@@ -22,14 +22,14 @@ This is not an introductory site. It teaches the hardest work in each field (the
 - **Navigable hierarchy.** The structure mirrors the curricula exactly — Domains → Milestones → Chapters → Topics — and every level is linked and reachable from the master page.
 - **Domains.** A domain is a whole field of study with its own curriculum file and its own milestones. Data Engineering ([DATA_ENGINEERING_CURRICULUM.md](DATA_ENGINEERING_CURRICULUM.md)) is the first.
 - **Everything is a webpage.** The master page and every single topic is delivered as a web page.
-- **A continuous, automated motion-graphics sequence loops** as part of the experience — part of the visual identity, always alive.
+- **A continuous, automated motion-graphics sequence loops** as part of the experience — part of the visual identity, always alive, and always pausable.
 - **Beauty is a requirement, not a nice-to-have.** The master page and every topic page must look exceptional.
 
 ## The Production Model
 
 - **One topic at a time.** We do **not** generate the whole book at once. We produce a single topic — fully researched, fully animated, fully polished — and only then move on to the next.
 - **Incremental and compounding.** The experience grows topic by topic; per-topic quality is never traded away for speed of coverage.
-- **Release as we go.** The Data Engineering curriculum has roughly 820 topics. Order follows the curriculum, and each finished topic goes live straight away, so learners get value long before the whole domain is done.
+- **Release as we go.** The Data Engineering curriculum has roughly 820 topics. Order follows the curriculum, and each finished topic goes live straight away, marked "expert review pending" until its milestone's human sign-off, so learners get value long before the whole domain is done.
 
 ## The Core Rules (non-negotiable)
 
@@ -74,7 +74,7 @@ No single check can prove content correct; critic agents in particular can share
    Each must cite evidence for every objection. Anything they can't settle goes to a human.
 5. **Human expert sign-off.**
    - Each milestone is reviewed by at least one practitioner who works with that technology in production; for frontier topics, ideally someone who builds the system.
-   - The reviewer and date appear on the page ("Reviewed by …, on …").
+   - The reviewer and date appear on the page ("Reviewed by …, on …"). Until then a published topic shows "expert review pending".
 6. **State-of-the-art scan.**
    - Before a topic is written, and again at each re-verification, we scan the latest releases and changelogs, design proposals (such as Kafka KIPs and Iceberg spec changes), recent papers from the top venues (VLDB, SIGMOD, OSDI, NSDI and arXiv), and recent talks from the teams building the system.
    - The topic records what was scanned and when.
@@ -91,12 +91,12 @@ No single check can prove content correct; critic agents in particular can share
 
 Built for experts. Research on how experienced learners learn (the "expertise reversal effect") shows that the step-by-step scaffolding that helps beginners slows experts down; they learn best from hard problems first, mechanisms in full, and room to skip what they know. The curriculum asks for "explanation → worked example → lab → failure analysis"; for this audience every topic is built in these layers:
 
-1. **The problem.** Open with a hard, real situation the topic resolves, e.g. "your exactly-once pipeline double-counted after a consumer rebalance; why?". State the 2–4 things the reader will be able to do afterwards and link the prerequisites.
+1. **The problem.** Open with a hard, real situation the topic resolves, e.g. "your exactly-once pipeline double-counted after a consumer rebalance; why?". State the 2–4 things the reader will be able to do afterwards and link the prerequisites. By the end of the topic this problem is solved in full: it is the topic's worked example.
 2. **Predict first.** Before each reveal, the reader commits to an answer ("what happens to p99 latency when…?"). Being wrong first makes the explanation stick.
 3. **The mechanism.** The animated, interactive explanation of how it actually works, in segments the reader controls. Real values on screen, words next to the motion, nothing that only moves.
 4. **Trade-offs and numbers.** The design space: the alternatives, what each costs, where each breaks, and the numbers that matter (latencies, throughput, complexity, cost) with back-of-envelope estimates.
 5. **Into the internals.** Where the idea lives in real systems: the paper, the design doc, the exact source-code paths, the configuration that changes behaviour. Formal precision where it matters: invariants, proofs sketched, complexity, pseudo-code, or a formal spec for protocols.
-6. **Build, break, measure.** A lab at realistic scale with failure injection and measurement. In the browser where possible (SQL via DuckDB-WASM or PGlite, Python via Pyodide, interactive simulations); otherwise a reproducible local setup with scripts and expected results.
+6. **Build, break, measure.** A lab with failure injection and measurement, as close to realistic scale as the medium allows. In the browser where possible (SQL via DuckDB-WASM or PGlite, Python via Pyodide, interactive simulations); otherwise a reproducible local setup with scripts and expected results.
 7. **In production.** How it fails in the real world: incidents and post-mortems, the misconceptions experienced engineers still hold, and how to diagnose them.
 8. **The frontier.** What is still unsolved or actively changing, and where the field is heading.
 9. **Prove it.** Expert-level self-assessment, not trivia: predict-the-outcome, debug-this, estimate-the-cost and defend-a-design questions, each with a worked answer. Facts worth keeping (numbers, invariants, failure signatures) go into an optional spaced-repetition review queue (e.g. the FSRS algorithm).
@@ -106,7 +106,7 @@ Built for experts. Research on how experienced learners learn (the "expertise re
 
 ## Experience features
 
-- **Skip what you know.** Each topic opens with a short diagnostic; readers who pass a layer's questions can jump straight past it.
+- **Skip what you know.** Each layer can start with a short diagnostic; readers who pass it jump straight past that layer.
 - **Progress without accounts.** Completed topics, quiz results and the review queue are saved in the browser, with export/import so a learner can move devices. A learner always sees where they are and can resume where they stopped.
 - **Find anything.** Full-text search across topics, a glossary of terms linked from wherever they appear, and a prerequisite map showing what each topic builds on.
 - **Built for deep work.** Reading-time estimates per layer, keyboard-first navigation, typeset maths and code, citations that open in place, and a print/PDF view of any topic.
@@ -137,10 +137,10 @@ One topic at a time is produced start to finish as a single scrollable reel, fol
 2. **Research & verify.** Run the state-of-the-art scan, then gather from primary sources first (official docs, specs, source code, papers), using books and talks for framing; record every claim with its source and version; cross-check for correctness and currency and regressively re-verify. Nothing incorrect, outdated, or missing passes. _(Rule #3)_
 3. **Distill the explanation.** Start from the hard problem and what the reader will be able to do afterwards, then find the clearest framing that stays fully precise. Draft every layer of the [learning design](#learning-design--what-every-topic-contains) alongside: predictions, trade-offs and numbers, internals, the lab, production failures, the frontier and the self-assessment. _(Rule #4)_
 4. **Decide what to animate.** For every concept ask "can this be shown with a pretty animation?" — if yes, it becomes an animation; and "can the reader learn more by driving it?" — if yes, it becomes interactive. Storyboard the motion. _(Rule #1)_
-5. **Build the reel.** Assemble the animations + content into one self-contained, scrollable reel following the [animation principles](#animation-principles) and the [coffee theme](#theme--coffee), with components designed for this topic; add the looping motion-graphics; scrolling advances to the next topic. _(Rule #1, Rule #2)_
+5. **Build the reel.** Assemble the animations + content into one self-contained, scrollable reel following the [animation principles](#animation-principles) and the [coffee theme](#theme--coffee): topic visuals designed for this concept, built on the [shared components](#shared-components); add the looping motion-graphics; scrolling advances to the next topic. _(Rule #1, Rule #2)_
 6. **Polish for beauty & memorability.** Refine visuals, layout, and pacing until it looks exceptional and sticks in memory. _(Rule #4)_
-7. **Check against the Definition of Done.** Confirm every criterion above is met before shipping.
-8. **Review.** Launch the brutal, hardcore critic review agents described in [Correctness and currency](#correctness-and-currency--how-we-make-sure) (fact-checker, red team, currency checker, expert reader), plus reviewers for learning design, accessibility and looks. CI must be green (every example runs, every claim is sourced, every link resolves). Each finished milestone also gets a human practitioner's sign-off. If it's not up to the mark, go back to step 2.
+7. **Review.** Launch the brutal, hardcore critic review agents described in [Correctness and currency](#correctness-and-currency--how-we-make-sure) (fact-checker, red team, currency checker, expert reader), plus reviewers for learning design, accessibility and looks. CI must be green (every example runs, every claim is sourced, every link resolves). Each finished milestone also gets a human practitioner's sign-off. If it's not up to the mark, go back to step 2.
+8. **Check against the Definition of Done.** Confirm every criterion above is met before shipping.
 9. **Wire it into the experience.** Link the finished topic into the master page and the vertical feed so it is reachable in the hierarchy.
 10. **Ship the topic.** One topic at a time — finish and ship it before starting the next. _(Rule #2)_
 
@@ -180,7 +180,7 @@ A new shared component is added when a second topic would need the same thing; u
 | In-browser labs | **DuckDB-WASM**, **PGlite**, **Pyodide** | SQL and Python in the page, no install |
 | Search | **Pagefind** | Full-text search over the static site, no server |
 | Sound (optional) | **WebAudio**, synthesised live | Original score only; no licensed or copyrighted music |
-| Hosting | **GitHub Pages** via GitHub Actions on push to `main` | Exact version pins (a floating Rollup once broke the build) |
+| Hosting | **GitHub Pages** via GitHub Actions on push to `main` | Exact version pins, so builds are reproducible |
 | Verification | **Playwright** + Chromium, CI | Screenshots, overflow scans, frame-time runs and executable snippets, see [Verification](#verification) |
 
 ### How the site maps to the curriculum
@@ -194,19 +194,19 @@ A new shared component is added when a second topic would need the same thing; u
 
 ### Animation principles
 
-These are rules for how animations behave, not things to reuse. The visuals themselves are invented per topic.
+These are rules for how animations behave. The building blocks are shared; the visual idea is invented per topic.
 
 - **Designed for the concept.** Each topic gets its own visual idea and motion, built from the shared building blocks and chosen for what makes that idea click. If two topics explain things the same way, one of them hasn't found its own idea yet.
 - **Driven by time.** Every animation is a function of the reel's clock, with no hidden state, so a reel can pause, scrub, loop and open at an exact moment (`?t=12.5`) at any frame rate.
 - **Fits every screen.** Each reel lays out on a fixed virtual canvas scaled to the screen, with its own portrait layout rather than a squeezed landscape one.
-- **The learner is in control.** Every reel can be paused, scrubbed (with markers for its sections), replayed and muted, from the mouse, touch or keyboard.
+- **The learner is in control.** Every reel can be paused, scrubbed (with markers for its sections), sped up or slowed down, replayed and muted, from the mouse, touch or keyboard.
 - **Steady rhythm.** Steps land on a regular beat, roughly one new idea every two beats, so the pacing is predictable and easy to remember.
 - **Repeatable.** Any randomness is seeded, so a reel plays identically every time.
 - **Calm when asked.** With reduced motion turned on, each reel shows a chosen still frame instead of playing.
 
 ### Theme — coffee
 
-The one thing every page shares. The hub, every domain, milestone, chapter and topic use exactly this theme, so the product reads as one whole while the components inside each page are new. It runs from roasted dark to steamed light.
+The one thing every page shares. The hub, every domain, milestone, chapter and topic use exactly this theme, so the product reads as one whole while each topic's visuals are new. It runs from roasted dark to steamed light.
 
 | Token | Hex | Use |
 |---|---|---|
@@ -243,7 +243,7 @@ The one thing every page shares. The hub, every domain, milestone, chapter and t
 
 ### Performance rules
 
-Learned on real phones while building the intro:
+Learned on real phones in earlier animation work:
 
 - Animate only `transform` and `opacity`; use `translate3d` and `will-change` on layers that move.
 - No SVG or CSS filters on large moving layers on phones. A blur on a wide sliding layer made one scene stutter.
@@ -265,4 +265,4 @@ Every topic is checked in a real browser before it ships:
 
 ### Sources and licensing
 
-Books, papers and docs are sources to learn from and cite, not to copy: explanations, examples and figures are our own, written in our own words, with the source credited. Only original or properly licensed media. Reels carry no copyrighted music: YouTube embeds bring ads and a mandatory visible 200 × 200 player, and self-hosting a commercial track isn't allowed. Any soundtrack is synthesised in the browser with WebAudio.
+Books, papers and docs are sources to learn from and cite, not to copy: explanations, examples and figures are our own, written in our own words, with the source credited. Only original or properly licensed media. Reels carry no copyrighted music; any soundtrack is original, synthesised in the browser with WebAudio.
