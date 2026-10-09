@@ -1,45 +1,45 @@
-# The World-Class Data Engineer — Complete, Self-Contained Syllabus
+# Data Engineering — Syllabus
 
-Synthesized from *Advanced Data Engineering Learning Curriculum* and *Rust Systems Engineering*, validated against current public roadmaps (DataTalksClub DE Zoomcamp, the Data Engineering Cookbook) and extended with the modern/emerging stack plus the career/business layer needed to convert deep technical mastery into top-tier compensation.
+The data-engineering domain of the learning experience: the systems, theory and engineering behind data platforms at the frontier, taught to working professionals who are already strong engineers. Synthesized from *Advanced Data Engineering Learning Curriculum*, validated against current public roadmaps (DataTalksClub DE Zoomcamp, the Data Engineering Cookbook) and extended with the modern and emerging stack.
 
-**Design goal:** a book written to cover *every* line in this syllabus — to the depth implied by the sub-bullets and labs — would be a complete education. No other resource would be strictly required. This is a topic index, not a tutorial: every line is something to go learn, build, break, and measure.
+**Design goal:** a treatment of *every* topic in this syllabus, to the depth its line and labs imply, is a complete education in the field. This file is a topic index, not prose: every topic is something to learn, build, break and measure.
 
 ## Structure: Milestones → Chapters → Topics
-This syllabus is a three-level hierarchy:
-- **Milestones** (top level) — a coherent domain of mastery (*Foundations*, *Storage*, *Compute*, …). Advance milestone by milestone.
-- **Chapters** (mid level) — a major subject inside a milestone (*Database Internals*, *Spark*, …).
-- **Topics** (leaf level) — the individual learnable, testable units (the bullets).
 
-**Every milestone closes with a "Systems in Production" section** — the real systems, grounded in the original engineering papers and post-mortems, that embody the milestone's ideas at planetary scale, with their actual internals and the trade-offs their builders consciously accepted. These are not illustrations; they are the proof that the milestone's theory survives contact with production.
+- **Milestones** — a coherent area of mastery (*Foundations*, *Storage*, *Compute*, …), taken in order.
+- **Chapters** — a major subject inside a milestone (*Database Internals*, *Spark*, …). A chapter may group its topics under numbered sections (§N.M).
+- **Topics** — the individual learnable, testable units: each bullet is one topic, and each topic becomes one interactive reel on the site. Topics marked *(refresher)* are basics an expert should already know; they become short refresher pages rather than full reels.
 
-The ten milestones:
-1. **Foundations** — SQL, modeling, programming, CS fundamentals
+**Every milestone closes with "Systems in Production"**: the real systems, grounded in the original papers and post-mortems, that embody the milestone's ideas at scale, with their internals and the trade-offs their builders accepted. They are the proof that the theory survives contact with production.
+
+The eight milestones:
+1. **Foundations** — CS fundamentals, SQL and query execution, data modeling, Python for data systems
 2. **Storage** — database internals, file formats, the lakehouse
 3. **Compute** — batch and distributed processing
 4. **Movement** — ingestion, CDC, streaming
-5. **Platform** — cloud, orchestration, containers, operations
+5. **Platform** — cloud, orchestration, containers, operations, governance
 6. **Theory & Design** — distributed-systems theory and data-system design
-7. **Frontier** — industrial/time-series and the modern/AI stack
-8. **Mastery** — capstones, career, self-assessment, learning philosophy
-9. **Deep Track (optional)** — systems engineering in Rust (43-chapter track)
-10. **Data Structures & Algorithms (reference)** — comprehensive DSA for interviews and engineering, mapped to data-system mechanisms
+7. **Frontier** — industrial and time-series data, the modern and AI data stack
+8. **Capstones & Practice** — integrative capstone projects and working with stakeholders
+
+Two related domains go deeper where this one stops: **Rust Systems Engineering** ([rust-systems-engineering.md](rust-systems-engineering.md)) builds the storage engines, runtimes and replicated logs from scratch, and **Data Structures & Algorithms** ([data-structures-and-algorithms.md](data-structures-and-algorithms.md)) covers the structures and algorithms these systems are made of.
 
 ## How to use this syllabus
-- **Topic index, not prose.** Each bullet is a learnable, testable unit. A full treatment expands each into explanation → worked example → lab → failure analysis.
-- **Build-break-measure.** Every major area has a lab. You have not learned a system until you have built a toy version, injected failures, and measured behavior (see Ch.24 — Learning Philosophy).
-- **Depth over coverage.** If time-constrained, cut breadth before cutting hands-on depth. Use the specialization tracks (Ch.21) to prioritize.
-- **Progression.** Work the milestones in order (1 → 9). Milestone 9 (Rust) is optional and deliberately last.
-- **Self-assessment is mandatory.** You do not pass a chapter until you can answer its questions (Ch.20) and defend a design (Ch.15) under time pressure.
 
-## Canonical references (each mapped to the chapters it covers; the syllabus stands alone, but these are the primary sources it distills)
-- *Designing Data-Intensive Applications* (Kleppmann) — Ch.5, Ch.9, Ch.14, Ch.15
-- *Database Internals* (Petrov) — Ch.5, Ch.6, Ch.25-D
-- *The Data Warehouse Toolkit* (Kimball) — Ch.3
+- **Build, break, measure.** Every major area has a lab. A system isn't learned until you have built a toy version, injected failures and measured its behaviour.
+- **Depth over coverage.** If time is short, cut breadth before cutting hands-on depth; Appendix B lists specialization tracks.
+- **Progression.** Work the milestones in order; within a chapter, topics are ordered so each builds on the ones before it.
+- **Self-assessment.** A chapter is done when you can answer its questions (Appendix A) and defend a design (Ch.15) under time pressure.
+
+## Canonical references (mapped to the chapters they inform; the syllabus stands alone, these are the primary sources it distills)
+
+- *Designing Data-Intensive Applications*, 2nd ed. (Kleppmann & Riccomini, 2026) — Ch.5, Ch.9, Ch.14, Ch.15
+- *Database Internals* (Petrov) — Ch.5, Ch.6
+- *The Data Warehouse Toolkit*, 3rd ed. (Kimball & Ross) — Ch.3
 - *Fundamentals of Data Engineering* (Reis & Housley) — Ch.3, Ch.7, Ch.13
-- *Streaming Systems* (Akidau et al.) — Ch.9
+- *Streaming Systems* (Akidau, Chernyak & Lax) — Ch.9
 - *Spark: The Definitive Guide* / *High Performance Spark* — Ch.7
-- The Raft paper, the Kafka design doc, the Dynamo paper, the Google Spanner/F1 papers — Ch.14, Ch.25-E, and the Systems-in-Production sections
-- *The Rust Programming Language* + the dedicated 43-chapter systems book — Ch.25
+- The Raft paper, the Kafka design docs, the Dynamo paper, the Google Spanner and F1 papers — Ch.14 and the Systems in Production sections
 
 ---
 
@@ -1180,197 +1180,3 @@ Notice the recurring shape across all twenty-plus systems:
 
 ---
 
-# MILESTONE 9 — Deep Track (optional): Systems Engineering in Rust
-## Chapter 25 — Systems Engineering in Rust: The Complete 43-Chapter Deep Dive
-Why top-tier data platform teams use Rust for connectors, agents, and hot paths (Polars, DataFusion/Ballista, Vector, delta-rs, Materialize, RisingWave, Redpanda). This milestone is deliberately placed last: it is the single deepest, most time-intensive track in the syllabus, and it is optional for pure-analytics roles — but decisive for the storage/streaming/infra specializations in Ch.21. Treat it as the capstone "fourth year" after Milestones 1–8 are solid, not a detour through them. The sub-sections below map directly to the 43 chapters of a dedicated systems-engineering curriculum — kept chapter-specific and concrete rather than generic, since this is precisely the depth that separates "uses a database" from "could build one."
-
-> **Rust prerequisites (do before Ch.1):** if you have never written Rust, spend ~1–2 weeks on *The Rust Programming Language* (the Book) through ch. 10 — ownership, borrowing, structs/enums, pattern matching, generics/traits, error handling (`Result`/`?`), collections, and `cargo` basics. Ch.1 below assumes you can compile and read a borrow-checker error. This track is a 3–5 month commitment on top of everything before it.
-
-### 25-A. Ownership, types, and concurrency primitives (Ch.1–7)
-- **Ch.1 Ownership and moves** — one live owner responsible for destruction; move invalidates the old binding (no implicit deep copy); API design framing (`T` = takes ownership, `&T` = borrows, return `T` = returns ownership); error **E0505** (move while a borrow is active); anti-pattern of reflexively reaching for `Arc<Mutex<T>>` when the real issue is wrong ownership topology; RAII wrapper for an OS file descriptor (single close, no accidental copy); `Drop` destruction-order tracing in nested structs; partial moves out of multi-field structs; pattern-matching as a resource-transfer boundary. *Lab: 3-stage byte pipeline (allocate once → borrow to inspect headers → own buffer, return to pool); instrument allocation counts.*
-- **Ch.2 Borrowing, lifetimes, and references** — many shared `&T` OR one `&mut T`, never both; lifetimes as relationships between existing references, not lifetime extension; `'static` called out as "rarely a legitimate fix"; zero-copy parsing pattern `fn parse<'a>(buf: &'a [u8]) -> Header<'a>`; `Cow<'a, [u8]>` vs `&'a [u8]` vs owned `Vec` for mostly-read workloads; non-lexical lifetimes (NLL); reborrowing (`&mut *x`); `'static` requirement for data crossing an async task boundary. *Lab: zero-copy protocol parser over `&[u8]`; deliberately write a dangling-reference function and read the compiler diagnostic.*
-- **Ch.3 Traits, generics, monomorphization, and dynamic dispatch** — generics+trait bounds (monomorphized, zero-cost) vs `dyn Trait` (vtable dispatch) for plugin-style boundaries; associated types vs generic type parameters (iterator pattern); object-safety/dyn-compatibility failure mode. *Lab: implement one codec as a generic function and once behind `Box<dyn Codec>`; benchmark throughput and binary size.*
-- **Ch.4 Smart pointers and interior mutability** — `Box` (heap ownership), `Rc` (single-thread shared), `Arc` (cross-thread shared), `RefCell` (runtime-checked interior mutability, explicitly NOT a sync primitive); anti-pattern of wrapping unclear designs in `Arc<Mutex<T>>` until the compiler is satisfied (can serialize the hot path and hide real contention); `Weak` references to break reference cycles (safe Rust can still leak via cyclic logical ownership). *Lab: take an `Arc<Mutex<HashMap<...>>>` service, measure lock-hold time, redesign one path as owner-task+channel, compare throughput/tail latency.*
-- **Ch.5 Type layout, alignment, ABI, and FFI** — size/alignment/field-offset rules; `repr(Rust)` layout is compiler-chosen and unstable, `repr(C)` gives C-compatible guarantees; padding/field-order affects struct size (verify with `size_of`/`align_of`, never assume); Rust 2024 Edition requires `unsafe extern` blocks with `pub safe fn` for individually-safe declarations; FFI safety-contract checklist (pointer validity, ownership transfer, thread-safety, which side frees). *Lab: define a C-compatible packet header, verify `size_of`/`align_of` against a C compiler, add a compile-time assertion, show how `repr(Rust)` breaks the assumption.*
-- **Ch.6 Send, Sync, Arc, Mutex, and ownership across threads** — `Send`/`Sync` as auto-traits/type-level concurrency boundaries (a type can be `Send` without `Sync`); `Arc` is shared ownership only, not synchronization; rule: never do I/O inside a critical section — "the lock is doing more than protecting a critical section, it is serializing external latency"; `tokio::spawn(async move {...})` as an explicit ownership-crossing point. *Lab: implement a concurrent counter three ways (Mutex, atomics, owner-task+channel), compare throughput/tail latency at 1/2/4/8/16 workers.*
-- **Ch.7 Atomics and the memory-ordering model** — `Relaxed`/`Acquire`/`Release`/SeqCst orderings grounded in Linux kernel memory-barrier semantics; atomicity (no torn updates) vs ordering (visibility) as distinct concerns; publication pattern (release-store a flag/pointer, acquire-load before reading published data); CAS loops as lock-free building blocks; the **ABA problem** and mitigations (hazard pointers, epochs, tagged pointers). *Lab: build an SPSC ring buffer with a Mutex, then with atomic indices; define the slot-ownership invariant and fuzz producer/consumer schedules.*
-
-### 25-B. Async runtime internals (Ch.8–10)
-- **Ch.8 Future, Waker, Pin, and the async state machine** — `Future` as lazy computation (constructing one does no work; laziness is itself a backpressure mechanism); `Poll::Pending`/waker contract (pending future must arrange its `Waker` to be called); architecture is Future → Waker → scheduler → poll, not "hidden thread"; `Pin` exists because self-referential async state machines break if their address moves after internal references are established. *Lab: write a future that returns Pending once then Ready, logging every poll/wake; build a tiny executor with a runnable queue.*
-- **Ch.9 Tokio runtime architecture** — tasks are lightweight and multiplexed onto worker threads (not 1:1 with OS threads; blocking a worker stalls unrelated tasks); current-thread vs multi-thread runtime as a workload-shape decision; CPU-bound work needs dedicated blocking threads/a CPU pool; I/O driver flow (register interest → sleep until ready → wake task → poll again) ties directly to epoll/io_uring; operational rules — keep tasks small enough to yield, bound concurrency, bound channels, define cancellation semantics explicitly. *Lab: async TCP accept loop with bounded semaphore, per-connection task, timeout, shutdown signal, metrics; overload beyond the bound and observe behavior.*
-- **Ch.10 Channels, backpressure, cancellation, and graceful shutdown** — any introduced concurrency/queuing must use a **bounded** channel or memory exhaustion follows; channel capacity as an application-specific burst-tolerance decision; cancellation = dropping the future (subtle once background tasks/external resources are involved); explicit shutdown sequence (stop accepting → signal workers → drain/cancel per policy → close transports → wait for completion). *Lab: worker pool that rejects new jobs post-shutdown and guarantees every accepted job completes or is explicitly abandoned.*
-
-### 25-C. OS, networking, and protocol layer (Ch.11–18)
-- **Ch.11 Processes, file descriptors, syscalls, and resource ownership** — fds as process-local handles to kernel objects; syscalls as explicit user/kernel boundary crossings with batching trade-offs; wrap descriptors in a `Drop`-implementing owner type to prevent use-after-close; `into_raw_fd(self)` for clean ownership handoff. *Lab: wrap a raw socket/fd, test double-close prevention, inspect via `/proc/<pid>/fd`.*
-- **Ch.12 Virtual memory, mmap, page faults, and memory mappings** — virtual-address → page-table-walk → physical-frame translation with permission enforcement; `mmap` anonymous vs file-backed, shared vs private copy-on-write; major vs minor page faults; `/proc/<pid>/maps` and `/proc/<pid>/smaps`; the double-caching problem (page cache + app buffer cache both holding the same data) and why direct I/O trades this for alignment constraints. *Lab: map a multi-GB file, scan sequentially then randomly, record page faults/RSS/throughput; repeat with read-based I/O.*
-- **Ch.13 epoll and readiness-driven networking** — interest list vs ready list; level-triggered vs edge-triggered semantics; edge-triggered rule: every readable event needs a read-until-EAGAIN loop, every writable event needs an outbound-buffer drain; design principle — kernel reports readiness, the application owns protocol state (input buffer, output buffer, parser state, deadlines, lifecycle). *Lab: implement a level-triggered echo server, convert to edge-triggered, introduce partial writes/slow readers, find where the state machine breaks.*
-- **Ch.14 io_uring and submission/completion queues** — shared ring buffers between user space and kernel (SQE describes an op, CQE reports completion); SQPOLL kernel-thread polling changes the batching story; critical lifetime rule — buffers referenced by an in-flight SQE must remain valid until the CQE arrives; io_uring is not universally faster — must be benchmarked against blocking read and epoll on submissions/batch, completions/batch, cache misses, syscalls, CPU, tail latency. *Lab: file-read microbenchmark, blocking read vs io_uring with fixed-size buffers; measure CPU time/GB and latency distribution.*
-- **Ch.15 Filesystems, page cache, direct I/O, and durability** — buffered I/O (through page cache) vs direct I/O (`O_DIRECT`, bypasses page cache, alignment/completion constraints); durability requires more than a successful write — may need file-data AND directory-metadata on stable storage; database approach is WAL + explicit flush points, not fsync-per-small-update; tools: `strace`, `perf`, device-queue-depth counters. *Lab: journaled file format; crash the process at four distinct write/flush stages and verify which post-restart states survive.*
-- **Ch.16 TCP sockets, framing, partial I/O, and backpressure** — TCP is a byte stream, not a message queue (`read`/`write` can be partial); framing strategies — length-prefix, delimiter-based, fixed-size, each with distinct failure modes; backpressure as explicit connection-state-machine behavior (pause producers / drop by policy / close once a limit is reached). *Lab: length-prefixed TCP protocol, 1 MiB max frame, bounded output buffer, per-connection timeout, graceful half-close.*
-- **Ch.17 HTTP/1.1, HTTP/2, HTTP/3, QUIC, and TLS 1.3** — grounded in RFC 9000 (QUIC), RFC 9114 (HTTP/3), RFC 8446 (TLS 1.3); HTTP/2 multiplexing over one TCP connection means one lost packet stalls all streams (head-of-line blocking generalized: transport recovery granularity coarser than the application concurrency unit amplifies failure); QUIC gives flow-controlled independent streams, fast handshake, path migration, integrated TLS, over UDP; TLS 1.3 review checklist (cert validation, SNI/ALPN, key establishment, session resumption, 0-RTT replay risk, safe shutdown on auth failure). *Lab: trace one request over HTTP/1.1 and HTTP/3 under injected packet loss; compare tail behavior, not just wall-clock latency.*
-- **Ch.18 Axum, Tower, and production service boundaries** — Axum has no native middleware system, it's built entirely on `tower::Service`, so Tower middleware (timeouts, tracing, compression, authorization) is shared across any Tower-based stack; middleware *ordering* changes semantics (timeout-before-vs-after-auth; retrying a non-idempotent op is catastrophic; tracing-layer placement determines whether a span describes one logical request or one retry attempt). *Lab: build a service with timeout/trace/auth/retry middleware, deliberately misorder them to demonstrate the bug, then document the invariant correct order protects.*
-
-### 25-D. Storage-engine internals (Ch.19–24)
-- **Ch.19 Pages, records, and physical storage layout** — PostgreSQL page layout as reference (fixed-size page: header, line pointers, tuples, free space); self-describing page format (magic number, version, slot info, checksums); slotted-page design — separates tuple identifier from physical offset so records can move within a page while logical identity (slot) stays stable; in-place vs append-only vs copy-on-write update strategies and their fragmentation/MVCC/compaction trade-offs. *Lab: implement a 4 KiB slotted page, insert variable-length records, delete half, compact, fuzz malformed offsets, add page checksum + format version.*
-- **Ch.20 Write-ahead logging and crash recovery** — "log first, data later": the durable log record must reach its durability point before the data page can be trusted after a crash; Log Sequence Number (LSN) lets recovery know whether a redo record still needs applying (`page.lsn >= record.lsn`); group commit batches multiple transactions into one flush; commit latency ≠ execution time (p99 commit latency can be dominated by flush contention). *Lab: single-file WAL with length-prefixed records and checksums; crash after append-before-page-write and page-write-before-checkpoint; recovery must never expose a partial commit.*
-- **Ch.21 B-trees, page splits, and range scans** — PostgreSQL B-Tree as reference; fanout keeps tree height low across billions of records at the cost of page splits/write amplification; a partial split must not orphan or duplicate key ranges (crash-safety required); range scans rely on leaf ordering + neighbor-leaf traversal, not just balanced search. *Lab: disk-backed B-tree over fixed pages with point lookup, ascending range scan, splits; kill the process mid-split and recover from WAL.*
-- **Ch.22 LSM trees, memtables, SSTables, and compaction** — write path: durable log append → memtable → rotate to immutable structure → flush as sorted SSTable; reads check newest structures first; immutability of flushed files simplifies concurrent reads/recovery; compaction rewrites records to reduce overlap and must be budgeted against foreground I/O/CPU; Bloom filters rule out SSTables that definitely lack a key (no false negatives, some false positives — "a negative result is proof of absence, a positive result is only permission to look"). *Lab: LSM KV store with WAL, memtable, immutable memtable, SSTable, Bloom filter, one compaction policy; measure write/read amplification under skewed vs uniform workloads.*
-- **Ch.23 MVCC, visibility, and transaction isolation** — PostgreSQL MVCC docs as reference; visibility is a function of version metadata + transaction snapshot, not "newest row"; writers create new versions instead of overwriting versions a concurrent reader may need (decouples read-blocking from writers but ties visibility to garbage collection); isolation levels as statements about which concurrent histories are permitted; vacuum/version-retention coupling — old versions can't be reclaimed while any active snapshot might need them (a long-running transaction becomes a storage-growth problem). *Lab: simulate two concurrent transactions over an in-memory version chain; implement read-committed and repeatable-read visibility; measure version retention under a long-lived reader.*
-- **Ch.24 Columnar storage, vectors, and compression** — Apache Arrow as reference; column-major storage reduces bytes touched for narrow projections, improves cache locality, enables SIMD-friendly loops, but hurts point updates and wide-column queries; encodings — run-length, delta, dictionary — chosen by data distribution/predicate shape/decode cost, not by default; vectorized execution processes batches instead of row-at-a-time to cut interpreter overhead. *Lab: column scan over 10M integers; compare row-major structs vs column-major arrays; add RLE or delta encoding; measure bytes read, cycles/row, predicate selectivity.*
-
-### 25-E. Distributed systems and streaming (Ch.25–28)
-- **Ch.25 Replication, quorums, and failure semantics** — grounded in the Kafka Design doc and the Raft paper; durability vs availability distinguished by *which* acknowledgement point is used (subset accepted / quorum persisted / leader durably recorded); quorum intersection is necessary but not sufficient — still need an explicit rule for which version wins; failure-injection requirement — process death, partition, delayed packets, duplicate requests, disk-full, simultaneously, not one at a time. *Lab: three-node replicated register; inject delayed acks and leader failure; record which reads are permitted at each point.*
-- **Ch.26 Raft: leader election, log replication, and commitment** — terms, follower/candidate/leader roles, randomized election timeouts; candidates must prove log up-to-date-ness under voting rules; `AppendEntries{term, prev_log_index, entries, leader_commit}`; entries commit only once stored by required replicas under the current term; conflict repair — leader backs up to a common prefix and overwrites a divergent follower suffix (must be impossible to silently corrupt indexes); consensus/state-machine separation enables testing consensus against a trivial KV state machine first. *Lab: 3-node Raft-like log, deterministic timers first then randomized elections, inject partitions/restarts, compare observed history against a linearizable register spec.*
-- **Ch.27 Kafka-style logs, partitions, and delivery semantics** — topic divided into partitions, each an ordered append-only log (ordering scoped to a partition, not the topic); key-based partitioning (`hash(key) % N`) preserves per-key order while distributing load; at-most-once/at-least-once/exactly-once distinguished explicitly — "exactly once" depends on publish/consume/commit failure boundaries, not the network; idempotent consumers recommended even with transactional broker support, since downstream side effects (payments, email) need their own dedup; log compaction (latest value per key forever) vs time/size retention. *Lab: partitioned log with consumer offsets; run at-least-once, crash between side-effect and offset-commit, observe the duplicate, then make the consumer idempotent.*
-- **Ch.28 CRDTs, idempotency, and convergent state** — the real question is whether the state has a mathematically safe merge operation matching user semantics, not whether CRDTs are fashionable; mergeable types (sets, counters, registers with version metadata) each need different merge rules — the merge operator is part of the data model; idempotency keys as the practical cousin of exactly-once for distributed APIs; explicit "when NOT to use a CRDT" — single-lock-holder business rules or external global invariants need a coordination protocol instead. *Lab: model a replicated shopping-cart quantity (CRDT) vs a unique reservation (consensus-style); explain why only one merges without coordination.*
-
-### 25-F. Performance, unsafe code, FFI, build, and observability (Ch.29–33)
-- **Ch.29 Performance engineering: caches, branch prediction, NUMA, profiling** — workflow is measure → hypothesize → change → measure; cache-line as the unit of memory movement; **false sharing** named as a reason lock-free structures can underperform locked ones; track p50/p95/p99 and tail, not average (a median improvement can be a p99 regression); tooling — `cargo bench`/Criterion, `perf`, flamegraphs; NUMA — multi-socket memory-locality effects that can overwhelm parallelism gains if ignored. *Lab: benchmark shared/sharded/padded counters at 1/2/4/8 threads with cache-miss and context-switch counters; explain the scaling curve.*
-- **Ch.30 Unsafe Rust, allocators, and memory reclamation** — unsafe is a larger proof obligation, not a faster mode (must prove validity, aliasing, initialization, lifetime, alignment, thread-safety); every unsafe block needs stated preconditions, "this is faster" is not a safety argument; custom allocators (arenas, fixed-size pools, region lifetimes with bulk dealloc) justified only for predictable allocation topology; epoch-based reclamation and hazard pointers for lock-free structures. *Lab: implement a bump arena, prove individual drops aren't required, expose one unsafe accessor with a documented safety contract and boundary-case tests.*
-- **Ch.31 FFI, ABI, dynamic linking, and native interop** — the FFI boundary is a protocol (who allocates, who frees, error representation, alignment, concurrent-callback possibility), not just `repr(C)`; prefer generated bindings over handwritten ones that drift; callback-lifetime problem — a native library calling back after the initiating Rust function returns needs stable heap allocation + context pointer + explicit synchronization, not a stack-captured closure. *Lab: wrap a tiny C library that allocates/frees buffers, add safe ownership, introduce a callback with explicit lifetime handling, run under sanitizers.*
-- **Ch.32 Cargo workspaces, features, lints, tests, and release engineering** — workspace boundaries should follow API/dependency ownership, not "a crate per module"; Cargo features are compile-time product variants with combinatorial test-space cost; CI baseline — format check, Clippy (warnings-as-errors), unit/integration tests, release build, dependency auditing. *Lab: split a prototype into core/transport/storage/service crates with CI, feature-gated backends, integration tests, reproducible release profile.*
-- **Ch.33 Observability: tracing, metrics, and failure-oriented diagnostics** — the `tracing` crate's structured events+spans matter specifically for async code, since execution hops between tasks and call stacks aren't a simple linear story; structured fields over formatted-sentence logs (request_id, tenant, shard, partition, operation, attempt, queue depth); counters vs gauges vs histograms answer different overload questions; failure taxonomy — timeout, cancellation, remote error, protocol violation, local resource exhaustion, invariant failure — drives retry policy and alerting. *Lab: instrument the Ch.18 service with spans around HTTP request/DB call/queue wait/retry attempt; build dashboards for queue depth, p99 latency, error class, in-flight tasks.*
-
-### 25-G. Systems capstones A–C (Ch.34–36)
-- **Capstone A — production-grade async service (Ch.34):** HTTP edge (Axum) → bounded internal queue → worker pool → storage layer → shutdown coordinator, each owning a narrow state boundary; explicit failure budget for queue-full, DB slowdown, client disconnect, SIGTERM, downstream timeout; benchmark request latency, queue wait, storage latency, CPU, allocation rate, task count, loading until one resource saturates. *Lab: implement, containerize, run failure injection, write a two-page design review.*
-- **Capstone B — durable key-value engine (Ch.35):** four-version build progression — **V1** WAL+memtable (replay on startup, proves durability first) → **V2** SSTables (periodic freeze/flush, newest-first reads, Bloom filters/sparse indexes added only after correctness is stable) → **V3** compaction (merge overlapping SSTables, atomic manifest switch, crash-during-compaction resolves to old-or-new only) → **V4** MVCC (versions+snapshots, creating a real GC problem). *Lab: build in milestones with crash-injection tests; benchmark point/range reads; profile time in parsing/I-O/compaction/synchronization.*
-- **Capstone C — Raft-backed replicated state machine (Ch.36):** build a deterministic pure-function state machine first (identical histories → identical state, for testability), then the replicated log; persist term/vote/log *before* acknowledging dependent operations ("in-memory only is not the same algorithm"); network chaos testing (delay, duplication, reordering, loss, partition) — may stall but must never return conflicting committed histories; snapshotting to collapse log prefixes, itself crash-safe and index-compatible. *Lab: deterministic simulator first, then real TCP transport; property-style tests over random failure schedules.*
-
-### 25-H. Meta-skill, compiler, embedded, GPU, security, and testing (Ch.37–43)
-- **Ch.37 How to reason about a new systems problem in Rust** — the book's own worksheet: resources, owners, sharing rules, queues, persistence boundary, failure modes, consistency rule, backpressure point, observability signals — "if one of these is implicit, the design is not finished"; abstraction-level selection rule (stay in safe Rust until the problem genuinely crosses a lower-level boundary; drop to epoll/io_uring only when the runtime abstraction blocks needed control); evidence discipline — hypothesis, workload, metric, change, result for every optimization.
-- **Ch.38 Compiler pipeline, MIR, LLVM, and optimization boundaries** — rustc lowers through internal IRs before LLVM optimization and backend codegen; the optimizer may reorder/eliminate operations as long as language-permitted behavior is preserved, but unsafe code must uphold the validity assumptions those optimizations rely on ("it works on my CPU" is not proof UB is harmless); inspection tooling — `rustc --emit=llvm-ir`, `-C llvm-args`; record compiler version + target flags alongside every benchmark. *Lab: inspect optimized IR/assembly for a bounds-check-heavy loop, a slice iterator, and a hand-indexed loop; benchmark all three on the same target.*
-- **Ch.39 no_std, embedded, and hardware-facing Rust** — `#![no_std]` relies on `core` (+ optional `alloc` with a platform allocator); MMIO/volatile semantics require `ptr.read_volatile()` and type-safe peripheral wrappers, not ordinary memory reads; interrupt handlers are a separate execution context — shared state with main code needs atomics/critical sections driven by the hardware's concurrency model. *Lab: tiny no_std firmware module (one timer, one GPIO abstraction); test register-level logic on host, isolate target-specific code behind a thin layer.*
-- **Ch.40 GPU and heterogeneous systems: ownership across the PCIe boundary** — host/device separation (host owns buffers, queues transfers, launches kernels via FFI, waits on an event/stream); copies are a first-class cost (CPU→GPU→CPU can dominate over compute); synchronization IS ownership transfer — a kernel-completion event means the device finished using a buffer, explicitly called "the heterogeneous analogue of io_uring's in-flight buffer lifetime problem." *Lab: GPU pipeline processing batches on-device between ingest and writeback; compare one-copy-per-stage vs one-transfer-per-batch.*
-- **Ch.41 Security engineering: crypto APIs, parsers, secrets, and supply chain** — never implement crypto primitives casually (risk surface includes nonce handling, serialization, side channels, key lifecycle, not just math); parsers are security boundaries — validate lengths before arithmetic can overflow, fuzz with **cargo-fuzz** for truncated/oversized/duplicated/inconsistent fields; supply-chain trust via the **RustSec advisory database** and `cargo audit`, review new transitive dependencies. *Lab: fuzz a binary parser with a max nesting/size policy; run a dependency audit; write a short threat model.*
-- **Ch.42 Testing concurrent and failure-prone Rust systems** — **loom** for deterministic exploration of scheduler interleavings (finds orderings a stress test might miss for days); property-based testing (`proptest!`) for storage-page invariants (slots in bounds, no bad offset overlap, serialization round-trips); turning fuzz discoveries and crash-injection points into permanent, reproducible regression tests. *Lab: add property tests + fuzzed record bytes + crash points to the WAL/page engine, plus one deterministic concurrency model for the in-memory index.*
-- **Capstone D — zero-copy ETL and streaming data plane (Ch.43):** bounded dataflow stages source → decoder → batch builder → transform → sink; batch owns its backing buffers, transforms borrow/move columns, downstream gets ownership only when it can keep up (prevents unbounded producer allocation against a slow sink); durable checkpoints store source offsets/watermarks alongside output commit metadata; measurement set — MB/s, records/s, CPU cycles/record, allocation bytes/record, queue depth, batch size, sink latency, memory high-water mark (records/s alone can hide a pathological allocation regime). *Lab: ingest a large event stream, zero-copy parse, build Arrow-compatible column batches, transform, write to a durable sink; slow the sink 10x and prove memory stays bounded.*
-
-## Systems in Production — Milestone 9: Rust in the data plane
-Why these systems chose Rust (or its thread-per-core cousin), and which chapters each one proves.
-- **Polars** — a DataFrame engine built on Arrow with a lazy, optimized query plan (predicate/projection pushdown, parallel execution). Demonstrates Ch.24 (columnar) + Ch.1 (ownership): no GIL, zero-copy Arrow buffers, work-stealing parallelism.
-- **Apache DataFusion / Ballista** — an Arrow-native SQL query engine (planner + vectorized execution) usable as a library; the Rust answer to "embed a fast engine." Ties Ch.2.3 (optimizers), Ch.6.4 (lakehouse engines), and Ch.24 together.
-- **Materialize / RisingWave** — streaming databases maintaining incremental views over changing inputs; exactly the Ch.9.3 "SQL-native streaming" idea, implemented where deterministic low-latency state (Ch.26/27) matters.
-- **delta-rs / Vector** — a Rust Delta Lake implementation and a Rust observability pipeline: connectors and hot paths where predictable memory and no GC pauses (Ch.1/Ch.30) are the entire point.
-- **Redpanda** — a Kafka-compatible log built thread-per-core on C++/Seastar (not Rust), included because it is the clearest production proof of the Ch.13–15 thesis: own the core, pin the thread, manage the page cache deliberately, and the log gets dramatically faster. The Rust engines above apply the same discipline with memory safety added.
-
----
-
-# MILESTONE 10 — Data Structures & Algorithms (Interview & Engineering Reference)
-A comprehensive DSA reference: the structures and algorithms every engineer should know cold, with their data-engineering relevance called out. This milestone is **foundational and can be worked alongside Milestone 1** — it is placed last only to avoid renumbering the syllabus. It is also the explicit answer to the coding/DSA rounds interview loops open with (cross-ref Ch.1.2, which carries the curated DE-relevant subset, and Ch.20's applied warm-ups).
-
-*Numbering note:* the syllabus's own chapters run Ch.1–Ch.28; Milestone 9's Rust track uses that book's internal 1–43 numbering, a separate space — references to "Ch.26/27" inside Milestone 9 mean the Rust book's chapters, not these.
-
-**Approach (consistent with Ch.24):** learn **patterns, not problem counts** — implement each structure/algorithm once from scratch, know its complexity, and recognize which real data-system mechanism it powers.
-
-## Chapter 26 — Data Structures
-### 26.1 Linear structures
-- Arrays and dynamic arrays (amortized growth, cache locality)
-- Linked lists: singly, doubly, circular; when they beat arrays (and why cache behavior means rarely)
-- Stacks, queues, deques; monotonic stack/queue
-- Ring/circular buffers (bounded queues, backpressure — cross-ref Ch.25 SPSC ring buffer)
-- Strings, string builders; immutability, rope/gap buffers
-
-### 26.2 Hashing
-- Hash tables / maps / sets; the hash function's role
-- Collision resolution: separate chaining, open addressing (linear/quadratic probing, double hashing), Robin Hood, cuckoo
-- Load factor, resizing/rehashing, amortized cost
-- Perfect hashing; cryptographic vs non-cryptographic hashes
-- **Consistent hashing** and rendezvous hashing (sharding, caches, partition assignment — cross-ref Ch.5.3)
-
-### 26.3 Trees and hierarchical structures
-- Binary trees; binary search trees (BST)
-- Self-balancing: AVL, red-black, splay, treap
-- **B-tree / B+-tree** (database/filesystem indexes — cross-ref Ch.5.1, Ch.25-D)
-- **Heaps / priority queues:** binary, d-ary, binomial, Fibonacci (top-N, k-way merge, Dijkstra)
-- **Tries / prefix trees,** radix/Patricia trees (autocomplete, routing, IP lookup)
-- Segment trees, Fenwick / binary-indexed trees (range query + update)
-- Suffix trees / suffix arrays (string indexing)
-- Spatial: k-d trees, R-trees, quadtrees (geo / time-series indexing)
-- **LSM-tree** (write-optimized storage — cross-ref Ch.5.1, Ch.25-D)
-
-### 26.4 Graphs
-- Representations: adjacency list, adjacency matrix, edge list; CSR for large sparse graphs
-- Directed/undirected, weighted/unweighted, cyclic/acyclic (DAGs), multigraphs
-- Property graphs (cross-ref Ch.17.3 / 17.4)
-
-### 26.5 Disjoint sets and probabilistic/streaming structures
-- **Union-Find / disjoint-set** (path compression, union by rank — connected components, dedup clustering)
-- Skip lists (probabilistic balanced search; used in some LSM memtables)
-- **Bloom / cuckoo filters, HyperLogLog, Count-Min Sketch, t-digest / DDSketch, MinHash / LSH** — approximate membership/cardinality/frequency/quantiles/similarity (full treatment in Ch.5.6)
-- LRU / LFU cache structures (hashmap + doubly-linked list / frequency buckets — cross-ref Ch.5.5)
-
-## Chapter 27 — Algorithms
-### 27.1 Sorting
-- Comparison sorts: quicksort (randomized pivot, quickselect), merge sort, heapsort, insertion/selection/bubble (why they still matter for small/nearly-sorted inputs), Timsort/introsort (real stdlib hybrids)
-- Non-comparison: counting, radix, bucket
-- **External merge sort** (sorting beyond memory — basis of large joins/aggregations that spill; cross-ref Ch.1.2, Ch.7)
-- Stability, in-place vs out-of-place, the Ω(n log n) comparison lower bound
-
-### 27.2 Searching and selection
-- Linear search; **binary search** and boundary variants (lower/upper bound, first/last occurrence)
-- Binary search on the answer (parametric search); search in rotated / 2D-sorted arrays; exponential/interpolation search
-- Quickselect / median-of-medians (k-th smallest in expected O(n))
-
-### 27.3 Graph algorithms
-- Traversal: **BFS, DFS** (iterative + recursive), connected components
-- **Topological sort** (Kahn's + DFS) — DAG scheduling (cross-ref Ch.11)
-- Shortest paths: **Dijkstra**, Bellman-Ford (negative edges), Floyd-Warshall (all-pairs), A* (heuristic)
-- Minimum spanning tree: **Kruskal** (with union-find), **Prim**
-- Strongly connected components (Tarjan, Kosaraju); articulation points/bridges
-- Cycle detection (directed/undirected); bipartite check / 2-coloring
-- Max-flow / min-cut (Ford-Fulkerson, Edmonds-Karp, Dinic); bipartite matching
-- Euler/Hamiltonian path awareness
-
-### 27.4 Algorithm design paradigms
-- **Divide and conquer** (recurrences, Master theorem)
-- **Greedy** (interval scheduling, Huffman coding, when greedy is provably optimal)
-- **Dynamic programming:** memoization vs tabulation; classic forms — knapsack (0/1, unbounded), LCS/LIS, edit distance, coin change, matrix-chain, interval DP, bitmask DP, DP on trees/DAGs, digit DP
-- **Backtracking** (permutations/combinations/subsets, N-queens, Sudoku, constraint search) and **branch-and-bound**
-
-### 27.5 Array/sequence techniques
-- Two pointers; **sliding window** (fixed/variable); prefix sums and difference arrays; Kadane's (max subarray); cyclic sort / in-place index tricks
-
-### 27.6 Bit manipulation
-- Masks (set/clear/toggle/test); XOR tricks (single number, swap); counting bits; power-of-two checks; subset enumeration
-
-### 27.7 Math and number theory
-- GCD/LCM (Euclid), modular arithmetic and modular inverse, fast/modular exponentiation, sieve of Eratosthenes, primality (trial division, Miller-Rabin), combinatorics (nCr, Pascal), basic probability
-
-### 27.8 String algorithms
-- Pattern matching: **KMP**, Rabin-Karp (rolling hash), Z-algorithm, Boyer-Moore; Aho-Corasick (multi-pattern)
-- Tries for matching/autocomplete; edit distance (DP); longest palindrome (Manacher's); suffix array/automaton applications
-
-### 27.9 Intervals, geometry, and scheduling
-- Interval merging/insertion/scheduling; sweep-line; meeting-rooms (heap); basic computational geometry (orientation test, convex-hull awareness)
-
-### 27.10 Randomized, online, and parallel
-- **Reservoir sampling** (uniform sample from a stream — cross-ref Ch.5.6), randomized quickselect, Monte Carlo vs Las Vegas
-- Online/streaming algorithms (one pass, bounded memory — cross-ref Ch.5.6)
-- Parallel/distributed primitives: map-reduce as an algorithmic pattern, parallel scan/prefix-sum, k-way merge (cross-ref Ch.3, Ch.7)
-
-## Chapter 28 — Complexity, Patterns and Interview Technique
-### 28.1 Complexity analysis
-- Big-O / Θ / Ω; best/average/worst; time vs space trade-offs
-- **Amortized analysis** (aggregate, accounting, potential — dynamic arrays, hash resizing)
-- Recurrence relations and the Master theorem
-- P / NP / NP-complete / NP-hard awareness; recognizing intractability and when to use approximation/heuristics
-- The I/O and network complexity lens: for data systems, bytes moved and shuffled dominate CPU (cross-ref Ch.1.3)
-
-### 28.2 Pattern recognition (the interview meta-skill)
-- Recognize the pattern, not the problem: fast/slow pointers, top-K via heap, k-way merge, intervals, matrix traversal, DP state design, graph-modeling a word problem, binary-search-on-answer, monotonic stack
-- Choosing the structure for a constraint: lookup → hash; ordered range → tree/B-tree; top-N → heap; membership-at-scale → Bloom; dedup groups → union-find
-
-### 28.3 Data-engineering mapping (why this milestone isn't just LeetCode)
-- Hash table → hash join / hash aggregation (Ch.2.3, Ch.7)
-- External merge sort → spill-to-disk joins/aggregations (Ch.1.2, Ch.7)
-- Heap / k-way merge → LSM compaction, shuffle merge, top-N (Ch.5.1, Ch.7)
-- Topological sort → DAG / task scheduling (Ch.11)
-- Union-find → connected components in lineage / entity-resolution graphs (Ch.8.3, Ch.17.3)
-- B-tree / LSM-tree → storage-engine indexes (Ch.5, Ch.25-D)
-- Consistent hashing → sharding and partition assignment (Ch.5.3)
-- Sketches / reservoir sampling → approximate aggregation at scale (Ch.5.6)
-
-### 28.4 Practice discipline
-- Implement each core structure/algorithm once from scratch; then solve by pattern under a timer
-- For every solution: state complexity, argue correctness informally, name an edge case and a failure mode (consistent with Ch.24)
-- *Lab*: implement and unit-test from scratch — a hash map with resizing, a binary heap, a BST or B-tree, Dijkstra with a heap, an LRU cache, and quickselect; benchmark each against the language's standard library.

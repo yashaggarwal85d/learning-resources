@@ -1,6 +1,6 @@
 # Project Plan — The Learning Experience
 
-> A draft. Both this plan and the curriculum ([DATA_ENGINEERING_CURRICULUM.md](DATA_ENGINEERING_CURRICULUM.md)) will be polished further.
+> A draft. Both this plan and the syllabi in [`syllabus/`](syllabus/) will be polished further.
 
 ## Vision
 
@@ -21,7 +21,10 @@ This is not an introductory site. It teaches the hardest work in each field (the
 
 - **Master page (the hub).** One very polished landing page that links to everything and presents every domain and its curriculum map. From it, a learner can pick a domain, then drill from any milestone, into its chapters, down to any individual topic.
 - **Navigable hierarchy.** The structure mirrors the curricula exactly — Domains → Milestones → Chapters → Topics — and every level is linked and reachable from the master page.
-- **Domains.** A domain is a whole field of study with its own curriculum file and its own milestones. Data Engineering ([DATA_ENGINEERING_CURRICULUM.md](DATA_ENGINEERING_CURRICULUM.md)) is the first.
+- **Domains.** A domain is a whole field of study with its own syllabus file in [`syllabus/`](syllabus/) and its own milestones. The first three:
+  - **Data Engineering**: [syllabus/data-engineering.md](syllabus/data-engineering.md);
+  - **Rust Systems Engineering**: [syllabus/rust-systems-engineering.md](syllabus/rust-systems-engineering.md);
+  - **Data Structures & Algorithms**: [syllabus/data-structures-and-algorithms.md](syllabus/data-structures-and-algorithms.md).
 - **Everything is a webpage.** The master page and every single topic is delivered as a web page.
 - **A continuous, automated motion-graphics sequence loops** as part of the experience — part of the visual identity, always alive, and always pausable.
 - **Beauty is a requirement, not a nice-to-have.** The master page and every topic page must look exceptional.
@@ -41,6 +44,8 @@ If a topic or concept **can** be explained with a pretty animation, we animate i
 ### Rule #2 — One topic at a time, delivered as a scrollable reel
 
 Production is strictly incremental — a single topic produced start to finish before the next one begins — rather than mass-generating everything. Each topic is like a **reel**: a self-contained unit of animations + content. Scrolling down ends the current topic and brings up the next one, in a continuous vertical feed.
+
+A reel has **no fixed length**. A small idea may take five minutes; a big one may run thirty minutes or more. Length follows the topic, never a format. A reel is fully animated, pretty and explosive, and it is **responsive**: where the learner needs to think, it stops and waits (for example, it steps through a graph algorithm one move at a time, and the next move starts only when the learner clicks "next"). Along the bottom runs a **segmented progress bar**, like Instagram's, one segment per step of the reel, so the learner always knows where they are and how much is left.
 
 ### Rule #3 — State-of-the-art, verified content
 
@@ -94,7 +99,7 @@ Built for experts. Research on how experienced learners learn (the "expertise re
 
 1. **The problem.** Open with a hard, real situation the topic resolves, e.g. "your exactly-once pipeline double-counted after a consumer rebalance; why?". State the 2–4 things the reader will be able to do afterwards and link the prerequisites. By the end of the topic this problem is solved in full: it is the topic's worked example.
 2. **Predict first.** Before each reveal, the reader commits to an answer ("what happens to p99 latency when…?"). Being wrong first makes the explanation stick.
-3. **The mechanism.** The animated, interactive explanation of how it actually works, in segments the reader controls. Real values on screen, words next to the motion, nothing that only moves.
+3. **The mechanism.** The animated, interactive explanation of how it actually works, in steps the reader advances. Real values on screen, words next to the motion, nothing that only moves.
 4. **Trade-offs and numbers.** The design space: the alternatives, what each costs, where each breaks, and the numbers that matter (latencies, throughput, complexity, cost) with back-of-envelope estimates.
 5. **Into the internals.** Where the idea lives in real systems: the paper, the design doc, the exact source-code paths, the configuration that changes behaviour. Formal precision where it matters: invariants, proofs sketched, complexity, pseudo-code, or a formal spec for protocols.
 6. **Build, break, measure.** A lab with failure injection and measurement, as close to realistic scale as the medium allows. In the browser where possible (SQL via DuckDB-WASM or PGlite, Python via Pyodide, interactive simulations); otherwise a reproducible local setup with scripts and expected results.
@@ -158,7 +163,7 @@ Grown as topics need them, documented in one place, and themed only through the 
 
 - **Page structure:** the hub, domain, milestone and chapter pages; the topic layout with its layers, table of contents, breadcrumbs, depth-on-demand sections and prev/next.
 - **Reading:** headings and type scale, callouts (key idea, warning, production note, frontier), definitions and glossary terms, figures with captions, tables, footnotes and citations, typeset maths, code blocks with copy and run.
-- **Learning machinery:** the reel player and its controls, prediction prompts, the self-assessment questions with worked answers, the skip-what-you-know diagnostic, the review queue, progress, bookmarks and the "last verified" box.
+- **Learning machinery:** the reel player with its step controls and segmented progress bar, prediction prompts, the self-assessment questions with worked answers, the skip-what-you-know diagnostic, the review queue, progress, bookmarks and the "last verified" box.
 - **Labs:** the in-browser runner (SQL and Python), result tables and charts, and the "run this locally" panel.
 - **Diagram and animation building blocks:** the time and easing utilities, the responsive canvas, and primitives such as nodes, edges, arrows, labels, value readouts, sliders and toggles for interactive models. Topic visuals are composed from these, so they share a visual grammar while the explanation stays original.
 - **Site-wide:** navigation, search, the feedback link, share images, and the offline and print views.
@@ -186,7 +191,7 @@ A new shared component is added when a second topic would need the same thing; u
 
 ### How the site maps to the curriculum
 
-- **Master page (hub):** the domains, and inside each the curriculum map (Milestones → Chapters → Topics), generated from each domain's curriculum file (`DATA_ENGINEERING_CURRICULUM.md` for Data Engineering) and the topics' front matter, so the hub always matches the syllabus and shows what's published.
+- **Master page (hub):** the domains, and inside each the curriculum map (Milestones → Chapters → Topics), generated from each domain's syllabus file in `syllabus/` and the topics' front matter, so the hub always matches the syllabus and shows what's published.
 - **Domain pages:** one landing page per domain (e.g. `/data-engineering/`) showing its milestones, its progress and its own looping motion-graphics.
 - **Topic folders:** one folder per topic, `topics/<domain>/<milestone>/<chapter>/<topic>/` (e.g. `topics/data-engineering/m1-foundations/ch02-advanced-sql/window-functions/`), holding its `index.mdx` (prose, questions and sources) and the animation and lab files it embeds. Search, the glossary, the prerequisite map and the review queue are generated from these files.
 - **URLs** follow the same path: `/<domain>/<milestone>/<chapter>/<topic>`.
@@ -199,10 +204,12 @@ A new shared component is added when a second topic would need the same thing; u
 These are rules for how animations behave. The building blocks are shared; the visual idea is invented per topic.
 
 - **Designed for the concept.** Each topic gets its own visual idea and motion, built from the shared building blocks and chosen for what makes that idea click. If two topics explain things the same way, one of them hasn't found its own idea yet.
-- **Driven by time.** Every animation is a function of the reel's clock, with no hidden state, so a reel can pause, scrub, loop and open at an exact moment (`?t=12.5`) at any frame rate.
+- **Driven by time, advanced by the learner.** Every animation is a function of the reel's clock, with no hidden state, so a reel can pause, scrub, loop and open at an exact moment (`?t=12.5`) at any frame rate. A reel is a sequence of steps: each step plays, then either flows into the next or holds and waits for the learner ("next", or an answer to a prediction) when there is something to think about.
 - **Fits every screen.** Each reel lays out on a fixed virtual canvas scaled to the screen, with its own portrait layout rather than a squeezed landscape one.
-- **The learner is in control.** Every reel can be paused, scrubbed (with markers for its sections), sped up or slowed down, replayed and muted, from the mouse, touch or keyboard.
-- **Steady rhythm.** Steps land on a regular beat, roughly one new idea every two beats, so the pacing is predictable and easy to remember.
+- **The learner is in control.** Every reel can be advanced, stepped back, paused, sped up or slowed down, replayed and muted, from the mouse, touch or keyboard (→ and Space for "next").
+- **Segmented progress.** A progress bar along the bottom, one segment per step like Instagram's, fills as the reel plays; tapping a segment jumps to that step.
+- **Any length.** No time limit: a reel is as long as its topic needs, from a few minutes to half an hour or more, because every step waits for the learner and the progress bar always shows how much is left.
+- **Steady rhythm inside a step.** Within a step, motion lands on a regular beat, so the pacing is predictable and easy to remember; between steps, the learner sets the pace.
 - **Repeatable.** Any randomness is seeded, so a reel plays identically every time.
 - **Calm when asked.** With reduced motion turned on, each reel shows a chosen still frame instead of playing.
 
@@ -258,7 +265,7 @@ Learned on real phones in earlier animation work:
 
 Every topic is checked in a real browser before it ships:
 
-- **Screenshot sheets** of every reel segment at three points in its timeline, at 1440 × 900, 1280 × 720 and 390 × 844, reviewed for clipping, overlap and empty frames.
+- **Screenshot sheets** of every reel step at three points in its timeline, at 1440 × 900, 1280 × 720 and 390 × 844, reviewed for clipping, overlap and empty frames.
 - **Layout scan** that fails if anything makes the page wider than the screen.
 - **Phone run:** an emulated iPhone with a 4× slower CPU, recording frame times through the reel.
 - **Executable content:** every SQL, Python and lab snippet runs in CI against pinned tool versions and must produce its stated output, so a wrong example fails the build (see [Correctness and currency](#correctness-and-currency--how-we-make-sure)).
