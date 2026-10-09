@@ -15,6 +15,7 @@ This is not an introductory site. It teaches the hardest work in each field (the
 - **Respect their time.** Dense, skimmable, skippable. A reader who already knows a part can prove it and jump past it.
 - **Peer tone.** Written engineer to engineer: direct, no cheerleading, no badges, streaks or other gamification.
 - **Go to the source.** Papers, design docs, source code, RFCs and post-mortems are part of the lesson, not a reading list at the end.
+- **Language domains too.** In a language domain such as German, the learner may be a beginner in the language but is still a fast, analytical adult, so the same rules hold: teach the system behind the rules, precisely, and never talk down.
 - **Basics are a refresher, not a course.** Where a curriculum lists true basics (Data Engineering's Chapter 1 covers Python syntax, Git and the shell, marked "patch gaps only"), they get compact refresher pages: what an expert should already know, a self-check, and links to the best external material. Full reels and labs are reserved for topics where we add depth. Foundations that are deep in their own right, such as query execution or storage internals, are taught at full depth.
 
 ## The Product
@@ -24,7 +25,8 @@ This is not an introductory site. It teaches the hardest work in each field (the
 - **Domains.** A domain is a whole field of study with its own syllabus file in [`syllabus/`](syllabus/) and its own milestones. The first three:
   - **Data Engineering**: [syllabus/data-engineering.md](syllabus/data-engineering.md);
   - **Rust Systems Engineering**: [syllabus/rust-systems-engineering.md](syllabus/rust-systems-engineering.md);
-  - **Data Structures & Algorithms**: [syllabus/data-structures-and-algorithms.md](syllabus/data-structures-and-algorithms.md).
+  - **Data Structures & Algorithms**: [syllabus/data-structures-and-algorithms.md](syllabus/data-structures-and-algorithms.md);
+  - **German Language**: [syllabus/german-language.md](syllabus/german-language.md), from A1 to C2 on the CEFR scale.
 - **Everything is a webpage.** The master page and every single topic is delivered as a web page.
 - **A continuous, automated motion-graphics sequence loops** as part of the experience — part of the visual identity, always alive, and always pausable.
 - **Beauty is a requirement, not a nice-to-have.** The master page and every topic page must look exceptional.
@@ -163,7 +165,7 @@ Grown as topics need them, documented in one place, and themed only through the 
 
 - **Page structure:** the hub, domain, milestone and chapter pages; the topic layout with its layers, table of contents, breadcrumbs, depth-on-demand sections and prev/next.
 - **Reading:** headings and type scale, callouts (key idea, warning, production note, frontier), definitions and glossary terms, figures with captions, tables, footnotes and citations, typeset maths, code blocks with copy and run.
-- **Learning machinery:** the reel player with its step controls and segmented progress bar, prediction prompts, the self-assessment questions with worked answers, the skip-what-you-know diagnostic, the review queue, progress, bookmarks and the "last verified" box.
+- **Learning machinery:** the reel player with its step controls, segmented progress bar, narration and captions, prediction prompts, the self-assessment questions with worked answers, the skip-what-you-know diagnostic, the review queue, progress, bookmarks and the "last verified" box.
 - **Labs:** the in-browser runner (SQL and Python), result tables and charts, and the "run this locally" panel.
 - **Diagram and animation building blocks:** the time and easing utilities, the responsive canvas, and primitives such as nodes, edges, arrows, labels, value readouts, sliders and toggles for interactive models. Topic visuals are composed from these, so they share a visual grammar while the explanation stays original.
 - **Site-wide:** navigation, search, the feedback link, share images, and the offline and print views.
@@ -186,6 +188,7 @@ A new shared component is added when a second topic would need the same thing; u
 | In-browser labs | **DuckDB-WASM**, **PGlite**, **Pyodide** | SQL and Python in the page, no install |
 | Search | **Pagefind** | Full-text search over the static site, no server |
 | Sound (optional) | **WebAudio**, synthesised live | Original score only; no licensed or copyrighted music |
+| Narration (optional) | Licensed TTS voice or contracted voice actor | An original signature voice, see [Narration](#narration-voice-over) |
 | Hosting | **GitHub Pages** via GitHub Actions on push to `main` | Exact version pins, so builds are reproducible |
 | Verification | **Playwright** + Chromium, CI | Screenshots, overflow scans, frame-time runs and executable snippets, see [Verification](#verification) |
 
@@ -212,6 +215,18 @@ These are rules for how animations behave. The building blocks are shared; the v
 - **Steady rhythm inside a step.** Within a step, motion lands on a regular beat, so the pacing is predictable and easy to remember; between steps, the learner sets the pace.
 - **Repeatable.** Any randomness is seeded, so a reel plays identically every time.
 - **Calm when asked.** With reduced motion turned on, each reel shows a chosen still frame instead of playing.
+
+### Narration (voice-over)
+
+Reels can carry an optional voice-over that narrates each step, which makes them more engaging and lets the learner watch the animation instead of reading.
+
+- **The voice.** One signature narrator for the whole site: warm, calm and soothing, low-to-mid register, unhurried, with a slight huskiness and clear diction, the voice of a trusted expert sitting next to you.
+- **An original voice, never an imitation.** The narrator is created for us: a professional voice actor under contract, or a designed synthetic voice from a licensed text-to-speech provider (for example ElevenLabs, Azure AI Speech or Google Cloud Text-to-Speech). It is never cloned from, or made to sound like, a real, identifiable person such as an actor; that needs their consent and invites right-of-publicity disputes.
+- **Synced to the steps.** Narration is written per reel step, timed to the animation, and pauses when the reel waits for the learner.
+- **Always optional, always captioned.** Sound is off until the learner turns it on (the reel works fully silent), captions show every word, and speed follows the reel's playback speed.
+- **Exact pronunciation.** A pronunciation lexicon for technical terms and names (PostgreSQL, Kafka, Tokio, Dijkstra) so the voice never stumbles.
+- **Per language.** In the German domain, the German examples are always spoken by native speakers; the narrator explains in the learner's language.
+- **Reviewed like content.** Narration scripts go through the same correctness review as the text, and audio is regenerated whenever the script changes.
 
 ### Theme — coffee
 
@@ -274,6 +289,6 @@ Every topic is checked in a real browser before it ships:
 
 ### Sources and licensing
 
-Books, papers and docs are sources to learn from and cite, not to copy: explanations, examples and figures are our own, written in our own words, with the source credited. Only original or properly licensed media. Reels carry no copyrighted music; any soundtrack is original, synthesised in the browser with WebAudio.
+Books, papers and docs are sources to learn from and cite, not to copy: explanations, examples and figures are our own, written in our own words, with the source credited. Only original or properly licensed media. Reels carry no copyrighted music; any soundtrack is original, synthesised in the browser with WebAudio. Voices are original too: no cloned or imitated voices of real people.
 
 **Still to decide:** the licence the site itself is published under, for example MIT for the code and Creative Commons (CC BY-NC-SA 4.0 or similar) for the written content. It should be chosen before the first topic goes live, because it governs how others may reuse and share the material.
