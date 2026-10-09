@@ -56,7 +56,7 @@ Each day, one topic is produced start to finish as a single scrollable reel, fol
 2. **Research & verify.** Gather from official sources, multiple reputable internet sources, and books; cross-check for correctness and currency and regressively re-verify. Nothing incorrect, outdated, or missing passes. _(Rule #3)_
 3. **Distill the explanation.** Reduce to the clearest, most memorable framing; find the hard parts and make them feel easy. _(Rule #4)_
 4. **Decide what to animate.** For every concept ask "can this be shown with a pretty animation?" — if yes, it becomes an animation. Storyboard the motion. _(Rule #1)_
-5. **Build the reel.** Assemble the animations + content into one self-contained, scrollable reel using the [scene engine](#the-animation-system) and the [coffee theme](#theme--coffee); add the looping motion-graphics; scrolling advances to the next topic. _(Rule #1, Rule #2)_
+5. **Build the reel.** Assemble the animations + content into one self-contained, scrollable reel following the [animation principles](#animation-principles) and the [coffee theme](#theme--coffee), with components designed for this topic; add the looping motion-graphics; scrolling advances to the next topic. _(Rule #1, Rule #2)_
 6. **Polish for beauty & memorability.** Refine visuals, layout, and pacing until it looks exceptional and sticks in memory. _(Rule #4)_
 7. **Check against the Definition of Done.** Confirm all four criteria above are met before shipping.
 8. **Review** Launch brutal hardcore critic review agents to re-check the work done on the topic. If its not upto the mark, go to step 2 again.
@@ -65,7 +65,7 @@ Each day, one topic is produced start to finish as a single scrollable reel, fol
 
 ## Technology, animation and theme
 
-The stack, motion system and look are taken from the animated intro built for the portfolio at [yashaggarwal85d.github.io/yashaggarwal85d](https://yashaggarwal85d.github.io/yashaggarwal85d/) (source: `yashaggarwal85d/yashaggarwal85d`, folder `site/`). Everything below has already shipped there and been tuned on real devices.
+What is fixed across the whole experience: the stack, the colour theme, and the rules below. What is **not** fixed: components. There is no shared library of visuals. Every topic designs its own components and animations from scratch, shaped by what that concept needs, so each page feels new while every page, chapter, milestone and domain still looks like part of one product.
 
 ### Stack
 
@@ -74,10 +74,10 @@ The stack, motion system and look are taken from the animated intro built for th
 | Build | **Vite 6** + **TypeScript 5.8** (strict) | `tsc -b && vite build`, target ES2022, relative `base: './'` so it runs under any Pages path |
 | UI | **React 19** | Function components; each topic is a lazily loaded module so the hub stays light |
 | Styling | **Tailwind CSS v4** (`@tailwindcss/vite`) | Theme colours as CSS variables (see [Theme](#theme--coffee)) |
-| UI motion | **motion** (`motion/react`) 12 | Springs, page transitions, in-view reveals, shared-layout pills |
-| Teaching animations | **Custom scene engine** | Scenes are pure functions of time, see [below](#the-animation-system) |
-| 3D | **three.js** 0.170 | Ambient backdrop and 3D concept models |
-| Icons | **lucide-react**, Simple Icons paths | Brand marks for tools (Kafka, Spark, Flink, dbt…) |
+| UI motion | **motion** (`motion/react`) 12 | Springs, page transitions, in-view reveals |
+| Teaching animations | **Hand-built per topic** | Driven by time, see [Animation principles](#animation-principles) |
+| 3D | **three.js** 0.170 | Only where a topic genuinely needs depth |
+| Icons | **lucide-react**, Simple Icons | Brand marks for tools (Kafka, Spark, Flink, dbt…) |
 | Sound (optional) | **WebAudio**, synthesised live | Original score only; no licensed or copyrighted music |
 | Hosting | **GitHub Pages** via GitHub Actions on push to `main` | Exact version pins (a floating Rollup once broke the build) |
 | Verification | **Playwright** + Chromium | Screenshots, overflow scans and frame-time runs, see [Verification](#verification) |
@@ -91,35 +91,21 @@ The stack, motion system and look are taken from the animated intro built for th
 - **The vertical feed:** full-height sections with CSS scroll-snap. An `IntersectionObserver` plays the reel in view and pauses the rest; scrolling past the end of a topic brings up the next one.
 - **Deep links:** every topic has its own URL, and `?t=12.5` opens a reel paused on an exact moment (useful for sharing and reviewing).
 
-### The animation system
+### Animation principles
 
-The intro proved a small, deterministic engine that's easy to reason about:
+These are rules for how animations behave, not things to reuse. The visuals themselves are invented per topic.
 
-- **Scenes are pure functions of time.** A scene receives `{ t, W, H, portrait }` and returns JSX. No internal state and no CSS keyframes, so a reel can pause, scrub, loop and deep-link frame-accurately at any frame rate.
-- **A fixed virtual stage.** Scenes lay out on a 1600 × 900 stage (900 × 1600 in portrait) that's scaled to fit the screen, so one scene is exact on a phone and on a 4K monitor. Portrait gets its own layout, not a squeezed one.
-- **One master clock.** A `requestAnimationFrame` loop drives a timeline of scenes (`start`, `dur`), grouped into chapters, with an optional loop.
-- **A player dock.** Play/pause, a scrubber with chapter markers, replay, sound toggle, and keyboard shortcuts (Space, ←/→ chapters, R replay, M sound, number keys jump to chapters).
-- **The toolkit (`anim.ts`):**
-  - `prog`, `tw`, `lerp`, `clamp01` for timing;
-  - an easing set (expo, back, cubic, sine);
-  - `hit` and `beatEnv` for impulses that land on a beat;
-  - `shake`/`shakes` for camera hits;
-  - `typed` (typewriter) and `scramble` (decoding text);
-  - a seeded `rand`, so "random" motion is identical on every play.
-- **`Stage` and `At` components.** `Stage` gives each scene a background, a camera (scale, pan, rotate, beat-driven), a HUD layer and a `Flash` overlay. `At` places anything on the stage by anchor (`tl`, `tc`, `c`…).
-- **Rhythm.** Motion lands on a beat grid (`BPM`, `BEAT`, `BAR`). For lessons: one concept step every two beats keeps the pacing steady and memorable.
-- **Explanation patterns that worked:**
-  - diagrams drawn on with SVG `pathLength` stroke-dashes;
-  - data "packets" riding Bézier edges, computed per frame (as in the OLTP/OLAP pipeline scene);
-  - cards that slam down and tear to reveal before → after;
-  - counters that roll up;
-  - kinetic display type for the one line that must stick.
-- **The ambient backdrop.** A three.js isometric keyboard of keycaps controlled through a small driver (`pump`, `shockR`/`shockAmp`, `focus`, `all`, idle wave). Scenes choreograph it; as the reader scrolls into written content it fades from the dark palette to the light one.
-- **Reduced motion.** `prefers-reduced-motion` shows a chosen still poster frame per scene instead of playing.
+- **Designed for the concept.** Each topic gets its own components and motion, chosen for what makes that idea click. Nothing is copied from another topic; if two topics look alike, one of them hasn't found its own idea yet.
+- **Driven by time.** Every animation is a function of the reel's clock, with no hidden state, so a reel can pause, scrub, loop and open at an exact moment (`?t=12.5`) at any frame rate.
+- **Fits every screen.** Each reel lays out on a fixed virtual canvas scaled to the screen, with its own portrait layout rather than a squeezed landscape one.
+- **The learner is in control.** Every reel can be paused, scrubbed (with markers for its sections), replayed and muted, from the mouse, touch or keyboard.
+- **Steady rhythm.** Steps land on a regular beat, roughly one new idea every two beats, so the pacing is predictable and easy to remember.
+- **Repeatable.** Any randomness is seeded, so a reel plays identically every time.
+- **Calm when asked.** With reduced motion turned on, each reel shows a chosen still frame instead of playing.
 
 ### Theme — coffee
 
-The page runs from roasted dark to steamed light.
+The one thing every page shares. The hub, every domain, milestone, chapter and topic use exactly this theme, so the product reads as one whole while the components inside each page are new. It runs from roasted dark to steamed light.
 
 | Token | Hex | Use |
 |---|---|---|
@@ -131,7 +117,7 @@ The page runs from roasted dark to steamed light.
 | `latte` | `#c8ac8c` | Secondary text on dark |
 | `crema` | `#e9d9bf` | Primary text on dark |
 | `oat` | `#f3eadb` | Reading-page background |
-| `foam` | `#fbf7ef` | Cards on light pages |
+| `foam` | `#fbf7ef` | Raised surfaces on light pages |
 | `caramel` | `#d49a57` | Accent, highlights, progress |
 | `cinnamon` | `#b8612f` | Primary accent, buttons, labels |
 | `cherry` | `#8e2f2a` | End of the signature gradient |
@@ -145,11 +131,10 @@ The page runs from roasted dark to steamed light.
 - **Surfaces:**
   - **Reels:** dark roast.
   - **Reading:** oat and foam pages.
-  - **Inverted sections:** `.roast` islands flip the same tokens.
+  - **Inverted sections:** dark-roast panels flip the same colours.
 - **Texture:**
   - a faint film grain (≈8% opacity) over reels;
-  - cards rounded 18–26 px;
-  - diagram nodes with a 3 px espresso border and a hard offset shadow.
+  - generous rounded corners (18–26 px).
 - **Voice:** short, confident lines; numbers over adjectives.
 
 ### Performance rules
