@@ -80,7 +80,7 @@ Hash functions and hash tables from the probability guarantee down to SIMD probi
 - **Cuckoo hashing** — two choices and worst-case O(1) lookup, insertion eviction chains, cycles and rehash, bucketized and stashed variants (the basis of cuckoo filters, Ch.12).
 - **SIMD group-probing tables (Swiss Tables)** — Abseil's `flat_hash_map` design (2017): H1/H2 hash split, one control byte per slot, matching 16 slots per SIMD instruction; adopted by Rust's `hashbrown` (std `HashMap`) and Go's built-in map since Go 1.24.
 - **Resizing and incremental rehashing** — doubling with amortized cost vs incremental migration across two tables (Redis `dict`) to bound per-operation latency; hash tables under memory pressure.
-- **Perfect and minimal perfect hashing** — FKS two-level static hashing; modern MPHFs (RecSplit, PTHash/PtrHash, BBHash) at ~1.5–3 bits per key for static key sets.
+- **Perfect and minimal perfect hashing** — FKS two-level static hashing; modern MPHFs (RecSplit, PTHash/PtrHash, BBHash) at ~1.5–4 bits per key for static key sets.
 
 ### 3.3 Distributed and authenticated hashing
 - **Consistent hashing rings** — ring placement, virtual nodes for balance, minimal remapping on join/leave, and consistent hashing with bounded loads (Mirrokni, Thorup, Zadimoghaddam, SODA 2018) → *Data Engineering* §5.3.
@@ -330,7 +330,7 @@ Flows, cuts and matchings: the most general polynomial-time modelling tools.
 
 ### 20.1 Maximum flow
 - **Max-flow min-cut and Ford–Fulkerson** — residual graphs, augmenting paths, the max-flow min-cut theorem, integrality, and non-termination with irrational capacities.
-- **Edmonds–Karp and Dinic's algorithm** — shortest augmenting paths in O(VE²); level graphs and blocking flows in O(V²E), O(E√V) on unit-capacity networks.
+- **Edmonds–Karp and Dinic's algorithm** — shortest augmenting paths in O(VE²); level graphs and blocking flows in O(V²E), O(E√V) on unit networks such as bipartite matching.
 - **Push–relabel** — preflows, height labels, highest-label selection with gap and global-relabel heuristics; the practical choice for large dense instances.
 - **Global minimum cut** — Stoer–Wagner's deterministic algorithm vs Karger's randomized contraction (Ch.29).
 - **Frontier: almost-linear-time flows** — max flow and min-cost flow in m^{1+o(1)} time via interior-point methods and dynamic data structures (Chen, Kyng, Liu, Peng, Probst Gutenberg & Sachdeva, FOCS 2022 best paper) and why practical solvers still use push–relabel and network simplex.
