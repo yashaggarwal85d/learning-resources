@@ -1,15 +1,16 @@
-# Project Plan — The Data Engineering Learning Experience
+# Project Plan — The Learning Experience
 
 > A draft. Both this plan and the curriculum ([DATA_ENGINEERING_CURRICULUM.md](DATA_ENGINEERING_CURRICULUM.md)) will be polished further.
 
 ## Vision
 
-Turn the Data Engineer curriculum into a living, animated web experience. A single, beautiful **master page** is the gateway; from there a learner moves through the full hierarchy — **Milestones → Chapters → Topics** — and every topic is its own polished page built to _teach_, not just tell.
+Turn our curricula into a living, animated web experience. A single, beautiful **master page** is the gateway; from there a learner moves through the full hierarchy — **Domains → Milestones → Chapters → Topics** — and every topic is its own polished page built to _teach_, not just tell. The first domain is **Data Engineering**; more domains can be added later, each with its own curriculum.
 
 ## The Product
 
-- **Master page (the hub).** One very polished landing page that links to everything and presents the whole curriculum map. From it, a learner can drill from any milestone, into its chapters, down to any individual topic.
-- **Navigable hierarchy.** The structure mirrors the curriculum exactly — Milestones → Chapters → Topics — and every level is linked and reachable from the master page.
+- **Master page (the hub).** One very polished landing page that links to everything and presents every domain and its curriculum map. From it, a learner can pick a domain, then drill from any milestone, into its chapters, down to any individual topic.
+- **Navigable hierarchy.** The structure mirrors the curricula exactly — Domains → Milestones → Chapters → Topics — and every level is linked and reachable from the master page.
+- **Domains.** A domain is a whole field of study with its own curriculum file and its own milestones. Data Engineering ([DATA_ENGINEERING_CURRICULUM.md](DATA_ENGINEERING_CURRICULUM.md)) is the first.
 - **Everything is a webpage.** The master page and every single topic is delivered as a web page.
 - **A continuous, automated motion-graphics sequence loops** as part of the experience — part of the visual identity, always alive.
 - **Beauty is a requirement, not a nice-to-have.** The master page and every topic page must look exceptional.
@@ -51,7 +52,7 @@ A topic page is complete only when:
 
 Each day, one topic is produced start to finish as a single scrollable reel, following these steps:
 
-1. **Pick the next topic.** Take the next topic in curriculum order (Milestone → Chapter → Topic) from the master map.
+1. **Pick the next topic.** Take the next topic in curriculum order (Domain → Milestone → Chapter → Topic) from the master map.
 2. **Research & verify.** Gather from official sources, multiple reputable internet sources, and books; cross-check for correctness and currency and regressively re-verify. Nothing incorrect, outdated, or missing passes. _(Rule #3)_
 3. **Distill the explanation.** Reduce to the clearest, most memorable framing; find the hard parts and make them feel easy. _(Rule #4)_
 4. **Decide what to animate.** For every concept ask "can this be shown with a pretty animation?" — if yes, it becomes an animation. Storyboard the motion. _(Rule #1)_
@@ -83,8 +84,10 @@ The stack, motion system and look are taken from the animated intro built for th
 
 ### How the site maps to the curriculum
 
-- **Master page (hub):** the curriculum map (Milestones → Chapters → Topics) rendered from a registry generated from `DATA_ENGINEERING_CURRICULUM.md`, so the hub always matches the syllabus.
-- **Topic modules:** one folder per topic, `topics/<milestone>/<chapter>/<topic>/`, exporting its metadata, its scenes and its written content. Topics are loaded with dynamic `import()` only when reached.
+- **Master page (hub):** the domains, and inside each the curriculum map (Milestones → Chapters → Topics), rendered from a registry generated from each domain's curriculum file (`DATA_ENGINEERING_CURRICULUM.md` for Data Engineering), so the hub always matches the syllabus.
+- **Domain pages:** one landing page per domain (e.g. `/data-engineering/`) showing its milestones, its progress and its own looping motion-graphics.
+- **Topic modules:** one folder per topic, `topics/<domain>/<milestone>/<chapter>/<topic>/` (e.g. `topics/data-engineering/m1-foundations/ch02-advanced-sql/window-functions/`), exporting its metadata, its scenes and its written content. Topics are loaded with dynamic `import()` only when reached.
+- **URLs** follow the same path: `/<domain>/<milestone>/<chapter>/<topic>`.
 - **The vertical feed:** full-height sections with CSS scroll-snap. An `IntersectionObserver` plays the reel in view and pauses the rest; scrolling past the end of a topic brings up the next one.
 - **Deep links:** every topic has its own URL, and `?t=12.5` opens a reel paused on an exact moment (useful for sharing and reviewing).
 
