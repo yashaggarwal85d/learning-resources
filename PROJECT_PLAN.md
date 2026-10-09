@@ -15,6 +15,7 @@ This is not an introductory site. It teaches the hardest work in each field (the
 - **Respect their time.** Dense, skimmable, skippable. A reader who already knows a part can prove it and jump past it.
 - **Peer tone.** Written engineer to engineer: direct, no cheerleading, no badges, streaks or other gamification.
 - **Go to the source.** Papers, design docs, source code, RFCs and post-mortems are part of the lesson, not a reading list at the end.
+- **Basics are a refresher, not a course.** Where a curriculum lists true basics (Data Engineering's Chapter 1 covers Python syntax, Git and the shell, marked "patch gaps only"), they get compact refresher pages: what an expert should already know, a self-check, and links to the best external material. Full reels and labs are reserved for topics where we add depth. Foundations that are deep in their own right, such as query execution or storage internals, are taught at full depth.
 
 ## The Product
 
@@ -80,10 +81,10 @@ No single check can prove content correct; critic agents in particular can share
    - The topic records what was scanned and when.
 7. **Staying current automatically.**
    - Release and changelog feeds for every covered tool are watched.
-   - Automated dependency updates (Renovate or Dependabot) bump the pinned versions, CI re-runs every example, and a failure points at exactly the topics that went stale.
+   - Automated dependency updates (Renovate or Dependabot) open a pull request for each new tool version; CI re-runs every example against it, and a failure points at exactly the topics that went stale. The bump is merged only once the affected topics are re-verified for the new version, so a page never claims a version it wasn't checked against.
    - A topic whose last verification is older than its review interval shows a visible "due for re-verification" badge until it's re-checked.
 8. **Public corrections.**
-   - Every topic has a "report an error" link that opens a structured GitHub issue.
+   - Every topic has a "report an error or unclear part" link that opens a structured GitHub issue.
    - Corrections are fixed quickly, logged in a per-topic changelog, and credited to the reporter.
    - Each confirmed error triggers a short root-cause note: which layer should have caught it, and how that layer is tightened.
 
@@ -114,7 +115,7 @@ Built for experts. Research on how experienced learners learn (the "expertise re
 - **Accessible to everyone (WCAG 2.2 AA).** Every animation has a text equivalent that carries the same information; full keyboard use; visible focus; colour contrast checked against the theme; captions for any narration; no sound until the learner turns it on; still frames when reduced motion is on.
 - **Fast and findable.** Every page is pre-rendered to static HTML, so it loads quickly, works with JavaScript slow or off, and is indexed by search engines. Each topic has a share image and appears in a sitemap. Targets: Largest Contentful Paint under 2.5 s, Interaction to Next Paint under 200 ms, Cumulative Layout Shift under 0.1, on a mid-range phone.
 - **Works offline.** Topics a learner has opened stay available offline (installable as a web app).
-- **Feedback loop.** A "something's wrong or unclear" link on every topic, and privacy-friendly, cookie-free analytics on where learners drop off or miss questions, used to improve topics.
+- **Feedback loop.** The "report an error or unclear part" link on every topic (see [Correctness and currency](#correctness-and-currency--how-we-make-sure)), and privacy-friendly, cookie-free analytics on where learners drop off or miss questions, used to improve topics.
 
 ## Per-Topic Definition of Done (how the rules apply)
 
@@ -189,7 +190,8 @@ A new shared component is added when a second topic would need the same thing; u
 - **Domain pages:** one landing page per domain (e.g. `/data-engineering/`) showing its milestones, its progress and its own looping motion-graphics.
 - **Topic folders:** one folder per topic, `topics/<domain>/<milestone>/<chapter>/<topic>/` (e.g. `topics/data-engineering/m1-foundations/ch02-advanced-sql/window-functions/`), holding its `index.mdx` (prose, questions and sources) and the animation and lab files it embeds. Search, the glossary, the prerequisite map and the review queue are generated from these files.
 - **URLs** follow the same path: `/<domain>/<milestone>/<chapter>/<topic>`.
-- **The vertical feed:** full-height sections with CSS scroll-snap. An `IntersectionObserver` plays the reel in view and pauses the rest; scrolling past the end of a topic brings up the next one.
+- **Stable identity.** The curriculum will keep being polished, so every topic gets a permanent ID in its front matter. Progress, the review queue, bookmarks and cross-links key on that ID, and when a topic is renamed or moved its old URL redirects to the new one, so nothing a learner saved ever breaks.
+- **The vertical feed:** topics follow one another in a vertical feed. Snapping is gentle and only at topic boundaries, never inside a long topic, so reading is never fought. An `IntersectionObserver` plays the reel in view and pauses the rest; scrolling past the end of a topic brings up the next one.
 - **Deep links:** every topic has its own URL, and `?t=12.5` opens a reel paused on an exact moment (useful for sharing and reviewing).
 
 ### Animation principles
@@ -246,7 +248,7 @@ The one thing every page shares. The hub, every domain, milestone, chapter and t
 Learned on real phones in earlier animation work:
 
 - Animate only `transform` and `opacity`; use `translate3d` and `will-change` on layers that move.
-- No SVG or CSS filters on large moving layers on phones. A blur on a wide sliding layer made one scene stutter.
+- No SVG or CSS filters on large moving layers on phones. A blur on a wide sliding layer once made an animation stutter.
 - Keep moving layers small: render only what's near the camera.
 - On touch devices, cap WebGL at 1.25× device pixels with no MSAA. If frames run slower than ~22 ms, step the resolution down automatically.
 - Start a reel only once fonts have loaded and a run of frames is smooth (a "settle gate", capped at 5 s), so the loading time comes first and the reel itself never stutters.
@@ -256,7 +258,7 @@ Learned on real phones in earlier animation work:
 
 Every topic is checked in a real browser before it ships:
 
-- **Screenshot sheets** of every scene at three points in its timeline, at 1440 × 900, 1280 × 720 and 390 × 844, reviewed for clipping, overlap and empty frames.
+- **Screenshot sheets** of every reel segment at three points in its timeline, at 1440 × 900, 1280 × 720 and 390 × 844, reviewed for clipping, overlap and empty frames.
 - **Layout scan** that fails if anything makes the page wider than the screen.
 - **Phone run:** an emulated iPhone with a 4× slower CPU, recording frame times through the reel.
 - **Executable content:** every SQL, Python and lab snippet runs in CI against pinned tool versions and must produce its stated output, so a wrong example fails the build (see [Correctness and currency](#correctness-and-currency--how-we-make-sure)).
@@ -266,3 +268,5 @@ Every topic is checked in a real browser before it ships:
 ### Sources and licensing
 
 Books, papers and docs are sources to learn from and cite, not to copy: explanations, examples and figures are our own, written in our own words, with the source credited. Only original or properly licensed media. Reels carry no copyrighted music; any soundtrack is original, synthesised in the browser with WebAudio.
+
+**Still to decide:** the licence the site itself is published under, for example MIT for the code and Creative Commons (CC BY-NC-SA 4.0 or similar) for the written content. It should be chosen before the first topic goes live, because it governs how others may reuse and share the material.
