@@ -181,7 +181,7 @@ Formal and academic German, precision of style, real-world listening and full pr
 - **Fine points of grammar and punctuation** — genitive vs *von*, *als ob* + Konjunktiv II, and the comma rules for subordinate clauses and infinitive groups.
 
 ## Chapter 21 — Listening in the Real World
-- **Fast speech** — reductions in everyday spoken German (haben wir → hamma, ist es → isses) and how to hear through them.
+- **Fast speech** — reductions in everyday spoken German (haben wir → hamwa, in the south hamma; ist es → isses) and how to hear through them.
 - **Regional varieties** — Austrian Standard German (Jänner, Paradeiser), Swiss Standard German (no ß, Velo) and the Swiss German dialects; the main German dialect areas and regional accents.
 - **Media German** — the register of news, interviews and podcasts; techniques for extensive listening.
 
@@ -214,5 +214,5 @@ You can understand virtually everything you hear or read, summarise and reconstr
 # Appendix — Exams and Certificates
 
 - **General certificates, A1–C2:** Goethe-Zertifikat, telc Deutsch, ÖSD (Austria).
-- **University admission:** TestDaF and DSH, both at C1-equivalent level.
+- **University admission:** TestDaF and DSH; the usual admission results (TDN 4 in all four parts, DSH-2) are at about C1 level.
 - **Work and residence:** requirements depend on the visa, the employer and the country, and they change; always check the current official sources (for Germany, the Federal Foreign Office and the immigration authorities) before relying on a level.
