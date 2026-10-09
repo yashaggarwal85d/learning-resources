@@ -12,3 +12,14 @@ Change logs from the topic-by-topic review of the three syllabi. Each file lists
 | [de-m8.md](de-m8.md) | Data Engineering, Milestone 8 and Appendices A–B |
 | [rust.md](rust.md) | Rust Systems Engineering |
 | [dsa.md](dsa.md) | Data Structures & Algorithms |
+
+## Fact-check logs
+
+After the review, every dated or uncertain claim was checked against primary sources (official release notes, specs, papers, proceedings, official legal texts). Each log lists what was confirmed (with the source), what was corrected, what was softened, and what could not be checked.
+
+| File | Domain | Confirmed | Corrected |
+|---|---|---|---|
+| [fact-check/de.md](fact-check/de.md) | Data Engineering | 110+ | 11 |
+| [fact-check/rust.md](fact-check/rust.md) | Rust Systems Engineering | 61 | 5 |
+| [fact-check/dsa.md](fact-check/dsa.md) | Data Structures & Algorithms | 121 | 2 |
+| [fact-check/german.md](fact-check/german.md) | German Language | ~38 | 2 |
