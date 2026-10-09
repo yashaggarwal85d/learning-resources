@@ -1,0 +1,46 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  docs:
+    name: Docs links
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - run: node scripts/check-docs.mjs
+
+  site:
+    name: Site typecheck & build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: No site yet
+        if: hashFiles('site/package-lock.json') == ''
+        run: echo "::notice::There is no site/ folder yet, so there is nothing to build."
+      - uses: actions/setup-node@v4
+        if: hashFiles('site/package-lock.json') != ''
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: site/package-lock.json
+      - if: hashFiles('site/package-lock.json') != ''
+        working-directory: site
+        run: npm ci
+      - if: hashFiles('site/package-lock.json') != ''
+        working-directory: site
+        run: npm run build
