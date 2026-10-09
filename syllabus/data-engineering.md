@@ -43,1140 +43,1260 @@ Two related domains go deeper where this one stops: **Rust Systems Engineering**
 
 ---
 
-# MILESTONE 1 — Foundations: SQL, Modeling & Programming
-The ground floor every data engineer stands on: the computer-science substrate, the query language you will write every day, the way data is modeled for analytics, and the programming craft to move it reliably. Nothing above this milestone is safe until this is solid.
+# Milestone 1 — Foundations: SQL, Modeling & Programming
+The substrate every later milestone assumes: how hardware and networks price your work, how SQL is planned and executed, how analytical data is modeled so answers stay correct over time, and how Python moves data reliably and fast.
 
 ## Chapter 1 — Prerequisites and Computer-Science Foundations
-Treat Chapter 1 as a gate: patch any gap here before Chapter 2. These are assumed but a self-contained education must name them.
+Refresher pages patch tooling gaps quickly; the full topics are the hardware, algorithmic and network costs that dominate every data system above this chapter.
 
 ### 1.1 Programming and tooling baseline (patch gaps only)
-- Python: syntax, functions/classes, comprehensions, context managers, decorators, typing basics
-- Git: branching, rebase vs merge, bisect, resolving conflicts, PR workflow
-- Linux/shell: file system, permissions, pipes/redirection, process model, `ps`/`top`/`htop`, `grep`/`awk`/`sed`, cron, ssh
-- Software-engineering workflow: code review, unit testing, CI basics, semantic versioning, dependency management
+- **Python language essentials** *(refresher)* — functions and classes, comprehensions, context managers as resource-lifetime guarantees, decorators, iterators and generators for bounded-memory streaming pipelines, type hints; the recall a senior needs in code review (performance internals in §4.1).
+- **Git branching and history workflows** *(refresher)* — rebase vs merge (linear history vs preserved topology), interactive history cleanup, `git bisect` to find regressions, conflict resolution, PR flow, trunk-based vs long-lived branches.
+- **Linux shell and process toolkit** *(refresher)* — filesystem and permissions, pipes and redirection, the process model (fork/exec, signals, exit codes), `ps`/`top`/`htop`, `grep`/`awk`/`sed`/`jq`, cron, ssh and tunnels; `/proc` and `strace` for a hung job.
+- **Software delivery workflow** *(refresher)* — code-review norms, unit tests, CI pipelines, semantic versioning as a breakage contract, dependency pinning (Python toolchain in §4.3; data CI/CD in §11.4).
+- *Lab:* the refresher gate, in one sitting on a clean machine: `git bisect` a planted regression in a data-cleaning script using a failing test as the oracle, then reproduce the script's output with a shell pipeline (`jq` + `awk` + `sort | uniq -c`) and diff the two.
 
-### 1.2 Data structures and algorithms that actually matter for data engineering
-- Hash tables (and why hash joins/aggregations exist), collision strategies, load factor
-- Sorting: comparison sorts, and **external merge sort** (the basis of large joins/aggregations that spill to disk)
-- Trees: binary search trees, B-trees/B+-trees, LSM-trees (forward reference to Ch.5)
-- Heaps/priority queues (top-N, k-way merge during compaction/shuffle)
-- Graphs: BFS/DFS, topological sort (DAG scheduling), shortest path, connected components
-- Big-O in the context of I/O and network cost, not just CPU — the dominant cost in data systems
-- Streaming/online algorithms (forward reference to Ch.5.6 probabilistic structures)
+### 1.2 Algorithms that dominate data-system cost
+- **The external-memory (I/O) cost model** — the Aggarwal–Vitter model: cost counted in block transfers, scan bound N/B and sort bound (N/B)·log_{M/B}(N/B); why CPU big-O misleads when I/O and network dominate; using it to predict index-lookup vs full-scan crossovers.
+- **Hash tables inside query engines** — chaining vs open addressing, load factor and resize stalls, hash quality and adversarial or skewed keys, cache-conscious and radix-partitioned hashing; why hash join and hash aggregation exist and what happens when the table outgrows memory (→ §2.3).
+- **External merge sort and k-way merge** — run generation (including replacement selection), heap-driven k-way merge, fan-in vs number of passes as a function of the memory budget; the one mechanism behind ORDER BY spills, sort-merge joins, LSM compaction (§5.1) and shuffle merges (Ch.7).
+- **B+-trees vs LSM-trees at a glance** *(refresher)* — fan-out and height, read vs write amplification, why one favors point reads and the other ingest; internals live in §5.1 and → *Data Structures & Algorithms* Ch.3.
+- **Graph algorithms for pipeline DAGs** *(refresher)* — BFS/DFS, topological sort (Kahn) for task scheduling, cycle detection, critical path, connected components; full treatment → *Data Structures & Algorithms* Ch.8.
+- *Lab:* implement external merge sort over a file 10× larger than an enforced memory limit (cgroup or container limit); vary run size and fan-in and plot passes and wall-clock against the I/O-model prediction; then implement a spilling hash aggregation and find the key-cardinality crossover where sort-based aggregation wins.
 
 ### 1.3 Computer architecture and OS fundamentals for data systems
-- Memory hierarchy: registers → L1/L2/L3 cache → RAM → SSD → HDD → network/object store; latency numbers every engineer should know
-- Cache lines, locality, why columnar + vectorized execution wins
-- Processes vs threads, context switches, the cost of synchronization
-- Virtual memory, paging, page cache (deep version in Ch.25-C)
-- Disk: sequential vs random I/O, block size, SSD write amplification, durability (fsync)
-- Numeric representation and its data bugs: integer overflow/width, IEEE-754 floating-point rounding (why float SUM is non-associative and order-dependent across a shuffle), and fixed-point/DECIMAL for money and other exact values — "never store currency as a float"
+- **Memory hierarchy and latency numbers** — registers → L1/L2/L3 → DRAM (local vs remote NUMA) → NVMe SSD → HDD → same-AZ network → object storage; order-of-magnitude latency and bandwidth per tier, and estimating a job's lower bound from them before running it.
+- **CPU caches, SIMD and vectorization** — cache lines, spatial and temporal locality, hardware prefetching, false sharing, branch misprediction, SIMD lanes; why columnar layout plus batch-at-a-time operators beats row-at-a-time interpretation (engine designs in §2.3).
+- **Threads, context switches and synchronization cost** — processes vs threads, context-switch and cache-pollution cost, lock contention, atomics and memory ordering at the depth needed to read engine code; why engines use thread-per-core and morsel scheduling (deep version → *Rust Systems Engineering* M1).
+- **Virtual memory, page cache and mmap** — paging, TLBs and huge pages, OS page cache vs a database buffer pool (double buffering), `O_DIRECT`, and why mmap-based DBMSs suffer stalls and poor I/O-error handling (Crotty, Leis, Pavlo, CIDR 2022); deep version → *Rust Systems Engineering* M3.
+- **Storage devices and fsync durability** — sequential vs random I/O, block size and alignment, SSD internals (FTL, erase blocks, garbage collection, write amplification), async I/O via `io_uring` (now an `io_method` option in PostgreSQL 18), fsync semantics and the 2018 "fsyncgate" lesson that a failed fsync cannot simply be retried.
+- **Object storage as a storage tier** — S3-class semantics: strong read-after-write consistency, first-byte latency in tens of milliseconds, per-prefix request-rate limits, range GETs, multipart upload, conditional writes; why lakehouse engines coalesce, cache and parallelize requests (economics in §3.3; table formats in Ch.6).
+- **Numeric representation and its data bugs** — integer width and overflow, IEEE-754 rounding and non-associativity (a float SUM changes with shuffle order), DECIMAL precision/scale propagation for money, timestamp resolution (ns vs µs: pandas 3.0 now infers µs when parsing strings) — "never store currency as a float".
+- *Lab:* measure the hierarchy: sequential vs random reads in RAM, on NVMe with and without the page cache (`O_DIRECT`), and against an object store across range sizes; sum the same float column in two orders and show different totals; reproduce false sharing between two threads and remove it with padding.
 
 ### 1.4 Networking fundamentals for distributed data
-- The OSI/TCP-IP model to the depth a data engineer needs; what each layer costs
-- TCP vs UDP, connection setup, flow control, congestion, head-of-line blocking
-- DNS, load balancing, TLS handshake basics (deep version in Ch.25-C)
-- Bandwidth vs latency vs throughput; why moving compute to data beats moving data to compute
-- Serialization on the wire and its cost (forward reference to Ch.9)
+- **TCP/IP layers and their costs** *(refresher)* — what each layer adds (framing, routing, reliable byte streams), MTU and per-packet overhead, where TLS and compression sit.
+- **TCP handshakes, flow and congestion control** — three-way handshake and slow start (why short-lived connections are slow and pools matter), receive windows, congestion control (CUBIC vs BBR), head-of-line blocking in TCP and HTTP/2 and how QUIC/HTTP/3 removes it at the transport; when UDP is the right choice.
+- **DNS, load balancing and TLS costs** — DNS caching and TTL failure modes, L4 vs L7 load balancers and connection draining, TLS 1.3 1-RTT handshakes and 0-RTT replay risk, mTLS between services; the latency each adds to a pipeline call (deep version → *Rust Systems Engineering* M3).
+- **Bandwidth, latency and data locality** — bandwidth-delay product, throughput vs latency, why moving compute to data beats moving data to compute; cross-AZ and cross-region transfer pricing as a design constraint (wire-format costs: §6.1 and §4.1).
+- **Tail latency under fan-out** — why the p99 of a request fanned out to N servers approaches each server's p99.9+; hedged and tied requests, timeouts and deadline propagation (Dean & Barroso, "The Tail at Scale", CACM 2013); consequences for shuffles, scatter-gather queries and object-store reads.
+- *Lab:* with `tc netem`, inject latency and loss between a client and a PostgreSQL or HTTP server; measure throughput with and without connection reuse and with BDP-sized buffers; then build a 50-way fan-out client, show the p99 blow-up, and recover it with hedged requests.
 
 ## Chapter 2 — Advanced SQL and Query Execution
-### 2.1 Relational theory and advanced query constructs (foundation to patch, then master)
-- Relational algebra behind SQL (selection, projection, join, aggregation, set ops) — know which algebraic form the optimizer rewrites to
-- NULL semantics, three-valued logic, and the bugs they cause (NOT IN with NULLs, aggregate NULL handling)
-- Set operations: UNION/UNION ALL, INTERSECT, EXCEPT and their performance
-- Recursive CTEs: hierarchy traversal, graph reachability, bill-of-materials, cycle detection
-- Grouping sets, ROLLUP, CUBE for multi-level aggregation in one pass
-- PIVOT/UNPIVOT and conditional aggregation
-- LATERAL / CROSS APPLY joins (correlated subquery in the FROM clause)
-- Arrays, structs/records, maps, and JSON handling (nested data in SQL engines)
-- User-defined functions (scalar/table/aggregate) and their optimizer-opacity cost
-- MERGE / UPSERT semantics and concurrency implications
+SQL semantics precise enough to predict every result, and planner/executor internals precise enough to predict every cost.
 
-### 2.2 Window-function mastery
-- Window frames: ROWS vs RANGE vs GROUPS; frame boundaries and peer groups
-- Nested windows via staged CTEs
-- Ranking, sessionization, gaps-and-islands, change detection
-- Running aggregates, moving statistics, percentile functions, distribution analysis
-- Top-N per group with ties; deterministic deduplication
-- QUALIFY to filter on a window-function result without a wrapping subquery (Snowflake/BigQuery/DuckDB/Databricks; not in the ISO standard) — the idiomatic top-N-per-group and dedup form
-- Temporal joins, point-in-time joins, as-of joins
-- Anti-joins, semi-joins, existence semantics
+### 2.1 Relational semantics and advanced query constructs
+- **Relational algebra and bag semantics** — selection, projection, join, aggregation and set operators (UNION vs UNION ALL, INTERSECT/EXCEPT [ALL]) as algebra over multisets; the equivalences optimizers exploit and where bag semantics break set intuition (why UNION pays for a dedup).
+- **NULLs and three-valued logic** — UNKNOWN propagation through predicates, `IS [NOT] DISTINCT FROM`, NULLs in aggregates, GROUP BY, joins, UNIQUE constraints and ORDER BY; the classic silent bugs (vanishing rows, `COUNT(col)` vs `COUNT(*)`).
+- **Semi-joins, anti-joins and existence** — EXISTS / IN / NOT EXISTS / NOT IN vs `LEFT JOIN … IS NULL`; why NOT IN over a NULL-bearing subquery returns nothing; how planners turn these into semi-, anti- and null-aware anti-join operators.
+- **Recursive CTEs and graph traversal** — fixpoint evaluation via a working table, hierarchy and bill-of-materials explosion, reachability, cycle detection with the standard `SEARCH`/`CYCLE` clauses (PostgreSQL 14+) or path arrays; termination and row blow-up risks.
+- **Grouping sets, ROLLUP, CUBE and pivots** — multi-level aggregation in one pass, `GROUPING()` to tell subtotal NULLs from data NULLs; PIVOT/UNPIVOT vs conditional aggregation (`FILTER (WHERE …)`, `CASE`) and their dialect portability.
+- **LATERAL joins and correlated subqueries** — LATERAL / CROSS APPLY as a per-row table function in FROM; top-N-per-group via LATERAL + LIMIT; when the planner can decorrelate and when it falls back to per-row execution (→ §2.3).
+- **Nested and semi-structured data in SQL** — arrays, structs and maps; UNNEST/explode and its cardinality traps; SQL/JSON path and `JSON_TABLE` (PostgreSQL 17); binary semi-structured types (Snowflake and Databricks VARIANT, the Parquet/Iceberg v3 variant type with shredding) vs JSON text.
+- **User-defined functions and optimizer opacity** — scalar, table and aggregate UDFs; why opaque UDFs block pushdown, costing and parallelism; inlining (PostgreSQL SQL-function inlining, SQL Server's "Froid" scalar-UDF inlining) and vectorized Arrow-batch Python UDFs vs row-at-a-time ones.
+- **MERGE, upsert and concurrent writers** — `MERGE` vs `INSERT … ON CONFLICT`: matching semantics, duplicate-source-row errors, why PostgreSQL's MERGE can still hit unique violations under concurrency while ON CONFLICT is race-safe; `RETURNING` with MERGE (PostgreSQL 17) and OLD/NEW (PostgreSQL 18); lakehouse MERGE as file rewrites (→ §6.3).
+- **SQL standards and dialect portability** — SQL:2023 additions (SQL/PGQ property graphs, a JSON type, ANY_VALUE, GREATEST/LEAST); widespread extensions (QUALIFY, GROUP BY ALL, `SELECT * EXCLUDE/REPLACE`, pipe syntax `|>` in BigQuery and Spark 4.0/Databricks); transpiling with SQLGlot and the semantics that silently differ (NULL ordering, integer division, collation, timestamp types).
+- *Lab:* build a "SQL semantics trap" suite on PostgreSQL and DuckDB — NOT IN with NULLs, `COUNT(col)` vs `COUNT(*)`, GROUPING() vs data NULLs, a recursive BOM with a planted cycle, and a two-session MERGE race that raises a unique violation; transpile the suite to a third dialect with SQLGlot and diff the results.
+
+### 2.2 Window functions and temporal joins
+- **Window frame semantics** — PARTITION BY / ORDER BY, ROWS vs RANGE vs GROUPS, peer groups and the default-frame trap with ties, the EXCLUDE clause, named windows; staging "nested" windows through CTEs because window calls cannot nest.
+- **Window function execution internals** — partition-and-sort cost and sort reuse across compatible windows, segment trees and removable cumulative aggregation for arbitrary frames (Leis et al., PVLDB 2015), parallel evaluation and skewed partitions; why a window beats an equivalent self-join.
+- **Ranking, top-N and deterministic dedup** — ROW_NUMBER vs RANK vs DENSE_RANK under ties, tie-breakers for reproducible output, QUALIFY (Teradata origin; Snowflake, BigQuery, DuckDB, Databricks; not ISO) as the idiomatic filter, and top-N-per-partition optimizations.
+- **Gaps-and-islands and sessionization** — LAG/LEAD change detection, the row-number-difference trick, running-sum session IDs with inactivity thresholds, compressing event streams into state intervals.
+- **Running and moving statistics** — cumulative and sliding aggregates, time-range frames (RANGE with INTERVAL), ordered-set aggregates (`PERCENTILE_CONT/DISC … WITHIN GROUP`), NTILE and CUME_DIST; exact vs approximate percentiles (→ §5.6).
+- **Point-in-time and as-of joins** — joining each event to the latest value at or before its timestamp; range-join plans vs native `ASOF JOIN` (DuckDB, Snowflake, ClickHouse); leakage-free training sets (→ Ch.17) and bitemporal as-of queries (→ §3.2).
+- *Lab:* on a 100M-row clickstream: sessionize with a 30-minute gap, keep the latest record per key with deterministic ties, and build a point-in-time join to a price history three ways (correlated subquery, window + range join, native ASOF JOIN); compare plans and runtimes in DuckDB and PostgreSQL.
 
 ### 2.3 Query optimizer and execution plans
-- Logical vs physical query plans
-- Cost-based optimization, cardinality estimation
-- Hash join vs merge join vs nested-loop join selection
-- Hash aggregation vs sort aggregation
-- Predicate pushdown, projection pruning, join reordering
-- CTE materialization vs inlining
-- Statistics, histograms, stale statistics
-- Spills to disk, memory pressure
-- Reading EXPLAIN / EXPLAIN ANALYZE across engines (Postgres, Spark, Trino, Snowflake)
-- Join-order explosion and why optimizers use heuristics/genetic search past ~10 joins
+- **From SQL text to plan tree** — parse → bind/analyze → rewrite → optimize → execute; logical vs physical plans; operator trees and the physical properties (sort order, partitioning) operators require and provide.
+- **Query rewrites and subquery unnesting** — predicate and projection pushdown, constant folding, join elimination, outer-to-inner join conversion, and decorrelation of arbitrary subqueries (Neumann & Kemper, BTW 2015) that turns per-row subqueries into joins.
+- **CTE inlining vs materialization** — CTEs as optimization fences, PostgreSQL 12+ inlining of side-effect-free single-reference CTEs and the `[NOT] MATERIALIZED` override, engines that always inline (and recompute); when a fence is what you want.
+- **Cardinality estimation and statistics** — histograms, most-common values, n_distinct, the independence and uniformity assumptions, correlated columns and extended statistics (`CREATE STATISTICS`), sampling, stale statistics after bulk loads; how errors compound through joins; learned estimators as frontier.
+- **Cost models and join-order search** — I/O + CPU cost formulas, bottom-up dynamic programming (System R) vs top-down transformation search (Volcano/Cascades), interesting orders, search-space explosion; PostgreSQL's collapse limits (default 8) and GEQO genetic search from 12 FROM items (`geqo_threshold`).
+- **Join algorithms: nested-loop, hash, sort-merge** — block and index nested loops, build/probe hash joins, merge joins over sorted inputs; how cardinalities, existing sort order, memory and equality vs inequality predicates decide the choice.
+- **Hash vs sort aggregation** — hash aggregation vs streaming aggregation over sorted input, partial/two-phase aggregation for parallel plans, DISTINCT aggregates, eager aggregation pushed below joins (PostgreSQL 19 beta).
+- **Memory budgets, spilling and grace hash join** — `work_mem`-style per-operator budgets, external-sort spills, grace and hybrid hash joins that partition to disk, recursive partitioning under skew; reading spills in plans and why concurrency multiplies memory.
+- **Execution models: iterator, vectorized, compiled** — Volcano tuple-at-a-time pull, vectorized batches (MonetDB/X100, DuckDB, Velox, ClickHouse), data-centric code generation (HyPer/Umbra), push-based pipelines and morsel-driven parallelism; trade-offs in interpretation overhead, compile latency and debuggability.
+- **Parallel and distributed query plans** — exchange operators (gather, repartition/shuffle, broadcast), partition-wise and co-located joins, broadcast thresholds; the plan shape that Spark (§7.2) and cloud warehouses (§6.5) implement.
+- **Adaptive execution and runtime filters** — re-optimization at stage boundaries (Spark AQE: coalescing partitions, switching join strategy, splitting skewed partitions), runtime Bloom and min/max filters, dynamic partition pruning (sideways information passing).
+- **Plan caching and plan regressions** — prepared statements and generic vs custom plans, parameter-sensitive plans ("parameter sniffing"), regressions after statistics refreshes or upgrades; steering tools (pg_hint_plan, SQL Server Query Store, `pg_plan_advice` in the PostgreSQL 19 betas).
+- **Reading EXPLAIN across engines** — estimated vs actual rows, loops, buffers (on by default with ANALYZE since PostgreSQL 18), spill and memory indicators; the equivalents in Spark (physical plan + UI), Trino (EXPLAIN ANALYZE), Snowflake (Query Profile) and BigQuery (execution graph); a fixed triage order.
+- *Lab:* run the Join Order Benchmark (IMDB) on PostgreSQL: find queries with 100×+ estimate errors, fix some with extended statistics, force alternative join orders, shrink `work_mem` to trigger spills, and provoke a generic-plan regression with a skewed parameter; run one query in DuckDB and Spark and compare plan shapes.
 
-### 2.4 Advanced SQL performance
-- Composite indexes and column order
-- Covering indexes / index-only scans
-- Partial and expression indexes
-- Partition pruning, partition-key selection
-- BRIN vs B-tree for very large ordered data
-- GIN / GiST (inverted and generalized) indexes for containment and membership predicates on JSONB, arrays, full-text, and geospatial data — where B-tree cannot help (cross-ref Ch.5.5 search stores)
-- Materialized views and precomputation
-- Concurrency vs analytical workload interference
-- Vectorized / columnar query execution (SIMD-based engines: DuckDB, ClickHouse, Velox)
+### 2.4 Physical design and SQL performance
+- **Composite index design and column order** — equality-before-range ordering, using index order to avoid sorts, selectivity; B-tree skip scan (PostgreSQL 18) when leading columns lack predicates; the write and storage cost of every extra index.
+- **Covering, partial and expression indexes** — INCLUDE columns and index-only scans (and PostgreSQL's dependence on the visibility map), partial indexes over hot subsets, expression indexes and the planner's exact-expression match requirement.
+- **Table partitioning and partition pruning** — range/list/hash partitioning, choosing keys from predicates and retention policy, plan-time vs run-time pruning, overhead of too many partitions; contrast with warehouse clustering (§6.5).
+- **Zone maps and BRIN indexes** — min/max summaries per block range for naturally ordered data vs B-trees; the physical-correlation requirement; the same idea as Parquet statistics and Snowflake micro-partition pruning (§6.2, §6.5).
+- **Inverted and generalized indexes (GIN/GiST)** — GIN posting lists for JSONB, array and full-text containment; GiST/SP-GiST for ranges and geospatial; pending-list and update costs; vector indexes (pgvector HNSW/IVFFlat) as the next step (→ Ch.17; search stores §5.5).
+- **Materialized views and incremental maintenance** — full refresh vs incremental view maintenance, PostgreSQL `REFRESH … CONCURRENTLY`, warehouse incremental MVs, Snowflake dynamic tables, Databricks materialized views; which aggregates maintain incrementally, staleness bounds; frontier: DBSP and differential dataflow (→ Ch.9).
+- **Mixed-workload interference** — long analytical queries vs OLTP: snapshot and lock effects (a long transaction stalls vacuum), replica offload and its query conflicts (`hot_standby_feedback`), workload management and resource queues, HTAP designs with separate row and column replicas.
+- *Lab:* on a 50M-row orders table, design indexes for a fixed five-query workload and measure each index's read win against its write and size cost; compare BRIN and B-tree on time-ordered vs shuffled data; replace a dashboard aggregate with an incrementally maintained view (Snowflake dynamic table, Databricks MV, or Feldera) and measure freshness lag.
 
 ## Chapter 3 — Data Modeling and Analytical Architecture
-### 3.1 Modeling foundations (name them, then go deep)
-- Conceptual vs logical vs physical data models and how each maps to the next
-- OLTP vs OLAP: workload shape, normalization pressure, storage layout, why one schema rarely serves both
-- Normalization 1NF→BCNF and deliberate denormalization; functional dependencies; when to normalize vs denormalize for analytics
-- Relationship cardinality (1:1, 1:N, M:N) and how it drives physical design
-- Primary/foreign/surrogate/natural keys; composite keys; key stability over time
-- Entity-relationship modeling and ER diagrams as a communication artifact
-- Data vault 2.0 (hubs/links/satellites) as an alternative to Kimball for auditable, source-aligned warehouses — when it earns its complexity
-- Normalized (3NF/Inmon) vs dimensional (Kimball) warehouse philosophies and when each wins
+How to model data so analytical answers stay correct as the world and the sources change, and which architectures serve those models.
+
+### 3.1 Modeling foundations
+- **Conceptual, logical and physical models** *(refresher)* — what each level fixes (business entities, platform-neutral structure, engine-specific layout) and how decisions flow from one to the next.
+- **OLTP vs OLAP workload shapes** *(refresher)* — point reads/writes vs large scans and aggregates; normalization pressure, row vs column layout and indexing, and why one schema rarely serves both.
+- **ER modeling and relationship cardinality** *(refresher)* — 1:1, 1:N, M:N and optionality; ER diagrams as a communication artifact; how cardinality drives junction tables and foreign-key placement.
+- **Functional dependencies and normal forms** — FDs, attribute closure and candidate keys, 1NF→BCNF (and 4NF for multivalued dependencies), lossless and dependency-preserving decomposition; deliberate denormalization for analytics and the update anomalies it brings back.
+- **Key design: natural, surrogate, durable, hash** — key stability over time, composite keys, generating surrogates in distributed pipelines (sequences vs hash keys vs time-ordered UUIDv7), durable keys that survive SCD versions, hash-collision risk.
+- **Inmon vs Kimball warehouse philosophies** — normalized enterprise warehouse feeding marts vs bus-architecture dimensional marts; time to value, integration cost, tolerance to change; how ELT on columnar engines shifted the balance.
+- **Data Vault 2.0 modeling** — hubs (business keys), links (relationships), satellites (descriptive history), hash keys and insert-only parallel loading, raw vs business vault, PIT and bridge tables for query speed; when auditability and source agility are worth the join cost.
+- *Lab:* model one operational domain (orders, customers with address changes, products) three ways — 3NF, star schema, Data Vault; load six months of synthetic change history into each and compare load complexity, query complexity, and the ability to answer "what was the customer's address on the order date".
 
 ### 3.2 Dimensional modeling at scale
-- Grain-first modeling
-- Factless facts, accumulating snapshots, periodic snapshots
-- Conformed dimensions, degenerate dimensions, role-playing dimensions
-- Junk dimensions (collapsing low-cardinality flags/indicators into one dimension), mini-dimensions for rapidly-changing attributes, and outrigger dimensions
-- Bridge tables, many-to-many relationships
-- Surrogate keys, late-arriving facts
-- SCD Type 1/2/3 and historical correctness
-- SCD Type 4 (history-table / mini-dimension split) and Type 6 (hybrid 1+2+3); choosing a type by query pattern and attribute churn rate
-- Bitemporal modeling: separating valid time (when a fact was true in the world) from transaction/system time (when the warehouse recorded it); system-versioned temporal tables; correct as-of and audit "what did we know, and when" queries, and late-arriving backdated corrections
+- **Grain-first dimensional design** — the four-step process (business process, grain, dimensions, facts), declaring the most atomic grain, additive vs semi-additive vs non-additive measures.
+- **Fact table types** — transaction, periodic snapshot, accumulating snapshot and factless facts (event and coverage); how each absorbs late updates and which measures stay additive.
+- **Conformed dimensions and drill-across** — conformed dimensions and facts across business processes, the enterprise bus matrix, drill-across queries that combine facts of different grains without fan-out.
+- **Special-purpose dimension patterns** — degenerate dimensions, role-playing dimensions (one date dimension, many roles), junk dimensions for low-cardinality flags, outriggers; when each simplifies and when it complicates.
+- **Bridge tables and many-to-many** — multivalued dimensions and ragged hierarchies through bridges, weighting factors against double counting, flattened vs recursive hierarchy bridges.
+- **SCD Type 2 implementation** — effective/expiry timestamps, current flags, hash-diff change detection, MERGE-based loads, idempotent reloads, correctness under out-of-order and duplicate changes.
+- **SCD types 0–7 and selection** — Types 0/1/3 (retain, overwrite, limited prior value), Type 4 mini-dimensions for rapidly changing attributes, hybrids 5/6/7; choosing by query pattern and attribute churn rate.
+- **Late-arriving facts and dimensions** — facts that arrive before their dimension rows (inferred members, later update), backdated facts that must map to historical SCD2 versions, bounded reprocessing windows.
+- **Bitemporal modeling** — valid time vs transaction (system) time; SQL:2011 application-time and system-versioned tables; temporal constraints (`WITHOUT OVERLAPS`, `PERIOD` foreign keys in PostgreSQL 18); as-of and "what did we know, and when" queries; why Snowflake/Delta/Iceberg time travel is transaction time only.
+- **Wide-table and activity-schema alternatives** — One Big Table denormalization on columnar engines and the activity schema (one typed event stream); when they beat a star (BI simplicity, compression of repeated values) and when they break (history, conformance, update cost).
+- *Lab:* implement SCD Type 2 with MERGE in two engines (e.g., PostgreSQL and Spark + Delta or DuckDB), replay the same change feed out of order and with duplicates, and prove idempotency and correct as-of answers with a bitemporal test suite; add a bridge table, demonstrate double counting, then fix it with weights.
 
 ### 3.3 Warehouse vs lake vs lakehouse
-- Warehouse workloads, columnar execution
-- Data lakes and object-storage economics
-- Lakehouse architecture
-- Medallion patterns and their limitations
-- Serving layers and semantic models
-- Workload isolation, compute/storage separation
-- Data contracts and domain ownership
-- Lambda vs Kappa architecture: Lambda (parallel batch + speed layers merged at a serving layer, Marz) vs Kappa (stream-only, reprocess by replaying the log, Kreps); the reprocessing/serving-merge trade-off; why the industry drifted toward Kappa/unified engines (one codebase, no dual-logic drift), and when a dedicated batch correction layer still earns its complexity
+- **From warehouse to lake to lakehouse** — coupled MPP columnar warehouses → cheap schema-on-read lakes without transactions (the "swamp") → open table formats + catalogs + many engines over object storage (internals in Ch.6); what each still does best.
+- **Object storage and query economics** — $/TB-month storage vs per-request vs egress charges, storage classes and retrieval latency, bytes-scanned vs compute-time billing, how file sizing and layout move the bill.
+- **Compute–storage separation and workload isolation** — elastic stateless compute over shared storage, per-workload clusters and warehouses, caches that re-couple storage for speed, noisy neighbors and concurrency scaling.
+- **Medallion architecture and its limits** — bronze/silver/gold as quality contracts; failure modes: layer sprawl, copy cost and latency, unclear ownership of "silver"; when to collapse or reshape layers.
+- **Lambda vs Kappa architectures** — Lambda (batch + speed layers merged at serving; Marz) vs Kappa (stream-only, reprocess by replaying the log; Kreps); the reprocessing and serving-merge trade-off; why the industry drifted to unified engines (one codebase, no dual-logic drift) and when a batch correction layer still earns its cost.
+- *Lab:* store the same dataset as raw JSON, as Parquet, and as an Iceberg or Delta table on object storage; run a fixed query set from two engines; tabulate bytes scanned, request counts, latency and projected monthly cost under on-demand and capacity pricing.
 
 ### 3.4 Modern modeling and governance layer
-- Data mesh: domain-oriented data products, federated computational governance, self-serve data platform
-- Data contracts enforced in CI (schema + SLA + semantics), not just documentation
-- Semantic/metrics layer: dbt Semantic Layer, Cube, LookML — single definition of a metric reused everywhere
-- Transformation-as-code with dbt: models, tests, macros, exposures, lineage graph, incremental models, snapshots
-- Transformation-layer evolution (2025+): the **dbt Fusion** engine (Rust-based, faster parse/compile, native column-level lineage), **dbt Mesh** / cross-project references for multi-team repos, and **SQLMesh** as an alternative with virtual data environments and automatic column-level change analysis
+- **Data mesh and data products** — domain ownership, data as a product, self-serve platform, federated computational governance; organizational preconditions and the failure mode of mesh without platform maturity (governance mechanics → §13.4).
+- **Data contracts as a modeling artifact** — what a contract specifies (schema, semantics, quality rules, SLAs, ownership), enforcement at the producer boundary, the Open Data Contract Standard (Bitol, Linux Foundation; v3.1), versioning and breaking-change policy (CI enforcement → §11.4).
+- **Semantic and metrics layers** — metric definitions compiled to SQL over declared entities, grain and time spines; MetricFlow (open-sourced under Apache 2.0, Oct 2025), Cube, LookML, warehouse-native Snowflake semantic views and Databricks metric views; the Open Semantic Interchange (OSI) spec; semantic layers as grounding for LLM text-to-SQL (BI boundary → Ch.17).
+- **dbt models, tests and lineage** — models as SELECTs, the `ref()`-built DAG, Jinja macros, data and unit tests, exposures, docs and lineage; multi-project dbt Mesh with cross-project refs, model contracts, versions and access levels.
+- **Incremental models and snapshots in dbt** — strategies (append, merge, delete+insert, insert_overwrite, microbatch), `is_incremental()` filters and late-data lookback, full-refresh drift, schema-change handling; snapshots as SCD2 via timestamp vs check strategies (→ §3.2).
+- **dbt Fusion engine and SQL comprehension** — a Rust engine that parses and type-checks SQL per warehouse dialect: compile-time errors, column-level lineage, state-aware builds that skip unchanged models; runtime open-sourced as dbt Core v2.0 (Apache 2.0, alpha, June 2026) at the Fivetran–dbt Labs merger close; GA on Snowflake, preview on other adapters.
+- **SQLMesh plans and virtual environments** — semantic SQL diffing via SQLGlot to classify breaking vs non-breaking changes, virtual data environments promoted by view-pointer swap instead of rebuild, built-in time-interval incrementals; trade-offs vs dbt now that both sit under Fivetran.
+- *Lab:* build the §3.2 star in dbt with model contracts, unit tests and a microbatch incremental fact; define three metrics in MetricFlow; then ship a breaking column change and compare what dbt Fusion's state-aware build and a SQLMesh plan detect, rebuild and cost.
 
 ## Chapter 4 — Advanced Python for Data Systems
-### 4.1 Memory and high-throughput processing
-- Object overhead and memory layout (conceptual)
-- Iterators/generators for streaming processing
-- Zero-copy and buffer-oriented thinking
-- Serialization costs: JSON vs Avro/Protobuf/Parquet/Arrow
-- Multiprocessing, threads, GIL implications, process boundaries
-- Async I/O for network-heavy workloads
-- Profiling CPU, memory, allocation behavior
+Python as the control plane over native columnar engines: where its costs hide, how to parallelize it, and how to make its clients, tests and environments production-grade.
+
+### 4.1 Memory, concurrency and high-throughput processing
+- **CPython object model and memory cost** — PyObject headers and refcounts, boxed ints and floats, lists of pointers vs contiguous buffers, `__slots__`; why per-row Python loops run 10–100× slower than columnar kernels; what the specializing interpreter (3.11+) and experimental JIT (3.13+) do and do not fix.
+- **Buffer protocol and zero-copy interchange** — PEP 3118 buffers and `memoryview`, NumPy views, the Arrow C Data Interface and Arrow PyCapsule protocol (`__arrow_c_stream__`) for library-to-library hand-off without PyArrow, DLPack for tensors; when "zero-copy" silently copies (casts, non-contiguous data, null handling).
+- **Serialization costs in Python** — stdlib `json` vs orjson/msgspec, pickle (and why it is unsafe on untrusted input), Avro/Protobuf codecs, Arrow IPC and Parquet; CPU per record vs bytes on the wire; typed decoding as validation (format internals → §6.1).
+- **GIL, free-threading and subinterpreters** — what the GIL serializes; multiprocessing costs (pickling, fork vs spawn, memory duplication); native code that releases the GIL; free-threaded CPython (experimental in 3.13, officially supported but optional in 3.14 under PEP 779, roughly 5–10% single-thread overhead); per-interpreter GILs via `concurrent.interpreters` and `InterpreterPoolExecutor` (3.14); C-extension compatibility as the gating factor.
+- **Async I/O for network-bound pipelines** — event-loop mechanics, `TaskGroup` structured concurrency, bounded concurrency with semaphores as backpressure, cancellation and timeouts, blocking calls that stall the loop, async database drivers; async vs threads for I/O fan-out.
+- **Profiling CPU, memory and allocations** — deterministic vs sampling profilers (cProfile vs py-spy, Scalene), allocation tracking (tracemalloc, memray), native frames via `perf` support, attaching to live processes (PEP 768 in 3.14) and the built-in sampling profiler `profiling.sampling` (3.15); profiling the native engine (Polars, DuckDB) separately from the Python glue.
+- *Lab:* process a 20 GB JSONL file four ways — pure-Python generator pipeline, multiprocessing, threads on free-threaded 3.14, and a Polars/DuckDB scan; profile each with py-spy and memray and report throughput, peak RSS and hot spots; then hand the result to DuckDB through the PyCapsule interface and prove no copy occurred.
 
 ### 4.2 Production data libraries and testing
-- PyArrow and columnar memory model
-- Pandas vs Polars vs Spark vs Dask vs Ray vs DuckDB: workload boundaries (single-node columnar, out-of-core, distributed DataFrame, distributed Python/ML) and when each wins
-- Database connection pooling
-- Retries, timeouts, exponential backoff, idempotent clients
-- Contract tests, property-based testing, integration tests
-- Schema validation and data contracts (Pydantic, Pandera, Great Expectations, Soda)
+- **Arrow columnar memory format** — arrays as validity bitmap + data/offset buffers, chunked arrays and record batches, dictionary and run-end encoding, the string-view layout ("German strings", used by Polars and DataFusion), nested types; compute kernels, and why Arrow became the interchange layer (relation to Parquet → §6.1).
+- **pandas 3.0 semantics** — Copy-on-Write always on (chained assignment no longer works, `SettingWithCopyWarning` gone), the default `str` dtype backed by PyArrow when installed, microsecond-resolution datetime inference, NumPy vs Arrow-backed dtypes and missing-value semantics; migrating via pandas 2.3 warnings.
+- **Polars lazy query engine** — the expression API, lazy plans with predicate/projection pushdown and common-subexpression elimination, the streaming engine (the default for lazy queries since Polars 2.0) and its no-implicit-row-order rule, out-of-core execution, the cuDF-backed GPU engine.
+- **Choosing a DataFrame engine** — pandas vs Polars vs DuckDB on one node, Spark / Dask / Ray Data / Daft distributed; boundaries by data size, latency, statefulness and team skills; dataframe-agnostic code with Narwhals and Ibis; "single node first" (→ §6.4).
+- **Connection pooling and database clients** — connection setup cost (→ §1.4), pool sizing by Little's law, PgBouncer session vs transaction pooling and prepared-statement caveats, server-side cursors and fetch size, bulk paths (COPY, Arrow-native ADBC drivers) vs row-by-row inserts.
+- **Resilient clients: timeouts, retries, idempotency** — timeouts on every call and deadline propagation, exponential backoff with jitter, retry budgets and circuit breakers against retry storms, idempotency keys and deduplication for exactly-once effects.
+- **Testing data code** — unit tests on minimal fixtures, property-based tests for invariants (Hypothesis), producer/consumer contract tests, integration tests against real ephemeral dependencies (Testcontainers), golden-output tests (pipeline CI → §11.4).
+- **Runtime schema validation** — Pydantic v2 (Rust core) for records and config, Pandera for DataFrames (pandas and Polars backends), Great Expectations (GX Core 1.x) and Soda checks; row-level vs batch-level validation cost and where validation belongs (governance tooling → §13.3).
+- *Lab:* build an ingestion client for a flaky paginated API (inject 5xx errors, timeouts and duplicate pages through a fault proxy) that stays idempotent under replay; validate with Pydantic and Pandera; property-test the transformation with Hypothesis; load PostgreSQL three ways (executemany, COPY, ADBC) and measure.
 
-## Systems in Production — Milestone 1: query planners, executors, and MVCC you can read
-The foundations become real in the engine that turns your SQL into execution. Read one open-source planner end to end; it demystifies every chapter above.
+### 4.3 Python toolchain and native acceleration
+- **Reproducible environments with uv** — resolver and cross-platform `uv.lock`, PEP 751 `pylock.toml` export, managed Python builds, workspaces, PEP 723 inline script metadata, cache-friendly CI; pairing with Ruff and type checkers (mypy/pyright and the newer Rust-based ty and Pyrefly); stewardship note: OpenAI announced the acquisition of Astral (uv, Ruff, ty) in March 2026.
+- **Native extensions with Rust and PyO3** — why the Python data stack is Rust/C++ underneath (Polars, pydantic-core, orjson, DataFusion bindings); building extensions with PyO3 + maturin, releasing the GIL and supporting free-threaded builds, abi3 and multi-platform wheels (→ *Rust Systems Engineering* M6).
+- *Lab:* move a hot transformation into a PyO3 extension built with maturin; have uv-driven CI build wheels for CPython 3.14 in both the default and free-threaded variants; benchmark against pure Python and an equivalent Polars expression.
 
-### PostgreSQL — the planner/executor you can actually read
-- Parse → rewrite → plan/optimize → execute. The planner is **cost-based**: it enumerates join orders and access paths and estimates each with statistics in `pg_statistic` (per-column null fraction, `n_distinct`, most-common-values list, and a histogram), gathered by `ANALYZE`. `EXPLAIN (ANALYZE, BUFFERS)` shows estimated-vs-actual rows — the gap is where plans go wrong, and reading it is the Ch.2.3 skill made concrete.
-- Executor nodes compose a tree pulled tuple-at-a-time (**Volcano/iterator model**): `Seq Scan`, `Index Scan`/`Index Only Scan`, `Bitmap Heap Scan`, `Hash Join`, `Merge Join`, `Nested Loop`, `HashAggregate`, and `Sort` — which spills to disk via **external merge sort** when `work_mem` is exceeded (the Ch.1.2 topic made physical).
-- **MVCC in the heap:** every row carries `xmin`/`xmax`; a tuple is visible to a snapshot if its inserting transaction committed before the snapshot and its deleting transaction did not. Updates write a *new* tuple version and leave the old one dead — which is exactly why `VACUUM` exists and why one long-running transaction blocks cleanup (previews Ch.5.1/Ch.5.2 and the from-scratch build in Ch.25-D).
+## Systems in Production — Milestone 1: planners, executors and the Python data stack
+- **System R optimizer (1979, Selinger et al., SIGMOD) — cost-based optimization is born.** Forcing problem: a declarative language needs the system, not the user, to pick among exponentially many plans. Mechanism: catalog statistics feed I/O+CPU cost formulas; bottom-up dynamic programming over left-deep join orders keeps the cheapest plan per subset and "interesting order". Trade-off accepted: a restricted search space (left-deep, cross products deferred) for tractability. Proves that plan quality is bounded by estimate quality — the template behind §2.3.
+- **PostgreSQL planner and executor (Berkeley POSTGRES lineage, 1986 → today) — a production optimizer you can read.** Forcing problem: one general-purpose engine must plan arbitrary SQL well enough without hints. Mechanism: parse → rewrite → plan → execute; `ANALYZE` fills `pg_statistic` (null fraction, n_distinct, MCV list, histogram); exhaustive join search up to the collapse limits and GEQO beyond; a Volcano-style tree of Seq/Index/Bitmap scans, Hash/Merge/Nested-Loop joins, HashAggregate and Sort that spills via external merge sort past `work_mem`. Trade-off accepted: per-column statistics and independence assumptions, so correlated predicates misestimate. Proves §1.2 and §2.3 as concrete code paths visible in `EXPLAIN ANALYZE`.
+- **PostgreSQL MVCC and the Mandrill wraparound outage (Mailchimp postmortem, Feb 2019) — the cost of keeping old versions in the heap.** Forcing problem: readers must not block writers. Mechanism: every tuple carries `xmin`/`xmax`, an update writes a new version, VACUUM reclaims dead versions and freezes old ones because transaction IDs are 32-bit. Failure: a write spike pushed one shard toward XID wraparound; Postgres stopped accepting writes to protect data, and the offline VACUUM of a large database ran for more than a day with no progress indicator, and the incident lasted about 40 hours. Trade-off accepted: simple append-a-version writes in exchange for continuous maintenance debt. Proves vacuum capacity is part of schema and workload design (previews §5.1–§5.2; built from scratch in → *Rust Systems Engineering* M4).
+- **Join Order Benchmark (2015, Leis, Gubichev, Mirchev, Boncz, Kemper, Neumann, PVLDB) — how good are query optimizers, really?** Forcing problem: synthetic TPC data with uniform, independent columns hides estimation errors. Mechanism: 113 join-heavy queries over the correlated real-world IMDB dataset, run through several engines with true cardinalities injected. Findings: estimates are routinely off by orders of magnitude, cardinalities matter far more than the cost model, and plans that rely on aggressive nested loops are fragile. Proves where to look first when a plan goes wrong (§2.3 lab).
+- **MonetDB/X100 → Vectorwise (2005, Boncz, Zukowski, Nes, CIDR) — vectorized execution.** Forcing problem: tuple-at-a-time interpreters run modern CPUs at a fraction of their instruction throughput. Mechanism: operators process cache-resident vectors of ~1,000 values with tight, branch-light primitives over columnar data. Trade-off accepted: materializing intermediate vectors and a more complex operator set. Proves that interpretation overhead, not disk, bounded analytical engines once data fit in memory — the lineage of DuckDB, Velox and ClickHouse-style engines.
+- **HyPer compiled execution and morsel-driven parallelism (2011 Neumann, PVLDB; 2014 Leis et al., SIGMOD) — the compilation alternative.** Forcing problem: even vectorized engines pay to materialize between operators. Mechanism: data-centric code generation via LLVM fuses each pipeline so tuples stay in registers; morsel-driven scheduling splits work into small NUMA-aware chunks for elastic parallelism. Trade-off accepted: compile latency and harder debugging. Proves that compiled and vectorized engines each win on different workloads (Kersten et al., PVLDB 2018), continued in Umbra.
+- **DuckDB (2019, Raasveldt & Mühleisen, SIGMOD demo) — the analytical database as a library.** Forcing problem: analysts shipping data to servers or pushing analytics through pandas. Mechanism: in-process engine with vectorized push-based execution, out-of-core operators that spill gracefully, and direct scans of Parquet, Arrow and DataFrames. Trade-off accepted: one node and a single writing process. Proves the single-node renaissance: most analytical working sets fit on one large machine (→ §6.4).
+- **Snowflake (2016, Dageville et al., SIGMOD) — pruning instead of indexing.** Forcing problem: elastic analytics on cloud object storage, where reads are slow and charged. Mechanism: immutable micro-partitions with per-column min/max metadata so the planner prunes before reading a byte; independent virtual warehouses over shared storage. Trade-off accepted: no secondary indexes, so clustering quality decides performance. Proves that in the cloud the dominant cost is bytes scanned and moved, not CPU (§1.3 priced in dollars).
+- **Dremel / BigQuery (2010 and 2020, Melnik et al., VLDB) — nested columnar storage and serving trees.** Forcing problem: interactive SQL over trillions of nested records. Mechanism: repetition/definition-level column striping of nested data (→ §6.2), multi-level serving trees fanning queries over thousands of workers, later a disaggregated in-memory shuffle and slot scheduling. Trade-off accepted: scan-everything columnar execution billed per byte, which makes partitioning and clustering the user's cost lever. Proves tail latency under fan-out (§1.4) is the scaling limit for interactive analytics.
+- **Amazon Redshift (2015 Gupta et al.; 2022 Armenatzoglou et al., "Amazon Redshift Re-invented", SIGMOD) — distribution-aware MPP planning.** Forcing problem: a cheap, simple cloud warehouse built on a shared-nothing MPP engine. Mechanism: DISTKEY/SORTKEY choices decide whether joins run co-located or need redistribute/broadcast steps; queries compile to native code segments; RA3 later separated storage into managed S3-backed storage. Trade-off accepted: users encode physical design in DDL, and a bad distribution key causes skew and shuffle. Proves the §2.3 distributed-plan model in a commercial product.
+- **Apache Arrow (2016, Apache top-level project, McKinney et al.) — a shared columnar memory standard.** Forcing problem: every system paid to serialize and convert data at each boundary, and pandas' memory model hit its limits (McKinney, "Apache Arrow and the 10 Things I Hate About pandas", 2017). Mechanism: a language-independent columnar layout, the C Data Interface for in-process hand-off, IPC and Flight for transport. Trade-off accepted: immutable, append-oriented buffers optimized for analytics rather than in-place updates. Proves interoperability as infrastructure: pandas 3.0 strings, Polars, DuckDB and DataFusion all speak it (§4.2).
+- **Free-threaded CPython (PEP 703, Sam Gross; accepted 2023, supported in 3.14) — removing the GIL without breaking the ecosystem.** Forcing problem: ML and data workloads could not use cores from Python threads. Mechanism: biased reference counting, immortal objects, deferred reference counting, mimalloc-based allocation and per-object locks/critical sections; a phased rollout (experimental build in 3.13, supported in 3.14, default undecided). Trade-off accepted: single-thread overhead and a separate ABI that every C extension must adopt. Proves that a language runtime change of this scale ships as an ecosystem migration, not a release (§4.1).
 
-### Cloud warehouse planners — the same ideas, charged by the byte
-- Snowflake prunes micro-partitions using per-partition min/max metadata before reading a byte; BigQuery's Dremel executes a columnar plan across many slots; Redshift's planner picks a distribution-aware join strategy driven by DISTKEY/SORTKEY.
-- In all three, the dominant cost is **bytes scanned and shuffle, not CPU** — the Ch.1.3 lesson (I/O/network over CPU) priced in dollars. Reading these plans (Ch.2.3) is the single most leveraged tuning skill in analytics engineering.
-
----
-
-# MILESTONE 2 — Storage: Database Internals, Files & the Lakehouse
-How bytes are actually stored, made durable, made transactional, and made queryable — from a single page on disk to a petabyte-scale table format over object storage. This is the layer that separates "uses a database" from "could build one."
+# Milestone 2 — Storage: Database Internals, Files & the Lakehouse
+How bytes are laid out, made durable, made transactional, replicated, and made queryable: from one page on disk to a petabyte table over object storage.
 
 ## Chapter 5 — Database Internals and Distributed Storage
+How a single-node engine stores, protects and isolates data, and how that engine is replicated and partitioned across machines. This chapter takes the data-engineering view; the build-it-yourself depth is in → *Rust Systems Engineering* M4 (Ch.19–24) and M5 (Ch.25–28).
+
 ### 5.1 Storage engines
-- Pages/blocks, tuples, heap storage, row layout
-- Slotted pages, record headers, checksums
-- Buffer pools and cache locality
-- WAL and durability; fsync/fdatasync; write barriers
-- B-tree structure, page splits, index maintenance
-- MVCC and visibility
-- Vacuuming, bloat, dead tuples
-- LSM-tree concepts: memtables, SSTables, compaction, write amplification
-- Columnar storage internals: column chunks, vectors, dictionary/RLE/delta encoding, compression trade-offs
+- **Pages, slotted pages and tuple layout** — the fixed-size page as the unit of I/O: header, line-pointer (slot) array, tuples growing toward each other, record headers, null bitmaps, page checksums; why slots decouple logical row identity (Postgres `ctid`) from physical offset; out-of-line storage of large values (Postgres TOAST, InnoDB overflow pages). Build depth → *Rust Systems Engineering* Ch.19.
+- **Buffer pool and page replacement** — the buffer pool as the engine's own cache: pin/unpin, dirty-page tracking, replacement policies (LRU, clock-sweep, LRU-K/2Q) and why plain LRU fails under sequential scans (ring buffers); double caching with the OS page cache vs `O_DIRECT`; PostgreSQL 18's asynchronous I/O subsystem (`io_method` = worker or io_uring) replacing reliance on OS readahead.
+- **Write-ahead logging and fsync semantics** — "log before data": LSNs, group commit, `fsync` vs `fdatasync` vs `O_DSYNC`, write barriers and drive caches; torn pages and Postgres full-page writes vs InnoDB's doublewrite buffer; the 2018 "fsyncgate" lesson (a failed fsync can silently drop dirty pages, so the only safe response is to crash and replay). Build depth → *Rust Systems Engineering* Ch.20 and Ch.15.
+- **Checkpoints and crash recovery** — ARIES-style analysis/redo/undo vs Postgres's redo-only recovery; checkpoint frequency trading recovery time against write amplification and full-page-write volume; the WAL as the substrate that physical replication, point-in-time recovery and logical decoding (CDC, Ch.8) are all built on.
+- **B-tree indexes in production** — B+-tree structure and fanout, page splits and merges, fill factor, Lehman–Yao (B-link) concurrency; index bloat and deduplication (PG13+); multicolumn skip scan (PG18); clustered (InnoDB) vs heap-organised (Postgres) tables and what a secondary-index lookup costs in each. Build depth → *Rust Systems Engineering* Ch.21.
+- **MVCC: append versions vs undo logs** — two families of the same idea: Postgres writes new heap tuples (`xmin`/`xmax`, snapshots, commit-log lookups), while InnoDB and Oracle update in place and reconstruct old versions from undo segments; how each affects update cost, index maintenance, long-read behaviour and "snapshot too old" failures. Build depth → *Rust Systems Engineering* Ch.23.
+- **Vacuum, bloat and transaction-ID wraparound** — dead tuples, HOT updates, the visibility map, autovacuum tuning; why one long transaction, an abandoned replication slot or a stale prepared transaction pins the xmin horizon and grows every table; 32-bit XID freezing and the wraparound shutdown as a real production outage.
+- **LSM trees: write and read paths** — WAL → memtable (often a skip list) → immutable memtable → sorted SSTable flush; point reads checking newest structures first, guided by per-file Bloom filters and block indexes; range reads merging many sorted runs; tombstones and why deletes are not free. Build depth → *Rust Systems Engineering* Ch.22.
+- **LSM compaction and the RUM trade-off** — leveled vs tiered (size-tiered/universal) vs FIFO compaction; read, write and space amplification and the RUM conjecture (you can optimise at most two); compaction debt, write stalls and tombstone build-up as production failures; when a B-tree beats an LSM and vice versa (RocksDB, Cassandra, ScyllaDB, Pebble as reference points).
+- *Lab:* run the same insert/update/scan workload against Postgres and RocksDB (or SQLite vs a RocksDB-backed store); measure write amplification, space amplification and p99 read latency; then hold a long-running transaction open in Postgres and chart table bloat until it is released.
 
 ### 5.2 Transactions and concurrency
-- ACID properties
-- Isolation levels: read uncommitted, read committed, repeatable read, snapshot isolation, serializable
-- Anomalies: lost updates, write skew, phantom reads, dirty reads
-- Non-repeatable reads; **read skew** (reading two related items left mutually inconsistent because a concurrent transaction committed between the reads) — distinct from the **read-only transaction anomaly** (a read-only transaction observing a state no serial order permits, which can occur even under snapshot isolation); the anomaly↔isolation-level mapping — which level permits which anomaly, and why **Serializable Snapshot Isolation (SSI)** (what Postgres implements) and strict two-phase locking reach serializability by different routes (the classic correctness question)
-- Locking, deadlocks, lock escalation
-- Optimistic vs pessimistic concurrency
-- Distributed transaction trade-offs (2PC, sagas)
+- **ACID guarantees, precisely stated** *(refresher)* — what atomicity, consistency, isolation and durability each actually promise, and which layer (engine vs application) owns "consistency".
+- **Isolation anomalies beyond ANSI** — dirty write, dirty read, non-repeatable read, read skew, lost update, write skew, phantoms and the read-only transaction anomaly; why the ANSI SQL-92 definitions are ambiguous (Berenson et al. 1995, Adya's dependency-graph formalisation) and what each anomaly looks like as a two-transaction timeline.
+- **Snapshot isolation and write skew** — how SI works (read from a snapshot, first-committer-wins on write–write conflicts), which anomalies it prevents and why write skew and the read-only anomaly survive; vendor naming traps: Postgres `REPEATABLE READ` is SI, Oracle `SERIALIZABLE` is SI, MySQL InnoDB `REPEATABLE READ` mixes snapshot reads with locking reads.
+- **Serializability: strict 2PL versus SSI** — two routes to the same guarantee: two-phase locking with predicate/next-key locks (block on conflict) vs Serializable Snapshot Isolation (track rw-antidependencies, abort on a dangerous structure; Cahill 2008, Ports & Grittner 2012 for Postgres); throughput, false-positive aborts, and why retries become mandatory application logic.
+- **Locking, deadlocks and lock escalation** — lock modes and intention locks, row vs page vs table granularity, deadlock detection (wait-for graphs) vs prevention (timeouts, wait-die/wound-wait), lock escalation in SQL Server/Db2, and long DDL locks as a migration hazard.
+- **Optimistic vs pessimistic concurrency control** — `SELECT … FOR UPDATE` vs version-column compare-and-set vs validate-at-commit OCC; how conflict rate decides the winner; the same pattern reappearing in object-store table commits (§6.3) and distributed SQL (§5.3).
+- **2PC in production databases** — prepare/commit as databases run it, coordinator failure leaving participants in doubt (theory in Ch.14), XA in practice, and how distributed SQL systems hide 2PC behind consensus-replicated participants (Spanner, Ch.14 and the M6 case study).
+- **Sagas, compensation and the outbox pattern** — long-running business transactions as local transactions plus compensating actions; orchestration vs choreography; the transactional outbox (write the event in the same local transaction, ship it via CDC) as the fix for dual writes (outbox mechanics in §8.2, durable-execution sagas in §11.2).
+- *Lab:* reproduce write skew (the "on-call doctors" pattern) under Postgres `REPEATABLE READ`, then rerun under `SERIALIZABLE` and observe the serialization failure; add retry logic and measure abort rate as contention rises.
 
 ### 5.3 Replication and distributed databases
-- Primary/replica architectures
-- Physical vs logical replication
-- Replication lag, read-after-write consistency
-- Quorum concepts (read/write quorums, Dynamo-style)
-- Leader/follower vs leaderless designs
-- CAP theorem as a practical trade-off
-- PACELC: the refinement of CAP — during a **P**artition you trade **A**vailability against **C**onsistency (PA/PC), but **E**lse — no partition, the normal case — you still trade **L**atency against **C**onsistency (EL/EC); why "strongly consistent" stores are slower on the happy path, with real systems classified (e.g., Dynamo/Cassandra PA/EL, Spanner PC/EC)
-- Consistency models: strong, eventual, causal, session guarantees
-- Partition tolerance and failure domains
-- **Data sharding / horizontal partitioning (interview-critical):** splitting one logical dataset across nodes so each shard holds a subset of rows; **shard-key choice** (user ID, geography, time range) and why it dominates performance; **range vs hash sharding** trade-offs; **consistent hashing** to minimize re-mapping when nodes join/leave (the Dynamo technique); request **routing** to the owning shard; **resharding/rebalancing** and the **hot-shard / celebrity-key** problem; sharding vs partitioning vs replication as distinct axes (cross-ref Ch.5.5 hot partitions and the Dynamo / Uber-Schemaless case studies)
-- **Consensus and convergent-state internals (systems-level, detailed in Ch.25-E):** Raft leader election/term/log replication/commitment/conflict repair/snapshotting; Kafka-style partitioned-log ordering and delivery-semantics nuance; CRDTs and idempotency keys as the two alternative convergence strategies, and when neither is appropriate
+- **Synchronous, asynchronous and semi-synchronous replication** *(refresher)* — primary/replica topologies, what each acknowledgement mode risks on failover (lost commits vs stalled writes), and failover/promotion basics.
+- **Physical vs logical replication** — shipping WAL bytes (exact block copy, same major version) vs decoded row changes (cross-version, selective, the basis of CDC); Postgres replication slots and the WAL-retention outage when a consumer stalls; failover-safe logical slots (PG17+); MySQL row-based binlog as the equivalent.
+- **Replication lag and session guarantees** — read-your-writes, monotonic reads and consistent-prefix reads; implementing them with LSN/GTID tokens, sticky routing or primary fallback; what lag does to dashboards and downstream pipelines (formal consistency models live in Ch.14).
+- **Multi-leader replication and write conflicts** — active-active across regions, conflict detection, last-writer-wins and its silent data loss under clock skew, application-level merge, and when CRDTs fit (theory in Ch.14, build depth → *Rust Systems Engineering* Ch.28).
+- **Leaderless quorums and anti-entropy** — Dynamo-style N/R/W, sloppy quorums and hinted handoff, read repair, Merkle-tree anti-entropy; why R + W > N gives quorum intersection but not linearizability; tunable consistency in Cassandra/ScyllaDB (quorum theory revisited in the M6 case study).
+- **CAP and PACELC in practice** — CAP as a statement about behaviour during a partition (PA vs PC); PACELC adding the normal-case latency-vs-consistency trade (EL vs EC), with systems classified (Dynamo/Cassandra PA/EL, Spanner PC/EC); failure domains (process, host, rack, AZ, region) as what "partition" means physically.
+- **Partitioning schemes: range, hash, consistent hashing** — range partitioning (ordered scans, hot tails) vs hash partitioning (even spread, no range scans); consistent hashing with virtual nodes and rendezvous hashing to limit data movement on membership change (algorithm in → *Data Structures & Algorithms* Ch.2); request routing via client, proxy or coordinator; partitioning vs replication as independent axes.
+- **Shard keys, hot shards and resharding** — choosing a shard key from access patterns (tenant, user, time) and cardinality; celebrity keys and salting/splitting; secondary indexes across shards (local vs global); online resharding and range splits (Vitess, CockroachDB, DynamoDB partition splits) and the cost of moving data under load.
+- **Consensus inside data systems** — where Raft and Paxos actually run in a data stack (Kafka KRaft, etcd for Kubernetes, per-range Raft in CockroachDB/TiKV, Multi-Paxos per DynamoDB partition), what a commit costs in round trips, and what losing quorum looks like operationally; theory in Ch.14, build depth → *Rust Systems Engineering* Ch.26 and M7 Capstone C (Ch.36).
+- **Distributed SQL architecture** — the Spanner pattern made mainstream: range-sharded keyspace, consensus group per range, MVCC with timestamps (TrueTime, hybrid logical clocks), and 2PC across ranges; CockroachDB, TiDB, YugabyteDB, and Aurora DSQL's alternative (optimistic concurrency with conflict checks only at commit, GA May 2025); the latency price and when "shard a boring Postgres" wins instead (M6 case study).
+- **Compute–storage disaggregated OLTP** — Aurora's log-as-database storage tier, Neon's pageserver/safekeeper split, AlloyDB; instant branching and scale-to-zero as consequences; Postgres moving inside the lakehouse platforms (Databricks Lakebase on Neon, Snowflake Postgres via Crunchy Data, both announced mid-2025) and what that changes for operational→analytical sync.
+- *Lab:* run a three-node Postgres (or CockroachDB) cluster; measure replication lag under write load, break read-your-writes from a replica and fix it with an LSN token, then kill the leader and record failover time and any lost acknowledged writes.
 
-### 5.4 Build-it-yourself storage engine track (differentiator)
-- Four-milestone build progression (see Ch.25-G Capstone B): **V1** WAL + memtable (durability first) → **V2** SSTables (flush, Bloom filters, sparse index) → **V3** compaction (atomic manifest switch, crash-safe merge) → **V4** MVCC (snapshot visibility, version GC)
-- Implement a B-tree alternative with page splits and crash-safe range scans (Ch.25-D)
-- Implement a Raft-backed replicated state machine: deterministic state machine first, persist term/vote/log before acknowledging, then chaos-test the transport (see Ch.25-G Capstone C)
-- Why this matters: this is what separates "uses Postgres" from "could build the next Postgres/FoundationDB/TiKV" — the highest-paid infra data engineers can reason at this layer
+### 5.4 Build-it-yourself storage engine track (cross-domain)
+- *Lab:* the from-scratch builds live in the Rust domain and are not duplicated here: durable KV engine V1 WAL + memtable → V2 SSTables with Bloom filters → V3 crash-safe compaction → V4 MVCC (→ *Rust Systems Engineering* Ch.35, Capstone B); crash-safe B-tree (→ *Rust Systems Engineering* Ch.21); Raft-replicated state machine (→ *Rust Systems Engineering* Ch.36, Capstone C). The data-engineering deliverable here: put your engine, RocksDB and Postgres under the same ingest-then-query workload and explain every difference in throughput, amplification and tail latency with §5.1 vocabulary.
 
 ### 5.5 NoSQL, serving stores, and caching (the read side of data systems)
-- NoSQL families and when each fits: key-value (DynamoDB, Redis), wide-column (Cassandra, HBase, Bigtable), document (MongoDB), search (Elasticsearch/OpenSearch)
-- Access-pattern-first modeling for NoSQL (design the queries, then the table) — the opposite of relational normalization
-- Partition/hash keys, hot partitions, and even key distribution
-- Caching layers: cache-aside, read-through, write-through, write-behind; TTL and eviction (LRU/LFU); cache stampede/thundering herd and mitigation
-- Redis as cache, as a data structure server, and its persistence/limits
-- Consistency between cache and system of record; invalidation strategies
-- Serving layer for analytics: pre-aggregation, materialized serving tables, low-latency OLAP (Druid/Pinot/ClickHouse — cross-ref Ch.9/Ch.6)
-- Message queues vs event logs: RabbitMQ/SQS (queue, per-message ack, no replay) vs Kafka (log, offsets, replay) — pick by replay/ordering/fan-out needs
+- **NoSQL families and their fit** — key-value (DynamoDB, Redis/Valkey), wide-column (Cassandra, ScyllaDB, HBase, Bigtable), document (MongoDB), search (Elasticsearch/OpenSearch): the data model, partitioning and consistency each implies, and the workload each wins; vector stores in Ch.17.
+- **Access-pattern-first NoSQL modeling** — list the queries first, then design keys: partition + sort keys, single-table design, composite and overloaded keys, adjacency lists, GSIs vs LSIs (eventually consistent, separately provisioned); DynamoDB per-partition throughput limits, adaptive capacity and split-for-heat, and write sharding for hot keys.
+- **Inverted indexes and search segments** — postings lists, term dictionaries and doc values; Lucene's immutable segments, refresh vs commit, and segment merging as an LSM-like design; shards and replicas in Elasticsearch/OpenSearch; why deep pagination and high-cardinality aggregations hurt (cross-ref GIN in §2.4).
+- **Cache patterns and eviction policies** — cache-aside, read-through, write-through, write-behind and the failure each risks; TTLs; LRU vs LFU vs W-TinyLFU (Caffeine) and why admission matters as much as eviction (structures in → *Data Structures & Algorithms* Ch.5).
+- **Cache stampedes and thundering herds** — what happens when a hot key expires or a cache node restarts cold; request coalescing (single-flight), leases, probabilistic early expiration (XFetch), TTL jitter, and serve-stale-while-revalidate.
+- **Cache consistency and invalidation** — the delete-after-write race and why "update the cache" is wrong; versioned keys, leases against stale sets (the Memcache-at-Facebook design), CDC-driven invalidation from the database log, and deciding per field how stale is acceptable (the TAO case study).
+- **Redis and Valkey internals** — single-threaded event loop with I/O threads, data structures as the API, RDB vs AOF persistence, async replication and the writes lost on failover, Redis Cluster's 16,384 hash slots; licensing history (2024 move to RSALv2/SSPL, the BSD-licensed Valkey fork under the Linux Foundation, Redis 8 adding AGPLv3 in May 2025) as a platform-selection factor.
+- **Analytical serving layers** — pre-aggregation, materialized serving tables and cubes, and when to move from warehouse queries to a real-time OLAP store (Druid, Pinot, ClickHouse — engine detail in §6.4 and §9.3); freshness vs concurrency vs cost.
+- **Message queues vs event logs** — per-message ack and redelivery without replay (RabbitMQ, SQS) vs offset-based replayable logs (Kafka); choosing by replay, ordering and fan-out; Kafka 4.2 share groups (KIP-932 "queues for Kafka", production-ready Feb 2026) blurring the line (Kafka internals in Ch.9).
+- *Lab:* put a cache-aside Redis/Valkey layer in front of Postgres; expire a hot key under 1,000 concurrent readers and measure the database spike; then add single-flight coalescing and early expiration and measure again; finally reproduce the delete-after-write stale-read race.
 
 ### 5.6 Probabilistic and streaming data structures (scale-critical, frequently missing)
-- **Bloom filters / cuckoo filters:** approximate membership, no false negatives, tunable false-positive rate; used in LSM reads, join pruning, cache layers
-- **HyperLogLog:** approximate distinct-count (cardinality) in fixed memory; mergeable across partitions — what engines' **approximate** distinct-count functions (`APPROX_COUNT_DISTINCT`, Spark `approx_count_distinct`) are built on; an *exact* `COUNT(DISTINCT)` does not use it
-- **Count-Min Sketch:** approximate frequency/heavy-hitters in sublinear space
-- **t-digest / DDSketch:** approximate quantiles (p50/p95/p99) over streams without storing all data
-- **Reservoir sampling:** uniform sample from an unbounded stream
-- **MinHash / SimHash / LSH:** approximate similarity and near-duplicate detection at scale
-- Accuracy vs memory trade-offs; mergeability (why these fit map-reduce/partitioned aggregation); when exactness is required instead
-- *Lab*: implement HyperLogLog and Count-Min Sketch; measure error vs memory against exact counts on a skewed stream; merge across simulated partitions
+- **Bloom, cuckoo and xor filters** — approximate membership with no false negatives; sizing from target false-positive rate (bits per key, hash count); cuckoo filters adding deletes, xor/binary-fuse and ribbon filters (RocksDB) trading build cost for space; uses in LSM reads, Parquet column filters (§6.2), join pruning and runtime filters.
+- **HyperLogLog and distinct counting** — leading-zero estimation, registers and harmonic mean, HLL++ bias correction and sparse mode; mergeability across partitions and time; what `APPROX_COUNT_DISTINCT` returns vs exact `COUNT(DISTINCT)`; Theta/KMV sketches when you need set intersection and difference.
+- **Count-Min Sketch and heavy hitters** — frequency estimation with one-sided error, conservative update, and heavy-hitter algorithms (Space-Saving, Misra–Gries) for top-k over streams.
+- **Quantile sketches: t-digest, DDSketch, KLL** — rank-error vs relative-error guarantees, why averaging per-partition percentiles is wrong, mergeability, and which engines and observability tools use which.
+- **Stream sampling: reservoir and weighted** — Algorithm R and weighted reservoir sampling (A-Res), stratified sampling for skewed data, and sampling vs sketching as different tools.
+- **MinHash, SimHash and LSH** — Jaccard and cosine similarity estimation, banding for candidate generation, and near-duplicate detection at corpus scale (applied in entity resolution, §8.3, and LLM data dedup, Ch.17).
+- **Sketches as stored, mergeable aggregates** — persisting sketches in tables (Apache DataSketches, Druid, BigQuery HLL functions, Iceberg Puffin NDV sketches, §6.3.1) so rollups stay mergeable; error budgets and when exactness is non-negotiable (billing, compliance).
+- *Lab:* implement HyperLogLog and Count-Min Sketch; measure error vs memory against exact counts on a Zipf-skewed stream; merge sketches across simulated partitions and confirm the merged estimate matches a single-pass sketch.
 
 ## Chapter 6 — File Formats, Lakehouse and Table Formats
+From the bytes in one file to a transactional, multi-engine table over object storage, and the engines and warehouses that query it.
+
 ### 6.1 Serialization and file formats (the physical substrate)
-- Text formats: CSV (quoting/escaping/encoding pitfalls, no schema), JSON/JSONL (flexible, verbose, no columnar pushdown), XML
-- Row-oriented binary: Avro (schema evolution rules, schema registry, splittable), Protobuf
-- Columnar on disk: Parquet, ORC (stripes, row groups, column statistics, predicate pushdown)
-- In-memory columnar: Apache Arrow (zero-copy, language-interop), Arrow IPC/Feather
-- Compression codecs: Snappy, LZ4, Zstd, Gzip — ratio vs CPU vs splittability trade-offs
-- Encoding schemes: dictionary, RLE, delta, bit-packing — and when each is chosen
-- Row vs columnar decision: write-heavy/point-lookup vs scan-heavy/analytical
-- Schema evolution across formats: add/drop/rename/reorder columns, type widening, default/nullability rules
-- The small-file problem and compaction; optimal file/row-group sizing
+- **Text interchange formats and their traps** *(refresher)* — CSV (quoting, escaping, embedded newlines, encodings and BOMs, no types or schema), JSON/JSONL (verbose, no columnar pushdown, number-precision loss), XML; when you still must accept them at the edge and convert immediately.
+- **Row vs columnar vs hybrid layouts** *(refresher)* — N-ary row storage vs decomposition by column vs PAX (columnar within a block); point lookups and writes vs scans and compression; why one physical layout rarely serves both OLTP and OLAP.
+- **Row-oriented binary encodings: Avro and Protobuf** — Avro object container files (schema in header, sync markers, splittable blocks) vs Protobuf's tag/varint wire format with no container; zero-copy formats (FlatBuffers, Cap'n Proto) for comparison; where each fits: Kafka payloads, RPC, landing zones.
+- **Schema evolution rules across formats** — Avro writer/reader schema resolution (defaults, aliases, unions), Protobuf field-number rules (never reuse, `reserved`), Parquet's by-name vs by-position vs by-field-ID column matching; type widening and nullability changes; how table formats add stable column IDs on top (§6.3); registry compatibility modes in §9.2.
+- **Apache Arrow columnar memory format** — buffers, validity bitmaps, offsets, dictionary and run-end encoded arrays, string views; the C Data Interface for zero-copy hand-off between libraries; Arrow IPC/Feather as an on-disk and streaming form; why Arrow is a memory format, not a storage format (transport in §6.4, build depth → *Rust Systems Engineering* Ch.24).
+- **Compression codecs and their trade-offs** — Snappy, LZ4, Zstd (levels, dictionaries), Gzip/Deflate, Brotli: ratio vs compress/decompress throughput vs CPU; splittability for raw text files vs block-level compression inside Parquet/ORC/Avro; codec choice by access pattern (hot interactive vs cold archive).
+- *Lab:* serialize the same 10M-row dataset as CSV, JSONL, Avro, Parquet (Snappy and Zstd) and Arrow IPC; measure size, write time, full-scan time and single-column-scan time; then evolve the schema (add, rename, widen) and record which readers break.
 
 ### 6.2 Parquet and columnar storage
-- Row vs column storage
-- Column chunks and pages
-- Nested-data encoding: repetition and definition levels (the Dremel record-shredding model) for optional/repeated fields — how Parquet stores arrays/structs/maps columnar
-- Compression and encoding
-- Predicate pushdown, projection pruning
-- Statistics and data skipping
-- Row-group vs page-level statistics; optional column **bloom filters** (sidecar) for high-cardinality equality predicates where min/max stats cannot prune
-- File size and small-file trade-offs
+- **Parquet file anatomy** — row groups, column chunks, pages (data, dictionary, v1 vs v2 data pages), Thrift footer metadata, logical vs physical types; timestamp pitfalls (legacy INT96, `isAdjustedToUTC`, unit mismatches) as classic cross-engine bugs; why the footer-at-the-end design suits write-once object storage.
+- **Columnar encodings: dictionary, RLE, delta, byte-stream-split** — dictionary encoding and fallback when the dictionary grows too large, the RLE/bit-packing hybrid, `DELTA_BINARY_PACKED`, delta byte arrays, `BYTE_STREAM_SPLIT` for floats; encoding first, general compression second; lightweight encodings in research and newer formats (FSST for strings, ALP for floats, cascading encodings).
+- **Nested data: repetition and definition levels** — the Dremel record-shredding model: how optional, repeated and nested fields become flat columns plus level streams, and how readers reassemble records; comparison with Arrow's offsets/validity and ORC's length/present streams; cost of deep nesting.
+- **Data skipping: statistics, page indexes, bloom filters** — projection pruning, row-group min/max/null-count statistics, the page index (ColumnIndex/OffsetIndex) for page-level skipping, optional split-block bloom filters for high-cardinality equality predicates; why sorting/clustering decides whether stats prune at all; truncated binary statistics and other skipping failures.
+- **Variant type and shredding** — the Variant logical type for semi-structured data (binary-encoded value + metadata dictionary) shared by Parquet, Spark 4, Iceberg v3 and Delta 4.x; shredding frequently present fields into typed columns so stats and pushdown work, with a residual binary for the rest; Variant vs JSON strings vs fully typed structs.
+- **ORC versus Parquet** — ORC stripes, stream layout, built-in light indexes (row index every 10k rows) and ACID history in Hive; why Parquet became the lakehouse default; when ORC still appears (Hive/Trino estates).
+- **Next-generation columnar file formats** — why Parquet struggles with random access, wide schemas (footer parsing) and modern encodings: Lance (random access for ML/multimodal), Vortex (LF AI & Data, extensible encodings, file format stable since 0.36), Meta's Nimble, and the F3 research prototype (Wasm-embedded decoders); what an engineer should benchmark before betting on one.
+- *Lab:* write one large Parquet dataset four ways (unsorted vs sorted, small vs large row groups, with and without page index and bloom filters); run selective and point queries in DuckDB and PyArrow and measure bytes read and row groups/pages skipped; inspect footers to explain every result.
 
-### 6.3 Transactional table formats: Delta Lake / Iceberg / Hudi
-**Shared concepts (the "mutable table on an immutable object store" problem all three solve):**
-- Metadata/log architecture over immutable data files on object storage
-- ACID-style commits, snapshot isolation, optimistic concurrency control (conflict detection on commit, then retry); single-writer vs safe concurrent multi-writer
-- Time travel (query/rollback to a prior snapshot) and snapshot expiration
-- Schema enforcement and evolution (add/drop/rename/reorder, type widening, nullability)
-- Compaction/clustering and the small-file problem; file/row-group sizing
-- Partition evolution without rewriting history
-- **Copy-on-write (COW) vs merge-on-read (MOR):** COW rewrites whole data files on update (read-fast, write-amplified); MOR writes delete/change files merged at read time (write-fast, read-amplified) — the single most important table-format design trade-off; know which workload picks which, and how background compaction converts MOR toward COW-like read cost
+### 6.3 Transactional table formats: shared foundations
+- **Object storage as a database substrate** — what S3/GCS/ADLS guarantee and what they don't: strong read-after-write consistency (S3 since Dec 2020), no atomic rename, LIST cost and latency, per-prefix request-rate limits, first-byte latency, request pricing; conditional writes (`If-None-Match` Aug 2024, `If-Match` and bucket-policy enforcement later in 2024) as the primitive that now enables catalog-free atomic commits.
+- **Why Hive-style tables broke** — directory-as-partition, file listing as table state, no atomic multi-partition commits, readers seeing partial writes, metastore and listing bottlenecks at millions of files; the "mutable table on an immutable object store" problem every modern format solves.
+- **Snapshot-based table metadata** — a table version as an explicit, immutable list of data files plus schema and statistics; the commit as one atomic pointer move (catalog compare-and-swap, or put-if-absent of the next log entry); readers pinned to a snapshot never see partial writes.
+- **Optimistic commits and conflict resolution** — writers stage files then race to commit; validation of what changed since the base snapshot (appends vs overwrites vs row-level deletes touching the same files); retry and re-validation; serializable vs snapshot vs write-serializable isolation choices in Iceberg and Delta; commit storms from many concurrent writers and compaction–writer conflicts.
+- **Copy-on-write vs merge-on-read** — COW rewrites every touched file (read-fast, write-amplified); MOR writes delete/log files merged at read time (write-fast, read-amplified); choosing per table and per operation by update rate, update spread and read SLA; compaction converting MOR debt back into COW-like read cost.
+- **Deletion vectors across formats** — a per-data-file bitmap of deleted row positions (RoaringBitmap) instead of rewriting the file or writing many positional delete files; Delta DVs, Iceberg v3 DVs stored as Puffin blobs (at most one per data file), Hudi's equivalent; the merge-on-read cost they leave behind and when to purge them.
+- **Schema evolution with column IDs** — why name- or position-based column matching corrupts data on rename/reorder, and how Iceberg field IDs and Delta column mapping (`name`/`id` mode) make add/drop/rename/reorder safe; type widening, default values, and evolving nested structs.
+- **Snapshot lifecycle: time travel to garbage collection** — time travel and rollback by snapshot ID or timestamp; retention windows; expiring snapshots, removing orphan files and `VACUUM`; the conflict between long time travel and GDPR deletes; how a too-aggressive cleanup corrupts concurrent readers and writers.
+- **Small files, compaction and file sizing** — where small files come from (streaming, high-partition-count writes, MOR), why they hurt (metadata size, open/LIST cost, poor compression); bin-pack compaction, target file and row-group sizes, compaction scheduling vs ingestion; managed maintenance (S3 Tables, Databricks predictive optimization) vs self-run jobs (Spark-side output control in §7.2).
+- **Data layout: sorting, Z-order, Hilbert, clustering** — why layout determines data skipping; linear sort orders vs space-filling curves (Z-order, Hilbert) for multi-column predicates; Delta liquid clustering, Iceberg sort orders and Hudi clustering as the format-level mechanisms; incremental vs full re-clustering cost.
+- **Incremental reads and change feeds** — reading only what changed between snapshots: Iceberg incremental scans, changelog views and v3 row lineage (`_row_id`, `_last_updated_sequence_number`); Delta Change Data Feed; Hudi incremental queries; how deletes and compaction complicate "what changed" and why downstream CDC needs row identity.
+- *Lab:* on MinIO or S3, create the same table as Iceberg and Delta; run two concurrent writers (append + MERGE) to provoke and resolve commit conflicts; perform 1% row updates in COW and MOR modes and chart read latency as delete files/DVs accumulate; compact, expire snapshots and verify that time travel past the retention window now fails.
 
-**Apache Iceberg (format-specific internals — "table-format specialist" depth):**
-- The metadata tree: `metadata.json` (schema, partition specs, sort orders, snapshot list) → **manifest list** → **manifest files** → data files; every commit writes a new metadata.json and atomically swaps the catalog pointer
-- **Hidden partitioning** and partition transforms (`identity`, `bucket[N]`, `truncate[W]`, `year/month/day/hour`) — partitioning derived from column values, so queries need no partition-column predicates and the partition layout can evolve
-- **Position deletes vs equality deletes** (the two MOR delete-file encodings) and when each is produced
-- Column-level stats/metrics for data skipping, **Puffin files** (sketch/stats sidecars), **deletion vectors** (v3)
-- Catalog types and the **Iceberg REST catalog** spec; Hive Metastore, AWS Glue, Nessie (git-like branching/tagging), Polaris; catalog migration and multi-engine access
-- Table maintenance: `expire_snapshots`, `rewrite_data_files` (compaction), `rewrite_manifests`, `remove_orphan_files`
+### 6.3.1 Apache Iceberg
+- **Iceberg metadata tree and scan planning** — `metadata.json` (schemas, partition specs, sort orders, snapshot log, refs) → manifest list (per-manifest partition summaries) → manifests (per-file partition tuple, column metrics) → data and delete files; sequence numbers; how planning prunes manifests then files; manifest bloat and `rewrite_manifests`.
+- **Hidden partitioning and partition evolution** — partition transforms (`identity`, `bucket[N]`, `truncate[W]`, `year/month/day/hour`, multi-argument transforms in v3) derived from source columns so queries never name partition columns; changing the spec without rewriting old data, with each manifest planned under the spec it was written with.
+- **Position and equality deletes** — v2 merge-on-read: position deletes (file + row ordinal) vs equality deletes (match on column values, produced by streaming writers such as Flink upserts); the read-side join cost of equality deletes, why v3 replaces position-delete files with deletion vectors, and why v4 drafts forbid new equality deletes.
+- **Iceberg v3 spec features** — deletion vectors, row lineage, `variant`, `geometry`/`geography`, nanosecond timestamps, the `unknown` type, column default values (`initial-default`/`write-default`), multi-argument transforms and table encryption keys; what older readers do with each, and engine support lag as the real adoption constraint.
+- **Iceberg statistics and Puffin files** — per-file column metrics in manifests (and their truncation), table-level statistics and NDV theta sketches in Puffin sidecars feeding cost-based optimizers in Trino and Spark, partition statistics files; keeping stats fresh.
+- **Branches, tags and write-audit-publish** — snapshot references: tags for retention and reproducibility, branches for isolated writes; write-audit-publish (stage on a branch, validate, fast-forward `main`); Iceberg views; multi-table branching belongs to the catalog (§6.3.4).
+- **Iceberg v4 in development** — not yet adopted as of Oct 2026: relative paths in metadata (relocatable tables), prohibition of new equality deletes, and the proposed redesign toward single-file commits with an adaptive metadata tree and richer column statistics (groundwork in Iceberg 1.11–1.12; Delta has proposed converging on the same structure); what it would change for commit latency and streaming writes.
+- *Lab:* build an Iceberg table through a REST catalog, evolve its partition spec from `day(ts)` to `hour(ts)` plus `bucket(16, id)`, inspect the `files`, `manifests` and `snapshots` metadata tables, and prove that queries on old and new data both prune; then run a write-audit-publish flow on a branch.
 
-**Delta Lake (format-specific internals):**
-- The `_delta_log` transaction log: ordered JSON commits + periodic Parquet **checkpoints**; `_last_checkpoint`; protocol reader/writer versions and table features
-- **Deletion vectors** (Delta's MOR), **Change Data Feed** (row-level change capture for downstream CDC), `MERGE`/`UPDATE`/`DELETE` semantics
-- Maintenance: `OPTIMIZE` + **Z-ORDER** multi-dimensional clustering, **liquid clustering** (clustering without rigid partitions), `VACUUM` (tombstone retention vs the time-travel window)
+### 6.3.2 Delta Lake
+- **The Delta transaction log** — `_delta_log` as ordered JSON commits (`add`/`remove`/`metaData`/`protocol` actions), Parquet checkpoints (classic, multi-part, V2 with sidecars), `_last_checkpoint`, log compaction and version checksum files; reconstructing table state; protocol reader/writer versions replaced by named table features.
+- **Delta commit protocol and catalog-managed tables** — put-if-absent commits of the next log version (historically needing a DynamoDB LogStore on S3, now viable with conditional writes); Delta's isolation levels (WriteSerializable default vs Serializable); catalog-managed tables (the successor to "coordinated commits"): preview in 4.0 (Sept 2025), with commits and then all table operations routed through the catalog in 4.2–4.3, laying the ground for multi-table transactions.
+- **Delta DML execution: MERGE, UPDATE, DELETE** — how MERGE finds touched files and rewrites them, or writes deletion vectors instead; low-shuffle merge; why MERGE conflicts with concurrent compaction; row tracking for stable row identity; Change Data Feed as the outbound CDC stream (§6.3).
+- **Delta Lake 4.x and Delta Kernel** — the 4.x line on Spark 4.x (4.4 supports Spark 4.0–4.2): Variant (shredding out of preview in 4.2), type widening, collations, identity and generated columns, geospatial types; Delta Kernel as the library that lets non-Spark engines (Flink, Trino, DuckDB, delta-rs) read and write Delta correctly; delta-rs as the Rust implementation.
+- *Lab:* run a CDC-style MERGE stream into a Delta table with and without deletion vectors; measure write latency, files rewritten and read latency; enable Change Data Feed and rebuild a downstream SCD2 table from it.
 
-**Apache Hudi (format-specific internals):**
-- The **timeline** of instants (commits/compaction/cleaning), **COW vs MOR table types**, file groups/file slices, base + log files
-- Record-level indexes (Bloom, simple, HBase, record-index) enabling fast upserts; the upsert/incremental-pull model Hudi pioneered (cross-ref the Uber case study in Milestone 2)
-- Compaction, clustering, and cleaning services; inline vs async scheduling
+### 6.3.3 Apache Hudi
+- **Hudi timeline and table types** — the timeline of instants (commit, deltacommit, compaction, clustering, clean, rollback) with requested/inflight/completed states; Hudi 1.0's LSM-tree timeline with completion times; COW vs MOR table types; file groups, file slices, base files and log files.
+- **Hudi indexing for record-level upserts** — mapping record keys to file groups: Bloom, simple, bucket (fixed and consistent-hashing), HBase and the record-level index in the metadata table; 1.0 secondary and expression indexes; partitioned record index and partition-level bucket index in 1.1; why indexing is what makes high-rate upserts cheap.
+- **Hudi table services and concurrency control** — compaction, clustering, cleaning and archival, inline vs async vs standalone scheduling; OCC with lock providers vs Hudi 1.0's non-blocking concurrency control (NBCC) for multiple concurrent streaming writers; partial updates and merge modes; Hudi 1.1's pluggable table-format layer.
+- *Lab:* ingest a skewed upsert stream into Hudi MOR and COW tables; compare write throughput and read latency before and after async compaction; switch index types and measure upsert cost.
 
-**Choosing between them:** engine ecosystem support (Spark/Flink/Trino/Snowflake/BigQuery), catalog strategy (Unity Catalog, Nessie, Hive Metastore, AWS Glue, Polaris, Iceberg REST), upsert-heavy vs append-heavy workload, single- vs concurrent-writer needs, managed (Databricks/Tabular) vs open — state the trade-off, don't cargo-cult.
+### 6.3.4 Open catalogs
+- **Catalogs as commit coordinators** — what a table catalog actually does: namespace, current-metadata pointer with compare-and-swap, access control and credential issuance; the legacy options (Hive Metastore, AWS Glue Data Catalog, JDBC catalog) and their limits for multi-engine, multi-cloud estates.
+- **Iceberg REST catalog protocol** — the OpenAPI spec as the interop standard: config negotiation, load/commit with requirement assertions, multi-table transactions, views and register endpoints, credential vending and remote signing (`X-Iceberg-Access-Delegation`), server-side scan planning (featured in Iceberg 1.11), metrics reporting, SQL UDFs; the built-in OAuth2 token endpoint deprecated in favour of external identity providers.
+- **Apache Polaris** — the Iceberg-REST catalog co-created by Snowflake and Dremio, donated to the ASF in Aug 2024 and a top-level project since Feb 2026: realms, principal roles and catalog roles (RBAC), per-catalog storage configuration and down-scoped vended credentials, internal vs external/federated catalogs, generic-table support for non-Iceberg formats; Snowflake Open Catalog as the managed service.
+- **Unity Catalog OSS** — the Apache-2.0 catalog Databricks open-sourced in June 2024 under LF AI & Data: three-level namespace, tables, volumes, functions and models; Delta and Iceberg REST access (via UniForm); the Unity Catalog Delta REST APIs that Delta 4.3+ uses for catalog-managed tables; gaps between the OSS server and Databricks' hosted Unity Catalog.
+- **Catalog landscape and multi-engine access** — Project Nessie (git-like multi-table branches and commits), Lakekeeper (Rust Iceberg REST), Apache Gravitino (federated metadata), cloud-managed catalogs (AWS S3 Tables and Glue Iceberg REST endpoint, Google BigLake metastore's Iceberg REST catalog, Snowflake Open Catalog); catalog migration, federation, and avoiding a catalog as the new lock-in point.
+- *Lab:* stand up Polaris or Lakekeeper with MinIO; create principals and roles so Spark can write and DuckDB/Trino can only read; confirm credential vending scopes access to one table's prefix; then register the same table in a second catalog and observe what breaks when both accept commits.
 
-**Format interoperability and streaming formats (2024+):** **Delta UniForm** (exposes a Delta table through Iceberg/Hudi metadata) and **Apache XTable** (incubating; cross-translates Hudi/Delta/Iceberg metadata) are shifting the question from "which format" toward "read any format"; **Apache Paimon** is a streaming-first, LSM-backed lakehouse table format (Flink-native) for high-update CDC/streaming sinks. The **2024–2025** "catalog wars" (Databricks–Tabular, Snowflake Polaris, Unity Catalog going open source — all June 2024) are consolidating interop on the Iceberg REST catalog.
+### 6.3.5 Streaming and alternative table formats
+- **Apache Paimon: LSM-based streaming lakehouse tables** — primary-key tables as an LSM tree per bucket on object storage, merge engines (deduplicate, partial-update, aggregation), changelog producers, Flink-native streaming reads and writes, Iceberg-compatible metadata generation; when it beats Iceberg/Hudi for high-rate CDC sinks; Apache Fluss (graduated July 2026) as the columnar streaming-storage tier that tiers into lake tables.
+- **DuckLake: SQL database as catalog and metadata** — all table metadata (snapshots, file lists, statistics) stored as rows in a transactional SQL database (Postgres, MySQL, SQLite or DuckDB) instead of files on object storage, with Parquet data files; data inlining for small writes, Iceberg-compatible Puffin deletion files, 1.0 spec in April 2026 (DuckDB 1.5.2); the trade-off: fast multi-table commits vs dependence on an OLTP database's scale and availability.
+- *Lab:* run the same high-frequency small-batch CDC stream into Iceberg, Paimon and DuckLake; compare commit latency, metadata files created per hour and query latency before compaction.
+
+### 6.3.6 Interoperability and choosing a format
+- **Metadata translation: UniForm and XTable** — Delta UniForm generating Iceberg (and Hudi) metadata over the same Parquet files (synchronous at commit since Delta 4.2, IcebergCompatV3 experimental in 4.3), Apache XTable (incubating) translating between Hudi, Delta and Iceberg; what translation cannot carry (deletion vectors, engine-specific features, concurrent writers on both sides).
+- **Choosing a table format and catalog** — decide from evidence: engine read/write support matrix (Spark, Flink, Trino, DuckDB, Snowflake, BigQuery, Redshift), catalog strategy, upsert-heavy vs append-heavy workload, streaming-writer concurrency, managed-service availability; the 2024 consolidation (Databricks bought Tabular, Polaris and Unity Catalog open-sourced, all June 2024) and the market's convergence on Iceberg REST as the interop contract.
 
 ### 6.4 Modern query engines over the lakehouse
-- Trino (the actively-developed successor; PrestoDB has far less momentum in new OSS deployments, though it remains active under the Presto Foundation): federated query execution, connector model, cost-based optimization at scale
-- ClickHouse: MergeTree engine, sparse indexes, materialized views for real-time analytics
-- DuckDB: embedded OLAP, local-first analytics, Arrow interop; **MotherDuck** (serverless/hybrid DuckDB) and the "**big data is dead**" / single-node renaissance — most analytical workloads now fit on one large node, so reach for a distributed engine only when they genuinely don't
-- Apache DataFusion / Ballista: Rust-native query engine internals (ties back to Ch.25)
-- Apache Arrow as the universal in-memory columnar interchange format; Arrow Flight / Flight SQL for zero-copy data transport between systems
-- **Composable data systems (emerging thesis):** reusable engine building blocks — Arrow (memory), **Substrait** (engine-agnostic query-plan IR), **Velox** (unified C++ execution), DataFusion — so engines stop re-implementing the same layers; know Substrait as the "interchange format for query plans"
+- **Trino: federated MPP execution** — coordinator/worker architecture, connector SPI and pushdown, pipelined exchanges, dynamic filtering, cost-based join ordering with table statistics, fault-tolerant execution mode for long batch queries; Presto's C++ worker (Prestissimo on Velox) as the PrestoDB alternative path.
+- **ClickHouse MergeTree internals** — immutable parts and background merges, the sparse primary index over granules (8,192 rows by default), data-skipping indexes and projections, materialized views as insert triggers, ReplacingMergeTree/AggregatingMergeTree semantics, lightweight deletes and updates; why it serves sub-second analytics (serving context in §5.5 and §9.3).
+- **DuckDB and single-node analytics** — in-process vectorized execution, morsel-driven parallelism, out-of-core operators, zero-copy Arrow and pandas/Polars interop, extensions for Iceberg, Delta and DuckLake; the 1.4 LTS / 1.5 lines and the previewed 2.0 client-server mode; MotherDuck's hybrid execution; the "most analytical data fits on one large node" argument and where it stops holding.
+- **Apache DataFusion as an embeddable engine** — an extensible Rust query engine (SQL and DataFrame front ends, logical and physical optimizer rules, custom table providers and UDFs) used to build products such as InfluxDB 3 and Spark accelerators; Ballista for distribution; the data-engineering view of when to build on an engine instead of buying one (Rust-side depth → *Rust Systems Engineering* Ch.24).
+- **Arrow Flight, Flight SQL and ADBC** — moving Arrow record batches between systems without row-by-row serialization: Flight (gRPC streams of Arrow), Flight SQL (a SQL protocol on top), ADBC (Arrow-native client API replacing JDBC/ODBC row conversion); measured gains vs ODBC and where they disappear.
+- **Composable engines: Substrait, Velox, Gluten, Comet** — reusable layers instead of monolithic engines: Arrow for memory, Substrait as an engine-agnostic plan IR, Velox as a C++ execution library (Presto C++, Gluten), Apache Gluten (top-level project since Mar 2026) and DataFusion Comet (1.0 in Aug 2026) as native Spark accelerators; correctness gaps and fallback-to-JVM costs.
+- *Lab:* query one Iceberg table from DuckDB, Trino and Spark (with and without Comet or Gluten); compare plans, bytes read and wall time for a selective filter, a large join and a high-cardinality aggregation; explain each gap.
 
 ### 6.5 Cloud data warehouse internals (the engines you will actually be paid to tune)
-- **Snowflake:** separation of storage/compute, virtual warehouses, micro-partitions and pruning, clustering keys, result/metadata caching, time travel + fail-safe, data sharing, credit/cost model
-- **BigQuery:** Dremel/column execution, slots and reservations, storage billing vs on-demand, partitioning + clustering, BI Engine, materialized views, streaming inserts vs load jobs
-- **Redshift:** leader/compute nodes, distribution styles (KEY/EVEN/ALL), sort keys (compound vs interleaved), vacuum/analyze, Redshift Spectrum over S3, RA3 managed storage, workload management (WLM/queues)
-- **Cross-cutting:** cost-based query tuning, spilling, concurrency scaling, workload isolation, when a warehouse beats a lakehouse engine and vice versa
-- *Lab*: load the same dataset into two of {Snowflake, BigQuery, Redshift, DuckDB}; tune partitioning/clustering/distribution; compare query latency, bytes scanned, and cost for identical analytical queries
+- **Snowflake storage, micro-partitions and pruning** — immutable micro-partitions (50–500 MB uncompressed) with per-column metadata, pruning, clustering depth and automatic clustering, search optimization; time travel, fail-safe and zero-copy cloning as consequences of immutable storage; secure data sharing without copies.
+- **Snowflake compute, caching and cost** — virtual warehouses and multi-cluster scaling, Gen2 standard warehouses and adaptive compute, the result cache vs warehouse local-disk cache vs metadata cache, query acceleration service, credit consumption and the idle/auto-suspend economics.
+- **BigQuery Dremel execution and storage** — Capacitor columnar storage on Colossus, separated compute (Borg) joined by the Jupiter network and an in-memory shuffle tier; partitioning plus clustering, materialized views, BI Engine; loading via batch load jobs vs the Storage Write API (exactly-once with stream offsets) instead of legacy `insertAll` streaming.
+- **BigQuery slots, editions and billing** — on-demand per-TiB vs editions (Standard/Enterprise/Enterprise Plus) with autoscaling reservations billed on scaled slots, baselines and commitments; logical vs physical storage billing; reading a job's slot-time and bytes-shuffled to find cost.
+- **Redshift distribution, sort keys and RMS** — leader/compute nodes and slices, distribution styles (KEY/EVEN/ALL/AUTO) and redistribution in joins, compound vs interleaved sort keys and zone maps, RA3 managed storage, Serverless RPUs, auto WLM and concurrency scaling, Spectrum over S3; automatic table optimization vs manual tuning.
+- **Warehouses on open table formats** — Snowflake-managed vs externally cataloged Iceberg tables, BigLake tables for Apache Iceberg in BigQuery, Redshift reading Iceberg (2023) and writing append-only Iceberg (Nov 2025), Databricks and Microsoft Fabric storing Delta and exposing Iceberg metadata; what you lose (features, performance, governance) when the warehouse no longer owns the storage.
+- **Warehouse versus lakehouse engine choice** — workload isolation, concurrency and spilling behaviour, cost-based tuning, data-gravity and egress, governance and lock-in; when a managed warehouse beats a lakehouse engine on total cost and when it does not.
+- *Lab:* load the same dataset into two of {Snowflake, BigQuery, Redshift} plus DuckDB over Iceberg; tune partitioning, clustering and distribution; compare latency, bytes scanned and dollar cost for identical queries, then repeat with the warehouse reading the external Iceberg table.
 
 ## Systems in Production — Milestone 2: storage at planetary scale
-Every system below was built because an off-the-shelf store hit a wall at a specific scale or workload. The pattern repeats: **identify the exact limitation → state the trade-off accepted → build the minimum system that resolves it.** Read the primary papers, not retellings.
+Each system exists because an off-the-shelf store hit a wall at a specific scale or workload: identify the exact limitation, state the trade-off accepted, build the minimum that resolves it. Read the primary papers, not retellings.
+- **Bigtable (2006, Chang et al., OSDI) — the sparse sorted map that seeded every LSM engine.** Forcing problem: one store for web indexing, Earth imagery and Finance time series at petabyte scale on commodity servers. Mechanism: a sparse, distributed `(row, column, timestamp) → value` map split into tablets, client-controlled locality through row-key design, on GFS with immutable SSTables plus a commit log and memtable (the LSM shape of §5.1). Trade-offs: single-row atomicity only, no relational model. Proves: the SSTable/tablet vocabulary that HBase, LevelDB, RocksDB and Cassandra inherited.
+- **RocksDB (2021, Dong et al., FAST) — an LSM engine tuned by a decade of production.** Forcing problem: one embedded key-value engine serving workloads from social-graph storage to stream-processor state on flash. Mechanism: leveled/universal compaction, Bloom and ribbon filters, column families, rate-limited background I/O; the paper documents priorities shifting from write amplification to space amplification and CPU as SSDs changed the bottleneck. Proves: the RUM trade-off (§5.1) is re-decided whenever the hardware changes.
+- **Dynamo (2007, DeCandia et al., SOSP) — availability first for the shopping cart.** Forcing problem: primary-key access with "always writeable" behaviour, because any outage cost money. Mechanism: consistent hashing with virtual nodes, N/R/W quorums with sloppy quorum and hinted handoff, vector clocks for version conflicts, gossip membership, Merkle-tree anti-entropy. Trade-off: the application reconciles divergent versions, a new client-facing contract. Proves: eventual consistency as a legitimate production choice; ancestor of Cassandra, Riak and Voldemort (quorum theory revisited in the M6 case study).
+- **DynamoDB (2022, Elhemali et al., USENIX ATC) — what changed when Dynamo became a service.** Forcing problem: a multi-tenant managed database needs predictable latency at any scale, not just availability. Mechanism: unlike Dynamo, each partition is a Multi-Paxos replication group with a leader; admission control, global/adaptive capacity and split-for-heat replace manual partition tuning (§5.5). Trade-off: leader-based writes and strongly consistent reads as an option, in exchange for fleet-level operational machinery. Proves: the product named after Dynamo deliberately abandoned its leaderless design.
+- **S3 consistency evolution (2006–2024, AWS) — from eventual to strong, then conditional.** Forcing problem: eleven-nines object storage without a single point of failure. History: originally eventually consistent for overwrites, deletes and listings (and new objects in the legacy US-Standard region), which broke write-then-read pipelines; strong read-after-write consistency by default since Dec 2020; conditional writes in 2024. Proves: a hyperscaler can remove a consistency trade-off once it can afford to, and table formats (§6.3) can then drop external lock services. Lesson: re-verify inherited storage assumptions.
+- **Aurora (2017, Verbitski et al., SIGMOD) — the log is the database.** Forcing problem: mirrored MySQL over network storage spent its I/O shipping full pages and duplicate writes. Mechanism: compute nodes ship only redo records to a multi-tenant storage tier that materialises pages on demand; six copies across three AZs with a 4/6 write and 3/6 read quorum. Trade-off: a far more complex storage service in exchange for much less network I/O and fast crash recovery (AWS markets up to 5× MySQL throughput, a vendor figure). Proves: compute–storage disaggregation for OLTP (§5.3), later echoed by Neon and Aurora DSQL.
+- **TAO (2013, Bronson et al., USENIX ATC) — the social-graph cache.** Forcing problem: Facebook's read-dominated graph of objects and associations outran memcache-plus-MySQL. Mechanism: a graph-aware, write-through cache tier (followers and leaders per region) over sharded MySQL, with per-region asynchronous replication. Trade-off: eventual consistency across regions accepted for counts and lists where staleness is harmless. Proves: the cache-design question (§5.5) is "which fields may be how stale for whom."
+- **Memcache at Facebook (2013, Nishtala et al., NSDI) — leases, stampedes and invalidation at scale.** Forcing problem: billions of requests per second against a demand-filled look-aside cache. Mechanism: leases to stop stale sets and thundering herds, invalidations driven from the MySQL commit log (mcsqueal), gutter pools for failed servers, regional pools. Proves: the stampede and invalidation mechanisms in §5.5 were forced by production, not theory.
+- **Dremel (2010, Melnik et al., VLDB; retrospective 2020) — nested columnar storage and interactive SQL at scale.** Forcing problem: interactive ad-hoc queries over trillions of nested records. Mechanism: repetition/definition-level shredding of nested records into columns (the model Parquet adopted, §6.2), tree-structured serving; the 2020 retrospective adds disaggregated storage and an in-memory shuffle tier. Proves: the columnar-nested format and the serverless-warehouse architecture behind BigQuery (§6.5).
+- **Snowflake (2016, Dageville et al., SIGMOD) — the elastic warehouse on object storage.** Forcing problem: shared-nothing warehouses coupled storage and compute, so scaling either meant re-distributing data. Mechanism: immutable micro-partitions on S3, stateless virtual warehouses with local caches, a transactional metadata service (FoundationDB) for pruning, cloning and time travel. Trade-off: object-store latency hidden behind caching and metadata pruning. Proves: separation of storage and compute as the default warehouse architecture (§6.5).
+- **Hudi (2016–2017, Uber; originally "Hoodie") — incremental processing on a Hadoop lake.** Forcing problem: corrected trip records forced either daily full rewrites of multi-terabyte tables or unbounded small files. Mechanism: record-level upserts with indexes, MOR log files plus compaction, and incremental pulls by commit time. Trade-off: write-path complexity (indexing, compaction services) for a lake that behaves like a mutable table. Proves: the upsert and incremental-pull model the whole table-format category grew from (§6.3.3).
+- **Iceberg (2017–2018, Ryan Blue and Daniel Weeks, Netflix) — fixing Hive tables at the format level.** Forcing problem: Netflix's S3 lake hit Hive's listing costs, non-atomic multi-partition changes and unsafe concurrent writers. Mechanism: tracking files rather than directories in a snapshot metadata tree, atomic metadata-pointer swaps, hidden partitioning, field-ID schema evolution (§6.3.1). Proves: the format, not the engine, should own table semantics, which is why one table can now be shared by many engines.
+- **Delta Lake (2020, Armbrust et al., VLDB) — ACID tables from a log on object storage.** Forcing problem: Databricks customers' cloud tables suffered from partial writes, slow listing and no isolation between jobs. Mechanism: an ordered JSON transaction log with Parquet checkpoints, committed by atomic put-if-absent where the store offered it (and a coordination service on S3, which then lacked it), file-level statistics for skipping, optimistic concurrency (§6.3.2); the follow-on Lakehouse paper (CIDR 2021) argued warehouses could be rebuilt on such tables. Lesson across Hudi, Iceberg and Delta: three organisations hit the same "mutable table on an immutable object store" wall within a few years and converged on similar answers, which shows the problem was structural.
 
-### Amazon — availability-first key-value and the "log is the database" insight
-- **Dynamo (2007, DeCandia et al., SOSP) — the key-value store behind the shopping cart.** Forcing problem: Amazon's shopping-cart and session services needed primary-key-only access with "always-on" availability — any RDBMS replication at the time forced a consistency-over-availability choice during partitions, and even "the slightest outage has significant financial consequences." Core decision: give up strict consistency (the "C" in ACID) for availability, using **consistent hashing** for partitioning, **vector clocks + object versioning** for conflict detection, **quorum-based (R/W) replication**, **gossip-based failure detection**, and **anti-entropy via Merkle trees** for background replica repair. Trade-off accepted: the client (not the store) resolves write conflicts — a genuinely new application-facing API contract. Scale at launch: internal-only, hundreds of nodes per service instance, serving "tens of millions" of checkout requests and "well over 3 million checkouts in a single day" during peak. Influence: directly fathered **DynamoDB**, popularized **eventual consistency** as a legitimate production trade-off, and seeded the entire Dynamo-style NoSQL family (Cassandra, Voldemort, Riak).
-- **S3 — the eventually-consistent-to-strongly-consistent journey.** Forcing problem: object storage at planet scale needs 11-nines durability without a single point of failure. Original design: eventually consistent for **overwrites, deletes, and listing** (and, in the legacy US-Standard region only, even for brand-new objects — elsewhere new objects were read-after-write from the start) — a well-known early gotcha for data engineers building pipelines that wrote then immediately re-read. Later evolution (2020): **strong read-after-write consistency** became the default — a rare, publicly documented case of a hyperscale system *removing* an eventual-consistency trade-off once engineering could afford it. Lesson for data engineers: your pipeline's "eventually consistent" assumption from five years ago may silently be stale; verify, don't assume.
-- **Aurora — the log is the database.** Forcing problem: traditional MySQL/PostgreSQL replication ships whole data pages across the network for every write, dominating I/O at cloud scale. Core decision: ship **only the redo log** to a separate, decoupled storage layer that replicates and reconstructs pages on demand — "the log is the database." Trade-off: a much more complex storage layer in exchange for up to ~5x the write throughput of stock MySQL on equivalent hardware. Lesson: separating compute from storage, and shrinking what crosses the network, is the recurring theme across every system in this syllabus.
+# Milestone 3 — Compute: Batch & Distributed Processing
+Turning stored data into derived data at scale: how work is partitioned, shuffled, executed on CPUs and recovered from failure, taught through Spark 4.x and its native-execution successors but rooted in MapReduce.
 
-### Google — the sparse map that seeded every LSM engine
-- **Bigtable (2006, Chang et al., OSDI) — the sparse map behind 60+ Google products.** Forcing problem: Google needed one storage system spanning wildly different workloads (web indexing, Google Earth imagery, Google Finance time series) at "petabytes of data across thousands of commodity servers," which no existing parallel/main-memory database handled. Core decision: a sparse, distributed, persistent **multi-dimensional sorted map**: `(row:string, column:string, time:int64) → string`. Row ranges split into **tablets** (the unit of load-balancing); clients control locality by designing row keys (e.g., reversed-hostname URLs so same-domain pages sort adjacently). Built on **GFS** for storage and the **SSTable** format for immutable, sorted on-disk files — this SSTable concept is the direct ancestor of every LSM-tree engine covered in Ch.5/Ch.25-D (RocksDB, Cassandra, HBase, LevelDB all borrow it by name). Trade-off: no general cross-row transactions, no full relational model — single-row atomicity only. Influence: HBase is a near-literal open-source reimplementation; the SSTable/tablet vocabulary is now industry-standard.
+## Chapter 7 — Apache Spark and Distributed Batch Execution
+How a distributed dataflow engine plans, shuffles, executes and survives failure, and how to diagnose and tune it from evidence rather than folklore.
 
-### Meta — the social-graph cache
-- **TAO — the social graph cache.** Forcing problem: Facebook's social graph (friends, likes, comments) is read orders of magnitude more than it's written, and MySQL alone couldn't serve the read fan-out. Core decision: a graph-aware caching layer (objects + associations) sitting in front of sharded MySQL, with **eventual consistency across regions** accepted explicitly because "slightly stale friend count" is an acceptable user-facing trade-off that "lost your post" is not. Lesson: TAO is the canonical case study for Ch.5.5 (caching) — the trade-off decision (what can be stale, by how much, for which fields) is the whole design.
-
-### Uber & Netflix — "mutable table on an immutable object store"
-- **Hudi (2016+, originally "Hoodie") — incremental processing on a data lake.** Forcing problem: Uber's Hadoop-based lake only supported full-table rewrites or append-only ingestion; upsert-heavy operational data (trip records that get corrected after the fact) forced either unacceptable latency (daily full rewrites of multi-TB tables) or unbounded small-file growth. Core decision: bring **upsert, incremental pull, and record-level versioning** to the data lake — the direct ancestor of the Ch.6 table-format trio (Hudi/Delta/Iceberg) and the reason "lakehouse" is now a category at all. Trade-off: added write-path complexity (compaction, indexing within files) in exchange for making the lake behave like a mutable table.
-- **Netflix's data platform and Iceberg co-authorship.** Forcing problem: Netflix's S3-based lake hit the exact Hive-metastore scaling and consistency problems (partition-listing cost, no atomic multi-partition commits, no safe concurrent writers) that motivated Hudi at Uber and Delta at Databricks — Netflix's answer became a founding contribution to **Apache Iceberg**. Lesson: three different companies (Uber, Databricks, Netflix) hit the *same* "mutable table on an immutable object store" wall (Ch.6.3) within a few years of each other and produced three converging-but-distinct answers — a strong signal that the underlying problem was genuine and inevitable, not idiosyncratic.
-
----
-
-# MILESTONE 3 — Compute: Batch & Distributed Processing
-Turning stored data into derived data at scale. The distributed execution model — how work is partitioned, shuffled, and recovered from failure — is the heart of this milestone, taught through Spark but rooted in MapReduce.
-
-## Chapter 7 — Apache Spark / PySpark — Internals and Optimization
 ### 7.1 Spark execution model
-- Driver, executors, jobs, stages, tasks
-- DAG construction, stage boundaries
-- Narrow vs wide transformations
-- Shuffle files, network transfer
-- Task scheduling, parallelism
-- Logical vs physical DataFrame plans
-- Catalyst optimizer, Tungsten / whole-stage code generation
-- Python UDF cost: the row-at-a-time Python↔JVM serialization boundary and Catalyst-opacity (cross-ref Ch.2.1); Pandas/Arrow-vectorized UDFs and `mapInArrow` as the fix; prefer built-in/SQL expressions over Python UDFs
-- Spark Connect (3.4+): the decoupled client-server architecture — a thin client builds the unresolved logical plan and ships it to a remote driver that executes it; enables non-JVM/remote clients, client-version decoupling, and embedding Spark in applications
-- Spark 4.0 (2025) as the current major line: ANSI mode on by default, Spark Connect maturity, Python/pandas-API and streaming-state improvements — track version-specific behavior changes against 3.x
+- **Driver, executors and the task hierarchy** *(refresher)* — application → job (one per action) → stage → task (one per partition); the driver as the single planner and single point of failure; executors as slot pools (cores × executors); cluster managers in Spark 4.x (YARN, Kubernetes, standalone; Mesos removed in 4.0).
+- **DAG scheduling and stage boundaries** — narrow vs wide dependencies; the DAGScheduler cuts the lineage graph at every shuffle dependency, pipelines narrow operators inside a stage, and orders shuffle-map stages before the result stage; why a stage boundary is a materialisation point, not a lineage break.
+- **Sort-based shuffle mechanics** — map side partitions, sorts and spills records into one data file plus an index file per map task; the MapOutputTracker tells reducers where blocks live; reducers fetch over the network with bounded in-flight requests; why shuffle (disk + network + serialisation + O(M×R) small blocks) is the dominant cost of most jobs.
+- **Task scheduling, locality and parallelism** — locality levels (PROCESS/NODE/RACK/ANY) and delay scheduling; `spark.default.parallelism` vs `spark.sql.shuffle.partitions`; dynamic allocation and the shuffle-tracking requirement; FIFO vs FAIR pools for concurrent jobs in one application.
+- **Catalyst: from unresolved to physical plan** — parse → analysis (resolution against the catalog) → rule-based logical optimisation (predicate/projection pushdown, constant folding, subquery rewrites) → physical planning with join/aggregate strategy selection → cost-based reordering only when statistics exist; reading `EXPLAIN FORMATTED` and `Exchange` nodes (builds on §2.3).
+- **Tungsten and whole-stage code generation** — UnsafeRow binary layout outside Java object overhead; fusing a pipeline of operators into one generated Java method compiled by Janino (no virtual `next()` per row, values in registers); the vectorised Parquet/ORC reader as the columnar exception; when codegen silently falls back (huge methods, too many fields) and how to see it.
+- **PySpark execution path and Python UDF cost** — row-at-a-time pickled Python UDFs cross the JVM↔Python worker boundary and are opaque to Catalyst (cross-ref §2.1); Arrow-based fixes: pandas UDFs, `mapInArrow`, Arrow-optimised Python UDFs (default-on since Spark 4.2) and `@arrow_udf` (4.1); rule of thumb: built-in SQL expressions first, Arrow UDFs second, pickled UDFs never on hot paths.
+- **Spark Connect client-server architecture** — the client builds an unresolved logical plan, serialises it as protobuf over gRPC to a long-lived server-side driver, and receives Arrow batches back; what it buys (client/server version decoupling, thin `pyspark-client`, IDE/app embedding, Go/Rust/Swift clients, multi-tenant gateways) and what it removes (RDD API, `SparkContext`, `df._jdf`, Py4J); Spark ML on Connect GA in 4.1.
+- *Lab:* run one aggregation-plus-join query, predict the number of stages and shuffles from the code, then confirm with `EXPLAIN FORMATTED` and the Spark UI; rewrite a pickled Python UDF as a built-in expression and as an Arrow UDF and measure the three run times.
 
 ### 7.2 Partitioning, joins and skew
-- Partition count/size trade-offs
-- Repartition vs coalesce
-- Hash partitioning, partition pruning
-- Bucketing: pre-shuffling tables on a join/aggregation key at write time so later sort-merge joins and aggregations skip the shuffle (and the bucket-count-must-match / stale-bucketing pitfalls)
-- Broadcast joins
-- Sort-merge joins, shuffle hash joins
-- Data skew detection and salting
-- Adaptive Query Execution (AQE)
-- Dynamic partition pruning (DPP): prune fact-table partitions at runtime from the dimension-side filter in a star-schema join
-- Small-file problem, output compaction
+- **Partition sizing, repartition and coalesce** — input splits (`spark.sql.files.maxPartitionBytes`, open-cost padding), shuffle partition counts, per-task overhead vs spill risk (target ~100–200 MB per task); `repartition` (full shuffle, even sizes) vs `coalesce` (narrow merge, no shuffle) and the trap where `coalesce(1)` collapses the parallelism of the whole upstream stage.
+- **Hash and range partitioning, partition pruning** — hash partitioner vs sampled range partitioner (global sorts); exchange elimination when an existing output partitioning already satisfies the required distribution; static partition pruning on Hive-style directory layouts and DSv2 partition-stats filtering.
+- **Bucketing and storage-partitioned joins** — pre-shuffling tables on the join/aggregation key at write time so later joins skip the exchange; bucket-count-must-match and stale-bucketing pitfalls; storage-partitioned join (SPJ) over DSv2 sources such as Iceberg, which reuses the table's own partitioning instead of Hive bucketing.
+- **Broadcast hash join** — the driver collects the small side and ships it to every executor as a torrent broadcast; `autoBroadcastJoinThreshold`, hints and the 8 GB table limit; why a broadcast becomes dangerous (stale statistics, driver OOM, filters that don't shrink the side); broadcast nested-loop join as the non-equi fallback.
+- **Shuffle joins: sort-merge vs shuffled hash** — sort-merge join as the default for large-large equi-joins (sort both sides, stream merge, spill-friendly) vs shuffled hash join (build a per-partition hash table, no sort, OOM-prone if the build side is skewed); how the planner chooses and when to override with hints.
+- **Adaptive Query Execution (AQE)** — re-optimising at query-stage boundaries using real shuffle statistics: coalescing small post-shuffle partitions, demoting sort-merge to broadcast or shuffled hash join, splitting skewed partitions; default-on since 3.2; why AQE cannot fix what happens before the first exchange.
+- **Data skew: diagnosis and remedies** — evidence (max vs median task duration and shuffle-read bytes, one straggler per stage); remedies in order: AQE skew-join splitting, broadcasting, isolating hot keys, salting with replicated small side, two-phase (partial then final) aggregation; where AQE's skew handling does not apply (aggregations, preserved side of outer joins, window functions).
+- **Dynamic partition pruning (DPP)** — using the dimension-side filter result at runtime as a subquery/broadcast filter to prune fact-table partitions in a star join; preconditions (partitioned fact table, selective dimension filter) and how to see it in the plan.
+- **Controlling Spark output file layout** — output file count = writing tasks × partitions touched; `maxRecordsPerFile`, `REBALANCE` hints with AQE, and table-format write-distribution modes as the Spark-side answer to the small-file problem (general treatment in §6.1/§6.3).
+- *Lab:* generate a Zipf-skewed fact table; reproduce a 20× straggler, then fix it three ways (AQE skew join, salting, broadcast) and compare wall time, shuffle bytes and spill; toggle DPP on a star query and measure files read.
 
 ### 7.3 Spark memory and failure behavior
-- Executor memory, memory overhead
-- Spilling, shuffle memory
-- Persistence levels (cache/checkpoint)
-- Garbage collection symptoms
-- Executor loss, task retry, speculative execution
-- Checkpointing vs caching
+- **Executor memory model** — unified memory manager: execution vs storage regions with borrowing and eviction (`spark.memory.fraction`, `storageFraction`), user memory, reserved memory, off-heap, and `memoryOverhead` for netty buffers, Python workers and native libraries; JVM `OutOfMemoryError` vs container OOM-kill (YARN/Kubernetes) and why they need different fixes.
+- **Spill and shuffle memory pressure** — when sorts and hash aggregations exceed execution memory they spill sorted runs to disk and merge (external merge sort, §1.2; → *Data Structures & Algorithms* Ch.6); reading spill (memory) vs spill (disk) metrics; why adding executor memory often fails to fix a skewed or over-wide task.
+- **Caching, persistence and checkpointing** — storage levels (memory/disk, serialised, replicated), LRU eviction and recomputation; `cache` keeps lineage while `checkpoint` (reliable) and `localCheckpoint` truncate it; when caching hurts (memory stolen from execution, cache of a non-deterministic plan).
+- **JVM garbage-collection symptoms** — GC time in the executor tab, long G1 pauses causing heartbeat timeouts and lost executors; object-heavy RDD/UDF code vs Tungsten binary rows; Spark 4.x on Java 17/21 and the GC choices that matter.
+- **Task retry, fetch failure and speculation** — task retry up to `spark.task.maxFailures`; fetch failures that resubmit the parent shuffle-map stage; executor loss taking shuffle files with it (external shuffle service, graceful decommissioning with block migration on Kubernetes); speculative execution and its hazard with non-idempotent sinks.
+- **Indeterminate stages and retry correctness** — why re-running a stage whose output depends on input order (round-robin `repartition`, non-deterministic UDFs) can silently duplicate or lose rows downstream; Spark's fix (sort-before-repartition, rerunning all indeterminate successor stages) and how to write retry-safe jobs.
+- **Push-based and remote shuffle services** — the O(M×R) small-random-read problem at scale; push-based shuffle (Magnet: mappers push blocks to merger nodes, reducers read merged files; YARN-only in OSS Spark); disaggregated remote shuffle services (Apache Celeborn, Apache Uniffle) for Kubernetes and dynamic allocation; the durability and cost trade-offs.
+- **Diagnosing jobs from the Spark UI** — reading the SQL tab plan with per-operator metrics, stage task-metric distributions (duration, GC, spill, shuffle-read blocked time), executor tab and event logs in the History Server; turning symptoms into a hypothesis (skew vs spill vs GC vs small files vs driver bottleneck).
+- *Lab:* run a wide aggregation with too few partitions and too little memory; observe spill and GC, kill an executor mid-shuffle and watch stage resubmission; then repeat with an external or remote shuffle service and compare recovery time.
 
 ### 7.4 Structured Streaming
-- Micro-batch execution
-- Event time vs processing time, watermarks
-- Stateful aggregations, output modes
-- Checkpointing, exactly-once boundaries
-- Late data and state cleanup
-- State store backends: the **RocksDB state store** as the modern default for large stateful streaming (off-heap, spills to disk, incremental checkpointing) vs the legacy in-memory HDFS-backed store that OOMs on large aggregation/join state
+- **Micro-batch incremental execution** — the engine plans one incremental batch per trigger against new source offsets; offset log (write-ahead) and commit log in the checkpoint; trigger types (`processingTime`, `availableNow`; `once` deprecated); why micro-batch latency floors sit around hundreds of milliseconds.
+- **Real-time mode in Structured Streaming** — Spark 4.1+: long-running tasks per input partition pull records continuously instead of per-trigger batches, targeting single-digit-millisecond p99; initial scope (stateless single-stage queries, Update mode, Kafka source, Kafka/foreach sinks; PySpark trigger in 4.2) and its trade-offs vs micro-batch and the older experimental continuous-processing mode.
+- **Event time, watermarks and late data** — `withWatermark` as max-observed-event-time minus delay; global watermark across multiple inputs (min by default, configurable max); records behind the watermark dropped; how the watermark bounds state and when each output mode emits (cross-ref §9.2 for the general theory).
+- **Stateful operators and output modes** — streaming aggregation, stream-stream joins (watermark plus time-range condition required to evict state), `dropDuplicatesWithinWatermark`, chained stateful operators; append vs update vs complete semantics and which sinks accept which.
+- **Arbitrary state with transformWithState** — Spark 4.0's state API v2: multiple typed state variables (Value/List/Map), processing- and event-time timers, state TTL and schema evolution, replacing `(flat)MapGroupsWithState`; requires the RocksDB state store; inspecting state with the State Data Source reader.
+- **Checkpoints and exactly-once boundaries** — offsets + state + commit log make the engine exactly-once only together with replayable sources and idempotent or transactional sinks; `foreachBatch` with `batchId` for idempotent writes; which query changes break checkpoint compatibility and the 4.2 named sources/sinks that relax it.
+- **RocksDB state store and state checkpointing** — HDFS-backed in-heap provider (still the OSS default) vs RocksDB provider (native memory + local disk; recommended for millions of keys); changelog checkpointing, checkpoint structure v2, bounded memory, state rebalancing; the GC/OOM failure that forces the switch.
+- *Lab:* build a Kafka → Spark windowed aggregation with a stream-stream join; inject late and out-of-order events, kill the driver mid-batch and restart from the checkpoint; prove no loss/duplication in an idempotent Delta/Iceberg sink; compare HDFS-backed vs RocksDB state at 10M keys.
+
+### 7.5 Spark 4.x platform changes
+- **ANSI mode and the 3.x → 4.x migration** — ANSI SQL on by default in 4.0: overflow, invalid casts and division by zero now raise errors instead of returning NULL; `try_*` functions and store-assignment rules; Java 17/Scala 2.13 baseline, removed Mesos; a migration method (run suites in both modes, diff outputs, audit implicit casts).
+- **VARIANT type for semi-structured data** — binary encoding (field-name dictionary + self-describing value) vs JSON strings vs inferred structs; `parse_json`, `variant_get`, path extraction; shredding frequently accessed fields into typed Parquet columns (GA in 4.1: faster reads, slower writes); interop with Parquet/Iceberg v3/Delta variant (cross-ref §6.2/§6.3).
+- **Python Data Source API and UDTFs** — writing batch and streaming connectors in pure Python (reader/writer, partitions, filter pushdown) and polymorphic table functions (`analyze` for schema, Arrow UDTFs) without JVM code; when this beats a JVM DSv2 connector and when it does not.
+- **Spark Declarative Pipelines** — Spark 4.1's open-sourced declarative framework: define streaming tables, materialised views and flows in Python/SQL, the runner resolves the dependency graph, validates schemas before execution, and manages checkpoints and retries via `spark-pipelines`; Auto CDC (SCD type 1) in 4.2; vs imperative jobs plus an orchestrator (cross-ref Ch.10.3 Lakeflow, Ch.11).
+- *Lab:* port a 3.5 job to 4.x with ANSI on; catalogue every behaviour change it surfaces; rebuild a JSON-string pipeline on VARIANT with and without shredding and compare scan bytes and latency.
+
+### 7.6 Native vectorized execution for Spark
+- **Native engine offload: plan conversion and fallback** — how accelerators hook Spark's physical planning (session extensions, columnar rules), translate supported subtrees into a native plan (Substrait for Gluten, protobuf for Comet), exchange Arrow batches across JNI, and insert row↔columnar transitions where operators fall back; why partial offload can be slower than none; semantic-compatibility traps (ANSI, floats, regex, timestamps); native shuffle and unified memory accounting with Spark.
+- **Photon, Gluten+Velox, Comet and GPUs compared** — Databricks Photon (proprietary C++ vectorised interpreter inside the DBR planner), Apache Gluten (Velox or ClickHouse backends), Apache DataFusion Comet (Rust/DataFusion), and the NVIDIA RAPIDS Accelerator (GPU); vectorised interpretation vs JVM codegen, coverage vs speed-up, licensing and vendor lock-in (vectorisation fundamentals in §2.4, composable engines in §6.4).
+- *Lab:* run a TPC-H/TPC-DS subset on vanilla Spark vs Gluten or Comet; list every fallback node, remove the worst offender (a UDF or unsupported expression), and measure speed-up per query and overall.
+
+### 7.7 Execution models beyond Spark
+- **Pipelined MPP vs staged batch execution** — Trino-style pipelined, in-memory exchange (low latency, a failed task fails the query) vs Spark-style materialised shuffle (recoverable, higher latency); Trino fault-tolerant execution with spooled exchanges as the convergence point; how to pick per workload (Trino internals in §6.4).
+- **Ray Data streaming execution** — operator-level streaming with backpressure across heterogeneous CPU and GPU actor pools, versus Spark's stage-at-a-time model; why multimodal and batch-inference pipelines (decode → embed → write) moved to it; object-store spilling and failure semantics.
+- *Lab:* run the same image-embedding batch job on Spark (pandas UDF) and Ray Data with a GPU stage; measure GPU utilisation, throughput and memory.
 
 ## Systems in Production — Milestone 3: batch at thousands of machines
 ### Google — MapReduce, the model everything descends from
-- **MapReduce (2004, Dean & Ghemawat, OSDI) — batch processing at thousands of machines.** Forcing problem: Google was writing hundreds of bespoke distributed programs (inverted index, PageRank-style link graphs, log analysis) and re-solving parallelization, fault tolerance, and data distribution every time. Core decision: a tiny functional interface — `map(k1,v1)→list(k2,v2)` and `reduce(k2,list(v2))→list(v2)` — with the runtime handling partitioning, scheduling, straggler/failure re-execution, and inter-machine shuffle. Scale at publication: "many terabytes of data on thousands of machines," over 1,000 MapReduce jobs/day company-wide. Trade-off: programmers give up control over execution order and machine placement entirely. Influence: directly inspired **Hadoop** (open-source reimplementation at Yahoo), and indirectly every batch engine since (Spark is explicitly "MapReduce, but keep intermediate data in memory instead of re-reading from disk between stages").
+- **MapReduce (2004, Dean & Ghemawat, OSDI) — batch processing at thousands of machines.** Forcing problem: Google was writing hundreds of bespoke distributed programs (inverted index, link graphs, log analysis) and re-solving parallelisation, fault tolerance and data distribution every time. Mechanism: a tiny functional interface — `map(k1,v1)→list(k2,v2)`, `reduce(k2,list(v2))→list(v2)` — with the runtime owning partitioning, scheduling, the inter-machine shuffle, re-execution of failed work and backup tasks for stragglers. Scale at publication: thousands of machines, upwards of a thousand jobs per day. Trade-off: programmers give up control of execution order and placement, and every job round-trips through disk. Proves: a narrow interface plus deterministic re-execution makes fault tolerance cheap; directly inspired Hadoop and every batch engine since.
 
 ### Spark — RDDs, Catalyst, and Tungsten
-- **The RDD insight (Zaharia et al., NSDI 2012):** a resilient distributed dataset is an immutable, partitioned collection whose *lineage* (the sequence of transformations that built it) is remembered — so a lost partition is recomputed from its parents rather than restored from a replicated checkpoint. This is why Spark's fault tolerance is cheap and why the Ch.7.1 DAG/stage model exists: stage boundaries fall exactly where a wide transformation (shuffle) breaks lineage into pipelineable segments.
-- **Catalyst** rewrites the logical plan (predicate pushdown, projection pruning, join reordering — the Ch.2.3 optimizer ideas, now distributed) before choosing physical operators; **Tungsten** then generates whole-stage JVM bytecode and uses cache-friendly, off-heap binary layouts so execution approaches hand-written code. The Ch.1.3 memory-hierarchy and Ch.6.1 columnar-encoding lessons are what make Tungsten fast.
+- **RDDs (2012, Zaharia et al., NSDI) — lineage instead of replication.** Forcing problem: iterative and interactive workloads (ML, ad-hoc queries) paid MapReduce's disk round-trip on every step. Mechanism: an immutable, partitioned dataset that remembers the coarse-grained transformations that built it, so a lost partition is recomputed from its parents rather than restored from a replica; intermediate data stays in memory between stages. Trade-off: coarse-grained transformations only (no fine-grained updates), and long lineages make recovery expensive without checkpoints (§7.3). Proves: the §7.1 DAG/stage model — stages pipeline narrow dependencies and materialise at shuffle dependencies, which are also the recomputation boundaries.
+- **Spark SQL: Catalyst and Tungsten (2015, Armbrust et al., SIGMOD) — relational optimisation inside a dataflow engine.** Forcing problem: RDD code was opaque to any optimiser and paid Java-object and virtual-call overhead per row. Mechanism: DataFrames carry schema and an extensible tree-rewriting optimiser (Catalyst) that applies the §2.3 optimiser ideas to distributed plans; Tungsten adds compact binary rows and whole-stage code generation so pipelines run like hand-written loops. Trade-off: opaque UDFs and RDD code fall outside the optimiser. Proves: the §7.1 topics, and why Python UDFs are expensive.
 
-### Meta — SQL on top of MapReduce
-- **Hive (2009, Thusoo et al., VLDB) — SQL on top of MapReduce.** Forcing problem: Facebook's data (initially 15 TB/day → hundreds of TB/day by publication) was accessible only to engineers who could write raw MapReduce jobs in Java/Python, while most analysts only knew SQL. Core decision: a SQL-like language (**HiveQL**) compiling down to MapReduce jobs, with a **metastore** tracking table/partition/schema metadata separately from the data itself — the metastore concept is the direct ancestor of every catalog in Ch.6 (Hive Metastore, Glue Catalog, Unity Catalog all descend from this exact idea). Trade-off: query latency measured in minutes (full MapReduce job startup overhead), acceptable for the batch/analyst workload it targeted, unacceptable for anything interactive — the gap this trade-off left open is precisely why Presto/Trino were later built at Facebook.
+### LinkedIn — when the shuffle itself becomes the bottleneck
+- **Magnet (2020, Shen et al., VLDB) — push-based shuffle.** Forcing problem: at LinkedIn's scale the reduce side of a shuffle became millions of tiny random disk reads, making the shuffle service unreliable and slow. Mechanism: mappers push shuffle blocks to remote merger nodes that append them into per-partition merged files, so reducers do large sequential reads, with fallback to the original blocks on failure. Trade-off: extra network and coordination for better I/O locality and resilience. Proves: the §7.3 shuffle-service topic; upstreamed into Spark 3.2.
+
+### Meta — SQL on top of MapReduce, and the interactive gap
+- **Hive (2009, Thusoo et al., VLDB) — SQL compiled to MapReduce.** Forcing problem: Facebook's warehouse (over 700 TB of usable data and over 5,000 queries a day at publication) was accessible only to engineers who could write raw MapReduce jobs, while analysts knew SQL. Mechanism: HiveQL compiled into MapReduce DAGs, with a metastore holding table/partition/schema metadata separately from the files — the ancestor of every catalog in Ch.6. Trade-off: minutes of latency from job start-up and disk round-trips, fine for batch reporting, unusable for interactive analysis. Proves: separating metadata from data is the durable idea; the latency gap motivated Presto.
+- **Presto (2019, Sethi et al., ICDE) — interactive SQL on everything.** Forcing problem: Hive's latency left Facebook analysts without interactive queries over the same warehouse. Mechanism: a long-running coordinator/worker MPP engine with pipelined in-memory exchanges, a connector API that federates many storage systems, and runtime bytecode generation. Trade-off: speed by giving up mid-query fault tolerance (later added as optional spooled execution in the Trino fork). Proves: the §7.7 pipelined-vs-staged trade-off; Trino (the fork by Presto's original creators) is covered in §6.4.
+
+### Databricks and Meta — native vectorised execution
+- **Photon (2022, Behm et al., SIGMOD) — a native engine inside a JVM platform.** Forcing problem: Spark's JVM codegen engine had hit a CPU ceiling on lakehouse data (raw, poorly modelled, mixed encodings) while the platform had to stay 100% Spark-API compatible. Mechanism: a C++ vectorised interpreted engine with columnar batches and adaptive per-batch specialisation, plugged into Spark's planner operator by operator with transitions where unsupported. Trade-off: two engines with identical semantics to keep in lock-step; proprietary. Proves: §7.6 — vectorised interpretation can beat codegen and offload can be incremental.
+- **Velox (2022, Pedreira et al., VLDB) — one execution library for many engines.** Forcing problem: Meta ran many engines (Presto, Spark, streaming, ML preprocessing) that each re-implemented expressions, functions and operators with subtly different semantics. Mechanism: a reusable C++ vectorised execution library (vectors, expression evaluation, operators, memory pools) that engines embed; Prestissimo and Apache Gluten put it under Presto and Spark. Trade-off: a shared library must serve many dialects and type systems. Proves: the composable-engine thesis of §6.4 and the §7.6 offload model.
 
 ---
 
-# MILESTONE 4 — Movement: Ingestion, CDC & Streaming
-Getting data from where it is produced to where it is processed — reliably, in order, exactly once in effect, and replayably. Batch ingestion, log-based change data capture, and real-time streaming are three faces of the same problem.
+# Milestone 4 — Movement: Ingestion, CDC & Streaming
+Getting data from where it is produced to where it is processed — reliably, in order, exactly once in effect, and replayably; batch ingestion, log-based CDC and stream processing are three faces of the same problem.
 
 ## Chapter 8 — Data Ingestion, Integration and Change Data Capture
+Extracting data from sources without losing, duplicating or harming them, capturing every change from database logs, and reconciling records that describe the same real-world entity.
+
 ### 8.1 Ingestion patterns and the extract layer
-- Push vs pull ingestion; batch vs micro-batch vs streaming ingestion
-- Full load vs incremental load; high-watermark / cursor-based extraction; late-arriving corrections
-- API ingestion: pagination, rate limiting, retries/backoff, auth (OAuth, API keys), idempotency keys
-- Webhook/event ingestion: ordering, deduplication, replay from a durable buffer
-- File ingestion: landing zones, atomic rename/commit, poison-file quarantine, schema-on-read vs schema-on-write
-- Database extraction: query-based (JDBC), bulk export/COPY, read-replica offloading to protect production
-- Idempotent and resumable extraction; checkpointing offsets/watermarks durably
-- Managed/declarative ingestion tools: Fivetran, Airbyte, Meltano, dlt, Kafka Connect — build-vs-buy trade-offs and connector-maintenance cost
-- Raw/bronze layer design: immutability, append-only landing, replayability
+- **Ingestion modes: push vs pull, batch vs streaming** *(refresher)* — who owns the schedule and the buffer; batch vs micro-batch vs streaming ingestion and the latency/cost/complexity each buys.
+- **Database extraction without hurting production** — query-based JDBC extraction with parallel range reads (partition column, bounds, fetch size), bulk export/`COPY`, read-replica offloading; consistent multi-table snapshots (one repeatable-read transaction); how long-running extracts block vacuum and inflate replica lag.
+- **Incremental extraction with high-watermark cursors** — full vs incremental loads; cursor columns (`updated_at`, sequence ids) and why they miss rows (commit order ≠ timestamp order, clock skew, non-monotonic updates, invisible hard deletes); lookback windows plus idempotent merge as the fix; when the answer is log-based CDC instead (§8.2).
+- **API ingestion: pagination, limits and retries** — offset vs cursor/keyset pagination and consistency under concurrent writes; rate limits (429, `Retry-After`, token buckets); exponential backoff with jitter; idempotency keys for writes; OAuth token refresh and secret rotation.
+- **Webhook and event ingestion** — acknowledge fast, persist to a durable buffer, process asynchronously; signature verification; at-least-once, out-of-order delivery and dedup by event id; periodic reconciliation polling to catch dropped events; replay from the buffer.
+- **File ingestion and landing zones** — landing → validation → promotion; commit protocols on object stores without atomic rename (temp-then-manifest, success markers, conditional writes); poison-file quarantine; schema-on-read vs schema-on-write; event-notification-driven discovery vs listing (Auto Loader in Ch.10.3).
+- **Idempotent, resumable extraction** — durable checkpoints of offsets/watermarks committed with or after the output; deterministic batch ids so a re-run overwrites rather than appends; at-least-once delivery plus idempotent writes as the general recipe for exactly-once effect.
+- **Raw/bronze landing-layer design** — immutable, append-only raw capture with source metadata (ingest time, source offset, schema version) so any downstream table can be rebuilt by replay; retention and PII implications of keeping raw.
+- **Managed ingestion tools and build-vs-buy** — Fivetran (merging with dbt Labs, announced Oct 2025), Airbyte, dlt, Meltano, Kafka Connect; connector maintenance as the real cost, row/MAR-based pricing, schema-drift handling, and when to own a connector.
+- *Lab:* build an incremental extractor for a Postgres table and a paginated REST API; inject a crash mid-batch, a late-committing transaction with an old `updated_at`, and a hard delete; show which rows the cursor misses, then fix with lookback + idempotent `MERGE`.
 
 ### 8.2 CDC architecture
-- Polling vs log-based CDC
-- Database WAL/binlog internals
-- Replication-slot / WAL (binlog) retention management: a stalled or slow CDC consumer prevents the source from reclaiming WAL and causes unbounded disk growth on the production database — the classic log-based-CDC production incident
-- Snapshots + change streams
-- Ordering and transaction boundaries
-- Schema evolution
-- Deletes and tombstones
-- Replay and offset management
-- CDC into Kafka / lakehouse / warehouse
-- Debezium internals: connectors, snapshot modes, outbox pattern, single-message transforms
-- Initial-snapshot-plus-stream consistency (no gap, no overlap between snapshot and log tail)
+- **Query-based vs log-based CDC** — polling and triggers (load on the source, missed deletes and intermediate states, write amplification) vs reading the database's own replication log (complete, ordered, low overhead, but operationally coupled to the source).
+- **PostgreSQL logical decoding internals** — WAL, logical replication slots, output plugins (`pgoutput`, decoderbufs), publications, `REPLICA IDENTITY` (DEFAULT vs FULL for before-images), `restart_lsn` vs `confirmed_flush_lsn`; decoding on standbys (PG16) and failover-synchronised slots (PG17) so CDC survives a primary failover.
+- **MySQL binlog and other change logs** — row-based binlog with `binlog_row_image=FULL`, GTIDs for position independence across failover, binlog retention; DDL parsing and the schema-history topic; Oracle (LogMiner/XStream) and SQL Server (CDC tables) as contrasting capture mechanisms.
+- **Replication-slot WAL retention incidents** — a stalled or slow consumer pins WAL and fills the production disk; idle-captured-table and multi-database variants where the slot never advances; heartbeats and `heartbeat.action.query`, `max_slot_wal_keep_size` as a safety valve (which invalidates the slot), and monitoring slot lag.
+- **Initial snapshot to stream handoff** — exporting a consistent snapshot at a known log position (exported snapshot or brief lock), then streaming from exactly that position so there is no gap and no overlap; snapshot modes (`initial`, `no_data`, `when_needed`, …) and what each does on restart.
+- **Incremental snapshots with watermark windows** — DBLog-style chunked snapshots interleaved with the live log: open/close watermarks around each primary-key chunk, drop buffered snapshot rows superseded by streamed changes; signal tables vs Kafka signalling vs read-only (transaction-id watermark) variants; re-snapshotting one table without stopping CDC.
+- **Ordering and transaction boundaries** — per-key order via primary-key partitioning; loss of cross-table and cross-partition order; transaction metadata (BEGIN/END events with per-table counts) to reassemble transactions downstream; what "exactly-once" means when a transaction spans many topics.
+- **Schema evolution in change streams** — capturing DDL, schema history, propagating column adds/drops/type changes through a schema registry into lakehouse and warehouse sinks; incompatible changes that require re-snapshot.
+- **Deletes and tombstones** — delete events with before-images vs Kafka tombstones (null value) that let log compaction drop the key; soft vs hard deletes; carrying deletes into table formats via `MERGE`/delete files; the delete-retention window race.
+- **CDC offsets, replay and exactly-once** — two positions (source LSN/GTID vs Kafka offset) and how Kafka Connect stores source offsets; Kafka Connect exactly-once source support (KIP-618) used by Debezium; Debezium has no dedup layer of its own; recovery when the source log position has been purged (re-snapshot).
+- **Debezium architecture and event model** — Debezium 3.x (Java 17+): Kafka Connect connectors vs Debezium Server (Kinesis, Pub/Sub, Redis, …) vs embedded engine; the change-event envelope (`before`/`after`/`source`/`op`/`ts_ms`); single-message transforms (unwrap/new-record-state, routing, filtering); JDBC sink connector.
+- **Transactional outbox pattern** — avoiding dual writes by writing domain events to an outbox table in the same transaction and letting CDC publish them (outbox event router); ordering, payload design, outbox cleanup, and why it beats application-level publish-after-commit.
+- **Flink CDC pipelines** — Flink CDC 3.x as the Kafka-less path: lock-free parallel chunked snapshots plus binlog/WAL reading inside Flink, YAML-defined end-to-end pipelines with schema-change propagation into Paimon/Iceberg/Doris/StarRocks; when it beats Debezium + Kafka and what it gives up (no shared durable log for other consumers).
+- **Landing CDC in lakehouse and warehouse** — append-only change log + periodic `MERGE` vs streaming upserts into MOR tables (§6.3); ordering by source LSN, not arrival time; compaction cost of high-update tables; warehouse-native CDC ingestion (Snowpipe Streaming, BigQuery CDC upserts); topic-to-table materialisation (§9.3).
+- *Lab:* Postgres → Debezium → Kafka → Iceberg/Delta: kill the connector mid-snapshot and prove no gap/overlap; stall the consumer and watch WAL grow until heartbeats/`max_slot_wal_keep_size` intervene; run an incremental snapshot of one table during heavy updates; fail over the primary on PG17 with a failover slot.
 
 ### 8.3 Data integration, entity resolution and master data
-- **Entity resolution / record linkage:** deterministic (rule/key-based) vs probabilistic matching; **blocking/indexing** to avoid O(n²) comparisons; similarity measures (Jaro-Winkler, Levenshtein, cosine); **MinHash/LSH** for scalable near-duplicate and fuzzy matching (cross-ref Ch.5.6)
-- **Deduplication and canonicalization:** survivorship rules, golden-record construction, merge/split handling over time
-- **Master Data Management (MDM):** customer/product/plant master consistency across systems; registry vs consolidation vs centralized styles; match-merge pipelines (cross-ref the SAP/master-data note in Ch.10.5)
-- **Reference data and crosswalks:** code/lookup tables, slowly-changing reference data, mapping across source systems
-- **Schema matching and integration:** reconciling heterogeneous source schemas; semantic mapping; conflicting units/currencies/time zones
+- **Record linkage: deterministic and probabilistic matching** — rule/key-based matching vs Fellegi–Sunter probabilistic matching (m/u probabilities, match weights, thresholds, clerical review band); similarity measures (Jaro-Winkler, Levenshtein, token/cosine, embeddings); open tooling such as Splink; precision/recall evaluation without full ground truth.
+- **Blocking and candidate generation** — avoiding O(n²) comparisons with blocking keys, sorted-neighbourhood and MinHash/LSH blocking (§5.6; → *Data Structures & Algorithms* Ch.5); the pair-completeness vs reduction-ratio trade-off and how a bad blocking key silently caps recall.
+- **Clustering, survivorship and golden records** — turning pairwise matches into entities (connected components and the over-merge chain problem), survivorship rules per attribute, golden-record construction, and stable entity ids across merges/splits over time.
+- **Master data management styles** — registry, consolidation, coexistence and centralised (transactional) hub styles; match-merge pipelines and stewardship workflows; customer/product/plant master consistency across ERP/CRM (cross-ref the SAP/master-data note in Ch.10.5).
+- **Semantic integration: schemas, codes and units** — schema matching and mapping across heterogeneous sources; reference/lookup data and crosswalk tables (slowly changing); reconciling units, currencies and time zones; owning the mapping as versioned, tested data.
+- *Lab:* deduplicate a synthetic customer dataset with injected typos and transliterations: compare deterministic rules vs Fellegi–Sunter with two blocking strategies; report pairs compared, precision, recall and over-merged clusters.
 
 ## Chapter 9 — Streaming Systems: Kafka, Flink, and Beyond
+The partitioned log, the correctness guarantees built on it, and the engines that compute over unbounded data — at Kafka 4.x and Flink 2.x.
+
 ### 9.1 Kafka internals
-- Partition leaders and replicas
-- Producer batching, compression, acknowledgements
-- Consumer groups and partition assignment
-- Offsets, log segments
-- Retention and compaction
-- Replication, ISR concepts
-- Ordering guarantees
-- **Log internals (systems-level):** append-only log structures, partitioned logs, delivery-semantics implementation detail — build a toy Kafka-style log to internalize segment files, index files, and consumer offset tracking
+- **Partitioned log storage: segments and indexes** — a partition as a directory of segment files with sparse offset and time indexes; active segment rolling; reads served from the page cache with zero-copy `sendfile`; offsets as positions owned by consumers, not the broker (internals built in → *Rust Systems Engineering* Ch.27).
+- **Producer batching, compression and acks** — record accumulator per partition, `batch.size` and `linger.ms` (default 5 ms since Kafka 4.0), compression per batch (zstd/lz4), sticky partitioning; `acks=0/1/all` and why idempotence + `acks=all` is the default since 3.0.
+- **Replication, ISR and the high watermark** — leader/follower fetch replication, in-sync replica set, high watermark as the committed point, `min.insync.replicas`; leader-epoch-based truncation; unclean leader election vs Eligible Leader Replicas (KIP-966, default on new clusters from 4.1) and the "last replica standing" data-loss case.
+- **KRaft: metadata as a replicated log** — Kafka 4.0 removed ZooKeeper: a Raft-based controller quorum writes cluster metadata to `__cluster_metadata`, brokers replay it and are fenced by heartbeats; metadata snapshots, pre-vote (KIP-996), dynamic controller quorums (KIP-853); the mandatory 3.9 bridge migration from ZooKeeper (theory in Ch.14; → *Rust Systems Engineering* Ch.26).
+- **Consumer groups and rebalance protocols** — offset commits in `__consumer_offsets`; classic protocol (client-side assignment, eager vs cooperative-sticky, stop-the-world rebalances, static membership) vs the KIP-848 consumer protocol (GA in 4.0: broker-side assignment, incremental per-member reconciliation, no global barrier); the Streams rebalance protocol (KIP-1071, GA with a limited feature set in 4.2); classic being phased out.
+- **Share groups: queues on Kafka** — KIP-932 (production-ready in 4.2): many consumers share one partition, records are acquired under a time-limited lock and individually acknowledged (accept/release/reject/renew), delivery counts cap redelivery; no per-partition ordering; when to use a share group vs a consumer group vs a real queue (cross-ref §5.5).
+- **Retention and log compaction** — time/size retention by deleting whole segments vs compaction keeping the latest value per key (cleaner, dirty ratio, `min/max.compaction.lag.ms`, tombstone retention); compacted topics as changelogs and table snapshots.
+- **Kafka ordering guarantees** — total order only within a partition; idempotent producers preserve order with up to 5 in-flight requests; key-to-partition stability breaks when partition counts change; designing keys so the order you need is the order you get.
+- **Kafka tiered storage** — KIP-405 (production-ready since 3.9): the remote log manager copies closed segments to object storage, separate local vs total retention, the `RemoteStorageManager` plugin, consumers reading cold data transparently; limits (no compacted topics) and the cost/latency profile of historical reads.
+- **Diskless and object-store-native Kafka** — why inter-AZ replication traffic dominates cloud Kafka bills; leaderless designs that write batches straight to object storage with a separate sequencing/metadata layer (WarpStream, Aiven Inkless, AutoMQ, Bufstream, Confluent Freight); KIP-1150 accepted March 2026 but not yet in an Apache release; the latency vs cost trade-off.
+- *Lab:* build a toy segmented log with an offset index and consumer offset tracking; then on a real 3-broker KRaft cluster kill the leader under `acks=1` vs `acks=all` + `min.insync.replicas=2` and count lost records; compare rebalance pauses under the classic and KIP-848 protocols while scaling a consumer group.
 
 ### 9.2 Streaming correctness
-- At-most-once, at-least-once, exactly-once semantics
-- Idempotent producers, transactions
-- Deduplication keys
-- Dead-letter topics, retry topics, poison messages
-- Replay and backfill
-- Windowing and time semantics: tumbling vs sliding/hopping vs session vs global windows; triggers (when a window emits) and allowed lateness/late firing vs dropping; the watermark-vs-completeness trade-off (how long to wait for stragglers before closing a window) — cross-ref Ch.7.4
-- Schema Registry and compatibility modes (backward/forward/full)
+- **Delivery semantics and where duplicates arise** — at-most/at-least/exactly-once as statements about effects; the crash windows that create loss or duplication (producer retry after a lost ack, consumer crash between processing and offset commit); exactly-once as an end-to-end property (theory in Ch.14).
+- **Idempotent producer** — producer id + epoch + per-partition sequence numbers let the broker reject duplicates and out-of-order batches; scope (one producer session, one partition) and what it does not cover.
+- **Kafka transactions and read-committed** — transactional ids and zombie fencing, the transaction coordinator and `__transaction_state`, commit/abort markers, last stable offset and `read_committed` consumers; consume-transform-produce with `sendOffsetsToTransaction`; transactions v2 (KIP-890: server-side defence against hanging transactions, epoch bump per transaction, completed in 4.0); KIP-939 two-phase-commit participation for atomic Kafka + database writes.
+- **End-to-end exactly-once with external sinks** — two-phase-commit sinks (pre-commit on checkpoint, commit on checkpoint-complete), idempotent upsert sinks keyed by deterministic ids, storing offsets atomically with the output; where it breaks (non-deterministic processing, external side effects, transaction timeouts shorter than checkpoint intervals).
+- **Deduplication keys and idempotent consumers** — event ids assigned at the source, dedup state bounded by TTL or watermark, approximate dedup with Bloom filters (§5.6); deterministic ids for derived events.
+- **Dead-letter and retry topics** — poison messages that block a partition; non-blocking retry topics with tiered delays and the ordering they sacrifice; DLQ payload and metadata design, alerting and replay tooling (Kafka Connect `errors.tolerance`, Kafka Streams DLQ handlers from 4.2).
+- **Replay and backfill** — resetting offsets by timestamp, replaying one partition or time range, backfilling from tiered storage or the lakehouse instead of the hot log; making replays safe (idempotent sinks, versioned outputs, suppressed side effects) (Lambda vs Kappa in Ch.3.3).
+- **Schema Registry and compatibility modes** — backward/forward/full and their transitive variants, which evolutions each permits for Avro/Protobuf/JSON Schema, subject-naming strategies, schema ids in the wire format; data-contract rules as an extension (Ch.13).
+- **Event time, watermarks and completeness** — event vs processing time; watermarks as a heuristic (or perfect) assertion of input completeness; per-partition watermark generation, idle sources, watermark alignment to stop fast sources racing ahead; the latency vs completeness trade-off.
+- **Windowing: tumbling, sliding, session, global** — window assignment and state cost of each; session windows that merge as gaps close; global windows with custom triggers; pane-per-key state and its cleanup.
+- **Triggers, allowed lateness and retractions** — early/on-time/late firings, allowed lateness vs dropping, accumulation modes (discarding, accumulating, accumulating-and-retracting), and changelog/retraction streams that downstream operators and sinks must handle.
+- *Lab:* replay a Kafka topic with 2% late and 1% duplicated events through a windowed aggregation; measure result correctness vs watermark delay; then kill the job between processing and commit with and without transactions and diff the sink against ground truth.
 
-### 9.3 Beyond Kafka: the modern streaming stack
-- Apache Flink: DataStream API, event-time processing, exactly-once state via checkpoints/savepoints, stateful functions, watermark strategies — the dominant streaming engine outside the Spark ecosystem, heavily asked for in EU/global enterprise roles
-- **Streaming SQL and stream-processing libraries:** Flink SQL, **ksqlDB**, **Kafka Streams** (library-embedded stateful processing, KStream/KTable duality) — SQL/embedded alternatives to a full cluster engine, and when each fits
-- Streaming databases: Materialize, RisingWave — incremental view maintenance over streams (SQL-native streaming)
-- Apache Pulsar / Redpanda as Kafka alternatives — segment-based tiered storage, multi-tenancy
-- Kafka evolution (2023+): **tiered storage** (KIP-405 — offload cold log segments to object storage) and emerging **diskless/object-store-backed** topics that cut cross-AZ cost; **Confluent Tableflow** and similar materialize Kafka topics directly as Iceberg/Delta tables (streaming → lakehouse with no separate ETL job)
-- Real-time OLAP serving: Apache Druid, Pinot, ClickHouse for sub-second dashboards on streaming data
+### 9.3 Stream processing engines and the modern streaming stack
+- **Flink runtime architecture** — JobManager/TaskManagers, slots, operator chaining, pipelined network exchange with credit-based flow control and backpressure; application mode (per-job mode removed in 2.0); unified batch/stream execution with adaptive batch scheduling.
+- **Asynchronous barrier snapshots** — Chandy–Lamport-derived checkpoint barriers, aligned vs unaligned checkpoints under backpressure, incremental checkpoints, exactly-once vs at-least-once mode; checkpoints vs savepoints and restoring a changed job.
+- **Keyed state, key groups and rescaling** — state backends (heap, RocksDB, ForSt), key groups and max parallelism as the unit of redistribution, state TTL and schema evolution; why 1.x state is not compatible with 2.x.
+- **Disaggregated state in Flink 2.x** — ForSt stores state primarily on remote object storage with local disk as cache; the asynchronous execution model and async state API hide remote latency while preserving per-key order; checkpoints become near-metadata operations, enabling fast recovery and rescaling; what latency-sensitive jobs give up.
+- **Flink SQL and dynamic tables** — streams as changelogs of dynamic tables (append, upsert, retract), regular joins with unbounded state vs interval, temporal and lookup joins, delta joins and multi-way joins that cut state; materialised tables; process table functions; `FROM_CHANGELOG`/`TO_CHANGELOG` (2.3); model inference with `ML_PREDICT` (2.1+).
+- **Kafka Streams and the KStream/KTable duality** — a library, not a cluster: tasks per input partition, local state stores backed by compacted changelog topics, standby replicas, exactly-once v2; stream-table duality; the Streams rebalance protocol; ksqlDB as the SQL layer on top (Confluent Community License, no longer accepting community contributions).
+- **Apache Beam and the portable model** — PCollections, transforms and windowing/trigger semantics taken from the Dataflow Model, runners (Dataflow, Flink, Spark), the portability framework for Python/Go; what Dataflow adds (disaggregated shuffle and streaming engine, autoscaling).
+- **Streaming databases and incremental view maintenance** — maintaining SQL views over changing inputs incrementally: Materialize (differential dataflow, strict serializability), RisingWave (object-store-backed state), Feldera (DBSP); consistency guarantees vs Flink's eventually consistent outputs; when a streaming database replaces a stream processor plus serving store.
+- **Pulsar and Redpanda as Kafka alternatives** — Pulsar's broker/BookKeeper separation, segment-based storage and multi-tenancy; Redpanda's Kafka-API-compatible thread-per-core C++ design and Iceberg topics; protocol compatibility vs semantic compatibility.
+- **Streaming into the lakehouse** — topic-to-table materialisation (Confluent Tableflow to Iceberg/Delta, Redpanda Iceberg topics), Flink/Spark sinks to Iceberg/Delta/Paimon; commit frequency vs small files vs freshness; Paimon and Fluss as streaming-first storage for Flink.
+- **Real-time OLAP ingestion** — streaming ingestion into Druid, Pinot and ClickHouse: per-partition consumers building segments, exactly-once offset/segment commits, Pinot upsert tables, ClickHouse Kafka engine vs ClickPipes; serving trade-offs in §5.5 and engine internals in §6.4.
+- *Lab:* run a keyed Flink job with RocksDB vs ForSt state; kill a TaskManager and measure recovery time; rescale from a savepoint; compare aligned vs unaligned checkpoint duration under induced backpressure.
 
 ## Systems in Production — Milestone 4: the log as unifying abstraction
 ### LinkedIn — the commit log as a product
-- **Kafka (2011, Kreps/Narkhede/Rao, NetDB) — the log as infrastructure.** Forcing problem: LinkedIn had user-activity events (logins, pageviews, clicks) *and* operational metrics flowing through separate, specialized point-to-point pipelines (Facebook's Scribe-style log aggregators on one side, traditional message queues like ActiveMQ/RabbitMQ on the other) — "orders of magnitude larger than the real data," and every new consumer meant a new integration. Core decision: treat **the commit log itself as the product** — partitioned, append-only, offset-addressed, with **consumers (not the broker) tracking their own position** — collapsing both use cases (offline batch consumption and online low-latency consumption) into one system. At publication: "processing hundreds of gigabytes of new data each day" — a number that looks almost quaint next to Kafka's current trillions-of-messages-per-day deployments. Trade-off: brokers do (almost) nothing but append and serve sequential reads — nearly all intelligence (ordering guarantees, replay, consumer-group balancing) lives in client libraries, not the server, which is why Kafka's broker is so fast and so simple relative to a traditional message queue. Influence: this is the single paper most responsible for Ch.9 and the "log as the unifying abstraction" theme repeated in Ch.25-E and Ch.14 — Jay Kreps's later essay *"The Log: What every software engineer should know about real-time data's unifying abstraction"* is the canonical plain-English follow-up and is worth reading end to end.
-- **Venice / Samza — the derived-data half of the Kafka story.** Forcing problem: once Kafka centralized the log, LinkedIn still needed (a) a stream-processing framework consuming directly from Kafka partitions with the same partitioning model (Samza — process a partition on the machine that owns it, state co-located with computation) and (b) a serving store for the *output* of streaming jobs that needs online reads (Venice). Lesson: a log by itself isn't a platform — the processing layer (Samza, later superseded internally by Flink) and the serving layer (Venice) are the other two-thirds of a real streaming platform, mirrored in Ch.9.3's "beyond Kafka" coverage.
+- **Kafka (2011, Kreps, Narkhede & Rao, NetDB) — the log as infrastructure.** Forcing problem: LinkedIn's activity events and operational metrics flowed through separate point-to-point pipelines (Scribe-style log aggregators for offline, message queues for online), log data was orders of magnitude larger than "real" data, and every new consumer meant a new integration. Mechanism: a partitioned, append-only, offset-addressed log where consumers (not the broker) track their own position, serving both offline batch loads and online low-latency consumers; at publication it processed hundreds of gigabytes of new data a day. Trade-off: the broker does almost nothing but append and serve sequential reads, pushing ordering, replay and group balancing into clients. Proves: §9.1 and the "log as unifying abstraction" theme (→ *Rust Systems Engineering* M5); Jay Kreps's essay *"The Log"* is the plain-English follow-up.
+- **Samza (2017, Noghabi et al., VLDB) and Venice — the derived-data half of the Kafka story.** Forcing problem: once Kafka centralised the log, LinkedIn still needed processing co-partitioned with the log and a serving store for the output of streaming jobs. Mechanism: Samza processes each Kafka partition on the machine that owns its task, with local state backed by a changelog topic for recovery; Venice is a derived-data serving store fed by batch and streaming writers. Trade-off: tight coupling to Kafka's partitioning model. Proves: a log alone is not a platform — processing (later complemented at LinkedIn by Flink) and serving are the other two-thirds; Kafka Streams adopted the same changelog-backed state design (§9.3).
+- **Exactly-once in Kafka (2021, Wang et al., SIGMOD) — consistency and completeness for stream processing.** Forcing problem: Kafka Streams users needed correct results despite failures and out-of-order data, without a separate coordination system. Mechanism: idempotent producers, transactions that atomically commit output records, state changelogs and input offsets, and revision-based handling of late data instead of blocking on watermarks. Trade-off: commit-interval latency and transaction overhead for correctness. Proves: §9.2 transactions and the end-to-end exactly-once recipe.
 
 ### Meta — log aggregation before Kafka standardized it
-- **Scribe — log aggregation at Facebook scale.** The forcing problem Kafka solved at LinkedIn, Facebook solved earlier with Scribe: a simple, high-throughput log-collection daemon shipping data from thousands of web servers into HDFS/Hive. Lesson: nearly every "big data" company independently re-derived some version of "durable, append-only log collector" before Kafka standardized it as a reusable open-source product — recognizing this pattern is itself a system-design skill.
+- **Scribe (2008, Facebook, open source) — log aggregation at Facebook scale.** Forcing problem: shipping logs from thousands of web servers into HDFS/Hive reliably at high throughput. Mechanism: a simple daemon hierarchy that buffers locally and forwards to aggregators that write to HDFS. Trade-off: best-effort delivery, no replay, no ordering guarantees. Proves: nearly every big-data company re-derived "durable append-only log collector" before Kafka made it a reusable product — recognising the pattern is itself a design skill.
 
 ### Google — watermarks, and streaming before it was a category
-- **MillWheel (2013, Akidau et al., VLDB) — streaming before "streaming" was a category.** Forcing problem: Google's Zeitgeist (search-trend anomaly detection) needed continuous, low-latency, exactly-once stream processing with correct handling of out-of-order events arriving from all over the world. Core decision: **low watermarks** — a per-stage, monotonically increasing signal meaning "all data up to timestamp T has been seen" — solving the "is this just slow, or truly missing?" ambiguity that every late-data design in Ch.7.4/Ch.9 faces. Combined with per-key persistent state and exactly-once delivery via idempotent, atomically-checkpointed record processing. Direct influence: MillWheel's watermark model is **the** reason the Dataflow Model (and therefore **Apache Beam**, and therefore **Flink's** and **Spark Structured Streaming's** watermark semantics in Ch.7.4/Ch.9.3) look the way they do — this one paper's vocabulary ("watermark," "windowing," "triggers") is now universal streaming terminology.
+- **MillWheel (2013, Akidau et al., VLDB) — low watermarks and exactly-once per-key state.** Forcing problem: Zeitgeist (search-trend anomaly detection) needed continuous, low-latency, exactly-once processing of out-of-order events arriving from around the world. Mechanism: low watermarks (a per-stage, monotonically increasing bound on the oldest pending work), persistent per-key state, and exactly-once delivery through record ids deduplicated against atomically checkpointed state. Trade-off: per-record checkpoint and dedup cost for strong guarantees. Proves: the "is it late or missing?" answer that every late-data design in §7.4/§9.2 inherits.
+- **The Dataflow Model (2015, Akidau et al., VLDB) — what, where, when, how.** Forcing problem: Google needed one programming model that gives correct, tunable results over unbounded, out-of-order data, rather than separate batch and streaming systems with different answers. Mechanism: separate *what* is computed (transforms), *where* in event time (windows, including merging session windows), *when* in processing time results are emitted (watermarks + triggers) and *how* refinements relate (discarding, accumulating, retracting). Trade-off: more concepts for users in exchange for explicit latency/completeness/cost control. Proves: §9.2 windowing and triggers; became Apache Beam and shaped Flink and Spark streaming semantics.
+
+### Apache Flink — consistent state at scale
+- **State Management in Apache Flink (2017, Carbone et al., VLDB) — asynchronous barrier snapshots.** Forcing problem: exactly-once stateful stream processing without stopping the world or logging every record. Mechanism: barriers injected at sources flow with the data, operators snapshot state asynchronously when barriers align, and key groups allow rescaling from a snapshot. Trade-off: alignment stalls under backpressure (later addressed by unaligned checkpoints). Proves: §9.3 checkpointing and rescaling.
+- **Disaggregated state in Flink 2.0 (2025, Mei et al., VLDB) — state on object storage.** Forcing problem: at Alibaba scale, large local state made jobs disk-bound and turned checkpoints, recovery and rescaling into bulk file copies. Mechanism: ForSt keeps the primary copy of state on a distributed file system with local disk as a cache, and an asynchronous execution model overlaps remote state access with processing while preserving per-key order. Trade-off: added access latency and runtime complexity; reported up to 94% shorter checkpoints and up to 49× faster recovery than Flink 1.20. Proves: the §9.3 disaggregated-state topic.
+
+### Confluent — re-architecting Kafka for the cloud
+- **Kora (2023, Povzner et al., VLDB) — a cloud-native Kafka engine.** Forcing problem: running Kafka as a multi-tenant cloud service across tens of thousands of clusters, with elasticity and cost that a disk-bound broker design couldn't deliver. Mechanism: tiered storage to object stores, multi-tenant isolation and quotas, a separated control plane and automated rebalancing/elasticity while keeping the Kafka protocol. Trade-off: significant engineering beyond Apache Kafka and dependence on cloud object-store behaviour. Proves: the §9.1 tiered and diskless topics; the economics that pushed the community toward KIP-1150.
 
 ### Netflix — the pipeline migration as an organizational redesign
-- **Keystone — the real-time data pipeline migration off a legacy stack.** Forcing problem: Netflix's prior pipeline (a chain of custom routing/Chukwa-based tools) couldn't keep up with event-volume growth or provide self-service onboarding for new event producers. Core decision: standardize on **Kafka as the backbone**, with a stream-processing layer (initially Samza-based, later Flink) that gives producer teams a self-service path to a new topic with schema registration, without a central team in the critical path. Lesson for Ch.11/Ch.17.5: the win wasn't a novel algorithm, it was an **operational/organizational redesign** — self-service onboarding is as much a platform-engineering deliverable as a technical one.
+- **Keystone (2016+, Netflix) — self-service real-time pipeline migration.** Forcing problem: Netflix's earlier Chukwa-based pipeline could not keep up with event-volume growth or offer self-service onboarding for new producers. Mechanism: Kafka as the backbone with a routing/stream-processing layer (initially Samza-based, later Flink) that lets producer teams create a stream with schema registration and sinks without a central team in the critical path. Trade-off: platform investment in self-service tooling and multi-tenant operations. Proves (cross-ref Ch.11/Ch.17.5): the win was an operational and organisational redesign, not a novel algorithm.
 
-### The CDC bridge — Debezium + the lakehouse
-- **Debezium (log-based CDC) into Hudi/Iceberg/Delta.** The production realization of Ch.8.2: Debezium reads the database WAL/binlog, emits an initial consistent snapshot followed by the change stream with no gap and no overlap, and lands upserts/deletes into a table format that can actually apply them (Uber's Hudi, above, exists precisely to make the lake absorb this upsert stream). This is the standard "OLTP → lakehouse with exactly-once effect" path asked about in system-design loops.
+### Netflix and the CDC bridge — DBLog, Debezium and the lakehouse
+- **DBLog (2019, Andreakis & Papapanagiotou, Netflix) — snapshots without stopping the log.** Forcing problem: re-snapshotting a large table for CDC consumers either locked the source or paused the change stream for hours. Mechanism: chunked primary-key selects bracketed by low/high watermark writes in the log, with chunk rows dropped when the same key appears between the watermarks, so full state and live changes interleave without locks. Trade-off: watermark-table writes on the source and more complex consumer-side ordering. Proves: §8.2 incremental snapshots; Debezium's incremental snapshot design follows it.
+- **Debezium into Hudi/Iceberg/Delta — the OLTP-to-lakehouse path.** Forcing problem: getting every insert, update and delete from operational databases into analytical tables with exactly-once effect. Mechanism: Debezium reads the WAL/binlog, emits a consistent snapshot followed by the change stream with no gap or overlap, and a table format that can apply upserts and deletes (Hudi exists precisely for this, Ch.6) absorbs it via MERGE or MOR writes. Trade-off: operational coupling to the source's log retention and compaction cost on the lake side. Proves: the standard "CDC from OLTP to lakehouse" design asked in system-design loops (Ch.15).
 
----
-
-# MILESTONE 5 — Platform: Cloud, Orchestration, Containers & Operations
-Where pipelines run, how they are scheduled and recovered, and how you know they are healthy. This milestone turns a collection of jobs into an operated platform.
+# Milestone 5 — Platform: Cloud, Orchestration, Containers & Operations
+Where pipelines run, how they are scheduled, recovered, governed and paid for — the milestone that turns a collection of jobs into an operated, compliant platform.
 
 ## Chapter 10 — Cloud Data Architecture
+The cloud primitives that data systems rest on, the mechanisms behind managed data services, and the regulatory and hybrid constraints that shape real (especially European) platforms.
+
 ### 10.1 Cloud foundations for data systems
-- Regions, availability zones, failure domains
-- Object storage durability and lifecycle management
-- IAM, roles, service identities, least privilege
-- Private networking: VPC/VNet, subnets, security groups
-- Managed compute vs self-managed compute
-- Secrets and key management
-- Cloud cost dimensions: storage, compute, network, managed-service premiums
+- **Failure domains: regions, zones, cells** *(refresher)* — which data services are zonal vs regional (block volumes zonal, object storage regional, managed Kafka multi-AZ), what an AZ outage actually takes down, cross-AZ replication cost, cell-based architectures as blast-radius limits.
+- **Object storage semantics for data engineers** — strong read-after-write and list consistency (S3 since Dec 2020), atomic single-object PUT but no atomic rename (copy+delete) unlike ADLS Gen2 hierarchical namespace, conditional writes (`If-None-Match` Aug 2024, `If-Match` Nov 2024, CopyObject Oct 2025) as compare-and-swap for catalog-free commits and leases, per-prefix request-rate limits and `503 SlowDown`; why table formats exist on top of these guarantees (§6.3).
+- **Storage classes and lifecycle economics** — hot/infrequent/archive tiers across S3/GCS/Azure Blob, minimum-duration and retrieval charges, Intelligent-Tiering-style automation, lifecycle rules vs table-format snapshot expiry (a lifecycle rule deleting files a live snapshot references corrupts the table), versioning plus Object Lock/WORM for ransomware and regulatory retention.
+- **Workload identity and least privilege** — roles over users, short-lived federated credentials (EKS Pod Identity/IRSA, GKE Workload Identity Federation, Entra workload identity) instead of static keys, trust policies, permission boundaries and org-level guardrails (SCPs), `PassRole`-style escalation paths, separating raw vs curated access by role.
+- **Private networking and exfiltration control** — VPC/VNet, subnets, security groups vs NACLs, gateway vs interface endpoints (PrivateLink, Private Service Connect, Private Endpoints), the NAT-gateway per-GB processing trap, perimeter controls (VPC Service Controls, endpoint policies, bucket policies conditioned on source endpoint) that stop data leaving even with valid credentials.
+- **Secrets management for pipelines** — managed secret stores and Vault, rotation without downtime (dual credentials), dynamic short-lived database credentials, orchestrator secrets backends; never in images, notebooks or DAG code (key hierarchies and envelope encryption are §13.2).
+- **Cloud cost anatomy for data workloads** — the bill's real dimensions: storage GB-month plus per-request charges (small-file LIST/GET storms), compute, network (internet egress, cross-region, cross-AZ, NAT processing), managed-service premiums; a worked teardown of where one Spark job's money goes (cost governance is §10.4).
+- *Lab:* implement a minimal atomic commit log on object storage with `If-None-Match` conditional PUTs, race 20 concurrent writers and prove no lost commits vs a naive list-then-put; then provoke `503 SlowDown` with a hot prefix, fix it with key-space design, and price both runs from the request counts.
 
-### 10.2 AWS, Azure, and GCP data-stack mapping
-- AWS: S3, IAM, Glue, EMR, MSK, Redshift, Kinesis, Lake Formation, Athena
-- Azure: Entra ID, ADLS, Data Factory, Databricks, Event Hubs, Synapse, Fabric
-- **GCP** (frequently missing from curricula despite heavy enterprise adoption): BigQuery (slots, storage billing, BI Engine), Dataflow (Apache Beam execution), Pub/Sub, Dataproc, Composer, Dataplex for governance
-- Mapping object storage, orchestration, streaming, Spark-equivalent, warehouse, and identity primitives across all three providers
-- Managed-service trade-offs and vendor lock-in
+### 10.2 Cloud data services: mechanisms and cross-cloud mapping
+- **Cross-cloud data-service mapping** *(refresher)* — one compact table across AWS / Azure / GCP: object storage (S3 · ADLS Gen2 + OneLake · GCS), catalog/governance (Glue Data Catalog + Lake Formation · Unity Catalog, Purview, OneLake catalog · BigLake metastore + Dataplex Universal Catalog), Spark (Glue, EMR · Fabric Spark, Azure Databricks · Dataproc), streaming (Kinesis, MSK · Event Hubs, Fabric Eventstreams · Pub/Sub, Managed Service for Apache Kafka), warehouse (Redshift · Fabric Warehouse; Synapse dedicated pools are maintained but new investment goes to Fabric · BigQuery), orchestration (MWAA incl. Serverless, Step Functions · Data Factory · Cloud Composer), identity (IAM · Entra ID · Cloud IAM); lock-in lives in the catalog and identity layers, not the compute.
+- **Catalog-enforced access and credential vending** — the shared mechanism behind Lake Formation, Unity Catalog, BigLake metastore, Apache Polaris and OneLake security: the catalog holds policy, a *trusted* engine enforces row/column filters, and the catalog vends short-lived, down-scoped storage credentials (Iceberg REST credential vending) so engines never hold bucket-wide IAM; tag-based grants, cross-account sharing, Spark-native fine-grained writes (Glue 5.1); the bypass failure mode (an untrusted engine reading files directly); catalog protocol itself is §6.3.
+- **Managed table services on object storage** — S3 Tables (table buckets, Iceberg-native, Dec 2024; automatic compaction, snapshot expiry and orphan-file removal; Iceberg REST endpoint), BigLake Iceberg tables in BigQuery, Unity Catalog managed Iceberg, Snowflake-managed Iceberg: maintenance-as-a-service vs running your own `rewrite_data_files`/`expire_snapshots` jobs, per-request premiums, and engine skew on new spec versions (Iceberg v3 readers lag writers).
+- **Serverless vs provisioned compute economics** — billing units and their granularity (Glue DPU-hours, EMR Serverless vCPU/GB-seconds, Dataproc Serverless DCUs, Databricks serverless DBUs, BigQuery slot-ms), cold start, autoscaling lag, noisy neighbours and version lag, escape hatches; break-even utilisation vs reserved clusters; Glue job bookmarks vs table-format incremental reads for idempotent re-runs.
+- *Lab:* run the same incremental Parquet→Iceberg ETL on a serverless Spark service and on a provisioned cluster at three data volumes; record start latency, runtime and cost per run, find the break-even volume, then read the result through a catalog with a column mask and show which access path bypasses it.
 
-### 10.2.1 AWS Glue (managed Spark ETL + catalog)
-- **What it is / why:** serverless managed Spark (plus Python-shell and Ray jobs) for ETL without running a cluster; the **Glue Data Catalog** supplies schema and partition metadata consumed by Athena, Redshift Spectrum, and EMR.
-- **Architecture essentials:** job bookmarks for idempotent incremental re-runs; crawlers/schema inference and schema-drift handling; DPU-based serverless billing.
-- **Trade-off / when not:** low-ops and convenient, but less control and often costlier at scale than self-managed EMR or Databricks — pick Glue for bursty/managed ETL, EMR/Databricks when you need cluster control or heavy tuning.
+### 10.3 Databricks and managed lakehouse platforms
+- **Databricks compute model and Photon** — classic (all-purpose vs job clusters, policies, pools, spot) vs serverless (vendor-managed fleet: fast start, different network/egress boundary), Photon's vectorised C++ execution (the Ch.1.3/§6.1 lesson behind Tungsten), SQL warehouses as the BI-serving boundary (§17.7), DBU accounting by SKU and when serverless is cheaper; table maintenance (OPTIMIZE, liquid clustering, VACUUM, deletion vectors) is taught once in §6.3.
+- **Declarative pipelines: Spark and Lakeflow** — the dataflow-graph model: streaming tables vs materialized views, flows, incremental refresh, expectations (warn/drop/fail), AUTO CDC for SCD 1/2; donated to Apache Spark as Spark Declarative Pipelines (`pyspark.pipelines`, Spark 4.1) with Lakeflow Spark Declarative Pipelines (formerly Delta Live Tables) as the managed superset — AUTO CDC and expectations are not portable; declarative graph vs imperative orchestration (Ch.11).
+- **Auto Loader incremental file ingestion** — directory-listing vs file-notification discovery, the checkpointed (RocksDB) set of seen files that yields exactly-once file ingestion, schema inference and evolution modes, the rescued-data column, vs idempotent `COPY INTO` batch loads (§8.1).
+- **Unity Catalog governance model** — metastore → `catalog.schema.object` namespace, securables (tables, volumes, functions, models), privilege inheritance, ABAC row-filter/column-mask policies on governed tags plus automated classification, column-level lineage and audit in system tables, Lakehouse Federation, the Delta Sharing open protocol (bearer-token REST plus pre-signed file URLs); open-source Unity Catalog (LF AI & Data) vs the managed service.
+- **Lakehouse platform choice: storage, format, pricing** — mechanism-level comparison of Databricks, Snowflake, Microsoft Fabric and BigQuery: who owns the storage (your bucket vs vendor-managed vs OneLake), open-format posture (Delta/Iceberg/UniForm, managed Iceberg), zero-copy access (OneLake shortcuts vs mirroring copies, Delta Sharing, Snowflake data sharing), pricing model (DBUs vs credits vs Fabric capacity units with smoothing vs slots) and the exit cost of each.
+- *Lab:* build the same bronze→silver CDC pipeline twice — as an open-source Spark Declarative Pipeline and as a hand-orchestrated Structured Streaming job; inject a schema change and a replayed duplicate file; compare recovery behaviour, lines of code and compute cost.
 
-### 10.2.2 AWS Lake Formation (lake governance & access control)
-- **What it is / why:** a governance layer over the Glue Catalog that centralizes fine-grained access control (table/column/row-level, tag-based) and cross-account sharing for an S3 data lake.
-- **Architecture essentials:** permissions enforced for Athena/Redshift Spectrum/EMR consumers; CloudTrail audit; self-service table registration for a multi-team/data-mesh setup.
-- **Trade-off / when not:** AWS-native and tightly coupled to the Glue Catalog; open-table-format catalogs (Iceberg REST, Unity Catalog, Polaris, Nessie) are the cross-engine alternatives when you want to avoid AWS lock-in (cross-ref Ch.6.3).
+### 10.4 Infrastructure as code and FinOps
+- **IaC state, plan and drift** — declarative desired state, state files and locking, plan/apply, drift detection and import, module boundaries for data platforms (bucket + catalog + IAM as one unit), Terraform's 2023 BSL relicensing and the OpenTofu fork, Pulumi/CDK general-purpose IaC, policy-as-code gates on plans (in-cluster GitOps is §12.3).
+- **Cost attribution and showback with FOCUS** — tagging strategy and its gaps (shared clusters and warehouses are untaggable per team), query-level metering (BigQuery `INFORMATION_SCHEMA.JOBS`, Snowflake account-usage views, Databricks `system.billing`) to allocate shared compute, the FinOps Open Cost and Usage Specification as a normalised billing schema (FOCUS 1.3, Dec 2025: split-cost allocation for shared resources, contract-commitment dataset, data-completeness flags), unit economics (cost per run, per TB, per consumer), showback vs chargeback.
+- **Compute cost controls and commitments** — BigQuery editions with slot reservations/autoscaling vs on-demand bytes, Snowflake warehouse sizing, auto-suspend and resource monitors, Databricks budget policies, max-bytes-billed guardrails, spot/preemptible with interruption-safe engines (§12.2), committed-use/savings plans vs flexibility; cost regressions as CI failures.
+- *Lab:* attribute one month of a shared warehouse or Spark bill to individual pipelines from query-level metering, export it in FOCUS columns, rank the top three cost drivers, and cut total cost ≥30% without breaching any freshness SLO.
 
-### 10.3 Databricks and modern data platforms
-- **Compute:** all-purpose vs job clusters, compute policies, instance pools, autoscaling; classic vs **serverless** compute; **Photon** (the vectorized C++ execution engine — the same Ch.1.3 memory-hierarchy and Ch.6.1 columnar-encoding lesson that makes Spark's Tungsten fast)
-- **Orchestration and pipelines:** Databricks **Workflows** (Jobs) for scheduling/dependencies; **Delta Live Tables / Lakeflow Declarative Pipelines** (declarative, expectation-based pipelines with managed dependencies and built-in data quality); when to use Workflows vs external Airflow/Dagster (cross-ref Ch.11)
-- **Ingestion:** **Auto Loader** (`cloudFiles`) for incremental, schema-evolving file ingestion with checkpointing; `COPY INTO` (cross-ref Ch.8)
-- **Delta-on-Databricks operations:** `OPTIMIZE` + **Z-ORDER**, **liquid clustering**, `VACUUM`, **Change Data Feed**, **deletion vectors**, `MERGE` performance (cross-ref Ch.6.3)
-- **Databricks SQL:** SQL warehouses (classic/pro/serverless), query/result caching, dashboards — the BI-serving boundary over the lakehouse
-- **Unity Catalog in depth:** three-level namespace (`catalog.schema.table`), governed **volumes** for non-tabular data, automated column/table **data lineage**, fine-grained access control and dynamic masking, **Delta Sharing** (open cross-org/cross-platform sharing), Lakehouse Federation (query external sources through UC)
-- **Notebooks vs production code:** Repos/Git integration, **Databricks Asset Bundles (DABs)** for CI/CD and environment promotion, CLI-based deployment; the notebook-only anti-pattern (cross-ref Ch.23)
-- **Cost/performance tuning (DBU economics):** DBUs by compute type, serverless vs classic cost model, cluster right-sizing, Photon cost/benefit, spot/preemptible strategy
+### 10.5 EU regulatory architecture
+- **GDPR by design in pipelines** — purpose limitation as machine-readable purpose tags, minimisation at ingestion, storage limitation enforced by retention jobs, Art. 30 records of processing generated from lineage, DPIA triggers, 72-hour breach notification and the logs it requires; erasure mechanics are §13.2, pseudonymisation law is §13.2.
+- **Residency, transfers and extraterritorial access** — residency (where bytes rest) vs sovereignty (who can compel access, e.g. the US CLOUD Act) vs localisation; Schrems II, SCCs with transfer-impact assessments, the EU–US Data Privacy Framework (upheld by the General Court in *Latombe*, Sept 2025; appeal C‑703/25 P pending at the CJEU), remote support access as a transfer; region-pinned storage and compute routing, EU-only operations, customer-held keys as a supplementary measure.
+- **EU Data Act for data platforms** — applicable since 12 Sept 2025: user and third-party access to connected-product data (product-design obligations from 12 Sept 2026), FRAND data-sharing terms, cloud switching rights (notice and transition periods, export of data and metadata in interoperable formats, switching and egress charges capped at cost until 11 Jan 2027 and banned from 12 Jan 2027); open table formats and export APIs as a compliance strategy.
+- **EU AI Act duties for data engineers** — in force 1 Aug 2024; prohibitions and AI literacy from 2 Feb 2025; general-purpose-AI obligations (training-data summary, copyright policy) from 2 Aug 2025; Art. 10 data-governance duties for high-risk systems (representativeness, bias examination, provenance) deferred by the 2026 AI Omnibus to 2 Dec 2027 (Annex III) and 2 Aug 2028 (Annex I-embedded); versioned training snapshots, dataset documentation and lineage as the compliance artefacts (§17.1).
+- **NIS2, DORA and CRA obligations** — NIS2 risk-management and supply-chain duties with 24-hour early warning / 72-hour notification / one-month report (Germany's NIS2UmsuCG in force Dec 2025, ~29,500 entities), DORA for financial entities (applicable 17 Jan 2025: ICT risk, resilience testing, register of ICT third parties including cloud providers), the Cyber Resilience Act for software you ship (reporting from 11 Sept 2026, full application 11 Dec 2027); what each demands of logging, backups and restore proof.
+- **Sovereign cloud and data spaces** — the sovereignty spectrum: EU regions of US hyperscalers → data-boundary commitments → operationally separate sovereign clouds (AWS European Sovereign Cloud, GA Jan 2026, Brandenburg) → partner-operated and EU-owned clouds; SecNumCloud and C5 attestations; the proposed Cloud and AI Development Act (June 2026, four assurance levels, not yet law); Gaia-X trust framework and data spaces (Data Governance Act, Eclipse Dataspace Components implementing the Dataspace Protocol, Catena-X, Manufacturing-X) with usage-policy enforcement at the connector.
+- **DPO, DPIA and works-council co-determination** — German specifics: co-determination under §87(1) No. 6 BetrVG for any technical system able to monitor employee behaviour or performance (MES telemetry, HR analytics, log analytics) → works agreement before go-live; DPO consultation and DPIA; the architectural consequences (aggregation thresholds, pseudonymous operator IDs, access logging, purpose-bound views).
+- *Lab:* generate an Art. 30 record of processing automatically from OpenLineage events plus purpose tags, and add a CI policy test that fails any deployment writing EU-tagged data to a non-EU region or granting a non-EU principal read access.
 
-### 10.4 Infrastructure as Code and platform engineering
-- Terraform / Pulumi for provisioning data infrastructure reproducibly
-- GitOps for data platforms: environment promotion, PR-based infra changes
-- FinOps for data: cost attribution per team/pipeline, spot/preemptible compute strategy, storage tiering, query cost governance (e.g., BigQuery slot reservations, Snowflake credit monitoring)
+### 10.6 SAP and industrial-system integration
+- **SAP extraction paths and their limits** — S/4HANA/ECC data reality (FI/CO, MM, PP, QM tables; CDS views as the semantic extraction layer), mechanisms: ODP delta queues, SLT trigger-based replication, OData, database-level CDC; SAP Note 3255746 (Feb 2024: third-party use of ODP RFC APIs not permitted) and SAP's push to Datasphere / Business Data Cloud (Feb 2025, incl. SAP Databricks) — connector, legal and delta-capability trade-offs; SuccessFactors HR via OData with effective-dated records (inherently SCD) and special-category data (works-council scope).
+- **IT/OT integration without blocking production** — ISA-95 levels and Purdue-model segmentation, OT DMZs and data diodes, MES/SCADA/historian extraction via OPC UA, MQTT/Sparkplug B and historian APIs, edge buffering so a slow consumer can never backpressure a PLC or MES, unified-namespace pattern; the plant data model itself is §16.1, master-data consistency is §8.3.
 
-### 10.5 Europe-specific data architecture (regulatory, industrial, on-prem)
-- **Regulatory and compliance layer:**
-  - GDPR/ePrivacy implications for pipeline design: data residency (data stays in EU, compute routing), retention policies, PII detection/masking, audit trails for regulatory audits
-  - Data sovereignty: Gaia-X framework, European alternatives to US cloud providers, EU data spaces regulation
-  - Works council / data protection officer collaboration: soft skill but real governance requirement in German enterprises
-- **Industrial/SAP integration patterns (manufacturing, automotive, supply chain):**
-  - SAP ERP → data infra: extracting FI/CO (finance), MM (materials), PP (production), QM (quality) data; CDC from SAP HANA
-  - SuccessFactors (HR) → analytics layer
-  - MES/SCADA ↔ ERP ↔ warehouse: orchestration under operational constraints (must not block production systems)
-  - Master data governance: customer/product/plant master data consistency across systems
-- **On-prem-first or hybrid-cloud assumptions:**
-  - On-prem Hadoop/Spark clusters (not cloud-native)
-  - Private cloud / virtual private data centers
-  - Hybrid architectures: on-prem transactional systems, analytics on cloud (data egress costs matter)
-  - Network latency between on-prem and cloud: implications for real-time pipelines
-- **Practical EU data-engineer context:**
-  - German manufacturing plants data model (OEE, production scheduling, quality SPC)
-  - Time-zone and multi-currency considerations for multinational enterprises
-  - Language/localization in data catalogs and governance tools
-  - *Lab*: design a data platform for a 3-plant German manufacturer with GDPR compliance, SAP integration, on-prem+cloud hybrid, data residency constraints
+### 10.7 Hybrid and on-prem architectures
+- **On-prem data platforms after Hadoop** — what an on-prem stack looks like now: legacy HDFS/YARN estates vs S3-compatible object storage + Kubernetes + Spark/Trino + Iceberg; private-cloud and virtualisation-licensing pressure; when on-prem wins (data gravity, OT proximity, sovereignty, steady utilisation) and the operational bill it carries.
+- **Hybrid connectivity, egress and latency** — dedicated interconnects vs VPN, bandwidth-delay product and bulk-transfer throughput, egress pricing, cross-WAN CDC and streaming (MirrorMaker 2 / cluster linking, buffering, ordering across link failure), latency budgets for near-real-time pipelines, deciding where compute lives (data gravity).
+- *Lab:* design a data platform for a 3-plant German manufacturer — SAP S/4HANA extraction path chosen under Note 3255746, OT DMZ ingestion, on-prem + EU-region cloud hybrid, residency and works-council constraints — as an ADR with cost estimate; then run a failure drill (WAN link down 4 hours) and prove buffered catch-up with no loss or duplication.
 
 ## Chapter 11 — Orchestration, Reliability and Data Operations
+How work is scheduled, retried, backfilled and recovered; how long-lived processes survive crashes; and how data pipelines are tested, deployed and kept within their SLOs.
+
 ### 11.1 Orchestration beyond DAG syntax
-- Scheduler/executor/worker architecture
-- Task retries and idempotency
-- Backfills and catchup
-- Dynamic task mapping
-- Pools, queues, concurrency controls
-- Task-level vs workflow-level failure
-- Metadata database and operational concerns
-- Alternatives and trade-offs: Airflow vs Dagster (asset-based orchestration) vs Prefect vs Temporal (durable execution/workflow-as-code)
+- **Orchestrator architecture: scheduler, executor, metadata DB** — Airflow 3 components (API server, scheduler, separate DAG processor, triggerer, workers talking through the Task Execution API/Task SDK instead of the metadata DB, Edge executor for remote workers), Local/Celery/Kubernetes executors, HA schedulers coordinating via row locks (`SKIP LOCKED`), DAG-parsing cost and the metadata DB as the scaling ceiling; Airflow 2 reached end of life 22 Apr 2026.
+- **Idempotent tasks and failure semantics** — tasks run at-least-once (retries, zombie/orphaned tasks, heartbeats), idempotency through deterministic, interval-keyed outputs (partition overwrite, not append), retryable vs non-retryable errors and backoff, task-level vs run-level failure, trigger rules and `upstream_failed` propagation, timeouts.
+- **Data intervals, catchup and backfills** — logical date and data-interval semantics, catchup (off by default in Airflow 3), scheduler-managed backfills (Airflow 3: API/UI-driven, bounded concurrency, reprocess policy), Dagster partition backfills (per-partition vs single-run), resumable backfill design, and the blast radius of a 5-year backfill on shared sources and warehouses.
+- **Dynamic task mapping and fan-out** — runtime-determined parallelism (`expand`/`partial`, map over files or partitions), mapped-task limits, the 10,000-task-DAG anti-pattern vs pushing parallelism into the compute engine.
+- **Concurrency controls: pools, queues, priorities** — pools and slots, `max_active_runs`/`max_active_tasks`, priority weights, queue-to-worker routing, protecting fragile sources (rate-limiting a JDBC source), starvation and fairness; multi-team deployments (experimental since Airflow 3.2).
+- **Deferrable tasks and the triggerer** — asyncio triggers release worker slots while waiting on sensors or external jobs (vs poke and reschedule modes), the triggerer as a separate scaling unit, failure modes (trigger serialisation, triggerer saturation); the same deferral mechanism underlies Airflow 3.1 human-in-the-loop operators and deadline alerts.
+- **Data-aware and event-driven scheduling** — Airflow assets (renamed from datasets in 3.0), asset events and AssetWatchers on message queues, partition-driven asset scheduling (3.2) and partition mappers (3.3), Dagster declarative automation conditions and freshness policies; time-based vs data-driven triggering, thundering herds and missed events.
+- **Asset-centric orchestration (Dagster model)** — software-defined assets vs tasks: the graph is the data products, materialisations, asset checks, partitions and partition mappings, lineage as a by-product; Components and the `dg` CLI (GA in 1.12); where asset-centric fits poorly (imperative side effects, operational workflows).
+- **Orchestrator landscape and selection** — compact comparison: Airflow 3 (self-run, MWAA incl. MWAA Serverless, Cloud Composer, Astronomer), Dagster, Prefect 3, Kestra, Netflix Maestro, Lakeflow Jobs (formerly Databricks Workflows), Azure/Fabric Data Factory, serverless state machines (AWS Step Functions standard vs express, Distributed Map, retry/catch; Google Workflows) — choose by data-awareness, operational burden, ecosystem and cloud coupling.
+- *Lab:* run Airflow 3 with the Celery executor; kill a worker mid-task, kill the scheduler during a 30-day backfill, and saturate a pool; prove idempotency by diffing outputs of two full re-runs; measure scheduler loop latency as the number of DAG files grows from 100 to 5,000.
 
-### 11.1.5 AWS Step Functions (serverless orchestration)
-- **What it is / why:** a serverless state-machine orchestrator for stitching AWS services (Glue, Lambda, Athena, EMR, DynamoDB) into a pipeline without running an Airflow cluster.
-- **Architecture essentials:** state types (Choice/Parallel/Map/Wait), built-in retry/catch with backoff, standard (long-running) vs express (short, high-volume) workflows; pay-per-state-transition.
-- **Trade-off / when not:** great for AWS-centric, event-driven, low-ops pipelines; weaker for complex data-aware DAGs and cross-cloud work — reach for Airflow/Dagster (Ch.11.1) or Temporal (Ch.11.2) there.
-
-### 11.2 Temporal and durable-execution orchestration (paradigm shift)
-- **When DAG-based orchestration isn't enough:**
-  - Long-running workflows (hours to days) with internal state between steps
-  - Human-in-the-loop workflows (approval gates, manual intervention, resumable after human decision)
-  - Workflow code as the source of truth (vs metadata DB + DSL separation)
-  - Built-in retry/exponential backoff without task re-queueing overhead
-- **Temporal architecture:** workers poll Temporal server for tasks, execute SDK code, durably record state; replays on failure to restore state
-- **Durable execution semantics:** workflow code is deterministic and replayable; side effects (DB writes, API calls) are activity functions outside the deterministic zone
-- **Trade-offs:** complexity for long-lived workflows; overkill for simple DAGs; requires rethinking error handling (activities are retryable, workflows are not)
-- **Comparison table:**
-  - Airflow: DAG-centric, easy DAG visualization, large ecosystem, metadata DB bottleneck at scale (substantially re-architected by **Airflow 3.0**, April 2025 — task-execution API, DAG versioning, event-driven scheduling)
-  - Dagster: asset graph, data-aware lineage, great for lineage-first platforms
-  - Temporal: durable code, long-lived workflows, best for event-driven / saga patterns
-  - Prefect: middle ground, newer patterns
-- *Lab*: migrate a long-running approval-gate workflow from Airflow to Temporal; measure operational overhead reduction
+### 11.2 Durable execution and Temporal
+- **Durable execution: event history and replay** — why DAG orchestrators struggle with long-lived, stateful, human-paced processes; Temporal's architecture (frontend, history and matching services, persistence; workers poll task queues), the event-sourced workflow history, deterministic replay to rebuild in-memory state after a worker crash, history-size limits and Continue-As-New.
+- **Workflow determinism and versioning** — workflow code must be deterministic (no wall clock, randomness or I/O outside SDK APIs); side effects live in activities with retry policies and must be idempotent (at-least-once); workflow-task failures are retried but workflow-execution retries are opt-in and rarely right; non-determinism errors on code change, patching vs Worker Versioning (pinned vs auto-upgrade deployments, GA 2026, legacy version sets removed).
+- **Signals, timers and human-in-the-loop sagas** — signals, queries and updates; durable timers (sleep 30 days without a running process); approval gates resumable after a human decision; saga compensation across multi-system writes; child workflows and Nexus for cross-namespace calls; contrast with Airflow 3.1 human-in-the-loop operators.
+- **Durable execution landscape** — Temporal (and its Cadence lineage), Restate, DBOS (state in your Postgres), AWS Lambda durable functions (Dec 2025: checkpoint/replay, 15-minute invocations, executions up to one year), Step Functions, Azure Durable Functions: dedicated cluster vs library-on-your-database vs fully managed, and what each costs in operations and lock-in.
+- **Choosing DAG, asset or durable models** — decision rules across Airflow 3 (time- and asset-triggered batch DAGs), Dagster (asset graph, lineage-first), Temporal (code-first, long-lived, event-driven, sagas) and Prefect (dynamic Python flows); hybrid designs (the DAG orchestrator triggers a durable workflow for the long-running human-paced part).
+- *Lab:* migrate a multi-day approval-gate workflow from Airflow sensors to Temporal; kill workers mid-approval, deploy a code change mid-flight (observe the non-determinism error, fix it with versioning), and compare recovery time, lines of state-handling code and infrastructure cost against the Airflow version.
 
 ### 11.3 Data reliability engineering
-- Freshness, completeness, validity, uniqueness, consistency
-- Data quality SLIs/SLOs and error budgets for data
-- Data incidents and blast radius; incident command for data outages
-- Runbooks and ownership; on-call for data pipelines
-- Backfills and replay; idempotent, resumable backfill design
-- Disaster recovery: RPO/RTO, cross-region failover, backup/restore testing
-- Schema-change management: expand/contract pattern, backward/forward compatibility rollout
+- **Data SLIs, SLOs and error budgets** — the quality dimensions (freshness, completeness, validity, uniqueness, consistency, accuracy) turned into measurable SLIs at the consumer's read point, SLO targets per data tier, error budgets that gate risky changes and backfills; the dimensions themselves are refresher material.
+- **Data incident response and blast radius** — detect → triage → contain (circuit breakers that halt downstream publication, quarantine partitions) → repair (targeted backfill) → postmortem; incident-command roles, lineage-derived blast radius, runbooks, asset-level ownership and on-call design, routing alerts to owners.
+- **Disaster recovery for lakehouse platforms** — RPO/RTO per data tier; why bucket replication is not DR (table metadata holds absolute paths, catalog databases need their own backups, Kafka replication needs offset translation, encryption keys must be multi-region), immutable backups against ransomware, restore drills as the only proof (DORA-style resilience testing).
+- **Schema-change rollout: expand/contract** — expand → migrate consumers → contract across producers and consumers, schema-registry compatibility modes (backward/forward/full), dual-write/dual-read windows, coordinated with contract checks (§11.4) and CDC schema evolution (§8.2).
+- *Lab:* define three data SLOs for a pipeline with burn-rate alerts; run a game day injecting a stale source, a duplicate load and the loss of the primary bucket's region; measure time-to-detect, time-to-contain and achieved RPO/RTO against target.
 
 ### 11.4 DataOps: testing, CI/CD and deployment for data pipelines
-- **Testing the transformation layer:** unit tests for transforms; **data-diff / regression testing** (compare old vs new pipeline output on the same input); golden-dataset snapshot tests; assertion/expectation tests (Great Expectations, Soda, dbt tests — cross-ref Ch.13.3); property-based tests for invariants (cross-ref Ch.4.2)
-- **CI for data code:** lint/compile/test dbt and Spark jobs on every PR; run tests against a sampled or seeded synthetic dataset; fail the build on broken lineage, a failing data contract, or an SLA regression
-- **Environment promotion:** dev → staging → prod parity; isolated per-environment data/catalogs; seeded synthetic data generators (cross-ref Ch.18 rubric); config/secret separation across environments
-- **Deployment strategies for pipelines:** blue-green and canary pipeline deploys; shadow/parallel runs (write to a side table and diff before cutover); **write-audit-publish (WAP)** pattern; feature-flagging a new transform
-- **Data-contract enforcement in CI:** schema + SLA + semantics checked before merge (cross-ref Ch.3.4, Ch.13.4), with automated notification of downstream owners on a breaking change
-- **GitOps and reproducibility:** everything-as-code (pipelines, infra, tests, contracts); one-command local bring-up; pinned dependencies (cross-ref Ch.10.4, Ch.23)
+- **Testing pyramid for transformations** — unit tests on transforms (dbt unit tests, pytest on PySpark functions via local Spark or Spark Connect), property-based invariants (§4.2), golden-dataset snapshots, in-pipeline expectation tests (§13.3); what belongs at which layer and the usual sources of flakiness (ordering, time, floating point).
+- **Data-diff regression testing** — comparing old vs new pipeline outputs on identical input: full join-diff vs checksum bisection across systems (hash key ranges, recurse into mismatching segments), tolerances for floats and timestamps, column-level change summaries, and the cost of diffing TB-scale tables.
+- **Slim CI and state-aware builds** — build and test only modified models plus downstream (dbt `state:modified`, `--defer` to production artefacts), SQLMesh plans and virtual environments, column-level breaking-change detection (dbt Fusion, SQLMesh), CI on sampled or seeded synthetic data, failing the build on broken lineage or SLA regression.
+- **Zero-copy environments: clones and branches** — dev/staging/prod isolation without copying data: Snowflake zero-copy clones, Delta shallow clones, Iceberg branches and tags, catalog-level branches (Nessie, lakeFS); config and secret separation; seeded synthetic generators (Ch.18 rubric); promotion via deploy jobs or Declarative Automation Bundles (formerly Databricks Asset Bundles).
+- **Write-audit-publish and safe deploys** — WAP via an Iceberg audit branch fast-forwarded on success or a staging table with atomic swap/view repoint; blue-green tables, shadow runs diffed before cutover, canary by partition or tenant, feature-flagged transforms, rollback via time travel.
+- **Contract enforcement in CI** — the single home for data contracts: contract-as-code (Open Data Contract Standard v3.1 under Bitol/LF AI & Data — schema, quality rules, SLAs, ownership), breaking-change classification, producer-side CI gates plus runtime enforcement, automated notification of downstream owners via lineage (modelling view in §3.4, ownership in §13.4).
+- *Lab:* put a dbt or Spark project under CI — slim CI on every PR, a data-diff against production on a zero-copy clone or branch, a contract check that blocks a column rename, and a WAP publish; plant ten known regressions and report how many each layer catches and the CI minutes spent.
 
 ## Chapter 12 — Containers, Kubernetes and Delivery
-### 12.1 Docker for data workloads
-- Images, layers, volumes, networks
-- Multi-container environments
-- Resource limits and health checks
-- Secrets/configuration
-- Reproducible builds
+Packaging data workloads reproducibly, running batch and stateful streaming on Kubernetes under real resource pressure, and delivering platform changes by reconciliation.
 
-### 12.2 Kubernetes concepts for data engineers
-- Pods, deployments, jobs, cron jobs
-- Services and networking
-- ConfigMaps and Secrets
-- Requests/limits
-- Persistent volumes
-- Schedulers and node pools
-- Failure/restart behavior
-- Spark-on-Kubernetes and Kafka-on-Kubernetes operational patterns
-- *Lab*: run Spark-on-Kubernetes, inject executor-pod eviction, OOMKilled, and PVC failure, and observe restart, task re-scheduling, and recovery behavior under each
+### 12.1 Containers for data workloads
+- **Images, layers and local environments** *(refresher)* — layers and copy-on-write filesystems, build-cache ordering, multi-stage builds, volumes and networks, Compose for local multi-service stacks (Kafka + Postgres + object store), configuration via environment and mounted files.
+- **Reproducible, minimal, signed images** — pinned base-image digests and dependency lockfiles, deterministic builds, slimming JVM/PySpark images, SBOMs and provenance attestations (SLSA), signing and verification (Sigstore), vulnerability scanning in CI; why "works on my laptop" breaks scheduled pipelines.
+- **Container resource limits: cgroups and OOM** — cgroups v2 memory and CPU limits, CFS quota throttling, `OOMKilled` (kernel) vs JVM `OutOfMemoryError` vs Python RSS growth, container-aware JVM sizing, Spark `memoryOverhead`, liveness vs readiness vs startup probes and the restart loops a wrong probe causes.
+- *Lab:* build a PySpark image three ways (naive, multi-stage, distroless); compare size, cold-start time and CVE count; then run it with a memory limit 10% below need and capture the distinct OOMKilled vs Java OOM signatures in logs and metrics.
+
+### 12.2 Kubernetes for data workloads
+- **Kubernetes workload primitives** *(refresher)* — Pods, Deployments, StatefulSets, Services and DNS, ConfigMaps and Secrets, PersistentVolumes/Claims and StorageClasses (CSI), node pools, taints/tolerations and affinity, restart policies.
+- **Requests, limits, QoS and eviction** — the scheduler places by requests, the kubelet enforces limits; QoS classes (Guaranteed/Burstable/BestEffort) and eviction order under node pressure, the CPU-limit throttling debate, priority classes and preemption, PodDisruptionBudgets, in-place pod resize (GA in 1.35).
+- **Jobs and CronJobs for batch pipelines** — Indexed Jobs, per-index backoff limits (GA 1.33), pod failure policy (ignore disruptions, fail fast on exit codes), success policy, TTL cleanup; CronJob `concurrencyPolicy`, `startingDeadlineSeconds` and missed-schedule behaviour; when Kubernetes CronJobs suffice and when you need an orchestrator (Ch.11).
+- **Batch scheduling: queues and gang scheduling** — why pod-at-a-time scheduling deadlocks distributed jobs (drivers running, executors pending), gang scheduling and quota queues (Kueue with JobSet, Volcano, YuniKorn; native workload-aware gang scheduling alpha since 1.35), fair sharing across teams, Dynamic Resource Allocation (GA 1.34) for GPUs.
+- **Spark on Kubernetes internals** — the driver creates executor pods through the API server, dynamic allocation with shuffle tracking, graceful executor decommissioning with shuffle/block migration (spot nodes), remote shuffle services (Apache Celeborn), pod templates, operators (Kubeflow Spark Operator; the Apache Spark Kubernetes Operator subproject with SparkApp/SparkCluster CRDs) vs EMR on EKS / Dataproc on GKE.
+- **Stateful streaming on Kubernetes: Kafka, Flink** — stable identities and PVC-per-broker, zone/rack awareness, ISR-safe rolling restarts, Strimzi (KRaft-only since 0.46), the Flink Kubernetes Operator (savepoint-based upgrades, autoscaler), checkpoints on object storage; when a managed service is the better trade.
+- **Autoscaling data workloads** — HPA on custom/external metrics, KEDA scaling on Kafka lag or queue depth (incl. scale-to-zero), node autoscaling (Cluster Autoscaler vs Karpenter), spot interruption handling, safe scale-down for stateful pods.
+- *Lab:* run Spark on Kubernetes and inject executor-pod eviction, OOMKilled executors, PVC failure and a spot-node interruption with decommissioning on vs off; observe restart, task re-scheduling and recovery time under each; then submit two concurrent jobs that only fit one at a time and show deadlock without gang scheduling vs clean queueing with Kueue.
+
+### 12.3 Delivery
+- **GitOps reconciliation for data platforms** — pull-based reconcilers (Argo CD, Flux) continuously converge clusters to Git, Helm/Kustomize packaging, environment promotion by pull request, automatic drift correction, secrets in GitOps (External Secrets, SOPS), progressive delivery for streaming services; the split between IaC for cloud resources (§10.4) and GitOps for in-cluster state.
+- *Lab:* promote a Flink job from staging to production through Argo CD with a savepoint-preserving upgrade; introduce manual drift with `kubectl edit` and observe reconciliation; roll back and verify no state loss.
 
 ## Chapter 13 — Observability, Governance and Security
+Knowing the platform is healthy, knowing what data exists and where it flows, and controlling who can see it — enforced by machines, auditable by regulators.
+
 ### 13.1 Observability
-- Structured logging
-- Metrics: throughput, latency, error rate, lag, freshness, backlog
-- Tracing concepts (OpenTelemetry)
-- High-cardinality dimensions and metric design
-- Alert fatigue and actionable alerts
-- Pipeline lineage and dependency visualization
+- **Telemetry for pipelines: logs, metrics, traces** — structured logs with correlation IDs (run, task, asset, partition), metric types (counter, gauge, histogram), the pipeline golden signals (throughput, latency, error rate, consumer lag, freshness, backlog), push vs pull collection.
+- **OpenTelemetry across batch and streaming** — OTel signals and the Collector, W3C trace-context propagation through Kafka headers, span links for fan-in batch steps, semantic conventions for messaging and databases, following one record from CDC to warehouse; OTel (operational telemetry) vs OpenLineage (lineage metadata) as complements (§13.3).
+- **Metric cardinality and observability cost** — label explosion (per-partition, per-customer series), series churn, histogram design and exemplars, downsampling and retention tiers, per-series vs per-GB pricing; cloud-native stacks (CloudWatch metrics/Logs Insights, Azure Monitor, Cloud Monitoring) vs Prometheus/Grafana/Datadog for cross-system correlation.
+- **SLO burn-rate alerting** — symptom-based alerts on SLOs, multi-window multi-burn-rate rules, schedule-aware freshness alerts (no page for an expected gap), deduplication and owner routing, the "every page must be actionable" test.
+- *Lab:* instrument a Kafka→Spark→warehouse pipeline with OTel traces and Prometheus metrics, propagating trace context through Kafka headers; add a per-customer label and measure the series explosion; build a burn-rate freshness alert and replay a stale-source incident against it.
 
 ### 13.2 Governance and security
-- Data classification
-- PII and sensitive-data handling
-- Encryption at rest/in transit; envelope encryption, KMS, key rotation; **tokenization** and **format-preserving encryption** (keep referential integrity on masked data)
-- **Privacy-enhancing techniques:** anonymization vs pseudonymization; **k-anonymity, l-diversity, t-closeness**; **differential privacy** (noise budgets for aggregate release); hashing/salting of identifiers; re-identification risk
-- Dynamic data masking and column-level masking policies
-- RBAC/ABAC concepts
-- Column/row-level security
-- Data catalogs and lineage
-- Retention and deletion policies; right-to-erasure / crypto-shredding
-- Auditability
-- **Regulatory frameworks (cross-jurisdiction — complements the EU/GDPR-specific coverage in Ch.10.5):** GDPR (EU), **CCPA/CPRA** (California), **HIPAA** (US healthcare/PHI), **PCI-DSS** (payment cards), **SOX** (financial-reporting controls), **HITRUST**, **LGPD** (Brazil), **PIPL** (China); data residency/sovereignty; how each shapes retention, access control, audit trails, and pipeline design
+- **Data classification and sensitive-data discovery** — classification schemes (public → restricted; PII, PHI, PCI), automated discovery (pattern, ML and LLM classifiers in Macie, Purview, Unity Catalog, Sensitive Data Protection), tag propagation along lineage, false negatives in free text; classification as the input every later policy depends on.
+- **Envelope encryption, KMS and key rotation** — DEK/KEK hierarchy and what the KMS actually sees, KEK rotation without re-encrypting data vs DEK re-encryption after compromise, customer-managed, BYOK and external/hold-your-own keys, TLS and mTLS in transit, client- vs server-side encryption, key deletion as crypto-shredding.
+- **Tokenization and format-preserving encryption** — vaulted vs vaultless tokenization, deterministic encryption for joinability and its frequency-analysis leak, FPE with FF1 (FF3/FF3-1 dropped from the NIST SP 800-38G Rev. 1 draft after cryptanalysis), preserving referential integrity across masked datasets and PCI scope reduction.
+- **Pseudonymisation vs anonymisation** — the legal and technical line: pseudonymised data remains personal data for whoever can re-identify; the CJEU's relative approach in *EDPS v SRB* (C‑413/23 P, Sept 2025: may be non-personal for a recipient with no means to re-identify) and the pending GDPR changes in the Digital Omnibus; keyed hashing (HMAC) vs plain hashing (dictionary attacks on emails and phone numbers), linkage attacks.
+- **k-anonymity, l-diversity, t-closeness** — generalisation and suppression into equivalence classes, homogeneity and background-knowledge attacks motivating l-diversity and t-closeness, utility loss, and why all three break on high-dimensional data (Netflix Prize de-anonymisation).
+- **Differential privacy for aggregate release** — ε/δ, sensitivity, Laplace and Gaussian mechanisms, composition and budget accounting, per-user contribution bounding, DP in SQL engines and libraries (BigQuery differential-privacy clause, OpenDP, PipelineDP), the 2020 US Census as the production case; utility vs privacy trade-off.
+- **Access-control models: RBAC, ABAC, policy-as-code** — role explosion in RBAC, attribute/tag-based policies, policy decision vs enforcement points, policy engines (OPA, Cedar), federation with the enterprise IdP (SAML/OIDC, SCIM provisioning), periodic access reviews.
+- **Row/column security and dynamic masking in-engine** — enforce in the query engine, not the application: row filters, column masks and dynamic masking (Snowflake masking/row-access policies, Unity Catalog ABAC, BigQuery row-level security and policy tags, Lake Formation, Trino with Ranger/OPA), the impact on pruning and caching, and bypass paths (direct file reads, extracts, unprotected materialized views).
+- **Right to erasure in immutable lakehouses** — deletes vs time travel (snapshots must expire), MOR delete files until compaction, `VACUUM`/`expire_snapshots`/orphan removal, replicas, backups and Kafka topics (compaction tombstones, retention), per-subject key crypto-shredding and its key-management cost, proving deletion to an auditor; retention policies as code.
+- **Audit logging and tamper evidence** — data-access audit trails (cloud data-event logs, catalog system tables, warehouse audit logs), WORM storage and hash chaining, retention vs minimisation, using audit logs for access reviews and incident forensics.
+- **Global regulatory map for pipelines** — CCPA/CPRA, HIPAA (PHI, BAAs, minimum necessary), PCI DSS v4.0.1 (future-dated requirements mandatory since 31 Mar 2025), SOX IT general controls (change management, access reviews), LGPD, PIPL (cross-border assessments), India's DPDP Act (Rules notified Nov 2025, phased to May 2027), HITRUST as a certifiable control framework rather than a law; how each shapes retention, access, audit and residency design (EU specifics in §10.5).
+- *Lab:* implement GDPR erasure for one data subject across an Iceberg or Delta table with time travel, a Kafka topic and a nightly backup — once by delete + snapshot expiry, once by crypto-shredding; prove completion from audit logs, then attempt re-identification against a k-anonymised release of the same data.
 
 ### 13.3 Tooling for governance at scale
-- Data catalogs: DataHub (OSS, actively developed), Collibra/Atlan (enterprise); Amundsen is now less actively maintained — know it, but don't lead with it
-- Automated lineage: OpenLineage/Marquez standard, lineage from dbt/Spark/Airflow integrations
-- Data quality frameworks: Great Expectations, Soda Core/Cloud, dbt tests, Monte Carlo-style data observability (anomaly detection on freshness/volume/schema)
+- **Metadata platforms and active catalogs** — architecture of metadata graphs: pull crawlers vs push/event-based ingestion (change-log streams), search, usage statistics, glossary; open source (DataHub, OpenMetadata, Unity Catalog OSS, Apache Polaris — top-level ASF project since Feb 2026 — as technical catalogs) vs enterprise (Collibra, Atlan, Alation); technical vs business catalog; Amundsen is now low-activity.
+- **OpenLineage: events, facets and lineage graphs** — the run/job/dataset event model (START/COMPLETE/FAIL), facets (schema, column lineage, data quality, SQL), integrations (Airflow provider built in, Spark listener, Flink, dbt), consumers (Marquez reference server, DataHub, cloud catalogs), column lineage from SQL parsing vs runtime plans, and the gaps static lineage misses.
+- **Data quality frameworks** — where checks run (in-pipeline gates vs post-hoc scans) and what they cost at scale; dbt tests and unit tests, GX Core expectation suites (open source now stewarded by Fivetran; GX Cloud went to FICO in 2026), Soda 4 contracts-first engine, Deequ/PyDeequ metric-based checks, Databricks DQX; incremental metrics and sampling.
+- **Data observability: anomaly detection on metadata** — monitors on freshness, volume, schema and distributions built from warehouse metadata and query logs, seasonal baselines, false-positive control, rules vs learned thresholds; observability (unknown unknowns) vs tests (known invariants); Monte Carlo, Anomalo, Elementary and peers as instances.
+- *Lab:* wire OpenLineage from Airflow and Spark into Marquez or DataHub; plant a bad partition and compute its blast radius from the lineage graph; compare the column lineage produced by SQL parsing with Spark runtime lineage for the same job.
 
-### 13.3.5 AWS CloudWatch (pipeline observability)
-- **What it is / why:** AWS-native metrics, logs, alarms, and dashboards — the default place Glue/Lambda/Step Functions emit operational signals.
-- **Architecture essentials:** custom metrics (rows ingested, freshness/lag, null/duplicate rate, cost), **Logs Insights** for ad-hoc log querying, alarms on SLO breaches, dashboards with drill-down to logs.
-- **Trade-off / when not:** fine inside AWS, but weak cross-system correlation and costly at high metric cardinality — Datadog/Grafana + Prometheus and OpenTelemetry (Ch.13.1) are the vendor-neutral alternatives.
-
-### 13.4 Governance architecture and data ownership (platform-engineering perspective)
-- **Ownership model:** domain teams own data products (not centralized data office), with platform team providing self-serve tooling; reverse Conway's Law (org structure should match data product boundaries)
-- **Data contracts:** versioned, machine-checkable schema + SLO (freshness, completeness) + semantics; enforced in CI before deployment
-- **Multi-tenancy governance:** per-tenant cost allocation, isolation (logical vs physical), per-tenant retention policies, per-tenant compliance (GDPR erasure, audit logs)
-- **Access control at scale:** column-level / row-level security enforced in query engines (Trino/Presto RLS, Snowflake dynamic masking), not application layer; federation with enterprise IAM (LDAP, SAML, OAuth)
-- **Lineage-driven decision-making:** blast radius assessment (if table X is stale, which downstream tables are affected?); impact analysis before schema changes; automated notification of dependent teams
-- **Stewardship vs pure automation:** some governance decisions require human stewardship (criticality assessment, retention exceptions, PII classification); don't over-automate subjective judgments
-- *Lab*: design governance for a platform with 3 domain teams + 2 compliance requirements; instrument lineage collection; build a self-serve table-registration flow with schema validation
+### 13.4 Governance architecture and data ownership
+- **Federated governance operating model** — domain teams own data products, a platform team supplies self-serve tooling, central policy is applied computationally; reverse Conway's law; what must stay human stewardship (criticality, retention exceptions, ambiguous PII classification) vs what to automate; links to §3.4 (data mesh) and §19.1 (team topology).
+- **Multi-tenant isolation and compliance** — the isolation spectrum (tenant-ID rows → schema/catalog per tenant → account/project per tenant), noisy neighbours and blast radius, per-tenant keys for crypto-shredding, per-tenant retention and residency, per-tenant cost allocation (§10.4).
+- **Lineage-driven impact analysis** — blast-radius scoring before a schema change or deprecation, stale-table propagation, automated notification of dependent owners, deprecation workflows, lineage as the backbone of incident triage (§11.3) and contract enforcement (§11.4).
+- *Lab:* design governance for a platform with three domain teams and two compliance regimes; instrument lineage collection; build a self-serve table-registration flow that validates schema, contract and classification tags before a table becomes discoverable.
 
 ## Systems in Production — Milestone 5: operating platforms at scale
-### Netflix — failure injection as a product, not an afterthought
-- **Chaos engineering (Chaos Monkey, and later the Simian Army).** Forcing problem: Netflix runs on AWS, where instance failure is a certainty, not an edge case; manual disaster-recovery drills don't scale and don't run often enough to build real confidence. Core decision: automatically and continuously kill production instances during business hours, forcing every service to be built for graceful degradation by default rather than by discipline. Direct lesson for the Ch.18/Ch.22 rubrics: "failure injection" in this syllabus's capstone rubric is not academic — it is a deliberate echo of Chaos Monkey's actual production practice.
+- **Borg (2015, Verma et al., EuroSys) — one cluster manager for prod and batch.** Forcing problem: Google ran latency-sensitive services and batch jobs on separate machines and wasted capacity. Mechanism: cells, priorities and quota, admission control, bin-packing, and preemption of batch work by production work, with reservations reclaimed from over-provisioned tasks. Trade-off accepted: batch jobs must tolerate eviction. What it proves: the QoS, preemption and gang-scheduling problems of §12.2, and the design of Kubernetes itself (pods, labels, IP-per-pod), come straight from this lineage.
+- **Netflix Chaos Monkey and ChAP (2011–2017; Basiri et al., IEEE Software 2016) — failure injection as a product.** Forcing problem: on AWS instance failure is a certainty, and manual DR drills don't run often enough to build confidence. Mechanism: automatically and continuously kill production instances during business hours (Chaos Monkey, then the Simian Army), later controlled experiments on a small slice of real traffic against a control group (Chaos Automation Platform). Trade-off accepted: deliberate, bounded customer-facing risk in exchange for verified resilience. What it proves: the failure-injection requirement in the Ch.18 rubric and the game days of §11.3 are production practice, not academic.
+- **Apache Airflow (2014, Beauchemin at Airbnb; Apache top-level 2019) — pipelines as Python code.** Forcing problem: cron-scheduled ETL with no shared dependency model, no retries, no visibility and no backfill story. Mechanism: Python-defined DAGs, a metadata-database-centric scheduler, a web UI, and built-in retries and backfills. Trade-off accepted: a scheduler bound to the metadata DB and DAG-file parsing that became the scaling ceiling at high task density. What it proves: Airflow 3.0 (Apr 2025) answered with the Task Execution API, a separate DAG processor, DAG versioning and asset/event-driven scheduling; 3.1–3.3 added human-in-the-loop, deadline alerts and partitioned assets, and Airflow 2 reached end of life in Apr 2026 (§11.1).
+- **Cadence → Temporal (2017 Uber; Temporal 2019, Fateev & Abbas) — durable execution as a platform.** Forcing problem: long-running business processes spread across microservices, each hand-rolling state machines, retries and timers in queues and databases. Mechanism: an event-sourced workflow history plus deterministic replay, so ordinary code survives crashes and sleeps for weeks. Trade-off accepted: strict determinism rules and code versioning discipline. What it proves: the paradigm of §11.2; the open-source Cadence fork became Temporal, and its model is now copied by Lambda durable functions, Restate and DBOS.
+- **Netflix Maestro (2024 open source, Netflix) — horizontally scaled workflow orchestration.** Forcing problem: the earlier orchestrator (Meson) scaled only vertically and approached the largest available instance. Mechanism: a stateless, horizontally scalable engine over a distributed database and queues, supporting DAGs plus foreach loops, sub-workflows, conditionals and cycles; around half a million jobs a day, two million at peak. Trade-off accepted: a JSON workflow definition and an in-house platform over the Airflow ecosystem. What it proves: the metadata-DB ceiling of §11.1 is real at that scale, and the fix is a scale-out state store, not a faster scheduler loop.
+- **Airbnb Minerva (2021, Airbnb engineering) — the metrics layer born from disagreeing dashboards.** Forcing problem: teams computed "bookings" and "revenue" with subtly different filters, and exec dashboards disagreed. Mechanism: centrally defined, versioned metric and dimension definitions that every downstream report must consume instead of re-deriving, with a compute layer that materialises them. Trade-off accepted: a central review bottleneck on metric definitions. What it proves: the semantic-layer category (§3.4, §17.7) exists because this problem is universal.
+- **LinkedIn DataHub (2019, LinkedIn engineering) — metadata as a stream.** Forcing problem: the crawler-based catalog (WhereHows) was always stale and could not model the growing variety of entities. Mechanism: a generalised metadata graph fed by push-based metadata change events over Kafka, with search and graph indexes built as derived views of that log. Trade-off accepted: producers must emit metadata, and connectors must be maintained. What it proves: the push-vs-pull metadata trade-off of §13.3 and the same "log as the source of truth" idea as Milestone 4, applied to metadata.
+- **Monarch (2020, Adams et al., VLDB) — monitoring at planetary scale.** Forcing problem: Borgmon, Google's first monitoring system (the inspiration for Prometheus), encouraged one instance per team, unschematised metrics and manual sharding, which made cross-team correlation hard and operations heavy. Mechanism: a regionalised, multi-tenant, in-memory time-series database with global query and configuration planes, push-based collection, a schematised data model with distribution-typed values, lexicographic key sharding and aggressive query pushdown to zones and leaves. Trade-off accepted: in-memory storage and schema setup in exchange for availability and scale. What it proves: the cardinality and cost problems of §13.1 eventually need the same sharding and federation design as the data systems being monitored.
 
-### Airbnb — the orchestrator and the metrics layer, born from specific pain
-- **Airflow (2014+) — the workflow orchestrator born from a specific pain point.** Forcing problem: Airbnb's growing set of cron-scheduled ETL/analytics jobs had no shared dependency model, no retry semantics, no visibility into failures, and no backfill story — every team's cron jobs were a black box to every other team. Core decision: workflows as **Python-defined DAGs** (code, not XML/config), a web UI for visibility, and built-in backfill/retry — explicitly chosen so data engineers could express pipeline logic in the same language as their transformations. Trade-off (now well-understood, see Ch.11.1/Ch.11.2): the metadata-database-centric scheduler architecture that made Airflow easy to adopt is the same architecture that bottlenecks at very high DAG/task-density scale — directly motivating Ch.11.2's Temporal comparison. (This critique predates **Airflow 3.0** (April 2025), which re-architected much of it — a task-execution API decoupling workers from the metadata DB, DAG versioning, and event-driven/data-aware scheduling — so it now applies mainly to pre-3.0 deployments.)
-- **Minerva / metrics platform — the semantic-layer problem before it had a name.** Forcing problem: different Airbnb teams computed "bookings" or "revenue" with subtly different filters, producing dashboards that disagreed with each other in exec reviews. Core decision: a centralized metrics definition layer that every downstream dashboard/report must consume rather than re-deriving. Lesson: this is the lived experience behind Ch.3.4's "single definition of a metric reused everywhere" bullet — the dbt Semantic Layer / Cube / LookML category exists because this problem is universal, not Airbnb-specific.
+# Milestone 6 — Theory & Design: Distributed Systems and System Design
+The reasoning layer: the theory that explains *why* the mechanisms of Milestones 1–5 are correct, and a repeatable method for designing a new data system under explicit requirements and trade-offs.
 
-### Google — monitoring the monitors
-- **Monarch / Borgmon — metrics at planetary scale.** Forcing problem: monitoring hundreds of thousands of jobs across global datacenters with a single Prometheus-style server was never going to scale. Core decision: a hierarchical, globally-distributed time-series database (Borgmon, later Monarch) with push-based collection and a purpose-built query language (predecessor to **PromQL**'s design lineage). Lesson for Ch.13: the observability stack you build in-house eventually needs the same sharding/federation thinking as the data systems it's monitoring.
+## Chapter 14 — Distributed Systems Theory
+The formal backbone under replication, streaming and lakehouse commits: system models, time, consistency, impossibility results, consensus, failure detection and coordination-free convergence. §5.2–§5.3 give the database-practitioner view; this chapter gives the proofs and the precise definitions. Implementation depth (Raft message formats, Kafka-style logs, CRDT merge operators) lives in → *Rust Systems Engineering* M5.
 
----
+### 14.1 System models: what you are allowed to assume
+- **Timing and failure models** — synchronous vs partially synchronous (Dwork–Lynch–Stockmeyer GST) vs asynchronous networks; crash-stop, crash-recovery, omission and Byzantine faults; fair-loss vs reliable links. Every protocol's correctness claim is relative to one model, and production incidents start where the real system leaves that model.
+- **Two Generals and common knowledge** — why no finite exchange of messages over a lossy link can guarantee coordinated action; the reason every distributed commit, ack or "exactly once" scheme ends up relying on retries, idempotence or a timeout-based assumption.
+- *Lab:* simulate one protocol (e.g. a primary–backup register) under each fault model in turn — message loss, reordering, crash-recovery with a lost disk — and record which invariant breaks first in each.
 
-# MILESTONE 6 — Theory & Design: Distributed Systems and System Design
-The reasoning layer. Everything before this milestone was a mechanism; here you learn the theory that explains *why* those mechanisms are correct, and the method to design a new system under requirements and trade-offs.
+### 14.2 Time, clocks and ordering
+- **Physical clocks and why they lie** — quartz drift, NTP synchronization error, leap-second smearing, VM pauses, wall-clock vs monotonic clocks; PTP and bounded-error clock services (e.g. AWS ClockBound). Why "last write wins by timestamp" silently drops writes, and why lease-based protocols must budget for maximum skew.
+- **Lamport clocks and happens-before** — the happens-before partial order, scalar logical clocks and the clock condition; a scalar clock yields a total order consistent with causality but cannot tell you whether two events were concurrent.
+- **Vector clocks and version vectors** — per-process counters that capture causality exactly and detect concurrency; version vectors (per replica) vs vector clocks (per process), dotted version vectors, sibling explosion and metadata growth; how Dynamo-style stores surface conflicts to the application.
+- **Hybrid logical clocks** — HLC (Kulkarni et al., 2014): a physical-time component plus a logical counter, bounded divergence from wall time, fits in 64 bits; how CockroachDB and YugabyteDB use HLC plus a maximum-offset bound and read restarts (uncertainty intervals) instead of specialized hardware.
+- **TrueTime and commit wait** — an API returning an interval [earliest, latest] with bounded uncertainty ε (GPS + atomic clocks); commit wait (≈2ε) makes timestamp order equal real-time order, giving external consistency; the cost model of shrinking ε (case study: Spanner, below).
+- *Lab:* implement Lamport, vector and hybrid logical clocks in one event simulator with injected clock skew; show the anomaly each one fails to detect, and measure HLC drift from physical time as skew grows.
 
-## Chapter 14 — Distributed Systems Theory (deep, cross-cutting)
-- Consistency models revisited: linearizability, sequential consistency, causal consistency
-- Consensus: Raft and Paxos-family reasoning, leader election, quorum writes/reads
-- The FLP impossibility result (no deterministic consensus with even one crash failure in a fully asynchronous model) and how real systems escape it — partial synchrony, timeouts, and randomized election timeouts (why Raft needs them; cross-ref Ch.25-E)
-- Failure detection, gossip protocols
-- Idempotency and exactly-once as an architectural property, not a library feature
-- CRDTs for coordination-free convergence
-- Lamport logical clocks and the happens-before relation — the causality foundation beneath vector clocks (and why a scalar clock gives a total order but cannot detect concurrency)
-- Vector clocks and causality tracking
-- Why this theory underlies Kafka ISR, ZooKeeper/KRaft, distributed databases, and consistent hashing in object stores
-- For implementation-level grounding (actual Raft message formats, log-conflict repair, Kafka partition/offset semantics, CRDT merge-operator design) see Ch.25-E
+### 14.3 Consistency models, precisely
+- **Linearizability** — single-object, real-time-respecting atomicity (Herlihy & Wing, 1990); locality/composability; why it costs at least a round-trip per operation (Attiya–Welch lower bound) and why "read from the leader" is not linearizable without a lease or quorum read.
+- **Sequential and causal consistency** — sequential consistency (a single total order, no real-time constraint) vs causal consistency (only causally related operations ordered; the strongest model available under partition); session guarantees (read-your-writes, monotonic reads/writes, writes-follow-reads) as the client-centric slice — §5.3 gives the practitioner view.
+- **Serializability vs strict serializability** — transactional (multi-object) models vs single-object ones; serializability allows "time travel" (stale reads, causal reversal), strict serializability = serializability + real-time order; the two-axis map of models (single/multi-object × ordering strength) and which systems claim which.
+- **Isolation anomalies as dependency cycles** — Adya's formalism: direct serialization graphs with ww/wr/rw edges; G0 (dirty write), G1a/b/c (dirty/intermediate reads, circular info flow), G-single (read skew), G2-item (write skew); snapshot isolation forbids every anomaly except rw-antidependency cycles; Fekete's read-only anomaly and SSI's "dangerous structure" (two consecutive rw edges) — the theory behind §5.2.
+- **Checking histories for consistency** — Jepsen methodology: record client histories under fault injection, then check them; linearizability checking is NP-complete (Knossos, Porcupine) while Elle (Kingsbury & Alvaro, VLDB 2020) infers transactional dependency cycles efficiently from list-append workloads.
+- *Lab:* run a Jepsen-style harness (or Porcupine/Elle on recorded histories) against a three-node store with partitions and clock skew injected; find and classify one real anomaly (e.g. G-single under snapshot isolation, a stale read under "leader reads").
+
+### 14.4 Impossibility results and the trade-off space
+- **FLP impossibility** — no deterministic consensus protocol can guarantee termination in a fully asynchronous system with even one crash failure (Fischer–Lynch–Paterson, 1985); the bivalence argument; how real systems escape it: partial synchrony, failure detectors, randomization, and Raft's randomized election timeouts (liveness traded for safety-always).
+- **CAP, stated precisely, and PACELC** — Gilbert–Lynch's formal statement (linearizability + availability of every non-failed node + arbitrary message loss) and proof sketch; the common misreadings ("pick two", treating CP/AP as a system label, ignoring latency); PACELC's else-branch latency/consistency trade-off (§5.3 gives the system classification); why Spanner is "effectively CA" only because partitions are rare, not impossible.
+- *Lab:* in a three-replica register, partition one node and show concretely which requests must block or fail to keep linearizability, then relax to causal consistency and show what becomes available.
+
+### 14.5 Failure detection and membership
+- **Failure detectors and their guarantees** — Chandra–Toueg completeness/accuracy classes; eventually-perfect (◇P) and eventually-strong (◇S, the weakest sufficient for consensus); heartbeat timeouts vs the φ-accrual detector (Hayashibara et al., 2004; used by Cassandra and Akka) that outputs a suspicion level instead of a binary verdict.
+- **Gossip and SWIM membership** — epidemic dissemination in O(log n) rounds; SWIM's ping/ping-req indirect probes and suspicion sub-protocol (Das et al., 2002); Lifeguard refinements (HashiCorp memberlist/Serf/Consul); Cassandra-style gossip of ring state; convergence time vs network overhead.
+- **Gray failures and metastable failures** — gray failure (Huang et al., HotOS 2017): a node that is "up" to the detector but broken to clients (differential observability); metastable failure (Bronson et al., HotOS 2021; Huang et al., OSDI 2022): retry storms and cache-miss cascades that keep a system down after the trigger is gone; mitigations — retry budgets, jittered backoff, load shedding, admission control.
+- *Lab:* build a SWIM-style membership protocol over UDP for 20 simulated nodes; measure detection time and false-positive rate as packet loss rises, then switch to φ-accrual and compare.
+
+### 14.6 Consensus and coordination
+- **The consensus problem and quorum systems** — agreement, validity, integrity, termination; equivalence of consensus, total-order (atomic) broadcast and a linearizable compare-and-set; majority quorums and why any two must intersect; flexible quorums (Howard et al., 2016) that only require phase-1/phase-2 intersection.
+- **Quorum intersection is not linearizability** — Dynamo-style N/R/W: R + W > N guarantees overlap but not a correct result — sloppy quorums, hinted handoff, concurrent writes and read repair still yield stale or conflicting reads without a version-resolution rule (vector clocks, LWW, application merge); the worked Dynamo example from Milestone 2 re-read as theory (→ *Rust Systems Engineering* Ch.25).
+- **Paxos and Multi-Paxos** — single-decree Paxos (prepare/promise, accept/accepted, the "adopt the highest accepted value" rule that gives safety); Multi-Paxos with a stable leader to skip phase 1; why Paxos is famously hard to turn into a system (log gaps, leader changes, reconfiguration — see the Chubby case study).
+- **Raft at the conceptual level** — terms, leader election with the up-to-date-log voting restriction, log matching property, commitment only for current-term entries, membership change (joint consensus / single-server changes), snapshots; what Raft adds over Multi-Paxos is understandability, not new power. Message formats and conflict repair: → *Rust Systems Engineering* Ch.26.
+- **Leases, fencing tokens and split brain** — leader leases for local linearizable reads (and their dependence on bounded clock drift); zombie leaders after GC pauses; fencing tokens / epoch numbers checked by the storage layer (Chubby sequencers, Kafka producer epochs, ZooKeeper zxids); why a distributed lock without fencing is not safe.
+- **Coordination services and replicated logs in data systems** — ZooKeeper (Zab, sessions, ephemeral nodes, watches), etcd (Raft), Kafka's KRaft controller quorum (Kafka 4.0 removed ZooKeeper entirely); Kafka's ISR replication as a non-majority quorum (f+1 replicas tolerate f failures because membership is decided by a separate consensus-backed controller); table-format commits as compare-and-swap on a catalog pointer (§6.3).
+- *Lab:* (a) run a three-node etcd or ZooKeeper cluster, pause the leader process (SIGSTOP) past its lease, and show a write from the stale leader rejected by a fencing token; (b) kill a Kafka broker with `min.insync.replicas` set to 1 vs 2 and `acks=all`, and record which acknowledged writes survive.
+
+### 14.7 Atomic commitment and distributed transactions
+- **Two-phase commit and its blocking problem** — prepare/commit, the coordinator as single point of blocking (participants in doubt hold locks), 3PC and why it fails under partitions; Paxos Commit (Gray & Lamport, 2006) / 2PC over consensus-replicated participants as the production answer (Spanner, CockroachDB parallel commits). Sagas and outbox patterns at the application level: §5.2, §8.2.
+- **Transaction architectures beyond 2PC** — Percolator (snapshot isolation via a timestamp oracle and primary-lock commit on Bigtable), Calvin (deterministic ordering before execution removes commit-time coordination), and FoundationDB's unbundled sequencer/resolver/log design; where each places the coordination cost.
+- *Lab:* implement 2PC across three in-process participants; crash the coordinator after prepare and measure lock-hold time; then replicate the coordinator decision via a Raft log (or etcd) and show participants resolve without blocking.
+
+### 14.8 Convergence without coordination
+- **CRDTs** — state-based (join-semilattice: commutative, associative, idempotent merge) vs operation-based (causal delivery required) vs delta-state; G-Counter, PN-Counter, OR-Set, LWW-register, sequence CRDTs; metadata growth and tombstone GC; when *not* to use one (uniqueness and global invariants need coordination). Merge-operator design: → *Rust Systems Engineering* Ch.28.
+- **CALM and coordination avoidance** — the CALM theorem (Hellerstein & Alvaro): a program has a consistent coordination-free implementation iff it is monotonic; invariant confluence (Bailis et al., VLDB 2015) to decide which business invariants need coordination; Highly Available Transactions (read committed and causal achievable under partition, snapshot isolation and serializability not).
+- **Exactly-once as an end-to-end property** — the end-to-end argument (Saltzer, Reed & Clark): delivery is at-least-once at best, so "exactly-once" is an *effect* — at-least-once plus idempotent writes, deterministic replay or atomic offset+output commits (Kafka transactions, Flink two-phase-commit sinks, table-format commits); where the guarantee breaks at external side effects. Mechanics: §9.2; idempotency keys: → *Rust Systems Engineering* Ch.27–28.
+- *Lab:* implement a PN-Counter and an OR-Set replicated across three nodes with random partitions and message duplication; prove convergence by property test, then attempt a "stock never below zero" invariant and show why it needs coordination.
+
+### 14.9 Verifying distributed systems
+- **Formal specification with TLA+** — modeling a protocol as states and actions, safety vs liveness properties, model checking with TLC; Amazon's experience (Newcombe et al., CACM 2015) finding deep bugs in DynamoDB/S3 designs before code.
+- **Deterministic simulation testing** — run the whole distributed system in one thread with simulated network, disk and clocks, seeded randomness and fault injection, so every failing run is replayable (FoundationDB; also TigerBeetle, Antithesis); why it finds bugs that Jepsen-style black-box testing cannot reach.
+- *Lab:* write a TLA+ spec of a two-replica primary–backup protocol, let TLC find the lost-write trace when the primary fails mid-replication, fix the protocol, and re-check.
 
 ## Chapter 15 — Data-System Design
-Review the Systems in Production sections (closing each milestone) alongside this chapter — every exercise below is a smaller version of a problem some company already solved in production, and knowing the real precedent sharpens your trade-off reasoning.
+A repeatable design method (§15.1) and the requirements interrogation behind it (§15.2), followed by worked design problems grouped by shape. Each design problem is one reel: a timed walk-through that applies the method and names the real precedent in the Systems in Production sections.
 
-### Design method (apply to every exercise)
-- Clarify functional requirements
-- Clarify latency, volume, retention, availability, correctness requirements
-- Estimate events/sec, bytes/day, storage/year, peak traffic
-- Identify source systems and ownership
-- Choose batch, streaming, or hybrid ingestion
-- Choose durable storage and layout
-- Choose processing engine
-- Choose serving/consumption layer
-- Define partitioning, indexing, data lifecycle
-- Design for duplicates, late data, replay, backfill
-- Design failure recovery and disaster recovery
-- Add security, governance, observability
-- Estimate cost and identify the largest cost levers
-- State trade-offs and alternatives
+### 15.1 The design method
+- **Requirements into SLOs** — turn functional asks and non-functional constraints (freshness, latency, completeness, correctness, availability, retention) into measurable SLOs; define what "correct" means for this system (exactly-once effect? eventual completeness by T+1?) before choosing anything.
+- **Back-of-envelope capacity estimation** — events/s, bytes/day, storage/year with replication and compaction overhead, peak-to-average ratio, Little's law for in-flight work; the reference numbers to carry in your head (memory/SSD/network latencies, per-partition Kafka throughput, object-store request costs and limits, warehouse scan rates).
+- **Choosing the data-flow shape** — batch vs micro-batch vs streaming vs hybrid driven by the freshness SLO and the reprocessing story; where Lambda/Kappa (§3.3) and unified engines fit; push vs pull boundaries with source owners.
+- **Storage, layout and lifecycle decisions** — system of record vs derived stores; table format and file layout; partitioning, clustering and indexing for the dominant access path; hot/warm/cold tiering, retention and deletion (including erasure) designed up front.
+- **Processing and serving choices** — engine choice by state size, latency and team skill; serving store by query shape (point lookup, OLAP slice, search, vector); pre-aggregation vs on-query compute; read/write amplification accounting.
+- **Correctness under replay and late data** — duplicates, out-of-order and late events, replay, backfill and reprocessing designed as first-class paths: idempotent writes, deterministic transforms, watermarks and correction windows, versioned outputs.
+- **Failure-mode analysis and recovery** — enumerate component failures (source outage, broker loss, poison record, bad deploy, region loss) and their blast radius; RPO/RTO per data class; degraded modes; DR mechanics live in §11.3.
+- **Cost model and dominant cost lever** — compute, storage, egress, request and license cost per unit of business volume; identify the one lever that dominates (often scan volume, cross-AZ traffic or idle compute) and the design change that moves it.
+- **Trade-off articulation and decision records** — at least three alternatives with explicit costs, an ADR per major choice, "what would make us change our mind", and the next bottleneck at 10× load; pacing a 45-minute whiteboard session (requirements 5–10 min, high level 10, deep dives 20, wrap-up 5).
+- *Lab:* apply the full method to one problem from §15.3–§15.5 and produce a two-page design doc with an estimate sheet, a failure-mode table and three ADRs; have a peer attack it for 20 minutes and record what changed.
 
-### Requirements-gathering checklist (ask these before designing anything)
-A world-class designer interrogates requirements before drawing boxes. Work both halves every time.
+### 15.2 Requirements interrogation
+- **Source-side interrogation** — origin, format and schema ownership/evolution; volume, rate, burst and seasonality; delivery reliability (late, duplicate, lost, corrupted data; source outages); pull vs push and connector growth; protocol, auth, rate limits and quotas; encryption, residency and compliance at source; per-delivery metadata, audit and lineage.
+- **Destination-side interrogation** — consumers and use cases (BI, ML, operational API, regulatory); freshness, query frequency, scan size and latency SLAs; aggregation grain and modeling; concurrency and scaling; retention, archival and reprocessing; monitoring and debugging of delivery; access control, sensitive-data handling and export paths; how the use case and load will evolve.
+- *Lab:* role-play a 15-minute requirements interview for a vague prompt ("we want real-time dashboards for the plants"); write down the five answers that most change the design and show the two designs they lead to.
 
-**Source side (where data comes from):**
-- Origin and structure: what is the source? format (JSON/CSV/Avro/Parquet)? schema defined or dynamic? structured/semi/unstructured? how is schema evolution handled?
-- Volume and velocity: bytes per transmission? arrival rate (msgs/sec)? max/day per source and across all sources? bursts/peaks? seasonal/daily fluctuation? throttle or buffer on burst?
-- Reliability and redundancy: late data? duplicate risk and dedup strategy? source failure rate? corruption/loss in transit? what if a source goes offline (failover)? retry/fault-tolerance?
-- Extraction and growth: must we extract (pull) or is it pushed? how many sources? new sources coming?
-- Connectivity and auth: arrival mechanism (API/bucket/stream)? protocol (REST/WebSocket/FTP)? rate limits/quotas? credential handling? retry strategy?
-- Security and compliance: encryption at source? GDPR/HIPAA/compliance frameworks? masking/obfuscation needed?
-- Metadata and audit: per-transmission metadata (record counts, latency)? ingestion event logging? lineage tracking?
+### 15.3 Analytical pipelines and platforms
+- **Clickstream and ad-click analytics at billions/day** — client SDK → collector → log → lake → warehouse → dashboards; sessionization, bot filtering, late events; exactly-once-effect streaming aggregation with a batch reconciliation path for billing-grade counts.
+- **E-commerce warehouse with incremental loads** — dimensional model for orders, inventory and customers; incremental/merge loads with SCD handling; serving marts and the semantic layer; cost of full vs incremental refresh.
+- **CDC from OLTP into a lakehouse** — Postgres/Oracle log-based CDC → Kafka → MERGE into Iceberg/Delta with exactly-once effect; snapshot + stream handover, deletes, schema change, replication-slot safety, compaction of MOR tables (§8.2, §6.3).
+- **Concurrent-writer lakehouse with time travel** — catalog-level atomic commits, optimiztic concurrency and conflict retry, schema evolution policy, snapshot expiration vs time-travel and audit requirements, maintenance scheduling (§6.3).
+- **Resumable multi-TB historical backfill** — reprocess five years without harming production: chunked, idempotent and checkpointed partitions, throttling against shared resources, write-to-shadow then atomic swap, validation by data diff.
+- **Lambda vs Kappa for one pipeline** — design the same pipeline both ways; argue reprocessing cost, dual-logic drift and correctness, and when a separate batch correction layer still earns its complexity (§3.3).
+- **Multi-region analytical platform** — residency-constrained data placement, replication vs federation of queries, egress cost, regional failover of pipelines and catalogs, consistent global metrics.
+- **Multi-tenant analytics with cost attribution** — per-tenant isolation (shared tables with row-level security vs schema/database per tenant), noisy-neighbor control, per-tenant retention and erasure, metering usage into a cost-attribution model.
+- **GDPR erasure across lakehouse and backups** — locate a subject's data via lineage and indexes, row-level deletes in table formats, snapshot expiry and rewrite, backups and downstream copies, crypto-shredding as the scalable alternative, proof of deletion.
+- **Data-quality monitoring platform** — check execution (rules, statistical/anomaly checks on freshness, volume, schema, distribution), lineage-aware blast radius and alert routing, suppression to fight alert fatigue, incident workflow (§11.3, §13.3).
+- **Search indexing pipeline with freshness SLOs** — crawl/CDC → parse → enrich → index → serve; incremental vs full reindex, alias swaps, backpressure, measuring end-to-end freshness.
+- **Distributed job scheduler** — schedule millions of cron/DAG tasks: time-bucketed task storage, leader-elected or sharded schedulers, at-least-once dispatch with idempotent workers, missed-run and catch-up semantics (Ch.11).
 
-**Destination side (where data goes and how it's used):**
-- Use case: analytics / BI / ML / transactional / visualization / API? real-time vs historical criticality?
-- Query and delivery: freshness required? query frequency? data scanned per query? cold-data volume and query rate? result latency SLA? downstream consumers?
-- Aggregation and modeling: aggregate by what (device/topic/time)? aggregate when (on-query/scheduled/streaming)? model (star/snowflake)? pre-aggregations? partition/index strategy?
-- Performance and availability: processing-time requirement? input→output delay budget? concurrent-query load? ingestion→queryable lag? horizontal scaling of query engines?
-- Lifecycle and retention: retention period? archival to cold storage cadence? reprocessing old data for new use cases? hot vs cold tiers?
-- Monitoring and debugging: how is delivery monitored (time-to-load, query failures)? pipeline-health metrics (throughput, latency)? debugging tools? corruption/incomplete-data handling?
-- Access and permissions: who queries/visualizes? which tools? export formats? RBAC/row-level security? sensitive-data access?
-- Scaling and future: scalability as volume grows? how will the use case evolve? load growth from more users/data?
+### 15.4 Real-time and ML serving systems
+- **Sub-100 ms fraud-scoring pipeline** — event → streaming feature computation → online feature lookup → model → decision; latency budget per hop, state size, fallback decisions on timeout, label feedback and replay for model retraining.
+- **Feature platform with point-in-time correctness** — offline and online stores fed from one definition, streaming and batch features, point-in-time joins for training sets, online/offline parity checks, backfilling new features (§17.1).
+- **RAG ingestion for millions of documents** — connectors with ACLs, parsing, chunking, embedding at scale, incremental re-embedding, vector + keyword indexes, evaluation and freshness SLOs (§17.1.1, §17.1.5).
+- **Notification fan-out system** — fan-out-on-write vs fan-out-on-read, celebrity accounts, per-user preferences and rate limits, delivery tracking and retries, write amplification arithmetic.
+- **Top-K trending with sketches** — Count-Min Sketch + heap per window, mergeable partial results across partitions, sliding vs tumbling windows, accuracy guarantees vs memory (§5.6).
+- **Streaming quantiles service** — exact two-heap median for small windows vs t-digest/DDSketch/KLL for p99 at scale; mergeability across shards and time; relative vs rank error guarantees (§5.6).
+- **Global manufacturing telemetry platform** — 100k+ sensor events/s from many plants: edge gateways with store-and-forward, MQTT/OPC UA ingestion into a log, hot TSDB plus lakehouse history, asset-hierarchy context joined at ingest, plant-local autonomy during WAN loss, residency per site (Ch.16, §10.5).
+- **Real-time quality and anomaly monitoring** — near-real-time line-quality dashboard plus streaming anomaly detection: streaming baselines (EWMA, seasonal decomposition, SPC rules), per-series state at high cardinality, alert deduplication and suppression, backtesting on history (Ch.16).
 
-### Design exercises
-- Global manufacturing telemetry platform
-- 100k+ sensor events/sec ingestion system
-- CDC from Oracle/PostgreSQL into a lakehouse
-- Near-real-time production-quality dashboard
-- Enterprise data warehouse with incremental loads
-- Multi-region analytical platform
-- Five-year historical backfill system
-- Real-time anomaly detection pipeline
-- ML feature-generation platform
-- Data-quality monitoring platform
-- Multi-tenant SaaS analytics platform with per-tenant isolation and cost allocation
-- RAG ingestion pipeline for an LLM product serving millions of documents
-- Real-time fraud-detection pipeline with sub-100ms scoring latency
-- Data platform for a German manufacturing plant: SAP ERP integration, GDPR compliance, on-prem+cloud hybrid, multi-plant data governance
-- Long-running approval-gated workflow in Temporal: event-driven orchestration with human-in-the-loop
-- Operational supply-chain-provenance graph: design for transactional consistency, real-time querying, and analytics
-
-### System-design question catalog (the ones actually asked at senior/staff loops)
-Practice each at a whiteboard in 45 minutes using the method above. Classic FAANG/infra-company prompts:
-- Design a rate limiter / design an API that enforces per-tenant quotas
-- Design a distributed message queue (Kafka from scratch): partitioning, replication, offsets, delivery semantics
-- Design a metrics/monitoring system (time-series ingestion + rollups + alerting) — e.g., Prometheus-scale
-- Design a clickstream/analytics pipeline (events → lake → warehouse → dashboards) at billions/day
-- Design a near-real-time recommendation feature pipeline (online/offline feature parity)
-- Design a data warehouse for a large e-commerce company (model + ingestion + serving)
-- Design a deduplication service for an at-least-once event stream
-- Design an idempotent, resumable multi-TB backfill without harming production
-- Design a CDC pipeline from OLTP to lakehouse with exactly-once-effect semantics
-- Design a search/indexing pipeline (crawl → parse → index → serve) with freshness SLOs
-- Design a feature store (online + offline) with point-in-time correctness
-- Design a notification/fan-out system (write amplification, fan-out-on-write vs on-read)
-- Design a top-K / trending system (heavy hitters at scale) using sketches
-- Design a multi-region, strongly-consistent counter / inventory system (and know why it's hard)
-- Design a GDPR "right to be forgotten" deletion pipeline across a lakehouse + backups
-- Design a data-quality / anomaly-detection platform with blast-radius-aware alerting
-- Design a lakehouse with time travel, schema evolution, and concurrent writers
-- Design the same pipeline as Lambda vs Kappa: batch + speed layers merged at a serving layer vs stream-only with log replay for reprocessing; argue the reprocessing/correctness trade-off and when a separate batch correction layer is still warranted (cross-ref Ch.3.3)
-- Design a cost-attribution system for a multi-tenant data platform
-- Design a streaming-median / running-quantiles service (two-heaps for exact; t-digest/DDSketch for approximate-at-scale — cross-ref Ch.1.2 heaps and Ch.5.6 sketches)
-- Design a sharded datastore: choose a shard key, route requests, apply consistent hashing, and handle resharding and a hot shard (cross-ref Ch.5.3)
-- Design a distributed unique-ID generator (Snowflake ID / UUIDv7 / ULID): coordination-free uniqueness, rough time-ordering/monotonicity, clock skew, and why auto-increment doesn't shard — also the basis for surrogate keys in a distributed warehouse (cross-ref Ch.3.2)
+### 15.5 Distributed building blocks
+- **Rate limiter and per-tenant quotas** — token/leaky bucket vs fixed/sliding window counters; local vs centralized (Redis) enforcement; consistency vs latency of a global limit; hierarchical tenant quotas.
+- **Distributed message log from scratch** — partitioned append-only logs, replication with ISR and leader epochs, consumer offsets and groups, retention/compaction, delivery semantics (Ch.9, §14.6).
+- **Dedup service for at-least-once streams** — dedup keys and windows, exact (keyed state with TTL) vs probabilistic (Bloom) dedup, state size and recovery, interaction with replay.
+- **Sharded datastore with resharding** — shard-key choice, routing tier, consistent hashing with virtual nodes, online resharding and data movement, hot-shard mitigation (§5.3).
+- **Distributed unique-ID generation** — Snowflake IDs, UUIDv7 (RFC 9562), ULID: coordination-free uniqueness, time-ordering and index locality, clock-rollback handling; why auto-increment does not shard; surrogate keys in a distributed warehouse (§3.2).
+- **Globally consistent counter or inventory** — why multi-region strong consistency costs a cross-region round-trip (§14.3); options: single-home per item, escrow/reservation splitting, CRDT counters with bounded overdraw, consensus-backed decrement.
+- **Metrics and monitoring system at scale** — time-series ingestion, label-cardinality control, rollups and retention tiers, query fan-out, alert evaluation; Prometheus/Mimir-style vs Monarch-style designs (Ch.16, Milestone 5 case study).
 
 ## Systems in Production — Milestone 6: the hardest guarantees, and the pragmatic alternative
-### Google — global consistency that CAP says you shouldn't have
-- **Spanner (2012, Corbett et al., OSDI) — globally distributed and still strongly consistent.** Forcing problem: Google's ad/billing systems (F1) needed cross-datacenter, globally-distributed transactions with real **external consistency** (**strict serializability**) — something the CAP theorem says should be impossible without sacrificing availability during partitions. Core decision: **TrueTime**, an API exposing bounded wall-clock uncertainty (backed by GPS + atomic clocks in every datacenter), lets Spanner assign globally-meaningful timestamps and use **Paxos-replicated** shards with **two-phase commit** across shards without a central coordinator bottleneck. Trade-off: real infrastructure investment (atomic clocks in datacenters) to buy down a problem most companies solve by weakening consistency instead. Lesson: this is the system to cite when an interviewer asks "didn't CAP theorem prove you can't have this?" — the answer is bounded clock uncertainty, not a CAP exception.
-
-### Amazon — quorum reasoning, revisited as theory
-- **Dynamo's quorum (R/W/N), revisited.** The Milestone-2 case study described Dynamo as a product; here it is a theory exhibit for Ch.14. With N replicas, choosing R + W > N guarantees read/write quorum *intersection* (a read set and a write set always overlap), which is **necessary but not sufficient** for a correct result — you still need an explicit rule for which version wins (vector clocks and application-side conflict resolution). Dynamo is the canonical worked example of tuning R, W, N to slide along the latency/durability/consistency surface.
-
-### Uber — "just shard a boring database" as a legitimate design
-- **Schemaless / sharded MySQL — the pragmatic alternative to "just use Dynamo."** Forcing problem: Uber needed horizontally-scalable, highly-available storage for trip data without betting the company on a brand-new distributed database. Core decision: a thin schemaless layer (key, column, timestamped-value — notably similar in shape to Bigtable's cell model) on top of **well-understood, battle-tested sharded MySQL**. Lesson: "shard a boring, well-understood database behind a thin abstraction" is a legitimate, frequently-correct alternative to adopting an exotic distributed database — don't let case studies of exotic systems bias you toward always reaching for one.
+- **Chubby and "Paxos Made Live" (2006–2007, Burrows, OSDI; Chandra, Griesemer & Redstone, PODC) — consensus as a product.** Forcing problem: Google's GFS and Bigtable needed leader election and small consistent metadata, and every team was rebuilding it badly. Mechanism: a coarse-grained lock service replicated by Multi-Paxos, with sessions, leases, sequencers (fencing tokens) and client caching with invalidation. Trade-offs accepted: low write throughput and coarse locks in exchange for one well-tested consensus implementation; the companion paper documents what the Paxos paper leaves out — disk corruption, master leases, group membership, snapshots, testing. Proves that consensus is best centralized in one service that everything else leans on (§14.6).
+- **Spanner (2012, Corbett et al., OSDI) — external consistency at global scale.** Forcing problem: F1 (the AdWords backend) needed cross-datacenter transactions with strict serializability. Mechanism: TrueTime's bounded-uncertainty clock (GPS + atomic clocks) plus commit wait makes timestamp order match real-time order; Paxos-replicated tablets with 2PC across Paxos groups; lock-free snapshot reads at a timestamp. Trade-offs accepted: specialized time infrastructure, commit latency of ≈2ε plus cross-region Paxos, and availability that relies on rare partitions rather than beating CAP. Proves bounded clock uncertainty can be converted into consistency (§14.2, §14.7).
+- **CockroachDB (2020, Taft et al., SIGMOD) — Spanner's guarantees without atomic clocks.** Forcing problem: deliver serializable, geo-distributed SQL on commodity clocks. Mechanism: hybrid logical clocks with a configured maximum offset, uncertainty intervals that force read restarts, Raft per range, leaseholder reads, parallel commits (a write-intent protocol that commits 2PC in one round of consensus latency). Trade-offs accepted: serializable rather than strict-serializable by default for some cross-node causal patterns, read restarts under skew, nodes that self-terminate when clock offset exceeds the bound. Proves the HLC + uncertainty-interval design is a practical alternative to TrueTime (§14.2).
+- **FoundationDB (2021, Zhou et al., SIGMOD) — unbundled transactions, verified by simulation.** Forcing problem: an ordered key-value store with strict-serializable multi-key transactions that other data models (records, documents, queues) can be layered on. Mechanism: separate sequencer, conflict resolvers, transaction logs and storage servers; optimiztic concurrency with a 5-second transaction limit; fast recovery by reconfiguring the whole transaction system; years of deterministic simulation testing before production. Trade-offs accepted: short transactions only, size limits, layering complexity pushed to clients. Proves deterministic simulation can make a complex distributed database trustworthy (§14.7, §14.9).
+- **Uber Schemaless → Docstore (2016 / 2021, Uber Engineering) — shard a boring database behind a thin layer.** Forcing problem: horizontally scalable, highly available trip storage without betting on an unproven distributed database. Mechanism: Schemaless put an append-only (row key, column, ref key) cell model on sharded MySQL with buffered writes; its successor Docstore replicates MySQL transactions with Raft per partition and offers strictly serializable operations within a partition. Trade-offs accepted: limited cross-shard transactions and query flexibility in exchange for well-understood storage operations. Proves "sharded, battle-tested database + thin abstraction" is often the right design, and that it can evolve toward consensus-replicated partitions when stronger guarantees are needed.
 
 ---
 
-# MILESTONE 7 — Frontier: Industrial, Time-Series & the Modern/AI Stack
-The specialized and fast-moving edges: industrial/time-series data, the ML/MLOps data layer, production RAG and vector systems (the highest-paid niche right now), graph systems, and the emerging agentic stack.
+# Milestone 7 — Frontier: Industrial, Time-Series & the Modern/AI Stack
+The specialized, fast-moving edges where data-engineering discipline meets new sinks: industrial and time-series data, the ML and LLM data layer, vector retrieval, graphs, and the agentic stack — taught as mechanisms, not product tours.
 
 ## Chapter 16 — Industrial and Time-Series Data
+How plant-floor data is modeled, moved and stored, and the storage and query techniques that make high-rate telemetry cheap. EU regulatory and SAP context: §10.5.
+
 ### 16.1 Manufacturing data model
-- Plant → line → machine → sensor hierarchy
-- Production runs, batches, recipes, work orders
-- Quality measurements and non-conformance
-- Maintenance and failure events
-- Energy and environmental telemetry
-- ERP/MES/SCADA/IoT conceptual boundaries
-- Operational vs analytical ownership
+- **ISA-95 hierarchy and the automation pyramid** — enterprise → site → area → line/cell → equipment → sensor; levels 0–4 (sensors, PLC/SCADA, MES, ERP) and which system owns which data; the equipment hierarchy as the dimension every telemetry fact joins to, and how it changes over time (re-tooling, moved assets).
+- **Production execution entities and genealogy** — work orders, production runs, batches and recipes (ISA-88 procedural model), material lots; forward/backward lot genealogy for recalls and traceability as a graph-shaped problem (§17.4).
+- **Quality data and SPC** — inspection measurements, specification limits, control charts and Western Electric/Nelson rules, Cp/Cpk; non-conformance and CAPA records; why quality facts must carry the exact process context (recipe version, tool, shift) to be analyzable.
+- **OEE and downtime event modeling** — OEE = availability × performance × quality from state/event streams; downtime reason-code hierarchies, micro-stops, planned vs unplanned time; maintenance events, MTBF/MTTR; the classic double-counting and shift-boundary bugs.
+- **Energy and utility metering** — cumulative meter counters → interval consumption (counter resets, rollovers, meter swaps), power vs energy units, allocation of shared utilities to lines/products, energy-per-unit KPIs feeding sustainability reporting.
+- **IT/OT boundary and data ownership** — OT networks segmented by the Purdue model, DMZs and unidirectional gateways; who owns operational vs analytical copies; read-only extraction that must never disturb control systems; change management with plant engineering.
+- *Lab:* model a two-plant equipment hierarchy with SCD history, derive OEE per line and shift from a synthetic machine-state event stream, and reconcile it against a hand-computed answer including a shift-spanning downtime event.
 
 ### 16.2 Time-series engineering
-- Event time and time zones
-- Downsampling and rollups
-- Windowing and resampling
-- Gap filling and interpolation for missing/irregular samples (forward-fill/LOCF, linear interpolation) and as-of alignment of multiple unsynchronized sensor streams onto a common time grid
-- Retention tiers
-- Compression
-- Time-series-specific compression: delta-of-delta timestamp encoding + XOR float encoding (Gorilla-style) — why TSDBs compress regular telemetry far better than generic columnar
-- High-cardinality dimensions
-- Time-series database vs warehouse/lake trade-offs (InfluxDB, TimescaleDB, Prometheus-style storage)
+- **Timestamps, clocks and time zones in telemetry** — device vs gateway vs ingest timestamps, drifting PLC clocks and NTP at the edge, UTC storage with plant-local presentation, DST gaps and repeats in shift calendars; choosing which timestamp is event time.
+- **Resampling and gap filling** — regular vs irregular series, resampling to a grid with the right aggregate per signal type (mean, last, max, integral), gap filling by LOCF or interpolation and when filling lies; step vs continuous signals. Windowing semantics: §9.2.
+- **As-of alignment of unsynchronized streams** — as-of (nearest-preceding) joins across sensors sampled at different rates, tolerance windows, interpolation at join time; implementations in DuckDB/ClickHouse/kdb+-style `ASOF JOIN` and pandas `merge_asof`; the same mechanism as point-in-time feature joins (§17.1).
+- **Downsampling, rollups and retention tiers** — rollups that stay mergeable (min, max, sum, count, sketches — never stored averages), continuous aggregates and their refresh/late-data handling, raw-to-rollup retention tiers and query routing by time range.
+- **Time-series compression** — delta-of-delta timestamps and XOR-encoded floats (Gorilla), Chimp, and ALP (SIGMOD 2024; DuckDB's default float codec) with dictionary/RLE for tags; lossy options (deadband, swinging-door — §16.3); what the gains really are — Gorilla's ~12× over raw 16-byte points comes mostly from regular timestamps and slowly changing values, and ALP's benchmarks show older float codecs barely beat Zstd, so the win is decimal-aware encoding plus streaming-friendly, fast decode.
+- **Series cardinality and the label index** — every distinct label set is a series; inverted (postings) indexes from labels to series IDs; cardinality explosions from unbounded labels (request IDs, pod names); how columnar TSDBs trade the per-series model for scan-based queries. Metric design for observability: §13.1.
+- **Time-series storage engine internals** — Prometheus TSDB (in-memory head block, WAL, 2-hour blocks, compaction, out-of-order ingestion window); TimescaleDB hypertables (time-partitioned chunks, columnstore compression); InfluxDB 3 (Arrow in memory, Parquet on object storage, DataFusion queries); horizontally scaled backends (Mimir, Thanos, VictoriaMetrics).
+- **TSDB vs warehouse vs lakehouse** — choose by write rate, query shape (last value, range scan, cross-series aggregation), retention and cost: Prometheus-style for operational metrics, TimescaleDB/InfluxDB/QuestDB/ClickHouse for high-rate analytics, Iceberg/Delta for long-term history joined with business data; tiering between them.
+- **Sensor data quality** — stuck/flatlined values, spikes, out-of-range and physically impossible readings, unit or scaling changes after a firmware update, duplicate and back-filled batches from gateways; rule-based and statistical validation at ingest with quarantine rather than deletion.
+- *Lab:* ingest a week of synthetic mixed-rate (1 Hz to 1 kHz) sensor data into a TSDB and into Parquet; compare compressed size (Gorilla-style vs generic codec), as-of join correctness across two sensors, and range-query latency on raw vs rolled-up data.
+
+### 16.3 Industrial connectivity and historians
+- **OPC UA information model and transport** — address space of nodes and references, companion specifications as typed models (e.g. for machine tools), client/server subscriptions with monitored items and deadbands vs OPC UA PubSub over MQTT/UDP; security modes and certificates; why browsing the model gives you semantics that raw tags lack.
+- **MQTT, Sparkplug and the Unified Namespace** — MQTT pub/sub with QoS 0/1/2, retained messages and last will; Sparkplug B (ISO/IEC 20237) topic namespace, Protobuf payloads, birth/death certificates and sequence numbers for state awareness; the Unified Namespace pattern (an ISA-95-shaped topic tree as the single real-time hub) and its limits (no history, no replay — pair with a log).
+- **Process historians and swinging-door compression** — historians (e.g. AVEVA PI System) store tags with exception (deadband) filtering then swinging-door trending compression that keeps only points needed to reconstruct within an error band; interpolated vs recorded value retrieval; extracting historian data into a lakehouse without losing compression semantics.
+- **Edge buffering and store-and-forward** — gateways that buffer on WAN loss, replay in order with idempotent sequence numbers, local aggregation and filtering, backpressure when the buffer fills, and clock correction on reconnect; plant autonomy as a requirement.
+- **Asset Administration Shell digital twins** — the Industrie 4.0 asset model (IEC 63278): an AAS per asset with standardized submodels (digital nameplate, technical data, documentation, carbon footprint), type vs instance shells, REST API and AASX packages; its role in EU data spaces (e.g. Catena-X) and digital product passports.
+- *Lab:* publish simulated machine tags over MQTT with Sparkplug B, kill and restore the edge node to observe death/birth handling, buffer through a 10-minute WAN outage, and apply swinging-door compression with a stated error band; measure point reduction and reconstruction error.
 
 ## Chapter 17 — The Modern and Emerging Data Stack
-### 17.1 ML / MLOps data engineering foundations (the data side of ML)
-- The data engineer's role in the ML lifecycle: data > features > training sets > serving; most ML failures are data failures
-- **Feature engineering at scale:** batch vs streaming features, point-in-time correctness (no label/feature leakage), backfilling features
-- **Feature stores:** Feast, Tecton — online/offline store consistency, feature freshness, training/serving skew
-- **Training-data pipelines:** dataset curation, versioning (DVC, lakeFS, Delta/Iceberg snapshots), reproducibility, labeling pipelines, class balancing
-- **Serving data:** low-latency feature retrieval, model-input logging, shadow/canary data capture
-- **Monitoring:** data drift, concept drift, feature-distribution monitoring, label-delay handling
-- **Experiment/metadata tracking:** MLflow, Weights & Biases from the data-pipeline perspective
-- Pitfalls: train/serve skew, leakage, silent schema drift corrupting features
+The data layer of ML and LLM systems, retrieval, graphs, agents and the converging operational/analytical stack — each taught as a mechanism with measurable trade-offs. Most ML and RAG failures are data failures, so this is ordinary data-engineering discipline applied to new sinks.
 
-### 17.1.1 AI / LLM data engineering (fastest-growing high-pay niche)
-- Vector databases: Pinecone, Weaviate, Milvus, pgvector — indexing (HNSW, IVF), ANN trade-offs; **vector quantization** (scalar/product/binary) for memory/cost, **hybrid search** (dense + sparse/BM25) and reranking, **Lance/LanceDB** (columnar format for vector + multimodal data)
-- Embedding pipelines: chunking strategies, embedding model selection, re-indexing at scale
-- RAG ingestion architecture: document parsing, deduplication, metadata enrichment, incremental re-embedding
-- Data pipelines for model fine-tuning: dataset curation, deduplication, PII scrubbing, synthetic data generation
-- Data pipelines for agentic systems: tool-call logging, feedback-loop data capture, evaluation datasets; **Model Context Protocol (MCP)** as the emerging standard for exposing data and tools to LLM agents
-- **GraphRAG / knowledge-graph-augmented retrieval:** combine vector search with a knowledge graph for multi-hop, entity-centric questions (cross-ref Ch.17.3)
+### 17.1 ML data foundations
+- **Point-in-time correct training data** — label/feature timelines, as-of joins of features to label timestamps, leakage from future data or post-outcome fields, feature TTLs; backfilling a new feature historically with the same logic used online; batch vs streaming feature computation.
+- **Feature stores and online/offline consistency** — one feature definition materialized to an offline store (lakehouse tables) and an online store (low-latency KV); freshness SLAs, train/serve skew sources (different code paths, different joins, stale online values); Feast (OSS), Tecton (acquired by Databricks, 2025), Hopsworks, cloud-native feature stores.
+- **Inference logging and log-and-wait features** — logging the exact feature vector and model version at serving time, joining to delayed labels to build training sets that are skew-free by construction; shadow/canary capture; storage cost and PII in logged payloads.
+- **Training-set versioning and lineage** — reproducible datasets via table-format snapshots/tags (Iceberg/Delta), lakeFS branches or DVC; linking dataset versions, code and models in an experiment tracker (MLflow 3's LoggedModel, Weights & Biases); labeling pipelines and label-version drift.
+- **Drift and label-delay monitoring** — data drift vs concept drift; PSI, KS and Jensen–Shannon tests per feature; schema and null-rate drift that silently corrupt features; proxy metrics while labels arrive days or weeks later.
+- *Lab:* build a training set with a naïve join and with a point-in-time join over a synthetic churn dataset; show the leakage-inflated offline AUC, then serve the same features online and measure skew between logged and recomputed values.
 
-### 17.1.5 Production RAG systems at scale (deep dive into highest-paying niche)
-- **RAG architecture layers:**
-  - **Ingestion:** document discovery (file system, APIs, web crawl), parsing (text, PDF, code, tables), chunking (token-aware, semantic, overlap strategies)
-  - **Embedding:** model selection criteria (domain-specific vs general; OSS vs commercial; cost/latency vs quality), batch embedding, incremental updates, versioning
-  - **Index management:** vector DB schema design (metadata filtering, sparse/dense hybrid), reranking (BM25 + dense), retrieval evaluation (recall/MRR)
-  - **Query processing:** query expansion, query routing (parametric vs semantic), fallback strategies
-  - **Post-retrieval:** context window management, ranked fusion, chain-of-thought grounding
-- **Production requirements (often missing from toy RAG examples):**
-  - **Freshness:** incremental re-embedding on source changes (cost/latency trade-off); snapshot versioning for reproducibility
-  - **Cost:** embedding cost per query, vector DB storage/query cost, LLM token cost; optimization levers (quantization, clustering, distillation)
-  - **Latency SLOs:** p50/p95/p99 for retrieval + LLM response; regional latency (cross-region vector DB, embedding batching)
-  - **Correctness:** retrieval quality metrics (coverage, precision, diversity); evaluation dataset maintenance; drift detection (relevance decay over time)
-  - **Deduplication and canonicalization:** source content updates (rewording, moved), duplicate detection before indexing, merge strategies
-  - **Hallucination mitigation:** citation tracking (grounding each LLM output token to a source span), rejection thresholds, retrieval coverage checks
-- **Failure modes and mitigation:**
-  - Cold start (no domain data): synthetic data generation, bootstrap from public sources
-  - Domain drift (embedding model changes): version migration strategies, re-embedding windows
-  - Spurious high-rank results: manual review queues, feedback loops to reranker
-  - Catastrophic forgetting (new documents don't appear): reconcile ingestion lag with freshness SLO
-- *Lab*: build an incremental RAG pipeline over a large document corpus; implement drift detection; measure cost/latency/correctness trade-offs; design a feedback loop for continuous reranker improvement
+### 17.1.1 Embeddings and vector search internals
+- **Embedding models and versioning** — what a text/multimodal embedding encodes; choosing by retrieval benchmark (MTEB-style), domain, dimension, context length and cost; Matryoshka embeddings that truncate gracefully; vectors from different models or versions are incomparable, so every index is pinned to a model version and migrations need dual indexes with a cut-over.
+- **Chunking strategies** — fixed-token with overlap, structure-aware (headings, tables, code blocks), semantic chunking, parent–child (small-to-retrieve, large-to-read), and contextual chunk enrichment (prepending document context before embedding); how chunk size moves recall, precision and cost.
+- **Embedding pipelines at scale** — batch inference throughput (GPU batching, API rate limits, cost per million tokens), content hashing to re-embed only changed chunks, deletes and tombstones propagated to the index, backfills after a model change without downtime.
+- **Similarity metrics and exact search** — cosine vs dot product vs L2 and normalization; brute-force kNN as the ground truth (and often the right answer below ~1M vectors on a GPU or SIMD CPU); recall@k against exact results as the metric every ANN index is judged by.
+- **HNSW graph index** — hierarchical navigable small-world graphs: layered skip-list-like structure, greedy descent, `M`/`efConstruction`/`efSearch` and their recall–latency–memory trade-offs; insert cost, deletes as tombstones and graph degradation; why the graph must live in RAM.
+- **IVF partitioning** — k-means coarse quantizer, inverted lists, `nprobe` as the recall/latency knob, list imbalance and retraining as data drifts; IVF as the natural fit for GPU and disk layouts.
+- **Vector quantization** — scalar (int8), product quantization with asymmetric distance computation, binary quantization and RaBitQ (SIGMOD 2024) with error bounds; re-scoring top candidates with full-precision vectors; memory-per-vector arithmetic at 1B scale.
+- **Disk and object-storage vector indexes** — DiskANN/Vamana (SSD-resident graph + compressed vectors in RAM), SPANN-style partitioned layouts, and object-storage-native stores (Amazon S3 Vectors, LanceDB/Lance format, turbopuffer-style designs) trading query latency for 10×-cheaper storage.
+- **Filtered vector search** — pre-filter vs post-filter vs in-graph filtering; the low-selectivity failure (too few results) and fixes: iterative scans (pgvector 0.8), filter-aware graphs (ACORN, SIGMOD 2024), per-tenant/partitioned indexes; planning by filter selectivity.
+- **Hybrid lexical–dense retrieval** — BM25 and learned sparse (SPLADE) alongside dense vectors, reciprocal rank fusion vs score normalization, when keyword search wins (IDs, codes, rare terms); hybrid implementations in OpenSearch/Elasticsearch, Postgres and vector databases.
+- **Vector index freshness and compaction** — segment-based designs (growing vs sealed segments, background index builds and merges, Milvus/Lucene-style), delete bitmaps, read-your-writes guarantees and consistency levels in vector stores, rebuild cadence vs recall decay.
+- **Choosing a vector store** — pgvector/pgvectorscale inside Postgres vs dedicated engines (Milvus, Qdrant, Weaviate, Pinecone) vs search engines vs lakehouse/object-store options; decide by corpus size, filter complexity, update rate, tenancy, latency SLO and operational ownership — not by benchmark marketing.
+- *Lab:* on 10M vectors build flat, HNSW, IVF-PQ and a quantized + re-score index with FAISS; plot recall@10 vs p99 latency vs memory; then add a metadata filter sweeping selectivity from 50% to 0.1% and measure result shortfall under post-filtering vs iterative/filter-aware search.
 
-### 17.2 Reverse ETL and the activation layer
-- Syncing warehouse data back into operational SaaS tools (Hightouch, Census patterns)
-- Operational analytics vs BI analytics boundary
+### 17.1.5 Production RAG systems
+- **Document parsing and normalization** — PDF/layout parsing, tables, OCR and vision-language-model parsing, HTML boilerplate removal, canonicalization and near-duplicate removal (MinHash, §5.6) before indexing; parse quality as the hidden ceiling on answer quality.
+- **Permission-aware retrieval** — syncing source ACLs alongside content, document- and chunk-level security trimming at query time, group expansion and ACL change propagation latency; why post-hoc filtering in the prompt is a data-leak bug.
+- **Incremental ingestion and freshness** — change detection from sources (CDC, webhooks, crawl diffs), update/delete propagation through chunk → embedding → index, freshness SLOs measured end-to-end, index snapshots for reproducible evaluation.
+- **Query transformation and routing** — query rewriting and expansion (multi-query, HyDE), decomposition of multi-part questions, routing between indexes, SQL/text-to-SQL and no-retrieval paths; fallbacks when retrieval confidence is low.
+- **Reranking stage** — cross-encoder rerankers over the top-N candidates vs late-interaction models (ColBERT) vs LLM rerankers; latency/cost per candidate, choosing N, distillation of rerankers.
+- **Context assembly and citation grounding** — fitting a token budget, deduplicating and ordering passages (position effects such as "lost in the middle"), claim-level citations to source spans, abstention when coverage is insufficient; long-context stuffing vs retrieval and prompt caching as cost trade-offs.
+- **Agentic multi-step retrieval** — the model issues iterative search/tool calls, reads, and refines; bounded loops, per-query cost ceilings, tracing each step; when a single retrieval pass is enough.
+- **GraphRAG and entity-centric retrieval** — LLM-extracted entity/relation graphs and community summaries for multi-hop and global questions; graph construction cost and staleness vs plain vector retrieval (§17.3).
+- **Retrieval evaluation metrics** — recall@k, precision@k, MRR, nDCG against labeled query–passage sets; building and versioning golden sets (including synthetic query generation for cold start); regression-testing retrieval on every index or model change.
+- **Generation evaluation and LLM judges** — faithfulness/groundedness, answer relevance and completeness; LLM-as-judge with rubric prompts, calibration against human labels, position and verbosity bias; online signals (feedback, click-through, escalations) feeding rerankers and eval sets; frameworks such as RAGAS and MLflow 3 evaluation.
+- **RAG cost and latency budgets** — per-stage p50/p95/p99 budget (embed query, retrieve, rerank, generate), cost per query (embedding, vector storage/query, LLM tokens), semantic and prompt caching, quantization and smaller models as levers; regional placement of indexes vs models.
+- *Lab:* build an incremental RAG pipeline over a large, changing document corpus with ACLs; measure freshness lag after updates and deletes, retrieval recall@10 and judge-scored faithfulness on a versioned golden set, and cost/latency per query; then swap the embedding model behind a dual index and show the evaluation gate deciding the cut-over.
 
-### 17.3 Graph databases and analytics
-- **Analytics-focused graph:** Neo4j for knowledge graphs, recommendation systems, social-network analysis; Cypher query language; graph algorithms (PageRank, community detection)
-- **GraphX / Spark GraphFrames:** distributed graph compute on Spark; iterative vertex/edge operations
-- **Materialized view generation** from graphs (recommendation ranking feeds, influence scores)
+### 17.2 Reverse ETL and activation
+- **Reverse ETL sync mechanics** — warehouse models synced into SaaS tools (CRM, ads, support): change detection by diffing snapshots, upsert vs mirror semantics, identity matching, API rate limits, partial-failure retries and idempotency; operational vs BI analytics boundary and freshness expectations; vendors (Hightouch; Census, acquired by Fivetran 2025) and warehouse-native "composable CDP" patterns.
+
+### 17.3 Graph data and analytics
+- **Property graphs, Cypher and GQL** — vertices and edges with labels and properties; Cypher pattern matching; ISO GQL (ISO/IEC 39075:2024) and SQL/PGQ (SQL:2023 Part 16) bringing graph patterns into standards and relational engines; mapping relational data to graph views.
+- **Graph algorithms for analytics** — PageRank, connected components, community detection (Louvain/Leiden), shortest paths and similarity; materializing results (influence scores, communities, recommendation candidates) back into tables as features. Algorithm foundations: → *Data Structures & Algorithms* M2.
+- **Pregel-style distributed graph processing** — the vertex-centric bulk-synchronous model (supersteps, messages, vote to halt), partitioning and the high-degree-vertex problem, GraphX/GraphFrames on Spark; when a single large node (or a graph library on one machine) beats a cluster.
+- **Knowledge graph construction** — entity extraction and linking (LLM-assisted or rule-based), relation extraction, schema/ontology design, entity resolution against master data (§8.3), provenance and confidence per edge; the input to GraphRAG.
 
 ### 17.4 Graph as operational backend
-- **Operational graphs:** TigerGraph, Amazon Neptune as transactional backends (not just analytics)
-- **Property graphs:** rich attributes on vertices and edges; use case examples (supply-chain provenance, service dependencies, permission graphs)
-- **Query optimization:** traversal planning, execution strategy (eager vs lazy), index design for operational SLOs
-- **Real-time graph update semantics:** ACID properties, how graph mutations propagate (immediate vs eventually consistent)
-- *Lab*: design a supply-chain provenance graph; query "find all suppliers transitively used by product X"; measure query latency under updates
-- **vs. traditional relational:** when joins become the bottleneck (deep traversals), when graph-native indexes win (reachability queries); cost/latency trade-offs
+- **Graph-native storage vs relational joins** — index-free adjacency vs B-tree-backed join paths; why deep or variable-length traversals blow up in relational plans; worst-case-optimal joins as the relational answer for cyclic patterns; where relational still wins (aggregations, shallow joins).
+- **Operational graph databases and update semantics** — Neo4j, Amazon Neptune, TigerGraph as transactional backends: ACID scope, replication and read-replica staleness, how mutations become visible to traversals; use cases (supply-chain provenance, service dependency, permission graphs).
+- **Traversal planning and index design** — start-node selection, expansion order, cardinality estimation for patterns, eager vs lazy evaluation, property and composite indexes, and supernode handling to meet operational latency SLOs.
+- *Lab:* design a supply-chain provenance graph; query "all suppliers transitively used by product X" in a graph database and in recursive SQL; measure latency vs depth and under concurrent updates.
 
-### 17.5 Data product and platform thinking
-- Treating pipelines and datasets as products with SLAs, versioning, and consumers
-- Internal developer platforms for data teams (self-serve provisioning, templated pipelines)
-
-### 17.6 Agentic and AI-assisted data pipelines (emerging 2026)
-- LLM-based agents orchestrating data pipelines (adaptive retry logic, failure diagnosis)
-- Agents for data quality decision-making (anomaly flagging, schema inference, auto-remediation)
-- Agent-as-ETL-state-machine: agent memory persisted, incremental task resumption
-- Cautions: reproducibility (LLMs are stochastic), audit trails (who decided what, why), cost explosion under scale
-- State of the art: early-stage; watch **LangGraph** (the primary forward reference here) for data-pipeline orchestration patterns — note **AutoGen** has largely merged into Microsoft's **Agent Framework**
+### 17.6 Agents, MCP and LLM-era data patterns
+- **Model Context Protocol mechanics** — JSON-RPC 2.0 between hosts, clients and servers; server primitives (tools, resources, prompts) and client elicitation; stdio vs Streamable HTTP transports; OAuth-based authorization for remote servers; the 2026-07-28 revision's stateless, per-request model and opt-in extensions (e.g. Tasks for long-running work); governance under the Linux Foundation's Agentic AI Foundation.
+- **Securing agent access to data** — prompt injection via retrieved content, tool poisoning and confused-deputy risks; least-privilege, read-only, row-level-secured service identities; query cost and row limits; human approval for writes; audit logs of every tool call.
+- **Text-to-SQL over a semantic layer** — schema linking, few-shot retrieval of similar queries, grounding generation in governed metrics/semantic models (§3.4) rather than raw tables; execution-based validation and evaluation on benchmarks such as BIRD and Spider 2.0.
+- **LLM inference as a batch transform** — warehouse AI functions (Databricks `ai_query`, Snowflake `AI_COMPLETE`, BigQuery `AI.GENERATE`) for classification/extraction inside pipelines; non-determinism (pin model versions, temperature 0, cache outputs), per-row cost, throughput limits, and evaluating extraction quality like any other data-quality check.
+- **Agent telemetry and evaluation data** — traces of model, agent and tool spans (OpenTelemetry GenAI semantic conventions), cost and latency per step, turning traces and feedback into versioned evaluation datasets; PII handling in captured prompts.
+- **Durable execution for agents** — agent state as a checkpointed state machine (LangGraph checkpointers, Temporal workflows, Microsoft Agent Framework) for resumption after crashes, human-in-the-loop interrupts and replay; same determinism/side-effect rules as §11.2.
+- **LLM-assisted pipeline operations** — failure triage from logs and lineage, schema-inference and mapping suggestions, data-quality alert summarization; guardrails that make it production-safe: propose-then-approve, full audit trail of decisions, hard cost ceilings, reproducible prompts and model versions.
+- *Lab:* expose a read-only warehouse schema and semantic layer through an MCP server; run a text-to-SQL agent against a 50-question golden set, measure execution accuracy with and without the semantic layer, then attempt a prompt-injection attack via a poisoned table comment and show the least-privilege role contain it.
 
 ### 17.7 The analytics-engineering last mile and the BI serving boundary
-Where data engineering ends and analytics/BI begins — know the boundary and the handoff, even though BI-tool mastery is out of scope for this syllabus.
-- **The serving/consumption contract:** what the DE delivers to BI — conformed marts, the semantic/metrics layer as the single source of metric truth (cross-ref Ch.3.4), documented grain and freshness SLAs
-- **BI tools as consumers (recognition, not mastery):** Looker/LookML, Power BI, Tableau, Superset, Metabase; import/extract vs live-query modes and what each does to the warehouse; **headless BI** (one metrics layer served to many tools)
-- **Serving-layer performance for BI:** pre-aggregation/rollup tables, materialized views, caching and BI-engine acceleration (BigQuery BI Engine, Databricks SQL); extract-refresh scheduling
-- **The DE ↔ analyst/analytics-engineer handoff:** where ownership transfers, how semantic definitions are negotiated, and avoiding the "metric computed two ways" problem (cross-ref the Airbnb Minerva case study in Milestone 5)
+- **Serving contract and ownership handoff** — what data engineering hands to BI: conformed marts, the semantic/metrics layer as single metric definition (§3.4), documented grain and freshness SLAs; where ownership moves to analytics engineers and how metric definitions are negotiated so nothing is computed two ways (Airbnb Minerva case study, Milestone 5).
+- **BI tools as warehouse consumers** *(refresher)* — Looker/LookML, Power BI, Tableau, Superset, Metabase; import/extract vs live-query vs Power BI Direct Lake (reading Delta tables in OneLake directly) and the load each puts on the warehouse; headless BI serving one metrics layer to many tools.
+- **BI serving-layer performance** — pre-aggregated rollup tables, materialized views, result caching and acceleration engines (BigQuery BI Engine, Databricks SQL), extract-refresh scheduling and concurrency limits.
 
-## Systems in Production — Milestone 7: the ML/AI data platform
-### Uber — the system that forced "feature store" into existence
-- **Michelangelo — the ML platform that forced feature-store thinking.** Forcing problem: every ML team at Uber was independently rebuilding feature pipelines, with online (serving) and offline (training) feature computation drifting apart — classic **train/serve skew** (Ch.17.1). Core decision: a shared platform with a managed feature store enforcing the *same* feature-computation code path for training and serving. Lesson: this is the origin story behind "feature store" as a category (predating Feast/Tecton as products) — know it when discussing Ch.17.1's train/serve-skew question.
+### 17.8 Data for foundation-model training and fine-tuning
+- **Pretraining corpus deduplication and filtering** — exact (hash, suffix-array substring) and near-duplicate (MinHash-LSH) dedup at web scale; language ID, heuristic and model-based quality filters (FineWeb-style classifiers); measuring what each stage removes.
+- **PII scrubbing and benchmark decontamination** — PII detection and redaction at scale (NER + regex + validation), secrets removal in code corpora; n-gram overlap decontamination against evaluation sets and why contaminated evals invalidate results.
+- **Fine-tuning and preference datasets** — instruction (SFT) and preference (DPO-style pairs) data formats, synthetic data generation with verification/filtering, data mixtures and their versioning; small-data quality over quantity.
+- **Training-data provenance and transparency** — licensing and consent metadata per source, dataset cards, opt-out handling; the EU AI Act's general-purpose-model obligations (since 2 August 2025) including the mandatory public training-content summary template.
+- **Feeding accelerators with data** — streaming sharded datasets to GPUs (WebDataset/MosaicML Streaming-style shards, Ray Data, Lance for multimodal random access), deterministic shuffling and resumable epochs, keeping data loading off the critical path.
+- *Lab:* deduplicate a 10M-document web crawl sample with MinHash-LSH at three similarity thresholds, measure removed fraction and false-merge rate on a labeled subset, and decontaminate it against a benchmark's test set.
 
-### Vector search in production — HNSW, and the cost of freshness
-- **The ANN index is the whole engine.** Production vector databases (Pinecone, Weaviate, Milvus, pgvector) are built around an approximate-nearest-neighbor index — most commonly **HNSW** (a navigable small-world graph giving logarithmic-ish search) or **IVF** (inverted-file clustering). The real engineering is not the first query but the Ch.17.1.5 operational surface: incremental insert/delete without rebuilding the whole graph, metadata-filtered search, and keeping the index fresh as the corpus changes — each a direct cost/latency/recall trade-off.
-- **RAG as a data pipeline, not a prompt.** The durable lesson of 2024–2026: production RAG quality is dominated by the ingestion/embedding/freshness pipeline (parsing, chunking, dedup, re-embedding on change, citation grounding), i.e. ordinary data-engineering discipline applied to a new sink — which is exactly why this niche pays what it does.
+### 17.9 Convergence: zero-ETL and the streaming lakehouse
+- **Zero-ETL replication** — managed CDC from operational databases into analytics engines (Aurora/RDS/DynamoDB → Redshift, Microsoft Fabric mirroring, similar warehouse connectors); what "zero" hides — it is still log-based CDC, with schema-change, filtering and cost constraints you no longer control.
+- **Serverless Postgres beside the lakehouse** — separated compute/storage Postgres (Neon's pageserver + safekeeper design behind Databricks Lakebase; Snowflake Postgres from the Crunchy Data acquisition) with branching and synced tables to/from Delta/Iceberg; when OLTP-in-the-platform simplifies feature serving and apps, and its isolation limits.
+- **Streams as tables** — Kafka topics materialized as Iceberg/Delta tables (Confluent Tableflow, Redpanda Iceberg topics), streaming storage tiering into lake formats (Apache Fluss, Paimon), diskless/object-store Kafka (KIP-1150 accepted 2026); the commit-cadence vs small-file vs freshness trade-off and exactly-once into a table format; Iceberg v3 row lineage for incremental consumers (§6.3, §9.3).
+- **Declarative incremental tables** — declare target tables and let the engine maintain them incrementally: Snowflake Dynamic Tables, Spark Declarative Pipelines (open-sourced to Apache Spark 4.1; managed as Lakeflow), dbt incremental models, streaming databases (§9.3); refresh semantics, target lag, and when full recompute is cheaper.
+- *Lab:* stream CDC from Postgres into Kafka and materialise it as an Iceberg table with two commit intervals (10 s and 5 min); measure freshness, file counts and query latency before and after compaction, and compare against a declarative incremental-table implementation of the same model.
 
-### The agentic frontier — handle with audit trails
-- **LLM agents orchestrating pipelines** (LangGraph/AutoGen-style) are early-stage: they can diagnose failures and auto-remediate, but they are stochastic. In production the non-negotiables are the Ch.17.6 cautions — persisted agent memory for resumability, a full audit trail of *who decided what and why*, and hard cost ceilings — because an unbounded agent loop is a billing incident waiting to happen.
+## Systems in Production — Milestone 7: telemetry, vectors and the ML/AI data platform
+- **Gorilla (2015, Pelkonen et al., VLDB) — an in-memory TSDB built around compression.** Forcing problem: Facebook's monitoring needed recent data queryable in milliseconds, but the HBase-backed store was too slow and too large. Mechanism: delta-of-delta timestamp encoding and XOR float encoding (≈1.37 bytes per point instead of 16), 26 hours held in memory as a write-through cache in front of HBase, with lossy failover across regions. Trade-offs accepted: in-memory cost and possible data gaps during failover in exchange for 73× lower query latency. Proves the encoding of regular telemetry is the main lever in TSDB design (§16.2); its codecs live on in Prometheus and most TSDBs.
+- **Pregel (2010, Malewicz et al., SIGMOD) — "think like a vertex".** Forcing problem: PageRank-style iterative graph computations over billions of edges were awkward and slow as chained MapReduce jobs. Mechanism: bulk-synchronous supersteps in which each vertex processes incoming messages, updates state and sends messages, with combiners, aggregators and checkpoint-based recovery. Trade-offs accepted: barrier synchronization slowed by stragglers and high-degree vertices in exchange for a simple, fault-tolerant programming model. Proves the vertex-centric model that GraphX, Giraph and GraphFrames inherited (§17.3).
+- **Michelangelo (2017, Uber Engineering) — the platform that made "feature store" a category.** Forcing problem: Uber's ML teams each rebuilt feature pipelines, and features computed offline for training differed from those served online — train/serve skew. Mechanism: a shared platform whose feature store computes features once (batch Spark/Hive jobs over the HDFS lake; near-real-time Samza jobs over Kafka) and serves the same values to training and online prediction from Cassandra, with a functional Scala-subset feature DSL applied identically at training and serving time. Trade-offs accepted: a central platform team and a constrained feature DSL in exchange for consistency and reuse. Proves that online/offline parity is a data-platform property, not a modeling one (§17.1).
+- **FAISS (2017–2019, Johnson, Douze & Jégou, IEEE Transactions on Big Data) — billion-scale similarity search on GPUs.** Forcing problem: nearest-neighbor search over billions of image/text vectors at interactive latency and feasible memory. Mechanism: IVF partitioning with product quantization, GPU-optimized k-selection and distance kernels, and composable index types (flat, IVF, PQ, HNSW) behind one API. Trade-offs accepted: approximate results tuned by `nprobe`/code size and offline training of quantizers, in exchange for orders-of-magnitude memory and speed gains. Proves the IVF-PQ design and the recall-vs-latency-vs-memory framing used by every vector database (§17.1.1).
+- **DiskANN (2019, Subramanya et al., NeurIPS) — billion-point search from one SSD.** Forcing problem: RAM-resident graph indexes (HNSW) make billion-scale search prohibitively expensive. Mechanism: the Vamana graph with long-range edges laid out on SSD, compressed (PQ) vectors in RAM for navigation, full vectors read from disk only for re-ranking; FreshDiskANN later added streaming inserts/deletes with background merges. Trade-offs accepted: SSD I/O per query and complex update handling in exchange for ~10× lower memory cost. Proves that the storage hierarchy, not the algorithm alone, sets vector-search cost — the design now behind several cloud vector stores and Postgres extensions (§17.1.1).
+- **QueryGPT (2024, Uber Engineering) — text-to-SQL as a data-platform product.** Forcing problem: thousands of employees writing SQL against a huge, poorly discoverable warehouse. Mechanism: a pipeline of LLM agents — intent classification into curated workspaces, table selection with user confirmation, column pruning to fit context, and few-shot retrieval of similar validated queries — evolved over 20+ iterations from a hackathon prototype. Trade-offs accepted: curated domain workspaces and human-in-the-loop table confirmation in exchange for accuracy, with generated SQL treated as a draft. Proves that LLM data access succeeds through metadata curation and evaluation discipline, not prompt cleverness (§17.6).
+
+# Milestone 8 — Synthesis: Capstones, Benchmarking & Stakeholder Craft
+Prove mastery by integrating Milestones 1–7 into measured, failure-tested systems, and by carrying requirements, contracts and trade-offs across an organisation.
+
+## Chapter 18 — Capstones and Benchmarking
+The benchmarking method every capstone report depends on (taught as reels), then the pass bar and the guided capstone projects themselves (built, not watched).
+
+### 18.1 Benchmarking methodology
+- **Warm-up and steady-state measurement** — why the first minutes lie: JIT/code-gen warm-up, cold page cache and buffer pool, empty result caches, LSM compaction debt and table-format small files not yet accumulated; detecting steady state, run length, repeated trials with confidence intervals, and reporting cold-cache and hot-cache numbers as two separate results.
+- **Latency percentiles and histogram aggregation** — why means hide tails; p50/p95/p99/p99.9/max; percentiles cannot be averaged across hosts or time windows, so merge histograms (HdrHistogram) or mergeable sketches (t-digest/DDSketch, §5.6) instead; tail amplification under fan-out (a request touching 100 shards hits at least one shard's p99 about 63% of the time).
+- **Coordinated omission** — closed-loop load generators slow down with the system under test and silently skip the samples that would have been worst; open- vs closed-loop workload models; constant-rate generators (wrk2-style) that time each request from its intended send time; HdrHistogram's post-hoc correction and why correcting at generation time is better than patching afterwards.
+- **Representative data and workload skew** — uniform toy data hides hot keys, skewed joins and spills; Zipfian key distributions (the YCSB default), realistic cardinalities and cross-column correlations (what breaks cardinality estimators), scale factors, and the seeded data generator as a committed artifact of the benchmark.
+- **Reproducible benchmark harnesses** — pinned versions, configs and instance types recorded with every result; noisy-neighbour variance on cloud hardware; a stated baseline; one-command re-runs; regression tracking in CI with explicit noise thresholds; price-performance ($/query, $/TB processed) reported next to raw speed.
+- **Analytical benchmark suites** — what TPC-H (22 queries, 8-table schema) and TPC-DS (99 queries, skewed snowflake schemas) each stress; ClickBench (ClickHouse, 2022: one wide web-analytics table, 43 queries, no joins) and its blind spots; the Join Order Benchmark (Leis et al., PVLDB 2015) for cardinality estimation and join ordering; TPC-DI as the only TPC ETL specification, now listed by TPC as obsolete; vendor "benchmarketing" and DeWitt-clause licence terms that restrict publishing results.
+- **System benchmark suites** — YCSB (Cooper et al., SoCC 2010) core workloads for key-value and serving stores; the OpenMessaging Benchmark for Kafka-compatible logs (constant-rate publishing, publish and end-to-end latency percentiles); adapting both to your own throughput, lag and SLO targets instead of quoting vendor results.
+- *Lab:* benchmark one service or query engine with a closed-loop generator and a constant-rate generator at the same offered load; inject a 2-second stall; show the p99 gap, correct it, then publish the harness, seeded dataset and baseline so someone else can reproduce the numbers.
+
+### 18.2 Capstone completion rubric (the pass bar)
+A capstone is "done" only when all six hold:
+1. **Design doc:** problem statement, goals and non-goals, at least three alternatives with explicit trade-offs, the chosen design justified, and cost/latency/throughput estimated *before* building (format in §19.1).
+2. **Reproducibility:** code and scripts run end to end from a clean checkout on Linux; one-command setup; a seeded synthetic-data generator included; versions pinned.
+3. **Failure injection:** at least five named failure scenarios (crash mid-write, duplicate, late/out-of-order data, slow or failed dependency, partition/network loss), each with an automated test proving correct recovery; fault schedules seeded so every failure reproduces.
+4. **Benchmarks:** throughput and p50/p95/p99 latency measured by the §18.1 method (steady state, coordinated-omission-safe load, representative skew), plus a resource profile (CPU, memory high-water mark, allocation/IO), against a stated baseline and reproduced by a committed script.
+5. **Observability:** structured logs, metrics, traces and a dashboard; one worked incident walk-through (symptom → metric → log/trace → root cause → fix).
+6. **Defense:** can answer "why this and not X?" for every major choice, and name the dominant cost lever and the next bottleneck.
+
+### 18.3 Primary capstone — Global Industrial Data Platform
+- *Capstone:* **Global Industrial Data Platform** — operational PostgreSQL/Oracle sources → log-based CDC (Debezium) into Kafka with a schema registry (§8.2, §9.2) → high-frequency sensor telemetry through Kafka (Ch.16) → object-storage landing zone (immutable bronze) → Iceberg or Delta tables behind a REST catalog (§6.3) → PySpark batch plus Structured Streaming or Flink (Ch.7, §9.3) → curated warehouse/serving layer with a semantic layer (§3.4, §6.5) → Airflow 3 or Dagster orchestration (Ch.11) → data contracts and write-audit-publish quality gates in CI (§11.4) → Docker Compose local environment (Ch.12) → Terraform-provisioned equivalent on AWS, Azure or GCP (Ch.10) → metrics, logs, traces, alerts and OpenLineage lineage (Ch.13).
+- *Failure scenarios to demonstrate:* duplicate event; late/out-of-order event; consumer crash after processing but before offset commit; broker failure; Spark executor loss; data skew; bad schema deployment; source database outage; stalled CDC consumer retaining source WAL; concurrent table-format commit conflict; corrupt input partition; five-day backfill; partial downstream failure; replication lag.
+- *Required technical reports:* ADRs for every major choice; data model with grain and historical semantics; data contracts with freshness/completeness SLOs; Spark performance benchmark; Kafka throughput/consumer-lag benchmark; database query-plan benchmark; failure-recovery report; security and governance model (including the GDPR erasure path across time travel and backups); cost estimate with the optimisation levers ranked.
+
+### 18.4 AI capstone — Production RAG Pipeline
+- *Capstone:* **Production RAG pipeline** (§17.1.1, §17.1.5) — incremental re-ingestion (change detection, dedup, re-embedding only changed chunks, propagated deletes); hybrid dense + sparse retrieval with reranking; permission-aware retrieval (source ACLs carried as filter metadata and enforced at query time); an evaluation harness (recall@k/MRR on a maintained golden set, groundedness and citation checks, LLM-as-judge calibrated against human labels); embedding-model migration without downtime (dual index, shadow evaluation, cutover); cost and latency SLOs budgeted across retrieval, reranking, time-to-first-token and generation; optionally an MCP server exposing retrieval to agents.
+- *Failure scenarios to demonstrate:* source deletion or permission change not propagated (stale or forbidden content served); embedding-model change mid-corpus; ingest lag breaching the freshness SLO; reranker or vector-store outage with a degraded fallback; indirect prompt injection carried in an ingested document.
+
+### 18.5 Systems capstones (cross-domain)
+- *Cross-reference:* the async service, durable key-value engine and Raft-backed replicated state machine are built in → *Rust Systems Engineering* M7 (Ch.34–36); the zero-copy ETL and streaming data plane in → *Rust Systems Engineering* Ch.43. They are judged by the same rubric (§18.2) and benchmark method (§18.1).
+
+## Chapter 19 — Stakeholder Engineering: Requirements, Contracts and Communication
+The non-technical multiplier: turning business asks into measurable requirements, negotiating contracts across teams, and communicating trade-offs (career and interview guidance is in Appendix B; the live system-design interview is practised with the Ch.15 method).
+
+### 19.1 Stakeholder management and requirements elicitation
+- **Eliciting the decision behind the ask** — running the Ch.15 requirements checklist with non-technical stakeholders; separating the stated want ("real-time dashboard") from the decision the data must support and its true latency tolerance; turning answers into measurable acceptance criteria (grain, freshness, completeness, accuracy) and explicit non-goals.
+- **Stakeholder mapping and decision rights** — who produces, consumes, approves and can veto (compliance, legal, the DPO and works council in EU enterprises, §10.5); RACI/DACI-style decision ownership; partnering with analysts, PMs and domain owners so that disagreements surface before the build, not at launch.
+- **Team topology for data products** — reverse-Conway alignment of teams to data-product boundaries (§13.4); stream-aligned, platform and enabling team roles; where the platform team's self-serve boundary ends and domain ownership begins.
+- **Negotiating data contracts and SLOs** — driving producer/consumer agreements; pricing each freshness or availability tier so consumers choose SLOs from the cost curve; error budgets and who owns a breach (§11.3); this reel is the negotiation, while enforcement lives in §3.4, §11.4 and §13.4.
+- **Breaking changes and deprecation campaigns** — finding every consumer through lineage and query/access logs; versioned dual-publishing (expand/contract, §11.3); migration windows, usage telemetry to chase stragglers, brownouts before removal, and the communication cadence that keeps it blameless.
+- **Communicating trade-offs to decision-makers** — translating cost/latency/correctness trade-offs into business terms (cost per freshness tier, the price of a wrong number); naming the dominant cost lever; justifying "boring" choices; bottom-line-up-front executive summaries vs engineering deep-dives for the same decision.
+- **Proving data-platform value** — usage telemetry from query and access logs, unused-asset detection, cost per consumer and showback (§10.4), adoption and time-to-data metrics as the evidence for investment, prioritisation and deprecation.
+- **Design docs, RFCs and ADRs** — design-doc structure (context, goals/non-goals, alternatives, estimates, risks); cross-team RFC review; Nygard-style ADRs (context, decision, status, consequences) stored with the code, with superseded decisions marked rather than deleted (§18.2 rubric point 1).
+- **Blameless post-mortems and incident communication** — timeline, impact quantified in data terms (stale or wrong rows, affected consumers and decisions), contributing factors rather than blame, tracked action items; stakeholder updates during a data incident (incident command in §11.3).
+- *Lab:* take a vague request ("we need real-time production dashboards for all plants"): produce a requirements doc with measurable SLOs and non-goals, a three-tier freshness/cost comparison, a one-page executive summary and an ADR; then write a deprecation plan for a table whose consumers you discover through lineage and query logs, and a blameless post-mortem for a simulated stale-data incident.
+
+## Systems in Production — Milestone 8: proving systems correct, fast and worth building
+- **FoundationDB (2021, Zhou et al., SIGMOD) — deterministic simulation as the primary test strategy.** Forcing problem: a distributed transactional key-value store whose worst bugs (partitions, disk faults, crashes in rare interleavings) are too rare and nondeterministic to find with conventional tests. Mechanism: the whole cluster — many logical processes, the network and disks — runs inside one single-threaded, deterministic process (Flow actors), with seeded fault injection (process and disk faults, network "clogging" and "swizzle-clogging" of random node subsets) so any failing run replays exactly from its seed. Trade-offs accepted: every source of I/O, time and concurrency must go through simulatable interfaces, and the simulator only finds failures it models. What it proves: seeded, reproducible fault schedules (§18.2 rubric point 3) are achievable for a production database; the approach has since spread to other systems and to commercial deterministic-testing tools.
+- **Jepsen and Elle (2013–, Kingsbury; Elle: Kingsbury & Alvaro, VLDB 2021) — black-box verification of advertised guarantees.** Forcing problem: databases claimed isolation and consistency levels they did not deliver under partitions, and nobody checked. Mechanism: drive a real cluster with generated client workloads while injecting partitions, clock skew and crashes; record the history; check it against a consistency model — first with linearizability checkers (Knossos; the general problem is NP-complete), then with Elle, which designs workloads (e.g. list-append) so that reads reveal version order and infers an Adya-style dependency graph to name each anomaly (§5.2). Trade-offs accepted: black-box testing finds violations but cannot prove correctness, and needs workloads crafted to make histories observable. What it proves: an isolation claim is a hypothesis to test, not a documentation fact (Ch.14, §5.2).
+- **The cross-company pattern — why every system in these sections exists.** Across every Systems-in-Production section in this domain: (1) a specific, measurable limit was hit (a latency SLA, a write-amplification number, a consistency bug, an operational-ownership gap); (2) one core trade-off was consciously accepted — availability over consistency (Dynamo), SQL accessibility over latency (Hive), write-path complexity for mutable tables on immutable storage (Hudi/Iceberg/Delta), infrastructure cost over a consistency compromise (Spanner); (3) the abstraction spread further than the implementation — Bigtable's data model lives on in HBase and Cassandra, Kafka's log protocol in independent reimplementations (Redpanda, WarpStream), MillWheel's watermarks in Beam, Flink and Spark semantics.
+- *Exercise:* pick one system from any Systems-in-Production section, identify its 2026 open-source or managed successor, and write one page on what changed and what didn't, grounded in the primary paper rather than secondary retellings.
 
 ---
 
-# MILESTONE 8 — Mastery: Capstones, Career & Self-Assessment
-Proof of mastery, not more topics. Build the integrative systems, test yourself against the question bank, define what "excellent" means at each gate, and convert the whole thing into career leverage.
+# Appendix A — Assessment bank
+Answer each question out loud or in writing, from first principles, with a concrete example and a failure mode; if you cannot, you have found your next lab. Each question is tagged with the chapter(s) it tests.
 
-## Chapter 18 — Capstones
-- **Primary capstone — Global Industrial Data Platform:** operational Postgres/Oracle-style sources → CDC into Kafka → high-frequency sensor events through Kafka → object-storage data lake → transactional lakehouse layer → PySpark batch + Structured Streaming → curated warehouse/serving layer → Airflow orchestration → data-quality framework → Dockerized local environment → AWS/Azure cloud equivalent → metrics/logs/alerts/lineage
-  - Failure scenarios to demonstrate: duplicate event, late/out-of-order event, consumer crash after processing, broker failure, Spark executor loss, data skew, bad schema deployment, source database outage, corrupt input partition, five-day backfill, partial downstream failure, replication lag
-  - Required technical reports: ADR for major choices, data model with grain/historical semantics, Spark performance benchmark, Kafka throughput/lag benchmark, database query-plan benchmark, failure-recovery report, security/governance model, cost estimate and optimization options
-- **Systems capstone A:** a production-grade async service (Rust/Tokio) — see Ch.25-G
-- **Systems capstone B:** a durable key-value engine (WAL + B-tree/LSM + MVCC) — see Ch.25-G
-- **Systems capstone C:** a Raft-backed replicated state machine — see Ch.25-G
-- **Systems capstone D:** a zero-copy ETL and streaming data plane — see Ch.25 (Ch.43)
-- **AI capstone:** a production RAG pipeline with incremental re-ingestion, evaluation harness, and cost/latency SLOs
-- **Benchmarking methodology (apply to every capstone benchmark):** warm-up vs steady-state, report percentiles (p50/p95/p99) not averages, correct for **coordinated omission**, use representative/skewed (not uniform-toy) data, and commit a repeatable harness measured against a stated baseline; know the standard suites — **TPC-H / TPC-DS / TPC-DI** and **ClickBench** — and what each stresses (cross-ref the capstone rubric's benchmark requirement, point 4 below)
+## Fundamentals, modeling and warehousing
+- Explain conceptual vs logical vs physical data models with one example each. (Ch.3)
+- OLTP vs OLAP: what changes in schema, storage layout and indexing, and why? (Ch.3)
+- Normalize a denormalized table to BCNF, then argue when you'd denormalize it back. (Ch.3)
+- When is a star schema the wrong choice? When would Data Vault earn its complexity? (Ch.3)
+- Implement SCD Type 2 correctly: what are the failure modes with late-arriving data? (Ch.3)
+- What is a surrogate key and why not just use the natural key? (Ch.3)
+- A fact whose measures change after it is first loaded (an order moving through fulfilment): when do you model it as an accumulating snapshot, and when as a transaction fact with adjustment rows? (Ch.3)
+- Why can the same metric compute differently in two dashboards, and how does a semantic layer fix it? (Ch.3, Ch.17)
+- Why can a float `SUM` over the same data return different results from two runs of the same distributed job, and what type do you store money in? (Ch.1, Ch.7)
 
-### Capstone completion rubric (apply to every capstone — this is the pass bar)
-A capstone is "done" only when all six hold:
-1. **Design doc:** problem statement, ≥3 alternatives considered with explicit trade-offs, chosen design justified, estimated cost/latency/throughput before building.
-2. **Reproducibility:** code + scripts run end-to-end from a clean checkout on Linux; README with one-command setup; seeded/synthetic data generator included.
-3. **Failure injection:** ≥5 named failure scenarios (crash mid-write, duplicate, late/out-of-order, dependency slow/down, partition/network loss) each with an automated test proving correct recovery.
-4. **Benchmarks:** throughput and p50/p95/p99 latency, resource profile (CPU, memory high-water, allocation/IO), measured against a stated baseline; results reproduced with a committed benchmark script.
-5. **Observability:** structured logs, metrics, and a dashboard; one worked incident walk-through (symptom → metric → log → root cause).
-6. **Defense:** can answer "why this and not X?" for every major choice, and explain the dominant cost lever and the next bottleneck.
+## ETL / ELT / ingestion
+- ETL vs ELT: what shifted the industry toward ELT, and when is ETL still right? (Ch.3, Ch.8)
+- Full load vs incremental load: design a watermark-based incremental extract with late corrections. (Ch.8)
+- How do you make an ingestion job idempotent and resumable after a mid-run crash? (Ch.8)
+- Design API ingestion against a paginated, rate-limited endpoint with retries and auth refresh. (Ch.8)
+- Webhook ingestion: how do you guarantee no loss and no duplicates under redelivery? (Ch.8)
+- What is data staging, and why does an immutable raw/bronze layer matter? (Ch.8)
 
-## Chapter 19 — Career, Positioning, and Compensation (turning mastery into millions)
-### 19.1 Choosing a high-leverage specialization
-- Streaming/real-time infra specialist (Kafka/Flink internals, exactly-once systems)
-- Database/storage-engine specialist (contributes to or builds OLTP/OLAP engines)
-- Lakehouse/table-format specialist (Iceberg/Delta committer-level depth)
-- AI data infra specialist (RAG/vector/feature-store systems) — currently the hottest and best-paid niche
-- Platform/infra specialist (Kubernetes-native data platforms, FinOps for data)
+## SQL execution
+- Why can a logically equivalent SQL query have a radically different physical plan? (Ch.2)
+- When does a composite index fail to help? (Ch.2)
+- What causes a hash join to spill? (Ch.2)
+- How do stale statistics affect cardinality estimation? (Ch.2)
+- How would you optimize a top-N-per-group query over billions of rows? (Ch.2)
+- Write a recursive CTE for a bill-of-materials explosion with cycle detection. (Ch.2)
+- When do window functions beat self-joins, and what does the sort cost? (Ch.2)
+- `NOT IN` vs `NOT EXISTS` vs `LEFT JOIN … IS NULL` with NULLs present: which is correct, and which is fast? (Ch.2)
 
-### 19.2 Building visible proof of mastery
-- Public portfolio of systems built from first principles (not tutorials) — the capstones above, documented with benchmarks and failure analysis
-- Open-source contributions to high-visibility projects (Spark, Kafka, Flink, Airflow, Iceberg, DataFusion, Arrow, dbt)
-- Technical writing: deep-dive blog posts on internals, published benchmarks, post-mortems
-- Conference talks and meetups (data engineering, systems, and AI-infra conferences)
+## Databases
+- Explain MVCC and how vacuum relates to it. (Ch.5)
+- Demonstrate a write-skew anomaly. (Ch.5)
+- What consistency does a read replica provide? (Ch.5)
+- When would an LSM tree outperform a B-tree? (Ch.5)
+- What happens during replication lag, and which user-visible anomalies does it cause? (Ch.5)
 
-### 19.3 Interview and negotiation mechanics
-- System design interview mastery (use the Ch.15 method live, under time pressure)
-- Behavioral and leadership-principle interviews (increasingly decisive — at Amazon, often half the loop):
-  - **STAR method** (Situation, Task, Action, Result) — structure every story; lead with the result and quantify impact
-  - **Amazon Leadership Principles** (Ownership, Dive Deep, Bias for Action, Deliver Results, Earn Trust, Disagree and Commit, …) — map each story to one or more principles; expect deep follow-ups probing *your* specific decisions, failures, and lessons
-  - **Story bank:** prepare 6–10 reusable STAR stories (a proud result, a failure you caused, a conflict, an ambiguous problem, a tight deadline, a time you changed your mind) — each reusable across several principles
-  - **Project deep-dive / resume walkthrough:** narrate one project end to end — architecture, *your* specific contribution, trade-offs, what you'd do differently (ties to the Ch.18 capstone defense)
-- Compensation negotiation: leveling calibration, competing offers, total-comp structure (base/bonus/equity), refresh cycles
-- Staff/Principal/Distinguished Engineer trajectory: scope of influence, cross-team technical leadership, writing architecture RFCs
+## Distributed systems theory
+- R + W > N guarantees that read and write quorums intersect: why is that still not enough for a correct read? (Ch.14)
+- How do real consensus systems escape the FLP impossibility result, and what does Raft's randomized election timeout have to do with it? (Ch.14)
 
-### 19.4 Beyond employment: scaling earnings further
-- High-end consulting/fractional staff data-engineer rates for scale-ups
-- Building and selling a data-infra product or OSS-with-commercial-support company
-- Technical advisory/board roles once a recognized specialization is established
+## Spark
+- What exactly creates a stage boundary? (Ch.7)
+- Why does a shuffle hurt performance? (Ch.7)
+- How would you diagnose skew from Spark UI evidence, and fix it three ways (salting, AQE, broadcast)? (Ch.7)
+- When does a broadcast join become dangerous? (Ch.7)
+- Why can increasing executor memory fail to fix a slow job? (Ch.7)
 
-### 19.5 Stakeholder management and requirements elicitation (the non-technical multiplier)
-- **Translating business needs into data requirements:** running the Ch.15 requirements-gathering checklist *with* non-technical stakeholders; separating stated wants from the underlying decision the data must support
-- **Working across the org:** partnering with analysts, PMs, domain owners, and compliance/legal; reverse-Conway alignment of teams to data-product boundaries (cross-ref Ch.13.4)
-- **Communicating trade-offs upward:** explaining cost/latency/correctness trade-offs and the dominant cost lever to a non-technical audience; justifying "boring" choices
-- **Negotiating and owning data contracts:** driving producer/consumer agreements, managing breaking-change rollouts and deprecations, setting and defending SLAs
-- **Writing for different audiences:** ADRs and design RFCs (cross-ref Ch.18), incident write-ups/post-mortems, executive summaries vs engineering deep-dives
+## Kafka / streaming
+- Why are offsets separate from the messages themselves? (Ch.9)
+- How does consumer-group rebalancing affect processing? (Ch.9)
+- How does log compaction differ from retention? (Ch.9)
+- How would you guarantee deterministic downstream results under duplicates? (Ch.9)
+- How would you replay only one partition or time range? (Ch.9)
 
-## Chapter 20 — Self-Assessment Question Bank
-Answer every question out loud or in writing, from first principles, with a concrete example and a failure mode. If you cannot, you have found your next lab. These span the categories companies actually probe (modeling, warehousing, ETL, Python, SQL, ingestion/APIs, queues/caches, processing, storage, platforms, systems, AI).
+## Data architecture
+- How do you choose between warehouse, lake and lakehouse? (Ch.3)
+- When should a pipeline be batch rather than streaming? (Ch.15)
+- How would you design a five-year backfill without overwhelming production systems? (Ch.11, Ch.15)
+- How do you guarantee data correctness across CDC + streaming + batch? (Ch.8, Ch.9, Ch.15)
+- What is the smallest architecture that satisfies a given SLA? (Ch.15)
 
-### Fundamentals, modeling, and warehousing
-- Explain conceptual vs logical vs physical data models with one example each.
-- OLTP vs OLAP: what changes in schema, storage layout, and indexing, and why?
-- Normalize a denormalized table to BCNF, then argue when you'd denormalize it back.
-- When is a star schema the wrong choice? When would Data Vault earn its complexity?
-- Implement SCD Type 2 correctly: what are the failure modes with late-arriving data?
-- What is a surrogate key and why not just use the natural key?
-- What is a slowly-changing fact, and how do accumulating-snapshot facts handle it?
-- Why can the same metric compute differently in two dashboards, and how does a semantic layer fix it?
+## Cloud
+- How would you design private connectivity for a data platform? (Ch.10)
+- What are the largest cloud cost drivers for Spark? (Ch.7, Ch.10)
+- How would you enforce least privilege across raw and curated data? (Ch.10, Ch.13)
 
-### ETL / ELT / ingestion
-- ETL vs ELT: what shifted the industry toward ELT, and when is ETL still right?
-- Full load vs incremental load: design a watermark-based incremental extract with late corrections.
-- How do you make an ingestion job idempotent and resumable after a mid-run crash?
-- Design API ingestion against a paginated, rate-limited endpoint with retries and auth refresh.
-- Webhook ingestion: how do you guarantee no loss and no duplicates under redelivery?
-- What is data staging and why does a raw/bronze immutable layer matter?
+## AWS advanced
+- What is the cost breakdown of a Glue job vs an EMR (or EMR Serverless) Spark job vs Lambda for an incremental CSV ingest? (Ch.10)
+- Design multi-team access control for a data mesh using Lake Formation, with an audit trail for compliance. (Ch.10, Ch.13)
+- How would you detect schema drift in an incremental ingest pipeline, and what is the remediation workflow? (Ch.8, Ch.10)
+- Compare Step Functions + Glue vs Airflow for orchestrating a 10-step data pipeline: what are the operational trade-offs? (Ch.11)
+- How do you version and archive data for long-term reproducibility while keeping ingest costs low? (Ch.6, Ch.10)
 
-### SQL execution
-- Why can a logically equivalent SQL query have a radically different physical plan?
-- When does a composite index fail to help?
-- What causes a hash join to spill?
-- How do stale statistics affect cardinality estimation?
-- How would you optimize a top-N-per-group query over billions of rows?
-- Write a recursive CTE for a bill-of-materials explosion with cycle detection.
-- When do window functions beat self-joins, and what's the cost of the sort?
-- NOT IN vs NOT EXISTS vs LEFT JOIN ... IS NULL with NULLs present — which is correct and fast?
+## Containers and Kubernetes
+- A Spark executor pod is OOMKilled while its JVM heap looks healthy: what memory did Kubernetes count that the heap didn't, and how do requests/limits and memory overhead settings fix it? (Ch.12, Ch.7)
 
-### Databases
-- Explain MVCC and how vacuum relates to it.
-- Demonstrate a write-skew anomaly.
-- What consistency does a read replica provide?
-- When would an LSM tree outperform a B-tree?
-- What happens during replication lag?
+## Orchestration
+- When is Temporal's durable-execution model superior to Airflow's DAG model? (Ch.11)
+- Design a long-running approval workflow in Temporal vs Airflow: where do the operational costs diverge? (Ch.11)
 
-### Spark
-- What exactly creates a stage boundary?
-- Why does a shuffle hurt performance?
-- How would you diagnose skew from Spark UI evidence, and fix it three ways (salting, AQE, broadcast)?
-- When does a broadcast join become dangerous?
-- Why can increasing executor memory fail to solve a slow job?
+## Industrial, time-series and Europe
+- Why does delta-of-delta timestamp encoding plus XOR float encoding compress regular telemetry far better than generic columnar codecs, and what data defeats it? (Ch.16)
+- Align three unsynchronized sensor streams onto a one-second grid: as-of join or interpolation, and what does each assume? (Ch.16)
+- How would you design a data platform for a German manufacturing plant with GDPR, SAP integration and on-prem + cloud constraints? (Ch.10, Ch.16)
+- What do data-residency requirements imply for a lakehouse architecture? (Ch.10, Ch.13)
+- How do the works council and the data protection officer shape data-governance decisions? (Ch.10, Ch.19)
 
-### Kafka / streaming
-- Why are offsets separate from the messages themselves?
-- How does consumer-group rebalancing affect processing?
-- How does log compaction differ from retention?
-- How would you guarantee deterministic downstream results under duplicates?
-- How would you replay only one partition/time range?
+## Graph systems
+- How does query optimization differ between graph databases and relational stores for deep traversals? (Ch.17)
+- Design an operational supply-chain-provenance graph and measure traversal latency under concurrent updates. (Ch.17)
 
-### Data architecture
-- How do you choose between warehouse, lake, and lakehouse?
-- When should a pipeline be batch rather than streaming?
-- How would you design a five-year backfill without overwhelming production systems?
-- How do you guarantee data correctness across CDC + streaming + batch?
-- What is the smallest architecture that satisfies a given SLA?
+## AI data infrastructure
+- What are the failure modes of a naive RAG pipeline, and how do production systems mitigate them? (Ch.17)
+- Design a cost-aware embedding strategy for a 1B-document corpus: where are the cost levers? (Ch.17)
+- How do you detect and prevent retrieval drift in a continuously updating RAG system? (Ch.17)
+- How would you set and budget a latency SLO for a production RAG system across retrieval, reranking, time-to-first-token, generation and network? (Ch.17, Ch.18)
 
-### Cloud
-- How would you design private connectivity for a data platform?
-- What are the largest cloud cost drivers for Spark?
-- How would you enforce least privilege across raw and curated data?
+## Python for data engineering
+- When does the GIL actually hurt you, what are the established ways around it (processes, native code that releases the GIL, async for I/O-bound work), and what does the free-threaded CPython build (PEP 703, officially supported since 3.14) change? (Ch.4)
+- Generators vs lists for a 100 GB file: show the memory difference and when generators break. (Ch.4)
+- How does Arrow enable zero-copy hand-off between Python and a native engine? (Ch.4, Ch.6)
+- Design a resilient HTTP client: timeouts, retries with jitter, circuit breaker, idempotency keys. (Ch.4, Ch.8)
+- How do you unit-test a transformation and property-test it for invariants? (Ch.4, Ch.11)
+- *Applied warm-ups* (the easy/medium coding asked first; be fluent, don't over-invest): dedupe a list preserving order; parse and flatten nested JSON; sum the digits of an integer; group/aggregate records into a dict; traverse a tree (BFS/DFS) and invert it; two-pointer and sliding-window over a sequence. (Ch.4; → *Data Structures & Algorithms* M1–M2)
 
-### Systems/Rust
-- Why does an owning pipeline naturally produce backpressure while a clone-heavy pipeline does not?
-- What is the difference between epoll-based and io_uring-based I/O, and when does the difference matter?
-- Why can a correct Raft implementation still produce stale reads at the follower?
-- What is the actual cost difference between a B-tree and an LSM-tree under write-heavy load, measured, not assumed?
+## File formats and serialization
+- Parquet vs Avro vs ORC vs JSON: pick one per scenario (scan-heavy, schema-evolving, streaming) and justify it. (Ch.6)
+- How do Parquet predicate pushdown and column statistics skip data, and when do they fail to help? (Ch.6)
+- Explain Avro schema-evolution compatibility modes (backward/forward/full) with a breaking example. (Ch.6, Ch.9)
+- Snappy vs Zstd vs Gzip: ratio and CPU trade-offs for a Spark read, and why splittability matters for compressed CSV/JSON files but not for codecs inside Parquet. (Ch.6)
 
-### AI data infrastructure
-- What are the failure modes of a naive RAG pipeline, and how do production systems mitigate them?
-- Design a cost-aware embedding strategy for a 1B-document corpus; where are the cost levers?
-- How do you detect and prevent retrieval drift in a continuously updating RAG system?
-- What is the latency SLO for a production RAG system, and how does it break down (retrieval + LLM + network)?
+## Message queues, caches and serving
+- Queue (SQS/RabbitMQ) vs log (Kafka): which gives replay, which gives per-message ack, and when do you need each? (Ch.5, Ch.9)
+- Design a cache-aside layer; show how a cache stampede happens and three ways to prevent it. (Ch.5)
+- How do you keep a cache consistent with the system of record? What breaks under write-heavy load? (Ch.5)
+- Model a high-write access pattern in DynamoDB/Cassandra: how do you avoid a hot partition? (Ch.5)
 
-### Europe/Industrial
-- How would you design a data platform for a German manufacturing plant with GDPR, SAP integration, and on-prem+cloud constraints?
-- What are the implications of data residency requirements for a lakehouse architecture?
-- How does the works council or data protection officer role shape data governance decisions?
+## Distributed processing and streaming
+- Event time vs processing time: design watermarks for 2% late data with a stated correctness guarantee. (Ch.7, Ch.9)
+- Prove exactly-once effect end to end across a source, a stream processor and an idempotent sink. (Ch.9, Ch.14)
+- Design heavy-hitters/top-K over a firehose using Count-Min Sketch and bound the error. (Ch.5, Ch.15)
 
-### Orchestration
-- When is Temporal's durable-execution model superior to Airflow's DAG model?
-- Design a long-running approval workflow in Temporal vs Airflow; where do the operational costs diverge?
+## Storage, platforms and warehouses
+- Snowflake micro-partitions vs Redshift distribution/sort keys vs BigQuery partitioning/clustering: tune the same query on each. (Ch.6)
+- What makes object storage different from a distributed filesystem, and how does that shape lakehouse design? (Ch.6, Ch.10)
+- Design cross-region DR for a data platform: state RPO/RTO and the cost of each additional nine. (Ch.11)
 
-### Graph systems
-- What is the difference in query optimization between graph databases and relational stores for deep traversals?
-- Design an operational supply-chain-provenance graph; measure traversal latency under concurrent updates
+## Operations, governance and security
+- A table is 6 hours stale at 3 a.m.: walk the incident from alert to root cause to prevention. (Ch.11, Ch.13)
+- Implement GDPR erasure across a lakehouse with time travel and immutable backups: where is it hard? (Ch.6, Ch.13)
+- Envelope encryption with a KMS: what exactly is encrypted with what, and how does key rotation work? (Ch.13)
+- Design row-level and column-level security enforced in the query engine, not the application. (Ch.13)
 
-### AWS advanced
-- What is the cost breakdown of a Glue job vs Spark job vs Lambda for an incremental CSV ingest?
-- Design multi-team access control for a data mesh using Lake Formation; audit trail for compliance
-- How would you detect schema drift in an incremental ingest pipeline? Design a remediation workflow
-- Compare Step Functions + Glue vs Airflow for orchestrating a 10-step data pipeline; what are the operational trade-offs?
-- How do you version and archive data for long-term reproducibility while keeping ingest costs low?
+## Capstones and benchmarking
+- Why does a closed-loop load generator under-report p99 during a stall, and how do you fix the measurement? (Ch.18)
+- Why can't you average p99 latencies from 20 hosts, and what do you aggregate instead? (Ch.18)
+- What does each of TPC-H, TPC-DS and ClickBench fail to tell you about your own workload? (Ch.18)
+- Walk through your capstone's dominant cost lever and its next bottleneck, with the measurements that show it. (Ch.18)
 
-### Python for data engineering
-- When does the GIL actually hurt you, and what are the three ways around it?
-- Generators vs lists for a 100 GB file: show the memory difference and when generators break.
-- How does Arrow enable zero-copy hand-off between Python and a native engine?
-- Design a resilient HTTP client: timeouts, retries with jitter, circuit breaker, idempotency keys.
-- How do you unit-test a transformation and property-test it for invariants?
-- *Applied warm-ups (the easy/medium coding you'll actually get asked first — be fluent, don't over-invest):* dedupe a list preserving order; parse and flatten nested JSON; sum the digits of an integer; group/aggregate records into a dict; traverse a tree (BFS/DFS) and invert it; two-pointer / sliding-window over a sequence
+## Stakeholders and communication
+- A VP asks for "real-time" data: which questions reveal the actual latency requirement, and how do you present the cost of each freshness tier? (Ch.19, Ch.15)
+- Plan the removal of a table with 40 consumers you haven't identified yet, without breaking any of them. (Ch.19, Ch.13)
+- What belongs in an ADR, and why is a superseded ADR kept rather than deleted? (Ch.19)
 
-### File formats and serialization
-- Parquet vs Avro vs ORC vs JSON: pick one per scenario and justify (scan-heavy, schema-evolving, streaming).
-- How does Parquet predicate pushdown + column stats skip data, and when does it fail to help?
-- Explain Avro schema-evolution compatibility modes (backward/forward/full) with a breaking example.
-- Snappy vs Zstd vs Gzip: ratio/CPU/splittability trade-offs for a Spark read.
+## Behavioral and leadership (STAR — rehearse out loud, quantify every result)
+- Tell me about yourself / walk me through a project you owned end to end. (Appendix B, Ch.18)
+- A result you're proud of: what was *your* specific contribution, and its measured impact? (Appendix B)
+- A decision of yours that caused a critical failure: what happened, how did you respond, what did you change afterwards? (Appendix B, Ch.19)
+- A time you worked under high ambiguity or a hard deadline; a conflict with a stakeholder and how you resolved it. (Appendix B, Ch.19)
+- Map each story to a leadership principle (e.g. Ownership, Dive Deep, Earn Trust, Deliver Results) and expect "why did you do that?" follow-ups. (Appendix B)
 
-### Message queues, caches, and serving
-- Queue (SQS/RabbitMQ) vs log (Kafka): which gives replay, which gives per-message ack, and when do you need each?
-- Design a cache-aside layer; show how a cache stampede happens and three ways to prevent it.
-- How do you keep a cache consistent with the system of record? What breaks under write-heavy load?
-- Model a high-write access pattern in DynamoDB/Cassandra; how do you avoid a hot partition?
+# Appendix B — How to use this domain
+Guidance, not topics: the learning method, schedule, specialization tracks, mastery gates and career positioning.
 
-### Distributed processing and streaming
-- Event time vs processing time: design watermarks for 2% late data with a correctness guarantee.
-- Prove exactly-once-effect end to end across a source, a stream processor, and an idempotent sink.
-- Design heavy-hitters/top-K over a firehose using Count-Min Sketch; bound the error.
+## B.1 The learning method
+For every technology, answer four questions: what problem does it solve; what happens under the hood; what failure mode does it introduce; what alternative solves the same problem? Progress each topic through **concept → controlled experiment → implementation → failure injection → measurement → architecture trade-off → explanation**. A chapter is passed only when you can answer its Appendix A questions and defend a design built on it with the Ch.15 method under time pressure.
 
-### Storage, platforms, and warehouses
-- Snowflake micro-partitions vs Redshift distribution/sort keys vs BigQuery partition/cluster: tune the same query on each.
-- What makes object storage different from a distributed filesystem, and how does that shape lakehouse design?
-- Design cross-region DR for a data platform: state RPO/RTO and the cost of each 9.
-
-### Operations, governance, and security
-- A table is 6 hours stale at 3am — walk the incident from alert to root cause to prevention.
-- Implement GDPR erasure across a lakehouse with time travel and immutable backups — where is it hard?
-- Envelope encryption with a KMS: what exactly is encrypted with what, and how does key rotation work?
-- Design row-level + column-level security enforced in the query engine, not the app.
-
-### Behavioral and leadership (STAR — rehearse out loud, quantify every result)
-- Tell me about yourself / walk me through a project you owned end to end.
-- A result you're proud of — what was *your* specific contribution and its measured impact?
-- A decision of yours that caused a critical failure — what happened, how did you respond, what did you change afterward?
-- A time you worked under high ambiguity or a hard deadline; a conflict with a stakeholder and how you resolved it.
-- Map each story to a leadership principle (Ownership, Dive Deep, Earn Trust, Deliver Results) and expect "why did you do that?" follow-ups.
-
-## Chapter 21 — Learning Schedule and Specialization Tracks
-### 21.1 Suggested weekly schedule
+## B.2 Weekly rhythm
 | Day | Focus |
 |---|---|
-| Mon | Deep theory + notes; reproduce one internal behavior |
+| Mon | Deep theory and notes; reproduce one internal behaviour |
 | Tue | Implementation experiment |
 | Wed | SQL/Spark/database performance lab |
 | Thu | Architecture/design exercise |
 | Fri | Cloud/Kafka/lakehouse lab |
-| Sat | Long-form project implementation + benchmarking |
+| Sat | Long-form capstone implementation and benchmarking |
 | Sun | Review, write-up, teach-back, one timed design |
 
-Target: 15–20 hours/week. If time is constrained, preserve the implementation/experiment ratio — reduce breadth before reducing hands-on depth.
+Plan on roughly 15–20 hours a week. When time is short, cut breadth before hands-on depth: keep the experiment-and-measure days.
 
-### 21.2 Specialization tracks (prioritize once foundations are solid)
-Everyone does Ch.1–6 (foundations + storage), Ch.7–9 (compute + movement), Ch.13–15 (operations, theory, design), and Ch.19 (career). Then specialize:
+## B.3 Specialization tracks
+Common core for everyone: Ch.1–9, Ch.13–15, the §18.1 benchmarking method and Ch.19. Then go deep on one track (rough planning figure: about six months of core, then four to eight months per track at the pace above).
+- **Streaming / real-time infrastructure** — priority: Ch.9, §8.2, §7.4, Ch.14, the streaming table formats in §6.3, the streaming path of the Ch.18 primary capstone, and → *Rust Systems Engineering* M5 (Ch.25–28). Lighter: graph (§17.3–17.4), Europe-specific architecture (§10.5) unless targeting that market.
+- **Database / storage engines** — priority: Ch.5, Ch.6, §2.3, Ch.14, and → *Rust Systems Engineering* M4 (Ch.19–24) plus the Ch.35–36 capstones. Lighter: reverse ETL and BI serving (§17.2, §17.7).
+- **Lakehouse / table formats** — priority: Ch.3, Ch.6 (all of it), Ch.8, §10.3, Ch.13; aim for committer-level depth in one of Iceberg, Delta or Hudi.
+- **AI data infrastructure** — priority: §17.1, §17.1.1, §17.1.5, §5.6, Ch.9, the Ch.18 AI capstone.
+- **Platform / infrastructure** — priority: Ch.10, Ch.11, Ch.12, Ch.13 (especially §13.4), FinOps (§10.4), and → *Rust Systems Engineering* for data-plane hot paths.
 
-- **Streaming / real-time infrastructure specialist** — Priority: Ch.9, Ch.6.4, Ch.25-E (Kafka/Raft), Ch.11, Ch.17, Ch.18 streaming capstones. Deprioritize: graph, GPU, EU-specific (unless targeting that market). Target roles: Confluent/streaming platform, real-time analytics.
-- **Database / storage-engine specialist** — Priority: Ch.5, Ch.25-D (storage internals), Ch.25-G capstone B/C, Ch.6, Ch.17. Deprioritize: reverse ETL, BI. Target roles: OLTP/OLAP engine teams, TiKV/CockroachDB/ClickHouse-style companies.
-- **Lakehouse / table-format specialist** — Priority: Ch.2, Ch.6 (all), Ch.8, Ch.3, Ch.13. Target roles: Databricks/Iceberg/Delta committer-level depth.
-- **AI data-infra specialist** (hottest/best-paid) — Priority: Ch.17.1/17.1.1/17.1.5, Ch.5.6 (sketches), Ch.9, Ch.18 AI capstone. Target roles: RAG/vector/feature-store systems at AI companies.
-- **Platform / infra specialist** — Priority: Ch.10, Ch.11, Ch.12, Ch.13.4, Ch.25 (systems). Target roles: Kubernetes-native data platforms, internal developer platforms, FinOps.
+## B.4 Mastery gates
+| Area | Where taught | Mastery condition |
+|---|---|---|
+| Foundations | Ch.1 | States the latency hierarchy, picks the right data structure for a workload, reasons about I/O and network cost over CPU |
+| SQL | Ch.2 | Inspects an execution plan, predicts bottlenecks, validates an optimisation with measurements |
+| Modeling | Ch.3 | Designs a warehouse/lakehouse model with explicit grain and historical semantics; justifies normalized vs dimensional vs Data Vault |
+| Python | Ch.4 | Builds memory-bounded, tested, observable ingestion and processing components |
+| Databases | Ch.5 | Explains storage, indexing, MVCC, isolation, replication and consistency trade-offs; models NoSQL by access pattern; designs a correct cache layer |
+| Scale algorithms | §5.6 | Picks and implements the right probabilistic structure (HLL, Bloom, CMS, t-digest) with a stated error bound |
+| Formats and lakehouse | Ch.6 | Explains Parquet internals and transactional table formats; chooses format and compression with evidence |
+| Spark | Ch.7 | Diagnoses shuffle, skew, partitioning, memory and join problems from evidence |
+| Ingestion and CDC | Ch.8 | Builds idempotent, resumable incremental ingestion; designs snapshot + change-stream CDC with deletes, ordering and replay |
+| Kafka / streaming | Ch.9 | Explains partitions, replication, offsets, consumer groups, replay and delivery semantics |
+| Cloud | Ch.10 | Designs secure, scalable, cost-aware architecture on AWS, Azure and GCP |
+| AWS advanced | §10.2, §11.1 | Designs a multi-team data mesh with Lake Formation, cost-optimises Glue jobs, orchestrates with Step Functions |
+| Operations | Ch.11–13 | Detects, diagnoses and recovers from pipeline and data incidents |
+| Distributed theory | Ch.14 | Reasons about consistency models, quorums, consensus and exactly-once as architectural properties |
+| System design | Ch.15 | Runs any Ch.15 catalog prompt end to end in 45 minutes with estimates, failure modes and trade-offs |
+| AI data infra | Ch.17 | Designs and operates a production RAG/vector pipeline with cost and latency SLOs; understands feature stores and train/serve skew |
+| Benchmarking | §18.1 | Produces reproducible, coordinated-omission-safe percentile measurements against a stated baseline |
+| Capstone | §18.2 | Passes all six points of the capstone rubric |
+| Stakeholders | Ch.19 | Turns a vague ask into measurable requirements, negotiates a data contract, and runs a deprecation without breaking consumers |
+| Systems / Rust | → *Rust Systems Engineering* | Builds a durable storage-engine component and reasons about ownership, concurrency and zero-copy I/O |
+| DSA | → *Data Structures & Algorithms* | Implements every core structure and algorithm from scratch, states its complexity, recognizes the pattern behind a problem and maps it to the data-system mechanism it powers |
+| Proof of mastery | B.5 | Has a public portfolio, at least one merged open-source contribution, and can run a system-design interview end to end |
 
-Each track: ~4–8 months of focused depth after the ~6-month common core. Map every track to its mastery gates (Ch.22) and compensation ladder (Ch.19).
+## B.5 Proof of mastery and career positioning
+- **Visible proof:** a public portfolio of systems built from first principles — the Ch.18 capstones with their benchmarks and failure analyses; open-source contributions to widely used projects (Spark, Kafka, Flink, Airflow, Iceberg, DataFusion, Arrow, dbt); deep-dive writing on internals, published reproducible benchmarks and post-mortems; conference and meetup talks.
+- **Staff/Principal trajectory:** scope of influence beyond your team, cross-team technical leadership, and writing the architecture RFCs and ADRs of §19.1.
+- **Beyond employment:** independent or fractional consulting for scale-ups, building a data-infrastructure product or an open-source-with-commercial-support company, and technical advisory roles once a specialization is recognized.
 
-## Chapter 22 — Mastery Gates
-| Area | Mastery condition |
-|---|---|
-| Foundations | Can state the latency hierarchy, pick the right data structure for a workload, and reason about I/O/network cost over CPU |
-| SQL | Can inspect an execution plan, predict bottlenecks, and validate an optimization with measurements |
-| Databases | Can explain storage, indexing, MVCC, isolation, replication, and consistency trade-offs; can model for NoSQL by access pattern and design a correct cache layer |
-| Modeling | Can design a warehouse/lakehouse model with explicit grain and historical semantics; can justify normalized vs dimensional vs Data Vault |
-| Ingestion/formats | Can build an idempotent, resumable incremental ingest and choose the right file format/compression with evidence |
-| Scale algorithms | Can pick and implement the right probabilistic structure (HLL/Bloom/CMS/t-digest) with a stated error bound |
-| Python | Can build memory-bounded, tested, observable ingestion/processing components |
-| Systems/Rust | Can build a durable storage engine component and reason about ownership, concurrency, and zero-copy I/O |
-| Spark | Can diagnose shuffle, skew, partitioning, memory, and join problems using evidence |
-| Kafka/streaming | Can explain partitions, replication, offsets, consumer groups, replay, and delivery semantics |
-| CDC | Can design snapshot + change-stream ingestion with deletes, ordering, and replay |
-| Lakehouse | Can explain Parquet internals and transactional table formats |
-| Cloud | Can design secure, scalable, cost-aware architecture on AWS, Azure, and GCP |
-| AWS Advanced | Can design a multi-team data mesh with Lake Formation, cost-optimize Glue jobs, and orchestrate via Step Functions |
-| Operations | Can detect, diagnose, and recover from pipeline/data incidents |
-| AI data infra | Can design and operate a production RAG/vector pipeline with cost and latency SLOs; understands feature stores and train/serve skew |
-| System design | Can run any Ch.15 catalog prompt end-to-end in 45 minutes with estimates, failure modes, and trade-offs |
-| Capstone | Passes the six-point capstone rubric: design doc, reproducibility, failure injection, benchmarks, observability, defense |
-| Career | Has a public portfolio, at least one OSS contribution, and can run a system-design interview end to end |
-| DSA | Can implement every core structure/algorithm from scratch, state its complexity, recognize the pattern behind a problem, and map it to the data-system mechanism it powers (Milestone 10) |
+## B.6 Interview preparation
+- **System design:** use the Ch.15 method live, under time pressure, on the Ch.15 catalog.
+- **Behavioral loops:** structure every story with **STAR** (Situation, Task, Action, Result), leading with a quantified result. Companies with published principles — Amazon publishes 16 Leadership Principles (e.g. Ownership, Dive Deep, Bias for Action, Deliver Results, Earn Trust, Have Backbone; Disagree and Commit) — probe each story against them with deep follow-ups on *your* decisions, failures and lessons.
+- **Story bank:** six to ten reusable STAR stories (a proud result, a failure you caused, a conflict, an ambiguous problem, a tight deadline, a time you changed your mind), each mapped to several principles; rehearse with the behavioral questions in Appendix A.
+- **Project deep-dive:** narrate one project end to end — architecture, your specific contribution, trade-offs, what you'd do differently — using the capstone defense (§18.2 point 6).
+- **Coding warm-ups:** easy/medium Python and SQL still open many loops; stay fluent via the Appendix A warm-ups and → *Data Structures & Algorithms*.
+- **Offers:** calibrate the level before negotiating; understand total-compensation structure (base, bonus, equity, vesting and refresh cycles) and use competing offers as leverage.
 
-## Chapter 23 — Intentionally De-emphasized Topics
-- Basic Python syntax, functions, classes, elementary data structures
-- Basic Git commands and introductory Linux
-- Beginner SQL SELECT/JOIN exercises beyond quick revision
-- Generic CRUD application development
-- Memorizing cloud-service catalogs without understanding architecture
-- Large amounts of easy LeetCode-style programming practice
-- Tool-specific tutorials without understanding the underlying system
-- Notebook-only projects that cannot be reproduced or tested
-
-**Caveat for interviews:** these are de-emphasized for *mastery*, not ignored. Simple practical Python (dedup, JSON parsing, basic DSA) and basic SQL still show up as interview *warm-ups* (see the applied-warm-ups and behavioral items in Ch.20). Be fluent in them — just don't spend your limited time there instead of on the fundamentals above.
-
-## Chapter 24 — The Learning Philosophy
-For every new technology, ask four questions:
-1. What problem does it solve?
-2. What is happening under the hood?
-3. What failure mode does it introduce?
-4. What alternative could solve the same problem?
-
-Progression: **concept → controlled experiment → implementation → failure injection → measurement → architecture trade-off → explanation.**
-
-If you can answer those four questions for a technology, you are learning the system rather than memorizing a tool — and that is precisely the difference between an average data engineer and the data engineers companies pay the most to hire.
-
-## Systems in Production — Milestone 8: the cross-company pattern (the real takeaway)
-Every system in this syllabus's Systems-in-Production sections was built because an existing off-the-shelf tool hit a wall at a company's specific scale or workload. Read each primary source; the citations are the actual engineering papers/posts, not secondary retellings. For each, know: the forcing problem, the core design decision, the trade-off accepted, the scale at launch, and what it influenced afterward.
-
-Notice the recurring shape across all twenty-plus systems:
-1. **A specific, measurable limit was hit** (not "we felt like building something") — a latency SLA, a write-amplification number, a consistency bug, an operational-ownership gap.
-2. **One core trade-off was consciously accepted** — availability over consistency (Dynamo), latency over flexibility (Hive), write-path complexity over read-path mutability (Hudi/Iceberg/Delta), infrastructure cost over consistency compromise (Spanner).
-3. **The abstraction, not the implementation, is what spread** — Bigtable's data model outlived Google's specific C++ implementation (becoming HBase); Kafka's log abstraction outlived its original Scala codebase's internals; MillWheel's watermark concept outlived MillWheel itself, surviving as Beam/Flink/Spark semantics.
-
-- *Exercise*: pick one system from any Systems-in-Production section, find its current (2026) equivalent open-source or managed product, and write one page on what changed and what didn't — this is the single highest-leverage reading exercise in this syllabus, because interviewers at infra companies routinely ask "tell me about a system whose design you admire and why," and a first-hand answer grounded in the primary paper is immediately distinguishable from a Wikipedia-level answer.
-
----
-
+## B.7 Deliberately de-emphasized
+Not ignored, just not where depth time goes: basic Python syntax and elementary data structures, introductory Git and Linux, beginner SQL (patched through the Ch.1 baseline and §2.1, not taught in depth); generic CRUD application development; memorizing cloud-service catalogs without the architecture behind them; large volumes of easy LeetCode-style practice (the → *Data Structures & Algorithms* domain teaches patterns instead); tool tutorials without the underlying system; and notebook-only projects that cannot be reproduced or tested.
