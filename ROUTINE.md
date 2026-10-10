@@ -21,7 +21,7 @@ This is the procedure an automated session follows when a domain's daily routine
 2. Then pick the next topic of this domain.
    - Walk the domain's syllabus (`syllabus/<domain>.md`) in order, refreshers included.
    - The first topic that has no entry in `site/src/topics/registry.ts` is the topic to make.
-   - **Held topics:** if a topic already in the registry with `status: 'held'` now has every topic before it live, this run's job is to **release** it instead: check it still passes every step below (refresh facts, narration, checks), set `status: 'live'`, and ship it. Make nothing new in that run.
+   - **Held topics:** if a topic already in the registry with `status: 'held'` now has every topic before it live, this run's job is to **release** it instead: check it still passes every step below (refresh facts against current sources, coverage map and gap review, narration, checks), set `status: 'live'`, and ship it. A held topic's narration may never have been generated, or may be stale because its script changed: generate it with `narrate.sh` (section 5) before shipping; `npm run test:narration` must pass once it is live. Make nothing new in that run.
 3. Read before writing anything: the plan's Core Rules (#1–#6), Learning design, Narration and Definition of Done; all of `QUALITY.md`; the previous topic's files (reel, narration, Deep dive, Prerequisites, registry entry) and the next topic's syllabus line, so the bridge and handoff are real.
 
 ## 2. Research and verify
