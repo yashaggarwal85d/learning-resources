@@ -7,7 +7,7 @@
     "dev": "astro dev",
     "build": "astro build",
     "preview": "astro preview",
-    "test:examples": "find src/topics -name examples.py -print0 | xargs -0 -r -n1 python3",
+    "test:examples": "find src/topics -name examples.py -print0 | xargs -0 -r -n1 ${PYTHON:-python3}",
     "test:reels": "node tests/reels.mjs",
     "test:narration": "node tests/narration.mjs",
     "check:links": "node ../scripts/check-links.mjs"

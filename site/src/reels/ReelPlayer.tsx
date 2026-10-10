@@ -247,7 +247,7 @@ export default function ReelPlayer({ meta, reel, active, startStep, next, onPlay
   return (
     <div className="relative flex h-full w-full select-none flex-col overflow-hidden" aria-roledescription="reel">
       <div
-        className="relative flex min-h-0 flex-1 cursor-pointer flex-col landscape:grid landscape:grid-cols-[minmax(300px,0.8fr)_1.45fr]"
+        className="reel-stage relative flex min-h-0 flex-1 cursor-pointer flex-col landscape:grid landscape:grid-cols-[minmax(300px,0.8fr)_1.45fr]"
         style={{ touchAction: 'pan-y' }}
         onPointerDown={onPointerDown}
         onPointerMove={onPointerMove}
@@ -356,7 +356,7 @@ export default function ReelPlayer({ meta, reel, active, startStep, next, onPlay
       </div>
 
       {/* Side rail */}
-      <div className="absolute bottom-16 right-2.5 z-20 flex flex-col items-center gap-2.5 landscape:gap-4 landscape:bottom-auto landscape:right-4 landscape:top-1/2 landscape:-translate-y-1/2">
+      <div className="absolute bottom-16 right-2.5 z-20 flex flex-col items-center gap-2 landscape:gap-4 landscape:bottom-auto landscape:right-4 landscape:top-1/2 landscape:-translate-y-1/2">
         <RailButton label="Prereqs" title="Prerequisites" onClick={() => onOpenSheet(undefined, 'prereq')} icon={<IconSteps />} />
         <RailButton label="Deep dive" onClick={() => onOpenSheet()} icon={<IconLayers />} />
         <RailButton label="Sources" onClick={() => onOpenSheet('sources')} icon={<IconBook />} />
@@ -644,10 +644,10 @@ function ControlButton({ label, onClick, primary, children }: { label: string; o
 function RailButton({ label, title, icon, onClick }: { label: string; title?: string; icon: React.ReactNode; onClick: () => void }) {
   return (
     <button type="button" onClick={onClick} className="group flex flex-col items-center gap-1 text-crema" aria-label={title ?? label}>
-      <span className="grid h-11 w-11 place-items-center rounded-full border border-crema/10 bg-espresso/60 backdrop-blur transition group-hover:border-caramel group-hover:text-caramel group-active:scale-90">
+      <span className="grid h-10 w-10 place-items-center rounded-full border border-crema/10 bg-espresso/60 backdrop-blur transition group-hover:border-caramel group-hover:text-caramel group-active:scale-90 landscape:h-11 landscape:w-11">
         {icon}
       </span>
-      <span className="font-mono text-[0.55rem] uppercase tracking-[0.12em] text-latte">{label}</span>
+      <span className="font-mono text-[0.55rem] uppercase tracking-[0.12em] text-latte max-sm:portrait:hidden">{label}</span>
     </button>
   );
 }

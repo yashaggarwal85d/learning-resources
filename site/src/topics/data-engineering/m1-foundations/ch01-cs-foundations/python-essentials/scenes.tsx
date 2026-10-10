@@ -16,7 +16,7 @@ const Svg = ({ label, h = 260, children }: { label: string; h?: number; children
   </svg>
 );
 const T = ({ x, y, s = 15, f = C.latte, a = 'start', w = 500, o = 1, serif = false, children }: { x: number; y: number; s?: number; f?: string; a?: 'start' | 'middle' | 'end'; w?: number; o?: number; serif?: boolean; children: ReactNode }) => (
-  <text x={x} y={y} fontSize={s} fill={f} textAnchor={a} fontWeight={w} opacity={o} fontFamily={serif ? SERIF : MONO} letterSpacing={serif ? 0 : '0.03em'}>
+  <text x={x} y={y} fontSize={s} style={{ fontSize: `calc(${s}px * var(--svg-text-scale, 1))` }} fill={f} textAnchor={a} fontWeight={w} opacity={o} fontFamily={serif ? SERIF : MONO} letterSpacing={serif ? 0 : '0.03em'}>
     {children}
   </text>
 );
@@ -242,7 +242,7 @@ export function Dataclass({ t }: StepCtx) {
   return (
     <Stack>
       <Code title="event.py" t={t} end={0.9} lines={['@dataclass(frozen=True, slots=True)', 'class Event:', '    id: int', '    kind: str']} highlight={t > 1 ? [0] : []} />
-      <Svg label="The dataclass generates init, repr and eq; frozen blocks assignment; slots removes the per-instance dict" h={170}>
+      <Svg label="The dataclass generates init, repr and eq; frozen blocks assignment; slots removes the per-instance dict" h={200}>
         {gens.map((g, i) => {
           const a = easeOutBack(seg(t, 1.1 + i * 0.3, 1.6 + i * 0.3));
           return (
@@ -253,12 +253,12 @@ export function Dataclass({ t }: StepCtx) {
           );
         })}
         <g opacity={easeOut(seg(t, 2.3, 2.8))}>
-          <T x={30} y={112} s={14} f={C.crema} w={600}>frozen=True</T>
-          <T x={190} y={112} s={14} f={C.latte}>e.kind = 'view'  → FrozenInstanceError</T>
+          <T x={30} y={104} s={14} f={C.crema} w={600}>frozen=True</T>
+          <T x={30} y={128} s={14} f={C.latte}>e.kind = 'view'  → FrozenInstanceError</T>
         </g>
         <g opacity={easeOut(seg(t, 2.9, 3.4))}>
-          <T x={30} y={150} s={14} f={C.crema} w={600}>slots=True</T>
-          <T x={190} y={150} s={14} f={C.latte}>no per-instance __dict__: smaller records</T>
+          <T x={30} y={166} s={14} f={C.crema} w={600}>slots=True</T>
+          <T x={30} y={190} s={14} f={C.latte}>no per-instance __dict__: smaller records</T>
         </g>
       </Svg>
     </Stack>

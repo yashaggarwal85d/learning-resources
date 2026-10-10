@@ -28,6 +28,7 @@ Four tracks, each with a full syllabus:
 PROJECT_PLAN.md  ROUTINE.md  QUALITY.md   rules, procedure, quality record
 syllabus/                                  the four syllabi (the build reads them)
 scripts/check-docs.mjs                     checks links and anchors in the docs
+scripts/check-all.mjs                      runs every pre-ship check with a timing summary (ROUTINE.md section 6)
 scripts/check-links.mjs                    checks every topic's outside links (status and title)
 site/                                      the website (Astro + React islands + Tailwind)
   src/topics/registry.ts                   every finished topic: live or held, concept ledger, bridge and handoff

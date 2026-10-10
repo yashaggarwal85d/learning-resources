@@ -67,6 +67,9 @@ body {
 :focus-visible { outline: 2px solid var(--color-caramel); outline-offset: 3px; border-radius: 6px; }
 
 /* Reels */
+/* Touch-action only reaches down to the nearest scroll container, and the caption and visual are scroll containers
+   (overflow). Without this a sideways swipe that starts on the caption is claimed by the browser and cancelled. */
+.reel-stage, .reel-stage * { touch-action: pan-y; }
 .no-scrollbar { scrollbar-width: none; }
 .no-scrollbar::-webkit-scrollbar { display: none; }
 .reel-body b { color: var(--color-crema); font-weight: 600; }
@@ -126,3 +129,6 @@ body {
 .deep .res-role-before .res-kind { background: color-mix(in oklab, var(--color-caramel) 18%, transparent); color: var(--color-caramel); border-color: color-mix(in oklab, var(--color-caramel) 45%, transparent); }
 .deep .res-role-later { opacity: 0.72; }
 .deep .res-role-later .res-kind, .deep .res-role-other .res-kind { border-style: dashed; }
+
+/* Phones: scene drawings are laid out 600 units wide and shrink to the screen, so their text grows to stay readable. */
+@media (orientation: portrait) { .reel-stage { --svg-text-scale: 1.22; } }

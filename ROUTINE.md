@@ -22,7 +22,7 @@ This is the procedure an automated session follows when a domain's daily routine
    - Walk the domain's syllabus (`syllabus/<domain>.md`) in order, refreshers included.
    - The first topic that has no entry in `site/src/topics/registry.ts` is the topic to make.
    - **Held topics:** if a topic already in the registry with `status: 'held'` now has every topic before it live, this run's job is to **release** it instead: check it still passes every step below (refresh facts against current sources, coverage map and gap review, narration, checks), set `status: 'live'`, and ship it. A held topic's narration may never have been generated, or may be stale because its script changed: generate it with `narrate.sh` (section 5) before shipping; `npm run test:narration` must pass once it is live. Make nothing new in that run.
-3. Read before writing anything: the plan's Core Rules (#1–#6), Learning design, Narration and Definition of Done; all of `QUALITY.md`; the previous topic's files (reel, narration, Deep dive, Prerequisites, registry entry) and the next topic's syllabus line, so the bridge and handoff are real.
+3. Read before writing anything (read the parts, not whole files you won't use: the plan's named sections by heading, not all of `PROJECT_PLAN.md`; the previous topic's reel, registry entry and Deep dive headings rather than every file in full): the plan's Core Rules (#1–#6), Learning design, Narration and Definition of Done; all of `QUALITY.md`; the previous topic's files (reel, narration, Deep dive, Prerequisites, registry entry) and the next topic's syllabus line, so the bridge and handoff are real.
 
 ## 2. Research and verify
 
@@ -36,6 +36,8 @@ This is the procedure an automated session follows when a domain's daily routine
 4. Anything about real software behaviour is **executed**: code, commands and queries go into the topic's `examples.py` or `examples.sh`, with asserts for every output the reel shows. Run it.
 
 ## 3. Write the topic
+
+**Checkpoint:** commit and push `topic/<id>` at the end of sections 2, 3, 4 and 5 (a message like "WIP <id>: research done"). A run that hits its usage limit then loses nothing and the next run resumes from the last checkpoint. Nothing reaches `main` until section 8.
 
 In `site/src/topics/<domain>/<milestone>/<chapter>/<topic>/`, following the existing topics as the pattern. Folder names: `m<N>-<short-name>/ch<NN>-<short-name>/<topic-slug>` (as in `data-engineering/m1-foundations/ch01-cs-foundations/io-cost-model`). Topic ids are permanent and prefixed by domain: `de.` Data Engineering, `dsa.` Data Structures & Algorithms, `ger.` German, `rust.` Rust.
 
@@ -65,16 +67,14 @@ Expect about 40–70 seconds per take on 4 CPU cores (a refresher is about 2 hou
 
 ## 6. Checks (all must pass)
 
-From `site/`:
+From the repo root, one command runs everything below (cheapest first, a timing summary at the end, starts and stops `astro preview` itself):
 
 ```sh
-npm run build              # includes the flow, coverage, syllabus and topic-file checks
-npm run check:links        # every outside link loads and matches its title; open by hand only what it reports
-npm run test:examples
-npm run test:narration
-npm run test:reels -- http://127.0.0.1:4321/learning-resources/   # with `npx astro preview` running
-node ../scripts/check-docs.mjs
+node scripts/check-all.mjs                 # docs, examples, build, narration, reels, links
+node scripts/check-all.mjs --only reels    # re-run just what a fix could affect (docs, examples, build, narration, reels, links)
 ```
+
+It runs the same commands as CI, so nothing is weaker: `npm run build` (includes the flow, coverage, syllabus and topic-file checks), `npm run test:examples`, `npm run test:narration`, `npm run test:reels`, `npm run check:links`, `node scripts/check-docs.mjs`. While fixing, re-run only the affected checks (`--only`); the full run, all green, is required once before shipping and again after any later change. The reel test takes about two minutes per live reel, so don't run it after every small edit.
 
 Then look at the screenshots in `site/test-results/` for every step at desktop and phone size: nothing clipped, overlapping, too small, or hidden behind the controls.
 

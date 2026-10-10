@@ -102,6 +102,21 @@ for (const [device, opts] of [
           await page.waitForTimeout(300);
         }
       }
+      // ...including from the caption (title and text): it is its own scroll container, and a swipe there used to be cancelled by the browser (QUALITY.md #36).
+      for (const i of [1, from]) {
+        await page.locator('[aria-label^="Step "]').nth(i).click();
+        await page.waitForTimeout(500);
+        const cap = await page.locator('[aria-roledescription="reel"] h2').last().boundingBox();
+        for (const [x0, x1, delta] of [[290, 60, 1], [60, 290, -1]]) {
+          const before = Number(await stepNow());
+          if (delta === 1 && (await page.locator(`[aria-label^="Step ${before}:"][data-predict]`).count())) continue; // an unanswered predict step holds
+          await drag(x0, cap.y + cap.height / 2, x1, cap.y + cap.height / 2);
+          const now = Number(await stepNow());
+          if (now !== before + delta && !(before === 1 && delta === -1)) fail(`${where}: swipe from the caption on step ${before} went to ${now}`);
+          await page.locator('[aria-label^="Step "]').nth(i).click();
+          await page.waitForTimeout(300);
+        }
+      }
       const before = await stepNow();
       await drag(200, y, 210, y - 120);
       await page.evaluate(() => document.querySelector('.snap-y')?.scrollTo({ top: 0, behavior: 'instant' }));
