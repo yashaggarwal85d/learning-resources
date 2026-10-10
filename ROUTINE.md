@@ -1,12 +1,12 @@
 # Routine — produce the next topic
 
-This is the procedure an automated session follows when a domain's daily routine fires. There is **one routine per domain** (Data Engineering, Data Structures & Algorithms, German; Rust is paused), each firing once a day and told its domain in its prompt. A run works through **its domain's current chapter**, one topic at a time, each finished and shipped before the next starts, to the same standard as a hand-made topic. The rules live in [PROJECT_PLAN.md](PROJECT_PLAN.md) and [QUALITY.md](QUALITY.md); this file is the order of work. If anything here conflicts with the plan, the plan wins.
+This is the procedure an automated session follows when a domain's daily routine fires. There is **one routine per domain** (Data Engineering, Data Structures & Algorithms, German; Rust is paused), each firing once a day and told its domain in its prompt. A run makes **one topic** of its domain (the next in syllabus order), finished and shipped, to the same standard as a hand-made topic. The rules live in [PROJECT_PLAN.md](PROJECT_PLAN.md) and [QUALITY.md](QUALITY.md); this file is the order of work. If anything here conflicts with the plan, the plan wins.
 
 ## 0. Ground rules
 
 - **One domain per run:** only the domain named in the prompt. Never touch another domain's topics.
 - **One topic at a time.** Finish and ship a topic (all of sections 2–8) before starting the next. Never write several topics in parallel or mass-produce.
-- **Scope of a run:** the domain's current chapter (the chapter holding the first topic of that domain not yet in the registry). Keep going, topic after topic, until the chapter is done or about **18 hours** have passed since the run started, whichever comes first. Never start a topic you can't finish inside that budget (a topic takes about 4–6 hours including narration). The next day's run continues where this one stopped.
+- **Scope of a run: one topic.** Resume this domain's unfinished topic branch if there is one; otherwise make (or release) the next topic. Ship it, report, and stop: don't start a second topic in the same run, even with time left (it keeps usage within the plan's limits). A topic takes about 4–6 hours for a refresher and 8–12 hours for a full topic, including narration. If the run can't finish (time or usage limit), push the branch; the next run resumes it.
 - **Never publish anything half-done.** All work happens on a branch `topic/<topic-id>`. `main` (which deploys the live site) only receives a topic after every check below passes. If the run can't finish, push the branch, write down where it stopped (section 9), and stop. The next run resumes that branch before doing anything else.
 - **Privacy.** Never put personal information (names, email addresses, account details) in any web request, header or query, yourself or in any agent you launch.
 - **No vendors for the voice.** Narration is generated locally with the frozen voices in `site/narration/voice.json` (English narrator and German voice). Never change the voices, their settings or the pipeline.
@@ -83,7 +83,7 @@ Then look at the screenshots in `site/test-results/` for every step at desktop a
 
 Go through `QUALITY.md` → "Before shipping any topic". If this run hit any new kind of problem, add a row with its fix and a guard (an automatic check where possible).
 
-## 8. Ship (then go back to step 1 for the next topic in the chapter)
+## 8. Ship (then report and stop)
 
 1. Commit on `topic/<topic-id>` with a clear message and the trailers used in this repo's history.
 2. Other domains' routines run at the same time and also merge into `main`. So: `git fetch origin && git merge origin/main` into the topic branch, resolve conflicts (in `site/src/topics/registry.ts` keep **both** sides' entries), and re-run section 6 if anything changed.
@@ -94,7 +94,7 @@ Go through `QUALITY.md` → "Before shipping any topic". If this run hit any new
 
 End the run with a short report for the owner:
 
-- the domain and chapter, and the topics shipped (or resumed, or released) this run, each with its live link; how much of the chapter remains;
+- the domain and chapter, and the topic shipped (or resumed, or released) this run, with its live link; how much of the chapter remains;
 - what was verified and how (fact-check corrections, executed examples, measured results);
 - anything that needs a human: the narration to listen to (name two or three clips), and the expert sign-off still pending;
 - if the run stopped early: the branch, the step it stopped at, and what remains.
