@@ -220,7 +220,7 @@ These are rules for how animations behave. The building blocks are shared; the v
 
 Reels can carry an optional voice-over that narrates each step, which makes them more engaging and lets the learner watch the animation instead of reading.
 
-- **The voice.** One signature narrator for the whole site. The brief, modelled on the qualities people liked in OpenAI's "Sky" voice:
+- **The voice.** One signature narrator for the whole site: a **female voice**. The brief, modelled on the qualities people liked in OpenAI's "Sky" voice:
   - **warm and soothing**, with a light smile in the voice;
   - **slightly low, mid-range** pitch and a soft, faintly breathy, slightly husky texture;
   - **relaxed and conversational**, like a friend explaining something over coffee rather than an announcer;
