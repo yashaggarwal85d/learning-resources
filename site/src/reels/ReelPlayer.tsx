@@ -418,6 +418,7 @@ export default function ReelPlayer({ meta, reel, active, startStep, next, onPlay
                 className="group flex-1 py-2"
                 aria-label={`Step ${i + 1}: ${s.title}`}
                 aria-current={i === step ? 'step' : undefined}
+                data-predict={s.predict ? '' : undefined}
                 onClick={() => goTo(i, i < step)}
               >
                 <span className="block h-[3px] overflow-hidden rounded-full bg-crema/15 transition group-hover:bg-crema/30">
@@ -613,9 +614,9 @@ function Captions({ clip, time, playing }: { clip: Clip; time: number; playing: 
   const lit = Math.ceil(progress * words.length);
   return (
     <div className="pointer-events-none relative z-20 px-4 pb-1 text-center" aria-live="off">
-      <p className="mx-auto inline-block max-w-3xl rounded-xl bg-void/75 px-3 py-1.5 text-[0.9rem] leading-snug backdrop-blur sm:text-base">
+      <p lang={line.lang ?? 'en'} className={`mx-auto inline-block max-w-3xl rounded-xl bg-void/75 px-3 py-1.5 text-[0.9rem] leading-snug backdrop-blur sm:text-base ${line.lang === 'de' ? 'font-semibold italic' : ''}`}>
         {words.map((w, i) => (
-          <span key={i} className={i < lit ? 'text-crema' : 'text-latte/55'}>
+          <span key={i} className={i < lit ? (line.lang === 'de' ? 'text-caramel' : 'text-crema') : 'text-latte/55'}>
             {w}{' '}
           </span>
         ))}

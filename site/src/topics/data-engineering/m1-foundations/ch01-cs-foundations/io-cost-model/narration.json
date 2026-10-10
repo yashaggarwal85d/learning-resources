@@ -7,7 +7,9 @@
         "Your orders table has a hundred million rows... spread across a million pages. And there's an index on status.",
         "You want the two percent that were refunded.",
         "Two percent? That sounds small. So most engineers reach straight for the index.",
-        { "beat": 0.4 },
+        {
+          "beat": 0.4
+        },
         "But count the page reads... and the answer flips."
       ]
     },
@@ -57,6 +59,8 @@
         "Now put them side by side.",
         "The scan is flat, at N over B. The index climbs one read for every matching row.",
         "They cross at one over B. Here, one percent.",
+        "CPU big-O can't see this. There, the index wins whenever the matches are a small part of the table.",
+        "Count block transfers instead... and it only wins below N over B matches.",
         "At our two percent, the index reads twice as many pages. Try the slider."
       ]
     },
@@ -70,9 +74,12 @@
     {
       "lines": [
         "And real storage isn't fair.",
-        "A random read waits for a seek, or a fresh request. Sequential reads just stream.",
+        "A random read waits for a seek, or a fresh request. And a plain index scan waits for them one at a time.",
+        "Sequential reads just stream ahead.",
         "If a random read costs r sequential ones, the crossover drops to one over r times B.",
-        "Postgres assumes r is four... so, a quarter of a percent."
+        "Postgres assumes r is four... so, a quarter of a percent.",
+        "And four is low on purpose. It assumes most random reads are already in cache.",
+        "On a cold hard disk, r is two hundred or more... and the crossover falls to five thousandths of a percent, or less."
       ]
     },
     {
@@ -109,11 +116,25 @@
     },
     {
       "lines": [
+        "And the network is just another tier.",
+        "On a cluster, the slowest move is often between machines... and the same counting works.",
+        "Join a one terabyte table with a hundred megabyte one, on a hundred machines.",
+        "Shuffle both by key, and about nine hundred and ninety gigabytes cross the network.",
+        "Broadcast the small table instead... just under ten gigabytes.",
+        "The same join. The same work for the processor... and a hundred times less traffic.",
+        "Broadcast wins on bytes while the small table is smaller than the big one divided by the number of machines. Here, about ten gigabytes.",
+        "And only if it fits in every machine's memory."
+      ]
+    },
+    {
+      "lines": [
         "So, back to the query.",
         "Row by row through the index: two million random reads. At four times the cost... eight times the scan.",
         "Sorted lookups: most of the pages, with gaps.",
         "The scan: a million pages, in one sweep.",
-        "The real contest is between the last two... and that's exactly the call a planner's cost model makes."
+        "The real contest is between the last two... and that's exactly the call a planner's cost model makes.",
+        "At this scale, Postgres prices those two within about one percent of each other.",
+        "A close call... settled by details the deep dive works through."
       ]
     },
     {

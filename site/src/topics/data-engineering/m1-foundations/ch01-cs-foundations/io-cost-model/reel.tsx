@@ -39,7 +39,7 @@ const reel: Reel = {
       duration: 1.2,
       predict: {
         options: [{ label: 'About 50%' }, { label: 'About 10%' }, { label: 'About 1%', correct: true }, { label: 'About 0.1%' }],
-        explain: <>About 1%: one over the number of rows per page. The next four steps derive it, then show why real storage moves it even lower.</>,
+        explain: <>About 1%: one over the number of rows per page. The next few steps derive it, then show why real storage moves it even lower.</>,
       },
       Visual: S.Seesaw,
     },
@@ -91,8 +91,9 @@ const reel: Reel = {
       title: 'They cross at 1/B',
       body: (
         <>
-          The scan is flat at N/B. The index climbs one read per matching row. They meet where k = N/B, at a share of <b>1/B</b>: 1% here. At our 2%,
-          the index reads twice as many pages. Drag to explore.
+          The scan is flat at N/B. The index climbs one read per matching row. They meet where k = N/B, at a share of <b>1/B</b>: 1% here. CPU
+          big-O hides this: there the index's log N + k beats the scan's N whenever k is much smaller than N, but counted in block transfers it wins
+          only while k &lt; N/B. At our 2%, the index reads twice as many pages. Drag to explore.
         </>
       ),
       duration: 2.2,
@@ -113,8 +114,10 @@ const reel: Reel = {
       title: 'Random reads cost more',
       body: (
         <>
-          The model counts every I/O the same; real storage doesn't. A random read waits for a seek, or a new request, while sequential reads stream. If a
-          random read costs <b>r</b> sequential ones, the crossover drops to <b>1/(r·B)</b>. PostgreSQL assumes r = 4 by default: 0.25%.
+          The model counts every I/O the same; real storage doesn't. A random read waits for a seek or a new request, and a plain index scan issues
+          them one at a time, while sequential reads stream ahead. If a random read costs <b>r</b> sequential ones, the crossover drops to{' '}
+          <b>1/(r·B)</b>. PostgreSQL assumes r = 4 by default, so 0.25%, and 4 is low on purpose: it assumes most random reads hit cache. A cold hard
+          disk is r ≈ 200 or more: 0.005% or less.
         </>
       ),
       duration: 4,
@@ -165,12 +168,26 @@ const reel: Reel = {
       Visual: S.Tiers,
     },
     {
+      title: 'The network is a tier too',
+      body: (
+        <>
+          On a cluster the slow transfer is often the network, and the same counting works: bytes moved and requests made, not comparisons. Join a 1 TB
+          table with a 100 MB one on 100 machines. Shuffling both by key sends about <b>990 GB</b> across the network; broadcasting the small table sends
+          about <b>9.9 GB</b>. Same hash join, same CPU big-O, 100× less traffic. Broadcast wins on bytes while the small table is under about 1/p of
+          the big one (here about 10 GB), and only if it fits in every machine's memory.
+        </>
+      ),
+      duration: 3.8,
+      Visual: S.Network,
+    },
+    {
       title: 'Back to the query',
       body: (
         <>
-          Row by row through the index: 2 million random reads, eight times the scan once r = 4. Sorted lookups touch 87% of the pages out of order. The
-          scan reads a million pages in one sweep. The real contest is the bottom two, and that is the call a planner's cost model makes. (PostgreSQL
-          picks the sorted lookups here; the Deep dive shows why.)
+          Row by row through the index: 2 million random reads, eight times the scan once r = 4. Sorted lookups touch 87% of the pages, in order but with gaps. The
+          scan reads a million pages in one sweep. The real contest is the bottom two, and that is the call a planner's cost model makes. At this scale
+          PostgreSQL prices those two within about 1% of each other: a close call, settled by details (memory for the bitmap, the index's size,
+          parallel workers) that the Deep dive works through.
         </>
       ),
       duration: 3.2,

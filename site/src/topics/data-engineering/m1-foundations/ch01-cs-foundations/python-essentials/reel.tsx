@@ -36,6 +36,26 @@ const reel: Reel = {
       Visual: S.MutableDefault,
     },
     {
+      title: 'Closures bind late',
+      body: (
+        <>
+          An inner function or lambda looks up the names it uses when it <em>runs</em>, not when it is made. Three lambdas built in a loop: what do they
+          return?
+        </>
+      ),
+      duration: 1.2,
+      predict: {
+        options: [{ label: '[0, 1, 2]' }, { label: '[2, 2, 2]', correct: true }, { label: '[3, 3, 3]' }, { label: 'NameError' }],
+        explain: (
+          <>
+            <code>[2, 2, 2]</code>: all three look up <code>i</code> after the loop has finished. Bind the value now with a default, <code>lambda i=i: i</code>{' '}
+            (defaults are evaluated once, at <code>def</code>), or with <code>functools.partial</code>.
+          </>
+        ),
+      },
+      Visual: S.LateBinding,
+    },
+    {
       title: 'Comprehensions: filter, then map',
       body: (
         <>
@@ -105,6 +125,27 @@ const reel: Reel = {
       Visual: S.Dataclass,
     },
     {
+      title: 'Classes: equal must mean same hash',
+      body: (
+        <>
+          Special methods plug a class into Python: <code>__iter__</code> makes <code>for</code> work, <code>__len__</code> makes{' '}
+          <code>len()</code> work, <code>__eq__</code> defines <code>==</code>. Defining <code>__eq__</code> removes <code>__hash__</code>, and{' '}
+          <code>@dataclass</code> defines <code>__eq__</code>. Can this record be a dict key?
+        </>
+      ),
+      duration: 1.2,
+      predict: {
+        options: [{ label: 'Yes' }, { label: 'TypeError: unhashable', correct: true }, { label: 'Only once' }, { label: 'KeyError' }],
+        explain: (
+          <>
+            <code>TypeError: unhashable type: 'Key'</code>. Equal objects must hash equally, and a mutable record could change after it is stored. Make it{' '}
+            <code>frozen=True</code> and it is hashable, and safe as a key.
+          </>
+        ),
+      },
+      Visual: S.Hashable,
+    },
+    {
       title: 'Type hints don’t run',
       body: (
         <>
@@ -125,7 +166,7 @@ const reel: Reel = {
     },
     {
       title: 'In one breath',
-      body: <>Seven things to keep. If any felt rusty, the Prerequisites panel has the best places to brush up; otherwise, on to Git.</>,
+      body: <>Nine things to keep. If any felt rusty, the Prerequisites panel has the best places to brush up; otherwise, on to Git.</>,
       duration: 1.8,
       Visual: S.Recap,
     },

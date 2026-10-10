@@ -67,6 +67,16 @@ The course must read as one continuous story. Every topic follows from the one b
 - **Bridges at both ends.** Every reel opens by connecting to the topic before it ("you've just seen X; here is where it bites") and ends by handing off to the next ("this leaves one question open: Y"). Refresher reels do the same, briefly.
 - **A flow review before release.** A reviewer reads the previous topic, this topic and the next one in sequence and flags anything abrupt, unexplained or out of order; it is fixed before the topic ships.
 
+### Rule #6 — Complete coverage, proven
+
+Correct is not enough: a topic must also cover **everything** it should, and we prove it instead of assuming it. Every topic has a **coverage map** (`coverage.json` in its folder) listing what it must cover, from three independent places:
+
+- **The syllabus line, clause by clause.** Every clause of the topic's syllabus entry, copied word for word. Together the clauses must cover the whole line; a word of the syllabus left unmapped fails the build.
+- **The primary sources.** The contents of the key papers, docs and specs the topic rests on, item by item, so nothing standard is missed.
+- **An independent expert list.** A separate reviewer, who has not seen the topic, writes what an expert must know about it.
+
+Every item is mapped to where it is taught: a **reel step**, a **Deep dive section**, or **another topic whose syllabus line says it covers it** (quoted, so "covered elsewhere" can't be waved through). Source and expert items may be left out only with a written reason; a syllabus clause never can: the syllabus is a promise, so it is covered or the syllabus is changed. Then an **adversarial gap hunt**: a reviewer reads the topic against the map and the sources looking for what is missing or too thin; the topic ships only with no open gaps. The build checks the map for every finished topic (live or held): every clause covered, every place real.
+
 ## Correctness and currency — how we make sure
 
 No single check can prove content correct; critic agents in particular can share the same blind spots as the writer. So correctness rests on several independent layers, each catching what the others miss. Nothing can promise zero errors, but together these make errors rare, visible and quickly fixed.
@@ -88,6 +98,7 @@ No single check can prove content correct; critic agents in particular can share
    - a **red team** tries to break the explanation with edge cases and counter-examples;
    - a **currency checker** looks for anything deprecated, renamed or superseded;
    - an **expert reader** judges depth and precision as a sceptical senior engineer would.
+   - a **gap hunter** reads the topic against its coverage map and sources and lists what is missing or too thin ([Rule #6](#rule-6--complete-coverage-proven)).
 
    Each must cite evidence for every objection. Anything they can't settle goes to a human.
 5. **Human expert sign-off.**
@@ -149,21 +160,22 @@ A topic page is complete only when:
 7. It meets the accessibility bar in [Experience features](#experience-features): a text equivalent for every animation, keyboard use and checked contrast.
 8. It has a **Prerequisites** panel: each thing a learner must already know, explained briefly in our own words with a one-line self-check, plus the best free resources for it (reels on this site, videos, readings, courses), every link checked to load and to be what it claims.
 9. It passes the [flow rules](#rule-5--a-natural-flow-never-a-surprise): its concept ledger checks out against earlier live topics, it opens with a bridge from the previous topic and ends with a handoff to the next, every topic before it is live, and the flow review found nothing abrupt.
-10. It passes every layer of [Correctness and currency](#correctness-and-currency--how-we-make-sure): every claim sourced, every example executed in CI, adversarial review resolved, the state-of-the-art scan recorded, and (at milestone level) a human expert sign-off. _(Rule #3)_
+10. It passes the [coverage rule](#rule-6--complete-coverage-proven): its coverage map covers the whole syllabus line, the primary sources and an independent expert list, every item maps to a real reel step, Deep dive section or covering topic, and the gap hunt has nothing open. _(Rule #6)_
+11. It passes every layer of [Correctness and currency](#correctness-and-currency--how-we-make-sure): every claim sourced, every example executed in CI, adversarial review resolved, the state-of-the-art scan recorded, and (at milestone level) a human expert sign-off. _(Rule #3)_
 
 ## How to Create a Topic — the workflow
 
 One topic at a time is produced start to finish as a single scrollable reel, following these steps:
 
 1. **Pick the next topic.** Take the next topic in curriculum order (Domain → Milestone → Chapter → Topic) from the master map.
-2. **Research & verify.** Run the state-of-the-art scan, then gather from primary sources first (official docs, specs, source code, papers), using books and talks for framing; record every claim with its source and version; cross-check for correctness and currency and regressively re-verify. Nothing incorrect, outdated, or missing passes. _(Rule #3)_
+2. **Research & verify.** Run the state-of-the-art scan, then gather from primary sources first (official docs, specs, source code, papers), using books and talks for framing; record every claim with its source and version; cross-check for correctness and currency and regressively re-verify. Nothing incorrect, outdated, or missing passes. Start the coverage map here: the syllabus clauses, the sources' contents, and a blind expert list from an independent reviewer. _(Rule #3, Rule #6)_
 3. **Distill the explanation.** Start from the hard problem and what the reader will be able to do afterwards, then find the clearest framing that stays fully precise. Draft every layer of the [learning design](#learning-design--what-every-topic-contains) alongside: predictions, trade-offs and numbers, internals, the lab, production failures, the frontier and the self-assessment. _(Rule #4)_
 4. **Decide what to animate.** For every concept ask "can this be shown with a pretty animation?" — if yes, it becomes an animation; and "can the reader learn more by driving it?" — if yes, it becomes interactive. Storyboard the motion. _(Rule #1)_
 5. **Build the reel.** Assemble the animations + content into one self-contained, scrollable reel following the [animation principles](#animation-principles) and the [coffee theme](#theme--coffee): topic visuals designed for this concept, built on the [shared components](#shared-components); add the looping motion-graphics; scrolling advances to the next topic. _(Rule #1, Rule #2)_
 6. **Polish for beauty & memorability.** Refine visuals, layout, and pacing until it looks exceptional and sticks in memory. _(Rule #4)_
 7. **Flow review.** Read the previous topic, this one and the next in sequence; make sure every concept used was introduced earlier or declared, the opening bridge and closing handoff read naturally, and nothing arrives as a surprise. Record the topic's `introduces` and `uses` concepts. _(Rule #5)_
-8. **Review.** Launch the brutal, hardcore critic review agents described in [Correctness and currency](#correctness-and-currency--how-we-make-sure) (fact-checker, red team, currency checker, expert reader), plus reviewers for learning design, accessibility and looks. CI must be green (every example runs, every claim is sourced, every link resolves). Each finished milestone also gets a human practitioner's sign-off. If it's not up to the mark, go back to step 2.
-9. **Check against the Definition of Done and the [Quality Record](QUALITY.md).** Every issue ever found is listed there with its guard; run its "Before shipping any topic" list and the automatic checks (`npm run build`, `npm run test:examples`, `npm run test:reels`). Any new issue found gets a row and a guard there. Confirm every criterion above is met before shipping.
+8. **Review.** Launch the brutal, hardcore critic review agents described in [Correctness and currency](#correctness-and-currency--how-we-make-sure) (fact-checker, red team, currency checker, expert reader, gap hunter), plus reviewers for learning design, accessibility and looks. CI must be green (every example runs, every claim is sourced, every link resolves). Each finished milestone also gets a human practitioner's sign-off. If it's not up to the mark, go back to step 2.
+9. **Check against the Definition of Done and the [Quality Record](QUALITY.md).** Every issue ever found is listed there with its guard; run its "Before shipping any topic" list and the automatic checks (`npm run build`, `npm run test:examples`, `npm run test:narration`, `npm run test:reels`). A failing check is fixed at its cause, never skipped, loosened or worked around (for example by holding the topic back). Any new issue found gets a row and a guard there. Confirm every criterion above is met before shipping.
 10. **Wire it into the experience.** Link the finished topic into the master page and the vertical feed so it is reachable in the hierarchy.
 11. **Ship the topic.** One topic at a time, in syllabus order — finish and ship it before starting the next. It goes live only when every topic before it in its domain is live. _(Rule #2, Rule #5)_
 
@@ -303,8 +315,9 @@ Reels can carry an optional voice-over that narrates each step, which makes them
 
 #### German domain
 
-- The narrator explains in the learner's language.
-- The German examples are spoken in native-quality standard German by a German voice from an open-source model, held to the same female-voice and quality rules. Austrian and Swiss variants are flagged where they differ.
+- **Two voices, one clip.** The English narrator explains (the learner learns German from English); every German word or sentence is spoken by the German voice. In a script, an English line is a plain string and a German line is `{"de": "…"}`; both are assembled into the same clip, level-matched, and captioned (German captions are marked as German).
+- **The German voice (chosen by the site owner by ear, 2026-10-10).** A voice designed from a text description with Qwen3-TTS VoiceDesign (Apache-2.0; "a warm, friendly female speaker in her early thirties, slightly low pitch, calm and natural, clear standard German"), frozen as the reference clip `site/narration/voices/german-reference.wav`. Every German line is generated by cloning that clip with Qwen3-TTS 1.7B Base (Apache-2.0) through the qwen3-tts C engine (MIT) at a pinned commit, so every line is the same speaker. No real person's voice is cloned: the reference was itself designed from text.
+- **Same method as English.** Three takes per line (more if none passes), each transcribed by a German speech-to-text model and kept only if word-perfect, pace checked, the take with the most pitch movement wins; same pauses and audio standard. Austrian and Swiss variants are flagged where they differ.
 
 #### Review
 

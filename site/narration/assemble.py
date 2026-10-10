@@ -8,16 +8,21 @@ import json, os, re, subprocess, sys, warnings
 warnings.filterwarnings("ignore")
 import numpy as np, soundfile as sf, librosa
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
-from common import VOICE, CACHE, clips, clip_hash, take_path, take_key
+from common import VOICE, GERMAN, CACHE, clips, clip_hash, take_path, take_key, spoken, voice_takes
 
 SITE = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 ALIASES = VOICE["asr"]["aliases"]
 SCORES = os.path.join(CACHE, "scores.json")
 
 
-def norm(s):
+def norm(s, lang="en"):
     """Lowercase words, numbers spelled out, aliases applied: what was said, independent of how it was written."""
     from num2words import num2words
+    if lang == "de":
+        s = s.lower().replace("%", " prozent").replace("-", " ")
+        s = re.sub(r"(\d)\.(\d{3})", r"\1\2", s)
+        s = re.sub(r"\d+", lambda m: " " + num2words(int(m.group()), lang="de") + " ", s)
+        return re.sub(r"[^a-zäöüß ]", " ", s).split()
     s = s.lower().replace("%", " percent").replace("-", " ")
     s = re.sub(r"(\d),(\d)", r"\1\2", s)
     s = re.sub(r"\d+(\.\d+)?", lambda m: " " + num2words(float(m.group()) if "." in m.group() else int(m.group())) + " ", s)
@@ -29,8 +34,8 @@ def norm(s):
     return words.split()
 
 
-def wer(ref, hyp):
-    r, h = norm(ref), norm(hyp)
+def wer(ref, hyp, lang="en"):
+    r, h = norm(ref, lang), norm(hyp, lang)
     d = np.zeros((len(r) + 1, len(h) + 1), int)
     d[:, 0] = range(len(r) + 1); d[0, :] = range(len(h) + 1)
     for i in range(1, len(r) + 1):
@@ -44,13 +49,13 @@ def trim(a, sr, thr=0.004):
     return a if not len(idx) else a[max(0, idx[0] - int(0.01 * sr)): idx[-1] + int(0.04 * sr)]
 
 
-_asr = None
-def transcribe(a, sr):
-    global _asr
-    if _asr is None:
+_asr = {}
+def transcribe(a, sr, lang="en"):
+    if lang not in _asr:
         from faster_whisper import WhisperModel
-        _asr = WhisperModel("small.en", device="cpu", compute_type="int8", cpu_threads=os.cpu_count())
-    segs, _ = _asr.transcribe(librosa.resample(a, orig_sr=sr, target_sr=16000), language="en", beam_size=5)
+        # English: small.en. German: the multilingual small model (voice.json -> german.asr).
+        _asr[lang] = WhisperModel("small" if lang == "de" else "small.en", device="cpu", compute_type="int8", cpu_threads=os.cpu_count())
+    segs, _ = _asr[lang].transcribe(librosa.resample(a, orig_sr=sr, target_sr=16000), language=lang, beam_size=5)
     return " ".join(s.text for s in segs).strip()
 
 
@@ -60,15 +65,15 @@ def pitch_sd(a, sr):
     return float(np.std(12 * np.log2(f / np.median(f)))) if len(f) > 10 else 0.0
 
 
-def score(line, take, cache):
-    key = take_key(line, take)
+def score(line, take, cache, lang="en"):
+    key = take_key(line, take, lang)
     if key in cache:
         return cache[key]
-    a, sr = sf.read(take_path(line, take))
+    a, sr = sf.read(take_path(line, take, lang))
     a = trim(a.astype(np.float32), sr)
-    hyp = transcribe(a, sr)
-    words = len(norm(line))
-    s = {"wer": wer(line, hyp), "hyp": hyp, "pitch_sd": pitch_sd(a, sr), "wps": words / (len(a) / sr), "dur": len(a) / sr}
+    hyp = transcribe(a, sr, lang)
+    words = len(norm(line, lang))
+    s = {"wer": wer(line, hyp, lang), "hyp": hyp, "pitch_sd": pitch_sd(a, sr), "wps": words / (len(a) / sr), "dur": len(a) / sr}
     cache[key] = s
     return s
 
@@ -79,14 +84,18 @@ def passes(s, words):
 
 
 def lines_of(topic_dir):
+    """Every distinct spoken line as (language, text)."""
     topic, cs = clips(topic_dir)
-    return topic, cs, sorted({x for _, items in cs for x in items if isinstance(x, str)})
+    lines = sorted({spoken(x) for _, items in cs for x in items if spoken(x)})
+    if any(lang == "de" for lang, _ in lines) and not GERMAN:
+        sys.exit("This script has German lines, but voice.json has no German voice.")
+    return topic, cs, lines
 
 
 def plan(topic_dir, jobs_path):
     _, _, lines = lines_of(topic_dir)
-    json.dump([{"line": l, "takes": VOICE["takes"]} for l in lines], open(jobs_path, "w"), indent=1)
-    print(f"{len(lines)} line(s), {len(lines) * len(VOICE['takes'])} take(s) planned")
+    json.dump([{"lang": lang, "line": l, "takes": voice_takes(lang)[0]} for lang, l in lines], open(jobs_path, "w"), indent=1)
+    print(f"{len(lines)} line(s), {sum(len(voice_takes(lang)[0]) for lang, _ in lines)} take(s) planned")
 
 
 def run(cmd):
@@ -97,18 +106,18 @@ def build(topic_dir, jobs_path):
     topic, cs, lines = lines_of(topic_dir)
     cache = json.load(open(SCORES)) if os.path.exists(SCORES) else {}
     best, more = {}, []
-    all_takes = VOICE["takes"] + VOICE["extra_takes"]
-    for line in lines:
-        made = [t for t in all_takes if os.path.exists(take_path(line, t))]
-        scored = [(t, score(line, t, cache)) for t in made]
-        ok = [(t, s) for t, s in scored if passes(s, len(norm(line)))]
+    for lang, line in lines:
+        all_takes = sum(voice_takes(lang), [])
+        made = [t for t in all_takes if os.path.exists(take_path(line, t, lang))]
+        scored = [(t, score(line, t, cache, lang)) for t in made]
+        ok = [(t, s) for t, s in scored if passes(s, len(norm(line, lang)))]
         if ok:
-            best[line] = max(ok, key=lambda ts: ts[1]["pitch_sd"])
+            best[(lang, line)] = max(ok, key=lambda ts: ts[1]["pitch_sd"])
         else:
             nxt = [t for t in all_takes if t not in made][:2]
             if not nxt:
                 sys.exit(f"No take passes for: {line!r}. Rewrite the line (closest: {min(scored, key=lambda ts: ts[1]['wer'])[1]['hyp']!r}).")
-            more.append({"line": line, "takes": nxt})
+            more.append({"lang": lang, "line": line, "takes": nxt})
             print(f"needs more takes ({len(made)} failed): {line[:70]}  e.g. heard {scored[0][1]['hyp']!r}")
     json.dump(cache, open(SCORES, "w"))
     if more:
@@ -122,15 +131,27 @@ def build(topic_dir, jobs_path):
     for cid, items in cs:
         parts, timing, t, sr = [], [], 0.0, 24000
         lead = np.zeros(int(P["lead_in"] * sr), np.float32); parts.append(lead); t += len(lead) / sr
+        segs = {}
+        for x in items:
+            if spoken(x):
+                lang, text = spoken(x)
+                a, s = sf.read(take_path(text, best[(lang, text)][0], lang)); assert s == sr
+                segs[spoken(x)] = trim(a.astype(np.float32), sr)
+        # German lines are level-matched to the English lines around them, so the two voices sit at one loudness.
+        rms = lambda a: float(np.sqrt(np.mean(a ** 2))) or 1.0
+        en = [rms(a) for (lang, _), a in segs.items() if lang == "en"]
+        for key, a in segs.items():
+            if key[0] == "de" and en:
+                segs[key] = a * (float(np.mean(en)) / rms(a))
         for k, x in enumerate(items):
-            if not isinstance(x, str):
+            if not spoken(x):
                 z = np.zeros(int(x["beat"] * sr), np.float32); parts.append(z); t += len(z) / sr; continue
-            a, s = sf.read(take_path(x, best[x][0])); assert s == sr
-            a = trim(a.astype(np.float32), sr)
-            timing.append({"text": x, "start": round(t, 3), "end": round(t + len(a) / sr, 3)})
+            lang, text = spoken(x)
+            a = segs[(lang, text)]
+            timing.append({"text": text, "start": round(t, 3), "end": round(t + len(a) / sr, 3), **({"lang": "de"} if lang == "de" else {})})
             parts.append(a); t += len(a) / sr
             if k < len(items) - 1:
-                gap = P["after_question"] if x.rstrip().endswith("?") else P["between_lines"]
+                gap = P["after_question"] if text.rstrip().endswith("?") else P["between_lines"]
                 parts.append(np.zeros(int(gap * sr), np.float32)); t += gap
         parts.append(np.zeros(int(P["tail"] * sr), np.float32))
         wav = np.concatenate(parts)
@@ -144,11 +165,11 @@ def build(topic_dir, jobs_path):
         run(["ffmpeg", "-y", "-v", "error", "-i", raw, "-af", ln, "-ar", str(A["sample_rate"]), "-ac", "1", "-c:a", "libopus", "-b:a", f"{A['opus_kbps']}k", opus])
         check = subprocess.run(["ffmpeg", "-hide_banner", "-i", mp3, "-af", "ebur128=peak=true", "-f", "null", "-"], capture_output=True, text=True).stderr
         lufs = float(re.findall(r"I:\s+(-?[\d.]+) LUFS", check)[-1]); peak = float(re.findall(r"Peak:\s+(-?[\d.]+) dBFS", check)[-1])
-        words = sum(len(norm(x)) for x in items if isinstance(x, str))
+        words = sum(len(norm(spoken(x)[1], spoken(x)[0])) for x in items if spoken(x))
         manifest["clips"][cid] = {
             "hash": clip_hash(items), "duration": round(len(wav) / sr, 3), "lines": timing,
             "lufs": lufs, "true_peak": peak, "wpm": round(words / (len(wav) / sr) * 60),
-            "wer": max(best[x][1]["wer"] for x in items if isinstance(x, str)),
+            "wer": max(best[spoken(x)][1]["wer"] for x in items if spoken(x)),
         }
         print(f"{cid}: {len(wav)/sr:5.1f}s  {manifest['clips'][cid]['wpm']} wpm  {lufs} LUFS  peak {peak} dBTP")
     json.dump(manifest, open(os.path.join(out_dir, "manifest.json"), "w"), indent=1)

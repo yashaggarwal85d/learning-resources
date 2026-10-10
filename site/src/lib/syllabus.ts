@@ -3,7 +3,8 @@
 import { readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 
-export type Topic = { title: string; refresher: boolean };
+// scope: the topic's syllabus line after its title, which its coverage map must cover in full.
+export type Topic = { title: string; refresher: boolean; scope: string };
 export type Chapter = { number: number; title: string; topics: Topic[]; labs: number };
 export type Milestone = { number: number; title: string; chapters: Chapter[]; cases: number };
 export type Domain = {
@@ -84,7 +85,12 @@ function parse(md: string): Milestone[] {
       m.cases++;
       continue;
     }
-    if (c) c.topics.push({ title: clean(tm[1]).replace(/[.:]$/, ''), refresher: /\*\(refresher\)\*/.test(line) });
+    if (c)
+      c.topics.push({
+        title: clean(tm[1]).replace(/[.:]$/, ''),
+        refresher: /\*\(refresher\)\*/.test(line),
+        scope: clean(tm[2].replace(/\*\(refresher\)\*/, '')).replace(/^—\s*/, ''),
+      });
   }
   return milestones;
 }

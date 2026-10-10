@@ -48,7 +48,7 @@
       "seed": 79
     }
   ],
-  "selection": "Reject any take whose transcript differs from the line (after number and alias normalisation), or, for lines of six words or more, whose pace is outside 1.5\u20133.6 words/s; of the rest keep the one with the most pitch movement (std of F0 in semitones).",
+  "selection": "Reject any take whose transcript differs from the line (after number and alias normalisation), or, for lines of six words or more, whose pace is outside 1.5–3.6 words/s; of the rest keep the one with the most pitch movement (std of F0 in semitones).",
   "pauses": {
     "between_lines": 0.42,
     "after_question": 0.55,
@@ -67,6 +67,70 @@
     "aliases": {
       "dataclasses": "data classes",
       "dataclass": "data class"
+    }
+  },
+  "german": {
+    "version": "qwen-de-v1",
+    "note": "The German voice: speaks German words and sentences in the German lessons; the explanation stays with the English narrator. Chosen by the site owner by ear on 2026-10-10 (sample qwen_design_en_s1). Changing anything here regenerates every clip with German in it.",
+    "engine": {
+      "name": "qwen3-tts (C inference engine for Qwen3-TTS)",
+      "repo": "https://github.com/gabriele-mastrapasqua/qwen3-tts",
+      "commit": "ef339be58a778b062e1c14382347964552eae007",
+      "licence": "MIT",
+      "build": "make blas"
+    },
+    "model": {
+      "repo": "Qwen/Qwen3-TTS-12Hz-1.7B-Base",
+      "licence": "Apache-2.0 (code and weights)",
+      "download": "download_model.sh --model base-large"
+    },
+    "reference": {
+      "file": "voices/german-reference.wav",
+      "sha256": "81b0fd77d394aaf8",
+      "made_with": "Qwen/Qwen3-TTS-12Hz-1.7B-VoiceDesign (Apache-2.0): a voice designed from a text description, not a real person",
+      "language": "German",
+      "seed": 1,
+      "instruct": "A warm, friendly female speaker in her early thirties, slightly low pitch, calm and natural, clear standard German (Hochdeutsch), relaxed pace with natural pauses",
+      "text": "Ich rufe dich morgen um acht an. Kannst du mir bitte sagen, wo der Bahnhof ist? Obwohl es regnet, gehen wir heute Abend ins Kino."
+    },
+    "clone": "xvector",
+    "language": "German",
+    "takes": [
+      {
+        "temperature": 0.7,
+        "seed": 11
+      },
+      {
+        "temperature": 0.78,
+        "seed": 23
+      },
+      {
+        "temperature": 0.85,
+        "seed": 37
+      }
+    ],
+    "extra_takes": [
+      {
+        "temperature": 0.75,
+        "seed": 41
+      },
+      {
+        "temperature": 0.8,
+        "seed": 53
+      },
+      {
+        "temperature": 0.72,
+        "seed": 67
+      },
+      {
+        "temperature": 0.82,
+        "seed": 79
+      }
+    ],
+    "selection": "Same as the English voice: transcript must match word for word (German ASR), pace 1.5–3.6 words/s on lines of six words or more, then the most pitch movement. Each German line is level-matched to the English lines in its clip.",
+    "asr": {
+      "model": "faster-whisper small (multilingual, int8, CPU)",
+      "language": "de"
     }
   }
 }

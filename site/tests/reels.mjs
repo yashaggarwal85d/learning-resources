@@ -4,7 +4,7 @@
 // Fails (exit 1) on any page error, sideways scroll, empty panel, missing
 // control, or a step that doesn't render, at desktop and phone sizes.
 import { chromium, devices } from 'playwright';
-import { readFileSync, mkdirSync } from 'node:fs';
+import { readFileSync, mkdirSync, existsSync, readdirSync } from 'node:fs';
 
 const root = process.argv[2] ?? 'http://localhost:4321/learning-resources/';
 const slugs = [...readFileSync(new URL('../src/topics/registry.ts', import.meta.url), 'utf8').matchAll(/slug: '([^']+)',[\s\S]*?status: '(live|held)'/g)]
@@ -14,7 +14,21 @@ const failures = [];
 const fail = (msg) => failures.push(msg);
 mkdirSync('test-results', { recursive: true });
 
-const browser = await chromium.launch(process.env.CHROMIUM_PATH ? { executablePath: process.env.CHROMIUM_PATH } : {});
+// Browser: CHROMIUM_PATH if set, else Playwright's own; if that isn't installed (e.g. a cloud session with a
+// pre-installed Chromium of another build), fall back to any Chromium under PLAYWRIGHT_BROWSERS_PATH or /opt/pw-browsers.
+const preinstalled = () => {
+  const root = process.env.PLAYWRIGHT_BROWSERS_PATH || '/opt/pw-browsers';
+  if (!existsSync(root)) return undefined;
+  for (const d of readdirSync(root).filter((d) => d.startsWith('chromium-')).sort().reverse())
+    for (const bin of ['chrome-linux/chrome', 'chrome-linux64/chrome']) if (existsSync(`${root}/${d}/${bin}`)) return `${root}/${d}/${bin}`;
+};
+const browser = await chromium
+  .launch(process.env.CHROMIUM_PATH ? { executablePath: process.env.CHROMIUM_PATH } : {})
+  .catch((err) => {
+    const exe = preinstalled();
+    if (!exe) throw err;
+    return chromium.launch({ executablePath: exe });
+  });
 for (const [device, opts] of [
   ['desktop', { viewport: { width: 1440, height: 900 } }],
   ['phone', { ...devices['iPhone 13'] }],
@@ -50,7 +64,12 @@ for (const [device, opts] of [
         await page.waitForTimeout(500);
       };
       const stepNow = async () => (await page.locator('[aria-current="step"]').getAttribute('aria-label'))?.match(/^Step (\d+)/)?.[1];
-      await page.locator('[aria-label^="Step "]').nth(2).click();
+      // Swipe from a plain step (a predict step waits for an answer; checked below).
+      const dots = page.locator('[aria-label^="Step "]');
+      const nDots = await dots.count();
+      let from = -1;
+      for (let i = 1; i < nDots - 1 && from < 0; i++) if ((await dots.nth(i).getAttribute('data-predict')) === null) from = i;
+      await dots.nth(from).click();
       await page.waitForTimeout(400);
       const box = await page.locator('section [data-visual]').last().boundingBox();
       const y = box.y + box.height / 2;
@@ -61,6 +80,15 @@ for (const [device, opts] of [
       await drag(70, y, 320, y);
       const s2 = await stepNow();
       if (Number(s2) !== Number(s0)) fail(`${where}: swipe right didn't go back (${s1} -> ${s2})`);
+      // On an unanswered predict step, swiping left must not skip the question.
+      const firstPredict = await page.locator('[aria-label^="Step "][data-predict]').first();
+      if (await firstPredict.count()) {
+        await firstPredict.click();
+        await page.waitForTimeout(400);
+        const p0 = await stepNow();
+        await drag(320, y, 70, y);
+        if ((await stepNow()) !== p0) fail(`${where}: swipe left skipped an unanswered predict step (${p0})`);
+      }
       // A swipe must work wherever it starts, on every step (code panels and charts must not swallow it).
       const total = await page.locator('[aria-label^="Step "]').count();
       for (let i = 1; i < total; i++) {

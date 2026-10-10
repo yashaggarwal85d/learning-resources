@@ -1,0 +1,743 @@
+{
+  "topic": "de.io-cost-model",
+  "syllabus": [
+    {
+      "clause": "the Aggarwal–Vitter model",
+      "at": [
+        {
+          "step": "Only block transfers count"
+        },
+        {
+          "step": "Three numbers describe the job"
+        },
+        {
+          "deep": "The model, as stated"
+        }
+      ]
+    },
+    {
+      "clause": "cost counted in block transfers",
+      "at": [
+        {
+          "step": "Only block transfers count"
+        },
+        {
+          "deep": "The model, as stated"
+        }
+      ]
+    },
+    {
+      "clause": "scan bound N/B",
+      "at": [
+        {
+          "step": "A full scan costs N/B"
+        },
+        {
+          "deep": "The model, as stated"
+        }
+      ]
+    },
+    {
+      "clause": "sort bound (N/B)·log_{M/B}(N/B)",
+      "at": [
+        {
+          "step": "Sorting: count passes, not comparisons"
+        },
+        {
+          "step": "A terabyte in two passes"
+        },
+        {
+          "deep": "The model, as stated"
+        }
+      ]
+    },
+    {
+      "clause": "why CPU big-O misleads when I/O and network dominate",
+      "at": [
+        {
+          "step": "Predict the crossover"
+        },
+        {
+          "step": "They cross at 1/B"
+        },
+        {
+          "step": "Sorting: count passes, not comparisons"
+        },
+        {
+          "step": "The network is a tier too"
+        },
+        {
+          "deep": "Why CPU big-O misleads"
+        },
+        {
+          "deep": "The network, counted the same way"
+        }
+      ]
+    },
+    {
+      "clause": "using it to predict index-lookup vs full-scan crossovers",
+      "at": [
+        {
+          "step": "An index pays about one read per row"
+        },
+        {
+          "step": "They cross at 1/B"
+        },
+        {
+          "step": "Random reads cost more"
+        },
+        {
+          "step": "Unless the table is in index order"
+        },
+        {
+          "step": "Back to the query"
+        },
+        {
+          "deep": "How PostgreSQL turns this into costs"
+        },
+        {
+          "deep": "Lab 1 · Watch the crossover in PostgreSQL"
+        }
+      ]
+    }
+  ],
+  "sources": [
+    {
+      "source": "Aggarwal and Vitter, The Input/Output Complexity of Sorting and Related Problems, CACM 1988",
+      "items": [
+        {
+          "item": "Parameters N, M, B, P; internal computation not counted",
+          "at": [
+            {
+              "step": "Only block transfers count"
+            },
+            {
+              "step": "Three numbers describe the job"
+            },
+            {
+              "deep": "The model, as stated"
+            }
+          ]
+        },
+        {
+          "item": "Sorting bound",
+          "at": [
+            {
+              "step": "Sorting: count passes, not comparisons"
+            },
+            {
+              "deep": "The model, as stated"
+            }
+          ]
+        },
+        {
+          "item": "Permuting bound",
+          "at": [
+            {
+              "deep": "The model, as stated"
+            }
+          ]
+        },
+        {
+          "item": "FFT and permutation networks bounds",
+          "at": [
+            {
+              "out": "Specialised results with no direct use in data platforms; the sorting and permuting bounds carry the lesson."
+            }
+          ]
+        },
+        {
+          "item": "Matrix transposition bound",
+          "at": [
+            {
+              "out": "Specialised result; columnar layout and transposition costs are taught with file formats."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "Vitter, Algorithms and Data Structures for External Memory, 2008",
+      "items": [
+        {
+          "item": "Scan, sort and search bounds; output term Z/B",
+          "at": [
+            {
+              "deep": "The model, as stated"
+            },
+            {
+              "step": "A full scan costs N/B"
+            }
+          ]
+        },
+        {
+          "item": "Parallel disk model (D disks)",
+          "at": [
+            {
+              "deep": "The model, as stated"
+            }
+          ]
+        },
+        {
+          "item": "External merge sort and distribution sort",
+          "at": [
+            {
+              "step": "Sorting: count passes, not comparisons"
+            },
+            {
+              "step": "A terabyte in two passes"
+            },
+            {
+              "topic": "External merge sort and k-way merge",
+              "quote": "heap-driven k-way merge"
+            }
+          ]
+        },
+        {
+          "item": "B-trees and external search structures",
+          "at": [
+            {
+              "deep": "Why CPU big-O misleads"
+            },
+            {
+              "topic": "B+-trees vs LSM-trees at a glance",
+              "quote": "fan-out and height"
+            }
+          ]
+        },
+        {
+          "item": "Cache-oblivious algorithms",
+          "at": [
+            {
+              "deep": "The frontier"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "PostgreSQL 18 documentation and costsize.c",
+      "items": [
+        {
+          "item": "seq_page_cost and random_page_cost, and why 4.0",
+          "at": [
+            {
+              "step": "Random reads cost more"
+            },
+            {
+              "deep": "How PostgreSQL turns this into costs"
+            }
+          ]
+        },
+        {
+          "item": "cpu_tuple_cost and cpu_operator_cost",
+          "at": [
+            {
+              "deep": "How PostgreSQL turns this into costs"
+            }
+          ]
+        },
+        {
+          "item": "Index scan costing with correlation",
+          "at": [
+            {
+              "step": "Unless the table is in index order"
+            },
+            {
+              "deep": "How PostgreSQL turns this into costs"
+            }
+          ]
+        },
+        {
+          "item": "Bitmap heap scan costing",
+          "at": [
+            {
+              "step": "Sorted lookups still touch most pages"
+            },
+            {
+              "deep": "How PostgreSQL turns this into costs"
+            }
+          ]
+        },
+        {
+          "item": "pg_stats.correlation",
+          "at": [
+            {
+              "step": "Unless the table is in index order"
+            },
+            {
+              "deep": "How PostgreSQL turns this into costs"
+            },
+            {
+              "deep": "In production"
+            }
+          ]
+        },
+        {
+          "item": "EXPLAIN and EXPLAIN (ANALYZE, BUFFERS): shared hit vs read (a shared-buffers miss), BUFFERS on by default with ANALYZE in 18, track_io_timing",
+          "at": [
+            {
+              "deep": "Lab 1 · Watch the crossover in PostgreSQL"
+            },
+            {
+              "deep": "Why CPU big-O misleads"
+            }
+          ]
+        },
+        {
+          "item": "Bitmap heap page estimate (Mackert–Lohman 2Tt/(2T+t)) and lossy bitmaps under work_mem (tbm_calculate_entries)",
+          "at": [
+            {
+              "deep": "How PostgreSQL turns this into costs"
+            },
+            {
+              "deep": "Lab 1 · Watch the crossover in PostgreSQL"
+            }
+          ]
+        },
+        {
+          "item": "effective_cache_size as the buffer size b (the model's M) in index_pages_fetched",
+          "at": [
+            {
+              "deep": "How PostgreSQL turns this into costs"
+            }
+          ]
+        },
+        {
+          "item": "Parallel plan costing: parallel divisor, Gather's parallel_setup_cost and parallel_tuple_cost",
+          "at": [
+            {
+              "deep": "How PostgreSQL turns this into costs"
+            },
+            {
+              "deep": "Lab 1 · Watch the crossover in PostgreSQL"
+            }
+          ]
+        },
+        {
+          "item": "Prefetching: plain index scans read one page at a time; bitmap heap scans prefetch up to effective_io_concurrency (default 16 in 18); sequential scans get readahead and AIO",
+          "at": [
+            {
+              "step": "Random reads cost more"
+            },
+            {
+              "deep": "How PostgreSQL turns this into costs"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "Distributed communication cost: Valiant (BSP, 1990), Culler et al. (LogP, 1993), Beame, Koutris and Suciu (MPC, 2013); AWS S3 performance guidance; Apache Spark SQL performance tuning",
+      "items": [
+        {
+          "item": "BSP superstep cost: local work + g·h + l",
+          "at": [
+            {
+              "deep": "The network, counted the same way"
+            }
+          ]
+        },
+        {
+          "item": "LogP parameters L, o, g, P",
+          "at": [
+            {
+              "deep": "The network, counted the same way"
+            }
+          ]
+        },
+        {
+          "item": "MPC: rounds and maximum load per server; skew",
+          "at": [
+            {
+              "deep": "The network, counted the same way"
+            }
+          ]
+        },
+        {
+          "item": "S3 first-byte latency, request rates per prefix, byte-range reads",
+          "at": [
+            {
+              "step": "Every tier has its own B"
+            },
+            {
+              "deep": "The network, counted the same way"
+            },
+            {
+              "deep": "In production"
+            }
+          ]
+        },
+        {
+          "item": "Spark spark.sql.autoBroadcastJoinThreshold (default 10 MB) and join hints",
+          "at": [
+            {
+              "deep": "The network, counted the same way"
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "independent reviewer agent, written without seeing the topic",
+    "date": "2026-10-10",
+    "items": [
+      {
+        "item": "Model parameters N (input), M (memory), B (block), plus D disks/P CPUs; cost = number of block transfers, in-memory compute treated as free",
+        "at": [
+          {
+            "step": "Only block transfers count"
+          },
+          {
+            "step": "Three numbers describe the job"
+          },
+          {
+            "deep": "The model, as stated"
+          }
+        ]
+      },
+      {
+        "item": "Scan bound Θ(N/B): reading N items costs N/B transfers, so bytes per transfer, not item count, set the price",
+        "at": [
+          {
+            "step": "A full scan costs N/B"
+          },
+          {
+            "deep": "The model, as stated"
+          }
+        ]
+      },
+      {
+        "item": "Sort bound Θ((N/B)·log_{M/B}(N/B)), tight with constant ≈2; for realistic B the hard part is routing data, not comparing it",
+        "at": [
+          {
+            "step": "Sorting: count passes, not comparisons"
+          },
+          {
+            "step": "A terabyte in two passes"
+          },
+          {
+            "deep": "The model, as stated"
+          }
+        ]
+      },
+      {
+        "item": "Permuting bound Θ(min(N, Sort(N))): just moving items to target positions is as hard as sorting; many O(N)-in-RAM problems are nonlinear in I/O",
+        "at": [
+          {
+            "deep": "The model, as stated"
+          },
+          {
+            "deep": "Why CPU big-O misleads"
+          }
+        ]
+      },
+      {
+        "item": "Search bound Θ(log_B N) plus Output Θ(Z/B): why B-trees beat binary search (log2 of N/B) on disk",
+        "at": [
+          {
+            "deep": "The model, as stated"
+          },
+          {
+            "deep": "Why CPU big-O misleads"
+          }
+        ]
+      },
+      {
+        "item": "log_{M/B}(N/B) is a small constant (≈2–3) in practice, so external sort ≈ a few read+write passes; keep the log visible because constants matter",
+        "at": [
+          {
+            "step": "A terabyte in two passes"
+          },
+          {
+            "deep": "Why CPU big-O misleads"
+          },
+          {
+            "deep": "The model, as stated"
+          }
+        ]
+      },
+      {
+        "item": "Why CPU big-O misleads: an O(N) algorithm with random access (out-of-core hashing, pointer chasing) costs ~N I/Os, B times a scan, and loses to an O(N log N) sort-based one",
+        "at": [
+          {
+            "deep": "Why CPU big-O misleads"
+          },
+          {
+            "step": "Sorting: count passes, not comparisons"
+          }
+        ]
+      },
+      {
+        "item": "Index-vs-scan crossover: unclustered lookup of k rows ≈ k random page reads (+ log_B N), full scan ≈ N/B sequential; break-even selectivity ≈ (seq/random cost ratio)/(rows per page), usually well under a few percent",
+        "at": [
+          {
+            "step": "They cross at 1/B"
+          },
+          {
+            "step": "Random reads cost more"
+          },
+          {
+            "deep": "How PostgreSQL turns this into costs"
+          },
+          {
+            "step": "Prove it · 1 of 3"
+          }
+        ]
+      },
+      {
+        "item": "Real engines weight transfers unequally: PostgreSQL seq_page_cost 1.0 vs random_page_cost 4.0 (low because most random reads assumed cached), effective_cache_size as effective M",
+        "at": [
+          {
+            "step": "Random reads cost more"
+          },
+          {
+            "deep": "How PostgreSQL turns this into costs"
+          },
+          {
+            "deep": "In production"
+          }
+        ]
+      },
+      {
+        "item": "Physical correlation between index order and heap order moves index cost from k random pages toward k/B pages (pg_stats.correlation)",
+        "at": [
+          {
+            "step": "Unless the table is in index order"
+          },
+          {
+            "deep": "How PostgreSQL turns this into costs"
+          },
+          {
+            "deep": "In production"
+          }
+        ]
+      },
+      {
+        "item": "Bitmap heap scan visits matching pages in physical order, each once: heap I/O bounded by min(k, N/B) and near-sequential, the regime between index scan and seq scan",
+        "at": [
+          {
+            "step": "Sorted lookups still touch most pages"
+          },
+          {
+            "deep": "How PostgreSQL turns this into costs"
+          }
+        ]
+      },
+      {
+        "item": "A transfer costs latency + B/bandwidth; pick the effective block size so transfer time amortizes latency (B ≳ latency × bandwidth)",
+        "at": [
+          {
+            "deep": "The network, counted the same way"
+          },
+          {
+            "deep": "The frontier"
+          }
+        ]
+      },
+      {
+        "item": "For object storage the 'block' is a request: ~100–200 ms first byte and per-prefix limits (3,500 writes/5,500 reads per s) mean you count GETs and use MB-scale range reads; small files explode the count",
+        "at": [
+          {
+            "step": "Every tier has its own B"
+          },
+          {
+            "deep": "The network, counted the same way"
+          },
+          {
+            "deep": "In production"
+          }
+        ]
+      },
+      {
+        "item": "N is the bytes actually transferred: projection, compression and min/max pruning shrink N before the scan bound applies",
+        "at": [
+          {
+            "deep": "Why CPU big-O misleads"
+          }
+        ]
+      },
+      {
+        "item": "Parallel disk model: D disks divide Scan and Sort by D, but search only becomes log_{DB}N, so parallelism cuts volume, not dependent-chain latency",
+        "at": [
+          {
+            "deep": "The model, as stated"
+          },
+          {
+            "deep": "How PostgreSQL turns this into costs"
+          }
+        ]
+      },
+      {
+        "item": "Network with the same counting: a message is the network's block, cost ≈ α + n/β (LogP adds per-message overhead o and gap g; BSP charges g·h + l per superstep); batch small messages",
+        "at": [
+          {
+            "deep": "The network, counted the same way"
+          }
+        ]
+      },
+      {
+        "item": "MPC model: p servers, cost = rounds × max per-server load; skew-free one-round hash join load ≈ N/p, but the cost is the maximum load, so skew sets it",
+        "at": [
+          {
+            "deep": "The network, counted the same way"
+          }
+        ]
+      },
+      {
+        "item": "Broadcast vs repartition join by bytes moved: broadcast ≈ |S|·(p−1), shuffle ≈ |R|+|S|, so broadcast wins on bytes while |S| < |R|/(p−1); broadcast is also capped by executor memory, which Spark's fixed autoBroadcastJoinThreshold mostly guards",
+        "at": [
+          {
+            "step": "The network is a tier too"
+          },
+          {
+            "deep": "The network, counted the same way"
+          },
+          {
+            "topic": "Broadcast hash join",
+            "quote": "autoBroadcastJoinThreshold"
+          }
+        ]
+      },
+      {
+        "item": "A shuffle is a distributed sort pass: ~N bytes over the network plus a local spill write and read; count shuffles (stage boundaries) the way you count sort passes",
+        "at": [
+          {
+            "deep": "The network, counted the same way"
+          },
+          {
+            "topic": "Sort-based shuffle mechanics",
+            "quote": "why shuffle"
+          }
+        ]
+      },
+      {
+        "item": "The model is a hypothesis to measure: count real transfers (EXPLAIN (ANALYZE, BUFFERS) shared hit/read) and confirm the bottleneck; Ousterhout et al. found CPU often dominates and network gains help ≤2% median",
+        "at": [
+          {
+            "deep": "Why CPU big-O misleads"
+          },
+          {
+            "deep": "Lab 1 · Watch the crossover in PostgreSQL"
+          }
+        ]
+      },
+      {
+        "item": "Cache-oblivious (ideal-cache) model: algorithms optimal for unknown M and B, so for every level at once, under a tall-cache assumption",
+        "at": [
+          {
+            "deep": "The frontier"
+          }
+        ]
+      },
+      {
+        "item": "Per-tier latency and bandwidth numbers (cache, DRAM, NVMe, HDD, network, object store) that set each tier's B and cost weight",
+        "at": [
+          {
+            "step": "Every tier has its own B"
+          },
+          {
+            "topic": "Memory hierarchy and latency numbers",
+            "quote": "order-of-magnitude latency and bandwidth per tier"
+          }
+        ]
+      },
+      {
+        "item": "Run generation, replacement selection, k-way heap merge and fan-in vs pass trade-offs",
+        "at": [
+          {
+            "step": "Sorting: count passes, not comparisons"
+          },
+          {
+            "topic": "External merge sort and k-way merge",
+            "quote": "replacement selection"
+          }
+        ]
+      },
+      {
+        "item": "Grace/hybrid hash join and spilling under work_mem budgets",
+        "at": [
+          {
+            "topic": "Memory budgets, spilling and grace hash join",
+            "quote": "grace and hybrid hash joins"
+          }
+        ]
+      },
+      {
+        "item": "Full planner cost formulas (I/O + CPU terms) and join-order search",
+        "at": [
+          {
+            "deep": "How PostgreSQL turns this into costs"
+          },
+          {
+            "topic": "Cost models and join-order search",
+            "quote": "I/O + CPU cost formulas"
+          }
+        ]
+      },
+      {
+        "item": "The O(M×R) small-random-read shuffle problem and push-based/remote shuffle as the fix",
+        "at": [
+          {
+            "topic": "Push-based and remote shuffle services",
+            "quote": "small-random-read problem"
+          }
+        ]
+      },
+      {
+        "item": "Diagnosing and fixing skew (heavy hitters, salting, AQE skew join)",
+        "at": [
+          {
+            "topic": "Data skew: diagnosis and remedies",
+            "quote": "salting"
+          }
+        ]
+      },
+      {
+        "item": "Cross-AZ, cross-region and egress $/GB as weights on network transfers",
+        "at": [
+          {
+            "topic": "Bandwidth, latency and data locality",
+            "quote": "cross-AZ and cross-region transfer pricing"
+          }
+        ]
+      },
+      {
+        "item": "MapReduce replication-rate vs reducer-size lower bounds (Afrati, Das Sarma, Salihoglu, Ullman) and worst-case-optimal parallel joins",
+        "at": [
+          {
+            "out": "Lower bounds for MapReduce replication rate are research-level theory; the reviewer placed them out of scope for a data-engineering course."
+          }
+        ]
+      },
+      {
+        "item": "External-memory graph and geometric algorithms (list ranking, buffer trees, time-forward processing)",
+        "at": [
+          {
+            "out": "External-memory graph and geometric algorithms (buffer trees, list ranking) rarely appear in data platforms; the reviewer placed them out of scope."
+          }
+        ]
+      }
+    ]
+  },
+  "gapReview": {
+    "date": "2026-10-10",
+    "by": "independent gap-hunter agent, then a second independent agent confirming the fixes (numbers recomputed from PostgreSQL REL_18_STABLE costsize.c and tidbitmap.c; links, narration and coverage checked)",
+    "resolved": [
+      "Blocker: the reel claimed PostgreSQL picks the sorted lookups at the reel's scale; now worked in PG18 cost units (Mackert–Lohman pages, lossy bitmaps under work_mem, CPU and parallel terms): a close call, ~1% apart. Deep dive 'How PostgreSQL turns this into costs', Lab 1, examples.py",
+      "87% is the true binomial count; the planner's estimate is higher",
+      "Parallel disks (D) and prefetching: 'The model, as stated', PostgreSQL section, step 'Random reads cost more'",
+      "RAM-model big-O vs the I/O crossover made explicit: step 'They cross at 1/B', 'Why CPU big-O misleads'",
+      "random_page_cost 4.0 is low on purpose; physical r for a cold disk (a lower bound at queue depth 16)",
+      "FACT-CHECK entries 39–70 for the network content and the fixes",
+      "Broadcast vs shuffle crossover, memory bound, bytes to time: step 'The network is a tier too', 'The network, counted the same way'",
+      "S3 latency wording per AWS; worked latency × bandwidth range size",
+      "Prerequisite on distributed joins added",
+      "Sort bound reconciled with pass counts; merge-sort scene fan-in consistent",
+      "Bounds table attribution; EXPLAIN BUFFERS semantics; lab version stated; effective_cache_size as M",
+      "Second review: bitmap pages read in physical order; QD16 caveat; lab runner-up commands; broadcast drawn from all machines; Table 3.1 wording; per-row CPU wording; unused Knuth source removed; FACT-CHECK #17; coverage pointers"
+    ],
+    "open": []
+  }
+}

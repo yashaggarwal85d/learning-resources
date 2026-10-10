@@ -73,6 +73,51 @@
    "wer": 0.0
   },
   "03": {
+   "hash": "d6bef330124e4026",
+   "duration": 12.117,
+   "lines": [
+    {
+     "text": "Here's its cousin.",
+     "start": 0.15,
+     "end": 1.637
+    },
+    {
+     "text": "A lambda reads the value of a name when it runs... not when it's created.",
+     "start": 2.057,
+     "end": 6.995
+    },
+    {
+     "text": "So three lambdas, built in a loop. What do they return?",
+     "start": 7.815,
+     "end": 11.768
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.4,
+   "wpm": 144,
+   "wer": 0.0
+  },
+  "03a": {
+   "hash": "99fe8edc40255a00",
+   "duration": 13.827,
+   "lines": [
+    {
+     "text": "Two, two, two. All three look up i after the loop has finished.",
+     "start": 0.15,
+     "end": 5.974
+    },
+    {
+     "text": "The fix? Bind the value now, with a default. Defaults are evaluated once, remember... at the moment the function is made.",
+     "start": 6.394,
+     "end": 13.477
+    }
+   ],
+   "lufs": -16.3,
+   "true_peak": -1.4,
+   "wpm": 148,
+   "wer": 0.0
+  },
+  "04": {
    "hash": "06bda929e76a9ebd",
    "duration": 14.904,
    "lines": [
@@ -102,7 +147,7 @@
    "wpm": 137,
    "wer": 0.0
   },
-  "04": {
+  "05": {
    "hash": "7e1a251ffa7b9b14",
    "duration": 17.026,
    "lines": [
@@ -132,7 +177,7 @@
    "wpm": 148,
    "wer": 0.0
   },
-  "05": {
+  "06": {
    "hash": "e743db3f89daf226",
    "duration": 16.492,
    "lines": [
@@ -157,7 +202,7 @@
    "wpm": 156,
    "wer": 0.0
   },
-  "06": {
+  "07": {
    "hash": "41dfad20a479fb22",
    "duration": 19.291,
    "lines": [
@@ -187,7 +232,7 @@
    "wpm": 128,
    "wer": 0.0
   },
-  "07": {
+  "08": {
    "hash": "a127244b870de43f",
    "duration": 21.084,
    "lines": [
@@ -212,7 +257,7 @@
    "wpm": 139,
    "wer": 0.0
   },
-  "08": {
+  "09": {
    "hash": "07c463bf8f840c70",
    "duration": 15.735,
    "lines": [
@@ -237,7 +282,67 @@
    "wpm": 133,
    "wer": 0.0
   },
-  "09": {
+  "10": {
+   "hash": "c62f64e263c1316f",
+   "duration": 21.841,
+   "lines": [
+    {
+     "text": "Classes plug into Python through special methods.",
+     "start": 0.15,
+     "end": 3.58
+    },
+    {
+     "text": "One lets a for loop walk through your object. Another gives it a length. A third decides what equal means.",
+     "start": 4.0,
+     "end": 10.835
+    },
+    {
+     "text": "But define equals... and Python quietly removes the hash.",
+     "start": 11.255,
+     "end": 15.519
+    },
+    {
+     "text": "A dataclass defines equals for you.",
+     "start": 15.939,
+     "end": 17.952
+    },
+    {
+     "text": "So, can this record be a dictionary key?",
+     "start": 18.772,
+     "end": 21.491
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -1.4,
+   "wpm": 140,
+   "wer": 0.0
+  },
+  "10a": {
+   "hash": "fbfa8b223c14ca50",
+   "duration": 14.641,
+   "lines": [
+    {
+     "text": "No. You get a type error. Unhashable.",
+     "start": 0.15,
+     "end": 4.384
+    },
+    {
+     "text": "Equal objects must hash the same... and a record that can change could break the dictionary after it's stored.",
+     "start": 4.804,
+     "end": 11.223
+    },
+    {
+     "text": "Freeze it, and it works as a key.",
+     "start": 11.643,
+     "end": 14.291
+    }
+   ],
+   "lufs": -16.6,
+   "true_peak": -1.4,
+   "wpm": 139,
+   "wer": 0.0
+  },
+  "11": {
    "hash": "e9bbafc0f5e80922",
    "duration": 8.193,
    "lines": [
@@ -262,7 +367,7 @@
    "wpm": 132,
    "wer": 0.0
   },
-  "09a": {
+  "11a": {
    "hash": "97ae0a70a74e04f8",
    "duration": 11.266,
    "lines": [
@@ -287,39 +392,39 @@
    "wpm": 160,
    "wer": 0.0
   },
-  "10": {
-   "hash": "db874b1036b86d97",
-   "duration": 22.798,
+  "12": {
+   "hash": "9976f05a61364b31",
+   "duration": 27.102,
    "lines": [
     {
-     "text": "So... seven things to keep.",
+     "text": "So... nine things to keep.",
      "start": 0.15,
-     "end": 3.184
+     "end": 2.223
     },
     {
-     "text": "Defaults run once. Comprehensions filter, then map. Generators stream.",
-     "start": 3.604,
-     "end": 9.369
+     "text": "Defaults run once. Closures look names up late. Comprehensions filter, then map. Generators stream.",
+     "start": 2.643,
+     "end": 11.916
     },
     {
-     "text": "A with block always cleans up. Decorators wrap. Dataclasses write the boilerplate.",
-     "start": 9.789,
-     "end": 16.573
+     "text": "A with block always cleans up. Decorators wrap. Dataclasses write the boilerplate. Equal objects need equal hashes.",
+     "start": 12.336,
+     "end": 20.877
     },
     {
      "text": "And hints are checked by tools, not at runtime.",
-     "start": 16.993,
-     "end": 19.872
+     "start": 21.297,
+     "end": 24.176
     },
     {
      "text": "Next up... Git.",
-     "start": 20.792,
-     "end": 22.448
+     "start": 25.096,
+     "end": 26.752
     }
    ],
-   "lufs": -16.6,
-   "true_peak": -1.3,
-   "wpm": 103,
+   "lufs": -16.5,
+   "true_peak": -1.4,
+   "wpm": 108,
    "wer": 0.0
   }
  }
