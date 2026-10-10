@@ -291,7 +291,7 @@ export default function ReelPlayer({ meta, reel, active, startStep, next, onPlay
       </div>
 
       {/* Side rail */}
-      <div className="absolute bottom-16 right-2.5 z-20 flex flex-col items-center gap-4 landscape:bottom-auto landscape:right-4 landscape:top-1/2 landscape:-translate-y-1/2">
+      <div className="absolute bottom-16 right-2.5 z-20 flex flex-col items-center gap-2.5 landscape:gap-4 landscape:bottom-auto landscape:right-4 landscape:top-1/2 landscape:-translate-y-1/2">
         <RailButton label="Prereqs" title="Prerequisites" onClick={() => onOpenSheet(undefined, 'prereq')} icon={<IconSteps />} />
         <RailButton label="Deep dive" onClick={() => onOpenSheet()} icon={<IconLayers />} />
         <RailButton label="Sources" onClick={() => onOpenSheet('sources')} icon={<IconBook />} />
