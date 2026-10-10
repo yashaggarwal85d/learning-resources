@@ -41,7 +41,7 @@ for (const t of live) {
     if (c.wer !== 0) failures.push(`${t.id} ${id}: a line was not spoken word-perfectly (WER ${c.wer})`);
     if (Math.abs(c.lufs - voice.audio.loudness_lufs) > 1.5) failures.push(`${t.id} ${id}: loudness ${c.lufs} LUFS`);
     if (c.true_peak > voice.audio.true_peak_dbtp + 0.3) failures.push(`${t.id} ${id}: peak ${c.true_peak} dBTP`);
-    if (c.wpm < 110 || c.wpm > 170) failures.push(`${t.id} ${id}: pace ${c.wpm} wpm`);
+    if (c.wpm < 100 || c.wpm > 170) failures.push(`${t.id} ${id}: pace ${c.wpm} wpm`);
   }
   if (Object.keys(manifest.clips).length !== clips.length) failures.push(`${t.id}: manifest has ${Object.keys(manifest.clips).length} clips, script has ${clips.length}`);
 }

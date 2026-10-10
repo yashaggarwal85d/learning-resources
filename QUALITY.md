@@ -68,6 +68,7 @@ When a new issue is found: fix it, add a row here, and add or strengthen a guard
 | 26 | Orpheus "tara" lacked natural pauses and pitch movement. | Scripts written for speaking; best of several takes per line by pitch movement; designed pauses and beats. Pitch variation rose from 3.3 to 4.4 semitones. | The method is fixed in the plan and in `narration/`; every clip is made the same way. |
 | 27 | The transcript check flagged "2%" against "two percent" (and would flag "mypy" against "my pie"). | Transcripts and scripts are normalised (numbers spelled out, "a million" = "one million", an alias list). | `narration/assemble.py`; real errors (a skipped word, "endpoints" for "engineers") are still caught. |
 | 28 | Narration could silently fall out of date when a script line changed. | Every clip stores a hash of its script and voice version. | `npm run test:narration` fails on any stale or missing clip, wrong loudness, peak or pace. |
+| 29 | The voice mangled code names and some words ("functools" → "folk cells", "mypy" → "mikai", "retries" → "ratties", "with always cleans up" → "with all means up"). | Those lines rewritten in plain spoken English; the transcript check rejected every bad take, so none shipped. | Rule (plan, Narration): narration scripts avoid code identifiers and say what they mean in plain words; a line no take can pass is rewritten, never the check loosened. |
 
 ## Before shipping any topic
 

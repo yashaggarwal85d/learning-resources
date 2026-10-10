@@ -40,6 +40,31 @@ for (const [device, opts] of [
     if ((await bar()) !== a) fail(`${where}: pause does not freeze the step`);
     await page.getByRole('button', { name: /^(Pause|Play) \(P\)$/ }).click();
 
+    // Narration (when the reel has it): sound on shows captions that advance; pause freezes them; the next step switches clip.
+    const soundOn = page.getByRole('button', { name: /^Turn narration on/ });
+    if (await soundOn.count()) {
+      await page.locator('[aria-label^="Step "]').first().click();
+      await soundOn.click();
+      await page.waitForTimeout(2500);
+      // Where the captions are: the line on screen and how many of its words are lit.
+      const at = async () => `${await page.locator('[aria-live="off"] p').innerText().catch(() => '')}|${await page.locator('[aria-live="off"] p span.text-crema').count()}`;
+      const a1 = await at();
+      await page.waitForTimeout(1500);
+      const a2 = await at();
+      if (a1 === a2 || a1.endsWith('|0')) fail(`${where}: narration captions don't advance (${a1} -> ${a2})`);
+      await page.getByRole('button', { name: /^(Pause|Play) \(P\)$/ }).click();
+      const p1 = await at();
+      await page.waitForTimeout(1200);
+      if ((await at()) !== p1) fail(`${where}: narration keeps going while paused`);
+      await page.getByRole('button', { name: /^(Pause|Play) \(P\)$/ }).click();
+      const first = await page.locator('[aria-live="off"] p').innerText();
+      await page.locator('[aria-label^="Step "]').nth(2).click();
+      await page.waitForTimeout(2500);
+      const second = await page.locator('[aria-live="off"] p').innerText().catch(() => '');
+      if (!second || second === first) fail(`${where}: narration didn't switch clips with the step`);
+      await page.getByRole('button', { name: /^Turn narration off/ }).click();
+    }
+
     // Every step renders; predict steps can be answered.
     const steps = await page.locator('[aria-label^="Step "]').count();
     if (!steps) fail(`${where}: no steps`);
