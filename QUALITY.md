@@ -14,7 +14,7 @@ When a new issue is found: fix it, add a row here, and add or strengthen a guard
 | Every topic title, and every on-site reel named in a Prerequisites panel, exists in the syllabus | `site/src/lib/live.ts`, `site/src/components/Resource.astro` (build) | Links to topics that don't exist |
 | On-site reels in Prerequisites are labelled from the syllabus order ("Before this", "Goes deeper later", other track) | `site/src/components/Resource.astro` (build) | A panel contradicting the course order |
 | Every topic's code examples run and their asserted outputs hold | `npm run test:examples` (`examples.py` per topic) | Wrong or outdated code on screen |
-| Reel smoke test at 1440 × 900 and iPhone size: no page or console errors, no sideways scroll, every step renders a non-empty visual, predict steps answerable, pause/replay/restart controls exist and pause freezes the clock, every panel opens with content on first and second open, outside links open in a new tab | `site/tests/reels.mjs` | Broken reels, empty panels, missing controls, layout overflow |
+| Reel smoke test at 1440 × 900 and iPhone size: no page or console errors, no sideways scroll, every step renders a non-empty visual, predict steps answerable, pause/replay/restart controls exist and pause freezes the clock, on phone a real touch swipe left/right moves exactly one step on every step and a vertical swipe never changes the step, every panel opens with content on first and second open, outside links open in a new tab | `site/tests/reels.mjs` | Broken reels, empty panels, missing controls, layout overflow |
 | Markdown relative links and anchors resolve | `scripts/check-docs.mjs` | Broken links in the plan and syllabi |
 | Narration exists for every live reel, matches its current script, both formats present, every line word-perfect, loudness, peak and pace in range | `npm run test:narration` (`site/tests/narration.mjs`) | Missing, stale or badly mastered narration |
 | The deploy also runs when only `syllabus/` changes | `.github/workflows/deploy.yml` | Site out of date with the syllabus |
@@ -69,6 +69,7 @@ When a new issue is found: fix it, add a row here, and add or strengthen a guard
 | 27 | The transcript check flagged "2%" against "two percent" (and would flag "mypy" against "my pie"). | Transcripts and scripts are normalised (numbers spelled out, "a million" = "one million", an alias list). | `narration/assemble.py`; real errors (a skipped word, "endpoints" for "engineers") are still caught. |
 | 28 | Narration could silently fall out of date when a script line changed. | Every clip stores a hash of its script and voice version. | `npm run test:narration` fails on any stale or missing clip, wrong loudness, peak or pace. |
 | 29 | The voice mangled code names and some words ("functools" → "folk cells", "mypy" → "mikai", "retries" → "ratties", "with always cleans up" → "with all means up"). | Those lines rewritten in plain spoken English; the transcript check rejected every bad take, so none shipped. | Rule (plan, Narration): narration scripts avoid code identifiers and say what they mean in plain words; a line no take can pass is rewritten, never the check loosened. |
+| 30 | Swiping left or right between steps did nothing on phones (it worked on PC with keys and clicks); on code steps the code panel's own sideways scroll also swallowed the swipe. | Horizontal swipes on the reel stage go to the next / previous step; the stage only lets the browser scroll vertically (`touch-action: pan-y`); code panels shrink their font to fit the screen width, so nothing inside a reel scrolls sideways. | `test:reels` sends real touch swipes (Chrome DevTools touch events) at phone size on every step, from two start points, and checks a vertical swipe still scrolls the feed. Rule: nothing inside a reel scrolls sideways. |
 
 ## Before shipping any topic
 
@@ -78,7 +79,7 @@ Go through this list (it summarises the rows above):
 2. Every claim checked against primary sources; behaviour of real systems verified by running them; current docs quoted.
 3. Every code example in `examples.py`, executed.
 4. Every resource link and its metadata verified.
-5. Screens checked at desktop and phone size: nothing clipped, overlapping, too small or hidden behind controls.
+5. Screens checked at desktop and phone size: nothing clipped, overlapping, too small or hidden behind controls; swipes work on a real phone.
 6. Narration generated with `narration/narrate.sh` and listened to end to end.
 7. `npm run build`, `npm run test:examples`, `npm run test:narration` and `npm run test:reels` pass.
 8. No feature described before it exists.

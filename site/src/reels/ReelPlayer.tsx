@@ -178,23 +178,47 @@ export default function ReelPlayer({ meta, reel, active, startStep, next, onPlay
   }, [active, forward, back, replayStep, restartReel]);
 
   // Tap the left third to go back, anywhere else to go on; hold to pause.
-  const press = useRef<{ x: number; timer: number; held: boolean } | null>(null);
+  // Swipe left for the next step, right for the previous one (vertical swipes scroll the feed).
+  const press = useRef<{ x: number; y: number; timer: number; held: boolean } | null>(null);
   const onPointerDown = (e: React.PointerEvent) => {
     if ((e.target as HTMLElement).closest('button, a, input, [data-interactive]')) return;
-    const held = { x: e.clientX, timer: 0, held: false };
+    const held = { x: e.clientX, y: e.clientY, timer: 0, held: false };
     held.timer = window.setTimeout(() => {
       held.held = true;
       setPaused(true);
     }, 280);
     press.current = held;
   };
+  const onPointerMove = (e: React.PointerEvent) => {
+    const p = press.current;
+    // A finger that moves is swiping, not holding.
+    if (p && !p.held && Math.hypot(e.clientX - p.x, e.clientY - p.y) > 10) clearTimeout(p.timer);
+  };
+  const swipe = useCallback(
+    (dir: 1 | -1) => {
+      if (dir < 0) return back();
+      if (ended) return;
+      if (needsAnswer) {
+        tRef.current = cur.duration;
+        setT(cur.duration);
+        setNudge((n) => n + 1);
+        return;
+      }
+      if (step < last) goTo(step + 1);
+      else setEnded(true);
+    },
+    [back, ended, needsAnswer, cur.duration, step, last, goTo],
+  );
   const onPointerUp = (e: React.PointerEvent) => {
     const p = press.current;
     press.current = null;
     if (!p) return;
     clearTimeout(p.timer);
     if (p.held) return setPaused(false);
-    if (Math.abs(e.clientX - p.x) > 30) return;
+    const dx = e.clientX - p.x;
+    const dy = e.clientY - p.y;
+    if (Math.abs(dx) >= 50 && Math.abs(dx) > 1.4 * Math.abs(dy)) return swipe(dx < 0 ? 1 : -1);
+    if (Math.abs(dx) > 30 || Math.abs(dy) > 30) return; // a scroll, not a tap
     const box = (e.currentTarget as HTMLElement).getBoundingClientRect();
     if (e.clientX - box.left < box.width * 0.3) back();
     else forward();
@@ -224,7 +248,9 @@ export default function ReelPlayer({ meta, reel, active, startStep, next, onPlay
     <div className="relative flex h-full w-full select-none flex-col overflow-hidden" aria-roledescription="reel">
       <div
         className="relative flex min-h-0 flex-1 cursor-pointer flex-col landscape:grid landscape:grid-cols-[minmax(300px,0.8fr)_1.45fr]"
+        style={{ touchAction: 'pan-y' }}
         onPointerDown={onPointerDown}
+        onPointerMove={onPointerMove}
         onPointerUp={onPointerUp}
         onPointerCancel={onPointerCancel}
         onPointerLeave={onPointerCancel}

@@ -40,6 +40,48 @@ for (const [device, opts] of [
     if ((await bar()) !== a) fail(`${where}: pause does not freeze the step`);
     await page.getByRole('button', { name: /^(Pause|Play) \(P\)$/ }).click();
 
+    // Touch gestures on phones: swipe left = next step, swipe right = previous, a vertical swipe leaves the step alone.
+    if (device === 'phone') {
+      const cdp = await ctx.newCDPSession(page);
+      const drag = async (x0, y0, x1, y1) => {
+        await cdp.send('Input.dispatchTouchEvent', { type: 'touchStart', touchPoints: [{ x: x0, y: y0 }] });
+        for (let k = 1; k <= 8; k++) await cdp.send('Input.dispatchTouchEvent', { type: 'touchMove', touchPoints: [{ x: x0 + ((x1 - x0) * k) / 8, y: y0 + ((y1 - y0) * k) / 8 }] });
+        await cdp.send('Input.dispatchTouchEvent', { type: 'touchEnd', touchPoints: [] });
+        await page.waitForTimeout(500);
+      };
+      const stepNow = async () => (await page.locator('[aria-current="step"]').getAttribute('aria-label'))?.match(/^Step (\d+)/)?.[1];
+      await page.locator('[aria-label^="Step "]').nth(2).click();
+      await page.waitForTimeout(400);
+      const box = await page.locator('section [data-visual]').last().boundingBox();
+      const y = box.y + box.height / 2;
+      const s0 = await stepNow();
+      await drag(320, y, 70, y);
+      const s1 = await stepNow();
+      if (Number(s1) !== Number(s0) + 1) fail(`${where}: swipe left didn't go to the next step (${s0} -> ${s1})`);
+      await drag(70, y, 320, y);
+      const s2 = await stepNow();
+      if (Number(s2) !== Number(s0)) fail(`${where}: swipe right didn't go back (${s1} -> ${s2})`);
+      // A swipe must work wherever it starts, on every step (code panels and charts must not swallow it).
+      const total = await page.locator('[aria-label^="Step "]').count();
+      for (let i = 1; i < total; i++) {
+        await page.locator('[aria-label^="Step "]').nth(i).click();
+        await page.waitForTimeout(500);
+        for (const x0 of [60, 200]) {
+          await drag(x0, y, x0 + 250 > 380 ? 380 : x0 + 250, y);
+          const now = Number(await stepNow());
+          if (now !== i) fail(`${where}: swipe right from x=${x0} on step ${i + 1} went to step ${now} instead of ${i}`);
+          await page.locator('[aria-label^="Step "]').nth(i).click();
+          await page.waitForTimeout(300);
+        }
+      }
+      const before = await stepNow();
+      await drag(200, y, 210, y - 120);
+      await page.evaluate(() => document.querySelector('.snap-y')?.scrollTo({ top: 0, behavior: 'instant' }));
+      await page.waitForTimeout(300);
+      if ((await stepNow()) !== before) fail(`${where}: a vertical swipe changed the step (${before} -> ${await stepNow()})`);
+      await cdp.detach();
+    }
+
     // Narration (when the reel has it): sound on shows captions that advance; pause freezes them; the next step switches clip.
     const soundOn = page.getByRole('button', { name: /^Turn narration on/ });
     if (await soundOn.count()) {

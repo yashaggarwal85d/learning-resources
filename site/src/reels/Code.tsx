@@ -43,18 +43,21 @@ export function Code({
   dim?: boolean;
 }) {
   const total = lines.reduce((n, l) => n + l.length + 1, 0);
+  // Size the text so the longest line fits: code never scrolls sideways (which would also swallow swipes on phones).
+  const longest = Math.max(20, ...lines.map((l) => l.length));
+  const fontSize = `min(0.95rem, calc((100cqw - 2.2rem) / ${(longest * 0.61).toFixed(2)}))`;
   let budget = clamp((t - start) / Math.max(0.01, end - start)) * total;
   return (
-    <div className={`rounded-2xl border border-crema/10 bg-espresso/85 font-mono text-[clamp(0.62rem,1.55vw,0.95rem)] leading-[1.7] shadow-[0_20px_60px_rgba(0,0,0,.45)] transition-opacity ${dim ? 'opacity-40' : ''}`}>
+    <div style={{ containerType: 'inline-size' }} className={`rounded-2xl border border-crema/10 bg-espresso/85 font-mono leading-[1.7] shadow-[0_20px_60px_rgba(0,0,0,.45)] transition-opacity ${dim ? 'opacity-40' : ''}`}>
       {title && (
         <div className="flex items-center gap-1.5 border-b border-crema/8 px-3 py-1.5">
           <span className="h-2 w-2 rounded-full bg-cherry/80" />
           <span className="h-2 w-2 rounded-full bg-caramel/80" />
           <span className="h-2 w-2 rounded-full bg-mocha" />
-          <span className="ml-2 text-[0.68em] uppercase tracking-[0.14em] text-taupe">{title}</span>
+          <span className="ml-2 text-[0.62rem] uppercase tracking-[0.14em] text-taupe">{title}</span>
         </div>
       )}
-      <pre className="overflow-x-auto px-3 py-2.5 sm:px-4">
+      <pre className="overflow-hidden px-3 py-2.5 sm:px-4" style={{ fontSize, touchAction: 'pan-y' }}>
         {lines.map((l, i) => {
           const shown = Math.max(0, Math.min(l.length, Math.floor(budget)));
           budget -= l.length + 1;
