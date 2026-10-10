@@ -1,0 +1,95 @@
+{
+  "topic": "de.python-essentials",
+  "note": "Written to be spoken: one sentence or phrase per line; {\"beat\": s} is a deliberate pause; code is spelled the way it is said. `answer` plays after the learner answers a predict step.",
+  "steps": [
+    {
+      "lines": [
+        "Data Engineering opens with five quick refreshers.",
+        "This one is Python... the parts a senior engineer leans on in code review, and the language our pipelines are written in.",
+        { "beat": 0.4 },
+        "All familiar? Swipe on to Git."
+      ]
+    },
+    {
+      "lines": [
+        "Here's a classic.",
+        "A function's default value is created once... when the function is defined. Not on every call.",
+        { "beat": 0.5 },
+        "So what does the second call return?"
+      ],
+      "answer": [
+        "Both calls share the same list... the one made when the function was defined.",
+        "The fix? Default to None, and create the list inside the function."
+      ]
+    },
+    {
+      "lines": [
+        "A comprehension reads almost like a sentence.",
+        "Keep the items that pass the test... transform them... and collect the result.",
+        "The same shape builds dictionaries and sets.",
+        "And the loop variable? It stays inside."
+      ]
+    },
+    {
+      "lines": [
+        "Both of these lines compute the same sum.",
+        "But the list version builds a million items first... about forty megabytes.",
+        "The generator hands them over one at a time, in half a kilobyte.",
+        { "beat": 0.4 },
+        "That's how a pipeline reads files bigger than memory."
+      ]
+    },
+    {
+      "lines": [
+        "Put yield in a function, and it becomes a generator.",
+        "Each time you ask for the next value, it runs up to the next yield... hands that value back... and pauses right there, remembering everything.",
+        "Batching a stream takes just a few lines."
+      ]
+    },
+    {
+      "lines": [
+        "A with block guarantees cleanup.",
+        "When the block ends, the exit code runs... even if something blew up inside.",
+        "Files, connections, locks, transactions... they all rely on it.",
+        "With context manager, setup goes before the yield, and teardown goes in finally."
+      ]
+    },
+    {
+      "lines": [
+        "Put timed above a function, and Python replaces it with timed of that function. A new function, wrapping the old one.",
+        "Retries, caching, timing, auth checks... they're usually decorators.",
+        "Just remember to use wraps, from functools. Otherwise the wrapper hides the original's name."
+      ]
+    },
+    {
+      "lines": [
+        "A dataclass writes the boring parts for you: dunder init, dunder repr, and equality.",
+        "Frozen makes it immutable.",
+        "And slots drops the per-instance dictionary... so millions of small records take less memory."
+      ]
+    },
+    {
+      "lines": [
+        "Last one.",
+        "This function says it takes an int.",
+        { "beat": 0.4 },
+        "So what happens if you pass it a string?"
+      ],
+      "answer": [
+        "It simply returns the string, twice.",
+        "Python doesn't check type hints when the code runs. Tools like my pie and pie right do.",
+        "Run one in CI, and they catch this before it ships."
+      ]
+    },
+    {
+      "lines": [
+        "So... seven things to keep.",
+        "Defaults run once. Comprehensions filter, then map. Generators stream.",
+        "With always cleans up. Decorators wrap. Dataclasses write the boilerplate.",
+        "And hints are checked by tools, not at runtime.",
+        { "beat": 0.5 },
+        "Next up... Git."
+      ]
+    }
+  ]
+}

@@ -2,6 +2,7 @@ import type { ReactNode } from 'react';
 import type { StepCtx } from '../../../../../reels/types';
 import { clamp, easeInOut, easeOut, easeOutBack, lerp, seg } from '../../../../../reels/anim';
 import { Code } from '../../../../../reels/Code';
+import { RefresherList } from '../refreshers';
 
 // Every example shown here is executed and checked by examples.py.
 const C = { roast: '#2a1d16', cocoa: '#3b2a21', mocha: '#5a4032', taupe: '#8b7766', latte: '#c8ac8c', crema: '#e9d9bf', caramel: '#d49a57', cinnamon: '#b8612f', cherry: '#8e2f2a', espresso: '#17100c' };
@@ -21,27 +22,7 @@ const T = ({ x, y, s = 15, f = C.latte, a = 'start', w = 500, o = 1, serif = fal
 );
 
 // 1 · Where we are: the five refreshers that open the chapter.
-const REFRESHERS = ['Python essentials', 'Git history workflows', 'Linux shell and processes', 'Software delivery workflow', 'Asymptotic notation and logarithms'];
-export function Opening({ t }: StepCtx) {
-  return (
-    <Svg label="Chapter 1 opens with five refreshers; this is the first" h={420}>
-      <T x={30} y={40} s={13} f={C.taupe}>§1.1 · REFRESHERS · SKIM WHAT YOU KNOW</T>
-      {REFRESHERS.map((r, i) => {
-        const a = easeOutBack(seg(t, 0.2 + i * 0.22, 0.8 + i * 0.22));
-        const on = i === 0;
-        const y = 70 + i * 66;
-        return (
-          <g key={r} transform={`translate(${30 + (1 - clamp(a)) * -40} ${y})`} opacity={clamp(a)}>
-            <rect width={540} height={52} rx={14} fill={on ? C.caramel : C.roast} stroke={on ? C.caramel : C.mocha} />
-            <T x={22} y={33} s={14} f={on ? C.espresso : C.taupe} w={600}>{String(i + 1).padStart(2, '0')}</T>
-            <T x={64} y={33} s={19} f={on ? C.espresso : C.crema} serif w={700}>{r}</T>
-            {on && <T x={518} y={33} s={13} f={C.espresso} a="end" w={600}>NOW ▶</T>}
-          </g>
-        );
-      })}
-    </Svg>
-  );
-}
+export const Opening = (c: StepCtx) => <RefresherList {...c} current={0} />;
 
 // 2 · Mutable default arguments.
 export function MutableDefault({ t, answer, portrait }: StepCtx) {

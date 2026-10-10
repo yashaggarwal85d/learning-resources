@@ -5,6 +5,7 @@ import type { TopicMeta } from '../topics/registry';
 import { saveProgress } from './progress';
 import { clamp } from './anim';
 import { Brewed } from './Brewed';
+import { useNarration, type Clip } from './narration';
 
 type Next = { title: string; live: boolean } | null;
 
@@ -49,6 +50,18 @@ export default function ReelPlayer({ meta, reel, active, startStep, next, onPlay
   const answer = answers[step] ?? null;
   const needsAnswer = !!cur.predict && answer === null;
   const done = t >= cur.duration;
+
+  // Narration: one clip per step (01, 02, …) and one per predict answer (02a, …).
+  const narr = useNarration(meta.id);
+  const stepClip = String(step + 1).padStart(2, '0');
+  const wantClip = answer !== null && narr.has(`${stepClip}a`) ? `${stepClip}a` : stepClip;
+  const narrRef = useRef(narr);
+  narrRef.current = narr;
+  useEffect(() => {
+    const n = narrRef.current;
+    if (!n.on || !active || ended || paused) n.pause();
+    else n.play(wantClip);
+  }, [narr.on, narr.available, active, ended, paused, wantClip]);
 
   // A step opens at its start, or at its end state with reduced motion.
   const goTo = useCallback(
@@ -122,11 +135,13 @@ export default function ReelPlayer({ meta, reel, active, startStep, next, onPlay
     tRef.current = 0;
     setT(0);
     setEnded(false);
-  }, []);
+    if (narrRef.current.on) narrRef.current.play(wantClip, true);
+  }, [wantClip]);
   const restartReel = useCallback(() => {
     setPaused(false);
     setAnswers({});
     goTo(0);
+    if (narrRef.current.on) narrRef.current.play('01', true);
   }, [goTo]);
 
   const back = useCallback(() => {
@@ -150,6 +165,8 @@ export default function ReelPlayer({ meta, reel, active, startStep, next, onPlay
         back();
       } else if (e.key === 'p' || e.key === 'k') {
         setPaused((v) => !v);
+      } else if (e.key === 'm' || e.key === 'M') {
+        narrRef.current.toggle();
       } else if (e.key === 'r' || e.key === 'R') {
         e.preventDefault();
         if (e.shiftKey) restartReel();
@@ -320,6 +337,8 @@ export default function ReelPlayer({ meta, reel, active, startStep, next, onPlay
         <RailButton label="Share" onClick={share} icon={<IconSend />} />
       </div>
 
+      {narr.on && narr.clip && narr.clipId === wantClip && <Captions clip={narr.clip} time={narr.time} playing={narr.playing} />}
+
       {/* Playback controls and segmented progress */}
       <div className="relative z-20 px-3 pb-[max(0.75rem,env(safe-area-inset-bottom))] pt-1 sm:px-5">
         <div className="flex items-center gap-1.5" role="group" aria-label="Playback">
@@ -341,6 +360,24 @@ export default function ReelPlayer({ meta, reel, active, startStep, next, onPlay
             <path d="M6 5v14" />
             <path d="M19 5.5v13L9 12z" fill="currentColor" stroke="none" />
           </ControlButton>
+          {narr.available && (
+            <ControlButton label={narr.on ? 'Turn narration off (M)' : 'Turn narration on (M)'} onClick={narr.toggle} primary={narr.on}>
+              <path d="M4 9.5h3.5L12 5.5v13l-4.5-4H4z" fill="currentColor" stroke="none" />
+              {narr.on ? (
+                <>
+                  <path d="M15.5 9a4.5 4.5 0 0 1 0 6" />
+                  <path d="M18 6.5a8 8 0 0 1 0 11" />
+                </>
+              ) : (
+                <path d="m16 9.5 5 5m0-5-5 5" />
+              )}
+            </ControlButton>
+          )}
+          {narr.available && !narr.on && (
+            <button type="button" onClick={narr.toggle} className="hidden rounded-full border border-caramel/40 px-3 py-1 font-mono text-[0.62rem] uppercase tracking-[0.12em] text-caramel transition hover:bg-caramel/10 sm:inline-block">
+              Turn on narration
+            </button>
+          )}
           <span className="ml-2 font-mono text-[0.62rem] uppercase tracking-[0.14em] text-latte/70" aria-live="polite">
             {paused ? 'Paused' : ''}
           </span>
@@ -538,6 +575,26 @@ function EndCard({
         </motion.div>
       </div>
     </motion.div>
+  );
+}
+
+/** The narration line being spoken, with words lighting up as they are said. */
+function Captions({ clip, time, playing }: { clip: Clip; time: number; playing: boolean }) {
+  const line = [...clip.lines].reverse().find((l) => time >= l.start - 0.05) ?? clip.lines[0];
+  if (!line || (!playing && time >= clip.duration - 0.1)) return null;
+  const words = line.text.split(' ');
+  const progress = Math.max(0, Math.min(1, (time - line.start) / Math.max(0.1, line.end - line.start)));
+  const lit = Math.ceil(progress * words.length);
+  return (
+    <div className="pointer-events-none relative z-20 px-4 pb-1 text-center" aria-live="off">
+      <p className="mx-auto inline-block max-w-3xl rounded-xl bg-void/75 px-3 py-1.5 text-[0.9rem] leading-snug backdrop-blur sm:text-base">
+        {words.map((w, i) => (
+          <span key={i} className={i < lit ? 'text-crema' : 'text-latte/55'}>
+            {w}{' '}
+          </span>
+        ))}
+      </p>
+    </div>
   );
 }
 

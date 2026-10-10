@@ -52,6 +52,8 @@ jobs:
       - run: npm run build
       - name: Run every topic's code examples
         run: npm run test:examples
+      - name: Narration matches every live reel's script
+        run: npm run test:narration
       - name: Install Chromium for the reel smoke test
         run: npx playwright install --with-deps chromium
       - name: Reel smoke test (desktop and phone)

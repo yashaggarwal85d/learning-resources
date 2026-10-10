@@ -48,6 +48,10 @@ jobs:
         if: hashFiles('site/package-lock.json') != ''
         working-directory: site
         run: npm run test:examples
+      - name: Narration matches every live reel's script
+        if: hashFiles('site/package-lock.json') != ''
+        working-directory: site
+        run: npm run test:narration
       - name: Install Chromium for the reel smoke test
         if: hashFiles('site/package-lock.json') != ''
         working-directory: site
