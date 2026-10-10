@@ -220,7 +220,7 @@ These are rules for how animations behave. The building blocks are shared; the v
 
 Reels can carry an optional voice-over that narrates each step, which makes them more engaging and lets the learner watch the animation instead of reading.
 
-- **The voice.** One signature narrator for the whole site, and it **must be a female voice**: this is a fixed requirement, not a preference, and applies to every voice actor, synthetic voice or provider voice we consider. The brief, modelled on the qualities people liked in OpenAI's "Sky" voice:
+- **The voice.** One signature narrator for the whole site, and it **must be a female voice**: this is a fixed requirement, not a preference, and applies to every voice actor, synthetic voice or provider voice we consider. The brief, modelled on the qualities of two reference voices from ChatGPT: "Sky" and "Sol" (which OpenAI describes as savvy and relaxed):
   - **warm and soothing**, with a light smile in the voice;
   - **slightly low, mid-range** pitch and a soft, faintly breathy, slightly husky texture;
   - **relaxed and conversational**, like a friend explaining something over coffee rather than an announcer;
@@ -228,7 +228,7 @@ Reels can carry an optional voice-over that narrates each step, which makes them
   - **clear diction**, so dense technical terms stay easy to follow.
 
   It should feel like a trusted expert sitting next to you: charming, calm and confident, never theatrical.
-- **An original voice, never an imitation.** The narrator is created for us: a professional voice actor under contract, or a designed synthetic voice from a licensed text-to-speech provider (for example ElevenLabs, Azure AI Speech or Google Cloud Text-to-Speech). The brief above describes qualities; the voice itself is never cloned from, or made to sound like, a real, identifiable person or an existing product voice (including Sky's actual recordings); that needs their consent and invites right-of-publicity disputes. If a provider offers a ready-made voice that fits the brief under its standard licence, using it on those terms is fine.
+- **An original voice, never an imitation.** The narrator is created for us: a professional voice actor under contract, or a designed synthetic voice from a licensed text-to-speech provider (for example ElevenLabs, Azure AI Speech or Google Cloud Text-to-Speech). The brief above describes qualities; the voice itself is never cloned from, or made to sound like, a real, identifiable person or an existing product voice (including the actual Sky and Sol voices); that needs their consent and invites right-of-publicity disputes. If a provider offers a ready-made voice that fits the brief under its standard licence, using it on those terms is fine. ChatGPT's app voices themselves aren't licensed for use in other products, but OpenAI's text-to-speech API offers its own female voices under the API terms, which makes it a natural shortlist alongside ElevenLabs, Azure and Google.
 - **Synced to the steps.** Narration is written per reel step, timed to the animation, and pauses when the reel waits for the learner.
 - **Always optional, always captioned.** Sound is off until the learner turns it on (the reel works fully silent), captions show every word, and speed follows the reel's playback speed.
 - **Exact pronunciation.** A pronunciation lexicon for technical terms and names (PostgreSQL, Kafka, Tokio, Dijkstra) so the voice never stumbles.
