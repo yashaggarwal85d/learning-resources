@@ -15,7 +15,7 @@ type Props = {
   startStep: number;
   next: Next;
   onPlayNext: () => void;
-  onOpenSheet: (section?: string) => void;
+  onOpenSheet: (section?: string, panel?: 'deep' | 'prereq') => void;
   onOpenTree: () => void;
   onToast: (msg: string) => void;
 };
@@ -274,6 +274,16 @@ export default function ReelPlayer({ meta, reel, active, startStep, next, onPlay
                   {cur.predict.explain}
                 </motion.div>
               )}
+              {step === 0 && (
+                <button
+                  type="button"
+                  onClick={() => onOpenSheet(undefined, 'prereq')}
+                  className="mt-3 inline-flex items-center gap-2 rounded-full border border-crema/15 bg-crema/5 px-3 py-1.5 text-[0.78rem] text-latte transition hover:border-caramel hover:text-crema"
+                >
+                  <IconSteps size={14} />
+                  New to this? Start with the prerequisites
+                </button>
+              )}
               <NextHint visible={done && !needsAnswer && !ended} paused={paused} predict={needsAnswer && done} />
             </motion.div>
           </AnimatePresence>
@@ -282,6 +292,7 @@ export default function ReelPlayer({ meta, reel, active, startStep, next, onPlay
 
       {/* Side rail */}
       <div className="absolute bottom-16 right-2.5 z-20 flex flex-col items-center gap-4 landscape:bottom-auto landscape:right-4 landscape:top-1/2 landscape:-translate-y-1/2">
+        <RailButton label="Prereqs" title="Prerequisites" onClick={() => onOpenSheet(undefined, 'prereq')} icon={<IconSteps />} />
         <RailButton label="Deep dive" onClick={() => onOpenSheet()} icon={<IconLayers />} />
         <RailButton label="Sources" onClick={() => onOpenSheet('sources')} icon={<IconBook />} />
         <RailButton label="Share" onClick={share} icon={<IconSend />} />
@@ -491,9 +502,9 @@ function EndCard({
   );
 }
 
-function RailButton({ label, icon, onClick }: { label: string; icon: React.ReactNode; onClick: () => void }) {
+function RailButton({ label, title, icon, onClick }: { label: string; title?: string; icon: React.ReactNode; onClick: () => void }) {
   return (
-    <button type="button" onClick={onClick} className="group flex flex-col items-center gap-1 text-crema" aria-label={label}>
+    <button type="button" onClick={onClick} className="group flex flex-col items-center gap-1 text-crema" aria-label={title ?? label}>
       <span className="grid h-11 w-11 place-items-center rounded-full border border-crema/10 bg-espresso/60 backdrop-blur transition group-hover:border-caramel group-hover:text-caramel group-active:scale-90">
         {icon}
       </span>
@@ -503,6 +514,12 @@ function RailButton({ label, icon, onClick }: { label: string; icon: React.React
 }
 
 const svg = { width: 20, height: 20, viewBox: '0 0 24 24', fill: 'none', stroke: 'currentColor', strokeWidth: 1.8, strokeLinecap: 'round', strokeLinejoin: 'round' } as const;
+const IconSteps = ({ size = 20 }: { size?: number }) => (
+  <svg {...svg} width={size} height={size}>
+    <path d="M3 20h5v-5h5v-5h5V5h3" />
+    <path d="M3 20V16" />
+  </svg>
+);
 const IconLayers = () => (
   <svg {...svg}>
     <path d="M12 3 3 8l9 5 9-5-9-5Z" />

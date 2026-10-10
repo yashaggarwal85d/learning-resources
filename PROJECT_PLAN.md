@@ -110,6 +110,8 @@ Built for experts. Research on how experienced learners learn (the "expertise re
 9. **Prove it.** Expert-level self-assessment, not trivia: predict-the-outcome, debug-this, estimate-the-cost and defend-a-design questions, each with a worked answer. Facts worth keeping (numbers, invariants, failure signatures) go into an optional spaced-repetition review queue (e.g. the FSRS algorithm).
 10. **Sources.** Every claim traceable: official docs, papers, books and code, with a "last verified" date.
 
+**Prerequisites first.** Every topic has a Prerequisites panel, one tap from the reel (and offered on its first step): what you must already know, each explained in a few sentences with a quick self-check, and the best resources to fill a gap: reels on this site (linked as soon as they are live), well-regarded videos, readings and courses. Experts skip it; anyone missing a piece gets exactly that piece.
+
 **Depth on demand.** The reel carries the core path: layers 1–4 and a short "Prove it". Layers 5–8, the full question set and the sources live in the topic's **Deep dive**, a panel that slides up over the reel (like the comments panel on Instagram), so one topic serves both "I need the model" and "I need the internals".
 
 ## Experience features
@@ -135,7 +137,8 @@ A topic page is complete only when:
 5. It meets the [performance rules](#performance-rules) and passes the [visual checks](#verification) on desktop and phone, with a still poster for reduced motion.
 6. It has every layer listed in [Learning design](#learning-design--what-every-topic-contains), at expert depth: the problem, prediction prompts, the mechanism, trade-offs and numbers, internals, a build-break-measure lab, production failures, the frontier, expert self-assessment and sources.
 7. It meets the accessibility bar in [Experience features](#experience-features): a text equivalent for every animation, keyboard use and checked contrast.
-8. It passes every layer of [Correctness and currency](#correctness-and-currency--how-we-make-sure): every claim sourced, every example executed in CI, adversarial review resolved, the state-of-the-art scan recorded, and (at milestone level) a human expert sign-off. _(Rule #3)_
+8. It has a **Prerequisites** panel: each thing a learner must already know, explained briefly in our own words with a one-line self-check, plus the best free resources for it (reels on this site, videos, readings, courses), every link checked to load and to be what it claims.
+9. It passes every layer of [Correctness and currency](#correctness-and-currency--how-we-make-sure): every claim sourced, every example executed in CI, adversarial review resolved, the state-of-the-art scan recorded, and (at milestone level) a human expert sign-off. _(Rule #3)_
 
 ## How to Create a Topic — the workflow
 
@@ -202,7 +205,7 @@ A new shared component is added when a second topic would need the same thing; u
 - **The Reels page (`/reels/`):** the full-screen vertical feed, one feed per domain (chips along the top), in curriculum order, never shuffled. Each topic fills the screen and snaps into place; an `IntersectionObserver` plays the reel in view and pauses the rest, and the next reel is loaded in advance so a swipe starts it instantly.
   - **Opens where you left off:** at the topic and step where the learner stopped ("Resumed at step 6 · Start over").
   - **Curriculum tree:** an icon at the top opens the tree of live reels only (Domain → Milestone → Chapter → Topic), with each reel's progress; tap one to play it. A single line counts the topics still in production.
-  - **Side buttons:** Deep dive, Sources and Share (copies a link to the current step). No saving, no streaks.
+  - **Side buttons:** Prerequisites, Deep dive, Sources and Share (copies a link to the current step). No saving, no streaks.
   - **The end of a reel:** a short "brewed" moment, then **Up next**: the next live reel starts after a 3-second countdown (or on a swipe); if the next topic is still in production, the card says so. After the last live reel, a "You're all caught up" card lists what is in production next.
   - **Phones:** a portrait layout with the animation on top and the caption below, clamped to three lines with a "more", like an Instagram caption.
 - **Deep links:** every topic has its own URL, and `?t=12.5` opens a reel paused on an exact moment (useful for sharing and reviewing).

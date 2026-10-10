@@ -35,7 +35,7 @@ export default function ReelFeed({ base, domains, topics, initialDomain, initial
   const [active, setActive] = useState(-1);
   const [reels, setReels] = useState<Record<string, Reel>>({});
   const [starts, setStarts] = useState<Record<string, { step: number; epoch: number }>>({});
-  const [sheet, setSheet] = useState<{ id: string; section?: string } | null>(null);
+  const [sheet, setSheet] = useState<Sheet | null>(null);
   const [treeOpen, setTreeOpen] = useState(false);
   const [toast, setToast] = useState<{ msg: string; action?: { label: string; run: () => void } } | null>(null);
   const scroller = useRef<HTMLDivElement>(null);
@@ -222,7 +222,7 @@ export default function ReelFeed({ base, domains, topics, initialDomain, initial
                   startStep={start.step}
                   next={nextAfter[t.id] ?? null}
                   onPlayNext={() => scrollToIndex(i + 1)}
-                  onOpenSheet={(section) => setSheet({ id: t.id, section })}
+                  onOpenSheet={(section, panel = 'deep') => setSheet({ id: t.id, section, panel })}
                   onOpenTree={() => setTreeOpen(true)}
                   onToast={(m) => showToast(m)}
                 />
@@ -307,13 +307,15 @@ export default function ReelFeed({ base, domains, topics, initialDomain, initial
   );
 }
 
-/** The Deep dive: a bottom sheet holding the topic's full write-up (rendered by Astro, moved in here). */
-function DeepSheet({ sheet, onClose }: { sheet: { id: string; section?: string } | null; onClose: () => void }) {
+type Sheet = { id: string; section?: string; panel: 'deep' | 'prereq' };
+
+/** A bottom sheet holding a topic's Deep dive or Prerequisites (rendered by Astro, copied in here). */
+function DeepSheet({ sheet, onClose }: { sheet: Sheet | null; onClose: () => void }) {
   const body = useRef<HTMLDivElement>(null);
   useEffect(() => {
     if (!sheet || !body.current) return;
     // Copy, don't move: the sheet unmounts on close and would take the original with it.
-    const node = document.getElementById(`deep-${sheet.id}`);
+    const node = document.getElementById(`${sheet.panel}-${sheet.id}`);
     if (node) {
       const copy = node.cloneNode(true) as HTMLElement;
       copy.removeAttribute('id');
@@ -339,7 +341,7 @@ function DeepSheet({ sheet, onClose }: { sheet: { id: string; section?: string }
           <motion.div
             role="dialog"
             aria-modal="true"
-            aria-label="Deep dive"
+            aria-label={sheet.panel === 'prereq' ? 'Prerequisites' : 'Deep dive'}
             className="absolute inset-x-0 bottom-0 mx-auto flex max-h-[88dvh] max-w-3xl flex-col rounded-t-[28px] border border-b-0 border-crema/10 bg-roast shadow-[0_-30px_80px_rgba(0,0,0,.6)]"
             initial={{ y: '100%' }}
             animate={{ y: 0 }}
@@ -352,9 +354,9 @@ function DeepSheet({ sheet, onClose }: { sheet: { id: string; section?: string }
             onDragEnd={(_, info) => info.offset.y > 120 && onClose()}
           >
             <div className="flex items-center justify-between px-5 pb-2 pt-3">
-              <span className="eyebrow text-[0.62rem] text-caramel">Deep dive</span>
+              <span className="eyebrow text-[0.62rem] text-caramel">{sheet.panel === 'prereq' ? 'Prerequisites' : 'Deep dive'}</span>
               <span className="h-1.5 w-12 rounded-full bg-crema/20" />
-              <button type="button" onClick={onClose} className="grid h-8 w-8 place-items-center rounded-full text-latte hover:bg-crema/10 hover:text-crema" aria-label="Close deep dive">
+              <button type="button" onClick={onClose} className="grid h-8 w-8 place-items-center rounded-full text-latte hover:bg-crema/10 hover:text-crema" aria-label="Close panel">
                 ✕
               </button>
             </div>

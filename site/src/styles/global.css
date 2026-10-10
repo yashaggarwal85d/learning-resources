@@ -105,3 +105,21 @@ body {
 .deep th { color: var(--color-crema); font-weight: 600; }
 .deep pre { padding: 1rem; border-radius: 14px; overflow-x: auto; font-size: 0.82rem; line-height: 1.55; background: var(--color-espresso) !important; border: 1px solid color-mix(in oklab, var(--color-crema) 10%, transparent); }
 .deep pre code { background: none; padding: 0; font-size: inherit; }
+
+/* Prerequisites panel */
+.deep .prereq { border-top: 1px solid color-mix(in oklab, var(--color-crema) 10%, transparent); padding-top: 1.1rem; margin-top: 1.2rem; }
+.deep .prereq h3 { display: flex; gap: 0.6rem; align-items: baseline; margin-top: 0; }
+.deep .prereq h3 .n { font-family: var(--font-mono); font-size: 0.8rem; color: var(--color-caramel); }
+.deep ul.resources { list-style: none; padding: 0; display: grid; gap: 0.5rem; margin-top: 0.8rem; }
+.deep .res { display: flex; gap: 0.75rem; align-items: flex-start; padding: 0.6rem 0.75rem; border-radius: 12px; background: color-mix(in oklab, var(--color-espresso) 70%, transparent); border: 1px solid color-mix(in oklab, var(--color-crema) 8%, transparent); margin: 0; }
+.deep .res::marker { content: ''; }
+.deep .res-kind { flex-shrink: 0; margin-top: 0.15rem; min-width: 4.6rem; text-align: center; font-family: var(--font-mono); font-size: 0.6rem; text-transform: uppercase; letter-spacing: 0.1em; padding: 0.2rem 0.45rem; border-radius: 999px; border: 1px solid color-mix(in oklab, var(--color-crema) 18%, transparent); color: var(--color-latte); }
+.deep .res-video { color: var(--color-caramel); border-color: color-mix(in oklab, var(--color-caramel) 45%, transparent); }
+.deep .res-live { background: var(--color-caramel); color: var(--color-espresso); border-color: var(--color-caramel); font-weight: 600; }
+.deep .res-body { display: flex; flex-direction: column; min-width: 0; }
+.deep .res-body a, .deep .res-title { font-weight: 600; color: var(--color-crema); text-decoration: none; }
+.deep .res-body a:hover { color: var(--color-caramel); text-decoration: underline; }
+.deep .res-meta { font-family: var(--font-mono); font-size: 0.68rem; color: var(--color-taupe); margin-top: 0.1rem; }
+.deep .res-note { font-size: 0.86rem; color: var(--color-latte); margin-top: 0.15rem; }
+.deep .check { margin-top: 0.6rem; font-size: 0.88rem; color: var(--color-crema); }
+.deep .check b { color: var(--color-caramel); font-weight: 600; }

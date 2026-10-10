@@ -13,6 +13,8 @@ const initialDomain = domain ?? live.feedDomains.find((d) => d.live)?.id ?? live
 // Each topic's Deep dive is rendered here, hidden, and moved into the sheet when opened.
 const deep = import.meta.glob<{ Content: any }>('../topics/**/index.mdx', { eager: true });
 const deepFor = (slug: string) => deep[`../topics/${slug}/index.mdx`]?.Content;
+const prereq = import.meta.glob<{ Content: any }>('../topics/**/prerequisites.mdx', { eager: true });
+const prereqFor = (slug: string) => prereq[`../topics/${slug}/prerequisites.mdx`]?.Content;
 ---
 <Base title={title} description={description}>
   <ReelFeed
@@ -30,12 +32,20 @@ const deepFor = (slug: string) => deep[`../topics/${slug}/index.mdx`]?.Content;
   <div hidden>
     {live.ordered.map((t) => {
       const Content = deepFor(t.slug);
+      const Prereq = prereqFor(t.slug);
       return (
-        <article id={`deep-${t.id}`} hidden>
-          <p class="eyebrow text-[0.62rem] text-latte">§{t.chapter.section} · Milestone {t.milestone.number} · Ch.{t.chapter.number}</p>
-          <h2 class="mt-1 font-display text-3xl font-bold text-crema">{t.title}</h2>
-          {Content ? <Content /> : <p>Deep dive coming soon.</p>}
-        </article>
+        <>
+          <article id={`deep-${t.id}`} hidden>
+            <p class="eyebrow text-[0.62rem] text-latte">§{t.chapter.section} · Milestone {t.milestone.number} · Ch.{t.chapter.number}</p>
+            <h2 class="mt-1 font-display text-3xl font-bold text-crema">{t.title}</h2>
+            {Content ? <Content /> : <p>Deep dive coming soon.</p>}
+          </article>
+          <article id={`prereq-${t.id}`} hidden>
+            <p class="eyebrow text-[0.62rem] text-latte">Before you watch</p>
+            <h2 class="mt-1 font-display text-3xl font-bold text-crema">{t.title}</h2>
+            {Prereq ? <Prereq /> : <p>This topic has no prerequisites beyond the ones before it in the curriculum.</p>}
+          </article>
+        </>
       );
     })}
   </div>
