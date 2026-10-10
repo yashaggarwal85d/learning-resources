@@ -220,8 +220,15 @@ These are rules for how animations behave. The building blocks are shared; the v
 
 Reels can carry an optional voice-over that narrates each step, which makes them more engaging and lets the learner watch the animation instead of reading.
 
-- **The voice.** One signature narrator for the whole site: warm, calm and soothing, low-to-mid register, unhurried, with a slight huskiness and clear diction, the voice of a trusted expert sitting next to you.
-- **An original voice, never an imitation.** The narrator is created for us: a professional voice actor under contract, or a designed synthetic voice from a licensed text-to-speech provider (for example ElevenLabs, Azure AI Speech or Google Cloud Text-to-Speech). It is never cloned from, or made to sound like, a real, identifiable person such as an actor; that needs their consent and invites right-of-publicity disputes.
+- **The voice.** One signature narrator for the whole site. The brief, modelled on the qualities people liked in OpenAI's "Sky" voice:
+  - **warm and soothing**, with a light smile in the voice;
+  - **slightly low, mid-range** pitch and a soft, faintly breathy, slightly husky texture;
+  - **relaxed and conversational**, like a friend explaining something over coffee rather than an announcer;
+  - **unhurried**, with natural pauses that leave room to think;
+  - **clear diction**, so dense technical terms stay easy to follow.
+
+  It should feel like a trusted expert sitting next to you: charming, calm and confident, never theatrical.
+- **An original voice, never an imitation.** The narrator is created for us: a professional voice actor under contract, or a designed synthetic voice from a licensed text-to-speech provider (for example ElevenLabs, Azure AI Speech or Google Cloud Text-to-Speech). The brief above describes qualities; the voice itself is never cloned from, or made to sound like, a real, identifiable person or an existing product voice (including Sky's actual recordings); that needs their consent and invites right-of-publicity disputes. If a provider offers a ready-made voice that fits the brief under its standard licence, using it on those terms is fine.
 - **Synced to the steps.** Narration is written per reel step, timed to the animation, and pauses when the reel waits for the learner.
 - **Always optional, always captioned.** Sound is off until the learner turns it on (the reel works fully silent), captions show every word, and speed follows the reel's playback speed.
 - **Exact pronunciation.** A pronunciation lexicon for technical terms and names (PostgreSQL, Kafka, Tokio, Dijkstra) so the voice never stumbles.
