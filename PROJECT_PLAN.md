@@ -45,7 +45,7 @@ If a topic or concept **can** be explained with a pretty animation, we animate i
 
 ### Rule #2 — One topic at a time, delivered as a scrollable reel
 
-Production is strictly incremental — a single topic produced start to finish before the next one begins — rather than mass-generating everything. Each topic is like a **reel**: a self-contained unit of animations + content. Scrolling down ends the current topic and brings up the next one, in a continuous vertical feed.
+Production is strictly incremental — a single topic produced start to finish before the next one begins — rather than mass-generating everything. Each topic is like a **reel**: a self-contained unit of animations + content, played full screen. The feed has two directions, like Instagram Stories inside Reels: **swiping or scrolling up and down moves between topics**, in curriculum order, and **tapping (or → / Space) moves between the steps of a topic**; tapping the left third goes back a step and holding pauses. Keeping the two apart means a long reel is never lost to an accidental swipe.
 
 A reel has **no fixed length**. A small idea may take five minutes; a big one may run thirty minutes or more. Length follows the topic, never a format. A reel is fully animated, pretty and explosive, and it is **responsive**: where the learner needs to think, it stops and waits (for example, it steps through a graph algorithm one move at a time, and the next move starts only when the learner clicks "next"). Along the bottom runs a **segmented progress bar**, like Instagram's, one segment per step of the reel, so the learner always knows where they are and how much is left.
 
@@ -110,7 +110,7 @@ Built for experts. Research on how experienced learners learn (the "expertise re
 9. **Prove it.** Expert-level self-assessment, not trivia: predict-the-outcome, debug-this, estimate-the-cost and defend-a-design questions, each with a worked answer. Facts worth keeping (numbers, invariants, failure signatures) go into an optional spaced-repetition review queue (e.g. the FSRS algorithm).
 10. **Sources.** Every claim traceable: official docs, papers, books and code, with a "last verified" date.
 
-**Depth on demand.** Layers 1–4 are the core path. Layers 5–8 open for readers who want to go all the way down, so one page serves both "I need the model" and "I need the internals".
+**Depth on demand.** The reel carries the core path: layers 1–4 and a short "Prove it". Layers 5–8, the full question set and the sources live in the topic's **Deep dive**, a panel that slides up over the reel (like the comments panel on Instagram), so one topic serves both "I need the model" and "I need the internals".
 
 ## Experience features
 
@@ -118,7 +118,7 @@ Built for experts. Research on how experienced learners learn (the "expertise re
 - **Progress without accounts.** Completed topics, quiz results and the review queue are saved in the browser, with export/import so a learner can move devices. A learner always sees where they are and can resume where they stopped.
 - **Find anything.** Full-text search across topics, a glossary of terms linked from wherever they appear, and a prerequisite map showing what each topic builds on.
 - **Built for deep work.** Reading-time estimates per layer, keyboard-first navigation, typeset maths and code, citations that open in place, and a print/PDF view of any topic.
-- **The feed, with an exit.** Scrolling advances to the next topic, but every topic also has its own address, a table of contents and bookmarks, so studying and revisiting are as easy as browsing.
+- **The feed, with an exit.** Swiping advances to the next topic, but every topic also has its own address and every step can be linked (`?step=6`), and the curriculum tree jumps straight to any live reel, so studying and revisiting are as easy as browsing.
 - **Accessible to everyone (WCAG 2.2 AA).** Every animation has a text equivalent that carries the same information; full keyboard use; visible focus; colour contrast checked against the theme; captions for any narration; no sound until the learner turns it on; still frames when reduced motion is on.
 - **Fast and findable.** Every page is pre-rendered to static HTML, so it loads quickly, works with JavaScript slow or off, and is indexed by search engines. Each topic has a share image and appears in a sitemap. Targets: Largest Contentful Paint under 2.5 s, Interaction to Next Paint under 200 ms, Cumulative Layout Shift under 0.1, on a mid-range phone.
 - **Works offline.** Topics a learner has opened stay available offline (installable as a web app).
@@ -165,7 +165,7 @@ Grown as topics need them, documented in one place, and themed only through the 
 
 - **Page structure:** the hub, domain, milestone and chapter pages; the topic layout with its layers, table of contents, breadcrumbs, depth-on-demand sections and prev/next.
 - **Reading:** headings and type scale, callouts (key idea, warning, production note, frontier), definitions and glossary terms, figures with captions, tables, footnotes and citations, typeset maths, code blocks with copy and run.
-- **Learning machinery:** the reel player with its step controls, segmented progress bar, narration and captions, prediction prompts, the self-assessment questions with worked answers, the skip-what-you-know diagnostic, the review queue, progress, bookmarks and the "last verified" box.
+- **Learning machinery:** the reel player with its step controls, segmented progress bar, narration and captions, prediction prompts, the self-assessment questions with worked answers, the skip-what-you-know diagnostic, the review queue, progress and the "last verified" box.
 - **Labs:** the in-browser runner (SQL and Python), result tables and charts, and the "run this locally" panel.
 - **Diagram and animation building blocks:** the time and easing utilities, the responsive canvas, and primitives such as nodes, edges, arrows, labels, value readouts, sliders and toggles for interactive models. Topic visuals are composed from these, so they share a visual grammar while the explanation stays original.
 - **Site-wide:** navigation, search, the feedback link, share images, and the offline and print views.
@@ -194,12 +194,17 @@ A new shared component is added when a second topic would need the same thing; u
 
 ### How the site maps to the curriculum
 
-- **Master page (hub):** the domains, and inside each the curriculum map (Milestones → Chapters → Topics), generated from each domain's syllabus file in `syllabus/` and the topics' front matter, so the hub always matches the syllabus and shows what's published.
+- **Master page (hub):** the domains, and inside each the curriculum map (Milestones → Chapters → Topics), generated from each domain's syllabus file in `syllabus/` and the topics' front matter, so the hub always matches the syllabus and shows what's published. Live topics are marked everywhere: a **Reels** tab with the live count in the header, a "Start watching" button, a live chip on each domain card, a "▶ Live" badge that opens the reel in the curriculum map (topics in production are dimmed), and a pulsing star in the hero sky.
 - **Domain pages:** one landing page per domain (e.g. `/data-engineering/`) showing its milestones, its progress and its own looping motion-graphics.
 - **Topic folders:** one folder per topic, `topics/<domain>/<milestone>/<chapter>/<topic>/` (e.g. `topics/data-engineering/m1-foundations/ch02-advanced-sql/window-functions/`), holding its `index.mdx` (prose, questions and sources) and the animation and lab files it embeds. Search, the glossary, the prerequisite map and the review queue are generated from these files.
 - **URLs** follow the same path: `/<domain>/<milestone>/<chapter>/<topic>`.
-- **Stable identity.** The curriculum will keep being polished, so every topic gets a permanent ID in its front matter. Progress, the review queue, bookmarks and cross-links key on that ID, and when a topic is renamed or moved its old URL redirects to the new one, so nothing a learner saved ever breaks.
-- **The vertical feed:** topics follow one another in a vertical feed. Snapping is gentle and only at topic boundaries, never inside a long topic, so reading is never fought. An `IntersectionObserver` plays the reel in view and pauses the rest; scrolling past the end of a topic brings up the next one.
+- **Stable identity.** The curriculum will keep being polished, so every topic gets a permanent ID in its front matter. Progress, the review queue and cross-links key on that ID, and when a topic is renamed or moved its old URL redirects to the new one, so nothing a learner saved ever breaks.
+- **The Reels page (`/reels/`):** the full-screen vertical feed, one feed per domain (chips along the top), in curriculum order, never shuffled. Each topic fills the screen and snaps into place; an `IntersectionObserver` plays the reel in view and pauses the rest, and the next reel is loaded in advance so a swipe starts it instantly.
+  - **Opens where you left off:** at the topic and step where the learner stopped ("Resumed at step 6 · Start over").
+  - **Curriculum tree:** an icon at the top opens the tree of live reels only (Domain → Milestone → Chapter → Topic), with each reel's progress; tap one to play it. A single line counts the topics still in production.
+  - **Side buttons:** Deep dive, Sources and Share (copies a link to the current step). No saving, no streaks.
+  - **The end of a reel:** a short "brewed" moment, then **Up next**: the next live reel starts after a 3-second countdown (or on a swipe); if the next topic is still in production, the card says so. After the last live reel, a "You're all caught up" card lists what is in production next.
+  - **Phones:** a portrait layout with the animation on top and the caption below, clamped to three lines with a "more", like an Instagram caption.
 - **Deep links:** every topic has its own URL, and `?t=12.5` opens a reel paused on an exact moment (useful for sharing and reviewing).
 
 ### Animation principles

@@ -65,3 +65,43 @@ body {
 }
 
 :focus-visible { outline: 2px solid var(--color-caramel); outline-offset: 3px; border-radius: 6px; }
+
+/* Reels */
+.no-scrollbar { scrollbar-width: none; }
+.no-scrollbar::-webkit-scrollbar { display: none; }
+.reel-body b { color: var(--color-crema); font-weight: 600; }
+.reel-body em { font-style: italic; color: var(--color-crema); }
+.reel-body code,
+.deep code {
+  font-family: var(--font-mono);
+  font-size: 0.86em;
+  padding: 0.08em 0.36em;
+  border-radius: 6px;
+  background: color-mix(in oklab, var(--color-caramel) 14%, transparent);
+  color: var(--color-crema);
+}
+.next-pulse { animation: next-pulse 1.4s ease-in-out infinite; }
+@keyframes next-pulse { 50% { transform: scale(1.9); opacity: 0.35; } }
+
+.reel-range { appearance: none; height: 28px; background: transparent; cursor: pointer; }
+.reel-range::-webkit-slider-runnable-track { height: 4px; border-radius: 4px; background: color-mix(in oklab, var(--color-crema) 22%, transparent); }
+.reel-range::-moz-range-track { height: 4px; border-radius: 4px; background: color-mix(in oklab, var(--color-crema) 22%, transparent); }
+.reel-range::-webkit-slider-thumb { appearance: none; width: 22px; height: 22px; margin-top: -9px; border-radius: 50%; background: var(--color-caramel); box-shadow: 0 0 0 6px color-mix(in oklab, var(--color-caramel) 25%, transparent); }
+.reel-range::-moz-range-thumb { width: 22px; height: 22px; border: 0; border-radius: 50%; background: var(--color-caramel); }
+
+/* The Deep dive sheet's prose. */
+.deep { color: var(--color-latte); line-height: 1.7; font-size: 0.98rem; }
+.deep section { padding-top: 1.75rem; }
+.deep h2 { font-family: var(--font-display); font-weight: 700; font-size: 1.6rem; color: var(--color-crema); margin-bottom: 0.75rem; }
+.deep h3 { font-weight: 600; font-size: 1.05rem; color: var(--color-crema); margin: 1.4rem 0 0.4rem; }
+.deep p, .deep ul, .deep table, .deep pre { margin: 0.7rem 0; }
+.deep ul { padding-left: 1.2rem; list-style: disc; }
+.deep li { margin: 0.35rem 0; }
+.deep li::marker { color: var(--color-caramel); }
+.deep strong { color: var(--color-crema); }
+.deep a { color: var(--color-caramel); text-decoration: underline; text-underline-offset: 3px; }
+.deep table { width: 100%; border-collapse: collapse; font-size: 0.9rem; display: block; overflow-x: auto; }
+.deep th, .deep td { text-align: left; padding: 0.45rem 0.75rem 0.45rem 0; border-bottom: 1px solid color-mix(in oklab, var(--color-crema) 12%, transparent); }
+.deep th { color: var(--color-crema); font-weight: 600; }
+.deep pre { padding: 1rem; border-radius: 14px; overflow-x: auto; font-size: 0.82rem; line-height: 1.55; background: var(--color-espresso) !important; border: 1px solid color-mix(in oklab, var(--color-crema) 10%, transparent); }
+.deep pre code { background: none; padding: 0; font-size: inherit; }

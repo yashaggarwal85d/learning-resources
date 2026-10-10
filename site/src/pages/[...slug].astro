@@ -1,0 +1,17 @@
+---
+// Every live topic has its own address; it opens the feed on that reel.
+import Reels from '../layouts/Reels.astro';
+import { liveData } from '../lib/live';
+import type { TopicMeta } from '../topics/registry';
+
+export function getStaticPaths() {
+  return liveData().ordered.map((t) => ({ params: { slug: t.slug }, props: { t } }));
+}
+const { t } = Astro.props as { t: TopicMeta };
+---
+<Reels
+  domain={t.domain}
+  topicId={t.id}
+  title={`${t.title} · The Learning Experience`}
+  description={`An animated reel on ${t.syllabusTitle.toLowerCase()}, for experts. Verified ${t.verified}.`}
+/>

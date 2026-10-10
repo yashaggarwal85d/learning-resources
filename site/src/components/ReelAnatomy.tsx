@@ -114,7 +114,7 @@ export default function ReelAnatomy() {
         </motion.div>
       </div>
       <p className="mt-6 font-mono text-[0.7rem] uppercase tracking-[0.24em] text-taupe">
-        A reel waits for you at every step · no time limit · narrated, captioned, skippable
+        A reel waits for you at every step · no time limit · tap to go on, hold to pause
       </p>
     </div>
   );

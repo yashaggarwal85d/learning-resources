@@ -1,0 +1,45 @@
+---
+// The full-screen reels feed. Used by /reels/ and by every topic's own address.
+import Base from './Base.astro';
+import ReelFeed from '../reels/ReelFeed.tsx';
+import { liveData } from '../lib/live';
+
+interface Props { domain?: string; topicId?: string; title: string; description: string }
+const { domain, topicId, title, description } = Astro.props;
+const live = liveData();
+const base = import.meta.env.BASE_URL.endsWith('/') ? import.meta.env.BASE_URL : `${import.meta.env.BASE_URL}/`;
+const initialDomain = domain ?? live.feedDomains.find((d) => d.live)?.id ?? live.feedDomains[0].id;
+
+// Each topic's Deep dive is rendered here, hidden, and moved into the sheet when opened.
+const deep = import.meta.glob<{ Content: any }>('../topics/**/index.mdx', { eager: true });
+const deepFor = (slug: string) => deep[`../topics/${slug}/index.mdx`]?.Content;
+---
+<Base title={title} description={description}>
+  <ReelFeed
+    client:load
+    base={base}
+    domains={live.feedDomains}
+    topics={live.ordered}
+    initialDomain={initialDomain}
+    initialTopic={topicId}
+    nextAfter={live.nextAfter}
+    upcoming={live.upcoming}
+    tree={live.tree}
+    comingTotal={live.comingTotal}
+  />
+  <div hidden>
+    {live.ordered.map((t) => {
+      const Content = deepFor(t.slug);
+      return (
+        <article id={`deep-${t.id}`} hidden>
+          <p class="eyebrow text-[0.62rem] text-latte">§{t.chapter.section} · Milestone {t.milestone.number} · Ch.{t.chapter.number}</p>
+          <h2 class="mt-1 font-display text-3xl font-bold text-crema">{t.title}</h2>
+          {Content ? <Content /> : <p>Deep dive coming soon.</p>}
+        </article>
+      );
+    })}
+  </div>
+  <noscript>
+    <p class="p-6 text-latte">Reels need JavaScript to play.</p>
+  </noscript>
+</Base>

@@ -6,13 +6,25 @@ import CurriculumMap from '../components/CurriculumMap.tsx';
 import ReelAnatomy from '../components/ReelAnatomy.tsx';
 import Counter from '../components/Counter.tsx';
 import { loadDomains } from '../lib/syllabus';
+import { liveData } from '../lib/live';
 
 const domains = loadDomains();
+const live = liveData();
+const base = import.meta.env.BASE_URL.endsWith('/') ? import.meta.env.BASE_URL : `${import.meta.env.BASE_URL}/`;
+const reelHref = (slug: string) => `${base}${slug}/`;
+const liveCount = (id: string) => live.ordered.filter((t) => t.domain === id).length;
+const firstReel = live.ordered[0];
+const liveMap = Object.fromEntries(
+  domains.map((d) => [d.id, Object.fromEntries(live.ordered.filter((t) => t.domain === d.id).map((t) => [t.syllabusTitle, reelHref(t.slug)]))]),
+);
 const sky = domains.map((d) => ({
   id: d.id,
   title: d.title,
   topics: d.counts.topics,
   milestones: d.milestones.map((m) => m.chapters.map((c) => c.topics.length)),
+  live: d.milestones.flatMap((m, mi) =>
+    m.chapters.flatMap((c, ci) => c.topics.flatMap((tp, ti) => (live.liveFor(d.id, tp.title) ? [[mi, ci, ti] as [number, number, number]] : []))),
+  ),
 }));
 const total = domains.reduce(
   (a, d) => ({
@@ -40,10 +52,15 @@ const promises = [
         <span class="grid h-6 w-6 place-items-center rounded-md bg-caramel font-display text-sm font-bold italic text-espresso">L</span>
         <span class="font-display text-[0.95rem] font-semibold italic">The Learning Experience</span>
       </a>
-      <div class="hidden items-center gap-1 rounded-full border border-crema/10 bg-espresso/85 p-1.5 backdrop-blur-xl md:flex">
-        <a href="#domains" class="rounded-full px-4 py-1.5 text-sm text-latte transition hover:bg-crema/10 hover:text-crema">Domains</a>
-        <a href="#how" class="rounded-full px-4 py-1.5 text-sm text-latte transition hover:bg-crema/10 hover:text-crema">How it teaches</a>
-        <a href="#curriculum" class="rounded-full px-4 py-1.5 text-sm text-latte transition hover:bg-crema/10 hover:text-crema">Curriculum</a>
+      <div class="flex items-center gap-1 rounded-full border border-crema/10 bg-espresso/85 p-1.5 backdrop-blur-xl">
+        <a href="#domains" class="hidden rounded-full px-4 py-1.5 text-sm text-latte transition hover:bg-crema/10 hover:text-crema md:block">Domains</a>
+        <a href="#how" class="hidden rounded-full px-4 py-1.5 text-sm text-latte transition hover:bg-crema/10 hover:text-crema md:block">How it teaches</a>
+        <a href="#curriculum" class="hidden rounded-full px-4 py-1.5 text-sm text-latte transition hover:bg-crema/10 hover:text-crema md:block">Curriculum</a>
+        <a href={`${base}reels/`} class="group inline-flex items-center gap-2 rounded-full bg-caramel px-4 py-1.5 text-sm font-semibold text-espresso transition hover:brightness-110">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M7 4.5v15l13-7.5z" /></svg>
+          Reels
+          <span class="whitespace-nowrap rounded-full bg-espresso/15 px-1.5 font-mono text-[0.62rem] uppercase tracking-wider">{live.ordered.length} live</span>
+        </a>
       </div>
     </nav>
   </header>
@@ -63,12 +80,15 @@ const promises = [
           Animated, interactive deep-dives for people who are already very good, and want to understand how things really work.
         </p>
         <div class="hero-in mt-9 flex flex-wrap gap-3" style="--d:0.85s">
-          <a href="#domains" class="group inline-flex items-center gap-2 rounded-full bg-caramel px-6 py-3 font-semibold text-espresso transition hover:brightness-110">
+          <a href={firstReel ? reelHref(firstReel.slug) : `${base}reels/`} class="group inline-flex items-center gap-2.5 rounded-full bg-caramel px-6 py-3 font-semibold text-espresso transition hover:brightness-110">
+            <span class="grid h-6 w-6 place-items-center rounded-full bg-espresso text-caramel transition group-hover:scale-110">
+              <svg width="11" height="11" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M7 4.5v15l13-7.5z" /></svg>
+            </span>
+            Start watching
+          </a>
+          <a href="#domains" class="group inline-flex items-center gap-2 rounded-full border border-crema/25 px-6 py-3 font-medium text-crema transition hover:border-crema/60">
             Explore the domains
             <span class="transition group-hover:translate-x-1">→</span>
-          </a>
-          <a href="#curriculum" class="inline-flex items-center rounded-full border border-crema/25 px-6 py-3 font-medium text-crema transition hover:border-crema/60">
-            See the full curriculum
           </a>
         </div>
       </div>
@@ -99,7 +119,7 @@ const promises = [
       <div class="mt-14 grid gap-6 md:grid-cols-2">
         {domains.map((d, i) => (
           <a
-            href="#curriculum"
+            href={liveCount(d.id) ? reelHref(live.ordered.find((t) => t.domain === d.id)!.slug) : '#curriculum'}
             data-domain={d.id}
             data-reveal
             style={`--d:${i * 0.08}s`}
@@ -120,6 +140,11 @@ const promises = [
               <span class="rounded-full border border-crema/10 px-3 py-1">{d.counts.milestones} milestones</span>
               <span class="rounded-full border border-crema/10 px-3 py-1">{d.counts.chapters} chapters</span>
               <span class="rounded-full border border-crema/10 px-3 py-1">{d.counts.topics} topics</span>
+              {liveCount(d.id) ? (
+                <span class="rounded-full bg-caramel px-3 py-1 font-semibold text-espresso">▶ {liveCount(d.id)} {liveCount(d.id) === 1 ? 'reel' : 'reels'} live</span>
+              ) : (
+                <span class="rounded-full border border-dashed border-crema/15 px-3 py-1 text-latte/60">Reels soon</span>
+              )}
             </div>
           </a>
         ))}
@@ -135,7 +160,7 @@ const promises = [
             Every topic is a reel that <span class="italic text-caramel">waits for you.</span>
           </h2>
           <p class="mx-auto mt-5 max-w-2xl text-lg text-latte">
-            Ten layers, from the hard problem to the frontier. Fully animated, narrated, and paced by you: it pauses whenever there is something to think about.
+            Ten layers, from the hard problem to the frontier. Fully animated and paced by you: it waits whenever there is something to think about.
           </p>
         </div>
         <div class="mt-14" data-reveal>
@@ -170,7 +195,7 @@ const promises = [
           </p>
         </div>
         <div class="mt-12" data-reveal>
-          <CurriculumMap client:visible domains={domains} />
+          <CurriculumMap client:visible domains={domains} live={liveMap} />
         </div>
       </div>
     </section>

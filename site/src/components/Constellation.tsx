@@ -6,7 +6,7 @@ import { useEffect, useRef } from 'react';
  * On load the points bloom out from the centre like coffee and settle into
  * their galaxies; then they drift, twinkle and lean away from the cursor.
  */
-export type SkyDomain = { id: string; title: string; topics: number; milestones: number[][] };
+export type SkyDomain = { id: string; title: string; topics: number; milestones: number[][]; live?: [number, number, number][] };
 
 type Star = {
   d: number; // domain index
@@ -15,6 +15,7 @@ type Star = {
   radius: number; // 0..1 of the galaxy radius
   size: number;
   chapter: boolean;
+  live: boolean; // a topic with a reel: shines and pulses
   phase: number;
   delay: number;
   ox: number; // pointer offset, smoothed
@@ -70,10 +71,10 @@ export default function Constellation({ domains }: { domains: SkyDomain[] }) {
         const r = 0.22 + (0.78 * (ring + 0.6)) / (M + 0.2);
         let k = 0;
         const turn = rand(seed++) * Math.PI * 2;
-        chapters.forEach((n) => {
+        chapters.forEach((n, ci) => {
           const start = (k / Math.max(1, total)) * Math.PI * 2 + turn;
           const span = (n / Math.max(1, total)) * Math.PI * 2;
-          stars.push({ d, ring, angle: start + span / 2, radius: r, size: 2.1, chapter: true, phase: rand(seed++) * 6.28, delay: 0.15 + d * 0.12 + ring * 0.05, ox: 0, oy: 0 });
+          stars.push({ d, ring, angle: start + span / 2, radius: r, size: 2.1, chapter: true, live: false, phase: rand(seed++) * 6.28, delay: 0.15 + d * 0.12 + ring * 0.05, ox: 0, oy: 0 });
           for (let i = 0; i < n; i++) {
             const jitter = (rand(seed++) - 0.5) * 0.07;
             stars.push({
@@ -83,6 +84,7 @@ export default function Constellation({ domains }: { domains: SkyDomain[] }) {
               radius: r + jitter,
               size: 1.1 + rand(seed++) * 1.1,
               chapter: false,
+              live: !!dom.live?.some(([lr, lc, lt]) => lr === ring && lc === ci && lt === i),
               phase: rand(seed++) * 6.28,
               delay: 0.2 + d * 0.12 + ring * 0.05 + rand(seed++) * 0.35,
               ox: 0,
@@ -213,7 +215,25 @@ export default function Constellation({ domains }: { domains: SkyDomain[] }) {
         const tw = 0.7 + 0.3 * Math.sin(t * (s.chapter ? 1.1 : 2.3) + s.phase);
         const alpha = Math.min(1, p * tw * (s.chapter ? 0.95 : 0.8) * (1 + g1 * 0.8));
         const [r, g, b] = COLORS[s.d];
-        if (s.chapter) {
+        if (s.live) {
+          // A live reel: a bright star with a slow, breathing halo.
+          const beat = (Math.sin(t * 2.4) + 1) / 2;
+          const halo = c.createRadialGradient(x, y, 0, x, y, 22 + beat * 10);
+          halo.addColorStop(0, `rgba(251,247,239,${0.5 * p})`);
+          halo.addColorStop(0.35, `rgba(212,154,87,${0.28 * p})`);
+          halo.addColorStop(1, 'rgba(212,154,87,0)');
+          c.fillStyle = halo;
+          c.fillRect(x - 34, y - 34, 68, 68);
+          c.strokeStyle = `rgba(233,217,191,${(1 - beat) * 0.6 * p})`;
+          c.lineWidth = 1.2;
+          c.beginPath();
+          c.arc(x, y, 6 + beat * 16, 0, Math.PI * 2);
+          c.stroke();
+          c.fillStyle = `rgba(251,247,239,${p})`;
+          c.beginPath();
+          c.arc(x, y, 3.2, 0, Math.PI * 2);
+          c.fill();
+        } else if (s.chapter) {
           const rad = s.size * (1 + 0.35 * g1);
           const grd = c.createRadialGradient(x, y, 0, x, y, rad * 5);
           grd.addColorStop(0, `rgba(${r},${g},${b},${alpha * 0.55})`);
