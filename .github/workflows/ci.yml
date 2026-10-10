@@ -25,7 +25,7 @@ jobs:
       - run: node scripts/check-docs.mjs
 
   site:
-    name: Site build
+    name: Site build and reel tests
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -44,3 +44,24 @@ jobs:
       - if: hashFiles('site/package-lock.json') != ''
         working-directory: site
         run: npm run build
+      - name: Run every topic's code examples
+        if: hashFiles('site/package-lock.json') != ''
+        working-directory: site
+        run: npm run test:examples
+      - name: Install Chromium for the reel smoke test
+        if: hashFiles('site/package-lock.json') != ''
+        working-directory: site
+        run: npx playwright install --with-deps chromium
+      - name: Reel smoke test (desktop and phone)
+        if: hashFiles('site/package-lock.json') != ''
+        working-directory: site
+        run: |
+          npx astro preview --host 127.0.0.1 --port 4321 > preview.log 2>&1 &
+          for i in $(seq 1 30); do curl -sf http://127.0.0.1:4321/learning-resources/ > /dev/null && break; sleep 1; done
+          npm run test:reels -- http://127.0.0.1:4321/learning-resources/
+      - uses: actions/upload-artifact@v4
+        if: always() && hashFiles('site/package-lock.json') != ''
+        with:
+          name: reel-screenshots
+          path: site/test-results
+          if-no-files-found: ignore

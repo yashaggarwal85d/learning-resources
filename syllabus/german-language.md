@@ -8,7 +8,7 @@ The German-language domain of the learning experience: German for working profes
 
 - **Milestones** are the CEFR levels, A1 to C2, taken in order.
 - **Chapters** are areas within a level: sounds, sentence structure, grammar, communication, life and work.
-- **Topics** are the learnable, testable units: each bullet is one topic, and each topic becomes one interactive reel. Topics marked *(refresher)* are short reference pages.
+- **Topics** are the learnable, testable units: each bullet is one topic, and each topic becomes one interactive reel. Topics marked *(refresher)* are short refresher reels for quick revision.
 
 **Every milestone closes with a "Can-do check"**: what you should be able to do in German at that level, in our own words, and the matching exam.
 

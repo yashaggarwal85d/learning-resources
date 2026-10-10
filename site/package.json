@@ -6,7 +6,9 @@
   "scripts": {
     "dev": "astro dev",
     "build": "astro build",
-    "preview": "astro preview"
+    "preview": "astro preview",
+    "test:examples": "find src/topics -name examples.py -print0 | xargs -0 -r -n1 python3",
+    "test:reels": "node tests/reels.mjs"
   },
   "dependencies": {
     "@astrojs/mdx": "8.0.3",
@@ -17,5 +19,8 @@
     "react": "19.3.0",
     "react-dom": "19.3.0",
     "tailwindcss": "4.3.3"
+  },
+  "devDependencies": {
+    "playwright": "1.56.1"
   }
 }

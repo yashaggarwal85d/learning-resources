@@ -116,6 +116,19 @@ export default function ReelPlayer({ meta, reel, active, startStep, next, onPlay
     else setEnded(true);
   }, [ended, cur.duration, needsAnswer, step, last, goTo]);
 
+  // Visible controls: replay the current step's animation, or the whole reel.
+  const replayStep = useCallback(() => {
+    setPaused(false);
+    tRef.current = 0;
+    setT(0);
+    setEnded(false);
+  }, []);
+  const restartReel = useCallback(() => {
+    setPaused(false);
+    setAnswers({});
+    goTo(0);
+  }, [goTo]);
+
   const back = useCallback(() => {
     if (ended) return setEnded(false);
     if (step > 0) goTo(step - 1, true);
@@ -137,11 +150,15 @@ export default function ReelPlayer({ meta, reel, active, startStep, next, onPlay
         back();
       } else if (e.key === 'p' || e.key === 'k') {
         setPaused((v) => !v);
+      } else if (e.key === 'r' || e.key === 'R') {
+        e.preventDefault();
+        if (e.shiftKey) restartReel();
+        else replayStep();
       }
     };
     window.addEventListener('keydown', onKey);
     return () => window.removeEventListener('keydown', onKey);
-  }, [active, forward, back]);
+  }, [active, forward, back, replayStep, restartReel]);
 
   // Tap the left third to go back, anywhere else to go on; hold to pause.
   const press = useRef<{ x: number; timer: number; held: boolean } | null>(null);
@@ -200,7 +217,8 @@ export default function ReelPlayer({ meta, reel, active, startStep, next, onPlay
           <AnimatePresence mode="popLayout" initial={false}>
             <motion.div
               key={step}
-              className="absolute inset-0 px-2 pt-16 landscape:py-20 landscape:pl-6 landscape:pr-24"
+              data-visual
+              className="absolute inset-0 overflow-hidden px-2 pt-16 landscape:py-20 landscape:pl-6 landscape:pr-24"
               initial={{ opacity: 0, scale: 0.96, filter: 'blur(10px)' }}
               animate={{ opacity: 1, scale: 1, filter: 'blur(0px)' }}
               exit={{ opacity: 0, scale: 1.03, filter: 'blur(8px)' }}
@@ -221,7 +239,11 @@ export default function ReelPlayer({ meta, reel, active, startStep, next, onPlay
               exit={{ opacity: 0, y: -10, filter: 'blur(4px)' }}
               transition={{ duration: 0.45, ease: [0.16, 1, 0.3, 1] }}
             >
+              {step === 0 && (
+                <p className="mb-3 max-w-[34rem] border-l-2 border-caramel/60 pl-3 text-[0.85rem] italic leading-snug text-latte/90">{meta.bridge}</p>
+              )}
               <p className="eyebrow text-[0.62rem] text-caramel">
+                {meta.kind === 'refresher' && <span className="mr-2 rounded-full bg-crema/10 px-2 py-0.5 text-crema">Refresher</span>}
                 {step + 1}/{steps.length} · §{meta.chapter.section}
                 <span className="max-sm:hidden"> · {meta.title}</span>
               </p>
@@ -298,8 +320,31 @@ export default function ReelPlayer({ meta, reel, active, startStep, next, onPlay
         <RailButton label="Share" onClick={share} icon={<IconSend />} />
       </div>
 
-      {/* Segmented progress */}
+      {/* Playback controls and segmented progress */}
       <div className="relative z-20 px-3 pb-[max(0.75rem,env(safe-area-inset-bottom))] pt-1 sm:px-5">
+        <div className="flex items-center gap-1.5" role="group" aria-label="Playback">
+          <ControlButton label={paused ? 'Play (P)' : 'Pause (P)'} onClick={() => setPaused((v) => !v)} primary>
+            {paused ? (
+              <path d="M8 5.5v13l11-6.5z" fill="currentColor" stroke="none" />
+            ) : (
+              <>
+                <rect x="6.5" y="5" width="4" height="14" rx="1.2" fill="currentColor" stroke="none" />
+                <rect x="13.5" y="5" width="4" height="14" rx="1.2" fill="currentColor" stroke="none" />
+              </>
+            )}
+          </ControlButton>
+          <ControlButton label="Replay this step (R)" onClick={replayStep}>
+            <path d="M4 12a8 8 0 1 0 2.6-5.9" />
+            <path d="M4 4v4.5h4.5" />
+          </ControlButton>
+          <ControlButton label="Restart the reel (Shift+R)" onClick={restartReel}>
+            <path d="M6 5v14" />
+            <path d="M19 5.5v13L9 12z" fill="currentColor" stroke="none" />
+          </ControlButton>
+          <span className="ml-2 font-mono text-[0.62rem] uppercase tracking-[0.14em] text-latte/70" aria-live="polite">
+            {paused ? 'Paused' : ''}
+          </span>
+        </div>
         <div className="flex items-center gap-1" role="group" aria-label="Steps">
           {steps.map((s, i) => {
             const fill = i < step || ended ? 1 : i === step ? p : 0;
@@ -321,13 +366,6 @@ export default function ReelPlayer({ meta, reel, active, startStep, next, onPlay
         </div>
       </div>
 
-      {paused && !ended && (
-        <div className="pointer-events-none absolute inset-0 z-30 grid place-items-center">
-          <span className="grid h-16 w-16 place-items-center rounded-full bg-espresso/70 text-crema backdrop-blur">
-            <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><rect x="5" y="4" width="5" height="16" rx="1.5" /><rect x="14" y="4" width="5" height="16" rx="1.5" /></svg>
-          </span>
-        </div>
-      )}
 
       <AnimatePresence>
         {ended && (
@@ -459,6 +497,7 @@ function EndCard({
         >
           <p className="eyebrow text-[0.6rem] text-latte">{next?.live ? 'Up next' : next ? 'Next reel · in production' : 'That was the last reel'}</p>
           {next && <p className="mt-1.5 font-display text-xl font-semibold text-crema">{next.title}</p>}
+          <p className="mt-1.5 text-sm leading-relaxed text-latte">{meta.handoff}</p>
           {next?.live ? (
             <div className="mt-4 flex items-center gap-3">
               <button type="button" onClick={onPlayNext} className="relative inline-flex items-center gap-2 rounded-full bg-caramel px-5 py-2.5 font-semibold text-espresso">
@@ -499,6 +538,22 @@ function EndCard({
         </motion.div>
       </div>
     </motion.div>
+  );
+}
+
+function ControlButton({ label, onClick, primary, children }: { label: string; onClick: () => void; primary?: boolean; children: React.ReactNode }) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      aria-label={label}
+      title={label}
+      className={`grid h-9 w-9 place-items-center rounded-full border transition active:scale-90 ${primary ? 'border-caramel/60 bg-caramel/15 text-caramel hover:bg-caramel/25' : 'border-crema/12 bg-espresso/60 text-crema hover:border-caramel hover:text-caramel'}`}
+    >
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+        {children}
+      </svg>
+    </button>
   );
 }
 

@@ -8,7 +8,7 @@ The data-engineering domain of the learning experience: the systems, theory and 
 
 - **Milestones** — a coherent area of mastery (*Foundations*, *Storage*, *Compute*, …), taken in order.
 - **Chapters** — a major subject inside a milestone (*Database Internals*, *Spark*, …). A chapter may group its topics under numbered sections (§N.M).
-- **Topics** — the individual learnable, testable units: each bullet is one topic, and each topic becomes one interactive reel on the site. Topics marked *(refresher)* are basics an expert should already know; they become short refresher pages rather than full reels.
+- **Topics** — the individual learnable, testable units: each bullet is one topic, and each topic becomes one interactive reel on the site. Topics marked *(refresher)* are basics an expert should already know; they become short refresher reels: fast revision in the same player, which experts can skim or swipe past.
 
 **Every milestone closes with "Systems in Production"**: the real systems, grounded in the original papers and post-mortems, that embody the milestone's ideas at scale, with their internals and the trade-offs their builders accepted. They are the proof that the theory survives contact with production.
 
@@ -47,7 +47,7 @@ Two related domains go deeper where this one stops: **Rust Systems Engineering**
 The substrate every later milestone assumes: how hardware and networks price your work, how SQL is planned and executed, how analytical data is modeled so answers stay correct over time, and how Python moves data reliably and fast.
 
 ## Chapter 1 — Prerequisites and Computer-Science Foundations
-Refresher pages patch tooling gaps quickly; the full topics are the hardware, algorithmic and network costs that dominate every data system above this chapter.
+Refresher reels patch tooling gaps quickly; the full topics are the hardware, algorithmic and network costs that dominate every data system above this chapter.
 
 ### 1.1 Programming and tooling baseline (patch gaps only)
 - **Python language essentials** *(refresher)* — functions and classes, comprehensions, context managers as resource-lifetime guarantees, decorators, iterators and generators for bounded-memory streaming pipelines, type hints; the recall a senior needs in code review (performance internals in §4.1).
