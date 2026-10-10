@@ -1,0 +1,668 @@
+{
+  "topic": "de.python-essentials",
+  "syllabus": [
+    {
+      "clause": "functions and classes",
+      "at": [
+        {
+          "step": "Defaults are evaluated once"
+        },
+        {
+          "step": "Closures bind late"
+        },
+        {
+          "step": "Classes: equal must mean same hash"
+        },
+        {
+          "deep": "Functions"
+        },
+        {
+          "deep": "Classes"
+        }
+      ]
+    },
+    {
+      "clause": "comprehensions",
+      "at": [
+        {
+          "step": "Comprehensions: filter, then map"
+        },
+        {
+          "deep": "Iterators and generators"
+        }
+      ]
+    },
+    {
+      "clause": "context managers as resource-lifetime guarantees",
+      "at": [
+        {
+          "step": "Context managers always clean up"
+        },
+        {
+          "deep": "Context managers and decorators"
+        }
+      ]
+    },
+    {
+      "clause": "decorators",
+      "at": [
+        {
+          "step": "Decorators wrap functions"
+        },
+        {
+          "deep": "Context managers and decorators"
+        }
+      ]
+    },
+    {
+      "clause": "iterators and generators for bounded-memory streaming pipelines",
+      "at": [
+        {
+          "step": "Generators stream; lists pile up"
+        },
+        {
+          "step": "yield pauses; next() resumes"
+        },
+        {
+          "deep": "Iterators and generators"
+        }
+      ]
+    },
+    {
+      "clause": "type hints",
+      "at": [
+        {
+          "step": "Type hints don’t run"
+        },
+        {
+          "deep": "Type hints"
+        }
+      ]
+    },
+    {
+      "clause": "the recall a senior needs in code review",
+      "at": [
+        {
+          "deep": "In code review"
+        }
+      ]
+    },
+    {
+      "clause": "performance internals in §4.1",
+      "at": [
+        {
+          "topic": "CPython object model and memory cost",
+          "quote": "why per-row Python loops run 10–100× slower"
+        },
+        {
+          "topic": "GIL, free-threading and subinterpreters",
+          "quote": "what the GIL serializes"
+        }
+      ]
+    }
+  ],
+  "sources": [
+    {
+      "source": "Python Tutorial, More Control Flow Tools and Data Structures (docs.python.org/3/tutorial/)",
+      "items": [
+        {
+          "item": "Default argument values are evaluated only once",
+          "at": [
+            {
+              "step": "Defaults are evaluated once"
+            },
+            {
+              "deep": "Functions"
+            }
+          ]
+        },
+        {
+          "item": "Keyword arguments, special parameters / and *",
+          "at": [
+            {
+              "deep": "Functions"
+            }
+          ]
+        },
+        {
+          "item": "List comprehensions; dict and set comprehensions",
+          "at": [
+            {
+              "step": "Comprehensions: filter, then map"
+            }
+          ]
+        },
+        {
+          "item": "Classes: scopes, class and instance variables (shared mutable class variables), inheritance",
+          "at": [
+            {
+              "deep": "Classes"
+            }
+          ]
+        },
+        {
+          "item": "Iterators and generators, generator expressions",
+          "at": [
+            {
+              "step": "Generators stream; lists pile up"
+            },
+            {
+              "step": "yield pauses; next() resumes"
+            },
+            {
+              "deep": "Iterators and generators"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "Language reference: Data model and compound statements (docs.python.org/3/reference/)",
+      "items": [
+        {
+          "item": "Special method names as protocols (__iter__, __len__, __enter__/__exit__, __eq__, __repr__)",
+          "at": [
+            {
+              "step": "Classes: equal must mean same hash"
+            },
+            {
+              "deep": "Classes"
+            }
+          ]
+        },
+        {
+          "item": "__hash__ is set to None when __eq__ is defined without it",
+          "at": [
+            {
+              "step": "Classes: equal must mean same hash"
+            },
+            {
+              "deep": "Classes"
+            }
+          ]
+        },
+        {
+          "item": "__slots__",
+          "at": [
+            {
+              "step": "Dataclasses write the boilerplate"
+            },
+            {
+              "topic": "CPython object model and memory cost",
+              "quote": "__slots__"
+            }
+          ]
+        },
+        {
+          "item": "The with statement and exception suppression by __exit__",
+          "at": [
+            {
+              "step": "Context managers always clean up"
+            },
+            {
+              "deep": "Context managers and decorators"
+            }
+          ]
+        },
+        {
+          "item": "Function definitions: decorators are applied at definition time; default values evaluated once",
+          "at": [
+            {
+              "step": "Decorators wrap functions"
+            },
+            {
+              "step": "Defaults are evaluated once"
+            },
+            {
+              "deep": "Context managers and decorators"
+            }
+          ]
+        },
+        {
+          "item": "Annotations are stored, not enforced; deferred evaluation (PEP 649/749)",
+          "at": [
+            {
+              "step": "Type hints don’t run"
+            },
+            {
+              "deep": "Type hints"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "Library reference: contextlib, functools, itertools, dataclasses, typing",
+      "items": [
+        {
+          "item": "contextlib.contextmanager, ExitStack, closing",
+          "at": [
+            {
+              "step": "Context managers always clean up"
+            },
+            {
+              "deep": "Context managers and decorators"
+            },
+            {
+              "deep": "Iterators and generators"
+            }
+          ]
+        },
+        {
+          "item": "functools.wraps, partial, cache, lru_cache",
+          "at": [
+            {
+              "step": "Decorators wrap functions"
+            },
+            {
+              "deep": "Context managers and decorators"
+            },
+            {
+              "deep": "Functions"
+            }
+          ]
+        },
+        {
+          "item": "itertools.batched, groupby, islice",
+          "at": [
+            {
+              "deep": "Iterators and generators"
+            }
+          ]
+        },
+        {
+          "item": "dataclasses: frozen, slots, eq and hash, field(default_factory)",
+          "at": [
+            {
+              "step": "Dataclasses write the boilerplate"
+            },
+            {
+              "step": "Classes: equal must mean same hash"
+            },
+            {
+              "deep": "Functions"
+            }
+          ]
+        },
+        {
+          "item": "typing: Protocol, TypedDict, ParamSpec, Iterator; collections.abc",
+          "at": [
+            {
+              "deep": "Classes"
+            },
+            {
+              "deep": "Type hints"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "PEPs 479, 570, 585, 604, 695, 798",
+      "items": [
+        {
+          "item": "PEP 479: StopIteration inside generators becomes RuntimeError",
+          "at": [
+            {
+              "deep": "Iterators and generators"
+            }
+          ]
+        },
+        {
+          "item": "PEP 570: positional-only parameters",
+          "at": [
+            {
+              "deep": "Functions"
+            }
+          ]
+        },
+        {
+          "item": "PEP 585 / 604: built-in generics and X | Y unions",
+          "at": [
+            {
+              "deep": "Type hints"
+            }
+          ]
+        },
+        {
+          "item": "PEP 695: type parameter syntax",
+          "at": [
+            {
+              "deep": "Type hints"
+            }
+          ]
+        },
+        {
+          "item": "PEP 798: unpacking in comprehensions (3.15)",
+          "at": [
+            {
+              "deep": "Iterators and generators"
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "independent reviewer agent, written without seeing the topic",
+    "date": "2026-10-10",
+    "items": [
+      {
+        "item": "Default argument values are evaluated once at def time: a mutable default (list/dict) is shared across calls; use None and create inside",
+        "at": [
+          {
+            "step": "Defaults are evaluated once"
+          },
+          {
+            "deep": "Functions"
+          }
+        ]
+      },
+      {
+        "item": "Keyword-only (*) and positional-only (/) parameters to make pipeline function signatures explicit and safe to evolve",
+        "at": [
+          {
+            "deep": "Functions"
+          }
+        ]
+      },
+      {
+        "item": "Closures bind late: lambdas/inner functions created in a loop see the variable's final value; bind via default arg or functools.partial",
+        "at": [
+          {
+            "step": "Closures bind late"
+          },
+          {
+            "deep": "Functions"
+          }
+        ]
+      },
+      {
+        "item": "Dataclasses for record/config types: frozen=True, slots=True, kw_only, field(default_factory=...) instead of mutable defaults",
+        "at": [
+          {
+            "step": "Dataclasses write the boilerplate"
+          },
+          {
+            "deep": "Functions"
+          }
+        ]
+      },
+      {
+        "item": "Class contract recall: defining __eq__ without __hash__ makes instances unhashable; hash must be consistent with eq and stable for objects used as dict/set keys",
+        "at": [
+          {
+            "step": "Classes: equal must mean same hash"
+          },
+          {
+            "deep": "Classes"
+          }
+        ]
+      },
+      {
+        "item": "Comprehensions have their own scope (loop var does not leak); list vs set vs dict vs generator expression; pass a generator expression to sum/any/max/join to avoid materializing; 3.15 adds unpacking in comprehensions ([*xs for xs in batches], PEP 798)",
+        "at": [
+          {
+            "step": "Comprehensions: filter, then map"
+          },
+          {
+            "step": "Generators stream; lists pile up"
+          },
+          {
+            "deep": "Iterators and generators"
+          }
+        ]
+      },
+      {
+        "item": "The with statement guarantees __exit__ runs on normal exit, exception, return or break; __exit__ returning a truthy value suppresses the exception",
+        "at": [
+          {
+            "step": "Context managers always clean up"
+          },
+          {
+            "deep": "Context managers and decorators"
+          }
+        ]
+      },
+      {
+        "item": "@contextmanager: put cleanup in try/finally around the yield, or it is skipped when the body raises; yield exactly once",
+        "at": [
+          {
+            "step": "Context managers always clean up"
+          },
+          {
+            "deep": "Context managers and decorators"
+          }
+        ]
+      },
+      {
+        "item": "contextlib.ExitStack for a dynamic number of resources (open N partition files, roll back on partial failure); closing() and suppress() helpers",
+        "at": [
+          {
+            "deep": "Context managers and decorators"
+          },
+          {
+            "deep": "Iterators and generators"
+          }
+        ]
+      },
+      {
+        "item": "A generator holding a resource (open file/cursor) only runs its finally/with exit when exhausted or close()d (GeneratorExit); a partially consumed generator relies on GC",
+        "at": [
+          {
+            "deep": "Iterators and generators"
+          }
+        ]
+      },
+      {
+        "item": "Decorators: @d def f is f = d(f); always functools.wraps the wrapper; decorator factories for arguments (e.g. @retry(times=3)); applied at import time; type them with ParamSpec, not Callable[..., Any]",
+        "at": [
+          {
+            "step": "Decorators wrap functions"
+          },
+          {
+            "deep": "Context managers and decorators"
+          },
+          {
+            "deep": "Type hints"
+          }
+        ]
+      },
+      {
+        "item": "functools.cache/lru_cache: unbounded cache grows forever, args must be hashable, and on methods it keeps self alive (memory leak)",
+        "at": [
+          {
+            "deep": "Context managers and decorators"
+          }
+        ]
+      },
+      {
+        "item": "Iterator protocol (__iter__/__next__/StopIteration); iterators and generators are single-pass: a second consumer silently gets nothing",
+        "at": [
+          {
+            "deep": "Iterators and generators"
+          }
+        ]
+      },
+      {
+        "item": "Generator pipelines for bounded memory: chain generator functions (read -> parse -> filter -> batch -> write); yield from for delegation; work happens only when pulled",
+        "at": [
+          {
+            "step": "Generators stream; lists pile up"
+          },
+          {
+            "step": "yield pauses; next() resumes"
+          },
+          {
+            "deep": "Iterators and generators"
+          }
+        ]
+      },
+      {
+        "item": "Generator laziness traps: argument validation and errors surface only at first next(); a StopIteration raised inside a generator becomes RuntimeError",
+        "at": [
+          {
+            "deep": "Iterators and generators"
+          }
+        ]
+      },
+      {
+        "item": "itertools for streaming: islice, chain.from_iterable, batched(n, strict=) for chunked writes, groupby only groups consecutive keys (sort first), tee buffers unboundedly",
+        "at": [
+          {
+            "deep": "Iterators and generators"
+          }
+        ]
+      },
+      {
+        "item": "Type hints are not enforced at runtime; modern syntax: list[int], dict[str, X], X | None (PEP 585/604), no typing.List/Optional needed",
+        "at": [
+          {
+            "step": "Type hints don’t run"
+          },
+          {
+            "deep": "Type hints"
+          }
+        ]
+      },
+      {
+        "item": "Annotate parameters with abstract collections.abc types (Iterable, Iterator, Mapping, Sequence) and return concrete types; type generator functions as Iterator[T]",
+        "at": [
+          {
+            "deep": "Type hints"
+          }
+        ]
+      },
+      {
+        "item": "Protocol for structural typing (e.g. 'anything with .write(bytes)') and TypedDict for JSON-shaped records; TypedDict is a plain dict at runtime",
+        "at": [
+          {
+            "deep": "Classes"
+          }
+        ]
+      },
+      {
+        "item": "PEP 695 generics syntax: def first[T](xs: Iterable[T]) -> T and the type alias statement (3.12+)",
+        "at": [
+          {
+            "deep": "Type hints"
+          }
+        ]
+      },
+      {
+        "item": "3.14 deferred evaluation of annotations (PEP 649/749): forward references work without quotes or from __future__ import annotations; read them with annotationlib",
+        "at": [
+          {
+            "deep": "Type hints"
+          }
+        ]
+      },
+      {
+        "item": "Exception hygiene: catch narrowly, re-raise with raise ... from err (chaining), never bare except/pass; return/break/continue in finally is now a SyntaxWarning (PEP 765, 3.14)",
+        "at": [
+          {
+            "deep": "Functions"
+          },
+          {
+            "deep": "In code review"
+          }
+        ]
+      },
+      {
+        "item": "Explicit encoding= on open(); 3.15 makes UTF-8 the default regardless of locale (PEP 686), plus newline='' for csv",
+        "at": [
+          {
+            "deep": "In code review"
+          },
+          {
+            "topic": "Text interchange formats and their traps",
+            "quote": "encodings and BOMs"
+          }
+        ]
+      },
+      {
+        "item": "__slots__, per-object memory and why per-row Python objects/loops are slow; comprehension inlining (PEP 709) and interpreter speedups",
+        "at": [
+          {
+            "topic": "CPython object model and memory cost",
+            "quote": "__slots__"
+          }
+        ]
+      },
+      {
+        "item": "async def / async with / async for, async generators, TaskGroup and except* exception groups",
+        "at": [
+          {
+            "topic": "Async I/O for network-bound pipelines",
+            "quote": "TaskGroup structured concurrency"
+          }
+        ]
+      },
+      {
+        "item": "Thread safety of shared iterators/generators and caches under threads and free-threaded builds (3.15 threading.synchronized_iterator)",
+        "at": [
+          {
+            "topic": "GIL, free-threading and subinterpreters",
+            "quote": "free-threaded CPython"
+          }
+        ]
+      },
+      {
+        "item": "Enforcing types at runtime on untrusted records (Pydantic models, Pandera schemas) rather than relying on hints",
+        "at": [
+          {
+            "topic": "Runtime schema validation",
+            "quote": "Pydantic v2"
+          }
+        ]
+      },
+      {
+        "item": "Running a type checker and linter in CI (mypy/pyright/ty, Ruff) and pinning the Python version",
+        "at": [
+          {
+            "topic": "Reproducible environments with uv",
+            "quote": "type checkers"
+          }
+        ]
+      },
+      {
+        "item": "Logging instead of print: module-level loggers, lazy %-style args, logger.exception, structured fields",
+        "at": [
+          {
+            "deep": "In code review"
+          },
+          {
+            "topic": "Telemetry for pipelines: logs, metrics, traces",
+            "quote": "structured logs"
+          }
+        ]
+      },
+      {
+        "item": "Metaclasses, descriptor protocol internals, __init_subclass__ and class-creation hooks",
+        "at": [
+          {
+            "out": "Metaclasses, descriptors and class-creation hooks are framework-author tools; a pipeline reviewer rarely needs them, and the reviewer placed them out of scope."
+          }
+        ]
+      }
+    ]
+  },
+  "gapReview": {
+    "date": "2026-10-10",
+    "by": "independent gap-hunter agent (read the reel, Deep dive, examples and this map against docs.python.org and the PEPs; ran examples.py on CPython 3.12, 3.13, 3.14 and 3.15.0b4)",
+    "resolved": [
+      "Lazy iterator escaping its with block: Deep dive 'Iterators and generators' and 'In code review'; executed in examples.py",
+      "A with guarantees only what its __exit__ does (sqlite3 connection): 'Context managers and decorators'; executed",
+      "return in finally swallows exceptions (PEP 765): 'Functions'; executed",
+      "Lazy annotations on 3.14+, annotationlib, NameError on read: 'Type hints'; executed on 3.14/3.15",
+      "zip(strict=True), batched(strict=True): 'Iterators and generators' and 'In code review'; executed",
+      "Truthiness drops valid zeros: 'In code review'; executed",
+      "tee and iterable-vs-iterator: 'Iterators and generators'; executed",
+      "Cache wording (both need hashable args; lru_cache default 128; shared mutable results): fixed; executed",
+      "suppress(), yield exactly once, kw_only: added; executed",
+      "Logging idioms and encoding=/newline='' (PEP 686 in 3.15): 'In code review'",
+      "Sources: Python versions run, PEPs cited directly"
+    ],
+    "open": []
+  }
+}

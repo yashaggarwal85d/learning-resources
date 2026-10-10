@@ -1,6 +1,7 @@
 // Joins the syllabus with the live topics in src/topics/registry.ts, at build time.
 import { loadDomains, type Domain } from './syllabus';
 import { TOPICS, type TopicMeta } from '../topics/registry';
+import { checkCoverage } from './coverage';
 
 type Flat = { domain: string; title: string; refresher: boolean; m: number; mTitle: string; c: number; cTitle: string };
 
@@ -25,6 +26,8 @@ function build() {
   }
   const liveFor = (domain: string, title: string) => byTitle.get(`${domain}::${title}`);
   checkFlow(domains, flat, liveFor);
+  // Every finished topic, live or held, must cover its whole scope (Rule #6).
+  checkCoverage(domains, TOPICS);
 
   // Live topics in syllabus order (the registry order doesn't matter).
   const ordered: TopicMeta[] = domains.flatMap((d) => flat.get(d.id)!.map((x) => liveFor(d.id, x.title)).filter((x): x is TopicMeta => !!x));

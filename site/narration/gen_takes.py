@@ -22,8 +22,8 @@ def _token_gen(self, text, options=None):
 M.OrpheusCpp._token_gen = _token_gen
 
 jobs = json.load(open(sys.argv[1]))
-todo = [(j["line"], t) for j in jobs for t in j["takes"] if not os.path.exists(take_path(j["line"], t))]
-print(f"{len(todo)} take(s) to generate", flush=True)
+todo = [(j["line"], t) for j in jobs if j.get("lang", "en") == "en" for t in j["takes"] if not os.path.exists(take_path(j["line"], t))]
+print(f"{len(todo)} English take(s) to generate", flush=True)
 if not todo:
     sys.exit(0)
 o = OrpheusCpp(verbose=False, lang="en", n_threads=os.cpu_count())

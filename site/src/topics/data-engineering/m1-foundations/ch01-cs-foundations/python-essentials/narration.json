@@ -28,6 +28,20 @@
     },
     {
       "lines": [
+        "Here's its cousin.",
+        "A lambda looks up the names it uses when it runs... not when it's made.",
+        {
+          "beat": 0.4
+        },
+        "So three lambdas, built in a loop. What do they return?"
+      ],
+      "answer": [
+        "Two, two, two. All three look up i after the loop has finished.",
+        "The fix? Bind the value now, with a default. Defaults are evaluated once, remember... at the moment the function is made."
+      ]
+    },
+    {
+      "lines": [
         "A comprehension reads almost like a sentence.",
         "Keep the items that pass the test... transform them... and collect the result.",
         "The same shape builds dictionaries and sets.",
@@ -76,6 +90,23 @@
     },
     {
       "lines": [
+        "Classes plug into Python through special methods.",
+        "One makes a for loop work. One makes length work. One defines equals.",
+        "But define equals... and Python quietly removes the hash.",
+        "A dataclass defines equals for you.",
+        {
+          "beat": 0.4
+        },
+        "So, can this record be a dictionary key?"
+      ],
+      "answer": [
+        "No. You get a type error. Unhashable.",
+        "Equal objects must hash the same... and a record that can change could break the dictionary after it's stored.",
+        "Freeze it, and it works as a key."
+      ]
+    },
+    {
+      "lines": [
         "Last one.",
         "This function says it takes an int.",
         {
@@ -91,9 +122,9 @@
     },
     {
       "lines": [
-        "So... seven things to keep.",
-        "Defaults run once. Comprehensions filter, then map. Generators stream.",
-        "A with block always cleans up. Decorators wrap. Dataclasses write the boilerplate.",
+        "So... nine things to keep.",
+        "Defaults run once. Closures look names up late. Comprehensions filter, then map. Generators stream.",
+        "A with block always cleans up. Decorators wrap. Dataclasses write the boilerplate. Equal objects need equal hashes.",
         "And hints are checked by tools, not at runtime.",
         {
           "beat": 0.5

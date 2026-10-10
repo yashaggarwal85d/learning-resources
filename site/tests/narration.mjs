@@ -9,9 +9,15 @@ const voice = JSON.parse(readFileSync(`${site}narration/voice.json`, 'utf8'));
 const registry = readFileSync(`${site}src/topics/registry.ts`, 'utf8');
 const live = [...registry.matchAll(/id: '([^']+)',[\s\S]*?slug: '([^']+)',[\s\S]*?status: '(live|held)'/g)].filter((m) => m[3] === 'live').map((m) => ({ id: m[1], slug: m[2] }));
 const failures = [];
+// Must match narration/common.py clip_hash: German lines as "[de] text", plus the German voice version when present.
 const hash = (items) =>
   createHash('sha256')
-    .update(items.map((x) => (typeof x === 'string' ? x : `[beat ${x.beat}]`)).join('\n') + '\n#voice:' + voice.version, 'utf8')
+    .update(
+      items.map((x) => (typeof x === 'string' ? x : 'de' in x ? `[de] ${x.de}` : `[beat ${x.beat}]`)).join('\n') +
+        '\n#voice:' + voice.version +
+        (items.some((x) => typeof x === 'object' && 'de' in x) ? '\n#voice-de:' + voice.german.version : ''),
+      'utf8',
+    )
     .digest('hex')
     .slice(0, 16);
 

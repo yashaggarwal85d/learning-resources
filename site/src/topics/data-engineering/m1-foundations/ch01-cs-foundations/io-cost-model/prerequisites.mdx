@@ -1,6 +1,6 @@
 import Resource from '../../../../../components/Resource.astro';
 
-This reel assumes six things. If they're familiar, skip straight in. If one isn't, a few minutes with the matching resource is enough to follow every step. Reels on this site are marked **Before this** (earlier in the course), **Goes deeper later** (not needed now) or with the name of another track.
+This reel assumes seven things. If they're familiar, skip straight in. If one isn't, a few minutes with the matching resource is enough to follow every step. Reels on this site are marked **Before this** (earlier in the course), **Goes deeper later** (not needed now) or with the name of another track.
 
 <section class="prereq" data-section="logs">
 
@@ -104,6 +104,25 @@ Merge sort sorts pieces and then merges sorted runs into one. Merging **k** runs
   <Resource kind="reading" title="PostgreSQL execution plan operations" href="https://use-the-index-luke.com/sql/explain-plan/postgresql/operations" by="Markus Winand, Use The Index, Luke" length="10 min">A compact reference for every scan and join node.</Resource>
   <Resource kind="video" title="Understanding PostgreSQL Query Plans (aka EXPLAIN)" href="https://www.youtube.com/watch?v=ymVGg6woUtc" by="Stephen Frost, PGConf NYC 2022" length="52 min">A PostgreSQL committer walks through real plans.</Resource>
   <Resource kind="reel" host={props.host} domain="data-engineering" title="Reading EXPLAIN across engines">Estimated vs actual rows, buffers and spills, in Chapter 2.</Resource>
+</ul>
+
+</section>
+
+<section class="prereq" data-section="distributed-joins">
+
+### <span class="n">07</span> Joining tables spread across machines
+
+On a cluster each table is split into **partitions**, one or more per machine. To join two tables on a key, rows with the same key must meet on the same machine. **Hash partitioning** sends each row to machine hash(key) mod p, so equal keys always land together. A **shuffle** re-partitions a table this way, sending most rows across the network; a **shuffle join** does it to both tables. A **broadcast join** instead copies the whole small table to every machine, and the big table stays where it is. The reel's network step counts the bytes each one moves.
+
+<p class="check"><b>Check yourself:</b> on 4 machines, a table is shuffled by key. Roughly what share of its rows has to move? (Answer: about 3/4: a row stays only if its key hashes to the machine it is already on, 1 chance in 4.)</p>
+
+<ul class="resources">
+  <Resource kind="reading" title="Lecture #23: Distributed OLAP Databases" href="https://15445.courses.cs.cmu.edu/fall2024/notes/24-distributedolap.pdf" by="Andy Pavlo, CMU 15-445/645 (Fall 2024)" length="6-page PDF">Its “Distributed Join Algorithms” section walks through the four cases, broadcast join and shuffle join included.</Resource>
+  <Resource kind="video" title="#24 - Distributed Analytical Databases (CMU Intro to Database Systems)" href="https://www.youtube.com/watch?v=L6E75IyBgpk" by="CMU Database Group">The same material as a lecture.</Resource>
+  <Resource kind="reading" title="Performance Tuning" href="https://spark.apache.org/docs/latest/sql-performance-tuning.html" by="Apache Spark documentation" length="reference page">Where Spark sets its broadcast threshold and accepts join-strategy hints.</Resource>
+  <Resource kind="reel" host={props.host} domain="data-engineering" title="Partitioning schemes: range, hash, consistent hashing">Hash vs range partitioning, in Chapter 5.</Resource>
+  <Resource kind="reel" host={props.host} domain="data-engineering" title="Broadcast hash join">How Spark ships the small side, in Chapter 7.</Resource>
+  <Resource kind="reel" host={props.host} domain="data-engineering" title="Shuffle joins: sort-merge vs shuffled hash">The shuffle-based joins, in Chapter 7.</Resource>
 </ul>
 
 </section>

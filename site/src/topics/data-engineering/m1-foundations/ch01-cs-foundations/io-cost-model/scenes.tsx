@@ -461,6 +461,7 @@ export function RandomCost({ t }: StepCtx) {
       <g transform={`translate(${CH.x1 - 150} 226) scale(${badge})`} opacity={clamp(badge)}>
         <rect x={-150} y={-20} width={300} height={40} rx={20} fill={C.roast} stroke={C.caramel} />
         <Mono x={0} y={5} size={15} anchor="middle" fill={C.crema}>PostgreSQL: random_page_cost = 4</Mono>
+        <Mono x={0} y={44} size={12} anchor="middle" fill={C.latte}>LOW ON PURPOSE: ASSUMES MOST READS HIT CACHE</Mono>
       </g>
     </Frame>
   );
@@ -501,9 +502,13 @@ export function Clustered({ t }: StepCtx) {
 }
 
 // ── 11 · External merge sort ───────────────────────────────────────────────
+// 12 blocks, memory M = 4 blocks: pass 1 writes 3 memory-sized runs; pass 2
+// merges them with 3 input buffers + 1 output buffer, the fan-in M/B − 1 = 3.
+const NV = 12;
+const NRUNS = NV / 4;
 const VALUES = (() => {
   const r = rng(42);
-  const v = Array.from({ length: 16 }, (_, i) => i);
+  const v = Array.from({ length: NV }, (_, i) => i);
   for (let i = v.length - 1; i > 0; i--) {
     const j = Math.floor(r() * (i + 1));
     [v[i], v[j]] = [v[j], v[i]];
@@ -512,13 +517,14 @@ const VALUES = (() => {
 })();
 const SB = 30;
 const sbGap = 4;
-const rowX = (i: number) => (600 - (16 * (SB + sbGap) - sbGap)) / 2 + i * (SB + sbGap);
+const rowX = (i: number) => (600 - (NV * (SB + sbGap) - sbGap)) / 2 + i * (SB + sbGap);
 const memX = (i: number) => 300 - (4 * (SB + sbGap) - sbGap) / 2 + i * (SB + sbGap);
-const runX = (run: number, j: number) => 15 + run * (4 * (SB + sbGap) - sbGap + 14) + j * (SB + sbGap);
+const RUN_W = 4 * (SB + sbGap) - sbGap + 14;
+const runX = (run: number, j: number) => (600 - (NRUNS * RUN_W - 14)) / 2 + run * RUN_W + j * (SB + sbGap);
 const shade = (v: number) => {
   const a = [233, 217, 191];
   const b = [142, 47, 42];
-  const k = v / 15;
+  const k = v / (NV - 1);
   return `rgb(${a.map((c, i) => Math.round(lerp(c, b[i], k))).join(',')})`;
 };
 const ROWS = { input: 78, mem: 178, runs: 282, out: 400 };
@@ -527,12 +533,12 @@ export function MergeSort({ t }: StepCtx) {
   const pass = t < 4.5 ? 1 : 2;
   return (
     <Frame label="External merge sort: pass one sorts memory-sized chunks into runs, pass two merges the runs">
-      <Mono x={25} y={36} size={14} fill={C.latte}>INPUT · 16 BLOCKS, UNSORTED</Mono>
+      <Mono x={25} y={36} size={14} fill={C.latte}>INPUT · 12 BLOCKS, UNSORTED</Mono>
       <Mono x={575} y={36} size={15} anchor="end" fill={C.caramel} weight={600}>PASS {pass}</Mono>
       <rect x={memX(0) - 12} y={ROWS.mem - 26} width={4 * (SB + sbGap) - sbGap + 24} height={SB + 40} rx={14} fill="none" stroke={C.latte} strokeDasharray="5 6" />
       <Mono x={300} y={ROWS.mem - 34} size={13} anchor="middle" fill={C.crema}>MEMORY · M = 4 BLOCKS</Mono>
       <Mono x={25} y={ROWS.runs - 14} size={13} fill={C.latte} o={easeOut(seg(t, 0.8, 1.2))}>PASS 1 → SORTED RUNS (EACH THE SIZE OF MEMORY)</Mono>
-      <Mono x={25} y={ROWS.out - 14} size={13} fill={C.latte} o={easeOut(seg(t, 4.5, 5))}>PASS 2 → ONE 4-WAY MERGE</Mono>
+      <Mono x={25} y={ROWS.out - 14} size={13} fill={C.latte} o={easeOut(seg(t, 4.5, 5))}>PASS 2 → ONE 3-WAY MERGE · FAN-IN M/B − 1 = 3</Mono>
       {VALUES.map((v, i) => {
         const run = Math.floor(i / 4);
         const a = 0.3 + run * 1.0;
@@ -560,7 +566,7 @@ export function MergeSort({ t }: StepCtx) {
         return (
           <g key={i}>
             <rect x={x} y={y} width={SB} height={SB} rx={6} fill={shade(v)} />
-            <Mono x={x + SB / 2} y={y + SB / 2 + 4} size={13} anchor="middle" fill={v > 8 ? C.crema : C.espresso} weight={600}>
+            <Mono x={x + SB / 2} y={y + SB / 2 + 4} size={13} anchor="middle" fill={v > 6 ? C.crema : C.espresso} weight={600}>
               {v}
             </Mono>
           </g>
@@ -639,6 +645,83 @@ export function Tiers({ t }: StepCtx) {
   );
 }
 
+// ── 13b · The network is a tier too ──────────────────────────────────────
+// Join a 1 TB table with a 100 MB table on 100 machines (ten boxes stand for
+// them). Shuffle: both tables are re-partitioned by key, so ~99% of the rows
+// cross the network. Broadcast: every machine receives the small table once.
+// Numbers are derived in examples.py.
+const NODES = 10;
+const nodeX = (i: number) => 48 + i * 56;
+const SHUFFLE = (() => {
+  const r = rng(29);
+  return Array.from({ length: 70 }, () => {
+    const a = Math.floor(r() * NODES);
+    let b = Math.floor(r() * (NODES - 1));
+    if (b >= a) b++;
+    return { a, b, start: 0.5 + r() * 1.5 };
+  });
+})();
+function Machines({ y, lit }: { y: number; lit: number }) {
+  return (
+    <g>
+      {Array.from({ length: NODES }, (_, i) => (
+        <rect key={i} x={nodeX(i) - 20} y={y} width={40} height={30} rx={6} fill={C.cocoa} stroke={lit > 0 ? C.caramel : C.mocha} strokeOpacity={0.4 + 0.6 * lit} strokeWidth={1.5} />
+      ))}
+    </g>
+  );
+}
+function Packet({ a, b, y, k, r, fill }: { a: number; b: number; y: number; k: number; r: number; fill: string }) {
+  if (k <= 0 || k >= 1) return null;
+  const e = easeInOut(k);
+  const x = lerp(nodeX(a), nodeX(b), e);
+  const lift = Math.sin(Math.PI * e) * (18 + Math.abs(a - b) * 7);
+  return <circle cx={x} cy={y - lift} r={r} fill={fill} />;
+}
+export function Network({ t }: StepCtx) {
+  const shuffleY = 150;
+  const castY = 345;
+  const sh = seg(t, 0.5, 2.4);
+  const bc = seg(t, 2.0, 3.2);
+  return (
+    <Frame label="Joining a 1 TB table with a 100 MB table on 100 machines: a shuffle moves about 990 GB across the network (about 8 seconds at 10 Gbit/s per machine), a broadcast about 9.9 GB (about 0.08 seconds)">
+      <Mono x={25} y={36} size={13} fill={C.taupe}>JOIN 1 TB WITH 100 MB · 100 MACHINES</Mono>
+
+      <Serif x={25} y={84} size={22} o={easeOut(seg(t, 0.1, 0.6))}>Shuffle both sides by key</Serif>
+      <Mono x={25} y={108} size={14} fill={C.latte} o={easeOut(seg(t, 0.1, 0.6))}>99% of rows move to another machine</Mono>
+      <Machines y={shuffleY} lit={sh > 0 && sh < 1 ? 1 : 0} />
+      {SHUFFLE.map((p, i) => (
+        <Packet key={i} a={p.a} b={p.b} y={shuffleY} k={(t - p.start) / 0.7} r={4} fill={C.cherry} />
+      ))}
+      <Mono x={575} y={218} size={18} anchor="end" fill={C.crema} weight={600} o={clamp(sh * 3)}>
+        ≈ {fmt(990 * easeOut(sh))} GB on the wire
+      </Mono>
+      <Mono x={575} y={240} size={13} anchor="end" fill={C.latte} o={easeOut(seg(t, 2.2, 2.6))}>
+        ≈ 8 SECONDS AT 10 GBIT/S PER MACHINE
+      </Mono>
+
+      <Serif x={25} y={278} size={22} o={easeOut(seg(t, 1.9, 2.4))}>Broadcast the small side</Serif>
+      <Mono x={25} y={302} size={14} fill={C.latte} o={easeOut(seg(t, 1.9, 2.4))}>each machine receives the 100 MB table once</Mono>
+      <Machines y={castY} lit={bc > 0 && bc < 1 ? 1 : 0} />
+      {Array.from({ length: NODES - 1 }, (_, i) => (
+        <Packet key={i} a={0} b={i + 1} y={castY} k={(t - 2.1 - i * 0.06) / 0.7} r={3} fill={C.caramel} />
+      ))}
+      <Mono x={575} y={413} size={18} anchor="end" fill={C.crema} weight={600} o={clamp(bc * 3)}>
+        ≈ {(9.9 * easeOut(bc)).toFixed(1)} GB on the wire
+      </Mono>
+      <Mono x={575} y={435} size={13} anchor="end" fill={C.latte} o={easeOut(seg(t, 3.0, 3.4))}>
+        ≈ 0.08 SECONDS AT 10 GBIT/S PER MACHINE
+      </Mono>
+
+      <Mono x={300} y={478} size={14} anchor="middle" fill={C.crema} o={easeOut(seg(t, 3.0, 3.6))}>
+        SAME HASH JOIN, SAME CPU BIG-O. 100× LESS TRAFFIC.
+      </Mono>
+      <Mono x={300} y={502} size={13} anchor="middle" fill={C.latte} o={easeOut(seg(t, 3.3, 3.8))}>
+        BROADCAST WINS WHILE SMALL &lt; BIG / (p − 1) AND FITS IN MEMORY
+      </Mono>
+    </Frame>
+  );
+}
+
 // ── 14 · Back to the query ─────────────────────────────────────────────────
 export function Verdict({ t }: StepCtx) {
   const max = 8e6;
@@ -669,7 +752,7 @@ export function Verdict({ t }: StepCtx) {
         );
       })}
       <Mono x={300} y={488} size={14} anchor="middle" fill={C.crema} o={easeOut(seg(t, 2.4, 3.0))}>
-        ROW BY ROW LOSES 8×. THE REAL CONTEST IS THE BOTTOM TWO.
+        ROW BY ROW LOSES 8×. THE BOTTOM TWO: A CLOSE CALL.
       </Mono>
     </Frame>
   );

@@ -48,6 +48,25 @@ export function MutableDefault({ t, answer, portrait }: StepCtx) {
   );
 }
 
+// 2b · Closures look names up when they run.
+export function LateBinding({ t, answer, portrait }: StepCtx) {
+  const shown = answer !== null;
+  return (
+    <Stack>
+      {!(portrait && shown) && <Code
+        title="closures.py"
+        t={t}
+        end={1}
+        lines={['fs = [lambda: i for i in range(3)]', `[f() for f in fs]   # ${shown ? '[2, 2, 2]  ← all see the last i' : '?'}`]}
+        highlight={shown ? [1] : []}
+      />}
+      {shown && (
+        <Code title="bind the value now" t={t + 10} lines={['fs = [lambda i=i: i for i in range(3)]', '[f() for f in fs]   # [0, 1, 2]']} highlight={[0]} />
+      )}
+    </Stack>
+  );
+}
+
 // 3 · Comprehensions: filter, then map.
 export function Comprehension({ t }: StepCtx) {
   const items = [1, 2, 3, 4, 5];
@@ -246,6 +265,25 @@ export function Dataclass({ t }: StepCtx) {
   );
 }
 
+// 8b · Classes: defining __eq__ removes __hash__.
+export function Hashable({ t, answer, portrait }: StepCtx) {
+  const shown = answer !== null;
+  return (
+    <Stack>
+      {!(portrait && shown) && <Code
+        title="keys.py"
+        t={t}
+        end={1}
+        lines={['@dataclass', 'class Key:', '    table: str', '', `{Key('orders'): 1}   # ${shown ? "TypeError: unhashable type: 'Key'" : '?'}`]}
+        highlight={shown ? [4] : [0]}
+      />}
+      {shown && (
+        <Code title="the fix" t={t + 10} lines={['@dataclass(frozen=True)', 'class Key:', '    table: str', '', "{Key('orders'): 1}   # works: equal keys, equal hashes"]} highlight={[0]} />
+      )}
+    </Stack>
+  );
+}
+
 // 9 · Type hints are not enforced at runtime.
 export function TypeHints({ t, answer, portrait }: StepCtx) {
   return (
@@ -267,24 +305,26 @@ export function TypeHints({ t, answer, portrait }: StepCtx) {
 // 10 · Recap in one breath.
 const RECAP = [
   ['Defaults', 'run once, at def'],
+  ['Closures', 'look names up late; i=i binds now'],
   ['Comprehensions', 'filter, then map'],
   ['Generators', 'stream one item at a time'],
   ['with', 'always cleans up'],
   ['Decorators', 'wrap a function; use @wraps'],
   ['Dataclasses', 'write the boilerplate'],
+  ['Classes', '__eq__ drops __hash__; freeze keys'],
   ['Type hints', 'checked by tools, not at runtime'],
 ];
 export function Recap({ t }: StepCtx) {
   return (
-    <Svg label="Recap of the seven points" h={470}>
+    <Svg label="Recap of the nine points" h={520}>
       {RECAP.map(([k, v], i) => {
-        const a = easeOut(seg(t, 0.1 + i * 0.18, 0.6 + i * 0.18));
-        const y = 30 + i * 62;
+        const a = easeOut(seg(t, 0.1 + i * 0.15, 0.6 + i * 0.15));
+        const y = 12 + i * 56;
         return (
           <g key={k} opacity={a} transform={`translate(${(1 - a) * 30} 0)`}>
-            <rect x={30} y={y} width={540} height={50} rx={12} fill={C.roast} />
-            <T x={52} y={y + 32} s={19} f={C.caramel} serif w={700}>{k}</T>
-            <T x={250} y={y + 31} s={14} f={C.crema}>{v}</T>
+            <rect x={30} y={y} width={540} height={46} rx={12} fill={C.roast} />
+            <T x={52} y={y + 30} s={19} f={C.caramel} serif w={700}>{k}</T>
+            <T x={250} y={y + 29} s={14} f={C.crema}>{v}</T>
           </g>
         );
       })}

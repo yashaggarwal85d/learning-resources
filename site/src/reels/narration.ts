@@ -1,8 +1,9 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 
 // Narration for a reel: clips generated in-house (site/narration/), one per
-// step plus one per predict answer, with line timings for captions.
-export type Clip = { hash: string; duration: number; lines: { text: string; start: number; end: number }[] };
+// step plus one per predict answer, with line timings for captions. Lines marked
+// lang 'de' are spoken by the German voice and shown as German.
+export type Clip = { hash: string; duration: number; lines: { text: string; start: number; end: number; lang?: 'de' }[] };
 type Manifest = { topic: string; voice: string; clips: Record<string, Clip> };
 
 const SOUND = 'le.sound.v1';

@@ -4,7 +4,7 @@
 // Fails (exit 1) on any page error, sideways scroll, empty panel, missing
 // control, or a step that doesn't render, at desktop and phone sizes.
 import { chromium, devices } from 'playwright';
-import { readFileSync, mkdirSync } from 'node:fs';
+import { readFileSync, mkdirSync, existsSync, readdirSync } from 'node:fs';
 
 const root = process.argv[2] ?? 'http://localhost:4321/learning-resources/';
 const slugs = [...readFileSync(new URL('../src/topics/registry.ts', import.meta.url), 'utf8').matchAll(/slug: '([^']+)',[\s\S]*?status: '(live|held)'/g)]
@@ -14,7 +14,21 @@ const failures = [];
 const fail = (msg) => failures.push(msg);
 mkdirSync('test-results', { recursive: true });
 
-const browser = await chromium.launch(process.env.CHROMIUM_PATH ? { executablePath: process.env.CHROMIUM_PATH } : {});
+// Browser: CHROMIUM_PATH if set, else Playwright's own; if that isn't installed (e.g. a cloud session with a
+// pre-installed Chromium of another build), fall back to any Chromium under PLAYWRIGHT_BROWSERS_PATH or /opt/pw-browsers.
+const preinstalled = () => {
+  const root = process.env.PLAYWRIGHT_BROWSERS_PATH || '/opt/pw-browsers';
+  if (!existsSync(root)) return undefined;
+  for (const d of readdirSync(root).filter((d) => d.startsWith('chromium-')).sort().reverse())
+    for (const bin of ['chrome-linux/chrome', 'chrome-linux64/chrome']) if (existsSync(`${root}/${d}/${bin}`)) return `${root}/${d}/${bin}`;
+};
+const browser = await chromium
+  .launch(process.env.CHROMIUM_PATH ? { executablePath: process.env.CHROMIUM_PATH } : {})
+  .catch((err) => {
+    const exe = preinstalled();
+    if (!exe) throw err;
+    return chromium.launch({ executablePath: exe });
+  });
 for (const [device, opts] of [
   ['desktop', { viewport: { width: 1440, height: 900 } }],
   ['phone', { ...devices['iPhone 13'] }],
