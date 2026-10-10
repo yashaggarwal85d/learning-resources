@@ -1,0 +1,21 @@
+name: Link check
+
+# Outside links rot over time; check every topic's links weekly (and on demand).
+# A link that is gone (404/410, or a domain that no longer exists) fails the run, and GitHub emails the owner.
+on:
+  schedule:
+    - cron: '17 6 * * 1'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  links:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - run: node scripts/check-links.mjs

@@ -68,7 +68,8 @@ Expect about 40–70 seconds per take on 4 CPU cores (a refresher is about 2 hou
 From `site/`:
 
 ```sh
-npm run build              # includes the flow, coverage and syllabus checks
+npm run build              # includes the flow, coverage, syllabus and topic-file checks
+npm run check:links        # every outside link loads and matches its title; open by hand only what it reports
 npm run test:examples
 npm run test:narration
 npm run test:reels -- http://127.0.0.1:4321/learning-resources/   # with `npx astro preview` running

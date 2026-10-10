@@ -36,6 +36,7 @@ list_peak = peak(lambda: sum([i * i for i in range(1_000_000)]))
 gen_peak = peak(lambda: sum(i * i for i in range(1_000_000)))
 assert sum(i * i for i in range(1_000_000)) == sum([i * i for i in range(1_000_000)])
 assert list_peak > 1_000_000 * 8 and gen_peak < 10_000, (list_peak, gen_peak)
+assert round(list_peak / 1e6) == 40  # the reel shows "about 40 MB"
 def read_batches(rows, size):
     batch = []
     for r in rows:

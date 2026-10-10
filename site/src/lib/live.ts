@@ -2,6 +2,7 @@
 import { loadDomains, type Domain } from './syllabus';
 import { TOPICS, type TopicMeta } from '../topics/registry';
 import { checkCoverage } from './coverage';
+import { checkTopicFiles } from './topic-checks';
 
 type Flat = { domain: string; title: string; refresher: boolean; m: number; mTitle: string; c: number; cTitle: string };
 
@@ -28,6 +29,8 @@ function build() {
   checkFlow(domains, flat, liveFor);
   // Every finished topic, live or held, must cover its whole scope (Rule #6).
   checkCoverage(domains, TOPICS);
+  // Narration lines up with the reel and is speakable; every number on screen is executed (QUALITY.md #35).
+  checkTopicFiles(TOPICS);
 
   // Live topics in syllabus order (the registry order doesn't matter).
   const ordered: TopicMeta[] = domains.flatMap((d) => flat.get(d.id)!.map((x) => liveFor(d.id, x.title)).filter((x): x is TopicMeta => !!x));

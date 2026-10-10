@@ -128,6 +128,13 @@ assert abs(lab_par_seq - 36_107.87) < 0.01  # EXPLAIN: 36107.87
 assert abs(lab_par_bitmap - 36_292.79) < 0.5, lab_par_bitmap  # EXPLAIN: 36292.79
 assert round((lab_par_bitmap - lab_par_seq) / lab_par_seq * 100, 1) == 0.5
 
+# ── Prove it 1: 50,000,000 rows, 50 per page, an unclustered index, 400,000 matches ──
+p1_pages = 50_000_000 // 50
+assert p1_pages == 1_000_000
+p1_reads = 400_000  # one random read per match
+assert p1_reads < p1_pages  # equal costs: the index wins
+assert p1_reads * 4 == 1_600_000 > p1_pages  # r = 4: the scan wins
+
 # ── External merge sort: 1 TiB with 16 GiB of memory, 1 MiB blocks ────────
 def passes(data, memory, block):
     runs = math.ceil(data / memory)

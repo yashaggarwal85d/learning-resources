@@ -28,6 +28,7 @@ Four tracks, each with a full syllabus:
 PROJECT_PLAN.md  ROUTINE.md  QUALITY.md   rules, procedure, quality record
 syllabus/                                  the four syllabi (the build reads them)
 scripts/check-docs.mjs                     checks links and anchors in the docs
+scripts/check-links.mjs                    checks every topic's outside links (status and title)
 site/                                      the website (Astro + React islands + Tailwind)
   src/topics/registry.ts                   every finished topic: live or held, concept ledger, bridge and handoff
   src/topics/<domain>/m<N>-…/ch<NN>-…/<topic>/
@@ -38,7 +39,8 @@ site/                                      the website (Astro + React islands + 
     coverage.json                          the coverage map (syllabus, sources, blind expert list, gap review)
     examples.py                            every example and number, executed with asserts
     FACT-CHECK.md                          claims checked against primary sources
-  src/lib/live.ts, coverage.ts             build-time checks: flow (Rule #5) and coverage (Rule #6)
+  src/lib/live.ts, coverage.ts,            build-time checks: flow (Rule #5), coverage (Rule #6),
+    topic-checks.ts                        narration alignment, speakable lines, numbers backed by examples.py
   src/reels/                               the reel player, feed, captions, narration hook
   narration/                               voice-over pipeline: voices, setup, generation, checks
   public/audio/<topic id>/                 generated narration clips and their manifest
@@ -54,12 +56,13 @@ Requirements: Node 22, Python 3.12+ and, for the smoke test, Chromium (Playwrigh
 cd site
 npm ci
 npm run dev                  # local site at http://localhost:4321/learning-resources/
-npm run build                # also runs the flow, coverage and syllabus checks
+npm run build                # also runs the flow, coverage, syllabus and topic-file checks
 npm run test:examples        # runs every topic's examples.py
 npm run test:narration       # narration matches the scripts and the audio standard
 npx astro preview --host 127.0.0.1 --port 4321 &
 npm run test:reels -- http://127.0.0.1:4321/learning-resources/   # every live reel at desktop and phone size
 node ../scripts/check-docs.mjs
+npm run check:links          # outside links load and match their titles (also weekly in CI)
 ```
 
 Every push runs all of these in CI; the deploy to GitHub Pages runs them again and publishes only if they pass.
