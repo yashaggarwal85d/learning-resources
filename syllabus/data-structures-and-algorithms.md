@@ -269,7 +269,7 @@ From comparison sorting theory to the hybrid, SIMD, parallel and external sorts 
 ### 15.2 Integer, parallel and external sorts
 - **Counting, radix and bucket sort** — LSD vs MSD radix sort, American-flag in-place MSD, key normalization of multi-column keys to byte strings (as in DuckDB's sort), and when O(n·w/log n) beats O(n log n).
 - **SIMD and parallel sorting** — vectorized quicksort (Google Highway vqsort; x86-simd-sort in NumPy), sample sort and IPS⁴o (in-place parallel super-scalar samplesort), and their scaling limits from memory bandwidth.
-- **External merge sort** — run generation (replacement selection gives runs ~2M long), multi-way merging with loser trees (Ch.6), number of passes log_{M/B}(N/M), and the spill path of large sorts, joins and aggregations → *Data Engineering* §1.2, Ch.7.
+- **External merge sort** — run generation (replacement selection gives runs ~2M long), multi-way merging with loser trees (Ch.6), number of passes log_{M/B}(N/M), and the spill path of large sorts, joins and aggregations → *Data Engineering* §1.3, Ch.7.
 - *Lab:* implement quicksort with Lomuto, Hoare and three-way partitioning plus LSD radix sort; benchmark against your stdlib's stable and unstable sorts on random, sorted, reverse, few-unique and Zipfian inputs; then sort a file 10× larger than RAM with an external merge sort and count passes and bytes moved.
 
 ## Chapter 16 — Searching and Selection
@@ -586,7 +586,7 @@ Bridge reels: how each textbook structure is modified when it becomes a mechanis
 
 ### 37.1 The mapping
 - **Hash tables inside hash joins** — build/probe phases, partitioning for cache and memory (Ch.31), Bloom-filter pushdown, and spilling when the build side outgrows memory → *Data Engineering* §2.3, Ch.7.
-- **Sorting inside spilling operators** — external merge sort (Ch.15) as the spill path of sorts, sort-merge joins and aggregations → *Data Engineering* §1.2, Ch.7.
+- **Sorting inside spilling operators** — external merge sort (Ch.15) as the spill path of sorts, sort-merge joins and aggregations → *Data Engineering* §1.3, Ch.7.
 - **Heaps inside compaction, shuffle and top-N** — k-way merges with heaps or loser trees in LSM compaction and shuffle reads; bounded heaps for `ORDER BY … LIMIT` → *Data Engineering* §5.1, Ch.7.
 - **Topological sort inside schedulers** — DAG orchestration, ready queues, critical-path prioritization and cycle rejection → *Data Engineering* Ch.11.
 - **Union–find inside entity resolution** — clustering matched record pairs into entities and connected components in lineage graphs → *Data Engineering* §8.3, §17.3.

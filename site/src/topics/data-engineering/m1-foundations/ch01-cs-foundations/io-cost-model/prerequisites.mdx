@@ -1,6 +1,6 @@
 import Resource from '../../../../../components/Resource.astro';
 
-This reel assumes six things. If they're familiar, skip straight in. If one isn't, a few minutes with the matching resource is enough to follow every step.
+This reel assumes six things. If they're familiar, skip straight in. If one isn't, a few minutes with the matching resource is enough to follow every step. Reels on this site are marked **Before this** (earlier in the course), **Goes deeper later** (not needed now) or with the name of another track.
 
 <section class="prereq" data-section="logs">
 
@@ -11,10 +11,11 @@ You'll read costs like Θ(N/B) and (N/B) · log<sub>M/B</sub>(N/B) throughout. B
 <p class="check"><b>Check yourself:</b> what is log<sub>1000</sub>(10⁹)? (Answer: 3, since 1000³ = 10⁹.)</p>
 
 <ul class="resources">
+  <Resource kind="reel" host={props.host} domain="data-engineering" title="Asymptotic notation and logarithms">The refresher at the start of this chapter.</Resource>
   <Resource kind="video" title="Big O Notation" href="https://www.youtube.com/watch?v=v4cd1O4zkGw" by="HackerRank (Gayle Laakmann McDowell)" length="9 min">A fast, practical refresher on reading and comparing growth rates.</Resource>
   <Resource kind="video" title="Change of base formula" href="https://www.youtube.com/watch?v=OkFdDqW9xxM" by="Khan Academy" length="8 min">Exactly the identity behind log<sub>M/B</sub>(N/B).</Resource>
   <Resource kind="reading" title="6.006 Recitation 1: asymptotic notation" href="https://ocw.mit.edu/courses/6-006-introduction-to-algorithms-spring-2020/resources/mit6_006s20_r01/" by="MIT OpenCourseWare" length="7-page PDF">O, Θ and Ω defined precisely, with worked examples.</Resource>
-  <Resource kind="reel" domain="data-structures-and-algorithms" title="Asymptotic notation and case analysis">The DSA domain's refresher on O, Θ and Ω.</Resource>
+  <Resource kind="reel" host={props.host} domain="data-structures-and-algorithms" title="Asymptotic notation and case analysis">The full treatment of O, Θ and Ω in the DSA track.</Resource>
 </ul>
 
 </section>
@@ -28,10 +29,11 @@ Data lives in tiers: CPU caches, RAM, SSD, hard disk, and storage across the net
 <p class="check"><b>Check yourself:</b> on a hard disk, why can reading 1 GB in order be faster than reading 10,000 scattered 8 KB pages, only 80 MB? (Answer: each scattered read pays a seek of several milliseconds, about 10,000 × 7 ms ≈ 70 s, while 1 GB streams at a couple of hundred MB/s in about 5 s.)</p>
 
 <ul class="resources">
+  <Resource kind="reel" host={props.host} domain="data-engineering" title="Memory hierarchy and latency numbers">The tiers and their numbers, in §1.2.</Resource>
+  <Resource kind="reel" host={props.host} domain="data-engineering" title="Storage devices and fsync durability">Sequential vs random I/O on real devices, in §1.2.</Resource>
   <Resource kind="video" title="The numbers EVERY ENGINEER should know (napkin math)" href="https://www.youtube.com/watch?v=PFEBo7SMX3M" by="Ben Dicken" length="18 min">Latency and bandwidth per tier, used for back-of-envelope estimates.</Resource>
   <Resource kind="reading" title="IO devices and latency" href="https://planetscale.com/blog/io-devices-and-latency" by="PlanetScale" length="interactive article">Animated tour from tape to NVMe: why random access hurts.</Resource>
   <Resource kind="reading" title="Latency Numbers Every Programmer Should Know" href="https://gist.github.com/jboner/2841832" by="Jonas Bonér, after Jeff Dean and Peter Norvig" length="1 page">The classic table to keep in your head.</Resource>
-  <Resource kind="reel" domain="data-engineering" title="Memory hierarchy and latency numbers">Covered in depth in §1.3 of this chapter.</Resource>
 </ul>
 
 </section>
@@ -48,7 +50,7 @@ A table is stored as a file of fixed-size **pages** (8 KB in PostgreSQL). Each p
   <Resource kind="video" title="#03 Database Storage: Files &amp; Pages" href="https://www.youtube.com/watch?v=dSxV5Sob5V8" by="CMU Database Group (Intro to Database Systems)" length="82 min">Pages, heap files and tuple layout, from the best free database course.</Resource>
   <Resource kind="reading" title="Database Page Layout" href="https://www.postgresql.org/docs/current/storage-page-layout.html" by="PostgreSQL documentation" length="10 min">How an 8 kB PostgreSQL page is laid out.</Resource>
   <Resource kind="reading" title="Heap Table Structure" href="https://www.interdb.jp/pg/pgsql01/03.html" by="Hironobu Suzuki, The Internals of PostgreSQL" length="10 min">Pages, line pointers and tuples, with clear diagrams.</Resource>
-  <Resource kind="reel" domain="data-engineering" title="Pages, slotted pages and tuple layout">The full treatment, in Milestone 2.</Resource>
+  <Resource kind="reel" host={props.host} domain="data-engineering" title="Pages, slotted pages and tuple layout">The full page layout, in Milestone 2. Not needed for this reel.</Resource>
 </ul>
 
 </section>
@@ -62,10 +64,11 @@ An index is a separate structure, usually a **B+tree**, that keeps a column's va
 <p class="check"><b>Check yourself:</b> an index finds 1,000 matching rows. How many table pages might it have to read? (Answer: anywhere from about 10, if the rows sit next to each other, to 1,000, if every row is on a different page.)</p>
 
 <ul class="resources">
+  <Resource kind="reel" host={props.host} domain="data-engineering" title="B+-trees vs LSM-trees at a glance">The refresher just before this topic.</Resource>
   <Resource kind="reading" title="The Search Tree (B-Tree) Makes the Index Fast" href="https://use-the-index-luke.com/sql/anatomy/the-tree" by="Markus Winand, Use The Index, Luke" length="10 min">What a lookup walks through. Continue with “Slow Indexes, Part I” for the table access per hit.</Resource>
   <Resource kind="video" title="The critical data structure for databases. (B-trees)" href="https://www.youtube.com/watch?v=5jC2nebEvas" by="Ben Dicken" length="16 min">B-trees animated, with database context.</Resource>
   <Resource kind="video" title="#08 Tree Indexes: B+Trees" href="https://www.youtube.com/watch?v=scUtG_6M_lU" by="CMU Database Group (Intro to Database Systems)" length="82 min">The full lecture, if you want the internals.</Resource>
-  <Resource kind="reel" domain="data-structures-and-algorithms" title="B-tree and B+-tree mechanics">Fan-out, splits and why the tree stays 3–4 levels deep.</Resource>
+  <Resource kind="reel" host={props.host} domain="data-structures-and-algorithms" title="B-tree and B+-tree mechanics">Fan-out, splits and why the tree stays 3–4 levels deep.</Resource>
 </ul>
 
 </section>
@@ -82,8 +85,8 @@ Merge sort sorts pieces and then merges sorted runs into one. Merging **k** runs
   <Resource kind="reading" title="Mergesort, and Priority Queues" href="https://algs4.cs.princeton.edu/22mergesort/" by="Sedgewick and Wayne, Algorithms 4th ed." length="20 min">Merging sorted runs; section 2.4 (Priority Queues) adds a heap-based multiway merge.</Resource>
   <Resource kind="video" title="Merge K Sorted Arrays: Min Heap Algorithm" href="https://www.youtube.com/watch?v=ptYUCjfNhJY" by="Back To Back SWE" length="11 min">The k-way merge with a heap, step by step.</Resource>
   <Resource kind="video" title="8. Binary Heaps" href="https://www.youtube.com/watch?v=Xnpo1atN-Iw" by="MIT OpenCourseWare (6.006)" length="51 min">Heaps from first principles, if the structure is rusty.</Resource>
-  <Resource kind="reel" domain="data-structures-and-algorithms" title="Binary heaps and heapify">The heap behind every k-way merge.</Resource>
-  <Resource kind="reel" domain="data-structures-and-algorithms" title="Tournament and loser trees">The merge kernel external sorts actually use.</Resource>
+  <Resource kind="reel" host={props.host} domain="data-structures-and-algorithms" title="Binary heaps and heapify">The heap behind every k-way merge.</Resource>
+  <Resource kind="reel" host={props.host} domain="data-engineering" title="External merge sort and k-way merge">The full mechanism, two topics after this one.</Resource>
 </ul>
 
 </section>
@@ -100,7 +103,7 @@ Merge sort sorts pieces and then merges sorted runs into one. Merging **k** runs
   <Resource kind="reading" title="Using EXPLAIN" href="https://www.postgresql.org/docs/current/using-explain.html" by="PostgreSQL documentation" length="30 min">The official guide: seq, index and bitmap scans side by side.</Resource>
   <Resource kind="reading" title="PostgreSQL execution plan operations" href="https://use-the-index-luke.com/sql/explain-plan/postgresql/operations" by="Markus Winand, Use The Index, Luke" length="10 min">A compact reference for every scan and join node.</Resource>
   <Resource kind="video" title="Understanding PostgreSQL Query Plans (aka EXPLAIN)" href="https://www.youtube.com/watch?v=ymVGg6woUtc" by="Stephen Frost, PGConf NYC 2022" length="52 min">A PostgreSQL committer walks through real plans.</Resource>
-  <Resource kind="reel" domain="data-engineering" title="Reading EXPLAIN across engines">Estimated vs actual rows, buffers and spills, in Chapter 2.</Resource>
+  <Resource kind="reel" host={props.host} domain="data-engineering" title="Reading EXPLAIN across engines">Estimated vs actual rows, buffers and spills, in Chapter 2.</Resource>
 </ul>
 
 </section>

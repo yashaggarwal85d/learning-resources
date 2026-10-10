@@ -1,7 +1,10 @@
 ---
 // One resource in a topic's Prerequisites panel. A `reel` names a syllabus
-// topic on this site: it links once that reel is live, and says so until then.
+// topic on this site and is labelled by where it sits relative to the host
+// topic: earlier in the same domain ("Before this"), later ("Goes deeper
+// later"), or in another domain. It links once that reel is live.
 import { liveData } from '../lib/live';
+import { TOPICS } from '../topics/registry';
 
 interface Props {
   kind: 'video' | 'reading' | 'course' | 'reel';
@@ -9,26 +12,42 @@ interface Props {
   href?: string;
   by?: string;
   length?: string;
-  domain?: string; // for reels
+  domain?: string; // for reels: the syllabus the topic lives in
+  host?: string; // for reels: the id of the topic whose panel this is
 }
-const { kind, title, href, by, length, domain } = Astro.props;
+const { kind, title, href, by, length, domain, host } = Astro.props;
+const live = liveData();
 const base = import.meta.env.BASE_URL.endsWith('/') ? import.meta.env.BASE_URL : `${import.meta.env.BASE_URL}/`;
-const reel = kind === 'reel' && domain ? liveData().liveFor(domain, title) : undefined;
-if (kind === 'reel' && domain && !liveData().domains.find((d) => d.id === domain)?.milestones.some((m) => m.chapters.some((c) => c.topics.some((t) => t.title === title))))
-  throw new Error(`Resource: "${title}" is not a topic in syllabus/${domain}.md`);
-const link = reel ? `${base}${reel.slug}/` : href;
-const label = { video: 'Video', reading: 'Read', course: 'Course', reel: reel ? '▶ Reel' : 'Reel · soon' }[kind];
+
+let label = { video: 'Video', reading: 'Read', course: 'Course', reel: '' }[kind];
+let role = '';
+let link = href;
+let shown = title;
+let meta = [by, length].filter(Boolean).join(' · ');
+if (kind === 'reel') {
+  const h = TOPICS.find((t) => t.id === host);
+  if (!domain || !h) throw new Error(`Resource "${title}": a reel needs domain and host`);
+  const pos = live.position(domain, title);
+  if (pos < 0) throw new Error(`Resource: "${title}" is not a topic in syllabus/${domain}.md`);
+  const reel = live.liveFor(domain, title);
+  const domainTitle = live.domains.find((d) => d.id === domain)!.title;
+  role = domain !== h.domain ? 'other' : pos < live.position(h.domain, h.syllabusTitle) ? 'before' : 'later';
+  label = { before: 'Before this', later: 'Goes deeper later', other: domainTitle }[role];
+  link = reel ? `${base}${reel.slug}/` : undefined;
+  shown = reel?.title ?? title;
+  meta = [reel ? '▶ Reel on this site' : 'Reel on this site · in production', by].filter(Boolean).join(' · ');
+}
 const external = !!link && link.startsWith('http');
 ---
-<li class="res">
-  <span class={`res-kind res-${kind}${reel ? ' res-live' : ''}`}>{label}</span>
+<li class={`res${role ? ` res-role-${role}` : ''}`}>
+  <span class={`res-kind res-${kind}`}>{label}</span>
   <span class="res-body">
     {link ? (
-      <a href={link} target={external ? '_blank' : undefined} rel={external ? 'noopener' : undefined}>{reel?.title ?? title}</a>
+      <a href={link} target={external ? '_blank' : undefined} rel={external ? 'noopener' : undefined}>{shown}</a>
     ) : (
-      <span class="res-title">{title}</span>
+      <span class="res-title">{shown}</span>
     )}
-    <span class="res-meta">{[by, length].filter(Boolean).join(' · ')}</span>
+    <span class="res-meta">{meta}</span>
     <span class="res-note"><slot /></span>
   </span>
 </li>

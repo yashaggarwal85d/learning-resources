@@ -102,3 +102,14 @@
 - The web-search budget ran out near the end of the pass, so the items above could not get more searches.
 
 Topics: before 102 (+2 Systems-in-Production case-study groups, 5 bullets) → after 102 (+12 Systems-in-Production case studies; 15 labs added)
+
+## Reorder, 10 October 2026 (prerequisite order)
+
+Building the first reel's Prerequisites panel showed that Chapter 1 taught the cost model before the hardware it rests on.
+
+- §1.2 and §1.3 swapped: **§1.2 is now Computer architecture and OS fundamentals**, **§1.3 is now Algorithms that dominate data-system cost**. The I/O cost model uses the memory hierarchy, storage devices and object storage, so those come first.
+- Within §1.3, **B+-trees vs LSM-trees at a glance** *(refresher)* moved ahead of **The external-memory (I/O) cost model**, which uses index lookups.
+- §1.1: added **Asymptotic notation and logarithms** *(refresher)*; the cost model needs logarithms in any base. Full treatment stays in *Data Structures & Algorithms* Ch.1.
+- References updated: "external merge sort, §1.2" → §1.3 (Ch.7 spill topic); *DSA* "→ *Data Engineering* §1.2" → §1.3.
+
+Topics: before 552 → after 553.

@@ -21,7 +21,7 @@ export const TOPICS: TopicMeta[] = [
     title: 'The I/O cost model',
     syllabusTitle: 'The external-memory (I/O) cost model',
     milestone: { number: 1, title: 'Foundations' },
-    chapter: { number: 1, title: 'Computer-science foundations', section: '1.2' },
+    chapter: { number: 1, title: 'Computer-science foundations', section: '1.3' },
     minutes: 12,
     verified: '2026-10-10',
   },

@@ -43,7 +43,7 @@ const prereqFor = (slug: string) => prereq[`../topics/${slug}/prerequisites.mdx`
           <article id={`prereq-${t.id}`} hidden>
             <p class="eyebrow text-[0.62rem] text-latte">Before you watch</p>
             <h2 class="mt-1 font-display text-3xl font-bold text-crema">{t.title}</h2>
-            {Prereq ? <Prereq /> : <p>This topic has no prerequisites beyond the ones before it in the curriculum.</p>}
+            {Prereq ? <Prereq host={t.id} /> : <p>This topic has no prerequisites beyond the ones before it in the curriculum.</p>}
           </article>
         </>
       );

@@ -37,12 +37,10 @@ function build() {
     nextAfter[t.id] = n ? { title: liveFor(t.domain, n.title)?.title ?? n.title, live: !!liveFor(t.domain, n.title) } : null;
   }
 
-  // What's being produced next in each domain.
+  // What's being produced next in each domain: the earliest full topics without a reel yet.
   const upcoming: Record<string, string[]> = {};
   for (const d of domains) {
-    const list = flat.get(d.id)!.filter((x) => !x.refresher);
-    const lastLive = list.map((x, i) => (liveFor(d.id, x.title) ? i : -1)).reduce((a, b) => Math.max(a, b), -1);
-    upcoming[d.id] = list.slice(lastLive + 1).filter((x) => !liveFor(d.id, x.title)).slice(0, 3).map((x) => x.title);
+    upcoming[d.id] = flat.get(d.id)!.filter((x) => !x.refresher && !liveFor(d.id, x.title)).slice(0, 3).map((x) => x.title);
   }
 
   const totalTopics = domains.reduce((n, d) => n + d.counts.topics, 0);
@@ -67,7 +65,11 @@ function build() {
     }))
     .filter((d) => d.milestones.length);
 
+  // Where a topic sits in its domain's order (refreshers included), for before/after checks.
+  const position = (domain: string, title: string) => flat.get(domain)?.findIndex((x) => x.title === title) ?? -1;
+
   return {
+    position,
     domains,
     ordered,
     liveFor,
