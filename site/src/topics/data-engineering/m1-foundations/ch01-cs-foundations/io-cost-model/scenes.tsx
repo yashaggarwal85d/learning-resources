@@ -661,6 +661,18 @@ const SHUFFLE = (() => {
     return { a, b, start: 0.5 + r() * 1.5 };
   });
 })();
+// Broadcast: the small table starts spread across the machines (1 MB each), and
+// every machine sends its slice to every other, so each one receives ~99 MB.
+const BROADCAST = (() => {
+  const r = rng(31);
+  return Array.from({ length: NODES }, (_, a) =>
+    [1, 2].map(() => {
+      let b = Math.floor(r() * (NODES - 1));
+      if (b >= a) b++;
+      return { a, b, start: 2.1 + r() * 0.5 };
+    }),
+  ).flat();
+})();
 function Machines({ y, lit }: { y: number; lit: number }) {
   return (
     <g>
@@ -702,8 +714,8 @@ export function Network({ t }: StepCtx) {
       <Serif x={25} y={278} size={22} o={easeOut(seg(t, 1.9, 2.4))}>Broadcast the small side</Serif>
       <Mono x={25} y={302} size={14} fill={C.latte} o={easeOut(seg(t, 1.9, 2.4))}>each machine receives the 100 MB table once</Mono>
       <Machines y={castY} lit={bc > 0 && bc < 1 ? 1 : 0} />
-      {Array.from({ length: NODES - 1 }, (_, i) => (
-        <Packet key={i} a={0} b={i + 1} y={castY} k={(t - 2.1 - i * 0.06) / 0.7} r={3} fill={C.caramel} />
+      {BROADCAST.map((p, i) => (
+        <Packet key={i} a={p.a} b={p.b} y={castY} k={(t - p.start) / 0.7} r={2.5} fill={C.caramel} />
       ))}
       <Mono x={575} y={413} size={18} anchor="end" fill={C.crema} weight={600} o={clamp(bc * 3)}>
         ≈ {(9.9 * easeOut(bc)).toFixed(1)} GB on the wire

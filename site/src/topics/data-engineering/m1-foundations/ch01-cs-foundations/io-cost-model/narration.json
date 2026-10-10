@@ -79,7 +79,7 @@
         "If a random read costs r sequential ones, the crossover drops to one over r times B.",
         "Postgres assumes r is four... so, a quarter of a percent.",
         "And four is low on purpose. It assumes most random reads are already in cache.",
-        "On a cold hard disk, r is nearer two hundred... and the crossover falls to five thousandths of a percent."
+        "On a cold hard disk, r is two hundred or more... and the crossover falls to five thousandths of a percent, or less."
       ]
     },
     {

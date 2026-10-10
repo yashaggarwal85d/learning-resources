@@ -39,7 +39,7 @@ const reel: Reel = {
       duration: 1.2,
       predict: {
         options: [{ label: 'About 50%' }, { label: 'About 10%' }, { label: 'About 1%', correct: true }, { label: 'About 0.1%' }],
-        explain: <>About 1%: one over the number of rows per page. The next four steps derive it, then show why real storage moves it even lower.</>,
+        explain: <>About 1%: one over the number of rows per page. The next few steps derive it, then show why real storage moves it even lower.</>,
       },
       Visual: S.Seesaw,
     },
@@ -117,7 +117,7 @@ const reel: Reel = {
           The model counts every I/O the same; real storage doesn't. A random read waits for a seek or a new request, and a plain index scan issues
           them one at a time, while sequential reads stream ahead. If a random read costs <b>r</b> sequential ones, the crossover drops to{' '}
           <b>1/(r·B)</b>. PostgreSQL assumes r = 4 by default, so 0.25%, and 4 is low on purpose: it assumes most random reads hit cache. A cold hard
-          disk is nearer r ≈ 200: 0.005%.
+          disk is r ≈ 200 or more: 0.005% or less.
         </>
       ),
       duration: 4,
@@ -184,7 +184,7 @@ const reel: Reel = {
       title: 'Back to the query',
       body: (
         <>
-          Row by row through the index: 2 million random reads, eight times the scan once r = 4. Sorted lookups touch 87% of the pages out of order. The
+          Row by row through the index: 2 million random reads, eight times the scan once r = 4. Sorted lookups touch 87% of the pages, in order but with gaps. The
           scan reads a million pages in one sweep. The real contest is the bottom two, and that is the call a planner's cost model makes. At this scale
           PostgreSQL prices those two within about 1% of each other: a close call, settled by details (memory for the bitmap, the index's size,
           parallel workers) that the Deep dive works through.

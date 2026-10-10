@@ -24,7 +24,7 @@ Checked 2026-10-10. PostgreSQL "current" = 18 (18.6); 19 is at Beta 4. All arith
 | 14 | CONFIRMED (model statement) | Holds in the I/O model: ceil(k/B) + O(log_B N) vs N/B. Caveat for the PostgreSQL context: Postgres heap tables are not kept clustered (see #35), so this applies to InnoDB/SQL Server-style clustered indexes or to a freshly CLUSTERed table. | recomputed |
 | 15 | CONFIRMED | 2^40/2^34 = 64 runs. M/B = 2^34/2^20 = 16,384, so fan-in 16,383 >= 64, giving 1 merge pass and 2 passes total. log2 64 = 6 merge passes, giving 7 total. | recomputed |
 | 16 | CONFIRMED | TAOCP Vol. 3 Sec. 5.4.1 is "Multiway Merging and Replacement Selection" (snowplow argument). Bender et al. ISAAC 2015: "when the input appears in random order, then the expected length of a run is 2M [Gassner 1967]. In [Knuth TAOCP v3], Knuth gives memorable intuition ... snowplow." Note that 2M is the steady-state expectation. (Side note: PostgreSQL no longer uses replacement selection for run formation.) | https://www.cs.stonybrook.edu/~bender/newpub/2015-BenderMcMc-ISAAC-run-generation.pdf (Sec. 1); TAOCP Vol. 3 2nd ed. ToC (Sec. 5.4.1, p.252) |
-| 17 | CONFIRMED | 2^40/2^33 = 128 runs; fan-in 2^33/2^20 - 1 = 8,191 >= 128, so 2 passes. | recomputed |
+| 17 | CONFIRMED | Memory cut to a quarter, 4 GiB: 2^40/2^32 = 256 runs; fan-in 2^32/2^20 - 1 = 4,095 >= 256, so 2 passes (examples.py). | recomputed |
 | 18 | CONFIRMED | 50e6/50 = 1,000,000 pages; 400,000 < 1,000,000; 400,000 x 4 = 1,600,000 > 1,000,000. | recomputed |
 | 19 | CONFIRMED | 4*2^40/2^33 = 512 runs; 2^33/2^23 - 1 = 1,023 >= 512, so 1 merge pass and 2 passes. | recomputed |
 | 20 | CONFIRMED | PG 18 docs, 19.7.2 Planner Cost Constants: seq_page_cost "The default is 1.0." random_page_cost "The default is 4.0." Unchanged in 19 beta. | https://www.postgresql.org/docs/18/runtime-config-query.html#RUNTIME-CONFIG-QUERY-CONSTANTS |
@@ -113,7 +113,7 @@ Each claim will appear on the site. For each: CONFIRMED / CORRECTED (give the fi
 14. Clustered (table physically ordered by the key): matching rows are contiguous, cost ≈ k/B pages, so an index range scan beats a full scan at any selectivity below 100% (plus a few index pages).
 15. External sort, 1 TiB data, 16 GiB memory, 1 MiB blocks: run formation produces 1 TiB / 16 GiB = 64 sorted runs; merge fan-in up to M/B − 1 = 16,383 ≥ 64, so one merge pass; total 2 passes over the data (read+write each pass). With 2-way merging instead: log2(64) = 6 merge passes, 7 passes total.
 16. Replacement selection produces runs of expected length 2M on randomly ordered input (Knuth, TAOCP Vol. 3, §5.4.1).
-17. Halving memory to 8 GiB: 128 runs, fan-in 8,191 → still 2 passes.
+17. Cutting memory to a quarter, 4 GiB: 256 runs, fan-in 4,095 → still 2 passes.
 18. Quiz: 50M rows, 50 rows/page → 1M pages; unclustered index query returning 400,000 rows → 400,000 random reads (< 1M, index wins if all reads cost the same); with r = 4 → equivalent of 1.6M sequential reads (> 1M, scan wins).
 19. Quiz: 4 TiB, 8 GiB memory, 8 MiB blocks → 512 runs, fan-in 1,023 → one merge pass → 2 passes.
 

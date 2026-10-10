@@ -174,9 +174,6 @@
           "item": "Parallel disk model (D disks)",
           "at": [
             {
-              "deep": "The frontier"
-            },
-            {
               "deep": "The model, as stated"
             }
           ]
@@ -565,9 +562,6 @@
         "item": "Parallel disk model: D disks divide Scan and Sort by D, but search only becomes log_{DB}N, so parallelism cuts volume, not dependent-chain latency",
         "at": [
           {
-            "deep": "The frontier"
-          },
-          {
             "deep": "The model, as stated"
           },
           {
@@ -729,9 +723,21 @@
   },
   "gapReview": {
     "date": "2026-10-10",
-    "by": "pending",
-    "open": [
-      "gap hunt not yet run"
-    ]
+    "by": "independent gap-hunter agent, then a second independent agent confirming the fixes (numbers recomputed from PostgreSQL REL_18_STABLE costsize.c and tidbitmap.c; links, narration and coverage checked)",
+    "resolved": [
+      "Blocker: the reel claimed PostgreSQL picks the sorted lookups at the reel's scale; now worked in PG18 cost units (Mackert–Lohman pages, lossy bitmaps under work_mem, CPU and parallel terms): a close call, ~1% apart. Deep dive 'How PostgreSQL turns this into costs', Lab 1, examples.py",
+      "87% is the true binomial count; the planner's estimate is higher",
+      "Parallel disks (D) and prefetching: 'The model, as stated', PostgreSQL section, step 'Random reads cost more'",
+      "RAM-model big-O vs the I/O crossover made explicit: step 'They cross at 1/B', 'Why CPU big-O misleads'",
+      "random_page_cost 4.0 is low on purpose; physical r for a cold disk (a lower bound at queue depth 16)",
+      "FACT-CHECK entries 39–70 for the network content and the fixes",
+      "Broadcast vs shuffle crossover, memory bound, bytes to time: step 'The network is a tier too', 'The network, counted the same way'",
+      "S3 latency wording per AWS; worked latency × bandwidth range size",
+      "Prerequisite on distributed joins added",
+      "Sort bound reconciled with pass counts; merge-sort scene fan-in consistent",
+      "Bounds table attribution; EXPLAIN BUFFERS semantics; lab version stated; effective_cache_size as M",
+      "Second review: bitmap pages read in physical order; QD16 caveat; lab runner-up commands; broadcast drawn from all machines; Table 3.1 wording; per-row CPU wording; unused Knuth source removed; FACT-CHECK #17; coverage pointers"
+    ],
+    "open": []
   }
 }
