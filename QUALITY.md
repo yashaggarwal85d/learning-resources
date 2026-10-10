@@ -16,6 +16,7 @@ When a new issue is found: fix it, add a row here, and add or strengthen a guard
 | Every topic's code examples run and their asserted outputs hold | `npm run test:examples` (`examples.py` per topic) | Wrong or outdated code on screen |
 | Reel smoke test at 1440 × 900 and iPhone size: no page or console errors, no sideways scroll, every step renders a non-empty visual, predict steps answerable, pause/replay/restart controls exist and pause freezes the clock, every panel opens with content on first and second open, outside links open in a new tab | `site/tests/reels.mjs` | Broken reels, empty panels, missing controls, layout overflow |
 | Markdown relative links and anchors resolve | `scripts/check-docs.mjs` | Broken links in the plan and syllabi |
+| Narration exists for every live reel, matches its current script, both formats present, every line word-perfect, loudness, peak and pace in range | `npm run test:narration` (`site/tests/narration.mjs`) | Missing, stale or badly mastered narration |
 | The deploy also runs when only `syllabus/` changes | `.github/workflows/deploy.yml` | Site out of date with the syllabus |
 
 ## Issues and their guards
@@ -63,7 +64,11 @@ When a new issue is found: fix it, add a row here, and add or strengthen a guard
 | 22 | GitHub Pages wasn't enabled (and the repo was private), so the first deploy failed. | Repo made public; Pages source set to GitHub Actions. | Noted in the plan's deploy notes; the deploy job fails loudly if Pages is off. |
 | 23 | A syllabus-only change would not have triggered a redeploy. | `syllabus/*.md` added to the deploy triggers. | `deploy.yml`. |
 | 24 | A helper agent once put personal details (an email address) in a web request header. | Every agent brief now forbids personal information in any request, header or query. | Rule in every agent prompt. |
-| 25 | The first narrator voices (Kokoro) sounded robotic. | Comparing more natural open models by ear before choosing. | Rule: the voice is chosen by listening, by the site owner, then frozen. |
+| 25 | The first narrator voices (Kokoro) sounded robotic. | Compared Qwen3-TTS, VoxCPM2, Chatterbox and Orpheus by ear; the owner chose Orpheus "tara". | Rule: the voice is chosen by listening, by the site owner, then frozen in `narration/voice.json`. |
+| 26 | Orpheus "tara" lacked natural pauses and pitch movement. | Scripts written for speaking; best of several takes per line by pitch movement; designed pauses and beats. Pitch variation rose from 3.3 to 4.4 semitones. | The method is fixed in the plan and in `narration/`; every clip is made the same way. |
+| 27 | The transcript check flagged "2%" against "two percent" (and would flag "mypy" against "my pie"). | Transcripts and scripts are normalised (numbers spelled out, "a million" = "one million", an alias list). | `narration/assemble.py`; real errors (a skipped word, "endpoints" for "engineers") are still caught. |
+| 28 | Narration could silently fall out of date when a script line changed. | Every clip stores a hash of its script and voice version. | `npm run test:narration` fails on any stale or missing clip, wrong loudness, peak or pace. |
+| 29 | The voice mangled code names and some words ("functools" → "folk cells", "mypy" → "mikai", "retries" → "ratties", "with always cleans up" → "with all means up"). | Those lines rewritten in plain spoken English; the transcript check rejected every bad take, so none shipped. | Rule (plan, Narration): narration scripts avoid code identifiers and say what they mean in plain words; a line no take can pass is rewritten, never the check loosened. |
 
 ## Before shipping any topic
 
@@ -74,5 +79,6 @@ Go through this list (it summarises the rows above):
 3. Every code example in `examples.py`, executed.
 4. Every resource link and its metadata verified.
 5. Screens checked at desktop and phone size: nothing clipped, overlapping, too small or hidden behind controls.
-6. `npm run build`, `npm run test:examples` and `npm run test:reels` pass.
-7. No feature described before it exists.
+6. Narration generated with `narration/narrate.sh` and listened to end to end.
+7. `npm run build`, `npm run test:examples`, `npm run test:narration` and `npm run test:reels` pass.
+8. No feature described before it exists.

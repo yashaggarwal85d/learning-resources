@@ -1,0 +1,153 @@
+{
+  "topic": "de.io-cost-model",
+  "note": "Written to be spoken: one sentence or phrase per line; {\"beat\": s} is a deliberate pause; numbers are phrased the way they are said. `answer` plays after the learner answers a predict step.",
+  "steps": [
+    {
+      "lines": [
+        "Your orders table has a hundred million rows... spread across a million pages. And there's an index on status.",
+        "You want the two percent that were refunded.",
+        "Two percent? That sounds small. So most engineers reach straight for the index.",
+        { "beat": 0.4 },
+        "But count the page reads... and the answer flips."
+      ]
+    },
+    {
+      "lines": [
+        "Let's predict it first.",
+        "Say every page read costs the same, and each page holds a hundred rows.",
+        "Up to what share of matching rows does the index read fewer pages than scanning the whole table?"
+      ],
+      "answer": [
+        "About one percent. One over the number of rows per page.",
+        "The next few steps derive it... and then show why real storage pushes it even lower."
+      ]
+    },
+    {
+      "lines": [
+        "Here's the model. Aggarwal and Vitter, nineteen eighty-eight.",
+        "There's a fast memory that holds M items, and a slow disk that moves data in blocks of B items.",
+        "Work inside memory is free.",
+        "The only thing that counts... is how many blocks you move."
+      ]
+    },
+    {
+      "lines": [
+        "Three numbers describe any job.",
+        "N items in the problem. M that fit in memory. B per block.",
+        "Our table: a hundred million rows, a hundred to a page.",
+        "So it spans N over B... one million pages."
+      ]
+    },
+    {
+      "lines": [
+        "A full scan touches every block exactly once.",
+        "That's N over B reads. Here, a million... all sequential.",
+        "It's the floor for any job that has to look at all the data."
+      ]
+    },
+    {
+      "lines": [
+        "The index finds the matches fast. Its upper levels are almost always cached.",
+        "But every matching row lives on its own page, somewhere in the table.",
+        "So unless the table is stored in index order... each match costs about one random page read."
+      ]
+    },
+    {
+      "lines": [
+        "Now put them side by side.",
+        "The scan is flat, at N over B. The index climbs one read for every matching row.",
+        "They cross at one over B. Here, one percent.",
+        "At our two percent, the index reads twice as many pages. Try the slider."
+      ]
+    },
+    {
+      "lines": [
+        "Smarter engines sort the matches by page first, and read each page at most once.",
+        "Postgres calls that a bitmap heap scan.",
+        "It beats going row by row. But at two percent of the rows... you still touch about eighty-seven percent of the pages."
+      ]
+    },
+    {
+      "lines": [
+        "And real storage isn't fair.",
+        "A random read waits for a seek, or a fresh request. Sequential reads just stream.",
+        "If a random read costs r sequential ones, the crossover drops to one over r times B.",
+        "Postgres assumes r is four... so, a quarter of a percent."
+      ]
+    },
+    {
+      "lines": [
+        "Unless... the table is stored in index order.",
+        "Then the matches sit side by side, and k matches cost about k over B reads.",
+        "The index wins at almost any share.",
+        "Planners estimate this from a correlation statistic, from minus one to plus one."
+      ]
+    },
+    {
+      "lines": [
+        "Sorting on disk works the same way. Count passes, not comparisons.",
+        "External merge sort fills memory, sorts it, and writes a sorted run.",
+        "Then it merges many runs at once.",
+        "And that's optimal in this model."
+      ]
+    },
+    {
+      "lines": [
+        "Here's a terabyte, sorted with sixteen gigabytes of memory.",
+        "The first pass writes sixty-four runs.",
+        "The merge can take over sixteen thousand at once... so one more pass finishes it.",
+        "Two passes in total. Merging two at a time would take seven."
+      ]
+    },
+    {
+      "lines": [
+        "The same model works at every level of the hierarchy. Only the block size and the price of a move change.",
+        "CPUs move sixty-four byte lines. Databases move eight kilobyte pages.",
+        "Object stores want multi-megabyte ranges, because every request waits before its first byte.",
+        "So count the transfers at whichever tier dominates."
+      ]
+    },
+    {
+      "lines": [
+        "So, back to the query.",
+        "Row by row through the index: two million random reads. At four times the cost... eight times the scan.",
+        "Sorted lookups: most of the pages, with gaps.",
+        "The scan: a million pages, in one sweep.",
+        "The real contest is between the last two... and that's exactly the call a planner's cost model makes."
+      ]
+    },
+    {
+      "lines": [
+        "Time to prove it.",
+        "Fifty million rows, fifty to a page, an unclustered index. Your query matches four hundred thousand rows.",
+        "Index, or full scan?"
+      ],
+      "answer": [
+        "It depends. The table is a million pages, and the index needs about four hundred thousand random reads.",
+        "If random and sequential reads cost the same, the index wins.",
+        "But at four times the cost, that's one point six million... and the scan wins."
+      ]
+    },
+    {
+      "lines": [
+        "Next. Sort four terabytes, with eight gigabytes of memory, and eight megabyte blocks.",
+        "How many passes over the data?"
+      ],
+      "answer": [
+        "Two.",
+        "The first pass writes five hundred and twelve runs. The merge can take over a thousand at once... so one more pass does it."
+      ]
+    },
+    {
+      "lines": [
+        "Last one. Our terabyte sort again... but memory is cut to a quarter.",
+        "What happens?"
+      ],
+      "answer": [
+        "Still two passes.",
+        "Two hundred and fifty-six runs, and the merge can take over four thousand at once.",
+        "Memory only starts to matter once the runs outnumber what you can merge."
+      ]
+    }
+  ]
+}

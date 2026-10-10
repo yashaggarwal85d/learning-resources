@@ -1,0 +1,72 @@
+{
+  "version": "tara-v1",
+  "note": "The frozen narrator voice (PROJECT_PLAN.md, Narration). Changing anything here is a deliberate decision that regenerates every clip.",
+  "model": {
+    "name": "Orpheus 3B 0.1 (fine-tuned), Q4_K_M GGUF",
+    "repo": "isaiahbjork/orpheus-3b-0.1-ft-Q4_K_M-GGUF",
+    "base": "canopylabs/orpheus-3b-0.1-ft",
+    "licence": "Apache-2.0 model card; built on Llama 3.2 (Built with Llama)"
+  },
+  "voice": "tara",
+  "sampling": {
+    "top_p": 0.95,
+    "top_k": 50,
+    "min_p": 0.05,
+    "repeat_penalty": 1.1,
+    "max_tokens": 2048,
+    "n_ctx": 4096
+  },
+  "takes": [
+    {
+      "temperature": 0.7,
+      "seed": 11
+    },
+    {
+      "temperature": 0.78,
+      "seed": 23
+    },
+    {
+      "temperature": 0.85,
+      "seed": 37
+    }
+  ],
+  "extra_takes": [
+    {
+      "temperature": 0.75,
+      "seed": 41
+    },
+    {
+      "temperature": 0.8,
+      "seed": 53
+    },
+    {
+      "temperature": 0.72,
+      "seed": 67
+    },
+    {
+      "temperature": 0.82,
+      "seed": 79
+    }
+  ],
+  "selection": "Reject any take whose transcript differs from the line (after number and alias normalisation), or, for lines of six words or more, whose pace is outside 1.5\u20133.6 words/s; of the rest keep the one with the most pitch movement (std of F0 in semitones).",
+  "pauses": {
+    "between_lines": 0.42,
+    "after_question": 0.55,
+    "lead_in": 0.15,
+    "tail": 0.35
+  },
+  "audio": {
+    "loudness_lufs": -16,
+    "true_peak_dbtp": -1,
+    "sample_rate": 48000,
+    "mp3_kbps": 96,
+    "opus_kbps": 48
+  },
+  "asr": {
+    "model": "faster-whisper small.en (int8, CPU)",
+    "aliases": {
+      "dataclasses": "data classes",
+      "dataclass": "data class"
+    }
+  }
+}
