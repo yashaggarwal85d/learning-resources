@@ -10,7 +10,7 @@ The reels' voice-over is generated here, on our own machine, with an open-source
 ## How a clip is made
 
 1. Each line is generated as three takes (`voice.json` → `takes`).
-2. Each take is transcribed locally (faster-whisper `small.en`). A take is rejected unless the transcript matches the line word for word (numbers and aliases normalised) and its pace is 1.9–3.4 words per second.
+2. Each take is transcribed locally (faster-whisper `small.en`). A take is rejected unless the transcript matches the line word for word (numbers and aliases normalised) and (for lines of six words or more) its pace is 1.5–3.6 words per second.
 3. Of the takes that pass, the one with the most pitch movement wins (more natural, less flat).
 4. If no take passes, more takes are generated (`extra_takes`); if none ever passes, rewrite the line.
 5. Winning lines are joined with designed pauses, then normalised to −16 LUFS, −1 dBTP true peak, and encoded to Opus and MP3.

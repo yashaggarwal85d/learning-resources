@@ -73,8 +73,9 @@ def score(line, take, cache):
     return s
 
 
-def passes(s):
-    return s["wer"] == 0 and 1.9 <= s["wps"] <= 3.4
+def passes(s, words):
+    # Pace is only meaningful on longer lines: a deliberate pause dominates a short one.
+    return s["wer"] == 0 and (words < 6 or 1.5 <= s["wps"] <= 3.6)
 
 
 def lines_of(topic_dir):
@@ -100,7 +101,7 @@ def build(topic_dir, jobs_path):
     for line in lines:
         made = [t for t in all_takes if os.path.exists(take_path(line, t))]
         scored = [(t, score(line, t, cache)) for t in made]
-        ok = [(t, s) for t, s in scored if passes(s)]
+        ok = [(t, s) for t, s in scored if passes(s, len(norm(line)))]
         if ok:
             best[line] = max(ok, key=lambda ts: ts[1]["pitch_sd"])
         else:
