@@ -80,6 +80,8 @@ IPA = {
     'Bad': 'baːt', 'Bäder': 'ˈbɛːdɐ', 'lieblich': 'ˈliːplɪç', 'lieben': 'ˈliːbn̩', 'wichtig': 'ˈvɪçtɪç',
     'Acht': 'ˈʔaxt', 'beachten': 'bəˈʔaxtn̩', 'Theater': 'teˈʔaːtɐ', 'Oase': 'ʔoˈʔaːzə', 'Achtung': 'ˈʔaxtʊŋ',
     'Hund': 'hʊnt', 'Hündchen': 'ˈhʏntçən',
+    'Müller': 'ˈmʏlɐ', 'Bär': 'bɛːɐ̯', 'Fuchs': 'fʊks', 'Dachs': 'daks', 'Dachs (genitive of Dach)': 'daxs',
+    'Los': 'ˈloːs', 'Lose': 'ˈloːzə',
 }
 # Length goes with quality: the short partner is a different vowel (Miete iː, Mitte ɪ; Höhle øː, Hölle œ).
 assert IPA['Miete'] == 'ˈmiːtə' and IPA['Mitte'] == 'ˈmɪtə'
@@ -87,6 +89,7 @@ assert IPA['Miete'].replace('iː', 'ɪ') == IPA['Mitte']  # one vowel is the who
 assert IPA['Miete'].count('t') == IPA['Mitte'].count('t') == 1  # the doubled tt is one sound
 assert len('mɪtə') == 4  # four sounds in [ˈmɪtə]: m, ɪ, t, ə (Prerequisites self-check)
 assert IPA['Mühle'][1:3] == 'my'
+assert IPA['Müller'][2] == 'ʏ' and IPA['Mühle'][1:3] == 'my'  # the Practice table's Müller / Mühle row: short ʏ, long yː
 MULLER_VOWEL = 'ʏ'  # Müller [ʏ] (ADS table, ORTH): the short partner of Mühle's yː
 assert VOWELS[MULLER_VOWEL][3] == 'short' and umlaut('uː') == 'yː'
 assert IPA['kam'] == 'kaːm' and IPA['Kamm'] == 'kam'
@@ -128,13 +131,16 @@ assert length_from_spelling('Drache') == length_from_spelling('Sprache') == 'unk
 
 # ---------------------------------------------------------------------------------------------------------------
 # 3. The two ch sounds: the vowel before decides, and -chen always takes the front one.
-def ch_sound(stem, suffix=''):
+def ch_sound(stem, suffix='', boundary=False):
+    """boundary=True: the s after ch is a separate ending (Dach + s), so the ch keeps its own sound."""
     if suffix == 'chen':
         return 'ç'
     s = stem.lower()
     i = s.index('ch')
     if i == 0:  # northern onset in loanwords: Chemie
         return 'ç'
+    if s[i:i + 3] == 'chs' and not boundary:  # chs inside a stem is [ks]: sechs, Fuchs, Dachs, wachsen, Ochse
+        return 'ks'
     before = s[:i]
     if before.endswith(('eu', 'äu', 'ei', 'ai')):  # the sound ends in a front glide although the letter is u or i
         return 'ç'
@@ -152,6 +158,12 @@ for w in BACK:
 assert ch_sound('rauchen') == 'x' and ch_sound('Frau', 'chen') == 'ç' and ch_sound('Hünd', 'chen') == 'ç'
 # Kuchen is the test that the rule is about the cut in the word, not the spelled letters c-h-e-n.
 assert ch_sound('Kuchen') == 'x' and ch_sound('Fräu', 'chen') == 'ç'
+# One spelling is not a ch at all (review 8): chs inside a stem is [ks]; across a morpheme boundary the ch keeps its sound.
+for w in ['sechs', 'Fuchs', 'Dachs', 'wachsen', 'Ochse']:
+    assert ch_sound(w) == 'ks', w
+assert ch_sound('Dachs', boundary=True) == 'x'  # Dach + s, 'of the roof': [daxs]
+assert IPA['Fuchs'] == 'fʊks' and IPA['Dachs'] == 'daks' and IPA['Dachs (genitive of Dach)'] == 'daxs'
+assert IPA['Dachs'] != IPA['Dachs (genitive of Dach)'] and IPA['Fuchs'].endswith('ks') and 'ç' not in IPA['Fuchs']
 # Umlaut moves the ch (C76): Buch -> Bücher, Koch -> Köche.
 assert (ch_sound('Buch'), ch_sound('Bücher')) == ('x', 'ç') and (ch_sound('Koch'), ch_sound('Köche')) == ('x', 'ç')
 # The sourced transcriptions agree.
@@ -197,6 +209,14 @@ assert devoice(['ʁaːd'], 'AT') == 'ʁaːd' and devoice(['ʁaːd'], 'CH') == '�
 # What is on screen is the sourced transcription (the dictionary forms, with the stress mark).
 assert IPA['Räder'] == 'ˈʁɛːdɐ' and IPA['Tage'] == 'ˈtaːɡə' and IPA['brave'] == 'ˈbʁaːvə'
 assert IPA['Bäder'] == 'ˈbɛːdɐ' and IPA['lieblich'] == 'ˈliːplɪç' and IPA['lieben'] == 'ˈliːbn̩'
+# The letters are not the sounds (review 14): z is [ts] and never voiced; native v is [f]; the voiced /z/ is spelled s.
+LETTER_SOUND = {'z': 'ts', 'v (native: Vogel, viel)': 'f', 's before a vowel': 'z'}
+assert 'ts' not in DEVOICE and LETTER_SOUND['z'] == 'ts' and 'f' not in DEVOICE  # nothing to devoice in Zaun or Vogel
+assert LETTER_SOUND['s before a vowel'] in DEVOICE  # /z/ is in the devoicing class
+assert devoice(['loːz']) == 'loːs' and devoice(['loː', 'zə']) == 'loːzə'  # Los / Lose
+assert devoice(['ˈloːz']) == IPA['Los'] == 'ˈloːs' and devoice(['ˈloː', 'zə']) == IPA['Lose'] == 'ˈloːzə'
+CAPTION_SOUNDS = 'b d ɡ v z'.split()  # [b d ɡ v z] in step 11's caption
+assert len(CAPTION_SOUNDS) == 5 and all(c in DEVOICE for c in CAPTION_SOUNDS)
 # A twist, not an exception: [ɪç] is voiceless too. Before -lich the g stays a stop: königlich [ˈkøːnɪklɪç].
 assert devoice(['køː', 'nɪɡ', 'lɪç']).replace('ɡ', 'k') == 'køːnɪklɪç'
 
@@ -214,6 +234,10 @@ assert r_surface('roːt') == IPA['rot'] and r_surface('deːr') == IPA['der'] and
 assert r_surface('fyːr') == 'fyːɐ̯' and r_surface('zeːr') == 'zeːɐ̯'
 assert r_surface('ˈbɛsər') == IPA['besser'] == 'ˈbɛsɐ'
 assert r_surface('ˈoːpər') == IPA['Oper'] == 'ˈoːpɐ'
+assert r_surface('bɛːr') == IPA['Bär'] == 'bɛːɐ̯'  # Bär: a glide after ä (not an -er word)
+# After a the vocalised r is often absorbed into long aː (SGP: /ar/ > [aɐ] > [aː]): hart comes out as [haːt].
+ABSORBED = {'haɐ̯t': 'haːt'}
+assert ABSORBED['haɐ̯t'].replace('aː', 'aɐ̯') == 'haɐ̯t' and r_surface('hart') == 'haɐ̯t'
 # -er [ɐ] is not -e [ə]: besser is not bitte.
 assert IPA['besser'][-1] == 'ɐ' and IPA['bitte'][-1] == 'ə' and 'ɐ' != 'ə'
 # Oper and Opa: the dictionaries keep [ɐ] and [a] apart; a 2020 study of six northern speakers found them merged.
@@ -222,7 +246,8 @@ NORTHERN_SPEECH_2020 = {'Oper': 'ˈoːpa', 'Opa': 'ˈoːpa'}
 assert DICTIONARY['Oper'] != DICTIONARY['Opa'] and NORTHERN_SPEECH_2020['Oper'] == NORTHERN_SPEECH_2020['Opa']
 assert DICTIONARY['Oper'] == IPA['Oper'] and DICTIONARY['Opa'] == IPA['Opa']
 assert r_surface('ˈoːpər').replace('ɐ', 'a') == DICTIONARY['Opa']  # ɐ is just a little higher than a
-SPEAKERS_2020 = 6  # Rathcke and Mooshammer (2020): six northern speakers
+SPEAKERS_2020 = 6
+DUDEN_EDITION, DUDEN_YEAR = 7, 2015  # Duden Aussprachewörterbuch, 7th edition, Berlin 2015 (de.wiktionary footnote)  # Rathcke and Mooshammer (2020): six northern speakers
 
 
 # ---------------------------------------------------------------------------------------------------------------

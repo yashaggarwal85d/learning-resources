@@ -373,6 +373,20 @@ Added by the fact-check (2026-10-11), raw passages from the same fetched text:
 
 > ch after ⟨a, o, u⟩ [x]
 
+Added by the content review (2026-10-11), raw passages from the same fetched text:
+
+> within a morpheme (e.g. Dachs [daks] "badger")
+
+> across a morpheme boundary (e.g. Dachs [daxs] "roof (gen.)")
+
+> Native German words now pronounced with a /ks/ sound are usually written using ⟨chs⟩ or ⟨(c)ks⟩, as with Fuchs (fox).
+
+> In words of Ancient Greek origin, word-initial ⟨ch⟩ is pronounced [k] before ⟨a, o, l, r⟩ (with rare exceptions : Charisma, where both [k] and [ç] are possible); normally [ç] before ⟨e, i, y⟩ (but [k] in Southern Germany and Austria)
+
+> The letter ⟨v⟩ occurs only in a few native words, and then it represents /f/.
+
+> The letter ⟨z⟩ represents the sound /t͡s/.
+
 Contents:
 - Alphabet: basic alphabet and special letters (ä, ö, ü, ß); count of letters
 - Use of special letters: umlaut diacritic usage (origin from superscript e; ae/oe/ue substitution; Swiss keyboards), sharp s (ß after long vowels and diphthongs; not used in Switzerland)
@@ -887,7 +901,7 @@ Version: current revision as served 2026-10-11 (accessed 2026-10-11)
 
 The footnote [1] on the northern variant cites the Duden pronunciation dictionary:
 
-> Nach Stefan Kleiner, Ralf Knöbl und Dudenredaktion: Duden Aussprachewörterbuch.
+> Nach Stefan Kleiner, Ralf Knöbl und Dudenredaktion: Duden Aussprachewörterbuch. In: Der Duden in zwölf Bänden. 7., komplett überarbeitete und aktualisierte Auflage. Band 6, Dudenverlag, Berlin 2015
 
 ## Wiktionary (de): Kuchen
 URL: https://de.wiktionary.org/wiki/Kuchen
@@ -1117,3 +1131,42 @@ Version: current revision as served 2026-10-11 (accessed 2026-10-11)
 
 > kö·nig·lich, Komparativ: kö·nig·li·cher, Superlativ: am kö·nig·lichs·ten Aussprache: IPA: [ˈkøːnɪklɪç]
 
+## DWDS: Fuchs
+URL: https://www.dwds.de/wb/Fuchs
+Version: current entry as served 2026-10-11 (accessed 2026-10-11)
+
+> Aussprache: Fehler [fʊks]
+
+Note: "Fehler" is the label of the page's audio player as it appears in the fetched text, not part of the entry.
+
+## DWDS: Frauchen
+URL: https://www.dwds.de/wb/Frauchen
+Version: current entry as served 2026-10-11 (accessed 2026-10-11)
+
+> kleine (alte) Frau
+
+> Herrin des Hundes
+
+## Wiktionary (de): Müller
+URL: https://de.wiktionary.org/wiki/M%C3%BCller
+Version: current revision as served 2026-10-11 (accessed 2026-10-11)
+
+> IPA: [ˈmʏlɐ]
+
+## Wiktionary (de): Bär
+URL: https://de.wiktionary.org/wiki/B%C3%A4r
+Version: current revision as served 2026-10-11 (accessed 2026-10-11)
+
+> IPA: [bɛːɐ̯]
+
+## Close back rounded vowel (Wikipedia)
+URL: https://en.wikipedia.org/wiki/Close_back_rounded_vowel
+Version: accessed 2026-10-11 (Wikipedia current revision, no revision id shown in the fetched text)
+
+> In most languages, this rounded vowel is pronounced with protruded lips ('endolabial'). However, in a few cases the lips are compressed ('exolabial').
+
+## Guttural R (Wikipedia)
+URL: https://en.wikipedia.org/wiki/Guttural_R
+Version: accessed 2026-10-11 (Wikipedia current revision, no revision id shown in the fetched text)
+
+> This is most common in the syllable coda, as in non-rhotic English, but sometimes occurs before an underlying schwa, too.

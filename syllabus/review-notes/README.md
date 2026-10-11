@@ -12,6 +12,7 @@ Change logs from the topic-by-topic review of the three syllabi. Each file lists
 | [de-m8.md](de-m8.md) | Data Engineering, Milestone 8 and Appendices A–B |
 | [rust.md](rust.md) | Rust Systems Engineering |
 | [dsa.md](dsa.md) | Data Structures & Algorithms |
+| [german-m1.md](german-m1.md) | German Language, Milestone 1: gaps found in topic reviews |
 
 ## Fact-check logs
 

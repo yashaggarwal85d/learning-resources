@@ -174,7 +174,7 @@ export function Problem({ t }: StepCtx) {
       </g>
       <g opacity={fade(t, 2.6, 3.2)}>
         <T x={300} y={318} s={14} f={C.cherryText} a="middle">ie said short: Miete becomes Mitte</T>
-        <T x={300} y={342} s={14} f={C.cherryText} a="middle">ü said as u: Küche drifts toward Kuchen, cake</T>
+        <T x={300} y={342} s={14} f={C.cherryText} a="middle">ü said as u: not a German word (Kuche)</T>
       </g>
       <g opacity={fade(t, 3.4, 4.2)}>
         <T x={300} y={386} s={13} f={C.taupe} a="middle">THE AGENT REPLIES</T>
@@ -386,7 +386,7 @@ export function ChPlaces({ t }: StepCtx) {
     </>
   );
   return (
-    <Svg label="The two ch sounds: after a, o, u and au the tongue is at the back; elsewhere at the front" h={496}>
+    <Svg label="The two ch sounds: after a, o, u and au the tongue is at the back; elsewhere at the front; chs in a stem is ks" h={530}>
       <Mouth ox={OX} oy={OY} sc={SC} pose={pose} lips="spread" mark={over ? undefined : cur.mark} t={t - k * beat} />
       {!over && cur.mark === 'hardPalate' && <T x={hx - 18} y={hy - 4} s={13} f={C.taupe} a="end">hard palate</T>}
       {!over && cur.mark === 'softPalate' && <T x={sx + 40} y={sy - 12} s={13} f={C.taupe}>soft palate</T>}
@@ -407,6 +407,9 @@ export function ChPlaces({ t }: StepCtx) {
       </g>
       <g opacity={fade(t, 6.0, 6.6)}>
         <Tx x={300} y={478} s={17} a="middle" f={C.latte}>Küche ʏ+ç · Kuchen uː+x</Tx>
+      </g>
+      <g opacity={fade(t, 6.4, 7)}>
+        <Tx x={300} y={510} s={17} a="middle" f={C.latte}>chs in a stem is ks: sechs · Fuchs fʊks</Tx>
       </g>
     </Svg>
   );
@@ -429,7 +432,7 @@ export function Frauchen({ t, answer }: StepCtx) {
           sounds={[{ s: 'ʁ', from: [0] }, { s: 'aʊ', from: [1, 2] }, { s: 'x', from: [3, 4], f: C.cinnamon }, { s: 'ə', from: [5] }, { s: 'n', from: [6] }]}
         />
         <Line x1={X1 + P * 5} y1={38} x2={X1 + P * 5} y2={144} f={C.caramel} w={2} dash="4 4" o={cut} />
-        <T x={X2} y={22} s={14} f={C.latte}>Frau + chen: small Frau</T>
+        <T x={X2} y={22} s={14} f={C.latte}>Frau + chen</T>
         <Strip
           x0={X2} y={66} pitch={P} letters={['F', 'r', 'a', 'u', 'c', 'h', 'e', 'n']}
           lcol={(i) => (ans && i >= 4 ? C.caramel : undefined)}

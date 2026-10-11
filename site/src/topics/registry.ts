@@ -98,7 +98,7 @@ export const TOPICS: TopicMeta[] = [
     ],
     uses: [],
     declared: ['english'],
-    bridge: 'German starts here. Before any grammar, the sounds: six places where English reading habits will mislead you, and the mechanism behind each.',
+    bridge: 'German starts here. Before any grammar, the sounds: six sounds that English ears and eyes get wrong, and the mechanism behind each.',
     handoff: 'You can hear the system now. Next: Spelling-to-sound rules: read ei and ie, sch, sp and st, z, v and w, and ß against ss straight off the page.',
   },
 ];
