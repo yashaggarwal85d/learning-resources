@@ -17,7 +17,7 @@
 //   node scripts/claim.mjs open [<domain>...]   how many runs could start work now, per domain (nothing is claimed)
 //   node scripts/claim.mjs expire <minutes>     after an outage (a usage limit): claims silent this long are dead now, free to resume
 //
-// <domain> is a domain id, title or topic-id prefix ("data-structures-and-algorithms", "Data Structures & Algorithms", "dsa", "German").
+// <domain> is a domain id, title or topic-id prefix ("data-structures-and-algorithms", "Data Structures & Algorithms", "dsa", "Rust").
 // Settings: CLAIM_MAX_PARALLEL (default 4) runs per domain at once; a claim is stale after 90 minutes without a heartbeat;
 // a topic whose runs stopped 3 times (or vanished 6 times, as on a usage limit) is blocked (reported, not retried) until a
 // human looks at it and deletes its claim. CLAIM_MAX_TOTAL (default 8) caps the runs of all domains together.
@@ -55,7 +55,7 @@ async function course(domainArg) {
   const { TOPICS } = await import(join(root, 'site/src/topics/registry.ts'));
   const domains = loadDomains(); // reads ../syllabus relative to site/
   process.chdir(root);
-  const alias = { de: 'data-engineering', dsa: 'data-structures-and-algorithms', ger: 'german-language', rust: 'rust-systems-engineering' };
+  const alias = { de: 'data-engineering', dsa: 'data-structures-and-algorithms', rust: 'rust-systems-engineering' };
   domainArg = alias[domainArg.toLowerCase()] ?? domainArg;
   const want = domainArg.toLowerCase().replace(/&/g, 'and').replace(/[^a-z]+/g, ' ').trim();
   const d = domains.find((x) => [x.id, x.title].some((n) => { const s = n.toLowerCase().replace(/&/g, 'and').replace(/[^a-z]+/g, ' ').trim(); return s === want || s.startsWith(want + ' '); }));
@@ -65,7 +65,7 @@ async function course(domainArg) {
   return { domain: d.id, order, reg };
 }
 
-const PREFIX = { 'data-engineering': 'de', 'data-structures-and-algorithms': 'dsa', 'german-language': 'ger', 'rust-systems-engineering': 'rust' };
+const PREFIX = { 'data-engineering': 'de', 'data-structures-and-algorithms': 'dsa', 'rust-systems-engineering': 'rust' };
 const words = (x, n) => x.toLowerCase().normalize('NFKD').replace(/[^a-z0-9]+/g, ' ').trim().split(' ').filter((w) => !['and', 'the', 'of', 'a', 'an', 'in', 'to', 'for', 'with', 'its'].includes(w)).slice(0, n).join('-');
 
 // Where a new topic goes, so parallel runs in one chapter never invent two folders for it: the chapter's folder as
@@ -98,7 +98,7 @@ function chapterPlans(domain) {
 // Unmerged topic branches with no claim (a run from before claims existed, or one whose claim was lost):
 // their registry entry says which syllabus topic they hold, so the next run resumes them instead of starting over.
 function orphans(domain, reg) {
-  const prefix = { 'data-engineering': 'de.', 'data-structures-and-algorithms': 'dsa.', 'german-language': 'ger.', 'rust-systems-engineering': 'rust.' }[domain];
+  const prefix = { 'data-engineering': 'de.', 'data-structures-and-algorithms': 'dsa.', 'rust-systems-engineering': 'rust.' }[domain];
   const found = new Map();
   const heads = git(['ls-remote', '--heads', 'origin', `refs/heads/topic/${prefix}*`]).stdout.trim().split('\n').filter(Boolean);
   for (const line of heads) {

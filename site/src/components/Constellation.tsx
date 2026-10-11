@@ -26,7 +26,6 @@ const COLORS: [number, number, number][] = [
   [212, 154, 87], // caramel: Data Engineering
   [196, 108, 58], // cinnamon: Rust
   [233, 217, 191], // crema: DSA
-  [200, 172, 140], // latte: German
 ];
 
 // Galaxy centres as fractions of the canvas, for wide and tall screens.

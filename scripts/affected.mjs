@@ -44,7 +44,7 @@ export function affected(base = 'origin/main') {
       continue;
     }
     // Docs, syllabi and metrics don't change how a reel renders; the build checks syllabi on every run anyway.
-    if (/^(syllabus\/|metrics\/|[^/]+\.md$|site\/narration\/)/.test(p) || /^scripts\/(claim|run-metrics|ledger|audit-scope|sources)\.mjs$/.test(p) || p === '.gitattributes') continue;
+    if (/^(syllabus\/|metrics\/|[^/]+\.md$|site\/narration\/)/.test(p) || /^scripts\/(claim|run-metrics|ledger|audit-scope|sources|check-locked)\.mjs$/.test(p) || p === '.gitattributes') continue;
     return all; // shared code, tests, packages, workflows: everything is affected
   }
   const slugs = [...hit];

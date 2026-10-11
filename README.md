@@ -4,13 +4,12 @@ An expert-level learning site where every topic is a short animated, narrated **
 
 **Live:** https://yashaggarwal85d.github.io/learning-resources/ (the Reels tab plays every finished topic in course order).
 
-Four tracks, each with a full syllabus:
+Three tracks, each with a full syllabus:
 
 | Track | Syllabus | Status |
 |---|---|---|
 | Data Engineering | [syllabus/data-engineering.md](syllabus/data-engineering.md) | in production (hourly routine) |
 | Data Structures & Algorithms | [syllabus/data-structures-and-algorithms.md](syllabus/data-structures-and-algorithms.md) | in production (hourly routine) |
-| German, A1 to C2 | [syllabus/german-language.md](syllabus/german-language.md) | in production (hourly routine) |
 | Rust Systems Engineering | [syllabus/rust-systems-engineering.md](syllabus/rust-systems-engineering.md) | in production (hourly routine) |
 
 ## The documents that run the project
@@ -46,7 +45,7 @@ site/                                      the website (Astro + React islands + 
     reel.tsx, scenes.tsx                   the reel: steps and animations (each a pure function of time)
     index.mdx                              the Deep dive
     prerequisites.mdx                      what to know first, with resources
-    narration.json                         the spoken script (English lines, {"de": …} German lines, beats)
+    narration.json                         the spoken script (lines and beats)
     coverage.json                          the coverage map (syllabus, sources, blind expert list, gap review)
     examples.py                            every example and number, executed with asserts
     FACT-CHECK.md                          claims checked against primary sources
@@ -89,7 +88,6 @@ narration/narrate.sh src/topics/<domain>/<milestone>/<chapter>/<topic>
 ```
 
 - **English narrator:** Orpheus 3B, voice "tara".
-- **German voice:** for German lessons, a voice designed from a text description and frozen as `site/narration/voices/german-reference.wav`, cloned for every line with Qwen3-TTS.
 
 Both are frozen in `site/narration/voice.json`. Details are in [site/narration/README.md](site/narration/README.md).
 
