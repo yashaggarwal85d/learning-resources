@@ -97,6 +97,7 @@ Fact-check record: `FACT-CHECK.md`. Source quotes: `SOURCES.md`.
 ## Progress
 
 - Done: research, reel, deep dive, fact-check, gap hunt, flow review (section-4 content review, 2026-10-11: flow, gap hunt and expert reader; fixes applied, recorded in `coverage.json` → `gapReview`). Build and `examples.py` pass; the reel test passes apart from the narration manifest 404 (no audio yet).
-- Next: narration (`narration.json` is final for the current reel), checks (section 6, with the looks and learning review).
+- 2026-10-11 resume run: narration audio is on the branch; examples, build, reels and links checks pass on the merged branch. Two blockers remain before shipping: (1) `node scripts/check-locked.mjs` fails because it counts registry.ts as owned by live de.python-essentials, so any new registry entry fails it (needs the owner's decision or an Unlock: shared); (2) `SOURCES.md` was written from WebFetch summaries in a format `sources.mjs check` rejects (no 'URL:' line; 11 problems, 0 quotes verified): it must be redone with `sources.mjs fetch` raw texts and verbatim quotes, then FACT-CHECK re-run against them. Looks review (Opus) still to do.
+- Next (original): narration (`narration.json` is final for the current reel), checks (section 6, with the looks and learning review).
 
 ## Changes after outlined
