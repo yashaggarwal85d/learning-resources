@@ -19,6 +19,7 @@
 //
 // <domain> is a domain id, title or topic-id prefix ("data-structures-and-algorithms", "Data Structures & Algorithms", "dsa", "Rust").
 // Settings: CLAIM_MAX_PARALLEL (default 4) runs per domain at once; a claim is stale after 90 minutes without a heartbeat;
+// scripts/claim-settings.json: { "finishOnly": true } starts nothing new; "maxTotal" overrides CLAIM_MAX_TOTAL.
 // a topic whose runs stopped 3 times (or vanished 6 times, as on a usage limit) is blocked (reported, not retried) until a
 // human looks at it and deletes its claim. CLAIM_MAX_TOTAL (default 8) caps the runs of all domains together.
 import { spawnSync } from 'node:child_process';
@@ -34,7 +35,10 @@ const BEAT_MIN = Number(process.env.CLAIM_BEAT_MIN ?? 15);
 const MAX = Number(process.env.CLAIM_MAX_PARALLEL ?? 4); // runs of one domain at once
 // Runs of all domains at once. They share one account's usage limit (with its owner's own sessions): 26 runs started
 // together hit the five-hour limit within three minutes and all died (QUALITY.md #46).
-const MAX_TOTAL = Number(process.env.CLAIM_MAX_TOTAL ?? 8);
+// The owner's switches, in scripts/claim-settings.json on main: finishOnly (resume and release started topics, start
+// nothing new: no chapter plans, no new topics) and maxTotal (runs of all domains at once).
+const SETTINGS = (() => { try { return JSON.parse(readFileSync(join(root, 'scripts/claim-settings.json'), 'utf8')); } catch { return {}; } })();
+const MAX_TOTAL = Number(process.env.CLAIM_MAX_TOTAL ?? SETTINGS.maxTotal ?? 8);
 const MAX_STOPS = 3; // a topic whose runs gave up (claim.mjs stop) this often is blocked for a human
 const MAX_DEATHS = 6; // runs that vanished without a word (a usage limit, a lost container) count separately, and more loosely
 
@@ -245,6 +249,8 @@ function decide({ domain, order, reg, lost, plans, chapters }, owner) {
       const c = claimOf(planTitle(ch));
       if (c && stale(c) && !plans.has(ch.number) && !tooOften(c, planTitle(ch))) return planJob(ch, true);
     }
+
+    if (SETTINGS.finishOnly) return { action: 'wait', reason: blocked.length ? blocked.join('; ') : 'finishing started topics only (scripts/claim-settings.json): nothing new is started' };
 
     // 3. Plan the next chapter. Chapters go in sequence: a chapter is planned once every topic of the chapter before it is
     // content-final (live, held, or marked final), so its plan builds on what that chapter really teaches.
