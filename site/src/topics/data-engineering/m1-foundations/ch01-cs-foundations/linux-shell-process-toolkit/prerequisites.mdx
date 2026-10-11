@@ -1,0 +1,32 @@
+import Resource from '../../../../../components/Resource.astro';
+
+This is a refresher, the third of five. It assumes you already work at a shell prompt: move around, list files, run a command, edit a file. The syllabus treats basic shell use as known, so the reel is a recap of the parts a data engineer leans on (redirection, exit codes, signals, a hung job, a few text tools), not a first course.
+
+<section class="prereq" data-section="shell-basics">
+
+### <span class="n">01</span> Everyday shell use
+
+Using a terminal: <code>cd</code>, <code>ls</code>, running a program with arguments, and editing a file. If you have only ever used a graphical file manager, the book below takes a weekend and covers every command the reel assumes.
+
+<p class="check"><b>Check yourself:</b> what does the first column of <code>ls -l</code> show? (Answer: the file type and the nine permission bits: three each for the owner, the group and everyone else.)</p>
+
+<ul class="resources">
+  <Resource kind="reading" title="The Linux Command Line" href="https://linuxcommand.org/tlcl.php" by="William Shotts, free to read">A book-length tour of the shell, from navigation to scripts.</Resource>
+  <Resource kind="reading" title="Bash Reference Manual" href="https://www.gnu.org/software/bash/manual/bash.html" by="The GNU Project">The shell's own manual; the sections on redirections, pipelines and exit status are the ones the reel leans on.</Resource>
+</ul>
+
+</section>
+
+<section class="prereq" data-section="exit-status">
+
+### <span class="n">02</span> Exit status, as bisect reads it
+
+Every command ends with a number, its exit status, and 0 means success. The Git refresher met it through <code>git bisect run</code>, which treats 0 as good and 1 to 127 (except 125) as bad. This topic starts from there and shows where those numbers come from.
+
+<p class="check"><b>Check yourself:</b> which exit status means a test could not be run, so bisect should skip the commit? (Answer: 125.)</p>
+
+<ul class="resources">
+  <Resource kind="reel" title="Git branching and history workflows" domain="data-engineering" host="de.linux-shell-process-toolkit" by="the refresher before this one" />
+</ul>
+
+</section>

@@ -106,6 +106,14 @@ assert kv['grep_dot_regex'] == '2' and kv['grep_dot_fixed'] == '1'
 assert kv['awk_fields'] == '2' and kv['awk_rebuild'] == '[a b]'
 assert kv['sed_inplace'] == 'y (was x)'
 
+# ---- Deep dive: the rest of the toolbox -------------------------------------------------------------
+assert kv['amp_redirect_lines'] == '1' and kv['pipe_amp_lines'] == '1'  # &> and |& carry stderr too
+assert kv['noclobber_status'] == '1' and kv['noclobber_override'] == '0 forced'
+assert kv['builtin_usage_status'] == '2'
+assert kv['sed_E'] == '1 2 ' and kv['sed_z'] == 'Xa Xb ' and kv['sed_s_lines'] == '2 1'
+assert kv['grep_binary'] == '1' and kv['grep_binary_stdout_lines'] == '0' and kv['grep_a_lines'] == '2'
+assert kv['jq_default'] == 'x' and kv['jq_tsv_tab'] == '1' and kv['jq_argjson'] == '6' and kv['jq_stream_events'] == '4'
+
 # ---- Step 9: cron and ssh (parsed, not run) ---------------------------------------------------------
 assert kv['cron_minute'] == '15' and kv['cron_hour'] == '2' and kv['cron_runs_per_day'] == '1'  # 15 2 * * *: 02:15 every day
 assert kv['cron_command_streams'] == 'both'
@@ -123,6 +131,11 @@ assert kv['hard_same_inode'] == 'yes' and kv['nlink'] == '2' and kv['symlink_oth
 assert kv['umask_077'] == '600' and kv['umask_022'] == '644' and kv['umask_arith'] == '644' and kv['proc_umask'] == '0022'
 if kv['dir_search_eacces'] != 'skipped':
     assert (kv['dir_read_only_ls'], kv['dir_read_only_cat'], kv['dir_search_only_ls'], kv['dir_search_only_cat']) == ('0', '1', '2', '0')
+
+assert kv['rm_needs_dir_w'] in ('yes', 'skipped')  # deleting needs write on the directory, not on the file
+assert kv['sticky_blocks_delete'] in ('yes', 'skipped')  # root-only demos: skipped for a normal user
+if kv['sticky_blocks_delete'] == 'yes':
+    assert kv['no_sticky_allows_delete'] == 'yes' and kv['setgid_dir_group'] == '4242' and kv['setgid_dir_mode'] == '2775'
 
 # ---- Deep dive: small things that bite --------------------------------------------------------------
 assert kv['unlink_target'] == 'True' and kv['unlink_still_readable'] == '1000'

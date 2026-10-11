@@ -400,6 +400,31 @@ out awk_rebuild "$(echo '  a   b  ' | awk '{ $1 = $1; print "[" $0 "]" }')"; che
 printf 'x\n' > sedfile; sed -i.bak 's/x/y/' sedfile
 out sed_inplace "$(cat sedfile) (was $(cat sedfile.bak))"; check "$(cat sedfile)$(cat sedfile.bak)" yx 'sed -i.bak keeps a backup'
 
+# more of the toolbox the Deep dive states (Bash shorthands, sed, grep, jq)
+set +e
+bash -c 'python3 clean.py missing.jsonl &> both.log'
+out amp_redirect_lines "$(wc -l < both.log | tr -d ' ')"; check "$(wc -l < both.log | tr -d ' ')" 1 '&> sends both streams to the file'
+out pipe_amp_lines "$(python3 clean.py missing.jsonl |& wc -l | tr -d ' ')"; check "$(python3 clean.py missing.jsonl |& wc -l | tr -d ' ')" 1 '|& pipes stderr too'
+echo old > exists.txt; (set -o noclobber; echo new > exists.txt) 2> /dev/null; noclobber_status=$?
+(set -o noclobber; echo forced >| exists.txt); noclobber_force=$?
+bash -c 'cd -Z' > /dev/null 2>&1; builtin_usage=$?
+set -e
+out noclobber_status "$noclobber_status"; check "$noclobber_status" 1 'noclobber: > refuses to overwrite'
+out noclobber_override "$noclobber_force $(cat exists.txt)"; check "$noclobber_force $(cat exists.txt)" '0 forced' '>| overrides noclobber'
+out builtin_usage_status "$builtin_usage"; check "$builtin_usage" 2 'a builtin used wrongly exits 2'
+out sed_E "$(printf 'a1\nb2\n' | sed -E 's/[a-z]([0-9])/\1/' | tr '\n' ' ')"; check "$(printf 'a1\nb2\n' | sed -E 's/[a-z]([0-9])/\1/' | tr '\n' ' ')" '1 2 ' 'sed -E: extended regular expressions'
+out sed_z "$(printf 'a\0b\0' | sed -z 's/^/X/' | tr '\0' ' ')"; check "$(printf 'a\0b\0' | sed -z 's/^/X/' | tr '\0' ' ')" 'Xa Xb ' 'sed -z: NUL-separated records'
+printf '1\n2\n' > f1.txt; printf '3\n4\n' > f2.txt
+out sed_s_lines "$(sed -s -n '$p' f1.txt f2.txt | wc -l | tr -d ' ') $(sed -n '$p' f1.txt f2.txt | wc -l | tr -d ' ')"; check "$(sed -s -n '$p' f1.txt f2.txt | wc -l | tr -d ' ') $(sed -n '$p' f1.txt f2.txt | wc -l | tr -d ' ')" '2 1' 'sed -s treats files separately'
+printf 'abc\0def\nabc\n' > bin.dat
+out grep_binary "$(grep abc bin.dat 2>&1 | grep -c 'binary file matches')"; check "$(grep abc bin.dat 2>&1 | grep -c 'binary file matches')" 1 'grep reports binary file matches (on stderr since grep 3.5) and prints no lines'
+out grep_binary_stdout_lines "$(grep abc bin.dat 2> /dev/null | wc -l | tr -d ' ')"; check "$(grep abc bin.dat 2> /dev/null | wc -l | tr -d ' ')" 0 'and no matching lines on stdout'
+out grep_a_lines "$(grep -a abc bin.dat | wc -l | tr -d ' ')"; check "$(grep -a abc bin.dat | wc -l | tr -d ' ')" 2 'grep -a forces text'
+out jq_default "$(jq -rn 'null // "x"')"; check "$(jq -rn 'null // "x"')" x 'jq: // supplies a default'
+out jq_tsv_tab "$(jq -r '[.status, .amount] | @tsv' order_events.jsonl | head -1 | grep -c "$(printf '\t')")"; check "$(jq -r '[.status, .amount] | @tsv' order_events.jsonl | head -1 | grep -c "$(printf '\t')")" 1 'jq @tsv makes tab-separated lines'
+out jq_argjson "$(jq -n --argjson n 5 '$n + 1')"; check "$(jq -n --argjson n 5 '$n + 1')" 6 'jq --argjson passes JSON'
+out jq_stream_events "$(echo '{"a":[1,2]}' | jq -c --stream . | wc -l | tr -d ' ')"; check "$(echo '{"a":[1,2]}' | jq -c --stream . | wc -l | tr -d ' ')" 4 'jq --stream emits path/leaf events'
+
 # ---- 9 · cron and ssh: parsed, not run --------------------------------------------------------------
 cat > cron_parse.py << 'PY'
 import datetime, sys
@@ -433,10 +458,10 @@ def due(dt, f=fields):
     return dt.minute in p['minute'] and dt.hour in p['hour'] and dt.month in p['month'] and day_ok
 print('cron_due_0215=' + ('yes' if due(datetime.datetime(2026, 10, 12, 2, 15)) else 'no'))
 print('cron_due_0216=' + ('yes' if due(datetime.datetime(2026, 10, 12, 2, 16)) else 'no'))
-# both day fields restricted: the 13th OR a Friday (2026-02-13 is a Friday and the 13th; 2026-02-06 is a Friday; 2026-02-13...)
+# both day fields restricted: the 13th OR a Friday (2026-02-06 is a Friday, 2026-04-13 is a Monday, 2026-02-10 is a Tuesday)
 both = ['0', '0', '13', '*', '5']
 print('cron_either_day_friday=' + ('yes' if due(datetime.datetime(2026, 2, 6, 0, 0), both) else 'no'))  # a Friday, not the 13th
-print('cron_either_day_13th=' + ('yes' if due(datetime.datetime(2026, 2, 13, 0, 0), both) else 'no'))
+print('cron_either_day_13th=' + ('yes' if due(datetime.datetime(2026, 4, 13, 0, 0), both) else 'no'))
 print('cron_either_day_other=' + ('yes' if due(datetime.datetime(2026, 2, 10, 0, 0), both) else 'no'))  # a Tuesday, the 10th
 def wall(tz, y, m, d, h, mi, fold=0):
     dt = datetime.datetime(y, m, d, h, mi, tzinfo=ZoneInfo(tz), fold=fold)
@@ -507,6 +532,33 @@ if [ "$(id -u)" != 0 ] || command -v setpriv > /dev/null; then
   out dir_search_eacces yes
 else
   out dir_search_eacces skipped
+fi
+
+# deleting a file needs write on the directory, not on the file
+if [ "$(id -u)" != 0 ] || command -v setpriv > /dev/null; then
+  mkdir -p rmdir_demo; echo x > rmdir_demo/keep; echo x > rmdir_demo/gone
+  if [ "$(id -u)" != 0 ]; then d_deny=500; d_allow=700; else d_deny=755; d_allow=757; chmod 666 rmdir_demo/keep; fi
+  chmod 666 rmdir_demo/keep; chmod 000 rmdir_demo/gone
+  chmod $d_deny rmdir_demo; set +e; run rm -f rmdir_demo/keep 2> /dev/null; rm_denied=$?; set -e
+  chmod $d_allow rmdir_demo; set +e; run rm -f rmdir_demo/gone 2> /dev/null; rm_allowed=$?; set -e
+  chmod 755 rmdir_demo
+  out rm_needs_dir_w "$([ "$rm_denied" != 0 ] && [ -e rmdir_demo/keep ] && [ "$rm_allowed" = 0 ] && [ ! -e rmdir_demo/gone ] && echo yes || echo no)"
+  check "$([ "$rm_denied" != 0 ] && [ -e rmdir_demo/keep ] && [ "$rm_allowed" = 0 ] && [ ! -e rmdir_demo/gone ] && echo yes || echo no)" yes 'a writable file is not enough to delete it; an unreadable one can be deleted from a writable directory'
+else
+  out rm_needs_dir_w skipped
+fi
+# root only: the sticky bit (/tmp style) and a setgid directory (a shared landing zone)
+if [ "$(id -u)" = 0 ] && command -v setpriv > /dev/null; then
+  mkdir sticky_dir; echo x > sticky_dir/rootfile; chmod 1777 sticky_dir; chmod 666 sticky_dir/rootfile
+  set +e; as_other rm -f sticky_dir/rootfile 2> /dev/null; sticky_rm=$?; set -e
+  out sticky_blocks_delete "$([ -e sticky_dir/rootfile ] && echo yes || echo no)"; check "$([ -e sticky_dir/rootfile ] && echo yes || echo no)" yes 'sticky: others cannot delete a file they do not own'
+  chmod 0777 sticky_dir; as_other rm -f sticky_dir/rootfile
+  out no_sticky_allows_delete "$([ -e sticky_dir/rootfile ] && echo no || echo yes)"; check "$([ -e sticky_dir/rootfile ] && echo no || echo yes)" yes 'without sticky, the same delete works'
+  mkdir team; chgrp 4242 team; chmod 2775 team; touch team/new
+  out setgid_dir_group "$(stat -c %g team/new)"; check "$(stat -c %g team/new)" 4242 'a file made in a setgid directory takes the directory group'
+  out setgid_dir_mode "$(stat -c %a team)"; check "$(stat -c %a team)" 2775 'the setgid bit shows as the first octal digit'
+else
+  out sticky_blocks_delete skipped; out setgid_dir_group skipped
 fi
 
 # ---- 11 · Small things that bite (Deep dive) ----------------------------------------------------------

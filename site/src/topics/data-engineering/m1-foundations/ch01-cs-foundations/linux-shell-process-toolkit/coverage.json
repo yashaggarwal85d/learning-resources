@@ -1,0 +1,2660 @@
+{
+  "topic": "de.linux-shell-process-toolkit",
+  "syllabus": [
+    {
+      "clause": "filesystem and permissions",
+      "at": [
+        {
+          "step": "Exit codes: 0 to 255, and 128 plus the signal"
+        },
+        {
+          "deep": "Files, inodes and permissions"
+        }
+      ]
+    },
+    {
+      "clause": "pipes and redirection",
+      "at": [
+        {
+          "step": "Where did the error go?"
+        },
+        {
+          "step": "A pipeline exits with its last command"
+        },
+        {
+          "deep": "Pipes, redirection and the pipeline's status"
+        }
+      ]
+    },
+    {
+      "clause": "the process model (fork/exec, signals, exit codes)",
+      "at": [
+        {
+          "step": "fork, then exec, then wait"
+        },
+        {
+          "step": "Exit codes: 0 to 255, and 128 plus the signal"
+        },
+        {
+          "step": "TERM asks; KILL does not"
+        },
+        {
+          "deep": "The process model: fork, exec, wait and the exit status"
+        },
+        {
+          "deep": "Signals, zombies, orphans and threads"
+        }
+      ]
+    },
+    {
+      "clause": "ps/top/htop",
+      "at": [
+        {
+          "step": "A load job hangs: what is it doing?"
+        },
+        {
+          "deep": "Looking at processes: ps, top, htop and load average"
+        }
+      ]
+    },
+    {
+      "clause": "grep/awk/sed/jq",
+      "at": [
+        {
+          "step": "One pipeline, one script, same answer"
+        },
+        {
+          "deep": "One-liners over order_events"
+        }
+      ]
+    },
+    {
+      "clause": "cron",
+      "at": [
+        {
+          "step": "cron starts it; ssh gets you in"
+        },
+        {
+          "deep": "cron"
+        }
+      ]
+    },
+    {
+      "clause": "ssh and tunnels",
+      "at": [
+        {
+          "step": "cron starts it; ssh gets you in"
+        },
+        {
+          "deep": "ssh and tunnels"
+        }
+      ]
+    },
+    {
+      "clause": "/proc and strace for a hung job",
+      "at": [
+        {
+          "step": "A load job hangs: what is it doing?"
+        },
+        {
+          "deep": "A hung job: /proc and strace"
+        },
+        {
+          "deep": "Try it"
+        }
+      ]
+    }
+  ],
+  "sources": [
+    {
+      "source": "wait(2)",
+      "items": [
+        {
+          "item": "NAME",
+          "at": [
+            {
+              "out": "page section that is not about what a data engineer does with the tool (name, synopsis, history, bugs, authors, cross-references or API return codes)"
+            }
+          ]
+        },
+        {
+          "item": "LIBRARY",
+          "at": [
+            {
+              "out": "page section that is not about what a data engineer does with the tool (name, synopsis, history, bugs, authors, cross-references or API return codes)"
+            }
+          ]
+        },
+        {
+          "item": "SYNOPSIS",
+          "at": [
+            {
+              "out": "page section that is not about what a data engineer does with the tool (name, synopsis, history, bugs, authors, cross-references or API return codes)"
+            }
+          ]
+        },
+        {
+          "item": "DESCRIPTION (wait() and waitpid(); WIFEXITED, WEXITSTATUS, WIFSIGNALED, WTERMSIG, WCOREDUMP, WIFSTOPPED, WSTOPSIG, WIFCONTINUED; waitid())",
+          "at": [
+            {
+              "step": "fork, then exec, then wait"
+            },
+            {
+              "deep": "The process model: fork, exec, wait and the exit status"
+            },
+            {
+              "deep": "Signals, zombies, orphans and threads"
+            }
+          ]
+        },
+        {
+          "item": "RETURN VALUE",
+          "at": [
+            {
+              "out": "page section that is not about what a data engineer does with the tool (name, synopsis, history, bugs, authors, cross-references or API return codes)"
+            }
+          ]
+        },
+        {
+          "item": "ERRORS",
+          "at": [
+            {
+              "out": "page section that is not about what a data engineer does with the tool (name, synopsis, history, bugs, authors, cross-references or API return codes)"
+            }
+          ]
+        },
+        {
+          "item": "VERSIONS",
+          "at": [
+            {
+              "out": "page section that is not about what a data engineer does with the tool (name, synopsis, history, bugs, authors, cross-references or API return codes)"
+            }
+          ]
+        },
+        {
+          "item": "STANDARDS",
+          "at": [
+            {
+              "out": "page section that is not about what a data engineer does with the tool (name, synopsis, history, bugs, authors, cross-references or API return codes)"
+            }
+          ]
+        },
+        {
+          "item": "HISTORY",
+          "at": [
+            {
+              "out": "page section that is not about what a data engineer does with the tool (name, synopsis, history, bugs, authors, cross-references or API return codes)"
+            }
+          ]
+        },
+        {
+          "item": "NOTES (zombies, SIGCHLD set to SIG_IGN, Linux notes on threads and __WCLONE/__WALL/__WNOTHREAD)",
+          "at": [
+            {
+              "step": "fork, then exec, then wait"
+            },
+            {
+              "deep": "The process model: fork, exec, wait and the exit status"
+            },
+            {
+              "deep": "Signals, zombies, orphans and threads"
+            }
+          ]
+        },
+        {
+          "item": "BUGS",
+          "at": [
+            {
+              "out": "page section that is not about what a data engineer does with the tool (name, synopsis, history, bugs, authors, cross-references or API return codes)"
+            }
+          ]
+        },
+        {
+          "item": "EXAMPLES",
+          "at": [
+            {
+              "out": "page section that is not about what a data engineer does with the tool (name, synopsis, history, bugs, authors, cross-references or API return codes)"
+            }
+          ]
+        },
+        {
+          "item": "SEE ALSO",
+          "at": [
+            {
+              "out": "page section that is not about what a data engineer does with the tool (name, synopsis, history, bugs, authors, cross-references or API return codes)"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "fork(2)",
+      "items": [
+        {
+          "item": "NAME",
+          "at": [
+            {
+              "out": "page section that is not about what a data engineer does with the tool (name, synopsis, history, bugs, authors, cross-references or API return codes)"
+            }
+          ]
+        },
+        {
+          "item": "LIBRARY",
+          "at": [
+            {
+              "out": "page section that is not about what a data engineer does with the tool (name, synopsis, history, bugs, authors, cross-references or API return codes)"
+            }
+          ]
+        },
+        {
+          "item": "SYNOPSIS",
+          "at": [
+            {
+              "out": "page section that is not about what a data engineer does with the tool (name, synopsis, history, bugs, authors, cross-references or API return codes)"
+            }
+          ]
+        },
+        {
+          "item": "DESCRIPTION (attributes that differ in the child; further points on threads, file descriptors, message queues, directory streams)",
+          "at": [
+            {
+              "step": "fork, then exec, then wait"
+            },
+            {
+              "deep": "The process model: fork, exec, wait and the exit status"
+            }
+          ]
+        },
+        {
+          "item": "RETURN VALUE",
+          "at": [
+            {
+              "out": "page section that is not about what a data engineer does with the tool (name, synopsis, history, bugs, authors, cross-references or API return codes)"
+            }
+          ]
+        },
+        {
+          "item": "ERRORS",
+          "at": [
+            {
+              "out": "page section that is not about what a data engineer does with the tool (name, synopsis, history, bugs, authors, cross-references or API return codes)"
+            }
+          ]
+        },
+        {
+          "item": "VERSIONS (C library/kernel differences; async-signal safety)",
+          "at": [
+            {
+              "step": "fork, then exec, then wait"
+            },
+            {
+              "deep": "The process model: fork, exec, wait and the exit status"
+            }
+          ]
+        },
+        {
+          "item": "STANDARDS",
+          "at": [
+            {
+              "out": "page section that is not about what a data engineer does with the tool (name, synopsis, history, bugs, authors, cross-references or API return codes)"
+            }
+          ]
+        },
+        {
+          "item": "HISTORY",
+          "at": [
+            {
+              "out": "page section that is not about what a data engineer does with the tool (name, synopsis, history, bugs, authors, cross-references or API return codes)"
+            }
+          ]
+        },
+        {
+          "item": "NOTES (copy-on-write)",
+          "at": [
+            {
+              "step": "fork, then exec, then wait"
+            },
+            {
+              "deep": "The process model: fork, exec, wait and the exit status"
+            }
+          ]
+        },
+        {
+          "item": "EXAMPLES",
+          "at": [
+            {
+              "out": "page section that is not about what a data engineer does with the tool (name, synopsis, history, bugs, authors, cross-references or API return codes)"
+            }
+          ]
+        },
+        {
+          "item": "SEE ALSO",
+          "at": [
+            {
+              "out": "page section that is not about what a data engineer does with the tool (name, synopsis, history, bugs, authors, cross-references or API return codes)"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "execve(2)",
+      "items": [
+        {
+          "item": "NAME",
+          "at": [
+            {
+              "out": "page section that is not about what a data engineer does with the tool (name, synopsis, history, bugs, authors, cross-references or API return codes)"
+            }
+          ]
+        },
+        {
+          "item": "LIBRARY",
+          "at": [
+            {
+              "out": "page section that is not about what a data engineer does with the tool (name, synopsis, history, bugs, authors, cross-references or API return codes)"
+            }
+          ]
+        },
+        {
+          "item": "SYNOPSIS",
+          "at": [
+            {
+              "out": "page section that is not about what a data engineer does with the tool (name, synopsis, history, bugs, authors, cross-references or API return codes)"
+            }
+          ]
+        },
+        {
+          "item": "DESCRIPTION (argv and envp, interpreter scripts, set-user-ID/set-group-ID handling, effects on process attributes)",
+          "at": [
+            {
+              "deep": "The process model: fork, exec, wait and the exit status"
+            }
+          ]
+        },
+        {
+          "item": "RETURN VALUE",
+          "at": [
+            {
+              "out": "page section that is not about what a data engineer does with the tool (name, synopsis, history, bugs, authors, cross-references or API return codes)"
+            }
+          ]
+        },
+        {
+          "item": "ERRORS",
+          "at": [
+            {
+              "out": "page section that is not about what a data engineer does with the tool (name, synopsis, history, bugs, authors, cross-references or API return codes)"
+            }
+          ]
+        },
+        {
+          "item": "VERSIONS",
+          "at": [
+            {
+              "out": "page section that is not about what a data engineer does with the tool (name, synopsis, history, bugs, authors, cross-references or API return codes)"
+            }
+          ]
+        },
+        {
+          "item": "STANDARDS",
+          "at": [
+            {
+              "out": "page section that is not about what a data engineer does with the tool (name, synopsis, history, bugs, authors, cross-references or API return codes)"
+            }
+          ]
+        },
+        {
+          "item": "HISTORY",
+          "at": [
+            {
+              "out": "page section that is not about what a data engineer does with the tool (name, synopsis, history, bugs, authors, cross-references or API return codes)"
+            }
+          ]
+        },
+        {
+          "item": "NOTES",
+          "at": [
+            {
+              "deep": "The process model: fork, exec, wait and the exit status"
+            }
+          ]
+        },
+        {
+          "item": "EXAMPLES",
+          "at": [
+            {
+              "out": "page section that is not about what a data engineer does with the tool (name, synopsis, history, bugs, authors, cross-references or API return codes)"
+            }
+          ]
+        },
+        {
+          "item": "SEE ALSO",
+          "at": [
+            {
+              "out": "page section that is not about what a data engineer does with the tool (name, synopsis, history, bugs, authors, cross-references or API return codes)"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "signal(7)",
+      "items": [
+        {
+          "item": "NAME",
+          "at": [
+            {
+              "out": "page section that is not about what a data engineer does with the tool (name, synopsis, history, bugs, authors, cross-references or API return codes)"
+            }
+          ]
+        },
+        {
+          "item": "DESCRIPTION (signal dispositions; the Term, Ign, Core, Stop, Cont default actions; standard signals table SIGHUP, SIGINT, SIGKILL, SIGTERM and others; real-time signals; delivery, blocking, handlers)",
+          "at": [
+            {
+              "step": "TERM asks; KILL does not"
+            },
+            {
+              "deep": "Signals, zombies, orphans and threads"
+            }
+          ]
+        },
+        {
+          "item": "STANDARDS",
+          "at": [
+            {
+              "out": "page section that is not about what a data engineer does with the tool (name, synopsis, history, bugs, authors, cross-references or API return codes)"
+            }
+          ]
+        },
+        {
+          "item": "NOTES",
+          "at": [
+            {
+              "step": "TERM asks; KILL does not"
+            },
+            {
+              "deep": "Signals, zombies, orphans and threads"
+            }
+          ]
+        },
+        {
+          "item": "BUGS",
+          "at": [
+            {
+              "out": "page section that is not about what a data engineer does with the tool (name, synopsis, history, bugs, authors, cross-references or API return codes)"
+            }
+          ]
+        },
+        {
+          "item": "SEE ALSO",
+          "at": [
+            {
+              "out": "page section that is not about what a data engineer does with the tool (name, synopsis, history, bugs, authors, cross-references or API return codes)"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "proc_pid_status(5)",
+      "items": [
+        {
+          "item": "NAME",
+          "at": [
+            {
+              "out": "page section that is not about what a data engineer does with the tool (name, synopsis, history, bugs, authors, cross-references or API return codes)"
+            }
+          ]
+        },
+        {
+          "item": "DESCRIPTION (field-by-field description of /proc/pid/status: Name, Umask, State, Tgid, Ngid, Pid, PPid, ..., Threads, SigQ, SigPnd, SigBlk, SigIgn, ...)",
+          "at": [
+            {
+              "step": "A load job hangs: what is it doing?"
+            },
+            {
+              "deep": "A hung job: /proc and strace"
+            }
+          ]
+        },
+        {
+          "item": "SEE ALSO",
+          "at": [
+            {
+              "out": "page section that is not about what a data engineer does with the tool (name, synopsis, history, bugs, authors, cross-references or API return codes)"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "proc_pid_wchan(5)",
+      "items": [
+        {
+          "item": "NAME",
+          "at": [
+            {
+              "out": "page section that is not about what a data engineer does with the tool (name, synopsis, history, bugs, authors, cross-references or API return codes)"
+            }
+          ]
+        },
+        {
+          "item": "DESCRIPTION (/proc/pid/wchan since Linux 2.6.0; ptrace access check)",
+          "at": [
+            {
+              "step": "A load job hangs: what is it doing?"
+            },
+            {
+              "deep": "A hung job: /proc and strace"
+            }
+          ]
+        },
+        {
+          "item": "SEE ALSO",
+          "at": [
+            {
+              "out": "page section that is not about what a data engineer does with the tool (name, synopsis, history, bugs, authors, cross-references or API return codes)"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "proc_pid_fd(5)",
+      "items": [
+        {
+          "item": "NAME",
+          "at": [
+            {
+              "out": "page section that is not about what a data engineer does with the tool (name, synopsis, history, bugs, authors, cross-references or API return codes)"
+            }
+          ]
+        },
+        {
+          "item": "DESCRIPTION (one symlink per open fd; pipe and socket type:[inode] form; anon_inode entries; /proc/self/fd/N versus /dev/fd/N; permission notes)",
+          "at": [
+            {
+              "step": "A load job hangs: what is it doing?"
+            },
+            {
+              "deep": "A hung job: /proc and strace"
+            }
+          ]
+        },
+        {
+          "item": "SEE ALSO",
+          "at": [
+            {
+              "out": "page section that is not about what a data engineer does with the tool (name, synopsis, history, bugs, authors, cross-references or API return codes)"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "proc_pid_stack(5)",
+      "items": [
+        {
+          "item": "NAME",
+          "at": [
+            {
+              "out": "page section that is not about what a data engineer does with the tool (name, synopsis, history, bugs, authors, cross-references or API return codes)"
+            }
+          ]
+        },
+        {
+          "item": "DESCRIPTION (/proc/pid/stack since Linux 2.6.29; needs CONFIG_STACKTRACE; ptrace attach access check)",
+          "at": [
+            {
+              "step": "A load job hangs: what is it doing?"
+            },
+            {
+              "deep": "A hung job: /proc and strace"
+            }
+          ]
+        },
+        {
+          "item": "SEE ALSO",
+          "at": [
+            {
+              "out": "page section that is not about what a data engineer does with the tool (name, synopsis, history, bugs, authors, cross-references or API return codes)"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "credentials(7)",
+      "items": [
+        {
+          "item": "NAME",
+          "at": [
+            {
+              "out": "page section that is not about what a data engineer does with the tool (name, synopsis, history, bugs, authors, cross-references or API return codes)"
+            }
+          ]
+        },
+        {
+          "item": "DESCRIPTION (Process ID; Parent process ID; Process group ID and session ID; User and group identifiers: real, effective, saved set-user-ID, filesystem IDs, supplementary group IDs; modifying and retrieving IDs)",
+          "at": [
+            {
+              "deep": "The process model: fork, exec, wait and the exit status"
+            },
+            {
+              "deep": "Files, inodes and permissions"
+            }
+          ]
+        },
+        {
+          "item": "STANDARDS",
+          "at": [
+            {
+              "out": "page section that is not about what a data engineer does with the tool (name, synopsis, history, bugs, authors, cross-references or API return codes)"
+            }
+          ]
+        },
+        {
+          "item": "NOTES",
+          "at": [
+            {
+              "deep": "The process model: fork, exec, wait and the exit status"
+            },
+            {
+              "deep": "Files, inodes and permissions"
+            }
+          ]
+        },
+        {
+          "item": "SEE ALSO",
+          "at": [
+            {
+              "out": "page section that is not about what a data engineer does with the tool (name, synopsis, history, bugs, authors, cross-references or API return codes)"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "path_resolution(7)",
+      "items": [
+        {
+          "item": "NAME",
+          "at": [
+            {
+              "out": "page section that is not about what a data engineer does with the tool (name, synopsis, history, bugs, authors, cross-references or API return codes)"
+            }
+          ]
+        },
+        {
+          "item": "DESCRIPTION (pathname components; starting lookup directory; the lookup loop and its errors; symlinks; permission bits and fsuid)",
+          "at": [
+            {
+              "step": "Exit codes: 0 to 255, and 128 plus the signal"
+            },
+            {
+              "deep": "Files, inodes and permissions"
+            }
+          ]
+        },
+        {
+          "item": "SEE ALSO",
+          "at": [
+            {
+              "out": "page section that is not about what a data engineer does with the tool (name, synopsis, history, bugs, authors, cross-references or API return codes)"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "inode(7)",
+      "items": [
+        {
+          "item": "NAME",
+          "at": [
+            {
+              "out": "page section that is not about what a data engineer does with the tool (name, synopsis, history, bugs, authors, cross-references or API return codes)"
+            }
+          ]
+        },
+        {
+          "item": "DESCRIPTION (struct stat fields; st_mode file type and permission constants such as S_ISUID 04000)",
+          "at": [
+            {
+              "deep": "Files, inodes and permissions"
+            }
+          ]
+        },
+        {
+          "item": "STANDARDS",
+          "at": [
+            {
+              "out": "page section that is not about what a data engineer does with the tool (name, synopsis, history, bugs, authors, cross-references or API return codes)"
+            }
+          ]
+        },
+        {
+          "item": "HISTORY",
+          "at": [
+            {
+              "out": "page section that is not about what a data engineer does with the tool (name, synopsis, history, bugs, authors, cross-references or API return codes)"
+            }
+          ]
+        },
+        {
+          "item": "NOTES",
+          "at": [
+            {
+              "deep": "Files, inodes and permissions"
+            }
+          ]
+        },
+        {
+          "item": "SEE ALSO",
+          "at": [
+            {
+              "out": "page section that is not about what a data engineer does with the tool (name, synopsis, history, bugs, authors, cross-references or API return codes)"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "chmod(1)",
+      "items": [
+        {
+          "item": "NAME",
+          "at": [
+            {
+              "out": "page section that is not about what a data engineer does with the tool (name, synopsis, history, bugs, authors, cross-references or API return codes)"
+            }
+          ]
+        },
+        {
+          "item": "SYNOPSIS",
+          "at": [
+            {
+              "out": "page section that is not about what a data engineer does with the tool (name, synopsis, history, bugs, authors, cross-references or API return codes)"
+            }
+          ]
+        },
+        {
+          "item": "DESCRIPTION (symbolic and octal modes)",
+          "at": [
+            {
+              "deep": "Files, inodes and permissions"
+            }
+          ]
+        },
+        {
+          "item": "SETUID AND SETGID BITS",
+          "at": [
+            {
+              "deep": "Files, inodes and permissions"
+            }
+          ]
+        },
+        {
+          "item": "RESTRICTED DELETION FLAG OR STICKY BIT",
+          "at": [
+            {
+              "deep": "Files, inodes and permissions"
+            }
+          ]
+        },
+        {
+          "item": "OPTIONS",
+          "at": [
+            {
+              "out": "chmod's flags (-R, -v, --reference) are not needed for the permission ideas"
+            }
+          ]
+        },
+        {
+          "item": "AUTHOR",
+          "at": [
+            {
+              "out": "page section that is not about what a data engineer does with the tool (name, synopsis, history, bugs, authors, cross-references or API return codes)"
+            }
+          ]
+        },
+        {
+          "item": "REPORTING BUGS",
+          "at": [
+            {
+              "out": "page section that is not about what a data engineer does with the tool (name, synopsis, history, bugs, authors, cross-references or API return codes)"
+            }
+          ]
+        },
+        {
+          "item": "SEE ALSO",
+          "at": [
+            {
+              "out": "page section that is not about what a data engineer does with the tool (name, synopsis, history, bugs, authors, cross-references or API return codes)"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "umask(2)",
+      "items": [
+        {
+          "item": "NAME",
+          "at": [
+            {
+              "out": "page section that is not about what a data engineer does with the tool (name, synopsis, history, bugs, authors, cross-references or API return codes)"
+            }
+          ]
+        },
+        {
+          "item": "LIBRARY",
+          "at": [
+            {
+              "out": "page section that is not about what a data engineer does with the tool (name, synopsis, history, bugs, authors, cross-references or API return codes)"
+            }
+          ]
+        },
+        {
+          "item": "SYNOPSIS",
+          "at": [
+            {
+              "out": "page section that is not about what a data engineer does with the tool (name, synopsis, history, bugs, authors, cross-references or API return codes)"
+            }
+          ]
+        },
+        {
+          "item": "DESCRIPTION (mask & 0777; default ACL interaction; 0666 & ~022 = 0644)",
+          "at": [
+            {
+              "deep": "Files, inodes and permissions"
+            }
+          ]
+        },
+        {
+          "item": "RETURN VALUE",
+          "at": [
+            {
+              "out": "page section that is not about what a data engineer does with the tool (name, synopsis, history, bugs, authors, cross-references or API return codes)"
+            }
+          ]
+        },
+        {
+          "item": "STANDARDS",
+          "at": [
+            {
+              "out": "page section that is not about what a data engineer does with the tool (name, synopsis, history, bugs, authors, cross-references or API return codes)"
+            }
+          ]
+        },
+        {
+          "item": "HISTORY",
+          "at": [
+            {
+              "out": "page section that is not about what a data engineer does with the tool (name, synopsis, history, bugs, authors, cross-references or API return codes)"
+            }
+          ]
+        },
+        {
+          "item": "NOTES (inheritance; Umask field in /proc/pid/status since Linux 4.7; IPC objects)",
+          "at": [
+            {
+              "deep": "Files, inodes and permissions"
+            }
+          ]
+        },
+        {
+          "item": "SEE ALSO",
+          "at": [
+            {
+              "out": "page section that is not about what a data engineer does with the tool (name, synopsis, history, bugs, authors, cross-references or API return codes)"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "strace(1)",
+      "items": [
+        {
+          "item": "NAME",
+          "at": [
+            {
+              "out": "page section that is not about what a data engineer does with the tool (name, synopsis, history, bugs, authors, cross-references or API return codes)"
+            }
+          ]
+        },
+        {
+          "item": "SYNOPSIS",
+          "at": [
+            {
+              "out": "page section that is not about what a data engineer does with the tool (name, synopsis, history, bugs, authors, cross-references or API return codes)"
+            }
+          ]
+        },
+        {
+          "item": "DESCRIPTION",
+          "at": [
+            {
+              "step": "A load job hangs: what is it doing?"
+            },
+            {
+              "deep": "A hung job: /proc and strace"
+            }
+          ]
+        },
+        {
+          "item": "OPTIONS (-p/--attach among general, filtering, tracing, output and statistics options)",
+          "at": [
+            {
+              "step": "A load job hangs: what is it doing?"
+            },
+            {
+              "deep": "A hung job: /proc and strace"
+            }
+          ]
+        },
+        {
+          "item": "DIAGNOSTICS",
+          "at": [
+            {
+              "out": "strace's own exit statuses and messages"
+            }
+          ]
+        },
+        {
+          "item": "SETUID INSTALLATION",
+          "at": [
+            {
+              "out": "installing strace setuid is system administration"
+            }
+          ]
+        },
+        {
+          "item": "MULTIPLE PERSONALITIES SUPPORT",
+          "at": [
+            {
+              "out": "tracing programs of another ABI on one machine is out of scope"
+            }
+          ]
+        },
+        {
+          "item": "NOTES",
+          "at": [
+            {
+              "step": "A load job hangs: what is it doing?"
+            },
+            {
+              "deep": "A hung job: /proc and strace"
+            }
+          ]
+        },
+        {
+          "item": "BUGS",
+          "at": [
+            {
+              "out": "page section that is not about what a data engineer does with the tool (name, synopsis, history, bugs, authors, cross-references or API return codes)"
+            }
+          ]
+        },
+        {
+          "item": "HISTORY",
+          "at": [
+            {
+              "out": "page section that is not about what a data engineer does with the tool (name, synopsis, history, bugs, authors, cross-references or API return codes)"
+            }
+          ]
+        },
+        {
+          "item": "REPORTING BUGS",
+          "at": [
+            {
+              "out": "page section that is not about what a data engineer does with the tool (name, synopsis, history, bugs, authors, cross-references or API return codes)"
+            }
+          ]
+        },
+        {
+          "item": "SEE ALSO",
+          "at": [
+            {
+              "out": "page section that is not about what a data engineer does with the tool (name, synopsis, history, bugs, authors, cross-references or API return codes)"
+            }
+          ]
+        },
+        {
+          "item": "AUTHORS",
+          "at": [
+            {
+              "out": "page section that is not about what a data engineer does with the tool (name, synopsis, history, bugs, authors, cross-references or API return codes)"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "ps(1)",
+      "items": [
+        {
+          "item": "NAME",
+          "at": [
+            {
+              "out": "page section that is not about what a data engineer does with the tool (name, synopsis, history, bugs, authors, cross-references or API return codes)"
+            }
+          ]
+        },
+        {
+          "item": "SYNOPSIS",
+          "at": [
+            {
+              "out": "page section that is not about what a data engineer does with the tool (name, synopsis, history, bugs, authors, cross-references or API return codes)"
+            }
+          ]
+        },
+        {
+          "item": "DESCRIPTION",
+          "at": [
+            {
+              "step": "A load job hangs: what is it doing?"
+            },
+            {
+              "deep": "Looking at processes: ps, top, htop and load average"
+            }
+          ]
+        },
+        {
+          "item": "EXAMPLES",
+          "at": [
+            {
+              "out": "page section that is not about what a data engineer does with the tool (name, synopsis, history, bugs, authors, cross-references or API return codes)"
+            }
+          ]
+        },
+        {
+          "item": "SIMPLE PROCESS SELECTION",
+          "at": [
+            {
+              "step": "A load job hangs: what is it doing?"
+            },
+            {
+              "deep": "Looking at processes: ps, top, htop and load average"
+            }
+          ]
+        },
+        {
+          "item": "PROCESS SELECTION BY LIST",
+          "at": [
+            {
+              "step": "A load job hangs: what is it doing?"
+            },
+            {
+              "deep": "Looking at processes: ps, top, htop and load average"
+            }
+          ]
+        },
+        {
+          "item": "OUTPUT FORMAT CONTROL",
+          "at": [
+            {
+              "step": "A load job hangs: what is it doing?"
+            },
+            {
+              "deep": "Looking at processes: ps, top, htop and load average"
+            }
+          ]
+        },
+        {
+          "item": "OUTPUT MODIFIERS",
+          "at": [
+            {
+              "step": "A load job hangs: what is it doing?"
+            },
+            {
+              "deep": "Looking at processes: ps, top, htop and load average"
+            }
+          ]
+        },
+        {
+          "item": "THREAD DISPLAY (-L, -T, m)",
+          "at": [
+            {
+              "step": "A load job hangs: what is it doing?"
+            },
+            {
+              "deep": "Looking at processes: ps, top, htop and load average"
+            }
+          ]
+        },
+        {
+          "item": "OTHER INFORMATION",
+          "at": [
+            {
+              "step": "A load job hangs: what is it doing?"
+            },
+            {
+              "deep": "Looking at processes: ps, top, htop and load average"
+            }
+          ]
+        },
+        {
+          "item": "NOTES",
+          "at": [
+            {
+              "step": "A load job hangs: what is it doing?"
+            },
+            {
+              "deep": "Looking at processes: ps, top, htop and load average"
+            }
+          ]
+        },
+        {
+          "item": "PROCESS FLAGS",
+          "at": [
+            {
+              "out": "the kernel's process-flag column (F) isn't needed to diagnose a hung job"
+            }
+          ]
+        },
+        {
+          "item": "PROCESS STATE CODES (D, I, R, S, T, t, W, X, Z and the BSD extra characters)",
+          "at": [
+            {
+              "step": "A load job hangs: what is it doing?"
+            },
+            {
+              "deep": "Looking at processes: ps, top, htop and load average"
+            }
+          ]
+        },
+        {
+          "item": "OBSOLETE SORT KEYS",
+          "at": [
+            {
+              "out": "obsolete BSD sort keys; the reel never sorts ps output"
+            }
+          ]
+        },
+        {
+          "item": "AIX FORMAT DESCRIPTORS",
+          "at": [
+            {
+              "out": "AIX-compatibility format codes, never used on Linux jobs"
+            }
+          ]
+        },
+        {
+          "item": "STANDARD FORMAT SPECIFIERS",
+          "at": [
+            {
+              "step": "A load job hangs: what is it doing?"
+            },
+            {
+              "deep": "Looking at processes: ps, top, htop and load average"
+            }
+          ]
+        },
+        {
+          "item": "ENVIRONMENT VARIABLES",
+          "at": [
+            {
+              "out": "ps's own configuration variables (PS_FORMAT and friends) are a user preference, not a diagnosis step"
+            }
+          ]
+        },
+        {
+          "item": "PERSONALITY",
+          "at": [
+            {
+              "out": "ps's personality emulation (other Unix flavours) is not needed"
+            }
+          ]
+        },
+        {
+          "item": "BUGS",
+          "at": [
+            {
+              "out": "page section that is not about what a data engineer does with the tool (name, synopsis, history, bugs, authors, cross-references or API return codes)"
+            }
+          ]
+        },
+        {
+          "item": "SEE ALSO",
+          "at": [
+            {
+              "out": "page section that is not about what a data engineer does with the tool (name, synopsis, history, bugs, authors, cross-references or API return codes)"
+            }
+          ]
+        },
+        {
+          "item": "STANDARDS",
+          "at": [
+            {
+              "out": "page section that is not about what a data engineer does with the tool (name, synopsis, history, bugs, authors, cross-references or API return codes)"
+            }
+          ]
+        },
+        {
+          "item": "AUTHOR",
+          "at": [
+            {
+              "out": "page section that is not about what a data engineer does with the tool (name, synopsis, history, bugs, authors, cross-references or API return codes)"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "crontab(5)",
+      "items": [
+        {
+          "item": "NAME",
+          "at": [
+            {
+              "out": "page section that is not about what a data engineer does with the tool (name, synopsis, history, bugs, authors, cross-references or API return codes)"
+            }
+          ]
+        },
+        {
+          "item": "DESCRIPTION (environment settings; five time fields minute 0-59, hour 0-23, day of month 1-31, month 1-12, day of week 0-7; ranges, lists, steps, names; the command field and % handling; @reboot, @yearly ... @hourly)",
+          "at": [
+            {
+              "step": "cron starts it; ssh gets you in"
+            },
+            {
+              "deep": "cron"
+            }
+          ]
+        },
+        {
+          "item": "EXAMPLE CRON FILE",
+          "at": [
+            {
+              "step": "cron starts it; ssh gets you in"
+            },
+            {
+              "deep": "cron"
+            }
+          ]
+        },
+        {
+          "item": "EXAMPLE SYSTEM CRON FILE",
+          "at": [
+            {
+              "out": "the system crontab (with its extra user field) is host administration, not a job author's file"
+            }
+          ]
+        },
+        {
+          "item": "YET ANOTHER EXAMPLE",
+          "at": [
+            {
+              "out": "a further example of the same five-field format"
+            }
+          ]
+        },
+        {
+          "item": "SEE ALSO",
+          "at": [
+            {
+              "out": "page section that is not about what a data engineer does with the tool (name, synopsis, history, bugs, authors, cross-references or API return codes)"
+            }
+          ]
+        },
+        {
+          "item": "EXTENSIONS",
+          "at": [
+            {
+              "out": "Debian's crontab extensions are specific to one cron implementation"
+            }
+          ]
+        },
+        {
+          "item": "LIMITATIONS (single configured timezone)",
+          "at": [
+            {
+              "step": "cron starts it; ssh gets you in"
+            },
+            {
+              "deep": "cron"
+            }
+          ]
+        },
+        {
+          "item": "USING EVAL TO WRAP MISC ENVIRONMENT SETTINGS",
+          "at": [
+            {
+              "out": "a wrapper trick for environment settings, beyond a refresher"
+            }
+          ]
+        },
+        {
+          "item": "DIAGNOSTICS",
+          "at": [
+            {
+              "out": "cron's own error messages"
+            }
+          ]
+        },
+        {
+          "item": "AUTHORS",
+          "at": [
+            {
+              "out": "page section that is not about what a data engineer does with the tool (name, synopsis, history, bugs, authors, cross-references or API return codes)"
+            }
+          ]
+        },
+        {
+          "item": "COPYRIGHT",
+          "at": [
+            {
+              "out": "page section that is not about what a data engineer does with the tool (name, synopsis, history, bugs, authors, cross-references or API return codes)"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "GNU Bash Reference Manual",
+      "items": [
+        {
+          "item": "Pipelines: exit status is the last command's; pipefail changes it to the rightmost non-zero status; `!` negates",
+          "at": [
+            {
+              "step": "Where did the error go?"
+            },
+            {
+              "step": "A pipeline exits with its last command"
+            },
+            {
+              "deep": "Pipes, redirection and the pipeline's status"
+            }
+          ]
+        },
+        {
+          "item": "Redirections: order is significant; `> file 2>&1` sends both streams to the file, `2>&1 > file` does not",
+          "at": [
+            {
+              "step": "Where did the error go?"
+            },
+            {
+              "step": "A pipeline exits with its last command"
+            },
+            {
+              "deep": "Pipes, redirection and the pipeline's status"
+            }
+          ]
+        },
+        {
+          "item": "Exit Status: 0 success, non-zero failure, 127 not found, 126 not executable, 128+N for fatal signal N",
+          "at": [
+            {
+              "step": "Where did the error go?"
+            },
+            {
+              "step": "A pipeline exits with its last command"
+            },
+            {
+              "deep": "Pipes, redirection and the pipeline's status"
+            }
+          ]
+        },
+        {
+          "item": "The Set Builtin: -e (errexit), -u (nounset), -o pipefail",
+          "at": [
+            {
+              "step": "Where did the error go?"
+            },
+            {
+              "step": "A pipeline exits with its last command"
+            },
+            {
+              "deep": "Pipes, redirection and the pipeline's status"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "POSIX.1-2024 Shell Command Language",
+      "items": [
+        {
+          "item": "Shell Command Language chapter (2): quoting, token recognition, reserved words, parameter/command/arithmetic expansion, redirection, exit status and errors, shell commands (pipelines, lists, compound commands), shell grammar, job control, signals, shell execution environment, pattern matching, special built-in utilities",
+          "at": [
+            {
+              "deep": "Pipes, redirection and the pipeline's status"
+            },
+            {
+              "deep": "The process model: fork, exec, wait and the exit status"
+            }
+          ]
+        },
+        {
+          "item": "Exit Status for Commands: 127 not found, 126 found but not executable, signal termination above 128",
+          "at": [
+            {
+              "deep": "Pipes, redirection and the pipeline's status"
+            },
+            {
+              "deep": "The process model: fork, exec, wait and the exit status"
+            }
+          ]
+        },
+        {
+          "item": "Pipelines: exit status depends on the pipefail option (new in Issue 8) and a leading `!`",
+          "at": [
+            {
+              "deep": "Pipes, redirection and the pipeline's status"
+            },
+            {
+              "deep": "The process model: fork, exec, wait and the exit status"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "jq 1.8 Manual",
+      "items": [
+        {
+          "item": "Invoking jq: --slurp/-s, --compact-output/-c, --raw-output/-r, --slurpfile",
+          "at": [
+            {
+              "step": "One pipeline, one script, same answer"
+            },
+            {
+              "deep": "One-liners over order_events"
+            }
+          ]
+        },
+        {
+          "item": "Builtin operators and functions: length, select(boolean_expression), group_by(path_expression), unique_by, map, add",
+          "at": [
+            {
+              "step": "One pipeline, one script, same answer"
+            },
+            {
+              "deep": "One-liners over order_events"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "The GNU Awk User's Guide (Top page, Edition 5.4)",
+      "items": [
+        {
+          "item": "Part I, The awk Language: getting started, running awk, regular expressions, reading input files, printing, expressions, patterns and actions, arrays, functions",
+          "at": [
+            {
+              "step": "One pipeline, one script, same answer"
+            },
+            {
+              "deep": "One-liners over order_events"
+            }
+          ]
+        },
+        {
+          "item": "Part II onward: gawk-specific features (see the manual's Short Table of Contents)",
+          "at": [
+            {
+              "out": "gawk-specific features beyond POSIX awk; the reel and examples use only POSIX awk (the runner has mawk)"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "The GNU Awk User's Guide: Examining Fields",
+      "items": [
+        {
+          "item": "Section 4.2 Examining Fields: records split into fields by whitespace by default",
+          "at": [
+            {
+              "step": "One pipeline, one script, same answer"
+            },
+            {
+              "deep": "One-liners over order_events"
+            }
+          ]
+        },
+        {
+          "item": "$1, $2, ... address fields; $0 is the whole record",
+          "at": [
+            {
+              "step": "One pipeline, one script, same answer"
+            },
+            {
+              "deep": "One-liners over order_events"
+            }
+          ]
+        },
+        {
+          "item": "NF holds the field count; $NF is the last field",
+          "at": [
+            {
+              "step": "One pipeline, one script, same answer"
+            },
+            {
+              "deep": "One-liners over order_events"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "The GNU Awk User's Guide: Arrays",
+      "items": [
+        {
+          "item": "Introduction to arrays: awk arrays are associative (index/value pairs), need no declared size",
+          "at": [
+            {
+              "step": "One pipeline, one script, same answer"
+            },
+            {
+              "deep": "One-liners over order_events"
+            }
+          ]
+        },
+        {
+          "item": "New pairs can be added at any time; subscripts are always strings",
+          "at": [
+            {
+              "step": "One pipeline, one script, same answer"
+            },
+            {
+              "deep": "One-liners over order_events"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "The GNU Awk User's Guide: Some Simple Examples",
+      "items": [
+        {
+          "item": "Section 1.3: a pattern in slashes selects lines, `{ print $0 }` is the action printing the current line",
+          "at": [
+            {
+              "step": "One pipeline, one script, same answer"
+            },
+            {
+              "deep": "One-liners over order_events"
+            }
+          ]
+        },
+        {
+          "item": "A rule may omit the pattern or the action, not both",
+          "at": [
+            {
+              "step": "One pipeline, one script, same answer"
+            },
+            {
+              "deep": "One-liners over order_events"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "GNU sed manual",
+      "items": [
+        {
+          "item": "Command-line options: -n/--quiet/--silent disables automatic printing of the pattern space",
+          "at": [
+            {
+              "step": "One pipeline, one script, same answer"
+            },
+            {
+              "deep": "One-liners over order_events"
+            }
+          ]
+        },
+        {
+          "item": "The s command: s/regexp/replacement/flags, substitutes the match in the pattern space",
+          "at": [
+            {
+              "step": "One pipeline, one script, same answer"
+            },
+            {
+              "deep": "One-liners over order_events"
+            }
+          ]
+        },
+        {
+          "item": "The p command prints; commands such as d, N, q change the cycle",
+          "at": [
+            {
+              "step": "One pipeline, one script, same answer"
+            },
+            {
+              "deep": "One-liners over order_events"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "GNU Grep manual",
+      "items": [
+        {
+          "item": "Matching control: -E (extended regexp), -F (fixed strings), -G (basic), -P (Perl)",
+          "at": [
+            {
+              "step": "One pipeline, one script, same answer"
+            },
+            {
+              "deep": "One-liners over order_events"
+            }
+          ]
+        },
+        {
+          "item": "Regular expressions: basic vs extended syntax, character classes, back-references",
+          "at": [
+            {
+              "step": "One pipeline, one script, same answer"
+            },
+            {
+              "deep": "One-liners over order_events"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "OpenBSD ssh(1)",
+      "items": [
+        {
+          "item": "-J destination: jump host (ProxyJump shortcut), comma-separated hops",
+          "at": [
+            {
+              "step": "cron starts it; ssh gets you in"
+            },
+            {
+              "deep": "ssh and tunnels"
+            }
+          ]
+        },
+        {
+          "item": "-L [bind_address:]port:host:hostport: local forward",
+          "at": [
+            {
+              "step": "cron starts it; ssh gets you in"
+            },
+            {
+              "deep": "ssh and tunnels"
+            }
+          ]
+        },
+        {
+          "item": "-R [bind_address:]port:host:hostport: remote forward",
+          "at": [
+            {
+              "step": "cron starts it; ssh gets you in"
+            },
+            {
+              "deep": "ssh and tunnels"
+            }
+          ]
+        },
+        {
+          "item": "-i identity_file: key selection",
+          "at": [
+            {
+              "step": "cron starts it; ssh gets you in"
+            },
+            {
+              "deep": "ssh and tunnels"
+            }
+          ]
+        },
+        {
+          "item": "Authentication: ~/.ssh/authorized_keys on the server lists public keys",
+          "at": [
+            {
+              "step": "cron starts it; ssh gets you in"
+            },
+            {
+              "deep": "ssh and tunnels"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "pthreads(7)",
+      "items": [
+        {
+          "item": "NAME",
+          "at": [
+            {
+              "out": "page section that is not about what a data engineer does with the tool (name, synopsis, history, bugs, authors, cross-references or API return codes)"
+            }
+          ]
+        },
+        {
+          "item": "DESCRIPTION (POSIX threads; threads in one process share global memory, each has its own stack; shared and per-thread attributes)",
+          "at": [
+            {
+              "deep": "Signals, zombies, orphans and threads"
+            }
+          ]
+        },
+        {
+          "item": "NOTES (Linux implementations of threads: LinuxThreads and NPTL)",
+          "at": [
+            {
+              "deep": "Signals, zombies, orphans and threads"
+            }
+          ]
+        },
+        {
+          "item": "SEE ALSO",
+          "at": [
+            {
+              "out": "page section that is not about what a data engineer does with the tool (name, synopsis, history, bugs, authors, cross-references or API return codes)"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "proc_loadavg(5)",
+      "items": [
+        {
+          "item": "NAME: /proc/loadavg - load average",
+          "at": [
+            {
+              "deep": "Looking at processes: ps, top, htop and load average"
+            }
+          ]
+        },
+        {
+          "item": "DESCRIPTION: first three fields are the load averages over 1, 5 and 15 minutes (state R and state D jobs); fourth field is runnable/existing scheduling entities; fifth field is the most recently created PID",
+          "at": [
+            {
+              "deep": "Looking at processes: ps, top, htop and load average"
+            }
+          ]
+        },
+        {
+          "item": "SEE ALSO",
+          "at": [
+            {
+              "out": "page section that is not about what a data engineer does with the tool (name, synopsis, history, bugs, authors, cross-references or API return codes)"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "capabilities(7)",
+      "items": [
+        {
+          "item": "DESCRIPTION: privileged processes (effective user ID 0, superuser or root) bypass kernel permission checks; capabilities divide superuser power into distinct units",
+          "at": [
+            {
+              "deep": "Files, inodes and permissions"
+            }
+          ]
+        },
+        {
+          "item": "List of capabilities: CAP_DAC_OVERRIDE (bypass file read, write and execute checks), CAP_DAC_READ_SEARCH (bypass file read and directory read/execute checks)",
+          "at": [
+            {
+              "deep": "Files, inodes and permissions"
+            }
+          ]
+        },
+        {
+          "item": "Other sections not used here",
+          "at": [
+            {
+              "deep": "Files, inodes and permissions"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "symlink(7)",
+      "items": [
+        {
+          "item": "NAME",
+          "at": [
+            {
+              "out": "page section that is not about what a data engineer does with the tool (name, synopsis, history, bugs, authors, cross-references or API return codes)"
+            }
+          ]
+        },
+        {
+          "item": "DESCRIPTION: what a symbolic link is; symbolic links may refer to directories and cross filesystem boundaries",
+          "at": [
+            {
+              "deep": "Files, inodes and permissions"
+            }
+          ]
+        },
+        {
+          "item": "Symbolic link ownership, permissions and timestamps; resolution of symbolic links in pathnames",
+          "at": [
+            {
+              "deep": "Files, inodes and permissions"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "The GNU Awk User's Guide: String Functions",
+      "items": [
+        {
+          "item": "String-manipulation functions: tolower(string), toupper(string) and others (sub, gsub, split, substr, sprintf, length, ...)",
+          "at": [
+            {
+              "step": "One pipeline, one script, same answer"
+            },
+            {
+              "deep": "One-liners over order_events"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "The GNU Awk User's Guide: Changing the Contents of a Field",
+      "items": [
+        {
+          "item": "Changing a field (for example $2 = $2 - 10) recalculates $0 from the fields",
+          "at": [
+            {
+              "step": "One pipeline, one script, same answer"
+            },
+            {
+              "deep": "One-liners over order_events"
+            }
+          ]
+        },
+        {
+          "item": "Creating a new field changes the internal copy of the record; out-of-range references do not change $0 or NF",
+          "at": [
+            {
+              "step": "One pipeline, one script, same answer"
+            },
+            {
+              "deep": "One-liners over order_events"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "uniq(1)",
+      "items": [
+        {
+          "item": "NAME, SYNOPSIS, DESCRIPTION: filter adjacent matching lines",
+          "at": [
+            {
+              "step": "One pipeline, one script, same answer"
+            },
+            {
+              "deep": "One-liners over order_events"
+            }
+          ]
+        },
+        {
+          "item": "Options including -c/--count, -d/--repeated",
+          "at": [
+            {
+              "step": "One pipeline, one script, same answer"
+            },
+            {
+              "deep": "One-liners over order_events"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "Comparing and Merging Files (GNU diffutils manual)",
+      "items": [
+        {
+          "item": "Invoking diff: options and exit status",
+          "at": [
+            {
+              "step": "One pipeline, one script, same answer"
+            },
+            {
+              "deep": "One-liners over order_events"
+            }
+          ]
+        },
+        {
+          "item": "Invoking cmp, sdiff, diff3: each with an exit status paragraph",
+          "at": [
+            {
+              "out": "cmp, sdiff and diff3 aren't used; diff's own exit status is covered"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "cron(8)",
+      "items": [
+        {
+          "item": "DESCRIPTION: how cron wakes each minute and runs due commands",
+          "at": [
+            {
+              "step": "cron starts it; ssh gets you in"
+            },
+            {
+              "deep": "cron"
+            }
+          ]
+        },
+        {
+          "item": "Daylight saving time and other clock changes (less than 3 hours, more than 3 hours)",
+          "at": [
+            {
+              "step": "cron starts it; ssh gets you in"
+            },
+            {
+              "deep": "cron"
+            }
+          ]
+        },
+        {
+          "item": "Time zone: single timezone via /etc/localtime",
+          "at": [
+            {
+              "step": "cron starts it; ssh gets you in"
+            },
+            {
+              "deep": "cron"
+            }
+          ]
+        },
+        {
+          "item": "Logging to syslog",
+          "at": [
+            {
+              "step": "cron starts it; ssh gets you in"
+            },
+            {
+              "deep": "cron"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "flock(1)",
+      "items": [
+        {
+          "item": "NAME, SYNOPSIS, DESCRIPTION: manage locks from shell scripts",
+          "at": [
+            {
+              "deep": "cron"
+            }
+          ]
+        },
+        {
+          "item": "Options: -n/--nb/--nonblock (fail rather than wait), -E (exit status on failure), -w (timeout), others",
+          "at": [
+            {
+              "deep": "cron"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "OpenBSD ssh_config(5)",
+      "items": [
+        {
+          "item": "ProxyJump: one or more jump proxies, comma-separated, visited in order",
+          "at": [
+            {
+              "step": "cron starts it; ssh gets you in"
+            },
+            {
+              "deep": "ssh and tunnels"
+            }
+          ]
+        },
+        {
+          "item": "ServerAliveInterval: seconds of silence before ssh sends a keep-alive request; default 0 (none sent)",
+          "at": [
+            {
+              "step": "cron starts it; ssh gets you in"
+            },
+            {
+              "deep": "ssh and tunnels"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "nohup(1)",
+      "items": [
+        {
+          "item": "NAME: run a command immune to hangups, with output to a non-tty",
+          "at": [
+            {
+              "deep": "The process model: fork, exec, wait and the exit status"
+            }
+          ]
+        },
+        {
+          "item": "SYNOPSIS, DESCRIPTION",
+          "at": [
+            {
+              "deep": "The process model: fork, exec, wait and the exit status"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "setsid(1)",
+      "items": [
+        {
+          "item": "NAME, SYNOPSIS",
+          "at": [
+            {
+              "deep": "The process model: fork, exec, wait and the exit status"
+            }
+          ]
+        },
+        {
+          "item": "DESCRIPTION: runs a program in a new session; forks if already a process group leader (see --fork)",
+          "at": [
+            {
+              "deep": "The process model: fork, exec, wait and the exit status"
+            }
+          ]
+        },
+        {
+          "item": "OPTIONS",
+          "at": [
+            {
+              "deep": "The process model: fork, exec, wait and the exit status"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "proc_pid_syscall(5)",
+      "items": [
+        {
+          "item": "DESCRIPTION of /proc/pid/syscall (since Linux 2.6.27): system call number, six argument registers, stack pointer, program counter",
+          "at": [
+            {
+              "step": "A load job hangs: what is it doing?"
+            },
+            {
+              "deep": "A hung job: /proc and strace"
+            }
+          ]
+        },
+        {
+          "item": "SEE ALSO",
+          "at": [
+            {
+              "out": "page section that is not about what a data engineer does with the tool (name, synopsis, history, bugs, authors, cross-references or API return codes)"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "git-bisect (Git documentation)",
+      "items": [
+        {
+          "item": "git bisect run: exit codes 0 (good), 1 to 127 except 125 (bad), 125 (cannot be tested, skip), others abort",
+          "at": [
+            {
+              "step": "Exit codes: 0 to 255, and 128 plus the signal"
+            },
+            {
+              "deep": "The process model: fork, exec, wait and the exit status"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "_exit(2)",
+      "items": [
+        {
+          "item": "NAME, LIBRARY, SYNOPSIS",
+          "at": [
+            {
+              "out": "page section that is not about what a data engineer does with the tool (name, synopsis, history, bugs, authors, cross-references or API return codes)"
+            }
+          ]
+        },
+        {
+          "item": "DESCRIPTION: _exit terminates the process; open fds closed; children inherited by init or the nearest subreaper; parent sent SIGCHLD; status & 0xff",
+          "at": [
+            {
+              "deep": "Signals, zombies, orphans and threads"
+            }
+          ]
+        },
+        {
+          "item": "RETURN VALUE, STANDARDS, HISTORY, NOTES, SEE ALSO",
+          "at": [
+            {
+              "deep": "Signals, zombies, orphans and threads"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "Yama (The Linux Kernel documentation)",
+      "items": [
+        {
+          "item": "Yama LSM; ptrace_scope sysctl in /proc/sys/kernel/yama",
+          "at": [
+            {
+              "deep": "A hung job: /proc and strace"
+            }
+          ]
+        },
+        {
+          "item": "Levels 0 (classic), 1 (restricted: descendants only, or a declared ptracer), 2 (admin-only), 3 (no attach)",
+          "at": [
+            {
+              "deep": "A hung job: /proc and strace"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "git builtin/bisect.c (Git source, v2.56.0)",
+      "items": [
+        {
+          "item": "bisect_run: runs the command per revision; on the first run only, a 126 or 127 is re-checked on a good revision; 125 skip, 0 good, 1-127 bad, anything else aborts",
+          "at": [
+            {
+              "step": "Exit codes: 0 to 255, and 128 plus the signal"
+            },
+            {
+              "deep": "The process model: fork, exec, wait and the exit status"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "top(1)",
+      "items": [
+        {
+          "item": "1. COMMAND-LINE Options (-b batch mode, -n iterations)",
+          "at": [
+            {
+              "deep": "Looking at processes: ps, top, htop and load average"
+            }
+          ]
+        },
+        {
+          "item": "2. SUMMARY Display (uptime and load averages, task and CPU states such as wa, memory usage)",
+          "at": [
+            {
+              "deep": "Looking at processes: ps, top, htop and load average"
+            }
+          ]
+        },
+        {
+          "item": "3. FIELDS / Columns (descriptions of fields such as %CPU, VIRT, RES; managing fields)",
+          "at": [
+            {
+              "deep": "Looking at processes: ps, top, htop and load average"
+            }
+          ]
+        },
+        {
+          "item": "4. INTERACTIVE Commands (global, summary area, task area, bottom window, colour mapping; I Irix/Solaris mode, H Threads mode)",
+          "at": [
+            {
+              "deep": "Looking at processes: ps, top, htop and load average"
+            }
+          ]
+        },
+        {
+          "item": "5. ALTERNATE-DISPLAY Provisions (windows, scrolling, searching, filtering)",
+          "at": [
+            {
+              "out": "top's multi-window display is interactive configuration, not needed for a snapshot"
+            }
+          ]
+        },
+        {
+          "item": "6. FILES (personal and system configuration files, inspect entries, restrictions file)",
+          "at": [
+            {
+              "out": "top's configuration files are a user preference"
+            }
+          ]
+        },
+        {
+          "item": "7. ENVIRONMENT VARIABLE(S)",
+          "at": [
+            {
+              "out": "top's own environment variables are a user preference"
+            }
+          ]
+        },
+        {
+          "item": "8. STUPID TRICKS Sampler",
+          "at": [
+            {
+              "out": "top's tricks sampler is interactive usage"
+            }
+          ]
+        },
+        {
+          "item": "9. BUGS",
+          "at": [
+            {
+              "out": "page section that is not about what a data engineer does with the tool (name, synopsis, history, bugs, authors, cross-references or API return codes)"
+            }
+          ]
+        },
+        {
+          "item": "10. SEE Also",
+          "at": [
+            {
+              "out": "page section that is not about what a data engineer does with the tool (name, synopsis, history, bugs, authors, cross-references or API return codes)"
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "independent Opus agent, written without seeing the topic (it did not read site/)",
+    "date": "2026-10-11",
+    "items": [
+      {
+        "item": "Directory permission bits mean different things than file bits: r lists names, w creates/removes/renames entries (so deleting a file needs w on the directory, not on the file), x lets you traverse and access entries by name.",
+        "at": [
+          {
+            "deep": "Files, inodes and permissions"
+          }
+        ]
+      },
+      {
+        "item": "Special bits: setgid on a shared directory makes new files inherit the directory's group (the usual fix for a team landing zone); the sticky bit on a directory like /tmp stops users deleting or renaming each other's files.",
+        "at": [
+          {
+            "deep": "Files, inodes and permissions"
+          }
+        ]
+      },
+      {
+        "item": "umask is a per-process mask whose bits are turned off from the mode passed to open()/mkdir(), so a job that writes files readable by no one else (or world-readable) usually has an inherited umask problem, not a chmod problem.",
+        "at": [
+          {
+            "deep": "Files, inodes and permissions"
+          }
+        ]
+      },
+      {
+        "item": "A file is a reference-counted inode: names are hard links (st_nlink), and rm/unlink only removes a name; if a process still holds the file open, the data and its disk space persist until the last descriptor closes (why df shows a full disk that du cannot find; look for '(deleted)' targets under /proc/<pid>/fd).",
+        "at": [
+          {
+            "deep": "Small things that bite"
+          },
+          {
+            "deep": "Files, inodes and permissions"
+          }
+        ]
+      },
+      {
+        "item": "rename() atomically replaces an existing target, so 'write to a temp file in the same directory, then mv over the final name' gives readers either the old or the new file, never a partial one; it fails with EXDEV across filesystems, where mv silently degrades to copy+delete and loses atomicity.",
+        "at": [
+          {
+            "deep": "Small things that bite"
+          }
+        ]
+      },
+      {
+        "item": "Redirections are processed left to right: 'cmd > file 2>&1' sends both streams to file, while 'cmd 2>&1 > file' sends stderr to the old stdout (the terminal) because fd 2 was duplicated before fd 1 moved; &>file is bash shorthand for both, and set -o noclobber makes > refuse to overwrite an existing file.",
+        "at": [
+          {
+            "step": "Where did the error go?"
+          },
+          {
+            "deep": "Pipes, redirection and the pipeline's status"
+          }
+        ]
+      },
+      {
+        "item": "A pipeline's exit status is that of the last command only, so 'extract | gzip > out.gz' reports success even when extract failed; set -o pipefail makes it return the rightmost non-zero status instead. |& pipes stderr too (shorthand for 2>&1 |).",
+        "at": [
+          {
+            "step": "A pipeline exits with its last command"
+          },
+          {
+            "deep": "Pipes, redirection and the pipeline's status"
+          }
+        ]
+      },
+      {
+        "item": "Each stage of a multi-command pipeline runs in its own subshell, so 'producer | while read x; do count=...; done' loses variable changes after the loop unless shopt -s lastpipe is set (and job control is off).",
+        "at": [
+          {
+            "deep": "Pipes, redirection and the pipeline's status"
+          }
+        ]
+      },
+      {
+        "item": "set -e has deliberate holes: it does not fire for commands in if/while tests, any command in a && or || list except the last, non-final pipeline stages without pipefail, or commands negated with !; 'set -euo pipefail' plus explicit checks is the defensible baseline, not a guarantee.",
+        "at": [
+          {
+            "deep": "Pipes, redirection and the pipeline's status"
+          }
+        ]
+      },
+      {
+        "item": "Exit-status conventions: 0 success, 1-125 command-defined failure, 126 found but not executable, 127 command not found, 128+N killed by signal N (137 = SIGKILL, 143 = SIGTERM, 130 = SIGINT); builtins use 2 for usage errors.",
+        "at": [
+          {
+            "step": "Exit codes: 0 to 255, and 128 plus the signal"
+          },
+          {
+            "deep": "The process model: fork, exec, wait and the exit status"
+          }
+        ]
+      },
+      {
+        "item": "grep's exit status is a three-way signal: 0 a line matched, 1 no match, 2 error; under set -e or pipefail, a grep that simply finds nothing (status 1) will abort the script unless you handle it ('|| true' or an explicit test).",
+        "at": [
+          {
+            "deep": "One-liners over order_events"
+          }
+        ]
+      },
+      {
+        "item": "Pipes are bounded kernel buffers (64 KiB by default on Linux): a writer blocks when the reader is slow, which gives free backpressure but also deadlocks a process that fills one pipe while its peer waits on another.",
+        "at": [
+          {
+            "deep": "Pipes, redirection and the pipeline's status"
+          }
+        ]
+      },
+      {
+        "item": "Writing to a pipe whose readers are all gone raises SIGPIPE (or EPIPE if ignored), which is why 'producer | head' ends the producer early with status 141 (128+13), harmless in itself but fatal under pipefail; writes up to PIPE_BUF (4096 bytes on Linux) are atomic, so larger interleaved writes from parallel workers can tear lines.",
+        "at": [
+          {
+            "deep": "Pipes, redirection and the pipeline's status"
+          },
+          {
+            "deep": "Small things that bite"
+          }
+        ]
+      },
+      {
+        "item": "fork() duplicates the process with copy-on-write memory; the child inherits copies of the open file descriptors, which share file offsets and status flags with the parent, and only the calling thread is duplicated.",
+        "at": [
+          {
+            "deep": "The process model: fork, exec, wait and the exit status"
+          }
+        ]
+      },
+      {
+        "item": "execve() does not create a process: it replaces the program in the same PID; caught signal handlers reset to default, ignored signals stay ignored, and descriptors stay open unless marked close-on-exec (the source of leaked fds and 'exec' in wrapper scripts keeping the PID).",
+        "at": [
+          {
+            "deep": "The process model: fork, exec, wait and the exit status"
+          }
+        ]
+      },
+      {
+        "item": "A child that exits stays a zombie (ps state Z, <defunct>) until its parent wait()s for it; orphans are reparented to init or the nearest subreaper, which reaps them. Zombies hold no memory but do hold PIDs.",
+        "at": [
+          {
+            "step": "TERM asks; KILL does not"
+          },
+          {
+            "deep": "Signals, zombies, orphans and threads"
+          }
+        ]
+      },
+      {
+        "item": "A program running as PID 1 in a container takes on init's job: orphaned children are reparented to it and stay zombies unless it wait()s for them. That is why images use a minimal init, or the exec form so the job itself gets the signals.",
+        "at": [
+          {
+            "deep": "Signals, zombies, orphans and threads"
+          }
+        ]
+      },
+      {
+        "item": "SIGKILL and SIGSTOP cannot be caught, blocked or ignored, so 'kill -9' skips every cleanup handler (temp files, lock release, flushing buffers, committing offsets). Send SIGTERM first, give a grace period, then escalate.",
+        "at": [
+          {
+            "step": "TERM asks; KILL does not"
+          },
+          {
+            "deep": "Signals, zombies, orphans and threads"
+          }
+        ]
+      },
+      {
+        "item": "Signal dispositions are inherited across fork(); nohup and background jobs work by ignoring SIGHUP, and an interactive bash resends SIGHUP to its jobs on exit unless they are disowned, so jobs started from an ssh session die when it drops.",
+        "at": [
+          {
+            "deep": "Signals, zombies, orphans and threads"
+          },
+          {
+            "deep": "The process model: fork, exec, wait and the exit status"
+          }
+        ]
+      },
+      {
+        "item": "If bash is waiting on a foreground command when a trapped signal arrives, the trap runs only after that command finishes. A wrapper that must forward SIGTERM should run the child in the background and 'wait' on it, which returns >128 at once.",
+        "at": [
+          {
+            "deep": "Signals, zombies, orphans and threads"
+          }
+        ]
+      },
+      {
+        "item": "kill with a negative PID signals a whole process group (kill -TERM -<pgid>), which is how you stop a pipeline or a job's whole tree; kill -0 <pid> sends nothing but tests whether the process exists and you may signal it.",
+        "at": [
+          {
+            "deep": "Signals, zombies, orphans and threads"
+          }
+        ]
+      },
+      {
+        "item": "timeout(1) sends SIGTERM and exits 124 on timeout (137 if KILL was needed); add -k/--kill-after to escalate to SIGKILL for a child that ignores TERM, which is the standard guard on a cron or CI step that can hang.",
+        "at": [
+          {
+            "deep": "The process model: fork, exec, wait and the exit status"
+          },
+          {
+            "deep": "Small things that bite"
+          }
+        ]
+      },
+      {
+        "item": "ps state codes for triage: R running/runnable, S interruptible sleep, D uninterruptible sleep (usually I/O; signals, even kill -9, cannot interrupt it), T stopped, Z zombie (<defunct>); 'ps -eo pid,stat,wchan:20,cmd' shows the kernel function each process is sleeping in.",
+        "at": [
+          {
+            "step": "A load job hangs: what is it doing?"
+          },
+          {
+            "deep": "Looking at processes: ps, top, htop and load average"
+          }
+        ]
+      },
+      {
+        "item": "Linux load average counts tasks that are runnable (R) and in uninterruptible disk wait (D), so a load of 40 on an idle CPU usually means stuck I/O (NFS, a failing disk, a stalled FUSE/object-store mount), not CPU saturation.",
+        "at": [
+          {
+            "deep": "Looking at processes: ps, top, htop and load average"
+          }
+        ]
+      },
+      {
+        "item": "In top, %CPU above 100% is normal for a multithreaded process in Irix mode (Shift+I switches to Solaris mode, divided by CPU count); 'wa' is the share of CPU time waiting on I/O; RES is resident memory while VIRT includes merely reserved address space, so a large VIRT alone is not a leak.",
+        "at": [
+          {
+            "deep": "Looking at processes: ps, top, htop and load average"
+          }
+        ]
+      },
+      {
+        "item": "Hung-job triage without restarting it: /proc/<pid>/wchan and /proc/<pid>/stack (kernel function it is blocked in), /proc/<pid>/fd and fdinfo (which files/sockets are open and the read offset, which tells you progress through an input), /proc/<pid>/io (read_bytes/write_bytes moving or not), /proc/<pid>/environ (the env it actually started with).",
+        "at": [
+          {
+            "step": "A load job hangs: what is it doing?"
+          },
+          {
+            "deep": "A hung job: /proc and strace"
+          }
+        ]
+      },
+      {
+        "item": "strace -p <pid> attaches to a running process and Ctrl-C detaches, leaving it running; -f follows threads/children, -tt -T timestamps each call and its duration, -y/--decode-fds=path turns fd numbers into paths, and a single '<unfinished ...>' read/futex/poll/connect shows exactly what the job is waiting on.",
+        "at": [
+          {
+            "step": "A load job hangs: what is it doing?"
+          },
+          {
+            "deep": "A hung job: /proc and strace"
+          }
+        ]
+      },
+      {
+        "item": "strace -c gives a per-syscall count/time/error summary (cheap way to spot a job doing millions of tiny reads or failing stat() calls), and -e trace=%file / %network narrows the output; tracing slows syscall-heavy processes, so use it briefly on production jobs.",
+        "at": [
+          {
+            "deep": "A hung job: /proc and strace"
+          }
+        ]
+      },
+      {
+        "item": "awk splits on runs of whitespace by default (set -F for CSV-ish data, and know it is not a CSV parser); assigning to any field rebuilds $0 with OFS, and '$1=$1' is the idiom to force that rebuild.",
+        "at": [
+          {
+            "step": "One pipeline, one script, same answer"
+          },
+          {
+            "deep": "One-liners over order_events"
+          }
+        ]
+      },
+      {
+        "item": "sed -i edits files in place with no undo (-i.bak keeps a backup), -E switches to extended regexes, -s treats files separately instead of as one stream, and -z splits on NUL bytes for find -print0 style input; test the expression without -i first.",
+        "at": [
+          {
+            "deep": "One-liners over order_events"
+          }
+        ]
+      },
+      {
+        "item": "grep -F matches fixed strings (no regex surprises from dots in IPs or file names); 'Binary file matches' means GNU grep suppressed output for a file it detected as binary (often a stray NUL or encoding issue), and -a forces text.",
+        "at": [
+          {
+            "deep": "One-liners over order_events"
+          }
+        ]
+      },
+      {
+        "item": "jq essentials for pipelines: -r for raw strings, -c for one JSON value per line (JSONL), --arg passes shell values as strings and --argjson as JSON (never splice shell variables into the filter text), '//' supplies defaults for null/false, @tsv/@csv to hand off to awk/sort.",
+        "at": [
+          {
+            "deep": "One-liners over order_events"
+          }
+        ]
+      },
+      {
+        "item": "jq's exit status is 0 even when the result is null unless you pass -e (then 1 for false/null, 4 for no output); -s slurps the whole input into memory, while --stream emits [path, leaf] events for inputs too large to load.",
+        "at": [
+          {
+            "deep": "One-liners over order_events"
+          }
+        ]
+      },
+      {
+        "item": "cron runs commands with /bin/sh and a minimal environment (SHELL=/bin/sh, HOME and LOGNAME from passwd, no login profile), so set PATH and other variables at the top of the crontab or in the script; an unescaped % in the command becomes a newline (escape it in date +%F).",
+        "at": [
+          {
+            "step": "cron starts it; ssh gets you in"
+          },
+          {
+            "deep": "cron"
+          }
+        ]
+      },
+      {
+        "item": "Cron gotchas: if both day-of-month and day-of-week are restricted, the job runs when either matches; output is mailed (or lost) unless redirected; around DST, fixed-time jobs in a skipped hour run soon after the change and those in a repeated hour are not re-run.",
+        "at": [
+          {
+            "deep": "cron"
+          }
+        ]
+      },
+      {
+        "item": "cron does not stop overlapping runs: if a run outlasts its interval, two copies run at once. Wrap jobs in 'flock -n /var/lock/job.lock cmd' (fails right away, exit code set by -E) or -w for a bounded wait.",
+        "at": [
+          {
+            "step": "cron starts it; ssh gets you in"
+          },
+          {
+            "deep": "cron"
+          }
+        ]
+      },
+      {
+        "item": "Cron has no retries, backfill, dependency tracking or missed-run catch-up while the host is down; those are why pipelines move to an orchestrator or Kubernetes CronJobs.",
+        "at": [
+          {
+            "deep": "cron"
+          }
+        ]
+      },
+      {
+        "item": "SSH tunnels: -L port:host:hostport exposes a remote-side service locally (for example a private warehouse or Spark UI), -R publishes a local port on the remote host, -D runs a local SOCKS proxy, -N skips the remote command, and -J jump1,jump2 hops through bastions (ProxyJump).",
+        "at": [
+          {
+            "step": "cron starts it; ssh gets you in"
+          },
+          {
+            "deep": "ssh and tunnels"
+          }
+        ]
+      },
+      {
+        "item": "Agent forwarding (-A) lets anyone with root on the remote host use your loaded keys for as long as you are connected; the man page recommends -J jump hosts instead. ssh exits with the remote command's status, or 255 for its own errors, which matters when it wraps remote steps in scripts.",
+        "at": [
+          {
+            "deep": "ssh and tunnels"
+          }
+        ]
+      },
+      {
+        "item": "Setuid/setgid binaries cannot be ptrace'd (so strace on them fails or loses privilege), and reading another user's /proc/<pid>/stack or wchan requires ptrace-level access: debugging a job usually means running as its user or root.",
+        "at": [
+          {
+            "out": "ptrace access policy and kernel hardening are security-engineering detail beyond a refresher"
+          }
+        ]
+      }
+    ]
+  },
+  "gapReview": {
+    "date": "2026-10-11",
+    "by": "builder",
+    "open": []
+  }
+}

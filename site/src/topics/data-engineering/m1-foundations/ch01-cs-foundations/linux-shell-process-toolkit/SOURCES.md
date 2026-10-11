@@ -37,6 +37,8 @@ Contents:
 URL: https://manpages.debian.org/unstable/manpages-dev/fork.2.en.html
 Version: Linux man-pages 6.19, page dated 2026-06-05 (manpages-dev 6.19-3, Debian unstable)
 
+> The child process is created with a single thread—the one that called fork().
+
 > fork() creates a new process by duplicating the calling process.
 
 > The child process and the parent process run in separate memory spaces.
@@ -62,6 +64,10 @@ Contents:
 ## execve(2) - Linux manual page (Debian manpages mirror)
 URL: https://manpages.debian.org/unstable/manpages-dev/execve.2.en.html
 Version: Linux man-pages 6.19, page dated 2026-02-08 (manpages-dev 6.19-3, Debian unstable)
+
+> The dispositions of any signals that are being caught are reset to the default (signal(7)).
+
+> POSIX.1 specifies that the dispositions of any signals that are ignored or set to the default are left unchanged.
 
 > execve() executes the program referred to by path. This causes the program that is currently being run by the calling process to be replaced with a new program, with newly initialized stack, heap, and (initialized and uninitialized) data segments.
 
@@ -228,6 +234,8 @@ Version: coreutils 9.10-1 (Debian unstable, source updated 2026-02-26)
 > The first digit selects the set user ID (4) and set group ID (2) and restricted deletion or sticky (1) attributes.
 
 > chmod clears the set-group-ID bit of a regular file if the file's group ID does not match the user's effective group ID or one of the user's supplementary group IDs, unless the user has appropriate privileges.
+
+> For directories, it prevents unprivileged users from removing or renaming a file in the directory unless they own the file or the directory; this is called the restricted deletion flag for the directory, and is commonly found on world-writable directories like /tmp.
 
 Contents:
 - NAME
@@ -405,6 +413,12 @@ Contents:
 ## GNU Bash Reference Manual
 URL: https://www.gnu.org/software/bash/manual/bash.html
 Version: Bash 5.3, 18 May 2025
+
+> Before exiting, an interactive shell resends the SIGHUP to all jobs, running or stopped.
+
+> If Bash is waiting for a command to complete and receives a signal for which a trap has been set, it will not execute the trap until the command completes.
+
+> the redirection fails if the file whose name results from the expansion of word exists and is a regular file.
 Pipeline status is the last command's; pipefail:
 > The exit status of a pipeline is the exit status of the last command in the pipeline, unless the pipefail option is enabled
 
@@ -598,6 +612,14 @@ Version: OpenBSD-current, September 5, 2026
 > Do not execute a remote command. This is useful for just forwarding ports.
 
 > ssh will simply ignore a private key file if it is accessible by others.
+
+> ssh exits with the exit status of the remote command or with 255 if an error occurred.
+
+> Agent forwarding should be enabled with caution.
+
+> A safer alternative may be to use a jump host
+
+> ssh will act as a SOCKS server.
 
 Contents:
 - -J destination: jump host (ProxyJump shortcut), comma-separated hops
@@ -823,3 +845,26 @@ Note: the comment's lines are quoted one by one because each source line starts 
 Contents:
 - bisect_run: runs the command per revision; on the first run only, a 126 or 127 is re-checked on a good revision; 125 skip, 0 good, 1-127 bad, anything else aborts
 
+## top(1) - procps manual page (Debian manpages mirror)
+URL: https://manpages.debian.org/unstable/procps/top.1.en.html
+Version: procps 2:4.0.7-1 (Debian unstable)
+
+> In a true SMP environment, if a process is multi-threaded and top is not operating in Threads mode, amounts greater than 100% may be reported.
+
+> top will operate in Solaris mode where a task's cpu usage will be divided by the total number of CPUs.
+
+> wa : time waiting for I/O completion
+
+> The total amount of virtual memory used by the task. It includes all code, data and shared libraries plus pages that have been swapped out and pages that have been mapped but not used.
+
+Contents:
+- 1. COMMAND-LINE Options (-b batch mode, -n iterations)
+- 2. SUMMARY Display (uptime and load averages, task and CPU states such as wa, memory usage)
+- 3. FIELDS / Columns (descriptions of fields such as %CPU, VIRT, RES; managing fields)
+- 4. INTERACTIVE Commands (global, summary area, task area, bottom window, colour mapping; I Irix/Solaris mode, H Threads mode)
+- 5. ALTERNATE-DISPLAY Provisions (windows, scrolling, searching, filtering)
+- 6. FILES (personal and system configuration files, inspect entries, restrictions file)
+- 7. ENVIRONMENT VARIABLE(S)
+- 8. STUPID TRICKS Sampler
+- 9. BUGS
+- 10. SEE Also

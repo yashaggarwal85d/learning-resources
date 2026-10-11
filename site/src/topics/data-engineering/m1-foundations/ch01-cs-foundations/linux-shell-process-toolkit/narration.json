@@ -1,0 +1,134 @@
+{
+  "topic": "de.linux-shell-process-toolkit",
+  "note": "Written to be spoken: one sentence or phrase per line; {\"beat\": s} is a deliberate pause; code is spelled the way it is said. `answer` plays after the learner answers a predict step.",
+  "steps": [
+    {
+      "lines": [
+        "Bisect trusted an exit code.",
+        "So here is where exit codes come from... processes, their signals, and the pipes between them.",
+        "Five minutes.",
+        {
+          "beat": 0.4
+        },
+        "All familiar? Swipe on to the delivery workflow."
+      ]
+    },
+    {
+      "lines": [
+        "Every command you type is three steps.",
+        "The shell forks a copy of itself. The copy execs the program, which replaces it, in place. And the shell waits for it to end.",
+        "What comes back is one number, the exit status. That is what the question mark variable shows, and what bisect read.",
+        {
+          "beat": 0.4
+        },
+        "The child starts with the same three open files. Zero is standard input. One is standard output. Two is standard error."
+      ]
+    },
+    {
+      "lines": [
+        "A job reads a file that is missing, and prints one error line on standard error.",
+        "The shell applies redirections from left to right. And the standard error redirection means, make two a copy of whatever one points at, right now.",
+        {
+          "beat": 0.4
+        },
+        "So where does that error line land?"
+      ],
+      "answer": [
+        "On the terminal.",
+        "The copy of standard output was made first, while it still pointed at the terminal. Only afterwards did standard output move to the file.",
+        "So the log stays empty. Zero lines.",
+        "Put the file first, then the copy, and both lines land in the file."
+      ]
+    },
+    {
+      "lines": [
+        "A pipe joins one command's output to the next one's input.",
+        "And the pipeline's exit status is the last command's.",
+        "Here the JSON tool cannot open the file. But sort, and the counting step, are perfectly happy with nothing.",
+        {
+          "beat": 0.4
+        },
+        "So what does the shell report?"
+      ],
+      "answer": [
+        "Zero.",
+        "The last command succeeded, so the whole pipeline says success. The failure in the middle vanished.",
+        "The pipe-fail option makes it the rightmost failure instead, here a two.",
+        "Put set minus e, minus u, and pipe-fail at the top of the nightly script, and it stops right there, instead of loading nothing."
+      ]
+    },
+    {
+      "lines": [
+        "An exit status is one byte. Zero to two hundred fifty-five.",
+        "Zero is success. One to one hundred twenty-five mean whatever the program says.",
+        "The shell adds two of its own. One hundred twenty-six, found but not executable, because the execute bit is missing. And one hundred twenty-seven, not found.",
+        "Above one hundred twenty-eight, Bash reports one hundred twenty-eight plus the signal that killed the program. So one hundred thirty-seven is a kill, and one hundred forty-three is a terminate.",
+        {
+          "beat": 0.4
+        },
+        "That is why bisect reserved one hundred twenty-five for skip... and distrusts a first run that exits with one hundred twenty-six or one hundred twenty-seven."
+      ]
+    },
+    {
+      "lines": [
+        "A signal is a one number message.",
+        "Sig-term is the polite stop. A program can catch it, flush its buffers, and close.",
+        "Sig-kill cannot be caught, blocked or ignored. The kernel ends the process where it stands, and whatever sat in its own buffers is lost.",
+        "A child that has ended, but not been waited for, is a zombie. And a child whose parent died is adopted by init.",
+        {
+          "beat": 0.4
+        },
+        "So, term first. Wait. Then kill."
+      ]
+    },
+    {
+      "lines": [
+        "The nightly load has sat for an hour. Not finished, not failed.",
+        "P-S says it is sleeping. And tracing the process shows a read on file descriptor four, and nothing more.",
+        {
+          "beat": 0.4
+        },
+        "What is it doing?"
+      ],
+      "answer": [
+        "It is waiting in a read, on a socket that nobody writes to.",
+        "Sleeping means it wakes the moment data arrives. A busy loop would show running, with a busy processor. A disk wait would show a D. And a zombie has no open files at all.",
+        "So send term, give it a moment to close, and then kill, if it is still there."
+      ]
+    },
+    {
+      "lines": [
+        "Here is the whole lab in one picture.",
+        "The JSON tool pulls one field per line. Awk trims it and lowercases it. Then sort and count.",
+        "Compare that with the script's own output, and the difference is empty. Exit zero.",
+        {
+          "beat": 0.4
+        },
+        "Skip the awk step, and forty badly spelt events make seven groups instead of four."
+      ]
+    },
+    {
+      "lines": [
+        "Two lines you must read on sight.",
+        "Five fields, minute to weekday, then the command. This one runs at two fifteen every day, and appends both streams to a log.",
+        "Cron gives the job a tiny environment, with nothing from your own shell's path. It runs in one timezone. And it has no guard against a run that is still going. So take a lock.",
+        {
+          "beat": 0.4
+        },
+        "To reach a database behind a bastion, forward a local port through it with S-S-H. The bastion connects to the database for you."
+      ]
+    },
+    {
+      "lines": [
+        "So... eight things to keep.",
+        "Fork, exec and wait. Three standard files, and the copy that depends on order. A pipeline reports its last command.",
+        "A status is a byte, with its own codes for not executable, not found, and killed by a signal.",
+        "Term first, then kill. Look at a hung job with P-S, the proc files, and strace. Chain small tools, and diff against the script.",
+        {
+          "beat": 0.5
+        },
+        "Next up... how a change gets from your branch to production."
+      ]
+    }
+  ]
+}
