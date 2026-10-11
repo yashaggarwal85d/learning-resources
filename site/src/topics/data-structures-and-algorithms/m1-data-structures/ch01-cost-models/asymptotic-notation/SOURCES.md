@@ -1,216 +1,347 @@
 # Sources: Asymptotic notation and case analysis
 
-Checked 2026-10-11. Each source was opened with WebFetch or, where the server returned a PDF, saved and extracted with `pdftotext`. Quotes marked **[pdftotext]** are byte-level extractions and are the most reliable. Quotes marked **[WebFetch]** are returned by a summarising model and were not checked byte-for-byte against the page; re-check them before relying on exact wording.
+Checked 2026-10-11 (fact-check pass added quotes for Rutanen's bibliography, the shadow-vertex method, CPython's comparison costs, Roughgarden's two criticisms and the Wikipedia pseudo-polynomial article). Every source below was fetched raw with scripts/sources.mjs and every quote is proven word for word by `sources.mjs check`. Textbooks (CLRS 4th ed. ch. 2, 3, 7; Mitzenmacher and Upfal, Probability and Computing; Garey and Johnson) could not be opened online and are cited only for framing next to the opened sources, never for a quoted claim.
 
-Status key: **Opened** = text read; **Partial** = source opened but the item is not in it; **Not opened** = could not be read.
+## Donald E. Knuth, "Big Omicron and Big Omega and Big Theta" (SIGACT News, 1976)
+URL: https://danluu.com/knuth-big-o.pdf
+Version: SIGACT News, Apr.-June 1976, pp. 18-24 (scan hosted at danluu.com)
 
----
+> Most of us have gotten accustomed to the idea of using the notation
+> O(f(n))
+> to stand for any function whose magnitude is upper-bounded by a
+> constant times
+> f(n) , for all large
+> n .
 
-## 1. Knuth, "Big Omicron and Big Omega and Big Theta", SIGACT News, Apr.-June 1976
+> Sometimes we also need a
+> corresponding notation for lower-bounded functions,
 
-- URL: https://danluu.com/knuth-big-o.pdf
-- Version/date: SIGACT News 18, Apr.-June 1976 (page header "SIGACT News 18 Apr.-June 1976"). Donald E. Knuth, Stanford University. The PDF also contains a short 1976 letter from Dana Angluin, not relevant to the topic.
-- Status: **Opened** [pdftotext]. Greek letters Ω, Θ, Ω_L/Ω_R are mis-extracted as `~`, `®`, `Q`, `N` in the text layer; the English is exact. Quotes below keep the English and mark symbol damage with `[sym]`.
+> for example when they reject a particular sorting method
+> "because its running time is
+> O(n 2)
 
-Quotes:
+> The classical literature does have a notation for functions that are
+> bounded below, namely
 
-1. "Most of us have gotten accustomed to the idea of using the notation O(f(n)) to stand for any function whose magnitude is upper-bounded by a constant times f(n) , for all large n ."
-2. "Sometimes we also need a corresponding notation for lower-bounded functions, i.e., those functions which are at least as large as a constant times f(n) for all large n ."
-3. "Unfortunately, people have occasionally been using the O-notation for lower bounds, for example when they reject a particular sorting method "because its running time is O(n 2) ""
-4. "Hardy and Littlewood introduced Q in their classic 1914 memoir [4, p. 225], calling it a "new" notation." (`Q` = Ω [sym])
-5. "Unfortunately, Hardy and Littlewood didn't define ~(f(n)) as I wanted them to; their definition was a negation of o(f(n)) , namely a function whose absolute value exceeds Cf(n) for infinitely many n , when C is a sufficiently small positive constant. For all the applications I have seen so far in computer science, a stronger requirement (replacing "infinitely many n" by "all large n") is much more appropriate."
-6. "O(f(n)) denotes the set of all g(n) such that there exist positive constants C and nO with Ig(n)l ~ Cf(n) for all n ~ nO ." (`~` = ≤ [sym])
-7. "~(f(n)) denotes the set of all g(n) such that there exist positive constants C and nO with g(n) k Cf(n) for all n k n0 ." (`k` = ≥ [sym])
-8. "®(f(n)) denotes the set of all g(n) such that there exist positive constants C, C' , and nO with Cf(n) < g(n) < C'f(n) for all n ~ nO ." (`®` = Θ [sym])
-9. "Verbally, O(f(n)) can be read as "order at most f(n) "; ~(f(n)) as "order at least f(n) "; ®(f(n)) as "order exactly f(n) "."
-10. "Under this interpretation, when the O-notation and its relatives are used in formulas, we are actually speaking about sets of functions rather than single functions."
-11. "...we should continue to use one-way equality together with O-notations, since it has been common practice of thousands of mathematicians for so many years now..." (the "one-way equality" passage; part of the text is mis-extracted, so this is the legible run)
-12. "(Hardy's book on divergent series uses 0L and OR v~en a one-sided O-result is needed. Hardy and Littlewood [5] used NL and ~R for functions respectively < -Cf(n) and > Cf(n) infinitely often. Neither of these has become widespread.)" (symbols [sym])
+> denotes the set of all
+> constants
 
-Contents, item by item (from coverage.json):
+> The definitions above refer to "the set of all
 
-| Item | Status | Quote |
-|---|---|---|
-| O, Ω, Θ defined with "all large n", and why Ω is needed for lower bounds | Found | 1, 2, 3, 6, 7, 8 |
-| Hardy–Littlewood meaning of Ω (infinitely often) and the one-way equality | Found | 5, 11 (and 12 for Hardy's one-sided variants) |
+> can be read as "order at most
 
----
+> "order at least
 
-## 2. Har-Peled, UIUC CS 473 Fall 2023, Chapter 9 "Randomized Algorithms II"
+> as "order exactly
 
-- URL: https://courses.grainger.illinois.edu/cs473/fa2023/lec/notes/09_rand_II.pdf (course page: https://courses.grainger.illinois.edu/cs473/fa2023/ , schedule: `.../lec/`, lecture #11 "QuickSort: high probability", notes `notes/09_rand_II.pdf`). Note: the URL `.../cs473/fa2023/notes/09_rand_II.pdf` returned 404.
-- Version/date: "By Sariel Har-Peled, September 26, 2023 Version: 0.2"
-- Status: **Opened** [pdftotext]. Hyphenation at line breaks was joined.
+> a stronger requirement
+> (replacing "infinitely
+> n") is much more appropriate.
 
-Quotes:
+> their definition was a negation of
 
-1. "9.1. QuickSort and Treaps with High Probability"
-2. "Namely, QuickSort performs at most 32n ln n comparisons with high probability. It follows, that QuickSort runs in O(n log n) time, with high probability, since the running time of QuickSort is proportional to the number of comparisons it performs."
-3. "Theorem 9.1.2. With high probability (i.e., 1 − 1/n2 ) the depth of the recursion of QuickSort is ≤ 32 ln n. Thus, with high probability, the running time of QuickSort is O(n log n)."
-4. "More generally, for any constant c, there exist a constant d, such that the probability that QuickSort recursion depth for any element exceeds d ln n is smaller than 1/nc ."
-5. "Specifically, for any t ≥ 1, we have that probability that the recursion depth for any element exceeds t · d ln n is smaller than 1/nt·c ."
+> for infinitely many
+> n , when
+> C
+> is a
 
-Note for the fact-check: the source states the w.h.p. result for recursion depth (d ln n, failure ≤ 1/n^c), not literally "d·n·log n fails with probability ≤ n^−c" as the FACT-CHECK row says. Quote 4 is the closest verbatim form; the O(n log n) running time follows from it (quote 2/3).
+> we are actually speaking about sets of functions rather
+> than single functions.
 
-Contents, item by item:
+> The equal sign here really means
 
-| Item | Status | Quote |
-|---|---|---|
-| w.h.p. wording: for every c there is a d such that the bound fails with probability ≤ n^−c | Found (stated for recursion depth, d ln n; running time O(n log n) follows) | 3, 4 |
+> My feeling is that we should continue
+> to use one-way equality together with
 
----
+Contents:
+- Complaint that O-notation is misused for lower bounds (e.g. rejecting a sorting method "because its running time is O(n^2)"), and the need for a lower-bound notation.
+- History: Omega in Titchmarsh and Prachar; searching for O and o in Bachmann (1894) and Landau; Hardy and Littlewood's 1914 introduction of Omega.
+- Hardy-Littlewood's Omega (negation of o, "infinitely many n") versus Knuth's stronger "all large n" version.
+- Knuth's proposed definitions of O, Omega, Theta as sets of functions with positive constants C, C', n0 and "for all n >= n0".
+- Verbal readings: order at most / at least / exactly f(n); applies to n -> infinity, with a neighbourhood of zero substitute.
+- Credit for Theta to Tarjan and Paterson; set-based definition from Rivest.
+- Formulas as sets (A+B, 1 + O(n^-1)), one-way equality as set inclusion, and Knuth's defence of keeping it.
+- little-omega, asymmetry of absolute values, Hardy-Littlewood Omega_L/Omega_R, and notations for oscillating functions.
+- Competing relational notations (du Bois-Reymond, Hardy, Vinogradov) and why O inside formulas is handier.
+- Proposal that SIGACT members and editors adopt O, Omega, Theta; reference list; unrelated letter from Dana Angluin on the Four Russians' algorithm.
 
-## 3. Rutanen, "O-notation in Algorithm Analysis", arXiv:1309.3210
+## Randomized Algorithms II, Chapter 9 (Har-Peled, UIUC CS 473)
+URL: https://courses.grainger.illinois.edu/cs473/fa2023/lec/notes/09_rand_II.pdf
+Version: Version 0.2, September 26, 2023
+> Thus, to show that QuickSort takes O(n log n) time, it is enough to show, that every element in the input,
+> participates in at most 32 ln n rounds with high enough probability.
 
-- URL: https://arxiv.org/abs/1309.3210 (abstract page); https://arxiv.org/pdf/1309.3210 (full text, used)
-- Version/date: arXiv:1309.3210v32 [cs.DS] 29 Oct 2016; title page dated November 27, 2024 ("updated"). Kalle Rutanen. Abstract page title: "O-notation in algorithm analysis"; PDF title: "O-notation in Algorithm Analysis (updated)".
-- Status: **Opened** [pdftotext]. The abstract page alone did not contain the multivariate passages; the PDF did.
+> Namely, QuickSort performs at most 32n ln n comparisons with high probability.
 
-Quotes:
+> Theorem 9.1.2. With high probability (i.e., 1 − 1/n2 ) the depth of the recursion of QuickSort is ≤ 32 ln n. Thus,
+> with high probability, the running time of QuickSort is O(n log n).
 
-1. "Textbooks on algorithms approach the definition on N2 in two ways. The first way — exemplified in [8, page 312] — is to define the O-notation only in N, and then silently continue using the notation over multiple variables too. That is, with no definition. The second way — exemplified in [1] and [2] — is to define the O-notation in N, and later provide some definition for a generalization to N2 , with the implication that the generalization does not bring anything new."
-2. "Among all the books we have looked at, [1] and [2] were the only ones to provide a definition for N2 — although different ones. The former provided asymptotic linear dominance, while the latter provided coasymptotic linear dominance."
-3. "The first documented symptom of a non-trivial generalization to N2 was given by Howell [11], who demonstrated a flaw4 in asymptotic linear dominance on N2 . Perhaps it was for this issue, or a similar issue, that [2] changed the definition to coasymptotic linear dominance."
-4. "The present paper resolves this question by showing that the only definition which has the desirable properties is linear dominance; the multivariate definition is merely an instance of the definition on Nd ."
-5. Appendix B, "Howell's counterexample": "In this section, we consider Howell's counterexample [11], which shows that asymptotic linear dominance O does not satisfy subset-summability."
+> More generally, for any constant c, there exist a constant d, such that the probability that QuickSort recursion depth for any element exceeds d ln n is smaller than 1/nc .
 
-Contents, item by item:
+> Theorem 9.2.1 (Markov’s Inequality.). For a non-negative variable X, and t > 0, we have:
 
-| Item | Status | Quote |
-|---|---|---|
-| Multivariate O: most textbooks define one variable only; two that define several differ; Howell found a flaw in one | Found | 1, 2, 3 |
+> Theorem 9.2.3 (Chernoff inequality). Let X1 , . . . , Xn be n independent random variables, such that P[Xi = 1] =
 
----
+> Lemma 9.3.1. Given n elements, the expected depth of a treap T defined over those elements is O(log(n)).
 
-## 4. OEIS A013603
+Contents:
+- 9.1 QuickSort and Treaps with High Probability: QuickSort as a game in rounds, with each comparison charged to an element; the union bound; "with high probability" meaning failure probability polynomially small in n (here 1/n^2).
+- 9.1.1 Bounding the rounds an element participates in: lucky rounds (both parts at most 3/4), rho = log_{4/3} n <= 3.5 ln n, coin-flip lemma 9.1.1, Theorem 9.1.2 with the "for any constant c there is a constant d" generalisation.
+- 9.1.2 Alternative proof via expected subproblem size, shrinking by a factor 7/8 per level in expectation, finished with Markov's inequality.
+- 9.2 Chernoff inequality: Markov's inequality (9.2.1), the +-1 Chernoff bound (9.2.3), the general case (9.2.7).
+- 9.3 Treaps: construction, operations, and depth O(log n) in expectation and with high probability (Lemma 9.3.1).
+- 9.4 Bibliographical notes; 9.5 recap from earlier lectures (conditional expectation).
+- Note: the notes do not derive the expected comparison count of QuickSort; they go straight to high-probability bounds.
 
-- URL: https://oeis.org/A013603
-- Version/date: OEIS entry as served on the fetch date (no version or date shown on the page as read). Name as read: "Difference between 2^n and the nearest prime less than or equal to 2^n."
-- Status: **Opened** [WebFetch]. Data quoted from the summary.
+## O-notation in Algorithm Analysis
+URL: https://arxiv.org/pdf/1309.3210
+Version: arXiv:1309.3210v32 [cs.DS], 29 Oct 2016 (PDF compiled 27 Nov 2024)
+> is to define the O-notation only in N,
+> and then silently continue using the notation over multiple variables too. That
+> is, with no definition.
 
-Quotes:
+> Among all the books we have looked at, [1] and [2] were the only ones to provide
+> a definition for N2 — although different ones. The former provided asymptotic
+> linear dominance, while the latter provided coasymptotic linear dominance.
 
-1. Name: "Difference between 2^n and the nearest prime less than or equal to 2^n."
-2. Terms (offset 1): 0, 1, 1, 3, 1, 3, 1, 5, 3, 3, 9, 3, 1, 3, 19, 15, ...
-3. Formula: "a(n) = 2^n - prevprime(2^n) = 2^n - prime(primepi(2^n))." (Alonso del Arte, Dec 10 2016)
-4. Page reports a(32) = 5 and a(64) = 59 (WebFetch summary; the values 4294967291 and 18446744073709551557 do not appear as text on the page).
+> The first documented symptom of a non-trivial generalization to N2 was
+> given by Howell [11], who demonstrated a flaw4 in asymptotic linear dominance
+> on N2 .
 
-Contents, item by item:
+> [1] Thomas H. Cormen, Charles E. Leiserson, Ronald L. Rivest, and Clifford
+> Stein. Introduction to Algorithms. MIT Press, Cambridge, MA, USA, 2nd
+> edition, 2001.
 
-| Item | Status | Quote |
-|---|---|---|
-| 4294967291 = 2^32−5 and 18446744073709551557 = 2^64−59 are the largest primes below 2^32 and 2^64 | Partial: page gives the differences 5 and 59, which imply the primes 2^32−5 and 2^64−59 are the nearest primes ≤ 2^32 and 2^64. "Largest prime below" is not stated. The primality/largest-ness claim rests on the difference values plus computation (FACT-CHECK). | 3, 4 |
+> [2] Thomas H. Cormen, Charles E. Leiserson, Ronald L. Rivest, and Clifford
+> Stein. Introduction to Algorithms. The MIT Press, 3rd edition, 2009.
 
----
+> [11] Rodney R. Howell. On Asymptotic Notation with Multiple Variables, 2008.
 
-## 5. libstdc++ `bits/stl_algo.h` (GCC master)
+Note: so the two books with a multivariable definition are the 2nd and 3rd editions of CLRS; the title of arXiv 1309.3210 (v32) is "O-notation in Algorithm Analysis", and Howell's paper is the one titled "On Asymptotic Notation with Multiple Variables".
 
-- URL: https://raw.githubusercontent.com/gcc-mirror/gcc/master/libstdc++-v3/include/bits/stl_algo.h
-- Version/date: GCC master branch as served on the fetch date; not pinned to a release, and the page has no version line in the text read. Licence: GPL v3 with GCC Runtime Library Exception (as shown on the page).
-- Status: **Opened** [WebFetch]. The file is 218,535 characters; only the first 100,000 were read. Line numbers were not visible.
+Contents:
+- Abstract and introduction: cost functions, the order relation, and O(f) as the set of g with g ≤ f.
+- Problem 3: how the multivariate O-notation should be defined, with a survey of how textbooks treat N2.
+- 8 intuitive properties of the order relation, and a proof that linear dominance is the only definition satisfying them.
+- Master theorems, O-mappings and O-equalities.
+- Local linear dominance and limit theorems.
+- Appendix B: Howell's counterexample to asymptotic linear dominance on N2.
+- Appendix G: comparison of definitions (trivial, asymptotic, co-asymptotic, cofinite linear dominance).
 
-Quotes:
+## OEIS A013603: difference between 2^n and the nearest prime less than or equal to 2^n
+URL: https://oeis.org/A013603
+Version: OEIS entry A013603 as shown on 2026-10-11 (page footer: "Last modified October 11 13:27 EDT 2026"); status approved
 
-1. `enum { _S_threshold = 16 };` with the comment "This controls some aspect of the sort routines."
-2. `__final_insertion_sort`: "This is a helper function for the sort routine." Body: if `__last - __first > __threshold`, call `std::__insertion_sort(__first, __first + __threshold, __comp)` then `std::__unguarded_insertion_sort(__first + __threshold, __last, __comp)`; otherwise `std::__insertion_sort(__first, __last, __comp)`.
-3. `_S_threshold` is also used in `__introsort_loop` as `while (__last - __first > int(_S_threshold))`.
+> Difference between 2^n and the nearest prime less than or equal to 2^n.
 
-Contents, item by item:
+> 0, 1, 1, 3, 1, 3, 1, 5, 3, 3, 9, 3, 1, 3, 19, 15, 1, 5, 1, 3, 9, 3, 15, 3, 39, 5, 39, 57, 3, 35, 1, 5, 9, 41, 31, 5, 25, 45, 7, 87, 21, 11, 57, 17, 55, 21, 115, 59, 81, 27, 129, 47, 111, 33, 55, 5, 13, 27, 55, 93, 1, 57, 25, 59, 49, 5, 19, 23, 19, 35, 231, 93, 69, 35, 97, 15
 
-| Item | Status | Quote |
-|---|---|---|
-| Libraries switch to insertion sort for short ranges; libstdc++ threshold 16 | Found | 1, 2, 3 |
+> a(n) = 2^n - prevprime(2^n) = 2^n - prime(primepi(2^n)). - Alonso del Arte, Dec 10 2016
 
----
+The data line starts at OFFSET 1, so its 32nd term is 5 and its 64th term is 59 (counting the comma-separated terms). By the formula, the largest prime below 2^32 is 2^32 - 5 and the largest prime below 2^64 is 2^64 - 59.
 
-## 6. CPython `Objects/listsort.txt` (3.12 branch)
+Contents:
+- Title line and definition of the sequence (2^n minus the largest prime not above 2^n).
+- The first 76 terms (data line), OFFSET 1,4.
+- Comments: a(n) = 1 means 2^n - 1 is a Mersenne prime; a(1) = 0 convention; Mathematica NextPrime caveat for n = 1.
+- Links: T. D. Noe's table for n = 1..5000, V. Danilov's table for large n, a video on 2^255 - 19.
+- Formula: a(n) = A049711(2^n); a(n) = 2^n - prevprime(2^n).
+- Maple, Mathematica and PARI programs.
+- Cross references (A013597, A014234, A049711, A007917, A151799, A092131), keyword nonn, author, extensions, status.
+
+## Pseudo-polynomial time (Wikipedia)
+URL: https://en.wikipedia.org/wiki/Pseudo-polynomial_time
+Version: English Wikipedia article as fetched 2026-10-11 (cites Garey and Johnson, Computers and Intractability, 1979, for the definition)
+
+> a numeric algorithm runs in pseudo-polynomial time if its running time is bounded from above by a polynomial function of the two variables: the numeric value of the input (the largest integer present in the input) and the length of the input (the number of bits required to represent it).
+
+> divisions, which is sub-linear in the value of n but exponential in the length of n
+
+> Since computational complexity measures difficulty with respect to the length of the (encoded) input, this naive algorithm is actually exponential. It is, however, pseudo-polynomial time.
+
+> Michael R. Garey and David S. Johnson. Computers and Intractability: A Guide to the Theory of NP-Completeness. W.H. Freeman and Company, 1979.
 
-- URL: https://github.com/python/cpython/blob/3.12/Objects/listsort.txt
-- Version/date: CPython 3.12 branch as served on the fetch date. The FACT-CHECK notes minrun differs between 3.12 and main; this source covers 3.12 only.
-- Status: **Opened** [WebFetch].
+Note: used as opened corroboration of the Garey and Johnson definition (the book itself was not opened) and of trial division as the standard pseudo-polynomial example.
+
+Contents:
+- Definition (polynomial in the numeric value and the length of the input), why value is exponential in length under positional encoding, unary encoding, weak and strong NP-completeness.
+- Examples: primality by trial division (up to about sqrt(n) - 1 divisions, exponential in the length), contrast with addition and long division, a polynomial-time primality test found in 2002; the knapsack problem and its O(nW) dynamic program.
+- Strong and weak NP-hardness against strong and weak polynomial-time algorithms (partition, 3-partition); see also; references.
 
-Quotes:
+## libstdc++ bits/stl_algo.h (GCC mirror, master)
+URL: https://raw.githubusercontent.com/gcc-mirror/gcc/master/libstdc++-v3/include/bits/stl_algo.h
+Version: gcc-mirror/gcc branch master, fetched 2026-10-11 (header: "Copyright (C) 2001-2026 Free Software Foundation, Inc.")
+
+> enum { _S_threshold = 16 };
+
+> if (__last - __first > __threshold)
+> {
+> std::__insertion_sort(__first, __first + __threshold, __comp);
+> std::__unguarded_insertion_sort(__first + __threshold, __last,
+> __comp);
+> }
+> else
+> std::__insertion_sort(__first, __last, __comp);
+
+> while (__last - __first > int(_S_threshold))
+
+> std::__introsort_loop(__first, __last,
+> std::__lg(__last - __first) * 2,
+> __comp);
+> std::__final_insertion_sort(__first, __last, __comp);
+
+Contents:
+- Copyright and licence header, file overview of the bits/stl_algo.h algorithm implementations.
+- __insertion_sort and __unguarded_insertion_sort, helpers for the sort routine.
+- The constant _S_threshold = 16, which controls some aspect of the sort routines.
+- __final_insertion_sort: insertion sort for the first 16 elements, unguarded insertion sort for the rest.
+- __introsort_loop: partitions while the range is longer than _S_threshold, falls back to partial sort (heap) when the depth limit reaches 0.
+- __sort: introsort loop with depth limit 2 * lg(n), then final insertion sort.
+- Other algorithms in the header (partial sort, nth_element, merge, inplace merge, stable sort with __chunk_insertion_sort, and so on).
+
+## CPython Objects/listsort.txt (timsort description)
+URL: https://raw.githubusercontent.com/python/cpython/3.12/Objects/listsort.txt
+Version: python/cpython branch 3.12
+
+> This describes an adaptive, stable, natural mergesort, modestly called
+> timsort
+
+> If a natural
+> run contains less than minrun elements (see next section), the main loop
+> artificially boosts it to minrun elements, via a stable binary insertion sort
+> applied to the right number of array elements following the short natural
+> run. In a random array, *all* runs are likely to be minrun long as a
+> result.
+
+> A "binary insertion sort" is just like a textbook insertion sort, but instead
+> of locating the correct position of the next item via linear (one at a time)
+> search, an equivalent to Python's bisect.bisect_right is used to find the
+> correct position in logarithmic time.
+
+> insertion
+> sort remains quadratic (expected and worst cases) either way. Speeding the
+> search doesn't reduce the quadratic data movement costs.
+
+> If we take minrun=33 in this case, then we're very likely to end up with 64
+> runs each of length 33, and then all merges are perfectly balanced. Better!
 
-1. "We pick 32 as a good value in the sweet range"
-2. "Instead we pick a minrun in range(32, 65) such that N/minrun is exactly a power of 2"
-3. "If N < 64, minrun is N."
-4. "IOW, binary insertion sort is used for the whole array then"
-5. "A "binary insertion sort" is just like a textbook insertion sort"
+> But in CPython's case, comparisons are extraordinarily expensive compared to
+> moving data, and the details matter. Moving objects is just copying
+> pointers.
+
+> So cutting the number of compares is almost always measurably helpful in
+> CPython, and the savings swamp the quadratic-time data movement costs for
+> reasonable minrun values.
+
+Note: the main branch (https://raw.githubusercontent.com/python/cpython/main/Objects/listsort.txt, fetched 2026-10-11) keeps the BINSORT note and the "extraordinarily expensive" paragraph but replaces the minrun computation (a 2025 change credited to Stefan Pochmann), so minrun values are not quoted from 3.12. The cached plain text of that file is partly garbled: the fetch's HTML stripping removes text between "<" and ">" in a plain-text file.
+
+Contents:
+- Intro: timsort as an adaptive, stable, natural mergesort.
+- Comparison with Python's samplesort hybrid, with comparison counts and temp-memory tables from sortperf.py.
+- Runs: count_run(), ascending and strictly descending runs, boosting short runs to minrun by binary insertion sort.
+- Computing minrun: choosing minrun so the number of runs is a power of 2 or slightly less (worked example with N = 2112).
+- Merge pattern, merge memory, merge_lo and merge_hi, MIN_GALLOP and galloping mode.
+- Notes: BINSORT, LEFT OR RIGHT (gallop_left and gallop_right), REGION OF UNCERTAINTY, optimisation of individual comparisons.
+
+## Sedgewick and Wayne, Algorithms 4th edition, section 1.4 Analysis of Algorithms (booksite)
+URL: https://algs4.cs.princeton.edu/14analysis/
+Version: Algorithms, 4th edition booksite page "1.4 Analysis of Algorithms" (no date shown; fetched 2026-10-11)
+> We write g(N) ~ f(N) to indicate that
+> g(N) / f(N) approaches 1 as N grows.
+
+> Most often, we work with tilde approximations of the form
+> g(N) ~ a f(N) where f(N) = N^b log^c N
+> and refer to f(N) as the The order of growth
+> of g(N).
+
+> the cost of executing each statement and
+> the frequency of execution of each statement.
+
+> Amortized analysis provides a worst-case performance guarantee
+> on a sequence of operations.
+
+> To determine the memory usage of an object, we add the amount of
+> memory used by each instance variable to the overhead associated
+> with each object, typically 16 bytes.
+
+Note: the fetched plain text keeps the prose but drops the page's tables and figures, so the doubling-hypothesis table values are not in the cached text; the doubling programs (DoublingTest.java, DoublingRatio.java) are named in the prose.
+
+Contents:
+- Scientific method: observe, hypothesize, predict, verify, validate; experiments reproducible, hypotheses falsifiable.
+- Observations: Stopwatch.java, ThreeSum.java, DoublingTest.java (doubling the input size and timing) and DoublingRatio.java (running-time ratios).
+- Mathematical models: running time = cost per statement times frequency; tilde approximations; order-of-growth classifications of the form N^b log^c N.
+- Cost model: counting array accesses for 3-sum; property that 3-sum is order N^3; proposition of ~N^3/2 array accesses.
+- Designing faster algorithms: 2-sum in N^2 (brute force) and N log N (TwoSumFast); 3-sum in N^2 log N (ThreeSumFast).
+- Coping with dependence on inputs: input models, worst-case guarantees, randomized algorithms, amortized analysis (linked-list and resizing-array propositions for Bag, Stack, Queue).
+- Memory usage: primitive types, objects (16-byte overhead, 8-byte padding), references (8 bytes), linked-list nodes, arrays (24-byte header), strings (56 + 2N bytes).
+- Q and A (JVM memory flags, padding, timing advice, system effects such as caching and garbage collection), exercises (orders of growth of loops), creative problems (4-sum, local minimum, bitonic search, Fibonacci binary search).
+
+## Spielman and Teng, Smoothed Analysis of Algorithms: Why the Simplex Algorithm Usually Takes Polynomial Time
+URL: https://arxiv.org/pdf/cs/0111050
+Version: arXiv:cs/0111050v7, last revised 9 Oct 2003 (first submitted 19 Nov 2001); abstract page https://arxiv.org/abs/cs/0111050
+> We introduce the smoothed analysis of algorithms, which continuously interpolates between the worst-case and average-case analyses of algorithms.
+
+> In smoothed analysis, we measure the maximum over inputs of the expected
+> performance of an algorithm under small random perturbations of that input.
+
+> We show that the simplex algorithm has
+> smoothed complexity polynomial in the input size and the standard deviation
+> of Gaussian perturbations.
+
+> time taken by a two-phase shadow-vertex simplex method to solve such a linear program is
+> polynomial in 1/σ and the dimensions of A.
+
+Note: the arXiv abstract page (v7) words the first sentence as "a hybrid of the worst-case and average-case analysis of algorithms"; the PDF text above says "continuously interpolates between".
+
+Contents:
+- Abstract: definition of smoothed analysis (maximum over inputs of expected performance under small random perturbations), measured in input size and perturbation magnitude.
+- Main result: the simplex algorithm has smoothed complexity polynomial in input size and the standard deviation of Gaussian perturbations.
+- Full paper (about 160k characters of text): motivation contrasting worst-case and average-case analysis, definitions of smoothed complexity, the simplex method with the shadow-vertex pivot rule, and the probabilistic proofs.
+- Authors: Daniel A. Spielman (MIT) and Shang-Hua Teng (Boston University and Akamai); extended abstract in STOC 2001.
+
+## Roughgarden (ed.), Beyond the Worst-Case Analysis of Algorithms, Chapter 1 (Introduction)
+URL: https://arxiv.org/pdf/2007.13241
+Version: arXiv:2007.13241v1, 26 Jul 2020; Chapter 1 of the book published by Cambridge University Press (2020); abstract page https://arxiv.org/abs/2007.13241
+> Worst-case analysis summarizes the performance profile of an algorithm by its worst performance on any input of a given size
+
+> Theorem 3.1 is an example of a “parameterized analysis” of an algorithm, where the performance
+> guarantee is expressed as a function of parameters of the input other than its size.
+
+> Chapter 3, by Barbay, searches for instance-optimal algorithms—algorithms that for every input
+> perform better than every other algorithm (up to a constant factor).
+
+> A resource augmentation guarantee then states that the performance of an algorithm of
+> interest is always close to that achieved by an all-powerful algorithm that is handicapped by slightly
+> less resources.
+
+> Part III of the book is about semi-random models—hybrids of worst- and average-case analysis in
+> which nature and an adversary collaborate to produce an instance of a problem.
+
+> 1. Overly pessimistic performance predictions. By design, worst-case analysis gives a pessimistic
+> estimate of an algorithm’s empirical performance.
+
+> One key
+> drawback of distributional analysis is that it can encourage the design of algorithms that are brittle
+> and overly tailored to the assumed input distribution.
+
+Contents:
+- Why worst-case analysis: goals of performance prediction and identifying optimal algorithms, with its strengths and shortcomings.
+- Motivating mysteries (for example over-parameterized neural networks) and the limits of worst-case guarantees.
+- Worked example: parameterized bounds in online paging (locality of reference, working-set function f, LRU versus FIFO, Theorem 3.1).
+- Reasons to prefer parameterized guarantees (five listed).
+- Roadmap by part: Part I (parameterized algorithms, instance optimality, resource augmentation), Part II (deterministic data models such as perturbation stability), Part III (semi-random models, planted models, random-order models, self-improving algorithms), Part IV (smoothed analysis), Part V (applications to machine learning and beyond).
+
+## Mitzenmacher and Vassilvitskii, Algorithms with Predictions
+URL: https://arxiv.org/abs/2006.09123
+Version: arXiv:2006.09123v1, submitted 16 Jun 2020 (abstract page)
+> We introduce algorithms that use predictions from machine learning applied to the input to circumvent worst-case analysis.
+
+> We aim for algorithms that have near optimal performance when these predictions are good, but recover the prediction-less worst case behavior when the predictions have large errors.
+
+> survey is to appear as a chapter in Beyond the Worst-Case Analysis of Algorithms, a collection edited by Tim Roughgarden.
+
+Contents:
+- Abstract: algorithms that take machine-learned predictions about the input, aiming at near-optimal performance when predictions are good and worst-case behaviour when they are badly wrong.
+- Metadata: authors Michael Mitzenmacher and Sergei Vassilvitskii; subject cs.DS; a survey chapter for the Roughgarden volume, to be updated on arXiv.
+- Links to the full text (PDF, HTML) not quoted here.
 
-Contents, item by item:
-
-| Item | Status | Quote |
-|---|---|---|
-| Sort libraries switch to insertion sort for short ranges (CPython) | Found for 3.12 only; FACT-CHECK does not state the CPython claim because it differs by version | 1–5 |
-
----
-
-## 7. Sedgewick and Wayne, *Algorithms*, 4th ed., §1.4 Analysis of Algorithms
-
-- URL: https://algs4.cs.princeton.edu/14analysis/
-- Version/date: "Algorithms, 4th edition (Robert Sedgewick and Kevin Wayne). Copyright © 2000–2025 Robert Sedgewick and Kevin Wayne." (as shown on the page)
-- Status: **Opened** [WebFetch]. The order-of-growth table is an image and was not readable. No doubling-hypothesis section was found on this page.
-
-Quotes:
-
-1. "so very often the order of growth of the cost is one of just a few functions of the problem size _N_."
-2. "[DoublingRatio.java] is similar but also output the ratios in running times from one size to the next." (Observations section; the only doubling text on the page)
-3. "To estimate how much memory our program uses, we can count up the number of variables"
-4. "we add the amount of memory used by each instance variable to the overhead associated with each object, typically 16 bytes."
-5. "An array of primitive-type values typically requires 24 bytes of header information"
-6. "A Java 7 string of length _N_ typically uses 32 bytes (for the String object) plus 24 + 2_N_ bytes"
-
-Contents, item by item:
-
-| Item | Status | Quote |
-|---|---|---|
-| Order-of-growth classifications and what the constants do at real sizes | Partial: the classes are named in the text, but the table (1, log N, N, N log N, N², N³, 2^N) is an image, and constant-factor discussion was not found on the page | 1 |
-| Doubling hypothesis for estimating the exponent | **Not found** on this page. Only a DoublingRatio mention (quote 2). The FACT-CHECK does not cite a quote for it either. | 2 |
-| Memory use as a second resource | Found | 3–6 |
-
----
-
-## 8. CLRS, *Introduction to Algorithms*, 4th ed., chapters 3, 2, 7
-
-- URL: https://mitpress.mit.edu/9780262046305/introduction-to-algorithms/
-- Status: **Not opened**. The server returned HTTP 403 Forbidden. The FACT-CHECK also records the definitions as not verifiable online.
-
-Contents, item by item:
-
-| Item | Status |
-|---|---|
-| Θ, O, Ω with c1, c2, n0 and "for all n ≥ n0" | Not opened |
-| o and ω with "for every c > 0"; limit characterisation | Not opened |
-| Asymptotic notation denotes sets; "=" abuse; anonymous functions | Not opened |
-| Standard rules: sums, products, polynomials, log bases, exponentials | Not opened |
-| Best, worst and average-case analysis of insertion sort | Not opened |
-| Expected running time of randomized quicksort and pivot analysis | Not opened |
-
----
-
-## 9. Mitzenmacher and Upfal, *Probability and Computing*, 2nd ed.
-
-- URL: not found. A Cambridge catalogue URL returned HTTP 404.
-- Status: **Not opened**.
-
-Contents, item by item:
-
-| Item | Status |
-|---|---|
-| Markov's inequality bounds a tail from an expectation only weakly | Not opened |
-| High-probability bound: failure at most 1/n^c | Not opened (Har-Peled covers the w.h.p. wording, see §2) |
-| Chernoff and Chebyshev tail bounds | Not opened |
-
----
-
-## 10. Garey and Johnson (pseudo-polynomial definition)
-
-- Status: **Not opened** (cited in FACT-CHECK as not opened).
-
----
-
-## 11. Other sources cited in FACT-CHECK but not in coverage.json
-
-- Limit test and n vs n(2+sin n): mathematics, no external source.
-- Insertion sort count formulas and quicksort recurrence: verified by `examples.py` (not a web source).
-- Duplicate detection trade-off (heapsort permutes input): no external source.

@@ -1,35 +1,61 @@
-# Fact-check: Asymptotic notation and case analysis (2026-10-11)
+# Fact-check: Asymptotic notation and case analysis (2026-10-11, against raw source texts)
 
-Adversarial check by an independent agent against sources it opened; computed claims were re-derived.
-
-| Claim | Result | Source / evidence |
-|---|---|---|
-| Knuth's Ω needs "all n ≥ n0"; Hardy–Littlewood's Ω is the negation of o ("infinitely many n") | Confirmed (Knuth also notes Hardy used one-sided Ω_L, Ω_R) | Knuth 1976, https://danluu.com/knuth-big-o.pdf |
-| CLRS 4th ed. definitions of Θ, O, Ω, o, ω | Not verifiable online (book); wording matches standard restatements and Knuth. Section numbers unconfirmed, so cited as "chapter 3" | — |
-| Limit test; n vs n(2+sin n) | Confirmed (mathematics) | — |
-| 2^(2n) not O(2^n); log bases differ by a constant | Confirmed | — |
-| Insertion sort: n−1, n(n−1)/2, expected n(n−1)/4 + n − Hₙ | Confirmed by exhaustive enumeration with exact fractions (n ≤ 8 in examples.py) | examples.py |
-| Randomized quicksort expected comparisons 2(n+1)Hₙ − 4n; first pivot on sorted input n(n−1)/2 | Confirmed against the exact recurrence | examples.py |
-| w.h.p. wording | Corrected: "for every c there is a d such that the bound d·n·log n fails with probability ≤ n^−c" | Har-Peled, UIUC CS 473 Fall 2023, §9.1 |
-| Average-case vs expected-time convention | Standard usage; no single quotable definition found | — |
-| Pseudo-polynomial | Corrected: formal definition is polynomial in length and largest number; the "polynomial in value, exponential in bits" gloss is informal | Garey & Johnson (not opened); trial division O(√v) |
-| 4294967291 = 2^32−5 and 18446744073709551557 = 2^64−59 are the largest primes below 2^32 and 2^64 | Confirmed by computation and OEIS A013603 differences | https://oeis.org/A013603 |
-| Multivariate O definitions | Corrected: most textbooks define one variable only; two that define several differ; Howell found a flaw in one | Rutanen, arXiv 1309.3210 |
-| Sort libraries switch to insertion sort for short ranges | libstdc++ threshold 16 confirmed; CPython minrun claim differs between 3.12 and main, so not stated | stl_algo.h; listsort.txt |
-| Duplicate detection trade-off (hash set vs in-place heapsort) | Confirmed; heapsort permutes the input, so "O(1) auxiliary space" | — |
-
-All corrections are applied in the reel and Deep dive.
-
-## Additions from the content review (2026-10-11)
+Adversarial re-check of `OUTLINE.md`'s claims list, the reel (`reel.tsx`, `scenes.tsx`), `narration.json` and `index.mdx`. Each claim was checked against the raw texts cached in `sources/` (fetched with `node scripts/sources.mjs fetch`; quotes in `SOURCES.md` pass `sources.mjs check`, 65 quotes, 0 problems). Computed claims were re-derived independently and `examples.py` was run (all assertions hold). Textbooks (CLRS 4th ed., Mitzenmacher and Upfal, Garey and Johnson) could not be opened; they are cited for framing only, next to an opened source where one exists.
 
 | Claim | Result | Source / evidence |
 |---|---|---|
-| Insertion sort average shown as n²/4 + n − Hₙ in the drawing | Corrected to n(n−1)/4 + n − Hₙ (the enumerated formula) | examples.py |
-| "×65,536 in value for 16 more bits" (trial division drawing) | Corrected: 32 more bits multiply the steps by about 65,536 | examples.py (asserted) |
-| First-pivot quicksort averages 2(n+1)Hₙ − 4n over random orders | Confirmed by sampling (within 3%) and the standard recurrence | examples.py |
-| Log bases inside exponents: 2^(log₂ n) = n, 2^(log₄ n) = √n (replaces an example that compared different arguments, not bases) | Confirmed | examples.py (asserted) |
-| Doubling test cannot separate n from n log n (ratio 2.07 from 10⁹ to 2·10⁹) | Confirmed | examples.py (asserted) |
-| 2n ln n alone gives 13,816 at n = 1,000 against the exact 10,986 | Confirmed | examples.py (asserted) |
-| Smoothed analysis: "the maximum over inputs of the expected performance of an algorithm under small random perturbations of that input"; simplex has polynomial smoothed complexity | Confirmed from the abstract | https://arxiv.org/abs/cs/0111050 |
-| Roughgarden's book surveys parameterized analysis, instance optimality, resource augmentation and semi-random models | Confirmed from the introduction chapter | https://arxiv.org/abs/2007.13241 |
-| Algorithms with predictions: near-optimal with good predictions, prediction-less worst case when they are bad | Confirmed from the abstract | https://arxiv.org/abs/2006.09123 |
+| O(f) is a set of functions; O needs \|g(n)\| ≤ C·f(n) for all n ≥ n₀; Ω needs g(n) ≥ C·f(n) for all n ≥ n₀; Θ is both | Confirmed | Knuth 1976 (`sources/danluu_com_knuth_big_o_pdf.txt`): "denotes the set of all ... constants C and n0 ... for all n ≥ n0"; "the set of all g(n)" credited to Rivest |
+| Hardy–Littlewood Ω is "not o": the bound for infinitely many n; Knuth's (and CLRS's) Ω for all large n | Confirmed | Knuth 1976: "their definition was a negation of o(f(n)) ... for infinitely many n"; "a stronger requirement (replacing "infinitely many n" by "all large n") is much more appropriate" |
+| Ω still used in number theory | Supported, not quoted | Knuth 1976 cites Titchmarsh's zeta-function book, which "devotes his entire Chapter 8 to Ω-theorems"; Knuth also says the definition "is by no means in wide use" (1976) |
+| One-way equals sign means set membership or inclusion; Knuth keeps it | Confirmed | Knuth 1976: "we are actually speaking about sets of functions rather than single functions"; "My feeling is that we should continue to use one-way equality" |
+| n odd → n, n even → 0 is Ω(n) in the Hardy–Littlewood sense only | Confirmed | examples.py (asserted); follows from Knuth's two definitions |
+| CLRS 4th ed. definitions; "insertion sort is Θ(n²)" wrong as stated; "at least O(n²)" meaningless | Not verifiable online (book); consistent with the standard statements and with Knuth's opening complaint about O used for lower bounds ("because its running time is O(n 2)") | Knuth 1976; CLRS ch. 3 (framing) |
+| o and ω: "for every c > 0", n₀ may depend on c; limit test sufficient, not necessary; n vs n·(2 + sin n) | Confirmed, with a sharpening: for o and ω the limit always exists (f/g → 0 or ∞ is equivalent to the definition when g is eventually positive); only Θ, O, Ω can hold with no limit. Deep dive had "equivalently f/g → 0 when the ratio has a limit", which suggested o could hold without one: corrected | mathematics |
+| n and n^(1+sin n) are incomparable | Confirmed: n^(sin n) is unbounded and has 0 as a limit point on integers | mathematics |
+| 2ⁿ⁺¹ = O(2ⁿ); 2²ⁿ = 4ⁿ not O(2ⁿ); log bases differ by a constant, not inside exponents | Confirmed | examples.py (asserted) |
+| 3n² ≤ 3n² + 10n ≤ 4n² from n₀ = 10; f(9) = 333 > 324; c₁ cannot exceed 3 | Confirmed (10n ≤ n² iff n ≥ 10) | examples.py (asserted) |
+| Ratio values in the `Ratios` scene (0.3322, 0.0100, 2.0e-5; 3.01, 100.34, 5.0e+4) | Confirmed by recomputation | scenes.tsx computes them |
+| Multivariate O: most texts define one variable; the two that define several differ; Howell showed a flaw | Confirmed, made precise: the two books are CLRS 2nd and 3rd eds. (asymptotic vs coasymptotic linear dominance); Howell's flaw is in asymptotic linear dominance. The Deep dive's link text gave Rutanen's paper the title of Howell's paper: corrected to "O-notation in Algorithm Analysis" | Rutanen, arXiv 1309.3210v32 (`sources/arxiv_org_pdf_1309_3210.txt`): "Among all the books we have looked at, [1] and [2] were the only ones ..."; bibliography [1], [2], [11] |
+| Insertion sort, n = 8: best 7 (n − 1), worst 28 (n(n−1)/2), average 19.3 (n(n−1)/4 + n − Hₙ), over 40,320 orders | Confirmed by exhaustive enumeration (exact fractions, n = 5…8) and by derivation (inversions + n − Hₙ). Reel caption said "about n²/4 on average", which is 16 at n = 8 against the 19.3 drawn: corrected to the exact formula with "about n²/4 for large n" | examples.py |
+| Quicksort: 499,500 comparisons on 1,000 sorted keys with the first pivot | Confirmed: n(n−1)/2 | examples.py |
+| Randomized quicksort expected comparisons 2(n+1)Hₙ − 4n = 10,986 at n = 1,000, for every input order (distinct keys); 2n ln n = 13,816; ≈ 1.39 n log₂ n | Confirmed: recurrence solved exactly in examples.py; recomputed 10,985.9; 2 ln 2 = 1.386 | examples.py; CLRS ch. 7 (framing). Har-Peled's notes do not derive the expected count |
+| First-pivot quicksort averages the same count over random orders | Confirmed for partitions that keep subarrays uniformly random (as in examples.py); sampled within 3% | examples.py |
+| 2,000 seeded runs: min 9,449, max 15,583, mean 10,991, max/mean 1.42, histogram 55, 1,086, 704, 139, 13, 2, 1, 0 | Confirmed (rerun) | examples.py (asserted) |
+| W.h.p.: for every constant c there is a constant d with failure probability ≤ 1/nᶜ | Confirmed. Har-Peled proves it for recursion depth d ln n; comparisons are then at most d·n ln n. Deep dive said Har-Peled "states it this way" for the running-time bound: made precise | Har-Peled, CS 473 notes §9.1 (`sources/courses_grainger_illinois_edu_cs473_fa2023_lec_notes_09_rand_II_pdf.txt`): "for any constant c, there exist a constant d, such that the probability that QuickSort recursion depth for any element exceeds d ln n is smaller than 1/nc" |
+| Markov: Pr[T ≥ k·E[T]] ≤ 1/k | Confirmed (t = k·E[T]) | Har-Peled Theorem 9.2.1 (opened); Mitzenmacher and Upfal (framing) |
+| Neither E[T] = O(n log n) nor a w.h.p. bound implies the other; T ≤ nᵈ always plus failure ≤ 1/nᵈ⁺¹ gives E[T] = O(n log n) | Confirmed (E[T] ≤ a·n log n + nᵈ·n⁻⁽ᵈ⁺¹⁾). Narration step 7 said w.h.p. "says something stronger", which the Deep dive contradicts: reworded to "bounds the tail instead" | mathematics |
+| Amortized: a worst-case bound on a sequence, no probability | Confirmed | Sedgewick and Wayne §1.4: "Amortized analysis provides a worst-case performance guarantee on a sequence of operations." |
+| Duplicate search on 1,000 distinct numbers: pairs 499,500 / 0; heapsort plus scan 17,830 / 0 (O(1) auxiliary, permutes the input); hash set 1,000 / 1,000, expected O(1) per lookup, quadratic if keys collide | Confirmed | examples.py (asserted) |
+| 100n against n²: crossover at n = 100 | Confirmed | examples.py (asserted) |
+| Merge sort's exact average comparisons equal insertion sort's at n = 2, 3 and are lower for 4…8 | Confirmed by enumeration | examples.py (asserted) |
+| Sort libraries' small-input insertion sort is about per-step overhead "and cache effects, not comparison counts" | Corrected. True for libstdc++ (introsort stops at ranges of 16 and finishes with plain insertion sort), but CPython's timsort uses *binary* insertion sort for short runs precisely to cut comparisons, which cost far more than moving pointers; "cache effects" had no support and was dropped | `sources/raw_githubusercontent_com_gcc_mirror_gcc_master_libstdc_v3_include_bits_stl_algo_h.txt` (`_S_threshold = 16`, `__final_insertion_sort`); CPython 3.12 listsort.txt: "comparisons are extraordinarily expensive compared to moving data"; the BINSORT note is unchanged on main |
+| Doubling test: T(2n)/T(n) → 2ᵇ; n log n gives 2.07 from 10⁹ to 2·10⁹ | Confirmed (mathematics; recomputed 2.067). The booksite text names DoublingTest and DoublingRatio; its tables are not in the fetched text | Sedgewick and Wayne §1.4; examples.py |
+| Trial division: 2³² − 5 and 2⁶⁴ − 59 are the largest primes below 2³² and 2⁶⁴; 65,534 divisions; over 4·10⁹ for the 64-bit prime (exactly 4,294,967,294); ratio about 65,536 | Confirmed: OEIS terms 32 and 64 are 5 and 59; independent Miller–Rabin check (no prime between them and the powers of 2) | `sources/oeis_org_A013603.txt`; examples.py |
+| Pseudo-polynomial: polynomial in the input length and the largest number; trial division O(√v) is exponential in the bit length | Confirmed from an opened source that cites Garey and Johnson | Wikipedia, Pseudo-polynomial time: "bounded from above by a polynomial function of the two variables: the numeric value of the input ... and the length of the input"; trial division "is actually exponential. It is, however, pseudo-polynomial time" |
+| Ladder at 10⁹ steps/s, n = 10⁶: 19.9 steps / 20 ns; 20 million steps / 0.02 s; 10¹² steps / 1,000 s / 16.7 min; 2⁶⁴ ≈ 1.8 × 10¹⁹ steps / 585 years | Confirmed (2⁶⁴/10⁹ s = 584.9 years) | examples.py (asserted) |
+| Smoothed analysis: "the maximum over inputs of the expected performance ... under small random perturbations"; simplex has polynomial smoothed complexity | Confirmed, made precise: the result is for a two-phase shadow-vertex simplex method, now named in the Deep dive | Spielman and Teng, arXiv cs/0111050v7 |
+| Worst case can be too pessimistic; average case rests on an assumed distribution | Confirmed; Deep dive's "a distribution nobody can check" had no support and now follows Roughgarden ("brittle and overly tailored to the assumed input distribution") | Roughgarden (ed.), arXiv 2007.13241 |
+| Roughgarden's book covers parameterized analysis, instance optimality, resource augmentation, semi-random models | Confirmed | arXiv 2007.13241, introduction |
+| Algorithms with predictions: near-optimal with good predictions, prediction-free worst case when they are bad; a chapter of the same book | Confirmed (v1 is the only version on arXiv) | Mitzenmacher and Vassilvitskii, arXiv 2006.09123 abstract page |
+| Narration step 4: "For every constant, f eventually falls below it" | Corrected: as spoken it says f falls below the constant; now "below c times g" | reel caption step 4 |
+| Narration step 3 asks about "four to the n" while the screen asks about 2²ⁿ | Not an error of fact (they are equal), but the spoken question gives away the key step of the answer; left as is, flagged for the narration owner | reel.tsx step 3 |
+
+## Corrections applied
+
+1. `reel.tsx` step 5: "about n²/4 on average" → "n(n − 1)/4 + n − Hₙ on average (about n²/4 for large n)", matching the 19.3 drawn (n²/4 is 16 at n = 8).
+2. `narration.json` step 4: "For every constant, f eventually falls below it." → "For every constant c, f eventually falls below c times g." **Clip 04 is now stale and must be regenerated.**
+3. `narration.json` step 7: "With high probability says something stronger..." → "With high probability bounds the tail instead...", because neither bound implies the other (as the Deep dive says). **Clip 07 is now stale and must be regenerated.**
+4. `index.mdx`, Strict versions: o is exactly f/g → 0 (and ω, f/g → ∞) for g eventually positive; the limit test's "says nothing" case applies only to Θ, O and Ω.
+5. `index.mdx`, Several variables: the two books with multivariable definitions are CLRS 2nd and 3rd eds.; Howell's flaw is in the first one's definition (asymptotic linear dominance).
+6. `index.mdx`, w.h.p.: Har-Peled proves the "for every c a d" form for recursion depth d·ln n, which caps comparisons at d·n·ln n.
+7. `index.mdx`, Constants and sizes: replaced "cut-offs come from per-step overhead and cache effects, not comparison counts" with libstdc++ (plain insertion sort below 16, for low overhead) against CPython (binary insertion sort, because comparisons are expensive).
+8. `index.mdx`, Frontier: Spielman–Teng's result is for the shadow-vertex simplex method; average-case criticism now follows Roughgarden's wording.
+9. `index.mdx`, Sources: Rutanen's title corrected to "O-notation in Algorithm Analysis" (the old text used Howell's title); Har-Peled URL changed to the lowercase path that was fetched and §9.2 (Markov) added; Garey and Johnson, libstdc++ `stl_algo.h` and CPython `listsort.txt` added.
+10. `SOURCES.md`: quotes added for Rutanen's bibliography, the shadow-vertex method, CPython's comparison costs, Roughgarden's two criticisms, and a new Wikipedia "Pseudo-polynomial time" section; all 65 quotes pass `sources.mjs check`.
+11. `OUTLINE.md`: claims list updated (Markov now from Har-Peled, multivariate attribution, w.h.p. scope, expectation vs w.h.p., amortized, pseudo-polynomial source, doubling-test scope, sort-library cut-offs, shadow-vertex, Roughgarden), and an entry under "Changes after outlined".
+
+## Notes
+
+- Knuth 1976 floats ω as "the set of all functions whose ratio to f(n) is unbounded", weaker than CLRS's ratio → ∞. The topic does not use Knuth's ω, so nothing was changed.
+- `sources.mjs fetch` strips anything between "<" and ">" even in plain-text files: the cached CPython `main` listsort.txt has lost text. No quote depends on it; the 3.12 copy is complete for the quoted passages.
+- `npm run build` (with topic checks) and `check-links` on `index.mdx` pass after the changes; `test:narration` will fail on clips 04 and 07 until they are regenerated.

@@ -63,8 +63,8 @@ const reel: Reel = {
       title: 'Bound and case are different axes',
       body: (
         <>
-          “O is worst case” is the most common slip. A <em>case</em> picks a function: insertion sort’s count of key-against-element comparisons is n − 1 sorted, about n²/4
-          on average, n(n − 1)/2 reversed. A <em>bound</em> then relates that function to another. Best case Θ(n) and worst case Θ(n²) are both exact; “the
+          “O is worst case” is the most common slip. A <em>case</em> picks a function: insertion sort’s count of key-against-element comparisons is n − 1 sorted, n(n − 1)/4 + n − Hₙ
+          on average (about n²/4 for large n), n(n − 1)/2 reversed. A <em>bound</em> then relates that function to another. Best case Θ(n) and worst case Θ(n²) are both exact; “the
           worst case is O(n³)” is true but loose. Counts here are for 8 items, checked over all 40,320 orders.
         </>
       ),

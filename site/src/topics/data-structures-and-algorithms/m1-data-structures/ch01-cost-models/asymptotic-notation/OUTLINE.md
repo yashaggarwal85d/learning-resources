@@ -77,19 +77,22 @@ Canvas: 600 units wide, height per step as given; the same layout serves portrai
 |---|---|
 | Θ, O, Ω, o, ω definitions; quantifier order; notation as sets | CLRS 4th ed. ch. 3 (book, framing); Knuth 1976, SIGACT News, https://danluu.com/knuth-big-o.pdf |
 | Knuth's Ω for all large n; Hardy–Littlewood Ω as "not o"; one-way equals | Knuth 1976 |
-| Limit test sufficient not necessary; n vs n(2 + sin n); rules to know cold; log bases inside exponents | mathematics; asserted in examples.py where numeric |
-| Multivariate O: most texts define one variable; two that define several differ; Howell's flaw | Rutanen 2013, arXiv 1309.3210 |
+| Limit test sufficient not necessary (only for Θ, O, Ω: o and ω are equivalent to the limit 0 or ∞); n vs n(2 + sin n); rules to know cold; log bases inside exponents | mathematics; asserted in examples.py where numeric |
+| Multivariate O: most texts define one variable; the two that define several (CLRS 2nd and 3rd eds.) differ; Howell's flaw in asymptotic linear dominance | Rutanen, "O-notation in Algorithm Analysis", arXiv 1309.3210 (v32), text and bibliography |
 | Insertion sort n − 1, n(n−1)/2, average n(n−1)/4 + n − Hₙ | examples.py (enumeration); CLRS ch. 2 |
 | Randomized quicksort expected 2(n+1)Hₙ − 4n; first pivot on sorted input n(n−1)/2; same average for fixed pivot over random orders | examples.py (recurrence, sampling); CLRS ch. 7 |
-| W.h.p. wording: for every c a constant d with failure ≤ n⁻ᶜ | Har-Peled, UIUC CS 473 Fall 2023 notes §9.1 |
-| Markov's inequality | Mitzenmacher and Upfal, 2nd ed. |
-| Pseudo-polynomial: polynomial in length and magnitude of the largest number | Garey and Johnson (framing); trial division in examples.py |
+| W.h.p. wording: for every c a constant d with failure ≤ n⁻ᶜ (proved for recursion depth d ln n, which caps comparisons at d·n ln n) | Har-Peled, UIUC CS 473 Fall 2023 notes §9.1, Theorem 9.1.2 |
+| Neither E[T] = O(n log n) nor a w.h.p. bound implies the other; a capped worst case plus a w.h.p. bound bounds E[T] | mathematics (Markov; E[T] ≤ a·n log n + nᵈ·n⁻⁽ᵈ⁺¹⁾) |
+| Markov's inequality | Har-Peled notes Theorem 9.2.1 (opened); Mitzenmacher and Upfal, 2nd ed. (book, framing) |
+| Amortized: a worst-case guarantee on a sequence of operations | Sedgewick and Wayne §1.4 |
+| Pseudo-polynomial: polynomial in length and magnitude of the largest number; trial division as the example | Garey and Johnson (book, framing); Wikipedia "Pseudo-polynomial time" (opened, cites Garey and Johnson); trial division in examples.py |
 | 2³² − 5 and 2⁶⁴ − 59 are the largest primes below 2³² and 2⁶⁴ | examples.py; OEIS A013603 |
 | Duplicate search counts; heapsort permutes the input (O(1) auxiliary) | examples.py |
-| Doubling hypothesis; order-of-growth classes; memory as a resource | Sedgewick and Wayne §1.4, https://algs4.cs.princeton.edu/14analysis/ |
+| Doubling test; order-of-growth classes N^b log^c N; memory as a resource | Sedgewick and Wayne §1.4, https://algs4.cs.princeton.edu/14analysis/ (the T(2n)/T(n) → 2ᵇ limit is mathematics; the booksite's tables are not in the fetched text) |
+| Merge sort's average comparisons below insertion sort's for n = 4…8; libstdc++ std::sort finishes ranges of ≤ 16 with insertion sort; CPython's timsort uses binary insertion sort because comparisons cost far more than moves | examples.py (enumeration); libstdc++ bits/stl_algo.h (_S_threshold = 16); CPython Objects/listsort.txt (3.12; BINSORT note unchanged on main) |
 | Ladder times at 10⁹ steps/s (assumption stated) | examples.py |
-| Smoothed analysis definition; simplex polynomial smoothed complexity | Spielman and Teng, arXiv cs/0111050 |
-| Beyond-worst-case alternatives | Roughgarden (ed.), introduction, arXiv 2007.13241 |
+| Smoothed analysis definition; simplex (two-phase shadow-vertex method) polynomial smoothed complexity | Spielman and Teng, arXiv cs/0111050 |
+| Beyond-worst-case alternatives; worst case overly pessimistic; distributional analysis can tailor algorithms to the assumed distribution | Roughgarden (ed.), introduction, arXiv 2007.13241 |
 | Algorithms with predictions | Mitzenmacher and Vassilvitskii, arXiv 2006.09123 |
 
 Fact-check record: `FACT-CHECK.md`. Source quotes: `SOURCES.md`.
@@ -101,3 +104,5 @@ Fact-check record: `FACT-CHECK.md`. Source quotes: `SOURCES.md`.
 - Next (original): narration (`narration.json` is final for the current reel), checks (section 6, with the looks and learning review).
 
 ## Changes after outlined
+
+- 2026-10-11 fact-check against raw source texts (see `FACT-CHECK.md`): step 5 caption gives the exact average n(n−1)/4 + n − Hₙ; narration lines in steps 4 and 7 reworded (clips 04 and 07 need regenerating); Deep dive fixes to the o/ω limit statement, the multivariate-O attribution, the w.h.p. attribution, the sort-library cut-off explanation, the smoothed-analysis result and the Sources list; claims list extended.
