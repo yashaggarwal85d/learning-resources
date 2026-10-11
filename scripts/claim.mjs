@@ -1,11 +1,12 @@
 // Lets several routine runs of one domain work at once without clashing (ROUTINE.md section 1).
 // Each run claims one topic on the `claims` branch (one JSON file per claimed topic). A run keeps its claim alive
 // with a heartbeat; a claim whose heartbeat stops (the run hit a limit or died) can be taken over and resumed.
-// A topic may only be started once the topic before it has a pushed plan (OUTLINE.md), so it can follow on from it.
+// A topic may only be started once the topic before it has its content final (written, reviewed and checked; only narration
+// and shipping left), so the new topic can follow on from what the learner will actually see.
 //
 //   node scripts/claim.mjs next <domain>        claim this run's job; prints JSON: action make | resume | release | wait
 //   node scripts/claim.mjs set <topic-id> <topic-folder>   record the topic's id and folder on this run's claim
-//   node scripts/claim.mjs outlined             this topic's OUTLINE.md is pushed: the next topic may start
+//   node scripts/claim.mjs final                this topic's content is final and pushed: the next topic may start
 //   node scripts/claim.mjs keepalive            run in the background: a heartbeat every 15 minutes while this run works
 //   node scripts/claim.mjs mine                 exit 1 if another run has taken this claim over (then stop)
 //   node scripts/claim.mjs done                 shipped or released: drop the claim
@@ -122,7 +123,7 @@ if (cmd === 'next') {
     const neighbour = (i) => {
       if (i < 0 || i >= order.length) return null;
       const t = order[i], r = reg.get(t.title), c = read(file(i));
-      return { title: t.title, status: r ? r.status : c ? (stale(c) ? 'abandoned' : 'in progress') : 'not started', topicId: r?.id ?? c?.topicId ?? null, branch: c?.topicId ? `topic/${c.topicId}` : null, folder: r ? `site/src/topics/${r.slug}` : c?.folder ?? null, outlined: !!(r || c?.outlined) };
+      return { title: t.title, status: r ? r.status : c ? (stale(c) ? 'abandoned' : c.final ? 'content final' : 'in progress') : 'not started', topicId: r?.id ?? c?.topicId ?? null, branch: c?.topicId ? `topic/${c.topicId}` : null, folder: r ? `site/src/topics/${r.slug}` : c?.folder ?? null, final: !!(r || c?.final) };
     };
     for (let i = 0; i < order.length; i++) {
       const t = order[i], r = reg.get(t.title), o = lost.get(t.title);
@@ -137,10 +138,10 @@ if (cmd === 'next') {
       } else if (c) action = 'resume'; // its run stopped: take it over from its last pushed checkpoint
       else {
         const prev = neighbour(i - 1);
-        if (prev && !prev.outlined) return { action: 'wait', reason: `"${prev.title}" has no pushed plan yet; this topic must follow on from it` };
+        if (prev && !prev.final) return { action: 'wait', reason: `"${prev.title}" isn't content-final yet; this topic must follow on from it` };
         action = 'make';
       }
-      const claim = { domain, index: i + 1, title: t.title, chapter: t.chapter, action, topicId: r?.id ?? c?.topicId ?? null, folder: r ? `site/src/topics/${r.slug}` : c?.folder ?? null, outlined: !!(r || c?.outlined), owner, startedAt: now(), beatAt: now(), takenOverFrom: c ? c.startedAt : undefined };
+      const claim = { domain, index: i + 1, title: t.title, chapter: t.chapter, action, topicId: r?.id ?? c?.topicId ?? null, folder: r ? `site/src/topics/${r.slug}` : c?.folder ?? null, final: !!(r || c?.final), owner, startedAt: now(), beatAt: now(), takenOverFrom: c ? c.startedAt : undefined };
       write(file(i), claim);
       return { action, file: file(i), topic: { index: i + 1, title: t.title, chapter: t.chapter, topicId: claim.topicId, branch: claim.topicId ? `topic/${claim.topicId}` : null, folder: claim.folder }, previous: neighbour(i - 1), next: neighbour(i + 1) };
     }
@@ -148,13 +149,13 @@ if (cmd === 'next') {
   });
   if (res.file) writeFileSync(local, JSON.stringify({ domain, file: res.file, owner }));
   console.log(JSON.stringify(res, null, 2));
-} else if (['set', 'outlined', 'beat', 'done'].includes(cmd)) {
+} else if (['set', 'final', 'outlined', 'beat', 'done'].includes(cmd)) {
   const me = mine();
   const ok = transact(({ read, write }) => {
     const c = read(me.file);
     if (!c || c.owner !== me.owner) return false;
     if (cmd === 'done') write(me.file, null);
-    else write(me.file, { ...c, beatAt: now(), ...(cmd === 'set' ? { topicId: args[0], folder: args[1] } : {}), ...(cmd === 'outlined' ? { outlined: true } : {}) });
+    else write(me.file, { ...c, beatAt: now(), ...(cmd === 'set' ? { topicId: args[0], folder: args[1] } : {}), ...(cmd === 'final' ? { final: true } : {}) });
     return true;
   });
   if (!ok) die('another run has taken this claim over: stop, and leave its branch alone');
@@ -177,8 +178,8 @@ if (cmd === 'next') {
   }
 } else if (cmd === 'status') {
   const rows = transact(({ all }) => all()).filter((c) => !args[0] || c.domain.includes(args[0].toLowerCase()));
-  for (const c of rows) console.log(`${c.domain} #${c.index} ${c.title} [${c.action}${c.outlined ? ', outlined' : ''}] ${c.topicId ?? ''} heartbeat ${Math.round(ageMin(c.beatAt))} min ago${stale(c) ? ' (stale)' : ''}`);
+  for (const c of rows) console.log(`${c.domain} #${c.index} ${c.title} [${c.action}${c.final ? ', content final' : ''}] ${c.topicId ?? ''} heartbeat ${Math.round(ageMin(c.beatAt))} min ago${stale(c) ? ' (stale)' : ''}`);
   if (!rows.length) console.log('no claims');
 } else {
-  die('usage: next <domain> | set <topic-id> <folder> | outlined | keepalive | mine | done | status [<domain>]');
+  die('usage: next <domain> | set <topic-id> <folder> | final | keepalive | mine | done | status [<domain>]');
 }
