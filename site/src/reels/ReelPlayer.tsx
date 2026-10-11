@@ -184,6 +184,7 @@ export default function ReelPlayer({ meta, reel, active, startStep, next, onPlay
   const press = useRef<{ x: number; y: number; timer: number; held: boolean } | null>(null);
   const onPointerDown = (e: React.PointerEvent) => {
     if ((e.target as HTMLElement).closest('button, a, input, [data-interactive]')) return;
+    ignoreClick.current = false;
     const held = { x: e.clientX, y: e.clientY, timer: 0, held: false };
     held.timer = window.setTimeout(() => {
       held.held = true;
@@ -211,19 +212,35 @@ export default function ReelPlayer({ meta, reel, active, startStep, next, onPlay
     },
     [back, ended, needsAnswer, cur.duration, step, last, goTo],
   );
+  // A tap is handled from the browser's `click`, not from pointerup: on a real phone a finger that drifts a few pixels
+  // makes the browser cancel the pointer (it may be a scroll), which silently dropped taps; a click is sent for every tap.
+  const ignoreClick = useRef(false);
   const onPointerUp = (e: React.PointerEvent) => {
     const p = press.current;
     press.current = null;
     if (!p) return;
     clearTimeout(p.timer);
-    if (p.held) return setPaused(false);
+    if (p.held) {
+      ignoreClick.current = true;
+      return setPaused(false);
+    }
     const dx = e.clientX - p.x;
     const dy = e.clientY - p.y;
-    if (Math.abs(dx) >= 50 && Math.abs(dx) > 1.4 * Math.abs(dy)) return swipe(dx < 0 ? 1 : -1);
-    if (Math.abs(dx) > 30 || Math.abs(dy) > 30) return; // a scroll, not a tap
+    if (Math.abs(dx) >= 50 && Math.abs(dx) > 1.4 * Math.abs(dy)) {
+      ignoreClick.current = true;
+      return swipe(dx < 0 ? 1 : -1);
+    }
+  };
+  const onClick = (e: React.MouseEvent) => {
+    if ((e.target as HTMLElement).closest('button, a, input, [data-interactive]')) return;
+    if (ignoreClick.current) {
+      ignoreClick.current = false;
+      return;
+    }
+    // Left third goes back, anywhere else goes on, like Instagram stories; a tap always moves on, even mid-animation.
     const box = (e.currentTarget as HTMLElement).getBoundingClientRect();
     if (e.clientX - box.left < box.width * 0.3) back();
-    else forward(true); // like Instagram stories: a tap always moves on, even mid-animation
+    else forward(true);
   };
   const onPointerCancel = () => {
     if (press.current) clearTimeout(press.current.timer);
@@ -254,6 +271,7 @@ export default function ReelPlayer({ meta, reel, active, startStep, next, onPlay
         onPointerDown={onPointerDown}
         onPointerMove={onPointerMove}
         onPointerUp={onPointerUp}
+        onClick={onClick}
         onPointerCancel={onPointerCancel}
         onPointerLeave={onPointerCancel}
       >

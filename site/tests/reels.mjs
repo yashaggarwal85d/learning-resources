@@ -119,7 +119,9 @@ for (const [device, opts] of [
       }
       // A tap works like Instagram stories: right side = next step at once (even mid-animation), left third = previous.
       const tap = async (x, yy) => {
+        // A real finger drifts a little while it taps (a few pixels); the browser may then cancel the pointer, but still sends a click.
         await cdp.send('Input.dispatchTouchEvent', { type: 'touchStart', touchPoints: [{ x, y: yy }] });
+        await cdp.send('Input.dispatchTouchEvent', { type: 'touchMove', touchPoints: [{ x: x + 3, y: yy + 7 }] });
         await page.waitForTimeout(60);
         await cdp.send('Input.dispatchTouchEvent', { type: 'touchEnd', touchPoints: [] });
         await page.waitForTimeout(500);
