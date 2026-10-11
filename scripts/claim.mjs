@@ -278,7 +278,7 @@ function decide({ domain, order, reg, lost, plans, chapters }, owner) {
       });
       const prev = chapters[chapters.indexOf(ch) - 1];
       const { file, claim, previousRunStopped } = claimJob(planTitle(ch), { kind: 'chapter-plan', action: 'plan', chapterNumber: ch.number, milestone: ch.m.number, folder: `site/src/topics/${dir}` });
-      return { action: 'plan', file, attempt: claim.attempts, ...(resuming ? { previousRunStopped } : {}), chapter: { number: ch.number, title: ch.title, milestone: ch.m.number, plan: `site/src/topics/${dir}/CHAPTER.md`, topics }, previousChapter: prev ? chapterInfo(prev) : null };
+      return { action: 'plan', file, attempt: claim.attempts, ...(resuming ? { previousRunStopped } : {}), chapter: { number: ch.number, title: ch.title, milestone: ch.m.number, plan: `site/src/topics/${dir}/CHAPTER.md`, branch: `plan/${PREFIX[domain]}-ch${String(ch.number).padStart(2, '0')}`, topics }, previousChapter: prev ? chapterInfo(prev) : null };
     }
   };
 }
