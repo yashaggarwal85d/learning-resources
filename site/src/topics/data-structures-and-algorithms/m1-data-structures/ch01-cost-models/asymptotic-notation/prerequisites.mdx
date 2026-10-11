@@ -1,0 +1,62 @@
+import Resource from '../../../../../components/Resource.astro';
+
+This is the first topic in Data Structures & Algorithms, and a refresher: it assumes you program comfortably and have met Big-O before. If you have not, start with the resources below; the reel is a recap, not a first course.
+
+<section class="prereq" data-section="programming">
+
+### <span class="n">01</span> Programming, loops and recursion
+
+You can read a short loop or recursive function and say roughly how many times its body runs for an input of size n.
+
+<p class="check"><b>Check yourself:</b> how many times does the inner statement run in <code>for i in range(n): for j in range(i): …</code>? (Answer: n(n − 1)/2.)</p>
+
+<ul class="resources">
+  <Resource kind="reading" title="Analysis of Algorithms" href="https://algs4.cs.princeton.edu/14analysis/" by="Sedgewick and Wayne, Algorithms 4th ed., section 1.4">Observation, mathematical models and order-of-growth classifications, with running experiments.</Resource>
+  <Resource kind="course" title="Algorithms by Jeff Erickson" href="https://jeffe.cs.illinois.edu/teaching/algorithms/" by="Jeff Erickson" length="free book">The free textbook; the first chapters cover recursion and analysis.</Resource>
+</ul>
+
+</section>
+
+<section class="prereq" data-section="logarithms">
+
+### <span class="n">02</span> Logarithms, sums and limits
+
+You know that log₂ n is the number of times you can halve n, that 1 + 2 + … + n = n(n + 1)/2, and what it means for a ratio to tend to 0 or to infinity.
+
+<p class="check"><b>Check yourself:</b> roughly what is log₂ 1,000,000, and what does n / n² tend to? (Answer: about 20; it tends to 0.)</p>
+
+<ul class="resources">
+  <Resource kind="reel" title="Asymptotic notation and logarithms" domain="data-engineering" host={props.host} by="Data Engineering §1.1">The same ideas in the other domain's refresher, with logarithms spelled out.</Resource>
+  <Resource kind="reading" title="Big Omicron and Big Omega and Big Theta" href="https://danluu.com/knuth-big-o.pdf" by="Donald Knuth, SIGACT News 1976">The note that fixed the notation computer science uses; short, precise and readable.</Resource>
+</ul>
+
+</section>
+
+<section class="prereq" data-section="algorithms">
+
+### <span class="n">03</span> The algorithms used as examples
+
+The reel counts the cost of a few standard algorithms without re-teaching them: insertion sort (insert each item into the sorted prefix), quicksort (split around a pivot, sort both sides), heapsort and a hash set. You need to know what each does, not its analysis: the analysis is the point of the reel. Each gets its own topic later in this course.
+
+<p class="check"><b>Check yourself:</b> what does quicksort do with the keys smaller than the pivot? (Answer: puts them on one side and sorts that side recursively.)</p>
+
+<ul class="resources">
+  <Resource kind="reading" title="Elementary Sorts" href="https://algs4.cs.princeton.edu/21elementary/" by="Sedgewick and Wayne, Algorithms 4th ed., section 2.1">Selection and insertion sort, with traces.</Resource>
+  <Resource kind="reading" title="Quicksort" href="https://algs4.cs.princeton.edu/23quicksort/" by="Sedgewick and Wayne, Algorithms 4th ed., section 2.3">Partitioning, the random shuffle, and why sorted input hurts a fixed pivot.</Resource>
+</ul>
+
+</section>
+
+<section class="prereq" data-section="probability">
+
+### <span class="n">04</span> Probability and expectation
+
+You know what a random variable's expected value is, and that a probability is a number between 0 and 1. The reel uses both for randomized quicksort.
+
+<p class="check"><b>Check yourself:</b> what is the expected value of one roll of a fair six-sided die? (Answer: 3.5.)</p>
+
+<ul class="resources">
+  <Resource kind="course" title="Mathematics for Computer Science" href="https://ocw.mit.edu/courses/6-042j-mathematics-for-computer-science-spring-2015/" by="MIT OpenCourseWare 6.042J, Spring 2015">Unit 4 is probability, with readings from the free course textbook.</Resource>
+</ul>
+
+</section>
