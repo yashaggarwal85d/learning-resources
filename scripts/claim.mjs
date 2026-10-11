@@ -14,6 +14,7 @@
 //   node scripts/claim.mjs stop "<reason>"      this run can't finish: hand the topic back at once (the next run resumes it)
 //   node scripts/claim.mjs done                 shipped or released: drop the claim
 //   node scripts/claim.mjs status [<domain>]    every claim, with its age
+//   node scripts/claim.mjs open [<domain>...]   how many runs could start work now, per domain (nothing is claimed)
 //
 // <domain> is a domain id, title or topic-id prefix ("data-structures-and-algorithms", "Data Structures & Algorithms", "dsa", "German").
 // Settings: CLAIM_MAX_PARALLEL (default 10) runs per domain at once; a claim is stale after 90 minutes without a heartbeat;
@@ -157,13 +158,18 @@ function working() {
 
 const [cmd, ...args] = process.argv.slice(2);
 
-if (cmd === 'next') {
-  const { domain, order, reg } = await course(args[0] ?? die('usage: next <domain>'));
-  const owner = randomUUID();
+// Everything a decision needs about one domain: syllabus order, registry, orphan branches and planned chapters.
+async function context(domainArg) {
+  const { domain, order, reg } = await course(domainArg);
   const lost = orphans(domain, reg);
   const plans = chapterPlans(domain); // chapter number -> chapter folder, for chapters whose CHAPTER.md is on main
   const chapters = [...new Map(order.map((t) => [t.c.number, t])).values()].map((t) => ({ number: t.c.number, title: t.c.title, m: t.m, c: t.c }));
-  const res = transact(({ all, write }) => {
+  return { domain, order, reg, lost, plans, chapters };
+}
+
+// The job the next run of a domain gets, as a transaction over the claims (`next` saves it; `open` only simulates it).
+function decide({ domain, order, reg, lost, plans, chapters }, owner) {
+  return ({ all, write }) => {
     // Claims are found by title (a topic's syllabus title, or "Chapter N plan" for a chapter plan), never by position,
     // so a syllabus reorder can't point a claim at the wrong job. New claims are filed under the title's slug.
     const claims = all().filter((c) => c.domain === domain);
@@ -263,7 +269,14 @@ if (cmd === 'next') {
       const { file, claim, previousRunStopped } = claimJob(planTitle(ch), { kind: 'chapter-plan', action: 'plan', chapterNumber: ch.number, milestone: ch.m.number, folder: `site/src/topics/${dir}` });
       return { action: 'plan', file, attempt: claim.attempts, ...(resuming ? { previousRunStopped } : {}), chapter: { number: ch.number, title: ch.title, milestone: ch.m.number, plan: `site/src/topics/${dir}/CHAPTER.md`, topics }, previousChapter: prev ? chapterInfo(prev) : null };
     }
-  });
+  };
+}
+
+if (cmd === 'next') {
+  const ctx = await context(args[0] ?? die('usage: next <domain>'));
+  const { domain } = ctx;
+  const owner = randomUUID();
+  const res = transact(decide(ctx, owner));
   const files = res.files ?? (res.file ? [res.file] : []);
   if (files.length) writeFileSync(local, JSON.stringify({ domain, files, owner }));
   console.log(JSON.stringify(res, null, 2));
@@ -310,10 +323,26 @@ if (cmd === 'next') {
     }
     if (!ok) { console.error('claim: taken over by another run'); process.exit(1); }
   }
+} else if (cmd === 'open') {
+  // How many runs could start work now, per domain: hand out jobs to imaginary runs until the answer is "wait".
+  // Nothing is saved. The dispatcher fires a domain's routine this many times (routine runs can't start runs themselves).
+  const out = {};
+  for (const d of args.length ? args : Object.keys(PREFIX)) {
+    const ctx = await context(d);
+    const mem = new Map(transact(({ all }) => all()).map(({ file, ...c }) => [file, c]));
+    const jobs = [];
+    for (let i = 0; i <= MAX; i++) {
+      const res = decide(ctx, randomUUID())({ all: () => [...mem].map(([file, c]) => ({ file, ...c })), write: (f, v) => (v === null ? mem.delete(f) : mem.set(f, v)) });
+      if (res.action === 'wait') break;
+      jobs.push(`${res.action}: ${res.topic?.title ?? res.chapter?.title ?? res.topics?.map((t) => t.title).join(', ')}`);
+    }
+    out[ctx.domain] = { open: jobs.length, jobs };
+  }
+  console.log(JSON.stringify(out, null, 2));
 } else if (cmd === 'status') {
   const rows = transact(({ all }) => all()).filter((c) => !args[0] || c.domain.includes(args[0].toLowerCase()));
   for (const c of rows) console.log(`${c.domain} ${c.kind === 'chapter-plan' ? '' : `#${c.index} `}${c.title} [${c.action}${c.final ? ', content final' : ''}, attempt ${c.attempts ?? 1}] ${c.topicId ?? ''} heartbeat ${Math.round(ageMin(c.beatAt))} min ago${stale(c) ? ' (stale)' : ''}${c.note ? ` — stopped: ${c.note}` : ''}`);
   if (!rows.length) console.log('no claims');
 } else {
-  die('usage: next <domain> | set <topic-id> <folder> | final | keepalive | mine | stop "<reason>" | done | status [<domain>]');
+  die('usage: next <domain> | set <topic-id> <folder> | final | keepalive | mine | stop "<reason>" | done | status [<domain>] | open [<domain>...]');
 }
