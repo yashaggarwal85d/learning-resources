@@ -23,7 +23,7 @@ const TLY = (h: number) => h - 54;
 type SlotState = 'live' | 'moved' | 'dropped' | 'forgotten';
 
 /** An owner: a binding name (and type) in a rounded slot. `k` scales it about its centre (the collapse), `look` marks the one to look at. */
-function Slot({ x, y, name, type, w = 170, h = 38, state = 'live', look = false, k = 1, o = 1, n }: { x: number; y: number; name: string; type?: string; w?: number; h?: number; state?: SlotState; look?: boolean; k?: number; o?: number; n?: number }) {
+function Slot({ x, y, name, type, w = 170, h = 38, state = 'live', look = false, k = 1, o = 1, n, word = true }: { x: number; y: number; name: string; type?: string; w?: number; h?: number; state?: SlotState; look?: boolean; k?: number; o?: number; n?: number; word?: boolean }) {
   if (k <= 0.001 || o <= 0.001) return null;
   const cx = x + w / 2;
   const cy = y + h / 2;
@@ -34,8 +34,8 @@ function Slot({ x, y, name, type, w = 170, h = 38, state = 'live', look = false,
       <rect x={x} y={y} width={w} height={h} rx={8} fill={live ? C.cocoa : 'none'} stroke={live ? (look ? C.caramel : C.mocha) : C.taupe} strokeWidth={live ? (look ? 2.5 : 1.5) : 1.5} strokeDasharray={live ? undefined : '6 5'} opacity={state === 'forgotten' ? 0.35 : 1} />
       <T x={x + 12} y={y + h / 2 + 5} s={15} f={live ? C.crema : C.latte} w={600} o={faded}>{name}</T>
       {live && type && <T x={x + w - 12} y={y + h / 2 + 5} s={13} a="end" f={C.latte}>{type}</T>}
-      {state === 'moved' && <T x={x + w - 12} y={y + h / 2 + 5} s={13} a="end" f={C.latte}>moved</T>}
-      {state === 'forgotten' && <T x={x + w - 12} y={y + h / 2 + 5} s={13} a="end" f={C.latte}>forgotten</T>}
+      {state === 'moved' && word && <T x={x + w - 12} y={y + h / 2 + 5} s={13} a="end" f={C.latte}>moved</T>}
+      {state === 'forgotten' && word && <T x={x + w - 12} y={y + h / 2 + 5} s={13} a="end" f={C.latte}>forgotten</T>}
       {state === 'dropped' && n !== undefined && <T x={x + w - 12} y={y + h / 2 + 5} s={13} a="end" f={C.latte}>{`dropped ${n}`}</T>}
     </g>
   );
@@ -208,7 +208,7 @@ export function Problem({ t, portrait }: StepCtx) {
   return (
     <Stack>
       {(!portrait || t < 1.4) && <Code title="stage.rs" t={t} end={1.2} lines={STAGE_LINES} highlight={t > 1.2 ? [0, 3] : []} />}
-      <Svg label="The same six lines built twice: under edition 2021 the read guard lives into the else branch and write() waits forever; under 2024 it is dropped before else" h={256} fill>
+      <Svg label="The same six lines built twice: under edition 2021 the read guard lives into the else branch and write() waits forever; under 2024 it is dropped before else" h={272} fill>
         <T x={20} y={14} s={13} f={C.taupe} o={fa(t, 1.4)}>2021</T>
         <Ruler y={48} o={fa(t, 1.4)} />
         <T x={60} y={84} s={13} f={C.taupe} o={fa(t, 1.4)}>read guard</T>
@@ -311,7 +311,7 @@ export function LastOwner({ t, portrait }: StepCtx) {
   const mY = lerp(50, 44, slide);
   const nSlide = easeOut(seg(t, 3.4, 3.8));
   const nX = lerp(45, 335, nSlide);
-  const nY = lerp(96, 128, nSlide);
+  const nY = lerp(96, 136, nSlide);
   return (
     <Stack>
       {(!portrait || t < 1.4) && (
@@ -326,14 +326,14 @@ export function LastOwner({ t, portrait }: StepCtx) {
         <g opacity={fa(t, 1.4)}>
           <Frame x={30} y={20} w={240} h={130} label="MAIN" />
           <Frame x={320} y={20} w={216} h={80} label="consume" />
-          <Brace x={518} y={96} t={t} a={2.8} />
+          <Brace x={520} y={99} t={t} a={2.8} />
         </g>
         <Slot x={45} y={50} name="m" state={t >= 2.6 ? 'moved' : 'live'} o={fa(t, 1.4)} w={190} />
         <Slot x={45} y={96} name="n" state={t >= 3.4 ? 'moved' : 'live'} o={fa(t, 1.4)} w={190} />
         {t >= 2.0 && <Slot x={mX} y={mY} name="m" w={190} k={t < 2.8 ? 1 : collapse(t, 2.8)} />}
         {t >= 3.4 && (
           <g opacity={fa(t, 3.4, 0.2)}>
-            <Frame x={320} y={116} w={216} h={56} label="drop" />
+            <Frame x={320} y={108} w={216} h={72} label="drop" />
           </g>
         )}
         {t >= 3.4 && <Slot x={nX} y={nY} name="n" w={190} k={t < 3.8 ? 1 : collapse(t, 3.8)} />}
@@ -378,7 +378,7 @@ export function ManualDrop({ t, answer }: StepCtx) {
 
 // ── 6 · Exactly once: why Copy and Drop never meet ──────────────────────────────────────────────────────────────
 export function CopyDrop({ t }: StepCtx) {
-  const H = 440;
+  const H = 456;
   const yA = 184;
   const yB = 396;
   const dim = 1 - 0.4 * easeOut(seg(t, 4.0, 5.0));
@@ -393,7 +393,7 @@ export function CopyDrop({ t }: StepCtx) {
           <Owner x1={210} y1={69} x2={380} y2={78} />
           <Owner x1={210} y1={115} x2={380} y2={92} />
           <Payload x={380} y={60} w={130} h={40} label="File (4 bytes)" bad={bad && t >= 1.6} />
-          <Brace x={560} y={150} t={t} a={1.0} />
+          <Brace x={520} y={150} t={t} a={1.0} />
         </g>
         <T x={40} y={146} s={15} f={C.cherryText} w={600} o={fa(t, 1.6, 0.3)}>E0184</T>
         <T x={445} y={124} s={15} a="middle" f={C.cherryText} o={fa(t, 1.8, 0.3)}>closed twice</T>
@@ -407,8 +407,8 @@ export function CopyDrop({ t }: StepCtx) {
         <Slot x={40} y={308} name="b" type="Fd" w={170} look />
         <Owner x1={210} y1={327} x2={380} y2={290} />
         <Payload x={380} y={270} w={130} h={40} label="File (4 bytes)" />
-        <Brace x={560} y={352} t={t} a={3.2} />
-        <T x={125} y={348} s={13} a="middle" f={C.latte} o={fa(t, 3.2, 0.4)}>nothing to drop</T>
+        <Brace x={520} y={352} t={t} a={3.2} />
+        <T x={125} y={366} s={13} a="middle" f={C.latte} o={fa(t, 3.2, 0.4)}>nothing to drop</T>
       </g>
       <Timeline h={yB + 54} label={false} o={fa(t, 2.6, 0.5)} />
       <Badge x={300} y={yB} n={1} name="close" t={t} a={3.2} hi />
@@ -448,13 +448,14 @@ export function Spill({ t, portrait }: StepCtx) {
         ))}
         <Brace x={176} y={90} t={t} a={3.9} />
         {visited.map((v, i) => v && <Slot key={i} x={slotX(i)} y={44} w={i === 2 ? 106 : 140} name="s" state="moved" o={fa(t, 1.5)} />)}
+        {closed && k < 0.05 && <Slot x={slotX(0)} y={44} w={140} name="s" state="dropped" n={1} />}
         <Slot x={x} y={44} w={where === 2 ? 106 : 140} name="s" type={where === 2 ? undefined : 'SpillFile'} k={k} o={fa(t, 1.5)} look />
         <g opacity={fa(t, 1.5)}>
           <FileIcon x={40} y={108} gone={closed} />
           <T x={80} y={132} s={13} f={closed ? C.taupe : C.latte}>/tmp/…/spill</T>
         </g>
         <Counter x={400} y={112} label="CLOSES" v={closed ? 1 : 0} t={t} a={3.9} d={0.3} text={closed ? '1' : '0'} />
-        <T x={30} y={176} s={13} f={C.latte} o={fa(t, 4.5, 0.6)}>File: 4 bytes, the descriptor · SpillFile: 32 bytes</T>
+        <T x={30} y={162} s={13} f={C.latte} o={fa(t, 4.5, 0.6)}>File: 4 bytes, the descriptor · SpillFile: 32 bytes</T>
         <Timeline h={H} o={fa(t, 1.5)} />
         <Badge x={120} y={TLY(H)} n={1} name="spill" t={t} a={3.9} hi />
       </Svg>
@@ -470,9 +471,9 @@ export function FieldOrder({ t, answer }: StepCtx) {
     <Svg label="Fields drop in declaration order, so the directory field is dropped first while the file is still inside: remove_dir fails and the directory is left on disk" h={H}>
       <CodeLines x={24} y={32} s={13} step={22} lines={[`struct Spool {`, `    dir: SpillDir,     // remove_dir in Drop`, `    spill: SpillFile,  // remove_file in Drop`, `}`]} o={fa(t, 0, 0.5)} />
       <g opacity={fa(t, 0.2, 0.5)}>
-        <Frame x={384} y={16} w={152} h={108} label="Spool" />
-        <Slot x={394} y={46} w={132} name="dir" />
-        <Slot x={394} y={86} w={132} name="spill" />
+        <Frame x={396} y={16} w={140} h={108} label="Spool" />
+        <Slot x={406} y={46} w={120} name="dir" />
+        <Slot x={406} y={86} w={120} name="spill" />
       </g>
       <g opacity={fa(t, 0.9, 0.5)}>
         <rect x={40} y={176} width={260} height={130} rx={10} fill={ans ? C.cherry : 'none'} fillOpacity={ans ? 0.2 : 1} stroke={ans ? C.cherryText : C.latte} strokeWidth={1.5} style={{ transition: 'fill .15s, stroke .15s' }} />
@@ -486,7 +487,7 @@ export function FieldOrder({ t, answer }: StepCtx) {
         <T x={104} y={250} s={13} f={C.latte}>spill.bin</T>
       </g>
       <g style={rv(ans)}>
-        <T x={170} y={332} s={15} a="middle" f={C.cherryText} w={600}>left behind</T>
+        <T x={190} y={292} s={15} a="middle" f={C.cherryText} w={600}>left behind</T>
         <T x={24} y={140} s={13} f={C.caramel}>fix: declare spill before dir</T>
       </g>
       <Timeline h={H} />
@@ -525,7 +526,7 @@ export function Temporaries({ t }: StepCtx) {
             {p > 0.98 && <T x={x2} y={r.y0 + 38} s={15} a="middle" f={C.crema} o={fa(t, r.a + 1.0, 0.2)}>{r.end}</T>}
             {i === 2 && <line x1={420} y1={r.y0 + 34} x2={420} y2={r.y0 + 54} stroke={C.taupe} strokeWidth={1.5} opacity={fa(t, 0.8 + i * 0.4, 0.4)} />}
             {i === 2 && <T x={420} y={r.y0 + 70} s={13} a="middle" f={C.taupe} o={fa(t, 0.8 + i * 0.4, 0.4)}>arm</T>}
-            <T x={316} y={r.y0 + (i === 2 ? 90 : 74)} s={13} f={C.latte} o={fa(t, r.a + 1.0, 0.4)}>{r.label}</T>
+            <T x={24} y={r.y0 + 88} s={13} f={C.latte} o={fa(t, r.a + 1.0, 0.4)}>{r.label}</T>
           </g>
         );
       })}
@@ -571,21 +572,17 @@ function Lane({ y, year, badges, t, a, hiIdx }: { y: number; year: string; badge
 }
 
 export function TwoChanges({ t }: StepCtx) {
-  const pulse = 1 + 0.15 * Math.sin(Math.PI * seg(t, 4.6, 5.2));
   return (
-    <Svg label="Rust 2024 ends two temporaries sooner: an if let scrutinee temporary now drops before else, and a tail-expression temporary drops before the block's locals" h={444}>
+    <Svg label="Rust 2024 ends two temporaries sooner: an if let scrutinee temporary now drops before else, and a tail-expression temporary drops before the block's locals" h={478}>
       <T x={24} y={24} s={13} f={C.taupe}>{'if let … else'}</T>
       <Lane y={72} year="2021" t={t} a={0.4} hiIdx={0} badges={[['else'], ['guard'], ['after-if']]} />
-      <g transform={`translate(0 0)`}>
-        <Lane y={154} year="2024" t={t} a={1.6} hiIdx={0} badges={[['guard'], ['else'], ['after-if']]} />
-      </g>
+      <Lane y={154} year="2024" t={t} a={1.6} hiIdx={0} badges={[['guard'], ['else'], ['after-if']]} />
       <T x={24} y={206} s={13} f={C.latte} o={fa(t, 4.6, 0.5)}>scrutinee temporaries drop before else</T>
       <line x1={24} y1={226} x2={536} y2={226} stroke={C.mocha} strokeWidth={1} />
       <T x={24} y={254} s={13} f={C.taupe}>{'{ let local; tail() }'}</T>
       <Lane y={304} year="2021" t={t} a={3.0} hiIdx={1} badges={[['local'], ['tail']]} />
       <Lane y={384} year="2024" t={t} a={3.8} hiIdx={0} badges={[['tail'], ['local']]} />
-      <T x={24} y={430} s={13} f={C.latte} o={fa(t, 4.6, 0.5)}>tail temporaries drop before the locals</T>
-      <g opacity={0} transform={`scale(${pulse})`} />
+      <T x={24} y={446} s={13} f={C.latte} o={fa(t, 4.6, 0.5)}>tail temporaries drop before the locals</T>
     </Svg>
   );
 }
@@ -599,7 +596,7 @@ export function TailRefCell({ t, answer }: StepCtx) {
   return (
     <Svg label="A RefCell borrow as the tail expression compiles only under 2024: in 2021 the Ref temporary outlives the local c and rustc reports E0597; in 2024 it drops first" h={H}>
       <CodeLines x={40} y={34} lines={[`fn f() -> usize {`, `    let c = RefCell::new("..");`, `    c.borrow().len()`, `}`]} step={24} o={fa(t, 0, 0.5)} />
-      <rect x={34} y={72} width={250} height={26} rx={5} fill="none" stroke={C.caramel} strokeWidth={1.5} opacity={ans ? 0 : pulse} />
+      <rect x={34} y={66} width={250} height={26} rx={5} fill="none" stroke={C.caramel} strokeWidth={1.5} opacity={ans ? 0 : pulse} />
       {['2021', '2024'].map((yr, i) => (
         <g key={yr} opacity={fa(t, 0.5 + i * 0.2, 0.4)}>
           <T x={24} y={ly[i] - 20} s={13} f={C.taupe}>{yr}</T>
@@ -624,7 +621,6 @@ export function TailRefCell({ t, answer }: StepCtx) {
 export function DropFlags({ t, portrait }: StepCtx) {
   const H = 250;
   const flip = t >= 1.9;
-  const k1 = t >= 2.9 ? 1 : 0;
   return (
     <Stack>
       {(!portrait || t < 1.3) && (
@@ -638,21 +634,21 @@ export function DropFlags({ t, portrait }: StepCtx) {
           <T x={226} y={44} s={13} f={C.taupe}>flag</T>
         </g>
         {/* the true path */}
-        <T x={30} y={90} s={13} f={C.taupe} o={fa(t, 1.9, 0.4)}>flag = true</T>
-        <line x1={40} y1={124} x2={330} y2={124} stroke={C.taupe} strokeWidth={1.5} opacity={fa(t, 1.9, 0.4)} />
-        <Badge x={110} y={124} n={1} name="cond" t={t} a={2.0} />
-        <Badge x={230} y={124} n={2} name="z" t={t} a={3.1} />
-        <T x={250} y={90} s={13} f={C.latte} o={fa(t, 3.1, 0.4)}>skipped: flag 0</T>
+        <T x={30} y={84} s={13} f={C.taupe} o={fa(t, 1.9, 0.4)}>flag = true</T>
+        <line x1={40} y1={104} x2={330} y2={104} stroke={C.taupe} strokeWidth={1.5} opacity={fa(t, 1.9, 0.4)} />
+        <Badge x={110} y={104} n={1} name="cond" t={t} a={2.0} />
+        <Badge x={230} y={104} n={2} name="z" t={t} a={3.1} />
+        <T x={250} y={84} s={13} f={C.latte} o={fa(t, 3.1, 0.4)}>skipped: flag 0</T>
         {/* the false path */}
         <T x={30} y={160} s={13} f={C.taupe} o={fa(t, 2.9, 0.4)}>flag = false</T>
-        <line x1={40} y1={194} x2={330} y2={194} stroke={C.taupe} strokeWidth={1.5} opacity={fa(t, 2.9, 0.4)} />
-        <Badge x={110} y={194} n={1} name="z" t={t} a={3.1} />
-        <Badge x={230} y={194} n={2} name="cond" t={t} a={3.6} />
-        <g opacity={fa(t, 3.9, 0.7) * (k1 || 1)}>
-          <T x={350} y={70} s={13} f={C.taupe}>MIR</T>
-          <T x={350} y={94} s={13} f={C.latte}>_5 = const true;</T>
-          <T x={350} y={116} s={13} f={C.latte}>_5 = const false;</T>
-          <T x={350} y={138} s={13} f={C.latte}>switchInt(copy _5)</T>
+        <line x1={40} y1={186} x2={330} y2={186} stroke={C.taupe} strokeWidth={1.5} opacity={fa(t, 2.9, 0.4)} />
+        <Badge x={110} y={186} n={1} name="z" t={t} a={3.1} />
+        <Badge x={230} y={186} n={2} name="cond" t={t} a={3.6} />
+        <g opacity={fa(t, 3.9, 0.7)}>
+          <T x={360} y={112} s={13} f={C.taupe}>MIR</T>
+          <T x={360} y={136} s={13} f={C.latte}>_5 = const true;</T>
+          <T x={360} y={158} s={13} f={C.latte}>_5 = const false;</T>
+          <T x={360} y={180} s={13} f={C.latte}>switchInt(copy _5)</T>
         </g>
       </Svg>
     </Stack>
@@ -662,10 +658,10 @@ export function DropFlags({ t, portrait }: StepCtx) {
 // ── 14 · Unwinding drops; exit does not ─────────────────────────────────────────────────────────────────────────
 export function Unwinding({ t }: StepCtx) {
   const lanes = [
-    { y: 24, l: 'return', code: '0', drops: true },
-    { y: 122, l: 'panic!', code: '101', drops: true },
-    { y: 220, l: 'process::exit(3)', code: '3', drops: false },
-    { y: 318, l: 'panic! with panic=abort', code: '134', drops: false },
+    { y: 18, l: 'return', code: '0', drops: true },
+    { y: 114, l: 'panic!', code: '101', drops: true },
+    { y: 210, l: 'process::exit(3)', code: '3', drops: false },
+    { y: 306, l: 'panic! with panic=abort', code: '134', drops: false },
   ];
   return (
     <Svg label="Destructors run on a normal return and during a panic's unwinding, but not after process::exit or with panic set to abort" h={420}>
@@ -689,8 +685,8 @@ export function Unwinding({ t }: StepCtx) {
               </>
             ) : (
               <>
-                <Slot x={24} y={ln.y + 30} w={64} h={32} name="a" state={gone ? 'forgotten' : 'live'} o={fa(t, i * 0.2, 0.4)} />
-                <Slot x={100} y={ln.y + 30} w={64} h={32} name="b" state={gone ? 'forgotten' : 'live'} o={fa(t, i * 0.2, 0.4)} />
+                <Slot x={24} y={ln.y + 30} w={64} h={32} name="a" word={false} state={gone ? 'forgotten' : 'live'} o={fa(t, i * 0.2, 0.4)} />
+                <Slot x={100} y={ln.y + 30} w={64} h={32} name="b" word={false} state={gone ? 'forgotten' : 'live'} o={fa(t, i * 0.2, 0.4)} />
                 <T x={340} y={ln.y + 40} s={13} a="middle" f={C.cherryText} o={fa(t, a + 0.5, 0.4)}>no destructor ran</T>
               </>
             )}
@@ -726,8 +722,8 @@ export function Forget({ t, portrait }: StepCtx) {
         <Owner x1={240} y1={59} x2={360} y2={120} o={fa(t, 1.3) * (1 - gone)} />
         <Payload x={350} y={36} w={180} label="path bytes" bad={tint > 0.5} o={fa(t, 1.3)} />
         <FileIcon x={362} y={104} bad={tint > 0.5} o={fa(t, 1.3)} />
-        <T x={350} y={84} s={13} f={C.cherryText} o={tint}>1 allocation never freed</T>
-        <T x={404} y={128} s={13} f={C.cherryText} o={tint}>file still on disk</T>
+        <T x={350} y={84} s={13} f={C.cherryText} o={tint}>1 allocation leaked</T>
+        <T x={404} y={128} s={13} f={C.cherryText} o={tint}>still on disk</T>
         <Counter x={40} y={112} label="ALLOCS · FREED" text="1 · 0" t={t} a={4.4} d={0.1} bad />
         <Counter x={210} y={112} label="CLOSES" text="1" t={t} a={1.5} d={0.1} />
         <Timeline h={H} label={false} o={fa(t, 1.3)} />
@@ -811,19 +807,18 @@ export function Leakpocalypse({ t }: StepCtx) {
       <g opacity={fa(t, 0, 0.6)}>
         <Frame x={30} y={20} w={270} h={246} label="parent" />
         <Payload x={46} y={104} w={200} h={30} label="heap: Vec<u32>" freed={freed} />
-        <rect x={470} y={40} width={12} height={260} rx={4} fill={C.latte} opacity={0.7} />
+        <rect x={470} y={40} width={12} height={250} rx={4} fill={C.latte} opacity={0.7} />
         <T x={476} y={32} s={13} a="middle" f={C.latte}>child thread</T>
-        <T x={476} y={318} s={13} a="middle" f={C.taupe}>runs…</T>
       </g>
       <Slot x={46} y={52} w={200} name="data" type="Vec<u32>" k={kd} o={fa(t, 0, 0.6)} />
       <Slot x={46} y={160} w={220} name="guard" type="JoinGuard" state={forgot ? 'forgotten' : 'live'} o={fa(t, 0, 0.6)} />
       <Borrow x1={470} y1={120} x2={250} y2={120} c={bad ? C.cherry : C.latte} o={fa(t, 0, 0.6)} />
       <T x={46} y={214} s={13} f={C.latte} o={fa(t, 1.2, 0.4) * (forgot ? 0.4 : 1)}>Drop joins the child</T>
       <T x={30} y={292} s={15} f={C.crema} o={fa(t, 2.0, 0.3)}>mem::forget(guard);</T>
-      <Brace x={165} y={286} t={t} a={2.8} />
-      <T x={360} y={212} s={15} a="middle" f={C.cherryText} w={600} o={fa(t, 3.4, 0.3)}>use after free</T>
-      <T x={536} y={344} s={13} a="end" f={C.latte} o={fa(t, 4.2, 0.6)}>safe code · no unsafe anywhere</T>
-      <T x={536} y={364} s={13} a="end" f={C.latte} o={fa(t, 4.4, 0.6)}>RFC 1066: destructors are never guaranteed</T>
+      <Brace x={280} y={290} t={t} a={2.8} />
+      <T x={385} y={212} s={15} a="middle" f={C.cherryText} w={600} o={fa(t, 3.4, 0.3)}>use after free</T>
+      <T x={536} y={318} s={13} a="end" f={C.latte} o={fa(t, 4.2, 0.6)}>safe code · no unsafe anywhere</T>
+      <T x={536} y={338} s={13} a="end" f={C.latte} o={fa(t, 4.4, 0.6)}>RFC 1066: destructors are never guaranteed</T>
       <Timeline h={H} />
       <Badge x={120} y={TLY(H)} n={1} name="data" t={t} a={2.8} />
     </Svg>
@@ -849,8 +844,10 @@ export function JoinInCall({ t }: StepCtx) {
           </g>
         ))}
         <Slot x={370} y={56} w={150} name="data" type="Vec" />
-        <Borrow x1={112} y1={70} x2={366} y2={68} />
-        <Borrow x1={232} y1={90} x2={366} y2={82} />
+        <path d="M106 56 V44 H350 L366 64" fill="none" stroke={C.latte} strokeWidth={2} strokeDasharray="6 5" />
+        <path d="M226 56 V50 H340 L366 76" fill="none" stroke={C.latte} strokeWidth={2} strokeDasharray="6 5" />
+        <circle cx={366} cy={64} r={4} fill="none" stroke={C.latte} strokeWidth={1.5} />
+        <circle cx={366} cy={76} r={4} fill="none" stroke={C.latte} strokeWidth={1.5} />
       </g>
       <rect x={30} y={14} width={310} height={200} rx={12} fill="none" stroke={C.caramel} strokeWidth={2.5} opacity={fa(t, 2.4, 0.4)} />
       <T x={44} y={206} s={13} f={C.caramel} o={fa(t, 2.4, 0.4)}>joins every child, then returns</T>
@@ -886,10 +883,10 @@ export function ProveParams({ t, answer }: StepCtx) {
       {names.map((n, i) => (
         <g key={n}>
           <g style={{ opacity: ans ? 0 : 1, transition: 'opacity .15s' }}>
-            <Slot x={xs[i]} y={140} w={100} name={n} o={fa(t, 0.4 + i * 0.15, 0.3)} />
+            <Slot x={xs[i]} y={140} w={112} name={n} o={fa(t, 0.4 + i * 0.15, 0.3)} />
           </g>
           <g style={rv(ans)}>
-            <Slot x={xs[i]} y={140} w={100} name={n} state="dropped" n={order[n]} />
+            <Slot x={xs[i]} y={140} w={112} name={n} state="dropped" n={order[n]} />
           </g>
         </g>
       ))}
@@ -971,9 +968,9 @@ export function Recap({ t }: StepCtx) {
       y: 96,
       glyph: (
         <g>
-          <Badge x={24} y={90} n={1} t={99} />
-          <Badge x={46} y={90} n={2} t={99} />
-          <Badge x={68} y={90} n={3} t={99} />
+          <Badge x={22} y={90} n={1} t={99} />
+          <Badge x={48} y={90} n={2} t={99} />
+          <Badge x={74} y={90} n={3} t={99} />
         </g>
       ),
       l1: 'Locals reverse · fields in order',
@@ -990,7 +987,7 @@ export function Recap({ t }: StepCtx) {
       l1: 'One owner, one release: RAII',
     },
     { y: 280, glyph: <rect x={20} y={264} width={56} height={26} rx={7} fill="none" stroke={C.taupe} strokeDasharray="6 5" opacity={0.5} />, l1: 'Leaking is safe. forget, ManuallyDrop, leak' },
-    { y: 336, glyph: <T x={40} y={344} s={20} a="middle" f={C.latte}>{'[ ]'}</T>, l1: 'Soundness never depends on Drop' },
+    { y: 336, glyph: <T x={40} y={342} s={20} a="middle" f={C.latte}>{'[ ]'}</T>, l1: 'Soundness never depends on Drop' },
   ];
   return (
     <Svg label="Six things to keep: a destructor is Drop::drop then the fields; locals reverse and fields in order; temporaries die at the semicolon; one owner means one release; leaking is safe; soundness never depends on Drop. Next: take a field out of a Drop type, E0509" h={H}>

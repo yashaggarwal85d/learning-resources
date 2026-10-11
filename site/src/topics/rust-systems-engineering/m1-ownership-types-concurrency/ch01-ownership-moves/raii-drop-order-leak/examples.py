@@ -306,6 +306,10 @@ assert r.returncode == 0, r.stderr
 
 # E16 · what `cargo fix --edition` does is the lint's suggestion (E2c above): the rewrite has the pattern arm and a `_` arm.
 
+# Numbers the reel quotes from sources rather than from a run: the RFC's number and the Edition Guide's string literal.
+RFC_FORGET = 1066   # rust-lang.github.io/rfcs/1066-safe-mem-forget.html
+assert '"1234"' in src('tail_string')  # `{ &String::from("1234") }.len()` is the Edition Guide's example, run in E3
+
 print(f'ok: {ver}; drop order traced in both editions (19 lines); 2021 deadlocks (killed after {DEADLOCK_TIMEOUT} s), 2024 runs; '
       f'SpillFile closes once ({FILE_BYTES}/{PATHBUF_BYTES}/{SPILL_BYTES} bytes); forget leaks {LEAK_ALLOCS} allocation, {BUF_CAP:,} bytes for a 64 KiB vec; '
       f'thread::scope since {SCOPE_STABLE}')

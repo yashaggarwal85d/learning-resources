@@ -65,4 +65,23 @@ export const TOPICS: TopicMeta[] = [
     bridge: 'You have just revised how a B+-tree finds a row in a few page reads. Now: what happens when the index finds thousands of them?',
     handoff: 'Next: hash tables, the other structure behind every join and aggregation, and what they cost when memory runs out.',
   },
+  {
+    id: 'rust.raii-drop-order-leak',
+    domain: 'rust-systems-engineering',
+    slug: 'rust-systems-engineering/m1-ownership-types-concurrency/ch01-ownership-moves/raii-drop-order-leak',
+    title: 'RAII, drop order, and leak safety',
+    syllabusTitle: 'RAII, drop order, and leak safety',
+    kind: 'full',
+    // Built ahead of its turn: the topic before it is content final but not live yet.
+    status: 'held',
+    milestone: { number: 1, title: 'Ownership, Types, and Concurrency Primitives' },
+    chapter: { number: 1, title: 'Ownership and Moves', section: '1.1' },
+    minutes: 20,
+    verified: '2026-10-11',
+    introduces: ['drop-trait', 'raii-guard', 'drop-order', 'temporary-scopes', 'edition-2024-temporary-scopes', 'drop-flags', 'mem-forget-manuallydrop', 'leak-safety', 'counting-allocator'],
+    uses: ['ownership', 'move-semantics', 'deinitialized-place', 'copy-trait', 'clone-cost', 'ownership-signatures'],
+    declared: ['rust-basics', 'stack-and-heap', 'references-basics', 'structs-enums', 'pattern-matching-basics', 'error-handling-result', 'traits-generics-basics', 'threads-and-channels', 'mutexes', 'closures-basics'],
+    bridge: "You've seen that the single owner decides who destroys a value. Now: exactly when that happens, in what order, and why Rust still lets you skip it.",
+    handoff: 'A type with `Drop` keeps its fields until it dies. Next: how do you take one field out early, say to hand a buffer (`Buf`) back to its pool (`Pool`) from inside a guard?',
+  },
 ];
