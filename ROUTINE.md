@@ -63,6 +63,8 @@ narration/narrate.sh src/topics/<domain>/<milestone>/<chapter>/<topic>
 
 **German domain:** the explanation is narrated in English by the narrator; every German word or sentence is a `{"de": "…"}` line in `narration.json`, spoken by the frozen German voice (`voice.json` → `german`). Write German lines exactly as they should be heard (no abbreviations; numbers as words where the lesson is about the words). Never change the German voice, its reference clip or its settings.
 
+`narrate.sh` restores the take cache from the `narration-cache` branch when it starts and saves it when it stops, so takes survive a fresh session or an interrupted run; nothing to do by hand.
+
 Expect about 40–70 seconds per take on 4 CPU cores (a refresher is about 2 hours). If a line never passes the transcript check, rewrite the line (simpler words, spelled-out names), not the check.
 
 ## 6. Checks (all must pass)

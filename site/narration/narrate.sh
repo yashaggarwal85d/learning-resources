@@ -11,6 +11,11 @@ ORPHEUS_PY=${ORPHEUS_PY:-$tools/.venv-orph/bin/python}
 EVAL_PY=${EVAL_PY:-$tools/.venv-eval/bin/python}
 for py in "$ORPHEUS_PY" "$EVAL_PY"; do [ -x "$py" ] || { echo "$py not found: run narration/setup.sh first" >&2; exit 1; }; done
 jobs=$(mktemp)
+# Takes are kept across sessions on the `narration-cache` branch: restore them now, save them when we stop (even on failure or interrupt).
+# The cache only saves time, so a problem with it never stops narration.
+cache() { [ "${NARRATION_NO_SYNC:-}" = 1 ] || "$EVAL_PY" "$here/cache_sync.py" "$1" || echo "narration cache $1 failed (continuing)" >&2; }
+cache pull
+trap 'cache push' EXIT
 "$EVAL_PY" "$here/assemble.py" plan "$topic" "$jobs"
 for round in 1 2 3 4; do
   "$ORPHEUS_PY" "$here/gen_takes.py" "$jobs"
