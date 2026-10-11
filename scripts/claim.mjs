@@ -49,6 +49,24 @@ async function course(domainArg) {
   return { domain: d.id, order, reg };
 }
 
+// Unmerged topic branches with no claim (a run from before claims existed, or one whose claim was lost):
+// their registry entry says which syllabus topic they hold, so the next run resumes them instead of starting over.
+function orphans(domain, reg) {
+  const prefix = { 'data-engineering': 'de.', 'data-structures-and-algorithms': 'dsa.', 'german-language': 'ger.', 'rust-systems-engineering': 'rust.' }[domain];
+  const found = new Map();
+  const heads = git(['ls-remote', '--heads', 'origin', `refs/heads/topic/${prefix}*`]).stdout.trim().split('\n').filter(Boolean);
+  for (const line of heads) {
+    const ref = line.split('\t')[1];
+    if (git(['fetch', '-q', 'origin', ref]).status !== 0) continue;
+    const src = git(['show', 'FETCH_HEAD:site/src/topics/registry.ts']).stdout;
+    for (const m of src.matchAll(/id: '([^']+)',[\s\S]*?slug: '([^']+)',[\s\S]*?syllabusTitle: '([^']+)'/g)) {
+      const [, id, slug, title] = m;
+      if (`refs/heads/topic/${id}` === ref && !reg.has(title)) found.set(title, { topicId: id, folder: `site/src/topics/${slug}` });
+    }
+  }
+  return found;
+}
+
 // Read the claims branch, let `fn` change files in it, and save with a compare-and-swap push; retry if another run won.
 function transact(fn) {
   const url = git(['remote', 'get-url', 'origin']).stdout.trim();
@@ -96,6 +114,7 @@ const [cmd, ...args] = process.argv.slice(2);
 if (cmd === 'next') {
   const { domain, order, reg } = await course(args[0] ?? die('usage: next <domain>'));
   const owner = randomUUID();
+  const lost = orphans(domain, reg);
   const res = transact(({ read, all, write }) => {
     const file = (i) => `claims/${domain}/${String(i + 1).padStart(3, '0')}.json`;
     const active = all().filter((c) => c.domain === domain && !stale(c));
@@ -106,8 +125,10 @@ if (cmd === 'next') {
       return { title: t.title, status: r ? r.status : c ? (stale(c) ? 'abandoned' : 'in progress') : 'not started', topicId: r?.id ?? c?.topicId ?? null, branch: c?.topicId ? `topic/${c.topicId}` : null, folder: r ? `site/src/topics/${r.slug}` : c?.folder ?? null, outlined: !!(r || c?.outlined) };
     };
     for (let i = 0; i < order.length; i++) {
-      const t = order[i], r = reg.get(t.title), c = read(file(i));
+      const t = order[i], r = reg.get(t.title), o = lost.get(t.title);
+      let c = read(file(i));
       if (r?.status === 'live') continue;
+      if (!c && !r && o) c = { ...o, startedAt: 'before claims', beatAt: new Date(0).toISOString() }; // an orphaned branch: resume it
       if (c && !stale(c)) continue; // another run is on it
       let action;
       if (r?.status === 'held') {
