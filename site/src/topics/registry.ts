@@ -65,4 +65,23 @@ export const TOPICS: TopicMeta[] = [
     bridge: 'You have just revised how a B+-tree finds a row in a few page reads. Now: what happens when the index finds thousands of them?',
     handoff: 'Next: hash tables, the other structure behind every join and aggregation, and what they cost when memory runs out.',
   },
+  {
+    id: 'rust.single-ownership-move-semantics',
+    domain: 'rust-systems-engineering',
+    slug: 'rust-systems-engineering/m1-ownership-types-concurrency/ch01-ownership-moves/single-ownership-move-semantics',
+    title: 'Single ownership and move semantics',
+    syllabusTitle: 'Single ownership and move semantics',
+    kind: 'full',
+    // First topic of its domain: nothing comes before it, so it can be live.
+    status: 'live',
+    milestone: { number: 1, title: 'Ownership, Types, and Concurrency Primitives' },
+    chapter: { number: 1, title: 'Ownership and Moves', section: '1.1' },
+    minutes: 18,
+    verified: '2026-10-11',
+    introduces: ['ownership', 'move-semantics', 'deinitialized-place', 'copy-trait', 'clone-cost', 'move-cost', 'box-ownership', 'ownership-signatures', 'e0382', 'e0505'],
+    uses: [],
+    declared: ['programming', 'rust-book-basics', 'stack-and-heap', 'references-and-borrowing', 'slices', 'structs-traits-generics'],
+    bridge: "Rust Systems Engineering starts here. You've read the Book through chapter 10; now ownership becomes a design tool, starting with its smallest unit: one value, one owner, one destruction.",
+    handoff: 'One owner decides who destroys a value. Next: exactly when that happens: drop order, temporaries, and why leaking memory is still safe.',
+  },
 ];

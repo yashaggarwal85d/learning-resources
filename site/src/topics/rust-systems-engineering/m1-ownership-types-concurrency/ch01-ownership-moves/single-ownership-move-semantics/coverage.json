@@ -1,0 +1,991 @@
+{
+  "topic": "rust.single-ownership-move-semantics",
+  "syllabus": [
+    {
+      "clause": "one live owner is responsible for destruction",
+      "at": [
+        {
+          "step": "Two owners would free twice"
+        },
+        {
+          "step": "C++ std::move leaves a shell"
+        },
+        {
+          "deep": "What a move is, as the Reference states it"
+        }
+      ]
+    },
+    {
+      "clause": "A move is a shallow bitwise copy",
+      "at": [
+        {
+          "step": "What does let s2 = s1 copy?"
+        },
+        {
+          "step": "Proof: the buffer never moved"
+        },
+        {
+          "step": "Is a move always cheap?"
+        },
+        {
+          "deep": "A move is a bit copy, and addresses change"
+        }
+      ]
+    },
+    {
+      "clause": "that statically invalidates the source binding",
+      "at": [
+        {
+          "step": "Two owners would free twice"
+        },
+        {
+          "step": "Can a moved-out variable come back?"
+        },
+        {
+          "deep": "What a move is, as the Reference states it"
+        }
+      ]
+    },
+    {
+      "clause": "with no implicit deep copy",
+      "at": [
+        {
+          "step": "Proof: the buffer never moved"
+        },
+        {
+          "step": ".clone() is where the cost is"
+        },
+        {
+          "deep": "Copy, Clone and the types in between"
+        }
+      ]
+    },
+    {
+      "clause": "Copy vs Clone marks where the cost is",
+      "at": [
+        {
+          "step": "Copy: when the bits are the whole value"
+        },
+        {
+          "step": "A file descriptor that is just an i32"
+        },
+        {
+          "step": ".clone() is where the cost is"
+        },
+        {
+          "deep": "Copy, Clone and the types in between"
+        }
+      ]
+    },
+    {
+      "clause": "Signatures act as ownership contracts (T takes, &T borrows, &mut T borrows exclusively, returning T hands ownership back)",
+      "at": [
+        {
+          "step": "Signatures are ownership contracts"
+        },
+        {
+          "step": "Methods sign the same contract"
+        },
+        {
+          "step": "Which signature would you ship?"
+        }
+      ]
+    },
+    {
+      "clause": "Reading E0382 (use after move)",
+      "at": [
+        {
+          "step": "Reading E0382, span by span"
+        },
+        {
+          "step": "A move inside a loop"
+        },
+        {
+          "step": "Back to the batch"
+        },
+        {
+          "deep": "Lab 4 · Break it on purpose"
+        }
+      ]
+    },
+    {
+      "clause": "and E0505 (move while borrowed)",
+      "at": [
+        {
+          "step": "E0505: a move inside a live borrow"
+        },
+        {
+          "deep": "The borrow checker's view of a move"
+        },
+        {
+          "deep": "Lab 4 · Break it on purpose"
+        }
+      ]
+    }
+  ],
+  "sources": [
+    {
+      "source": "The Rust Programming Language, ch. 4.1 What is Ownership? (doc.rust-lang.org/book/ch04-01-what-is-ownership.html)",
+      "items": [
+        {
+          "item": "Intro: ownership as rules for memory management; GC vs manual alloc/free vs Rust's compiler-checked ownership; no runtime cost",
+          "at": [
+            {
+              "step": "Two owners would free twice"
+            },
+            {
+              "deep": "C++, Go, Java and Python, precisely"
+            }
+          ]
+        },
+        {
+          "item": "The Stack and the Heap: LIFO stack, fixed-size data, push/pop; heap allocation returns a pointer; stack faster than heap; function calls push args and locals",
+          "at": [
+            {
+              "step": "What does let s2 = s1 copy?"
+            },
+            {
+              "step": "Size decides the cost; Box caps it"
+            }
+          ]
+        },
+        {
+          "item": "Ownership Rules: each value has an owner; one owner at a time; dropped when owner goes out of scope",
+          "at": [
+            {
+              "step": "Two owners would free twice"
+            },
+            {
+              "deep": "What a move is, as the Reference states it"
+            }
+          ]
+        },
+        {
+          "item": "Variable Scope: scope definition, string literal s, Listing 4-1",
+          "at": [
+            {
+              "step": "Two owners would free twice"
+            }
+          ]
+        },
+        {
+          "item": "The String Type: String as heap-allocated, growable, mutable; String::from; push_str; literals immutable",
+          "at": [
+            {
+              "step": "What does let s2 = s1 copy?"
+            },
+            {
+              "step": "Methods sign the same contract"
+            }
+          ]
+        },
+        {
+          "item": "Memory and Allocation: request memory at runtime and return it; GC vs manual free; Rust returns memory at scope end; drop called at closing brace; RAII note",
+          "at": [
+            {
+              "step": "Two owners would free twice"
+            },
+            {
+              "topic": "RAII, drop order, and leak safety",
+              "quote": "deterministic destruction"
+            }
+          ]
+        },
+        {
+          "item": "Variables and Data Interacting with Move: Listing 4-2 integers copied; String = pointer, length, capacity on stack; Figures 4-1 to 4-4; double free; s1 invalidated; E0382 error; move vs shallow copy; no automatic deep copies",
+          "at": [
+            {
+              "step": "What does let s2 = s1 copy?"
+            },
+            {
+              "step": "Two owners would free twice"
+            },
+            {
+              "step": "Proof: the buffer never moved"
+            }
+          ]
+        },
+        {
+          "item": "Scope and Assignment: assigning a new value drops the old one immediately (Figure 4-5)",
+          "at": [
+            {
+              "step": "Can a moved-out variable come back?"
+            },
+            {
+              "deep": "What a move is, as the Reference states it"
+            }
+          ]
+        },
+        {
+          "item": "Variables and Data Interacting with Clone: clone deep-copies heap data; visible cost signal",
+          "at": [
+            {
+              "step": ".clone() is where the cost is"
+            },
+            {
+              "step": "Prove it · 2 of 3"
+            }
+          ]
+        },
+        {
+          "item": "Stack-Only Data: Copy: integers still valid after let y = x; Copy trait; cannot combine Copy with Drop; types implementing Copy (integers, bool, floats, char, tuples of Copy types)",
+          "at": [
+            {
+              "step": "Copy: when the bits are the whole value"
+            },
+            {
+              "step": "A file descriptor that is just an i32"
+            }
+          ]
+        },
+        {
+          "item": "Ownership and Functions: Listing 4-3 takes_ownership vs makes_copy; use after move is a compile-time error",
+          "at": [
+            {
+              "step": "Signatures are ownership contracts"
+            },
+            {
+              "step": "Reading E0382, span by span"
+            }
+          ]
+        },
+        {
+          "item": "Return Values and Scope: Listing 4-4 gives_ownership / takes_and_gives_back; the move-or-drop pattern; Listing 4-5 returning a tuple (s, length); transition to references",
+          "at": [
+            {
+              "step": "Signatures are ownership contracts"
+            },
+            {
+              "step": "Which signature would you ship?"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "The Rust Programming Language, ch. 4.2 References and Borrowing (doc.rust-lang.org/book/ch04-02-references-and-borrowing.html)",
+      "items": [
+        {
+          "item": "Intro: tuple return of Listing 4-5 is clumsy; a reference points to data owned by another variable and is guaranteed valid",
+          "at": [
+            {
+              "step": "Which signature would you ship?"
+            }
+          ]
+        },
+        {
+          "item": "calculate_length(&s1) taking &String: & creates a reference without owning; Figure 4-6; dereference operator * note; borrowed value not dropped when reference stops being used; no need to return values",
+          "at": [
+            {
+              "step": "Signatures are ownership contracts"
+            },
+            {
+              "step": "Which signature would you ship?"
+            }
+          ]
+        },
+        {
+          "item": "Borrowing defined: creating a reference is borrowing",
+          "at": [
+            {
+              "step": "Signatures are ownership contracts"
+            }
+          ]
+        },
+        {
+          "item": "Listing 4-6: modifying through & reference fails with E0596; references immutable by default",
+          "at": [
+            {
+              "out": "E0596 (writing through a shared reference) is a borrowing rule taught with Chapter 2; this topic only names shared borrows as read-only."
+            }
+          ]
+        },
+        {
+          "item": "Mutable References: &mut s and &mut String signature; one mutable reference restriction; E0499 on two &mut; data race definition (three conditions); inner scopes allow sequential &mut",
+          "at": [
+            {
+              "step": "Signatures are ownership contracts"
+            },
+            {
+              "topic": "Aliasing XOR mutability",
+              "quote": "many &T or exactly one &mut T"
+            }
+          ]
+        },
+        {
+          "item": "Mixing mutable and immutable references: E0502; multiple immutable allowed; reference scope ends at last use (non-lexical), so r1/r2 then r3 compiles",
+          "at": [
+            {
+              "step": "Signatures are ownership contracts"
+            },
+            {
+              "step": "E0505: a move inside a live borrow"
+            },
+            {
+              "deep": "The borrow checker's view of a move"
+            },
+            {
+              "deep": "Lab 4 · Break it on purpose"
+            }
+          ]
+        },
+        {
+          "item": "Dangling References: compiler guarantees data outlives reference; dangle() fails with E0106; explanation of s dropped at end of dangle; fix by returning String (ownership moved out)",
+          "at": [
+            {
+              "out": "Dangling references and E0106 are lifetime errors; Chapter 2 (Borrowing, Lifetimes, and References) owns them."
+            }
+          ]
+        },
+        {
+          "item": "The Rules of References: either one &mut or any number of &; references must always be valid; next topic slices",
+          "at": [
+            {
+              "step": "Signatures are ownership contracts"
+            },
+            {
+              "topic": "Aliasing XOR mutability",
+              "quote": "many &T or exactly one &mut T"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "The Rust Reference, Expressions (doc.rust-lang.org/reference/expressions.html)",
+      "items": [
+        {
+          "item": "Place expressions and value expressions: the two main categories, place and value contexts, assignee expressions",
+          "at": [
+            {
+              "deep": "What a move is, as the Reference states it"
+            }
+          ]
+        },
+        {
+          "item": "Moved and copied types: a place expression in a value context is copied if the type is Copy, otherwise moved; which places can be moved out of; a moved-from local is deinitialized",
+          "at": [
+            {
+              "step": "Can a moved-out variable come back?"
+            },
+            {
+              "deep": "What a move is, as the Reference states it"
+            }
+          ]
+        },
+        {
+          "item": "Evaluation order, operator precedence, mutability and temporaries",
+          "at": [
+            {
+              "out": "Expression grammar, precedence and evaluation order are not about ownership; temporaries and their scopes belong to the next topic, RAII, drop order, and leak safety."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "std::marker::Copy, std 1.99.0 (doc.rust-lang.org/std/marker/trait.Copy.html)",
+      "items": [
+        {
+          "item": "Trait summary: types whose values can be duplicated simply by copying bits; move semantics versus copy semantics with a Foo example",
+          "at": [
+            {
+              "step": "Copy: when the bits are the whole value"
+            },
+            {
+              "step": "One line, six meanings"
+            }
+          ]
+        },
+        {
+          "item": "How can I implement Copy?: derive, or manual impl of Copy and Clone; derive adds a Copy bound on type parameters",
+          "at": [
+            {
+              "deep": "Copy, Clone and the types in between"
+            },
+            {
+              "step": "Prove it · 3 of 3"
+            }
+          ]
+        },
+        {
+          "item": "What's the difference between Copy and Clone?: implicit bit-wise copy versus explicit, customisable clone; String is Clone but not Copy",
+          "at": [
+            {
+              "step": "Copy: when the bits are the whole value"
+            },
+            {
+              "step": ".clone() is where the cost is"
+            }
+          ]
+        },
+        {
+          "item": "When can my type be Copy?: all components must be Copy; Point example, PointList (Vec) counter-example, shared references",
+          "at": [
+            {
+              "step": "Copy: when the bits are the whole value"
+            },
+            {
+              "deep": "Copy, Clone and the types in between"
+            }
+          ]
+        },
+        {
+          "item": "When can't my type be Copy?: &mut T, String, and any type implementing Drop; error E0204",
+          "at": [
+            {
+              "step": "Copy: when the bits are the whole value"
+            },
+            {
+              "step": "A file descriptor that is just an i32"
+            },
+            {
+              "deep": "Copy, Clone and the types in between"
+            }
+          ]
+        },
+        {
+          "item": "When should my type be Copy?: generally yes, but Copy is part of the public API",
+          "at": [
+            {
+              "step": "Prove it · 3 of 3"
+            },
+            {
+              "deep": "Copy, Clone and the types in between"
+            },
+            {
+              "deep": "In production"
+            }
+          ]
+        },
+        {
+          "item": "Additional implementors: function items, function pointers, non-capturing or Copy-capturing closures",
+          "at": [
+            {
+              "deep": "Where moves hide"
+            }
+          ]
+        },
+        {
+          "item": "Dyn Compatibility and the list of implementors",
+          "at": [
+            {
+              "out": "Dyn compatibility and the implementor list are trait-object and reference-lookup material, not ownership."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "std::clone::Clone, std 1.99.0 (doc.rust-lang.org/std/clone/trait.Clone.html)",
+      "items": [
+        {
+          "item": "Difference from Copy: Copy is implicit and cheap, Clone is explicit and may run arbitrary code",
+          "at": [
+            {
+              "step": ".clone() is where the cost is"
+            },
+            {
+              "deep": "Copy, Clone and the types in between"
+            }
+          ]
+        },
+        {
+          "item": "Required method clone: meaning of duplicate for values, references and Arc/Rc, with examples",
+          "at": [
+            {
+              "step": ".clone() is where the cost is"
+            },
+            {
+              "topic": "Box, Rc, and Arc ownership shapes",
+              "quote": "Arc for an atomic refcount"
+            }
+          ]
+        },
+        {
+          "item": "Provided method clone_from: copy-assignment that can reuse existing resources",
+          "at": [
+            {
+              "deep": "Copy, Clone and the types in between"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "Error code E0382 (doc.rust-lang.org/error_codes/E0382.html)",
+      "items": [
+        {
+          "item": "Erroneous example: a non-Copy struct is moved by `let y = x;`, then `x.s` is used",
+          "at": [
+            {
+              "step": "Reading E0382, span by span"
+            },
+            {
+              "deep": "Lab 4 · Break it on purpose"
+            }
+          ]
+        },
+        {
+          "item": "Explanation: the data is moved out of `x`; a value cannot be owned by more than one variable (outside Rc-style workarounds)",
+          "at": [
+            {
+              "step": "Two owners would free twice"
+            },
+            {
+              "step": "Reading E0382, span by span"
+            }
+          ]
+        },
+        {
+          "item": "Fix 1: borrow with `&` instead of moving (the `calculate_length(&s1)` example), and `&mut` for mutable references",
+          "at": [
+            {
+              "step": "Reading E0382, span by span"
+            },
+            {
+              "step": "Back to the batch"
+            }
+          ]
+        },
+        {
+          "item": "Fix 2: duplicate with `.clone()` (Clone types; `#[derive(Clone)]`; the \"many\"/\"any many\" string example)",
+          "at": [
+            {
+              "step": "It compiled after one .clone()"
+            },
+            {
+              "step": "Reading E0382, span by span"
+            },
+            {
+              "step": ".clone() is where the cost is"
+            }
+          ]
+        },
+        {
+          "item": "Fix 3: make the type `Copy` when all members are Copy (the `Point` example, `let p2 = p1` without moving p1)",
+          "at": [
+            {
+              "step": "Copy: when the bits are the whole value"
+            },
+            {
+              "step": "Prove it · 3 of 3"
+            }
+          ]
+        },
+        {
+          "item": "Fix 4: shared ownership with `Rc<RefCell<..>>`, which does runtime borrow checking",
+          "at": [
+            {
+              "topic": "Box, Rc, and Arc ownership shapes",
+              "quote": "Rc for a single-threaded refcount"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "Error code E0505 (doc.rust-lang.org/error_codes/E0505.html)",
+      "items": [
+        {
+          "item": "Erroneous example: `eat(x)` takes ownership of `x` while `_ref_to_val` is still used afterwards by `borrow`",
+          "at": [
+            {
+              "step": "E0505: a move inside a live borrow"
+            }
+          ]
+        },
+        {
+          "item": "Explanation: the move is rejected because the borrow must last until the later call",
+          "at": [
+            {
+              "step": "E0505: a move inside a live borrow"
+            },
+            {
+              "deep": "The borrow checker's view of a move"
+            }
+          ]
+        },
+        {
+          "item": "Three suggested fixes: avoid the move (pass `&x`), release the borrow before the move (last use of the reference comes first), or implement Copy",
+          "at": [
+            {
+              "step": "E0505: a move inside a live borrow"
+            },
+            {
+              "step": "Back to the batch"
+            }
+          ]
+        },
+        {
+          "item": "Three corresponding code examples",
+          "at": [
+            {
+              "step": "E0505: a move inside a live borrow"
+            }
+          ]
+        },
+        {
+          "item": "Pointer to the Book's References & Borrowing section",
+          "at": [
+            {
+              "step": "E0505: a move inside a live borrow"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "RFC 2094 Non-lexical lifetimes (rust-lang.github.io/rfcs/2094-nll.html)",
+      "items": [
+        {
+          "item": "Summary: extend the borrow system to lifetimes based on the control-flow graph rather than lexical scopes",
+          "at": [
+            {
+              "deep": "The borrow checker's view of a move"
+            }
+          ]
+        },
+        {
+          "item": "Motivation, \"What is a lifetime?\": values may not be mutated or moved while borrowed; a reference's lifetime is the span where it may be used; lifetime versus scope",
+          "at": [
+            {
+              "step": "E0505: a move inside a live borrow"
+            },
+            {
+              "deep": "The borrow checker's view of a move"
+            }
+          ]
+        },
+        {
+          "item": "Lifetime inference constraints and liveness: a variable is live if its value may be used later; a lifetime is live where a variable whose type mentions it is live",
+          "at": [
+            {
+              "deep": "The borrow checker's view of a move"
+            }
+          ]
+        },
+        {
+          "item": "Reporting errors and access rules: reads and writes; moves count as deep writes; legality of an access against in-scope loans",
+          "at": [
+            {
+              "deep": "The borrow checker's view of a move"
+            }
+          ]
+        },
+        {
+          "item": "Drop as last use, and appendix on remaining borrow-checker limitations",
+          "at": [
+            {
+              "deep": "The frontier"
+            },
+            {
+              "topic": "NLL limits and the Polonius borrow checker",
+              "quote": "non-lexical lifetimes"
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "independent blind expert list: a reviewer agent that had not seen the topic (expert-list.json)",
+    "date": "2026-10-11",
+    "items": [
+      {
+        "item": "Every value has exactly one owner at a time, and that owner (a binding, a field, a container slot, a closure environment) is the single party responsible for running its destructor when it goes out of scope.",
+        "at": [
+          {
+            "step": "Two owners would free twice"
+          },
+          {
+            "step": "Signatures are ownership contracts"
+          },
+          {
+            "deep": "What a move is, as the Reference states it"
+          }
+        ]
+      },
+      {
+        "item": "A move copies only the inline bytes (for String: pointer, length, capacity) and statically invalidates the source, so the heap buffer is never duplicated and never freed twice; Rust never inserts an implicit deep copy, so any implicit copy is cheap by construction.",
+        "at": [
+          {
+            "step": "What does let s2 = s1 copy?"
+          },
+          {
+            "step": "Proof: the buffer never moved"
+          }
+        ]
+      },
+      {
+        "item": "Invalidation is a compile-time property of the place, not a runtime state of the value: a moved-from local is deinitialized, every read is rejected until it is assigned again, and reassigning a `let mut` binding after a move is legal and revives it.",
+        "at": [
+          {
+            "step": "Can a moved-out variable come back?"
+          }
+        ]
+      },
+      {
+        "item": "Loops are where moves bite: `for x in v` desugars to `IntoIterator::into_iter(v)` and consumes `v` (iterate `&v` or `&mut v` to borrow), and moving a non-Copy outer variable inside a loop body is rejected because the next iteration would read a deinitialized place, unless the body reassigns it or breaks.",
+        "at": [
+          {
+            "step": "A move inside a loop"
+          },
+          {
+            "deep": "Where moves hide"
+          }
+        ]
+      },
+      {
+        "item": "`Copy` means the implicit duplicate is a plain bitwise copy that cannot run user code and leaves the source usable; `Clone` is an explicit, possibly expensive call to arbitrary code, so the presence or absence of `.clone()` shows the reader where the cost is.",
+        "at": [
+          {
+            "step": "Copy: when the bits are the whole value"
+          },
+          {
+            "step": ".clone() is where the cost is"
+          }
+        ]
+      },
+      {
+        "item": "The compiler’s E0382 help text (\"consider cloning the value if the performance cost is acceptable\") is a suggestion, not a fix; an expert first asks whether the callee should borrow (`&T`), whether the caller still needs the value, or whether ownership should be handed back by return.",
+        "at": [
+          {
+            "step": "Reading E0382, span by span"
+          },
+          {
+            "step": "Back to the batch"
+          }
+        ]
+      },
+      {
+        "item": "A `.clone()` call does not always mean a deep copy: `Rc::clone` and `Arc::clone` only bump a reference count, which is why the convention `Rc::clone(&a)` is used to make shared-ownership handles visibly different from data copies.",
+        "at": [
+          {
+            "step": ".clone() is where the cost is"
+          },
+          {
+            "deep": "Copy, Clone and the types in between"
+          },
+          {
+            "topic": "Box, Rc, and Arc ownership shapes",
+            "quote": "Arc for an atomic refcount"
+          }
+        ]
+      },
+      {
+        "item": "`Copy` and `Drop` are mutually exclusive (E0184): a type that owns a resource beyond its own bytes cannot be duplicated bitwise, so any type with a destructor, or any field with one, always has move semantics.",
+        "at": [
+          {
+            "step": "A file descriptor that is just an i32"
+          }
+        ]
+      },
+      {
+        "item": "Deriving `Copy` is a semver commitment: removing it later breaks every caller that relied on implicit copies, so a type that might later gain a heap field or a destructor should stay move-only from the start.",
+        "at": [
+          {
+            "step": "Prove it · 3 of 3"
+          },
+          {
+            "deep": "Copy, Clone and the types in between"
+          },
+          {
+            "deep": "In production"
+          }
+        ]
+      },
+      {
+        "item": "Shared references `&T` are `Copy` whatever `T` is, but `&mut T` is never `Copy`, because copying it would create two aliasing mutable references; this is why passing a `&mut` moves it (the reborrowing that hides this is covered with borrowing).",
+        "at": [
+          {
+            "step": "Copy: when the bits are the whole value"
+          },
+          {
+            "deep": "Copy, Clone and the types in between"
+          },
+          {
+            "topic": "Aliasing XOR mutability",
+            "quote": "Reborrowing"
+          }
+        ]
+      },
+      {
+        "item": "Signatures are ownership contracts that callers can read without opening the body: a `T` or `self` parameter consumes the argument, `&T`/`&self` borrows it, `&mut T`/`&mut self` borrows it exclusively, and returning `T` hands ownership back; a by-value `self` is the tool for \"after this call the old value must not be used\" (builders, `into_*`, state transitions).",
+        "at": [
+          {
+            "step": "Signatures are ownership contracts"
+          },
+          {
+            "step": "Methods sign the same contract"
+          },
+          {
+            "step": "Which signature would you ship?"
+          }
+        ]
+      },
+      {
+        "item": "`&mut T` in a signature promises exclusivity, not just mutability: while it is live no other reference to the value may exist, which is what lets the callee mutate without the defensive copying or locking a C++ or Java programmer would add.",
+        "at": [
+          {
+            "step": "Signatures are ownership contracts"
+          },
+          {
+            "topic": "Aliasing XOR mutability",
+            "quote": "many &T or exactly one &mut T"
+          }
+        ]
+      },
+      {
+        "item": "E0382 (use of moved value) has three labelled spans to read in order: where the value was moved, why it moved (its type is not `Copy`), and the later use; the fix depends on which of those three you change (borrow at the move site, derive Copy/Clone, or reorder or reassign before the use).",
+        "at": [
+          {
+            "step": "Reading E0382, span by span"
+          }
+        ]
+      },
+      {
+        "item": "E0505 (move out while borrowed) means a live borrow outlives the point where ownership leaves; because borrows end at their last use, the usual fix is to move the last use of the reference before the move, not to clone.",
+        "at": [
+          {
+            "step": "E0505: a move inside a live borrow"
+          }
+        ]
+      },
+      {
+        "item": "You cannot write `let s = v[i];` for a `Vec<String>`, because indexing a non-array type desugars to a dereference of the `&T` returned by `Index::index`, so `v[i]` is borrowed content (E0507); you take ownership with `remove`, `swap_remove`, `pop`, `into_iter`, or by putting something back.",
+        "at": [
+          {
+            "deep": "Where moves hide"
+          }
+        ]
+      },
+      {
+        "item": "Through a `&mut` you may move a value out only if you leave a valid one in its place: `mem::replace`, `mem::take` and `Option::take` are the standard way out of E0507, and they are central to working with `&mut self` in real code.",
+        "at": [
+          {
+            "deep": "Where moves hide"
+          },
+          {
+            "topic": "Partial moves and destructuring as transfer",
+            "quote": "idioms for moving out of a"
+          }
+        ]
+      },
+      {
+        "item": "Only some places can be moved out of: unborrowed locals, temporaries, `*box`, and fields of such places whose containing type does not implement `Drop`; moving a field out of a `Drop` type is E0509 because its destructor needs the whole value.",
+        "at": [
+          {
+            "deep": "What a move is, as the Reference states it"
+          },
+          {
+            "topic": "Partial moves and destructuring as transfer",
+            "quote": "cannot partially move out of a type that implements Drop"
+          }
+        ]
+      },
+      {
+        "item": "Moving a `Box<T>` moves one pointer no matter how large `T` is, so boxing is the standard way to make a large value cheap to move, and `*b` is a place you are allowed to move out of, unlike other smart pointers.",
+        "at": [
+          {
+            "step": "Size decides the cost; Box caps it"
+          },
+          {
+            "deep": "What a move is, as the Reference states it"
+          }
+        ]
+      },
+      {
+        "item": "A move of a large by-value type is a real memory copy (above roughly 128 bytes, a `memcpy` call), and the optimizer is not guaranteed to remove it, so large structs, arrays and big enum variants passed or returned by value have a measurable cost that `size_of` and profiling expose.",
+        "at": [
+          {
+            "step": "Is a move always cheap?"
+          },
+          {
+            "step": "Size decides the cost; Box caps it"
+          },
+          {
+            "deep": "Lab 3 · Find the memcpy (and watch it vanish)"
+          }
+        ]
+      },
+      {
+        "item": "Rust has no move constructor: a move is always a byte copy with no user hook, and a value’s address can change at any move, so code must never rely on a value staying at a stable address unless it is pinned.",
+        "at": [
+          {
+            "step": "C++ std::move leaves a shell"
+          },
+          {
+            "step": "Is a move always cheap?"
+          },
+          {
+            "deep": "A move is a bit copy, and addresses change"
+          }
+        ]
+      },
+      {
+        "item": "Unlike C++ `std::move`, which is only a cast that hands the object to a user-written move constructor and leaves a moved-from object that is still destroyed and must stay valid, a Rust move ends the source binding statically, runs no destructor on it, and needs no \"null out the source\" code.",
+        "at": [
+          {
+            "step": "C++ std::move leaves a shell"
+          },
+          {
+            "step": "One line, six meanings"
+          },
+          {
+            "deep": "C++, Go, Java and Python, precisely"
+          }
+        ]
+      },
+      {
+        "item": "Conditional moves (moving in one branch only) are legal: when the compiler cannot know statically whether a value is still owned at scope end, it keeps a hidden drop flag on the stack and checks it at run time to decide whether to drop.",
+        "at": [
+          {
+            "step": "Prove it · 1 of 3"
+          },
+          {
+            "topic": "RAII, drop order, and leak safety",
+            "quote": "deterministic destruction"
+          }
+        ]
+      },
+      {
+        "item": "Closures are owners too: `move` makes a closure capture by value (needed for `thread::spawn` and returned closures), but which `Fn` trait it implements depends on what the body does with the captures; only a body that moves a capture out is limited to `FnOnce`, and moving out of a capture in an `Fn`/`FnMut` closure is E0507.",
+        "at": [
+          {
+            "deep": "Where moves hide"
+          }
+        ]
+      },
+      {
+        "item": "Patterns move: `match opt { Some(s) => .. }` or `let (a, b) = pair;` moves non-Copy parts out of the scrutinee and leaves it unusable, while `_` binds nothing and moves nothing, and matching on `&opt` switches the default binding mode to `ref` so nothing moves.",
+        "at": [
+          {
+            "deep": "Where moves hide"
+          },
+          {
+            "topic": "Partial moves and destructuring as transfer",
+            "quote": "Pattern matching"
+          }
+        ]
+      },
+      {
+        "item": "Because any move may relocate a value, a self-referential value would leave dangling internal pointers if moved; safe Rust stops this by forbidding moves while a borrow is live, and `Pin` exists for the cases (async futures) where that is not enough.",
+        "at": [
+          {
+            "deep": "A move is a bit copy, and addresses change"
+          },
+          {
+            "topic": "Zero-copy parsing with borrowed views",
+            "quote": "Self-referential structs"
+          }
+        ]
+      }
+    ]
+  },
+  "gapReview": {
+    "date": "2026-10-11",
+    "by": "Opus content review pending",
+    "open": []
+  }
+}
