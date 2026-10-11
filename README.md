@@ -4,13 +4,12 @@ An expert-level learning site where every topic is a short animated, narrated **
 
 **Live:** https://yashaggarwal85d.github.io/learning-resources/ (the Reels tab plays every finished topic in course order).
 
-Four tracks, each with a full syllabus:
+Three tracks, each with a full syllabus:
 
 | Track | Syllabus | Status |
 |---|---|---|
 | Data Engineering | [syllabus/data-engineering.md](syllabus/data-engineering.md) | in production (hourly routine) |
 | Data Structures & Algorithms | [syllabus/data-structures-and-algorithms.md](syllabus/data-structures-and-algorithms.md) | in production (hourly routine) |
-| German, A1 to C2 | [syllabus/german-language.md](syllabus/german-language.md) | in production (hourly routine) |
 | Rust Systems Engineering | [syllabus/rust-systems-engineering.md](syllabus/rust-systems-engineering.md) | in production (hourly routine) |
 
 ## The documents that run the project
@@ -19,6 +18,9 @@ Four tracks, each with a full syllabus:
 |---|---|
 | [PROJECT_PLAN.md](PROJECT_PLAN.md) | The rules (animate first; one topic at a time; verified, state-of-the-art content; beautiful and memorable; a natural flow; complete coverage, proven), what every topic contains, the Definition of Done, the narration standard and the tech stack. **The plan wins any conflict.** |
 | [ROUTINE.md](ROUTINE.md) | The step-by-step procedure the hourly per-domain routines follow to make, check and ship the next topic. |
+| [DESIGN.md](DESIGN.md) | The house style for reel steps: canvas, text sizes, colour, motion, and what the looks review checks. |
+| [LEDGER.md](LEDGER.md) | Two lines per routine run and per audit finding: time, tokens per model, checks passed, what went wrong. The data for improving the pipeline. |
+| [AUDIT.md](AUDIT.md) | The daily audit: re-checks every reel shipped since the last audit, fixes what is wrong, and records which part of the pipeline let it through. |
 | [QUALITY.md](QUALITY.md) | Every problem ever found, its fix and the guard that stops it recurring, plus the automatic checks and the "before shipping" list. |
 | `syllabus/` | The course order, topic by topic; `syllabus/review-notes/` records syllabus changes and why. |
 
@@ -28,9 +30,14 @@ Four tracks, each with a full syllabus:
 PROJECT_PLAN.md  ROUTINE.md  QUALITY.md   rules, procedure, quality record
 syllabus/                                  the four syllabi (the build reads them)
 scripts/check-docs.mjs                     checks links and anchors in the docs
-scripts/check-all.mjs                      runs every pre-ship check with a timing summary (ROUTINE.md section 6)
+site/src/reels/kit.tsx                     the drawing kit every topic's scenes are built from (colours, canvas, text)
+scripts/check-all.mjs                      runs every pre-ship check with a timing summary (ROUTINE.md sections 5 and 8)
 scripts/check-links.mjs                    checks every topic's outside links (status and title)
 scripts/claim.mjs                          hands each routine run its topic (claims on the `claims` branch, heartbeats)
+scripts/affected.mjs                       which reels and links a change can affect (CI and check-all --changed test those)
+scripts/sources.mjs                        fetches sources raw and proves every quote in SOURCES.md word for word
+scripts/ledger.mjs                         appends entries to LEDGER.md on main (run-metrics.mjs finish and the audit use it)
+scripts/audit-scope.mjs                    the topics and runs since the last audit (AUDIT.md)
 scripts/run-metrics.mjs                    records a run's tokens (per model), calls and time, per stage
 site/                                      the website (Astro + React islands + Tailwind)
   src/topics/registry.ts                   every finished topic: live or held, concept ledger, bridge and handoff
@@ -38,7 +45,7 @@ site/                                      the website (Astro + React islands + 
     reel.tsx, scenes.tsx                   the reel: steps and animations (each a pure function of time)
     index.mdx                              the Deep dive
     prerequisites.mdx                      what to know first, with resources
-    narration.json                         the spoken script (English lines, {"de": …} German lines, beats)
+    narration.json                         the spoken script (lines and beats)
     coverage.json                          the coverage map (syllabus, sources, blind expert list, gap review)
     examples.py                            every example and number, executed with asserts
     FACT-CHECK.md                          claims checked against primary sources
@@ -81,18 +88,18 @@ narration/narrate.sh src/topics/<domain>/<milestone>/<chapter>/<topic>
 ```
 
 - **English narrator:** Orpheus 3B, voice "tara".
-- **German voice:** for German lessons, a voice designed from a text description and frozen as `site/narration/voices/german-reference.wav`, cloned for every line with Qwen3-TTS.
 
 Both are frozen in `site/narration/voice.json`. Details are in [site/narration/README.md](site/narration/README.md).
 
 ## How a topic is made
 
-Each domain has an hourly routine (an automated session; several runs of one domain can work at once, each on its own topic) that follows [ROUTINE.md](ROUTINE.md).
+Each domain has an hourly routine (an automated session; up to four runs of one domain and eight in all work at once, each on its own job) that follows [ROUTINE.md](ROUTINE.md). Chapters go in sequence, the topics of a chapter in parallel. A dispatcher session starts runs every hour, one per free job (`node scripts/claim.mjs open` counts them), because a routine session can't start runs itself.
 
-1. It claims the first topic in syllabus order that no other run is working on (once the topic before it has a plan to follow on from), then researches it from primary sources, with an adversarial fact-check.
-2. It builds the coverage map, including a blind expert list from an independent reviewer.
-3. It writes the reel, Deep dive, Prerequisites, narration script and executed examples, then runs a flow review and a gap hunt.
-4. It generates the narration, runs every check, and ships to `main` only when all of them pass.
+1. Before a chapter is built, one run plans it: a Fable planner writes the chapter's `CHAPTER.md` (each topic's scope, concepts introduced and used, bridge and handoff), an Opus agent reviews it, and it is pushed to `main`. That plan is the contract every topic of the chapter follows, so they can all be built at once and still follow on from each other. The next chapter is planned once every topic of this one is content-final.
+2. Each other run claims the first topic of a planned chapter that no run is working on.
+3. It researches the topic from primary sources; a Fable agent plans and storyboards it, an Opus agent fact-checks the plan, and a blind Opus expert list starts the coverage map. (What Fable writes, Opus checks; if Fable's weekly limit is reached, its jobs run on Opus.)
+4. A builder agent writes the reel, Deep dive, Prerequisites, narration script and executed examples; Fable reviews the content and Opus the looks; every check except narration must pass.
+5. The topic is marked content-final (the next chapter may be planned once all its siblings are too), then narrated, checked once more in full, and shipped to `main`.
 
 A topic goes live only when every topic before it in its domain is live; one finished early is held until then. If a check fails, the routine fixes the cause and never loosens the check.
 

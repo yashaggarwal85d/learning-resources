@@ -1,12 +1,15 @@
 // Records what a routine run cost, from the session transcript Claude Code keeps (~/.claude/projects/**.jsonl).
 //   node scripts/run-metrics.mjs mark <stage>                     at the start of each ROUTINE.md section: snapshot of tokens and time so far
-//   node scripts/run-metrics.mjs finish <domain> <topic-id> <outcome>   at the end: totals and per-stage deltas, appended to metrics/runs.jsonl
+//   node scripts/run-metrics.mjs finish <domain> <topic-id> <outcome> --checks "<what passed>" --issues "<what went wrong, or none>"
+//       at the end: totals and per-stage deltas go to metrics/runs.jsonl and a two-line entry to LEDGER.md, both pushed
+//       straight to main (scripts/ledger.mjs), so every run is on record whether it shipped or stopped.
 // Tokens are summed from the `usage` of every assistant message in this session's transcript (and its subagents' transcripts,
 // where they are stored beside it), in total and per model. No prices are assumed: cost = tokens x your plan's rates, worked out when you read the log.
 // Missing transcript = a clear message and no invented numbers.
 import { readdirSync, readFileSync, statSync, existsSync, appendFileSync, writeFileSync, mkdirSync } from 'node:fs';
 import { join, dirname, resolve } from 'node:path';
 import { homedir, tmpdir } from 'node:os';
+import { publish, runEntry } from './ledger.mjs';
 
 const root = resolve(dirname(new URL(import.meta.url).pathname), '..');
 const projects = join(process.env.CLAUDE_CONFIG_DIR ?? join(homedir(), '.claude'), 'projects');
@@ -63,16 +66,23 @@ if (cmd === 'mark') {
   writeFileSync(state, JSON.stringify(marks));
   console.log(`run-metrics: marked ${args[0]}`);
 } else if (cmd === 'finish') {
-  const [domain, topic, outcome = 'shipped'] = args;
+  const flag = (name) => (args.includes(name) ? args[args.indexOf(name) + 1] : undefined);
+  const [domain, topic, outcome = 'shipped'] = args.filter((a, i) => !a.startsWith('--') && !args[i - 1]?.startsWith('--'));
   const end = snapshot();
   const points = [...marks, { stage: 'end', ...end }];
   const stages = marks.map((m, i) => ({ stage: m.stage, ...diff(m, points[i + 1]) }));
   const row = { date: new Date().toISOString(), domain, topic, outcome, totals: { ...diff({ input: 0, cacheWrite: 0, cacheRead: 0, output: 0, calls: 0, tools: 0, subagents: 0, models: {}, now: end.start }, end) }, stages };
-  mkdirSync(join(root, 'metrics'), { recursive: true });
-  appendFileSync(join(root, 'metrics', 'runs.jsonl'), JSON.stringify(row) + '\n');
+  const entry = runEntry({ ...row, checks: flag('--checks'), issues: flag('--issues') });
+  if (!publish({ ledger: entry, runs: [row] }, `Ledger: ${topic} ${outcome}`)) {
+    // Never lose the record: keep it locally and say how to get it in.
+    mkdirSync(join(root, 'metrics'), { recursive: true });
+    appendFileSync(join(root, 'metrics', 'runs.jsonl'), JSON.stringify(row) + '\n');
+    appendFileSync(join(root, 'LEDGER.md'), entry.join('\n') + '\n');
+    console.error('run-metrics: could not push the ledger to main; it is appended locally: commit LEDGER.md and metrics/runs.jsonl to main');
+  }
   writeFileSync(state, '[]');
-  console.log('run-metrics:', JSON.stringify(row.totals));
+  console.log(entry.join('\n'));
 } else {
-  console.error('usage: run-metrics.mjs mark <stage> | finish <domain> <topic-id> <outcome>');
+  console.error('usage: run-metrics.mjs mark <stage> | finish <domain> <topic-id> <outcome> --checks "<...>" --issues "<...>"');
   process.exit(2);
 }

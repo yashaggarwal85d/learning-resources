@@ -8,7 +8,7 @@ import json, os, re, subprocess, sys, warnings
 warnings.filterwarnings("ignore")
 import numpy as np, soundfile as sf, librosa
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
-from common import VOICE, GERMAN, CACHE, clips, clip_hash, take_path, take_key, spoken, voice_takes
+from common import VOICE, CACHE, clips, clip_hash, take_path, take_key, spoken, voice_takes
 
 SITE = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 ALIASES = VOICE["asr"]["aliases"]
@@ -18,11 +18,6 @@ SCORES = os.path.join(CACHE, "scores.json")
 def norm(s, lang="en"):
     """Lowercase words, numbers spelled out, aliases applied: what was said, independent of how it was written."""
     from num2words import num2words
-    if lang == "de":
-        s = s.lower().replace("%", " prozent").replace("-", " ")
-        s = re.sub(r"(\d)\.(\d{3})", r"\1\2", s)
-        s = re.sub(r"\d+", lambda m: " " + num2words(int(m.group()), lang="de") + " ", s)
-        return re.sub(r"[^a-zäöüß ]", " ", s).split()
     s = s.lower().replace("%", " percent").replace("-", " ")
     s = re.sub(r"(\d),(\d)", r"\1\2", s)
     s = re.sub(r"\d+(\.\d+)?", lambda m: " " + num2words(float(m.group()) if "." in m.group() else int(m.group())) + " ", s)
@@ -53,8 +48,7 @@ _asr = {}
 def transcribe(a, sr, lang="en"):
     if lang not in _asr:
         from faster_whisper import WhisperModel
-        # English: small.en. German: the multilingual small model (voice.json -> german.asr).
-        _asr[lang] = WhisperModel("small" if lang == "de" else "small.en", device="cpu", compute_type="int8", cpu_threads=os.cpu_count())
+        _asr[lang] = WhisperModel("small.en", device="cpu", compute_type="int8", cpu_threads=os.cpu_count())
     segs, _ = _asr[lang].transcribe(librosa.resample(a, orig_sr=sr, target_sr=16000), language=lang, beam_size=5)
     return " ".join(s.text for s in segs).strip()
 
@@ -87,8 +81,6 @@ def lines_of(topic_dir):
     """Every distinct spoken line as (language, text)."""
     topic, cs = clips(topic_dir)
     lines = sorted({spoken(x) for _, items in cs for x in items if spoken(x)})
-    if any(lang == "de" for lang, _ in lines) and not GERMAN:
-        sys.exit("This script has German lines, but voice.json has no German voice.")
     return topic, cs, lines
 
 
@@ -137,18 +129,12 @@ def build(topic_dir, jobs_path):
                 lang, text = spoken(x)
                 a, s = sf.read(take_path(text, best[(lang, text)][0], lang)); assert s == sr
                 segs[spoken(x)] = trim(a.astype(np.float32), sr)
-        # German lines are level-matched to the English lines around them, so the two voices sit at one loudness.
-        rms = lambda a: float(np.sqrt(np.mean(a ** 2))) or 1.0
-        en = [rms(a) for (lang, _), a in segs.items() if lang == "en"]
-        for key, a in segs.items():
-            if key[0] == "de" and en:
-                segs[key] = a * (float(np.mean(en)) / rms(a))
         for k, x in enumerate(items):
             if not spoken(x):
                 z = np.zeros(int(x["beat"] * sr), np.float32); parts.append(z); t += len(z) / sr; continue
             lang, text = spoken(x)
             a = segs[(lang, text)]
-            timing.append({"text": text, "start": round(t, 3), "end": round(t + len(a) / sr, 3), **({"lang": "de"} if lang == "de" else {})})
+            timing.append({"text": text, "start": round(t, 3), "end": round(t + len(a) / sr, 3)})
             parts.append(a); t += len(a) / sr
             if k < len(items) - 1:
                 gap = P["after_question"] if text.rstrip().endswith("?") else P["between_lines"]

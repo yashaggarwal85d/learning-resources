@@ -18,12 +18,17 @@ function build() {
   const domains = loadDomains();
   const flat = new Map(domains.map((d) => [d.id, flatten(d)]));
   const byTitle = new Map<string, TopicMeta>();
+  const heldByTitle = new Map<string, TopicMeta>();
+  // PREVIEW_HELD=1 (tests only, never a deploy): held topics get pages and join the feed, so the reel test and the looks
+  // review can check a topic that is finished but waiting for the topics before it. The flow rules still treat it as held.
+  const preview = process.env.PREVIEW_HELD === '1';
 
   for (const t of TOPICS) {
     const list = flat.get(t.domain);
     if (!list) throw new Error(`Topic ${t.id}: unknown domain ${t.domain}`);
     if (!list.some((x) => x.title === t.syllabusTitle)) throw new Error(`Topic ${t.id}: "${t.syllabusTitle}" is not a topic in syllabus/${t.domain}.md`);
     if (t.status === 'live') byTitle.set(`${t.domain}::${t.syllabusTitle}`, t);
+    else heldByTitle.set(`${t.domain}::${t.syllabusTitle}`, t);
   }
   const liveFor = (domain: string, title: string) => byTitle.get(`${domain}::${title}`);
   checkFlow(domains, flat, liveFor);
@@ -33,7 +38,8 @@ function build() {
   checkTopicFiles(TOPICS);
 
   // Live topics in syllabus order (the registry order doesn't matter).
-  const ordered: TopicMeta[] = domains.flatMap((d) => flat.get(d.id)!.map((x) => liveFor(d.id, x.title)).filter((x): x is TopicMeta => !!x));
+  const shown = (domain: string, title: string) => liveFor(domain, title) ?? (preview ? heldByTitle.get(`${domain}::${title}`) : undefined);
+  const ordered: TopicMeta[] = domains.flatMap((d) => flat.get(d.id)!.map((x) => shown(d.id, x.title)).filter((x): x is TopicMeta => !!x));
 
   // The next reel after each live topic: the next topic in the syllabus (refreshers are reels too).
   const nextAfter: Record<string, { title: string; live: boolean } | null> = {};
