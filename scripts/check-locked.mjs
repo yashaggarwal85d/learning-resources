@@ -56,7 +56,8 @@ function imports(dir) {
 const problems = [];
 for (const t of before) {
   const dir = `site/src/topics/${t.slug}/`;
-  const owned = new Set([...imports(dir)]);
+  // The registry is the index every topic adds itself to; a live topic's own entry is compared on its own below.
+  const owned = new Set([...imports(dir)].filter((p) => p !== 'site/src/topics/registry.ts'));
   const hits = changed.filter((p) => p.startsWith(dir) || p.startsWith(`site/public/audio/${t.id}/`) || owned.has(p));
   if (after.get(t.id)?.text !== t.text) hits.push(`site/src/topics/registry.ts (the ${t.id} entry)`);
   if (hits.length && !unlocked.has(t.id)) problems.push(`${t.id} is live and locked, but these changed: ${[...new Set(hits)].join(', ')}`);
