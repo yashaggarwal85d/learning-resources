@@ -3,7 +3,7 @@
 ## Progress
 
 - [x] **planned** (content plan, this file, 2026-10-11). Everything below is a plan: nothing is built, and every number here was taken from the probe runs listed under "Examples to execute" (sandbox: Linux 6.18, Bash 5.2.21, jq 1.7, mawk 1.3.4, GNU sed 4.9, grep 3.11, coreutils 9.4, diffutils 3.10, strace 6.8, Python 3.11) and must be re-asserted by `examples.py` when built.
-- [ ] `SOURCES.md` extended with the quotes under "Needed quotes" (fetch with `scripts/sources.mjs`; never invent).
+- [x] `SOURCES.md` extended (154 quotes pass).
 - [ ] `examples.sh` + `examples.py`, fact-check, coverage map, build, checks, narration, reviews, ship.
 
 ---

@@ -99,6 +99,16 @@ The signal table lists each signal as a name, standard, default action and comme
 
 > Termination signal
 
+> The first numeric value in each table row shows the signal number on x86, ARM, and most other architectures
+
+> SIGHUP 1 1 1 1
+
+> SIGINT 2 2 2 2
+
+> SIGKILL 9 9
+
+> SIGTERM 15 15
+
 Contents:
 - NAME
 - DESCRIPTION (signal dispositions; the Term, Ign, Core, Stop, Cont default actions; standard signals table SIGHUP, SIGINT, SIGKILL, SIGTERM and others; real-time signals; delivery, blocking, handlers)
@@ -191,6 +201,8 @@ Version: Linux man-pages 6.19, page dated 2026-02-08 (manpages 6.19-3, Debian un
 
 > set-user-ID bit (see execve (2))
 
+> This field contains the number of hard links to the file.
+
 Contents:
 - NAME
 - DESCRIPTION (struct stat fields; st_mode file type and permission constants such as S_ISUID 04000)
@@ -228,6 +240,8 @@ Version: Linux man-pages 6.19, page dated 2026-02-08 (manpages-dev 6.19-3, Debia
 
 > A child process created via fork(2) inherits its parent's umask. The umask is left unchanged by execve(2).
 
+> Since Linux 4.7, the umask of any process can be viewed via the Umask field of /proc/pid/status.
+
 Contents:
 - NAME
 - LIBRARY
@@ -244,6 +258,16 @@ URL: https://manpages.debian.org/unstable/strace/strace.1.en.html
 Version: strace 7.2+ds-1 (Debian unstable, page dated 2026-06-25)
 
 > Attaches to the process with the process ID pid and begin tracing. The trace may be terminated at any time by a keyboard interrupt signal (CTRL-C). strace will respond by detaching itself from the traced processes, leaving them to continue running.
+
+> Writes the trace output to the file filename rather than to stderr.
+
+> Traces child processes as they are created by currently traced processes as a result of the fork(2), vfork(2) and clone(2) system calls.
+
+> Traces all the network related system calls.
+
+> Shows the time spent in system calls.
+
+> Prints paths associated with file descriptor arguments and with the AT_FDCWD constant.
 
 Contents:
 - NAME
@@ -275,6 +299,20 @@ Version: procps 2:4.0.7-1 (Debian unstable, source updated 2026-08-12)
 > Show threads, possibly with LWP and NLWP columns.
 
 Notes: the four state codes are the entries D, R, S, Z of "PROCESS STATE CODES" (each code letter sits on the line before its text).
+
+> elapsed time since the process was started, in the form [[DD-]hh:]mm:ss.
+
+> resident set size, the non-swapped physical memory that a task has used (in kibibytes).
+
+> cpu utilization of the process in "##.#" format. Currently, it is the CPU time used divided by the time the process has been running (cputime/realtime ratio), expressed as a percentage.
+
+> name of the kernel function in which the process is sleeping.
+
+> is a session leader
+
+> is multi-threaded (using CLONE_THREAD, like NPTL pthreads do)
+
+> is in the foreground process group
 
 Contents:
 - NAME
@@ -316,6 +354,14 @@ Version: cron 3.0pl1-211 (Debian unstable, source updated 2026-09-27)
 
 Notes: this Debian crontab(5) says nothing about daylight-saving-time transitions; do not attribute DST behaviour to it (cron(8) or the Debian cron README would be needed).
 
+> minute 0-59 hour 0-23 day of month 1-31 month 1-12 (or names, see below) day of week 0-7 (0 or 7 is Sun, or use names)
+
+> Percent-signs (%) in the command, unless escaped with backslash (\), will be changed into newline characters, and all data after the first % will be sent to the command as standard input.
+
+> The entire command portion of the line, up to a newline or % character, will be executed by /usr/bin/sh or by the shell specified in the SHELL variable of the cronfile.
+
+> The cron daemon runs with a defined timezone. It currently does not support per-user timezones.
+
 Contents:
 - NAME
 - DESCRIPTION (environment settings; five time fields minute 0-59, hour 0-23, day of month 1-31, month 1-12, day of week 0-7; ranges, lists, steps, names; the command field and % handling; @reboot, @yearly ... @hourly)
@@ -356,6 +402,18 @@ set -e / set -u:
 
 > Treat unset variables and parameters other than the special parameters ‘@’ or ‘*’, or array variables subscripted with ‘@’ or ‘*’, as an error when performing parameter expansion.
 
+> ($?) Expands to the exit status of the most recently executed command.
+
+> ($$) Expands to the process ID of the shell.
+
+> ($!) Expands to the process ID of the job most recently placed into the background
+
+> If command is supplied, it replaces the shell without creating a new process.
+
+> The action is a command that is read and executed when the shell receives any of the signals sigspec.
+
+> The -l option lists the signal names.
+
 Contents:
 - Pipelines: exit status is the last command's; pipefail changes it to the rightmost non-zero status; `!` negates
 - Redirections: order is significant; `> file 2>&1` sends both streams to the file, `2>&1 > file` does not
@@ -392,6 +450,10 @@ Version: jq 1.8 Manual
 > The length of an array is the number of elements.
 
 > The length of an object is the number of key-value pairs.
+
+> Sets the exit status of jq to 0 if the last output value was neither false nor null, 1 if the last output value was either false or null, or 4 if no valid result was ever produced. Normally jq exits with 2 if there was any usage problem or system error, 3 if there was a jq program compile error, or 0 if the jq program ran.
+
+> The given exit_code (defaulting to 5) will be jq's exit
 
 Contents:
 - Invoking jq: --slurp/-s, --compact-output/-c, --raw-output/-r, --slurpfile
@@ -489,9 +551,191 @@ Version: OpenBSD-current, September 5, 2026
 
 > The file ~/.ssh/authorized_keys lists the
 
+> The file ~/.ssh/authorized_keys lists the public keys that are permitted for logging in.
+
+> Requests ssh to go to background just before command execution.
+
+> Selects a file from which the identity (private key) for public key authentication is read.
+
+> Do not execute a remote command. This is useful for just forwarding ports.
+
+> ssh will simply ignore a private key file if it is accessible by others.
+
 Contents:
 - -J destination: jump host (ProxyJump shortcut), comma-separated hops
 - -L [bind_address:]port:host:hostport: local forward
 - -R [bind_address:]port:host:hostport: remote forward
 - -i identity_file: key selection
 - Authentication: ~/.ssh/authorized_keys on the server lists public keys
+
+## pthreads(7) - Linux manual page (Debian manpages mirror)
+URL: https://manpages.debian.org/unstable/manpages/pthreads.7.en.html
+Version: Linux man-pages 6.19 (manpages 6.19-3, Debian unstable)
+> A single process can contain multiple threads, all of which are executing the same program. These threads share the same global memory (data and heap segments), but each thread has its own stack (automatic variables).
+
+Contents:
+- NAME
+- DESCRIPTION (POSIX threads; threads in one process share global memory, each has its own stack; shared and per-thread attributes)
+- NOTES (Linux implementations of threads: LinuxThreads and NPTL)
+- SEE ALSO
+
+## proc_loadavg(5) - Linux manual page (Debian manpages mirror)
+URL: https://manpages.debian.org/unstable/manpages/proc_loadavg.5.en.html
+Version: Linux man-pages 6.19, page dated 2026-02-08 (manpages 6.19-3, Debian unstable)
+> The first three fields in this file are load average figures giving the number of jobs in the run queue (state R) or waiting for disk I/O (state D) averaged over 1, 5, and 15 minutes.
+
+> They are the same as the load average numbers given by uptime(1) and other programs.
+
+Contents:
+- NAME: /proc/loadavg - load average
+- DESCRIPTION: first three fields are the load averages over 1, 5 and 15 minutes (state R and state D jobs); fourth field is runnable/existing scheduling entities; fifth field is the most recently created PID
+- SEE ALSO
+
+## capabilities(7) - Linux manual page (Debian manpages mirror)
+URL: https://manpages.debian.org/unstable/manpages/capabilities.7.en.html
+Version: Linux man-pages 6.19 (manpages 6.19-3, Debian unstable)
+> Privileged processes bypass all kernel permission checks
+
+> Bypass file read, write, and execute permission checks.
+
+> Bypass file read permission checks and directory read and execute permission checks;
+
+Contents:
+- DESCRIPTION: privileged processes (effective user ID 0, superuser or root) bypass kernel permission checks; capabilities divide superuser power into distinct units
+- List of capabilities: CAP_DAC_OVERRIDE (bypass file read, write and execute checks), CAP_DAC_READ_SEARCH (bypass file read and directory read/execute checks)
+- Other sections not used here
+
+## symlink(7) - Linux manual page (Debian manpages mirror)
+URL: https://manpages.debian.org/unstable/manpages/symlink.7.en.html
+Version: Linux man-pages 6.19 (manpages 6.19-3, Debian unstable)
+> A symbolic link is a special type of file whose contents are a string that is the pathname of another file, the file to which the link refers.
+
+> In other words, a symbolic link is a pointer to another name, and not to an underlying object.
+
+Contents:
+- NAME
+- DESCRIPTION: what a symbolic link is; symbolic links may refer to directories and cross filesystem boundaries
+- Symbolic link ownership, permissions and timestamps; resolution of symbolic links in pathnames
+
+## The GNU Awk User's Guide: String Functions
+URL: https://www.gnu.org/software/gawk/manual/html_node/String-Functions.html
+Version: Edition 5.4 of GAWK: Effective AWK Programming
+> Return a copy of string, with each uppercase character in the string replaced with its corresponding lowercase character.
+
+> Nonalphabetic characters are left unchanged.
+
+Contents:
+- String-manipulation functions: tolower(string), toupper(string) and others (sub, gsub, split, substr, sprintf, length, ...)
+
+## The GNU Awk User's Guide: Changing the Contents of a Field
+URL: https://www.gnu.org/software/gawk/manual/html_node/Changing-Fields.html
+Version: Edition 5.4 of GAWK: Effective AWK Programming
+> When the value of a field is changed (as perceived by awk), the text of the input record is recalculated to contain the new field where the old one was. In other words, $0 changes to reflect the altered field.
+
+Contents:
+- Changing a field (for example $2 = $2 - 10) recalculates $0 from the fields
+- Creating a new field changes the internal copy of the record; out-of-range references do not change $0 or NF
+
+## uniq(1) - coreutils manual page (Debian manpages mirror)
+URL: https://manpages.debian.org/unstable/coreutils/uniq.1.en.html
+Version: coreutils 9.10-1 (Debian unstable)
+> prefix lines by the number of occurrences
+
+Contents:
+- NAME, SYNOPSIS, DESCRIPTION: filter adjacent matching lines
+- Options including -c/--count, -d/--repeated
+
+## Comparing and Merging Files (GNU diffutils manual)
+URL: https://www.gnu.org/software/diffutils/manual/diffutils.html
+Version: GNU diffutils manual (single-page HTML, as served 2026-10-11)
+The "Invoking diff" node states the exit status in the same words as the other tools of the package; the text below is the sentence under that node's option list.
+> An exit status of 0 means no differences were found, 1 means some differences were found, and 2 means trouble.
+
+Contents:
+- Invoking diff: options and exit status
+- Invoking cmp, sdiff, diff3: each with an exit status paragraph
+
+## cron(8) - cron manual page (Debian manpages mirror)
+URL: https://manpages.debian.org/unstable/cron/cron.8.en.html
+Version: cron 3.0pl1-211 (Debian unstable)
+> Special considerations exist when the clock is changed by less than 3 hours, for example at the beginning and end of daylight savings time.
+
+> If the time has moved forwards, those jobs which would have run in the time that was skipped will be run soon after the change.
+
+> Conversely, if the time has moved backwards by less than 3 hours, those jobs that fall into the repeated time will not be re-run.
+
+> Only jobs that run at a particular time (not specified as @hourly, nor with '*' in the hour or minute specifier) are affected.
+
+> Clock changes of more than 3 hours are considered to be corrections to the clock, and the new time is used immediately.
+
+> cron will only handle tasks in a single timezone.
+
+This is the Debian cron (Vixie-derived), not cronie. cron(8) does not state anything about a job that is still running when its next run is due (overlapping runs): not stated.
+
+Contents:
+- DESCRIPTION: how cron wakes each minute and runs due commands
+- Daylight saving time and other clock changes (less than 3 hours, more than 3 hours)
+- Time zone: single timezone via /etc/localtime
+- Logging to syslog
+
+## flock(1) - util-linux manual page (Debian manpages mirror)
+URL: https://manpages.debian.org/unstable/util-linux/flock.1.en.html
+Version: util-linux 2.42.4-1 (Debian unstable)
+> Fail rather than wait if the lock cannot be immediately acquired.
+
+Contents:
+- NAME, SYNOPSIS, DESCRIPTION: manage locks from shell scripts
+- Options: -n/--nb/--nonblock (fail rather than wait), -E (exit status on failure), -w (timeout), others
+
+## OpenBSD ssh_config(5)
+URL: https://man.openbsd.org/ssh_config
+Version: OpenBSD-current, as served 2026-10-11
+> Specifies one or more jump proxies as either [user@]host[:port] or an ssh URI. Multiple proxies may be separated by comma characters and will be visited sequentially.
+
+> Sets a timeout interval in seconds after which if no data has been received from the server, ssh(1) will send a message through the encrypted channel to request a response from the server. The default is 0, indicating that these messages will not be sent to the server.
+
+Contents:
+- ProxyJump: one or more jump proxies, comma-separated, visited in order
+- ServerAliveInterval: seconds of silence before ssh sends a keep-alive request; default 0 (none sent)
+
+## nohup(1) - coreutils manual page (Debian manpages mirror)
+URL: https://manpages.debian.org/unstable/coreutils/nohup.1.en.html
+Version: coreutils 9.10-1 (Debian unstable)
+> Run COMMAND, ignoring hangup signals.
+
+Contents:
+- NAME: run a command immune to hangups, with output to a non-tty
+- SYNOPSIS, DESCRIPTION
+
+## setsid(1) - util-linux manual page (Debian manpages mirror)
+URL: https://manpages.debian.org/unstable/util-linux/setsid.1.en.html
+Version: util-linux 2.42.4-1 (Debian unstable)
+> setsid runs a program in a new session.
+
+setsid(1) does not mention SIGHUP: not stated.
+
+Contents:
+- NAME, SYNOPSIS
+- DESCRIPTION: runs a program in a new session; forks if already a process group leader (see --fork)
+- OPTIONS
+
+## proc_pid_syscall(5) - Linux manual page (Debian manpages mirror)
+URL: https://manpages.debian.org/unstable/manpages/proc_pid_syscall.5.en.html
+Version: Linux man-pages 6.19 (manpages 6.19-3, Debian unstable)
+> This file exposes the system call number and argument registers for the system call currently being executed by the process, followed by the values of the stack pointer and program counter registers.
+
+> If the process is blocked, but not in a system call, then the file displays -1 in place of the system call number
+
+Contents:
+- DESCRIPTION of /proc/pid/syscall (since Linux 2.6.27): system call number, six argument registers, stack pointer, program counter
+- SEE ALSO
+
+## git-bisect (Git documentation)
+URL: https://git-scm.com/docs/git-bisect
+Version: git-bisect last updated in 2.56.0
+> 125 was chosen as the highest sensible value to use for this purpose, because 126 and 127 are used by POSIX shells to signal specific error status
+
+> exit with code 0 if the current source code is good/old, and exit with a code between 1 and 127 (inclusive), except 125, if the current source code is bad/new.
+
+Contents:
+- git bisect run: exit codes 0 (good), 1 to 127 except 125 (bad), 125 (cannot be tested, skip), others abort
