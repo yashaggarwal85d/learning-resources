@@ -719,7 +719,7 @@ No other factual claims go on screen or in the Deep dive. In particular: no clai
 
 ## Progress
 
-- Sources, OUTLINE, FACT-CHECK, expert list done. Next: coverage.json and the build (section 3).
+- Sources, OUTLINE, FACT-CHECK, expert list done. Built, content review and looks review done and fixed, checks green. Content final. Next: narration (section 7), then ship.
 
 - 2026-10-11 adversarial fact-check done (rustc 1.97.0, g++ 13.3): corrections applied in place above, each marked "Fact-check" where the reason isn't obvious; verdicts and open items in `FACT-CHECK.md`.
 
