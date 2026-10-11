@@ -5,13 +5,17 @@ on:
     branches: [main]
   pull_request:
   workflow_dispatch:
+  # Pushes test only the reels they can affect (scripts/affected.mjs); once a week every live reel is tested.
+  schedule:
+    - cron: '41 5 * * 0'
 
 permissions:
   contents: read
 
+# On main every push is checked to the end (routine runs confirm their own merge); elsewhere a newer push replaces an older run.
 concurrency:
-  group: ci-${{ github.ref }}
-  cancel-in-progress: true
+  group: ci-${{ github.ref }}-${{ github.ref == 'refs/heads/main' && github.sha || 'latest' }}
+  cancel-in-progress: ${{ github.ref != 'refs/heads/main' }}
 
 jobs:
   docs:
@@ -29,6 +33,15 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Reels this change can affect
+        id: affected
+        run: |
+          BASE="${{ github.event_name == 'push' && github.event.before || format('origin/{0}', github.base_ref) }}"
+          A=$(node scripts/affected.mjs "$BASE")
+          echo "$A"
+          echo "reels=$(node -e 'const a=JSON.parse(process.argv[1]); console.log(a.all ? "" : (a.slugs.join(",") || "none"))' "$A")" >> "$GITHUB_OUTPUT"
       - name: No site yet
         if: hashFiles('site/package-lock.json') == ''
         run: echo "::notice::There is no site/ folder yet, so there is nothing to build."
@@ -60,9 +73,12 @@ jobs:
         if: hashFiles('site/package-lock.json') != ''
         working-directory: site
         run: |
+          # Held topics (finished, waiting for earlier ones) are tested too, on a test-only build that gives them pages.
+          export PREVIEW_HELD=1
+          npm run build > /dev/null
           npx astro preview --host 127.0.0.1 --port 4321 > preview.log 2>&1 &
           for i in $(seq 1 30); do curl -sf http://127.0.0.1:4321/learning-resources/ > /dev/null && break; sleep 1; done
-          npm run test:reels -- http://127.0.0.1:4321/learning-resources/
+          npm run test:reels -- http://127.0.0.1:4321/learning-resources/ ${{ steps.affected.outputs.reels }}
       - uses: actions/upload-artifact@v4
         if: always() && hashFiles('site/package-lock.json') != ''
         with:

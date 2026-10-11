@@ -33,6 +33,7 @@ site/src/reels/kit.tsx                     the drawing kit every topic's scenes 
 scripts/check-all.mjs                      runs every pre-ship check with a timing summary (ROUTINE.md sections 5 and 8)
 scripts/check-links.mjs                    checks every topic's outside links (status and title)
 scripts/claim.mjs                          hands each routine run its topic (claims on the `claims` branch, heartbeats)
+scripts/affected.mjs                       which reels and links a change can affect (CI and check-all --changed test those)
 scripts/run-metrics.mjs                    records a run's tokens (per model), calls and time, per stage
 site/                                      the website (Astro + React islands + Tailwind)
   src/topics/registry.ts                   every finished topic: live or held, concept ledger, bridge and handoff
