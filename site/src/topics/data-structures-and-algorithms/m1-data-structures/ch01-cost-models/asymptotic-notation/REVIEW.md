@@ -117,3 +117,34 @@ Severity: **major** = a learner is misled, misses the step's point, or sees brok
     Fix (test owner): capture each step after the clock settles (wait for `t ≥ duration`, not a key press that can advance), and for predict steps take a `-q` shot before clicking an option.
 
 **Count: 10 major (1–10), 14 minor (11–24).**
+
+### Resolution (2026-10-11)
+
+Status per finding. All edits are in `scenes.tsx` (plus one narration line); nothing outside this topic was touched.
+
+1. **Fixed.** Bar runs `seg(t, 0.2, 1.4)` inside the 1.5 s duration, so the question frame shows exactly 499,500.
+2. **Fixed.** The footnote is two lines.
+3. **Fixed.** Step 1 cards are three stacked lines (question / values / description).
+4. **Fixed.** Hash-set "1,000", "n²" label and "4 billion+" use `C.cherryText`.
+5. **Fixed.** "n²" is end-anchored left of the curve's end; "100n" sits above-left of its line.
+6. **Fixed.** Both rows share one log axis (bar height = log₂ ratio, 13 units per doubling); at n = 1 both bars are equal.
+7. **Fixed.** Tail buckets have a 9-unit minimum height and are cherry; mean tick at 10,991; dashed "w.h.p. cap (example)" at 14,000 with "3 runs beyond it" (2 + 1 runs from `HIST`). The cap position is illustrative and labelled so.
+8. **Fixed.** Row now reads "bound: inequality, case: function".
+9. **Fixed.** Rows read "first element as pivot, this input" and "random pivot, any input order".
+10. **Fixed.** Step 2 now plots f(n)/n² against the band [3, 4]: the curve (cherry-text red) is above 4 for n < 10 and enters the band at n₀ = 10, with a "n = 9: 333 > 324" call-out.
+11. **Partly fixed.** Step 1's header line is gone, step 6's header is dropped on portrait, and step 3's header is short. The remaining part (the test measuring font size × scale) is in `site/tests/`: **skipped, shared code**.
+12. **Fixed.** Verdict lines in step 4 use words ("little-o", "Theta", "little-omega"); step 2's headline sets Θ in the serif via a `<tspan>`. Step 5's mono Θ labels stay mono (finding 16) and sit away from zeros.
+13. **Fixed in the topic.** A local clock (`useSinceAnswer`, rAF, final frame under reduced motion) animates the answer reveals in steps 3 and 6, with no player change. The "?" moved to x = 44. Caveat: the test screenshot is taken about 0.3 s after the click, so it can show the reveal part-way.
+14. **Fixed.** `scenes.tsx` imports `C`, `Svg`, `T`, `Bar`, `SERIF` from `reels/kit`; no local copies remain.
+15. **Fixed.** All labels are at least 13 units.
+16. **Fixed, with one recorded exception.** Step 1: one serif element (the claim). Step 5: mono Θ labels. Step 10: only "4 billion+" is serif; 65,534 is mono 20. Step 4 keeps its three serif verdict glyphs because DESIGN.md names those ratio cards as a good example; the recap's seven serif keys are a list.
+17. **Fixed.** Both sides of n = 100 are shaded and labelled "n² cheaper here" / "100n cheaper here".
+18. **Fixed.** Column headers "n = 10 · 10³ · 10⁶" align to x = 50/162/274; values print as "2×10⁻⁵" and "5×10⁴".
+19. **Fixed.** Step 1 draws the claim "quicksort is O(n log n)" with leader lines to the three cards; step 12's final frame decodes it (bound: O (upper), case: expected, random pivots, resource: time (comparisons)).
+20. **Fixed.** Narration step 3 now asks "is the function two to the two n in big O of two to the n?" (same line count; `answer` lines unchanged).
+21. **Fixed.** A 32-cell and a 64-cell bit strip sit in the two cards of step 10.
+22. **Fixed.** "avg ≠ expected", and the recap rows were compacted (value column at x = 236).
+23. **Skipped.** Player behaviour in `site/src/reels/` (shared, locked).
+24. **Skipped.** Test capture in `site/tests/reels.mjs` (shared, locked).
+
+Also fixed in the same pass: step 5's Θ and formula lines were moved apart after the phone overlap check flagged them.
