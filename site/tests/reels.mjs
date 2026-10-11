@@ -150,8 +150,11 @@ for (const [device, opts] of [
         await firstPredict.click();
         await page.waitForTimeout(400);
         const p0 = await stepNow();
-        await drag(320, y, 70, y);
+        for (let k = 0; k < 3; k++) await drag(320, y, 70, y);
         if ((await stepNow()) !== p0) fail(`${where}: swipe left skipped an unanswered predict step (${p0})`);
+        // Each of those swipes nudges the options; the step's text must still be there once (QUALITY.md #48: it piled up).
+        const bodies = await reel.locator('.reel-body').count();
+        if (bodies !== 1) fail(`${where}: after swiping on an unanswered predict step its text is shown ${bodies} times`);
       }
       // A swipe must work wherever it starts, on every step (code panels and charts must not swallow it).
       const total = await reel.locator('[aria-label^="Step "]').count();
