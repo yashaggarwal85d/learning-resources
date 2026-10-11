@@ -51,9 +51,24 @@ async function course(domainArg) {
   const want = domainArg.toLowerCase().replace(/&/g, 'and').replace(/[^a-z]+/g, ' ').trim();
   const d = domains.find((x) => [x.id, x.title].some((n) => { const s = n.toLowerCase().replace(/&/g, 'and').replace(/[^a-z]+/g, ' ').trim(); return s === want || s.startsWith(want + ' '); }));
   if (!d) die(`unknown domain "${domainArg}"`);
-  const order = d.milestones.flatMap((m) => m.chapters.flatMap((c) => c.topics.map((t) => ({ title: t.title, chapter: `${c.number} ${c.title}` }))));
+  const order = d.milestones.flatMap((m) => m.chapters.flatMap((c) => c.topics.map((t) => ({ title: t.title, chapter: `${c.number} ${c.title}`, m, c }))));
   const reg = new Map(TOPICS.filter((t) => t.domain === d.id).map((t) => [t.syllabusTitle, t]));
   return { domain: d.id, order, reg };
+}
+
+const PREFIX = { 'data-engineering': 'de', 'data-structures-and-algorithms': 'dsa', 'german-language': 'ger', 'rust-systems-engineering': 'rust' };
+const words = (x, n) => x.toLowerCase().normalize('NFKD').replace(/[^a-z0-9]+/g, ' ').trim().split(' ').filter((w) => !['and', 'the', 'of', 'a', 'an', 'in', 'to', 'for', 'with', 'its'].includes(w)).slice(0, n).join('-');
+
+// Where a new topic goes, so parallel runs in one chapter never invent two folders for it: the chapter's folder as
+// already used by a topic on main or by a claim of another run, else one made from the syllabus titles.
+function placeFor(domain, t, reg, claims) {
+  const same = (m, c) => m === t.m.number && c === t.c.number;
+  const fromReg = [...reg.values()].find((r) => same(r.milestone.number, r.chapter.number));
+  const fromClaim = claims.find((c) => c.folder && c.milestone === t.m.number && c.chapterNumber === t.c.number);
+  const milestoneDir = [...reg.values()].find((r) => r.milestone.number === t.m.number)?.slug.split('/')[1] ?? claims.find((c) => c.folder && c.milestone === t.m.number)?.folder.split('/')[4] ?? `m${t.m.number}-${words(t.m.title, 3)}`;
+  const chapterDir = fromReg ? fromReg.slug.split('/').slice(0, 3).join('/') : fromClaim ? fromClaim.folder.split('/').slice(3, 6).join('/') : `${domain}/${milestoneDir}/ch${String(t.c.number).padStart(2, '0')}-${words(t.c.title, 3)}`;
+  const slug = words(t.title, 4);
+  return { topicId: `${PREFIX[domain]}.${slug}`, folder: `site/src/topics/${chapterDir}/${slug}` };
 }
 
 // Unmerged topic branches with no claim (a run from before claims existed, or one whose claim was lost):
@@ -169,9 +184,10 @@ if (cmd === 'next') {
         if (prev && !prev.final) return { action: 'wait', reason: `"${prev.title}" isn't content-final yet; this topic must follow on from it` };
         action = 'make';
       }
-      const claim = { domain, index: i + 1, title: t.title, chapter: t.chapter, action, topicId: r?.id ?? c?.topicId ?? null, folder: r ? `site/src/topics/${r.slug}` : c?.folder ?? null, final: !!(r || c?.final), owner, startedAt: now(), beatAt: now(), attempts: (c?.attempts ?? 0) + 1, takenOverFrom: c ? c.startedAt : undefined, lastNote: c?.note };
+      const place = action === 'make' ? placeFor(domain, t, reg, claims) : null;
+      const claim = { domain, index: i + 1, title: t.title, chapter: t.chapter, milestone: t.m.number, chapterNumber: t.c.number, action, topicId: r?.id ?? c?.topicId ?? null, folder: r ? `site/src/topics/${r.slug}` : c?.folder ?? null, final: !!(r || c?.final), owner, startedAt: now(), beatAt: now(), attempts: (c?.attempts ?? 0) + 1, takenOverFrom: c ? c.startedAt : undefined, lastNote: c?.note };
       write(fileOf(t), claim);
-      return { action, file: fileOf(t), attempt: claim.attempts, ...(c?.note ? { previousRunStopped: c.note } : {}), ...(blocked.length ? { blocked } : {}), topic: { index: i + 1, title: t.title, chapter: t.chapter, topicId: claim.topicId, branch: claim.topicId ? `topic/${claim.topicId}` : null, folder: claim.folder }, previous: neighbour(i - 1), next: neighbour(i + 1) };
+      return { action, file: fileOf(t), attempt: claim.attempts, ...(c?.note ? { previousRunStopped: c.note } : {}), ...(blocked.length ? { blocked } : {}), topic: { index: i + 1, title: t.title, chapter: t.chapter, topicId: claim.topicId, branch: claim.topicId ? `topic/${claim.topicId}` : null, folder: claim.folder, ...(place ? { use: place } : {}) }, previous: neighbour(i - 1), next: neighbour(i + 1) };
     }
     return { action: 'wait', reason: blocked.length ? blocked.join('; ') : 'nothing left to start in this domain', ...(blocked.length ? { blocked } : {}) };
   });
