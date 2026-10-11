@@ -178,8 +178,8 @@ Applied in place above, each marked "(fact-check: …)"; details, verdicts and t
 - [x] Build: `examples.py`, `reel.tsx`, `scenes.tsx`, `index.mdx`, `prerequisites.mdx`, `narration.json`, registry entry (held; `npm run build` and `test:examples` pass; reel test passes at both sizes except a harness timing race, see REVIEW later)
 - [ ] Content review (flow, gap hunt, expert reader) in `REVIEW.md`; fixes
 - [x] Checks green (step 11 label overlap fixed; test race fixed, QUALITY #49)
-- [ ] Looks review; fixes
-- [ ] Content final
+- [x] Looks review; fixes (majors fixed; 3, 17 are locked player chrome, minors 11, 13, 14, 18 skipped, see REVIEW.md)
+- [x] Content final (2026-10-11)
 - [ ] Narration
 - [ ] Ship
 
