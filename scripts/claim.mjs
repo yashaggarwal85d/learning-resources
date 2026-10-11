@@ -19,7 +19,8 @@
 //
 // <domain> is a domain id, title or topic-id prefix ("data-structures-and-algorithms", "Data Structures & Algorithms", "dsa", "Rust").
 // Settings: CLAIM_MAX_PARALLEL (default 4) runs per domain at once; a claim is stale after 90 minutes without a heartbeat;
-// scripts/claim-settings.json: { "finishOnly": true } starts nothing new; "maxTotal" overrides CLAIM_MAX_TOTAL.
+// scripts/claim-settings.json: { "finishOnly": true } starts nothing new except the topics in "restart" (titles);
+// "maxTotal" overrides CLAIM_MAX_TOTAL.
 // a topic whose runs stopped 3 times (or vanished 6 times, as on a usage limit) is blocked (reported, not retried) until a
 // human looks at it and deletes its claim. CLAIM_MAX_TOTAL (default 8) caps the runs of all domains together.
 import { spawnSync } from 'node:child_process';
@@ -39,6 +40,7 @@ const MAX = Number(process.env.CLAIM_MAX_PARALLEL ?? 4); // runs of one domain a
 // nothing new: no chapter plans, no new topics) and maxTotal (runs of all domains at once).
 const SETTINGS = (() => { try { return JSON.parse(readFileSync(join(root, 'scripts/claim-settings.json'), 'utf8')); } catch { return {}; } })();
 const MAX_TOTAL = Number(process.env.CLAIM_MAX_TOTAL ?? SETTINGS.maxTotal ?? 8);
+const restart = new Set(SETTINGS.restart ?? []); // topic titles to start again while finishing (their runs died before saving)
 const MAX_STOPS = 3; // a topic whose runs gave up (claim.mjs stop) this often is blocked for a human
 const MAX_DEATHS = 6; // runs that vanished without a word (a usage limit, a lost container) count separately, and more loosely
 
@@ -250,12 +252,10 @@ function decide({ domain, order, reg, lost, plans, chapters }, owner) {
       if (c && stale(c) && !plans.has(ch.number) && !tooOften(c, planTitle(ch))) return planJob(ch, true);
     }
 
-    if (SETTINGS.finishOnly) return { action: 'wait', reason: blocked.length ? blocked.join('; ') : 'finishing started topics only (scripts/claim-settings.json): nothing new is started' };
-
-    // 3. Plan the next chapter. Chapters go in sequence: a chapter is planned once every topic of the chapter before it is
+    // 3. Plan the next chapter (never while finishing started work only). Chapters go in sequence: a chapter is planned once every topic of the chapter before it is
     // content-final (live, held, or marked final), so its plan builds on what that chapter really teaches.
     const complete = (ch) => order.filter((t) => t.c.number === ch.number).every((t) => reg.get(t.title) || claimOf(t.title)?.final);
-    for (let k = 0; k < chapters.length; k++) {
+    for (let k = 0; k < chapters.length && !SETTINGS.finishOnly; k++) {
       const ch = chapters[k];
       if (plans.has(ch.number)) continue;
       if (claimOf(planTitle(ch))) break; // being planned (or blocked)
@@ -269,11 +269,12 @@ function decide({ domain, order, reg, lost, plans, chapters }, owner) {
       const t = order[i];
       if (reg.get(t.title) || claimOf(t.title) || lost.get(t.title)) continue;
       if (!plans.has(t.c.number)) continue;
+      if (SETTINGS.finishOnly && !restart.has(t.title)) continue; // finishing: only topics whose runs died are started again
       const place = placeFor(domain, t, reg, claims, plans);
       const { file, claim } = claimJob(t.title, { kind: 'topic', action: 'make', index: i + 1, chapter: t.chapter, chapterNumber: t.c.number, milestone: t.m.number, topicId: place.topicId, folder: place.folder, final: false });
       return { action: 'make', file, attempt: claim.attempts, topic: { index: i + 1, title: t.title, chapter: chapterInfo(t.c), topicId: place.topicId, branch: `topic/${place.topicId}`, folder: place.folder, use: place }, previous: describe(i - 1), next: describe(i + 1) };
     }
-    return { action: 'wait', reason: blocked.length ? blocked.join('; ') : 'every topic of the planned chapter is taken; the next chapter is planned once they are all content-final', ...(blocked.length ? { blocked } : {}) };
+    return { action: 'wait', reason: blocked.length ? blocked.join('; ') : SETTINGS.finishOnly ? 'finishing started topics only (scripts/claim-settings.json): nothing new is started' : 'every topic of the planned chapter is taken; the next chapter is planned once they are all content-final', ...(blocked.length ? { blocked } : {}) };
 
     function planJob(ch, resuming) {
       const first = order.find((t) => t.c.number === ch.number);
