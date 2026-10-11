@@ -26,7 +26,9 @@ def clips(topic_dir):
 
 def clip_hash(items):
     """Must match tests/narration.mjs: lines joined by newlines, beats as [beat s], plus the voice version."""
-    canon = "\n".join(x if isinstance(x, str) else f"[beat {x['beat']}]" for x in items) + "\n#voice:" + VOICE["version"]
+    # Beats are written the way JavaScript prints a number (1.0 -> "1"), so tests/narration.mjs computes the same hash.
+    num = lambda b: str(int(b)) if float(b).is_integer() else repr(float(b))
+    canon = "\n".join(x if isinstance(x, str) else f"[beat {num(x['beat'])}]" for x in items) + "\n#voice:" + VOICE["version"]
     return hashlib.sha256(canon.encode("utf-8")).hexdigest()[:16]
 
 
