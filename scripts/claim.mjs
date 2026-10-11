@@ -17,8 +17,9 @@
 //   node scripts/claim.mjs open [<domain>...]   how many runs could start work now, per domain (nothing is claimed)
 //
 // <domain> is a domain id, title or topic-id prefix ("data-structures-and-algorithms", "Data Structures & Algorithms", "dsa", "German").
-// Settings: CLAIM_MAX_PARALLEL (default 10) runs per domain at once; a claim is stale after 90 minutes without a heartbeat;
-// a topic whose runs stopped 3 times is blocked (reported, not retried) until a human looks at it and deletes its claim.
+// Settings: CLAIM_MAX_PARALLEL (default 4) runs per domain at once; a claim is stale after 90 minutes without a heartbeat;
+// a topic whose runs stopped 3 times (or vanished 6 times, as on a usage limit) is blocked (reported, not retried) until a
+// human looks at it and deletes its claim. CLAIM_MAX_TOTAL (default 8) caps the runs of all domains together.
 import { spawnSync } from 'node:child_process';
 import { existsSync, mkdirSync, mkdtempSync, readdirSync, readFileSync, rmSync, statSync, writeFileSync } from 'node:fs';
 import { homedir, tmpdir } from 'node:os';
@@ -29,8 +30,12 @@ const root = resolve(dirname(new URL(import.meta.url).pathname), '..');
 const BRANCH = 'claims';
 const STALE_MIN = Number(process.env.CLAIM_STALE_MIN ?? 90);
 const BEAT_MIN = Number(process.env.CLAIM_BEAT_MIN ?? 15);
-const MAX = Number(process.env.CLAIM_MAX_PARALLEL ?? 10);
-const MAX_ATTEMPTS = 3;
+const MAX = Number(process.env.CLAIM_MAX_PARALLEL ?? 4); // runs of one domain at once
+// Runs of all domains at once. They share one account's usage limit (with its owner's own sessions): 26 runs started
+// together hit the five-hour limit within three minutes and all died (QUALITY.md #46).
+const MAX_TOTAL = Number(process.env.CLAIM_MAX_TOTAL ?? 8);
+const MAX_STOPS = 3; // a topic whose runs gave up (claim.mjs stop) this often is blocked for a human
+const MAX_DEATHS = 6; // runs that vanished without a word (a usage limit, a lost container) count separately, and more loosely
 
 const git = (args, cwd = root) => spawnSync('git', args, { cwd, encoding: 'utf8' });
 // This run's claim ({ domain, file, owner }), kept inside the clone so every shell and background job of the run finds it.
@@ -186,9 +191,14 @@ function decide({ domain, order, reg, lost, plans, chapters }, owner) {
     const blocked = [];
     const active = claims.filter((c) => titles.has(c.title) && reg.get(c.title)?.status !== 'live' && !(c.kind === 'chapter-plan' && plans.has(c.chapterNumber)) && !stale(c));
     if (active.length >= MAX) return { action: 'wait', reason: `${active.length} runs already working on this domain (limit ${MAX})`, working: active.map((c) => c.title) };
+    const elsewhere = all().filter((c) => c.domain !== domain && !stale(c)).length;
+    if (active.length + elsewhere >= MAX_TOTAL) return { action: 'wait', reason: `${active.length + elsewhere} runs already working across all domains (limit ${MAX_TOTAL})` };
+    // A stale claim counts as a stop if its run said why (claim.mjs stop), else as a death (the run vanished).
+    const stops = (c) => (c.stops ?? 0) + (c.note ? 1 : 0);
+    const deaths = (c) => (c.deaths ?? 0) + (c.note ? 0 : 1);
     const tooOften = (c, title) => {
-      if (!c || (c.attempts ?? 1) < MAX_ATTEMPTS) return false;
-      blocked.push(`"${title}" stopped ${c.attempts} times (last: ${c.note ?? 'no reason given'}); needs a human`);
+      if (!c || (stops(c) < MAX_STOPS && deaths(c) < MAX_DEATHS)) return false;
+      blocked.push(`"${title}" ${stops(c) >= MAX_STOPS ? `stopped ${stops(c)} times (last: ${c.note ?? c.lastNote ?? 'no reason given'})` : `lost its run ${deaths(c)} times (usage limits or lost containers)`}; needs a human`);
       return true;
     };
     const describe = (i) => {
@@ -198,7 +208,7 @@ function decide({ domain, order, reg, lost, plans, chapters }, owner) {
     };
     const claimJob = (title, fields) => {
       const c = claimOf(title);
-      const claim = { domain, title, owner, startedAt: now(), beatAt: now(), attempts: (c?.attempts ?? 0) + 1, takenOverFrom: c ? c.startedAt : undefined, lastNote: c?.note, ...fields };
+      const claim = { domain, title, owner, startedAt: now(), beatAt: now(), attempts: (c?.attempts ?? 0) + 1, ...(c ? { stops: stops(c), deaths: deaths(c) } : {}), takenOverFrom: c ? c.startedAt : undefined, lastNote: c?.note ?? c?.lastNote, ...fields };
       write(fileOf(title), claim);
       return { file: fileOf(title), claim, previousRunStopped: c?.note };
     };
@@ -324,19 +334,23 @@ if (cmd === 'next') {
     if (!ok) { console.error('claim: taken over by another run'); process.exit(1); }
   }
 } else if (cmd === 'open') {
-  // How many runs could start work now, per domain: hand out jobs to imaginary runs until the answer is "wait".
-  // Nothing is saved. The dispatcher fires a domain's routine this many times (routine runs can't start runs themselves).
-  const out = {};
-  for (const d of args.length ? args : Object.keys(PREFIX)) {
-    const ctx = await context(d);
-    const mem = new Map(transact(({ all }) => all()).map(({ file, ...c }) => [file, c]));
-    const jobs = [];
-    for (let i = 0; i <= MAX; i++) {
-      const res = decide(ctx, randomUUID())({ all: () => [...mem].map(([file, c]) => ({ file, ...c })), write: (f, v) => (v === null ? mem.delete(f) : mem.set(f, v)) });
-      if (res.action === 'wait') break;
-      jobs.push(`${res.action}: ${res.topic?.title ?? res.chapter?.title ?? res.topics?.map((t) => t.title).join(', ')}`);
+  // How many runs could start work now, per domain: hand out jobs to imaginary runs until every answer is "wait",
+  // one domain at a time in turn so the total cap is shared fairly. Nothing is saved. The dispatcher fires each
+  // domain's routine this many times (routine runs can't start runs themselves).
+  const ctxs = [];
+  for (const d of args.length ? args : Object.keys(PREFIX)) ctxs.push(await context(d));
+  const mem = new Map(transact(({ all }) => all()).map(({ file, ...c }) => [file, c]));
+  const view = { all: () => [...mem].map(([file, c]) => ({ file, ...c })), write: (f, v) => (v === null ? mem.delete(f) : mem.set(f, v)) };
+  const out = Object.fromEntries(ctxs.map((c) => [c.domain, { open: 0, jobs: [] }]));
+  for (let more = true; more; ) {
+    more = false;
+    for (const ctx of ctxs) {
+      const res = decide(ctx, randomUUID())(view);
+      if (res.action === 'wait') continue;
+      out[ctx.domain].open++;
+      out[ctx.domain].jobs.push(`${res.action}: ${res.topic?.title ?? res.chapter?.title ?? res.topics?.map((t) => t.title).join(', ')}`);
+      more = true;
     }
-    out[ctx.domain] = { open: jobs.length, jobs };
   }
   console.log(JSON.stringify(out, null, 2));
 } else if (cmd === 'status') {

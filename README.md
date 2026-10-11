@@ -95,7 +95,7 @@ Both are frozen in `site/narration/voice.json`. Details are in [site/narration/R
 
 ## How a topic is made
 
-Each domain has an hourly routine (an automated session; up to ten runs of one domain work at once, each on its own job) that follows [ROUTINE.md](ROUTINE.md). Chapters go in sequence, the topics of a chapter in parallel. A dispatcher session starts runs every hour, one per free job (`node scripts/claim.mjs open` counts them), because a routine session can't start runs itself.
+Each domain has an hourly routine (an automated session; up to four runs of one domain and eight in all work at once, each on its own job) that follows [ROUTINE.md](ROUTINE.md). Chapters go in sequence, the topics of a chapter in parallel. A dispatcher session starts runs every hour, one per free job (`node scripts/claim.mjs open` counts them), because a routine session can't start runs itself.
 
 1. Before a chapter is built, one run plans it: a Fable planner writes the chapter's `CHAPTER.md` (each topic's scope, concepts introduced and used, bridge and handoff), an Opus agent reviews it, and it is pushed to `main`. That plan is the contract every topic of the chapter follows, so they can all be built at once and still follow on from each other. The next chapter is planned once every topic of this one is content-final.
 2. Each other run claims the first topic of a planned chapter that no run is working on.
