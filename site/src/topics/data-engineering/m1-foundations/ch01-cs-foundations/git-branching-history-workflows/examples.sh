@@ -15,6 +15,8 @@ c() { git add -A; git commit -q -m "$1"; }
 
 cd "$W"; git init -q -b main repo; cd repo
 git config advice.detachedHead false
+# The Git that runs this script. examples.py asserts the keys that differ between versions per version.
+out git_version "$(git --version | awk '{print $3}')"
 
 # ---- Step "Merge or rebase": the same fork, integrated both ways ------------------------------------
 printf 'def clean(email):\n    return email.strip()\n' > clean.py; c 'add clean.py'
@@ -82,6 +84,9 @@ git log --reverse --format='pick %h %s' main..emails
 # The "editor" saves the todo list Git proposes, then drops the debug commit (what you'd do by hand).
 printf '#!/bin/sh\ncp "$1" "%s/todo"\nsed -i -e "/wip debug print/s/^pick/drop/" "$1"\n' "$W" > "$W/edit-todo.sh"; chmod +x "$W/edit-todo.sh"
 GIT_SEQUENCE_EDITOR="$W/edit-todo.sh" git rebase -q -i --autosquash main
+# [version] Git 2.43 writes "pick <id> <subject>"; Git 2.56 writes "pick <id> # <subject>" (the subject is a comment).
+# Printed as Git wrote it; examples.py accepts both and asserts the form per known version.
+if grep -Eq '^pick [0-9a-f]+ # ' "$W/todo"; then out todo_subject_comment yes; else out todo_subject_comment no; fi
 grep -v '^#' "$W/todo" | grep . | sed 's/^/todo| /'
 check "$(grep -v '^#' "$W/todo" | grep . | awk '{print $1}' | tr '\n' ' ')" 'pick fixup pick pick ' 'autosquash moved and re-labelled the fixup'
 out tidy_after "$(git rev-list --count main..emails)"
@@ -127,6 +132,16 @@ if git rebase -q up2 >/dev/null 2>&1; then echo 'expected a conflict' >&2; exit 
 printf 'u1-m1\nu2\n' > f.txt; git add f.txt; if GIT_EDITOR=: git rebase --continue >/dev/null 2>&1; then echo 'expected a 2nd conflict' >&2; exit 1; fi
 check "$(git show :2:f.txt | head -1)" 'u1-m1' 'ours at commit 2 = upstream + your replayed commit 1'
 git rebase --abort
+# Neighbouring lines conflict too: base a b c, one side changes line 1, the other line 2. Two lines apart merges cleanly.
+git switch -q -c adj-base main; printf 'a\nb\nc\nd\n' > adj.txt; c 'adj base'
+git switch -q -c adj-1 adj-base; printf 'A\nb\nc\nd\n' > adj.txt; c 'adj: line 1'
+git switch -q -c adj-2 adj-base; printf 'a\nB\nc\nd\n' > adj.txt; c 'adj: line 2'
+git switch -q -c adj-3 adj-base; printf 'a\nb\nC\nd\n' > adj.txt; c 'adj: line 3'
+git switch -q adj-1
+if git merge -q --no-edit adj-2 >/dev/null 2>&1; then echo 'expected a conflict' >&2; exit 1; fi
+out adjacent_conflict_stages "$(git ls-files -u adj.txt | awk '{print $3}' | tr '\n' ' ' | sed 's/ $//')"   # 1 2 3
+git merge --abort
+git merge -q --no-edit adj-3 >/dev/null 2>&1; out two_apart_merges_clean yes
 # rerere: record a resolution once, replay it next time
 git config rerere.enabled true
 git switch -q -c rr lower~1
@@ -201,6 +216,8 @@ git bisect start HEAD "$ROOT1" > "$W/start.txt"
 git bisect run python3 "$W/test_clean.py" > "$W/run.txt" 2>&1     # the command the reel shows
 out left "$(cat "$W/start.txt" "$W/run.txt" | sed -n 's/^Bisecting: \([0-9]*\) revisions\{0,1\} left.*/\1/p' | tr '\n' ' ' | sed 's/ $//')"
 out runs "$(grep -c '^running ' "$W/run.txt")"                       # one 'running' line per test
+# [version] "is the first bad commit" on 2.43, "is the first 'bad' commit" from 2.55 (hash dropped: it is the full 40 characters)
+out first_bad_line "$(grep ' is the first ' "$W/run.txt" | sed 's/^[0-9a-f]* //')"
 out first_bad "$(git log -1 --format='%h %s' refs/bisect/bad)"
 check "$(git log -1 --format=%s refs/bisect/bad)" 'clean: simplify normalisation' 'bisect found the planted commit'
 out first_bad_index "$(git rev-list --count refs/bisect/bad)"     # 731
@@ -223,12 +240,20 @@ out skip_adjacent "$(grep -c '^[0-9a-f]\{40\}$' "$W/b.txt")"      # candidates i
 # "bogus exit code %d for '%s' revision" (the term in quotes); the patterns below accept both.
 R=$(bis 'n=$(cat n); [ $n -lt 9 ] || exit 255'); grep -q 'exit code 255 .*>= 128' "$W/b.txt"; check "${R%% *}" 1 '255 aborts'
 R=$(bis 'n=$(cat n); [ $n -lt 9 ] || exit 128'); grep -q 'exit code 128 .*>= 128' "$W/b.txt"; [ "${R%% *}" != 0 ]   # aborts (git's own status here is not 1)
+# A crash by signal ends the test command with 128 plus the signal number (shell convention), which aborts too.
+R=$(bis 'n=$(cat n); [ $n -lt 9 ] || kill -SEGV $$'); grep -q 'exit code 139 .*>= 128' "$W/b.txt"; [ "${R%% *}" != 0 ]
 R=$(bis 'n=$(cat n); [ $n -lt 9 ] || exit 127'); out exit127 "${R#* }"   # 127 counts as bad when the good commit passes
 R=$(bis 'no_such_test_command'); grep -Eq "bogus exit code 127 for '?good'? revision" "$W/b.txt"; check "${R%% *}" 1 'missing command stops'
 R=$(bis 'exit 126'); grep -Eq "bogus exit code 126 for '?good'? revision" "$W/b.txt"   # same first-run check for 126
 # Statuses wrap modulo 256 ("chopped with & 0377"): exit 256 reads as 0 (good), exit(-1) as 255 (abort).
 set +e; sh -c 'exit 256'; E256=$?; python3 -c 'import sys; sys.exit(-1)'; EM1=$?; set -e
 check "$E256" 0 'exit 256 wraps to 0'; check "$EM1" 255 'exit(-1) shows as 255'
+# The pytest wrapper from the Deep dive: pytest exits 0 (passed) or 1 (tests failed); 2, 3, 4 and 5 (interrupted, internal
+# error, usage error, no tests collected) are not verdicts about the code, so the wrapper turns them into 125 (skip).
+wrap() { "$@"; local rc=$?; if [ "$rc" -le 1 ]; then return "$rc"; else return 125; fi; }
+V=""; for code in 0 1 2 3 4 5; do set +e; wrap sh -c "exit $code"; V="$V$? "; set -e; done
+check "$V" '0 1 125 125 125 125 ' 'the wrapper keeps 0 and 1 and skips everything else'
+out wrapper_verdicts "${V% }"
 # --first-parent: a merged branch introduced the bug; first-parent bisect blames the merge
 cd "$W"; git init -q -b main fp; cd fp; git config advice.detachedHead false
 echo ok > f; c m1; c2() { echo x > "f_$(printf %s "$1" | tr -c "a-z0-9" _)"; c "$1"; }
@@ -239,14 +264,31 @@ fb() { git bisect start "$@" HEAD "$G" >/dev/null; git bisect run sh -c '! grep 
 check "$(fb)" 'side: bug' 'plain bisect walks into the branch'
 check "$(fb --first-parent)" 'Merge side' '--first-parent blames the merge'
 
-# ---- Deep dive: reflog expiry defaults (90 days, 30 for entries no longer reachable) --------------------
+# ---- Deep dive: merge-base moves when the target is merged into the branch ---------------------------
+cd "$W"; git init -q -b main mb; cd mb; git config advice.detachedHead false
+echo 1 > f; c m1; git switch -q -c feat; echo 2 > g; c f1; FORK=$(short main)
+git switch -q main; echo 3 > h; c m2; git switch -q feat
+check "$(short "$(git merge-base main feat)")" "$FORK" 'before: the fork point'
+git merge -q --no-edit main >/dev/null; check "$(git merge-base main feat)" "$(git rev-parse main)" 'after merging main in: its tip'
+out merge_base_moves yes
+
+# ---- Deep dive: reflog expiry (docs: 90 days for reachable entries, 30 for unreachable ones) ---------------------
+# Pinned with -c so the numbers do not depend on the Git version: the v2.56.0 source has the two defaults the other way
+# round (see reflog_default_*, printed below and asserted per version in examples.py).
 for d in 29 31 89 91; do
   cd "$W"; rm -rf r; git init -q -b main r; cd r
   T=$(date -u -d "-$d days" +%Y-%m-%dT%H:%M:%SZ)
   GIT_COMMITTER_DATE=$T git commit -q --allow-empty -m a; A=$(git rev-parse HEAD)
-  GIT_COMMITTER_DATE=$T git commit -q --allow-empty -m lost
+  GIT_COMMITTER_DATE=$T git commit -q --allow-empty -m lost; LOST=$(git rev-parse HEAD)
   GIT_COMMITTER_DATE=$T git reset -q --hard "$A"     # 'lost' is now only in the reflog
-  git reflog expire --all
+  git -c gc.reflogExpire=90.days -c gc.reflogExpireUnreachable=30.days reflog expire --all
   out "reflog_$d" "$(git reflog main | wc -l | tr -d ' ')"
+  # The entries are gone at 91 days, but the commit object is not: it stays until gc prunes it (default grace: 2 weeks).
+  git cat-file -e "$LOST"; [ "$d" -ne 91 ] || { out lost_commit_after_expire exists; out lost_commit_dangling "$(git fsck --lost-found 2>/dev/null | grep -c '^dangling commit')"; }
 done
+# What a plain `git reflog expire --all` does with no configuration: a commit 45 days old, still reachable from the tip.
+cd "$W"; rm -rf r; git init -q -b main r; cd r
+GIT_COMMITTER_DATE=$(date -u -d '-45 days' +%Y-%m-%dT%H:%M:%SZ) git commit -q --allow-empty -m old; GIT_COMMITTER_DATE=$(date -u +%Y-%m-%dT%H:%M:%SZ) git commit -q --allow-empty -m new
+git reflog expire --all
+out reflog_default_45 "$(git reflog main | wc -l | tr -d ' ')"   # 2 if reachable entries last 90 days (documented), 1 if 30
 echo "all Git examples pass on $(git --version)"

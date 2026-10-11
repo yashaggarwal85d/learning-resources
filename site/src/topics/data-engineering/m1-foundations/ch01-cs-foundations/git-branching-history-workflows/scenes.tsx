@@ -96,13 +96,15 @@ export function MergeOrRebase({ t, answer }: StepCtx) {
 }
 
 // 3 · Clean up before you push: the todo list is the interface.
-const TODO_COMMITTED = ['pick  5f14405 add email check', 'pick  3d6cce4 wip debug print', 'pick  84e21ce fixup! add email check', 'pick  dad1c0d test email check'];
-const TODO_PROPOSED = ['pick  5f14405 add email check', 'fixup 84e21ce fixup! add email check', 'pick  3d6cce4 wip debug print', 'pick  dad1c0d test email check'];
-const TODO_DROPPED = ['pick  5f14405 add email check', 'fixup 84e21ce fixup! add email check', 'drop  3d6cce4 wip debug print', 'pick  dad1c0d test email check'];
+// The todo as Git 2.56 writes it (the subject is a comment after the ID; Git 2.43 omits the '#'). examples.py asserts both.
+const TODO_CMD = '$ git rebase -i --autosquash main';
+const TODO_COMMITTED = ['pick  5f14405 # add email check', 'pick  3d6cce4 # wip debug print', 'pick  84e21ce # fixup! add email check', 'pick  dad1c0d # test email check'];
+const TODO_PROPOSED = ['pick  5f14405 # add email check', 'fixup 84e21ce # fixup! add email check', 'pick  3d6cce4 # wip debug print', 'pick  dad1c0d # test email check'];
+const TODO_DROPPED = ['pick  5f14405 # add email check', 'fixup 84e21ce # fixup! add email check', 'drop  3d6cce4 # wip debug print', 'pick  dad1c0d # test email check'];
 export function Tidy({ t }: StepCtx) {
   const lines = t < 1.0 ? TODO_COMMITTED : t < 1.9 ? TODO_PROPOSED : TODO_DROPPED;
-  const title = t < 1.0 ? 'as committed' : 'the todo Git proposes';
-  const hl = t < 1.0 ? [] : t < 1.9 ? [1] : [2];
+  const title = t < 1.0 ? 'as committed' : t < 1.9 ? 'the todo Git proposes' : 'after your edit';
+  const hl = t < 1.0 ? [] : t < 1.9 ? [2] : [3]; // line 0 is the command
   const k = easeInOut(seg(t, 2.5, 3.2)); // 0 = four dots, 1 = two
   const ghost = easeOut(seg(t, 3.5, 4.0));
   // Dots: first (5f14405), wip (3d6cce4), fixup (84e21ce), last (dad1c0d).
@@ -112,7 +114,7 @@ export function Tidy({ t }: StepCtx) {
   const xLast = lerp(450, 285, k);
   return (
     <Stack>
-      <Code title={title} t={t} end={0.9} lines={lines} highlight={hl} />
+      <Code title={title} t={t} end={0.9} lines={[TODO_CMD, ...lines]} highlight={hl} />
       <Svg fill label="Four commits become two: the fixup folds into its target and the debug commit is dropped; the old four stay in the reflog" h={210}>
         <Edge x1={xFirst} y1={46} x2={xLast} y2={46} o={0.6} />
         <Commit x={xWip} y={46} o={1 - k} id="3d6cce4" />
@@ -130,6 +132,7 @@ export function Tidy({ t }: StepCtx) {
         <T x={536} y={52} s={24} a="end" f={C.caramel} serif w={700} o={clamp((k - 0.5) * 2)}>4 → 2</T>
         <g opacity={ghost}>
           <T x={30} y={156} s={14} f={C.taupe}>emails@{'{1}'}</T>
+          <T x={30} y={192} s={13} f={C.taupe}>branch emails, one reflog entry back</T>
           {[0, 1, 2, 3].map((i) => <circle key={i} cx={196 + i * 30} cy={152} r={7} fill="none" stroke={C.taupe} strokeWidth={2} strokeDasharray="3 3" />)}
           <T x={330} y={157} s={13} f={C.taupe}>the 4 old commits</T>
         </g>
@@ -263,7 +266,7 @@ export function ExitCodes({ t }: StepCtx) {
   const markers: [number, number][] = [[0, 1.6], [1, 2.2], [125, 2.8], [255, 3.4]];
   return (
     <Stack>
-      <Code title="the oracle is the test" t={t} end={0.7} lines={['$ git bisect run python3 ~/test_clean.py', '784d178… is the first bad commit']} />
+      <Code title="the oracle is the test (Git 2.56 wording)" t={t} end={0.7} lines={['$ git bisect run python3 ~/test_clean.py', "784d178… is the first 'bad' commit"]} />
       <Svg fill label="Exit codes as a number line: 0 is good, 1 to 127 bad except 125 which skips, 128 to 255 stops the run" h={200}>
         <g opacity={draw}>
           <rect x={30} y={84} width={22} height={34} rx={6} fill={C.crema} />
@@ -322,6 +325,7 @@ export function Landing({ t, answer }: StepCtx) {
           {[80, 180].map((x) => <Commit key={x} x={x} y={l3.y0 + 80} r={8} />)}
           {[300, 380, 460].map((x) => <Commit key={x} x={x} y={l3.y0 + 80} kind="new" r={9} />)}
         </g>
+        <T x={30} y={358} s={14} f={C.caramel} o={clamp(easeOut(seg(t, 1.2, 1.6)))}>then +1 commit on the same branch: next PR lists?</T>
       </Svg>
     );
   }
@@ -363,7 +367,7 @@ export function Trunk({ t }: StepCtx) {
           </g>
         );
       })}
-      <T x={30} y={156} s={13} f={C.latte}>short-lived PR branches: review + CI, then merge</T>
+      <T x={30} y={156} s={13} f={C.latte}>short-lived PR branches: review + checks, then merge</T>
 
       <T x={30} y={222} s={15} f={C.crema} w={600}>long-lived branch</T>
       <line x1={30} y1={262} x2={536} y2={262} stroke={C.crema} strokeWidth={4} strokeLinecap="round" />
@@ -394,7 +398,7 @@ const RECAP = [
   ['bisect', '1,000 commits in 10 tests'],
   ['bisect run', '0 good, 1–127 bad, 125 skip'],
   ['Squash', 'one commit; then retire the branch'],
-  ['Trunk', 'short-lived branches, merged at least daily'],
+  ['Trunk', 'integrate daily; branches last days'],
 ];
 export function Recap({ t }: StepCtx) {
   return (

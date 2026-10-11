@@ -15,7 +15,7 @@
     },
     {
       "lines": [
-        "Two ways to bring a branch in.",
+        "Our repo is a small data cleaning script, and this branch adds deduplication. Two ways to bring it in.",
         "A merge keeps both lines, and ties them together with a commit that has two parents. History, as it happened.",
         "A rebase replays your commits on top of the target. One straight line, as if the work happened in order.",
         {
@@ -25,14 +25,14 @@
       ],
       "answer": [
         "Three new commits, with new IDs.",
-        "Rebase replays each change onto main. And a commit's ID covers its parent and its files... so every replayed commit gets a new one.",
+        "Rebase replays each change onto main. And a commit's ID covers its parent, its files, who made it and when, and its message... so every replayed commit gets a new one.",
         "The originals stay in the ref-log. A merge would have kept them, and added a commit with two parents.",
         "But look at the end. Both ways finish with the very same files."
       ]
     },
     {
       "lines": [
-        "Before you push, rewrite freely.",
+        "Before you push this branch, rewrite freely.",
         "An interactive rebase lets you reorder, reword, squash, fixup and drop commits.",
         "Commit a fix with the fixup option... and autosquash moves it right under its target.",
         "Here, four commits become two.",
@@ -40,12 +40,12 @@
           "beat": 0.4
         },
         "One rule. Never rewrite what others have already pulled.",
-        "And if you do slip... the old branch is one ref-log entry back."
+        "And any rewrite of your own is undoable. The old branch is one ref-log entry back."
       ]
     },
     {
       "lines": [
-        "When both sides change the same lines, Git stops, and keeps three versions.",
+        "When both sides change the same lines, or neighbouring ones, Git stops, and keeps three versions.",
         "The common ancestor. Yours. And theirs.",
         "Set the conflict style to z-diff-three, and the file shows the ancestor too... so you can see what each side actually changed.",
         "Edit the file, add it, then continue. Or abort, to back out.",
@@ -67,7 +67,7 @@
       ],
       "answer": [
         "About ten.",
-        "Each test halves the suspects. A thousand commits need about ten tests.",
+        "Each test halves the suspects. A thousand commits need about ten tests, because ten halvings take about a thousand down to one.",
         "Checking them one by one could take nearly a thousand.",
         "That's the power of halving."
       ]
@@ -75,8 +75,8 @@
     {
       "lines": [
         "Better still... let Git run the tests for you.",
-        "Give bisect run a command, and it reads just one thing back: the exit code.",
-        "Zero means good. One to one hundred twenty-seven means bad... except one hundred twenty-five, which means, skip this one, I can't test it.",
+        "Give bisect run a command, and it reads just one thing back: the exit code. That is the number every command ends with, and zero means it worked.",
+        "So zero means good. One to one hundred twenty-seven means bad... except one hundred twenty-five, which means, skip this one, I can't test it.",
         "Anything else stops the whole run.",
         {
           "beat": 0.4
@@ -86,14 +86,14 @@
     },
     {
       "lines": [
-        "A pull request asks for review, and checks, before a branch lands.",
+        "A pull request asks for review, and automated build and test checks, before a branch lands.",
         "GitHub can land it three ways.",
         "A merge commit keeps every commit. Squash makes one commit. And rebase and merge replays them as new commits in a line.",
         "Squash suits short-lived branches.",
         {
           "beat": 0.4
         },
-        "So what happens if you keep using the branch after a squash?"
+        "Say you squash a three commit pull request, then add one more commit to the same branch and open a new pull request. How many commits does it list?"
       ],
       "answer": [
         "The next pull request shows four commits.",
@@ -106,11 +106,11 @@
       "lines": [
         "Branch length is the risk.",
         "In trunk-based development, everyone merges into one trunk, at least daily, through short-lived branches that exist for review and checks.",
-        "Bigger changes still land in small steps, behind feature flags.",
+        "Bigger changes still land in small steps, with feature flags and branch by abstraction.",
         {
           "beat": 0.4
         },
-        "A long-lived branch drifts. The longer it lives, the bigger the merge... and the same conflicts keep coming back."
+        "A long-lived branch drifts. The longer it lives, the bigger the final merge... and keeping it in step means resolving the same conflicts again."
       ]
     },
     {

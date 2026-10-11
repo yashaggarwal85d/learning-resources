@@ -613,12 +613,14 @@ Version: tag v2.56.0, fetched 2026-10-11 (added by the fact-check; v2.43.0 fetch
 
 > strbuf_addf(out, "%s %s ", insn,
 
+> format = xstrdup("# %s");
+
 > if (item->command == TODO_FIXUP) {
 
 > warning(_("skipped previously applied commit %s"),
 
 Contents:
-- `make_script` writes "<command> <id> <subject>"; `todo_list_to_strbuf` writes "fixup [-C|-c] <id> <subject>". Same in 2.43.0, so the step-3 todo lines are what current Git shows too.
+- `make_script` writes "<command> <id> <subject>"; `todo_list_to_strbuf` writes "fixup [-C|-c] <id> <subject>". The subject itself comes from the todo format below: plain `%s` at v2.43.0, a comment (`# %s`) at v2.56.0 (corrected after the content review: the executed run on 2.56.0 shows `pick 5f14405 # add email check`).
 
 ## Git 2.44 release notes
 URL: https://raw.githubusercontent.com/git/git/v2.44.0/Documentation/RelNotes/2.44.0.txt
@@ -841,3 +843,243 @@ URL: https://git-scm.com/docs/git-merge-base
 Version: current docs as fetched 2026-10-11
 
 > but also takes into account the reflog of <ref> to see if the history leading to <commit> forked from an earlier incarnation of the branch <ref>
+
+## Git source: sequencer.c at v2.43.0 (todo format)
+URL: https://raw.githubusercontent.com/git/git/v2.43.0/sequencer.c
+Version: tag v2.43.0, fetched 2026-10-11 (added in the content-review fixes)
+
+> format = xstrdup("%s");
+
+Contents:
+- The default `rebase.instructionFormat` is the bare subject at v2.43.0; at v2.56.0 it is `# %s`, so an interactive rebase's todo list shows `pick <id> # <subject>` there.
+
+## Git source: reflog.h at v2.56.0 (reflog expiry defaults)
+URL: https://raw.githubusercontent.com/git/git/v2.56.0/reflog.h
+Version: tag v2.56.0, fetched 2026-10-11 (added in the content-review fixes). Executed on a Git 2.56.0 built from the release tarball: a reachable entry 45 days old is pruned by a plain `git reflog expire --all`.
+
+> .default_expire_total = now - 30 * 24 * 3600, \
+> .default_expire_unreachable = now - 90 * 24 * 3600, \
+
+Contents:
+- `REFLOG_EXPIRE_OPTIONS_INIT`: the default for entries in general (`expire_total`, documented as 90 days) is 30 days, and the default for unreachable ones (documented as 30 days) is 90 days: the two are the other way round from git-gc's documentation. The examples therefore set both explicitly.
+
+## Git source: builtin/reflog.c at v2.43.0 (reflog expiry defaults)
+URL: https://raw.githubusercontent.com/git/git/v2.43.0/builtin/reflog.c
+Version: tag v2.43.0, fetched 2026-10-11 (added in the content-review fixes)
+
+> default_reflog_expire_unreachable = now - 30 * 24 * 3600;
+> default_reflog_expire = now - 90 * 24 * 3600;
+
+Contents:
+- At v2.43.0 the defaults match the documentation: 30 days for unreachable entries, 90 days for the rest.
+
+## Git - git-gc Documentation (reflog expiry and pruning)
+URL: https://git-scm.com/docs/git-gc
+Version: current docs as fetched 2026-10-11 (added in the content-review fixes)
+
+> git reflog expire removes reflog entries older than this time; defaults to 90 days.
+
+> git reflog expire removes reflog entries older than this time and are not reachable from the current tip; defaults to 30 days.
+
+> When git gc is run, it will call prune --expire 2.weeks.ago
+
+Contents:
+- `gc.reflogExpire` (90 days), `gc.reflogExpireUnreachable` (30 days), `gc.pruneExpire` (unreachable loose objects older than two weeks are pruned by `git gc`).
+
+## Git - git-history Documentation
+URL: https://git-scm.com/docs/git-history
+Version: current docs as fetched 2026-10-11 (experimental; new in Git 2.55, see the release notes)
+
+> THIS COMMAND IS EXPERIMENTAL. THE BEHAVIOR MAY CHANGE.
+
+> Remove the specified commit from the history. All descendants of the commit are replayed directly onto its parent.
+
+> This command does not (yet) work with histories that contain merges.
+
+> the command does not support operations that can result in merge conflicts.
+
+Contents:
+- Subcommands `drop`, `fixup`, `reword` and `split`; limitations (no merges, no conflicts, no hooks).
+
+## Git - git-replay Documentation
+URL: https://git-scm.com/docs/git-replay
+Version: current docs as fetched 2026-10-11 (experimental)
+
+> (EXPERIMENTAL!) git replay
+
+> In this mode, each replayed commit is stacked on top of the previously replayed one, so all replayed commits are flattened into a single linear history.
+
+> (This matches the behavior of git-rebase(1)'s --no-rebase-merges option.)
+
+Contents:
+- `--linearize`, new in Git 2.56 (release notes).
+
+## Git - git-add Documentation (--resolved)
+URL: https://git-scm.com/docs/git-add
+Version: current docs as fetched 2026-10-11
+
+> Update the index for unmerged paths matching <pathspec> where no conflict markers remain in the working tree.
+
+> while any path with leftover conflict markers causes the command to refuse to stage any files.
+
+Contents:
+- `--resolved`, new in Git 2.56 (release notes).
+
+## Git - git-branch Documentation (--delete-merged)
+URL: https://git-scm.com/docs/git-branch
+Version: current docs as fetched 2026-10-11
+
+> Delete local branches whose configured upstream matches <pattern>, but only when their tip is reachable from that upstream.
+
+> A branch whose work has not yet been merged into its upstream is silently skipped.
+
+Contents:
+- `--delete-merged`, new in Git 2.56 (release notes). A squash-merged branch's tip is not reachable from the upstream, so it is skipped.
+
+## Git 2.55 and 2.56 release notes (frontier scan)
+URL: https://raw.githubusercontent.com/git/git/v2.56.0/Documentation/RelNotes/2.56.0.adoc
+Version: Git v2.56.0 (2026-09-28), re-read for the content review: the history-editing and conflict items
+
+> * 'git add' has been taught a new '--resolved' option to stage conflict-resolved paths, while leaving unrelated local changes unstaged. It scans the unmerged paths for leftover conflict markers and aborts if any are found.
+
+> * The 'git branch' command has been taught the '--delete-merged' option to remove local branches that are already merged into their tracked remote-tracking branches.
+
+> * The 'git replay' command has been taught the '--linearize' option to drop merge commits and linearize the replayed history, mimicking 'git rebase --no-rebase-merges'.
+
+Contents:
+- The 2.55 note ("git history" learned "fixup" command) and the 2.56 note (`git history drop`) are quoted above. The scan for the frontier section covered these two release notes; the other items in them are not about branching, history or conflicts.
+
+## Git - git-rebase Documentation (defaults and dates)
+URL: https://git-scm.com/docs/git-rebase
+Version: git-rebase last updated in 2.54.0; current docs as fetched 2026-10-11
+
+> Use reflog to find a better common ancestor between <upstream> and <branch> when calculating which commits have been introduced by <branch>.
+
+> If <upstream> or --keep-base is given on the command line, then the default is --no-fork-point, otherwise the default is --fork-point.
+
+> See also rebase.forkpoint in git-config[1].
+
+> allow it to also update the index with the result of resolution. --no-rerere-autoupdate is a good way to double-check what git-rerere[1] did and catch potential mismerges
+
+> Instead of using the current time as the committer date, use the author date of the commit being rebased as the committer date. This option implies --force-rebase.
+
+> Instead of using the author date of the original commit, use the current time as the author date of the rebased commit. This option implies --force-rebase.
+
+> If the commits had different authors, the folded commit will be attributed to the author of the first commit.
+
+## Git - git-merge Documentation (conflict styles and conflicting areas)
+URL: https://git-scm.com/docs/git-merge
+Version: git-merge last updated in 2.54.0; current docs as fetched 2026-10-11
+
+> Another alternate style, "zdiff3", is similar to diff3 but removes matching lines on the two sides from the conflict region when those matching lines appear near either the beginning or end of a conflict region.
+
+> When both sides made changes to the same area, however, Git cannot randomly pick one side over the other, and asks you to resolve it by leaving what both sides did to that area.
+
+## Git - git-pull Documentation (default)
+URL: https://git-scm.com/docs/git-pull
+Version: current docs as fetched 2026-10-11
+
+> git pull --ff-only will only do "fast-forward" updates: it fails if your local branch has diverged from the remote branch. This is the default.
+
+> Only update to the new history if there is no divergent local history. This is the default when no method for reconciling divergent histories is provided (via the --rebase flags).
+
+## Git - git-rerere Documentation (test merges and rebases)
+URL: https://git-scm.com/docs/git-rerere
+Version: git-rerere last updated in 2.54.0; current docs as fetched 2026-10-11
+
+> When your topic branch is long-lived, however, your topic branch would end up having many such "Merge from master" commits on it, which would unnecessarily clutter the development history.
+
+> However, this conflict is often the same conflict you resolved when you created the test merge you blew away.
+
+> This would result in falling back to a three-way merge, and it would conflict the same way as the test merge you resolved earlier.
+
+## Git - git-revert Documentation (reverting a merge)
+URL: https://git-scm.com/docs/git-revert
+Version: current docs as fetched 2026-10-11
+
+> git revert [--[no-]edit] [-n] [-m <parent-number>] [-s] [-S[<keyid>]] <commit>
+
+> Given one or more existing commits, revert the changes that the related patches introduce, and record some new commits that record them.
+
+## Revert a faulty merge (Git How-To)
+URL: https://raw.githubusercontent.com/git/git/v2.56.0/Documentation/howto/revert-a-faulty-merge.adoc
+Version: Git v2.56.0 source tree (Documentation/howto), fetched 2026-10-11 (added in the content-review fixes)
+
+> where Y is the revert of W. Such a "revert of the revert" can be done with:
+
+> now need to do it by reverting the revert.
+
+## Git - git-cherry-pick Documentation (-x)
+URL: https://git-scm.com/docs/git-cherry-pick
+Version: current docs as fetched 2026-10-11
+
+> If on the other hand you are cherry-picking between two publicly visible branches (e.g. backporting a fix to a maintenance branch for an older release from a development branch), adding this information can be useful.
+
+## Trunk Based Development - Branch for release (fix on the trunk first)
+URL: https://trunkbaseddevelopment.com/branch-for-release/
+Version: as fetched 2026-10-11 (added in the content-review fixes)
+
+> The best practice for Trunk-Based Development teams is to reproduce the bug on the trunk, fix it there with a test, watch that be verified by the CI server, then cherry-pick that to the release branch
+
+> You should not fix bugs on the release branch in the expectation of cherry-picking them back to the trunk.
+
+## Trunk Based Development - Alternative branching models (GitHub flow)
+URL: https://trunkbaseddevelopment.com/alternative-branching-models/
+Version: as fetched 2026-10-11 (added in the content-review fixes)
+
+> This is very close to PR-centric Trunk-Based Development.
+
+> The crucial difference is where the release is performed from.
+
+> One problem with this is the small risk of regression in the following release - that would be if the release goes out, but the branch is never merged back.
+
+## About protected branches - GitHub Docs (reviews and rulesets)
+URL: https://docs.github.com/en/repositories/configuring-branches-and-merges-in-your-repository/managing-protected-branches/about-protected-branches
+Version: as fetched 2026-10-11 (added in the content-review fixes)
+
+> Only a single branch protection rule can apply at a time, which means it can be difficult to know which rule will apply when multiple versions of a rule target the same branch. This restriction does not apply to rulesets
+
+> can require that all pull requests receive a specific number of approving reviews before someone merges the pull request into a protected branch. You can require approving reviews from people with write permissions in the repository or from a designated code owner.
+
+## pytest - Exit codes
+URL: https://docs.pytest.org/en/stable/reference/exit-codes.html
+Version: pytest stable docs as fetched 2026-10-11 (added in the content-review fixes)
+
+> Exit code 0: All tests were collected and passed successfully
+
+> Exit code 1: Tests were collected and run but some of the tests failed
+
+> Exit code 2: Test execution was interrupted by the user
+
+> Exit code 3: Internal error happened while executing tests
+
+> Exit code 4: pytest command line usage error
+
+> Exit code 5: No tests were collected
+
+## Python - The assert statement
+URL: https://docs.python.org/3/reference/simple_stmts.html
+Version: Python 3.15 documentation as fetched 2026-10-11 (added in the content-review fixes)
+
+> The simple form, assert expression, is equivalent to if __debug__: if not expression: raise AssertionError
+
+> The current code generator emits no code for an assert statement when optimization is requested at compile time.
+
+## Git source: builtin/bisect.c at v2.56.0 (first-run check only)
+URL: https://raw.githubusercontent.com/git/git/v2.56.0/builtin/bisect.c
+Version: tag v2.56.0, fetched 2026-10-11 (added in the content-review fixes)
+
+> int is_first_run = 1;
+
+> if (is_first_run && (res == 126 || res == 127)) {
+
+> is_first_run = 0;
+
+Contents:
+- The 126/127 re-check on the good commit runs once, on the first test; later runs map 126 and 127 straight to bad.
+
+## Git - git-merge-base Documentation (a merge base is a best common ancestor)
+URL: https://git-scm.com/docs/git-merge-base
+Version: current docs as fetched 2026-10-11 (added in the content-review fixes)
+
+> git merge-base finds the best common ancestor(s) between two commits to use in a three-way merge.

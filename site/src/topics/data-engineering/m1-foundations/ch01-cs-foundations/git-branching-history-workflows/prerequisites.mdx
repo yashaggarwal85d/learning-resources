@@ -36,11 +36,12 @@ Every step of the reel is a picture of the commit graph: dots for commits, lines
 
 ### <span class="n">03</span> A script that fails with a test
 
-The bisect steps use a tiny Python test: an <code>assert</code> that fails when the code is wrong, which makes the script stop with a non-zero exit code. If functions and <code>assert</code> are familiar from the Python refresher, that is all you need.
+The bisect steps use a tiny Python test: an <code>assert</code> that fails when the code is wrong, which makes the script stop with a non-zero exit code. Functions are covered by the Python refresher; <code>assert</code> is not: <code>assert condition</code> is shorthand for <code>if not condition: raise AssertionError</code>, and an uncaught exception ends the script with a non-zero exit status. The reading below is all you need for it.
 
 <p class="check"><b>Check yourself:</b> what happens when an <code>assert</code> fails in a script? (Answer: it raises <code>AssertionError</code> and the script exits with a non-zero status, so a shell or a tool like <code>git bisect run</code> sees a failure.)</p>
 
 <ul class="resources">
+  <Resource kind="reading" title="The assert statement" href="https://docs.python.org/3/reference/simple_stmts.html#the-assert-statement" by="The Python Language Reference">What <code>assert</code> is equivalent to, and that <code>-O</code> removes it.</Resource>
   <Resource kind="reel" title="Python language essentials" domain="data-engineering" host="de.git-branching-history-workflows" by="the refresher before this one" />
 </ul>
 
