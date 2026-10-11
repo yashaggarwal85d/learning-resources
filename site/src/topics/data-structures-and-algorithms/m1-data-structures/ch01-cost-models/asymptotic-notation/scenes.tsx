@@ -67,9 +67,13 @@ export function Sandwich({ t }: StepCtx) {
       <path d={path((n) => 4 * n * n)} stroke={C.latte} strokeWidth={2} fill="none" strokeDasharray="6 5" />
       <path d={path((n) => 3 * n * n)} stroke={C.latte} strokeWidth={2} fill="none" strokeDasharray="6 5" />
       <path d={path(f)} stroke={C.caramel} strokeWidth={3.5} fill="none" strokeDasharray="900" strokeDashoffset={900 * (1 - clamp(sweep / N))} />
-      <T x={px(N) - 4} y={py(4 * N * N) + 16} s={13} f={C.latte} a="end">4n²  (c₂ = 4)</T>
-      <T x={px(N) - 4} y={py(3 * N * N) + 38} s={13} f={C.latte} a="end">3n²  (c₁ = 3)</T>
-      <T x={px(N) - 4} y={py(f(N)) - 8} s={13} f={C.caramel} a="end" w={700}>3n² + 10n</T>
+      {/* legend in the empty top-left: the three curves end too close together to label at their tips */}
+      <line x1={70} y1={68} x2={100} y2={68} stroke={C.latte} strokeWidth={2} strokeDasharray="6 5" />
+      <T x={110} y={73} s={13} f={C.latte}>4n²  (c₂ = 4)</T>
+      <line x1={70} y1={94} x2={100} y2={94} stroke={C.caramel} strokeWidth={3.5} />
+      <T x={110} y={99} s={13} f={C.caramel} w={700}>3n² + 10n</T>
+      <line x1={70} y1={120} x2={100} y2={120} stroke={C.latte} strokeWidth={2} strokeDasharray="6 5" />
+      <T x={110} y={125} s={13} f={C.latte}>3n²  (c₁ = 3)</T>
       <line x1={px(n0)} y1={Y0} x2={px(n0)} y2={Y0 - H} stroke={C.cinnamon} strokeDasharray="3 5" opacity={ok ? 1 : 0.35} />
       <T x={px(n0)} y={Y0 + 22} s={14} f={ok ? C.caramel : C.taupe} a="middle" w={700}>n₀ = 10</T>
       <T x={X0} y={Y0 + 22} s={13} f={C.taupe}>n</T>
@@ -124,7 +128,7 @@ export function Ratios({ t }: StepCtx) {
             <T x={550} y={y + 34} s={30} f={C.caramel} a="end" serif w={800}>{sym}</T>
             {ns.map((n, j) => {
               const v = g(n);
-              return <T key={n} x={50 + j * 112} y={y + 60} s={14} f={C.latte}>{v < 1000 ? v.toFixed(v < 1 ? 4 : 2) : v.toExponential(1)}</T>;
+              return <T key={n} x={50 + j * 112} y={y + 60} s={14} f={C.latte}>{v < 0.001 || v >= 1000 ? v.toExponential(1) : v.toFixed(v < 1 ? 4 : 2)}</T>;
             })}
             <T x={50} y={y + 82} s={13} f={C.caramel}>{verdict}</T>
           </g>
@@ -138,8 +142,8 @@ export function Ratios({ t }: StepCtx) {
 export function CaseGrid({ t }: StepCtx) {
   const rows: [string, number, string, string][] = [
     ['best  (sorted)', 7, 'n − 1', 'Θ(n)'],
-    ['average (random)', 19.3, 'n²/4 + n − Hₙ', 'Θ(n²)'],
-    ['worst (reversed)', 28, 'n(n − 1)/2', 'Θ(n²)'],
+    ['average (random)', 19.3, 'n(n−1)/4+n−Hₙ', 'Θ(n²)'],
+    ['worst (reversed)', 28, 'n(n−1)/2', 'Θ(n²)'],
   ];
   return (
     <Svg label="Insertion sort on 8 items: 7 comparisons best case, about 19.3 on average, 28 worst case" h={380}>
@@ -157,7 +161,7 @@ export function CaseGrid({ t }: StepCtx) {
           </g>
         );
       })}
-      <T x={30} y={350} s={13} f={C.latte} o={easeOut(seg(t, 3, 3.6))}>each row is its own function of n, and has its own O, Ω and Θ</T>
+      <T x={30} y={350} s={13} f={C.latte} o={easeOut(seg(t, 3, 3.6))}>each row is its own function, with its own O, Ω, Θ</T>
     </Svg>
   );
 }
@@ -175,7 +179,7 @@ export function PivotChoice({ t, answer }: StepCtx) {
       <T x={30} y={184} s={15} f={C.crema} w={600}>random pivot, every run</T>
       <Bar x={30} y={196} w={shown ? (540 * 10986) / 499500 * easeOut(seg(t, 0.2, 1.2)) : 0} h={34} full={540} fill={C.caramel} />
       {shown ? <T x={30 + (540 * 10986) / 499500 + 12} y={219} s={15} f={C.crema} w={700}>10,986 expected</T> : <T x={30} y={219} s={15} f={C.taupe}>?</T>}
-      <T x={30} y={290} s={13} f={C.latte}>the coin flips are the algorithm's; no input can be unlucky for them</T>
+      <T x={30} y={290} s={13} f={C.latte}>the coins are the algorithm's: no input is bad, only an unlucky run</T>
     </Svg>
   );
 }
@@ -199,7 +203,7 @@ export function Spread({ t }: StepCtx) {
         );
       })}
       <T x={40} y={334} s={14} f={C.crema} w={600} o={easeOut(seg(t, 2.2, 2.8))}>mean 10,991 · fastest 9,449 · slowest 15,583</T>
-      <T x={40} y={358} s={13} f={C.latte} o={easeOut(seg(t, 2.8, 3.4))}>the tail thins fast: that is what “with high probability” promises</T>
+      <T x={40} y={358} s={13} f={C.latte} o={easeOut(seg(t, 2.8, 3.4))}>a thin tail here; only a w.h.p. bound promises one</T>
     </Svg>
   );
 }
@@ -209,27 +213,27 @@ export function TimeSpace({ t }: StepCtx) {
   const rows: [string, string, string, string][] = [
     ['compare every pair', '499,500', '0', 'time n²'],
     ['heapsort in place, scan', '17,830', '0', 'time n log n'],
-    ['hash set', '1,000', '1,000', 'time n'],
+    ['hash set', '1,000', '1,000', 'expected time n'],
   ];
   return (
     <Svg label="Finding a duplicate among 1000 distinct numbers: pairs 499,500 comparisons and no extra storage; heapsort 17,830 and none; hash set 1,000 lookups and 1,000 stored values" h={380}>
       <T x={30} y={34} s={13} f={C.taupe}>1,000 DISTINCT NUMBERS: NO DUPLICATE (WORST CASE)</T>
-      <T x={330} y={64} s={12} f={C.taupe} a="end">STEPS</T>
-      <T x={450} y={64} s={12} f={C.taupe} a="end">EXTRA VALUES</T>
+      <T x={420} y={64} s={12} f={C.taupe} a="end">STEPS</T>
+      <T x={550} y={64} s={12} f={C.taupe} a="end">EXTRA VALUES</T>
       {rows.map(([lab, steps, extra, th], i) => {
         const a = easeOut(seg(t, 0.2 + i * 0.7, 0.9 + i * 0.7));
-        const y = 76 + i * 96;
+        const y = 74 + i * 92;
         return (
           <g key={lab} opacity={a} transform={`translate(${(1 - a) * 24} 0)`}>
             <rect x={30} y={y} width={540} height={82} rx={16} fill={C.roast} stroke={C.mocha} />
-            <T x={50} y={y + 32} s={16} f={C.crema} w={600}>{lab}</T>
+            <T x={50} y={y + 30} s={15} f={C.crema} w={600}>{lab}</T>
             <T x={50} y={y + 62} s={13} f={C.caramel}>{th}</T>
-            <T x={330} y={y + 48} s={20} f={C.crema} a="end" w={700}>{steps}</T>
-            <T x={450} y={y + 48} s={20} f={extra === '0' ? C.caramel : C.cherry} a="end" w={700}>{extra}</T>
+            <T x={420} y={y + 60} s={20} f={C.crema} a="end" w={700}>{steps}</T>
+            <T x={550} y={y + 60} s={20} f={extra === '0' ? C.caramel : C.cherry} a="end" w={700}>{extra}</T>
           </g>
         );
       })}
-      <T x={30} y={366} s={13} f={C.latte} o={easeOut(seg(t, 3, 3.6))}>time bought with space; name both resources and what you count</T>
+      <T x={30} y={368} s={13} f={C.latte} o={easeOut(seg(t, 3, 3.6))}>time bought with space: name both resources</T>
     </Svg>
   );
 }
@@ -256,7 +260,7 @@ export function Crossover({ t }: StepCtx) {
       <T x={px(118)} y={py(13924) + 22} s={14} f={C.cherry} w={700} a="start">n²</T>
       <line x1={px(100)} y1={Y0} x2={px(100)} y2={Y0 - H} stroke={C.cinnamon} strokeDasharray="3 5" opacity={after ? 1 : 0.3} />
       <T x={px(100)} y={Y0 + 24} s={14} f={after ? C.caramel : C.taupe} a="middle" w={700}>n = 100</T>
-      <T x={30} y={30} s={14} f={C.crema} w={600}>{after ? 'from n = 100 on, 100n is the cheaper one' : 'below n = 100 the “worse” n² is cheaper'}</T>
+      <T x={30} y={30} s={14} f={C.crema} w={600}>{after ? 'past n = 100, 100n is the cheaper one' : 'below n = 100 the “worse” n² is cheaper'}</T>
     </Svg>
   );
 }
@@ -264,11 +268,11 @@ export function Crossover({ t }: StepCtx) {
 // 10 · Size is bits, not value.
 export function BitsNotValue({ t }: StepCtx) {
   const rows: [string, string, string][] = [
-    ['a 32-bit number', '65,534', 'trial divisions to prove it prime'],
-    ['a 64-bit number', '4 billion+', 'the input only doubled in size'],
+    ['a 32-bit prime', '65,534', 'trial divisions to prove it prime'],
+    ['a 64-bit prime', '4 billion+', 'the input only doubled in size'],
   ];
   return (
-    <Svg label="Trial division on a 32-bit prime takes 65,534 steps; on a 64-bit prime over four billion: linear in the value, exponential in the bits" h={330}>
+    <Svg label="Trial division on a 32-bit prime takes 65,534 steps; on a 64-bit prime over four billion: polynomial in the value, exponential in the bits" h={330}>
       <T x={30} y={34} s={13} f={C.taupe}>PRIMALITY BY TRIAL DIVISION · O(√v) IN THE VALUE v</T>
       {rows.map(([lab, v, d], i) => {
         const a = easeOut(seg(t, 0.3 + i * 0.9, 1.1 + i * 0.9));
@@ -282,47 +286,51 @@ export function BitsNotValue({ t }: StepCtx) {
           </g>
         );
       })}
-      <T x={30} y={300} s={13} f={C.latte} o={easeOut(seg(t, 2.4, 3))}>cost per bit of input: ×65,536 in value for 16 more bits</T>
+      <T x={30} y={300} s={13} f={C.latte} o={easeOut(seg(t, 2.4, 3))}>32 more bits of input: about 65,536 times the steps</T>
     </Svg>
   );
 }
 
-// 11 · The ladder at one million items.
+// 11 · The ladder at one million items. Bar length is time on a log scale, from 1 ns to 585 years.
 export function Ladder({ t }: StepCtx) {
+  const YEAR = 3600 * 24 * 365;
   const rows: [string, string, string, number][] = [
-    ['log n', '19.9 steps', 'instant', 0.02],
-    ['n log n', '20 million steps', '0.02 s', 0.18],
-    ['n²', '1 trillion steps', '16.7 min', 0.7],
-    ['2ⁿ at n = 64', '585 years', 'never', 1],
+    ['log n', '19.9 steps', '20 ns', 19.9e-9],
+    ['n log n', '20 million steps', '0.02 s', 0.02],
+    ['n²', '1 trillion steps', '16.7 min', 1000],
+    ['2ⁿ at n = 64', '1.8 × 10¹⁹ steps', '585 years', 585 * YEAR],
   ];
+  const lo = Math.log10(1e-9), hi = Math.log10(585 * YEAR);
   return (
-    <Svg label="At one million items and a billion steps per second: n log n takes 0.02 seconds, n squared 16.7 minutes; 2 to the n at n equals 64 takes 585 years" h={360}>
+    <Svg label="At one million items and a billion steps per second: log n takes 20 nanoseconds, n log n 0.02 seconds, n squared 16.7 minutes; 2 to the n at n equals 64 takes 585 years" h={360}>
       <T x={30} y={34} s={13} f={C.taupe}>n = 1,000,000 · ONE BILLION STEPS A SECOND (ASSUMED)</T>
-      {rows.map(([lab, steps, time, frac], i) => {
+      {rows.map(([lab, steps, time, secs], i) => {
         const a = easeOut(seg(t, 0.2 + i * 0.6, 0.9 + i * 0.6));
-        const y = 60 + i * 72;
+        const frac = (Math.log10(secs) - lo) / (hi - lo);
+        const y = 60 + i * 70;
         return (
           <g key={lab}>
             <T x={30} y={y + 16} s={16} f={C.crema} w={600} o={a}>{lab}</T>
+            <T x={200} y={y + 16} s={13} f={C.latte} o={a}>{steps}</T>
             <T x={570} y={y + 16} s={14} f={C.caramel} a="end" w={700} o={a}>{time}</T>
             <Bar x={30} y={y + 26} w={540 * frac * a} h={20} full={540} fill={i < 2 ? C.caramel : C.cherry} />
-            <T x={36} y={y + 41} s={12} f={C.espresso} w={700} o={a}>{steps}</T>
           </g>
         );
       })}
+      <T x={30} y={346} s={12} f={C.taupe} o={easeOut(seg(t, 2.6, 3.2))}>bar length: time on a log scale, 1 ns to 585 years</T>
     </Svg>
   );
 }
 
 // 12 · Recap.
 const RECAP = [
-  ['O, Ω, Θ', 'inequalities with witnesses c and n₀'],
-  ['o, ω', 'strict: the ratio goes to 0 or ∞'],
-  ['bound ≠ case', 'two axes: which function, which inequality'],
-  ['average ≠ expected', 'random inputs vs the algorithm’s own coins'],
-  ['w.h.p.', 'failure ≤ 1/nᶜ, and c is yours to choose'],
+  ['O, Ω, Θ', 'inequalities with c and n₀'],
+  ['o, ω', 'strict: ratio → 0 or ∞'],
+  ['bound ≠ case', 'function vs inequality'],
+  ['average ≠ expected', 'random input vs own coins'],
+  ['w.h.p.', 'failure ≤ 1/nᶜ, you choose c'],
   ['time ↔ space', 'name both, and what you count'],
-  ['constants, size', 'n is the input’s size in bits, not its value'],
+  ['constants, size', 'small n: constants; n is bits'],
 ];
 export function Recap({ t }: StepCtx) {
   return (
@@ -334,7 +342,7 @@ export function Recap({ t }: StepCtx) {
           <g key={k} opacity={a} transform={`translate(${(1 - a) * 30} 0)`}>
             <rect x={30} y={y} width={540} height={44} rx={11} fill={C.roast} />
             <T x={50} y={y + 29} s={17} f={C.caramel} serif w={700}>{k}</T>
-            <T x={225} y={y + 28} s={13} f={C.crema}>{v}</T>
+            <T x={262} y={y + 28} s={13} f={C.crema}>{v}</T>
           </g>
         );
       })}

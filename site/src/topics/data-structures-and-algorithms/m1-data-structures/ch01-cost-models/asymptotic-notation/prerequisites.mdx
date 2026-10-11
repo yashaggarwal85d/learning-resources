@@ -31,3 +31,32 @@ You know that log₂ n is the number of times you can halve n, that 1 + 2 + … 
 </ul>
 
 </section>
+
+<section class="prereq" data-section="algorithms">
+
+### <span class="n">03</span> The algorithms used as examples
+
+The reel counts the cost of a few standard algorithms without re-teaching them: insertion sort (insert each item into the sorted prefix), quicksort (split around a pivot, sort both sides), heapsort and a hash set. You need to know what each does, not its analysis: the analysis is the point of the reel. Each gets its own topic later in this course.
+
+<p class="check"><b>Check yourself:</b> what does quicksort do with the keys smaller than the pivot? (Answer: puts them on one side and sorts that side recursively.)</p>
+
+<ul class="resources">
+  <Resource kind="reading" title="Elementary Sorts" href="https://algs4.cs.princeton.edu/21elementary/" by="Sedgewick and Wayne, Algorithms 4th ed., section 2.1">Selection and insertion sort, with traces.</Resource>
+  <Resource kind="reading" title="Quicksort" href="https://algs4.cs.princeton.edu/23quicksort/" by="Sedgewick and Wayne, Algorithms 4th ed., section 2.3">Partitioning, the random shuffle, and why sorted input hurts a fixed pivot.</Resource>
+</ul>
+
+</section>
+
+<section class="prereq" data-section="probability">
+
+### <span class="n">04</span> Probability and expectation
+
+You know what a random variable's expected value is, and that a probability is a number between 0 and 1. The reel uses both for randomized quicksort.
+
+<p class="check"><b>Check yourself:</b> what is the expected value of one roll of a fair six-sided die? (Answer: 3.5.)</p>
+
+<ul class="resources">
+  <Resource kind="course" title="Mathematics for Computer Science" href="https://ocw.mit.edu/courses/6-042j-mathematics-for-computer-science-spring-2015/" by="MIT OpenCourseWare 6.042J, Spring 2015">Unit 4 is probability, with readings from the free course textbook.</Resource>
+</ul>
+
+</section>

@@ -20,6 +20,14 @@ for c in (10, 1000, 10**6):  # no constant c works for 4^n <= c * 2^n
     assert 4**n > c * 2**n
 assert 4**20 == 2 ** (2 * 20)
 
+# Deep dive: log bases differ by a constant factor, but not inside an exponent.
+for m in (2**10, 2**20, 2**40):
+    assert abs(math.log2(m) / math.log10(m) - math.log2(10)) < 1e-9  # a constant ratio
+    assert round(2 ** math.log2(m)) == m and round(2 ** (math.log(m, 4))) == math.isqrt(m)  # n versus sqrt(n)
+# Deep dive: the doubling test cannot see a log factor: n^1 and n log n both give a ratio tending to 2.
+T = lambda m: m * math.log2(m)
+assert 2 < T(2 * 10**9) / T(10**9) < 2.07
+
 # Step: o and omega are strict; the ratio decides.
 ratios = [(n * math.log2(n)) / (n * n) for n in (10, 10**3, 10**6)]
 assert ratios[0] > ratios[1] > ratios[2]  # n log n / n^2 -> 0, so n log n = o(n^2)
@@ -83,12 +91,14 @@ for m in range(2, N + 1):
     if m in (10, 100, 1000):
         assert abs(float(C[m]) - formula(m)) < 1e-6
 assert round(formula(N)) == 10_986
+assert round(2 * N * math.log(N)) == 13_816  # the leading term alone overshoots at n = 1,000 (Deep dive)
 runs = [quicksort_comparisons(range(N), lambda xs: rng.randrange(len(xs))) for _ in range(2000)]
 mean = sum(runs) / len(runs)
 assert abs(mean - formula(N)) / formula(N) < 0.01  # the sample mean matches the formula within 1%
 assert max(runs) < 1.5 * formula(N), max(runs)  # w.h.p.: no run strays far; the worst was well under 1.5 x mean
 assert max(runs) < 499_500 / 30
 assert (min(runs), max(runs), round(mean), len(runs)) == (9_449, 15_583, 10_991, 2_000)
+assert round(max(runs) / mean, 2) == 1.42  # slowest run against the mean (Deep dive)
 HIST = [55, 1086, 704, 139, 13, 2, 1, 0]  # runs per 1,000-comparison bucket starting at 9,000 (drawn in the reel)
 assert HIST == [sum(1 for x in runs if 9000 + 1000 * i <= x < 10000 + 1000 * i) for i in range(8)] and sum(HIST) == 2000
 # the same inputs shuffled to a random permutation: average over inputs, first pivot, is about the same mean
@@ -157,7 +167,7 @@ def merge_comparisons(a):
     return count
 def avg_merge(m):  # exact average over every permutation, for small m
     return Fraction(sum(merge_comparisons(p) for p in permutations(range(m))), math.factorial(m))
-assert all(avg(m) <= avg_merge(m) for m in (2, 3))
+assert all(avg(m) == avg_merge(m) for m in (2, 3))  # equal at 2 and 3 (Deep dive)
 assert all(avg(m) > avg_merge(m) for m in range(4, 9))  # merge sort is ahead for n = 4..8
 
 # Step: the ladder, at one million items and a stated 10^9 simple operations per second.
@@ -168,6 +178,9 @@ assert n * n / ops == 1000  # seconds
 assert round(n * n / ops / 60, 1) == 16.7  # minutes
 assert math.log2(2**64) == 64 and 2**64 / ops / (3600 * 24 * 365) > 580  # 2^n at n=64 is centuries
 assert round(2**64 / ops / (3600 * 24 * 365)) == 585  # years
+assert round(math.log2(n) / ops * 1e9) == 20  # log n: about 20 ns
+assert round(n * math.log2(n) / 1e6) == 20 and n * n == 10**12  # 20 million and 1 trillion steps
+assert round(2**64 / 1e19, 1) == 1.8  # 2^64 is about 1.8 x 10^19 steps
 
 # Step: bits versus value. Trial division is O(sqrt(v)) in the VALUE v, exponential in the BITS.
 def trial_division_steps(v):
@@ -181,6 +194,7 @@ prime32, prime64 = 4_294_967_291, 18_446_744_073_709_551_557  # largest primes b
 assert prime32 == 2**32 - 5 and prime64 == 2**64 - 59
 assert trial_division_steps(prime32) == 65_534  # 16 bits' worth: sqrt(2^32) = 65536
 assert math.isqrt(prime64) > 4 * 10**9  # doubling the bits squares the work: 2^32 steps for a 64-bit input
+assert abs((math.isqrt(prime64) - 1) / 65_534 - 65_536) < 5 and 2**16 == 65_536  # 32 more bits: about 65,536 times the steps
 
 # Step: the two disagreeing conventions for Omega are visible on f(n) = n for odd n, 0 for even n.
 g = lambda n: n if n % 2 else 0

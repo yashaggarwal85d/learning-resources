@@ -84,8 +84,9 @@ const reel: Reel = {
         options: [{ label: 'About 499,500' }, { label: 'About 250,000' }, { label: 'About 10,986', correct: true }, { label: 'About 1,000' }],
         explain: (
           <>
-            About 10,986, which is 2(n+1)Hₙ − 4n for distinct keys (Hₙ = 1 + 1/2 + … + 1/n ≈ ln n), the same as for any other order. <b>Average case</b> assumes a distribution over inputs and can be
-            wrong when real inputs aren’t like it; <b>expected time</b> uses the algorithm’s own random choices, so it holds for every fixed input.
+            About 10,986, which is 2(n+1)Hₙ − 4n for distinct keys (Hₙ = 1 + 1/2 + … + 1/n ≈ ln n), the same for every input order. The first-pivot
+            version averages that same count over random orders: same number, different promise. <b>Average case</b> assumes a distribution over inputs and
+            breaks when real inputs aren’t like it (sorted data); <b>expected time</b> uses the algorithm’s own coins, so it holds for every fixed input.
           </>
         ),
       },
@@ -95,9 +96,9 @@ const reel: Reel = {
       title: 'Expected is not a guarantee; w.h.p. is a tail',
       body: (
         <>
-          2,000 runs of randomized quicksort on 1,000 keys: mean 10,991, slowest 15,583. An expectation allows rare slow runs; a{' '}
-          <b>with-high-probability</b> bound says the failure chance is at most 1/n<sup>c</sup>, for a constant c you may choose (a bigger c costs only a
-          bigger constant). For randomized quicksort: for every c there is a constant a so that the run time is at most a·n·log n with probability at least 1 − 1/n<sup>c</sup>. Services are judged on tails, so ask which one you are given.
+          2,000 runs of randomized quicksort on 1,000 keys: mean 10,991, slowest 15,583. An expectation allows rare slow runs. A{' '}
+          <b>with-high-probability</b> bound limits them: for every constant c there is a constant a such that a run takes at most a·n·log n steps with
+          probability at least 1 − 1/n<sup>c</sup>; a bigger c costs only a bigger a. Services are judged on tails, so ask which promise you are given.
         </>
       ),
       duration: 4.4,
@@ -108,7 +109,7 @@ const reel: Reel = {
       body: (
         <>
           Does a list of 1,000 distinct numbers contain a duplicate? Comparing every pair costs 499,500 steps and no extra storage. Heapsort in place, then
-          one scan: 17,830. A hash set: 1,000 lookups, but 1,000 values stored. Say what you count: here, steps and extra values, not bytes.
+          one scan: 17,830. A hash set: 1,000 lookups, each O(1) only in expectation, but 1,000 values stored. Say what you count: here, steps and extra values, not bytes.
         </>
       ),
       duration: 4.6,
@@ -118,7 +119,7 @@ const reel: Reel = {
       title: 'The constant hides inside the O',
       body: (
         <>
-          Asymptotics describe growth, not speed at a given size. 100n beats n² only from n = 100; below that the “worse” algorithm wins. The crossover is
+          Asymptotics describe growth, not speed at a given size. 100n beats n² only above n = 100; below that the “worse” algorithm wins. The crossover is
           where constants, cache behaviour and the real input size decide, so measure when n is small or the constants differ a lot.
         </>
       ),
@@ -140,7 +141,7 @@ const reel: Reel = {
       body: (
         <>
           At a million items and an assumed billion steps a second: log n is about 19.9 steps, n log n takes 0.02 seconds, n² takes 1000 seconds, about 16.7
-          minutes. Exponential 2<sup>n</sup> is already hopeless at n = 64: 585 years. Next: the machine model these step counts assume.
+          minutes. Exponential 2<sup>n</sup> is already hopeless at n = 64: 585 years. Every count here assumes each step costs the same; hold that thought.
         </>
       ),
       duration: 3.6,
@@ -148,7 +149,12 @@ const reel: Reel = {
     },
     {
       title: 'In one breath',
-      body: <>Seven things to keep. If any felt rusty, the Prerequisites panel has the best places to brush up; otherwise, on to the word-RAM model.</>,
+      body: (
+        <>
+          Seven things to keep. The opening claim, decoded: “quicksort is O(n log n)” is an upper bound on <em>expected</em> time with random pivots; with a
+          fixed pivot the worst case is Θ(n²). If a point felt rusty, the Deep dive has it in full; otherwise, on to the word-RAM model.
+        </>
+      ),
       duration: 2.6,
       Visual: S.Recap,
     },

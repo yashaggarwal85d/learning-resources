@@ -9,7 +9,7 @@
         {
           "beat": 0.4
         },
-        "A claim like... quicksort is n log n... hides three choices.",
+        "A claim like... quicksort is big O of n log n... hides three choices.",
         "Which bound? Which case? And which resource?",
         {
           "beat": 0.4
@@ -83,20 +83,22 @@
         "Pick the pivot at random instead. How many comparisons do you expect on that same sorted input?"
       ],
       "answer": [
-        "About ten thousand nine hundred eighty six. The same as for any other order.",
-        "Average case assumes a distribution over inputs... and can be wrong when real inputs aren't like it.",
+        "About ten thousand nine hundred eighty six. The same for every input order.",
+        "The first pivot version averages that same count over random orders. Same number... different promise.",
+        "Average case assumes a distribution over inputs... and breaks when real inputs aren't like it, such as sorted data.",
         "Expected time uses the algorithm's own coin flips... so it holds for every fixed input."
       ]
     },
     {
       "lines": [
         "Two thousand runs, one thousand keys.",
-        "The mean is about eleven thousand. The slowest run, fifteen thousand.",
+        "The mean is about eleven thousand. The slowest run, about fifteen and a half thousand.",
         {
           "beat": 0.4
         },
         "An expectation allows rare slow runs.",
         "With high probability says something stronger... the chance of failure is at most one over n to the c, and you pick c.",
+        "A bigger c only costs a bigger constant.",
         {
           "beat": 0.3
         },
@@ -108,7 +110,7 @@
         "Does a list of a thousand distinct numbers contain a duplicate?",
         "Compare every pair... almost five hundred thousand steps, and no extra storage.",
         "Heapsort in place, then one scan... about eighteen thousand.",
-        "Or a hash set... a thousand lookups, but a thousand values stored.",
+        "Or a hash set... a thousand lookups, each fast only in expectation, but a thousand values stored.",
         {
           "beat": 0.3
         },
@@ -118,7 +120,7 @@
     {
       "lines": [
         "Asymptotics describe growth... not speed at one size.",
-        "A hundred n beats n squared only from a hundred up.",
+        "A hundred n beats n squared only above a hundred.",
         "Below that, the worse algorithm wins.",
         {
           "beat": 0.3
@@ -147,15 +149,23 @@
         {
           "beat": 0.4
         },
-        "Those step counts assume a machine model. That's next."
+        "Every count here assumes each step costs the same. Hold that thought."
       ]
     },
     {
       "lines": [
         "Seven things to keep.",
         "Inequalities with witnesses. Strict little o and little omega. Bound is not case. Average is not expected.",
-        "High probability is a tail. Time trades with space. And n is the size in bits.",
-        "Next, the machine model behind the step counts."
+        "High probability is a tail. Time trades with space. And constants rule small inputs... while n is the size in bits.",
+        {
+          "beat": 0.4
+        },
+        "So, quicksort is big O of n log n... is an upper bound on expected time, with random pivots.",
+        "With a fixed pivot, the worst case is Theta of n squared.",
+        {
+          "beat": 0.3
+        },
+        "Next, the word RAM model... the machine behind those step counts."
       ]
     }
   ]

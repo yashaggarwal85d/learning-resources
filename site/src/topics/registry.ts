@@ -78,8 +78,9 @@ export const TOPICS: TopicMeta[] = [
     minutes: 6,
     verified: '2026-10-11',
     introduces: ['big-o-theta-omega', 'little-o-omega', 'best-worst-average-case', 'expected-vs-average', 'with-high-probability', 'time-space-tradeoff', 'pseudo-polynomial'],
-    uses: [],
-    declared: ['programming'],
+    // Assumed, not taught first in this domain: listed in the Prerequisites panel (sorts and hash sets get their own topics later).
+    uses: ['logarithms', 'limits', 'expectation', 'standard-sorts', 'hash-set'],
+    declared: ['programming', 'logarithms', 'limits', 'expectation', 'standard-sorts', 'hash-set'],
     bridge: 'Data Structures & Algorithms starts with the language its costs are written in: what a bound claims, which case it is about, and what it leaves out.',
     handoff: 'Next: the word-RAM model, the machine these step counts quietly assume, and what it hides.',
   },

@@ -19,3 +19,17 @@ Adversarial check by an independent agent against sources it opened; computed cl
 | Duplicate detection trade-off (hash set vs in-place heapsort) | Confirmed; heapsort permutes the input, so "O(1) auxiliary space" | — |
 
 All corrections are applied in the reel and Deep dive.
+
+## Additions from the content review (2026-10-11)
+
+| Claim | Result | Source / evidence |
+|---|---|---|
+| Insertion sort average shown as n²/4 + n − Hₙ in the drawing | Corrected to n(n−1)/4 + n − Hₙ (the enumerated formula) | examples.py |
+| "×65,536 in value for 16 more bits" (trial division drawing) | Corrected: 32 more bits multiply the steps by about 65,536 | examples.py (asserted) |
+| First-pivot quicksort averages 2(n+1)Hₙ − 4n over random orders | Confirmed by sampling (within 3%) and the standard recurrence | examples.py |
+| Log bases inside exponents: 2^(log₂ n) = n, 2^(log₄ n) = √n (replaces an example that compared different arguments, not bases) | Confirmed | examples.py (asserted) |
+| Doubling test cannot separate n from n log n (ratio 2.07 from 10⁹ to 2·10⁹) | Confirmed | examples.py (asserted) |
+| 2n ln n alone gives 13,816 at n = 1,000 against the exact 10,986 | Confirmed | examples.py (asserted) |
+| Smoothed analysis: "the maximum over inputs of the expected performance of an algorithm under small random perturbations of that input"; simplex has polynomial smoothed complexity | Confirmed from the abstract | https://arxiv.org/abs/cs/0111050 |
+| Roughgarden's book surveys parameterized analysis, instance optimality, resource augmentation and semi-random models | Confirmed from the introduction chapter | https://arxiv.org/abs/2007.13241 |
+| Algorithms with predictions: near-optimal with good predictions, prediction-less worst case when they are bad | Confirmed from the abstract | https://arxiv.org/abs/2006.09123 |
