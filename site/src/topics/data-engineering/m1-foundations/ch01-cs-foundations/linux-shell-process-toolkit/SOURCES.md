@@ -14,6 +14,8 @@ Version: Linux man-pages 6.19, page dated 2026-06-05 (manpages-dev 6.19-3, Debia
 
 > If a parent process terminates, then its "zombie" children (if any) are adopted by init(1), (or by the nearest "subreaper" process as defined through the use of the prctl(2) PR_SET_CHILD_SUBREAPER operation); init(1) automatically performs a wait to remove the zombies.
 
+> POSIX.1-2001 specifies that if the disposition of SIGCHLD is set to SIG_IGN or the SA_NOCLDWAIT flag is set for SIGCHLD (see sigaction(2)), then children that terminate do not become zombies
+
 Notes: this page has no word "orphan"; the adoption-by-init sentence above is the source for the orphan behaviour.
 
 Contents:
@@ -66,6 +68,10 @@ Version: Linux man-pages 6.19, page dated 2026-02-08 (manpages-dev 6.19-3, Debia
 > If the set-user-ID bit is set on the program file referred to by path, then the effective user ID of the calling process is changed to that of the owner of the program file.
 
 > The process's real UID and real GID, as well as its supplementary group IDs, are unchanged by a call to execve().
+
+> By default, file descriptors remain open across an execve(). File descriptors that are marked close-on-exec are closed
+
+> there is no new process; many attributes of the calling process remain unchanged (in particular, its PID).
 
 Contents:
 - NAME
@@ -190,6 +196,10 @@ Version: Linux man-pages 6.19, page dated 2026-02-08 (manpages 6.19-3, Debian un
 
 > Of the three bits used, the first bit determines read permission, the second write permission, and the last execute permission in case of ordinary files, or search permission in case of directories.
 
+> The CAP_DAC_OVERRIDE capability overrides all permission checking, but grants execute permission only when at least one of the file's three execute permission bits is set.
+
+> The CAP_DAC_READ_SEARCH capability grants read and search permission on directories, and read permission on ordinary files.
+
 Contents:
 - NAME
 - DESCRIPTION (pathname components; starting lookup directory; the lookup loop and its errors; symlinks; permission bits and fsuid)
@@ -242,6 +252,10 @@ Version: Linux man-pages 6.19, page dated 2026-02-08 (manpages-dev 6.19-3, Debia
 
 > Since Linux 4.7, the umask of any process can be viewed via the Umask field of /proc/pid/status.
 
+> Alternatively, if the parent directory has a default ACL (see acl(5)), the umask is ignored
+
+Note: the page's "0666 ... 0644" example is stated for a default ACL equivalent to umask 022; the plain-umask arithmetic 0666 & ~022 = 0644 is the same and was executed.
+
 Contents:
 - NAME
 - LIBRARY
@@ -262,6 +276,8 @@ Version: strace 7.2+ds-1 (Debian unstable, page dated 2026-06-25)
 > Writes the trace output to the file filename rather than to stderr.
 
 > Traces child processes as they are created by currently traced processes as a result of the fork(2), vfork(2) and clone(2) system calls.
+
+> Note that if process PID is multi-threaded, using -f -p PID attaches to all of its threads, not just the one with thread_id = PID.
 
 > Traces all the network related system calls.
 
@@ -314,6 +330,12 @@ Notes: the four state codes are the entries D, R, S, Z of "PROCESS STATE CODES" 
 
 > is in the foreground process group
 
+> Processes marked <defunct> are dead processes (so-called "zombies") that remain because their parent has not destroyed them properly.
+
+> idle kernel thread
+
+Notes: `<defunct>` is shown in the args/cmd column (the comm column shows only the name); `I` is the eighth state code.
+
 Contents:
 - NAME
 - SYNOPSIS
@@ -360,6 +382,10 @@ Notes: this Debian crontab(5) says nothing about daylight-saving-time transition
 
 > The entire command portion of the line, up to a newline or % character, will be executed by /usr/bin/sh or by the shell specified in the SHELL variable of the cronfile.
 
+> Even if a user specifies the TZ environment variable in his crontab this will affect only the commands executed in the crontab, not the execution of the crontab tasks themselves.
+
+> The value string is not parsed for environmental substitutions or replacement of variables or tilde(~) expansion
+
 > The cron daemon runs with a defined timezone. It currently does not support per-user timezones.
 
 Contents:
@@ -400,6 +426,12 @@ Exit status 126, 127, 128+n:
 set -e / set -u:
 > Exit immediately if a pipeline (see Pipelines), which may consist of a single simple command
 
+> any command in a pipeline but the last (subject to the state of the pipefail shell option)
+
+> An error message will be written to the standard error, and a non-interactive shell will exit.
+
+> Exit statuses fall between 0 and 255, though, as explained below, the shell may use values above 125 specially.
+
 > Treat unset variables and parameters other than the special parameters ‘@’ or ‘*’, or array variables subscripted with ‘@’ or ‘*’, as an error when performing parameter expansion.
 
 > ($?) Expands to the exit status of the most recently executed command.
@@ -429,6 +461,10 @@ Version: IEEE Std 1003.1-2024, The Open Group Base Specifications Issue 8
 
 > The exit status of a pipeline shall depend on whether or not the pipefail option (see set) is enabled
 
+> Otherwise, if the command terminated due to the receipt of a signal, the shell shall assign it an exit status greater than 128.
+
+> Note that shell implementations are permitted to assign an exit status greater than 255 if a command terminates due to a signal.
+
 Contents:
 - Shell Command Language chapter (2): quoting, token recognition, reserved words, parameter/command/arithmetic expansion, redirection, exit status and errors, shell commands (pipelines, lists, compound commands), shell grammar, job control, signals, shell execution environment, pattern matching, special built-in utilities
 - Exit Status for Commands: 127 not found, 126 found but not executable, signal termination above 128
@@ -454,6 +490,8 @@ Version: jq 1.8 Manual
 > Sets the exit status of jq to 0 if the last output value was neither false nor null, 1 if the last output value was either false or null, or 4 if no valid result was ever produced. Normally jq exits with 2 if there was any usage problem or system error, 3 if there was a jq program compile error, or 0 if the jq program ran.
 
 > The given exit_code (defaulting to 5) will be jq's exit
+
+Note: this 5 is `halt_error`'s default. The manual does not document the exit status of an uncaught runtime error or an input parse error; jq 1.7 exits 5 for both (executed), and jq 1.8.2's src/main.c sets `JQ_ERROR_UNKNOWN = 5` for them (read with curl, see FACT-CHECK.md).
 
 Contents:
 - Invoking jq: --slurp/-s, --compact-output/-c, --raw-output/-r, --slurpfile
@@ -632,6 +670,10 @@ URL: https://www.gnu.org/software/gawk/manual/html_node/Changing-Fields.html
 Version: Edition 5.4 of GAWK: Effective AWK Programming
 > When the value of a field is changed (as perceived by awk), the text of the input record is recalculated to contain the new field where the old one was. In other words, $0 changes to reflect the altered field.
 
+> Finally, there are times when it is convenient to force awk to rebuild the entire record, using the current values of the fields and OFS.
+
+> $1 = $1 # force record to be reconstituted
+
 Contents:
 - Changing a field (for example $2 = $2 - 10) recalculates $0 from the fields
 - Creating a new field changes the internal copy of the record; out-of-range references do not change $0 or NF
@@ -739,3 +781,45 @@ Version: git-bisect last updated in 2.56.0
 
 Contents:
 - git bisect run: exit codes 0 (good), 1 to 127 except 125 (bad), 125 (cannot be tested, skip), others abort
+
+## _exit(2) - Linux manual page (Debian manpages mirror)
+URL: https://manpages.debian.org/unstable/manpages-dev/_exit.2.en.html
+Version: Linux man-pages 6.18 (manpages-dev 6.18-1 as served by Debian unstable; page dated 2026-02-08)
+> Any children of the process are inherited by init(1) (or by the nearest "subreaper" process as defined through the use of the prctl(2) PR_SET_CHILD_SUBREAPER operation).
+
+Contents:
+- NAME, LIBRARY, SYNOPSIS
+- DESCRIPTION: _exit terminates the process; open fds closed; children inherited by init or the nearest subreaper; parent sent SIGCHLD; status & 0xff
+- RETURN VALUE, STANDARDS, HISTORY, NOTES, SEE ALSO
+
+## Yama (The Linux Kernel documentation)
+URL: https://docs.kernel.org/admin-guide/LSM/Yama.html
+Version: docs.kernel.org, as served 2026-10-11
+> 1 - restricted ptrace: a process must have a predefined relationship with the inferior it wants to call PTRACE_ATTACH on. By default, this relationship is that of only its descendants when the above classic criteria is also met.
+
+> 2 - admin-only attach: only processes with CAP_SYS_PTRACE may use ptrace, either with PTRACE_ATTACH or through children calling PTRACE_TRACEME.
+
+> If a process wishes to entirely disable these ptrace restrictions, it can call prctl(PR_SET_PTRACER, PR_SET_PTRACER_ANY, ...)
+
+Contents:
+- Yama LSM; ptrace_scope sysctl in /proc/sys/kernel/yama
+- Levels 0 (classic), 1 (restricted: descendants only, or a declared ptracer), 2 (admin-only), 3 (no attach)
+
+## git builtin/bisect.c (Git source, v2.56.0)
+URL: https://raw.githubusercontent.com/git/git/v2.56.0/builtin/bisect.c
+Version: Git v2.56.0 tag
+> Exit code 126 and 127 can either come from the shell
+
+> if it was unable to execute or even find the script,
+
+> or from the script itself. Check with a known-good
+
+> missing or non-executable script.
+
+Note: the comment's lines are quoted one by one because each source line starts with " * "; read together they say: "Exit code 126 and 127 can either come from the shell if it was unable to execute or even find the script, or from the script itself. Check with a known-good revision to avoid trashing the bisect run due to a missing or non-executable script." The check runs only when `is_first_run`.
+
+> if (is_first_run && (res == 126 || res == 127)) {
+
+Contents:
+- bisect_run: runs the command per revision; on the first run only, a 126 or 127 is re-checked on a good revision; 125 skip, 0 good, 1-127 bad, anything else aborts
+
