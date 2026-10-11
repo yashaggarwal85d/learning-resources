@@ -88,7 +88,10 @@ export function ForkExecWait({ t }: StepCtx) {
         <Sock x={450} y={212} n="1" />
         <Sock x={450} y={238} n="2" />
       </g>
-      <Line x1={462} y1={212} x2={462 + 66 * run} y2={212} c={C.caramel} o={run} w={4} />
+      <Line x1={462} y1={212} x2={462 + 28 * Math.min(1, run * 2)} y2={212} c={C.caramel} o={run} w={4} />
+      <Line x1={490} y1={212} x2={490} y2={212 - 128 * clamp(run * 2 - 1)} c={C.caramel} o={run} w={4} />
+      <T x={130} y={230} s={13} a="end" f={C.taupe} o={child}>keyboard</T>
+      <T x={472} y={230} s={13} f={C.taupe} o={child}>terminal</T>
       <Tok x={300} y={lerp(200, 116, ride)} n="0" c={C.caramel} o={ride > 0 ? 1 : 0} />
       <T x={276} y={150} s={17} a="end" f={C.crema} o={status}>$? = 0</T>
       <T x={130} y={304} s={15} a="middle" f={lit(0.7)}>fork</T>
@@ -136,16 +139,22 @@ export function WhereDidItGo({ t, answer }: StepCtx) {
       </Svg>
     );
   }
+  const Num = ({ x, y, n }: { x: number; y: number; n: string }) => (
+    <g>
+      <circle cx={x} cy={y} r={10} fill={C.espresso} stroke={C.caramel} strokeWidth={2} />
+      <T x={x} y={y + 5} s={13} a="middle" f={C.caramel} w={700}>{n}</T>
+    </g>
+  );
   return (
-    <Svg label="Two re-pointings in order: standard error copies the terminal, then standard output moves to out.log; the error line stays on the terminal and out.log is empty" h={380}>
+    <Svg label="Two re-pointings in order: 1, standard error copies the terminal; 2, standard output moves to out.log; the error line stays on the terminal and out.log is empty" h={260}>
       <Frame done />
+      <Line x1={172} y1={140} x2={400} y2={182} c={C.taupe} w={2} dash="5 5" />
       <Line x1={172} y1={185} x2={400} y2={188} c={C.caramel} w={4} />
       <Line x1={172} y1={140} x2={400} y2={96} c={C.caramel} w={4} />
-      <T x={536} y={236} s={13} a="end" f={C.cherryText}>clean.py: cannot open missing.jsonl</T>
-      <T x={30} y={278} s={13} f={C.crema}>① 2&gt;&amp;1 copies fd 1: the terminal</T>
-      <T x={30} y={300} s={13} f={C.crema}>② &gt; out.log moves fd 1 to the file</T>
-      <T x={30} y={338} s={15} f={C.crema}>&gt; out.log 2&gt;&amp;1</T>
-      <T x={30} y={360} s={13} f={C.latte}>this order: both lines in the file</T>
+      <Num x={286} y={187} n="1" />
+      <Num x={286} y={118} n="2" />
+      <T x={536} y={228} s={13} a="end" f={C.cherryText}>clean.py: cannot open missing.jsonl</T>
+      <T x={30} y={252} s={13} f={C.latte}>fix: &gt; out.log 2&gt;&amp;1</T>
     </Svg>
   );
 }
@@ -176,7 +185,7 @@ export function PipelineStatus({ t, answer }: StepCtx) {
         {boxes((i) => fade(t, 0.6 + i * 0.3))}
         <g opacity={fade(t, 0.9)}><T x={30} y={176} s={13} f={C.cherryText}>cannot open missing.jsonl</T></g>
         <Line x1={180} y1={126} x2={180 + 10 * (1 - Math.abs(2 * stop - 1))} y2={126} c={C.caramel} o={stop} w={4} />
-        {xs.map((x) => <circle key={x} cx={x + 75} cy={225} r={18} fill="none" stroke={C.taupe} strokeWidth={2} strokeDasharray="4 4" opacity={fade(t, 1.2)} />)}
+        {xs.map((x) => <circle key={x} cx={x + 75} cy={218} r={18} fill="none" stroke={C.taupe} strokeWidth={2} strokeDasharray="4 4" opacity={fade(t, 1.2)} />)}
         <g opacity={fade(t, 1.8)}>
           <T x={30} y={288} s={17} f={C.crema}>$? =</T>
           <g transform={`translate(98 288) scale(${pop(t, 1.8)})`}><T x={0} y={0} s={28} f={C.caramel} serif w={700}>?</T></g>
@@ -185,18 +194,19 @@ export function PipelineStatus({ t, answer }: StepCtx) {
     );
   }
   return (
-    <Svg label="jq's status is 2, sort and uniq give 0; the pipeline reports 0, the last one; with pipefail it reports 2" h={380}>
+    <Svg label="jq's status is 2, sort and uniq give 0; the pipeline reports 0, the last one; with pipefail it reports 2" h={300}>
       <g>{command}</g>
       {boxes(() => 1)}
       <T x={30} y={176} s={13} f={C.cherryText}>cannot open missing.jsonl</T>
-      <Tok x={105} y={225} n="2" bad />
-      <Tok x={279} y={225} n="0" />
-      <Tok x={453} y={225} n="0" />
-      <T x={30} y={291} s={20} f={C.crema} serif w={700}>$? = 0</T>
-      <T x={170} y={291} s={13} f={C.latte}>the last command's</T>
-      <T x={30} y={327} s={13} f={C.latte}>set -o pipefail:</T>
-      <T x={216} y={327} s={20} f={C.cherryText} serif w={700}>$? = 2</T>
-      <T x={30} y={361} s={13} f={C.taupe}>PIPESTATUS: 2 0 0</T>
+      <Tok x={105} y={218} n="2" bad />
+      <Tok x={279} y={218} n="0" />
+      <Tok x={453} y={218} n="0" />
+      <Line x1={453} y1={239} x2={453} y2={254} c={C.taupe} w={2} />
+      <T x={453} y={278} s={22} a="middle" f={C.crema} serif w={700}>$? = 0</T>
+      <T x={385} y={278} s={13} a="end" f={C.latte}>the last command's</T>
+      <Line x1={105} y1={239} x2={105} y2={254} c={C.cherryText} w={2} />
+      <T x={105} y={274} s={17} a="middle" f={C.cherryText} w={700}>$? = 2</T>
+      <T x={105} y={294} s={13} a="middle" f={C.latte}>set -o pipefail</T>
     </Svg>
   );
 }
@@ -204,7 +214,7 @@ export function PipelineStatus({ t, answer }: StepCtx) {
 // 5 · Exit codes: 0 to 255, and 128 plus the signal. The bar is in order but not to scale (the signal band is stretched to be readable).
 const BX = { zero: [30, 60], own: [68, 268], n126: [276, 304], n127: [312, 340], sig: [348, 530] } as const;
 export function ExitCodes({ t }: StepCtx) {
-  const code = ['$ chmod 644 clean.py; ./clean.py   # 126', '$ pyhton3 clean.py                 # 127', "$ bash -c 'kill -KILL $$'          # 137", "$ bash -c 'kill -TERM $$'          # 143"];
+  const code = ['$ chmod 644 clean.py; ./clean.py', '$ pyhton3 clean.py', "$ bash -c 'kill -KILL $$'", "$ bash -c 'kill -TERM $$'"];
   const draw = easeOut(seg(t, 1.0, 1.6));
   const BY = 54;
   const MY = BY + 17;
@@ -219,7 +229,7 @@ export function ExitCodes({ t }: StepCtx) {
   return (
     <Stack>
       <Code t={t} start={0.2} end={1.0} lines={code} title="exit statuses" />
-      <Svg fill label="Exit statuses on a number line from 0 to 255: zero is success, 1 to 125 the program's own, 126 not executable, 127 not found, above 128 a signal; bisect's 125 sits just below" h={290}>
+      <Svg fill label="Exit statuses on a number line from 0 to 255: zero is success, 1 to 125 the program's own, 126 not executable, 127 not found, above 128 a signal; bisect's 125 sits just below" h={296}>
         <g opacity={draw}>
           <rect x={BX.zero[0]} y={BY} width={BX.zero[1] - BX.zero[0]} height={34} rx={6} fill={C.crema} />
           <rect x={BX.own[0]} y={BY} width={BX.own[1] - BX.own[0]} height={34} rx={6} fill={C.mocha} />
@@ -229,23 +239,22 @@ export function ExitCodes({ t }: StepCtx) {
           <T x={30} y={BY - 12} s={13} f={C.crema}>0 ok</T>
           <T x={100} y={BY - 12} s={13} f={C.latte}>1–125 own codes</T>
           <T x={439} y={BY - 12} s={15} f={C.caramel} a="middle">128 + signal</T>
-          <path d="M268 94 L261 106 L275 106 Z" fill={C.taupe} />
+          <path d="M268 94 L263 104 L273 104 Z" fill={C.taupe} />
+          <T x={274} y={138} s={13} a="end" f={C.latte}>125 skip</T>
         </g>
         {legend.map((l) => (
           <g key={l.code}>
             <circle cx={l.x} cy={MY} r={8} fill={l.kind === 'kill' ? C.cherry : C.espresso} stroke={stroke(l.kind)} strokeWidth={3} opacity={pop(t, l.at)} transform={`translate(0 ${(1 - pop(t, l.at)) * -6})`} />
+            <T x={l.x + (l.code === '126' ? 6 : 0)} y={l.code === '127' ? 120 : 104} s={13} a="middle" f={C.latte} o={pop(t, l.at)}>{l.code}</T>
           </g>
         ))}
         {[...legend].sort((a, b) => Number(a.code) - Number(b.code)).map((l, i) => (
           <g key={l.code} opacity={fade(t, l.at)}>
-            <circle cx={38} cy={134 + i * 26 - 5} r={7} fill={l.kind === 'kill' ? C.cherry : C.espresso} stroke={stroke(l.kind)} strokeWidth={3} />
-            <T x={56} y={134 + i * 26} s={15} f={l.kind === 'kill' ? C.cherryText : C.crema}>{l.code}</T>
-            <T x={106} y={134 + i * 26} s={13} f={C.latte}>{l.why}</T>
+            <circle cx={38} cy={172 + i * 26 - 5} r={7} fill={l.kind === 'kill' ? C.cherry : C.espresso} stroke={stroke(l.kind)} strokeWidth={3} />
+            <T x={56} y={172 + i * 26} s={15} f={l.kind === 'kill' ? C.cherryText : C.crema}>{l.code}</T>
+            <T x={106} y={172 + i * 26} s={13} f={C.latte}>{l.why}</T>
           </g>
         ))}
-        <g opacity={fade(t, 3.9)}>
-          <T x={30} y={278} s={13} f={C.latte}>bisect: 125 = skip, just under 126 and 127</T>
-        </g>
       </Svg>
     </Stack>
   );
@@ -277,17 +286,23 @@ export function Signals({ t }: StepCtx) {
       <T x={420} y={214} s={13} a="middle" f={C.cherryText} o={fade(t, 2.8)}>gone mid-write</T>
       <Tok x={140} y={lerp(150, 116, tok0)} n="0" c={C.caramel} o={tok0 > 0 ? 1 : 0} />
       <Tok x={420} y={lerp(150, 114, tok137)} n="137" r={24} bad o={tok137 > 0 ? 1 : 0} />
+      <g opacity={fade(t, 3.2)}>
+        <Line x1={30} y1={228} x2={570} y2={228} c={C.taupe} w={1} o={0.6} />
+        <T x={30} y={246} s={13} f={C.taupe}>left behind</T>
+      </g>
       <g opacity={fade(t, 3.4)}>
-        <rect x={60} y={268} width={120} height={34} rx={10} fill="none" stroke={C.taupe} strokeWidth={2} strokeDasharray="6 5" />
-        <T x={120} y={291} s={15} a="middle" f={C.crema}>Z</T>
-        <T x={120} y={326} s={13} a="middle" f={C.taupe}>ended, not waited for</T>
+        <Proc x={70} y={258} w={120} h={28} label="parent" ls={13} />
+        <Line x1={130} y1={286} x2={130} y2={304} c={C.taupe} w={2} />
+        <rect x={70} y={304} width={120} height={28} rx={10} fill="none" stroke={C.taupe} strokeWidth={2} strokeDasharray="6 5" />
+        <T x={130} y={323} s={13} a="middle" f={C.crema}>zombie</T>
+        <T x={130} y={352} s={13} a="middle" f={C.latte}>not waited for</T>
       </g>
       <g opacity={fade(t, 3.8)}>
-        <T x={390} y={248} s={13} a="middle" f={C.latte}>init / subreaper</T>
-        <Line x1={390} y1={254} x2={390} y2={268} c={C.taupe} w={2} />
-        <rect x={330} y={268} width={120} height={34} rx={10} fill={C.espresso} stroke={C.crema} strokeWidth={2} />
-        <T x={390} y={291} s={13} a="middle" f={C.crema}>orphan</T>
-        <T x={390} y={326} s={13} a="middle" f={C.taupe}>adopted by init (or a subreaper)</T>
+        <Proc x={380} y={258} w={120} h={28} label="init" ls={13} />
+        <Line x1={440} y1={286} x2={440} y2={304} c={C.taupe} w={2} />
+        <rect x={380} y={304} width={120} height={28} rx={10} fill={C.espresso} stroke={C.crema} strokeWidth={2} />
+        <T x={440} y={323} s={13} a="middle" f={C.crema}>orphan</T>
+        <T x={440} y={352} s={13} a="middle" f={C.latte}>parent died</T>
       </g>
     </Svg>
   );
@@ -299,7 +314,7 @@ export function HungJob({ t, answer }: StepCtx) {
   const a = (at: number) => (q ? fade(t, at) : 1);
   const caret = q && Math.floor(t * 2) % 2 === 0 ? '▌' : q ? '' : '▌';
   return (
-    <Svg label="A load job is blocked in read on file descriptor 4, a socket nobody writes to; ps says S, the proc status says two threads, strace shows read(4, with no result" h={q ? 280 : 330}>
+    <Svg label="A load job is blocked in read on file descriptor 4, a socket nobody writes to; ps says S, the proc status says two threads, strace shows read(4, with no result" h={292}>
       <g opacity={a(0.2)}>
         <Proc x={30} y={30} w={170} h={90} label="load_orders.py" ls={14} />
         <Sock x={115} y={120} n="4" c={C.caramel} />
@@ -314,16 +329,15 @@ export function HungJob({ t, answer }: StepCtx) {
       <T x={232} y={98} s={13} f={C.crema} o={a(1.6)}>wchan: wait_woken</T>
       <T x={232} y={122} s={13} f={C.crema} o={a(2.0)}>fd/4 → socket</T>
       <T x={232} y={152} s={13} f={C.taupe} o={a(2.4)}>strace -p</T>
-      <T x={232} y={176} s={15} f={C.crema} o={a(2.4)}>{`read(4,${caret}`}</T>
+      <T x={232} y={176} s={15} f={q ? C.crema : C.caramel} o={a(2.4)}>{`read(4,${caret}`}</T>
       {q && <g transform={`translate(490 100) scale(${pop(t, 2.8)})`}><T x={0} y={0} s={28} f={C.caramel} a="middle" serif w={700}>?</T></g>}
       {!q && (
         <>
-          <T x={30} y={252} s={13} f={C.cherryText}>no sender</T>
+          <T x={115} y={248} s={15} a="middle" f={C.cherryText}>no sender</T>
           <T x={232} y={228} s={13} f={C.crema}>kill -TERM {'<pid>'}</T>
-          <Tok x={450} y={222} n="143" r={24} c={C.crema} />
-          <T x={450} y={262} s={13} a="middle" f={C.latte}>no handler here: 143</T>
-          <T x={232} y={268} s={13} f={C.crema}>kill -KILL {'<pid>'}</T>
-          <T x={232} y={306} s={13} f={C.taupe}>only if it is still there</T>
+          <Tok x={470} y={220} n="143" r={24} c={C.crema} />
+          <T x={470} y={262} s={13} a="middle" f={C.latte}>no handler here</T>
+          <T x={232} y={284} s={13} f={C.crema}>kill -KILL {'<pid>'}</T>
         </>
       )}
     </Svg>
@@ -347,23 +361,25 @@ export function PipelineLab({ t }: StepCtx) {
           {i < 3 && <Line x1={135} y1={y + 40} x2={135} y2={y + 72} c={C.taupe} w={5} />}
         </g>
       ))}
+      <Line x1={240} y1={276} x2={256} y2={276} c={C.taupe} w={3} o={fade(t, 0.8)} />
+      <Line x1={256} y1={276} x2={256} y2={74} c={C.taupe} w={3} o={fade(t, 0.8)} />
       <rect x={126} y={40 + run * 250} width={18} height={8} rx={3} fill={C.caramel} opacity={run > 0 && run < 1 ? 1 : 0} />
-      <T x={450} y={50} s={13} a="end" f={C.taupe} o={fade(t, 0.8)}>pipe</T>
+      <T x={456} y={50} s={13} a="end" f={C.taupe} o={fade(t, 0.8)}>pipe</T>
       <T x={536} y={50} s={13} a="end" f={C.taupe} o={script}>script</T>
       {ROWS.map(([status, n], i) => {
         const y = 82 + i * 32;
         const at = 1.0 + i * 0.3;
         return (
           <g key={status}>
-            <T x={290} y={y} s={15} f={C.latte} o={fade(t, at)}>{status}</T>
-            <T x={450} y={y} s={15} a="end" f={C.crema} o={fade(t, at)}>{n}</T>
+            <T x={272} y={y} s={15} f={C.latte} o={fade(t, at)}>{status}</T>
+            <T x={456} y={y} s={15} a="end" f={C.crema} o={fade(t, at)}>{n}</T>
             <T x={536} y={y} s={15} a="end" f={C.crema} o={script}>{n}</T>
           </g>
         );
       })}
-      <T x={290} y={236} s={15} f={C.caramel} o={fade(t, 2.8)}>diff: 0 lines, exit 0</T>
+      <T x={272} y={236} s={15} f={C.caramel} o={fade(t, 2.8)}>diff: 0 lines, exit 0</T>
       <T x={30} y={326} s={15} f={C.cherryText} o={fade(t, 3.3)}>without awk: 7 groups, not 4</T>
-      <T x={30} y={348} s={13} f={C.latte} o={fade(t, 3.3)}>{`40 events: 'Paid'  'SHIPPED '  ' refunded'`}</T>
+      <T x={30} y={348} s={13} f={C.latte} o={fade(t, 3.3)}>{'40 events: Paid · SHIPPED␣ · ␣refunded'}</T>
     </Svg>
   );
 }
@@ -381,19 +397,20 @@ export function CronSsh({ t }: StepCtx) {
           <T x={70 + i * 100} y={68} s={13} a="middle" f={C.latte}>{l}</T>
         </g>
       ))}
-      <T x={30} y={98} s={13} f={C.crema} o={fade(t, 0.9)}>/opt/etl/nightly.sh &gt;&gt; /var/log/nightly.log 2&gt;&amp;1</T>
-      <T x={30} y={122} s={13} f={C.taupe} o={fade(t, 1.3)}>cron's env: SHELL HOME LOGNAME, no shell PATH</T>
-      <T x={30} y={148} s={15} f={C.caramel} o={fade(t, 1.6)}>runs at 02:15 every day</T>
-      <Line x1={150} y1={235} x2={150 + 266 * tube} y2={235} c={C.caramel} w={8} o={tube > 0 ? 1 : 0} />
-      {([['laptop', ':5433', 30], ['bastion', 'a hop', 240], ['db.internal', ':5432', 416]] as [string, string, number][]).map(([n, s, x], i) => (
+      <T x={30} y={98} s={15} f={C.caramel} o={fade(t, 0.9)}>runs at 02:15 every day</T>
+      <T x={30} y={124} s={13} f={C.crema} o={fade(t, 1.3)}>/opt/etl/nightly.sh &gt;&gt; /var/log/nightly.log 2&gt;&amp;1</T>
+      <T x={30} y={148} s={13} f={C.latte} o={fade(t, 1.6)}>cron's env: SHELL HOME LOGNAME, no shell PATH</T>
+      <Line x1={30} y1={172} x2={536} y2={172} c={C.taupe} w={1} o={0.5 * fade(t, 1.8)} />
+      <Line x1={150} y1={239} x2={150 + 266 * tube} y2={239} c={C.caramel} w={8} o={tube > 0 ? 1 : 0} />
+      {([['laptop', ':5433', 30], ['bastion', 'a hop', 240], ['db', ':5432', 416]] as [string, string, number][]).map(([n, s, x], i) => (
         <g key={n} opacity={fade(t, 1.9 + i * 0.2)}>
-          <rect x={x} y={210} width={120} height={50} rx={12} fill={C.espresso} stroke={C.crema} strokeWidth={2} />
-          <T x={x + 60} y={231} s={13} a="middle" f={C.crema}>{n}</T>
-          <T x={x + 60} y={250} s={13} a="middle" f={C.latte}>{s}</T>
+          <rect x={x} y={214} width={120} height={50} rx={12} fill={C.espresso} stroke={C.crema} strokeWidth={2} />
+          <T x={x + 60} y={235} s={13} a="middle" f={C.crema}>{n}</T>
+          <T x={x + 60} y={254} s={13} a="middle" f={C.latte}>{s}</T>
         </g>
       ))}
-      <T x={30} y={192} s={13} f={C.crema} o={fade(t, 2.9)}>ssh -N -L 5433:db.internal:5432 user@bastion</T>
-      <T x={300} y={288} s={13} a="middle" f={C.taupe} o={fade(t, 3.0)}>key in authorized_keys</T>
+      <T x={30} y={196} s={13} f={C.crema} o={fade(t, 2.9)}>ssh -N -L 5433:db.internal:5432 user@bastion</T>
+      <T x={300} y={292} s={13} a="middle" f={C.taupe} o={fade(t, 3.0)}>key in authorized_keys</T>
     </Svg>
   );
 }
@@ -401,14 +418,15 @@ export function CronSsh({ t }: StepCtx) {
 // 10 · Recap in one breath.
 const RECAP: [string, string][] = [
   ['fork, exec, wait', "the child's status comes back as one byte"],
-  ['0 1 2', 'stdin, stdout, stderr; 2>&1 copies where 1 points'],
+  ['0 · 1 · 2', 'stdin, stdout, stderr; 2>&1 copies 1 now'],
   ['pipefail', 'status = last command, unless asked'],
   ['126, 127, 128+n', 'not executable, not found, killed by signal n'],
   ['TERM then KILL', '15 can be caught; 9 cannot'],
-  ['R S D Z', 'ps and /proc say which; strace -p, what it is in'],
-  ['jq | awk | sort | uniq -c', 'diff against the script; grep, sed for log lines'],
+  ['R · S · D · Z', 'ps, /proc: which; strace -p: what call'],
+  ['jq | awk | sort | uniq -c', 'diff against the script; grep, sed: logs'],
   ['cron, ssh -L', 'five fields, tiny env; a port via a hop'],
 ];
+const MONO_ROWS = ['pipefail', 'jq | awk | sort | uniq -c', 'cron, ssh -L'];
 export function Recap({ t }: StepCtx) {
   return (
     <Svg label="Recap of the eight points" h={480}>
@@ -418,7 +436,7 @@ export function Recap({ t }: StepCtx) {
         return (
           <g key={k} opacity={a} transform={`translate(${(1 - a) * 30} 0)`}>
             <rect x={30} y={y} width={506} height={53} rx={11} fill={C.roast} />
-            <T x={50} y={y + 22} s={16} f={C.caramel} serif w={700}>{k}</T>
+            <T x={50} y={y + 22} s={16} f={C.caramel} serif={!MONO_ROWS.includes(k)} w={700}>{k}</T>
             <T x={50} y={y + 43} s={14} f={C.crema}>{v}</T>
           </g>
         );

@@ -403,3 +403,17 @@ Fixes for `REVIEW.md` "Content review (Fable, 2026-10-11)"; the outline's own te
 - **Deep dive.** Post-build claims sourced or executed (FACT-CHECK.md, "Post-build additions"); the `mv` and `tolower` clauses are now executed, the cron "no login profile" clause is marked as reasoning; `timeout` 137, fork-inherited dispositions, `-tt`, the SIGHUP condition and the PID-namespace placement corrected; "Try it" says where `examples.sh` and `hung_load.py` are.
 - **`examples.sh` / `examples.py`.** New asserts for the post-build claims, and `hung_syscall_fd` (field 2 of `/proc/<pid>/syscall`) is asserted to be 4 where readable.
 
+## Build notes: changes after the looks review (2026-10-11)
+
+Fixes for `REVIEW.md` "Looks review (Opus, 2026-10-11)"; the plan above is kept, and these notes say what the build now does. `narration.json` is unchanged.
+
+- **Step 1.** Body no longer repeats the bridge sentences.
+- **Step 2.** The child's sockets are labelled keyboard and terminal, and the output line runs up to the shell's `terminal` label.
+- **Step 3.** Answer frame is the question frame's height; numbered glyphs 1 and 2 sit on the two re-pointings, with a dashed ghost of socket 1's first line to the terminal; no legend. Duration 2.0.
+- **Step 4.** Answer frame is the same height as the question frame; `$? = 0` hangs on an arrow from the `uniq -c` token, the pipefail `$? = 2` is smaller and cherry; `PIPESTATUS` is left to the Deep dive. Duration 2.4.
+- **Step 5.** Markers carry their code numbers, the pin says `125 skip`, and the code panel has no `# nnn` comments. Duration 4.4.
+- **Step 6.** The bottom row is a separate "left behind" row: a parent above the `zombie` box, `init` above the `orphan` box (this replaces the plan's tiny-`init` box and the TERM/KILL column placement).
+- **Step 7.** Body about 190 characters, the state letters live in the explain and the narration; the question frame shows all beats (duration 3.4); the answer has the 143 on the TERM row, `read(4,` in caramel and "no sender" under the tube.
+- **Step 8.** Table columns re-spaced and joined to `uniq -c` by a tube; the dirty spellings read `Paid · SHIPPED␣ · ␣refunded`.
+- **Step 9.** Chips, then the decoded reading, command and env line; a rule before the ssh block; the database box reads `db :5432`.
+- **Step 10.** Shorter summaries on rows 2, 6 and 7; `0 · 1 · 2` and `R · S · D · Z`; code-like names in mono.

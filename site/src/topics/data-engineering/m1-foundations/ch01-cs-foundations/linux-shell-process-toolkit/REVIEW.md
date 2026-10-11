@@ -159,3 +159,144 @@ Overall: the topic is carefully sourced and executed, the bridge from bisect's e
 - *Where:* `examples.sh` lines 326–343; `examples.py` lines 79–85.
 - *What:* when `strace -p` is refused (`strace_read=skipped`), the only fd assertion is that `/proc/<pid>/fd/4` is a socket. `hung_load.py` opens three sockets (fds 3, 4, 5), so that holds whichever one the main thread reads from; the on-screen `read(4,` is then unasserted on that runner. `FACT-CHECK.md` R6 asked for exactly this ("`examples.py` must assert the number it printed, and the reel shows that number"). `/proc/<pid>/syscall` is read when readable (line 335) but only its first field is kept; its second field is the first argument of the call, the fd.
 - *Fix:* when `/proc/<pid>/syscall` is readable, print its second field as `hung_syscall_fd` and assert it is `4` (and the first field `0` or `63` by architecture); when neither strace nor `syscall` is readable, record in this file that the runner could not verify the fd, as R6 suggested.
+
+## Looks review (Opus, 2026-10-11)
+
+What I looked at: all 20 screenshots in `site/test-results/` (`desktop-` and `phone-linux-shell-process-toolkit-01…10.png`, made by `PREVIEW_HELD=1 node ../scripts/check-all.mjs --only reels --topic linux-shell-process-toolkit`), read against `OUTLINE.md` ("The reel: 10 steps" and the build notes), `narration.json`, `reel.tsx`, `scenes.tsx` and `DESIGN.md` → "The looks review checks". The test answers each predict step with its *first* (wrong) option, so the test screenshots never show a question frame or a correct-answer frame. Its phone `-01` file also shows step 2 at t = 0, not step 1 (a quirk in the shared test's click-then-ArrowRight loop, not this topic). So I made extra captures with a throwaway Playwright script against `astro preview`, saved in the session scratchpad and not committed: phone step 1, the finished question frames of steps 3, 4 and 7, and their correct-answer frames, at both sizes. **The reels test fails today** on two layout problems, findings 1 and 2. Paths are relative to this folder.
+
+**Totals: 18 findings: 4 high, 7 medium, 7 low.** High: 1, 2, 3, 4.
+
+Overall: the reel has a real visual idea, and it belongs to the site. The process tree (boxes with 0/1/2 sockets, taupe tubes, round status tokens riding up to the parent, cherry for a bad outcome) carries steps 2, 3, 4, 6 and 7 in one grammar. Colour keeps its meaning, and no step uses more than two accents. Steps 2, 8 and 10 are clean at both sizes. The weak spots are the three predict steps: their question frames are cut short by the step durations, their answer frames are crowded or shrunk on a phone, and step 7's caption is so long that it pushes the page out of shape at both sizes. Then come two label collisions that fail CI, and a few final frames whose point the eye doesn't land on first.
+
+---
+
+**1. Step 7: "no handler here: 143" overlaps `kill -KILL <pid>` on the phone and runs into it on desktop, and it labels the wrong command. (high)**
+- **Status: Fixed. `HungJob` answer: the 143 token and 'no handler here' now sit on the TERM row (right of `kill -TERM <pid>`), the KILL row is 56 units lower; no shared baseline, no overlap.**
+- *Where:* `scenes.tsx` `HungJob`, answer frame: `kill -TERM <pid>` (x 232, y 228), the token `143` (x 450, y 222), "no handler here: 143" (centred at x 450, y 262) and `kill -KILL <pid>` (x 232, y 268).
+- *What:* the label is centred under the token. It is about 20 characters wide, so it starts near x 370, and that is where the 16-character `kill -KILL <pid>` ends. On the phone the two overlap; on desktop they are about 7 units apart. The label also sits on the same baseline as the KILL command, so it reads as "KILL → 143". The 143 belongs to TERM (it is 128 + 15, as step 5 just taught), so the picture teaches the wrong pairing.
+- *Evidence:* `phone-…-07.png` (the text "<pid>" and "no handler" print on top of each other); `desktop-…-07.png` ("kill -KILL <pid> no handler here: 143" reads as one line); the reel test: "step 7: text "no handler here: 143" overlaps "kill -KILL"".
+- *Fix:* put the token and its label on the TERM line: `kill -TERM <pid>  → 143` with "no handler here" (latte 13) under the token. Drop the KILL line by 30+ units so that nothing shares its baseline, or put "no handler: 143" to the right of the TERM command and leave the KILL row alone.
+
+**2. Step 6 on the phone: "ended, not waited for" runs into "adopted by init (or a subreaper)". (high)**
+- **Status: Fixed. `Signals` bottom row rebuilt: divider and 'left behind' heading, each leftover hangs from a drawn parent (`parent` / `init`), captions shortened to 'not waited for' and 'parent died' and centred 130 / 440 apart. The reels test no longer reports it.**
+- *Where:* `scenes.tsx` `Signals`, bottom row: the label centred at x 120 and the label centred at x 390, both at y 326.
+- *What:* the two captions are 21 and 32 characters wide. At phone text scale they need about 170 and 260 units, but only 270 units separate their centres, so they meet. The phone shows one unbroken line, "ended, not waited for adopted by init (or a subreaper)".
+- *Evidence:* `phone-…-06.png`; the reel test: "step 6: text "ended, not waited for" runs into "adopted by init (or a subreaper)"".
+- *Fix:* shorten the right label to "parent died" or "re-parented", because the `init / subreaper` label above the box already says who adopts it. Stack each caption on two lines, or move the orphan group right (box at x 380–500). See also 10.
+
+**3. The question frames of steps 3, 4 and 7 never finish: each step's `duration` ends before its last beats. (high)**
+- **Status: Fixed. Durations: step 3 1.4 to 2.0, step 4 1.8 to 2.4, step 7 1.6 to 3.4 (every beat lands 0.2+ s before the end), step 5 4.2 to 4.4. The step 5 bisect line is gone (see 9).**
+- *Where:* `reel.tsx` durations, step 3 `1.4`, step 4 `1.8` and step 7 `1.6`, against the beats in `scenes.tsx`. `ReelPlayer.tsx` clamps `t` at `duration` (line 88), so a beat that starts at or after the duration never shows.
+- *What:* **Step 7** (worst): `wchan` (1.6), `fd/4 → socket` (2.0), `strace -p` and `read(4,` (2.4) and the "?" (2.8) never appear. The learner is asked "what is it doing?" with only `State: S` and `Threads: 2` on screen, and the strace line the whole diagnosis turns on is missing. **Step 4:** the `$? = ?` row (fades in from 1.8) has opacity 0 when the clock stops at 1.8, so the frame never says what is being asked; only the three dashed token slots show. **Step 3:** the "?" pops from 1.3 to 1.7 and freezes at about a quarter of its pop, so it renders as a small, half-grown glyph floating above the lines.
+- *Evidence:* scratchpad captures `desktop-q07.png` and `phone-q07.png` (two evidence lines only), `phone-q04.png` (no `$?` row) and `phone-q03.png` / `desktop-q03.png` (small "?"), each taken 5 s after the step opened.
+- *Fix:* step 7 `duration` 3.2 (or compress the beats into 0.2–1.4); step 4 at least 2.2; step 3 at least 1.7. Better still, make every question-frame beat land by `duration − 0.4`. Step 5 has a milder case: the bisect line (3.9 + 0.4) ends after 4.2 and stops at about 94 % opacity. Set it to 4.4 or start the line at 3.7.
+
+**4. Step 7's caption is about 480 characters and breaks the layout at both sizes. (high)**
+- **Status: Fixed. Step 7 body cut to about 190 characters; the R/S/D/Z legend moved into the `explain` (and stays in the narration). Desktop header no longer touches the nav; phone shows the title and full caption above the options.**
+- *Where:* `reel.tsx` step 7 `body`. `OUTLINE.md` asks for predict captions of about 200 characters, a rule taken from the Git looks review.
+- *What:* on **desktop** the body, four two-line options and the explain panel push the step header up under the top navigation. "REFRESHER 7/10 · §1.1 · LINUX SHELL AND" is cut by the "Data Engineering" pill. On the **phone** a predict body is shown in full (no MORE), so the caption scrolls: the title is pushed out of view, the visible text starts mid-sentence ("finished, not failed."), and in the question frame the options sit behind the playback controls.
+- *Evidence:* `desktop-…-07.png` and scratchpad `desktop-a07-correct.png` (the header overlaps the nav); `phone-…-07.png` (the caption starts at "finished, not failed."); scratchpad `phone-q07.png` (the option buttons are cut off at the bottom).
+- *Fix:* cut the body to the question: "The nightly load has sat for an hour. `/proc` says `S` and `Threads: 2` (two threads, one memory; `ps -L`). `strace -p` shows `read(4,` and nothing more. What is it doing?" (about 190 characters). Move the R/S/D/Z legend into the `explain`, which already names R, D and Z, and into the narration. Then recheck steps 3 and 4 on the phone; their explain panels also run under the controls.
+
+**5. On the phone, the answer frames of steps 3 and 4 shrink to about 55 % width, and the drawing jumps between question and answer. (medium)**
+- **Status: Fixed. Both answer frames are now the same height as their question frames (step 3 260, step 4 300), so nothing shrinks on answer. Step 3 lost the legend lines and the 'this order' label; step 4 lost PIPESTATUS and the side-by-side rows became stacked captions under each token.**
+- *Where:* `scenes.tsx` `WhereDidItGo` and `PipelineStatus`: the answer `Svg h={380}`, against `h={260}` and `h={300}` for the question frames.
+- *What:* the phone keeps the drawing's height fixed above the long predict caption, so a 380-tall canvas is drawn at about 0.37 scale. The labels sit at the 9 px floor, the pipe stubs between the step 4 boxes are a few pixels, and when the learner answers, the whole picture visibly shrinks and moves. `OUTLINE.md` puts canvas heights at 230–350.
+- *Evidence:* `phone-…-03.png` and `phone-…-04.png` (the drawing spans x ≈ 240–885 of 1170 px) next to scratchpad `phone-q03.png` and `phone-q04.png` (the drawing spans x ≈ 80–1045).
+- *Fix:* keep each answer frame at the question frame's height. In step 3, drop the fix lines (`> out.log 2>&1` / "this order: …"), because the explain already says it, or put them on one line. In step 4, put `$? = 0` and the pipefail row side by side under the tokens and drop `PIPESTATUS` (it is in the Deep dive) to save about 40 units.
+
+**6. Step 4's answer frame: `$? = 0` sits directly under the cherry `2` token, and the cherry `$? = 2` is the loudest thing on screen. (medium)**
+- **Status: Fixed. `$? = 0` (Fraunces 22, crema) now hangs on a short taupe arrow from the `uniq -c` token with 'the last command's' beside it; the pipefail answer is a smaller cherry `$? = 2` (17) on a cherry arrow from the `2` token.**
+- *Where:* `scenes.tsx` `PipelineStatus` answer frame: `$? = 0` at x 30, under `jq`'s token at x 105; "the last command's" at x 170; the pipefail row `$? = 2` at x 216.
+- *What:* the step's point is "the shell keeps the rightmost token". Nothing joins the `uniq -c` token to `$? = 0`. Proximity instead pairs `$? = 0` with the failing `jq`, the one wrong pairing the step exists to prevent. The eye lands first on the filled cherry token and the cherry Fraunces `$? = 2`, the pipefail answer, not on the answer to the question (0).
+- *Evidence:* `desktop-…-04.png` and scratchpad `phone-a04-correct.png`.
+- *Fix:* put `$? = 0` (Fraunces 20, crema) under or right of the `uniq -c` token with a short taupe arrow from that token, and "the last command's" beside it. For the pipefail row, draw a thin cherry arrow from the `2` token to `$? = 2` and make it smaller (17) than the main answer, so the answer to the question is the biggest thing.
+
+**7. Step 3's answer frame shows the end state but not the order, which is the lesson. (medium)**
+- **Status: Fixed. The two re-pointings carry numbered glyphs 1 (socket 2's line) and 2 (socket 1's line) on the lines themselves, and a dashed taupe ghost of socket 1's original line to the terminal shows what 2 copied. The legend is gone.**
+- *Where:* `scenes.tsx` `WhereDidItGo` answer frame: two identical caramel lines and the legend `① 2>&1 copies fd 1: the terminal` / `② > out.log moves fd 1 to the file` below them.
+- *What:* `OUTLINE.md` planned ① and ② on the lines themselves. As built, both re-pointings look the same, the numbers live only in a text legend under the picture, and nothing shows that fd 1 *was* on the terminal when fd 2 copied it. A watcher who doesn't read the legend sees "1 → file, 2 → terminal" with no reason. The frame also carries eight text items (command, `out.log` / "0 lines", `terminal`, the error line, ①, ②, the fix, its label), double the checklist's four.
+- *Evidence:* `desktop-…-03.png`, `phone-…-03.png`.
+- *Fix:* put ① at the midpoint of the socket-2 line and ② on the socket-1 line, as small glyphs on the lines. Keep a dashed taupe "ghost" of socket 1's first line to the terminal, which shows what 2 copied. Then the legend lines can go (the explain says them), and that also frees the height for 5.
+
+**8. Step 7's answer frame: the biggest element is the `143` token, and 13 labels compete. (medium)**
+- **Status: Fixed. The answer now leads: `read(4,` turns caramel, 'no sender' (cherry 15) is centred under the dashed tube end, the 143 is part of the TERM row, and 'only if it is still there' is dropped. Token kept at r 24 so that the three digits fit.**
+- *Where:* `scenes.tsx` `HungJob` answer frame.
+- *What:* the answer is "blocked in `read` on a socket with no sender", but the largest, most prominent shape is the 143 token (r 24), a follow-up detail. On top of the four evidence lines, `strace -p`, `read(4,`, the box, socket 4, the `socket` tab, "no sender", two kill commands, the token, its label and "only if it is still there" all compete. "No sender" (the answer) starts at x 30 while its tube is at x 115, so it hangs off-centre to the left.
+- *Evidence:* `desktop-…-07.png` and scratchpad `desktop-a07-correct.png`.
+- *Fix:* make the answer the focal point. Put "no sender" (cherryText 15) centred under the dashed tube end, and turn the `read(4,` line caramel in the answer frame (the call that never returns). Shrink the token to r 17, or show "→ 143" as text (see 1). Drop "only if it is still there", which the caption and explain both say.
+
+**9. Step 5's bar has no scale, and its markers can only be matched to the legend by counting. (medium)**
+- **Status: Fixed, with one deviation. The bar's markers now carry their code numbers beneath (126, 127, 130, 137, 143; 127 staggered one row down so the labels don't touch) and the pin reads '125 skip'; the bottom bisect line is dropped. No 128 or 255 ticks: at phone scale they collide with the 143 label, and the title and the '128 + signal' band label already carry them.**
+- *Where:* `scenes.tsx` `ExitCodes`: the bar's labels are "0 ok", "1–125 own codes" and "128 + signal"; the markers are two crema rings (126, 127) and two caramel rings plus one cherry ring (130, 137, 143); the taupe pin at x 268 has no label.
+- *What:* the title promises "0 to 255, and 128 plus the signal", but 128 and 255 are never written on the bar. The 125 pin is explained only by a line 200 units lower ("bisect: 125 = skip…"). The two caramel markers (130, 143) look the same, so the bar-to-legend link is "same colour, count from the left". Because the bar is not to scale (build note), the eye can't use position either.
+- *Evidence:* `desktop-…-05.png`, `phone-…-05.png`.
+- *Fix:* add small taupe tick numbers under the bar at 125, 128 and 255, or put the code number in each marker (13-unit text under each ring: 126 127 · 130 137 143). Label the pin directly ("125 skip", latte 13, under the triangle) and drop the bottom line, or shorten it to "bisect skips on 125". On the phone that also clears the bottom line, which now sits about 19 px above the REFRESHER chip.
+
+**10. Step 6's bottom row: the zombie sits under the TERM column and the orphan under the KILL column, and the word "zombie" is not on screen. (medium)**
+- **Status: Fixed. See 2: separate 'left behind' row, a parent drawn above the zombie, the word 'zombie' in the Z box, a shortened orphan caption.**
+- *Where:* `scenes.tsx` `Signals`: the Z box at x 60–180 (the TERM column) and the orphan at x 330–450 (the KILL column).
+- *What:* placed in the two signal columns, the leftovers read as results of those signals ("TERM leaves a zombie, KILL leaves an orphan"), which is wrong. The Z box floats with no parent line, although "not waited for" is about a parent, and the screen says "Z", never "zombie". The orphan's caption repeats the `init / subreaper` label just above it.
+- *Evidence:* `desktop-…-06.png` and `phone-…-06.png`.
+- *Fix:* separate the row from the trees: add a thin taupe divider at y ≈ 235, or a quiet heading "left behind" (taupe 13), and centre the two items as a pair. Hang the Z box from a small parent box with the line drawn (the parent alive, not waiting), and label it "zombie: ended, not waited for". Shorten the orphan's caption as in 2.
+
+**11. Step 2 doesn't draw the sentence it ends on: the child inherits the same three files. (low)**
+- **Status: Fixed. The child's sockets are labelled keyboard / terminal like the parent's, and the caramel output line now runs from the child's socket 1 up to the shell's `terminal` label instead of into empty space.**
+- *Where:* `scenes.tsx` `ForkExecWait`: the child's sockets 0/1/2 are drawn but connect to nothing, and the caramel output dash from socket 1 runs 66 units into empty space.
+- *What:* the caption and narration end on "the child starts with the same three open files". The shell's sockets are labelled `keyboard` / `terminal`, but the child's are bare, so inheritance is not shown, and the program's output goes nowhere visible.
+- *Evidence:* `desktop-…-02.png`, `phone-…-02.png`.
+- *Fix:* label the child's sockets like the parent's (`keyboard` on the left, `terminal` on the right, taupe 13), or draw thin taupe lines from the child's 1/2 up to the parent's `terminal` label. End the caramel dash at that terminal label.
+
+**12. Step 10 on the phone: three summary lines run past their row cards. (medium)**
+- **Status: Fixed by trimming (not widening): rows 2, 6 and 7 use the 40-character summaries suggested.**
+- *Where:* `scenes.tsx` `Recap`: the cards are 506 units wide (x 30–536) and the summaries are 14 units. Rows 2 ("stdin, stdout, stderr; 2>&1 copies where 1 points", 49 characters), 6 and 7 overflow.
+- *What:* at phone text scale those lines go past the card's right edge by about 25 units. The page doesn't clip, but the card no longer contains its text, and the ragged right edge stands out in an otherwise tidy list.
+- *Evidence:* `phone-…-10.png` (row 2 ends at x ≈ 1100 px; the card ends at ≈ 1025 px).
+- *Fix:* widen the cards to x 20–580 (the rail rule applies to desktop only and the recap is centred there), or trim rows 2, 6 and 7 to 42 characters or fewer: "stdin, stdout, stderr; 2>&1 copies 1 now", "ps, /proc: which; strace -p: what call", "diff against the script; grep, sed: logs".
+
+**13. Step 8 on the phone: "cancelled" and "1300" sit about 12 units apart, and the table isn't connected to the pipeline. (low)**
+- **Status: Fixed. Status column moved to x 272, pipe counts end at 456 (script counts stay at 536), and a taupe tube joins the `uniq -c` box to the table. The pipe/script headers moved with the counts after the test flagged them touching.**
+- *Where:* `scenes.tsx` `PipelineLab`: the status at x 290, the right-aligned count ending at x 450, the script column ending at x 536.
+- *What:* at phone text scale, "cancelled 1300" reads almost as one token (the house minimum is 24 units). The output table also floats to the right of the `uniq -c` box with no tube or arrow, so "these are the pipeline's output" is implied only by the column header `pipe`.
+- *Evidence:* `phone-…-08.png`.
+- *Fix:* move the status column to x 270 and the pipe counts to x 470 (script counts stay at 536), or drop the status words to latte 14. Add a short taupe tube or arrow from `uniq -c`'s right edge to the first row.
+
+**14. Step 8: the quoted dirty spellings read as four tokens. (low)**
+- **Status: Fixed. Now `40 events: Paid · SHIPPED␣ · ␣refunded`.**
+- *Where:* `scenes.tsx` `PipelineLab` line 366: `40 events: 'Paid'  'SHIPPED '  ' refunded'`.
+- *What:* the content-review fix (finding 18) added quotes, but the two-space separators match the blanks inside the quotes. `'SHIPPED '  ' refunded'` scans as `'SHIPPED '`, `' '`, `'refunded'`, so the eye finds a quoted blank token, and the leading blank of ` refunded` (the point) is the hardest to see.
+- *Evidence:* `desktop-…-08.png`, `phone-…-08.png`.
+- *Fix:* mark the blanks with `␣` and separate the items with ` · `: `40 events: Paid · SHIPPED␣ · ␣refunded`.
+
+**15. Step 9: two panels with no separation, the reading of the cron line far from its fields, the env line in taupe, and `db.internal` filling its box on the phone. (low)**
+- **Status: Fixed. Order is chips, 'runs at 02:15 every day', command, env line (latte), then a thin rule before the ssh block; the database box reads `db` / `:5432` (the command line carries `db.internal`).**
+- *Where:* `scenes.tsx` `CronSsh`.
+- *What:* the chips are followed by the command, then "cron's env…" in taupe, then "runs at 02:15 every day" in caramel. The decoded meaning of the chips (the line to look at) comes third, after a quiet line, and the env line is one of the step's three cron pitfalls, yet it is drawn as a quiet caption. The ssh command starts 44 units below the cron block with nothing to mark a new topic, so it reads as part of the cron panel. On the phone, `db.internal` spans almost the full 120-unit box (about 5 units of padding per side).
+- *Evidence:* `desktop-…-09.png`, `phone-…-09.png`.
+- *Fix:* order the block as chips → "runs at 02:15 every day" → command → env line (latte, not taupe). Add a thin taupe rule or 20 more units of gap before the ssh command. Widen the database box to 140 units (x 416–556), or label it `db :5432`.
+
+**16. Step 1: the bridge quote and the body say the same two sentences, one above the other. (low)**
+- **Status: Fixed. Step 1 body is now 'Five minutes on processes, signals and pipes; all familiar? Swipe on to the delivery workflow.' The registry is untouched. Narration unchanged (its first sentences are the bridge).**
+- *Where:* `reel.tsx` step 1 `body`; the bridge text comes from `site/src/topics/registry.ts` line 65 and is shown by the player above the title.
+- *What:* "Bisect trusted an exit code. Here is where exit codes come from: processes, their signals, and the pipes between them." prints twice, in italics and then as the body, at both sizes. The Python refresher's body does not repeat its bridge.
+- *Evidence:* `desktop-…-01.png` and scratchpad `phone-s01.png`.
+- *Fix:* change the step 1 body only (not the registry, which is shared): "Five minutes on processes, signals and pipes; all familiar? Swipe on to the delivery workflow."
+
+**17. Step 10: "0 1 2" in Fraunces reads as "012", and the command names are set in serif. (low)**
+- **Status: Fixed. Row 2 reads `0 · 1 · 2`, row 6 `R · S · D · Z`; the code-like names (pipefail, the pipeline, `cron, ssh -L`) are in mono.**
+- *Where:* `scenes.tsx` `Recap` row names (Fraunces 16, caramel).
+- *What:* Fraunces has narrow word spaces, so `0 1 2` renders as "012", a number, and the pipeline name `jq | awk | sort | uniq -c` and `ssh -L` are code set in a display serif. DESIGN allows one serif word or number per step for emphasis; eight serif headings works for a recap list, but code in serif reads oddly next to the mono summaries.
+- *Evidence:* `desktop-…-10.png`, `phone-…-10.png`.
+- *Fix:* write row 2 as `0 · 1 · 2`, or set the code-like names (rows 2, 6, 7, 8) in mono 16 caramel and keep Fraunces for the word rows.
+
+**18. Step 5 on the phone: the code panel and the legend say each code twice. (low)**
+- **Status: Fixed. The `# nnn` comments are removed from the code panel; the legend is the one place codes and causes meet.**
+- *Where:* `scenes.tsx` `ExitCodes`: the four `# 126 / # 127 / # 137 / # 143` comments in the code panel, then the five legend rows.
+- *What:* the code panel already labels each code, and the legend repeats them with their causes. On the phone, the space above the caption holds two lists of the same numbers, and the bar, the one new idea, is squeezed between them.
+- *Evidence:* `phone-…-05.png`.
+- *Fix:* drop the `# nnn` comments from the code panel, so each command links to its row by order, and the legend stays the one place codes and causes meet. The rows keep their numbers.
+
+
+### Looks review fixes (2026-10-11)
+
+All 18 findings are fixed (see the status line under each). `node scripts/check-all.mjs --only reels --topic linux-shell-process-toolkit` passes (no overlap, clip or small-text failures) and `cd site && npm run build` succeeds. The narration is unchanged: no line contains a slash, and every changed picture still shows what the narration says.

@@ -9,8 +9,7 @@ const reel: Reel = {
       title: 'The shell, in five minutes',
       body: (
         <>
-          Bisect trusted an exit code. Here is where exit codes come from: processes, their signals, and the pipes between them. Five minutes; all familiar?
-          Swipe on to the delivery workflow.
+          Five minutes on processes, signals and pipes; all familiar? Swipe on to the delivery workflow.
         </>
       ),
       duration: 2,
@@ -36,7 +35,7 @@ const reel: Reel = {
           error line to stderr: where does it land?
         </>
       ),
-      duration: 1.4,
+      duration: 2,
       predict: {
         options: [{ label: 'In out.log' }, { label: 'On the terminal', correct: true }, { label: 'In both' }, { label: 'Nowhere; it is discarded' }],
         explain: (
@@ -56,7 +55,7 @@ const reel: Reel = {
           <code>sort</code> and <code>uniq -c</code> are happy with nothing. What does the shell report?
         </>
       ),
-      duration: 1.8,
+      duration: 2.4,
       predict: {
         options: [{ label: '2' }, { label: '0', correct: true }, { label: '1' }, { label: '127' }],
         explain: (
@@ -77,7 +76,7 @@ const reel: Reel = {
           bisect reserved 125 for "skip" and distrusts a first-run 126 or 127.
         </>
       ),
-      duration: 4.2,
+      duration: 4.4,
       Visual: S.ExitCodes,
     },
     {
@@ -98,19 +97,17 @@ const reel: Reel = {
       title: 'A load job hangs: what is it doing?',
       body: (
         <>
-          The nightly load has sat for an hour, not finished, not failed. <code>/proc/&lt;pid&gt;/status</code> says <code>S</code> and{' '}
-          <code>Threads: 2</code>: two threads sharing the process's memory (<code>ps -L</code> lists them), and <code>ps</code> reads <code>Sl</code>. The state
-          letters: R runs, S waits for an event, D waits for I/O and ignores even kill until it returns, Z is dead. <code>strace -p</code> shows{' '}
-          <code>read(4,</code> and nothing more. What is it doing?
+          The nightly load has sat for an hour. <code>/proc</code> says <code>S</code> and <code>Threads: 2</code> (two threads, one memory;{' '}
+          <code>ps -L</code>). <code>strace -p</code> shows <code>read(4,</code> and nothing more. What is it doing?
         </>
       ),
-      duration: 1.6,
+      duration: 3.4,
       predict: {
         options: [{ label: 'Spinning in a loop' }, { label: 'Waiting in read() on fd 4, a socket nobody writes to', correct: true }, { label: 'Waiting for the disk' }, { label: "It's a zombie" }],
         explain: (
           <>
-            Waiting in <code>read()</code> on fd 4, a socket. <code>S</code> is an interruptible sleep: it wakes the moment data arrives, or a signal. Spinning
-            would show <code>R</code> and a busy CPU; a disk wait shows <code>D</code>; a zombie shows <code>Z</code> and has no open files. So{' '}
+            Waiting in <code>read()</code> on fd 4, a socket. <code>S</code> is an interruptible sleep: it wakes the moment data arrives, or a signal. The
+            state letters: R runs (spinning shows a busy CPU), S waits for an event, D waits for I/O and ignores even kill until it returns, Z is dead and has no open files. So{' '}
             <code>kill -TERM</code>, give it a moment, then <code>kill -KILL</code>. This job has no TERM handler, so the shell sees 143; step 6's job caught
             it and returned 0.
           </>
