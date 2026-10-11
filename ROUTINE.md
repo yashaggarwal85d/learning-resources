@@ -8,6 +8,7 @@ This is the procedure an automated session follows when a domain's daily routine
 - **One topic at a time.** Finish and ship a topic (all of sections 2–8) before starting the next. Never write several topics in parallel or mass-produce.
 - **Scope of a run: one topic.** Resume this domain's unfinished topic branch if there is one; otherwise make (or release) the next topic. Ship it, report, and stop: don't start a second topic in the same run, even with time left (it keeps usage within the plan's limits). A topic takes about 4–6 hours for a refresher and 8–12 hours for a full topic, including narration. If the run can't finish (time or usage limit), push the branch; the next run resumes it.
 - **Never publish anything half-done.** All work happens on a branch `topic/<topic-id>`. `main` (which deploys the live site) only receives a topic after every check below passes. If the run can't finish, push the branch, write down where it stopped (section 9), and stop. The next run resumes that branch before doing anything else.
+- **Measure the run.** At the start of each numbered section below run `node scripts/run-metrics.mjs mark <section name>` (it snapshots tokens and time from the session transcript), and at the very end, after the report is drafted, `node scripts/run-metrics.mjs finish <domain> <topic-id> <shipped|resumed|released|stopped>`, then commit `metrics/runs.jsonl` with the topic (or on the branch if the run stopped). If it says no transcript was found, carry on: never invent numbers. This is how future optimisation gets a real baseline.
 - **Privacy.** Never put personal information (names, email addresses, account details) in any web request, header or query, yourself or in any agent you launch.
 - **No vendors for the voice.** Narration is generated locally with the frozen voices in `site/narration/voice.json` (English narrator and German voice). Never change the voices, their settings or the pipeline.
 - **Everything needed is in the repo.** A fresh session has nothing installed: `site/narration/setup.sh` builds the narration tools, `npm ci` the site. If a tool, script or step you need isn't in the repo, that is a bug to fix in the repo (and record in `QUALITY.md`), not something to work around locally.
@@ -99,5 +100,6 @@ End the run with a short report for the owner:
 
 - the domain and chapter, and the topic shipped (or resumed, or released) this run, with its live link; how much of the chapter remains;
 - what was verified and how (fact-check corrections, executed examples, measured results);
+- the run's measured totals from `metrics/runs.jsonl` (tokens, calls, subagents, elapsed time) and the stage that used the most;
 - anything that needs a human: the narration to listen to (name two or three clips), and the expert sign-off still pending;
 - if the run stopped early: the branch, the step it stopped at, and what remains.
