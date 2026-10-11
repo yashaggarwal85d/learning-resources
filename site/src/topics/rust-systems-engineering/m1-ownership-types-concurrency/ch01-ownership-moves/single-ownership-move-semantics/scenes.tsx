@@ -97,19 +97,19 @@ function Counter({ x, y, label, v, t, a, d = 0.6, big = false, o = 1, zeroOk = f
 }
 
 // ── 1 · The problem ─────────────────────────────────────────────────────────────────────────────────────────────
-export function Problem({ t }: StepCtx) {
+export function Problem({ t, portrait }: StepCtx) {
   const slide = easeOutBack(seg(t, 2.0, 2.6));
   const cloneX = lerp(20, 330, slide);
   const grow = easeOut(seg(t, 2.6, 3.2));
   return (
     <Stack>
-      <Code
+      {(!portrait || t < 1.2) && <Code
         title="ingest.rs"
         t={t}
-        end={1.1}
+        end={portrait ? 0.9 : 1.1}
         lines={['fn ship(batch: Vec<u8>) -> usize {', '    batch.len()', '}', '', 'let batch = vec![7u8; 1_000_000];', 'let sent = ship(batch.clone());', 'println!("{sent} {}", batch.len());']}
         highlight={t > 1.2 ? [5] : []}
-      />
+      />}
       <Svg label="Shipping a 1,000,000-byte batch with .clone() makes one extra allocation and copies 1,000,000 bytes, for every batch" h={262} fill>
         <g opacity={fa(t, 1.2)}>
           <Card x={20} y={36} w={250} name="batch" len="1,000,000" cap="1,000,000" />
@@ -181,31 +181,31 @@ export function DoubleFree({ t }: StepCtx) {
   return (
     <Svg label="If both bindings owned the buffer it would be freed twice, a double free; with one owner it is freed once" h={420}>
       <g opacity={dim}>
-        <T x={30} y={36} s={13} f={C.taupe}>IF BOTH OWNED</T>
+        <T x={30} y={34} s={13} f={C.taupe}>IF BOTH OWNED</T>
         <g opacity={fa(t, 0, 0.6)}>
-          <Card x={50} y={60} name="s1" len="5" cap="5" />
-          <Card x={330} y={60} name="s2" len="5" cap="5" />
-          <Arrow x1={72} y1={106} x2={180} y2={138} />
-          <Arrow x1={352} y1={106} x2={300} y2={138} />
-          <T x={560} y={150} s={20} a="middle" f={C.latte}>{'}'}</T>
+          <Card x={50} y={72} name="s1" len="5" cap="5" />
+          <Card x={330} y={72} name="s2" len="5" cap="5" />
+          <Arrow x1={72} y1={118} x2={180} y2={148} />
+          <Arrow x1={352} y1={118} x2={300} y2={148} />
+          <T x={560} y={160} s={20} a="middle" f={C.latte}>{'}'}</T>
         </g>
-        <Cells x={165} y={140} text="hello" freed={freedA} o={fa(t, 0, 0.6)} />
-        {pulse(0.8, 352, 106, 300, 150)}
-        {pulse(1.6, 72, 106, 190, 150)}
-        {t >= 2.1 && <circle cx={240} cy={157} r={50 * burst} fill={C.cherry} opacity={0.6 * (1 - burst * 0.5)} />}
-        <T x={240} y={196} s={17} a="middle" f={C.cherryText} w={700} o={fa(t, 2.1, 0.3)}>double free</T>
-        <T x={440} y={170} s={17} f={C.cherryText} w={700} o={fa(t, 2.1, 0.3)}>frees: 2</T>
+        <Cells x={165} y={150} text="hello" freed={freedA} o={fa(t, 0, 0.6)} />
+        {pulse(0.8, 352, 118, 300, 160)}
+        {pulse(1.6, 72, 118, 190, 160)}
+        {t >= 2.1 && <circle cx={240} cy={167} r={50 * burst} fill={C.cherry} opacity={0.6 * (1 - burst * 0.5)} />}
+        <T x={240} y={206} s={17} a="middle" f={C.cherryText} w={700} o={fa(t, 2.1, 0.3)}>double free</T>
+        <T x={440} y={182} s={17} f={C.cherryText} w={700} o={fa(t, 2.1, 0.3)}>frees: 2</T>
       </g>
       <g opacity={fa(t, 2.9, 0.5)}>
         <T x={30} y={236} s={13} f={C.caramel}>RUST</T>
-        <Card x={50} y={260} name="s1" moved />
-        <Card x={330} y={260} name="s2" len="5" cap="5" />
-        <Arrow x1={352} y1={306} x2={300} y2={338} />
-        <T x={560} y={350} s={20} a="middle" f={C.latte}>{'}'}</T>
+        <Card x={50} y={284} name="s1" moved />
+        <Card x={330} y={284} name="s2" len="5" cap="5" />
+        <Arrow x1={352} y1={330} x2={300} y2={360} />
+        <T x={560} y={372} s={20} a="middle" f={C.latte}>{'}'}</T>
       </g>
-      <Cells x={165} y={340} text="hello" freed={freedB} o={fa(t, 2.9, 0.5)} />
-      {pulse(3.6, 352, 306, 300, 350)}
-      <T x={440} y={376} s={17} f={C.caramel} w={700} o={fa(t, 4.1, 0.5)}>frees: 1</T>
+      <Cells x={165} y={362} text="hello" freed={freedB} o={fa(t, 2.9, 0.5)} />
+      {pulse(3.6, 352, 330, 300, 372)}
+      <T x={440} y={400} s={17} f={C.caramel} w={700} o={fa(t, 4.1, 0.5)}>frees: 1</T>
     </Svg>
   );
 }
@@ -471,8 +471,8 @@ export function FdCopy({ t, answer, portrait }: StepCtx) {
   return (
     <Stack>
       {!(portrait && ans) && <Code title="fd.rs" t={t} end={1.0} lines={['#[derive(Clone, Copy)]', 'struct Fd(i32);', 'impl Drop for Fd {', '    fn drop(&mut self) {}', '}']} />}
-      <Svg label="A type with a destructor can never be Copy: two copies of a descriptor wrapper would close the same descriptor twice" h={300} fill>
-        <T x={300} y={ans ? 40 : 150} s={15} a="middle" f={C.latte} o={ans ? 0 : fa(t, 0.8)}>does it compile?</T>
+      <Svg label="A type with a destructor can never be Copy: two copies of a descriptor wrapper would close the same descriptor twice" h={262} fill>
+        <T x={300} y={ans ? 40 : 130} s={15} a="middle" f={C.latte} o={ans ? 0 : fa(t, 0.8)}>does it compile?</T>
         <g style={rv(ans)}>
           <T x={14} y={26} s={13} f={C.cherryText}>{'error[E0184]: the trait `Copy` cannot'}</T>
           <T x={14} y={46} s={13} f={C.cherryText}>be implemented for this type; the type</T>
@@ -540,7 +540,7 @@ export function BigMove({ t, answer, portrait }: StepCtx) {
     <Stack>
       {!(portrait && ans) && (
         <Code
-          title="big.rs"
+          title={portrait ? undefined : 'big.rs'}
           t={t}
           end={1.2}
           lines={[
@@ -558,8 +558,8 @@ export function BigMove({ t, answer, portrait }: StepCtx) {
       <Svg label="Moving a 4096-byte struct copies all 4096 bytes: the data lands at a new address and the program prints false" h={ans ? 300 : 120} fill>
         {!ans && <T x={300} y={64} s={15} a="middle" f={C.latte} o={fa(t, 0.8)}>how many bytes does take(b) copy?</T>}
         <g style={rv(ans)}>
-          <T x={20} y={46} s={13} f={C.taupe}>b IN MAIN</T>
-          <T x={320} y={46} s={13} f={C.taupe}>{"take'S PARAMETER"}</T>
+          <T x={20} y={46} s={13} f={C.taupe}>b IN main</T>
+          <T x={320} y={46} s={13} f={C.taupe}>b IN take</T>
           <rect x={20} y={60} width={260} height={64} rx={12} fill="none" stroke={C.mocha} strokeWidth={1.5} />
           <rect x={320} y={60} width={260} height={64} rx={12} fill="none" stroke={C.mocha} strokeWidth={1.5} />
           <rect x={30} y={78} width={240} height={28} rx={6} fill={C.cocoa} stroke={C.latte} />
@@ -773,37 +773,37 @@ const Hot = ({ children }: { children: ReactNode }) => (
 export function ReadE0382({ t }: StepCtx) {
   const lab = (a: number, next: number) => fa(t, a, 0.4) * (t > 4.0 ? 1 : 1 - 0.4 * fa(t, next, 0.3));
   return (
-    <Svg label="E0382 read in order: why the value moved because Vec is not Copy, where it moved at the call, and the later use; each span has a fix and cloning is last" h={512}>
+    <Svg label="E0382 read in order: why the value moved because Vec is not Copy, where it moved at the call, and the later use; each span has a fix and cloning is last" h={520}>
       <T x={14} y={24} s={14} f={C.cherryText} w={600} o={fa(t, 0, 0.4)}>{'error[E0382]: borrow of moved value: `batch`'}</T>
       <g opacity={fa(t, 0.4, 0.8)}>
         <T x={14} y={58} s={13} f={C.crema}>{nb('6 |     let ')}<Hot>batch</Hot>{' = vec![7u8; 1_000_000];'}</T>
         <T x={14} y={140} s={13} f={C.crema}>{nb('7 |     let sent = ship(')}<Hot>batch</Hot>);</T>
-        <T x={14} y={194} s={13} f={C.crema}>{nb('8 |     println!("{sent} {}", ')}<Hot>batch</Hot>.len());</T>
+        <T x={14} y={196} s={13} f={C.crema}>{nb('8 |     println!("{sent} {}", ')}<Hot>batch</Hot>.len());</T>
       </g>
       <g opacity={lab(1.6, 2.4)}>
-        <Marker x={22} y={76} n={1} />
-        <T x={44} y={80} s={13} f={C.latte}>{'move occurs because `batch` has type `Vec<u8>`,'}</T>
-        <T x={44} y={98} s={13} f={C.latte}>{'which does not implement the `Copy` trait'}</T>
+        <Marker x={22} y={78} n={1} />
+        <T x={44} y={82} s={13} f={C.latte}>{'move occurs because `batch` has type `Vec<u8>`,'}</T>
+        <T x={44} y={104} s={13} f={C.latte}>{'which does not implement the `Copy` trait'}</T>
       </g>
       <g opacity={lab(2.4, 3.2)}>
         <Marker x={22} y={158} n={2} />
         <T x={44} y={162} s={13} f={C.latte}>value moved here</T>
       </g>
       <g opacity={lab(3.2, 99)}>
-        <Marker x={22} y={212} n={3} />
-        <T x={44} y={216} s={13} f={C.latte}>value borrowed here after move</T>
+        <Marker x={22} y={214} n={3} />
+        <T x={44} y={218} s={13} f={C.latte}>value borrowed here after move</T>
       </g>
       <g opacity={fa(t, 4.2, 0.5)}>
-        <T x={14} y={252} s={13} f={C.latte}>note: consider changing this parameter type in</T>
-        <T x={14} y={270} s={13} f={C.latte}>{'function `ship` to borrow instead if owning the'}</T>
-        <T x={14} y={288} s={13} f={C.latte}>{"value isn't necessary"}</T>
-        <T x={30} y={306} s={13} f={C.latte}>{'at `Vec<u8>`: this parameter takes ownership'}</T>
-        <T x={30} y={324} s={13} f={C.latte}>of the value</T>
-        <T x={14} y={348} s={13} f={C.cherryText}>help: consider cloning the value if the</T>
-        <T x={14} y={366} s={13} f={C.cherryText}>performance cost is acceptable</T>
+        <T x={14} y={256} s={13} f={C.latte}>note: consider changing this parameter type in</T>
+        <T x={14} y={278} s={13} f={C.latte}>{'function `ship` to borrow instead if owning the'}</T>
+        <T x={14} y={300} s={13} f={C.latte}>{"value isn't necessary"}</T>
+        <T x={30} y={322} s={13} f={C.latte}>{'at `Vec<u8>`: this parameter takes ownership'}</T>
+        <T x={30} y={344} s={13} f={C.latte}>of the value</T>
+        <T x={14} y={372} s={13} f={C.cherryText}>help: consider cloning the value if the</T>
+        <T x={14} y={394} s={13} f={C.cherryText}>performance cost is acceptable</T>
       </g>
       {['1 plain data? derive Copy', '2 borrow: ship(&batch)', '3 use it first: let n = batch.len();'].map((s, i) => {
-        const y = 382 + i * 30;
+        const y = 410 + i * 30;
         return (
           <g key={s} opacity={fa(t, 4.8 + i * 0.5, 0.4)}>
             <rect x={14} y={y} width={s.length > 30 ? 400 : 290} height={24} rx={8} fill="none" stroke={C.caramel} />
@@ -811,7 +811,7 @@ export function ReadE0382({ t }: StepCtx) {
           </g>
         );
       })}
-      <T x={14} y={496} s={13} f={C.cherryText} o={fa(t, 6.2, 0.2)}>clone: last resort</T>
+      <T x={14} y={510} s={13} f={C.cherryText} o={fa(t, 6.2, 0.2)}>clone: last resort</T>
     </Svg>
   );
 }
