@@ -10,3 +10,5 @@ Every routine run and every audit finding, newest at the bottom: two lines each,
   checks: none · issues: routine had no repo attached; push refused with 403 (fixed: repo attached)
 - **2026-10-11 07:12 UTC · German · `ger.sound-system` · stopped after research** · 0.1 h · Haiku 5.5 4.5M (169k out) · Sonnet 5.5 1.4M (8k out) · Opus 5.5 70k (10k out) · 4 agents (by hand)
   checks: none yet · issues: WebFetch gave summaries, so no quote was verbatim (fixed: scripts/sources.mjs); branched from a stale local main; stopped because ROUTINE.md changed mid-run (fixed: one procedure per run); used Haiku (fixed: Sonnet minimum)
+- **2026-10-11 09:59 UTC · Data Engineering · `chapter-01` · planned** · 0.4 h · Sonnet 5.5 966k (6k out) · Opus 5.5 5.8M (60k out) · 2 agents, 68 calls
+  checks: check-docs passed (plan reviewer); no other checks apply to a plan · issues: fire_trigger tool unavailable, so topic runs were not started; hourly schedule will start them
