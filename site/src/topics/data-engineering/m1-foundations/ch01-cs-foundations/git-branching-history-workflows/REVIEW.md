@@ -270,3 +270,175 @@ Fixed: the Deep dive and In production say only the first run is re-checked and 
 7. "What's changing" leaves out `git history` (2.55/2.56), `git add --resolved`, `git replay --linearize` and `branch --delete-merged`, all in the fetched release notes, and lists the old `--update-refs` instead.
 20. All executed evidence is from Git 2.43.0 while the topic claims currency with 2.56.0; run `examples.sh` on both.
 21. Landing a PR has descriptions but no trade-offs: bisect granularity, revert cost and ID stability for merge, squash and rebase-and-merge.
+
+## Looks and learning review (Opus, 2026-10-11)
+
+Judged from `site/test-results/desktop-…-01..09.png` and `phone-…-01..09.png` against `OUTLINE.md`, `narration.json` and DESIGN.md "The looks review checks". Severity: major (a learner misses the point or the frame breaks a DESIGN.md rule), minor (weaker than it should be), nit.
+
+**1. Step 1 · phone · the phone screenshot for step 1 is not step 1. (major)**
+- *What:* `phone-…-01.png` is identical to `phone-…-02.png` (the merge/rebase answer frame, the progress bar already on segment 2). The `RefresherList` opening was never captured on phone, so its looks can't be checked there.
+- *Fix:* make the phone capture wait for step 1's final frame before advancing (or check the step index before the shot), then re-review step 1 on phone.
+
+**2. Step 2 · phone · the caption is printed twice and pushes the predict options off the screen. (major)**
+- *What:* below the drawing the caption runs "…deduplication while `main` moves on … what happens to its commits?" and then starts again "Our repo is `clean.py`…". The title, the kicker and the four options are all below the fold; a phone learner sees a wall of repeated text and no question to answer.
+- *Fix:* render the caption once; on predict steps clamp it with MORE like the other steps (or put the question line first) so the four options show without scrolling.
+
+**3. Steps 2 and 7 · desktop · the step kicker collides with the top navigation. (major)**
+- *What:* on the two predict steps with a long left column, "REFRESHER 2/9 · §1.1 · GIT" starts at y≈27, runs under the logo and is cut by the subject pill at x≈360; "HISTORY" wraps on its own line. The other steps sit lower and are fine.
+- *Fix:* give the left column a top margin that clears the nav (or let it scroll inside its own area), and shorten the kicker so it fits one line ("§1.1 · GIT" or the short title).
+
+**4. Every step · desktop · the kicker wraps to a lone "HISTORY". (minor)**
+- *What:* "REFRESHER n/9 · §1.1 · GIT BRANCHING AND / HISTORY" breaks on every desktop step; the orphan word looks like a second label.
+- *Fix:* use the short topic name in the kicker ("GIT HISTORY") or let it ellipsize on one line.
+
+**5. Step 2 · both · the drawing never names `main` and `dedupe`. (minor)**
+- *What:* the outline's caramel `main` / `dedupe` pills and the "$ git rebase main" line are absent; the learner has to guess which row is `main`. The "=" between the panels floats at the right, not between the two `tree 827c45a` labels, so "same files" isn't read at a glance.
+- *Fix:* add the two branch pills at the tips; put the "=" directly between the stacked tree labels (same x), or join them with a short vertical bracket.
+
+**6. Step 2 · phone · the drawing is scaled down to about 10 px text. (minor)**
+- *What:* the two-panel graph uses roughly the middle 60 % of the width; IDs and "old commits: in the reflog" read near the 9 px floor, and the struck-through old IDs are at 40 % opacity on top of that, so they are almost unreadable.
+- *Fix:* tighten the dot spacing on portrait so the graph fills the width, and raise the ghost IDs to about 60 % opacity (they are a label the caption names).
+
+**7. Step 3 · both · the final frame hides what the edit did. (major)**
+- *What:* the todo panel ends with only the `drop` line tinted; `drop` isn't struck through or in `C.cherryText`, the `fixup` verb isn't highlighted, and the "as committed" order is gone. A paused learner sees four lines and two dots but not that the fixup moved up under its target and the wip commit vanished — the step's whole idea.
+- *Fix:* keep the beat-1/beat-2 marks in the final frame: highlight `fixup` (caramel) with a small "↑ moved" mark, strike `drop 3d6cce4` in `C.cherryText`; keep the panel label "what Git proposes, after your edit".
+
+**8. Step 3 · both · the reflog ghost row is too faint and the layout leaves a hole. (minor)**
+- *What:* the four dashed rings are tiny, low-contrast taupe and far from their label "the 4 old commits"; on desktop there is a 150 px empty band between the panel and the dots.
+- *Fix:* close the gap (move the dots up), draw the ghost rings at the same size as the live dots, and put "the 4 old commits" directly under them, one label line with `emails@{1}` before it.
+
+**9. Step 4 · both · too much text competes, and the same three lines appear twice. (major)**
+- *What:* the final frame shows three cards (6 labels) plus the full conflicted file (9 lines) plus "resolved:" and the footer — about 18 text items at equal brightness. The outline's ghosting of the markers behind the resolved line didn't happen, so the eye has nowhere to land.
+- *Fix:* in the final frame fade the cards to 40 % (they've done their job by flying in), fade the marker block to a ghost, and keep the resolved line and the footer at full strength. Or drop the cards' code lines and keep only their stage badges colour-linked to the file lines.
+
+**10. Step 4 · both · the conflicted file is shown with no indentation. (minor)**
+- *What:* `def clean(email):` is followed by unindented `return …` lines, which is invalid Python; a careful learner will stumble on it.
+- *Fix:* indent the code lines by two spaces as the outline asks (markers stay at column 0, as Git writes them).
+
+**11. Step 4 · both · the rebase swap of ours and theirs is in the narration but not in the picture. (minor)**
+- *What:* the narration's "one trap" (the step's last two lines) has no visual; it is the point most learners get wrong.
+- *Fix:* add one last line under the footer, taupe 13: "in a rebase: ours = main + replayed, theirs = your commit", appearing on the trap beat.
+
+**12. Step 5 · phone · the bisect rows are under-sized. (major)**
+- *What:* the ten "test n · k left" rows plus their bars fit a tall Svg that is scaled to about 60 % of the width; labels and "784d178 / clean: simplify normalisation" render near or under the 9 px floor; the "RIGHT" explanation is cut off by the controls.
+- *Fix:* on portrait show fewer row labels (tests 1, 2, 3 and 10, with dots for the rest), or shorten them to "1 · 499", so the Svg can be wider and shorter; let the explain box scroll above the controls.
+
+**13. Step 5 · desktop · the culprit pin and its label are detached. (minor)**
+- *What:* the caramel pin sits at x≈1143 while `784d178` and its message are right-aligned to x≈1257, so they read as a separate label rather than "this commit".
+- *Fix:* centre the ID under the pin (or draw a short leader line), and keep the message to one line under it.
+
+**14. Step 5 · both · good for teaching; one nit on pacing. (nit)**
+- *What:* the shrinking window per row and "10 tests / one by one: up to 998" make the point at a glance — the best frame in the reel. But ten rows at 0.35 s plus the pin means the reveal ends before the narration's "That's the power of halving."
+- *Fix:* none needed beyond holding; optionally slow the beats to 0.45 s so the count tracks the spoken explanation.
+
+**15. Step 6 · both · the markers don't carry their meaning. (major)**
+- *What:* all four markers are the same caramel ring; the 0 and 1 markers sit almost on top of each other at the left; the 125 marker sits on the 127/128 boundary, so it reads as "the edge of bad" rather than "an exception inside bad". The planned crema/cherry/taupe markers and their short notes ("a failing assert exits with 1") are missing.
+- *Fix:* colour the markers by verdict (crema 0, cherry 1, taupe 125, void-with-✕ 255); put the 125 notch at its true position (≈ 49 % of the bar) with its label below it; stagger the 0 and 1 marker notes above and below the bar.
+
+**16. Step 6 · both · empty band and a misleading syntax colour in the code panel. (minor)**
+- *What:* about 200 px of empty space separates the code panel from the bar; "is" in "784d178… is the first 'bad' commit" is coloured as a Python keyword (caramel) in what is Git output; on phone the panel title "THE ORACLE IS THE TEST (GIT 2.56 WORDING)" wraps to two lines.
+- *Fix:* move the bar up under the panel; mark the output line as plain text (no highlighting); shorten the panel title to "git 2.56 output".
+
+**17. Step 7 · both · the final frame has lost the "three ways". (major)**
+- *What:* after the answer only the trap lane remains. The step is titled "Three ways to land a PR" and the narration spends most of its time on merge / squash / rebase-and-merge, but none of the three lanes is in the final frame; a paused learner learns the trap without the thing it is a trap of. The old commits are cherry fills (cherry = bad/broken), though they aren't broken, only duplicated.
+- *Fix:* on desktop keep the three small lanes on the left and the enlarged lane on the right, as the outline allows; on portrait keep a one-row strip of three mini-lanes above the enlarged lane. Draw the old commits as cherry outlines (as planned), not fills.
+
+**18. Step 7 · phone · the long caption pushes the answer off screen. (minor)**
+- *What:* the full caption, then four options, leaves the "NOT QUITE" explanation clipped by the controls.
+- *Fix:* clamp the caption with MORE on predict steps after an answer, so the explain box is visible.
+
+**19. Step 8 · both · the long-lived branch doesn't drift. (major)**
+- *What:* the cherry area is a flat-bottomed tub of constant depth, not a wedge that widens to the right; the branch line has no commits, so "the longer it lives, the bigger the merge" isn't drawn. The sparks are small, partly behind the return curve, and the only label is "merge hell".
+- *Fix:* make the branch line descend steadily (wedge widening from left to right) with a few small commit dots on it; make the sparks larger and clear of the curve; add a quiet taupe label under the wedge "drift grows every day".
+
+**20. Step 8 · phone · empty band above the drawing. (nit)**
+- *What:* about 160 px of empty space sits between the nav and "trunk-based".
+- *Fix:* top-align the Svg on portrait.
+
+**21. Step 9 · phone · two recap lines run past their cards. (major)**
+- *What:* "only what you haven't pushed; reflog undoes it" and "1 base, 2 ours, 3 theirs; zdiff3 shows the base" extend beyond the card's right edge (to x≈1040–1060 against a card edge at ≈1025); text crossing a box edge is the overlap DESIGN.md forbids.
+- *Fix:* shorten them ("only unpushed; reflog undoes it", "1 base · 2 ours · 3 theirs; zdiff3") or wrap them onto two lines on portrait.
+
+**22. Step 9 · both · "branches last days" says the opposite of the lesson. (minor)**
+- *What:* the Trunk row reads "integrate daily; branches last days", which can be read as "branches last several days"; the outline's row is "short-lived branches, merged at least daily". The recap also has no row for the three ways to land a PR (only Squash).
+- *Fix:* "Trunk — short-lived branches, merged at least daily"; optionally fold the PR options into the Squash row ("PR: merge, squash, rebase; after a squash, retire the branch").
+
+**23. Step 1 · desktop · the caption is shown twice. (nit)**
+- *What:* an italic pull-quote above the kicker ("You've got the Python; every change to it lands as a commit…") repeats the caption printed right below the title.
+- *Fix:* drop the pull-quote on this step (or show a one-line hook instead of the caption's first sentence).
+
+**24. Whole reel · both · belongs to the site, with its own idea mostly kept. (minor)**
+- *What:* coffee palette, kit typography and accents are consistent and never exceed two accents per step. Steps 2, 3 and 7 share the commit-graph grammar as planned, and 5 and 6 have their own ideas. But crema/caramel/cherry meanings drift: caramel marks rewritten commits (2, 3), a resolved line (4), all bisect-run markers (6) and the squash commit (7); cherry fills mark both "bad" (5, 6) and "duplicate" (7).
+- *Fix:* keep the outline's grammar strictly (caramel = made by Git for you; cherry = bad/broken); the fixes in 15 and 17 restore it.
+
+**Majors in one line each:**
+1. Step 1 phone screenshot is a copy of step 2; step 1 unchecked on phone.
+2. Step 2 phone caption is printed twice, hiding the options.
+3. Steps 2 and 7 desktop kicker runs under the top nav.
+7. Step 3 final frame hides the fixup move and the drop.
+9. Step 4 has about 18 equal-weight text items; the ghosting never happened.
+12. Step 5 phone labels near or under the 9 px floor.
+15. Step 6 markers are all one colour, 0 and 1 overlap, 125 sits at the wrong place.
+17. Step 7 final frame drops the three ways the step is named for.
+19. Step 8 long-lived branch doesn't widen, so drift isn't shown.
+21. Step 9 phone: two recap lines overflow their cards.
+
+### Fixes for the looks and learning review (2026-10-11)
+
+Checked against fresh `desktop-…` and `phone-…` screenshots of every changed step, plus fresh-page phone shots of steps 1, 2, 5 and 7 (question frames). Plan changes are in OUTLINE.md "Changes after looks review".
+
+**Capture findings, investigated (tests/reels.mjs and `ReelPlayer.tsx`):**
+- *Finding 1 is a test artefact.* The reel test's step loop clicks the first step dot while the phone is on a later step; the player opens a step reached by going back at its end state (`goTo(i, i < step)`), so the loop's `ArrowRight` ("finish the animation") then moves on to step 2 and the shot is step 2. On a fresh page the step 1 phone frame is correct (checked by hand: list, bridge quote, caption). Shared test code; not changed. Suggested fix: click step 1 twice (or skip `ArrowRight` when the progress bar is already full) before the shot.
+- *Finding 2 is partly a test artefact, partly real.* The doubled caption exists only in the test's run: after its rapid step changes `AnimatePresence mode="wait"` in `ReelPlayer` leaks mounted copies of the caption (the probe counted a dozen `.reel-body` nodes; a fresh page has one). Shared player code; reported, not changed. The real part is the caption length: a predict step is never clamped (`portrait && !cur.predict`), so a 330-character caption pushed the options below the fold. Fixed in the topic by cutting the predict captions to about 200 characters.
+- *Finding 3 is real, in shared layout.* The caption column is `landscape:justify-center` with `overflow-y: auto` and no safe centring, so a column taller than the screen (long caption plus options plus "Not quite" box) overflows at the top, under the nav. Reported, not changed (`my-auto` on an inner wrapper would fix it for every reel and needs all reels re-tested). Mitigated in the topic: shorter predict captions and explanations; steps 2 and 7 now sit well clear of the nav.
+- *Finding 4 is shared.* The kicker is "REFRESHER n/9 · §1.1 · <registry title>"; with the title "Git branching and history" it wraps in the 300 to 400 px column on every step. Fix belongs in the player (ellipsize, or hide the title on narrow columns) or in a shorter registry title; not changed here.
+
+**1.** Not fixed: test artefact, see above; step 1's phone frame was checked on a fresh page and is fine.
+
+**2.** Fixed: step 2, 5 and 7 captions cut to about 200 characters and the explanations trimmed; the four options are on screen on a phone without scrolling (checked on a fresh page). The doubled caption itself is the player leak above (not fixed: shared code).
+
+**3.** Not fixed in shared code (reported); in the topic the long columns are shorter, and the step 2 and 7 kickers no longer touch the nav.
+
+**4.** Not fixed: shared kicker (above).
+
+**5.** Fixed: `main` and `dedupe` pills in both panels (merge: `main` on the merge dot, `dedupe` at the branch tip; rebase: `main` under the old tip, `dedupe` at the new tip); both `tree 827c45a` labels are right-aligned at one x with the "=" centred between them. The "$ git rebase main" line stays in the question frame (it is the command the learner is asked about).
+
+**6.** Fixed: the answer frame is a little shorter (352 units) and tighter, ghost IDs at 70 % opacity, "old commits:" / "in the reflog" no longer overlap on a phone. Not fully fixed: the drawing is still height-limited on a phone (the visual area is about 170 px tall under a predict caption), so it renders at about half scale; text stays above the 9 px floor.
+
+**7.** Fixed: the todo is drawn in the Svg; the final frame keeps the `fixup` line caramel with "↑ moved", the `drop` line struck through in `C.cherryText` with "dropped", and the panel label "what Git proposes, after your edit"; the fixup line slides up on beat 1.
+
+**8.** Fixed: the gap is closed (dots and ghost row follow the todo panel directly), the four ghost rings are the live dot size, and one label sits under them: "emails@{1}: the 4 old commits".
+
+**9.** Fixed: on the last beat the cards fade to 40 %, the marker block and code lines fade to a ghost, and the resolved line, footer and trap line stay at full strength. Items on screen at full brightness drop from about 18 to 4.
+
+**10.** Fixed: the code lines are indented (x offset; SVG collapses leading spaces, which is why the first build lost them); markers stay at column 0.
+
+**11.** Fixed: a last two-line note appears on the trap beat: "in a rebase they swap: ours = main + replayed, theirs = your commit"; step duration 4.4.
+
+**12.** Fixed: row labels shortened to "1 · 499" under a "test · left" header, bars wider (X0 110, 426 units), canvas 338 units instead of 352 with the explanation kept in the caption column.
+
+**13.** Fixed: the pin is joined to the bar rows by a leader, with the ID and the one-line message centred under it.
+
+**14.** Not fixed: nothing to change. The answer frame is the finished picture (the player does not restart the clock on answer), so there is no beat to slow.
+
+**15.** Fixed: markers coloured by verdict (0 crema, 1 cherry, 125 latte, 255 void), the 0 and 1 notes staggered below the bar (colour-matched), 125 and 255 each with a leader and a one-line note. The 125 notch sits at its true place on the 1 to 255 scale (49 %); at that scale it is only two codes from the 127 / 128 edge, which is the truth the picture shows. Not done: separate crema/cherry/taupe fills as in the old plan (rings read better on the dark bands).
+
+**16.** Fixed: the panel and the bar are one drawing (no empty band), the output line is plain text (the code panel's keyword colouring of "is" is gone), and the title is "git 2.56 output".
+
+**17.** Fixed: the answer frame keeps a strip of three mini-lanes (Merge, Squash with the caramel outline, Rebase) above the enlarged squash lane, on desktop and phone alike; the three old commits are cherry outlines (new `dup` kind), not fills.
+
+**18.** Fixed with 2: the caption is short enough that the options and the start of the "Not quite" box are visible; the explanation itself still scrolls on a phone (the player never clamps a predict caption).
+
+**19.** Fixed: the branch descends in a straight line from the trunk with four commit dots, the cherry wedge widens to the right, the sparks are larger and sit to the right of the return curve, and the new taupe label "drift grows every day" sits under the wedge.
+
+**20.** Fixed: the canvas is tight (content starts at y 24 and the aspect is 600 by 362), so no empty band above it. The blank space that remains on a phone is the visual area being taller than the drawing, not canvas padding.
+
+**21.** Fixed: "only unpushed; reflog undoes it" and "1 base · 2 ours · 3 theirs; zdiff3"; every recap line is at most 43 characters (at the phone text scale 44 is the limit inside the card).
+
+**22.** Fixed: Trunk row "short-lived branches, merged at least daily"; the Squash row became "Land a PR: merge, squash, rebase; retire after squash" (narration follows).
+
+**23.** Fixed: the step 1 caption no longer repeats the bridge quote's first sentence ("Five minutes on shaping that history, searching it and sharing it. All familiar? Swipe on to the shell.").
+
+**24.** Fixed by 15 and 17 (cherry = bad only; cherry outlines for duplicates; caramel = made by Git). Step 6's markers no longer all use caramel; step 7's old commits are no longer cherry fills. Caramel still marks the squash commit and the rewritten commits, as in the grammar.
+
+Checks after the fixes: `npm run build`, `PYTHON=python3.12 npm run test:examples` and the reel test for this topic pass; `npm run test:narration` still fails only because the audio is not generated yet (as before). No number was added to the screen, so `examples.py` is unchanged.

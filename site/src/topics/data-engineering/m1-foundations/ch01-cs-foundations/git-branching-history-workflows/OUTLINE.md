@@ -279,6 +279,23 @@ Plan changes made while fixing REVIEW.md (2026-10-11); the numbers are the findi
 - **Versions (20):** `examples.sh` ran on Git 2.43.0 and 2.56.0. Version-dependent output (todo `#`, non-interactive `--autosquash`, bisect wording, reflog defaults) is printed as keys and asserted per known version in `examples.py`. New finding from the run: the v2.56.0 source sets the reflog expiry defaults the other way round from the documentation (30 days for reachable entries, 90 for unreachable), so the examples set `gc.reflogExpire` explicitly and the Deep dive says to do the same.
 - **Bookkeeping (16, 17):** `expert.json` places "Commit messages as part of history" here; `coverage.json` records this review in `gapReview` and corrects the `ort` and `--fork-point` rows.
 
+## Changes after looks review
+
+Plan changes made while fixing the "Looks and learning review" in REVIEW.md (2026-10-11); the numbers are the findings'.
+
+- **Phone height rule (6, 12, 20):** on a phone the drawing is height-limited (about 374 by 170 to 280 CSS px), so every drawing is now shorter and tighter (canvas heights 230 to 350 instead of 340 to 480); a short drawing is drawn larger. Predict-step captions (steps 2, 5, 7) are cut to about 200 characters so the four options are on screen without scrolling (2, 18); the player never clamps a predict caption, so the length is the only lever. The long explanations moved to the "Not quite / Right" box and were trimmed.
+- **Step 1 (23):** the caption no longer repeats the bridge pull-quote's first sentence.
+- **Step 2 (5, 6):** the answer frame names the branches: `main` pill on the merge dot (merge) and on the third original commit (rebase), `dedupe` pills at the tips; both `tree 827c45a` labels are right-aligned at the same x with the "=" centred between them; ghost IDs at 60 % opacity.
+- **Step 3 (7, 8):** the todo is drawn in the Svg (not `Code`) so the final frame can keep the edit visible: `fixup` line caramel with "moved up", `drop` line struck through in `C.cherryText`, panel label "what Git proposes, after your edit". The fixup line slides up under its target on beat 1. The reflog row sits under the dots, rings the same size as live dots, one label "emails@{1}: the 4 old commits".
+- **Step 4 (9, 10, 11):** final frame fades the cards to 40 % and the conflicted file to a ghost; the resolved line, footer and a new trap line ("in a rebase: ours = main + replayed, theirs = your commit") stay at full strength; code lines are indented by x offset (SVG collapses leading spaces). Duration 4.4.
+- **Step 5 (12, 13, 14):** row labels shortened to "1 · 499" (a "test · left" header), bars wider, pin and its ID centred. Pacing needs no change: the answer frame is the finished picture.
+- **Step 6 (15, 16):** the panel is drawn in the Svg (output as plain text, no syntax colouring, title "git 2.56 output"); markers coloured by verdict (0 crema, 1 cherry, 125 taupe, 255 void with a cross) with one-line notes staggered below the bar; the 125 notch is at its true place on a linear 0 to 255 scale, with its note under it.
+- **Step 7 (17, 18):** the answer frame keeps a strip of three mini-lanes on top (squash highlighted) above the enlarged squash lane; the old three commits are cherry outlines, not fills.
+- **Step 8 (19, 20):** the long-lived branch descends in a straight line with small commit dots, the shaded wedge widens to the right, larger sparks sit to the right of the return curve, new quiet label "drift grows every day"; the canvas is tight so nothing floats on a phone.
+- **Step 9 (21, 22):** "only unpushed; reflog undoes it", "1 base, 2 ours, 3 theirs; zdiff3", Trunk row "short-lived branches, merged at least daily", and the Squash row becomes "Land a PR: merge, squash or rebase; retire after squash".
+- **Narration** follows: step 3 says the fix moves up and the debug commit goes; step 6 adds "a failing assert exits with one"; step 8 names the widening gap; step 9 matches the recap rows.
+- **Not changed here (shared code):** the kicker under the nav on long desktop columns, the kicker wrapping, the doubled caption and the step 1 phone capture are player or test behaviour; see REVIEW.md.
+
 ## The claims list
 
 Every factual claim the topic makes, with the `SOURCES.md` quote that supports it (all quotes pass `sources.mjs check`; checked 2026-10-11). "Executed" means `examples.sh` demonstrates it on Git 2.43.0. Where a quote is a fragment, the sentence continues in the fetched text as noted.

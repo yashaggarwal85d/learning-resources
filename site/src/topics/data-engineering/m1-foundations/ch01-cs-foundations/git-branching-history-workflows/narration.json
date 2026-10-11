@@ -35,6 +35,7 @@
         "Before you push this branch, rewrite freely.",
         "An interactive rebase lets you reorder, reword, squash, fixup and drop commits.",
         "Commit a fix with the fixup option... and autosquash moves it right under its target.",
+        "The fix moves up under its target, and the debug commit is dropped.",
         "Here, four commits become two.",
         {
           "beat": 0.4
@@ -76,7 +77,7 @@
       "lines": [
         "Better still... let Git run the tests for you.",
         "Give bisect run a command, and it reads just one thing back: the exit code. That is the number every command ends with, and zero means it worked.",
-        "So zero means good. One to one hundred twenty-seven means bad... except one hundred twenty-five, which means, skip this one, I can't test it.",
+        "So zero means good. One to one hundred twenty-seven means bad... and a failing assert exits with one. Except one hundred twenty-five, which means, skip this one, I can't test it.",
         "Anything else stops the whole run.",
         {
           "beat": 0.4
@@ -97,7 +98,7 @@
       ],
       "answer": [
         "The next pull request shows four commits.",
-        "The squash commit isn't made of your three commits... so Git still sees them as unmerged. They come back, along with the new one.",
+        "The squash commit isn't made of your three commits... so Git still sees them as unmerged. They come back, along with the new one. The three old ones are only duplicates.",
         "And here, they even conflict.",
         "After a squash merge, start a fresh branch from main."
       ]
@@ -110,7 +111,7 @@
         {
           "beat": 0.4
         },
-        "A long-lived branch drifts. The longer it lives, the bigger the final merge... and keeping it in step means resolving the same conflicts again."
+        "A long-lived branch drifts. The gap grows every day, so the longer it lives, the bigger the final merge... and keeping it in step means resolving the same conflicts again."
       ]
     },
     {
@@ -118,7 +119,7 @@
         "So... eight things to keep.",
         "A merge keeps both parents. A rebase replays, with new IDs. Rewrite only what you haven't pushed.",
         "A conflict has a base, ours, and theirs. Bisect finds a bug in about ten tests, and bisect run reads the exit code.",
-        "Squash gives one commit, so retire the branch. And keep your branches short.",
+        "A pull request can land by merge, squash or rebase, and after a squash, retire the branch. And keep your branches short.",
         {
           "beat": 0.5
         },

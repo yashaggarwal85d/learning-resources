@@ -9,8 +9,7 @@ const reel: Reel = {
       title: 'Git, in five minutes',
       body: (
         <>
-          You've got the Python; every change to it lands as a commit. Five minutes on shaping that history, searching it and sharing it. All familiar?
-          Swipe on to the shell.
+          Five minutes on shaping that history, searching it and sharing it. All familiar? Swipe on to the shell.
         </>
       ),
       duration: 2,
@@ -20,10 +19,9 @@ const reel: Reel = {
       title: 'Merge or rebase?',
       body: (
         <>
-          Our repo is <code>clean.py</code>, a data-cleaning script; the branch <code>dedupe</code> adds deduplication while <code>main</code> moves on. Two ways
-          to bring a branch in. A merge keeps both lines and ties them with a commit that has two parents: history as it happened. A rebase replays your commits
-          on top of the target: a straight line, as if the work happened in order. Rebase <code>dedupe</code> onto <code>main</code>: what happens to its
-          commits?
+          In <code>clean.py</code>, the branch <code>dedupe</code> adds deduplication while <code>main</code> moves on. A merge ties both lines with a commit
+          that has two parents; a rebase replays your commits on top of <code>main</code>. Rebase <code>dedupe</code> onto <code>main</code>: what happens to
+          its commits?
         </>
       ),
       duration: 1.2,
@@ -31,10 +29,9 @@ const reel: Reel = {
         options: [{ label: 'They move on top, same IDs' }, { label: 'Three new commits, new IDs', correct: true }, { label: 'Squashed into one commit' }, { label: 'A merge commit is added' }],
         explain: (
           <>
-            Three new commits, <code>9f711a4 a0a20c8 30d3436</code>: rebase replays each change onto <code>main</code>, and a commit's ID is a hash of its
-            parent, its files, its author and committer with their dates, and its message, so every replayed commit gets a new one (this demo pins the dates; a
-            real rebase also stamps a new committer date). The originals stay in the reflog. A merge keeps them and adds a commit with two parents.
-            Both end with the same files: tree <code>827c45a</code>.
+            Three new commits, <code>9f711a4 a0a20c8 30d3436</code>: a commit's ID hashes its parent, files, author, committer, dates and message, so replaying
+            onto <code>main</code> gives each a new one (the demo pins the dates; a real rebase also stamps a new one). The originals stay in the reflog. A
+            merge keeps them and adds a commit with two parents. Both end with the same files: tree <code>827c45a</code>.
           </>
         ),
       },
@@ -62,15 +59,15 @@ const reel: Reel = {
           rebase onto plus your commits replayed so far; theirs is your commit being replayed.
         </>
       ),
-      duration: 3.6,
+      duration: 4.4,
       Visual: S.Conflict,
     },
     {
       title: 'bisect halves the suspects',
       body: (
         <>
-          <code>git bisect</code> is a binary search through history. Mark one commit good and one bad; it checks out the middle, you test it, and every
-          answer halves the suspects. A thousand commits: how many tests until the first bad commit?
+          <code>git bisect</code> is a binary search: mark one commit good and one bad, and every test halves the suspects. A thousand commits: how many
+          tests until the first bad one?
         </>
       ),
       duration: 1.2,
@@ -78,8 +75,8 @@ const reel: Reel = {
         options: [{ label: 'About 10', correct: true }, { label: 'About 32' }, { label: 'About 500' }, { label: 'About 1,000' }],
         explain: (
           <>
-            10. Each test halves the suspects: 1,000 commits need about log₂ 1,000 ≈ 10 tests, because 2¹⁰ = 1,024: ten halvings take 1,024 suspects down to
-            one (9 or 10, depending on where the bug sits). Checking the 999 suspects one by one could take 998. Here the run found <code>784d178</code> in 10 tests.
+            10. Each test halves the suspects: 1,000 commits need about log₂ 1,000 ≈ 10 tests, because 2¹⁰ = 1,024 (9 or 10, depending on where the bug
+            sits). One by one could take 998. Here the run found <code>784d178</code> in 10 tests.
           </>
         ),
       },
@@ -102,8 +99,7 @@ const reel: Reel = {
       title: 'Three ways to land a PR',
       body: (
         <>
-          A pull request asks for review and CI (automated build and test checks) before a branch lands. GitHub can land it three ways: a merge commit keeps
-          every commit; squash makes one commit; rebase-and-merge replays them as new commits in a straight line. Squash suits short-lived branches. You
+          A pull request asks for review and CI (automated build and test checks) before a branch lands: as a merge commit, a squash or a rebase. You
           squash-merge a three-commit PR, then add one commit to the same branch and open a new PR: how many commits does it list?
         </>
       ),
@@ -112,9 +108,8 @@ const reel: Reel = {
         options: [{ label: '1' }, { label: '4', correct: true }, { label: '0' }, { label: '2: the squash and the new one' }],
         explain: (
           <>
-            4: the squash commit isn't made of your three commits, so Git still sees them as unmerged, and the new PR shows them again with the new one. Here
-            it also conflicts: merging or rebasing that branch onto <code>main</code> stops in <code>dedupe.py</code>. After a squash merge, start a fresh
-            branch from <code>main</code>.
+            4: the squash commit isn't made of your three commits, so Git still sees them as unmerged, and the new PR lists them again with the new one.
+            Here it also conflicts in <code>dedupe.py</code>. After a squash merge, start a fresh branch from <code>main</code>.
           </>
         ),
       },
