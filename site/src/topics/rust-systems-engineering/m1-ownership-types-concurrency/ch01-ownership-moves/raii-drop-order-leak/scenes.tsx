@@ -62,7 +62,7 @@ function Timeline({ h, label = true, o = 1, x1 = 40, x2 = 540 }: { h: number; la
   return (
     <g opacity={o}>
       <line x1={x1} y1={y} x2={x2} y2={y} stroke={C.taupe} strokeWidth={1.5} />
-      {label && <T x={x1} y={y - 12} s={13} f={C.taupe}>DROP ORDER</T>}
+      {label && <T x={x2} y={y - 12} s={13} a="end" f={C.taupe}>DROP ORDER</T>}
     </g>
   );
 }
@@ -364,7 +364,7 @@ export function ManualDrop({ t, answer }: StepCtx) {
       </g>
       <g style={rv(ans)}>
         <Slot x={330} y={120} name="x" state="dropped" n={1} />
-        <T x={140} y={158} s={15} f={C.cherryText} w={600}>E0040</T>
+        <T x={190} y={158} s={15} f={C.cherryText} w={600}>E0040</T>
         <T x={40} y={192} s={15} f={C.caramel} w={600}>{'drop(x);'}</T>
         <T x={40} y={228} s={13} f={C.latte}>explicit use of destructor method</T>
       </g>
@@ -418,7 +418,7 @@ export function CopyDrop({ t }: StepCtx) {
 
 // ── 7 · SpillFile: an OS resource with one owner ────────────────────────────────────────────────────────────────
 export function Spill({ t, portrait }: StepCtx) {
-  const H = 274;
+  const H = 290;
   const fx = [30, 220, 410];
   const slotX = (i: number) => fx[i] + 10;
   const seg1 = easeOut(seg(t, 2.1, 2.5));
@@ -455,8 +455,9 @@ export function Spill({ t, portrait }: StepCtx) {
           <T x={80} y={132} s={13} f={closed ? C.taupe : C.latte}>/tmp/…/spill</T>
         </g>
         <Counter x={400} y={112} label="CLOSES" v={closed ? 1 : 0} t={t} a={3.9} d={0.3} text={closed ? '1' : '0'} />
-        <T x={30} y={162} s={13} f={C.latte} o={fa(t, 4.5, 0.6)}>File: 4 bytes, the descriptor · SpillFile: 32 bytes (Linux)</T>
-        <T x={30} y={182} s={13} f={C.latte} o={fa(t, 4.8, 0.6)}>descriptors open in /proc/self/fd: +1 inside, +0 after</T>
+        <T x={30} y={166} s={13} f={C.latte} o={fa(t, 4.5, 0.6)}>File: 4 bytes, the descriptor</T>
+        <T x={30} y={186} s={13} f={C.latte} o={fa(t, 4.7, 0.6)}>SpillFile: 32 bytes (Linux)</T>
+        <T x={30} y={206} s={13} f={C.latte} o={fa(t, 4.9, 0.6)}>/proc/self/fd: +1 inside, +0 after</T>
         <Timeline h={H} o={fa(t, 1.5)} />
         <Badge x={120} y={TLY(H)} n={1} name="spill" t={t} a={3.9} hi />
       </Svg>
@@ -472,9 +473,9 @@ export function FieldOrder({ t, answer }: StepCtx) {
     <Svg label="Fields drop in declaration order, so the directory field is dropped first while the file is still inside: remove_dir fails and the directory is left on disk" h={H}>
       <CodeLines x={24} y={32} s={13} step={22} lines={[`struct Spool {`, `    dir: SpillDir,     // remove_dir in Drop`, `    spill: SpillFile,  // remove_file in Drop`, `}`]} o={fa(t, 0, 0.5)} />
       <g opacity={fa(t, 0.2, 0.5)}>
-        <Frame x={396} y={16} w={140} h={108} label="Spool" />
-        <Slot x={406} y={46} w={120} name="dir" />
-        <Slot x={406} y={86} w={120} name="spill" />
+        <Frame x={396} y={128} w={140} h={108} label="Spool" />
+        <Slot x={406} y={158} w={120} name="dir" />
+        <Slot x={406} y={198} w={120} name="spill" />
       </g>
       <g opacity={fa(t, 0.9, 0.5)}>
         <rect x={40} y={176} width={260} height={130} rx={10} fill={ans ? C.cherry : 'none'} fillOpacity={ans ? 0.2 : 1} stroke={ans ? C.cherryText : C.latte} strokeWidth={1.5} style={{ transition: 'fill .15s, stroke .15s' }} />
@@ -489,7 +490,7 @@ export function FieldOrder({ t, answer }: StepCtx) {
       </g>
       <g style={rv(ans)}>
         <T x={190} y={292} s={15} a="middle" f={C.cherryText} w={600}>left behind</T>
-        <T x={24} y={140} s={13} f={C.caramel}>fix: declare spill before dir</T>
+        <T x={24} y={146} s={13} f={C.caramel}>fix: declare spill before dir</T>
       </g>
       <Timeline h={H} />
       <g style={rv(ans, 0.05)}>
@@ -743,13 +744,13 @@ export function WhichUnsafe({ t, answer }: StepCtx) {
     <Svg label="None of the four ways to skip a destructor needs unsafe: forget, Box::leak, an Rc cycle and process::exit are all safe; only ManuallyDrop::drop is unsafe" h={H}>
       {rows.map((r, i) => (
         <g key={r}>
-          <T x={24} y={40 + i * 50} s={15} f={C.crema} o={fa(t, i * 0.2, 0.3)}>{r}</T>
+          <T x={24} y={40 + i * 50} s={13} f={C.crema} o={fa(t, i * 0.2, 0.3)}>{r}</T>
           <g opacity={fa(t, i * 0.2, 0.3)}>
-            <Slot x={396} y={18 + i * 50} w={120} h={30} name="s" state="forgotten" />
+            <Slot x={372} y={18 + i * 50} w={60} h={30} name="s" state="forgotten" word={false} />
           </g>
           <g style={rv(ans, i * 0.02)}>
-            <T x={388} y={40 + i * 50} s={20} a="end" f={C.caramel} w={700}>✓</T>
-            <T x={530} y={64 + i * 50} s={13} a="end" f={C.latte}>safe</T>
+            <T x={478} y={40 + i * 50} s={20} a="end" f={C.caramel} w={700}>✓</T>
+            <T x={536} y={40 + i * 50} s={13} a="end" f={C.latte}>safe</T>
           </g>
         </g>
       ))}
@@ -777,7 +778,7 @@ export function OnPurpose({ t }: StepCtx) {
         {!into && <rect x={206} y={66} width={18} height={12} rx={3} fill={C.caramel} />}
         {into && <rect x={206} y={60 - 8 * latchUp} width={18} height={12} rx={3} fill={C.caramel} opacity={1 - latchUp} />}
         <Brace x={260} y={96} t={t} a={1.0} />
-        <Counter x={400} y={56} label="CLOSES" text={t >= 2.0 ? '2' : '1'} t={t} a={0.5} d={0.1} />
+        <Counter x={330} y={80} label="CLOSES" text={t >= 2.0 ? '2' : '1'} t={t} a={0.5} d={0.1} />
         <Timeline h={190} label={false} />
         <Badge x={300} y={TLY(190)} n={1} name="spill" t={t} a={2.0} hi />
       </g>
@@ -797,7 +798,7 @@ export function OnPurpose({ t }: StepCtx) {
 
 // ── 18 · The leakpocalypse of 2015 ──────────────────────────────────────────────────────────────────────────────
 export function Leakpocalypse({ t }: StepCtx) {
-  const H = 420;
+  const H = 440;
   const forgot = t >= 2.0;
   const freed = t >= 2.8;
   const kd = t < 2.8 ? 1 : collapse(t, 2.8);
@@ -818,7 +819,7 @@ export function Leakpocalypse({ t }: StepCtx) {
       <T x={30} y={292} s={15} f={C.crema} o={fa(t, 2.0, 0.3)}>mem::forget(guard);</T>
       <Brace x={280} y={290} t={t} a={2.8} />
       <T x={385} y={212} s={15} a="middle" f={C.cherryText} w={600} o={fa(t, 3.4, 0.3)}>use after free</T>
-      <T x={536} y={318} s={13} a="end" f={C.latte} o={fa(t, 4.2, 0.6)}>safe code · no unsafe anywhere</T>
+      <T x={536} y={316} s={13} a="end" f={C.latte} o={fa(t, 4.2, 0.6)}>safe code · no unsafe anywhere</T>
       <T x={536} y={338} s={13} a="end" f={C.latte} o={fa(t, 4.4, 0.6)}>RFC 1066: destructors are never guaranteed</T>
       <Timeline h={H} />
       <Badge x={120} y={TLY(H)} n={1} name="data" t={t} a={2.8} />
@@ -828,7 +829,7 @@ export function Leakpocalypse({ t }: StepCtx) {
 
 // ── 19 · Leak-safe: join in a call, not in a Drop ───────────────────────────────────────────────────────────────
 export function JoinInCall({ t }: StepCtx) {
-  const H = 410;
+  const H = 424;
   const ends = fa(t, 1.4, 0.8);
   const lenZero = t >= 3.0;
   const drainOn = t >= 3.0 && t < 3.8;
@@ -851,7 +852,7 @@ export function JoinInCall({ t }: StepCtx) {
         <circle cx={366} cy={76} r={4} fill="none" stroke={C.latte} strokeWidth={1.5} />
       </g>
       <rect x={30} y={14} width={310} height={200} rx={12} fill="none" stroke={C.caramel} strokeWidth={2.5} opacity={fa(t, 2.4, 0.4)} />
-      <T x={44} y={206} s={13} f={C.caramel} o={fa(t, 2.4, 0.4)}>joins every child, then returns</T>
+      <T x={44} y={206} s={13} f={C.caramel} o={fa(t, 2.4, 0.4)}>joins all, then returns</T>
       <line x1={24} y1={236} x2={536} y2={236} stroke={C.mocha} strokeWidth={1} opacity={fa(t, 2.8, 0.4)} />
       <g opacity={fa(t, 2.8, 0.4)}>
         <rect x={40} y={256} width={230} height={38} rx={8} fill={C.cocoa} stroke={C.mocha} strokeWidth={1.5} />
@@ -863,10 +864,11 @@ export function JoinInCall({ t }: StepCtx) {
           </g>
         ))}
       </g>
-      {(drainOn || forgot) && <Slot x={310} y={256} w={150} name="Drain" state={forgot ? 'forgotten' : 'live'} o={fa(t, 3.0, 0.3)} />}
-      <T x={40} y={326} s={13} f={C.latte} o={fa(t, 3.0, 0.4)}>len set to the range start (0 for drain(..)) before the proxy</T>
-      <T x={40} y={350} s={13} f={C.latte} o={fa(t, 3.8, 0.4)}>3 elements leaked, nothing freed twice</T>
-      <T x={40} y={380} s={15} f={C.caramel} o={fa(t, 4.4, 0.5)}>leak amplification: more leaks, never UB</T>
+      {(drainOn || forgot) && <Slot x={310} y={256} w={190} name="Drain" state={forgot ? 'forgotten' : 'live'} o={fa(t, 3.0, 0.3)} />}
+      <T x={40} y={324} s={13} f={C.latte} o={fa(t, 3.0, 0.4)}>len set to the range start</T>
+      <T x={40} y={344} s={13} f={C.latte} o={fa(t, 3.2, 0.4)}>(0 for drain(..)) before the proxy</T>
+      <T x={40} y={368} s={13} f={C.latte} o={fa(t, 3.8, 0.4)}>3 elements leaked, nothing freed twice</T>
+      <T x={40} y={396} s={15} f={C.caramel} o={fa(t, 4.4, 0.5)}>more leaks, never UB</T>
     </Svg>
   );
 }
@@ -875,7 +877,7 @@ export function JoinInCall({ t }: StepCtx) {
 export function ProveParams({ t, answer }: StepCtx) {
   const ans = answer !== null;
   const H = 360;
-  const xs = [30, 150, 270, 390];
+  const xs = [14, 154, 294, 434];
   const names = ['a', 'b', 'c', 'd'];
   const order = { d: 1, c: 2, b: 3, a: 4 } as Record<string, number>;
   return (
@@ -884,10 +886,10 @@ export function ProveParams({ t, answer }: StepCtx) {
       {names.map((n, i) => (
         <g key={n}>
           <g style={{ opacity: ans ? 0 : 1, transition: 'opacity .15s' }}>
-            <Slot x={xs[i]} y={140} w={112} name={n} o={fa(t, 0.4 + i * 0.15, 0.3)} />
+            <Slot x={xs[i]} y={140} w={140} name={n} o={fa(t, 0.4 + i * 0.15, 0.3)} />
           </g>
           <g style={rv(ans)}>
-            <Slot x={xs[i]} y={140} w={112} name={n} state="dropped" n={order[n]} />
+            <Slot x={xs[i]} y={140} w={140} name={n} state="dropped" n={order[n]} />
           </g>
         </g>
       ))}
@@ -911,15 +913,15 @@ export function ProveWild({ t, answer }: StepCtx) {
       <CodeLines x={24} y={132} lines={[`let _g = lock.write().unwrap();`, `shared += 1;`]} step={26} f={C.latte} o={fa(t, 0.3, 0.5) * 0.8} />
       {ans && <line x1={22} y1={34} x2={290} y2={34} stroke={C.cherry} strokeWidth={2.5} />}
       <g style={{ opacity: ans ? 0 : 1, transition: 'opacity .15s' }}>
-        <TempSlot x={350} y={22} o={fa(t, 0.6, 0.4)} />
-        <Slot x={350} y={114} w={150} name="_g" o={fa(t, 0.8, 0.4)} />
+        <TempSlot x={400} y={22} o={fa(t, 0.6, 0.4)} />
+        <Slot x={400} y={114} w={136} name="_g" o={fa(t, 0.8, 0.4)} />
       </g>
       <g style={rv(ans)}>
-        <TempSlot x={350} y={22} />
-        <Slot x={350} y={114} w={150} name="_g" look />
+        <TempSlot x={400} y={22} />
+        <Slot x={400} y={114} w={136} name="_g" look />
         <T x={24} y={92} s={15} f={C.cherryText} w={600}>let_underscore_lock</T>
-        <T x={350} y={74} s={13} f={C.latte}>try_read ok</T>
-        <T x={350} y={170} s={13} f={C.latte}>try_read blocked</T>
+        <T x={400} y={74} s={13} f={C.latte}>try_read ok</T>
+        <T x={400} y={170} s={13} f={C.latte}>try_read blocked</T>
       </g>
       <Timeline h={H} />
       <g style={rv(ans, 0.05)}>
@@ -939,11 +941,11 @@ export function ProveDesign({ t, answer }: StepCtx) {
       <CodeLines x={24} y={30} s={14} step={22} lines={[`/// Safety: the returned guard MUST be dropped`, `fn borrow_for_dma(buf: &mut [u8]) -> DmaGuard<'_>`, `impl Drop for DmaGuard<'_> { /* stop the device */ }`]} o={fa(t, 0, 0.6)} />
       <g opacity={fa(t, 0.4, 0.5)}>
         <g style={{ opacity: ans ? 0 : 1, transition: 'opacity .15s' }}>
-          <Slot x={24} y={110} w={170} name="guard" type="DmaGuard" />
-          <Borrow x1={194} y1={129} x2={300} y2={129} c={C.cinnamon} />
+          <Slot x={24} y={110} w={210} name="guard" type="DmaGuard" />
+          <Borrow x1={234} y1={129} x2={300} y2={129} c={C.cinnamon} />
         </g>
         <g style={rv(ans)}>
-          <Slot x={24} y={110} w={170} name="guard" state="forgotten" />
+          <Slot x={24} y={110} w={210} name="guard" state="forgotten" />
         </g>
         <Payload x={304} y={114} w={110} label="buf" freed={ans} />
         <rect x={440} y={110} width={96} height={38} rx={8} fill="none" stroke={ans ? C.cherryText : C.latte} strokeWidth={1.5} />
@@ -962,7 +964,7 @@ export function ProveDesign({ t, answer }: StepCtx) {
 
 // ── 23 · In one breath ──────────────────────────────────────────────────────────────────────────────────────────
 export function Recap({ t }: StepCtx) {
-  const H = 420;
+  const H = 440;
   const rows: { y: number; glyph: ReactNode; l1: string; l2?: string }[] = [
     { y: 40, glyph: <Badge x={40} y={34} n={1} t={99} />, l1: 'Destructor = Drop::drop, then the fields' },
     {
@@ -1001,7 +1003,7 @@ export function Recap({ t }: StepCtx) {
       ))}
       <g opacity={fa(t, 2.6, 0.4)}>
         <T x={24} y={394} s={15} f={C.caramel}>Next: take a field out of a Drop type</T>
-        <T x={430} y={394} s={15} f={C.cherryText} w={600}>E0509</T>
+        <T x={24} y={420} s={15} f={C.cherryText} w={600}>E0509</T>
       </g>
     </Svg>
   );

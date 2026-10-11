@@ -44,10 +44,10 @@ const reel: Reel = {
       duration: 1.4,
       predict: {
         options: [
-          { label: 'a, b, c: the order they were declared' },
-          { label: 'c, b, a: the reverse', correct: true },
-          { label: 'All three at once, order unspecified' },
-          { label: 'Whichever the optimiser picks' },
+          { label: 'a, b, c' },
+          { label: 'c, b, a', correct: true },
+          { label: 'All at once' },
+          { label: 'Any order' },
         ],
         explain: (
           <>
