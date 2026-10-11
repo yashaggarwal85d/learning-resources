@@ -13,7 +13,7 @@ const reel: Reel = {
       title: 'A million keys, twenty probes',
       body: (
         <>
-          The vector holds 1,000,000 sorted 64-bit keys, and a request wants the <em>predecessor</em> of x: the largest stored key that is at most x.
+          This chapter&rsquo;s running example is a <em>vector</em>: a growable array of 64-bit keys. Here it holds 1,000,000 of them, sorted, and a request wants the <em>predecessor</em> of x: the largest stored key that is at most x.
           Binary search halves the range, and 20 comparisons finish it. Two questions for this reel: is 20 a floor, and what does one of those steps
           cost on a real core?
         </>
@@ -26,8 +26,8 @@ const reel: Reel = {
       body: (
         <>
           The <em>word-RAM</em> is the machine step counts assume: memory is an array of cells of <b>w</b> bits, addressed by integers (here w = 64).
-          The operations C gives you on an integer, plus a load or store at a computed address, each cost <b>one unit</b>. That is the unit of this
-          reel: one word operation.
+          A fixed set of operations like C&rsquo;s integer ones (arithmetic, comparisons, bit operations, shifts), each touching O(1) words, plus a
+          load or store at a computed address, each cost <b>one unit</b>. That is the unit of this reel: one word operation.
         </>
       ),
       duration: 5,
@@ -65,7 +65,7 @@ const reel: Reel = {
         <>
           The machine must be able to address its own memory, so a word must hold an index: <b>w ≥ log₂ n</b>. For a million keys, 20 bits address
           1,048,576 cells, and a 64-bit word has 44 bits to spare. An 8-bit word would reach only 256 cells. Words cannot be unbounded either, or one
-          unit operation could do the whole input&rsquo;s work.
+          unit operation could do the whole input&rsquo;s work: 20 squarings make a million-bit number.
         </>
       ),
       duration: 4.5,
@@ -76,7 +76,7 @@ const reel: Reel = {
       body: (
         <>
           Unit cost is per word. A b-bit number is b/w words, so adding two costs Θ(b/w) word operations: 4,096 bits is 64 words, 64 additions.
-          Schoolbook multiplication costs Θ((b/w)²). Topic 1&rsquo;s Θ(b) is this count with w = 1.
+          Schoolbook multiplication costs Θ((b/w)²). Counted bit by bit, as topic 1&rsquo;s Deep dive did, that is Θ(b): the same count with w = 1.
         </>
       ),
       duration: 5,
@@ -87,8 +87,9 @@ const reel: Reel = {
       body: (
         <>
           The model charges one unit for a load. A real core pays a few cycles for a hit in the first-level cache and a couple of hundred for a trip to
-          main memory: Intel&rsquo;s Pentium M figures, listed by Drepper in 2007, are about 3 against about 240, an <b>80×</b> gap. Binary search
-          makes 20 probes that land far apart: with 64-byte cache lines, 17 distinct lines. This is the <em>cache miss</em>.
+          main memory: Intel&rsquo;s Pentium M figures, listed by Drepper in 2007, are about 3 against about 240, an <b>80×</b> gap. Memory
+          arrives in 64-byte <em>cache lines</em>, 8 keys at a time, and binary search&rsquo;s 20 probes land far apart: on 17 different lines. On a
+          cold cache that is up to 17 trips (hot queries share the first few). This is the <em>cache miss</em>.
         </>
       ),
       duration: 6,
@@ -99,7 +100,7 @@ const reel: Reel = {
       body: (
         <>
           A pipelined core guesses which way a branch goes and runs ahead. A wrong guess throws that work away: Agner Fog&rsquo;s manual puts the
-          penalty at 15 to 20 cycles on recent Intel cores and 15 to 25 on AMD&rsquo;s Zen 5, about the length of the pipeline. The model charges 1
+          penalty at 15 to 20 cycles on Intel cores from Haswell to Tiger Lake (sometimes above 20 on Alder Lake) and 15 to 25 on AMD&rsquo;s Zen 5, about the length of the pipeline. The model charges 1
           for the comparison. This is the <em>branch misprediction</em>.
         </>
       ),
@@ -133,8 +134,10 @@ const reel: Reel = {
       title: 'Radix sort: digits as addresses',
       body: (
         <>
-          A digit of 16 bits is an array index. A stable counting sort places a million keys by one digit in one pass, so a 64-bit key needs 4 passes:
-          4,000,000 moves, against about 20,000,000 for n log₂ n comparisons. The units differ and each move is a scattered write, but 4 passes stay 4
+          A digit of about log₂ n bits (16 here, for a million keys) is an array index into at most about n buckets, so one pass is O(n). A stable
+          counting sort places every key by its digit, lowest digit first, and because each pass is stable the order the earlier digits produced
+          survives inside every bucket. A 64-bit key needs 64 / 16 = 4 passes, w / log₂ n in general: each key is placed 4 times, 4,000,000
+          placements, against about 20,000,000 for n log₂ n comparisons. The units differ and each placement is a scattered write, but 4 passes stay 4
           as n grows. Linear when w = O(log n).
         </>
       ),
@@ -145,9 +148,11 @@ const reel: Reel = {
       title: 'van Emde Boas: halve the bits, not the keys',
       body: (
         <>
-          A van Emde Boas tree splits a key into its high half, which picks a cluster, and its low half, the position inside it. It stores each
-          level&rsquo;s minimum and maximum, so a query recurses once, and every level halves the bits: T(u) ≤ T(√u) + O(1), which is O(log w).
-          For 64-bit keys that is 6 halvings, whether n is a thousand or a billion.
+          A van Emde Boas tree splits a key into its high half, which picks a cluster, and its low half, the position inside it; our key is
+          x = 3·2³² + 7, so its cluster is 3 and its position 7. Each level stores its minimum and maximum. The cluster&rsquo;s min says in O(1)
+          whether the answer is inside the key&rsquo;s own cluster (recurse there) or before it (ask the summary for the previous cluster and take its
+          max): one recursion either way. Every level halves the bits, so with U = 2ʷ the count is a recurrence, T(U) ≤ T(√U) + O(1), which topic 3
+          solves: O(log w). For 64-bit keys that is 6 halvings, whether n is a thousand or a billion.
         </>
       ),
       duration: 7,
@@ -170,7 +175,9 @@ const reel: Reel = {
         <>
           At most k − 1 bit positions tell k keys apart, so each key shrinks to a tiny <em>sketch</em> and a node&rsquo;s sketches fit in one word. Put
           a 1 before each, subtract the query&rsquo;s sketch from every block at once, and the leading bits show where it sits: word-level
-          parallelism. Careful: the sketch rank is right for 25 but not for 22, which one more step repairs. Height Θ(log n / log w), theory only.
+          parallelism. Careful: 22 has the same sketch as 21, so the subtraction says &ldquo;no predecessor&rdquo; though 21 is one; one more step (the Deep dive&rsquo;s
+          desketchifying) repairs it. A node holds about w^(1/5) keys and is searched in O(1) this way, so the tree is a B-tree of height
+          Θ(log n / log w): theory only (Fredman and Willard).
         </>
       ),
       duration: 7,
@@ -182,7 +189,8 @@ const reel: Reel = {
         <>
           Binary search&rsquo;s 20 is a law of the comparison model only. The word-RAM allows 6 halvings, at the price of space or hashing, and on
           paper O(log n / log w). And each unit step hides a load that hits or misses and a compare the pipeline predicted or paid for. From here, say
-          of every bound: which model, and what does its unit hide?
+          of every bound: which model, and what does its unit hide? Counting a loop here is easy; a recursive algorithm hands you a recurrence
+          instead. Next: how to read the answer off one.
         </>
       ),
       duration: 4,

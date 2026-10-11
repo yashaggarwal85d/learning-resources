@@ -188,4 +188,4 @@ None in scope, outcomes, concepts, bridge, handoff or visual idea. Source substi
 
 ## Changes after final
 
-(none yet)
+Content-review fixes (2026-10-11): `uses` now also lists `with-high-probability` and `expected-vs-average` (CHAPTER.md is not edited, so the registry differs from its ledger line by those two). The reel writes the universe as U (T(U) ≤ T(√U) + O(1)) and the Deep dive says its u is the same; topic 3 should match. In the Deep dive Fredman and Willard's b is our w.

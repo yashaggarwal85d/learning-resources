@@ -8,7 +8,7 @@
         {
           "beat": 0.4
         },
-        "Our vector holds one million sorted sixty-four bit keys. A request wants the predecessor of a key... the largest stored key that is no bigger.",
+        "This chapter's running example is a vector... a growable array of sixty-four bit keys. Here it holds one million of them, sorted. A request wants the predecessor of a key... the largest stored key that is no bigger.",
         "Binary search halves the range, and twenty comparisons finish the job.",
         {
           "beat": 0.4
@@ -23,7 +23,7 @@
         {
           "beat": 0.3
         },
-        "The operations C gives you on an integer, plus a load or a store at a computed address... each cost exactly one unit.",
+        "A fixed set of operations like C's integer ones... arithmetic, comparisons, bit operations, shifts... each touching a constant number of words, plus a load or a store at a computed address. Each costs exactly one unit.",
         "Five different operations, five units. That is the unit of this reel: one word operation."
       ]
     },
@@ -46,7 +46,7 @@
         {
           "beat": 0.3
         },
-        "Words can't be unbounded either. Or one unit operation could do the whole input's work."
+        "Words can't be unbounded either. Or one unit operation could do the whole input's work. Twenty squarings make a million bit number."
       ]
     },
     {
@@ -57,7 +57,7 @@
         {
           "beat": 0.3
         },
-        "Schoolbook multiplication costs the square of that. And topic one's theta of b is this count with w equal to one."
+        "Schoolbook multiplication costs the square of that. Counted bit by bit, as topic one's deep dive did, that is theta of b... the same count with w equal to one."
       ]
     },
     {
@@ -68,7 +68,7 @@
         {
           "beat": 0.3
         },
-        "And binary search is unkind to caches. Its twenty probes land far apart. With sixty-four byte cache lines, seventeen distinct lines.",
+        "And binary search is unkind to caches. Memory arrives in sixty-four byte cache lines, eight keys at a time. The twenty probes land far apart, on seventeen different lines. On a cold cache, up to seventeen trips. Hot queries share the first few.",
         "That is a cache miss. The model never sees it."
       ]
     },
@@ -79,7 +79,7 @@
         {
           "beat": 0.3
         },
-        "Agner Fog's manual puts the penalty at fifteen to twenty cycles on recent Intel cores, and fifteen to twenty-five on AMD's Zen five. About the length of the pipeline.",
+        "Agner Fog's manual puts the penalty at fifteen to twenty cycles on Intel cores from Haswell to Tiger Lake, a little more on Alder Lake, and fifteen to twenty-five on AMD's Zen five. About the length of the pipeline.",
         "The model charges one unit for the comparison. That is a branch misprediction."
       ]
     },
@@ -108,24 +108,24 @@
     {
       "lines": [
         "First escape: radix sort.",
-        "A digit of sixteen bits is an array index. A stable counting sort places a million keys by one digit in a single pass.",
-        "So a sixty-four bit key needs four passes. Four million moves... against about twenty million for n log n comparisons.",
+        "A digit of about log n bits... sixteen here... is an array index into at most about n buckets. So one pass costs order n. A stable counting sort places a million keys by one digit in a single pass. Lowest digit first, and stable, so earlier passes survive.",
+        "So a sixty-four bit key needs sixty-four over sixteen... four passes. Each key is placed four times. Four million placements... against about twenty million for n log n comparisons.",
         {
           "beat": 0.3
         },
-        "The units differ, and every move is a scattered write. But four passes stay four as n grows."
+        "The units differ, and every placement is a scattered write. But four passes stay four as n grows."
       ]
     },
     {
       "lines": [
         "Second escape: van Emde Boas.",
-        "Split the key into its high half, which picks a cluster... and its low half, the position inside it.",
-        "Every level stores its minimum and maximum, so a query recurses only once.",
+        "Split the key into its high half, which picks a cluster... and its low half, the position inside it. Our key is three times two to the thirty-two, plus seven. Cluster three, position seven.",
+        "Every level stores its minimum and maximum. The cluster's minimum says at once whether the answer is inside the key's own cluster... or before it, where the summary gives the previous cluster and we take its maximum. One recursion either way.",
         {
           "beat": 0.3
         },
         "And every level halves the number of bits. Sixty-four, thirty-two, sixteen, eight, four, two, one.",
-        "Six halvings, whether n is a thousand or a billion."
+        "Six halvings, whether n is a thousand or a billion. The count is a recurrence, T of U at most T of root U plus a constant, and topic three solves it."
       ]
     },
     {
@@ -147,7 +147,8 @@
         {
           "beat": 0.3
         },
-        "One warning. The sketch rank is right for twenty-five, but not for twenty-two. One more step repairs it. And the constants keep fusion trees in theory."
+        "One warning. Twenty-two has the same sketch as twenty-one, so the subtraction says there is no predecessor. One more step repairs it.",
+        "A node holds about w to the one fifth keys and is searched in constant time this way. So the tree is a B-tree of height log n over log w. And the constants keep fusion trees in theory."
       ]
     },
     {
@@ -159,7 +160,11 @@
           "beat": 0.3
         },
         "And every unit step hides a load that hits or misses, and a compare the pipeline predicted or paid for.",
-        "From here, say of every bound... which model, and what does its unit hide?"
+        "From here, say of every bound... which model, and what does its unit hide?",
+        {
+          "beat": 0.3
+        },
+        "Counting a loop here is easy. A recursive algorithm hands you a recurrence instead. Next: how to read the answer off one."
       ]
     },
     {

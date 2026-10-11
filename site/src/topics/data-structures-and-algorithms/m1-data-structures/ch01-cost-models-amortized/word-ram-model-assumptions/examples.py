@@ -91,7 +91,11 @@ assert 2**20 - 1 == 1_048_575 >= N - 1 == 999_999  # the largest index fits in 2
 assert W - 20 == 44 and W >= math.ceil(math.log2(N))
 assert 2**8 == 256 < N  # an 8-bit word reaches 256 cells
 # Why the word cannot be unbounded: repeated squaring makes a 2^n-bit number in n steps (Mehlhorn and Sanders).
-assert (2 ** (2**20)).bit_length() == 2**20 + 1  # squaring 2 twenty times: 1,048,577 bits in twenty steps
+assert (2 ** (2**20)).bit_length() == 2**20 + 1  # squaring 2 twenty times: 1,048,577 bits in twenty steps (step 4: a million-bit number)
+sq = 2
+for _ in range(20):
+    sq = sq * sq  # twenty squarings, each one unit on an unbounded word
+assert sq.bit_length() == 2**20 + 1 > 1_000_000
 assert (2**64 - 59).bit_length() == 64  # topic 1's prime: one word
 
 # ── Step 5: big numbers pay by the word ───────────────────────────────────────────────────────────────────
@@ -156,7 +160,8 @@ line_counts = set()
 for _ in range(500):
     _, _, pr, _ = binary_search_predecessor(sample.getrandbits(W))
     line_counts.add(len({(i * 8) // CACHE_LINE_BYTES for i in pr}))
-assert line_counts <= {16, 17}
+    assert pr[0] == N // 2 and pr[1] in (N // 4, 3 * N // 4)  # every query starts at the midpoint: hot queries share the first lines
+assert line_counts <= {16, 17}  # 17 is a cold-cache count: up to 17 trips, fewer when the first probes are cached
 # Zen 5 (Agner Fog's manual, last updated 2026-05-23): L1d 4 clocks, L2 14 clocks, no main-memory figure.
 AGNER_ZEN5_LATENCY = {'L1d': 4, 'L2': 14}
 AGNER_ZEN5_LINE_BYTES = 64
@@ -164,7 +169,9 @@ AGNER_ZEN5_LINE_BYTES = 64
 # ── Step 7: a wrong guess flushes the pipeline (Agner Fog's manual, 2026-05-23) ────────────────────────────
 STAGES = 8  # stage boxes in the drawing (an illustration, not a real core)
 AGNER_MISPREDICT_ZEN5 = (15, 25)
-AGNER_MISPREDICT_INTEL_RECENT = (15, 20)  # Haswell to the Lakes
+AGNER_MISPREDICT_INTEL_RECENT = (15, 20)  # Haswell to the Lakes (section 3.8)
+AGNER_MISPREDICT_TIGER_LAKE = (16, 20)  # Ice Lake and Tiger Lake chapter: "varies between 16 and 20 clock cycles"
+assert AGNER_MISPREDICT_TIGER_LAKE[1] == AGNER_MISPREDICT_INTEL_RECENT[1]  # Alder Lake: "sometimes exceeding 20"
 AGNER_MISPREDICT_PPRO = (10, 20)
 assert AGNER_MISPREDICT_ZEN5 == (15, 25) and AGNER_MISPREDICT_INTEL_RECENT == (15, 20) and AGNER_MISPREDICT_PPRO == (10, 20)
 assert STAGES == 8  # drawn, not measured; the model charges the comparison one unit
@@ -183,28 +190,35 @@ passes_done = 0
 
 
 def radix_sort_lsd(ks, width, r):
-    """LSD radix sort: a stable counting sort on each r-bit digit. Returns (sorted list, passes)."""
-    passes = 0
+    """LSD radix sort: a stable counting sort on each r-bit digit, lowest digit first. Returns (sorted list, passes, placements),
+    where a placement is one key put into a bucket (each key is placed once per pass)."""
+    passes = placements = 0
     for shift in range(0, width, r):
         buckets = [[] for _ in range(1 << r)]
         for k in ks:
             buckets[(k >> shift) & ((1 << r) - 1)].append(k)  # stable: input order kept inside a bucket
+            placements += 1
         ks = [k for bucket in buckets for k in bucket]
         passes += 1
-    return ks, passes
+    return ks, passes, placements
 
 
 radix_rng = random.Random(9)
 sample_keys = [radix_rng.getrandbits(W) for _ in range(1000)]
 for r, expected_passes in [(8, 8), (16, 4)]:
-    out_keys, passes = radix_sort_lsd(sample_keys, W, r)
+    out_keys, passes, placed = radix_sort_lsd(sample_keys, W, r)
     assert out_keys == sorted(sample_keys) and passes == expected_passes == math.ceil(64 / r)
+    assert placed == passes * len(sample_keys)  # each key is placed once per pass: 4 placements per key for r = 16
 assert [math.ceil(64 / r) for r in (8, 16, 20, 32)] == [8, 4, 4, 2]  # 2^20 and 2^32 buckets: counted, not built
-assert 2**16 == 65_536 and 4 * N == 4_000_000  # four passes over a million keys: 4,000,000 moves
+assert 2**16 == 65_536
+assert radix_sort_lsd(sample_keys, W, 16)[2] // len(sample_keys) == 4  # 4 placements per key ...
+assert 4 * N == 4_000_000  # ... so 4,000,000 placements for the million-key vector
+assert 2**16 <= N  # a 16-bit digit gives at most about n buckets: one pass is O(n)
+assert W // 16 == 4  # w / digit bits = 64 / 16 passes
 digits = [(x_fixed >> s) & 0xFFFF for s in (0, 16, 32, 48)]
 assert sum(d << (16 * i) for i, d in enumerate(digits)) == x_fixed  # the four 16-bit digits recombine
 ks32 = [radix_rng.getrandbits(32) for _ in range(1000)]
-out32, passes32 = radix_sort_lsd(ks32, 32, 11)
+out32, passes32, _ = radix_sort_lsd(ks32, 32, 11)
 assert out32 == sorted(ks32) and passes32 == 3 == math.ceil(32 / 11) and 2**11 == 2048  # Prove it, in full (b)
 # Four passes stay four as n grows; log2 n does not.
 assert [round(math.log2(m), 1) for m in (10**6, 10**9)] == [19.9, 29.9]
@@ -385,9 +399,11 @@ assert FKEYS[bisect_right(FKEYS, 22) - 1] == 21 and fusion_predecessor(22) == 21
 expected = [FKEYS[bisect_right(FKEYS, v) - 1] if bisect_right(FKEYS, v) else None for v in range(256)]
 assert [fusion_predecessor(v) for v in range(256)] == expected
 assert sum(1 for v in range(256) if sketch_rank_only(v) == expected[v]) == 42  # the sketch rank alone: right 42 times of 256
-# A fusion node holds about w^(1/5) keys; the height for the running example is hardly better than binary search.
+# A fusion node holds about w^(1/5) keys (the notes' exponent; "any small constant power suffices"). With 2.3 keys the
+# node is nearly binary; with w^(1/3) = 4 keys the height is about 10. Either way it is far from log n / log w = 3.3.
 assert round(64**0.2, 1) == 2.3
 assert round(math.log2(N) / math.log2(64**0.2), 1) == 16.6
+assert round(64 ** (1 / 3), 6) == 4.0 and round(math.log(N, 4), 1) == 10.0  # w^(1/3) = 4 keys per node: height about 10
 assert round(math.log2(N) / math.log2(64), 1) == 3.3  # log n / log w before constants
 
 # ── Step 14 and the Deep dive: the three counts, side by side ─────────────────────────────────────────────

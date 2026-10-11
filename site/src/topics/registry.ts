@@ -79,8 +79,8 @@ export const TOPICS: TopicMeta[] = [
     minutes: 12,
     verified: '2026-10-11',
     introduces: ['word-ram', 'word-size-assumption', 'comparison-model', 'cache-miss', 'branch-misprediction', 'word-level-parallelism', 'integer-sorting', 'van-emde-boas-tree', 'fusion-tree'],
-    uses: ['big-o-theta-omega', 'pseudo-polynomial', 'time-space-tradeoff', 'logarithms', 'standard-sorts', 'binary-numbers', 'binary-search'],
-    // The first three come from the topic before it (Asymptotic notation and case analysis); the last four are assumed, and listed in the Prerequisites panel.
+    uses: ['big-o-theta-omega', 'pseudo-polynomial', 'time-space-tradeoff', 'with-high-probability', 'expected-vs-average', 'logarithms', 'standard-sorts', 'binary-numbers', 'binary-search'],
+    // The first five come from the topic before it (Asymptotic notation and case analysis); the last four are assumed, and listed in the Prerequisites panel.
     declared: ['logarithms', 'standard-sorts', 'binary-numbers', 'binary-search'],
     bridge: 'Every count in the last reel assumed each step costs the same. Here is the machine that makes that true, one word at a time, and the costs it leaves out.',
     handoff: 'Counting a loop on this machine is easy. A recursive algorithm hands you its count as a recurrence; next, how to solve one.',

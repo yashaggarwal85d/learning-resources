@@ -2,6 +2,11 @@
 URL: https://courses.csail.mit.edu/6.851/spring21/scribe/lec11.pdf
 Version: 6.851: Advanced Data Structures, Fall 2017; Lecture 11 — March 22, 2012; Prof. Erik Demaine; scribes Stef Ren, Brian Shimanuki, Ray Hua Wu (2017), Sam Fingeret (2012), Shravas Rao (2012), Paul Christiano (2010)
 
+> we start with the case in which x is the minimum
+> element.
+
+> works in a very similar fashion.
+
 > In this lecture, we will be discussing integer data structures that can be used to solve the predecessor problem.
 
 > In each model, memory is arranged as a collection of words of some size (and potentially a small amount of working memory), and a fixed cost is charged for each operation.
@@ -199,6 +204,14 @@ Contents:
 URL: https://courses.csail.mit.edu/6.851/spring21/scribe/lec14.pdf
 Version: Lecture 14, April 10, 2012 (Prof. Erik Demaine; scribe notes posted with the Spring 2021 course materials)
 
+> Deterministic Sorting in O(n log log n) Time and Linear Space
+
+> The best we have done in the general case is a randomized algorithm in
+
+> Han & Thorup [5], [6]
+
+> O(n lg lg n) for all w
+
 > Today we are going to cover integer sorting.
 
 
@@ -259,6 +272,13 @@ Summary table of sorting algorithms
 ## The microarchitecture of Intel, AMD and VIA CPUs
 URL: https://www.agner.org/optimize/microarchitecture.pdf
 Version: Agner Fog, copyright 1996 - 2026, last updated 2026-05-23
+
+> The measured misprediction penalty varies between 16 and 20 clock
+> cycles.
+
+> The penalty for branch misprediction is high, sometimes exceeding 20 clock cycles in my
+> measurements.
+
 > In the PPro, P2 and P3, the misprediction penalty is higher due to the long pipeline. A misprediction usually costs between 10 and 20 clock cycles.
 
 > The misprediction penalty is approximately 13 clock cycles in the PM and 15 clock cycles in the Core2, corresponding to the length of the pipeline.
@@ -537,3 +557,10 @@ Contents:
 2.10 P and NP
 2.11 Implementation Notes
 2.12 Historical Notes and Further Findings (Sheperdson and Sturgis define the RAM; cells hold a logarithmic number of bits)
+
+## Dynamic Ordered Sets with Exponential Search Trees (Andersson and Thorup)
+URL: https://arxiv.org/pdf/cs/0210006
+Version: arXiv:cs/0210006v2, 20 Jun 2003 (the extracted text loses the square root sign over the bound)
+
+> This leads to an optimal bound of O( log n/ log log n) for searching and updating
+> a dynamic set of n integer keys in linear space.

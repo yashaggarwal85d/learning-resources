@@ -756,6 +756,27 @@
           ]
         }
       ]
+    },
+    {
+      "source": "Andersson and Thorup, Dynamic Ordered Sets with Exponential Search Trees (arXiv cs/0210006, journal version 2007): https://arxiv.org/pdf/cs/0210006",
+      "items": [
+        {
+          "item": "Abstract: exponential search trees turn static polynomial-space search structures into dynamic linear-space ones; optimal O(sqrt(log n / log log n)) for dynamic integer searching and updating",
+          "at": [
+            {
+              "deep": "The frontier"
+            }
+          ]
+        },
+        {
+          "item": "Sections 2 to 6: the construction, finger and string search, trade-offs between n, W and U",
+          "at": [
+            {
+              "out": "Construction details of exponential search trees; the Deep dive's frontier states the headline bound and does not teach the technique"
+            }
+          ]
+        }
+      ]
     }
   ],
   "expert": {
@@ -984,6 +1005,9 @@
         "at": [
           {
             "deep": "The comparison model and its escapes"
+          },
+          {
+            "deep": "The frontier"
           }
         ]
       },
@@ -1102,10 +1126,13 @@
   },
   "gapReview": {
     "date": "2026-10-11",
-    "by": "builder, against OUTLINE.md and FACT-CHECK.md (the independent content review of ROUTINE section 4 is still to run and will append here)",
+    "by": "Fable content review",
     "resolved": [
-      "Expert items 12 and 13 (state of integer sorting, Thorup's equivalence) are placed in the Deep dive's frontier, not out of scope",
-      "Expert item 32 (IPS2Ra) makes a claim about speed in practice; no source opened for this topic supports it, so the Deep dive claims nothing and points to Chapter 15's SIMD and parallel sorting"
+      "Expert items 12 and 13 (state of integer sorting, Thorup's equivalence) are in the Deep dive's frontier, now with Han and Han-Thorup",
+      "Expert item 22, dynamic optimum: the Andersson-Thorup paper was opened and its abstract is quoted in the frontier",
+      "Expert item 25 (Patrascu-Thorup, B-tree or best RAM algorithm) is stated in the frontier with Chapter 5's B-trees as the forward pointer",
+      "Expert item 32 (IPS2Ra) makes a claim about speed in practice; no source opened for this topic supports it, so the Deep dive claims nothing and points to Chapter 15's SIMD and parallel sorting",
+      "All 24 findings of REVIEW.md (1 major, 23 minor) are fixed or answered with a status line there; finding 23's paper text could not be opened, so no attribution was added"
     ],
     "open": []
   }

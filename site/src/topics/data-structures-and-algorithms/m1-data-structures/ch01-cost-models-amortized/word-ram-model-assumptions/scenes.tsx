@@ -267,6 +267,7 @@ export function Flush({ t }: StepCtx) {
         <rect key={i} x={60 + i * 64} y={120} width={60} height={44} rx={6} fill="none" stroke={C.taupe} />
       ))}
       {chips}
+      <T x={60} y={184} s={13} f={C.taupe}>8 of about 15–25 stages drawn</T>
       <T x={60} y={210} s={15} f={C.latte}>x &lt; a[mid]? predicted: yes</T>
       <T x={572} y={250} s={15} f={C.caramel} a="end" o={fadeIn(t, FLUSH - 0.1, 0.2)}>resolved: no</T>
       <T x={60} y={296} s={17} f={C.cherryText} o={fadeIn(t, FLUSH + 0.3)}>lost: 15–25 cycles ≈ pipeline length</T>
@@ -344,7 +345,7 @@ export function RadixPasses({ t }: StepCtx) {
       <T x={60} y={30} s={15} f={C.latte}>pass {pass} of 4</T>
       <Bits x={60} y={40} />
       {[0, 1, 2, 3].map((p) => (
-        <Bracket key={p} x1={62 + p * 120} x2={58 + (p + 1) * 120} y={78} c={p === pass - 1 ? C.caramel : C.taupe} />
+        <Bracket key={p} x1={62 + p * 120} x2={58 + (p + 1) * 120} y={78} c={p === 4 - pass ? C.caramel : C.taupe} />
       ))}
       <T x={60} y={118} s={13} f={C.taupe}>65,536 buckets, one per digit value</T>
       {Array.from({ length: 60 }, (_, s) => (
@@ -355,9 +356,9 @@ export function RadixPasses({ t }: StepCtx) {
         return <circle key={i} cx={lerp(d.x, 60 + d.slot * 8 + 3, easeOut(clamp(local * 1.6 - i * 0.015)))} cy={y} r={2.4} fill={C.crema} opacity={local < 0.9 ? 1 : 0.2} />;
       })}
       <rect x={60} y={196} width={480} height={10} rx={3} fill={done ? C.crema : C.cocoa} opacity={done ? 0.9 : 0.8} />
-      <T x={60} y={246} s={13} f={C.taupe}>collected in bucket order, stably</T>
+      <T x={60} y={246} s={13} f={C.taupe}>lowest digit first; collected in bucket order, stably</T>
       <T x={40} y={290} s={18} f={C.caramel} w={600} o={fadeIn(t, 5.4)}>4 passes × 1,000,000 keys</T>
-      <T x={40} y={322} s={18} f={C.caramel} w={600} o={fadeIn(t, 5.4)}>= 4,000,000 moves</T>
+      <T x={40} y={322} s={18} f={C.caramel} w={600} o={fadeIn(t, 5.4)}>= 4,000,000 placements</T>
       <T x={40} y={366} s={17} f={C.cinnamon} o={fadeIn(t, 5.8)}>n · log₂ n ≈ 20,000,000 comparisons</T>
     </Svg>
   );
@@ -374,8 +375,8 @@ export function HalveBits({ t }: StepCtx) {
       <Bits x={60} y={36} />
       <Bracket x1={62} x2={298} y={74} o={halves} />
       <Bracket x1={302} x2={538} y={74} o={halves} />
-      <T x={180} y={98} s={15} f={C.caramel} a="middle" o={halves}>high 32: cluster 3</T>
-      <T x={420} y={98} s={15} f={C.latte} a="middle" o={halves}>low 32: position 7</T>
+      <T x={180} y={98} s={15} f={C.caramel} a="middle" o={halves}>x = 3·2³² + 7: high 32 = cluster 3</T>
+      <T x={420} y={98} s={15} f={C.latte} a="middle" o={halves}>low 32 = position 7</T>
       <T x={60} y={134} s={13} f={C.taupe}>summary</T>
       {Array.from({ length: 16 }, (_, i) => (
         <rect key={i} x={140 + i * 26} y={122} width={22} height={14} rx={3} fill={i === 3 ? C.caramel : C.cocoa} opacity={i === 3 ? lit : 1} />
@@ -384,10 +385,11 @@ export function HalveBits({ t }: StepCtx) {
       {Array.from({ length: 16 }, (_, i) => (
         <rect key={i} x={140 + i * 26} y={152} width={22} height={28} rx={3} fill="none" stroke={i === 3 ? C.caramel : C.mocha} strokeWidth={i === 3 ? 2.5 : 1} opacity={i === 3 ? 1 : 0.9} />
       ))}
+      <T x={140} y={204} s={13} f={C.taupe}>16 slots drawn of 2³² per level</T>
       <T x={60} y={246} s={20} f={C.caramel} w={600}>{chain.slice(0, links).join(' → ')}</T>
       <T x={60} y={312} s={26} f={C.caramel} w={700} o={fadeIn(t, 1.6 + 0.6 * 6)}>halvings 6</T>
       <T x={560} y={312} s={17} f={C.cinnamon} a="end" o={fadeIn(t, 1.6 + 0.6 * 6)}>vs 20 comparisons</T>
-      <T x={60} y={352} s={13} f={C.taupe}>each level stores its min and max,</T>
+      <T x={60} y={352} s={13} f={C.taupe}>the cluster’s min says: answer inside, or before it,</T>
       <T x={60} y={372} s={13} f={C.taupe}>so a query recurses once</T>
     </Svg>
   );
