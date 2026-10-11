@@ -17,8 +17,10 @@
 //   node scripts/claim.mjs open [<domain>...]   how many runs could start work now, per domain (nothing is claimed)
 //   node scripts/claim.mjs expire <minutes>     after an outage (a usage limit): claims silent this long are dead now, free to resume
 //
-// <domain> is a domain id, title or topic-id prefix ("data-structures-and-algorithms", "Data Structures & Algorithms", "dsa", "German").
+// <domain> is a domain id, title or topic-id prefix ("data-structures-and-algorithms", "Data Structures & Algorithms", "dsa", "Rust").
 // Settings: CLAIM_MAX_PARALLEL (default 4) runs per domain at once; a claim is stale after 90 minutes without a heartbeat;
+// scripts/claim-settings.json: { "finishOnly": true } starts nothing new except the topics in "restart" (titles);
+// "maxTotal" overrides CLAIM_MAX_TOTAL.
 // a topic whose runs stopped 3 times (or vanished 6 times, as on a usage limit) is blocked (reported, not retried) until a
 // human looks at it and deletes its claim. CLAIM_MAX_TOTAL (default 8) caps the runs of all domains together.
 import { spawnSync } from 'node:child_process';
@@ -34,7 +36,11 @@ const BEAT_MIN = Number(process.env.CLAIM_BEAT_MIN ?? 15);
 const MAX = Number(process.env.CLAIM_MAX_PARALLEL ?? 4); // runs of one domain at once
 // Runs of all domains at once. They share one account's usage limit (with its owner's own sessions): 26 runs started
 // together hit the five-hour limit within three minutes and all died (QUALITY.md #46).
-const MAX_TOTAL = Number(process.env.CLAIM_MAX_TOTAL ?? 8);
+// The owner's switches, in scripts/claim-settings.json on main: finishOnly (resume and release started topics, start
+// nothing new: no chapter plans, no new topics) and maxTotal (runs of all domains at once).
+const SETTINGS = (() => { try { return JSON.parse(readFileSync(join(root, 'scripts/claim-settings.json'), 'utf8')); } catch { return {}; } })();
+const MAX_TOTAL = Number(process.env.CLAIM_MAX_TOTAL ?? SETTINGS.maxTotal ?? 8);
+const restart = new Set(SETTINGS.restart ?? []); // topic titles to start again while finishing (their runs died before saving)
 const MAX_STOPS = 3; // a topic whose runs gave up (claim.mjs stop) this often is blocked for a human
 const MAX_DEATHS = 6; // runs that vanished without a word (a usage limit, a lost container) count separately, and more loosely
 
@@ -55,7 +61,7 @@ async function course(domainArg) {
   const { TOPICS } = await import(join(root, 'site/src/topics/registry.ts'));
   const domains = loadDomains(); // reads ../syllabus relative to site/
   process.chdir(root);
-  const alias = { de: 'data-engineering', dsa: 'data-structures-and-algorithms', ger: 'german-language', rust: 'rust-systems-engineering' };
+  const alias = { de: 'data-engineering', dsa: 'data-structures-and-algorithms', rust: 'rust-systems-engineering' };
   domainArg = alias[domainArg.toLowerCase()] ?? domainArg;
   const want = domainArg.toLowerCase().replace(/&/g, 'and').replace(/[^a-z]+/g, ' ').trim();
   const d = domains.find((x) => [x.id, x.title].some((n) => { const s = n.toLowerCase().replace(/&/g, 'and').replace(/[^a-z]+/g, ' ').trim(); return s === want || s.startsWith(want + ' '); }));
@@ -65,7 +71,7 @@ async function course(domainArg) {
   return { domain: d.id, order, reg };
 }
 
-const PREFIX = { 'data-engineering': 'de', 'data-structures-and-algorithms': 'dsa', 'german-language': 'ger', 'rust-systems-engineering': 'rust' };
+const PREFIX = { 'data-engineering': 'de', 'data-structures-and-algorithms': 'dsa', 'rust-systems-engineering': 'rust' };
 const words = (x, n) => x.toLowerCase().normalize('NFKD').replace(/[^a-z0-9]+/g, ' ').trim().split(' ').filter((w) => !['and', 'the', 'of', 'a', 'an', 'in', 'to', 'for', 'with', 'its'].includes(w)).slice(0, n).join('-');
 
 // Where a new topic goes, so parallel runs in one chapter never invent two folders for it: the chapter's folder as
@@ -98,7 +104,7 @@ function chapterPlans(domain) {
 // Unmerged topic branches with no claim (a run from before claims existed, or one whose claim was lost):
 // their registry entry says which syllabus topic they hold, so the next run resumes them instead of starting over.
 function orphans(domain, reg) {
-  const prefix = { 'data-engineering': 'de.', 'data-structures-and-algorithms': 'dsa.', 'german-language': 'ger.', 'rust-systems-engineering': 'rust.' }[domain];
+  const prefix = { 'data-engineering': 'de.', 'data-structures-and-algorithms': 'dsa.', 'rust-systems-engineering': 'rust.' }[domain];
   const found = new Map();
   const heads = git(['ls-remote', '--heads', 'origin', `refs/heads/topic/${prefix}*`]).stdout.trim().split('\n').filter(Boolean);
   for (const line of heads) {
@@ -246,10 +252,10 @@ function decide({ domain, order, reg, lost, plans, chapters }, owner) {
       if (c && stale(c) && !plans.has(ch.number) && !tooOften(c, planTitle(ch))) return planJob(ch, true);
     }
 
-    // 3. Plan the next chapter. Chapters go in sequence: a chapter is planned once every topic of the chapter before it is
+    // 3. Plan the next chapter (never while finishing started work only). Chapters go in sequence: a chapter is planned once every topic of the chapter before it is
     // content-final (live, held, or marked final), so its plan builds on what that chapter really teaches.
     const complete = (ch) => order.filter((t) => t.c.number === ch.number).every((t) => reg.get(t.title) || claimOf(t.title)?.final);
-    for (let k = 0; k < chapters.length; k++) {
+    for (let k = 0; k < chapters.length && !SETTINGS.finishOnly; k++) {
       const ch = chapters[k];
       if (plans.has(ch.number)) continue;
       if (claimOf(planTitle(ch))) break; // being planned (or blocked)
@@ -263,11 +269,12 @@ function decide({ domain, order, reg, lost, plans, chapters }, owner) {
       const t = order[i];
       if (reg.get(t.title) || claimOf(t.title) || lost.get(t.title)) continue;
       if (!plans.has(t.c.number)) continue;
+      if (SETTINGS.finishOnly && !restart.has(t.title)) continue; // finishing: only topics whose runs died are started again
       const place = placeFor(domain, t, reg, claims, plans);
       const { file, claim } = claimJob(t.title, { kind: 'topic', action: 'make', index: i + 1, chapter: t.chapter, chapterNumber: t.c.number, milestone: t.m.number, topicId: place.topicId, folder: place.folder, final: false });
       return { action: 'make', file, attempt: claim.attempts, topic: { index: i + 1, title: t.title, chapter: chapterInfo(t.c), topicId: place.topicId, branch: `topic/${place.topicId}`, folder: place.folder, use: place }, previous: describe(i - 1), next: describe(i + 1) };
     }
-    return { action: 'wait', reason: blocked.length ? blocked.join('; ') : 'every topic of the planned chapter is taken; the next chapter is planned once they are all content-final', ...(blocked.length ? { blocked } : {}) };
+    return { action: 'wait', reason: blocked.length ? blocked.join('; ') : SETTINGS.finishOnly ? 'finishing started topics only (scripts/claim-settings.json): nothing new is started' : 'every topic of the planned chapter is taken; the next chapter is planned once they are all content-final', ...(blocked.length ? { blocked } : {}) };
 
     function planJob(ch, resuming) {
       const first = order.find((t) => t.c.number === ch.number);
@@ -278,7 +285,7 @@ function decide({ domain, order, reg, lost, plans, chapters }, owner) {
       });
       const prev = chapters[chapters.indexOf(ch) - 1];
       const { file, claim, previousRunStopped } = claimJob(planTitle(ch), { kind: 'chapter-plan', action: 'plan', chapterNumber: ch.number, milestone: ch.m.number, folder: `site/src/topics/${dir}` });
-      return { action: 'plan', file, attempt: claim.attempts, ...(resuming ? { previousRunStopped } : {}), chapter: { number: ch.number, title: ch.title, milestone: ch.m.number, plan: `site/src/topics/${dir}/CHAPTER.md`, topics }, previousChapter: prev ? chapterInfo(prev) : null };
+      return { action: 'plan', file, attempt: claim.attempts, ...(resuming ? { previousRunStopped } : {}), chapter: { number: ch.number, title: ch.title, milestone: ch.m.number, plan: `site/src/topics/${dir}/CHAPTER.md`, branch: `plan/${PREFIX[domain]}-ch${String(ch.number).padStart(2, '0')}`, topics }, previousChapter: prev ? chapterInfo(prev) : null };
     }
   };
 }

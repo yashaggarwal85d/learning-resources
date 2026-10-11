@@ -313,12 +313,14 @@ export default function ReelPlayer({ meta, reel, active, startStep, next, onPlay
               <h2 className="mt-2 font-display text-[clamp(1.45rem,3.2vw,2.6rem)] font-bold leading-[1.05] text-crema [text-wrap:balance]">
                 {cur.title}
               </h2>
-              <Caption key={step} portrait={portrait && !cur.predict}>
+              {/* Keys are namespaced: the options' key counts nudges, and a nudge equal to the step number used to collide
+                  with this one, so React left an orphan copy of the text behind on every nudge (QUALITY.md #48). */}
+              <Caption key={`caption-${step}`} portrait={portrait && !cur.predict}>
                 {cur.body}
               </Caption>
               {cur.predict && (
                 <motion.div
-                  key={nudge}
+                  key={`nudge-${nudge}`}
                   animate={nudge ? { x: [0, -8, 8, -5, 5, 0] } : {}}
                   transition={{ duration: 0.4 }}
                   className="mt-3 grid grid-cols-2 gap-2"

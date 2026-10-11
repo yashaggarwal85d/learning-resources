@@ -33,6 +33,8 @@ Then compare with the topic's `REVIEW.md` and `FACT-CHECK.md`: for every finding
 
 ## 4. Fix
 
+Live reels are locked (ROUTINE.md section 0): don't change a live topic or the shared reel code. For a finding in one, write the exact fix you propose in the ledger and in the report under "needs the owner", and leave the reel as it is; the owner unlocks it if they want the change. Held topics are fixed as below.
+
 On a branch `audit/<date>` from a fresh `origin/main`: fix every finding (a fresh Sonnet fix agent per topic; Opus, or Fable for a fix to something Opus wrote, re-checks a fix that changes what is taught). A fix that changes a topic's concept ledger or handoff must keep the next topic consistent (its bridge and `uses`); check both. Run `node scripts/check-all.mjs --changed`, then merge into `main` the way ROUTINE.md section 8 does (merge `origin/main` first, full checks green, confirm CI and Deploy). Narration lines that change get new audio (`narration/narrate.sh`).
 
 ## 5. Ledger
