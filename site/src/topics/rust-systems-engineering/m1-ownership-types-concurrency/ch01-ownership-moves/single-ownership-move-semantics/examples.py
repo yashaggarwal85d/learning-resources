@@ -299,6 +299,26 @@ fn main() {
 for opt in (0, 3):
     r = kv(run_rs('e9', e9, opt))
     assert (r['copy'], r['move'], r['clone']) == ('0/0', '0/0', '1/1000000'), r
+# The two cousins shown beside .clone() in step 10 stamp a buffer too, on a slice of 1,000,000 bytes.
+cost_cousins = '''let v = s.to_vec();      // &[u8] -> Vec<u8>: copies
+let o = s.to_owned();    // &[u8] -> Vec<u8>: copies'''
+run_rs('cost_cousins_verbatim', main_body('let c = vec![7u8; 1_000_000];\nlet s: &[u8] = &c;\n' + cost_cousins + '\nprintln!("{} {}", v.len(), o.len());'))
+e9b = COUNT + '''
+fn main() {
+    let c = vec![7u8; 1_000_000];
+    let s: &[u8] = &c;
+    let a = snap();
+    let v = black_box(s.to_vec());
+    println!("to_vec={}", since(a));
+    let a = snap();
+    let o = black_box(s.to_owned());
+    println!("to_owned={}", since(a));
+    black_box((&v, &o));
+}
+'''
+for opt in (0, 3):
+    r = kv(run_rs('e9b', e9b, opt))
+    assert (r['to_vec'], r['to_owned']) == ('1/1000000', '1/1000000'), r
 
 # E10 · the 4 KiB move (step 11).
 big_defs = 'struct Big { data: [u8; 4096] }\nfn take(b: Big) -> *const u8 {\n    b.data.as_ptr()\n}\n\n'
@@ -363,7 +383,7 @@ for opt in (0, 3):
     assert r['vec_len'] == '1000000' and r['vec_size'] == '24', r
     assert (r['a16'], r['a4096'], r['a65536'], r['boxed'], r['unsized'], r['same_ptr']) == ('16', '4096', '65536', '8', '16', 'true'), r
 assert log2(8) == 3 and log2(65536) == 16 and log2(16) == 4 and log2(4096) == 12
-assert [round(420 * log2(b) / 16) for b in (16, 4096, 65536, 8, 24)] == [105, 315, 420, 79, 120]  # bar widths in the drawing
+assert [round(420 * log2(b) / 20) for b in (16, 4096, 65536, 8, 24, 1_000_000)] == [84, 252, 336, 63, 96, 419]  # bar widths in the drawing (log scale, 20 bits; the last two rows also draw what they own: 65,536 and 1,000,000)
 # 4 * 65_536 bytes through four nested calls (Prove it 7)
 assert 4 * 65_536 == 262_144 and 4 * 8 == 32
 
@@ -505,6 +525,7 @@ cfg_main = 'let p = Point3 { x: 1.0, y: 2.0, z: 3.0 };\nfor _ in 0..3 { norm(p);
 fails('cfg_bad', cfg + proc + main_body(cfg_main), 'error[E0382]: use of moved value: `p`', 'value moved here, in previous iteration of loop')
 out = run_rs('cfg_ok', '#[derive(Clone, Copy)]\n' + cfg + proc + main_body(cfg_main + '\nprintln!("{}", size_of::<Point3>());'))
 assert out == '12\n'
+assert run_rs('f32_size', main_body('println!("{}", size_of::<f32>());')) == '4\n' and 3 * 4 == 12  # step 22: three 4-byte floats
 # The caveat in the explanation: a config struct that may gain a String takes &Config (compiles, and the caller keeps it).
 assert run_rs('cfg_ref', 'struct Config {\n    retries: u32,\n    endpoint: String,\n}\nfn process(cfg: &Config) -> usize { cfg.endpoint.len() + cfg.retries as usize }\n' + main_body('let cfg = Config { retries: 3, endpoint: String::from("db") };\nfor _ in 0..3 { process(&cfg); }\nprintln!("{}", process(&cfg));')) == '5\n'
 

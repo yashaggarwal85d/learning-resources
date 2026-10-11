@@ -740,3 +740,21 @@ The plan changed in these places, each for the reason given:
 - **No incident cited** (finding 15): no public post-mortem with a verifiable primary page was found; recorded in `coverage.json` `gapReview.notes`, not invented.
 - **Rust for Rustaceans not used** (finding 12): not freely available; the FLS section 15 is quoted instead.
 - Narration lines for steps 10, 12, 14 and 23 reworded or extended (findings 6, 17, 22). No audio exists yet for this topic, so nothing is stale.
+
+### Looks review fixes, 2026-10-11 (REVIEW.md, "Looks and learning review", 21 findings)
+
+The plan changed in these places, each for the reason given. Shared code (`site/src/reels/`, `site/tests/`, `kit.tsx`) is untouched.
+
+- **Reveal fades are shorter** (`rv`: 0.15 s with 0 to 0.1 s delays instead of 0.45 s with up to 0.45 s). Reason: the shared test screenshots 250 ms after the click (finding 1, a harness issue), so a reveal that finishes inside 250 ms is captured complete.
+- **Step 1** gains the `ptr · len · cap` legend over the first card. Reason: the opening card's numbers meant nothing without it (finding 2).
+- **Steps 2, 9, 11, 15 captions (the `explain` text) shortened** to 75 words or fewer (60 where options wrap); the dropped sentences are already in the Deep dive. Reason: a long reveal pushed the title under the nav on desktop and the caption under the drawing on phone (findings 3, 19). Step 5's question now asks "Does this compile, and what does it print?" and its boxes are labelled with the statements (finding 5).
+- **Step 3** burst sits behind the buffer only and is lighter; the `}` becomes a scope line with `}` as its label. **Step 6** counter moves 8 units down (finding 4).
+- **Step 7** colours the language latte and the code crema. The three alias rows are NOT folded into one: the title promises six meanings and the six rows are the six (finding 6, partly).
+- **Step 8** rules go taupe, one caramel test label ("owns anything beyond its bytes?") sits above the bins, chips are mocha and only the two reference chips are caramel (finding 7). The thin line from the reference chips to the `&T` rule is not drawn: it would cross the bins.
+- **Step 12** defaults to `Vec<u8> (1,000,000 bytes)`; Box and Vec rows get a dashed "owns" bar on a log scale (denominator 20, so 1,000,000 fits); the bar widths asserted in `examples.py` are updated (finding 8).
+- **Step 13** leaves a trace in each lane's final state (arrow, two parked `&`, a thick `&mut`, `new` token with an arrow back); verdicts are crema (finding 9).
+- **Step 14** line says "appends in place, may grow"; verdicts on the signature baselines; a dashed `s: String` ghost stays beside `v` (finding 10).
+- **Step 15** drawing becomes the caller's timeline (`batch` card, `checksum(batch)`, `batch.len()`) and, after the answer, one row per option with a small card glyph for its effect; the signatures stay on the buttons only (finding 11).
+- **Step 16** drops the sub-label, dims the note, spaces the chips (finding 12). **Step 17** bars move into the gutter, with a cherry ring and `move` labels (finding 13). **Step 18** keeps the batch in the `ship` box (moved above the loop), adds a direction arrow and a `lap 2: batch gone` label (finding 14). **Step 19** strike raised; the card-and-buffer motif returns beside each of the three counter blocks (findings 15, 20).
+- **Bottom spacing** on steps 12, 16, 20 (finding 16). **Step 22** reuses step 8's bin with a `Point3` chip and three 4-byte cells (finding 17); its narration says "point" not "config". **Step 23** wraps before the separator and draws four arrows (finding 18).
+- **Pacing (finding 20), the reasonable part:** step 10 swaps its second table for the code listing where `.clone()`, `to_vec()` and `to_owned()` each stamp a cherry buffer (new execution in `examples.py`); step 21 becomes a → b slide, clone stamp, c → d slide, `total: 1 allocation`; step 19 and 22 as above. Steps 14 to 17 stay as ordered text-dominated frames: re-planning their order and durations is out of scope for a fix batch; step 15 now has a picture, which breaks the run.

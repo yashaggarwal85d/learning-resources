@@ -59,6 +59,7 @@ When a new issue is found: fix it, add a row here, and add or strengthen a guard
 | 19 | A large pause icon covered the animation. | Removed; the control row shows "Paused". | Rule: overlays never cover the visual during a step. |
 | 20 | Header pills were see-through, so text scrolled visibly behind them; a badge wrapped onto two lines on phones. | Opaque background; no-wrap badge. | Screenshot review at both sizes. |
 | 21 | Hero sky: topic stars too faint, labels clashing with the scroll cue and running off-screen on phones. | Brighter stars, repositioned galaxies, labels kept inside the canvas and hidden on phones. | Screenshot review at both sizes. |
+| 36 | Open for the player (found by the Rust single-ownership looks review): on a predict step the caption column grows with the explanation and scrolls up behind the drawing on phone (clipped kicker, caption repeated three times on step 2) and under the top nav on desktop; the reel test screenshots 250 ms after the click, before 0.45 s reveal fades finish, so captures show half-drawn reveals and phone step 1 shows step 2. | Topic side: explanations kept to 75 words or fewer and reveals fade in 0.15 s. Not fixed: the player should keep the kicker clear of the nav when the column overflows, and `tests/reels.mjs` should wait about 1 s before the screenshot. | Looks review; the topic's captures. |
 
 ### Delivery and process
 

@@ -13,8 +13,8 @@ import { C, Stack, Svg, T } from '../../../../../reels/kit';
 const nb = (s: string) => s.replace(/ {2,}/g, (m) => '\u00a0'.repeat(m.length));
 /** Opacity ramp: 0 before `a`, 1 after `a + d`. */
 const fa = (t: number, a: number, d = 0.4) => easeOut(seg(t, a, a + d));
-/** CSS-driven reveal for predict steps (the clock stops at `duration`, so the reveal is a still frame). */
-const rv = (on: boolean, delay = 0) => ({ opacity: on ? 1 : 0, transition: 'opacity .45s', transitionDelay: on ? `${delay}s` : '0s' });
+/** CSS-driven reveal for predict steps (the clock stops at `duration`, so the reveal is a still frame). Short on purpose: the harness screenshots 250 ms after the click. */
+const rv = (on: boolean, delay = 0) => ({ opacity: on ? 1 : 0, transition: 'opacity .15s', transitionDelay: on ? `${Math.min(delay, 0.1)}s` : '0s' });
 
 // ── shared glyphs ───────────────────────────────────────────────────────────────────────────────────────────────
 
@@ -113,6 +113,7 @@ export function Problem({ t, portrait }: StepCtx) {
       <Svg label="Shipping a 1,000,000-byte batch with .clone() makes one extra allocation and copies 1,000,000 bytes, for every batch" h={262} fill>
         <g opacity={fa(t, 1.2)}>
           <Card x={20} y={36} w={250} name="batch" len="1,000,000" cap="1,000,000" />
+          <T x={110} y={27} s={13} f={C.taupe}>ptr · len · cap</T>
           <Bar x={20} y={140} label="1,000,000 bytes" />
           <Arrow x1={42} y1={82} x2={42} y2={138} />
         </g>
@@ -187,12 +188,13 @@ export function DoubleFree({ t }: StepCtx) {
           <Card x={330} y={72} name="s2" len="5" cap="5" />
           <Arrow x1={72} y1={118} x2={180} y2={148} />
           <Arrow x1={352} y1={118} x2={300} y2={148} />
-          <T x={560} y={160} s={20} a="middle" f={C.latte}>{'}'}</T>
+          <line x1={556} y1={72} x2={556} y2={178} stroke={C.mocha} strokeWidth={2} />
+          <T x={556} y={202} s={17} a="middle" f={C.latte}>{'}'}</T>
         </g>
         <Cells x={165} y={150} text="hello" freed={freedA} o={fa(t, 0, 0.6)} />
         {pulse(0.8, 352, 118, 300, 160)}
         {pulse(1.6, 72, 118, 190, 160)}
-        {t >= 2.1 && <circle cx={240} cy={167} r={50 * burst} fill={C.cherry} opacity={0.6 * (1 - burst * 0.5)} />}
+        {t >= 2.1 && <circle cx={240} cy={167} r={34 * burst} fill={C.cherry} opacity={0.35 * (1 - burst * 0.5)} />}
         <T x={240} y={206} s={17} a="middle" f={C.cherryText} w={700} o={fa(t, 2.1, 0.3)}>double free</T>
         <T x={440} y={182} s={17} f={C.cherryText} w={700} o={fa(t, 2.1, 0.3)}>frees: 2</T>
       </g>
@@ -201,7 +203,8 @@ export function DoubleFree({ t }: StepCtx) {
         <Card x={50} y={284} name="s1" moved />
         <Card x={330} y={284} name="s2" len="5" cap="5" />
         <Arrow x1={352} y1={330} x2={300} y2={360} />
-        <T x={560} y={372} s={20} a="middle" f={C.latte}>{'}'}</T>
+        <line x1={556} y1={284} x2={556} y2={382} stroke={C.mocha} strokeWidth={2} />
+        <T x={556} y={276} s={17} a="middle" f={C.latte}>{'}'}</T>
       </g>
       <Cells x={165} y={362} text="hello" freed={freedB} o={fa(t, 2.9, 0.5)} />
       {pulse(3.6, 352, 330, 300, 372)}
@@ -271,12 +274,12 @@ export function Reinit({ t, answer, portrait }: StepCtx) {
         <Code title="reinit.rs" t={t} end={1.0} lines={['let mut s = String::from("first");', 'let t = s;', 's = String::from("second");', 'println!("{s} {t}");']} />
       )}
       {!(portrait && !ans) && (
-        <Svg label="The place s is live after line 1, deinitialized after line 2, and live again after line 3; the program prints second first" h={200} fill>
+        <Svg label="The place s is live after let mut s, deinitialized after let t = s, and live again after s is assigned; the program prints second first" h={200} fill>
           <T x={30} y={68} s={15} f={C.crema} w={600}>s:</T>
           {[0, 1, 2].map((i) => (
             <g key={i}>
               <rect x={xs[i]} y={40} width={150} height={44} rx={10} fill="none" stroke={C.mocha} opacity={ans ? 0 : fa(t, 1.0)} />
-              <T x={xs[i] + 75} y={108} s={13} a="middle" f={C.taupe} o={fa(t, 1.0)}>{`line ${i + 1}`}</T>
+              <T x={xs[i] + 75} y={108} s={13} a="middle" f={C.taupe} o={fa(t, 1.0)}>{['let mut s = …', 'let t = s;', 's = …'][i]}</T>
             </g>
           ))}
           <g style={rv(ans)}>
@@ -347,22 +350,22 @@ export function CppShell({ t }: StepCtx) {
           <>
             <T x={x} y={388} s={13} f={C.crema} o={fa(t, 3.0, 0.3)}>destructor (data owned)</T>
             <T x={x} y={408} s={13} f={C.crema} o={fa(t, 3.5, 0.3)}>destructor (data null)</T>
-            <T x={x} y={436} s={17} f={C.cherryText} w={700} o={fa(t, 3.8, 0.3)}>destructors: 2</T>
+            <T x={x} y={444} s={17} f={C.cherryText} w={700} o={fa(t, 3.8, 0.3)}>destructors: 2</T>
           </>
         ) : (
           <>
             <T x={x} y={388} s={13} f={C.crema} o={fa(t, 4.4, 0.3)}>drop (1024 bytes)</T>
-            <T x={x} y={436} s={17} f={C.caramel} w={700} o={fa(t, 4.8, 0.3)}>drops: 1</T>
+            <T x={x} y={444} s={17} f={C.caramel} w={700} o={fa(t, 4.8, 0.3)}>drops: 1</T>
           </>
         )}
       </g>
     );
   };
   return (
-    <Svg label="In C++ the moved-from object still exists and its destructor runs, so two destructors run; in Rust the source is gone and one drop runs" h={476}>
+    <Svg label="In C++ the moved-from object still exists and its destructor runs, so two destructors run; in Rust the source is gone and one drop runs" h={508}>
       {col(0)}
       {col(1)}
-      <T x={300} y={466} s={13} a="middle" f={C.taupe} o={fa(t, 5.0, 0.6)}>std::move is a cast; the source lives on</T>
+      <T x={300} y={486} s={13} a="middle" f={C.taupe} o={fa(t, 5.0, 0.6)}>std::move is a cast; the source lives on</T>
     </Svg>
   );
 }
@@ -370,12 +373,12 @@ export function CppShell({ t }: StepCtx) {
 // ── 7 · One line, six meanings ─────────────────────────────────────────────────────────────────────────────────
 export function SixMeanings({ t }: StepCtx) {
   const rows = [
-    ['Python b = a', 'shared', 'usable, alias'],
-    ['Java b = a', 'shared', 'usable, alias'],
-    ['Go b := a', 'shared', 'usable, alias'],
-    ['C++ b = a', 'copied', 'usable, separate'],
-    ['C++ b = move(a)', 'stolen', 'valid, unspecified'],
-    ['Rust let b = a', 'stays put', 'use = compile error'],
+    ['Python', 'b = a', 'shared', 'usable, alias'],
+    ['Java', 'b = a', 'shared', 'usable, alias'],
+    ['Go', 'b := a', 'shared', 'usable, alias'],
+    ['C++', 'b = a', 'copied', 'usable, separate'],
+    ['C++', 'b = move(a)', 'stolen', 'valid, unspecified'],
+    ['Rust', 'let b = a', 'stays put', 'use = compile error'],
   ];
   return (
     <Svg label="After b = a: Python, Java and Go share one object and a stays usable; C++ copies or steals; Rust leaves the data in place and a becomes a compile error" h={420}>
@@ -393,9 +396,12 @@ export function SixMeanings({ t }: StepCtx) {
         const f = rust ? C.caramel : C.latte;
         return (
           <g key={i} opacity={k} transform={`translate(${-20 * (1 - k)} 0) translate(14 ${y}) scale(${sc}) translate(-14 ${-y})`}>
-            <T x={14} y={y} s={13} f={f} w={rust ? 700 : 500}>{r[0]}</T>
-            <T x={196} y={y} s={13} f={f} w={rust ? 700 : 500}>{r[1]}</T>
-            <T x={346} y={y} s={13} f={f} w={rust ? 700 : 500}>{r[2]}</T>
+            <T x={14} y={y} s={13} f={rust ? C.caramel : C.latte} w={rust ? 700 : 500}>
+              {r[0]}
+              <tspan fill={rust ? C.caramel : C.crema}>{` ${r[1]}`}</tspan>
+            </T>
+            <T x={196} y={y} s={13} f={f} w={rust ? 700 : 500}>{r[2]}</T>
+            <T x={346} y={y} s={13} f={f} w={rust ? 700 : 500}>{r[3]}</T>
             {rust && <rect x={14} y={y + 12} width={530} height={2} fill={C.caramel} />}
           </g>
         );
@@ -443,14 +449,15 @@ export function CopySieve({ t }: StepCtx) {
         </g>
       </g>
       {[0, 1, 2].map((i) => (
-        <T key={i} x={14} y={110 + i * 24} s={14} f={C.crema} o={fa(t, 4.2 + i * 0.3, 0.3)}>
+        <T key={i} x={14} y={104 + i * 22} s={13} f={C.taupe} o={fa(t, 4.2 + i * 0.3, 0.3)}>
           {['Copy only if every field is Copy', 'a type with Drop is never Copy', '&T is Copy; &mut T never is'][i]}
         </T>
       ))}
+      <T x={300} y={184} s={15} a="middle" f={C.caramel} w={600} o={fa(t, 1.0, 0.4)}>owns anything beyond its bytes?</T>
       <g opacity={fa(t, 1.0, 0.4)}>
-        <rect x={8} y={200} width={280} height={190} rx={14} fill="none" stroke={C.caramel} strokeWidth={1.5} />
+        <rect x={8} y={200} width={280} height={190} rx={14} fill="none" stroke={C.mocha} strokeWidth={1.5} />
         <rect x={304} y={200} width={280} height={190} rx={14} fill="none" stroke={C.mocha} strokeWidth={1.5} />
-        <T x={24} y={226} s={17} f={C.caramel} w={600}>Copy</T>
+        <T x={24} y={226} s={17} f={C.crema} w={600}>Copy</T>
         <T x={24} y={246} s={13} f={C.latte}>bits are the whole value</T>
         <T x={320} y={226} s={17} f={C.latte} w={600}>move-only</T>
         <T x={320} y={246} s={13} f={C.latte}>owns more, or exclusive</T>
@@ -460,7 +467,7 @@ export function CopySieve({ t }: StepCtx) {
         const y = lerp(120, c.y, easeOutBack(k));
         return (
           <g key={c.s} opacity={easeOut(k * 3)}>
-            <rect x={c.x} y={y} width={c.w} height={28} rx={8} fill={C.roast} stroke={c.copy ? C.caramel : C.mocha} />
+            <rect x={c.x} y={y} width={c.w} height={28} rx={8} fill={C.roast} stroke={c.s.startsWith('&') ? C.caramel : C.mocha} strokeWidth={c.s.startsWith('&') ? 2 : 1.5} />
             <T x={c.x + c.w / 2} y={y + 19} s={13} a="middle" f={C.crema}>{c.s}</T>
           </g>
         );
@@ -501,10 +508,13 @@ export function FdCopy({ t, answer, portrait }: StepCtx) {
 
 // ── 10 · .clone() is where the cost is ─────────────────────────────────────────────────────────────────────────
 export function CloneCost({ t }: StepCtx) {
+  // One row per line of the listing: only the clone family stamps a second (cherry) buffer.
   const rows = [
-    { label: 'copy', a: 0, b: 0, at: 1.4 },
-    { label: 'move', a: 0, b: 0, at: 2.2 },
-    { label: 'clone', a: 1, b: 1_000_000, at: 3.0 },
+    { label: 'copy', at: 1.4, cost: false },
+    { label: 'move', at: 2.0, cost: false },
+    { label: 'clone', at: 2.6, cost: true },
+    { label: 'to_vec', at: 3.2, cost: true },
+    { label: 'to_owned', at: 3.8, cost: true },
   ];
   return (
     <Stack>
@@ -512,26 +522,30 @@ export function CloneCost({ t }: StepCtx) {
         title="cost.rs"
         t={t}
         end={1.0}
-        lines={['let n2 = n;           // i32: copy', 'let b2 = b;           // Vec<u8>: move', 'let c2 = c.clone();   // Vec<u8>: clone']}
-        highlight={t >= 3.0 ? [2] : []}
+        lines={['let n2 = n;           // i32: copy', 'let b2 = b;           // Vec<u8>: move', 'let c2 = c.clone();   // Vec<u8>: clone', 'let v = s.to_vec();   // &[u8]: copies', 'let o = s.to_owned(); // &[u8]: copies']}
+        highlight={t >= 3.8 ? [2, 3, 4] : t >= 3.2 ? [2, 3] : t >= 2.6 ? [2] : []}
       />
-      <Svg label="Copy and move make 0 allocations and copy 0 heap bytes; only .clone() allocates, 1 allocation of 1,000,000 bytes" h={274} fill>
-        <T x={190} y={26} s={13} a="middle" f={C.taupe} o={fa(t, 1.0)}>ALLOCATIONS</T>
-        <T x={440} y={26} s={13} a="middle" f={C.taupe} o={fa(t, 1.0)}>HEAP BYTES</T>
+      <Svg label="Copy and move stamp no new buffer; only .clone(), to_vec() and to_owned() each allocate a second buffer, 1 allocation of 1,000,000 bytes" h={274} fill>
         {rows.map((r, i) => {
-          const y = 66 + i * 58;
-          const e = easeOut(seg(t, r.at, r.at + 0.6));
-          const cost = r.a > 0;
+          const y = 26 + i * 40;
+          const k = easeOut(seg(t, r.at, r.at + 0.5));
           return (
             <g key={r.label} opacity={fa(t, r.at - 0.2, 0.3)}>
-              <T x={14} y={y} s={16} f={cost ? C.cherryText : C.crema} w={600}>{r.label}</T>
-              <T x={190} y={y} s={20} a="middle" f={cost ? C.cherryText : C.crema} w={700}>{fmt(r.a * e)}</T>
-              <T x={440} y={y} s={20} a="middle" f={cost ? C.cherryText : C.crema} w={700}>{fmt(r.b * e)}</T>
+              <T x={14} y={y + 18} s={15} f={r.cost ? C.cherryText : C.crema} w={600}>{r.label}</T>
+              <MiniCard x={150} y={y} />
+              <Arrow x1={226} y1={y + 13} x2={256} y2={y + 13} c={C.latte} />
+              <rect x={260} y={y + 4} width={130} height={18} rx={5} fill={C.cocoa} stroke={C.latte} strokeWidth={1.5} />
+              {r.cost && (
+                <g opacity={k}>
+                  <rect x={400} y={y + 4} width={130 * k} height={18} rx={5} fill={C.cherry} fillOpacity={0.3} stroke={C.cherry} strokeWidth={2} />
+                  <T x={420} y={y + 19} s={13} f={C.cherryText} o={k > 0.9 ? 1 : 0}>+1 buffer</T>
+                </g>
+              )}
             </g>
           );
         })}
-        <T x={14} y={238} s={13} f={C.taupe} o={fa(t, 4.0, 0.6)}>Rc::clone and Arc::clone only bump a count:</T>
-        <T x={14} y={258} s={13} f={C.taupe} o={fa(t, 4.0, 0.6)}>see Chapter 4</T>
+        <T x={14} y={238} s={13} f={C.taupe} o={fa(t, 4.2, 0.6)}>Rc::clone and Arc::clone only bump a count:</T>
+        <T x={14} y={258} s={13} f={C.taupe} o={fa(t, 4.2, 0.6)}>see Chapter 4</T>
       </Svg>
     </Stack>
   );
@@ -583,15 +597,17 @@ export function BigMove({ t, answer, portrait }: StepCtx) {
 }
 
 // ── 12 · Size decides the cost; Box caps it (interactive) ──────────────────────────────────────────────────────
-const SIZES = [
+const SIZES: { label: string; bytes: number; why: string; owns?: number }[] = [
   { label: '[u8; 16]', bytes: 16, why: 'the whole array is copied' },
   { label: '[u8; 4096]', bytes: 4096, why: 'the whole array is copied' },
   { label: '[u8; 65536]', bytes: 65536, why: 'the whole array is copied' },
-  { label: 'Box<[u8; 65536]>', bytes: 8, why: '8-byte pointer; the 65,536 bytes stay on the heap' },
-  { label: 'Vec<u8> (1,000,000)', bytes: 24, why: 'header only; the 1,000,000 bytes stay on the heap' },
+  { label: 'Box<[u8; 65536]>', bytes: 8, why: '8-byte pointer; the 65,536 bytes stay on the heap', owns: 65536 },
+  { label: 'Vec<u8> (1,000,000 bytes)', bytes: 24, why: 'header only; the 1,000,000 bytes stay on the heap', owns: 1_000_000 },
 ];
+/** Bar width on a log scale: 20 bits of range, so 1,000,000 bytes still fits in 420 units. */
+const barW = (bytes: number) => (420 * Math.log2(bytes)) / 20;
 export function SizeChooser({ t }: StepCtx) {
-  const [sel, setSel] = useState(1);
+  const [sel, setSel] = useState(4);
   // The chips sit below the drawing and are not wrapped in a [data-interactive] container: the player ignores presses on a
   // data-interactive element, so a container that is wide and tall would swallow a swipe that starts on it. Each chip is a
   // <button>, which the player already ignores, and nothing else here handles pointer events.
@@ -600,12 +616,18 @@ export function SizeChooser({ t }: StepCtx) {
       <Svg label="Bytes one move copies equals the size of the type: 16, 4096 or 65536 for arrays, 8 for a Box and 24 for a Vec, however big their contents" h={350} fill>
         {SIZES.map((s, i) => {
           const y = 28 + i * 56;
-          const w = (420 * Math.log2(s.bytes)) / 16;
+          const w = barW(s.bytes);
           const k = easeOut(seg(t, 0.4 + i * 0.4, 1.0 + i * 0.4));
           const on = i === sel;
           return (
             <g key={s.label}>
               <T x={24} y={y} s={14} f={on ? C.crema : C.latte} w={on ? 700 : 500}>{s.label}</T>
+              {s.owns && (
+                <g opacity={fa(t, 1.0 + i * 0.4, 0.4)}>
+                  <rect x={24} y={y + 8} width={barW(s.owns)} height={20} rx={6} fill="none" stroke={C.taupe} strokeDasharray="5 4" />
+                  <T x={24 + barW(s.owns) - 18} y={y + 24} s={13} a="end" f={C.taupe}>{`owns ${fmt(s.owns)}`}</T>
+                </g>
+              )}
               <rect x={24} y={y + 8} width={Math.max(2, w * k)} height={20} rx={6} fill={on ? C.caramel : C.mocha} />
               <T x={24 + w * k + 12} y={y + 24} s={15} f={C.crema} o={k > 0.3 ? 1 : 0}>{fmt(s.bytes)}</T>
             </g>
@@ -614,7 +636,7 @@ export function SizeChooser({ t }: StepCtx) {
         <T x={24} y={312} s={13} f={C.taupe} o={fa(t, 0, 0.4)}>bytes one move copies = size_of::&lt;T&gt;() (log scale)</T>
         <T x={24} y={338} s={13} f={C.crema} o={fa(t, 3.0, 0.6)}>{SIZES[sel].why}</T>
       </Svg>
-      <div className="flex flex-wrap justify-center gap-2 px-2">
+      <div className="mt-2 mb-4 flex flex-wrap justify-center gap-2 px-2">
         {SIZES.map((s, i) => (
           <button
             key={s.label}
@@ -655,7 +677,7 @@ export function Contracts({ t }: StepCtx) {
       {laneY.map((y, i) => (
         <g key={i}>
           <T x={14} y={y + 18} s={15} f={C.crema}>{sigs[i]}</T>
-          <T x={586} y={y + 18} s={15} a="end" f={C.caramel} w={600} o={fa(t, win[i][1] - 0.2, 0.4)}>{verdicts[i]}</T>
+          <T x={586} y={y + 18} s={15} a="end" f={C.crema} w={600} o={fa(t, win[i][1] - 0.2, 0.4)}>{verdicts[i]}</T>
           <rect x={30} y={y + 28} width={170} height={56} rx={10} fill="none" stroke={C.mocha} strokeWidth={1.5} />
           <rect x={380} y={y + 28} width={180} height={56} rx={10} fill="none" stroke={C.mocha} strokeWidth={1.5} />
           <T x={38} y={y + 42} s={13} f={C.taupe}>caller</T>
@@ -667,6 +689,7 @@ export function Contracts({ t }: StepCtx) {
         const k = p(0);
         return (
           <g>
+            <Arrow x1={206} y1={laneY[0] + 61} x2={376} y2={laneY[0] + 61} c={C.latte} o={fa(t, 1.3, 0.3)} />
             <rect x={lx} y={laneY[0] + 46} width={60} height={30} rx={7} fill="none" stroke={C.taupe} strokeDasharray="5 4" opacity={k > 0.05 ? 0.7 : 0} />
             <Token x={oneWay(k)} y={laneY[0] + 46} o={fa(t, 0.2, 0.2)} />
           </g>
@@ -674,6 +697,12 @@ export function Contracts({ t }: StepCtx) {
       })()}
       {/* lane 2: the token stays; two shared borrows travel out and back */}
       <Token x={lx} y={laneY[1] + 46} o={fa(t, 1.4, 0.2)} />
+      <g opacity={fa(t, win[1][1] - 0.2, 0.3)}>
+        <Arrow x1={206} y1={laneY[1] + 51} x2={376} y2={laneY[1] + 51} c={C.latte} />
+        <Arrow x1={376} y1={laneY[1] + 71} x2={206} y2={laneY[1] + 71} c={C.latte} />
+        <Token x={392} y={laneY[1] + 46} ghost label="&" />
+        <Token x={474} y={laneY[1] + 46} ghost label="&" />
+      </g>
       {[0, 0.2].map((d, j) => {
         const k = seg(t, win[1][0] + d, win[1][1] + d - 0.2);
         return k > 0 && k < 1 ? <Token key={j} x={there(k)} y={laneY[1] + 46 + (j ? 5 : 0)} w={60} ghost label="&" /> : null;
@@ -689,14 +718,20 @@ export function Contracts({ t }: StepCtx) {
               <Token x={lx} y={laneY[2] + 46} w={mutated ? 72 : 60} o={fa(t, 2.7, 0.2)} />
             </g>
             {out && <Token x={there(k)} y={laneY[2] + 46} ghost thick label="&mut" />}
-            <T x={38} y={laneY[2] + 100} s={13} f={C.latte} o={out ? 1 : 0}>no other access</T>
+            <T x={38} y={laneY[2] + 100} s={13} f={C.taupe} o={k > 0 ? 1 : 0}>no other access</T>
+            {mutated && <Token x={rx} y={laneY[2] + 46} ghost thick label="&mut" />}
           </g>
         );
       })()}
       {/* lane 4: a token appears in make and slides to the caller */}
       {(() => {
         const k = p(3);
-        return <Token x={lerp(rx, lx, k)} y={laneY[3] + 46} o={fa(t, win[3][0], 0.2)} />;
+        return (
+          <g>
+            <Arrow x1={376} y1={laneY[3] + 61} x2={206} y2={laneY[3] + 61} c={C.latte} o={fa(t, win[3][1] - 0.4, 0.3)} />
+            <Token x={lerp(rx, lx, k)} y={laneY[3] + 46} label="new" o={fa(t, win[3][0], 0.2)} />
+          </g>
+        );
       })()}
     </Svg>
   );
@@ -712,11 +747,11 @@ export function Methods({ t }: StepCtx) {
   const morph = easeInOut(seg(t, 2.9, 3.5));
   const nudge = 20 * Math.sin(Math.PI * morph);
   return (
-    <Svg label="Receivers state the contract: &self reads, &mut self mutates, self consumes; into_bytes consumes the String and reuses the same buffer with 0 allocations" h={450}>
+    <Svg label="Receivers state the contract: &self reads, &mut self mutates, self consumes; into_bytes consumes the String and returns a Vec on the same buffer with 0 allocations" h={480}>
       {rows.map((r, i) => (
         <g key={r.sig} opacity={fa(t, r.at, 0.4)}>
           <T x={14} y={50 + i * 60} s={15} f={C.crema}>{r.sig}</T>
-          <T x={586} y={74 + i * 60} s={13} a="end" f={i === 2 ? C.caramel : C.latte} w={i === 2 ? 700 : 500}>{r.chip}</T>
+          <T x={586} y={50 + i * 60} s={13} a="end" f={i === 2 ? C.caramel : C.latte} w={i === 2 ? 700 : 500}>{r.chip}</T>
         </g>
       ))}
       <g opacity={fa(t, 2.1, 0.4)}>
@@ -729,9 +764,12 @@ export function Methods({ t }: StepCtx) {
         <T x={170} y={380} s={13} a="end" f={C.taupe}>HEAP</T>
         <Arrow x1={82 + nudge} y1={304} x2={245} y2={348} />
       </g>
-      <T x={262} y={300} s={15} f={C.caramel} o={fa(t, 3.7, 0.4)}>same buffer · 0 allocations</T>
-      <T x={14} y={420} s={13} f={C.latte} o={fa(t, 4.4, 0.5)}>String + &amp;str also consumes the left side</T>
-      <T x={14} y={440} s={13} f={C.latte} o={fa(t, 4.4, 0.5)}>and reuses its buffer</T>
+      <g opacity={fa(t, 3.5, 0.4)}>
+        <Card x={330} y={258} w={180} name="s: String" moved />
+      </g>
+      <T x={14} y={420} s={15} f={C.caramel} o={fa(t, 3.7, 0.4)}>same buffer · 0 allocations</T>
+      <T x={14} y={448} s={13} f={C.latte} o={fa(t, 4.4, 0.5)}>String + &amp;str also consumes the left side</T>
+      <T x={14} y={468} s={13} f={C.latte} o={fa(t, 4.4, 0.5)}>(appends in place, may grow)</T>
     </Svg>
   );
 }
@@ -739,26 +777,63 @@ export function Methods({ t }: StepCtx) {
 // ── 15 · Which signature would you ship? (predict) ─────────────────────────────────────────────────────────────
 export function WhichSignature({ t, answer }: StepCtx) {
   const ans = answer !== null;
-  const sigs = [
-    { s: 'fn checksum(b: Vec<u8>) -> u32', chip: 'takes: the caller loses the batch', right: false },
-    { s: 'fn checksum(b: &[u8]) -> u32', chip: 'borrows: right contract', right: true },
-    { s: 'fn checksum(b: &mut Vec<u8>) -> u32', chip: 'exclusive for no reason', right: false },
-    { s: 'fn checksum(b: Vec<u8>) -> (Vec<u8>, u32)', chip: 'works, clumsy', right: false },
+  // What each option does to the caller's batch (the signatures themselves are on the buttons).
+  const fx: { chip: string; right: boolean; glyph: (y: number) => ReactNode }[] = [
+    { chip: 'takes: the caller loses the batch', right: false, glyph: (y) => <rect x={60} y={y} width={56} height={26} rx={7} fill="none" stroke={C.taupe} strokeDasharray="5 4" /> },
+    {
+      chip: 'borrows: right contract',
+      right: true,
+      glyph: (y) => (
+        <>
+          <rect x={60} y={y} width={56} height={26} rx={7} fill={C.roast} stroke={C.caramel} strokeWidth={2.5} />
+          <circle cx={74} cy={y + 13} r={4} fill={C.caramel} />
+          <Arrow x1={122} y1={y + 13} x2={156} y2={y + 13} c={C.caramel} />
+          <T x={168} y={y + 18} s={13} f={C.caramel}>&amp;</T>
+        </>
+      ),
+    },
+    {
+      chip: 'exclusive for no reason',
+      right: false,
+      glyph: (y) => (
+        <>
+          <rect x={60} y={y} width={56} height={26} rx={7} fill={C.roast} stroke={C.latte} strokeWidth={3.5} />
+          <circle cx={74} cy={y + 13} r={4} fill={C.latte} />
+        </>
+      ),
+    },
+    {
+      chip: 'works, clumsy',
+      right: false,
+      glyph: (y) => (
+        <>
+          <rect x={60} y={y} width={56} height={26} rx={7} fill={C.roast} stroke={C.latte} strokeWidth={1.5} />
+          <Arrow x1={122} y1={y + 8} x2={156} y2={y + 8} c={C.latte} />
+          <Arrow x1={156} y1={y + 20} x2={122} y2={y + 20} c={C.latte} />
+        </>
+      ),
+    },
   ];
   return (
-    <Svg label="Four signatures for a checksum that only reads the batch; the shared borrow, &[u8], is the right contract" h={360}>
-      <T x={14} y={30} s={15} f={C.latte}>checksum reads every byte;</T>
-      <T x={14} y={54} s={15} f={C.latte}>the caller keeps using the batch</T>
-      {sigs.map((r, i) => {
-        const y = 80 + i * 66;
+    <Svg label="The caller runs checksum(batch) and then uses batch.len(); of four signatures, the shared borrow keeps the batch with the caller and is the right contract" h={360}>
+      <g opacity={fa(t, 0, 0.4)}>
+        <Card x={20} y={52} w={150} name="batch" />
+        <rect x={210} y={52} width={190} height={46} rx={10} fill="none" stroke={C.latte} strokeWidth={1.5} />
+        <T x={305} y={81} s={14} a="middle" f={C.crema}>checksum(batch)</T>
+        <Arrow x1={176} y1={75} x2={206} y2={75} />
+        <rect x={440} y={52} width={140} height={46} rx={10} fill="none" stroke={C.latte} strokeWidth={1.5} />
+        <T x={510} y={81} s={14} a="middle" f={C.crema}>batch.len()</T>
+        <Arrow x1={404} y1={75} x2={436} y2={75} />
+      </g>
+      <T x={300} y={200} s={15} a="middle" f={C.latte} o={ans ? 0 : fa(t, 0.6, 0.4)}>can the caller still use batch?</T>
+      {fx.map((r, i) => {
+        const y = 134 + i * 54;
         return (
-          <g key={i} opacity={fa(t, 0.2 + i * 0.15, 0.3)}>
-            <rect x={40} y={y} width={540} height={56} rx={10} fill="none" stroke={ans && r.right ? C.caramel : C.mocha} strokeWidth={ans && r.right ? 2.5 : 1.5} />
-            <T x={16} y={y + 26} s={14} f={C.taupe}>{'ABCD'[i]}</T>
-            <T x={56} y={y + 24} s={14} f={C.crema}>{r.s}</T>
-            <g style={rv(ans, 0.15 * i)}>
-              <T x={56} y={y + 46} s={13} f={r.right ? C.caramel : C.latte}>{r.chip}</T>
-            </g>
+          <g key={i} style={rv(ans, 0.03 * i)}>
+            <rect x={14} y={y - 8} width={572} height={44} rx={10} fill="none" stroke={r.right ? C.caramel : C.mocha} strokeWidth={r.right ? 2.5 : 1.5} />
+            <T x={30} y={y + 18} s={14} f={C.taupe}>{'ABCD'[i]}</T>
+            {r.glyph(y + 3)}
+            <T x={206} y={y + 20} s={13} f={r.right ? C.caramel : C.latte}>{r.chip}</T>
           </g>
         );
       })}
@@ -802,16 +877,14 @@ export function ReadE0382({ t }: StepCtx) {
         <T x={44} y={218} s={13} f={C.latte}>value borrowed here after move</T>
       </g>
       <g opacity={fa(t, 4.2, 0.5)}>
-        <T x={14} y={256} s={13} f={C.latte}>note: consider changing this parameter type in</T>
-        <T x={14} y={278} s={13} f={C.latte}>{'function `ship` to borrow instead if owning the'}</T>
-        <T x={14} y={300} s={13} f={C.latte}>{"value isn't necessary"}</T>
-        <T x={30} y={322} s={13} f={C.latte}>{'at `Vec<u8>`: this parameter takes ownership'}</T>
-        <T x={30} y={344} s={13} f={C.latte}>of the value</T>
-        <T x={14} y={372} s={13} f={C.cherryText}>help: consider cloning the value if the</T>
-        <T x={14} y={394} s={13} f={C.cherryText}>performance cost is acceptable</T>
+        <T x={14} y={256} s={13} f={C.taupe}>note: consider changing this parameter type in</T>
+        <T x={14} y={278} s={13} f={C.taupe}>{'function `ship` to borrow instead if owning the'}</T>
+        <T x={14} y={300} s={13} f={C.taupe}>{"value isn't necessary"}</T>
+        <T x={14} y={332} s={13} f={C.cherryText}>help: consider cloning the value if the</T>
+        <T x={14} y={354} s={13} f={C.cherryText}>performance cost is acceptable</T>
       </g>
       {['1 plain data? derive Copy', '2 borrow: ship(&batch)', '3 use it first: let n = batch.len();'].map((s, i) => {
-        const y = 410 + i * 30;
+        const y = 378 + i * 36;
         return (
           <g key={s} opacity={fa(t, 4.8 + i * 0.5, 0.4)}>
             <rect x={14} y={y} width={s.length > 30 ? 400 : 290} height={24} rx={8} fill="none" stroke={C.caramel} />
@@ -819,7 +892,7 @@ export function ReadE0382({ t }: StepCtx) {
           </g>
         );
       })}
-      <T x={14} y={510} s={13} f={C.cherryText} o={fa(t, 6.2, 0.2)}>clone: last resort</T>
+      <T x={14} y={494} s={13} f={C.cherryText} o={fa(t, 6.2, 0.2)}>clone: last resort</T>
     </Svg>
   );
 }
@@ -840,33 +913,35 @@ export function ReadE0505({ t }: StepCtx) {
       <T x={14} y={24} s={14} f={C.cherryText} w={600} o={fa(t, 0, 0.4)}>{'error[E0505]: cannot move out of `batch`'}</T>
       <T x={14} y={44} s={14} f={C.cherryText} w={600} o={fa(t, 0, 0.4)}>because it is borrowed</T>
       <g opacity={fa(t, 0.3, 0.8)}>
-        <T x={14} y={104} s={13} f={C.crema}>{nb('7 |     let header = &batch[..4];')}</T>
-        <T x={14} y={174} s={13} f={C.crema}>{nb('8 |     let sent = ship(batch);')}</T>
-        <T x={14} y={244} s={13} f={C.crema}>{nb('9 |     println!("{sent} {header:?}");')}</T>
+        <T x={84} y={104} s={13} f={C.crema}>{nb('7 |     let header = &batch[..4];')}</T>
+        <T x={84} y={174} s={13} f={C.crema}>{nb('8 |     let sent = ship(batch);')}</T>
+        <T x={84} y={244} s={13} f={C.crema}>{nb('9 |     println!("{sent} {header:?}");')}</T>
       </g>
-      <T x={44} y={124} s={13} f={C.latte} o={fa(t, 1.4, 0.3)}>{'borrow of `batch` occurs here'}</T>
-      <T x={44} y={194} s={13} f={C.latte} o={fa(t, 1.8, 0.3)}>{'move out of `batch` occurs here'}</T>
-      <T x={44} y={264} s={13} f={C.latte} o={fa(t, 2.2, 0.3)}>borrow later used here</T>
-      <T x={560} y={90} s={13} a="end" f={C.caramel} o={fa(t, 2.4, 0.4)}>header is live</T>
-      <rect x={555} y={98} width={10} height={Math.max(1, 152 * bar)} rx={5} fill={C.caramel} />
+      <T x={114} y={124} s={13} f={C.latte} o={fa(t, 1.4, 0.3)}>{'borrow of `batch` occurs here'}</T>
+      <T x={114} y={194} s={13} f={C.latte} o={fa(t, 1.8, 0.3)}>{'move out of `batch` occurs here'}</T>
+      <T x={114} y={264} s={13} f={C.latte} o={fa(t, 2.2, 0.3)}>borrow later used here</T>
+      <T x={14} y={84} s={13} f={C.caramel} o={fa(t, 2.4, 0.4)}>header is live</T>
+      <rect x={10} y={98} width={10} height={Math.max(1, 152 * bar)} rx={5} fill={C.caramel} />
       {t >= 3.4 && (
         <g>
-          <circle cx={560} cy={170} r={9 + 18 * burst} fill={C.cherry} opacity={0.5 * (1 - burst)} />
-          <circle cx={560} cy={170} r={9} fill={C.cherry} />
+          <circle cx={15} cy={170} r={11 + 14 * burst} fill={C.cherry} opacity={0.5 * (1 - burst)} />
+          <circle cx={15} cy={170} r={11} fill="none" stroke={C.cherry} strokeWidth={3.5} />
+          <T x={34} y={175} s={13} f={C.cherryText} o={fa(t, 3.4, 0.3)}>move</T>
         </g>
       )}
       <g opacity={fa(t, 4.0, 0.4)}>
         <T x={14} y={304} s={14} f={C.caramel}>fix: finish with the borrow first</T>
         {fixLines.map((l, i) => (
-          <T key={i} x={14} y={lerp(l.from, l.to, swap)} s={13} f={C.crema}>{l.s}</T>
+          <T key={i} x={84} y={lerp(l.from, l.to, swap)} s={13} f={C.crema}>{l.s}</T>
         ))}
-        <rect x={555} y={322} width={10} height={Math.max(1, 48 * shortBar)} rx={5} fill={C.caramel} />
+        <rect x={10} y={322} width={10} height={Math.max(1, 48 * shortBar)} rx={5} fill={C.caramel} />
         <g opacity={fa(t, 5.4, 0.3)}>
-          <circle cx={560} cy={392} r={9} fill={C.caramel} />
-          <T x={536} y={396} s={13} a="end" f={C.caramel} w={600}>compiles</T>
+          <circle cx={15} cy={392} r={9} fill={C.caramel} />
+          <T x={34} y={397} s={13} f={C.caramel}>move</T>
+          <T x={400} y={396} s={13} f={C.caramel} w={600}>compiles</T>
         </g>
       </g>
-      <T x={14} y={446} s={13} f={C.taupe} o={fa(t, 5.8, 0.2)}>or copy the 4 bytes out: [u8; 4] is Copy</T>
+      <T x={84} y={452} s={13} f={C.taupe} o={fa(t, 5.8, 0.2)}>or copy the 4 bytes out: [u8; 4] is Copy</T>
     </Svg>
   );
 }
@@ -876,35 +951,54 @@ export function LoopMove({ t, answer, portrait }: StepCtx) {
   const ans = answer !== null;
   const ticks = [
     { x: 300, y: 30, lx: 300, ly: 18 },
-    { x: 421, y: 105, lx: 446, ly: 110 },
+    { x: 421, y: 105, lx: 484, ly: 110 },
     { x: 179, y: 105, lx: 154, ly: 110 },
   ];
   return (
     <Stack>
       {!(portrait && ans) && <Code title="loop.rs" t={t} end={1.0} lines={['let batch = vec![7u8; 4];', 'for _ in 0..3 {', '    ship(batch);', '}']} />}
       {!(portrait && !ans) && (
-        <Svg label="The loop comes back to ship(batch) a second time with batch already moved, so it is rejected at compile time" h={250} fill>
-          <ellipse cx={300} cy={80} rx={140} ry={50} fill="none" stroke={C.mocha} strokeWidth={2} />
-          {ticks.map((k, i) => (
-            <g key={i} opacity={fa(t, 0.2 + i * 0.2, 0.3)}>
-              <circle cx={k.x} cy={k.y} r={5} fill={C.latte} />
-              <T x={k.lx} y={k.ly} s={13} a="middle" f={C.taupe}>{String(i + 1)}</T>
+        <Svg label="The loop comes back to ship(batch) a second time with batch already moved, so it is rejected at compile time" h={290} fill>
+          <g transform="translate(0 46)">
+            <ellipse cx={300} cy={80} rx={140} ry={50} fill="none" stroke={C.mocha} strokeWidth={2} />
+            {/* direction of the lap: an arrowhead between tick 1 and tick 2 */}
+            <polygon points="428,59 415,57 420,49" fill={C.latte} opacity={fa(t, 0.5, 0.3)} />
+            {ticks.map((k, i) => (
+              <g key={i} opacity={fa(t, 0.2 + i * 0.2, 0.3)}>
+                <circle cx={k.x} cy={k.y} r={5} fill={C.latte} />
+                <T x={k.lx} y={k.ly} s={13} a="middle" f={C.taupe}>{String(i + 1)}</T>
+              </g>
+            ))}
+            {!ans && <Token x={270} y={46} o={fa(t, 0.6, 0.4)} />}
+            <g style={rv(ans)}>
+              <rect x={330} y={-40} width={150} height={44} rx={8} fill="none" stroke={C.latte} />
+              <T x={342} y={-13} s={13} f={C.crema}>ship</T>
+              <Token x={400} y={-33} />
+              <circle cx={421} cy={105} r={22} fill={C.cherry} opacity={0.4} />
+              <rect x={391} y={90} width={60} height={30} rx={7} fill="none" stroke={C.taupe} strokeDasharray="5 4" />
+              <T x={421} y={146} s={13} a="middle" f={C.cherryText}>lap 2: batch gone</T>
+              <T x={300} y={176} s={13} a="middle" f={C.latte}>inside of this loop</T>
+              <T x={300} y={198} s={13} a="middle" f={C.cherryText}>value moved here,</T>
+              <T x={300} y={218} s={13} a="middle" f={C.cherryText}>in previous iteration of loop</T>
             </g>
-          ))}
-          {!ans && <Token x={270} y={46} o={fa(t, 0.6, 0.4)} />}
-          <g style={rv(ans)}>
-            <rect x={344} y={12} width={70} height={28} rx={8} fill="none" stroke={C.latte} />
-            <T x={379} y={31} s={13} a="middle" f={C.crema}>ship</T>
-            <circle cx={421} cy={105} r={22} fill={C.cherry} opacity={0.4} />
-            <rect x={391} y={90} width={60} height={30} rx={7} fill="none" stroke={C.taupe} strokeDasharray="5 4" />
-            <T x={300} y={168} s={13} a="middle" f={C.latte}>inside of this loop</T>
-            <T x={300} y={192} s={13} a="middle" f={C.cherryText}>value moved here,</T>
-            <T x={300} y={212} s={13} a="middle" f={C.cherryText}>in previous iteration of loop</T>
           </g>
         </Svg>
       )}
     </Stack>
   );
+}
+
+/** Small card and buffer glyphs: the reel's motif, reused where a step is about a move or a clone. */
+function MiniCard({ x, y, moved = false }: { x: number; y: number; moved?: boolean }) {
+  return (
+    <g opacity={moved ? 0.55 : 1}>
+      <rect x={x} y={y} width={70} height={26} rx={7} fill={moved ? 'none' : C.roast} stroke={moved ? C.taupe : C.caramel} strokeWidth={moved ? 1.5 : 2.5} strokeDasharray={moved ? '5 4' : undefined} />
+      {!moved && <circle cx={x + 14} cy={y + 13} r={4} fill={C.caramel} />}
+    </g>
+  );
+}
+function MiniBuf({ x, y, clone = false, o = 1 }: { x: number; y: number; clone?: boolean; o?: number }) {
+  return <rect x={x} y={y} width={150} height={14} rx={5} fill={clone ? C.cherry : C.cocoa} fillOpacity={clone ? 0.3 : 1} stroke={clone ? C.cherry : C.latte} strokeWidth={clone ? 2 : 1.5} opacity={o} />;
 }
 
 // ── 19 · Back to the batch ─────────────────────────────────────────────────────────────────────────────────────
@@ -917,12 +1011,22 @@ export function BackToBatch({ t }: StepCtx) {
         <T x={14} y={32} s={14} f={C.cherryText}>the clone fix</T>
         <Counter x={14} y={62} label="ALLOCATIONS" v={1} t={Math.max(t, 0.9)} a={0.2} />
         <Counter x={200} y={62} label="BYTES COPIED" v={1_000_000} t={Math.max(t, 0.9)} a={0.2} d={0.6} />
-        <rect x={10} y={90} width={Math.max(0.1, 390 * strike)} height={3} fill={C.cherry} />
+        <rect x={10} y={83} width={Math.max(0.1, 390 * strike)} height={3} fill={C.cherry} />
+        {/* the card-and-buffer motif of step 1: the clone's second buffer, struck out */}
+        <MiniCard x={440} y={22} />
+        <MiniBuf x={420} y={62} />
+        <MiniBuf x={420} y={82} clone o={1 - 0.6 * strike} />
       </g>
       <g opacity={fa(t, 1.2, 0.4) * bright}>
         <T x={14} y={150} s={15} f={C.caramel} w={600}>if ship only reads: borrow</T>
         <T x={14} y={180} s={14} f={C.crema} o={fa(t, 1.2, 0.8)}>fn ship(batch: &amp;[u8]) -&gt; usize</T>
         <T x={14} y={202} s={14} f={C.crema} o={fa(t, 1.6, 0.4)}>let sent = ship(&amp;batch);</T>
+        <g opacity={fa(t, 1.4, 0.4)}>
+          <MiniCard x={440} y={166} />
+          <Arrow x1={476} y1={196} x2={476} y2={226} c={C.caramel} />
+          <T x={488} y={216} s={13} f={C.caramel}>&amp;</T>
+          <MiniBuf x={420} y={230} />
+        </g>
         <Counter x={14} y={232} label="ALLOCATIONS" v={0} t={t} a={2.2} zeroOk />
         <Counter x={200} y={232} label="BYTES COPIED" v={0} t={t} a={2.2} zeroOk />
       </g>
@@ -930,6 +1034,11 @@ export function BackToBatch({ t }: StepCtx) {
         <T x={14} y={330} s={15} f={C.caramel} w={600}>if ship must own it: use first, move last</T>
         <T x={14} y={360} s={14} f={C.crema} o={fa(t, 2.8, 0.8)}>let n = batch.len();</T>
         <T x={14} y={382} s={14} f={C.crema} o={fa(t, 3.2, 0.4)}>let sent = ship(batch);</T>
+        <g opacity={fa(t, 3.0, 0.4)}>
+          <MiniCard x={420} y={348} moved />
+          <MiniCard x={500} y={348} />
+          <MiniBuf x={420} y={394} />
+        </g>
         <Counter x={14} y={412} label="ALLOCATIONS" v={0} t={t} a={3.8} zeroOk />
         <Counter x={200} y={412} label="BYTES COPIED" v={0} t={t} a={3.8} zeroOk />
       </g>
@@ -950,7 +1059,7 @@ export function ProveMaybeMoved({ t, answer, portrait }: StepCtx) {
           lines={['let batch = vec![7u8; 4];', 'let retry = std::env::args().count() > 1;', 'if retry {', '    ship(batch);', '}', 'println!("{}", batch.len());']}
         />
       )}
-      <Svg label="The path where retry is true moves batch and the other path does not; at println! the value is maybe moved, which counts as moved" h={300} fill>
+      <Svg label="The path where retry is true moves batch and the other path does not; at println! the value is maybe moved, which counts as moved" h={324} fill>
         <g style={rv(ans)}>
           <rect x={240} y={12} width={120} height={32} rx={8} fill="none" stroke={C.latte} />
           <T x={300} y={33} s={13} a="middle" f={C.crema}>let batch</T>
@@ -978,26 +1087,26 @@ export function ProveMaybeMoved({ t, answer, portrait }: StepCtx) {
 // ── 21 · Prove it 2 (predict) ──────────────────────────────────────────────────────────────────────────────────
 export function ProveCost({ t, answer, portrait }: StepCtx) {
   const ans = answer !== null;
-  const rows = [
-    { l: 'line 2: move', a: '0', b: '0 bytes', bad: false },
-    { l: 'line 3: clone', a: '1', b: '1,000,000 bytes', bad: true },
-    { l: 'line 4: move', a: '0', b: '0 bytes', bad: false },
-  ];
   return (
     <Stack>
       {!(portrait && ans) && <Code title="chain.rs" t={t} end={1.0} lines={['let a = vec![0u8; 1_000_000];', 'let b = a;', 'let c = b.clone();', 'let d = c;']} />}
-      <Svg label="Line 2 and line 4 are moves with 0 allocations; only the clone on line 3 allocates, once, 1,000,000 bytes" h={220} fill>
+      <Svg label="Line 2 and line 4 are moves that slide the card and allocate nothing; only the clone on line 3 stamps a second buffer, 1 allocation of 1,000,000 bytes" h={236} fill>
         <g style={rv(ans)}>
-          <T x={250} y={22} s={13} a="middle" f={C.taupe}>ALLOCATIONS</T>
-          <T x={345} y={22} s={13} f={C.taupe}>HEAP BYTES</T>
-          {rows.map((r, i) => (
-            <g key={r.l}>
-              <T x={14} y={66 + i * 40} s={15} f={r.bad ? C.cherryText : C.crema}>{r.l}</T>
-              <T x={250} y={66 + i * 40} s={20} a="middle" f={r.bad ? C.cherryText : C.crema} w={700}>{r.a}</T>
-              <T x={345} y={66 + i * 40} s={14} f={r.bad ? C.cherryText : C.latte}>{r.b}</T>
-            </g>
-          ))}
-          <T x={300} y={200} s={17} a="middle" f={C.caramel} w={700}>total: 1 allocation</T>
+          <Card x={14} y={44} w={100} name="a" moved />
+          <Card x={134} y={44} w={100} name="b" />
+          <Arrow x1={156} y1={90} x2={150} y2={148} />
+          <Bar x={14} y={150} w={240} label="1,000,000 bytes" />
+        </g>
+        <g style={rv(ans, 0.05)}>
+          <Arrow x1={238} y1={67} x2={296} y2={67} c={C.cherryText} />
+          <T x={267} y={56} s={13} a="middle" f={C.cherryText}>clone</T>
+          <Card x={300} y={44} w={100} name="c" moved />
+          <Card x={420} y={44} w={100} name="d" />
+          <Arrow x1={442} y1={90} x2={430} y2={148} />
+          <Bar x={300} y={150} w={240} label="1,000,000 bytes" clone />
+        </g>
+        <g style={rv(ans, 0.1)}>
+          <T x={300} y={216} s={17} a="middle" f={C.caramel} w={700}>total: 1 allocation</T>
         </g>
       </Svg>
     </Stack>
@@ -1017,11 +1126,21 @@ export function ProveCopyConfig({ t, answer, portrait }: StepCtx) {
           lines={['struct Point3 {', '    x: f32,', '    y: f32,', '    z: f32,', '}', 'for _ in 0..3 { norm(p); }  // E0382']}
         />
       )}
-      <Svg label="Point3 is 12 bytes of plain numbers that own nothing and will not grow, so deriving Copy fits; a config type that may grow a String should be borrowed instead" h={200} fill>
+      <Svg label="Point3 is 12 bytes of plain numbers, three 4-byte floats, that own nothing and will not grow, so it goes in the Copy bin and deriving Copy fits" h={210} fill>
         <g style={rv(ans)}>
-          <T x={300} y={54} s={15} a="middle" f={C.crema}>size_of::&lt;Point3&gt;() = 12</T>
-          <T x={300} y={104} s={17} a="middle" f={C.caramel} w={600}>plain bits → Copy</T>
-          <T x={300} y={154} s={13} a="middle" f={C.taupe}>a config that may grow a String? take &amp;Config</T>
+          <T x={300} y={30} s={15} a="middle" f={C.crema}>size_of::&lt;Point3&gt;() = 12</T>
+          <rect x={20} y={50} width={560} height={140} rx={14} fill="none" stroke={C.mocha} strokeWidth={1.5} />
+          <T x={38} y={78} s={17} f={C.crema} w={600}>Copy</T>
+          <T x={110} y={78} s={13} f={C.latte}>bits are the whole value</T>
+          <rect x={38} y={106} width={96} height={28} rx={8} fill={C.roast} stroke={C.mocha} />
+          <T x={86} y={125} s={13} a="middle" f={C.crema}>Point3</T>
+          {['x', 'y', 'z'].map((n, k) => (
+            <g key={n}>
+              <rect x={190 + k * 100} y={104} width={96} height={34} fill={C.espresso} stroke={C.latte} strokeWidth={1.5} />
+              <T x={238 + k * 100} y={126} s={15} a="middle" f={C.crema}>{n}</T>
+            </g>
+          ))}
+          <T x={340} y={162} s={13} a="middle" f={C.taupe}>3 floats × 4 bytes</T>
         </g>
       </Svg>
     </Stack>
@@ -1059,17 +1178,22 @@ export function Recap({ t }: StepCtx) {
       glyph: <rect x={22} y={-12} width={36} height={24} rx={4} fill={C.cherry} fillOpacity={0.3} stroke={C.cherry} strokeWidth={2} />,
     },
     {
-      lines: ['T takes · &T borrows ·', '&mut T excludes · -> T returns'],
+      lines: ['T takes · &T borrows', '&mut T excludes · -> T returns'],
       glyph: (
         <>
-          {[-12, -4, 4, 12].map((y, i) => (
-            <line key={i} x1={22} y1={y} x2={56} y2={y} stroke={C.latte} strokeWidth={2} />
-          ))}
+          {/* one arrow per kind: takes, borrows, borrows exclusively (thick), returns */}
+          <Arrow x1={22} y1={-18} x2={56} y2={-18} />
+          <Arrow x1={22} y1={-6} x2={56} y2={-6} />
+          <Arrow x1={56} y1={-6} x2={22} y2={-6} />
+          <line x1={26} y1={6} x2={52} y2={6} stroke={C.caramel} strokeWidth={4} />
+          <Arrow x1={22} y1={6} x2={56} y2={6} c={C.caramel} />
+          <Arrow x1={56} y1={6} x2={22} y2={6} c={C.caramel} />
+          <Arrow x1={56} y1={18} x2={22} y2={18} />
         </>
       ),
     },
     {
-      lines: ['E0382: why, where, use ·', 'E0505: end the borrow first'],
+      lines: ['E0382: why · where · use', 'E0505: end the borrow first'],
       glyph: (
         <>
           <circle cx={40} cy={0} r={11} fill={C.caramel} />

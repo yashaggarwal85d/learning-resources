@@ -36,8 +36,7 @@ const reel: Reel = {
         ],
         explain: (
           <>
-            <code>s2</code> gets a bit-for-bit copy of the 24-byte header (pointer, length, capacity on a 64-bit target); the 5 heap bytes are not copied. (The
-            optimiser may even skip copying the header; it never copies the heap bytes.) Then Rust treats <code>s1</code> as no longer valid. A shallow copy plus
+            <code>s2</code> gets a bit-for-bit copy of the 24-byte header (pointer, length, capacity on a 64-bit target); the 5 heap bytes are not copied. Then Rust treats <code>s1</code> as no longer valid. A shallow copy plus
             an invalidated source is what Rust calls a <b>move</b>.
           </>
         ),
@@ -73,7 +72,7 @@ const reel: Reel = {
       body: (
         <>
           Validity belongs to the variable at each point of the program, not to the value. After <code>let t = s;</code> the variable <code>s</code> is
-          deinitialized. What happens on line 3?
+          deinitialized. Does this compile, and what does it print?
         </>
       ),
       duration: 1.4,
@@ -138,8 +137,8 @@ const reel: Reel = {
       title: 'A file descriptor that is just an i32',
       body: (
         <>
-          A wrapper around an integer handle, with a destructor that closes it (<code>Drop</code> is the trait for a destructor: code that runs when the owner
-          goes away; the next topic is about it). The integer is plain bits, so does this compile?
+          A wrapper around an integer handle, with a <code>Drop</code> impl (a destructor: code that runs when the owner goes away) that closes it. The integer is plain bits, so does this
+          compile?
         </>
       ),
       duration: 1.4,
@@ -154,8 +153,7 @@ const reel: Reel = {
           <>
             E0184. A type with <code>Drop</code> manages something beyond its own bytes (here, a descriptor to close), so a bitwise copy would duplicate that
             responsibility: two copies, two closes. <code>Copy</code> and <code>Drop</code> are mutually exclusive, so any type with a destructor, or with a field
-            that has one, always moves. Even without a <code>Drop</code>, plain bits can stand for unique ownership of something outside the value (a descriptor number, a slot
-            index, a capability token), and such a type should usually not be <code>Copy</code>. You'll build exactly this wrapper properly in the next topic.
+            that has one, always moves. You'll build exactly this wrapper properly in the next topic.
           </>
         ),
       },
@@ -196,9 +194,7 @@ const reel: Reel = {
           <>
             A move is a bitwise copy of the whole value, <code>size_of::&lt;Big&gt;()</code> = 4,096 bytes. Here the data really does land at a new address: with
             rustc 1.97 it prints <code>false</code> at every optimisation level, because we took its address first. The optimiser may remove a copy, but nothing
-            guarantees it: a function that only passes a <code>Big</code> on does a 4,096-byte <code>memcpy</code> in a debug build, and the optimised build drops
-            that copy, but keeps it once the value's address has escaped. A move is always cheap only when the type is small, like <code>Vec</code>'s 24-byte
-            header. Because Rust may relocate any value on a move without running code, never keep a raw pointer into a value you then move.
+            guarantees it. A move is reliably cheap only when the type is small, like <code>Vec</code>'s 24-byte header.
           </>
         ),
       },
@@ -266,8 +262,7 @@ const reel: Reel = {
           <>
             Borrow: <code>&amp;[u8]</code>. Taking <code>Vec&lt;u8&gt;</code> consumes the batch, so the caller gets E0382 or pays for a clone. <code>&amp;mut</code>{' '}
             demands exclusive access the function doesn't need and forbids the caller from holding any other reference meanwhile. Returning the vector in a tuple
-            works, but it's the clumsy pattern references exist to replace. A shared borrow reads without owning, and the caller keeps the batch. Why <code>&amp;[u8]</code> and not <code>&amp;Vec&lt;u8&gt;</code>: the slice also
-            accepts arrays, boxed slices and sub-slices, and drops a layer of indirection (<code>&amp;batch</code> coerces to <code>&amp;[u8]</code>).
+            works, but it's the clumsy pattern references exist to replace. A shared borrow reads without owning, and the caller keeps the batch.
           </>
         ),
       },
@@ -408,11 +403,10 @@ const reel: Reel = {
         ],
         explain: (
           <>
-            Derive <code>Copy</code>. <code>Point3</code> is 12 bytes of plain numbers, owns nothing and will not grow a heap field, so it can be <code>Copy</code>, and the std docs' advice
-            is that a type that can be <code>Copy</code> generally should be: each call gets its own bitwise copy, no move, no clone call. <code>.clone()</code>{' '}
-            would do the same work behind a call that suggests a cost; <code>Rc</code> adds a heap allocation and a count; <code>&amp;mut</code> demands exclusivity
-            for a read. One caution: <code>Copy</code> is part of a public type's API, so for a config struct that might gain a <code>String</code> later, take{' '}
-            <code>&amp;Config</code> instead.
+            Derive <code>Copy</code>. <code>Point3</code> is 12 bytes of plain numbers and owns nothing, so it can be <code>Copy</code>, and the std docs' advice
+            is that a type that can be <code>Copy</code> generally should be. <code>.clone()</code> would do the same work behind a call that suggests a cost;{' '}
+            <code>Rc</code> adds a heap allocation; <code>&amp;mut</code> demands exclusivity for a read. One caution: for a config struct that might gain a{' '}
+            <code>String</code> later, take <code>&amp;Config</code> instead.
           </>
         ),
       },
