@@ -375,8 +375,8 @@ export function HalveBits({ t }: StepCtx) {
       <Bits x={60} y={36} />
       <Bracket x1={62} x2={298} y={74} o={halves} />
       <Bracket x1={302} x2={538} y={74} o={halves} />
-      <T x={180} y={98} s={15} f={C.caramel} a="middle" o={halves}>x = 3·2³² + 7: high 32 = cluster 3</T>
-      <T x={420} y={98} s={15} f={C.latte} a="middle" o={halves}>low 32 = position 7</T>
+      <T x={180} y={98} s={14} f={C.caramel} a="middle" o={halves}>high 32 = cluster 3</T>
+      <T x={420} y={98} s={14} f={C.latte} a="middle" o={halves}>low 32 = position 7</T>
       <T x={60} y={134} s={13} f={C.taupe}>summary</T>
       {Array.from({ length: 16 }, (_, i) => (
         <rect key={i} x={140 + i * 26} y={122} width={22} height={14} rx={3} fill={i === 3 ? C.caramel : C.cocoa} opacity={i === 3 ? lit : 1} />
