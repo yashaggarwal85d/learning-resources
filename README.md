@@ -8,9 +8,9 @@ Four tracks, each with a full syllabus:
 
 | Track | Syllabus | Status |
 |---|---|---|
-| Data Engineering | [syllabus/data-engineering.md](syllabus/data-engineering.md) | in production (daily routine) |
-| Data Structures & Algorithms | [syllabus/data-structures-and-algorithms.md](syllabus/data-structures-and-algorithms.md) | in production (daily routine) |
-| German, A1 to C2 | [syllabus/german-language.md](syllabus/german-language.md) | in production (daily routine) |
+| Data Engineering | [syllabus/data-engineering.md](syllabus/data-engineering.md) | in production (hourly routine) |
+| Data Structures & Algorithms | [syllabus/data-structures-and-algorithms.md](syllabus/data-structures-and-algorithms.md) | in production (hourly routine) |
+| German, A1 to C2 | [syllabus/german-language.md](syllabus/german-language.md) | in production (hourly routine) |
 | Rust Systems Engineering | [syllabus/rust-systems-engineering.md](syllabus/rust-systems-engineering.md) | paused |
 
 ## The documents that run the project
@@ -18,7 +18,7 @@ Four tracks, each with a full syllabus:
 | File | What it is |
 |---|---|
 | [PROJECT_PLAN.md](PROJECT_PLAN.md) | The rules (animate first; one topic at a time; verified, state-of-the-art content; beautiful and memorable; a natural flow; complete coverage, proven), what every topic contains, the Definition of Done, the narration standard and the tech stack. **The plan wins any conflict.** |
-| [ROUTINE.md](ROUTINE.md) | The step-by-step procedure the daily per-domain routines follow to make, check and ship the next topic. |
+| [ROUTINE.md](ROUTINE.md) | The step-by-step procedure the hourly per-domain routines follow to make, check and ship the next topic. |
 | [QUALITY.md](QUALITY.md) | Every problem ever found, its fix and the guard that stops it recurring, plus the automatic checks and the "before shipping" list. |
 | `syllabus/` | The course order, topic by topic; `syllabus/review-notes/` records syllabus changes and why. |
 
@@ -30,6 +30,8 @@ syllabus/                                  the four syllabi (the build reads the
 scripts/check-docs.mjs                     checks links and anchors in the docs
 scripts/check-all.mjs                      runs every pre-ship check with a timing summary (ROUTINE.md section 6)
 scripts/check-links.mjs                    checks every topic's outside links (status and title)
+scripts/claim.mjs                          hands each routine run its topic (claims on the `claims` branch, heartbeats)
+scripts/run-metrics.mjs                    records a run's tokens (per model), calls and time, per stage
 site/                                      the website (Astro + React islands + Tailwind)
   src/topics/registry.ts                   every finished topic: live or held, concept ledger, bridge and handoff
   src/topics/<domain>/m<N>-…/ch<NN>-…/<topic>/
@@ -85,9 +87,9 @@ Both are frozen in `site/narration/voice.json`. Details are in [site/narration/R
 
 ## How a topic is made
 
-Each domain has a daily routine (an automated session) that follows [ROUTINE.md](ROUTINE.md).
+Each domain has an hourly routine (an automated session; several runs of one domain can work at once, each on its own topic) that follows [ROUTINE.md](ROUTINE.md).
 
-1. It picks the next topic in syllabus order and researches it from primary sources, with an adversarial fact-check.
+1. It claims the first topic in syllabus order that no other run is working on (once the topic before it has a plan to follow on from), then researches it from primary sources, with an adversarial fact-check.
 2. It builds the coverage map, including a blind expert list from an independent reviewer.
 3. It writes the reel, Deep dive, Prerequisites, narration script and executed examples, then runs a flow review and a gap hunt.
 4. It generates the narration, runs every check, and ships to `main` only when all of them pass.
