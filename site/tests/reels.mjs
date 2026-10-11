@@ -1,14 +1,16 @@
 // Smoke test for every live reel, run in CI after the build (QUALITY.md lists
 // the issues each check guards against). Usage:
-//   node tests/reels.mjs http://localhost:4321/learning-resources/
+//   node tests/reels.mjs http://localhost:4321/learning-resources/ [slug-part]
+// With a slug part (e.g. asymptotic-notation), only the matching reels are tested.
 // Fails (exit 1) on any page error, sideways scroll, empty panel, missing
-// control, or a step that doesn't render, at desktop and phone sizes.
+// control, a step that doesn't render, or text in a drawing that is clipped,
+// overlaps or runs into other text, or is too small to read, at desktop and phone sizes.
 import { chromium, devices } from 'playwright';
 import { readFileSync, mkdirSync, existsSync, readdirSync } from 'node:fs';
 
 const root = process.argv[2] ?? 'http://localhost:4321/learning-resources/';
 const slugs = [...readFileSync(new URL('../src/topics/registry.ts', import.meta.url), 'utf8').matchAll(/slug: '([^']+)',[\s\S]*?status: '(live|held)'/g)]
-  .filter((m) => m[2] === 'live')
+  .filter((m) => m[2] === 'live' && (!process.argv[3] || m[1].includes(process.argv[3])))
   .map((m) => m[1]);
 const failures = [];
 const fail = (msg) => failures.push(msg);
@@ -22,6 +24,49 @@ const preinstalled = () => {
   for (const d of readdirSync(root).filter((d) => d.startsWith('chromium-')).sort().reverse())
     for (const bin of ['chrome-linux/chrome', 'chrome-linux64/chrome']) if (existsSync(`${root}/${d}/${bin}`)) return `${root}/${d}/${bin}`;
 };
+// Text in the step's drawing, at its finished state: every visible piece of text must sit inside the drawing,
+// must not overlap another piece of text, and must be at least MIN_TEXT_PX tall on screen (QUALITY.md #16-18, #36).
+const MIN_TEXT_PX = 9; // 13 units on the 600-unit canvas at phone width, with the phone text scale
+const layoutProblems = (page) =>
+  page.locator('section [data-visual]').last().evaluate((root, minPx) => {
+    const box = root.getBoundingClientRect();
+    const seen = (el) => {
+      for (let e = el; e && e !== root.parentElement; e = e.parentElement) {
+        const cs = getComputedStyle(e);
+        if (cs.display === 'none' || cs.visibility === 'hidden' || parseFloat(cs.opacity) < 0.15) return false;
+      }
+      return true;
+    };
+    const items = [];
+    const walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT);
+    for (let n = walker.nextNode(); n; n = walker.nextNode()) {
+      const text = n.textContent.trim();
+      if (!text || !seen(n.parentElement)) continue;
+      const svgText = n.parentElement.closest('text');
+      const r = svgText ? svgText.getBoundingClientRect() : (() => { const g = document.createRange(); g.selectNodeContents(n); return g.getBoundingClientRect(); })();
+      if (r.width < 1 || r.height < 1) continue;
+      if (items.some((x) => x.node === (svgText ?? n))) continue;
+      items.push({ node: svgText ?? n, text: text.slice(0, 40), r, code: !!n.parentElement.closest('pre') });
+    }
+    const out = [];
+    for (const { text, r, node } of items) {
+      const el = node.nodeType === 1 ? node : node.parentElement;
+      if (r.left < box.left - 2 || r.right > box.right + 2 || r.top < box.top - 2 || r.bottom > box.bottom + 2) out.push(`text "${text}" runs outside the drawing`);
+      else if (el.scrollWidth > el.clientWidth + 2 && ['hidden', 'clip'].includes(getComputedStyle(el).overflowX)) out.push(`text "${text}" is cut off`);
+      const h = r.height; // rendered line height, so scaled drawings count at their real size
+      if (h < minPx) out.push(`text "${text}" is ${h.toFixed(1)}px tall (minimum ${minPx})`);
+    }
+    for (let i = 0; i < items.length; i++)
+      for (let j = i + 1; j < items.length; j++) {
+        const a = items[i].r, b = items[j].r;
+        const w = Math.min(a.right, b.right) - Math.max(a.left, b.left), h = Math.min(a.bottom, b.bottom) - Math.max(a.top, b.top);
+        if (w > 2 && h > 2 && w * h > 0.15 * Math.min(a.width * a.height, b.width * b.height)) out.push(`text "${items[i].text}" overlaps "${items[j].text}"`);
+        // Side by side on one line with no visible gap (code tokens sit flush by design, so code is left out).
+        else if (!items[i].code && !items[j].code && w > -4 && h > 0.5 * Math.min(a.height, b.height)) out.push(`text "${items[i].text}" runs into "${items[j].text}"`);
+      }
+    return out;
+  }, MIN_TEXT_PX);
+
 const browser = await chromium
   .launch(process.env.CHROMIUM_PATH ? { executablePath: process.env.CHROMIUM_PATH } : {})
   .catch((err) => {
@@ -181,6 +226,7 @@ for (const [device, opts] of [
       }
       const visual = await page.locator('section [data-visual]').last().evaluate((el) => el.querySelectorAll('svg, pre').length + el.innerText.trim().length);
       if (!visual) fail(`${where}: step ${i + 1} has an empty visual`);
+      for (const p of await layoutProblems(page)) fail(`${where}: step ${i + 1}: ${p}`);
       const sw = await page.evaluate(() => document.documentElement.scrollWidth - window.innerWidth);
       if (sw > 0) fail(`${where}: step ${i + 1} scrolls sideways by ${sw}px`);
       await page.screenshot({ path: `test-results/${device}-${slug.split('/').pop()}-${String(i + 1).padStart(2, '0')}.png` });

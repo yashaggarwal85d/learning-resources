@@ -218,7 +218,7 @@ export function Decorator({ t }: StepCtx) {
   return (
     <Stack>
       <Code title="timed.py" t={t} end={1} lines={['def timed(fn):', '    @wraps(fn)', '    def wrapper(*args, **kwargs):', '        return fn(*args, **kwargs)', '    return wrapper', '', '@timed            # load = timed(load)', 'def load(path): ...']} highlight={t > 1.2 ? [6] : []} />
-      <Svg label="The decorator wraps load in a new function; wraps keeps the original name" h={150}>
+      <Svg label="The decorator wraps load in a new function; wraps keeps the original name" h={168}>
         <g transform="translate(300 70)">
           <rect x={-70} y={-24} width={140} height={48} rx={12} fill={C.caramel} />
           <T x={0} y={7} s={17} a="middle" f={C.espresso} w={700}>load</T>
@@ -228,8 +228,8 @@ export function Decorator({ t }: StepCtx) {
           </g>
         </g>
         <g opacity={names}>
-          <T x={30} y={140} s={13} f={C.crema}>with @wraps: load.__name__ == 'load'</T>
-          <T x={570} y={140} s={13} a="end" f={C.taupe}>without: 'wrapper'</T>
+          <T x={300} y={140} s={13} a="middle" f={C.crema}>with @wraps: load.__name__ == 'load'</T>
+          <T x={300} y={162} s={13} a="middle" f={C.taupe}>without @wraps: 'wrapper'</T>
         </g>
       </Svg>
     </Stack>
