@@ -6,8 +6,9 @@
 - [x] `SOURCES.md` extended (154 quotes pass).
 - [x] Plan fact-checked (`FACT-CHECK.md`, 2026-10-11): corrections applied below; `SOURCES.md` now 181 quotes, all pass.
 - [x] fact-check done (FACT-CHECK.md, 181 quotes pass)
-- [ ] coverage.json
-- [ ] `examples.sh` + `examples.py`, fact-check, coverage map, build, checks, narration, reviews, ship.
+- [x] coverage.json (generated 2026-10-11; gap review by the builder, open: [])
+- [x] BUILT (2026-10-11): `examples.sh` + `examples.py`, `reel.tsx` + `scenes.tsx`, `index.mdx`, `prerequisites.mdx`, `narration.json` (no audio), `coverage.json`, registry entry (`held`). `npm run build` and `npm run test:examples` (this topic) pass; the reel test (`PREVIEW_HELD=1`) passes at both sizes; `sources.mjs check` passes (196 quotes).
+- [ ] content review (section 4), looks review (5), narration (7), ship (8).
 
 ---
 
@@ -375,3 +376,14 @@ Every factual claim the topic makes, with the `SOURCES.md` quote that supports i
 17. `nohup(1)` — **resolved**; `setsid(1)` does not mention SIGHUP, so the page says only "in a new session".
 18. `proc_pid_syscall(5)` — **resolved**; it also says access needs a PTRACE_MODE_ATTACH check, which is why it is no longer the ptrace fallback.
 19. Bash `$?`, `$$`, `$!`, `exec`, `trap`, `kill -l` — **resolved**.
+
+## Build notes: changes from this outline (builder, 2026-10-11)
+
+- **Step 5 layout.** The five markers on the bar are labelled in a legend of five rows below it (dot colour = marker colour; 126, 127, 130, 137, 143, each with its cause) instead of staggered labels on the bar: at phone scale the three signal markers (130, 137, 143) are about 15 units apart on a to-scale bar and their labels collided. The bar is in order but not to scale (the signal band is stretched); the code panel has four lines as planned. Reason: legibility; the same facts.
+- **Step 9 layout.** The crontab line is five chips (`15`, `2`, `*`, `*`, `*`) each with its field name under it, then the command on its own line, because the whole line (61 characters) cannot be one label. The environment is one line of text instead of a box.
+- **Step 7.** `fd/4 → socket` is shown without the `[…]` inode; the `wchan` line shows `wait_woken` (Linux 6.18; the name is kernel-dependent, asserted only as non-empty).
+- **`hung_load.py`.** A single process: a loopback TCP connection (fds 3, 4, 5: the listening socket, the client end the main thread reads, and the accepted end kept open) plus a sleeping thread; it calls `prctl(PR_SET_PTRACER, PR_SET_PTRACER_ANY)` so `strace -p` works under Yama scope 1. No child process.
+- **Non-root runs.** The directory-permission demo uses mode 400 and 100 for the owner class when not root (an owner is never in the "other" class); the zombie's `fd` directory is unreadable to a normal user, so `zombie_fds` is `0` as root and `unreadable` otherwise; the sticky-bit and setgid-directory demos need root (`setpriv`) and print `skipped` otherwise. `examples.py` accepts exactly those values.
+- **Deep dive additions** (blind expert list items the outline did not place): "Small things that bite" (unlink while open, atomic rename, pipe capacity, `timeout`, process-group kill), the sticky bit and a setgid directory (executed as root), `&>`, `|&`, `noclobber`, `sed -E/-s/-z`, `grep` binary-file notice and `-a`, `jq` `//`, `@tsv`, `--argjson`, `--stream` and `-e`, `top` (%CPU over 100, Solaris mode, `wa`, `VIRT`), ssh `-D`, `-A` and exit status 255, trap timing, SIGHUP on shell exit, signal dispositions across exec. Every one is executed in `examples.sh` or quoted in `SOURCES.md` (`top(1)`, ssh, fork, execve and Bash quotes were added; 196 quotes pass). Not covered, with reasons in `coverage.json`: setuid binaries under ptrace (the expert list itself places it out of scope).
+- **Shared test.** `site/tests/reels.mjs`: the wait after re-clicking a step in the caption-swipe loop went from 300 ms to 1500 ms. This is the first refresher whose second step is plain and third is a predict step; after a forward swipe into the predict step the caption area is still re-flowing 300 ms after the step is re-selected, and the next swipe starts on the (rightly ignored) option buttons. Committed separately so it can be moved or dropped.
+- **Python 3.11 note.** `npm run test:examples` runs every topic's `examples.py` with the default `python3`; python-essentials needs Python 3.12 (`def f[T]` syntax), so with 3.11 it fails regardless of this topic (set `PYTHON=python3.12`). This topic's examples run on 3.11 and later.
