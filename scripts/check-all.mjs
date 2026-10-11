@@ -1,6 +1,6 @@
 // Runs every pre-ship check from ROUTINE.md (sections 5 and 8) in one command and prints a timing summary.
 //   node scripts/check-all.mjs                  all checks (from the repo root or site/)
-//   node scripts/check-all.mjs --only reels     just the named checks (docs, examples, build, narration, reels, links)
+//   node scripts/check-all.mjs --only reels     just the named checks (docs, examples, sources, build, narration, reels, links)
 //   node scripts/check-all.mjs --skip links     everything except the named checks
 //   node scripts/check-all.mjs --only reels --topic asymptotic-notation   the reel test for matching reels only (while fixing)
 //   node scripts/check-all.mjs --changed [base]  every check, with the reel and link checks limited to what the changes
@@ -9,6 +9,7 @@
 // Order is cheapest first. A failing check doesn't stop the others (so one run lists every problem), except that
 // reels needs a good build. Starts and stops `astro preview` itself. Exit code 1 if any check failed.
 import { spawn, spawnSync } from 'node:child_process';
+import { existsSync } from 'node:fs';
 import { dirname, resolve } from 'node:path';
 import { setTimeout as sleep } from 'node:timers/promises';
 
@@ -60,6 +61,12 @@ const results = {};
 const checks = [
   ['docs', () => run('node', ['scripts/check-docs.mjs'], root)],
   ['examples', () => run('npm', ['run', 'test:examples'])],
+  // Quotes in SOURCES.md, word for word against the fetched sources, for the topics being checked (--topic or --changed).
+  ['sources', () => {
+    const folders = (topic && topic !== 'none' ? topic.split(',') : []).map((t) => `site/src/topics/${t}`).filter((f) => existsSync(`${root}/${f}/SOURCES.md`));
+    if (!folders.length) return console.log('no SOURCES.md to check for these topics'), true;
+    return folders.every((f) => run('node', ['scripts/sources.mjs', 'check', f], root));
+  }],
   ['build', () => run('npm', ['run', 'build'])],
   ['narration', () => run('npm', ['run', 'test:narration'])],
   ['reels', () => (results.build?.ok === false ? (console.error('skipped: build failed'), false) : run('npm', ['run', 'build'], site, HELD) && withPreview(() => run('npm', ['run', 'test:reels', '--', URL_ROOT, ...(topic ? [topic] : [])], site, HELD)))],
