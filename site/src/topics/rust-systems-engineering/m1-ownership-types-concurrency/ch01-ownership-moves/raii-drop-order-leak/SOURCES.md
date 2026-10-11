@@ -573,6 +573,14 @@ Version: std 1.99.0 (b940084d7 2026-09-28); stable since 1.20.0
 
 > users of ManuallyDrop must uphold those guarantees without assistance from the compiler.
 
+Added by the fact-check (2026-10-11), verbatim from the same fetched text:
+
+> Before Rust 1.96.0, if you had a ManuallyDrop<T>, where the type T was a Box or contained a Box inside, then dropping the T followed by moving the ManuallyDrop<T> was considered to be undefined behavior.
+
+> In particular, deriving Debug, Clone, PartialEq, PartialOrd, Ord, or Hash on the struct or enum could be unsound, since the derived implementations of these traits would access the ManuallyDrop field.
+
+> Note that similar unsoundness can arise without derive. The cause of the unsoundness are public APIs which allow to access an already dropped value inside ManuallyDrop.
+
 Contents:
 - Struct docs: 0-cost wrapper inhibiting auto drop; same layout/bit validity as T
 - Safe access, unsafe ManuallyDrop::drop
@@ -636,6 +644,42 @@ Version: The Rust Reference (no version string in fetched text; page includes 20
 
 > There is one additional case to be aware of: when a panic reaches a non-unwinding ABI boundary, either no destructors will run, or all destructors up until the ABI boundary will run.
 
+Added by the fact-check (2026-10-11), verbatim from the same fetched text:
+
+> For the purpose of drop order, or-patterns declare bindings in the order given by the first subpattern.
+
+> Apart from lifetime extension, the temporary scope of an expression is the smallest scope that contains the expression and is one of the following:
+
+> The entire function.
+
+> The body of an if, while or loop expression.
+
+> The else block of an if expression.
+
+> The non-pattern matching condition expression of an if or while expression or a non-pattern-matching match guard condition operand.
+
+> The pattern-matching guard, if present, and body expression for a match arm.
+
+> Each operand of a lazy boolean expression.
+
+> The pattern-matching condition(s) and consequent body of if (destructors.scope.temporary.edition2024).
+
+> The pattern-matching condition and loop body of while.
+
+> The arguments to an extending tuple struct or tuple enum variant constructor expression.
+
+> The super operands of an extending super macro call expression.
+
+> So the borrow expressions in &mut 0, (&1, &mut 2), and Some(&mut 3) are all extending expressions. The borrows in &0 + &1 and f(&mut 0) are not.
+
+> Final expressions of `async` blocks are not extending expressions.
+
+> Operands of loop breaks are not extending expressions.
+
+> Scrutinees of match expressions are not extending expressions.
+
+> The parent of the initializer of a let statement is the let statement’s scope.
+
 Contents:
 - Intro: destructor runs when an initialized variable/temporary goes out of scope; assignment drops the old left-hand value; partially initialized variables drop only initialized fields.
 - Destructor operation: Drop::drop then recursive field destructors; struct fields in declaration order; active enum variant fields in order; tuple fields in order; array/slice elements first to last; closure move-captures unspecified order; trait objects run the underlying destructor; ptr::drop_in_place for manual runs.
@@ -695,6 +739,10 @@ Version: Start Date 2015-04-15; RFC PR rust-lang/rfcs#1066; Rust issue rust-lang
 > Overall the changes necessary for this strategy are more invasive than admitting destructors may not run, so this alternative is not proposed in this RFC.
 
 > Are there remaining APIs in the standard library which rely on destructors being run for memory safety?
+
+Added by the fact-check (2026-10-11), verbatim from the same fetched text:
+
+> it is expected that most code will not break in practice and this would be an acceptable change to cherry-pick into the 1.0 release.
 
 Contents:
 - Summary: make mem::forget safe; state that not running destructors is not unsafe behaviour.
@@ -998,3 +1046,200 @@ Contents:
 - Temporary scope may be narrowed: pre-2024 extension to enclosing boundary vs 2024 drop at end of block; `{ &String::from("1234") }.len()` compiles in 2021 and fails in 2024; fix by lifting to a local (relies on temporary lifetime extension); cross-link to if let chapter.
 - Migration: no semantics-preserving rewrite; tail_expr_drop_order lint; cargo fix --edition only warns, makes no changes; manual inspection; #![warn(tail_expr_drop_order)]; RFC 3606 footnote.
 
+
+## Patterns - The Rust Reference (wildcard pattern)
+URL: https://doc.rust-lang.org/reference/patterns.html
+Version: The Rust Reference (no version string in fetched text), fetched 2026-10-11 by the fact-check
+
+> The wildcard pattern (an underscore symbol) matches any value. It is used to ignore values when they don’t matter.
+
+> Unlike identifier patterns, it does not copy, move, or borrow the value it matches.
+
+> The wildcard pattern is always irrefutable.
+
+Contents:
+- Wildcard pattern: syntax `_`; matches any value; inside other patterns matches one field; does not copy, move or borrow; always irrefutable; examples (tuple, closure parameter, struct field, `Some(_)`).
+- (Rest of the chapter, not used here: literal, identifier, rest, range, reference, struct, tuple, slice, path and or-patterns; binding modes.)
+
+## Deny-by-default Lints - The rustc book (let_underscore_lock)
+URL: https://doc.rust-lang.org/rustc/lints/listing/deny-by-default.html
+Version: rustc book, current online edition as fetched 2026-10-11 (no version string in the text); the lint's message matches rustc 1.97.0 (measured)
+
+> The let_underscore_lock lint checks for statements which don’t bind a mutex to anything, causing the lock to be released immediately instead of at end of scope, which is typically incorrect.
+
+> let _ = data.lock().unwrap();
+
+> error: non-binding let on a synchronization lock
+
+> this lock is not assigned to a binding and is immediately dropped
+
+> = note: `#[deny(let_underscore_lock)]` (part of `#[deny(let_underscore)]`) on by default
+
+> help: consider binding to an unused variable to avoid immediately dropping the value
+
+Contents:
+- let_underscore_lock: what it checks (a lock not bound to anything is released at once), example with `Arc<Mutex<_>>` in a spawned thread, the error text, deny by default, part of the `let_underscore` group.
+- (Rest of the page: the other deny-by-default lints, not used here.)
+
+## Running Code on Cleanup with the Drop Trait - The Rust Programming Language
+URL: https://doc.rust-lang.org/book/ch15-03-drop.html
+Version: the Book, current online edition as fetched 2026-10-11 (chapter 15.3 per the URL); prerequisite reading only
+
+> Rust doesn’t let you call the Drop trait’s drop method manually; instead, you have to call the std::mem::drop function provided by the standard library if you want to force a value to be dropped before the end of its scope.
+
+> Rust doesn’t let us call drop explicitly, because Rust would still automatically call drop on the value at the end of main. This would cause a double free error because Rust would be trying to clean up the same value twice.
+
+Contents:
+- `Drop` in the smart-pointer context; `CustomSmartPointer` example (variables dropped in reverse order of creation); why `drop` can't be called manually (E0040, double free); `std::mem::drop` to drop early.
+
+## Reference Cycles Can Leak Memory - The Rust Programming Language
+URL: https://doc.rust-lang.org/book/ch15-06-reference-cycles.html
+Version: the Book, current online edition as fetched 2026-10-11 (chapter 15.6 per the URL)
+
+> Rust’s memory safety guarantees make it difficult, but not impossible, to accidentally create memory that is never cleaned up (known as a memory leak).
+
+> Preventing memory leaks entirely is not one of Rust’s guarantees, meaning memory leaks are memory safe in Rust.
+
+Contents:
+- Leaks are memory safe; `Rc<T>` + `RefCell<T>` cycles never reach a count of 0; creating a cycle; preventing cycles with `Weak<T>` (Ch.4 material here).
+
+## std::vec::Vec::drain (Leaking)
+URL: https://doc.rust-lang.org/std/vec/struct.Vec.html
+Version: std 1.99.0 (b940084d7 2026-09-28); Vec::drain stable since 1.6.0
+
+> 1.6.0 · Sourcepub fn drain<R>(&mut self, range: R) -> Drain<'_, T, A>
+
+> If the iterator is dropped before being fully consumed, it drops the remaining removed elements.
+
+> If the returned iterator goes out of scope without being dropped (due to mem::forget, for example), the vector may have lost and leaked elements arbitrarily, including elements outside the range.
+
+Contents:
+- `Vec::drain`: removes a range, returns a double-ended iterator; dropping it early drops the remaining removed elements; Panics; Leaking (a forgotten `Drain` may lose and leak elements, including outside the range); examples (`drain(1..)`, `drain(..)` clears).
+- (The rest of the large `Vec` page is not used here.)
+
+## std::pin (Drop guarantee)
+URL: https://doc.rust-lang.org/std/pin/index.html
+Version: std 1.99.0 docs as fetched 2026-10-11 (module page)
+
+> Therefore, pinning data also comes with the “Drop guarantee”.
+
+> The memory location that stores the value must not get invalidated or otherwise repurposed during the lifespan of the pinned value until its drop returns or panics
+
+> Thus, in any situation where we may want to overwrite a pinned value, that value’s drop must be called beforehand (unless the pinned value implements Unpin, in which case we can ignore all of Pin’s guarantees, as usual).
+
+> Of course, leaking memory in such a way that its underlying storage will never get invalidated or re-used is still fine: mem::forgeting a Box<T> prevents its storage from ever getting re-used, so the drop guarantee is still satisfied.
+
+Contents:
+- Pinning, address-sensitive values, `Unpin`; "Subtle details and the Drop guarantee": a pinned value's storage must not be reused or invalidated until its `drop` ran; leaking is still allowed; `ManuallyDrop` inside a pinned box can never be made safe; structural pinning and `VecDeque`'s destructor. (Taught in Ch.8; one frontier sentence here.)
+
+## Static items - The Rust Reference
+URL: https://doc.rust-lang.org/reference/items/static-items.html
+Version: The Rust Reference (no version string in fetched text), fetched 2026-10-11
+
+> Static items have the static lifetime, which outlives all other lifetimes in a Rust program. Static items do not call drop at the end of the program.
+
+Contents:
+- Static items: `'static` lifetime, never dropped at program end; mutable statics; statics with generics; `static` vs `const`.
+
+## Pre-Pooping Your Pants With Rust - Faultlore (secondary)
+URL: https://faultlore.com/blah/everyone-poops/
+Version: Aria Desires, dated "April 27, 2015" on the page (the author preserved the post and added an undated preface); secondary source
+
+> Pre-Pooping Your Pants With Rust
+
+> Aria Desires
+
+> April 27, 2015
+
+> Also I rebranded “Pre-Pooping Your Pants” as just “Leak Amplification”.
+
+> §Leakpocalypse
+
+> Much existential anguish and ennui was recently triggered by Rust Issue #24292: std::thread::JoinGuard (and scoped) are unsound because of reference cycles. If you feel like you’re sufficiently familiar with Leakpocalypse 2k15, feel free to skip to the next section.
+
+> You can use a reference cycle to leak a JoinGuard and then the scoped thread can access freed memory
+
+> no dtor - leaking is irrelevant: primitives, pointers.
+
+> leaks system resources - not a big deal: Most collections and smaht pointer types, when they contain primitives will simply waste heap space if leaked.
+
+> leaks arbitrary other dtors - acceptable but nasty: Collections and smaht pointer types in general.
+
+> leaves the world in an unexpected but safe state - a scary footgun:
+
+> leaves the world in a broken state - unacceptable: Vec::drain_range as written above.
+
+> Generally, one should strive to push their destructor reliance as far up this hierarchy as is practical, with the last category in the hierarchy verboten by an API that claims to be safe.
+
+> unsafe { self.set_len(a); }
+
+Contents:
+- Preface: the author points to the Nomicon's "Leaking" section as the better version and renames the pattern "Leak Amplification".
+- "Leakpocalypse": issue #24292, `JoinGuard`/`thread::scoped` unsound through reference cycles; why `thread::scoped` was attractive.
+- The leak-reliance ladder (no dtor; leaks system resources; leaks other dtors; unexpected but safe state; broken state).
+- Pre-poop pattern: `drain_range` sets `len` to the range start before handing out the proxy.
+
+## Go spec: Defer statements
+URL: https://go.dev/ref/spec
+Version: Language version go1.27 (May 26, 2026)
+
+> A "defer" statement invokes a function whose execution is deferred to the moment the surrounding function returns, either because the surrounding function executed a return statement, reached the end of its function body, or because the corresponding goroutine is panicking.
+
+Contents:
+- Defer statements only (the rest of the spec is not used): deferred to function return, not block exit.
+
+## Python: The with statement
+URL: https://docs.python.org/3/reference/compound_stmts.html
+Version: Python 3.15.0 documentation
+
+> The with statement is used to wrap the execution of a block with methods defined by a context manager
+
+Contents:
+- The `with` statement (a block wrapped by a context manager's `__enter__`/`__exit__`); the rest of the chapter is not used.
+
+## JLS 14.20.3 try-with-resources
+URL: https://docs.oracle.com/javase/specs/jls/se27/html/jls-14.html
+Version: The Java Language Specification, Java SE 27 Edition, chapter 14
+
+> A try-with-resources statement is parameterized with variables (known as resources) that are initialized before execution of the try block and closed automatically, in the reverse order from which they were initialized, after execution of the try block.
+
+Contents:
+- 14.20.3 try-with-resources only: resources closed automatically after the try block, in reverse order.
+
+## C++ draft standard [class.dtor]
+URL: https://eel.is/c++draft/class.dtor
+Version: C++ working draft as published at eel.is, fetched 2026-10-11
+
+> for a constructed object with automatic storage duration ([basic.stc.auto]) when the block in which an object is created exits ([stmt.dcl]),
+
+Contents:
+- Destructors: declaration, implicit invocation for static, thread, automatic and temporary objects; array elements destroyed in reverse order of construction.
+
+## C++ draft standard [lib.types.movedfrom]
+URL: https://eel.is/c++draft/lib.types.movedfrom
+Version: C++ working draft as published at eel.is, fetched 2026-10-11
+
+> Unless otherwise specified, such moved-from objects shall be placed in a valid but unspecified state
+
+Contents:
+- Moved-from standard-library objects stay valid (so they still exist and are destroyed later).
+
+## systemd-system.conf (DefaultLimitNOFILE)
+URL: https://raw.githubusercontent.com/systemd/systemd/main/man/systemd-system.conf.xml
+Version: systemd `main` branch man page source, fetched 2026-10-11
+
+> DefaultLimitNOFILE= defaults to 1024
+
+Contents:
+- Manager defaults; resource-limit defaults (`DefaultLimitNOFILE=` soft limit 1024, `DefaultLimitMEMLOCK=` 8M). Used only for Prove it 6's descriptor limit.
+
+## Announcing Rust 1.0 | Rust Blog
+URL: https://blog.rust-lang.org/2015/05/15/Rust-1.0/
+Version: The Rust Core Team, May 15, 2015
+
+> May 15, 2015
+
+> Today we are very proud to announce the 1.0 release of Rust
+
+Contents:
+- The 1.0 release announcement (date only; anchors "just before Rust 1.0" for RFC 1066, start date 2015-04-15).
