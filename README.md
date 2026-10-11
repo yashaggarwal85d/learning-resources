@@ -20,6 +20,8 @@ Four tracks, each with a full syllabus:
 | [PROJECT_PLAN.md](PROJECT_PLAN.md) | The rules (animate first; one topic at a time; verified, state-of-the-art content; beautiful and memorable; a natural flow; complete coverage, proven), what every topic contains, the Definition of Done, the narration standard and the tech stack. **The plan wins any conflict.** |
 | [ROUTINE.md](ROUTINE.md) | The step-by-step procedure the hourly per-domain routines follow to make, check and ship the next topic. |
 | [DESIGN.md](DESIGN.md) | The house style for reel steps: canvas, text sizes, colour, motion, and what the looks review checks. |
+| [LEDGER.md](LEDGER.md) | Two lines per routine run and per audit finding: time, tokens per model, checks passed, what went wrong. The data for improving the pipeline. |
+| [AUDIT.md](AUDIT.md) | The daily audit: re-checks every reel shipped since the last audit, fixes what is wrong, and records which part of the pipeline let it through. |
 | [QUALITY.md](QUALITY.md) | Every problem ever found, its fix and the guard that stops it recurring, plus the automatic checks and the "before shipping" list. |
 | `syllabus/` | The course order, topic by topic; `syllabus/review-notes/` records syllabus changes and why. |
 
@@ -34,6 +36,9 @@ scripts/check-all.mjs                      runs every pre-ship check with a timi
 scripts/check-links.mjs                    checks every topic's outside links (status and title)
 scripts/claim.mjs                          hands each routine run its topic (claims on the `claims` branch, heartbeats)
 scripts/affected.mjs                       which reels and links a change can affect (CI and check-all --changed test those)
+scripts/sources.mjs                        fetches sources raw and proves every quote in SOURCES.md word for word
+scripts/ledger.mjs                         appends entries to LEDGER.md on main (run-metrics.mjs finish and the audit use it)
+scripts/audit-scope.mjs                    the topics and runs since the last audit (AUDIT.md)
 scripts/run-metrics.mjs                    records a run's tokens (per model), calls and time, per stage
 site/                                      the website (Astro + React islands + Tailwind)
   src/topics/registry.ts                   every finished topic: live or held, concept ledger, bridge and handoff
