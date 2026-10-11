@@ -254,7 +254,8 @@ Sections in the Python essentials pattern (`data-section` names), plus a frontie
 - [x] Fact-check (`FACT-CHECK.md`), against `sources/*.txt` (2026-10-11): 26 findings, all corrections applied here and in `examples.sh`; 8 new sources (Git source at v2.43.0/v2.56.0, release notes 2.44/2.55/2.56) and new quotes added to `SOURCES.md`; `sources.mjs check` passes (200 quotes, 0 problems); `examples.sh` passes on 2.43.0 and is deterministic.
 - [x] Coverage map (`coverage.json`) with blind expert list (gap review: pending content review).
 - [x] Build: `reel.tsx`, `scenes.tsx`, `index.mdx`, `prerequisites.mdx`, `narration.json`, `examples.py` (wrapping `examples.sh`), `coverage.json`, registry entry.
-- [ ] Checks, narration, reviews, ship.
+- [x] Checks green (docs, examples, sources, build, reels, links), reviews done, content final.
+- [ ] Narration, ship.
 
 ## Changes after final
 
