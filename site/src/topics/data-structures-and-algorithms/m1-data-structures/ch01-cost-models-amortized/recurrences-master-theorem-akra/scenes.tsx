@@ -181,10 +181,11 @@ export function LeafPredict({ t, answer }: StepCtx) {
       {/* the column */}
       {[2, 3, 4, 5, 6].map((i) => {
         const at = (i - 2) * 0.3;
-        const f = shown ? easeOut(seg(s, at, at + 0.3)) : 0;
+        const f = shown ? easeOut(seg(s, at + 0.12, at + 0.3)) : 0;
+        const q = shown ? 1 - seg(s, at, at + 0.12) : 1;
         return (
           <g key={i} opacity={easeOut(seg(t, 0.3 + 0.1 * i, 0.6 + 0.1 * i))}>
-            {f < 1 && <T x={540} y={ROW(i) + 5} s={15} f={C.taupe} a="end" o={1 - f}>?</T>}
+            {q > 0 && <T x={540} y={ROW(i) + 5} s={15} f={C.taupe} a="end" o={q}>?</T>}
             <T x={540} y={ROW(i) + 5} s={15} f={C.caramel} a="end" w={600} o={f}>{fmt(col[i])}</T>
           </g>
         );
@@ -369,12 +370,12 @@ export function SelectionTree({ t }: StepCtx) {
           {fmt(v)}
         </T>
       ))}
-      <T x={540} y={(ROW(0) + ROW(1)) / 2 + 12} s={13} f={C.taupe} a="end" o={easeOut(seg(t, 1.1, 1.5))}>× 9/10</T>
+      <T x={468} y={(ROW(0) + ROW(1)) / 2 + 12} s={13} f={C.taupe} a="end" o={easeOut(seg(t, 1.1, 1.5))}>× 9/10</T>
       <T x={540} y={ROW(5) + 34} s={15} f={C.taupe} a="end" o={end}>…</T>
       <line x1={400} y1={ROW(5) + 46} x2={545} y2={ROW(5) + 46} stroke={C.latte} strokeWidth={1.5} opacity={end} />
       <T x={540} y={ROW(5) + 72} s={20} f={C.caramel} a="end" w={700} o={end}>&lt; 10,000</T>
       <T x={540} y={ROW(5) + 94} s={13} f={C.latte} a="end" o={end}>= 1,000 × (1 + 9/10 + 81/100 + …)</T>
-      <T x={30} y={ROW(5) + 94} s={13} f={C.latte} o={easeOut(seg(t, 4.4, 4.8))}>exact: T(1,000) = 6,532</T>
+      <T x={30} y={ROW(5) + 118} s={13} f={C.latte} o={easeOut(seg(t, 4.4, 4.8))}>exact: T(1,000) = 6,532</T>
     </Svg>
   );
 }
@@ -389,17 +390,18 @@ export function ThirdsPredict({ t, answer }: StepCtx) {
       <TreeRows tree={tree} t={t} beat={0.2} start={0} lastRow={5} />
       {Array.from({ length: 6 }, (_, i) => {
         const at = i === 0 ? 0 : (i - 1) * 0.3;
-        const f = shown && i > 0 ? easeOut(seg(s, at, at + 0.3)) : i === 0 ? 1 : 0;
+        const f = i === 0 ? 1 : shown ? easeOut(seg(s, at + 0.12, at + 0.3)) : 0;
+        const q = i === 0 ? 0 : shown ? 1 - seg(s, at, at + 0.12) : 1;
         return (
           <g key={i} opacity={easeOut(seg(t, 0.1 + 0.2 * i, 0.4 + 0.2 * i))}>
-            {f < 1 && <T x={540} y={ROW(i) + 10} s={15} f={C.taupe} a="end" o={1 - f}>?</T>}
+            {q > 0 && <T x={540} y={ROW(i) + 10} s={15} f={C.taupe} a="end" o={q}>?</T>}
             <T x={540} y={ROW(i) + 10} s={15} f={C.caramel} a="end" w={600} o={f}>1,000</T>
           </g>
         );
       })}
       {shown && (
         <g opacity={easeOut(seg(s, 1.8, 2.2))}>
-          <T x={540} y={(ROW(0) + ROW(1)) / 2 + 12} s={13} f={C.taupe} a="end">× 1</T>
+          <T x={468} y={(ROW(0) + ROW(1)) / 2 + 12} s={13} f={C.taupe} a="end">× 1</T>
           <line x1={400} y1={ROW(5) + 46} x2={545} y2={ROW(5) + 46} stroke={C.latte} strokeWidth={1.5} />
           <T x={540} y={ROW(5) + 72} s={15} f={C.caramel} a="end" w={700}>× log n levels: <G>Θ</G>(n log n)</T>
           <T x={30} y={ROW(5) + 94} s={13} f={C.latte}>exact: T(1,000) = 10,526 ≈ 1.06 · n log₂ n</T>
@@ -413,7 +415,7 @@ export function ThirdsPredict({ t, answer }: StepCtx) {
 export function ExponentP({ t, portrait }: StepCtx) {
   const phi = (p: number) => 0.2 ** p + 0.7 ** p;
   const X0 = portrait ? 70 : 60;
-  const X1 = portrait ? 520 : 380;
+  const X1 = portrait ? 520 : 350;
   const Y0 = portrait ? 220 : 300; // phi = 0.5
   const Y1 = portrait ? 40 : 60; // phi = 2
   const px = (p: number) => X0 + (p / 1.5) * (X1 - X0);
@@ -464,8 +466,8 @@ export function ExponentP({ t, portrait }: StepCtx) {
             const a = easeOut(seg(t, 2.8 + i * 0.5, 3.2 + i * 0.5));
             return (
               <g key={rec} opacity={a}>
-                <T x={400} y={100 + i * 62} s={13} f={C.latte}>{rec}</T>
-                <T x={400} y={122 + i * 62} s={15} f={C.caramel} w={600}>{p}</T>
+                <T x={412} y={100 + i * 62} s={13} f={C.latte}>{rec}</T>
+                <T x={412} y={122 + i * 62} s={15} f={C.caramel} w={600}>{p}</T>
               </g>
             );
           })}
@@ -563,7 +565,7 @@ export function Closing({ t }: StepCtx) {
   const cards: { name: string; verdict: ReactNode; count: string }[] = [
     { name: 'merge sort · T(n) = 2T(n/2) + n', verdict: <>case 2: <G>Θ</G>(n log n)</>, count: '1,000,000 keys: 20,951,424 ops' },
     { name: 'binary search · T(n) = T(n/2) + 1', verdict: <>case 2, watershed 1: <G>Θ</G>(log n)</>, count: '1,000,000 keys: 20 probes' },
-    { name: 'median of medians · T(n/5) + T(7n/10) + n', verdict: <>Akra–Bazzi, p ≈ 0.84: <G>Θ</G>(n)</>, count: '1,000,000 keys: 8,832,605 ops &lt; 10n' },
+    { name: 'median of medians · T(n/5) + T(7n/10) + n', verdict: <>Akra–Bazzi, p ≈ 0.84: <G>Θ</G>(n)</>, count: '1,000,000 keys: 8,832,605 ops < 10n' },
   ];
   return (
     <Svg label="Back to the problem: merge sort is Theta of n log n, about 20,951,424 operations on a million keys; binary search is Theta of log n, 20 probes; median of medians is linear, 8,832,605 operations, under 10n" h={380}>
@@ -599,13 +601,14 @@ function ColumnQuestion({ label, tot, shown, s, ratio, first, verdict, ratios }:
         {tot.map((v, i) => {
           const val = Number(v.replace(/,/g, ''));
           const max = Number(tot[tot.length - 1].replace(/,/g, ''));
-          const vis = i < 2 ? 1 : shown ? easeOut(seg(s, (i - 2) * 0.25, (i - 2) * 0.25 + 0.3)) : 0;
+          const vis = i < 2 ? 1 : shown ? easeOut(seg(s, (i - 2) * 0.25 + 0.12, (i - 2) * 0.25 + 0.4)) : 0;
+          const q = i < 2 ? 0 : shown ? 1 - seg(s, (i - 2) * 0.25, (i - 2) * 0.25 + 0.12) : 1;
           const y = 50 + i * 34;
           return (
             <g key={i}>
               <rect x={30} y={y} width={Math.max(3, (val / max) * 300) * vis} height={22} rx={4} fill={C.caramel} />
               <T x={30 + Math.max(3, (val / max) * 300) * vis + 10} y={y + 17} s={15} f={C.crema} w={600} o={vis}>{v}</T>
-              {i >= 2 && !shown && <T x={30} y={y + 17} s={15} f={C.taupe}>?</T>}
+              {q > 0 && <T x={30} y={y + 17} s={15} f={C.taupe} o={q}>?</T>}
               {ratios && i < tot.length - 1 && i >= 1 && <T x={440} y={y + 36} s={13} f={C.taupe} o={shown ? easeOut(seg(s, (i - 1) * 0.25 + 0.2, (i - 1) * 0.25 + 0.5)) : 0}>{ratios[i]}</T>}
               {i === 0 && <T x={440} y={y + 36} s={13} f={C.taupe}>{ratios ? ratios[0] : ratio}</T>}
             </g>

@@ -229,6 +229,7 @@ Fact-check record: `FACT-CHECK.md` (2.3, 2026-10-11). Source quotes: `SOURCES.md
 
 - 2026-10-11: sources fetched and `SOURCES.md` written (2.1); content plan and storyboard written (this file, 2.2). Next: fact-check and red team (2.3) on this outline against `sources/*.txt`, with the "to verify" items above as its first list; blind expert list (2.4; a draft `sources/expert-list.json` exists); `coverage.json`; then the build (3).
 - 2026-10-11: fact-check and red team (2.3) done: `FACT-CHECK.md`; corrections applied in this file (step 3 question, step 6 leaf row, steps 5/6 and Deep dive on CLRS 4th ed. a > 0 and regularity, step 8 groups of 3, step 9 Akra–Bazzi conditions, step 14 integral bound, Leighton example 2, T(0) convention, oscillation in the Frontier), new quotes in `SOURCES.md` (check passes).
+- 2026-10-11: build (3) done by the builder agent: examples.py, scenes.tsx, reel.tsx, index.mdx, prerequisites.mdx, narration.json (script only; no audio yet), coverage.json (gapReview by the builder, pending content review) and the held registry entry. `npm run build`, `npm run test:examples` and the reel test pass. Deviations: steps 11 and 15 stack their two induction cards on landscape too (full-width cards), step 9's portrait cards are one line each, step 10's bars are labelled 2^k (k = 1, 4, …, 19) instead of n in full, steps 3, 13 and 14 show only the first two level totals until the learner answers (so the question does not show the answer). Next: content review (4), looks review (5), narration (7).
 
 ## Changes from the chapter plan
 
