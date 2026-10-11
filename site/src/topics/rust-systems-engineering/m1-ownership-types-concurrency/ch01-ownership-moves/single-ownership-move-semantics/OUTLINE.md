@@ -263,7 +263,7 @@ Titles below are exact. Write each in `reel.tsx` as a 6-space-indented `title: '
 ### Step 12 — `Size decides the cost; Box caps it`  (interactive trade-off; `duration: 3.6`)
 
 - **Visual idea:** the learner taps a type and sees the bytes a move copies; `Box` stays at 8 however big its contents, while its heap block sits still. Interactive, because "cost = `size_of`" is learned by changing the type.
-- **On screen:** a row of four buttons above the drawing (HTML `<button type="button">`, inside a `div` with `data-interactive`, font-mono 0.72rem, rounded-full, border `crema/15`; the selected one `border-caramel text-caramel`): `[u8; 16]` · `[u8; 4096]` · `[u8; 65536]` · `Box<[u8; 65536]>`. Default selection: `[u8; 4096]`. React `useState` holds the selection (as in io-cost-model step 7).
+- **On screen (changed by the review, see Changes after final):** a row of five buttons BELOW the drawing, in a plain `div` (no `data-interactive`; each is an HTML `<button type="button">`, font-mono 0.72rem, rounded-full, border `crema/15`; the selected one `border-caramel text-caramel`): `[u8; 16]` · `[u8; 4096]` · `[u8; 65536]` · `Box<[u8; 65536]>` · `Vec<u8> (1,000,000)` (24 bytes: "header only; the 1,000,000 bytes stay on the heap"). Default selection: `[u8; 4096]`. React `useState` holds the selection (as in io-cost-model step 7).
   - Drawing `Svg h={380}`: a log-scale bar chart, four rows (y 50, 120, 190, 260), one per type in button order. Each row: the type label at (24, y), 14 units `C.latte`; under it a bar at (24, y + 10), height 22, rx 6, width = 420 × log2(bytes) / 16 (so 16 → 105, 4096 → 315, 65536 → 420, Box's 8 → 79); the value 15 units `C.crema` at x = 24 + width + 12, baseline y + 27 (rightmost ends near x 504). Bars `C.mocha`; the selected row's bar `C.caramel` and its label `C.crema`. Values: `16`, `4,096`, `65,536`, `8`. Axis caption at y 325, 13 units `C.taupe`: `bytes one move copies = size_of::<T>() (log scale)`.
   - Under it at y 358, a one-line explanation for the selection (14 units `C.crema`): for the arrays `the whole array is copied`; for Box `8-byte pointer; the 65,536 bytes stay on the heap`.
 - **Beats:** 0–0.4 s axis caption; bars grow from width 0 one per 0.5 s from 0.4 s (`easeOut`, 0.6 s each); explanation line at 3.0–3.6 s. Tapping a button changes highlight instantly (no time dependence).
@@ -724,3 +724,19 @@ No other factual claims go on screen or in the Deep dive. In particular: no clai
 - 2026-10-11 adversarial fact-check done (rustc 1.97.0, g++ 13.3): corrections applied in place above, each marked "Fact-check" where the reason isn't obvious; verdicts and open items in `FACT-CHECK.md`.
 
 ## Changes after final
+
+### Review fixes, 2026-10-11 (REVIEW.md, 22 findings)
+
+The plan changed in these places, each for the reason given:
+
+- **Prerequisites: new item 05 Closures (Book 13.1), `closures` added to the registry `declared`, and Book 15.3 (`Drop`) linked from item 04** (findings 1, 2). The Deep dive uses `move` closures and the reel uses `Drop`; neither is in "the Book through ch. 10". The syllabus is not reordered.
+- **Thread example removed** (finding 1, option a): Lab 4 row and Prove it 6 now use a closure that is returned (`-> impl Fn() -> usize`, E0373 without `move`) or kept in a local (`let f = move || data.len()`, E0382). Why `thread::spawn` needs `move` is one clause pointing at Chapter 2 "Borrows across thread and task boundaries". Reason: `thread::spawn` and `'static` are syllabus 2.2, later in this domain.
+- **Step 12 gains a fifth chip, `Vec<u8> (1,000,000)` = 24**, the topic's central contrast, and its chips move below the drawing and lose the `data-interactive` wrapper (finding 6, and the reel test: a full-width `data-interactive` row at the top of the visual swallowed a swipe that started on it, because the player ignores presses there). Bars use 56-unit rows, `h` 350.
+- **Step 22 and Prove it 3 use `Point3 { x, y, z: f32 }`** instead of `Config` (finding 20): a type that clearly will not grow, so `Copy` is the unambiguous answer. The `&Config` caution stays as one sentence about config structs.
+- **Frontier gains the ergonomic-clones bullet** (finding 7), written from the fetched 2025H2 and 2026 goal pages and the nightly `UseCloned` and `Share` docs, with quotes in `SOURCES.md`.
+- **Time numbers** (finding 8): Lab 5 and "In production" give the clone time as measured on two machines (about 18 and 72 microseconds), `examples.py` asserts only the bound 5 us to 2 ms; step 19 says "tens of microseconds" without a figure.
+- **Drop-flag promise** (finding 3): step 20 points to this topic's Deep dive; the `coverage.json` item is placed there instead of at the RAII topic.
+- **New claims, each executed in `examples.py`:** assignment to a live place drops the old value; `Vec<String>` clone is 1 + n allocations; `String +` can reallocate; first move into a `Box`; returned large values; `&[u8]` vs `&Vec<u8>`; generic `T` as `&U`; `Into<String>`; plain-bit handles are not automatically `Copy`.
+- **No incident cited** (finding 15): no public post-mortem with a verifiable primary page was found; recorded in `coverage.json` `gapReview.notes`, not invented.
+- **Rust for Rustaceans not used** (finding 12): not freely available; the FLS section 15 is quoted instead.
+- Narration lines for steps 10, 12, 14 and 23 reworded or extended (findings 6, 17, 22). No audio exists yet for this topic, so nothing is stale.

@@ -88,7 +88,7 @@ const reel: Reel = {
           <>
             It compiles and prints <code>second first</code>. A move deinitializes the place <code>s</code>; it can't be read until it is assigned again (which
             needs <code>let mut</code>; without it, E0384), and then it's an ordinary variable. Assigning to a deinitialized place drops nothing, because nothing
-            is there. <code>t</code> owns <code>first</code>.
+            is there. Had <code>s</code> still owned <code>first</code>, the assignment would have dropped it at once. <code>t</code> owns <code>first</code>.
           </>
         ),
       },
@@ -124,8 +124,8 @@ const reel: Reel = {
       title: 'Copy: when the bits are the whole value',
       body: (
         <>
-          <code>Copy</code> marks types whose bits are the whole value: integers, floats, <code>bool</code>, <code>char</code>, and arrays and tuples of{' '}
-          <code>Copy</code> types. Assigning one duplicates it and the source stays valid; the copy is always a plain bitwise copy, never your code. A type can be{' '}
+          <code>Copy</code> is the opt-in for types whose bits are the whole value: primitives are <code>Copy</code> (integers, floats, <code>bool</code>,{' '}
+          <code>char</code>), arrays and tuples of <code>Copy</code> types are, and your own struct is once you derive it. Assigning one duplicates it and the source stays valid; the copy is always a plain bitwise copy, never your code. A type can be{' '}
           <code>Copy</code> only if every field is. <code>&amp;T</code> is <code>Copy</code> (copying a shared reference is harmless); <code>&amp;mut T</code>{' '}
           never is, because two copies would be two mutable aliases. Under the hood a copy and a move copy the same bits; the only difference is whether the source
           stays usable.
@@ -138,7 +138,8 @@ const reel: Reel = {
       title: 'A file descriptor that is just an i32',
       body: (
         <>
-          A wrapper around an integer handle, with a destructor that closes it. The integer is plain bits, so does this compile?
+          A wrapper around an integer handle, with a destructor that closes it (<code>Drop</code> is the trait for a destructor: code that runs when the owner
+          goes away; the next topic is about it). The integer is plain bits, so does this compile?
         </>
       ),
       duration: 1.4,
@@ -153,7 +154,8 @@ const reel: Reel = {
           <>
             E0184. A type with <code>Drop</code> manages something beyond its own bytes (here, a descriptor to close), so a bitwise copy would duplicate that
             responsibility: two copies, two closes. <code>Copy</code> and <code>Drop</code> are mutually exclusive, so any type with a destructor, or with a field
-            that has one, always moves. You'll build exactly this wrapper properly in the next topic.
+            that has one, always moves. Even without a <code>Drop</code>, plain bits can stand for unique ownership of something outside the value (a descriptor number, a slot
+            index, a capability token), and such a type should usually not be <code>Copy</code>. You'll build exactly this wrapper properly in the next topic.
           </>
         ),
       },
@@ -164,7 +166,8 @@ const reel: Reel = {
       body: (
         <>
           Rust never deep-copies behind your back, so the expensive line is the one that says so. A copy and a move allocate nothing; <code>.clone()</code> on a{' '}
-          <code>Vec</code> allocates a new buffer and copies every element. <code>Clone</code> is always explicit and may run arbitrary code, which is why the Book
+          <code>Vec</code> allocates a new buffer and clones every element (one allocation for a <code>Vec&lt;u8&gt;</code>, 1 + n for a <code>Vec</code> of n{' '}
+          <code>String</code>s). <code>Clone</code> is always explicit and may run arbitrary code, which is why the Book
           calls a <code>.clone()</code> call a visual signal that something costly may be happening. Search a hot path for <code>.clone()</code>, and for explicit
           cousins such as <code>to_vec()</code>, <code>to_owned()</code> and <code>to_string()</code>, to find its deep copies. (Not every clone is deep: cloning
           an <code>Rc</code> or <code>Arc</code> only bumps a count; that comes in Chapter 4.)
@@ -206,9 +209,11 @@ const reel: Reel = {
       body: (
         <>
           A move copies up to <code>size_of::&lt;T&gt;()</code> bytes, so its cost follows the type's inline size, not what it owns: a <code>Vec</code> with a
-          million elements moves 24 bytes; a 65,536-byte array can cost all 65,536. <code>Box&lt;T&gt;</code> puts the <code>T</code> on the heap and owns it; for a
+          million elements moves 24 bytes (tap it); a 65,536-byte array can cost all 65,536. <code>Box&lt;T&gt;</code> puts the <code>T</code> on the heap and owns it; for a
           sized <code>T</code> the box itself is a single pointer, so moving it copies 8 bytes however big <code>T</code> is. (A box of an unsized type, such as{' '}
-          <code>Box&lt;[u8]&gt;</code>, is a 16-byte pointer plus length.) That's the Book's reason to box large data you pass around. Tap a type.
+          <code>Box&lt;[u8]&gt;</code>, is 16 bytes: an 8-byte pointer and an 8-byte length.) That's the Book's reason to box large data you pass around. One catch:
+          getting the value into the box is itself a move, and in a debug build <code>Box::new</code> of a huge array can overflow the stack; allocate on the heap
+          directly instead. Tap a type.
         </>
       ),
       duration: 3.6,
@@ -221,7 +226,7 @@ const reel: Reel = {
           A signature tells you what a call does to your value without opening the body. <code>T</code> takes ownership: the callee drops it, stores it or passes
           it on (if <code>T</code> is <code>Copy</code>, the callee gets a copy and you keep yours). <code>&amp;T</code> borrows for shared, normally read-only
           access (interior mutability, Chapter 4, is the exception), and any number of shared borrows may coexist. <code>&amp;mut T</code> borrows exclusively: while
-          it's live, no other reference to the value may exist, which is what rules out data races at compile time. Returning <code>T</code> hands ownership back to
+          it's live, no other reference to the value may exist, which, with <code>Send</code> and <code>Sync</code> (Chapter 6), is how Rust rules out data races at compile time. Returning <code>T</code> hands ownership back to
           the caller.
         </>
       ),
@@ -236,7 +241,7 @@ const reel: Reel = {
           <code>&amp;mut self</code>, and <code>into_bytes</code> takes <code>self</code>: it consumes the <code>String</code> and returns a <code>Vec&lt;u8&gt;</code>{' '}
           built on the same buffer (measured: same pointer, 0 allocations). A by-value <code>self</code> is how an API says "don't use the old value after this":{' '}
           <code>into_*</code> conversions, builders, state transitions. Even <code>+</code> is a contract: <code>String + &amp;str</code> consumes the left side and
-          reuses its buffer.
+          appends into its allocation (growing it if needed); it never builds a second string.
         </>
       ),
       duration: 5.0,
@@ -261,7 +266,8 @@ const reel: Reel = {
           <>
             Borrow: <code>&amp;[u8]</code>. Taking <code>Vec&lt;u8&gt;</code> consumes the batch, so the caller gets E0382 or pays for a clone. <code>&amp;mut</code>{' '}
             demands exclusive access the function doesn't need and forbids the caller from holding any other reference meanwhile. Returning the vector in a tuple
-            works, but it's the clumsy pattern references exist to replace. A shared borrow reads without owning, and the caller keeps the batch.
+            works, but it's the clumsy pattern references exist to replace. A shared borrow reads without owning, and the caller keeps the batch. Why <code>&amp;[u8]</code> and not <code>&amp;Vec&lt;u8&gt;</code>: the slice also
+            accepts arrays, boxed slices and sub-slices, and drops a layer of indirection (<code>&amp;batch</code> coerces to <code>&amp;[u8]</code>).
           </>
         ),
       },
@@ -272,7 +278,9 @@ const reel: Reel = {
       body: (
         <>
           Read E0382 in three spans, in this order: why the value moved (its type isn't <code>Copy</code>), where it moved (the call), and the later use. Each
-          span is a place to fix it: borrow at the move site, use the value before the move, or, only for plain data, make the type <code>Copy</code>. The note
+          span is a place to fix it: for plain data only, make the type <code>Copy</code> (why); borrow at the move site (where); or use the value before the move
+          (the later use). The header names what that later use does: <code>batch.len()</code> borrows, so "borrow of moved value"; a second{' '}
+          <code>ship(batch)</code> moves, so "use of moved value". The note
           points at the parameter that takes ownership and suggests making it a borrow if owning isn't necessary: the signature may be wrong. The help line, clone,
           is the fix to reach for last.
         </>
@@ -313,7 +321,7 @@ const reel: Reel = {
             E0382, at compile time. The check follows every path, and the path round the loop reaches <code>ship(batch)</code> a second time with{' '}
             <code>batch</code> already moved. Borrow (<code>fn ship(b: &amp;[u8])</code>), build a fresh batch inside the loop, or clone per iteration if each send
             truly must own its copy: 3 allocations for 3 laps. The same rule makes <code>for s in v</code> consume <code>v</code>: a <code>for</code> loop calls{' '}
-            <code>IntoIterator::into_iter(v)</code>; iterate <code>&amp;v</code> to borrow.
+            <code>IntoIterator::into_iter(v)</code> on what it loops over, which takes it by value; iterate <code>&amp;v</code> to borrow.
           </>
         ),
       },
@@ -324,9 +332,10 @@ const reel: Reel = {
       body: (
         <>
           Read the original error by its spans: <code>Vec&lt;u8&gt;</code> isn't <code>Copy</code> (and shouldn't be), it moved at <code>ship(batch)</code>, and it
-          was used after. If <code>ship</code> only reads, the signature was wrong: take <code>&amp;[u8]</code>, pass <code>&amp;batch</code>: 0 allocations, 0
-          bytes copied. If <code>ship</code> must own the batch, say to hand it to a writer thread, read the length first and move last: also 0. The clone was
-          correct code paying 1 allocation and 1,000,000 bytes per batch for nothing.
+          was used after. If <code>ship</code> only reads, the signature was wrong: take <code>&amp;[u8]</code>, pass <code>&amp;batch</code> (it coerces to a slice): 0
+          allocations, 0 bytes copied. If <code>ship</code> must own the batch, say to hand it to a writer thread, read the length first and move last: also 0. The clone was
+          correct code paying 1 allocation and 1,000,000 bytes per batch for nothing: tens of microseconds each, measured, so at 10,000 batches a second it can
+          take a large share of a core (Deep dive, In production).
         </>
       ),
       duration: 5.6,
@@ -351,7 +360,7 @@ const reel: Reel = {
           <>
             E0382 at compile time, whatever <code>retry</code> is at run time. Moves are checked on every path: a value moved on any path that reaches the{' '}
             <code>println!</code> counts as moved there. Delete the <code>println!</code> and it compiles: Rust then tracks at run time whether{' '}
-            <code>batch</code> still needs freeing at the end of the scope (a hidden drop flag, next topic).
+            <code>batch</code> still needs freeing at the end of the scope (a hidden drop flag; the Deep dive explains it).
           </>
         ),
       },
@@ -386,23 +395,23 @@ const reel: Reel = {
       title: 'Prove it · 3 of 3',
       body: (
         <>
-          <code>process(cfg: Config)</code> only reads the three numbers, and E0382 fires on the second lap. Which fix fits this type best?
+          <code>norm(p: Point3)</code> only reads the three numbers, and E0382 fires on the second lap. Which fix fits this type best?
         </>
       ),
       duration: 1.2,
       predict: {
         options: [
-          { label: '#[derive(Clone)] and pass cfg.clone()' },
-          { label: '#[derive(Clone, Copy)] on Config', correct: true },
-          { label: 'Wrap it in Rc<Config>' },
-          { label: 'Change the parameter to &mut Config' },
+          { label: '#[derive(Clone)] and pass p.clone()' },
+          { label: '#[derive(Clone, Copy)] on Point3', correct: true },
+          { label: 'Wrap it in Rc<Point3>' },
+          { label: 'Change the parameter to &mut Point3' },
         ],
         explain: (
           <>
-            Derive <code>Copy</code>. <code>Config</code> is 12 bytes of plain numbers and owns nothing, so it can be <code>Copy</code>, and the std docs' advice
+            Derive <code>Copy</code>. <code>Point3</code> is 12 bytes of plain numbers, owns nothing and will not grow a heap field, so it can be <code>Copy</code>, and the std docs' advice
             is that a type that can be <code>Copy</code> generally should be: each call gets its own bitwise copy, no move, no clone call. <code>.clone()</code>{' '}
             would do the same work behind a call that suggests a cost; <code>Rc</code> adds a heap allocation and a count; <code>&amp;mut</code> demands exclusivity
-            for a read. One caution: <code>Copy</code> is part of a public type's API, so if <code>Config</code> might gain a <code>String</code> later, take{' '}
+            for a read. One caution: <code>Copy</code> is part of a public type's API, so for a config struct that might gain a <code>String</code> later, take{' '}
             <code>&amp;Config</code> instead.
           </>
         ),

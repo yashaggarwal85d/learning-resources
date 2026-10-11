@@ -686,6 +686,86 @@
           ]
         }
       ]
+    },
+    {
+      "source": "Ferrocene Language Specification (FLS), 15. Ownership and Destruction (rust-lang.github.io/fls/ownership-and-deconstruction.html)",
+      "items": [
+        {
+          "item": "15.1 Ownership: a value shall have only one owner",
+          "at": [
+            {
+              "step": "Two owners would free twice"
+            },
+            {
+              "deep": "What a move is, as the Reference states it"
+            }
+          ]
+        },
+        {
+          "item": "15.2 Initialization: a variable whose value has been passed by move is uninitialized and must be initialized before it is accessed",
+          "at": [
+            {
+              "step": "Can a moved-out variable come back?"
+            },
+            {
+              "deep": "What a move is, as the Reference states it"
+            }
+          ]
+        },
+        {
+          "item": "15.5 Passing conventions: copy types are passed by copy, move types (Sized, not Copy) by move, which changes the owner",
+          "at": [
+            {
+              "step": "Copy: when the bits are the whole value"
+            },
+            {
+              "deep": "What a move is, as the Reference states it"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "Nightly std docs UseCloned and Share, and the Rust Project Goals pages 2025H2 and 2026 on ergonomic ref-counting (doc.rust-lang.org/nightly/std/clone, goals.rust-lang.org)",
+      "items": [
+        {
+          "item": "UseCloned (nightly, ergonomic_clones): marks O(1), allocation-free clones; `.use` and `use ||` closures from RFC 3680",
+          "at": [
+            {
+              "deep": "The frontier"
+            }
+          ]
+        },
+        {
+          "item": "Share (nightly, share_trait): clone-as-alias; owned values such as Vec, String and Box are not Share",
+          "at": [
+            {
+              "deep": "The frontier"
+            }
+          ]
+        },
+        {
+          "item": "2025H2 goal: alternative RFC making lightweight clones automatic; 2026 goal (Accepted): Share plus move($expr), keeping ref counts visible",
+          "at": [
+            {
+              "deep": "The frontier"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "Rust for Rustaceans (Gjengset), ch. 1 (not used)",
+      "items": [
+        {
+          "item": "Ownership, moves and Copy (the syllabus's M1 reference; not freely available, so not fetched or quoted; the same claims are anchored on the FLS, the Reference, std docs and the Book)",
+          "at": [
+            {
+              "out": "Not freely available online, so no quote can be verified word for word; the claims it would cover are anchored on the FLS, the Reference, the std docs and the Book."
+            }
+          ]
+        }
+      ]
     }
   ],
   "expert": {
@@ -944,8 +1024,7 @@
             "step": "Prove it · 1 of 3"
           },
           {
-            "topic": "RAII, drop order, and leak safety",
-            "quote": "deterministic destruction"
+            "deep": "The borrow checker's view of a move"
           }
         ]
       },
@@ -985,7 +1064,11 @@
   },
   "gapReview": {
     "date": "2026-10-11",
-    "by": "Opus content review pending",
-    "open": []
+    "by": "Opus content review (REVIEW.md), 22 findings fixed the same day",
+    "open": [],
+    "notes": [
+      "Incidents (Learning design layer 7): no public post-mortem of a clone-removal or large-move fix with a verifiable primary page was found, so none is cited and none is invented. The Rust Performance Book (secondary) is cited for the same cost class (memcpy above 128 bytes, DHAT copy profiling, boxing outsized variants).",
+      "Frontier: RFC 3680's own pull-request page could not be fetched (HTTP 403 through the proxy); its status is taken from the 2025H2 and 2026 goal pages and the nightly std docs, all fetched 2026-10-11."
+    ]
   }
 }

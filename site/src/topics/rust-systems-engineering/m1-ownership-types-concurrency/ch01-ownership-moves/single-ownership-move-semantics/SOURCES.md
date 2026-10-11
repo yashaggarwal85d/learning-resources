@@ -698,3 +698,78 @@ Version: CWE 4.20, read 2026-10-11
 
 Contents:
 - Definition of double free; consequences (allocator corruption, two mallocs returning the same pointer, exploitation).
+
+## Ferrocene Language Specification (FLS) — 15. Ownership and Destruction
+URL: https://rust-lang.github.io/fls/ownership-and-deconstruction.html
+Version: current online FLS, read 2026-10-11
+The specification text the project adopted as the M1 reference (syllabus). It is the normative anchor for "a move deinitializes the place".
+Not used: *Rust for Rustaceans* (Gjengset), ch. 1, the other M1 reference the syllabus names (ownership, moves, Copy). It is not freely available online, so no quote can be checked word for word against a fetched page; the same claims are anchored on the FLS, the Reference, the std docs and the Book instead. A reviewer who has the book can add it.
+
+> A value shall have only one owner.
+
+> When a variable lacks a value or its value has been passed by move, the variable is considered to be uninitialized.
+
+> A variable shall be initialized before it is accessed.
+
+> A value of a copy type is passed by copy. Passing by copy does not change the owner of the value.
+
+> A value of a move type is passed by move. Passing by move changes the owner of the value.
+
+Contents:
+- 15.1 Ownership: one owner per value; 15.2 Initialization: a variable is uninitialized once its value has been passed by move; 15.5 Passing conventions: copy types are passed by copy, move types (Sized, not Copy) by move.
+
+## std::clone::UseCloned (nightly docs, 1.101.0-nightly 2026-10-10)
+URL: https://doc.rust-lang.org/nightly/std/clone/trait.UseCloned.html
+Version: nightly std docs, std 1.101.0-nightly (6f5da406b 2026-10-10), read 2026-10-11
+Frontier source: RFC 3680 (`x.use`, `use ||` closures) as implemented on nightly. The RFC's own pull-request page could not be fetched here (HTTP 403 through the proxy), so its status is taken from the goal pages below.
+
+> nightly-only experimental API. (ergonomic_clones #132290)
+
+> Trait for objects whose Clone impl is lightweight (e.g. reference-counted)
+
+> not require a memory allocation
+
+> The UseCloned trait does not provide a method; instead, it indicates that Clone::clone is lightweight, and allows the use of the .use syntax.
+
+Contents:
+- UseCloned contract: O(1), no allocation, at most roughly 64 bytes, non-blocking, no side effects; `.use` postfix and `use` closures; implementors include Rc and Arc.
+
+## std::clone::Share (nightly docs, 1.101.0-nightly 2026-10-10)
+URL: https://doc.rust-lang.org/nightly/std/clone/trait.Share.html
+Version: nightly std docs, std 1.101.0-nightly (6f5da406b 2026-10-10), read 2026-10-11
+
+> nightly-only experimental API. (share_trait #156756)
+
+> Share does not mean merely that cloning is cheap, constant-time, allocation-free, or convenient.
+
+> Types such as Vec<T>, String, Box<T>, owned collections, and similar owned values are not Share, even though they implement Clone, because cloning them creates independent owned storage or value ownership.
+
+Contents:
+- Share: clone-as-alias, a third way next to Copy (implicit) and Clone (explicit); implementors are shared references, Rc, Arc and channel senders; owned values are not Share.
+
+## Rust Project Goals 2025H2 — Ergonomic ref-counting: RFC decision and preview
+URL: https://goals.rust-lang.org/2025h2/ergonomic-rc.html
+Version: goal page read 2026-10-11 (status shown: Proposed)
+
+> We propose to write an alternative RFC for ergonomic ref-counting that makes lightweight cloning automatic and hold design meetings so the lang team can compare both approaches.
+
+> Nightly Rust now has an experimental implementation of RFC #3680
+
+Contents:
+- The 2025H2 proposal: an alternative RFC making lightweight clones automatic, compared by the lang team with RFC 3680 (`.use`); implementation checklist for the `ergonomic_clones` feature gate.
+
+## Rust Project Goals 2026 — Ergonomic ref-counting
+URL: https://goals.rust-lang.org/2026/ergonomic-rc.html
+Version: goal page read 2026-10-11 (status shown: Accepted; prototypes targeted for summer 2026)
+Frontier, current as of the verification date: the project moved from "automatic" to a `Share` trait plus `move($expr)`.
+
+> a Share trait that semantically identifies types where cloning creates an alias to the same underlying value
+
+> These two features make working with ref-counted data more ergonomic while still retaining Rust's traditional guarantee that all ref counts are visible.
+
+> Our approach keeps aliases visible while reducing boilerplate.
+
+> RFC #3680 proposed .use syntax and a Use trait. That work remains available on nightly
+
+Contents:
+- The accepted 2026 goal: `Share` trait and `move($expr)`; why not automatic cloning; history from 2024H2 through 2025H2; how it relates to RFC 3680.

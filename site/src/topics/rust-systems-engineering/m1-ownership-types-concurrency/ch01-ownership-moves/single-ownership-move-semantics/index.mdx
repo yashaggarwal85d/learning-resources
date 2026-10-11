@@ -7,7 +7,7 @@ title: Single ownership and move semantics
 
 ## After this topic you can
 
-- Predict, for any assignment, call, return or loop, whether a value is **moved, copied or must be cloned**, and what each costs in bytes copied and heap allocations. A move is a bitwise copy of `size_of::<T>()` bytes, which the optimiser may shrink or remove, and it allocates nothing; `.clone()` of a non-empty `Vec` or `String` allocates once and copies its elements.
+- Predict, for any assignment, call, return or loop, whether a value is **moved, copied or must be cloned**, and what each costs in bytes copied and heap allocations. A move is a bitwise copy of `size_of::<T>()` bytes, which the optimiser may shrink or remove, and it allocates nothing; `.clone()` of a `Vec<u8>` or `String` allocates once and copies its bytes; a `Vec<T>` clones every element, so a `Vec<String>` of n strings costs 1 + n allocations.
 - Explain at the memory level what a move copies (the 24-byte `ptr/len/cap` header of a `String` or `Vec`) and what it never copies (the heap buffer), why the source must become unusable (otherwise two owners free twice), and how this differs from C++ `std::move` and from Go, Java and Python reference sharing.
 - Read a function or method **signature as an ownership contract**: `T` or `self` takes, `&T` or `&self` borrows, `&mut T` or `&mut self` borrows exclusively, `-> T` hands ownership back; and choose the right one for an API.
 - Read **E0382** and **E0505** span by span (why it moved, where, the later use; or the live borrow around the move) and fix them without cloning: borrow at the move site, move the last use before the move, return ownership, derive `Copy` for plain data, clone last.
@@ -22,7 +22,7 @@ All sizes are for a 64-bit target. Everything measured here was run with rustc 1
 
 ### What a move is, as the Reference states it
 
-The Reference sorts expressions into **place expressions** (a memory location: a variable, a field, a dereference, an index) and **value expressions** (a value, such as a call result). When a place expression is used where a value is needed, the value is **copied if its type implements `Copy`**, and otherwise **moved** (if the type is `Sized`). After moving out of a local variable, "the location is deinitialized and cannot be read from again until it is reinitialized". That is the whole mechanism behind `let t = s; s = String::from("second");` compiling: the place `s` was empty, and assigning to an uninitialized place runs no destructor, because there is nothing to drop.
+The Reference sorts expressions into **place expressions** (a memory location: a variable, a field, a dereference, an index) and **value expressions** (a value, such as a call result). When a place expression is used where a value is needed, the value is **copied if its type implements `Copy`**, and otherwise **moved** (if the type is `Sized`). After moving out of a local variable, "the location is deinitialized and cannot be read from again until it is reinitialized". That is the whole mechanism behind `let t = s; s = String::from("second");` compiling: the place `s` was empty, and assigning to an uninitialized place runs no destructor, because there is nothing to drop. The contrast is assignment to a *live* place: `s = String::from("second");` while `s` still owns `"first"` drops `"first"` at once, before the new value takes its place (the Book, "Scope and Assignment"; measured in `examples.py` with a `Drop` that prints). The *Ferrocene Language Specification* states the same model in its terms: a variable "lacks a value or its value has been passed by move" is uninitialized, "a value shall have only one owner", and passing a move type "changes the owner of the value".
 
 Only some places may be moved out of: variables that are not currently borrowed, temporaries, fields of a place that can be moved out of and that do not implement `Drop`, and the result of dereferencing a `Box<T>` that can itself be moved out of (so `*b` moves the contents out of a box). Everything else (a `Vec` element behind an index, anything behind a reference) can only be borrowed or copied. Moving a field out of a type that implements `Drop`, and moving parts out with patterns (`match`, `let (a, b) = pair;`), belong to the later topic "Partial moves and destructuring as transfer".
 
@@ -36,6 +36,8 @@ Measured (Lab 1): when a 1,000,000-byte `Vec<u8>` is moved into a function, the 
 
 Two caveats the documentation itself makes. First, 24 bytes for `String` and `Vec<T>` is what the compiler produces today, not a language guarantee: the `size_of` documentation says "in general, the size of a type is not stable across compilations, but specific types such as primitives are". Second, `Box<T>` and `&T` are documented to be the same size as `usize` when `T` is `Sized`; for an unsized `T` they carry metadata (`size_of::<Box<[u8]>>()` is 16 on x86_64, measured). Where the copy of a large value lives is not promised either: on x86_64 a large by-value argument is passed as a pointer to a copy that the caller makes (measured), and an optimised build may skip the copy entirely (Lab 3).
 
+Returning a large value is the same story from the other side. The callee usually builds it directly in the slot the caller provides (measured, Lab 3: the address of the callee's local and of the caller's binding is the same), but nothing guarantees it, so builder-style APIs that return large structs by value rely on the optimiser, not on a rule. Boxing has the same catch: getting a big value *into* a `Box` is itself a move. `Box::new(x)` builds `x` first and then moves it to the heap, and in a debug build that passes through the stack (measured, Lab 5: `Box::new([7u8; 16_000_000])` overflows a 2 MiB stack at `-C opt-level=0` and runs at `-C opt-level=3`). For a big buffer, allocate on the heap directly: `vec![0u8; n].into_boxed_slice()`, then `try_into()` for a fixed-size `Box<[u8; N]>`.
+
 ### The borrow checker's view of a move
 
 RFC 2094 (non-lexical lifetimes) states the rule the compiler enforces: "values may not be mutated or moved while they are borrowed", and it adds that moves count as "deep writes". A borrow is live over the smallest region of the control-flow graph that covers its uses, which is why the E0505 fix in the reel is about the **last use** of the reference, not the end of the block. A value with a destructor that holds a borrow (a guard type with `Drop`) uses that borrow again when it is dropped, so for it the borrow lasts until the drop: measured, a `Guard<'a>(&'a [u8])` with `Drop` makes `ship(batch)` fail with E0505 "borrow might be used here, when `g` is dropped". "Last use" is the rule for plain references.
@@ -46,6 +48,7 @@ Conditional moves compile: moving in one branch and not the other is fine, as lo
 
 - `Copy` is a plain bitwise copy and cannot be overloaded. `Clone` is a supertrait of `Copy`, is always explicit (`x.clone()`), and may run arbitrary code and allocate.
 - A type can be `Copy` only if every field is. Deriving it adds a `Copy` bound on type parameters. A non-`Copy` field is E0204; a type with a destructor is E0184 ("`Copy` not allowed on types with destructors"). The reason is in the std docs: a type implementing `Drop` "is managing some resource besides its own `size_of::<T>` bytes".
+- `Copy` is opt-in. A struct of plain numbers is move-only until you derive it (measured: using it after `let b = a;` is E0382). The converse matters more: plain bits can still stand for unique ownership of something outside the value, such as a file-descriptor number, a slot index or a capability token, even with no `Drop` to forbid it. Such a type should usually *not* be `Copy`, because a copy would be a second owner of the same thing. That is the question the next topic, on RAII, is built around.
 - `&T` is `Copy` for any `T`. `&mut T` is neither `Copy` nor `Clone`: copying it would create an aliased mutable reference. So `let r2 = r;` **moves** a `&mut` (measured: using `r` afterwards is E0382), while an annotated `let r2: &mut String = r;` compiles, because the compiler inserts a reborrow (measured, `s` ends as `abc`). Reborrowing is taught in Chapter 2, "Aliasing XOR mutability".
 - `Copy` is part of a public type's API: removing it later breaks every caller who relied on implicit copies, and the std docs advise omitting it from a type that might gain a non-`Copy` field. "Generally speaking, if your type can implement `Copy`, it should" is the other half.
 - `clone` is not always deep. Cloning an `Rc` or `Arc` only increments a reference count and points at the same data (Chapter 4, "Box, Rc, and Arc ownership shapes"). `clone_from` can be overridden to reuse the destination's allocation instead of dropping it and allocating again.
@@ -54,9 +57,16 @@ Conditional moves compile: moving in one branch and not the other is fine, as lo
 
 - **Loops.** `for x in v` calls `IntoIterator::into_iter(v)`, so it consumes `v` (rustc's note, measured: "`into_iter` takes ownership of the receiver `self`, which moves `v`", with the help to iterate over `&v`). Moving an outer value inside a loop body is rejected with "value moved here, in previous iteration of loop".
 - **Method receivers.** A method taking `self` consumes its receiver (`into_bytes`, builders, state transitions).
-- **Operators.** `String + &str` consumes the left side and reuses its buffer; the right side is only borrowed.
-- **Closures.** A `move` closure captures by value. It is needed when the body only borrows but the closure must outlive the scope, as in `thread::spawn(move || data.len())`; without `move` that is E0373 (measured), and with it a later `data.len()` is E0382 "value moved into closure here". A closure whose body consumes a capture (`|| drop(data)`) takes it by value even without `move` (measured). A `Copy` capture is copied, so the original stays usable (measured: `let n = 5; let c = move || n + 1;` prints `6 5`). Which `Fn` trait a closure implements depends on what its body does, not how it captures: a body that moves a capture out is `FnOnce`, and calling it twice is E0382 with the note "closure cannot be invoked more than once because it moves the variable `name` out of its environment". Moving out of a capture in an `Fn` or `FnMut` closure is E0507.
+- **Operators.** `String + &str` consumes the left side and appends into its allocation, growing it with a reallocation when the capacity runs out (so the buffer can move); it never builds a second string. The right side is only borrowed. The Lab 2 row measures the favourable case, where the capacity is already there.
+- **Closures.** (Prerequisite: Book 13.1.) A `move` closure captures by value. It is needed when the body only borrows but the closure must outlive the scope it was made in, as when a function returns it: `fn len_fn() -> impl Fn() -> usize { let data = vec![1u8; 4]; move || data.len() }`. Without `move` that is E0373 "closure may outlive the current function, but it borrows `data`" (measured), and with `move` a later `data.len()` in the same scope is E0382 "value moved into closure here". The same reason, taken further, is why a spawned thread needs `move`: it may outlive its caller (Chapter 2, "Borrows across thread and task boundaries"). A closure whose body consumes a capture (`|| drop(data)`) takes it by value even without `move` (measured). A `Copy` capture is copied, so the original stays usable (measured: `let n = 5; let c = move || n + 1;` prints `6 5`). Which `Fn` trait a closure implements depends on what its body does, not how it captures: a body that moves a capture out is `FnOnce`, and calling it twice is E0382 with the note "closure cannot be invoked more than once because it moves the variable `name` out of its environment". Moving out of a capture in an `Fn` or `FnMut` closure is E0507.
+- **The two E0382 headers.** The header names what the *later* use does. `batch.len()` borrows through autoref, so the header says "borrow of moved value"; a second `ship(batch)` in the next loop iteration moves again, so it says "use of moved value". Both are the same rule (the value was already moved), and Lab 4 shows each.
 - **Indexing.** `v[i]` on a `Vec` is `*Index::index(&v, i)`: a place behind a reference. So `let s = v[0];` for a `Vec<String>` is E0507 "cannot move out of index of `Vec<String>`" (measured). Take ownership with `remove`, `swap_remove` (measured: same pointer, 0 allocations), `pop` or `into_iter`, or borrow with `&v[0]`. Moving out through a `&mut` with `mem::take`, `mem::replace` or `Option::take` belongs to "Partial moves and destructuring as transfer", as does the fact that `match` on a non-`Copy` value can move out of it.
+
+### Signatures in practice
+
+- **Prefer `&[u8]` to `&Vec<u8>`.** `&Vec<u8>` is the most common real-world mistake (Clippy's `ptr_arg` lint flags it). A `&[u8]` parameter accepts `&batch` for a `Vec` through deref coercion, and also arrays, boxed slices and sub-slices (measured: `sum(&[1u8; 4])`, `sum(&boxed)` and `sum(&v[1..3])` compile), and it removes a layer of indirection. A `&Vec<u8>` parameter rejects the array with E0308.
+- **A generic `T` can be a reference.** "`T` takes ownership" has an exception: `fn show<T: Debug>(x: T)` called as `show(&s)` instantiates `T = &String`, so the call only borrows `s` (measured: `s` is still usable). The signature alone does not tell you the callee owns something; the instantiation does.
+- **Flexible ownership.** An API can avoid forcing a clone on its callers by accepting either: `fn greet(n: impl Into<String>)` takes a `&str` (one allocation inside, only if needed) or a `String` (no copy); `AsRef<[u8]>` does the same for borrowed views. `Cow`, which defers the copy until a write, is the subject of Chapter 2, "Zero-copy parsing with borrowed views".
 
 ### C++, Go, Java and Python, precisely
 
@@ -122,7 +132,7 @@ fn snap() -> (usize, usize) {
 }
 ```
 
-Take a `snap()` before and after the operation and subtract. Measured (opt-level 0 and 3, the same each time; wrap values you do not otherwise use in `std::hint::black_box` so the optimiser cannot delete the work):
+Copy this harness as is: `unsafe` is Chapter 30 and `Ordering::Relaxed` is Chapter 7 of this domain, and neither is needed to read the numbers. Take a `snap()` before and after the operation and subtract. Measured (opt-level 0 and 3, the same each time; wrap values you do not otherwise use in `std::hint::black_box` so the optimiser cannot delete the work):
 
 | Operation | Allocations | Bytes |
 |---|---|---|
@@ -155,6 +165,8 @@ Compile with `rustc --edition 2024 --crate-type lib -C opt-level=3 --emit=asm bi
 - `pass_on` at `-C opt-level=3`: the `memcpy` with `$4096` is back, because `black_box` lets the value's address escape.
 - `pass_box` at either level: no `memcpy`; only the 8-byte pointer moves.
 
+Returning a large value (Lab 3 extra): in `fn make(at: &mut usize) -> Big { let b = Big { data: [7; 4096] }; *at = b.data.as_ptr() as usize; b }`, the address recorded inside `make` equals the address of the caller's binding at `-C opt-level=0` and `-C opt-level=3` (measured). The callee built the value in the caller's slot. That is an observation, not a guarantee.
+
 A large move may cost a 4,096-byte copy, and the optimiser removes it only when it can prove nobody observes the old address. The Rust Performance Book (a secondary source) adds that types larger than 128 bytes are copied with `memcpy` rather than inline code (when they are copied at all), and that DHAT's copy profiling finds the hot ones.
 
 ### Lab 4 · Break it on purpose
@@ -167,11 +179,45 @@ Compile each snippet (inside `fn main() { … }`, with `fn ship(batch: Vec<u8>) 
 | `let batch = vec![7u8; 4]; ship(batch); batch.len();` | ``error[E0382]: borrow of moved value: `batch` `` |
 | `for _ in 0..3 { ship(batch); }` | ``error[E0382]: use of moved value: `batch` `` |
 | `for s in v { … } v.len();` | ``error[E0382]: borrow of moved value: `v` `` |
-| `let h = thread::spawn(move \|\| data.len()); data.len();` | ``error[E0382]: borrow of moved value: `data` `` (label: value moved into closure here) |
+| `let f = move \|\| data.len(); data.len();` | ``error[E0382]: borrow of moved value: `data` `` (label: value moved into closure here) |
 | `let r = &mut s; let r2 = r; r2.push('b'); r.push('c');` | ``error[E0382]: borrow of moved value: `r` `` |
 | `let header = &batch[..4]; ship(batch); println!("{header:?}");` | ``error[E0505]: cannot move out of `batch` because it is borrowed`` |
 | `#[derive(Clone, Copy)] struct Fd(i32); impl Drop for Fd { … }` | ``error[E0184]: the trait `Copy` cannot be implemented for this type; the type has a destructor`` |
 | `let v = vec![String::from("a")]; let s = v[0];` | ``error[E0507]: cannot move out of index of `Vec<String>` `` |
+
+### Lab 5 · Put a number on the clone, and on the first move into a Box
+
+Time the clone from step 1 (compile with `-C opt-level=3`):
+
+```rust
+use std::hint::black_box;
+use std::time::Instant;
+#[inline(never)]
+fn ship(b: Vec<u8>) -> usize { b.len() }
+fn main() {
+    let batch = vec![7u8; 1_000_000];
+    let n = 2000;
+    let t = Instant::now();
+    for _ in 0..n { black_box(ship(black_box(batch.clone()))); }
+    println!("us per clone: {:.1}", t.elapsed().as_secs_f64() * 1e6 / n as f64);
+}
+```
+
+Measured, rustc 1.97, x86_64, 2,000 iterations: about 18 µs per clone on one machine and about 72 µs on another (two runs there: 74.3 and 72.1 µs). The figure is machine-dependent, so `examples.py` asserts only a loose bound (between 5 µs and 2 ms, which brackets any real memory bandwidth). A clone is an allocation plus a `memcpy` of 1,000,000 bytes, so it follows memory bandwidth, roughly 14 to 55 GB/s here. Back of the envelope: 10,000 batches a second × 72 µs is 0.72 of a core spent only on copying; at 18 µs it is 0.18.
+
+Then the first move into a box. Run this on a 2 MiB thread stack so the result does not depend on your shell's limit:
+
+```rust
+fn main() {
+    let h = std::thread::Builder::new().stack_size(2 << 20).spawn(|| {
+        let b = Box::new([7u8; 16_000_000]);
+        println!("{}", b.len());
+    }).unwrap();
+    h.join().unwrap();
+}
+```
+
+At `-C opt-level=0` it aborts with "has overflowed its stack"; at `-C opt-level=3` it prints `16000000`. Building the buffer on the heap first (`vec![7u8; 16_000_000].into_boxed_slice().try_into().unwrap()`) works at both levels. (The thread is only a way to fix the stack size; threads come later in this domain.)
 
 </section>
 
@@ -180,7 +226,9 @@ Compile each snippet (inside `fn main() { … }`, with `fn ship(batch: Vec<u8>) 
 ## In production
 
 - **Clone to silence the compiler.** On a hot path, `.clone()` is one allocation plus a full copy per call (measured: 1 allocation and 1,000,000 bytes for a 1,000,000-byte `Vec`). Find these by counting allocations in a test with a global allocator (Lab 2), or with a heap profiler. Also search for `to_vec()`, `to_owned()` and `to_string()`, which are explicit deep copies too.
-- **"Moves are free" for large types.** A 4,096-byte struct passed on by value is a `memcpy` in a debug build, and in an optimised build whenever its address has escaped (measured, Lab 3). The optimiser removes the copy only sometimes. Box large values you pass around (the Book, ch. 15.1: "only the small amount of pointer data is copied around on the stack"), or pass `&T`.
+- **What a clone costs in time.** One clone of a 1,000,000-byte `Vec<u8>` took roughly 18 to 72 µs depending on the machine (Lab 5; measure yours). At 10,000 batches a second that is between 0.18 and 0.72 of a core spent copying and nothing else, and it also adds 1,000,000 bytes of allocator and cache traffic per batch. Quote the per-batch time next to the byte count when you argue for a signature change.
+- **"Moves are free" for large types.** A 4,096-byte struct passed on by value is a `memcpy` in a debug build, and in an optimised build whenever its address has escaped (measured, Lab 3). The optimiser removes the copy only sometimes. Box large values you pass around (the Book, ch. 15.1: "only the small amount of pointer data is copied around on the stack"), or pass `&T`. Boxing caps the cost of later moves, but the first move into the box can still copy, and in a debug build can overflow the stack; for big buffers allocate on the heap directly (`vec![0u8; n].into_boxed_slice()`, then `try_into()` for a `Box<[u8; N]>`; Lab 5).
+- **A public record of this class of fix.** The Rust Performance Book (secondary) documents the same cost from the compiler's own work: types over 128 bytes are copied with `memcpy`, DHAT's copy profiling finds the hot ones, and boxing an outsized enum variant is its remedy. No public post-mortem of a clone-removal incident with a verifiable primary page was found while preparing this topic, and none is invented here (`coverage.json`, `gapReview`).
 - **Raw pointers into a moved value.** Holding a raw pointer, or an address registered with FFI, into a value and then moving that value: the address can change without notice (`std::pin`). Keep such values boxed or pinned.
 - **Deriving `Copy` on a public type.** If it later needs a heap field, removing `Copy` is a breaking change (the `Copy` docs).
 - **Habits from other languages.** Expecting a moved-from variable to be an empty but usable object (C++), or two structs to share one buffer by assignment (Go, Java, Python). In Rust the second needs a borrow or shared ownership (a later topic).
@@ -193,6 +241,7 @@ Compile each snippet (inside `fn main() { … }`, with `fn ship(batch: Vec<u8>) 
 ## The frontier
 
 - Rust has no move constructors, and no type is immovable by itself: a value can only be kept in place by putting it behind a pointer and pinning it (`Pin`, whose guarantee applies to `!Unpin` types). Self-referential data is handled by `Pin` and by the crates that Chapter 2's topic "Zero-copy parsing with borrowed views" discusses.
+- **Making cheap clones less noisy.** This topic's rule is that every non-`Copy` duplicate is spelled `.clone()`. Active work targets exactly the cheap, reference-counted case, and as of 11 October 2026 none of it is stable. RFC 3680 proposed `x.use` and `use ||` closures with a `UseCloned` trait, and that is implemented on nightly (feature `ergonomic_clones`, tracking issue 132290): `UseCloned` marks types whose clone is O(1) and allocation-free. The 2025H2 project goal proposed an alternative RFC that would make such clones automatic. The 2026 goal, status "Accepted", chose a different direction: a `Share` trait (nightly feature `share_trait`) for types whose clone "creates another alias to the same logical resource", plus `move($expr)` in closures, "while still retaining Rust's traditional guarantee that all ref counts are visible". What stays true under all of these: `Vec`, `String` and `Box` are not `Share` and cannot be `UseCloned`, so duplicating owned data is still a visible `.clone()`; what may change is the spelling for `Rc`, `Arc` and channel handles.
 - The borrow checker still rejects some sound programs; the limitations are listed in the appendix of RFC 2094, and the next-generation checker is the subject of Chapter 2's "NLL limits and the Polonius borrow checker".
 
 </section>
@@ -207,13 +256,13 @@ Answer first, then check. Each was compiled and run in `examples.py`.
 
 **2. Count the allocations.** `let a = vec![0u8; 1_000_000]; let b = a; let c = b.clone(); let d = c;`: how many after line 1? *One, of 1,000,000 bytes*: the two moves allocate nothing.
 
-**3. Choose the fix.** `Config { retries: u32, timeout_ms: u32, batch: u32 }` is passed by value in a loop and E0382 fires. *Derive `Clone, Copy`*: 12 bytes of plain numbers that own nothing. If it is a public type that may grow a `String`, take `&Config` instead.
+**3. Choose the fix.** `Point3 { x: f32, y: f32, z: f32 }` is passed by value to `norm(p)` in a loop and E0382 fires. *Derive `Clone, Copy`*: 12 bytes of plain numbers that own nothing and will not grow. For a config struct that may gain a `String` later, take `&Config` instead.
 
 **4. Loops.** `for s in v { … } v.len()` with `v: Vec<String>`. *E0382*; iterate `&v` (it then prints `a`, `b`, `2` in the example).
 
 **5. Exclusive references.** `let r = &mut s; let r2 = r; r2.push('b'); r.push('c');`. *E0382*: a `&mut` is not `Copy`, so `let r2 = r;` moves it. With `let r2: &mut String = r;` it compiles and `s` is `abc`: a reborrow (Chapter 2).
 
-**6. Closures.** `let h = std::thread::spawn(move || data.len());` then `data.len()`. *E0382*, "value moved into closure here": a `move` closure took the `Vec`.
+**6. Closures.** `let f = move || data.len();` then `data.len()`. *E0382*, "value moved into closure here": a `move` closure took the `Vec`. (Returned without `move`, the same closure is E0373.)
 
 **7. Estimate.** Passing a `[u8; 65536]` by value through four nested calls can copy up to 4 × 65,536 = 262,144 bytes; a `Box<[u8; 65536]>`, 4 × 8 = 32. Say "up to": the optimiser may remove copies.
 
@@ -226,6 +275,8 @@ Answer first, then check. Each was compiled and run in `examples.py`.
 Last verified against these sources: 11 October 2026. Examples executed with rustc 1.97.0 (edition 2024) and g++ 13 on x86_64 Linux. Expert sign-off: pending.
 
 - *The Rust Programming Language* (online edition): [4.1 What is Ownership?](https://doc.rust-lang.org/book/ch04-01-what-is-ownership.html), [4.2 References and Borrowing](https://doc.rust-lang.org/book/ch04-02-references-and-borrowing.html), [5.3 Methods](https://doc.rust-lang.org/book/ch05-03-method-syntax.html), [13.1 Closures](https://doc.rust-lang.org/book/ch13-01-closures.html), [15.1 Using Box&lt;T&gt;](https://doc.rust-lang.org/book/ch15-01-box.html).
+- *Ferrocene Language Specification* (FLS): [15. Ownership and Destruction](https://rust-lang.github.io/fls/ownership-and-deconstruction.html). *Rust for Rustaceans* (Gjengset), ch. 1, is the other canonical reference for this chapter; it is not freely available, so it was not used (see `SOURCES.md`).
+- Nightly std docs, read 11 October 2026: [`UseCloned`](https://doc.rust-lang.org/nightly/std/clone/trait.UseCloned.html), [`Share`](https://doc.rust-lang.org/nightly/std/clone/trait.Share.html). Rust Project Goals: [2025H2 ergonomic ref-counting](https://goals.rust-lang.org/2025h2/ergonomic-rc.html), [2026 ergonomic ref-counting](https://goals.rust-lang.org/2026/ergonomic-rc.html).
 - *The Rust Reference*: [Expressions](https://doc.rust-lang.org/reference/expressions.html), [Destructors](https://doc.rust-lang.org/reference/destructors.html), [Loop expressions](https://doc.rust-lang.org/reference/expressions/loop-expr.html), [Array and index expressions](https://doc.rust-lang.org/reference/expressions/array-expr.html).
 - Standard library 1.99.0: [`Copy`](https://doc.rust-lang.org/std/marker/trait.Copy.html), [`Clone`](https://doc.rust-lang.org/std/clone/trait.Clone.html), [`String`](https://doc.rust-lang.org/std/string/struct.String.html), [`std::pin`](https://doc.rust-lang.org/std/pin/index.html), [`size_of`](https://doc.rust-lang.org/std/mem/fn.size_of.html), [`std::alloc`](https://doc.rust-lang.org/std/alloc/index.html), [primitive `reference`](https://doc.rust-lang.org/std/primitive.reference.html), [keyword `move`](https://doc.rust-lang.org/std/keyword.move.html).
 - Error index: [E0382](https://doc.rust-lang.org/error_codes/E0382.html), [E0505](https://doc.rust-lang.org/error_codes/E0505.html), [E0507](https://doc.rust-lang.org/error_codes/E0507.html), [E0184](https://doc.rust-lang.org/error_codes/E0184.html).

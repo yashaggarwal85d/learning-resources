@@ -80,7 +80,7 @@ export const TOPICS: TopicMeta[] = [
     verified: '2026-10-11',
     introduces: ['ownership', 'move-semantics', 'deinitialized-place', 'copy-trait', 'clone-cost', 'move-cost', 'box-ownership', 'ownership-signatures', 'e0382', 'e0505'],
     uses: [],
-    declared: ['programming', 'rust-book-basics', 'stack-and-heap', 'references-and-borrowing', 'slices', 'structs-traits-generics'],
+    declared: ['programming', 'rust-book-basics', 'stack-and-heap', 'references-and-borrowing', 'slices', 'structs-traits-generics', 'closures'],
     bridge: "Rust Systems Engineering starts here. You've read the Book through chapter 10; now ownership becomes a design tool, starting with its smallest unit: one value, one owner, one destruction.",
     handoff: 'One owner decides who destroys a value. Next: exactly when that happens: drop order, temporaries, and why leaking memory is still safe.',
   },

@@ -118,6 +118,27 @@ What changed:
 - The C++ use of `a` after `std::move` compiles with no warning under g++ `-Wall -Wextra -Werror`.
 - The 24-byte header lands at a new address with and without `#[inline(never)]` at opt 0 and 3. This is an observation, and Lab 1 now says so.
 
+## Claims added by the review fixes (2026-10-11, REVIEW.md)
+
+All M rows are asserted in `examples.py` (rustc 1.97.0) unless noted; V rows are quotes in `SOURCES.md`, checked by `scripts/sources.mjs check`.
+
+| Claim | Verdict | Evidence |
+|---|---|---|
+| `s = D("second")` on a live `s` drops `"first"` before the new value is stored; on a moved-out `s` nothing is dropped | M, V | `assign_live`, `assign_moved`; Book 4.1 "Rust will call drop and free the original value's memory immediately" |
+| FLS 15.1, 15.2, 15.5: one owner; passed by move means uninitialized; move types change the owner | V | `SOURCES.md`, FLS section |
+| `Vec<String>` of 3 clones with 1 + 3 = 4 allocations; `Vec<u8>` with 1 | M | `e16`, opt 0 and 3 |
+| `String + &str` can reallocate (the buffer can move) | M (no pointer assert: allocator-dependent) | review measured `same ptr false`; `e17` checks the length only |
+| `fn len_fn() -> impl Fn() -> usize { ...; move \|\| data.len() }` compiles; without `move` E0373 "closure may outlive the current function, but it borrows `data`"; `let f = move \|\| data.len(); data.len()` is E0382 "value moved into closure here" | M | `e20_len_fn`, `e20_len_fn_nomove`, `e20_move_closure` |
+| `&batch` coerces to `&[u8]`; `&[u8]` accepts arrays, boxed slices, sub-slices; `&Vec<u8>` rejects an array (E0308) | M | `accepts`, `vec_ref`, `coerce` |
+| A generic `T` instantiated as `&String` only borrows; `impl Into<String>` takes `&str` or `String` | M | `accepts` |
+| Clone of 1,000,000 bytes takes tens of microseconds; 5 us to 2 ms is a loose bound only | M (bound), measured here 16.8-20.1 us, review machine 72 us | `timing`; the text states both machines and never asserts a single figure |
+| `Box::new([7u8; 16_000_000])` overflows a 2 MiB stack at opt-level 0, runs at 3; heap-first `into_boxed_slice().try_into()` works at both | M | `boxnew`, `boxnew3`, `boxheap` |
+| A large return value is built in the caller's slot (same address) at opt 0 and 3 | M, observation not guarantee | `ret` |
+| A struct of plain numbers is move-only until `Copy` is derived | M | `opt_in`, `opt_in_use` |
+| `Vec<u8>` holding 1,000,000 elements is 24 bytes | M | `e11` |
+| Frontier: `UseCloned` (`ergonomic_clones` #132290) and `Share` (`share_trait` #156756) are nightly-only as of nightly 1.101.0 (2026-10-10); 2026 goal "Accepted": `Share` + `move($expr)`, "all ref counts are visible" | V | nightly docs and goal pages, fetched 2026-10-11. RFC 3680's PR page returned HTTP 403 through the proxy, so its state is not claimed beyond what the goal pages say |
+| Drop-flag promise ("next topic") replaced by a pointer to this topic's Deep dive | C | the RAII syllabus line does not mention drop flags; the expert item is now placed here |
+
 ## Open items
 
 1. **Diagnostics are checked on 1.97 only.** Stable is 1.99. CI pins 1.97.0, so the asserts hold. Re-check the E0382 note text and the E0505 `binding … declared here` label before bumping the pin; these strings have changed between releases before.

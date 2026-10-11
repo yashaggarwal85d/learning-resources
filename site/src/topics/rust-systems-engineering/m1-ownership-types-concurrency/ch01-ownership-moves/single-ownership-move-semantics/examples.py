@@ -354,13 +354,16 @@ fn main() {
     let at = b.as_ptr();
     let moved = take_box(black_box(b));
     println!("same_ptr={}", at == moved);
+    let v = vec![1u8; 1_000_000];
+    println!("vec_len={} vec_size={}", v.len(), size_of_val(&v));
 }
 '''
 for opt in (0, 3):
     r = kv(run_rs('e11', e11, opt))
+    assert r['vec_len'] == '1000000' and r['vec_size'] == '24', r
     assert (r['a16'], r['a4096'], r['a65536'], r['boxed'], r['unsized'], r['same_ptr']) == ('16', '4096', '65536', '8', '16', 'true'), r
 assert log2(8) == 3 and log2(65536) == 16 and log2(16) == 4 and log2(4096) == 12
-assert [round(420 * log2(b) / 16) for b in (16, 4096, 65536, 8)] == [105, 315, 420, 79]  # bar widths in the drawing
+assert [round(420 * log2(b) / 16) for b in (16, 4096, 65536, 8, 24)] == [105, 315, 420, 79, 120]  # bar widths in the drawing
 # 4 * 65_536 bytes through four nested calls (Prove it 7)
 assert 4 * 65_536 == 262_144 and 4 * 8 == 32
 
@@ -495,13 +498,15 @@ for opt in (0, 3):
     assert r['line1'] == '1/1000000' and r['lines2to4'] == '1/1000000', r
 run_rs('chain_verbatim', main_body('let a = vec![0u8; 1_000_000];\nlet b = a;\nlet c = b.clone();\nlet d = c;'))
 
-# E19 · Prove it 3 (step 22): derive Copy for a struct of plain numbers.
-cfg = 'struct Config {\n    retries: u32,\n    timeout_ms: u32,\n    batch: u32,\n}\n'
-proc = 'fn process(cfg: Config) -> u32 { cfg.retries + cfg.timeout_ms + cfg.batch }\n'
-cfg_main = 'let cfg = Config { retries: 3, timeout_ms: 500, batch: 64 };\nfor _ in 0..3 { process(cfg); }  // E0382'
-fails('cfg_bad', cfg + proc + main_body(cfg_main), 'error[E0382]: use of moved value: `cfg`', 'value moved here, in previous iteration of loop')
-out = run_rs('cfg_ok', '#[derive(Clone, Copy)]\n' + cfg + proc + main_body(cfg_main + '\nprintln!("{}", size_of::<Config>());'))
+# E19 · Prove it 3 (step 22): derive Copy for a struct of plain numbers that will not grow.
+cfg = 'struct Point3 {\n    x: f32,\n    y: f32,\n    z: f32,\n}\n'
+proc = 'fn norm(p: Point3) -> f32 { p.x + p.y + p.z }\n'
+cfg_main = 'let p = Point3 { x: 1.0, y: 2.0, z: 3.0 };\nfor _ in 0..3 { norm(p); }  // E0382'
+fails('cfg_bad', cfg + proc + main_body(cfg_main), 'error[E0382]: use of moved value: `p`', 'value moved here, in previous iteration of loop')
+out = run_rs('cfg_ok', '#[derive(Clone, Copy)]\n' + cfg + proc + main_body(cfg_main + '\nprintln!("{}", size_of::<Point3>());'))
 assert out == '12\n'
+# The caveat in the explanation: a config struct that may gain a String takes &Config (compiles, and the caller keeps it).
+assert run_rs('cfg_ref', 'struct Config {\n    retries: u32,\n    endpoint: String,\n}\nfn process(cfg: &Config) -> usize { cfg.endpoint.len() + cfg.retries as usize }\n' + main_body('let cfg = Config { retries: 3, endpoint: String::from("db") };\nfor _ in 0..3 { process(&cfg); }\nprintln!("{}", process(&cfg));')) == '5\n'
 
 # E20 · Deep dive extras.
 fails('e0507', main_body('let v = vec![String::from("a"), String::from("b")];\nlet s = v[0];'), 'error[E0507]: cannot move out of index of `Vec<String>`')
@@ -518,15 +523,138 @@ r = kv(run_rs('e20_swap', e20))
 assert r['swap_remove_same_ptr'] == 'true' and r['swap_remove'] == '0/0', r
 fails('e20_mutref', main_body('let mut s = String::new();\nlet r = &mut s;\nlet r2 = r;\nr2.push(\'b\');\nr.push(\'c\');'), 'error[E0382]')
 assert run_rs('e20_reborrow', main_body("let mut s = String::from(\"a\");\nlet r = &mut s;\nlet r2: &mut String = r;\nr2.push('b');\nr.push('c');\nprintln!(\"{s}\");")) == 'abc\n'
-fails('e20_move_closure', main_body('let data = vec![1, 2, 3];\nlet h = std::thread::spawn(move || data.len());\nprintln!("{}", data.len());\nh.join().unwrap();'), 'value moved into closure here')
-fails('e20_nomove', main_body('let data = vec![1, 2, 3];\nlet h = std::thread::spawn(|| data.len());\nh.join().unwrap();'), 'error[E0373]')
+# Closures (Prove it 6, Lab 4): returning a closure that owns its capture needs `move`; the capture is then moved.
+assert run_rs('e20_len_fn', 'fn len_fn() -> impl Fn() -> usize {\n    let data = vec![1u8; 4];\n    move || data.len()\n}\n\nfn main() {\n    println!("{}", len_fn()());\n}\n') == '4\n'
+fails('e20_len_fn_nomove', 'fn len_fn() -> impl Fn() -> usize {\n    let data = vec![1u8; 4];\n    || data.len()\n}\nfn main() {}\n', 'error[E0373]: closure may outlive the current function, but it borrows `data`')
+fails('e20_move_closure', main_body('let data = vec![1u8; 4];\nlet f = move || data.len();\nprintln!("{}", data.len());\nf();'), 'error[E0382]: borrow of moved value: `data`', 'value moved into closure here')
 fails('e20_consume', main_body('let data = vec![1, 2, 3];\nlet c = || drop(data);\nc();\nprintln!("{}", data.len());'), 'value moved into closure here')
 assert run_rs('e20_copy_capture', main_body('let n = 5;\nlet c = move || n + 1;\nprintln!("{} {}", c(), n);')) == '6 5\n'
 fails('e20_fnonce', main_body('let name = String::from("batch-7");\nlet consume = move || name;\nlet a = consume();\nlet b = consume();'),
       'error[E0382]: use of moved value: `consume`',
       'closure cannot be invoked more than once because it moves the variable `name` out of its environment')
 
+# ---------------------------------------------------------------------------------------------------------------
+# Review fixes (REVIEW.md).
+# 11 · assigning to a LIVE place drops the old value at once (Book 4.1 "Scope and Assignment"); to a moved-out place, nothing.
+dropd = 'struct D(&\'static str);\nimpl Drop for D {\n    fn drop(&mut self) {\n        println!("drop {}", self.0);\n    }\n}\n\n'
+live = 'let mut s = D("first");\nprintln!("assigning");\ns = D("second");\nprintln!("assigned {}", s.0);'
+assert run_rs('assign_live', main_body(live, '#![allow(unused_assignments)]\n' + dropd)) == 'assigning\ndrop first\nassigned second\ndrop second\n'
+moved = 'let mut s = D("first");\nlet t = s;\nprintln!("assigning");\ns = D("second");\nprintln!("assigned {} {}", s.0, t.0);'
+assert run_rs('assign_moved', main_body(moved, dropd)) == 'assigning\nassigned second first\ndrop first\ndrop second\n'
+
+# 8 · the time cost of the clone: machine-dependent, so only a loose bound is asserted (measured here and by the reviewer:
+# about 20 and 70 microseconds per 1,000,000-byte clone). A clone is an allocation plus a memcpy, so it cannot beat memory bandwidth.
+timing = """use std::hint::black_box;
+use std::time::Instant;
+#[inline(never)]
+fn ship(b: Vec<u8>) -> usize { b.len() }
+fn main() {
+    let batch = vec![7u8; 1_000_000];
+    let n = 2000;
+    let t = Instant::now();
+    for _ in 0..n { black_box(ship(black_box(batch.clone()))); }
+    println!("us={:.1}", t.elapsed().as_secs_f64() * 1e6 / n as f64);
+}
+"""
+us = min(float(kv(run_rs('timing', timing, 3))['us']) for _ in range(3))
+assert 5 < us < 2000, us  # 1,000,000 bytes in under 5 us would be 200 GB/s; over 2 ms would be 0.5 GB/s
+print(f'clone of 1,000,000 bytes: {us:.1f} us on this machine (not asserted beyond 5..2000)')
+# The back-of-envelope in the text: 10,000 batches per second at 72 us is 0.72 of a core; at 20 us it is 0.2.
+assert round(10_000 * 72e-6, 2) == 0.72 and round(10_000 * 20e-6, 2) == 0.2
+
+# 9 · getting a big value into a Box is itself a move: in a debug build `Box::new([7u8; 16_000_000])` builds the array on the
+# stack first (run on a 2 MiB stack thread so the result does not depend on the machine's stack limit); the optimised build does not.
+bx = """fn main() {
+    let h = std::thread::Builder::new().stack_size(2 << 20).spawn(|| {
+        let b = Box::new([7u8; 16_000_000]);
+        println!("{}", b.len());
+    }).unwrap();
+    h.join().unwrap();
+}
+"""
+compile_rs('boxnew', bx, 0)
+r = subprocess.run([os.path.join(WD, 'boxnew')], capture_output=True, text=True)
+assert r.returncode != 0 and 'overflowed its stack' in r.stderr, r
+assert run_rs('boxnew3', bx, 3) == '16000000\n'
+heap_first = """fn main() {
+    let b: Box<[u8; 16_000_000]> = vec![7u8; 16_000_000].into_boxed_slice().try_into().unwrap();
+    println!("{}", b.len());
+}
+"""
+for opt in (0, 3):
+    assert run_rs('boxheap', heap_first, opt) == '16000000\n'
+
+# 10 · returning a large value: observed, not guaranteed. The callee builds it in the slot the caller provides (same address).
+ret = """pub struct Big { pub data: [u8; 4096] }
+#[inline(never)]
+fn make(at: &mut usize) -> Big {
+    let b = Big { data: [7; 4096] };
+    *at = b.data.as_ptr() as usize;
+    b
+}
+fn main() {
+    let mut at = 0;
+    let b = make(&mut at);
+    println!("{}", at == b.data.as_ptr() as usize);
+}
+"""
+for opt in (0, 3):
+    assert run_rs('ret', ret, opt) == 'true\n'
+
+# 14 · signature contracts: &[u8] accepts arrays, boxed slices and sub-slices; &Vec<u8> accepts only a Vec.
+accepts = """fn sum(b: &[u8]) -> usize { b.len() }
+fn greet(n: impl Into<String>) -> usize { n.into().len() }
+fn show<T: std::fmt::Debug>(x: T) -> usize { format!("{x:?}").len() }
+fn main() {
+    let bx: Box<[u8]> = vec![1, 2, 3].into_boxed_slice();
+    println!("{} {} {}", sum(&[1u8; 4]), sum(&bx), sum(&vec![1u8; 5][1..3]));
+    println!("{} {}", greet("hi"), greet(String::from("hey")));
+    let s = String::from("abc");
+    println!("{} {}", show(&s), s.len());
+}
+"""
+assert run_rs('accepts', accepts) == '4 3 2\n2 3\n5 3\n'
+fails('vec_ref', 'fn sumv(b: &Vec<u8>) -> usize { b.len() }\nfn main() { println!("{}", sumv(&[1u8; 4])); }\n', 'error[E0308]: mismatched types')
+
+# 16 · Vec::clone clones every element: a Vec<String> of 3 costs 1 + 3 allocations; a Vec<u8> costs 1.
+e16 = COUNT + """
+fn main() {
+    let v = vec![String::from("a"), String::from("b"), String::from("c")];
+    let a = snap();
+    let w = black_box(v.clone());
+    println!("vec_string={}", since(a));
+    let u = vec![1u8, 2, 3];
+    let a = snap();
+    let x = black_box(u.clone());
+    println!("vec_u8={}", since(a));
+    black_box((&w, &x));
+}
+"""
+for opt in (0, 3):
+    r = kv(run_rs('e16', e16, opt))
+    assert r['vec_string'].split('/')[0] == '4' and r['vec_u8'] == '1/3', r
+
+# 17 · `String + &str` appends into the left operand's allocation and, when capacity runs out, grows (reallocates) it.
+e17 = COUNT + """
+fn main() {
+    let s = String::from("hello");
+    let p = s.as_ptr();
+    let pad = black_box(vec![0u8; 64]);
+    let t = s + &"x".repeat(4096);
+    println!("same_ptr={} len={}", p == t.as_ptr(), t.len());
+    black_box(pad);
+}
+"""
+assert kv(run_rs('e17', e17, 0))['len'] == '4101'
+
+# 19 · plain bits can still stand for unique ownership; a struct of numbers is move-only until Copy is derived.
+assert run_rs('opt_in', 'struct P { x: i32 }\nfn main() {\n    let a = P { x: 1 };\n    let b = a;\n    println!("{}", b.x);\n}\n') == '1\n'
+fails('opt_in_use', 'struct P { x: i32 }\nfn main() {\n    let a = P { x: 1 };\n    let b = a;\n    println!("{} {}", a.x, b.x);\n}\n', 'error[E0382]')
+
+# 4 · deref coercion: &Vec<u8> is accepted where &[u8] is expected.
+assert run_rs('coerce', 'fn peek(b: &[u8]) -> usize { b.len() }\nfn main() {\n    let batch = vec![7u8; 4];\n    println!("{}", peek(&batch));\n}\n') == '4\n'
+
 # Prove it 4: for-in consumes the Vec (E16 above). Prove it 5: &mut is not Copy (E20 above). Prove it 6: move closure (E20 above).
 
 print(f'ok: {ver}; move 24-byte header, 0 allocations; clone 1 allocation of 1,000,000 bytes; Big(4096) moves to a new address; '
-      f'C++ 2 destructors vs Rust 1 drop; Config is 12 bytes')
+      f'C++ 2 destructors vs Rust 1 drop; Point3 is 12 bytes')

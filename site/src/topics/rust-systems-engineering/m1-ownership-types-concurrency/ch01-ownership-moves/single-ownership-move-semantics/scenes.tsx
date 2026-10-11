@@ -253,6 +253,8 @@ export function Proof({ t, portrait }: StepCtx) {
   );
 }
 
+// On a phone the question frame shows the code alone: the drawing before the answer is only a few unlabelled marks, and beside a code panel it is
+// a sliver. It appears, full size, once the learner has answered (the code leaves, as in the other predict steps).
 // ── 5 · Can a moved-out variable come back? (predict) ─────────────────────────────────────────────────────────
 export function Reinit({ t, answer, portrait }: StepCtx) {
   const ans = answer !== null;
@@ -268,24 +270,26 @@ export function Reinit({ t, answer, portrait }: StepCtx) {
       {!(portrait && ans) && (
         <Code title="reinit.rs" t={t} end={1.0} lines={['let mut s = String::from("first");', 'let t = s;', 's = String::from("second");', 'println!("{s} {t}");']} />
       )}
-      <Svg label="The place s is live after line 1, deinitialized after line 2, and live again after line 3; the program prints second first" h={200} fill>
-        <T x={30} y={68} s={15} f={C.crema} w={600}>s:</T>
-        {[0, 1, 2].map((i) => (
-          <g key={i}>
-            <rect x={xs[i]} y={40} width={150} height={44} rx={10} fill="none" stroke={C.mocha} opacity={ans ? 0 : fa(t, 1.0)} />
-            <T x={xs[i] + 75} y={108} s={13} a="middle" f={C.taupe} o={fa(t, 1.0)}>{`line ${i + 1}`}</T>
+      {!(portrait && !ans) && (
+        <Svg label="The place s is live after line 1, deinitialized after line 2, and live again after line 3; the program prints second first" h={200} fill>
+          <T x={30} y={68} s={15} f={C.crema} w={600}>s:</T>
+          {[0, 1, 2].map((i) => (
+            <g key={i}>
+              <rect x={xs[i]} y={40} width={150} height={44} rx={10} fill="none" stroke={C.mocha} opacity={ans ? 0 : fa(t, 1.0)} />
+              <T x={xs[i] + 75} y={108} s={13} a="middle" f={C.taupe} o={fa(t, 1.0)}>{`line ${i + 1}`}</T>
+            </g>
+          ))}
+          <g style={rv(ans)}>
+            {box(0, true, '"first"')}
+            {box(1, false, 'deinitialized')}
+            {box(2, true, '"second"')}
           </g>
-        ))}
-        <g style={rv(ans)}>
-          {box(0, true, '"first"')}
-          {box(1, false, 'deinitialized')}
-          {box(2, true, '"second"')}
-        </g>
-        <g style={rv(ans, 0.2)}>
-          <T x={235} y={150} s={15} f={C.crema}>{`t: "first"`}</T>
-          <T x={300} y={188} s={16} a="middle" f={C.caramel} w={600}>prints: second first</T>
-        </g>
-      </Svg>
+          <g style={rv(ans, 0.2)}>
+            <T x={235} y={150} s={15} f={C.crema}>{`t: "first"`}</T>
+            <T x={300} y={188} s={16} a="middle" f={C.caramel} w={600}>prints: second first</T>
+          </g>
+        </Svg>
+      )}
     </Stack>
   );
 }
@@ -584,12 +588,33 @@ const SIZES = [
   { label: '[u8; 4096]', bytes: 4096, why: 'the whole array is copied' },
   { label: '[u8; 65536]', bytes: 65536, why: 'the whole array is copied' },
   { label: 'Box<[u8; 65536]>', bytes: 8, why: '8-byte pointer; the 65,536 bytes stay on the heap' },
+  { label: 'Vec<u8> (1,000,000)', bytes: 24, why: 'header only; the 1,000,000 bytes stay on the heap' },
 ];
 export function SizeChooser({ t }: StepCtx) {
   const [sel, setSel] = useState(1);
+  // The chips sit below the drawing and are not wrapped in a [data-interactive] container: the player ignores presses on a
+  // data-interactive element, so a container that is wide and tall would swallow a swipe that starts on it. Each chip is a
+  // <button>, which the player already ignores, and nothing else here handles pointer events.
   return (
     <Stack>
-      <div data-interactive className="flex cursor-auto flex-wrap justify-center gap-2 px-2">
+      <Svg label="Bytes one move copies equals the size of the type: 16, 4096 or 65536 for arrays, 8 for a Box and 24 for a Vec, however big their contents" h={350} fill>
+        {SIZES.map((s, i) => {
+          const y = 28 + i * 56;
+          const w = (420 * Math.log2(s.bytes)) / 16;
+          const k = easeOut(seg(t, 0.4 + i * 0.4, 1.0 + i * 0.4));
+          const on = i === sel;
+          return (
+            <g key={s.label}>
+              <T x={24} y={y} s={14} f={on ? C.crema : C.latte} w={on ? 700 : 500}>{s.label}</T>
+              <rect x={24} y={y + 8} width={Math.max(2, w * k)} height={20} rx={6} fill={on ? C.caramel : C.mocha} />
+              <T x={24 + w * k + 12} y={y + 24} s={15} f={C.crema} o={k > 0.3 ? 1 : 0}>{fmt(s.bytes)}</T>
+            </g>
+          );
+        })}
+        <T x={24} y={312} s={13} f={C.taupe} o={fa(t, 0, 0.4)}>bytes one move copies = size_of::&lt;T&gt;() (log scale)</T>
+        <T x={24} y={338} s={13} f={C.crema} o={fa(t, 3.0, 0.6)}>{SIZES[sel].why}</T>
+      </Svg>
+      <div className="flex flex-wrap justify-center gap-2 px-2">
         {SIZES.map((s, i) => (
           <button
             key={s.label}
@@ -601,23 +626,6 @@ export function SizeChooser({ t }: StepCtx) {
           </button>
         ))}
       </div>
-      <Svg label="Bytes one move copies equals the size of the type: 16, 4096 or 65536 for arrays, but only 8 for a Box, however big its contents" h={380} fill>
-        {SIZES.map((s, i) => {
-          const y = 36 + i * 70;
-          const w = (420 * Math.log2(s.bytes)) / 16;
-          const k = easeOut(seg(t, 0.4 + i * 0.5, 1.0 + i * 0.5));
-          const on = i === sel;
-          return (
-            <g key={s.label}>
-              <T x={24} y={y} s={14} f={on ? C.crema : C.latte} w={on ? 700 : 500}>{s.label}</T>
-              <rect x={24} y={y + 10} width={Math.max(2, w * k)} height={22} rx={6} fill={on ? C.caramel : C.mocha} />
-              <T x={24 + w * k + 12} y={y + 27} s={15} f={C.crema} o={k > 0.3 ? 1 : 0}>{fmt(s.bytes)}</T>
-            </g>
-          );
-        })}
-        <T x={24} y={322} s={13} f={C.taupe} o={fa(t, 0, 0.4)}>bytes one move copies = size_of::&lt;T&gt;() (log scale)</T>
-        <T x={24} y={354} s={13} f={C.crema} o={fa(t, 3.0, 0.6)}>{SIZES[sel].why}</T>
-      </Svg>
     </Stack>
   );
 }
@@ -874,25 +882,27 @@ export function LoopMove({ t, answer, portrait }: StepCtx) {
   return (
     <Stack>
       {!(portrait && ans) && <Code title="loop.rs" t={t} end={1.0} lines={['let batch = vec![7u8; 4];', 'for _ in 0..3 {', '    ship(batch);', '}']} />}
-      <Svg label="The loop comes back to ship(batch) a second time with batch already moved, so it is rejected at compile time" h={250} fill>
-        <ellipse cx={300} cy={80} rx={140} ry={50} fill="none" stroke={C.mocha} strokeWidth={2} />
-        {ticks.map((k, i) => (
-          <g key={i} opacity={fa(t, 0.2 + i * 0.2, 0.3)}>
-            <circle cx={k.x} cy={k.y} r={5} fill={C.latte} />
-            <T x={k.lx} y={k.ly} s={13} a="middle" f={C.taupe}>{String(i + 1)}</T>
+      {!(portrait && !ans) && (
+        <Svg label="The loop comes back to ship(batch) a second time with batch already moved, so it is rejected at compile time" h={250} fill>
+          <ellipse cx={300} cy={80} rx={140} ry={50} fill="none" stroke={C.mocha} strokeWidth={2} />
+          {ticks.map((k, i) => (
+            <g key={i} opacity={fa(t, 0.2 + i * 0.2, 0.3)}>
+              <circle cx={k.x} cy={k.y} r={5} fill={C.latte} />
+              <T x={k.lx} y={k.ly} s={13} a="middle" f={C.taupe}>{String(i + 1)}</T>
+            </g>
+          ))}
+          {!ans && <Token x={270} y={46} o={fa(t, 0.6, 0.4)} />}
+          <g style={rv(ans)}>
+            <rect x={344} y={12} width={70} height={28} rx={8} fill="none" stroke={C.latte} />
+            <T x={379} y={31} s={13} a="middle" f={C.crema}>ship</T>
+            <circle cx={421} cy={105} r={22} fill={C.cherry} opacity={0.4} />
+            <rect x={391} y={90} width={60} height={30} rx={7} fill="none" stroke={C.taupe} strokeDasharray="5 4" />
+            <T x={300} y={168} s={13} a="middle" f={C.latte}>inside of this loop</T>
+            <T x={300} y={192} s={13} a="middle" f={C.cherryText}>value moved here,</T>
+            <T x={300} y={212} s={13} a="middle" f={C.cherryText}>in previous iteration of loop</T>
           </g>
-        ))}
-        {!ans && <Token x={270} y={46} o={fa(t, 0.6, 0.4)} />}
-        <g style={rv(ans)}>
-          <rect x={344} y={12} width={70} height={28} rx={8} fill="none" stroke={C.latte} />
-          <T x={379} y={31} s={13} a="middle" f={C.crema}>ship</T>
-          <circle cx={421} cy={105} r={22} fill={C.cherry} opacity={0.4} />
-          <rect x={391} y={90} width={60} height={30} rx={7} fill="none" stroke={C.taupe} strokeDasharray="5 4" />
-          <T x={300} y={168} s={13} a="middle" f={C.latte}>inside of this loop</T>
-          <T x={300} y={192} s={13} a="middle" f={C.cherryText}>value moved here,</T>
-          <T x={300} y={212} s={13} a="middle" f={C.cherryText}>in previous iteration of loop</T>
-        </g>
-      </Svg>
+        </Svg>
+      )}
     </Stack>
   );
 }
@@ -1001,17 +1011,17 @@ export function ProveCopyConfig({ t, answer, portrait }: StepCtx) {
     <Stack>
       {!(portrait && ans) && (
         <Code
-          title="config.rs"
+          title="point.rs"
           t={t}
           end={1.2}
-          lines={['struct Config {', '    retries: u32,', '    timeout_ms: u32,', '    batch: u32,', '}', 'for _ in 0..3 { process(cfg); }  // E0382']}
+          lines={['struct Point3 {', '    x: f32,', '    y: f32,', '    z: f32,', '}', 'for _ in 0..3 { norm(p); }  // E0382']}
         />
       )}
-      <Svg label="Config is 12 bytes of plain numbers that own nothing, so deriving Copy fits; a public type that may grow should be borrowed instead" h={200} fill>
+      <Svg label="Point3 is 12 bytes of plain numbers that own nothing and will not grow, so deriving Copy fits; a config type that may grow a String should be borrowed instead" h={200} fill>
         <g style={rv(ans)}>
-          <T x={300} y={54} s={15} a="middle" f={C.crema}>size_of::&lt;Config&gt;() = 12</T>
+          <T x={300} y={54} s={15} a="middle" f={C.crema}>size_of::&lt;Point3&gt;() = 12</T>
           <T x={300} y={104} s={17} a="middle" f={C.caramel} w={600}>plain bits → Copy</T>
-          <T x={300} y={154} s={13} a="middle" f={C.taupe}>public type that may grow? take &amp;Config</T>
+          <T x={300} y={154} s={13} a="middle" f={C.taupe}>a config that may grow a String? take &amp;Config</T>
         </g>
       </Svg>
     </Stack>

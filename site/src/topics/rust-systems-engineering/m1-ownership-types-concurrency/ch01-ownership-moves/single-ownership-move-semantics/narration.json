@@ -111,7 +111,7 @@
         "Only the line that says clone lights up.",
         { "beat": 0.3 },
         "In Rust, if it's expensive, it says clone.",
-        "Search a hot path for clone... and for its cousins, to vec, to owned and to string... and you've found its deep copies."
+        "Search a hot path for clone... and for its cousins, the to-vec, to-owned and to-string methods... and you've found its deep copies."
       ]
     },
     {
@@ -130,6 +130,7 @@
       "lines": [
         "So the cost of a move is the size of the type.",
         "A sixteen byte array moves sixteen bytes. A sixty-five thousand byte array can cost all of them.",
+        "But a vector holding a million bytes? Twenty-four bytes. Just the header.",
         "Put it in a box, and the box is one pointer. Eight bytes... however big the contents.",
         "Tap a type, and see."
       ]
@@ -148,12 +149,12 @@
     {
       "lines": [
         "Methods sign the same contract, in the receiver.",
-        "Length takes a shared reference. It reads.",
-        "Push string takes a mutable reference. It mutates.",
-        "Into bytes takes self. It consumes the string.",
+        "The length method takes a shared reference. It reads.",
+        "The push-string method takes a mutable reference. It mutates.",
+        "The into-bytes method takes the string itself. It consumes it.",
         { "beat": 0.3 },
         "And consuming isn't copying. It returns a vector on the very same buffer. Zero allocations.",
-        "Even the plus operator is a contract. It consumes the left side, and reuses its buffer."
+        "Even the plus operator is a contract. It consumes the left side, and appends into its buffer, growing it if needed."
       ]
     },
     {
@@ -257,7 +258,7 @@
         "Copy means the bits are the whole value, and never with a destructor.",
         "Clone is the visible cost.",
         "A signature takes, borrows, borrows exclusively, or returns.",
-        "And the two errors: why, where and the use... or end the borrow first.",
+        "For the use-after-move error, read why, where, and the later use. For the move-while-borrowed error, end the borrow first.",
         { "beat": 0.3 },
         "One owner decides who destroys a value. Next: exactly when that happens. Drop order, temporaries, and why leaking memory is still safe."
       ]
