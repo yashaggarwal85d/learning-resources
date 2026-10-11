@@ -1,0 +1,461 @@
+{
+ "topic": "dsa.asymptotic-notation",
+ "voice": "tara-v1",
+ "clips": {
+  "01": {
+   "hash": "2b2e06ee0f93c70f",
+   "duration": 26.459,
+   "lines": [
+    {
+     "text": "Welcome to Data Structures and Algorithms.",
+     "start": 0.15,
+     "end": 2.175
+    },
+    {
+     "text": "Before any structure, the language its costs are written in.",
+     "start": 2.595,
+     "end": 5.759
+    },
+    {
+     "text": "A claim like... quicksort is big O of n log n... hides three choices.",
+     "start": 6.579,
+     "end": 12.58
+    },
+    {
+     "text": "Which bound? Which case? And which resource?",
+     "start": 13.0,
+     "end": 17.526
+    },
+    {
+     "text": "Most arguments about complexity are really arguments about which one was meant.",
+     "start": 18.476,
+     "end": 22.919
+    },
+    {
+     "text": "All familiar? Swipe on.",
+     "start": 23.339,
+     "end": 26.11
+    }
+   ],
+   "lufs": -16.6,
+   "true_peak": -1.2,
+   "wpm": 120,
+   "wer": 0.0
+  },
+  "02": {
+   "hash": "9dc09bb6a8a2d036",
+   "duration": 31.967,
+   "lines": [
+    {
+     "text": "Big O, big Omega, and Theta are inequalities.",
+     "start": 0.15,
+     "end": 4.543
+    },
+    {
+     "text": "Pick two constants, and a threshold... and the inequality must hold for every size past it.",
+     "start": 4.963,
+     "end": 11.112
+    },
+    {
+     "text": "Here, three n squared plus ten n sits between three n squared and four n squared... from ten onward.",
+     "start": 11.932,
+     "end": 20.988
+    },
+    {
+     "text": "When n is nine, the value is three hundred and thirty three. That is just above the line.",
+     "start": 21.408,
+     "end": 27.688
+    },
+    {
+     "text": "The constants can't depend on n. That's the whole trick.",
+     "start": 28.408,
+     "end": 31.617
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -1.4,
+   "wpm": 133,
+   "wer": 0.0
+  },
+  "03": {
+   "hash": "7252b5bdb7cabc72",
+   "duration": 13.488,
+   "lines": [
+    {
+     "text": "The function two to the n plus one is in big O of the function two to the n. Double it, and you are done.",
+     "start": 0.15,
+     "end": 7.315
+    },
+    {
+     "text": "Now, is the function four to the n in big O of two to the n?",
+     "start": 8.135,
+     "end": 13.138
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.7,
+   "wpm": 182,
+   "wer": 0.0
+  },
+  "03a": {
+   "hash": "adb2c22fe6e77bef",
+   "duration": 19.51,
+   "lines": [
+    {
+     "text": "No. Two to the two n is four to the n... and dividing by two to the n leaves two to the n, which grows without bound.",
+     "start": 0.15,
+     "end": 7.929
+    },
+    {
+     "text": "So no constant works. An exponent multiplies the base. It isn't a constant factor.",
+     "start": 8.349,
+     "end": 14.511
+    },
+    {
+     "text": "Logarithm bases are different... they only differ by a constant.",
+     "start": 14.931,
+     "end": 19.16
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.4,
+   "wpm": 157,
+   "wer": 0.0
+  },
+  "04": {
+   "hash": "76e0025f64630e85",
+   "duration": 20.513,
+   "lines": [
+    {
+     "text": "Little o means strictly slower.",
+     "start": 0.15,
+     "end": 2.071
+    },
+    {
+     "text": "For every constant, f eventually falls below it.",
+     "start": 2.491,
+     "end": 6.063
+    },
+    {
+     "text": "When the ratio has a limit, zero means little o... a positive constant means Theta... and infinity means little omega.",
+     "start": 6.783,
+     "end": 14.571
+    },
+    {
+     "text": "But the limit may not exist. So the ratio test is sufficient... not necessary.",
+     "start": 14.991,
+     "end": 20.163
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -1.4,
+   "wpm": 137,
+   "wer": 0.0
+  },
+  "05": {
+   "hash": "2b34a82aa4838bf6",
+   "duration": 29.794,
+   "lines": [
+    {
+     "text": "Here's the most common slip.",
+     "start": 0.15,
+     "end": 2.256
+    },
+    {
+     "text": "Big O is not worst case.",
+     "start": 2.676,
+     "end": 4.876
+    },
+    {
+     "text": "A case picks a function. Take insertion sort on eight items. Sorted input costs seven comparisons. Random input costs about nineteen. Reversed input costs twenty eight. We checked every order.",
+     "start": 5.696,
+     "end": 18.315
+    },
+    {
+     "text": "A bound then relates that function to another.",
+     "start": 18.735,
+     "end": 21.096
+    },
+    {
+     "text": "So best case Theta of n and worst case Theta of n squared are both exact.",
+     "start": 21.816,
+     "end": 26.344
+    },
+    {
+     "text": "Two axes. Don't mix them up.",
+     "start": 26.764,
+     "end": 29.444
+    }
+   ],
+   "lufs": -16.6,
+   "true_peak": -1.4,
+   "wpm": 143,
+   "wer": 0.0
+  },
+  "06": {
+   "hash": "0d34dc06ddb76375",
+   "duration": 12.708,
+   "lines": [
+    {
+     "text": "A quicksort that always pivots on the first key does almost five hundred thousand comparisons on a thousand sorted keys.",
+     "start": 0.15,
+     "end": 5.889
+    },
+    {
+     "text": "Pick the pivot at random instead. How many comparisons do you expect on that same sorted input?",
+     "start": 6.709,
+     "end": 12.358
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.4,
+   "wpm": 175,
+   "wer": 0.0
+  },
+  "06a": {
+   "hash": "40390a067fb28705",
+   "duration": 28.265,
+   "lines": [
+    {
+     "text": "The count is about ten thousand, nine hundred and eighty six. It is the same for every input order.",
+     "start": 0.15,
+     "end": 6.139
+    },
+    {
+     "text": "The first pivot version averages that same count over random orders. Same number... different promise.",
+     "start": 6.559,
+     "end": 14.001
+    },
+    {
+     "text": "Average case assumes a distribution over inputs... and breaks when real inputs aren't like it, such as sorted data.",
+     "start": 14.421,
+     "end": 22.26
+    },
+    {
+     "text": "Expected time uses the algorithm's own coin flips... so it holds for every fixed input.",
+     "start": 22.68,
+     "end": 27.915
+    }
+   ],
+   "lufs": -16.6,
+   "true_peak": -1.4,
+   "wpm": 144,
+   "wer": 0.0
+  },
+  "07": {
+   "hash": "0a6043c27e5f5138",
+   "duration": 30.538,
+   "lines": [
+    {
+     "text": "Two thousand runs, one thousand keys.",
+     "start": 0.15,
+     "end": 2.835
+    },
+    {
+     "text": "The mean is about eleven thousand. The slowest run, about fifteen and a half thousand.",
+     "start": 3.255,
+     "end": 10.307
+    },
+    {
+     "text": "An expectation allows rare slow runs.",
+     "start": 11.127,
+     "end": 13.625
+    },
+    {
+     "text": "With high probability says something stronger... the chance of failure is at most one over n to the c, and you pick c.",
+     "start": 14.045,
+     "end": 22.68
+    },
+    {
+     "text": "A bigger c only costs a bigger constant.",
+     "start": 23.1,
+     "end": 25.327
+    },
+    {
+     "text": "Services are judged on tails. So ask which one you're being given.",
+     "start": 26.047,
+     "end": 30.188
+    }
+   ],
+   "lufs": -16.6,
+   "true_peak": -1.4,
+   "wpm": 138,
+   "wer": 0.0
+  },
+  "08": {
+   "hash": "f51a01b445e7853d",
+   "duration": 29.975,
+   "lines": [
+    {
+     "text": "Does a list of a thousand distinct numbers contain a duplicate?",
+     "start": 0.15,
+     "end": 4.227
+    },
+    {
+     "text": "Compare every pair... almost five hundred thousand steps, and no extra storage.",
+     "start": 4.777,
+     "end": 10.329
+    },
+    {
+     "text": "Heapsort in place, then one scan... about eighteen thousand.",
+     "start": 10.749,
+     "end": 15.695
+    },
+    {
+     "text": "Or a hash set... a thousand lookups, each fast only in expectation, but a thousand values stored.",
+     "start": 16.115,
+     "end": 23.356
+    },
+    {
+     "text": "Time bought with space. Always say which two resources, and what you count.",
+     "start": 24.076,
+     "end": 29.625
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.4,
+   "wpm": 124,
+   "wer": 0.0
+  },
+  "09": {
+   "hash": "ec459e2edf956121",
+   "duration": 17.204,
+   "lines": [
+    {
+     "text": "Asymptotics describe growth... not speed at one size.",
+     "start": 0.15,
+     "end": 3.879
+    },
+    {
+     "text": "A hundred n beats n squared only above a hundred.",
+     "start": 4.299,
+     "end": 7.879
+    },
+    {
+     "text": "Below that point, the slower algorithm in theory is the faster one in practice.",
+     "start": 8.299,
+     "end": 13.05
+    },
+    {
+     "text": "Where constants and cache effects decide, measure.",
+     "start": 13.77,
+     "end": 16.854
+    }
+   ],
+   "lufs": -16.6,
+   "true_peak": -1.4,
+   "wpm": 136,
+   "wer": 0.0
+  },
+  "10": {
+   "hash": "69a72bc754fa7812",
+   "duration": 20.815,
+   "lines": [
+    {
+     "text": "One more trap.",
+     "start": 0.15,
+     "end": 1.095
+    },
+    {
+     "text": "Trial division is order square root of the value... sixty five thousand steps for a thirty two bit prime.",
+     "start": 1.515,
+     "end": 7.357
+    },
+    {
+     "text": "Double the bits... and it's over four billion.",
+     "start": 7.777,
+     "end": 11.273
+    },
+    {
+     "text": "In the length of the input, that's exponential.",
+     "start": 11.993,
+     "end": 14.352
+    },
+    {
+     "text": "A cost polynomial in the value, but exponential in the bit length, is called pseudo-polynomial.",
+     "start": 14.772,
+     "end": 20.465
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.4,
+   "wpm": 156,
+   "wer": 0.0
+  },
+  "11": {
+   "hash": "fbea2f7766df82c2",
+   "duration": 27.228,
+   "lines": [
+    {
+     "text": "Now let us get a feel for each rung, with one million items.",
+     "start": 0.15,
+     "end": 4.232
+    },
+    {
+     "text": "Log n is about twenty steps. And n log n takes about two hundredths of a second.",
+     "start": 4.652,
+     "end": 10.903
+    },
+    {
+     "text": "N squared takes a thousand seconds... nearly seventeen minutes.",
+     "start": 11.323,
+     "end": 16.62
+    },
+    {
+     "text": "And two to the n is hopeless by sixty four... centuries.",
+     "start": 17.04,
+     "end": 21.509
+    },
+    {
+     "text": "Every count here assumes each step costs the same. Hold that thought.",
+     "start": 22.329,
+     "end": 26.878
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -1.4,
+   "wpm": 137,
+   "wer": 0.0
+  },
+  "12": {
+   "hash": "8bba8541322733a4",
+   "duration": 36.835,
+   "lines": [
+    {
+     "text": "Seven things to keep.",
+     "start": 0.15,
+     "end": 1.6
+    },
+    {
+     "text": "Inequalities with witnesses. Strict little o and little omega. Bound is not case. Average is not expected.",
+     "start": 2.02,
+     "end": 9.633
+    },
+    {
+     "text": "High probability is a statement about the tail. Time can be traded for space. Constants rule small inputs. And for numbers, n means the size in bits.",
+     "start": 10.053,
+     "end": 20.055
+    },
+    {
+     "text": "So, quicksort is big O of n log n... is an upper bound on expected time, with random pivots.",
+     "start": 20.875,
+     "end": 27.191
+    },
+    {
+     "text": "With a fixed pivot, the worst case is Theta of n squared.",
+     "start": 27.611,
+     "end": 31.337
+    },
+    {
+     "text": "Next, the word RAM model... the machine behind those step counts.",
+     "start": 32.057,
+     "end": 36.485
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.4,
+   "wpm": 147,
+   "wer": 0.0
+  }
+ }
+}

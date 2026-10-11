@@ -26,7 +26,7 @@
           "beat": 0.4
         },
         "Here, three n squared plus ten n sits between three n squared and four n squared... from ten onward.",
-        "At nine, it's three hundred thirty three. Just above the line.",
+        "When n is nine, the value is three hundred and thirty three. That is just above the line.",
         {
           "beat": 0.3
         },
@@ -35,11 +35,11 @@
     },
     {
       "lines": [
-        "Two to the n plus one is big O of two to the n. Double it, and you're done.",
+        "The function two to the n plus one is in big O of the function two to the n. Double it, and you are done.",
         {
           "beat": 0.4
         },
-        "But is two to the two n also big O of two to the n?"
+        "Now, is the function four to the n in big O of two to the n?"
       ],
       "answer": [
         "No. Two to the two n is four to the n... and dividing by two to the n leaves two to the n, which grows without bound.",
@@ -65,7 +65,7 @@
         {
           "beat": 0.4
         },
-        "A case picks a function. For insertion sort, sorted input costs seven comparisons, random about nineteen, reversed twenty eight... that's eight items, checked over every order.",
+        "A case picks a function. Take insertion sort on eight items. Sorted input costs seven comparisons. Random input costs about nineteen. Reversed input costs twenty eight. We checked every order.",
         "A bound then relates that function to another.",
         {
           "beat": 0.3
@@ -83,7 +83,7 @@
         "Pick the pivot at random instead. How many comparisons do you expect on that same sorted input?"
       ],
       "answer": [
-        "About ten thousand nine hundred eighty six. The same for every input order.",
+        "The count is about ten thousand, nine hundred and eighty six. It is the same for every input order.",
         "The first pivot version averages that same count over random orders. Same number... different promise.",
         "Average case assumes a distribution over inputs... and breaks when real inputs aren't like it, such as sorted data.",
         "Expected time uses the algorithm's own coin flips... so it holds for every fixed input."
@@ -121,11 +121,11 @@
       "lines": [
         "Asymptotics describe growth... not speed at one size.",
         "A hundred n beats n squared only above a hundred.",
-        "Below that, the worse algorithm wins.",
+        "Below that point, the slower algorithm in theory is the faster one in practice.",
         {
           "beat": 0.3
         },
-        "Where constants and cache behaviour decide, measure."
+        "Where constants and cache effects decide, measure."
       ]
     },
     {
@@ -142,8 +142,8 @@
     },
     {
       "lines": [
-        "Now, a feel for the ladder at a million items.",
-        "Log n is about twenty steps. N log n takes two hundredths of a second.",
+        "Now let us get a feel for each rung, with one million items.",
+        "Log n is about twenty steps. And n log n takes about two hundredths of a second.",
         "N squared takes a thousand seconds... nearly seventeen minutes.",
         "And two to the n is hopeless by sixty four... centuries.",
         {
@@ -156,7 +156,7 @@
       "lines": [
         "Seven things to keep.",
         "Inequalities with witnesses. Strict little o and little omega. Bound is not case. Average is not expected.",
-        "High probability is a tail. Time trades with space. And constants rule small inputs... while n is the size in bits.",
+        "High probability is a statement about the tail. Time can be traded for space. Constants rule small inputs. And for numbers, n means the size in bits.",
         {
           "beat": 0.4
         },
