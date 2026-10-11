@@ -158,3 +158,284 @@
 - Step 16 body: "Four ways … Which one needs `unsafe`?" while the options list three ways plus "None of them"; make the body say "Four ways are on screen" or add `process::exit` as an option in place of one, so the question and the options match.
 - *Status:* fixed: step 13 caption, narration, drawing label and Deep dive say 'hidden boolean local (`_5`)'; 'on Linux' added to step 6/7 captions and the step 7 drawing; Prove it 6 says 'fewer than 1,021'; step 7 defines *guard*; step 16 body now says four ways are drawn and asks which of the first three needs `unsafe`.
 
+## Looks and learning review (ROUTINE.md section 5)
+
+- **Reviewer:** looks and learning review agent (Opus); edited nothing in this topic except this section.
+- **Date:** 2026-10-11
+- **Read:** DESIGN.md (all of it; the checklist under "The looks review checks"), this topic's `OUTLINE.md` ("Shared visual vocabulary" and all 23 step storyboards), `narration.json`, and every screenshot `site/test-results/{desktop,phone}-raii-drop-order-leak-01…23.png` (1440 × 900 desktop; iPhone 13 phone, 3× pixels, so screenshot px ÷ 3 = CSS px). I opened `reel.tsx` and `scenes.tsx` only to name where a fix goes, and took one extra phone screenshot of step 1 from the built `dist/` (see finding 5).
+- **Counts:** 17 major, 23 minor (40 in all). Steps 3, 8 and 14 hold up best (minor findings only). The step 14 lanes (two with badges, two empty, exit codes on the right) and the step 8 reveal (a cherry folder with `left behind`) read at a glance.
+- **Severity:** *major* means text that overlaps, is clipped or is too small to read, or a picture that teaches the wrong thing or hides the step's point. *Minor* means crowding, weak focus, a mismatch between caption and picture, or polish.
+
+### Across many steps
+
+**1. Phone predict reveals are drawn at about 0.4 scale, so drawing text renders at about 6 px** (major)
+- *Where:* phone, steps 3, 5, 8, 10, 12, 16, 20, 21, 22 once they are answered (the `Svg h={340…400}` predict drawings).
+- *What:* Once a predict step is answered, the question, the four options and the explain box take the space, so the drawing gets about 150 CSS px of height. A 340–400-unit-tall drawing then shrinks to about 0.4 px per unit, where DESIGN.md plans for about 0.6. Labels set at 13 units (`DROP ORDER`, `dropped 3`, `the temporary is part of an expression…`, `stops before it returns`) render at about 5–6 CSS px, and code at about 6–7 px. That is well under DESIGN.md's 9.5 px and hard to read on a real phone. The answer, the thing the learner just committed to, is the hardest text on screen to read.
+- *Evidence:* phone-03: the timeline (x 40→540 units) spans screenshot x 270→875, which is 202 CSS px for 500 units (0.40/unit). On phone-14, a mechanism step, the same 500 units span 311 CSS px (0.62/unit). The same squeeze shows on phone-05 (0.45), -08, -12, -16, -20, -21 and -22. The reel test's 9 px check did not catch it, probably because it measures before the explain panel grows; worth a line in QUALITY.md.
+- *Fix:* On `portrait && answer !== null`, draw a shorter reveal that fills the width. Cut the empty bands: step 3 moves the timeline up under the slots (h ≈ 240); step 20 keeps the slots and the timeline only. Drop the in-SVG code lines when the body already quotes the code (steps 12, 21, 22, as step 10 already does with the `Code` panel). Aim for at least 0.55 px/unit on phone-03-style captures.
+- *Status:* fixed: on portrait once answered, steps 3, 5, 8, 12, 20, 21, 22 draw a shorter reveal (code lines dropped or cut to one line, slots moved up, `h` 200 to 270) so the drawing is about 0.6 px/unit (phone-03 timeline now about 311 CSS px for 500 units); step 16 has no portrait problem now (shorter `h`, no chips, no timeline). Steps 10 already swapped the code. The test's 9 px check is shared code, not touched.
+
+**2. Desktop: the topic eyebrow (and step 1's bridge quote) slides under the domain nav** (major)
+- *Where:* desktop steps 1, 5, 12, 22.
+- *What:* When the left column is taller than the viewport, it is centred upward and its top line runs under the fixed nav pill. On step 1 the italic bridge line ("…who destroys a value. Now: exactly when that happens, in what order, and why…") is cut by the `Data Engineering` pill. On steps 5, 12 and 22 the eyebrow `RAII, DROP ORDER, AND LEAK` is clipped (`AND L…`, `AND`, `LEAK` half-covered).
+- *Evidence:* desktop-01 (y 25–60), desktop-05 (y 42), desktop-12 (y 33), desktop-22 (y 52).
+- *Fix:* In this topic, shorten what makes those columns tall: step 1's caption (finding 3) and the explains of 5 and 22, which are over the 75-word cap. Then check that the column top clears y ≈ 60. The general cure is in shared code (top padding for the left column equal to the nav's height), so raise it with the run rather than here.
+- *Status:* fixed in this topic (captions only): step 1 body cut to about 85 words and the repeated bridge sentence removed; step 5, 12 and 22 explains cut; step 12 body shortened. desktop-01, -05, -12 and -22 now clear the nav (eyebrow top at y 90 or more). Shared fix (top padding equal to the nav height) not done: raise it with the run.
+
+**3. Caption walls on desktop; three explains over the 75-word cap** (minor)
+- *Where:* bodies of steps 1, 4, 6, 7, 9 (about 145–165 words each) and 2, 13, 18, 19, 23 (about 110–115). The explains of steps 3 and 5 (about 85–89 words) and 22 (about 80).
+- *What:* On desktop these fill the whole left column, the same height as the drawing, so the eye goes to the paragraph, not the picture. Step 4 adds `drop(&g)` and `dropping_references`, and step 6 adds the E0184 error-index quote and `OwnedFd`, which belong in the Deep dive. Step 1 says the bridge sentence twice: once as the italic quote above the title, once in the middle of the body. OUTLINE.md sets "every `explain` is 75 words or fewer".
+- *Fix:* Cut each body to the mechanism the picture shows, at most about 90 words, and move the asides (lint names, error-index quotes, chapter pointers) to the Deep dive. Delete the repeated bridge sentence from step 1's body. Trim explains 3, 5 and 22 to 75 words: step 3 can drop "The Deep dive's drop check is this rule made precise", and step 5 can drop the last sentence about panics.
+- *Status:* fixed: bodies of steps 1, 2, 4, 6, 7, 9, 13, 18 cut to about 80 to 100 words; lint names, E0184 quote, `OwnedFd`, `dropping_references`, loop-header and `&&`/`||` asides are in the Deep dive already; explains 3, 5, 22 trimmed to 75 words or fewer. Narration step 4 (copy / reference line) and step 9 (loop header line) removed to match. Steps 19 and 23 left at about 100 words.
+
+**4. Phone mechanism steps leave an empty band above a small drawing** (minor)
+- *Where:* phone steps 2, 4, 7, 13, 15 (also 9 and 14, less so).
+- *What:* About 70–100 CSS px of blank space sits between the nav and the drawing, while the drawing itself is only about 0.6 scale. On step 2 the space between the note and the timeline is empty too, so the final frame is mostly dark.
+- *Evidence:* phone-02 (drawing content starts at y ≈ 520 of 1150 px of drawing area), phone-04 (y ≈ 455), phone-07 (y ≈ 405), phone-13 (y ≈ 455), phone-15 (y ≈ 445).
+- *Fix:* After the code panel is swapped out on portrait, use a shorter portrait `h` (or top-align the drawing) so it grows into the space. Step 2 needs this most (see finding 7).
+- *Status:* partly fixed: steps 2, 4, 7 and 17 now use more of the height (brackets, ghost slots, arcs, two-beat strip), but the blank band above a width-bound drawing on phone comes from the shared `Svg` centring, so it is not removable in this topic; steps 13 and 15 unchanged. Raise top-aligning `Svg fill` on portrait with the run.
+
+**5. The phone screenshot for step 1 is actually step 2; the real phone step 1 has two small problems** (minor)
+- *Where:* `phone-raii-drop-order-leak-01.png`; phone step 1.
+- *What:* phone-01 shows step 2 (`2/23`, `struct Stag▌` still typing). So the test's `ArrowRight` advanced past step 1 instead of finishing it, and phone step 1 was never checked by the test. I captured it myself from `dist/` after 7 s. Its final frame is readable, but on portrait it drops the `stage.rs` code, so the `read() · then · else · write()` ruler has no source on screen. Also the `read guard` label sits about 2 CSS px under its bar (both lanes).
+- *Evidence:* phone-01 vs desktop-01; my capture of phone step 1 (bar bottom y ≈ 331, label top y ≈ 338 in 3× px).
+- *Fix:* Re-run the reel test and confirm phone-01 is step 1 (if not, the harness needs a look; that is shared code, so raise it with the run). In `Problem`, move each `read guard` label 8 units lower. On portrait, keep a one-line source above the lanes, e.g. `if let … = *value.read()… { } else { value.write() }` in 13-unit latte.
+- *Status:* partly fixed: the `read guard` labels are 8 units lower and portrait step 1 keeps a one-line source above the lanes. The phone-01 screenshot is still step 2 (the harness's `ArrowRight` issue is shared test code, not touched; raise it with the run).
+
+### Step by step
+
+**6. Step 4: `DROP ORDER` is struck through by the `drop` frame's bottom border** (major)
+- *Where:* step 4 `LastOwner`, desktop and phone.
+- *What:* The timeline label (`Timeline`, `y - 12`, anchored at x 540) sits exactly on the bottom edge of the dashed `drop` frame (x 320–560, y 120–170), so the frame's line runs through the letters.
+- *Evidence:* desktop-04 (`DROP ORDER` at y 614, frame bottom at y 614); phone-04 (y 752).
+- *Fix:* Shorten the `drop` frame (bottom ≤ TLY − 30), or pass `label={false}` to this step's `Timeline`. The two badges already say "order".
+- *Status:* fixed: step 4 `Timeline` has `label={false}`.
+
+**7. Step 2: the "two parts" are not visible; it is one row of four equal badges** (major)
+- *Where:* step 2 `TwoParts`, final frame, both sizes.
+- *What:* The step's point is "your `Drop::drop`, *then* the glue drops the fields". The final frame shows four look-alike badges `stage · name · input · spill`, a floating three-line taupe note far up and to the right, and a brace above `input`. The `Stage` frame and its slots have faded out, and on phone the code is gone, so nothing groups badge 1 apart from badges 2–4 except a caramel ring. A paused learner sees "four things in order", not "two parts".
+- *Evidence:* desktop-02, phone-02 (note at y 530–610, badges at y 830; nothing in between).
+- *Fix:* Put a bracket under each group, directly below the badge names: `Drop::drop` under badge 1 and `drop glue: fields, in order` under badges 2–4, in 13-unit latte. Delete the floating note. Keep the `Stage` outline at about 0.3 opacity in the final frame so the field names have a home, and move the brace next to the frame, not over badge 3.
+- *Status:* fixed: `Drop::drop` bracket under badge 1 and `drop glue: fields, in order` bracket under badges 2 to 4; floating note deleted; `Stage` outline stays at 0.3 opacity; brace moved beside the frame.
+
+**8. Step 6: on phone the `File (4 bytes)` label overflows its box and the arrowheads hit it** (major)
+- *Where:* step 6 `CopyDrop`, both payload boxes, phone.
+- *What:* The 15-unit label is wider than its 90-unit box at phone scale. `F` sits on the arrowhead and `)` runs past the right border, in both rows.
+- *Evidence:* phone-06 (y 375 and y 767: `▸File (4 bytes)` with the closing paren outside the box).
+- *Fix:* Widen the payload box to ≥ 150 units (move it left to x ≈ 360), or label it `File` with `4 bytes` as a 13-unit line under the box.
+- *Status:* fixed: payload boxes are 170 units wide (x 350), so the label fits at phone scale and the arrowheads stop at the box edge.
+
+**9. Step 6: `nothing to drop` sits under `b`, the live owner, not under the moved-from `a`** (major)
+- *Where:* step 6 row B (`scenes.tsx` `CopyDrop`, the `nothing to drop` text at `x={125} y={366}`).
+- *What:* In the RUST row the caramel `b File` slot (the owner, which *is* dropped: badge `1 close`) has `nothing to drop` directly under it. The moved-from `a` is the slot above. A glance reads "b: nothing to drop", which is the opposite of the lesson.
+- *Evidence:* desktop-06 (y 594 under the `b` slot at y 548); phone-06 (y 901).
+- *Fix:* Put the label inside or beside the `a moved` outline (e.g. right of it, or replace `moved` with `moved · nothing to drop`), as step 4 does.
+- *Status:* fixed: `nothing to drop` now sits on the `RUST` header line directly above the moved-from `a` slot, away from the live `b` owner.
+
+**10. Step 7: the closing brace sits on `main`'s slot border, on top of `dropped 1`** (major)
+- *Where:* step 7 `Spill` (`Brace x={176} y={90}`), both sizes.
+- *What:* The caramel `}` overlaps the right edge of the dashed `s dropped 1` slot.
+- *Evidence:* desktop-07 (x 783, y 486); phone-07 (x 350, y 530).
+- *Fix:* Move the brace below the `main` frame (y ≈ 125, as in `Brace` elsewhere) or to x ≥ 200, clear of the slot.
+- *Status:* fixed: the brace moved to the corridor between the `main` and first `pass` frames, below the slot row.
+
+**11. Step 9 (phone): the `{` of `match m.lock().unwrap().len() {` runs into the `temp` slot** (major)
+- *Where:* step 9 `Temporaries`, row 3, phone.
+- *What:* The code line is about 34 characters. At phone scale it reaches the left dashed edge of row 3's `TempSlot`, so `{` and the dash overlap.
+- *Evidence:* phone-09 (x 625–645, y 805).
+- *Fix:* Start row 3's slot and bar at x ≥ 330 (or put the `TempSlot` above the bar rather than beside the code), keeping the code line as it is: the lock call in the scrutinee is the point.
+- *Status:* fixed: row 3 slot, bar and arm tick start at x 352 (and rows 1 and 2 match), clear of the 34-character code line at phone scale.
+
+**12. Step 11: panel A highlights the wrong badge** (major)
+- *Where:* step 11 `TwoChanges`, `<Lane y={72} year="2021" … hiIdx={0}>`.
+- *What:* The caption and narration say "that one badge, landing on the other side of the else". In panel B the caramel ring follows `tail` in both lanes, which is right. In panel A it rings `1 else` in 2021 and `1 guard` in 2024, so the eye compares `else` with `guard` and the moved badge (the guard) is not marked in 2021.
+- *Evidence:* desktop-11 (caramel ring on `else`, y 189); phone-11 (y 340).
+- *Fix:* `hiIdx={1}` for the 2021 lane of panel A, so `guard` is ringed in both lanes (see finding 30 for making the move itself visible).
+- *Status:* fixed: panel A now rings the guard badge in both lanes.
+
+**13. Step 12: `E0597` and `prints 2` sit on the timeline, so the line strikes them through** (major)
+- *Where:* step 12 `TailRefCell` reveal, desktop (and phone at small size).
+- *What:* Both result labels are drawn at the timeline's y, so the taupe line runs through their middles. `E0597` reads as a struck-out error, which says "not E0597", the opposite of the answer.
+- *Evidence:* desktop-12 (`E0597` x 1075–1138, y 408; `prints 2` x 1075–1190, y 588, both crossed by the line); phone-12 (y 428, 589).
+- *Fix:* Stop each lane's line at the last badge (x2 ≈ 400) and put the result to the right with 24+ units of clear space, or put it 20 units above the line.
+- *Status:* fixed: lane lines stop at x 350 and `E0597` / `prints 2` start at x 390 with clear space.
+
+**14. Step 13: `skipped: flag 0` sits over badge `2 z`, so it reads as "z was skipped"** (major)
+- *Where:* step 13 `DropFlags`, upper lane (`flag = true`), both sizes.
+- *What:* The note that `t`'s drop was skipped is placed directly above the `z` badge. `z` is dropped on that path; the skipped value (`cond`/`t`) has no mark at the brace. The step's one idea (the brace checks a flag and skips the drop) is misattributed.
+- *Evidence:* desktop-13 (`skipped: flag 0` at x 873–1037, y 467, directly over badge 2 at x 845); phone-13 (x 492–770 over x 453).
+- *Fix:* In the true lane, draw a dashed empty badge position after `z` labelled `cond: skipped (flag 0)`, or put the note on the `t` slot. Keep nothing above `z`.
+- *Status:* fixed: nothing sits above `z`; a dashed empty badge position after `z` is labelled `skipped` and an arrow from the lane's drop-flag box points at it.
+
+**15. Steps 15 and 17: the `1 · 0` counter reads as "1.0"** (major)
+- *Where:* `Counter … label="ALLOCS · FREED" text="1 · 0"` in `Forget` and `OnPurpose`.
+- *What:* At 20 units in Fraunces, the middle dot between `1` and `0` looks like a decimal point. The step's one serif number reads as "one point zero" rather than "1 allocated, 0 freed". It is the number that proves the leak.
+- *Evidence:* desktop-15 (x 590–640, y 525, cherry), desktop-17 (y 617), phone-15 (y 665), phone-17 (y 933).
+- *Fix:* Split it into two counters side by side, `ALLOCS 1` and `FREED 0` (13-unit labels, 20-unit values), or one counter `LIVE ALLOCS +1`, the delta `examples.py` asserts.
+- *Status:* fixed: the two `1 · 0` counters are now one `LIVE ALLOCS +1` (the delta `examples.py` asserts) in steps 15 and 17.
+
+**16. Step 15: `CLOSES 1` beside `no destructor ran`** (major)
+- *Where:* step 15 `Forget` counters.
+- *What:* This run forgets a fresh `SpillFile`. The `1` is carried over from step 7's run, but a paused learner sees "closes: 1" next to "no destructor ran" and "still on disk", which looks like a contradiction. Everything else in the frame is cherry (counter, payload, label, file icon, `no destructor ran`), so there is no single thing to look at first.
+- *Evidence:* desktop-15 (`CLOSES 1` at x 819, y 525); phone-15 (y 665).
+- *Fix:* Show the delta for this block, `CLOSES +0`, matching what `leak.rs` measures. Make `no destructor ran` the one cherry focal label on the empty timeline. Draw the payload and file icon with a cherry outline only and latte labels, so cherry marks one idea.
+- *Status:* fixed: step 15 shows `CLOSES +0`; payload and file icon are cherry outlines with latte labels; `no destructor ran` is the one cherry label.
+
+**17. Step 16 (phone): `// in a cycle` runs into its chip** (major)
+- *Where:* step 16 `WhichUnsafe`, row 3, phone.
+- *What:* The code `let a = Rc::new(..); // in a cycle` reaches the left dashed edge of the `s` chip.
+- *Evidence:* phone-16 (x 540–670 against the chip at x 678, y 366).
+- *Fix:* Move the chips to x ≥ 470 (or drop the chips; they add nothing, see finding 34) and shorten the comment to `// cycle`.
+- *Status:* fixed: chips removed and the comment shortened to `// cycle`.
+
+**18. Step 17: `ALLOCS · FREED` overlaps the `r` slot's bottom border** (major)
+- *Where:* step 17 `OnPurpose` row B (`Slot x={40} y={284}` with `Counter x={40} y={330}`), both sizes.
+- *What:* The counter's label is drawn over the slot's bottom edge.
+- *Evidence:* desktop-17 (y 583, slot bottom y 578); phone-17 (y 885).
+- *Fix:* Move the counter to the row's right (x ≈ 400, y 340), as the outline specifies (`allocs 1 · freed 0` small counter at the row's right), or move it 24 units lower.
+- *Status:* fixed: the counter moved to the row's lower right (x 400, y 362), clear of the payload and the `r` slot.
+
+**19. Step 17: the `ManuallyDrop` half leaves nothing of its idea in the final frame** (major)
+- *Where:* step 17 row A, final frame.
+- *What:* The storyboard's mark (a slot with a latch, the brace that does *nothing*, then `into_inner` lifting the latch) has fully collapsed by the end. What remains is two lines of code, a lone brace, `CLOSES 2` (with no `1` ever shown in this step) and badge `1 spill`. That frame looks like an ordinary drop. "Same bytes, no automatic drop" is not on screen.
+- *Evidence:* desktop-17 (y 170–370), phone-17 (y 320–590).
+- *Fix:* End on a two-beat strip. On the left, the `m` slot with its caramel latch at the brace and the label `brace: nothing dropped`. On the right, `into_inner → drop(s)` with badge `1 spill`. Show `CLOSES 1 → 2` or `+1` so the counter is explained.
+- *Status:* fixed: the final frame is a two-beat strip: `m` with its latch and `brace: nothing dropped`, then `into_inner → drop(s)` with `s dropped 1` and badge `1 spill`; the counter reads `CLOSES +0` then `+1`.
+
+**20. Step 20: on phone `DROP ORDER` overlaps badge 4; the slots abut and overhang the timeline** (major)
+- *Where:* step 20 `ProveParams` reveal.
+- *What:* The fourth badge lands under the right-anchored `DROP ORDER` label. The four 180-unit dashed slots touch each other with no gap (their dashes merge) and run wider than the timeline (desktop x 555–1310 vs timeline x 590–1263).
+- *Evidence:* phone-20 (`DROP ORDER` x 775–905, y 580 over badge 4 at x 772, y 602); desktop-20 (label at y 561, badge 4 top at y 568, 4 px apart).
+- *Fix:* Badges at x 90/200/310/420 (the step 2 spacing) and slots 120 units wide with 16-unit gaps, or a 2 × 2 slot grid. With the badges ending at x 420, the label at x 540 is clear.
+- *Status:* fixed: slots are a 2 x 2 grid (200 wide, gaps), badges at x 80/180/280/380, so `DROP ORDER` clears badge 4.
+
+**21. Step 3: the three revealed slots abut, so their dashed borders merge** (minor)
+- *Where:* step 3 reveal, both sizes.
+- *Evidence:* desktop-03 (slots at y 185–350, no gap); phone-03.
+- *Fix:* 8-unit gap between slots (y 30, 80, 130).
+- *Status:* fixed: step 3 slots have a 10-unit gap.
+
+**22. Step 4: where `m` died is not shown; `nothing to drop` crowds badge 1** (minor)
+- *Where:* step 4 final frame.
+- *What:* The `consume` and `drop` frames are empty, and nothing ties badge `1 m` to `consume`'s brace or badge `2 n` to the `drop` frame. Yet "m dies at consume's brace, not main's" is the step's point. `nothing to drop` sits about 20 px above badge 1 and reads as its label.
+- *Evidence:* desktop-04 (label y 596, badge y 636); phone-04.
+- *Fix:* Leave a small dashed ghost `m · dropped 1` in `consume` and `n · dropped 2` in `drop` (as step 7 does in `main`). Move `nothing to drop` inside the `MAIN` frame under the two `moved` outlines.
+- *Status:* fixed: dashed ghost slots `m · dropped 1` in `consume` and `n · dropped 2` in `drop`; `nothing to drop` moved inside `MAIN`.
+
+**23. Step 5: the struck-through `x.drop();` is hard to read, and the dropped slot sits on the wrong line** (minor)
+- *Where:* step 5 reveal.
+- *What:* The line the question is about is dark cherry text under a cherry strike line on dark roast, the lowest-contrast text in the frame. The revealed `x dropped 1` slot sits level with `x.drop();`, which suggests that call did the dropping, while the caramel `drop(x);` line is below it.
+- *Evidence:* desktop-05 (x 590–700, y 378); phone-05 (y 396).
+- *Fix:* Keep `x.drop();` in crema with only the strike in cherry (or `C.cherryText` for the text). Move the `x · dropped 1` slot level with `drop(x);`.
+- *Status:* fixed: `x.drop();` is crema with a cherry strike; the `x dropped 1` slot is level with `drop(x);`.
+
+**24. Step 6: dimming row A makes its point (`closed twice`, `E0184`) low-contrast** (minor)
+- *Where:* step 6 row A in the final frame (opacity 0.6); `E0184` under `b = a`.
+- *What:* Cherry text at 0.6 opacity on dark roast is the faintest text on screen, and it is the counterfactual's whole result. `E0184` touches the bottom of the `b = a` slot.
+- *Evidence:* desktop-06 (y 266, 296); phone-06 (y 447, 487).
+- *Fix:* Dim only the slots and arrows in row A and keep `closed twice` and `E0184` at full opacity. Put `E0184` 18+ units below the slot, or to its right.
+- *Status:* fixed: only slots, arrows, badges dimmed in row A; `closed twice` and `E0184` stay full colour, `E0184` 30 units below the slot.
+
+**25. Step 7: about twelve labels compete, and the round trip is not drawn** (minor)
+- *Where:* step 7 final frame.
+- *What:* `main`, `pass`, `pass`, three slot labels, `/tmp/…/spill`, `CLOSES`, `1`, three crema size lines, `DROP ORDER`, `spill`. The sizes block is crema, the same weight as primary labels, and outweighs the counter. The move `main → pass → pass → main` (the reason "one close" is remarkable) leaves no trace. `CLOSES 1` sits under the second `pass` frame as if it belonged to it.
+- *Evidence:* desktop-07, phone-07.
+- *Fix:* Draw two thin latte arcs, `main → pass → pass → main`, over the frames. Set the size lines in 13-unit taupe (or move them to the caption). Put `CLOSES` top-right as A.5 specifies.
+- *Status:* fixed: two thin latte arcs `main → pass → pass → main` over the frames, sizes block in 13-unit taupe, a rule separates the frames from the `CLOSES` row.
+
+**26. Step 8: after the reveal, the `Spool` slots are still drawn live** (minor)
+- *Where:* step 8 reveal, right-hand `Spool` frame.
+- *What:* The badges say `1 dir · 2 spill` were dropped, but the `dir` and `spill` slots keep their live fill.
+- *Evidence:* desktop-08 (x 1080–1245, y 357–462).
+- *Fix:* Draw them as dashed `dropped 1/2` outlines, as steps 3 and 20 do.
+- *Status:* fixed: `dir` and `spill` redraw as dashed `dropped 1` and `dropped 2` after the answer (Spool frame widened to fit).
+
+**27. Step 9: the bars are not anchored to anything, and rows 2 and 3 look the same** (minor)
+- *Where:* step 9 final frame.
+- *What:* Each bar floats on the right with a tiny `;` or `}` at its end. Rows 2 (block end) and 3 (end of the match statement) end at the same x with the same `}`, so "extended to the block" and "lives to the end of the statement" are indistinguishable in the picture. The row-1 `;` sits on the bar's end. The label `guard dropped · try_lock ok` is closer to row 2's code than to row 1's.
+- *Evidence:* desktop-09 (row-1 label y 290, row-2 code y 360, row-1 code y 190).
+- *Fix:* Give each row a small code ruler (as step 1 does: `stmt ; next` / `let … }` / `match { arm } ;`) and end each bar on its stop. Keep each row's label 12 units under its own bar. The loop-header case in the narration ("the lock stays held through the whole loop") could be a fourth row, or cut from the narration.
+- *Status:* fixed: each row has a start tick and label (`lock()`, `let r`, `match`) and an end label (`} block`, `} match`), labels sit under their own bar. The loop-header sentence was cut from the narration and caption.
+
+**28. Step 10: the reveal's ruler still says `then / else` for a `match`** (minor)
+- *Where:* step 10 reveal lane `2024 after cargo fix`.
+- *What:* The code under the lane is the rewritten `match` with `Some(x) =>` and `_ =>` arms, but the ruler stops still read `read() · then · else · write()`. The learner has to translate.
+- *Evidence:* desktop-10 (y 424 vs the `match` block at y 548–636).
+- *Fix:* Relabel the stops `read() · Some(x) · _ => · write()` in the answered frame.
+- *Status:* fixed: the answered ruler reads `read() · Some(x) · _ => · write()`.
+
+**29. Step 12 (phone): a stray mark above the body, and the title is scrolled out of view** (minor)
+- *Where:* phone-12.
+- *What:* A small light bar (about 6 × 2 CSS px) floats at x ≈ 110, y ≈ 227 CSS. The step number and title are scrolled off, so the frame has no heading.
+- *Evidence:* phone-12 (3× px x 322–342, y 678–684).
+- *Fix:* Find what it is (probably the clipped bottom of the title or eyebrow under the drawing) and keep the title in view after answering. Shrinking the reveal drawing (finding 1) gives the room.
+- *Status:* fixed: with the shorter portrait reveal the title and the stray mark are gone in phone-12; on phone-22 the title is partly scrolled under the explain panel, which is page layout (shared).
+
+**30. Step 11: the badge never visibly moves past `else`; trace events sit on a `DROP ORDER` line** (minor)
+- *Where:* step 11 panel A.
+- *What:* Both lanes use the same three x positions, so only the *labels* swap. The "badge landing on the other side of the else" (narration) is not a visible movement. The vertical dashed `else` marker the storyboard asked for is missing. `else` and `after-if` are events, not destructors, yet they are drawn as numbered drop badges. The rule line `scrutinee temporaries drop before else` sits about 10 px under the lane labels.
+- *Evidence:* desktop-11 (labels y 337, rule y 363); phone-11 (y 543, 580).
+- *Fix:* Draw a fixed dashed `else` marker per lane. Draw the guard badge left of it in 2024 and right of it in 2021. Draw `else` and `after-if` as small taupe ticks, not badges. Give the rule line 20+ units of space.
+- *Status:* fixed: a fixed dashed `else` marker per lane; the guard badge sits left of it in 2024 and right in 2021; `else` is a label and `after-if` a small tick (not badges); the rule line has 20+ units of space.
+
+**31. Step 13: the flag is a 16-unit box that connects to nothing** (minor)
+- *Where:* step 13 final frame.
+- *What:* The outline's branch arrows (`flag = true` to a `consume` frame, `flag = false` down) are gone. The `0` box sits beside a live, caramel-ringed `t`, but only the true path set it to 0, so the frame shows `t` both alive and flagged moved. Nothing links the flag to the check at the brace.
+- *Evidence:* desktop-13 (flag at x 805–828, y 400–424).
+- *Fix:* Show the flag twice, one per lane at the lane's start (`flag 1` / `flag 0`), with a short taupe arrow to the brace position where the lane's `cond` badge does or does not land. Drop the caramel ring from `t`.
+- *Status:* fixed: one drop-flag box per lane (`0` / `1`) with an arrow to where `cond` lands or not; the caramel ring on `t` is gone.
+
+**32. Step 14: timelines run into `101` and `134`; `exit code` is repeated four times** (minor)
+- *Where:* step 14 lanes 2 and 4.
+- *Evidence:* desktop-14 (line end x 1210 touches `101` at x 1215 and `134` at x 1215); phone-14 (x 958 vs 955).
+- *Fix:* End the lines at x ≈ 470 and write one `EXIT CODE` column header above lane 1.
+- *Status:* fixed: lines end at x 470 and one `EXIT CODE` header sits over lane 1.
+
+**33. Step 15: all-cherry frame, no single focal point** (minor)
+- See finding 16 for the fix. Listed separately because finding 16 is about the wrong value, and this one is about colour focus (DESIGN.md: "the eye lands on one thing first").
+- *Status:* fixed with finding 16.
+
+**34. Steps 16 and 22: chips and empty timelines that say nothing** (minor)
+- *Where:* step 16 (four `s` chips, nearly invisible taupe text, labelled `s` even on the `Rc` and `exit` rows); steps 16 and 22 (an empty `DROP ORDER` timeline).
+- *What:* Decoration by DESIGN.md's test: the picture makes sense without them, and they add two more label sets.
+- *Fix:* Step 16: drop the chips and keep code · `✓ safe`. Steps 16 and 22: drop the empty timeline, or label it `no drops` if the emptiness is the point.
+- *Status:* fixed: chips, empty timelines removed from steps 16 and 22.
+
+**35. Step 17: the cut is drawn on `r`'s reference; three accents** (minor)
+- *Where:* step 17 row B.
+- *What:* The cherry `×` sits on the dashed `&mut` edge from `r` to the payload, so it reads as "the reference is cut". `r` is the one live way to the leaked bytes; what `Box::leak` cuts is the box's *owner* edge. The frame also uses caramel (brace, badge), cinnamon (the `&mut` edge) and cherry (the `×`), three accents where DESIGN.md allows two.
+- *Fix:* Draw a short caramel owner stub from a ghost `Box` outline, cut it with the `×`, and keep `r`'s `&mut` edge intact and latte (or cinnamon with no cherry).
+- *Status:* fixed: a ghost `Box` with a caramel owner stub is cut by the `×`; `r`'s `&mut` edge is intact and latte, so the step uses caramel and cherry only.
+
+**36. Step 18: names on screen don't match, and the year floats** (minor)
+- *Where:* step 18.
+- *What:* The badge says `1 data`, but no label on screen says `data` (the box is `heap: Vec<u32>`, drawn *inside* the parent's stack frame while the caption says the child borrowed the parent's *stack*). `2015` sits right above `child thread` and reads as its label. `Drop joins the child` (the mechanism) is at forgotten-opacity and nearly invisible. `use after free` floats in the gap, attached to nothing.
+- *Evidence:* desktop-18 (y 130–155, 278, 397–400).
+- *Fix:* Label the box `data: Vec<u32>` (or the badge `heap`). Move `2015` top-left as the storyboard says. Keep `Drop joins the child` at latte 0.8 beside the forgotten slot. Put `use after free` on the cherry edge, just above its open dot.
+- *Status:* fixed: payload reads `data: Vec<u32>`, `2015` moved top-left, `Drop joins the child` stays at latte 0.8, `use after free` sits on the cherry edge.
+
+**37. Step 19: two ideas, crowded labels** (minor)
+- *Where:* step 19.
+- *What:* `joined` and `joins all, then returns` are stacked about 12 CSS px apart on phone, and the latter touches the frame's bottom border. The borrow edges cross the frame's title line. On phone `len 0` fills its cell edge to edge. The lower half has five text items, and `scope` and leak amplification compete for the eye in one frame.
+- *Evidence:* phone-19 (y 597 / 632; cells x 297–515).
+- *Fix:* Put the frame label outside the frame's bottom edge in caramel and the `joined` ticks inside. Route the borrow edges out of the frame's right side. Widen the `len` cell. Cut the lower text to two lines (`len 0 before the proxy` / `forget → more leaks, never UB`), moving the rest to the caption.
+- *Status:* fixed: frame label moved below the frame in caramel, `len` cells widened, lower text cut to two lines (`len 0 before the proxy`, `forget → more leaks, never UB`).
+
+**38. Step 21: the reveal shows run results for code that does not compile** (minor)
+- *Where:* step 21 reveal.
+- *What:* The answer is "rustc refuses", yet the frame shows `temp · try_read ok`, `_g · try_read blocked` and two drop badges, as if it ran. A learner can't tell that these are the `#[allow(let_underscore_lock)]` measurements. The struck line is the same hard-to-read dark cherry as step 5.
+- *Fix:* Add a 13-unit taupe heading over the right-hand results, `if allowed:`. Use crema text with a cherry strike for line 1.
+- *Status:* fixed: `if allowed:` heading over the results; line 1 is crema with a cherry strike.
+
+**39. Step 22: the failure label is far from what fails** (minor)
+- *Where:* step 22 reveal.
+- *What:* `writes into freed memory` sits under the forgotten guard, about 200 units left of the `device` box. The device-to-`buf` edge is three short dashes, so the picture of "the device keeps writing" is the smallest thing on screen.
+- *Fix:* Draw a longer cherry edge from `device` to the dashed `buf`, with the label right under it.
+- *Status:* fixed: the device edge is 120 units long and the label sits right under it.
+
+**40. Step 23 (phone): a row nearly reaches the edge; the badge glyph overlaps itself; two rows repeat** (minor)
+- *Where:* step 23 `Recap`.
+- *What:* On phone, `Leaking is safe. forget, ManuallyDrop, leak` ends about 14 CSS px from the screen edge, inside the 16 px gutter. The `1 2 3` glyph's circles overlap each other and touch the left edge. Rows 1 and 2 both say "fields in order". The `[ ]` glyph for row 6 means nothing yet.
+- *Evidence:* phone-23 (row 5 ends x 1128 of 1170; glyph x 42–185).
+- *Fix:* Shorten row 5 to `Leaking is safe: forget, leak, cycles`. Space the three badges 26 units apart. Make row 1 `Destructor = Drop::drop, then glue` and row 2 `Locals reverse · fields in order`. For row 6, reuse step 19's scope frame mark (a small caramel-bordered rect).
+- *Status:* fixed: row 5 is `Leaking is safe: forget, leak, cycles`, badges 30 units apart and inset, rows 1 and 2 reworded, row 6 uses the caramel scope-frame mark.

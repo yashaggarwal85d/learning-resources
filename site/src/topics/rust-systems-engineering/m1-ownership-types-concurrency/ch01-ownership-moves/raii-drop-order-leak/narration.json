@@ -46,7 +46,6 @@
         "Where does a value die? Where its last owner ends.",
         "After a move, the owner is the new binding. So m dies at the closing brace of the function it was handed to, and the brace in main drops nothing for it.",
         "Mem drop isn't magic. It's a function that takes ownership and returns, so the value dies right there.",
-        "On a copy type, it does nothing... the original stays. On a reference, it drops the reference, not the value.",
         "And assigning over a variable builds the new value first, then drops the old one."
       ]
     },
@@ -98,7 +97,6 @@
         "It dies at the semicolon. That lock guard is gone before the next statement.",
         "Unless a let borrows it... then it lives to the end of the block.",
         "And a match scrutinee's temporaries live through every arm.",
-        "A loop header does the same: the lock stays held through the whole loop.",
         "That's how a lock gets held longer than it looks."
       ]
     },
