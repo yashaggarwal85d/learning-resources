@@ -252,13 +252,20 @@ Sections in the Python essentials pattern (`data-section` names), plus a frontie
 - [x] `SOURCES.md` extended with the quotes this plan cites (all from the already-fetched texts, plus one new source, Pro Git "Git Objects", fetched with `scripts/sources.mjs`); `node scripts/sources.mjs check` passes: 159 quotes found word for word, 0 problems.
 - [x] Draft `examples.sh` written and executed on Git 2.43.0 (passes in about 3 s; deterministic: two runs give identical output). Note: `sources/` holds the new fetched text `git_scm_com_book_en_v2_Git_Internals_Git_Objects.txt` (not committed, re-fetched by `sources.mjs check` when missing).
 - [x] Fact-check (`FACT-CHECK.md`), against `sources/*.txt` (2026-10-11): 26 findings, all corrections applied here and in `examples.sh`; 8 new sources (Git source at v2.43.0/v2.56.0, release notes 2.44/2.55/2.56) and new quotes added to `SOURCES.md`; `sources.mjs check` passes (200 quotes, 0 problems); `examples.sh` passes on 2.43.0 and is deterministic.
-- [ ] Coverage map (`coverage.json`) with blind expert list and gap hunt.
-- [ ] Build: `reel.tsx`, `scenes.tsx`, `index.mdx`, `prerequisites.mdx`, `narration.json`, `examples.py` (wrapping `examples.sh`), `coverage.json`, registry entry.
+- [x] Coverage map (`coverage.json`) with blind expert list (gap review: pending content review).
+- [x] Build: `reel.tsx`, `scenes.tsx`, `index.mdx`, `prerequisites.mdx`, `narration.json`, `examples.py` (wrapping `examples.sh`), `coverage.json`, registry entry.
 - [ ] Checks, narration, reviews, ship.
 
 ## Changes after final
 
-(none yet)
+Builder deviations (2026-10-11), each with its reason:
+
+- **Predict steps 2, 5 and 7: the answer frame is the finished picture, not an animation.** `ReelPlayer` does not restart the clock when the learner answers (`t` stays at the step's duration), exactly as in Python essentials, so an animation "from the answer" cannot play. Only the question frame animates. Step 5's answer is therefore ten stacked rows, one per test, each showing the window of suspects and the tested commit (a static picture of the halving) instead of one shrinking window, with the counter text `test k · N left` on each row.
+- **Step 2:** the two tip labels `tree 827c45a` sit above the merge dot and above the last rebased dot, and a single `=` sits in the gap between the panels.
+- **Step 3:** duration 4 (was 3.6) so the reflog ghost row has time to appear; the title above the todo list reads "as committed", then "the todo Git proposes".
+- **Step 4:** no faded ghost behind the resolved line (it would overlap text); the marker version stays at full strength and the resolved line plus the footer appear below it. Duration 3.6.
+- **Step 6:** the number line gives `0` its own slot at the left so the markers for 0 and 1 don't collide; the bands are otherwise to scale. Markers pop in place instead of dropping (a drop would pass through the labels). Duration 4.
+- **Expert list additions (blind list vs this outline):** `--force-with-lease` and `--force-if-includes` (git-push), `git range-diff`, `git revert -m`, `A..B` / `A...B` / `merge-base --fork-point`, `git pull`, `commit --amend` and splitting a commit, `--keep-base`, `--fixup=amend:`/`reword:`, `ort`, `-Xignore-space-change`, `checkout --ours`, branch protection, merge queue, commit-message norms, TBD's "couple of days", GitFlow incompatibility, cherry-picking onto release branches, branch by abstraction. Each is now in the Deep dive with a quote in `SOURCES.md` (`node scripts/sources.mjs check` passes). This supersedes "Left out on purpose: `--force-with-lease`" above. The stacked-pull-request and Nessie/GitOps frontier bullets were dropped (unsourced here; the latter two map to other topics in `coverage.json`).
 
 ## The claims list
 

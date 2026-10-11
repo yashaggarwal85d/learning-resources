@@ -657,3 +657,187 @@ Version: Git v2.56.0 (2026-09-28), fetched 2026-10-11 (added by the fact-check)
 
 Contents:
 - UI changes in 2.56, including `git bisect --reset-when-found` and `git history drop`.
+
+## Git - git-push Documentation
+URL: https://git-scm.com/docs/git-push
+Version: current docs as fetched 2026-10-11 (added by the builder for the expert list)
+
+> This option overrides this restriction if the current value of the remote ref is the expected value. git push fails otherwise.
+
+> If somebody else built on top of your original history while you are rebasing, the tip of the branch at the remote may advance with their commit, and blindly pushing with --force will lose their work.
+
+> It is like taking a "lease" on the ref without explicitly locking it
+
+Contents: NAME, SYNOPSIS, DESCRIPTION, OPTIONS (--force, --force-with-lease, --force-if-includes), NOTE ABOUT FAST-FORWARDS, EXAMPLES
+
+## Git - git-range-diff Documentation
+URL: https://git-scm.com/docs/git-range-diff
+Version: current docs as fetched 2026-10-11 (added by the builder for the expert list)
+
+> git-range-diff - Compare two commit ranges (e.g. two versions of a branch)
+
+> This command shows the differences between two versions of a patch series, or more generally, two commit ranges (ignoring merge commits).
+
+Contents: NAME, SYNOPSIS, DESCRIPTION, OPTIONS, OUTPUT STABILITY, ALGORITHM
+
+## Git - git-revert Documentation
+URL: https://git-scm.com/docs/git-revert
+Version: current docs as fetched 2026-10-11 (added by the builder for the expert list)
+
+> Usually you cannot revert a merge because you do not know which side of the merge should be considered the mainline.
+
+> Reverting a merge commit declares that you will never want the tree changes brought in by the merge.
+
+Contents: NAME, SYNOPSIS, DESCRIPTION, OPTIONS (-m parent-number), EXAMPLES
+
+## Git - git-pull Documentation
+URL: https://git-scm.com/docs/git-pull
+Version: current docs as fetched 2026-10-11 (added by the builder for the expert list)
+
+> First, git pull runs git fetch with the same arguments (excluding merge options) to fetch remote branch(es).
+
+> Only update to the new history if there is no divergent local history.
+
+Contents: NAME, SYNOPSIS, DESCRIPTION, OPTIONS (--ff-only, --ff, --rebase)
+
+## Git - gitrevisions Documentation
+URL: https://git-scm.com/docs/gitrevisions
+Version: current docs as fetched 2026-10-11 (added by the builder for the expert list)
+
+> you can ask for commits that are reachable from r2 excluding those that are reachable from r1 by ^r1 r2 and it can be written as r1..r2.
+
+Contents: NAME, SYNOPSIS, DESCRIPTION, SPECIFYING REVISIONS, SPECIFYING RANGES (the .. and ... notations)
+
+## Git - git-merge-base Documentation
+URL: https://git-scm.com/docs/git-merge-base
+Version: current docs as fetched 2026-10-11 (added by the builder for the expert list)
+
+> git merge-base finds the best common ancestor(s) between two commits to use in a three-way merge.
+
+Contents: NAME, SYNOPSIS, DESCRIPTION, OPTIONS (--fork-point)
+
+## Git - git-commit Documentation
+URL: https://git-scm.com/docs/git-commit
+Version: current docs as fetched 2026-10-11 (added by the builder for the expert list)
+
+> --fixup=[(amend|reword):]<commit>
+
+Contents: NAME, SYNOPSIS, DESCRIPTION, OPTIONS (--amend, --fixup, --squash)
+
+## Git - Rewriting History (Pro Git)
+URL: https://git-scm.com/book/en/v2/Git-Tools-Rewriting-History
+Version: Pro Git 2nd edition, as fetched 2026-10-11
+
+> You need to be careful with this technique because amending changes the SHA-1 of the commit.
+
+> Splitting a commit undoes a commit and then partially stages and commits as many times as commits you want to end up with.
+
+Contents: Changing the Last Commit; Changing Multiple Commit Messages; Reordering Commits; Squashing Commits; Splitting a Commit; The Nuclear Option: filter-branch
+
+## Git - Advanced Merging (Pro Git)
+URL: https://git-scm.com/book/en/v2/Git-Tools-Advanced-Merging
+Version: Pro Git 2nd edition, as fetched 2026-10-11
+
+> If you see that you have a lot of whitespace issues in a merge, you can simply abort it and do it again, this time with -Xignore-all-space or -Xignore-space-change.
+
+Contents: Merge Conflicts; Undoing Merges; Other Types of Merges; Rerere
+
+## About protected branches - GitHub Docs
+URL: https://docs.github.com/en/repositories/configuring-branches-and-merges-in-your-repository/managing-protected-branches/about-protected-branches
+Version: as fetched 2026-10-11 (added by the builder for the expert list)
+
+> By default, each branch protection rule disables force pushes to the matching branches and prevents the matching branches from being deleted.
+
+> The branch must be up to date with the base branch before merging.
+
+Contents: About branch protection rules; Require linear history; Allow force pushes; Allow deletions; Require status checks before merging (strict and loose)
+
+## Managing a merge queue - GitHub Docs
+URL: https://docs.github.com/en/repositories/configuring-branches-and-merges-in-your-repository/configuring-pull-request-merges/managing-a-merge-queue
+Version: as fetched 2026-10-11 (added by the builder for the expert list)
+
+> You must use the merge_group event to trigger your GitHub Actions workflow when a pull request is added to a merge queue.
+
+> the changes in the pull request are grouped into a merge_group with the latest version of the base_branch as well as changes from pull requests ahead of it in the queue.
+
+Contents: About merge queues; Triggering merge group checks; Managing merge queues
+
+## Trunk Based Development - Short-Lived Feature Branches
+URL: https://trunkbaseddevelopment.com/short-lived-feature-branches/
+Version: as fetched 2026-10-11 (added by the builder for the expert list)
+
+> Simply put, the branch should only last a couple of days.
+
+Contents: team size and the pull request; the length of life of a branch; code review and CI before landing
+
+## Trunk Based Development - Alternative branching models
+URL: https://trunkbaseddevelopment.com/alternative-branching-models/
+Version: as fetched 2026-10-11 (added by the builder for the expert list)
+
+> Git Flow is incompatible with Trunk-Based Development.
+
+Contents: GitFlow and similar; GitHub Flow; why long-running branches defer integration
+
+## Trunk Based Development - Branch for release
+URL: https://trunkbaseddevelopment.com/branch-for-release/
+Version: as fetched 2026-10-11 (added by the builder for the expert list)
+
+> cherry-picked from trunk onto the release branch
+
+Contents: release branches cut late; fix on trunk first; cherry-pick to the release branch
+
+## Trunk Based Development - Branch by Abstraction
+URL: https://trunkbaseddevelopment.com/branch-by-abstraction/
+Version: as fetched 2026-10-11 (added by the builder for the expert list)
+
+> Branch by Abstraction is a set-piece technique to effect a ’longer to complete’ change in the trunk.
+
+Contents: introduce an abstraction; write a second implementation; switch over; remove the abstraction
+
+## Git - git-merge Documentation (merge strategies)
+URL: https://git-scm.com/docs/git-merge
+Version: current docs as fetched 2026-10-11 (page shows: last updated in 2.54.0)
+
+> This is the default merge strategy when pulling or merging one branch.
+
+Contents: MERGE STRATEGIES (ort, recursive, resolve, octopus, ours, subtree)
+
+## Git - Contributing to a Project (Pro Git)
+URL: https://git-scm.com/book/en/v2/Distributed-Git-Contributing-to-a-Project
+Version: Pro Git 2nd edition, as fetched 2026-10-11 (added by the builder for the expert list)
+
+> As a general rule, your messages should start with a single line that’s no more than about 50 characters and that describes the changeset concisely, followed by a blank line, followed by a more detailed explanation.
+
+> Write your commit message in the imperative: "Fix bug" and not "Fixed bug" or "Fixes bug."
+
+Contents: Commit Guidelines; Private Small Team; Public Project
+
+## Git - Advanced Merging (Pro Git), checkout --ours
+URL: https://git-scm.com/book/en/v2/Git-Tools-Advanced-Merging
+Version: Pro Git 2nd edition, as fetched 2026-10-11
+
+> The git checkout command can also take --ours and --theirs options, which can be a really fast way of just choosing either one side or the other without merging things at all.
+
+## Git - git-rebase Documentation (--keep-base)
+URL: https://git-scm.com/docs/git-rebase
+Version: git-rebase last updated in 2.54.0; current docs as fetched 2026-10-11
+
+> Set the starting point at which to create the new commits to the merge base of <upstream> and <branch>.
+
+## Git - git-push Documentation (--force-if-includes)
+URL: https://git-scm.com/docs/git-push
+Version: current docs as fetched 2026-10-11
+
+> verify if updates from the remote-tracking refs that may have been implicitly updated in the background are integrated locally before allowing a forced update.
+
+## Git - gitrevisions Documentation (symmetric difference)
+URL: https://git-scm.com/docs/gitrevisions
+Version: current docs as fetched 2026-10-11
+
+> It is the set of commits that are reachable from either one of r1 (left side) or r2 (right side) but not from both.
+
+## Git - git-merge-base Documentation (--fork-point)
+URL: https://git-scm.com/docs/git-merge-base
+Version: current docs as fetched 2026-10-11
+
+> but also takes into account the reflog of <ref> to see if the history leading to <commit> forked from an earlier incarnation of the branch <ref>

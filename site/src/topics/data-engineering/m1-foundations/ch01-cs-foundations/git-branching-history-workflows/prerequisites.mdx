@@ -1,0 +1,47 @@
+import Resource from '../../../../../components/Resource.astro';
+
+This is a refresher, the second of five. It assumes you already use Git day to day: commit, branch, switch, push and pull. The syllabus treats introductory Git as known and does not teach it in depth, so the reel is a recap of branching and history, not a first course.
+
+<section class="prereq" data-section="git-basics">
+
+### <span class="n">01</span> Everyday Git: commits, branches and a remote
+
+Making a commit, creating and switching branches, and sharing work with <code>git push</code> and <code>git pull</code> against a remote such as GitHub. If you have only ever used Git through an editor's buttons, the two Pro Git chapters below take an afternoon and cover every command the reel assumes.
+
+<p class="check"><b>Check yourself:</b> what does <code>git switch -c fix</code> do? (Answer: it creates a branch called <code>fix</code> at the current commit and switches to it.)</p>
+
+<ul class="resources">
+  <Resource kind="reading" title="Getting a Git Repository" href="https://git-scm.com/book/en/v2/Git-Basics-Getting-a-Git-Repository" by="Pro Git, the official Git book">Chapter 2 starts here: repositories, commits and remotes.</Resource>
+  <Resource kind="reading" title="Basic Branching and Merging" href="https://git-scm.com/book/en/v2/Git-Branching-Basic-Branching-and-Merging" by="Pro Git, the official Git book">Chapter 3: creating, switching and merging branches, and a first conflict.</Resource>
+  <Resource kind="reading" title="Learn Git Branching" href="https://learngitbranching.js.org/">Interactive puzzles that draw the commit graph as you type commands.</Resource>
+</ul>
+
+</section>
+
+<section class="prereq" data-section="history">
+
+### <span class="n">02</span> Reading a commit history
+
+Every step of the reel is a picture of the commit graph: dots for commits, lines to their parents. You should be comfortable reading <code>git log --oneline --graph</code> and knowing that each commit points back at its parent, or at two parents for a merge.
+
+<p class="check"><b>Check yourself:</b> in a history drawn as a graph, how do you recognise a merge commit? (Answer: it is the one commit with two parents, so two lines join into it.)</p>
+
+<ul class="resources">
+  <Resource kind="reading" title="Viewing the Commit History" href="https://git-scm.com/book/en/v2/Git-Basics-Viewing-the-Commit-History" by="Pro Git, the official Git book">How to read <code>git log</code>, including the graph view.</Resource>
+</ul>
+
+</section>
+
+<section class="prereq" data-section="python-test">
+
+### <span class="n">03</span> A script that fails with a test
+
+The bisect steps use a tiny Python test: an <code>assert</code> that fails when the code is wrong, which makes the script stop with a non-zero exit code. If functions and <code>assert</code> are familiar from the Python refresher, that is all you need.
+
+<p class="check"><b>Check yourself:</b> what happens when an <code>assert</code> fails in a script? (Answer: it raises <code>AssertionError</code> and the script exits with a non-zero status, so a shell or a tool like <code>git bisect run</code> sees a failure.)</p>
+
+<ul class="resources">
+  <Resource kind="reel" title="Python language essentials" domain="data-engineering" host="de.git-branching-history-workflows" by="the refresher before this one" />
+</ul>
+
+</section>
