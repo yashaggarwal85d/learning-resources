@@ -17,22 +17,22 @@ impl Drop for SpillFile {
 
 mod bad {
     use super::*;
-    pub struct Spool {
+    struct Spool {
         dir: SpillDir,     // remove_dir in Drop
         spill: SpillFile,  // remove_file in Drop
     }
-    pub fn new(dir: SpillDir, spill: SpillFile) -> Spool {
-        Spool { dir, spill }
+    pub fn run(dir: SpillDir, spill: SpillFile) {
+        drop(Spool { dir, spill });
     }
 }
 mod good {
     use super::*;
-    pub struct Spool {
+    struct Spool {
         spill: SpillFile,  // remove_file in Drop
         dir: SpillDir,     // remove_dir in Drop
     }
-    pub fn new(dir: SpillDir, spill: SpillFile) -> Spool {
-        Spool { spill, dir }
+    pub fn run(dir: SpillDir, spill: SpillFile) {
+        drop(Spool { spill, dir });
     }
 }
 
@@ -46,11 +46,11 @@ fn make(name: &str) -> (SpillDir, SpillFile, PathBuf, PathBuf) {
 
 fn main() {
     let (dir, spill, d, f) = make("spool-bad");
-    drop(bad::new(dir, spill));
+    bad::run(dir, spill);
     println!("bad: dir exists={} file exists={}", d.exists(), f.exists());
     let _ = fs::remove_dir(&d);
 
     let (dir, spill, d, f) = make("spool-good");
-    drop(good::new(dir, spill));
+    good::run(dir, spill);
     println!("good: dir exists={} file exists={}", d.exists(), f.exists());
 }

@@ -1,0 +1,247 @@
+{
+  "topic": "rust.raii-drop-order-leak",
+  "note": "Written to be spoken: one sentence or phrase per line; {\"beat\": s} is a deliberate pause; numbers are phrased the way they are said. `answer` plays after the learner answers a predict step.",
+  "steps": [
+    {
+      "lines": [
+        "You've seen that the single owner decides who destroys a value.",
+        "Now: exactly when that happens, in what order, and why Rust still lets you skip it.",
+        {
+          "beat": 0.4
+        },
+        "Here is a pipeline stage. It reads a flag under a reader-writer lock, and if the flag isn't set, it takes the write lock and sets it.",
+        "It's the Rust Edition Guide's own example.",
+        "Compiled with the twenty twenty-one edition, it hangs forever. Compiled with the twenty twenty-four edition, it runs.",
+        "Same source. The only thing that changed is when a temporary dies.",
+        {
+          "beat": 0.4
+        },
+        "By the end, you'll place every destructor in a program on a timeline, build a wrapper that closes a file exactly once, and know why leaking is allowed."
+      ]
+    },
+    {
+      "lines": [
+        "When a value is no longer needed, Rust runs its destructor.",
+        "And a destructor is two parts.",
+        "First, your drop, if the type has one. Then the compiler's own drop glue, which drops every field... in the order you wrote them.",
+        "So this stage logs its own name first, then name, input, and the spill file.",
+        "Most types never write a drop at all. The glue already drops their fields.",
+        "Our probe, a trace, is just a value whose drop writes its name to a log."
+      ]
+    },
+    {
+      "lines": [
+        "Let's predict one.",
+        "Three locals, declared in order: a, then b, then c.",
+        "At the closing brace, in what order do they die?"
+      ],
+      "answer": [
+        "The reverse. C, then b, then a.",
+        "That's the opposite of struct fields... and there's a reason. A later local may be borrowing an earlier one, so it has to go first."
+      ]
+    },
+    {
+      "lines": [
+        "Where does a value die? Where its last owner ends.",
+        "After a move, the owner is the new binding. So m dies at the closing brace of the function it was handed to, and the brace in main drops nothing for it.",
+        "Mem drop isn't magic. It's a function that takes ownership and returns, so the value dies right there.",
+        "On a copy type, it does nothing... the original stays.",
+        "And assigning over a variable drops the old value on the spot."
+      ]
+    },
+    {
+      "lines": [
+        "Your type has a drop. You hold x, and you write x dot drop.",
+        "Does the compiler let you run the destructor by hand?"
+      ],
+      "answer": [
+        "Rejected. The explicit destructor call error.",
+        "Your call would run drop, and then the brace would run it again... so Rust forbids the call, and offers mem drop instead."
+      ]
+    },
+    {
+      "lines": [
+        "Why can't a file handle be copy?",
+        "Because two copies would close the same file twice.",
+        "A type with a drop manages something besides its own bytes, so a bitwise copy would duplicate that responsibility.",
+        "That's why copy and drop never meet. The compiler rejects it.",
+        "Put three rules together. One owner. A move empties the source. And no copy on a type with a destructor.",
+        "Exactly once isn't a convention... it's a theorem."
+      ]
+    },
+    {
+      "lines": [
+        "Now the real thing. A spill file: a temporary file that's closed and unlinked in drop.",
+        "RAII in Rust is just ownership plus drop.",
+        "Hand it through two functions and back... one close, one unlink.",
+        "No defer. No finally. No with. There is exactly one owner, and its scope end is the release.",
+        "The file itself is four bytes, the descriptor.",
+        "One caveat: errors on close are ignored by drop. Call sync all first, if they matter."
+      ]
+    },
+    {
+      "lines": [
+        "A spool owns a directory guard and a file guard, in that order.",
+        "The directory's drop removes the directory. The file's drop removes the file.",
+        "After the spool is dropped, what's left on disk?"
+      ],
+      "answer": [
+        "The directory stays.",
+        "Dir is declared first, so it drops first, while the file is still inside... and removing a full directory fails.",
+        "Declare the spill file first, and both go."
+      ]
+    },
+    {
+      "lines": [
+        "A temporary is a value with no name.",
+        "It dies at the semicolon. That lock guard is gone before the next statement.",
+        "Unless a let borrows it... then it lives to the end of the block.",
+        "And a match scrutinee's temporaries live through every arm.",
+        "That's how a lock gets held longer than it looks."
+      ]
+    },
+    {
+      "lines": [
+        "Back to the stage under the old edition. The migration lint fires.",
+        "You run the automatic fix.",
+        "What does it produce... and is the deadlock gone?"
+      ],
+      "answer": [
+        "It rewrites the if let into a match... and the match keeps the old order. The deadlock stays.",
+        "The guide says: review each rewrite, and put the if let back where you want the shorter life."
+      ]
+    },
+    {
+      "lines": [
+        "Rust twenty twenty-four changes two temporary scopes. Both make a temporary die sooner.",
+        "In an if let, the scrutinee's temporaries now drop before the else branch.",
+        "In a block's tail expression, they drop before the block's own locals.",
+        "That one badge, landing on the other side of the else, is the whole difference between hanging and running.",
+        "A match is unchanged."
+      ]
+    },
+    {
+      "lines": [
+        "The Edition Guide's other example. A function ends with a borrow of a ref cell, as its tail expression.",
+        "Which editions compile it?"
+      ],
+      "answer": [
+        "Only twenty twenty-four.",
+        "In the old edition, the borrow guard outlived the cell itself, so the compiler refused... the does-not-live-long-enough error.",
+        "Now the guard goes first, and it compiles."
+      ]
+    },
+    {
+      "lines": [
+        "Here's a value moved on one path only.",
+        "So at the closing brace, who knows whether to drop it?",
+        "Only the running program does. So the compiler keeps a one-bit flag on the stack, and checks it at the brace.",
+        "You can see it in the compiler's intermediate code: a constant true, a constant false, and a switch."
+      ]
+    },
+    {
+      "lines": [
+        "Destructors run on the normal path. And a panic still drops everything on its way out, in the same reverse order.",
+        "But process exit drops nothing.",
+        "And with panic set to abort, nothing either.",
+        "So a spill file is cleaned up after a panic, but not after an exit.",
+        "One more rule: a drop that panics while already unwinding aborts the whole process. Keep drop bodies simple."
+      ]
+    },
+    {
+      "lines": [
+        "Mem forget takes a value and never drops it.",
+        "The file stays open, and on disk. The path's buffer is never freed... the counting allocator sees one allocation too many.",
+        "And all of that is safe code.",
+        "Because Rust never promised destructors would run.",
+        "Leaking is usually a bug. But it's a memory-safe bug."
+      ]
+    },
+    {
+      "lines": [
+        "Four ways to end up with a value that never drops.",
+        "Which of them needs unsafe?"
+      ],
+      "answer": [
+        "None of them. Leaking is safe... forget, box leak, a reference-count cycle, process exit.",
+        "The unsafe one is running a destructor by hand, with manually drop's drop, because nothing stops it running twice."
+      ]
+    },
+    {
+      "lines": [
+        "Two honest ways to skip a destructor, on purpose.",
+        "Manually drop: the same bytes, no automatic drop. Hand the value back with into inner, and it drops.",
+        "Box leak: cut the owner, keep the bytes for the whole program.",
+        "Neither one fixes drop order. For that, reorder your declarations."
+      ]
+    },
+    {
+      "lines": [
+        "Twenty fifteen, just before Rust one point oh.",
+        "A thread API handed out a guard whose drop joined the child thread. The child borrowed the parent's stack, so the parent couldn't leave first.",
+        "Then someone forgot the guard, in safe code.",
+        "The parent's frame went away, and the child kept running, with a reference into it.",
+        "Safe code. Memory unsafety.",
+        "The fix wasn't to forbid leaks. It was to admit that destructors may never run."
+      ]
+    },
+    {
+      "lines": [
+        "So put the guarantee in a function call, not in a destructor.",
+        "Thread scope joins every thread before it returns. A return can't be forgotten.",
+        "The general rule: unsafe code must never rely on drop running.",
+        "And when you hand out a proxy, make the owner safe first. A vector sets its length to zero before it gives out a drain. Forget the drain, and you only leak more.",
+        "That's called leak amplification."
+      ]
+    },
+    {
+      "lines": [
+        "Prove it, one of three.",
+        "A function takes a parameter a, a tuple parameter with b and c, and has one local, d.",
+        "In what order do the four drop?"
+      ],
+      "answer": [
+        "D, c, b, a.",
+        "The local first. Then the parameters, last and in reverse... and inside the tuple pattern, c before b."
+      ]
+    },
+    {
+      "lines": [
+        "Two of three.",
+        "You write let underscore equals a write lock, and then increment a counter.",
+        "Is the counter protected?"
+      ],
+      "answer": [
+        "The compiler refuses it.",
+        "An underscore binds nothing, so the guard would die at the semicolon and the increment would run unlocked... which is exactly why that line is a deny-by-default lint.",
+        "Name the guard."
+      ]
+    },
+    {
+      "lines": [
+        "Three of three. A code review.",
+        "Someone proposes an API that hands out a guard, and says the guard must be dropped, or the device keeps writing into the buffer.",
+        "Is it sound?"
+      ],
+      "answer": [
+        "Unsound. A safe caller can forget the guard, the buffer is freed, and the device keeps writing.",
+        "Soundness may never depend on drop running.",
+        "Move the stop into a function that takes a closure, like thread scope."
+      ]
+    },
+    {
+      "lines": [
+        "Six things to keep.",
+        "A destructor is your drop, then the fields, in order. Locals go in reverse.",
+        "A temporary dies at its semicolon, and the twenty twenty-four edition ends two of them sooner.",
+        "One owner means one release. That's RAII.",
+        "Leaking is safe. So soundness never depends on drop running.",
+        {
+          "beat": 0.3
+        },
+        "A type with a drop keeps its fields until it dies.",
+        "Next: how do you take one field out early... say, to hand the buffer back to its pool, from inside a guard?"
+      ]
+    }
+  ]
+}

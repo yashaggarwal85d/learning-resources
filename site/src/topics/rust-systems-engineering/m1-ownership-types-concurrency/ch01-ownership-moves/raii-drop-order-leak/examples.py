@@ -60,14 +60,27 @@ def lines_of(out):
     return dict(l.split(': ', 1) for l in out.strip().split('\n') if ': ' in l)
 
 
+def _norm(line):
+    """A source line without comments and whitespace, to compare an on-screen line with the file's line."""
+    line = re.sub(r'/\*.*?\*/', '', line)
+    line = re.sub(r'//.*$', '', line)
+    return re.sub(r'\s+', '', line)
+
+
 def shown(file, *lines):
-    """Snippet lines shown on screen: each must be a line of the example file, and (once scenes.tsx exists) of scenes.tsx."""
-    text = src(file)
-    have = {l.rstrip() for l in text.split('\n')}
+    """Snippet lines shown on screen. Each must be a line of examples/<file>.rs (ignoring comments and spacing; a pair
+    (on_screen, in_file) names the file's own text where the screen shows a shortened form), and, once scenes.tsx exists,
+    appear verbatim in scenes.tsx."""
+    have = [l for l in src(file).split('\n')]
+    norms = {_norm(l) for l in have}
     for l in lines:
-        assert l.rstrip() in have or l.strip() in {h.strip() for h in have}, f'{file}.rs has no line {l!r}'
+        scene, infile = l if isinstance(l, tuple) else (l, None)
+        if infile is not None:
+            assert infile in src(file), f'{file}.rs has no text {infile!r}'
+        else:
+            assert _norm(scene) in norms, f'{file}.rs has no line {scene!r}'
         if SCENES_SRC is not None:
-            assert l.strip() in SCENES_SRC, f'scenes.tsx has no line {l!r}'
+            assert scene in SCENES_SRC, f'scenes.tsx has no line {scene!r}'
 
 
 # ---------------------------------------------------------------------------------------------------------------
@@ -102,11 +115,13 @@ for ed in ('2021', '2024'):
         assert got[k] == v, f'trace {ed} {k}: {got[k]} != {v}'
 # The reel's badge numbers: 1 2 3 4 for the stage, 1 2 3 for the locals, 1 2 for the two-badge cases.
 assert len(eval(EQUAL['stage'])) == 4 and len(eval(EQUAL['locals'])) == 3 and len(eval(EQUAL['memdrop'])) == 2
-shown('trace', 'struct Trace(&\'static str);          // logs its name in Drop', 'struct Stage {', '    name: Trace,', '    input: Trace,',
-      '    spill: SpillFile,                // closes + unlinks in Drop', 'fn consume(t: Trace) {}',
-      'fn params(a: Trace, (b, c): (Trace, Trace)) {', '    let d = Trace("d");', '    let t = Trace("cond");', '    if flag {', '        consume(t);',
-      '    let z = Trace("z");', '        let a = Trace("a");', '        let b = Trace("b");', '        let c = Trace("c");',
-      '        let r = &Trace("ext");', '        let mut v = Trace("v1");', '        v = Trace("v2");')
+shown('trace', "struct Trace(&'static str);          // logs its name in Drop", 'struct Stage {', '    name: Trace,', '    input: Trace,',
+      '    spill: SpillFile,                // closes + unlinks in Drop', ('impl Drop for Stage { /* logs "stage" */ }', 'impl Drop for Stage {'),
+      'fn consume(t: Trace) { }        // t dies here', 'let m = Trace("m");', 'let n = Trace("n");', 'consume(m);                      // m moved in',
+      'drop(n);                         // = fn drop<T>(_x: T) {}',
+      'fn params(a: Trace, (b, c): (Trace, Trace)) {', '    let d = Trace("d");', 'let t = Trace("cond");', 'if flag {',
+      '    consume(t);          // moved on this path only', 'let z = Trace("z");', 'let a = Trace("a");', 'let b = Trace("b");', 'let c = Trace("c");',
+      'let r = &Trace("ext");')
 assert 'impl Drop for Stage {' in src('trace')
 
 # ---------------------------------------------------------------------------------------------------------------
@@ -115,8 +130,8 @@ out = run_ok('iflet_rwlock', '2021')
 assert 'try_write failed: "WouldBlock"' in out and out.strip().endswith('None'), out
 out = run_ok('iflet_rwlock', '2024')
 assert 'set to true' in out and out.strip().endswith('Some(true)'), out
-shown('iflet_rwlock_deadlock', '    if let Some(x) = *value.read().unwrap() {', '        println!("value is {x}");', '    } else {',
-      '        let mut v = value.write().unwrap();', '        *v = Some(true);')
+shown('iflet_rwlock_deadlock', 'if let Some(x) = *value.read().unwrap() {', '    println!("value is {x}");', '} else {',
+      '    let mut v = value.write().unwrap();', '    *v = Some(true);')
 
 # E2b · the real write(): under 2021 the process never finishes (killed after 5 s); under 2024 it runs.
 b21, _ = compile_rs('iflet_rwlock_deadlock', '2021')
@@ -150,13 +165,13 @@ assert 'relative drop order changing in Rust 2024' in err
 out = run_ok('tail_lint', '2021').split()
 assert out[:4] == ['drop', 'local', 'drop', 'tail'], out
 assert run_ok('tail_lint', '2024').split()[:4] == ['drop', 'tail', 'drop', 'local']
-shown('tail_refcell', '    let c = RefCell::new("..");', '    c.borrow().len()')
+shown('tail_refcell', 'fn f() -> usize {', '    let c = RefCell::new("..");', '    c.borrow().len()')
 
 # ---------------------------------------------------------------------------------------------------------------
 # E4 · SpillFile, exactly once (step 7; Lab 3).
 shown('spill', 'struct SpillFile { path: PathBuf, file: File }', 'impl Drop for SpillFile {', '    fn drop(&mut self) {',
-      '        let _ = fs::remove_file(&self.path);', '        CLOSES.fetch_add(1, Relaxed);', 'fn pass(s: SpillFile) -> SpillFile { s }')
-assert 'let s = pass(pass(SpillFile::create(p.clone())?));' in src('spill')
+      '        let _ = fs::remove_file(&self.path);', '        CLOSES.fetch_add(1, Relaxed);', 'fn pass(s: SpillFile) -> SpillFile { s }',
+      ('let s = pass(pass(SpillFile::create(p)?));', 'let s = pass(pass(SpillFile::create(p.clone())?));'))
 spill_lines = run_ok('spill').strip().split('\n')
 assert spill_lines[0] == 'inside: closes=0 exists=true'
 assert spill_lines[1] == 'closes=1 exists=false'
@@ -167,7 +182,7 @@ assert sizes == {'size_file': '4', 'size_pathbuf': '24', 'size_spill': '32', 'si
 assert (int(sizes['size_file']), int(sizes['size_pathbuf']), int(sizes['size_spill'])) == (FILE_BYTES, PATHBUF_BYTES, SPILL_BYTES)
 
 # E5 · the field-order bug on disk (step 8; Lab 3).
-shown('spool', '        dir: SpillDir,     // remove_dir in Drop', '        spill: SpillFile,  // remove_file in Drop')
+shown('spool', 'struct Spool {', '    dir: SpillDir,     // remove_dir in Drop', '    spill: SpillFile,  // remove_file in Drop')
 out = run_ok('spool').strip().split('\n')
 assert out == ['bad: dir exists=true file exists=false', 'good: dir exists=false file exists=false'], out
 
@@ -179,9 +194,9 @@ for needle in ('pub static BYTES: AtomicUsize = AtomicUsize::new(0); // bytes re
     assert needle in leak_src, needle
 # Only the allocator impl uses `unsafe`: the `unsafe impl` and the two `unsafe fn`, with one inner `unsafe { }` in each.
 assert leak_src.count('unsafe {') == 2 and leak_src.count('unsafe impl') == 1 and leak_src.count('unsafe fn') == 2, 'unsafe outside the allocator'
-shown('leak', '        std::mem::forget(s);     // safe. No drop.', '    let before = allocs() - deallocs();',
-      '        let s = SpillFile::create(path())?;', '        let spill = SpillFile::create(p2.clone())?;', '        let m = ManuallyDrop::new(spill);',
-      '    let r: &\'static mut [u8; 64] =', '        Box::leak(Box::new([7u8; 64]));')
+shown('leak', '    std::mem::forget(s);     // safe. No drop.', 'let before = allocs() - deallocs();',
+      'let s = SpillFile::create(path())?;', 'let m = ManuallyDrop::new(spill);', 'let s = ManuallyDrop::into_inner(m); drop(s);',
+      "let r: &'static mut [u8; 64] =", '    Box::leak(Box::new([7u8; 64]));')
 r = lines_of(run_ok('leak'))
 BASELINE_CLOSES = 1
 assert run_ok('leak').split('\n')[0] == f'baseline closes={BASELINE_CLOSES}'
@@ -238,13 +253,14 @@ fails('dropck', '2024', 'error[E0597]: `world.days` does not live long enough', 
 compile_rs('dropck_ok', '2024')  # the same program without the Drop impl is sound and compiles
 fails('e0509', '2024', 'error[E0509]: cannot move out of type `Guard`, which implements the `Drop` trait')
 fails('let_underscore', '2024', 'error: non-binding let on a synchronization lock', '#[deny(let_underscore_lock)]')
-shown('e0040', 'struct Foo;', '    let x = Foo;', '    x.drop();')
+shown('e0040', 'impl Drop for Foo {', ('    fn drop(&mut self) { /* kaboom */ }', '    fn drop(&mut self) {'), 'let x = Foo;', 'x.drop();')
 ERROR_CODES = ['E0040', 'E0184', 'E0597', 'E0716', 'E0509']
 
 # E10 · temporaries and lock guards (step 9).
 out = run_ok('semi').strip().split('\n')
 assert out == ['after statement: try_lock ok = true', 'in arm: try_lock ok = false', 'after match: try_lock ok = true'], out
-shown('semi', '    m.lock().unwrap().push(1);')
+shown('semi', 'm.lock().unwrap().push(1);', 'match m.lock().unwrap().len() {')
+shown('wild', 'let _ = lock.write().unwrap();', 'shared += 1;', 'let _g = lock.write().unwrap();')
 
 # E11 · `let _` against `let _g` (step 21).
 out = run_ok('wild').strip().split('\n')
@@ -276,6 +292,19 @@ assert SOFT_NOFILE - STD_FDS == 1021
 
 # Prove it 7 (defend-a-design): `with_spill` against a returned guard are both safe; nothing to execute beyond E4 and E6.
 # Step 22's DMA guard is a sketch (not compiled), and step 18's `thread::scoped` no longer exists in std.
+
+# E15 · lifetime extension, measured (Deep dive "Temporaries: scopes, extension, and the two 2024 changes").
+out = lines_of(run_ok('ext_more'))
+assert out['some'] == '["after-some", "some"]'          # Some(&temp()) extends: a tuple-variant constructor argument
+assert out['pin'] == '["after-pin", "pin", "fa"]'       # pin!(..) and format_args!(..) keep their temporaries to the block's end
+assert out['arg'] == '["arg", "after-arg"]'             # a function argument does not extend: dies at the semicolon
+# Without a later use of `r` the E0716 program only warns (the Deep dive says so).
+EOF_E0716 = src('e0716').replace('    println!("{r}");\n', '    let _ = &r;\n')
+open(os.path.join(WD, 'e0716_nouse.rs'), 'w').write(EOF_E0716.replace('let _ = &r;', ''))
+r = subprocess.run([RUSTC, '--edition', '2024', '--color', 'never', os.path.join(WD, 'e0716_nouse.rs'), '-o', os.path.join(WD, 'e0716_nouse')], capture_output=True, text=True)
+assert r.returncode == 0, r.stderr
+
+# E16 · what `cargo fix --edition` does is the lint's suggestion (E2c above): the rewrite has the pattern arm and a `_` arm.
 
 print(f'ok: {ver}; drop order traced in both editions (19 lines); 2021 deadlocks (killed after {DEADLOCK_TIMEOUT} s), 2024 runs; '
       f'SpillFile closes once ({FILE_BYTES}/{PATHBUF_BYTES}/{SPILL_BYTES} bytes); forget leaks {LEAK_ALLOCS} allocation, {BUF_CAP:,} bytes for a 64 KiB vec; '
