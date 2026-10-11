@@ -1,0 +1,202 @@
+[
+  {
+    "item": "Directory permission bits mean different things than file bits: r lists names, w creates/removes/renames entries (so deleting a file needs w on the directory, not on the file), x lets you traverse and access entries by name.",
+    "source": "https://www.gnu.org/software/coreutils/manual/html_node/Mode-Structure.html",
+    "placement": "here"
+  },
+  {
+    "item": "Special bits: setgid on a shared directory makes new files inherit the directory's group (the usual fix for a team landing zone); the sticky bit on a directory like /tmp stops users deleting or renaming each other's files.",
+    "source": "https://www.gnu.org/software/coreutils/manual/html_node/Mode-Structure.html",
+    "placement": "here"
+  },
+  {
+    "item": "umask is a per-process mask whose bits are turned off from the mode passed to open()/mkdir(), so a job that writes files readable by no one else (or world-readable) usually has an inherited umask problem, not a chmod problem.",
+    "source": "https://manpages.debian.org/bookworm/manpages-dev/umask.2.en.html",
+    "placement": "here"
+  },
+  {
+    "item": "A file is a reference-counted inode: names are hard links (st_nlink), and rm/unlink only removes a name; if a process still holds the file open, the data and its disk space persist until the last descriptor closes (why df shows a full disk that du cannot find; look for '(deleted)' targets under /proc/<pid>/fd).",
+    "source": "https://manpages.debian.org/bookworm/manpages-dev/unlink.2.en.html",
+    "placement": "here"
+  },
+  {
+    "item": "rename() atomically replaces an existing target, so 'write to a temp file in the same directory, then mv over the final name' gives readers either the old or the new file, never a partial one; it fails with EXDEV across filesystems, where mv silently degrades to copy+delete and loses atomicity.",
+    "source": "https://manpages.debian.org/bookworm/manpages-dev/rename.2.en.html",
+    "placement": "here"
+  },
+  {
+    "item": "Redirections are processed left to right: 'cmd > file 2>&1' sends both streams to file, while 'cmd 2>&1 > file' sends stderr to the old stdout (the terminal) because fd 2 was duplicated before fd 1 moved; &>file is bash shorthand for both, and set -o noclobber makes > refuse to overwrite an existing file.",
+    "source": "https://www.gnu.org/software/bash/manual/html_node/Redirections.html",
+    "placement": "here"
+  },
+  {
+    "item": "A pipeline's exit status is that of the last command only, so 'extract | gzip > out.gz' reports success even when extract failed; set -o pipefail makes it return the rightmost non-zero status instead. |& pipes stderr too (shorthand for 2>&1 |).",
+    "source": "https://www.gnu.org/software/bash/manual/html_node/Pipelines.html",
+    "placement": "here"
+  },
+  {
+    "item": "Each stage of a multi-command pipeline runs in its own subshell, so 'producer | while read x; do count=...; done' loses variable changes after the loop unless shopt -s lastpipe is set (and job control is off).",
+    "source": "https://www.gnu.org/software/bash/manual/html_node/Pipelines.html",
+    "placement": "here"
+  },
+  {
+    "item": "set -e has deliberate holes: it does not fire for commands in if/while tests, any command in a && or || list except the last, non-final pipeline stages without pipefail, or commands negated with !; 'set -euo pipefail' plus explicit checks is the defensible baseline, not a guarantee.",
+    "source": "https://www.gnu.org/software/bash/manual/html_node/The-Set-Builtin.html",
+    "placement": "here"
+  },
+  {
+    "item": "Exit-status conventions: 0 success, 1-125 command-defined failure, 126 found but not executable, 127 command not found, 128+N killed by signal N (137 = SIGKILL, 143 = SIGTERM, 130 = SIGINT); builtins use 2 for usage errors.",
+    "source": "https://www.gnu.org/software/bash/manual/html_node/Exit-Status.html",
+    "placement": "here"
+  },
+  {
+    "item": "grep's exit status is a three-way signal: 0 a line matched, 1 no match, 2 error; under set -e or pipefail, a grep that simply finds nothing (status 1) will abort the script unless you handle it ('|| true' or an explicit test).",
+    "source": "https://www.gnu.org/software/grep/manual/html_node/Exit-Status.html",
+    "placement": "here"
+  },
+  {
+    "item": "Pipes are bounded kernel buffers (64 KiB by default on Linux): a writer blocks when the reader is slow, which gives free backpressure but also deadlocks a process that fills one pipe while its peer waits on another.",
+    "source": "https://manpages.debian.org/bookworm/manpages/pipe.7.en.html",
+    "placement": "here"
+  },
+  {
+    "item": "Writing to a pipe whose readers are all gone raises SIGPIPE (or EPIPE if ignored), which is why 'producer | head' ends the producer early with status 141 (128+13), harmless in itself but fatal under pipefail; writes up to PIPE_BUF (4096 bytes on Linux) are atomic, so larger interleaved writes from parallel workers can tear lines.",
+    "source": "https://manpages.debian.org/bookworm/manpages/pipe.7.en.html",
+    "placement": "here"
+  },
+  {
+    "item": "fork() duplicates the process with copy-on-write memory; the child inherits copies of the open file descriptors, which share file offsets and status flags with the parent, and only the calling thread is duplicated.",
+    "source": "https://manpages.debian.org/bookworm/manpages-dev/fork.2.en.html",
+    "placement": "here"
+  },
+  {
+    "item": "execve() does not create a process: it replaces the program in the same PID; caught signal handlers reset to default, ignored signals stay ignored, and descriptors stay open unless marked close-on-exec (the source of leaked fds and 'exec' in wrapper scripts keeping the PID).",
+    "source": "https://manpages.debian.org/bookworm/manpages-dev/execve.2.en.html",
+    "placement": "here"
+  },
+  {
+    "item": "A child that exits stays a zombie (ps state Z, <defunct>) until its parent wait()s for it; orphans are reparented to init or the nearest subreaper, which reaps them. Zombies hold no memory but do hold PIDs.",
+    "source": "https://manpages.debian.org/bookworm/manpages-dev/wait.2.en.html",
+    "placement": "here"
+  },
+  {
+    "item": "A program running as PID 1 in a container takes on init's job: orphaned children are reparented to it and stay zombies unless it wait()s for them. That is why images use a minimal init, or the exec form so the job itself gets the signals.",
+    "source": "https://manpages.debian.org/bookworm/manpages-dev/wait.2.en.html",
+    "placement": "later: Images, layers and local environments"
+  },
+  {
+    "item": "SIGKILL and SIGSTOP cannot be caught, blocked or ignored, so 'kill -9' skips every cleanup handler (temp files, lock release, flushing buffers, committing offsets). Send SIGTERM first, give a grace period, then escalate.",
+    "source": "https://manpages.debian.org/bookworm/manpages/signal.7.en.html",
+    "placement": "here"
+  },
+  {
+    "item": "Signal dispositions are inherited across fork(); nohup and background jobs work by ignoring SIGHUP, and an interactive bash resends SIGHUP to its jobs on exit unless they are disowned, so jobs started from an ssh session die when it drops.",
+    "source": "https://www.gnu.org/software/bash/manual/html_node/Signals.html",
+    "placement": "here"
+  },
+  {
+    "item": "If bash is waiting on a foreground command when a trapped signal arrives, the trap runs only after that command finishes. A wrapper that must forward SIGTERM should run the child in the background and 'wait' on it, which returns >128 at once.",
+    "source": "https://www.gnu.org/software/bash/manual/html_node/Signals.html",
+    "placement": "here"
+  },
+  {
+    "item": "kill with a negative PID signals a whole process group (kill -TERM -<pgid>), which is how you stop a pipeline or a job's whole tree; kill -0 <pid> sends nothing but tests whether the process exists and you may signal it.",
+    "source": "https://manpages.debian.org/bookworm/manpages-dev/kill.2.en.html",
+    "placement": "here"
+  },
+  {
+    "item": "timeout(1) sends SIGTERM and exits 124 on timeout (137 if KILL was needed); add -k/--kill-after to escalate to SIGKILL for a child that ignores TERM, which is the standard guard on a cron or CI step that can hang.",
+    "source": "https://manpages.debian.org/bookworm/coreutils/timeout.1.en.html",
+    "placement": "here"
+  },
+  {
+    "item": "ps state codes for triage: R running/runnable, S interruptible sleep, D uninterruptible sleep (usually I/O; signals, even kill -9, cannot interrupt it), T stopped, Z zombie (<defunct>); 'ps -eo pid,stat,wchan:20,cmd' shows the kernel function each process is sleeping in.",
+    "source": "https://manpages.debian.org/bookworm/procps/ps.1.en.html",
+    "placement": "here"
+  },
+  {
+    "item": "Linux load average counts tasks that are runnable (R) and in uninterruptible disk wait (D), so a load of 40 on an idle CPU usually means stuck I/O (NFS, a failing disk, a stalled FUSE/object-store mount), not CPU saturation.",
+    "source": "https://manpages.debian.org/bookworm/manpages/proc.5.en.html",
+    "placement": "here"
+  },
+  {
+    "item": "In top, %CPU above 100% is normal for a multithreaded process in Irix mode (Shift+I switches to Solaris mode, divided by CPU count); 'wa' is the share of CPU time waiting on I/O; RES is resident memory while VIRT includes merely reserved address space, so a large VIRT alone is not a leak.",
+    "source": "https://manpages.debian.org/bookworm/procps/top.1.en.html",
+    "placement": "here"
+  },
+  {
+    "item": "Hung-job triage without restarting it: /proc/<pid>/wchan and /proc/<pid>/stack (kernel function it is blocked in), /proc/<pid>/fd and fdinfo (which files/sockets are open and the read offset, which tells you progress through an input), /proc/<pid>/io (read_bytes/write_bytes moving or not), /proc/<pid>/environ (the env it actually started with).",
+    "source": "https://manpages.debian.org/bookworm/manpages/proc.5.en.html",
+    "placement": "here"
+  },
+  {
+    "item": "strace -p <pid> attaches to a running process and Ctrl-C detaches, leaving it running; -f follows threads/children, -tt -T timestamps each call and its duration, -y/--decode-fds=path turns fd numbers into paths, and a single '<unfinished ...>' read/futex/poll/connect shows exactly what the job is waiting on.",
+    "source": "https://manpages.debian.org/bookworm/strace/strace.1.en.html",
+    "placement": "here"
+  },
+  {
+    "item": "strace -c gives a per-syscall count/time/error summary (cheap way to spot a job doing millions of tiny reads or failing stat() calls), and -e trace=%file / %network narrows the output; tracing slows syscall-heavy processes, so use it briefly on production jobs.",
+    "source": "https://manpages.debian.org/bookworm/strace/strace.1.en.html",
+    "placement": "here"
+  },
+  {
+    "item": "awk splits on runs of whitespace by default (set -F for CSV-ish data, and know it is not a CSV parser); assigning to any field rebuilds $0 with OFS, and '$1=$1' is the idiom to force that rebuild.",
+    "source": "https://www.gnu.org/software/gawk/manual/html_node/Changing-Fields.html",
+    "placement": "here"
+  },
+  {
+    "item": "sed -i edits files in place with no undo (-i.bak keeps a backup), -E switches to extended regexes, -s treats files separately instead of as one stream, and -z splits on NUL bytes for find -print0 style input; test the expression without -i first.",
+    "source": "https://manpages.debian.org/bookworm/sed/sed.1.en.html",
+    "placement": "here"
+  },
+  {
+    "item": "grep -F matches fixed strings (no regex surprises from dots in IPs or file names); 'Binary file matches' means GNU grep suppressed output for a file it detected as binary (often a stray NUL or encoding issue), and -a forces text.",
+    "source": "https://www.gnu.org/software/grep/manual/html_node/Usage.html",
+    "placement": "here"
+  },
+  {
+    "item": "jq essentials for pipelines: -r for raw strings, -c for one JSON value per line (JSONL), --arg passes shell values as strings and --argjson as JSON (never splice shell variables into the filter text), '//' supplies defaults for null/false, @tsv/@csv to hand off to awk/sort.",
+    "source": "https://jqlang.org/manual/v1.7/",
+    "placement": "here"
+  },
+  {
+    "item": "jq's exit status is 0 even when the result is null unless you pass -e (then 1 for false/null, 4 for no output); -s slurps the whole input into memory, while --stream emits [path, leaf] events for inputs too large to load.",
+    "source": "https://jqlang.org/manual/v1.7/",
+    "placement": "here"
+  },
+  {
+    "item": "cron runs commands with /bin/sh and a minimal environment (SHELL=/bin/sh, HOME and LOGNAME from passwd, no login profile), so set PATH and other variables at the top of the crontab or in the script; an unescaped % in the command becomes a newline (escape it in date +%F).",
+    "source": "https://manpages.debian.org/bookworm/cron/crontab.5.en.html",
+    "placement": "here"
+  },
+  {
+    "item": "Cron gotchas: if both day-of-month and day-of-week are restricted, the job runs when either matches; output is mailed (or lost) unless redirected; around DST, fixed-time jobs in a skipped hour run soon after the change and those in a repeated hour are not re-run.",
+    "source": "https://manpages.debian.org/bookworm/cron/cron.8.en.html",
+    "placement": "here"
+  },
+  {
+    "item": "cron does not stop overlapping runs: if a run outlasts its interval, two copies run at once. Wrap jobs in 'flock -n /var/lock/job.lock cmd' (fails right away, exit code set by -E) or -w for a bounded wait.",
+    "source": "https://manpages.debian.org/bookworm/util-linux/flock.1.en.html",
+    "placement": "here"
+  },
+  {
+    "item": "Cron has no retries, backfill, dependency tracking or missed-run catch-up while the host is down; those are why pipelines move to an orchestrator or Kubernetes CronJobs.",
+    "source": "https://manpages.debian.org/bookworm/cron/cron.8.en.html",
+    "placement": "later: Orchestrator architecture: scheduler, executor, metadata DB"
+  },
+  {
+    "item": "SSH tunnels: -L port:host:hostport exposes a remote-side service locally (for example a private warehouse or Spark UI), -R publishes a local port on the remote host, -D runs a local SOCKS proxy, -N skips the remote command, and -J jump1,jump2 hops through bastions (ProxyJump).",
+    "source": "https://man.openbsd.org/ssh.1",
+    "placement": "here"
+  },
+  {
+    "item": "Agent forwarding (-A) lets anyone with root on the remote host use your loaded keys for as long as you are connected; the man page recommends -J jump hosts instead. ssh exits with the remote command's status, or 255 for its own errors, which matters when it wraps remote steps in scripts.",
+    "source": "https://man.openbsd.org/ssh.1",
+    "placement": "here"
+  },
+  {
+    "item": "Setuid/setgid binaries cannot be ptrace'd (so strace on them fails or loses privilege), and reading another user's /proc/<pid>/stack or wchan requires ptrace-level access: debugging a job usually means running as its user or root.",
+    "source": "https://manpages.debian.org/bookworm/manpages-dev/execve.2.en.html",
+    "placement": "out of scope: ptrace access policy and kernel hardening are security-engineering detail beyond a refresher"
+  }
+]
