@@ -14,3 +14,5 @@ Every routine run and every audit finding, newest at the bottom: two lines each,
   checks: check-docs passed (plan reviewer); no other checks apply to a plan · issues: fire_trigger tool unavailable, so topic runs were not started; hourly schedule will start them
 - **2026-10-11 10:19 UTC · Rust Systems Engineering · `chapter-01` · planned** · 0.5 h · Sonnet 5.5 1.1M (5k out) · Opus 5.5 10.3M (117k out) · 2 agents, 105 calls
   checks: check-docs passed (planner); plan review by fresh Opus agent, 20 fixes applied; no build run (plan only) · issues: fire_trigger tool unavailable, so topic runs not fired; hourly schedule will start them. Claim status showed topic 1 already claimed as make before plan was on main.
+- **2026-10-11 10:30 UTC · Data Structures & Algorithms · `chapter-01` · planned** · 0.4 h · Sonnet 5.5 1.0M (6k out) · Opus 5.5 6.2M (73k out) · 2 agents, 77 calls
+  checks: check-docs passed; plan review (Opus) fixed 22 findings · issues: fire_trigger tool unavailable, so topic runs were not started; hourly schedule will start them. Topic 1 folder is ch01-cost-models while topics 2-10 use ch01-cost-models-amortized (release run decides).
