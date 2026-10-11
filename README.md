@@ -95,10 +95,10 @@ Both are frozen in `site/narration/voice.json`. Details are in [site/narration/R
 
 Each domain has an hourly routine (an automated session; up to four runs of one domain and eight in all work at once, each on its own job) that follows [ROUTINE.md](ROUTINE.md). Chapters go in sequence, the topics of a chapter in parallel. A dispatcher session starts runs every hour, one per free job (`node scripts/claim.mjs open` counts them), because a routine session can't start runs itself.
 
-1. Before a chapter is built, one run plans it: a Fable planner writes the chapter's `CHAPTER.md` (each topic's scope, concepts introduced and used, bridge and handoff), an Opus agent reviews it, and it is pushed to `main`. That plan is the contract every topic of the chapter follows, so they can all be built at once and still follow on from each other. The next chapter is planned once every topic of this one is content-final.
+1. Before a chapter is built, one run plans it: a Sonnet planner writes the chapter's `CHAPTER.md` (each topic's scope, concepts introduced and used, bridge and handoff), a fresh Sonnet agent reviews it, and it is pushed to `main`. That plan is the contract every topic of the chapter follows, so they can all be built at once and still follow on from each other. The next chapter is planned once every topic of this one is content-final.
 2. Each other run claims the first topic of a planned chapter that no run is working on.
-3. It researches the topic from primary sources; a Fable agent plans and storyboards it, an Opus agent fact-checks the plan, and a blind Opus expert list starts the coverage map. (What Fable writes, Opus checks; if Fable's weekly limit is reached, its jobs run on Opus.)
-4. A builder agent writes the reel, Deep dive, Prerequisites, narration script and executed examples; Fable reviews the content and Opus the looks; every check except narration must pass.
+3. It researches the topic from primary sources; a Sonnet agent plans and storyboards it, a fresh one fact-checks the plan, and a blind expert list starts the coverage map. Every model is Sonnet; checks go to fresh agents that didn't write what they check.
+4. A builder agent writes the reel, Deep dive, Prerequisites, narration script and executed examples; fresh agents review the content and the looks; every check except narration must pass.
 5. The topic is marked content-final (the next chapter may be planned once all its siblings are too), then narrated, checked once more in full, and shipped to `main`.
 
 A topic goes live only when every topic before it in its domain is live; one finished early is held until then. If a check fails, the routine fixes the cause and never loosens the check.
