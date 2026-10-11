@@ -1,10 +1,12 @@
 // Lets several routine runs of one domain work at once without clashing (ROUTINE.md section 1).
 // Each run claims one topic on the `claims` branch (one JSON file per claimed topic). A run keeps its claim alive
 // with a heartbeat; a claim whose heartbeat stops (the run hit a limit or died) can be taken over and resumed.
-// A topic may only be started once the topic before it has its content final (written, reviewed and checked; only narration
-// and shipping left), so the new topic can follow on from what the learner will actually see.
+// Chapters go in sequence, topics in parallel: one run plans a chapter (CHAPTER.md: every topic's scope, outcomes,
+// concepts, bridge and handoff) once every topic of the chapter before is content-final; then all topics of the planned
+// chapter are built in parallel, each to its part of the plan. Topics finished out of order ship held, and a later run
+// releases them in order, as a chain.
 //
-//   node scripts/claim.mjs next <domain>        claim this run's job; prints JSON: action make | resume | release | wait
+//   node scripts/claim.mjs next <domain>        claim this run's job; prints JSON: action plan | make | resume | release | wait
 //   node scripts/claim.mjs set <topic-id> <topic-folder>   record the topic's id and folder on this run's claim
 //   node scripts/claim.mjs final                this topic's content is final and pushed: the next topic may start
 //   node scripts/claim.mjs keepalive            run in the background: a heartbeat every 15 minutes while this run works
@@ -14,7 +16,7 @@
 //   node scripts/claim.mjs status [<domain>]    every claim, with its age
 //
 // <domain> is a domain id, title or topic-id prefix ("data-structures-and-algorithms", "Data Structures & Algorithms", "dsa", "German").
-// Settings: CLAIM_MAX_PARALLEL (default 5) runs per domain at once; a claim is stale after 90 minutes without a heartbeat;
+// Settings: CLAIM_MAX_PARALLEL (default 10) runs per domain at once; a claim is stale after 90 minutes without a heartbeat;
 // a topic whose runs stopped 3 times is blocked (reported, not retried) until a human looks at it and deletes its claim.
 import { spawnSync } from 'node:child_process';
 import { existsSync, mkdirSync, mkdtempSync, readdirSync, readFileSync, rmSync, statSync, writeFileSync } from 'node:fs';
@@ -26,7 +28,7 @@ const root = resolve(dirname(new URL(import.meta.url).pathname), '..');
 const BRANCH = 'claims';
 const STALE_MIN = Number(process.env.CLAIM_STALE_MIN ?? 90);
 const BEAT_MIN = Number(process.env.CLAIM_BEAT_MIN ?? 15);
-const MAX = Number(process.env.CLAIM_MAX_PARALLEL ?? 5);
+const MAX = Number(process.env.CLAIM_MAX_PARALLEL ?? 10);
 const MAX_ATTEMPTS = 3;
 
 const git = (args, cwd = root) => spawnSync('git', args, { cwd, encoding: 'utf8' });
@@ -61,7 +63,11 @@ const words = (x, n) => x.toLowerCase().normalize('NFKD').replace(/[^a-z0-9]+/g,
 
 // Where a new topic goes, so parallel runs in one chapter never invent two folders for it: the chapter's folder as
 // already used by a topic on main or by a claim of another run, else one made from the syllabus titles.
-function placeFor(domain, t, reg, claims) {
+function placeFor(domain, t, reg, claims, plans = new Map()) {
+  if (plans.has(t.c.number)) {
+    const slug = words(t.title, 4);
+    return { topicId: `${PREFIX[domain]}.${slug}`, folder: `site/src/topics/${domain}/${plans.get(t.c.number)}/${slug}` };
+  }
   const same = (m, c) => m === t.m.number && c === t.c.number;
   const fromReg = [...reg.values()].find((r) => same(r.milestone.number, r.chapter.number));
   const fromClaim = claims.find((c) => c.folder && c.milestone === t.m.number && c.chapterNumber === t.c.number);
@@ -69,6 +75,17 @@ function placeFor(domain, t, reg, claims) {
   const chapterDir = fromReg ? fromReg.slug.split('/').slice(0, 3).join('/') : fromClaim ? fromClaim.folder.split('/').slice(3, 6).join('/') : `${domain}/${milestoneDir}/ch${String(t.c.number).padStart(2, '0')}-${words(t.c.title, 3)}`;
   const slug = words(t.title, 4);
   return { topicId: `${PREFIX[domain]}.${slug}`, folder: `site/src/topics/${chapterDir}/${slug}` };
+}
+
+// Chapters whose plan (CHAPTER.md) is on main: chapter number -> "<milestone dir>/<chapter dir>".
+function chapterPlans(domain) {
+  git(['fetch', '-q', 'origin', 'main']);
+  const out = new Map();
+  for (const p of git(['ls-tree', '-r', '--name-only', 'origin/main', '--', `site/src/topics/${domain}/`]).stdout.split('\n')) {
+    const m = p.match(/^site\/src\/topics\/[^/]+\/(m\d+-[^/]+\/ch(\d+)-[^/]+)\/CHAPTER\.md$/);
+    if (m) out.set(Number(m[2]), m[1]);
+  }
+  return out;
 }
 
 // Unmerged topic branches with no claim (a run from before claims existed, or one whose claim was lost):
@@ -124,7 +141,9 @@ function transact(fn) {
 const legacy = join(tmpdir(), 'run-claim.json');
 const mine = () => {
   if (!existsSync(local) && existsSync(legacy)) writeFileSync(local, readFileSync(legacy));
-  return existsSync(local) ? JSON.parse(readFileSync(local, 'utf8')) : die('this run has no claim (run `next` first)');
+  if (!existsSync(local)) die('this run has no claim (run `next` first)');
+  const me = JSON.parse(readFileSync(local, 'utf8'));
+  return { ...me, files: me.files ?? [me.file] }; // a release run holds several claims (a chain of topics)
 };
 
 // Is this run still working? The session transcript was written lately, or a long job (narration, checks, setup) is running.
@@ -142,67 +161,124 @@ if (cmd === 'next') {
   const { domain, order, reg } = await course(args[0] ?? die('usage: next <domain>'));
   const owner = randomUUID();
   const lost = orphans(domain, reg);
+  const plans = chapterPlans(domain); // chapter number -> chapter folder, for chapters whose CHAPTER.md is on main
+  const chapters = [...new Map(order.map((t) => [t.c.number, t])).values()].map((t) => ({ number: t.c.number, title: t.c.title, m: t.m, c: t.c }));
   const res = transact(({ all, write }) => {
-    // Claims are found by topic title, not position, so a syllabus reorder can never point a claim at the wrong topic.
-    // New claims are filed under the title's slug; older ones keep the file they were saved in.
+    // Claims are found by title (a topic's syllabus title, or "Chapter N plan" for a chapter plan), never by position,
+    // so a syllabus reorder can't point a claim at the wrong job. New claims are filed under the title's slug.
     const claims = all().filter((c) => c.domain === domain);
     const byTitle = new Map(claims.map((c) => [c.title, c]));
     const slugify = (x) => x.toLowerCase().normalize('NFKD').replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '').slice(0, 80);
-    const fileOf = (t) => byTitle.get(t.title)?.file ?? `claims/${domain}/${slugify(t.title)}.json`;
-    const claimOf = (t) => { const c = byTitle.get(t.title); if (!c) return null; const { file, ...rest } = c; return rest; };
-    // Claims left behind by a run that shipped but died before `done` (the topic is live), or for a title no longer in
-    // the syllabus: noise, removed.
-    const titles = new Set(order.map((t) => t.title));
-    for (const c of claims) if (!titles.has(c.title) || reg.get(c.title)?.status === 'live') write(c.file, null);
+    const fileOf = (title) => byTitle.get(title)?.file ?? `claims/${domain}/${slugify(title)}.json`;
+    const claimOf = (title) => { const c = byTitle.get(title); if (!c) return null; const { file, ...rest } = c; return rest; };
+    const planTitle = (ch) => `Chapter ${ch.number} plan: ${ch.title}`;
+    // Noise: claims of live topics (their run died before `done`), of chapters already planned, or of titles gone from the syllabus.
+    const titles = new Set([...order.map((t) => t.title), ...chapters.map(planTitle)]);
+    for (const c of claims)
+      if (!titles.has(c.title) || reg.get(c.title)?.status === 'live' || (c.kind === 'chapter-plan' && plans.has(c.chapterNumber))) write(c.file, null);
+    const live = (t) => reg.get(t.title)?.status === 'live';
     const blocked = [];
-    const active = claims.filter((c) => titles.has(c.title) && reg.get(c.title)?.status !== 'live' && !stale(c));
+    const active = claims.filter((c) => titles.has(c.title) && reg.get(c.title)?.status !== 'live' && !(c.kind === 'chapter-plan' && plans.has(c.chapterNumber)) && !stale(c));
     if (active.length >= MAX) return { action: 'wait', reason: `${active.length} runs already working on this domain (limit ${MAX})`, working: active.map((c) => c.title) };
-    const neighbour = (i) => {
-      if (i < 0 || i >= order.length) return null;
-      const t = order[i], r = reg.get(t.title), c = claimOf(t);
-      return { title: t.title, status: r ? r.status : c ? (stale(c) ? 'abandoned' : c.final ? 'content final' : 'in progress') : 'not started', topicId: r?.id ?? c?.topicId ?? null, branch: c?.topicId ? `topic/${c.topicId}` : null, folder: r ? `site/src/topics/${r.slug}` : c?.folder ?? null, final: !!(r || c?.final) };
+    const tooOften = (c, title) => {
+      if (!c || (c.attempts ?? 1) < MAX_ATTEMPTS) return false;
+      blocked.push(`"${title}" stopped ${c.attempts} times (last: ${c.note ?? 'no reason given'}); needs a human`);
+      return true;
     };
-    for (let i = 0; i < order.length; i++) {
-      const t = order[i], r = reg.get(t.title), o = lost.get(t.title);
-      let c = claimOf(t);
-      if (r?.status === 'live') continue;
-      if (!c && !r && o) c = { ...o, startedAt: 'before claims', beatAt: new Date(0).toISOString() }; // an orphaned branch: resume it
-      if (c && !stale(c)) continue; // another run is on it
-      if (c && (c.attempts ?? 1) >= MAX_ATTEMPTS) {
-        // Its runs keep stopping: don't burn another run on it. Later topics may go on only if its content is final.
-        blocked.push(`"${t.title}" stopped ${c.attempts} times (last: ${c.note ?? 'no reason given'}); needs a human`);
-        if (c.final) continue;
-        return { action: 'wait', reason: blocked.join('; '), blocked };
+    const describe = (i) => {
+      if (i < 0 || i >= order.length) return null;
+      const t = order[i], r = reg.get(t.title), c = claimOf(t.title);
+      return { title: t.title, status: r ? r.status : c ? (stale(c) ? 'abandoned' : c.final ? 'content final' : 'in progress') : 'not started', topicId: r?.id ?? c?.topicId ?? null, branch: !r && c?.topicId ? `topic/${c.topicId}` : null, folder: r ? `site/src/topics/${r.slug}` : c?.folder ?? null };
+    };
+    const claimJob = (title, fields) => {
+      const c = claimOf(title);
+      const claim = { domain, title, owner, startedAt: now(), beatAt: now(), attempts: (c?.attempts ?? 0) + 1, takenOverFrom: c ? c.startedAt : undefined, lastNote: c?.note, ...fields };
+      write(fileOf(title), claim);
+      return { file: fileOf(title), claim, previousRunStopped: c?.note };
+    };
+    const chapterInfo = (ch) => ({ number: ch.number, title: ch.title, plan: plans.has(ch.number) ? `site/src/topics/${domain}/${plans.get(ch.number)}/CHAPTER.md` : null });
+
+    // 1. Release: held topics whose earlier topics are all live, as one consecutive chain (each gets a seam check).
+    const firstOpen = order.findIndex((t) => !live(t));
+    if (firstOpen >= 0 && reg.get(order[firstOpen].title)?.status === 'held') {
+      const chain = [];
+      for (let i = firstOpen; i < order.length && reg.get(order[i].title)?.status === 'held'; i++) {
+        const c = claimOf(order[i].title);
+        if (c && !stale(c)) break;
+        if (tooOften(c, order[i].title)) break;
+        chain.push(i);
       }
-      let action;
-      if (r?.status === 'held') {
-        if (!order.slice(0, i).every((x) => reg.get(x.title)?.status === 'live')) continue; // waits for the topics before it
-        action = 'release';
-      } else if (c) action = 'resume'; // its run stopped: take it over from its last pushed checkpoint
-      else {
-        const prev = neighbour(i - 1);
-        if (prev && !prev.final) return { action: 'wait', reason: `"${prev.title}" isn't content-final yet; this topic must follow on from it` };
-        action = 'make';
+      if (chain.length) {
+        const files = chain.map((i) => claimJob(order[i].title, { kind: 'topic', action: 'release', index: i + 1, chapter: order[i].chapter, chapterNumber: order[i].c.number, milestone: order[i].m.number, topicId: reg.get(order[i].title).id, folder: `site/src/topics/${reg.get(order[i].title).slug}`, final: true }).file);
+        return { action: 'release', files, topics: chain.map((i) => ({ index: i + 1, title: order[i].title, topicId: reg.get(order[i].title).id, folder: `site/src/topics/${reg.get(order[i].title).slug}` })), previous: describe(chain[0] - 1), next: describe(chain.at(-1) + 1) };
       }
-      const place = action === 'make' ? placeFor(domain, t, reg, claims) : null;
-      const claim = { domain, index: i + 1, title: t.title, chapter: t.chapter, milestone: t.m.number, chapterNumber: t.c.number, action, topicId: r?.id ?? c?.topicId ?? null, folder: r ? `site/src/topics/${r.slug}` : c?.folder ?? null, final: !!(r || c?.final), owner, startedAt: now(), beatAt: now(), attempts: (c?.attempts ?? 0) + 1, takenOverFrom: c ? c.startedAt : undefined, lastNote: c?.note };
-      write(fileOf(t), claim);
-      return { action, file: fileOf(t), attempt: claim.attempts, ...(c?.note ? { previousRunStopped: c.note } : {}), ...(blocked.length ? { blocked } : {}), topic: { index: i + 1, title: t.title, chapter: t.chapter, topicId: claim.topicId, branch: claim.topicId ? `topic/${claim.topicId}` : null, folder: claim.folder, ...(place ? { use: place } : {}) }, previous: neighbour(i - 1), next: neighbour(i + 1) };
     }
-    return { action: 'wait', reason: blocked.length ? blocked.join('; ') : 'nothing left to start in this domain', ...(blocked.length ? { blocked } : {}) };
+
+    // 2. Resume: a topic or a chapter plan whose run stopped (or an unclaimed topic branch from before claims).
+    for (let i = 0; i < order.length; i++) {
+      const t = order[i], r = reg.get(t.title);
+      let c = claimOf(t.title);
+      if (r) continue;
+      if (!c && lost.get(t.title)) c = { ...lost.get(t.title), startedAt: 'before claims', beatAt: new Date(0).toISOString() };
+      if (!c || !stale(c) || tooOften(c, t.title)) continue;
+      const { file, claim, previousRunStopped } = claimJob(t.title, { kind: 'topic', action: 'resume', index: i + 1, chapter: t.chapter, chapterNumber: t.c.number, milestone: t.m.number, topicId: c.topicId ?? null, folder: c.folder ?? null, final: !!c.final });
+      return { action: 'resume', file, attempt: claim.attempts, previousRunStopped, topic: { index: i + 1, title: t.title, chapter: chapterInfo(t.c), topicId: claim.topicId, branch: claim.topicId ? `topic/${claim.topicId}` : null, folder: claim.folder }, previous: describe(i - 1), next: describe(i + 1) };
+    }
+    for (const ch of chapters) {
+      const c = claimOf(planTitle(ch));
+      if (c && stale(c) && !plans.has(ch.number) && !tooOften(c, planTitle(ch))) return planJob(ch, true);
+    }
+
+    // 3. Plan the next chapter. Chapters go in sequence: a chapter is planned once every topic of the chapter before it is
+    // content-final (live, held, or marked final), so its plan builds on what that chapter really teaches.
+    const complete = (ch) => order.filter((t) => t.c.number === ch.number).every((t) => reg.get(t.title) || claimOf(t.title)?.final);
+    for (let k = 0; k < chapters.length; k++) {
+      const ch = chapters[k];
+      if (plans.has(ch.number)) continue;
+      if (claimOf(planTitle(ch))) break; // being planned (or blocked)
+      if (k > 0 && !(plans.has(chapters[k - 1].number) && complete(chapters[k - 1]))) break;
+      if (order.filter((t) => t.c.number === ch.number).every((t) => reg.get(t.title)?.status === 'live')) continue; // nothing left to plan
+      return planJob(ch, false);
+    }
+
+    // 4. Make: the first topic nobody is on, in a planned chapter.
+    for (let i = 0; i < order.length; i++) {
+      const t = order[i];
+      if (reg.get(t.title) || claimOf(t.title) || lost.get(t.title)) continue;
+      if (!plans.has(t.c.number)) continue;
+      const place = placeFor(domain, t, reg, claims, plans);
+      const { file, claim } = claimJob(t.title, { kind: 'topic', action: 'make', index: i + 1, chapter: t.chapter, chapterNumber: t.c.number, milestone: t.m.number, topicId: place.topicId, folder: place.folder, final: false });
+      return { action: 'make', file, attempt: claim.attempts, topic: { index: i + 1, title: t.title, chapter: chapterInfo(t.c), topicId: place.topicId, branch: `topic/${place.topicId}`, folder: place.folder, use: place }, previous: describe(i - 1), next: describe(i + 1) };
+    }
+    return { action: 'wait', reason: blocked.length ? blocked.join('; ') : 'every topic of the planned chapter is taken; the next chapter is planned once they are all content-final', ...(blocked.length ? { blocked } : {}) };
+
+    function planJob(ch, resuming) {
+      const first = order.find((t) => t.c.number === ch.number);
+      const dir = placeFor(domain, first, reg, claims, plans).folder.split('/').slice(3, 6).join('/');
+      const topics = order.map((t, i) => [t, i]).filter(([t]) => t.c.number === ch.number).map(([t, i]) => {
+        const d = describe(i);
+        return { index: i + 1, title: t.title, status: d.status, ...(reg.get(t.title) || claimOf(t.title) ? { topicId: d.topicId, folder: d.folder, branch: d.branch } : placeFor(domain, t, reg, claims, plans)) };
+      });
+      const prev = chapters[chapters.indexOf(ch) - 1];
+      const { file, claim, previousRunStopped } = claimJob(planTitle(ch), { kind: 'chapter-plan', action: 'plan', chapterNumber: ch.number, milestone: ch.m.number, folder: `site/src/topics/${dir}` });
+      return { action: 'plan', file, attempt: claim.attempts, ...(resuming ? { previousRunStopped } : {}), chapter: { number: ch.number, title: ch.title, milestone: ch.m.number, plan: `site/src/topics/${dir}/CHAPTER.md`, topics }, previousChapter: prev ? chapterInfo(prev) : null };
+    }
   });
-  if (res.file) writeFileSync(local, JSON.stringify({ domain, file: res.file, owner }));
+  const files = res.files ?? (res.file ? [res.file] : []);
+  if (files.length) writeFileSync(local, JSON.stringify({ domain, files, owner }));
   console.log(JSON.stringify(res, null, 2));
 } else if (['set', 'final', 'outlined', 'beat', 'done', 'stop'].includes(cmd)) {
   const me = mine();
   if (cmd === 'set' && !(args[0] && args[1])) die('usage: set <topic-id> <topic-folder>');
   const ok = transact(({ read, write }) => {
-    const c = read(me.file);
-    if (!c || c.owner !== me.owner) return false;
-    if (cmd === 'done') write(me.file, null);
-    // stop: stale at once, so the next run resumes it; the note says why, for that run and for a human.
-    else if (cmd === 'stop') write(me.file, { ...c, beatAt: new Date(0).toISOString(), note: args.join(' ') || 'stopped' });
-    else write(me.file, { ...c, beatAt: now(), ...(cmd === 'set' ? { topicId: args[0], folder: args[1] } : {}), ...(cmd === 'final' ? { final: true } : {}) });
+    const cs = me.files.map((f) => [f, read(f)]);
+    if (cs.some(([, c]) => !c || c.owner !== me.owner)) return false;
+    for (const [f, c] of cs) {
+      if (cmd === 'done') write(f, null);
+      // stop: stale at once, so the next run resumes it; the note says why, for that run and for a human.
+      else if (cmd === 'stop') write(f, { ...c, beatAt: new Date(0).toISOString(), note: args.join(' ') || 'stopped' });
+      else write(f, { ...c, beatAt: now(), ...(cmd === 'set' ? { topicId: args[0], folder: args[1] } : {}), ...(cmd === 'final' ? { final: true } : {}) });
+    }
     return true;
   });
   if (!ok) die('another run has taken this claim over: stop, and leave its branch alone');
@@ -210,7 +286,7 @@ if (cmd === 'next') {
   console.log(`claim: ${cmd} ok`);
 } else if (cmd === 'mine') {
   const me = mine();
-  const ok = transact(({ read }) => read(me.file)?.owner === me.owner);
+  const ok = transact(({ read }) => me.files.every((f) => read(f)?.owner === me.owner));
   if (!ok) die('another run has taken this claim over: stop, and leave its branch alone');
   console.log('claim: still yours');
 } else if (cmd === 'keepalive') {
@@ -222,7 +298,12 @@ if (cmd === 'next') {
     const me = mine();
     let ok;
     try {
-      ok = transact(({ read, write }) => { const c = read(me.file); if (!c || c.owner !== me.owner) return false; write(me.file, { ...c, beatAt: now() }); return true; });
+      ok = transact(({ read, write }) => {
+        const cs = me.files.map((f) => [f, read(f)]);
+        if (cs.some(([, c]) => !c || c.owner !== me.owner)) return false;
+        for (const [f, c] of cs) write(f, { ...c, beatAt: now() });
+        return true;
+      });
     } catch (e) {
       console.error(`claim: heartbeat failed, retrying next beat: ${e.message}`); // a network blip must not end the heartbeat
       continue;
@@ -231,7 +312,7 @@ if (cmd === 'next') {
   }
 } else if (cmd === 'status') {
   const rows = transact(({ all }) => all()).filter((c) => !args[0] || c.domain.includes(args[0].toLowerCase()));
-  for (const c of rows) console.log(`${c.domain} #${c.index} ${c.title} [${c.action}${c.final ? ', content final' : ''}, attempt ${c.attempts ?? 1}] ${c.topicId ?? ''} heartbeat ${Math.round(ageMin(c.beatAt))} min ago${stale(c) ? ' (stale)' : ''}${c.note ? ` — stopped: ${c.note}` : ''}`);
+  for (const c of rows) console.log(`${c.domain} ${c.kind === 'chapter-plan' ? '' : `#${c.index} `}${c.title} [${c.action}${c.final ? ', content final' : ''}, attempt ${c.attempts ?? 1}] ${c.topicId ?? ''} heartbeat ${Math.round(ageMin(c.beatAt))} min ago${stale(c) ? ' (stale)' : ''}${c.note ? ` — stopped: ${c.note}` : ''}`);
   if (!rows.length) console.log('no claims');
 } else {
   die('usage: next <domain> | set <topic-id> <folder> | final | keepalive | mine | stop "<reason>" | done | status [<domain>]');

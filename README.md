@@ -95,12 +95,13 @@ Both are frozen in `site/narration/voice.json`. Details are in [site/narration/R
 
 ## How a topic is made
 
-Each domain has an hourly routine (an automated session; several runs of one domain can work at once, each on its own topic) that follows [ROUTINE.md](ROUTINE.md).
+Each domain has an hourly routine (an automated session; up to ten runs of one domain work at once, each on its own job) that follows [ROUTINE.md](ROUTINE.md). Chapters go in sequence, the topics of a chapter in parallel; a run that frees work starts the next runs itself.
 
-1. It claims the first topic in syllabus order that no other run is working on, once the topic before it is content-final, so it follows on from what the learner will see.
-2. It researches the topic from primary sources; an Opus agent plans and storyboards it, another fact-checks the plan, and a blind expert list starts the coverage map.
-3. A builder agent writes the reel, Deep dive, Prerequisites, narration script and executed examples; Opus agents review the content and the looks; every check except narration must pass.
-4. The topic is marked content-final (the next topic may start), then narrated, checked once more in full, and shipped to `main`.
+1. Before a chapter is built, one run plans it: an Opus planner writes the chapter's `CHAPTER.md` (each topic's scope, concepts introduced and used, bridge and handoff), a second Opus agent reviews it, and it is pushed to `main`. That plan is the contract every topic of the chapter follows, so they can all be built at once and still follow on from each other. The next chapter is planned once every topic of this one is content-final.
+2. Each other run claims the first topic of a planned chapter that no run is working on.
+3. It researches the topic from primary sources; an Opus agent plans and storyboards it, another fact-checks the plan, and a blind expert list starts the coverage map.
+4. A builder agent writes the reel, Deep dive, Prerequisites, narration script and executed examples; Opus agents review the content and the looks; every check except narration must pass.
+5. The topic is marked content-final (the next chapter may be planned once all its siblings are too), then narrated, checked once more in full, and shipped to `main`.
 
 A topic goes live only when every topic before it in its domain is live; one finished early is held until then. If a check fails, the routine fixes the cause and never loosens the check.
 
