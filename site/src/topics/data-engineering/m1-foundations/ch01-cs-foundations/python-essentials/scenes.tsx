@@ -316,15 +316,16 @@ const RECAP = [
 ];
 export function Recap({ t }: StepCtx) {
   return (
-    <Svg label="Recap of the nine points" h={440}>
+    <Svg label="Recap of the nine points" h={536}>
       {RECAP.map(([k, v], i) => {
         const a = easeOut(seg(t, 0.1 + i * 0.15, 0.6 + i * 0.15));
-        const y = 6 + i * 48;
+        const y = 4 + i * 59;
+        // The point's name above its one-line summary: no two labels share a line, so nothing can collide at any font.
         return (
           <g key={k} opacity={a} transform={`translate(${(1 - a) * 30} 0)`}>
-            <rect x={30} y={y} width={540} height={41} rx={11} fill={C.roast} />
-            <T x={52} y={y + 27} s={18} f={C.caramel} serif w={700}>{k}</T>
-            <T x={250} y={y + 26} s={14} f={C.crema}>{v}</T>
+            <rect x={30} y={y} width={540} height={53} rx={11} fill={C.roast} />
+            <T x={50} y={y + 22} s={16} f={C.caramel} serif w={700}>{k}</T>
+            <T x={50} y={y + 43} s={14} f={C.crema}>{v}</T>
           </g>
         );
       })}

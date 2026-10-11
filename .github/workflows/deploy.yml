@@ -43,6 +43,15 @@ jobs:
         working-directory: site
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Reels this change can affect
+        id: affected
+        working-directory: .
+        run: |
+          A=$(node scripts/affected.mjs "${{ github.event.before }}")
+          echo "$A"
+          echo "reels=$(node -e 'const a=JSON.parse(process.argv[1]); console.log(a.all ? "" : (a.slugs.join(",") || "none"))' "$A")" >> "$GITHUB_OUTPUT"
       - uses: actions/setup-node@v4
         with:
           node-version: 22
@@ -60,7 +69,7 @@ jobs:
         run: |
           npx astro preview --host 127.0.0.1 --port 4321 > preview.log 2>&1 &
           for i in $(seq 1 30); do curl -sf http://127.0.0.1:4321/learning-resources/ > /dev/null && break; sleep 1; done
-          npm run test:reels -- http://127.0.0.1:4321/learning-resources/
+          npm run test:reels -- http://127.0.0.1:4321/learning-resources/ ${{ steps.affected.outputs.reels }}
       - uses: actions/upload-artifact@v4
         if: always()
         with:
