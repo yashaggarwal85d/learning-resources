@@ -15,6 +15,7 @@
 //   node scripts/claim.mjs done                 shipped or released: drop the claim
 //   node scripts/claim.mjs status [<domain>]    every claim, with its age
 //   node scripts/claim.mjs open [<domain>...]   how many runs could start work now, per domain (nothing is claimed)
+//   node scripts/claim.mjs expire <minutes>     after an outage (a usage limit): claims silent this long are dead now, free to resume
 //
 // <domain> is a domain id, title or topic-id prefix ("data-structures-and-algorithms", "Data Structures & Algorithms", "dsa", "German").
 // Settings: CLAIM_MAX_PARALLEL (default 4) runs per domain at once; a claim is stale after 90 minutes without a heartbeat;
@@ -353,10 +354,17 @@ if (cmd === 'next') {
     }
   }
   console.log(JSON.stringify(out, null, 2));
+} else if (cmd === 'expire') {
+  // When every run died at once (a usage limit), their claims would block the run limit until each went stale on its own.
+  // This marks claims without a heartbeat for <minutes> as dead now; the next runs resume them (a death, not a stop).
+  const mins = Number(args[0]);
+  if (!(mins >= 30)) die('usage: expire <minutes>  (30 or more, so a working run is never expired)');
+  const gone = transact(({ all, write }) => all().filter((c) => !stale(c) && ageMin(c.beatAt) > mins).map((c) => (write(c.file, { ...c, beatAt: new Date(0).toISOString() }), c.title)));
+  console.log(gone.length ? `expired ${gone.length}: ${gone.join('; ')}` : 'nothing to expire');
 } else if (cmd === 'status') {
   const rows = transact(({ all }) => all()).filter((c) => !args[0] || c.domain.includes(args[0].toLowerCase()));
   for (const c of rows) console.log(`${c.domain} ${c.kind === 'chapter-plan' ? '' : `#${c.index} `}${c.title} [${c.action}${c.final ? ', content final' : ''}, attempt ${c.attempts ?? 1}] ${c.topicId ?? ''} heartbeat ${Math.round(ageMin(c.beatAt))} min ago${stale(c) ? ' (stale)' : ''}${c.note ? ` — stopped: ${c.note}` : ''}`);
   if (!rows.length) console.log('no claims');
 } else {
-  die('usage: next <domain> | set <topic-id> <folder> | final | keepalive | mine | stop "<reason>" | done | status [<domain>] | open [<domain>...]');
+  die('usage: next <domain> | set <topic-id> <folder> | final | keepalive | mine | stop "<reason>" | done | status [<domain>] | open [<domain>...] | expire <minutes>');
 }
