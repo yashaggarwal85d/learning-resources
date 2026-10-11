@@ -1,0 +1,182 @@
+[
+  {
+    "item": "Merge keeps true topology: a fast-forward just moves the branch pointer, a three-way merge records a merge commit with two parents; --no-ff forces a merge commit even when fast-forward is possible, --ff-only refuses anything but a fast-forward.",
+    "source": "git-merge documentation (git-scm.com)",
+    "url": "https://git-scm.com/docs/git-merge",
+    "placement": "here"
+  },
+  {
+    "item": "Rebase replays each commit on a new base, creating new commits with new SHAs, which gives a linear history at the cost of rewriting it. The golden rule: do not rebase commits that exist outside your repository and that people may have based work on.",
+    "source": "Pro Git 2nd ed., 3.6 Git Branching - Rebasing",
+    "url": "https://git-scm.com/book/en/v2/Git-Branching-Rebasing",
+    "placement": "here"
+  },
+  {
+    "item": "Rebase mechanics beyond the basics: --onto <newbase> transplants a range of commits (e.g. a topic branched off another topic), --keep-base rebases without moving the fork point, merge commits are dropped unless you pass --rebase-merges, and during a rebase 'ours' is the upstream series rebased so far while 'theirs' is your own branch (the reverse of a merge).",
+    "source": "git-rebase documentation (git-scm.com)",
+    "url": "https://git-scm.com/docs/git-rebase",
+    "placement": "here"
+  },
+  {
+    "item": "git pull is fetch plus merge or rebase; when local and remote have diverged, choose explicitly with --rebase or --ff-only (or the pull.rebase / pull.ff config) instead of producing accidental merge commits.",
+    "source": "git-pull documentation (git-scm.com)",
+    "url": "https://git-scm.com/docs/git-pull",
+    "placement": "here"
+  },
+  {
+    "item": "Interactive history cleanup before sharing: commit --amend for the last commit, and rebase -i to reorder, reword, edit, squash, fixup, split or drop commits; --exec <cmd> runs the test suite after every rewritten commit so each one still builds.",
+    "source": "Pro Git 2nd ed., 7.6 Git Tools - Rewriting History",
+    "url": "https://git-scm.com/book/en/v2/Git-Tools-Rewriting-History",
+    "placement": "here"
+  },
+  {
+    "item": "Fixup workflow for review feedback: commit --fixup=<commit> (or --fixup=amend:/reword:) records a correction aimed at an earlier commit, and rebase -i --autosquash (or rebase.autoSquash) folds it in automatically.",
+    "source": "git-commit documentation (git-scm.com)",
+    "url": "https://git-scm.com/docs/git-commit",
+    "placement": "here"
+  },
+  {
+    "item": "Stacked branches: rebase --update-refs force-updates every branch that points at a commit being rebased, so a stack of dependent PR branches moves together in one rebase.",
+    "source": "git-rebase documentation (git-scm.com)",
+    "url": "https://git-scm.com/docs/git-rebase",
+    "placement": "here"
+  },
+  {
+    "item": "git range-diff compares two versions of a patch series (e.g. my-topic@{u} vs my-topic after a rebase) commit by commit, which is how a reviewer checks what actually changed in a force-pushed PR.",
+    "source": "git-range-diff documentation (git-scm.com)",
+    "url": "https://git-scm.com/docs/git-range-diff",
+    "placement": "here"
+  },
+  {
+    "item": "Safe force push after rewriting a PR branch: --force-with-lease refuses to overwrite the remote unless it still matches your remote-tracking ref, and --force-if-includes also guards against a background fetch having updated that ref.",
+    "source": "git-push documentation (git-scm.com)",
+    "url": "https://git-scm.com/docs/git-push",
+    "placement": "here"
+  },
+  {
+    "item": "The reflog is the undo log for rewrites: HEAD@{n} and ORIG_HEAD recover a bad rebase or reset; reflog entries expire (90 days by default, 30 days for unreachable ones), so recovery is time-limited and local-only.",
+    "source": "git-reflog documentation (git-scm.com)",
+    "url": "https://git-scm.com/docs/git-reflog",
+    "placement": "here"
+  },
+  {
+    "item": "Revision ranges: A..B means commits reachable from B but not A (what a branch adds), A...B is the symmetric difference; git merge-base finds the fork point that PR diffs are computed against (--fork-point uses the reflog).",
+    "source": "gitrevisions documentation (git-scm.com)",
+    "url": "https://git-scm.com/docs/gitrevisions",
+    "placement": "here"
+  },
+  {
+    "item": "git bisect performs a binary search between a known good and a known bad commit: start/good/bad, skip for untestable commits, reset to finish, custom terms (old/new) when hunting a change rather than a bug, and --first-parent to follow only the mainline in merge-heavy history.",
+    "source": "git-bisect documentation (git-scm.com)",
+    "url": "https://git-scm.com/docs/git-bisect",
+    "placement": "here"
+  },
+  {
+    "item": "Automated bisect: git bisect run <cmd> uses the command's exit code as the oracle: 0 means good, 1-127 (except 125) means bad, and 125 means skip; a failing test script makes regression hunting fully mechanical.",
+    "source": "git-bisect documentation (git-scm.com)",
+    "url": "https://git-scm.com/docs/git-bisect",
+    "placement": "here"
+  },
+  {
+    "item": "Conflict mechanics: markers <<<<<<< ======= >>>>>>> delimit the two sides; merge.conflictStyle diff3 or zdiff3 adds the common-ancestor version (|||||||) so you can see what each side changed; git merge --abort (or rebase --abort/--continue/--skip) gets you out or forward.",
+    "source": "git-merge documentation (git-scm.com)",
+    "url": "https://git-scm.com/docs/git-merge",
+    "placement": "here"
+  },
+  {
+    "item": "Advanced resolution: the index holds stage 1 (base), 2 (ours) and 3 (theirs) for a conflicted file; you can check out one side, re-merge with -Xignore-space-change for whitespace noise, and ort is the default merge strategy.",
+    "source": "Pro Git 2nd ed., 7.8 Git Tools - Advanced Merging",
+    "url": "https://git-scm.com/book/en/v2/Git-Tools-Advanced-Merging",
+    "placement": "here"
+  },
+  {
+    "item": "git rerere (reuse recorded resolution), enabled with rerere.enabled, records how you resolved a conflict and replays it when the same conflict reappears, e.g. when repeatedly rebasing a long-running branch.",
+    "source": "git-rerere documentation (git-scm.com)",
+    "url": "https://git-scm.com/docs/git-rerere",
+    "placement": "here"
+  },
+  {
+    "item": "Undoing on shared history means revert, not reset; reverting a merge needs -m <parent-number> to pick the mainline, and it declares you never want that merge's tree changes, so re-merging the branch later will not bring them back unless you revert the revert.",
+    "source": "git-revert documentation (git-scm.com)",
+    "url": "https://git-scm.com/docs/git-revert",
+    "placement": "here"
+  },
+  {
+    "item": "PR merge methods and their history shape: merge commit preserves the branch topology, squash and merge collapses the PR to one commit (losing intermediate commits on the base), rebase and merge adds each commit linearly but rewrites them as new commits.",
+    "source": "GitHub Docs - About pull request merges",
+    "url": "https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/incorporating-changes-from-a-pull-request/about-pull-request-merges",
+    "placement": "here"
+  },
+  {
+    "item": "Branch protection enforces the PR flow: required status checks (strict mode requires the branch to be up to date with base), required reviews, require linear history, and force pushes and deletion disabled by default on protected branches.",
+    "source": "GitHub Docs - About protected branches",
+    "url": "https://docs.github.com/en/repositories/configuring-branches-and-merges-in-your-repository/managing-protected-branches/about-protected-branches",
+    "placement": "here"
+  },
+  {
+    "item": "A merge queue tests each PR against the latest base plus the PRs ahead of it on temporary gh-readonly-queue/* branches before merging, which removes the 'green PR, red main' race on busy trunks; CI must trigger on the merge_group event.",
+    "source": "GitHub Docs - Managing a merge queue",
+    "url": "https://docs.github.com/en/repositories/configuring-branches-and-merges-in-your-repository/configuring-pull-request-merges/managing-a-merge-queue",
+    "placement": "here"
+  },
+  {
+    "item": "CODEOWNERS automatically requests reviews from the owners of changed paths (not on draft PRs), and when required reviews are enabled, approval from a code owner can be made mandatory before merge.",
+    "source": "GitHub Docs - About code owners",
+    "url": "https://docs.github.com/en/repositories/managing-your-repositorys-settings-and-features/customizing-your-repository/about-code-owners",
+    "placement": "Software delivery workflow (refresher, §1.1): code-review norms are its subject; this topic only needs the PR mechanics"
+  },
+  {
+    "item": "Commit messages as part of history: a short summary line (about 50 characters) in the imperative, a blank line, then the why; clean messages are what make log, blame and bisect output usable.",
+    "source": "Pro Git 2nd ed., 5.2 Distributed Git - Contributing to a Project",
+    "url": "https://git-scm.com/book/en/v2/Distributed-Git-Contributing-to-a-Project",
+    "placement": "Software delivery workflow (refresher, §1.1): a code-review norm"
+  },
+  {
+    "item": "Trunk-based development: everyone integrates into a single trunk; if branches are used they are short-lived feature branches that last a couple of days at most before being merged and deleted, beyond which they become long-lived branches.",
+    "source": "Trunk Based Development - Short-Lived Feature Branches",
+    "url": "https://trunkbaseddevelopment.com/short-lived-feature-branches/",
+    "placement": "here"
+  },
+  {
+    "item": "Long-lived branches (GitFlow-style develop/release/feature branches) defer integration, so merge pain grows with branch age; trunkbaseddevelopment.com argues for trunk-based development instead of models with multiple long-running branches.",
+    "source": "Trunk Based Development - Alternative branching models",
+    "url": "https://trunkbaseddevelopment.com/alternative-branching-models/",
+    "placement": "here"
+  },
+  {
+    "item": "Release branches in trunk-based development: cut a release branch late (just in time), fix bugs on trunk first and cherry-pick them onto the release branch, and do not develop on the release branch; cherry-pick -x records the source commit.",
+    "source": "Trunk Based Development - Branch for release",
+    "url": "https://trunkbaseddevelopment.com/branch-for-release/",
+    "placement": "here"
+  },
+  {
+    "item": "Keeping incomplete or large changes on trunk without a long-lived branch: branch by abstraction (introduce an abstraction, migrate behind it, delete the old code, every step keeps the build green) and feature flags to ship code turned off.",
+    "source": "Trunk Based Development - Branch by Abstraction",
+    "url": "https://trunkbaseddevelopment.com/branch-by-abstraction/",
+    "placement": "here"
+  },
+  {
+    "item": "Git-like branching of data itself: catalogs such as Project Nessie apply branch, commit and merge semantics to lakehouse tables, so the Git mental model carries over to isolated pipeline environments.",
+    "source": "Project Nessie home page",
+    "url": "https://projectnessie.org/",
+    "placement": "§11.4 DataOps: testing, CI/CD and deployment for data pipelines (zero-copy environments: clones and branches); catalogs in §6.3.4 Open catalogs"
+  },
+  {
+    "item": "GitOps: desired state is declared, versioned and immutable in Git, pulled automatically and continuously reconciled by software agents, which turns the PR flow into the deployment mechanism.",
+    "source": "OpenGitOps principles",
+    "url": "https://opengitops.dev/",
+    "placement": "§12.3 Delivery (GitOps reconciliation for data platforms)"
+  },
+  {
+    "item": "Rewriting an entire repository's history (purging secrets or large files across all commits) with filter-branch, or its recommended replacement git filter-repo.",
+    "source": "git-filter-branch documentation (git-scm.com)",
+    "url": "https://git-scm.com/docs/git-filter-branch",
+    "placement": "out of scope: a rare, disruptive repository-admin task that forces every clone to re-sync, not part of the daily branching workflow; a leaked secret must be rotated anyway (secrets management in §10.1)"
+  },
+  {
+    "item": "Signing commits and tags with GPG (-S, tag -s) and verifying signatures.",
+    "source": "Pro Git 2nd ed., 7.4 Git Tools - Signing Your Work",
+    "url": "https://git-scm.com/book/en/v2/Git-Tools-Signing-Your-Work",
+    "placement": "out of scope: an organisation-level trust and key-management policy rather than a branching or history skill; the syllabus covers artifact signing for images in §12.1 Containers for data workloads"
+  }
+]
