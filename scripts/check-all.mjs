@@ -1,7 +1,9 @@
-// Runs every pre-ship check from ROUTINE.md section 6 in one command and prints a timing summary.
+// Runs every pre-ship check from ROUTINE.md (sections 5 and 8) in one command and prints a timing summary.
 //   node scripts/check-all.mjs                  all checks (from the repo root or site/)
 //   node scripts/check-all.mjs --only reels     just the named checks (docs, examples, build, narration, reels, links)
 //   node scripts/check-all.mjs --skip links     everything except the named checks
+//   node scripts/check-all.mjs --only reels --topic asymptotic-notation   the reel test for matching reels only (while fixing;
+//                                                the full run before shipping tests every live reel)
 // Order is cheapest first. A failing check doesn't stop the others (so one run lists every problem), except that
 // reels needs a good build. Starts and stops `astro preview` itself. Exit code 1 if any check failed.
 import { spawn, spawnSync } from 'node:child_process';
@@ -13,6 +15,7 @@ const site = `${root}/site`;
 const arg = (name) => (process.argv.includes(name) ? process.argv[process.argv.indexOf(name) + 1].split(',') : null);
 const only = arg('--only');
 const skip = arg('--skip') ?? [];
+const topic = arg('--topic')?.[0];
 const PORT = 4321;
 const URL_ROOT = `http://127.0.0.1:${PORT}/learning-resources/`;
 
@@ -32,6 +35,8 @@ async function withPreview(fn) {
     return false;
   } finally {
     server.kill();
+    // Astro's preview keeps running in the background after the command exits; stop it so the next run starts clean.
+    spawnSync('npx', ['astro', 'preview', 'stop'], { cwd: site, stdio: 'ignore' });
   }
 }
 
@@ -41,7 +46,7 @@ const checks = [
   ['examples', () => run('npm', ['run', 'test:examples'])],
   ['build', () => run('npm', ['run', 'build'])],
   ['narration', () => run('npm', ['run', 'test:narration'])],
-  ['reels', () => (results.build?.ok === false ? (console.error('skipped: build failed'), false) : withPreview(() => run('npm', ['run', 'test:reels', '--', URL_ROOT])))],
+  ['reels', () => (results.build?.ok === false ? (console.error('skipped: build failed'), false) : withPreview(() => run('npm', ['run', 'test:reels', '--', URL_ROOT, ...(topic ? [topic] : [])])))],
   ['links', () => run('npm', ['run', 'check:links'])],
 ];
 

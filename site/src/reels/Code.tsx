@@ -48,7 +48,7 @@ export function Code({
   const fontSize = `min(0.95rem, calc((100cqw - 2.2rem) / ${(longest * 0.61).toFixed(2)}))`;
   let budget = clamp((t - start) / Math.max(0.01, end - start)) * total;
   return (
-    <div style={{ containerType: 'inline-size' }} className={`rounded-2xl border border-crema/10 bg-espresso/85 font-mono leading-[1.7] shadow-[0_20px_60px_rgba(0,0,0,.45)] transition-opacity ${dim ? 'opacity-40' : ''}`}>
+    <div style={{ containerType: 'inline-size' }} className={`rounded-2xl border border-crema/10 bg-espresso/85 font-mono leading-[1.7] portrait:leading-[1.4] shadow-[0_20px_60px_rgba(0,0,0,.45)] transition-opacity ${dim ? 'opacity-40' : ''}`}>
       {title && (
         <div className="flex items-center gap-1.5 border-b border-crema/8 px-3 py-1.5">
           <span className="h-2 w-2 rounded-full bg-cherry/80" />

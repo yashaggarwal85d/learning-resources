@@ -8,17 +8,18 @@ Four tracks, each with a full syllabus:
 
 | Track | Syllabus | Status |
 |---|---|---|
-| Data Engineering | [syllabus/data-engineering.md](syllabus/data-engineering.md) | in production (daily routine) |
-| Data Structures & Algorithms | [syllabus/data-structures-and-algorithms.md](syllabus/data-structures-and-algorithms.md) | in production (daily routine) |
-| German, A1 to C2 | [syllabus/german-language.md](syllabus/german-language.md) | in production (daily routine) |
-| Rust Systems Engineering | [syllabus/rust-systems-engineering.md](syllabus/rust-systems-engineering.md) | paused |
+| Data Engineering | [syllabus/data-engineering.md](syllabus/data-engineering.md) | in production (hourly routine) |
+| Data Structures & Algorithms | [syllabus/data-structures-and-algorithms.md](syllabus/data-structures-and-algorithms.md) | in production (hourly routine) |
+| German, A1 to C2 | [syllabus/german-language.md](syllabus/german-language.md) | in production (hourly routine) |
+| Rust Systems Engineering | [syllabus/rust-systems-engineering.md](syllabus/rust-systems-engineering.md) | in production (hourly routine) |
 
 ## The documents that run the project
 
 | File | What it is |
 |---|---|
 | [PROJECT_PLAN.md](PROJECT_PLAN.md) | The rules (animate first; one topic at a time; verified, state-of-the-art content; beautiful and memorable; a natural flow; complete coverage, proven), what every topic contains, the Definition of Done, the narration standard and the tech stack. **The plan wins any conflict.** |
-| [ROUTINE.md](ROUTINE.md) | The step-by-step procedure the daily per-domain routines follow to make, check and ship the next topic. |
+| [ROUTINE.md](ROUTINE.md) | The step-by-step procedure the hourly per-domain routines follow to make, check and ship the next topic. |
+| [DESIGN.md](DESIGN.md) | The house style for reel steps: canvas, text sizes, colour, motion, and what the looks review checks. |
 | [QUALITY.md](QUALITY.md) | Every problem ever found, its fix and the guard that stops it recurring, plus the automatic checks and the "before shipping" list. |
 | `syllabus/` | The course order, topic by topic; `syllabus/review-notes/` records syllabus changes and why. |
 
@@ -28,8 +29,11 @@ Four tracks, each with a full syllabus:
 PROJECT_PLAN.md  ROUTINE.md  QUALITY.md   rules, procedure, quality record
 syllabus/                                  the four syllabi (the build reads them)
 scripts/check-docs.mjs                     checks links and anchors in the docs
-scripts/check-all.mjs                      runs every pre-ship check with a timing summary (ROUTINE.md section 6)
+site/src/reels/kit.tsx                     the drawing kit every topic's scenes are built from (colours, canvas, text)
+scripts/check-all.mjs                      runs every pre-ship check with a timing summary (ROUTINE.md sections 5 and 8)
 scripts/check-links.mjs                    checks every topic's outside links (status and title)
+scripts/claim.mjs                          hands each routine run its topic (claims on the `claims` branch, heartbeats)
+scripts/run-metrics.mjs                    records a run's tokens (per model), calls and time, per stage
 site/                                      the website (Astro + React islands + Tailwind)
   src/topics/registry.ts                   every finished topic: live or held, concept ledger, bridge and handoff
   src/topics/<domain>/m<N>-…/ch<NN>-…/<topic>/
@@ -85,12 +89,12 @@ Both are frozen in `site/narration/voice.json`. Details are in [site/narration/R
 
 ## How a topic is made
 
-Each domain has a daily routine (an automated session) that follows [ROUTINE.md](ROUTINE.md).
+Each domain has an hourly routine (an automated session; several runs of one domain can work at once, each on its own topic) that follows [ROUTINE.md](ROUTINE.md).
 
-1. It picks the next topic in syllabus order and researches it from primary sources, with an adversarial fact-check.
-2. It builds the coverage map, including a blind expert list from an independent reviewer.
-3. It writes the reel, Deep dive, Prerequisites, narration script and executed examples, then runs a flow review and a gap hunt.
-4. It generates the narration, runs every check, and ships to `main` only when all of them pass.
+1. It claims the first topic in syllabus order that no other run is working on, once the topic before it is content-final, so it follows on from what the learner will see.
+2. It researches the topic from primary sources; an Opus agent plans and storyboards it, another fact-checks the plan, and a blind expert list starts the coverage map.
+3. A builder agent writes the reel, Deep dive, Prerequisites, narration script and executed examples; Opus agents review the content and the looks; every check except narration must pass.
+4. The topic is marked content-final (the next topic may start), then narrated, checked once more in full, and shipped to `main`.
 
 A topic goes live only when every topic before it in its domain is live; one finished early is held until then. If a check fails, the routine fixes the cause and never loosens the check.
 
