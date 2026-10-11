@@ -682,9 +682,9 @@ Every factual claim the topic makes, with its `SOURCES.md` section (by title) an
 - [x] 2.4 Coverage map `coverage.json` written by the builder (syllabus clauses, 9 sources' contents item by item, the 40 blind-expert items mapped; one expert item out with a reason, plus six source items out with reasons). `gapReview` holds a placeholder (`by: pending ...`, `open: []`) so the build passes; the content review (section 4) replaces it.
 - [x] Sources still to fetch (see list) fetched and quoted; `sources.mjs check` green.
 - [x] 3 Build (2026-10-11, Sonnet builder): `examples/*.rs` (26 files, one extra `ext_more.rs`), `examples.py`, `reel.tsx`, `scenes.tsx`, `index.mdx`, `prerequisites.mdx`, `narration.json`, `coverage.json`, registry entry (`held`). `npm run build` green; `examples.py` green (rustc 1.97.0; `npm run test:examples` also runs the python-essentials topic, which needs a newer Python and fails here for that reason alone). Layout checked statically (text boxes from server-rendered final frames: no text outside its drawing or overlapping other text, 16 units clear under the lowest element); the reel/screenshot tests were not run (the run does).
-- [ ] 4 Content review (flow, gap hunt, expert reader) and fixes; `coverage.json` → `gapReview`.
-- [ ] 5 `check-all --skip narration --changed`; looks review on screenshots and fixes.
-- [ ] 6 Content final (`claim.mjs final`).
+- [x] 4 Content review (flow, gap hunt, expert reader) and fixes; `coverage.json` → `gapReview`.
+- [x] 5 `check-all --skip narration --changed`; looks review on screenshots and fixes.
+- [x] 6 Content final (`claim.mjs final`).
 - [ ] 7 Narration generated, listened to, committed.
 - [ ] 8 Ship (merge `origin/main`, continuity check against the previous topic's real handoff, `check-all --changed`, merge, CI green).
 
