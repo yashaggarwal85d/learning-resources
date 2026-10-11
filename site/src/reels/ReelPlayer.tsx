@@ -113,15 +113,17 @@ export default function ReelPlayer({ meta, reel, active, startStep, next, onPlay
     }
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
-  const forward = useCallback(() => {
+  const forward = useCallback((skipAnimation = false) => {
     if (ended) return;
-    if (tRef.current < cur.duration) {
+    if (tRef.current < cur.duration && !(skipAnimation && !needsAnswer)) {
       // First tap completes the animation; the next one moves on.
       tRef.current = cur.duration;
       setT(cur.duration);
       return;
     }
     if (needsAnswer) {
+      tRef.current = cur.duration;
+      setT(cur.duration);
       setNudge((n) => n + 1);
       return;
     }
@@ -221,7 +223,7 @@ export default function ReelPlayer({ meta, reel, active, startStep, next, onPlay
     if (Math.abs(dx) > 30 || Math.abs(dy) > 30) return; // a scroll, not a tap
     const box = (e.currentTarget as HTMLElement).getBoundingClientRect();
     if (e.clientX - box.left < box.width * 0.3) back();
-    else forward();
+    else forward(true); // like Instagram stories: a tap always moves on, even mid-animation
   };
   const onPointerCancel = () => {
     if (press.current) clearTimeout(press.current.timer);

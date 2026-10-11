@@ -117,6 +117,20 @@ for (const [device, opts] of [
           await page.waitForTimeout(300);
         }
       }
+      // A tap works like Instagram stories: right side = next step at once (even mid-animation), left third = previous.
+      const tap = async (x, yy) => {
+        await cdp.send('Input.dispatchTouchEvent', { type: 'touchStart', touchPoints: [{ x, y: yy }] });
+        await page.waitForTimeout(60);
+        await cdp.send('Input.dispatchTouchEvent', { type: 'touchEnd', touchPoints: [] });
+        await page.waitForTimeout(500);
+      };
+      await page.locator('[aria-label^="Step "]').nth(from).click();
+      await page.waitForTimeout(300); // the step is still animating
+      const t0 = Number(await stepNow());
+      await tap(250, y);
+      if (Number(await stepNow()) !== t0 + 1) fail(`${where}: a tap on the right didn't go to the next step at once (${t0} -> ${await stepNow()})`);
+      await tap(40, y);
+      if (Number(await stepNow()) !== t0) fail(`${where}: a tap on the left didn't go back (${await stepNow()} instead of ${t0})`);
       const before = await stepNow();
       await drag(200, y, 210, y - 120);
       await page.evaluate(() => document.querySelector('.snap-y')?.scrollTo({ top: 0, behavior: 'instant' }));
