@@ -12,7 +12,7 @@
 //   node scripts/claim.mjs status [<domain>]    every claim, with its age
 //
 // <domain> is a domain id, title or topic-id prefix ("data-structures-and-algorithms", "Data Structures & Algorithms", "dsa", "German").
-// Settings: CLAIM_MAX_PARALLEL (default 2) runs per domain at once; a claim is stale after 90 minutes without a heartbeat.
+// Settings: CLAIM_MAX_PARALLEL (default 5) runs per domain at once; a claim is stale after 90 minutes without a heartbeat.
 import { spawnSync } from 'node:child_process';
 import { existsSync, mkdirSync, mkdtempSync, readdirSync, readFileSync, rmSync, statSync, writeFileSync } from 'node:fs';
 import { homedir, tmpdir } from 'node:os';
@@ -23,7 +23,7 @@ const root = resolve(dirname(new URL(import.meta.url).pathname), '..');
 const BRANCH = 'claims';
 const STALE_MIN = Number(process.env.CLAIM_STALE_MIN ?? 90);
 const BEAT_MIN = 15;
-const MAX = Number(process.env.CLAIM_MAX_PARALLEL ?? 2);
+const MAX = Number(process.env.CLAIM_MAX_PARALLEL ?? 5);
 const local = join(tmpdir(), 'run-claim.json'); // this run's claim: { domain, file, owner }
 
 const git = (args, cwd = root) => spawnSync('git', args, { cwd, encoding: 'utf8' });
