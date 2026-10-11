@@ -1,0 +1,66 @@
+import Resource from '../../../../../components/Resource.astro';
+
+This reel assumes four things. If they are familiar, skip straight in. If one is not, a few minutes with the matching resource is enough to follow every step. Reels on this site are marked **Before this** (earlier in the course) or **Goes deeper later** (not needed now).
+
+<section class="prereq" data-section="asymptotics">
+
+### <span class="n">01</span> Asymptotic notation and the cost of a loop
+
+You can read Θ, O and Ω, you know that constants and lower-order terms are dropped, and you have met the quicksort recurrence that the first reel solved by differencing. This reel counts the cost of a recursive procedure, so it needs the language the costs are written in.
+
+<p class="check"><b>Check yourself:</b> is 3n² + 10n in Θ(n²), and is n log n in o(n²)? (Answer: yes to both; the first ratio tends to 3, the second to 0.)</p>
+
+<ul class="resources">
+  <Resource kind="reel" host={props.host} domain="data-structures-and-algorithms" title="Asymptotic notation and case analysis">The notation, the cases and the full-history quicksort recurrence this reel contrasts with.</Resource>
+</ul>
+
+</section>
+
+<section class="prereq" data-section="word-ram">
+
+### <span class="n">02</span> The word-RAM: what a step costs
+
+You know what one unit of cost is: a single operation on a machine word, with constant-time memory access. The reel counts word operations and drops the constants, and the Deep dive reuses the van Emde Boas halving (a 64-bit key's bits halved six times) from that topic.
+
+<p class="check"><b>Check yourself:</b> on the word-RAM, what does one step cost, and why is adding two numbers a single step? (Answer: one unit; the numbers fit in a machine word.)</p>
+
+<ul class="resources">
+  <Resource kind="reel" host={props.host} domain="data-structures-and-algorithms" title="The word-RAM model and its assumptions">The machine these counts assume, and what it hides.</Resource>
+</ul>
+
+</section>
+
+<section class="prereq" data-section="induction">
+
+### <span class="n">03</span> Proof by induction and geometric series
+
+Induction: prove a statement for the base cases, then show that if it holds for smaller sizes it holds for this one. Geometric series: a sum whose terms shrink (or grow) by a constant factor is dominated by its largest term.
+
+<p class="check"><b>Check yourself:</b> what do 1 + ½ + ¼ + … and 1 + 9/10 + 81/100 + … add up to? (Answer: 2, and 10; the sum of a shrinking series is 1/(1 − ratio).)</p>
+
+<ul class="resources">
+  <Resource kind="course" title="Mathematics for Computer Science" href="https://ocw.mit.edu/courses/6-042j-mathematics-for-computer-science-spring-2015/" by="MIT OpenCourseWare 6.042J, Spring 2015">Induction and sums, with the free course textbook.</Resource>
+  <Resource kind="reading" title="Mathematical induction" href="https://en.wikipedia.org/wiki/Mathematical_induction" by="Wikipedia">The principle, with worked examples.</Resource>
+  <Resource kind="reading" title="Geometric series" href="https://en.wikipedia.org/wiki/Geometric_series" by="Wikipedia">The closed form for the sum, and when it converges.</Resource>
+</ul>
+
+</section>
+
+<section class="prereq" data-section="procedures">
+
+### <span class="n">04</span> Merge sort and binary search as procedures
+
+You need to know what each does, not its analysis: merge sort splits the keys in two, sorts each half and merges; binary search compares with the middle key and keeps one half. The reel derives their step counts. Their own chapters come later.
+
+<p class="check"><b>Check yourself:</b> how many probes does binary search make on 1,000,000 sorted keys in the worst case? (Answer: 20, which is ⌊log₂ 1,000,000⌋ + 1; the number of halvings is 19.)</p>
+
+<ul class="resources">
+  <Resource kind="reading" title="Mergesort" href="https://algs4.cs.princeton.edu/22mergesort/" by="Sedgewick and Wayne, Algorithms 4th ed., section 2.2">Top-down and bottom-up merge sort, with traces and the proof of the n log n bound.</Resource>
+  <Resource kind="reading" title="Programming Model" href="https://algs4.cs.princeton.edu/11model/" by="Sedgewick and Wayne, Algorithms 4th ed., section 1.1">Includes binary search as the worked example of a recursive and an iterative procedure.</Resource>
+  <Resource kind="course" title="Algorithms by Jeff Erickson" href="https://jeffe.cs.illinois.edu/teaching/algorithms/" by="Jeff Erickson" length="free book">Chapter 1 covers recursion, merge sort and selection; its recurrences appendix is a Source of this topic.</Resource>
+  <Resource kind="reel" host={props.host} domain="data-structures-and-algorithms" title="Divide-and-conquer design">Merge sort and binary search as the template, reading the cost off the recurrence (Ch.21).</Resource>
+  <Resource kind="reel" host={props.host} domain="data-structures-and-algorithms" title="Quickselect and median-of-medians">The algorithm behind the n/5 and 7n/10 recurrence (Ch.16).</Resource>
+  <Resource kind="reel" host={props.host} domain="data-structures-and-algorithms" title="Karatsuba and Strassen">The 3T(n/2) + n and 7T(n/2) + n² shapes (Ch.21).</Resource>
+</ul>
+
+</section>

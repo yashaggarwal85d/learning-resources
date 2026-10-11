@@ -84,4 +84,23 @@ export const TOPICS: TopicMeta[] = [
     bridge: 'Data Structures & Algorithms starts with the language its costs are written in: what a bound claims, which case it is about, and what it leaves out.',
     handoff: 'Next: the word-RAM model, the machine these step counts quietly assume, and what it hides.',
   },
+  {
+    id: 'dsa.recurrences-master-theorem-akra',
+    domain: 'data-structures-and-algorithms',
+    slug: 'data-structures-and-algorithms/m1-data-structures/ch01-cost-models-amortized/recurrences-master-theorem-akra',
+    title: 'Recurrences: Master theorem and Akra–Bazzi',
+    syllabusTitle: 'Recurrences: Master theorem and Akra–Bazzi',
+    kind: 'full',
+    status: 'held', // topic 2 (the word-RAM model) is built in parallel and is not live yet
+    milestone: { number: 1, title: 'Data Structures' },
+    chapter: { number: 1, title: 'Cost Models and Amortized Analysis', section: '1.1' },
+    minutes: 12,
+    verified: '2026-10-11',
+    introduces: ['recurrence-relations', 'recursion-tree', 'master-theorem', 'akra-bazzi', 'substitution-method'],
+    // word-ram and van-emde-boas-tree are introduced by topic 2 (planned in CHAPTER.md); the rest are assumed and listed in the Prerequisites panel.
+    uses: ['big-o-theta-omega', 'word-ram', 'van-emde-boas-tree', 'logarithms', 'standard-sorts', 'binary-search', 'induction', 'geometric-series'],
+    declared: ['logarithms', 'standard-sorts', 'binary-search', 'induction', 'geometric-series'],
+    bridge: 'The word-RAM lets you count steps, and a recursive algorithm hands you that count as a recurrence. Here is how to read the answer off it.',
+    handoff: 'A recurrence bounds what one algorithm costs. Next: how to prove that no algorithm can do better.',
+  },
 ];

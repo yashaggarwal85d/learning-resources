@@ -1,0 +1,215 @@
+{
+  "topic": "dsa.recurrences-master-theorem-akra",
+  "note": "Written to be spoken: one sentence or phrase per line; {\"beat\": s} is a deliberate pause; code is spelled the way it is said. `answer` plays after the learner answers a predict step.",
+  "steps": [
+    {
+      "lines": [
+        "The word RAM lets you count steps, and a recursive algorithm hands you that count as a recurrence.",
+        "Here is how to read the answer off it.",
+        {
+          "beat": 0.4
+        },
+        "Take the vector of a million keys, and three recursive procedures on it. Merge sort. Binary search. And median of medians.",
+        "Each one's count is an equation that defines T of n through T at smaller sizes.",
+        {
+          "beat": 0.3
+        },
+        "Two of them recurse twice. One of those two is linear, and the other is not.",
+        "By the end, you will read all three off their trees."
+      ]
+    },
+    {
+      "lines": [
+        "Draw the recurrence as what it is... a tree of calls.",
+        "Each node does its own work, then calls itself twice on halves.",
+        {
+          "beat": 0.3
+        },
+        "A level is a few nodes of one size, so its total is the number of nodes times the work of one.",
+        "For merge sort on sixty four keys, every level totals sixty four.",
+        "There are seven levels, so the answer is the sum of the column. Four hundred forty eight."
+      ]
+    },
+    {
+      "lines": [
+        "Same tree shape, new recurrence. Every call now makes eight calls on half the keys, and does n squared work itself.",
+        "The root level costs four thousand ninety six. The calls at the bottom are on one key, and cost one each.",
+        {
+          "beat": 0.4
+        },
+        "What does that bottom level total?"
+      ],
+      "answer": [
+        "Two hundred sixty two thousand one hundred forty four.",
+        "Eight calls per node, six levels down... that is a lot of leaves, each doing one unit.",
+        "The column doubles at every level, so the bottom row is sixty four times the root.",
+        "That leaf count has a name. The watershed. When the leaves win, the answer is the watershed itself."
+      ]
+    },
+    {
+      "lines": [
+        "The Master theorem is nothing but three shapes the column can take.",
+        "Compare one level with the next.",
+        {
+          "beat": 0.3
+        },
+        "Smaller by a constant factor... the column shrinks, and the root is the answer.",
+        "Equal... every level ties, so you multiply by the number of levels. That is the log.",
+        "Larger by a constant factor... the leaves win.",
+        {
+          "beat": 0.3
+        },
+        "A geometric series is a constant times its largest term. That is the whole proof."
+      ]
+    },
+    {
+      "lines": [
+        "The textbook statement compares f of n with the watershed.",
+        "Polynomially smaller, case one. The leaves win.",
+        "Same size, up to a log power, case two. A tie, with one more log.",
+        "Polynomially larger, case three, and the root wins... but only if a regularity condition holds, so the column really shrinks.",
+        {
+          "beat": 0.3
+        },
+        "For a plain power it holds by itself. Here, two over four, one half.",
+        "Binary search is case two, with a watershed of one. The log comes from the depth alone."
+      ]
+    },
+    {
+      "lines": [
+        "The three cases are not exhaustive.",
+        "Here f is n log n. It is above the watershed, but not by any power of n.",
+        {
+          "beat": 0.3
+        },
+        "The column does shrink. But the ratio between neighbouring levels keeps drifting towards one at the top.",
+        "So no constant below one fits, and no case applies.",
+        {
+          "beat": 0.3
+        },
+        "Akra Bazzi, next, covers this gap. Recursion trees cover the rest."
+      ]
+    },
+    {
+      "lines": [
+        "Median of medians recurses on two different sizes... a fifth, and seven tenths.",
+        "The Master theorem has one split factor. It cannot take this.",
+        {
+          "beat": 0.3
+        },
+        "The tree still can. A fifth plus seven tenths is nine tenths.",
+        "So each level's sizes add up to nine tenths of the level above, and the work shrinks by the same factor.",
+        "The root dominates. The total stays under ten times n. Linear."
+      ]
+    },
+    {
+      "lines": [
+        "Now change the groups. Groups of three give T of n over three, plus T of two n over three, plus n.",
+        {
+          "beat": 0.4
+        },
+        "Still linear?"
+      ],
+      "answer": [
+        "No. A third plus two thirds is exactly one.",
+        "So every full level adds back up to n, and the levels run about log n deep.",
+        "That is n log n. This analysis can no longer show linear time.",
+        "The sum of the fractions decides. Below one, the column shrinks. At exactly one, it ties."
+      ]
+    },
+    {
+      "lines": [
+        "Akra Bazzi turns that sum into an exponent.",
+        "Find the one number p where the fractions, each raised to the power p, add up to one.",
+        {
+          "beat": 0.3
+        },
+        "For selection, p is about zero point eight four.",
+        "With f equal to n, the integral grows like n to the one minus p, and n to the p times that is just n. Linear.",
+        {
+          "beat": 0.3
+        },
+        "The Master theorem is the one term case. And floors, ceilings and plus six are absorbed by small perturbations."
+      ]
+    },
+    {
+      "lines": [
+        "Now substitution. Guess, then prove by induction.",
+        "Merge sort, guess T of n is at most c times n.",
+        "The step gives... c times n, plus n.",
+        {
+          "beat": 0.4
+        },
+        "What has this proved?"
+      ],
+      "answer": [
+        "Nothing. The step has to come back to exactly c times n, and c times n plus n is larger, for any c.",
+        "The constant may not grow. You cannot induct over big O.",
+        "The guess was simply wrong. The real ratio climbs by three, every time n grows eight times."
+      ]
+    },
+    {
+      "lines": [
+        "A second trap. Here the guess is right.",
+        "Counting merge sort's calls, the Master theorem says linear, and the counts say two n minus one.",
+        "But the induction still fails by the plus one.",
+        {
+          "beat": 0.3
+        },
+        "Subtract a lower order term. With c n minus d, the step closes, as soon as d is at least one.",
+        "A stronger hypothesis is easier to prove."
+      ]
+    },
+    {
+      "lines": [
+        "Back to the problem.",
+        "Merge sort doubles, but every level costs n. A tie. N log n.",
+        "Median of medians doubles, but each level costs nine tenths of the last. The root wins. Linear.",
+        "Binary search never doubles, and costs one per level. Log n.",
+        {
+          "beat": 0.3
+        },
+        "At a million keys, those are about twenty one million operations, eight point eight million, and twenty probes.",
+        "Next, what every algorithm must pay."
+      ]
+    },
+    {
+      "lines": [
+        "Prove it, one of three.",
+        "T of n equals seven T of n over two, plus n squared.",
+        {
+          "beat": 0.4
+        },
+        "Which end of the column wins?"
+      ],
+      "answer": [
+        "The leaves. The watershed is n to the log base two of seven, about n to the two point eight one.",
+        "Cutting the number of calls from eight to seven moved the exponent from three to two point eight one."
+      ]
+    },
+    {
+      "lines": [
+        "Prove it, two of three.",
+        "T of n equals two T of n over two, plus n over log n.",
+        "A colleague applies case two, and writes n log n. Right?"
+      ],
+      "answer": [
+        "No case applies. This f sits below the watershed by only a log factor.",
+        "Akra Bazzi gives n log log n.",
+        "The tree agrees. The levels add up like a harmonic series."
+      ]
+    },
+    {
+      "lines": [
+        "Prove it, three of three.",
+        "T of n equals four T of n over two, plus n. The Master theorem says n squared.",
+        "Your induction with c n squared ends at c n squared plus n. What now?"
+      ],
+      "answer": [
+        "Strengthen the guess. A larger c never helps, because the plus n sits outside it.",
+        "Subtract a linear term, and the step closes. The theorem was right.",
+        "A recurrence bounds what one algorithm costs. Next, how to prove that no algorithm can do better."
+      ]
+    }
+  ]
+}
