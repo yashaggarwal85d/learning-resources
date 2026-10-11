@@ -10,10 +10,11 @@ const reel: Reel = {
       body: (
         <>
           A pipeline stage reads a flag under a reader-writer lock (<code>read()</code> and <code>write()</code> return guards that unlock when dropped) and sets
-          it if unset: the Rust Edition Guide's own example. Compiled with <code>--edition 2021</code> it hangs forever when the flag is unset; with{' '}
-          <code>--edition 2024</code> it runs. Nothing but <em>when a temporary dies</em> changed. You've seen that the single owner decides who destroys a
+          it if unset: the Rust Edition Guide's own example. Compiled with <code>--edition 2021</code> it deadlocks when the flag is unset (the <code>RwLock</code> docs allow a panic instead; on this
+          toolchain it hangs); with <code>--edition 2024</code> it runs. Nothing but <em>when a temporary dies</em> changed. You've seen that the single owner decides who destroys a
           value. Now: exactly when that happens, in what order, and why Rust still lets you skip it. By the end you'll place every destructor in a program on a
-          timeline, build a wrapper that closes a file exactly once, and know why leaking is allowed.
+          timeline, build a wrapper that closes a file exactly once, and know why leaking is allowed. First what a destructor is and where it runs (steps 2 to 8); then when a <em>temporary</em> dies, which is
+          what changed (9 to 12).
         </>
       ),
       duration: 5.0,
@@ -25,7 +26,7 @@ const reel: Reel = {
         <>
           When a value is no longer needed Rust runs its destructor, which is two parts: a call to <code>Drop::drop</code> if the type implements{' '}
           <code>Drop</code>, then the compiler-generated <em>drop glue</em>, which drops every field in declaration order. The <code>Stage</code> above logs{' '}
-          <code>stage</code> first, then <code>name</code>, <code>input</code>, <code>spill</code>. Most types never write a <code>Drop</code>: the glue
+          <code>stage</code> first, then <code>name</code>, <code>input</code>, <code>spill</code> (<code>SpillFile</code>, built at step 7, closes a temporary file in <code>Drop</code>). Most types never write a <code>Drop</code>: the glue
           already drops their fields. A <code>Trace</code> is our probe, a value whose <code>Drop</code> appends its name to a log (a <code>thread_local!</code>{' '}
           holds one copy per thread, in a <code>RefCell</code> whose borrow rules are checked at run time; Chapter 4).
         </>
@@ -50,8 +51,9 @@ const reel: Reel = {
         ],
         explain: (
           <>
-            <code>c</code>, then <code>b</code>, then <code>a</code>: locals drop in reverse declaration order, the opposite of struct fields. The reason is
-            borrowing: a later local may hold a reference to an earlier one (<code>let r = &amp;a;</code>), so the later one must die first. Shadowing changes
+            <code>c</code>, then <code>b</code>, then <code>a</code>: locals drop in reverse declaration order, the opposite of struct fields. Reverse
+            order is the stack discipline, and it is what makes a later value that borrows an earlier one sound: a guard holding <code>&amp;a</code> (its
+            destructor may still read <code>a</code>) dies before <code>a</code> does. The Deep dive's drop check is this rule made precise. Shadowing changes
             nothing: a shadowed <code>x</code> is still dropped at the brace, in its own position. Tuples and arrays follow the field rule: first element first.
           </>
         ),
@@ -66,7 +68,9 @@ const reel: Reel = {
           <code>consume</code>'s closing brace, and <code>main</code>'s brace drops nothing for it, because the moved-from place is deinitialized (previous topic).{' '}
           <code>std::mem::drop</code> is not magic: it is literally <code>{'pub fn drop<T>(_x: T) {}'}</code>, a function that takes ownership and returns, so the
           value dies at once. On a <code>Copy</code> value it does nothing: a copy is moved in and dropped, the original stays. Assignment also runs the
-          destructor: <code>v = Trace("v2")</code> drops the old <code>v1</code> on the spot.
+          destructor: in <code>v = built("v2")</code> the new value is built first, then the old <code>v1</code> is dropped, then the new one is stored (the
+          Reference's order), so a new value that needs the resource the old one holds fails or deadlocks. On a reference, <code>drop</code> drops the
+          reference, not the value: <code>drop(&amp;g)</code> keeps <code>g</code> locked (the <code>dropping_references</code> lint warns).
         </>
       ),
       duration: 5.0,
@@ -91,7 +95,8 @@ const reel: Reel = {
         explain: (
           <>
             E0040: <code>explicit use of destructor method</code>. <code>Drop::drop</code> takes <code>&amp;mut self</code>, so after your call <code>x</code>{' '}
-            would still exist and be dropped again at the brace: a double destructor. rustc's own help says <code>consider using `drop` function</code>:{' '}
+            would still exist and be dropped again at the brace: a double destructor. Because <code>drop</code> gets <code>&amp;mut self</code>, every
+            field must still be there when it runs: a <code>Drop</code> type keeps its fields until it dies. rustc's own help says <code>consider using `drop` function</code>:{' '}
             <code>drop(x)</code> moves <code>x</code> in, so nothing is left to drop twice. A destructor should not panic either: a panic while unwinding
             aborts.
           </>
@@ -106,9 +111,11 @@ const reel: Reel = {
           A type with <code>Drop</code> manages something besides its own <code>size_of::&lt;T&gt;</code> bytes (the std <code>Copy</code> docs' words), so a
           bitwise copy would duplicate that responsibility: two owners, two closes. That is why <code>Copy</code> and <code>Drop</code> are mutually
           exclusive, E0184 (the error index adds that the combination is disabled for now because the current implementation "is incorrect and can lead to
-          memory unsafety"). Put the three rules together and "exactly once" is a theorem, not a convention: every value has one owner; a move deinitializes the
-          source, so it drops nothing; and a type with a destructor can never be <code>Copy</code>. The previous topic's <code>Fd</code> wrapper is about to
-          become real.
+          memory unsafety"). Put the three rules together and "never twice" is a theorem, not a convention: every value has one owner; a move deinitializes the
+          source, so it drops nothing; and a type with a destructor can never be <code>Copy</code>. "Exactly once" follows whenever the destructor runs at
+          all, and, as you'll see, Rust does not promise that. The previous topic's <code>Fd(i32)</code> wrapper is <code>File</code> (4 bytes on Linux: the
+          descriptor), which std already wraps for you; the raw-fd version, <code>OwnedFd</code>, is Chapter 11. Here we build the wrapper one level up:{' '}
+          <code>SpillFile</code>.
         </>
       ),
       duration: 5.0,
@@ -119,8 +126,10 @@ const reel: Reel = {
       body: (
         <>
           RAII in Rust is ownership plus <code>Drop</code>. <code>SpillFile</code> owns a temporary spill file: <code>create</code> opens it, <code>Drop</code>{' '}
-          unlinks it, and the drop glue then drops <code>file</code>, whose own destructor closes the descriptor (<code>File</code> is 4 bytes here: the
-          descriptor, measured). Hand it through two functions and back: one close, one unlink, no <code>defer</code>, no <code>finally</code>, no{' '}
+          unlinks it, and the drop glue then drops <code>file</code>, whose own destructor closes the descriptor (<code>File</code> is 4 bytes on Linux: the
+          descriptor, measured). A <em>guard</em> is a value whose only job is to do something in <code>Drop</code>; <code>SpillFile</code> is one, and so is a lock
+          guard. The <code>closes</code> counter ticks in the wrapper's own <code>Drop</code>; the count in <code>/proc/self/fd</code> (up by one while open,
+          back after) confirms the descriptor was closed. Hand it through two functions and back: one close, one unlink, no <code>defer</code>, no <code>finally</code>, no{' '}
           <code>with</code>, because there is exactly one owner and that owner's scope end is the release. Caveat from the <code>File</code> docs: errors detected
           on close are ignored by <code>Drop</code>; call <code>sync_all</code> first if they matter. Raw descriptors and I/O safety are Chapter 11.
         </>
@@ -160,12 +169,13 @@ const reel: Reel = {
       body: (
         <>
           A temporary (a value with no binding) lives until the end of its <em>temporary scope</em>, usually the enclosing statement:{' '}
-          <code>m.lock().unwrap().push(1);</code> releases the lock at the semicolon. Two exceptions matter. <em>Lifetime extension</em>: in{' '}
+          <code>m.lock().unwrap().push(1);</code> releases the lock at the semicolon. One exception and one trap. The exception, <em>lifetime extension</em>: in{' '}
           <code>let r = &amp;Trace("ext");</code> the temporary is kept to the end of the block so <code>r</code> has something to point at (a function argument does
-          not extend: <code>let r = id(&amp;temp());</code> is E0716 once <code>r</code> is used). And a <code>match</code> scrutinee is{' '}
-          <strong>not</strong> a temporary scope, so its temporaries live to the end of the whole <code>match</code> statement: a lock taken in the scrutinee is
-          held through every arm. Shorter scopes exist too: <code>if</code> conditions, <code>&amp;&amp;</code>/<code>||</code> operands and match guards each get
-          their own.
+          not extend: <code>let r = id(&amp;temp());</code> is E0716 once <code>r</code> is used). The trap: an <code>if</code> condition is a scope of
+          its own, a <code>match</code> scrutinee is <strong>not</strong>, so a lock taken in the scrutinee lives to the end of the whole{' '}
+          <code>match</code>, through every arm. A <code>for</code> header and a <code>while let</code> scrutinee hold their lock through the loop body in the
+          same way (measured with <code>try_lock</code>), while a local declared in a loop body is dropped at the end of every iteration. Shorter scopes exist
+          too: <code>&amp;&amp;</code>/<code>||</code> operands and match guards each get their own.
         </>
       ),
       duration: 5.6,
@@ -216,7 +226,8 @@ const reel: Reel = {
       title: 'c.borrow().len() as a tail expression',
       body: (
         <>
-          The Edition Guide's <code>RefCell</code> example (a cell whose borrow rules are checked at run time; <code>borrow()</code> returns a guard; Chapter 4):
+          The Edition Guide's <code>RefCell</code> example (a cell whose borrow rules are checked at run time; <code>borrow()</code> returns a guard that holds a borrow of <code>c</code> and releases it in{' '}
+          <code>Drop</code>; Chapter 4):
           the guard is a temporary in the tail expression of <code>f</code>. Which editions compile it?
         </>
       ),
@@ -245,7 +256,7 @@ const reel: Reel = {
         <>
           The previous topic left this open: a value moved on one path compiles, so how does the brace know whether to drop it? When initialization is statically
           known (straight-line code, or branches that agree) the compiler emits an unconditional drop or none. When it is not, Rust keeps a run-time{' '}
-          <strong>drop flag</strong> for that variable, toggled as it becomes initialized or moved-from and checked at scope exit; the flags live on the stack. You
+          <strong>drop flag</strong> for that variable, toggled as it becomes initialized or moved-from and checked at scope exit; the flag is a hidden boolean local (<code>_5</code> in the MIR; the Nomicon's unoptimised picture keeps it on the stack). You
           can see it in the MIR: <code>const true</code>, <code>const false</code>, <code>switchInt</code>. Partial moves use the same machinery per field: next
           topic.
         </>
@@ -260,7 +271,8 @@ const reel: Reel = {
           Destructors run on the normal path and during <strong>unwinding</strong>: a <code>panic!</code> peels every frame it passes, in the same reverse order,
           before the thread dies (exit code 101 for <code>main</code>). They do <strong>not</strong> run when the process ends without unwinding:{' '}
           <code>std::process::exit</code>, <code>std::process::abort</code>, or a panic under <code>panic = "abort"</code>. So a <code>SpillFile</code> is cleaned
-          up after a panic but not after <code>exit(3)</code>. And a destructor that panics while already unwinding aborts the process; keep <code>Drop</code>{' '}
+          up after a panic but not after <code>exit(3)</code>. And when <code>main</code> returns, every other thread dies where it stands, its
+          destructors unrun (measured). And a destructor that panics while already unwinding aborts the process; keep <code>Drop</code>{' '}
           bodies infallible.
         </>
       ),
@@ -285,7 +297,8 @@ const reel: Reel = {
       title: 'Which of these needs unsafe?',
       body: (
         <>
-          Four ways to end up with a value that is never dropped. Which one needs <code>unsafe</code>?
+          Four ways to end up with a value that is never dropped are drawn here: <code>mem::forget</code>, <code>Box::leak</code>, an <code>Rc</code>{' '}
+          cycle and <code>process::exit</code>. Which of the first three needs <code>unsafe</code>, if any?
         </>
       ),
       duration: 1.2,
@@ -338,7 +351,7 @@ const reel: Reel = {
           spawned within the scope that have not been joined are joined before <code>scope</code> returns, so the borrowed data outlives them whatever the caller
           does with the handles. A return cannot be forgotten. The general rule: safe code may assume leaks don't happen, but <strong>unsafe code cannot rely on
           destructors running</strong>. Proxy types such as <code>Drain</code> put the owner into a consistent state <em>before</em> handing out the proxy, so a
-          leak only amplifies into more leaks. Using <code>thread::scope</code> for real is Chapter 2.
+          leak only amplifies into more leaks: std promises nothing is freed twice, not which elements survive. Using <code>thread::scope</code> for real is Chapter 2.
         </>
       ),
       duration: 5.0,
@@ -370,7 +383,8 @@ const reel: Reel = {
       title: 'Prove it · 2 of 3',
       body: (
         <>
-          Does the increment run with the lock held? <code>let _ = lock.write().unwrap();</code> followed by <code>shared += 1;</code>. What happens?
+          Does the increment run with the lock held? Here <code>lock</code> is a plain mutex around state it does not hold (<code>RwLock&lt;()&gt;</code>).{' '}
+          <code>let _ = lock.write().unwrap();</code> followed by <code>shared += 1;</code>. What happens?
         </>
       ),
       duration: 1.2,
@@ -412,7 +426,7 @@ const reel: Reel = {
           <>
             Unsound. A safe caller may <code>mem::forget</code> the guard: the borrow ends, <code>buf</code> is freed or reused, and the device keeps writing into
             it. The Reference's rule: apart from the places it guarantees, types may not rely on a destructor running for soundness. Redesign like{' '}
-            <code>thread::scope</code>: <code>with_dma(buf, f)</code> starts the device, runs <code>f</code>, and stops the device before it returns; a return
+            <code>thread::scope</code>: <code>with_dma(buf, f)</code> (where <code>f: impl FnOnce(&amp;Dma)</code> is a closure argument that is called once) starts the device, runs <code>f</code>, and stops the device before it returns; a return
             cannot be skipped.
           </>
         ),
@@ -424,7 +438,7 @@ const reel: Reel = {
       body: (
         <>
           Six things to keep. A destructor is <code>Drop::drop</code> and then the fields, in order; locals go in reverse; a temporary dies at its semicolon, and
-          Rust 2024 ends <code>if let</code> scrutinee and tail-expression temporaries sooner; a RAII wrapper releases exactly once because there is one owner;
+          Rust 2024 ends <code>if let</code> scrutinee and tail-expression temporaries sooner; a RAII wrapper never releases twice, because there is one owner, and releases once whenever its destructor runs;
           leaking is safe, by <code>forget</code>, <code>ManuallyDrop</code>, <code>Box::leak</code>, a cycle or <code>exit</code>; so soundness may never depend
           on <code>Drop</code> running. A type with <code>Drop</code> keeps its fields until it dies. Next: how do you take one field out early, say to hand a
           buffer (<code>Buf</code>) back to its pool (<code>Pool</code>) from inside a guard? The compiler's first answer is E0509.

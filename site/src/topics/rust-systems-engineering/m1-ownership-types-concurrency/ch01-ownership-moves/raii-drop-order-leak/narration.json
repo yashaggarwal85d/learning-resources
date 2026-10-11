@@ -11,8 +11,9 @@
         },
         "Here is a pipeline stage. It reads a flag under a reader-writer lock, and if the flag isn't set, it takes the write lock and sets it.",
         "It's the Rust Edition Guide's own example.",
-        "Compiled with the twenty twenty-one edition, it hangs forever. Compiled with the twenty twenty-four edition, it runs.",
+        "Compiled with the twenty twenty-one edition, it deadlocks. Here, it hangs forever. Compiled with the twenty twenty-four edition, it runs.",
         "Same source. The only thing that changed is when a temporary dies.",
+        "First what a destructor is and where it runs. Then when a temporary dies, which is what changed.",
         {
           "beat": 0.4
         },
@@ -24,7 +25,7 @@
         "When a value is no longer needed, Rust runs its destructor.",
         "And a destructor is two parts.",
         "First, your drop, if the type has one. Then the compiler's own drop glue, which drops every field... in the order you wrote them.",
-        "So this stage logs its own name first, then name, input, and the spill file.",
+        "So this stage logs its own name first, then name, input, and the spill file, which we build in a few steps.",
         "Most types never write a drop at all. The glue already drops their fields.",
         "Our probe, a trace, is just a value whose drop writes its name to a log."
       ]
@@ -37,7 +38,7 @@
       ],
       "answer": [
         "The reverse. C, then b, then a.",
-        "That's the opposite of struct fields... and there's a reason. A later local may be borrowing an earlier one, so it has to go first."
+        "That's the opposite of struct fields. It's the stack discipline, and it keeps a later value that borrows an earlier one sound... the guard dies before what it points at."
       ]
     },
     {
@@ -45,8 +46,8 @@
         "Where does a value die? Where its last owner ends.",
         "After a move, the owner is the new binding. So m dies at the closing brace of the function it was handed to, and the brace in main drops nothing for it.",
         "Mem drop isn't magic. It's a function that takes ownership and returns, so the value dies right there.",
-        "On a copy type, it does nothing... the original stays.",
-        "And assigning over a variable drops the old value on the spot."
+        "On a copy type, it does nothing... the original stays. On a reference, it drops the reference, not the value.",
+        "And assigning over a variable builds the new value first, then drops the old one."
       ]
     },
     {
@@ -66,7 +67,7 @@
         "A type with a drop manages something besides its own bytes, so a bitwise copy would duplicate that responsibility.",
         "That's why copy and drop never meet. The compiler rejects it.",
         "Put three rules together. One owner. A move empties the source. And no copy on a type with a destructor.",
-        "Exactly once isn't a convention... it's a theorem."
+        "Never twice isn't a convention... it's a theorem. Exactly once follows whenever the destructor runs at all. And Rust doesn't promise that."
       ]
     },
     {
@@ -97,6 +98,7 @@
         "It dies at the semicolon. That lock guard is gone before the next statement.",
         "Unless a let borrows it... then it lives to the end of the block.",
         "And a match scrutinee's temporaries live through every arm.",
+        "A loop header does the same: the lock stays held through the whole loop.",
         "That's how a lock gets held longer than it looks."
       ]
     },
@@ -135,7 +137,7 @@
       "lines": [
         "Here's a value moved on one path only.",
         "So at the closing brace, who knows whether to drop it?",
-        "Only the running program does. So the compiler keeps a one-bit flag on the stack, and checks it at the brace.",
+        "Only the running program does. So the compiler keeps a hidden boolean flag, and checks it at the brace.",
         "You can see it in the compiler's intermediate code: a constant true, a constant false, and a switch."
       ]
     },
@@ -144,7 +146,7 @@
         "Destructors run on the normal path. And a panic still drops everything on its way out, in the same reverse order.",
         "But process exit drops nothing.",
         "And with panic set to abort, nothing either.",
-        "So a spill file is cleaned up after a panic, but not after an exit.",
+        "So a spill file is cleaned up after a panic, but not after an exit. And when main returns, every other thread dies where it stands, destructors unrun.",
         "One more rule: a drop that panics while already unwinding aborts the whole process. Keep drop bodies simple."
       ]
     },
@@ -160,7 +162,7 @@
     {
       "lines": [
         "Four ways to end up with a value that never drops.",
-        "Which of them needs unsafe?"
+        "Which of the first three needs unsafe? Or none?"
       ],
       "answer": [
         "None of them. Leaking is safe... forget, box leak, a reference-count cycle, process exit.",
@@ -190,7 +192,7 @@
         "So put the guarantee in a function call, not in a destructor.",
         "Thread scope joins every thread before it returns. A return can't be forgotten.",
         "The general rule: unsafe code must never rely on drop running.",
-        "And when you hand out a proxy, make the owner safe first. A vector sets its length to zero before it gives out a drain. Forget the drain, and you only leak more.",
+        "And when you hand out a proxy, make the owner safe first. A vector sets its length to the start of the drained range before it gives out a drain, zero for a full drain. Forget the drain, and you only leak more. The standard library promises nothing is freed twice, not which elements survive.",
         "That's called leak amplification."
       ]
     },
@@ -234,7 +236,7 @@
         "Six things to keep.",
         "A destructor is your drop, then the fields, in order. Locals go in reverse.",
         "A temporary dies at its semicolon, and the twenty twenty-four edition ends two of them sooner.",
-        "One owner means one release. That's RAII.",
+        "One owner means one release, never two. That's RAII.",
         "Leaking is safe. So soundness never depends on drop running.",
         {
           "beat": 0.3

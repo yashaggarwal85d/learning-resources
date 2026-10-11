@@ -12,6 +12,16 @@ fn main() {
     match mode.as_str() {
         "panic" => panic!("boom"),
         "exit" => std::process::exit(3),
+        "thread" => {
+            let (tx, rx) = std::sync::mpsc::channel();
+            std::thread::spawn(move || {
+                let _t = Noisy("t");
+                tx.send(()).unwrap();
+                std::thread::sleep(std::time::Duration::from_secs(60));
+            });
+            rx.recv().unwrap();
+            println!("main returns");
+        }
         "dtorpanic" => {
             struct Bad;
             impl Drop for Bad {

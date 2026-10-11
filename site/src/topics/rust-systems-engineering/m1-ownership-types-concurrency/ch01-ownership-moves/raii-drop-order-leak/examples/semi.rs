@@ -10,4 +10,12 @@ fn main() {
         }
     }
     println!("after match: try_lock ok = {}", m.try_lock().is_ok());
+    for x in m.lock().unwrap().iter() {
+        println!("in for body: try_lock ok = {}", m.try_lock().is_ok());
+    }
+    println!("after for: try_lock ok = {}", m.try_lock().is_ok());
+    while let Some(x) = m.lock().unwrap().pop() {
+        println!("in while let body: try_lock ok = {}", m.try_lock().is_ok());
+    }
+    println!("after while let: try_lock ok = {}", m.try_lock().is_ok());
 }

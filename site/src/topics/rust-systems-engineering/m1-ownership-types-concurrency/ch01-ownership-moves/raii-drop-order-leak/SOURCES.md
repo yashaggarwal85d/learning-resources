@@ -1243,3 +1243,81 @@ Version: The Rust Core Team, May 15, 2015
 
 Contents:
 - The 1.0 release announcement (date only; anchors "just before Rust 1.0" for RFC 1066, start date 2015-04-15).
+
+## std::process::exit
+URL: https://doc.rust-lang.org/std/process/fn.exit.html
+Version: std 1.99.0
+
+> no destructors on the current stack or any other thread’s stack will be run
+
+Contents:
+- `exit` runs no destructors on any thread's stack (step 14, Deep dive "Ways a destructor is skipped").
+
+## std::thread (module)
+URL: https://doc.rust-lang.org/std/thread/index.html
+Version: std 1.99.0
+
+> When the main thread of a Rust program terminates, the entire program shuts down, even if other threads are still running, and any destructors on the remaining threads’ stacks may not be executed.
+
+Contents:
+- Main thread ends the process; other threads' destructors may not run (step 14, Deep dive; measured in `examples/unwind.rs`, mode `thread`).
+
+## std::thread::LocalKey
+URL: https://doc.rust-lang.org/std/thread/struct.LocalKey.html
+Version: std 1.99.0
+
+> Note that a “best effort” is made to ensure that destructors for types stored in thread local storage are run, but not all platforms can guarantee that destructors will be run for all types in thread local storage.
+
+> On Unix systems when pthread-based TLS is being used, destructors will not be run for TLS values on the main thread when it exits.
+
+Contents:
+- Thread-local destructors are best effort and may not run on the main thread at exit (Deep dive "Ways a destructor is skipped").
+
+## Operator expressions (assignment) - The Rust Reference
+URL: https://doc.rust-lang.org/reference/expressions/operator-expr.html
+Version: Reference, as fetched 2026-10-11
+
+> Evaluating assignment expressions begins by evaluating its operands. The assigned value operand is evaluated first, followed by the assignee expression.
+
+> It then has the effect of first dropping the value at the assigned place, unless the place is an uninitialized local variable or an uninitialized field of a local variable.
+
+Contents:
+- Assignment evaluates the new value first, then drops the old one (step 4, Deep dive table row `assign`; measured with `built("v2")` in `examples/trace.rs`).
+
+## Ownership and Destruction - The Rust Specification (FLS)
+URL: https://rust-lang.github.io/fls/ownership-and-deconstruction.html
+Version: FLS, chapter 15, as fetched 2026-10-11
+
+> Dropping a value is the act of invoking the destructor of the related type.
+
+> If the drop type implements the core::ops::Drop trait, then core::ops::Drop::drop of the drop type is invoked.
+
+> Otherwise, if the drop type is a struct type, then its fields are dropped in declaration order.
+
+> Otherwise, if the drop type is an enum type, then the fields of the active enum variant are dropped in declaration order.
+
+> All other bindings are dropped in reverse declaration order.
+
+> When a drop scope of a function is left, then each function parameter is dropped from right to left as follows:
+
+> When multiple drop scopes are left at once, the values are dropped from the innermost drop scope to the outermost drop scope.
+
+> Drop scope extension is the process of extending a drop scope associated with a temporary to prevent the premature dropping of the temporary.
+
+Contents:
+- 15.7 Destructors, 15.8 Drop Scopes (and 15.8.1 Drop Scope Extension), 15.9 Drop Order: the specification text for the rules the Reference states (Deep dive).
+
+## std::ptr::drop_in_place
+URL: https://doc.rust-lang.org/std/ptr/fn.drop_in_place.html
+Version: std 1.99.0
+
+> Executes the destructor (if any) of the pointed-to value.
+
+> It is required to use drop_in_place to drop unsized types like trait objects, because they can’t be read out onto the stack and dropped normally.
+
+> It can be used to drop pinned data when T is not repr(packed) (pinned data must not be moved before it is dropped).
+
+> Additionally, if T is not Copy, using the pointed-to value after calling drop_in_place can cause undefined behavior.
+
+Contents:
+- `drop_in_place` runs a destructor through a pointer, is required for unsized values, and the pointee must not be used afterwards (Deep dive "The destructor, as the Reference states it").

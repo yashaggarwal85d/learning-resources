@@ -386,9 +386,9 @@ export function CopyDrop({ t }: StepCtx) {
   return (
     <Svg label="If a type with a destructor could be Copy, two owners would close the same resource twice; Rust allows one owner, a move empties the source, and Copy with Drop is rejected as E0184" h={H}>
       <g opacity={dim}>
-        <T x={24} y={22} s={13} f={C.taupe} o={fa(t, 0, 0.4)}>IF Fd WERE Copy</T>
+        <T x={24} y={22} s={13} f={C.taupe} o={fa(t, 0, 0.4)}>IF File WERE Copy</T>
         <g opacity={fa(t, 0, 0.5)}>
-          <Slot x={40} y={50} name="a" type="Fd" w={170} />
+          <Slot x={40} y={50} name="a" type="File" w={170} />
           <Slot x={40} y={96} name="b = a" w={170} />
           <Owner x1={210} y1={69} x2={380} y2={78} />
           <Owner x1={210} y1={115} x2={380} y2={92} />
@@ -404,7 +404,7 @@ export function CopyDrop({ t }: StepCtx) {
       <g opacity={fa(t, 2.6, 0.5)}>
         <T x={24} y={246} s={13} f={C.caramel}>RUST</T>
         <Slot x={40} y={262} name="a" state="moved" w={170} />
-        <Slot x={40} y={308} name="b" type="Fd" w={170} look />
+        <Slot x={40} y={308} name="b" type="File" w={170} look />
         <Owner x1={210} y1={327} x2={380} y2={290} />
         <Payload x={380} y={270} w={130} h={40} label="File (4 bytes)" />
         <Brace x={520} y={352} t={t} a={3.2} />
@@ -418,7 +418,7 @@ export function CopyDrop({ t }: StepCtx) {
 
 // ── 7 · SpillFile: an OS resource with one owner ────────────────────────────────────────────────────────────────
 export function Spill({ t, portrait }: StepCtx) {
-  const H = 250;
+  const H = 274;
   const fx = [30, 220, 410];
   const slotX = (i: number) => fx[i] + 10;
   const seg1 = easeOut(seg(t, 2.1, 2.5));
@@ -455,7 +455,8 @@ export function Spill({ t, portrait }: StepCtx) {
           <T x={80} y={132} s={13} f={closed ? C.taupe : C.latte}>/tmp/…/spill</T>
         </g>
         <Counter x={400} y={112} label="CLOSES" v={closed ? 1 : 0} t={t} a={3.9} d={0.3} text={closed ? '1' : '0'} />
-        <T x={30} y={162} s={13} f={C.latte} o={fa(t, 4.5, 0.6)}>File: 4 bytes, the descriptor · SpillFile: 32 bytes</T>
+        <T x={30} y={162} s={13} f={C.latte} o={fa(t, 4.5, 0.6)}>File: 4 bytes, the descriptor · SpillFile: 32 bytes (Linux)</T>
+        <T x={30} y={182} s={13} f={C.latte} o={fa(t, 4.8, 0.6)}>descriptors open in /proc/self/fd: +1 inside, +0 after</T>
         <Timeline h={H} o={fa(t, 1.5)} />
         <Badge x={120} y={TLY(H)} n={1} name="spill" t={t} a={3.9} hi />
       </Svg>
@@ -626,7 +627,7 @@ export function DropFlags({ t, portrait }: StepCtx) {
       {(!portrait || t < 1.3) && (
         <Code title="flag.rs" t={t} end={1.0} lines={[`let t = Trace("cond");`, `if flag {`, `    consume(t);          // moved on this path only`, `}`, `let z = Trace("z");`, `// } : drop z; drop t only if still here`]} />
       )}
-      <Svg label="When a value is moved on only one path, the compiler keeps a one-bit drop flag on the stack and checks it at the closing brace: the MIR shows const true, const false and a switchInt" h={H} fill>
+      <Svg label="When a value is moved on only one path, the compiler keeps a hidden boolean drop flag and checks it at the closing brace: the MIR shows const true, const false and a switchInt" h={H} fill>
         <Slot x={30} y={20} w={160} name="t" type="Trace" look o={fa(t, 1.3)} />
         <g opacity={fa(t, 1.3)}>
           <rect x={200} y={31} width={16} height={16} fill="none" stroke={C.caramel} strokeWidth={2} />
@@ -833,7 +834,7 @@ export function JoinInCall({ t }: StepCtx) {
   const drainOn = t >= 3.0 && t < 3.8;
   const forgot = t >= 3.8;
   return (
-    <Svg label="thread::scope joins every child before it returns, so a forgotten handle cannot break it; a Vec sets its length to zero before it hands out a Drain proxy, so a forgotten proxy only leaks" h={H}>
+    <Svg label="thread::scope joins every child before it returns, so a forgotten handle cannot break it; a Vec sets its length to the start of the drained range before it hands out a Drain proxy, so a forgotten proxy only leaks" h={H}>
       <g opacity={fa(t, 0, 0.6)}>
         <Frame x={30} y={14} w={310} h={200} />
         <T x={44} y={34} s={13} f={C.taupe}>{'thread::scope(|s| { … })'}</T>
@@ -863,7 +864,7 @@ export function JoinInCall({ t }: StepCtx) {
         ))}
       </g>
       {(drainOn || forgot) && <Slot x={310} y={256} w={150} name="Drain" state={forgot ? 'forgotten' : 'live'} o={fa(t, 3.0, 0.3)} />}
-      <T x={40} y={326} s={13} f={C.latte} o={fa(t, 3.0, 0.4)}>len set to 0 before the proxy exists</T>
+      <T x={40} y={326} s={13} f={C.latte} o={fa(t, 3.0, 0.4)}>len set to the range start (0 for drain(..)) before the proxy</T>
       <T x={40} y={350} s={13} f={C.latte} o={fa(t, 3.8, 0.4)}>3 elements leaked, nothing freed twice</T>
       <T x={40} y={380} s={15} f={C.caramel} o={fa(t, 4.4, 0.5)}>leak amplification: more leaks, never UB</T>
     </Svg>
@@ -984,7 +985,7 @@ export function Recap({ t }: StepCtx) {
           <rect x={44} y={206} width={32} height={20} rx={5} fill={C.cocoa} stroke={C.latte} strokeWidth={1.5} />
         </g>
       ),
-      l1: 'One owner, one release: RAII',
+      l1: 'One owner: one release, never two',
     },
     { y: 280, glyph: <rect x={20} y={264} width={56} height={26} rx={7} fill="none" stroke={C.taupe} strokeDasharray="6 5" opacity={0.5} />, l1: 'Leaking is safe. forget, ManuallyDrop, leak' },
     { y: 336, glyph: <T x={40} y={342} s={20} a="middle" f={C.latte}>{'[ ]'}</T>, l1: 'Soundness never depends on Drop' },

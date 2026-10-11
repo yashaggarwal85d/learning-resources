@@ -966,6 +966,121 @@
           ]
         }
       ]
+    },
+    {
+      "source": "FLS, Ownership and Destruction (rust-lang.github.io/fls/ownership-and-deconstruction.html)",
+      "items": [
+        {
+          "item": "15.7 Destructors: Drop::drop first, then fields (struct, enum active variant, tuple in declaration order; array and slice first to last; closure move-captures unspecified; trait object underlying destructor).",
+          "at": [
+            {
+              "step": "A destructor is two parts"
+            },
+            {
+              "deep": "The destructor, as the Reference states it"
+            }
+          ]
+        },
+        {
+          "item": "15.8 Drop scopes and 15.8.1 drop scope extension: the normative statement of temporary scopes and their extension.",
+          "at": [
+            {
+              "step": "Temporaries die at the semicolon"
+            },
+            {
+              "deep": "Temporaries: scopes, extension, and the two 2024 changes"
+            }
+          ]
+        },
+        {
+          "item": "15.9 Drop order: bindings in reverse declaration order; parameters right to left, each after its pattern bindings; inner scopes before outer; or-pattern order from the first alternative.",
+          "at": [
+            {
+              "step": "Three locals, which dies first?"
+            },
+            {
+              "step": "Prove it · 1 of 3"
+            },
+            {
+              "deep": "Every drop-order rule, with a trace"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "The Rust Reference, Operator expressions: assignment (doc.rust-lang.org/reference/expressions/operator-expr.html)",
+      "items": [
+        {
+          "item": "Assignment evaluates the assigned value operand first, then drops the value at the assigned place (unless uninitialized), then writes.",
+          "at": [
+            {
+              "step": "A value dies where its last owner ends"
+            },
+            {
+              "deep": "Every drop-order rule, with a trace"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "std::process::exit (doc.rust-lang.org/std/process/fn.exit.html)",
+      "items": [
+        {
+          "item": "exit runs no destructors on the current stack or any other thread's stack.",
+          "at": [
+            {
+              "step": "Unwinding drops; exit does not"
+            },
+            {
+              "deep": "Leaking is safe: RFC 1066 and the Reference's rule"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "std::thread module (doc.rust-lang.org/std/thread/index.html)",
+      "items": [
+        {
+          "item": "When the main thread terminates the whole program shuts down; destructors on the remaining threads' stacks may not be executed.",
+          "at": [
+            {
+              "step": "Unwinding drops; exit does not"
+            },
+            {
+              "deep": "Leaking is safe: RFC 1066 and the Reference's rule"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "std::thread::LocalKey (doc.rust-lang.org/std/thread/struct.LocalKey.html)",
+      "items": [
+        {
+          "item": "Thread-local destructors are best effort; on Unix with pthread TLS they are not run for the main thread at exit.",
+          "at": [
+            {
+              "deep": "Leaking is safe: RFC 1066 and the Reference's rule"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "std::ptr::drop_in_place (doc.rust-lang.org/std/ptr/fn.drop_in_place.html)",
+      "items": [
+        {
+          "item": "Runs the destructor through a pointer; required for unsized types; usable for pinned data; the pointee must not be used afterwards.",
+          "at": [
+            {
+              "deep": "The destructor, as the Reference states it"
+            }
+          ]
+        }
+      ]
     }
   ],
   "expert": {
@@ -1425,7 +1540,7 @@
   },
   "gapReview": {
     "date": "2026-10-11",
-    "by": "pending: the content review (ROUTINE.md section 4) replaces this placeholder",
+    "by": "Fable content review",
     "open": []
   }
 }

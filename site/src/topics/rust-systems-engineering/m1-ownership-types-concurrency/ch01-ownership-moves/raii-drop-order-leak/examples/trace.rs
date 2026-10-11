@@ -33,6 +33,11 @@ impl Trace {
     }
 }
 
+fn built(name: &'static str) -> Trace {
+    push("built");
+    Trace(name)
+}
+
 struct SpillFile {
     path: PathBuf,
     file: File,
@@ -119,9 +124,25 @@ fn main() {
     report("memdrop");
     {
         let mut v = Trace("v1");
-        v = Trace("v2");
+        v = built("v2");
     }
     report("assign");
+    {
+        let _a = Some(Trace("some"));
+        let _b = None::<Trace>;
+    }
+    report("option");
+    {
+        let mut o = Some(Trace("taken"));
+        let t = o.take();
+        push("took");
+    }
+    report("option-take");
+    for _ in 0..2 {
+        let _l = Trace("l");
+        push("body");
+    }
+    report("loop-body");
     {
         let f = Trace("f");
         let _ = Trace("wild");

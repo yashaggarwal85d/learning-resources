@@ -94,7 +94,10 @@ EQUAL = {
     'params': '["d", "c", "b", "a"]',
     'shadow': '["x2", "y", "x"]',
     'memdrop': '["m", "n"]',
-    'assign': '["v1", "v2"]',
+    'assign': '["built", "v1", "v2"]',   # the new value is built first, then the old one drops, then the new one is stored
+    'option': '["some"]',                 # Some(payload) drops its payload; None drops nothing
+    'option-take': '["took", "taken"]',   # take() leaves a None that drops nothing
+    'loop-body': '["body", "l", "body", "l"]',  # a local in a loop body drops at the end of every iteration
     'wildcard': '["wild", "g", "f"]',
     'condmove': '["z", "cond"]',
     'condmove-moved': '["cond", "z"]',
@@ -110,7 +113,7 @@ DIFF = {
 }
 for ed in ('2021', '2024'):
     got = lines_of(run_ok('trace', ed))
-    assert len(got) == len(EQUAL) + len(DIFF[ed]) == 19, got
+    assert len(got) == len(EQUAL) + len(DIFF[ed]) == 22, got
     for k, v in {**EQUAL, **DIFF[ed]}.items():
         assert got[k] == v, f'trace {ed} {k}: {got[k]} != {v}'
 # The reel's badge numbers: 1 2 3 4 for the stage, 1 2 3 for the locals, 1 2 for the two-badge cases.
@@ -175,6 +178,7 @@ shown('spill', 'struct SpillFile { path: PathBuf, file: File }', 'impl Drop for 
 spill_lines = run_ok('spill').strip().split('\n')
 assert spill_lines[0] == 'inside: closes=0 exists=true'
 assert spill_lines[1] == 'closes=1 exists=false'
+assert spill_lines[2] == 'fds_inside=1 fds_after=0', spill_lines  # the OS close, measured in /proc/self/fd: the counter only counts the wrapper's Drop
 size_line = spill_lines[-1]
 sizes = dict(kv.split('=') for kv in size_line.split())
 FILE_BYTES, PATHBUF_BYTES, SPILL_BYTES = 4, 24, 32
@@ -233,6 +237,9 @@ assert r.returncode in (-6, 134) and 'panic in a destructor during cleanup' in r
 abort_bin, _ = compile_rs('unwind', '2024', extra=['-C', 'panic=abort'], tag='unwind_abort')
 r = run(abort_bin, 'panic')
 assert r.returncode in (-6, 134) and 'drop' not in r.stdout, (r.returncode, r.stdout)  # SIGABRT: -6 from Python, 134 in a shell
+# A thread still running when `main` returns is killed where it stands: its locals are never dropped.
+r = run(binary, 'thread')
+assert r.returncode == 0 and r.stdout.split('\n')[:3] == ['main returns', 'drop b', 'drop a'] and 'drop t' not in r.stdout, r.stdout
 EXIT_CODES = {'return': 0, 'panic': 101, 'exit': 3, 'abort': 134}
 
 # E8 · the drop flag is visible in the MIR (step 13; Lab "Drop flags").
@@ -258,9 +265,17 @@ ERROR_CODES = ['E0040', 'E0184', 'E0597', 'E0716', 'E0509']
 
 # E10 · temporaries and lock guards (step 9).
 out = run_ok('semi').strip().split('\n')
-assert out == ['after statement: try_lock ok = true', 'in arm: try_lock ok = false', 'after match: try_lock ok = true'], out
+assert out == ['after statement: try_lock ok = true', 'in arm: try_lock ok = false', 'after match: try_lock ok = true',
+               'in for body: try_lock ok = false', 'after for: try_lock ok = true',
+               'in while let body: try_lock ok = false', 'after while let: try_lock ok = true'], out
 shown('semi', 'm.lock().unwrap().push(1);', 'match m.lock().unwrap().len() {')
+# `drop` of a reference drops the reference, not the value: the guard stays locked, and rustc warns (finding 9).
+binary, err = compile_rs('dropref', '2024')
+assert '`#[warn(dropping_references)]` on by default' in err and 'calls to `std::mem::drop` with a reference instead of an owned value does nothing' in err, err
+assert run(binary).stdout.strip() == 'still locked: true'
 shown('wild', 'let _ = lock.write().unwrap();', 'shared += 1;', 'let _g = lock.write().unwrap();')
+
+assert 'RwLock::new(())' in src('wild')  # the lock stands guard over state it does not hold: the `RwLock<()>` idiom (step 21)
 
 # E11 · `let _` against `let _g` (step 21).
 out = run_ok('wild').strip().split('\n')
@@ -310,6 +325,6 @@ assert r.returncode == 0, r.stderr
 RFC_FORGET = 1066   # rust-lang.github.io/rfcs/1066-safe-mem-forget.html
 assert '"1234"' in src('tail_string')  # `{ &String::from("1234") }.len()` is the Edition Guide's example, run in E3
 
-print(f'ok: {ver}; drop order traced in both editions (19 lines); 2021 deadlocks (killed after {DEADLOCK_TIMEOUT} s), 2024 runs; '
+print(f'ok: {ver}; drop order traced in both editions (22 lines); 2021 deadlocks (killed after {DEADLOCK_TIMEOUT} s), 2024 runs; '
       f'SpillFile closes once ({FILE_BYTES}/{PATHBUF_BYTES}/{SPILL_BYTES} bytes); forget leaks {LEAK_ALLOCS} allocation, {BUF_CAP:,} bytes for a 64 KiB vec; '
       f'thread::scope since {SCOPE_STABLE}')

@@ -1,6 +1,6 @@
 import Resource from '../../../../../components/Resource.astro';
 
-This topic follows "Single ownership and move semantics": you should know that every value has one owner, that a move deinitializes its source, and how to read a borrow-checker error. It adds `Drop`, which the Book's chapter 15 introduces and the reel explains from scratch. A few things appear only as a one-line gloss on the spot (a reader-writer lock, a `RefCell`, `thread_local!`, `thread::scope`, closures); their Rust details are in Chapters 2, 4 and 6.
+This topic follows "Single ownership and move semantics": you should know that every value has one owner, that a move deinitializes its source, and how to read a borrow-checker error. It adds `Drop`, which the Book's chapter 15 introduces and the reel explains from scratch. A few things appear only as a one-line gloss on the spot (a reader-writer lock, a `RefCell`, `thread_local!`, `thread::scope`, closures, and a closure argument written `impl FnOnce(&Dma)`, which means a closure that the callee calls once); their Rust details are in Chapters 2, 4 and 6.
 
 <section class="prereq" data-section="single-ownership">
 
