@@ -65,4 +65,24 @@ export const TOPICS: TopicMeta[] = [
     bridge: 'You have just revised how a B+-tree finds a row in a few page reads. Now: what happens when the index finds thousands of them?',
     handoff: 'Next: hash tables, the other structure behind every join and aggregation, and what they cost when memory runs out.',
   },
+  {
+    id: 'dsa.word-ram-model-assumptions',
+    domain: 'data-structures-and-algorithms',
+    slug: 'data-structures-and-algorithms/m1-data-structures/ch01-cost-models-amortized/word-ram-model-assumptions',
+    title: 'The word-RAM model and its assumptions',
+    syllabusTitle: 'The word-RAM model and its assumptions',
+    kind: 'full',
+    // Built in parallel with its chapter: it waits until Asymptotic notation and case analysis is live.
+    status: 'held',
+    milestone: { number: 1, title: 'Data Structures' },
+    chapter: { number: 1, title: 'Cost Models and Amortized Analysis', section: '1.1' },
+    minutes: 12,
+    verified: '2026-10-11',
+    introduces: ['word-ram', 'word-size-assumption', 'comparison-model', 'cache-miss', 'branch-misprediction', 'word-level-parallelism', 'integer-sorting', 'van-emde-boas-tree', 'fusion-tree'],
+    uses: ['big-o-theta-omega', 'pseudo-polynomial', 'time-space-tradeoff', 'logarithms', 'standard-sorts', 'binary-numbers', 'binary-search'],
+    // The first three come from the topic before it (Asymptotic notation and case analysis); the last four are assumed, and listed in the Prerequisites panel.
+    declared: ['logarithms', 'standard-sorts', 'binary-numbers', 'binary-search'],
+    bridge: 'Every count in the last reel assumed each step costs the same. Here is the machine that makes that true, one word at a time, and the costs it leaves out.',
+    handoff: 'Counting a loop on this machine is easy. A recursive algorithm hands you its count as a recurrence; next, how to solve one.',
+  },
 ];

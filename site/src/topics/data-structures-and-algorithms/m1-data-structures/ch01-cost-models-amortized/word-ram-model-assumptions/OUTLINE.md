@@ -174,8 +174,8 @@ Applied in place above, each marked "(fact-check: …)"; details, verdicts and t
 
 - [x] Content plan (`OUTLINE.md`) written
 - [x] Fact-check, currency and red team (`FACT-CHECK.md`); corrections applied here
-- [ ] Coverage map (`coverage.json`) with the blind expert list from `parts/expert.json`
-- [ ] Build: `examples.py`, `reel.tsx`, `scenes.tsx`, `index.mdx`, `prerequisites.mdx`, `narration.json`, registry entry
+- [x] Coverage map (`coverage.json`) with the blind expert list from `parts/expert.json`
+- [x] Build: `examples.py`, `reel.tsx`, `scenes.tsx`, `index.mdx`, `prerequisites.mdx`, `narration.json`, registry entry (held; `npm run build` and `test:examples` pass; reel test passes at both sizes except a harness timing race, see REVIEW later)
 - [ ] Content review (flow, gap hunt, expert reader) in `REVIEW.md`; fixes
 - [ ] Checks and the looks review; fixes
 - [ ] Content final
