@@ -12,3 +12,5 @@ Every routine run and every audit finding, newest at the bottom: two lines each,
   checks: none yet · issues: WebFetch gave summaries, so no quote was verbatim (fixed: scripts/sources.mjs); branched from a stale local main; stopped because ROUTINE.md changed mid-run (fixed: one procedure per run); used Haiku (fixed: Sonnet minimum)
 - **2026-10-11 09:59 UTC · Data Engineering · `chapter-01` · planned** · 0.4 h · Sonnet 5.5 966k (6k out) · Opus 5.5 5.8M (60k out) · 2 agents, 68 calls
   checks: check-docs passed (plan reviewer); no other checks apply to a plan · issues: fire_trigger tool unavailable, so topic runs were not started; hourly schedule will start them
+- **2026-10-11 10:19 UTC · Rust Systems Engineering · `chapter-01` · planned** · 0.5 h · Sonnet 5.5 1.1M (5k out) · Opus 5.5 10.3M (117k out) · 2 agents, 105 calls
+  checks: check-docs passed (planner); plan review by fresh Opus agent, 20 fixes applied; no build run (plan only) · issues: fire_trigger tool unavailable, so topic runs not fired; hourly schedule will start them. Claim status showed topic 1 already claimed as make before plan was on main.
