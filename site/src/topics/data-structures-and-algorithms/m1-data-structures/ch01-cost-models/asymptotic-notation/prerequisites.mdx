@@ -1,0 +1,33 @@
+import Resource from '../../../../../components/Resource.astro';
+
+This is the first topic in Data Structures & Algorithms, and a refresher: it assumes you program comfortably and have met Big-O before. If you have not, start with the resources below; the reel is a recap, not a first course.
+
+<section class="prereq" data-section="programming">
+
+### <span class="n">01</span> Programming, loops and recursion
+
+You can read a short loop or recursive function and say roughly how many times its body runs for an input of size n.
+
+<p class="check"><b>Check yourself:</b> how many times does the inner statement run in <code>for i in range(n): for j in range(i): …</code>? (Answer: n(n − 1)/2.)</p>
+
+<ul class="resources">
+  <Resource kind="reading" title="Analysis of Algorithms" href="https://algs4.cs.princeton.edu/14analysis/" by="Sedgewick and Wayne, Algorithms 4th ed., section 1.4">Observation, mathematical models and order-of-growth classifications, with running experiments.</Resource>
+  <Resource kind="course" title="Algorithms by Jeff Erickson" href="https://jeffe.cs.illinois.edu/teaching/algorithms/" by="Jeff Erickson" length="free book">The free textbook; the first chapters cover recursion and analysis.</Resource>
+</ul>
+
+</section>
+
+<section class="prereq" data-section="logarithms">
+
+### <span class="n">02</span> Logarithms, sums and limits
+
+You know that log₂ n is the number of times you can halve n, that 1 + 2 + … + n = n(n + 1)/2, and what it means for a ratio to tend to 0 or to infinity.
+
+<p class="check"><b>Check yourself:</b> roughly what is log₂ 1,000,000, and what does n / n² tend to? (Answer: about 20; it tends to 0.)</p>
+
+<ul class="resources">
+  <Resource kind="reel" title="Asymptotic notation and logarithms" domain="data-engineering" host={props.host} by="Data Engineering §1.1">The same ideas in the other domain's refresher, with logarithms spelled out.</Resource>
+  <Resource kind="reading" title="Big Omicron and Big Omega and Big Theta" href="https://danluu.com/knuth-big-o.pdf" by="Donald Knuth, SIGACT News 1976">The note that fixed the notation computer science uses; short, precise and readable.</Resource>
+</ul>
+
+</section>

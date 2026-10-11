@@ -1,0 +1,162 @@
+{
+  "topic": "dsa.asymptotic-notation",
+  "note": "Written to be spoken: one sentence or phrase per line; {\"beat\": s} is a deliberate pause; code is spelled the way it is said. `answer` plays after the learner answers a predict step.",
+  "steps": [
+    {
+      "lines": [
+        "Welcome to Data Structures and Algorithms.",
+        "Before any structure, the language its costs are written in.",
+        {
+          "beat": 0.4
+        },
+        "A claim like... quicksort is n log n... hides three choices.",
+        "Which bound? Which case? And which resource?",
+        {
+          "beat": 0.4
+        },
+        "Most arguments about complexity are really arguments about which one was meant.",
+        "All familiar? Swipe on."
+      ]
+    },
+    {
+      "lines": [
+        "Big O, big Omega, and Theta are inequalities.",
+        "Pick two constants, and a threshold... and the inequality must hold for every size past it.",
+        {
+          "beat": 0.4
+        },
+        "Here, three n squared plus ten n sits between three n squared and four n squared... from ten onward.",
+        "At nine, it's three hundred thirty three. Just above the line.",
+        {
+          "beat": 0.3
+        },
+        "The constants can't depend on n. That's the whole trick."
+      ]
+    },
+    {
+      "lines": [
+        "Two to the n plus one is big O of two to the n. Double it, and you're done.",
+        {
+          "beat": 0.4
+        },
+        "But is two to the two n also big O of two to the n?"
+      ],
+      "answer": [
+        "No. Two to the two n is four to the n... and dividing by two to the n leaves two to the n, which grows without bound.",
+        "So no constant works. An exponent multiplies the base. It isn't a constant factor.",
+        "Logarithm bases are different... they only differ by a constant."
+      ]
+    },
+    {
+      "lines": [
+        "Little o means strictly slower.",
+        "For every constant, f eventually falls below it.",
+        {
+          "beat": 0.3
+        },
+        "When the ratio has a limit, zero means little o... a positive constant means Theta... and infinity means little omega.",
+        "But the limit may not exist. So the ratio test is sufficient... not necessary."
+      ]
+    },
+    {
+      "lines": [
+        "Here's the most common slip.",
+        "Big O is not worst case.",
+        {
+          "beat": 0.4
+        },
+        "A case picks a function. For insertion sort, sorted input costs seven comparisons, random about nineteen, reversed twenty eight... that's eight items, checked over every order.",
+        "A bound then relates that function to another.",
+        {
+          "beat": 0.3
+        },
+        "So best case Theta of n and worst case Theta of n squared are both exact.",
+        "Two axes. Don't mix them up."
+      ]
+    },
+    {
+      "lines": [
+        "A quicksort that always pivots on the first key does almost five hundred thousand comparisons on a thousand sorted keys.",
+        {
+          "beat": 0.4
+        },
+        "Pick the pivot at random instead. How many comparisons do you expect on that same sorted input?"
+      ],
+      "answer": [
+        "About ten thousand nine hundred eighty six. The same as for any other order.",
+        "Average case assumes a distribution over inputs... and can be wrong when real inputs aren't like it.",
+        "Expected time uses the algorithm's own coin flips... so it holds for every fixed input."
+      ]
+    },
+    {
+      "lines": [
+        "Two thousand runs, one thousand keys.",
+        "The mean is about eleven thousand. The slowest run, fifteen thousand.",
+        {
+          "beat": 0.4
+        },
+        "An expectation allows rare slow runs.",
+        "With high probability says something stronger... the chance of failure is at most one over n to the c, and you pick c.",
+        {
+          "beat": 0.3
+        },
+        "Services are judged on tails. So ask which one you're being given."
+      ]
+    },
+    {
+      "lines": [
+        "Does a list of a thousand distinct numbers contain a duplicate?",
+        "Compare every pair... almost five hundred thousand steps, and no extra storage.",
+        "Heapsort in place, then one scan... about eighteen thousand.",
+        "Or a hash set... a thousand lookups, but a thousand values stored.",
+        {
+          "beat": 0.3
+        },
+        "Time bought with space. Always say which two resources, and what you count."
+      ]
+    },
+    {
+      "lines": [
+        "Asymptotics describe growth... not speed at one size.",
+        "A hundred n beats n squared only from a hundred up.",
+        "Below that, the worse algorithm wins.",
+        {
+          "beat": 0.3
+        },
+        "Where constants and cache behaviour decide, measure."
+      ]
+    },
+    {
+      "lines": [
+        "One more trap.",
+        "Trial division is order square root of the value... sixty five thousand steps for a thirty two bit prime.",
+        "Double the bits... and it's over four billion.",
+        {
+          "beat": 0.3
+        },
+        "In the length of the input, that's exponential.",
+        "So linear in the number is not polynomial. It's called pseudo-polynomial."
+      ]
+    },
+    {
+      "lines": [
+        "Now, a feel for the ladder at a million items.",
+        "Log n is about twenty steps. N log n takes two hundredths of a second.",
+        "N squared takes a thousand seconds... nearly seventeen minutes.",
+        "And two to the n is hopeless by sixty four... centuries.",
+        {
+          "beat": 0.4
+        },
+        "Those step counts assume a machine model. That's next."
+      ]
+    },
+    {
+      "lines": [
+        "Seven things to keep.",
+        "Inequalities with witnesses. Strict little o and little omega. Bound is not case. Average is not expected.",
+        "High probability is a tail. Time trades with space. And n is the size in bits.",
+        "Next, the machine model behind the step counts."
+      ]
+    }
+  ]
+}
