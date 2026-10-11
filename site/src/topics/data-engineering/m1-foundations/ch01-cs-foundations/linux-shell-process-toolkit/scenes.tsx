@@ -84,9 +84,11 @@ export function ForkExecWait({ t }: StepCtx) {
         <T x={300} y={221} s={15} a="middle" f={C.taupe} o={1 - swap}>bash</T>
         <T x={300} y={221} s={15} a="middle" f={C.crema} o={swap}>python3 clean.py</T>
         <T x={300} y={240} s={13} a="middle" f={C.latte}>{swap < 0.5 ? 'a copy: fork' : 'the program: exec'}</T>
-        <Sock x={450} y={225} n="1" />
+        <Sock x={150} y={225} n="0" />
+        <Sock x={450} y={212} n="1" />
+        <Sock x={450} y={238} n="2" />
       </g>
-      <Line x1={462} y1={225} x2={462 + 66 * run} y2={225} c={C.caramel} o={run} w={4} />
+      <Line x1={462} y1={212} x2={462 + 66 * run} y2={212} c={C.caramel} o={run} w={4} />
       <Tok x={300} y={lerp(200, 116, ride)} n="0" c={C.caramel} o={ride > 0 ? 1 : 0} />
       <T x={276} y={150} s={17} a="end" f={C.crema} o={status}>$? = 0</T>
       <T x={130} y={304} s={15} a="middle" f={lit(0.7)}>fork</T>
@@ -207,7 +209,7 @@ export function ExitCodes({ t }: StepCtx) {
   const BY = 54;
   const MY = BY + 17;
   const legend: { at: number; x: number; code: string; why: string; kind: 'ok' | 'sig' | 'kill' }[] = [
-    { at: 1.6, x: 290, code: '126', why: 'found, not executable', kind: 'ok' },
+    { at: 1.6, x: 290, code: '126', why: 'found, not executable (rw-r--r--: no x)', kind: 'ok' },
     { at: 2.1, x: 326, code: '127', why: 'command not found', kind: 'ok' },
     { at: 3.1, x: 382, code: '130', why: 'killed by INT, signal 2', kind: 'sig' },
     { at: 2.6, x: 439, code: '137', why: 'killed by KILL, signal 9', kind: 'kill' },
@@ -281,11 +283,11 @@ export function Signals({ t }: StepCtx) {
         <T x={120} y={326} s={13} a="middle" f={C.taupe}>ended, not waited for</T>
       </g>
       <g opacity={fade(t, 3.8)}>
-        <T x={390} y={248} s={13} a="middle" f={C.latte}>init</T>
+        <T x={390} y={248} s={13} a="middle" f={C.latte}>init / subreaper</T>
         <Line x1={390} y1={254} x2={390} y2={268} c={C.taupe} w={2} />
         <rect x={330} y={268} width={120} height={34} rx={10} fill={C.espresso} stroke={C.crema} strokeWidth={2} />
         <T x={390} y={291} s={13} a="middle" f={C.crema}>orphan</T>
-        <T x={390} y={326} s={13} a="middle" f={C.taupe}>adopted by init</T>
+        <T x={390} y={326} s={13} a="middle" f={C.taupe}>adopted by init (or a subreaper)</T>
       </g>
     </Svg>
   );
@@ -308,7 +310,7 @@ export function HungJob({ t, answer }: StepCtx) {
         <Line x1={115} y1={200} x2={115} y2={226} c={C.taupe} w={5} dash="6 6" />
       </g>
       <T x={232} y={50} s={13} f={C.crema} o={a(1.0)}>State: S (sleeping)</T>
-      <T x={232} y={74} s={13} f={C.crema} o={a(1.3)}>Threads: 2</T>
+      <T x={232} y={74} s={13} f={C.crema} o={a(1.3)}>Threads: 2 (ps -L)</T>
       <T x={232} y={98} s={13} f={C.crema} o={a(1.6)}>wchan: wait_woken</T>
       <T x={232} y={122} s={13} f={C.crema} o={a(2.0)}>fd/4 → socket</T>
       <T x={232} y={152} s={13} f={C.taupe} o={a(2.4)}>strace -p</T>
@@ -319,6 +321,7 @@ export function HungJob({ t, answer }: StepCtx) {
           <T x={30} y={252} s={13} f={C.cherryText}>no sender</T>
           <T x={232} y={228} s={13} f={C.crema}>kill -TERM {'<pid>'}</T>
           <Tok x={450} y={222} n="143" r={24} c={C.crema} />
+          <T x={450} y={262} s={13} a="middle" f={C.latte}>no handler here: 143</T>
           <T x={232} y={268} s={13} f={C.crema}>kill -KILL {'<pid>'}</T>
           <T x={232} y={306} s={13} f={C.taupe}>only if it is still there</T>
         </>
@@ -360,7 +363,7 @@ export function PipelineLab({ t }: StepCtx) {
       })}
       <T x={290} y={236} s={15} f={C.caramel} o={fade(t, 2.8)}>diff: 0 lines, exit 0</T>
       <T x={30} y={326} s={15} f={C.cherryText} o={fade(t, 3.3)}>without awk: 7 groups, not 4</T>
-      <T x={30} y={348} s={13} f={C.latte} o={fade(t, 3.3)}>40 events: Paid, SHIPPED, refunded</T>
+      <T x={30} y={348} s={13} f={C.latte} o={fade(t, 3.3)}>{`40 events: 'Paid'  'SHIPPED '  ' refunded'`}</T>
     </Svg>
   );
 }
@@ -402,8 +405,8 @@ const RECAP: [string, string][] = [
   ['pipefail', 'status = last command, unless asked'],
   ['126, 127, 128+n', 'not executable, not found, killed by signal n'],
   ['TERM then KILL', '15 can be caught; 9 cannot'],
-  ['R S D Z', 'ps, /proc, strace -p tell you which'],
-  ['jq | awk | sort | uniq -c', 'and diff against the script'],
+  ['R S D Z', 'ps and /proc say which; strace -p, what it is in'],
+  ['jq | awk | sort | uniq -c', 'diff against the script; grep, sed for log lines'],
   ['cron, ssh -L', 'five fields, tiny env; a port via a hop'],
 ];
 export function Recap({ t }: StepCtx) {

@@ -88,3 +88,25 @@ Behaviour was re-run in the sandbox: Linux 6.18.44, Bash 5.2.21, dash 0.5.12, jq
 - jq 1.8.2 `src/main.c` and `NEWS.md` were read raw with `curl`. `sources.mjs` turns them to text with an HTML stripper that deletes text between `<` and `>`, so their sentences can't be checked word for word. They are cited here with URLs instead (claims 13 and R11).
 - The GitHub release pages and the GitHub API were not reachable from the sandbox (HTTP 403). Release versions were read from ftp.gnu.org, kernel.org, gitlab.com/procps-ng, cdn.openbsd.org and the projects' raw NEWS files.
 - cronie's `cron(8)` was not fetched. DST and overlap are attributed to Debian's cron only.
+
+## Post-build additions (content review, 11 October 2026)
+
+The Deep-dive paragraphs added after the fact-check ("Small things that bite" and neighbours) were checked claim by claim against sources fetched with `sources.mjs`; every quote is in `SOURCES.md` and passes `sources.mjs check`, and the cheap ones run in `examples.sh` and are asserted in `examples.py`. This was one pass over the added paragraphs only, by the content reviewer, not a second full fact-check.
+
+| # | Verdict | Claim and note | Source, executed |
+|---|---|---|---|
+| P1 | CORRECTED (wording) | "Pipe writes up to `PIPE_BUF` are atomic": `pipe(7)` says "writes of less than PIPE_BUF bytes must be atomic", so the Deep dive now says "smaller than". PIPE_BUF is 4096 on Linux. | pipe(7); executed `getconf PIPE_BUF /` = 4096 (`pipe_buf`) |
+| P2 | CONFIRMED | `rename()` atomically replaces an existing target. | rename(2) quote; `os.replace` already executed (`rename_content`) |
+| P3 | CONFIRMED | `EXDEV` when the paths are not on the same mounted filesystem. | rename(2) ERRORS; executed across `/dev/shm` (`rename_exdev`; `skipped` where it shares a filesystem) |
+| P4 | CONFIRMED (was unsourced) | `mv` falls back on copy and remove across filesystems. | coreutils manual, mv invocation; executed (`mv_cross_fs`) |
+| P5 | CONFIRMED | `fdinfo` `pos` is the file offset; `io` has `read_bytes` and `write_bytes`; `environ` is the initial environment. Reworded from "from `proc(5)` rather than from this run" to executed. | proc_pid_fdinfo(5), proc_pid_io(5), proc_pid_environ(5); executed (`fdinfo_pos` 600, `proc_io_fields`, `proc_environ`) |
+| P6 | CONFIRMED | A wrapper that forwards SIGTERM runs the child in the background and `wait`s; `wait` returns at once with a status above 128 and then the trap runs. | Bash manual, Signals; executed (`wrapper_trap`, `wrapper_wait_over_128`) |
+| P7 | CONFIRMED (was unsourced) | `tolower` in the runner's mawk leaves `É` alone where Python's `str.lower()` gives `é`. Stated as what the runner's mawk does, not about all awks. | executed (`mawk_tolower`, `python_lower`); no source quote |
+| P8 | REASONING | cron "has no login profile": `crontab(5)` lists only SHELL, LOGNAME and HOME as set up automatically and says nothing of PATH. The Deep dive now says so and marks the rest as reasoning from that list. | crontab(5) quote already in `SOURCES.md` |
+| P9 | CONFIRMED | `timeout` exits 124 on timeout, 125 if `timeout` itself fails, 137 if COMMAND (or timeout) is sent KILL. Added to the Deep dive (the 137 case, and the collision with bisect's 125). | timeout(1); executed 137 with `--kill-after` (`timeout_kill_status`) |
+| P10 | CONFIRMED | A child created by `fork` inherits a copy of the parent's signal dispositions; `execve` resets handled ones, keeps ignored ones. | signal(7); executed (`fork_inherits_handler`) |
+| P11 | CORRECTED (gloss) | "An interactive shell resends the SIGHUP before it exits" applies when the shell itself receives SIGHUP; on a plain exit it happens only with `huponexit` and for an interactive login shell. | Bash manual, Signals and the `huponexit` option |
+| P12 | CORRECTED (placement) | The PID-namespace sentence moved from the load-average bullet to the `ps` bullet and says what the page says: `/proc/<pid>` shows the processes visible in the mounting process's PID namespace. Nothing claims `/proc/loadavg` is per container. | pid_namespaces(7) |
+| P13 | CORRECTED (reel) | Reel step 5 said "137 is a kill and 143 a terminate" as a rule; it now says "by convention" (the program may exit 137 itself; Python reports −9), and step 6 says "init (or a subreaper)", as R2 and claim 23 asked. | wait(2), `_exit(2)` quotes already in `SOURCES.md` |
+
+Not verified from a source and left out of the claims: none. `strace -tt` (microsecond timestamps) is quoted from `strace(1)` as `--absolute-timestamps=precision:us` and was run (`strace -tt -T true` prints a time of day to the microsecond and the call duration).

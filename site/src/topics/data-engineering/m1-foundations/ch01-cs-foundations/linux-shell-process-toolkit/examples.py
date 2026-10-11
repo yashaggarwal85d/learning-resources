@@ -83,7 +83,12 @@ assert kv['hung_ps_L'].count(';') == 1 and kv['hung_ps_L'].count('Sl') == 2  # t
 assert kv['strace_read'] in ('read(4,', 'skipped')  # skipped only where ptrace is refused (Yama scope 2, a seccomp profile)
 if kv['strace_read'] == 'read(4,':
     assert kv['strace_line'].startswith('read(4,') and ')' not in kv['strace_line'].split('<detached')[0]  # the call never returned
-assert kv['hung_term'] == '143'
+assert kv['hung_term'] == '143'  # hung_load.py has no TERM handler, unlike step 6's job (handled_term == '0'): so 143 here
+assert kv['hung_syscall_fd'] in ('4', 'unavailable')  # when /proc/<pid>/syscall is readable, its first argument is the fd the reel shows
+if kv['hung_syscall'] != 'unavailable':
+    assert kv['hung_syscall'] in ('0', '63') and kv['hung_syscall_fd'] == '4'  # read on x86-64 / arm64, on fd 4
+if kv['strace_read'] == 'skipped' and kv['hung_syscall'] == 'unavailable':
+    pass  # neither strace nor /proc/<pid>/syscall was allowed on this runner: the on-screen read(4, is unverified here (only fd 4 -> socket is)
 assert kv['ps_columns'] == 'PID PPID STAT WCHAN ELAPSED RSS %CPU COMMAND'
 assert kv['loadavg_fields'] == '5'
 assert kv['htop_installed'] in ('yes', 'no')  # named, never relied on
@@ -113,6 +118,16 @@ assert kv['builtin_usage_status'] == '2'
 assert kv['sed_E'] == '1 2 ' and kv['sed_z'] == 'Xa Xb ' and kv['sed_s_lines'] == '2 1'
 assert kv['grep_binary'] == '1' and kv['grep_binary_stdout_lines'] == '0' and kv['grep_a_lines'] == '2'
 assert kv['jq_default'] == 'x' and kv['jq_tsv_tab'] == '1' and kv['jq_argjson'] == '6' and kv['jq_stream_events'] == '4'
+
+# ---- Deep dive: claims checked after the build (FACT-CHECK.md, post-build table) --------------------
+assert kv['pipe_buf'] == '4096' and 4096 == 4 * 1024
+assert kv['rename_exdev'] in ('yes', 'skipped') and kv['mv_cross_fs'] in ('copied_and_removed', 'skipped')  # skipped where /dev/shm shares a filesystem with the temp dir
+assert kv['fork_inherits_handler'] == 'yes'
+assert kv['fdinfo_pos'] == '600' and kv['proc_io_fields'] in ('yes', 'unreadable') and kv['proc_environ'] == 'yes'
+assert kv['mawk_tolower'] == 'Éa'  # mawk lowercases ASCII only (and the run is LC_ALL=C); Python's str.lower() does not stop at ASCII
+assert kv['python_lower'] == 'éa'
+assert kv['wrapper_trap'] == '1' and kv['wrapper_wait_over_128'] == 'yes'
+assert kv['timeout_kill_status'] == '137' and 128 + 9 == 137
 
 # ---- Step 9: cron and ssh (parsed, not run) ---------------------------------------------------------
 assert kv['cron_minute'] == '15' and kv['cron_hour'] == '2' and kv['cron_runs_per_day'] == '1'  # 15 2 * * *: 02:15 every day

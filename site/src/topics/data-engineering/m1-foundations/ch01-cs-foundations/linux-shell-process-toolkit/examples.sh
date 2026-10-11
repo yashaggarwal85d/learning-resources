@@ -332,7 +332,13 @@ out hung_ps_stat "$(ps -o stat= -p $hung | tr -d ' ')"
 out hung_ps_threads "$(ps -L -o lwp= -p $hung | wc -l | tr -d ' ')"
 out hung_ps_L "$(ps -L -o stat=,wchan:20= -p $hung | tr -s ' ' | tr '\n' ';' | sed 's/;$//')"
 if [ -r /proc/$hung/stack ] && [ -n "$(cat /proc/$hung/stack 2> /dev/null)" ]; then out hung_stack "$(head -3 /proc/$hung/stack | awk '{print $2}' | tr '\n' ' ')"; else out hung_stack unavailable; fi
-if [ -r /proc/$hung/syscall ] && [ -n "$(cat /proc/$hung/syscall 2> /dev/null)" ]; then out hung_syscall "$(cut -d' ' -f1 /proc/$hung/syscall)"; else out hung_syscall unavailable; fi
+# /proc/<pid>/syscall: the syscall number, then its first argument (here the fd). 0 is read on x86-64 and 63 on arm64.
+if [ -r /proc/$hung/syscall ] && [ -n "$(cat /proc/$hung/syscall 2> /dev/null)" ]; then
+  out hung_syscall "$(cut -d' ' -f1 /proc/$hung/syscall)"
+  out hung_syscall_fd "$(( $(cut -d' ' -f2 /proc/$hung/syscall) ))"  # the second field is hex (0x4)
+  case "$(cut -d' ' -f1 /proc/$hung/syscall)" in 0|63) ;; *) echo "FAIL: not a read syscall" >&2; exit 1;; esac
+  check "$(( $(cut -d' ' -f2 /proc/$hung/syscall) ))" 4 'the blocked call is on fd 4'
+else out hung_syscall unavailable; out hung_syscall_fd unavailable; fi
 set +e; timeout 1.5 strace -o trace.txt -p $hung > /dev/null 2>&1; set -e
 if grep -q 'read(4, ' trace.txt 2> /dev/null; then
   out strace_read "read(4,"; out strace_line "$(grep 'read(4, ' trace.txt | head -1 | sed 's/  */ /g')"
@@ -342,6 +348,7 @@ else
   # ptrace is refused here (Yama scope 2 needs CAP_SYS_PTRACE; a seccomp profile can refuse it too)
   out strace_read skipped; out strace_line "ptrace restricted"
 fi
+# hung_load.py installs no TERM handler, unlike the step 6 job that flushes and returns 0: so TERM ends it with 143
 kill -TERM $hung; set +e; wait $hung; hung_term=$?; set -e
 out hung_term "$hung_term"; check "$hung_term" 143 'TERM ends the hung job with 143'
 # ps columns for the Deep dive, and the load average
@@ -612,4 +619,64 @@ bash pgroup.sh
 set +e; kill -0 $$; k0=$?; kill -0 999999 2> /dev/null; k1=$?; set -e
 out kill_0_self "$k0"; check "$k0" 0 'kill -0 on a live process'
 out kill_0_missing "$k1"; check "$k1" 1 'kill -0 on a missing process'
+# ---- Deep dive: claims checked after the build (FACT-CHECK.md, post-build table) --------------------
+out pipe_buf "$(getconf PIPE_BUF /)"; check "$(getconf PIPE_BUF /)" 4096 'PIPE_BUF is 4096 on Linux'
+cat > post.py << 'PY'
+import errno, os, re, signal, subprocess, tempfile
+# rename(2) across filesystems fails with EXDEV, and mv falls back to copy and delete (only where /dev/shm is another filesystem)
+a, b = tempfile.mkdtemp(dir='/dev/shm'), tempfile.mkdtemp()
+if os.stat(a).st_dev == os.stat(b).st_dev:
+    print('rename_exdev=skipped'); print('mv_cross_fs=skipped')
+else:
+    src, dst = os.path.join(a, 'f'), os.path.join(b, 'f')
+    open(src, 'w').write('x')
+    try:
+        os.rename(src, dst); print('rename_exdev=no')
+    except OSError as e:
+        print('rename_exdev=' + ('yes' if e.errno == errno.EXDEV else 'other'))
+    r = subprocess.run(['mv', src, dst])
+    print('mv_cross_fs=' + ('copied_and_removed' if r.returncode == 0 and os.path.exists(dst) and not os.path.exists(src) else 'failed'))
+    os.unlink(dst)
+os.rmdir(a); os.rmdir(b)
+# a handler is inherited across fork (execve resets handled signals; ignored ones stay ignored)
+seen = []
+signal.signal(signal.SIGTERM, lambda n, f: seen.append(n))
+r, w = os.pipe()
+if os.fork() == 0:
+    os.kill(os.getpid(), signal.SIGTERM)
+    os.write(w, b'handler' if seen else b'none'); os._exit(0)
+os.wait()
+print('fork_inherits_handler=' + ('yes' if os.read(r, 20) == b'handler' else 'no'))
+# /proc/<pid>/fdinfo shows the read offset; /proc/<pid>/io the counters; /proc/<pid>/environ the starting environment
+d = tempfile.mkdtemp(); p = os.path.join(d, 'x'); open(p, 'wb').write(b'a' * 1000)
+fd = os.open(p, os.O_RDONLY); os.read(fd, 600)
+info = open(f'/proc/self/fdinfo/{fd}').read()
+print('fdinfo_pos=' + re.search(r'^pos:\s*(\d+)', info, re.M).group(1))
+os.close(fd); os.unlink(p); os.rmdir(d)
+try:
+    io = open('/proc/self/io').read(); print('proc_io_fields=' + ('yes' if all(k in io for k in ('read_bytes:', 'write_bytes:')) else 'no'))
+except OSError:
+    print('proc_io_fields=unreadable')
+env = subprocess.run(['sh', '-c', 'cat /proc/self/environ'], env={'POST_BUILD_MARK': 'on'}, capture_output=True).stdout
+print('proc_environ=' + ('yes' if b'POST_BUILD_MARK=on\0' in env else 'no'))
+PY
+python3 post.py
+# tolower is ASCII-only in mawk, str.lower() is not (what the awk step of the lab leaves alone)
+out mawk_tolower "$(printf 'ÉA\n' | awk '{ print tolower($0) }')"
+out python_lower "$(python3 -c "print('ÉA'.lower())")"
+# a wrapper that forwards TERM: trap + background child + wait; wait returns at once with a status above 128, then the trap runs
+cat > wrapper.sh << 'SH'
+child=
+trap 'echo trap_ran; kill -TERM "$child"' TERM
+sleep 30 & child=$!
+wait "$child"; echo "wait_status=$?"
+wait "$child" 2> /dev/null; echo "child_status=$?"
+SH
+bash wrapper.sh > wrapper.out & wrapper=$!; sleep 0.4; kill -TERM $wrapper; wait $wrapper || true
+out wrapper_trap "$(grep -c '^trap_ran$' wrapper.out)"; check "$(grep -c '^trap_ran$' wrapper.out)" 1 'the wrapper trap ran'
+wait_status=$(sed -n 's/^wait_status=//p' wrapper.out)
+out wrapper_wait_over_128 "$([ "$wait_status" -gt 128 ] && echo yes || echo no)"; check "$([ "$wait_status" -gt 128 ] && echo yes || echo no)" yes 'wait returned above 128 when the trap fired'
+# timeout: 124 when it fires; 137 when it had to send KILL (the child ignores TERM; ignored signals survive exec)
+set +e; timeout -k 0.3 0.3 bash -c 'trap "" TERM; exec sleep 5'; timeout_kill=$?; set -e
+out timeout_kill_status "$timeout_kill"; check "$timeout_kill" 137 'timeout --kill-after: 137'
 echo 'all examples ok'

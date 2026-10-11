@@ -2276,6 +2276,145 @@
           ]
         }
       ]
+    },
+    {
+      "source": "rename(2)",
+      "items": [
+        {
+          "item": "DESCRIPTION (atomic replace of newpath, RENAME_NOREPLACE, RENAME_EXCHANGE, RENAME_WHITEOUT)",
+          "at": [
+            {
+              "deep": "Small things that bite"
+            }
+          ]
+        },
+        {
+          "item": "ERRORS (EXDEV: not on the same mounted filesystem)",
+          "at": [
+            {
+              "deep": "Small things that bite"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "mv invocation",
+      "items": [
+        {
+          "item": "mv renames; across file systems it falls back on copy and remove",
+          "at": [
+            {
+              "deep": "Small things that bite"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "proc_pid_fdinfo(5)",
+      "items": [
+        {
+          "item": "DESCRIPTION (pos, flags, mnt_id, ino; per-type fields)",
+          "at": [
+            {
+              "deep": "A hung job: /proc and strace"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "proc_pid_io(5)",
+      "items": [
+        {
+          "item": "DESCRIPTION (rchar, wchar, syscr, syscw, read_bytes, write_bytes, cancelled_write_bytes)",
+          "at": [
+            {
+              "deep": "A hung job: /proc and strace"
+            }
+          ]
+        },
+        {
+          "item": "CAVEATS",
+          "at": [
+            {
+              "deep": "A hung job: /proc and strace"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "proc_pid_environ(5)",
+      "items": [
+        {
+          "item": "DESCRIPTION (initial environment at execve, NUL-separated)",
+          "at": [
+            {
+              "deep": "A hung job: /proc and strace"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "timeout(1)",
+      "items": [
+        {
+          "item": "DESCRIPTION (--kill-after, --signal, --preserve-status)",
+          "at": [
+            {
+              "deep": "The process model: fork, exec, wait and the exit status"
+            }
+          ]
+        },
+        {
+          "item": "EXIT STATUS (124, 125, 126, 127, 137)",
+          "at": [
+            {
+              "deep": "The process model: fork, exec, wait and the exit status"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "pid_namespaces(7)",
+      "items": [
+        {
+          "item": "DESCRIPTION (PID numbering per namespace)",
+          "at": [
+            {
+              "deep": "Looking at processes: ps, top, htop and load average"
+            }
+          ]
+        },
+        {
+          "item": "/proc and PID namespaces",
+          "at": [
+            {
+              "deep": "Looking at processes: ps, top, htop and load average"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "pipe(7)",
+      "items": [
+        {
+          "item": "PIPE_BUF, atomic writes, capacity, F_GETPIPE_SZ",
+          "at": [
+            {
+              "deep": "Pipes, redirection and the pipeline's status"
+            },
+            {
+              "deep": "Small things that bite"
+            }
+          ]
+        }
+      ]
     }
   ],
   "expert": {
@@ -2654,7 +2793,7 @@
   },
   "gapReview": {
     "date": "2026-10-11",
-    "by": "builder",
+    "by": "the Fable content reviewer",
     "open": []
   }
 }

@@ -387,3 +387,19 @@ Every factual claim the topic makes, with the `SOURCES.md` quote that supports i
 - **Deep dive additions** (blind expert list items the outline did not place): "Small things that bite" (unlink while open, atomic rename, pipe capacity, `timeout`, process-group kill), the sticky bit and a setgid directory (executed as root), `&>`, `|&`, `noclobber`, `sed -E/-s/-z`, `grep` binary-file notice and `-a`, `jq` `//`, `@tsv`, `--argjson`, `--stream` and `-e`, `top` (%CPU over 100, Solaris mode, `wa`, `VIRT`), ssh `-D`, `-A` and exit status 255, trap timing, SIGHUP on shell exit, signal dispositions across exec. Every one is executed in `examples.sh` or quoted in `SOURCES.md` (`top(1)`, ssh, fork, execve and Bash quotes were added; 196 quotes pass). Not covered, with reasons in `coverage.json`: setuid binaries under ptrace (the expert list itself places it out of scope).
 - **Shared test.** `site/tests/reels.mjs`: the wait after re-clicking a step in the caption-swipe loop went from 300 ms to 1500 ms. This is the first refresher whose second step is plain and third is a predict step; after a forward swipe into the predict step the caption area is still re-flowing 300 ms after the step is re-selected, and the next swipe starts on the (rightly ignored) option buttons. Committed separately so it can be moved or dropped.
 - **Python 3.11 note.** `npm run test:examples` runs every topic's `examples.py` with the default `python3`; python-essentials needs Python 3.12 (`def f[T]` syntax), so with 3.11 it fails regardless of this topic (set `PYTHON=python3.12`). This topic's examples run on 3.11 and later.
+
+## Build notes: changes after the content review (2026-10-11)
+
+Fixes for `REVIEW.md` "Content review (Fable, 2026-10-11)"; the outline's own text above is kept as planned, and these notes say what the build now does.
+
+- **Step 2.** "Every program you run is three steps"; the child box now has sockets 0, 1 and 2 (the plan drew them on the shell only).
+- **Step 3.** The narration states the order: the copy comes first, then standard output goes to the log file.
+- **Step 4.** `nightly.sh` is named as "the nightly script, `nightly.sh`" where it first appears.
+- **Step 5.** "137 means a kill and 143 a terminate, by convention" (R2's parenthetical restored in spirit); the 126 legend row carries `rw-r--r--: no x`.
+- **Step 6.** One sentence on SIGINT and SIGHUP; "init (or a subreaper)" in body, picture and narration; the signalled job is named as the nightly load job, `load_orders.py`.
+- **Step 7.** The one sentence on threads is back in the body and narration (`Threads: 2`, two threads sharing memory, `ps -L`); the state letters R, S, D, Z are in the question body; the 143 is labelled "no handler here: 143" and the explain says step 6's job caught TERM and returned 0.
+- **Step 8.** One clause on `grep -c` (1,495 against 1,500) and `sed`; the dirty spellings are shown in quotes with their blanks.
+- **Recap.** Row 6 gives `strace -p` its own job; row 7 names grep and sed.
+- **Deep dive.** Post-build claims sourced or executed (FACT-CHECK.md, "Post-build additions"); the `mv` and `tolower` clauses are now executed, the cron "no login profile" clause is marked as reasoning; `timeout` 137, fork-inherited dispositions, `-tt`, the SIGHUP condition and the PID-namespace placement corrected; "Try it" says where `examples.sh` and `hung_load.py` are.
+- **`examples.sh` / `examples.py`.** New asserts for the post-build claims, and `hung_syscall_fd` (field 2 of `/proc/<pid>/syscall`) is asserted to be 4 where readable.
+

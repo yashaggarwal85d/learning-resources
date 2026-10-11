@@ -121,6 +121,8 @@ The signal table lists each signal as a name, standard, default action and comme
 
 > SIGTERM 15 15
 
+> A child created via fork(2) inherits a copy of its parent's signal dispositions. During an execve(2), the dispositions of handled signals are reset to the default; the dispositions of ignored signals are left unchanged.
+
 Contents:
 - NAME
 - DESCRIPTION (signal dispositions; the Term, Ign, Core, Stop, Cont default actions; standard signals table SIGHUP, SIGINT, SIGKILL, SIGTERM and others; real-time signals; delivery, blocking, handlers)
@@ -293,6 +295,10 @@ Version: strace 7.2+ds-1 (Debian unstable, page dated 2026-06-25)
 
 > Prints paths associated with file descriptor arguments and with the AT_FDCWD constant.
 
+> --absolute-timestamps=precision:us
+
+Notes: this is the long form of `-tt`, listed directly under `-tt` in the options.
+
 Contents:
 - NAME
 - SYNOPSIS
@@ -417,6 +423,12 @@ Version: Bash 5.3, 18 May 2025
 > Before exiting, an interactive shell resends the SIGHUP to all jobs, running or stopped.
 
 > If Bash is waiting for a command to complete and receives a signal for which a trap has been set, it will not execute the trap until the command completes.
+
+> The shell exits by default upon receipt of a SIGHUP.
+
+> If the huponexit shell option has been set using shopt (see The Shopt Builtin), Bash sends a SIGHUP to all jobs when an interactive login shell exits.
+
+> If Bash is waiting for an asynchronous command via the wait builtin, and it receives a signal for which a trap has been set, the wait builtin will return immediately with an exit status greater than 128, immediately after which the shell executes the trap.
 
 > the redirection fails if the file whose name results from the expansion of word exists and is a regular file.
 Pipeline status is the last command's; pipefail:
@@ -868,3 +880,101 @@ Contents:
 - 8. STUPID TRICKS Sampler
 - 9. BUGS
 - 10. SEE Also
+
+## pipe(7) - Linux manual page (Debian manpages mirror)
+URL: https://manpages.debian.org/unstable/manpages/pipe.7.en.html
+Version: Linux man-pages 6.19 (manpages 6.19-3, Debian unstable)
+
+> POSIX.1 says that writes of less than PIPE_BUF bytes must be atomic: the output data is written to the pipe as a contiguous sequence.
+
+> Writes of more than PIPE_BUF bytes may be nonatomic: the kernel may interleave the data with data written by other processes.
+
+> (On Linux, PIPE_BUF is 4096 bytes.)
+
+Notes: the page says "less than PIPE_BUF bytes" in the first sentence and its table covers n <= PIPE_BUF; the Deep dive says "up to" and leaves the edge to the table.
+
+Contents:
+- NAME, DESCRIPTION (pipe capacity, closing, SIGPIPE), I/O on pipes and FIFOs (atomicity, blocking), PIPE_BUF, capacity, F_GETPIPE_SZ
+
+## rename(2) - Linux manual page (Debian manpages mirror)
+URL: https://manpages.debian.org/unstable/manpages-dev/rename.2.en.html
+Version: Linux man-pages 6.19 (manpages-dev 6.19-3, Debian unstable)
+
+> If newpath already exists, it will be atomically replaced, so that there is no point at which another process attempting to access newpath will find it missing.
+
+> oldpath and newpath are not on the same mounted filesystem.
+
+Notes: the second quote is the text under the EXDEV error.
+
+Contents:
+- DESCRIPTION (atomic replace of newpath, RENAME_NOREPLACE, RENAME_EXCHANGE, RENAME_WHITEOUT)
+- ERRORS (EXDEV: not on the same mounted filesystem)
+
+## mv invocation (GNU Coreutils manual)
+URL: https://www.gnu.org/software/coreutils/manual/html_node/mv-invocation.html
+Version: GNU Coreutils 9.12
+
+> To move a file, mv ordinarily simply renames it. However, if renaming does not work because the destination's file system differs, mv falls back on copying as if by cp -a, then (assuming the copy succeeded) it removes the original.
+
+Contents:
+- mv renames; across file systems it falls back on copy and remove
+
+## proc_pid_fdinfo(5) - Linux manual page (Debian manpages mirror)
+URL: https://manpages.debian.org/unstable/manpages/proc_pid_fdinfo.5.en.html
+Version: Linux man-pages 6.19 (manpages 6.19-3, Debian unstable)
+
+> This is a decimal number showing the file offset.
+
+Notes: the field is `pos`, in the per-descriptor file under /proc/<pid>/fdinfo/.
+
+Contents:
+- DESCRIPTION (pos, flags, mnt_id, ino; per-type fields)
+
+## proc_pid_io(5) - Linux manual page (Debian manpages mirror)
+URL: https://manpages.debian.org/unstable/manpages/proc_pid_io.5.en.html
+Version: Linux man-pages 6.19 (manpages 6.19-3, Debian unstable)
+
+> This file contains I/O statistics for the process and its waited-for children
+
+> The number of bytes really fetched from the storage layer.
+
+> The number of bytes really sent to the storage layer.
+
+Contents:
+- DESCRIPTION (rchar, wchar, syscr, syscw, read_bytes, write_bytes, cancelled_write_bytes)
+- CAVEATS
+
+## proc_pid_environ(5) - Linux manual page (Debian manpages mirror)
+URL: https://manpages.debian.org/unstable/manpages/proc_pid_environ.5.en.html
+Version: Linux man-pages 6.19 (manpages 6.19-3, Debian unstable)
+
+> This file contains the initial environment that was set when the currently executing program was started via execve(2).
+
+Contents:
+- DESCRIPTION (initial environment at execve, NUL-separated)
+
+## timeout(1) - coreutils manual page (Debian manpages mirror)
+URL: https://manpages.debian.org/unstable/coreutils/timeout.1.en.html
+Version: coreutils manual page, Debian unstable
+
+> if COMMAND times out, and --preserve-status is not specified
+
+> if COMMAND (or timeout itself) is sent the KILL (9) signal (128+9)
+
+Notes: the page lists 124 (timed out), 125 (timeout itself fails) and 137 (KILL) in its exit-status list; the quotes are the descriptions of 124 and 137.
+
+Contents:
+- DESCRIPTION (--kill-after, --signal, --preserve-status)
+- EXIT STATUS (124, 125, 126, 127, 137)
+
+## pid_namespaces(7) - Linux manual page (Debian manpages mirror)
+URL: https://manpages.debian.org/unstable/manpages/pid_namespaces.7.en.html
+Version: Linux man-pages 6.19 (manpages 6.19-3, Debian unstable)
+
+> A /proc filesystem shows (in the /proc/pid directories) only processes visible in the PID namespace of the process that performed the mount
+
+Notes: this is about /proc/<pid> entries; the page does not say that /proc/loadavg is per container, and the Deep dive makes no such claim.
+
+Contents:
+- DESCRIPTION (PID numbering per namespace)
+- /proc and PID namespaces
