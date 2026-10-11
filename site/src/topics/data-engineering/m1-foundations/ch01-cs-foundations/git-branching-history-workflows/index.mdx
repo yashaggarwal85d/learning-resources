@@ -103,13 +103,13 @@ Every example in the reel was run with real Git in a throwaway repository with f
 
 ## Try it
 
-This is the Foundations lab in miniature. Run [`examples.sh`](https://github.com/yashaggarwal85d/learning-resources/blob/main/site/src/topics/data-engineering/m1-foundations/ch01-cs-foundations/git-branching-history-workflows/examples.sh) (download it, then `bash examples.sh`; it needs bash, Git and python3, and writes only to a temporary directory it deletes): it builds a 1,000-commit history with a planted regression in `clean.py` and a test that lives outside the repository, then bisects it in 10 runs and prints the commit it found. Then:
+This is the Foundations lab in miniature. Run `examples.sh` (it sits in this topic's folder in the repository; run `bash examples.sh`; it needs bash, Git and python3, and writes only to a temporary directory it deletes): it builds a 1,000-commit history with a planted regression in `clean.py` and a test that lives outside the repository, then bisects it in 10 runs and prints the commit it found. Then:
 
 - Make some commits untestable (a syntax error in a middle stretch) and have the test `exit 125` for them; watch bisect skip and still find the culprit, then skip the commits next to it and see it refuse to name one.
 - Plant the bug inside a merged branch (a broken commit followed by a fix, merged to `main`) and compare a plain bisect with `git bisect start --first-parent`.
 - Break the oracle: make the test `exit 255` and watch the run abort. Run the same assert-based test with `python3 -O` and see why a broken commit "passes".
 
-Every example in this reel is executed and checked in [`examples.py`](https://github.com/yashaggarwal85d/learning-resources/blob/main/site/src/topics/data-engineering/m1-foundations/ch01-cs-foundations/git-branching-history-workflows/examples.py), which runs `examples.sh`.
+Every example in this reel is executed and checked in `examples.py`, which runs `examples.sh`.
 
 </section>
 
