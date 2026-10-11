@@ -68,6 +68,21 @@ Version: 6.851: Advanced Data Structures, Fall 2017; Lecture 11 — March 22, 20
 > each structure contains the minimum element, V.min (or None if it is empty), and a copy of the
 > maximum element, V.max.
 
+Added by the fact-check (2026-10-11). Section notes: "However, to perform an update ... O(w) update bound" above is in §6.2 X-fast trees, and "The O(lg w) query bound is maintained ..." is in §6.3 Y-fast trees; neither is about the hashed vEB of §6.1, whose bounds are the third quote below.
+
+> In particular, the cell probe model is stronger than
+> the trandichotomous RAM model which is in turn stronger than the word RAM model, followed
+> by the pointer machine and the BST.
+
+> Note that at each level,
+> the minimum is stored directly, and not recursively.
+
+> In addition, if we use a
+> hash table with O(1) query and update with high probability, this allows us to obtain query and
+> update bounds of O(lg lg u) with high probability.
+
+> information for all w prefixes of every integer in the structure, for a worst case O(nw) space bound.
+
 
 Contents:
 1 Overview
@@ -159,6 +174,17 @@ Most significant set bit.
 
 Practicality: the only remark is the historical note on multiplication cost in the AC0 bullet above; the notes make no claim that fusion trees are practical.
 
+Added by the fact-check (2026-10-11): the AC0 RAM bullet is a fusion-tree *version* without multiplication; its reference [3] is the paper that shows it.
+
+> Under some models, such as the AC0 model, the perfect sketch
+> operation is a single operation [3].
+
+> [3] A. Andersson, P. B. Miltersen, and M. Thorup. Fusion trees can be implemented with AC0
+> instructions only.
+
+> Here, the sketch neighbours of q are x0 and x1 , but x0 is neither
+> a predecessor nor successor of q.
+
 Contents:
 - 1 Introduction (sketching, parallel comparison, most significant set bit in constant time)
 - 2 Overview of Fusion Trees (word RAM model, O(log_w n) static predecessor, AC0 / exponential-tree / hashing variants)
@@ -216,6 +242,14 @@ Version: Spring 2020 lecture slides (MIT OpenCourseWare)
 
 > If c is constant, so each key is ≤ nc , this sort is linear O(n)!
 
+Added by the fact-check (2026-10-11):
+
+> Comparison model implies that algorithm decision tree is binary (constant branching factor)
+
+> Thus height lower bounded by log(n!) ≥ log((n/2)n/2 ) = Ω(n log n)
+
+> Hash tables give expected O(1) time operations, amortized if dynamic
+
 Contents:
 Direct access array sort
 Tuple sort
@@ -264,6 +298,20 @@ Version: Agner Fog, copyright 1996 - 2026, last updated 2026-05-23
 > Speculative execution means that the
 > instructions are decoded and executed, but the results are not retired into the permanent
 > register file, and memory writes are pending until the branch instruction is finally resolved.
+
+Added by the fact-check (2026-10-11). Which processor each penalty quote above belongs to (section of the manual): 10–20 = §3.3 PPro/P2/P3; ~13 / 15 = §3.5 PM and Core2; ≥ 17 = §3.6 Nehalem; 15 or more = §3.7 Sandy Bridge/Ivy Bridge; 15–20 = §3.8 Haswell to the Lakes; 16 typical / 20 max = §3.10 VIA Nano; 10 or 12 (AMD manuals) and "corresponds to the length of the pipeline" = §3.11 AMD K8/K10; minimum 20 / 15 (specified) = §3.12 AMD Bulldozer family; ~18 / 15–18 / 15–25 = §3.13 AMD Zen; 4 / 5 clocks = §3.3 PMMX. The "uncached data" and "forget about everything else" quotes sit in the bottleneck sections for the P4 (§5.13), PM (§7.15) and PPro/P2/P3 (§6.10). Current cache figures for Zen 5:
+
+> In my
+> measurements, I have found a minimum branch misprediction penalty of 12 and 13 clock
+> cycles, respectively.
+
+> Level 1 data
+> 48 kB, 12 way, 64 sets, 64 B line size, per core. Latency 4 clocks
+> Level 2
+> 1 MB, 16 way, 64 B line size, per core. Latency 14 clocks
+
+> Table 25.1. Cache sizes on AMD Zen 5
+
 Contents:
 1 Introduction
 2 Out-of-order execution (All processors except P1, PMMX)
@@ -296,6 +344,14 @@ Version: Ulrich Drepper, Red Hat, Inc., November 21, 2007
 > So the entries stored in the caches are
 > not single words but, instead, “lines” of several contiguous words. In early caches these lines were 32 bytes
 > long; nowadays the norm is 64 bytes.
+
+Added by the fact-check (2026-10-11). The "below 10 … 28 … 480" staircase is the random-write test of Figure 3.4; the "450 cycles and more" is the random-read test of Figure 3.15, whose rise Drepper attributes to TLB misses:
+
+> Figure 3.4: Access Times for Random Writes
+
+> If the access pattern is unpredictable or random the situation is quite different.
+
+> The reason behind this is a rising rate of TLB misses.
 Contents:
 1 Introduction
 2 Commodity hardware today
@@ -336,6 +392,14 @@ Version: arXiv:cs/0603043v1 [cs.CC], 10 Mar 2006 (extended abstract in STOC 2006
 > We are working on a RAM with word length w ≥ ℓ.
 
 > This can be done by clever use of multiplication as described in [10].
+
+Added by the fact-check (2026-10-11). The multiplication quote above is about computing the length of a common prefix in the paper's own construction, citing Fredman–Willard [10]; it is not about the sketch.
+
+> Note that for space n1+ε , a
+> running time of O(lg ℓ/ lg lg ℓ) was given by Beame and Fich [STOC’99].
+
+> The fastest deployed software solutions use non-comparison-based
+> RAM tricks [6].
 
 
 Note: pdftotext garbles the displayed min{...} formula (log_w n, lg((ℓ-lg n)/lg a), lg(ℓ/a)/lg(lg(ℓ/a)/lg(lg n/lg a)), ...); only the surrounding sentences are quoted. The paper does not state multiplication as unit cost in its model sentence; it says "unit-cost word RAM" and uses multiplication in fusion-tree citations.
@@ -381,6 +445,26 @@ Version: Journal of Computer and System Sciences 41, 424-436 (1993); received Oc
 > The fusion tree can be roughly regarded as an implementation of a B-tree [2] such that (a) the approximate degree B of an internal node is an increasing, unbounded function of N, and (b) when performing a key search, the correct child of each node along the search path can be determined in constant time, independently of B.
 
 
+Added by the fact-check (2026-10-11):
+
+> The information theoretic bound asserts that sorting N numbers requires N log N
+> comparisons in the worst case.
+
+> these approaches improve upon conventional sorting only for
+> sufticiently large values of N
+
+> We assume that the multipliction instruction produces a two-word product, one
+> consisting of the most significant b bits, the other containing the least significant b
+> bits.
+
+> algorithms use multiplication, which does not belong to AC’. Thus, it would be
+> interesting to know if there exist fast sorting and searching algorithms that can
+> be implemented with AC0 instructions.
+
+> The beguiling successes of this
+> appealing model of computation have led to many claims that various Nlog N
+> algorithms are optimal, conclusions that should not be taken too seriously.
+
 Note: the word "transdichotomous" does not appear in this copy's extracted text; the coinage is attested only via Wikipedia (pointer, not quoted), which cites this paper and Fredman and Willard's name choice.
 
 Contents:
@@ -422,6 +506,23 @@ Version: K. Mehlhorn and P. Sanders, Springer 2008; the authors' free chapter PD
 > the word size and memory of a RAM scale with input size.
 
 > The RAM model restricts cells to holding a logarithmic number of bits.
+
+Added by the fact-check (2026-10-11). The squaring sentence's exponents are lost in extraction ("2n" is 2ⁿ in the book):
+
+> For example, by repeated squaring, we could generate a number with 2n
+> bits in n steps.
+
+> Ri := S[R j ] loads the contents of the memory cell indexed by the contents of R j
+> into register Ri .
+
+> S[R j ] := Ri stores register Ri into the memory cell indexed by the contents of R j .
+
+> Each instruction takes one time step to execute.
+
+> The worst-case time for a memory access to the main memory
+> can be hundreds of times higher than the best-case time.
+
+> Many processors have 128–512-bit-wide SIMD registers that allow the parallel execution of a single instruction on multiple data objects.
 
 Contents:
 2.1 Asymptotic Notation
