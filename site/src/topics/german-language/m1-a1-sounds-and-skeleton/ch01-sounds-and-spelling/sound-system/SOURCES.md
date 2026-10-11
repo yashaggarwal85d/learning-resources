@@ -97,6 +97,30 @@ Version: accessed 2026-10-11 (Wikipedia current revision, no revision id shown i
 
 > A remnant of their former diphthong character is shown when [iː] continues to be written ie in German (as in Liebe 'love').
 
+Added by the fact-check (2026-10-11), raw passages from the same fetched text:
+
+> While the spelling of German is officially standardised by an international organisation (the Council for German Orthography) the pronunciation has no official standard and relies on a de facto standard documented in reference works such as Deutsches Aussprachewörterbuch (German Pronunciation Dictionary) by Eva-Maria Krech et al.,[1] Duden 6 Das Aussprachewörterbuch (Duden volume 6, The Pronunciation Dictionary) by Max Mangold
+
+> If a sonorant follows in the syllable coda, the schwa often disappears so that the sonorant becomes syllabic, for instance Kissen [ˈkɪsn̩] ('pillow'), Esel [ˈeːzl̩] ('donkey').
+
+> /a/ has been variously described as open front unrounded [a][17] and open central unrounded [ä].[8][9][10][18][19]
+
+> /aː/ has been variously described as open central unrounded [äː][8][9][10][18][19] and open back unrounded [ɑː].[24] Because of this, it is sometimes transcribed /ɑː/.[25]
+
+> /ɛː/ has been variously described as mid front unrounded [ɛ̝ː][8] and open-mid front unrounded [ɛː].[8][9]
+
+> According to the 7th edition of Das Aussprachewörterbuch, the standard pronunciation differentiates [ɐ] from unstressed [a] (which typically belongs to /aː/ phoneme, see below). The authors claim that the difference is one of height: [ɐ] vs. [ä]. However, they tend to be neutralized in the Berlin/Brandenburg Metropolitan Region towards an open central [ä]. Conversely, in southern Germany, /ɐ/ is often realized as [ə]
+
+> The merged vowel has a centralized quality [ɐ]. The authors of the study advocate for ditching the distinction in transcriptions aimed at foreign learners of German. This neutralization may not apply to all dialects with r-vocalization, particularly the southern ones.
+
+> In the Standard Austrian accent, the uvular fricative is also the most common realization, although its voicing is variable (that is, it can be either voiced [ʁ] or voiceless [χ]).
+
+> Kohler (1999) writes that "the place of articulation of the consonant varies from uvular in e.g. rot ('red') to velar in e.g. treten ('kick'), depending on back or front vowel contexts."
+
+> Laut [laʊ̯t] is the German word for 'sound, phone'.
+
+> In loanwords, the pronunciation of potential fricatives in onsets of stressed syllables varies: in the Northern varieties of standard German, it is [ç], while in Southern varieties, it is [k], and in Western varieties, it is [ʃ] (for instance in China: [ˈçiːna] vs. [ˈkiːna] vs. [ˈʃiːna]).
+
 Contents:
 - Vowels: monophthong chart (short/long; front unrounded, front rounded, central, back) with IPA symbols
 - Vowel notes: close, mid and open vowels with their phonetic descriptions; /ɐ/ and its neutralisation with unstressed /a/; length vs tense/lax analysis; short vowels in unstressed loanword syllables
@@ -126,6 +150,10 @@ Version: accessed 2026-10-11
 > Its roundedness is compressed, which means that the margins of the lips are tense and drawn together in such a way that the inner surfaces are not exposed.
 
 > The usual realization of /ʏ/ in Switzerland, Austria and partially also in Western and Southwestern Germany (Palatinate, Swabia).[31] See Standard German phonology
+
+Added by the fact-check (2026-10-11): some English accents do have [y] (occurrence table, English rows).
+
+> English General South African[17] few [fjyː] 'few' Some younger speakers, especially females.
 
 Contents:
 - Definition and IPA symbol [y]; spelling as ü in German
@@ -163,6 +191,10 @@ Version: accessed 2026-10-11
 > Its phonation is voiceless, which means it is produced without vibrations of the vocal cords.
 
 > Traditionally allophone of /x/, or vice versa, but phonemic for some speakers who have both /aːx/ and /aːç/ (< /aʁç/). See Standard German phonology § Ich-Laut and ach-Laut.
+
+Added by the fact-check (2026-10-11), German row of the occurrence table:
+
+> nicht [nɪçt]
 
 Contents:
 - Definition and symbol ⟨ç⟩; allophone of /x/ in German
@@ -333,6 +365,14 @@ Version: accessed 2026-10-11
 
 > It is not used in Switzerland and Liechtenstein.
 
+Added by the fact-check (2026-10-11), raw passages from the same fetched text:
+
+> Double consonants are pronounced as single consonants, except in compound words.
+
+> ⟨e⟩: [ɛ] as in Bett 'bed';
+
+> ch after ⟨a, o, u⟩ [x]
+
 Contents:
 - Alphabet: basic alphabet and special letters (ä, ö, ü, ß); count of letters
 - Use of special letters: umlaut diacritic usage (origin from superscript e; ae/oe/ue substitution; Swiss keyboards), sharp s (ß after long vowels and diphthongs; not used in Switzerland)
@@ -384,6 +424,22 @@ Version: revision oldid=270737026, last edited 23 September 2026 (accessed 2026-
 > (langer,) geschlossener vorderer gerundeter Vokal
 
 > langer, halboffener vorderer ungerundeter Vokal
+
+Added by the fact-check (2026-10-11), further rows of the same "Monophthonge" table (a, aː, ɛ, eː, oː, ɔ, uː):
+
+> kurzer, offener vorderer bis hinterer ungerundeter Vokal
+
+> langer, offener vorderer bis hinterer ungerundeter Vokal
+
+> kurzer, halboffener vorderer ungerundeter Vokal
+
+> (langer,) halbgeschlossener vorderer ungerundeter Vokal
+
+> (langer,) halbgeschlossener hinterer gerundeter Vokal
+
+> kurzer, halboffener hinterer gerundeter Vokal
+
+> (langer,) geschlossener hinterer gerundeter Vokal
 
 > Verschiedene deutsche Konsonanten treten in Paaren von gleichem Artikulationsort und gleicher Artikulationsart auf, nämlich die Paare /p–b, t–d, k–ɡ, s–z, ʃ–ʒ/.
 
@@ -600,3 +656,464 @@ Contents:
 - Gender-Pause: glottal stop in Bäcker*innen etc.; suffixes like -in normally take no glottal stop (Ach-tung, Fah-rer, kin-disch).
 - Der Glottisschlag im Arabischen (Hamza, Hamzat al-qatʿ/al-wasl, dialect variation, Arabic and Western views): not relevant to German.
 - Siehe auch, Weblinks, Einzelnachweise (Krech et al. 2009 pp. 236, 262; Wiese 2000), IPA consonant chart.
+
+## Grandpa or opera? (Rathcke and Mooshammer 2020, Journal of the International Phonetic Association)
+URL: https://doi.org/10.1017/S0025100320000110
+Version: Journal of the International Phonetic Association 52(1), 33–58 (published online 2020); accessed 2026-10-11 via the DOI landing page (full text served)
+
+> In the description of German phonology, two distinct phonetic symbols are currently recommended for the transcription of the vowels [a] (a central low vowel, phonemically /a/) and [ɐ] (phonemically /əʁ/) in word-final, unstressed positions.
+
+> In Experiment 1, six speakers produced a series of minimal pairs that were embedded in meaningful sentences and varied with respect to their accentuation and position within a prosodic phrase.
+
+> Phonetic analyses also confirmed that only this male speaker produced subtle, but consistent F2/F3 differences between [a] and [ɐ] while the contrast was completely neutralised in the rest of the corpus.
+
+> Accordingly, word pairs such as Oper ‘opera’ and Opa ‘grandpa’ can be considered homophones rather than minimal pairs.
+
+> Moreover, the present findings are necessarily restricted to the Northern variety of Standard German and are unlikely to generalise to other dialects.
+
+> The present study was based on a relatively small sample of six speakers and a geographically heterogenous group of listeners, and would benefit from a follow-up with larger, more homogenous groups of participants.
+
+Contents:
+- Abstract; 1 Introduction (unstressed /a/ vs [ɐ], neutralisation, orthography, duration, prosodic position); 2 Experiment 1 (production: six northern speakers, minimal pairs such as Oper/Opa); 3 Experiment 2 (perception: 44 listeners, forced choice); 4 Discussion (neutralisation of unstressed vowels; implications for describing Standard Northern German: one symbol [ɐ] for both); 5 Conclusion (small sample, read speech)
+
+## Stimmloser palataler Frikativ (Wikipedia, de)
+URL: https://de.wikipedia.org/wiki/Stimmloser_palataler_Frikativ
+Version: current revision as served 2026-10-11 (accessed 2026-10-11)
+
+> Ein ch, das den Vokalen E und I, den Konsonanten L, N, R und Y, den Umlauten Ä, Ö und Ü und den Diphthongen EI, ÄU, AI und EU folgt, sowie in der Verkleinerungssilbe „-chen“ und gelegentlich am Anfang eines Wortes vorkommt
+
+> Beispiele: ich [ɪç], möchte [ˈmœçtʰə], reiche [ˈʁɐɪ̯çə], Mädchen [ˈmɛːtçən], Essig [ˈɛsɪç], Chemie [çe.'mi:] (vor allem letzteres aber regional auch anders ausgesprochen).
+
+Contents:
+- Definition and IPA symbol [ç]; occurrence by language: German (Ich-Laut, allophone of /x/, after e, i, l, n, r, the umlauts and the diphthongs ei, äu, ai, eu, in -chen, sometimes word-initially), other languages; Siehe auch; Weblinks
+
+## Help:IPA/Standard German (Wikipedia)
+URL: https://en.wikipedia.org/wiki/Help:IPA/Standard_German
+Version: current revision as served 2026-10-11 (accessed 2026-10-11)
+
+> über, Mühe, Zypern, Duisburg somewhat like few
+
+> [ç] and [x] belong to one phoneme traditionally transcribed /x/. The velar allophone appears after back vowels and /a, aː/ and it may instead be uvular [χ], depending on the variety and speaker. In this guide, the difference between velar and uvular allophones is ignored and both are written with ⟨x⟩.
+
+> In other regions, the uvular pronunciation prevails, mainly as a fricative/approximant [ʁ]. In many regions except for most parts of Switzerland, the /r/ in the syllable coda is vocalized to [ɐ̯] after long vowels or after all vowels, and /ər/ is pronounced as [ɐ]. Also, in southern Germany, /ɐ/ is alternatively realized as [ə].
+
+> Care must be taken to clearly distinguish between the two.
+
+Contents:
+- Key to the IPA for Standard German: consonants (with [ç]/[x]/[χ] note, /r/ variants), vowels (with approximate English equivalents, e.g. [yː] "somewhat like few"), reduced vowels [ɐ] and [ə], semivowel [ɐ̯], glottal stop [ʔ] ("uh-oh"), stress and length marks, notes
+## DWDS: Miete
+URL: https://www.dwds.de/wb/Miete
+Version: DWDS entry as served 2026-10-11 (accessed 2026-10-11)
+
+> Miete · Substantiv (Femininum) · Genitiv Singular: Miete · Nominativ Plural: Mieten · Deklinationstabelle Aussprache: Fehler [ˈmiːtə]
+
+Note: "Fehler" is the label of the page's audio player as it appears in the fetched text, not part of the entry.
+
+## DWDS: Mitte
+URL: https://www.dwds.de/wb/Mitte
+Version: DWDS entry as served 2026-10-11 (accessed 2026-10-11)
+
+> Mitte · Substantiv (Femininum) · Genitiv Singular: Mitte · Nominativ Plural: Mitten · wird meist im Singular verwendet · Deklinationstabelle Aussprache: Fehler [ˈmɪtə]
+
+Note: "Fehler" is the label of the page's audio player as it appears in the fetched text, not part of the entry.
+
+## DWDS: Hölle
+URL: https://www.dwds.de/wb/H%C3%B6lle
+Version: DWDS entry as served 2026-10-11 (accessed 2026-10-11)
+
+> Hölle · Substantiv (Femininum) · Genitiv Singular: Hölle · Nominativ Plural: Höllen · wird meist im Singular verwendet · Deklinationstabelle Aussprache: Fehler [ˈhœlə]
+
+Note: "Fehler" is the label of the page's audio player as it appears in the fetched text, not part of the entry.
+
+## DWDS: Tag
+URL: https://www.dwds.de/wb/Tag
+Version: DWDS entry as served 2026-10-11 (accessed 2026-10-11)
+
+> Tag · Substantiv (Maskulinum) · Genitiv Singular: Tag(e)s · Nominativ Plural: Tage · Deklinationstabelle Aussprache: Fehler [taːk]
+
+Note: "Fehler" is the label of the page's audio player as it appears in the fetched text, not part of the entry.
+
+## DWDS: Bad
+URL: https://www.dwds.de/wb/Bad
+Version: DWDS entry as served 2026-10-11 (accessed 2026-10-11)
+
+> Bad · Substantiv (Neutrum) · Genitiv Singular: Bad(e)s · Nominativ Plural: Bäder · Deklinationstabelle Aussprache: Fehler [baːt]
+
+Note: "Fehler" is the label of the page's audio player as it appears in the fetched text, not part of the entry.
+
+## DWDS: Rad
+URL: https://www.dwds.de/wb/Rad
+Version: DWDS entry as served 2026-10-11 (accessed 2026-10-11)
+
+> Rad · Substantiv (Neutrum) · Genitiv Singular: Rad(e)s · Nominativ Plural: Räder · Deklinationstabelle Aussprache: Fehler [ʀaːt]
+
+Note: "Fehler" is the label of the page's audio player as it appears in the fetched text, not part of the entry.
+
+## DWDS: Rat
+URL: https://www.dwds.de/wb/Rat
+Version: DWDS entry as served 2026-10-11 (accessed 2026-10-11)
+
+> Rat · Substantiv (Maskulinum) · Genitiv Singular: Rat(e)s · Nominativ Plural: Räte · Deklinationstabelle Aussprache: Fehler [ʀaːt]
+
+Note: "Fehler" is the label of the page's audio player as it appears in the fetched text, not part of the entry.
+
+## DWDS: und
+URL: https://www.dwds.de/wb/und
+Version: DWDS entry as served 2026-10-11 (accessed 2026-10-11)
+
+> und · Konjunktion · verbindet meist syntaktisch gleichartige Glieder Aussprache: Fehler [ʊnt]
+
+Note: "Fehler" is the label of the page's audio player as it appears in the fetched text, not part of the entry.
+
+## DWDS: auch
+URL: https://www.dwds.de/wb/auch
+Version: DWDS entry as served 2026-10-11 (accessed 2026-10-11)
+
+> auch · Konjunktion Aussprache: Fehler [aʊ̯χ]
+
+Note: "Fehler" is the label of the page's audio player as it appears in the fetched text, not part of the entry.
+
+## DWDS: in
+URL: https://www.dwds.de/wb/in
+Version: DWDS entry as served 2026-10-11 (accessed 2026-10-11)
+
+> in · Präposition (mit Dativ, mit Akkusativ) Aussprache: Fehler [ɪn]
+
+Note: "Fehler" is the label of the page's audio player as it appears in the fetched text, not part of the entry.
+
+## DWDS: der
+URL: https://www.dwds.de/wb/der
+Version: DWDS entry as served 2026-10-11 (accessed 2026-10-11)
+
+> der · bestimmter Artikel (Maskulinum) Aussprache: Fehler [deːɐ̯]
+
+> die · bestimmter Artikel (Femininum) · Deklinationstabelle Aussprache: Fehler [diː]
+
+> das · bestimmter Artikel (Neutrum) Aussprache: Fehler [das]
+
+Note: "Fehler" is the label of the page's audio player as it appears in the fetched text, not part of the entry.
+
+## DWDS: Theater
+URL: https://www.dwds.de/wb/Theater
+Version: DWDS entry as served 2026-10-11 (accessed 2026-10-11)
+
+> Theater · Substantiv (Neutrum) · Genitiv Singular: Theaters · Nominativ Plural: Theater · Deklinationstabelle Aussprache: Fehler [teˈʔaːtɐ]
+
+Note: "Fehler" is the label of the page's audio player as it appears in the fetched text, not part of the entry.
+
+## DWDS: Lehrer
+URL: https://www.dwds.de/wb/Lehrer
+Version: DWDS entry as served 2026-10-11 (accessed 2026-10-11)
+
+> Lehrer · Substantiv (Maskulinum) · Genitiv Singular: Lehrers · Nominativ Plural: Lehrer · Deklinationstabelle Aussprache: Fehler [ˈleːʀɐ]
+
+Note: "Fehler" is the label of the page's audio player as it appears in the fetched text, not part of the entry.
+
+## DWDS: Oper
+URL: https://www.dwds.de/wb/Oper
+Version: DWDS entry as served 2026-10-11 (accessed 2026-10-11)
+
+> Oper · Substantiv (Femininum) · Genitiv Singular: Oper · Nominativ Plural: Opern · Deklinationstabelle Aussprache: Fehler [ˈoːpɐ]
+
+Note: "Fehler" is the label of the page's audio player as it appears in the fetched text, not part of the entry.
+
+## DWDS: Opa
+URL: https://www.dwds.de/wb/Opa
+Version: DWDS entry as served 2026-10-11 (accessed 2026-10-11)
+
+> Opa · Substantiv (Maskulinum) · Genitiv Singular: Opas · Nominativ Plural: Opas · Deklinationstabelle Aussprache: Fehler [ˈoːpa]
+
+Note: "Fehler" is the label of the page's audio player as it appears in the fetched text, not part of the entry.
+
+## DWDS: euch
+URL: https://www.dwds.de/wb/euch
+Version: DWDS entry as served 2026-10-11 (accessed 2026-10-11)
+
+> euch · Pronomen · Deklinationstabelle Aussprache: [ɔɪ̯ç]
+
+## DWDS: Hund
+URL: https://www.dwds.de/wb/Hund
+Version: DWDS entry as served 2026-10-11 (accessed 2026-10-11)
+
+> Hund · Substantiv (Maskulinum) · Genitiv Singular: Hund(e)s · Nominativ Plural: Hunde · Deklinationstabelle Aussprache: Fehler [hʊnt]
+
+Note: "Fehler" is the label of the page's audio player as it appears in the fetched text, not part of the entry.
+
+## DWDS: Acht
+URL: https://www.dwds.de/wb/Acht
+Version: DWDS entry as served 2026-10-11 (accessed 2026-10-11)
+
+> Acht · Substantiv (Femininum) · Genitiv Singular: Acht · wird nur im Singular verwendet · Deklinationstabelle Aussprache: Fehler [aχt]
+
+Note: "Fehler" is the label of the page's audio player as it appears in the fetched text, not part of the entry.
+
+## DWDS: Auto
+URL: https://www.dwds.de/wb/Auto
+Version: DWDS entry as served 2026-10-11 (accessed 2026-10-11)
+
+> Auto · Substantiv (Neutrum) · Genitiv Singular: Autos · Nominativ Plural: Autos · Deklinationstabelle Aussprache: Fehler [ˈaʊ̯to]
+
+Note: "Fehler" is the label of the page's audio player as it appears in the fetched text, not part of the entry.
+
+## DWDS: mein
+URL: https://www.dwds.de/wb/mein
+Version: DWDS entry as served 2026-10-11 (accessed 2026-10-11)
+
+> mein · Possessivpronomen (Maskulinum) Aussprache: Fehler [maɪ̯n]
+
+Note: "Fehler" is the label of the page's audio player as it appears in the fetched text, not part of the entry.
+
+## DWDS: rauchen
+URL: https://www.dwds.de/wb/rauchen
+Version: DWDS entry as served 2026-10-11 (accessed 2026-10-11)
+
+> rauchen · Verb · raucht, rauchte, hat geraucht · Konjugationstabelle Aussprache: Fehler [ˈʀaʊ̯χn̩]
+
+Note: "Fehler" is the label of the page's audio player as it appears in the fetched text, not part of the entry.
+
+## DWDS: Achtung
+URL: https://www.dwds.de/wb/Achtung
+Version: DWDS entry as served 2026-10-11 (accessed 2026-10-11)
+
+> Achtung · Substantiv (Femininum) · Genitiv Singular: Achtung · wird nur im Singular verwendet · Deklinationstabelle Aussprache: Fehler [ˈaχtʊŋ]
+
+Note: "Fehler" is the label of the page's audio player as it appears in the fetched text, not part of the entry.
+
+## Wiktionary (de): Küche
+URL: https://de.wiktionary.org/wiki/K%C3%BCche
+Version: current revision as served 2026-10-11 (accessed 2026-10-11)
+
+> Kü·che, Plural: Kü·chen Aussprache: IPA: [ˈkʏçə], norddeutsch standardsprachlich oft: [ˈkyːçə][1]
+
+The footnote [1] on the northern variant cites the Duden pronunciation dictionary:
+
+> Nach Stefan Kleiner, Ralf Knöbl und Dudenredaktion: Duden Aussprachewörterbuch.
+
+## Wiktionary (de): Kuchen
+URL: https://de.wiktionary.org/wiki/Kuchen
+Version: current revision as served 2026-10-11 (accessed 2026-10-11)
+
+> Ku·chen, Plural: Ku·chen Aussprache: IPA: [ˈkuːxn̩]
+
+## Wiktionary (de): Keller
+URL: https://de.wiktionary.org/wiki/Keller
+Version: current revision as served 2026-10-11 (accessed 2026-10-11)
+
+> Kel·ler, Plural: Kel·ler Aussprache: IPA: [ˈkɛlɐ]
+
+## Wiktionary (de): Höhle
+URL: https://de.wiktionary.org/wiki/H%C3%B6hle
+Version: current revision as served 2026-10-11 (accessed 2026-10-11)
+
+> Höh·le, Plural: Höh·len Aussprache: IPA: [ˈhøːlə]
+
+## Wiktionary (de): richtig
+URL: https://de.wiktionary.org/wiki/richtig
+Version: current revision as served 2026-10-11 (accessed 2026-10-11)
+
+> rich·tig, Komparativ: rich·ti·ger, Superlativ: rich·tigs·ten Aussprache: IPA: [ˈʁɪçtɪç], [ˈʁɪçtɪk]
+
+## Wiktionary (de): ist
+URL: https://de.wiktionary.org/wiki/ist
+Version: current revision as served 2026-10-11 (accessed 2026-10-11)
+
+> ist Aussprache: IPA: [ɪst], umgangssprachlich: [ɪs]
+
+> 3. Person Singular Indikativ Präsens des Verbs sein
+
+## Wiktionary (de): Ode
+URL: https://de.wiktionary.org/wiki/Ode
+Version: current revision as served 2026-10-11 (accessed 2026-10-11)
+
+> Ode, Plural: Oden Aussprache: IPA: [ˈoːdə]
+
+## Wiktionary (de): Diode
+URL: https://de.wiktionary.org/wiki/Diode
+Version: current revision as served 2026-10-11 (accessed 2026-10-11)
+
+> Di·o·de, Plural: Di·o·den Aussprache: IPA: [diˈʔoːdə]
+
+## Wiktionary (de): Hündchen
+URL: https://de.wiktionary.org/wiki/H%C3%BCndchen
+Version: current revision as served 2026-10-11 (accessed 2026-10-11)
+
+> Hünd·chen, Plural: Hünd·chen Aussprache: IPA: [ˈhʏntçən]
+
+## Wiktionary (de): Frauchen
+URL: https://de.wiktionary.org/wiki/Frauchen
+Version: current revision as served 2026-10-11 (accessed 2026-10-11)
+
+> Frau·chen, Plural: Frau·chen Aussprache: IPA: [ˈfʁaʊ̯çən]
+
+## Wiktionary (de): leicht
+URL: https://de.wiktionary.org/wiki/leicht
+Version: current revision as served 2026-10-11 (accessed 2026-10-11)
+
+> leicht, Komparativ: leich·ter, Superlativ: am leich·tes·ten Aussprache: IPA: [laɪ̯çt]
+
+## Wiktionary (de): Tage
+URL: https://de.wiktionary.org/wiki/Tage
+Version: current revision as served 2026-10-11 (accessed 2026-10-11)
+
+> Ta·ge Aussprache: IPA: [ˈtaːɡə]
+
+> Nominativ Plural des Substantivs Tag
+
+## Wiktionary (de): Bücher
+URL: https://de.wiktionary.org/wiki/B%C3%BCcher
+Version: current revision as served 2026-10-11 (accessed 2026-10-11)
+
+> Bü·cher Aussprache: IPA: [ˈbyːçɐ]
+
+> Nominativ Plural des Substantivs Buch
+
+## Wiktionary (de): Buch
+URL: https://de.wiktionary.org/wiki/Buch
+Version: current revision as served 2026-10-11 (accessed 2026-10-11)
+
+> Buch, Plural: Bü·cher Aussprache: IPA: [buːx]
+
+## Wiktionary (de): Koch
+URL: https://de.wiktionary.org/wiki/Koch
+Version: current revision as served 2026-10-11 (accessed 2026-10-11)
+
+> Koch, Plural: Kö·che Aussprache: IPA: [kɔx]
+
+## Wiktionary (de): Köche
+URL: https://de.wiktionary.org/wiki/K%C3%B6che
+Version: current revision as served 2026-10-11 (accessed 2026-10-11)
+
+> Kö·che Aussprache: IPA: [ˈkœçə]
+
+> Nominativ Plural des Substantivs Koch
+
+## Wiktionary (de): Ofen
+URL: https://de.wiktionary.org/wiki/Ofen
+Version: current revision as served 2026-10-11 (accessed 2026-10-11)
+
+> Ofen, Plural: Öfen Aussprache: IPA: [ˈoːfn̩]
+
+## Wiktionary (de): offen
+URL: https://de.wiktionary.org/wiki/offen
+Version: current revision as served 2026-10-11 (accessed 2026-10-11)
+
+> of·fen, Komparativ: of·fe·ner, Superlativ: am of·fens·ten Aussprache: IPA: [ˈɔfn̩], [ˈɔfm̩]
+
+## Wiktionary (de): lieblich
+URL: https://de.wiktionary.org/wiki/lieblich
+Version: current revision as served 2026-10-11 (accessed 2026-10-11)
+
+> lieb·lich, Komparativ: lieb·li·cher, Superlativ: am lieb·lichs·ten Aussprache: IPA: [ˈliːplɪç]
+
+## Wiktionary (de): lieben
+URL: https://de.wiktionary.org/wiki/lieben
+Version: current revision as served 2026-10-11 (accessed 2026-10-11)
+
+> lie·ben, Präteritum: lieb·te, Partizip II: ge·liebt Aussprache: IPA: [ˈliːbn̩]
+
+## Wiktionary (de): endlich
+URL: https://de.wiktionary.org/wiki/endlich
+Version: current revision as served 2026-10-11 (accessed 2026-10-11)
+
+> end·lich, keine Steigerung Aussprache: IPA: [ˈɛntlɪç]
+
+## Wiktionary (de): Ende
+URL: https://de.wiktionary.org/wiki/Ende
+Version: current revision as served 2026-10-11 (accessed 2026-10-11)
+
+> En·de, Plural: En·den Aussprache: IPA: [ˈɛndə]
+
+## Wiktionary (de): Handlung
+URL: https://de.wiktionary.org/wiki/Handlung
+Version: current revision as served 2026-10-11 (accessed 2026-10-11)
+
+> Hand·lung, Plural: Hand·lun·gen Aussprache: IPA: [ˈhandlʊŋ]
+
+## Wiktionary (de): handeln
+URL: https://de.wiktionary.org/wiki/handeln
+Version: current revision as served 2026-10-11 (accessed 2026-10-11)
+
+> han·deln, Präteritum: han·del·te, Partizip II: ge·han·delt Aussprache: IPA: [ˈhandl̩n]
+
+## Wiktionary (de): Eigner
+URL: https://de.wiktionary.org/wiki/Eigner
+Version: current revision as served 2026-10-11 (accessed 2026-10-11)
+
+> Eig·ner, Plural: Eig·ner Aussprache: IPA: [ˈaɪ̯ɡnɐ]
+
+## Wiktionary (de): Adler
+URL: https://de.wiktionary.org/wiki/Adler
+Version: current revision as served 2026-10-11 (accessed 2026-10-11)
+
+> Ad·ler, Plural: Ad·ler Aussprache: IPA: [ˈaːdlɐ]
+
+## Wiktionary (de): Radweg
+URL: https://de.wiktionary.org/wiki/Radweg
+Version: current revision as served 2026-10-11 (accessed 2026-10-11)
+
+> Rad·weg, Plural: Rad·we·ge Aussprache: IPA: [ˈʁaːtˌveːk]
+
+## Wiktionary (de): Sandale
+URL: https://de.wiktionary.org/wiki/Sandale
+Version: current revision as served 2026-10-11 (accessed 2026-10-11)
+
+> San·da·le, Plural: San·da·len Aussprache: IPA: [zanˈdaːlə]
+
+## Wiktionary (de): enthalten
+URL: https://de.wiktionary.org/wiki/enthalten
+Version: current revision as served 2026-10-11 (accessed 2026-10-11)
+
+> ent·hal·ten, Präteritum: ent·hielt, Partizip II: ent·hal·ten Aussprache: IPA: [ɛntˈhaltn̩]
+
+## Wiktionary (de): Theater
+URL: https://de.wiktionary.org/wiki/Theater
+Version: current revision as served 2026-10-11 (accessed 2026-10-11)
+
+> The·a·ter, Plural: The·a·ter Aussprache: IPA: [teˈaːtɐ], [teˈʔaːtɐ]
+
+## Wiktionary (de): Käse
+URL: https://de.wiktionary.org/wiki/K%C3%A4se
+Version: current revision as served 2026-10-11 (accessed 2026-10-11)
+
+> Kä·se, Plural: Kä·se Aussprache: IPA: [ˈkɛːzə], [ˈkeːzə]
+
+## Wiktionary (de): Mühle
+URL: https://de.wiktionary.org/wiki/M%C3%BChle
+Version: current revision as served 2026-10-11 (accessed 2026-10-11)
+
+> Müh·le, Plural: Müh·len Aussprache: IPA: [ˈmyːlə]
+
+## Wiktionary (de): Männer
+URL: https://de.wiktionary.org/wiki/M%C3%A4nner
+Version: current revision as served 2026-10-11 (accessed 2026-10-11)
+
+> Män·ner Aussprache: IPA: [ˈmɛnɐ]
+
+> Nominativ Plural des Substantivs Mann
+
+## Wiktionary (de): Räder
+URL: https://de.wiktionary.org/wiki/R%C3%A4der
+Version: current revision as served 2026-10-11 (accessed 2026-10-11)
+
+> Rä·der Aussprache: IPA: [ˈʁɛːdɐ] Hörbeispiele: Räder (Info), Räder (Österreich) (Info)
+
+> Nominativ Plural des Substantivs Rad
+
+## Wiktionary (de): auch
+URL: https://de.wiktionary.org/wiki/auch
+Version: current revision as served 2026-10-11 (accessed 2026-10-11)
+
+> auch Aussprache: IPA: [aʊ̯x]
+
+## Wiktionary (de): wichtig
+URL: https://de.wiktionary.org/wiki/wichtig
+Version: current revision as served 2026-10-11 (accessed 2026-10-11)
+
+> wich·tig, Komparativ: wich·ti·ger, Superlativ: am wich·tigs·ten Aussprache: IPA: [ˈvɪçtɪç], [ˈvɪçtɪk]
+
+## Wiktionary (de): königlich
+URL: https://de.wiktionary.org/wiki/k%C3%B6niglich
+Version: current revision as served 2026-10-11 (accessed 2026-10-11)
+
+> kö·nig·lich, Komparativ: kö·nig·li·cher, Superlativ: am kö·nig·lichs·ten Aussprache: IPA: [ˈkøːnɪklɪç]
+

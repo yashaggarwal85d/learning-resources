@@ -5,7 +5,7 @@ Next topic: **Spelling-to-sound rules**: "ei vs ie, eu/äu, sch, sp and st at th
 Syllabus line: "The German sound system: vowel length (Miete vs Mitte), the umlauts ä/ö/ü, the two *ch* sounds (ich-Laut vs ach-Laut), the uvular and vocalised r (-er as a vowel), final devoicing (Tag sounds like "Tak"), the glottal stop before initial vowels."
 Chapter practice line: "minimal-pair listening (Miete/Mitte, Hölle/Höhle, Küche/Kuchen), then record yourself and compare against the model."
 
-Planned by: content-plan agent (Opus), 2026-10-11. Sources: `SOURCES.md` (section names below) and the raw texts in `sources/`. Claims are numbered **C1–C75** in the claims list at the end. **TBS** = to be sourced by the fact-check agent with `node scripts/sources.mjs fetch` (URL given); if it can't be sourced, the fallback named next to it is used instead.
+Planned by: content-plan agent (Opus), 2026-10-11. Sources: `SOURCES.md` (section names below) and the raw texts in `sources/`. Claims are numbered **C1–C81** in the claims list at the end (C76–C81 added by the fact-check). **TBS** = to be sourced by the fact-check agent with `node scripts/sources.mjs fetch` (URL given); if it can't be sourced, the fallback named next to it is used instead.
 
 ---
 
@@ -31,7 +31,7 @@ Fast, analytical adult English speakers, possibly with no German at all. We teac
 2. Build ü and ö from parts you already have: the tongue of i or e plus the rounded lips of u or o. Say why ä is pronounced like e.
 3. Choose ich-Laut [ç] or ach-Laut [x] from the sound before the ch, and apply the one override: the suffix -chen is always [ç] (Frauchen vs rauchen).
 4. Say r as a consonant at the back of the mouth before a vowel, and as a vowel after one ([ɐ̯], and [ɐ] for -er). Keep -er [ɐ] apart from -e [ə].
-5. Apply final devoicing at the end of every syllable (Rad = Rat [ʁaːt], Hand|lung), and the northern -ig → [ɪç].
+5. Apply final devoicing at the end of every syllable (Rad = Rat [ʁaːt], lieb|lich), and the northern -ig → [ɪç].
 6. Put a glottal catch before vowel-initial words and stems (mein | Auto), and know where it does not go (before suffixes, and in Austria and Switzerland).
 7. Read both lines of the opening flat-viewing exchange aloud, sound by sound.
 
@@ -39,21 +39,21 @@ Fast, analytical adult English speakers, possibly with no German at all. We teac
 
 ## The opening problem (layer 1), resolved in step 15
 
-**Your first flat viewing in Germany.** You ask the agent: „Ist die Küche in der Miete?" ("Is the kitchen included in the rent?"). Read with English habits, the short [ɪ] turns **Miete** ("rent") into **Mitte** ("middle"). The u-like vowel pulls **Küche** ("kitchen") toward **Kuchen** ("cake"). So what she may hear is closer to "Is the kitchen in the middle?". She answers: „Richtig. Das Bad und der Keller auch." ("Right. The bathroom and the cellar too."), and you can't map half of what you hear onto the words you read.
+**Your first flat viewing in Germany.** You ask the agent: „Ist die Küche in der Miete enthalten?" ("Is the kitchen included in the rent?"). Say Miete with a short vowel and **Miete** ("rent") becomes **Mitte** ("middle"): one vowel is the only difference. Say ü as a plain u and **Küche** ("kitchen") drifts toward **Kuchen** ("cake"). So what she may hear is closer to "Is the kitchen included in the middle?". She answers: „Richtig. Das Bad und der Keller auch." ("Right. The bathroom and the cellar too."), and you can't map half of what you hear onto the words you read. (Fact-check: don't claim English *reading* habits shorten Miete. English speakers already have [iː] vs [ɪ] (beat/bit), and English ie often reads [iː] (field). The point is that German length is meaningful, not that English speakers will misread ie.)
 
 Together the two lines contain every feature in the syllabus line:
-- the question: glottal stops (Ist, in); long vs short vowels (die, Miete vs Ist, in); the umlaut ü and the ich-Laut (Küche); vocalised r (der); schwa (Küche, Miete);
+- the question: glottal stops (Ist, in, enthalten); long vs short vowels (die, Miete vs Ist, in); the umlaut ü and the ich-Laut (Küche); vocalised r (der); schwa (Küche, Miete) and a syllabic n (enthalten);
 - the answer: uvular r, two ich-Laute and the -ig ending (Richtig); final devoicing (Bad, und); glottal stops (und, auch); vocalised r (der); -er as a vowel (Keller); the ach-Laut after au (auch).
 
 Step 15 transcribes both lines in full, so every mark is explained by a step the learner has seen.
 
-**Target transcriptions** (citation forms, careful northern standard speech; per-word IPA from DWDS (TBS, C69), with [ʔ] added by C56–C57):
-- Question: [ʔɪst diː ˈkʏçə ʔɪn deːɐ̯ ˈmiːtə]
+**Target transcriptions** (citation forms, careful northern standard speech; per-word IPA from DWDS and de.wiktionary (C69, sourced by the fact-check), with [ʔ] added by C56–C57):
+- Question: [ʔɪst diː ˈkʏçə ʔɪn deːɐ̯ ˈmiːtə ʔɛntˈhaltn̩]
 - Answer: [ˈʁɪçtɪç | das baːt ʔʊnt deːɐ̯ ˈkɛlɐ ʔaʊ̯x]
 
-Function words often reduce in connected speech (die → [di], der → [dɐ]). The reel shows citation forms and says so in step 15's caption.
+Function words often reduce in connected speech (die → [di], der → [dɐ]). The reel shows citation forms and says so in step 15's caption. Transcription conventions: DWDS writes the r as [ʀ] and the ach-Laut after a/au as [χ] (auch [aʊ̯χ], Acht [aχt]); the reel follows the broad convention of Help:IPA and de.wiktionary ([ʁ], [x]: auch [aʊ̯x]) and the Deep dive says so. Küche: de.wiktionary (citing the Duden Aussprachewörterbuch) gives [ˈkʏçə] and notes that northern standard speech often has a long [ˈkyːçə]; the reel shows [ˈkʏçə], the Deep dive mentions the variant.
 
-**Wording check (fact-check).** Confirm that „Ist die Küche in der Miete?" reads as natural for "included in the rent". If it doesn't, use „Ist die Küche in der Miete enthalten?" (one more glottal stop) and update the transcription in `examples.py`.
+**Wording check (fact-check, done).** The bare „Ist die Küche in der Miete?" is elliptical; „… in der Miete enthalten?" is the usual phrasing for "included in the rent" (editorial judgement; no corpus source could be fetched). Use „Ist die Küche in der Miete enthalten?". enthalten [ɛntˈhaltn̩] (de.wiktionary) adds a word-initial [ʔ] and a syllabic [n̩]. Its h is a normal [h] at the start of the stem -halt-, not a length h: say so in the Deep dive, since step 3 teaches the silent h.
 
 ---
 
@@ -94,8 +94,8 @@ Canvas sizes are given as Svg `h` on the 600-unit width. "Portrait" is the phone
 - **Layer:** 1, the problem. The registry `bridge` is shown on this step by the player.
 - **Visual idea:** one German question, seen two ways. The letters stay the same while two vowels slip, and the meaning slips with them. This makes the cost of English reading habits concrete before any theory.
 - **Portrait (Svg h=480):**
-  - top, y 60: "you say" (s=14 taupe); y 110: „Ist die Küche in der Miete?" (s=24 crema, centred; if it doesn't fit 560 units at phone scale, break after "Küche"); y 145: "Is the kitchen included in the rent?" (s=14 latte).
-  - middle, y 230–330: the same sentence again, with the ü in Küche and the ie in Miete drawn in cherryText, and below it the "heard" version "… Kuche… in der Mitte?" with the changed letters in cherryText and the gloss "… in the middle?" (s=14 latte).
+  - top, y 60: "you say" (s=14 taupe); y 110: „Ist die Küche in der Miete enthalten?" (s=24 crema, centred; if it doesn't fit 560 units at phone scale, break after "Küche"); y 145: "Is the kitchen included in the rent?" (s=14 latte).
+  - middle, y 230–330: the same sentence again, with the ü in Küche and the ie in Miete drawn in cherryText, and below it the "heard" version "… Kuche… in der Mitte enthalten?" with the changed letters in cherryText and the gloss "… included in the middle?" (s=14 latte).
   - bottom, y 400–450: two small labels: "ie said short → Mitte" and "ü said as u → toward Kuchen 'cake'" (s=14 latte).
 - **Landscape (Svg h=340):** two columns: left "what you meant" (German line plus gloss), right "what she may hear" (German line plus gloss), with an arrow between them. The two slip labels sit under the right column.
 - **Beats:**
@@ -106,12 +106,12 @@ Canvas sizes are given as Svg `h` on the 600-unit width. "Portrait" is the phone
   - 3.4–4.2: the agent's answer appears at the very bottom (y 470, s=15 latte): „Richtig. Das Bad und der Keller auch." with "?" marks over Richtig, Bad, und, auch.
 - **Duration:** about 4.4 s.
 - **Final frame:** the meant line, the heard line, the two slip labels, and the agent's answer with question marks. All the parts of the problem are on screen.
-- **Caption (body):** "German starts with its sounds. On a flat viewing you ask „Ist die Küche in der Miete?" (is the kitchen included in the rent?). Said with English habits, Miete becomes Mitte, 'middle'. Then the answer comes, and half of it doesn't sound like it's written. By the end of this reel you'll read both lines sound by sound. Notation: [square brackets] are sounds, not letters; ː means long."
+- **Caption (body):** "German starts with its sounds. On a flat viewing you ask „Ist die Küche in der Miete enthalten?" (is the kitchen included in the rent?). Say Miete with a short vowel and it becomes Mitte, 'middle'. Then the answer comes, and half of it doesn't sound like it's written. By the end of this reel you'll read both lines sound by sound. Notation: [square brackets] are sounds, not letters; ː means long."
 - **Narration sketch:**
   - "Welcome to German. Before any grammar, its sounds."
   - "You're at a flat viewing, and you ask whether the kitchen is included in the rent."
-  - {"de": "Ist die Küche in der Miete?"}
-  - "Read it with English habits, and one short vowel turns rent into middle."
+  - {"de": "Ist die Küche in der Miete enthalten?"}
+  - "Shorten one vowel, and rent turns into middle."
   - {"de": "Miete."} {"de": "Mitte."}
   - "Then the agent answers."
   - {"de": "Richtig. Das Bad und der Keller auch."}
@@ -136,7 +136,7 @@ Canvas sizes are given as Svg `h` on the 600-unit width. "Portrait" is the phone
     - "The t: held longer in Mitte, because it's written twice"
     - "The final e: spoken in Miete, silent in Mitte"
     - "Nothing you can hear: context tells them apart"
-  - Explain: "The vowel. ie is a long, tense [iː]. i before a doubled consonant is a short, lax [ɪ], a little lower and less front. The doubled t is spelling only, pronounced as one [t], and both words end in the same weak e, [ə]."
+  - Explain: "The vowel. ie is a long, tense [iː]. i before a doubled consonant is a short, lax [ɪ], a little lower and (in most descriptions) slightly less front. The doubled t is spelling only, pronounced as one [t], and both words end in the same weak e, [ə]."
 - **After answer (`answer !== null`):** the ? tiles flip. Miete gets [iː] in caramel with a long LenBar under it; Mitte gets [ɪ] in cinnamon with a short LenBar. The final [ə] tiles pulse once to show they are the same.
 - **Final frame:** both strips fully transcribed, [ˈmiːtə] and [ˈmɪtə], with their bars.
 - **Narration:** lines (question); answer: "The vowel. Long and tense in Miete... short and lax in Mitte." {"de": "Miete."} {"de": "Mitte."} "The double t is just spelling. You say one t."
@@ -148,7 +148,7 @@ Canvas sizes are given as Svg `h` on the 600-unit width. "Portrait" is the phone
 - **Portrait (Svg h=520):**
   - top band, y 20–170: a mini VowelGrid (front half only, width 300, centred).
     - i: [iː] dot at close-front, [ɪ] dot at near-close/near-front, with an arrow iː→ɪ labelled "lax" (s=13 taupe).
-    - a: one dot at open-central labelled [a] = [aː], with "same vowel, only length" (s=13 latte).
+    - a: one dot at open-central labelled [a] = [aː], with "(nearly) only length" (s=13 latte). Fact-check: the ADS table gives a/aː (and ɛ/ɛː) identical quality descriptions, but SGP notes /aː/ is sometimes described as back [ɑː]; keep "nearly".
   - lower band, y 200–500: four rows, each about 70 units: long word (caramel, left x 40) and short word (cinnamon, right x 330), each with its LenBar under it.
     - Miete / Mitte
     - Höhle / Hölle
@@ -164,14 +164,14 @@ Canvas sizes are given as Svg `h` on the 600-unit width. "Portrait" is the phone
 - **Duration:** about 5.4 s.
 - **Real values (sourced):**
   - Höhle /øː/ vs Hölle /œ/, Ofen /oː/ vs offen /ɔ/, kam /kaːm/ vs Kamm /kam/: ADS table and ORTH (C6, C8).
-  - Mitte /ɪ/ (ADS table); Miete [iː] (TBS, C13; fallback Mieter, ADS table).
+  - Mitte /ɪ/ (ADS table); Miete [ˈmiːtə], Mitte [ˈmɪtə] (C13, DWDS); Höhle [ˈhøːlə], Hölle [ˈhœlə], Ofen [ˈoːfn̩], offen [ˈɔfn̩] (de.wiktionary, DWDS Hölle).
   - Vowel descriptions (C17).
 - **Final frame:** the grid, four ledger rows with bars and underlines, and the footer.
-- **Caption (body):** "German pairs a long, tense vowel with a short, lax one: [iː]/[ɪ], [øː]/[œ], [oː]/[ɔ]. The short one is shorter **and** a different vowel. Only a and aː differ by length alone. The spelling usually tells you which: ie, a silent h, a doubled vowel, or a single consonant before another vowel means long; a doubled consonant means short. Usually, not always: Mond is long, and nothing marks length before ch (Drache vs Sprache). The full spelling system is the next topic."
+- **Caption (body):** "German pairs a long, tense vowel with a short, lax one: [iː]/[ɪ], [øː]/[œ], [oː]/[ɔ]. The short one is shorter **and** a different vowel. The exception is a: [a] and [aː] differ (almost) only in length (so do short e/ä [ɛ] and long ä [ɛː], for speakers who keep [ɛː]). The spelling usually tells you which: ie, a silent h, a doubled vowel, or a single consonant before another vowel means long; a doubled consonant means short. Usually, not always: Mond is long, and nothing marks length before ch (Drache vs Sprache). The full spelling system is the next topic."
 - **Narration sketch:**
   - "Every German vowel comes in a pair: long and tense, or short and lax."
   - "The short one isn't just shorter. It's a slightly different vowel."
-  - "Only a is the same vowel, either way."
+  - "Only a stays almost the same vowel, either way."
   - "Listen to the pairs."
   - {"de": "Höhle."} {"de": "Hölle."} {"de": "Ofen."} {"de": "offen."}
   - "And the spelling helps. A doubled consonant after a vowel means short. ie, a silent h, or a single consonant before another vowel means long."
@@ -186,17 +186,17 @@ Canvas sizes are given as Svg `h` on the 600-unit width. "Portrait" is the phone
 - **Beats:** 0–0.6 the mouth draws; 0.6–1.0 the lips round (scale the lip outline); 1.0 the "?" appears.
 - **Duration:** 1.2 s.
 - **Predict:**
-  - Question (body): "ü is a rounded vowel: your lips round. Which German vowel does it share its tongue position with?"
+  - Question (body): "Long ü (Mühle, über) is a rounded vowel: your lips round. Which German vowel does it share its tongue position with?"
   - Options:
     - **"Long i, as in Miete"** (correct)
     - "Long u, as in Mut"
     - "Short a, as in Kamm"
     - "The weak e at the end of Miete"
-  - Explain: "Long i. ü [yː] is close and front, exactly where i [iː] is, with the lips rounded as for u. Keep the tongue of i and round your lips: that's ü. It isn't a kind of u at all."
+  - Explain: "Long i. ü [yː] is close and front, essentially where i [iː] is (at most a touch further back), with the lips rounded as for u. Keep the tongue of i and round your lips: that's ü. It isn't a kind of u at all."
 - **After answer:** the dashed tongue morphs into the 'i' pose (front, high). Label "i's tongue" (s=14 caramel) at the tongue and "u's lips" (s=14 caramel) at the lips; the "?" becomes [yː].
 - **Final frame:** the mouth with the front-high tongue and round lips, the two labels, and [yː].
 - **Narration:** "Your lips round for this one. But where's your tongue?" Answer: "Exactly where it is for the long i in Miete." {"de": "Miete."} "Keep that tongue, round your lips..." {"de": "Mühle."} "That's the ü."
-- **Claims:** C15, C16, C17, C20; C71 (English cue "meet with rounded lips", TBS, optional).
+- **Claims:** C15, C16, C17, C20. (C71 dropped by the fact-check: Help:IPA gives "somewhat like few", not "meet with rounded lips".)
 
 ### Step 5: "ü and ö: front tongue, round lips"
 - **Layer:** 3, mechanism.
@@ -222,7 +222,7 @@ Canvas sizes are given as Svg `h` on the 600-unit width. "Portrait" is the phone
   - Descriptions: /iː/ geschlossen vorder ungerundet; /yː/ geschlossen vorder gerundet; /uː/ geschlossen hinter gerundet; /eː/ halbgeschlossen vorder ungerundet; /øː/ halbgeschlossen vorder gerundet; /oː/ halbgeschlossen hinter gerundet; /ɛ/ halboffen vorder ungerundet (C17).
   - Männer [ɛ] and Bett [ɛ] (C18); Mühle [yː] and Höhle [øː] (C8).
 - **Final frame:** the grid with i·ü and e·ö side by side, u and o at the back with ghost arrows pointing front, ä on [ɛ], and the two example lines.
-- **Caption (body):** "Umlaut means fronting. ü is u's rounded lips with i's tongue; ö is o's rounded lips with e's tongue. They come as pairs too: long [yː] in Mühle and short [ʏ] in Müller; long [øː] in Höhle and short [œ] in Hölle. ä is the odd one: short ä is exactly short e, [ɛ] (Männer, Bett), and many northern speakers say long ä like long e (Käse). Where umlauts can't be typed, Germans write ae, oe, ue, never the bare vowel."
+- **Caption (body):** "Umlaut means fronting. ü is u's rounded lips with i's tongue; ö is o's rounded lips with e's tongue. They come as pairs too: long [yː] in Mühle and short [ʏ] in Müller; long [øː] in Höhle and short [œ] in Hölle. ä is the odd one: short ä is exactly short e, [ɛ] (Männer, Bett), and many northern speakers say long ä like long e (Käse). Where umlauts can't be typed, write ae, oe, ue: the bare vowel would be wrong and misleading."
 - **Narration sketch:**
   - "The dots in ü and ö mean: move this vowel to the front."
   - "U slides forward, and keeps its rounded lips. That's ü."
@@ -234,7 +234,7 @@ Canvas sizes are given as Svg `h` on the 600-unit width. "Portrait" is the phone
 
 ### Step 6: "One ch, two places"
 - **Layer:** 3, mechanism.
-- **Visual idea:** the **tongue doesn't jump**. Within one word, the mouth schematic shows the tongue at the vowel's place, and the ch is made where the tongue already is: front (hard palate) after i, ü and consonants, back (soft palate) after a, o and u. The two IPA symbols become one rule you can feel. Küche vs Kuchen closes the loop with the umlaut step: fronting the vowel moves the ch forward too.
+- **Visual idea:** the **tongue doesn't jump**. Within one word, the mouth schematic shows the tongue at the vowel's place, and the ch is made where the tongue already is: front (hard palate) after i, ü and consonants, back (soft palate) after a, o and u. The two IPA symbols become one rule you can feel. A real umlaut pair, Buch [buːx] → Bücher [ˈbyːçɐ], closes the loop with the umlaut step: fronting the vowel moves the ch forward too. Küche vs Kuchen (the syllabus listening pair) then shows the same contrast in two unrelated words. Fact-check: Küche and Kuchen are not an umlaut pair (different words, different origins), and they differ in more than the vowel: short [ʏ] vs long [uː], [ç] vs [x], and -e [ə] vs -en [n̩]. Call them a near-minimal pair, never "the umlaut of Kuchen".
 - **Portrait (Svg h=520):**
   - top, y 20–260: the Mouth, about 300 wide, centred. Two place marks: "hard palate" (front roof) and "soft palate" (back roof), s=13 taupe.
   - y 290: the current word strip (s=22), e.g. i-c-h → [ɪ][ç].
@@ -249,21 +249,23 @@ Canvas sizes are given as Svg `h` on the 600-unit width. "Portrait" is the phone
   - 3.5–4.2: doch;
   - 4.2–4.9: hoch;
   - 4.9–5.6: nicht;
-  - 5.6–6.6: a final pair row at y 505: "Küche [ʏ]+[ç]" and "Kuchen [uː]+[x]" (s=16), with the ü/u tiles in caramel/cinnamon.
+  - 5.6–6.6: a final pair row at y 505: "Buch [x] → Bücher [ç]" (umlaut moves the ch), then "Küche [ʏ]+[ç] · Kuchen [uː]+[x]" (s=16), with the ü/u tiles in caramel/cinnamon. On phone, the Buch/Bücher row can replace the Küche/Kuchen row if both don't fit; Küche/Kuchen then stays in the narration and the Practice section.
 - **Duration:** about 6.8 s.
 - **Real values:**
   - ich [ɪç], ach [ax], Buch [buːx], mich [mɪç], Furcht [fʊʁçt], nicht [nɪçt], doch [dɔχ], hoch [hoːx] (C23–C27, C32);
-  - Küche [ˈkʏçə] and Kuchen [ˈkuːxn̩] (TBS, C22). If they can't be sourced, the pair row becomes "Buch [x]" vs "mich [ç]".
+  - Küche [ˈkʏçə] and Kuchen [ˈkuːxn̩] (C22, sourced: de.wiktionary); Buch [buːx] / Bücher [ˈbyːçɐ] and Koch [kɔx] / Köche [ˈkœçə] (C76, de.wiktionary).
 - **Final frame:** the mouth with the both-places legend, both lists of four words, and the Küche/Kuchen row.
-- **Caption (body):** "German has one ch sound with two places. After a, o, u and au it is made at the back, at the soft palate: the ach-Laut [x] (Buch, doch). Everywhere else (after i, e, the umlauts, ei and eu, and after consonants) it is made at the front, at the hard palate: the ich-Laut [ç] (ich, nicht, Furcht). The vowel before it decides, so fronting the vowel moves the ch too: Kuchen [x], Küche [ç]. [ç] is not sch: keep ich and Tisch apart."
-  - The ei/eu clause depends on C31. If that can't be sourced, drop it from the caption.
+- **Caption (body):** "German has one ch sound with two places. After a, o, u and au it is made at the back: at the soft palate after u and o, and often further back, near the uvula, after a: the ach-Laut [x] (Buch, doch). Everywhere else (after i, e, the umlauts, ei and eu, and after consonants) it is made at the front, at the hard palate: the ich-Laut [ç] (ich, nicht, Furcht). The vowel *sound* before it decides, not the letter: eu ends in a u letter but takes [ç] (euch). So fronting the vowel moves the ch too: Buch [x], Bücher [ç]. [ç] is not sch: keep ich and Tisch apart."
+  - The ei/eu clause is sourced (C31: de.wikipedia "Stimmloser palataler Frikativ"; DWDS euch [ɔɪ̯ç]; de.wiktionary leicht [laɪ̯çt]).
 - **Narration sketch:**
   - "The letters c h make one sound, made in two places."
   - "Your tongue is already in place for the vowel... and the ch is made right there."
   - {"de": "ich."} {"de": "ach."}
-  - "After a, o and u, it's at the back. Everywhere else, at the front."
+  - "After a, o, u and au, it's at the back. Everywhere else, at the front."
   - {"de": "Buch."} {"de": "mich."} {"de": "doch."} {"de": "nicht."}
   - "So the umlaut moves the ch as well."
+  - {"de": "Buch."} {"de": "Bücher."}
+  - "And the pair to listen for."
   - {"de": "Kuchen."} {"de": "Küche."}
 - **Claims:** C22–C32.
 
@@ -284,7 +286,7 @@ Canvas sizes are given as Svg `h` on the 600-unit width. "Portrait" is the phone
     - "The ach sound, [x], as in rauchen"
     - "[k]"
     - "[ʃ], the sch sound"
-  - Explain: "The ich sound. The diminutive suffix -chen is always [çən], whatever comes before it, so after au you get [ç] in Frauchen and [x] in rauchen. In rauchen the ch belongs to the stem rauch-. The cut in the word decides, not the letters. Same in Hündchen."
+  - Explain: "The ich sound. The diminutive suffix -chen is always [çən], whatever comes before it, so after au you get [ç] in Frauchen and [x] in rauchen. In rauchen the ch belongs to the stem rauch-. The cut in the word decides, not the letters. That holds for every -chen word."
 - **After answer:** the "?" becomes [ç] (caramel); the |chen piece glows; a small tag "-chen → always [ç]" (s=14 caramel) appears at the bottom.
 - **Final frame:** both strips fully transcribed, the boundaries, and the tag.
 - **Narration:** lines (question), with {"de": "rauchen."} and {"de": "Frauchen."}; answer: "The ich sound. The little ending chen always takes it... even right after au." {"de": "Frauchen."} {"de": "rauchen."}
@@ -298,7 +300,7 @@ Canvas sizes are given as Svg `h` on the 600-unit width. "Portrait" is the phone
   - middle, y 140–330, split in two: on the left the Mouth (width 260) with the tongue in the 'uvular' pose and a mark on "uvula" (for [ʁ]); on the right a mini VowelGrid (width 260) with one caramel dot at near-open central labelled [ɐ].
   - bottom, y 360–510: three rule rows (s=15):
     - "before a vowel → [ʁ]  rot [ʁoːt]"
-    - "after a vowel → [ɐ̯]  der [deːɐ̯], wir [viːɐ̯]"
+    - "end of a syllable, after a vowel → [ɐ̯]  der [deːɐ̯], wir [viːɐ̯]" (fact-check: plain "after a vowel" is wrong for Lehrer's first r, which follows e but comes before a vowel; vocalisation is regular after long vowels and variable after short ones, Help:IPA)
     - "-er → [ɐ]  besser [ˈbɛsɐ]  ≠  -e [ə]  bitte"
 - **Landscape (Svg h=380):** the strip across the top; mouth, grid and rules in three columns.
 - **Beats:**
@@ -309,19 +311,19 @@ Canvas sizes are given as Svg `h` on the 600-unit width. "Portrait" is the phone
 - **Duration:** about 4.8 s.
 - **Real values:** Lehrer [ˈleːʁɐ] (northern; C39), rot [ʁoːt] (C35), der [deːɐ̯] (C36), wir [viːɐ̯] (C36), besser [ˈbɛsɐ] (C36), bitte [ə] (C41), ɐ near-open central (C38).
 - **Final frame:** the strip, the mouth plus the grid, and the three rule rows.
-- **Caption (body):** "German has two kinds of r. Before a vowel it is a consonant, usually made with the back of the tongue at the uvula, [ʁ] (rot, the first r in Lehrer); a tongue-tip r is also standard, mostly in the south. After a vowel it turns into a vowel glide, [ɐ̯] (der, wir), and the ending -er becomes the open vowel [ɐ], close to a (Lehrer, besser). Keep it apart from the weak e of -e, [ə]: besser is not bitte."
+- **Caption (body):** "German has two kinds of r. Before a vowel it is a consonant, usually made with the back of the tongue at the uvula, [ʁ] (rot, the first r in Lehrer); a tongue-tip r is also standard, mostly in the south. At the end of a syllable, after a vowel, it usually turns into a vowel glide, [ɐ̯] (der, wir), and the ending -er becomes the vowel [ɐ], close to a (Lehrer, besser). Keep it apart from the weak e of -e, [ə]: besser is not bitte."
 - **Narration sketch:**
   - "This word has two r's, and they're different sounds."
   - {"de": "Lehrer."}
   - "The first comes before a vowel. It's a real consonant, made at the back, at the uvula."
   - "The second isn't a consonant at all. The ending e r becomes a vowel, close to a."
-  - "After a vowel, an r turns into a little vowel glide."
+  - "And at the end of a syllable, after a vowel, an r turns into a little vowel glide."
   - {"de": "der."} {"de": "wir."} {"de": "besser."} {"de": "bitte."}
 - **Claims:** C34–C39, C41, C42.
 
 ### Step 9: "Oper and Opa" (predict)
 - **Layer:** 2, predict.
-- **Visual idea:** two strips whose endings are spelled differently (-er vs -a) and fly onto the vowel grid. Do they land on the same dot?
+- **Visual idea:** two strips whose endings are spelled differently (-er vs -a) and fly onto the vowel grid. Do they land on the same dot? (Fact-check: question reframed from "are they the same?" to "which is closest?", because the dictionary standard the reel models (Duden 7th ed.; DWDS Opa [ˈoːpa], Oper [ˈoːpɐ]) still separates [ɐ] from [a] by height, while the 2020 study (Rathcke & Mooshammer, six northern speakers) found them merged. The new correct answer holds under both views.)
 - **Portrait (Svg h=440):**
   - y 90: Oper "opera"; y 200: Opa "grandpa"; the ending tiles show "?".
   - below, y 260–420: a mini VowelGrid (centre and open area only) with [ɐ] (near-open central) and [a] (open) both marked faintly.
@@ -329,16 +331,17 @@ Canvas sizes are given as Svg `h` on the 600-unit width. "Portrait" is the phone
 - **Beats:** 0–0.8 the strips and grid; hold.
 - **Duration:** 1.2 s.
 - **Predict:**
-  - Question (body): "Oper ('opera') ends in -er; Opa ('grandpa') ends in a. In northern standard German, how do the two endings compare?"
+  - Question (body): "Oper ('opera') ends in -er; Opa ('grandpa') ends in a. In northern standard German, what is the ending of Oper closest to?"
   - Options:
-    - **"They sound the same"** (correct)
-    - "Oper ends in a consonant r"
-    - "Oper ends in the weak e of Miete"
-    - "Opa's ending is long, Oper's short"
-  - Explain: "The same. -er is the vowel [ɐ], and a 2020 study found that northern standard German doesn't distinguish it from an unstressed a: Oper and Opa are both [ˈoːpɐ]. Dictionaries still write Opa with [a]. Swiss speakers, who rarely vocalise the r, keep them apart."
-- **After answer:** both "?" tiles fly to the same dot (caramel), and the label "[ˈoːpɐ] = [ˈoːpɐ]" appears.
-- **Final frame:** both strips transcribed identically, with one dot lit.
-- **Narration:** lines: {"de": "die Oper."} {"de": "der Opa."} (articles keep the speech-to-text check unambiguous; see Narration risks); answer: "In the north, they sound the same. The ending e r is just a vowel, like a."
+    - **"The a at the end of Opa"** (correct)
+    - "A consonant r, as in rot"
+    - "The weak e at the end of Miete"
+    - "The long u of Mut" (replaces an "English-style curled r" option: SGP records a retroflex r in Middle Hessian, so that option had a regional reading)
+  - Explain: "The a of Opa. -er is the vowel [ɐ], just a little higher than a. Dictionaries still keep the two apart ([ˈoːpɐ] vs [ˈoːpa]), but a 2020 study of northern speakers found no reliable difference: there, Oper and Opa sound the same. In southern Germany -er often sounds more like the weak e, and in most of Switzerland the r stays a consonant."
+  - Red-team note: "the weak e" is a real southern variant (Help:IPA, SGP), which is why the question says "northern standard German".
+- **After answer:** both "?" tiles fly to two dots that sit almost on top of each other (caramel), and the label "[ˈoːpɐ] ≈ [ˈoːpa]: the same in northern speech" appears.
+- **Final frame:** both strips transcribed, the two dots nearly touching.
+- **Narration:** lines: {"de": "die Oper."} {"de": "der Opa."} (articles keep the speech-to-text check unambiguous; see Narration risks); answer: "Closest to the a of Opa. In the north, many speakers say them exactly the same. The ending e r is just a vowel, near a."
 - **Claims:** C38, C40.
 
 ### Step 10: "Rad or Rat?" (predict)
@@ -365,27 +368,27 @@ Canvas sizes are given as Svg `h` on the 600-unit width. "Portrait" is the phone
 - **Layer:** 3, mechanism.
 - **Visual idea:** the syllable boundary moves and voicing follows it. Each row is a word pair, a short form and a longer form. The consonant tile slides across the syllable gap and its voice track fills or empties as it crosses. Then a word-internal case (Hand|lung) proves the rule is about **syllables**, not word ends. Last, the spelling note: the letter keeps the voiced form, because German spells the stem.
 - **Portrait (Svg h=520):** four rows, about 85 units each, from y 40:
-  - "Tag [taːk]  ·  Tage [ˈtaːɡə]" (TBS for Tage, C54; fallback "Zug [tsuːk] · Züge [ˈtsyːɡə]", C46)
+  - "Tag [taːk]  ·  Tage [ˈtaːɡə]" (C54, sourced: DWDS Tag, de.wiktionary Tage)
   - "brav [bʁaːf]  ·  brave [ˈbʁaːvə]"
   - "Bad [baːt]  ·  Bäder [ˈbɛːdɐ]"
-  - "Hand|lung [t]  ·  han|deln [d]"
+  - "lieb|lich [p]  ·  lie|ben [b]" (fact-check: replaces "Hand|lung [t] · han|deln [d]". AV writes Han[t]lung, but de.wiktionary writes Handlung [ˈhandlʊŋ], and Adler [ˈaːdlɐ] and Eigner [ˈaɪ̯ɡnɐ] likewise keep the voiced stop before l/n, because where the syllable boundary falls before l, n, r is disputed. lieblich [ˈliːplɪç] / lieben [ˈliːbn̩] (de.wiktionary) is undisputed. Alternatives: endlich [ˈɛntlɪç] / Ende [ˈɛndə]; Radweg [ˈʁaːtˌveːk]. Handlung goes to the Deep dive as the disputed case.)
   - Each row: the coda tile's voice track is empty (caramel outline); the onset tile's is filled (cinnamon).
-  - Exception band, y 400–440: "one exception: -ig → [ɪç]  wichtig [ˈvɪçtɪç] (north)" (s=14).
+  - Twist band, y 400–440: "one twist: -ig → [ɪç]  wichtig [ˈvɪçtɪç] (north)" (s=14). Fact-check: not an "exception" to devoicing (the result [ç] is voiceless too); it is an extra change of g to a fricative. Before -lich it stays [k]: königlich [ˈkøːnɪklɪç] (Deep dive).
   - Footer, y 480–510: "spelling keeps the stem: Tag, not Tak" (s=13 taupe).
 - **Landscape (Svg h=380):** rows in a 2×2 grid, with the exception and footer across the bottom.
 - **Beats:** each row 0.9 s (the short form appears, its coda tile's track empties, then the long form appears with the tile in its onset, track filled); 3.8–4.6 the exception band; 4.8–5.4 the footer.
 - **Duration:** about 5.6 s.
-- **Real values:** Tag /taːk/ (C47), brav/brave (C46), Bad/Bäder (C46), Handlung [t] / handeln [d] (C44), wichtig [ˈvɪçtɪç] (C52).
+- **Real values:** Tag [taːk] (C47, DWDS), Tage [ˈtaːɡə] (C54), brav/brave (C46), Bad/Bäder (C46), lieblich [ˈliːplɪç] / lieben [ˈliːbn̩] (C44 rule; C77 forms), wichtig [ˈvɪçtɪç] (C52).
 - **Final frame:** four rows, the exception band and the footer.
-- **Caption (body):** "Final devoicing (Auslautverhärtung): b, d, g, v, z and the rest of their class lose their voice at the end of a **syllable**, not only of a word: Tag [taːk], brav [f], Hand|lung [t]. When an ending pulls the consonant into the next syllable, its voice returns: Tage, brave, Bäder. German spells the stem, so the letter tells you the voiced form. One exception in the northern standard: final -ig is [ɪç], as in wichtig. English has no such rule, which is why a German accent says 'Hund' with a hard d, and why your English-style 'Tag' sounds foreign."
+- **Caption (body):** "Final devoicing (Auslautverhärtung): b, d, g, v, z and the rest of their class lose their voice at the end of a **syllable**, not only of a word: Tag [taːk], brav [f], lieb|lich [p]. When an ending pulls the consonant into the next syllable, its voice returns: Tage, brave, Bäder. German spells the stem, so the letter tells you the voiced form. One twist in the northern standard: final -ig becomes [ɪç], as in wichtig. English has no such rule, which is why Germans speaking English often harden final consonants, and why your English-style 'Tag' with a voiced g sounds foreign."
 - **Narration sketch:**
   - "Here's the rule behind Rad and Rat."
   - "At the end of a syllable, these consonants lose their voice."
   - {"de": "Tag."} {"de": "Tage."} {"de": "brav."} {"de": "brave."}
   - "Not just at the end of a word. Inside one, too."
-  - {"de": "Handlung."}
+  - {"de": "lieblich."} {"de": "lieben."}
   - "The spelling keeps the original letter, so the related word tells you which one it is."
-  - "One exception, in the north: the ending i g sounds like the ich sound."
+  - "One twist, in the north: the ending i g sounds like the ich sound."
   - {"de": "wichtig."}
 - **Claims:** C44–C54.
 
@@ -407,7 +410,7 @@ Canvas sizes are given as Svg `h` on the 600-unit width. "Portrait" is the phone
     - "mei-Nauto, linked like English"
     - "mein-wauto, with a glide"
     - "mei Auto, dropping the n"
-  - Explain: "With a catch. Before a word that starts with a vowel, German closes the vocal folds and releases them: a glottal stop, [ʔ], the catch in English 'uh-oh'. So mein Auto is [maɪ̯n ˈʔaʊ̯to], never 'mei Nauto'. German writes no letter for it."
+  - Explain: "With a catch. Before a word that starts with a vowel, northern standard German closes the vocal folds and releases them: a glottal stop, [ʔ], the catch in English 'uh-oh'. So in careful speech mein Auto is [maɪ̯n ˈʔaʊ̯to], not 'mei Nauto'. German writes no letter for it."
 - **After answer:** a Catch bar drops into the gap (caramel); the mouth inset's vocal folds close (two lines meet) then open; label [ˈʔaʊ̯to].
 - **Final frame:** "mein | Auto", [ʔ] above the bar, the English linking row dimmed to 40% for contrast.
 - **Narration:** lines: "English runs an apple together. How does German join these two words?" {"de": "mein Auto."}; answer: "With a little catch in the throat... like the middle of uh-oh." {"de": "mein Auto."}
@@ -420,26 +423,26 @@ Canvas sizes are given as Svg `h` on the 600-unit width. "Portrait" is the phone
   1. "Acht [ˈʔaxt]": catch at the word start.
   2. "be|achten [bəˈʔaxtən]": catch inside the word, at the stem.
   3. "The|ater [teˈʔaːtɐ]": catch before a stressed vowel after a vowel.
-  4. "die Ode · Diode": the catch is in the first only (minimal pair).
-  5. "Ach|tung · Fah|rer": no catch, because a suffix attaches to the consonant before it. Shown as a crossed-out ghost bar (taupe), never cherry, since nothing is wrong.
+  4. "O|a|se [ʔoˈʔaːzə]": two catches in one word (SGP, KL). Fact-check: replaces "die Ode · Diode: the catch is in the first only". That is wrong. Diode has its own catch by the hiatus rule of row 3: de.wiktionary gives [diˈʔoːdə]. So die Ode [diː ˈʔoːdə] and Diode [diˈʔoːdə] differ in the length of i and the word boundary, not in the catch. The other "minimal pairs" in KL also differ in more than the catch: Spiegel-Ei/Spiegelei in stress (KL says so), Sandaale/Sandale in stress and [t]/[d] (Sandale [zanˈdaːlə]). This goes to the Deep dive's open questions.
+  5. "Ach|tung · Fah|rer": no catch before the suffix, because it attaches to the consonant before it. Shown as a crossed-out ghost bar (taupe), never cherry, since nothing is wrong. Builder: Achtung still has a catch at its start ([ˈʔaxtʊŋ]); draw the word-initial bar and put the ghost bar only at the -ung cut.
   - Footer, y 500: "not a phoneme: a boundary marker · north, careful speech" (s=13 taupe).
 - **Landscape (Svg h=380):** rows 1–4 in a 2×2 grid, row 5 and the footer across the bottom.
 - **Beats:** one row every 0.8 s, the bar dropping with `easeOutBack`; row 5's ghost bar appears, shakes slightly (position only), and fades to 30%; footer at 4.4 s.
 - **Duration:** about 4.8 s.
-- **Real values:** Acht [ˈʔaxt]; beachten [bəˈʔaxtʰən] (shown as [bəˈʔaxtən]: aspiration dropped for clarity; the Deep dive gives the full form); Theater [teˈʔaːtɐ]; die Ode / Diode; Ach-tung, Fah-rer (C57, C58, C63).
+- **Real values:** Acht [ˈʔaxt]; beachten [bəˈʔaxtʰən] (shown as [bəˈʔaxtən]: aspiration dropped for clarity; the Deep dive gives the full form); Theater [teˈʔaːtɐ] (KL; DWDS also writes [teˈʔaːtɐ]; de.wiktionary gives [teˈaːtɐ] as well, so the hiatus catch is optional); Oase [ʔoˈʔaːzə]; Ach-tung, Fah-rer (C57, C63).
 - **Final frame:** all five rows, the bars in place, the ghost in row 5, and the footer.
-- **Caption (body):** "In standard German from Germany, a glottal stop comes before a vowel that starts a word (Acht), a stem inside a word (be|achten), or a stressed syllable right after another vowel (The|ater). It never comes before a suffix: Achtung and Fahrer link straight through. Because it marks boundaries, it can separate words: die Ode vs Diode. It isn't a phoneme: leaving it out never makes a different word by itself, and casual speech often drops it."
+- **Caption (body):** "In standard German from Germany, a glottal stop comes before a vowel that starts a word (Acht), a stem inside a word (be|achten), or a stressed syllable right after another vowel (The|ater). It never comes before a suffix: Achtung and Fahrer link straight through. It isn't a phoneme: it marks where a word or stem begins, leaving it out doesn't by itself make a different word, and casual speech often drops it."
 - **Narration sketch:**
   - "So where does the catch go?"
   - "Before a vowel that starts a word, or that starts a stem inside one."
   - {"de": "Acht."} {"de": "beachten."}
   - "Before a stressed vowel that follows another vowel."
   - {"de": "Theater."}
+  - "It can even come twice in one word."
+  - {"de": "Oase."}
   - "But never before an ending."
   - {"de": "Achtung."}
-  - "It's how German keeps these two apart."
-  - {"de": "die Ode."} {"de": "Diode."}
-- **Claims:** C56–C59, C62, C63.
+- **Claims:** C56, C57, C59, C62, C63 (C58 removed from the reel by the fact-check).
 
 ### Step 14: "One standard, three countries"
 - **Layer:** 4, trade-offs and variation.
@@ -462,11 +465,11 @@ Canvas sizes are given as Svg `h` on the 600-unit width. "Portrait" is the phone
   - [ɐ] less common in Switzerland (C38).
   - Austria may use [x] for every ch (C30), and the tongue-tip r is common in the south (C35): both go in the caption, not the grid, to keep four rows.
 - **Final frame:** the full grid and the footer.
-- **Caption (body):** "German is pluricentric: newsreaders in Germany, Austria and Switzerland each speak a standard of their own. Final devoicing and the glottal stop are features of the standard from Germany (strongest in the north); Austrian and Swiss standard German have neither. In the south, Austria and Switzerland, -ig keeps a soft g, a tongue-tip r is common, and in Austria ch may be [x] everywhere. This reel models the dictionary standard usually taught to learners. Hearing the others is part of the skill."
+- **Caption (body):** "German is pluricentric: newsreaders in Germany, Austria and Switzerland each speak a standard of their own. Final devoicing and the glottal stop are northern features of the standard from Germany (devoicing is absent in southern Germany too, and the catch is much rarer there); Austrian and Swiss standard German have neither. In the south, Austria and Switzerland, -ig keeps a soft g, a tongue-tip r is common, and in Austria ch may be [x] even after front vowels. This reel models the dictionary standard usually taught to learners. Hearing the others is part of the skill."
 - **Narration sketch:**
   - "German has more than one standard."
   - "Newsreaders in Germany, Austria and Switzerland each sound a little different... and all of them are correct."
-  - "The hard final consonant and the catch in the throat are from Germany. Austrian and Swiss speakers do without both."
+  - "The hard final consonant and the catch in the throat are from northern Germany. Austrian and Swiss speakers do without both."
   - "This course models the standard in the pronunciation dictionaries. Expect the others."
 - **Claims:** C30, C35, C38, C49, C52, C59, C66, C67.
 
@@ -474,21 +477,21 @@ Canvas sizes are given as Svg `h` on the 600-unit width. "Portrait" is the phone
 - **Layer:** 1, resolved (the worked example).
 - **Visual idea:** the opening exchange again, now **annotated**. Each word gets its sound strip, and each feature lights up in the order it was taught. The final frame is the whole problem, solved.
 - **Portrait (Svg h=540):**
-  - top half, y 30–250: the question in German (s=20) with its IPA under it (s=17): [ʔɪst diː ˈkʏçə ʔɪn deːɐ̯ ˈmiːtə]. On phone the IPA wraps after ˈkʏçə.
+  - top half, y 30–250: the question in German (s=20) with its IPA under it (s=17): [ʔɪst diː ˈkʏçə ʔɪn deːɐ̯ ˈmiːtə ʔɛntˈhaltn̩]. On phone the German line wraps after Küche and the IPA after ˈkʏçə.
   - bottom half, y 290–520: the answer (s=20) with its IPA (s=17): [ˈʁɪçtɪç | das baːt ʔʊnt deːɐ̯ ˈkɛlɐ ʔaʊ̯x], wrapping after baːt.
   - Under the IPA, small taupe tick labels (s=13) appear one at a time under the relevant symbols and fade to 50% once the next appears: "long", "ü", "ç", "ʁ", "ɐ", "-ig", "devoiced", "ʔ", "x".
 - **Landscape (Svg h=380):** each sentence on one line.
 - **Beats:**
   - 0–0.8: both German lines;
   - 0.8–1.6: the IPA types in;
-  - then the features light in reel order, about 0.6 s each: length (iː in Miete, caramel; ɪ in ist, cinnamon) → ü (ʏ) → ç (Küche, Richtig) → ʁ (Richtig) and ɐ̯/ɐ (der, Keller) → devoicing (t in baːt and ʊnt) → ʔ (ʔɪst, ʔɪn, ʔʊnt, ʔaʊ̯x) → x (aʊ̯x);
+  - then the features light in reel order, about 0.6 s each: length (iː in Miete, caramel; ɪ in ist, cinnamon) → ü (ʏ) → ç (Küche, Richtig) → ʁ (Richtig) and ɐ̯/ɐ (der, Keller) → devoicing (t in baːt and ʊnt) → ʔ (ʔɪst, ʔɪn, ʔɛnt…, ʔʊnt, ʔaʊ̯x) → x (aʊ̯x);
   - 6.4–7.0: all highlights settle to caramel underlines.
 - **Duration:** about 7.2 s.
 - **Final frame:** both lines, fully transcribed, with every feature underlined and the "Mitte" ghost gone.
-- **Caption (body):** "Both lines, sound by sound (citation forms; die and der often weaken in fast speech). Miete with a long [iː], Küche with [ʏ] and the front [ç]. Richtig: a back [ʁ], two ich-Laute, -ig as [ɪç]. Bad and und end in [t]. der and Keller vocalise their r. Catches before ist, in, und, auch, and the ach-Laut after au. Every mark is one of six rules."
+- **Caption (body):** "Both lines, sound by sound (citation forms; die and der often weaken in fast speech). Miete with a long [iː], Küche with [ʏ] and the front [ç]. Richtig: a back [ʁ], two ich-Laute, -ig as [ɪç]. Bad and und end in [t]. der and Keller vocalise their r. Catches before ist, in, enthalten, und, auch, and the ach-Laut after au. Every mark is one of six rules."
 - **Narration sketch:**
   - "Back to the flat. Here's your question again."
-  - {"de": "Ist die Küche in der Miete?"}
+  - {"de": "Ist die Küche in der Miete enthalten?"}
   - "A long vowel in Miete. A front vowel with rounded lips in Küche, and the ch at the front."
   - "And her answer."
   - {"de": "Richtig. Das Bad und der Keller auch."}
@@ -523,17 +526,17 @@ Canvas sizes are given as Svg `h` on the 600-unit width. "Portrait" is the phone
 - **Predict:**
   - Question (body): "Hund ('dog') is [hʊnt]. Apply every rule you've seen: how is Hündchen ('little dog') pronounced?"
   - Options:
-    - **"[ˈhʏntçn̩]"** (correct)
-    - "[ˈhʊndxən]"
-    - "[ˈhʏndçən]"
-    - "[ˈhʊntçən]"
-  - Explain: "[ˈhʏntçn̩]. Three rules at once:
+    - **"[ˈhʏntçən]"** (correct; fact-check: changed from [ˈhʏntçn̩] so that the answer matches step 7's "-chen is always [çən]" and every wrong option differs from it in exactly the rules being tested. de.wiktionary gives [ˈhʏntçən]; SGP gives [ˈhʏntçn̩]; both are right)
+    - "[ˈhʊndxən]" (no rule applied)
+    - "[ˈhʏndçən]" (no devoicing)
+    - "[ˈhʊntçən]" (no umlaut)
+  - Explain: "[ˈhʏntçən]. Three rules at once:
     - the umlaut fronts u to ü, still short before two consonants: [ʏ];
     - d ends the syllable Hünd-, so it devoices: [t];
-    - -chen always takes the ich sound: [ç].
+    - -chen takes the ich sound: [ç] (here it would anyway, after the t; Frauchen showed the rule wins even after au).
 
-    The weak e before n often disappears, leaving a syllabic n: [n̩]."
-- **After answer:** the tiles fill in sequence, ʏ (caramel) → t (empty voice track) → ç → n̩.
+    In quick speech the weak e before n often disappears, leaving a syllabic n: [ˈhʏntçn̩]."
+- **After answer:** the tiles fill in sequence, ʏ (caramel) → t (empty voice track) → ç → ən, then a small taupe note "fast: [ˈhʏntçn̩]".
 - **Narration:** answer: "Umlaut, final devoicing, and the chen rule, all in one word." {"de": "Hündchen."}
 - **Claims:** C25 (Hund/Hündchen is SGP's own example), C41 (syllabic n), C44.
 
@@ -549,7 +552,7 @@ Canvas sizes are given as Svg `h` on the 600-unit width. "Portrait" is the phone
     - "Yes, both are errors"
     - "Only the soft d is an error"
     - "Only the missing catch is an error"
-  - Explain: "No. Final devoicing and the glottal stop belong to the standard from Germany. Austrian and Swiss standard German have neither: their b, d and g are soft (lenis) and voiceless anywhere, so there is no hardening at the end. Both pronunciations are correct Austrian standard."
+  - Explain: "No. Final devoicing and the glottal stop belong to the northern standard of Germany. Austrian and Swiss standard German have neither. In Austrian standard German b, d and g are soft (lenis) and voiceless everywhere, so there is nothing to harden at the end. Both pronunciations are correct Austrian standard."
 - **After answer:** the Austria column lights up (caramel outline) on the "—" cells.
 - **Narration:** answer: "Not a mistake. Austrian standard German doesn't harden final consonants, and doesn't use the catch."
 - **Claims:** C49, C59, and C49's lenis note (SGP L86).
@@ -657,11 +660,12 @@ Registry fields:
      - the rule stated on syllable codas (C44); the affected classes (C48);
      - loanwords (Klub, Trend);
      - fortis/lenis as the better analysis, and aspiration (C53);
-     - -g → [ç]/[x] colloquially in central and northern Germany (Krieg, lag) vs the prescribed -ig (C52);
+     - -g → [ç]/[x] colloquially in central and northern Germany (Krieg, lag) vs the prescribed -ig (C52); -ig before -lich stays [k]: königlich [ˈkøːnɪklɪç] (de.wiktionary);
+     - the disputed cases (fact-check): AV writes Han[t]lung and Ei[k]ner, de.wiktionary writes Handlung [ˈhandlʊŋ], Eigner [ˈaɪ̯ɡnɐ], Adler [ˈaːdlɐ]. Before l, n, r the syllable boundary (and so devoicing) is analysed differently; lieblich [ˈliːplɪç], endlich [ˈɛntlɪç] and Radweg [ˈʁaːtˌveːk] are not disputed;
      - history: Middle High German spelled it, tac vs tages (C50).
    - **`### The glottal stop as a boundary marker`**:
      - all the contexts (C57); exceptions (erinnern, Verein both ways, but vereinen always) (C57);
-     - Thea vs Theater (C63); Spiegel-Ei vs Spiegelei (stress differs too) (C58);
+     - Thea vs Theater (C63); Spiegel-Ei vs Spiegelei (stress differs too) (C58); why the often-cited "minimal pairs" are not clean: die Ode [diː ˈʔoːdə] vs Diode [diˈʔoːdə] (both have a catch; they differ in the length of i), Sandaale vs Sandale [zanˈdaːlə] (stress and [t]/[d] differ) (C58, corrected);
      - not a phoneme (C62); Beamter (C65);
      - Duden notation [|] (C61).
 4. **`## Practice: minimal pairs, out loud`** (layer 6, adapted; the lab for a language topic):
@@ -677,16 +681,18 @@ Registry fields:
      - what Germans get wrong in English (final devoicing and the glottal stop carried over: C51, C64), since learners will hear it from colleagues.
 6. **`## Open questions`** (layer 8, frontier):
    - is /ɛː/ a phoneme (C19);
-   - the Oper = Opa merger, a 2020 finding vs the traditional transcriptions (C40);
+   - the Oper = Opa merger: Rathcke & Mooshammer (2020; six northern speakers, read speech) vs Duden 7th ed., which keeps [ɐ] and [a] apart by height (C40);
    - whether [ç] or [x] is underlying (C26);
-   - why the glottal stop isn't a phoneme yet can separate words (C58, C62);
+   - why the glottal stop isn't a phoneme, and why the pairs said to show it separating words (Spiegel-Ei/Spiegelei, die Ode/Diode, Sandaale/Sandale) all differ in something else too (C58 corrected, C62);
+   - Küche: [ˈkʏçə] in the dictionaries, but often a long [ˈkyːçə] in northern standard speech (de.wiktionary citing the Duden Aussprachewörterbuch, 2015);
+   - transcription conventions differ: DWDS writes [ʀ] and [χ] (Rad [ʀaːt], auch [aʊ̯χ]), the reel writes [ʁ] and [x]; neither is wrong;
    - its newer use as a "gender pause" (one sentence, KL L589; out of the reel, see coverage).
 7. **`## Prove it`**: the two reel questions, plus four more with worked answers:
    - (a) "rauchen vs Frauchen: why do they differ?";
-   - (b) "Is Handlung said with [d] or [t], and why does 'only at the end of a word' fail?";
+   - (b) "Is lieblich said with [b] or [p], and why does 'only at the end of a word' fail?" (fact-check: was Handlung, whose transcription is disputed);
    - (c) "Thea vs Theater: where does the catch go?";
    - (d) "Debug this transcription: [ˈʁaːd] for Rad in northern standard." (Answer: devoicing, [ʁaːt].)
-8. **`## Sources`**: every source in `SOURCES.md` plus the TBS sources once fetched, with "last verified" and "Expert sign-off: pending".
+8. **`## Sources`**: every source in `SOURCES.md` plus the sources the fact-check added (DWDS, de.wiktionary, Help:IPA, de.wikipedia ich-Laut, Rathcke & Mooshammer 2020), with "last verified" and "Expert sign-off: pending".
 
 ---
 
@@ -715,20 +721,21 @@ Everything shown on screen comes from here (topic-checks rule 3). Each word's IP
    - if the suffix is 'chen' → 'ç';
    - if the stem starts with ch → 'ç' (northern loanword onset, Chemie; Deep dive only);
    - else look at the vowel or consonant before ch: au, a, o, u → 'x'; anything else (i, e, ä, ö, ü, ei, ai, eu, äu, a consonant) → 'ç'.
-   - Asserts: ich ç, mich ç, nicht ç, Furcht ç, manchmal ç, Molch ç, ach x, Buch x, Bach x, doch x, hoch x, rauch|en x, Frau|chen ç, Hünd|chen ç, Drache x, Sprache x; Küche ç and Kuchen x (TBS); euch ç and leicht ç (TBS; delete those two asserts if unsourced).
+   - Asserts: ich ç, mich ç, nicht ç, Furcht ç, manchmal ç, Molch ç, ach x, Buch x, Bach x, doch x, hoch x, rauch|en x, Frau|chen ç, Hünd|chen ç, Drache x, Sprache x; Küche ç and Kuchen x; Bücher ç, Koch x, Köche ç; euch ç and leicht ç (all sourced by the fact-check).
+   - The diphthongs must be matched before single letters: eu/äu/ei/ai → ç, then au → x, then a/o/u → x. (euch ends in the letter u but is [ç]; a letter-by-letter rule gets it wrong.)
    - Also assert `ch_sound('Kuchen')` is x **without** treating the spelled -chen as the suffix. Kuchen is the test that the rule is morphological.
 4. **`devoice(syllables, region='north')`**: input a syllabified phonemic form (a list of syllables). In each syllable's coda, map b→p, d→t, ɡ→k, v→f, z→s, ʒ→ʃ, except the ending ɪɡ in the north → ɪç. `region in ('AT','CH')` returns the form unchanged.
-   - Asserts: ['ʁaːd'] → 'ʁaːt' == Rat's 'ʁaːt'; ['ʁɛː','dɐ'] unchanged; ['taːɡ'] → 'taːk' (C47); ['baːd'] → 'baːt'; ['bʁaːv'] → 'bʁaːf'; ['bʁaː','və'] unchanged; ['hand','lʊŋ'] → 'hant.lʊŋ'; ['han','dəln'] keeps d; ['tsuːɡ'] → 'tsuːk'; ['loːz'] → 'loːs'; ['ʁiːb'] → 'ʁiːp'; ['vɪç','tɪɡ'] → 'vɪçtɪç' (C52); `devoice(['ʁaːd'], 'AT') == 'ʁaːd'`.
+   - Asserts: ['ʁaːd'] → 'ʁaːt' == Rat's 'ʁaːt'; ['ʁɛː','dɐ'] unchanged; ['taːɡ'] → 'taːk' (C47); ['baːd'] → 'baːt'; ['bʁaːv'] → 'bʁaːf'; ['bʁaː','və'] unchanged; ['liːb','lɪç'] → 'liːplɪç' and ['liː','bən'] keeps b (the on-screen pair); ['ɛnd','lɪç'] → 'ɛntlɪç'; (Handlung is not asserted: its transcription is disputed); ['tsuːɡ'] → 'tsuːk'; ['loːz'] → 'loːs'; ['ʁiːb'] → 'ʁiːp'; ['vɪç','tɪɡ'] → 'vɪçtɪç' (C52); `devoice(['ʁaːd'], 'AT') == 'ʁaːd'`.
 5. **`r_surface(phonemic)`**: /r/ before a vowel → ʁ; /ər/ → ɐ; /r/ after a vowel → ɐ̯.
-   - Asserts: /ˈleːrər/ → ˈleːʁɐ (C39); /ˈoːpər/ → ˈoːpɐ (C40); /viːr/ → viːɐ̯; /fyːr/ → fyːɐ̯; /zeːr/ → zeːɐ̯; /ˈbɛsər/ → ˈbɛsɐ; /roːt/ → ʁoːt; /deːr/ → deːɐ̯ (C36). Also assert Oper's surface == Opa's northern surface 'ˈoːpɐ' (C40).
+   - Asserts: /ˈleːrər/ → ˈleːʁɐ (C39); /ˈoːpər/ → ˈoːpɐ (C40); /viːr/ → viːɐ̯; /fyːr/ → fyːɐ̯; /zeːr/ → zeːɐ̯; /ˈbɛsər/ → ˈbɛsɐ; /roːt/ → ʁoːt; /deːr/ → deːɐ̯ (C36). Also assert Oper's surface == Opa's northern surface 'ˈoːpɐ' (C40, Rathcke & Mooshammer 2020), and that the dictionary forms differ (DWDS Oper 'ˈoːpɐ', Opa 'ˈoːpa').
 6. **`glottal(words, region='north')`**: words given as morph lists with stem boundaries and the stressed-syllable index. Insert ʔ before a vowel that starts a word or a stem, and before a stressed vowel that follows a vowel; never before a suffix; nothing in 'AT' or 'CH'.
-   - Asserts: mein Auto → 'maɪ̯n ʔaʊ̯to'; Acht → 'ʔaxt'; be+achten → 'bəʔaxtən'; Theater → 'teʔaːtɐ'; Thea → 'teːa' (no ʔ); Oase → 'ʔoʔaːzə'; Acht+ung → 'ʔaxtʊŋ' (one ʔ only); ver+einen → 'fɛɐ̯ʔaɪ̯nən'; die Ode → 'diː ʔoːdə' vs Diode → no ʔ inside; region 'AT' → 'maɪ̯n aʊ̯to'.
-7. **`opening()`**: builds both opening lines from the per-word IPA constants (TBS DWDS forms) through `glottal`, `devoice` and `r_surface`.
+   - Asserts: mein Auto → 'maɪ̯n ʔaʊ̯to'; Acht → 'ʔaxt'; be+achten → 'bəʔaxtən'; Theater → 'teʔaːtɐ'; Thea → 'teːa' (no ʔ); Oase → 'ʔoʔaːzə'; Acht+ung → 'ʔaxtʊŋ' (one ʔ only); ver+einen → 'fɛɐ̯ʔaɪ̯nən'; die Ode → 'diː ʔoːdə' and Diode → 'diʔoːdə' (hiatus rule; de.wiktionary [diˈʔoːdə]); assert both contain ʔ, so the pair does not differ in the catch; region 'AT' → 'maɪ̯n aʊ̯to'.
+7. **`opening()`**: builds both opening lines (question with „enthalten") from the per-word IPA constants (DWDS and de.wiktionary forms, C69) through `glottal`, `devoice` and `r_surface`.
    - Assert equality with the two target strings in this outline.
    - Assert the set of features found (via simple detectors) covers all six syllabus features: length, umlaut, ch, r, devoicing, glottal.
-   - Assert that replacing iː with ɪ in Miete yields Mitte's IPA (TBS forms).
-8. **`hundchen()`**: apply umlaut (ʊ→ʏ), devoice (d→t in the coda Hünd-), ch_sound(suffix='chen') and schwa→syllabic n before n.
-   - Assert == 'ˈhʏntçn̩' (C25).
+   - Assert that replacing iː with ɪ in Miete yields Mitte's IPA (DWDS forms).
+8. **`hundchen()`**: apply umlaut (ʊ→ʏ), devoice (d→t in the coda Hünd-) and ch_sound(suffix='chen').
+   - Assert == 'ˈhʏntçən' (de.wiktionary); with an optional fast-speech schwa→syllabic n step, assert == 'ˈhʏntçn̩' (SGP, C25).
    - Assert each wrong option of Prove it 1 differs from it.
 9. **Numbers on screen:** the reel shows no digits except "1 of 2" and "2 of 2" in the Prove-it titles, so `examples.py` must contain 1 and 2 as values (e.g. `PROVE_IT = 2`, `assert PROVE_IT == 2`). If the prerequisites self-check number goes into the reel, also assert `len(['m','ɪ','t','ə']) == 4`.
 
@@ -843,7 +850,7 @@ Sections of `SOURCES.md` are abbreviated:
 | C10 | Two identical consonant letters (also ck, tz) after a single vowel signal shortness (Sonne, irren, Ratte, Masse). | ADS L450 |
 | C11 | Cue failures: Mond long before two consonants; no length marking before ch (Drache /a/ vs Sprache /aː/); short one-syllable words an, das, es, in, mit, von. | ORTH L310, L294, L296 |
 | C12 | Double consonants are pronounced as single consonants (except in compounds). | ORTH raw (wp-orth.txt L820) |
-| C13 | Miete [ˈmiːtə] "rent"; Mitte [ˈmɪtə] "middle". | **TBS** DWDS Miete, Mitte (fallback: use Mieter /iː/ from the ADS table on screen and keep Miete only as the syllabus pair) |
+| C13 | Miete [ˈmiːtə] "rent"; Mitte [ˈmɪtə] "middle". | DWDS Miete, Mitte; de.wiktionary Miete, Mitte (sourced by the fact-check) |
 | C14 | Close (long) vowels are usually short when unstressed (/ɡeˈnoːm/, /viˈtaːl/). | ADS L362 (Deep dive only) |
 
 ### Umlauts
@@ -856,7 +863,7 @@ Sections of `SOURCES.md` are abbreviated:
 | C19 | Long ä is [ɛː] or [eː]; in the north of Germany and the east of Austria /ɛː/ (Käse) is usually said as /eː/; many authors treat /ɛː/ as peripheral. | ORTH L320; ADS L368; SGP L20 |
 | C20 | ö [œ] (Göttin) / [øː] (Österreich); ü [ʏ] (Müller) / [yː] (über). | ORTH L316–324 |
 | C21 | Without umlauts, write ae/oe/ue; a bare base vowel is wrong and misleading. | ORTH L276 (Deep dive) |
-| C22 | Küche [ˈkʏçə] "kitchen"; Kuchen [ˈkuːxn̩] "cake". | **TBS** DWDS Küche, Kuchen (fallback in step 6: Buch vs mich) |
+| C22 | Küche [ˈkʏçə] "kitchen" (northern standard often [ˈkyːçə]); Kuchen [ˈkuːxn̩] "cake". A near-minimal pair (vowel quality and length, ch, -e/-en), not an umlaut pair. | de.wiktionary Küche (citing Duden Aussprachewörterbuch 2015 for the variant), Kuchen; DWDS gives no IPA for either |
 
 ### ich-Laut and ach-Laut
 | # | Claim | Source |
@@ -869,7 +876,7 @@ Sections of `SOURCES.md` are abbreviated:
 | C28 | Palatal = middle or back of the tongue raised to the hard palate; velar = back of the tongue at the soft palate; voiceless = no vocal-cord vibration. | WPal L161, L163; WVel L179, L181 |
 | C29 | Western varieties tend to merge /ç/ with /ʃ/; hypercorrection Fisch → [fɪç]. | SGP L80 |
 | C30 | In Austro-Bavarian, especially in Austria, [ç] may always be replaced by [x]; southeastern Furcht [fʊɐ̯xt]. | ORTH L330; SGP L70 |
-| C31 | au takes [x] (rauchen); ei, ai, eu, äu take [ç] (euch, leicht). | au: SGP L74. ei/eu/äu: **TBS** de.wikipedia Stimmloser palataler Frikativ, DWDS euch (fallback: drop "ei and eu" from the step 6 caption and the asserts) |
+| C31 | au takes [x] (rauchen); ei, ai, eu, äu take [ç] (euch, leicht). | au: SGP L74; DWDS rauchen [ˈʀaʊ̯χn̩]. ei/eu/äu: de.wikipedia "Stimmloser palataler Frikativ"; DWDS euch [ɔɪ̯ç]; de.wiktionary leicht [laɪ̯çt] |
 | C32 | nicht [nɪçt]. | WPal raw (occurrence table) |
 | C72 | "Laut" is the German word for "sound". | SGP raw (wp-phonology.txt L829) |
 
@@ -882,7 +889,7 @@ Sections of `SOURCES.md` are abbreviated:
 | C37 | -er is often [ɐ]; in some regions [ʀ̩] or [r̩]; ⟨er⟩ [ɐ] in Wasser. | ORTH L298, L332; ADS L430 |
 | C38 | [ɐ] is near-open central unrounded, an allophone of /ər/ in all areas but Switzerland ("widespread, but less common in Switzerland"). | SGP L28, L56, L58 |
 | C39 | Northern Lehrer [ˈleːʁɐ]; Austrian [ˈlɛɐ̯ʁɐ]; Austrian rar [ʁɑː]. | SGP L42, L44 |
-| C40 | A 2020 study: [ɐ] is not distinguished from unstressed [a] in northern standard German; Oper and Opa are homophones [ˈoːpɐ]. Wiese notes a tendency to neutralise [a(ː)], [aɐ̯], [ɐ]. | SGP L34, L32 |
+| C40 | **Disputed:** a 2020 study (Rathcke & Mooshammer; six northern speakers) found [ɐ] not distinguished from unstressed [a] in northern standard German, so Oper and Opa are homophones; the Duden 7th ed. keeps them apart by height, and DWDS writes Opa [ˈoːpa]. Wiese notes a tendency to neutralise [a(ː)], [aɐ̯], [ɐ]. Step 9 now asks "closest to". | SGP L34, L32 and raw (Duden 7th ed.); Rathcke & Mooshammer 2020; DWDS Oper, Opa |
 | C41 | [ə] occurs only in unstressed syllables (besetzen); bitte has [ə]; before a sonorant in the coda the schwa often disappears, giving a syllabic consonant (Kissen [ˈkɪsn̩]). | SGP L18; ADS raw table (bitte, Schwa); SGP raw (wp-phonology.txt L360) |
 | C42 | In the Standard Austrian accent the uvular fricative is the most common r, with variable voicing ([ʁ] or [χ]). | SGP raw (wp-phonology.txt, after L768) |
 | C43 | Kohler: the place of the r varies from uvular (rot) to velar (treten). | SGP raw (Deep dive only) |
@@ -890,7 +897,7 @@ Sections of `SOURCES.md` are abbreviated:
 ### Final devoicing and -ig
 | # | Claim | Source |
 |---|---|---|
-| C44 | Plosives, affricates and fricatives are voiceless in the syllable coda; this applies inside words too (handeln – Handlung, eigen – Eigner), not only at the end of a word. | AV L532, L530; WPD L240 ("at the ends of all syllables") |
+| C44 | Plosives, affricates and fricatives are voiceless in the syllable coda; this applies inside words too, not only at the end of a word. On-screen example: lieb|lich (C77); AV's own examples (handeln – Handlung, eigen – Eigner) are disputed in de.wiktionary and go to the Deep dive only. | AV L532, L530; WPD L240 ("at the ends of all syllables"); C77 |
 | C45 | Rad and Rat are both [ʁaːt]; Räder keeps its voicing because the d starts a syllable. | WPD L240; AV L494 |
 | C46 | Bad [baːt] / Bäder [ˈbɛːdɐ]; Zug [t͡suːk] / Züge [ˈt͡syːɡə]; sag! [zaːk] / sagen; rieb [ˈʁiːp]; Süd [zyːt]; schwieg [ˈʃviːk]; Los [ˈloːs]; brav [ˈbʁaːf] / brave [ˈbʁaːvə]. | WPD L244–254; AV L504–512 |
 | C47 | Tag /taːk/. | ADS L398 |
@@ -900,7 +907,7 @@ Sections of `SOURCES.md` are abbreviated:
 | C51 | English has no final devoicing; German speakers carry it into foreign languages (a typical accent). | AV L496, L498, L538 |
 | C52 | -ig: the fricative [ɪç] is prescribed by Siebs (wichtig [ˈvɪçtɪç]), for northern Germany only; elsewhere [ɪk]; in Austro-Bavarian and Alemannic standard varieties [ɪɡ̊]. Other final g → [ç]/[x] (Krieg, lag) is frequent in central and northern Germany but colloquial. | SGP L94, L92; ADS L404 |
 | C53 | Fortis/lenis is a better description than voiced/voiceless; aspiration is strongest in the onset of a stressed syllable (Taler) and weakest in the coda. | SGP L84, L90; WPD L238; ADS L390 (Deep dive) |
-| C54 | Tage [ˈtaːɡə]. | **TBS** DWDS Tag (or Wiktionary Tage); fallback: Zug/Züge in step 11, row 1 |
+| C54 | Tag [taːk]; Tage [ˈtaːɡə]. | DWDS Tag; de.wiktionary Tage |
 
 ### Glottal stop
 | # | Claim | Source |
@@ -908,7 +915,7 @@ Sections of `SOURCES.md` are abbreviated:
 | C55 | The glottal stop is made by closing the glottis (the vocal folds), as in English "uh-oh"; symbol ʔ. | WG L193, L195; KL L555 |
 | C56 | It occurs in careful speech before vowel-initial stems and stressed vowels word-internally (Oase twice); much more frequent in the north; often omitted in colloquial speech, especially when unstressed; not usually a phoneme. | SGP L60, L62 |
 | C57 | Before a word-initial vowel (Acht [ˈʔaxt], der Alte); before vowel-initial stems in compounds (beachten [bəˈʔaxtʰən], Spiegelei); in hiatus before a more stressed vowel (Theater, Aorta, Oase). Frequent words may lose it (erinnern, Verein), but vereinen always has it. | KL L561–567, L565 |
-| C58 | Minimal pairs: das Spiegel-Ei / die Spiegelei (stress also differs), die Ode / Diode, Sandaale / Sandale. | KL L569, L577 |
+| C58 | **Corrected:** KL calls these minimal pairs (das Spiegel-Ei / die Spiegelei, die Ode / Diode, Sandaale / Sandale), but each also differs in stress, vowel length or [t]/[d] (see C79). Deep dive only, as an open question; not in the reel. | KL L569, L577; C79 |
 | C59 | Absent in Austrian and Swiss standard German, and in some dialects. | KL L571, L573 |
 | C60 | mein Auto [ˌmaɪ̯n ˈʔaʊ̯tʰo]; without the stop it sounds like *mei Nauto, as English an apple sounds like *a napple. | KL L575 |
 | C61 | No letter for it in German spelling; the Duden-Grammatik writes [|]. | KL L557 |
@@ -920,12 +927,40 @@ Sections of `SOURCES.md` are abbreviated:
 ### Opening problem and cues
 | # | Claim | Source |
 |---|---|---|
-| C69 | Per-word citation IPA for the opening lines: ist [ɪst], die [diː], Küche [ˈkʏçə], in [ɪn], der [deːɐ̯], Miete [ˈmiːtə], richtig [ˈʁɪçtɪç], das [das], Bad [baːt], und [ʊnt], Keller [ˈkɛlɐ], auch [aʊ̯x]. | der: KL L561; Bad: WPD L244; all others **TBS** DWDS. [ʔ] is added by C56/C57, final [t] by C44, [ç]/[x] by C24, [ɐ] by C37. |
+| C69 | Per-word citation IPA for the opening lines: ist [ɪst], die [diː], Küche [ˈkʏçə], in [ɪn], der [deːɐ̯], Miete [ˈmiːtə], enthalten [ɛntˈhaltn̩], richtig [ˈʁɪçtɪç], das [das], Bad [baːt], und [ʊnt], Keller [ˈkɛlɐ], auch [aʊ̯x]. | DWDS: die, der, das, in, und, Miete, Bad (auch as [aʊ̯χ]); de.wiktionary: ist, Küche, enthalten, richtig, Keller, auch [aʊ̯x]; KL L561 (der); WPD L244 (Bad). [ʔ] is added by C56/C57, final [t] by C44, [ç]/[x] by C24, [ɐ] by C37. |
 | C70 | The scenario (a short [ɪ] in Miete is heard as Mitte; ü said as u drifts toward Kuchen) follows from C13 and C22: the pairs differ in those vowels. It is presented as "may hear", not as a measured fact. | derived |
-| C71 | (Optional) English teaching cue: German [yː] is like "meet" with rounded lips. | **TBS** Help:IPA/Standard German (drop the cue if unsourced; step 4 doesn't need it) |
+| C71 | ~~(Optional) English teaching cue: German [yː] is like "meet" with rounded lips.~~ **Dropped**: Help:IPA gives "somewhat like few", not this cue. | Help:IPA/Standard German |
 | C73 | The site has no recording feature; sound is off until the learner turns it on; steps can be replayed. | PROJECT_PLAN.md "In the reel"; QUALITY.md #13 (site facts, no outside source) |
 | C74 | The German voice is synthetic (Qwen3-TTS voice designed from a text description, frozen). | PROJECT_PLAN.md "German domain" |
 | C75 | Gender pause (since the mid-1980s). | KL L589 (Deep dive, one sentence) |
+
+### Claims added by the fact-check
+| # | Claim | Source |
+|---|---|---|
+| C76 | Umlaut moves the ch: Buch [buːx] → Bücher [ˈbyːçɐ]; Koch [kɔx] → Köche [ˈkœçə]. | de.wiktionary Buch, Bücher, Koch, Köche |
+| C77 | Word-internal devoicing: lieblich [ˈliːplɪç] vs lieben [ˈliːbn̩]; endlich [ˈɛntlɪç] vs Ende [ˈɛndə]; Radweg [ˈʁaːtˌveːk]. Disputed: Handlung [ˈhandlʊŋ], Eigner [ˈaɪ̯ɡnɐ], Adler [ˈaːdlɐ] in de.wiktionary vs Han[t]lung, Ei[k]ner in AV. | de.wiktionary (each word); AV L530 |
+| C78 | Oper [ˈoːpɐ] vs Opa [ˈoːpa] in the dictionaries (DWDS; Duden 7th ed. separates [ɐ] and [ä] by height); merged in northern standard speech per Rathcke & Mooshammer 2020 (six speakers, read speech; "unlikely to generalise to other dialects"). | DWDS Oper, Opa; SGP raw (Duden 7th ed. passage); Rathcke & Mooshammer 2020 |
+| C79 | Diode [diˈʔoːdə] has a glottal stop by the hiatus rule, so die Ode / Diode is not a glottal-stop minimal pair; Sandale [zanˈdaːlə]. | de.wiktionary Diode, Ode, Sandale; KL L567 |
+| C80 | -ig before -lich stays [k]: königlich [ˈkøːnɪklɪç]. | de.wiktionary königlich (Deep dive only) |
+| C81 | DWDS's own conventions: [ʀ] for r (Rad [ʀaːt], Lehrer [ˈleːʀɐ]) and [χ] after a/au (auch [aʊ̯χ], Acht [aχt], rauchen [ˈʀaʊ̯χn̩]); DWDS writes Theater [teˈʔaːtɐ] with the catch. | DWDS entries |
+
+### Corrections from fact-check (2026-10-11; details and verdicts in `FACT-CHECK.md`)
+1. **Opening question** is now „Ist die Küche in der Miete enthalten?" [ʔɪst diː ˈkʏçə ʔɪn deːɐ̯ ˈmiːtə ʔɛntˈhaltn̩]. The slip is framed as "a short vowel turns Miete into Mitte", not as an English reading habit: English has [iː]/[ɪ], and English ie usually reads [iː].
+2. **Step 3:** "only a differs by length alone" → a/aː (and ɛ/ɛː) differ (almost) only in length; SGP reports /aː/ as back [ɑː] in some descriptions.
+3. **Step 4:** ü's tongue is "essentially" where i is (SGP: /yː/ close near-front). The question now asks about long ü. C71 is dropped (Help:IPA's cue is "somewhat like few").
+4. **Step 5:** "never the bare vowel" → "the bare vowel would be wrong and misleading" (ORTH wording).
+5. **Step 6:** Küche/Kuchen is not an umlaut pair and differs in vowel length, ch and ending too, so it is a *near*-minimal pair. Buch → Bücher (C76) now demonstrates that umlaut moves the ch. The ach-Laut after a is often uvular [χ] (Kohler, ADS, DWDS, Help:IPA), so the caption no longer says "soft palate" for every case. The rule follows the vowel *sound*: eu → [ç] although its letter is u. ei/eu → [ç] is sourced (C31).
+6. **Step 7:** "Same in Hündchen" is removed. After t, ch is [ç] anyway, so Hündchen doesn't show the -chen override.
+7. **Step 8:** the r rule is now "at the end of a syllable, after a vowel → [ɐ̯]". Plain "after a vowel" mispredicts Lehrer's first r. Vocalisation is regular after long vowels and variable after short ones.
+8. **Step 9:** the predict question is reframed ("closest to the a of Opa"). The old "they sound the same" contradicted the dictionary standard the reel says it models (Duden 7th ed., DWDS Opa [ˈoːpa]); the merger rests on one six-speaker study. A wrong option with a regional reading (curled r: Middle Hessian) is replaced.
+9. **Step 11:** Hand|lung → lieb|lich / lie|ben (Handlung is transcribed [ˈhandlʊŋ] in de.wiktionary; disputed syllabification before l/n). "-ig exception" → "twist" (the result is still voiceless). The caption's "a German accent says 'Hund' with a hard d" was garbled; it now says Germans speaking English often harden final consonants. Tage [ˈtaːɡə] is sourced.
+10. **Step 12:** the catch is "northern standard German, careful speech"; "never 'mei Nauto'" → "not … in careful speech".
+11. **Step 13:** "die Ode · Diode" is removed. Diode [diˈʔoːdə] has its own catch (hiatus rule), so the pair differs in the length of i, not in the catch, and the claim also clashed with C62. The row is now Oase [ʔoˈʔaːzə]. The Achtung row must keep the word-initial catch.
+12. **Step 14:** devoicing and the catch are *northern* features (AV: absent in southern Germany too). Austria: ch "may be [x] even after front vowels" (ORTH speaks of Austro-Bavarian), not "everywhere" in the standard.
+13. **Step 15:** the transcription includes enthalten. Conventions: DWDS [ʀ]/[χ] vs the reel's [ʁ]/[x].
+14. **Step 17:** the correct option is [ˈhʏntçən] (de.wiktionary; matches "-chen is always [çən]"), with [ˈhʏntçn̩] as the fast-speech form. Each wrong option now misses exactly the rules it tests.
+15. **Step 18:** the lenis-voiceless statement is limited to Austrian standard (SGP L86 says nothing about Swiss).
+16. **Deep dive / examples.py** are updated accordingly: the Küche [yː] variant, the devoicing dispute, the Ode/Diode pair as an open question, the DWDS conventions, the königlich [k] note, the eu-before-u order in `ch_sound`, and the asserts for Diode, lieblich and Hündchen.
 
 ---
 
@@ -935,9 +970,9 @@ Sections of `SOURCES.md` are abbreviated:
 - Done 2.2 (2026-10-11): this OUTLINE.md (content plan and storyboards, 18 steps, claims C1–C75).
 - Source caveats carried forward:
   - several expert-list quotes come from pages that are not in `sources/` (Vokalquantität, Help:IPA, Wiktionary, de Ich-Laut, Guttural R, de Schwa, de Umlaut, Rechtschreibrat). The plan relies on none of them except the TBS items above;
-  - per-word IPA for the opening lines, Miete, Küche/Kuchen and Tage is **TBS** (DWDS).
+  - per-word IPA for the opening lines, Miete, Küche/Kuchen and Tage was TBS; sourced in 2.3 (DWDS, de.wiktionary).
+- Done 2.3 (2026-10-11): fact-check → `FACT-CHECK.md`. All TBS items are sourced (DWDS, de.wiktionary, de.wikipedia "Stimmloser palataler Frikativ", Help:IPA, Rathcke & Mooshammer 2020) and added to `SOURCES.md`, where `sources.mjs check` reports 0 problems. The corrections are applied above (see "Corrections from fact-check").
 - Next:
-  - 2.3 fact-check (Opus) → `FACT-CHECK.md`, fetching the TBS sources, adding raw quotes to `SOURCES.md`, and applying corrections here;
   - coverage.json, using the map above;
   - `claim.mjs outlined`;
   - then sections 3–8.
