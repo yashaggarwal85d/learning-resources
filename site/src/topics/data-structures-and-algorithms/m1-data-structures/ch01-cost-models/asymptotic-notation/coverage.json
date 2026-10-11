@@ -52,7 +52,7 @@
   ],
   "sources": [
     {
-      "source": "CLRS, Introduction to Algorithms, 4th ed., §3.2 asymptotic notation, §2.2 analysis, §7.4 quicksort analysis",
+      "source": "CLRS, Introduction to Algorithms, 4th ed., chapters 3, 2 and 7: asymptotic notation, analysis, quicksort analysis",
       "items": [
         {
           "item": "Θ, O, Ω with constants c1, c2, n0 and 'for all n ≥ n0'",
@@ -348,6 +348,9 @@
         "item": "Counting-model caveat: unit-cost word operations break for big integers; state bit operations",
         "at": [
           {
+            "deep": "Resources, size and reality"
+          },
+          {
             "topic": "The word-RAM model and its assumptions",
             "quote": "unit-cost operations on w ≥ log n-bit words"
           }
@@ -405,10 +408,6 @@
         "at": [
           {
             "deep": "Cases and randomness"
-          },
-          {
-            "topic": "Concentration bounds: Markov to Chernoff",
-            "quote": "Markov, Chebyshev, Chernoff–Hoeffding"
           }
         ]
       },
@@ -445,9 +444,6 @@
       {
         "item": "Space uses the same notation: auxiliary versus total space, recursion depth counts",
         "at": [
-          {
-            "deep": "Definitions"
-          },
           {
             "deep": "Resources, size and reality"
           },
@@ -502,9 +498,16 @@
   },
   "gapReview": {
     "date": "2026-10-11",
-    "by": "pending",
-    "open": [
-      "gap hunt not yet run"
-    ]
+    "by": "independent gap-hunter agent (read reel, Deep dive, coverage map and examples.py against the syllabus; ran examples.py)",
+    "resolved": [
+      "Neither-implies-the-other for expected and w.h.p. bounds, and Las Vegas vs Monte Carlo: added to Cases and randomness",
+      "'At least O(n^2)' meaningless and Θ needs a case: added to Cases and randomness",
+      "Pseudo-polynomial definition and trial-division wording: reel and Deep dive",
+      "Rules to know cold extended (product rule, logs inside exponents, log n!, order relations)",
+      "Big-integer and log n ≤ 64 caveats: added to Resources, size and reality",
+      "Merge vs insertion sort claim restated for n = 4..8 and asserted for each",
+      "Reel wording: n0 may depend on c, comparison convention, Hn defined, w.h.p. quantifiers"
+    ],
+    "open": []
   }
 }

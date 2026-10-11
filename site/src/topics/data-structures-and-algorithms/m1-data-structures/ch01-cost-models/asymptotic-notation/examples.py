@@ -48,6 +48,7 @@ avg = lambda m: Fraction(m * (m - 1), 4) + m - H(m)  # expected comparisons over
 for m in (5, 6, 7, 8):
     exact = Fraction(sum(insertion_comparisons(p) for p in permutations(range(m))), math.factorial(m))
     assert exact == avg(m), (m, exact, avg(m))  # checked by enumerating every permutation
+assert math.factorial(8) == 40_320  # all orders of 8 items, enumerated above
 assert float(avg(8)) == 19.282142857142858 and round(float(avg(8)), 1) == 19.3
 # So 'worst case' and 'big-O' are separate axes: worst case is Theta(n^2) and also Omega(n^2);
 # best case is Theta(n) and also O(n); average is Theta(n^2).
@@ -157,7 +158,7 @@ def merge_comparisons(a):
 def avg_merge(m):  # exact average over every permutation, for small m
     return Fraction(sum(merge_comparisons(p) for p in permutations(range(m))), math.factorial(m))
 assert all(avg(m) <= avg_merge(m) for m in (2, 3))
-assert avg(4) > avg_merge(4) and avg(6) > avg_merge(6) and avg(8) > avg_merge(8)  # merge sort is ahead from n = 4
+assert all(avg(m) > avg_merge(m) for m in range(4, 9))  # merge sort is ahead for n = 4..8
 
 # Step: the ladder, at one million items and a stated 10^9 simple operations per second.
 n, ops = 10**6, 10**9

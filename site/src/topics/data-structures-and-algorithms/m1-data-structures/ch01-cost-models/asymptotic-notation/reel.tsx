@@ -51,7 +51,7 @@ const reel: Reel = {
       title: 'o and ω are strict: read the ratio',
       body: (
         <>
-          <b>o</b> means “grows strictly slower”: for <em>every</em> c &gt; 0, f &lt; c·g eventually. When the limit of f/g exists, 0 gives o, a positive
+          <b>o</b> means “grows strictly slower”: for <em>every</em> c &gt; 0, f &lt; c·g from some n₀ on (n₀ may depend on c). When the limit of f/g exists, 0 gives o, a positive
           constant gives Θ, infinity gives ω. Careful: the limit may not exist (n against n·(2 + sin n) is Θ with no limit), so the test is sufficient,
           not necessary.
         </>
@@ -63,7 +63,7 @@ const reel: Reel = {
       title: 'Bound and case are different axes',
       body: (
         <>
-          “O is worst case” is the most common slip. A <em>case</em> picks a function: insertion sort’s comparison count is n − 1 sorted, about n²/4
+          “O is worst case” is the most common slip. A <em>case</em> picks a function: insertion sort’s count of key-against-element comparisons is n − 1 sorted, about n²/4
           on average, n(n − 1)/2 reversed. A <em>bound</em> then relates that function to another. Best case Θ(n) and worst case Θ(n²) are both exact; “the
           worst case is O(n³)” is true but loose. Counts here are for 8 items, checked over all 40,320 orders.
         </>
@@ -84,7 +84,7 @@ const reel: Reel = {
         options: [{ label: 'About 499,500' }, { label: 'About 250,000' }, { label: 'About 10,986', correct: true }, { label: 'About 1,000' }],
         explain: (
           <>
-            About 10,986, which is 2(n+1)Hₙ − 4n, the same as for any other order. <b>Average case</b> assumes a distribution over inputs and can be
+            About 10,986, which is 2(n+1)Hₙ − 4n for distinct keys (Hₙ = 1 + 1/2 + … + 1/n ≈ ln n), the same as for any other order. <b>Average case</b> assumes a distribution over inputs and can be
             wrong when real inputs aren’t like it; <b>expected time</b> uses the algorithm’s own random choices, so it holds for every fixed input.
           </>
         ),
@@ -97,7 +97,7 @@ const reel: Reel = {
         <>
           2,000 runs of randomized quicksort on 1,000 keys: mean 10,991, slowest 15,583. An expectation allows rare slow runs; a{' '}
           <b>with-high-probability</b> bound says the failure chance is at most 1/n<sup>c</sup>, for a constant c you may choose (a bigger c costs only a
-          bigger constant). For quicksort the O(n log n) bound holds with that probability. Services are judged on tails, so ask which one you are given.
+          bigger constant). For randomized quicksort: for every c there is a constant a so that the run time is at most a·n·log n with probability at least 1 − 1/n<sup>c</sup>. Services are judged on tails, so ask which one you are given.
         </>
       ),
       duration: 4.4,
@@ -129,8 +129,7 @@ const reel: Reel = {
       title: 'n is the size of the input, in bits',
       body: (
         <>
-          Trial division is O(√v) in the <em>value</em> v: 65,534 steps for a 32-bit prime. Double the bits to 64 and it is over 4 billion steps. In the
-          input’s <em>length</em> that is exponential, which is why “linear in the number” (pseudo-polynomial) is not polynomial.
+          Trial division is O(√v) in the <em>value</em> v: 65,534 steps for a 32-bit prime. Double the bits to 64 and it is over 4 billion steps. In the input’s <em>length</em> b that is 2<sup>b/2</sup>, exponential. A cost polynomial in the value but exponential in the bit length is called pseudo-polynomial.
         </>
       ),
       duration: 3.8,
