@@ -101,6 +101,7 @@ for (const [device, opts] of [
     const noNarrationYet = (m) => m.text().startsWith('Failed to load resource') && /\/audio\/[^/]+\/manifest\.json$/.test(m.location().url ?? '');
     page.on('console', (m) => m.type() === 'error' && !noNarrationYet(m) && fail(`${where}: console error: ${m.text()}`));
     await page.goto(`${root}${slug}/`, { waitUntil: 'networkidle' });
+    await page.evaluate(() => document.fonts.ready); // measure text in the real fonts, never a fallback
     const reel = page.locator(`section[aria-label=${JSON.stringify(title)}]`);
     if (!(await reel.count())) fail(`${where}: no reel section titled "${title}"`);
     await page.waitForTimeout(800);
