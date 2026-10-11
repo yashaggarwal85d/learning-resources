@@ -218,6 +218,9 @@ for (const [device, opts] of [
       const a2 = await at();
       if (a1 === a2 || a1.endsWith('|0')) fail(`${where}: narration captions don't advance (${a1} -> ${a2})`);
       await reel.getByRole('button', { name: /^(Pause|Play) \(P\)$/ }).click();
+      // The pause lands a frame or two after the click (a React effect); sample once it shows, or a word lit in between reads as moving.
+      await reel.getByRole('button', { name: 'Play (P)' }).waitFor({ timeout: 2000 }).catch(() => {});
+      await page.waitForTimeout(200);
       const p1 = await at();
       await page.waitForTimeout(1200);
       if ((await at()) !== p1) fail(`${where}: narration keeps going while paused`);
