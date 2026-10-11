@@ -43,6 +43,8 @@ const Arrow = ({ x1, y1, x2, y2, c = C.caramel, o = 1 }: { x1: number; y1: numbe
   );
 };
 
+/** Answer clocks stop at the step's duration, so the answer branch runs on a clock stretched to end by then. */
+const stretch = (t: number, duration: number, end: number) => (t / duration) * end;
 const fadeIn = (t: number, a: number, d = 0.5) => easeOut(seg(t, a, a + d));
 
 // 1 · A million keys, twenty probes.
@@ -58,7 +60,7 @@ const PROBES: { lo: number; hi: number; mid: number }[] = (() => {
   out.push({ lo, hi, mid: -1 });
   return out;
 })();
-const probeTime = (k: number) => (k < 6 ? 0.5 + 0.55 * k : 3.8 + 0.17 * (k - 6));
+const probeTime = (k: number) => (k < 6 ? 0.5 + 0.55 * k : 3.8 + 0.15 * (k - 6));
 export function TwentyProbes({ t, portrait }: StepCtx) {
   let k = 0; // probes made so far
   while (k < 20 && t >= probeTime(k)) k++;
@@ -99,10 +101,10 @@ const OPS = ['load a[mid]', 'compare <', 'add +', 'shift >> 1', 'store a[0]'];
 export function WordRam({ t }: StepCtx) {
   const k = Math.min(5, Math.max(0, Math.floor((t - 0.5) / 0.7) + 1)); // operations lit so far
   const cur = k > 0 ? OPS[k - 1] : '';
-  const row = (y: number, a: string, lit: boolean) => (
+  const row = (y: number, a: string, lit: boolean, value: number) => (
     <g key={a}>
       <T x={128} y={y + 11} s={15} f={C.taupe} a="end">{a}</T>
-      <Bits x={140} y={y} cw={5} h={14} value={KEY} o={lit ? 1 : 0.6} />
+      <Bits x={140} y={y} cw={5} h={14} value={value} o={lit ? 1 : 0.6} />
     </g>
   );
   return (
@@ -110,12 +112,15 @@ export function WordRam({ t }: StepCtx) {
       <T x={300} y={32} s={15} f={C.latte} a="middle">one word: w = 64 bits</T>
       <Bits x={60} y={42} />
       <T x={140} y={104} s={13} f={C.taupe}>memory: cells of w bits, addressed by a word</T>
-      {row(116, '0', k === 1 || k === 5)}
-      {row(140, '1', false)}
-      {row(164, '2', false)}
+      {row(116, '0', k === 1 || k === 5, KEY)}
+      {row(140, '1', false, 1_515_870_810)}
+      {row(164, '2', false, 0)}
       <T x={128} y={198} s={15} f={C.taupe} a="end">…</T>
       <T x={40} y={236} s={15} f={C.latte}>+ − × ÷ % &amp; | ^ {'<<'} {'>>'}</T>
-      <T x={40} y={260} s={15} f={C.latte}>{'<  >  load  store'}</T>
+      <T x={40} y={260} s={13} f={C.taupe}>counted:</T>
+      {['load', '<', '+', '>>', 'store'].map((op, i) => (
+        <T key={op} x={[150, 206, 236, 268, 314][i]} y={260} s={15} f={i < k ? C.caramel : C.taupe} w={i < k ? 700 : 500}>{op}</T>
+      ))}
       <T x={40} y={312} s={17} f={C.caramel} w={600}>{cur}</T>
       <T x={560} y={316} s={26} f={C.caramel} a="end" w={700}>units {k}</T>
       <T x={40} y={366} s={13} f={C.taupe}>every C-style operation, load and store: one unit</T>
@@ -127,6 +132,7 @@ export function WordRam({ t }: StepCtx) {
 export function BeatTwenty({ t, answer }: StepCtx) {
   const shown = answer !== null;
   const chain = [64, 32, 16, 8, 4, 2, 1];
+  const u = stretch(t, 1.5, 2.0); // the chain's 7 links finish at 1.8 s of answer time
   return (
     <Svg label="Comparison model: 20. Word-RAM: a question mark that becomes 6 after the answer" h={300}>
       <T x={150} y={60} s={15} f={C.cinnamon} a="middle">comparison model</T>
@@ -135,10 +141,10 @@ export function BeatTwenty({ t, answer }: StepCtx) {
       <T x={450} y={124} s={34} f={C.caramel} a="middle" w={700} o={shown ? 1 : 0.7 + 0.3 * Math.sin(t * 4)}>{shown ? '6' : '?'}</T>
       {shown && (
         <>
-          <T x={450} y={150} s={13} f={C.taupe} a="middle" o={fadeIn(t, 0.1)}>halvings, each a few</T>
-          <T x={450} y={174} s={13} f={C.taupe} a="middle" o={fadeIn(t, 0.1)}>word operations</T>
+          <T x={450} y={150} s={13} f={C.taupe} a="middle" o={fadeIn(u, 0.1)}>halvings, each a few</T>
+          <T x={450} y={174} s={13} f={C.taupe} a="middle" o={fadeIn(u, 0.1)}>word operations</T>
           <T x={300} y={236} s={17} f={C.caramel} a="middle" w={600}>
-            {chain.slice(0, Math.min(7, Math.floor(t / 0.3) + 1)).join(' → ')}
+            {chain.slice(0, Math.min(7, Math.floor(u / 0.3) + 1)).join(' → ')}
           </T>
         </>
       )}
@@ -170,10 +176,12 @@ export function PointerFits({ t }: StepCtx) {
       <rect x={120} y={262} width={120} height={20} rx={4} fill={C.cocoa} stroke={C.caramel} strokeWidth={2} opacity={lerp(1, 0.35, small)} />
       <Arrow x1={x0 + 56 * cw} y1={124} x2={246} y2={272} o={arrow} />
       <g opacity={small}>
-        <Bits x={330} y={200} n={8} cw={20} h={20} value={255} tint={() => null} />
-        <T x={330} y={248} s={13} f={C.taupe}>8 bits reach 256 cells</T>
+        <Bits x={330} y={268} n={8} cw={20} h={16} value={0} />
+        <T x={330} y={304} s={13} f={C.taupe}>8 bits reach 256 cells</T>
+        <path d="M252 150 H258 V222 H252" stroke={C.taupe} strokeWidth={2} fill="none" />
+        <T x={266} y={190} s={13} f={C.taupe}>256 cells</T>
       </g>
-      <T x={300} y={332} s={22} f={C.caramel} a="middle" w={700} o={fadeIn(t, 3.6)}>w ≥ log₂ n: 64 ≥ 20</T>
+      <T x={300} y={346} s={22} f={C.caramel} a="middle" w={700} o={fadeIn(t, 3.6)}>w ≥ log₂ n: 64 ≥ 20</T>
     </Svg>
   );
 }
@@ -212,7 +220,7 @@ export function OneLoad({ t }: StepCtx) {
   ];
   const hit = easeOut(seg(t, 0.2, 0.9));
   const climb = easeOut(seg(t, 1.8, 4.2));
-  const missY = lerp(176, 58, climb); // from main memory up to the registers
+  const missY = lerp(176, 52, climb); // from main memory up to the registers
   const flash = t > 1.5 && t < 2.1 ? 1 - (t - 1.5) / 0.6 : 0;
   const axis = (c: number) => 40 + (520 * Math.log10(c)) / 3;
   return (
@@ -224,6 +232,8 @@ export function OneLoad({ t }: StepCtx) {
           <T x={140} y={b.y + b.h / 2 + 5} s={13} f={C.latte} a="end">{b.name}</T>
         </g>
       ))}
+      <line x1={251} y1={97} x2={251} y2={lerp(97, 61, hit)} stroke={C.caramel} strokeWidth={2.5} />
+      <line x1={451} y1={185} x2={451} y2={missY + 9} stroke={C.cherry} strokeWidth={2.5} strokeDasharray="3 6" strokeLinecap="round" />
       <rect x={236} y={lerp(88, 52, hit)} width={30} height={18} rx={4} fill={C.crema} />
       <rect x={436} y={missY} width={30} height={18} rx={4} fill={flash > 0 ? C.cherry : C.crema} stroke={C.cherry} strokeWidth={flash > 0 ? 3 : 0} />
       <T x={251} y={242} s={17} f={C.crema} a="middle" o={fadeIn(t, 0.9)}>≈ 3 cycles</T>
@@ -267,6 +277,10 @@ export function Flush({ t }: StepCtx) {
         <rect key={i} x={60 + i * 64} y={120} width={60} height={44} rx={6} fill="none" stroke={C.taupe} />
       ))}
       {chips}
+      {[0, 1, 2, 3].map((i) => (
+        <rect key={i} x={66 + i * 64} y={226} width={48} height={16} rx={4} fill="none" stroke={C.cherry} strokeWidth={1.5} strokeDasharray="4 3" opacity={fadeIn(t, FLUSH + 0.2)} />
+      ))}
+      <T x={66} y={262} s={13} f={C.cherryText} o={fadeIn(t, FLUSH + 0.3)}>thrown away</T>
       <T x={60} y={184} s={13} f={C.taupe}>8 of about 15–25 stages drawn</T>
       <T x={60} y={210} s={15} f={C.latte}>x &lt; a[mid]? predicted: yes</T>
       <T x={572} y={250} s={15} f={C.caramel} a="end" o={fadeIn(t, FLUSH - 0.1, 0.2)}>resolved: no</T>
@@ -278,9 +292,10 @@ export function Flush({ t }: StepCtx) {
 
 // 8 · The comparison model: one bit per question.
 export function OneBit({ t }: StepCtx) {
-  const probes = [3, 5, 6, 7]; // examples.py: places left after each answer are 9, 5, 3, 2, 1
+  const probes = [3, 6, 4, 5]; // x sits in gap 5: no, yes, no, yes. examples.py: places left after each answer are 9, 5, 3, 2, 1
   const lefts = [9, 5, 3, 2, 1];
-  const lows = [0, 4, 6, 7, 8];
+  const lows = [0, 4, 4, 5, 5];
+  const highs = [8, 8, 6, 6, 5];
   const k = Math.min(4, Math.max(0, Math.floor((t - 0.6) / 0.8) + 1));
   const cur = k > 0 ? probes[Math.min(3, k - 1)] : -1;
   const cx = (j: number) => 60 + j * 60;
@@ -293,10 +308,10 @@ export function OneBit({ t }: StepCtx) {
         </g>
       ))}
       {Array.from({ length: 9 }, (_, g) => (
-        <circle key={g} cx={cx(g) - 5} cy={196} r={6} fill={C.crema} opacity={g >= lows[k] ? 1 : 0.15} />
+        <circle key={g} cx={cx(g) - 5} cy={196} r={6} fill={C.crema} opacity={g >= lows[k] && g <= highs[k] ? 1 : 0.15} />
       ))}
-      <rect x={cx(cur >= 0 ? cur : 7) + 0} y={34} width={50} height={40} rx={8} fill={C.caramel} />
-      <T x={cx(cur >= 0 ? cur : 7) + 25} y={61} s={17} f={C.espresso} a="middle" w={700}>x</T>
+      <rect x={cx(cur >= 0 ? cur : 3) + 0} y={34} width={50} height={40} rx={8} fill={C.caramel} />
+      <T x={cx(cur >= 0 ? cur : 3) + 25} y={61} s={17} f={C.espresso} a="middle" w={700}>x</T>
       <T x={300} y={252} s={17} f={C.cinnamon} a="middle">x {'<'} this card? yes or no: 1 bit</T>
       <T x={60} y={308} s={24} f={C.cinnamon} w={700}>answers {k}</T>
       <T x={540} y={308} s={17} f={C.crema} a="end">places left {lefts[k]}</T>
@@ -379,13 +394,13 @@ export function HalveBits({ t }: StepCtx) {
       <T x={420} y={98} s={14} f={C.latte} a="middle" o={halves}>low 32 = position 7</T>
       <T x={60} y={134} s={13} f={C.taupe}>summary</T>
       {Array.from({ length: 16 }, (_, i) => (
-        <rect key={i} x={140 + i * 26} y={122} width={22} height={14} rx={3} fill={i === 3 ? C.caramel : C.cocoa} opacity={i === 3 ? lit : 1} />
+        <rect key={i} x={152 + i * 26} y={122} width={22} height={14} rx={3} fill={i === 3 ? C.caramel : C.cocoa} opacity={i === 3 ? lit : 1} />
       ))}
       <T x={60} y={172} s={13} f={C.taupe}>clusters</T>
       {Array.from({ length: 16 }, (_, i) => (
-        <rect key={i} x={140 + i * 26} y={152} width={22} height={28} rx={3} fill="none" stroke={i === 3 ? C.caramel : C.mocha} strokeWidth={i === 3 ? 2.5 : 1} opacity={i === 3 ? 1 : 0.9} />
+        <rect key={i} x={152 + i * 26} y={152} width={22} height={28} rx={3} fill="none" stroke={i === 3 ? C.caramel : C.mocha} strokeWidth={i === 3 ? 2.5 : 1} opacity={i === 3 ? 1 : 0.9} />
       ))}
-      <T x={140} y={204} s={13} f={C.taupe}>16 slots drawn of 2³² per level</T>
+      <T x={152} y={204} s={13} f={C.taupe}>16 slots drawn of 2³² per level</T>
       <T x={60} y={246} s={20} f={C.caramel} w={600}>{chain.slice(0, links).join(' → ')}</T>
       <T x={60} y={312} s={26} f={C.caramel} w={700} o={fadeIn(t, 1.6 + 0.6 * 6)}>halvings 6</T>
       <T x={560} y={312} s={17} f={C.cinnamon} a="end" o={fadeIn(t, 1.6 + 0.6 * 6)}>vs 20 comparisons</T>
@@ -403,10 +418,10 @@ export function SpacePrice({ t }: StepCtx) {
     <Svg label="An array of 2 to the 64 cluster slots dwarfs a million keys; hashing keeps only the non-empty clusters, Theta of n" h={340}>
       <T x={40} y={90} s={15} f={C.latte}>array of clusters: 2⁶⁴ slots</T>
       <T x={560} y={90} s={22} f={C.taupe} a="end" w={700} o={1 - 0.5 * collapse}>Θ(U)</T>
-      <rect x={40} y={104} width={520} height={34} rx={6} fill={C.cocoa} stroke={C.mocha} opacity={1 - 0.8 * collapse} />
-      <rect x={299} y={104} width={2} height={34} fill={C.crema} opacity={fadeIn(t, 0.6) * (1 - collapse)} />
-      <path d="M300 140 V168" stroke={C.crema} opacity={fadeIn(t, 0.8) * (1 - collapse)} />
-      <T x={300} y={188} s={15} f={C.crema} a="middle" o={fadeIn(t, 0.9) * (1 - collapse)}>1,000,000 keys</T>
+      <rect x={40} y={104} width={520} height={34} rx={6} fill={C.cocoa} stroke={C.mocha} opacity={1 - 0.4 * collapse} />
+      <rect x={299} y={104} width={2} height={34} fill={C.crema} opacity={fadeIn(t, 0.6)} />
+      <path d="M300 140 V168" stroke={C.crema} opacity={fadeIn(t, 0.8)} />
+      <T x={300} y={188} s={15} f={C.crema} a="middle" o={fadeIn(t, 0.9)}>1,000,000 keys</T>
       {dots.map((i) => (
         <circle key={i} cx={120 + i * 52} cy={248} r={7} fill={C.caramel} opacity={collapse} />
       ))}
@@ -472,9 +487,9 @@ export function Sketch({ t }: StepCtx) {
 // 14 · Back to the problem.
 export function BackToProblem({ t }: StepCtx) {
   const cols = [
-    { x: 100, head: 'comparison model', big: '20', color: C.cinnamon, size: 34, unit: 'comparisons', note1: 'a floor,', note2: 'proved in topic 4' },
+    { x: 110, head: 'comparisons', big: '20', color: C.cinnamon, size: 34, unit: '', note1: 'a floor,', note2: 'proved in topic 4' },
     { x: 300, head: 'van Emde Boas', big: '6', color: C.caramel, size: 34, unit: 'halvings', note1: 'Θ(U) space,', note2: 'or hash' },
-    { x: 500, head: 'fusion tree', big: 'log n / log w', color: C.caramel, size: 17, unit: '', note1: 'theory only', note2: '' },
+    { x: 490, head: 'fusion tree', big: 'log n / log w', color: C.caramel, size: 17, unit: '', note1: 'theory only', note2: '' },
   ];
   return (
     <Svg label="Three counts for the opening problem: 20 comparisons, 6 halvings, and log n over log w, each with its model and its price" h={380}>
@@ -503,14 +518,15 @@ export function BackToProblem({ t }: StepCtx) {
 export function Quiz1({ t, answer }: StepCtx) {
   const shown = answer !== null;
   const chain = [64, 32, 16, 8, 4, 2, 1];
+  const u = stretch(t, 1.2, 1.8); // 7 links by 1.8 s, then the comparison line fades in from 1.2 s: all done at the step's end
   return (
     <Svg label="A 64-bit key and a billion keys; the answer is the chain of six halvings" h={300}>
       <Bits x={60} y={40} />
       <T x={300} y={110} s={17} f={C.crema} a="middle">n = 10⁹ keys</T>
       {shown && (
         <>
-          <T x={300} y={180} s={20} f={C.caramel} a="middle" w={600}>{chain.slice(0, Math.min(7, Math.floor(t / 0.3) + 1)).join(' → ')}</T>
-          <T x={300} y={230} s={17} f={C.cinnamon} a="middle" o={fadeIn(t, 1.2)}>log₂ 10⁹ ≈ 29.9 → 30 comparisons</T>
+          <T x={300} y={180} s={20} f={C.caramel} a="middle" w={600}>{chain.slice(0, Math.min(7, Math.floor(u / 0.3) + 1)).join(' → ')}</T>
+          <T x={300} y={230} s={17} f={C.cinnamon} a="middle" o={fadeIn(u, 1.2, 0.5)}>log₂ 10⁹ ≈ 29.9 → 30 comparisons</T>
         </>
       )}
     </Svg>
@@ -544,15 +560,15 @@ export function Quiz2({ t, answer }: StepCtx) {
 // 17 · Prove it 3: word additions for two 4,096-bit integers.
 export function Quiz3({ t, answer }: StepCtx) {
   const shown = answer !== null;
-  const n = shown ? Math.min(64, Math.floor(t / 0.045) + 1) : 0;
+  const n = shown ? Math.min(64, Math.floor(stretch(t, 1.2, 3.0) / 0.045) + 1) : 0; // 64 cells by 2.9 s of answer time
   return (
-    <Svg label="Two 4,096-bit integers as a grid of 64 word cells; the carry visits every cell" h={320}>
+    <Svg label="Two 4,096-bit integers as a grid of 64 word cells; the carry visits every cell" h={300}>
       <T x={300} y={28} s={15} f={C.latte} a="middle">two 4,096-bit integers, w = 64</T>
       {Array.from({ length: 64 }, (_, i) => {
         const r = Math.floor(i / 8), c = i % 8;
         return <rect key={i} x={108 + c * 48} y={42 + r * 26} width={44} height={22} rx={4} fill={i < n ? C.caramel : C.cocoa} stroke={C.mocha} />;
       })}
-      {shown && <T x={300} y={296} s={22} f={C.caramel} a="middle" w={700}>word additions {n}</T>}
+      {shown && <T x={300} y={282} s={22} f={C.caramel} a="middle" w={700}>word additions {n}</T>}
     </Svg>
   );
 }

@@ -18,7 +18,7 @@ const reel: Reel = {
           cost on a real core?
         </>
       ),
-      duration: 6,
+      duration: 6.6,
       Visual: S.TwentyProbes,
     },
     {
@@ -37,23 +37,21 @@ const reel: Reel = {
       title: 'Predict: can anything beat twenty?',
       body: (
         <>
-          A million sorted 64-bit keys. Binary search needs 20 comparisons for a predecessor. On the word-RAM, is there a structure whose worst-case
-          query does not grow with n at all?
+          A million sorted 64-bit keys; binary search needs 20 comparisons. On the word-RAM, can a predecessor query not grow with n?
         </>
       ),
       duration: 1.5,
       predict: {
         options: [
           { label: 'No: log₂ n is a law for search' },
-          { label: 'Yes: about 6 halvings of the key, 64 → 32 → … → 1', correct: true },
+          { label: 'Yes: about 6 halvings, 64 → … → 1', correct: true },
           { label: 'Yes, in 1 step: hash the key' },
           { label: 'Only if the keys are small' },
         ],
         explain: (
           <>
             Yes. A van Emde Boas tree halves the key&rsquo;s <em>bits</em>, not the range of keys: six halvings for 64-bit keys, whatever n is. Each
-            halving is a few word operations, not one, so the win is in how the count grows. The 20 was never a law of the problem, only of a model where
-            keys can only be compared.
+            halving is a few word operations, so the win is in how the count grows. The 20 was only ever a law of the comparison model.
           </>
         ),
       },
@@ -176,7 +174,7 @@ const reel: Reel = {
           At most k − 1 bit positions tell k keys apart, so each key shrinks to a tiny <em>sketch</em> and a node&rsquo;s sketches fit in one word. Put
           a 1 before each, subtract the query&rsquo;s sketch from every block at once, and the leading bits show where it sits: word-level
           parallelism. Careful: 22 has the same sketch as 21, so the subtraction says &ldquo;no predecessor&rdquo; though 21 is one; one more step (the Deep dive&rsquo;s
-          desketchifying) repairs it. A node holds about w^(1/5) keys and is searched in O(1) this way, so the tree is a B-tree of height
+          desketchifying) repairs it. A node holds about w<sup>1/5</sup> keys and is searched in O(1) this way, so the tree is a B-tree of height
           Θ(log n / log w): theory only (Fredman and Willard).
         </>
       ),
@@ -212,13 +210,13 @@ const reel: Reel = {
     },
     {
       title: 'Prove it · 2 of 3',
-      body: <>A design doc says: &ldquo;finding the predecessor in our sorted index is O(log n) and cannot be beaten.&rdquo; In which model is that true, and does it hold on the word-RAM?</>,
+      body: <>Which model is the design doc&rsquo;s claim true in, and does it hold on the word-RAM?</>,
       duration: 1.2,
       predict: {
         options: [
-          { label: 'True in the comparison model; beaten on the word-RAM', correct: true },
+          { label: 'Comparison model only; beaten on the word-RAM', correct: true },
           { label: 'True in both models' },
-          { label: 'False in both: hashing beats it' },
+          { label: 'False in both: hashing wins' },
           { label: 'True on the word-RAM only' },
         ],
         explain: (
@@ -232,14 +230,13 @@ const reel: Reel = {
     },
     {
       title: 'Prove it · 3 of 3',
-      body: <>Add two 4,096-bit integers on a word-RAM with w = 64, one word at a time with a carry. How many word additions?</>,
+      body: <>Add two 4,096-bit integers on a word-RAM with w = 64, one word at a time. How many word additions?</>,
       duration: 1.2,
       predict: {
         options: [{ label: '1: addition is unit cost' }, { label: '64', correct: true }, { label: '4,096' }, { label: '12' }],
         explain: (
           <>
-            4,096 / 64 = 64 words, one addition with carry each. Unit cost is per word, not per number. Schoolbook multiplication would be 64 × 64 =
-            4,096 word multiplies.
+            4,096 / 64 = 64 words, one addition each. Unit cost is per word, not per number.
           </>
         ),
       },

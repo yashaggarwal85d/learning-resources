@@ -178,3 +178,126 @@ Severity: **major** = a learner is misled, misses the step's point, or a claim i
    Status: Fixed: "Prove it, in full" 6 names the promise: expected time over the choice of hash function (6.006: "expected O(1)"), families left to Chapter 3, amortized across resizes.
 
 **Count: 1 major (9), 23 minor (1–8, 10–24).** The one major finding (9) is a wrong picture and a missing sentence in step 10; it needs no new step or redesign, so this review does not need to run again after the fix. Findings 1–8 are flow, 9–15 gaps, 16–24 expert reading.
+
+## Looks and learning review (2026-10-11, Opus)
+
+ROUTINE.md section 5, judged against DESIGN.md "The looks review checks". Viewed every screenshot in `site/test-results/` named `desktop-word-ram-model-assumptions-*.png` and `phone-word-ram-model-assumptions-*.png` (17 steps, 4 predict question frames, both sizes: 42 images), against `OUTLINE.md` (storyboard) and `narration.json`. Where a screenshot looked wrong, I read the step's scene in `scenes.tsx` and its `duration` in `reel.tsx` to find the cause; I changed no file except this one.
+
+What works: the reel looks like this site (dark roast, caramel for the word-RAM's count, cinnamon for the comparison model, cherry kept to the miss and the flush), and most steps have their own picture rather than a shared template: the bit row cut three ways (step 9), the summary and cluster strip with the halving chain (step 11), the sketch rows and the three words of the subtraction (step 13), the back-to-the-problem card (step 14), and the two stamps on the design-doc card (step 16) all read at a glance at both sizes. Every number checked against the storyboard (the bits of x = 3·2³² + 7, the node, query and difference words of step 13, 1,048,576, 80×, 4,000,000 against ≈ 20,000,000) is right on screen. No text runs past the drawing at either size.
+
+Severity: **major** = the step's point is missing, wrong or hidden in its final frame, or something is clipped or overlapping; **minor** = polish, crowding or pacing.
+
+1. **Steps 3, 15 and 17 (predict answers), both sizes: the answer animation is cut off at the step's `duration`, so the answer frame freezes unfinished. Major.**
+   Where: `BeatTwenty`, `Quiz1`, `Quiz3` in `scenes.tsx`; durations 1.5, 1.2 and 1.2 in `reel.tsx`.
+   What: the answer visuals are timed from the step's own `t`, which stops at `duration`. Step 3's chain ends "64 → 32 → 16 → 8 → 4 → 2", with no "→ 1". Step 15's chain stops at "64 → 32 → 16 → 8 → 4", and the cinnamon "log₂ 10⁹ ≈ 29.9 → 30 comparisons" never shows (it fades in from t = 1.2). Step 17 is the worst: the learner is told 64, and the picture says **"word additions 27"**, with 27 of 64 cells filled.
+   Evidence: `desktop-…-03.png`, `-15.png`, `-17.png` and the phone versions. The frozen values are exactly what the code gives at t = duration: `floor(1.5/0.3)+1 = 6` links; `floor(1.2/0.3)+1 = 5` links; `floor(1.2/0.045)+1 = 27` cells.
+   Fix: time the answer animation from when the answer arrives, not from the step's start (or give the answer branch its own clock), so it always runs to the end: 7 links, the cinnamon line, and all 64 cells with "word additions 64". Or render the answer frame complete when the clock has stopped. Check that it plays when the learner answers late.
+   Status: Fixed: answer branches run on a stretched clock (`stretch(t, duration, end)` in `scenes.tsx`) so the final frame is complete at the step's duration: step 3 shows 64 → … → 1 (7 links), step 15 the 7 links and the cinnamon 'log₂ 10⁹ ≈ 29.9 → 30 comparisons' line, step 17 all 64 cells and 'word additions 64'. Late answers still show the finished frame.
+
+2. **Step 1, both sizes: the final frame shows 19 comparisons, not 20, and has no footnote. Major.**
+   Where: `TwentyProbes` (`probeTime(19) = 3.8 + 0.17·13 = 6.01 s`); `reel.tsx` step 1 `duration: 6`.
+   What: the step's whole point is the number 20, and it is the number the next two steps argue with. At `duration` the counter reads **19**, the strip has not collapsed to one lit cell, a cinnamon "<" still hangs under the strip, and "log₂ 1,000,000 ≈ 19.9, so 20 probes" (which fades in at 6.21 s) is missing. A paused or reduced-motion learner sees 19.
+   Evidence: `desktop-…-01.png` and `phone-…-01.png` both show "comparisons 19".
+   Fix: make `duration` about 6.6 s, or shorten the fast beats (e.g. 0.15 s) so that probe 20 and the footnote land by 5.8 s. Hide the "<" once `done`.
+   Status: Fixed: fast beats shortened from 0.17 s to 0.15 s and step 1 `duration` raised from 6 to 6.6, so probe 20 lands at 5.75 s and the footnote is fully in by 6.45 s; the final frame reads 20 with the footnote and no stray '<'.
+
+3. **Step 1, phone: no step title or caption on screen. Major.**
+   Where: `phone-…-01.png`.
+   What: every other phone step shows "n/17 · §1.1", the title, a three-line caption and MORE below the drawing. Step 1 shows the drawing and then about 850 px of empty background down to the controls, with no title ("A million keys, twenty probes"), no bridge and no problem statement. The first frame of the reel does not say what the strip is for. Desktop shows the bridge, title and caption.
+   Evidence: compare `phone-…-01.png` with `phone-…-02.png`, where the caption block starts at y ≈ 1140.
+   Fix: find out why the caption block does not render or sits off-screen on step 1 in portrait (likely the bridge quote plus the prerequisites button making the block too tall). If it is site chrome, report it to the site and check another topic's step 1. Then confirm the title and the first lines of the caption are visible without scrolling.
+   Status: Not fixed (site chrome, locked): `ReelPlayer.tsx` renders the bridge quote only on step 0 for every topic and the caption block is shared; the phone step-1 frame is the same player layout for all topics. This topic has no layout of its own to change. I could not compare with asymptotic-notation's phone step 1 screenshot (none in `test-results/` and a second 5-minute run was not made); it should be checked at site level.
+
+4. **Steps 3, 16 and 17, phone: the explanation after answering is below the fold. Major.**
+   Where: `phone-…-03.png`, `-16.png`, `-17.png` (and the question frames `-03-q`, `-16-q`, where "PICK AN ANSWER TO CONTINUE" is half hidden behind the controls in 03-q).
+   What: after answering, step 3 and step 16 show only the top edge of the feedback box above the playback controls. Step 17's box is cut mid-sentence ("be 64 × 64 = 4,096 word multiplies" is sliced). The explanation is the teaching moment of a predict step, and nothing tells the learner to scroll. Step 15, whose question is three lines, fits.
+   Evidence: the screenshots above; the question captions of steps 3 and 16 run to 5 lines on phone, plus 4 two-line options (16 has a four-line option).
+   Fix: shorten the question text on these steps (step 3: "A million sorted 64-bit keys; binary search needs 20 comparisons. On the word-RAM, can a predecessor query not grow with n?"; step 16: drop the quote from the caption, since the card in the drawing already shows it, and ask only "Which model is it true in, and does it hold on the word-RAM?"). Shorten the longest options. If the site does not already do so, scroll the feedback into view when it appears (a site-level fix).
+   Status: Fixed in this topic: step 3 question shortened to 'A million sorted 64-bit keys; binary search needs 20 comparisons. On the word-RAM, can a predecessor query not grow with n?', option 2 shortened; step 16 caption reduced to 'Which model is the design doc's claim true in, and does it hold on the word-RAM?' (the quote stays on the card in the drawing), options shortened; step 17 question and explanation shortened (multiplication sentence dropped); step 3 and 16 explanations trimmed. Narration lines and answers updated to match. Not fixed: scrolling feedback into view is site-level (locked).
+
+5. **Step 4, both sizes: the address arrow runs through the 8-bit word. Major.**
+   Where: `PointerFits`: `Arrow` from (480, 124) to (246, 272) crosses the 8-bit `Bits` at x 330–490, y 200–220.
+   What: the caramel arrow from "20 bits: 1,048,576 addresses" to cell 999,999 passes through the third cell of the 8-bit word. That reads as if the address goes through the small word, which is the opposite of the point (the small word cannot reach). The 8-bit word is also drawn as eight filled crema cells, the brightest shape in the frame, so it competes with the caramel 20-bit run. It does not look like the dim "taupe" word in the storyboard. The "column dims beyond its reach" idea shows only as the 999,999 cell fading, which reads as the arrow's target going dark.
+   Evidence: `desktop-…-04.png` (arrow crosses at about x 1010, y 450), `phone-…-04.png` (about x 680, y 700).
+   Fix: move the 8-bit word below the memory column or to the left under the word row, clear of the arrow's path (e.g. x 330, y 290, with the inequality moved down). Draw it in taupe outline. Show its reach as a short taupe bracket over cells 0–2 with "256 cells", ending well above 999,999.
+   Status: Fixed: the 8-bit word is now a taupe-outline row below the memory column at (330, 268), clear of the arrow, with a short taupe bracket beside cells 0 to 2 labelled '256 cells'.
+
+6. **Step 6, both sizes: the final frame loses the hit/miss picture. Both blocks end side by side in "registers". Major.**
+   Where: `OneLoad`: the hit block ends at y 52, the miss block at y 58. The cherry flash lasts only from 1.5 to 2.1 s.
+   What: the step's visual idea is one load hopping one band against one climbing from main memory. In the still, two identical crema blocks sit in the registers band, the right one 6 units lower (it looks misplaced, not meaningful). Nothing shows that one came from L1 and the other from main memory. The lesson comes only from the "≈ 3 / ≈ 240 cycles" labels and 80×.
+   Evidence: `desktop-…-06.png`, `phone-…-06.png`.
+   Fix: leave a trace of each trip in the final frame: a short caramel tick from L1 to registers in the left lane, and a cherry dotted path from main memory up to registers in the right lane (or a cherry outline on the right block). Align both blocks at y 52. Put each cycles label under its own lane's path.
+   Status: Fixed: both blocks end at y 52; a caramel trace from L1 to registers (left lane) and a cherry dotted path from main memory to registers (right lane) stay in the final frame.
+
+7. **Step 12, both sizes: the final frame drops the "2⁶⁴ dwarfs a million" contrast. Major.**
+   Where: `SpacePrice`: the band fades to 20 % and the "1,000,000 keys" sliver and its label fade to 0 as `collapse` reaches 1.
+   What: the still shows an almost invisible empty box under "array of clusters: 2⁶⁴ slots", a dimmed Θ(U), and a row of 8 caramel dots with Θ(n). The scale picture (a million keys as a hairline inside 2⁶⁴ slots) is gone, so the frame shows only two labels and some dots. The price is told, not shown.
+   Evidence: `desktop-…-12.png`, `phone-…-12.png`.
+   Fix: keep the band, the sliver and "1,000,000 keys" in the final frame (dim the band to about 60 %, not 20 %), and draw the hashed row below it as a short caramel bar or dots, so the still holds both bars as the storyboard's final frame says ("the two bars with Θ(U) and Θ(n)").
+   Status: Fixed: band dims to 60 % (not 20 %), the 1,000,000-keys sliver, connector and label stay visible, and the hashed dots (Θ(n)) appear below, so the still holds both pictures.
+
+8. **Step 2, both sizes: the five operations are never marked, and every memory cell holds x. Minor.**
+   Where: `WordRam`; `desktop-…-02.png`.
+   What: the final frame shows the operation list in uniform latte, "store a[0]" and "units 5". Which five different operations were counted is not visible, yet that is the idea ("five different operations, five units"). Memory cells 0, 1 and 2 all carry x's bit pattern, which suggests three copies of the key rather than cells.
+   Fix: leave the five used operations lit in caramel in the list (load, <, +, >>, store), or list them as a small "load · < · + · >> · store" line above "units 5". Give cells 1 and 2 different seeded patterns, or leave them empty except the cell the store wrote.
+   Status: Fixed: a 'counted: load < + >> store' row lights each operation in caramel as it is used; memory cell 1 holds a different pattern and cell 2 is empty, so only a[0] carries x.
+
+9. **Step 7, both sizes: no trace of the flush in the final frame; hyphen in a range. Minor.**
+   Where: `Flush`; `desktop-…-07.png`.
+   What: the still shows a half-refilled pipeline and the penalty label. The flushed (cherry) work that makes the step is gone, so the refill looks like a normal start-up. "15-25" uses a hyphen in two labels, where the captions use "15 to 25"; elsewhere the site uses an en dash for ranges.
+   Fix: keep the four discarded chips as faint cherry outlines under the row ("thrown away"), or a cherry bracket over the emptied stages. Use "15–25".
+   Status: Fixed: four dashed cherry outlines labelled 'thrown away' remain after the flush. The range already used an en dash in `scenes.tsx` (15–25); the monospace font draws it like a hyphen.
+
+10. **Step 8, both sizes: x lands after the last card, the degenerate case. Minor.**
+   Where: `OneBit` (`probes = [3, 5, 6, 7]`); `desktop-…-08.png`.
+   What: every answer goes "no, further right", and the lit gap is the far-right end, so the still looks like "x is bigger than everything" rather than "four answers found one of nine places". It also puts the caramel x card in the top-right corner, beside the side rail on desktop.
+   Fix: choose a target gap in the middle (e.g. gap 5, places 9 → 5 → 3 → 2 → 1 with mixed yes/no), so the lit gap sits between cards.
+   Status: Fixed: x now falls in gap 5 (probes at cards 3, 6, 4, 5: no, yes, no, yes), places 9 → 5 → 3 → 2 → 1 as examples.py asserts; the lit dot range follows lo/hi and the x card starts mid-row.
+
+11. **Step 10, both sizes: a crowded still with no picture of the scatter; tally misaligned on phone. Minor.**
+   Where: `RadixPasses`; `desktop-…-10.png`, `phone-…-10.png`.
+   What: six text items compete (pass, buckets label, note, two tally lines, comparisons line). The scatter into buckets, which is both the mechanism and the price, is not visible in the still: the bucket strip is uniform and the "collected" strip is a plain crema bar. On phone the tally starts at x ≈ 100 while everything above it starts at ≈ 137. The note line runs to x ≈ 1125, past the bucket strip.
+   Fix: drop the "lowest digit first…" note (the caption says it). Leave a few crema dots sitting in scattered buckets in the final frame. Align the tally with the key row's left edge.
+   Status: Not fixed: minor, skipped (needs a redesign of the scatter picture).
+
+12. **Steps 10, 11 and 13: the captions are too long for one step, and step 13 carries more than one idea. Minor.**
+   Where: desktop captions of 11–12 lines (10, 11, 13); narration for 13 has six sentences across three beats.
+   What: step 13 teaches sketching, the parallel compare, the q = 22 counterexample, w^(1/5) branching, the tree height and "theory only". The drawing carries the first two. The 22 warning and the height have no picture, so the learner holds them only from the caption. "w^(1/5)" in caret notation is also out of style beside "2³²" elsewhere.
+   Fix: in step 13, keep the caption to sketch, block subtraction and "one more step repairs some queries (Deep dive)". Move the height and "theory only" into step 14's fusion-tree column, which already says "theory only". Write w^(1/5) as w¹ᐟ⁵ or "the fifth root of w". Trim 10 and 11 by a sentence each (10: the stability clause; 11: the min/max recursion clause is already the footnote).
+   Status: Partly fixed: w^(1/5) in the step 13 caption now reads w<sup>1/5</sup>, as in index.mdx. Not fixed: trimming and splitting captions 10, 11 and 13 (skipped as non-trivial).
+
+13. **Step 13, both sizes: the leading bits 0 and 1 are highlighted the same, and the query's own bits are missing. Minor.**
+   Where: `Sketch`; `desktop-…-13.png`.
+   What: in the difference word all four leading bits get the same caramel fill, so the learner has to read the digits to see "0 1 1 1 → 3". The storyboard's query row (25 = 00011001, with its sketch 01) is not drawn, so where "sketch 01" comes from is only stated in a label.
+   Fix: fill only the 1-leading bits in caramel and give the 0 a taupe outline (or the reverse). Add the query's 8-bit row under the four keys, with its two distinguishing bits lit and its sketch "01" in the sketch column.
+   Status: Not fixed: minor, skipped.
+
+14. **Step 5, both sizes: the multiply lattice reads as decoration. Minor.**
+   Where: `BigNumber`; `desktop-…-05.png`.
+   What: the taupe dot in each caramel cell looks like a screw head on a tile. Nothing ties it to "64 × 64 = 4,096 word multiplies", since one dot per cell is 64 marks, not 4,096 pairings.
+   Fix: drop the dots and let the note carry the multiply. Or draw an 8 × 8 corner of the 64 × 64 product grid beside the cells, labelled "each word × each word".
+   Status: Not fixed: minor, skipped.
+
+15. **Step 11, phone: "clusters" touches the first cluster box. Minor.**
+   Where: `phone-…-11.png` (label ends at x ≈ 283, box starts at x ≈ 285).
+   Fix: shorten the strip by one or two slots, or start it 12 units further right.
+   Status: Fixed: the cluster strips and their labels start 12 units further right (x 152).
+
+16. **Step 14, phone: the column headers reach the edges. Minor.**
+   Where: `phone-…-14.png`: "comparison model" starts about 13 CSS px from the left edge, inside the 16 px gutter. "log n / log w" ends about 18 px from the right.
+   Fix: move the columns to x 110 / 300 / 490 and shorten "comparison model" to "comparisons" (the unit line under 20 can then go).
+   Status: Fixed: columns moved to x 110 / 300 / 490 and 'comparison model' shortened to 'comparisons'; the unit line under 20 removed.
+
+17. **Steps 15 and 17, phone: the drawing rescales when the feedback appears. Minor.**
+   Where: `phone-…-15-q.png` → `-15.png` (key row narrows from x 137–1032 to 197–972); `-17-q` → `-17` (grid narrows from 225–937 to 295–870).
+   What: the picture jumps smaller just as the answer animates. This is likely the layout giving the feedback box room. It reads as a glitch, and it shrinks the answer's numbers.
+   Fix: give predict steps a fixed drawing height in portrait, or reserve the feedback's space in the question frame (site-level); otherwise drop step 17's `h` from 320 to 300 so it shrinks less.
+   Status: Not fixed: the rescale comes from the shared player layout (locked). Step 17's drawing height lowered from 320 to 300 so it shrinks less.
+
+18. **Step 2, phone: the 64-cell memory rows turn into texture. Minor.**
+   Where: `phone-…-02.png`: each memory bit cell is about 1.5 CSS px wide.
+   What: the three memory rows read as striped bars, and the bit pattern (the point of drawing bits) is lost. The word row above is just legible.
+   Fix: in portrait, draw the memory cells as plain 64-bit boxes (outline plus "64 bits" once) rather than 64 sub-cells, and keep the bit row only for the word at the top.
+   Status: Not fixed: minor, skipped.
+
+**Count: 7 major (1–7), 11 minor (8–18).** Findings 1 and 2 are timing bugs. In both, the final frame a paused or reduced-motion learner sees states a wrong number ("word additions 27", "comparisons 19"); fix them first. Findings 3, 4 and 17 may be site layout rather than this topic, so check them against another topic's phone screenshots before changing this reel. After 1–7 are fixed, re-shoot the screenshots and run this review again on steps 1, 3, 4, 6, 12, 15 and 17.

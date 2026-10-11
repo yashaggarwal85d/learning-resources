@@ -30,12 +30,12 @@
     {
       "lines": [
         "Back to our million sorted keys. Binary search needs twenty comparisons.",
-        "On the word RAM, is there a structure whose worst case query does not grow with n at all?"
+        "On the word RAM, can a predecessor query not grow with n?"
       ],
       "answer": [
         "Yes. A van Emde Boas tree halves the bits of the key, not the range of keys. Six halvings for sixty-four bit keys, whatever n is.",
-        "Each halving is a few word operations, not one. So the win is in how the count grows.",
-        "The twenty was never a law of the problem. It is a law of a model where keys can only be compared."
+        "Each halving is a few word operations. So the win is in how the count grows.",
+        "The twenty was only ever a law of the comparison model."
       ]
     },
     {
@@ -179,8 +179,8 @@
     },
     {
       "lines": [
-        "A design document says... finding the predecessor in our sorted index is big O of log n, and cannot be beaten.",
-        "In which model is that true, and does it hold on the word RAM?"
+        "A design document claims its sorted index's predecessor search is big O of log n, and cannot be beaten.",
+        "Which model is that true in, and does it hold on the word RAM?"
       ],
       "answer": [
         "It is true in the comparison model, and topic four proves it.",
@@ -190,11 +190,11 @@
     {
       "lines": [
         "Add two four thousand and ninety-six bit integers on a word RAM with w equal to sixty-four.",
-        "One word at a time, with a carry. How many word additions?"
+        "One word at a time. How many word additions?"
       ],
       "answer": [
         "Sixty-four. Four thousand and ninety-six over sixty-four is sixty-four words, one addition each.",
-        "Unit cost is per word, not per number. Schoolbook multiplication would be sixty-four times sixty-four word multiplies."
+        "Unit cost is per word, not per number."
       ]
     }
   ]
