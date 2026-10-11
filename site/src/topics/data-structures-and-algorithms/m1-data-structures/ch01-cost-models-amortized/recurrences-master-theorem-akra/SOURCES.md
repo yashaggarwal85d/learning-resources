@@ -28,6 +28,12 @@ Conditions on the recurrence (Equation 1: T(x) = 1 for 1 <= x <= x0, and sum of 
 
 Items 1-5 (real x >= 1; x0 >= 1/b_i and >= 1/(1-b_i); a_i > 0; b_i in (0,1); k >= 1 constants) contain garbled symbols and are paraphrased only. The polynomial-growth condition: there exist positive constants c1, c2 with c1 g(x) <= g(u) <= c2 g(x) for all x >= 1, all i, all u in [b_i x, x].
 
+Fact-check 2026-10-11 (2.3): items 1-5 and the definition re-read from the raw text, where the control characters decode consistently as \x15 = ≥, \x14 = ≤, \x02 = Θ, \x0f = ε (and the bullet), "=" = "/", "," = "−" and a stray "0" = the prime ′ (the j′ of the proof shows the same "0"). The paraphrase above is correct. The remark below is about g′ (the derivative), not g, and it is not true as stated (g(x) = 2^(−x) has |g′| ≤ 1 but fails the condition); the topic does not quote it as a fact.
+
+> Remark. If jg (x)j is upper bounded by a polynomial in x, then g(x) satis es the polynomial0
+
+> does not necessarily hold if g (x) does not satisfy the polynomial-growth condition.
+
 Theorem 1 (Akra-Bazzi), definition of p. The conclusion is T(x) = Theta( x^p ( 1 + integral from 1 to x of g(u)/u^(p+1) du ) ).
 
 > Theorem 1 ([1]).PGiven
@@ -39,6 +45,14 @@ Theorem 1 (Akra-Bazzi), definition of p. The conclusion is T(x) = Theta( x^p ( 1
 Examples as printed (formulas garbled in the text layer, paraphrased): 2T(x/4)+3T(x/6)+Theta(x log x) gives p=1, T=Theta(x log^2 x); 2T(x/2)+(8/9)T(3x/4)+Theta(x^2/log x) gives p=2, T=Theta(x^2/log log x); T(x/2)+Theta(log x) gives p=0, T=Theta(log^2 x); (1/2)T(x/2)+Theta(1/x) gives p=-1, T=Theta((log x)/x); 4T(x/2)+Theta(x) gives p=2, T=Theta(x^2).
 
 > Examples.
+
+Fact-check 2026-10-11: the second example is misprinted in the notes. 2·(1/2)^2 + (8/9)·(3/4)^2 = 1/2 + 1/2 = 1, so p = 2, and the integral of (u^2/log u)/u^3 is Θ(log log x): the solution is Θ(x^2 log log x), not Θ(x^2/log log x) (brute force: T(x)/x^2 rises 2.06, 2.58, 2.97, 3.27, 3.52, 3.90 at x = 2^10, 2^15, …, 2^40). The other four examples are correct as printed.
+
+> If T (x) = 2T (x=2) + 89 T (3x=4) +
+
+> (x2= log x), then p = 2 and T (x) =
+
+> (x2= log log x).
 
 > 1 These conditions are somewhat less restrictive than those of [1].
 
@@ -59,6 +73,16 @@ Floors and ceilings (Section 3, Equation 2 with perturbations h_i(x), |h_i(x)| <
 > hi (x) = dbi xe , bix;
 
 > thereby extending Theorem 1 to handle ceiling functions.
+
+> For example, we could set hi (x) = , x or hi (x) = x=(log2 x) for
+
+Fact-check 2026-10-11: the bound on h_i (condition 2 of Section 3) reads, decoded, "there is some constant ε > 0 for which |h_i(x)| ≤ x/(log^(1+ε) x) for 1 ≤ i ≤ k whenever x ≥ x0"; the line above gives h_i(x) = −√x and x/log² x as allowed perturbations. The nearly-tight remark: the recurrence is T(x) = 2T(x/2 + x/log x) + x, and the solution is x·log^Θ(1) x (the \x02 before "(1)" is Θ), not Θ(x log x).
+
+> Remark. It is worth noting that the x= log1+
+
+> x limit on the size of jhi(x)j is nearly tight, since the solution of the recurrence
+
+> (1) x, which is di erent than the solution of
 
 Contents:
 - Abstract and 1 Introduction: Master Method (CLR) versus the Akra-Bazzi generalisation; aim of an inductive proof for undergraduates.
@@ -136,6 +160,12 @@ Examples (equal / decreasing / increasing level sums):
 > This geometric series is dominated by its final term (3/2) L n. Each leaf contributes 1 to this term; thus, the final term is equal to the number of leaves in the tree!
 
 > The level sums are neither constant nor a geometric series, so we just have to evaluate the overall sum directly.
+
+The worked example T(n) = 2T(n/2) + n/lg n (fact-check 2026-10-11):
+
+> The sum of all the nodes in the ith level is n/(lg n − i).
+
+> = nHlg n = Θ(n lg lg n)
 
 Unbalanced splits (quicksort-, selection-type):
 
@@ -265,6 +295,10 @@ Exact constants and additive terms:
 > T (n)  T (n/3) + T (2n/3) + O(n).
 
 > Median-of-medians selection using 3-element blocks is no faster than sorting.
+
+> (Moreover, this analysis is tight, because the recursion tree has log3 n complete levels.)
+
+Fact-check note: "tight" here is about the recurrence's solution, not a proven worst case of the algorithm; see Chen and Dumitrescu below.
 
 > Selecting the median of 5 elements requires at most 6 comparisons, so we need at most 6n/5 comparisons to set up the recursive subproblem.
 
@@ -399,6 +433,12 @@ Median-of-medians recurrence, and why floors and ceilings matter.
 
 > This linear-time selection algorithm does run in time O(n), but there is a huge constant factor hidden here.
 
+The two substitution proofs and their constants (fact-check 2026-10-11; k = 50c checked by hand: 8k + cn − kn/10 = 400c − 4cn ≤ 0 exactly when n ≥ 100):
+
+> If we pick k so 9k / 10 + c ≤ k, then T(n) ≤ kn holds. This is true when c ≤ k / 10, which happens when 10c ≤ k. If we pick k = 10c, then T(n) ≤ kn, completing the induction.
+
+> If (8k + cn – kn / 10) ≤ 0, then T(n) ≤ kn. It's left as an exercise to the reader to check that this is true if we pick k = 50c.
+
 Contents:
 - Order statistics and the selection problem; sort-then-index in O(n log n)
 - Partition subroutine and quickselect; worst-case recurrence T(n) = T(n-1) + Theta(n)
@@ -417,5 +457,73 @@ Version: undated course handout, MIT 6.046 (fetched 2026-10-11)
 
 > Regularity condition: af (n/b) ≤ cf (n) for some constant c < 1 and all sufficiently large n.
 
-Contents: the statement of the three cases (with the log^k n form of case 2), the regularity condition, and 19 practice recurrences some of which the theorem does not cover.
+Case 2 as stated (ε is dropped from cases 1 and 3 by the text layer; case 2 has no ε):
 
+> 2. If f (n) = Θ(nlogb a logk n) with1 k ≥ 0, then T (n) = Θ(nlogb a logk+1 n).
+
+Solutions the topic uses (fact-check 2026-10-11). Note that "non-polynomial difference" is the handout's reason for n/log n (problem 7), while n log n (problem 6) is solved by case 2 with k = 1:
+
+> 6. T (n) = 2T (n/2) + n log n =⇒ T (n) = n log2 n (Case 2)
+
+> 7. T (n) = 2T (n/2) + n/ log n =⇒ Does not apply (non-polynomial difference between f (n) and nlogb a )
+
+> 9. T (n) = 0.5T (n/2) + 1/n =⇒ Does not apply (a < 1)
+
+> 19. T (n) = 64T (n/8) − n2 log n =⇒ Does not apply (f (n) is not positive)
+
+> 22. T (n) = T (n/2) + n(2 − cos n) =⇒ Does not apply. We are in Case 3, but the regularity condition is violated.
+
+> show that c ≥ 3/2, thereby violating the regularity condition.)
+
+Contents: the statement of the three cases (with the log^k n form of case 2), the regularity condition, and 22 practice recurrences with solutions, some of which the theorem (in this a ≥ 1 form) does not cover.
+
+## Master Theorem (A. Dillhoff, course notes restating CLRS 4th edition Theorem 4.1)
+URL: https://ajdillhoff.github.io/notes/master_theorem/
+Version: course notes web page (undated), citing Cormen, Leiserson, Rivest, Stein, Introduction to Algorithms, 4th ed., MIT Press, 2022; fetched 2026-10-11
+
+A secondary restatement: the book itself was not opened. It is used only for what changed in the 4th edition (a > 0 instead of a ≥ 1, a nonnegative "driving function", floors and ceilings built into aT(n/b), the "watershed function" name, case 2 with k ≥ 0). These notes write the regularity constant as k where the book writes c.
+
+> The full theorem as described in Introduction to Algorithms is restated below (Cormen et al. 2022).
+
+> Let \(a > 0\) and \(b > 1\) be constants, and let \(f(n)\) be a driving function that is defined and nonnegative on all sufficiently large reals.
+
+> where \(aT(n/b)\) actually means \(a’T(\lfloor n/b \rfloor) + a{’’}T(\lceil n / b \rceil)\) for some constants \(a’ \geq 0\) and \(a’’ \geq 0\) such that \(a = a’ + a’’\).
+
+> If \(f(n) = \Theta(n^{\log_b a} \log^k n)\) for some constant \(k \geq 0\), then \(T(n) = \Theta(n^{\log_b a} \log^{k+1} n)\).
+
+> The common function \(n^{\log_b a}\) is called the watershed function.
+
+Contents: the general divide-and-conquer recurrence; the Master theorem as in CLRS 4th ed.; the watershed and driving functions; the three cases and the regularity condition; examples (merge sort, matrix multiplication, median finding as not fitting the form, an exercise from CLRS 4.5).
+
+## Selection Algorithms with Small Groups (K. Chen and A. Dumitrescu)
+URL: https://arxiv.org/abs/1409.3600
+Version: arXiv:1409.3600 abstract page (fetched 2026-10-11)
+
+> We first point out that the usual arguments found in the literature justifying the superlinear worst-case running time fall short of proving this claim.
+
+> We further prove that it is possible to use group size smaller than $5$ while maintaining the worst case linear running time.
+
+Contents: abstract only: the BFPRT algorithm with groups smaller than 5; the usual Ω(n log n) argument is incomplete; three linear-time variants with small groups (repeated step, shifting target, hyperpair).
+
+## A Master Theorem for Discrete Divide and Conquer Recurrences (M. Drmota and W. Szpankowski)
+URL: https://www.cs.purdue.edu/homes/spa/papers/jacm-divide.pdf
+Version: authors' PDF hosted at Purdue (journal version: J. ACM, 2013)
+
+> introduces certain oscillations not captured by the traditional Master Theorem, for example due to Akra and Bazzi
+
+> when log p1 , . . . , log pm are rationally related the ﬁnal solution will exhibit some oscillation that disappears when log p1 , . . . , log pm are irrationally related.
+
+Contents: the discrete recurrence with floors and ceilings; Dirichlet series and Tauberian methods; Theorem 1 (a_n = C n^a (log n)^b) and Theorem 2; the rationally and irrationally related cases; applications (Boncelet's arithmetic coding).
+
+
+## Lecture 2: Asymptotic Analysis and Recurrences (A. Blum, CMU 15-451)
+URL: https://www.cs.cmu.edu/~avrim/451f11/lectures/lect0901.pdf
+Version: CMU 15-451, Fall 2011, lecture notes for lecture 2 (fetched 2026-10-11)
+
+Cited only for the case numbering, which is the reverse of CLRS (case 1 = root-dominated, case 3 = leaf-dominated, with r = a/b^k):
+
+> Case 1: r < 1. In this case, the sum is a convergent series.
+
+> Note that Case 3 is what we used for Karatsuba multiplication (a = 3, b = 2, k = 1) and Strassen’s algorithm (a = 7, b = 2, k = 2).
+
+Contents: asymptotic notation; recurrences: unrolling, guess and induct, recursion trees ("bricks"), the three cases by r = a/b^k and the resulting master theorem for f = cn^k.
