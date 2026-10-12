@@ -382,6 +382,8 @@ def test_rate_one_and_growth():
 def test_costs_and_space():
     c = 524_288
     assert c + 2 * c == 1_572_864 and 1_572_864 * 8 == 12 * 2 ** 20  # 12 MiB of 8-byte keys
+    # plain doubling holds the same two buffers (c old + 2c new) during its one copying append: the peak is the same
+    assert 524_288 + 1_048_576 == 1_572_864 and 1_572_864 * 8 // 2 ** 20 == 12  # old cap + new cap at append 524,289
     assert c // 2 == 262_144  # both buffers stay alive for c / 2 appends
     assert 3 * c * 8 // 2 ** 20 == 12
     # the next resize, from 1,048,576 keys (Prove it 1)
@@ -937,6 +939,11 @@ def test_scapegoat_example():
     # the potential at 87 before the rebuild: left 5, right 0, so |5 - 0| = 5
     n87 = subtree = probe.root.right.right
     assert n87.key == 87 and abs((n87.left.size if n87.left else 0) - (n87.right.size if n87.right else 0)) == 5
+    # Galperin and Rivest scale the potential by a constant c: at 87 (size 6, delta 5) c = 3 gives 15, which pays for the
+    # rebuild (6 writes) plus a climb that counts at most 6 more sizes. In general, for alpha = 2/3, an unbalanced node of
+    # size s has delta > s/3 + 1, so 3 * delta > s + 3.
+    d87 = 5
+    assert n87.size == 6 and d87 > F(n87.size, 3) + 1 and 3 * d87 == 15 and 3 * d87 >= 6 + 6
     # insert 69: depth 6 > h(9) = 5
     c69 = t.insert(69)
     assert t.last_depth == 6 and t.last_scapegoat == 87 and t.last_rebuild == 6 and c69 == 7

@@ -11,7 +11,7 @@
         },
         "Each request appends one key. One tick is the time to write one element, and a request arrives every four ticks.",
         "This is a model of a service, not a measurement.",
-        "Append five hundred twenty four thousand, two hundred eighty nine copies five hundred twenty four thousand, two hundred eighty eight keys.",
+        "The append that finds it full, number five hundred twenty four thousand, two hundred eighty nine, copies every key before it.",
         "While it runs, one hundred thirty one thousand, seventy two requests arrive. They all wait.",
         "Is this service fast?"
       ]
@@ -19,8 +19,8 @@
     {
       "lines": [
         "Percentiles describe a tail.",
-        "The ninety ninth percentile, p ninety nine, is the cost that ninety nine of every hundred appends stay at or under.",
-        "Of a million appends to the doubling vector, twenty resize. The largest copies five hundred twenty four thousand keys.",
+        "P fifty is the median. The ninety ninth percentile, p ninety nine, is the cost that ninety nine of every hundred appends stay at or under. For p ninety nine point nine, it is nine hundred ninety nine of every thousand.",
+        "Of a million appends to the doubling vector, twenty resize. The largest copies about five hundred twenty four thousand keys.",
         "What is the p ninety nine cost of an append?"
       ],
       "answer": [
@@ -33,7 +33,6 @@
     },
     {
       "lines": [
-        "p fifty is the median. p ninety nine is the value only one in a hundred exceeds. p ninety nine point nine, only one in a thousand.",
         "Per append, the tail is one write.",
         {
           "beat": 0.3
@@ -65,7 +64,7 @@
           "beat": 0.3
         },
         "When the vector of eight fills, append nine allocates sixteen slots, and moves two old keys.",
-        "The gauge of keys left to copy drains by two every time, from eight to zero.",
+        "The gauge of keys left to copy drains from eight to zero, by two on each of appends nine to twelve.",
         {
           "beat": 0.3
         },
@@ -101,11 +100,11 @@
     },
     {
       "lines": [
-        "Same total work. A different bill.",
+        "Same total writes. A different bill.",
         {
           "beat": 0.3
         },
-        "Both buffers stay alive while the copy runs. At the last resize of a million appends, that is twelve mebibytes, for two hundred sixty two thousand, one hundred forty four appends.",
+        "Both buffers stay alive while the copy runs. At the last resize of a million appends, that is the same twelve mebibytes of peak as plain doubling, but held for about a quarter of a million appends, not one.",
         "Every read pays a comparison with the frontier.",
         "More than half the appends now cost three, so the median got worse.",
         "And the big O of one worst case assumes that allocating a buffer is big O of one."
@@ -113,7 +112,7 @@
     },
     {
       "lines": [
-        "Now a second structure, to see the idea apart from arrays that grow.",
+        "A second structure, apart from arrays that grow.",
         "Global rebuilding: let a structure go stale, then rebuild all of it.",
         {
           "beat": 0.3
@@ -125,7 +124,7 @@
         {
           "beat": 0.3
         },
-        "And one delete still copies half a million keys."
+        "And at about a million keys, one delete still copies half a million."
       ]
     },
     {
@@ -137,7 +136,7 @@
           "beat": 0.3
         },
         "A key deleted after it was copied goes into a log. The log is replayed before the swap.",
-        "Then the new copy takes over.",
+        "Eight slots a delete finish the copy before the old one is half tombstones. The vector's deadline again.",
         "No delete writes more than ten."
       ]
     },
@@ -149,7 +148,7 @@
         {
           "beat": 0.3
         },
-        "Fix alpha strictly between one half and one. Here, alpha is two thirds.",
+        "Fix alpha strictly between one half and one. Here, alpha is two thirds. It is a balance parameter, not the last reel's load factor.",
         "A node deeper than h of n, the floor of log base one point five of n, is too deep. Here n counts the new node.",
         "Inserting sixty nine lands at depth six, below the limit of five."
       ]
@@ -176,9 +175,10 @@
         {
           "beat": 0.3
         },
-        "The time is proportional to the subtree. Done in place, the extra space is big O of log n.",
-        "Who pays? Each node holds the difference between its left and right sizes as potential.",
-        "An unbalanced node holds theta of its own size. So inserts cost big O of log n, amortized."
+        "The time is proportional to the subtree.",
+        "Who pays? Each node holds a constant times the difference between its left and right sizes, as potential.",
+        "An insert adds a little at each of its big O of log n ancestors. An unbalanced node holds theta of its own size, enough for the climb and the rebuild.",
+        "So inserts cost big O of log n, amortized."
       ]
     },
     {
@@ -197,7 +197,7 @@
         "Be honest about the tree. It is amortized, not deamortized.",
         "Big O of log n per insert, over any sequence. But one insert can rebuild most of the tree.",
         "A million increasing keys cost twenty eight writes per insert on average. The p ninety nine is two hundred forty six.",
-        "And insert nine hundred thousand, nine hundred sixty one rebuilds seven hundred fifty one thousand, three hundred thirty two nodes.",
+        "One insert, near the nine hundred thousandth, rebuilds about three quarters of a million nodes.",
         {
           "beat": 0.3
         },
@@ -212,7 +212,7 @@
         {
           "beat": 0.3
         },
-        "The total work is the same. The median rose from one to three.",
+        "The total writes are the same. The median rose from one to three.",
         "And every tick charged a write the same, wherever in memory it landed."
       ]
     },
@@ -224,7 +224,8 @@
       ],
       "answer": [
         "Five hundred twenty four thousand, two hundred eighty eight appends, and three writes.",
-        "The next append allocates twice the slots, and moving the keys at two per append takes five hundred twenty four thousand, two hundred eighty eight appends, until n is one million, five hundred seventy two thousand, eight hundred sixty four.",
+        "The next append allocates twice the slots, and moving the keys at two per append takes five hundred twenty four thousand, two hundred eighty eight appends.",
+        "That ends when n is one million, five hundred seventy two thousand, eight hundred sixty four.",
         "Meanwhile both buffers, twenty four mebibytes, stay alive.",
         "Each of those appends writes its key and moves two."
       ]
@@ -249,9 +250,9 @@
       ],
       "answer": [
         "No.",
-        "Both vectors write two billion, seventy three million, seven hundred forty one thousand, eight hundred twenty three elements.",
+        "Both vectors write about two point one billion elements.",
         "The incremental one also pays a comparison on every read, and holds two buffers longer.",
-        "Its gain is the tail. In a batch, no request waits behind the five hundred thirty six million, eight hundred seventy thousand, nine hundred thirteen write append.",
+        "Its gain is the tail. In a batch, no request waits behind the one append that writes over half a billion.",
         "Deamortize when something waits on single operations: requests, frames, or a fan out."
       ]
     }

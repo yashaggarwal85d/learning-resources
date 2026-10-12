@@ -58,6 +58,7 @@
     },
     {
       "clause": "scapegoat-style partial rebuilds)",
+      "note": "Taught as amortized, on purpose: Galperin and Rivest's Theorem 5.2 is an amortized bound, so step 15 and the Deep dive 'Spreading a partial rebuild out' say the partial rebuild does not make it worst-case. The syllabus wording is logged in syllabus/review-notes/dsa.md.",
       "at": [
         {
           "step": "A tree that stores no balance"
@@ -267,7 +268,10 @@
               "quote": "dynamic-array doubling, binary counter and multipop stack"
             },
             {
-              "out": "queues from two stacks, Nudge, Fibonacci and doubly lazy counters are further amortized-analysis exercises, not deamortization"
+              "deep": "Deamortizing as a recipe"
+            },
+            {
+              "out": "the amortized two-stack queue is an exercise; its deamortized form, the real-time queue, is taught in Ch.13 'Amortization under persistence' and named in the recipe here. Nudge, Fibonacci and doubly lazy counters are further amortized-analysis exercises, not deamortization"
             }
           ]
         }
@@ -881,7 +885,7 @@
         "at": [
           {
             "topic": "Resizing and incremental rehashing",
-            "quote": "hash tables under memory pressure"
+            "quote": "doubling with amortized cost vs incremental migration across two tables"
           }
         ]
       },
@@ -945,7 +949,7 @@
   },
   "gapReview": {
     "date": "2026-10-12",
-    "by": "builder",
+    "by": "content review (Opus) + fixes",
     "open": []
   }
 }

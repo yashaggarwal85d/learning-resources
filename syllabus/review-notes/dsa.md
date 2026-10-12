@@ -116,6 +116,12 @@ The 12 refresher-tagged topics:
 - Masks and two's-complement tricks (Ch.25)
 - Expectation and indicator variables (Ch.29)
 
+## Wording notes from content review (2026-10-12)
+Topics are reviewed one at a time after they are built. These notes ask for wording changes only; no topic is reordered.
+- **1.2 "Deamortization and global rebuilding"** (`dsa.deamortization-global-rebuilding`): the line reads "turning amortized bounds into worst-case ones (incremental copying, scapegoat-style partial rebuilds)", which offers scapegoat rebuilds as a deamortization technique. Galperin and Rivest's Theorem 5.2 is an amortized bound, and the topic teaches it as amortized on purpose. Suggested wording: "(incremental copying, Overmars's background rebuild; and scapegoat-style partial rebuilds, which stay amortized)".
+- **Dependency of §1.2 on Ch.4:** that topic's reel uses binary search trees (in-order walk, delete by successor swap, subtree size) before Ch.4 "BST operations and rotations". It declares `bst-basics` and its Prerequisites page carries a short refresher. A Ch.4 home for scapegoat trees (CHAPTER.md release note 4) would remove the forward dependency.
+- **Notation:** α is the load factor n / cap in the previous reel (CHAPTER.md "Shared notation") and the balance parameter of the scapegoat tree in this topic. The topic says so on screen; the chapter's shared notation could list the second meaning for the release seam check.
+
 ## Unverified
 These were stated from memory (well-known facts or venues) and not fetched this session, because the web-search budget ran out. They are worth a spot-check:
 - S3-FIFO (SOSP 2023), SIEVE (NSDI 2024), W-TinyLFU in Caffeine.

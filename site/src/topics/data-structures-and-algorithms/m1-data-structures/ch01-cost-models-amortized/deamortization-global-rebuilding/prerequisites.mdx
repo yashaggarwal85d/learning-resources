@@ -6,17 +6,17 @@ This reel assumes five things, and opens with the words it uses. If they are fam
 
 ### <span class="n">00</span> Basics: the terms this reel uses
 
-- **Percentile (p50, p99, p99.9)**: the value that a given share of the measurements stay at or under; p99 is the cost 99 of every 100 stay under. *Where you meet it:* "p99 is 120 ms" means 1 request in 100 is slower.
-- **Tail latency**: the slow end of the latency distribution, which a service is judged on instead of the average. *Where you meet it:* a page that loads in 2 s for 1 user in 100.
+- **Percentile (p50, p99, p99.9) and tail latency**: the value that a given share of the measurements stay at or under; p99 is the cost that 99 of every 100 stay at or under. The slow end, the tail, is what a service is judged on. *Where you meet it:* "p99 is 120 ms" means at most 1 request in 100 is slower.
+- **Fan-out**: one request split across many servers, which finishes only when the slowest answers. *Where you meet it:* a search that asks 100 index shards at once.
 - **Tick**: this reel's unit of time, the time of one element write. *Where you meet it:* a request arrives every 4 ticks.
-- **Worst-case versus amortized bound**: a worst-case bound holds for every operation; an amortized one for a whole sequence. *Where you meet it:* append is O(1) amortized, yet one append copies half a million keys.
 - **Deamortization**: turning an amortized bound into a worst-case one by doing the expensive work in small pieces over later operations. *Where you meet it:* a vector copy spread over later appends.
-- **Incremental copying**: when the old buffer fills, allocate the new one, then let each operation move a fixed number of old keys. *Where you meet it:* a doubling vector that moves 2 old keys per append.
+- **Incremental copying**: when the old buffer fills, allocate a new one, then let each operation move a few old keys. *Where you meet it:* a doubling vector that moves 2 old keys per append.
 - **Frontier**: how many old keys have moved so far; a read compares its index with it to pick the buffer. *Where you meet it:* reading index 5 when only 2 keys have moved.
-- **Global rebuilding**: let a structure go stale for Θ(n) updates, then rebuild all of it; Overmars's version rebuilds in the background. *Where you meet it:* a sorted vector rebuilt once half its slots are tombstones (marks left by deletes).
+- **Global rebuilding**: let a structure go stale for Θ(n) updates, then rebuild all of it; Overmars's version rebuilds in the background. *Where you meet it:* a sorted vector rebuilt once half its slots are tombstones.
+- **Tombstone**: a deleted key left in its slot with a mark, so lookups skip it and the order is kept. *Where you meet it:* a sorted array that deletes without shifting.
 - **Partial rebuilding**: rebuild only the part that went bad. *Where you meet it:* one subtree of a scapegoat tree.
-- **Scapegoat tree**: a plain binary search tree with no balance data in its nodes; only the root keeps the size and the largest size. *Where you meet it:* a too deep insert triggers a rebuild of one ancestor.
-- **alpha-weight-balanced, h(n)**: a node is balanced if neither child holds more than alpha of its subtree; h(n) = ⌊log base 1/alpha of n⌋ is the depth limit. *Where you meet it:* alpha = 2/3 and n = 9 give h = 5.
+- **Scapegoat tree**: a plain binary search tree with no balance data in its nodes. *Where you meet it:* a too deep insert triggers a rebuild of one ancestor.
+- **alpha-weight-balanced, h(n)**: a node is balanced if neither child holds more than alpha of its subtree; h(n) = ⌊log base 1/alpha of n⌋ is the depth limit. Alpha is not the last reel's load factor. *Where you meet it:* alpha = 2/3 and n = 9 give h = 5.
 
 </section>
 
@@ -26,7 +26,7 @@ This reel assumes five things, and opens with the words it uses. If they are fam
 
 You know that an amortized bound is a worst-case bound on the total of a whole sequence divided by its length, never an average over random inputs. You have seen the doubling vector, the charge of 3 per append (1 to write, 2 saved for later copies), and the cost strip with its spikes.
 
-<p class="check"><b>Check yourself:</b> how many of a million appends to the doubling vector copy anything? (Answer: 20, plus the first append, which only allocates.)</p>
+<p class="check"><b>Check yourself:</b> how many of a million appends to the doubling vector copy anything? (Answer: 20. The first append only allocates, and copies nothing.)</p>
 
 <ul class="resources">
   <Resource kind="reel" host={props.host} domain="data-structures-and-algorithms" title="Aggregate and accounting methods">The charge of 3, the cost strip, and the million-append numbers this reel builds on.</Resource>
@@ -51,11 +51,11 @@ You know the gauge Φ = 2n − cap that fills on cheap appends and empties on a 
 
 <section class="prereq" data-section="bst">
 
-### <span class="n">03</span> Binary search trees: search and insert
+### <span class="n">03</span> Binary search trees: search, insert, delete
 
-You know that a binary search tree keeps smaller keys to the left and larger to the right, that a search follows one path from the root, and that an insert ends as a new leaf.
+You know that a binary search tree keeps smaller keys to the left and larger to the right, that a search follows one path from the root, and that an insert ends as a new leaf. An in-order walk visits the keys in sorted order. A delete replaces a node with two children by its successor, so no node ends up deeper.
 
-<p class="check"><b>Check yourself:</b> insert 5, 3, 8, 4 into an empty tree. What is the depth of 4? (Answer: 2, under 3.)</p>
+<p class="check"><b>Check yourself:</b> insert 5, 3, 8, 4 into an empty tree. What is the depth of 4, and what is the in-order walk? (Answer: 2, under 3; the walk is 3, 4, 5, 8.)</p>
 
 <ul class="resources">
   <Resource kind="reel" host={props.host} domain="data-structures-and-algorithms" title="BST operations and rotations">Search, insert, delete by successor swap, and the rotation: the reel that follows later in the course.</Resource>

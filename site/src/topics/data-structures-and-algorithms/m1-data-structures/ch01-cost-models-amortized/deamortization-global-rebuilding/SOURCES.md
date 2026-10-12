@@ -405,6 +405,8 @@ Contents (chapter 5 only):
 - 5.3 Lazy rebuilding: pay for the rebuild concurrently, execute it lazily; amortized, worst-case again with scheduling.
 - 5.4 Double-ended queues; 5.5 Related work (global rebuilding's uses: real-time queues and deques, catenable deques, order maintenance).
 
+Not opened, to check when someone can open it: the chapters of Overmars's book on partial and local rebuilding, the likeliest source for a deamortized (worst-case) partial rebuild. This topic's "Spreading a partial rebuild out" is the recipe applied, labelled so, with no source behind it. Andersson's partial-rebuilding papers appear amortized, going by their abstracts.
+
 ## Algorithms, Lecture 10: Scapegoat and Splay Trees (Jeff Erickson)
 URL: https://jeffe.cs.illinois.edu/teaching/algorithms/notes/10-scapegoat-splay.pdf
 Version: Lecture 10 [Fa'13], copyright 2018 Jeff Erickson, CC BY-NC-SA 4.0

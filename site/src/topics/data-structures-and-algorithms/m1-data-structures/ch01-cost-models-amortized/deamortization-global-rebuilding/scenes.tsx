@@ -300,7 +300,7 @@ export function Installments({ t }: StepCtx) {
   const level = 8 - 2 * T9.reduce((a, x) => a + at(t, x, x + 0.25), 0);
   const gaugeOn = at(t, 1.2, 1.6);
   return (
-    <Svg label="The first 16 appends twice. Plain doubling: bars of 1, 2, 3, 1, 5, 1, 1, 1, 9 and seven 1s, 31 writes, largest 9. With 2 moves per append: bars of 1 or 3, never more than 3, also 31 writes. A gauge of keys left to copy drains from 8 by 2 on each of appends 9 to 12" h={380}>
+    <Svg label="The first 16 appends twice. Plain doubling: bars of 1, 2, 3, 1, 5, 1, 1, 1, 9 and seven 1s, 31 writes, largest 9. With 2 moves per append: bars of 1, 2 or 3, never more than 3, also 31 writes. A gauge of keys left to copy drains from 8 by 2 on each of appends 9 to 12" h={380}>
       <T x={90} y={28} s={15} f={C.latte}>plain doubling</T>
       {PLAIN16.map((c, i) => {
         const g = at(t, 0.2 + 0.06 * i, 0.4 + 0.06 * i);
@@ -455,14 +455,14 @@ export function Race({ t, answer, portrait }: StepCtx) {
 // 8 · What the installments cost: four ledger rows, each with a tiny picture.
 export function Costs({ t }: StepCtx) {
   const rows = [
-    { y: 44, a: 'both buffers stay alive', b: <>c = 524,288: 12 MiB for 262,144 appends</>, t: 0.3 },
+    { y: 44, a: 'both buffers stay alive for longer', b: <>c = 524,288: the same 12 MiB peak,<tspan x={40} dy={18}>held 262,144 appends, not 1</tspan></>, t: 0.3 },
     { y: 124, a: 'every read checks the frontier', b: <>old if k ≤ i &lt; m, else new</>, t: 1.1 },
     { y: 204, a: 'the median append got slower', b: <>p50: 1 → <tspan fill={C.cherryText} fontWeight={700}>3</tspan> writes (524,287 appends cost 3)</>, t: 1.9 },
     { y: 284, a: 'O(1) only if allocation is O(1)', b: <>the analysis assumes the allocator is O(1)</>, t: 2.7 },
   ];
   const o = (i: number) => at(t, rows[i].t, rows[i].t + 0.4);
   return (
-    <Svg label="Four costs of incremental copying: both buffers alive for 262,144 appends, 12 MiB at c = 524,288; a frontier comparison on every read; the median append rising from 1 to 3 writes; and the O(1) worst case holding only if allocation is O(1)" h={350}>
+    <Svg label="Four costs of incremental copying: both buffers alive for 262,144 appends instead of one, the same 12 MiB peak as plain doubling at c = 524,288; a frontier comparison on every read; the median append rising from 1 to 3 writes; and the O(1) worst case holding only if allocation is O(1)" h={350}>
       {rows.map((r, i) => (
         <g key={i} opacity={o(i)}>
           <T x={40} y={r.y} s={15} f={C.crema}>{r.a}</T>
@@ -834,7 +834,7 @@ export function Rebuild({ t }: StepCtx) {
   const gauge = 5 * (1 - at(t, 1.8, 2.8));
   const goatRing = 1 - seg(t, 2.6, 3.0);
   return (
-    <Svg label="The six nodes of the scapegoat's subtree, 51, 54, 63, 69, 80 and 87, flatten into a sorted row and snap back as a perfectly balanced subtree rooted at 63; the tree's height falls from 6 to 4, paid by the potential at 87, which was 5" h={400}>
+    <Svg label="The six nodes of the scapegoat's subtree, 51, 54, 63, 69, 80 and 87, flatten into a sorted row and snap back as a perfectly balanced subtree rooted at 63; the tree's height falls from 6 to 4, paid by the potential at 87: 3 times its 5 is 15, against 6 writes and a climb of 6" h={400}>
       {edges.map((e, i) => {
         const a = pos(e.from);
         const b = pos(e.to);
@@ -852,10 +852,10 @@ export function Rebuild({ t }: StepCtx) {
       <g opacity={at(t, 0.2, 0.5)}>
         <rect x={490} y={68} width={14} height={48} rx={5} fill="none" stroke={C.taupe} strokeWidth={1} />
         <rect x={491} y={116 - 9.6 * gauge} width={12} height={Math.max(0.1, 9.6 * gauge)} rx={4} fill={C.caramel} />
-        <T x={480} y={96} s={13} f={C.caramel} a="end">Φ at 87: 5 → 0</T>
+        <T x={480} y={96} s={13} f={C.caramel} a="end">Φ at 87: 3 × 5 = 15 → 0</T>
       </g>
       <T x={40} y={360} s={15} f={C.crema} o={at(t, 3.0, 3.4)}>rebuilt: 6 nodes · height {height(POS_BEFORE)} → {height(POS_AFTER)}</T>
-      <T x={40} y={380} s={13} f={C.caramel} o={at(t, 3.2, 3.6)}>paid by potential: |left − right| at 87 was 5</T>
+      <T x={40} y={380} s={13} f={C.caramel} o={at(t, 3.2, 3.6)}>paid by c × 5 = 15 ≥ 12 of work (c = 3)</T>
     </Svg>
   );
 }

@@ -21,7 +21,7 @@ const reel: Reel = {
       title: 'What is the p99 of an append?',
       body: (
         <>
-          Percentiles describe a tail: p99 is the cost that 99 of every 100 appends stay at or under. Of a million appends to the doubling vector, 20 resize, the largest copying 524,288 keys. What is the p99 cost of an append?
+          Percentiles describe a tail. p50 is the median; p99 is the cost that 99 of every 100 appends stay at or under; p99.9, 999 of every 1,000. Of a million appends to the doubling vector, 20 resize, the largest copying 524,288 keys. What is the p99 cost of an append?
         </>
       ),
       duration: 1.6,
@@ -39,8 +39,7 @@ const reel: Reel = {
       title: 'Percentiles of requests, not of appends',
       body: (
         <>
-          p50 is the median; p99, the value only 1 in 100 exceeds; p99.9, only 1 in 1,000. Per append, the tail is 1 write. Per request, wait included, p99 is 494,289 ticks: 349,515 requests, 35%, queue behind a resize. A service is judged on
-          its requests, so their tail is the one that counts.
+          Per append, the tail is 1 write. Per request, wait included, p99 is 494,289 ticks: 349,515 requests, 35%, queue behind a resize. A service is judged on its requests, so their tail is the one that counts.
         </>
       ),
       duration: 4.8,
@@ -102,8 +101,8 @@ const reel: Reel = {
       title: 'What the installments cost',
       body: (
         <>
-          Same total work, a different bill. Both buffers stay alive while the copy runs: 12 MiB for 262,144 appends at the last resize. Every read pays a comparison with the frontier. More than half the appends now cost 3, so the median got
-          worse. And the O(1) worst case assumes allocation is O(1).
+          Same total writes, a different bill. Both buffers stay alive while the copy runs: the same 12 MiB peak as plain doubling, but held for 262,144 appends instead of 1. Every read pays a comparison with the frontier. More than half the appends
+          now cost 3, so the median got worse. And the O(1) worst case assumes allocation is O(1).
         </>
       ),
       duration: 3.6,
@@ -113,8 +112,8 @@ const reel: Reel = {
       title: 'Global rebuilding: let it go stale, then rebuild',
       body: (
         <>
-          Global rebuilding: let a structure go stale, then rebuild all of it. A sorted vector deletes by leaving a tombstone, which a lookup reports as absent. Once half its slots are tombstones, copy the live keys into a compact vector.
-          That costs Θ(n), after Θ(n) deletes: O(1) amortized. The doubling vector does the same for growth. And one delete still copies half a million keys.
+          A second structure, apart from growing arrays. Global rebuilding: let it go stale, then rebuild all of it. A sorted vector deletes by leaving a tombstone, which a lookup reports as absent. Once half its slots are tombstones, copy the live keys
+          into a compact vector: Θ(n) after Θ(n) deletes, O(1) amortized. The doubling vector does the same for growth. At 1,048,576 keys, one delete still copies 524,288.
         </>
       ),
       duration: 4.8,
@@ -124,8 +123,8 @@ const reel: Reel = {
       title: 'Rebuild in the background',
       body: (
         <>
-          Overmars’s global rebuilding goes further: start early and rebuild while serving. At 4 tombstones of 16, begin a new copy: each delete also scans 8 slots of the old one, copying live keys. Queries use the old copy. A key deleted after it was copied
-          goes into a log, replayed before the swap. No delete writes more than 10.
+          Overmars’s global rebuilding goes further: start early, rebuild while serving. At 4 tombstones of 16, begin a new copy; each delete also scans 8 slots of the old one, copying live keys. 8 finishes the copy before the old one is half
+          tombstones, the vector’s deadline again. Queries use the old copy. Keys deleted after being copied go into a log, replayed before the swap. No delete writes more than 10.
         </>
       ),
       duration: 5.6,
@@ -135,8 +134,8 @@ const reel: Reel = {
       title: 'A tree that stores no balance',
       body: (
         <>
-          A scapegoat tree is a plain binary search tree: each node holds a key and two pointers, nothing else. The root keeps two counts: the size, and the largest size since the last full rebuild. Fix α strictly between ½ and 1, here 2/3. A node
-          deeper than h(n) = ⌊log<sub>1/α</sub> n⌋, n counting the new node, is too deep: inserting 69 lands at depth 6, below h(9) = 5.
+          Now a tree where only a part goes bad. A scapegoat tree is a plain binary search tree: a key and two pointers per node. The root keeps the size and the largest size since the last full rebuild. Fix α strictly between ½ and 1, here 2/3: a balance
+          parameter, not the last reel’s load factor. A node deeper than h(n) = ⌊log<sub>1/α</sub> n⌋, n counting the new node, is too deep: inserting 69 lands at depth 6, below h(9) = 5.
         </>
       ),
       duration: 4.6,
@@ -165,8 +164,8 @@ const reel: Reel = {
       title: 'Rebuild the subtree, perfectly balanced',
       body: (
         <>
-          Rebuild the scapegoat’s subtree perfectly balanced: walk its 6 nodes in order, make the lower middle one, 63, the root, and recurse. Time is proportional to the subtree; done in place, extra space is O(log n). Who pays? Each node holds
-          |left size − right size| of potential (0 below 2): an unbalanced node holds Θ(its size). So inserts cost O(log n) amortized.
+          Rebuild the scapegoat’s subtree perfectly balanced: walk its 6 nodes in order, make the lower middle one, 63, the root, and recurse. Time is proportional to the subtree. Who pays? Each node holds c·|left size − right size| of potential (0 below 2),
+          for a constant c. An insert adds O(1) at each of its O(log n) ancestors; an unbalanced node holds Θ(its size), enough for the climb and the rebuild. So inserts cost O(log n) amortized.
         </>
       ),
       duration: 3.8,
@@ -198,7 +197,7 @@ const reel: Reel = {
       title: 'Back to the problem',
       body: (
         <>
-          Back to the service. With 2 moves per append no append takes more than 3 ticks, and requests arrive 4 apart, so no queue ever forms: request p99 and max are 3 ticks, against 494,289 and 524,289. Same total work; the median rose from 1 to 3.
+          Back to the service. With 2 moves per append no append takes more than 3 ticks, and requests arrive 4 apart, so no queue ever forms: request p99 and max are 3 ticks, against 494,289 and 524,289. Same total writes; the median rose from 1 to 3.
           And every tick charged a write the same, wherever in memory it landed.
         </>
       ),
@@ -254,7 +253,7 @@ const reel: Reel = {
       predict: {
         options: [
           { label: 'Yes: a worst-case bound always beats an amortized one' },
-          { label: 'No: same total writes, slower reads, buffers held longer; only the tail improves, and nothing waits on it', correct: true },
+          { label: 'No: same total writes, and nothing waits on the tail', correct: true },
           { label: 'Yes: it halves the copies' },
           { label: 'No: incremental copying makes appends O(log n)' },
         ],
