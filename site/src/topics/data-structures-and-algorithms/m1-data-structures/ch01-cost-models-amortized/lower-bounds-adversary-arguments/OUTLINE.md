@@ -281,7 +281,7 @@ Fact-check record: `FACT-CHECK.md` (2.3, 2026-10-12). Source quotes: `SOURCES.md
 
 - 2026-10-12: sources fetched and `SOURCES.md` written (2.1). Content plan and storyboard written (this file, 2.2). The plan added four sources, fetched with `scripts/sources.mjs` (Amenta UC Davis discussion 2; NMSU Fall 2016 qual answers; Waterloo CS 466 notes; CMU 15-451 lecture 6) and extra quotes in the Erickson, Northeastern and Ben-Or sections; `node scripts/sources.mjs check` passes (69 quotes, 0 problems). The exhaustive searches the plan relies on (sorting 3–5 keys; min and max 3–6; merging 2–5; distinctness 3–5) were prototyped in the session scratchpad and give the values above in under 10 s each.
 - 2026-10-12: fact-check and red team (2.3) done: `FACT-CHECK.md`. Corrections applied here (see "Changes after the fact-check") and in `SOURCES.md` (36 quotes and two sources added; `sources.mjs check`: 105 quotes, 0 problems).
-- Next: coverage map (2.4) with the blind expert list; then the build (3).
+- 2026-10-12: coverage map, build, content review (20 findings fixed) and looks review (12 findings fixed) done; all checks except narration pass. Content final. Next: narration (7), then ship (8).
 
 ## Changes from the chapter plan
 
