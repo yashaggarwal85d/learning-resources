@@ -1,0 +1,686 @@
+# OUTLINE: Ownership topology over shared mutability (`rust.ownership-topology-over-shared`)
+
+Content plan and storyboard (ROUTINE.md 2.2). The builder follows this file exactly; a change of plan is made here first, with the reason. Written 2026-10-12 against `../CHAPTER.md` (Part A all of it; Part B Topic 4 as the contract, Topic 3 for the bridge), `SOURCES.md` (204 quotes, `sources.mjs check` green; this plan added 20 sources' quotes, listed under "Sources"), the blind expert list (20 items, every one placed below), the previous topics as they really are (`origin/topic/rust.single-ownership-move-semantics` and `origin/topic/rust.raii-drop-order-leak`: their `OUTLINE.md`, `REVIEW.md`, `reel.tsx`, registry entries) and the DSA asymptotic-notation topic as the file pattern. Topic 3 (`rust.partial-moves-destructuring-as`) has no branch yet: it is being built in parallel to `CHAPTER.md`, so this topic builds to its CHAPTER entry and the release seam check compares the two.
+
+Everything marked **measured** below was compiled and run by the planner on rustc 1.97.0 (2d8144b78 2026-07-07), `--edition 2024`, x86_64 Linux, 4 cores, with the chapter's A.3 code copied verbatim (the drafts are the shapes `examples.py` must reproduce; the builder re-runs everything and records the toolchain actually used). No timing is measured or claimed anywhere in this topic (CHAPTER.md A.3 table, row 4; Part C): every number is a count.
+
+- **Domain:** Rust Systems Engineering. **Milestone 1** Ownership, Types, and Concurrency Primitives. **Chapter 1** Ownership and Moves, **section 1.1** Ownership as resource topology. Kind: **full**. Fourth and last topic of the chapter.
+- **Syllabus line (verbatim):** "**Ownership topology over shared mutability** — the anti-pattern of reaching for `Arc<Mutex<T>>` when the real problem is the wrong ownership topology. Alternatives: tree-shaped ownership, arenas with generational indices for graphs, and an owner task fed by messages (→ Ch.4, Ch.6)."
+- **Previous topic (planned, in parallel):** "Partial moves and destructuring as transfer": E0509, E0507, `Option::take`/`mem::take`/`mem::replace`, binding modes, 2024 match ergonomics, and the guard `PooledBuf<'p> { buf: Option<Buf>, pool: &'p mut Pool }` whose `&'p mut Pool` allows one guard at a time. Its handoff (CHAPTER.md A.8): "`PooledBuf` holds the `Pool` by exclusive borrow, so only one guard can exist at a time. Next: when three stages need buffers at once, do you reach for `Arc<Mutex<Pool>>`, or change who owns what?"
+- **What the learner has really seen of the running example:** topic 1 did **not** build `Buf`/`Pool`/`fill`/`inspect`/`consume` (its example was `ship(batch)`); topic 2 built `Trace`, `Stage`, `SpillFile` and the counting allocator and glossed `Buf`/`Pool` in its handoff; topic 3 builds `Frame` and `PooledBuf` on top of A.3. So this topic shows the A.3 signatures it relies on (`Pool::get`, `Pool::put`, `fill`, `inspect`, `consume`) on screen the first time it uses them, with one-line glosses, and never assumes more than topic 3's `PooledBuf`.
+- **Next:** Ch.2 "Aliasing XOR mutability" (many `&T` or one `&mut T`, reborrowing, two-phase borrows). **Do not teach any of it here**: the rule is used only as the Book's statement (declared `references-basics`), and the handoff names it as the next question.
+- **Also later, do not teach (one forward line each, chapter named, only where unavoidable):** `Arc`/`Rc`/`Box` shapes, `Arc::clone` cost under contention, interior mutability (`RefCell`, `Cell`), `Weak` and cycles in depth, sharding and `arc-swap`, measured contention (Ch.4, "Arc<Mutex<T>> as hidden serialization" and "Reference cycles and Weak"); `Send`/`Sync`, poisoning, lock ordering in depth, `MutexGuard` across `.await` (Ch.6); `'static` bounds and `thread::scope` as the borrow-friendly spawn (Ch.2 section 2.2, "Borrows across thread and task boundaries"); the general ABA problem (Ch.7); bounded channels and backpressure as policy, structured shutdown (Ch.10); allocation arenas and bump allocators (Ch.30, "Custom allocators and arenas"); async owner tasks and actors on Tokio (M2: Ch.8–Ch.10).
+
+---
+
+## Learning outcomes ("After this topic you can")
+
+1. **Recognise the `Arc<Mutex<T>>` reflex** in a design or a pull request (the chain of compiler errors that leads to it, `E0499` → `E0373` → `E0382` → `E0596` → `Arc<Mutex<_>>`, and its single-threaded twin `Rc<RefCell<_>>`), **name the topology it hides**, and count what it costs in code: owners of one value (3 for the reviewed `Pool`), lock acquisitions per message (5), invariants spread across every lock holder, and a buffer count nobody bounds.
+2. **Restructure shared mutable state** into a **tree** (one owner lends down, results come back up), an **arena with generational handles** (one owner for every node of a graph), or an **owner thread fed by messages** (one owner, everyone else sends it owned values), and **pick between them** by the shape of the data (hierarchy, graph with cycles and removal, concurrent users) and the access pattern; and say when `Arc<Mutex<T>>` (or plain `Arc<T>`) really is the right shape.
+3. **Implement a minimal generational arena** (`Arena<T>`, `Handle { index, generation }`, about 30 lines, the idea behind the `slotmap` crate) and explain how the generation turns a stale handle into `None` instead of a silent hit on a reused slot.
+4. **Move owned buffers between threads through channels** (`std::sync::mpsc`, `thread::spawn(move || …)`) and **account for every buffer's owner at every moment**: a send is a move (`E0382` if the binding is reused, `E0505` if it is still borrowed), `SendError` hands the value back, the owner checks `in the pool + out in the ring == every buffer ever made` at each hand-over, and the number of buffers is bounded by the topology (3), not by luck.
+
+---
+
+## Bridge and handoff
+
+- **Registry `bridge`** (shown on step 1; CHAPTER.md A.8 wording with one-line glosses, as topic 2 did, because topic 1 never built `Buf`/`Pool`): "Your `PooledBuf` guard lets one buffer (`Buf`) out of the pool (`Pool`) at a time, because it holds the pool by exclusive borrow, and three stages need buffers at once. Now: why `Arc<Mutex<Pool>>` is the reflex, not the answer, and the shapes of ownership that fix it across a whole program."
+- **Registry `handoff`** (end card, said in step 22; CHAPTER.md A.8 wording): "Every topology still lends: `fill` borrows `&mut Buf`, `inspect` borrows `&Buf`. Next: the rule behind those loans, many shared borrows or one exclusive borrow, never both."
+- At ship time (ROUTINE.md section 8 step 3) re-read topic 3's real registry `handoff` and bring this bridge in line if its wording or names changed (keep the point and the names).
+
+---
+
+## Shared visual vocabulary (build once at the top of `scenes.tsx`, reuse in every step)
+
+The topic's own idea: **four maps of one pipeline.** The same four places are drawn at the same four positions in every map: the **owner** corner (top-left: `main`, the driver, or the owner thread, whichever owns the `Pool` in that map), **fill** (top-right), **inspect** (bottom-right), **consume** (bottom-left). Only the **edges** change from map to map, and the edges are the chapter's marks, so a map *is* an owns-graph: in the shared map three caramel owner arrows converge on one locked box in the middle (many owners, visibly breaking "one caramel arrow per payload"); in the tree, arrows leave one node (one owner, loans going down); in the arena, nodes become a row of numbered slots and edges become `index·gen` labels; in the ring, three buffer chips travel clockwise and each always has exactly one caramel arrow. The map's name sits top-left (`SHARED`, `TREE`, `ARENA`, `RING`), so a paused learner knows which topology the frame shows. Two counters sit top-right in every map (`LOCKS`, `BUFFERS`), so maps compare at a glance.
+
+Use `C`, `Svg`, `T`, `Stack`, `Bar` from `site/src/reels/kit.tsx`, `Code` from `site/src/reels/Code.tsx` (`title`, `highlight`, `end`), helpers from `site/src/reels/anim.ts` (`seg`, `easeOut`, `easeOutBack`, `lerp`, `fmt`). Do not copy kit code into the topic. Chapter marks (CHAPTER.md A.5) exactly:
+
+- **Canvas:** maps use `Svg h={400}` (portrait and landscape); predict reveals on portrait use a shorter `h` (about 240–280) so the drawing keeps about 0.6 px per unit once the explain panel opens (topic 2 looks review, finding 1).
+- **`MapNode`:** rounded rect 160 × 48 (rx 8), stroke `C.mocha` 1.5, fill `C.cocoa`; name 15 units `C.crema` weight 600 at x+12, baseline y+30; an optional role line is **not** drawn inside (no room at phone scale): roles go in the caption. Fixed positions on the 600 × 400 canvas: owner `(40, 96)`, fill `(360, 96)`, inspect `(360, 276)`, consume `(40, 276)` (right edges at 520, clear of the right 64 px on desktop). Centres: owner (120, 120), fill (440, 120), inspect (440, 300), consume (120, 300). The node the step is about gets stroke `C.caramel` 2.5. A node can hold a small inner cell `Pool` (90 × 22, stroke `C.latte` 1, label 13 `C.latte`) at its bottom-right corner when it owns the pool.
+- **`MapTitle`:** 13 units `C.taupe` uppercase at (40, 34): `MAP · SHARED`, `MAP · TREE`, `MAP · ARENA`, `MAP · RING`.
+- **`Counters`** (A.5 position, top-right): two stacked rows right-aligned at x 520: label 13 units `C.taupe` uppercase (`LOCKS`, `BUFFERS`) at y 30 and y 62, value 20 units at y 50 and y 82. Only the counter the step is about uses the **serif** face (the step's one serif element, DESIGN.md); the other is monospace `C.latte`. Values count with `easeOut` and `fmt()`. Where allocations matter (steps 6, 8, 9, 15), the second row reads `ALLOCS` or `LIVE` instead, as the step says.
+- **Owner edge:** solid `C.caramel` 2.5 with an arrowhead at what it owns, exactly one per value. **Shared borrow:** dashed `C.latte` 2 (`6 5`), open dot r 4 at the borrowed value, no arrowhead. **Exclusive borrow:** dashed `C.cinnamon` 2, open dot. **A move** is the value's chip sliding along its edge; the place it left keeps a `moved` outline (dashed `C.taupe`, word `moved` 13 units `C.latte` at full opacity), never deleted.
+- **`Hub`** (shared map only): the locked box in the middle, rect 200 × 56 at (200, 182), stroke `C.caramel` 2, label `Arc<Mutex<Pool>>` 15 units `C.crema` centred; a small padlock glyph (a 14 × 11 rect plus an arc, stroke `C.latte` 1.5) at its top-right corner; each lock acquisition flashes the padlock (`C.caramel` for 0.15 s) and ticks `LOCKS`.
+- **`Chip`** (a `Buf` in the ring): rounded rect 44 × 24 (rx 6), fill `C.roast`, stroke `C.latte` 1.5, its id (`1`, `2`, `3`) 15 units `C.crema` centred. A chip always has exactly **one** caramel arrow: from the node that owns it, or, while it travels, from the channel it is in (a channel is drawn as a thin double line `C.mocha` along the square's side, labelled only once per map in 13-unit `C.taupe`, `channel`).
+- **`Slots`** (arena map): a row of four slot boxes 110 × 64 at y 300, x 40, 170, 300, 430 (right edge 540: move the row left by 20 on desktop if the rail needs it; check the screenshot); inside each, the node name 15 `C.crema` and `gen N` 13 `C.latte`; above each, its index `0 1 2 3` in 13 `C.taupe`. A handle is drawn as a label `2·0` (index·generation) in 15-unit `C.caramel` on the edge it stands for.
+- **Errors:** the offending edge turns `C.cherry` (stroke only on lines, fill on boxes), the code in `C.cherryText` 15 units beside it (`E0499`, `E0382`, …). An error frame never uses caramel for anything else.
+- **Accents:** at most two per step: caramel (ownership, the thing to look at) plus either cinnamon (an exclusive borrow) or cherry (an error, a leak, a stale hit). Taupe and latte are structure.
+- **Predict steps:** the clock stops at `duration`; the question frame gives nothing away; the reveal (`answer !== null`) is a complete still frame; reveal groups may fade with a CSS opacity transition of at most 0.15 s and 0.1 s delay. On portrait, when the reveal needs the room, hide the code panel (`portrait && answer !== null`). Every `explain` is **75 words or fewer**; every option label 34 characters or fewer.
+- **Text in drawings:** 13 units minimum; 15–17 for values; one 20+ number per step; code lines on screen 40 characters or fewer; never two labels on one line unless both fit with 24+ units between them at phone scale (13-unit mono ≈ 8 units per character); at least 16 units clear under the lowest element on portrait; nothing within the right 64 px on desktop. Every `Svg` has an `aria-label` that carries the step's whole point in one sentence.
+- **Captions:** body 90 words or fewer (topic 2 looks review, finding 3); the bridge is said only on step 1, once.
+- **Every snippet on screen is in a lab file verbatim:** each displayed line is an exact substring of a line of the named `examples/*.rs` file (trailing comments may be cut), and `examples.py` asserts it. Every number on screen (counters, ids, E-codes, sizes) is asserted in `examples.py`.
+- **One-line glosses, said on the spot where each first appears (and in Prerequisites):** `Arc<T>` "shared ownership: an atomically counted pointer; the last one dropped frees the value (Chapter 4)"; `Mutex<T>` "owns its data; `lock()` returns a guard that gives `&mut` access and unlocks when dropped (Chapter 6)"; `Rc<T>` "the single-threaded `Arc` (Chapter 4)"; `RefCell<T>` "borrow rules checked at run time instead of compile time (Chapter 4)"; `thread::spawn` "runs a closure on a new OS thread; its `join()` waits and hands back the closure's result"; `mpsc::channel()` "a FIFO queue between threads: `Sender` in, `Receiver` out"; `move || …` "a closure that takes ownership of what it uses" (taught here); `'static` and `Send` named only ("the thread may outlive this function", "safe to hand to another thread": Chapter 2 section 2.2 and Chapter 6).
+
+---
+
+## The reel: 22 steps
+
+Layers: 1 the problem (step 1, solved by steps 6 and 14), 2 predict first (steps 3, 7, 10, 15, 19–21), 3 mechanism (2, 4, 5, 6, 8, 9, 11–14, 16), 4 trade-offs and numbers (3, 4, 6, 8, 9, 14, 15, 17, 18), Prove it (19–21), recap with handoff (22). About 20 minutes (`minutes: 20`). Pacing: no more than two text-heavy steps in a row; every mechanism step has a moving picture.
+
+Titles below are exact (coverage keys on them). Write each in `reel.tsx` as a 6-space-indented `title: '…',` line; titles contain no apostrophes.
+
+---
+
+### Step 1 — `Three stages, one guard at a time`  (the problem; `duration: 5.0`)
+
+- **Visual idea:** the topic-3 guard hits its wall on the map: stage 1's guard holds the pool by an exclusive (cinnamon) loan; stage 2 reaches for a second exclusive loan and the edge turns cherry with `E0499`. Then a ghost of the pull request's fix fades in at the centre, `Arc<Mutex<Pool>>`, unlit: the question of the topic.
+- **On screen, portrait:** `Stack`: `Code` panel titled `stages.rs` (5 lines), `Svg h={300} fill` under it.
+  - Code (exact, from `examples/e0499.rs`):
+    ```
+    let mut pool = Pool::new();
+    let a = PooledBuf::new(&mut pool);
+    let b = PooledBuf::new(&mut pool);
+    drop(b);
+    drop(a);
+    ```
+    `highlight={[3]}` once typed.
+  - Drawing (600 × 300, map without the bottom row: owner node `pool` at (40, 60), `fill` at (360, 60), `inspect` at (360, 200); consume is not drawn): a cinnamon dashed exclusive-borrow edge from `fill` to `pool` with an open dot; then a second cinnamon edge from `inspect` to `pool` that turns `C.cherry` with `E0499` (15, `C.cherryText`) at its midpoint and the label `second &mut` 13 `C.latte` under it. A dashed `C.taupe` outline box at the centre-bottom (200, 236, 200 × 44) with `Arc<Mutex<Pool>>` 15 units `C.latte` inside and `the PR` 13 `C.taupe` above it.
+- **Landscape:** `Code` left (about 45% width), drawing right, same coordinates.
+- **Beats:** 0–1.0 s code types. 1.2 s nodes fade in (0.4 s). 1.8–2.4 s the first cinnamon edge draws `fill → pool`. 2.8–3.4 s the second edge draws `inspect → pool`; at 3.4 s it turns cherry and `E0499` pops (`easeOutBack`, 0.3 s). 4.2–5.0 s the dashed PR box fades in.
+- **Real values:** `E0499` and the header `error[E0499]: cannot borrow `pool` as mutable more than once at a time` (measured, E1). Only the code is shown on screen; the drawing shows `E0499` only.
+- **Final frame:** two loans into one pool, the second cherry with `E0499`, the unlit `Arc<Mutex<Pool>>` box labelled `the PR`.
+- **Caption (body, ≤ 90 words):** "Three pipeline stages each want a buffer at the same time. The guard `PooledBuf` borrows the pool exclusively, so a second guard is `E0499`. The pull request in review wraps the pool in `Arc<Mutex<Pool>>` (shared ownership plus a lock) and every stage's counters in another, and it compiles. Was that the fix the compiler was asking for? By the end you'll name the topology behind this design, count what it costs, and rebuild the pipeline three ways that need no lock at all."
+- **Narration gist:** the bridge sentence in full first ("Your pooled buffer guard lets one buffer out of the pool at a time…"), then the double exclusive borrow error, the pull request's arc of mutex, the question, the promise. Spoken forms: "the double exclusive borrow error", "arc of mutex".
+
+### Step 2 — `Four errors, four patches`  (mechanism: how the reflex arises; `duration: 5.6`)
+
+- **Visual idea:** a ladder. Each rung is one real rustc error and the one-token patch that silences it; the learner climbs from `E0499` to a green build without anyone asking who should own the pool. The ladder *is* the reflex.
+- **On screen (both orientations, one `Svg h={420}`):** four rungs stacked bottom to top at y 340, 260, 180, 100, each a row: left an error chip (rect 96 × 30, fill `C.cherry`, code 15 units `C.crema` centred: `E0499`, `E0373`, `E0382`, `E0596`), then the error's gist 13 units `C.latte` at x 150 on the first line (≤ 40 chars) and the patch 15 units `C.caramel` on the second line (y + 20):
+  1. `E0499` · `two &mut of one pool` · patch `give each stage a thread`
+  2. `E0373` · `closure may outlive pool` · patch `add move`
+  3. `E0382` · `pool moved into thread 1` · patch `wrap it in Arc`
+  4. `E0596` · `no &mut through an Arc` · patch `add a Mutex`
+  Top (y 40): a rounded rect 300 × 36 at x 150, stroke `C.caramel` 2, text `Arc<Mutex<Pool>>  compiles` 15 units `C.crema`. A thin `C.mocha` rail on the left (x 40) joins the rungs. Bottom-right, 13 units `C.taupe`: `nobody asked: who owns the pool?` (y 396).
+- **Beats:** rungs arrive bottom-up 0.9 s apart (0.3, 1.2, 2.1, 3.0 s), each chip popping (`easeOutBack` 0.3 s) then its two text lines (0.25 s). 4.0 s the top box draws. 4.8–5.6 s the taupe line fades in.
+- **Real values:** the four E-codes and headers (measured, E1): `error[E0499]: cannot borrow `pool` as mutable more than once at a time`; `error[E0373]: closure may outlive the current function, but it borrows `pool`, which is owned by the current function` with help `to force the closure to take ownership of `pool` (and any other referenced variables), use the `move` keyword`; `error[E0382]: use of moved value: `pool`` with `value moved into closure here, in previous iteration of loop` and the note `if `Pool` implemented `Clone`, you could clone the value`; `error[E0596]: cannot borrow data in an `Arc` as mutable` with help `trait `DerefMut` is required to modify through a dereference, but it is not implemented for `Arc<Pool>``; then the `Arc<Mutex<Pool>>` program compiles and runs (E1, `l5`).
+- **Final frame:** the full ladder, the green-edged top box, the taupe question.
+- **Caption:** "How the reflex happens, with the real errors. Two exclusive loans of one pool: `E0499`. Move each stage to a thread, and the closure borrows a pool it may outlive: `E0373`, whose help says *add `move`*. Now the pool moves into the first thread: `E0382`, whose note even offers to clone it (three separate pools!). `Arc` gives shared ownership but no `&mut`: `E0596`. A `Mutex` makes it exclusive again, at run time. Every patch was local; none asked who should own the pool. Single-threaded, the same ladder ends at `Rc<RefCell<Pool>>`."
+- **Narration gist:** "four errors, four patches"; each rung in a sentence; "every patch was local; none of them asked who should own the pool"; "the single-threaded twin is an R C of ref cell". Glosses for arc and mutex said here, once.
+
+### Step 3 — `How many locks per message?`  (predict; `duration: 1.4`)
+
+- **Visual idea:** the shared map with the reviewed code; the learner counts lock acquisitions in one message's life before the padlock starts ticking.
+- **On screen, portrait:** `Stack`: `Code` titled `the PR, per message` (8 lines), `Svg h={240} fill` with the shared map scaled to its top half (owner `main`, `fill`, `inspect`, `consume`, `Hub` in the middle, three caramel owner arrows into the hub from `main`, `fill`, `consume`; `inspect` has none to the pool). Code (exact lines from `examples/reviewed.rs`):
+  ```
+  // fill
+  let mut buf = lock(&pool).get();
+  lock(&stats).filled += 1;
+  // inspect
+  lock(&stats).inspected += 1;
+  // consume
+  lock(&stats).consumed += 1;
+  lock(&pool).put(buf);
+  ```
+  (`lock` is the lab's counting wrapper: `LOCKS.fetch_add(1, Relaxed); m.lock().unwrap()`.)
+- **Landscape:** code left, map right.
+- **Beats (question frame):** 0–0.8 s code types; 0.8–1.4 s the hub's padlock pulses once.
+- **Predict:**
+  - Options (this order): `1: the pool, once` · `2: get and put` · `5: pool twice, counters thrice` **(correct)** · `0: channels carry the buffers`
+  - Why each wrong one tempts: "1" counts the shared value, not the operations; "2" forgets the counters' `Arc<Mutex<Stats>>`; "0" confuses the channels between stages (which this PR also has) with the pool and counters, which are locked.
+  - **explain (≤ 75 words):** "Five: `get` and `put` lock the pool, and each stage locks the shared counters once. Over 1,000 messages that is 5,000 acquisitions, counted in code. Each is a point where the stages must take turns (Chapter 4 measures what that costs). And the pool now has three owners, the counters four: next step."
+- **Reveal frame:** the map with the counter `LOCKS` in serif counting to `5,000` (still frame shows `5,000`), the padlock lit, and under the hub `5 per message` 15 units `C.caramel`. On portrait hide the code panel.
+- **Real values:** `locks=5000`, `locks_per_message=5`, `messages=1000` (measured, E2; deterministic: `lock()` blocks, nothing retries).
+- **Narration:** question lines; answer: "Five. Get and put lock the pool, and every stage locks the shared counters once. A thousand messages, five thousand locks."
+
+### Step 4 — `Everyone owns it, so no one does`  (mechanism: the design cost; `duration: 5.0`)
+
+- **Visual idea:** the chapter's rule "one caramel arrow per payload" broken on the map: three caramel arrows converge on the hub. Then what that hides: no node can state an invariant alone, and nothing bounds how many buffers exist.
+- **On screen (both orientations, `Svg h={400}`):** full shared map. Owner corner labelled `main`. Caramel owner arrows from `main`, `fill`, `consume` into the `Hub` (the hub's own caramel stroke dims to `C.mocha` so the three arrows are the focus). A second smaller hub `Arc<Mutex<Stats>>` (rect 170 × 34 at (215, 250), stroke `C.latte`) with four thin `C.latte` arrows (main and the three stages) is drawn quieter. Counters: `OWNERS` (serif) `3` for the pool, `LOCKS` `5,000` in latte mono. Bottom, 13 units `C.latte`, two stacked lines at y 360 and 380: `invariants: in every lock holder` / `buffer count: bounded by nobody`.
+- **Beats:** 0.3 s map fades in. 1.0, 1.5, 2.0 s the three caramel arrows draw into the hub; `OWNERS` ticks 1 → 2 → 3. 2.6 s the stats hub and its four latte arrows fade in. 3.4 s and 4.2 s the two bottom lines appear.
+- **Real values:** `owners_pool=3`, `owners_stats=4` (measured, E2: `Arc::strong_count` read while all three stage threads are parked at a `Barrier`, so the count is deterministic); `5,000` locks (E2).
+- **Final frame:** three caramel arrows into one box, `OWNERS 3`, the two lines.
+- **Caption:** "Count the owners: the pool has three (`main`, `fill`, `consume`), the counters four. Shared ownership is real ownership, so every holder can do anything at any time, and an invariant like *every buffer is either in the pool or in exactly one stage* now lives in no single place: each lock holder must keep it. Two locks taken in different orders deadlock, so lock order becomes a rule for the whole program. And how many buffers exist? Nothing in this design decides; step 15 shows what that costs."
+- **Narration gist:** "the pool has three owners, the counters four"; "every holder can do anything at any time"; "the invariant lives nowhere"; "lock order becomes a rule for the whole program"; "how many buffers exist? nothing decides".
+
+### Step 5 — `A lock is exclusivity checked at run time`  (mechanism; `duration: 5.0`)
+
+- **Visual idea:** one `&mut` loan, drawn twice: on top, the compiler grants it statically (a cinnamon dashed edge, no padlock, `0 locks`); below, the same loan granted by a `Mutex` at run time (the padlock flashes, a guard slot appears and collapses back when dropped). Exactly what the reflex re-implements, and its price.
+- **On screen (both orientations, `Svg h={400}`):** two lanes. Lane A (y 30–170) label `STATIC` 13 `C.taupe`: owner slot `pool` at x 40 (a `MapNode`), a `fill` node at x 360, a cinnamon dashed edge `&mut Pool` from fill to pool with an open dot, label 15 `C.latte` `checked by the compiler` at y 160. Lane B (y 210–370) label `RUN TIME` 13 `C.taupe`: the `Hub` (smaller, 200 × 44) at x 40 with padlock; `fill` at x 360; on each `lock()` a guard slot `MutexGuard` (130 × 30, dashed `C.latte`) appears beside fill, a cinnamon edge from guard into the hub, then the guard collapses (`easeOut` 0.3 s) and the edge vanishes. Counter `LOCKS` (serif) counts lane B only. Bottom, 13 units `C.taupe`: `Arc::clone: 0 allocations, a pointer and a count` (y 392).
+- **Beats:** 0.3 s lane A draws its edge (0.5 s) and its label `0 locks` 15 `C.latte`. 1.4 s lane B appears; five lock cycles 0.5 s apart from 1.8 s to 3.8 s (guard appears 0.15 s, edge 0.15 s, guard drops 0.2 s), `LOCKS` ticking 1 → 5 (one message of the reviewed design). 4.2–5.0 s bottom line.
+- **Real values:** lane A `0 locks` (E2b `getmut`: `Mutex::get_mut` and `into_inner` on an owned mutex, the counting helper never called: `locks=0`); lane B `5` per message (E2); `Arc::clone` allocations `0` and `Arc::new(Mutex::new(Pool::new()))` allocations `2` (the pool's free-list reservation and the `Arc`'s heap block) (E2b); `size_of::<Arc<Mutex<Pool>>>() == 8` (E2b) appears in the caption only.
+- **Final frame:** lane A: one cinnamon loan, `0 locks`; lane B: the hub with `LOCKS 5` and no live guard; the bottom line.
+- **Caption:** "`Mutex<T>` owns its data and hands out `&mut` through a guard that unlocks when it is dropped: the exclusive loan you already know, checked at run time instead of compile time. The std docs say it outright: `Mutex::get_mut` needs no locking, because holding `&mut` to the mutex *statically guarantees* no one else can lock it. So the lock is only needed when you can't name one owner. `Arc::clone` doesn't copy the pool: it copies an 8-byte pointer and bumps a count (0 allocations, measured)."
+- **Narration gist:** "a mutex is an exclusive loan, checked while the program runs"; "if you can name one owner, the compiler does this for free"; "an arc clone copies a pointer and bumps a count, not the pool".
+
+### Step 6 — `Name the owner: a tree`  (mechanism + numbers; closes step 1 for sequential stages; `duration: 5.4`)
+
+- **Visual idea:** the tree map: one node owns everything and arrows only leave it. The driver (owner corner) owns the pool and every stage's counters; a buffer chip is lent down to `fill` (cinnamon), to `inspect` (latte), handed to `consume` (caramel move) and handed back. Counters: `LOCKS 0`, `BUFFERS 1`.
+- **On screen, portrait:** `Stack`: `Code` titled `pipeline.rs` (5 lines, from `examples/tree.rs` `Pipeline::run_one`), `Svg h={300} fill`.
+  ```
+  let mut buf = self.pool.get();
+  fill(&mut buf, src);
+  let h = inspect(&buf);
+  let buf = consume(buf);
+  self.pool.put(buf);
+  ```
+  `highlight` moves line by line with the beats (2, 3, 4, 5).
+  - Drawing: tree map (owner corner labelled `driver` with the inner `Pool` cell; the three stage nodes at their positions); one chip `1` next to the driver. Counters `LOCKS` (serif) `0`, `BUFFERS` `1`.
+- **Landscape:** code left, map right.
+- **Beats:** 0–1.0 s code types. 1.2 s map fades in. 1.8 s cinnamon dashed edge driver → fill with an open dot on the chip (the chip stays at the driver: a loan). 2.6 s it vanishes; latte dashed edge driver → inspect; a small `Header` card (rect 80 × 24, `C.latte` stroke, text `Header` 13) slides back from inspect to driver (`Copy`, "results come up"). 3.4 s the chip **slides** to consume (a move; caramel arrow now from consume), 4.0 s slides back (consume returns it). 4.6 s chip slides into the `Pool` cell. Counters never change.
+- **Real values:** 1,000 messages, `allocs_in_loop=1`, `buffers_created=1`, `locks=0` (measured, E3; the lab file has no `Mutex`, `Arc` or `.lock(` token, asserted by scanning code lines); last header `Header { kind: 1, len: 256 }`.
+- **Final frame:** the tree with the chip home in the `Pool` cell, `LOCKS 0`, `BUFFERS 1`, and the four edges drawn faint in their roles (cinnamon, latte, caramel) as a still summary.
+- **Caption:** "If the stages run one after another, name one owner and the problem is gone. The driver owns the pool and each stage's counters; it lends the buffer down (`&mut` to `fill`, `&` to `inspect`), hands it to `consume` and gets it back, and results come up as values (`Header` is `Copy`). The same signatures as before, now as the whole design: 1,000 messages, 1 allocation, 0 locks. If the stages must run *at the same time*, a tree isn't enough: step 14."
+- **Narration gist:** "name one owner"; "loans go down, results come up"; "a thousand messages, one allocation, no locks"; "if the stages must run at the same time, keep watching".
+
+### Step 7 — `Which of these really has many owners?`  (predict; `duration: 1.4`)
+
+- **Visual idea:** four small cards, each a piece of "shared" state from the pipeline. The learner picks the one whose ownership is truly shared; the reveal stamps the other three with the owner they really have.
+- **On screen (both orientations, `Svg h={400}`):** four cards (rect 250 × 70, stroke `C.mocha`, fill `C.cocoa`) in a 2 × 2 grid at (40, 60), (310, 60), (40, 180), (310, 180) on landscape; stacked 4 × 1 (x 40, width 440, y 50, 130, 210, 290; h 64) on portrait. Card text 15 `C.crema`, one line each (≤ 26 chars) with a 13 `C.latte` second line:
+  - A `the buffer pool` / `stages run in turn`
+  - B `per-stage counters` / `each stage counts its own`
+  - C `a read-only config` / `8 threads, whole run`
+  - D `one buffer` / `stage to stage`
+- **Beats:** cards appear 0.25 s apart (0.1–0.85 s); 1.0–1.4 s all four outlines pulse once.
+- **Predict:**
+  - Options: `A: the pool` · `B: the counters` · `C: the config` **(correct)** · `D: the buffer`
+  - Why each wrong one tempts: A is the PR's own answer; B "many stages update stats" sounds shared, but each stage only touches its own; D is touched by every stage, but one at a time, which is a move, not sharing.
+  - **explain:** "Only C. Eight threads read the config for the whole run and no one outlives the others, so ownership really is shared: `Arc<Config>`, and since nobody writes, no `Mutex`. The others each have one owner at a time: the driver owns the pool, each stage its own counters (sum them at the end), and a buffer handed from stage to stage is moved, not shared."
+- **Reveal frame:** C's card stroke turns `C.caramel` with `Arc<Config>` 15 units under it (inside the card); A gets `driver` 13 `C.latte`, B `each stage`, D `moved along`. Portrait: shorter `h` (about 280: cards 56 tall).
+- **Real values:** none numeric except `8` (the scenario's thread count; assert as a constant in E3b, where a read-only `Arc<Config>` is cloned into 8 threads, each reads it, `strong_count` back to 1 after joins, and the lab file contains no `Mutex`).
+- **Narration:** question; answer: "Only the config. Eight threads read it for the whole run and nobody writes, so it's an arc with no mutex at all. Everything else has one owner at a time."
+
+### Step 8 — `A cycle has no owner at the top`  (mechanism + numbers; `duration: 5.0`)
+
+- **Visual idea:** the pipeline as a graph has a cycle: `pool → fill → inspect → consume → pool`. Make each node own the next (`Rc`) and the ring of caramel arrows closes on itself; drop every outside handle and the four nodes stay alive, the `LIVE` counter stuck at 4.
+- **On screen (both orientations, `Svg h={400}`):** the map's four nodes with the owner corner labelled `pool`. `MapTitle` `GRAPH · RC`. Caramel owner arrows along the square clockwise (pool → fill → inspect → consume → pool), each labelled `Rc` 13 `C.latte` at its midpoint (outside the square). Left of the square at (40, 370), a `C.latte` slot `nodes` (the outside `Vec<Rc<…>>` the program holds) with four thin latte arrows to the nodes. Counter `LIVE` (serif, top-right).
+- **Beats:** 0.3 s nodes in; `LIVE` counts 0 → 4 as nodes appear (0.2 s apart). 1.4–2.6 s the four ring arrows draw, one per 0.3 s. 3.0 s the `nodes` slot collapses (scope end) and its four latte arrows vanish; `LIVE` stays at `4`. 3.6 s the four nodes' strokes turn `C.cherry` (fill stays cocoa), and `leaked: 4` 15 `C.cherryText` appears under the square. 4.2–5.0 s 13 `C.latte` line at y 392: `each count falls to 1, never to 0`.
+- **Real values:** `rc_ring_live_after_drop=4` (measured, E5: `ALLOCS − DEALLOCS` across the function that builds the ring of four `Rc<RefCell<RcNode>>` and drops its `Vec`; nothing printed inside the measured region).
+- **Final frame:** the closed ring of `Rc` arrows on cherry-outlined nodes, `LIVE 4`, `leaked: 4`, the latte line.
+- **Caption:** "Pipelines are graphs, and this one has a cycle: the pool feeds `fill`, and `consume` feeds the pool. Single ownership is a tree, so a cycle can't own itself. Try it with `Rc` (the single-threaded `Arc`) and `RefCell` (borrow rules checked at run time): when the program drops its handles, each count falls to 1, never to 0, and the counting allocator shows 4 allocations still live. Leaks are memory-safe in Rust, so the compiler won't catch it. Chapter 4 fixes it with `Weak`; here, change who owns."
+- **Narration gist:** "this pipeline is a graph with a cycle"; "make each node own the next and the ring keeps itself alive"; "four allocations, never freed"; "leaks are safe, so the compiler won't stop you".
+
+### Step 9 — `One owner for every node: an arena`  (mechanism + numbers; `duration: 5.4`)
+
+- **Visual idea:** the ring map folds down into a row of four slots owned by one caramel arrow from `Arena<Node>`; the ring's edges stay, but as caramel *labels* `1·0`, `2·0`, `3·0`, `0·0` (index·generation), never arrows. Dropping the arena: one collapse, `LIVE 0`.
+- **On screen, portrait:** `Stack`: `Code` titled `arena.rs` (8 lines), `Svg h={300} fill`.
+  ```
+  pub struct Handle {
+      index: u32,
+      generation: u32,
+  }
+  pub struct Node {
+      name: &'static str,
+      outputs: Vec<Handle>,
+  }
+  ```
+  - Drawing: `MapTitle` `MAP · ARENA`. A box `Arena<Node>` (rect 520 × 30 at (40, 60), stroke `C.caramel` 2, label 15 `C.crema`), one caramel arrow down to the `Slots` row (y 140 on this shorter canvas). Each slot: name and `gen 0`; above, index `0 1 2 3`. Between slots, curved latte lines (no arrowheads) for the ring's edges, each labelled with its handle `1·0`, `2·0`, `3·0`, and the long back-edge `0·0` under the row. Counter `LIVE` (serif) and `SIZE` (`8 B`, the handle) in latte mono.
+- **Landscape:** code left, drawing right.
+- **Beats:** 0–1.1 s code types. 1.3 s arena box and arrow. 1.8 s slots drop in left to right (0.15 s apart). 2.8–3.6 s the four handle labels draw. 4.4 s the arena box collapses with all four slots at once (`easeOut` 0.4 s); only now does `LIVE` appear, reading `0`, with `Rc ring: 4` 13 `C.latte` under it for contrast. (The pre-drop live count, 6 in the planner's draft, includes helper vectors and teaches nothing: don't show it.)
+- **Real values:** `size_of::<Handle>() == 8`, `Handle` is `Copy` (measured, E4); `arena_live_after_drop=0` and `rc_ring_live_after_drop=4` (measured, E5: the same four-node ring built in the real `Arena<Node>` copied from E4; nothing printed inside the region).
+- **Final frame:** the row of slots with handle labels faded, the arena box gone, `LIVE 0` with `Rc ring: 4` under it, `SIZE 8 B`.
+- **Caption:** "Give every node one owner: an arena, here a `Vec` of slots. Edges become `Handle`s, an index plus a *generation* (8 bytes, `Copy`), so the cycle is just data: no node owns another, and dropping the arena frees them all at once (0 live allocations after, against 4 for the `Rc` ring). This is the idea behind the `slotmap` crate. (`Handle` is the arena's key, unrelated to the pointer-capacity-length handle of a `Vec`.) What the generation is for, next."
+- **Narration gist:** "one owner for every node: the arena"; "edges become handles, an index and a generation, eight bytes"; "drop the arena and everything goes"; say "slot map" for the crate.
+
+### Step 10 — `Remove a node, reuse its slot`  (predict; `duration: 1.4`)
+
+- **Visual idea:** the arena row: `inspect` at index 2 is removed and `audit` is inserted into the freed slot; `fill` still holds the old handle `2·0`. What does looking it up return?
+- **On screen (both orientations, `Svg h={360}`):** the `Slots` row at y 160; slot 2 shows `audit` / `gen 1` (stroke `C.latte`); above slot 1 (`fill`) a caramel tag `outputs: [2·0]` 15 units; a curved latte line from the tag to slot 2. Code line above the row, 15 `C.crema` at (40, 60): `g.get(stale)` and at (40, 86) 13 `C.latte`: `stale = 2·0, slot 2 now holds audit`.
+- **Beats:** 0–0.6 s row appears with `inspect` in slot 2; 0.6–1.0 s `inspect` collapses and `audit` drops in (`gen` digit flips 0 → 1); 1.0–1.4 s the tag pulses.
+- **Predict:**
+  - Options: `Some(audit): the slot is reused` · `None: the handle is stale` **(correct)** · `Some(inspect): it is still there` · `A panic: index out of range`
+  - Why tempting: "audit" is exactly what a plain index does (the bug); "inspect" is how a pointer to freed memory behaves in C (here impossible: the value was moved out); "panic" confuses a stale handle with an out-of-range one.
+  - **explain:** "`None`. Removing `inspect` bumped slot 2's generation to 1; `audit` got handle `2·1`. The old handle still says generation 0, the slot says 1, so `get` refuses. With plain `Vec` indices the same lookup quietly returns `audit`, the wrong node: the `slotmap` docs call this the ABA problem. Removing the stale handle again is also `None`."
+- **Reveal frame:** the tag's line turns `C.cherry` and ends in a `None` chip (15 `C.cherryText`) beside slot 2 (stale refused); under the row, a second small strip `plain index 2 → audit` 13 `C.cherryText` struck through? No strike (topic 2 looks finding: strikes read as underlines): write it as `plain Vec index: audit (wrong)` 13 `C.latte`, and `generational: None` 15 `C.caramel`. Portrait: `h` about 260.
+- **Real values:** `insp=Handle { index: 2, generation: 0 }`, `audit=Handle { index: 2, generation: 1 }`, `get(stale)=None`, `remove(stale)=None`, `plain_index=audit` (measured, E4).
+- **Narration:** question; answer: "None. The slot's generation moved on to one, the old handle still says zero, so the lookup refuses. A plain index would have handed you the audit node."
+
+### Step 11 — `The generation catches the stale handle`  (mechanism; `duration: 5.4`)
+
+- **Visual idea:** slow-motion of one slot's life: insert (gen 0) → remove (value slides out, an empty `None` is left, the generation digit ticks to 1, the index joins the free list) → insert reuses the slot with gen 1. Under it, two handle tags try the slot: `2·1` passes (caramel), `2·0` bounces (cherry).
+- **On screen, portrait:** `Stack`: `Code` titled `Arena::remove` (7 lines, exact from `examples/arena.rs`), `Svg h={280} fill`.
+  ```
+  if slot.generation != h.generation {
+      return None;
+  }
+  let value = slot.value.take()?;
+  slot.generation =
+      slot.generation.wrapping_add(1);
+  self.free.push(h.index);
+  ```
+  - Drawing: one large slot (rect 200 × 90 at (200, 40)) showing `value`, `gen N` 20 units (serif, the step's one serif element), index `2` above; a `free` list strip at (40, 170) (three small boxes, latte); two handle tags at the bottom: `2·1` (caramel) and `2·0` (latte → cherry on bounce).
+- **Landscape:** code left, drawing right.
+- **Beats:** 0–1.2 s code types. 1.4 s slot holds `inspect`, `gen 0`. 2.0 s `remove`: the value chip slides out (it is returned to the caller), slot shows `None` (13 `C.latte`); 2.4 s `gen` flips 0 → 1 (`easeOutBack`); 2.8 s `2` drops into the `free` strip. 3.4 s `insert(audit)`: `2` leaves the strip, `audit` drops into the slot. 4.0 s tag `2·1` slides to the slot, glows caramel, `Some` 13 `C.crema`. 4.6 s tag `2·0` slides, turns `C.cherry`, bounces back, `None` 13 `C.cherryText`.
+- **Real values:** generations `0`, `1`, index `2` (E4); `u32::MAX.wrapping_add(1) == 0` (E4: our generation wraps after 2^32 removals of one slot); slotmap's versions wrap after 2^31 reuses of one slot (`SOURCES.md` → slotmap: "After 231 deletions and insertions…", superscript lost in extraction; assert `2**31` as a documented constant in `examples.py` if the caption shows it).
+- **Final frame:** slot with `audit`, `gen 1`, free strip empty, `2·1 → Some`, `2·0 → None`.
+- **Caption:** "Removal is three moves. `take()` moves the value out and leaves `None` (the previous topic's idiom). The generation goes up by one, so every handle made before is now stale. The index goes on the free list, and the next insert reuses the slot under the new generation. A lookup checks both numbers, so a stale handle gets `None`, never someone else's node, for one compare per access. Generations do wrap (ours after 2^32 removals of one slot, slotmap's after 2^31): still safe, just no longer caught."
+- **Narration gist:** "take the value, bump the generation, free the index"; "a lookup checks both numbers"; "one compare per access"; "it wraps eventually, and it's still safe".
+
+### Step 12 — `Sending is moving`  (mechanism; `duration: 5.0`)
+
+- **Visual idea:** the chapter's move picture across a thread boundary: a buffer's 32-byte handle slides from stage `fill` into a channel and on to `inspect`; the 64 KiB payload bar doesn't move; `fill`'s slot shows `moved`. Then the line that reuses it turns cherry with `E0382`.
+- **On screen, portrait:** `Stack`: `Code` titled `send.rs` (3 lines, from `examples/send_e0382.rs`), `Svg h={300} fill`.
+  ```
+  let buf = pool.get();
+  tx.send(buf).unwrap();
+  println!("sent buffer {}", buf.id);
+  ```
+  `highlight={[3]}` at 3.4 s.
+  - Drawing: owner slot `buf` (`fill` thread) at (40, 60) with the three handle cells `ptr · cap · len`; a channel (double `C.mocha` line, 200 long) from x 220 to x 420 at y 84 labelled `channel` 13 `C.taupe`; slot `inspect` at (420, 60). Heap bar (`Bar`, `C.latte`, full width 440 at y 200, label `64 KiB payload` 13 `C.latte`), caramel owner arrow from the current owner down to it. Counter `SIZE` (serif) `32 B` (what a send copies).
+- **Landscape:** code left, drawing right.
+- **Beats:** 0–0.9 s code types. 1.1 s slots and heap bar appear; owner arrow from `buf`. 1.8–2.6 s the three cells slide along the channel into `inspect` (`easeOut`); the owner arrow re-roots to `inspect`; the heap bar does not move; `buf` slot becomes `moved`. 3.4 s line 3 highlights; a cherry edge from line 3's position to the `moved` slot with `E0382` 15 `C.cherryText`. 4.2–5.0 s under the heap bar, 13 `C.latte`: `fix: let id = buf.id; before send`.
+- **Real values:** `size_of::<Buf>() == 32`, `size_of::<Msg>() == 32` (E6), `BUF_CAP` 65,536 ("64 KiB"); `error[E0382]: borrow of moved value: `buf``, labels `value moved here`, `value borrowed here after move`, help `consider cloning the value if the performance cost is acceptable` (measured, E8).
+- **Final frame:** handle cells in `inspect`, `moved` in `fill`, payload unmoved with one caramel arrow from `inspect`, `E0382` on the reuse, the fix line.
+- **Caption:** "`tx.send(buf)` takes the buffer by value: a move, like any other call. The 32-byte handle crosses to the other thread; the 64 KiB payload stays where it is; `buf` is moved-from, so using it after the send is `E0382` (the Book's own example of why: the other thread may already be changing or dropping it). The compiler offers *clone it*, which would copy 64 KiB per message. Copy the `u32` id before the send instead. If the receiver is gone, `send` fails and hands the buffer back inside `SendError`."
+- **Narration gist:** "a send is a move"; "the handle crosses, the payload stays"; "the use-after-move error again"; "clone would copy sixty-four K every message"; "if nobody is listening, you get the buffer back".
+
+### Step 13 — `move hands a thread what it owns`  (mechanism; introduces `move` closures; `duration: 4.8`)
+
+- **Visual idea:** a closure drawn as a box that swallows the bindings it uses: without `move` it reaches out with latte borrow edges to `fill_rx`, `to_inspect`, `src` (and the edges turn cherry, `E0373`, because the thread may outlive them); with `move` the three slots slide *into* the box, their old places show `moved`, and the box rides off onto a thread lane.
+- **On screen, portrait:** `Stack`: `Code` titled `ring.rs` (3 lines, from `examples/ring.rs`), `Svg h={300} fill`.
+  ```
+  let fill_t = thread::spawn(move || {
+      fill_stage(fill_rx, to_inspect, src)
+  });
+  ```
+  - Drawing: left column of three slots `fill_rx`, `to_inspect`, `src` at x 40, y 40/90/140 (`MAIN` frame, 13 taupe label); a closure box (rect 220 × 150 at (320, 30), dashed `C.latte`, label `closure` 13 `C.taupe`); a thread lane at y 240 (thin `C.mocha` line, label `thread fill` 13 `C.taupe`).
+- **Landscape:** code left, drawing right.
+- **Beats:** 0–0.9 s code types (with `move` greyed until 2.6 s). 1.1 s slots and box appear; 1.4–2.0 s three latte borrow edges from the box to the slots; 2.0 s they turn cherry, `E0373` 15 `C.cherryText` above the box. 2.6 s `move` lights in the code (caramel); the cherry edges vanish; 2.8–3.6 s the three slots slide into the box (0.2 s apart), the left column shows three `moved` outlines. 4.0–4.8 s the box slides down onto the thread lane; a caramel owner arrow from the lane's label to the box.
+- **Real values:** `E0373` header `closure may outlive the current function, but it borrows `pool`, which is owned by the current function` (E1, step 2's rung); `thread::spawn`'s bound `F: FnOnce() -> T + Send + 'static` (std docs, quoted, not measured).
+- **Final frame:** three `moved` outlines in `MAIN`, the closure box on the `thread fill` lane holding the three values, one caramel arrow.
+- **Caption:** "A closure that only reads its surroundings borrows them, and `thread::spawn` refuses borrows: the new thread may outlive this function (its closure must be `'static`, Chapter 2) and receives the closure by value (`Send`, Chapter 6). `move` makes the closure take ownership of what it uses: the receiver, the next stage's sender and the input move into it, and the thread owns them until it ends. `move` changes how the closure captures, never the ownership rules: using `src` here afterwards would be `E0382`."
+- **Narration gist:** "a closure borrows by default"; "a thread can't take a borrow; it may outlive you"; "move makes the closure own what it uses"; "it doesn't bend the rules". Say "move closure", never the keyword alone as a code token.
+
+### Step 14 — `One owner, fed by messages`  (mechanism + numbers; closes step 1 for concurrent stages; `duration: 6.0`)
+
+- **Visual idea:** the ring map, alive. The owner thread (owner corner, holding the `Pool` cell) launches three chips; they travel clockwise `fill → inspect → consume → owner`, each always with one caramel arrow (from its node, or from its channel while in transit); they come home and leave again, ids `1 2 3 1 2 3`. Counters: `LOCKS 0`, `BUFFERS 3`, with a message counter running to 1,000.
+- **On screen, portrait:** `Stack`: `Code` titled `owner thread` (7 lines, from `examples/ring.rs`), `Svg h={300} fill`.
+  ```
+  pub enum Msg { Data(Buf), Stop }
+
+  for msg in inbox {
+      match msg {
+          Msg::Data(buf) => owner.home(buf),
+          Msg::Stop => break,
+      }
+  }
+  ```
+  - Drawing: ring map; the four channels drawn along the square's sides (owner → fill, fill → inspect, inspect → consume, consume → owner), the last labelled `home` 13 `C.taupe`. Three chips. Counters: `BUFFERS` (serif) `3`, `LOCKS` `0`; under the map, `messages 1,000` 15 `C.latte` (animates from 0 with `fmt()`).
+- **Landscape:** code left, drawing right.
+- **Beats:** 0–1.2 s code types. 1.4 s map and channels. 1.8, 2.1, 2.4 s chips `1`, `2`, `3` leave the owner (each a `Pool::get`: `BUFFERS` 1 → 2 → 3). 2.4–5.0 s the chips circulate (pure function of `t`: chip k's position = path(t − 0.3k), one lap per 1.2 s, so each chip is always on exactly one node or one channel); `messages` counts to 1,000 by 5.0 s (the lap count is symbolic; the caption says the real count). 5.0–6.0 s chips settle home in the `Pool` cell in order 1, 2, 3; `LOCKS` still `0`.
+- **Real values:** `messages=1000`, `buffers_created=3`, `home_at_end=3`, `first_ids=[1, 2, 3, 1, 2, 3]`, `trips=[334, 333, 333]`, `locks` 0 (the lab file contains no `Mutex`, `Arc<` or `.lock(` outside comments, asserted), `buffer_bytes=196608` ("192 KiB", 3 × 64 KiB) (measured, E6; deterministic because each channel is FIFO and the owner only ever creates 3 buffers).
+- **Final frame:** the ring with three chips home, `BUFFERS 3`, `LOCKS 0`, `messages 1,000`, the ids `1 2 3 1 2 3 …` as a 13-unit latte line under the map.
+- **Caption:** "Now the stages run at once. One thread owns the pool and alone calls `Pool::get`: three times, one buffer per stage. Each stage thread receives a buffer, works, sends it on; `consume` sends it home as `Msg::Data`. At any instant every buffer has exactly one owner: a stage, the owner, or the channel it's in. 1,000 messages: 3 buffers, 0 locks in our code, and the ids go round in order (1, 2, 3, 1, …) because channels are first-in, first-out. The message enum is the owner's API."
+- **Narration gist:** "one thread owns the pool"; "three buffers go round, each with one owner at every instant"; "a thousand messages, three buffers, no locks"; "the message type is the owner's whole interface". Say "a message" for `Msg`.
+
+### Step 15 — `Stage 3 stalls. How many buffers?`  (predict; `duration: 1.4`)
+
+- **Visual idea:** the two maps side by side (landscape) or stacked (portrait), shared above, ring below, each with `consume` greyed out as stalled (a pause glyph `||` 15 `C.latte` on it). The learner predicts how many buffers stage 1 makes in each before stage 3 wakes.
+- **On screen (both orientations, `Svg h={400}`):** two half-height maps (each 600 × 180, nodes 120 × 36, counters `BUFFERS` only). Top: `SHARED` (fill's arrow into the hub; channel fill → inspect labelled `unbounded` 13 `C.taupe`). Bottom: `RING`. `consume` in both has the pause glyph.
+- **Beats:** 0–0.8 s maps; 0.8–1.4 s the pause glyphs pulse.
+- **Predict:**
+  - Options: `1,000 in the PR, 3 in the ring` **(correct)** · `3 in both` · `1,000 in both` · `The ring deadlocks`
+  - Why tempting: "3 in both" assumes the pool limits itself (it allocates whenever its free list is empty); "1,000 in both" forgets that only the ring's owner creates buffers; "deadlocks" sees a cycle and fears it (stage 1 waits, but the owner isn't waiting on stage 1, so nothing waits in a circle).
+  - **explain:** "In the PR, `fill` calls `pool.get()` itself and the channel to `inspect` never blocks, so while `consume` sleeps it makes a new buffer for every message: 1,000 buffers, 62.5 MiB. In the ring only the owner makes buffers, three of them; `fill` simply waits in `for msg in rx` for one to come back. Backpressure came from the topology, not from a setting."
+- **Reveal frame:** top `BUFFERS 1,000` (serif, `C.cherryText`) and `62.5 MiB` 15 `C.cherryText`; bottom `BUFFERS 3` in `C.caramel` and `fill waits` 13 `C.latte` by the fill node. Portrait: `h` about 280.
+- **Real values:** PR stall: `created=1000`, `BYTES` delta ≥ 65,536,000 (= 1,000 × 65,536, "62.5 MiB"), `ALLOCS` delta ≥ 1,000 (measured, E7, deterministic: `consume` waits on a channel signal that `fill` sends after its last message); ring stall: `buffers_created=3` (E7b: `consume` waits until `fill` has filled every buffer that exists, then runs; all 1,000 messages complete).
+- **Narration:** question; answer: "A thousand in the pull request, three in the ring. Stage one makes its own buffers there, and its channel never pushes back. In the ring, it simply waits for one to come home."
+
+### Step 16 — `The owner can count every buffer`  (mechanism: accounting and shutdown; `duration: 5.0`)
+
+- **Visual idea:** a ledger bar under the ring: `in pool` (latte) + `out in the ring` (caramel) always fills the same width, `3`, as chips leave and return; a tick mark lands per check, then the `Stop` message travels the ring behind the last buffer and everything shuts down.
+- **On screen, portrait:** `Stack`: `Code` titled `Owner::home` (4 lines, exact from `examples/ring.rs`), `Svg h={300} fill`.
+  ```
+  let out = self.sent - self.back;
+  let home = self.pool.free.len() as u32;
+  let made = self.pool.next_id;
+  assert_eq!(home + out, made);
+  ```
+  - Drawing: ring map (small, top 200 units); under it a stacked `Bar` pair at y 236: total width 480 units = 3 buffers; segment `in pool` (`C.latte`) and `out` (`C.caramel`), labels 13 above each segment (stacked if narrower than the label); right of the bar `= 3` 20 serif `C.crema`. A `checks` counter 15 `C.latte` at (40, 290) counting to `1,000`. A `Stop` chip (44 × 24, stroke `C.taupe`, text `Stop` 13).
+- **Landscape:** code left, drawing right.
+- **Beats:** 0–1.0 s code types. 1.2–3.2 s chips circulate; the bar's split changes with them (pure function of the same chip positions as step 14), total constant; `checks` counts to 1,000. 3.4–4.4 s after the last chip returns home, the `Stop` chip leaves the owner, travels `fill → inspect → consume → home` (each node greys as `Stop` passes: its thread ends). 4.6 s the owner node greys; under the map 13 `C.latte`: `Stop arrives last: FIFO`.
+- **Real values:** `accounting_checks=1000`, `home_at_end=3`, `buffers_created=3`, `same_order=true` (fill, inspect, consume and the owner saw the same id sequence) (measured, E6).
+- **Final frame:** bar fully latte (`in pool` 3, `out` 0), `= 3`, `checks 1,000`, all nodes grey, the FIFO line.
+- **Caption:** "Because one thread owns the pool, one place can check the books: after every hand-over, buffers in the pool plus buffers out in the ring equals every buffer ever made. It held at all 1,000 checks. Shutting down a ring needs care: each stage waits for its sender to hang up, and in a cycle no one goes first. So the owner sends `Msg::Stop` behind the last buffer; channels are first-in, first-out, so `Stop` arrives home last, after every buffer, and each stage passes it on and ends."
+- **Narration gist:** "one owner, one set of books"; "in the pool plus out in the ring equals every buffer ever made"; "a ring can't hang up by itself"; "the stop message travels behind the last buffer".
+
+### Step 17 — `Pick the shape by the data`  (trade-offs; `duration: 5.0`)
+
+- **Visual idea:** the four maps shrunk to thumbnails in a 2 × 2 grid (landscape) or a 4 × 1 column (portrait), each with its one-line "when" and its "costs", and the measured counters under it. The still frame is the decision table.
+- **On screen (both orientations, `Svg h={420}`):** four cards; each: a 120 × 70 thumbnail of the map's edges (no text inside thumbnails), a title 15 `C.crema` (`Tree`, `Arena`, `Owner thread`, `Arc<Mutex<T>>`), a `when` line 13 `C.latte`, a `cost` line 13 `C.latte`:
+  - Tree · `when: data has a natural parent` · `cost: callers wait their turn`
+  - Arena · `when: graph, cycles, removal` · `cost: a check per lookup`
+  - Owner thread · `when: many users at once` · `cost: a channel hop per request`
+  - Arc<Mutex<T>> · `when: small, short, truly shared` · `cost: a lock per access`
+  Card strokes `C.mocha`; the `Arc<Mutex<T>>` card's title in `C.latte` (not an accent: it is legitimate, see step 18).
+- **Beats:** cards arrive 0.8 s apart (0.3, 1.1, 1.9, 2.7 s); 3.6–5.0 s a 13-unit `C.taupe` line at the bottom: `ask first: who should own this?`
+- **Real values:** none new on the cards (thumbnails only). If counters are shown under thumbnails, they are the asserted ones (`0`, `0`, `0`, `5/msg`).
+- **Final frame:** the four cards and the question.
+- **Caption:** "Choose by the shape of the data, not by the error message. A natural parent (a request, a pipeline run): a tree, with no synchronisation at all. A graph with cycles or removal: an arena, paying one generation check per lookup. Many concurrent users of one piece of state: an owner thread, paying a channel hop per request. Small, simple data touched briefly by many threads: a `Mutex` is fine, paying a lock per access. First ask: who should own this?"
+- **Narration gist:** the four rows as sentences; "ask who should own it before you ask how to share it".
+
+### Step 18 — `When Arc<Mutex<T>> is the right shape`  (trade-offs; `duration: 4.6`)
+
+- **Visual idea:** the hub, rehabilitated: one small `Arc<Mutex<Counts>>` box with three short lock cycles that each end quickly (guards appear and vanish fast), next to `Arc<Config>` with no padlock and eight latte arrows. The difference from the PR is drawn: the critical section is a few units long; nothing else is shared.
+- **On screen (both orientations, `Svg h={400}`):** left (x 40–280): `Arc<Config>` box (200 × 40, stroke `C.latte`) with eight thin latte arrows from small dots (threads) on the left edge; label `read-only: no lock` 13 `C.latte`. Right (x 320–560): `Arc<Mutex<Counts>>` box with padlock; three guard flashes; under it a tiny timeline (thin `C.mocha` line) where each lock is a short caramel tick (4 units wide), label `short critical sections` 13 `C.latte`. Bottom (y 380), 13 `C.taupe`: `the anti-pattern is the reflex, not the type`.
+- **Beats:** 0.3 s left side; 1.4 s right side; 1.8, 2.4, 3.0 s guard flashes and ticks; 3.8–4.6 s the bottom line.
+- **Real values:** `8` threads (E3b constant). No lock-time numbers (none measured; Chapter 4 measures).
+- **Final frame:** both boxes, the ticks, the bottom line.
+- **Caption:** "`Arc<Mutex<T>>` isn't wrong; reaching for it to silence the compiler is. Tokio's own guide puts a `HashMap` of simple data behind a mutex, keeps the critical sections short, and moves state into a task that owns it once the work needs I/O. Read-only data shared for the whole run needs `Arc` alone. If a lock becomes contended, the fixes are an owner task, sharding, or restructuring to avoid the mutex; measuring that is Chapter 4. Thread-safety rules (`Send`, `Sync`, poisoning) are Chapter 6."
+- **Narration gist:** "the type isn't the problem; the reflex is"; "short, simple, truly shared: a mutex is fine"; "read-only: just an arc"; "contention and its fixes come in chapter four".
+
+### Step 19 — `Prove it · 1 of 3`  (predict, debug-this; `duration: 1.2`)
+
+- **Visual idea:** the stage keeps a borrowed header view while it hands the buffer to the next stage. The learner names the error before compiling.
+- **On screen (both orientations, `Svg h={360}`):** code as SVG text 15 `C.crema`, five lines at y 40–148 (exact from `examples/send_e0505.rs`):
+  ```
+  let mut buf = pool.get();
+  fill(&mut buf, &[1, 0, 1, 0, 0, 7]);
+  let view = &buf.bytes[..5];
+  tx.send(buf).unwrap();
+  println!("{view:?}");
+  ```
+  Under it, a `buf` slot with a latte dashed borrow edge from a `view` tag (open dot), and the channel to the right. 
+- **Beats:** code and slot by 1.0 s; 1.0–1.2 s the `send` line pulses.
+- **Predict:**
+  - Options: `Compiles: view is just 5 bytes` · `E0382: use after move` · `E0505: move while borrowed` **(correct)** · `Compiles, races at run time`
+  - Why tempting: "5 bytes" thinks in sizes, not loans; E0382 is the error of step 12, but here `buf` itself is never used again, its loan is; "races" is the C instinct, and safe Rust rejects it at compile time.
+  - **explain:** "`E0505`: `buf` can't move into the channel while `view` still borrows it, because the other thread could change or drop those bytes while you print them. rustc suggests cloning the bytes; the cheaper fix is to take what you need as a value first: `let h = inspect(&buf);` returns a `Copy` `Header`, and then the send is free."
+- **Reveal frame:** the borrow edge turns cherry with `E0505` 15 `C.cherryText`; below, in caramel 15: `let h = inspect(&buf);` and a small `Header` card beside the slot (a value, no edge). Portrait: drop the code lines except the `send` line (`h` about 260).
+- **Real values:** `error[E0505]: cannot move out of `buf` because it is borrowed` with labels `borrow of `buf.bytes` occurs here`, `move out of `buf` occurs here`, `borrow later used here` (measured, E8).
+- **Narration:** question; answer: "The move-while-borrowed error. The buffer can't leave while the view still points into it. Take the header as a value first, then send."
+
+### Step 20 — `Prove it · 2 of 3`  (predict, point-to-the-line; `duration: 1.2`)
+
+- **Visual idea:** the syllabus's own assessment question, on the ring: stage 3 stalls; point to the exact line where stage 1 blocks.
+- **On screen (both orientations, `Svg h={380}`):** the body of `fill_stage` as SVG code text 15 `C.crema` (exact from `examples/ring.rs`; the longest line is 45 characters with its indentation, about 415 units at phone scale, so it fits from x 40; drop the leading 4 spaces of every line if the reel test finds it tight):
+  ```
+  for msg in rx {
+      match msg {
+          Msg::Data(mut buf) => {
+              let s = &src[seen.len()];
+              fill(&mut buf, s);
+              seen.push(buf.id);
+              tx.send(Msg::Data(buf)).unwrap();
+  ```
+  Small ring thumbnail at the bottom-right with `consume` paused.
+- **Predict:**
+  - Options: `for msg in rx: waits for a buffer` **(correct)** · `tx.send(...): the channel is full` · `fill(...): the buffer is locked` · `Nowhere: it makes new buffers`
+  - Why tempting: "send" is where bounded channels block (this one is unbounded and never blocks); "fill" imagines a lock (there is none in the file); "new buffers" is the PR's behaviour from step 15.
+  - **explain:** "At `for msg in rx`: `fill` can only work on a buffer someone sends it, and only the owner sends buffers, three in all. With stage 3 stalled, none come home, so the owner has none to send and `fill` blocks on its receive. Its sends never block: the channel is unbounded, and that is safe here only because the ring holds three buffers, no more."
+- **Reveal frame:** line 1 highlighted caramel with a `blocks here` tag 13 `C.crema`; the ring thumbnail with `BUFFERS 3`.
+- **Real values:** `3` (E6/E7b). No timing.
+- **Narration:** question; answer: "At the receive. Stage one only works on a buffer someone sends it, and with stage three stalled, none come back."
+
+### Step 21 — `Prove it · 3 of 3`  (predict, defend-a-design; `duration: 1.2`)
+
+- **Visual idea:** a job scheduler drawn as a small DAG of five job nodes (one thread), one of which finishes and is removed while two others still list it as a dependency. Pick the ownership shape.
+- **On screen (both orientations, `Svg h={360}`):** five nodes (rect 90 × 34, labels `j1`…`j5` 15 `C.crema`) with latte dependency lines (no arrowheads), `j3` greyed with `done` 13 `C.latte`; two lines from `j4` and `j5` still reach it. A 13-unit `C.taupe` line at the top: `one thread · jobs depend on jobs · done jobs removed`.
+- **Predict:**
+  - Options: `Rc<RefCell<Job>> per job` · `Arc<Mutex<Job>> per job` · `Arena<Job> + Handle` **(correct)** · `Box<Job> tree, parents own deps`
+  - Why tempting: `Rc<RefCell>` is the single-threaded reflex and works until a cycle leaks (step 8); `Arc<Mutex>` adds locks to a program with one thread; a `Box` tree breaks when two jobs depend on one (a job would need two owners).
+  - **explain:** "An arena. Jobs form a graph, a job can have two dependents, and finished jobs are removed while others still refer to them: one owner for all jobs, `Handle`s as edges, and a dependent that asks for a finished job gets `None` instead of a reused slot. `Rc<RefCell>` leaks on a cycle, `Arc<Mutex>` locks for nothing on one thread, and a `Box` tree can't share a dependency."
+- **Reveal frame:** the five nodes become a slot row (indices 0–4); `j3`'s slot shows `gen 1` and the two lines from `j4`/`j5` end in a `None` chip 13 `C.cherryText`; the chosen option's text `Arena<Job> + Handle` 15 `C.caramel` at the top.
+- **Real values:** none new (draws on E4 and E5).
+- **Narration:** question; answer: "An arena. One owner for every job, handles for the dependencies, and a finished job answers none."
+
+### Step 22 — `In one breath`  (recap + handoff; `duration: 3.0`)
+
+- **Visual idea:** the four maps as a legend: four rows, each a tiny thumbnail glyph and a one-line rule, then the handoff line with the two loans the next chapter explains.
+- **On screen (both orientations, `Svg h={420}`):** rows at y 50 + 70·i: thumbnail glyph (60 × 40) at x 40, 15-unit `C.crema` line (≤ 40 chars) at x 120, 13-unit `C.latte` sub-line:
+  1. hub glyph: `Arc<Mutex<T>>: many owners, a lock` / `the reflex hides who should own it`
+  2. tree glyph: `Tree: one owner lends down` / `results come back up`
+  3. slot-row glyph: `Arena: one owner, handles as edges` / `the generation catches stale ones`
+  4. ring glyph: `Owner thread: send owned values` / `one owner per buffer, every instant`
+  Bottom (y 360): handoff line 15 `C.caramel`: `Next: why &mut is exclusive`; under it 13 `C.latte`: `fill(&mut Buf) · inspect(&Buf)`.
+- **Beats:** rows 0.5 s apart (0.2–1.7 s); handoff at 2.2 s.
+- **Real values:** none.
+- **Final frame:** all four rows and the handoff.
+- **Caption:** "Four shapes for one pipeline. `Arc<Mutex<T>>`: many owners and a lock, which by reflex hides who should own the data. A tree: one owner lends down, results come back. An arena: one owner for every node, edges as handles whose generation catches stale ones. An owner thread: one owner, sent owned values, one owner per buffer at every instant. Every topology still lends: `fill` borrows `&mut Buf`, `inspect` borrows `&Buf`. Next: the rule behind those loans, many shared borrows or one exclusive borrow, never both."
+- **Narration gist:** the four rows, then the handoff in full, with "the buffer" spoken as a plain word.
+
+---
+
+## Deep dive (`index.mdx`)
+
+Sections use `<section data-section="…">` as the previous topics do, in this order: `outcomes`, `internals`, `lab`, `production`, `frontier`, `prove`, `sources`. Headings below are exact (they are coverage-map anchors). Every code block is text compiled by `examples.py`; every output shown is what it printed on the recorded toolchain.
+
+1. **`## After this topic you can`** — the four outcomes above.
+
+2. **`## Into the internals`**
+   - **`### How the reflex happens: four errors, four patches`** — the ladder in full with each real diagnostic (E1): `E0499` (the error index: "A variable was borrowed as mutable more than once"; the Book's rule, declared, read as an ownership statement: two stages both want to be the pool's exclusive borrower), `E0373` and its `move` help (`thread::spawn` requires `F: FnOnce() -> T + Send + 'static`; the docs: "threads can outlive the lifetime they have been created in"), `E0382` in its loop form ("value moved into closure here, in previous iteration of loop") with the note offering `Clone` (a cloned `Pool` compiles and is wrong: three independent free lists, and a buffer put into one never comes out of another; one sentence), `E0596` ("cannot borrow data in an `Arc` as mutable"; the `Arc` docs: "you cannot generally obtain a mutable reference to something inside an `Arc`"), then `Mutex`. The single-threaded twin: `Rc<RefCell<Pool>>`, and why it stops at the thread boundary (`E0277`, "`Rc<RefCell<Pool>>` cannot be sent between threads safely", measured E10; `Send` named, Chapter 6). The Book's ch. 16.3 walks the same road for a counter (`Rc` → `E0277` → `Arc`) and is right for a counter; the point here is that a pool of buffers isn't a counter. The same move one level out: the Rust 2024 edition makes references to `static mut` a deny-by-default error (`static_mut_refs`; measured E12: "creating a shared reference to mutable static"; the Edition Guide: "upholding mutability XOR aliasing for a `static mut` requires reasoning about your code globally") — global mutable state is the far end of the same spectrum, and the Edition Guide's alternatives (atomics, `Mutex`, `OnceLock`, "don't use globals") are the same menu as this topic's.
+   - **`### What Arc<Mutex<T>> is, exactly`** — `Arc<T>`: "provides shared ownership of a value of type T, allocated in the heap"; `Arc::clone` "points to the same allocation on the heap as the source Arc, while increasing a reference count" (measured E2b: 0 allocations; `Arc::new(Mutex::new(Pool::new()))` 2 allocations; `size_of` 8 bytes on this target); "Arc<T> makes it thread safe to have multiple ownership of the same data, but it doesn't add thread safety to its data"; the last `Arc` dropped drops the value; `Arc::try_unwrap`/`into_inner`/`get_mut` as the ways back to single ownership (named; Chapter 4). `Mutex<T>`: owns its data, accessible only "through the RAII guards returned from lock and try_lock"; `MutexGuard` "When this structure is dropped (falls out of scope), the lock will be unlocked" (topic 2's guard pattern); `get_mut(&mut self)` needs no locking ("the mutable borrow statically guarantees no new locks can be acquired while this reference exists"; measured E13: compiles, the counting `lock` helper is never called) and `into_inner(self)` consumes the mutex — the two places where the type itself says "if you own it, you don't need the lock". Locking twice in one thread "will not return" (it "might panic or deadlock"). Poisoning: named in one line ("a mutex becomes poisoned if it recognizes that the thread holding it has panicked"), Chapter 6. Data races vs race conditions: safe Rust rules out data races "mostly through Rust's ownership system alone" (Nomicon), not deadlocks ("it is considered 'safe' for Rust to get deadlocked"); the Book: "Mutex<T> comes with the risk of creating deadlocks".
+   - **`### Tree-shaped ownership`** — the owns-graph as a tree: one root (a `main`, a request, a pipeline run), parents own children, work is lent down as `&T`/`&mut T`, results return up as owned values or `Copy` values (`Header`); `fn` signatures from topic 1 are the edges (`fill(&mut Buf, &[u8])`, `inspect(&Buf) -> Header`, `consume(Buf) -> Buf`, `Pool::put(&mut self, Buf)`). Why most "shared" state is a tree once the owner is named: per-stage counters owned by each stage and summed by the parent (no `Arc<Mutex<Stats>>`); a pool owned by the driver; read-only config is the real exception (`Arc<T>` without a lock). Trees across threads: a parent can lend each child thread a disjoint `&mut` if the threads are joined before the parent continues — that is `std::thread::scope` (stable 1.63; "scoped threads can borrow non-'static data, as the scope guarantees all threads will be joined at the end of the scope"), taught in Chapter 2 section 2.2; one sentence here. Back-pointers to a parent: `Weak` (the std docs: "a tree could have strong Rc pointers from parent nodes to children, and Weak pointers from children back to their parents"), Chapter 4.
+   - **`### Graphs: why single ownership can't hold a cycle`** — a graph with a cycle has no root, so "each node owns its successors" makes a ring of owners that keeps itself alive: the Book's ch. 15.6 ("the reference count of each item in the cycle will never reach 0, and the values will never be dropped"; "you can't rely on Rust to catch them"; leaks are memory-safe), measured E5 (4 live allocations after the ring's last outside handle is dropped, 0 for the arena). The Book's own remedy, "reorganizing your data structures so that some references express ownership and some references don't", has two forms: `Weak` back-edges (Chapter 4) and handles into an arena that owns everything (here). Indices into `Vec`s as the everyday form, and why they need generations once anything is removed.
+   - **`### A generational arena in thirty lines`** — the full `Arena<T>` from `examples/arena.rs` (insert reusing the free list, `remove` with `take()` and `wrapping_add`, `get`/`get_mut` checking the generation; `Option::as_ref`/`as_mut` glossed in one line: they turn `&Option<T>` into `Option<&T>`), the invariant (a handle `(i, g)` is live iff `slots[i].generation == g` and `slots[i].value` is `Some`), the `Node { name, outputs: Vec<Handle> }` stage graph, stale handles after hot-swapping a stage (E4), and plain indices returning the wrong node (E4). Costs: one bounds check and one compare per access; slots are never shrunk (the `slotmap` docs say the same of `SlotMap`: "It can never shrink the size of its underlying storage, because it must remember for each storage slot what the latest stored version was"); generations wrap (ours: 2^32 removals of one slot; slotmap: 2^31, "in all circumstances is the behavior safe"); a handle from another arena is not caught (slotmap: "it's an error to use the key of one slot map on another slot map. The result is safe, but unspecified"; its `new_key_type!` makes a distinct key type per map). The production crate (`slotmap` 1.1.1): `SlotMap`, `HopSlotMap`, `DenseSlotMap` and when to choose each; `SecondaryMap` for side data keyed by the same keys ("simply a Vec of slots like slot map is"); per-slot memory "4 + max(sizeof(T), 4) rounded up to the alignment of T". Not to be confused with *allocation* arenas (bump allocators such as `bumpalo`, freeing everything at once), which manage memory, not identity: Chapter 30, "Custom allocators and arenas". The general ABA problem in lock-free code: Chapter 7.
+   - **`### Owner thread fed by messages`** — `std::sync::mpsc` semantics as the docs state them: FIFO ("in the same order as it was sent"); `channel()` never blocks the sender ("infinite buffer") while `sync_channel(n)` blocks when full and `sync_channel(0)` is a rendezvous; `Sender::send(&self, t: T)` takes the value by move and "returning it back if it could not be sent" (`SendError<T>(pub T)`, measured E8: `send failed; got buffer 1 back`); `recv` blocks while a sender exists and, after disconnect, "messages sent before the disconnect will still be properly received"; the receiver "can only be owned by one thread"; `Sender` is `Send` when `T: Send`. `move` closures (the Reference: "A closure can be forced to capture its environment by copying or moving values by prefixing it with the move keyword. This is often used to ensure that the closure's lifetime is 'static"; the Book ch. 16.1: "The move keyword overrides Rust's conservative default of borrowing; it doesn't let us violate the ownership rules"). The ring in full (`examples/ring.rs`): the `Owner` struct (the owner's state is a plain struct with plain `&mut self` methods: no lock because no one else can reach it), the stage functions, `Msg::{Data, Stop}`, the accounting assert, `join()` handing the `Owner` (and its pool) back to `main` ("A thread can also return a value through its JoinHandle"). The general recipe (Alice Ryhl, "Actors with Tokio", secondary): an owner task plus a cloneable handle holding a `Sender`; the message enum as the API; replies over a one-shot channel (with std, a fresh `mpsc::channel()` used once); `let _ =` on replies because "a send operation on a channel fails if the receiver has been dropped"; the task ends "when all senders to the receiver have been dropped"; keep the task and the handle separate (her `'static` and single-ownership pitfalls). Shutting down a cycle: in a ring each stage waits for its upstream to hang up, and Ryhl warns that in a cycle "the last sender is never dropped, preventing shutdown": hence the explicit `Stop` behind the last buffer (alternatively the owner can drop its `Sender` first, since it is the one place that knows the work is done). Bounded channels: our ring's channels are unbounded but can never hold more than 3 messages, because only 3 buffers exist; in an open pipeline use `sync_channel` ("use a bounded channel so that the number of messages waiting in the channel don't grow without bound"); policy and sizing are Chapter 10. Async owner tasks (`tokio::spawn`, `tokio::sync::mpsc`/`oneshot`): M2.
+   - **`### A guard that sends its buffer home`** — topic 3's `PooledBuf<'p>` holds `&'p mut Pool`, so one guard at a time. Replace the borrow with a way home: `HomeBuf { buf: Option<Buf>, home: Sender<Msg> }`, whose `Drop` does `if let Some(buf) = self.buf.take() { let _ = self.home.send(Msg::Data(buf)); }` (topic 3's idiom). Senders clone, so any number of guards live at once (measured E9: 3 alive at once; one stage panics, its guard still sends the buffer home during unwinding; all 3 home, 3 created). If the owner is gone, `send` fails and the buffer is simply dropped: leak-safe, as topic 2 requires (soundness never depends on the send).
+   - **`### Choosing a topology`** — the decision table from step 17 with the measured row values (locks per message: 5 / 0 / 0 / 0; buffers: unbounded / 1 / n.a. / 3; owners of the pool: 3 / 1 / n.a. / 1), the "when", the "cost", and "where it breaks": a tree breaks when two parents need one child (graph) or when children must run concurrently and the borrow can't be scoped; an arena breaks when handles leak across arenas or generations wrap (both safe, both silent); an owner thread breaks when it becomes the bottleneck (every request serialises through one thread: the same serialisation as a lock, made explicit — Chapter 4 measures the trade) or when request/reply round-trips dominate; `Arc<Mutex<T>>` breaks when critical sections grow, when two locks meet (ordering), or when a guard is held across I/O (Chapter 6). Tokio's guide as an independent statement of the same menu: "Let a dedicated task manage state and use message passing." / "Shard the mutex." / "Restructure the code to avoid the mutex."
+
+3. **`## Build, break, measure`** (every command and output from `examples.py`; the Rust sources live in `examples/*.rs`; each file starts with the chapter's A.3 block copied verbatim (instrument, `Buf`, `Header`, `Pool`, stages) and, where needed, topic 3's `PooledBuf` exactly as CHAPTER.md A.3 fixes it; `examples.py` compiles each with `rustc --edition 2024 -O` into a temporary directory, runs it with a timeout, and asserts)
+   - **`### Lab 1 · The reviewed design: count owners and locks`** — `examples/reviewed.rs`: three stage threads, `Arc<Mutex<Pool>>`, `Arc<Mutex<Stats>>`, unbounded channels between stages, a counting `lock()` wrapper, a `Barrier` so the owner counts are read while every thread is parked. Output: `owners_pool=3 owners_stats=4`, `locks=5000 locks_per_message=5`, all 1,000 messages through. Plus `examples/arcclone.rs` (`Arc::new` 2 allocations, `Arc::clone` 0, `strong_count` 2, `size_of` 8) and `examples/getmut.rs` (`Mutex::get_mut` and `into_inner` without the lock).
+   - **`### Lab 2 · The tree: zero locks, one buffer`** — `examples/tree.rs`: `Pipeline { pool, counts }` with `run_one`; 1,000 messages, `allocs_in_loop=1`, `buffers_created=1`, no `Mutex`/`Arc`/`.lock(` in the code; `examples/config.rs`: `Arc<Config>` read by 8 threads, no lock, `strong_count` back to 1 after the joins.
+   - **`### Lab 3 · The stage graph in an arena, and a stale handle`** — `examples/arena.rs`: `Arena<T>`, `Handle`, `Node`; the ring as a graph walked from `pool` (`["pool", "fill", "inspect", "consume", "pool"]`); remove `inspect`, insert `audit` (handle `2·1`), the stale `2·0` gets `None` from `get` and `remove`; plain `Vec` indices return `audit`; `size_of::<Handle>() == 8`; `u32::MAX.wrapping_add(1) == 0`. `examples/rcring.rs`: the same ring with `Rc<RefCell<RcNode>>` leaves 4 live allocations; in the `Arena<Node>`, 0.
+   - **`### Lab 4 · The ring: buffers as messages, accounted at every hand-over`** — `examples/ring.rs` (output lines asserted exactly: `messages=1000 returned=1000 buffers_created=3 home_at_end=3`, `accounting_checks=1000 same_order=true`, `first_ids=[1, 2, 3, 1, 2, 3] trips=[334, 333, 333]`, `buffer_bytes=196608 size_of_buf=32 size_of_msg=32`); `examples/homebuf.rs` (3 guards alive, 1 panic, 3 home). Run it three times in `examples.py` and assert identical output (determinism is part of the claim). Note for readers: the channels' own bookkeeping allocates (std's unbounded channel stores messages in blocks), so buffers are counted with `Pool::next_id`, not with `ALLOCS`.
+   - **`### Lab 5 · Break it`** — (a) stall stage 3 in the reviewed design: 1,000 buffers, ≥ 65,536,000 bytes (62.5 MiB) requested (`examples/stall.rs`); the same stall in the ring: 3 (`examples/ring_stall.rs`). (b) Lock the same mutex twice in one statement: `println!("{} {}", pool.lock().unwrap().next_id, pool.lock().unwrap().free.len());` never returns (child process killed after 5 s; the `try_lock` variant reports `WouldBlock`), because the first guard is a temporary that lives to the end of the statement (topic 2) and a `Mutex` locked again by its holder "will not return" (`examples/selflock.rs`; this happened to the planner while writing Lab 5's own output line). (c) The compile-fail set with each first line: `E0499`, `E0373`, `E0382` (closure in a loop), `E0596`, `E0382` (use after send: `borrow of moved value: `buf``), `E0505` (send while a view borrows), `E0277` (`Rc<RefCell<Pool>>` across threads), and the 2024 `static_mut_refs` error.
+
+4. **`## In production`** — sourced or measured only:
+   - The reflex's signature in a code review: `Arc<Mutex<_>>` on state that only one component writes; `.lock()` calls in every stage of a pipeline; a struct full of `Arc<Mutex<…>>` fields "so it can be shared". The question to ask is the step 7 one: which of these really has many owners?
+   - Hidden unbounded growth: with a shared pool and unbounded channels, nothing bounds how many buffers exist; it varied from run to run in our unstalled lab (asserted only as "between 1 and 1,000") and reached 1,000 when stage 3 stalled (Lab 5a). Ring topologies bound it by construction; open pipelines need bounded channels (Ryhl; Chapter 10).
+   - Self-deadlock from guard temporaries (Lab 5b); lock order across two mutexes (the Book: "two threads have each acquired one of the locks, causing them to wait for each other forever"); both are why the Tokio guide's first fix for contention is "a dedicated task" rather than a smarter lock. A `std::sync::MutexGuard` held across `.await` makes a future non-`Send` (Tokio: "the std::sync::MutexGuard type is not Send"): Chapter 6 and M2.
+   - Games and ECS: the RustConf 2018 closing keynote's long-form post asks "How do you structure something like a game without needing Rc<RefCell> and Arc<Mutex> everywhere?" and answers with indices into `Vec`s and generational indices ("Generational indexes are never re-used because the generation will always increment"); it names `slotmap` as the crate built on the idea. (Secondary; verify the author's byline from the page before printing a name.)
+   - No public post-mortem of an `Arc<Mutex<_>>` redesign is cited (none was fetched); say so rather than invent one, as the previous topics did.
+
+5. **`## The frontier`** — (a) the arena trades compile-time lifetimes for run-time generation checks: a stale handle is caught, not prevented; research and crates keep trying to get both (branded/"ghost" types that tie handles to one arena at the type level are named only as a direction, with no citation unless the builder fetches one; otherwise drop the sentence). (b) `slotmap`'s own open item: keys usable across maps are not detected ("can not be detected at runtime"). (c) Async owner tasks and structured concurrency (cancellation, shutdown, bounded queues) are where this topology lives in modern services: Chapter 10's syllabus line ("Bounded channels and backpressure", "Structured shutdown with tokens and trackers"). (d) The 2024 edition's `static_mut_refs` denial shows the language itself steering global shared mutation toward owned or synchronised alternatives (Edition Guide: "There is no automatic migration to fix these references to static mut").
+
+6. **`## Prove it`** — the three reel questions with worked answers, plus four more, each backed by `examples.py`: (4) *predict-the-outcome:* the ring with `IN_FLIGHT = 1`: how many buffers, what id order? (1; `1, 1, 1, …`; the builder measures and asserts.) (5) *debug-this:* the `selflock` line from Lab 5b: why does it hang, and give two fixes (bind the value first: `let n = pool.lock().unwrap().next_id;`; or take one guard and read both fields from it). (6) *estimate-the-cost (counts, no time):* a service of 8 worker threads handles 10,000 requests per batch and each request touches the shared `Arc<Mutex<Stats>>` twice and the pool twice (a get and a put): lock acquisitions per batch? (10,000 × 4 = 40,000; assert the arithmetic) and how many after moving stats into each worker and the pool into an owner thread? (0 mutex acquisitions; a get becomes a request plus a reply, a put one message home: 3 messages per request, 30,000 per batch; say that a channel hop is itself a synchronisation, which Chapter 4 measures). (7) *defend-a-design:* a teammate argues the owner thread is "just a mutex with extra steps". Answer: it serialises like a mutex, but the state has one owner, the invariant is checked in one place, the API is a closed message enum, no caller can hold the state across a slow operation, and backpressure is a property of the topology; it costs a thread and a channel hop per request (Ryhl's recipe; Tokio's guide recommends it once state needs I/O).
+
+7. **`## Sources`** — every source in `SOURCES.md` with URL and version (std 1.99.0 docs as fetched: `Arc`, `Mutex`, `MutexGuard`, `Rc`, `Weak`, `mpsc` module, `Sender`, `SendError`, `Receiver`, `channel`, `sync_channel`, `thread::spawn`, `thread::scope`, `mem::replace`, `Option`, `Vec`; the Book ch. 15.6, 16.1, 16.2, 16.3; the Reference "Closure expressions"; the Nomicon "Data Races and Race Conditions"; the Edition Guide "Disallow references to static mut"; the error index E0499; the API Guidelines "Flexibility"; `slotmap` 1.1.1; the Go Blog "Share Memory By Communicating"; the Tokio tutorial "Shared state"; Alice Ryhl, "Actors with Tokio" (secondary); the RustConf 2018 closing keynote post (secondary)). "Last verified against these sources: 12 October 2026. Examples executed with rustc 1.97.0 (2d8144b78 2026-07-07), edition 2024, on x86_64 Linux. Expert sign-off: pending."
+
+---
+
+## Prerequisites (`prerequisites.mdx`)
+
+Sections (`<section class="prereq" data-section="…">`, numbered like the previous topics):
+
+1. **The chapter so far** — the three earlier reels (`<Resource kind="reel" host={props.host} title="Single ownership and move semantics">`, `"RAII, drop order, and leak safety"`, `"Partial moves and destructuring as transfer"`, labelled "Before this" by the build): one owner per value; a move copies the handle and leaves the source moved-from (`E0382`); signatures as contracts; a guard does its job in `Drop`; `Option::take` moves out of a `&mut`; `PooledBuf` holds the pool by `&mut`. Check: "Who owns a value after `let b = a;` for a non-`Copy` type?" (`b`; `a` is moved-from.)
+2. **The running example in five signatures** — `Pool::get(&mut self) -> Buf`, `Pool::put(&mut self, buf: Buf)`, `fill(&mut Buf, &[u8])`, `inspect(&Buf) -> Header`, `consume(Buf) -> Buf`, with one line each (CHAPTER.md A.3). Check: "Which of these takes ownership, and which only borrows?"
+3. **The Book's borrowing rule** — "either one mutable reference or any number of immutable references" and `E0499`/`E0502` as declared knowledge (`references-basics`; Book ch. 4.2); the model behind it is Chapter 2. Check: "Why can't two `&mut Pool` exist at once?"
+4. **Threads, channels, locks and lambdas as general ideas** — from the audience's other languages (`threads-and-channels`, `mutexes`, `closures-basics`): an OS thread, joining it, a FIFO channel between threads, a mutex, a lambda that captures variables. Rust's `thread::spawn`, `mpsc`, `Mutex` and `|| …` are shown and glossed on the spot; their full Rust semantics are Chapters 2, 4 and 6. Check: "In a producer/consumer queue, who owns an item after it is enqueued?" Optional reading (verify each title and a 200): the Book ch. 16.1 "Using Threads to Run Code Simultaneously", ch. 16.2 "Transfer Data Between Threads with Message Passing", ch. 16.3 "Shared-State Concurrency" (all three titles as fetched on 2026-10-12; past the ch. 10 baseline, so the reel explains what it uses).
+5. **Later, deeper** — Chapter 4 "Arc<Mutex<T>> as hidden serialization" and "Reference cycles and Weak", Chapter 6 "Send and Sync as auto-traits" (on-site reels labelled "Goes deeper later" by the build once they exist; until then plain text, no link).
+
+Every link, title and author is verified by the builder (HTTP 200 and matching title); no lengths unless verified.
+
+---
+
+## Examples to execute (`examples.py`)
+
+**Planner's drafts** (compiled and run as described in each row; start from them, then format them as the steps show): the A.3 block is `prelude.rs`, topic 3's guard `guard.rs`, and each lab a `*.body` file appended to it, in `/tmp/claude-0/-home-user-learning-resources/90f8a6d1-b1c2-51c9-9e2d-1b51701451f4/scratchpad/rs/` (`l1_e0499`…`l5_ok`, `reviewed`, `stall`, `arcclone`, `getmut`, `tree`, `config`, `arena`, `rcring2`, `ring`, `ring1`, `ring_stall`, `send_e0382`, `send_e0505`, `senderr`, `homebuf`, `rc_e0277`, `selflock`, `staticmut.rs`). The scratchpad is session-local: if it is gone, rebuild from this file, which records every output. Two cautions from the drafts: `gen` is a reserved keyword in the 2024 edition (don't name a variable `gen`); and never put two `lock()` calls on one mutex in one statement (the planner's own lab hung that way: Lab 5b).
+
+`npm run test:examples` runs `python3 examples.py` from `site/`, so every path is resolved from `__file__`. `examples.py` prints `rustc --version`, fails if the compiler is older than 1.85, compiles each `examples/*.rs` with `rustc --edition 2024 -O` (compile-fail cases without `-O`) into a `tempfile.TemporaryDirectory()`, runs each binary with `subprocess.run(..., timeout=60)`, and asserts. Nothing is skipped: a missing `rustc` is a failure. Compile-fail cases assert a non-zero exit and the exact `error[E…]` header plus the labels named. Every file that uses the pipeline starts with the A.3 block verbatim (assert it: `examples.py` checks that the A.3 text from `CHAPTER.md`'s code fence, read at run time from `../CHAPTER.md`, appears unchanged in each such file; if reading `CHAPTER.md` is judged too brittle, embed the block once in `examples.py` and assert each file contains it). No output is printed inside a region whose allocations are counted. Every displayed code line in `reel.tsx` is checked to be a substring of a line of its named lab file (a small table in `examples.py`: step → file → lines).
+
+| # | File | What it asserts |
+|---|---|---|
+| E1 | compile-fail `examples/e0499.rs`, `e0373.rs`, `e0382_loop.rs`, `e0596.rs`; then `examples/arcmutex_ok.rs` | `e0499`: `error[E0499]: cannot borrow `pool` as mutable more than once at a time` (+ `first mutable borrow occurs here`, `second mutable borrow occurs here`). `e0373`: `error[E0373]: closure may outlive the current function, but it borrows `pool`, which is owned by the current function` (+ `use the `move` keyword`). `e0382_loop`: `error[E0382]: use of moved value: `pool`` (+ `value moved into closure here, in previous iteration of loop`, `if `Pool` implemented `Clone`, you could clone the value`). `e0596`: `error[E0596]: cannot borrow data in an `Arc` as mutable` (+ `` trait `DerefMut` is required to modify through a dereference, but it is not implemented for `Arc<Pool>` ``). `arcmutex_ok` compiles, runs, exit 0. The four programs are the planner's `l1`…`l5` drafts: `PooledBuf` twice; `thread::spawn(|| { pool.get … })`; `move` closures in a `for _ in 0..3` loop; `Arc::new(Pool::new())` with `Arc::clone` per thread; then `Arc::new(Mutex::new(Pool::new()))` with `.lock().unwrap()`. |
+| E2 | `examples/reviewed.rs` | `owners_pool=3 owners_stats=4`; `messages=1000 filled=1000 inspected=1000 consumed=1000`; `locks=5000 locks_per_message=5`; `1 <= next_id <= 1000` (printed as a boolean; the exact count varies between runs and is never shown). |
+| E2b | `examples/arcclone.rs`, `examples/getmut.rs` | `arc_new_allocs=2 arc_clone_allocs=0 strong=2 size_of_arc=8`; `getmut`: `Mutex::get_mut` then `into_inner` on an owned `Mutex<Pool>`, the counting `lock` helper's counter stays 0, `next_id` as expected. |
+| E3 | `examples/tree.rs` | `messages=1000 filled=1000 inspected=1000 consumed=1000`; `allocs_in_loop=1 buffers_created=1`; last header `Header { kind: 1, len: 256 }`; the file's code lines (comments stripped) contain none of `Mutex`, `Arc<`, `Arc::`, `.lock(`. |
+| E3b | `examples/config.rs` | an `Arc<Config>` cloned into 8 threads (`THREADS = 8`), each reads it; planner's run: `threads=8 owners_while_running=9 owners_after=1 sum_ok=true` (`strong_count` read while all are parked at a `Barrier`); no `Mutex` in the code. |
+| E4 | `examples/arena.rs` | `walk=["pool", "fill", "inspect", "consume", "pool"]`; `insp=Handle { index: 2, generation: 0 }`; `removed=inspect`; `audit=Handle { index: 2, generation: 1 }`; `get(stale)=None`; `get(audit)=Some("audit")`; `remove(stale)=None`; `plain_index=audit`; `size_of_handle=8`; `u32::MAX.wrapping_add(1) == 0`. The `Handle` and `Node` declarations are formatted exactly as step 9 shows them (multi-line), `remove` exactly as step 11 shows it. |
+| E5 | `examples/rcring.rs` | `rc_ring_live_after_drop=4 arena_live_after_drop=0` (`ALLOCS − DEALLOCS` deltas; the arena case uses the real `Arena<Node>` copied from `arena.rs`, with the four ring edges added through `get_mut`). |
+| E6 | `examples/ring.rs` (run 3 times, identical stdout) | `messages=1000 returned=1000 buffers_created=3 home_at_end=3`; `accounting_checks=1000 same_order=true`; `first_ids=[1, 2, 3, 1, 2, 3] trips=[334, 333, 333]`; `buffer_bytes=196608 size_of_buf=32 size_of_msg=32`; code lines contain none of `Mutex`, `Arc<`, `Arc::`, `.lock(`. |
+| E7 | `examples/stall.rs`, `examples/ring_stall.rs` | `stall`: `created=1000`, `buf_bytes=65536000`, allocations delta ≥ 1,000, `BYTES` delta ≥ 65,536,000; `ring_stall`: `buffers_created=3`, `returned=1000`. Both deterministic (signals over channels, no sleeps); `timeout=60`. |
+| E8 | compile-fail `examples/send_e0382.rs`, `examples/send_e0505.rs`; run `examples/senderr.rs` | `send_e0382`: `error[E0382]: borrow of moved value: `buf`` (+ `value moved here`, `value borrowed here after move`, `consider cloning the value if the performance cost is acceptable`). `send_e0505`: `error[E0505]: cannot move out of `buf` because it is borrowed` (+ `borrow of `buf.bytes` occurs here`, `move out of `buf` occurs here`). `senderr`: `send failed; got buffer 1 back`, `home=1 created=1`. |
+| E9 | `examples/homebuf.rs` | `alive_at_once=3 created=3`; `panics=1 home=3 created=3`; exit 0 (the panic message on stderr is expected). |
+| E10 | compile-fail `examples/rc_e0277.rs` | `error[E0277]: `Rc<RefCell<Pool>>` cannot be sent between threads safely`. |
+| E11 | `examples/selflock.rs` | `selflock try` prints `second_lock_would_block=true`; `selflock` (no argument) is run with `timeout=5` and must raise `TimeoutExpired` (kill the child). Never run it without a timeout. |
+| E12 | `examples/staticmut.rs` (both editions) | `--edition 2024`: non-zero exit, `error: creating a shared reference to mutable static` and `` `#[deny(static_mut_refs)]` ``; `--edition 2021`: compiles with `warning: creating a shared reference to mutable static`. |
+| E13 | constants and arithmetic | `MESSAGES = 1000`, `IN_FLIGHT = 3`, `BUF_CAP = 65536`; `1000 * 65536 == 65536000` and `65536000 / 2**20 == 62.5`; `3 * 65536 == 196608` ("192 KiB"); `2**31` and `2**32` (slotmap's and our generation wrap, if shown); Prove it 4 (`IN_FLIGHT = 1` variant of `ring.rs`, measured by the planner: `buffers_created=1 home_at_end=1`, `first_ids=[1, 1, 1] trips=[1000]`, `buffer_bytes=65536`) and Prove it 6 (`8`, `10000`, `10000 * 4 == 40000`, `10000 * 3 == 30000`). |
+
+Every number on screen (`1,000`, `5`, `5,000`, `3`, `4`, `0`, `1`, `2`, `8`, `32`, `64 KiB`, `62.5 MiB`, `192 KiB`, `334`, `333`, the handle values `2·0`/`2·1`, the E-codes, `2^31`, `2^32`) appears as an asserted value or constant in `examples.py`.
+
+---
+
+## Concept ledger (registry entry)
+
+**As CHAPTER.md says (Part B, Topic 4, and A.7), unchanged:**
+
+- **introduces:** `ownership-topology`, `arc-mutex-reflex`, `tree-ownership`, `generational-arena`, `owner-task-messages`, `move-closures`.
+- **uses:** `single-ownership`, `move-semantics`, `copy-vs-clone` (`Arc::clone` copies a pointer and bumps a count, not the payload; `Handle` is `Copy`; `Header` returned as a `Copy` value), `ownership-signatures` (the tree's edges), `e0382-use-after-move` (use after send; the loop form in the ladder), `e0505-move-while-borrowed` (Prove it 1), `counting-allocator` (Rc ring leak, arena, stall, `Arc::clone`, tree), `drop-trait` and `raii-guard` (`MutexGuard` unlocks in `Drop`; `HomeBuf`), `take-replace-idioms` (`Arena::remove` uses `Option::take`; `HomeBuf::drop`).
+- **declared:** `rust-basics`, `references-basics`, `structs-enums`, `pattern-matching-basics` (`Msg` matched in the owner loop), `std-collections`, `traits-generics-basics`, `threads-and-channels`, `mutexes`, `closures-basics` (`move` closures build on it).
+
+**Registry form** (`site/src/topics/registry.ts`; ids mapped to what earlier topics really register, as topic 2 did and as `syllabus/review-notes/rust-ch01-topic2-ledger-departure.md` on topic 2's branch asks topics 3 and 4 to do; see "Changes from the chapter plan", item 1):
+
+```ts
+{
+  id: 'rust.ownership-topology-over-shared',
+  domain: 'rust-systems-engineering',
+  slug: 'rust-systems-engineering/m1-ownership-types-concurrency/ch01-ownership-moves/ownership-topology-over-shared',
+  title: 'Ownership topology over shared mutability',
+  syllabusTitle: 'Ownership topology over shared mutability',
+  kind: 'full',
+  status: 'held',            // topics 1–3 are not live on main yet
+  milestone: { number: 1, title: 'Ownership, Types, and Concurrency Primitives' },
+  chapter: { number: 1, title: 'Ownership and Moves', section: '1.1' },
+  minutes: 20,
+  verified: '2026-10-12',
+  introduces: ['ownership-topology', 'arc-mutex-reflex', 'tree-ownership', 'generational-arena', 'owner-task-messages', 'move-closures'],
+  uses: ['ownership', 'move-semantics', 'copy-trait', 'clone-cost', 'ownership-signatures', 'e0382', 'e0505', 'counting-allocator', 'drop-trait', 'raii-guard', 'take-replace-idioms'],
+  declared: ['rust-basics', 'references-basics', 'structs-enums', 'pattern-matching-basics', 'std-collections', 'traits-generics-basics', 'threads-and-channels', 'mutexes', 'closures-basics'],
+  bridge: 'Your `PooledBuf` guard lets one buffer (`Buf`) out of the pool (`Pool`) at a time, because it holds the pool by exclusive borrow, and three stages need buffers at once. Now: why `Arc<Mutex<Pool>>` is the reflex, not the answer, and the shapes of ownership that fix it across a whole program.',
+  handoff: 'Every topology still lends: `fill` borrows `&mut Buf`, `inspect` borrows `&Buf`. Next: the rule behind those loans, many shared borrows or one exclusive borrow, never both.',
+}
+```
+
+- `uses` mapping: `single-ownership` → topic 1's `ownership`; `copy-vs-clone` → topic 1's `copy-trait` and `clone-cost`; `e0382-use-after-move` → `e0382`; `e0505-move-while-borrowed` → `e0505`; `counting-allocator`, `drop-trait`, `raii-guard` → topic 2's ids (unchanged); `take-replace-idioms` → topic 3's id as CHAPTER.md names it (check topic 3's real registry entry at ship time and use its id). If topic 1 is later corrected to register the plan's ids (the review note's step 1), switch back to the plan's ids.
+- `status: 'held'` unless every earlier topic is live on `main` at ship time (ROUTINE.md section 8 step 3).
+
+---
+
+## Claims list
+
+Every factual claim the topic makes, with its `SOURCES.md` section (by title) and the quote it rests on, or **measured** (asserted in `examples.py`; the primary evidence for compiler and runtime behaviour). Design arguments (marked **argument**) are the topic's reasoning, stated as such on screen, built only on the cited facts.
+
+| # | Claim (where) | SOURCES.md section | Quote / evidence |
+|---|---|---|---|
+| 1 | Two `PooledBuf::new(&mut pool)` alive at once is `E0499` (step 1) | E0499 - Error codes index | "A variable was borrowed as mutable more than once." + **measured** E1 |
+| 2 | The Book's rule: many shared or one exclusive reference (step 1; Prerequisites) | E0499 - Error codes index | "Please note that in Rust, you can either have many immutable references, or one mutable reference." (declared knowledge, Book ch. 4.2) |
+| 3 | A closure passed to `thread::spawn` that borrows a local is `E0373`, and rustc's help suggests `move` (step 2) | **measured** E1; std::thread::spawn | "F: FnOnce() -> T + Send + 'static," / "The 'static constraint means that the closure and its return value must have a lifetime of the whole program execution. The reason for this is that threads can outlive the lifetime they have been created in." |
+| 4 | Moving `pool` into a `move` closure inside a loop is `E0382` "value moved into closure here, in previous iteration of loop", and rustc notes `Clone` (step 2) | **measured** E1; Shared-State Concurrency (ch16-03) | "Rust is telling us that we can’t move the ownership of lock counter into multiple threads." |
+| 5 | `Arc` gives shared ownership but no `&mut` to its contents (`E0596`) (step 2; internals) | Struct std::sync::Arc | "The type Arc<T> provides shared ownership of a value of type T, allocated in the heap." / "Shared references in Rust disallow mutation by default, and Arc is no exception: you cannot generally obtain a mutable reference to something inside an Arc." / "Use interior mutability with synchronization primitives like Mutex, RwLock, or one of the Atomic types." + **measured** E1 |
+| 6 | `Arc<T>` alone adds no thread safety to the data; usually paired with `Mutex` (step 2; internals) | Struct std::sync::Arc | "Arc<T> makes it thread safe to have multiple ownership of the same data, but it doesn’t add thread safety to its data." / "In the end, this means that you may need to pair Arc<T> with some sort of std::sync type, usually Mutex<T>." |
+| 7 | `Rc<RefCell<_>>` is the single-threaded twin (`Mutex` in `Arc` parallels `RefCell` in `Rc`) and `Rc` can't cross threads (`E0277`) (step 2; internals) | Shared-State Concurrency (ch16-03); Rc in std::rc | "In the same way we used RefCell<T> in Chapter 15 to allow us to mutate contents inside an Rc<T>, we use Mutex<T> to mutate contents inside an Arc<T>." / "Unfortunately, Rc<T> is not safe to share across threads." / "A single-threaded reference-counting pointer." + **measured** E10 |
+| 8 | The reviewed design makes 5 lock acquisitions per message, 5,000 for 1,000 messages (step 3) | **measured** E2 (counted in code; deterministic) | n/a |
+| 9 | The reviewed `Pool` has 3 owners, the counters 4 (step 4) | **measured** E2 (`Arc::strong_count` with all threads parked at a `Barrier`) | n/a |
+| 10 | Shared ownership spreads invariants across every holder and makes lock order a whole-program rule (step 4) | **argument**, on: Shared-State Concurrency (ch16-03); Disallow references to static mut | "multiple ownership can add complexity because these different owners need managing." / "Mutex<T> comes with the risk of creating deadlocks. These occur when an operation needs to lock two resources and two threads have each acquired one of the locks, causing them to wait for each other forever." / "upholding mutability XOR aliasing for a static mut requires reasoning about your code globally" |
+| 11 | `Mutex<T>` owns its data, reachable only through guards; the guard unlocks on drop (step 5; internals) | Struct std::sync::Mutex; MutexGuard in std::sync; Shared-State Concurrency (ch16-03) | "The data can only be accessed through the RAII guards returned from lock and try_lock, which guarantees that the data is only ever accessed when the mutex is locked." / "An RAII implementation of a “scoped lock” of a mutex. When this structure is dropped (falls out of scope), the lock will be unlocked." / "the type also has a Drop implementation that releases the lock automatically when a MutexGuard goes out of scope" |
+| 12 | `Mutex::get_mut` takes no lock because `&mut` already guarantees exclusivity; `into_inner` consumes the mutex (step 5; internals) | Struct std::sync::Mutex | "Since this call borrows the Mutex mutably, no actual locking needs to take place" / "the mutable borrow statically guarantees no new locks can be acquired while this reference exists." / "Consumes this mutex, returning the underlying data." + **measured** E2b |
+| 13 | `Arc::clone` points at the same allocation and bumps a count: 0 allocations; `Arc::new(Mutex::new(Pool::new()))` makes 2 (step 5; internals) | Struct std::sync::Arc | "Invoking clone on Arc produces a new Arc instance, which points to the same allocation on the heap as the source Arc, while increasing a reference count." + **measured** E2b |
+| 14 | Locking a `Mutex` its holder already holds does not return (Lab 5b; Prove it 5) | Struct std::sync::Mutex | "The exact behavior on locking a mutex in the thread which already holds the lock is left unspecified. However, this function will not return on the second call (it might panic or deadlock, for example)." + **measured** E11 |
+| 15 | The tree runs 1,000 messages with 1 allocation, 1 buffer, 0 locks (step 6) | **measured** E3 | n/a |
+| 16 | Read-only data shared by 8 threads needs `Arc` only, no `Mutex` (steps 7, 18) | Struct std::sync::Arc | "Use interior mutability with synchronization primitives like Mutex, RwLock, or one of the Atomic types." (only needed for mutation) + **measured** E3b |
+| 17 | An `Rc` cycle never frees its nodes: 4 allocations live after the last outside handle drops; leaks are memory-safe and not caught by the compiler (step 8; internals) | Reference Cycles Can Leak Memory (ch15-06) | "This creates memory leaks because the reference count of each item in the cycle will never reach 0, and the values will never be dropped." / "Preventing memory leaks entirely is not one of Rust’s guarantees, meaning memory leaks are memory safe in Rust." / "you must ensure that you don’t create cycles; you can’t rely on Rust to catch them." + **measured** E5 |
+| 18 | The remedy is to make some references non-owning (`Weak`, or handles) (step 8; internals) | Reference Cycles Can Leak Memory (ch15-06); Weak in std::rc | "Another solution for avoiding reference cycles is reorganizing your data structures so that some references express ownership and some references don’t." / "Weak is a version of Rc that holds a non-owning reference to the managed allocation." |
+| 19 | Tree back-pointers to parents use `Weak` (internals; expert 11) | Weak in std::rc | "For example, a tree could have strong Rc pointers from parent nodes to children, and Weak pointers from children back to their parents." |
+| 20 | A slot map owns things that "have no clear ownership otherwise, such as … graph nodes" (step 9) | slotmap - Rust (crate documentation) | "Great for storing collections of objects that need stable, safe references but have no clear ownership otherwise, such as game entities or graph nodes." / "A slot map’s main purpose is to simply own things in a safe and efficient manner." |
+| 21 | Dropping the arena frees every node: 0 live allocations; `Handle` is 8 bytes and `Copy` (step 9) | **measured** E4, E5 | n/a |
+| 22 | Slots hold (value, version); a key is valid only when versions match; removed keys stay invalid after reuse; plain indices suffer the ABA problem (steps 10, 11) | slotmap - Rust (crate documentation) | "Behind the scenes each slot in the vector is a (value, version) tuple. After insertion the returned key also contains a version. Only when the stored version and version in a key match is a key valid. This allows us to reuse space in the vector after deletion without letting removed keys point to spurious new elements." / "Those solutions either can not reclaim memory from deleted elements or suffer from the ABA problem." / "assert_eq!(sm.contains_key(bar), false); // After deletion a key stays invalid." |
+| 23 | Our arena: stale `get` and `remove` return `None`; the plain index returns `audit` (step 10) | **measured** E4; slotmap::SlotMap (item page, further quotes) | "assert_eq!(sm.remove(key), Some(42)); assert_eq!(sm.remove(key), None);" |
+| 24 | `Option::take` moves the value out and leaves `None` (step 11) | Option in std::option - Rust (take) | "Takes the value out of the option, leaving a None in its place." |
+| 25 | A lookup costs a bounds check and a generation compare; a slot `Vec` lookup out of range is `None` (step 11; internals) | Vec in std::vec - Rust (slice get) | "If given a position, returns a reference to the element at that position or None if out of bounds." + the code (E4) |
+| 26 | Generations wrap: ours after 2^32 removals of one slot, slotmap's after 2^31, and stay safe (step 11) | slotmap - Rust (crate documentation, further quotes) | "After 231 deletions and insertions to the same underlying slot the version wraps around and such a spurious reference could potentially occur. It is incredibly unlikely however, and in all circumstances is the behavior safe." (2^31; superscript lost) + **measured** E4 (`wrapping_add`) |
+| 27 | `SlotMap` never shrinks; per-slot memory; `SecondaryMap` for side data; keys of one map on another are not detected (internals) | slotmap - Rust (both sections) | "It can never shrink the size of its underlying storage…" / "The memory usage for each slot in SlotMap is 4 + max(sizeof(T), 4) rounded up to the alignment of T." / "A SecondaryMap is simply a Vec of slots like slot map is" / "If you have multiple slot maps it’s an error to use the key of one slot map on another slot map. The result is safe, but unspecified, and can not be detected at runtime, so it can lead to a hard to find bug." |
+| 28 | Generational indices predate the crate in games; the keynote names `slotmap` (In production) | My RustConf 2018 Closing Keynote (secondary) | "Generational indexes are never re-used because the generation will always increment, yet the “real indexes” will always be “small”, on the order of the largest total number of entries ever allocated." / "How do you structure something like a game without needing Rc<RefCell> and Arc<Mutex> everywhere?" |
+| 29 | `send` takes the value; using it afterwards is `E0382` "borrow of moved value"; the receiver takes ownership (step 12) | Transfer Data Between Threads with Message Passing (ch16-02) | "The send function takes ownership of its parameter, and when the value is moved the receiver takes ownership of it." / "error[E0382]: borrow of moved value: `val`" / "Once the value has been sent to another thread, that thread could modify or drop it before we try to use the value again." + **measured** E8 |
+| 30 | A send moves 32 bytes (`size_of::<Buf>()`, also `Msg`); the payload stays put (step 12) | **measured** E6 (size on this target, a measured fact, not a layout rule) | n/a |
+| 31 | `send` returns the value inside `SendError` if the receiver is gone (step 12; internals) | std::sync::mpsc::Sender and SendError (item pages); std::sync::mpsc::SendError (item page) | "Attempts to send a value on this channel, returning it back if it could not be sent." / "pub struct SendError<T>(pub T);" + **measured** E8 |
+| 32 | `move` closures take ownership of captures; without `move` captures are inferred, preferring shared borrows; `move` doesn't relax the rules (step 13) | Closure expressions - The Rust Reference; Using Threads to Run Code Simultaneously (ch16-01) | "Without the move keyword, the closure expression infers how it captures each variable from its environment, preferring to capture by shared reference…" / "A closure can be forced to capture its environment by copying or moving values by prefixing it with the move keyword. This is often used to ensure that the closure’s lifetime is 'static." / "The move keyword overrides Rust’s conservative default of borrowing; it doesn’t let us violate the ownership rules." |
+| 33 | `thread::spawn` takes the closure by value and needs `Send` (named only) (step 13) | std::thread::spawn; Closure expressions - The Rust Reference | "The Send constraint is because the closure will need to be passed by value from the thread where it is spawned to the new thread." / "The closure type implements Send and Sync if the type of every captured variable also implements the trait." |
+| 34 | The ring: 1,000 messages, 3 buffers, 0 locks, ids `1 2 3 1 …`, trips 334/333/333 (step 14) | **measured** E6 | n/a |
+| 35 | Channels are FIFO (why the ids go round in order and `Stop` arrives last) (steps 14, 16) | std::sync::mpsc::channel (function page) | "All data sent on the Sender will become available on the Receiver in the same order as it was sent" |
+| 36 | An owner task exclusively owns a resource that others reach by messages; the message enum is its API (step 14; internals) | Actors with Tokio - Alice Ryhl; Shared state - Tokio tutorial; Share Memory By Communicating - The Go Blog | "A common use-case of actors is to assign the actor exclusive ownership of some resource you want to share, and then let other tasks access this resource indirectly by talking to the actor." / "The ActorMessage enum defines the kind of messages we can send to the actor." / "Spawn a task to manage the state and use message passing to operate on it." / "This approach ensures that only one goroutine has access to the data at a given time." |
+| 37 | The slogan "Do not communicate by sharing memory; instead, share memory by communicating" (Book, from Go's docs) (step 14 caption or Deep dive) | Transfer Data Between Threads with Message Passing (ch16-02); Share Memory By Communicating - The Go Blog | "Here’s the idea in a slogan from the Go language documentation: “Do not communicate by sharing memory; instead, share memory by communicating.”" / "Do not communicate by sharing memory; instead, share memory by communicating." |
+| 38 | Channels are like single ownership; shared memory like multiple ownership (steps 4, 14) | Shared-State Concurrency (ch16-03) | "In a way, channels in any programming language are similar to single ownership because once you transfer a value down a channel, you should no longer use that value. Shared-memory concurrency is like multiple ownership" |
+| 39 | `channel()` never blocks the sender; `sync_channel` blocks when full; 0 is a rendezvous (step 15; step 20; internals) | std::sync::mpsc::channel (function page); std::sync::mpsc::sync_channel (function page); std::sync::mpsc::Sender::send … (further quotes) | "no send will block the calling thread (this channel has an “infinite buffer”, unlike sync_channel, which will block after its buffer limit is reached)" / "When the internal buffer becomes full, future sends will block waiting for the buffer to open up. Note that a buffer size of 0 is valid, in which case this becomes “rendezvous channel”…" / "This method will never block the caller in order to wait for space to become available." |
+| 40 | Stalling stage 3: the reviewed design makes 1,000 buffers (62.5 MiB requested); the ring makes 3 (step 15) | **measured** E7 | n/a |
+| 41 | `recv` blocks while a sender exists; after disconnect, already-sent messages are still received (steps 16, 20) | std::sync::mpsc::Receiver (item page) | "This function will always block the current thread if there is no data available and it’s possible for more data to be sent (at least one sender still exists)." / "However, since channels are buffered, messages sent before the disconnect will still be properly received." |
+| 42 | The owner's accounting holds at all 1,000 hand-overs; every stage saw the same order (step 16) | **measured** E6 | n/a |
+| 43 | A cycle of actors can't shut down by hanging up; owner tasks end when all senders drop (step 16; internals) | Actors with Tokio - Alice Ryhl | "You need to be a bit careful if your actors form a cycle, because by holding on to each other's handle structs, the last sender is never dropped, preventing shutdown." / "When all senders to the receiver have been dropped, we know that we will never receive another message and can therefore shut down the actor." |
+| 44 | `join()` hands back the thread's result (the `Owner` comes back to `main`) (internals) | std::thread::spawn | "A thread can also return a value through its JoinHandle" |
+| 45 | Tokio's guidance: a mutex for simple data and short critical sections at low contention, a managing task for state that needs async I/O; for contention: a dedicated task, sharding, or restructuring (steps 17, 18; internals) | Shared state - Tokio tutorial | "Generally you want to use the first approach for simple data, and the second approach for things that require asynchronous work such as I/O primitives." / "Using a blocking mutex to guard short critical sections is an acceptable strategy when contention is minimal." / "If contention on a synchronous mutex becomes a problem, the best fix is rarely to switch to the Tokio mutex." / "Let a dedicated task manage state and use message passing." / "Shard the mutex." / "Restructure the code to avoid the mutex." |
+| 46 | A std `MutexGuard` is not `Send` (named; Chapter 6) (In production) | MutexGuard in std::sync; Shared state - Tokio tutorial | "A MutexGuard is not Send to maximize platform portability." / "This happens because the std::sync::MutexGuard type is not Send." |
+| 47 | Sending while a borrowed view is live is `E0505` (Prove it 1) | **measured** E8 | n/a |
+| 48 | Safe Rust prevents data races (mostly by ownership) but not deadlocks or general race conditions (internals) | Data Races and Race Conditions - The Rustonomicon | "Safe Rust guarantees an absence of data races" / "Data races are prevented mostly through Rust’s ownership system alone: it’s impossible to alias a mutable reference, so it’s impossible to perform a data race." / "However Rust does not prevent general race conditions." / "For this reason, it is considered “safe” for Rust to get deadlocked or do something nonsensical with incorrect synchronization" |
+| 49 | Scoped threads may borrow because they're joined at scope end (forward pointer) (internals) | scope in std::thread - Rust | "Unlike non-scoped threads, scoped threads can borrow non-'static data, as the scope guarantees all threads will be joined at the end of the scope." |
+| 50 | Rust 2024 makes references to `static mut` a deny-by-default error, with no automatic migration (internals; frontier) | Disallow references to static mut - The Rust Edition Guide | "The static_mut_refs lint level is now deny by default." / "There is no automatic migration to fix these references to static mut." + **measured** E12 |
+| 51 | `mem::replace` moves a new value in and returns the old one, dropping neither (internals, alternative to `take` in `remove`) | replace in std::mem - Rust | "Moves src into the referenced dest, returning the previous dest value." / "Neither value is dropped." |
+| 52 | API design: take ownership when you need it, borrow when you don't (the tree's signatures) (step 6; internals) | Flexibility - Rust API Guidelines | "If a function requires ownership of an argument, it should take ownership of the argument rather than borrowing and cloning the argument." / "If a function does not require ownership of an argument, it should take a shared or exclusive borrow of the argument rather than taking ownership and dropping the argument." |
+| 53 | Poisoning (named only) (internals) | Struct std::sync::Mutex | "a mutex becomes poisoned if it recognizes that the thread holding it has panicked." |
+| 54 | Bounded channels keep waiting messages from growing without bound (internals; In production) | Actors with Tokio - Alice Ryhl | "You should still make sure to use a bounded channel so that the number of messages waiting in the channel don't grow without bound." |
+| 55 | Mutex in async code is fine when contention is low and not held across `.await` (Ch.6 pointer) | Shared state - Tokio tutorial | "As a rule of thumb, using a synchronous mutex from within asynchronous code is fine as long as contention remains low and the lock is not held across calls to .await." |
+
+---
+
+## Expert-list mapping (blind list, 20 items; every item placed)
+
+| # | Item (short) | Placement |
+|---|---|---|
+| 1 | `Arc<Mutex<T>>` = multiple ownership + interior mutability; ask first if the data has many owners | here: steps 4, 7; Deep dive "What Arc<Mutex<T>> is, exactly" |
+| 2 | Channels ≈ single ownership, shared memory ≈ multiple ownership | here: steps 12, 14; claim 38 |
+| 3 | `Arc` needed because spawned threads need `'static`/`Send` ownership; `Rc` not `Send`; atomics cost | here: steps 2, 13 (`'static`, `E0277`); the cost of atomic counting → Ch.4 "Box, Rc, and Arc ownership shapes" (quote: "`Arc` for an atomic refcount") |
+| 4 | `Arc<T>` `Send`/`Sync` only if `T`; `Arc` never gives mutation; `Arc<RefCell<T>>` rejected | here: step 2 (`E0596`, no mutation through `Arc`); `Send`/`Sync` → Ch.6 "Send and Sync as auto-traits" (quote: "`Send` means ownership may move to another thread; `Sync` means `&T` is `Send`") |
+| 5 | Rust prevents data races, not deadlocks; `Mutex` adds deadlock risk | here: step 4, Deep dive "What Arc<Mutex<T>> is, exactly", Lab 5b |
+| 6 | Data races prevented mostly by ownership alone | here, one sentence (internals, claim 48); the model → Ch.2 "Aliasing XOR mutability" (quote: "This rule gives data-race freedom") |
+| 7 | Mutex poisoning | named here (internals); → Ch.6 "Arc shares, Mutex synchronizes" (quote: "futex-based in std, with poisoning semantics") |
+| 8 | Tokio: mutex for simple data, managing task for async work; the anti-pattern is the reflex, not the type | here: step 18; Deep dive "Choosing a topology" |
+| 9 | std `Mutex` in async when uncontended and not held across `.await`; Tokio mutex not a free upgrade | one line here (In production); → Ch.6 "Arc shares, Mutex synchronizes" (quote: "Use `tokio::sync::Mutex` only when a lock must be held across `.await`, and never hold a std guard across `.await`") |
+| 10 | `MutexGuard` across `.await` makes the future non-`Send` | one line here (In production); → Ch.6 "Send and Sync as auto-traits" (quote: "A future is `Send` only if everything held across an `.await` is.") |
+| 11 | Tree-shaped ownership; back-pointers are `Weak` | here: step 6, Deep dive "Tree-shaped ownership" (with the `Weak` quote); `Weak` in depth → Ch.4 "Reference cycles and Weak" (quote: "`Weak` breaks cycles (parent pointers, caches)") |
+| 12 | `Rc` cycles leak and are memory-safe; design the topology acyclic | here: step 8 (measured), Deep dive "Graphs: why single ownership can't hold a cycle" |
+| 13 | `Weak::upgrade` returns `Option` | → Ch.4 "Reference cycles and Weak" (quote: "`Weak` breaks cycles (parent pointers, caches), and `Rc::new_cyclic` builds self-referencing structures") |
+| 14 | Slot map owns all nodes; edges store keys | here: steps 9–11, Deep dive "A generational arena in thirty lines" |
+| 15 | Plain indices: ABA; generational keys; wrap after 2^31 | here: steps 10, 11 |
+| 16 | Secondary maps for side data | here: Deep dive "A generational arena in thirty lines" (`SecondaryMap`, `HopSlotMap`, `DenseSlotMap`); the expert's "later" placement has no syllabus topic, so it is covered here |
+| 17 | Owner-task recipe: task + cloneable handle with a `Sender`; oneshot replies; message enum = API | here: step 14, Deep dive "Owner thread fed by messages" (std version; Tokio's `oneshot` named, M2) |
+| 18 | Actor lifecycle: ends when all senders drop; `let _ =` on replies | here: step 16, Deep dive "Owner thread fed by messages", `HomeBuf` |
+| 19 | Bounded channels for backpressure; `sync_channel(0)` rendezvous | here: steps 15, 20 and internals; policy and sizing → Ch.10 "Bounded channels and backpressure" (quote: "any concurrency or queueing you introduce must use a **bounded** channel, or memory exhaustion follows") |
+| 20 | Actor cycles block shutdown / can deadlock with bounded channels | here: step 16 (the ring is a cycle; `Stop`), Deep dive; the bounded-cycle deadlock and structured shutdown → Ch.10 "Structured shutdown with tokens and trackers" (quote: "An explicit shutdown sequence: stop accepting → signal workers → drain or cancel per policy") |
+
+---
+
+## Syllabus clauses → where taught (for `coverage.json`)
+
+1. "the anti-pattern of reaching for `Arc<Mutex<T>>` when the real problem is the wrong ownership topology" → steps `Three stages, one guard at a time`, `Four errors, four patches`, `How many locks per message?`, `Everyone owns it, so no one does`, `A lock is exclusivity checked at run time`, `When Arc<Mutex<T>> is the right shape`; Deep dive "How the reflex happens: four errors, four patches", "What Arc<Mutex<T>> is, exactly".
+2. "Alternatives: tree-shaped ownership" → steps `Name the owner: a tree`, `Which of these really has many owners?`; Deep dive "Tree-shaped ownership".
+3. "arenas with generational indices for graphs" → steps `A cycle has no owner at the top`, `One owner for every node: an arena`, `Remove a node, reuse its slot`, `The generation catches the stale handle`, `Prove it · 3 of 3`; Deep dive "Graphs: why single ownership can't hold a cycle", "A generational arena in thirty lines".
+4. "and an owner task fed by messages (→ Ch.4, Ch.6)" → steps `Sending is moving`, `move hands a thread what it owns`, `One owner, fed by messages`, `Stage 3 stalls. How many buffers?`, `The owner can count every buffer`; Deep dive "Owner thread fed by messages", "A guard that sends its buffer home"; and the pointers: Ch.4 topic "Arc<Mutex<T>> as hidden serialization" (quote: "Alternatives: sharding, an owner task with a channel, and `arc-swap`"), Ch.6 topic "Explicit ownership-crossing points" (quote: "`thread::spawn`, `thread::scope`, `tokio::spawn(async move { .. })` and channel sends are the only places ownership changes threads").
+5. The topic title words are the clauses' umbrella; the builder splits the line into clauses that together cover it word for word (the coverage check enforces it).
+
+`sources` for `coverage.json`: at least the `Arc`, `Mutex`, `mpsc` and `slotmap` sections' Contents, item by item, plus the Book ch. 16.2 and 16.3 (all in `SOURCES.md`); mark `out` with a reason any item outside scope (for example `Arc::make_mut` clone-on-write → Ch.4; `try_recv`/`recv_timeout` details; `slotmap` serde/no_std).
+
+---
+
+## Notes for the builder (decisions already made)
+
+- **Narration (`narration.json`)**: one entry per step, `answer` on steps 3, 7, 10, 15, 19, 20, 21 only. Spoken forms (CHAPTER.md A.4 and these): "arc of mutex" for `Arc<Mutex<T>>`, "the arc", "the mutex", "a lock guard"; "R C of ref cell" for `Rc<RefCell<…>>` (check the transcript; if it fails, "the single-threaded twin"); "the pool", "the buffer", "the guard", "the pooled buffer guard", "the arena", "a handle", "a node", "a message", "the stop message", "the owner thread", "a channel", "a move closure"; "the double exclusive borrow error" (E0499), "the closure-may-outlive error" (E0373), "the use-after-move error" (E0382), "the no-mutable-borrow-through-an-arc error" (E0596), "the move-while-borrowed error" (E0505), "the not-sendable error" (E0277); "sixty-four K"; "slot map" for `slotmap`; "Tokio" (add to the lexicon if missing); numbers as words ("five thousand", "three hundred and thirty-four"). No digits, symbols or code names in any line. Say the bridge in step 1 and the handoff in step 22 in full.
+- **Visual labels** (`aria-label` on every `Svg`) carry the step's whole point in a sentence (text equivalent).
+- **Avoid the previous topics' review findings:** every predict `explain` ≤ 75 words; caption bodies ≤ 90 words; no repeated bridge sentence in step 1's body; reveal fades ≤ 0.15 s; shorter portrait reveals; ≥ 16 units under the lowest element on portrait; labels never on a line, bar or another label at any moment of the animation (topic 2 looks findings 6, 13, 14, 18, 20); one name per thing in a drawing (topic 2 finding 2); every caption says what its picture shows; no strikethrough to mean "wrong" (topic 2 finding 23); counters never read as decimals (`1 · 0` → label each value; topic 2 finding 15); state "never twice"-style claims precisely (topic 2 finding 15: don't call a measured property a theorem; say "in our code, counted" for locks, and "the channel itself still synchronises" wherever "0 locks" appears in the Deep dive).
+- **Precision the expert reader will check:** "0 locks" means zero `Mutex` acquisitions *in our code*; a channel send/receive is itself a synchronisation point (std's `mpsc` uses atomics and blocking internally), so the redesign removes *shared ownership and its locks*, not synchronisation; say it once in step 14's caption or the Deep dive. The tree is the answer for *sequential* stages; for concurrent stages the answer is the ring (step 6 says so). The owner thread serialises access just as a lock does (Deep dive "Choosing a topology"): its gains are one owner, one place for invariants, a closed API and bounded resources, not speed. No timing claim anywhere.
+- **Deterministic labs only:** every asserted number is deterministic (counts, ids, sizes); the reviewed design's unstalled buffer count varies and is asserted only as a range, never shown; the stall variants use channel signals, never sleeps.
+- **Private helpers** (allowed by CHAPTER.md A.3): `lock()` (counting wrapper), `Stats`, `Counts`, `Pipeline`, `Owner`, `fill_stage`/`inspect_stage`/`consume_stage`, `HomeBuf`, `RcNode`, `Config`, `message(i)` (261-byte messages: kind 1, len 256, then 256 payload bytes), constants `MESSAGES = 1_000`, `IN_FLIGHT = 3`, `THREADS = 8`. A.3's names, types and constants are never changed; `PooledBuf` is copied from CHAPTER.md A.3 as topic 3 builds it (`new` calls `pool.get()`, `Drop` returns via `self.buf.take()`, `into_inner(mut self)`).
+- **Gloss each later-taught type in one line** where it first appears (list above); never more.
+
+---
+
+## Progress
+
+- [x] 2.1 Sources: `SOURCES.md` had 142 quotes; the content plan fetched 18 more pages (Book 15.6 and 16.1, Reference closure expressions, std `Rc`, `Weak`, `MutexGuard`, `Receiver`, `SendError`, `channel`, `sync_channel`, `thread::scope`, `mem::replace`, `Option`, `Vec`, error index E0499, Nomicon races, Go Blog, Tokio shared-state, Ryhl's actors post, the RustConf 2018 keynote post) and added their quotes; `node scripts/sources.mjs check` green at 204 quotes.
+- [x] 2.2 Content plan and storyboard (this file), with every lab drafted and run on rustc 1.97.0 (drafts in the planner's scratchpad; the builder writes the real `examples/*.rs`).
+- [ ] 2.3 Adversarial fact-check (fresh Opus) on this file against `sources/*.txt`; corrections applied here; `FACT-CHECK.md` saved.
+- [ ] 2.4 Coverage map `coverage.json` (syllabus clauses, ≥ 2 sources' contents, the 20 blind-expert items as placed above, `gapReview` placeholder until section 4).
+- [ ] 3 Build (Sonnet builder): `examples/*.rs`, `examples.py`, `reel.tsx`, `scenes.tsx`, `index.mdx`, `prerequisites.mdx`, `narration.json`, `coverage.json`, registry entry (`held`); `npm run build` and `npm run test:examples` green.
+- [ ] 4 Content review (flow, gap hunt, expert reader) and fixes; `coverage.json` → `gapReview`.
+- [ ] 5 `check-all --skip narration --changed`; looks review on screenshots and fixes.
+- [ ] 6 Content final (`claim.mjs final`).
+- [ ] 7 Narration generated, listened to, committed.
+- [ ] 8 Ship (merge `origin/main`, continuity check against topic 3's real handoff and ids, `check-all --changed`, merge, CI green).
+
+Next: 2.3 fact-check and 2.4 coverage map (in parallel).
+
+## Changes from the chapter plan
+
+1. **Concept ids in the registry `uses`.** The ledger above is CHAPTER.md's, unchanged. The build's ledger check fails on any `uses` id no earlier live topic introduces, and topic 1 registered `ownership`, `copy-trait`, `clone-cost`, `e0382`, `e0505` instead of the plan's `single-ownership`, `copy-vs-clone`, `e0382-use-after-move`, `e0505-move-while-borrowed` (topic 1's registry entry on `origin/topic/rust.single-ownership-move-semantics`; topic 2's `OUTLINE.md` "Changes from the chapter plan" items 1–2; `syllabus/review-notes/rust-ch01-topic2-ledger-departure.md` on topic 2's branch, item 2, asks topics 3 and 4 to use the real ids). So the registry `uses` names the same concepts by the ids that exist. Meaning unchanged. Check topic 3's real `introduces` for `take-replace-idioms` at ship time.
+2. **Glosses for the running example.** Topic 1 never built `Buf`/`Pool`/`fill`/`inspect`/`consume`, so this topic shows those five signatures on screen and in Prerequisites the first time it uses them, and the bridge glosses `Buf` and `Pool` in parentheses (as topic 2's handoff did). Same point and names as the plan.
+3. **Nothing else departs.** `Arena<T>`, `Handle { index: u32, generation: u32 }`, `Node { name: &'static str, outputs: Vec<Handle> }`, the `Msg` enum, `std::sync::mpsc` channels and a pool-owner thread are used exactly as A.3 names them; the `Msg` variants (`Data(Buf)`, `Stop`) are this topic's choice (A.3 leaves them open).
+
+## Changes after final

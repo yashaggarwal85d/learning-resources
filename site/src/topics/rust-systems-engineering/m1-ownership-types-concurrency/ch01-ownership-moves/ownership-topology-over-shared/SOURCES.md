@@ -498,3 +498,307 @@ Version: slotmap 1.1.1 page, fetched 2026-10-12
 > Returns a reference to the value corresponding to the key.
 
 Contents: new, insert, remove, get, contains_key, iteration, secondary maps.
+
+## std::sync::mpsc::Sender::send and SendError (item pages, further quotes)
+URL: https://doc.rust-lang.org/std/sync/mpsc/struct.Sender.html
+Version: std 1.99.0 page, fetched 2026-10-12 by the content plan
+
+> A successful send occurs when it is determined that the other end of
+> the channel has not hung up already. An unsuccessful send would be one
+> where the corresponding receiver has already been deallocated.
+
+> This method will never block the caller in order to wait for space to
+> become available.
+
+## std::sync::mpsc::SendError (item page)
+URL: https://doc.rust-lang.org/std/sync/mpsc/struct.SendError.html
+Version: std 1.99.0 (b940084d7 2026-09-28), fetched 2026-10-12 by the content plan
+
+> pub struct SendError<T>(pub T);
+
+> An error returned from the Sender::send or SyncSender::send
+> function on channels.
+
+Contents: `SendError<T>(pub T)`, a tuple struct whose public field is the value that could not be sent; trait implementations.
+
+## std::sync::mpsc::Receiver (item page)
+URL: https://doc.rust-lang.org/std/sync/mpsc/struct.Receiver.html
+Version: std 1.99.0 page, fetched 2026-10-12 by the content plan
+
+> This function will always block the current thread if there is no data
+> available and it’s possible for more data to be sent (at least one sender
+> still exists).
+
+> If the corresponding Sender has disconnected, or it disconnects while
+> this call is blocking, this call will wake up and return Err to
+> indicate that no more messages can ever be received on this channel.
+> However, since channels are buffered, messages sent before the disconnect
+> will still be properly received.
+
+Contents: `recv` (blocks while a sender exists; `Err` once every sender is gone, after buffered messages are delivered), `try_recv`, `recv_timeout`, `iter`/`try_iter`, `IntoIterator` (a `for` loop over the receiver ends when the channel is closed and empty).
+
+## std::sync::mpsc::channel (function page)
+URL: https://doc.rust-lang.org/std/sync/mpsc/fn.channel.html
+Version: std 1.99.0 (b940084d7 2026-09-28), fetched 2026-10-12 by the content plan
+
+> All data sent on the Sender will become available on the Receiver in
+> the same order as it was sent, and no send will block the calling thread
+> (this channel has an “infinite buffer”, unlike sync_channel, which will
+> block after its buffer limit is reached).
+
+## std::sync::mpsc::sync_channel (function page)
+URL: https://doc.rust-lang.org/std/sync/mpsc/fn.sync_channel.html
+Version: std 1.99.0 (b940084d7 2026-09-28), fetched 2026-10-12 by the content plan
+
+> Creates a new synchronous, bounded channel.
+
+> When the internal buffer becomes full,
+> future sends will block waiting for the buffer to open up. Note that a
+> buffer size of 0 is valid, in which case this becomes “rendezvous channel”
+> where each send will not return until a recv is paired with it.
+
+## Using Threads to Run Code Simultaneously - The Rust Programming Language (ch16-01)
+URL: https://doc.rust-lang.org/book/ch16-01-threads.html
+Version: online edition of The Rust Programming Language, chapter 16.1 (no edition number shown), fetched 2026-10-12 by the content plan
+
+> We’ll often use the move keyword with closures passed to thread::spawn
+> because the closure will then take ownership of the values it uses from the
+> environment, thus transferring ownership of those values from one thread to
+> another.
+
+> By adding the move keyword before the closure, we force the closure to take
+> ownership of the values it’s using rather than allowing Rust to infer that it
+> should borrow the values.
+
+> The move keyword overrides
+> Rust’s conservative default of borrowing; it doesn’t let us violate the
+> ownership rules.
+
+Contents: creating a thread with `spawn`; waiting with `join` handles; "Using move Closures with Threads" (Listing 16-3 fails because the closure borrows `v`; the compiler's help suggests `move`; Listing 16-5 with `move` compiles; using `v` after moving it into the closure is E0382).
+
+## Closure expressions - The Rust Reference
+URL: https://doc.rust-lang.org/reference/expressions/closure-expr.html
+Version: The Rust Reference (live page, no version shown), fetched 2026-10-12 by the content plan
+
+> Without the move keyword, the closure expression infers how it captures each variable from its environment, preferring to capture by shared reference, effectively borrowing all outer variables mentioned inside the closure’s body.
+
+> A closure can be forced to capture its environment by copying or moving values by prefixing it with the move keyword. This is often used to ensure that the closure’s lifetime is 'static.
+
+> The closure type implements Send and Sync if the type of every captured variable also implements the trait.
+
+Contents: syntax (optional `async`, optional `move`, parameters, body); captures (inferred: shared reference preferred, then mutable reference, then move/copy; `move` forces capture by value); closure traits (`Fn`/`FnMut`/`FnOnce` per the call-traits chapter; `Send`/`Sync` when every capture is); example `ten_times(move |j| …)`.
+
+## Reference Cycles Can Leak Memory - The Rust Programming Language (ch15-06)
+URL: https://doc.rust-lang.org/book/ch15-06-reference-cycles.html
+Version: online edition of The Rust Programming Language, chapter 15.6, fetched 2026-10-12 by the content plan
+
+> Preventing memory leaks entirely is not one of Rust’s guarantees, meaning
+> memory leaks are memory safe in Rust.
+
+> This creates memory leaks because the
+> reference count of each item in the cycle will never reach 0, and the values
+> will never be dropped.
+
+> you must
+> ensure that you don’t create cycles; you can’t rely on Rust to catch them.
+
+> Another solution for avoiding reference cycles is reorganizing your data
+> structures so that some references express ownership and some references don’t.
+
+Contents: leaks are memory safe; an `Rc<RefCell<…>>` list cycle never reaches count 0; consequences in long-running programs; cycles are logic bugs to catch with tests and review; reorganize so some references don't own; `Weak<T>` via `Rc::downgrade`, `upgrade` returns `Option`; a tree with `Rc` children and `Weak` parent links; `strong_count`/`weak_count`.
+
+## Weak in std::rc - Rust
+URL: https://doc.rust-lang.org/std/rc/struct.Weak.html
+Version: std 1.99.0 page, fetched 2026-10-12 by the content plan
+
+> Weak is a version of Rc that holds a non-owning reference to the
+> managed allocation.
+
+> For example, a tree could
+> have strong Rc pointers from parent nodes to children, and Weak
+> pointers from children back to their parents.
+
+## Rc in std::rc - Rust
+URL: https://doc.rust-lang.org/std/rc/struct.Rc.html
+Version: std 1.99.0 page, fetched 2026-10-12 by the content plan
+
+> A single-threaded reference-counting pointer.
+
+## Data Races and Race Conditions - The Rustonomicon
+URL: https://doc.rust-lang.org/nomicon/races.html
+Version: The Rustonomicon (live page, no version shown), fetched 2026-10-12 by the content plan
+
+> Safe Rust guarantees an absence of data races
+
+> Data races are prevented mostly through Rust’s ownership system alone:
+> it’s impossible to alias a mutable reference, so it’s impossible to perform a
+> data race.
+
+> However Rust does not prevent general race conditions.
+
+> For this reason, it is considered “safe” for Rust to get deadlocked or do
+> something nonsensical with incorrect synchronization
+
+Contents: definition of a data race (two or more threads, one writes, one unsynchronized); data races are UB and impossible in safe Rust, mostly through ownership; interior mutability is why `Send`/`Sync` exist; general race conditions are not prevented (deadlocks are "safe"); a race condition violates memory safety only together with unsafe code (the bounds-check example).
+
+## Share Memory By Communicating - The Go Blog
+URL: https://go.dev/blog/codelab-share
+Version: The Go Blog post (live page), fetched 2026-10-12 by the content plan
+
+> Do not communicate by sharing memory; instead, share memory by communicating.
+
+> This approach ensures that only one goroutine has access to the data at a given time.
+
+Notes: the post introduces the slogan as a summary from the document Effective Go; it is the origin the Book's ch. 16.2 attributes ("a slogan from the Go language documentation").
+
+## Shared state - Tokio tutorial
+URL: https://tokio.rs/tokio/tutorial/shared-state
+Version: Tokio tutorial (live page, no version shown), fetched 2026-10-12 by the content plan
+
+> Spawn a task to manage the state and use message passing to operate on it.
+
+> Generally you want to use the first approach for simple data, and the second
+> approach for things that require asynchronous work such as I/O primitives.
+
+> Using a blocking mutex to guard short critical sections is an acceptable
+> strategy when contention is minimal.
+
+> As a rule of thumb, using a synchronous mutex from within asynchronous code is
+> fine as long as contention remains low and the lock is not held across calls to
+> .await.
+
+> This happens because the std::sync::MutexGuard type is not Send.
+
+> If contention on a synchronous mutex becomes a problem, the best fix is rarely
+> to switch to the Tokio mutex.
+
+> Let a dedicated task manage state and use message passing.
+
+> Shard the mutex.
+
+> Restructure the code to avoid the mutex.
+
+Contents: two strategies (a `Mutex`, or a task that owns the state and is sent messages); `Arc<Mutex<HashMap>>` for a simple key-value store; `std::sync::Mutex` vs `tokio::sync::Mutex`; holding a `MutexGuard` across `.await` (non-`Send` future error; restructure so the guard is dropped first); tasks, threads and contention; mutex sharding.
+
+## Actors with Tokio - Alice Ryhl
+URL: https://ryhl.io/blog/actors-with-tokio/
+Version: blog post (live page, no date in the fetched text), author Alice Ryhl, fetched 2026-10-12 by the content plan; secondary source (a Tokio maintainer's guide), used for the owner-task recipe and its pitfalls
+
+> A common use-case of actors is to assign the actor exclusive ownership of some
+> resource you want to share, and then let other tasks access this resource
+> indirectly by talking to the actor.
+
+> An actor is split into two parts: the task and the handle.
+
+> The ActorMessage enum defines the kind of messages we can
+> send to the actor.
+
+> We return a value to
+> the sender by using an oneshot channel, which is a message passing channel
+> that allows sending exactly one message.
+
+> Generally a send operation on a channel fails if the receiver has been
+> dropped.
+
+> When all senders to the receiver have been dropped, we know that we will never
+> receive another message and can therefore shut down the actor.
+
+> You should still make sure to use a bounded channel so that the number of
+> messages waiting in the channel don't grow without bound.
+
+> You need to be a bit careful if your actors form a cycle, because by holding on
+> to each other's handle structs, the last sender is never dropped, preventing
+> shutdown.
+
+Contents: what an actor is; exclusive ownership of a resource accessed by talking to the actor; the recipe (task + handle; message enum; oneshot replies; `let _ =` on send errors; shutdown when all senders drop; cloneable handle); the `'static` spawn pitfall and keeping actor and handle separate (single ownership); variations (no reply, bounded channels and `try_send`, multiple handle structs with `select!`); actors messaging actors and cycles that prevent shutdown.
+
+## My RustConf 2018 Closing Keynote (long-form blog version)
+URL: https://kyren.github.io/2018/09/14/rustconf-talk.html
+Version: blog post dated Sep 14, 2018 (kyren.github.io), fetched 2026-10-12 by the content plan; secondary source, used for "In production" and history only
+
+> How do you structure
+> something like a game without needing Rc<RefCell> and Arc<Mutex>
+> everywhere?
+
+> You can do a LOT with indexes into Vecs. This is way easier than self
+> borrowing or Rc<RefCell>.
+
+> Generational indexes are never re-used because the generation
+> will always increment, yet the “real indexes” will always be “small”, on the
+> order of the largest total number of entries ever allocated.
+
+Notes: the post names the `slotmap` crate as "a recently released crate built on this idea". Verify the author's name from the page byline before printing it; the fetched text shows only the site name.
+
+## E0499 - Error codes index
+URL: https://doc.rust-lang.org/error_codes/E0499.html
+Version: rustc error codes index (live page), fetched 2026-10-12 by the content plan
+
+> A variable was borrowed as mutable more than once.
+
+> Please note that in Rust, you can either have many immutable references, or one
+> mutable reference.
+
+## replace in std::mem - Rust
+URL: https://doc.rust-lang.org/std/mem/fn.replace.html
+Version: std 1.99.0 page, fetched 2026-10-12 by the content plan
+
+> Moves src into the referenced dest, returning the previous dest value.
+
+> Neither value is dropped.
+
+## Option in std::option - Rust (take)
+URL: https://doc.rust-lang.org/std/option/enum.Option.html
+Version: std 1.99.0 page, fetched 2026-10-12 by the content plan
+
+> Takes the value out of the option, leaving a None in its place.
+
+## scope in std::thread - Rust
+URL: https://doc.rust-lang.org/std/thread/fn.scope.html
+Version: std 1.99.0 page (`scope` stable since 1.63.0), fetched 2026-10-12 by the content plan
+
+> Unlike non-scoped threads, scoped threads can borrow non-'static data,
+> as the scope guarantees all threads will be joined at the end of the scope.
+
+## MutexGuard in std::sync - Rust
+URL: https://doc.rust-lang.org/std/sync/struct.MutexGuard.html
+Version: std 1.99.0 page, fetched 2026-10-12 by the content plan
+
+> An RAII implementation of a “scoped lock” of a mutex. When this structure is
+> dropped (falls out of scope), the lock will be unlocked.
+
+> A MutexGuard is not Send to maximize platform portability.
+
+## Vec in std::vec - Rust (slice get)
+URL: https://doc.rust-lang.org/std/vec/struct.Vec.html
+Version: std 1.99.0 page, fetched 2026-10-12 by the content plan
+
+> If given a position, returns a reference to the element at that
+> position or None if out of bounds.
+
+## slotmap - Rust (crate documentation, further quotes)
+URL: https://docs.rs/slotmap/latest/slotmap/
+Version: slotmap 1.1.1 (docs.rs), fetched again 2026-10-12 by the content plan
+
+> After 231 deletions and insertions to the
+> same underlying slot the version wraps around and such a spurious reference
+> could potentially occur. It is incredibly unlikely however, and in all
+> circumstances is the behavior safe.
+
+> The memory usage for each slot in SlotMap is 4 + max(sizeof(T), 4)
+> rounded up to the alignment of T.
+
+> It can
+> never shrink the size of its underlying storage, because it must remember
+> for each storage slot what the latest stored version was, even if the slot
+> is empty now.
+
+> A SecondaryMap is simply a Vec of slots like slot map is
+
+Notes: "231" and "232 - 2" in the fetched text are 2^31 and 2^32 − 2 with the superscript lost in text extraction (the rendered page shows exponents).
+
+## slotmap::SlotMap (item page, further quotes)
+URL: https://docs.rs/slotmap/latest/slotmap/struct.SlotMap.html
+Version: slotmap 1.1.1 page, fetched again 2026-10-12 by the content plan
+
+> assert_eq!(sm.remove(key), Some(42));
+> assert_eq!(sm.remove(key), None);
