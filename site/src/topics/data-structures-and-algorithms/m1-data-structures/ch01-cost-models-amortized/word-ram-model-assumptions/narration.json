@@ -1,0 +1,201 @@
+{
+  "topic": "dsa.word-ram-model-assumptions",
+  "note": "Written to be spoken: one sentence or phrase per line; {\"beat\": s} is a deliberate pause; code is spelled the way it is said. `answer` plays after the learner answers a predict step.",
+  "steps": [
+    {
+      "lines": [
+        "Every count in the last lesson relied on each step costing the same. Here is the machine that makes that true.",
+        {
+          "beat": 0.4
+        },
+        "This chapter's running example is a vector... a growable array of sixty-four bit keys. Here it holds one million of them, sorted. A request wants the predecessor of a key... the largest stored key that is no bigger.",
+        "Binary search halves the range, and twenty comparisons finish the job.",
+        {
+          "beat": 0.4
+        },
+        "Two questions for this lesson. Is twenty a floor? And what does one of those steps cost on a real core?"
+      ]
+    },
+    {
+      "lines": [
+        "The word RAM is the machine those step counts assume.",
+        "Memory is an array of cells, each w bits wide, addressed by an integer. Here, w is sixty-four.",
+        {
+          "beat": 0.3
+        },
+        "A fixed set of operations like C's integer ones... arithmetic, comparisons, bit operations, shifts... each touching a constant number of words, plus a load or a store at a computed address. Each costs exactly one unit.",
+        "Five different operations, five units. That is the unit of this lesson: one word operation."
+      ]
+    },
+    {
+      "lines": [
+        "Back to our million sorted keys. Binary search needs twenty comparisons.",
+        "On the word RAM, can a predecessor query not grow with n?"
+      ],
+      "answer": [
+        "Yes. A tree that halves the bits of the key, not the range of keys. Six halvings for sixty-four bit keys, whatever n is.",
+        "Each halving is a few word operations. So the win is in how the count grows.",
+        "The twenty was only ever a law of the comparison model."
+      ]
+    },
+    {
+      "lines": [
+        "The machine must be able to address its own memory. So a word must be able to hold an index.",
+        "For a million keys, twenty bits address more than a million cells. A sixty-four bit word has forty-four bits to spare.",
+        "An eight bit word would reach only two hundred and fifty-six cells.",
+        {
+          "beat": 0.3
+        },
+        "Words can't be unbounded either. Or one unit operation could do the whole input's work. Twenty squarings make a million bit number."
+      ]
+    },
+    {
+      "lines": [
+        "Unit cost is per word.",
+        "A number of b bits is b over w words. So adding two costs about b over w word additions.",
+        "Four thousand and ninety-six bits is sixty-four words... so sixty-four additions, not one.",
+        {
+          "beat": 0.3
+        },
+        "Schoolbook multiplication costs the square of that. Counted bit by bit, as topic one's deep dive did, that is theta of b... the same count with w equal to one."
+      ]
+    },
+    {
+      "lines": [
+        "The model charges one unit for a load.",
+        "A real core pays a few cycles for a hit in the nearest memory, and two hundred cycles for a trip to main memory.",
+        "Intel's Pentium M figures, listed by Drepper in two thousand and seven... are about three against about two hundred and forty. Eighty times.",
+        {
+          "beat": 0.3
+        },
+        "And binary search is unkind to caches. Memory arrives in sixty-four byte cache lines, eight keys at a time. The twenty probes land far apart, on seventeen different lines. On a cold cache, up to seventeen trips. Hot queries share the first few.",
+        "That is a slow trip to memory. The model never sees it."
+      ]
+    },
+    {
+      "lines": [
+        "A modern core guesses which way a branch goes, and runs ahead.",
+        "A wrong guess throws that work away, and refills the pipeline.",
+        {
+          "beat": 0.3
+        },
+        "The standard microarchitecture manual puts the penalty at fifteen to twenty cycles on recent Intel cores, a little more on the newest ones, and fifteen to twenty-five on AMD's Zen five. About the length of the pipeline.",
+        "The model charges one unit for the comparison. That is a branch misprediction."
+      ]
+    },
+    {
+      "lines": [
+        "Now the other side. In the comparison model, keys are opaque.",
+        "The only thing you can do with them is compare, and one comparison is one yes or no answer.",
+        {
+          "beat": 0.3
+        },
+        "Nine places for x need four answers. A million and one places need twenty.",
+        "That is why binary search stops at twenty here. And topic four proves nothing in this model does better."
+      ]
+    },
+    {
+      "lines": [
+        "On the word RAM, a key is a number.",
+        "It can be an address. It can be cut into bit fields. It can be subtracted from another key.",
+        "Exactly what the comparison model forbids.",
+        {
+          "beat": 0.3
+        },
+        "Three escapes follow. Digits as addresses... splitting the key... and many keys in one word."
+      ]
+    },
+    {
+      "lines": [
+        "First escape: radix sort.",
+        "A digit of about log n bits... sixteen here... is an array index into at most about n buckets. So one pass costs order n. A stable counting sort places a million keys by one digit in a single pass. Lowest digit first, and stable, so earlier passes survive.",
+        "So a sixty-four bit key needs sixty-four over sixteen... four passes. Each key is placed four times. Four million placements... against about twenty million for n log n comparisons.",
+        {
+          "beat": 0.3
+        },
+        "The units differ, and every placement is a scattered store. But four passes stay four as n grows."
+      ]
+    },
+    {
+      "lines": [
+        "Second escape: split the key in two.",
+        "Split the key into its high half, which picks a cluster... and its low half, the position inside it. Our key is three times two to the thirty-two, plus seven. Cluster three, position seven.",
+        "Every level stores its minimum and maximum. The cluster's minimum says at once whether the answer is inside the key's own cluster... or before it, where the summary gives the previous cluster and we take its maximum. One recursion either way.",
+        {
+          "beat": 0.3
+        },
+        "And every level cuts the number of bits in half. Sixty-four, thirty-two, sixteen, eight, four, two, one.",
+        "Six halvings, whether n is a thousand or a billion keys. The count is a recurrence, T of U at most T of root U plus a constant, and topic three solves it."
+      ]
+    },
+    {
+      "lines": [
+        "There is a price. The basic structure needs space for every possible key: two to the sixty-four slots.",
+        "Keep only the non-empty clusters, stored in hash tables, and the space drops to theta of n. The bound then holds with high probability.",
+        "Time bought with space, or with randomness. Topic one's trade-off again."
+      ]
+    },
+    {
+      "lines": [
+        "Third escape: fusion trees.",
+        "At most k minus one bit positions tell k keys apart. So each key shrinks to a tiny sketch, and a whole node's sketches fit in one word.",
+        {
+          "beat": 0.3
+        },
+        "Put a one in front of each. Subtract the sketch of the query from every block at once. The leading bits show where the query sits.",
+        "That is word level parallelism.",
+        {
+          "beat": 0.3
+        },
+        "One warning. Twenty-two has the same sketch as twenty-one, so the subtraction says there is no predecessor. One more step repairs it.",
+        "A node holds about the fifth root of w keys, and is searched in constant time this way. So the tree is a B-tree of height log n over log w. And the constants keep fusion trees in theory."
+      ]
+    },
+    {
+      "lines": [
+        "Back to the problem.",
+        "Twenty is a law of the comparison model only.",
+        "The word RAM allows six halvings, at the price of space or hashing. And on paper, log n over log w.",
+        {
+          "beat": 0.3
+        },
+        "And every unit step hides a load that hits or misses, and a compare the pipeline predicted or paid for.",
+        "From here, say of every bound... which model, and what does its unit hide?",
+        {
+          "beat": 0.3
+        },
+        "Counting a loop here is easy. A recursive algorithm hands you a recurrence instead. Next: how to read the answer off one."
+      ]
+    },
+    {
+      "lines": [
+        "The vector grows to a billion sorted sixty-four bit keys.",
+        "How many steps does a search take in that tree?"
+      ],
+      "answer": [
+        "Six. The bound is log w, and w is still sixty-four.",
+        "The thirty is what a comparison search needs."
+      ]
+    },
+    {
+      "lines": [
+        "A design document claims its sorted index's predecessor search is big O of log n, and cannot be beaten.",
+        "Which model is that true in, and does it hold on the word RAM?"
+      ],
+      "answer": [
+        "It is true in the comparison model, and topic four proves it.",
+        "On the word RAM the bits can be split or packed, and the bound falls. Hashing finds equal keys, not predecessors."
+      ]
+    },
+    {
+      "lines": [
+        "Add two four thousand and ninety-six bit integers on a word RAM with w equal to sixty-four.",
+        "One word at a time. How many word additions?"
+      ],
+      "answer": [
+        "Sixty-four. Four thousand and ninety-six over sixty-four is sixty-four words, one addition each.",
+        "Unit cost is per word, not per number."
+      ]
+    }
+  ]
+}
