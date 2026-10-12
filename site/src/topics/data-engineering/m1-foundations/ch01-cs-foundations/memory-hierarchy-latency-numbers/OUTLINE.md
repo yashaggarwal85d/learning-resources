@@ -559,7 +559,7 @@ Every factual claim with its source in `SOURCES.md` (quotes checked by `node scr
 
 ## Progress
 
-Progress: fact-check done; next: coverage map, build.
+Progress: built (examples.py, reel, scenes, Deep dive, Prerequisites, narration.json, registry entry); build and examples pass; next: content review (gapReview open), looks review, narration audio.
 
 - 2026-10-12, fact-check (2.3): every claim re-derived from the raw texts; `SOURCES.md` corrected (Seagate acoustics line) and extended to 110 quotes (Intel manual moved to the current -051 edition; Seagate's own data sheet for the 168 IOPS; Samsung first-party pages; Norvig; proc_meminfo(5); sysctl numa_balancing; EC2 instance types); `sources.mjs check` passes. Corrections applied above (steps 3, 4, 5, 6, 7, 8, 9, 10, 12, Prove it 1–3, Deep dive, examples, claims). See `FACT-CHECK.md`.
 - 2026-10-12, content plan (2.2): `OUTLINE.md` written from `SOURCES.md` (56 quotes), the raw texts in `sources/`, `EXPERT-LIST.md`, CHAPTER.md, the held I/O topic and the asymptotic topic's OUTLINE and REVIEW. Measured in this sandbox while planning (to set the lab's ranges, not as final values): the C walks, the NumPy variant, the loopback round trip, the NUMA node count (1). Nothing else written.
@@ -573,6 +573,16 @@ Progress: fact-check done; next: coverage map, build.
 5. **NUMA is sourced, not measured.** CHAPTER.md says "topic 6 measures the ratio". This sandbox has one NUMA node, so the reel states Drepper's 2007 ratio with its date and the lab measures it only on a machine with two or more nodes.
 6. **The lab is C, with NumPy as an option.** CHAPTER.md allows "a C or NumPy array walk". NumPy isn't importable from the default `python3` here and isn't guaranteed on CI, and its `take` blurs the gap (about 3× vs about 15× in C). The C program is compiled and asserted by `examples.py`; the NumPy version runs when available.
 7. **The waits term is taupe, not a caramel tick.** CHAPTER.md's visual idea draws "a caramel tick for the requests × α part"; its visual language says a wait is a taupe bar and caramel is the transfer. The steps follow the visual language (waits taupe, bytes caramel).
+
+## Changes during build
+
+1. **Reference run and what it changes (2026-10-12, builder).** The lab is compiled with `cc -O3 -march=native` (falling back to `-O3`, then `-O2`): with `-O2` the scalar sum gave 6.6 GB/s, which would have made the RAM scan in step 11 (1.2 s) tie the NVMe scan (1.2 s) and hide the point of the race. Reference run (4-vCPU Intel Xeon at 2.10 GHz under KVM, gcc 13.3.0, median of five runs of the 1 GiB walk): in order 0.7 ns per read (about 12 GB/s on one core), at random 14 ns, dependent 158 ns, so the random walk is **20×** slower than in order (not 17×) and the dependent walk about 230× (not 130-ish). Consequences: step 8's correct option is "About 20× longer" (was "About 10-20× longer": 20 sits on its edge), step 11's RAM scan is **0.7 s** (8.2 GB / 12 GB/s; was 0.8 s), step 6's RAM dot is at 12 GB/s (was 10), the Deep dive's DRAM row and "In production" use 158 ns / 20× / 230×. `examples.py` asserts the ranges, never these constants against the live run.
+2. **Random walk = random indices, not a permutation.** Step 8's "random" walk reads `a[xorshift() & (n - 1)]`: independent random addresses, which is the property the lab needs (nothing depends on a loaded value, so the CPU can overlap the misses). The array itself holds a Sattolo cycle for the dependent walk; the in-order walk sums it. No permutation array is allocated (it would double the 1 GiB).
+3. **Loopback round trip** measured 33-36 µs median in three runs; the Deep dive says "about 36 µs".
+4. **`coverage.json`:** one mapping quote had backticks ("async I/O via `io_uring`") that the syllabus parser strips; the quote is now "async I/O via io_uring". Nothing else in the map changed; `gapReview` is untouched.
+5. **Resources:** sirupsen/napkin-math is not listed: github.com returned HTTP 403 to our fetch, so its page and title could not be verified. The YouTube video is listed without a length (oEmbed gives title and author only).
+6. **Predict drawings are compact** (heights 246-318 for steps 2 and 8, computed for the Prove-it steps): the visual area of a predict step on a phone is smaller because the answer panel takes room, so taller drawings render below the 9 px text floor.
+7. **Step 12:** the readout under the drawing is three short lines (k; waits, bytes and floor; the two real-run k values) so it doesn't wrap on a phone; the drawing's `k` counter sits below the axis.
 
 ## Changes after final
 

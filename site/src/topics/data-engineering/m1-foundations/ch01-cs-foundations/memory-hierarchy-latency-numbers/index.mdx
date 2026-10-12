@@ -1,0 +1,215 @@
+---
+id: de.memory-hierarchy-latency-numbers
+title: Memory hierarchy and latency numbers
+---
+
+<section data-section="outcomes">
+
+## After this topic you can
+
+- Place each tier (registers, L1/L2/L3, DRAM local and remote, NVMe, HDD, same-AZ network, object storage) on a log scale of latency, and separately of bandwidth, to within an order of magnitude, and say where each number comes from and how old it is.
+- Write the cost of one transfer as **T(n) = α + n/β**, and say when a request is mostly waiting: when n is well below α·β.
+- Compute a job's **floor** before running it, max(bytes / β, requests × α / k), and say whether it is latency-bound or bandwidth-bound.
+- Solve for the number k of requests in flight that hides a latency (k ≥ requests × α / target time), and say what else must then hold: per-request bandwidth, request-rate limits, the network card.
+- Explain why the remote-NUMA and network rungs matter for data systems, and measure the RAM rungs (in order against random) and the NUMA ratio on your own hardware.
+
+</section>
+
+<section data-section="internals">
+
+## The latency and bandwidth table
+
+One row per tier. Latency is α, the wait before the first byte; bandwidth is β, the rate after that. Units are as the source states them (Samsung's MB/s is 1,000,000 bytes per second; sizes of files here are binary). Every row was checked on 12 October 2026, and every value is a quoted passage in `SOURCES.md` or a number computed in `examples.py`.
+
+| Tier | Latency (α) | Bandwidth (β) | Conditions | Source (version) | Checked |
+|---|---|---|---|---|---|
+| Registers | ≤ 1 cycle (≤ 0.5 ns at 2 GHz) | — | Pentium M table, dated | Drepper, "What Every Programmer Should Know About Memory", 2007 | 2026-10-12 |
+| L1 data cache | 4–6 cycles (2–3 ns at 2 GHz) | 192 bytes/cycle peak, 133 sustained (266 GB/s at 2 GHz) | per core, Skylake server | Intel Optimization Reference Manual Vol. 1, 248966-051 (October 2026), Table 2-11 (Table 2-9 in the January 2024 edition; same values) | 2026-10-12 |
+| L2 cache | 14 cycles (7 ns) | 64 peak, 52 sustained bytes/cycle (104 GB/s) | same | same | 2026-10-12 |
+| L3 cache | 50–70 cycles (25–35 ns) | 32 peak, 15 sustained bytes/cycle (30 GB/s) | same; the table gives the size per core but does not say whether the bandwidth is per core | same | 2026-10-12 |
+| DRAM, local | 200+ cycles (100+ ns at 2 GHz; "100 ns" in Norvig's and Dean's tables, historical) | one core, in order: about 12 GB/s, measured here | dependent random read about 158 ns, measured here in a VM (reference run) | Drepper 2007; Norvig; Dean, LADIS 2009; `examples.py` | 2026-10-12 |
+| DRAM, remote NUMA node | reads 9% slower one hop, 30% two hops (AMD's figures for a four-socket machine, Drepper Fig. 5.3); reads 20% slower one hop in Drepper's own bandwidth-style test (Fig. 5.4) | — | 2007 Opterons; measure yours with `numactl` | Drepper 2007; numactl(8) | 2026-10-12 |
+| NVMe SSD | random 4 KB read 80 µs typical at queue depth 1; sequential 4 KB 20 µs | 6,800 MB/s sequential read (128 KB, QD32); 1,000 KIOPS random 4 KB read (QD32 × 4 workers) = 4.1 GB/s | Samsung PM9A3 3.84 TB, PCIe 4.0 U.2 (the one capacity with both headline figures); latency measured on a PCIe Gen3 host | Samsung PM9A3 datasheet Rev. 1.4 (Nov 2021), confirmed by Samsung's product page and brief | 2026-10-12 |
+| HDD | 4.16 ms average rotational latency, plus a seek (not published); 168 random 4K reads/s at QD16, about 6 ms each with 16 queued (one at a time is slower) | 285 MB/s (272 MiB/s) max sustained at the outer diameter, less toward the inner tracks | Seagate Exos X24, 7,200 rpm | Seagate Exos X24 product manual 205194300 Rev. A (2023) and data sheet DS2080-2307US | 2026-10-12 |
+| Same-AZ network | round trip **not published by AWS**; 500 µs "within same datacenter" in 2009 (Dean, historical); a loopback TCP round trip on this machine, with no wire at all, about 36 µs median in Python: a software floor, not a network figure | 10–100 Gbit/s per instance (m5.8xlarge 10, m5.16xlarge 20, "up to 100 Gb/s"), each direction; one flow 5 Gbit/s (10 in a cluster placement group, 25 with ENA Express in one AZ); through an internet gateway 5 Gbit/s under 32 vCPUs or 50% of the instance's bandwidth; the largest types list up to 600 Gigabit | EC2 | AWS EC2 User Guide and Instance Types guide (fetched 2026-10-12) | 2026-10-12 |
+| Object storage (Amazon S3) | first byte roughly 100–200 ms; medians "often in the tens of milliseconds" for requests under 512 KB, so a floor computed at α = 100 ms is a floor only if your measured α is at least that | up to 100 Gbit/s per instance across many requests; per-request throughput **not published** in the current docs (measure it: topic "Object storage as a storage tier"); at least 3,500 writes and 5,500 reads per second per prefix | general-purpose buckets | AWS S3 User Guide (fetched 2026-10-12) | 2026-10-12 |
+
+These match the chapter's planning orders of magnitude: L1, L2 and L3 at about 1 ns, a few ns and 10–40 ns (2–3, 7 and 25–35 ns at 2 GHz here), DRAM about 100 ns, NVMe tens of microseconds, HDD several milliseconds, the network under a millisecond (2009), object storage tens to hundreds of milliseconds. Two planning figures are not reproduced because no current source we could open states them: AWS's "85–90 MB/s per request" and "8 or 16 MB" range sizes. The reel uses a chosen 16 MiB range and leaves the per-request rate to measurement.
+
+## Into the internals
+
+### Why a hierarchy at all
+
+- **Memory is the limit.** Drepper: "As CPU cores become both faster and more numerous, the limiting factor for most programs is now, and will be for some time, memory access."
+- **Fast memory is expensive.** SRAM is "much more expensive to produce and to use than DRAM", so caches are SRAM and main memory is DRAM. A small fast layer in front of a big slow one is the cheapest way to get both.
+- **Locality is why it works.** Programs reuse recent data and read nearby data, so most reads hit the small layer. A working set that fits in a level runs at that level's speed; the staircase in the lab below is that, measured on your machine. (The CPU-cache topic of the syllabus is skipped, so locality is named here and not developed.)
+
+### Cycles, nanoseconds and the clock
+
+- **Manuals publish cycles** because the clock varies from part to part. Convert with a stated clock: nanoseconds = cycles ÷ GHz. This topic uses 2 GHz (0.5 ns a cycle) throughout, a stated assumption and not a vendor figure. The same 4–6 cycles are 1.3–2 ns at 3 GHz, and Skylake server parts run from under 2 to about 4 GHz, so the "at 2 GHz" stays on screen.
+- **Peak against sustained.** Intel's Table 2-11 gives L1 192 bytes a cycle peak and 133 sustained; L2 64 and 52; L3 32 and 15. An estimate should use the sustained figure or a measured one, never a datasheet "up to".
+- **A second data point.** For Crestmont, Intel's efficient core (the -051 manual updated its Gracemont chapter to Crestmont), loads typically take four cycles, and the L2 delivers 64 bytes per cycle at 17 cycles, shared by four cores.
+- **Cache lines are 64 bytes.** Drepper: "In early caches these lines were 32 bytes long; nowadays the norm is 64 bytes." Intel's manual lists a "Cache line size of 64 bytes". Check the architecture's manual before generalising to Arm.
+- **DRAM's 200 cycles is a round figure.** Drepper's Pentium M table says about 240; his rule of thumb is "200+ cycles". The lab measures this machine's number.
+
+### NUMA: local and remote memory
+
+- **What it is.** The kernel's definition: memory is divided into cells (nodes), and "Memory access time and effective memory bandwidth varies depending on how far away the cell containing the memory is from the processor". Access from the CPUs of the same cell is faster and has higher bandwidth.
+- **The default.** "By default, Linux will attempt to satisfy memory allocation requests from the node to which the CPU that executes the request is assigned." If that node is full, the request falls back to another. Tasks can later migrate: "under sufficient imbalance, tasks can migrate between nodes", leaving their memory behind, unless automatic NUMA balancing (`kernel.numa_balancing`) is on, which moves memory "automatically to nodes that access it often".
+- **Distances.** The firmware reports a distance table; in Drepper's example, local accesses cost 10 and every remote access 20. He adds that the accuracy of the table is another question: measure.
+- **Measured ratios, with their date.** Drepper reports, for a four-socket Opteron, that AMD's figures put one-hop reads 9% and two-hop reads 30% slower than local, and two-hop writes 49% slower. In his own bandwidth-style test remote reads were "always 20% slower", which is a slowdown, not a 20% lower bandwidth (that would be 17%). They are 2007 numbers: do not quote them as today's.
+- **The tool.** `numactl` sets placement: `--hardware` shows the nodes and distances, `--cpunodebind` pins threads, `--membind` fails when the nodes are full, `--preferred` and `--localalloc` fall back, `--interleave` spreads pages. `/proc/<pid>/numa_maps` shows where a process's pages sit. Intel's Memory Latency Checker exists for the same job (named only; its page did not open for us, so nothing is quoted from it).
+- **Why data systems care.** A scan or hash table whose memory sits on the other node pays the remote price on every cache miss, and a thread the scheduler moves to another socket can leave its memory behind. To measure: run the lab below under `numactl --cpunodebind=0 --membind=0`, then `--membind=1`. The build machine has one node, so the reel states the sourced ratio and the lab measures yours.
+
+### Drives: one at a time, or many in flight
+
+- **Read the conditions.** Samsung's PM9A3 datasheet gives 80 µs typical random 4 KB read latency at queue depth 1 (measured on a PCIe Gen3 host), 6,800 MB/s sequential read (128 KB blocks, QD32) and 1,000 KIOPS random 4 KB read (QD32 across 4 workers). 1,000 KIOPS of 4 KB reads is 4.1 GB/s, below the sequential figure. The latency is what one-at-a-time code gets; the rates need many requests in flight.
+- **Concurrency = rate × latency.** 1,000,000 reads/s × 80 µs = 80 in flight, a minimum: in-flight equals rate times the latency under that load, and at Samsung's 128 in flight each read takes about 128 µs. More in flight raises throughput until the drive saturates, then only raises latency.
+- **The hard disk.** 4.16 ms is half a revolution at 7,200 rpm (60 / 7,200 / 2 s); the head must also seek first, and the manual publishes no seek time. The data sheet's 168 random 4K reads a second is at queue depth 16: about 6 ms per read with 16 queued for the drive to reorder. One at a time each read is slower, and no QD1 figure is published, so 6 ms is a safe floor value. The 285 MB/s is the outer-diameter maximum: a full-disk scan averages less.
+- **For 8 KB pages**, the drive's 1,000,000 reads/s rating (a 4 KB figure) is not reachable: the drive's bandwidth binds first, at most 830,000 pages a second.
+- **Not here.** The mechanisms behind these numbers (the flash translation layer, queues, `io_uring`, `O_DIRECT`) belong to "Storage devices and fsync durability".
+
+### The network and object storage rungs
+
+- **EC2 bandwidth** applies to inbound and outbound traffic at once. Smaller "up to" instances run on a baseline and burst on credits, typically for 5 to 60 minutes. One flow is capped (5 Gbit/s outside a cluster placement group, up to 10 inside one, up to 25 with ENA Express in one AZ); several flows can use the instance's full bandwidth. Traffic through an internet gateway is limited to 5 Gbit/s under 32 vCPUs or 50% of the instance's bandwidth, so "up to 100 Gb/s" to S3 assumes the job does not go through one.
+- **Latency between instances.** Cluster placement groups pack instances in one AZ "for low-latency network performance", but AWS publishes no number on that page. Measure it with `ping` or a request loop between your two instances. The loopback round trip measured here (about 36 µs median) is the software cost of one TCP round trip on one machine, not a network figure.
+- **S3.** Roughly 100–200 ms to the first byte; medians for small requests are often in the tens of milliseconds; at least 3,500 writes and 5,500 reads per second per prefix, with no limit on prefixes (ten prefixes, 55,000 reads a second); "503 Slow Down" while it scales. AWS's advice is to issue many concurrent requests, fetch different byte ranges and access the bucket from the same Region "to reduce network latency and data transfer costs". There is no limit on connections.
+- **Faster rungs exist.** S3 Express One Zone is designed for "single-digit millisecond latencies"; CloudFront or ElastiCache can cache in front of S3.
+
+### T(n) = α + n/β, and the floor
+
+- **One transfer.** α is the wait per request, β the bandwidth, n the bytes. The break-even size α·β is where the wait equals the transfer: 544,000 bytes (about 0.5 MB) for this NVMe drive, about 1.7 MB for the disk. Requests smaller than α·β are latency-bound: batch them or coalesce them. It is the same α + n/β and α·β as the I/O cost model's messages, and the bandwidth-delay product of the networking topic.
+- **The floor.** floor = max(bytes / β, requests × α / k). It is a lower bound because each term alone is: bytes cannot move faster than β, and R waits of α spread over at most k slots take at least R·α/k. The real time is higher: with k = 1 nothing overlaps and the terms add, and with k > 1 each request still waits α before its own n/β.
+- **A closer estimate** for R requests of size s at per-request rate b is (R / k) × (α + s/b). For the 1 TiB in 16 MiB ranges, k = 41 assumes instant transfers; at b = 625 MB/s a real run needs k ≈ 52, at b = 166 MB/s about 82, and at 166 MB/s with only 41 in flight the job takes about 321 s. The k from the floor is a minimum.
+- **Which α.** A floor needs the smallest α that holds. AWS says "roughly 100–200 milliseconds" to the first byte and "tens of milliseconds" medians for small requests; at α = 50 ms, k = 21 would do. Use your own measured α and say which you used.
+- **A third term for object storage:** requests ÷ (request-rate limit × prefixes). At k = 41 the 1 TiB job sends 65,536 requests in 160 s, about 410 a second, far under 5,500 per prefix.
+- **Floors for other resources:** the network card (bytes ÷ NIC rate, 88 s for 1 TiB at 100 Gbit/s), a single flow, the CPU (bytes ÷ the rate your code processes them). A pipeline runs at its slowest stage, so take the maximum across resources (Prove it 2).
+- **Report three things:** the floor, the bottleneck tier, and measured ÷ floor. A ratio near 1 means the design is the limit (Prove it 3); a large ratio is the finding (the scan race).
+- **A history of the idea.** Jeff Dean's 2009 slides work the same example: 30 seeks of 10 ms and 30 reads of 256 KB at 30 MB/s take 560 ms one after another and about 18 ms in parallel.
+
+### Same O, different seconds
+
+Big-O (the refresher before this topic) counts the lab's 134,217,728 reads as Θ(n) however they are ordered, and the measured times differ about 20×, and 230× when each address depends on the last read. That gap is why the next topics count block transfers and requests, not steps: the I/O cost model does exactly that.
+
+</section>
+
+<section data-section="lab">
+
+## Build, break, measure
+
+### Lab · Sequential vs random reads in RAM
+
+This is the "sequential vs random reads in RAM" lab of section 1.2. The program is a C file of about 40 lines (`examples.py` writes it, compiles it with `cc` and runs it). It fills a 1 GiB array of 8-byte integers (2<sup>27</sup> of them) with a single random cycle, asks for 2 MiB pages with `madvise(MADV_HUGEPAGE)` where available (address translation has its own small cache, the TLB, and huge pages keep it from inflating the random numbers), and times three walks: in order, random addresses that are independent of each other, and a pointer chase where each address is the value just read.
+
+```c
+#define _GNU_SOURCE
+#include <stdint.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <time.h>
+#include <sys/mman.h>
+
+static uint64_t s = 88172645463325252ULL;                        /* seeded xorshift: the same walk every run */
+static inline uint64_t xr(void) { s ^= s << 13; s ^= s >> 7; s ^= s << 17; return s; }
+static double now(void) { struct timespec t; clock_gettime(CLOCK_MONOTONIC, &t); return t.tv_sec + t.tv_nsec * 1e-9; }
+
+int main(int argc, char **argv) {
+    size_t bytes = strtoull(argv[1], 0, 10);                      /* a power of two */
+    size_t steps = strtoull(argv[2], 0, 10);                      /* timed steps for the two random walks */
+    size_t n = bytes / 8;
+    size_t alloc = bytes < ((size_t)2 << 20) ? ((size_t)2 << 20) : bytes;
+    uint64_t *a = aligned_alloc((size_t)2 << 20, alloc);
+    if (!a) return 1;
+#ifdef MADV_HUGEPAGE
+    madvise(a, alloc, MADV_HUGEPAGE);                             /* 2 MiB pages where available: keeps address translation from inflating the walks */
+#endif
+    for (size_t i = 0; i < n; i++) a[i] = i;
+    for (size_t i = n - 1; i > 0; i--) { size_t j = xr() % i; uint64_t t = a[i]; a[i] = a[j]; a[j] = t; }   /* Sattolo: one cycle through every slot */
+    volatile uint64_t sink = 0;
+    double best = 1e9;
+    for (int r = 0; r < 3; r++) {                                 /* 1. in order, best of 3 */
+        double t0 = now(); uint64_t sum = 0;
+        for (size_t i = 0; i < n; i++) sum += a[i];
+        double dt = now() - t0; sink = sum; if (dt < best) best = dt;
+    }
+    double t0 = now(); uint64_t sum = 0;                          /* 2. random addresses, independent of each other */
+    for (size_t i = 0; i < steps; i++) sum += a[xr() & (n - 1)];
+    double rand_ns = (now() - t0) / steps * 1e9; sink = sum;
+    t0 = now(); uint64_t p = 0;                                   /* 3. each address is the value just read */
+    for (size_t i = 0; i < steps; i++) p = a[p];
+    double chase_ns = (now() - t0) / steps * 1e9; sink = p;
+    printf("%.3f %.3f %.3f %.2f\n", best / n * 1e9, rand_ns, chase_ns, n * 8 / best / 1e9);
+    return 0;
+}
+```
+
+Compile and run, with the array size in bytes and the number of timed steps:
+
+```sh
+cc -O3 -march=native -o walk walk.c
+./walk 1073741824 10000000       # in order ns, random ns, dependent ns, GB/s
+```
+
+**Reference run** (12 October 2026; 4-vCPU Intel Xeon at 2.10 GHz under KVM, gcc 13.3.0, median of five runs): 0.7 ns per read in order (about 12 GB/s on one core), 14 ns at random (20×), 158 ns dependent (about 230×). Your numbers will differ; the ranges `examples.py` asserts are: in order under 5 ns, random at least 3× slower, dependent at least 20× slower and at least 40 ns.
+
+What each walk shows: in order, the CPU prefetches the next lines before you ask, and one 64-byte line serves eight numbers. At random, each read uses one number of its line and cannot be prefetched, but independent misses overlap, so the cost is far below a full DRAM wait. In the pointer chase nothing can overlap, so each step waits the whole way: about the DRAM latency, plus address translation (a VM adds nested paging).
+
+**Break it: the staircase.** Shrink the array to 32 KiB, 1 MiB, 16 MiB and 1 GiB and run the dependent walk again. The reference run gives about 1.8, 8.1, 46 and 158 ns: the ladder of the cycles step on your own machine, with a jump wherever the working set outgrows a cache. Compare the sizes with `lscpu`. (In this VM `lscpu` reports a 260 MiB L3, so 16 MiB still fits.)
+
+**Break it: the second node.** On a machine with two NUMA nodes (`numactl --hardware`), run it twice:
+
+```sh
+numactl --cpunodebind=0 --membind=0 ./walk 1073741824 5000000
+numactl --cpunodebind=0 --membind=1 ./walk 1073741824 5000000
+```
+
+The ratio of the two dependent numbers is your NUMA latency ratio. `examples.py` does this when `/sys/devices/system/node/` shows two or more nodes and `numactl` is installed; the build machine has one node, so it prints that there is nothing to measure.
+
+**The NumPy version.** `np.take` into a pre-touched output array, in order and then with a seeded permutation, shows a smaller gap (about 3× in a reference run with NumPy 2.5: 5.7 against 18.2 ns per element), because per-element work and the writes blur the read cost. `examples.py` runs it when NumPy is importable; it backs no number on screen.
+
+**Where the rest of the section 1.2 lab lives.** Reading from NVMe with and without the page cache (`O_DIRECT`) is in "Storage devices and fsync durability"; reading an object store across range sizes is in "Object storage as a storage tier"; the float sum is in the topic after those.
+
+</section>
+
+<section data-section="production">
+
+## In production
+
+- **The famous table is old.** Dean's slide is from 2009 and Norvig's is older. DRAM latency has barely moved (still on the order of 100 ns; the lab's dependent read in a VM is about 158 ns), while drives changed rows entirely: there was no NVMe row in 2009, and "read 1 MB sequentially from disk" was 20 ms then, against about 3.7 ms for 1 MiB on the Exos X24 at 285 MB/s. Re-source a number before you put it in a design document.
+- **"Random-access memory" is not uniform.** About 20× between in-order and random reads in the lab, about 230× for dependent ones. Hash tables, pointer-heavy structures and row-at-a-time code pay the bottom of that range.
+- **A disk benchmark can be a RAM benchmark.** Linux keeps recently read file data in memory (the page cache; proc_meminfo(5): "In-memory cache for files read from the disk (the page cache)"), so a second run reads RAM. The storage topic's lab measures with and without it.
+- **"Up to" is not a promise.** Datasheet sequential rates are measured at queue depth 32; QD1 latency is what one-at-a-time code gets; EC2 "up to" bandwidth is a burst on credits. Sustained beats peak.
+- **One connection never fills a big network card, and one request at a time never fills object storage.** Parallelise, or the floor is set by α.
+- **Small files make object storage latency-bound.** 1,000,000 files of 1 MB with 100 in flight is 1,000 s of waits for 80 s of bytes. Compacting into large files, as the running example does for `order_events`, moves the floor back to the bytes.
+- **Pin compute and memory together** (`numactl --cpunodebind --membind`) when the lab shows a remote penalty; a thread that migrates keeps its memory on the old node.
+- **The floor ignores** serialization, decompression, skew, retries and the slowest request (the tail-latency topic). Treat it as a floor and report measured ÷ floor.
+
+</section>
+
+<section data-section="frontier">
+
+## The frontier
+
+- **More rungs, not fewer.** S3 Express One Zone puts an object store at "single-digit millisecond latencies" next to the 100–200 ms general-purpose tier. `numactl --weighted-interleave` spreads memory over nodes by a per-node weight read from `/sys/kernel/mm/mempolicy/weighted_interleave/`, for memory nodes of different bandwidth. Drives keep widening: Samsung's PCIe 5.0 PM1743 lists reads "up to 14,000 MB/s", which would put the 1 TiB floor near 79 s.
+- **Latency stays flat while bandwidth grows.** The single-core DRAM wait the lab measures is in the same order as the 2009 table's 100 ns, while per-instance network and drive bandwidth grew by orders of magnitude (100 Gbit/s instances, 6,800 MB/s drives). Designs that hide latency with concurrency are the ones that scale.
+
+</section>
+
+<section data-section="sources">
+
+## Sources
+
+Last verified: 12 October 2026, against the sources below (every quoted passage is checked word for word by the repository's source check; every number and example is run in `examples.py`). Expert sign-off: pending.
+
+- U. Drepper, [What Every Programmer Should Know About Memory](https://akkadia.org/drepper/cpumemory.pdf), version 1.0, 21 November 2007: memory as the limit, SRAM against DRAM, the Pentium M cycle table, cache lines, prefetching, NUMA and its measured ratios.
+- Intel, [Intel 64 and IA-32 Architectures Optimization Reference Manual, Volume 1](https://cdrdv2-public.intel.com/930021/248966-051-optimization-reference-manual-vol1.pdf), 248966-051, October 2026: Skylake server cache latencies and bandwidths (Table 2-11), Crestmont, cache line size.
+- Linux kernel documentation, [What is NUMA?](https://docs.kernel.org/mm/numa.html) and [/proc/sys/kernel](https://docs.kernel.org/admin-guide/sysctl/kernel.html) (7.3.0-rc7); [numa(7)](https://man7.org/linux/man-pages/man7/numa.7.html), [numactl(8)](https://man7.org/linux/man-pages/man8/numactl.8.html) and [proc_meminfo(5)](https://man7.org/linux/man-pages/man5/proc_meminfo.5.html) (man-pages, rendered 2026-09-09).
+- Samsung, [PM9A3 datasheet Rev. 1.4](https://www.ssd.group/wp-content/uploads/2022/07/PM9A3-NVMe-U.2-Datasheet_for-07_v1.4.pdf) (November 2021; a reseller-hosted copy), Samsung's [PM9A3 page](https://semiconductor.samsung.com/ssd/datacenter-ssd/pm9a3/), [product brief](https://download.semiconductor.samsung.com/resources/brochure/Samsung%20PM9A3%20NVMe%20PCIe%20SSD.pdf) and [PM1743 page](https://semiconductor.samsung.com/ssd/enterprise-ssd/pm1743/) (fetched 2026-10-12).
+- Seagate, [Exos X24 data sheet DS2080-2307US](https://www.seagate.com/content/dam/seagate/en/content-fragments/products/datasheets/exos-x24/exos-x24-DS2080-2307US-en_US.pdf) and the Exos X24 SATA product manual, publication 205194300 Rev. A (2023): rotational speed, average latency, sustained transfer rate, random read IOPS.
+- AWS, Amazon S3 User Guide: [Best practices design patterns](https://docs.aws.amazon.com/AmazonS3/latest/userguide/optimizing-performance.html), [Performance guidelines](https://docs.aws.amazon.com/AmazonS3/latest/userguide/optimizing-performance-guidelines.html) and [Performance design patterns](https://docs.aws.amazon.com/AmazonS3/latest/userguide/optimizing-performance-design-patterns.html); Amazon EC2 User Guide: [instance network bandwidth](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-instance-network-bandwidth.html) and [placement groups](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/placement-groups.html); [EC2 compute optimized instance types](https://docs.aws.amazon.com/ec2/latest/instancetypes/co.html) (all fetched 2026-10-12).
+- J. Dean, [Designs, Lessons and Advice from Building Large Distributed Systems](https://www.cs.cornell.edu/projects/ladis2009/talks/dean-keynote-ladis2009.pdf), LADIS 2009 keynote slides (historical numbers), and P. Norvig, [Teach Yourself Programming in Ten Years](https://norvig.com/21-days.html) (the "approximate timing" table; secondary, historical).
+- PostgreSQL 18 documentation, [Database Page Layout](https://www.postgresql.org/docs/current/storage-page-layout.html): the 8 kB page of the running example.
+
+Spotted an error or something unclear? [Report it](https://github.com/yashaggarwal85d/learning-resources/issues/new?title=memory-hierarchy-latency-numbers:%20).
+
+</section>
