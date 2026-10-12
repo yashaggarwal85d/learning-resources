@@ -1,0 +1,64 @@
+import Resource from '../../../../../components/Resource.astro';
+
+This is a refresher, the fourth of five. It builds on the three before it: the Python you write, the Git history you change and the shell commands a CI job runs. It assumes you have merged a pull request and installed a package with pip; the reel is a recap of what happens around those two actions, not a first course.
+
+<section class="prereq" data-section="python">
+
+### <span class="n">01</span> Python functions and decorators
+
+The tests in this reel are plain functions, and the test runner's two main tools, <code>@pytest.mark.parametrize</code> and <code>@pytest.fixture</code>, are decorators. The Python refresher covers both.
+
+<p class="check"><b>Check yourself:</b> what does <code>@timed</code> above <code>def load</code> mean? (Answer: <code>load = timed(load)</code>: a function that takes a function and returns a new one.)</p>
+
+<ul class="resources">
+  <Resource kind="reel" title="Python language essentials" domain="data-engineering" host="de.software-delivery-workflow" by="the first refresher" />
+  <Resource kind="reading" title="Get Started" href="https://docs.pytest.org/en/stable/getting-started.html" by="pytest documentation">Install pytest, write a first test and read its failure output.</Resource>
+</ul>
+
+</section>
+
+<section class="prereq" data-section="git">
+
+### <span class="n">02</span> Pull requests and a bisect oracle
+
+A pull request is a proposed branch that teammates review before it lands on the main branch. The Git refresher shows three ways it can land, and uses a failing test as the oracle that <code>git bisect</code> trusts. This topic turns that oracle into a unit test and puts it in front of the merge button.
+
+<p class="check"><b>Check yourself:</b> what must a bisect oracle exit with for a good commit, and for a bad one? (Answer: 0 for good; 1 to 127, except 125, for bad. 125 means skip.)</p>
+
+<ul class="resources">
+  <Resource kind="reel" title="Git branching and history workflows" domain="data-engineering" host="de.software-delivery-workflow" by="the second refresher" />
+  <Resource kind="reading" title="The Standard of Code Review" href="https://google.github.io/eng-practices/review/reviewer/standard.html" by="Google Engineering Practices">The standard the reel's review step follows; short.</Resource>
+  <Resource kind="reading" title="What to look for in a code review" href="https://google.github.io/eng-practices/review/reviewer/looking-for.html" by="Google Engineering Practices">The checklist behind the funnel: design, functionality, complexity, tests, naming, comments, style.</Resource>
+</ul>
+
+</section>
+
+<section class="prereq" data-section="shell">
+
+### <span class="n">03</span> Exit status and pipelines
+
+A CI job is a chain of shell commands, and each command ends with a number: 0 means success. A pipeline reports the status of its last command unless <code>pipefail</code> is on. The shell refresher explains where those numbers come from; the CI step in this reel is that idea on a runner.
+
+<p class="check"><b>Check yourself:</b> <code>jq -r .status missing.jsonl | sort | uniq -c</code>, with <code>jq</code> failing: what is the pipeline's status in a plain bash script? (Answer: 0, the status of <code>uniq</code>; with <code>set -o pipefail</code> it is jq's 2.)</p>
+
+<ul class="resources">
+  <Resource kind="reel" title="Linux shell and process toolkit" domain="data-engineering" host="de.software-delivery-workflow" by="the third refresher" />
+  <Resource kind="reading" title="Quickstart for GitHub Actions" href="https://docs.github.com/en/actions/get-started/quickstart" by="GitHub Docs">A first workflow file, from one commit to a green check.</Resource>
+</ul>
+
+</section>
+
+<section class="prereq" data-section="pip">
+
+### <span class="n">04</span> Installing packages with pip
+
+<code>pip install -r requirements.txt</code> installs whatever the file lists, choosing for each line the newest version that matches. <code>pip freeze</code> prints what is installed, every package pinned with <code>==</code>. The last two steps of the reel are about what that file should say.
+
+<p class="check"><b>Check yourself:</b> what does <code>pip freeze</code> print? (Answer: every installed package, dependencies included, as <code>name==version</code>.)</p>
+
+<ul class="resources">
+  <Resource kind="reading" title="Repeatable Installs" href="https://pip.pypa.io/en/stable/topics/repeatable-installs/" by="pip documentation">Pinning, hash-checking and wheelhouses: the three levels the last step draws on.</Resource>
+  <Resource kind="reading" title="Semantic Versioning 2.0.0" href="https://semver.org/" by="semver.org">The specification behind MAJOR.MINOR.PATCH; the rules are short.</Resource>
+</ul>
+
+</section>

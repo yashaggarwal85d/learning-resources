@@ -1,0 +1,1318 @@
+{
+  "topic": "de.software-delivery-workflow",
+  "syllabus": [
+    {
+      "clause": "code-review norms",
+      "at": [
+        {
+          "step": "Review: design first, keep it small"
+        },
+        {
+          "deep": "Code review"
+        }
+      ]
+    },
+    {
+      "clause": "unit tests",
+      "at": [
+        {
+          "step": "A unit test pins the bug"
+        },
+        {
+          "step": "Flaky: same code, different verdicts"
+        },
+        {
+          "deep": "Unit tests with pytest"
+        }
+      ]
+    },
+    {
+      "clause": "CI pipelines",
+      "at": [
+        {
+          "step": "CI: a chain of exit statuses"
+        },
+        {
+          "step": "Which shell runs your step?"
+        },
+        {
+          "step": "Flaky: same code, different verdicts"
+        },
+        {
+          "deep": "CI pipelines"
+        },
+        {
+          "deep": "Continuous integration practices"
+        },
+        {
+          "deep": "Try it: the refresher gate"
+        }
+      ]
+    },
+    {
+      "clause": "semantic versioning as a breakage contract",
+      "at": [
+        {
+          "step": "A version number is a promise"
+        },
+        {
+          "deep": "Semantic versioning"
+        }
+      ]
+    },
+    {
+      "clause": "dependency pinning",
+      "at": [
+        {
+          "step": "Works on my machine"
+        },
+        {
+          "step": "A lock file freezes the tree"
+        },
+        {
+          "deep": "Ranges, pins and lock files"
+        }
+      ]
+    },
+    {
+      "clause": "Python toolchain in §4.3",
+      "at": [
+        {
+          "topic": "Reproducible environments with uv",
+          "quote": "cache-friendly CI"
+        },
+        {
+          "deep": "What's changing"
+        }
+      ]
+    },
+    {
+      "clause": "data CI/CD in §11.4",
+      "at": [
+        {
+          "topic": "Slim CI and state-aware builds",
+          "quote": "build and test only modified models"
+        },
+        {
+          "deep": "What's changing"
+        }
+      ]
+    }
+  ],
+  "sources": [
+    {
+      "source": "Workflow syntax for GitHub Actions - GitHub Docs",
+      "items": [
+        {
+          "item": "Jobs run in parallel by default; `needs` makes them sequential and a failed or skipped dependency skips everything downstream (override with `if: always()`).",
+          "at": [
+            {
+              "step": "CI: a chain of exit statuses"
+            },
+            {
+              "deep": "CI pipelines"
+            }
+          ]
+        },
+        {
+          "item": "Each `run` step is a new shell process; lines of a multi-line `run` share one shell.",
+          "at": [
+            {
+              "step": "CI: a chain of exit statuses"
+            },
+            {
+              "step": "Which shell runs your step?"
+            },
+            {
+              "deep": "CI pipelines"
+            }
+          ]
+        },
+        {
+          "item": "Default shell (unspecified) runs `bash -e {0}`; explicit `shell: bash` adds `--noprofile --norc -eo pipefail`, so a failing pipeline stage fails the step.",
+          "at": [
+            {
+              "step": "Which shell runs your step?"
+            },
+            {
+              "deep": "CI pipelines"
+            }
+          ]
+        },
+        {
+          "item": "`continue-on-error` exists at step level (job still passes) and job level (workflow run still passes).",
+          "at": [
+            {
+              "deep": "CI pipelines"
+            }
+          ]
+        },
+        {
+          "item": "`timeout-minutes` at step level (max 360) and job level (default 360).",
+          "at": [
+            {
+              "deep": "CI pipelines"
+            }
+          ]
+        },
+        {
+          "item": "`strategy.fail-fast` (default true) cancels the remaining matrix jobs when one fails.",
+          "at": [
+            {
+              "deep": "CI pipelines"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "About protected branches - GitHub Docs",
+      "items": [
+        {
+          "item": "Branch protection rules gate pushes: passing status checks, reviews, linear history, signed commits, merge queue.",
+          "at": [
+            {
+              "deep": "CI pipelines"
+            }
+          ]
+        },
+        {
+          "item": "A required check must be successful, skipped or neutral; all required checks must pass before merge.",
+          "at": [
+            {
+              "step": "CI: a chain of exit statuses"
+            },
+            {
+              "deep": "CI pipelines"
+            },
+            {
+              "deep": "In production"
+            }
+          ]
+        },
+        {
+          "item": "\"Strict\" mode (branch must be up to date, the default) needs more builds; \"loose\" mode risks post-merge failures from incompatible changes.",
+          "at": [
+            {
+              "topic": "Git branching and history workflows",
+              "quote": "PR flow"
+            }
+          ]
+        },
+        {
+          "item": "Without required checks, anything can be merged at any time.",
+          "at": [
+            {
+              "deep": "CI pipelines"
+            }
+          ]
+        },
+        {
+          "item": "Job names must be unique across workflows, or check results become ambiguous.",
+          "at": [
+            {
+              "deep": "CI pipelines"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "Dependency caching reference - GitHub Docs",
+      "items": [
+        {
+          "item": "The cache key should embed a hash of the lockfile (`hashFiles(...)`), so changed dependencies produce a new cache.",
+          "at": [
+            {
+              "deep": "CI pipelines"
+            }
+          ]
+        },
+        {
+          "item": "Restore order: exact key, then prefix matches, then `restore-keys` in sequence; exact match is a hit, otherwise a miss.",
+          "at": [
+            {
+              "deep": "CI pipelines"
+            }
+          ]
+        },
+        {
+          "item": "A cache is only saved on a miss if the job succeeds.",
+          "at": [
+            {
+              "deep": "CI pipelines"
+            }
+          ]
+        },
+        {
+          "item": "`setup-python` handles caching for pip, pipenv and Poetry with minimal configuration.",
+          "at": [
+            {
+              "deep": "CI pipelines"
+            }
+          ]
+        },
+        {
+          "item": "Scope: current branch, default branch, PR base branch; not sibling or child branches.",
+          "at": [
+            {
+              "deep": "CI pipelines"
+            }
+          ]
+        },
+        {
+          "item": "Eviction: unused for 7 days, or oldest-first when over the 10 GB per-repository default.",
+          "at": [
+            {
+              "deep": "CI pipelines"
+            }
+          ]
+        },
+        {
+          "item": "Low-trust triggers (fork PRs, issue comments) are restricted to limit cache poisoning.",
+          "at": [
+            {
+              "out": "Hardening cache use for fork pull requests and issue comments is repository administration (cache poisoning), not the delivery loop this refresher recaps"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "The Standard of Code Review | eng-practices",
+      "items": [
+        {
+          "item": "Purpose of review: improve overall code health over time.",
+          "at": [
+            {
+              "step": "Review: design first, keep it small"
+            },
+            {
+              "deep": "Code review"
+            }
+          ]
+        },
+        {
+          "item": "Trade-offs: developers must make progress, reviewers own code quality.",
+          "at": [
+            {
+              "deep": "Code review"
+            }
+          ]
+        },
+        {
+          "item": "The standard: approve once the change definitely improves code health, even if imperfect; emergencies are the only exception to worsening health.",
+          "at": [
+            {
+              "step": "Review: design first, keep it small"
+            },
+            {
+              "deep": "Code review"
+            }
+          ]
+        },
+        {
+          "item": "\"Nit:\" prefix for optional polish; mentoring comments also marked non-mandatory.",
+          "at": [
+            {
+              "step": "Review: design first, keep it small"
+            },
+            {
+              "deep": "Code review"
+            }
+          ]
+        },
+        {
+          "item": "Principles: facts over opinion, style guide is authority, design judged on principles, consistency.",
+          "at": [
+            {
+              "deep": "Code review"
+            }
+          ]
+        },
+        {
+          "item": "Resolving conflicts: consensus first, then call/meeting, then escalate.",
+          "at": [
+            {
+              "deep": "Code review"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "What to look for in a code review | eng-practices",
+      "items": [
+        {
+          "item": "Design, Functionality, Complexity (over-engineering), Tests, Naming, Comments, Style, Consistency, Documentation.",
+          "at": [
+            {
+              "step": "Review: design first, keep it small"
+            },
+            {
+              "deep": "Code review"
+            }
+          ]
+        },
+        {
+          "item": "Review every line; look at context; know when to bring in qualified reviewers.",
+          "at": [
+            {
+              "out": "How to read every line, weigh context and bring in a qualified reviewer is reviewing craft beyond the norms this refresher recaps; the Deep dive keeps the page's checklist order"
+            }
+          ]
+        },
+        {
+          "item": "Exceptions for partial reviews; praise good things.",
+          "at": [
+            {
+              "deep": "Code review"
+            }
+          ]
+        },
+        {
+          "item": "Summary checklist of what a reviewer verifies.",
+          "at": [
+            {
+              "deep": "Code review"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "Speed of Code Reviews | eng-practices",
+      "items": [
+        {
+          "item": "Why fast reviews matter: team velocity, developer morale, code health.",
+          "at": [
+            {
+              "deep": "Code review"
+            }
+          ]
+        },
+        {
+          "item": "Target: respond within one business day; do not interrupt focused work.",
+          "at": [
+            {
+              "step": "Review: design first, keep it small"
+            },
+            {
+              "deep": "Code review"
+            }
+          ]
+        },
+        {
+          "item": "Response time matters more than total review time.",
+          "at": [
+            {
+              "deep": "Code review"
+            }
+          ]
+        },
+        {
+          "item": "Cross-time-zone reviews and \"LGTM with comments\".",
+          "at": [
+            {
+              "deep": "Code review"
+            }
+          ]
+        },
+        {
+          "item": "Large CLs: ask to split; reviews speed up over time without lowering standards; emergencies.",
+          "at": [
+            {
+              "deep": "Code review"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "Small CLs | eng-practices",
+      "items": [
+        {
+          "item": "Why small: faster, more thorough, fewer bugs, less wasted work, easier merge/design/rollback.",
+          "at": [
+            {
+              "step": "Review: design first, keep it small"
+            },
+            {
+              "deep": "Code review"
+            }
+          ]
+        },
+        {
+          "item": "What is small: one self-contained change with its tests; ~100 lines fine, ~1000 too large; file count matters.",
+          "at": [
+            {
+              "step": "Review: design first, keep it small"
+            },
+            {
+              "deep": "Code review"
+            }
+          ]
+        },
+        {
+          "item": "When large is OK: whole-file deletion, trusted automated refactoring.",
+          "at": [
+            {
+              "out": "Exceptions (whole-file deletion, trusted automated refactoring) are edge cases; the Deep dive gives the rule and says the reviewer judges"
+            }
+          ]
+        },
+        {
+          "item": "Splitting strategies: stacking, by files, horizontally, vertically, both.",
+          "at": [
+            {
+              "deep": "In production"
+            }
+          ]
+        },
+        {
+          "item": "Separate refactorings; keep tests with the change; do not break the build; when it cannot be small, get reviewer consent first.",
+          "at": [
+            {
+              "deep": "Code review"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "How to write and report assertions in tests - pytest documentation",
+      "items": [
+        {
+          "item": "Plain `assert` statement; failure output shows the values involved (introspection), optional message.",
+          "at": [
+            {
+              "step": "A unit test pins the bug"
+            },
+            {
+              "deep": "Unit tests with pytest"
+            }
+          ]
+        },
+        {
+          "item": "`pytest.approx()` for floats, lists, dicts, NumPy arrays, NaNs.",
+          "at": [
+            {
+              "deep": "Unit tests with pytest"
+            }
+          ]
+        },
+        {
+          "item": "`pytest.raises()` for expected exceptions, `excinfo`, subclass matching, `match=` regex on the message.",
+          "at": [
+            {
+              "deep": "Unit tests with pytest"
+            }
+          ]
+        },
+        {
+          "item": "Further sections on exception groups, warnings and custom assertion comparisons.",
+          "at": [
+            {
+              "out": "Exception groups, warnings and custom assertion comparisons are further sections the refresher does not need"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "How to use fixtures - pytest documentation",
+      "items": [
+        {
+          "item": "Requesting fixtures by argument name; fixtures can request other fixtures; reusable, one fresh result per test.",
+          "at": [
+            {
+              "step": "A unit test pins the bug"
+            },
+            {
+              "deep": "Unit tests with pytest"
+            }
+          ]
+        },
+        {
+          "item": "Return values cached within one test; autouse fixtures.",
+          "at": [
+            {
+              "out": "Per-test caching of fixture values and autouse fixtures are beyond what the lab uses"
+            }
+          ]
+        },
+        {
+          "item": "Scopes (function, class, module, package, session), dynamic scope, conftest.py sharing.",
+          "at": [
+            {
+              "deep": "Unit tests with pytest"
+            }
+          ]
+        },
+        {
+          "item": "Teardown via yield fixtures (recommended) and finalizers; safe teardown; fixture errors.",
+          "at": [
+            {
+              "deep": "Unit tests with pytest"
+            }
+          ]
+        },
+        {
+          "item": "Parametrized fixtures, marks, overriding fixtures, usefixtures.",
+          "at": [
+            {
+              "out": "Parametrized fixtures, overriding fixtures and usefixtures are beyond what the lab uses"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "How to parametrize fixtures and test functions - pytest documentation",
+      "items": [
+        {
+          "item": "Three levels: parametrized fixtures, `@pytest.mark.parametrize`, `pytest_generate_tests`.",
+          "at": [
+            {
+              "deep": "Unit tests with pytest"
+            }
+          ]
+        },
+        {
+          "item": "Input/expected tuples; each set runs as its own test and fails separately (`test_eval[6*9-42]`).",
+          "at": [
+            {
+              "step": "A unit test pins the bug"
+            },
+            {
+              "deep": "Unit tests with pytest"
+            }
+          ]
+        },
+        {
+          "item": "Parametrizing classes and modules (`pytestmark`); `pytest.param(..., marks=xfail)`.",
+          "at": [
+            {
+              "deep": "Unit tests with pytest"
+            }
+          ]
+        },
+        {
+          "item": "Stacked decorators give all combinations; mutable values are shared, not copied.",
+          "at": [
+            {
+              "deep": "Unit tests with pytest"
+            }
+          ]
+        },
+        {
+          "item": "`pytest_generate_tests` with `metafunc.parametrize` and a command-line option.",
+          "at": [
+            {
+              "out": "pytest_generate_tests with metafunc.parametrize is an advanced hook the refresher does not use"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "Exit codes - pytest documentation",
+      "items": [
+        {
+          "item": "0 all passed; 1 some failed; 2 interrupted by user; 3 internal error; 4 command-line usage error; 5 no tests collected; 6 max warnings exceeded (`--max-warnings`).",
+          "at": [
+            {
+              "deep": "Unit tests with pytest"
+            },
+            {
+              "step": "A unit test pins the bug"
+            }
+          ]
+        },
+        {
+          "item": "Codes are the public `pytest.ExitCode` enum; note pointing to pytest-custom_exit_code to customise the no-tests code.",
+          "at": [
+            {
+              "out": "The pytest.ExitCode enum and the plugin that customises the no-tests code are not needed to read exit statuses in CI"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "Flaky tests - pytest documentation",
+      "items": [
+        {
+          "item": "Definition; why flaky tests hurt a CI gate (mistrust, wasted re-runs).",
+          "at": [
+            {
+              "step": "Flaky: same code, different verdicts"
+            },
+            {
+              "deep": "Unit tests with pytest"
+            }
+          ]
+        },
+        {
+          "item": "Root causes: uncontrolled system state, test order and parallel runs, overly strict assertions, threads.",
+          "at": [
+            {
+              "step": "Flaky: same code, different verdicts"
+            },
+            {
+              "deep": "Unit tests with pytest"
+            }
+          ]
+        },
+        {
+          "item": "Tools: `xfail(strict=False)` as a manual quarantine, `PYTEST_CURRENT_TEST`, rerun and randomising plugins.",
+          "at": [
+            {
+              "deep": "Unit tests with pytest"
+            }
+          ]
+        },
+        {
+          "item": "Strategies: split unit vs integration suites (unit suite as the gate), screenshots, delete or rewrite at a lower level, quarantine, CI tools that rerun.",
+          "at": [
+            {
+              "deep": "Unit tests with pytest"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "Semantic Versioning 2.0.0",
+      "items": [
+        {
+          "item": "Summary: MAJOR.MINOR.PATCH increment rules; pre-release and build metadata labels",
+          "at": [
+            {
+              "step": "A version number is a promise"
+            },
+            {
+              "deep": "Semantic versioning"
+            }
+          ]
+        },
+        {
+          "item": "Introduction: dependency hell, version lock, version promiscuity; declare a public API",
+          "at": [
+            {
+              "deep": "Semantic versioning"
+            }
+          ]
+        },
+        {
+          "item": "Semantic Versioning Specification (SemVer): numbered rules 1-11 (public API; X.Y.Z form; released versions immutable; 0.y.z initial development; 1.0.0; patch; minor; major; pre-release; build metadata; precedence with examples)",
+          "at": [
+            {
+              "step": "A version number is a promise"
+            },
+            {
+              "deep": "Semantic versioning"
+            }
+          ]
+        },
+        {
+          "item": "Backus-Naur Form Grammar for Valid SemVer Versions",
+          "at": [
+            {
+              "out": "The Backus-Naur grammar and suggested regular expressions are tooling detail; the Deep dive states the rules, not the grammar"
+            }
+          ]
+        },
+        {
+          "item": "Why Use Semantic Versioning? (Firetruck/Ladder example)",
+          "at": [
+            {
+              "out": "The \"Why use semantic versioning\" fire-engine example is motivation, replaced here by the executed KeyError of the renamed column"
+            }
+          ]
+        },
+        {
+          "item": "FAQ: 0.y.z revisions; when to release 1.0.0; rapid development; version 42.0.0; documenting the API; accidental incompatible minor release; updating own dependencies; inadvertent API change; deprecating functionality; size limit; is \"v1.2.3\" semver; suggested regular expressions",
+          "at": [
+            {
+              "deep": "Semantic versioning"
+            }
+          ]
+        },
+        {
+          "item": "About; License (CC BY 3.0)",
+          "at": [
+            {
+              "out": "About and licence boilerplate"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "PEP 440 – Version Identification and Dependency Specification",
+      "items": [
+        {
+          "item": "Abstract; Definitions (projects, releases, distributions, tools)",
+          "at": [
+            {
+              "out": "Abstract and definitions of projects, releases and distributions are background for tool authors"
+            }
+          ]
+        },
+        {
+          "item": "Version scheme: public version identifiers (epoch, release, pre-release, post-release, development segments); local version identifiers",
+          "at": [
+            {
+              "deep": "Semantic versioning"
+            }
+          ]
+        },
+        {
+          "item": "Final releases; Pre-releases (a, b, rc); Post-releases (.postN); Developmental releases (.devN); Version epochs (N!)",
+          "at": [
+            {
+              "deep": "Semantic versioning"
+            }
+          ]
+        },
+        {
+          "item": "Normalization: case sensitivity, integer normalization, pre-release spelling and implicit numbers, post/dev separators and spelling, local version segments, preceding v, whitespace",
+          "at": [
+            {
+              "deep": "Semantic versioning"
+            }
+          ]
+        },
+        {
+          "item": "Examples of compliant version schemes; Summary of permitted suffixes and relative ordering; Version ordering across different metadata versions",
+          "at": [
+            {
+              "out": "Compliant version-scheme examples and the table of permitted suffixes are reference material; the Deep dive shows the pre-release spelling that matters for semver"
+            }
+          ]
+        },
+        {
+          "item": "Compatibility with other version schemes: Semantic versioning; DVCS based version labels; Olson database versioning",
+          "at": [
+            {
+              "deep": "Semantic versioning"
+            }
+          ]
+        },
+        {
+          "item": "Version specifiers: compatible release (~=); version matching (==, .* prefix); version exclusion (!=); inclusive ordered comparison (<=, >=); exclusive ordered comparison (<, >); arbitrary equality (===); handling of pre-releases; examples",
+          "at": [
+            {
+              "deep": "Ranges, pins and lock files"
+            }
+          ]
+        },
+        {
+          "item": "Direct references; File URLs",
+          "at": [
+            {
+              "out": "Direct references and file URLs are not part of the range-versus-pin decision this refresher teaches"
+            }
+          ]
+        },
+        {
+          "item": "Updating the versioning specification; differences from pkg_resources.parse_version and PEP 386; rationale sections; appendices (regular expressions)",
+          "at": [
+            {
+              "out": "Differences from pkg_resources and PEP 386, rationale and appendices concern the specification's history"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "Repeatable Installs - pip documentation v26.2.1",
+      "items": [
+        {
+          "item": "Level 1, pinning with `==`: easy, cross-platform; `pip freeze` captures transitive dependencies; `--no-deps` adds insurance; still trusts PyPI and the certificate chain.",
+          "at": [
+            {
+              "step": "A lock file freezes the tree"
+            },
+            {
+              "deep": "Ranges, pins and lock files"
+            }
+          ]
+        },
+        {
+          "item": "Level 2, hash-checking (`--hash=sha256:...`): defends against PyPI or TLS compromise and changed-without-version-bump packages; suited to automated deploys.",
+          "at": [
+            {
+              "step": "A lock file freezes the tree"
+            },
+            {
+              "deep": "Ranges, pins and lock files"
+            }
+          ]
+        },
+        {
+          "item": "Level 3, wheelhouse (`pip wheel`): installs offline without recompiling, but is OS and architecture specific.",
+          "at": [
+            {
+              "deep": "Ranges, pins and lock files"
+            }
+          ]
+        },
+        {
+          "item": "pip-tools is mentioned for generating requirements files.",
+          "at": [
+            {
+              "out": "pip-tools is named for generating requirements files; tooling is the Python toolchain topic (§4.3)"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "Secure installs - pip documentation v26.2.1",
+      "items": [
+        {
+          "item": "Default pip does no tamper checks and may run arbitrary build code from source distributions.",
+          "at": [
+            {
+              "deep": "Ranges, pins and lock files"
+            }
+          ]
+        },
+        {
+          "item": "Secure recipe: `--require-hashes` plus `--only-binary :all:`.",
+          "at": [
+            {
+              "step": "A lock file freezes the tree"
+            },
+            {
+              "deep": "Ranges, pins and lock files"
+            }
+          ]
+        },
+        {
+          "item": "Hash mode is global once any `--hash` appears; every requirement and every transitive dependency must be hashed and pinned.",
+          "at": [
+            {
+              "deep": "Ranges, pins and lock files"
+            }
+          ]
+        },
+        {
+          "item": "`--require-hashes` in deploy scripts forces authors to supply hashes and shows hashes to bootstrap with.",
+          "at": [
+            {
+              "deep": "Ranges, pins and lock files"
+            }
+          ]
+        },
+        {
+          "item": "`--no-require-hashes` (added in 26.2) verifies only the requirements that carry hashes.",
+          "at": [
+            {
+              "deep": "What's changing"
+            }
+          ]
+        },
+        {
+          "item": "Multiple hashes per package cover several platform wheels; sha256 recommended.",
+          "at": [
+            {
+              "deep": "Ranges, pins and lock files"
+            }
+          ]
+        },
+        {
+          "item": "Index-supplied hashes guard only against corruption, not tampering.",
+          "at": [
+            {
+              "deep": "Ranges, pins and lock files"
+            }
+          ]
+        },
+        {
+          "item": "Do not call `setup.py install` directly; use `pip install --no-deps .`.",
+          "at": [
+            {
+              "out": "Advice not to call setup.py install directly concerns building from source, not the delivery loop"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "Requirements File Format - pip documentation v26.2.1",
+      "items": [
+        {
+          "item": "A requirements file lists what `pip install -r` installs; one requirement, URL/path or option per line.",
+          "at": [
+            {
+              "deep": "Ranges, pins and lock files"
+            }
+          ]
+        },
+        {
+          "item": "UTF-8 by default; `\\` continues a line (used for multi-line `--hash` entries); `#` starts a comment.",
+          "at": [
+            {
+              "deep": "Ranges, pins and lock files"
+            }
+          ]
+        },
+        {
+          "item": "`-r` includes other requirement files and `-c` includes constraints files.",
+          "at": [
+            {
+              "out": "Including other requirement files (-r) and constraints (-c) is beyond the single lock file the gate uses"
+            }
+          ]
+        },
+        {
+          "item": "Global options (`--index-url`, `--require-hashes`, `--only-binary`, `--no-index`, ...) go on their own lines; `--hash` is per-requirement.",
+          "at": [
+            {
+              "deep": "Ranges, pins and lock files"
+            }
+          ]
+        },
+        {
+          "item": "`${VAR}` environment variables are expanded, so tokens stay out of the file.",
+          "at": [
+            {
+              "out": "Environment-variable expansion in requirement files is a convenience for tokens, not part of the topic"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "Continuous Integration",
+      "items": [
+        {
+          "item": "Make the build self-testing: a comprehensive automated test suite run before each integration, because manual testing cannot keep pace.",
+          "at": [
+            {
+              "deep": "Continuous integration practices"
+            }
+          ]
+        },
+        {
+          "item": "Everyone commits to the mainline every day (merge to mainline at least once a day); every push to mainline triggers a build in a CI service.",
+          "at": [
+            {
+              "deep": "Continuous integration practices"
+            }
+          ]
+        },
+        {
+          "item": "Fix broken builds immediately (usually by reverting the faulty commit); keep the build fast (about ten minutes).",
+          "at": [
+            {
+              "deep": "Continuous integration practices"
+            }
+          ]
+        },
+        {
+          "item": "Test in a clone of the production environment, as exact a mimic as possible.",
+          "at": [
+            {
+              "deep": "Continuous integration practices"
+            }
+          ]
+        },
+        {
+          "item": "Benefits and when not to use CI; continuous delivery as the step beyond.",
+          "at": [
+            {
+              "out": "Benefits, when not to use CI and continuous delivery are framing; this refresher teaches the practices, not the argument for them"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "Evaluate expressions in workflows and actions - GitHub Docs",
+      "items": [
+        {
+          "item": "Status check functions `success()`, `always()`, `cancelled()`, `failure()`; `success()` is the default condition of every step and job, so a failed step skips the steps after it unless they say otherwise.",
+          "at": [
+            {
+              "step": "CI: a chain of exit statuses"
+            },
+            {
+              "deep": "CI pipelines"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "GitHub-hosted runners - GitHub Docs",
+      "items": [
+        {
+          "item": "What a GitHub-hosted runner is (a new VM, except single-CPU runners in a container), the OS images, preinstalled software updated weekly and listed in each run's log, IP addresses, permissions.",
+          "at": [
+            {
+              "deep": "CI pipelines"
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "independent Sonnet agent, written blind: it did not read site/ and opened each source itself",
+    "date": "2026-10-12",
+    "items": [
+      {
+        "item": "Review's purpose is codebase health improving over time: approve once a change definitely improves it, even if imperfect; there is no perfect code, only better.",
+        "source": "https://google.github.io/eng-practices/review/reviewer/standard.html",
+        "placement": "here",
+        "at": [
+          {
+            "step": "Review: design first, keep it small"
+          },
+          {
+            "deep": "Code review"
+          }
+        ]
+      },
+      {
+        "item": "Keep changes small: one self-contained change per PR; err toward too small; reviewers rarely complain.",
+        "source": "https://google.github.io/eng-practices/review/developer/small-cls.html",
+        "placement": "here",
+        "at": [
+          {
+            "step": "Review: design first, keep it small"
+          },
+          {
+            "deep": "Code review"
+          }
+        ]
+      },
+      {
+        "item": "Label optional feedback 'Nit:' so the author knows it can be ignored; mandatory comments must tie to code health.",
+        "source": "https://google.github.io/eng-practices/review/reviewer/standard.html",
+        "placement": "here",
+        "at": [
+          {
+            "step": "Review: design first, keep it small"
+          },
+          {
+            "deep": "Code review"
+          }
+        ]
+      },
+      {
+        "item": "Settle disagreements with data and engineering principles over preference; the style guide is the authority on style; escalate rather than let a PR sit.",
+        "source": "https://google.github.io/eng-practices/review/reviewer/standard.html",
+        "placement": "here",
+        "at": [
+          {
+            "deep": "Code review"
+          }
+        ]
+      },
+      {
+        "item": "A CI build must be self-testing: a comprehensive automated suite runs before each integration, since manual testing cannot keep pace.",
+        "source": "https://martinfowler.com/articles/continuousIntegration.html",
+        "placement": "here",
+        "at": [
+          {
+            "deep": "Continuous integration practices"
+          }
+        ]
+      },
+      {
+        "item": "Integrate to a version-controlled mainline at least daily; every push to mainline triggers a build.",
+        "source": "https://martinfowler.com/articles/continuousIntegration.html",
+        "placement": "here",
+        "at": [
+          {
+            "deep": "Continuous integration practices"
+          }
+        ]
+      },
+      {
+        "item": "Fix broken builds immediately and keep the build fast; a slow or red mainline erodes trust in CI.",
+        "source": "https://martinfowler.com/articles/continuousIntegration.html",
+        "placement": "here",
+        "at": [
+          {
+            "deep": "Continuous integration practices"
+          }
+        ]
+      },
+      {
+        "item": "Test in a clone of the production environment, so CI results predict production behaviour.",
+        "source": "https://martinfowler.com/articles/continuousIntegration.html",
+        "placement": "here",
+        "at": [
+          {
+            "deep": "Continuous integration practices"
+          }
+        ]
+      },
+      {
+        "item": "SemVer requires a declared public API; MAJOR.MINOR.PATCH only means something relative to that API (for data teams: schemas, table contracts, file formats count).",
+        "source": "https://semver.org/",
+        "placement": "here",
+        "at": [
+          {
+            "step": "A version number is a promise"
+          },
+          {
+            "deep": "Semantic versioning"
+          }
+        ]
+      },
+      {
+        "item": "MAJOR = incompatible API change, MINOR = backward-compatible addition (or deprecation), PATCH = backward-compatible bug fix; lower numbers reset on bump.",
+        "source": "https://semver.org/",
+        "placement": "here",
+        "at": [
+          {
+            "step": "A version number is a promise"
+          },
+          {
+            "deep": "Semantic versioning"
+          }
+        ]
+      },
+      {
+        "item": "A released version's contents MUST NOT change; any fix ships as a new version.",
+        "source": "https://semver.org/",
+        "placement": "here",
+        "at": [
+          {
+            "step": "A version number is a promise"
+          },
+          {
+            "deep": "Semantic versioning"
+          }
+        ]
+      },
+      {
+        "item": "0.y.z means anything may change at any time; pre-release versions (1.0.0-rc.1) sort below the release and may break its contract; build metadata is ignored in precedence.",
+        "source": "https://semver.org/",
+        "placement": "here",
+        "at": [
+          {
+            "deep": "Semantic versioning"
+          }
+        ]
+      },
+      {
+        "item": "SemVer is a promise by maintainers, not a guarantee: too-tight specs cause version lock, too-loose cause version promiscuity; pin and test to verify.",
+        "source": "https://semver.org/",
+        "placement": "here",
+        "at": [
+          {
+            "deep": "Semantic versioning"
+          }
+        ]
+      },
+      {
+        "item": "Pinning means == on exact versions; pip freeze pins transitive dependencies too, and --no-deps installs only what is listed.",
+        "source": "https://pip.pypa.io/en/stable/topics/repeatable-installs/",
+        "placement": "here",
+        "at": [
+          {
+            "step": "A lock file freezes the tree"
+          },
+          {
+            "deep": "Ranges, pins and lock files"
+          }
+        ]
+      },
+      {
+        "item": "Pinning trusts the index and relies on versions not changing; --hash=sha256 hash-checking also guards against index compromise or a package changing under the same version.",
+        "source": "https://pip.pypa.io/en/stable/topics/repeatable-installs/",
+        "placement": "here",
+        "at": [
+          {
+            "step": "A lock file freezes the tree"
+          },
+          {
+            "deep": "Ranges, pins and lock files"
+          }
+        ]
+      },
+      {
+        "item": "Ranges and compatible release (~=) express what you allow; pins express what you tested. Keep ranges in the library spec, pins in the deployed lockfile (pip-tools workflow).",
+        "source": "https://peps.python.org/pep-0440/",
+        "placement": "later: Python toolchain (§4.3)",
+        "at": [
+          {
+            "step": "Works on my machine"
+          },
+          {
+            "deep": "Ranges, pins and lock files"
+          }
+        ]
+      },
+      {
+        "item": "Wheelhouse (pip wheel) allows installs without an index and without recompiling, but compiled wheels are OS- and architecture-specific.",
+        "source": "https://pip.pypa.io/en/stable/topics/repeatable-installs/",
+        "placement": "later: Python toolchain (§4.3)",
+        "at": [
+          {
+            "deep": "Ranges, pins and lock files"
+          }
+        ]
+      },
+      {
+        "item": "Unit-test layout: tests outside application code, src layout plus editable install so tests run against the installed package.",
+        "source": "https://docs.pytest.org/en/stable/explanation/goodpractices.html",
+        "placement": "later: Python toolchain (§4.3)",
+        "at": [
+          {
+            "out": "Project layout (src layout plus an editable install) is packaging, which the syllabus line defers: \"Python toolchain in §4.3\""
+          }
+        ]
+      },
+      {
+        "item": "Data CI builds and tests only changed models and their downstream dependencies in a per-PR temporary schema, and can gate merges on passing checks.",
+        "source": "https://docs.getdbt.com/docs/deploy/continuous-integration",
+        "placement": "later: data CI/CD (§11.4)",
+        "at": [
+          {
+            "topic": "Slim CI and state-aware builds",
+            "quote": "build and test only modified models"
+          }
+        ]
+      },
+      {
+        "item": "Cancel stale in-flight CI runs on new commits and drop the per-PR schema on merge or close, to save warehouse cost and avoid collisions.",
+        "source": "https://docs.getdbt.com/docs/deploy/continuous-integration",
+        "placement": "later: data CI/CD (§11.4)",
+        "at": [
+          {
+            "out": "Cancelling stale CI runs and dropping per-PR schemas is data CI/CD cost hygiene, deferred by the syllabus line: \"data CI/CD in §11.4\""
+          }
+        ]
+      },
+      {
+        "item": "Lint SQL in CI (SQLFluff) before the expensive build step to fail cheap and early.",
+        "source": "https://docs.getdbt.com/docs/deploy/continuous-integration",
+        "placement": "later: data CI/CD (§11.4)",
+        "at": [
+          {
+            "out": "Linting SQL in CI is data CI/CD, deferred by the syllabus line: \"data CI/CD in §11.4\""
+          }
+        ]
+      }
+    ]
+  },
+  "gapReview": {
+    "date": "2026-10-12",
+    "by": "the builder agent, as a self-check of the syllabus line, the expert list and SOURCES.md against the finished reel and Deep dive (not an independent review)",
+    "resolved": [
+      "Expert items on CI practice (self-testing build, daily integration, fast and fixed builds, production-like test environment) were not in the plan: added the Deep dive section 'Continuous integration practices' with quotes from Fowler's article, added to SOURCES.md and checked word for word",
+      "Pre-release spelling (PEP 440 against semver), the 0.y.z range trap and hashed ranges (pip 24.0 against 26.2.1): 'Ranges, pins and lock files' and 'Semantic versioning'; executed",
+      "Required checks pass when skipped, and exit codes 2 and 5 from pytest: 'CI pipelines', 'Unit tests with pytest' and 'In production'; executed"
+    ],
+    "open": []
+  }
+}

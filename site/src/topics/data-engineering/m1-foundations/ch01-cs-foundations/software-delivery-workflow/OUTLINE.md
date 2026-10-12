@@ -302,6 +302,15 @@ Sections in the Python essentials pattern (`data-section` names): outcomes, inte
 
 ## Changes from the chapter plan
 
+- Registry `uses` also lists `pipes-redirection`, `text-tools` and `signals` (introduced by the shell refresher; step 5 is `pipefail` on a runner, the gate's oracle is a `jq | awk | sort | uniq -c` pipeline, and 141 = 128 + SIGPIPE appears in the Deep dive). CHAPTER.md's entry lists only seven.
+
+## Changes during the build (12 October 2026)
+
+- **Added Deep dive section "Continuous integration practices"** (and a Fowler "Continuous Integration" section in `SOURCES.md`, quotes checked word for word). Reason: the blind expert list has four items (self-testing build, integrate daily and build every push, fix broken builds immediately and keep them fast, test in a clone of production) that the plan did not place anywhere.
+- Step 4's PR title is "PR: restore strip()" (the plan's "#14" is a number no example computes). Step 3's right-hand column header is "731: lower()" (the plan's "commit 731: lower()" collided with the left header at phone text scale). Step 10's one-line summaries are shortened to fit 540 units at phone scale.
+- The harness only runs `examples.py`, so `examples.py` runs `examples.sh` (as the shell refresher does) and asserts every on-screen value; `examples.sh` is unchanged.
+- The coverage map's `gapReview` is the builder's self-check, not an independent review; the content review should replace it.
+
 ## Changes after final
 
 ## The claims list

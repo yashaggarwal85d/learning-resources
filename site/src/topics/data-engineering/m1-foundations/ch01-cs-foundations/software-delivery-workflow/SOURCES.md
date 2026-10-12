@@ -1022,3 +1022,29 @@ Note: the text extraction drops everything between a `<` and the next `>`, so th
 
 Contents:
 - The release's metadata: `requires_dist`, `requires_python`, files and upload times.
+
+## Continuous Integration
+URL: https://martinfowler.com/articles/continuousIntegration.html
+Version: Martin Fowler's article (page title "Continuous Integration"; no edition shown on the page); fetched 2026-10-12. Added during the build, to cover the expert list's CI-practice items.
+> Manual testing is too slow to cope with the frequency of change.
+
+> The main technique to do this is a comprehensive test suite, one that is run before each integration to flush out as many bugs as possible.
+
+> merge branches to mainline at least once a day
+
+> Every time the mainline receives a commit, the CI service checks out the head of the mainline into an integration environment and performs a full build.
+
+> nobody has a higher priority task than fixing the build
+
+> The whole point of Continuous Integration is to provide rapid feedback.
+
+> For most projects, however, the XP guideline of a ten minute build is perfectly within reason.
+
+> we want to set up our test environment to be as exact a mimic of our production environment as possible.
+
+Contents:
+- Make the build self-testing: a comprehensive automated test suite run before each integration, because manual testing cannot keep pace.
+- Everyone commits to the mainline every day (merge to mainline at least once a day); every push to mainline triggers a build in a CI service.
+- Fix broken builds immediately (usually by reverting the faulty commit); keep the build fast (about ten minutes).
+- Test in a clone of the production environment, as exact a mimic as possible.
+- Benefits and when not to use CI; continuous delivery as the step beyond.
