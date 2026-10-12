@@ -4,13 +4,12 @@ An expert-level learning site where every topic is a short animated, narrated **
 
 **Live:** https://yashaggarwal85d.github.io/learning-resources/ (the Reels tab plays every finished topic in course order).
 
-Four tracks, each with a full syllabus:
+Three tracks, each with a full syllabus:
 
 | Track | Syllabus | Status |
 |---|---|---|
 | Data Engineering | [syllabus/data-engineering.md](syllabus/data-engineering.md) | in production (hourly routine) |
 | Data Structures & Algorithms | [syllabus/data-structures-and-algorithms.md](syllabus/data-structures-and-algorithms.md) | in production (hourly routine) |
-| German, A1 to C2 | [syllabus/german-language.md](syllabus/german-language.md) | in production (hourly routine) |
 | Rust Systems Engineering | [syllabus/rust-systems-engineering.md](syllabus/rust-systems-engineering.md) | in production (hourly routine) |
 
 ## The documents that run the project
@@ -46,7 +45,7 @@ site/                                      the website (Astro + React islands + 
     reel.tsx, scenes.tsx                   the reel: steps and animations (each a pure function of time)
     index.mdx                              the Deep dive
     prerequisites.mdx                      what to know first, with resources
-    narration.json                         the spoken script (English lines, {"de": …} German lines, beats)
+    narration.json                         the spoken script (lines and beats)
     coverage.json                          the coverage map (syllabus, sources, blind expert list, gap review)
     examples.py                            every example and number, executed with asserts
     FACT-CHECK.md                          claims checked against primary sources
@@ -89,7 +88,6 @@ narration/narrate.sh src/topics/<domain>/<milestone>/<chapter>/<topic>
 ```
 
 - **English narrator:** Orpheus 3B, voice "tara".
-- **German voice:** for German lessons, a voice designed from a text description and frozen as `site/narration/voices/german-reference.wav`, cloned for every line with Qwen3-TTS.
 
 Both are frozen in `site/narration/voice.json`. Details are in [site/narration/README.md](site/narration/README.md).
 
@@ -97,10 +95,10 @@ Both are frozen in `site/narration/voice.json`. Details are in [site/narration/R
 
 Each domain has an hourly routine (an automated session; up to four runs of one domain and eight in all work at once, each on its own job) that follows [ROUTINE.md](ROUTINE.md). Chapters go in sequence, the topics of a chapter in parallel. A dispatcher session starts runs every hour, one per free job (`node scripts/claim.mjs open` counts them), because a routine session can't start runs itself.
 
-1. Before a chapter is built, one run plans it: a Fable planner writes the chapter's `CHAPTER.md` (each topic's scope, concepts introduced and used, bridge and handoff), an Opus agent reviews it, and it is pushed to `main`. That plan is the contract every topic of the chapter follows, so they can all be built at once and still follow on from each other. The next chapter is planned once every topic of this one is content-final.
+1. Before a chapter is built, one run plans it: an Opus planner writes the chapter's `CHAPTER.md` (each topic's scope, concepts introduced and used, bridge and handoff), a fresh Opus agent reviews it, and it is pushed to `main`. That plan is the contract every topic of the chapter follows, so they can all be built at once and still follow on from each other. The next chapter is planned once every topic of this one is content-final.
 2. Each other run claims the first topic of a planned chapter that no run is working on.
-3. It researches the topic from primary sources; a Fable agent plans and storyboards it, an Opus agent fact-checks the plan, and a blind Opus expert list starts the coverage map. (What Fable writes, Opus checks; if Fable's weekly limit is reached, its jobs run on Opus.)
-4. A builder agent writes the reel, Deep dive, Prerequisites, narration script and executed examples; Fable reviews the content and Opus the looks; every check except narration must pass.
+3. It researches the topic from primary sources; an Opus agent plans and storyboards it, a fresh Opus agent fact-checks the plan, and a blind expert list starts the coverage map. Opus does the five judgment jobs (chapter plan and its review, content plan, fact-check, content review); everything else is Sonnet; checks go to fresh agents that didn't write what they check.
+4. A builder agent writes the reel, Deep dive, Prerequisites, narration script and executed examples; fresh agents review the content and the looks; every check except narration must pass.
 5. The topic is marked content-final (the next chapter may be planned once all its siblings are too), then narrated, checked once more in full, and shipped to `main`.
 
 A topic goes live only when every topic before it in its domain is live; one finished early is held until then. If a check fails, the routine fixes the cause and never loosens the check.

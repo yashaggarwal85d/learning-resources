@@ -83,4 +83,23 @@ export const TOPICS: TopicMeta[] = [
     bridge: 'You have just revised how a B+-tree finds a row in a few page reads. Now: what happens when the index finds thousands of them?',
     handoff: 'Next: hash tables, the other structure behind every join and aggregation, and what they cost when memory runs out.',
   },
+  {
+    id: 'dsa.asymptotic-notation',
+    domain: 'data-structures-and-algorithms',
+    slug: 'data-structures-and-algorithms/m1-data-structures/ch01-cost-models/asymptotic-notation',
+    title: 'Asymptotic notation and case analysis',
+    syllabusTitle: 'Asymptotic notation and case analysis',
+    kind: 'refresher',
+    status: 'live',
+    milestone: { number: 1, title: 'Data Structures' },
+    chapter: { number: 1, title: 'Cost Models and Amortized Analysis', section: '1.1' },
+    minutes: 6,
+    verified: '2026-10-11',
+    introduces: ['big-o-theta-omega', 'little-o-omega', 'best-worst-average-case', 'expected-vs-average', 'with-high-probability', 'time-space-tradeoff', 'pseudo-polynomial'],
+    // Assumed, not taught first in this domain: listed in the Prerequisites panel (sorts and hash sets get their own topics later).
+    uses: ['logarithms', 'limits', 'expectation', 'standard-sorts', 'hash-set'],
+    declared: ['programming', 'logarithms', 'limits', 'expectation', 'standard-sorts', 'hash-set'],
+    bridge: 'Data Structures & Algorithms starts with the language its costs are written in: what a bound claims, which case it is about, and what it leaves out.',
+    handoff: 'Next: the word-RAM model, the machine these step counts quietly assume, and what it hides.',
+  },
 ];

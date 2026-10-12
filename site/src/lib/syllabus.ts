@@ -32,11 +32,6 @@ const DOMAINS = [
     title: 'Data Structures & Algorithms',
     tagline: 'Engineering-grade structures and algorithms, stepped through live and tied to the systems they power.',
   },
-  {
-    id: 'german-language',
-    title: 'German',
-    tagline: 'From the first sound to C2: the system behind German, for adults who want to understand it.',
-  },
 ] as const;
 
 const clean = (s: string) =>

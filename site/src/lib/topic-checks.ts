@@ -7,7 +7,7 @@ import { existsSync, readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import type { TopicMeta } from '../topics/registry';
 
-type Line = string | { de: string } | { beat: number };
+type Line = string | { beat: number };
 type Step = { lines: Line[]; answer?: Line[] };
 
 /** Reel steps as written in reel.tsx: each starts with a 6-space-indented `title:` (the scaffold's format). */
@@ -57,7 +57,7 @@ export function checkTopicFiles(topics: TopicMeta[]) {
       // 2. Speakable lines.
       narr.forEach((n, i) =>
         [...n.lines, ...(n.answer ?? [])].forEach((x) => {
-          const text = typeof x === 'string' ? x : 'de' in x ? x.de : null;
+          const text = typeof x === 'string' ? x : null;
           if (text === null) return;
           const bad = text.match(UNSPEAKABLE) ?? text.match(CODE_NAME);
           if (bad) errors.push(`${t.id}: narration step ${i + 1} has "${bad[0]}" in "${text}". Write numbers, symbols and names the way they are said.`);
