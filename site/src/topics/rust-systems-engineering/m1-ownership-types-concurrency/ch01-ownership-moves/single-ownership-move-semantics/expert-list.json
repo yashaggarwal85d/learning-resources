@@ -1,0 +1,152 @@
+[
+  {
+    "item": "Every value has exactly one owner at a time, and that owner (a binding, a field, a container slot, a closure environment) is the single party responsible for running its destructor when it goes out of scope.",
+    "source": "https://doc.rust-lang.org/book/ch04-01-what-is-ownership.html",
+    "quote": "There can only be one owner at a time.",
+    "placement": "here"
+  },
+  {
+    "item": "A move copies only the inline bytes (for String: pointer, length, capacity) and statically invalidates the source, so the heap buffer is never duplicated and never freed twice; Rust never inserts an implicit deep copy, so any implicit copy is cheap by construction.",
+    "source": "https://doc.rust-lang.org/book/ch04-01-what-is-ownership.html",
+    "quote": "But because Rust also invalidates the first variable, instead of being called a shallow copy, it’s known as a move.",
+    "placement": "here"
+  },
+  {
+    "item": "Invalidation is a compile-time property of the place, not a runtime state of the value: a moved-from local is deinitialized, every read is rejected until it is assigned again, and reassigning a `let mut` binding after a move is legal and revives it.",
+    "source": "https://doc.rust-lang.org/reference/expressions.html",
+    "quote": "After moving out of a place expression that evaluates to a local variable, the location is deinitialized and cannot be read from again until it is reinitialized.",
+    "placement": "here"
+  },
+  {
+    "item": "Loops are where moves bite: `for x in v` desugars to `IntoIterator::into_iter(v)` and consumes `v` (iterate `&v` or `&mut v` to borrow), and moving a non-Copy outer variable inside a loop body is rejected because the next iteration would read a deinitialized place, unless the body reassigns it or breaks.",
+    "source": "https://doc.rust-lang.org/reference/expressions/loop-expr.html",
+    "quote": "let result = match IntoIterator::into_iter(iter_expr) {",
+    "placement": "here"
+  },
+  {
+    "item": "`Copy` means the implicit duplicate is a plain bitwise copy that cannot run user code and leaves the source usable; `Clone` is an explicit, possibly expensive call to arbitrary code, so the presence or absence of `.clone()` shows the reader where the cost is.",
+    "source": "https://doc.rust-lang.org/std/marker/trait.Copy.html",
+    "quote": "Copy is not overloadable; it is always a simple bit-wise copy.",
+    "placement": "here"
+  },
+  {
+    "item": "The compiler’s E0382 help text (\"consider cloning the value if the performance cost is acceptable\") is a suggestion, not a fix; an expert first asks whether the callee should borrow (`&T`), whether the caller still needs the value, or whether ownership should be handed back by return.",
+    "source": "https://doc.rust-lang.org/book/ch04-01-what-is-ownership.html",
+    "quote": "help: consider cloning the value if the performance cost is acceptable",
+    "placement": "here"
+  },
+  {
+    "item": "A `.clone()` call does not always mean a deep copy: `Rc::clone` and `Arc::clone` only bump a reference count, which is why the convention `Rc::clone(&a)` is used to make shared-ownership handles visibly different from data copies.",
+    "source": "https://doc.rust-lang.org/book/ch15-04-rc.html",
+    "quote": "The call to Rc::clone only increments the reference count, which doesn’t take much time.",
+    "placement": "a named later syllabus topic: 'Ownership topology over shared mutability'"
+  },
+  {
+    "item": "`Copy` and `Drop` are mutually exclusive (E0184): a type that owns a resource beyond its own bytes cannot be duplicated bitwise, so any type with a destructor, or any field with one, always has move semantics.",
+    "source": "https://doc.rust-lang.org/std/marker/trait.Copy.html",
+    "quote": "any type implementing Drop can’t be Copy, because it’s managing some resource besides its own size_of::<T> bytes.",
+    "placement": "here"
+  },
+  {
+    "item": "Deriving `Copy` is a semver commitment: removing it later breaks every caller that relied on implicit copies, so a type that might later gain a heap field or a destructor should stay move-only from the start.",
+    "source": "https://doc.rust-lang.org/std/marker/trait.Copy.html",
+    "quote": "implementing Copy is part of the public API of your type.",
+    "placement": "here"
+  },
+  {
+    "item": "Shared references `&T` are `Copy` whatever `T` is, but `&mut T` is never `Copy`, because copying it would create two aliasing mutable references; this is why passing a `&mut` moves it (the reborrowing that hides this is covered with borrowing).",
+    "source": "https://doc.rust-lang.org/std/marker/trait.Copy.html",
+    "quote": "copying &mut T would create an aliased mutable reference.",
+    "placement": "here (implicit reborrowing of &mut belongs to Chapter 2, borrowing and lifetimes)"
+  },
+  {
+    "item": "Signatures are ownership contracts that callers can read without opening the body: a `T` or `self` parameter consumes the argument, `&T`/`&self` borrows it, `&mut T`/`&mut self` borrows it exclusively, and returning `T` hands ownership back; a by-value `self` is the tool for \"after this call the old value must not be used\" (builders, `into_*`, state transitions).",
+    "source": "https://doc.rust-lang.org/book/ch05-03-method-syntax.html",
+    "quote": "this technique is usually used when the method transforms self into something else and you want to prevent the caller from using the original instance after the transformation.",
+    "placement": "here"
+  },
+  {
+    "item": "`&mut T` in a signature promises exclusivity, not just mutability: while it is live no other reference to the value may exist, which is what lets the callee mutate without the defensive copying or locking a C++ or Java programmer would add.",
+    "source": "https://doc.rust-lang.org/book/ch04-02-references-and-borrowing.html",
+    "quote": "If you have a mutable reference to a value, you can have no other references to that value.",
+    "placement": "here (the full aliasing-XOR-mutation model and lifetimes are in Chapter 2, borrowing and lifetimes)"
+  },
+  {
+    "item": "E0382 (use of moved value) has three labelled spans to read in order: where the value was moved, why it moved (its type is not `Copy`), and the later use; the fix depends on which of those three you change (borrow at the move site, derive Copy/Clone, or reorder or reassign before the use).",
+    "source": "https://doc.rust-lang.org/error_codes/E0382.html",
+    "quote": "A variable was used after its contents have been moved elsewhere.",
+    "placement": "here"
+  },
+  {
+    "item": "E0505 (move out while borrowed) means a live borrow outlives the point where ownership leaves; because borrows end at their last use, the usual fix is to move the last use of the reference before the move, not to clone.",
+    "source": "https://doc.rust-lang.org/error_codes/E0505.html",
+    "quote": "Release borrow before move.",
+    "placement": "here"
+  },
+  {
+    "item": "You cannot write `let s = v[i];` for a `Vec<String>`, because indexing a non-array type desugars to a dereference of the `&T` returned by `Index::index`, so `v[i]` is borrowed content (E0507); you take ownership with `remove`, `swap_remove`, `pop`, `into_iter`, or by putting something back.",
+    "source": "https://doc.rust-lang.org/reference/expressions/array-expr.html",
+    "quote": "For other types an index expression a[b] is equivalent to *std::ops::Index::index(&a, b)",
+    "placement": "here"
+  },
+  {
+    "item": "Through a `&mut` you may move a value out only if you leave a valid one in its place: `mem::replace`, `mem::take` and `Option::take` are the standard way out of E0507, and they are central to working with `&mut self` in real code.",
+    "source": "https://doc.rust-lang.org/error_codes/E0507.html",
+    "quote": "It is fine only if you put something back. mem::replace can be used for that:",
+    "placement": "here"
+  },
+  {
+    "item": "Only some places can be moved out of: unborrowed locals, temporaries, `*box`, and fields of such places whose containing type does not implement `Drop`; moving a field out of a `Drop` type is E0509 because its destructor needs the whole value.",
+    "source": "https://doc.rust-lang.org/reference/expressions.html",
+    "quote": "Fields of a place expression which can be moved out of and don’t implement Drop.",
+    "placement": "a named later syllabus topic: 'Partial moves and destructuring as transfer'"
+  },
+  {
+    "item": "Moving a `Box<T>` moves one pointer no matter how large `T` is, so boxing is the standard way to make a large value cheap to move, and `*b` is a place you are allowed to move out of, unlike other smart pointers.",
+    "source": "https://doc.rust-lang.org/book/ch15-01-box.html",
+    "quote": "only the small amount of pointer data is copied around on the stack",
+    "placement": "here"
+  },
+  {
+    "item": "A move of a large by-value type is a real memory copy (above roughly 128 bytes, a `memcpy` call), and the optimizer is not guaranteed to remove it, so large structs, arrays and big enum variants passed or returned by value have a measurable cost that `size_of` and profiling expose.",
+    "source": "https://nnethercote.github.io/perf-book/type-sizes.html",
+    "quote": "Rust types that are larger than 128 bytes are copied with memcpy rather than inline code.",
+    "placement": "here"
+  },
+  {
+    "item": "Rust has no move constructor: a move is always a byte copy with no user hook, and a value’s address can change at any move, so code must never rely on a value staying at a stable address unless it is pinned.",
+    "source": "https://doc.rust-lang.org/std/pin/index.html",
+    "quote": "The compiler is allowed to move a value to a new address without running any code to notify that value that its address has changed.",
+    "placement": "here"
+  },
+  {
+    "item": "Unlike C++ `std::move`, which is only a cast that hands the object to a user-written move constructor and leaves a moved-from object that is still destroyed and must stay valid, a Rust move ends the source binding statically, runs no destructor on it, and needs no \"null out the source\" code.",
+    "source": "https://learn.microsoft.com/en-us/cpp/cpp/move-constructors-and-move-assignment-operators-cpp",
+    "quote": "Assign the data members of the source object to default values. This prevents the destructor from freeing resources (such as memory) multiple times:",
+    "placement": "here"
+  },
+  {
+    "item": "Conditional moves (moving in one branch only) are legal: when the compiler cannot know statically whether a value is still owned at scope end, it keeps a hidden drop flag on the stack and checks it at run time to decide whether to drop.",
+    "source": "https://doc.rust-lang.org/nomicon/drop-flags.html",
+    "quote": "As a variable becomes initialized and uninitialized, a drop flag for that variable is toggled.",
+    "placement": "a named later syllabus topic: 'RAII, drop order, and leak safety' (state here only that conditional moves compile and stay sound)"
+  },
+  {
+    "item": "Closures are owners too: `move` makes a closure capture by value (needed for `thread::spawn` and returned closures), but which `Fn` trait it implements depends on what the body does with the captures; only a body that moves a capture out is limited to `FnOnce`, and moving out of a capture in an `Fn`/`FnMut` closure is E0507.",
+    "source": "https://doc.rust-lang.org/std/keyword.move.html",
+    "quote": "the traits implemented by a closure type are determined by what the closure does with captured values, not how it captures them",
+    "placement": "here"
+  },
+  {
+    "item": "Patterns move: `match opt { Some(s) => .. }` or `let (a, b) = pair;` moves non-Copy parts out of the scrutinee and leaves it unusable, while `_` binds nothing and moves nothing, and matching on `&opt` switches the default binding mode to `ref` so nothing moves.",
+    "source": "https://doc.rust-lang.org/reference/patterns.html",
+    "quote": "Unlike identifier patterns, it does not copy, move, or borrow the value it matches.",
+    "placement": "a named later syllabus topic: 'Partial moves and destructuring as transfer' (mention here that a match can move out of its scrutinee)"
+  },
+  {
+    "item": "Because any move may relocate a value, a self-referential value would leave dangling internal pointers if moved; safe Rust stops this by forbidding moves while a borrow is live, and `Pin` exists for the cases (async futures) where that is not enough.",
+    "source": "https://doc.rust-lang.org/book/ch17-05-traits-for-async.html",
+    "quote": "any object that has a reference to itself is unsafe to move",
+    "placement": "out of scope: Pin and self-referential types belong to async and unsafe material; give it one sentence here as a consequence of \"moves relocate\""
+  }
+]
