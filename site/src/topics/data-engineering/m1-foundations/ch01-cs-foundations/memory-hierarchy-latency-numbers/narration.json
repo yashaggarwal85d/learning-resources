@@ -10,7 +10,7 @@
           "beat": 0.4
         },
         "Before anyone runs it... what is the least time each way could take?",
-        "By the end, you'll compute both... and the setting that makes them match."
+        "By the end, you'll compute both... and the least setting that could make them match."
       ]
     },
     {
@@ -38,10 +38,10 @@
       "lines": [
         "Off the chip, the waits jump to microseconds, and then milliseconds.",
         "A random four kilobyte read from an enterprise N V M E drive takes eighty microseconds, says Samsung's datasheet.",
-        "A hard disk waits for the platter to turn... four point one six milliseconds on average at seventy two hundred R P M.",
-        "Seagate rates it at a hundred and sixty eight random reads a second.",
-        "Object storage... a hundred to two hundred milliseconds to the first byte.",
-        "The five hundred microsecond round trip is from two thousand nine. Amazon publishes no figure today, so measure yours."
+        "A hard disk waits for the platter to turn... Seagate gives four point one six milliseconds on average at seventy two hundred R P M.",
+        "Its hundred and sixty eight random reads a second were measured with sixteen queued. So each read takes at least six milliseconds.",
+        "Object storage... a hundred to two hundred milliseconds to the first byte. Medians for small requests are in the tens of milliseconds.",
+        "The five hundred microsecond round trip is from two thousand nine. Amazon shows a live median in its network console, but no fixed number. Read yours, or measure."
       ]
     },
     {
@@ -49,15 +49,15 @@
         "A server with several sockets gives each one its own memory. That's a Numa node.",
         "Memory on another node is slower to reach.",
         "On two thousand seven Opterons, Drepper measured remote reads twenty percent slower.",
-        "Linux allocates on the node of the C P U that asks. So a thread that moves to another socket can leave its memory behind.",
-        "Measure your own ratio with numa control."
+        "Linux places a page on the node of the C P U that first touches it. So a thread that moves to another socket can leave its memory behind.",
+        "Pin memory to each node with numa control, and time the lab's walk."
       ]
     },
     {
       "lines": [
         "Latency is how long until the first byte.",
         "Bandwidth is how fast the bytes come after that.",
-        "They rank the tiers differently.",
+        "They rank the tiers differently. RAM alone runs from twelve gigabytes a second on one core, to four hundred sixty point eight on one twelve channel socket, a peak from the spec sheet.",
         "Object storage is the slowest rung to answer... yet Amazon says one machine can pull up to a hundred gigabits per second from it, given enough requests at once.",
         "A hard disk is slow on both."
       ]
@@ -66,9 +66,9 @@
       "lines": [
         "Every transfer costs a wait, plus the bytes.",
         "T of n equals alpha plus n over beta.",
-        "Read one mebibyte, and the split depends on the tier. A third waiting on N V M E. Nearly two thirds on a hard disk.",
-        "On object storage, ninety eight percent... even at one flow's top speed.",
-        "Below n equals alpha times beta, a read is mostly waiting. About half a megabyte on this drive. One point seven on the disk."
+        "Read one mebibyte, and the split depends on the tier. A third waiting on N V M E. At least sixty two percent on a hard disk.",
+        "On object storage, ninety eight percent... even if one request streamed at five gigabits a second, an assumed top speed.",
+        "Below n equals alpha times beta, a read is mostly waiting. About half a megabyte on this drive. At least one point seven on the disk."
       ]
     },
     {
@@ -81,7 +81,7 @@
         "About twenty times, on this machine.",
         "Memory moves in sixty four byte lines. In order, one line serves eight numbers, and the C P U fetches the next lines before you ask.",
         "At random, each read uses one number of its line... and waits. But the C P U overlaps several waits.",
-        "Make each address depend on the last read, and nothing overlaps. A hundred and fifty eight nanoseconds... the whole D RAM wait.",
+        "Make each address depend on the last read, and nothing overlaps. A hundred and fifty eight nanoseconds... the whole D RAM wait, plus finding the address.",
         "Big O counted all three the same."
       ]
     },
@@ -97,8 +97,8 @@
       "lines": [
         "A job can't finish faster than its bytes take at bandwidth beta... or than its waits take with k in flight.",
         "The floor is the larger of the two.",
-        "One tebibyte, read in order from N V M E: a hundred and sixty two seconds of bytes, five seconds of waits. Bandwidth bound.",
-        "The orders table, page by page at random from a hard disk: twenty nine seconds of bytes, five thousand nine hundred fifty two of waits. Latency bound.",
+        "One tebibyte, read in order from N V M E: a hundred and sixty two seconds of bytes, five seconds of waits, at the sequential twenty microseconds. Bandwidth bound.",
+        "The orders table, page by page at random from a hard disk: twenty nine seconds of bytes, five thousand nine hundred fifty two of waits, using at least six milliseconds, a floor value. Latency bound.",
         "A floor ignores everything else. So a real run is slower."
       ]
     },
@@ -116,7 +116,7 @@
         "One tebibyte from the N V M E drive: bandwidth bound, a hundred and sixty two seconds.",
         "From object storage, in sixteen mebibyte ranges: sixty five thousand five hundred thirty six requests.",
         "One at a time, the hundred millisecond waits alone take one point eight hours.",
-        "With k in flight, they take sixty five hundred fifty four seconds, divided by k. And at k equals forty one, the floor matches the drive.",
+        "With k in flight, they take sixty five hundred fifty four seconds, divided by k. And with at least k equals forty one in flight, the floor matches the drive.",
         "Each request also streams its sixteen mebibytes. So a real run needs more. Measure the per request rate before you promise it."
       ]
     },
@@ -129,18 +129,18 @@
       "answer": [
         "A hundred and sixty seconds. One at a time, every read pays its eighty microsecond wait.",
         "That's a hundred and thirty times the one point two seconds it takes to scan the whole table in order.",
-        "With eighty reads in flight, the waits fall to two seconds, and the bytes become the floor. Same reads, a floor sixty six times lower."
+        "With eighty reads in flight, the waits fall to two seconds, and the bytes, at the drive's best rate, become the floor. Same reads, a floor sixty six times lower."
       ]
     },
     {
       "lines": [
         "Prove it. Two of three.",
-        "You copy orders from a local N V M E drive to another instance, over one T C P connection. Not in a cluster placement group.",
+        "You copy orders from a local N V M E drive to another instance, over one T C P connection. Not in a cluster placement group, which packs instances close together.",
         "What is the floor?"
       ],
       "answer": [
         "Thirteen seconds. A chain runs at its slowest link.",
-        "Amazon limits a single flow to five gigabits per second between instances outside a cluster placement group. That's six hundred twenty five megabytes per second, however fast the drive is.",
+        "Amazon limits a single flow, one T C P connection, to five gigabits per second between instances outside a cluster placement group. That's six hundred twenty five megabytes per second, however fast the drive is.",
         "Several connections in parallel can use the instance's full bandwidth instead."
       ]
     },
@@ -153,8 +153,8 @@
       ],
       "answer": [
         "Nothing is broken.",
-        "With eight in flight, the waits alone take thirteen point seven minutes, and each transfer adds to its wait. So eighteen is about what eight can do.",
-        "The job sends eighty requests a second, against at least fifty five hundred allowed. It's latency bound. Raise k... or use fewer, larger ranges."
+        "With eight in flight, the waits alone take thirteen point seven minutes. Eighteen is only one point three times that... near the floor, so k is the limit.",
+        "The job sends at most eighty requests a second, against at least fifty five hundred allowed per key prefix. It's latency bound. Raise k... or use fewer, larger ranges."
       ]
     }
   ]

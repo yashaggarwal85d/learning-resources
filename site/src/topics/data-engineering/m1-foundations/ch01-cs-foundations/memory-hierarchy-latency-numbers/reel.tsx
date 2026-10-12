@@ -19,7 +19,7 @@ const Q3 = (c: StepCtx) => (
   <S.Quiz
     {...c}
     chips={['1 TiB in 16 MiB ranges', '8 requests in flight', 'α ≈ 100 ms', '100 Gbit/s instance', 'measured: 18 minutes']}
-    work={['waits: 65,536 × 100 ms / 8', '= 819 s = 13.7 min', 'requests/s: 80, limit ≥ 5,500 per prefix', 'bytes at 100 Gbit/s: 88 s']}
+    work={['waits: 65,536 × 100 ms / 8', '= 819 s = 13.7 min; 18 / 13.7 = 1.3', 'requests/s: at most 80, limit ≥ 5,500 per prefix', 'bytes at 100 Gbit/s: 88 s']}
   />
 );
 
@@ -30,8 +30,8 @@ const reel: Reel = {
       body: (
         <>
           The nightly job reads all 1 TiB of <code>order_events</code> from a local NVMe drive. The team wants to read it straight from object storage
-          instead. Before anyone runs it: what is the least time each way could take? By the end you'll compute both, and the setting that makes them
-          match.
+          instead. Before anyone runs it: what is the least time each way could take? By the end you'll compute both, and the least setting that could make
+          them match.
         </>
       ),
       duration: 3.0,
@@ -74,8 +74,9 @@ const reel: Reel = {
       body: (
         <>
           Off the chip, waits jump to microseconds and milliseconds. A random 4 KB read from an enterprise NVMe drive: 80 µs, says Samsung's datasheet.
-          A hard disk waits for the platter to turn: 4.16 ms on average at 7,200 rpm, and Seagate rates 168 random reads a second. Object storage: 100–200
-          ms to the first byte. The 500 µs round trip is from 2009; AWS publishes no figure today, so measure yours.
+          A hard disk waits for the platter to turn: Seagate gives 4.16 ms on average at 7,200 rpm, and its 168 random reads a second, measured with 16
+          queued, give at least 6 ms each. Object storage: 100–200 ms to the first byte (medians for small requests: tens of ms). The 500 µs round trip
+          is from 2009; AWS now shows live medians in its network console, not a fixed figure: read yours there, or measure.
         </>
       ),
       duration: 3.8,
@@ -86,8 +87,8 @@ const reel: Reel = {
       body: (
         <>
           A server with several sockets gives each its own memory: a <em>NUMA node</em>. Memory on another node is slower to reach. On 2007 Opterons,
-          Drepper measured remote reads 20% slower. Linux allocates on the node of the CPU that asks, so a thread that moves to another socket can leave
-          its memory behind. Measure your ratio with <code>numactl</code>.
+          Drepper measured remote reads 20% slower. Linux places a page on the node of the CPU that first touches it, so a thread that moves to another socket
+          can leave its memory behind. Pin memory to each node with <code>numactl</code> and time the lab's walk.
         </>
       ),
       duration: 3.6,
@@ -97,8 +98,8 @@ const reel: Reel = {
       title: 'Latency is not bandwidth',
       body: (
         <>
-          Latency is how long until the first byte. Bandwidth is how fast the bytes come after that. They rank the tiers differently. Object storage is
-          the slowest rung to answer, yet AWS says one machine can pull up to 100 Gbit/s from it, given enough requests at once. A hard disk is slow on
+          Latency is how long until the first byte. Bandwidth is how fast the bytes come after that. They rank the tiers differently. RAM alone runs from
+          12 GB/s on one core to a 460.8 GB/s spec peak on one 12-channel socket. Object storage is the slowest rung to answer, yet AWS says one machine can pull up to 100 Gbit/s from it, given enough requests at once. A hard disk is slow on
           both.
         </>
       ),
@@ -110,8 +111,8 @@ const reel: Reel = {
       body: (
         <>
           Every transfer costs a wait plus the bytes: <b>T(n) = α + n/β</b>. Read 1 MiB and the split depends on the tier: a third waiting on NVMe,
-          nearly two thirds on a hard disk, 98% on object storage even at one flow's top speed. Below n = α·β a read is mostly waiting: about 0.5 MB on
-          this NVMe drive, 1.7 MB on the disk.
+          at least 62% on a hard disk, 98% on object storage even if one request streamed at 625 MB/s (an assumed top speed). Below n = α·β a read is
+          mostly waiting: about 0.5 MB on this NVMe drive, at least 1.7 MB on the disk.
         </>
       ),
       duration: 3.8,
@@ -132,7 +133,7 @@ const reel: Reel = {
           <>
             Here, 20×. Memory moves 64-byte lines. In order, one line serves eight numbers and the CPU fetches the next lines before you ask. At random,
             each read uses one number of its line and waits for it, but the CPU overlaps several waits. Make each address depend on the last read and
-            nothing overlaps: 158 ns, the whole DRAM wait. Big-O counted all three the same.
+            nothing overlaps: 158 ns: the whole DRAM wait, plus finding the address. Big-O counted all three the same.
           </>
         ),
       },
@@ -154,8 +155,8 @@ const reel: Reel = {
       body: (
         <>
           A job can't finish faster than its bytes take at bandwidth β, or than its waits take with k in flight: the floor is the larger. Read 1 TiB
-          sequentially from NVMe: 162 s of bytes, 5 s of waits, bandwidth-bound. Read <code>orders</code> page by page at random from a hard disk: 29 s of
-          bytes, 5,952 s of waits, latency-bound. A floor ignores everything else, so a real run is slower.
+          sequentially from NVMe: 162 s of bytes, 5 s of waits (α = 20 µs, sequential), bandwidth-bound. Read <code>orders</code> page by page at random from a
+          hard disk: 29 s of bytes, 5,952 s of waits (α of at least 6 ms, a floor value), latency-bound. A floor ignores everything else, so a real run is slower.
         </>
       ),
       duration: 3.8,
@@ -178,7 +179,7 @@ const reel: Reel = {
       body: (
         <>
           1 TiB from the NVMe drive: bandwidth-bound, 162 s. From object storage in 16 MiB ranges: 65,536 requests. One at a time, the 100 ms waits alone
-          take 1.8 hours. With k in flight they take 6,554 s ÷ k, and at k = 41 the floor matches the drive. Each request also streams its 16 MiB, so a
+          take 1.8 hours. With k in flight they take 6,554 s ÷ k, and with at least k = 41 in flight the floor matches the drive. Each request also streams its 16 MiB, so a
           real run needs more: measure the per-request rate before you promise it.
         </>
       ),
@@ -199,7 +200,7 @@ const reel: Reel = {
         explain: (
           <>
             160 s. One at a time, every read pays its 80 µs wait: 2,000,000 × 80 µs. That's 130 times the 1.2 s it takes to scan the whole table in order.
-            With 80 reads in flight the waits fall to 2 s, and the 16 GB of pages at 6,800 MB/s (2.4 s) become the floor. Same count of reads, a floor 66
+            With 80 reads in flight the waits fall to 2 s, and the 16 GB of pages, at the drive's best rate of 6,800 MB/s (2.4 s), become the floor. Same count of reads, a floor 66
             times lower.
           </>
         ),
@@ -211,7 +212,7 @@ const reel: Reel = {
       body: (
         <>
           You copy <code>orders</code> from a local NVMe drive to another EC2 instance over one TCP connection. The instances are not in a cluster
-          placement group. Floor?
+          placement group (instances packed close together in one availability zone). Floor?
         </>
       ),
       duration: 2.0,
@@ -219,7 +220,7 @@ const reel: Reel = {
         options: [{ label: 'About 1.2 s' }, { label: 'About 2.6 s' }, { label: 'About 13 s', correct: true }, { label: 'About 29 s' }],
         explain: (
           <>
-            13 s. A chain runs at its slowest link. AWS limits a single flow to 5 Gbit/s between instances outside a cluster placement group: 625 MB/s, so
+            13 s. A chain runs at its slowest link. AWS limits a single flow (one TCP connection) to 5 Gbit/s between instances outside a cluster placement group: 625 MB/s, so
             8.2 GB takes 13 s however fast the drive is. A placement group raises one flow to 10 Gbit/s (6.6 s); several connections in parallel can use
             the instance's full bandwidth instead (here 25 Gbit/s: 2.6 s).
           </>
@@ -238,16 +239,16 @@ const reel: Reel = {
       duration: 2.0,
       predict: {
         options: [
-          { label: "Yes: the prefix's request limit" },
+          { label: "Yes: the key prefix's request limit" },
           { label: 'Yes: the network card is full' },
           { label: 'Yes: the store is having a slow day' },
           { label: "No: it's near its floor; raise k", correct: true },
         ],
         explain: (
           <>
-            Nothing is broken. With 8 in flight the waits alone take 13.7 minutes, and each request's transfer adds to its wait, so 18 is about what 8 can
-            do. The job sends 80 requests a second against at least 5,500 allowed per prefix, and its bytes need 88 s of a 100 Gbit/s card. It's
-            latency-bound: raise k, or use fewer, larger ranges.
+            Nothing is broken. With 8 in flight the waits alone take 13.7 minutes, and 18 minutes is only 1.3 times that: near the floor, so k is the limit.
+            The job sends at most 80 requests a second against at least 5,500 allowed per key prefix (the start of an object's name), and its bytes need
+            88 s of a 100 Gbit/s card. It's latency-bound: raise k, or use fewer, larger ranges.
           </>
         ),
       },

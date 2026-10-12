@@ -4,22 +4,22 @@ This reel assumes three things. If they're familiar, skip straight in. If one is
 
 <section class="prereq basics" data-section="basics">
 
-### <span class="n">00</span> Basics: the terms this reel uses
+### <span class="n">00</span> Basics: terms this reel uses
 
 - **Latency (α)**: the wait before a request's first byte arrives. *Where you meet it:* 80 µs for a random NVMe read.
-- **Bandwidth (β)**: bytes per second once the transfer flows. *Where you meet it:* 6,800 MB/s from an NVMe drive.
-- **T(n) = α + n/β**: one transfer costs a wait plus the bytes at bandwidth. *Where you meet it:* below α·β bytes, a read is mostly waiting.
-- **Memory hierarchy**: tiers from registers through RAM, drives and the network to object storage, each slower and larger. *Where you meet it:* "which tier is this job reading from?"
-- **Clock cycle**: one tick of the CPU clock, 0.5 ns at 2 GHz. *Where you meet it:* manuals give cache latencies in cycles.
-- **Cache (L1, L2, L3)**: small, fast memories on the CPU holding recent data. *Where you meet it:* a loop whose data fits in L2 runs far faster.
-- **DRAM**: main memory, about 100 ns for a read that goes all the way there. *Where you meet it:* "the table is cached in memory".
-- **NUMA node**: one socket's own memory; another node's is slower to reach. *Where you meet it:* a thread on one socket, its data on the other.
-- **Requests in flight (queue depth, k)**: requests outstanding at once; their waits overlap. *Where you meet it:* NVMe drives need dozens in flight to reach rated speed.
-- **Rotational latency**: a hard disk's wait for the platter to turn, 4.16 ms on average at 7,200 rpm. *Where you meet it:* random disk reads.
-- **Same-AZ round trip**: a message to a machine in the same cloud data centre and back. *Where you meet it:* an app server calling its database.
-- **First byte (object storage)**: the wait before an object or byte range starts arriving over HTTP. *Where you meet it:* a lakehouse reading Parquet from a bucket.
-- **Floor**: the least time a job can take, max(bytes / β, requests × α / k); the larger term names the bottleneck. *Where you meet it:* checking a job before running it.
-- **Log scale**: equal steps are equal multiples, so nanoseconds and seconds share one axis. *Where you meet it:* every latency chart in this chapter.
+- **Bandwidth (β)**: bytes per second once data flows. *Where you meet it:* 6,800 MB/s from NVMe.
+- **T(n) = α + n/β**: one transfer costs a wait plus the bytes. *Where you meet it:* below α·β bytes, reads mostly wait.
+- **Memory hierarchy**: tiers from registers to object storage, each with a longer first-byte wait, and larger. *Where you meet it:* "which tier is this read from?"
+- **Cache (L1, L2, L3) and clock cycle**: small, fast CPU memories, timed in cycles (0.5 ns at 2 GHz). *Where you meet it:* a loop whose data fits in L2.
+- **Cache line and prefetching**: memory moves in 64-byte lines; the CPU prefetches the next ones for an in-order loop. *Where you meet it:* in-order scans beat random reads.
+- **DRAM**: main memory, about 100 ns a read. *Where you meet it:* "the table is in memory".
+- **NUMA node**: one socket's own memory; another node's is slower. *Where you meet it:* a thread on one socket, its data on the other.
+- **Requests in flight (queue depth, k)**: requests outstanding at once; their waits overlap. *Where you meet it:* NVMe needs dozens.
+- **NVMe SSD and HDD**: a flash drive on PCIe; a spinning disk whose random read waits for a seek plus half a turn (Seagate: 4.16 ms at 7,200 rpm). *Where you meet it:* the two local drives compared.
+- **Same-AZ round trip, flow, placement group**: a message to a machine in the same availability zone (one or more data centres) and back; one TCP connection is one *flow*; a cluster placement group packs instances nearby. *Where you meet it:* an app calling its database.
+- **First byte and key prefix**: the wait before a range arrives over HTTP; request limits apply per key prefix (the start of an object's name). *Where you meet it:* Parquet in a bucket.
+- **Floor; latency- or bandwidth-bound**: the least time a job can take, max(bytes / β, requests × α / k); latency-bound if the waits term is larger, else bandwidth-bound. *Where you meet it:* checking a job first.
+- **Log scale**: equal steps are equal multiples. *Where you meet it:* every latency chart here.
 
 </section>
 
@@ -27,7 +27,7 @@ This reel assumes three things. If they're familiar, skip straight in. If one is
 
 ### <span class="n">01</span> Big-O and logarithms, and reading a log axis
 
-The reel's charts are logarithmic: each tick is ten (or a thousand) times the one before. Big-O appears once, to say that two walks over an array both do the same number of steps, Θ(n), and still differ in time. If a log axis or Θ(n) is new, start with the refresher before this one.
+The reel's charts are logarithmic: each tick is ten (or a thousand) times the one before. Big-O appears once, to say that two walks over an array both do the same number of steps, Θ(n) as in the refresher (the steps grow in proportion to n), and still differ in time. If a log axis or Θ(n) is new, start with the refresher before this one.
 
 <p class="check"><b>Check yourself:</b> on an axis with ticks 1 ns, 1 µs, 1 ms and 1 s, how many times longer is 1 s than 1 ns? (Answer: a billion, three ticks of a thousand each.)</p>
 

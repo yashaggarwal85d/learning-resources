@@ -1460,7 +1460,10 @@
         "item": "Cloud block storage is specified in IOPS and MiB/s caps and a latency class, not by the medium (EBS gp3 vs io2 Block Express); local NVMe and network-attached volumes are different tiers.",
         "at": [
           {
-            "out": "Cloud volume classes are a product catalogue rather than a tier of the ladder, and no opened source states their figures; the NVMe and HDD rows carry the device numbers."
+            "deep": "The latency and bandwidth table"
+          },
+          {
+            "deep": "Drives: one at a time, or many in flight"
           }
         ]
       },
@@ -1500,10 +1503,6 @@
           },
           {
             "deep": "Drives: one at a time, or many in flight"
-          },
-          {
-            "topic": "Storage devices and fsync durability",
-            "quote": "async I/O via io_uring"
           }
         ]
       },
@@ -1665,10 +1664,17 @@
     ]
   },
   "gapReview": {
-    "date": "",
-    "by": "",
-    "open": [
-      "adversarial gap review not yet done"
-    ]
+    "date": "2026-10-12",
+    "by": "content-review agent (fresh Opus, wrote nothing in this topic): flow, basics, gap hunt, expert reader against the syllabus line, SOURCES.md, EXPERT-LIST.md and the AWS Network Manager docs; findings 1–27 in REVIEW.md fixed (findings 2, 7 and 17 recorded for other topics, not edited here)",
+    "resolved": [
+      "Socket-level DRAM bandwidth added, sourced and asserted (finding 12)",
+      "EBS / network block volumes: a Deep dive line and table row with current quoted figures; expert item remapped from 'out' (finding 13)",
+      "Same-AZ latency: AWS Network Manager Infrastructure Performance (intra-AZ and inter-AZ P50 round trip) cited; 'AWS publishes no figure' removed (findings 14, 18)",
+      "HDD 1/168 s labelled a QD16 per-read time and a floor value, not a latency (finding 19)",
+      "Basics names cache line and prefetching, NVMe SSD and HDD, latency- and bandwidth-bound, key prefix and flow (finding 8)",
+      "numastat counters and the NVMe queue mapping fixed (findings 15, 16)",
+      "Prove it 3 argued from measured ÷ floor; per-request rate assumptions stated (findings 20, 21, 22)"
+    ],
+    "open": []
   }
 }

@@ -26,6 +26,7 @@ const NIC_BW = 12.5e9; // bytes/s, 100 Gbit/s
 const ORDERS = 1_000_000 * 8192;
 // The RAM lab's reference run (examples.py #6): ns per 8-byte read, in order / random / dependent, and one core's GB/s.
 const REF = { seq: 0.7, rand: 14, chase: 158, gbs: 12 };
+const SOCKET_BW = 460.8e9; // bytes/s, peak: AMD EPYC 9654, 12 channels x 4,800 MT/s x 8 bytes (examples.py, SOURCES.md)
 
 /** A log axis with a tick at every decade and a label on the named ones. */
 function LogAxis({ x0, x1, y, lo, hi, named, o = 1, labelY = 28 }: { x0: number; x1: number; y: number; lo: number; hi: number; named: [number, string][]; o?: number; labelY?: number }) {
@@ -216,7 +217,7 @@ export function OnChip({ t, portrait }: StepCtx) {
 
 // ── 4 · Below RAM: drives and network ───────────────────────────────────────────────────────────────────────────────────────
 export function OffChip({ t }: StepCtx) {
-  const H = 468;
+  const H = 494;
   const X0 = 200;
   const X1 = 560;
   const u = easeInOut(seg(t, 0.2, 1.2));
@@ -224,16 +225,16 @@ export function OffChip({ t }: StepCtx) {
   const lhi = lerp(3, 9, u);
   const px = (v: number) => X0 + ((L10(v) - llo) / (lhi - llo)) * (X1 - X0);
   const ys = [64, 128, 192, 256, 346];
-  const hs = [56, 56, 56, 82, 56];
+  const hs = [56, 56, 56, 82, 82];
   const tickDefs: [number, string][] = [[1, '1 ns'], [1e3, '1 µs'], [1e6, '1 ms'], [1e9, '1 s']];
   const chip = ON_CHIP.map((r) => (r.c[0] === r.c[1] ? r.c[0] : (r.c[0] + r.c[1]) / 2) * NS_PER_CYCLE);
   const cx0 = px(0.5);
   const cx1 = px(100);
   const lower = [
     { name: ['NVMe read'], ns: 80e3, lab: '80 µs', note: ['Samsung PM9A3, 4 KB, QD1'], range: null as number | null },
-    { name: ['round trip in', 'one datacenter'], ns: 500e3, lab: '500 µs', note: ['2009 · AWS publishes none today'], range: null },
-    { name: ['HDD random', 'read'], ns: 6e6, lab: '≈ 6 ms', note: ['4.16 ms rotation alone', '168/s with 16 queued'], range: null },
-    { name: ['object storage,', 'first byte'], ns: 100e6, lab: '100–200 ms', note: ['AWS S3 documentation'], range: 200e6 },
+    { name: ['round trip in', 'one datacenter'], ns: 500e3, lab: '500 µs', note: ['2009 figure · AWS shows live medians'], range: null },
+    { name: ['HDD random', 'read'], ns: 6e6, lab: '≥ 6 ms', note: ['1/168 s: Seagate measured 168 a second', 'with 16 queued; one at a time is slower'], range: null },
+    { name: ['object storage,', 'first byte'], ns: 100e6, lab: '100–200 ms', note: ['AWS S3 documentation', 'medians, small requests: tens of ms'], range: 200e6 },
   ];
   return (
     <Svg label="On a log axis from 1 ns to 1 s: everything on the chip plus DRAM is squeezed into the first two decades; NVMe, a datacenter round trip, a hard disk and object storage sit far to the right" h={H}>
@@ -281,8 +282,8 @@ export function OffChip({ t }: StepCtx) {
         );
       })}
       <g opacity={fade(t, 3.4, 3.8)}>
-        <path d={`M${px(100)} ${ys[4] + 70} V${ys[4] + 80} H${px(100e6)} V${ys[4] + 70}`} fill="none" stroke={C.taupe} strokeWidth={2} />
-        <T x={(px(100) + px(100e6)) / 2} y={ys[4] + 106} s={17} f={C.crema} a="middle">× 1,000,000</T>
+        <path d={`M${px(100)} ${ys[4] + 96} V${ys[4] + 106} H${px(100e6)} V${ys[4] + 96}`} fill="none" stroke={C.taupe} strokeWidth={2} />
+        <T x={(px(100) + px(100e6)) / 2} y={ys[4] + 132} s={17} f={C.crema} a="middle">× 1,000,000</T>
       </g>
     </Svg>
   );
@@ -342,7 +343,7 @@ export function Numa({ t }: StepCtx) {
 
 // ── 6 · Latency is not bandwidth ───────────────────────────────────────────────────────────────────────────────────────────────
 export function TwoAxes({ t }: StepCtx) {
-  const H = 450;
+  const H = 470;
   const PX0 = 90;
   const PX1 = 560;
   const PY0 = 50; // bandwidth 1,000 GB/s
@@ -351,14 +352,14 @@ export function TwoAxes({ t }: StepCtx) {
   const y = (bps: number) => lgx(bps, 1e8, 1e12, PY1, PY0);
   const pts = [
     { k: 'L1', ns: 2.5, bw: 133 * 2e9, label: 'L1', dx: 14, dy: 5 },
-    { k: 'RAM', ns: 100, bw: REF.gbs * 1e9, label: 'RAM, 1 core', dx: -30, dy: -16 },
+    { k: 'RAM', ns: 100, bw: REF.gbs * 1e9, bw2: SOCKET_BW, label: 'RAM: 1 core to 1 socket', dx: 14, dy: 0, top: true },
     { k: 'NVMe', ns: 80e3, bw: NVME_BW, label: 'NVMe', dx: -14, dy: 5, end: true },
     { k: 'net', ns: 500e3, bw: 1.25e9, bw2: NIC_BW, label: 'network', dx: -12, dy: 0, end: true },
-    { k: 'HDD', ns: 6e6, bw: HDD_BW, label: 'HDD', dx: 14, dy: 5 },
+    { k: 'HDD', ns: 6e6, bw: HDD_BW, label: 'HDD (≥ 6 ms)', dx: 14, dy: 5 },
     { k: 'obj', ns: 100e6, bw: NIC_BW, label: 'object storage', dx: 14, dy: -22, end: true },
   ];
   return (
-    <Svg label="Tiers on two log axes, latency across and bandwidth up: L1 is fast and wide, a hard disk is slow and narrow, object storage has the highest latency but up to 12.5 GB/s per instance" h={H}>
+    <Svg label="Tiers on two log axes, latency across and bandwidth up: L1 is fast and wide, RAM runs from 12 GB/s on one core to a 460.8 GB/s peak on one 12-channel socket, a hard disk is slow and narrow, object storage has the highest latency but up to 12.5 GB/s per instance" h={H}>
       <g opacity={fade(t, 0.2, 0.6)}>
         <T x={24} y={24} s={13} f={C.taupe}>bandwidth (log) ↑</T>
         <line x1={PX0} y1={PY0} x2={PX0} y2={PY1} stroke={C.taupe} strokeWidth={2} />
@@ -384,8 +385,9 @@ export function TwoAxes({ t }: StepCtx) {
         return (
           <g key={p.k} opacity={clamp(a)}>
             {p.bw2 && <line x1={x(p.ns)} y1={y(p.bw)} x2={x(p.ns)} y2={y(p.bw2)} stroke={C.crema} strokeWidth={5} strokeLinecap="round" />}
+            {p.bw2 && <circle cx={x(p.ns)} cy={y(p.bw)} r={5 * clamp(a)} fill={C.crema} />}
             <circle cx={x(p.ns)} cy={y(p.bw2 ? p.bw2 : p.bw)} r={7 * clamp(a)} fill={obj ? C.caramel : C.crema} />
-            <T x={x(p.ns) + p.dx} y={(p.bw2 ? y(p.bw) + 0 : y(p.bw) + p.dy)} s={15} f={obj ? C.caramel : C.latte} a={p.end ? 'end' : 'start'}>{p.label}</T>
+            <T x={x(p.ns) + p.dx} y={p.top ? y(p.bw2) + 5 : p.bw2 ? y(p.bw) + 0 : y(p.bw) + p.dy} s={15} f={obj ? C.caramel : C.latte} a={p.end ? 'end' : 'start'}>{p.label}</T>
           </g>
         );
       })}
@@ -394,7 +396,8 @@ export function TwoAxes({ t }: StepCtx) {
         <T x={x(100e6) + 62} y={y(NIC_BW) + 36} s={15} f={C.crema} a="end">up to 12.5 GB/s</T>
       </g>
       <g opacity={fade(t, 3.6, 4.0)}>
-        <T x={24} y={H - 32} s={13} f={C.taupe}>RAM: one core, measured here</T>
+        <T x={24} y={H - 52} s={13} f={C.taupe}>RAM: 1 core measured here; 1 socket: AMD spec peak</T>
+        <T x={24} y={H - 32} s={13} f={C.taupe}>network: 2009 latency · HDD: at least 6 ms</T>
         <T x={24} y={H - 12} s={13} f={C.taupe}>network, object storage: per instance at 100 Gbit/s</T>
       </g>
     </Svg>
@@ -402,10 +405,11 @@ export function TwoAxes({ t }: StepCtx) {
 }
 
 // ── 7 · One transfer: α + n/β ─────────────────────────────────────────────────────────────────────────────────────────────────
+// HDD's alpha is a floor value (1/168 s was measured with 16 queued), so its share and time are "at least".
 const SPLIT_ROWS = [
-  { name: 'NVMe', a: NVME_ALPHA, bw: NVME_BW },
-  { name: 'HDD', a: HDD_ALPHA, bw: HDD_BW },
-  { name: 'object storage', a: OBJ_ALPHA, bw: FLOW_BW },
+  { name: 'NVMe', a: NVME_ALPHA, bw: NVME_BW, atLeast: false },
+  { name: 'HDD', a: HDD_ALPHA, bw: HDD_BW, atLeast: true },
+  { name: 'object storage', a: OBJ_ALPHA, bw: FLOW_BW, atLeast: false },
 ];
 const fmtTime = (s: number) => (s < 1e-3 ? `${Math.round(s * 1e6)} µs` : s < 0.01 ? `${(s * 1e3).toFixed(1)} ms` : `${Math.round(s * 1e3)} ms`);
 export function Split({ t, portrait }: StepCtx) {
@@ -414,7 +418,7 @@ export function Split({ t, portrait }: StepCtx) {
   const top = portrait ? 112 : 108;
   const BAR = 480;
   return (
-    <Svg label="One 1 MiB read on three tiers, each bar split into the wait (taupe) and the transfer (caramel): 34% waiting on NVMe, 62% on a hard disk, 98% on object storage" h={H}>
+    <Svg label="One 1 MiB read on three tiers, each bar split into the wait (taupe) and the transfer (caramel): 34% waiting on NVMe, at least 62% on a hard disk, 98% on object storage (at an assumed 625 MB/s per request)" h={H}>
       <g opacity={fade(t, 0.2, 0.6)}>
         <T x={300} y={44} s={20} f={C.crema} a="middle">
           T(n) = <tspan fontFamily={SERIF}>α</tspan> + n/<tspan fontFamily={SERIF}>β</tspan>
@@ -436,10 +440,10 @@ export function Split({ t, portrait }: StepCtx) {
             <T x={40} y={y} s={15} f={C.latte} o={fade(t, t0 - 0.1, t0 + 0.2)}>{r.name}</T>
             <rect x={40} y={y + 10} width={waitW} height={30} rx={0} fill={C.taupe} />
             <rect x={40 + BAR * share} y={y + 10} width={xferW} height={30} fill={C.caramel} />
-            <T x={48} y={y + 31} s={15} f={C.espresso} o={lab} w={700}>{Math.round(share * 100)}% wait</T>
-            <T x={40 + BAR} y={y + 62} s={15} f={C.crema} a="end" o={lab}>{fmtTime(total)}</T>
+            <T x={48} y={y + 31} s={15} f={C.espresso} o={lab} w={700}>{r.atLeast ? '≥ ' : ''}{Math.round(share * 100)}% wait</T>
+            <T x={40 + BAR} y={y + 62} s={15} f={C.crema} a="end" o={lab}>{r.atLeast ? '≥ ' : ''}{fmtTime(total)}</T>
             {i === 2 && (
-              <T x={40} y={y + 62} s={13} f={C.taupe} o={lab}>at 625 MB/s (one flow's cap)</T>
+              <T x={40} y={y + 62} s={13} f={C.taupe} o={lab}>at an assumed 625 MB/s per request</T>
             )}
           </g>
         );
@@ -607,8 +611,8 @@ export function Floor({ t }: StepCtx) {
   const X1 = 520;
   const fx = (s: number) => lgx(s, 1, 1e4, X0, X1);
   const cases = [
-    { y: 130, l1: '1 TiB from NVMe, 128 KiB reads,', l2: '32 in flight', d: FLOOR_A, t0: 0.8, verdict: 'bandwidth-bound', vc: C.caramel },
-    { y: 292, l1: 'orders, 8 KB pages at random,', l2: 'HDD, one at a time', d: FLOOR_B, t0: 2.2, verdict: 'latency-bound', vc: C.crema },
+    { y: 130, l1: '1 TiB from NVMe, 128 KiB reads,', l2: '32 in flight, α = 20 µs (sequential, QD1)', d: FLOOR_A, t0: 0.8, verdict: 'bandwidth-bound', vc: C.caramel },
+    { y: 292, l1: 'orders, 8 KB pages at random,', l2: 'HDD, one at a time, α ≥ 6 ms (a floor value)', d: FLOOR_B, t0: 2.2, verdict: 'latency-bound', vc: C.crema },
   ];
   return (
     <Svg label="Floor = max(bytes/β, requests × α / k) for two jobs: reading 1 TiB from NVMe is bandwidth-bound at 162 s; reading orders at random from a hard disk is latency-bound at 5,952 s" h={H}>
@@ -785,7 +789,10 @@ export function Verdict({ t }: StepCtx) {
           waits <span className="text-crema">{commas(WAITS1 / (kUser ?? 41))} s</span> · bytes <span className="text-caramel">{commas(NIC_S)} s</span> → floor{' '}
           <span className="text-crema">{commas(Math.max(WAITS1 / (kUser ?? 41), NIC_S))} s</span>
         </p>
-        <p className="mt-1 text-center font-mono text-[0.64rem] tracking-[0.04em] text-taupe">a floor: at 625 MB/s per request a real run needs k ≈ 52; at 166 MB/s, k ≈ 82</p>
+        <p className="mt-1 text-center font-mono text-[0.64rem] tracking-[0.04em] text-taupe">
+          a floor, so a real run needs more: k ≈ 52 at 625 MB/s per request,
+          <br />k ≈ 82 at 166 MB/s (the drive's rate ÷ 41)
+        </p>
         <label className="mt-2 flex items-center gap-3">
           <span className="sr-only">Requests in flight, k</span>
           <input type="range" min={1} max={128} step={1} value={kUser ?? 41} onChange={(e) => setK(Number(e.target.value))} className="reel-range w-full" />

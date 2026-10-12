@@ -52,6 +52,22 @@ quoted(
     'typically from 5 to 60 minutes',    # EC2 burst credits
     'single-digit millisecond',          # S3 Express One Zone
     '14,000 MB/s',                       # Samsung PM1743 (frontier only)
+    # Content review additions (REVIEW.md findings 5, 12, 13, 15, 16, 18, 27):
+    'Intra-Availability Zone latency metrics',   # AWS Network Manager Infrastructure Performance: intra-AZ round-trip medians exist
+    'the same latency metric data is presented in all AWS',
+    'median (P50)', 'five-minute (5M) interval',
+    'round-trip traffic latency',
+    'Memory Channels', 'Up to 4800 MT/s', 'Per Socket Mem BW', '460.8 GB/s',        # AMD EPYC 9654 spec page
+    'under 500 microseconds',                                                          # EBS io2 Block Express
+    '80,000 3 (25.6 KiB I/O 4)', '256,000 3 (16 KiB I/O 4)',                           # EBS max IOPS, gp3 and io2 Block Express
+    'baseline IOPS performance of 3,000 IOPS', 'baseline throughput performance of 125 MiB/s',   # EBS gp3 baseline
+    'gp3 volumes provide single-digit millisecond latency',
+    'Scalable Reliable Datagram (SRD) networking protocol',                            # EBS io2 Block Express is network-attached
+    'physically attached to the host computer',                                        # instance store is local
+    'numa_hit, numa_miss and numa_foreign',                                            # kernel numastat page
+    'Queues with up to 65,535 outstanding commands per I/O Queue',                     # NVMe base specification
+    'Linux implements malloc to commit physical page at first touch/access',           # Intel manual, Example 11-9
+    'use randomized prefixes like a1b2/log-2024-01-01.txt',                            # S3: a prefix is the start of an object's name
 )
 CLOCK_GHZ = 2.0                              # our stated assumption for converting cycles
 NS_PER_CYCLE = 1 / CLOCK_GHZ
@@ -71,13 +87,31 @@ assert 1_000_000 * 4_096 == 4_096_000_000 and round(1_000_000 * 4_096 / 1e9, 1) 
 assert round(4 / 3, 1) == 1.3 and 6 / 3 == 2.0
 # HDD: 7,200 rpm.
 rot_ms = 60 / 7_200 / 2 * 1000               # half a revolution
-assert abs(rot_ms - 4.16) < 0.01             # "4.16 ms"
+assert abs(rot_ms - 4.16) < 0.01             # "4.16 ms" (Seagate prints 4.16; the exact half turn is 4.1667)
+assert round(rot_ms, 2) == 4.17              # so the reel says "Seagate gives 4.16 ms", never "half a turn is 4.16 ms"
 hdd_iops = 168
 hdd_read_ms = 1000 / hdd_iops
-assert round(hdd_read_ms, 2) == 5.95 and round(hdd_read_ms) == 6                         # "≈ 6 ms"
+assert round(hdd_read_ms, 2) == 5.95 and round(hdd_read_ms) == 6                         # "at least 6 ms"
+# 168 IOPS is measured with 16 queued (Seagate): by Little's law each read then spends 16 / 168 s in the drive, so 1/168 s is the
+# time per read at that rate, not a one-at-a-time latency. One at a time costs a seek plus half a turn: more. 6 ms is a floor value.
+assert round(16 / hdd_iops * 1000) == 95                                                   # ms in the drive per read at QD16
+assert hdd_read_ms < 16 / hdd_iops * 1000
 assert round(272 * MiB / 1e6) == 285         # 272 MiB/s is the datasheet's 285 MB/s
 # Network: Gbit/s to bytes.
 assert 10 / 8 == 1.25 and 100 / 8 == 12.5 and 5 / 8 * 1000 == 625 and 25 / 8 == 3.125   # GB/s, MB/s
+# Socket-level DRAM bandwidth (finding 12): AMD EPYC 9654, 12 channels, up to 4,800 MT/s, "Per Socket Mem BW 460.8 GB/s".
+# A DDR5 channel moves 8 bytes per transfer; the arithmetic reproduces AMD's figure, so the figure is a peak (channels x MT/s x 8 B).
+EPYC_CHANNELS, EPYC_MTS = 12, 4_800
+assert EPYC_CHANNELS * EPYC_MTS * 1e6 * 8 == 460.8e9
+SOCKET_BW = 460.8e9                                                                       # step 6: the RAM point's upper end (peak, spec)
+assert round(SOCKET_BW / 12e9) == 38                                                      # one socket's peak is about 38 x one core, as measured here
+assert 1e8 < 12e9 < SOCKET_BW < 1e12                                                      # both ends fit step 6's 100 MB/s - 1,000 GB/s axis
+# EBS (finding 13): gp3 baseline 3,000 IOPS and 125 MiB/s, maximum 80,000 IOPS and 2,000 MiB/s; io2 Block Express 256,000 IOPS, 4,000 MiB/s,
+# average latency under 500 microseconds at 16 KiB. 16 KiB x 256,000 = 4,096 MB/s, about the 4,000 MiB/s cap; 3,000 x 16 KiB = 46.9 MiB/s.
+assert 3_000 * 16 // 1024 == 46 and 125 * MiB == 131_072_000 and round(125 * MiB / 1e6) == 131
+assert 80_000 * 25.6 * KiB / MiB == 2_000 and 256_000 * 16 * KiB / MiB == 4_000          # the IOPS maxima are at the I/O size that reaches the MiB/s cap
+assert 65_535 * 65_535 == 4_294_836_225                                                   # NVMe: up to 65,535 queues x 65,535 commands each (spec limits)
+
 # Planning magnitudes from CHAPTER.md: the ladder is in the right decades.
 NVME_ALPHA, HDD_ALPHA, OBJ_ALPHA = 80e-6, 1 / 168, 0.1
 assert ns['L1'][0] < 5 and 10 <= ns['L3'][0] <= 40
@@ -114,10 +148,12 @@ assert round(n / NVME_BW * 1e6) == 154 and round(nvme_t * 1e6) == 234           
 assert round(NVME_ALPHA / nvme_t * 100) == 34                                            # "34% wait"
 hdd_t = HDD_ALPHA + n / HDD_BW
 assert round(n / HDD_BW * 1e3, 2) == 3.68 and round(hdd_t * 1e3, 1) == 9.6              # "9.6 ms"
-assert round(HDD_ALPHA / hdd_t * 100) == 62                                              # "62% wait"
+assert round(HDD_ALPHA / hdd_t * 100) == 62                                              # "at least 62% wait" (alpha is a floor value)
+assert (1.5 * HDD_ALPHA) / (1.5 * HDD_ALPHA + n / HDD_BW) > HDD_ALPHA / hdd_t            # a larger alpha only raises the waiting share
+assert round(2 * n / HDD_BW * 1e3, 1) == 7.4 and 2 * n / HDD_BW > HDD_ALPHA                    # 'two thirds' would need alpha = 7.4 ms: not claimed
 obj_t = OBJ_ALPHA + n / FLOW_BW
 assert round(n / FLOW_BW * 1e3, 2) == 1.68 and round(obj_t * 1e3) == 102                 # "102 ms"
-assert round(OBJ_ALPHA / obj_t * 100) == 98                                              # "98% wait"
+assert round(OBJ_ALPHA / obj_t * 100) == 98                                              # "98% wait", at an assumed 625 MB/s per request (EC2's single-flow cap, not an S3 figure)
 assert round(OBJ_ALPHA / (OBJ_ALPHA + n / 85e6) * 100) == 89                             # slower stream, smaller share
 assert round(n / OBJ_ALPHA / 1e6, 1) == 10.5                                             # n/β < α above 10.5 MB/s
 assert round(NVME_ALPHA * NVME_BW) == 544_000 and round(NVME_ALPHA * NVME_BW / 1e6, 1) == 0.5   # α·β ≈ 0.5 MB
@@ -227,13 +263,15 @@ A_BYTES = TiB / NVME_BW
 assert round(A_BYTES, 1) == 161.7 and round(A_BYTES) == 162                              # "162 s"
 A_REQS = TiB // (128 * KiB)
 assert A_REQS == 8_388_608
-A_WAITS = A_REQS * 20e-6 / 32
+A_WAITS = A_REQS * 20e-6 / 32     # alpha = 20 µs: Samsung's sequential 4 KB latency at QD1 ("20/20 us"), shown on screen as "α = 20 µs (sequential)"
 assert round(A_WAITS, 2) == 5.24 and round(A_WAITS) == 5                                 # "5 s"
+assert round(A_REQS * 80e-6 / 32, 1) == 21.0                                             # with the random-read 80 µs it would be 21 s: same verdict, so the sequential alpha is shown instead
 B_BYTES = ORDERS_BYTES / HDD_BW
 assert round(B_BYTES, 1) == 28.7 and round(B_BYTES) == 29                                # "29 s"
 B_WAITS = 1_000_000 * (1 / 168)
 assert round(B_WAITS) == 5_952                                                           # "5,952 s"
 assert max(A_BYTES, A_WAITS) == A_BYTES and max(B_BYTES, B_WAITS) == B_WAITS             # the verdicts
+assert max(A_BYTES, A_REQS * 80e-6 / 32) == A_BYTES                                      # ... and with 80 µs
 
 # ---- 9. Step 11: scanning orders ---------------------------------------------------------------------------------------
 RAM_SCAN_S = ORDERS_BYTES / (REF_GBS * 1e9)
@@ -251,9 +289,9 @@ assert round(WAITS_1, 1) == 6_553.6 and round(WAITS_1) == 6_554 and round(WAITS_
 NIC_S = TiB / NIC100_BW
 assert round(NIC_S) == 88                                                                # bytes at 100 Gbit/s
 K = next(k for k in range(1, 1000) if WAITS_1 / k <= A_BYTES)
-assert K == 41 and WAITS_1 / 40 > A_BYTES                                                # 40 fails, 41 holds
+assert K == 41 and WAITS_1 / 40 > A_BYTES                                                # 40 fails, 41 holds: "at least k = 41" (assumes instant transfers)
 assert round(WAITS_1 / 41) == 160 and round(WAITS_1 / 41, 1) == 159.8
-assert round(NVME_BW / 41 / 1e6) == 166                                                  # each request's share of the drive
+assert round(NVME_BW / 41 / 1e6) == 166                                                  # each request's share of the drive: "166 MB/s (the drive's rate ÷ 41)"
 assert [1, 2, 4, 8, 16, 32, 41][-1] == K
 assert round(WAITS_1 / 128, 1) == 51.2 and 1 <= 128                                      # slider end: bytes term (88 s) is the floor
 assert max(WAITS_1 / 128, NIC_S) == NIC_S
@@ -293,7 +331,10 @@ assert round(5_500 / 80, 2) == 68.75 and round(5_500 / 80) == 69                
 assert round(NIC_S) == 88
 cap_t = REQS * (0.1 + RANGE / FLOW_BW) / 8
 assert round(cap_t) == 1_039 and round(cap_t / 60, 1) == 17.3 and cap_t / 60 < 18         # 18 minutes is consistent
-assert round(18 * 60 / P3_WAITS, 2) == 1.32
+assert round(18 * 60 / P3_WAITS, 2) == 1.32                                               # the reel's argument: 18 min is 1.3x the waits-only floor
+# The reel no longer argues from a per-request rate (REVIEW finding 20): cap_t above assumes 625 MB/s per request, an EC2 figure, not S3's.
+# Measured, the job issues 65,536 requests in 18 minutes: about 61 a second, under the "at most 80" floor rate and far under 5,500.
+assert round(REQS / (18 * 60)) == 61 and round(REQS / P3_WAITS) == 80
 
 # ---- 14. Loopback round trip (Deep dive): the software floor of one TCP round trip, no wire at all ---------------------
 def loopback_median_us(rounds=20_000):
@@ -317,7 +358,7 @@ def loopback_median_us(rounds=20_000):
     return statistics.median(times) * 1e6
 
 median_us = loopback_median_us()
-assert 1 < median_us < 5_000, median_us                        # reference run: about 33 µs median
+assert 1 < median_us < 5_000, median_us                        # reference runs: 33, 36 and 40 µs median (the Deep dive says "about 30-40 µs here")
 print(f'loopback TCP round trip: median {median_us:.0f} us (no network involved)')
 
 # ---- 15. NUMA (Deep dive): measured only where there is a second node ------------------------------------------------------
