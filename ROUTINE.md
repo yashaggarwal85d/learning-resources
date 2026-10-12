@@ -119,7 +119,7 @@ Then the **looks and learning review**: once the reels test is green, launch a f
 
 ## 6. Content final
 
-Commit and push the branch, then run `node scripts/claim.mjs final`. Once every topic of the chapter is content-final, the next run (started by the dispatcher or the hourly schedule) plans the next chapter. **The content is now final:** change it only when a check or the narration forces it, and then add a line under `OUTLINE.md` → "Changes after final" (what changed and why) and push it, so the release seam check and the next chapter's plan can follow.
+Commit and push the branch, then run `node scripts/claim.mjs final`. From here the run no longer counts against the run limits (narration and shipping use few tokens), so the next run can start while this one narrates. Once every topic of the chapter is content-final, the next run (started by the dispatcher or the hourly schedule) plans the next chapter. **The content is now final:** change it only when a check or the narration forces it, and then add a line under `OUTLINE.md` → "Changes after final" (what changed and why) and push it, so the release seam check and the next chapter's plan can follow.
 
 ## 7. Narration (last)
 
