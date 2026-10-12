@@ -1,0 +1,951 @@
+{
+  "topic": "dsa.deamortization-global-rebuilding",
+  "syllabus": [
+    {
+      "clause": "turning amortized bounds into worst-case ones",
+      "at": [
+        {
+          "step": "Spend the coins as you earn them"
+        },
+        {
+          "step": "What the installments cost"
+        },
+        {
+          "step": "Rebuild in the background"
+        },
+        {
+          "step": "Back to the problem"
+        },
+        {
+          "deep": "Deamortizing as a recipe"
+        },
+        {
+          "deep": "Incremental copying, exactly"
+        },
+        {
+          "deep": "Global rebuilding in the background"
+        }
+      ]
+    },
+    {
+      "clause": "(incremental copying,",
+      "at": [
+        {
+          "step": "Spend the coins as you earn them"
+        },
+        {
+          "step": "Two buffers and a frontier"
+        },
+        {
+          "step": "Does the copy finish in time?"
+        },
+        {
+          "step": "What the installments cost"
+        },
+        {
+          "step": "Prove it · 1 of 3"
+        },
+        {
+          "step": "Prove it · 2 of 3"
+        },
+        {
+          "deep": "Incremental copying, exactly"
+        },
+        {
+          "deep": "Build, break, measure"
+        }
+      ]
+    },
+    {
+      "clause": "scapegoat-style partial rebuilds)",
+      "at": [
+        {
+          "step": "A tree that stores no balance"
+        },
+        {
+          "step": "Which ancestor is the scapegoat?"
+        },
+        {
+          "step": "Rebuild the subtree, perfectly balanced"
+        },
+        {
+          "step": "Deletes rebuild the whole tree"
+        },
+        {
+          "step": "Partial rebuilds are still amortized"
+        },
+        {
+          "deep": "Scapegoat trees, exactly"
+        },
+        {
+          "deep": "Spreading a partial rebuild out"
+        },
+        {
+          "step": "Global rebuilding: let it go stale, then rebuild"
+        },
+        {
+          "step": "Rebuild in the background"
+        },
+        {
+          "deep": "Global rebuilding"
+        },
+        {
+          "deep": "Global rebuilding in the background"
+        }
+      ]
+    },
+    {
+      "clause": "because p99 latency, not average cost, is what a service is judged on.",
+      "at": [
+        {
+          "step": "One request behind half a million copies"
+        },
+        {
+          "step": "What is the p99 of an append?"
+        },
+        {
+          "step": "Percentiles of requests, not of appends"
+        },
+        {
+          "step": "A rare stall becomes common at scale"
+        },
+        {
+          "step": "Back to the problem"
+        },
+        {
+          "step": "Prove it · 3 of 3"
+        },
+        {
+          "deep": "Percentiles, exactly"
+        },
+        {
+          "deep": "In production"
+        }
+      ]
+    }
+  ],
+  "sources": [
+    {
+      "source": "Mareš et al., Data Structures, chapter \"Dynamization\" (dsbook, LaTeX source)",
+      "items": [
+        {
+          "item": "Static, semi-dynamic and fully dynamic structures; sorted array vs BST trade-off",
+          "at": [
+            {
+              "step": "Global rebuilding: let it go stale, then rebuild"
+            },
+            {
+              "deep": "Global rebuilding"
+            }
+          ]
+        },
+        {
+          "item": "Global rebuilding: rebuild after Theta(n) updates, amortized O(f(n)/n) overhead; examples: array doubling, y-fast trie, tombstones",
+          "at": [
+            {
+              "step": "Global rebuilding: let it go stale, then rebuild"
+            },
+            {
+              "deep": "Global rebuilding"
+            }
+          ]
+        },
+        {
+          "item": "Local rebuilding of parts of a structure (weight-balanced trees)",
+          "at": [
+            {
+              "step": "A tree that stores no balance"
+            },
+            {
+              "step": "Rebuild the subtree, perfectly balanced"
+            },
+            {
+              "deep": "Scapegoat trees, exactly"
+            }
+          ]
+        },
+        {
+          "item": "General semi-dynamization via decomposable search problems and binary-counter blocks; query, space and amortized insertion bounds",
+          "at": [
+            {
+              "out": "a dynamization scheme for decomposable search problems (blocks of rising size, queried in parallel); it is a different construction from the single-structure rebuilding this syllabus line asks for, and is named only in the Deep dive through the worst-case variant"
+            }
+          ]
+        },
+        {
+          "item": "Worst-case semi-dynamization: build blocks incrementally, a few steps per operation, keeping old blocks for queries; at most three finished blocks and one under construction per rank",
+          "at": [
+            {
+              "deep": "Global rebuilding in the background"
+            },
+            {
+              "deep": "Deamortizing as a recipe"
+            },
+            {
+              "step": "Rebuild in the background"
+            }
+          ]
+        },
+        {
+          "item": "Full dynamization: crossing out deleted elements, a BST mapping elements to blocks, global rebuild when enough are crossed out",
+          "at": [
+            {
+              "step": "Global rebuilding: let it go stale, then rebuild"
+            },
+            {
+              "deep": "Global rebuilding"
+            },
+            {
+              "out": "the BST that maps elements to blocks belongs to the decomposable-search-problem construction above, which is out of this topic"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "Erickson, Algorithms, Lecture 9: Amortized Analysis",
+      "items": [
+        {
+          "item": "9.1 Incrementing a binary counter: the Increment algorithm and its Theta(log n) worst case",
+          "at": [
+            {
+              "topic": "Aggregate and accounting methods",
+              "quote": "binary counter"
+            }
+          ]
+        },
+        {
+          "item": "9.2 Counting from 0 to n: Theta(n) total, via summation (aggregate), taxation (accounting, two schedules), charging, and potential methods",
+          "at": [
+            {
+              "topic": "Aggregate and accounting methods",
+              "quote": "charging cheap operations to pay for expensive ones"
+            },
+            {
+              "topic": "The potential method",
+              "quote": "choosing Φ"
+            }
+          ]
+        },
+        {
+          "item": "9.3 Incrementing and decrementing: the double (P, N) binary counter, amortized cost at most 2 by potential",
+          "at": [
+            {
+              "topic": "The potential method",
+              "quote": "choosing Φ"
+            }
+          ]
+        },
+        {
+          "item": "9.4 Gray codes: Ehrlich's focus-array algorithm giving constant worst-case time per increment (a deamortized counter)",
+          "at": [
+            {
+              "deep": "Deamortizing as a recipe"
+            }
+          ]
+        },
+        {
+          "item": "9.5 Generalities and warnings: amortization applies to any sequence; amortized bounds are not unique",
+          "at": [
+            {
+              "topic": "Aggregate and accounting methods",
+              "quote": "charging cheap operations to pay for expensive ones"
+            },
+            {
+              "step": "What is the p99 of an append?"
+            }
+          ]
+        },
+        {
+          "item": "Exercises: extendable array, ordered stack, multistack, queues with MultiPush/MultiPull, hash-table global rebuilding with 3/4 and 1/4 thresholds, queue from two stacks, Nudge counters, Fibonacci and doubly lazy counters",
+          "at": [
+            {
+              "deep": "Global rebuilding"
+            },
+            {
+              "topic": "Aggregate and accounting methods",
+              "quote": "dynamic-array doubling, binary counter and multipop stack"
+            },
+            {
+              "out": "queues from two stacks, Nudge, Fibonacci and doubly lazy counters are further amortized-analysis exercises, not deamortization"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "Galperin and Rivest, Scapegoat Trees (SODA 1993)",
+      "items": [
+        {
+          "item": "Abstract: amortized O(log n) INSERT/DELETE, worst-case O(log n) SEARCH, no per-node extra data, only size and max-size at the root, scapegoat idea",
+          "at": [
+            {
+              "step": "A tree that stores no balance"
+            },
+            {
+              "step": "Partial rebuilds are still amortized"
+            },
+            {
+              "deep": "Scapegoat trees, exactly"
+            }
+          ]
+        },
+        {
+          "item": "1 Introduction: comparison with red-black, AVL, weight-balanced (Nievergelt-Reingold, Varghese) and splay trees",
+          "at": [
+            {
+              "deep": "Scapegoat trees, exactly"
+            },
+            {
+              "topic": "Red-black trees",
+              "quote": "at most three rotations per update"
+            },
+            {
+              "topic": "Splay trees",
+              "quote": "amortized O(log n) via the access lemma"
+            }
+          ]
+        },
+        {
+          "item": "2 Notations: node fields key/left/right, size(x) computed not stored, tree attributes size[T] and max-size[T]",
+          "at": [
+            {
+              "step": "A tree that stores no balance"
+            },
+            {
+              "deep": "Scapegoat trees, exactly"
+            }
+          ]
+        },
+        {
+          "item": "3 Preliminary discussion: alpha-weight-balanced, alpha-height-balanced (h <= h_alpha(n)), loose alpha-height-balance (+1), deep nodes",
+          "at": [
+            {
+              "step": "A tree that stores no balance"
+            },
+            {
+              "step": "Which ancestor is the scapegoat?"
+            },
+            {
+              "deep": "Scapegoat trees, exactly"
+            }
+          ]
+        },
+        {
+          "item": "4 Operations: search, insert with scapegoat search (size formula 4.5, rebuild to 1/2-weight-balanced), delete with max-size test (4.7) and full rebuild, alternative scapegoat criterion (4.6)",
+          "at": [
+            {
+              "step": "A tree that stores no balance"
+            },
+            {
+              "step": "Which ancestor is the scapegoat?"
+            },
+            {
+              "step": "Rebuild the subtree, perfectly balanced"
+            },
+            {
+              "step": "Deletes rebuild the whole tree"
+            },
+            {
+              "deep": "Scapegoat trees, exactly"
+            }
+          ]
+        },
+        {
+          "item": "5 Correctness and complexity: Lemmas 5.1-5.10, search bound, potential-function amortized insert (Theorem 5.2), delete (Theorem 5.3)",
+          "at": [
+            {
+              "step": "Rebuild the subtree, perfectly balanced"
+            },
+            {
+              "step": "Partial rebuilds are still amortized"
+            },
+            {
+              "deep": "Scapegoat trees, exactly"
+            }
+          ]
+        },
+        {
+          "item": "6 Rebuilding in place: FLATTEN / BUILD-TREE / REBUILD-TREE in O(n) time and O(log n) space, non-recursive variant",
+          "at": [
+            {
+              "step": "Rebuild the subtree, perfectly balanced"
+            },
+            {
+              "deep": "Scapegoat trees, exactly"
+            }
+          ]
+        },
+        {
+          "item": "7 More applications: general scheme (Theorem 7.1), scapegoat k-d trees, orthogonal range trees, quad trees",
+          "at": [
+            {
+              "deep": "Scapegoat trees, exactly"
+            },
+            {
+              "out": "the full treatment of k-d trees, range trees and quad trees belongs with those structures; this topic carries the tree-independent mechanism and names the generalisation in one line"
+            }
+          ]
+        },
+        {
+          "item": "8 Experimental results: versus red-black and splay trees, effect of alpha, rebuild variants",
+          "at": [
+            {
+              "deep": "Scapegoat trees, exactly"
+            }
+          ]
+        },
+        {
+          "item": "9 Discussion and conclusions: open problem of average-case analysis",
+          "at": [
+            {
+              "deep": "The frontier"
+            }
+          ]
+        },
+        {
+          "item": "References",
+          "at": [
+            {
+              "out": "a bibliography"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "Dean and Barroso, The Tail at Scale (CACM 2013)",
+      "items": [
+        {
+          "item": "Introduction: sub-100ms responsiveness feels fluid; the tail of the latency distribution is hard to keep short as systems scale; \"tail-tolerant\" systems; key insights box",
+          "at": [
+            {
+              "step": "Percentiles of requests, not of appends"
+            },
+            {
+              "step": "A rare stall becomes common at scale"
+            },
+            {
+              "deep": "In production"
+            }
+          ]
+        },
+        {
+          "item": "Why Variability Exists: shared resources, daemons, global resource sharing, maintenance activities (compaction, GC, reconstruction), queueing; hardware trends",
+          "at": [
+            {
+              "deep": "In production"
+            }
+          ]
+        },
+        {
+          "item": "Component-Level Variability Amplified By Scale: fan-out from root to leaves; 1-in-100 slow servers x 100 servers gives 63% slow requests; 1-in-10,000 x 2,000 servers gives about 18%; Table 1",
+          "at": [
+            {
+              "step": "A rare stall becomes common at scale"
+            },
+            {
+              "deep": "Percentiles, exactly"
+            }
+          ]
+        },
+        {
+          "item": "Reducing Component Variability: service classes and higher-level queueing; time-slicing; managing background activities (throttling, splitting heavy work into smaller operations, running at low load)",
+          "at": [
+            {
+              "deep": "In production"
+            },
+            {
+              "deep": "Deamortizing as a recipe"
+            }
+          ]
+        },
+        {
+          "item": "Living with Latency Variability: hedged requests, tied requests, micro-partitions, selective replication, latency-induced probation",
+          "at": [
+            {
+              "out": "techniques for tolerating variability across replicas are distributed-systems material, not a data-structure topic; the Deep dive names that tail-tolerance exists"
+            }
+          ]
+        },
+        {
+          "item": "Large Information Retrieval Systems: \"good enough\" results; canary requests",
+          "at": [
+            {
+              "out": "an application-level technique of search systems, not a data-structure topic"
+            }
+          ]
+        },
+        {
+          "item": "Mutations: why tolerating variability for state-changing operations is easier",
+          "at": [
+            {
+              "out": "about replicated writes and consistency, not data structures"
+            }
+          ]
+        },
+        {
+          "item": "Hardware Trends and Their Effects",
+          "at": [
+            {
+              "out": "hardware trends in 2013; the memory hierarchy is the next section of the chapter, in the external-memory topic"
+            }
+          ]
+        },
+        {
+          "item": "Conclusion: tail-tolerant techniques let designers optimize the common case while resilient to uncommon cases",
+          "at": [
+            {
+              "deep": "In production"
+            }
+          ]
+        },
+        {
+          "item": "Acknowledgments and References",
+          "at": [
+            {
+              "out": "a bibliography"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "Tarjan and Zwick, Optimal resizable arrays (arXiv 2023)",
+      "items": [
+        {
+          "item": "Abstract and introduction: resizable arrays, doubling gives O(1) amortized or worst-case per operation, N + O(sqrt N) space by Sitarski and Brodnik et al., new N + O(N^(1/r)) results",
+          "at": [
+            {
+              "deep": "Incremental copying, exactly"
+            },
+            {
+              "deep": "The frontier"
+            }
+          ]
+        },
+        {
+          "item": "Section 2: the resizable array ADT (Get, Set, Grow, Shrink) and the block-based memory model",
+          "at": [
+            {
+              "deep": "Incremental copying, exactly"
+            }
+          ]
+        },
+        {
+          "item": "Section 3: previous work: basic structures and geometric growth, Sitarski hashed array tree with rebuild and background deamortization, Brodnik et al. worst-case structure with incremental index-block copying",
+          "at": [
+            {
+              "deep": "The frontier"
+            },
+            {
+              "deep": "Incremental copying, exactly"
+            }
+          ]
+        },
+        {
+          "item": "Sections 4-10: lower bound, r = 3 solution, general r, growth game and amortized lower bound",
+          "at": [
+            {
+              "out": "space-optimal resizable arrays beyond deamortization; the container side is the topic Dynamic arrays and growth policy"
+            },
+            {
+              "topic": "Dynamic arrays and growth policy",
+              "quote": "amortized O(1) append, growth factor 2 vs 1.5"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "Okasaki, Purely Functional Data Structures, chapter 5 Lazy Rebuilding",
+      "items": [
+        {
+          "item": "5.1 Batched rebuilding: rebuild the whole structure after a sequence of updates; conditions; the mark-deleted BST example; batched queues",
+          "at": [
+            {
+              "step": "Global rebuilding: let it go stale, then rebuild"
+            },
+            {
+              "deep": "Global rebuilding"
+            }
+          ]
+        },
+        {
+          "item": "5.2 Global rebuilding (Overmars): run the rebuild incrementally, a few steps per operation, started early enough; two copies; updates buffered and replayed before the swap; worst-case bounds; often complicated",
+          "at": [
+            {
+              "step": "Rebuild in the background"
+            },
+            {
+              "deep": "Global rebuilding in the background"
+            }
+          ]
+        },
+        {
+          "item": "5.3 Lazy rebuilding: pay for the rebuild concurrently, execute it lazily; amortized, worst-case again with scheduling",
+          "at": [
+            {
+              "topic": "Amortization under persistence",
+              "quote": "Okasaki's banker's and physicist's methods with lazy evaluation"
+            }
+          ]
+        },
+        {
+          "item": "5.4 Double-ended queues",
+          "at": [
+            {
+              "topic": "Amortization under persistence",
+              "quote": "real-time queues"
+            }
+          ]
+        },
+        {
+          "item": "5.5 Related work: global rebuilding's uses in real-time queues and deques, catenable deques, order maintenance",
+          "at": [
+            {
+              "topic": "Amortization under persistence",
+              "quote": "real-time queues"
+            },
+            {
+              "deep": "The frontier"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "Erickson, Algorithms, Lecture 10: Scapegoat and Splay Trees",
+      "items": [
+        {
+          "item": "10.1 Binary search trees: balanced-tree families and their bounds; lazy balanced trees (Overmars), scapegoat trees (Andersson; Galperin and Rivest), splay trees",
+          "at": [
+            {
+              "deep": "Scapegoat trees, exactly"
+            },
+            {
+              "deep": "Global rebuilding"
+            }
+          ]
+        },
+        {
+          "item": "10.2 Lazy deletions, global rebuilding: mark deleted nodes, rebuild when half are marked; O(1) amortized rebuilding per deletion",
+          "at": [
+            {
+              "step": "Global rebuilding: let it go stale, then rebuild"
+            },
+            {
+              "step": "Deletes rebuild the whole tree"
+            },
+            {
+              "deep": "Global rebuilding"
+            }
+          ]
+        },
+        {
+          "item": "10.3 Insertions, partial rebuilding: rebuild a subtree when height(v) > alpha lg size(v); imbalance |size(left) - size(right)|; O(log n) amortized",
+          "at": [
+            {
+              "step": "A tree that stores no balance"
+            },
+            {
+              "step": "Rebuild the subtree, perfectly balanced"
+            },
+            {
+              "deep": "Scapegoat trees, exactly"
+            }
+          ]
+        },
+        {
+          "item": "10.4 Scapegoat (lazy height-balanced) trees: both techniques; only O(1) extra integers",
+          "at": [
+            {
+              "step": "A tree that stores no balance"
+            },
+            {
+              "step": "Deletes rebuild the whole tree"
+            },
+            {
+              "deep": "Scapegoat trees, exactly"
+            }
+          ]
+        },
+        {
+          "item": "10.5-10.8 Rotations and splay trees",
+          "at": [
+            {
+              "topic": "BST operations and rotations",
+              "quote": "the rotation as the one primitive all balancing schemes share"
+            },
+            {
+              "topic": "Splay trees",
+              "quote": "amortized O(log n) via the access lemma"
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "independent blind agent (EXPERT-BLIND.md): wrote the list from the syllabus line and opened sources, without reading the topic",
+    "date": "2026-10-12",
+    "items": [
+      {
+        "item": "An amortized bound says nothing about any single operation, and some systems are judged per operation",
+        "at": [
+          {
+            "step": "One request behind half a million copies"
+          },
+          {
+            "step": "What is the p99 of an append?"
+          },
+          {
+            "step": "Percentiles of requests, not of appends"
+          },
+          {
+            "deep": "In production"
+          }
+        ]
+      },
+      {
+        "item": "Tail latency compounds with fan-out",
+        "at": [
+          {
+            "step": "A rare stall becomes common at scale"
+          },
+          {
+            "deep": "Percentiles, exactly"
+          }
+        ]
+      },
+      {
+        "item": "Global rebuilding (Overmars) runs the rebuild as a coroutine, a few steps per ordinary operation",
+        "at": [
+          {
+            "step": "Rebuild in the background"
+          },
+          {
+            "deep": "Global rebuilding in the background"
+          }
+        ]
+      },
+      {
+        "item": "Updates arriving during a rebuild must be buffered and replayed",
+        "at": [
+          {
+            "step": "Rebuild in the background"
+          },
+          {
+            "deep": "Global rebuilding in the background"
+          }
+        ]
+      },
+      {
+        "item": "Deamortizing costs complexity, not only constants",
+        "at": [
+          {
+            "step": "What the installments cost"
+          },
+          {
+            "deep": "Deamortizing as a recipe"
+          }
+        ]
+      },
+      {
+        "item": "Incremental is not enough: granularity and dependency chains matter",
+        "at": [
+          {
+            "deep": "Deamortizing as a recipe"
+          },
+          {
+            "deep": "Global rebuilding in the background"
+          },
+          {
+            "topic": "Amortization under persistence",
+            "quote": "Okasaki's banker's and physicist's methods with lazy evaluation"
+          }
+        ]
+      },
+      {
+        "item": "Real-time queue: the textbook deamortization",
+        "at": [
+          {
+            "topic": "Amortization under persistence",
+            "quote": "real-time queues"
+          }
+        ]
+      },
+      {
+        "item": "Amortization and persistence",
+        "at": [
+          {
+            "topic": "Amortization under persistence",
+            "quote": "why amortized bounds break when an old version is reused"
+          },
+          {
+            "deep": "The frontier"
+          }
+        ]
+      },
+      {
+        "item": "Scapegoat trees are not deamortized for updates",
+        "at": [
+          {
+            "step": "Partial rebuilds are still amortized"
+          },
+          {
+            "deep": "Scapegoat trees, exactly"
+          }
+        ]
+      },
+      {
+        "item": "Scapegoat mechanism",
+        "at": [
+          {
+            "step": "A tree that stores no balance"
+          },
+          {
+            "step": "Which ancestor is the scapegoat?"
+          },
+          {
+            "step": "Rebuild the subtree, perfectly balanced"
+          },
+          {
+            "deep": "Scapegoat trees, exactly"
+          }
+        ]
+      },
+      {
+        "item": "Deletes are handled by a global rebuild",
+        "at": [
+          {
+            "step": "Deletes rebuild the whole tree"
+          },
+          {
+            "deep": "Scapegoat trees, exactly"
+          }
+        ]
+      },
+      {
+        "item": "A rebuild can be done in small extra space",
+        "at": [
+          {
+            "step": "Rebuild the subtree, perfectly balanced"
+          },
+          {
+            "deep": "Scapegoat trees, exactly"
+          }
+        ]
+      },
+      {
+        "item": "Redis `dict`: incremental rehash across two tables",
+        "at": [
+          {
+            "topic": "Resizing and incremental rehashing",
+            "quote": "incremental migration across two tables"
+          }
+        ]
+      },
+      {
+        "item": "The per-step work itself must be bounded",
+        "at": [
+          {
+            "deep": "Global rebuilding in the background"
+          },
+          {
+            "topic": "Resizing and incremental rehashing",
+            "quote": "incremental migration across two tables"
+          }
+        ]
+      },
+      {
+        "item": "Incremental rehash interacts with iterators and fork",
+        "at": [
+          {
+            "topic": "Resizing and incremental rehashing",
+            "quote": "incremental migration across two tables"
+          }
+        ]
+      },
+      {
+        "item": "Go maps do the same with \"evacuation\"",
+        "at": [
+          {
+            "topic": "Resizing and incremental rehashing",
+            "quote": "incremental migration across two tables"
+          }
+        ]
+      },
+      {
+        "item": "Not every production table deamortizes",
+        "at": [
+          {
+            "topic": "Resizing and incremental rehashing",
+            "quote": "hash tables under memory pressure"
+          }
+        ]
+      },
+      {
+        "item": "Concurrent resizing: Linux `rhashtable`",
+        "at": [
+          {
+            "topic": "Concurrent hash maps",
+            "quote": "for lock-free resizing"
+          }
+        ]
+      },
+      {
+        "item": "The pace rule: deferred work is proportional to the work that creates the debt",
+        "at": [
+          {
+            "deep": "Deamortizing as a recipe"
+          },
+          {
+            "deep": "Incremental copying, exactly"
+          }
+        ]
+      },
+      {
+        "item": "Latency work costs throughput",
+        "at": [
+          {
+            "step": "What the installments cost"
+          },
+          {
+            "deep": "Deamortizing as a recipe"
+          }
+        ]
+      },
+      {
+        "item": "Deferred compaction becomes debt, and the system throttles or stalls writers",
+        "at": [
+          {
+            "topic": "LSM compaction and amplification",
+            "quote": "leveled vs tiered vs hybrid compaction"
+          }
+        ]
+      },
+      {
+        "item": "A background budget that adapts upward can re-create the pause",
+        "at": [
+          {
+            "deep": "Global rebuilding in the background"
+          }
+        ]
+      },
+      {
+        "item": "Eliminating amortization is a research area with general frameworks",
+        "at": [
+          {
+            "out": "a pointer only: general frameworks for removing amortization (Dietz and Raman's pebble game, ad hoc scheduling for relaxed heaps and binomial queues) are research-level; this topic names global rebuilding as Overmars's technique and Chapter 13 covers scheduling"
+          }
+        ]
+      }
+    ]
+  },
+  "gapReview": {
+    "date": "2026-10-12",
+    "by": "builder",
+    "open": []
+  }
+}

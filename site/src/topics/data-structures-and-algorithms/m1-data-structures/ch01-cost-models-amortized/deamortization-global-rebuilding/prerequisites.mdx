@@ -1,0 +1,101 @@
+import Resource from '../../../../../components/Resource.astro';
+
+This reel assumes five things, and opens with the words it uses. If they are familiar, go straight in. If one is not, a few minutes with the matching resource is enough to follow every step. Reels on this site are marked **Before this** (earlier in the course), **Goes deeper later** (not needed now) or with the name of another track.
+
+<section class="prereq basics" data-section="basics">
+
+### <span class="n">00</span> Basics: the terms this reel uses
+
+- **Percentile (p50, p99, p99.9)**: the value that a given share of the measurements stay at or under; p99 is the cost 99 of every 100 stay under. *Where you meet it:* "p99 is 120 ms" means 1 request in 100 is slower.
+- **Tail latency**: the slow end of the latency distribution, which a service is judged on instead of the average. *Where you meet it:* a page that loads in 2 s for 1 user in 100.
+- **Tick**: this reel's unit of time, the time of one element write. *Where you meet it:* a request arrives every 4 ticks.
+- **Worst-case versus amortized bound**: a worst-case bound holds for every operation; an amortized one for a whole sequence. *Where you meet it:* append is O(1) amortized, yet one append copies half a million keys.
+- **Deamortization**: turning an amortized bound into a worst-case one by doing the expensive work in small pieces over later operations. *Where you meet it:* a vector copy spread over later appends.
+- **Incremental copying**: when the old buffer fills, allocate the new one, then let each operation move a fixed number of old keys. *Where you meet it:* a doubling vector that moves 2 old keys per append.
+- **Frontier**: how many old keys have moved so far; a read compares its index with it to pick the buffer. *Where you meet it:* reading index 5 when only 2 keys have moved.
+- **Global rebuilding**: let a structure go stale for Θ(n) updates, then rebuild all of it; Overmars's version rebuilds in the background. *Where you meet it:* a sorted vector rebuilt once half its slots are tombstones (marks left by deletes).
+- **Partial rebuilding**: rebuild only the part that went bad. *Where you meet it:* one subtree of a scapegoat tree.
+- **Scapegoat tree**: a plain binary search tree with no balance data in its nodes; only the root keeps the size and the largest size. *Where you meet it:* a too deep insert triggers a rebuild of one ancestor.
+- **alpha-weight-balanced, h(n)**: a node is balanced if neither child holds more than alpha of its subtree; h(n) = ⌊log base 1/alpha of n⌋ is the depth limit. *Where you meet it:* alpha = 2/3 and n = 9 give h = 5.
+
+</section>
+
+<section class="prereq" data-section="amortized">
+
+### <span class="n">01</span> Aggregate and accounting methods
+
+You know that an amortized bound is a worst-case bound on the total of a whole sequence divided by its length, never an average over random inputs. You have seen the doubling vector, the charge of 3 per append (1 to write, 2 saved for later copies), and the cost strip with its spikes.
+
+<p class="check"><b>Check yourself:</b> how many of a million appends to the doubling vector copy anything? (Answer: 20, plus the first append, which only allocates.)</p>
+
+<ul class="resources">
+  <Resource kind="reel" host={props.host} domain="data-structures-and-algorithms" title="Aggregate and accounting methods">The charge of 3, the cost strip, and the million-append numbers this reel builds on.</Resource>
+  <Resource kind="reading" title="Lecture 9: Amortized Analysis" href="https://jeffe.cs.illinois.edu/teaching/algorithms/notes/09-amortize.pdf" by="Jeff Erickson, Algorithms">The counter by aggregate, taxation and potential; section 9.4 ends with a counter deamortized by Ehrlich's Gray code.</Resource>
+</ul>
+
+</section>
+
+<section class="prereq" data-section="potential">
+
+### <span class="n">02</span> The potential method
+
+You know the gauge Φ = 2n − cap that fills on cheap appends and empties on a resize, and the rule that shrinking at a quarter, not at a half, avoids thrashing.
+
+<p class="check"><b>Check yourself:</b> what is Φ = 2n − cap just before append 9? (Answer: 8, exactly the keys append 9 copies.)</p>
+
+<ul class="resources">
+  <Resource kind="reel" host={props.host} domain="data-structures-and-algorithms" title="The potential method">The gauge, the two-piece potential for a table that grows and shrinks, and why shrink-at-¼ works.</Resource>
+</ul>
+
+</section>
+
+<section class="prereq" data-section="bst">
+
+### <span class="n">03</span> Binary search trees: search and insert
+
+You know that a binary search tree keeps smaller keys to the left and larger to the right, that a search follows one path from the root, and that an insert ends as a new leaf.
+
+<p class="check"><b>Check yourself:</b> insert 5, 3, 8, 4 into an empty tree. What is the depth of 4? (Answer: 2, under 3.)</p>
+
+<ul class="resources">
+  <Resource kind="reel" host={props.host} domain="data-structures-and-algorithms" title="BST operations and rotations">Search, insert, delete by successor swap, and the rotation: the reel that follows later in the course.</Resource>
+</ul>
+
+</section>
+
+<section class="prereq" data-section="percentiles">
+
+### <span class="n">04</span> Percentiles
+
+You can read a percentile off a sorted list: p50 is the middle value, p90 the value 9 tenths of the way up, p99 the value only 1 in 100 exceeds. This reel counts a percentile by nearest rank: with N values, the p-th percentile is the one at rank ⌈p × N / 100⌉ in sorted order.
+
+<p class="check"><b>Check yourself:</b> ten requests take 1, 1, 1, 1, 1, 1, 1, 1, 1 and 50 ms. What are p50, p90 and p99? (Answer: 1, 1 and 50 ms.)</p>
+
+</section>
+
+<section class="prereq" data-section="logarithms">
+
+### <span class="n">05</span> Logarithms
+
+You can read a logarithm in any base as the number of times a size is divided by that base to reach 1. The scapegoat tree's depth limit uses base 3/2 for alpha = 2/3.
+
+<p class="check"><b>Check yourself:</b> about what is log base 1.5 of 9? (Answer: about 5.4, since 1.5⁵ is about 7.6 and 1.5⁶ about 11.4.)</p>
+
+</section>
+
+<section class="prereq" data-section="later">
+
+### <span class="n">06</span> Where this tool is used next
+
+You do not need these to follow the reel. Each one picks up a part of it.
+
+<ul class="resources">
+  <Resource kind="reel" host={props.host} domain="data-structures-and-algorithms" title="Resizing and incremental rehashing">Incremental migration across two tables, the hash-table cousin of the two-buffer vector.</Resource>
+  <Resource kind="reel" host={props.host} domain="data-structures-and-algorithms" title="Red-black trees">Balance information in every node, for worst-case O(log n) updates.</Resource>
+  <Resource kind="reel" host={props.host} domain="data-structures-and-algorithms" title="Amortization under persistence">Why amortized bounds break when an old version is reused.</Resource>
+  <Resource kind="reel" host={props.host} domain="data-structures-and-algorithms" title="Measuring the memory hierarchy">The chapter lab, which measures per-append latency and copies on a real machine.</Resource>
+  <Resource kind="reading" title="Scapegoat Trees" href="https://people.csail.mit.edu/rivest/pubs/GR93.pdf" by="Igal Galperin and Ronald L. Rivest, SODA 1993 (author PDF)">The scapegoat tree's definitions and its amortized proof.</Resource>
+  <Resource kind="reading" title="The Tail at Scale" href="https://www.barroso.org/publications/TheTailAtScale.pdf" by="Jeffrey Dean and Luiz André Barroso, Communications of the ACM 2013 (author PDF)">Why a rare slow response becomes the common case when a request fans out.</Resource>
+</ul>
+
+</section>

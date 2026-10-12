@@ -1,0 +1,259 @@
+{
+  "topic": "dsa.deamortization-global-rebuilding",
+  "note": "Written to be spoken: one sentence or phrase per line; {\"beat\": s} is a deliberate pause; code is spelled the way it is said. `answer` plays after the learner answers a predict step.",
+  "steps": [
+    {
+      "lines": [
+        "The last reel proved that append is big O of one, amortized.",
+        "Now put the vector behind a service.",
+        {
+          "beat": 0.3
+        },
+        "Each request appends one key. One tick is the time to write one element, and a request arrives every four ticks.",
+        "This is a model of a service, not a measurement.",
+        "Append five hundred twenty four thousand, two hundred eighty nine copies five hundred twenty four thousand, two hundred eighty eight keys.",
+        "While it runs, one hundred thirty one thousand, seventy two requests arrive. They all wait.",
+        "Is this service fast?"
+      ]
+    },
+    {
+      "lines": [
+        "Percentiles describe a tail.",
+        "The ninety ninth percentile, p ninety nine, is the cost that ninety nine of every hundred appends stay at or under.",
+        "Of a million appends to the doubling vector, twenty resize. The largest copies five hundred twenty four thousand keys.",
+        "What is the p ninety nine cost of an append?"
+      ],
+      "answer": [
+        "One write.",
+        "Only twenty of a million appends resize. That is two thousandths of a percent.",
+        "So p fifty, p ninety nine, p ninety nine point nine, and even p ninety nine point nine nine are all one write.",
+        "The mean is about two, and the maximum is five hundred twenty four thousand, two hundred eighty nine.",
+        "Doubling does not hurt the p ninety nine of appends. The harm is in what waits behind the rare one."
+      ]
+    },
+    {
+      "lines": [
+        "p fifty is the median. p ninety nine is the value only one in a hundred exceeds. p ninety nine point nine, only one in a thousand.",
+        "Per append, the tail is one write.",
+        {
+          "beat": 0.3
+        },
+        "Per request, with the wait included, p ninety nine is four hundred ninety four thousand, two hundred eighty nine ticks.",
+        "Three hundred forty nine thousand, five hundred fifteen requests wait behind a resize. That is thirty five percent.",
+        "A service is judged on its requests. So their tail is the one that counts.",
+        "The copy is one append. The wait is everyone's."
+      ]
+    },
+    {
+      "lines": [
+        "Fan out multiplies the tail.",
+        "Dean and Barroso give an example. A server answers in ten milliseconds, but takes a full second at its p ninety nine.",
+        "A request served by one such server is slow one time in a hundred.",
+        "A request that waits for a hundred of them is slow sixty three percent of the time.",
+        {
+          "beat": 0.3
+        },
+        "A tail you can ignore per server is the common case per request.",
+        "With two thousand servers, and one in ten thousand slow, it is almost one request in five."
+      ]
+    },
+    {
+      "lines": [
+        "Accounting charged three per append. One to write, two saved.",
+        "Deamortization spends the two right away.",
+        {
+          "beat": 0.3
+        },
+        "When the vector of eight fills, append nine allocates sixteen slots, and moves two old keys.",
+        "The gauge of keys left to copy drains by two every time, from eight to zero.",
+        {
+          "beat": 0.3
+        },
+        "Over sixteen appends, both vectors write thirty one elements.",
+        "But no append costs more than three. The dashed line is now a worst case bound."
+      ]
+    },
+    {
+      "lines": [
+        "Here is the state after append ten.",
+        "The old buffer. The new one. The count n. And the frontier k: how many old keys have moved.",
+        "An append writes its key at slot n of the new buffer, then moves the next two old keys.",
+        {
+          "beat": 0.3
+        },
+        "A read at index i uses the old buffer only if k is at most i, and i is below m, the old key count.",
+        "Everything else is in the new buffer. One comparison picks the buffer."
+      ]
+    },
+    {
+      "lines": [
+        "Append nine allocated sixteen slots and moved two old keys. Six are left to copy, and seven slots are free.",
+        "Every later append writes one new key and moves two old ones.",
+        "How many of the sixteen slots are in use when the last old key moves?"
+      ],
+      "answer": [
+        "Twelve.",
+        "Appends nine to twelve move two keys each, eight in all, while n goes from eight to twelve.",
+        "The copy ends at one and a half times the old size, with a quarter of the new buffer free.",
+        "Moving one key per append would also finish, but exactly as the buffer fills, with no slack.",
+        "For growth factor g, move at least one over g minus one keys per append."
+      ]
+    },
+    {
+      "lines": [
+        "Same total work. A different bill.",
+        {
+          "beat": 0.3
+        },
+        "Both buffers stay alive while the copy runs. At the last resize of a million appends, that is twelve mebibytes, for two hundred sixty two thousand, one hundred forty four appends.",
+        "Every read pays a comparison with the frontier.",
+        "More than half the appends now cost three, so the median got worse.",
+        "And the big O of one worst case assumes that allocating a buffer is big O of one."
+      ]
+    },
+    {
+      "lines": [
+        "Now a second structure, to see the idea apart from arrays that grow.",
+        "Global rebuilding: let a structure go stale, then rebuild all of it.",
+        {
+          "beat": 0.3
+        },
+        "A sorted vector deletes by leaving a tombstone. A lookup reports a tombstoned key as absent.",
+        "Once half the slots are tombstones, copy the live keys into a compact vector.",
+        "That costs theta of n, after theta of n deletes. So it is big O of one, amortized.",
+        "The doubling vector does the same for growth.",
+        {
+          "beat": 0.3
+        },
+        "And one delete still copies half a million keys."
+      ]
+    },
+    {
+      "lines": [
+        "Overmars's global rebuilding goes further. Start early, and rebuild while serving.",
+        "At four tombstones of sixteen, begin a new copy.",
+        "Each delete also scans eight slots of the old copy, and copies the live keys. Queries still use the old copy.",
+        {
+          "beat": 0.3
+        },
+        "A key deleted after it was copied goes into a log. The log is replayed before the swap.",
+        "Then the new copy takes over.",
+        "No delete writes more than ten."
+      ]
+    },
+    {
+      "lines": [
+        "Now a tree where only a part goes bad.",
+        "A scapegoat tree is a plain binary search tree. Each node holds a key and two pointers, nothing else.",
+        "The root keeps two counts: the size, and the largest size since the last full rebuild.",
+        {
+          "beat": 0.3
+        },
+        "Fix alpha strictly between one half and one. Here, alpha is two thirds.",
+        "A node deeper than h of n, the floor of log base one point five of n, is too deep. Here n counts the new node.",
+        "Inserting sixty nine lands at depth six, below the limit of five."
+      ]
+    },
+    {
+      "lines": [
+        "Climb from sixty nine, the deep node.",
+        "At each ancestor, compare its heavier child's subtree with the ancestor's own subtree.",
+        "The scapegoat is the first ancestor where that child holds more than alpha, two thirds.",
+        "Which node is it?"
+      ],
+      "answer": [
+        "Eighty seven.",
+        "From sixty nine going up: sixty three's heavier child holds one of its two nodes. Eighty's holds two of three. Exactly two thirds is still allowed.",
+        "Fifty four's holds three of five. That is under two thirds, though it looks lopsided.",
+        "Eighty seven's left child holds five of its six nodes. That is over two thirds, so eighty seven is the scapegoat.",
+        "The sizes are counted on the way up. No node stores one."
+      ]
+    },
+    {
+      "lines": [
+        "Rebuild the scapegoat's subtree, perfectly balanced.",
+        "Walk its six nodes in order. Make the lower middle one, sixty three, the root. Then recurse.",
+        {
+          "beat": 0.3
+        },
+        "The time is proportional to the subtree. Done in place, the extra space is big O of log n.",
+        "Who pays? Each node holds the difference between its left and right sizes as potential.",
+        "An unbalanced node holds theta of its own size. So inserts cost big O of log n, amortized."
+      ]
+    },
+    {
+      "lines": [
+        "Deletes never push a node deeper. But they shrink n, so the tree grows tall for its size.",
+        "The root's second count handles this. When the size drops below alpha times the largest size, rebuild the whole tree.",
+        "That is global rebuilding again, inside the scapegoat tree.",
+        {
+          "beat": 0.3
+        },
+        "It takes theta of n deletes first. At a million keys, delete three hundred thirty three thousand, three hundred thirty four rebuilds six hundred sixty six thousand, six hundred sixty six nodes."
+      ]
+    },
+    {
+      "lines": [
+        "Be honest about the tree. It is amortized, not deamortized.",
+        "Big O of log n per insert, over any sequence. But one insert can rebuild most of the tree.",
+        "A million increasing keys cost twenty eight writes per insert on average. The p ninety nine is two hundred forty six.",
+        "And insert nine hundred thousand, nine hundred sixty one rebuilds seven hundred fifty one thousand, three hundred thirty two nodes.",
+        {
+          "beat": 0.3
+        },
+        "Searches never restructure. Their worst case stays big O of log n, with depth at most thirty four here."
+      ]
+    },
+    {
+      "lines": [
+        "Back to the service.",
+        "With two moves per append, no append takes more than three ticks. Requests arrive four apart. So no queue ever forms.",
+        "Request p ninety nine and the maximum are three ticks, against more than four hundred ninety thousand before.",
+        {
+          "beat": 0.3
+        },
+        "The total work is the same. The median rose from one to three.",
+        "And every tick charged a write the same, wherever in memory it landed."
+      ]
+    },
+    {
+      "lines": [
+        "The vector holds one million, forty eight thousand, five hundred seventy six keys, and is full.",
+        "With incremental copying at two keys per append, for how many appends are both buffers alive?",
+        "And what does the costliest append write?"
+      ],
+      "answer": [
+        "Five hundred twenty four thousand, two hundred eighty eight appends, and three writes.",
+        "The next append allocates twice the slots, and moving the keys at two per append takes five hundred twenty four thousand, two hundred eighty eight appends, until n is one million, five hundred seventy two thousand, eight hundred sixty four.",
+        "Meanwhile both buffers, twenty four mebibytes, stay alive.",
+        "Each of those appends writes its key and moves two."
+      ]
+    },
+    {
+      "lines": [
+        "A teammate's get of i reads the new buffer for every index while a copy runs.",
+        "Right after append nine, the old size is eight and the frontier k is two.",
+        "What does get of five return?"
+      ],
+      "answer": [
+        "An empty slot.",
+        "Only indices below two have moved. New slots two to seven are still empty, and slot eight holds key nine.",
+        "Reads must check the frontier: old buffer if k is at most i and i is below m, else the new one.",
+        "Writes need the same rule, or a later move overwrites the new value with the old one."
+      ]
+    },
+    {
+      "lines": [
+        "A nightly batch job appends a billion keys to a vector. Only its total running time matters.",
+        "A reviewer asks you to switch to incremental copying. Do you agree?"
+      ],
+      "answer": [
+        "No.",
+        "Both vectors write two billion, seventy three million, seven hundred forty one thousand, eight hundred twenty three elements.",
+        "The incremental one also pays a comparison on every read, and holds two buffers longer.",
+        "Its gain is the tail. In a batch, no request waits behind the five hundred thirty six million, eight hundred seventy thousand, nine hundred thirteen write append.",
+        "Deamortize when something waits on single operations: requests, frames, or a fan out."
+      ]
+    }
+  ]
+}

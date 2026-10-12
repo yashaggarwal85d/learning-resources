@@ -180,4 +180,24 @@ export const TOPICS: TopicMeta[] = [
     handoff: 'Every bound so far priced one run on its worst input. A data structure lives through a sequence of operations, where one expensive step can be paid for by many cheap ones, with no probability involved. Next: amortized analysis.',
 
   },
+  {
+    id: 'dsa.deamortization-global-rebuilding',
+    domain: 'data-structures-and-algorithms',
+    slug: 'data-structures-and-algorithms/m1-data-structures/ch01-cost-models-amortized/deamortization-global-rebuilding',
+    title: 'Deamortization and global rebuilding',
+    syllabusTitle: 'Deamortization and global rebuilding',
+    kind: 'full',
+    // Built in parallel with the other topics of Chapter 1: it waits until every topic before it is live.
+    status: 'held',
+    milestone: { number: 1, title: 'Data Structures' },
+    chapter: { number: 1, title: 'Cost Models and Amortized Analysis', section: '1.2' },
+    minutes: 13,
+    verified: '2026-10-12',
+    introduces: ['latency-percentiles', 'deamortization', 'incremental-copying', 'global-rebuilding', 'partial-rebuilding', 'scapegoat-tree'],
+    uses: ['amortized-cost', 'accounting-method', 'potential-method', 'dynamic-array-doubling', 'growth-factor', 'load-factor', 'table-expand-contract', 'best-worst-average-case', 'big-o-theta-omega', 'bst-basics', 'logarithms'],
+    // Assumed, not taught first in this domain: listed in the Prerequisites panel.
+    declared: ['bst-basics', 'logarithms'],
+    bridge: 'The potential proof says each append costs O(1) on balance. A request that lands on the one append that copies half a million elements doesn\'t care. Here is how to pay that copy in installments.',
+    handoff: 'Every count so far charged the same for every memory access. Next: the external-memory model, where the only cost is moving blocks between memory and disk.',
+  },
 ];
