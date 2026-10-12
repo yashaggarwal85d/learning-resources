@@ -80,8 +80,8 @@
       "answer": [
         "About twenty times, on this machine.",
         "Memory moves in sixty four byte lines. In order, one line serves eight numbers, and the C P U fetches the next lines before you ask.",
-        "At random, each read uses one number of its line... and waits. But the C P U overlaps several waits.",
-        "Make each address depend on the last read, and nothing overlaps. A hundred and fifty eight nanoseconds... the whole D RAM wait, plus finding the address.",
+        "At random, each read uses one number of its line and waits. But the C P U overlaps several waits.",
+        "Make each address depend on the last read, and nothing overlaps: a hundred and fifty eight nanoseconds, the whole D RAM wait.",
         "Big O counted all three the same."
       ]
     },
@@ -95,10 +95,9 @@
     },
     {
       "lines": [
-        "A job can't finish faster than its bytes take at bandwidth beta... or than its waits take with k in flight.",
-        "The floor is the larger of the two.",
-        "One tebibyte, read in order from N V M E: a hundred and sixty two seconds of bytes, five seconds of waits, at the sequential twenty microseconds. Bandwidth bound.",
-        "The orders table, page by page at random from a hard disk: twenty nine seconds of bytes, five thousand nine hundred fifty two of waits, using at least six milliseconds, a floor value. Latency bound.",
+        "A job can't finish faster than its bytes take at bandwidth beta... or its waits take with k in flight. The floor is the larger.",
+        "One tebibyte, read in order from N V M E: a hundred and sixty two seconds of bytes, five of waits. Bandwidth bound.",
+        "The orders table, at random from a hard disk: twenty nine seconds of bytes, five thousand nine hundred fifty two of waits, at a floor value of six milliseconds each. Latency bound.",
         "A floor ignores everything else. So a real run is slower."
       ]
     },
@@ -112,12 +111,10 @@
     },
     {
       "lines": [
-        "Back to the problem.",
-        "One tebibyte from the N V M E drive: bandwidth bound, a hundred and sixty two seconds.",
-        "From object storage, in sixteen mebibyte ranges: sixty five thousand five hundred thirty six requests.",
-        "One at a time, the hundred millisecond waits alone take one point eight hours.",
-        "With k in flight, they take sixty five hundred fifty four seconds, divided by k. And with at least k equals forty one in flight, the floor matches the drive.",
-        "Each request also streams its sixteen mebibytes. So a real run needs more. Measure the per request rate before you promise it."
+        "Back to the problem. One tebibyte from the N V M E drive: bandwidth bound, a hundred and sixty two seconds.",
+        "From object storage, in sixteen mebibyte ranges: sixty five thousand five hundred thirty six requests. One at a time, the waits alone take one point eight hours.",
+        "With k in flight, they take sixty five hundred fifty four seconds divided by k. At k equals forty one, the floor matches the drive.",
+        "Each request also streams its sixteen mebibytes, so a real run needs more. Measure the per request rate before you promise it."
       ]
     },
     {

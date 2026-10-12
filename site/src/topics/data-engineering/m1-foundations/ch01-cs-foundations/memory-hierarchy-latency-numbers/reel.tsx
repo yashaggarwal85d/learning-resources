@@ -2,25 +2,17 @@ import type { Reel, StepCtx } from '../../../../../reels/types';
 import * as S from './scenes';
 
 const Q1 = (c: StepCtx) => (
-  <S.Quiz
-    {...c}
-    chips={['2,000,000 random 8 KB page reads', 'one NVMe drive, 80 µs per read', 'one at a time', 'nothing cached']}
-    work={['2,000,000 × 80 µs = 160 s', 'full scan of the same table: 1.2 s', '80 in flight: waits 2 s, bytes 2.4 s']}
-  />
+  <S.Quiz {...c} chips={['2,000,000 random 8 KB page reads', 'one NVMe drive, 80 µs per read', 'one at a time', 'nothing cached']} Answer={S.Answer1} />
 );
 const Q2 = (c: StepCtx) => (
   <S.Quiz
     {...c}
-    chips={['copy orders: 8.2 GB', 'from a local NVMe drive (6,800 MB/s)', 'to another machine, one TCP connection', 'no cluster placement group', 'both instances: 25 Gbit/s']}
-    work={['drive: 8.2 GB / 6,800 MB/s = 1.2 s', 'one flow: max 5 Gbit/s = 625 MB/s → 13.1 s', 'floor = the slowest link: 13 s']}
+    chips={['copy orders: 8.2 GB', 'local NVMe drive (6,800 MB/s) to another machine', 'one TCP connection, no placement group', 'both instances: 25 Gbit/s']}
+    Answer={S.Answer2}
   />
 );
 const Q3 = (c: StepCtx) => (
-  <S.Quiz
-    {...c}
-    chips={['1 TiB in 16 MiB ranges', '8 requests in flight', 'α ≈ 100 ms', '100 Gbit/s instance', 'measured: 18 minutes']}
-    work={['waits: 65,536 × 100 ms / 8', '= 819 s = 13.7 min; 18 / 13.7 = 1.3', 'requests/s: at most 80, limit ≥ 5,500 per prefix', 'bytes at 100 Gbit/s: 88 s']}
-  />
+  <S.Quiz {...c} chips={['1 TiB in 16 MiB ranges', '8 requests in flight, α ≈ 100 ms', '100 Gbit/s instance', 'measured: 18 minutes']} Answer={S.Answer3} />
 );
 
 const reel: Reel = {
@@ -79,7 +71,7 @@ const reel: Reel = {
           is from 2009; AWS now shows live medians in its network console, not a fixed figure: read yours there, or measure.
         </>
       ),
-      duration: 3.8,
+      duration: 7.0,
       Visual: S.OffChip,
     },
     {
@@ -103,7 +95,7 @@ const reel: Reel = {
           both.
         </>
       ),
-      duration: 4.0,
+      duration: 5.6,
       Visual: S.TwoAxes,
     },
     {
@@ -132,8 +124,8 @@ const reel: Reel = {
         explain: (
           <>
             Here, 20×. Memory moves 64-byte lines. In order, one line serves eight numbers and the CPU fetches the next lines before you ask. At random,
-            each read uses one number of its line and waits for it, but the CPU overlaps several waits. Make each address depend on the last read and
-            nothing overlaps: 158 ns: the whole DRAM wait, plus finding the address. Big-O counted all three the same.
+            each read uses one number of its line and waits, but the CPU overlaps several waits. Make each address depend on the last read and
+            nothing overlaps: 158 ns, the whole DRAM wait. Big-O counted all three the same.
           </>
         ),
       },
@@ -159,7 +151,7 @@ const reel: Reel = {
           hard disk: 29 s of bytes, 5,952 s of waits (α of at least 6 ms, a floor value), latency-bound. A floor ignores everything else, so a real run is slower.
         </>
       ),
-      duration: 3.8,
+      duration: 7.0,
       Visual: S.Floor,
     },
     {
@@ -171,7 +163,7 @@ const reel: Reel = {
           seconds.
         </>
       ),
-      duration: 3.8,
+      duration: 5.2,
       Visual: S.OrdersRace,
     },
     {
@@ -183,7 +175,7 @@ const reel: Reel = {
           real run needs more: measure the per-request rate before you promise it.
         </>
       ),
-      duration: 4.2,
+      duration: 6.4,
       Visual: S.Verdict,
     },
     {

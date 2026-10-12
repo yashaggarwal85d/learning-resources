@@ -594,5 +594,18 @@ Progress: built (examples.py, reel, scenes, Deep dive, Prerequisites, narration.
    - **Expert items (findings 15, 16):** `numastat` counters get a Deep dive line (kernel admin guide quote); the NVMe queue model gets one sentence from the NVMe base specification (up to 65,535 I/O queues, 65,535 commands each), and the `io_uring` topic quote is dropped from that item (a kernel interface, not the NVMe queue model).
    - **Seams recorded, not edited here (findings 2, 7, 17):** the previous topic's "disk read = 100 us" and the held I/O topic's per-request S3 figures go to `REVIEW.md` for the release seam check; the orphaned false-sharing lab clause goes to `syllabus/review-notes/de-cuts.md`.
 
+9. **Looks and learning review fixes (2026-10-12; `REVIEW.md`, second section, findings 1-19).** The storyboard changes, in step order:
+   - **Step 1:** the NVMe pipe is short and solid, the object-storage pipe long and dashed. **Step 2:** the question frame is a true linear axis (RAM dot on the zero end).
+   - **Step 3:** decade guide lines through the rows. **Step 4:** the rows arrive in the order the voice names them (NVMe, HDD, object storage, the 2009 round trip); the chip + DRAM bar is quiet taupe; hollow dots mark the 2009 and floor figures; the "× 1,000,000" bracket is on the axis from DRAM to object storage; notes are one short line each; duration 7.0 s.
+   - **Step 5:** local and remote trips both drawn and labelled beside their paths; the remote path runs down the interconnect, not through CPU 1. The "thread leaves its memory behind" idea stays in the caption only.
+   - **Step 6:** the network point and its footnotes are removed from the scatter (the round trip and Gbit/s stay in step 4); NVMe and HDD show their bandwidth; points arrive in narration order (5.6 s).
+   - **Step 7:** the caramel segment is labelled "bytes" and each total sits on its own bar's label line.
+   - **Step 8:** the answer frame is three dots on the log axis with "20×" and "11×" brackets (the 11× is asserted in `examples.py`); the question frame shows 64-byte lines; random is caramel, in order cinnamon.
+   - **Step 9:** legend, wider transfer tips, a finish line per panel ("done at 640 µs", "done at 80 µs"), "Samsung measured it with 128 in flight". **Step 10:** the two terms are dots on the log axis with the larger ringed, one-line titles, no footnote; the build is sequential (7.0 s).
+   - **Step 11:** the unlabelled top number is gone; a closing beat shows a 60 s scan running off the axis, "the other 59 s are not the drive" (5.2 s). **Step 12:** the caveat moved into the drawing, larger readout, the animated k drives the slider, "drag k: 1 ... 128" (6.4 s).
+   - **Steps 13-15:** the question frame keeps four pills (steps 14 and 15 merge two pairs); the answer frame is one small drawing each (two bars 160 s / 2.4 s; a three-link pipe at 6,800 / 625 / 3,125 MB/s; a 13.7 min floor against the 18 min measured run), not the old arithmetic lines.
+   - **Narration:** the step 8 answer and steps 10 and 12 are trimmed (about 85 to 81, 104 to 91 and 102 to 95 words); no fact is dropped. Step 4 is not split into two steps.
+   - **Not changed:** the phone answer panel being cut off is shared-player behaviour (recorded in `REVIEW.md` as "for the owner").
+
 ## Changes after final
 

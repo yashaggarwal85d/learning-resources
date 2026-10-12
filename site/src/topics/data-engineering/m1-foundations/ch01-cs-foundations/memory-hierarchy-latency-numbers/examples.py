@@ -227,6 +227,7 @@ assert REF_SEQ_NS < 5 and REF_RAND_NS / REF_SEQ_NS >= 3 and REF_CHASE_NS / REF_S
 assert 1 <= REF_GBS <= 100
 assert round(REF_RAND_NS / REF_SEQ_NS) == 20                    # "20× longer" at random
 assert round(REF_CHASE_NS / REF_SEQ_NS, -1) == 230              # about 230× for the dependent walk
+assert round(REF_CHASE_NS / REF_RAND_NS) == 11                  # the second bracket on the answer frame: "11×" from random to dependent
 assert 64 // 8 == 8                                              # a 64-byte line holds eight 8-byte numbers
 READS = GiB // 8
 assert READS == 134_217_728 == 2**27                             # "134,217,728 reads"
@@ -321,6 +322,7 @@ assert 830_000 < NVME_BW / 8_192 < 831_000                                      
 assert round(ORDERS_BYTES / FLOW_BW, 1) == 13.1 and round(ORDERS_BYTES / FLOW_BW) == 13   # one flow, 5 Gbit/s
 assert round(ORDERS_BYTES / (10 / 8 * 1e9), 1) == 6.6                                     # 10 Gbit/s in a cluster placement group
 assert round(ORDERS_BYTES / (25 / 8 * 1e9), 1) == 2.6                                     # several flows, the instance's 25 Gbit/s
+assert 25 / 8 * 1e9 == 3_125e6 and 5 / 8 * 1e9 == 625e6 and 625e6 < 3_125e6 < NVME_BW      # the answer frame's three links: 6,800 / 625 / 3,125 MB/s, the flow is the narrowest
 assert round(ORDERS_BYTES / NVME_BW, 1) == 1.2 and round(B_BYTES) == 29                   # the drive alone; the HDD scan (the 29 s option)
 
 # ---- 13. Prove it 3: the nightly job's measurement --------------------------------------------------------------------------
