@@ -52,6 +52,8 @@ destructure: ["destructured", "body", "head", "tail"]
 
 Struct update syntax "moves or copies the remaining fields from the base expression" (Reference), so `Frame { header: h2, ..frame }` partially moves `frame` when a non-`Copy` field comes from the base (E0382 on the next use, `update.rs`). If only `Copy` fields come from it, the base stays whole: `Frame { payload: pool.get(), ..frame }` copies just `header` (`update copied header only: frame whole id=1 next id=2`). And on a base that implements `Drop`, taking a field is E0509 (`update_drop.rs`).
 
+Closures make partial moves too, silently. From edition 2021, a `move ||` that uses `frame.payload` captures only that field: `let c = move || drop(frame.payload); c();` leaves `frame.header` readable (`closure_partial.rs` prints `closure moved only the payload: header kind=7` under 2021 and 2024; under 2018 it is `error[E0382]: borrow of moved value: `frame``). The capture rules themselves are the closures topic's (`move-closures`), so they are only noted here.
+
 ### Why a Drop type is a single unit (E0509)
 
 The error index: a struct "cannot be dropped if one or more of its fields have been moved", because "this destructor may use the fields of the struct, so moving out of the struct could make it impossible to run the destructor. Therefore, we must think of all values whose type implements the Drop trait as single units whose fields cannot be moved." Rust By Example: "types that implement the Drop trait cannot be partially moved from, because its drop method would use it afterwards as a whole." The Nomicon gives the signature reason: "taking &mut self means that even if you could suppress recursive Drop, Rust will prevent you from e.g. moving fields out of self."
@@ -70,7 +72,7 @@ error[E0509]: cannot move out of type `PooledBuf<'_>`, which implements the `Dro
 
 The E0507 forms, all measured: behind a shared reference (`cannot move out of `r.payload` which is behind a shared reference`), behind a mutable reference even when the next line refills the field (`cannot move out of `frame.payload` which is behind a mutable reference`), a `match` on a field (`... as enum variant `Some` which is behind a mutable reference`; its help is version-dependent, `match &slot.buf` on 1.97.0 and `Some(ref b)` on 1.99.0, so neither is quoted as *the* fix), an `Rc` (`cannot move out of an `Rc``), a `Vec` index (`cannot move out of index of `Vec<Buf>``, the first topic), a `for b in &bufs` loop body, and the error index's `RefCell::borrow` case with its three fixes (avoid the move, reclaim ownership with `into_inner`, make the type `Copy`). The index also notes it "can also happen when using a type implementing Fn or FnMut, as neither allows moving out of them" (the first topic covered it).
 
-Why: the owner gets the value back when the loan ends and will use or drop it. One way to see it, our own reasoning and not a quoted rule: if a panic unwound between `let old = frame.payload;` and the refill, the owner's destructor would run on a hole. The error index states the way out: "It is fine only if you put something back. mem::replace can be used for that."
+Why: the owner gets the value back when the loan ends and will use or drop it, and anything that can panic between `let old = frame.payload;` and the refill would hand the owner a hole. The Rustonomicon's Exception Safety chapter states the principle for code that creates a transient hole: "Code that transiently creates unsound states must be careful that a panic does not cause that state to be used." and "Generally this means ensuring that only non-panicking code is run while these states exist, or making a guard that cleans up the state in the case of a panic." Its examples are `unsafe`; applying the principle to a field behind a `&mut` (the type has no state for "temporarily empty", so the language allows only single-step swaps) is our reading, not a quoted rule. The error index states the way out: "It is fine only if you put something back. mem::replace can be used for that." Reel step 1 is the same rule one level down: `drop(&mut self)` holds only a `&mut`, so `self.buf` is E0507; the by-value `into_inner(self)` hits E0509 instead, because `PooledBuf` has a destructor (both protect the owner's `drop`).
 
 The idioms, with signatures and what they leave behind:
 
@@ -78,6 +80,8 @@ The idioms, with signatures and what they leave behind:
 - `mem::take<T: Default>(dest: &mut T) -> T` leaves `T::default()`; "take allows taking ownership of a struct field by replacing it with an empty value". `Vec::new` and `String::new` do not allocate.
 - `mem::replace(dest: &mut T, src: T) -> T` moves `src` in and returns the old value; "Neither value is dropped", and `T` need not be `Clone` (the docs' own example is `mem::replace(&mut self.buf[i], v)`).
 - `mem::swap(x, y)` exchanges two places "without deinitializing either one".
+
+The most common production use is not a struct field but a state machine advanced through `&mut self`: `*self = match mem::replace(self, Stage::Empty) { Stage::Full(buf) => Stage::Done(buf), other => other };` moves the owned payload out of the old variant by value, with a valid `Empty` in place for the whole match (`state.rs`: `Full -> Done -> Done`, 0 allocations, 0 deallocations). Written as `match *self { ... }` instead, it is E0507 (`state_e0507.rs`). The third-party `replace_with` crate exists for the case where you want to move out, compute and put back: "Temporarily take ownership of a value at a mutable location, and replace it with a new value based on the old one." It is honest about the price: "the desired ability to temporarily move out of &mut T doesn’t exist yet, so this crate is my interim solution", and "If the second closure (FnOnce() -> T) panics, however, then it does indeed abort." Its `replace_with_or_abort` aborts on a panic in the mapping closure, the cost of the hole the reel's step 9 describes.
 
 Costs, measured with the counting allocator: each of them is 0 allocations and 0 deallocations. `mem::replace` with a fresh `Vec::with_capacity(BUF_CAP)` costs the replacement's own allocation (1). The trap: `mem::take(&mut buf.bytes)` on a *pooled* buffer leaves capacity 0 (`left_cap=0 taken_cap=65536`), so 1,000 messages of 261 bytes cost 1,000 allocations and 326,275 bytes (65,536 + 999 x 261) instead of one.
 
@@ -114,9 +118,9 @@ as_ref: &Buf     as_mut: &mut Buf     &slot: &Buf     by value: Buf
 
 RFC 2005 declined a `move` keyword for patterns because "moving a value out from behind a shared or mutable reference is only possible for Copy types".
 
-`_` against `_x`: the Book, "The syntax _x still binds the value to the variable, whereas _ doesn't bind at all"; the Reference, `_` "does not copy, move, or borrow". The same holds in a `let`: `let _ = frame.payload;` leaves `frame` whole, and `let _ = g;` neither moves nor drops a named guard (`let _: frame whole id=1 guard alive id=1`). Only a *temporary* on the right of `let _ =` is dropped at once (previous topic). Patterns are everywhere the Book lists: `let`, `match` arms, `if let`, `while let`, `for`, and function parameters; the bindings drop in reverse order of declaration within the pattern.
+`_` against `_x`: the Book, "The syntax _x still binds the value to the variable, whereas _ doesn't bind at all"; the Reference, `_` "does not copy, move, or borrow". The same holds in a `let`: `let _ = frame.payload;` leaves `frame` whole, and `let _ = g;` neither moves nor drops a named guard (`let _: frame whole id=1 guard alive id=1`). Only a *temporary* on the right of `let _ =` is dropped at once (previous topic). Patterns are everywhere the Book lists: `let`, `match` arms, `if let`, `while let`, `for`, and function parameters; the bindings drop in reverse order of declaration within the pattern. `let ... else` is one more place where ownership changes hands: "The let...else syntax takes a pattern on the left side and an expression on the right, very similar to if let, but it does not have an if branch, only an else branch." (Book 6.3). `let Some(buf) = slot.take() else { return None; };` moves the `Buf` out of the temporary into `buf` for the rest of the block, and a second call finds `None` and takes the `else` arm (`state.rs`: `first=Some(2) second=None slot_is_none=true`).
 
-One consequence for the chapter's guard: in `if let Some(b) = self.buf.take()` the scrutinee is a temporary `Option<Buf>`; the by-value binding moves the `Buf` out of it, so the temporary has nothing left to drop when its temporary scope ends.
+One consequence for the chapter's guard, and the pattern half's tie to the reel's running example: in `if let Some(b) = self.buf.take()` the scrutinee is a temporary `Option<Buf>`; the by-value binding moves the `Buf` out of it, so the buffer changes owner right there (into `b`, then into `pool.put`) and the temporary has nothing left to drop when its temporary scope ends.
 
 ### Rust 2024 match ergonomics reservations
 
@@ -134,7 +138,7 @@ The 2021 behaviour is a silent copy for a `Copy` field (`copy edited: 99 origina
 
 ### Guard field designs: Option, placeholder, ManuallyDrop
 
-Three designs for the guard's field, all measured at 40 bytes and 1 allocation in the plain loop (`variants.rs`). The `Option<Buf>` with `take()` is the Nomicon's "classic safe solution", "certainly what you should reach for by default", with the caveat of "fairly odd semantics: you are saying that a field that should always be Some may be None". A **placeholder** (`mem::replace(&mut self.buf, Buf { id: 0, bytes: Vec::new() })`) works in the plain loop, but with `into_inner` its `drop` returns the empty `Buf` to the pool: after 1,000 messages the free list holds 1,000 placeholders (`placeholder: allocs=8 free=1001 placeholders=1000`; measured, the free list growing shows up as 7 extra counted allocations). Only an unenforced sentinel check (`id == 0`) could tell, by convention.
+Three designs for the guard's field, all measured at 40 bytes and 1 allocation in the plain loop (`variants.rs`). The `Option<Buf>` with `take()` is the Nomicon's "classic safe solution", "certainly what you should reach for by default", with the caveat of "fairly odd semantics: you are saying that a field that should always be Some may be None". Here the caveat has a concrete price: `buf()`, `buf_mut()` and `into_inner` (Lab 1) each call `expect("present")`, a run-time check of an invariant (always `Some` until handed out) that the type no longer states, and `ManuallyDrop` avoids it only with `unsafe`. Giving the guard `Deref` and `DerefMut`, as smart pointers do, would change how callers reach the buffer, not the `expect` behind it. A **placeholder** (`mem::replace(&mut self.buf, Buf { id: 0, bytes: Vec::new() })`) works in the plain loop, but with `into_inner` its `drop` returns the empty `Buf` to the pool: after 1,000 messages the free list holds 1,000 placeholders (`placeholder: allocs=8 free=1001 placeholders=1000`; measured, the free list growing shows up as 7 extra counted allocations). Only an unenforced sentinel check (`id == 0`) could tell, by convention.
 
 `ManuallyDrop<Buf>` with `unsafe { ManuallyDrop::take(&mut self.buf) }` in `drop` also works (the docs: "primarily intended for moving out values in drop"; "It is your responsibility to ensure that this ManuallyDrop is not used again"; prefer `into_inner` "whenever possible"). Its code in `variants.rs` carries a `// SAFETY:` comment; the details of that contract are Chapter 30, as is `ptr::read`, which makes a bitwise copy "regardless of whether T is Copy" and so a double-drop hazard. Finally, `into_inner(mut self) -> Buf` against `fn take_buf(&mut self) -> Option<Buf>`: consuming `self` makes a second take impossible at compile time, and follows the API Guidelines' `into_` convention (C-CONV).
 
@@ -159,7 +163,31 @@ take: allocs=1 bytes=65536 deallocs=0
 sizes: Buf=32 Option<Buf>=32 Header=8 Frame=40 PooledBuf=40
 ```
 
-`errpath.rs`'s `into_inner` loop (hand the buffer out, put it back by hand) is `into_inner loop allocs=1`. The instrument is the counting allocator of the previous topics, copied verbatim: an `unsafe impl GlobalAlloc` (the implementer promises the allocator contract; Chapter 30) with `Relaxed` counters (a plain counter; Chapter 7).
+`pooled.rs` is the whole guard, which every other file includes:
+
+```rust
+pub struct PooledBuf<'p> { buf: Option<Buf>, pool: &'p mut Pool }
+impl<'p> PooledBuf<'p> {
+    pub fn new(pool: &'p mut Pool) -> PooledBuf<'p> {
+        let buf = pool.get();
+        PooledBuf { buf: Some(buf), pool }
+    }
+    pub fn buf(&self) -> &Buf { self.buf.as_ref().expect("present") }
+    pub fn buf_mut(&mut self) -> &mut Buf { self.buf.as_mut().expect("present") }
+    pub fn into_inner(mut self) -> Buf {
+        self.buf.take().expect("present")
+    }   // self drops here
+}
+impl Drop for PooledBuf<'_> {
+  fn drop(&mut self) {
+    if let Some(b) = self.buf.take() {
+      self.pool.put(b);
+    }
+  }
+}
+```
+
+`new` takes the buffer from the pool; `buf()` and `buf_mut()` lend it for as long as the guard lives (a stage writes `fill(g.buf_mut(), src)`); `drop` and `into_inner` are the two ways out. Each accessor's `expect` is the price of the `Option`: the guard holds a `Some` from `new` until `take`, and the type cannot say so. `errpath.rs`'s `into_inner` loop (hand the buffer out, put it back by hand) is `into_inner loop allocs=1`. The instrument is the counting allocator of the previous topics, copied verbatim: an `unsafe impl GlobalAlloc` (the implementer promises the allocator contract; Chapter 30) with `Relaxed` counters (a plain counter; Chapter 7).
 
 ### Lab 2 · Break the guard on purpose
 
@@ -192,7 +220,9 @@ by hand: errors=100 allocs=100 bytes=6553600
 guarded: errors=100 allocs=1 bytes=65536
 ```
 
-`prove6.rs` repeats it for 10,000 messages with every fiftieth malformed (2%): 200 allocations (13,107,200 bytes, 12.5 MiB) by hand against 1 (65,536 bytes) guarded. Break it further, by hand and optional: add a `panic!` in `check` and catch it in a test harness; the guard still returns the buffer, because unwinding runs `drop` (previous topic).
+The 100 allocations by hand are 1 + 99, not 100 replacements: every tenth message is bad, including the last, whose lost buffer no later message needs. `prove6.rs` repeats it for 10,000 messages with every fiftieth malformed (2%): 200 allocations (1 + 199; 13,107,200 bytes, 12.5 MiB) by hand against 1 (65,536 bytes) guarded.
+
+`panic_path.rs` runs the guarded stage 100 times with every tenth call panicking inside `check`, each caught with `catch_unwind`: `guarded: caught=10 buffers_made=1 free=1`. The guard returned the buffer every time, because unwinding runs `drop` (previous topic; under `panic = "abort"` or `process::exit` no destructor runs). Count buffers made (`pool.next_id`) and `free`, not allocations: the allocation counter also rises, because the panic machinery allocates its own payload, which would wrongly suggest lost buffers.
 
 ### Lab 5 · What each idiom costs
 
@@ -220,7 +250,8 @@ default Vec cap=0 String cap=0
 ## In production
 
 - **The compiler's `.clone()` help has a price.** For E0507 rustc says "consider cloning the value if the performance cost is acceptable". In a pooled pipeline that adds a hidden allocation per message (measured: 1,001 allocations against 1). The same help appears behind `&`, behind `&mut`, for an `Rc`, an index and a loop over `&Vec` (all measured). Prefer moving the field out with `take`/`replace`, or change the signature (the first topic).
-- **Hand-written return paths lose pooled resources** on `?` and on panics; a guard makes the return structural (Lab 4). Its cost is an `Option` (0 extra bytes here, measured) and one branch in `drop`.
+- **Hand-written return paths lose pooled resources** on `?` and on panics; a guard makes the return structural (Lab 4). Its cost is an `Option` (0 extra bytes here, measured), one branch in `drop` and an `expect` in each accessor. Only a guard whose destructor never runs (leaked, `process::exit`, `panic = "abort"`) loses its buffer.
+- **Move out of a `&mut`, compute, put back: a crate, and an abort.** The `replace_with` crate does it by aborting if the mapping closure panics (Deep dive, "Moving out through a borrow"); in your own code prefer `mem::replace` with a valid placeholder or an `Option` and `take`.
 - **The capacity trap.** `mem::take` of a pooled buffer's bytes moves the capacity out of the pool (Lab 5). Take the whole `Buf`, or give the bytes back.
 - **Placeholders hide state.** A sentinel (an empty `Buf`, `id: 0`) that `drop` can tell apart from a real one only by a convention the type does not enforce; `Option` makes the state visible to the type system. The Nomicon still calls the `Option` field what you should reach for by default.
 - **Edition migration preserves 2021 pattern semantics.** `cargo fix --edition` keeps a pattern that edited a *copy* as a fully explicit copy, so a latent bug survives the migration: review every `&Frame { mut ... }` it writes.
@@ -249,15 +280,15 @@ Answer first, then check. Each was compiled and run in `examples.py`. Questions 
 
 **1. Predict the outcome.** `let Parts { tail, .. } = p; drop(p.head);` then the brace. *`head, tail, body`*: `drop(p.head)` ends the field at once; at the brace, locals in reverse: `tail`, then `p` with only `body` left (`prove1: ["head", "end", "tail", "body"]`).
 
-**2. Debug this.** `fn finish(&mut self) -> Buf { self.buf }` on a `Sink`. *`mem::replace(&mut self.buf, Buf { id: 0, bytes: Vec::new() })`* allocates nothing; `clone` allocates (1 allocation, 261 bytes), `mem::take` needs `Buf: Default` (E0277), and `let Sink { buf, .. } = *self` is E0507.
+**2. Debug this.** `fn finish(&mut self) -> Buf { self.buf }` on a `Sink`. *`mem::replace(&mut self.buf, Buf { id: 0, bytes: Vec::new() })`* allocates nothing; `clone` allocates (1 allocation, 261 bytes), `mem::take` needs `Buf: Default` (E0277), and `let Sink { buf, .. } = *self` is E0507. The placeholder is fine here because `Sink` has no `Drop` and `finish` runs once; if something later reads `buf` (a `Drop`, a second `finish`), the empty `Buf` is a lie, and the field should be an `Option<Buf>` (question 3).
 
-**3. Defend a design.** Placeholder, `ManuallyDrop` or `Option<Buf>` for the guard's field. *`Option<Buf>`*: only `None` tells `drop` the buffer is gone; the placeholder leaves 1,000 empty buffers in the pool, `ManuallyDrop::take` is `unsafe`. All three measure 40 bytes.
+**3. Defend a design.** Placeholder, `ManuallyDrop` or `Option<Buf>` for the guard's field. *`Option<Buf>`*: only `None` tells `drop` the buffer is gone; the placeholder leaves 1,000 empty buffers in the pool, `ManuallyDrop::take` is `unsafe`. All three measure 40 bytes. The `Option`'s price is an `expect` in each accessor, a check the type cannot remove; `ManuallyDrop` avoids it only with `unsafe`.
 
 **4. Predict the outcome.** What are the types of `header` and `payload` in `match &mut frame { Frame { header, payload } => ... }` and in `match & &mut frame { ... }`? *`&mut Header`/`&mut Buf`* and *`&Header`/`&Buf`*: the shared reference makes the mode `ref`, and a `&mut` behind it cannot change it back (`modes.rs`).
 
 **5. Debug this.** `for b in &bufs { pool.put(*b); }` is E0507 (`cannot move out of `*b` which is behind a shared reference`, help: clone). Fix with `for b in bufs.drain(..)` (keeps the `Vec`'s allocation) or `for b in bufs` (consumes it): `drain allocs=0 into_iter allocs=0`, and the pool holds the buffers afterwards (`prove5_ok.rs`, each delta measured around its own loop).
 
-**6. Estimate the cost.** 10,000 messages, 2% malformed, no guard. *200 allocations of 64 KiB, 13,107,200 bytes (12.5 MiB)*, against 1 with the guard (`prove6.rs`).
+**6. Estimate the cost.** 10,000 messages, 2% malformed, no guard. *200 allocations of 64 KiB (1 + 199), 13,107,200 bytes (12.5 MiB)*, against 1 with the guard (`prove6.rs`).
 
 **7. Defend a design.** `into_inner(mut self) -> Buf` against `take_buf(&mut self) -> Option<Buf>`. The first makes a second take a compile error and follows C-CONV's `into_`; the second keeps the guard alive and returns `Option`. Pick `into_inner` for a guard whose job ends when its contents leave.
 
@@ -275,8 +306,9 @@ Last verified against these sources: 12 October 2026. Examples executed with rus
 - [RFC 2005: match ergonomics](https://rust-lang.github.io/rfcs/2005-match-ergonomics.html).
 - Error index: [E0382](https://doc.rust-lang.org/error_codes/E0382.html), [E0507](https://doc.rust-lang.org/error_codes/E0507.html), [E0508](https://doc.rust-lang.org/error_codes/E0508.html), [E0509](https://doc.rust-lang.org/error_codes/E0509.html).
 - Standard library 1.99.0: [`mem::take`](https://doc.rust-lang.org/std/mem/fn.take.html), [`mem::replace`](https://doc.rust-lang.org/std/mem/fn.replace.html), [`mem::swap`](https://doc.rust-lang.org/std/mem/fn.swap.html), [`Option`](https://doc.rust-lang.org/std/option/enum.Option.html), [`ManuallyDrop`](https://doc.rust-lang.org/std/mem/struct.ManuallyDrop.html), [`Drop`](https://doc.rust-lang.org/std/ops/trait.Drop.html), [`Copy`](https://doc.rust-lang.org/std/marker/trait.Copy.html), [`Rc`](https://doc.rust-lang.org/std/rc/struct.Rc.html), [`Vec`](https://doc.rust-lang.org/std/vec/struct.Vec.html), [`String`](https://doc.rust-lang.org/std/string/struct.String.html), [`ptr::read`](https://doc.rust-lang.org/std/ptr/fn.read.html).
-- *The Rustonomicon*: [Destructors](https://doc.rust-lang.org/nomicon/destructors.html), [Drop Flags](https://doc.rust-lang.org/nomicon/drop-flags.html).
-- *The Rust Programming Language*: [15.3 Running Code on Cleanup with the Drop Trait](https://doc.rust-lang.org/book/ch15-03-drop.html), [13.2 Processing a Series of Items with Iterators](https://doc.rust-lang.org/book/ch13-02-iterators.html), [19 Patterns and Matching](https://doc.rust-lang.org/book/ch19-00-patterns.html), [19.1 All the Places Patterns Can Be Used](https://doc.rust-lang.org/book/ch19-01-all-the-places-for-patterns.html), [19.3 Pattern Syntax](https://doc.rust-lang.org/book/ch19-03-pattern-syntax.html).
+- *The Rustonomicon*: [Destructors](https://doc.rust-lang.org/nomicon/destructors.html), [Drop Flags](https://doc.rust-lang.org/nomicon/drop-flags.html), [Exception Safety](https://doc.rust-lang.org/nomicon/exception-safety.html).
+- Third-party crate: [`replace_with` 0.1.8](https://docs.rs/replace_with/latest/replace_with/) (docs.rs).
+- *The Rust Programming Language*: [15.3 Running Code on Cleanup with the Drop Trait](https://doc.rust-lang.org/book/ch15-03-drop.html), [13.2 Processing a Series of Items with Iterators](https://doc.rust-lang.org/book/ch13-02-iterators.html), [19 Patterns and Matching](https://doc.rust-lang.org/book/ch19-00-patterns.html), [19.1 All the Places Patterns Can Be Used](https://doc.rust-lang.org/book/ch19-01-all-the-places-for-patterns.html), [19.3 Pattern Syntax](https://doc.rust-lang.org/book/ch19-03-pattern-syntax.html), [6.3 Concise Control Flow with if let and let...else](https://doc.rust-lang.org/book/ch06-03-if-let.html).
 - [Rust By Example: Partial moves](https://doc.rust-lang.org/rust-by-example/scope/move/partial_move.html); [Rust API Guidelines: Naming](https://rust-lang.github.io/api-guidelines/naming.html) (C-CONV); [Clippy lints](https://rust-lang.github.io/rust-clippy/master/index.html) (master).
 
 Spotted an error or something unclear? [Report it](https://github.com/yashaggarwal85d/learning-resources/issues/new?title=partial-moves-destructuring-as:%20).

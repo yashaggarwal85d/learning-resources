@@ -225,9 +225,9 @@ export function Problem({ t, portrait }: StepCtx) {
   return (
     <Stack>
       {(!portrait || t < 1.6) && <Code title="guard.rs" t={t} end={1.4} lines={GUARD_LINES} highlight={t > 1.4 ? [4] : []} />}
-      <Svg label="The guard cannot move its buffer out inside drop (E0507); rustc suggests a clone, which compiles but costs 1,001 allocations for 1,000 messages instead of one" h={H} fill>
+      <Svg label="The guard cannot move its buffer out inside drop (E0507, a move out through a borrow); rustc suggests a clone, which compiles but costs 1,001 allocations for 1,000 messages instead of one" h={H} fill>
         <g opacity={fa(t, 1.6)}>
-          <Frame x={30} y={16} w={320} title="guard: NaiveGuard" seal bad={bad} lines={[{ cx: 114 }, { cx: 266 }]} />
+          <Frame x={30} y={16} w={320} title="guard: NaiveGuard" bad={bad} />
           <Cell x={44} y={48} w={140} name="buf" type="Buf" dx={sh * 0.5} dy={sh * 0.5} />
           <Cell x={196} y={48} w={140} name="pool" type="&mut Pool" />
           <Owner x1={114} y1={104} x2={114} y2={150} o={origK} />
@@ -299,7 +299,7 @@ export function Pipeline({ t }: StepCtx) {
         </g>
         <Counter t={t} a={1.2} text="1" />
         <T x={512} y={54} s={13} a="end" f={C.latte} o={fa(t, 3.6, 0.2)}>{`msgs ${fmt(1000 * easeOut(seg(t, 3.6, 4.6)))}`}</T>
-        <T x={260} y={252} s={13} f={C.latte} o={fa(t, 4.6, 0.5)}>Buf handle: 32 bytes · Header: 8</T>
+        <T x={260} y={252} s={13} f={C.latte} o={fa(t, 4.6, 0.5)}>Buf: 32 bytes · Header: 8</T>
       </Svg>
     </Stack>
   );
@@ -729,9 +729,9 @@ export function IntoInner({ t, answer, portrait }: StepCtx) {
 }
 
 // ── 14 · The error path, with and without the guard ──────────────────────────────────────────────────────────────────
-const ERR_LINES = [`let mut buf = pool.get();`, `fill(&mut buf, src);`, `let h = check(&buf)?; // Err: buf dropped`, `pool.put(consume(buf));`];
+const ERR_LINES = [`let mut buf = pool.get();`, `fill(&mut buf, src);`, `let h = check(&buf)?; // Err: buf dropped`, `pool.put(consume(buf));`, `let mut g = PooledBuf::new(pool);`, `fill(g.buf_mut(), src);`, `let h = check(g.buf())?; // Err: g drops`];
 
-export function ErrorPath({ t }: StepCtx) {
+export function ErrorPath({ t, portrait }: StepCtx) {
   const H = 312;
   const exit = t >= 1.8;
   const fall = easeOut(seg(t, 2.2, 2.8));
@@ -768,7 +768,14 @@ export function ErrorPath({ t }: StepCtx) {
   );
   return (
     <Stack>
-      <Code title="stage.rs" t={t} end={1.0} lines={ERR_LINES} highlight={t >= 1.8 ? [2] : []} />
+      {/* landscape: the by-hand stage and the guarded stage side by side in one panel; portrait swaps the panel to the guarded lines once the lanes have run */}
+      <Code
+        title="stage.rs"
+        t={t}
+        end={1.0}
+        lines={portrait ? (t < 2.9 ? ERR_LINES.slice(0, 4) : ERR_LINES.slice(4)) : ERR_LINES}
+        highlight={t >= 1.8 ? (portrait ? [2] : [2, 6]) : []}
+      />
       <Svg label="The same stage on a malformed message: by hand, the early return drops the buffer, so 100 bad messages cost 100 allocations; with the guard, the early return drops the guard, which puts the buffer back: 1 allocation" h={H} fill>
         {lane(8, 'BY HAND', false)}
         {lane(162, 'GUARDED', true)}
@@ -1108,9 +1115,9 @@ export function Recap({ t }: StepCtx) {
         );
     }
   };
-  const rows = ['Move a field out; the rest drops', 'Drop types are sealed: E0509', 'Behind & or &mut: no holes, E0507', 'take, replace, swap: put one back', 'Guard field: Option + take', 'Patterns move, copy or borrow'];
+  const rows = ['Move a field out; the rest drops', 'Drop types are sealed: E0509', 'Behind & or &mut: no holes, E0507', 'take, replace, swap: put one back', 'Guard that hands out: Option + take', 'Patterns move, copy or borrow'];
   return (
-    <Svg label="Six things to keep: moving a field out leaves a hole and the rest still drops; a Drop type is sealed, E0509; behind a reference you may never leave a hole, E0507, so take, replace and swap put one back; a guard's field is an Option; patterns move, copy or borrow. Next: two guards cannot share one pool, E0499" h={H}>
+    <Svg label="Six things to keep: moving a field out leaves a hole and the rest still drops; a Drop type is sealed, E0509; behind a reference you may never leave a hole, E0507, so take, replace and swap put one back; a guard that hands its contents out keeps them in an Option; patterns move, copy or borrow. Next: two guards cannot share one pool, E0499" h={H}>
       {rows.map((r, i) => {
         const y = 36 + 52 * i;
         return (

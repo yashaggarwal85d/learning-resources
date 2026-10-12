@@ -10,10 +10,10 @@ const reel: Reel = {
       title: 'The guard that will not give the buffer back',
       body: (
         <>
-          The chapter's pipeline takes a 64 KiB buffer (<code>Buf</code>) from a pool (<code>Pool</code>) for every message, and a guard should hand it back when the guard is dropped.
-          Moving <code>self.buf</code> out inside <code>drop</code> is E0507, <code>cannot move out of `self.buf` which is behind a mutable reference</code>. rustc's help:{' '}
-          <code>consider cloning the value if the performance cost is acceptable</code>. It compiles, and 1,000 full-size messages now cost 1,001 allocations (65,601,536 bytes) instead of one.
-          Next: the pipeline, why fields resist leaving, then the free fix.
+          The chapter's pipeline takes a 64 KiB buffer (<code>Buf</code>) from a pool (<code>Pool</code>) for every message, and a guard should hand it back when dropped. Inside <code>drop</code>,{' '}
+          <code>self</code> is only a <code>&amp;mut</code>, so moving <code>self.buf</code> out is E0507, <code>cannot move out of `self.buf` which is behind a mutable reference</code> (E0509, moving
+          out of a <code>Drop</code> type, is step 7). rustc's help: <code>consider cloning the value if the performance cost is acceptable</code>. It compiles, and 1,000 full-size messages now cost 1,001
+          allocations instead of one.
         </>
       ),
       duration: 5.6,
@@ -25,7 +25,7 @@ const reel: Reel = {
         <>
           The rest of this reel uses the chapter's pipeline. <code>Pool::get</code> is the only place a 64 KiB buffer is allocated; <code>fill</code> borrows it exclusively, <code>inspect</code>{' '}
           borrows it shared and returns a <code>Header</code> (kind and length, a small <code>Copy</code> value), <code>consume</code> takes it and hands it back, and <code>put</code> takes it
-          back into the pool. A thousand 261-byte messages: one allocation. Every handover moves the 32-byte <code>Buf</code> handle, never the payload. Owning the buffer through this chain is this topic's job.
+          back into the pool. A thousand 261-byte messages: one allocation. Every handover moves the 32-byte <code>Buf</code> (an id and the vector's 24-byte handle), never the payload. Owning the buffer through this chain is this topic's job.
         </>
       ),
       duration: 5.2,
@@ -36,7 +36,7 @@ const reel: Reel = {
       body: (
         <>
           A struct without <code>Drop</code> can give up one field: <code>let payload = frame.payload;</code> moves the buffer to a new owner and leaves a hole. The heap bytes don't move; only the
-          32-byte handle does. The rest of <code>frame</code> is still owned: <code>frame.header</code> is <code>Copy</code>, so reading it copies. What you can't do is use{' '}
+          <code>Buf</code> does. The rest of <code>frame</code> is still owned: <code>frame.header</code> is <code>Copy</code>, so reading it copies. What you can't do is use{' '}
           <code>frame</code> as a whole: E0382, <code>use of partially moved value</code>, pointing at <code>value partially moved here</code>.
         </>
       ),
@@ -110,7 +110,7 @@ const reel: Reel = {
       title: 'A type with Drop is sealed',
       body: (
         <>
-          Now the struct has a destructor. <code>PooledBuf</code>, the chapter's guard, holds <code>buf: Option&lt;Buf&gt;</code> and <code>pool: &amp;mut Pool</code> and implements <code>Drop</code> to return the buffer.
+          Now the struct has a destructor. <code>PooledBuf</code>, the chapter's guard (why its field is an <code>Option</code>: step 12), holds <code>buf: Option&lt;Buf&gt;</code> and <code>pool: &amp;mut Pool</code> and implements <code>Drop</code> to return the buffer.
           Destructuring it is E0509, <code>cannot move out of type `PooledBuf&lt;'_&gt;`, which implements the `Drop` trait</code>, and so is <code>guard.buf</code>. <code>Drop::drop</code> gets{' '}
           <code>&amp;mut self</code> and may read every field, so a field moved out early would hand it a hole. Reading a <code>Copy</code> field is still fine.
         </>
@@ -136,7 +136,7 @@ const reel: Reel = {
         explain: (
           <>
             No. <code>ref</code> binds a reference, so <code>buf</code> is <code>&amp;Option&lt;Buf&gt;</code>, and <code>expect</code> takes its receiver by value: E0507, <code>cannot move out of `*buf` which is behind a shared reference</code>.
-            Borrowing the field is the right fix when you only need to look at it. To take it out of a sealed type, the field must be able to change state: an <code>Option&lt;Buf&gt;</code> emptied with <code>take()</code>.
+            Borrowing the field is the right fix when you only need to look at it. To take it out of a sealed type, the field has to be able to say it's empty: step 12.
           </>
         ),
       },
@@ -147,8 +147,8 @@ const reel: Reel = {
       body: (
         <>
           A borrower may not leave a hole, because the owner gets the value back when the loan ends and will read or drop it. Moving <code>frame.payload</code> out through <code>&amp;mut Frame</code> is E0507,{' '}
-          <code>cannot move out of `frame.payload` which is behind a mutable reference</code>, even though the next line refills it: the borrow checker does not track a hole through a reference. The same
-          error covers <code>&amp;T</code>, a <code>match</code> on a field, a <code>Vec</code> index and an <code>Rc</code>. The way out: put something back in the same step.
+          <code>cannot move out of `frame.payload` which is behind a mutable reference</code>, even though the next line refills it: if anything panicked in between, the owner would get back a hole. So the value has to be replaced in one step. The same
+          error covers <code>&amp;T</code>, a <code>match</code> on a field, a <code>Vec</code> index and an <code>Rc</code>.
         </>
       ),
       duration: 5.0,
@@ -160,7 +160,7 @@ const reel: Reel = {
         <>
           Each idiom moves a value out through a <code>&amp;mut</code> by putting a valid value back in the same step, so the owner never sees a hole. <code>Option::take</code> leaves <code>None</code>.{' '}
           <code>mem::take</code> leaves <code>T::default()</code> and so needs <code>Default</code>; an empty <code>Vec</code> allocates nothing. <code>mem::replace</code> leaves the value you pass.{' '}
-          <code>mem::swap</code> exchanges two places. None of them allocates or drops anything (measured). For collections, owning removals do the same: <code>pop</code>, <code>swap_remove</code>, <code>drain</code>.
+          <code>mem::swap</code> exchanges two places. None of them allocates or drops anything (measured). For collections, owning removals avoid the hole another way, by shrinking the collection: <code>pop</code>, <code>swap_remove</code>, <code>drain</code>.
         </>
       ),
       duration: 5.6,
@@ -232,9 +232,9 @@ const reel: Reel = {
       title: 'The error path, with and without the guard',
       body: (
         <>
-          Ownership makes the error path correct by construction. Written by hand, <code>pool.put</code> sits after the <code>?</code>, so every malformed message drops its buffer instead of returning it: 1,000
-          messages with 100 bad ones cost 100 allocations (6,553,600 bytes). With the guard, the early return drops <code>g</code>, and its <code>drop</code> puts the buffer back: 1 allocation. A panic unwinding
-          through the stage runs the same <code>drop</code>. Only a leaked guard loses its buffer, and leaking is safe: it wastes 64 KiB, nothing worse.
+          By hand, <code>pool.put</code> sits after the <code>?</code>, so each malformed message drops its buffer: 1,000 messages with 100 bad ones cost 100 allocations (6,553,600 bytes), the first plus 99
+          replacements. <code>check</code> is <code>inspect</code> that rejects a bad kind with <code>Err</code>. With the guard <code>g</code>, the early return drops <code>g</code>, which puts the buffer back:
+          1 allocation. A panic that unwinds runs the same <code>drop</code>. Only a guard whose destructor never runs (leaked, or a process ending without unwinding) loses its buffer, and that is safe.
         </>
       ),
       duration: 5.6,
@@ -244,9 +244,10 @@ const reel: Reel = {
       title: 'A pattern is a transfer point',
       body: (
         <>
-          Every <code>let</code>, <code>match</code> arm and <code>if let</code> pattern decides, binding by binding, what happens to each part. A plain name binds by value: a copy for <code>Copy</code> types, a move
-          otherwise. <code>ref</code> binds a shared reference, <code>ref mut</code> an exclusive one, and <code>_</code> touches nothing. So <code>let Frame {'{ header, payload }'} = frame;</code> copies <code>header</code>,
-          moves <code>payload</code> and leaves <code>frame</code> partially moved; with <code>ref payload</code> nothing moves. Struct update syntax moves too: <code>..frame</code> takes <code>frame.payload</code>.
+          Every <code>let</code>, <code>match</code> arm and <code>if let</code> pattern decides, binding by binding, what happens to each part: a plain name copies a <code>Copy</code> type and moves anything else,{' '}
+          <code>ref</code> borrows, and <code>_</code> touches nothing. So <code>let Frame {'{ header, payload }'} = frame;</code> copies <code>header</code>, moves <code>payload</code> and leaves <code>frame</code>{' '}
+          partially moved; with <code>ref payload</code> nothing moves. The guard's <code>if let Some(b) = self.buf.take()</code> (step 12) is one: <code>b</code> binds by value, so the buffer changes owner there.
+          Struct update syntax, an expression, moves too: <code>..frame</code> takes <code>frame.payload</code>.
         </>
       ),
       duration: 5.6,
@@ -367,9 +368,9 @@ const reel: Reel = {
         ],
         explain: (
           <>
-            <code>mem::replace</code> with an empty <code>Buf</code> (<code>Buf {'{ id: 0, bytes: Vec::new() }'}</code>): out goes the buffer, in goes a valid one, 0 allocations, because an empty <code>Vec</code> allocates
-            nothing. <code>clone</code> compiles but allocates (1 allocation, 261 bytes here). <code>mem::take</code> needs <code>Buf: Default</code> and fails with E0277. Destructuring <code>*self</code> is still a
-            move out of a <code>&amp;mut</code>: E0507.
+            <code>mem::replace</code> with an empty <code>Buf</code> (<code>Buf {'{ id: 0, bytes: Vec::new() }'}</code>): out goes the buffer, in goes a valid one, 0 allocations. Fine here, because <code>Sink</code> has
+            no <code>Drop</code> and <code>finish</code> runs once; if a <code>Drop</code> or a second <code>finish</code> later read <code>buf</code>, the empty <code>Buf</code> would be a lie, so use{' '}
+            <code>Option&lt;Buf&gt;</code> (next question). <code>clone</code> allocates (1 allocation, 261 bytes). <code>mem::take</code> needs <code>Buf: Default</code> (E0277). Destructuring <code>*self</code> is E0507.
           </>
         ),
       },
@@ -394,7 +395,7 @@ const reel: Reel = {
           <>
             <code>Option&lt;Buf&gt;</code>. A placeholder's type can't say that <code>into_inner</code> already handed the buffer out, so this <code>drop</code> returns the empty <code>Buf</code> to the pool: after 1,000
             messages the free list holds 1,000 placeholders (measured). <code>ManuallyDrop::take</code> is <code>unsafe</code>: nothing stops a second take (Chapter 30). <code>None</code> is the honest state, and costs 0
-            bytes here: all three guards measured 40.
+            bytes here (all three measured 40); its price is an <code>expect</code> in each accessor, a check the type can't remove.
           </>
         ),
       },
@@ -404,10 +405,10 @@ const reel: Reel = {
       title: 'In one breath',
       body: (
         <>
-          Six things to keep. Moving a field out leaves a hole; the struct still drops its other fields. A type with <code>Drop</code> is sealed (E0509). Through <code>&amp;</code> or <code>&amp;mut</code> you may never
-          leave a hole (E0507), so <code>take</code>, <code>replace</code> and <code>swap</code> put a value back in the same step. A guard's field is an <code>Option</code>, emptied with <code>take</code>. Every
-          pattern binding moves, copies or borrows. <code>PooledBuf</code> holds the <code>Pool</code> by exclusive borrow, so only one guard can exist at a time. Next: when three stages need buffers at once, do you reach for{' '}
-          <code>Arc&lt;Mutex&lt;Pool&gt;&gt;</code>, or change who owns what?
+          Six things to keep. Moving a field out leaves a hole; the struct drops the rest. A <code>Drop</code> type is sealed (E0509). Behind <code>&amp;</code> or <code>&amp;mut</code> you never leave a hole (E0507), so{' '}
+          <code>take</code>, <code>replace</code> and <code>swap</code> put a value back in one step. A guard that hands its contents out keeps them in an <code>Option</code>, emptied with <code>take</code>. Every
+          pattern binding moves, copies or borrows. Next: <code>PooledBuf</code> borrows the <code>Pool</code> exclusively; when three stages need buffers, do you reach for <code>Arc&lt;Mutex&lt;Pool&gt;&gt;</code>, or
+          change who owns what?
         </>
       ),
       duration: 3.0,

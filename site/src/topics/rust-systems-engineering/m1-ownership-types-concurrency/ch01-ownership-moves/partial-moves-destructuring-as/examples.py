@@ -287,6 +287,36 @@ assert run_ok('update_copy').strip() == 'update copied header only: frame whole 
 assert run_ok('wild_let').strip() == 'let _: frame whole id=1 guard alive id=1'
 fails('update_drop', '2024', "error[E0509]: cannot move out of type `PooledBuf<'_>`, which implements the `Drop` trait")
 
+# E25 · review fixes. The error-path counts are 1 initial + one replacement per lost buffer that a later message needed:
+# every tenth of 1,000 messages is bad (indices 9, 19, ..., 999), and the last bad one is never replaced, so 99 replacements.
+BAD_IDX = [i for i in range(1000) if i % 10 == 9]
+assert len(BAD_IDX) == 100 and 1 + len([i for i in BAD_IDX if i + 1 < 1000]) == 100 and 1 + 99 == 100
+BAD_IDX_50 = [i for i in range(10000) if i % 50 == 49]
+assert len(BAD_IDX_50) == 200 and 1 + len([i for i in BAD_IDX_50 if i + 1 < 10000]) == 200 and 1 + 199 == 200
+assert 'if h.kind == 0 { Err(BadKind(h.kind)) } else { Ok(h) }' in src('errpath')      # `check` is `inspect` that rejects a bad kind
+# The guard's accessors: three `expect("present")` calls (buf, buf_mut, into_inner), the run-time price of the Option design.
+assert src('pooled').count('.expect("present")') == 3
+# Panics unwinding through the guarded stage: measured by buffers made and free, not by allocations (the panic itself allocates).
+t = lines_of(run_ok('panic_path'))
+assert t['guarded'] == 'caught=10 buffers_made=1 free=1', t
+assert t['panic machinery'] == 'allocations beyond the one buffer=true', t
+# An enum state machine advanced through `&mut self`, and `let ... else`; the sizes behind "an id and the vector's 24-byte handle".
+t = lines_of(run_ok('state'))
+assert t['stage'] == 'Full -> Done -> Done allocs=0 deallocs=0', t
+assert t['let-else'] == 'first=Some(2) second=None slot_is_none=true', t
+assert t['sizes'] == 'Vec<u8>=24 Buf=32 id=4', t
+fails('state_e0507', '2024', 'error[E0507]: cannot move out of `self` as enum variant `Full` which is behind a mutable reference')
+assert 24 + 4 + 4 == 32                                   # the Vec handle, the u32 id, and 4 bytes of padding
+# A move closure captures disjoint fields from edition 2021 on: only `frame.payload` moves, `frame.header` stays usable.
+for ed in ('2021', '2024'):
+    assert run_ok('closure_partial', ed).strip() == 'closure moved only the payload: header kind=7'
+fails('closure_partial', '2018', 'error[E0382]: borrow of moved value: `frame`')
+# The Deep dive shows the whole guard (pooled.rs without its first comment line) and the new examples by name.
+MDX = open(os.path.join(HERE, 'index.mdx')).read()
+assert '\n'.join(src('pooled').split('\n')[1:]).strip() in MDX, 'index.mdx must show pooled.rs in full'
+for name in ('state.rs', 'panic_path.rs', 'closure_partial.rs'):
+    assert name in MDX, name
+
 # ---------------------------------------------------------------------------------------------------------------
 # Snippets on screen: each line is a line of its file and, once scenes.tsx exists, appears verbatim there.
 shown('guard_e0507', "struct NaiveGuard<'p> { buf: Buf,", "pool: &'p mut Pool }", 'impl Drop for NaiveGuard<\'_> {', 'fn drop(&mut self) {', 'self.pool.put(self.buf);')
@@ -300,7 +330,7 @@ shown('e0509_into_inner', 'fn into_inner(self) -> Buf {', 'let PooledBuf { buf, 
 shown('e0507_mut', 'fn swap_payload(frame: &mut Frame,', 'fresh: Buf) -> Buf {', 'let old = frame.payload; // E0507', 'frame.payload = fresh;', 'old')
 shown('variants', 'let mut buf = pool.get();', 'fill(&mut buf, &msg);', 'let bytes = mem::take(&mut buf.bytes);', 'drop(bytes); // written elsewhere', 'pool.put(buf);')
 shown('pooled', 'impl Drop for PooledBuf<\'_> {', 'fn drop(&mut self) {', 'if let Some(b) = self.buf.take() {', 'self.pool.put(b);', 'pub fn into_inner(mut self) -> Buf {', 'self.buf.take().expect("present")')
-shown('errpath', 'let mut buf = pool.get();', 'fill(&mut buf, src);', 'let h = check(&buf)?; // Err: buf dropped', 'pool.put(consume(buf));')
+shown('errpath', 'let mut buf = pool.get();', 'fill(&mut buf, src);', 'let h = check(&buf)?; // Err: buf dropped', 'pool.put(consume(buf));', 'let mut g = PooledBuf::new(pool);', 'fill(g.buf_mut(), src);', 'let h = check(g.buf())?; // Err: g drops')
 shown('modes', 'let Frame { ref payload, .. } = frame;')
 shown('e0382_pattern', 'let Frame { header, payload } = frame;')
 shown('wild_move', 'let slot = Some(pool.get());', 'if let Some(_) = slot {}', 'if let Some(_b) = slot {}')

@@ -1047,3 +1047,44 @@ Version: latest entry "Language changes in Rust 1.99.0"; fetched 2026-10-12
 
 Contents:
 - Per-release language changes and how each affected the FLS; the 1.85.0 entry records the 2024 Edition as outside the FLS's scope.
+
+## Exception Safety - The Rustonomicon
+URL: https://doc.rust-lang.org/nomicon/exception-safety.html
+Version: current stable docs, fetched 2026-10-12
+
+> Unless you are very careful and tightly control what code runs, pretty much everything can unwind, and you need to be ready for it.
+
+> Code that transiently creates unsound states must be careful that a panic does not cause that state to be used.
+
+> Generally this means ensuring that only non-panicking code is run while these states exist, or making a guard that cleans up the state in the case of a panic.
+
+Contents:
+- Anything that can panic (unwrap, indexing, arithmetic in debug builds, user code such as Clone) must be survivable; minimal and maximal exception safety.
+- A transient hole (two copies of one value, a length set too large) must not be observable if a panic unwinds; the fix is a guard whose destructor fills the hole again.
+
+## replace_with - Rust (docs.rs)
+URL: https://docs.rs/replace_with/latest/replace_with/
+Version: replace_with 0.1.8, fetched 2026-10-12
+
+> Temporarily take ownership of a value at a mutable location, and replace it with a new value based on the old one.
+
+> the desired ability to temporarily move out of &mut T doesn’t exist yet, so this crate is my interim solution.
+
+> If the second closure (FnOnce() -> T) panics, however, then it does indeed abort.
+
+> The “abort on first panic” behaviour is available with replace_with_or_abort().
+
+Contents:
+- A third-party crate (not std): move out of a `&mut T`, compute a replacement, put it back; on a panic in the replacement closure it aborts, or with `replace_with_or_default` writes `Default::default()`.
+- Its motivating example is an enum state machine advanced through `&mut self` (E0507 without the crate).
+
+## Concise Control Flow with if let and let...else - The Rust Programming Language
+URL: https://doc.rust-lang.org/book/ch06-03-if-let.html
+Version: current stable docs, fetched 2026-10-12
+
+> The let...else syntax takes a pattern on the left side and an expression on the right, very similar to if let, but it does not have an if branch, only an else branch.
+
+> If the pattern matches, it will bind the value from the pattern in the outer scope.
+
+Contents:
+- `if let` is a match that cares about one pattern; `let...else` binds in the outer scope and its else arm must return from the function (diverge).
