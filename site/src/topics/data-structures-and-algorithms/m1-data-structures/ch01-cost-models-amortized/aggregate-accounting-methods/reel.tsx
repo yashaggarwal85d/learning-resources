@@ -184,9 +184,9 @@ const reel: Reel = {
       title: 'Cheap operations pay for expensive ones',
       body: (
         <>
-          The same move three times: an expensive operation can only follow cheap ones that set it up, so each cheap one pays a little extra in advance. The
-          aggregate method needs one total that covers every sequence; charge per operation when operations differ, like push and multipop. The charges are a
-          choice, not unique: any that keep the bank at zero or above prove a bound.
+          The same move three times: an expensive operation can only follow cheap ones that set it up, so each cheap one pays a little extra in advance.
+          Aggregate when one total covers every sequence; charge per operation when operations differ, like push and multipop. The charges are a choice: any
+          that keep the bank at zero or above prove a bound.
         </>
       ),
       duration: 4,
@@ -209,8 +209,7 @@ const reel: Reel = {
       body: (
         <>
           A million appends wrote 2,048,575 elements, under 3n. When append 524,289 arrived, the bank held 524,289 coins for its 524,288 copies. The spike is still one
-          operation: a request waiting on it waits, which is deamortization’s problem. And a vector that also shrinks must save for the shrink during its pops,
-          with no key left to keep those coins on.
+          operation: a request waiting on it waits, which is deamortization’s problem. A vector that also shrinks has no key left to keep its shrink coins on.
         </>
       ),
       duration: 4.2,

@@ -115,3 +115,83 @@
     - **What:** the plan's layer 7 asks for "incidents and post-mortems". This section lists review-time misreadings with this topic's numbers and no real incident.
     - **Fix:** none in this topic. CHAPTER.md gives real libraries' growth policies and their failures to Ch.2's "Dynamic arrays and growth policy", and latency incidents to "Deamortization and global rebuilding" (topic 7, with Dean and Barroso as its source). No opened source here reports an incident, and the topic deliberately makes no production claim.
     - **Status:** not fixed. The reason is above, and the section already says so.
+
+## Looks and learning review (ROUTINE.md section 5), 2026-10-12
+
+- **Reviewer:** a fresh agent that wrote nothing in this topic, judging as a demanding designer and teacher.
+- **Looked at:** every step's desktop and phone screenshot in `site/test-results/` (19 steps, plus the `-q` question frames of the 7 predict steps), against `OUTLINE.md`, `narration.json`, `DESIGN.md` ("The looks review checks") and `CHAPTER.md`'s visual language.
+- **Checked and found sound (no finding):** the cost strip, vector row, coins and dashed `caramel` amortized line follow the chapter grammar in every step; `cinnamon` is only g = 1.5, the alternative being compared (steps 9, 10, 18); `cherry` is only spikes and failures; at most two accents per step; the numbers on screen match the narration; steps 1, 3, 14 and 15 read at a glance; no text is under-sized or clipped on desktop. Predict steps are captured mid-reveal (the learner's answer animates in after the screenshot), so their final frames were judged from `scenes.tsx`: all carry their labels (total, tiles, tally, answer marker).
+- **Result:** 14 findings, 2 major. Listed as step, size, what, fix, severity; status at the end of each.
+
+1. **Step 5, phone: the first two cards' notes run into their pictures.** *(major)*
+   - **Where:** step 5, "A third kind of promise", phone.
+   - **What:** "an unusual input can cost more" and "an unlucky run can cost more" are 28-30 characters; at phone text scale they reach the bars and dots at x = 350 ("cost mor" is cut by a bar; the second touches the dots).
+   - **Fix:** both notes split over two lines, like the third card's.
+   - **Status:** fixed.
+2. **Step 6, desktop and phone: the coins sit on top of the key numbers in the full row.** *(major)*
+   - **Where:** step 6, "Coins on cells", the upper row after the keys are "spent".
+   - **What:** the spent coins lift 10 units and land on the digit (1 to 8): the number and the coin are one smudge, in the step's main picture.
+   - **Fix:** the lift is 4 units, so a spent coin stays below the digit.
+   - **Status:** fixed.
+3. **Step 6, phone: the sub-heading is too wide for the drawing.** *(minor)*
+   - **Where:** step 6, "1 write · 1 coin on the new key · 1 coin on an old key" (55 characters), phone.
+   - **What:** at phone text scale it runs about 100 units past the cells below it, to the right edge.
+   - **Fix:** "1 write · coin on new key · coin on old key" (43 characters).
+   - **Status:** fixed.
+4. **Step 4, phone: "16" and "1+2+4+8 = 15" read as one line.** *(minor)*
+   - **Where:** step 4, "Add up the whole sequence", the two totals under the columns.
+   - **What:** the two labels sit on one baseline about 8 units apart on a phone, and the right one is wider than its column.
+   - **Fix:** two big totals, 16 and 15, centred under their columns; "1+2+4+8" is a quiet taupe line beneath the 15.
+   - **Status:** fixed.
+5. **Step 7: the small "3" marks are unexplained.** *(minor)*
+   - **Where:** step 7, "The bank never goes negative", desktop and phone.
+   - **What:** four "3"s sit on the dashed line (appends 2, 3, 5, 9). They are the bank after each resize, but they look like the charge of 3 again.
+   - **Fix:** they are `caramel` and a legend line says "the small 3s: the bank after each resize".
+   - **Status:** fixed.
+6. **Step 8: superscript tick labels fall apart.** *(minor)*
+   - **Where:** step 8, "10 ⁶", "10 ⁹", "10 ¹ ²" (monospace spaces every superscript digit); on the phone "10¹²" also sits past the axis end.
+   - **Fix:** the ticks read "1 million", "1 billion", "1 trillion", aligned to start, middle and end of the axis.
+   - **Status:** fixed.
+7. **Step 10: ticks and axis titles.** *(minor)*
+   - **Where:** step 10, "Where n falls between resizes".
+   - **What:** the same spaced superscripts ("2 ¹ ⁰"); "n (log scale) · copies per append" under the x-axis names the y-axis in the wrong place; the troughs 1/(g − 1) the caption talks about are not drawn.
+   - **Fix:** ticks are the real values (1,024, 32,768, 1,048,576); "copies per append" heads the y-axis, the legend moves to the top right, the x-axis reads "n, appends so far (log scale)"; the peak line is labelled "peaks g/(g − 1)" and a dotted line is labelled "troughs 1/(g − 1)".
+   - **Status:** fixed.
+8. **Step 12: the final frame lost the carry.** *(minor)*
+   - **Where:** step 12, "One coin on every 1 bit".
+   - **What:** "3 resets paid by 3 coins", the step's idea, shows mid-animation and fades; the final frame (a learner who pauses at the end, or reduced motion) shows one coin on 10000 and a formula.
+   - **Fix:** a quiet line at the same place stays in the final frame: "every carry is paid by the coins it resets".
+   - **Status:** fixed.
+9. **Step 13: the final frame is an empty box.** *(minor)*
+   - **Where:** step 13, "Multipop: each key leaves once".
+   - **What:** after the last multipop the stack is empty and nothing in it says why that is the point.
+   - **Fix:** the empty stack carries "8 in" and "8 out" in the final frame.
+   - **Status:** fixed.
+10. **Step 14: the caption is the longest of the reel and the aggregate/accounting contrast is a clause.** *(minor)*
+    - **Where:** step 14, "Cheap operations pay for expensive ones": 63 words (8 lines on desktop).
+    - **Fix:** trimmed to about 55 words; "Aggregate when one total covers every sequence; charge per operation when operations differ". The meaning, the picture and the narration are unchanged.
+    - **Status:** fixed.
+11. **Step 15: the two strips have no unit.** *(minor)*
+    - **Where:** step 15, "When the bound breaks".
+    - **What:** the red bars are operations, but nothing says how many (8 and 10), so "40 flips, bound said 16" cannot be checked against the picture.
+    - **Fix:** "8 operations" and "10 appends" under the strips.
+    - **Status:** fixed.
+12. **Step 16: the bank label touches the spike; the caption is the second longest.** *(minor)*
+    - **Where:** step 16, "Back to the problem", both sizes.
+    - **What:** "bank: 524,289 coins / for 524,288 copies" ends about 10 units from the 524,289 spike, which is as tall as the label.
+    - **Fix:** the labels move 14 units left; the caption trims its last sentence (about 60 words).
+    - **Status:** fixed.
+13. **Step 17, phone: the answered frame shrinks the picture to about 0.4 and the badge row is unreadable.** *(minor)*
+    - **Where:** step 17, "Prove it 1 of 3", phone with the explanation open.
+    - **What:** 16 identical "2" badges at 7 px; the drawing (360 units tall) is scaled down to make room for the explanation; the cost bars have no label.
+    - **Fix:** the badge row becomes one line, "charge 2 per append" in `caramel`; the drawing is 324 units tall (was 360); "actual cost per append" labels the bars; "append 5: −2" sits under the hanging bars instead of among them.
+    - **Status:** fixed.
+14. **Step 1: the headline stack is tight.** *(minor)*
+    - **Where:** step 1, "both true?" and "append 524,289 / copies 524,288 keys", desktop and phone.
+    - **What:** four text lines inside 80 units, the red labels 8 units from the spike.
+    - **Fix:** the spike labels move down 6 and left 4 units, "both true?" up 2.
+    - **Status:** fixed.
+
+Not findings, noted for the next reviewer: the phone caption shows three lines and "MORE" by design, so the 55-65 word captions are fully read only in the expanded view; the narration carries the whole text.
+
+**Closed:** all 14 findings fixed in `scenes.tsx` and `reel.tsx` (captions of steps 14 and 16 trimmed; `narration.json` still says the same, so no change there). `npm run build` and `node scripts/check-all.mjs --only reels --topic aggregate-accounting-methods` pass; the new screenshots of steps 4, 5, 6, 7, 10, 13 and 17 (phone) were looked at again and show the fixes. Step 13's first fix ("8 keys in / out") touched the stack's walls on a phone and was shortened to "8 in / 8 out".
