@@ -600,3 +600,4 @@ The drawings were changed as the looks review asked (`REVIEW.md` marks each find
 9. **Step 10** labels the cache and disk scans, and shows "0.1 s" and "2.8 hours" (1 ns and 100 µs a step, illustrative, asserted in `examples.py`).
 10. **Step 11** has an icon per bullet. Θ, O, Ω are serif and log_b has a real subscript in every drawing.
 11. **Pacing.** The player runs animation time on `duration` and holds the last frame (like the live python-essentials reel, whose narration is also 27 to 50 words against 1.2 to 4.6 s), so reveals are staged to the spoken beats and the multi-beat steps got longer durations (5 to 6.6 s). The coverage.json step title for step 7 is updated.
+- 2026-10-12, resumed run: merged origin/main (registry kept both entries), checks green (locked, docs, examples, sources, build, reels, links). Looks review and fixes were done earlier. **Next:** content final, narration (7), ship (8).
