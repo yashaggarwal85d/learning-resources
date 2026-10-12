@@ -125,7 +125,7 @@ export function Permissions({ t, answer }: StepCtx) {
       <Row y={40} bits={['rw-', 'rw-', 'rw-']} o={q ? fade(t, 0.5) : 1} />
       <g opacity={q ? fade(t, 1.1) : 1}>
         <Line x1={300} y1={92} x2={300} y2={120} c={C.caramel} w={4} />
-        <T x={312} y={112} s={13} f={C.caramel}>umask 077 switches bits off</T>
+        <T x={312} y={112} s={13} f={C.caramel}>{q ? 'umask 077 switches bits off' : 'umask 077: 666 becomes 600'}</T>
       </g>
       {q ? (
         <g opacity={fade(t, 1.5)}>
@@ -136,12 +136,12 @@ export function Permissions({ t, answer }: StepCtx) {
         <Row y={126} bits={['rw-', '---', '---']} bad={[false, true, true]} />
       )}
       <g opacity={q ? fade(t, 2.1) : 1}>
-        <Proc x={175} y={216} w={200} h={50} label="loader" sub="another user, same group" />
+        <Proc x={145} y={216} w={260} h={50} label="loader" sub="another user, same group" />
         <Line x1={275} y1={216} x2={275} y2={178} c={ok ? C.cherryText : C.taupe} w={3} dash={ok ? undefined : '5 5'} />
       </g>
       {!q && (
         <>
-          <T x={390} y={246} s={13} f={C.cherryText}>Permission denied</T>
+          <T x={288} y={203} s={13} f={C.cherryText}>Permission denied</T>
           <T x={30} y={298} s={13} f={C.latte}>umask 027 would leave rw-r-----: the group can read</T>
         </>
       )}
@@ -288,7 +288,7 @@ export function ExitCodes({ t }: StepCtx) {
           <T x={100} y={BY - 12} s={13} f={C.latte}>1–125 own codes</T>
           <T x={439} y={BY - 12} s={15} f={C.caramel} a="middle">128 + signal</T>
           <path d="M268 94 L263 104 L273 104 Z" fill={C.taupe} />
-          <T x={274} y={138} s={13} a="end" f={C.latte}>125 skip</T>
+          <T x={274} y={124} s={13} a="end" f={C.latte}>125 skip</T>
         </g>
         {legend.map((l) => (
           <g key={l.code}>
@@ -362,7 +362,7 @@ export function HungJob({ t, answer }: StepCtx) {
   const a = (at: number) => (q ? fade(t, at) : 1);
   const caret = q && Math.floor(t * 2) % 2 === 0 ? '▌' : q ? '' : '▌';
   return (
-    <Svg label="A load job is blocked in read on file descriptor 4, a socket nobody writes to; ps says S, the proc status says two threads, strace shows read(4, with no result" h={292}>
+    <Svg label="A load job is blocked in read on file descriptor 4, a socket nobody writes to; ps says S, the proc status says two threads, strace shows read(4, with no result" h={296}>
       <g opacity={a(0.2)}>
         <Proc x={30} y={30} w={170} h={90} label="load_orders.py" ls={14} />
         <Sock x={115} y={120} n="4" c={C.caramel} />
@@ -374,18 +374,19 @@ export function HungJob({ t, answer }: StepCtx) {
       </g>
       <T x={232} y={50} s={13} f={C.crema} o={a(1.0)}>State: S (sleeping)</T>
       <T x={232} y={74} s={13} f={C.crema} o={a(1.3)}>Threads: 2 (ps -L)</T>
-      <T x={232} y={98} s={13} f={C.crema} o={a(1.6)}>wchan: wait_woken</T>
-      <T x={232} y={122} s={13} f={C.crema} o={a(2.0)}>fd/4 → socket</T>
-      <T x={232} y={152} s={13} f={C.taupe} o={a(2.4)}>strace -p</T>
-      <T x={232} y={176} s={15} f={q ? C.crema : C.caramel} o={a(2.4)}>{`read(4,${caret}`}</T>
-      {q && <g transform={`translate(490 100) scale(${pop(t, 2.8)})`}><T x={0} y={0} s={28} f={C.caramel} a="middle" serif w={700}>?</T></g>}
+      <T x={232} y={98} s={13} f={C.crema} o={a(1.6)}>fd/4 → socket</T>
+      <T x={232} y={128} s={13} f={C.taupe} o={a(2.0)}>strace -p</T>
+      <T x={232} y={152} s={15} f={q ? C.crema : C.caramel} o={a(2.0)}>{`read(4,${caret}`}</T>
+      {q && <g transform={`translate(440 140) scale(${pop(t, 2.8)})`}><T x={0} y={0} s={28} f={C.caramel} a="middle" serif w={700}>?</T></g>}
       {!q && (
         <>
           <T x={115} y={248} s={15} a="middle" f={C.cherryText}>no sender</T>
-          <T x={232} y={228} s={13} f={C.crema}>kill -TERM {'<pid>'}</T>
-          <Tok x={470} y={220} n="143" r={24} c={C.crema} />
-          <T x={470} y={262} s={13} a="middle" f={C.latte}>no handler, no flush</T>
-          <T x={232} y={284} s={13} f={C.crema}>kill -KILL {'<pid>'}</T>
+          <T x={232} y={206} s={13} f={C.crema}>kill -TERM {'<pid>'}</T>
+          <T x={232} y={226} s={13} f={C.latte}>no handler: just ends</T>
+          <Tok x={520} y={208} n="143" r={22} c={C.crema} />
+          <T x={232} y={262} s={13} f={C.crema}>kill -KILL {'<pid>'}</T>
+          <T x={232} y={282} s={13} f={C.latte}>if TERM is ignored</T>
+          <Tok x={520} y={264} n="137" r={22} bad o={0.55} />
         </>
       )}
     </Svg>
@@ -437,7 +438,7 @@ export function CronSsh({ t }: StepCtx) {
   const chips: [string, string][] = [['15', 'min'], ['2', 'hour'], ['*', 'day'], ['*', 'month'], ['*', 'weekday']];
   const tube = easeOut(seg(t, 2.4, 3.0));
   return (
-    <Svg label="A crontab line with its five fields labelled and cron's small environment, above a ssh tunnel from the laptop's port 5433 through a bastion to the database's port 5432" h={320}>
+    <Svg label="A crontab line with its five fields labelled and cron's small environment, above a ssh tunnel from the laptop's port 5433 through a bastion to the database's port 5432" h={340}>
       {chips.map(([v, l], i) => (
         <g key={l} opacity={fade(t, 0.2 + i * 0.1)}>
           <rect x={30 + i * 100} y={10} width={80} height={36} rx={9} fill={C.espresso} stroke={C.crema} strokeWidth={2} />
@@ -446,20 +447,21 @@ export function CronSsh({ t }: StepCtx) {
         </g>
       ))}
       <T x={30} y={92} s={15} f={C.caramel} o={fade(t, 0.9)}>runs at 02:15 every day</T>
-      <T x={30} y={112} s={13} f={C.taupe} o={fade(t, 1.0)}>(local time; DST nights: missing or twice)</T>
+      <T x={30} y={112} s={13} f={C.latte} o={fade(t, 1.0)}>local time: skipped or doubled on DST nights; use UTC</T>
       <T x={30} y={136} s={13} f={C.crema} o={fade(t, 1.3)}>/opt/etl/nightly.sh &gt;&gt; /var/log/nightly.log 2&gt;&amp;1</T>
       <T x={30} y={158} s={13} f={C.latte} o={fade(t, 1.6)}>cron's env: SHELL HOME LOGNAME, no shell PATH</T>
-      <Line x1={30} y1={172} x2={536} y2={172} c={C.taupe} w={1} o={0.5 * fade(t, 1.8)} />
-      <Line x1={150} y1={239} x2={150 + 266 * tube} y2={239} c={C.caramel} w={8} o={tube > 0 ? 1 : 0} />
+      <T x={30} y={180} s={13} f={C.latte} o={fade(t, 1.8)}>no guard against overlap: take a lock</T>
+      <Line x1={30} y1={196} x2={536} y2={196} c={C.taupe} w={1} o={0.5 * fade(t, 1.9)} />
+      <Line x1={150} y1={263} x2={150 + 266 * tube} y2={263} c={C.caramel} w={8} o={tube > 0 ? 1 : 0} />
       {([['laptop', ':5433', 30], ['bastion', 'a hop', 240], ['db', ':5432', 416]] as [string, string, number][]).map(([n, s, x], i) => (
         <g key={n} opacity={fade(t, 1.9 + i * 0.2)}>
-          <rect x={x} y={214} width={120} height={50} rx={12} fill={C.espresso} stroke={C.crema} strokeWidth={2} />
-          <T x={x + 60} y={235} s={13} a="middle" f={C.crema}>{n}</T>
-          <T x={x + 60} y={254} s={13} a="middle" f={C.latte}>{s}</T>
+          <rect x={x} y={238} width={120} height={50} rx={12} fill={C.espresso} stroke={C.crema} strokeWidth={2} />
+          <T x={x + 60} y={259} s={13} a="middle" f={C.crema}>{n}</T>
+          <T x={x + 60} y={278} s={13} a="middle" f={C.latte}>{s}</T>
         </g>
       ))}
-      <T x={30} y={196} s={13} f={C.crema} o={fade(t, 2.9)}>ssh -N -L 5433:db.internal:5432 user@bastion</T>
-      <T x={300} y={292} s={13} a="middle" f={C.taupe} o={fade(t, 3.0)}>key in authorized_keys</T>
+      <T x={30} y={220} s={13} f={C.crema} o={fade(t, 2.9)}>ssh -N -L 5433:db.internal:5432 user@bastion</T>
+      <T x={300} y={314} s={13} a="middle" f={C.latte} o={fade(t, 3.0)}>the bastion connects to the db for you</T>
     </Svg>
   );
 }
@@ -467,10 +469,10 @@ export function CronSsh({ t }: StepCtx) {
 // 11 · Recap in one breath.
 const RECAP: [string, string][] = [
   ['fork, exec, wait', "the child's status comes back as one byte"],
-  ['rwx · u g o', 'x on a directory = enter; umask turns bits off'],
+  ['rwx · u g o', 'umask clears bits; dir x = enter'],
   ['0 · 1 · 2', 'stdin, stdout, stderr; 2>&1 copies 1 now'],
   ['pipefail', 'status = last command, unless asked'],
-  ['126, 127, 128+n', 'not executable, not found, killed by signal n'],
+  ['126, 127, 128+n', 'not executable, not found, signal n'],
   ['TERM then KILL', '15 can be caught; 9 cannot'],
   ['R · S · D · Z', 'ps, /proc: which; strace -p: what call'],
   ['jq | awk | sort | uniq -c', 'diff against the script; grep, sed: logs'],

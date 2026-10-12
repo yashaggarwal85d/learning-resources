@@ -8,7 +8,10 @@
 - [x] fact-check done (FACT-CHECK.md, 181 quotes pass)
 - [x] coverage.json (generated 2026-10-11; gap review by the builder, open: [])
 - [x] BUILT (2026-10-11): `examples.sh` + `examples.py`, `reel.tsx` + `scenes.tsx`, `index.mdx`, `prerequisites.mdx`, `narration.json` (no audio), `coverage.json`, registry entry (`held`). `npm run build` and `npm run test:examples` (this topic) pass; the reel test (`PREVIEW_HELD=1`) passes at both sizes; `sources.mjs check` passes (196 quotes).
-- [ ] content review (section 4), looks review (5), narration (7), ship (8).
+- [x] content review (Opus, 2026-10-12) fixed; post-build fact-check (Opus) done.
+- [ ] checks and looks (5), narration (7), ship (8).
+
+**Changes from the chapter plan:** registry `declared` adds `ip-addresses` (the tunnel step uses hosts and ports; CHAPTER.md declares it first at topic 18); a predict step on file permissions was added.
 
 ---
 

@@ -472,3 +472,89 @@ Overall: the Deep dive is unusually strong. It is precise, sourced and executed,
 - *Fix:* once findings 6–13 are fixed or recorded as out of scope in `coverage.json`, set `gapReview` to `{"date": "<fix date>", "by": "Opus content review (2026-10-12)", "open": []}`. Until then, list the open item ids.
 - **Status: Not done here, by instruction (the run records the gap review). `gapReview` is untouched; findings 6-13 are fixed.**
 
+
+## Looks review 2 (Sonnet, 2026-10-12)
+
+What I looked at: the 30 screenshots in `site/test-results/` (`desktop-` and `phone-linux-shell-process-toolkit-01…11`, with the `-q` question frames of steps 3, 4, 5 and 8) from a fresh `PREVIEW_HELD=1 node scripts/check-all.mjs --only reels --topic linux-shell-process-toolkit`, against `DESIGN.md` → "The looks review checks", `OUTLINE.md`, `narration.json`, `reel.tsx` and `scenes.tsx`. Concentrated on what changed since looks review 1: the permissions predict (step 3), signals (6, 7), hung job (8), the cron DST note (10) and the 9-row recap (11). Steps 1, 2, 4, 5 and 9 are unchanged and clean at both sizes. The reel test passed at the start; the problems below are ones it cannot see (clipped text, a wrong claim, low contrast). On the phone the kit scales small SVG text up by about 1.3x, so any 13-unit label wider than about 20 characters overflows its box there.
+
+**Totals: 12 findings: 2 high, 6 medium, 4 low.** All fixed; the reel test is green again at both sizes.
+
+Overall: the process-tree grammar still carries the new steps well, and no step has more than two accents. The permissions step reads in one glance (three cells, a blank row, "?"). The weak spots were one teaching error in the hung-job answer, text that spills out of its box on the phone, and the new DST caveat sitting in the quietest colour on the page.
+
+**1. Step 8 answer: "Either way the shell sees 143" is wrong, and the 143 label sits between the TERM and KILL rows. (high)**
+- *Where:* `reel.tsx` step 8 `explain`; `narration.json` step 8 `answer`; `scenes.tsx` `HungJob` answer frame (143 token at y 220, "no handler, no flush" at y 262, KILL command at y 284).
+- *What:* the explain says "kill -TERM, give it a moment, then kill -KILL. Either way the shell sees 143". Only TERM gives 143 here (no handler, so the default action ends it); a job that needs KILL ends with 137, which step 6 and step 7 had just taught. The picture made it worse: "no handler, no flush" sat 34 units under the TERM row and 22 above the KILL row, so it read as a caption for KILL.
+- *Evidence:* `desktop-…-08.png`, `phone-…-08.png` (before the fix).
+- *Fix:* explain and narration: "With no TERM handler, TERM ends this job at once: 143. KILL is only for a job that ignores TERM: 137." Picture: two blocks, each a command with a latte line under it ("no handler: just ends" / "if TERM is ignored") and its token on the right, 143 solid, 137 cherry and dimmed because it is conditional.
+- **Status: Fixed.**
+
+**2. Step 3 answer: "another user, same group" runs through the loader box border, and "Permission denied" crowds the box on the phone. (high)**
+- *Where:* `scenes.tsx` `Permissions`: `Proc` at x 175, w 200 with a 24-character sub-label; "Permission denied" at x 390, y 246.
+- *What:* at desktop the sub-label touches both borders; on the phone (text scaled up) it crosses them, and "Permission denied" starts 20 px right of the box edge on the same line as the sub-label.
+- *Evidence:* `phone-…-03.png` ("an|other user, same gro|up"), `desktop-…-03.png`, `phone-…-03-q.png`.
+- *Fix:* box widened to 260 and centred under the group column; "Permission denied" moved to sit on the cherry connector line.
+- **Status: Fixed.**
+
+**3. Step 11 on the phone: two recap rows run past the right edge of their card. (medium)**
+- *Where:* `scenes.tsx` `RECAP` rows 2 and 5 ("x on a directory = enter; umask turns bits off", 46 characters; "not executable, not found, killed by signal n", 45).
+- *What:* at phone scale "off" ends 15 px outside the card and "signal n" touches the edge. Desktop is fine.
+- *Evidence:* `phone-…-11.png` (before the fix).
+- *Fix:* both shortened to 37 and 35 characters: "umask clears bits; dir x = enter", "not executable, not found, signal n". The other seven rows are at most 40 characters and fit.
+- **Status: Fixed.**
+
+**4. Step 10: the DST caveat, the new lesson of this step, is the faintest text in the picture. (medium)**
+- *Where:* `scenes.tsx` `CronSsh`: "(local time; DST nights: missing or twice)" in `C.taupe`, 13 units.
+- *What:* taupe is for axes and quiet captions. On the phone it is hard to read, and it does not say what to do about it; the caption does ("run cron in UTC"), the picture does not.
+- *Evidence:* `phone-…-10.png`, `desktop-…-10.png`.
+- *Fix:* latte, and the whole advice on one line: "local time: skipped or doubled on DST nights; use UTC".
+- **Status: Fixed.**
+
+**5. Step 8 question frame: the picture shows a jargon line the caption never explains, gives away the answer, and the "?" floats away from the evidence. (medium)**
+- *Where:* `scenes.tsx` `HungJob`: `wchan: wait_woken` (not in the caption, the narration or the explain), `fd/4 → socket` and the "?" at x 490.
+- *What:* "wchan" appears only on screen. `fd/4 → socket` plus a drawn socket tab shows the correct option before the learner chooses (the predict rule: the question frame must not give the answer away); this one stays because the narration says "file descriptor four" and the tube needs a far end, but the unexplained `wchan` line only adds a fifth label competing for attention. The "?" sat 250 units from `read(4,`.
+- *Fix:* `wchan` line removed (the Deep dive keeps it); evidence lines re-spaced; "?" moved next to the `read(4,` line.
+- **Status: Fixed.**
+
+**6. Step 8 options: the correct answer is the only long, detailed one. (medium)**
+- *Where:* `reel.tsx` step 8 `predict.options`: "Spinning in a loop", "Waiting for the disk", "It's a zombie" against "Waiting in read() on file descriptor 4, a socket nobody writes to".
+- *What:* a learner can pick the longest option without reading the evidence. On the phone it is also the only four-line button.
+- *Fix:* four options of similar length: "Spinning in a busy loop, using the CPU", "Blocked in read() on fd 4, waiting for data" (correct), "Waiting for a disk read to return", "A zombie, waiting to be reaped".
+- **Status: Fixed.**
+
+**7. Step 8 on desktop: body, four options and a 600-character explain push the step header up against the top navigation. (medium)**
+- *Where:* `reel.tsx` step 8 `explain` (about 600 characters) and body.
+- *What:* "REFRESHER 8/11 · §1.1 · LINUX SHELL AND" was cut by the "Data Engineering" pill (the same failure as looks review 1, finding 4, after the explain grew back).
+- *Fix:* explain cut to about 370 characters and the body trimmed ("which prints each system call"). The header now sits just under the navigation without touching it. The cost is the shared layout's, not this step's: a four-option predict with a long explain is at the limit.
+- **Status: Fixed.**
+
+**8. Step 3 answer: the picture never shows the result the explain names (600). (low)**
+- *Where:* `scenes.tsx` `Permissions` answer frame; `reel.tsx` explain ("666 becomes 600").
+- *What:* the lower row shows `rw- --- ---` but not "600", and the label by the arrow still says "switches bits off".
+- *Fix:* in the answer frame that label reads "umask 077: 666 becomes 600"; the question frame is unchanged.
+- **Status: Fixed.**
+
+**9. Step 3 explain ends on a loose end: "A setgid directory gives new files its group." (low)**
+- *Where:* `reel.tsx` step 3 `explain`.
+- *What:* setgid appears nowhere in the picture or the narration and does not answer the question; it makes the panel one line longer and leaves the learner with a new term.
+- *Fix:* sentence cut (the Deep dive has it).
+- **Status: Fixed.**
+
+**10. Step 7: the caption is about 640 characters and covers six ideas. (low)**
+- *Where:* `reel.tsx` step 7 `body`.
+- *What:* ten lines of dense text on desktop, three lines plus MORE on the phone, beside a picture that shows four of the six ideas (TERM, KILL, zombie, orphan; INT and HUP are text only).
+- *Fix:* trimmed to about 480 characters ("flushes, closes and re-raises", "its buffers are lost", "INT (Ctrl-C) and HUP (lost terminal) are catchable", "init adopts it"). The narration already says the same in separate lines.
+- **Status: Fixed.**
+
+**11. Step 6: 130 appears in the picture but nowhere in the caption or the narration; "125 skip" hangs 34 units below its marker. (low)**
+- *Where:* `scenes.tsx` `ExitCodes` legend (a 130 row and marker); `reel.tsx` and `narration.json` step 6; the `125 skip` label at y 138.
+- *What:* a third signal code that the words never mention; and the label for the ▲ marker is separated from it by the staggered "127".
+- *Fix:* caption and narration add "and 130 a Ctrl-C"; "125 skip" moved up to y 124, directly under the marker.
+- **Status: Fixed.**
+
+**12. Step 10: the caption talks about a lock and `-J`, the picture shows neither, and "key in authorized_keys" is explained nowhere. (low)**
+- *Where:* `scenes.tsx` `CronSsh`; `reel.tsx` step 10 `body`.
+- *What:* "does the caption say what the picture shows" fails twice: "take a lock" and the `-J` hop are caption-only (the narration has the lock, not `-J`), and the taupe "key in authorized_keys" under the tunnel is in neither caption nor narration.
+- *Fix:* a latte line "no guard against overlap: take a lock" added under the cron environment (the ssh block moves down 24 units, viewBox 320 to 340); the `-J` sentence dropped from the caption (the Deep dive keeps it); "key in authorized_keys" replaced by "the bastion connects to the db for you", which the narration says.
+- **Status: Fixed.**
+
+Checked and left alone: step 7's zigzag crosses the ghosted `load_orders.py` label (it reads as a break, the label is at 35 % opacity); step 9's table prints `1300` where the caption writes 1,500 (it mirrors `uniq -c`); steps 4 and 5 phone visuals sit tight under the step header (shared layout). Durations: every beat of every changed step lands at least 0.0-0.2 s before `duration`, including the 9-row recap (last row 1.3 to 1.8 s of 1.8).

@@ -81,7 +81,7 @@
         "An exit status is one byte. Zero to two hundred fifty-five.",
         "Zero is success. One to one hundred twenty-five mean whatever the program says.",
         "The shell adds two of its own. One hundred twenty-six, found but not executable, because the execute bit is missing. And one hundred twenty-seven, not found.",
-        "Above one hundred twenty-eight, Bash reports one hundred twenty-eight plus the signal that killed the program. So one hundred thirty-seven means a kill, and one hundred forty-three a terminate.",
+        "Above one hundred twenty-eight, Bash reports one hundred twenty-eight plus the signal that killed the program. So one hundred thirty-seven means a kill, one hundred forty-three a terminate, and one hundred thirty a Control-C.",
         "By convention. A program could exit with one hundred thirty-seven itself.",
         "Python's subprocess reads the wait status directly, and reports a kill as minus nine.",
         {
@@ -114,8 +114,8 @@
       ],
       "answer": [
         "It is waiting in a read, on a socket that nobody writes to.",
-        "Sleeping means it wakes the moment data arrives. A busy loop would show R, running, with a busy processor. A disk wait would show a D, which usually can't be killed until the disk read returns. And a zombie, a Z, has no open files at all.",
-        "So send term, give it a moment to close, and then kill, if it is still there. Either way the shell sees one hundred forty-three. The job a moment ago flushed first. This one has no term handler."
+        "Sleeping means it wakes the moment data arrives, or a signal. A busy loop would show R, running, with a busy processor. A disk wait would show a D, which usually can't be killed until the disk read returns. And a zombie, a Z, has no open files at all.",
+        "This job has no term handler, so send term and it simply ends, and the shell sees one hundred forty-three. Kill is for a job that ignores term, and then the shell sees one hundred thirty-seven."
       ]
     },
     {
