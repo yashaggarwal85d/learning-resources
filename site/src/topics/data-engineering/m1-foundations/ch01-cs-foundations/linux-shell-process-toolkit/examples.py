@@ -71,6 +71,7 @@ assert 125 + 1 == 126  # bisect's skip sits just under the shell's own codes
 # ---- Step 6: TERM asks; KILL doesn't ----------------------------------------------------------------
 assert kv['handled_term'] == '143' and kv['handler_line'] == 'flushed and closed'  # a handler that flushes and re-raises TERM: 143, not 0
 assert kv['handled_exit143'] == '143' and kv['handled_exit0'] == '0' and 128 + 15 == 143  # exit(143) says the same; exit(0) would report an interrupted job as a success
+assert kv['handled_exit_waits_worker'] == 'yes 143' and kv['handled_reraise_waits_worker'] == 'no 143'  # with a non-daemon worker, exit(143) waits for it; re-raising TERM does not
 assert kv['killed'] == '137' and kv['plain_term'] == '143'
 assert kv['zombie_state'] == 'Z' and kv['zombie_word'] == 'zombie' and '<defunct>' in kv['zombie_ps'] and kv['zombie_comm'] == 'true'
 assert kv['zombie_fds'] in ('0', 'unreadable') and kv['zombie_gone'] == 'yes'

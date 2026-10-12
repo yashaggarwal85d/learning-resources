@@ -27,7 +27,7 @@
     {
       "lines": [
         "Every file has nine permission bits. Read, write and execute, for the owner, for the group, and for everyone else.",
-        "A new file starts at six six six. And the umask switches bits off.",
+        "A new file usually starts at six six six. And the umask switches bits off.",
         "The nightly job writes the orders file under a umask of zero seven seven.",
         "The loader runs as another user, in the same group.",
         {
@@ -114,7 +114,7 @@
       ],
       "answer": [
         "It is waiting in a read, on a socket that nobody writes to.",
-        "Sleeping means it wakes the moment data arrives. A busy loop would show R, running, with a busy processor. A disk wait would show a D, which usually ignores even kill until the disk read returns. And a zombie, a Z, has no open files at all.",
+        "Sleeping means it wakes the moment data arrives. A busy loop would show R, running, with a busy processor. A disk wait would show a D, which usually can't be killed until the disk read returns. And a zombie, a Z, has no open files at all.",
         "So send term, give it a moment to close, and then kill, if it is still there. Either way the shell sees one hundred forty-three. The job a moment ago flushed first. This one has no term handler."
       ]
     },
@@ -127,7 +127,7 @@
           "beat": 0.4
         },
         "Skip the awk step, and forty events with stray capitals or blanks make seven groups instead of four.",
-        "And a grep for refunded misses the ones with a leading blank. One thousand four hundred ninety-five, not fifteen hundred. Count values after parsing, not strings."
+        "And a grep for refunded or cancelled misses the ones with a leading blank. One thousand four hundred ninety-five, not fifteen hundred. Count values after parsing, not strings."
       ]
     },
     {
@@ -135,7 +135,7 @@
         "Two lines you must read on sight.",
         "Five fields, minute to weekday, then the command. This one runs at two fifteen every day, and appends both streams to a log.",
         "Cron gives the job a tiny environment, with nothing from your own shell's path. It runs in one timezone. And it has no guard against a run that is still going. So take a lock.",
-        "Two fifteen is skipped or doubled on clock-change nights, unless cron runs in universal time.",
+        "On clock-change nights, two fifteen local time is missing, or comes twice. So run cron in universal time.",
         {
           "beat": 0.4
         },

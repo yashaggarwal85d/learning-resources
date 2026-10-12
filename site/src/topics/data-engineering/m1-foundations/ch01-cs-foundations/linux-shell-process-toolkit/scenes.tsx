@@ -446,7 +446,7 @@ export function CronSsh({ t }: StepCtx) {
         </g>
       ))}
       <T x={30} y={92} s={15} f={C.caramel} o={fade(t, 0.9)}>runs at 02:15 every day</T>
-      <T x={30} y={112} s={13} f={C.taupe} o={fade(t, 1.0)}>(local time; not on DST nights)</T>
+      <T x={30} y={112} s={13} f={C.taupe} o={fade(t, 1.0)}>(local time; DST nights: missing or twice)</T>
       <T x={30} y={136} s={13} f={C.crema} o={fade(t, 1.3)}>/opt/etl/nightly.sh &gt;&gt; /var/log/nightly.log 2&gt;&amp;1</T>
       <T x={30} y={158} s={13} f={C.latte} o={fade(t, 1.6)}>cron's env: SHELL HOME LOGNAME, no shell PATH</T>
       <Line x1={30} y1={172} x2={536} y2={172} c={C.taupe} w={1} o={0.5 * fade(t, 1.8)} />

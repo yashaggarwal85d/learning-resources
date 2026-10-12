@@ -221,6 +221,10 @@ Version: Linux man-pages 6.19, page dated 2026-02-08 (manpages 6.19-3, Debian un
 
 > This field contains the number of hard links to the file.
 
+> For a directory, it indicates that BSD semantics are to be used for that directory: files created there inherit their group ID from the directory, not from the effective group ID of the creating process, and directories created there will also get the S_ISGID bit set.
+
+Notes: the second quote is the set-group-ID directory rule behind the Deep dive's "shared landing zone" and the reel's "a setgid directory gives new files its group" (added by the post-build fact-check, 2026-10-12).
+
 Contents:
 - NAME
 - DESCRIPTION (struct stat fields; st_mode file type and permission constants such as S_ISUID 04000)
@@ -472,6 +476,16 @@ set -e / set -u:
 
 > The -l option lists the signal names.
 
+> This construct redirects both the standard output (file descriptor 1) and the standard error output (file descriptor 2) to the file whose name is the expansion of word.
+
+> If ‘|&’ is the pipeline operator, command1’s standard error, in addition to its standard output, is connected to command2’s standard input through the pipe; it is shorthand for 2>&1 |.
+
+> The noclobber option is available to avoid overwriting existing files with output redirection (see The Set Builtin).
+
+> The ‘>|’ redirection operator may be used to override noclobber.
+
+Notes: the last four quotes (3.6.4 `&>word`, 3.2.3 `|&`, and noclobber / `>|`) were added by the post-build fact-check (2026-10-12) for the Deep dive's "Bash's shorthands" sentence.
+
 Contents:
 - Pipelines: exit status is the last command's; pipefail changes it to the rightmost non-zero status; `!` negates
 - Redirections: order is significant; `> file 2>&1` sends both streams to the file, `2>&1 > file` does not
@@ -516,6 +530,16 @@ Version: jq 1.8 Manual
 > Sets the exit status of jq to 0 if the last output value was neither false nor null, 1 if the last output value was either false or null, or 4 if no valid result was ever produced. Normally jq exits with 2 if there was any usage problem or system error, 3 if there was a jq program compile error, or 0 if the jq program ran.
 
 > The given exit_code (defaulting to 5) will be jq's exit
+
+> A filter of the form a // b produces all the results of a that are not false or null. If a produces no results, or no results other than false or null, then a // b produces the results of b.
+
+> The input must be an array, and it is rendered as TSV (tab-separated values).
+
+> This option passes a JSON-encoded value to the jq program as a predefined variable.
+
+> Parse the input in streaming fashion, outputting arrays of path and leaf values (scalars and empty arrays or empty objects).
+
+Notes: the four quotes above (`//`, `@tsv`, `--argjson`, `--stream`) were added by the post-build fact-check (2026-10-12) for the Deep dive's "More jq" bullet; all four were also executed on jq 1.7.
 
 Note: this 5 is `halt_error`'s default. The manual does not document the exit status of an uncaught runtime error or an input parse error; jq 1.7 exits 5 for both (executed), and jq 1.8.2's src/main.c sets `JQ_ERROR_UNKNOWN = 5` for them (read with curl, see FACT-CHECK.md).
 
@@ -586,6 +610,14 @@ Version: GNU sed 4.10
 
 > The syntax of the s command is ‘s/regexp/replacement/flags’.
 
+> Use extended regular expressions rather than basic regular expressions.
+
+> By default, sed will consider the files specified on the command line as a single continuous long stream.
+
+> Treat the input as a set of lines, each terminated by a zero byte (the ASCII ‘NUL’ character) instead of a newline.
+
+Notes: the last three quotes (`-E`, `-s`, `-z`) were added by the post-build fact-check (2026-10-12).
+
 Contents:
 - Command-line options: -n/--quiet/--silent disables automatic printing of the pattern space
 - The s command: s/regexp/replacement/flags, substitutes the match in the pattern space
@@ -597,6 +629,12 @@ Version: GNU Grep 3.12
 > Interpret patterns as extended regular expressions (EREs).
 
 > (-E is specified by POSIX.)
+
+> By default, type is ‘binary’, and grep suppresses output after null input binary data is discovered, and suppresses output lines that contain improperly encoded data. When some output is suppressed, grep follows any output with a message to standard error saying that a binary file matches.
+
+> Process a binary file as if it were text;
+
+Notes: the binary-file quotes were added by the post-build fact-check (2026-10-12): output stops *after* the first NUL byte, so lines before it can still print; in the examples the NUL is on the first line, so stdout has no lines.
 
 Contents:
 - Matching control: -E (extended regexp), -F (fixed strings), -G (basic), -P (Perl)
@@ -1061,4 +1099,39 @@ Version: openssh-portable master, read 12 October 2026; function sshkey_perm_ok
 > error("This private key will be ignored.");
 
 Contents:
-- sshkey_perm_ok: refuses a private key whose mode has group or other bits (`st_mode & 077`)
+- sshkey_perm_ok: refuses a private key whose mode has group or other bits (`st_mode & 077`), checked only when the key file is owned by the running user (`st.st_uid == getuid()`)
+
+## threading - Thread-based parallelism (Python 3.15 documentation)
+URL: https://docs.python.org/3/library/threading.html
+Version: Python 3.15.0 documentation (the page the URL served on 12 October 2026)
+
+> The entire Python program exits when no alive non-daemon threads are left.
+
+Notes: added by the post-build fact-check (2026-10-12). It is why `sys.exit(143)` in a TERM handler is not the same as re-raising TERM in a job with a non-daemon worker thread: `SystemExit` ends the main thread, and the process stays until the worker finishes (executed: `handled_exit_waits_worker` yes, `handled_reraise_waits_worker` no).
+
+Contents:
+- Thread objects: daemon threads; the program exits when only daemon threads are left
+
+## proc_net(5) - Linux manual page (Debian manpages mirror)
+URL: https://manpages.debian.org/unstable/manpages/proc_net.5.en.html
+Version: Linux man-pages, Debian unstable, read 12 October 2026
+
+> Holds a dump of the TCP socket table.
+
+> The "rem_address" is the remote address and port number pair (if connected).
+
+Notes: added by the post-build fact-check (2026-10-12). The page does not describe the inode column; that the 10th whitespace-separated field is the socket inode is executed (`hung_peer_is_listener`: the inode from `/proc/<pid>/fd` matched a row), not quoted. IPv6 sockets are in `/proc/net/tcp6`.
+
+Contents:
+- /proc/net/tcp: sl, local_address, rem_address, st, tx_queue, rx_queue, tr, tm->when, rexmits, uid
+
+## include/net/tcp_states.h - Linux kernel source (master)
+URL: https://raw.githubusercontent.com/torvalds/linux/master/include/net/tcp_states.h
+Version: torvalds/linux master, read 12 October 2026
+
+> TCP_ESTABLISHED = 1,
+
+Notes: added by the post-build fact-check (2026-10-12): the `st` value `01` in `/proc/net/tcp` is TCP_ESTABLISHED.
+
+Contents:
+- enum of TCP states (TCP_ESTABLISHED = 1, then SYN_SENT, SYN_RECV, FIN_WAIT1, …, LISTEN, CLOSING)

@@ -417,3 +417,13 @@ Fixes for `REVIEW.md` "Looks review (Opus, 2026-10-11)"; the plan above is kept,
 - **Step 8.** Table columns re-spaced and joined to `uniq -c` by a tube; the dirty spellings read `Paid · SHIPPED␣ · ␣refunded`.
 - **Step 9.** Chips, then the decoded reading, command and env line; a rule before the ssh block; the database box reads `db :5432`.
 - **Step 10.** Shorter summaries on rows 2, 6 and 7; `0 · 1 · 2` and `R · S · D · Z`; code-like names in mono.
+
+## Build notes: changes after the post-build fact-check (Opus, 2026-10-12)
+
+Corrections from `FACT-CHECK.md` → "Post-build fact-check (Opus, 2026-10-12)", applied to the files directly:
+- **Cron step (now step 10).** "02:15 is skipped or doubled on DST nights" was wrong for the only cron quoted: Debian `cron(8)` runs a skipped fixed-time job "soon after the change" and does not re-run one in the repeated hour, so the *clock time* is missing or doubled, not the run. Caption: "On DST nights local 02:15 is missing or comes twice: run cron in UTC"; picture note: "(local time; DST nights: missing or twice)"; narration to match.
+- **Lab step (now step 9).** "A grep for "refunded" … 1,495, not 1,500" mixed two counts (refunded alone is 200). The caption and narration now say a grep for "refunded" or "cancelled", the pattern that gave 1,495.
+- **Hung-job explain (now step 8).** "D … usually ignores even kill" → "usually can't be killed until it returns" (the signal stays pending; it is not ignored, as claim 26 already said). "In production": "Nothing kills it" → "Even KILL usually waits until the I/O returns".
+- **Permissions step (now step 3).** "A new file starts at 666" → "usually starts at 666" (666 is what `open` callers such as the shell and Python ask for, not a kernel default).
+- **Deep dive "Handlers".** `sys.exit(128 + signum)` and re-raising TERM are not equivalent in a threaded job: Python waits for non-daemon threads after `SystemExit`. Sentence added, executed (`handled_exit_waits_worker`, `handled_reraise_waits_worker`), quote from the `threading` docs in `SOURCES.md`.
+- **Smaller Deep-dive precision:** grep's binary notice (output stops from the first NUL on), `/proc/net/tcp6` and state `01` = ESTABLISHED, ssh's key-permission check applies to a key you own and ssh then tries the next key or method, systemd timers reworded (no unsourced "usual alternative"; `Persistent=` is one catch-up run).

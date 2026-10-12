@@ -31,7 +31,7 @@ const reel: Reel = {
       title: 'Can the loader read the file?',
       body: (
         <>
-          Nine permission bits: read, write and execute for the owner, the group and everyone else. A new file starts at 666 and <code>umask</code> switches bits
+          Nine permission bits: read, write and execute for the owner, the group and everyone else. A new file usually starts at 666 and <code>umask</code> switches bits
           off. The nightly job writes <code>orders.csv</code> under <code>umask 077</code>; the loader, another user in the same group, opens it. Can it read it?
         </>
       ),
@@ -128,7 +128,7 @@ const reel: Reel = {
         explain: (
           <>
             Waiting in <code>read()</code> on fd 4, a socket. <code>S</code> is an interruptible sleep: it wakes the moment data arrives, or a signal. The
-            state letters: R runs (spinning shows a busy CPU), S waits for an event, D waits for I/O and usually ignores even kill until it returns, Z is dead and has no open files. So{' '}
+            state letters: R runs (spinning shows a busy CPU), S waits for an event, D waits for I/O and usually can't be killed until it returns, Z is dead and has no open files. So{' '}
             <code>kill -TERM</code>, give it a moment, then <code>kill -KILL</code>. Either way the shell sees 143; the job a moment ago flushed first, this one
             has no TERM handler.
           </>
@@ -142,8 +142,8 @@ const reel: Reel = {
         <>
           <code>jq -r .status</code> pulls one field per line; <code>{"awk '{ $1 = $1; print tolower($0) }'"}</code> trims and lowercases;{' '}
           <code>sort | uniq -c</code> counts. <code>diff</code> against <code>clean.py</code>'s output prints nothing and exits 0. Skip the awk step and 40
-          events with stray capitals or blanks make 7 groups instead of 4. A <code>grep</code> for <code>"refunded"</code> misses <code>" refunded"</code>: 1,495,
-          not 1,500. Count values after parsing, not strings. The Deep dive has the script and the breakages.
+          events with stray capitals or blanks make 7 groups instead of 4. A <code>grep</code> for <code>"refunded"</code> or <code>"cancelled"</code> misses <code>" refunded"</code>:
+          1,495, not 1,500. Count values after parsing, not strings. The Deep dive has the script and the breakages.
         </>
       ),
       duration: 3.8,
@@ -154,8 +154,8 @@ const reel: Reel = {
       body: (
         <>
           Five fields, minute to weekday, then the command: this runs at 02:15 every day, appending both streams to a log. cron gives the job a tiny
-          environment (nothing from your shell's <code>PATH</code>), runs in one timezone, and has no guard against a run that is still going: take a lock. 02:15 is skipped or doubled on DST nights unless cron
-          runs in UTC. To
+          environment (nothing from your shell's <code>PATH</code>), runs in one timezone, and has no guard against a run that is still going: take a lock. On DST nights local 02:15 is missing or comes
+          twice: run cron in UTC. To
           reach a database behind a bastion, <code>ssh -N -L</code> forwards a local port through it; <code>-J</code> hops through a bastion to a host behind
           it.
         </>

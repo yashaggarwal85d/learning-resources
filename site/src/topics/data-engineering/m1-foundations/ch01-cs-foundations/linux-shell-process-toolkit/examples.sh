@@ -279,6 +279,25 @@ out handled_exit143 "$handled_exit143"; check "$handled_exit143" 143 'exiting 12
 python3 term_exit0.py ready1c > /dev/null & hp=$!; waitfile ready1c
 kill -TERM $hp; set +e; wait $hp; handled_exit0=$?; set -e
 out handled_exit0 "$handled_exit0"; check "$handled_exit0" 0 'a handler that calls exit(0) reports success for an interrupted job'
+# exit(143) and re-raising are not the same in a job with a non-daemon worker thread: SystemExit ends only the main thread,
+# and Python waits for the worker before the process ends; re-raising TERM with SIG_DFL ends the process at once
+cat > term_worker.py << 'PY'
+import os, signal, sys, threading, time
+def stop(signum, frame):
+    if sys.argv[2] == 'exit':
+        sys.exit(128 + signum)
+    signal.signal(signum, signal.SIG_DFL); os.kill(os.getpid(), signum)
+signal.signal(signal.SIGTERM, stop)
+threading.Thread(target=lambda: (time.sleep(2), open(sys.argv[1] + '.done', 'w').close())).start()  # a non-daemon worker
+open(sys.argv[1], 'w').close()
+time.sleep(60)
+PY
+python3 term_worker.py ready1d exit & hp=$!; waitfile ready1d
+kill -TERM $hp; set +e; wait $hp; st_exit_worker=$?; set -e
+out handled_exit_waits_worker "$([ -e ready1d.done ] && echo yes || echo no) $st_exit_worker"; check "$([ -e ready1d.done ] && echo yes || echo no) $st_exit_worker" 'yes 143' 'sys.exit in the handler: the process ends only after the worker thread'
+python3 term_worker.py ready1e raise & hp=$!; waitfile ready1e
+kill -TERM $hp; set +e; wait $hp; st_raise_worker=$?; set -e
+out handled_reraise_waits_worker "$([ -e ready1e.done ] && echo yes || echo no) $st_raise_worker"; check "$([ -e ready1e.done ] && echo yes || echo no) $st_raise_worker" 'no 143' 're-raising TERM ends the process at once'
 python3 term_handler.py ready2 > /dev/null & hp=$!; waitfile ready2
 kill -KILL $hp; set +e; wait $hp; killed=$?; set -e
 out killed "$killed"; check "$killed" 137 'KILL cannot be caught: 137'
