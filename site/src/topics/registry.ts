@@ -179,4 +179,24 @@ export const TOPICS: TopicMeta[] = [
     bridge: 'Every count in the last reel assumed each step costs the same. Here is the machine that makes that true, one word at a time, and the costs it leaves out.',
     handoff: 'Counting a loop on this machine is easy. A recursive algorithm hands you its count as a recurrence; next, how to solve one.',
   },
+  {
+    id: 'dsa.lower-bounds-adversary-arguments',
+    domain: 'data-structures-and-algorithms',
+    slug: 'data-structures-and-algorithms/m1-data-structures/ch01-cost-models-amortized/lower-bounds-adversary-arguments',
+    title: 'Lower bounds and adversary arguments',
+    syllabusTitle: 'Lower bounds and adversary arguments',
+    kind: 'full',
+    status: 'held', // topics 2 (the word-RAM model) and 3 (recurrences) are built in parallel and are not live yet
+    milestone: { number: 1, title: 'Data Structures' },
+    chapter: { number: 1, title: 'Cost Models and Amortized Analysis', section: '1.1' },
+    minutes: 13,
+    verified: '2026-10-12',
+    introduces: ['decision-tree-model', 'sorting-lower-bound', 'information-theoretic-bound', 'adversary-argument', 'element-distinctness', 'min-max-comparisons', 'lower-bound-scope'],
+    // comparison-model, word-ram, integer-sorting, van-emde-boas-tree and recurrence-relations are introduced by topics 2 and 3 (planned in CHAPTER.md; these ids are a contract between topics); the rest are assumed and listed in the Prerequisites panel.
+    uses: ['comparison-model', 'word-ram', 'integer-sorting', 'van-emde-boas-tree', 'recurrence-relations', 'big-o-theta-omega', 'best-worst-average-case', 'expected-vs-average', 'logarithms', 'standard-sorts', 'binary-search', 'hash-set'],
+    declared: ['logarithms', 'standard-sorts', 'binary-search', 'hash-set'],
+    bridge: 'You can now bound what an algorithm costs. A lower bound says what every algorithm in a model must pay, and an adversary is how you prove it.',
+    handoff: 'Every bound so far priced one run on its worst input. A data structure lives through a sequence of operations, where one expensive step can be paid for by many cheap ones, with no probability involved. Next: amortized analysis.',
+
+  },
 ];
