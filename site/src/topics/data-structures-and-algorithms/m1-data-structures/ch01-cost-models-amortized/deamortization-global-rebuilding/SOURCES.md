@@ -48,6 +48,12 @@ Version: dsbook repository, commit 04bd1ec6c83d9dd651ca58197c83a4e44255de14, fil
 
 > Before having to rebuild the whole structure, we cross-out at least $\Theta(n)$
 
+Added by the fact-check (D23, D24): the condition of the O(f(n)/n) bound, and the rest of D13's sentence.
+
+> $\O(f(n)/n)$ to their time complexity, given that $n$ does not change
+
+> require low latency. In such cases, we would like that each insertion is fast
+
 
 Contents:
 - Static, semi-dynamic and fully dynamic structures; sorted array vs BST trade-off.
@@ -106,6 +112,16 @@ Version: Lecture 9 [Fa'13], copyright 2018 Jeff Erickson, CC BY-NC-SA 4.0
 > we will use the following global rebuilding rules:
 
 > Show that for any sequence of insertions and deletions, the amortized time per operation is still O(1).
+
+Added by the fact-check (E24–E27): the two rules of exercise 9 (the table grows at more than 3/4 full, not at full), and Ehrlich's year and worst case.
+
+> After an insertion, if the table is more than 3/4 full, we allocate a new table twice as
+
+> After a deletion, if the table is less than 1/4 full, we allocate a new table half as big as
+
+> discovered by Gideon Ehrlich1 in 1973
+
+> The EhrlichGrayIncrement algorithm obviously runs in O(1) time, even in the worst case.
 
 
 Contents:
@@ -172,6 +188,38 @@ Version: SODA 1993 proceedings paper, Chapter 19, pp. 165-174 (author PDF, MIT L
 
 > that achieves a worst-case SEARCHtime of O(logn), with reasonable amortized update costs.
 
+Added by the fact-check (G27–G41). The PDF is a scan with an OCR text layer; the displayed formulas are garbled or missing there, so these were read from the page images (pdftoppm, pages 166–174) and cannot be quote-checked: h_α(n) = ⌊log_(1/α) n⌋ (p. 166, the display under "We denote"); "We assume from now on that a fixed α, 1/2 < α < 1, has been chosen" (p. 166, strict, while the weight-balance definition allows 1/2 ≤ α < 1); (4.7) size[T] < α · max_size[T] (p. 167, strict); "To rebuild a subtree is to replace it with a 1/2-weight-balanced subtree" (p. 167; G13's "l/a" is OCR for "1/2"); Lemma 5.1's proof ends "the depth d(x) of a node x is at most log_(1/α) size[T]" (p. 167); Theorem 5.1, "If a scapegoat tree T was created from a 1/2-weight-balanced tree by a sequence of INSERT operations, then T is α-height-balanced" (p. 168); BUILD-TREE's first recursive call builds the left subtree of ⌈(n − 1)/2⌉ nodes, so the root is the upper middle (p. 170); Figure 4 and Figure 5 (pp. 173–174, timing tables, not in the text layer): inserts get faster as α grows from 0.55 to 0.75 (uniform, 1K: 9.46 to 3.83 s per 128K operations; sorted, 1K: 21.25 to 13.94 s), and on uniform inputs searches and deletes get slower (1K: 1.65 to 1.87 s and 3.49 to 6.88 s). The sentence G25 states the reverse of the tables; do not cite it.
+
+> each node only stores three values: key, left, and right.
+
+> The rebuilt subtree is 1/2weight-balanced.
+
+> and define the potential of node x to be 0 if A(x) < 2, and A(x) otherwise.
+
+> it is just an accounting fiction representing the amount of “prepaid work” available at node x.
+
+> Since this ancestor will often be higher in the tree than the first weight-unbalanced ancestor, it may tend to yield more balanced trees on the average.
+
+> our experiments this heuristic performed better than choosing the first weight-unbalanced ancestor to be the scapegoat.
+
+> Our experiments suggest that checking for condition (4.6) yields a better overall performance.
+
+> proved to work faster than the method described in section 6.1 by 25% - 30%.
+
+> However, for the insertion of sorted sequences scapegoat trees are noticeably slower than the other two data structures.
+
+> Red-black trees implement the basic dictionary operations with a worst-case cost of O(logn) per operation, at the cost of storing one extra bit
+
+> We leave as an open problem the average-case analysis of scapegoat trees
+
+> In Section 7 we show how our techniques can be used in k - d trees
+
+> technique can be applied to other tree-like data
+
+> Every time the whole tree is rebuilt
+
+> Therefore, the depth d(x) of a node x is at most
+
 
 Contents:
 - Abstract: amortized O(log n) INSERT/DELETE, worst-case O(log n) SEARCH, no per-node extra data, only size and max-size at the root, scapegoat idea
@@ -234,6 +282,16 @@ Version: CACM vol. 56, no. 2, February 2013, pp. 74-80, doi:10.1145/2408776.2408
 
 > simply stamping out all sources of performance variability will not achieve such responsiveness.
 
+Added by the fact-check (TS23–TS26): the per-server rate of the 2,000-server case, the scenario's status (hypothetical), log compaction, and time-slicing.
+
+> Even for services with only one in 10,000 requests experiencing more than onesecond latencies at the single-server level
+
+> outlines how service-level latency in this hypothetical scenario is affected by very
+
+> data reconstruction in distributed file systems, periodic log compactions in storage systems like
+
+> Google’s Web search system uses such time-slicing to prevent a small number of very computationally expensive queries from adding substantial latency to a large number of concurrent cheaper queries.
+
 
 Contents:
 - Introduction: sub-100ms responsiveness feels fluid; the tail of the latency distribution is hard to keep short as systems scale; "tail-tolerant" systems by analogy with fault tolerance; key insights box.
@@ -289,6 +347,20 @@ Version: arXiv:2211.11009v2 [cs.DS], 29 May 2023
 
 > rebuilding cannot be used, the O(r) amortized time for resizing, which we show is optimal, cannot
 
+Added by the fact-check (TZ20–TZ25): the allocation assumption, the abstract's result with its temporary-space condition, and the worst-case sentence. The paper states "cannot be made worst-case, unless r = 2" with the reason "Since background rebuilding cannot be used"; it proves the Ω(r) amortized lower bound, not a worst-case impossibility theorem.
+
+> We assume, for simplicity, that each such call takes only constant time. All our amortized bounds hold, however, if allocating or deallocating a fixed-length array of size N requires O(N ) time.
+
+> (assuming that memory allocation takes O(1) worst-case time).
+
+> items are never moved.
+
+> we show that N + O(N 1/r ) space is sufficient for storing and accessing an array of size N
+
+> if N + O(N 1−1/r ) space can be used briefly during grow and shrink operations.
+
+> The time for grow and shrink operations cannot be made worst-case, unless r = 2.
+
 
 Contents:
 - Abstract and introduction: resizable arrays, doubling gives O(1) amortized or worst-case per operation, N + O(sqrt N) space by Sitarski and Brodnik et al., new N + O(N^(1/r)) results.
@@ -296,3 +368,91 @@ Contents:
 - Section 3: previous work: basic (single-array) structures and geometric growth, Sitarski hashed array tree with rebuild and background deamortization, Brodnik et al. worst-case structure with incremental index-block copying.
 - Sections 4-10: lower bound, r = 3 solution, general r, growth game and amortized lower bound (not quoted).
 
+## Purely Functional Data Structures, PhD thesis (Chris Okasaki), Chapter 5 "Lazy Rebuilding"
+URL: https://www.cs.cmu.edu/~rwh/students/okasaki.pdf
+Version: CMU-CS-96-177, September 1996 (thesis PDF); sections 5.1 Batched Rebuilding, 5.2 Global Rebuilding, 5.3 Lazy Rebuilding, 5.5 Related Work
+Added by the fact-check (OK1–OK13). Opened source for Overmars's attribution (his 1983 book itself was not opened) and for the buffered-updates pattern. Okasaki's terms: rebuilding all at once after many updates is "batched rebuilding"; Overmars's "global rebuilding" is the incremental, worst-case version. dsbook and Erickson use "global rebuilding" for the all-at-once version.
+
+> We call this approach batched rebuilding.
+
+> Then, whenever half the nodes in the tree have been deleted, make a global pass removing the deleted nodes and restoring the tree to perfect balance.
+
+> Overmars [Ove83] developed a technique for eliminating the amortization from batched rebuilding. He called this technique global rebuilding.
+
+> The basic idea is to execute the rebuilding transformation incrementally, performing a few steps per normal operation.
+
+> The tricky part of global rebuilding is that the coroutine must be started early enough that it can finish by the time the rebuilt structure is needed.
+
+> Concretely, global rebuilding is accomplished by maintaining two copies of each object.
+
+> All queries and updates operate on the working copy. When the secondary copy is completed, it becomes the new working copy and the old working copy is discarded.
+
+> Thus, these updates to the secondary copy are buffered and executed, a few at a time, after the secondary copy has been rebuilt, but before it takes over as the working copy.
+
+> Unfortunately, global rebuilding is often quite complicated.
+
+> Global rebuilding has two advantages over batched rebuilding: it is suitable for implementing persistent data structures and it yields worst-case bounds rather than amortized bounds.
+
+> However, if desired, worst-case bounds can often be recovered using the scheduling techniques of Chapter 4.
+
+> Overmars introduced global rebuilding in [Ove83].
+
+> Mark H. Overmars. The Design of Dynamic Data Structures, volume 156 of LNCS.
+
+Contents (chapter 5 only):
+- 5.1 Batched rebuilding: rebuild the whole structure after a sequence of updates; conditions (1) not too often, (2) weak updates; the mark-deleted BST example; batched queues.
+- 5.2 Global rebuilding (Overmars): run the rebuild incrementally, a few steps per operation, started early enough; two copies (working, secondary); updates buffered and replayed before the swap; worst-case bounds; often complicated.
+- 5.3 Lazy rebuilding: pay for the rebuild concurrently, execute it lazily; amortized, worst-case again with scheduling.
+- 5.4 Double-ended queues; 5.5 Related work (global rebuilding's uses: real-time queues and deques, catenable deques, order maintenance).
+
+## Algorithms, Lecture 10: Scapegoat and Splay Trees (Jeff Erickson)
+URL: https://jeffe.cs.illinois.edu/teaching/algorithms/notes/10-scapegoat-splay.pdf
+Version: Lecture 10 [Fa'13], copyright 2018 Jeff Erickson, CC BY-NC-SA 4.0
+Added by the fact-check (L1–L9). Opened source for the history (Overmars's lazy balanced trees; Andersson 1989 before Galperin and Rivest 1993) and for "global rebuilding" in the all-at-once sense inside a BST. Erickson's partial-rebuilding rule uses a different parameter (height(v) > α · lg size(v) with α > 1) and is "closer to Andersson's"; it is not Galperin and Rivest's rule.
+
+> lazy weight-balanced trees, developed by Mark Overmars* in the early 1980s, [14] and scapegoat trees, discovered by Arne Andersson* in 1989 [1, 2] and independently2 by Igal Galperin* and Ron Rivest in 1993 [11].
+
+> The claim of independence is Andersson’s [2]. The two papers actually describe very slightly different rebalancing algorithms.
+
+> Global Rebuilding Rule. As soon as half the nodes in the tree have been marked, rebuild a new perfectly balanced tree containing only the unmarked nodes.
+
+> We spend O(n) time rebuilding, but only after Ω(n) deletions, so the amortized cost of rebuilding the tree is O(1) per deletion.
+
+> We use partial rebuilding to re-balance the tree after insertions, and global rebuilding to re-balance the tree after deletions.
+
+> Thus, unlike almost every other kind of balanced trees, scapegoat trees require only O(1) extra space.
+
+> [1] Arne Andersson*. Improving partial rebuilding by using simple balance criteria.
+
+> [2] Arne Andersson. General balanced trees. J. Algorithms 30:1–28, 1999.
+
+> [14] Mark H. Overmars*. The Design of Dynamic Data Structures. Lecture Notes Comput. Sci. 156.
+
+Contents:
+- 10.1 Binary search trees: balanced-tree families and their worst-case, amortized and expected bounds; lazy balanced trees (Overmars), scapegoat trees (Andersson; Galperin and Rivest), splay trees.
+- 10.2 Lazy deletions, global rebuilding: mark deleted nodes, rebuild when half are marked; O(1) amortized rebuilding per deletion.
+- 10.3 Insertions, partial rebuilding: rebuild a subtree when height(v) > α lg size(v); imbalance |size(left) − size(right)|; O(log n) amortized.
+- 10.4 Scapegoat (lazy height-balanced) trees: both techniques; only O(1) extra integers.
+- 10.5–10.8 Rotations and splay trees (not used here); references; exercises.
+
+## Scapegoat tree (Wikipedia)
+URL: https://en.wikipedia.org/wiki/Scapegoat_tree
+Version: revision oldid 1378893949 (fetched 2026-10-12)
+Added by the fact-check (W1–W5) as a lead and a clean-text check only; every claim it supports is verified against Galperin and Rivest's page images. Note: W3 writes the delete trigger with ≤; the paper's (4.7) is strict (<), and the topic follows the paper.
+
+> height(tree) ≤ floor(log1/α(size(tree)))
+
+> height(scapegoat tree) ≤ floor(log1/α(size(tree))) + 1.
+
+> NodeCount ≤ α*MaxNodeCount
+
+> A high α value results in fewer balances, making insertion quicker but lookups and deletions slower, and vice versa for a low α.
+
+> invented by Arne Andersson in 1989[2] and rediscovered by Igal Galperin and Ronald L. Rivest in 1993.[1]
+
+## The Java Language Specification, Java SE 26 Edition, Chapter 15 "Expressions"
+URL: https://docs.oracle.com/javase/specs/jls/se26/html/jls-15.html
+Version: Java SE 26 Edition, §15.10.2 Run-Time Evaluation of Array Creation Expressions
+Added by the fact-check (J1): one language that requires every slot of a new array to be initialized. It states the semantics, not a cost; no claim about what any runtime or allocator does.
+
+> one-dimensional array is created of the specified length, and each component of the array is initialized to its default value
