@@ -21,7 +21,7 @@
     {
       "lines": [
         "Only comparisons tell the algorithm anything about the keys.",
-        "So its whole run on an input is the path of answers it gets.",
+        "So, its whole run on one input is nothing but the path of answers that it gets.",
         {
           "beat": 0.3
         },
@@ -56,12 +56,12 @@
           "beat": 0.3
         },
         "That is theta of n log n.",
-        "Five keys: one hundred twenty orders sit between sixty four and one hundred twenty eight, so the height is at least seven.",
+        "Five keys: one hundred and twenty orders sit between sixty-four and one hundred and twenty-eight, so the height is at least seven.",
         {
           "beat": 0.3
         },
         "At a million keys, every comparison sort has an input that costs about eighteen and a half million comparisons.",
-        "Merge sort's worst case is two and a half percent above that floor. Last reel's number counted a unit for every key at every level, so it was higher.",
+        "Merge sort's worst case is two point five percent above that floor. Last reel's number counted a unit for every key at every level, so it was higher.",
         "Upper and lower bound meet, so sorting is settled."
       ]
     },
@@ -79,12 +79,12 @@
     {
       "lines": [
         "The argument used nothing about sorting, except the number of possible answers.",
-        "A problem with K answers needs at least log base two of K yes or no questions, rounded up.",
+        "A problem with K answers needs at least log base two of K yes or no questions. Round it up.",
         {
           "beat": 0.3
         },
         "Searching the sorted vector: a million and one answers, twenty questions, and binary search uses twenty. On a key that is absent, no probe can say equal.",
-        "Merging two runs of four: seventy interleavings, seven, and the standard merge uses seven. Sorting five keys: seven, and seven.",
+        "Merging two runs of four: seventy interleavings, so seven comparisons. The standard merge uses seven. Sorting five keys: seven, and seven.",
         "Here, counting is tight."
       ]
     },
@@ -97,7 +97,7 @@
         "How many comparisons must every comparison algorithm make in its worst case?"
       ],
       "answer": [
-        "Nine hundred ninety-nine thousand, nine hundred ninety-nine.",
+        "Nine hundred and ninety-nine thousand, nine hundred and ninety-nine.",
         "Until a key has lost a comparison, it might be the largest.",
         "So every key but one must lose, and one comparison makes at most one loser.",
         "Counting is a true bound, just a weak one. Twenty unrestricted questions could find the maximum, but a comparison cannot ask them."
@@ -141,7 +141,7 @@
         },
         "Only a comparison of two untested keys gives two units, and there are at most four of those. The referee answers every other comparison so that it gives at most one. A key that only won always beats a key that only lost, for nothing.",
         "Watch the units climb to fourteen, while the comparisons stop at ten.",
-        "So every algorithm needs at least three n over two, minus two. Pairing meets it. At a million keys, about one and a half million."
+        "So every algorithm needs at least three n over two, minus two. Pairing meets it. For a million keys, about one and a half million."
       ]
     },
     {
@@ -161,13 +161,13 @@
     },
     {
       "lines": [
-        "Suppose an algorithm says distinct, without ever comparing two keys that are neighbours in sorted order.",
+        "Suppose an algorithm says distinct, without ever comparing two keys that are neighbors in sorted order.",
         "Nothing lies between them, so the adversary makes them equal.",
         {
           "beat": 0.3
         },
         "Every answer stays the same. The algorithm still says distinct... and now it is wrong.",
-        "So every distinct answer rests on all the neighbour comparisons. Together they spell out the whole sorted order.",
+        "So every distinct answer rests on all the neighbor comparisons. Together they spell out the whole sorted order.",
         "The tree needs at least n factorial leaves, and the sorting bound applies.",
         "It even survives a stronger model, algebraic computation trees, which may also add, multiply, divide and take square roots."
       ]
@@ -189,11 +189,11 @@
       "lines": [
         "Back to the three promises.",
         "No comparison algorithm can keep any of the three, and you proved it without running anything.",
-        "A tree with n factorial leaves for the sort. A scoreboard of units for the minimum and maximum. The neighbour argument for distinctness.",
+        "A tree with n factorial leaves for the sort. A scoreboard of units for the minimum and maximum. The neighbor argument for distinctness.",
         {
           "beat": 0.3
         },
-        "Sorting and distinctness become possible once the keys are used as numbers: radix sort, then one scan for equal neighbours.",
+        "Sorting and distinctness become possible once the keys are used as numbers. Sort them digit by digit, then make one scan for equal neighbors.",
         "For the minimum and maximum, pairing is the best any comparison algorithm can do.",
         "Every bound so far priced one run, on its worst input or on average. A data structure lives through a sequence. The next reel pulls that thread."
       ]
@@ -234,7 +234,7 @@
       ],
       "answer": [
         "The comparison sort that averages seventeen million.",
-        "The average case bound says at least about eighteen and a half million.",
+        "The average cost is at least about eighteen point five million comparisons.",
         "Radix sort is outside the model. A sorted input is one easy input. And the ten largest is a different problem."
       ]
     }
