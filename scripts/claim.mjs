@@ -67,7 +67,9 @@ async function course(domainArg) {
   const want = domainArg.toLowerCase().replace(/&/g, 'and').replace(/[^a-z]+/g, ' ').trim();
   const d = domains.find((x) => [x.id, x.title].some((n) => { const s = n.toLowerCase().replace(/&/g, 'and').replace(/[^a-z]+/g, ' ').trim(); return s === want || s.startsWith(want + ' '); }));
   if (!d) die(`unknown domain "${domainArg}"`);
-  const order = d.milestones.flatMap((m) => m.chapters.flatMap((c) => c.topics.map((t) => ({ title: t.title, chapter: `${c.number} ${c.title}`, m, c }))));
+  // Topics marked *(skipped)* in the syllabus stay in the curriculum but get no reel: they are never handed out, never
+  // waited for, and a chapter is complete without them.
+  const order = d.milestones.flatMap((m) => m.chapters.flatMap((c) => c.topics.filter((t) => !t.skipped).map((t) => ({ title: t.title, chapter: `${c.number} ${c.title}`, m, c }))));
   const reg = new Map(TOPICS.filter((t) => t.domain === d.id).map((t) => [t.syllabusTitle, t]));
   return { domain: d.id, order, reg };
 }

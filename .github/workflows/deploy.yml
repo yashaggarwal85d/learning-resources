@@ -59,6 +59,12 @@ jobs:
           cache-dependency-path: site/package-lock.json
       - run: npm ci
       - run: npm run build
+      - name: Rust toolchain for the Rust examples
+        run: |
+          # Pinned: the examples assert rustc's exact diagnostic text. Bump it deliberately, with a re-check.
+          rustup toolchain install 1.97.0 --profile minimal
+          rustup default 1.97.0
+          command -v g++ >/dev/null || sudo apt-get install -y g++
       - name: Run every topic's code examples
         run: npm run test:examples
       - name: Narration matches every live reel's script

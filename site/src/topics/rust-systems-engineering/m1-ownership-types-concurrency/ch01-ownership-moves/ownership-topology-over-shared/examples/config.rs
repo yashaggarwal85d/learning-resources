@@ -1,0 +1,73 @@
+// ---- the instrument (topic 1 introduces it; topics 2–4 copy it verbatim) ----
+use std::alloc::{GlobalAlloc, Layout, System};
+use std::sync::atomic::{AtomicUsize, Ordering::Relaxed};
+
+pub struct CountingAlloc;
+pub static ALLOCS: AtomicUsize = AtomicUsize::new(0);
+pub static DEALLOCS: AtomicUsize = AtomicUsize::new(0);
+pub static BYTES: AtomicUsize = AtomicUsize::new(0); // bytes requested by alloc
+
+unsafe impl GlobalAlloc for CountingAlloc {
+    unsafe fn alloc(&self, layout: Layout) -> *mut u8 {
+        ALLOCS.fetch_add(1, Relaxed);
+        BYTES.fetch_add(layout.size(), Relaxed);
+        unsafe { System.alloc(layout) }
+    }
+    unsafe fn dealloc(&self, ptr: *mut u8, layout: Layout) {
+        DEALLOCS.fetch_add(1, Relaxed);
+        unsafe { System.dealloc(ptr, layout) }
+    }
+}
+#[global_allocator]
+static ALLOC: CountingAlloc = CountingAlloc;
+pub fn allocs() -> usize { ALLOCS.load(Relaxed) }
+
+// ---- the pipeline's data ----
+pub const BUF_CAP: usize = 64 * 1024; // 65,536 bytes ("64 KiB" on screen)
+pub const POOL_SLOTS: usize = 8;      // free-list capacity, reserved in Pool::new
+
+#[derive(Clone)]                       // Clone, never Copy: cloning is the visible, costly act
+pub struct Buf { pub id: u32, pub bytes: Vec<u8> }   // no Drop impl (so topic 3 can partially move it)
+
+#[derive(Clone, Copy, Debug, PartialEq)]
+pub struct Header { pub kind: u8, pub len: u32 }     // bytes[0], then bytes[1..5] little-endian
+
+pub struct Pool { free: Vec<Buf>, next_id: u32 }
+impl Pool {
+    pub fn new() -> Pool { Pool { free: Vec::with_capacity(POOL_SLOTS), next_id: 0 } }
+    pub fn get(&mut self) -> Buf {                   // the only place a buffer is allocated
+        match self.free.pop() {                      // a `match`, not `unwrap_or_else(|| ..)`: closures are Book ch. 13, past the baseline
+            Some(buf) => buf,
+            None => {
+                self.next_id += 1;
+                Buf { id: self.next_id, bytes: Vec::with_capacity(BUF_CAP) }
+            }
+        }
+    }
+    pub fn put(&mut self, mut buf: Buf) { buf.bytes.clear(); self.free.push(buf); } // takes ownership back
+}
+
+// ---- the three stages: one of each ownership contract ----
+pub fn fill(buf: &mut Buf, src: &[u8]) { buf.bytes.clear(); buf.bytes.extend_from_slice(src); } // &mut T: exclusive loan
+pub fn inspect(buf: &Buf) -> Header {                                                            // &T: shared loan, returns a Copy value
+    let b = &buf.bytes;
+    Header { kind: b[0], len: u32::from_le_bytes([b[1], b[2], b[3], b[4]]) }
+}
+pub fn consume(buf: Buf) -> Buf { /* write the payload out */ buf }                             // T in, T out: takes, then hands back
+
+use std::sync::{Arc, Barrier};
+use std::thread;
+pub const THREADS: usize = 8;
+struct Config { header_kind: u8, max_len: u32 }
+fn main() {
+    let cfg = Arc::new(Config { header_kind: 1, max_len: BUF_CAP as u32 - 5 });
+    let park = Arc::new(Barrier::new(THREADS + 1));
+    let handles: Vec<_> = (0..THREADS).map(|_| {
+        let (cfg, park) = (Arc::clone(&cfg), Arc::clone(&park));
+        thread::spawn(move || { park.wait(); cfg.header_kind as u32 + cfg.max_len })
+    }).collect();
+    let while_running = Arc::strong_count(&cfg);
+    park.wait();
+    let sum: u32 = handles.into_iter().map(|h| h.join().unwrap()).sum();
+    println!("threads={THREADS} owners_while_running={while_running} owners_after={} sum_ok={}", Arc::strong_count(&cfg), sum == 8 * 65532);
+}

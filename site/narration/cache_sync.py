@@ -90,10 +90,12 @@ def pull():
                 sf.write(dst + ".tmp.wav", a, sr)  # float WAV, as the generators write it
                 os.replace(dst + ".tmp.wav", dst)
                 n += 1
-        scores = os.path.join(CACHE, "scores.json")
-        mine, theirs = load(scores), load(os.path.join(tmp, "scores.json"))
-        json.dump({**theirs, **mine}, open(scores, "w"))
-        print(f"narration cache: restored {n} take(s), {len(theirs)} score(s)")
+        restored = 0
+        for f in glob.glob(os.path.join(tmp, "scores*.json")):  # one scores file per checker model
+            scores = os.path.join(CACHE, os.path.basename(f))
+            mine, theirs = load(scores), load(f)
+            json.dump({**theirs, **mine}, open(scores, "w")); restored += len(theirs)
+        print(f"narration cache: restored {n} take(s), {restored} score(s)")
 
 
 def push():
@@ -114,8 +116,10 @@ def push():
                 for f in glob.glob(os.path.join(tmp, "takes", "*.flac")):  # drop what no script on any branch can use any more
                     if os.path.basename(f)[:-5] not in keep:
                         os.remove(f)
-            merged = {**load(os.path.join(tmp, "scores.json")), **load(os.path.join(CACHE, "scores.json"))}
-            json.dump({k: v for k, v in merged.items() if keep is None or k in keep}, open(os.path.join(tmp, "scores.json"), "w"), sort_keys=True)
+            names = {os.path.basename(f) for f in glob.glob(os.path.join(tmp, "scores*.json")) + glob.glob(os.path.join(CACHE, "scores*.json"))}
+            for name in names:
+                merged = {**load(os.path.join(tmp, name)), **load(os.path.join(CACHE, name))}
+                json.dump({k: v for k, v in merged.items() if keep is None or k in keep}, open(os.path.join(tmp, name), "w"), sort_keys=True)
             git("add", "-A", cwd=tmp)
             if not git("status", "--porcelain", cwd=tmp).stdout.strip():
                 print("narration cache: already up to date")
