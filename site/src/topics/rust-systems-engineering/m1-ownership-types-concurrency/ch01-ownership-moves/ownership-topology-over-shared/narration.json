@@ -53,7 +53,7 @@
         "A mutex is an exclusive loan, checked while the program runs.",
         "It owns its data and hands out mutable access through a guard. A second caller waits.",
         "Hold a mutable borrow of it, and no one can lock it: no locking needed.",
-        "Use a lock only when no single owner can be named.",
+        "Use a lock, but only when nobody can be named as the single owner.",
         "An arc clone copies a pointer. Zero allocations."
       ]
     },
@@ -100,12 +100,12 @@
       "lines": [
         "Here's why the generation matters.",
         "The inspect stage, at index two, is hot-swapped. It's removed, and a new stage called audit takes the freed slot.",
-        "The fill stage still holds the old handle, with slot number 2 and generation 0.",
-        "What does looking it up return?"
+        "The fill stage still holds the old handle, with slot number two and generation zero.",
+        "So, what does looking up the old handle return?"
       ],
       "answer": [
         "None.",
-        "Removing inspect bumped the slot's generation to 1. The old handle still says 0, so the lookup refuses.",
+        "Removing inspect bumped the slot's generation to one. The old handle still says zero, so the lookup refuses.",
         "A plain index would have quietly handed you the audit node. The wrong one."
       ]
     },
@@ -166,7 +166,7 @@
     },
     {
       "lines": [
-        "How do you choose? Look at the shape of the data. Do not go by the error message.",
+        "So how do you choose? Look at the shape of the data, and not at the error message.",
         "A natural parent: a tree, and no locks at all. A graph with cycles or removal: an arena.",
         "Many concurrent users of one piece of state: an owner thread.",
         "Small simple data touched briefly: a mutex is fine.",
@@ -185,12 +185,12 @@
     {
       "lines": [
         "Prove it. One of three.",
-        "A stage borrows a view of the first five bytes of its buffer. It sends the buffer on. Then it prints the view.",
+        "One stage borrows a view of the first five bytes of its buffer. Next, it sends the whole buffer onward. Afterwards, it prints that view.",
         "What does the compiler say?"
       ],
       "answer": [
         "The move-while-borrowed error.",
-        "The buffer can't leave while the view still points into it. The other thread could change those bytes.",
+        "The buffer cannot leave. The view still points into it. Another thread could change those bytes.",
         "Take the header as a value first. Then send."
       ]
     },
