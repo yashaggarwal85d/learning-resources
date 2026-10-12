@@ -180,7 +180,7 @@ Applied in place above, each marked "(fact-check: …)"; details, verdicts and t
 - [x] Checks green (step 11 label overlap fixed; test race fixed, QUALITY #49)
 - [x] Looks review; fixes (majors fixed; 3, 17 are locked player chrome, minors 11, 13, 14, 18 skipped, see REVIEW.md)
 - [x] Content final (2026-10-11)
-- [ ] Narration
+- [x] Narration
 - [ ] Ship
 
 ## Changes from the chapter plan
