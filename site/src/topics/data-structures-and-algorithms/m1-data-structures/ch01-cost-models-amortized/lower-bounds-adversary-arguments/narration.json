@@ -1,0 +1,240 @@
+{
+  "topic": "dsa.lower-bounds-adversary-arguments",
+  "note": "Written to be spoken: one sentence or phrase per line; {\"beat\": s} is a deliberate pause; code is spelled the way it is said. `answer` plays after the learner answers a predict step.",
+  "steps": [
+    {
+      "lines": [
+        "You can now bound what an algorithm costs.",
+        "A lower bound says what every algorithm in a model must pay, and an adversary is how you prove it.",
+        {
+          "beat": 0.4
+        },
+        "Take the vector of a million keys. Three colleagues, who only compare keys, each promise something about every input.",
+        "Sort any input in at most fifteen million comparisons. Find the minimum and the maximum in at most one point two million. Say whether all keys are distinct in at most five million.",
+        {
+          "beat": 0.3
+        },
+        "No test can refute the words any input... you would need the bad input in hand.",
+        "By the end, you will refute all three without running anything."
+      ]
+    },
+    {
+      "lines": [
+        "Only comparisons tell the algorithm anything about the keys.",
+        "So its whole run on an input is the path of answers it gets.",
+        {
+          "beat": 0.3
+        },
+        "Draw every path for three keys, and you get a tree. A node for each comparison. A leaf for each finished run, holding the order it reports.",
+        "An input's cost is the depth of its leaf. The worst case is the height of the tree.",
+        {
+          "beat": 0.3
+        },
+        "From here, one unit of cost is one comparison. Everything else is free, so a bound on comparisons is a bound on time, never more."
+      ]
+    },
+    {
+      "lines": [
+        "Three keys, six possible orders.",
+        {
+          "beat": 0.4
+        },
+        "Can any comparison sort finish every input within two comparisons?"
+      ],
+      "answer": [
+        "No. Some input needs three.",
+        "Two yes or no answers have four outcomes, so a tree of height two has at most four leaves. Six orders need six.",
+        "An adversary that always keeps the larger half of the orders still has two alive after two comparisons.",
+        "Three comparisons do suffice... insertion sort's tree shows it."
+      ]
+    },
+    {
+      "lines": [
+        "A sort must be able to output any of the n factorial orders, so its tree has at least that many leaves.",
+        "A tree of height h has at most two to the h leaves. So the height is at least log base two of n factorial.",
+        {
+          "beat": 0.3
+        },
+        "That is theta of n log n.",
+        "Five keys: one hundred twenty orders sit between sixty four and one hundred twenty eight, so the height is at least seven.",
+        {
+          "beat": 0.3
+        },
+        "At a million keys, every comparison sort has an input that costs about eighteen and a half million comparisons.",
+        "Merge sort's worst case is two and a half percent above that floor. Upper and lower bound meet, so sorting is settled."
+      ]
+    },
+    {
+      "lines": [
+        "The bound holds on average too.",
+        "With every order equally likely, any comparison sort's average leaf depth is at least the floor of log base two of n factorial.",
+        {
+          "beat": 0.3
+        },
+        "The proof is the move you just watched. Hang the two deepest sibling leaves under the shallowest leaf, and the average drops.",
+        "So the cheapest tree is balanced, and luck does not help on average."
+      ]
+    },
+    {
+      "lines": [
+        "The argument used nothing about sorting, except the number of possible answers.",
+        "A problem with K answers needs at least log base two of K yes or no questions, rounded up.",
+        {
+          "beat": 0.3
+        },
+        "Searching the sorted vector: a million and one answers, twenty questions, and binary search uses twenty.",
+        "Merging two runs of four: seventy interleavings, seven, and the standard merge uses seven. Sorting five keys: seven, and seven.",
+        "Here, counting is tight."
+      ]
+    },
+    {
+      "lines": [
+        "The largest of a million keys has a million possible answers, so counting gives twenty yes or no questions.",
+        {
+          "beat": 0.4
+        },
+        "How many comparisons must every comparison algorithm make in its worst case?"
+      ],
+      "answer": [
+        "Nine hundred ninety-nine thousand, nine hundred ninety-nine.",
+        "Until a key has lost a comparison, it might be the largest.",
+        "So every key but one must lose, and one comparison makes at most one loser.",
+        "Counting is a true bound, just a weak one. Twenty unrestricted questions could find the maximum, but a comparison cannot ask them."
+      ]
+    },
+    {
+      "lines": [
+        "That was an adversary argument.",
+        "The adversary answers each comparison as it likes, with one rule. The answers so far must always fit some real input.",
+        "It assumes nothing about the algorithm, so it covers every algorithm at once.",
+        {
+          "beat": 0.3
+        },
+        "Here, a tournament stops after six comparisons. Two keys were never beaten.",
+        "Raise one of them, and every answer still holds... but the maximum changes.",
+        "The algorithm cannot tell the two inputs apart. It is wrong on one of them."
+      ]
+    },
+    {
+      "lines": [
+        "Two scans find the maximum, and then the minimum of the rest, in seven and then six... thirteen comparisons.",
+        {
+          "beat": 0.4
+        },
+        "What is the fewest any algorithm can guarantee for eight keys?"
+      ],
+      "answer": [
+        "Ten.",
+        "Pair the keys first. Four comparisons.",
+        "The maximum can only be a pair's winner, and the minimum only a pair's loser. So three more for each.",
+        "Four plus three plus three, ten. That is an upper bound. The next step shows nobody can guarantee nine."
+      ]
+    },
+    {
+      "lines": [
+        "Now the referee keeps a scoreboard, with four columns.",
+        "Until a key has lost, it could be the maximum. Until it has won, it could be the minimum.",
+        "So a correct answer needs fourteen units: each key's first win or first loss, except two.",
+        {
+          "beat": 0.3
+        },
+        "The referee answers so that only a comparison of two untested keys gives two units. And there are at most four of those.",
+        "Watch the units climb to fourteen, while the comparisons stop at ten.",
+        "So every algorithm needs at least three n over two, minus two. Pairing meets it. At a million keys, about one and a half million."
+      ]
+    },
+    {
+      "lines": [
+        "Are all the keys distinct? Two possible answers, so counting gives one question.",
+        {
+          "beat": 0.4
+        },
+        "What must a comparison algorithm pay on a million keys, in its worst case?"
+      ],
+      "answer": [
+        "About eighteen and a half million.",
+        "The answer has two values, but the work behind it does not.",
+        "To say distinct safely, an algorithm must have learned the whole sorted order. So it pays at least the sorting bound.",
+        "One question is the counting bound: true, and useless here."
+      ]
+    },
+    {
+      "lines": [
+        "Suppose an algorithm says distinct, without ever comparing two keys that are neighbours in sorted order.",
+        "Nothing lies between them, so the adversary makes them equal.",
+        {
+          "beat": 0.3
+        },
+        "Every answer stays the same. The algorithm still says distinct... and now it is wrong.",
+        "So every distinct answer rests on all the neighbour comparisons. Together they spell out the whole sorted order.",
+        "The tree needs at least n factorial leaves, and the sorting bound applies.",
+        "It even survives a stronger model: algebraic computation trees."
+      ]
+    },
+    {
+      "lines": [
+        "The sorting bound is about one model, and one problem.",
+        "The model: only comparisons tell you about the keys. The problem: output the sorted order of any input.",
+        {
+          "beat": 0.3
+        },
+        "It does not rule out radix sort, which reads keys as digits. Or a hash set, which decides distinctness in expected linear time, and gives up the worst case guarantee.",
+        "Nor a sort that is fast on an easy input, or a different problem, like putting the smallest half first, or a better constant.",
+        "And a problem's lower bound is not one algorithm's cost. Insertion sort's quadratic count is its own.",
+        "To beat a bound, change something it assumed."
+      ]
+    },
+    {
+      "lines": [
+        "Back to the three promises.",
+        "All three are impossible for every comparison algorithm, and you proved it without running anything.",
+        "A tree with n factorial leaves for the sort. A scoreboard of units for the minimum and maximum. The neighbour argument for distinctness.",
+        {
+          "beat": 0.3
+        },
+        "Two become possible once the keys are used as numbers. The third is already met by pairing.",
+        "Every bound so far priced one run on its worst input. The next reel pulls that thread."
+      ]
+    },
+    {
+      "lines": [
+        "Merge two sorted runs of eight keys. Counting their interleavings gives fourteen comparisons.",
+        {
+          "beat": 0.4
+        },
+        "What must every merge pay in its worst case?"
+      ],
+      "answer": [
+        "Fifteen.",
+        "Take the odd numbers as one run, and the even numbers as the other. In the merged order, every adjacent pair comes from different runs.",
+        "Only a direct comparison tells them apart, so all fifteen adjacent pairs must be compared.",
+        "Counting gave fourteen. An adversary can beat the count."
+      ]
+    },
+    {
+      "lines": [
+        "A student's adversary for the maximum answers every comparison the same way: the first key named is larger.",
+        {
+          "beat": 0.4
+        },
+        "Does it prove that every algorithm needs n minus one comparisons?"
+      ],
+      "answer": [
+        "No. Its answers can fit no input.",
+        "Ask a against b, b against c, then c against a. It says a beats b beats c beats a. No input fits that.",
+        "So the run it forces is not a run on any input, and it proves nothing.",
+        "An adversary may decide late, but never inconsistently."
+      ]
+    },
+    {
+      "lines": [
+        "Which of these claims about a million keys does the comparison sorting lower bound refute?"
+      ],
+      "answer": [
+        "The comparison sort that averages seventeen million on random orders.",
+        "The average case bound says at least about eighteen and a half million.",
+        "Radix sort is outside the model. A sorted input is one easy input. And the ten largest is a different problem."
+      ]
+    }
+  ]
+}

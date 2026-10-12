@@ -304,3 +304,17 @@ Fact-check record: `FACT-CHECK.md` (2.3, 2026-10-12). Source quotes: `SOURCES.md
 8. **Sources:** "Northeastern lecture 5" is Blum's CMU 15-451 lecture 5 (2011), word for word; Ford–Johnson kept to Waterloo's "(essentially) … the fewest comparisons"; claim 25's "one for each permutation" was a paraphrase in quotation marks and now quotes the source.
 
 9. **Prove it · 3 of 3 question:** "the Ω(n log n) comparison-sorting bound" → "the comparison-sorting lower bound": an asymptotic bound refutes no count at a single n; the answer rests on the exact ⌊log₂ n!⌋ = 18,488,884.
+
+## Changes during the build (2026-10-12)
+
+1. **Step 3 options shortened** to one line each ("Yes, best pair", "Yes, if distinct", "No: needs 3", "No: needs 4"). The reel test's swipe from the caption of step 2 starts, 300 ms after the player returns to step 2, on the exiting step-3 caption; with two-line options the first button sat under that point and swallowed the swipe (a test artefact of the layout, not a player bug). One-line options sit lower. The question and the answer are unchanged.
+2. **`examples.py` computes log₂ 1,000,000! and log₂ C(2,000,000, 1,000,000) from Stirling's series** in 60-digit decimal arithmetic, not from the exact integers: the exact 1,000,000! takes about 9 s and the binomial about 33 s in CPython. The series is asserted equal to the exact ⌊·⌋ and ⌈·⌉ at 1,000 and 100,000 and the fractional parts are shown to be far from integers, so 18,488,885 and 18,488,884 and 1,999,990 stand. The run takes about 12 s.
+3. **Step 2's right column has four entries (1, 2, 4, 8)**, not three: the six leaves sit on the fourth level.
+4. **Step 5 draws the exact trees** (depths 1, 2, 3, 4, 5, 5, then 2, 2, 2, 3, 4, 4, then 2, 2, 3, 3, 3, 3) from the rebalancing move as `examples.py` performs it, with a bar per tree (average × 30) and the floor log₂ 6 as a dashed tick across the three bars.
+5. **Step 12's two non-neighbour comparisons** are k₇ : k₅ and k₂ : k₆ (neither spans the k₅–k₂ gap, so the "never compared" bracket stays clear), and the arcs are drawn below the number line.
+6. **Step 10's ten comparisons** are the ones the four-state referee gives against the pairing algorithm (the list is asserted in `examples.py`): the first-named key wins each pair, then the winners are compared in a chain, then the losers.
+7. **Step 6's header** reads "K answers → ≥ ⌈log₂ K⌉ yes/no questions" and each row has three lines, to fit a phone.
+8. **Step 13's cards** carry a third line naming what the escape changes (the model, the input, the problem); the hash-set card says "the model" and the lost worst-case guarantee is in the caption.
+9. **Exhaustive searches extended** past the plan where they were cheap: min and max for n = 2 … 6 (1, 3, 4, 6, 7) and distinctness with yes/no "<" comparisons for n = 3, 4, 5 (4, 7, 10).
+10. **Prerequisites panel:** one video (MIT OpenCourseWare, "Lecture 7: Counting Sort, Radix Sort, Lower Bounds for Sorting", verified with oEmbed, no length shown), the Erickson, Sedgewick and Wayne, and Wikipedia pages (each returned 200 with the expected title); Erickson's two PDFs were opened and their first pages read.
+11. **Narration lexicon:** `site/narration/voice.json` gained alias entries for the new names (Ben-Or, Erickson, Dobkin, Kislitsyn); none of them is spoken in this reel's narration, which keeps to plain words.
