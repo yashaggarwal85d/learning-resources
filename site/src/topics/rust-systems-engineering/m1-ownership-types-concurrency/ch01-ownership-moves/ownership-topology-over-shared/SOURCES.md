@@ -337,6 +337,12 @@ Version: std 1.99.0 (b940084d7 2026-09-28)
 
 > Returns None otherwise, because it is not safe to mutate a shared value.
 
+> If you do need to mutate through an Arc, you have several options:
+
+> Sharing some immutable data between threads:
+
+Notes (fact-check, 2026-10-12): the first of these two quotes is the sentence that introduces "Use interior mutability with synchronization primitives like Mutex, RwLock, or one of the Atomic types." It is what makes that quote say "only if you mutate" (claim 16); the second is the heading of the docs' own example of an `Arc` shared read-only by threads, with no lock.
+
 Contents:
 - Overview: Arc is the atomically reference-counted pointer giving shared ownership of a heap value; clone makes a new Arc to the same allocation and bumps the count (the data is not copied); the inner value is dropped when the last Arc is destroyed.
 - Mutation: shared references disallow mutation, so Arc<T> gives only shared access; options are interior mutability (Mutex, RwLock, atomics), Arc::make_mut (clone-on-write), or Arc::get_mut (only when unshared).
@@ -510,6 +516,15 @@ Version: std 1.99.0 page, fetched 2026-10-12 by the content plan
 > This method will never block the caller in order to wait for space to
 > become available.
 
+> Note
+> that a return value of Err means that the data will never be
+> received, but a return value of Ok does not mean that the data
+> will be received.
+
+> impl<T: Send> Sync for Sender<T>
+
+Notes (fact-check, 2026-10-12): the `Sync` impl is marked "1.72.0" on the page; the plan only needs `Send`.
+
 ## std::sync::mpsc::SendError (item page)
 URL: https://doc.rust-lang.org/std/sync/mpsc/struct.SendError.html
 Version: std 1.99.0 (b940084d7 2026-09-28), fetched 2026-10-12 by the content plan
@@ -585,6 +600,10 @@ Version: The Rust Reference (live page, no version shown), fetched 2026-10-12 by
 > A closure can be forced to capture its environment by copying or moving values by prefixing it with the move keyword. This is often used to ensure that the closure’s lifetime is 'static.
 
 > The closure type implements Send and Sync if the type of every captured variable also implements the trait.
+
+> If needed the compiler will infer that instead mutable references should be taken, or that the values should be moved or copied (depending on their type) from the environment.
+
+Notes (fact-check, 2026-10-12): the last quote is why a closure whose body passes a captured value on by value captures it by value even without `move` (measured on rustc 1.97: the ring's `thread::spawn(|| fill_stage(fill_rx, to_inspect, src))` compiles without `move`), while `thread::spawn(|| { let buf = pool.get(); pool.put(buf); })` captures `pool` by `&mut` and is E0373.
 
 Contents: syntax (optional `async`, optional `move`, parameters, body); captures (inferred: shared reference preferred, then mutable reference, then move/copy; `move` forces capture by value); closure traits (`Fn`/`FnMut`/`FnOnce` per the call-traits chapter; `Send`/`Sync` when every capture is); example `ten_times(move |j| …)`.
 
@@ -710,6 +729,17 @@ Version: blog post (live page, no date in the fetched text), author Alice Ryhl, 
 > to each other's handle structs, the last sender is never dropped, preventing
 > shutdown.
 
+> To avoid such a deadlock, you must make sure that there are no cycles of
+> channels with bounded capacity. The reason for this is that the send method on
+> a bounded channel does not return immediately. Channels whose send method
+> always returns immediately do not count in this kind of cycle, as you cannot
+> deadlock on such a send.
+
+> The second issue causes problems because Rust enforces the single-ownership
+> principle.
+
+Notes (fact-check, 2026-10-12): the deadlock quote is from the post's "Beware of cycles" section. It is why the ring (a cycle of four channels) uses unbounded `channel()`, whose sends never block, and bounds its messages by the 3 buffers instead.
+
 Contents: what an actor is; exclusive ownership of a resource accessed by talking to the actor; the recipe (task + handle; message enum; oneshot replies; `let _ =` on send errors; shutdown when all senders drop; cloneable handle); the `'static` spawn pitfall and keeping actor and handle separate (single ownership); variations (no reply, bounded channels and `try_send`, multiple handle structs with `select!`); actors messaging actors and cycles that prevent shutdown.
 
 ## My RustConf 2018 Closing Keynote (long-form blog version)
@@ -794,6 +824,10 @@ Version: slotmap 1.1.1 (docs.rs), fetched again 2026-10-12 by the content plan
 
 > A SecondaryMap is simply a Vec of slots like slot map is
 
+> If you use a new key type for each
+> slot map you create you can entirely prevent using the wrong key on the
+> wrong slot map.
+
 Notes: "231" and "232 - 2" in the fetched text are 2^31 and 2^32 − 2 with the superscript lost in text extraction (the rendered page shows exponents).
 
 ## slotmap::SlotMap (item page, further quotes)
@@ -802,3 +836,26 @@ Version: slotmap 1.1.1 page, fetched again 2026-10-12 by the content plan
 
 > assert_eq!(sm.remove(key), Some(42));
 > assert_eq!(sm.remove(key), None);
+
+## slotmap::HopSlotMap (item page)
+URL: https://docs.rs/slotmap/latest/slotmap/struct.HopSlotMap.html
+Version: slotmap 1.1.1 page, fetched 2026-10-12 by the fact-check
+
+> Deprecated since 1.1.0: Use SlotMap or DenseSlotMap instead, the HopSlotMap is no longer maintained and will be removed in 2.0.
+
+Notes: the crate-level page's prose ("Choosing SlotMap, HopSlotMap or DenseSlotMap") still describes HopSlotMap without this warning; its item list marks it "Deprecated". Teach `SlotMap` and `DenseSlotMap` only, and name `HopSlotMap` as deprecated if at all.
+
+## References and Borrowing - The Rust Programming Language (ch04-02)
+URL: https://doc.rust-lang.org/book/ch04-02-references-and-borrowing.html
+Version: online edition of The Rust Programming Language, chapter 4.2, fetched 2026-10-12 by the fact-check
+
+> At any given time, you can have either one mutable reference or any
+> number of immutable references.
+
+Notes: the Prerequisites panel quotes this rule as declared knowledge (`references-basics`); this section makes the quote checkable.
+
+## Disallow references to static mut - The Rust Edition Guide (further quotes)
+URL: https://doc.rust-lang.org/edition-guide/rust-2024/static-mut-references.html
+Version: Rust Edition Guide, Rust 2024 chapter (live page), fetched again 2026-10-12 by the fact-check
+
+> This is probably something you already know, but if possible it is best to avoid mutable global state.
