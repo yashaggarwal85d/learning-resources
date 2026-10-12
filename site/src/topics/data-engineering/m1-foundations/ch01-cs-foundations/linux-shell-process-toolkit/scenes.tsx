@@ -101,7 +101,55 @@ export function ForkExecWait({ t }: StepCtx) {
   );
 }
 
-// 3 · Where did the error go? Redirections re-point sockets, left to right.
+// 3 · Can the loader read the file? A new file starts at 666; the umask switches bits off; the group's bits decide for the loader.
+// The mode cells are owner / group / other; the answer frame is the finished picture (executed: umask 077 -> 600, a group member's read fails, umask 027 -> 640).
+export function Permissions({ t, answer }: StepCtx) {
+  const q = answer === null;
+  const xs = [30, 200, 370];
+  const who = ['owner', 'group', 'other'];
+  const Row = ({ y, bits, bad, o = 1 }: { y: number; bits: string[]; bad?: boolean[]; o?: number }) => (
+    <g opacity={o}>
+      {xs.map((x, i) => (
+        <g key={x}>
+          <rect x={x} y={y} width={150} height={50} rx={12} fill={C.espresso} stroke={bad?.[i] ? C.cherryText : C.crema} strokeWidth={2} />
+          <T x={x + 75} y={y + 22} s={17} a="middle" f={bad?.[i] ? C.cherryText : C.crema}>{bits[i]}</T>
+          <T x={x + 75} y={y + 41} s={13} a="middle" f={C.latte}>{who[i]}</T>
+        </g>
+      ))}
+    </g>
+  );
+  const ok = q ? 0 : 1;
+  return (
+    <Svg label="orders.csv starts at rw-rw-rw- (666); umask 077 switches off the group and other bits, leaving rw------- (600); the loader, in the same group, is refused; umask 027 would leave rw-r-----" h={318}>
+      <T x={30} y={26} s={15} f={C.crema} o={q ? fade(t, 0.2) : 1}>orders.csv · a new file starts at 666</T>
+      <Row y={40} bits={['rw-', 'rw-', 'rw-']} o={q ? fade(t, 0.5) : 1} />
+      <g opacity={q ? fade(t, 1.1) : 1}>
+        <Line x1={300} y1={92} x2={300} y2={120} c={C.caramel} w={4} />
+        <T x={312} y={112} s={13} f={C.caramel}>umask 077 switches bits off</T>
+      </g>
+      {q ? (
+        <g opacity={fade(t, 1.5)}>
+          {xs.map((x) => <rect key={x} x={x} y={126} width={150} height={50} rx={12} fill="none" stroke={C.taupe} strokeWidth={2} strokeDasharray="6 5" />)}
+          <g transform={`translate(300 160) scale(${pop(t, 1.9)})`}><T x={0} y={0} s={28} f={C.caramel} a="middle" serif w={700}>?</T></g>
+        </g>
+      ) : (
+        <Row y={126} bits={['rw-', '---', '---']} bad={[false, true, true]} />
+      )}
+      <g opacity={q ? fade(t, 2.1) : 1}>
+        <Proc x={175} y={216} w={200} h={50} label="loader" sub="another user, same group" />
+        <Line x1={275} y1={216} x2={275} y2={178} c={ok ? C.cherryText : C.taupe} w={3} dash={ok ? undefined : '5 5'} />
+      </g>
+      {!q && (
+        <>
+          <T x={390} y={246} s={13} f={C.cherryText}>Permission denied</T>
+          <T x={30} y={298} s={13} f={C.latte}>umask 027 would leave rw-r-----: the group can read</T>
+        </>
+      )}
+    </Svg>
+  );
+}
+
+// 4 · Where did the error go? Redirections re-point sockets, left to right.
 export function WhereDidItGo({ t, answer }: StepCtx) {
   const cmd = 'python3 clean.py missing.jsonl 2>&1 > out.log';
   const Frame = ({ done }: { done: boolean }) => (
@@ -159,7 +207,7 @@ export function WhereDidItGo({ t, answer }: StepCtx) {
   );
 }
 
-// 4 · A pipeline exits with its last command.
+// 5 · A pipeline exits with its last command.
 export function PipelineStatus({ t, answer }: StepCtx) {
   const xs = [30, 204, 378];
   const names = ['jq', 'sort', 'uniq -c'];
@@ -211,7 +259,7 @@ export function PipelineStatus({ t, answer }: StepCtx) {
   );
 }
 
-// 5 · Exit codes: 0 to 255, and 128 plus the signal. The bar is in order but not to scale (the signal band is stretched to be readable).
+// 6 · Exit codes: 0 to 255, and 128 plus the signal. The bar is in order but not to scale (the signal band is stretched to be readable).
 const BX = { zero: [30, 60], own: [68, 268], n126: [276, 304], n127: [312, 340], sig: [348, 530] } as const;
 export function ExitCodes({ t }: StepCtx) {
   const code = ['$ chmod 644 clean.py; ./clean.py', '$ pyhton3 clean.py', "$ bash -c 'kill -KILL $$'", "$ bash -c 'kill -TERM $$'"];
@@ -260,7 +308,7 @@ export function ExitCodes({ t }: StepCtx) {
   );
 }
 
-// 6 · TERM asks; KILL doesn't. Two bolts on the same job, then the two leftovers.
+// 7 · TERM asks; KILL doesn't. Two bolts on the same job (both end in a status that says stopped: 143 after a flush, 137 mid-write), then the two leftovers.
 export function Signals({ t }: StepCtx) {
   const tok0 = easeInOut(seg(t, 1.6, 2.2));
   const tok137 = easeInOut(seg(t, 2.8, 3.4));
@@ -268,7 +316,7 @@ export function Signals({ t }: StepCtx) {
   const L = { box: 55 };
   const R = { box: 335 };
   return (
-    <Svg label="The same job receives two signals: SIGTERM is caught, the job flushes and closes and returns 0; SIGKILL cannot be caught, the job vanishes mid-write and the shell sees 137; below, a zombie and an orphan" h={360}>
+    <Svg label="The same job receives two signals: SIGTERM is caught, the job flushes and closes and re-raises it, so the shell sees 143; SIGKILL cannot be caught, the job vanishes mid-write and the shell sees 137; below, a zombie and an orphan" h={360}>
       <g opacity={fade(t, 0.2)}>
         <T x={140} y={22} s={15} a="middle" f={C.caramel}>SIGTERM 15</T>
         <T x={420} y={22} s={15} a="middle" f={C.caramel}>SIGKILL 9</T>
@@ -284,7 +332,7 @@ export function Signals({ t }: StepCtx) {
       <g opacity={crack}><path d="M395 150 L405 164 L396 172 L408 190" fill="none" stroke={C.cherryText} strokeWidth={3} strokeLinecap="round" /></g>
       <T x={140} y={214} s={13} a="middle" f={C.latte} o={fade(t, 1.2)}>flushed and closed</T>
       <T x={420} y={214} s={13} a="middle" f={C.cherryText} o={fade(t, 2.8)}>gone mid-write</T>
-      <Tok x={140} y={lerp(150, 116, tok0)} n="0" c={C.caramel} o={tok0 > 0 ? 1 : 0} />
+      <Tok x={140} y={lerp(150, 114, tok0)} n="143" r={24} o={tok0 > 0 ? 1 : 0} />
       <Tok x={420} y={lerp(150, 114, tok137)} n="137" r={24} bad o={tok137 > 0 ? 1 : 0} />
       <g opacity={fade(t, 3.2)}>
         <Line x1={30} y1={228} x2={570} y2={228} c={C.taupe} w={1} o={0.6} />
@@ -308,7 +356,7 @@ export function Signals({ t }: StepCtx) {
   );
 }
 
-// 7 · A load job hangs: what is it doing?
+// 8 · A load job hangs: what is it doing?
 export function HungJob({ t, answer }: StepCtx) {
   const q = answer === null;
   const a = (at: number) => (q ? fade(t, at) : 1);
@@ -336,7 +384,7 @@ export function HungJob({ t, answer }: StepCtx) {
           <T x={115} y={248} s={15} a="middle" f={C.cherryText}>no sender</T>
           <T x={232} y={228} s={13} f={C.crema}>kill -TERM {'<pid>'}</T>
           <Tok x={470} y={220} n="143" r={24} c={C.crema} />
-          <T x={470} y={262} s={13} a="middle" f={C.latte}>no handler here</T>
+          <T x={470} y={262} s={13} a="middle" f={C.latte}>no handler, no flush</T>
           <T x={232} y={284} s={13} f={C.crema}>kill -KILL {'<pid>'}</T>
         </>
       )}
@@ -344,7 +392,7 @@ export function HungJob({ t, answer }: StepCtx) {
   );
 }
 
-// 8 · One pipeline, one script, same answer.
+// 9 · One pipeline, one script, same answer.
 const ROWS: [string, string][] = [['cancelled', '1300'], ['paid', '6000'], ['refunded', '200'], ['shipped', '2500']];
 export function PipelineLab({ t }: StepCtx) {
   const ys = [40, 112, 184, 256];
@@ -384,7 +432,7 @@ export function PipelineLab({ t }: StepCtx) {
   );
 }
 
-// 9 · cron starts it; ssh gets you in.
+// 10 · cron starts it; ssh gets you in.
 export function CronSsh({ t }: StepCtx) {
   const chips: [string, string][] = [['15', 'min'], ['2', 'hour'], ['*', 'day'], ['*', 'month'], ['*', 'weekday']];
   const tube = easeOut(seg(t, 2.4, 3.0));
@@ -397,9 +445,10 @@ export function CronSsh({ t }: StepCtx) {
           <T x={70 + i * 100} y={68} s={13} a="middle" f={C.latte}>{l}</T>
         </g>
       ))}
-      <T x={30} y={98} s={15} f={C.caramel} o={fade(t, 0.9)}>runs at 02:15 every day</T>
-      <T x={30} y={124} s={13} f={C.crema} o={fade(t, 1.3)}>/opt/etl/nightly.sh &gt;&gt; /var/log/nightly.log 2&gt;&amp;1</T>
-      <T x={30} y={148} s={13} f={C.latte} o={fade(t, 1.6)}>cron's env: SHELL HOME LOGNAME, no shell PATH</T>
+      <T x={30} y={92} s={15} f={C.caramel} o={fade(t, 0.9)}>runs at 02:15 every day</T>
+      <T x={30} y={112} s={13} f={C.taupe} o={fade(t, 1.0)}>(local time; not on DST nights)</T>
+      <T x={30} y={136} s={13} f={C.crema} o={fade(t, 1.3)}>/opt/etl/nightly.sh &gt;&gt; /var/log/nightly.log 2&gt;&amp;1</T>
+      <T x={30} y={158} s={13} f={C.latte} o={fade(t, 1.6)}>cron's env: SHELL HOME LOGNAME, no shell PATH</T>
       <Line x1={30} y1={172} x2={536} y2={172} c={C.taupe} w={1} o={0.5 * fade(t, 1.8)} />
       <Line x1={150} y1={239} x2={150 + 266 * tube} y2={239} c={C.caramel} w={8} o={tube > 0 ? 1 : 0} />
       {([['laptop', ':5433', 30], ['bastion', 'a hop', 240], ['db', ':5432', 416]] as [string, string, number][]).map(([n, s, x], i) => (
@@ -415,9 +464,10 @@ export function CronSsh({ t }: StepCtx) {
   );
 }
 
-// 10 · Recap in one breath.
+// 11 · Recap in one breath.
 const RECAP: [string, string][] = [
   ['fork, exec, wait', "the child's status comes back as one byte"],
+  ['rwx · u g o', 'x on a directory = enter; umask turns bits off'],
   ['0 · 1 · 2', 'stdin, stdout, stderr; 2>&1 copies 1 now'],
   ['pipefail', 'status = last command, unless asked'],
   ['126, 127, 128+n', 'not executable, not found, killed by signal n'],
@@ -426,16 +476,16 @@ const RECAP: [string, string][] = [
   ['jq | awk | sort | uniq -c', 'diff against the script; grep, sed: logs'],
   ['cron, ssh -L', 'five fields, tiny env; a port via a hop'],
 ];
-const MONO_ROWS = ['pipefail', 'jq | awk | sort | uniq -c', 'cron, ssh -L'];
+const MONO_ROWS = ['rwx · u g o', 'pipefail', 'jq | awk | sort | uniq -c', 'cron, ssh -L'];
 export function Recap({ t }: StepCtx) {
   return (
-    <Svg label="Recap of the eight points" h={480}>
+    <Svg label="Recap of the nine points" h={510}>
       {RECAP.map(([k, v], i) => {
         const a = easeOut(seg(t, 0.1 + i * 0.15, 0.6 + i * 0.15));
-        const y = 4 + i * 59;
+        const y = 4 + i * 56;
         return (
           <g key={k} opacity={a} transform={`translate(${(1 - a) * 30} 0)`}>
-            <rect x={30} y={y} width={506} height={53} rx={11} fill={C.roast} />
+            <rect x={30} y={y} width={506} height={52} rx={11} fill={C.roast} />
             <T x={50} y={y + 22} s={16} f={C.caramel} serif={!MONO_ROWS.includes(k)} w={700}>{k}</T>
             <T x={50} y={y + 43} s={14} f={C.crema}>{v}</T>
           </g>

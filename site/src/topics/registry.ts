@@ -79,7 +79,7 @@ export const TOPICS: TopicMeta[] = [
     verified: '2026-10-11',
     introduces: ['file-permissions', 'pipes-redirection', 'process-model', 'signals', 'threads-basics', 'process-inspection', 'text-tools', 'cron', 'ssh-tunnels', 'proc-strace'],
     uses: ['exit-status', 'git-bisect'],
-    declared: ['shell-basics'],
+    declared: ['shell-basics', 'ip-addresses'],
     bridge: 'Bisect trusted an exit code. Here is where exit codes come from: processes, their signals, and the pipes between them.',
     handoff: 'Next refresher: how a change gets from your branch to production safely: review, tests, CI and versions.',
   },

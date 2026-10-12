@@ -35,7 +35,7 @@ assert (0, 1, 2) == (0, 1, 2)  # the three files every child starts with: standa
 
 # ---- Step 3: where did the error go? ----------------------------------------------------------------
 assert kv['out_log_lines'] == '0' and kv['terminal_lines'] == '1'  # 2>&1 > out.log: the error stays on the terminal
-assert kv['out2_log_lines'] == '1'  # > out.log 2>&1: both streams in the file
+assert kv['out2_log_lines'] == '1'  # > out.log 2>&1: the one error line is in the file
 assert kv['error_text'] == 'clean.py: cannot open missing.jsonl'
 assert kv['append_lines'] == '8'  # >> appends: two runs of four lines
 
@@ -69,7 +69,8 @@ assert 255 - 0 + 1 == 256  # one byte
 assert 125 + 1 == 126  # bisect's skip sits just under the shell's own codes
 
 # ---- Step 6: TERM asks; KILL doesn't ----------------------------------------------------------------
-assert kv['handled_term'] == '0' and kv['handler_line'] == 'flushed and closed'
+assert kv['handled_term'] == '143' and kv['handler_line'] == 'flushed and closed'  # a handler that flushes and re-raises TERM: 143, not 0
+assert kv['handled_exit143'] == '143' and kv['handled_exit0'] == '0' and 128 + 15 == 143  # exit(143) says the same; exit(0) would report an interrupted job as a success
 assert kv['killed'] == '137' and kv['plain_term'] == '143'
 assert kv['zombie_state'] == 'Z' and kv['zombie_word'] == 'zombie' and '<defunct>' in kv['zombie_ps'] and kv['zombie_comm'] == 'true'
 assert kv['zombie_fds'] in ('0', 'unreadable') and kv['zombie_gone'] == 'yes'
@@ -77,13 +78,15 @@ assert kv['orphan_parent_was_middle'] == 'yes' and kv['orphan_reparented'] == 'y
 
 # ---- Step 7: a load job hangs -----------------------------------------------------------------------
 assert kv['hung_state'] == 'S' and kv['hung_threads'] == '2' and kv['hung_fd4'] == 'socket'
+assert kv['hung_peer_is_listener'] in ('yes', 'unavailable') and kv['hung_tcp_state'] in ('01', 'unavailable')  # the socket's inode in /proc/net/tcp: ESTABLISHED, peer = the job's own listening port
+assert kv['ss_installed'] in ('yes', 'no')  # ss -tnp is named in the Deep dive, never relied on
 assert kv['hung_wchan'] not in ('', '0')  # the name depends on the kernel: wait_woken on Linux 6.18
 assert kv['hung_ps_stat'].startswith('S') and kv['hung_ps_threads'] == '2'  # STAT reads Sl: S plus the multi-threaded flag
 assert kv['hung_ps_L'].count(';') == 1 and kv['hung_ps_L'].count('Sl') == 2  # two threads, both sleeping
 assert kv['strace_read'] in ('read(4,', 'skipped')  # skipped only where ptrace is refused (Yama scope 2, a seccomp profile)
 if kv['strace_read'] == 'read(4,':
     assert kv['strace_line'].startswith('read(4,') and ')' not in kv['strace_line'].split('<detached')[0]  # the call never returned
-assert kv['hung_term'] == '143'  # hung_load.py has no TERM handler, unlike step 6's job (handled_term == '0'): so 143 here
+assert kv['hung_term'] == '143'  # hung_load.py has no TERM handler; step 6's job flushed first and also ends with 143 (handled_term)
 assert kv['hung_syscall_fd'] in ('4', 'unavailable')  # when /proc/<pid>/syscall is readable, its first argument is the fd the reel shows
 if kv['hung_syscall'] != 'unavailable':
     assert kv['hung_syscall'] in ('0', '63') and kv['hung_syscall_fd'] == '4'  # read on x86-64 / arm64, on fd 4
@@ -143,7 +146,9 @@ assert (5 - 1, 5) == (4, 5)  # five time fields
 
 # ---- Deep dive: files, inodes, permissions ----------------------------------------------------------
 assert kv['hard_same_inode'] == 'yes' and kv['nlink'] == '2' and kv['symlink_other_inode'] == 'yes' and kv['stat_L_same'] == 'yes'
-assert kv['umask_077'] == '600' and kv['umask_022'] == '644' and kv['umask_arith'] == '644' and kv['proc_umask'] == '0022'
+assert kv['umask_077'] == '600' and kv['umask_027'] == '640' and kv['umask_022'] == '644'
+assert f'{0o666 & ~0o077:o}' == kv['umask_077'] == '600' and f'{0o666 & ~0o027:o}' == kv['umask_027'] == '640'  # a new file starts at 666; umask 077 -> 600, umask 027 -> 640
+assert kv['loader_umask_077'] in ('1', 'skipped') and kv['loader_umask_027'] in ('0', 'skipped')  # step 3: a group member cannot read 600, can read 640 and kv['umask_arith'] == '644' and kv['proc_umask'] == '0022'
 if kv['dir_search_eacces'] != 'skipped':
     assert (kv['dir_read_only_ls'], kv['dir_read_only_cat'], kv['dir_search_only_ls'], kv['dir_search_only_cat']) == ('0', '1', '2', '0')
 

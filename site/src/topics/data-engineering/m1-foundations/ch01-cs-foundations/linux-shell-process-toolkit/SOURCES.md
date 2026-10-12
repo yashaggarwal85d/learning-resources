@@ -978,3 +978,87 @@ Notes: this is about /proc/<pid> entries; the page does not say that /proc/loada
 Contents:
 - DESCRIPTION (PID numbering per namespace)
 - /proc and PID namespaces
+
+## Termination in Handler - The GNU C Library manual
+URL: https://sourceware.org/glibc/manual/latest/html_node/Termination-in-Handler.html
+Version: GNU C Library manual, "latest" at the time of reading (11 October 2026 review: node 25.4.2, "Handlers That Terminate the Process")
+
+> The cleanest way for a handler to terminate the process is to raise the same signal that ran the handler in the first place.
+
+> We could just call exit or abort, but reraising the signal sets the return status from the process correctly.
+
+Notes: this is C-library guidance; the Deep dive applies it to a Python handler and executes both ways (`os.kill` on itself after `SIG_DFL`, and `sys.exit(143)`), which the shell reads as 143.
+
+Contents:
+- Handlers That Terminate the Process (the example handler: clean up, restore the default action with `signal (sig, SIG_DFL)`, `raise (sig)`)
+
+## signal - Set handlers for asynchronous events (Python 3.15 documentation)
+URL: https://docs.python.org/3/library/signal.html
+Version: Python 3.15.0 documentation (the page the URL served on 12 October 2026)
+
+> the low-level signal handler sets a flag which tells the virtual machine to execute the corresponding Python signal handler at a later point (for example, at the next bytecode instruction).
+
+> A long-running calculation implemented purely in C (such as regular expression matching on a large body of text) may run uninterrupted for an arbitrary amount of time, regardless of any signals received.
+
+> Python signal handlers are always executed in the main Python thread of the main interpreter, even if the signal was received in another thread.
+
+Contents:
+- Execution of Python signal handlers (flag, next bytecode, long-running C calculations)
+- Signals and threads (handlers run in the main thread)
+
+## dash changelog - Debian unstable
+URL: https://metadata.ftp-master.debian.org/changelogs/main/d/dash/unstable_changelog
+Version: Debian changelog of the dash source package, read 12 October 2026 (entry dash (0.5.12-7), dated Fri, 17 May 2024)
+
+> dash (0.5.12-7) unstable; urgency=medium
+
+> Implement pipefail option (Closes: #1071238)
+
+Notes: the second line is a bullet under "Upstream patch:" in the 0.5.12-7 entry, whose trailer reads "Fri, 17 May 2024". The runner's own dash is Ubuntu's 0.5.12-6ubuntu5 (`dpkg -l dash`), the version before that entry; Ubuntu's changelog was not fetched, so nothing is claimed about later Ubuntu builds.
+
+Contents:
+- Changelog entries from 0.5.12-6 to 0.5.12-12 (only 0.5.12-7 is used)
+
+## dash(1) - Debian manpages (unstable)
+URL: https://manpages.debian.org/unstable/dash/dash.1.en.html
+Version: dash(1) in Debian unstable, read 12 October 2026
+
+> If the pipefail option was enabled when the shell began execution of the pipeline, the pipeline's exit status is the exit status of the last command specified in the pipeline that exited with non-zero status, or zero if all commands in the pipeline exited with a status of zero.
+
+Contents:
+- Pipelines (the pipefail sentence)
+
+## systemd.timer(5) - Debian manpages (unstable)
+URL: https://manpages.debian.org/unstable/systemd/systemd.timer.5.en.html
+Version: systemd.timer(5) in Debian unstable, read 12 October 2026
+
+> If true, the time when the service unit was last triggered is stored on disk. When the timer is activated, the service unit is triggered immediately if it would have been triggered at least once during the time when the timer was inactive.
+
+> This is useful to catch up on missed runs of the service when the system was powered down. Note that this setting only has an effect on timers configured with OnCalendar=.
+
+Contents:
+- Options: Persistent= (and OnCalendar=)
+
+## ss(8) - Debian manpages (unstable)
+URL: https://manpages.debian.org/unstable/iproute2/ss.8.en.html
+Version: ss(8) in iproute2, Debian unstable, read 12 October 2026
+
+> -p, --processes Show processes using sockets.
+
+Notes: `ss` is not installed in the sandbox, so `ss -tnp` is named from this page and not run; the inode match against `/proc/net/tcp` is what `examples.sh` executes.
+
+Contents:
+- OPTIONS: -p, --processes
+
+## authfile.c - OpenSSH portable (master)
+URL: https://raw.githubusercontent.com/openssh/openssh-portable/master/authfile.c
+Version: openssh-portable master, read 12 October 2026; function sshkey_perm_ok
+
+> error("@ WARNING: UNPROTECTED PRIVATE KEY FILE! @");
+
+> error("Permissions 0%3.3o for '%s' are too open.",
+
+> error("This private key will be ignored.");
+
+Contents:
+- sshkey_perm_ok: refuses a private key whose mode has group or other bits (`st_mode & 077`)

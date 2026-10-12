@@ -235,12 +235,32 @@ out bisect_bands "0 1 125 126 127 128 255"
 
 # ---- 6 · Signals: TERM asks, KILL does not ----------------------------------------------------------
 cat > term_handler.py << 'PY'
+import os, signal, sys, time
+def stop(signum, frame):
+    print('flushed and closed', flush=True)
+    # flush, then re-raise the same signal with the default action: the parent sees "killed by TERM" (143), not a success
+    signal.signal(signal.SIGTERM, signal.SIG_DFL)
+    os.kill(os.getpid(), signal.SIGTERM)
+signal.signal(signal.SIGTERM, stop)
+open(sys.argv[1], 'w').close()  # ready: the handler is installed
+time.sleep(60)
+PY
+cat > term_exit143.py << 'PY'
 import signal, sys, time
 def stop(signum, frame):
     print('flushed and closed', flush=True)
-    sys.exit(0)
+    sys.exit(128 + signum)  # the other way to say "stopped by TERM": exit 143 yourself
 signal.signal(signal.SIGTERM, stop)
-open(sys.argv[1], 'w').close()  # ready: the handler is installed
+open(sys.argv[1], 'w').close()
+time.sleep(60)
+PY
+cat > term_exit0.py << 'PY'
+import signal, sys, time
+def stop(signum, frame):
+    print('flushed and closed', flush=True)
+    sys.exit(0)  # the trap: an interrupted job reports success
+signal.signal(signal.SIGTERM, stop)
+open(sys.argv[1], 'w').close()
 time.sleep(60)
 PY
 cat > sleeper.py << 'PY'
@@ -251,8 +271,14 @@ PY
 waitfile() { for _ in $(seq 1 100); do [ -e "$1" ] && return 0; sleep 0.05; done; echo "FAIL: $1 never appeared" >&2; exit 1; }
 python3 term_handler.py ready1 > handler.out & hp=$!; waitfile ready1
 kill -TERM $hp; set +e; wait $hp; handled_term=$?; set -e
-out handled_term "$handled_term"; check "$handled_term" 0 'a program that catches TERM exits 0'
+out handled_term "$handled_term"; check "$handled_term" 143 'a program that catches TERM, flushes and re-raises it exits 143'
 out handler_line "$(cat handler.out)"; check "$(cat handler.out)" 'flushed and closed' 'the handler flushed'
+python3 term_exit143.py ready1b > /dev/null & hp=$!; waitfile ready1b
+kill -TERM $hp; set +e; wait $hp; handled_exit143=$?; set -e
+out handled_exit143 "$handled_exit143"; check "$handled_exit143" 143 'exiting 128 + 15 from the handler says the same'
+python3 term_exit0.py ready1c > /dev/null & hp=$!; waitfile ready1c
+kill -TERM $hp; set +e; wait $hp; handled_exit0=$?; set -e
+out handled_exit0 "$handled_exit0"; check "$handled_exit0" 0 'a handler that calls exit(0) reports success for an interrupted job'
 python3 term_handler.py ready2 > /dev/null & hp=$!; waitfile ready2
 kill -KILL $hp; set +e; wait $hp; killed=$?; set -e
 out killed "$killed"; check "$killed" 137 'KILL cannot be caught: 137'
@@ -328,6 +354,15 @@ out hung_state "$hung_state"; check "$hung_state" S 'blocked in read(): sleeping
 out hung_threads "$hung_threads"; check "$hung_threads" 2 'two threads'
 out hung_wchan "$hung_wchan"; [ -n "$hung_wchan" ] && [ "$hung_wchan" != 0 ] || { echo "FAIL: empty wchan" >&2; exit 1; }
 case "$hung_fd4" in socket:\[[0-9]*\]) out hung_fd4 socket;; *) echo "FAIL: fd 4 is $hung_fd4" >&2; exit 1;; esac
+# which peer? match the socket's inode in /proc/net/tcp (the row's 10th field): its remote port is the listening port the job itself opened (fd 3)
+ino4=$(readlink /proc/$hung/fd/4 | tr -dc 0-9); ino3=$(readlink /proc/$hung/fd/3 | tr -dc 0-9)
+if [ -r /proc/net/tcp ]; then
+  row4=$(awk -v i="$ino4" '$10 == i { print $3 " " $4 }' /proc/net/tcp); row3=$(awk -v i="$ino3" '$10 == i { print $2 " " $4 }' /proc/net/tcp)
+  peer_port=$(( 16#$(echo "$row4" | cut -d' ' -f1 | cut -d: -f2) )); listen_port=$(( 16#$(echo "$row3" | cut -d' ' -f1 | cut -d: -f2) ))
+  out hung_peer_is_listener "$([ "$peer_port" = "$listen_port" ] && echo yes || echo no)"; check "$peer_port" "$listen_port" "the socket's remote port is the listening port"
+  out hung_tcp_state "$(echo "$row4" | cut -d' ' -f2)"; check "$(echo "$row4" | cut -d' ' -f2)" 01 'fd 4 is an ESTABLISHED connection (state 01)'
+else out hung_peer_is_listener unavailable; out hung_tcp_state unavailable; fi
+out ss_installed "$(command -v ss > /dev/null && echo yes || echo no)"  # printed only: the Deep dive names ss -tnp but does not run it
 out hung_ps_stat "$(ps -o stat= -p $hung | tr -d ' ')"
 out hung_ps_threads "$(ps -L -o lwp= -p $hung | wc -l | tr -d ' ')"
 out hung_ps_L "$(ps -L -o stat=,wchan:20= -p $hung | tr -s ' ' | tr '\n' ';' | sed 's/;$//')"
@@ -348,7 +383,7 @@ else
   # ptrace is refused here (Yama scope 2 needs CAP_SYS_PTRACE; a seccomp profile can refuse it too)
   out strace_read skipped; out strace_line "ptrace restricted"
 fi
-# hung_load.py installs no TERM handler, unlike the step 6 job that flushes and returns 0: so TERM ends it with 143
+# hung_load.py installs no TERM handler, unlike the step 6 job that flushes first: either way the shell sees 143, so the difference is what got flushed
 kill -TERM $hung; set +e; wait $hung; hung_term=$?; set -e
 out hung_term "$hung_term"; check "$hung_term" 143 'TERM ends the hung job with 143'
 # ps columns for the Deep dive, and the load average
@@ -516,6 +551,18 @@ out umask_077 "$(stat -c %a f077)"; check "$(stat -c %a f077)" 600 'umask 077 ->
 out umask_022 "$(stat -c %a f022)"; check "$(stat -c %a f022)" 644 'umask 022 -> 644'
 out umask_arith "$(printf '%o' $((0666 & ~022)))"; check "$(printf '%o' $((0666 & ~022)))" 644 '0666 & ~022 = 0644'
 out proc_umask "$( (umask 022; sed -n 's/^Umask:[[:space:]]*//p' /proc/self/status) )"; check "$( (umask 022; sed -n 's/^Umask:[[:space:]]*//p' /proc/self/status) )" 0022 'Umask in /proc/self/status'
+(umask 027; touch f027)
+out umask_027 "$(stat -c %a f027)"; check "$(stat -c %a f027)" 640 'umask 027 -> 640: the group can read'
+# the reel's predict: the nightly job writes under umask 077; a loader in the same group cannot read it (needs root + setpriv to be another user)
+if [ "$(id -u)" = 0 ] && command -v setpriv > /dev/null; then
+  chmod 755 "$W"; gid=$(stat -c %g f077)
+  set +e
+  setpriv --reuid=65534 --regid="$gid" --clear-groups cat f077 > /dev/null 2>&1; loader_077=$?
+  setpriv --reuid=65534 --regid="$gid" --clear-groups cat f027 > /dev/null 2>&1; loader_027=$?
+  set -e
+  out loader_umask_077 "$loader_077"; check "$loader_077" 1 'a group member cannot read a file written under umask 077'
+  out loader_umask_027 "$loader_027"; check "$loader_027" 0 'a group member can read a file written under umask 027'
+else out loader_umask_077 skipped; out loader_umask_027 skipped; fi
 # directory permissions, as a user who is not root and not the owner
 mkdir d; echo hello > d/file; chmod 644 d/file; chmod 755 "$W"
 as_other() { if [ "$(id -u)" = 0 ]; then command -v setpriv > /dev/null && setpriv --reuid=65534 --regid=65534 --clear-groups "$@"; else "$@"; fi; }

@@ -5,6 +5,9 @@
       "clause": "filesystem and permissions",
       "at": [
         {
+          "step": "Can the loader read the file?"
+        },
+        {
           "step": "Exit codes: 0 to 255, and 128 plus the signal"
         },
         {
@@ -2415,6 +2418,97 @@
           ]
         }
       ]
+    },
+    {
+      "source": "Termination in Handler (glibc manual)",
+      "items": [
+        {
+          "item": "Handlers That Terminate the Process: clean up, then re-raise the signal with the default action",
+          "at": [
+            {
+              "deep": "Signals, zombies, orphans and threads"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "signal (Python 3.15 documentation)",
+      "items": [
+        {
+          "item": "Execution of Python signal handlers and Signals and threads",
+          "at": [
+            {
+              "deep": "Signals, zombies, orphans and threads"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "dash changelog (Debian unstable)",
+      "items": [
+        {
+          "item": "dash (0.5.12-7): Implement pipefail option",
+          "at": [
+            {
+              "deep": "Pipes, redirection and the pipeline's status"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "dash(1) (Debian unstable)",
+      "items": [
+        {
+          "item": "Pipelines: the pipefail sentence",
+          "at": [
+            {
+              "deep": "Pipes, redirection and the pipeline's status"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "systemd.timer(5) (Debian unstable)",
+      "items": [
+        {
+          "item": "Persistent= and OnCalendar=",
+          "at": [
+            {
+              "deep": "cron"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "ss(8) (Debian unstable)",
+      "items": [
+        {
+          "item": "-p, --processes",
+          "at": [
+            {
+              "deep": "A hung job: /proc and strace"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "authfile.c (OpenSSH portable)",
+      "items": [
+        {
+          "item": "sshkey_perm_ok: the warning and 'This private key will be ignored.'",
+          "at": [
+            {
+              "deep": "ssh and tunnels"
+            }
+          ]
+        }
+      ]
     }
   ],
   "expert": {
@@ -2440,6 +2534,9 @@
       {
         "item": "umask is a per-process mask whose bits are turned off from the mode passed to open()/mkdir(), so a job that writes files readable by no one else (or world-readable) usually has an inherited umask problem, not a chmod problem.",
         "at": [
+          {
+            "step": "Can the loader read the file?"
+          },
           {
             "deep": "Files, inodes and permissions"
           }

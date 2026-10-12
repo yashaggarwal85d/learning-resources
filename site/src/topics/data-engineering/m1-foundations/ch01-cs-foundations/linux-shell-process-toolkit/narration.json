@@ -26,6 +26,24 @@
     },
     {
       "lines": [
+        "Every file has nine permission bits. Read, write and execute, for the owner, for the group, and for everyone else.",
+        "A new file starts at six six six. And the umask switches bits off.",
+        "The nightly job writes the orders file under a umask of zero seven seven.",
+        "The loader runs as another user, in the same group.",
+        {
+          "beat": 0.4
+        },
+        "Can it read the file?"
+      ],
+      "answer": [
+        "No.",
+        "Zero seven seven switches off every group and other bit. Six six six becomes six hundred, read and write for the owner, and nothing for anyone else.",
+        "A umask of zero two seven would leave the group able to read.",
+        "And on a directory, the execute bit means enter. Read alone lists the names, but opens nothing."
+      ]
+    },
+    {
+      "lines": [
         "A job reads a file that is missing, and prints one error line on standard error.",
         "The shell applies redirections from left to right. And the standard error redirection means, make two a copy of whatever one points at, right now.",
         "Here the copy comes first, and only then is standard output sent to the log file.",
@@ -38,7 +56,7 @@
         "On the terminal.",
         "The copy of standard output was made first, while it still pointed at the terminal. Only afterwards did standard output move to the file.",
         "So the log stays empty. Zero lines.",
-        "Put the file first, then the copy, and both lines land in the file."
+        "Put the file first, then the copy, and the error line lands in the file."
       ]
     },
     {
@@ -63,20 +81,22 @@
         "An exit status is one byte. Zero to two hundred fifty-five.",
         "Zero is success. One to one hundred twenty-five mean whatever the program says.",
         "The shell adds two of its own. One hundred twenty-six, found but not executable, because the execute bit is missing. And one hundred twenty-seven, not found.",
-        "Above one hundred twenty-eight, Bash reports one hundred twenty-eight plus the signal that killed the program. So one hundred thirty-seven means a kill, and one hundred forty-three a terminate. By convention: a program could exit with one thirty-seven itself, which is why Python reports a signal death as minus nine.",
+        "Above one hundred twenty-eight, Bash reports one hundred twenty-eight plus the signal that killed the program. So one hundred thirty-seven means a kill, and one hundred forty-three a terminate.",
+        "By convention. A program could exit with one hundred thirty-seven itself.",
+        "Python's subprocess reads the wait status directly, and reports a kill as minus nine.",
         {
           "beat": 0.4
         },
-        "That is why bisect reserved one hundred twenty-five for skip... and distrusts a first run that exits with one hundred twenty-six or one hundred twenty-seven."
+        "That is why bisect reserved one hundred twenty-five for skip... and re-checks a first run that exits with one hundred twenty-six or one hundred twenty-seven."
       ]
     },
     {
       "lines": [
         "A signal is a one number message. Here it goes to the nightly load job.",
-        "Sig-term is the polite stop. A program can catch it, flush its buffers, and close.",
-        "Sig-kill cannot be caught, blocked or ignored. The kernel ends the process where it stands, and whatever sat in its own buffers is lost.",
-        "Sig-int is Control-C. Sig-hup means your terminal went away, which is how an ssh session's job dies with it.",
-        "A child that has ended, but not been waited for, is a zombie. And a child whose parent died is adopted by init, or by a sub-reaper.",
+        "Sig-term is the polite stop. A program can catch it, flush its buffers, and close. Then it raises the signal again, so the shell still sees one hundred forty-three.",
+        "Sig-kill cannot be caught or ignored. The kernel ends the process where it stands, whatever sat in its own buffers is lost, and the shell sees one hundred thirty-seven.",
+        "Sig-int is Control-C. Sig-hup means your terminal went away. Both can be caught.",
+        "A child that has ended, but not been waited for, is a zombie. And when a parent dies, init, or a sub-reaper, adopts the child.",
         {
           "beat": 0.4
         },
@@ -86,7 +106,7 @@
     {
       "lines": [
         "The nightly load has sat for an hour. Not finished, not failed.",
-        "The proc status file says it is sleeping, with two threads, sharing the same memory. P-S dash L lists them. And tracing the process shows a read on file descriptor four, and nothing more.",
+        "The proc status file, the kernel's live record of the process, says it is sleeping, with two threads, sharing the same memory. P-S dash L lists them. And strace, which prints each system call, shows a read on file descriptor four, and nothing more.",
         {
           "beat": 0.4
         },
@@ -94,8 +114,8 @@
       ],
       "answer": [
         "It is waiting in a read, on a socket that nobody writes to.",
-        "Sleeping means it wakes the moment data arrives. A busy loop would show R, running, with a busy processor. A disk wait would show a D, which ignores even kill until the disk read returns. And a zombie, a Z, has no open files at all.",
-        "So send term, give it a moment to close, and then kill, if it is still there. This job has no term handler, so the shell sees one forty-three. The job a moment ago caught it, and returned zero."
+        "Sleeping means it wakes the moment data arrives. A busy loop would show R, running, with a busy processor. A disk wait would show a D, which usually ignores even kill until the disk read returns. And a zombie, a Z, has no open files at all.",
+        "So send term, give it a moment to close, and then kill, if it is still there. Either way the shell sees one hundred forty-three. The job a moment ago flushed first. This one has no term handler."
       ]
     },
     {
@@ -106,8 +126,8 @@
         {
           "beat": 0.4
         },
-        "Skip the awk step, and forty badly spelt events make seven groups instead of four.",
-        "And a grep count would count strings, not values. One thousand four hundred ninety-five, where there are fifteen hundred."
+        "Skip the awk step, and forty events with stray capitals or blanks make seven groups instead of four.",
+        "And a grep for refunded misses the ones with a leading blank. One thousand four hundred ninety-five, not fifteen hundred. Count values after parsing, not strings."
       ]
     },
     {
@@ -115,6 +135,7 @@
         "Two lines you must read on sight.",
         "Five fields, minute to weekday, then the command. This one runs at two fifteen every day, and appends both streams to a log.",
         "Cron gives the job a tiny environment, with nothing from your own shell's path. It runs in one timezone. And it has no guard against a run that is still going. So take a lock.",
+        "Two fifteen is skipped or doubled on clock-change nights, unless cron runs in universal time.",
         {
           "beat": 0.4
         },
@@ -123,10 +144,11 @@
     },
     {
       "lines": [
-        "So... eight things to keep.",
-        "Fork, exec and wait. Three standard files, and the copy that depends on order. A pipeline reports its last command.",
+        "So... nine things to keep.",
+        "Fork, exec and wait. Nine permission bits, and a umask that switches them off. Three standard files, and the copy that depends on order. A pipeline reports its last command.",
         "A status is a byte, with its own codes for not executable, not found, and killed by a signal.",
         "Term first, then kill. Look at a hung job with P-S, the proc files, and strace. Chain small tools, and diff against the script.",
+        "Cron runs it with a tiny environment, and ssh dash L brings a private port to you.",
         {
           "beat": 0.5
         },
