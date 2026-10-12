@@ -696,7 +696,7 @@ export function Scoreboard({ t }: StepCtx) {
   };
   const pulse = (e: number) => 1 - seg(t, EV_T[e], EV_T[e] + 0.35);
   return (
-    <Svg label="The referee's scoreboard for eight keys with four columns: untested, only won, only lost, both. The pairing algorithm makes 10 comparisons while the units counter climbs to 14, the 2n - 2 units any correct answer needs; at most 4 comparisons can give two units" h={410}>
+    <Svg label="The referee's scoreboard for eight keys with four columns: untested, only won, only lost, both. The pairing algorithm makes 10 comparisons while the units counter climbs to 14, the 2n - 2 units any correct answer needs; at most 4 comparisons can give two units, and comparing an only-won key with an only-lost one gives 0, as the referee shows after the four pairs" h={410}>
       <T x={30} y={20} s={13} f={C.taupe}>
         comparisons
       </T>
@@ -729,13 +729,20 @@ export function Scoreboard({ t }: StepCtx) {
         );
       })}
       <g opacity={fade(t, 4.0, 4.4)}>
-        <T x={30} y={346} s={13} f={C.latte}>
+        <T x={30} y={324} s={13} f={C.latte}>
           two untested keys → 2 units, at most 4 times
+        </T>
+        <T x={30} y={346} s={13} f={C.latte}>
+          only won vs only lost → the only-won key wins, 0 units
         </T>
         <T x={30} y={368} s={13} f={C.latte}>
           any other comparison → at most 1 unit
         </T>
       </g>
+      {/* the referee's choice made visible: after the four pairs, a comparison nobody has made (k₁ only won, k₄ only lost) teaches nothing */}
+      <T x={300} y={296} s={15} f={C.caramel} a="middle" w={700} o={fade(t, 1.6, 1.8) * (1 - fade(t, 2.0, 2.1))}>
+        ask k₁ : k₄ → k₁ wins · 0 units
+      </T>
       <T x={30} y={396} s={15} f={C.caramel} w={700} o={fade(t, 4.5, 4.9)}>
         ≥ 4 + (14 − 8) = 10
       </T>
@@ -889,7 +896,7 @@ export function Scope({ t }: StepCtx) {
         <line x1={24} y1={190} x2={fade(t, 1.2, 1.6) * 118 + 24} y2={190} stroke={C.taupe} strokeWidth={2} />
         <line x1={146} y1={178} x2={146} y2={202} stroke={C.taupe} strokeWidth={3} opacity={seg(t, 1.5, 1.6)} />
         <T x={24} y={172} s={13} f={C.latte}>
-          claim A: no
+          sort, 15 M: no
         </T>
       </g>
       {ESC.map((e, i) => {
@@ -925,13 +932,13 @@ export function Scope({ t }: StepCtx) {
 
 // 14 · Back to the problem: the three promises, refuted, with the way out.
 const VERDICTS: { l1: string; l2: string; l3: string }[] = [
-  { l1: 'sort any input · ≤ 15,000,000', l2: 'some input needs ≥ 18,488,885', l3: 'unless it stops comparing: radix sort' },
-  { l1: 'min and max · ≤ 1,200,000', l2: 'some input needs ≥ 1,499,998', l3: 'pairing meets it: 1,499,998' },
-  { l1: 'all distinct? · ≤ 5,000,000', l2: 'some input needs ≥ 18,488,885', l3: 'unless it hashes: expected O(n)' },
+  { l1: 'sort any input · ≤ 15,000,000', l2: 'some input needs ≥ 18,488,885', l3: 'unless it reads digits: radix sort' },
+  { l1: 'min and max · ≤ 1,200,000', l2: 'some input needs ≥ 1,499,998', l3: 'no way out: pairing’s 1,499,998 is best' },
+  { l1: 'all distinct? · ≤ 5,000,000', l2: 'some input needs ≥ 18,488,885', l3: 'unless it reads digits: radix sort + scan' },
 ];
 export function Closing({ t }: StepCtx) {
   return (
-    <Svg label="The three promises refuted: sorting in 15,000,000 comparisons is impossible because some input needs at least 18,488,885, minimum and maximum in 1,200,000 because some input needs at least 1,499,998, and distinctness in 5,000,000 because some input needs at least 18,488,885; sorting and distinctness escape by leaving comparisons, radix sort or hashing, and pairing meets the min and max bound" h={380}>
+    <Svg label="The three promises refuted: sorting in 15,000,000 comparisons is impossible because some input needs at least 18,488,885, minimum and maximum in 1,200,000 because some input needs at least 1,499,998, and distinctness in 5,000,000 because some input needs at least 18,488,885; sorting and distinctness escape by leaving comparisons (radix sort, then a scan for distinctness), while for min and max pairing's 1,499,998 is the best any comparison algorithm can do" h={380}>
       <VectorRow t={t} y={10} />
       <T x={30} y={64} s={13} f={C.taupe}>
         n = 1,000,000 keys · 64-bit

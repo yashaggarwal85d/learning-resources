@@ -30,7 +30,7 @@
         {
           "beat": 0.3
         },
-        "From here, one unit of cost is one comparison. Everything else is free, so a bound on comparisons is a bound on time, never more."
+        "From here, one unit of cost is one comparison. Everything else is free, so a lower bound on comparisons is a lower bound on time, never an upper bound."
       ]
     },
     {
@@ -61,13 +61,14 @@
           "beat": 0.3
         },
         "At a million keys, every comparison sort has an input that costs about eighteen and a half million comparisons.",
-        "Merge sort's worst case is two and a half percent above that floor. Upper and lower bound meet, so sorting is settled."
+        "Merge sort's worst case is two and a half percent above that floor. Last reel's number counted a unit for every key at every level, so it was higher.",
+        "Upper and lower bound meet, so sorting is settled."
       ]
     },
     {
       "lines": [
         "The bound holds on average too.",
-        "With every order equally likely, any comparison sort's average leaf depth is at least the floor of log base two of n factorial.",
+        "With every order equally likely, any comparison sort's average leaf depth is at least the floor of log base two of n factorial. A sharper count even removes the floor.",
         {
           "beat": 0.3
         },
@@ -82,7 +83,7 @@
         {
           "beat": 0.3
         },
-        "Searching the sorted vector: a million and one answers, twenty questions, and binary search uses twenty.",
+        "Searching the sorted vector: a million and one answers, twenty questions, and binary search uses twenty. On a key that is absent, no probe can say equal.",
         "Merging two runs of four: seventy interleavings, seven, and the standard merge uses seven. Sorting five keys: seven, and seven.",
         "Here, counting is tight."
       ]
@@ -104,7 +105,7 @@
     },
     {
       "lines": [
-        "That was an adversary argument.",
+        "That was an adversary argument. Its answers pretended that each key's value was its own number.",
         "The adversary answers each comparison as it likes, with one rule. The answers so far must always fit some real input.",
         "It assumes nothing about the algorithm, so it covers every algorithm at once.",
         {
@@ -134,11 +135,11 @@
       "lines": [
         "Now the referee keeps a scoreboard, with four columns.",
         "Until a key has lost, it could be the maximum. Until it has won, it could be the minimum.",
-        "So a correct answer needs fourteen units: each key's first win or first loss, except two.",
+        "So a correct answer needs fourteen units: every key but the maximum must lose once, and every key but the minimum must win once.",
         {
           "beat": 0.3
         },
-        "The referee answers so that only a comparison of two untested keys gives two units. And there are at most four of those.",
+        "Only a comparison of two untested keys gives two units, and there are at most four of those. The referee answers every other comparison so that it gives at most one. A key that only won always beats a key that only lost, for nothing.",
         "Watch the units climb to fourteen, while the comparisons stop at ten.",
         "So every algorithm needs at least three n over two, minus two. Pairing meets it. At a million keys, about one and a half million."
       ]
@@ -168,7 +169,7 @@
         "Every answer stays the same. The algorithm still says distinct... and now it is wrong.",
         "So every distinct answer rests on all the neighbour comparisons. Together they spell out the whole sorted order.",
         "The tree needs at least n factorial leaves, and the sorting bound applies.",
-        "It even survives a stronger model: algebraic computation trees."
+        "It even survives a stronger model, algebraic computation trees, which may also add, multiply, divide and take square roots."
       ]
     },
     {
@@ -178,7 +179,7 @@
         {
           "beat": 0.3
         },
-        "It does not rule out radix sort, which reads keys as digits. Or a hash set, which decides distinctness in expected linear time, and gives up the worst case guarantee.",
+        "It does not rule out radix sort, which reads keys as digits. Or a hash set, which computes with the bits of the keys, outside the model, and in exchange promises only expected linear time.",
         "Nor a sort that is fast on an easy input, or a different problem, like putting the smallest half first, or a better constant.",
         "And a problem's lower bound is not one algorithm's cost. Insertion sort's quadratic count is its own.",
         "To beat a bound, change something it assumed."
@@ -187,13 +188,14 @@
     {
       "lines": [
         "Back to the three promises.",
-        "All three are impossible for every comparison algorithm, and you proved it without running anything.",
+        "No comparison algorithm can keep any of the three, and you proved it without running anything.",
         "A tree with n factorial leaves for the sort. A scoreboard of units for the minimum and maximum. The neighbour argument for distinctness.",
         {
           "beat": 0.3
         },
-        "Two become possible once the keys are used as numbers. The third is already met by pairing.",
-        "Every bound so far priced one run on its worst input. The next reel pulls that thread."
+        "Sorting and distinctness become possible once the keys are used as numbers: radix sort, then one scan for equal neighbours.",
+        "For the minimum and maximum, pairing is the best any comparison algorithm can do.",
+        "Every bound so far priced one run, on its worst input or on average. A data structure lives through a sequence. The next reel pulls that thread."
       ]
     },
     {
@@ -231,7 +233,7 @@
         "Which of these claims about a million keys does the comparison sorting lower bound refute?"
       ],
       "answer": [
-        "The comparison sort that averages seventeen million on random orders.",
+        "The comparison sort that averages seventeen million.",
         "The average case bound says at least about eighteen and a half million.",
         "Radix sort is outside the model. A sorted input is one easy input. And the ten largest is a different problem."
       ]

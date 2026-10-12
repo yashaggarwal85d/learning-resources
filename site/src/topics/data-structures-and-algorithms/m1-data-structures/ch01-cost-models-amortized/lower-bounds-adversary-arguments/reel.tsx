@@ -23,8 +23,8 @@ const reel: Reel = {
         <>
           Only comparisons tell the algorithm anything about the keys (the comparison model of the word-RAM topic), so its whole run on an input is the path of answers it gets. Draw
           every path for three keys and you get a tree: a node per comparison, a leaf per finished run, holding the order it reports. An input’s cost is the depth of its leaf; the
-          worst case is the tree’s height. From here one unit of cost is one comparison (not the word operations of the last reel); everything else is free, so a bound on
-          comparisons is a bound on time, never more.
+          worst case is the tree’s height. From here one unit of cost is one comparison (not the word operations of the last reel); everything else is free, so a lower bound on
+          comparisons is a lower bound on time, never an upper bound.
         </>
       ),
       duration: 4.4,
@@ -55,10 +55,9 @@ const reel: Reel = {
       title: 'n! leaves force log₂ n! levels',
       body: (
         <>
-          A sort must be able to output any of the n! orders, so its tree has at least n! leaves. A tree of height h has at most 2ʰ, so h ≥ log₂ n!, and log₂ n! lies between
-          n·log₂ n − 1.443n and n·log₂ n: it is Θ(n log n). Five keys: 120 orders sit between 64 and 128, so the height is at least 7. At a million keys every comparison sort has an
-          input that costs at least 18,488,885 comparisons. Merge sort’s worst case, 18,951,425, is 2.5 % above that floor: the upper bound solved last reel meets the lower bound, so
-          sorting is settled at Θ(n log n) comparisons. A search over every tree confirms that 3, 5 and 7 comparisons are exact for three, four and five keys.
+          A sort must be able to output any of the n! orders, so its tree has at least n! leaves. A tree of height h has at most 2ʰ, so h ≥ log₂ n!, which is Θ(n log n). Five keys: 120 orders sit between 64 and 128, so the height is at least 7. At a million keys every comparison sort has an
+          input that costs at least 18,488,885 comparisons. Merge sort’s worst case, 18,951,425, is 2.5 % above that floor (n − 1 comparisons per merge; last reel’s 20,951,424 counted n units per level): the upper bound solved last
+          reel meets the lower bound, so sorting is settled at Θ(n log n) comparisons.
         </>
       ),
       duration: 4.4,
@@ -68,7 +67,7 @@ const reel: Reel = {
       title: 'The average order pays it too',
       body: (
         <>
-          The bound holds on average as well. With all n! orders equally likely, any comparison sort’s average leaf depth is at least ⌊log₂ n!⌋. The proof is the move you just watched:
+          The bound holds on average as well. With all n! orders equally likely, any comparison sort’s average leaf depth is at least ⌊log₂ n!⌋ (a sharper count gives log₂ n!, the dashed line; Deep dive). The proof is the move you just watched:
           hang the two deepest sibling leaves under the shallowest leaf, and the average drops whenever the depths differ by 2 or more, so the cheapest tree is balanced. This is an
           average over inputs (the first topic’s average case); a randomized sort, an average over its coins, obeys the same bound (Deep dive).
         </>
@@ -81,8 +80,8 @@ const reel: Reel = {
       body: (
         <>
           The argument used nothing about sorting except the number of possible answers. A problem with K answers needs at least ⌈log₂ K⌉ yes/no questions in the worst case, whatever the
-          questions are: the <b>information-theoretic bound</b>. Searching the sorted vector has a million and one answers and binary search uses 20 probes (each probe has three answers,
-          but “equal” ends the search, so the count still holds; Deep dive). Merging two runs of four: 70 interleavings, 7, met by the standard merge. Sorting five keys: 7, met.
+          questions are: the <b>information-theoretic bound</b>. Searching the sorted vector has a million and one answers and binary search uses 20 probes (on an absent key no probe answers “equal”, so each probe is a
+          yes/no question; Deep dive). Merging two runs of four: 70 interleavings, 7, met by the standard merge. Sorting five keys: 7, met.
           Here counting is tight.
         </>
       ),
@@ -114,9 +113,9 @@ const reel: Reel = {
       title: 'An adversary decides the input last',
       body: (
         <>
-          That was an <b>adversary argument</b>. The adversary answers each comparison as it likes, with one rule: the answers so far must always fit some real input. It assumes nothing
+          That was an <b>adversary argument</b>: its answers pretend key i has the value i (input A below). An adversary may answer as it likes, with one rule: the answers so far must always fit some real input. It assumes nothing
           about the algorithm, so the argument covers every algorithm at once. If the algorithm stops while two inputs fit every answer and have different correct outputs, the adversary
-          reveals the one it got wrong. Here a tournament stops after six comparisons: k₄ and k₈ were never beaten, and raising k₄ to 9 keeps every answer.
+          reveals the one it got wrong. Here a tournament stops after six comparisons: k₄ and k₈ were never beaten, and raising k₄ to 9 (input B) keeps every answer.
         </>
       ),
       duration: 4.6,
@@ -146,8 +145,9 @@ const reel: Reel = {
       title: 'The scoreboard: 14 units, 10 comparisons',
       body: (
         <>
-          The referee keeps four columns. Until a key has lost it could be the max; until it has won it could be the min. A correct answer needs every key’s first win or first loss
-          except two: 2n − 2 = 14 units. The referee answers so that only a comparison of two untested keys gives 2 units, and there are at most ⌊n/2⌋ = 4 of those. So every algorithm
+          The referee keeps four columns. Until a key has lost it could be the max; until it has won it could be the min. A correct answer needs every key but the max to lose once and every key but the min to win
+          once: 2n − 2 = 14 units. Only a comparison of two untested keys gives 2 units (at most ⌊n/2⌋ = 4 of those); the referee answers every other one so that it gives at most 1, and
+          an only-won key always beats an only-lost one, for 0. So every algorithm
           needs at least ⌈3n/2⌉ − 2 comparisons: 10 for 8 keys, 1,499,998 for a million, where two scans would take 1,999,997. Pairing meets it, so the bound is tight. (The syllabus’s 3n/2 − 2
           is the even case.)
         </>
@@ -164,7 +164,7 @@ const reel: Reel = {
       ),
       duration: 1.8,
       predict: {
-        options: [{ label: '1 comparison' }, { label: '999,999 comparisons' }, { label: '1,499,998 comparisons' }, { label: 'about 18.5 million', correct: true }],
+        options: [{ label: '1 comparison' }, { label: '999,999 comparisons' }, { label: '1,499,998 comparisons' }, { label: '18.5 M comparisons', correct: true }],
         explain: (
           <>
             The answer has two values but the work behind it does not: to say “distinct” safely, an algorithm must have learned the keys’ whole sorted order, so it pays at least the
@@ -181,8 +181,8 @@ const reel: Reel = {
         <>
           Suppose an algorithm answers “distinct” without ever comparing two keys that are neighbours in sorted order. Nothing lies between them, so the adversary makes them equal: every
           comparison made gives the same answer, the algorithm still says “distinct”, and now it is wrong. So every “distinct” answer comes after all n − 1 neighbour comparisons, which
-          spell out the whole sorted order: the tree has at least n! “distinct” leaves, and its height is at least ⌈log₂ n!⌉ (three-way comparisons, comparisons between two keys; Deep
-          dive). The bound survives a stronger model: Ben-Or (1983) proved Ω(n log n) for algebraic computation trees.
+          spell out the whole sorted order: the tree has at least n! “distinct” leaves, and its height is at least ⌈log₂ n!⌉ (on distinct keys no comparison answers “=”, so the tree is binary; keys are compared only with each other; Deep dive). Even algebraic computation trees, which may also add,
+          multiply, divide and take square roots, obey it (Ben-Or, 1983).
         </>
       ),
       duration: 5.0,
@@ -193,7 +193,7 @@ const reel: Reel = {
       body: (
         <>
           The sorting bound is about one <b>model</b> (only comparisons tell you about the keys) and one <b>problem</b> (output the sorted order of any input), in the worst case or on
-          average. It does not rule out radix sort, which reads keys as digits; a hash set, which decides distinctness in expected O(n) and gives up the worst-case guarantee; a sort that
+          average. It does not rule out radix sort, which reads keys as digits; a hash set, which computes with the keys’ bits (outside the model) and in exchange promises only expected O(n); a sort that
           is fast on an easy input; a different problem such as putting the smallest half first; or a better constant. And a problem’s lower bound is not one algorithm’s cost: insertion
           sort’s n(n − 1)/2 is its own worst case. Every correct algorithm must at least read every key: Ω(n).
         </>
@@ -205,9 +205,9 @@ const reel: Reel = {
       title: 'Back to the problem',
       body: (
         <>
-          All three promises are impossible for every comparison algorithm, and you proved it without running anything: a decision tree with n! leaves for the sort, a referee with 2n − 2
-          units for min and max, and the neighbour argument for distinctness. Two become possible once the keys are used as numbers; the third is already met by pairing. Every bound so far
-          priced one run on its worst input, which is the thread the next reel pulls.
+          No comparison algorithm can keep any of the three promises, and you proved it without running anything: a decision tree with n! leaves for the sort, a referee with 2n − 2
+          units for min and max, and the neighbour argument for distinctness. Sorting and distinctness become possible once the keys are used as numbers (radix sort, then one scan for equal neighbours); for min and max, pairing’s 1,499,998 is the best any
+          comparison algorithm can do. Every bound so far priced one run, on its worst input or on average; a data structure lives through a sequence, which is the thread the next reel pulls.
         </>
       ),
       duration: 3.8,
@@ -243,7 +243,7 @@ const reel: Reel = {
         explain: (
           <>
             Ask a : b, b : c, then c : a, and it says a &gt; b &gt; c &gt; a: no input fits, so the “run” it forces is not a run on any input and proves nothing. An adversary may decide late,
-            never inconsistently: it need not fix the input first, it must only keep some input fitting every answer. The referee of the max pretended xᵢ = i and stayed consistent; the
+            never inconsistently: it need not fix the input first, it must only keep some input fitting every answer. The adversary of step 8 answered as if key i had the value i and stayed consistent; the
             scoreboard assigned values at each key’s first comparison.
           </>
         ),
@@ -258,7 +258,7 @@ const reel: Reel = {
         options: [
           { label: 'Radix sort orders them in 4 passes' },
           { label: 'A comparison sort checks sorted input in 999,999' },
-          { label: 'A comparison sort averages 17 million on random orders', correct: true },
+          { label: 'Comparison sort: 17 M on average', correct: true },
           { label: 'A selection finds the 10 largest in O(n)' },
         ],
         explain: (

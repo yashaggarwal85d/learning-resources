@@ -184,6 +184,15 @@ ratio = MERGE_WORST_N / CEIL_LOG_FACT_N
 assert round(ratio, 3) == 1.025 and round((ratio - 1) * 100, 1) == 2.5  # 2.5 % above the floor
 assert 2**20 - 1 == 1_048_575  # (for the Deep dive's reminder of what the previous reel counted: n per level, not n - 1)
 
+def merge_units(n):  # the previous reel's recurrence: T(1) = 1, T(n) = T(ceil(n/2)) + T(floor(n/2)) + n (n units per merge level)
+    t = [0, 1]
+    for m in range(2, n + 1):
+        t.append(t[(m + 1) // 2] + t[m // 2] + m)
+    return t[n]
+
+
+assert merge_units(N) == 20_951_424  # the number step 4 reconciles with 18,951,425 (n units per merge, not n - 1)
+
 
 # exact minimum comparisons by exhaustive search over the sets of inputs still consistent with the answers
 def perm_masks(n):
@@ -635,6 +644,33 @@ ref4 = Referee(8)
 for i in range(0, 8, 2):
     ref4.compare(i, i + 1)
 assert ref4.columns() == (0, 4, 4, 0) and ref4.units == 8
+
+
+# the referee's answer table (Deep dive), one fresh referee per row: (comparison, who wins, units it gives)
+def table_row(setup, x, y, n=5):
+    r = Referee(n)
+    for p, q in setup:
+        r.compare(p, q)
+    before = r.units
+    first_wins = r.compare(x, y)
+    return first_wins, r.units - before
+
+
+PAIRS = [(0, 1), (2, 3)]  # after these, keys 0 and 2 have only won, keys 1 and 3 have only lost
+assert table_row([], 0, 1) == (True, 2)  # untested against untested: 2 units
+assert table_row(PAIRS, 4, 0) == (False, 1)  # untested against only won: the untested key loses, 1 unit
+assert table_row(PAIRS, 4, 1) == (True, 1)  # untested against only lost: the untested key wins, 1 unit
+assert table_row(PAIRS + [(0, 2)], 4, 0) == (True, 1)  # untested against both (key 0 won, then lost to key 2): the untested key wins, 1 unit
+assert table_row(PAIRS, 0, 3) == (True, 0)  # only won against only lost: the only-won key wins, 0 units
+assert table_row(PAIRS, 3, 0) == (False, 0)  # the same comparison, named the other way round
+assert table_row(PAIRS, 0, 2)[1] == 1  # only won against only won: by the values, 1 unit
+assert table_row(PAIRS, 1, 3)[1] == 1  # only lost against only lost: by the values, 1 unit
+# the reel's ghost comparison after the four pairs: k1 : k4 (keys 0 and 3 of the pairing run) gives k1, 0 units
+r_ghost = Referee(8)
+for i in range(0, 8, 2):
+    r_ghost.compare(i, i + 1)
+assert r_ghost.state[0] == Wn and r_ghost.state[3] == L
+assert r_ghost.compare(0, 3) is True and r_ghost.units == 8
 assert cols[7] == (0, 1, 4, 3)
 assert ref.columns() == (0, 1, 1, 6)
 two_unit = sum(1 for *_x, g in ref.log if g == 2)
