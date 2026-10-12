@@ -84,6 +84,26 @@ export const TOPICS: TopicMeta[] = [
     handoff: 'Next refresher: the Linux shell, where exit codes like the ones bisect reads come from.',
   },
   {
+    id: 'de.software-delivery-workflow',
+    domain: 'data-engineering',
+    slug: 'data-engineering/m1-foundations/ch01-cs-foundations/software-delivery-workflow',
+    title: 'Software delivery workflow',
+    syllabusTitle: 'Software delivery workflow',
+    kind: 'refresher',
+    // Built in parallel with the topics before it (Git, shell): it waits until every topic before it is live.
+    status: 'held',
+    milestone: { number: 1, title: 'Foundations' },
+    chapter: { number: 1, title: 'Computer-science foundations', section: '1.1' },
+    minutes: 5,
+    verified: '2026-10-12',
+    introduces: ['code-review-norms', 'unit-tests', 'ci-pipelines', 'semantic-versioning', 'dependency-pinning'],
+    uses: ['python-functions', 'decorators', 'type-hints', 'exit-status', 'pr-merge-strategies', 'trunk-based-development', 'git-bisect', 'pipes-redirection', 'text-tools', 'signals', 'pip-install', 'github-actions-basics'],
+    // Assumed by the Prerequisites panel (sections 04 and 05): installing with pip and reading a workflow file.
+    declared: ['pip-install', 'github-actions-basics'],
+    bridge: 'The shell runs one job by hand; a CI pipeline runs the same commands on every change and stops at the first non-zero exit.',
+    handoff: 'Last of the five refreshers: the notation for how costs grow, and the logarithms the rest of the chapter counts with.',
+  },
+  {
     id: 'de.io-cost-model',
     domain: 'data-engineering',
     slug: 'data-engineering/m1-foundations/ch01-cs-foundations/io-cost-model',
