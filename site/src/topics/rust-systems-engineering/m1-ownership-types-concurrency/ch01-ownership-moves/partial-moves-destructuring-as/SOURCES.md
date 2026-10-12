@@ -13,6 +13,10 @@ Version: current stable docs, fetched 2026-10-12
 
 > The particular pattern _ will match anything, but it never binds to a variable, so it’s often used in the last match arm.
 
+> In a for loop, the value that directly follows the keyword for is a pattern.
+
+> Function parameters can also be patterns.
+
 Contents:
 - Patterns appear in match arms, let statements, if let, while let, for loops and function parameters.
 - A bare variable name is the simplest pattern; let destructures tuples with a pattern like (x, y, z).
@@ -245,6 +249,10 @@ Version: RFC 2005, feature name pattern-binding-modes, start date 2016-08-12, tr
 > We could allow writing move in patterns. Without this, move, unlike ref and ref mut, would always be implicit, leaving no way override a default binding mode of ref or ref mut and move the value out from behind a reference.
 
 > However, moving a value out from behind a shared or mutable reference is only possible for Copy types, so this would not be particularly useful in practice, and would add unnecessary complexity to the language.
+
+> In the future, this RFC could be extended to add support for autodereferencing custom smart-pointer types using the Deref and DerefMut traits.
+
+> future DerefMove trait or similar.
 
 Contents:
 - Summary: matching on references currently needs `&Some(ref y)` or `*x`; after the RFC `match x { Some(y) => ... }` works, y a reference; done via auto-deref and default binding modes.
@@ -956,8 +964,14 @@ Version: std 1.99.0
 
 > which enables us to support field projections of Self type safely.
 
+> You cannot implement both Copy and Drop on the same type.
+
+> because drop() may itself be called during unwinding due to a panic
+
 Contents:
 - Frontier only: nightly pinned-drop API (pin_ergonomics) enabling safe field projections.
+- "Copy and Drop are exclusive" section (no type implements both).
+- Panics section: drop may run during unwinding.
 
 ## Clippy Lints - Clippy Documentation
 URL: https://rust-lang.github.io/rust-clippy/master/index.html
@@ -997,3 +1011,39 @@ Version: current stable docs, fetched 2026-10-12
 
 Contents:
 - Confirms the chapter is number 19 (ch18-00-patterns.html redirects).
+
+## Naming - Rust API Guidelines
+URL: https://rust-lang.github.io/api-guidelines/naming.html
+Version: no version on the page; fetched 2026-10-12
+
+> Ad-hoc conversions follow as_, to_, into_ conventions (C-CONV)
+
+> owned -> owned (non-Copy types)
+
+> When a type wraps a single value to associate it with higher-level semantics, access to the wrapped value should be provided by an into_inner() method.
+
+Contents:
+- C-CASE casing; C-CONV as_/to_/into_ prefixes by cost and ownership (into_: owned -> owned, non-Copy); wrappers expose into_inner().
+- C-GETTER, C-ITER (iter/iter_mut/into_iter), C-ITER-TY, C-FEATURE, C-WORD-ORDER.
+
+## 1. General - FLS
+URL: https://rust-lang.github.io/fls/general.html
+Version: states it covers rustc 1.98.0, 2021 Edition; fetched 2026-10-12
+
+> This document specifies the form and meaning of programs written in the 2021 Edition of the
+
+> version 1.98.0.
+
+Contents:
+- Scope: the 2021 Edition as implemented by rustc 1.98.0; prefers documenting rustc's behaviour.
+
+## E. Changelog - FLS
+URL: https://rust-lang.github.io/fls/changelog.html
+Version: latest entry "Language changes in Rust 1.99.0"; fetched 2026-10-12
+
+> The 2024 Edition is now stable.
+
+> The 2024 edition is outside the scope of the FLS.
+
+Contents:
+- Per-release language changes and how each affected the FLS; the 1.85.0 entry records the 2024 Edition as outside the FLS's scope.
