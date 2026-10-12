@@ -1,0 +1,59 @@
+import Resource from '../../../../../components/Resource.astro';
+
+This reel assumes four things. If they are familiar, go straight in. If one is not, a few minutes with the matching resource is enough to follow every step. Reels on this site are marked **Before this** (earlier in the course), **Goes deeper later** (not needed now) or with the name of another track.
+
+<section class="prereq" data-section="bounds">
+
+### <span class="n">01</span> Cost bounds and the machine they count
+
+You can read O(1), Θ(n) and Θ(log n), you know the difference between a best, worst, average and expected case, and you accept that a step of the machine (here, writing one element) costs one unit. “Asymptotic notation and case analysis” teaches the notation and the cases; “The word-RAM model and its assumptions” teaches the machine.
+
+<p class="check"><b>Check yourself:</b> an algorithm is O(n²) in the worst case and Θ(n) in the best case. Is it Θ(n²)? (Answer: no. Only its worst case is Θ(n²), if that bound is tight.)</p>
+
+<ul class="resources">
+  <Resource kind="reel" host={props.host} domain="data-structures-and-algorithms" title="Asymptotic notation and case analysis">Bounds, cases, and the average-case and expected promises; this topic is the third kind of promise that reel points to.</Resource>
+  <Resource kind="reel" host={props.host} domain="data-structures-and-algorithms" title="The word-RAM model and its assumptions">The machine behind “one element write is one unit”.</Resource>
+  <Resource kind="reel" host={props.host} domain="data-structures-and-algorithms" title="Measuring the memory hierarchy">Where the chapter lab measures the doubling and 1.5 growth policies on a real machine.</Resource>
+</ul>
+
+</section>
+
+<section class="prereq" data-section="stacks">
+
+### <span class="n">02</span> Stacks
+
+You know a stack holds items last in, first out: push adds on top, pop removes the top.
+
+<p class="check"><b>Check yourself:</b> push a, push b, push c, then pop twice. What is left? (Answer: a.)</p>
+
+<ul class="resources">
+  <Resource kind="reading" title="Bags, Queues, and Stacks" href="https://algs4.cs.princeton.edu/13stacks/" by="Sedgewick and Wayne, Algorithms 4th ed., section 1.3">Stacks and queues with array and linked-list implementations, including the resizing array.</Resource>
+  <Resource kind="reel" host={props.host} domain="data-structures-and-algorithms" title="Stacks, queues and deques">The containers themselves, in the data-structures chapter.</Resource>
+</ul>
+
+</section>
+
+<section class="prereq" data-section="binary">
+
+### <span class="n">03</span> Binary counting
+
+You can add 1 to a number written in binary: trailing 1s become 0s with a carry, and the next 0 becomes a 1.
+
+<p class="check"><b>Check yourself:</b> what is 0111 + 1, and how many bits changed? (Answer: 1000; four.)</p>
+
+</section>
+
+<section class="prereq" data-section="series">
+
+### <span class="n">04</span> Geometric series
+
+You know that 1 + 2 + 4 + … + 2<sup>k</sup> = 2<sup>k+1</sup> − 1, and that 1 + 1/g + 1/g² + … = g/(g − 1) for g &gt; 1. The reel uses the first for doubling and the second for any growth factor.
+
+<p class="check"><b>Check yourself:</b> what is 1 + 2 + 4 + 8 + 16? (Answer: 31.)</p>
+
+<ul class="resources">
+  <Resource kind="reading" title="Amortized Analysis" href="https://www.cs.cmu.edu/~avrim/451f11/lectures/lect0922.pdf" by="Avrim Blum, CMU 15-451, Lecture 7">Sums the doubling array's copies, 1 + 2 + 4 + …, step by step, then does the same proof by accounting.</Resource>
+  <Resource kind="reading" title="Lecture 9: Amortized Analysis" href="https://jeffe.cs.illinois.edu/teaching/algorithms/notes/09-amortize.pdf" by="Jeff Erickson, Algorithms">Sums the counter's flips, n + n/2 + n/4 + …, and analyses the counter three more ways; a good second explanation of this whole topic.</Resource>
+</ul>
+
+</section>
