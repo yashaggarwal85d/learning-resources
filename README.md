@@ -88,7 +88,7 @@ narration/setup.sh           # once per machine or session: builds every tool ou
 narration/narrate.sh src/topics/<domain>/<milestone>/<chapter>/<topic>
 ```
 
-- **English narrator:** Orpheus 3B, voice "tara".
+- **English narrator:** Orpheus 3B, voice "tara"; every take is checked by a local speech-to-text model (faster-whisper large-v3-turbo) and must say its line.
 
 Both are frozen in `site/narration/voice.json`. Details are in [site/narration/README.md](site/narration/README.md).
 

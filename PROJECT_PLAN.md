@@ -274,7 +274,7 @@ Reels can carry an optional voice-over that narrates each step, which makes them
 - **Natural delivery, by method.** Orpheus is most natural when driven well, so every clip is made the same way:
   - the script is written for speaking (short lines, questions that rise, ellipses where a thought lands), separate from the on-screen text;
   - each line is generated as several takes at slightly different sampling settings;
-  - takes whose transcript doesn't match the line, or whose pace is off, are rejected; of the rest, the one with the most pitch movement wins;
+  - takes that don't say the line are rejected: a local speech-to-text model transcribes each take, and every difference must be one a listener would not notice (a homophone, a spelled acronym, words split or merged, a number as digits; `site/narration/match.py`), never a skipped, added or garbled word; takes whose pace is off are rejected too; of the rest an exact take beats a tolerated one, then the one with the most pitch movement wins, and a clip that would be too fast or slow swaps in slower or faster passing takes;
   - the chosen lines are joined with designed pauses: a short gap between lines, a longer one after a question, and explicit beats before reveals.
 - **Choosing the voice.**
   - Audition the model's built-in female voices against the brief on one real topic script.
@@ -315,7 +315,7 @@ Reels can carry an optional voice-over that narrates each step, which makes them
 
 - **Script review.** Narration scripts go through the same correctness review as the text.
 - **Listening review.** Before a topic ships, every clip is listened to end to end for mispronunciations, wrong emphasis, artefacts and pacing.
-- **Automated checks.** At generation, a local speech-to-text model (faster-whisper) transcribes every take, and only word-perfect takes are used. In CI (`npm run test:narration`), every live reel must have narration whose clips match the current script hash (a changed line without new audio fails), with both audio formats present, loudness at −16 ± 1.5 LUFS, true peak at or below −1 dBTP and a sane pace.
+- **Automated checks.** At generation, a local speech-to-text model (faster-whisper, the model named in `voice.json`) transcribes every take, and only takes that say the line are used (above); the manifest lists every tolerated mishearing, so the listening review knows which clips to play first. In CI (`npm run test:narration`), every live reel must have narration whose clips match the current script hash (a changed line without new audio fails), with both audio formats present, loudness at −16 ± 1.5 LUFS, true peak at or below −1 dBTP, a pace within the clip limits and at most a few tolerated mishearings per clip; held reels get the same checks as warnings, and the run that releases them regenerates what the warnings name.
 - **Kept in sync.** Audio is regenerated whenever its script changes; unchanged lines reuse their cached takes.
 
 ### Theme — coffee

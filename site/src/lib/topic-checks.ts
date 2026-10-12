@@ -1,13 +1,17 @@
 // Mechanical checks on every finished topic's files, run on every build (QUALITY.md #35).
 // They replace what reviewers used to check by eye, so reviews can spend their effort on judgement.
 //   1. narration.json has one entry per reel step, in order, with an `answer` exactly on the predict steps;
-//   2. narration lines are speakable: no digits, symbols or code-style names (numbers and names are written as said);
+//   2. narration lines are speakable: no digits, symbols or code-style names (numbers and names are written as said),
+//      and no line longer than the voice's token budget allows (narration/voice.json → pace.max_words_per_line);
 //   3. every number in the reel's on-screen text (reel.tsx) is computed or asserted in examples.py;
 //   4. prerequisites.mdx opens with a Basics section (the topic's own terms, in brief; QUALITY.md #50), unless the topic
 //      was finished before that rule (2026-10-12) and is listed in src/topics/basics-backlog.json, which only shrinks.
 import { existsSync, readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import type { TopicMeta } from '../topics/registry';
+
+const VOICE = JSON.parse(readFileSync(resolve(process.cwd(), 'narration/voice.json'), 'utf8'));
+const MAX_WORDS: number = VOICE.pace.max_words_per_line;
 
 type Line = string | { beat: number };
 type Step = { lines: Line[]; answer?: Line[] };
@@ -83,6 +87,8 @@ export function checkTopicFiles(topics: TopicMeta[]) {
           if (text === null) return;
           const bad = text.match(UNSPEAKABLE) ?? text.match(CODE_NAME);
           if (bad) errors.push(`${t.id}: narration step ${i + 1} has "${bad[0]}" in "${text}". Write numbers, symbols and names the way they are said.`);
+          const words = text.split(/\s+/).filter(Boolean).length;
+          if (words > MAX_WORDS) errors.push(`${t.id}: narration step ${i + 1} has a ${words}-word line (limit ${MAX_WORDS}: the voice truncates longer lines, and no take of one passes). Split it: "${text.slice(0, 60)}…"`);
         }),
       );
     }
