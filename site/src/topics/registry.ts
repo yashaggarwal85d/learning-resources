@@ -180,6 +180,27 @@ export const TOPICS: TopicMeta[] = [
     handoff: '`PooledBuf` holds the `Pool` by exclusive borrow, so only one guard can exist at a time. Next: when three stages need buffers at once, do you reach for `Arc<Mutex<Pool>>`, or change who owns what?',
   },
   {
+    id: 'rust.ownership-topology-over-shared',
+    domain: 'rust-systems-engineering',
+    slug: 'rust-systems-engineering/m1-ownership-types-concurrency/ch01-ownership-moves/ownership-topology-over-shared',
+    title: 'Ownership topology over shared mutability',
+    syllabusTitle: 'Ownership topology over shared mutability',
+    kind: 'full',
+    // Built ahead of its turn: the three topics before it in Chapter 1 are not live yet.
+    status: 'held',
+    milestone: { number: 1, title: 'Ownership, Types, and Concurrency Primitives' },
+    chapter: { number: 1, title: 'Ownership and Moves', section: '1.1' },
+    minutes: 20,
+    verified: '2026-10-12',
+    introduces: ['ownership-topology', 'arc-mutex-reflex', 'tree-ownership', 'generational-arena', 'owner-task-messages', 'move-closures'],
+    // The ids are the ones the earlier topics really register (single-ownership is topic 1's `ownership`, copy-vs-clone is its
+    // `copy-trait` and `clone-cost`, and so on); `take-replace-idioms` is topic 3's id as the chapter plan names it.
+    uses: ['ownership', 'move-semantics', 'copy-trait', 'clone-cost', 'ownership-signatures', 'e0382', 'e0505', 'counting-allocator', 'drop-trait', 'raii-guard', 'take-replace-idioms'],
+    declared: ['rust-basics', 'references-basics', 'structs-enums', 'pattern-matching-basics', 'std-collections', 'traits-generics-basics', 'threads-and-channels', 'mutexes', 'closures-basics'],
+    bridge: 'Your `PooledBuf` guard lets one buffer (`Buf`) out of the pool (`Pool`) at a time, because it holds the pool by exclusive borrow, and three stages need buffers at once. Now: why `Arc<Mutex<Pool>>` is the reflex, not the answer, and the shapes of ownership that fix it across a whole program.',
+    handoff: 'Every topology still lends: `fill` borrows `&mut Buf`, `inspect` borrows `&Buf`. Next: the rule behind those loans, many shared borrows or one exclusive borrow, never both.',
+  },
+  {
     id: 'dsa.word-ram-model-assumptions',
     domain: 'data-structures-and-algorithms',
     slug: 'data-structures-and-algorithms/m1-data-structures/ch01-cost-models-amortized/word-ram-model-assumptions',
