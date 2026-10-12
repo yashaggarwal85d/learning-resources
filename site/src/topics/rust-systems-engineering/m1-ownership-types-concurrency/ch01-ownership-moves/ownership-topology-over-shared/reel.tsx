@@ -9,12 +9,11 @@ const reel: Reel = {
       title: 'Three stages, one guard at a time',
       body: (
         <>
-          Three pipeline stages each want a buffer at the same time. The guard <code>PooledBuf</code> borrows the pool exclusively, so a second guard is E0499. The pull request in review wraps the
-          pool in <code>{'Arc<Mutex<Pool>>'}</code> (shared ownership plus a lock) and every stage's counters in another, and it compiles. Was that the fix the compiler was asking for? By the end
-          you'll name the topology behind this design, count what it costs, and rebuild the pipeline three ways that need no lock at all.
+          Three stages each want a buffer at once. The guard <code>PooledBuf</code> borrows the pool exclusively, so a second guard is E0499. The pull request wraps the pool in{' '}
+          <code>{'Arc<Mutex<Pool>>'}</code>, and it compiles. Was that the fix the compiler was asking for?
         </>
       ),
-      duration: 5.0,
+      duration: 8.6,
       Visual: S.Problem,
     },
     {
@@ -22,12 +21,11 @@ const reel: Reel = {
       body: (
         <>
           How the reflex happens, with the real errors. Two exclusive loans of one pool: E0499. Give each stage a thread, and the closure borrows a pool it may outlive: E0373, whose help says{' '}
-          <em>add move</em> (a <code>move</code> closure owns what it uses; step 13). Now the pool moves into the first thread: E0382, whose note offers to clone it (three separate pools!). An{' '}
-          <code>Arc</code> shares ownership but gives no <code>&amp;mut</code>: E0596. A <code>Mutex</code> (it owns its data; <code>lock()</code> returns a guard) makes it exclusive again, at run time.
-          Every patch was local; none asked who should own the pool. On one thread the same ladder ends at <code>{'Rc<RefCell<Pool>>'}</code>, the single-threaded twins (step 8).
+          <em>add move</em> (step 13). The pool then moves into the first thread: E0382, whose note offers to clone it (three separate pools!). An <code>Arc</code> shares ownership but gives no{' '}
+          <code>&amp;mut</code>: E0596. A <code>Mutex</code> makes it exclusive again, at run time (step 5). Every patch was local; none asked who should own the pool.
         </>
       ),
-      duration: 5.6,
+      duration: 10.2,
       Visual: S.Ladder,
     },
     {
@@ -59,12 +57,12 @@ const reel: Reel = {
       title: 'Everyone owns it, so no one does',
       body: (
         <>
-          Count the owners: the pool has three (<code>main</code>, <code>fill</code>, <code>consume</code>), the counters four. Shared ownership is real ownership, so every holder can call any method at
-          any time and none is in charge, and an invariant like <em>every buffer is either in the pool or in exactly one stage</em> now lives in no single place: each lock holder must keep it. Two locks taken in different orders
-          can deadlock, so lock order becomes a rule for the whole program. And how many buffers exist? Nothing in this design decides; step 15 shows what that costs.
+          Count the owners: the pool has three (<code>main</code>, <code>fill</code>, <code>consume</code>), the counters four. Shared ownership is real ownership: every holder can call any method at
+          any time and none is in charge. An invariant like <em>every buffer is either in the pool or in exactly one stage</em> lives in no single place; each lock holder must keep it. Locks taken in
+          different orders can deadlock. How many buffers exist? Nothing here decides; step 15 shows the cost.
         </>
       ),
-      duration: 5.0,
+      duration: 4.0,
       Visual: S.Owners,
     },
     {
@@ -121,8 +119,8 @@ const reel: Reel = {
       body: (
         <>
           Pipelines are graphs, and this one has a cycle: the pool feeds <code>fill</code>, and <code>consume</code> feeds the pool. Single ownership is a tree, so a cycle can't own itself. Try it with{' '}
-          <code>Rc</code> (the single-threaded <code>Arc</code>) and <code>RefCell</code> (borrow rules checked at run time): when the program drops its handles, each count falls to 1, never to 0, and the
-          counting allocator shows 4 allocations still live. Leaks are memory-safe in Rust, so the compiler won't catch it. Chapter 4 fixes it with <code>Weak</code>; here, change who owns.
+          <code>Rc</code> (the single-threaded <code>Arc</code>) and <code>RefCell</code> (borrow rules checked at run time): when the program drops its handles, each count falls to 1, never to 0: the
+          counting allocator shows 4 allocations live. Leaks are memory-safe, so the compiler won't catch it. Chapter 4 fixes it with <code>Weak</code>; here, change who owns.
         </>
       ),
       duration: 5.0,
@@ -175,7 +173,7 @@ const reel: Reel = {
           node, for one compare per access. Generations do wrap (ours after 2^32 removals of one slot, slotmap's after 2^31): still safe, just no longer caught.
         </>
       ),
-      duration: 5.4,
+      duration: 6.0,
       Visual: S.GenCheck,
     },
     {
@@ -183,12 +181,12 @@ const reel: Reel = {
       body: (
         <>
           <code>tx</code> is the sending half of a channel (<code>mpsc</code>: a first-in, first-out queue between threads). <code>tx.send(buf)</code> takes the buffer by value, a move like any other
-          call: the 32-byte <code>Buf</code> (id, then the vector's pointer, capacity, length) crosses to the other thread, the 64 KiB heap buffer stays where it is, and <code>buf</code> is moved-from, so
-          using it after the send is E0382 (the other thread may already be changing or dropping it). The compiler offers <em>clone it</em>: a second buffer, every message. Copy the <code>u32</code> id
-          out first instead. If the receiver is gone, <code>send</code> hands the buffer back inside <code>SendError</code>.
+          call: the 32-byte <code>Buf</code> (id, then the vector's pointer, capacity, length) crosses to the other thread while the 64 KiB heap buffer stays where it is. <code>buf</code> is moved-from,
+          so using it after the send is E0382. The compiler offers <em>clone it</em>: a second buffer, every message. Copy the{' '}
+          <code>u32</code> id out first instead.
         </>
       ),
-      duration: 5.0,
+      duration: 4.2,
       Visual: S.SendMove,
     },
     {
@@ -246,12 +244,10 @@ const reel: Reel = {
       body: (
         <>
           One owner, one set of books. Every channel is first-in, first-out and every buffer takes the same path, so the owner knows which buffer must come home next and checks it: a cloned or lost buffer
-          fails at once (we tried both). With that check passing the books balance: in the pool plus out in the ring equals every buffer made, at each of 1,000 returns. Shutdown: no loop in a cycle
-          ends on its own, because each waits for a sender that is itself waiting. The owner, who knows the work is done, starts it: <code>Msg::Stop</code> behind the last buffer, arriving home last
-          (hanging up its sender works too).
+          fails at once (we tried both). With that check passing the books balance: in the pool plus out in the ring equals every buffer made, at each of 1,000 returns.
         </>
       ),
-      duration: 5.0,
+      duration: 6.5,
       Visual: S.Ledger,
     },
     {
@@ -275,7 +271,7 @@ const reel: Reel = {
           task, sharding, or restructuring to avoid the mutex; measuring that is Chapter 4. Thread-safety rules (<code>Send</code>, <code>Sync</code>, poisoning) are Chapter 6.
         </>
       ),
-      duration: 4.6,
+      duration: 5.0,
       Visual: S.RightShape,
     },
     {

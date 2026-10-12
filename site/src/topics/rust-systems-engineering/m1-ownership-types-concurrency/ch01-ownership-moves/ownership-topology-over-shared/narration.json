@@ -4,33 +4,27 @@
   "steps": [
     {
       "lines": [
-        "Your pooled buffer guard lets one buffer out of the pool at a time, because it holds the pool by exclusive borrow, and three stages need buffers at once.",
-        "Now: why an arc of mutex around the pool is the reflex, not the answer, and the shapes of ownership that fix it across a whole program.",
-        {
-          "beat": 0.4
-        },
-        "Here it is in code. A second guard on the same pool is the double exclusive borrow error.",
-        "The pull request in review wraps the pool in an arc of mutex, shared ownership plus a lock, puts every stage's counters in another, and it compiles.",
+        "The pooled buffer guard holds the pool by exclusive borrow.",
+        "A second guard on the same pool is the double exclusive borrow error.",
+        "The pull request wraps the pool in an arc of mutex, and it compiles.",
         "Was that the fix the compiler was asking for?",
         {
           "beat": 0.4
         },
-        "By the end, you'll name the topology behind this design, count what it costs, and rebuild the pipeline three ways that need no lock at all."
+        "By the end, you'll rebuild the pipeline with no locks."
       ]
     },
     {
       "lines": [
-        "Here is how the reflex happens, with the real errors.",
-        "Two exclusive loans of one pool: the double exclusive borrow error. So give each stage a thread.",
-        "Now the closure borrows a pool it may outlive. That's the closure-may-outlive error, and its help says: add move. A move closure owns what it uses; more on that later.",
-        "So the pool moves into the first thread, and the second iteration complains. That's the use-after-move error, and its note even offers to clone the pool. Three separate pools!",
-        "An arc shares ownership, an atomically counted pointer, but it gives no mutable access: the no-mutable-borrow-through-an-arc error.",
-        "So add a mutex. It owns its data, and its lock call returns a guard that unlocks when dropped. Exclusive again, but checked while the program runs.",
+        "Here's how the reflex happens.",
+        "Two exclusive loans of one pool. So give each stage a thread.",
+        "Now the closure may outlive the pool. Add move.",
+        "Now the pool moved into the first thread. Wrap it in an arc.",
+        "An arc gives no mutable access. Add a mutex.",
         {
           "beat": 0.3
         },
-        "Every patch was local. None of them asked who should own the pool.",
-        "On one thread, the same ladder ends at the single-threaded twins of arc and mutex: an R C of ref cell."
+        "Every patch was local. None asked who should own the pool."
       ]
     },
     {
@@ -48,28 +42,28 @@
     {
       "lines": [
         "Count the owners. The pool has three, main, fill and consume. The counters have four.",
-        "Shared ownership is real ownership. Every holder can call anything on the pool, at any time, and none of them is in charge.",
-        "And an invariant, like every buffer is either in the pool or in exactly one stage, now lives in no single place. Each lock holder has to keep it.",
-        "Two locks taken in different orders can deadlock, so lock order becomes a rule for the whole program.",
-        "And how many buffers exist? Nothing in this design decides. A later step shows what that costs."
+        "Every holder can call anything, any time. None is in charge.",
+        "So the invariant, every buffer is in the pool or in exactly one stage, lives in no single place.",
+        "Two locks in different orders can deadlock.",
+        "And how many buffers exist? Nothing here decides."
       ]
     },
     {
       "lines": [
-        "A mutex is an exclusive loan, checked while the program runs.",
-        "It owns its data and hands out mutable access through a guard. A second caller simply waits.",
-        "The standard library docs say it outright. If you already hold a mutable borrow of the mutex, no one else can lock it, so no locking is needed at all.",
-        "So the lock is only for when you can't name one owner.",
-        "And an arc clone doesn't copy the pool. It copies a pointer and bumps a count. Zero allocations, measured."
+        "A mutex is an exclusive loan, checked at run time.",
+        "It owns its data and hands out mutable access through a guard. A second caller waits.",
+        "Hold a mutable borrow of it, and no one can lock it: no locking needed.",
+        "The lock is only for when you can't name one owner.",
+        "An arc clone copies a pointer. Zero allocations."
       ]
     },
     {
       "lines": [
         "Now name the owner.",
-        "If the stages run one after another, give the pool to one driver. It owns the pool and each stage's counters.",
-        "Loans go down: an exclusive loan to fill, a shared loan to inspect. The buffer is handed to consume, and handed back. Results come up as plain values.",
-        "Same signatures as before, now as the whole design. A thousand messages, one allocation, no locks.",
-        "If the stages must run at the same time, a tree isn't enough. Keep watching."
+        "If the stages run in turn, one driver owns the pool and each stage's counters.",
+        "Loans go down: exclusive to fill, shared to inspect. The buffer is handed to consume and back. Results come up as plain values.",
+        "A thousand messages, one allocation, no locks.",
+        "If the stages must overlap, a tree isn't enough."
       ]
     },
     {
@@ -80,30 +74,25 @@
       ],
       "answer": [
         "Only the config.",
-        "Eight spawned threads read it for the whole run, and a spawned thread may outlive whoever would lend it. So it's an arc, and since nobody writes, no mutex at all.",
-        "Everything else has one owner at a time. The driver owns the pool, each stage owns its counters, and a buffer passed along is moved, not shared."
+        "Eight threads read it all run, and a spawned thread may outlive whoever would lend it. So it's an arc, with no mutex, since nobody writes.",
+        "Everything else has one owner at a time: the driver, each stage, and whoever holds the buffer."
       ]
     },
     {
       "lines": [
-        "Pipelines are graphs, and this one has a cycle. The pool feeds fill, and consume feeds the pool.",
-        "Single ownership is a tree, so a cycle can't own itself.",
-        "Try it anyway. Make each node own the next through a reference counted pointer.",
-        "When the program drops its own handles, every count falls to one, and never to zero. The ring keeps itself alive.",
-        "The counting allocator shows four allocations, still live. Never freed.",
-        {
-          "beat": 0.3
-        },
-        "Leaks are safe in Rust, so the compiler won't stop you. Chapter four fixes it with weak pointers. Here, we change who owns."
+        "Pipelines are graphs, and this one is a cycle.",
+        "A tree can't own a cycle. Try it with reference counted pointers.",
+        "Drop your handles and every count falls to one, never zero. The ring keeps itself alive.",
+        "Four allocations, still live. The compiler won't stop a leak.",
+        "Here, we change who owns."
       ]
     },
     {
       "lines": [
-        "Give every node one owner: an arena.",
-        "Here it's a vector of slots. The edges become handles, an index plus a generation, eight bytes, cheap to copy.",
+        "Give every node one owner: an arena, a vector of slots.",
+        "Edges become handles, an index plus a generation, eight bytes, cheap to copy.",
         "So the cycle is just data. No node owns another.",
-        "Drop the arena and everything goes at once. Zero live allocations, against four for the ring of reference counted pointers.",
-        "This is the idea behind the slot map crate.",
+        "Drop the arena and everything goes at once: zero live allocations, against four for the ring.",
         "What the generation is for, next."
       ]
     },
@@ -123,40 +112,36 @@
     {
       "lines": [
         "Slow motion, one slot's life.",
-        "Removal is three steps. Take the value out, leaving nothing behind. Bump the generation, so every older handle is stale. Put the index on the free list.",
+        "Removal is three steps. Take the value out. Bump the generation, so older handles go stale. Put the index on the free list.",
         "The next insert reuses the slot under the new generation.",
         "A lookup checks both numbers. The new handle passes. The old one gets none.",
-        "One compare per access. And generations do wrap, eventually. It's still safe. It's just no longer caught."
+        "One compare per access."
       ]
     },
     {
       "lines": [
         "Sending is moving.",
         "The sending half of a channel takes the buffer by value, like any other call.",
-        "Its small fixed part, the id and the vector's pointer, capacity and length, crosses to the other thread. The big heap buffer stays where it is.",
-        "The sender's variable is now moved-from, so using it after the send is the use-after-move error again.",
-        "The compiler offers to clone it. That would allocate and copy a second buffer, every message.",
-        "Copy the small id out before the send instead.",
-        "And if nobody is listening, you get the buffer back."
+        "The small part, id, pointer, capacity and length, crosses over. The big buffer stays.",
+        "Using the sender's variable afterwards is the use-after-move error.",
+        "Cloning would copy a second buffer, every message. Copy the id out first."
       ]
     },
     {
       "lines": [
         "Now a move closure.",
-        "A closure captures what it uses as lightly as its body allows. This one only needs a mutable borrow of the pool.",
-        "But a thread may outlive the function that started it, so a borrow is refused. That's the closure-may-outlive error.",
-        "Move makes the closure own what it uses. The thread owns the pool until it ends, and join hands it back.",
-        "It never bends the rules. Use the pool after the spawn, and you get the use-after-move error."
+        "A closure captures what it uses as lightly as it can. This one only needs a mutable borrow of the pool.",
+        "But a thread may outlive its function, so the borrow is refused: the closure-may-outlive error.",
+        "Move makes the closure own the pool. The thread owns it until it ends, and join hands it back."
       ]
     },
     {
       "lines": [
         "Now the stages run at once.",
-        "One thread owns the pool, and only that thread makes buffers. Three of them, one per stage.",
-        "Each stage receives a buffer, works on it, and sends it on. The last stage sends it home.",
-        "At every instant, each buffer has exactly one owner: a stage, the owner, or the channel it's in.",
-        "A thousand messages. Three buffers. No locks in our code. And the ids go round in order, because channels are first in, first out.",
-        "The message type is the owner's whole interface."
+        "One thread owns the pool and alone makes buffers: three, one per stage.",
+        "Each stage receives a buffer, works on it, and sends it on. The last sends it home.",
+        "At every instant, each buffer has exactly one owner: a stage, the owner, or a channel.",
+        "A thousand messages, three buffers, no locks."
       ]
     },
     {
@@ -174,31 +159,27 @@
     {
       "lines": [
         "One owner means one set of books.",
-        "Every channel is first in, first out, and every buffer takes the same path. So the owner knows which buffer must come home next, and checks it.",
-        "A cloned buffer or a lost one fails at once. We tried both.",
-        "With that check passing, the books balance. In the pool, plus out in the ring, equals every buffer ever made, at each of a thousand returns.",
-        "Shutdown is the tricky part. In a cycle, each stage waits for its sender to hang up, and that sender is waiting too. No loop ends on its own.",
-        "So the owner, the one who knows the work is done, starts it. It sends a stop message behind the last buffer, and the stop arrives home last. Simply hanging up would work too."
+        "Every channel is first in, first out, so the owner knows which buffer must come home next, and checks it.",
+        "A cloned or lost buffer fails at once. We tried both.",
+        "And the books balance: in the pool, plus out in the ring, equals every buffer made, at each of a thousand returns."
       ]
     },
     {
       "lines": [
-        "So how do you choose?",
-        "By the shape of the data, not by the error message.",
-        "A natural parent, like a request: a tree. No synchronisation at all.",
-        "A graph with cycles or removal: an arena, with one generation check per lookup.",
-        "Many concurrent users of one piece of state: an owner thread, with a channel hop per request.",
-        "Small, simple data touched briefly by many threads: a mutex is fine.",
+        "So how do you choose? By the shape of the data, not by the error message.",
+        "A natural parent: a tree, no synchronisation. A graph with cycles or removal: an arena.",
+        "Many concurrent users of one piece of state: an owner thread.",
+        "Small simple data touched briefly: a mutex is fine.",
         "First ask: who should own this?"
       ]
     },
     {
       "lines": [
         "An arc of mutex isn't wrong. Reaching for it to silence the compiler is.",
-        "The guide for the async runtime puts a map of simple data behind a mutex, keeps the critical sections short, and moves state into a task that owns it once the work needs input and output.",
-        "Read-only data shared for the whole run needs just an arc.",
-        "If a lock becomes contended, the fixes are an owner, sharding, or restructuring. Chapter four measures that.",
-        "And the thread-safety rules come in chapter six."
+        "The async runtime's guide puts a map of simple data behind a mutex, keeps critical sections short, and moves state into an owner task once the work needs input and output.",
+        "Read-only data needs just an arc.",
+        "Contended? Chapter four measures that.",
+        "Thread-safety rules: chapter six."
       ]
     },
     {
@@ -236,17 +217,15 @@
     },
     {
       "lines": [
-        "In one breath.",
         "Four shapes for one pipeline.",
-        "An arc of mutex: many owners and a lock, which by reflex hides who should own the data.",
-        "A tree: one owner lends down, and results come back.",
-        "An arena: one owner for every node, with handles as edges, and a generation to catch stale ones.",
-        "An owner thread: one owner, sent owned values, so every buffer has one owner at every instant.",
+        "An arc of mutex: many owners and a lock, hiding who should own the data.",
+        "A tree: one owner lends down. An arena: handles as edges.",
+        "An owner thread: sent owned values, one owner per buffer.",
         {
           "beat": 0.4
         },
-        "Every topology still lends. Fill borrows the buffer exclusively. Inspect borrows it shared.",
-        "Next: the rule behind those loans. Many shared borrows, or one exclusive borrow, never both."
+        "Every topology still lends: fill borrows exclusively, inspect shared.",
+        "Next: many shared borrows, or one exclusive borrow, never both."
       ]
     }
   ]
