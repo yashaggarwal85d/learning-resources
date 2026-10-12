@@ -8,16 +8,16 @@ Three tracks, each with a full syllabus:
 
 | Track | Syllabus | Status |
 |---|---|---|
-| Data Engineering | [syllabus/data-engineering.md](syllabus/data-engineering.md) | in production (hourly routine) |
-| Data Structures & Algorithms | [syllabus/data-structures-and-algorithms.md](syllabus/data-structures-and-algorithms.md) | in production (hourly routine) |
-| Rust Systems Engineering | [syllabus/rust-systems-engineering.md](syllabus/rust-systems-engineering.md) | in production (hourly routine) |
+| Data Engineering | [syllabus/data-engineering.md](syllabus/data-engineering.md) | in production (routine every 4 hours) |
+| Data Structures & Algorithms | [syllabus/data-structures-and-algorithms.md](syllabus/data-structures-and-algorithms.md) | in production (routine every 4 hours) |
+| Rust Systems Engineering | [syllabus/rust-systems-engineering.md](syllabus/rust-systems-engineering.md) | in production (routine every 4 hours) |
 
 ## The documents that run the project
 
 | File | What it is |
 |---|---|
 | [PROJECT_PLAN.md](PROJECT_PLAN.md) | The rules (animate first; one topic at a time; verified, state-of-the-art content; beautiful and memorable; a natural flow; complete coverage, proven), what every topic contains, the Definition of Done, the narration standard and the tech stack. **The plan wins any conflict.** |
-| [ROUTINE.md](ROUTINE.md) | The step-by-step procedure the hourly per-domain routines follow to make, check and ship the next topic. |
+| [ROUTINE.md](ROUTINE.md) | The step-by-step procedure the per-domain routines (every 4 hours) follow to make, check and ship the next topic. |
 | [DESIGN.md](DESIGN.md) | The house style for reel steps: canvas, text sizes, colour, motion, and what the looks review checks. |
 | [LEDGER.md](LEDGER.md) | Two lines per routine run and per audit finding: time, tokens per model, checks passed, what went wrong. The data for improving the pipeline. |
 | [AUDIT.md](AUDIT.md) | The daily audit: re-checks every reel shipped since the last audit, fixes what is wrong, and records which part of the pipeline let it through. |
@@ -93,7 +93,7 @@ Both are frozen in `site/narration/voice.json`. Details are in [site/narration/R
 
 ## How a topic is made
 
-Each domain has an hourly routine (an automated session; up to four runs of one domain and eight in all work at once, each on its own job) that follows [ROUTINE.md](ROUTINE.md). Chapters go in sequence, the topics of a chapter in parallel. A dispatcher session starts runs every hour, one per free job (`node scripts/claim.mjs open` counts them), because a routine session can't start runs itself.
+Each domain has a routine that fires every 4 hours (an automated session; up to four runs of one domain and six in all work at once; runs only narrating or shipping don't count, each on its own job) that follows [ROUTINE.md](ROUTINE.md). Chapters go in sequence, the topics of a chapter in parallel. A dispatcher session starts runs every hour, one per free job (`node scripts/claim.mjs open` counts them), because a routine session can't start runs itself.
 
 1. Before a chapter is built, one run plans it: an Opus planner writes the chapter's `CHAPTER.md` (each topic's scope, concepts introduced and used, bridge and handoff), a fresh Opus agent reviews it, and it is pushed to `main`. That plan is the contract every topic of the chapter follows, so they can all be built at once and still follow on from each other. The next chapter is planned once every topic of this one is content-final.
 2. Each other run claims the first topic of a planned chapter that no run is working on.
