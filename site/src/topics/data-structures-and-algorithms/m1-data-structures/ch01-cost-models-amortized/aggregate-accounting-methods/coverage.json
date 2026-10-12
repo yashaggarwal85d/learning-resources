@@ -1,0 +1,629 @@
+{
+  "topic": "dsa.aggregate-accounting-methods",
+  "syllabus": [
+    {
+      "clause": "dynamic-array doubling",
+      "at": [
+        {
+          "step": "One append copied half a million keys"
+        },
+        {
+          "step": "What do a million appends cost?"
+        },
+        {
+          "step": "Sixteen appends, counted in writes"
+        },
+        {
+          "step": "Add up the whole sequence"
+        },
+        {
+          "step": "Coins on cells: the accounting method"
+        },
+        {
+          "step": "The bank never goes negative"
+        },
+        {
+          "step": "Grow by a fixed amount and it is quadratic"
+        },
+        {
+          "step": "A growth factor of 1.5"
+        },
+        {
+          "step": "Where n falls between resizes"
+        },
+        {
+          "deep": "The doubling vector, both ways"
+        },
+        {
+          "deep": "Any growth factor g"
+        }
+      ]
+    },
+    {
+      "clause": "binary counter",
+      "at": [
+        {
+          "step": "A binary counter, by the total"
+        },
+        {
+          "step": "One coin on every 1 bit"
+        },
+        {
+          "deep": "The binary counter"
+        }
+      ]
+    },
+    {
+      "clause": "multipop stack",
+      "at": [
+        {
+          "step": "Multipop: each key leaves once"
+        },
+        {
+          "step": "Prove it · 3 of 3"
+        },
+        {
+          "deep": "The multipop stack"
+        }
+      ]
+    },
+    {
+      "clause": "charging cheap operations to pay for expensive ones",
+      "at": [
+        {
+          "step": "Cheap operations pay for expensive ones"
+        },
+        {
+          "step": "A third kind of promise"
+        },
+        {
+          "step": "When the bound breaks"
+        },
+        {
+          "step": "Back to the problem"
+        },
+        {
+          "deep": "Choosing a method"
+        },
+        {
+          "deep": "The definition, exactly"
+        }
+      ]
+    }
+  ],
+  "sources": [
+    {
+      "source": "Erickson, Algorithms, Lecture 9: Amortized Analysis (jeffe.cs.illinois.edu)",
+      "items": [
+        {
+          "item": "Epigraphs (Chaucer, Wimpy, Gasparini, Kintz) on paying later and averaging",
+          "at": [
+            {
+              "out": "decoration: quotations with no technical content"
+            }
+          ]
+        },
+        {
+          "item": "9.1 Incrementing a binary counter: the Increment algorithm, Θ(k) when the first k bits are 1, Θ(log n) worst case",
+          "at": [
+            {
+              "step": "A binary counter, by the total"
+            },
+            {
+              "deep": "The binary counter"
+            }
+          ]
+        },
+        {
+          "item": "9.2 Counting from 0 to n: the O(n log n) naive bound against the true Θ(n) total",
+          "at": [
+            {
+              "step": "A binary counter, by the total"
+            },
+            {
+              "deep": "The binary counter"
+            }
+          ]
+        },
+        {
+          "item": "9.2.1 Summation (aggregate) method: bit i flips ⌊n/2^i⌋ times, total exactly 2n − #1(n); amortized time T(n)/n; no probability involved",
+          "at": [
+            {
+              "step": "Add up the whole sequence"
+            },
+            {
+              "step": "A third kind of promise"
+            },
+            {
+              "step": "A binary counter, by the total"
+            },
+            {
+              "deep": "The definition, exactly"
+            },
+            {
+              "deep": "The binary counter"
+            }
+          ]
+        },
+        {
+          "item": "9.2.2 Taxation (accounting) method: a two-dollar tax per 0-to-1 flip with the credit stored on the bit; tax schedules and tight bounds; the second taxation scheme (each bit charges 2^−i per increment)",
+          "at": [
+            {
+              "step": "One coin on every 1 bit"
+            },
+            {
+              "step": "Coins on cells: the accounting method"
+            },
+            {
+              "deep": "Choosing a method"
+            },
+            {
+              "deep": "The binary counter"
+            }
+          ]
+        },
+        {
+          "item": "9.2.3 Charging method: charge clearing a bit to the earlier operation that set it",
+          "at": [
+            {
+              "deep": "Choosing a method"
+            }
+          ]
+        },
+        {
+          "item": "9.2.4 Potential method: potential equals the number of 1 bits, ĉᵢ = cᵢ + Φᵢ − Φᵢ₋₁",
+          "at": [
+            {
+              "topic": "The potential method",
+              "quote": "choosing Φ"
+            }
+          ]
+        },
+        {
+          "item": "9.3 Incrementing and decrementing: the double binary counter, taxation bound 4, potential bound 2; the aggregate method needs the sequence",
+          "at": [
+            {
+              "step": "When the bound breaks"
+            },
+            {
+              "deep": "The binary counter"
+            }
+          ]
+        },
+        {
+          "item": "9.4 Gray codes: Ehrlich's loopless increment in constant worst-case time",
+          "at": [
+            {
+              "deep": "The frontier"
+            },
+            {
+              "deep": "The binary counter"
+            }
+          ]
+        },
+        {
+          "item": "9.5 Generalities and warnings: amortization applies to any sequence of numbers; amortized bounds are not unique",
+          "at": [
+            {
+              "step": "Cheap operations pay for expensive ones"
+            },
+            {
+              "deep": "Choosing a method"
+            }
+          ]
+        },
+        {
+          "item": "Exercises 1 to 16: amortized costs of given f(k), extendable arrays, multistack, MultiPull and MultiPush queues, a queue from two stacks, and others",
+          "at": [
+            {
+              "deep": "More questions"
+            },
+            {
+              "deep": "The multipop stack"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "Blum, CMU 15-451 Lecture 7: Amortized Analysis (cs.cmu.edu/~avrim)",
+      "items": [
+        {
+          "item": "7.1 Overview: the worst case per operation can be too pessimistic when an expensive operation needs cheap ones to set it up",
+          "at": [
+            {
+              "step": "One append copied half a million keys"
+            },
+            {
+              "step": "Cheap operations pay for expensive ones"
+            }
+          ]
+        },
+        {
+          "item": "7.2 Introduction: Definition 7.1 (total cost divided by n) and the 100 cheap operations plus one of cost 100 example",
+          "at": [
+            {
+              "step": "Add up the whole sequence"
+            },
+            {
+              "deep": "The definition, exactly"
+            }
+          ]
+        },
+        {
+          "item": "7.3 Example 1, a stack as an array: grow by one costs n(n + 1)/2; doubling copies at most 2n − 1 and the total is under 3n",
+          "at": [
+            {
+              "step": "What do a million appends cost?"
+            },
+            {
+              "step": "Sixteen appends, counted in writes"
+            },
+            {
+              "step": "Add up the whole sequence"
+            },
+            {
+              "step": "Grow by a fixed amount and it is quadratic"
+            }
+          ]
+        },
+        {
+          "item": "7.4 Piggy banks and potential functions: 3 per push, the L-element copy paid by the bank, the bank never negative, seeding, and the contrast with average-case analysis",
+          "at": [
+            {
+              "step": "Coins on cells: the accounting method"
+            },
+            {
+              "step": "The bank never goes negative"
+            },
+            {
+              "step": "A third kind of promise"
+            },
+            {
+              "step": "When the bound breaks"
+            },
+            {
+              "deep": "The doubling vector, both ways"
+            },
+            {
+              "deep": "The definition, exactly"
+            }
+          ]
+        },
+        {
+          "item": "7.5 Example 2, the binary counter: one 0-to-1 flip per increment; the accounting and the aggregate proofs",
+          "at": [
+            {
+              "step": "A binary counter, by the total"
+            },
+            {
+              "step": "One coin on every 1 bit"
+            }
+          ]
+        },
+        {
+          "item": "7.6 Example 3, bit k costs 2^k to flip: O(log n) amortized, total at most n(lg n + 1)",
+          "at": [
+            {
+              "deep": "The binary counter"
+            }
+          ]
+        },
+        {
+          "item": "7.7 Example 4, an amortized dictionary built from arrays of size 2^i merged like the binary counter",
+          "at": [
+            {
+              "out": "a structure built on the binary counter, not one of this line's three examples; the logarithmic method is not part of §1.2"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "Sedgewick and Wayne, Algorithms 4th ed., booksite §1.3 Bags, Queues, and Stacks (algs4.cs.princeton.edu)",
+      "items": [
+        {
+          "item": "Stacks and queues: API and client examples (including Dijkstra's two-stack expression evaluator)",
+          "at": [
+            {
+              "topic": "Stacks, queues and deques",
+              "quote": "LIFO/FIFO semantics"
+            }
+          ]
+        },
+        {
+          "item": "Resizing-array stack: doubles when full, starts at size 1",
+          "at": [
+            {
+              "deep": "The doubling vector, both ways"
+            }
+          ]
+        },
+        {
+          "item": "Resizing-array stack: halving when less than one-quarter full",
+          "at": [
+            {
+              "topic": "The potential method",
+              "quote": "why shrinking at ½ occupancy thrashes while shrinking at ¼ does not"
+            }
+          ]
+        },
+        {
+          "item": "Linked-list implementations of stack, queue and bag",
+          "at": [
+            {
+              "out": "linked-list implementations are the containers of Ch.2, not amortized analysis"
+            }
+          ]
+        },
+        {
+          "item": "Q&A on generic arrays",
+          "at": [
+            {
+              "out": "language detail with no bearing on amortized analysis"
+            }
+          ]
+        },
+        {
+          "item": "Exercises: dynamic shrinking and queue with two stacks (constant amortized)",
+          "at": [
+            {
+              "deep": "More questions"
+            },
+            {
+              "topic": "The potential method",
+              "quote": "why shrinking at ½ occupancy thrashes while shrinking at ¼ does not"
+            }
+          ]
+        },
+        {
+          "item": "Web exercises: doubling and halving",
+          "at": [
+            {
+              "topic": "The potential method",
+              "quote": "why shrinking at ½ occupancy thrashes while shrinking at ¼ does not"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "Okasaki, Purely Functional Data Structures (PhD thesis, CMU-CS-96-177, 1996)",
+      "items": [
+        {
+          "item": "3.1 Traditional amortization: banker's method (credits on locations) and physicist's method (potential), credited to Tarjan 1985 and equivalent",
+          "at": [
+            {
+              "deep": "Choosing a method"
+            }
+          ]
+        },
+        {
+          "item": "3.2 Persistence, the problem of multiple futures: the queue used persistently costs n² + n; savings can only be spent once",
+          "at": [
+            {
+              "step": "When the bound breaks"
+            },
+            {
+              "deep": "The frontier"
+            }
+          ]
+        },
+        {
+          "item": "3.3 onwards: debits instead of credits, lazy evaluation, and the later chapters on scheduling and numerical representations",
+          "at": [
+            {
+              "topic": "Amortization under persistence",
+              "quote": "why amortized bounds break when an old version is reused"
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "independent blind agent (Sonnet), 2026-10-12: wrote the list from the syllabus line and opened sources only, without reading the repo",
+    "date": "2026-10-12",
+    "items": [
+      {
+        "item": "Amortized cost is total cost of a sequence of n operations divided by n, so it is a worst-case guarantee over any sequence, not a bound on any single operation.",
+        "at": [
+          {
+            "step": "Add up the whole sequence"
+          },
+          {
+            "deep": "The definition, exactly"
+          }
+        ]
+      },
+      {
+        "item": "Amortization is not average-case analysis: no probability or input distribution is involved, only averaging over time within one sequence.",
+        "at": [
+          {
+            "step": "A third kind of promise"
+          }
+        ]
+      },
+      {
+        "item": "Amortized also differs from expected cost of randomized algorithms: the average is over operations in a sequence, not over random outcomes of one operation.",
+        "at": [
+          {
+            "step": "A third kind of promise"
+          }
+        ]
+      },
+      {
+        "item": "Amortization pays off when the only way to get an expensive operation is to set it up with many cheap ones, so per-operation worst case is too pessimistic.",
+        "at": [
+          {
+            "step": "One append copied half a million keys"
+          },
+          {
+            "step": "Cheap operations pay for expensive ones"
+          }
+        ]
+      },
+      {
+        "item": "Aggregate method: bound the total cost T(n) of n operations directly, then divide by n; all operation types get the same amortized cost.",
+        "at": [
+          {
+            "step": "Add up the whole sequence"
+          },
+          {
+            "deep": "Choosing a method"
+          }
+        ]
+      },
+      {
+        "item": "Dynamic-array growth by a constant (+1) makes n pushes cost quadratic, giving linear amortized cost per push.",
+        "at": [
+          {
+            "step": "Grow by a fixed amount and it is quadratic"
+          }
+        ]
+      },
+      {
+        "item": "With doubling, resize costs form a geometric series 1+2+4+... at most 2n-1, so n pushes cost under 3n and the amortized push cost is under 3 (constant).",
+        "at": [
+          {
+            "step": "What do a million appends cost?"
+          },
+          {
+            "step": "Add up the whole sequence"
+          }
+        ]
+      },
+      {
+        "item": "Accounting method for doubling: charge each push $3 (1 to insert, 2 saved); at least L/2 pushes since the last resize bank enough to pay the L-element copy to size 2L.",
+        "at": [
+          {
+            "step": "Coins on cells: the accounting method"
+          },
+          {
+            "step": "The bank never goes negative"
+          }
+        ]
+      },
+      {
+        "item": "An accounting argument is valid only if the credit balance never goes negative; this invariant must be proved, otherwise the proof breaks down.",
+        "at": [
+          {
+            "step": "The bank never goes negative"
+          },
+          {
+            "step": "Prove it · 1 of 3"
+          }
+        ]
+      },
+      {
+        "item": "Accounting (taxation) charges may overcharge some operations and the amortized cost of an operation is the charge assigned to it, with tight bounds from schedules that just barely stay in the black.",
+        "at": [
+          {
+            "step": "Coins on cells: the accounting method"
+          },
+          {
+            "deep": "Choosing a method"
+          }
+        ]
+      },
+      {
+        "item": "Binary counter by aggregate: bit B[i] flips every 2^i-th increment, so n increments from zero flip fewer than 2n bits total, i.e. O(1) amortized versus Theta(log n) worst case per increment.",
+        "at": [
+          {
+            "step": "A binary counter, by the total"
+          }
+        ]
+      },
+      {
+        "item": "Binary counter by accounting: charge $2 when a bit goes 0 to 1 (one pays the flip, one is stored on the bit to pay its later reset); each increment sets exactly one bit, so amortized cost is 2.",
+        "at": [
+          {
+            "step": "One coin on every 1 bit"
+          }
+        ]
+      },
+      {
+        "item": "Both counter and array analyses assume the sequence starts from the initial (empty/zero) state; the potential must start at 0 and stay non-negative, else an initial seed must be added to the bound.",
+        "at": [
+          {
+            "step": "When the bound breaks"
+          },
+          {
+            "deep": "The definition, exactly"
+          }
+        ]
+      },
+      {
+        "item": "Multipop-style operations (MultiPull(k) removing k items) are O(1) amortized because each item can be removed only once after being added, so removals are charged to earlier pushes.",
+        "at": [
+          {
+            "step": "Multipop: each key leaves once"
+          },
+          {
+            "deep": "The multipop stack"
+          }
+        ]
+      },
+      {
+        "item": "Amortized bounds are not unique: different accounting schemes can assign different costs to the same operations, with no general reason to prefer one.",
+        "at": [
+          {
+            "step": "Cheap operations pay for expensive ones"
+          },
+          {
+            "deep": "Choosing a method"
+          }
+        ]
+      },
+      {
+        "item": "The potential method is the accounting method with the bank as a function of data structure state: amortized cost = actual cost + change in potential; for the counter, potential = number of 1 bits equals the unspent taxes.",
+        "at": [
+          {
+            "topic": "The potential method",
+            "quote": "choosing Φ"
+          }
+        ]
+      },
+      {
+        "item": "Amortization hides worst-case latency: a single operation can still be slow, and worst-case-per-operation guarantees (e.g. Ehrlich's Gray counter, O(1) worst case) are a strictly stronger property.",
+        "at": [
+          {
+            "step": "Back to the problem"
+          },
+          {
+            "topic": "Deamortization and global rebuilding",
+            "quote": "turning amortized bounds into worst-case ones"
+          },
+          {
+            "deep": "The frontier"
+          }
+        ]
+      },
+      {
+        "item": "The aggregate method fails for mixed operation sequences (e.g. increment and decrement) because the sequence is unknown; the method also breaks for naive counters, which cost Theta(k) per op alternating 2^k and 2^k-1.",
+        "at": [
+          {
+            "step": "When the bound breaks"
+          },
+          {
+            "deep": "The binary counter"
+          }
+        ]
+      },
+      {
+        "item": "Shrinking a resizing array needs hysteresis: halve only at 1/4 full, not 1/2, otherwise alternating push/pop at a boundary thrashes and loses the constant amortized bound.",
+        "at": [
+          {
+            "topic": "The potential method",
+            "quote": "why shrinking at ½ occupancy thrashes while shrinking at ¼ does not"
+          }
+        ]
+      }
+    ]
+  },
+  "gapReview": {
+    "date": "2026-10-12",
+    "by": "builder (ROUTINE section 3): every item above is mapped; the independent content review (section 4) is still to run and will replace this entry",
+    "open": []
+  }
+}

@@ -1,0 +1,270 @@
+{
+  "topic": "dsa.aggregate-accounting-methods",
+  "note": "Written to be spoken: one sentence or phrase per line; {\"beat\": s} is a deliberate pause; code is spelled the way it is said. `answer` plays after the learner answers a predict step.",
+  "steps": [
+    {
+      "lines": [
+        "Topic four priced one run on its worst input.",
+        "A data structure lives through a whole sequence of operations.",
+        {
+          "beat": 0.4
+        },
+        "Take a million appends to the vector.",
+        "One of them copies five hundred twenty four thousand keys... and yet everyone says append is big O of one.",
+        {
+          "beat": 0.3
+        },
+        "Both are true.",
+        "From here on, one unit of cost is one element write."
+      ]
+    },
+    {
+      "lines": [
+        "Count one write for each key appended, and one for each key a resize copies.",
+        {
+          "beat": 0.4
+        },
+        "What do all million appends cost together?"
+      ],
+      "answer": [
+        "About two million. Exactly, two million, forty eight thousand, five hundred seventy five.",
+        "That is a million new keys, plus about a million copies... one plus two plus four, and so on. Under three n.",
+        "Pricing every append at the worst one's price would say five hundred twenty four billion. True as an upper bound... and useless."
+      ]
+    },
+    {
+      "lines": [
+        "Here is the rule. An empty vector has capacity zero. The first append allocates one.",
+        "An append to a full vector allocates twice the capacity, copies every key, then writes the new one.",
+        {
+          "beat": 0.3
+        },
+        "Sixteen appends cost one, two, three, one, five, one, one, one, nine... and then seven ones.",
+        "Total, thirty one."
+      ]
+    },
+    {
+      "lines": [
+        "This is the aggregate method.",
+        "Bound the total cost of any n operations... then divide by n.",
+        {
+          "beat": 0.3
+        },
+        "The writes cost n. The copies are one plus two plus four, and so on, each resize copying at most half as many as the next.",
+        "So fewer than two n in all.",
+        {
+          "beat": 0.3
+        },
+        "The total is under three n. Big O of one, amortized, per append."
+      ]
+    },
+    {
+      "lines": [
+        "Topic one separated the average case, over inputs, from the expected case, over coins.",
+        "Amortized is neither. Nothing is random.",
+        {
+          "beat": 0.3
+        },
+        "It is a worst case bound on the total of a whole sequence... divided by its length.",
+        "Every n appends from empty cost less than three n. And one of them can still cost n."
+      ]
+    },
+    {
+      "lines": [
+        "Now the accounting method.",
+        "Charge each append three.",
+        "One pays for its write. One stays on the new key, as a coin. And one goes on a key in the old half, which has none.",
+        {
+          "beat": 0.3
+        },
+        "When the row fills, every key holds a coin... exactly what its copy will cost.",
+        "The next append has its copy paid, key by key."
+      ]
+    },
+    {
+      "lines": [
+        "Write c i for the actual cost of operation i, and c hat i for its charge.",
+        "The proof needs the charges to cover the costs after every operation... not just at the end.",
+        {
+          "beat": 0.3
+        },
+        "The bank, charges minus costs, never drops below zero.",
+        "Then n appends cost at most three n.",
+        "A bank that can drift negative proves nothing."
+      ]
+    },
+    {
+      "lines": [
+        "Why multiply?",
+        "Grow by one slot, and append i copies i minus one keys. So n appends cost about n squared over two. Half a trillion writes, at a million.",
+        {
+          "beat": 0.3
+        },
+        "A step of a thousand slots divides that by about a thousand... and it is still quadratic.",
+        "Growing by a constant factor makes the copies a geometric series, and that sums to big O of n."
+      ]
+    },
+    {
+      "lines": [
+        "Doubling copies at most about two keys per append.",
+        "A growth factor of one point five leaves less empty space after each resize.",
+        {
+          "beat": 0.5
+        },
+        "At most how many copies per append does it cost?"
+      ],
+      "answer": [
+        "About three.",
+        "Just after a resize that copied c keys, all the copies so far add up to about c times g over g minus one. And n is about c.",
+        "For doubling that is two. For one point five, it is three.",
+        {
+          "beat": 0.3
+        },
+        "Add the write, and the accounting charge is one plus g over g minus one. Three for doubling, four for one point five.",
+        "The space saved: right after a resize, a third of the capacity is empty, not a half."
+      ]
+    },
+    {
+      "lines": [
+        "About g over g minus one is a peak. It is reached just after a resize.",
+        "Just before the next resize, it falls to about one over g minus one.",
+        {
+          "beat": 0.3
+        },
+        "At a million appends, doubling has copied only about one point oh five keys per append. Not two.",
+        "And one point five has copied about two point one.",
+        {
+          "beat": 0.3
+        },
+        "So compare a measurement against the whole curve... not one number."
+      ]
+    },
+    {
+      "lines": [
+        "A binary counter, counting up from zero.",
+        "An increment turns the trailing ones into zeros, and the next zero into a one. So one increment can flip every bit. The sixteenth flips five.",
+        {
+          "beat": 0.5
+        },
+        "How many bits do sixteen increments flip in total?"
+      ],
+      "answer": [
+        "Thirty one.",
+        "Bit zero flips on every increment. Bit one, on every second. Bit i, on every two to the i th. Sixteen plus eight plus four plus two plus one.",
+        {
+          "beat": 0.3
+        },
+        "For any n, the total is under two n. So, big O of one amortized, against theta of log n for the worst single increment.",
+        "And the vector's sixteen appends also cost thirty one. At a power of two, both are two n minus one."
+      ]
+    },
+    {
+      "lines": [
+        "Accounting for the counter. Charge two per increment.",
+        "Every increment sets exactly one bit from zero to one. One unit pays for that. The other stays on the bit, as a coin.",
+        {
+          "beat": 0.3
+        },
+        "A carry resets bits that are ones, and each one has its own coin.",
+        "So the coins always equal the number of ones. The bank never goes negative."
+      ]
+    },
+    {
+      "lines": [
+        "Now a stack with push, pop, and multi-pop of k, which removes the top k keys, or all of them if there are fewer.",
+        "One multi-pop can cost almost n. So n operations look like n squared.",
+        {
+          "beat": 0.3
+        },
+        "But each key is popped at most once after it is pushed. The total is at most twice the pushes.",
+        "Charge a push two, and a pop or multi-pop nothing. Each key carries the coin for its own removal."
+      ]
+    },
+    {
+      "lines": [
+        "The same move, three times.",
+        "An expensive operation can only follow cheap ones that set it up. So each cheap one pays a little extra in advance.",
+        {
+          "beat": 0.3
+        },
+        "The aggregate method needs one total that covers every sequence. Charge per operation when operations differ, like push and multi-pop.",
+        "And the bounds you get are not unique."
+      ]
+    },
+    {
+      "lines": [
+        "The bound needs the cheap operations first, in one history, from the start state.",
+        {
+          "beat": 0.3
+        },
+        "Add decrement, and a counter on zero one one one one flips five bits on every operation.",
+        "Or append again and again to one old, full version of the vector... and every append copies all sixteen keys.",
+        "A later chapter returns to this, for persistent structures."
+      ]
+    },
+    {
+      "lines": [
+        "Back to the million appends.",
+        "They wrote about two million elements. Under three n.",
+        {
+          "beat": 0.3
+        },
+        "When append five hundred twenty four thousand, two hundred eighty nine arrived, the bank held exactly enough coins for its copies.",
+        {
+          "beat": 0.3
+        },
+        "But the spike is still one operation. A request waiting on it, waits. That is deamortization's problem.",
+        "And a vector that also shrinks has nowhere to keep the coins for its shrink."
+      ]
+    },
+    {
+      "lines": [
+        "Prove it. Part one.",
+        "A teammate charges two per append, not three. One for the write, and one coin on the new key.",
+        {
+          "beat": 0.4
+        },
+        "With doubling from empty, at which append does the bank first go negative?"
+      ],
+      "answer": [
+        "The fifth.",
+        "The costs add up to twelve, against ten charged.",
+        "The coin on each new key pays its own copy. But every resize also copies the old half, and that holds no coins.",
+        {
+          "beat": 0.3
+        },
+        "At each power of two the bank is back to plus one. So checking only at the end hides the failure."
+      ]
+    },
+    {
+      "lines": [
+        "Prove it. Part two.",
+        "With a growth factor of one point five, the last resize before the millionth append comes at append six hundred ninety nine thousand, nine hundred thirteen, and copies six hundred ninety nine thousand, nine hundred twelve keys.",
+        {
+          "beat": 0.4
+        },
+        "Estimate the total copies after a million appends."
+      ],
+      "answer": [
+        "About two point one million.",
+        "The copies up to that resize tile to about three times the last one. And none follow it before the millionth append.",
+        "Per append, that is two point one. Between the trough of two and the peak of three."
+      ]
+    },
+    {
+      "lines": [
+        "Prove it. Part three.",
+        "Someone adds multi-push of k, which pushes k keys in one operation.",
+        {
+          "beat": 0.4
+        },
+        "Is every stack operation still big O of one, amortized?"
+      ],
+      "answer": [
+        "No.",
+        "A thousand operations, alternating multi-push of a thousand and multi-pop of a thousand, cost a million. A thousand each.",
+        "Charging two per key still covers every pop, but then multi-push is charged two k. The bound was per key... and an operation that creates k keys at once breaks it per operation."
+      ]
+    }
+  ]
+}

@@ -84,4 +84,24 @@ export const TOPICS: TopicMeta[] = [
     bridge: 'Data Structures & Algorithms starts with the language its costs are written in: what a bound claims, which case it is about, and what it leaves out.',
     handoff: 'Next: the word-RAM model, the machine these step counts quietly assume, and what it hides.',
   },
+  {
+    id: 'dsa.aggregate-accounting-methods',
+    domain: 'data-structures-and-algorithms',
+    slug: 'data-structures-and-algorithms/m1-data-structures/ch01-cost-models-amortized/aggregate-accounting-methods',
+    title: 'Aggregate and accounting methods',
+    syllabusTitle: 'Aggregate and accounting methods',
+    kind: 'full',
+    // Built in parallel with the other topics of Chapter 1: it waits until every topic before it is live.
+    status: 'held',
+    milestone: { number: 1, title: 'Data Structures' },
+    chapter: { number: 1, title: 'Cost Models and Amortized Analysis', section: '1.2' },
+    minutes: 12,
+    verified: '2026-10-12',
+    introduces: ['amortized-cost', 'aggregate-method', 'accounting-method', 'dynamic-array-doubling', 'growth-factor', 'binary-counter', 'multipop-stack'],
+    uses: ['big-o-theta-omega', 'best-worst-average-case', 'expected-vs-average', 'word-ram', 'binary-numbers', 'stacks', 'geometric-series'],
+    // Assumed, not taught first in this domain: listed in the Prerequisites panel.
+    declared: ['binary-numbers', 'stacks', 'geometric-series'],
+    bridge: 'Here is that sequence. One append to a dynamic array can cost Θ(n), because it may copy everything; any n appends from empty cost less than 3n together. Here is how to count it.',
+    handoff: 'Credits on elements work while you can see where to store them. When the table can shrink too, keep the savings as one number for the whole structure: the potential.',
+  },
 ];
