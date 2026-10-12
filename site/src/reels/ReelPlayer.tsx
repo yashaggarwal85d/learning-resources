@@ -260,7 +260,6 @@ export default function ReelPlayer({ meta, reel, active, startStep, next, onPlay
     }
   };
 
-  const showExplanation = useCallback((el: HTMLDivElement | null) => el?.scrollIntoView({ block: 'nearest', behavior: 'smooth' }), []);
   const Visual = cur.Visual;
   const p = cur.duration > 0 ? clamp(t / cur.duration) : 1;
 
@@ -355,7 +354,6 @@ export default function ReelPlayer({ meta, reel, active, startStep, next, onPlay
                   initial={{ opacity: 0, y: 8 }}
                   animate={{ opacity: 1, y: 0 }}
                   className="reel-body mt-3 rounded-xl border border-caramel/30 bg-caramel/10 p-3 text-[0.86rem] leading-relaxed text-crema sm:p-4 sm:text-[0.95rem]"
-                  ref={showExplanation} // on a phone the options fill the caption: bring the explanation into view
                 >
                   <p className="eyebrow mb-1 text-[0.6rem] text-caramel">
                     {cur.predict.options[answer].correct ? 'Right' : 'Not quite'}

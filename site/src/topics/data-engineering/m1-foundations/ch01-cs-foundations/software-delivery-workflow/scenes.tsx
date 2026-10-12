@@ -2,8 +2,15 @@ import type { ReactNode } from 'react';
 import type { StepCtx } from '../../../../../reels/types';
 import { Code } from '../../../../../reels/Code';
 import { clamp, easeInOut, easeOut, easeOutBack, lerp, seg } from '../../../../../reels/anim';
-import { C, Svg, T } from '../../../../../reels/kit';
+import { C, T } from '../../../../../reels/kit';
 import { RefresherList } from '../refreshers';
+
+/** The kit's Svg, plus `auto`: the height the width implies, so a line of text above it stays next to it in a Stack. */
+const Svg = ({ label, h = 360, fill = false, auto = false, children }: { label: string; h?: number; fill?: boolean; auto?: boolean; children: ReactNode }) => (
+  <svg viewBox={`0 0 600 ${h}`} className={fill ? 'min-h-0 w-full flex-1' : auto ? 'h-auto min-h-0 w-full' : 'h-full w-full'} role="img" aria-label={label}>
+    {children}
+  </svg>
+);
 
 // Every number shown here comes from examples.sh and is asserted in examples.py.
 // The reel's frame is the four stages a change passes (review, tests, CI, release), drawn as a one-line strip.
