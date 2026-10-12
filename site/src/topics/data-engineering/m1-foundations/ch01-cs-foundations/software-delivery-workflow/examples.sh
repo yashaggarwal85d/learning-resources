@@ -1,0 +1,423 @@
+#!/usr/bin/env bash
+# Every example in the "Software delivery workflow" refresher, run for real in a temporary directory.
+# Run: bash examples.sh   (examples.py runs it and re-asserts every number the reel shows).
+# Needs bash, git, jq, awk, diff, python3 with pip, and network access to PyPI once (it installs pytest
+# from a hash-locked requirements file, which is itself one of the examples). Writes only to a temp dir.
+# KEEP=<dir> bash examples.sh  also copies the lab kit (clean.py, tests, gate.yml, lock file, data) to <dir>.
+set -euo pipefail
+export LC_ALL=C PYTHONDONTWRITEBYTECODE=1 PIP_DISABLE_PIP_VERSION_CHECK=1 PIP_NO_INPUT=1 PIP_ROOT_USER_ACTION=ignore
+export GIT_CONFIG_GLOBAL=/dev/null GIT_CONFIG_NOSYSTEM=1
+export GIT_AUTHOR_NAME=Ada GIT_AUTHOR_EMAIL=ada@example.com GIT_COMMITTER_NAME=Ada GIT_COMMITTER_EMAIL=ada@example.com
+W=$(mktemp -d); trap 'rm -rf "$W"' EXIT
+check() { [ "$1" = "$2" ] || { echo "FAIL: $3: got '$1', expected '$2'" >&2; exit 1; }; }
+out() { echo "$1=$2"; }
+need() { command -v "$1" > /dev/null || { echo "FAIL: $1 is not installed" >&2; exit 1; }; }
+for t in bash git jq awk sort uniq diff python3 sha256sum; do need "$t"; done
+out v_bash "${BASH_VERSION}"
+out v_git "$(git --version | awk '{print $3}')"
+out v_jq "$(jq --version)"
+out v_python "$(python3 -c 'import platform; print(platform.python_version())')"
+out v_pip "$(python3 -m pip --version | awk '{print $2}')"
+
+# The lab kit lives in $K; every command below runs from it, as the CI job would from a checkout.
+K="$W/kit"; mkdir -p "$K/tests"; cd "$K"
+# A `python` on PATH, as setup-python gives the CI job, so gate.yml's commands run here unchanged.
+mkdir -p "$W/bin"; ln -s "$(command -v python3)" "$W/bin/python"; export PATH="$W/bin:$PATH"
+
+# ---- 1 · The data and the script: topic 3's, byte for byte -------------------------------------------
+# 10,000 order events; 6,000 paid, 2,500 shipped, 1,300 cancelled, 200 refunded; 40 spelt badly.
+cat > gen_events.py << 'PY'
+import json, random, sys
+rng = random.Random(1)
+statuses = ['paid'] * 6000 + ['shipped'] * 2500 + ['cancelled'] * 1300 + ['refunded'] * 200
+rng.shuffle(statuses)
+dirty = {'paid': ('Paid', 25), 'shipped': ('SHIPPED ', 10), 'refunded': (' refunded', 5)}
+for status, (spelt, n) in dirty.items():
+    idx = [i for i, s in enumerate(statuses) if s == status][:n]
+    for i in idx:
+        statuses[i] = spelt
+with open(sys.argv[1], 'w') as f:
+    for i, status in enumerate(statuses, 1):
+        f.write(json.dumps({'order_id': i, 'customer_id': rng.randint(1, 900), 'status': status,
+                            'amount': round(rng.uniform(5, 300), 2), 'event_time': f'2026-01-01T{i % 24:02d}:{i % 60:02d}:00Z'}) + '\n')
+PY
+python3 gen_events.py order_events.jsonl
+cat > clean.py << 'PY'
+#!/usr/bin/env python3
+import json, sys
+
+
+def clean(value):
+    return value.strip().lower()
+
+
+def main(path):
+    try:
+        f = open(path)
+    except OSError:
+        print(f'clean.py: cannot open {path}', file=sys.stderr)
+        return 1
+    counts = {}
+    with f:
+        for line in f:
+            status = clean(json.loads(line)['status'])
+            counts[status] = counts.get(status, 0) + 1
+    for status in sorted(counts):
+        print(f'{counts[status]:7d} {status}')
+    return 0
+
+
+if __name__ == '__main__':
+    sys.exit(main(sys.argv[1]))
+PY
+out events "$(wc -l < order_events.jsonl | tr -d ' ')"; check "$(wc -l < order_events.jsonl | tr -d ' ')" 10000 'ten thousand events'
+out data_sha256_12 "$(sha256sum order_events.jsonl | cut -c1-12)"
+# The planted bug: topic 2's commit 731, "clean: simplify normalisation", which drops .strip().
+mkdir -p "$W/bad"; sed 's/value.strip().lower()/value.lower()/' clean.py > "$W/bad/clean.py"
+check "$(grep -c 'value.lower()' "$W/bad/clean.py")" 1 'the bad copy differs in one line'
+
+# ---- 2 · Tools from a lock file with hashes -------------------------------------------------------------
+# Resolved once with: pip install --dry-run --ignore-installed --only-binary :all: --report report.json pytest==9.1.1
+# (pip 24.0, Python 3.11; every wheel is py3-none-any). Each line: an exact == pin plus the sha256 of the wheel.
+cat > requirements-dev.lock << 'REQ'
+# Test tools for the refresher gate. Install with:
+#   python -m pip install --require-hashes --only-binary :all: -r requirements-dev.lock
+pytest==9.1.1 \
+    --hash=sha256:37a86b45efb9a47a61a36449063e8e18d0cab3161329fc099eb21783169c4f0c
+iniconfig==2.3.1 \
+    --hash=sha256:9121e2c1fdb355232495be3194c8dfe87ccc2d5dee45947b78e68f499790d7a7
+packaging==26.3 \
+    --hash=sha256:d7193f7c8e4e93f444fde0262bf90af30e16fa0ad0ad44cb553c87339b23cd1c
+pluggy==1.6.0 \
+    --hash=sha256:e920276dd6813095e9377c0bc5566d94c932c33b27a3e3945d8389c374dd4746
+pygments==2.21.0 \
+    --hash=sha256:2363c69b61c4a97c838da3b130dcd6468f4848992b21a82f2a63ec34377137d9
+REQ
+# --target keeps the tools out of any system environment; PYTHONPATH points python at them.
+python3 -m pip install --quiet --require-hashes --only-binary :all: --target "$W/tools" -r requirements-dev.lock
+export PYTHONPATH="$W/tools"
+out v_pytest "$(python3 -m pytest --version 2>&1 | awk '{print $2}')"
+check "$(python3 -m pytest --version 2>&1 | awk '{print $2}')" 9.1.1 'pytest from the lock'
+out lock_pins "$(grep -c '==' requirements-dev.lock)"
+
+# ---- 3 · A unit test pins the bug ---------------------------------------------------------------------
+cat > tests/test_clean.py << 'PY'
+import pytest
+
+from clean import clean
+
+
+# The 40 bad spellings in order_events.jsonl, one case each: each runs (and fails) on its own.
+@pytest.mark.parametrize('raw, expected', [
+    ('paid', 'paid'),
+    ('Paid', 'paid'),
+    ('SHIPPED ', 'shipped'),
+    (' refunded', 'refunded'),
+])
+def test_clean_status(raw, expected):
+    assert clean(raw) == expected
+
+
+def test_clean_email():  # topic 2's oracle, as a pytest test
+    assert clean('  Ada@Example.COM ') == 'ada@example.com'
+PY
+cat > tests/test_main.py << 'PY'
+import pytest
+
+from clean import main
+
+
+@pytest.fixture
+def events(tmp_path):  # a fresh three-line file for every test that asks for it
+    path = tmp_path / 'events.jsonl'
+    path.write_text('{"status": "Paid"}\n{"status": " refunded"}\n{"status": "paid"}\n')
+    return path
+
+
+def test_main_counts(events, capsys):
+    assert main(str(events)) == 0
+    assert capsys.readouterr().out == '      2 paid\n      1 refunded\n'
+PY
+PT() { python3 -m pytest -q -p no:cacheprovider "$@"; }
+set +e; PT tests > "$W/good.txt" 2>&1; good_rc=$?; set -e
+out pytest_good_rc "$good_rc"; check "$good_rc" 0 'pytest exits 0 when every test passes'
+out pytest_good "$(tail -1 "$W/good.txt" | sed 's/ in [0-9.]*s.*//')"
+# The same tests against the bad clean.py: does the test actually fail when the code is broken?
+cp -r tests "$W/bad/"; cd "$W/bad"
+set +e; PT tests > "$W/bad.txt" 2>&1; bad_rc=$?; set -e; cd "$K"
+out pytest_bad_rc "$bad_rc"; check "$bad_rc" 1 'pytest exits 1 when a test fails'
+out pytest_bad "$(tail -1 "$W/bad.txt" | sed 's/ in [0-9.]*s.*//')"
+out pytest_bad_ids "$(grep '^FAILED' "$W/bad.txt" | sed 's/^FAILED tests\///; s/ - .*//' | tr '\n' ';' | sed 's/;$//')"
+mkdir -p "$W/empty"; set +e; (cd "$W/empty" && PT .) > /dev/null 2>&1; none_rc=$?; set -e
+out pytest_none_rc "$none_rc"; check "$none_rc" 5 'no tests collected exits 5'
+# A flaky test: it depends on set order, which depends on the string hash seed (random per process).
+mkdir -p "$W/flaky"; cp clean.py "$W/flaky/"
+cat > "$W/flaky/test_flaky.py" << 'PY'
+from clean import clean
+
+ROWS = ['Paid', ' refunded', 'paid']
+
+
+def test_statuses():  # written after one run that happened to pass
+    assert list({clean(r) for r in ROWS}) == ['paid', 'refunded']
+
+
+def test_statuses_sorted():
+    assert sorted({clean(r) for r in ROWS}) == ['paid', 'refunded']
+PY
+flaky_pass=0; sorted_pass=0; pattern=''
+for seed in $(seq 0 19); do
+  if (cd "$W/flaky" && PYTHONHASHSEED=$seed PT test_flaky.py::test_statuses > /dev/null 2>&1); then flaky_pass=$((flaky_pass + 1)); pattern="${pattern}P"; else pattern="${pattern}F"; fi
+  (cd "$W/flaky" && PYTHONHASHSEED=$seed PT test_flaky.py::test_statuses_sorted > /dev/null 2>&1) && sorted_pass=$((sorted_pass + 1))
+done
+out flaky_pass_of_20 "$flaky_pass"; out sorted_pass_of_20 "$sorted_pass"
+out flaky_pattern "$pattern"   # pass (P) or fail (F) for PYTHONHASHSEED=0..19; same code every time
+check "$sorted_pass" 20 'the sorted version passes under every seed'
+[ "$flaky_pass" -gt 0 ] && [ "$flaky_pass" -lt 20 ] || { echo "FAIL: flaky test should pass for some seeds only" >&2; exit 1; }
+
+# ---- 4 · CI: a chain of exit statuses ---------------------------------------------------------------
+# GitHub runs each `run:` in a new shell: `bash -e {0}` when no shell is set, `bash --noprofile --norc -eo pipefail {0}`
+# with `shell: bash`. Run the same step file both ways.
+printf 'jq -r .status missing.jsonl | sort | uniq -c\n' > "$W/step_pipe.sh"
+set +e
+bash -e "$W/step_pipe.sh" > /dev/null 2>&1; default_rc=$?
+bash --noprofile --norc -eo pipefail "$W/step_pipe.sh" > /dev/null 2>&1; explicit_rc=$?
+set -e
+out step_default_shell_rc "$default_rc"; check "$default_rc" 0 'no shell set: the failed jq is hidden'
+out step_shell_bash_rc "$explicit_rc"; check "$explicit_rc" 2 'shell: bash: pipefail reports jq'"'"'s 2'
+# A multi-line run: lines share one shell, and -e stops at the first failing line.
+printf 'echo line1\nfalse\necho line3\n' > "$W/step_lines.sh"
+set +e; lines_out=$(bash -e "$W/step_lines.sh" 2>&1); lines_rc=$?; set -e
+out multiline_rc "$lines_rc"; check "$lines_rc" 1 'set -e stops at the failing line'
+out multiline_printed "$(echo "$lines_out" | tr '\n' ' ' | sed 's/ $//')"; check "$lines_out" line1 'line 3 never ran'
+# With pipefail, an early `| head` can fail the step: seq dies of SIGPIPE (128 + 13 = 141). Topic 3 executed this too.
+set +e; bash --noprofile --norc -eo pipefail -c 'seq 1 100000 | head -1 > /dev/null'; head_rc=$?; set -e
+out pipefail_head_rc "$head_rc"
+
+# ---- 5 · The gate: one job, two oracles -------------------------------------------------------------
+# The workflow file. Its run lines are executed below exactly as written (grep checks they match).
+mkdir -p .github/workflows
+cat > .github/workflows/gate.yml << 'YML'
+name: refresher-gate
+on:
+  push:
+  pull_request:
+jobs:
+  gate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    defaults:
+      run:
+        shell: bash            # bash --noprofile --norc -eo pipefail {0}: a failing pipe stage fails the step
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-python@v7
+        with:
+          python-version: '3.13'
+          cache: pip
+          cache-dependency-path: requirements-dev.lock
+      - name: Install the locked test tools
+        run: python -m pip install --require-hashes --only-binary :all: -r requirements-dev.lock
+      - name: Oracle 1, the unit tests
+        run: python -m pytest -q
+      - name: Oracle 2, the shell pipeline must equal the script
+        run: |
+          jq -r .status order_events.jsonl | awk '{ $1 = $1; print tolower($0) }' | LC_ALL=C sort | uniq -c > shell.txt
+          python clean.py order_events.jsonl > py.txt
+          diff shell.txt py.txt
+YML
+STEP_TEST='python -m pytest -q'
+STEP_DIFF=$(sed -n '/Oracle 2/,$p' .github/workflows/gate.yml | sed -n 's/^          //p')
+for s in "$STEP_TEST" "jq -r .status order_events.jsonl" "diff shell.txt py.txt" "python -m pip install --require-hashes --only-binary :all: -r requirements-dev.lock"; do
+  grep -qF -- "$s" .github/workflows/gate.yml || { echo "FAIL: gate.yml lacks: $s" >&2; exit 1; }
+done
+check "$(grep -c 'shell: bash' .github/workflows/gate.yml)" 1 'one shell: bash default for every step'
+# job DIR: run the two oracle steps as GitHub would (one new shell each, explicit bash), stop at the first failure.
+job() {
+  local dir=$1 n=0 rc=0 s; local -a steps=("$STEP_TEST" "$STEP_DIFF")
+  for s in "${steps[@]}"; do
+    n=$((n + 1))
+    printf '%s\n' "$s" > "$W/step.sh"
+    set +e; (cd "$dir" && bash --noprofile --norc -eo pipefail "$W/step.sh" > /dev/null 2>&1); rc=$?; set -e
+    [ "$rc" -eq 0 ] || { echo "fail step $n rc $rc skipped $(( ${#steps[@]} - n ))"; return; }
+  done
+  echo "pass steps $n"
+}
+cp order_events.jsonl "$W/bad/"
+out job_good "$(job "$K")"; check "$(job "$K")" 'pass steps 2' 'both oracles agree: good'
+out job_bad "$(job "$W/bad")"; check "$(job "$W/bad")" 'fail step 1 rc 1 skipped 1' 'the test fails, the diff step never runs'
+# Both oracles on their own, on the good and the bad clean.py: they agree each time.
+oracle_test() { (cd "$1" && python3 -m pytest -q -p no:cacheprovider tests/test_clean.py > /dev/null 2>&1); echo $?; }
+oracle_diff() { (cd "$1" && printf '%s\n' "$STEP_DIFF" > "$W/d.sh" && bash --noprofile --norc -eo pipefail "$W/d.sh" > /dev/null 2>&1); echo $?; }
+set +e; ag="$(oracle_test "$K") $(oracle_diff "$K")"; ab="$(oracle_test "$W/bad") $(oracle_diff "$W/bad")"; set -e
+out agree_good "$ag"; check "$ag" '0 0' 'good: test 0, diff 0'
+out agree_bad "$ab"; check "$ab" '1 1' 'bad: test 1, diff 1'
+out bad_py_groups "$(cd "$W/bad" && python3 clean.py order_events.jsonl | wc -l | tr -d ' ')"
+check "$(cd "$W/bad" && python3 clean.py order_events.jsonl | wc -l | tr -d ' ')" 6 'without strip: 6 groups, not 4'
+# What the diff step shows on the bad commit: refunded 200 -> 195 + 5 ' refunded', shipped 2500 -> 2490 + 10 'shipped '.
+out bad_py "$(cd "$W/bad" && python3 clean.py order_events.jsonl | tr -s ' ' | sed 's/^ //' | tr '\n' ';' | sed 's/;$//')"
+check "$(cd "$W/bad" && python3 clean.py order_events.jsonl | grep -c '^ *195 refunded$')" 1 '195 refunded'
+check "$(cd "$W/bad" && python3 clean.py order_events.jsonl | grep -c '^ *2490 shipped$')" 1 '2490 shipped'
+out bad_diff_lines "$(cd "$W/bad" && diff shell.txt py.txt | grep -c '^[<>]' || true)"
+# When the oracles disagree: one event whose status starts with a no-break space (U+00A0). Python's strip() removes it,
+# awk's field splitting (space, tab, newline) doesn't. The unit tests still pass; the diff fails; the gate goes red.
+mkdir -p "$W/nbsp"; cp -r clean.py tests order_events.jsonl "$W/nbsp/"
+python3 -c "import json; print(json.dumps({'order_id': 10001, 'customer_id': 1, 'status': ' paid', 'amount': 9.99, 'event_time': '2026-01-01T00:00:00Z'}))" >> "$W/nbsp/order_events.jsonl"
+set +e; an="$(oracle_test "$W/nbsp") $(oracle_diff "$W/nbsp")"; set -e
+out agree_nbsp "$an"; check "$an" '0 1' 'no-break space: tests pass, diff fails'
+out nbsp_job "$(job "$W/nbsp")"; check "$(job "$W/nbsp")" 'fail step 2 rc 1 skipped 0' 'the job fails at the diff step'
+out nbsp_py_paid "$(cd "$W/nbsp" && python3 clean.py order_events.jsonl | grep -c '^ *6001 paid$')"
+out nbsp_shell_groups "$(wc -l < "$W/nbsp/shell.txt" | tr -d ' ')"
+
+# ---- 6 · Bisect with each oracle over topic 2's history: the same commit --------------------------------
+# The history is topic 2's, built by the same fast-import stream, so the culprit is again 784d178.
+cd "$W"; git init -q -b main big; cd big; git config advice.detachedHead false
+N=1000; BAD=731
+{
+  for i in $(seq 1 $N); do
+    msg="change $i"; body='def clean(email):\n    return email.strip().lower()\n'
+    [ "$i" -ge $BAD ] && body='def clean(email):\n    return email.lower()\n'
+    [ "$i" -eq $BAD ] && msg='clean: simplify normalisation'
+    content=$(printf "$body")
+    printf 'commit refs/heads/main\nmark :%d\ncommitter Ada <ada@example.com> 1767268800 +0000\ndata %d\n%s\n' "$i" $((${#msg} + 1)) "$msg"
+    [ "$i" -gt 1 ] && printf 'from :%d\n' $((i - 1))
+    printf 'M 100644 inline clean.py\ndata %d\n%s\n' $((${#content} + 1)) "$content"
+    printf 'M 100644 inline CHANGES\ndata %d\n%s\n' $((${#i} + 1)) "$i"
+  done
+} | git fast-import --quiet
+git checkout -q main
+ROOT1=$(git rev-list --max-parents=0 HEAD)
+# Both oracles live outside the repository. The diff oracle counts with the checked-out clean() (topic 3's main).
+mkdir -p "$W/oracle"; cp "$K/tests/test_clean.py" "$W/oracle/"
+( cd "$K" && jq -r .status order_events.jsonl | awk '{ $1 = $1; print tolower($0) }' | LC_ALL=C sort | uniq -c ) > "$W/oracle/shell.txt"
+cat > "$W/oracle/count.py" << 'PY'
+import json, sys
+sys.path.insert(0, '.')
+from clean import clean
+counts = {}
+for line in open(sys.argv[1]):
+    status = clean(json.loads(line)['status'])
+    counts[status] = counts.get(status, 0) + 1
+for status in sorted(counts):
+    print(f'{counts[status]:7d} {status}')
+PY
+bis() { git bisect start HEAD "$ROOT1" > /dev/null; git bisect run sh -c "$1" > "$W/bis.txt" 2>&1
+        echo "$(git log -1 --format='%h' refs/bisect/bad) $(git rev-list --count refs/bisect/bad) $(grep -c '^running ' "$W/bis.txt")"
+        git bisect reset > /dev/null 2>&1; }
+by_test=$(bis "python3 -m pytest -q -p no:cacheprovider $W/oracle/test_clean.py")
+by_diff=$(bis "python3 $W/oracle/count.py $K/order_events.jsonl | diff -q $W/oracle/shell.txt - > /dev/null")
+out bisect_by_test "$by_test"; out bisect_by_diff "$by_diff"
+check "$by_test" '784d178 731 10' 'pytest oracle: 784d178, commit 731, 10 runs'
+check "$by_diff" "$by_test" 'the diff oracle names the same commit'
+
+# ---- 7 · Version numbers: the bump, the order, the ranges ---------------------------------------------
+cd "$W"
+python3 - << 'PY'
+from packaging.specifiers import SpecifierSet
+from packaging.version import Version
+
+def bump(v, change):
+    major, minor, patch = map(int, v.split('.'))
+    if change == 'breaking':
+        return f'{major + 1}.0.0'
+    if change == 'feature':
+        return f'{major}.{minor + 1}.0'
+    return f'{major}.{minor}.{patch + 1}'
+
+def out(k, v):
+    print(f'{k}={v}')
+
+# shopclean 1.5.0 is the library; each change decides the next number (semver 2.0.0 rules 6 to 8).
+out('bump_fix', bump('1.5.0', 'fix'))            # strip() restored: a backward compatible bug fix
+out('bump_feature', bump('1.5.0', 'feature'))    # a new optional argument: backward compatible functionality
+out('bump_breaking', bump('1.5.0', 'breaking'))  # output column status renamed to order_status
+assert bump('1.5.0', 'fix') == '1.5.1' and bump('1.5.0', 'feature') == '1.6.0' and bump('1.5.0', 'breaking') == '2.0.0'
+vs = ['1.10.0', '1.9.0', '2.0.0', '1.9.1']
+out('sort_text', ' '.join(sorted(vs)))
+out('sort_version', ' '.join(sorted(vs, key=Version)))
+assert sorted(vs, key=Version) == ['1.9.0', '1.9.1', '1.10.0', '2.0.0']
+for spec in ['>=1.4', '>=1.4,<2', '~=1.4', '~=1.4.0', '~=0.4', '~=0.4.0', '==1.5.0']:
+    ok = [v for v in ['1.4.0', '1.5.0', '2.0.0', '0.4.2', '0.5.0', '1.4.9'] if v in SpecifierSet(spec)]
+    out('spec_' + spec.replace(',', '_'), ' '.join(ok))
+PY
+
+# ---- 8 · Drift, pins and hashes, with a local package index -------------------------------------------
+# shopclean, the shop's cleaning library, as wheels built byte-for-byte reproducibly (fixed times, no compression).
+mkdir -p "$W/index"
+cat > "$W/mkwheel.py" << 'PY'
+import base64, hashlib, sys, zipfile
+LIB = {
+    '1.4.0': "def summarise(lines):\n    counts = {}\n    for line in lines:\n        s = clean(json.loads(line)['status'])\n        counts[s] = counts.get(s, 0) + 1\n    return [{'status': s, 'orders': n} for s, n in sorted(counts.items())]\n",
+    '1.5.0': "def summarise(lines, min_orders=0):\n    counts = {}\n    for line in lines:\n        s = clean(json.loads(line)['status'])\n        counts[s] = counts.get(s, 0) + 1\n    return [{'status': s, 'orders': n} for s, n in sorted(counts.items()) if n >= min_orders]\n",
+    '2.0.0': "def summarise(lines, min_orders=0):\n    counts = {}\n    for line in lines:\n        s = clean(json.loads(line)['status'])\n        counts[s] = counts.get(s, 0) + 1\n    return [{'order_status': s, 'orders': n} for s, n in sorted(counts.items()) if n >= min_orders]\n",
+}
+version, outdir = sys.argv[1], sys.argv[2]
+extra = sys.argv[3] if len(sys.argv) > 3 else ''
+code = f"import json\n__version__ = '{version}'\n\n\ndef clean(value):\n    return value.strip().lower()\n\n\n{LIB[version]}{extra}"
+di = f'shopclean-{version}.dist-info'
+files = {
+    'shopclean/__init__.py': code,
+    f'{di}/METADATA': f'Metadata-Version: 2.1\nName: shopclean\nVersion: {version}\n',
+    f'{di}/WHEEL': 'Wheel-Version: 1.0\nGenerator: examples.sh\nRoot-Is-Purelib: true\nTag: py3-none-any\n',
+}
+record = ''.join(f"{p},sha256={base64.urlsafe_b64encode(hashlib.sha256(c.encode()).digest()).rstrip(b'=').decode()},{len(c.encode())}\n" for p, c in files.items())
+files[f'{di}/RECORD'] = record + f'{di}/RECORD,,\n'
+with zipfile.ZipFile(f'{outdir}/shopclean-{version}-py3-none-any.whl', 'w', zipfile.ZIP_STORED) as z:
+    for p, c in files.items():
+        info = zipfile.ZipInfo(p, date_time=(2026, 1, 1, 0, 0, 0))
+        info.external_attr = 0o644 << 16
+        z.writestr(info, c)
+PY
+python3 "$W/mkwheel.py" 1.4.0 "$W/index"; python3 "$W/mkwheel.py" 1.5.0 "$W/index"
+# The application's own test: the nightly load reads the status column.
+cat > "$W/app_test.py" << 'PY'
+import sys
+from shopclean import __version__, summarise
+rows = summarise(open(sys.argv[1]))
+by_status = {r['status']: r['orders'] for r in rows}
+assert by_status['refunded'] == 200, by_status
+print(__version__)
+PY
+PIPI() { python3 -m pip install --quiet --no-index --find-links "$W/index" --target "$1" "${@:2}"; }
+app() { PYTHONPATH="$1" python3 "$W/app_test.py" "$K/order_events.jsonl" 2> "$W/app_err.txt"; }
+echo 'shopclean>=1.4' > "$W/requirements.txt"
+PIPI "$W/laptop" -r "$W/requirements.txt"; out laptop_installs "$(app "$W/laptop")"   # last week: 1.5.0, passes
+# A week later shopclean 2.0.0 renames the column. A clean machine resolves the same file again.
+python3 "$W/mkwheel.py" 2.0.0 "$W/index"
+PIPI "$W/ci" -r "$W/requirements.txt"
+set +e; app "$W/ci" > /dev/null; ci_rc=$?; set -e
+out ci_installs "$(PYTHONPATH="$W/ci" python3 -c 'import shopclean; print(shopclean.__version__)')"
+out ci_app_rc "$ci_rc"; check "$ci_rc" 1 'same requirements, new day: the app test fails'
+out ci_app_error "$(tail -1 "$W/app_err.txt")"
+# The library's consumers say what they can take: a range that stops before the next major.
+PIPI "$W/ranged" 'shopclean>=1.4,<2'; out range_installs "$(app "$W/ranged")"
+PIPI "$W/compat" 'shopclean~=1.4'; out compat_installs "$(app "$W/compat")"
+# The application pins: the exact version and the hash of the exact file, from pip's own resolver report.
+python3 -m pip install --quiet --dry-run --ignore-installed --no-index --find-links "$W/index" --report "$W/report.json" 'shopclean==1.5.0'
+H=$(python3 -c "import json,sys; r=json.load(open(sys.argv[1])); print(r['install'][0]['download_info']['archive_info']['hashes']['sha256'])" "$W/report.json")
+H2=$(python3 -m pip hash "$W/index/shopclean-1.5.0-py3-none-any.whl" | sed -n 's/^--hash=sha256://p')
+check "$H" "$H2" 'pip hash and the report agree'
+check "$H" "$(sha256sum "$W/index/shopclean-1.5.0-py3-none-any.whl" | cut -d' ' -f1)" 'it is the sha256 of the file'
+out wheel_sha256_12 "$(echo "$H" | cut -c1-12)"
+printf 'shopclean==1.5.0 \\\n    --hash=sha256:%s\n' "$H" > "$W/requirements.lock"
+PIPI "$W/locked" --require-hashes -r "$W/requirements.lock"; out lock_installs "$(app "$W/locked")"
+# Someone republishes 1.5.0 with different contents (semver forbids it). The hash no longer matches: pip refuses.
+mkdir -p "$W/tampered"; cp "$W/index/"*.whl "$W/tampered/"
+python3 "$W/mkwheel.py" 1.5.0 "$W/tampered" "
+import os  # republished
+"
+set +e; python3 -m pip install --no-index --find-links "$W/tampered" --target "$W/t2" --require-hashes -r "$W/requirements.lock" > "$W/tamper.txt" 2>&1; tamper_rc=$?; set -e
+out tamper_rc "$tamper_rc"; check "$tamper_rc" 1 'hash mismatch: pip refuses'
+grep -q 'DO NOT MATCH THE HASHES' "$W/tamper.txt" || { echo 'FAIL: no hash-mismatch message' >&2; exit 1; }
+out tamper_message "$(grep -o 'THESE PACKAGES DO NOT MATCH THE HASHES[A-Z ]*' "$W/tamper.txt" | head -1)"
+# Hash-checking mode needs every requirement pinned with ==: a range is refused.
+printf 'shopclean>=1.4 \\\n    --hash=sha256:%s\n' "$H" > "$W/ranged.lock"
+set +e; python3 -m pip install --no-index --find-links "$W/index" --target "$W/t3" -r "$W/ranged.lock" > "$W/ranged.txt" 2>&1; ranged_lock_rc=$?; set -e
+out ranged_lock_rc "$ranged_lock_rc"; check "$ranged_lock_rc" 1 'a range under --hash is refused'
+out ranged_lock_message "$(grep -o 'must have their versions pinned with ==' "$W/ranged.txt" | head -1)"
+# pip freeze pins what is installed (here: the laptop's environment).
+out freeze_laptop "$(python3 -m pip freeze --path "$W/laptop")"
+
+# The lab kit, for the reader to keep.
+if [ -n "${KEEP:-}" ]; then mkdir -p "$KEEP"; cp -r "$K/." "$KEEP/"; rm -rf "$KEEP/__pycache__" "$KEEP/tests/__pycache__" "$KEEP/.pytest_cache" "$KEEP/shell.txt" "$KEEP/py.txt"; echo "kept=$KEEP"; fi
+echo ok

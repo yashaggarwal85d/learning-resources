@@ -29,6 +29,28 @@ Version: GitHub Docs (en, current); no edition shown, fetched 2026-10-12
 
 > Prevents a workflow run from failing when a job fails. Set to true to allow a workflow run to pass when this job fails.
 
+Added by the content plan (2026-10-12), same page:
+
+> A job contains a sequence of tasks called steps.
+
+> Because steps run in their own process, changes to environment variables are not preserved between steps.
+
+> sh-like shells exit with the exit code of the last command executed in a script, which is also the default behavior for actions. The runner will report the status of the step as fail/succeed based on this exit code.
+
+> If bash is not found in the path, this is treated as sh.
+
+> Using the commit SHA of a released action version is the safest for stability and security.
+
+> If the action publishes major version tags, you should expect to receive critical fixes and security patches while still retaining compatibility.
+
+> Using the default branch of an action may be convenient, but if someone releases a new major version with a breaking change, your workflow could break.
+
+> uses: actions/checkout@v6
+
+> Runs a step asynchronously so the job continues to the next step without waiting for it to finish.
+
+> If a background step fails, the job fails at the next wait or wait-all that includes it (unless continue-on-error is set on that step).
+
 Contents:
 - Jobs run in parallel by default; `needs` makes them sequential and a failed or skipped dependency skips everything downstream (override with `if: always()`).
 - Each `run` step is a new shell process; lines of a multi-line `run` share one shell.
@@ -133,6 +155,18 @@ Version: pip documentation v26.2.1
 
 > weaker ones such as md5, sha1, and sha224 are excluded to avoid giving a false sense of security.
 
+Added by the content plan (2026-10-12), same page:
+
+> Added in version 26.2.
+
+> To help with such use cases, a --no-require-hashes flag is available to disable this mechanism. Hashes are then verified only for requirements where they are provided.
+
+> It is possible to use multiple hashes for each package. This is important when a package offers binary distributions for a variety of platforms or when it is important to allow both binary and source distributions.
+
+> Since this hash originates remotely, it is not a useful guard against tampering and thus does not satisfy the --require-hashes demand that every package have a local hash.
+
+> It is also a convenient way to bootstrap your list of hashes, since it shows the hashes of the packages it fetched.
+
 Contents:
 - Default pip does no tamper checks and may run arbitrary build code from source distributions.
 - Secure recipe: `--require-hashes` plus `--only-binary :all:`.
@@ -222,6 +256,22 @@ Version: Google Engineering Practices documentation (no edition date shown); fet
 > Don’t accept CLs that degrade the code health of the system.
 
 > If you see something nice in the CL, tell the developer, especially when they addressed one of your comments in a great way.
+
+Added by the content plan (2026-10-12), same page:
+
+> as the reviewer you should still be
+
+> thinking about edge cases, looking for concurrency problems, trying to think
+
+> like a user, and making sure that there are no bugs that you see just by reading
+
+> the code.
+
+> The code is well-designed.
+
+> Code has appropriate unit tests.
+
+> The developer used clear names for everything.
 
 Contents:
 - Design, Functionality, Complexity (over-engineering), Tests, Naming, Comments, Style, Consistency, Documentation.
@@ -511,6 +561,16 @@ Version: Semantic Versioning 2.0.0 (as shown on the page); fetched 2026-10-12
 
 > that users can smoothly transition to the new API.
 
+Added by the content plan (2026-10-12), same page (FAQ):
+
+> As soon as you realize that you’ve broken the Semantic Versioning spec, fix
+
+> the problem and release a new minor version that corrects the problem and
+
+> restores backward compatibility. Even under this circumstance, it is
+
+> unacceptable to modify versioned releases.
+
 Contents:
 - Summary: MAJOR.MINOR.PATCH increment rules; pre-release and build metadata labels
 - Introduction: dependency hell, version lock, version promiscuity; declare a public API
@@ -669,3 +729,178 @@ Contents:
 - Direct references; File URLs
 - Updating the versioning specification; differences from pkg_resources.parse_version and PEP 386; rationale sections; appendices (regular expressions)
 
+
+## Evaluate expressions in workflows and actions - GitHub Docs
+URL: https://docs.github.com/en/actions/reference/workflows-and-actions/expressions
+Version: GitHub Docs (en, current); no edition shown, fetched 2026-10-12
+> A default status check of success() is applied unless you include one of these functions.
+
+> Returns true when all previous steps have succeeded.
+
+> Returns true when any previous step of a job fails.
+
+> If you want to run a job or step regardless of its success or failure, use the recommended alternative: if: ${{ !cancelled() }}
+
+Contents:
+- Status check functions `success()`, `always()`, `cancelled()`, `failure()`; `success()` is the default condition of every step and job, so a failed step skips the steps after it unless they say otherwise.
+
+## Flaky tests - pytest documentation
+URL: https://docs.pytest.org/en/stable/explanation/flaky.html
+Version: pytest stable docs (sibling pages show pytest-9.x.y); fetched 2026-10-12
+> A “flaky” test is one that exhibits intermittent or sporadic failure, that seems to have non-deterministic behaviour.
+
+> Flaky tests are particularly troublesome when a continuous integration (CI) server is being used, so that all tests must pass before a new code change can be merged.
+
+> If the test result is not a reliable signal – that a test failure means the code change broke the test – developers can become mistrustful of the test results, which can lead to overlooking genuine failures.
+
+> Broadly speaking, a flaky test indicates that the test relies on some system state that is not being appropriately controlled - the test environment is not sufficiently isolated.
+
+> Tests that modify global state typically cannot be run in parallel.
+
+> Rerunning any failed tests can mitigate the negative effects of flaky tests by giving them additional chances to pass, so that the overall build does not fail.
+
+> This could be considered like a manual quarantine, and is rather dangerous to use permanently.
+
+> It can be common to split a single test suite into two, such as unit vs integration, and only use the unit test suite as a CI gate.
+
+> If the functionality is covered by other tests, perhaps the test can be removed. If not, perhaps it can be rewritten at a lower level which will remove the flakiness or make its source more apparent.
+
+Contents:
+- Definition; why flaky tests hurt a CI gate (mistrust, wasted re-runs).
+- Root causes: uncontrolled system state, test order and parallel runs, overly strict assertions, threads.
+- Tools: `xfail(strict=False)` as a manual quarantine, `PYTEST_CURRENT_TEST`, rerun and randomising plugins.
+- Strategies: split unit vs integration suites (unit suite as the gate), screenshots, delete or rewrite at a lower level, quarantine, CI tools that rerun.
+
+## How to use temporary directories and files in tests - pytest documentation
+URL: https://docs.pytest.org/en/stable/how-to/tmp_path.html
+Version: pytest stable docs; fetched 2026-10-12
+> You can use the tmp_path fixture which will provide a temporary directory
+
+> unique to each test function.
+
+Contents:
+- `tmp_path` (a `pathlib.Path`, unique per test), `tmp_path_factory` for session scope, retention policy, the legacy `tmpdir`.
+
+## How to capture stdout/stderr output - pytest documentation
+URL: https://docs.pytest.org/en/stable/how-to/capture-stdout-stderr.html
+Version: pytest stable docs; fetched 2026-10-12
+> fixtures allow access to stdout/stderr output created during test execution.
+
+Contents:
+- Default capture of fds 1 and 2; `-s`; `capsys`/`capfd` and `readouterr()`.
+
+## pip hash - pip documentation v26.2.1
+URL: https://pip.pypa.io/en/stable/cli/pip_hash/
+Version: pip documentation v26.2.1
+> Compute a hash of a local package archive.
+
+> These can be used with --hash in a requirements file to do repeatable
+
+> installs.
+
+Contents:
+- `pip hash <file>` prints `--hash=sha256:...` for a local archive; sha256, sha384 or sha512.
+
+## pip install - pip documentation v26.2.1
+URL: https://pip.pypa.io/en/stable/cli/pip_install/
+Version: pip documentation v26.2.1
+> In combination with the --dry-run and --ignore-installed it
+
+> can be used to resolve a set of requirements without actually installing them.
+
+> Require a hash to check each requirement against, for repeatable installs. This option is implied when any package in a requirements file has a --hash option.
+
+> Ignore package index (only looking at --find-links URLs instead).
+
+> it chooses which version of
+
+> each requirement to install using the simple rule that the latest version that
+
+> satisfies the given constraints will be installed
+
+> Generate a JSON file describing what pip did to install the provided requirements.
+
+Contents:
+- Options used here: `--dry-run`, `--ignore-installed`, `--report`, `--require-hashes`, `--only-binary`, `--no-index`, `--find-links`, `--target`.
+
+## Installation Report - pip documentation v26.2.1
+URL: https://pip.pypa.io/en/stable/reference/installation-report/
+Version: pip documentation v26.2.1
+> For source archives, download_info.archive_info.hashes may
+
+> be absent when the requirement was installed from the wheel cache
+
+Contents:
+- The JSON report: `install` entries with `metadata`, `download_info` (URL, `archive_info.hashes`), `requested`; the environment markers it was resolved for.
+
+## actions/setup-python README
+URL: https://raw.githubusercontent.com/actions/setup-python/main/README.md
+Version: `main` branch README, fetched 2026-10-12 (examples show `actions/setup-python@v7`)
+> uses: actions/setup-python@v7
+
+> uses: actions/checkout@v7
+
+> cache: 'pip' # caching pip dependencies
+
+> uses its hash as a part of the cache key
+
+> The action defaults to searching for a dependency file
+
+> Input `cache-dependency-path` is used for cases when multiple dependency files are used
+
+> In this case the pip install -r requirements.txt command will always try to install the latest available package version.
+
+Contents:
+- Basic usage, Python versions, caching for pip/pipenv/poetry keyed on a dependency file's hash, `cache-dependency-path`.
+
+## Command line and environment - Python documentation
+URL: https://docs.python.org/3/using/cmdline.html
+Version: Python 3.15.0 documentation (as titled), fetched 2026-10-12
+> If this variable is not set or set to random, a random value is used
+
+> to seed the hashes of str and bytes objects.
+
+> If PYTHONHASHSEED is set to an integer value, it is used as a fixed
+
+> the current directory will be added to the start of sys.path.
+
+Contents:
+- `-m` puts the current directory first on `sys.path`; `PYTHONHASHSEED` and hash randomisation.
+
+## Navigating a CL in review | eng-practices
+URL: https://google.github.io/eng-practices/review/reviewer/navigate.html
+Version: Google Engineering Practices documentation (no edition date shown); fetched 2026-10-12
+> Look at the most important part of the change first. Is it well-designed
+
+> overall?
+
+> Step One: Take a broad view of the change
+
+> Step Two: Examine the main parts of the CL
+
+> Sometimes it’s also helpful to read the tests
+
+> first before you read the main code, because then you have an idea of what the
+
+> change is supposed to be doing.
+
+> If you see some major design problems with this part of the CL, you should send
+
+> those comments immediately, even if you don’t have time to review the rest of
+
+> the CL right now.
+
+Contents:
+- Three steps: broad view (does the change make sense, good description), the main parts first (send design problems at once), the rest in a sensible sequence (tests first can help).
+
+## GitHub-hosted runners - GitHub Docs
+URL: https://docs.github.com/en/actions/concepts/runners/github-hosted-runners
+Version: GitHub Docs (en, current); no edition shown, fetched 2026-10-12
+> With the exception of single-CPU runners, each GitHub-hosted runner is a new virtual machine (VM) hosted by GitHub.
+
+> Each runner comes with the runner application and other tools preinstalled.
+
+> The software tools included in our GitHub-owned images are updated weekly.
+
+Contents:
+- What a GitHub-hosted runner is (a new VM, except single-CPU runners in a container), the OS images, preinstalled software updated weekly and listed in each run's log, IP addresses, permissions.
