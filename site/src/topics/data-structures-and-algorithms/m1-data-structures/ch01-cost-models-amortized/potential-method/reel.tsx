@@ -53,7 +53,7 @@ const reel: Reel = {
       body: (
         <>
           Keep the savings as one number Φ of the whole state; Φ lives in the proof, the vector never stores it. An operation’s amortized cost is its actual cost plus the change in Φ: ĉᵢ = cᵢ + Φ(Dᵢ) − Φ(Dᵢ₋₁).
-          For the counter, Φ = number of 1 bits. Increment 8 flips 4 bits, Φ falls from 3 to 1: amortized 2, like every increment.
+          For the counter, Φ = number of 1 bits. Adding 1 to 7 (00111 to 01000) flips 4 bits, Φ falls from 3 to 1: amortized 2, like every increment.
         </>
       ),
       duration: 4.6,
@@ -193,8 +193,8 @@ const reel: Reel = {
       title: 'The tool behind three later structures',
       body: (
         <>
-          The same move proves bounds you will meet later. Splay trees: Φ is the sum of log₂ of every subtree’s size (Sleator and Tarjan). Fibonacci heaps: trees in
-          the root list plus twice the marked nodes. Union–find: Tarjan analysed it in 1975; Lambert et al. (2023) reach O(α(n)), the inverse Ackermann function, with a potential on node ranks summed over Ackermann levels, while Σ√size alone proves only O(log log n).
+          The same move proves bounds you will meet later. Splay trees: Φ is the sum of log₂ of every subtree’s size, giving O(log n) amortized access (Sleator and Tarjan). Fibonacci heaps: trees in
+          the root list plus twice the marked nodes, giving O(1) decrease-key and O(log n) delete-min. Union–find: Tarjan analysed it in 1975; Lambert et al. (2023) reach O(α(n)), the inverse Ackermann function, with a potential on node ranks summed over Ackermann levels, while Σ√size alone proves only O(log log n).
         </>
       ),
       duration: 4.2,

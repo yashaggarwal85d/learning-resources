@@ -137,3 +137,119 @@ Reviewer did not write any of this topic. Read in sequence: the previous topic (
     - **Fix:** "strict alternation costs 24 over 8 operations under 'less than half' and 136 under 'at most half'; the thrash needs pop, pop, push, push."
 
    - **Status:** Fixed: "In production" bullet 2 now reads strict alternation costs 24 over 8 operations under "less than half" and 136 under "at most half"; the thrash needs pop, pop, push, push.
+## Looks and learning review (Sonnet, 2026-10-12)
+
+Reviewed from `site/test-results/desktop-potential-method-*.png` and `phone-potential-method-*.png` (all 19 steps, plus the question and answer states of steps 2, 7, 11, 17, 18, 19), against OUTLINE.md, narration.json, DESIGN.md ("The looks review checks") and CHAPTER.md ("One visual language"). Phone figures below are estimates from the 1170 px-wide phone shots (3x), so 1 CSS px = 3 image px.
+
+Limit of the evidence: the answer-state shots of 2, 7, 11, 17, 18, 19 were taken while the reveal was still animating (step 2 has no `round = 35`, step 7 has two of four cards empty, step 18 has no axis, step 19 has partial strips). Their final frames are not judged here; re-shoot them after the reveal ends (about 3 s after the answer) before sign-off.
+
+Fixes (2026-10-12): all 21 findings addressed below (19 fixed, 1 fixed in the reel with the shell part not fixed, 1 not this topic's bug). The answer states of steps 2, 7, 11, 17, 18, 19 were re-shot after the reveal ended (5 s after the answer), desktop and phone, and the other changed steps from the smoke test's shots; the smoke test passes.
+
+Counts: 6 major, 15 minor.
+
+1. **Step 4, desktop and phone, major: the final frame omits the counter's before-state.**
+   - **What:** the picture shows only `0 1 0 0 0`, Φ = 1, `c = 4`, `ΔΦ = 1 − 3 = −2`, `ĉ = 2`. The state it came from (`0 0 1 1 1`, seven, Φ = 3) is not on screen, so `1 − 3` has no visible 3 and "flips 4 bits" has nothing to count. A paused or reduced-motion learner cannot see why c = 4. The caption also says "Increment 8 flips 4 bits", which reads as "add eight" (8 to 9 flips one bit); the narration's "add one to seven" is right.
+   - **Fix:** keep a faded `00111` row above the `01000` row with a small arrow, the four flipped cells ringed in cherry, and a faded Φ = 3 tick on the gauge. Caption: "Add 1 to 7 (00111 to 01000) flips 4 bits".
+   - **Status:** Fixed: step 4 now keeps a faded `00111` row (labelled 7) above the live row with an `add 1` arrow, the four flipped cells stay ringed in cherry, and the gauge keeps a dashed tick `was 3`. The caption (and OUTLINE) now read "Adding 1 to 7 (00111 to 01000) flips 4 bits"; the narration already said "add one to seven".
+
+2. **Step 6, desktop and phone, major: the final frame shows an empty stack and an empty gauge, so "Φ = number of keys" is not visible.**
+   - **What:** the sequence ends with all keys popped (OUTLINE says so), leaving an empty bin, an empty tank labelled `Φ = size`, and a strip. The one thing the step teaches (the gauge is the stack's height; a push fills it by one, a multipop drains it) is only in the motion. The top label `multipop stack, as in the last reel` is taupe and sits about 120 units above the drawing on phone, leaving a dead band.
+   - **Fix:** hold the final frame at the state after the 6 pushes (6 keys, gauge 6, still showing the strip so far), or draw a ghost of the peak (6 keys, a caramel tick on the gauge at the peak, `peak Φ = 6`) before the multipops drain it. Move the header down to the drawing or drop it.
+   - **Status:** Fixed: the bin and gauge keep a dashed ghost of the peak after the multipops drain them (6 keys, caramel tick, `peak Φ = 6`); the far header is dropped and the drawing moved up (h 340).
+
+3. **Step 14, desktop and phone, major: the quantity on the picture is never named and the verdict is not the loudest thing.**
+   - **What:** the lines read "after grow: 10th pop or 16th push" and "after shrink: 4th pop or 10th push" with no header saying these are operations until the next resize. The two stacked bars under each line (crema over caramel / cinnamon) are never explained, and the dots, tick marks and bars are four small shapes per line. The point (10 / 16 / 4 / 10 operations against 2 / 2) sits at the same size and weight as the labels around it. The step does not say which capacity the counts refer to.
+   - **Fix:** add a latte 13 header per panel, `operations until the next resize`, and the capacity (`from n = 17 of 32`). Draw one bracket from each landing dot to its nearest threshold with the count on it, drop the double bars, and make the counts the biggest text (crema 20 for ¼, cinnamon 20 for ½, with `2` and `2`).
+   - **Status:** Fixed: step 14 is redrawn. A header `operations until the next resize` and a one-line legend (filled dot after a grow, ring after a shrink) sit on top; each panel names its capacities (`grow lands at 17 of 32, shrink at 7 of 16`); each landing dot has one bracket to its nearest threshold with the count as the biggest text (10 pops, 4 pops in crema for ¼; 2 pops, 2 pushes in cinnamon for ½). The double bars and the dot-and-line labels are gone.
+
+4. **Step 15, phone, major: on the union-find card the text runs through the sketch.**
+   - **What:** `Φ: ranks, summed over Ackermann levels` extends under the forest circles, which strike through the word "levels". On desktop the gap is under 15 units. The sketch for union-find is also two unlabelled trees, so it is decoration (DESIGN: "if the picture would make sense without the concept, it is decoration").
+   - **Fix:** cut the Φ line to `Φ: ranks, summed over levels` (the caption has the full wording) and move all three sketches right by about 30 units, or wrap the line. Either label the forest (`rank 2`, `rank 1`) or drop it.
+   - **Status:** Fixed: the union-find line is cut to `Φ: ranks, summed over levels` (the caption carries the Ackermann wording) and sits well clear of the sketch, whose roots are now labelled with their ranks (2 and 1). The bound lines moved to the caption.
+
+5. **Steps 2, 7, 11, 17, 18, 19 on phone, major: in the answer state the drawing shrinks to about 0.4 scale and the explanation is cut off.**
+   - **What:** once the learner answers, the explanation panel grows and the drawing is squeezed. Estimated from the shots, the 13-unit labels render at about 7 px (step 7: `16 appends, doubling from empty`; step 11: `pop: 8 -> 7 keys` and `halve to 16 and copy 7: cost 8`, whose two lines nearly touch; step 2: `after the push: n = 17, capacity 32`), under the 9 px floor. In step 7 the four result cards (`Φ = n`, `ĉ₉ = 10`) are the whole answer and are about 7 px. The NOT QUITE panel is cut by the player bar after one line in steps 2, 7, 11, 17, 18, 19, so the explanation is not readable without scrolling and nothing hints that it scrolls. This is partly the shared shell, but the reels are what suffer.
+   - **Fix:** in the reel, give predict steps a phone layout with `portrait` that uses fewer, larger elements (15+ units; step 7's cards stacked one per row at 15). For the shell, let the explanation scroll with a visible fade or "more" cue, or collapse the question text to one line once answered.
+   - **Status:** Fixed (reel part): the six question steps have a phone layout (`portrait`) on a 360-unit canvas about 240 units tall with fewer, larger elements: step 2 two rows of 16 cells, four chips and the costs; step 7 the strip over four cards one per row at 15 units; step 11 before and after as lines with the arithmetic; step 17 the vector and the numbers; step 18 two labelled bars on a log axis; step 19 two labelled strips. Re-shot after the reveal: all text in the drawings is readable at phone size with the explanation open. Not fixed (shell): the explanation panel being cut by the player bar with no scroll cue is the shared player's, which this topic may not change.
+
+6. **Step 1, phone, major (verify): the shot has no title, caption or "tap to continue" at all.**
+   - **What:** the drawing sits at the top and the whole lower half (about y 1000 to 1790 px) is empty. Every other phone step shows the step number, title and caption there. Either the opening state hides the caption until a tap (then the first thing the learner sees is an unexplained chip row with no "problem" sentence), or the shot caught a render gap.
+   - **Fix:** confirm in the app; if intended, say so in the OUTLINE; if not, fix it. Step 1 carries the whole problem ("the vector that gives memory back"), so it must not open without its sentence.
+   - **Status:** Not fixed: not this topic's bug. On a fresh load at phone size (iPhone 13) step 1 shows the eyebrow, the title `Halve when half empty`, the bridge sentence, the caption with MORE, the prerequisites button and TAP TO CONTINUE under the drawing. The empty lower half in the harness shot is the shared player mid-transition after the smoke test jumps back to step 1 from the end of the reel, not this topic's code; step 1 does open with its sentence.
+
+7. **Step 11, desktop and phone, minor: the answer frame draws a dashed line through the `Φ = 8` label and never marks the answer.**
+   - **What:** the dashed "after" V crosses the text `Φ = 8` (visible as `= /8`). The after point (Φ = 1, 7 keys in 16) is not marked, so the picture shows no 8 to 1 move. `ĉ = 1` appears with no arithmetic beside it. In the question frame the learner also needs the two-piece formula and the after state (n = 7, cap = 16) and neither is on screen.
+   - **Fix:** put `Φ = 8` above the dot, away from the dashed line; add a second dot at the after position with `Φ = 1` and a short arrow from the first; show `8 + 1 − 8 = 1` under the `ĉ`. In the question frame add a taupe 13 line `Φ = cap/2 − n below half`.
+   - **Status:** Fixed: `Φ = 8` sits above the dot, away from the dashed line; the dot keeps a ghost at 8 with an arrow to a second dot at the after position with `Φ = 1`; `8 + 1 − 8 = 1` sits under the bars; the question frame shows the two-piece formula and the after state (`after: n = 7, cap = 16`). The three bars moved up into the open top-left of the V so the dashed V no longer crosses them.
+
+8. **Step 9, desktop and phone, minor: two different states are on screen at once.**
+   - **What:** the cells and gauge are at n = 8 of 32, Φ = −16, while the pinned label says `after pop 2: Φ = −2` and `Σĉ = 48 < Σc = 50`. At a glance the learner reads Φ = −2 and Φ = −16 as a contradiction, and the Σ line is not tied to the gauge. The caption speaks only of "after two pops".
+   - **Fix:** label the pinned lines as a snapshot (`snapshot at pop 2:` in taupe, with a small tick on the gauge at −2), and make the final-state number the large one with a short line, `9 pops later: Φ = −16`.
+   - **Status:** Fixed: the pinned lines are labelled `snapshot at pop 2:` with a tick on the gauge at −2, and the final state gets its own large lines `9 pops later: Φ = −16`; the gauge label stays small.
+
+9. **Step 8, desktop and phone, minor: the dashed bound line is hidden and shows as a stray fragment.**
+   - **What:** the dashed caramel line at height 3 (y 333) is drawn exactly under the tops of the caramel ĉ outlines, so only a `- -` shows above the first cell, touching the `2` label, and `ĉ = 3` floats at the right end. CHAPTER's cost strip says the bound is a dashed caramel line across the strip; steps 6 and 8 use outlines instead. The gauge's path (rise 2 per append, drop at each grow) is not in the final frame, which shows Φ = 16 beside a 100-unit gap, so the step's idea is only in the motion.
+   - **Fix:** draw the dashed line across at y 333 and the outlines a few units lower or thinner, or drop the line and label the outlines `ĉ = 3`. Add small tick marks on the gauge at the peaks (2, 4, 6, 8 ... then back to 2) or a faint trail of the drops.
+   - **Status:** Fixed: the dashed `ĉ = 3` line is now drawn across the strip above the outlines, a few units higher so it no longer hides, cost labels show only for costs above 3 (no label sitting on the line), and the gauge has a scale with ticks at the peaks 8 and 16 (the labels at 2 and 4 were left out, they collided on phones).
+
+10. **Step 4, desktop and phone, minor: small and low-contrast symbols in the key formula.**
+    - **What:** the subscripts in `ĉᵢ = cᵢ + Φ(Dᵢ) − Φ(Dᵢ₋₁)` use Unicode subscript glyphs that render at about 6 px on phone, and `Dᵢ: the state after operation i` is taupe 13 under it. This formula is the definition the rest of the reel uses, so it is the text that must be legible. Step 5's `Φ₁₆`, `Φ₁₅` and step 8's `Φ₁₆` have the same problem.
+    - **Fix:** write the formula at 20 units with SVG `tspan` subscripts at 0.75 size (or `c_i` forms), and move the `Dᵢ` legend to latte.
+   - **Status:** Fixed: the key formula is drawn at 20 units with real subscripts (SVG tspans), its `D` legend is latte, and step 5's `Φ₁₆`, `ĉ₁₆` and step 8's `Φ₁₆` use the same subscripts (also `ĉ₉` on step 7 and `log₂` on step 15).
+
+11. **Step 3, desktop and phone, minor: the step is carrying three ideas and the picture connects only one.**
+    - **What:** the strip (328 against dashed 147) is clear. The `(2C + 3)/4` table and the adversary claim `Θ(m²)` (in the caption only) are separate ideas; the C = 16, 1,024, 1,048,576 rows float below with no link to the spikes. Six text blocks compete (header, dashed label, 328, dashed total, formula, three rows), over the "no more than four labels" guide.
+    - **Fix:** merge `dashed line: 3 per op` and `dashed total` into one label; mark one spike with `~2C` and draw a taupe bracket from it to the table; leave the Θ(m²) for step 16 or a Deep dive.
+   - **Status:** Fixed (partly): `dashed line: 3 per op` and `dashed total` are one label; one spike is marked `≈ 2C` with a dotted link down to the table header. Left as is: the Θ(m²) claim stays in the caption only (it is already not in the drawing), and no bracket was drawn, the dotted link does that job.
+
+12. **Step 5, desktop and phone, minor: dense, and only the first two cancellations are linked.**
+    - **What:** five blocks (the telescoping rows, the sum, the numeric check, the conclusion, the attribution) share the picture. Two diagonal strokes join `+Φ₁` to `−Φ₁` and `+Φ₂` to `−Φ₂`, but they run between rows, so they read as strike-throughs of the wrong cells. `Tarjan 1985: the physicist's view` is taupe and has no visual role.
+    - **Fix:** strike each cancelling pair horizontally in place (a short caramel line through both faded terms, or a bracket joining the two), and drop the attribution to the caption. Hold `32 = 31 + 1 − 0` as the one numeric line.
+   - **Status:** Fixed: each cancelling pair is struck out in place (a caramel line through the + term and through the matching − term, drawn left to right), the attribution line is dropped from the drawing (the caption has it), and `32 = 31 + 1 − 0` stays as the one numeric line.
+
+13. **Step 10, desktop and phone, minor: the new idea (the left piece) looks the same as the old one.**
+    - **What:** both arms of the V are the same caramel weight, and both formulas the same caramel text, so the new piece `Φ = cap/2 − n` does not stand out against the one from steps 8 and 9. The Greek α in JetBrains Mono renders like a plain `a`, so `if α < ½` reads as `if a < ½`. The left arm ends in the air at α = 0 with no value (it should reach cap/2 = 16).
+    - **Fix:** draw the left arm in crema or heavier, or add a small `new` tag; add `n = 0: Φ = 16` at its end, or end it with a dot. Use `n/cap` in the drawing and say "load factor" once.
+   - **Status:** Fixed: the new left arm is drawn in crema and heavier with a dot at its start labelled `Φ = 16` and a `← new` tag on its formula; the old piece is latte. The drawing writes `n/cap` (and says `load factor` once); the caption keeps α, which reads fine in the caption font.
+
+14. **Step 12, desktop and phone, minor: the table is clean but does not point at its own conclusion.**
+    - **What:** the whole ĉ column is caramel, so the maxima (3 for pushes, 2 for pops) are not distinguished from 0, 1 and −1. The footer `edge cases at capacities 0-2: ĉ ≤ 2 (Deep dive)` is a footnote about the page, not about the idea. The conclusion line (`Σc ≤ 3·pushes + 2·pops ≤ 3m`) is the same size as the labels above.
+    - **Fix:** ring or bold the two maxima (the 3 in the push rows, the 2 in the pop rows) and dim the rest; remove the Deep dive footer from the drawing (it belongs in the caption); make the final line crema 17.
+   - **Status:** Fixed: the two maxima (3 in the push rows, 2 in the pop row) are ringed and bold at 20; the other values are dim; the Deep dive footer is removed from the drawing; the final line is crema 17. The case labels use `n/cap` instead of α.
+
+15. **Step 13, desktop and phone, minor: the final frame loses the movement the step is about.**
+    - **What:** under shrink-at-¼ the move is "slide down the V" and under shrink-at-½ it is "climb the V", but the final frame shows only the two landing dots and a hollow ring, with no arrows or start points, and the cinnamon trail up the right arm is a faint dotted line. A still image shows two dots near the bottom and a ring at the top with no start. `a resize must slide down the V` is taupe.
+    - **Fix:** keep both paths in the final frame: a caramel arrow from the 8 dot to the 1 dot (down) and a cinnamon arrow from 0 to 14 (up) with a hollow start dot, and make the taupe line crema.
+   - **Status:** Fixed: the final frame keeps both moves: a caramel arrow from the Φ = 8 dot down to the Φ = 1 dot, a hollow start ring at the bottom of the V with a cinnamon arrow up to Φ = 14; the closing line is crema 15.
+
+16. **Step 16, desktop and phone, minor: the gauge is unlabelled and the bound is words, not a line.**
+    - **What:** the gauge at the right of the second strip has a tiny `Φ` and no value (it ends at 2, which is what `Σĉ = 82 = 80 + Φ (2)` needs). The chapter's dashed caramel bound line is not drawn on either strip, so "the bound now covers pops too" is text only. The step has 8 text elements.
+    - **Fix:** label the gauge `Φ = 2`; draw the dashed `3 per op` line on both strips (it sits low on the ¼ strip, which is the point); make `80 writes` crema 20.
+   - **Status:** Fixed: the gauge reads `Φ = 2`, the dashed `3 per op` line is drawn on both strips (low on the ¼ strip), and `80 writes` is crema 20.
+
+17. **Step 17, phone question frame, minor: text runs into the gauge.**
+    - **What:** `append 13: grow to 18, copy 12, cost 13` ends about 14 image px (5 CSS px) from the gauge, and the `Φ = 12` label sits on the same line as the text's top edge. The gauge has no zero tick, so 12 of 16 is hard to read as "twelve".
+    - **Fix:** shorten to `append 13: grow to 18, copy 12` (cost 13 is in the caption) or move the line under the row at full width; add a zero tick.
+   - **Status:** Fixed: the line is shortened to `append 13: grow to 18, copy 12` (cost 13 is in the caption and on the bar) and the gauge has a zero tick and label; on phones the gauge is replaced by the numbers `Φ before = 24 − 12 = 12`, `Φ after = 26 − 18 = 8`.
+
+18. **Steps 18 and 19, desktop and phone, minor: the drawing does not use the question's names.**
+    - **What:** Step 19's question says "Rule A" and "Rule B" but the drawing labels read `shrink if n < cap/2` and `shrink if n ≤ cap/2` with no A or B, and the options say "Only B (at most half)", so the learner must map them by hand. In step 18 the question frame is two empty bars and `?`, so there is nothing to estimate from (no scale yet), and the log axis appears only in the answer.
+    - **Fix:** prefix the labels `A:` and `B:`; in step 18's question frame show the axis (taupe ticks) with the bars empty, so the estimate is a position on the scale.
+   - **Status:** Fixed: step 19's labels read `A: shrink if n < cap/2` and `B: shrink if n ≤ cap/2` (also in the phone layout); step 18 shows its log axis with ticks in the question frame so the estimate is a position on the scale.
+
+19. **Step 1, desktop and phone, minor: the cost model is the quietest text on the page.**
+    - **What:** `unit: one element write` and `a resize also copies every key` are taupe 13 at the bottom, but the whole reel depends on them; the grow rule is taupe too. The `?` under every chip is the only prompt. The gap between the rules and the chip row is large on desktop.
+    - **Fix:** make the two unit lines latte 15; keep the shrink rule as the single cinnamon element; tighten the vertical spacing.
+   - **Status:** Fixed: `unit: one element write`, `a resize also copies every key` and the grow rule are latte 15; the shrink rule stays the one cinnamon element; the vertical gaps are tightened (h 350).
+
+20. **Step 15, desktop and phone, minor: three cards each carry formula, two bound lines and a sketch.**
+    - **What:** this is a teaser step, but 3 cards x 4 text lines is above "four labels"; the `Ch.4`, `Ch.6`, `Ch.11` references are the same size as the potentials. The recognisable move ("rises a little on cheap steps, falls on expensive ones") is not drawn.
+    - **Fix:** cut each card to two lines (name and chapter in latte, Φ in caramel) and put the bound in the caption.
+   - **Status:** Fixed: each card is two lines (name in crema with the chapter in latte, Φ in caramel) plus the sketch; the splay and Fibonacci bounds moved into the caption and the narration (words only, no digits). The idea of a quantity that rises a little on cheap steps and falls on expensive ones is carried by steps 8 to 10, not redrawn here.
+
+21. **Step 2, phone, minor: question frame leaves a large dead band.**
+    - **What:** the 32-cell row and the four chips sit at the top and `round = ?` sits about 250 image px below with a long empty gap and a rule between them; the drawing is at about 0.43 scale (cells about 9 CSS px).
+    - **Fix:** on `portrait`, move `round = ?` up under the chips and enlarge the cells (draw the 32 slots in two rows of 16).
+   - **Status:** Fixed: on phones step 2 draws the 32 slots as two rows of 16 with bigger cells, the four chips under them, and the live state `n = 17, capacity 32` above; no long gap and no rule between them.
+
+Not found as problems: colour grammar holds across the reel (cinnamon only for the compared rule and g = 1.5; cherryText for bad numbers; caramel for the potential, bound and chosen rule); at most two accents per step; nothing runs into the right 64 px; steps 3, 12 and 16 look finished and read clearly at phone size; phone captions truncate to three lines with MORE as designed.
