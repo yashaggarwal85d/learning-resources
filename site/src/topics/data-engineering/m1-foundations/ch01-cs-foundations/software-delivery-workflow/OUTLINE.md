@@ -298,7 +298,8 @@ Sections in the Python essentials pattern (`data-section` names): outcomes, inte
 - [x] `SOURCES.md` extended: new sources (GitHub expressions, GitHub-hosted runners, `setup-python` README, pytest flaky / tmp_path / capture, pip hash / install / installation report, Python command line, Google "Navigating a CL") and new quotes from the already-listed pages; `node scripts/sources.mjs check` passes: 327 quotes, 0 problems.
 - [x] `examples.sh` drafted and executed (Python 3.11.17 and 3.12.3, identical; deterministic over two runs; about 20 s).
 - [x] Fact-check (`FACT-CHECK.md`, 12 October 2026): corrections applied here, to `examples.sh` and `SOURCES.md`; `node scripts/sources.mjs check` passes: 358 quotes, 0 problems; `examples.sh` green on Python 3.11.17, 3.12.3 and 3.13.16 with pip 24.0, and on 3.11.17 with pip 26.2.1.
-- [ ] Coverage map with the blind expert list, build (`examples.py`, `reel.tsx`, `scenes.tsx`, `index.mdx`, `prerequisites.mdx`, `narration.json`, registry entry), checks, content and looks reviews, narration, ship.
+- [x] Build, checks (all green), content and looks reviews done (12 October 2026).
+- [ ] Narration, ship.
 
 ## Changes from the chapter plan
 
