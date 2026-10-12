@@ -1,0 +1,1282 @@
+{
+ "topic": "rust.partial-moves-destructuring-as",
+ "syllabus": [
+  {
+   "clause": "moving individual fields out of a multi-field struct",
+   "at": [
+    {
+     "step": "Move one field out"
+    },
+    {
+     "step": "What does the closing brace drop?"
+    },
+    {
+     "step": "Refill the hole, or move it only sometimes"
+    },
+    {
+     "step": "Which of these moves compiles?"
+    },
+    {
+     "step": "Prove it · 1 of 3"
+    },
+    {
+     "deep": "What may be moved out of, and what is dropped after"
+    },
+    {
+     "deep": "Drop flags per field"
+    },
+    {
+     "deep": "Lab 3 · Partial moves out of Frame, traced"
+    }
+   ]
+  },
+  {
+   "clause": "and why you cannot partially move out of a type that implements Drop",
+   "at": [
+    {
+     "step": "A type with Drop is sealed"
+    },
+    {
+     "step": "Does the ref fix rescue into_inner?"
+    },
+    {
+     "step": "PooledBuf: an Option makes the hole legal"
+    },
+    {
+     "step": "Prove it · 3 of 3"
+    },
+    {
+     "deep": "Why a Drop type is a single unit (E0509)"
+    },
+    {
+     "deep": "Lab 2 · Break the guard on purpose"
+    }
+   ]
+  },
+  {
+   "clause": "Option::take/mem::replace/mem::take are the idioms for moving out of a &mut",
+   "at": [
+    {
+     "step": "Behind a reference, no holes"
+    },
+    {
+     "step": "take, replace, swap: never leave a hole"
+    },
+    {
+     "step": "What does mem::take leave in the pool?"
+    },
+    {
+     "step": "PooledBuf: an Option makes the hole legal"
+    },
+    {
+     "step": "After into_inner, what does drop find?"
+    },
+    {
+     "step": "Prove it · 2 of 3"
+    },
+    {
+     "deep": "Moving out through a borrow (E0507), and the idioms that put something back"
+    },
+    {
+     "deep": "Lab 5 · What each idiom costs"
+    }
+   ]
+  },
+  {
+   "clause": "Pattern matching (by-value vs binding modes,",
+   "at": [
+    {
+     "step": "A pattern is a transfer point"
+    },
+    {
+     "step": "Some(_) or Some(_b)?"
+    },
+    {
+     "step": "Matching on a reference borrows instead"
+    },
+    {
+     "deep": "Binding modes, precisely"
+    },
+    {
+     "deep": "Lab 6 · One pattern, two editions"
+    }
+   ]
+  },
+  {
+   "clause": "Rust 2024 match-ergonomics reservations)",
+   "at": [
+    {
+     "step": "One mut, two editions"
+    },
+    {
+     "step": "Rust 2024 reserves three spellings"
+    },
+    {
+     "deep": "Rust 2024 match ergonomics reservations"
+    },
+    {
+     "deep": "Lab 6 · One pattern, two editions"
+    }
+   ]
+  },
+  {
+   "clause": "works as a resource-transfer boundary",
+   "at": [
+    {
+     "step": "The error path, with and without the guard"
+    },
+    {
+     "step": "A pattern is a transfer point"
+    },
+    {
+     "step": "In one breath"
+    },
+    {
+     "deep": "Binding modes, precisely"
+    },
+    {
+     "deep": "Lab 1 · Stage 3: own the buffer and return it to the pool"
+    },
+    {
+     "deep": "Lab 4 · The error path, with and without the guard"
+    }
+   ]
+  }
+ ],
+ "sources": [
+  {
+   "source": "Match ergonomics reservations, The Rust Edition Guide",
+   "items": [
+    {
+     "item": "Summary: mut / ref / ref mut on a binding only allowed when the pattern leading to it is fully explicit; & / &mut reference patterns only allowed in the fully-explicit prefix (i.e. only when default binding mode is move).",
+     "at": [
+      {
+       "step": "Rust 2024 reserves three spellings"
+      },
+      {
+       "step": "One mut, two editions"
+      },
+      {
+       "deep": "Rust 2024 match ergonomics reservations"
+      }
+     ]
+    },
+    {
+     "item": "Details/Background: fully explicit pattern vs match ergonomics (RFC 2005); default binding mode is move, ref mut or ref, starts as move; explicit `ref x` vs `[x] = &[()]` giving ref mode.",
+     "at": [
+      {
+       "step": "Matching on a reference borrows instead"
+      },
+      {
+       "deep": "Binding modes, precisely"
+      },
+      {
+       "deep": "Rust 2024 match ergonomics reservations"
+      }
+     ]
+    },
+    {
+     "item": "mut restriction: 2021 and earlier `let [x, mut y] = &[(), ()];` resets mode to move (surprising); 2024 makes it an error; write `let &[ref x, mut y] = &[(), ()];`.",
+     "at": [
+      {
+       "step": "One mut, two editions"
+      },
+      {
+       "step": "Rust 2024 reserves three spellings"
+      },
+      {
+       "deep": "Rust 2024 match ergonomics reservations"
+      }
+     ]
+    },
+    {
+     "item": "ref / ref mut restriction: `let [ref x] = &[()];` redundant explicit ref is disallowed in 2024; write `let [x] = &[()];`.",
+     "at": [
+      {
+       "step": "Rust 2024 reserves three spellings"
+      },
+      {
+       "deep": "Rust 2024 match ergonomics reservations"
+      }
+     ]
+    },
+    {
+     "item": "Reference patterns restriction: `let [&x, y] = &[&(), &()];` (x: (), y: &&()) disallowed in 2024; write `let &[&x, ref y] = &[&(), &()];`.",
+     "at": [
+      {
+       "step": "Rust 2024 reserves three spellings"
+      },
+      {
+       "deep": "Rust 2024 match ergonomics reservations"
+      }
+     ]
+    },
+    {
+     "item": "Migration: lint `rust_2024_incompatible_pat` (in group `rust-2024-compatibility`), run `cargo fix --edition`; auto-rewrites to fully explicit patterns (`let &[ref x, mut y] = ...; let &[ref x] = ...; let &[&x, ref y] = ...;`); manual: `#![warn(rust_2024_incompatible_pat)]`.",
+     "at": [
+      {
+       "step": "Rust 2024 reserves three spellings"
+      },
+      {
+       "deep": "Rust 2024 match ergonomics reservations"
+      },
+      {
+       "deep": "Lab 6 · One pattern, two editions"
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "source": "E0509, Error codes index",
+   "items": [
+    {
+     "item": "Error occurs when moving a field out of a value whose type implements Drop.",
+     "at": [
+      {
+       "step": "A type with Drop is sealed"
+      },
+      {
+       "deep": "Why a Drop type is a single unit (E0509)"
+      }
+     ]
+    },
+    {
+     "item": "Erroneous example: `DropStruct` (impl Drop) with field `fancy: FancyNum`; `let fancy_field = drop_struct.fancy;` fails.",
+     "at": [
+      {
+       "step": "A type with Drop is sealed"
+      },
+      {
+       "deep": "Why a Drop type is a single unit (E0509)"
+      },
+      {
+       "deep": "Lab 2 · Break the guard on purpose"
+      }
+     ]
+    },
+    {
+     "item": "Reason: the implicit destructor may use the fields, so a Drop type is a single unit whose fields cannot be moved.",
+     "at": [
+      {
+       "step": "A type with Drop is sealed"
+      },
+      {
+       "deep": "Why a Drop type is a single unit (E0509)"
+      }
+     ]
+    },
+    {
+     "item": "Fix 1: bind by reference with `let ref fancy_field = drop_struct.fancy;`.",
+     "at": [
+      {
+       "step": "Does the ref fix rescue into_inner?"
+      },
+      {
+       "deep": "Why a Drop type is a single unit (E0509)"
+      }
+     ]
+    },
+    {
+     "item": "Fix 2: same technique in match arms on a Drop enum: `DropEnum::Fancy(ref fancy_field) => ...`.",
+     "at": [
+      {
+       "deep": "Why a Drop type is a single unit (E0509)"
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "source": "E0507, Error codes index",
+   "items": [
+    {
+     "item": "Moving a value out from behind a borrow (e.g. RefCell::borrow gives &T) is E0507.",
+     "at": [
+      {
+       "step": "Behind a reference, no holes"
+      },
+      {
+       "deep": "Moving out through a borrow (E0507), and the idioms that put something back"
+      }
+     ]
+    },
+    {
+     "item": "Three fixes: avoid moving (take &self), reclaim ownership (RefCell::into_inner), or implement Copy.",
+     "at": [
+      {
+       "deep": "Moving out through a borrow (E0507), and the idioms that put something back"
+      }
+     ]
+    },
+    {
+     "item": "Also applies to Fn/FnMut closure bodies, which can be called more than once.",
+     "at": [
+      {
+       "deep": "Moving out through a borrow (E0507), and the idioms that put something back"
+      }
+     ]
+    },
+    {
+     "item": "Moving a field out of `&mut Batcave` (`borrowed.knight.nothing_is_true()`) is E0507.",
+     "at": [
+      {
+       "step": "Behind a reference, no holes"
+      },
+      {
+       "deep": "Moving out through a borrow (E0507), and the idioms that put something back"
+      }
+     ]
+    },
+    {
+     "item": "Fix: mem::replace(&mut borrowed.knight, TheDarkKnight) puts a replacement back.",
+     "at": [
+      {
+       "step": "Behind a reference, no holes"
+      },
+      {
+       "step": "take, replace, swap: never leave a hole"
+      },
+      {
+       "deep": "Moving out through a borrow (E0507), and the idioms that put something back"
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "source": "E0382, Error codes index",
+   "items": [
+    {
+     "item": "Use after move; erroneous example moves `x` into `y` then assigns `x.s = 6`.",
+     "at": [
+      {
+       "step": "Move one field out"
+      },
+      {
+       "deep": "What may be moved out of, and what is dropped after"
+      }
+     ]
+    },
+    {
+     "item": "Fixes: borrow with & / &mut; clone with .clone() (#[derive(Clone)]); derive Copy when all members are Copy (Point example); Rc<RefCell<_>> for shared mutable ownership.",
+     "at": [
+      {
+       "step": "The guard that will not give the buffer back"
+      },
+      {
+       "deep": "What may be moved out of, and what is dropped after"
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "source": "Destructors, The Rustonomicon",
+   "items": [
+    {
+     "item": "Drop::drop takes &mut self; afterwards Rust recursively drops all fields; no stable way to suppress this.",
+     "at": [
+      {
+       "deep": "Why a Drop type is a single unit (E0509)"
+      },
+      {
+       "step": "A type with Drop is sealed"
+      }
+     ]
+    },
+    {
+     "item": "&mut self also prevents moving fields out of self in drop.",
+     "at": [
+      {
+       "step": "A type with Drop is sealed"
+      },
+      {
+       "deep": "Why a Drop type is a single unit (E0509)"
+      }
+     ]
+    },
+    {
+     "item": "Naive SuperBox<T> { my_box: Box<T> } that deallocates my_box's pointer causes double-free/use-after-free.",
+     "at": [
+      {
+       "out": "unsafe manual deallocation of a Box inside drop; that is Chapter 30 (unsafe Rust). The safe lesson drawn from it, why drop gets &mut self, is step 7."
+      }
+     ]
+    },
+    {
+     "item": "Types with Drop-needing fields \"need Drop\" even without impl Drop (Boxy, enum Link).",
+     "at": [
+      {
+       "topic": "RAII, drop order, and leak safety",
+       "quote": "struct fields in declaration order"
+      }
+     ]
+    },
+    {
+     "item": "Classic fix: field as Option<Box<T>>, `self.my_box.take().unwrap()` in drop, then mem::forget.",
+     "at": [
+      {
+       "step": "PooledBuf: an Option makes the hole legal"
+      },
+      {
+       "deep": "Guard field designs: Option, placeholder, ManuallyDrop"
+      }
+     ]
+    },
+    {
+     "item": "Caveat: invariant \"always Some\" is weakened; still the default choice; a first-class mechanism is anticipated.",
+     "at": [
+      {
+       "deep": "Guard field designs: Option, placeholder, ManuallyDrop"
+      },
+      {
+       "deep": "Why a Drop type is a single unit (E0509)"
+      },
+      {
+       "deep": "In production"
+      },
+      {
+       "step": "PooledBuf: an Option makes the hole legal"
+      }
+     ]
+    },
+    {
+     "item": "This page does not mention ManuallyDrop.",
+     "at": [
+      {
+       "deep": "Guard field designs: Option, placeholder, ManuallyDrop"
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "source": "Expressions, The Rust Reference",
+   "items": [
+    {
+     "item": "[expr.place-value]: two categories, place expressions and value expressions, plus minor assignee expressions; operands occur in place or value context.",
+     "at": [
+      {
+       "deep": "What may be moved out of, and what is dropped after"
+      }
+     ]
+    },
+    {
+     "item": "Place expression kinds: local/static paths, `*expr`, `expr[expr]`, `expr.f`, parenthesized place expressions; everything else is a value expression.",
+     "at": [
+      {
+       "deep": "What may be moved out of, and what is dropped after"
+      }
+     ]
+    },
+    {
+     "item": "Place expression contexts: compound-assignment left operand, borrow/raw borrow/deref operand, field-expression operand, indexed operand, tuple-index operand, implicit borrows, `let` initializer, scrutinee of `if let`/`match`/`while let`, functional-update base.",
+     "at": [
+      {
+       "step": "Matching on a reference borrows instead"
+      },
+      {
+       "deep": "Binding modes, precisely"
+      }
+     ]
+    },
+    {
+     "item": "Assignee expressions: places, `_`, tuples/slices/tuple structs/structs/unit structs of assignees (basis of destructuring assignment).",
+     "at": [
+      {
+       "out": "assignee expressions are the syntax of destructuring assignment, an assignment form that moves like any other; the transfer rules taught here (movable places, bindings) are the same"
+      }
+     ]
+    },
+    {
+     "item": "[expr.move] Moved and copied types: place in value context or bound by value in a pattern denotes the value; `Copy` is copied; otherwise a `Sized` value may be moved.",
+     "at": [
+      {
+       "step": "Move one field out"
+      },
+      {
+       "step": "A pattern is a transfer point"
+      },
+      {
+       "deep": "What may be moved out of, and what is dropped after"
+      }
+     ]
+    },
+    {
+     "item": "[expr.move.movable-place] Only movable: unborrowed variables, temporaries, fields of a movable place whose type does not implement `Drop`, and deref of `Box<T>` that is itself movable. Anything else is an error (the E0507 / E0509 situations: move out of borrow/deref, move out of a `Drop` type's field).",
+     "at": [
+      {
+       "step": "Which of these moves compiles?"
+      },
+      {
+       "deep": "What may be moved out of, and what is dropped after"
+      }
+     ]
+    },
+    {
+     "item": "Moving out of a local variable deinitializes it until reinitialized.",
+     "at": [
+      {
+       "step": "Refill the hole, or move it only sometimes"
+      },
+      {
+       "deep": "What may be moved out of, and what is dropped after"
+      }
+     ]
+    },
+    {
+     "item": "[expr.mut] Mutability: mutable place expressions required for assignment, `&mut`, implicit mutable borrow, and `ref mut` bindings.",
+     "at": [
+      {
+       "step": "Refill the hole, or move it only sometimes"
+      },
+      {
+       "deep": "What may be moved out of, and what is dropped after"
+      }
+     ]
+    },
+    {
+     "item": "[expr.temporary] Temporaries: value expression in place context creates an unnamed temporary location.",
+     "at": [
+      {
+       "deep": "Binding modes, precisely"
+      }
+     ]
+    },
+    {
+     "item": "[expr.implicit-borrow]: implicit borrows for method-call/field/call/index left operands, deref operand, comparison operands, compound assignment, `format_args!` arguments.",
+     "at": [
+      {
+       "out": "implicit borrows of method receivers and operands are expression-evaluation detail for the borrowing topics (Chapter 2); the implicit borrow a pattern does is step 17"
+      }
+     ]
+    },
+    {
+     "item": "Also covered but peripheral: syntax, precedence, operand evaluation order, super macros (`format_args!`, `pin!`), overloading, attributes.",
+     "at": [
+      {
+       "out": "peripheral: syntax, precedence, evaluation order, macros and overloading are not ownership transfer"
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "source": "Patterns, The Rust Reference",
+   "items": [
+    {
+     "item": "patterns.destructure: destructuring structs/enums/tuples; wildcard `_` for one field, `..` for remaining; named-field shorthand",
+     "at": [
+      {
+       "step": "A pattern is a transfer point"
+      },
+      {
+       "deep": "Binding modes, precisely"
+      }
+     ]
+    },
+    {
+     "item": "patterns.refutable: refutable vs irrefutable patterns",
+     "at": [
+      {
+       "out": "refutable against irrefutable patterns is declared pattern-matching basics (linked from Prerequisites)"
+      }
+     ]
+    },
+    {
+     "item": "patterns.ident.bare / scrutinized / move / ref / ref-ignored: identifier patterns, `x @ subpattern`, default move-or-copy, `ref`/`ref mut`, Person example",
+     "at": [
+      {
+       "step": "A pattern is a transfer point"
+      },
+      {
+       "step": "Some(_) or Some(_b)?"
+      },
+      {
+       "deep": "Binding modes, precisely"
+      }
+     ]
+    },
+    {
+     "item": "patterns.ident.precedent / constraint / refutable: path-over-identifier precedence, ref on constants is an error",
+     "at": [
+      {
+       "out": "path-over-identifier precedence and ref on constants are pattern syntax with no ownership transfer"
+      }
+     ]
+    },
+    {
+     "item": "patterns.ident.binding.*: intro, non-reference, default-mode, move, top-down, auto-deref, ref, ref-mut, nested-references",
+     "at": [
+      {
+       "step": "Matching on a reference borrows instead"
+      },
+      {
+       "deep": "Binding modes, precisely"
+      }
+     ]
+    },
+    {
+     "item": "patterns.ident.binding.mode-limitations-binding (+ .edition2024) and mode-limitations-reference (+ .edition2024): 2024 reservations on explicit ref/mut/& under non-move default mode",
+     "at": [
+      {
+       "step": "One mut, two editions"
+      },
+      {
+       "step": "Rust 2024 reserves three spellings"
+      },
+      {
+       "deep": "Rust 2024 match ergonomics reservations"
+      }
+     ]
+    },
+    {
+     "item": "patterns.ident.binding.mixed: partial move example",
+     "at": [
+      {
+       "step": "A pattern is a transfer point"
+      },
+      {
+       "deep": "Binding modes, precisely"
+      }
+     ]
+    },
+    {
+     "item": "patterns.wildcard: `_` does not copy, move or borrow",
+     "at": [
+      {
+       "step": "Some(_) or Some(_b)?"
+      },
+      {
+       "deep": "Binding modes, precisely"
+      }
+     ]
+    },
+    {
+     "item": "patterns.rest, patterns.ref (reference patterns), patterns.struct (shorthand, union single field), tuple-struct, tuple, slice, path patterns",
+     "at": [
+      {
+       "out": "the syntax of rest, reference, struct, tuple, slice and path patterns is the Book (Prerequisites); the reel uses `..` and `&` patterns where they matter for ownership"
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "source": "take in std::mem, Rust",
+   "items": [
+    {
+     "item": "Signature requires T: Default; takes &mut T and returns owned T.",
+     "at": [
+      {
+       "step": "take, replace, swap: never leave a hole"
+      },
+      {
+       "step": "Prove it · 2 of 3"
+      },
+      {
+       "deep": "Moving out through a borrow (E0507), and the idioms that put something back"
+      }
+     ]
+    },
+    {
+     "item": "Leaves the default value behind; returns the old value.",
+     "at": [
+      {
+       "step": "take, replace, swap: never leave a hole"
+      },
+      {
+       "deep": "Moving out through a borrow (E0507), and the idioms that put something back"
+      }
+     ]
+    },
+    {
+     "item": "Example with Vec<i32>; Buffer<T> example showing the E0507-style error when moving self.buf out of &mut self.",
+     "at": [
+      {
+       "step": "The guard that will not give the buffer back"
+      },
+      {
+       "step": "Prove it · 2 of 3"
+      },
+      {
+       "deep": "Moving out through a borrow (E0507), and the idioms that put something back"
+      }
+     ]
+    },
+    {
+     "item": "Fix via mem::take; no Clone bound needed.",
+     "at": [
+      {
+       "step": "take, replace, swap: never leave a hole"
+      },
+      {
+       "step": "Prove it · 2 of 3"
+      },
+      {
+       "deep": "Moving out through a borrow (E0507), and the idioms that put something back"
+      }
+     ]
+    },
+    {
+     "item": "Cross-references to swap and replace.",
+     "at": [
+      {
+       "deep": "Moving out through a borrow (E0507), and the idioms that put something back"
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "source": "replace in std::mem, Rust",
+   "items": [
+    {
+     "item": "No Default bound; caller supplies the replacement.",
+     "at": [
+      {
+       "step": "take, replace, swap: never leave a hole"
+      },
+      {
+       "step": "Prove it · 2 of 3"
+      },
+      {
+       "deep": "Moving out through a borrow (E0507), and the idioms that put something back"
+      }
+     ]
+    },
+    {
+     "item": "Neither value dropped; old value returned.",
+     "at": [
+      {
+       "step": "take, replace, swap: never leave a hole"
+      },
+      {
+       "deep": "Moving out through a borrow (E0507), and the idioms that put something back"
+      }
+     ]
+    },
+    {
+     "item": "Example with Vec and with indexed field moving out of buf[i] (error without replace).",
+     "at": [
+      {
+       "deep": "Moving out through a borrow (E0507), and the idioms that put something back"
+      }
+     ]
+    },
+    {
+     "item": "Cross-references to swap and take.",
+     "at": [
+      {
+       "deep": "Moving out through a borrow (E0507), and the idioms that put something back"
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "source": "swap in std::mem, Rust",
+   "items": [
+    {
+     "item": "Swaps two &mut T locations; neither is deinitialized.",
+     "at": [
+      {
+       "step": "take, replace, swap: never leave a hole"
+      },
+      {
+       "deep": "Moving out through a borrow (E0507), and the idioms that put something back"
+      }
+     ]
+    },
+    {
+     "item": "Points to take and replace for default/passed values.",
+     "at": [
+      {
+       "deep": "Moving out through a borrow (E0507), and the idioms that put something back"
+      }
+     ]
+    },
+    {
+     "item": "Example swapping 5 and 42.",
+     "at": [
+      {
+       "step": "take, replace, swap: never leave a hole"
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "source": "Partial moves, Rust By Example",
+   "items": [
+    {
+     "item": "Destructuring can mix by-move and by-reference bindings, giving a partial move.",
+     "at": [
+      {
+       "step": "A pattern is a transfer point"
+      },
+      {
+       "deep": "Binding modes, precisely"
+      }
+     ]
+    },
+    {
+     "item": "The parent cannot be used as a whole afterwards; the referenced parts can.",
+     "at": [
+      {
+       "step": "Move one field out"
+      },
+      {
+       "deep": "What may be moved out of, and what is dropped after"
+      }
+     ]
+    },
+    {
+     "item": "Drop types cannot be partially moved from.",
+     "at": [
+      {
+       "step": "A type with Drop is sealed"
+      },
+      {
+       "deep": "Why a Drop type is a single unit (E0509)"
+      }
+     ]
+    }
+   ]
+  }
+ ],
+ "expert": {
+  "by": "independent blind expert list: a reviewer agent that had not seen the topic (sources/expert-list.json)",
+  "date": "2026-10-12",
+  "items": [
+   {
+    "item": "A partial move leaves the parent unusable as a whole while the untouched (referenced or Copy) parts stay usable, and a Drop type cannot be partially moved.",
+    "at": [
+     {
+      "step": "Move one field out"
+     },
+     {
+      "step": "A type with Drop is sealed"
+     },
+     {
+      "deep": "What may be moved out of, and what is dropped after"
+     }
+    ]
+   },
+   {
+    "item": "Mixing move and ref bindings in one destructuring pattern is a partial move; it only applies if the type cannot be copied (Copy fields are copied, not moved).",
+    "at": [
+     {
+      "step": "A pattern is a transfer point"
+     },
+     {
+      "deep": "Binding modes, precisely"
+     }
+    ]
+   },
+   {
+    "item": "After a partial move only the still-initialized fields are dropped, at the owner scope end; the moved-out field is dropped wherever its new owner is dropped.",
+    "at": [
+     {
+      "step": "What does the closing brace drop?"
+     },
+     {
+      "step": "Refill the hole, or move it only sometimes"
+     },
+     {
+      "step": "Prove it · 1 of 3"
+     }
+    ]
+   },
+   {
+    "item": "The Reference rule for what may be moved out of: unborrowed variables, temporaries, fields of movable places that do not implement Drop, and deref of Box.",
+    "at": [
+     {
+      "step": "Which of these moves compiles?"
+     },
+     {
+      "deep": "What may be moved out of, and what is dropped after"
+     }
+    ]
+   },
+   {
+    "item": "Moving out of a Box via * is a language special case (deref of Box<T> is a movable place), unlike any other smart pointer.",
+    "at": [
+     {
+      "step": "Which of these moves compiles?"
+     },
+     {
+      "deep": "What may be moved out of, and what is dropped after"
+     },
+     {
+      "deep": "The frontier"
+     }
+    ]
+   },
+   {
+    "item": "A moved-from local is deinitialized and may be reinitialized by assignment; the compiler then tracks it as initialized again (reinitialising a whole variable after a move).",
+    "at": [
+     {
+      "step": "Refill the hole, or move it only sometimes"
+     },
+     {
+      "deep": "What may be moved out of, and what is dropped after"
+     }
+    ]
+   },
+   {
+    "item": "Use-after-move is E0382; a partially-moved parent reports as use of a moved value, and Copy types (all members Copy) are the opt-out.",
+    "at": [
+     {
+      "step": "Move one field out"
+     },
+     {
+      "step": "A pattern is a transfer point"
+     },
+     {
+      "step": "Some(_) or Some(_b)?"
+     }
+    ]
+   },
+   {
+    "item": "Copy opt-out: a type may be Copy only if all its members are Copy, so Copy fields never cause a partial move.",
+    "at": [
+     {
+      "step": "Move one field out"
+     },
+     {
+      "deep": "What may be moved out of, and what is dropped after"
+     }
+    ]
+   },
+   {
+    "item": "Drop and Copy are mutually exclusive, which is why a Drop type can never escape the no-partial-move rule by being Copy.",
+    "at": [
+     {
+      "step": "A type with Drop is sealed"
+     },
+     {
+      "deep": "Why a Drop type is a single unit (E0509)"
+     }
+    ]
+   },
+   {
+    "item": "E0509 is the error for moving a field out of a Drop type.",
+    "at": [
+     {
+      "step": "A type with Drop is sealed"
+     }
+    ]
+   },
+   {
+    "item": "Why E0509: drop(&mut self) can read every field, so no field may be missing when the destructor runs; Drop types are single units.",
+    "at": [
+     {
+      "step": "A type with Drop is sealed"
+     },
+     {
+      "deep": "Why a Drop type is a single unit (E0509)"
+     }
+    ]
+   },
+   {
+    "item": "Fix for E0509: borrow the field with ref (or use Option/take/replace) instead of moving it.",
+    "at": [
+     {
+      "step": "Does the ref fix rescue into_inner?"
+     },
+     {
+      "step": "PooledBuf: an Option makes the hole legal"
+     }
+    ]
+   },
+   {
+    "item": "The Drop restriction applies to destructuring patterns too (let Person{name, ..} = person), not only to field access.",
+    "at": [
+     {
+      "step": "A type with Drop is sealed"
+     }
+    ]
+   },
+   {
+    "item": "E0507 means a borrowed value was moved out; the fixes are avoid the move, reclaim ownership, or make the type Copy (e.g. RefCell::borrow gives only &T).",
+    "at": [
+     {
+      "step": "Behind a reference, no holes"
+     },
+     {
+      "deep": "Moving out through a borrow (E0507), and the idioms that put something back"
+     }
+    ]
+   },
+   {
+    "item": "E0507 through &mut: moving a field out of a mutably borrowed struct is rejected; you must put something back, via mem::replace.",
+    "at": [
+     {
+      "step": "Behind a reference, no holes"
+     },
+     {
+      "step": "take, replace, swap: never leave a hole"
+     },
+     {
+      "step": "Prove it · 2 of 3"
+     }
+    ]
+   },
+   {
+    "item": "E0507 also arises in Fn/FnMut closure bodies, which may be called repeatedly and so cannot move captured values out.",
+    "at": [
+     {
+      "deep": "Moving out through a borrow (E0507), and the idioms that put something back"
+     }
+    ]
+   },
+   {
+    "item": "E0507 for indexing: self.buf[i] cannot be moved out of; mem::replace(&mut self.buf[i], v) is the fix and needs no Clone bound.",
+    "at": [
+     {
+      "step": "Which of these moves compiles?"
+     },
+     {
+      "deep": "Moving out through a borrow (E0507), and the idioms that put something back"
+     }
+    ]
+   },
+   {
+    "item": "Rc/Arc deref gives only &T so you cannot move out of it; Rc::try_unwrap recovers ownership only when the strong count is exactly one.",
+    "at": [
+     {
+      "step": "Which of these moves compiles?"
+     },
+     {
+      "deep": "Moving out through a borrow (E0507), and the idioms that put something back"
+     }
+    ]
+   },
+   {
+    "item": "Iterating by reference (iter/iter_mut) yields references, so moving elements out requires into_iter (owned) and consumes the collection.",
+    "at": [
+     {
+      "deep": "Moving out through a borrow (E0507), and the idioms that put something back"
+     },
+     {
+      "deep": "Prove it"
+     }
+    ]
+   },
+   {
+    "item": "mem::take moves out of a &mut by leaving T::default() behind; it needs T: Default and works without Clone.",
+    "at": [
+     {
+      "step": "take, replace, swap: never leave a hole"
+     },
+     {
+      "step": "What does mem::take leave in the pool?"
+     },
+     {
+      "step": "Prove it · 2 of 3"
+     }
+    ]
+   },
+   {
+    "item": "mem::replace moves src in and returns the old value; neither value is dropped (no destructor runs, only a move).",
+    "at": [
+     {
+      "step": "take, replace, swap: never leave a hole"
+     }
+    ]
+   },
+   {
+    "item": "mem::swap exchanges two &mut places without deinitializing either; the cost is a bitwise exchange of the values, not deep copies.",
+    "at": [
+     {
+      "step": "take, replace, swap: never leave a hole"
+     }
+    ]
+   },
+   {
+    "item": "Cost note: take/replace/swap are memcpy-sized moves of the struct itself plus constructing the replacement (Default::default() may allocate for some types; Vec/String/Option do not).",
+    "at": [
+     {
+      "step": "take, replace, swap: never leave a hole"
+     },
+     {
+      "step": "What does mem::take leave in the pool?"
+     }
+    ]
+   },
+   {
+    "item": "Option::take is the idiom for an Option field (guard/handle pattern): it leaves None so the owner Drop impl sees an emptied field and does not double-release.",
+    "at": [
+     {
+      "step": "PooledBuf: an Option makes the hole legal"
+     },
+     {
+      "step": "After into_inner, what does drop find?"
+     }
+    ]
+   },
+   {
+    "item": "Owning removal APIs: Vec::remove is O(n) and returns the owned element; swap_remove is O(1) but reorders; both avoid E0507 index moves.",
+    "at": [
+     {
+      "step": "take, replace, swap: never leave a hole"
+     },
+     {
+      "deep": "Moving out through a borrow (E0507), and the idioms that put something back"
+     }
+    ]
+   },
+   {
+    "item": "Vec::drain yields owned elements and keeps a mutable borrow on the vector; dropping it early drops the remaining removed elements.",
+    "at": [
+     {
+      "step": "take, replace, swap: never leave a hole"
+     },
+     {
+      "deep": "Moving out through a borrow (E0507), and the idioms that put something back"
+     },
+     {
+      "deep": "Prove it"
+     }
+    ]
+   },
+   {
+    "item": "Default binding mode starts as move; matching a reference with a non-reference pattern auto-derefs and switches the mode to ref or ref mut.",
+    "at": [
+     {
+      "step": "Matching on a reference borrows instead"
+     }
+    ]
+   },
+   {
+    "item": "Mode transitions: & sets ref; &mut sets ref mut unless already ref, so a shared reference anywhere makes the rest immutable bindings.",
+    "at": [
+     {
+      "step": "Matching on a reference borrows instead"
+     }
+    ]
+   },
+   {
+    "item": "Matching on a reference versus a value: matching &Option<T> with Some(y) binds y: &T, so no move occurs and no E0507 arises.",
+    "at": [
+     {
+      "step": "Matching on a reference borrows instead"
+     }
+    ]
+   },
+   {
+    "item": "Identifier patterns move or copy depending on Copy; ref and ref mut explicitly request references.",
+    "at": [
+     {
+      "step": "A pattern is a transfer point"
+     }
+    ]
+   },
+   {
+    "item": "Rust 2024 reserves mut/ref/ref mut on bindings under a non-move default binding mode; they are only allowed in fully explicit patterns.",
+    "at": [
+     {
+      "step": "One mut, two editions"
+     },
+     {
+      "step": "Rust 2024 reserves three spellings"
+     }
+    ]
+   },
+   {
+    "item": "Rust 2024 also rejects & and &mut reference patterns when the default binding mode is not move, where 2021 let a single & reset the mode.",
+    "at": [
+     {
+      "step": "Rust 2024 reserves three spellings"
+     }
+    ]
+   },
+   {
+    "item": "Migration: rust_2024_incompatible_pat lint (in rust-2024-compatibility) and cargo fix --edition rewrite to fully explicit patterns that work in all editions.",
+    "at": [
+     {
+      "step": "Rust 2024 reserves three spellings"
+     },
+     {
+      "deep": "Rust 2024 match ergonomics reservations"
+     }
+    ]
+   },
+   {
+    "item": "Wildcard _ does not copy, move or borrow, so `let _ = x;` and `Some(_)` leave x intact, whereas `_x` is an identifier pattern that moves.",
+    "at": [
+     {
+      "step": "Some(_) or Some(_b)?"
+     },
+     {
+      "deep": "Binding modes, precisely"
+     }
+    ]
+   },
+   {
+    "item": "Struct update syntax ..base moves or copies only the fields not explicitly specified, a partial move out of base.",
+    "at": [
+     {
+      "step": "A pattern is a transfer point"
+     },
+     {
+      "deep": "What may be moved out of, and what is dropped after"
+     }
+    ]
+   },
+   {
+    "item": "Edition 2021 closures capture disjoint fields, so a closure can move one field while another stays usable; drop timing of fields can change.",
+    "at": [
+     {
+      "out": "closures' disjoint field capture: the chapter plan puts it out of scope for this topic and no syllabus line covers closure capture rules; the Deep dive does not teach it"
+     }
+    ]
+   },
+   {
+    "item": "Move closures never capture through a reference: they capture the reference itself, since fields cannot be moved out of references.",
+    "at": [
+     {
+      "out": "move closures capturing through a reference: same reason as the previous item, no syllabus line covers closure capture rules"
+     }
+    ]
+   },
+   {
+    "item": "ManuallyDrop<T> inhibits the destructor at zero cost; ManuallyDrop::take is intended for moving fields out inside drop, with into_inner preferred when owned.",
+    "at": [
+     {
+      "step": "Prove it · 3 of 3"
+     },
+     {
+      "deep": "Guard field designs: Option, placeholder, ManuallyDrop"
+     }
+    ]
+   },
+   {
+    "item": "ptr::read is the unsafe bitwise-copy escape hatch; using both the copy and the original of a non-Copy T can violate memory safety (double drop).",
+    "at": [
+     {
+      "deep": "Guard field designs: Option, placeholder, ManuallyDrop"
+     }
+    ]
+   },
+   {
+    "item": "Drop flags: Rust tracks runtime initialization of conditionally moved variables and checks the flag at scope end, so conditional moves are safe.",
+    "at": [
+     {
+      "step": "Refill the hole, or move it only sometimes"
+     },
+     {
+      "deep": "Drop flags per field"
+     }
+    ]
+   }
+  ]
+ },
+ "gapReview": {
+  "date": "2026-10-12",
+  "by": "builder (content review pending)",
+  "open": []
+ }
+}

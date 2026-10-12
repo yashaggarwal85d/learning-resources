@@ -84,4 +84,23 @@ export const TOPICS: TopicMeta[] = [
     bridge: 'Data Structures & Algorithms starts with the language its costs are written in: what a bound claims, which case it is about, and what it leaves out.',
     handoff: 'Next: the word-RAM model, the machine these step counts quietly assume, and what it hides.',
   },
+  {
+    id: 'rust.partial-moves-destructuring-as',
+    domain: 'rust-systems-engineering',
+    slug: 'rust-systems-engineering/m1-ownership-types-concurrency/ch01-ownership-moves/partial-moves-destructuring-as',
+    title: 'Partial moves and destructuring as transfer',
+    syllabusTitle: 'Partial moves and destructuring as transfer',
+    kind: 'full',
+    // Built ahead of its turn: the two topics before it are content final on their branches, not live on main.
+    status: 'held',
+    milestone: { number: 1, title: 'Ownership, Types, and Concurrency Primitives' },
+    chapter: { number: 1, title: 'Ownership and Moves', section: '1.1' },
+    minutes: 20,
+    verified: '2026-10-12',
+    introduces: ['partial-moves', 'e0509-move-out-of-drop-type', 'e0507-move-out-of-borrow', 'take-replace-idioms', 'binding-modes', 'match-ergonomics-2024', 'destructuring-as-transfer'],
+    uses: ['ownership', 'move-semantics', 'deinitialized-place', 'copy-trait', 'clone-cost', 'box-ownership', 'ownership-signatures', 'e0382', 'counting-allocator', 'drop-trait', 'raii-guard', 'drop-order', 'temporary-scopes', 'drop-flags', 'mem-forget-manuallydrop', 'leak-safety'],
+    declared: ['rust-basics', 'references-basics', 'structs-enums', 'pattern-matching-basics', 'std-collections', 'error-handling-result', 'traits-generics-basics'],
+    bridge: "`Drop` ties a struct's fields to its life. Now: moving fields out one at a time, why a type with `Drop` forbids it, and how a guard hands its buffer (`Buf`) back to the pool (`Pool`) anyway.",
+    handoff: '`PooledBuf` holds the `Pool` by exclusive borrow, so only one guard can exist at a time. Next: when three stages need buffers at once, do you reach for `Arc<Mutex<Pool>>`, or change who owns what?',
+  },
 ];

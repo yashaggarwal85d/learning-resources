@@ -1,0 +1,255 @@
+{
+  "topic": "rust.partial-moves-destructuring-as",
+  "note": "Written to be spoken: one sentence or phrase per line; {\"beat\": s} is a deliberate pause; numbers are phrased the way they are said. `answer` plays after the learner answers a predict step.",
+  "steps": [
+    {
+      "lines": [
+        "A drop ties a struct's fields to its life.",
+        "Now: moving fields out one at a time, why a type with a destructor forbids it, and how a guard hands its buffer back to the pool anyway.",
+        {
+          "beat": 0.4
+        },
+        "Here's the chapter's pipeline. Every message gets a sixty-four K buffer from a pool, and a guard should hand it back when the guard is dropped.",
+        "So inside drop, we try to move the buffer out. And it's refused: the move out of a borrow error.",
+        "The compiler suggests a clone. And it compiles... but a thousand full-size messages now cost a thousand and one allocations.",
+        "We wanted one.",
+        {
+          "beat": 0.3
+        },
+        "First the pipeline. Then why fields resist leaving. Then the free fix."
+      ]
+    },
+    {
+      "lines": [
+        "Here's the pipeline the rest of this reel uses.",
+        "One function gets a buffer from the pool. That's the only place a sixty-four K buffer is ever allocated.",
+        "Fill borrows it exclusively. Inspect borrows it to read the header, a small copy type. Consume takes it and hands it back. And put returns it to the pool.",
+        "A thousand small messages... one allocation.",
+        "Every handover moves a thirty-two byte handle, never the payload.",
+        "Owning the buffer through that chain is this topic's job."
+      ]
+    },
+    {
+      "lines": [
+        "Take one field out of a struct, and the buffer moves to a new owner. The struct keeps a hole.",
+        "The heap bytes never move. Only the handle does.",
+        "The header is a copy type, so reading it just copies.",
+        "But the frame as a whole is now partially moved. That's the use-after-move error, in its partial form."
+      ]
+    },
+    {
+      "lines": [
+        "Let's predict one.",
+        "A struct of three trace probes. One field has been moved out into a local.",
+        "At the closing brace, what gets dropped, and in what order?"
+      ],
+      "answer": [
+        "Body first... it lives on in its new owner, declared last.",
+        "Then the struct drops what it still holds: head, then tail.",
+        "The hole drops nothing."
+      ]
+    },
+    {
+      "lines": [
+        "A hole can be filled again. Put a new value in, and the struct is whole.",
+        "It has to be declared mutable, and then you can move it as a unit.",
+        "Move a field on only one path, and the compiler keeps a drop flag for that one field.",
+        "At the brace, it checks the flag before dropping it. The other fields drop without a check."
+      ]
+    },
+    {
+      "lines": [
+        "Another prediction.",
+        "Four ways to take a buffer out of something that owns it.",
+        "Which line compiles?"
+      ],
+      "answer": [
+        "Only the box.",
+        "A vector index, a reference-counted pointer and a reference all reach the value through a borrow... and you can't move out through a borrow.",
+        "A box is the one pointer the language lets you move out of."
+      ]
+    },
+    {
+      "lines": [
+        "Now give the struct a destructor, and it's sealed.",
+        "The guard holds the buffer and the pool, and returns the buffer when it drops.",
+        "Try to destructure it, and you get the move out of a drop type error.",
+        "Why? Drop gets the whole value, and may read every field. A field moved out early would hand it a hole.",
+        "Copy fields can still be read, because a copy moves nothing."
+      ]
+    },
+    {
+      "lines": [
+        "Here's a debugging question.",
+        "The move out of a drop type error says: bind the field by reference instead.",
+        "Does that fix into inner?"
+      ],
+      "answer": [
+        "No. A ref binding only borrows... and expect wants to own the option.",
+        "So you trade one error for another.",
+        "To take the buffer out of a sealed guard, the field has to be able to say it's empty."
+      ]
+    },
+    {
+      "lines": [
+        "Through a borrow, you may never leave a hole.",
+        "The owner gets the value back when the loan ends, and will read it or drop it.",
+        "So moving a field out through an exclusive reference is refused, even if you'd refill it on the very next line.",
+        "That's the move out of a borrow error.",
+        "The way out: put something back, in the same step."
+      ]
+    },
+    {
+      "lines": [
+        "Every one of these takes the value out and puts something back, in the same step.",
+        "Option take leaves none. Mem take leaves the default value. Mem replace leaves whatever you give it. And mem swap trades two places.",
+        "None of them allocates anything.",
+        "For collections, an owning removal does the same job: pop, swap remove, or drain."
+      ]
+    },
+    {
+      "lines": [
+        "One more prediction.",
+        "A stage hands each message's bytes to a writer with mem take, and returns the buffer to the pool.",
+        "How many allocations for a thousand messages?"
+      ],
+      "answer": [
+        "A thousand. Mem take leaves an empty vector behind, with no capacity.",
+        "So the pool's sixty-four K left with the bytes, and every message after that allocates again.",
+        "Take the whole buffer, or hand the bytes back."
+      ]
+    },
+    {
+      "lines": [
+        "Now we can solve the first problem.",
+        "Make already handed back a state the field can be in. The guard stores its buffer in an option.",
+        "At the brace, drop calls option take. The buffer goes to the pool, and none takes its place. No field is ever missing.",
+        "A thousand full-size messages... one allocation.",
+        "And here, the option costs no space at all."
+      ]
+    },
+    {
+      "lines": [
+        "The guard has a second way out.",
+        "Into inner takes the buffer out and returns it. Then the guard drops at the closing brace.",
+        "What does its drop do?"
+      ],
+      "answer": [
+        "Nothing. Take left a none behind, so when the guard drops, there's nothing to put back.",
+        "And take only borrows the field, so it isn't a move out of a drop type.",
+        "The caller owns the buffer now."
+      ]
+    },
+    {
+      "lines": [
+        "Here's where the guard earns its keep: the error path.",
+        "By hand, the put sits after the question mark. So every bad message throws its buffer away, and the next one has to allocate.",
+        "With the guard, the early return drops the guard, and the guard puts the buffer back.",
+        "A hundred allocations against one.",
+        "A panic that unwinds through the stage runs the same drop. Only a leaked guard loses its buffer, and leaking is safe."
+      ]
+    },
+    {
+      "lines": [
+        "A pattern is where ownership of the parts changes hands.",
+        "Each name in it either copies, moves, or borrows.",
+        "A plain name copies a copy type, and moves anything else.",
+        "Add ref, and that part is only borrowed. And an underscore touches nothing.",
+        "So destructuring the frame copies the header, moves the payload, and leaves the frame partially moved.",
+        "Struct update syntax moves too, the fields it fills in."
+      ]
+    },
+    {
+      "lines": [
+        "Two patterns that look alike.",
+        "An underscore on its own, and an underscore with a letter.",
+        "Which one leaves the option usable afterwards?"
+      ],
+      "answer": [
+        "Only the bare underscore. It binds nothing, so nothing moves.",
+        "An underscore-prefixed name is still a name... it takes the buffer."
+      ]
+    },
+    {
+      "lines": [
+        "Match on a reference, and every name in the pattern becomes a reference.",
+        "The compiler carries a default binding mode. It starts at move.",
+        "Pass an ampersand, and it becomes ref. Pass a mutable one, and it becomes ref mut.",
+        "And there's no way back from ref.",
+        "So matching on a reference moves nothing. This is match ergonomics."
+      ]
+    },
+    {
+      "lines": [
+        "One pattern changed meaning.",
+        "A copy type. A pattern that borrows the frame, and asks for a mutable header.",
+        "What happens to the frame?"
+      ],
+      "answer": [
+        "In the twenty twenty-one edition it quietly edits a copy, and the frame keeps zero.",
+        "In the twenty twenty-four edition it doesn't compile.",
+        "If you want to edit the frame, borrow it mutably."
+      ]
+    },
+    {
+      "lines": [
+        "The twenty twenty-four edition reserves three spellings inside a pattern that's already borrowing.",
+        "Mut on a name. An explicit ref. And an ampersand pattern.",
+        "Each one is an error now. And each has a fully explicit rewrite.",
+        "Cargo fix will write that rewrite for you, and it keeps the old meaning.",
+        "Which might be a bug you never noticed. So read what it writes."
+      ]
+    },
+    {
+      "lines": [
+        "Time to prove it.",
+        "A pattern takes the tail. Then the head goes to drop.",
+        "In what order do the three destructors run?"
+      ],
+      "answer": [
+        "Head, tail, body.",
+        "Head goes the moment you pass it to drop.",
+        "At the brace, the tail binding goes first... then the struct, which only has the body left."
+      ]
+    },
+    {
+      "lines": [
+        "Prove it, number two.",
+        "A stage hands its buffer out through an exclusive reference, and the compiler says no.",
+        "Which fix allocates nothing?"
+      ],
+      "answer": [
+        "Mem replace, with an empty buffer.",
+        "The buffer goes out, an empty one goes in, and an empty vector costs nothing.",
+        "Clone works but allocates. Mem take needs a default. And destructuring through the reference is the same error again."
+      ]
+    },
+    {
+      "lines": [
+        "Prove it, number three.",
+        "Three ways to build the guard's buffer field. All three pass the happy path with one allocation.",
+        "Which design do you ship?"
+      ],
+      "answer": [
+        "Keep the option.",
+        "A placeholder can't tell drop that the buffer is already gone, so the pool fills up with empty buffers.",
+        "Manually drop needs unsafe. None says exactly what happened, and here it costs nothing."
+      ]
+    },
+    {
+      "lines": [
+        "Six things to keep.",
+        "Moving a field out leaves a hole, and the struct still drops the rest.",
+        "A type with a destructor is sealed.",
+        "Through a borrow, you never leave a hole. So take, replace and swap put one back.",
+        "A guard's field is an option.",
+        "And every pattern binding moves, copies, or borrows.",
+        {
+          "beat": 0.3
+        },
+        "The pooled buffer guard holds the pool by exclusive borrow, so only one guard can exist at a time.",
+        "Next: when three stages need buffers at once, do you reach for an arc of mutex around the pool, or change who owns what?"
+      ]
+    }
+  ]
+}
