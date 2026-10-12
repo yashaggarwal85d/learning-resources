@@ -1,0 +1,1078 @@
+{
+  "topic": "de.git-branching-history-workflows",
+  "syllabus": [
+    {
+      "clause": "rebase vs merge (linear history vs preserved topology)",
+      "at": [
+        {
+          "step": "Merge or rebase?"
+        },
+        {
+          "deep": "Merge and rebase, precisely"
+        },
+        {
+          "deep": "Commits, IDs and the graph"
+        }
+      ]
+    },
+    {
+      "clause": "interactive history cleanup",
+      "at": [
+        {
+          "step": "Clean up before you push"
+        },
+        {
+          "deep": "Rewriting history safely"
+        }
+      ]
+    },
+    {
+      "clause": "git bisect to find regressions",
+      "at": [
+        {
+          "step": "bisect halves the suspects"
+        },
+        {
+          "step": "bisect run: the test is the oracle"
+        },
+        {
+          "deep": "Bisect"
+        },
+        {
+          "deep": "Try it"
+        }
+      ]
+    },
+    {
+      "clause": "conflict resolution",
+      "at": [
+        {
+          "step": "Conflicts: base, ours, theirs"
+        },
+        {
+          "deep": "Conflicts"
+        }
+      ]
+    },
+    {
+      "clause": "PR flow",
+      "at": [
+        {
+          "step": "Three ways to land a PR"
+        },
+        {
+          "deep": "Landing a pull request"
+        }
+      ]
+    },
+    {
+      "clause": "trunk-based vs long-lived branches",
+      "at": [
+        {
+          "step": "Short-lived branches, one trunk"
+        },
+        {
+          "deep": "Branching models"
+        }
+      ]
+    }
+  ],
+  "sources": [
+    {
+      "source": "git-bisect documentation (git-scm.com/docs/git-bisect, Git 2.56.0)",
+      "items": [
+        {
+          "item": "Basic bisect commands: start, bad, good",
+          "at": [
+            {
+              "step": "bisect halves the suspects"
+            },
+            {
+              "deep": "Bisect"
+            }
+          ]
+        },
+        {
+          "item": "Bisect reset",
+          "at": [
+            {
+              "deep": "Bisect"
+            }
+          ]
+        },
+        {
+          "item": "Alternate terms (old and new)",
+          "at": [
+            {
+              "deep": "Bisect"
+            }
+          ]
+        },
+        {
+          "item": "Bisect visualize and view",
+          "at": [
+            {
+              "out": "a viewer for the remaining suspects; the same state is in bisect log, which the Deep dive covers"
+            }
+          ]
+        },
+        {
+          "item": "Bisect log and bisect replay",
+          "at": [
+            {
+              "deep": "Bisect"
+            }
+          ]
+        },
+        {
+          "item": "Avoiding testing a commit: bisect skip",
+          "at": [
+            {
+              "deep": "Bisect"
+            }
+          ]
+        },
+        {
+          "item": "Bisect next",
+          "at": [
+            {
+              "out": "a rarely used command; the Deep dive teaches the start, good, bad, skip and run cycle that selects each next commit"
+            }
+          ]
+        },
+        {
+          "item": "Cutting down bisection by giving more parameters to bisect start (several good commits, pathspec)",
+          "at": [
+            {
+              "deep": "Bisect"
+            }
+          ]
+        },
+        {
+          "item": "Bisect run, its exit codes and exit code 125",
+          "at": [
+            {
+              "step": "bisect run: the test is the oracle"
+            },
+            {
+              "deep": "Bisect"
+            },
+            {
+              "deep": "Try it"
+            }
+          ]
+        },
+        {
+          "item": "Options: --no-checkout",
+          "at": [
+            {
+              "deep": "Bisect"
+            }
+          ]
+        },
+        {
+          "item": "Options: --first-parent",
+          "at": [
+            {
+              "deep": "Bisect"
+            },
+            {
+              "deep": "Try it"
+            }
+          ]
+        },
+        {
+          "item": "Options: --reset-when-found",
+          "at": [
+            {
+              "deep": "Bisect"
+            },
+            {
+              "deep": "What's changing"
+            }
+          ]
+        },
+        {
+          "item": "Examples: bisect a broken build or a failing test, with a script outside the repository",
+          "at": [
+            {
+              "step": "bisect run: the test is the oracle"
+            },
+            {
+              "deep": "Try it"
+            }
+          ]
+        },
+        {
+          "item": "Example: bisect with temporary modifications (hot-fix)",
+          "at": [
+            {
+              "out": "an uncommon variant that patches each checkout; the Deep dive keeps to the plain test-as-oracle run"
+            }
+          ]
+        },
+        {
+          "item": "Example: single-line test with sh -c",
+          "at": [
+            {
+              "out": "a shell one-liner form of the same run command; the reel and lab use a script file outside the repository"
+            }
+          ]
+        },
+        {
+          "item": "Example: locate a good region of the object graph in a damaged repository",
+          "at": [
+            {
+              "out": "repository-repair forensics, not a regression hunt in history"
+            }
+          ]
+        },
+        {
+          "item": "Example: look for a fix instead of a regression",
+          "at": [
+            {
+              "deep": "Bisect"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "git-rebase documentation (git-scm.com/docs/git-rebase, Git 2.54.0)",
+      "items": [
+        {
+          "item": "Replay the commits one by one; conflict handling with --continue, --skip, --abort; ORIG_HEAD",
+          "at": [
+            {
+              "step": "Merge or rebase?"
+            },
+            {
+              "deep": "Merge and rebase, precisely"
+            },
+            {
+              "deep": "Conflicts"
+            },
+            {
+              "deep": "Rewriting history safely"
+            }
+          ]
+        },
+        {
+          "item": "Transplanting a topic branch with --onto",
+          "at": [
+            {
+              "deep": "Merge and rebase, precisely"
+            }
+          ]
+        },
+        {
+          "item": "Mode options: --continue, --skip, --abort",
+          "at": [
+            {
+              "step": "Conflicts: base, ours, theirs"
+            },
+            {
+              "deep": "Conflicts"
+            }
+          ]
+        },
+        {
+          "item": "Mode options: --quit, --edit-todo, --show-current-patch",
+          "at": [
+            {
+              "out": "housekeeping for a rebase already in progress; the Deep dive teaches continue, skip and abort"
+            }
+          ]
+        },
+        {
+          "item": "Options: --onto and --keep-base",
+          "at": [
+            {
+              "deep": "Merge and rebase, precisely"
+            }
+          ]
+        },
+        {
+          "item": "Options: --reapply-cherry-picks and skipping commits already upstream",
+          "at": [
+            {
+              "deep": "Merge and rebase, precisely"
+            }
+          ]
+        },
+        {
+          "item": "Options: --apply, --empty, --keep-empty, --allow-empty-message",
+          "at": [
+            {
+              "out": "handling of empty commits and the older apply backend; detail beyond a refresher"
+            }
+          ]
+        },
+        {
+          "item": "Options: -m/--merge, -s/--strategy, -X/--strategy-option (ours and theirs reversed)",
+          "at": [
+            {
+              "deep": "Conflicts"
+            }
+          ]
+        },
+        {
+          "item": "Option: --rerere-autoupdate",
+          "at": [
+            {
+              "deep": "Conflicts"
+            }
+          ]
+        },
+        {
+          "item": "Options: -S/--gpg-sign, --signoff, --trailer",
+          "at": [
+            {
+              "out": "commit signing and trailers are policy options, not branching or history skills"
+            }
+          ]
+        },
+        {
+          "item": "Options: -q, -v, --stat, -n, --no-verify, -C<n>, --ignore-whitespace, --whitespace",
+          "at": [
+            {
+              "out": "output, hook and whitespace toggles"
+            }
+          ]
+        },
+        {
+          "item": "Options: --no-ff, --force-rebase, -f, --committer-date-is-author-date, --ignore-date",
+          "at": [
+            {
+              "deep": "Merge and rebase, precisely"
+            }
+          ]
+        },
+        {
+          "item": "Option: --fork-point",
+          "at": [
+            {
+              "deep": "Commits, IDs and the graph"
+            },
+            {
+              "deep": "Merge and rebase, precisely"
+            }
+          ]
+        },
+        {
+          "item": "Options: -i/--interactive and the todo verbs",
+          "at": [
+            {
+              "step": "Clean up before you push"
+            },
+            {
+              "deep": "Rewriting history safely"
+            }
+          ]
+        },
+        {
+          "item": "Option: -r/--rebase-merges",
+          "at": [
+            {
+              "deep": "Merge and rebase, precisely"
+            }
+          ]
+        },
+        {
+          "item": "Option: -x/--exec",
+          "at": [
+            {
+              "deep": "Rewriting history safely"
+            }
+          ]
+        },
+        {
+          "item": "Option: --root",
+          "at": [
+            {
+              "out": "rebasing the very first commits of a branch; rarely needed in a branching workflow"
+            }
+          ]
+        },
+        {
+          "item": "Option: --autosquash and rebase.autoSquash",
+          "at": [
+            {
+              "step": "Clean up before you push"
+            },
+            {
+              "deep": "Rewriting history safely"
+            }
+          ]
+        },
+        {
+          "item": "Options: --autostash, --reschedule-failed-exec",
+          "at": [
+            {
+              "out": "working-tree and failed-exec housekeeping options"
+            }
+          ]
+        },
+        {
+          "item": "Option: --update-refs",
+          "at": [
+            {
+              "deep": "Rewriting history safely"
+            },
+            {
+              "deep": "What's changing"
+            }
+          ]
+        },
+        {
+          "item": "Incompatible options and behavioural differences between the apply and merge backends",
+          "at": [
+            {
+              "out": "implementation detail of the two backends, beyond a refresher"
+            }
+          ]
+        },
+        {
+          "item": "Merge strategies",
+          "at": [
+            {
+              "deep": "Conflicts"
+            }
+          ]
+        },
+        {
+          "item": "Recovering from an upstream rebase",
+          "at": [
+            {
+              "deep": "Rewriting history safely"
+            },
+            {
+              "deep": "In production"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "git-merge documentation (git-scm.com/docs/git-merge, Git 2.54.0)",
+      "items": [
+        {
+          "item": "Description and options: --ff, --no-ff, --ff-only",
+          "at": [
+            {
+              "deep": "Merge and rebase, precisely"
+            }
+          ]
+        },
+        {
+          "item": "Pre-merge checks",
+          "at": [
+            {
+              "out": "a merge starts from a clean working tree; the Deep dive notes only that merge --abort may not restore uncommitted changes"
+            }
+          ]
+        },
+        {
+          "item": "Fast-forward merge",
+          "at": [
+            {
+              "deep": "Merge and rebase, precisely"
+            }
+          ]
+        },
+        {
+          "item": "True merge: both branches tied together by a merge commit with two parents",
+          "at": [
+            {
+              "step": "Merge or rebase?"
+            },
+            {
+              "deep": "Merge and rebase, precisely"
+            }
+          ]
+        },
+        {
+          "item": "Merging a tag",
+          "at": [
+            {
+              "out": "merging a signed tag is a release and signing workflow, not day-to-day branching"
+            }
+          ]
+        },
+        {
+          "item": "How conflicts are presented: markers and the diff3 and zdiff3 styles",
+          "at": [
+            {
+              "step": "Conflicts: base, ours, theirs"
+            },
+            {
+              "deep": "Conflicts"
+            }
+          ]
+        },
+        {
+          "item": "How to resolve conflicts: edit, add, continue, abort",
+          "at": [
+            {
+              "step": "Conflicts: base, ours, theirs"
+            },
+            {
+              "deep": "Conflicts"
+            }
+          ]
+        },
+        {
+          "item": "Merge strategies: ort is the default",
+          "at": [
+            {
+              "deep": "Merge and rebase, precisely"
+            }
+          ]
+        },
+        {
+          "item": "Configuration: merge.conflictStyle",
+          "at": [
+            {
+              "step": "Conflicts: base, ours, theirs"
+            },
+            {
+              "deep": "Conflicts"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "Pro Git, Git Branching - Rebasing (git-scm.com/book)",
+      "items": [
+        {
+          "item": "The basic rebase: replay onto a target, fast-forward afterwards, linear history",
+          "at": [
+            {
+              "step": "Merge or rebase?"
+            },
+            {
+              "deep": "Merge and rebase, precisely"
+            }
+          ]
+        },
+        {
+          "item": "More interesting rebases: --onto",
+          "at": [
+            {
+              "deep": "Merge and rebase, precisely"
+            }
+          ]
+        },
+        {
+          "item": "The perils of rebasing: do not rebase commits that exist outside your repository",
+          "at": [
+            {
+              "step": "Clean up before you push"
+            },
+            {
+              "deep": "Rewriting history safely"
+            }
+          ]
+        },
+        {
+          "item": "Rebase when you rebase: patch-id, git pull --rebase and pull.rebase",
+          "at": [
+            {
+              "deep": "Merge and rebase, precisely"
+            }
+          ]
+        },
+        {
+          "item": "Rebase vs merge: history as a record or as a story",
+          "at": [
+            {
+              "step": "Merge or rebase?"
+            },
+            {
+              "deep": "Merge and rebase, precisely"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "GitHub Docs, About pull request merges",
+      "items": [
+        {
+          "item": "Strategy comparison: merge commit, squash and merge, rebase and merge",
+          "at": [
+            {
+              "step": "Three ways to land a PR"
+            },
+            {
+              "deep": "Landing a pull request"
+            }
+          ]
+        },
+        {
+          "item": "Merge commit: --no-ff, full history, explicit merge point",
+          "at": [
+            {
+              "step": "Three ways to land a PR"
+            },
+            {
+              "deep": "Landing a pull request"
+            }
+          ]
+        },
+        {
+          "item": "Squash and merge: a single commit, and the caveat for long-running branches",
+          "at": [
+            {
+              "step": "Three ways to land a PR"
+            },
+            {
+              "deep": "Landing a pull request"
+            }
+          ]
+        },
+        {
+          "item": "Rebase and merge: linear history, new SHAs and committer information, empty commits",
+          "at": [
+            {
+              "step": "Three ways to land a PR"
+            },
+            {
+              "deep": "Landing a pull request"
+            }
+          ]
+        },
+        {
+          "item": "Indirect merges",
+          "at": [
+            {
+              "deep": "Landing a pull request"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "Trunk Based Development (trunkbaseddevelopment.com)",
+      "items": [
+        {
+          "item": "One trunk and no long-lived development branches",
+          "at": [
+            {
+              "step": "Short-lived branches, one trunk"
+            },
+            {
+              "deep": "Branching models"
+            }
+          ]
+        },
+        {
+          "item": "Prefer trunk-based development to GitFlow; direct commits or pull requests with short-lived branches",
+          "at": [
+            {
+              "step": "Short-lived branches, one trunk"
+            },
+            {
+              "deep": "Branching models"
+            }
+          ]
+        },
+        {
+          "item": "Short-lived branches exist for review and CI; release branches cut just in time, or release from trunk and fix forward",
+          "at": [
+            {
+              "step": "Short-lived branches, one trunk"
+            },
+            {
+              "deep": "Branching models"
+            }
+          ]
+        },
+        {
+          "item": "Commit to the trunk at least every 24 hours (Continuous Integration)",
+          "at": [
+            {
+              "step": "Short-lived branches, one trunk"
+            },
+            {
+              "deep": "Branching models"
+            }
+          ]
+        },
+        {
+          "item": "History of the model and comparison with GitHub Flow and Gitflow",
+          "at": [
+            {
+              "deep": "Branching models"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "Git 2.55 and 2.56 release notes and manual pages (frontier scan, content review 2026-10-11)",
+      "items": [
+        {
+          "item": "git history (experimental): fixup in 2.55, drop in 2.56",
+          "at": [
+            {
+              "deep": "What's changing"
+            }
+          ]
+        },
+        {
+          "item": "git add --resolved (2.56)",
+          "at": [
+            {
+              "deep": "What's changing"
+            }
+          ]
+        },
+        {
+          "item": "git replay --linearize (2.56)",
+          "at": [
+            {
+              "deep": "What's changing"
+            }
+          ]
+        },
+        {
+          "item": "git branch --delete-merged (2.56)",
+          "at": [
+            {
+              "deep": "What's changing"
+            }
+          ]
+        },
+        {
+          "item": "git bisect --reset-when-found (2.56)",
+          "at": [
+            {
+              "deep": "What's changing"
+            }
+          ]
+        },
+        {
+          "item": "Other items in the two release notes (transport, packaging, reftable, hooks and similar)",
+          "at": [
+            {
+              "out": "not about branching, history rewriting, conflicts or pull requests"
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "independent Opus agent, blind",
+    "date": "2026-10-11",
+    "items": [
+      {
+        "item": "Merge keeps true topology: a fast-forward just moves the branch pointer, a three-way merge records a merge commit with two parents; --no-ff forces a merge commit even when fast-forward is possible, --ff-only refuses anything but a fast-forward.",
+        "at": [
+          {
+            "step": "Merge or rebase?"
+          },
+          {
+            "deep": "Merge and rebase, precisely"
+          }
+        ]
+      },
+      {
+        "item": "Rebase replays each commit on a new base, creating new commits with new SHAs, which gives a linear history at the cost of rewriting it. The golden rule: do not rebase commits that exist outside your repository and that people may have based work on.",
+        "at": [
+          {
+            "step": "Merge or rebase?"
+          },
+          {
+            "step": "Clean up before you push"
+          },
+          {
+            "deep": "Merge and rebase, precisely"
+          },
+          {
+            "deep": "Rewriting history safely"
+          }
+        ]
+      },
+      {
+        "item": "Rebase mechanics beyond the basics: --onto <newbase> transplants a range of commits (e.g. a topic branched off another topic), --keep-base rebases without moving the fork point, merge commits are dropped unless you pass --rebase-merges, and during a rebase 'ours' is the upstream series rebased so far while 'theirs' is your own branch (the reverse of a merge).",
+        "at": [
+          {
+            "deep": "Merge and rebase, precisely"
+          },
+          {
+            "deep": "Conflicts"
+          }
+        ]
+      },
+      {
+        "item": "git pull is fetch plus merge or rebase; when local and remote have diverged, choose explicitly with --rebase or --ff-only (or the pull.rebase / pull.ff config) instead of producing accidental merge commits.",
+        "at": [
+          {
+            "deep": "Merge and rebase, precisely"
+          }
+        ]
+      },
+      {
+        "item": "Interactive history cleanup before sharing: commit --amend for the last commit, and rebase -i to reorder, reword, edit, squash, fixup, split or drop commits; --exec <cmd> runs the test suite after every rewritten commit so each one still builds.",
+        "at": [
+          {
+            "step": "Clean up before you push"
+          },
+          {
+            "deep": "Rewriting history safely"
+          }
+        ]
+      },
+      {
+        "item": "Fixup workflow for review feedback: commit --fixup=<commit> (or --fixup=amend:/reword:) records a correction aimed at an earlier commit, and rebase -i --autosquash (or rebase.autoSquash) folds it in automatically.",
+        "at": [
+          {
+            "step": "Clean up before you push"
+          },
+          {
+            "deep": "Rewriting history safely"
+          }
+        ]
+      },
+      {
+        "item": "Stacked branches: rebase --update-refs force-updates every branch that points at a commit being rebased, so a stack of dependent PR branches moves together in one rebase.",
+        "at": [
+          {
+            "deep": "Rewriting history safely"
+          },
+          {
+            "deep": "What's changing"
+          }
+        ]
+      },
+      {
+        "item": "git range-diff compares two versions of a patch series (e.g. my-topic@{u} vs my-topic after a rebase) commit by commit, which is how a reviewer checks what actually changed in a force-pushed PR.",
+        "at": [
+          {
+            "deep": "Rewriting history safely"
+          }
+        ]
+      },
+      {
+        "item": "Safe force push after rewriting a PR branch: --force-with-lease refuses to overwrite the remote unless it still matches your remote-tracking ref, and --force-if-includes also guards against a background fetch having updated that ref.",
+        "at": [
+          {
+            "deep": "Rewriting history safely"
+          }
+        ]
+      },
+      {
+        "item": "The reflog is the undo log for rewrites: HEAD@{n} and ORIG_HEAD recover a bad rebase or reset; reflog entries expire (90 days by default, 30 days for unreachable ones), so recovery is time-limited and local-only.",
+        "at": [
+          {
+            "step": "Clean up before you push"
+          },
+          {
+            "deep": "Rewriting history safely"
+          }
+        ]
+      },
+      {
+        "item": "Revision ranges: A..B means commits reachable from B but not A (what a branch adds), A...B is the symmetric difference; git merge-base finds the fork point that PR diffs are computed against (--fork-point uses the reflog).",
+        "at": [
+          {
+            "deep": "Commits, IDs and the graph"
+          }
+        ]
+      },
+      {
+        "item": "git bisect performs a binary search between a known good and a known bad commit: start/good/bad, skip for untestable commits, reset to finish, custom terms (old/new) when hunting a change rather than a bug, and --first-parent to follow only the mainline in merge-heavy history.",
+        "at": [
+          {
+            "step": "bisect halves the suspects"
+          },
+          {
+            "deep": "Bisect"
+          }
+        ]
+      },
+      {
+        "item": "Automated bisect: git bisect run <cmd> uses the command's exit code as the oracle: 0 means good, 1-127 (except 125) means bad, and 125 means skip; a failing test script makes regression hunting fully mechanical.",
+        "at": [
+          {
+            "step": "bisect run: the test is the oracle"
+          },
+          {
+            "deep": "Bisect"
+          }
+        ]
+      },
+      {
+        "item": "Conflict mechanics: markers <<<<<<< ======= >>>>>>> delimit the two sides; merge.conflictStyle diff3 or zdiff3 adds the common-ancestor version (|||||||) so you can see what each side changed; git merge --abort (or rebase --abort/--continue/--skip) gets you out or forward.",
+        "at": [
+          {
+            "step": "Conflicts: base, ours, theirs"
+          },
+          {
+            "deep": "Conflicts"
+          }
+        ]
+      },
+      {
+        "item": "Advanced resolution: the index holds stage 1 (base), 2 (ours) and 3 (theirs) for a conflicted file; you can check out one side, re-merge with -Xignore-space-change for whitespace noise, and ort is the default merge strategy.",
+        "at": [
+          {
+            "deep": "Conflicts"
+          }
+        ]
+      },
+      {
+        "item": "git rerere (reuse recorded resolution), enabled with rerere.enabled, records how you resolved a conflict and replays it when the same conflict reappears, e.g. when repeatedly rebasing a long-running branch.",
+        "at": [
+          {
+            "deep": "Conflicts"
+          }
+        ]
+      },
+      {
+        "item": "Undoing on shared history means revert, not reset; reverting a merge needs -m <parent-number> to pick the mainline, and it declares you never want that merge's tree changes, so re-merging the branch later will not bring them back unless you revert the revert.",
+        "at": [
+          {
+            "deep": "Rewriting history safely"
+          }
+        ]
+      },
+      {
+        "item": "PR merge methods and their history shape: merge commit preserves the branch topology, squash and merge collapses the PR to one commit (losing intermediate commits on the base), rebase and merge adds each commit linearly but rewrites them as new commits.",
+        "at": [
+          {
+            "step": "Three ways to land a PR"
+          },
+          {
+            "deep": "Landing a pull request"
+          }
+        ]
+      },
+      {
+        "item": "Branch protection enforces the PR flow: required status checks (strict mode requires the branch to be up to date with base), required reviews, require linear history, and force pushes and deletion disabled by default on protected branches.",
+        "at": [
+          {
+            "deep": "Landing a pull request"
+          }
+        ]
+      },
+      {
+        "item": "A merge queue tests each PR against the latest base plus the PRs ahead of it on temporary gh-readonly-queue/* branches before merging, which removes the 'green PR, red main' race on busy trunks; CI must trigger on the merge_group event.",
+        "at": [
+          {
+            "deep": "Landing a pull request"
+          },
+          {
+            "deep": "In production"
+          },
+          {
+            "deep": "What's changing"
+          }
+        ]
+      },
+      {
+        "item": "CODEOWNERS automatically requests reviews from the owners of changed paths (not on draft PRs), and when required reviews are enabled, approval from a code owner can be made mandatory before merge.",
+        "at": [
+          {
+            "topic": "Software delivery workflow",
+            "quote": "code-review norms"
+          }
+        ]
+      },
+      {
+        "item": "Commit messages as part of history: a short summary line (about 50 characters) in the imperative, a blank line, then the why; clean messages are what make log, blame and bisect output usable.",
+        "at": [
+          {
+            "deep": "Commits, IDs and the graph"
+          }
+        ]
+      },
+      {
+        "item": "Trunk-based development: everyone integrates into a single trunk; if branches are used they are short-lived feature branches that last a couple of days at most before being merged and deleted, beyond which they become long-lived branches.",
+        "at": [
+          {
+            "step": "Short-lived branches, one trunk"
+          },
+          {
+            "deep": "Branching models"
+          }
+        ]
+      },
+      {
+        "item": "Long-lived branches (GitFlow-style develop/release/feature branches) defer integration, so merge pain grows with branch age; trunkbaseddevelopment.com argues for trunk-based development instead of models with multiple long-running branches.",
+        "at": [
+          {
+            "step": "Short-lived branches, one trunk"
+          },
+          {
+            "deep": "Branching models"
+          }
+        ]
+      },
+      {
+        "item": "Release branches in trunk-based development: cut a release branch late (just in time), fix bugs on trunk first and cherry-pick them onto the release branch, and do not develop on the release branch; cherry-pick -x records the source commit.",
+        "at": [
+          {
+            "step": "Short-lived branches, one trunk"
+          },
+          {
+            "deep": "Branching models"
+          }
+        ]
+      },
+      {
+        "item": "Keeping incomplete or large changes on trunk without a long-lived branch: branch by abstraction (introduce an abstraction, migrate behind it, delete the old code, every step keeps the build green) and feature flags to ship code turned off.",
+        "at": [
+          {
+            "step": "Short-lived branches, one trunk"
+          },
+          {
+            "deep": "Branching models"
+          }
+        ]
+      },
+      {
+        "item": "Git-like branching of data itself: catalogs such as Project Nessie apply branch, commit and merge semantics to lakehouse tables, so the Git mental model carries over to isolated pipeline environments.",
+        "at": [
+          {
+            "topic": "Catalog landscape and multi-engine access",
+            "quote": "Project Nessie (git-like multi-table branches and commits)"
+          }
+        ]
+      },
+      {
+        "item": "GitOps: desired state is declared, versioned and immutable in Git, pulled automatically and continuously reconciled by software agents, which turns the PR flow into the deployment mechanism.",
+        "at": [
+          {
+            "topic": "GitOps reconciliation for data platforms",
+            "quote": "pull-based reconcilers"
+          }
+        ]
+      },
+      {
+        "item": "Rewriting an entire repository's history (purging secrets or large files across all commits) with filter-branch, or its recommended replacement git filter-repo.",
+        "at": [
+          {
+            "out": "a rare, disruptive repository-admin task that forces every clone to re-sync, not part of the daily branching workflow; a leaked secret must be rotated anyway"
+          }
+        ]
+      },
+      {
+        "item": "Signing commits and tags with GPG (-S, tag -s) and verifying signatures.",
+        "at": [
+          {
+            "out": "an organisation-level trust and key-management policy rather than a branching or history skill"
+          }
+        ]
+      }
+    ]
+  },
+  "gapReview": {
+    "date": "2026-10-11",
+    "by": "Opus content review (REVIEW.md), gaps 7 to 15 then filled in index.mdx",
+    "open": []
+  }
+}
