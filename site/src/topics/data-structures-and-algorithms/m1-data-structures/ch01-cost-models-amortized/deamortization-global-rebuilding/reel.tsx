@@ -14,7 +14,7 @@ const reel: Reel = {
           131,072 requests arrive while it runs. Is this service fast?
         </>
       ),
-      duration: 4.8,
+      duration: 9.4,
       Visual: S.Opening,
     },
     {
@@ -42,7 +42,7 @@ const reel: Reel = {
           Per append, the tail is 1 write. Per request, wait included, p99 is 494,289 ticks: 349,515 requests, 35%, queue behind a resize. A service is judged on its requests, so their tail is the one that counts.
         </>
       ),
-      duration: 4.8,
+      duration: 6.8,
       Visual: S.Requests,
     },
     {
@@ -53,7 +53,7 @@ const reel: Reel = {
           time. A tail you can ignore per server is the common case per request.
         </>
       ),
-      duration: 4.2,
+      duration: 8.4,
       Visual: S.FanOut,
     },
     {
@@ -64,7 +64,7 @@ const reel: Reel = {
           write 31 elements, but no append costs more than 3.
         </>
       ),
-      duration: 5.6,
+      duration: 11.2,
       Visual: S.Installments,
     },
     {
@@ -75,7 +75,7 @@ const reel: Reel = {
           the old key count; everything else is in the new one.
         </>
       ),
-      duration: 3.4,
+      duration: 7.0,
       Visual: S.TwoBuffers,
     },
     {
@@ -105,7 +105,7 @@ const reel: Reel = {
           now cost 3, so the median got worse. And the O(1) worst case assumes allocation is O(1).
         </>
       ),
-      duration: 3.6,
+      duration: 7.4,
       Visual: S.Costs,
     },
     {
@@ -116,29 +116,29 @@ const reel: Reel = {
           into a compact vector: Θ(n) after Θ(n) deletes, O(1) amortized. The doubling vector does the same for growth. At 1,048,576 keys, one delete still copies 524,288.
         </>
       ),
-      duration: 4.8,
+      duration: 7.8,
       Visual: S.Stale,
     },
     {
       title: 'Rebuild in the background',
       body: (
         <>
-          Overmars’s global rebuilding goes further: start early, rebuild while serving. At 4 tombstones of 16, begin a new copy; each delete also scans 8 slots of the old one, copying live keys. 8 finishes the copy before the old one is half
-          tombstones, the vector’s deadline again. Queries use the old copy. Keys deleted after being copied go into a log, replayed before the swap. No delete writes more than 10.
+          Overmars’s global rebuilding starts early and rebuilds while serving. At 4 tombstones of 16, begin a new copy; each delete also scans 8 slots of the old one, which keeps answering queries. Deletes behind the scan go into a log, replayed
+          before the swap. No delete writes more than 10.
         </>
       ),
-      duration: 5.6,
+      duration: 10.0,
       Visual: S.Background,
     },
     {
       title: 'A tree that stores no balance',
       body: (
         <>
-          Now a tree where only a part goes bad. A scapegoat tree is a plain binary search tree: a key and two pointers per node. The root keeps the size and the largest size since the last full rebuild. Fix α strictly between ½ and 1, here 2/3: a balance
-          parameter, not the last reel’s load factor. A node deeper than h(n) = ⌊log<sub>1/α</sub> n⌋, n counting the new node, is too deep: inserting 69 lands at depth 6, below h(9) = 5.
+          A scapegoat tree is a plain binary search tree, a key and two pointers per node; the root keeps only the size and the largest size since the last full rebuild. With α = 2/3 (a balance parameter, not a load factor), a node deeper than h(n) =
+          ⌊log<sub>1/α</sub> n⌋ is too deep: inserting 69 lands at depth 6, below h(9) = 5.
         </>
       ),
-      duration: 4.6,
+      duration: 9.2,
       Visual: S.Scapegoat,
     },
     {
@@ -164,11 +164,10 @@ const reel: Reel = {
       title: 'Rebuild the subtree, perfectly balanced',
       body: (
         <>
-          Rebuild the scapegoat’s subtree perfectly balanced: walk its 6 nodes in order, make the lower middle one, 63, the root, and recurse. Time is proportional to the subtree. Who pays? Each node holds c·|left size − right size| of potential (0 below 2),
-          for a constant c. An insert adds O(1) at each of its O(log n) ancestors; an unbalanced node holds Θ(its size), enough for the climb and the rebuild. So inserts cost O(log n) amortized.
+          Rebuild the scapegoat’s subtree perfectly balanced: walk its 6 nodes in order, make the lower middle one, 63, the root, and recurse. Time is proportional to the subtree, paid by the potential an unbalanced node holds, so inserts cost O(log n) amortized.
         </>
       ),
-      duration: 3.8,
+      duration: 7.2,
       Visual: S.Rebuild,
     },
     {
@@ -179,7 +178,7 @@ const reel: Reel = {
           tree. That takes Θ(n) deletes first: at a million keys, delete 333,334 rebuilds 666,666 nodes.
         </>
       ),
-      duration: 4.0,
+      duration: 6.2,
       Visual: S.DeleteRebuild,
     },
     {
@@ -190,7 +189,7 @@ const reel: Reel = {
           751,332 nodes. Searches never restructure: their worst case stays O(log n), depth at most 34 here.
         </>
       ),
-      duration: 4.6,
+      duration: 8.4,
       Visual: S.StillAmortized,
     },
     {
@@ -201,7 +200,7 @@ const reel: Reel = {
           And every tick charged a write the same, wherever in memory it landed.
         </>
       ),
-      duration: 4.2,
+      duration: 6.4,
       Visual: S.Back,
     },
     {

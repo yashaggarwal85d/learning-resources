@@ -146,11 +146,12 @@ const Dot = ({ x, y, r = 5, f = C.crema, o = 1 }: { x: number; y: number; r?: nu
 
 // 1 · One request behind half a million copies: the spike, drawn as time that requests spend waiting.
 export function Opening({ t }: StepCtx) {
-  const fill = easeOut(seg(t, 1.6, 3.8));
+  const FS = 4.4; // the copy starts: narrated at "the append that finds it full"
+  const fill = easeOut(seg(t, FS, 8.4));
   const W = 330 * fill; // the queue band
   const dots = [0, 1, 2, 3, 4].map((i) => {
-    const st = 0.2 + 0.25 * i;
-    return { x: lerp(520, 150, seg(t, st, st + 0.9)), flash: seg(t, st + 0.7, st + 0.9) * (1 - seg(t, st + 0.9, st + 1.2)) };
+    const st = 0.3 + 0.5 * i;
+    return { x: lerp(520, 150, seg(t, st, st + 1.6)), flash: seg(t, st + 1.4, st + 1.6) * (1 - seg(t, st + 1.6, st + 2.0)) };
   });
   const flash = Math.max(...dots.map((d) => d.flash));
   return (
@@ -161,20 +162,21 @@ export function Opening({ t }: StepCtx) {
       <rect x={43} y={116} width={104 * fill} height={67} rx={4} fill={C.cherry} />
       <T x={95} y={106} s={13} f={C.latte} a="middle">vector</T>
       <line x1={170} y1={136} x2={520} y2={136} stroke={C.taupe} strokeWidth={1} opacity={0.6} />
-      {t < 1.8 && dots.map((d, i) => d.x > 153 && <Dot key={i} x={d.x} y={136} />)}
+      {t < FS && dots.map((d, i) => d.x > 153 && <Dot key={i} x={d.x} y={136} />)}
       {fill > 0 && (
         <g>
           <rect x={170} y={126} width={Math.max(2, W)} height={20} rx={6} fill={C.cherry} opacity={0.22} stroke={C.cherry} strokeWidth={1.5} />
           {Array.from({ length: Math.floor(W / 11) }, (_, j) => (
             <Dot key={j} x={178 + 11 * j} y={136} r={4} />
           ))}
+          <T x={170} y={168} s={13} f={C.cherryText} o={at(t, FS + 1.0, FS + 1.4)}>requests waiting</T>
         </g>
       )}
-      <T x={40} y={214} s={15} f={C.cherryText} w={600} o={at(t, 1.6, 2.0)}>append 524,289</T>
-      <T x={40} y={240} s={13} f={C.taupe} o={at(t, 1.6, 2.0)}>copies 524,288 keys</T>
-      <T x={40} y={286} s={26} f={C.cherryText} w={700} serif o={at(t, 1.6, 2.0)}>{fmt(131072 * fill)}</T>
-      <T x={40} y={312} s={13} f={C.latte} o={at(t, 1.6, 2.0)}>requests arrive while it copies</T>
-      <T x={40} y={348} s={13} f={C.taupe} o={at(t, 4.0, 4.4)}>1,000,000 requests in all</T>
+      <T x={40} y={214} s={15} f={C.cherryText} w={600} o={at(t, FS, FS + 0.4)}>append 524,289</T>
+      <T x={40} y={240} s={13} f={C.taupe} o={at(t, FS, FS + 0.4)}>copies 524,288 keys</T>
+      <T x={40} y={286} s={26} f={C.cherryText} w={700} serif o={at(t, FS, FS + 0.4)}>{fmt(131072 * fill)}</T>
+      <T x={40} y={312} s={13} f={C.latte} o={at(t, FS, FS + 0.4)}>requests arrive while it copies</T>
+      <T x={40} y={348} s={13} f={C.taupe} o={at(t, 8.6, 9.0)}>1,000,000 requests in all</T>
     </Svg>
   );
 }
@@ -197,7 +199,7 @@ export function AppendP99({ t, answer, portrait }: StepCtx) {
             <T x={cols[k]} y={104} s={15} f={C.taupe} a="middle" o={q}>{heads[c]}</T>
             {!shown && <T x={cols[k]} y={150} s={22} f={C.crema} a="middle" w={700} o={q}>?</T>}
             {shown && (
-              <T x={cols[k]} y={150} s={22} f={k === 1 ? C.cherryText : C.crema} a="middle" w={700} o={at(s, 0.2 + 0.4 * k, 0.5 + 0.4 * k)}>
+              <T x={cols[k]} y={150} s={22} f={k === 1 ? C.cherryText : C.crema} a="middle" w={700} o={at(s, 0.04 + 0.1 * k, 0.2 + 0.1 * k)}>
                 {vals[c]}
               </T>
             )}
@@ -213,27 +215,28 @@ export function AppendP99({ t, answer, portrait }: StepCtx) {
       <T x={40} y={52} s={13} f={C.taupe}>p99: the cost 99 of every 100 appends stay at or under</T>
       {COLS.map((x, i) => (
         <g key={i}>
-          <T x={x} y={100} s={13} f={C.taupe} a="middle" o={q}>{heads[i]}</T>
-          {!shown && <T x={x} y={150} s={20} f={C.crema} a="middle" w={700} o={q}>?</T>}
+          <T x={x} y={92} s={13} f={C.taupe} a="middle" o={q}>{heads[i]}</T>
+          {!shown && <T x={x} y={158} s={20} f={C.crema} a="middle" w={700} o={q}>?</T>}
           {shown && (
-            <T x={x} y={150} s={20} f={i === 3 ? C.cherryText : C.crema} a="middle" w={700} o={at(s, 0.2 + 0.3 * i, 0.5 + 0.3 * i)}>
+            <T x={x} y={158} s={20} f={i === 3 ? C.cherryText : C.crema} a="middle" w={700} o={at(s, 0.04 + 0.08 * i, 0.2 + 0.08 * i)}>
               {vals[i]}
             </T>
           )}
         </g>
       ))}
-      <T x={40} y={124} s={13} f={C.latte} o={q}>append cost (writes)</T>
+      <T x={40} y={122} s={13} f={C.latte} o={q}>append cost (writes)</T>
       <T x={40} y={210} s={13} f={C.latte} o={q}>20 appends resize</T>
       <T x={40} y={236} s={13} f={C.taupe} o={q}>mean: 2.05 writes</T>
       {shown && (
-        <T x={40} y={290} s={13} f={C.latte} o={at(s, 1.6, 2.0)}>p99.99 is 1 too: 99.998% cost 1</T>
+        <T x={40} y={290} s={13} f={C.latte} o={at(s, 0.3, 0.45)}>p99.99 is 1 too: 99.998% cost 1</T>
       )}
     </Svg>
   );
 }
 
 // 3 · Percentiles of requests, not of appends: the same ladder twice, then the share that waited.
-export function Requests({ t }: StepCtx) {
+export function Requests({ t: clock }: StepCtx) {
+  const t = clock / 1.4; // narration is long: spread the beats
   const heads = ['p50', 'p99', 'p99.9', 'max'];
   const r1 = ['1', '1', '1', '524,289'];
   const r2 = ['1', '494,289', '521,289', '524,289'];
@@ -242,7 +245,7 @@ export function Requests({ t }: StepCtx) {
     <Svg label="Two rows of the percentile ladder for the same million requests: the append cost stays at 1 until its maximum of 524,289, while the request latency, wait included, is 1 at p50 then 494,289, 521,289 and 524,289; a bar shows that 349,515 requests, 35 percent, waited behind a resize" h={380}>
       <T x={40} y={26} s={13} f={C.latte}>same million requests, one every 4 ticks</T>
       {COLS.map((x, i) => (
-        <T key={i} x={x} y={58} s={13} f={C.taupe} a="middle" o={at(t, 0.1, 0.4)}>{heads[i]}</T>
+        <T key={i} x={x} y={52} s={13} f={C.taupe} a="middle" o={at(t, 0.1, 0.4)}>{heads[i]}</T>
       ))}
       <T x={40} y={92} s={13} f={C.latte} o={at(t, 0.3, 0.6)}>append cost (writes)</T>
       {r1.map((v, i) => (
@@ -263,7 +266,8 @@ export function Requests({ t }: StepCtx) {
 // 4 · A rare stall becomes common at scale: one slow leaf makes the whole request slow.
 const LEAVES = Array.from({ length: 100 }, (_, i) => ({ x: 44 + 9.63 * (i % 50), y: i < 50 ? 176 : 196 }));
 const SLOW = 37;
-export function FanOut({ t }: StepCtx) {
+export function FanOut({ t: clock }: StepCtx) {
+  const t = clock / 1.9; // narration is long: spread the beats
   const lines = at(t, 0.2, 0.9);
   const slow = at(t, 1.1, 1.4);
   const root = at(t, 1.4, 1.7);
@@ -293,17 +297,17 @@ export function Installments({ t }: StepCtx) {
   const bx = (i: number) => 90 + 27.5 * i;
   const TB = 140;
   const BB = 322;
-  const T9 = [2.1, 2.55, 3.0, 3.45]; // appends 9 to 12
-  const barT = (i: number) => (i < 8 ? 1.4 + 0.075 * i : i < 12 ? T9[i - 8] : 3.7 + 0.1 * (i - 12));
+  const T9 = [5.2, 6.2, 7.2, 8.2]; // appends 9 to 12, at the narration of the gauge
+  const barT = (i: number) => (i < 8 ? 3.4 + 0.1 * i : i < 12 ? T9[i - 8] : 8.9 + 0.15 * (i - 12));
   const drained = T9.filter((x) => t >= x + 0.1).length; // 0..4
   const left = 8 - 2 * drained;
   const level = 8 - 2 * T9.reduce((a, x) => a + at(t, x, x + 0.25), 0);
-  const gaugeOn = at(t, 1.2, 1.6);
+  const gaugeOn = at(t, 3.0, 3.4);
   return (
     <Svg label="The first 16 appends twice. Plain doubling: bars of 1, 2, 3, 1, 5, 1, 1, 1, 9 and seven 1s, 31 writes, largest 9. With 2 moves per append: bars of 1, 2 or 3, never more than 3, also 31 writes. A gauge of keys left to copy drains from 8 by 2 on each of appends 9 to 12" h={380}>
       <T x={90} y={28} s={15} f={C.latte}>plain doubling</T>
       {PLAIN16.map((c, i) => {
-        const g = at(t, 0.2 + 0.06 * i, 0.4 + 0.06 * i);
+        const g = at(t, 0.3 + 0.1 * i, 0.5 + 0.1 * i);
         const h = c * UNIT * g;
         return (
           <g key={i}>
@@ -315,7 +319,7 @@ export function Installments({ t }: StepCtx) {
         );
       })}
       <line x1={90} y1={TB} x2={530} y2={TB} stroke={C.mocha} />
-      <T x={90} y={160} s={13} f={C.latte} o={at(t, 1.2, 1.5)}>31 writes · max 9</T>
+      <T x={90} y={160} s={13} f={C.latte} o={at(t, 2.2, 2.6)}>31 writes · max 9</T>
 
       <T x={40} y={208} s={13} f={C.latte} o={gaugeOn}>left to copy</T>
       <T x={176} y={208} s={17} f={C.caramel} w={700} o={gaugeOn}>{left}</T>
@@ -323,8 +327,8 @@ export function Installments({ t }: StepCtx) {
       <g opacity={gaugeOn}>
         <rect x={40} y={218} width={22} height={96} rx={7} fill="none" stroke={C.taupe} strokeWidth={1} />
         <rect x={41} y={314 - 12 * level - 0.5} width={20} height={Math.max(0.1, 12 * level)} rx={5} fill={C.caramel} />
-        <T x={70} y={228} s={13} f={C.taupe} o={at(t, 3.7, 4.0)}>was 8</T>
-        <line x1={36} y1={218} x2={66} y2={218} stroke={C.taupe} strokeDasharray="3 3" opacity={at(t, 3.7, 4.0)} />
+        <T x={82} y={228} s={13} f={C.taupe} o={at(t, 8.4, 8.8)}>was 8</T>
+        <line x1={36} y1={218} x2={66} y2={218} stroke={C.taupe} strokeDasharray="3 3" opacity={at(t, 8.4, 8.8)} />
       </g>
       <T x={40} y={342} s={13} f={C.taupe} o={gaugeOn}>the last reel’s Φ = 8</T>
       {INC16.map((v, i) => {
@@ -337,9 +341,9 @@ export function Installments({ t }: StepCtx) {
         );
       })}
       <line x1={90} y1={BB} x2={530} y2={BB} stroke={C.mocha} />
-      <line x1={90} y1={BB - 3 * UNIT} x2={lerp(90, 530, easeOut(seg(t, 4.2, 4.7)))} y2={BB - 3 * UNIT} stroke={C.caramel} strokeWidth={2} strokeDasharray="6 5" />
-      <T x={534} y={BB - 3 * UNIT - 6} s={13} f={C.caramel} a="end" o={at(t, 4.5, 4.8)}>3</T>
-      <T x={530} y={342} s={13} f={C.crema} a="end" o={at(t, 4.9, 5.2)}>31 writes · max 3</T>
+      <line x1={90} y1={BB - 3 * UNIT} x2={lerp(90, 530, easeOut(seg(t, 9.8, 10.4)))} y2={BB - 3 * UNIT} stroke={C.caramel} strokeWidth={2} strokeDasharray="6 5" />
+      <T x={534} y={BB - 3 * UNIT - 6} s={13} f={C.caramel} a="end" o={at(t, 10.2, 10.5)}>3</T>
+      <T x={530} y={342} s={13} f={C.crema} a="end" o={at(t, 10.5, 10.9)}>31 writes · max 3</T>
     </Svg>
   );
 }
@@ -362,33 +366,36 @@ const Ring = ({ x, y, w, h, o = 1, f = C.caramel }: { x: number; y: number; w: n
 export function TwoBuffers({ t, portrait }: StepCtx) {
   const { k, m, n } = AFTER10;
   const fx0 = 40 + 30 * k - 2;
+  // index i of a read is the cell labelled i + 1 (cells print keys); each read says which buffer and which key it returns
   const reads = [
-    { label: 'get(1) → new', x: 40, ring: [40 + 30 * 1, 92], t: 1.4 },
-    { label: 'get(5) → old', x: 215, ring: [40 + 30 * 5, 24], t: 2.0 },
-    { label: 'get(9) → new', x: 390, ring: [40 + 30 * 9, 92], t: 2.6 },
+    { a: 'get(1)', b: 'new · key 2', x: 40, ring: [40 + 30 * 1, 92], t: 3.4 },
+    { a: 'get(5)', b: 'old · key 6', x: 215, ring: [40 + 30 * 5, 24], t: 4.6 },
+    { a: 'get(9)', b: 'new · key 10', x: 390, ring: [40 + 30 * 9, 92], t: 5.8 },
   ];
   return (
     <Stack>
-      {!(portrait && t > 1.7) && <Code title="the incremental vector" t={t} start={0.1} end={1.3} lines={TB_CODE} highlight={[3, 5]} />}
-      <Svg fill label="After append 10: the old buffer of 8 slots and the new buffer of 16, with the frontier k = 4 splitting the old keys into moved (faded) and still waiting; three reads show which buffer each index uses: get(1) new, get(5) old, get(9) new" h={210}>
-        <T x={40} y={14} s={13} f={C.latte} o={at(t, 0.3, 0.6)}>old · 8 slots</T>
+      {!(portrait && t > 2.0) && <Code title="the incremental vector" t={t} start={0.1} end={1.6} lines={TB_CODE} highlight={[3, 5]} />}
+      <Svg fill label="After append 10: the old buffer of 8 slots (m = 8) and the new buffer of 16 (n = 10), with the frontier k = 4 splitting the old keys into moved (faded) and still waiting; three reads show which buffer each index uses: get(1) new, key 2; get(5) old, key 6; get(9) new, key 10" h={portrait ? 250 : 226}>
+        <T x={40} y={14} s={13} f={C.latte} o={at(t, 0.5, 0.9)}>old · m = 8 slots</T>
         {Array.from({ length: m }, (_, i) => (
-          <Cell key={i} x={40 + 30 * i} y={24} w={26} label={i + 1} faded={i < k} o={at(t, 0.3, 0.6)} />
+          <Cell key={i} x={40 + 30 * i} y={24} w={26} label={i + 1} faded={i < k} o={at(t, 0.5, 0.9)} />
         ))}
-        <T x={40} y={82} s={13} f={C.latte} o={at(t, 0.3, 0.6)}>new · 16 slots</T>
+        <T x={40} y={82} s={13} f={C.latte} o={at(t, 0.5, 0.9)}>new · 16 slots · n = {n}</T>
         {Array.from({ length: 16 }, (_, i) => {
           const has = i < k || (i >= m && i < n);
-          return <Cell key={i} x={40 + 30 * i} y={92} w={26} label={i + 1} filled={has} o={at(t, 0.3, 0.6)} />;
+          return <Cell key={i} x={40 + 30 * i} y={92} w={26} label={i + 1} filled={has} o={at(t, 0.5, 0.9)} />;
         })}
-        <line x1={fx0} y1={18} x2={fx0} y2={64} stroke={C.caramel} strokeWidth={2} strokeDasharray="5 4" opacity={at(t, 0.8, 1.1)} />
-        <line x1={fx0} y1={90} x2={fx0} y2={124} stroke={C.caramel} strokeWidth={2} strokeDasharray="5 4" opacity={at(t, 0.8, 1.1)} />
-        <T x={fx0} y={146} s={15} f={C.caramel} a="middle" w={600} o={at(t, 0.8, 1.1)}>k = {k}</T>
+        <line x1={fx0} y1={18} x2={fx0} y2={64} stroke={C.caramel} strokeWidth={2} strokeDasharray="5 4" opacity={at(t, 2.0, 2.4)} />
+        <line x1={fx0} y1={90} x2={fx0} y2={124} stroke={C.caramel} strokeWidth={2} strokeDasharray="5 4" opacity={at(t, 2.0, 2.4)} />
+        <T x={fx0} y={146} s={15} f={C.caramel} a="middle" w={600} o={at(t, 2.0, 2.4)}>k = {k}</T>
         {reads.map((r, i) => (
           <g key={i}>
-            <T x={r.x} y={186} s={13} f={C.latte} o={at(t, r.t, r.t + 0.3)}>{r.label}</T>
+            <T x={r.x} y={178} s={13} f={C.crema} w={600} o={at(t, r.t, r.t + 0.3)}>{r.a}</T>
+            <T x={r.x} y={196} s={13} f={C.latte} o={at(t, r.t, r.t + 0.3)}>{r.b}</T>
             <Ring x={r.ring[0]} y={r.ring[1]} w={26} h={26} o={at(t, r.t, r.t + 0.3)} />
           </g>
         ))}
+        {portrait && <T x={40} y={226} s={13} f={C.taupe} o={at(t, 6.4, 6.8)}>old if k ≤ i &lt; m, else new</T>}
       </Svg>
     </Stack>
   );
@@ -400,7 +407,7 @@ export function Race({ t, answer, portrait }: StepCtx) {
   const s = useSinceAnswer(shown);
   const q = at(t, 0.1, 0.6);
   // after appends 10, 11, 12 (local clock): left 6 -> 4 -> 2 -> 0, free 7 -> 6 -> 5 -> 4
-  const steps = [0.3, 0.8, 1.3].map((x) => (shown ? at(s, x, x + 0.4) : 0));
+  const steps = [0.0, 0.12, 0.24].map((x) => (shown ? at(s, x, x + 0.16) : 0)); // the whole reveal ends by 0.45 s
   const done = steps.reduce((a, b) => a + b, 0);
   const left = 6 - 2 * done;
   const free = 7 - done;
@@ -409,7 +416,7 @@ export function Race({ t, answer, portrait }: StepCtx) {
   const U = portrait ? 18.75 : 25;
   const X = portrait ? 20 : 40;
   const L = portrait ? 300 : 400;
-  const rev = at(s, 1.9, 2.3);
+  const rev = at(s, 0.3, 0.45);
   if (portrait) {
     return (
       <PSvg label="After append 9 of 16 slots, keys left to copy fall from 6 to 0 and free slots from 7 to 4: the copy ends with 12 of 16 slots in use" h={250}>
@@ -445,7 +452,7 @@ export function Race({ t, answer, portrait }: StepCtx) {
         <g>
           <T x={40} y={262} s={20} f={C.caramel} w={700} o={rev}>12 of 16 in use</T>
           <T x={40} y={288} s={13} f={C.latte} o={rev}>4 slots spare</T>
-          <T x={40} y={310} s={13} f={C.taupe} o={at(s, 2.1, 2.5)}>1 key per append would end at 16 of 16</T>
+          <T x={40} y={310} s={13} f={C.taupe} o={at(s, 0.3, 0.45)}>1 key per append would end at 16 of 16</T>
         </g>
       )}
     </Svg>
@@ -454,43 +461,45 @@ export function Race({ t, answer, portrait }: StepCtx) {
 
 // 8 · What the installments cost: four ledger rows, each with a tiny picture.
 export function Costs({ t }: StepCtx) {
+  // Pictures sit at x >= 458, text stops at x 440: no label can reach a picture (phone text is about 20% wider).
   const rows = [
-    { y: 44, a: 'both buffers stay alive for longer', b: <>c = 524,288: the same 12 MiB peak,<tspan x={40} dy={18}>held 262,144 appends, not 1</tspan></>, t: 0.3 },
-    { y: 124, a: 'every read checks the frontier', b: <>old if k ≤ i &lt; m, else new</>, t: 1.1 },
-    { y: 204, a: 'the median append got slower', b: <>p50: 1 → <tspan fill={C.cherryText} fontWeight={700}>3</tspan> writes (524,287 appends cost 3)</>, t: 1.9 },
-    { y: 284, a: 'O(1) only if allocation is O(1)', b: <>the analysis assumes the allocator is O(1)</>, t: 2.7 },
+    { y: 40, a: 'both buffers stay alive for longer', b: <>capacity 524,288: the same 12 MiB peak,<tspan x={40} dy={18}>held 262,144 appends, not 1</tspan></>, t: 0.4 },
+    { y: 120, a: 'every read checks the frontier', b: <>old if k ≤ i &lt; m, else new</>, t: 3.4 },
+    { y: 196, a: 'the median append got slower', b: <>p50: 1 → <tspan fill={C.cherryText} fontWeight={700}>3</tspan> writes<tspan x={40} dy={20}>(524,287 appends cost 3)</tspan></>, t: 5.0 },
+    { y: 288, a: 'O(1) only if allocation is O(1)', b: <>no allocator cost is counted</>, t: 6.4 },
   ];
   const o = (i: number) => at(t, rows[i].t, rows[i].t + 0.4);
   return (
-    <Svg label="Four costs of incremental copying: both buffers alive for 262,144 appends instead of one, the same 12 MiB peak as plain doubling at c = 524,288; a frontier comparison on every read; the median append rising from 1 to 3 writes; and the O(1) worst case holding only if allocation is O(1)" h={350}>
+    <Svg label="Four costs of incremental copying: both buffers alive for 262,144 appends instead of one, the same 12 MiB peak as plain doubling at capacity 524,288; a frontier comparison on every read; the median append rising from 1 to 3 writes; and the O(1) worst case holding only if allocation is O(1)" h={340}>
       {rows.map((r, i) => (
         <g key={i} opacity={o(i)}>
-          <T x={40} y={r.y} s={15} f={C.crema}>{r.a}</T>
+          <T x={40} y={r.y} s={i === 2 ? 17 : 15} w={i === 2 ? 600 : 500} f={C.crema}>{r.a}</T>
           <T x={40} y={r.y + 22} s={13} f={C.latte}>{r.b}</T>
         </g>
       ))}
       {/* 1 · two buffers along a time arrow */}
       <g opacity={o(0)}>
-        <rect x={420} y={30} width={36} height={12} rx={2} fill="none" stroke={C.taupe} strokeWidth={1.5} />
-        <rect x={420} y={46} width={72} height={12} rx={2} fill={C.crema} />
-        <Arrow x1={420} y1={70} x2={500} y2={70} f={C.taupe} w={1.5} />
+        <rect x={462} y={26} width={36} height={12} rx={2} fill="none" stroke={C.taupe} strokeWidth={1.5} />
+        <rect x={462} y={42} width={72} height={12} rx={2} fill={C.crema} />
+        <Arrow x1={462} y1={68} x2={534} y2={68} f={C.taupe} w={1.5} />
       </g>
       {/* 2 · the comparison */}
       <g opacity={o(1)}>
-        <polygon points="456,106 478,124 456,142 434,124" fill="none" stroke={C.caramel} strokeWidth={2} />
-        <Arrow x1={478} y1={124} x2={514} y2={112} f={C.taupe} w={1.5} />
-        <Arrow x1={478} y1={124} x2={514} y2={140} f={C.taupe} w={1.5} />
+        <polygon points="476,102 498,120 476,138 454,120" fill="none" stroke={C.caramel} strokeWidth={2} />
+        <Arrow x1={498} y1={120} x2={530} y2={108} f={C.taupe} w={1.5} />
+        <Arrow x1={498} y1={120} x2={530} y2={132} f={C.taupe} w={1.5} />
       </g>
-      {/* 3 · the median moving up a short ladder */}
+      {/* 3 · the median: one bar of 1 write becomes a bar of 3 */}
       <g opacity={o(2)}>
-        <line x1={470} y1={186} x2={470} y2={226} stroke={C.taupe} strokeWidth={1.5} />
-        <circle cx={470} cy={222} r={5} fill={C.crema} opacity={0.5} />
-        <circle cx={470} cy={190} r={6} fill={C.cherry} />
-        <Arrow x1={490} y1={218} x2={490} y2={194} f={C.taupe} w={1.5} />
+        <rect x={470} y={226 - 10} width={16} height={10} rx={2} fill={C.crema} opacity={0.6} />
+        <T x={478} y={248} s={13} f={C.latte} a="middle">1</T>
+        <Arrow x1={490} y1={218} x2={504} y2={218} f={C.taupe} w={1.5} />
+        <rect x={510} y={226 - 30} width={16} height={30} rx={2} fill={C.cherry} />
+        <T x={518} y={248} s={13} f={C.cherryText} a="middle" w={700}>3</T>
       </g>
       {/* 4 · an empty buffer, waiting to be allocated */}
       <g opacity={o(3)}>
-        <rect x={420} y={270} width={86} height={26} rx={3} fill="none" stroke={C.taupe} strokeWidth={1.5} strokeDasharray="5 4" />
+        <rect x={462} y={276} width={72} height={26} rx={3} fill="none" stroke={C.taupe} strokeWidth={1.5} strokeDasharray="5 4" />
       </g>
     </Svg>
   );
@@ -500,22 +509,23 @@ export function Costs({ t }: StepCtx) {
 const SEQ9 = [3, 6, 10, 14, 2, 15, 8, 11];
 const LIVE9 = [1, 4, 5, 7, 9, 12, 13, 16];
 const Cross = ({ x, y, w, o }: { x: number; y: number; w: number; o: number }) => (
-  <g opacity={o} stroke={C.taupe} strokeWidth={1.5}>
+  <g opacity={o * 0.85} stroke={C.taupe} strokeWidth={1}>
     <line x1={x + 4} y1={y + 4} x2={x + w - 4} y2={y + w - 4} />
     <line x1={x + w - 4} y1={y + 4} x2={x + 4} y2={y + w - 4} />
   </g>
 );
 export function Stale({ t }: StepCtx) {
-  const td = (i: number) => 0.5 + 0.3 * i;
+  const td = (i: number) => 1.2 + 0.3 * i; // eight deletes, narrated as "a sorted vector deletes by leaving a tombstone"
   const dead = (key: number) => {
     const i = SEQ9.indexOf(key);
     return i < 0 ? 0 : at(t, td(i), td(i) + 0.2);
   };
   const count = SEQ9.filter((_, i) => t >= td(i) + 0.1).length;
-  const reb = seg(t, 2.9, 3.7);
-  const fade = 1 - 0.55 * at(t, 3.7, 4.0);
+  const R0 = 4.2; // the rebuild: "once half the slots are tombstones, copy the live keys"
+  const reb = seg(t, R0, R0 + 0.8);
+  const fade = 1 - 0.55 * at(t, R0 + 0.8, R0 + 1.1);
   return (
-    <Svg label="A sorted vector of keys 1 to 16: eight deletes each leave a tombstone at cost 1; when 8 of 16 slots are tombstones the 8 live keys are copied into a compact vector at cost 9; at 1,048,576 keys that delete would copy 524,288 keys" h={380}>
+    <Svg label="A sorted vector of keys 1 to 16: eight deletes each leave a tombstone at cost 1; when 8 of 16 slots are tombstones the 8 live keys are copied into a compact vector at cost 9; scaled up, at 1,048,576 keys that delete would copy 524,288 keys" h={396}>
       <T x={40} y={24} s={13} f={C.latte}>sorted keys · a delete leaves a tombstone</T>
       <T x={40} y={50} s={15} f={count >= 8 ? C.caramel : C.crema} w={600}>tombstones: {count} of 16</T>
       <g opacity={fade}>
@@ -524,75 +534,81 @@ export function Stale({ t }: StepCtx) {
           return (
             <g key={i}>
               <rect x={40 + 30 * i} y={62} width={26} height={26} rx={3} fill={C.crema} opacity={1 - d} stroke={d > 0.5 ? C.taupe : C.crema} strokeWidth={1.5} />
-              <rect x={40 + 30 * i} y={62} width={26} height={26} rx={3} fill="none" stroke={C.taupe} strokeWidth={1.5} opacity={d} />
-              <T x={40 + 30 * i + 13} y={80} s={13} f={d > 0.5 ? C.taupe : C.espresso} a="middle" w={700}>{i + 1}</T>
+              <rect x={40 + 30 * i} y={62} width={26} height={26} rx={3} fill="none" stroke={C.taupe} strokeWidth={1.5} strokeDasharray={d > 0.5 ? '3 3' : undefined} opacity={d} />
+              <T x={40 + 30 * i + 13} y={80} s={13} f={d > 0.5 ? C.taupe : C.espresso} a="middle" w={d > 0.5 ? 500 : 700}>{i + 1}</T>
               <Cross x={40 + 30 * i} y={62} w={26} o={d} />
             </g>
           );
         })}
       </g>
       {LIVE9.map((key, j) => {
-        const a = at(t, 2.9 + 0.06 * j, 3.2 + 0.06 * j);
+        const a = at(t, R0 + 0.06 * j, R0 + 0.3 + 0.06 * j);
         const ox = 40 + 30 * (key - 1) + 13;
         const nx = 160 + 30 * j + 13;
         return (
           <g key={key}>
             <Arrow x1={ox} y1={90} x2={lerp(ox, nx, a)} y2={lerp(90, 138, a)} f={C.caramel} w={1.5} o={a > 0.02 && reb < 1 ? 1 : 0} />
-            <Cell x={160 + 30 * j} y={140} w={26} label={key} o={at(t, 3.1 + 0.06 * j, 3.4 + 0.06 * j)} />
+            <Cell x={160 + 30 * j} y={140} w={26} label={key} o={at(t, R0 + 0.2 + 0.06 * j, R0 + 0.5 + 0.06 * j)} />
           </g>
         );
       })}
-      <T x={160} y={186} s={13} f={C.latte} o={at(t, 3.7, 4.0)}>compact copy: 8 live keys</T>
-      <T x={40} y={214} s={13} f={C.latte}>writes per delete</T>
+      <T x={160} y={186} s={13} f={C.latte} o={at(t, R0 + 0.8, R0 + 1.1)}>compact copy: 8 live keys</T>
+      <T x={40} y={232} s={13} f={C.latte}>writes per delete</T>
       {SEQ9.map((_, i) => {
         const c = i === 7 ? 9 : 1;
         const h = c * 10 * at(t, td(i) + 0.1, td(i) + 0.3);
         return (
           <g key={i}>
-            <rect x={40 + 34 * i} y={316 - h} width={28} height={h} rx={2} fill={c > 1 ? C.cherry : C.crema} />
-            {c > 1 && h > 80 && <T x={40 + 34 * i + 14} y={316 - h - 5} s={15} f={C.cherryText} a="middle" w={700}>{c}</T>}
+            <rect x={40 + 34 * i} y={322 - h} width={28} height={h} rx={2} fill={c > 1 ? C.cherry : C.crema} />
+            {c > 1 && h > 80 && <T x={40 + 34 * i + 14} y={322 - h - 5} s={15} f={C.cherryText} a="middle" w={700}>{c}</T>}
           </g>
         );
       })}
-      <line x1={40} y1={316} x2={312} y2={316} stroke={C.mocha} />
-      <T x={40} y={342} s={13} f={C.latte} o={at(t, 4.0, 4.4)}>at 1,048,576 keys, the 524,288th delete</T>
-      <T x={40} y={370} s={15} f={C.cherryText} w={600} o={at(t, 4.0, 4.4)}>copies 524,288 keys</T>
+      <line x1={40} y1={322} x2={312} y2={322} stroke={C.mocha} />
+      <line x1={40} y1={338} x2={520} y2={338} stroke={C.mocha} strokeWidth={1} strokeDasharray="2 4" opacity={at(t, 7.0, 7.4)} />
+      <T x={40} y={358} s={13} f={C.latte} o={at(t, 7.0, 7.4)}>
+        <tspan fill={C.taupe}>scaled up: </tspan>1,048,576 keys, the 524,288th delete
+      </T>
+      <T x={40} y={384} s={15} f={C.cherryText} w={600} o={at(t, 7.0, 7.4)}>copies 524,288 keys</T>
     </Svg>
   );
 }
 
 // 10 · Rebuild in the background: start at a quarter, serve from the old copy, log what is behind the scan, swap.
 const SEQ10 = [3, 6, 10, 14, 2, 15];
-const TD10 = [0.3, 0.7, 1.1, 1.5, 2.4, 3.3];
+const TD10 = [0.4, 1.0, 1.6, 2.4, 4.8, 6.8]; // the deletes, in step with the narration (the 4th starts the new copy)
 const SRC10 = [0, 1, 3, 4, 6, 7, 8, 10, 11, 12, 14, 15]; // old slots copied, in scan order (keys 1,2,4,5,7,8,9,11,12,13,15,16)
 const COST10 = [1, 1, 1, 7, 8, 4];
 export function Background({ t }: StepCtx) {
-  const scan = t < 1.5 ? 0 : t < 2.4 ? 8 * seg(t, 1.5, 2.3) : 8 + 8 * seg(t, 2.4, 3.2);
-  const swap = easeInOut(seg(t, 4.0, 4.6));
+  const scan = t < 2.5 ? 0 : t < 4.8 ? 8 * seg(t, 2.5, 4.0) : 8 + 8 * seg(t, 5.0, 6.4);
+  const R2 = 7.4; // the log is replayed into the new copy, just before the swap
+  const R15 = 7.8;
+  const swap = easeInOut(seg(t, 8.4, 9.0));
   const deadAt = (key: number) => {
     const i = SEQ10.indexOf(key);
     return i < 0 ? 0 : at(t, TD10[i], TD10[i] + 0.2);
   };
-  const log = [t >= TD10[4] + 0.1 && t < 3.6 ? 2 : 0, t >= TD10[5] + 0.1 && t < 3.8 ? 15 : 0].filter(Boolean);
-  const replayed2 = at(t, 3.5, 3.7);
-  const replayed15 = at(t, 3.7, 3.9);
+  const log = [t >= TD10[4] + 0.1 && t < R2 + 0.3 ? 2 : 0, t >= TD10[5] + 0.1 && t < R15 + 0.3 ? 15 : 0].filter(Boolean);
+  const replayed2 = at(t, R2, R2 + 0.3);
+  const replayed15 = at(t, R15, R15 + 0.3);
   const oldY = lerp(56, 126, swap);
   const newY = lerp(126, 56, swap);
   const ptr = Math.min(15, Math.floor(scan));
   const ox = (i: number) => 40 + 30 * i;
+  const ghost = swap > 0.5; // after the swap the old copy is a ghost: dashed cells, taupe keys
+  const BL = 340; // the strip's baseline
   return (
-    <Svg label="The 16 keys rebuilt in the background: at 4 tombstones a new copy is started; every delete also scans 8 old slots and copies the live keys, queries use the old copy; deletes behind the scan go in a log and are replayed before the swap. The delete costs are 1, 1, 1, 7, 8 and 4, never over 10" h={400}>
-      <T x={40} y={20} s={13} f={C.latte}>start at a quarter · 8 slots of work per delete</T>
-      <T x={40} y={44} s={13} f={C.latte}>{swap > 0.5 ? 'serves queries now' : 'old: serves queries'}</T>
+    <Svg label="The 16 keys rebuilt in the background: at 4 tombstones a new copy is started; every delete also scans 8 old slots and copies the live keys, queries use the old copy; deletes behind the scan go in a log and are replayed before the swap, after which the new copy serves and the old one is freed. The delete costs are 1, 1, 1, 7, 8 and 4, never over 10" h={400}>
+      <T x={40} y={44} s={13} f={ghost ? C.caramel : C.latte} w={ghost ? 600 : 500}>{ghost ? 'new copy: serves queries now' : 'old copy: serves queries'}</T>
       {/* the old copy */}
-      <g opacity={lerp(1, 0.3, swap)}>
+      <g opacity={lerp(1, 0.75, swap)}>
         {Array.from({ length: 16 }, (_, i) => {
           const d = deadAt(i + 1);
           return (
             <g key={i}>
-              <rect x={ox(i)} y={oldY} width={26} height={26} rx={3} fill={C.crema} opacity={1 - d} stroke={d > 0.5 ? C.taupe : C.crema} strokeWidth={1.5} />
-              <rect x={ox(i)} y={oldY} width={26} height={26} rx={3} fill="none" stroke={C.taupe} strokeWidth={1.5} opacity={d} />
-              {swap < 0.5 && <T x={ox(i) + 13} y={oldY + 18} s={13} f={d > 0.5 ? C.taupe : C.espresso} a="middle" w={700}>{i + 1}</T>}
+              {!ghost && <rect x={ox(i)} y={oldY} width={26} height={26} rx={3} fill={C.crema} opacity={1 - d} stroke={d > 0.5 ? C.taupe : C.crema} strokeWidth={1.5} />}
+              <rect x={ox(i)} y={oldY} width={26} height={26} rx={3} fill="none" stroke={C.taupe} strokeWidth={1.5} strokeDasharray={ghost || d > 0.5 ? '3 3' : undefined} opacity={ghost ? 1 : d} />
+              <T x={ox(i) + 13} y={oldY + 18} s={13} f={ghost || d > 0.5 ? C.taupe : C.espresso} a="middle" w={ghost || d > 0.5 ? 500 : 700}>{i + 1}</T>
               <Cross x={ox(i)} y={oldY} w={26} o={d} />
             </g>
           );
@@ -606,8 +622,8 @@ export function Background({ t }: StepCtx) {
         </g>
       )}
       {/* the new copy */}
-      <T x={40} y={newY - 8} s={13} f={C.latte} o={at(t, 1.5, 1.8)}>{swap > 0.5 ? '' : 'new'}</T>
-      <g opacity={at(t, 1.5, 1.8)}>
+      <T x={40} y={118} s={13} f={C.latte} o={at(t, 2.4, 2.7)}>{ghost ? 'old copy: freed' : 'new copy: being built'}</T>
+      <g opacity={at(t, 2.4, 2.7)}>
         {Array.from({ length: 12 }, (_, j) => {
           const has = scan > SRC10[j];
           const r = j === 1 ? replayed2 : j === 10 ? replayed15 : 0;
@@ -619,30 +635,28 @@ export function Background({ t }: StepCtx) {
           );
         })}
       </g>
-      <T x={420} y={newY + 18} s={13} f={C.caramel} w={600} o={at(t, 4.4, 4.7)}>swap</T>
-      <T x={40} y={oldY + 46} s={13} f={C.taupe} o={at(t, 4.6, 4.9)}>old copy: freed</T>
       {/* the log */}
-      <T x={400} y={160} s={13} f={C.latte} o={at(t, 1.5, 1.8)}>log</T>
-      <rect x={400} y={168} width={120} height={32} rx={5} fill="none" stroke={C.taupe} strokeWidth={1.5} opacity={at(t, 1.5, 1.8)} />
+      <T x={370} y={172} s={13} f={C.latte} o={at(t, 2.4, 2.7)}>{t > R15 + 0.3 ? 'log: replayed' : 'log'}</T>
+      <rect x={370} y={180} width={120} height={30} rx={5} fill="none" stroke={C.taupe} strokeWidth={1.5} opacity={at(t, 2.4, 2.7)} />
       {log.map((k, i) => (
-        <T key={k} x={414 + 36 * i} y={190} s={15} f={C.crema} w={600}>{k}</T>
+        <T key={k} x={386 + 36 * i} y={201} s={15} f={C.crema} w={600}>{k}</T>
       ))}
       {/* the cost of each delete */}
-      <T x={40} y={218} s={13} f={C.latte}>writes per delete</T>
+      <T x={40} y={222} s={13} f={C.latte}>writes per delete</T>
       {COST10.map((c, i) => {
         const h = c * 10 * at(t, TD10[i] + 0.1, TD10[i] + 0.4);
         return (
           <g key={i}>
-            <rect x={40 + 40 * i} y={330 - h} width={32} height={h} rx={2} fill={C.crema} />
-            {c >= 4 && h > c * 9 && <T x={40 + 40 * i + 16} y={330 - h - 5} s={13} f={C.crema} a="middle" w={600}>{c}</T>}
+            <rect x={40 + 80 * i} y={BL - h} width={64} height={h} rx={2} fill={C.crema} />
+            {c >= 4 && h > c * 9 && <T x={40 + 80 * i + 32} y={BL - h - 5} s={13} f={C.crema} a="middle" w={600}>{c}</T>}
+            <T x={40 + 80 * i + 32} y={BL + 18} s={13} f={C.taupe} a="middle" o={at(t, TD10[i] + 0.1, TD10[i] + 0.4)}>del {SEQ10[i]}</T>
           </g>
         );
       })}
-      <line x1={40} y1={330} x2={520} y2={330} stroke={C.mocha} />
-      <line x1={40} y1={230} x2={lerp(40, 520, at(t, 4.4, 4.9))} y2={230} stroke={C.caramel} strokeWidth={2} strokeDasharray="6 5" />
-      <T x={520} y={224} s={13} f={C.caramel} a="end" o={at(t, 4.7, 5.0)}>10</T>
-      <T x={40} y={358} s={15} f={C.crema} o={at(t, 4.9, 5.3)}>at any size: every delete ≤ 10 writes</T>
-      <T x={40} y={378} s={13} f={C.taupe} o={at(t, 4.9, 5.3)}>old copy never past 39% tombstones</T>
+      <line x1={40} y1={BL} x2={520} y2={BL} stroke={C.mocha} />
+      <line x1={40} y1={BL - 100} x2={lerp(40, 520, at(t, 9.0, 9.5))} y2={BL - 100} stroke={C.caramel} strokeWidth={2} strokeDasharray="6 5" />
+      <T x={520} y={BL - 106} s={13} f={C.caramel} a="end" o={at(t, 9.3, 9.6)}>10</T>
+      <T x={40} y={388} s={15} f={C.crema} o={at(t, 9.4, 9.8)}>at any size: every delete ≤ 10 writes</T>
     </Svg>
   );
 }
@@ -703,7 +717,7 @@ const SX = (rank: number) => 64 + 54 * rank;
 const SY = (depth: number) => 52 + 46 * depth;
 export function Scapegoat({ t }: StepCtx) {
   const wp = [22, 31, 87, 54, 80, 63, 69];
-  const u = 6 * seg(t, 2.0, 3.4);
+  const u = 6 * seg(t, 6.8, 8.2);
   const idx = Math.min(5, Math.floor(u));
   const a = wp[idx];
   const b = wp[idx + 1];
@@ -712,43 +726,43 @@ export function Scapegoat({ t }: StepCtx) {
   const pb = pOf(POS_BEFORE, b);
   const mx = lerp(SX(pa.rank), SX(pb.rank), f);
   const my = lerp(SY(pa.depth), SY(pb.depth), f);
-  const landed = seg(t, 3.4, 3.6);
+  const landed = seg(t, 8.2, 8.4);
   const p69 = pOf(POS_BEFORE, 69);
-  const counts = t >= 4.0 ? '9 · max 9' : '8 · max 8';
+  const counts = t >= 8.8 ? '9 · max 9' : '8 · max 8';
   return (
     <Svg label="A plain binary search tree of 8 keys with a dashed limit line at depth 5 for alpha 2/3; inserting 69 lands at depth 6, below the line, and lights up. The root keeps only two counts, the size and the largest size since the last full rebuild" h={400}>
-      <T x={40} y={22} s={13} f={C.latte}>alpha = 2/3 · {fx('h(n) = ⌊log_{1.5} n⌋')}</T>
+      <T x={40} y={22} s={13} f={C.latte} o={at(t, 4.4, 4.8)}>alpha = 2/3 · {fx('h(n) = ⌊log_{1.5} n⌋')}</T>
       {Array.from({ length: 7 }, (_, d) => (
         <line key={d} x1={30} y1={SY(d)} x2={536} y2={SY(d)} stroke={C.mocha} strokeWidth={1} opacity={0.35} />
       ))}
       {POS_BEFORE.filter((p) => p.key !== 69 && p.parent !== undefined).map((p) => {
         const par = pOf(POS_BEFORE, p.parent!);
-        return <Edge key={p.key} x1={SX(par.rank)} y1={SY(par.depth)} x2={SX(p.rank)} y2={SY(p.depth)} o={at(t, 0.3 + 0.15 * p.depth, 0.55 + 0.15 * p.depth)} />;
+        return <Edge key={p.key} x1={SX(par.rank)} y1={SY(par.depth)} x2={SX(p.rank)} y2={SY(p.depth)} o={at(t, 0.3 + 0.2 * p.depth, 0.6 + 0.2 * p.depth)} />;
       })}
       <Edge x1={SX(pOf(POS_BEFORE, 63).rank)} y1={SY(pOf(POS_BEFORE, 63).depth)} x2={SX(p69.rank)} y2={SY(p69.depth)} o={landed} />
       {POS_BEFORE.filter((p) => p.key !== 69).map((p) => (
-        <TNode key={p.key} x={SX(p.rank)} y={SY(p.depth)} k={p.key} o={at(t, 0.3 + 0.15 * p.depth, 0.55 + 0.15 * p.depth)} />
+        <TNode key={p.key} x={SX(p.rank)} y={SY(p.depth)} k={p.key} o={at(t, 0.3 + 0.2 * p.depth, 0.6 + 0.2 * p.depth)} />
       ))}
-      <line x1={30} y1={305} x2={lerp(30, 536, at(t, 1.5, 1.9))} y2={305} stroke={C.caramel} strokeWidth={2} strokeDasharray="7 5" />
-      <T x={40} y={299} s={13} f={C.caramel} w={600} o={at(t, 1.7, 2.0)}>h(9) = 5</T>
-      <T x={142} y={56} s={13} f={C.taupe} o={at(t, 0.6, 0.9)}>size {counts}</T>
-      {t >= 2.0 && t < 3.4 && <TNode x={mx} y={my} k={69} fill={C.crema} f={C.espresso} ring={C.crema} />}
+      <line x1={30} y1={305} x2={lerp(30, 536, at(t, 5.6, 6.2))} y2={305} stroke={C.caramel} strokeWidth={2} strokeDasharray="7 5" />
+      <T x={40} y={299} s={13} f={C.caramel} w={600} o={at(t, 5.9, 6.3)}>h(9) = 5</T>
+      <T x={142} y={56} s={13} f={C.taupe} o={at(t, 2.6, 3.0)}>size {counts}</T>
+      {t >= 6.8 && t < 8.2 && <TNode x={mx} y={my} k={69} fill={C.crema} f={C.espresso} ring={C.crema} />}
       {landed > 0 && (
         <g>
           <TNode x={SX(p69.rank)} y={SY(p69.depth)} k={69} ring={C.cherry} rw={3.5} />
-          <T x={SX(p69.rank) + 24} y={SY(p69.depth) + 5} s={13} f={C.cherryText} w={600} o={at(t, 3.6, 3.9)}>69 · depth 6</T>
+          <T x={SX(p69.rank) + 24} y={SY(p69.depth) + 5} s={13} f={C.cherryText} w={600} o={at(t, 8.4, 8.8)}>69 · depth 6</T>
         </g>
       )}
     </Svg>
   );
 }
 
-// 12 · Which ancestor is the scapegoat? Climb from 69, reading one share per ancestor.
+// 12 · Which ancestor is the scapegoat? Climb from 69, reading one share per ancestor (the question frame hides the shares).
 const SHARE_AT: Record<number, { dx: number; dy: number; a: 'start' | 'middle' | 'end' }> = {
   63: { dx: 22, dy: 4, a: 'start' },
   80: { dx: 22, dy: 4, a: 'start' },
   54: { dx: -22, dy: 4, a: 'end' },
-  87: { dx: 0, dy: 38, a: 'middle' },
+  87: { dx: 20, dy: 38, a: 'end' },
   31: { dx: -22, dy: 4, a: 'end' },
   22: { dx: 22, dy: 4, a: 'start' },
 };
@@ -756,54 +770,68 @@ export function WhichScapegoat({ t, answer, portrait }: StepCtx) {
   const shown = answer !== null;
   const s = useSinceAnswer(shown);
   const q = at(t, 0.1, 0.6);
-  const tick = (i: number) => (shown ? at(s, 0.2 + 0.4 * i, 0.4 + 0.4 * i) : 0); // ancestor i has been cleared (or is the scapegoat)
+  // ancestor i = 0..3 (63, 80, 54, 87) has been read: the whole reveal ends by 0.45 s after the answer
+  const tick = (i: number) => (shown ? at(s, 0.03 + 0.09 * i, 0.15 + 0.09 * i) : 0);
+  const goat = tick(3);
   if (portrait) {
     return (
-      <PSvg label="The ancestors of 69 from the nearest up, each with its heavier child's share: 63 1 of 2, 80 2 of 3, 54 3 of 5, 87 5 of 6, 31 6 of 7, 22 7 of 9. The first over 2/3 is 87" h={270}>
+      <PSvg label="The ancestors of 69 from the nearest up, with the heavier child's share of each, hidden until answered: 63 1 of 2, 80 2 of 3, 54 3 of 5, 87 5 of 6. The climb passes 63, 80 and 54 and stops at 87, the first over 2/3; 31 and 22 are never reached" h={262}>
         <T x={20} y={22} s={15} f={C.crema}>scapegoat: the first ancestor</T>
-        <T x={20} y={42} s={15} f={C.crema}>with a child over 2/3 of it</T>
+        <T x={20} y={46} s={15} f={C.crema}>with a child over 2/3 of it</T>
         {ANC.map((k, i) => {
-          const y = 80 + 28 * i;
+          const y = 80 + 26 * i;
           const isGoat = k === SCAPEGOAT;
+          const above = i > 3;
+          const hide = i <= 3 ? tick(i) : goat;
           return (
             <g key={k} opacity={q}>
-              <T x={50} y={y} s={17} f={isGoat && tick(i) > 0.5 ? C.cherryText : C.crema} w={600}>{k}</T>
-              <T x={110} y={y} s={15} f={C.latte}>{share(k)}</T>
-              {i < 3 && tick(i) > 0.3 && <T x={230} y={y} s={15} f={C.caramel} w={700}>ok</T>}
-              {isGoat && tick(i) > 0.3 && <T x={230} y={y} s={15} f={C.cherryText} w={700} o={tick(i)}>scapegoat</T>}
+              <T x={50} y={y} s={17} f={above && goat > 0.5 ? C.taupe : isGoat && goat > 0.5 ? C.cherryText : C.crema} w={600}>{k}</T>
+              {hide < 0.9 && <T x={110} y={y} s={15} f={C.latte} o={1 - hide}>?</T>}
+              {i <= 3 && <T x={100} y={y} s={15} f={isGoat ? C.cherryText : C.latte} w={isGoat ? 600 : 500} o={tick(i)}>{isGoat ? '5 of 6 > 2/3' : share(k)}</T>}
+              {i < 3 && <T x={230} y={y} s={15} f={C.caramel} w={700} o={tick(i)}>ok</T>}
+              {isGoat && <T x={252} y={y} s={13} f={C.cherryText} w={700} o={goat}>scapegoat</T>}
+              {above && <T x={100} y={y} s={13} f={C.taupe} o={goat}>never reached</T>}
             </g>
           );
         })}
-        {shown && s > 1.4 && <T x={20} y={262} s={13} f={C.taupe}>80: exactly 2/3 is still allowed</T>}
+        <T x={20} y={234} s={13} f={C.caramel} w={600} o={goat}>69 → 63 → 80 → 54 → 87</T>
       </PSvg>
     );
   }
   return (
-    <Svg label="The binary search tree with 69 at depth 6 and, beside each ancestor on its path, the heavier child's share of its subtree: 63 1 of 2, 80 2 of 3, 54 3 of 5, 87 5 of 6, 31 6 of 7, 22 7 of 9. The climb passes 63, 80 and 54 and stops at 87, the first ancestor over 2/3" h={400}>
+    <Svg label="The binary search tree with 69 at depth 6 and, beside each ancestor on its path, the heavier child's share of its subtree, hidden until answered: 63 1 of 2, 80 2 of 3, 54 3 of 5, 87 5 of 6. The climb passes 63, 80 and 54 and stops at 87, the first ancestor over 2/3; 31 and 22 are never reached" h={400}>
       <T x={40} y={22} s={15} f={C.crema}>scapegoat: first ancestor with a child over 2/3 of it</T>
       {POS_BEFORE.filter((p) => p.parent !== undefined).map((p) => {
         const par = pOf(POS_BEFORE, p.parent!);
         return <Edge key={p.key} x1={SX(par.rank)} y1={SY(par.depth)} x2={SX(p.rank)} y2={SY(p.depth)} o={q} />;
       })}
-      {tick(3) > 0 &&
+      {goat > 0 &&
         REBUILT.map((k) => {
           const p = pOf(POS_BEFORE, k);
-          return <circle key={k} cx={SX(p.rank)} cy={SY(p.depth)} r={27} fill={C.cherry} opacity={0.16 * tick(3)} />;
+          return <circle key={k} cx={SX(p.rank)} cy={SY(p.depth)} r={27} fill={C.cherry} opacity={0.16 * goat} />;
         })}
       {POS_BEFORE.map((p) => {
         const i = ANC.indexOf(p.key);
-        const goat = p.key === SCAPEGOAT && tick(3) > 0.5;
+        const isGoat = p.key === SCAPEGOAT && goat > 0.5;
         const cleared = i >= 0 && i < 3 && tick(i) > 0.5;
+        const dim = i > 3 ? 1 - 0.55 * goat : 1; // 31 and 22 are never reached
+        const sh = SHARE_AT[p.key];
         return (
-          <g key={p.key} opacity={q}>
-            <TNode x={SX(p.rank)} y={SY(p.depth)} k={p.key} ring={goat || p.key === 69 ? C.cherry : cleared ? C.caramel : C.crema} rw={goat || cleared || p.key === 69 ? 3 : 1.5} />
-            {i >= 0 && (
-              <T x={SX(p.rank) + SHARE_AT[p.key].dx} y={SY(p.depth) + SHARE_AT[p.key].dy} s={13} f={C.latte} a={SHARE_AT[p.key].a}>{share(p.key)}</T>
+          <g key={p.key} opacity={q * dim}>
+            <TNode x={SX(p.rank)} y={SY(p.depth)} k={p.key} ring={isGoat || p.key === 69 ? C.cherry : cleared ? C.caramel : C.crema} rw={isGoat || cleared || p.key === 69 ? 3 : 1.5} />
+            {i >= 0 && i <= 3 && (
+              <g>
+                <T x={SX(p.rank) + sh.dx} y={SY(p.depth) + sh.dy} s={13} f={C.latte} a={sh.a} o={1 - tick(i)}>?</T>
+                <T x={SX(p.rank) + sh.dx} y={SY(p.depth) + sh.dy} s={13} f={i === 3 ? C.cherryText : C.latte} w={i === 3 ? 700 : 500} a={sh.a} o={tick(i)}>
+                  {i === 3 ? '5 of 6 > 2/3' : i < 3 ? `${share(p.key)} ok` : ''}
+                </T>
+              </g>
             )}
+            {i > 3 && <T x={SX(p.rank) + sh.dx} y={SY(p.depth) + sh.dy} s={13} f={C.latte} a={sh.a} o={1 - goat}>?</T>}
           </g>
         );
       })}
-      {tick(3) > 0.3 && <T x={536} y={118} s={15} f={C.cherryText} w={700} a="end" o={tick(3)}>scapegoat</T>}
+      {goat > 0.3 && <T x={536} y={118} s={15} f={C.cherryText} w={700} a="end" o={goat}>scapegoat</T>}
       {tick(1) > 0.5 && <T x={40} y={372} s={13} f={C.taupe}>80: exactly 2/3 is still allowed</T>}
     </Svg>
   );
@@ -812,8 +840,8 @@ export function WhichScapegoat({ t, answer, portrait }: StepCtx) {
 // 13 · Rebuild the subtree, perfectly balanced: flatten in order, build the lower middle as root, recurse.
 const RX = (rank: number) => 60 + 50 * rank;
 export function Rebuild({ t }: StepCtx) {
-  const p1 = easeInOut(seg(t, 0.4, 1.4));
-  const p2 = easeOutBack(seg(t, 1.8, 2.8));
+  const p1 = easeInOut(seg(t, 0.8, 2.4)); // "walk its six nodes in order"
+  const p2 = easeOutBack(seg(t, 2.9, 4.1)); // "make the lower middle one the root, then recurse"
   const rowX = (k: number) => 150 + 60 * REBUILT.indexOf(k);
   const ROWY = 316;
   const pos = (k: number) => {
@@ -828,71 +856,81 @@ export function Rebuild({ t }: StepCtx) {
   };
   const edges: { from: number; to: number; o: number }[] = [
     ...POS_BEFORE.filter((p) => p.parent !== undefined && !REBUILT.includes(p.key)).map((p) => ({ from: p.parent!, to: p.key, o: 1 })),
-    ...POS_BEFORE.filter((p) => p.parent !== undefined && REBUILT.includes(p.key)).map((p) => ({ from: p.parent!, to: p.key, o: 1 - seg(t, 0.4, 0.9) })),
-    ...POS_AFTER.filter((p) => p.parent !== undefined && REBUILT.includes(p.key)).map((p) => ({ from: p.parent!, to: p.key, o: seg(t, 2.5, 2.9) })),
+    ...POS_BEFORE.filter((p) => p.parent !== undefined && REBUILT.includes(p.key)).map((p) => ({ from: p.parent!, to: p.key, o: 1 - seg(t, 0.8, 1.3) })),
+    ...POS_AFTER.filter((p) => p.parent !== undefined && REBUILT.includes(p.key)).map((p) => ({ from: p.parent!, to: p.key, o: seg(t, 3.7, 4.1) })),
   ];
-  const gauge = 5 * (1 - at(t, 1.8, 2.8));
-  const goatRing = 1 - seg(t, 2.6, 3.0);
+  const goatRing = 1 - seg(t, 3.0, 3.4);
+  const rebuilt = seg(t, 4.0, 4.4); // the six rebuilt nodes turn caramel
+  const hOld = height(POS_BEFORE);
+  const hNew = height(POS_AFTER);
   return (
-    <Svg label="The six nodes of the scapegoat's subtree, 51, 54, 63, 69, 80 and 87, flatten into a sorted row and snap back as a perfectly balanced subtree rooted at 63; the tree's height falls from 6 to 4, paid by the potential at 87: 3 times its 5 is 15, against 6 writes and a climb of 6" h={400}>
+    <Svg label="The six nodes of the scapegoat's subtree, 51, 54, 63, 69, 80 and 87, flatten into a sorted row and snap back as a perfectly balanced subtree rooted at 63, drawn in caramel; the tree's height falls from 6 to 4, paid by the potential at 87: 3 times its 5 is 15, against 12 of work" h={400}>
       {edges.map((e, i) => {
         const a = pos(e.from);
         const b = pos(e.to);
         return <Edge key={i} x1={a.x} y1={a.y} x2={b.x} y2={b.y} o={e.o} />;
       })}
       {REBUILT.map((k) => (
-        <circle key={'g' + k} cx={rowX(k)} cy={ROWY} r={17} fill="none" stroke={C.taupe} strokeWidth={1} strokeDasharray="3 3" opacity={0.5 * seg(t, 2.6, 3.0)} />
+        <g key={'g' + k} opacity={seg(t, 3.0, 3.4)}>
+          <circle cx={rowX(k)} cy={ROWY} r={17} fill="none" stroke={C.taupe} strokeWidth={1} strokeDasharray="3 3" opacity={0.6} />
+          <T x={rowX(k)} y={ROWY + 5} s={13} f={C.taupe} a="middle" o={seg(t, 4.3, 4.7)}>{k}</T>
+        </g>
       ))}
       {POS_BEFORE.map((p) => {
         const c = pos(p.key);
         const goat = p.key === SCAPEGOAT;
-        return <TNode key={p.key} x={c.x} y={c.y} k={p.key} ring={goat && goatRing > 0.05 ? C.cherry : C.crema} rw={goat && goatRing > 0.05 ? 3 : 1.5} />;
+        const inSub = REBUILT.includes(p.key);
+        const ring = goat && goatRing > 0.05 ? C.cherry : inSub && rebuilt > 0.5 ? C.caramel : C.crema;
+        return <TNode key={p.key} x={c.x} y={c.y} k={p.key} ring={ring} rw={ring === C.crema ? 1.5 : 3} />;
       })}
-      <T x={40} y={ROWY + 5} s={13} f={C.latte} o={seg(t, 0.8, 1.2)}>in order</T>
-      <g opacity={at(t, 0.2, 0.5)}>
-        <rect x={490} y={68} width={14} height={48} rx={5} fill="none" stroke={C.taupe} strokeWidth={1} />
-        <rect x={491} y={116 - 9.6 * gauge} width={12} height={Math.max(0.1, 9.6 * gauge)} rx={4} fill={C.caramel} />
-        <T x={480} y={96} s={13} f={C.caramel} a="end">Φ at 87: 3 × 5 = 15 → 0</T>
+      <T x={40} y={ROWY + 5} s={13} f={C.latte} o={seg(t, 1.0, 1.4)}>in order</T>
+      {/* the heights: the lopsided path reached depth 6, the rebuilt tree reaches depth 4 */}
+      <g opacity={seg(t, 4.6, 5.2)}>
+        <line x1={496} y1={SY(0)} x2={496} y2={SY(hOld)} stroke={C.taupe} strokeWidth={2} strokeDasharray="2 4" />
+        <line x1={524} y1={SY(0)} x2={524} y2={SY(hNew)} stroke={C.caramel} strokeWidth={2} />
+        <T x={496} y={SY(hOld) + 22} s={13} f={C.taupe} a="middle">{hOld}</T>
+        <T x={524} y={SY(hNew) + 22} s={13} f={C.caramel} a="middle" w={700}>{hNew}</T>
       </g>
-      <T x={40} y={360} s={15} f={C.crema} o={at(t, 3.0, 3.4)}>rebuilt: 6 nodes · height {height(POS_BEFORE)} → {height(POS_AFTER)}</T>
-      <T x={40} y={380} s={13} f={C.caramel} o={at(t, 3.2, 3.6)}>paid by c × 5 = 15 ≥ 12 of work (c = 3)</T>
+      <T x={40} y={360} s={15} f={C.crema} o={at(t, 4.6, 5.0)}>rebuilt: 6 nodes · height {hOld} → {hNew}</T>
+      <T x={40} y={382} s={13} f={C.caramel} o={at(t, 6.2, 6.6)}>potential at 87: 3 × 5 = 15 ≥ 12 of work</T>
     </Svg>
   );
 }
 
 // 14 · Deletes rebuild the whole tree: the root's size against alpha times the largest size.
 export function DeleteRebuild({ t }: StepCtx) {
-  const TDL = [0.4, 0.9, 1.4, 1.9];
+  const TDL = [0.9, 1.6, 2.3, 3.0];
   const size = 9 - TDL.filter((x) => t >= x + 0.1).length;
   const sizeW = (360 * (9 - TDL.reduce((a, x) => a + at(t, x, x + 0.2), 0))) / 9;
   const under = size < 6;
-  const flash = seg(t, 2.0, 2.2) * (1 - seg(t, 2.6, 3.0));
+  const flash = seg(t, 3.1, 3.3) * (1 - seg(t, 3.7, 4.1));
   return (
-    <Svg label="The tree's root keeps the size and the largest size, 9. Four deletes take the size from 9 to 5, which is below 2/3 of 9, which is 6, so the whole tree is rebuilt; the delete that triggers it costs 1 plus 5 node writes. At a million keys, delete 333,334 rebuilds 666,666 nodes" h={370}>
+    <Svg label="The tree's root keeps the size and the largest size, 9. Four deletes take the size from 9 to 5, which is below 2/3 of 9, which is 6, so the whole tree is rebuilt; the delete that triggers it writes 6: 1 for the delete and 5 nodes. At a million keys, delete 333,334 rebuilds 666,666 nodes" h={392}>
       <T x={40} y={26} s={13} f={C.latte}>the root keeps size and max size</T>
-      <T x={280} y={50} s={13} f={C.caramel} a="middle" w={600} o={at(t, 0.3, 0.6)}>2/3 × 9 = 6</T>
+      <T x={280} y={50} s={13} f={C.caramel} a="middle" w={600} o={at(t, 2.2, 2.5)}>2/3 × 9 = 6</T>
       <T x={40} y={72} s={13} f={C.latte}>max size</T>
       <Bar x={40} y={78} w={360} h={20} full={360} fill={C.taupe} />
       <T x={414} y={94} s={15} f={C.crema} w={600}>9</T>
       <T x={40} y={124} s={13} f={C.latte}>size</T>
-      <Bar x={40} y={130} w={sizeW} h={20} full={360} fill={under ? C.cherry : C.crema} />
-      <T x={414} y={146} s={15} f={under ? C.cherryText : C.crema} w={600}>{size}</T>
-      <line x1={280} y1={56} x2={280} y2={156} stroke={C.caramel} strokeWidth={2} opacity={at(t, 0.3, 0.6)} />
-      <rect x={40} y={130} width={360} height={20} rx={7} fill="none" stroke={C.cherry} strokeWidth={3} opacity={flash} />
-      <T x={40} y={170} s={13} f={C.latte}>writes per delete</T>
+      <Bar x={40} y={130} w={sizeW} h={20} full={360} fill={C.crema} />
+      <T x={414} y={146} s={15} f={C.crema} w={600}>{size}</T>
+      <line x1={280} y1={56} x2={280} y2={156} stroke={C.caramel} strokeWidth={2} opacity={at(t, 2.2, 2.5)} />
+      <rect x={40} y={130} width={360} height={20} rx={7} fill="none" stroke={C.caramel} strokeWidth={3} opacity={flash} />
+      <T x={40} y={178} s={13} f={C.latte}>writes per delete</T>
       {[1, 1, 1, 6].map((c, i) => {
         const h = c * 12 * at(t, TDL[i] + 0.1, TDL[i] + 0.35 + (c > 1 ? 0.4 : 0));
         return (
           <g key={i}>
-            <rect x={40 + 50 * i} y={272 - h} width={40} height={h} rx={2} fill={c > 1 ? C.cherry : C.crema} />
-            {c > 1 && h > 60 && <T x={60 + 50 * i} y={272 - h - 5} s={15} f={C.cherryText} a="middle" w={700}>{c}</T>}
+            <rect x={40 + 50 * i} y={284 - h} width={40} height={h} rx={2} fill={c > 1 ? C.cherry : C.crema} />
+            {c > 1 && h > 60 && <T x={60 + 50 * i} y={284 - h - 5} s={15} f={C.cherryText} a="middle" w={700}>{c}</T>}
           </g>
         );
       })}
-      <line x1={40} y1={272} x2={240} y2={272} stroke={C.mocha} />
-      <T x={40} y={294} s={13} f={C.latte} o={at(t, 2.4, 2.8)}>size 5 &lt; 6: rebuild all 5 nodes, max size := 5</T>
-      <T x={40} y={322} s={13} f={C.latte} o={at(t, 3.2, 3.6)}>at a million keys:</T>
-      <T x={40} y={350} s={15} f={C.cherryText} w={600} o={at(t, 3.2, 3.6)}>delete 333,334 rebuilds 666,666 nodes</T>
+      <line x1={40} y1={284} x2={240} y2={284} stroke={C.mocha} />
+      <T x={40} y={308} s={13} f={C.latte} o={at(t, 3.9, 4.3)}>size 5 &lt; 6: rebuild all 5 nodes, max size := 5</T>
+      <T x={40} y={330} s={13} f={C.latte} o={at(t, 3.9, 4.3)}>6 writes = 1 delete + 5 nodes</T>
+      <T x={40} y={362} s={13} f={C.latte} o={at(t, 5.4, 5.8)}>at a million keys:</T>
+      <T x={40} y={384} s={15} f={C.cherryText} w={600} o={at(t, 5.4, 5.8)}>delete 333,334 rebuilds 666,666 nodes</T>
     </Svg>
   );
 }
@@ -900,7 +938,7 @@ export function DeleteRebuild({ t }: StepCtx) {
 // 15 · Partial rebuilds are still amortized: a million inserts in increasing order.
 export const SG_SPIKES: [number, number][] = [[15848,13329],[21794,12611],[24566,22047],[30892,11838],[33809,20267],[42280,13538],[44876,21201],[49488,35946],[54451,13950],[59496,8533],[61160,13684],[63866,23365],[66822,8798],[68335,36820],[73435,14305],[75915,62373],[81265,13147],[84037,23716],[90766,12658],[93587,21408],[98183,37862],[103040,14323],[105520,60792],[110926,13005],[113727,23405],[116622,103080],[122671,12492],[125467,21730],[132484,12450],[135265,20663],[139869,36132],[145013,14177],[147487,56635],[153298,12891],[156108,22780],[159070,8657],[160597,95515],[167273,12646],[170094,21437],[173170,8436],[174690,37972],[179561,14364],[182012,168470],[188990,12243],[195769,12901],[198579,21832],[201758,8637],[203285,31803],[208627,13293],[211478,24095],[214505,9051],[215598,54645],[221461,12694],[224282,22346],[227269,8574],[228933,89039],[235635,12267],[238495,20692],[243088,36415],[247943,13959],[250419,152642],[257558,11910],[260493,19615],[265341,34003],[270597,13757],[273304,61046],[278710,13037],[281511,23469],[284611,8968],[285714,272172],[293645,10058],[298462,17001],[303718,13757],[306425,29217],[312220,13100],[315001,23185],[317933,8729],[319446,50743],[325397,12294],[328304,21544],[331393,8475],[332895,38821],[337736,86044],[344640,12282],[347549,20569],[352297,36072],[357441,14162],[359915,65201],[365233,13469],[367957,150286],[375099,11839],[378016,19452],[382857,33686],[388115,13680],[390821,60436],[396228,12962],[399029,23317],[401985,8786],[403498,253870],[410886,11355],[414027,8819],[415540,19976],[420354,32723],[425671,13498],[428395,56631],[436036,11181],[439023,8578],[440685,19369],[445526,31289],[450877,13174],[453649,23768],[456547,56468],[462485,12997],[465286,22856],[468222,8650],[469749,97985],[475944,12320],[478851,21351],[481951,8438],[483471,38219],[488325,14409],[490778,150748],[497920,11853],[500818,19462],[505659,33725],[510917,13690],[513623,60532],[519030,12974],[521831,23341],[524787,8792],[526300,249737],[533618,11221],[536605,8598],[538102,19607],[542950,32259],[548273,13388],[551050,24230],[553936,58854],[559731,13152],[562503,23281],[565503,8821],[566606,102741],[572655,12471],[575436,21673],[578515,8498],[580017,39097],[584865,435237],[592357,10893],[595441,8531],[597105,19041],[601976,14392],[604429,33166],[609696,13559],[612292,54630],[618155,12692],[620976,22342],[623963,8573],[625627,95167],[632303,12624],[635075,21344],[638175,8436],[639695,37860],[644552,14322],[647032,170977],[654689,10329],[659293,17605],[664330,13840],[667037,30692],[672442,13078],[675223,23532],[678141,52482],[684142,12562],[686914,21894],[690093,8653],[691620,39720],[696442,92155],[703190,12508],[705986,21064],[709208,8488],[710710,37307],[715725,14342],[718176,156633],[725306,12025],[728333,9040],[729426,21040],[732648,8482],[734150,35554],[739124,13863],[741835,62818],[747187,13205],[749959,23829],[752894,276839],[760206,11638],[763206,8819],[764719,20477],[769352,33761],[774610,13699],[777316,59027],[783093,13156],[785865,23306],[788821,8783],[790334,106650],[796271,12603],[799043,22041],[802085,8553],[803749,40078],[808561,441315],[815934,10821],[819013,8490],[820515,18850],[825372,14282],[827854,33085],[833161,13579],[835867,54889],[841686,12681],[844507,22363],[847494,8578],[849156,95760],[855832,12661],[858653,21467],[861729,8443],[863419,38203],[868289,14421],[870742,172510],[877646,12295],[880553,20593],[885301,36123],[890445,14175],[892919,65305],[898237,13482],[900961,751333],[908577,10551],[913188,18097],[918234,14095],[920700,31479],[926052,13222],[928832,23872],[931760,54279],[937734,12759],[940529,22339],[943516,8572],[945180,91178],[951890,12409],[954696,20914],[959303,36918],[964325,14252],[966807,159763],[975062,10752],[978128,8442],[979818,18004],[984962,14146],[987436,30615],[992841,13059],[995622,23494],[998722,8974],[999825,52989]];
 export function StillAmortized({ t }: StepCtx) {
-  const p = seg(t, 0.2, 1.8);
+  const p = seg(t, 0.3, 3.0);
   const X = (i: number) => 40 + (480 * i) / 1_000_000;
   const heads = ['p50', 'p99', 'p99.9', 'max'];
   const vals = ['5', '246', '2,460', '751,333'];
@@ -913,32 +951,35 @@ export function StillAmortized({ t }: StepCtx) {
       ))}
       <T x={40} y={208} s={13} f={C.taupe}>insert 1</T>
       <T x={520} y={208} s={13} f={C.taupe} a="end">1,000,000</T>
-      <T x={466} y={72} s={15} f={C.cherryText} a="end" w={600} o={at(t, 2.0, 2.4)}>insert 900,961</T>
-      <T x={466} y={90} s={13} f={C.taupe} a="end" o={at(t, 2.0, 2.4)}>rebuilds 751,332 nodes</T>
-      <T x={40} y={232} s={13} f={C.latte} o={at(t, 2.6, 2.9)}>writes per insert</T>
+      <T x={466} y={72} s={15} f={C.cherryText} a="end" w={600} o={at(t, 5.6, 6.0)}>insert 900,961</T>
+      <T x={466} y={90} s={13} f={C.taupe} a="end" o={at(t, 5.6, 6.0)}>rebuilds 751,332 nodes</T>
+      <T x={40} y={232} s={13} f={C.latte} o={at(t, 3.4, 3.7)}>writes per insert</T>
       {COLS.map((x, i) => (
-        <g key={i} opacity={at(t, 2.6, 2.9)}>
+        <g key={i} opacity={at(t, 3.4, 3.7)}>
           <T x={x} y={256} s={13} f={C.taupe} a="middle">{heads[i]}</T>
           <T x={x} y={286} s={17} f={i === 0 ? C.crema : C.cherryText} a="middle" w={600}>{vals[i]}</T>
         </g>
       ))}
-      <T x={40} y={322} s={15} f={C.crema} o={at(t, 3.2, 3.6)}>average: 28 per insert, O(log n)</T>
-      <T x={40} y={352} s={15} f={C.caramel} o={at(t, 3.8, 4.2)}>search: never restructures, depth ≤ 34</T>
+      <T x={520} y={308} s={13} f={C.taupe} a="end" o={at(t, 5.6, 6.0)}>max 751,333 = 751,332 + 1</T>
+      <T x={40} y={336} s={15} f={C.crema} o={at(t, 4.2, 4.6)}>average: 28 per insert, O(log n)</T>
+      <T x={40} y={364} s={15} f={C.caramel} o={at(t, 7.6, 8.0)}>search: never restructures, depth ≤ 34</T>
     </Svg>
   );
 }
 
 // 16 · Back to the problem: the service again, with 2 moves per append. No queue ever forms.
-export function Back({ t }: StepCtx) {
-  const flash = ((t * 1.25) % 1) < 0.25 ? 1 : 0;
-  const dots = Array.from({ length: 5 }, (_, j) => 520 - ((t * 90 + 80 * j) % 400));
+export function Back({ t: clock }: StepCtx) {
+  const flash = ((clock * 1.25) % 1) < 0.25 ? 1 : 0;
+  const dots = Array.from({ length: 5 }, (_, j) => 520 - ((clock * 90 + 80 * j) % 400));
+  const t = clock / 1.5; // narration is long: spread the beats
   const row = (i: number, st: number) => at(t, st, st + 0.3);
   const heads = ['p50', 'p99', 'p99.9', 'max'];
   const plain = ['1', '494,289', '521,289', '524,289'];
   return (
     <Svg label="The service again, with 2 moves per append: requests flow through the server and no queue forms. The ladder of request latencies, plain doubling against incremental copying: p50 1 against 3, p99 494,289 against 3, p99.9 521,289 against 3, max 524,289 against 3. Requests that waited fall from 349,515 to 0; total writes are 2,048,575 for both; the price is a median of 3 instead of 1" h={360}>
       <rect x={40} y={30} width={90} height={70} rx={8} fill="none" stroke={flash ? C.caramel : C.crema} strokeWidth={flash ? 3 : 1.5} />
-      <T x={85} y={70} s={13} f={C.latte} a="middle">vector</T>
+      <T x={85} y={62} s={13} f={C.latte} a="middle">vector</T>
+      <T x={85} y={84} s={13} f={C.caramel} a="middle" w={600} o={row(0, 0.6)}>max 3</T>
       <line x1={150} y1={65} x2={520} y2={65} stroke={C.taupe} strokeWidth={1} opacity={0.6} />
       {dots.map((x, j) => x > 140 && <Dot key={j} x={x} y={65} />)}
       <T x={150} y={112} s={15} f={C.crema} w={600}>queue: 0</T>
@@ -965,21 +1006,24 @@ export function Q1({ t, answer, portrait }: StepCtx) {
   const shown = answer !== null;
   const s = useSinceAnswer(shown);
   const q = at(t, 0.1, 0.6);
-  const fill = at(s, 0.1, 1.5);
-  const rev = at(s, 1.6, 2.0);
+  const fill = at(s, 0.02, 0.3); // the new bar fills to 75% = n 1,572,864 of 2,097,152 slots
+  const rev = at(s, 0.3, 0.45);
   if (portrait) {
     return (
-      <PSvg label="A full vector of 1,048,576 keys with 2 moves per append: a new buffer of 2,097,152 slots is filled from the old one; how many appends are both buffers alive, and what does the costliest append write?" h={250}>
-        <T x={20} y={24} s={15} f={C.crema}>1,048,576 keys, full</T>
-        <T x={20} y={44} s={13} f={C.taupe}>2 moves per append</T>
-        <T x={20} y={76} s={13} f={C.latte} o={q}>old: 1,048,576 slots</T>
-        <rect x={20} y={82} width={100} height={20} rx={4} fill={C.taupe} opacity={q} />
-        <T x={20} y={128} s={13} f={C.latte} o={q}>new: 2,097,152 slots</T>
-        <rect x={20} y={134} width={200} height={20} rx={4} fill="none" stroke={C.crema} strokeWidth={1.5} opacity={q} />
-        <rect x={20} y={134} width={100 * fill} height={20} rx={4} fill={C.caramel} />
-        <T x={20} y={192} s={15} f={C.crema} o={q}>alive for {shown ? <tspan fill={C.caramel} fontWeight={700}>524,288</tspan> : '?'} appends</T>
-        <T x={20} y={216} s={15} f={C.crema} o={q}>costliest: {shown ? <tspan fill={C.caramel} fontWeight={700}>3</tspan> : '?'} writes</T>
-        {shown && <T x={20} y={240} s={13} f={C.taupe} o={rev}>24 MiB at the peak</T>}
+      <PSvg label="A full vector of 1,048,576 keys with 2 moves per append: a new buffer of 2,097,152 slots is filled from the old one; how many appends are both buffers alive, and what does the costliest append write? Answer: 524,288 appends and 3 writes" h={282}>
+        <T x={20} y={22} s={15} f={C.crema}>1,048,576 keys, full</T>
+        <T x={20} y={45} s={13} f={C.taupe}>2 moves per append</T>
+        <T x={20} y={70} s={13} f={C.latte} o={q}>old: 1,048,576 slots</T>
+        <rect x={20} y={76} width={100} height={18} rx={4} fill={C.taupe} opacity={q} />
+        <T x={20} y={116} s={13} f={C.latte} o={q}>new: 2,097,152 slots</T>
+        <rect x={20} y={122} width={200} height={18} rx={4} fill="none" stroke={C.crema} strokeWidth={1.5} opacity={q} />
+        <rect x={20} y={122} width={150 * fill} height={18} rx={4} fill={C.caramel} />
+        <line x1={120} y1={118} x2={120} y2={146} stroke={C.taupe} strokeWidth={2} opacity={rev} />
+        <T x={120} y={162} s={13} f={C.taupe} a="middle" o={rev}>old keys moved</T>
+        <T x={20} y={190} s={15} f={C.crema} o={q}>alive for {shown ? <tspan fill={C.caramel} fontWeight={700}>524,288</tspan> : '?'} appends</T>
+        <T x={20} y={213} s={15} f={C.crema} o={q}>costliest: {shown ? <tspan fill={C.caramel} fontWeight={700}>3</tspan> : '?'} writes</T>
+        {shown && <T x={20} y={238} s={13} f={C.taupe} o={rev}>3,145,728 slots, 24 MiB,</T>}
+        {shown && <T x={20} y={258} s={13} f={C.taupe} o={rev}>until n = 1,572,864</T>}
       </PSvg>
     );
   }
@@ -990,10 +1034,12 @@ export function Q1({ t, answer, portrait }: StepCtx) {
       <rect x={40} y={82} width={150} height={26} rx={4} fill={C.taupe} opacity={q} />
       <T x={40} y={134} s={13} f={C.latte} o={q}>new · 2,097,152 slots</T>
       <rect x={40} y={142} width={300} height={26} rx={4} fill="none" stroke={C.crema} strokeWidth={1.5} opacity={q} />
-      <rect x={40} y={142} width={150 * fill} height={26} rx={4} fill={C.caramel} />
-      <T x={40} y={218} s={17} f={C.crema} o={q}>both alive for {shown ? <tspan fill={C.caramel} fontWeight={700} style={{ fontSize: 'calc(20px * var(--svg-text-scale, 1))' }}>524,288</tspan> : '?'} appends</T>
-      <T x={40} y={246} s={17} f={C.crema} o={q}>costliest append: {shown ? <tspan fill={C.caramel} fontWeight={700} style={{ fontSize: 'calc(20px * var(--svg-text-scale, 1))' }}>3</tspan> : '?'} writes</T>
-      {shown && <T x={40} y={290} s={13} f={C.taupe} o={rev}>3,145,728 slots, 24 MiB, until n = 1,572,864</T>}
+      <rect x={40} y={142} width={225 * fill} height={26} rx={4} fill={C.caramel} />
+      <line x1={190} y1={138} x2={190} y2={172} stroke={C.taupe} strokeWidth={2} opacity={rev} />
+      <T x={190} y={190} s={13} f={C.taupe} a="middle" o={rev}>old keys moved</T>
+      <T x={40} y={226} s={17} f={C.crema} o={q}>both alive for {shown ? <tspan fill={C.caramel} fontWeight={700} style={{ fontSize: 'calc(20px * var(--svg-text-scale, 1))' }}>524,288</tspan> : '?'} appends</T>
+      <T x={40} y={254} s={17} f={C.crema} o={q}>costliest append: {shown ? <tspan fill={C.caramel} fontWeight={700} style={{ fontSize: 'calc(20px * var(--svg-text-scale, 1))' }}>3</tspan> : '?'} writes</T>
+      {shown && <T x={40} y={298} s={13} f={C.taupe} o={rev}>3,145,728 slots, 24 MiB, until n = 1,572,864</T>}
     </Svg>
   );
 }
@@ -1003,9 +1049,9 @@ export function Q2({ t, answer, portrait }: StepCtx) {
   const shown = answer !== null;
   const s = useSinceAnswer(shown);
   const q = at(t, 0.1, 0.6);
-  const bug = at(s, 0.2, 0.6);
-  const fixd = at(s, 1.0, 1.4);
-  const P = portrait ? { x0: 20, pitch: 20, w: 17, oy: 94, ny: 142, fs: 15 } : { x0: 40, pitch: 30, w: 26, oy: 56, ny: 112, fs: 13 };
+  const bug = at(s, 0.04, 0.2);
+  const fixd = at(s, 0.22, 0.4);
+  const P = portrait ? { x0: 20, pitch: 20, w: 17, oy: 112, ny: 160, fs: 15 } : { x0: 40, pitch: 30, w: 26, oy: 56, ny: 112, fs: 13 };
   const fxk = P.x0 + P.pitch * 2 - 2;
   const px = (i: number) => P.x0 + P.pitch * i;
   const rows = (
@@ -1022,17 +1068,30 @@ export function Q2({ t, answer, portrait }: StepCtx) {
     </g>
   );
   if (portrait) {
+    // phone: the old row is drawn big enough to print its keys, so the ringed cell (index 5) can be found; the new row stays small
+    const OP = { x: 20, pitch: 40, w: 34, y: 112 };
+    const NP = { x: 20, pitch: 20, w: 17, y: 174 };
     return (
-      <PSvg label="Right after append 9 the old buffer holds keys 1 to 8 with the first 2 moved, and the new buffer has keys 1 and 2 and key 9 at slot 8. A buggy get(5) reading the new buffer finds an empty slot; the right read is the old buffer, key 6" h={280}>
-        <T x={20} y={24} s={15} f={C.crema}>buggy get(i): always</T>
-        <T x={20} y={52} s={15} f={C.crema}>reads the new buffer</T>
-        {rows}
-        <T x={fxk} y={192} s={13} f={C.caramel} a="middle" w={600}>k = 2</T>
-        <Ring x={px(5)} y={P.ny} w={P.w} h={P.w} o={bug} f={C.cherry} />
-        <T x={20} y={218} s={15} f={C.cherryText} w={600} o={bug}>new[5] is empty</T>
-        <Ring x={px(5)} y={P.oy} w={P.w} h={P.w} o={fixd} />
-        <T x={20} y={246} s={15} f={C.caramel} w={600} o={fixd}>fix: old[5] = key 6</T>
-        <T x={20} y={272} s={17} f={C.crema} w={600}>{shown ? '' : 'get(5) = ?'}</T>
+      <PSvg label="Right after append 9 the old buffer holds keys 1 to 8 with the first 2 moved, and the new buffer has keys 1 and 2 and key 9 at slot 8. A buggy get(5) reading the new buffer finds an empty slot; the right read is the old buffer, key 6" h={258}>
+        <T x={20} y={22} s={15} f={C.crema}>buggy get(i): always</T>
+        <T x={20} y={46} s={15} f={C.crema}>reads the new buffer</T>
+        <T x={20} y={80} s={17} f={shown ? C.cherryText : C.crema} w={600}>{shown ? 'get(5) = an empty slot' : 'get(5) = ?'}</T>
+        <g opacity={q}>
+          <T x={20} y={104} s={13} f={C.latte}>old</T>
+          {Array.from({ length: 8 }, (_, i) => (
+            <Cell key={i} x={OP.x + OP.pitch * i} y={OP.y} w={OP.w} h={OP.w} label={i + 1} faded={i < 2} fs={15} />
+          ))}
+          <line x1={OP.x + OP.pitch * 2 - 3} y1={OP.y - 6} x2={OP.x + OP.pitch * 2 - 3} y2={OP.y + OP.w + 6} stroke={C.caramel} strokeWidth={2} strokeDasharray="5 4" />
+          <T x={20} y={166} s={13} f={C.latte}>new</T>
+          {Array.from({ length: 16 }, (_, i) => (
+            <Cell key={i} x={NP.x + NP.pitch * i} y={NP.y} w={NP.w} h={NP.w} label={i + 1} filled={i < 2 || i === 8} />
+          ))}
+          <line x1={NP.x + NP.pitch * 2 - 2} y1={NP.y - 6} x2={NP.x + NP.pitch * 2 - 2} y2={NP.y + NP.w + 6} stroke={C.caramel} strokeWidth={2} strokeDasharray="5 4" />
+        </g>
+        <T x={NP.x + NP.pitch * 2 - 2} y={210} s={13} f={C.caramel} a="middle" w={600}>k = 2</T>
+        <Ring x={NP.x + NP.pitch * 5} y={NP.y} w={NP.w} h={NP.w} o={bug} f={C.cherry} />
+        <Ring x={OP.x + OP.pitch * 5} y={OP.y} w={OP.w} h={OP.w} o={fixd} />
+        <T x={20} y={236} s={15} f={C.caramel} w={600} o={fixd}>fix: old[5] = key 6</T>
       </PSvg>
     );
   }
@@ -1056,21 +1115,21 @@ export function Q3({ t, answer, portrait }: StepCtx) {
   const shown = answer !== null;
   const s = useSinceAnswer(shown);
   const q = at(t, 0.1, 0.6);
-  const grow = at(s, 0.2, 1.4);
-  const rev = at(s, 1.5, 1.9);
-  const last = at(s, 2.0, 2.4);
+  const grow = at(s, 0.02, 0.28);
+  const rev = at(s, 0.25, 0.4);
+  const last = at(s, 0.3, 0.45);
   if (portrait) {
     return (
-      <PSvg label="A nightly batch job appends a billion keys and is judged on total time only: the plain and the incremental vector write the same 2,073,741,823 elements" h={280}>
-        <T x={20} y={24} s={15} f={C.crema}>nightly batch: a billion</T>
-        <T x={20} y={52} s={15} f={C.crema}>appends, total time only</T>
-        <T x={20} y={94} s={15} f={C.latte} o={q}>plain</T>
-        <Bar x={20} y={102} w={320 * grow} h={20} full={320} fill={C.crema} o={q} />
-        <T x={20} y={150} s={15} f={C.caramel} o={q}>incremental</T>
-        <Bar x={20} y={158} w={320 * grow} h={20} full={320} fill={C.caramel} o={q} />
-        {shown && <T x={20} y={206} s={15} f={C.crema} o={rev}>2,073,741,823 writes each</T>}
-        {shown && <T x={20} y={234} s={13} f={C.latte} o={last}>largest append: 536,870,913 vs 3</T>}
-        {shown && <T x={20} y={258} s={13} f={C.latte} o={last}>and nothing waits on it</T>}
+      <PSvg label="A nightly batch job appends a billion keys and is judged on total time only: the plain and the incremental vector write the same 2,073,741,823 elements" h={250}>
+        <T x={20} y={22} s={15} f={C.crema}>nightly batch: a billion</T>
+        <T x={20} y={46} s={15} f={C.crema}>appends, total time only</T>
+        <T x={20} y={86} s={15} f={C.latte} o={q}>plain</T>
+        <Bar x={20} y={92} w={320 * grow} h={18} full={320} fill={C.crema} o={q} />
+        <T x={20} y={134} s={15} f={C.caramel} o={q}>incremental</T>
+        <Bar x={20} y={140} w={320 * grow} h={18} full={320} fill={C.caramel} o={q} />
+        {shown && <T x={20} y={184} s={15} f={C.crema} o={rev}>2,073,741,823 writes each</T>}
+        {shown && <T x={20} y={208} s={13} f={C.latte} o={last}>largest append: 536,870,913 vs 3</T>}
+        {shown && <T x={20} y={226} s={13} f={C.latte} o={last}>and nothing waits on it</T>}
       </PSvg>
     );
   }

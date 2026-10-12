@@ -390,6 +390,8 @@ def test_costs_and_space():
     c2 = 1_048_576
     assert 2 * c2 == 2_097_152 and c2 // 2 == 524_288 and c2 + c2 // 2 == 1_572_864
     assert c2 + 2 * c2 == 3_145_728 and 3_145_728 * 8 == 24 * 2 ** 20  # 24 MiB
+    # the Prove-it-1 picture: the new bar ends at 75% of its slots (n = 1,572,864 of 2,097,152), the old keys moved are 50%
+    assert 4 * 1_572_864 == 3 * 2_097_152 and 2 * c2 == 2_097_152  # 75% of the new buffer in use, and the moved old keys are 50% of it
     v = IncVector()
     for i in range(c2):
         v.append(i)

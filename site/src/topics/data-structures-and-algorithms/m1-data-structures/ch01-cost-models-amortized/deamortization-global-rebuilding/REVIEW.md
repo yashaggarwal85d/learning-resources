@@ -146,3 +146,137 @@ Overall: the numbers are right and asserted, the topic is honest about the sylla
 - Dean and Barroso's figures are stated as their hypothetical (10 ms, 1 s at p99, 63%; 2,000 servers at 1 in 10,000 → about 18%), and Table 1 as the measured one.
 - The incremental-vector rule (k ≤ i < m, writes included), the 1/(g − 1) bound and the g = 1.5 boundary agree in the reel, the Deep dive and the asserts. All narration lines are ≤ 50 words (longest: 40).
 - Every other covered-elsewhere quote in `coverage.json` matches the syllabus text verbatim.
+
+## Looks and learning review (Sonnet, 2026-10-12)
+
+**Basis.** All 50 screenshots in `site/test-results/` (`desktop-` and `phone-` `deamortization-global-rebuilding-NN.png`, steps 1-19, plus the `-q` question frames of steps 2, 7, 12, 17, 18, 19) were viewed, judged by DESIGN.md "The looks review checks", and read against `narration.json` and the storyboard in OUTLINE.md. Step numbers are the built 19 steps. "Final frame" means the frame in the screenshot; where a screenshot looks mid-animation, that is said (finding 1).
+
+**Verdict.** The reel looks like this site (roast background, cream and caramel mono labels, Fraunces titles, cherry only for the bad number) and most steps have a clear point: 1 (the 131,072 counter), 3 (the red request row), 4 (63% and "1 request in 5"), 5 (the strips), 11 (69 under the dashed line), 15 (the spike chart), 16 (plain against incremental). Never more than two accents in a step. Two steps need real redesign (10, 13), one phone layout collides (8), and the predict steps' answer frames are either captured too early or leave the answer off the picture (1, 5, 6). Everything else is polish.
+
+Counts: 6 major, 13 minor, 4 nit (23 findings).
+
+### Major
+
+1. **Answer frames are captured mid-reveal, so the final frame of the predict steps cannot be judged.** (major)
+   - **Step / size:** steps 2 (desktop), 7, 12, 17, 18, 19; both sizes unless noted.
+   - **What:** step 2 desktop shows p50 and p99 revealed but p99.9 and max still blank; step 2 phone shows `524,289` in a half-faded dull red. Step 7 shows the gauges mid-drain (4 left, 6 free) and the line `in use when the copy ends: ?` gone, so the answer, 12, is on neither size. Step 17's new bar is filled about 38% (the answer is 75% of the bar, n = 1,572,864). Step 12 and 18 are discussed in 5 and 7. The reel test appears to take the answer shot a fixed time after the click, not after the reveal ends.
+   - **Fix:** make the reel test wait for the answer reveal to finish (the step's final `t`) before the shot, then re-look at 2, 7, 12, 17, 18, 19 at both sizes. Until then findings 5-8 below are "as captured".
+   - **Status:** **FIXED (2026-10-12).** Cause: `tests/reels.mjs` (shared, left alone) clicks the first option and screenshots 0.6 s later, while this topic's reveals (`useSinceAnswer` in `scenes.tsx`) ran 1.5 to 2.5 s. Other topics' answers are captured the same way, so the test is not wrong; the finding was real here because the final frame lacked the answer. Every predict reveal now finishes by 0.45 s after the click (steps 2, 7, 12, 17, 18, 19), and each was re-shot at both sizes: the answer is on the picture.
+
+2. **Phone step 8: labels collide with the row pictures.** (major)
+   - **Step / size:** 8, phone.
+   - **What:** the title `both buffers stay alive for longer` runs into the buffer icon (its last letter `r` is overprinted by the rectangle). The row 4 sub-line `the analysis assumes the allocator is O(1)` runs through the dashed box (its `O(1)` sits on the dashes). Row 3's `(524,287 appends cost 3)` ends against the dot icon. Violates "never place a label where a line, bar or another label can reach it".
+   - **Fix:** on `portrait` put each icon on the right of its own row at x >= 470 and cap the text at x 440 (shorten row 4's second line to `assumes allocation is O(1)`, row 3's to `p50: 1 → 3 (524,287 appends cost 3)`), or drop the icons on phone and keep four text rows.
+   - **Status:** **FIXED.** Step 8 rebuilt: text stops at x 440, every picture sits at x >= 458 (both sizes), row texts shortened (`capacity 524,288: the same 12 MiB peak,` / `no allocator cost is counted`); no collision at either size.
+
+3. **Step 10 (`Background`): nine labels, and which row is old and which is new is not readable.** (major)
+   - **Step / size:** 10, both.
+   - **What:** the frame carries `start at a quarter · 8 slots of work per delete`, `serves queries now`, `swap`, `old copy: freed`, `log`, `writes per delete`, `10`, `at any size: every delete ≤ 10 writes`, `old copy never past 39% tombstones`: more than twice the four-label limit. After the swap the top row (the new copy) is labelled `serves queries now`, which the caption has just said the old copy does; the old copy is a keyless grey ghost, so no one can see the two copies. The `log` label touches the old row's cells, and the empty log box shows nothing. The bar chart's last three-quarters are empty. The eye has no first stop.
+   - **Fix:** keep the storyboard's final frame but label the two rows `new copy (serves queries after the swap)` and `old copy (freed)`, give the ghost its keys in taupe, move `log` above the box and out of the cell row, and cut `start at a quarter ...` (the caption says it) and `old copy never past 39% tombstones` (Deep dive). Stretch the bar chart to the strip's width or label the three bars `delete 3, 6, 10`... so the empty right side reads as intended. Aim for five labels.
+   - **Status:** **FIXED.** Step 10 relabelled and re-laid out: `new copy: serves queries now` over the new row and `old copy: freed` over the old one (a ghost with dashed cells and taupe keys), `log` moved above its box and to the right (`log: replayed` at the end), `start at a quarter ...` and `39%` cut (the caption and the Deep dive carry them), the strip stretched to 480 units with `del 3 / 6 / 10 / 14 / 2 / 15` under the bars. Five labels plus the bar values.
+
+4. **Step 13 (`Rebuild`): the final frame does not show what was rebuilt.** (major)
+   - **Step / size:** 13, both.
+   - **What:** the final frame is the rebalanced tree with every node drawn alike, so the rebuilt subtree (63 and its five nodes) is not marked. The "before" (the lopsided path 87-54-80-63-69, height 6) is gone, so `height 6 → 4` is only text. The `in order` row is six empty dashed circles that read as unfilled placeholders, not as the walk that was done. The potential gauge is a tiny empty tube at the far right with the `Φ at 87` text, and the 10-line caption carries the whole payment argument.
+   - **Fix:** colour the six rebuilt nodes caramel (the only accent); put the in-order keys (51 54 63 69 80 87) in the ghost row in taupe; show `was height 6` as a taupe dotted outline of the old path or a small `6 → 4` marker beside the tree's depth lines (as step 11's grid lines). Move `paid by c × 5 = 15 ≥ 12 of work` to the one line under the tree and drop the separate tube.
+   - **Status:** **FIXED.** Step 13: the six rebuilt nodes end caramel, the in-order keys are printed (taupe) in the ghost row, a depth ruler beside the tree shows the old height 6 (taupe dots) against the new 4 (caramel), the tube is gone and the payment is one line under the tree (`potential at 87: 3 × 5 = 15 ≥ 12 of work`).
+
+5. **Step 12 (`WhichScapegoat`): the answer is not on the picture; the phone has no tree.** (major)
+   - **Step / size:** 12 and its `-q`, both.
+   - **What:** after the choice the desktop tree rings 63 in caramel (the climb stopped at the first ancestor), and 87 is not marked; the phone shows a six-row list `63 1 of 2 ok / 80 2 of 3 ok / 54 ... / 87 5 of 6` with only two `ok`s. Whichever the learner picked, the picture does not end on 87 flagged as the scapegoat (`5 of 6 > 2/3`), and the explanation card (below the fold on phone) carries the answer. The phone's list is also an arithmetic table, not the tree: the "climb from 69" idea is lost.
+   - **Fix:** the final frame ends with 87 ringed caramel, `5 of 6 > 2/3`, and the ancestors below it dimmed with `ok` (63, 80, 54) and above it greyed (31, 22). On phone keep the list but add the tree's one-line path `69 → 63 → 80 → 54 → 87` or draw the small tree at 0.6 scale as in step 11 (it fits: step 11's phone tree is the same size).
+   - **Status:** **FIXED.** Step 12: the final frame ends on 87 ringed with `5 of 6 > 2/3`, 63, 80 and 54 ringed caramel with `ok`, 31 and 22 dimmed. The phone list gains `never reached` rows and the climb path `69 → 63 → 80 → 54 → 87` (a list with the path, not a scaled tree).
+
+6. **Step 19 (Q3): the answer frame is two equal unlabelled bars.** (major)
+   - **Step / size:** 19, both.
+   - **What:** the storyboard promised `2,073,741,823 writes` under each bar and `largest append: 536,870,913 vs 3, and nothing waits on it`. The screenshot has neither: two bars filled to the same 72% of an unlabelled track. The picture says "equal" but not equal what, and does not carry the lesson's other half (the tail gain is real but worthless in a batch). It is also the reel's last picture.
+   - **Fix:** add the two numbers at the bar ends and the one latte line from the storyboard; if the capture is early (finding 1) re-shoot first.
+   - **Status:** **FIXED.** Step 19: the answer frame carries `2,073,741,823 writes` under each bar and the latte line `largest append: 536,870,913 vs 3, and nothing waits on it` (both sizes); the miss was the capture timing (finding 1), now re-shot.
+
+### Minor
+
+7. **Step 18 (Q2): the final frame shows only the bug, not the fix.** (minor)
+   - **Size:** both. The storyboard's caramel arrow to old slot 5 (key 6) and `fix: k ≤ i < m → old` is absent (or not yet shown, finding 1). On phone the explanation that holds the rule is under the transport bar.
+   - **Fix:** ring old key 6 in caramel and add `fix: old if k ≤ i < m`, so the picture ends on the right rule.
+   - **Status:** **FIXED.** Step 18: the final frame shows the caramel ring on old key 6 with `old[5] = key 6` and `fix: k ≤ i < m → old` (desktop) / `fix: old[5] = key 6` (phone), after the reveal timing fix.
+
+8. **Step 17 (Q1): the answer reveal lacks the storyboard's last line.** (minor)
+   - **Size:** both. `3,145,728 slots, 24 MiB, until n = 1,572,864` is missing, and the new bar's fill (about 38%) matches nothing on screen (it should reach 75% = 1,572,864 of 2,097,152, or 50% for the moved keys, and say which).
+   - **Fix:** fill to 75% with a taupe tick at 50% labelled `old keys moved`, add the taupe line.
+   - **Status:** **FIXED.** Step 17: the new bar fills to 75% (n = 1,572,864 of 2,097,152, asserted in `examples.py`), a taupe tick at 50% is labelled `old keys moved`, and the line `3,145,728 slots, 24 MiB, until n = 1,572,864` is shown (two lines on phone).
+
+9. **Step 6: the rings put `get(5)` on the cell labelled 6, with no index shown.** (minor)
+   - **Size:** both. The rings sit on index 1, 5, 9 whose cells read 2, 6, 10 (key = index + 1); the three read lines have no colour link to the rings. `n` and `m`, which the caption and narration use ("slot n", "i below m"), are not on the picture. On phone the code panel is gone, so `k ≤ i < m` appears only in the caption, clamped behind `MORE`.
+   - **Fix:** put the index under each slot in taupe 13 (0..7 and 0..15, at the ring cells only if crowded) or write `get(5) → old (key 6)`; add `n = 10`, `m = 8` beside the row labels (`old · m = 8 slots`, `new · 16 slots · n = 10`); on phone add the rule as one line under the reads.
+   - **Status:** **FIXED.** Step 6: row labels read `old · m = 8 slots` and `new · 16 slots · n = 10`; each read is two lines (`get(5)` / `old · key 6`) naming the key the ringed cell prints; on phone the rule `old if k ≤ i < m, else new` sits under the reads (desktop has it in the code panel).
+
+10. **Step 5: the Φ ghost collides with its own label; the draining gauge is over before the narration reaches it.** (minor)
+    - **Size:** both. The dashed top of the gauge's ghost crosses `was 8`, so the text reads `- - - was 8`. The final gauge is an empty tube whose full state is a hairline; the narration says "drains from eight to zero, by two on each of appends nine to twelve" at about 15 s, 10 s after the drain animation (about 5.6 s) finished.
+    - **Fix:** move `was 8` 12 units right of the ghost line; see 17 for the timing.
+   - **Status:** **FIXED.** Step 5: `was 8` moved 12 units right of the ghost line; the beats follow the narration (plain strip, gauge, appends 9 to 12 draining at 5.2 to 8.2 s, the bound at 10 s; duration 5.6 s to 11.2 s).
+
+11. **Step 9: two scales in one frame, and crowded labels.** (minor)
+    - **Size:** both. The 16-slot toy's bar `9` sits above a line reading `copies 524,288 keys`; the learner must connect `9 of 16` to `524,288 of a million` with only the caption. `writes per delete` is 38 px under `compact copy: 8 live keys` and reads as part of it. The tombstoned keys' digits are struck through and unreadable (intended, but the survivors line below needs no gap check).
+    - **Fix:** put a taupe `scaled up:` divider before the million line and move `writes per delete` 20 units lower or left of the strip.
+   - **Status:** **FIXED.** Step 9: a dotted divider and a taupe `scaled up:` lead the million line, `writes per delete` sits 46 units under the compact-copy line, and the beats are spread to 7.8 s.
+
+12. **Step 8 (desktop): four rows, no focal point; icons carry no meaning.** (minor)
+    - **Size:** desktop (phone: see 2). All four rows are the same weight and the pictures are 40 px taupe sketches: the eye lands nowhere. The red dot-and-arrow beside row 3 does not say "median"; row 4's box is just a dashed rectangle; `c = 524,288` uses a `c` the reel has not defined (the storyboard's `524,288` alone was clear). Rows 1 and 4 repeat their title in the second line.
+    - **Fix:** make the row the lesson stresses (`the median append got slower`, the only red `3`) the largest, draw its picture as `1 → 3` on two small bars, write `capacity 524,288`, and shorten row 4's second line to `no allocator cost is counted`.
+   - **Status:** **FIXED.** Step 8: row 3 (`the median append got slower`) is larger with a `1 → 3` two-bar picture (the only red `3`), `c =` is now `capacity`, row 4's second line is `no allocator cost is counted`, and the beats follow the narration (7.4 s).
+
+13. **Step 14: `6` for writes and `5` for nodes, and a red `size` bar.** (minor)
+    - **Size:** both. `size 5 < 6: rebuild all 5 nodes` sits under a bar labelled `6` writes (5 nodes + the delete: not said); the `size` bar is cherry although a shrinking tree is not the bad outcome; `writes per delete` is 20 px under the bar labels.
+    - **Fix:** `6 writes = 1 delete + 5 nodes`, make the `size` bar crema and keep cherry for the spike only.
+   - **Status:** **FIXED.** Step 14: `6 writes = 1 delete + 5 nodes` added, the size bar is crema (cherry only for the 6-write spike and the million line; the trigger flash is caramel), `writes per delete` has room; beats follow the narration (6.2 s).
+
+14. **Step 18 `-q`, phone: `get(5) = ?` runs into the step kicker.** (minor)
+    - **What:** the line is about 15 CSS px above `18/19 · §1.2`, tighter than any other phone frame. Also the phone strips are unlabelled, so index 5 cannot be found (see 9).
+    - **Fix:** lower the drawing's height by 30 units or put `get(5) = ?` above the rows.
+   - **Status:** **FIXED.** Step 18, phone: `get(5) = ?` moved to the top under the title, the drawing is shorter and the old row uses 34-unit cells that print keys 1 to 8, so index 5 can be found.
+
+15. **Step 1: the queue is not labelled; phone caption blurred.** (minor)
+    - **What:** the band of dots right of the box is the pile of requests, but nothing says so (`requests waiting` would cost one 13-unit label); the 131,072 counter carries the point, and it does. In the phone frame the caption area is a blur (the intro gate), so the step's question `Is this service fast?` cannot be read in that shot.
+    - **Fix:** add `waiting` in cherry text at the band's end; confirm the blur is only the first-step gate and the shot is taken after it clears.
+   - **Status:** **FIXED.** Step 1: `requests waiting` added at the queue band; beats follow the narration (9.4 s). The blurred phone caption was the first-step intro gate (the new shot is sharp).
+
+16. **Step 12 `-q`: the question frame already shows every ratio.** (minor)
+    - **What:** all five `x of y` labels (and on phone the whole table) are printed before the learner chooses, so the choice reduces to "which fraction is over 2/3", and the hard part, counting subtree sizes on the way up, is done for them. DESIGN: the question frame must not give the answer away.
+    - **Fix:** show the tree with sizes hidden in the `-q` frame (a `?` at each ancestor) and print the ratios in the reveal, as the narration's "sizes are counted on the way up" suggests.
+   - **Status:** **FIXED.** Step 12 `-q`: the question frame shows a `?` at each ancestor; the ratios appear only in the reveal.
+
+17. **Pacing: every animation ends in 3.4-5.6 s, the narration runs 11-41 s.** (minor, systemic)
+    - **What:** the 15 explainer steps have narration of 29-106 words (about 11-41 s at the voice's pace); the picture is finished after about 5 s and then holds. The other reels in this chapter do the same, so it is the house pattern, but here several steps narrate a process the learner can no longer watch: step 5 (the drain, said at about 15 s), 10 (scan, log and replay, said at about 20 s), 13/14 (the in-order walk, the climb), 1 (the queue, 131,072 reached at 3.8 s, narrated at about 25 s). Step 11 is the longest (106 words, about 41 s) over a static tree.
+    - **Fix:** if durations can follow the narration, give steps 5, 10, 13 and 1 beats at the lines that describe them (the `narration.json` order already matches the storyboard's beats) and split step 11's narration (alpha and h(n) here; the root's two counts to step 14, where the delete rule is). If not, trim those steps' narration to what the held final frame shows.
+   - **Status:** **FIXED (beats spread, narration kept).** Durations now follow the narration's order of beats: step 1 9.4 s, 3 6.8 s, 4 8.4 s, 5 11.2 s, 6 7.0 s, 8 7.4 s, 9 7.8 s, 10 10.0 s, 11 9.2 s, 13 7.2 s, 14 6.2 s, 15 8.4 s, 16 6.4 s (pure functions of `t`; the first tap still completes a step). Narration is not cut and step 11's was not split: its counts line is drawn at 2.6 s, alpha at 4.4 s, the limit at 5.6 s, the insert at 6.8 s.
+
+18. **Captions of steps 10, 11 and 13 run 8-10 lines; on phone only three show.** (minor)
+    - **What:** step 13's caption (about 78 words) holds the in-order walk, lower middle, `c·|left − right|`, the O(1) per ancestor, and the amortized conclusion. On phone the lines after `and recurse` are behind `MORE`, so the payment argument is not seen by a phone learner who does not tap it. Step 11 defines alpha, h(n) and the two counts in one paragraph.
+    - **Fix:** move the potential argument's second half to the narration and Deep dive only; keep the caption to what the picture shows (see 4 for what the picture should add).
+   - **Status:** **FIXED.** Captions of steps 10, 11 and 13 shortened to about 40 to 55 words; the potential argument (c·|left − right|, Θ(size), O(log n) ancestors) stays in the narration and the Deep dive ("Analysis").
+
+19. **Phone predict steps: the explanation card starts under the transport bar.** (minor)
+    - **Size:** phone, steps 2, 7, 12, 17, 18, 19. The `RIGHT`/`NOT QUITE` card is clipped at the controls on every answer frame; the learner has to scroll the caption to read it, and nothing hints that. Site-wide behaviour, not this topic's, but here the answers carry the rule (steps 7, 18).
+    - **Fix:** report to the shared player (locked: note it, do not change it); in this topic keep each answer's key fact on the picture (5, 6, 7, 8 above).
+   - **Status:** **NOT CHANGED (shared player, locked).** Reported: on phone the `RIGHT` / `NOT QUITE` card starts under the transport bar on every predict answer frame (`ReelPlayer.tsx`). In this topic each answer's key fact is on the picture (see 5 to 8).
+
+### Nits
+
+20. **Steps 2 and 3, desktop: row label crowds the column heads.** `append cost (writes)` is 33 px under `p50 p99 ...` and reads as part of the header row. Add 12 units above it. (nit)
+   - **Status:** **FIXED.** Steps 2 and 3 (desktop): the column heads moved up so `append cost (writes)` sits with its own row of values.
+
+21. **Step 15: `max 751,333` against `rebuilds 751,332 nodes`.** Correct (the insert itself is one write) but a reader sees two different numbers for one event. Write `max 751,333 = 751,332 + 1`. (nit)
+   - **Status:** **FIXED.** Step 15: `max 751,333 = 751,332 + 1` added under the table.
+
+22. **Steps 9 and 10: struck-through keys are unreadable.** The `×` and the digit overprint. A thinner `×` or taupe digits without the cross, with the cell outline dashed, would do. (nit)
+   - **Status:** **FIXED.** Steps 9 and 10: tombstone cells are dashed with taupe keys and a 1-unit cross (the keys stay readable).
+
+23. **Step 16: the `vector` and five dots at the top show nothing about incremental copying.** `queue: 0` is the point, and it reads; the strip could end with a small caramel `3` on the box. Optional. Steps 3 and 16 reuse one table frame on purpose (the bookend works). (nit)
+   - **Status:** **FIXED.** Step 16: a caramel `max 3` on the vector box; beats follow the narration (6.4 s).
+
+### Checked and fine
+
+- Step 2, 3, 4, 15, 16: points land at a glance; numbers match the narration (494,289; 63%; 246; 751,333).
+- Step 11: the 69 node under the dashed `h(9) = 5` line is the best picture in the reel; the long edge from 31 to 87 is the one odd note (an in-order x layout) and is readable.
+- Q1-Q3 question frames (`?` in place of the answer) give nothing away except in 12.
+- Contrast: taupe 13-unit lines on phone are small (about 9 px) but within the stated floor; nothing is clipped at the canvas edge except in 2.
