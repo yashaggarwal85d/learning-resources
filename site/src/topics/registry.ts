@@ -216,7 +216,8 @@ export const TOPICS: TopicMeta[] = [
     declared: ['logarithms', 'standard-sorts', 'binary-search', 'hash-set'],
     bridge: 'You can now bound what an algorithm costs. A lower bound says what every algorithm in a model must pay, and an adversary is how you prove it.',
     handoff: 'Every bound so far priced one run on its worst input. A data structure lives through a sequence of operations, where one expensive step can be paid for by many cheap ones, with no probability involved. Next: amortized analysis.',
-
+  },
+  {
     id: 'dsa.aggregate-accounting-methods',
     domain: 'data-structures-and-algorithms',
     slug: 'data-structures-and-algorithms/m1-data-structures/ch01-cost-models-amortized/aggregate-accounting-methods',
