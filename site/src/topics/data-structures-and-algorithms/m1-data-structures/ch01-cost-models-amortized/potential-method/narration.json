@@ -47,7 +47,7 @@
         },
         "An adversary only has to choose the sequence.",
         "Fill with pushes for about half the operations first.",
-        "Then the total cost grows as the square of the number of operations."
+        "Then the total cost is quadratic, the square of the operation count."
       ]
     },
     {
@@ -175,7 +175,8 @@
     },
     {
       "lines": [
-        "Phi must fall by about what a resize copies. Then the resize is paid for.",
+        "The potential must drop by about the number of keys that get copied.",
+        "Then the resize is paid for.",
         "Under shrink at a quarter, the pops fill the gauge.",
         "Then the shrink spends it.",
         {
@@ -194,7 +195,7 @@
           "beat": 0.3
         },
         "Halving at a quarter lands the vector close to half full.",
-        "But halving at a half lands it only one push from full.",
+        "Shrinking at a half leaves the vector one push from full.",
         "Any fixed shrink fraction below a half works."
       ]
     },
@@ -238,7 +239,8 @@
     {
       "lines": [
         "Fill the vector with more than a million keys. Push once.",
-        "Under shrink at a half, run one thousand rounds of pop, pop, push, push.",
+        "Now use the rule that shrinks at half full.",
+        "Run one thousand rounds of pop, pop, push, push.",
         "About how much do the thousand rounds cost in total?"
       ],
       "answer": [
@@ -256,7 +258,7 @@
         "Which rules thrash?"
       ],
       "answer": [
-        "Only rule B thrashes.",
+        "Only the at most half rule thrashes.",
         "After the first push there are seventeen keys in thirty two. A pop leaves sixteen... exactly half.",
         "Rule A does not shrink, and the next push fits. Alternation costs one per operation after the grow.",
         "Rule B shrinks to sixteen, which is full, and the next push doubles again. Seventeen writes, every operation.",
