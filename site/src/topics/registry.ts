@@ -102,4 +102,24 @@ export const TOPICS: TopicMeta[] = [
     bridge: 'Data Structures & Algorithms starts with the language its costs are written in: what a bound claims, which case it is about, and what it leaves out.',
     handoff: 'Next: the word-RAM model, the machine these step counts quietly assume, and what it hides.',
   },
+  {
+    id: 'dsa.potential-method',
+    domain: 'data-structures-and-algorithms',
+    slug: 'data-structures-and-algorithms/m1-data-structures/ch01-cost-models-amortized/potential-method',
+    title: 'The potential method',
+    syllabusTitle: 'The potential method',
+    kind: 'full',
+    // Built in parallel with the other topics of Chapter 1: it waits until every topic before it is live.
+    status: 'held',
+    milestone: { number: 1, title: 'Data Structures' },
+    chapter: { number: 1, title: 'Cost Models and Amortized Analysis', section: '1.2' },
+    minutes: 13,
+    verified: '2026-10-12',
+    introduces: ['potential-method', 'load-factor', 'table-expand-contract', 'resize-hysteresis'],
+    uses: ['amortized-cost', 'aggregate-method', 'accounting-method', 'dynamic-array-doubling', 'growth-factor', 'binary-counter', 'multipop-stack', 'adversary-argument', 'big-o-theta-omega', 'binary-numbers', 'stacks', 'logarithms'],
+    // Assumed, not taught first in this domain: listed in the Prerequisites panel.
+    declared: ['binary-numbers', 'stacks', 'logarithms'],
+    bridge: 'Accounting stored credits on single elements. The potential method keeps them as one number for the whole structure, which is what a table that grows and shrinks needs.',
+    handoff: 'Amortized O(1) still lets a single append copy the whole table. Next: deamortization, which spreads that copy out so no single operation spikes.',
+  },
 ];

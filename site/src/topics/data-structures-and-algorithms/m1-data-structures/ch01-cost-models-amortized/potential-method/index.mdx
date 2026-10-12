@@ -1,0 +1,161 @@
+---
+id: dsa.potential-method
+title: The potential method
+---
+
+<section data-section="outcomes">
+
+## After this topic you can
+
+- Turn an accounting argument into a potential function and back. Read Φ as the last reel’s bank summed over the whole state (counter: Φ = number of 1 bits; stack: Φ = number of keys; doubling vector: Φ = 2n − cap, the bank 2n − cap + 1 without its spare coin), compute ĉᵢ = cᵢ + Φ(Dᵢ) − Φ(Dᵢ₋₁), and explain why Φ(D₀) = 0 and Φ ≥ 0 make Σĉᵢ an upper bound on Σcᵢ after every operation (the sum telescopes). Going back, a potential is credit placed on the whole structure.
+- Prove amortized O(1) push and pop for a table that grows and shrinks. With the load factor α = n/cap, use Φ = 2n − cap when α ≥ ½ and Φ = cap/2 − n when α &lt; ½ (that is, Φ = max(2n − cap, cap/2 − n)); check the six cases; conclude that every push costs at most 3 amortized and every pop at most 2 under shrink-at-¼, so any m operations from empty cost at most 3·pushes + 2·pops ≤ 3m.
+- Show why shrink-at-½ costs Θ(n²) on an adversarial sequence, and choose thresholds that cannot thrash. On the chapter’s sequence every round of four operations costs 2C + 3 writes (35 at C = 16), so the cost per operation grows with C. Resize hysteresis: after any resize the vector must land Ω(cap) operations away from both thresholds, which halving at any fixed fraction below ½ gives and halving at ½ does not.
+- Recognise the potential behind splay trees (the sum over nodes of log₂ of the subtree size), Fibonacci heaps (trees in the root list plus twice the marked nodes) and union–find (the O(α(n)) bound, α(n) the inverse Ackermann function) when those chapters use it.
+
+</section>
+
+<section data-section="internals">
+
+## Into the internals
+
+One cost unit throughout: **one element write**. An empty vector has capacity 0 and the first push allocates 1; a push to a full vector doubles the capacity, copies its n keys, then writes the new one (cost n + 1); a push without a resize costs 1. The growth factor is 2 except where a section says 1.5. **Shrink-at-½:** after a pop, if n &lt; cap/2 (strictly), the capacity becomes ⌊cap/2⌋ and the n remaining keys are copied, so a shrinking pop costs 1 plus those copies. **Shrink-at-¼** is the same with n &lt; cap/4. Capacities are always 0 or a power of two, so halving is exact except 1 → 0 (popping the last key of a capacity-1 vector frees it). A pop on an empty vector is not an operation, and one pop halves at most once. Allocation and freeing are not counted; “Deamortization and global rebuilding” and “Measuring the memory hierarchy” say what that hides. Every number below is an assertion in `examples.py`.
+
+### The potential method, exactly
+
+- **Definition.** A potential function Φ maps the state of the data structure to a real number. The amortized cost of operation i is ĉᵢ = cᵢ + Φ(Dᵢ) − Φ(Dᵢ₋₁), with Dᵢ the state after it. Tarjan (1985) defines the amortized time of an operation as its actual time plus the potential after minus the potential before (the symbols are lost in the text extraction of the paper; his prose names the actual time and the configurations before and after, and the formula here is reconstructed from that); Erickson writes aᵢ = cᵢ + Φᵢ − Φᵢ₋₁. Erickson stresses that the potential “is a function of the entire data structure”, which lets you argue more globally when a local distribution of credit is difficult or impossible.
+- **Telescoping.** Summing gives Σcᵢ = Σĉᵢ + Φ(D₀) − Φ(Dₘ). In Tarjan’s words, “the total time of the operations equals the sum of their amortized times plus the net decrease in potential from the initial to the final configuration.” Sleator and Tarjan use the same sum.
+- **Conditions.** If Φ(D₀) = 0 and Φ ≥ 0 always, then Σcᵢ ≤ Σĉᵢ: this is Tarjan’s “most cases of interest”, Erickson’s validity condition and Blum’s Definition 7.2. More generally Erickson asks only Φᵢ − Φ₀ ≥ 0 for every i. If Φ₀ &gt; 0, Blum’s “seed” adds Φ₀ to the bound. The bound holds after **every** prefix, because a prefix is itself a sequence: the same condition as the last reel’s bank staying at zero or above. ĉᵢ may be negative (a pop above half full gets −1), which is fine, and Φ may be fractional (Φ = ½ at capacity 1 with no keys; Tarjan: it is more natural to deal with fractional amounts of time in the physicist’s view). Since Σcᵢ is an integer and at most Σĉᵢ, an integer bound follows.
+- **Names.** Tarjan describes the banker’s view (credits as coins that buy a fixed amount of time, borrowing allowed if repaid, stored in the structure only as an accounting device) and the physicist’s view, which “was proposed by D. Sleator (private communication)”. A potential that starts at zero and never goes negative “corresponds to the banker’s view of amortization with no borrowing”, and the two views are “entirely equivalent”. Okasaki (1996) gives the conversions both ways: credits summed into a potential, a potential placed as credits on the root.
+
+### The last reel’s three examples, as potentials
+
+- **Stack.** Φ = number of items. A push costs 1 and raises Φ by 1 (amortized 2); a pop or multipop of k keys costs k and lowers Φ by k (amortized 0); Σĉ = Σc + final size. Tarjan’s own opening example has operations of zero or more pops followed by one push: one operation can take m time units, yet all m operations make at most 2m pushes and pops, and with Φ = number of items each has amortized cost 2. (The reel’s multipop stack is a cousin of that stack, not the same operations.)
+- **Counter.** Φ = number of 1 bits. An increment with t trailing 1s costs t + 1 and changes Φ by 1 − t, so ĉ = 2 (Erickson: aᵢ = 2 × the bits changed from 0 to 1; Blum: the number of 1-bits). Sixteen increments: 32 = 31 + 1 (the register ends at 10000, one 1 bit). A fixed-width counter that wraps from all ones to zero flips its k bits and drops Φ by k: ĉ = 0, still within 2 and Φ still ≥ 0. Erickson’s counter that also decrements keeps two registers (P, N) with Φ = the 1 bits in both and gets ĉ ≤ 2, whereas the plain counter alternating 15 and 16 flips 5 bits every time and is Θ(k) per operation: the counter’s own thrash.
+- **Doubling vector.** Φ = 2n − cap, which Blum describes as twice the number of elements in the array after the midpoint. Each append has ĉ = 3, the first 2. Just after every grow that copies, Φ = 2 (after the first append, which only allocates, Φ = 1); just before a grow, Φ = n. It is the last reel’s bank 2n − cap + 1 minus the spare coin from the first append. At a million appends Φ = 951,424, Σĉ = 2,999,999 and Σc = 2,048,575 = Σĉ − Φ.
+- **Any growth factor g.** Φ_g = (g/(g − 1))·(n − cap/g) is zero just after a resize and cap when full; ĉ ≤ 1 + g/(g − 1): 3 for g = 2, and 4 for g = 1.5, where Φ = 3n − 2cap. These are the last reel’s charges recovered. With the rounding ⌈g·cap⌉ the potential stays at least 1 after the first append (just after a resize n − cap′/g &gt; 1 − 1/g), and ĉ ≤ 1 + g/(g − 1) holds for every append up to 1,000,000, executed for g = 2 and g = 1.5. Prove it 1’s mistake is the 2n − cap of g = 2 reused at g = 1.5: at a resize that copies c keys, ĉ ≈ c/2 + 3 (9 at append 13, 12 at append 19, 16 at append 28), growing with the vector.
+
+### Choosing Φ, and what a bad one looks like
+
+Erickson’s rule of thumb: a good Φ goes up a little on cheap operations and down a lot on expensive ones, and there is “no general technique … except to play around”. Read Φ as how far the structure is from just after its last expensive operation, in *state*, not in time: a push then a pop right after a grow puts Φ back at 2. Different potentials give different bounds. Four bad shapes, each executed:
+
+- **It does not drop on the expensive step.** Φ = n: the append that copies 2ᵏ keys has ĉ = 2ᵏ + 2 (10 at append 9). Φ = empty slots: ĉ = 16 at append 9, because the doubling creates 7 new empty slots. Φ = cap: ĉ = 17. All three are ≥ 0 and start at 0, so they are valid and useless.
+- **It drops too little.** 2n − cap with a growth factor of 1.5 (ĉ = 9 at append 13).
+- **It goes negative.** 2n − cap with pops: after 17 pushes (Φ = 2) and two pops, Φ = −2 and Σĉ = 48 &lt; Σc = 50; at 8 keys Φ = −16; the shrinking pop then gets ĉ = 22. Blum’s footnote “$3 per push and $−1 per successful pop”, which the last reel showed false as a charge (push, push, pop, pop costs 5 against 4), is exactly 2n − cap’s ĉ for a pop, valid only while α ≥ ½: on push, push, pop, pop that Φ goes 1, 2, 0, −2.
+- **It does not start at zero** without a seed.
+
+### A table that grows and shrinks
+
+The two-piece potential is Φ = max(2n − cap, cap/2 − n): it equals 2n − cap when α ≥ ½ and cap/2 − n when α &lt; ½. It is never negative, 0 at α = ½, cap when full and cap/4 at α = ¼. The slopes are 2 and 1 because the cap/2 pushes from half to full must save cap copies, and the cap/4 pops from half to a quarter must save about cap/4. The six cases, with ĉ = c + ΔΦ:
+
+| case | c | ΔΦ | ĉ |
+|---|---|---|---|
+| push, α ≥ ½ | 1 | +2 | 3 |
+| push that grows (from n = cap) | n + 1 | 2 − n | 3 |
+| push, α &lt; ½ (including the one that reaches ½) | 1 | −1 | 0 |
+| pop, staying ≥ ½ | 1 | −2 | −1 |
+| pop, ending below ½ | 1 | +1 | 2 |
+| pop that shrinks (n = cap/4 → cap/4 − 1) | cap/4 | 1 − cap/4 | 1 |
+
+The edge cases at capacities 0, 1 and 2: the first push from capacity 0 has ĉ = 2; a push into an empty capacity-1 vector (Φ = ½ → 1) has ĉ = 3/2; the pop that shrinks 2 → 1 has ĉ = 3/2; the pop that frees capacity 1 has ĉ = 0. Ordinary pushes at capacities 1 and 2 still cost 3, inside the bound. So Σc ≤ Σĉ ≤ 3·pushes + 2·pops ≤ 3m for every sequence from empty. `examples.py` checks it exhaustively over every state reachable from empty up to capacity 4,096 (6,158 states) and on 2,000 seeded random sequences of up to 3,000 operations.
+
+Erickson’s exercise 9 asks for the same idea with other thresholds (grow when more than ¾ full, shrink when less than ¼ full, both by rebuilding); his hint says to do it without potentials (see More questions). The textbook CLRS treats dynamic tables in its chapter on amortized analysis; it is cited here for framing only, was not opened for this topic, and no formula or section number is taken from it.
+
+### Thrashing and hysteresis
+
+The adversarial sequence, defined here for the chapter lab: fill to n = cap = C (a power of two), push once, then repeat (pop, pop, push, push), each repeat a **round**. Under shrink-at-½ every round costs 2C + 3 writes, 2C − 1 of them copies (C − 1 on the shrink, C on the grow); under shrink-at-¼ every round costs 4 and copies nothing; the fill and the push cost 3C writes and 2C − 1 copies under both.
+
+The honest scaling: **with C fixed** the thrash is Θ(C) per operation, for any number of operations. **With C proportional to the number of operations** (C pushes to fill, one push, C/4 rounds: m = 2C + 1 operations) the totals are exactly C²/2 + 15C/4 under ½ (528,128 at C = 1,024; 549,759,746,048 at C = 1,048,576), about m²/8, which is Θ(n²), against exactly 4C under ¼ (4,096; 4,194,304).
+
+Strict alternation is different. Under “less than half” it costs 1 per operation after the first grow (the pop leaves exactly half); under “at most half” every operation resizes (17 writes each at C = 16, 136 over 8 operations against 24).
+
+Why no potential can rescue ½: the actual total of the rounds is Θ(C) per operation, so any valid Φ must give some operation a Θ(C) amortized cost. With the two-piece Φ it is the shrinking pop, ĉ = cap − 2 for a shrink from capacity cap (30 at cap 32, 510 at 512, 4,094 at 4,096).
+
+**Hysteresis in general.** With doubling when full and halving when a pop leaves n &lt; a·cap, the vector lands at about 2a·cap′ after a shrink to cap′ and just over cap/2 after a grow. For any fixed 0 &lt; a &lt; ½ both landings are Ω(cap) operations from both thresholds. A potential proves it: Φ_a = max(2n − cap, k·(cap/2 − n)) with k = max(1, (3a − ½)/(½ − a)); a push costs at most 3 amortized and a pop at most 1 + k. Here k = 1 for a ≤ ¼, 3 for a = ⅓, 5 for a = ⅜ and 13 for a = 7/16, the pop bounds 2, 4, 6 and 14 are attained (exhaustive search to capacity 4,096), k grows without bound as a → ½, and a = ½ fails. The trade-off: a smaller a lets the vector sit emptier (at a load factor just above a) in exchange for a smaller constant.
+
+### The tool behind splay trees, Fibonacci heaps and union–find
+
+- **Splay trees** (Ch.4 “Splay trees”, Goes deeper later). Sleator and Tarjan give each item a fixed positive weight w(i); the size s(x) of a node is the total weight in its subtree, its rank r(x) = log s(x) (binary logarithms), and the potential is the sum of all ranks. The access lemma: splaying at x in a tree with root t costs at most 3(r(t) − r(x)) + 1 = O(log(s(t)/s(x))) amortized, proved per rotation step and telescoped. With unit weights this is Tarjan’s 1985 version (the sum over nodes of the log of the number of descendants), giving amortized access O(log n); other weight choices give the balance and static-optimality theorems.
+- **Fibonacci heaps** (Ch.6 “Fibonacci heaps”, Goes deeper later). Φ(H) = trees(H) + 2·marks(H), the potential in Wayne’s Kleinberg–Tardos slides, which prove the theorem they credit to Fredman and Tarjan (dated 1986 on the slide; the journal paper was not opened, so this Φ is not quoted as theirs). Insert: ΔΦ = +1. Meld: ΔΦ = 0. Decrease-key with c cuts: ΔΦ ≤ 4 − c, so O(1) amortized. Extract-min is O(log n) amortized because ΔΦ ≤ rank(H′) + 1 − trees(H).
+- **Union–find** (Ch.11 “Union–find”, Goes deeper later). Galler and Fischer (1964) described the structure (Tarjan 1985: Galler and Fischer proposed union by size, McIlroy and Morris path compression). Tarjan (1975) gave the first precise analysis of union by size with path compression, O(m·α(m, n)) for m operations on n elements (Tarjan 1985 adds: assuming m = Ω(n)); the Waterloo notes state the same theorem for union by rank. Here α is the inverse Ackermann function, at most 4 for most practical cases, written α(n) or α(m, n) with its arguments and never the load factor. Tarjan 1985 calls his proof “a complicated amortized analysis that uses debits as well as credits”: the banker’s view, not a potential. Lambert, Huang, Nie and Peng (2023) prove the O(log log n), O(log* n), O(log** n) and O(α(n)) amortized bounds with potential functions: each node’s potential the square root of its subtree size for O(log log n), Size/(3 + log Size)² for O(log* n), and, for O(α(n)) (their Section 6, which uses the classical recursive definitions of the Ackermann function), a potential built on a rank r(p) = ⌊log Sizemax(p)⌋ and summed over Ackermann levels k ≤ α(n). Beyond log* n their potentials involve a node and its parent, not Size alone. They say only the log log n and log* n proofs are significantly simpler, and they analyse the union-by-size version.
+- **Move-to-front** (Tarjan 1985). A potential can also compare two algorithms: the number of inversions between move-to-front’s list and another algorithm’s, the start of competitive analysis. The cache-oblivious model uses Sleator and Tarjan’s paging result.
+
+</section>
+
+<section data-section="lab">
+
+## Build, break, measure
+
+Run `python3 examples.py` next to this topic’s source. Then break it, one change at a time, and predict before you run:
+
+1. Shrink at ½ and run the adversarial sequence: 35 writes per round at C = 16.
+2. Change `<` to `≤` and run strict alternation: 17 writes per operation.
+3. Keep Φ = 2n − cap and pop: it first goes negative at the second pop below 17 keys in capacity 32.
+4. Set g = 1.5 and reuse 2n − cap: ĉ = 9 at append 13.
+5. Shrink at a = ⅓ and at a = 7/16 and watch the pop’s amortized bound grow: 4, then 14.
+
+**Predictions for the chapter lab.** Part 3 of the chapter lab, in “Measuring the memory hierarchy” (Goes deeper later), runs the sequence on a real machine; it is not repeated here. The counts to reconcile against, for 1,000 rounds after the fill and the push:
+
+| C | ½: writes | ½: copies | ¼: writes | ¼: copies |
+|---|---|---|---|---|
+| 16 | 35,000 | 31,000 | 4,000 | 0 |
+| 1,024 | 2,051,000 | 2,047,000 | 4,000 | 0 |
+| 1,048,576 | 2,097,155,000 | 2,097,151,000 | 4,000 | 0 |
+
+Per round that is 2C + 3 writes and 2C − 1 copies under ½, and 4 writes and no copies under ¼. The fill and the push cost 3C writes and 2C − 1 copies under both rules. The bound Σĉ ≤ 3·pushes + 2·pops is what the measured copies are reconciled against. Where measured time diverges from copies is the lab’s question, not this topic’s.
+
+</section>
+
+<section data-section="production">
+
+## In production
+
+Misreadings to catch in review, each with its numbers from this topic:
+
+- “Pop is O(1) amortized” taken to hold for any shrink rule. At ½ it fails: 524,288.75 writes per operation in the rounds at C = 1,048,576.
+- “The bad case is alternation.” Not under the strict rule: the thrash needs pop, pop, push, push (alternation costs 24 against 136 only when the comparison is “at most half”).
+- Shrinking to fit after a burst of deletes: the next push copies everything.
+- A resize threshold with no gap is the same bug in any structure that resizes on a load factor, such as a hash table (Ch.3 “Resizing and incremental rehashing”, Goes deeper later).
+
+No real library’s shrink policy is claimed here (Ch.2 “Dynamic arrays and growth policy” covers reserve and shrink). Allocation and freeing are not counted; “Deamortization and global rebuilding” and “Measuring the memory hierarchy” say what that hides. No incident is reported by an opened source, so none is claimed.
+
+</section>
+
+<section data-section="frontier">
+
+## The frontier
+
+A potential is the savings of **one** history. Okasaki: the physicist’s method “requires that the output of one operation be the input of the next operation”, and “savings can only be spent once”; his lazy variant bounds accumulated debt instead (Ch.13 “Amortization under persistence”, Goes deeper later). Union–find’s analysis is still being simplified: Lambert et al. leave open whether potentials that depend only on the subtree size can give log** n or better. And turning an amortized bound into a worst-case one, so that no single push copies the table, is the next topic.
+
+</section>
+
+<section data-section="questions">
+
+## More questions
+
+1. **Prove it 1, 2 and 3** are the three questions at the end of the reel, with the worked answers above.
+2. **Erickson’s exercise 9.** Grow ×2 when an insertion leaves a table more than ¾ full; shrink ×½ when a deletion leaves it less than ¼ full; prove O(1) amortized without potentials. Answer: after a grow the table is about ⅜ full and after a shrink about ½, so a grow at capacity C′ copies about ¾C′ keys after at least C′/4 insertions (3 per insertion), and a shrink copies about C′/4 after at least C′/8 deletions (2 per deletion): about 4 per operation, so O(1) by the aggregate method. Executed with a minimum capacity of 4, insert 1 and a rebuild costing the n elements it reinserts: at most 4 per operation over every prefix; pure insertions approach 3 (97 insertions cost 292, 3.01 per operation).
+3. **A potential for g = 1.5.** Find it. Answer: Φ = 3n − 2cap, zero at two-thirds full, with ĉ ≤ 4 at every append up to 1,000,000.
+4. **A fractional potential.** Why does a potential of ½ at capacity 1 still prove an integer bound? Answer: Σc is an integer and Σc ≤ Σĉ, so the bound on the total is an integer bound whatever Φ’s fractions do (Tarjan on fractional amounts of time).
+5. **How far can the shrink fraction go?** What is the largest a for which Φ_a proves a pop costs at most 4 amortized? Answer: a = ⅓, where k = 3.
+
+</section>
+
+<section data-section="sources">
+
+## Sources
+
+Last verified against these sources: 2026-10-12, with every example run in `examples.py`. Fact-check record: `FACT-CHECK.md`. Expert sign-off: pending.
+
+- Robert E. Tarjan, [Amortized computational complexity](https://courses.cs.duke.edu/fall11/cps234/reading/Tarjan85_AmortizedComplexity.pdf) (SIAM J. Algebraic Discrete Methods 6(2), 1985; the course-reading copy): the banker’s and physicist’s views, the stack, the telescoping sum, move-to-front, and the description of the union–find proof as using debits as well as credits.
+- Jeff Erickson, [Algorithms, Lecture 9: Amortized Analysis](https://jeffe.cs.illinois.edu/teaching/algorithms/notes/09-amortize.pdf) (Fa’13 notes, © 2018, CC BY-NC-SA 4.0): the potential method for the counter, the increment-and-decrement counter, the choice of Φ, and exercise 9.
+- Avrim Blum, [15-451 Algorithms, Lecture 7: Amortized Analysis](https://www.cs.cmu.edu/~avrim/451f11/lectures/lect0922.pdf) (CMU, Fall 2011): Definitions 7.1 and 7.2, the potential for the doubling array, the seed, and the footnote on charging pops.
+- University of Waterloo CS466, [Amortized Analysis, Part 2: Union–Find](https://student.cs.uwaterloo.ca/~cs466/Old_courses/F14/4-AmortizedAnalysis-part2.pdf) (Fall 2014): the union–find operations, the O(m·α(m, n)) theorem and the Ackermann function.
+- Daniel D. Sleator and Robert E. Tarjan, [Self-Adjusting Binary Search Trees](https://www.cs.cmu.edu/~sleator/papers/self-adjusting.pdf) (J. ACM 32(3), 1985): the splay potential and the access lemma.
+- Kevin Wayne, [Fibonacci Heaps](https://www.cs.princeton.edu/~wayne/kleinberg-tardos/pdf/FibonacciHeaps.pdf) (Kleinberg–Tardos lecture slides, 2017): the Fibonacci-heap potential and each operation’s change in it. A secondary source; the Fredman–Tarjan paper was not opened.
+- Chris Okasaki, [Purely Functional Data Structures](https://www.cs.cmu.edu/~rwh/students/okasaki.pdf) (PhD thesis, CMU-CS-96-177, 1996), Chapter 3: the conversions between the banker’s and physicist’s methods, and why they break under persistence.
+- Lambert, Huang, Nie and Peng, [Simpler Analyses of Union-Find](https://arxiv.org/pdf/2308.09021) (arXiv:2308.09021v1, 2023): potential-function proofs of the log log n, log* n, log** n and α(n) bounds.
+- Cormen, Leiserson, Rivest and Stein, *Introduction to Algorithms*, 4th ed. (MIT Press, 2022), the chapter on amortized analysis: cited for framing only; it was not opened for this topic and no chapter number is claimed. Fredman and Tarjan (1987) and Tarjan (1975) are named only through the sources above.
+
+Spotted an error or something unclear? [Report it](https://github.com/yashaggarwal85d/learning-resources/issues/new?title=potential-method:%20).
+
+</section>
