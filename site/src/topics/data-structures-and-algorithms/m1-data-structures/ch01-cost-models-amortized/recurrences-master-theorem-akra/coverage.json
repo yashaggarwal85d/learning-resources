@@ -1,0 +1,847 @@
+{
+  "topic": "dsa.recurrences-master-theorem-akra",
+  "syllabus": [
+    {
+      "clause": "recursion-tree animation for the three Master cases",
+      "at": [
+        {
+          "step": "Unroll it: the recursion tree"
+        },
+        {
+          "step": "Predict: eight calls on each half"
+        },
+        {
+          "step": "Three shapes of the column"
+        },
+        {
+          "step": "The statement: f against the watershed"
+        },
+        {
+          "step": "The gaps between the cases"
+        },
+        {
+          "deep": "The recursion tree, in full"
+        },
+        {
+          "deep": "Floors, ceilings and small shifts"
+        }
+      ]
+    },
+    {
+      "clause": "Akra–Bazzi for unequal splits (median-of-medians, Ch.16)",
+      "at": [
+        {
+          "step": "An unequal split: the lopsided tree"
+        },
+        {
+          "step": "Predict: groups of 3"
+        },
+        {
+          "step": "Akra–Bazzi: the exponent p"
+        },
+        {
+          "deep": "Akra–Bazzi, stated and used"
+        },
+        {
+          "topic": "Quickselect and median-of-medians",
+          "quote": "deterministic BFPRT with groups of five"
+        }
+      ]
+    },
+    {
+      "clause": "the substitution method for checking guesses",
+      "at": [
+        {
+          "step": "Predict: the proof that proves nothing"
+        },
+        {
+          "step": "The right guess that fails, and the fix"
+        },
+        {
+          "step": "Prove it · 3 of 3"
+        },
+        {
+          "deep": "Substitution, done right"
+        }
+      ]
+    }
+  ],
+  "sources": [
+    {
+      "source": "Notes on Better Master Theorems for Divide-and-Conquer Recurrences (T. Leighton, MIT, 1996)",
+      "items": [
+        {
+          "item": "Abstract and 1 Introduction: the Master Method (CLR) versus the Akra-Bazzi generalisation; the aim of an inductive proof",
+          "at": [
+            {
+              "step": "Akra–Bazzi: the exponent p"
+            },
+            {
+              "deep": "Akra–Bazzi, stated and used"
+            }
+          ]
+        },
+        {
+          "item": "2 The Akra-Bazzi Solution: Equation 1 with conditions on x, x0, a_i, b_i, k and g; the polynomial-growth condition; Theorem 1 (p from sum a_i b_i^p = 1; the integral formula)",
+          "at": [
+            {
+              "step": "Akra–Bazzi: the exponent p"
+            },
+            {
+              "deep": "Akra–Bazzi, stated and used"
+            }
+          ]
+        },
+        {
+          "item": "Five worked examples of Theorem 1",
+          "at": [
+            {
+              "deep": "Akra–Bazzi, stated and used"
+            }
+          ]
+        },
+        {
+          "item": "Lemma 1 and the inductive proof of Theorem 1",
+          "at": [
+            {
+              "out": "the inductive proof is cited from the source, not reproduced; the reel states the theorem and its hypotheses and checks the examples numerically"
+            }
+          ]
+        },
+        {
+          "item": "Remark on g growing faster than any polynomial",
+          "at": [
+            {
+              "deep": "Akra–Bazzi, stated and used"
+            }
+          ]
+        },
+        {
+          "item": "3 Variations: recurrences with ceilings; Equation 2 with perturbations h_i(x); Lemma 2; Theorem 2 (same solution)",
+          "at": [
+            {
+              "deep": "Floors, ceilings and small shifts"
+            },
+            {
+              "step": "Akra–Bazzi: the exponent p"
+            }
+          ]
+        },
+        {
+          "item": "Remark that the x/log^(1+eps) x limit on h_i is nearly tight",
+          "at": [
+            {
+              "deep": "Floors, ceilings and small shifts"
+            }
+          ]
+        },
+        {
+          "item": "References: Akra and Bazzi; Cormen, Leiserson and Rivest",
+          "at": [
+            {
+              "deep": "Sources"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "Jeff Erickson, Algorithms, Appendix II: Solving Recurrences",
+      "items": [
+        {
+          "item": "1 Introduction: recurrence = base cases + recursive cases; closed form versus asymptotic solution; tight solutions for inequalities",
+          "at": [
+            {
+              "deep": "A recurrence is a program's step count"
+            }
+          ]
+        },
+        {
+          "item": "2 The Ultimate Method, Guess and Confirm: Tower of Hanoi, Fibonacci, mergesort, and the uglier sqrt(n)T(sqrt(n)) + n",
+          "at": [
+            {
+              "step": "Predict: the proof that proves nothing"
+            },
+            {
+              "step": "The right guess that fails, and the fix"
+            },
+            {
+              "deep": "Substitution, done right"
+            },
+            {
+              "deep": "The recursion tree, in full"
+            }
+          ]
+        },
+        {
+          "item": "3 Divide and Conquer Recurrences (recursion trees): level sums, depth log_b n, leaves n^(log_b a); mergesort, selection, Karatsuba, 2T(n/2)+n/lg n, quicksort, search trees, ham-sandwich trees",
+          "at": [
+            {
+              "step": "Unroll it: the recursion tree"
+            },
+            {
+              "step": "An unequal split: the lopsided tree"
+            },
+            {
+              "step": "Prove it · 2 of 3"
+            },
+            {
+              "deep": "The recursion tree, in full"
+            }
+          ]
+        },
+        {
+          "item": "3 The Master Theorem: the three cases by a f(n/b) against f(n), with its proof sketch",
+          "at": [
+            {
+              "step": "Three shapes of the column"
+            },
+            {
+              "step": "The statement: f against the watershed"
+            },
+            {
+              "deep": "The recursion tree, in full"
+            }
+          ]
+        },
+        {
+          "item": "4 The Nuclear Bomb (Akra-Bazzi): the statement, the Master theorem as a corollary, non-integer parameters, deterministic selection rho = 0.83978, remarks on magic and exceptions",
+          "at": [
+            {
+              "step": "Akra–Bazzi: the exponent p"
+            },
+            {
+              "step": "An unequal split: the lopsided tree"
+            },
+            {
+              "deep": "Akra–Bazzi, stated and used"
+            }
+          ]
+        },
+        {
+          "item": "5 Linear Recurrences (annihilators): operators, the five-step technique, Fibonacci, Hanoi",
+          "at": [
+            {
+              "out": "annihilators solve linear recurrences with constant coefficients (Fibonacci-like), not the divide-and-conquer recurrences this syllabus line names; the reel and Deep dive use trees, Akra-Bazzi and substitution"
+            }
+          ]
+        },
+        {
+          "item": "6 Transformations: domain, range and difference; unsimplified mergesort with floors and ceilings; the full-history quicksort recurrence",
+          "at": [
+            {
+              "deep": "Floors, ceilings and small shifts"
+            },
+            {
+              "deep": "Change of variables: the van Emde Boas recurrence"
+            },
+            {
+              "deep": "The recursion tree, in full"
+            }
+          ]
+        },
+        {
+          "item": "7 Exercises",
+          "at": [
+            {
+              "out": "exercises; this topic's own Prove it steps and Try it section take their place"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "Jeff Erickson, Algorithms, Chapter 1: Recursion",
+      "items": [
+        {
+          "item": "Reductions; Simplify and Delegate",
+          "at": [
+            {
+              "topic": "Divide-and-conquer design",
+              "quote": "split, solve, combine"
+            }
+          ]
+        },
+        {
+          "item": "Tower of Hanoi",
+          "at": [
+            {
+              "out": "a linear recurrence solved by unrolling; the recursion is not divide-and-conquer, and the syllabus line is about splitting recurrences"
+            }
+          ]
+        },
+        {
+          "item": "Mergesort: correctness and analysis",
+          "at": [
+            {
+              "step": "Unroll it: the recursion tree"
+            },
+            {
+              "step": "Back to the problem"
+            }
+          ]
+        },
+        {
+          "item": "Quicksort: correctness and analysis",
+          "at": [
+            {
+              "deep": "The recursion tree, in full"
+            }
+          ]
+        },
+        {
+          "item": "Recursion trees: the level-by-level sum; decreasing, equal and increasing cases; mergesort and T(n/3) + T(2n/3)",
+          "at": [
+            {
+              "step": "Unroll it: the recursion tree"
+            },
+            {
+              "step": "Three shapes of the column"
+            },
+            {
+              "step": "Predict: groups of 3"
+            }
+          ]
+        },
+        {
+          "item": "Ignoring floors and ceilings is okay (domain transformation)",
+          "at": [
+            {
+              "deep": "Floors, ceilings and small shifts"
+            }
+          ]
+        },
+        {
+          "item": "Linear-time selection: quickselect, good pivots, median of medians, analysis, sanity checking",
+          "at": [
+            {
+              "step": "An unequal split: the lopsided tree"
+            },
+            {
+              "step": "Predict: groups of 3"
+            },
+            {
+              "topic": "Quickselect and median-of-medians",
+              "quote": "deterministic BFPRT with groups of five"
+            }
+          ]
+        },
+        {
+          "item": "Fast multiplication: naive divide and conquer and Karatsuba",
+          "at": [
+            {
+              "step": "The statement: f against the watershed"
+            },
+            {
+              "topic": "Karatsuba and Strassen",
+              "quote": "trading multiplications for additions"
+            }
+          ]
+        },
+        {
+          "item": "Exponentiation",
+          "at": [
+            {
+              "out": "fast exponentiation's recurrence T(n) = T(n/2) + 1 has the binary-search shape of the watershed step; the algorithm itself belongs to its own chapter"
+            }
+          ]
+        },
+        {
+          "item": "Exercises",
+          "at": [
+            {
+              "out": "exercises; this topic's own Prove it steps take their place"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "UIUC CS374 Fall 2020, slides 11.4.4: Median of medians is a good median",
+      "items": [
+        {
+          "item": "Proposition: at least 3n/10 - 6 elements are smaller than the median of medians",
+          "at": [
+            {
+              "step": "An unequal split: the lopsided tree"
+            },
+            {
+              "deep": "Akra–Bazzi, stated and used"
+            }
+          ]
+        },
+        {
+          "item": "Proof: at least half of the floor(n/5) groups have at least 3 smaller elements",
+          "at": [
+            {
+              "step": "An unequal split: the lopsided tree"
+            }
+          ]
+        },
+        {
+          "item": "Corollaries: |A_greater| and |A_less| are each at most 7n/10 + 6",
+          "at": [
+            {
+              "deep": "Akra–Bazzi, stated and used"
+            },
+            {
+              "step": "An unequal split: the lopsided tree"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "Roura, Improved Master Theorems for Divide-and-Conquer Recurrences (J. ACM 2001)",
+      "items": [
+        {
+          "item": "1 Introduction: the toll function, the classic master theorem, the smoothness caveat, examples (mergesort, binary search, quicksort, quad-trees)",
+          "at": [
+            {
+              "deep": "The frontier"
+            },
+            {
+              "deep": "Floors, ceilings and small shifts"
+            }
+          ]
+        },
+        {
+          "item": "2 The Discrete Master Theorem: discrete recursive definitions, sublogarithmic functions, recurrences outside its scope",
+          "at": [
+            {
+              "deep": "Floors, ceilings and small shifts"
+            },
+            {
+              "deep": "The frontier"
+            }
+          ]
+        },
+        {
+          "item": "3 The Continuous Master Theorem: shape functions and stochastic recurrences",
+          "at": [
+            {
+              "deep": "The frontier"
+            }
+          ]
+        },
+        {
+          "item": "4-5 Core theorems for general divide-and-conquer recurrences",
+          "at": [
+            {
+              "out": "the general theorems behind the Discrete and Continuous Master Theorems; the Frontier cites the two results"
+            }
+          ]
+        },
+        {
+          "item": "6-7 Proofs of the Discrete and Continuous Master Theorems",
+          "at": [
+            {
+              "out": "proofs of a research paper's theorems; the Deep dive's Frontier cites the results"
+            }
+          ]
+        },
+        {
+          "item": "8 Variance of the cost; 9 Open problems",
+          "at": [
+            {
+              "out": "beyond the order of growth; the Frontier names what these tools do not give"
+            }
+          ]
+        },
+        {
+          "item": "Appendices A and B: worked examples of the Discrete and Continuous Master Theorems",
+          "at": [
+            {
+              "deep": "The frontier"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "Stanford CS161, Lecture 8: Divide-and-Conquer Algorithms, Part Four (Summer 2013)",
+      "items": [
+        {
+          "item": "Order statistics and the selection problem; sorting then indexing in O(n log n)",
+          "at": [
+            {
+              "step": "An unequal split: the lopsided tree"
+            }
+          ]
+        },
+        {
+          "item": "The partition subroutine and quickselect; worst-case recurrence T(n) = T(n-1) + Theta(n)",
+          "at": [
+            {
+              "out": "quickselect's worst-case recurrence T(n - 1) + Theta(n) is a linear chain, not a divide-and-conquer recurrence; Ch.16"
+            },
+            {
+              "topic": "Quickselect and median-of-medians",
+              "quote": "expected O(n) quickselect"
+            }
+          ]
+        },
+        {
+          "item": "Recursive median of the first two-thirds as pivot: T(n) <= 2T(2n/3) + Theta(n)",
+          "at": [
+            {
+              "out": "a Master-theorem exercise with a = 2 and b = 3/2 (watershed n^1.71, so superlinear): the same leaves-win reading as steps 3 to 5 and Prove it 1; the reel does not draw it"
+            }
+          ]
+        },
+        {
+          "item": "Median-of-medians: groups of five, a 30%/70% split, T(n) <= T(floor(n/5)) + T(floor(7n/10)) + Theta(n)",
+          "at": [
+            {
+              "step": "An unequal split: the lopsided tree"
+            },
+            {
+              "step": "Akra–Bazzi: the exponent p"
+            }
+          ]
+        },
+        {
+          "item": "The fat base case (n <= 100) and the substitution proof of O(n) with k = 10c, then the exact ceiling recurrence with k = 50c",
+          "at": [
+            {
+              "step": "The right guess that fails, and the fix"
+            },
+            {
+              "deep": "Substitution, done right"
+            }
+          ]
+        },
+        {
+          "item": "Remarks on the large constant factor",
+          "at": [
+            {
+              "deep": "Akra–Bazzi, stated and used"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "MIT 6.046, Master Theorem: Practice Problems and Solutions (recitation handout)",
+      "items": [
+        {
+          "item": "The statement of the three cases, with the log^k n form of case 2",
+          "at": [
+            {
+              "step": "The statement: f against the watershed"
+            },
+            {
+              "deep": "The recursion tree, in full"
+            }
+          ]
+        },
+        {
+          "item": "The regularity condition",
+          "at": [
+            {
+              "step": "The statement: f against the watershed"
+            },
+            {
+              "deep": "The recursion tree, in full"
+            }
+          ]
+        },
+        {
+          "item": "22 practice recurrences with solutions, some outside the theorem (non-polynomial difference, a < 1, regularity violated, f not positive)",
+          "at": [
+            {
+              "step": "The gaps between the cases"
+            },
+            {
+              "step": "Prove it · 2 of 3"
+            },
+            {
+              "deep": "The recursion tree, in full"
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "independent Opus agent, written blind (it did not read site/); items from sources/expert-list.json",
+    "date": "2026-10-11",
+    "items": [
+      {
+        "item": "The Master theorem solves T(n) = aT(n/b) + f(n) with constants a >= 1, b > 1 and f asymptotically positive, by comparing f(n) with the watershed function n^(log_b a), which is exactly the number of leaves a^(log_b n) of the recursion tree.",
+        "at": [
+          {
+            "step": "The statement: f against the watershed"
+          },
+          {
+            "step": "Unroll it: the recursion tree"
+          }
+        ]
+      },
+      {
+        "item": "Recursion-tree picture of the three cases: level i costs a^i f(n/b^i). The level sums form a geometric series that is dominated by the root (the f-heavy case), even across all levels (the balanced case, Θ(f · log n)), or dominated by the leaves (the leaf-heavy case, Θ(n^(log_b a))). This is the picture to animate.",
+        "at": [
+          {
+            "step": "Three shapes of the column"
+          },
+          {
+            "deep": "The recursion tree, in full"
+          }
+        ]
+      },
+      {
+        "item": "Case 1 (leaf-dominated) needs f(n) = O(n^(log_b a − ε)) for some ε > 0, which means polynomially smaller. Being merely little-o of n^(log_b a) is not enough.",
+        "at": [
+          {
+            "step": "The statement: f against the watershed"
+          }
+        ]
+      },
+      {
+        "item": "Case 2 (balanced) in its extended form: if f(n) = Θ(n^(log_b a) · lg^k n) with k >= 0, then T(n) = Θ(n^(log_b a) · lg^(k+1) n). The basic k = 0 case gives the familiar extra log factor.",
+        "at": [
+          {
+            "deep": "The recursion tree, in full"
+          },
+          {
+            "step": "Prove it · 2 of 3"
+          }
+        ]
+      },
+      {
+        "item": "Case 3 (root-dominated) needs two things: f(n) = Ω(n^(log_b a + ε)), and the regularity condition a·f(n/b) <= c·f(n) for some constant c < 1 and all sufficiently large n. Regularity is what makes the level sums decrease geometrically. Some lecture statements drop the c < 1 requirement, and they are wrong to.",
+        "at": [
+          {
+            "step": "The statement: f against the watershed"
+          },
+          {
+            "deep": "The recursion tree, in full"
+          }
+        ]
+      },
+      {
+        "item": "The three cases are not exhaustive. There are gaps where f is larger or smaller than n^(log_b a) only by a sub-polynomial factor. Example: T(n) = 2T(n/2) + n lg n is not covered by the basic statement, but it is covered by extended Case 2 or by Akra–Bazzi, and equals Θ(n lg^2 n).",
+        "at": [
+          {
+            "step": "The gaps between the cases"
+          }
+        ]
+      },
+      {
+        "item": "Floors and ceilings in subproblem sizes, such as T(⌈n/2⌉) + T(⌊n/2⌋), do not change the asymptotic solution of a divide-and-conquer recurrence. An expert knows why this holds, not just that it holds: either a perturbation term in the theorem (Akra–Bazzi's h_i) or monotone sandwiching between powers of b.",
+        "at": [
+          {
+            "deep": "Floors, ceilings and small shifts"
+          }
+        ]
+      },
+      {
+        "item": "Domain transformation to remove floors, ceilings and additive shifts: overestimate T(n) <= 2T(n/2 + 1) + n, then set S(n) = T(n + α), choosing α (here α = 2) so that S satisfies a clean Master-form recurrence.",
+        "at": [
+          {
+            "deep": "Floors, ceilings and small shifts"
+          }
+        ]
+      },
+      {
+        "item": "Change of variables: substitute n = 2^k (t(k) = T(2^k)) to turn a recurrence with an awkward shape into a familiar one. For example, T(n) = T(n/2) + T(n/4) + 1 becomes a Fibonacci-like linear recurrence, giving Θ(n^(lg φ)). The same trick (m = lg n) handles recurrences such as T(n) = 2T(√n) + lg n.",
+        "at": [
+          {
+            "deep": "Change of variables: the van Emde Boas recurrence"
+          }
+        ]
+      },
+      {
+        "item": "Some divide-and-conquer recurrences fit neither the Master theorem nor Akra–Bazzi, because the number or size of subproblems is not a constant fraction. Example: T(n) = √n·T(√n) + n has depth lg lg n, with every level summing to n, so T(n) = Θ(n lg lg n). Use a recursion tree or substitution for these.",
+        "at": [
+          {
+            "step": "The gaps between the cases"
+          },
+          {
+            "deep": "The recursion tree, in full"
+          }
+        ]
+      },
+      {
+        "item": "Unbalanced recursion trees (unequal splits) can be bounded by full levels. Every complete level sums to the same amount (or decays geometrically), and leaves lie between the shallowest depth log_{1/b_min} n and the deepest depth log_{1/b_max} n. Extending the tree to the deepest leaf gives an upper bound, and truncating at the shallowest leaf gives a lower bound.",
+        "at": [
+          {
+            "step": "An unequal split: the lopsided tree"
+          },
+          {
+            "step": "Predict: groups of 3"
+          }
+        ]
+      },
+      {
+        "item": "A recursion tree that sums '...' is a way to generate a guess, not a proof. The rigorous step is to verify the guess by induction (substitution), or to cite a theorem whose hypotheses you have checked.",
+        "at": [
+          {
+            "step": "Predict: the proof that proves nothing"
+          },
+          {
+            "deep": "The recursion tree, in full"
+          }
+        ]
+      },
+      {
+        "item": "Substitution-method pitfall: you must prove exactly the induction hypothesis T(n) <= cn with the same constant c. Getting T(n) <= cn + n and calling it 'O(n)' is invalid, because the constant drifts at every level. You cannot induct over big-O.",
+        "at": [
+          {
+            "step": "Predict: the proof that proves nothing"
+          }
+        ]
+      },
+      {
+        "item": "When a correct guess fails by a lower-order term, strengthen the hypothesis by subtracting one. Example: T(n) = 4T(n/2) + n fails with T(n) <= c·n^2 but succeeds with T(n) <= c1·n^2 − c2·n. A stronger hypothesis is easier to push through the induction.",
+        "at": [
+          {
+            "step": "The right guess that fails, and the fix"
+          },
+          {
+            "step": "Prove it · 3 of 3"
+          }
+        ]
+      },
+      {
+        "item": "Base cases in substitution proofs: the base case of the induction is not the base case of the recurrence. Choose n0 and verify enough small values (for example n = 2, 3 when T(1) <= c·1·lg 1 = 0 fails), and choose the constants large enough to cover them. For divide-and-conquer recurrences the boundary values do not affect the asymptotic answer, except in degenerate cases such as T(n) = 2T(n/2) with T(1) = 0.",
+        "at": [
+          {
+            "deep": "Substitution, done right"
+          },
+          {
+            "deep": "A recurrence is a program's step count"
+          }
+        ]
+      },
+      {
+        "item": "Substitution only checks a guess and cannot show it is tight. If an upper-bound induction goes through for every constant, however small, the bound is probably loose. Prove a matching lower bound, or tighten the guess, as in moving from n lg n to n lg lg n for √n·T(√n) + n.",
+        "at": [
+          {
+            "deep": "Substitution, done right"
+          }
+        ]
+      },
+      {
+        "item": "Akra–Bazzi statement: for T(x) = Σ_{i=1..k} a_i T(b_i x + h_i(x)) + g(x) with constants a_i > 0 and 0 < b_i < 1, let p be the unique real with Σ a_i b_i^p = 1. Then T(x) = Θ(x^p (1 + ∫_1^x g(u)/u^(p+1) du)). Unlike the Master theorem, it handles unequal splits, non-integer a_i, and p <= 0.",
+        "at": [
+          {
+            "step": "Akra–Bazzi: the exponent p"
+          },
+          {
+            "deep": "Akra–Bazzi, stated and used"
+          }
+        ]
+      },
+      {
+        "item": "Akra–Bazzi needs a growth condition on g: |g'(x)| bounded by a polynomial (Lehman–Leighton–Meyer), or Leighton's polynomial-growth condition that g(u) is within constant factors of g(x) for u in [b_i x, x]. Polynomially bounded functions such as x^2 log x qualify. An exponential g = 2^n does not, and then T = Θ(g) instead.",
+        "at": [
+          {
+            "step": "Akra–Bazzi: the exponent p"
+          },
+          {
+            "deep": "Akra–Bazzi, stated and used"
+          }
+        ]
+      },
+      {
+        "item": "The h_i(x) perturbation terms in Akra–Bazzi absorb floors, ceilings and small shifts of subproblem sizes, provided |h_i(x)| = O(x / log^2 x). Leighton's version allows x / log^(1+ε) x and notes that this bound is nearly tight. That fact justifies dropping ⌊ ⌋ and ⌈ ⌉ in the analysis.",
+        "at": [
+          {
+            "deep": "Floors, ceilings and small shifts"
+          },
+          {
+            "step": "Akra–Bazzi: the exponent p"
+          }
+        ]
+      },
+      {
+        "item": "Finding p: the function φ(p) = Σ a_i b_i^p is strictly decreasing in p, so p is unique. You often do not need its closed form, only which side of a threshold it lies on. If Σ a_i b_i < 1 then p < 1, and with g(n) = n the integral is Θ(n^(1−p)), so T(n) = Θ(n). If the value of p is needed, solve numerically (p ≈ 0.83978 for selection).",
+        "at": [
+          {
+            "step": "Akra–Bazzi: the exponent p"
+          },
+          {
+            "deep": "Akra–Bazzi, stated and used"
+          }
+        ]
+      },
+      {
+        "item": "The Master theorem is a special case of Akra–Bazzi (k = 1 gives p = log_b a, and the integral reproduces the three cases and their gaps). When in doubt, compute the Akra–Bazzi integral rather than forcing a Master case.",
+        "at": [
+          {
+            "step": "Akra–Bazzi: the exponent p"
+          },
+          {
+            "deep": "Akra–Bazzi, stated and used"
+          }
+        ]
+      },
+      {
+        "item": "The selection (median-of-medians) recurrence T(n) <= T(n/5) + T(7n/10) + O(n) is linear because the subproblem fractions sum to 9/10 < 1. Each level of the recursion tree does at most 9/10 of the work of the level above, so the series is geometric. This is the canonical unequal-split example for Akra–Bazzi.",
+        "at": [
+          {
+            "step": "An unequal split: the lopsided tree"
+          }
+        ]
+      },
+      {
+        "item": "Why the group size is 5: with groups of 3 the recurrence becomes T(n) = T(n/3) + T(2n/3) + O(n). The fractions sum to exactly 1, so every level costs n over Θ(log n) levels and T(n) = Θ(n log n). The boundary case Σ fractions = 1 gives the extra log factor, and Σ < 1 is what gives linear time.",
+        "at": [
+          {
+            "step": "Predict: groups of 3"
+          }
+        ]
+      },
+      {
+        "item": "Original source of linear-time selection: BFPRT (1973) prove that PICK makes at most 5.4305n comparisons. Linearity follows because each pass discards a constant fraction at a cost proportional to what it discards, and the column length must be at least 5.",
+        "at": [
+          {
+            "topic": "Quickselect and median-of-medians",
+            "quote": "deterministic BFPRT with groups of five"
+          }
+        ]
+      },
+      {
+        "item": "Master-theorem instances that experts recognise immediately: Karatsuba (a = 3, b = 2, f = Θ(n) gives Θ(n^(lg 3)) ≈ n^1.585) and Strassen (a = 7, b = 2, f = Θ(n^2) gives Θ(n^(lg 7)) ≈ n^2.81). Both are leaf-dominated, so lowering a matters more than lowering f.",
+        "at": [
+          {
+            "step": "Prove it · 1 of 3"
+          },
+          {
+            "step": "The statement: f against the watershed"
+          },
+          {
+            "topic": "Karatsuba and Strassen",
+            "quote": "trading multiplications for additions"
+          }
+        ]
+      },
+      {
+        "item": "Full-history recurrences, such as expected randomized-quicksort cost T(n) = (2/n) Σ_{k<n} T(k) + n, are not divide-and-conquer recurrences. Neither the Master theorem nor Akra–Bazzi applies. Solve them by differencing to a limited-history recurrence, or analyse them with indicator variables.",
+        "at": [
+          {
+            "deep": "The recursion tree, in full"
+          },
+          {
+            "topic": "Expectation and indicator variables",
+            "quote": "expected comparisons in randomized quicksort"
+          }
+        ]
+      },
+      {
+        "item": "Beyond Θ: the exact solution of the discrete recurrence (with real floors and ceilings) can oscillate. Typically T(n) ~ Ψ(log n)·n^p with Ψ periodic when the log b_i are rationally related, as in mergesort's comparison count. Master theorem and Akra–Bazzi give only the order of growth, not the leading constant.",
+        "at": [
+          {
+            "deep": "The frontier"
+          }
+        ]
+      }
+    ]
+  },
+  "gapReview": {
+    "date": "2026-10-11",
+    "by": "Fable content review + fix agent",
+    "open": []
+  }
+}
