@@ -33,7 +33,8 @@ def pct(sorted_vals, p):
 
 def test_percentiles():
     assert rank(1_000_000, 99) == 990_000
-    assert rank(1_000_000, '99.9') == 999_000  # a float product gives 999_000.0000000001 and rank 999_001
+    assert rank(1_000_000, '99.9') == 999_000
+    assert math.ceil(99.9 / 100 * 1_000_000) == 999_001  # the float pitfall: the same rank computed with floats is one too high
     assert rank(1_000_000, '99.99') == 999_900
     assert rank(1_000_000, '99.999') == 999_990
     assert rank(1_000_000, 50) == 500_000
@@ -76,7 +77,6 @@ def test_plain():
     assert c16[8:12] == [9, 1, 1, 1] and sum(c16[8:12]) == 12
     phi = 2 * 8 - 8  # the potential 2n - cap just before append 9 (the last reel)
     assert phi == 8
-    assert 3 * 16 == 48  # the accounting charge of 3 per append, 16 appends
 
     costs = plain_costs(MILLION)
     s = sorted(costs)
@@ -193,37 +193,30 @@ def test_incremental_appends():
     assert c16 == [1, 2, 3, 1, 3, 3, 1, 1, 3, 3, 3, 3, 1, 1, 1, 1] and sum(c16) == 31 and max(c16) == 3
     assert c16[8:12] == [3, 3, 3, 3] and sum(c16[8:12]) == 12
 
-    # the migration after append 9: 16 slots, 2 old keys moved, 6 left to copy, 7 slots free; then 4, 2, 0
+    # the vector of 8 is full: the last reel's potential 2n - cap is 8, the keys append 9 must copy. The keys left to copy
+    # (the gauge of the reel) then fall by 2 on each of appends 9 to 12, and the free slots by 1.
     v = IncVector()
-    for i in range(9):
+    for i in range(8):
         v.append(i)
-    assert (v.cap, v.n, v.m, v.k) == (16, 9, 8, 2)
-    left_to_copy = [v.m - v.k]
-    free = [v.cap - v.n]
-    assert left_to_copy == [6] and free == [7]
-    seen = [(8 - 0)]  # just before append 9 the gauge of the last reel was 8: all 8 keys still to copy
-    for i in range(9, 12):
+    assert v.n == v.cap == 8 and 2 * v.n - v.cap == 8
+    left_to_copy, free = [v.n], [v.cap - v.n]
+    for i in range(8, 12):
         v.append(i)
         left_to_copy.append(v.m - v.k if v.old is not None else 0)
         free.append(v.cap - v.n)
-        seen.append(i)
-    assert left_to_copy == [6, 4, 2, 0] and free == [7, 6, 5, 4]
-    assert [8 - 2 * j for j in range(5)] == [8, 6, 4, 2, 0]  # the gauge around appends 9 to 12: 8, 6, 4, 2, 0
+        if i == 8:
+            assert (v.cap, v.n, v.m, v.k) == (16, 9, 8, 2)  # append 9: 16 slots, 2 old keys moved
+    assert left_to_copy == [8, 6, 4, 2, 0]  # the gauge: 8, 6, 4, 2, 0
+    assert free == [0, 7, 6, 5, 4]  # after append 9: 6 left to copy and 7 slots free; then 4 and 6, 2 and 5, 0 and 4
     assert v.old is None and (v.n, v.cap) == (12, 16)  # 12 of 16 in use when the last old key moves
-    assert v.cap - v.n == 4 and 16 // 4 == 4 and F(v.n, 8) == F(3, 2)  # a quarter spare; n = 1.5 times the old size
-    # a copy of 1 key per append would end exactly full
-    v1 = IncVector(rate=1)
-    for i in range(16):
-        v1.append(i)
-        if i == 15:
-            assert v1.old is None
+    assert v.cap - v.n == 4 == v.cap // 4 and F(v.n, 8) == F(3, 2)  # a quarter of the new buffer spare; n = 1.5 times the old size
+    # a copy of 1 key per append would end exactly full: n == 16 of 16
     v1 = IncVector(rate=1)
     for i in range(9):
         v1.append(i)
-    n_end = None
     while v1.old is not None:
         v1.append(0)
-    assert v1.n == 16  # the copy ends with n == 16 of 16: no slack
+    assert v1.n == v1.cap == 16
 
     # the state after append 10: get(1) reads new, get(5) reads old, get(9) reads new
     v = IncVector()
@@ -232,7 +225,6 @@ def test_incremental_appends():
     assert (v.n, v.m, v.k, v.cap) == (10, 8, 4, 16)
     assert (v.where(1), v.where(5), v.where(9)) == ('new', 'old', 'new')
     assert (v.get(1), v.get(5), v.get(9)) == (2, 6, 10)
-    assert 2 * 8 - 8 == 8
 
     # the frontier off-by-one guard: during every migration of a 16-append run get(k) returns the old buffer's key
     v = IncVector()
@@ -252,7 +244,7 @@ def test_incremental_appends():
     assert v.get(5) == 6 and v.where(5) == 'old'  # the right read: key 6, in the old buffer
     assert all(v.buf[j] is None for j in range(2, 8)) and v.buf[8] == 9  # new slots 2 to 7 are empty; slot 8 holds key 9
     assert len(v.buf) == 16
-    # index 5 moves on append 11 (2 moves per append: indices 2, 3 on append 10 ... wait: append 9 moved 0 and 1)
+    # append 9 moved indices 0 and 1; index 5 moves on append 11
     v.append(10)
     assert v.k == 4
     v.append(11)
@@ -455,7 +447,6 @@ def test_queue(plain, inc):
     assert waited == 349_515 and round(100 * waited / MILLION) == 35
     assert sum(lat) == 61_085_503_615 and sum(lat) / MILLION == 61_085.503615
     assert round(sum(plain) / MILLION / 4 * 100) == 51  # the server is busy about half the time
-    assert 1_000_000 == MILLION and 4 == 4
     # arrival gaps 3 and 8
     lat3, w3, _ = queue(plain, 3)
     s3 = sorted(lat3)
@@ -481,15 +472,21 @@ def test_queue(plain, inc):
 # ---------------------------------------------------------------------------------------------------------------
 # Fan-out (Dean and Barroso, The Tail at Scale: 10 ms typical, 1 s at the 99th percentile)
 # ---------------------------------------------------------------------------------------------------------------
+def slow_share(p, k):
+    """The share of requests that take over the slow time when each of k independent servers is slow with probability p."""
+    return 1 - (1 - p) ** k
+
+
 def test_fanout():
     typical_ms, p99_ms = 10, 1000  # "typically responds in 10ms but with a 99th-percentile latency of one second"
-    assert (1 - 0.99 ** 100) > 0.63 and round(100 * (1 - 0.99 ** 100)) == 63 and round(1 - 0.99 ** 100, 3) == 0.634
-    assert round(100 * (1 - 0.9999 ** 2000)) == 18 and round(1 - 0.9999 ** 2000, 3) == 0.181
-    assert 1 / 100 == 0.01 and 1 / 10_000 == 0.0001  # one request in 100; one in 10,000
-    assert 2000 * 0.0001 == 0.2  # expected slow servers per request at 2,000 servers
-    one_in_five = 1 / 5
-    assert abs((1 - 0.9999 ** 2000) - one_in_five) < 0.02  # "almost one in five"
-    leaf_ms, all_ms = 10, 140  # Table 1, measured: 99th percentile for one leaf and for all leaves of a request
+    one = slow_share(F(1, 100), 1)
+    assert one == F(1, 100)  # on one such server, one user request in 100 is slow
+    hundred = slow_share(F(1, 100), 100)
+    assert round(100 * hundred) == 63 and round(float(hundred), 3) == 0.634  # 100 servers: 63% slow
+    big = slow_share(F(1, 10_000), 2000)
+    assert round(100 * big) == 18 and round(float(big), 3) == 0.181  # 2,000 servers, 1 in 10,000 slow: almost one in five
+    assert F(1, 6) < big < F(1, 5)
+    leaf_ms, all_ms = 10, 140  # Table 1, measured: 99th percentile for a single random request and for all requests to finish
     assert (typical_ms, p99_ms, leaf_ms, all_ms) == (10, 1000, 10, 140)
 
 
@@ -586,7 +583,7 @@ class BgTomb:
         self.new_start_share = F(0)
         self.longest_scan = 0
         self.max_units = self.max_writes = self.max_writes_no_log = 0
-        self.copies = 2  # the old and the new copy
+        self.peak_dead, self.logged, self.max_copies = 0, [], 1
 
     def contains(self, key):
         i = bisect_left(self.keys, key)
@@ -630,12 +627,16 @@ class BgTomb:
         assert i < len(self.keys) and self.keys[i] == key and not self.dead[i]
         self.dead[i] = 1
         self.ndead += 1
+        self.peak_dead = max(self.peak_dead, self.ndead)
         writes = writes_no_log = 1
         if self.scan is not None and i < self.scan:
+            self.logged.append(key)
             self.log.append(key)  # behind the scan: logged, replayed in the new copy before the swap
             writes += 1
         if self.scan is None and 4 * self.ndead >= len(self.keys):
             self.scan, self.new_keys, self.log, self.new_dead = 0, [], [], set()
+        if self.scan is not None:
+            self.max_copies = 2  # the old copy and the one being built; a rebuild never starts while another runs
         S = len(self.keys)
         self.max_share = max(self.max_share, F(self.ndead, S)) if S >= 64 else self.max_share
         units = scanned = 0
@@ -673,15 +674,8 @@ def test_background_tombstones():
     assert len(v.keys) == 12 and v.ndead == 2  # the new copy: 12 slots with 2 tombstones
     assert [k for k, d in zip(v.keys, v.dead) if d] == [2, 15]
     assert [k for k, d in zip(v.keys, v.dead) if not d] == [1, 4, 5, 7, 8, 9, 11, 12, 13, 16]
-    peak = 6  # the old copy peaks at 6 tombstones of 16 before the swap
-    assert peak == 3 + 1 + 1 + 1 and peak * 100 // 16 == 37
-    assert 16 // 4 == 4 and 8 * 2 == 16  # trigger at a quarter: 4 of 16; 8 units per delete
-    # the log content before the replay is [2, 15]
-    w = BgTomb(range(1, 17))
-    for k in (3, 6, 10, 14, 2):
-        w.delete(k)
-    w.log.append(15)
-    assert w.log == [2, 15]
+    assert v.peak_dead == 6  # the old copy peaks at 6 tombstones of 16 before the swap
+    assert v.logged == [2, 15] and v.log == []  # both entries were logged, and replayed before the swap
 
     # at 1,048,576 keys: all keys deleted, smallest first, largest first, seeded random
     N = 1 << 20
@@ -698,9 +692,9 @@ def test_background_tombstones():
         assert v.max_writes == 10 and v.max_writes_no_log == 9 and v.max_units == 8, (name, v.max_writes, v.max_writes_no_log, v.max_units)
         assert v.max_share <= F(11, 28), (name, float(v.max_share))
         assert v.new_start_share <= F(4, 17)
+        assert v.max_copies == 2  # never more than two copies: the old and the new
         shares.append(float(v.max_share))
     assert round(100 * 11 / 28) == 39 and round(100 * 4 / 17) == 24  # 39% and under a quarter
-    assert 2 == 2  # never more than two copies: the old and the new
 
     # the broken budget: 8 copies per delete (a write budget, not a time budget): one delete scans a long run of tombstones
     longest = {}
@@ -772,6 +766,12 @@ class Scapegoat:
         x.size = s
         return x
 
+    def unbalanced(self, x):
+        """True if a child of x holds more than alpha of x's subtree (x is not alpha-weight-balanced)."""
+        l = x.left.size if x.left is not None else 0
+        r = x.right.size if x.right is not None else 0
+        return max(l, r) * self.den > self.num * x.size
+
     # -- operations ----------------------------------------------------------------------------------------
     def insert(self, key):
         path, x = [], self.root
@@ -799,14 +799,11 @@ class Scapegoat:
                 self.ub = d
             return 1
         # too deep: climb. path[d - j] is the j-th ancestor x_j of the new node.
-        num, den = self.num, self.den
         goat = None
         if self.rule == 'weight':
             for j in range(1, d + 1):
                 a = path[d - j]
-                l = a.left.size if a.left is not None else 0
-                r = a.right.size if a.right is not None else 0
-                if max(l, r) * den > num * a.size:
+                if self.unbalanced(a):
                     goat = d - j
                     break
         else:
@@ -930,8 +927,16 @@ def test_scapegoat_example():
         shares[x.key] = (max(l, r), x.size)
         x = x.left if 69 < x.key else x.right
     assert shares == {22: (7, 9), 31: (6, 7), 87: (5, 6), 54: (3, 5), 80: (2, 3), 63: (1, 2)}, shares
-    assert F(2, 3) == F(2, 3) and F(2, 3) >= F(2, 3)  # 80's 2 of 3 is exactly alpha: still allowed
-    assert F(3, 5) < F(2, 3) < F(5, 6)  # 54's 3 of 5 is under 2/3; 87's 5 of 6 is over
+    # 80's 2 of 3 is exactly alpha: still allowed; 54's 3 of 5 is under 2/3 though it looks lopsided; 87's 5 of 6 is over
+    by_key = {}
+    x = probe.root
+    while x.key != 69:
+        by_key[x.key] = probe.unbalanced(x)
+        x = x.left if 69 < x.key else x.right
+    assert by_key == {22: True, 31: True, 87: True, 54: False, 80: False, 63: False}, by_key  # climbing from 69, the first True is 87
+    # the potential at 87 before the rebuild: left 5, right 0, so |5 - 0| = 5
+    n87 = subtree = probe.root.right.right
+    assert n87.key == 87 and abs((n87.left.size if n87.left else 0) - (n87.right.size if n87.right else 0)) == 5
     # insert 69: depth 6 > h(9) = 5
     c69 = t.insert(69)
     assert t.last_depth == 6 and t.last_scapegoat == 87 and t.last_rebuild == 6 and c69 == 7
@@ -942,9 +947,6 @@ def test_scapegoat_example():
     # depths in the whole tree: 22:0, 31:1, 63:2 (the rebuilt subtree hangs under 31's right), 51 and 80:3, 54, 69, 87: 4
     assert d == {22: 0, 18: 1, 31: 1, 63: 2, 51: 3, 80: 3, 54: 4, 69: 4, 87: 4}
     assert t.height() == 4 and max(depths for depths in d.values()) == 4  # height 6 -> 4
-    assert 1 + 6 == 7
-    # potential at 87 before: left 5, right 0, so |5 - 0| = 5
-    assert abs(5 - 0) == 5
     # the lower middle: 63 is the root of the six sorted nodes; the paper's BUILD-TREE uses the upper middle: 69
     six = [51, 54, 63, 69, 80, 87]
     assert six[(6 - 1) // 2] == 63 and six[6 // 2] == 69

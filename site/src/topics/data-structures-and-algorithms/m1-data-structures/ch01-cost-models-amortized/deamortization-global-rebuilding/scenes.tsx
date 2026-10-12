@@ -380,7 +380,8 @@ export function TwoBuffers({ t, portrait }: StepCtx) {
           const has = i < k || (i >= m && i < n);
           return <Cell key={i} x={40 + 30 * i} y={92} w={26} label={i + 1} filled={has} o={at(t, 0.3, 0.6)} />;
         })}
-        <line x1={fx0} y1={18} x2={fx0} y2={124} stroke={C.caramel} strokeWidth={2} strokeDasharray="5 4" opacity={at(t, 0.8, 1.1)} />
+        <line x1={fx0} y1={18} x2={fx0} y2={64} stroke={C.caramel} strokeWidth={2} strokeDasharray="5 4" opacity={at(t, 0.8, 1.1)} />
+        <line x1={fx0} y1={90} x2={fx0} y2={124} stroke={C.caramel} strokeWidth={2} strokeDasharray="5 4" opacity={at(t, 0.8, 1.1)} />
         <T x={fx0} y={146} s={15} f={C.caramel} a="middle" w={600} o={at(t, 0.8, 1.1)}>k = {k}</T>
         {reads.map((r, i) => (
           <g key={i}>
@@ -953,8 +954,8 @@ export function Back({ t }: StepCtx) {
         <T key={i} x={x} y={258} s={17} f={C.caramel} a="middle" w={600} o={row(0, 1.4)}>3</T>
       ))}
       <T x={40} y={300} s={15} f={C.crema} o={row(0, 2.2)}>requests that waited: 349,515 → 0</T>
-      <T x={40} y={320} s={13} f={C.latte} o={row(0, 2.8)}>total writes: 2,048,575 for both</T>
-      <T x={40} y={340} s={13} f={C.taupe} o={row(0, 3.4)}>the price: median 1 → 3</T>
+      <T x={40} y={326} s={13} f={C.latte} o={row(0, 2.8)}>total writes: 2,048,575 for both</T>
+      <T x={40} y={350} s={13} f={C.taupe} o={row(0, 3.4)}>the price: median 1 → 3</T>
     </Svg>
   );
 }
