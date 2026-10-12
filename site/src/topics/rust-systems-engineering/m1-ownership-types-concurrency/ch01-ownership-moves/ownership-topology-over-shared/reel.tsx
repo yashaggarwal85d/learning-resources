@@ -22,8 +22,9 @@ const reel: Reel = {
       body: (
         <>
           How the reflex happens, with the real errors. Two exclusive loans of one pool: E0499. Give each stage a thread, and the closure borrows a pool it may outlive: E0373, whose help says{' '}
-          <em>add move</em>. Now the pool moves into the first thread: E0382, whose note offers to clone it (three separate pools!). An <code>Arc</code> shares ownership but gives no <code>&amp;mut</code>:
-          E0596. A <code>Mutex</code> (it owns its data; <code>lock()</code> returns a guard) makes it exclusive again, at run time. Every patch was local; none asked who should own the pool.
+          <em>add move</em> (a <code>move</code> closure owns what it uses; step 13). Now the pool moves into the first thread: E0382, whose note offers to clone it (three separate pools!). An{' '}
+          <code>Arc</code> shares ownership but gives no <code>&amp;mut</code>: E0596. A <code>Mutex</code> (it owns its data; <code>lock()</code> returns a guard) makes it exclusive again, at run time.
+          Every patch was local; none asked who should own the pool. On one thread the same ladder ends at <code>{'Rc<RefCell<Pool>>'}</code>, the single-threaded twins (step 8).
         </>
       ),
       duration: 5.6,
@@ -48,7 +49,7 @@ const reel: Reel = {
         explain: (
           <>
             Five: <code>get</code> and <code>put</code> lock the pool, and each stage locks the shared counters once. Over 1,000 messages that is 5,000 acquisitions, counted in code. Each is a point where
-            the stages must take turns (Chapter 4 measures what that costs). And the pool now has three owners, the counters four: next step.
+            the stages must take turns (Chapter 4 measures what that costs). And how many owners does the pool have now? Next step.
           </>
         ),
       },
@@ -58,8 +59,8 @@ const reel: Reel = {
       title: 'Everyone owns it, so no one does',
       body: (
         <>
-          Count the owners: the pool has three (<code>main</code>, <code>fill</code>, <code>consume</code>), the counters four. Shared ownership is real ownership, so every holder can do anything at any
-          time, and an invariant like <em>every buffer is either in the pool or in exactly one stage</em> now lives in no single place: each lock holder must keep it. Two locks taken in different orders
+          Count the owners: the pool has three (<code>main</code>, <code>fill</code>, <code>consume</code>), the counters four. Shared ownership is real ownership, so every holder can call any method at
+          any time and none is in charge, and an invariant like <em>every buffer is either in the pool or in exactly one stage</em> now lives in no single place: each lock holder must keep it. Two locks taken in different orders
           can deadlock, so lock order becomes a rule for the whole program. And how many buffers exist? Nothing in this design decides; step 15 shows what that costs.
         </>
       ),
@@ -107,9 +108,9 @@ const reel: Reel = {
         ],
         explain: (
           <>
-            Only C. Eight spawned threads read the config for the whole run and none is its natural owner, so ownership really is shared: <code>{'Arc<Config>'}</code>, and since nobody writes, no{' '}
-            <code>Mutex</code> (scoped threads, Chapter 2, could simply borrow it). The others have one owner at a time: the driver owns the pool, each stage its own counters, and a buffer passed stage to
-            stage is moved, not shared.
+            Only C. Eight spawned threads read the config for the whole run, and a spawned thread may outlive whoever would lend it, so ownership really is shared: <code>{'Arc<Config>'}</code>,
+            with no <code>Mutex</code> since nobody writes. (With scoped threads, Chapter 2, <code>main</code> could own it and lend it.) The others have one owner at a time: the driver owns the pool,
+            each stage its own counters, and a buffer passed along is moved, not shared.
           </>
         ),
       },
@@ -169,7 +170,7 @@ const reel: Reel = {
       title: 'The generation catches the stale handle',
       body: (
         <>
-          Removal is three moves. <code>take()</code> moves the value out and leaves <code>None</code> (the previous topic's idiom). The generation goes up by one, so every handle made before is now
+          Removal is three steps. <code>take()</code> moves the value out and leaves <code>None</code> (the previous topic's idiom). The generation goes up by one, so every handle made before is now
           stale. The index goes on the free list, and the next insert reuses the slot under the new generation. A lookup checks both numbers, so a stale handle gets <code>None</code>, never someone else's
           node, for one compare per access. Generations do wrap (ours after 2^32 removals of one slot, slotmap's after 2^31): still safe, just no longer caught.
         </>
@@ -181,9 +182,10 @@ const reel: Reel = {
       title: 'Sending is moving',
       body: (
         <>
-          <code>tx.send(buf)</code> takes the buffer by value: a move, like any other call. The 32-byte handle crosses to the other thread; the 64 KiB heap buffer stays where it is; <code>buf</code> is
-          moved-from, so using it after the send is E0382 (the Book's own example of why: the other thread may already be changing or dropping it). The compiler offers <em>clone it</em>: a second buffer,
-          every message. Copy the <code>u32</code> id before the send instead. If the receiver is gone, <code>send</code> fails and hands the buffer back inside <code>SendError</code>.
+          <code>tx</code> is the sending half of a channel (<code>mpsc</code>: a first-in, first-out queue between threads). <code>tx.send(buf)</code> takes the buffer by value, a move like any other
+          call: the 32-byte <code>Buf</code> (id, then the vector's pointer, capacity, length) crosses to the other thread, the 64 KiB heap buffer stays where it is, and <code>buf</code> is moved-from, so
+          using it after the send is E0382 (the other thread may already be changing or dropping it). The compiler offers <em>clone it</em>: a second buffer, every message. Copy the <code>u32</code> id
+          out first instead. If the receiver is gone, <code>send</code> hands the buffer back inside <code>SendError</code>.
         </>
       ),
       duration: 5.0,
@@ -217,7 +219,7 @@ const reel: Reel = {
       title: 'Stage 3 stalls. How many buffers?',
       body: (
         <>
-          Stage 3, <code>consume</code>, stalls, in the pull request and in the ring alike, while stage 1 has 1,000 messages to push. How many buffers does stage 1 end up making in each before stage 3
+          Stage 3, <code>consume</code>, stalls, in the pull request and in the ring alike, while stage 1 has 1,000 messages to push. How many buffers exist in each design by the time stage 3
           wakes?
         </>
       ),
@@ -244,8 +246,9 @@ const reel: Reel = {
       body: (
         <>
           One owner, one set of books. Every channel is first-in, first-out and every buffer takes the same path, so the owner knows which buffer must come home next and checks it: a cloned or lost buffer
-          fails at once (we tried both). Then in the pool plus out in the ring equals every buffer ever made, at all 1,000 checks. Shutdown: in a cycle each stage waits for its sender to hang up, so no
-          one goes first. The owner sends <code>Msg::Stop</code> behind the last buffer; it arrives home last.
+          fails at once (we tried both). With that check passing the books balance: in the pool plus out in the ring equals every buffer made, at each of 1,000 returns. Shutdown: no loop in a cycle
+          ends on its own, because each waits for a sender that is itself waiting. The owner, who knows the work is done, starts it: <code>Msg::Stop</code> behind the last buffer, arriving home last
+          (hanging up its sender works too).
         </>
       ),
       duration: 5.0,
@@ -304,7 +307,7 @@ const reel: Reel = {
       title: 'Prove it · 2 of 3',
       body: (
         <>
-          Stage 3 stalls. Point to the exact line of <code>fill_stage</code> where stage 1 blocks.
+          In the ring, stage 3 stalls. Point to the exact line of <code>fill_stage</code> where stage 1 blocks.
         </>
       ),
       duration: 1.2,

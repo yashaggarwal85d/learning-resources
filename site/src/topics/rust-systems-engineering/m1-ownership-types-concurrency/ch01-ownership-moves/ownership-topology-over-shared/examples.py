@@ -201,6 +201,20 @@ for name in ('ring_clone', 'ring_drop'):
     assert r.returncode != 0 and 'assertion `left == right` failed' in r.stderr, (name, r.returncode, r.stderr)
 assert 'buf.clone()' in src('ring_clone') and 'drop(buf); continue;' in src('ring_drop')
 
+# E6c · shutdown (step 16): no loop in the cycle ends on its own, so the owner starts it. The Stop message is one way;
+# the owner hanging up its Sender after the last dispatch is the other, and the ring drains and ends just the same.
+out = run_ok('ring_hangup')
+assert out == outs[0], (out, outs[0])
+assert 'self.to_fill = None;' in src('ring_hangup') and 'send(Msg::Stop)' not in src('ring_hangup').split('impl Owner')[1].split('fn main')[0]
+
+# E6d · the general owner task (Deep dive "Owner thread fed by messages"): requests with a reply channel, a cloneable handle.
+# Each request is 3 messages (Get, its reply, Put); each stage holds at most one buffer, so at most 3 are ever made.
+out = run_ok('owner_rpc')
+assert 'requests=3000 messages=9000 messages_per_request=3' in out, out
+assert 'buffers_created_le_3=true all_home=true' in out, out  # how many of the 3 get made varies with scheduling: only the bound is asserted
+for banned in ('Mutex', 'Arc<', 'Arc::', '.lock('):
+    assert banned not in code_lines('owner_rpc'), f'owner_rpc.rs must not contain {banned}'
+
 # Prove it 4 · the same ring with one buffer in flight.
 out = run_ok('ring_one')
 assert 'buffers_created=1 home_at_end=1' in out and 'first_ids=[1, 1, 1] trips=[1000]' in out and 'buffer_bytes=65536' in out, out

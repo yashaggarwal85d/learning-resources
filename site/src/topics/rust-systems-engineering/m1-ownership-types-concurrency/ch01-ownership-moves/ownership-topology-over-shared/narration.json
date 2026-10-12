@@ -9,7 +9,7 @@
         {
           "beat": 0.4
         },
-        "Three pipeline stages each want a buffer at the same moment. The guard borrows the pool exclusively, so a second guard is the double exclusive borrow error.",
+        "Here it is in code. A second guard on the same pool is the double exclusive borrow error.",
         "The pull request in review wraps the pool in an arc of mutex, shared ownership plus a lock, puts every stage's counters in another, and it compiles.",
         "Was that the fix the compiler was asking for?",
         {
@@ -22,7 +22,7 @@
       "lines": [
         "Here is how the reflex happens, with the real errors.",
         "Two exclusive loans of one pool: the double exclusive borrow error. So give each stage a thread.",
-        "Now the closure borrows a pool it may outlive. That's the closure-may-outlive error, and its help says: add move.",
+        "Now the closure borrows a pool it may outlive. That's the closure-may-outlive error, and its help says: add move. A move closure owns what it uses; more on that later.",
         "So the pool moves into the first thread, and the second iteration complains. That's the use-after-move error, and its note even offers to clone the pool. Three separate pools!",
         "An arc shares ownership, an atomically counted pointer, but it gives no mutable access: the no-mutable-borrow-through-an-arc error.",
         "So add a mutex. It owns its data, and its lock call returns a guard that unlocks when dropped. Exclusive again, but checked while the program runs.",
@@ -30,7 +30,7 @@
           "beat": 0.3
         },
         "Every patch was local. None of them asked who should own the pool.",
-        "Single-threaded, the same ladder ends at an R C of ref cell."
+        "On one thread, the same ladder ends at the single-threaded twins of arc and mutex: an R C of ref cell."
       ]
     },
     {
@@ -42,13 +42,13 @@
       "answer": [
         "Five. Get and put lock the pool, and every stage locks the shared counters once.",
         "A thousand messages, five thousand locks. Each one is a point where the stages must take turns, and chapter four measures what that costs.",
-        "And look at the owners: the pool now has three, the counters four."
+        "And who owns the pool now? Next step."
       ]
     },
     {
       "lines": [
         "Count the owners. The pool has three, main, fill and consume. The counters have four.",
-        "Shared ownership is real ownership. So every holder can do anything, at any time.",
+        "Shared ownership is real ownership. Every holder can call anything on the pool, at any time, and none of them is in charge.",
         "And an invariant, like every buffer is either in the pool or in exactly one stage, now lives in no single place. Each lock holder has to keep it.",
         "Two locks taken in different orders can deadlock, so lock order becomes a rule for the whole program.",
         "And how many buffers exist? Nothing in this design decides. A later step shows what that costs."
@@ -80,7 +80,7 @@
       ],
       "answer": [
         "Only the config.",
-        "Eight threads read it for the whole run and nobody writes, so it's an arc with no mutex at all.",
+        "Eight spawned threads read it for the whole run, and a spawned thread may outlive whoever would lend it. So it's an arc, and since nobody writes, no mutex at all.",
         "Everything else has one owner at a time. The driver owns the pool, each stage owns its counters, and a buffer passed along is moved, not shared."
       ]
     },
@@ -123,7 +123,7 @@
     {
       "lines": [
         "Slow motion, one slot's life.",
-        "Removal is three moves. Take the value out, leaving nothing behind. Bump the generation, so every older handle is stale. Put the index on the free list.",
+        "Removal is three steps. Take the value out, leaving nothing behind. Bump the generation, so every older handle is stale. Put the index on the free list.",
         "The next insert reuses the slot under the new generation.",
         "A lookup checks both numbers. The new handle passes. The old one gets none.",
         "One compare per access. And generations do wrap, eventually. It's still safe. It's just no longer caught."
@@ -132,7 +132,8 @@
     {
       "lines": [
         "Sending is moving.",
-        "A send takes the buffer by value, like any other call. The small handle crosses to the other thread. The big heap buffer stays where it is.",
+        "The sending half of a channel takes the buffer by value, like any other call.",
+        "Its small fixed part, the id and the vector's pointer, capacity and length, crosses to the other thread. The big heap buffer stays where it is.",
         "The sender's variable is now moved-from, so using it after the send is the use-after-move error again.",
         "The compiler offers to clone it. That would allocate and copy a second buffer, every message.",
         "Copy the small id out before the send instead.",
@@ -162,12 +163,12 @@
       "lines": [
         "Now break it.",
         "Stage three stalls, in the pull request, and in the ring.",
-        "How many buffers does stage one end up making in each?"
+        "How many buffers exist in each, by the time stage three wakes?"
       ],
       "answer": [
         "A thousand in the pull request. Three in the ring.",
         "In the pull request, stage one makes its own buffers, and its channel never pushes back.",
-        "In the ring, it just waits for one to come home. The backpressure came from the shape, not from a setting."
+        "In the ring, only the owner makes buffers, and stage one just waits for one to come home. The backpressure came from the shape, not from a setting."
       ]
     },
     {
@@ -175,9 +176,9 @@
         "One owner means one set of books.",
         "Every channel is first in, first out, and every buffer takes the same path. So the owner knows which buffer must come home next, and checks it.",
         "A cloned buffer or a lost one fails at once. We tried both.",
-        "Then, in the pool plus out in the ring always equals every buffer ever made. At every one of a thousand checks.",
-        "Shutdown is the tricky part. In a cycle, each stage waits for its sender to hang up, so no one can go first.",
-        "So the owner sends a stop message behind the last buffer. It arrives home last."
+        "With that check passing, the books balance. In the pool, plus out in the ring, equals every buffer ever made, at each of a thousand returns.",
+        "Shutdown is the tricky part. In a cycle, each stage waits for its sender to hang up, and that sender is waiting too. No loop ends on its own.",
+        "So the owner, the one who knows the work is done, starts it. It sends a stop message behind the last buffer, and the stop arrives home last. Simply hanging up would work too."
       ]
     },
     {
@@ -215,7 +216,7 @@
     {
       "lines": [
         "Prove it. Two of three.",
-        "Stage three stalls. Point to the exact line where stage one blocks."
+        "In the ring, stage three stalls. Point to the exact line where stage one blocks."
       ],
       "answer": [
         "At the receive.",

@@ -605,7 +605,7 @@ export function SendMove({ t }: StepCtx) {
   return (
     <Stack>
       <Code title="send.rs" t={t} end={0.9} highlight={t >= 3.4 ? [2] : []} lines={[`let buf = pool.get();`, `tx.send(buf).unwrap();`, `println!("sent buffer {}", buf.id);`]} />
-      <Svg label="A send is a move: the 32-byte handle of the buffer crosses the channel to the next stage while the 64 KiB heap buffer stays where it is; the sender's buf is moved-from, so using it afterwards is E0382" h={H} fill>
+      <Svg label="A send is a move: the 32-byte Buf, its id and the vector's pointer, capacity and length, crosses the channel to the next stage while the 64 KiB heap buffer stays where it is; the sender's buf is moved-from, so using it afterwards is E0382" h={H} fill>
         <g opacity={fa(t, 1.1, 0.4)}>
           <T x={40} y={32} s={13} f={C.taupe}>fill thread</T>
           <T x={350} y={32} s={13} f={C.taupe}>inspect thread</T>
@@ -1092,7 +1092,7 @@ export function Recap({ t }: StepCtx) {
     },
   ];
   return (
-    <Svg label="Four shapes for one pipeline: Arc<Mutex<T>> has many owners and a lock and hides who should own the data; a tree has one owner that lends down; an arena has one owner with handles as edges; an owner thread is sent owned values. Next: why a mutable borrow is exclusive" h={420}>
+    <Svg label="Four shapes for one pipeline: Arc<Mutex<T>> has many owners and a lock and hides who should own the data; a tree has one owner that lends down; an arena has one owner with handles as edges; an owner thread is sent owned values. Next: the rule behind every loan, many shared borrows or one exclusive borrow, never both" h={420}>
       {rows.map((r, i) => (
         <g key={i} opacity={fa(t, 0.2 + i * 0.5, 0.4)} transform={`translate(0 ${50 + i * 70 - 14})`}>
           {r.glyph}
@@ -1101,7 +1101,7 @@ export function Recap({ t }: StepCtx) {
         </g>
       ))}
       <g opacity={fa(t, 2.2, 0.5)}>
-        <T x={40} y={368} s={15} f={C.caramel}>Next: why &amp;mut is exclusive</T>
+        <T x={40} y={368} s={15} f={C.caramel}>Next: many &amp;T or one &amp;mut T</T>
         <T x={40} y={392} s={13} f={C.latte}>fill(&amp;mut Buf) · inspect(&amp;Buf)</T>
       </g>
     </Svg>

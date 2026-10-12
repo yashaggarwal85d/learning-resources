@@ -83,7 +83,7 @@
           "deep": "Graphs: why single ownership can't hold a cycle"
         },
         {
-          "deep": "A generational arena in thirty lines"
+          "deep": "A generational arena in about forty lines"
         }
       ]
     },
@@ -641,7 +641,7 @@
               "step": "One owner for every node: an arena"
             },
             {
-              "deep": "A generational arena in thirty lines"
+              "deep": "A generational arena in about forty lines"
             }
           ]
         },
@@ -681,7 +681,7 @@
           "item": "Choosing SlotMap / HopSlotMap / DenseSlotMap: SlotMap fastest except iteration, never shrinks storage (must remember the latest version per slot); HopSlotMap iterates only filled slots but insertion/removal about twice as slow; DenseSlotMap contiguous storage, two indirections per random access, Vec-speed iteration.",
           "at": [
             {
-              "deep": "A generational arena in thirty lines"
+              "deep": "A generational arena in about forty lines"
             }
           ]
         },
@@ -689,7 +689,7 @@
           "item": "Choosing SecondaryMap / SparseSecondaryMap: SecondaryMap is a Vec of slots, may need memory as large as the primary; SparseSecondaryMap is hash-based and auto-removes outdated keys whose slot was reused.",
           "at": [
             {
-              "deep": "A generational arena in thirty lines"
+              "deep": "A generational arena in about forty lines"
             }
           ]
         },
@@ -892,7 +892,7 @@
             "step": "The generation catches the stale handle"
           },
           {
-            "deep": "A generational arena in thirty lines"
+            "deep": "A generational arena in about forty lines"
           }
         ]
       },
@@ -911,7 +911,7 @@
         "item": "Side data for arena nodes lives in secondary maps keyed by the same keys (direct indexing, no hashing), instead of fields on shared nodes.",
         "at": [
           {
-            "deep": "A generational arena in thirty lines"
+            "deep": "A generational arena in about forty lines"
           }
         ]
       },
@@ -977,7 +977,7 @@
   },
   "gapReview": {
     "date": "2026-10-12",
-    "by": "pending: the content review (ROUTINE.md section 4) replaces this entry with its own",
+    "by": "Opus content review",
     "open": []
   }
 }

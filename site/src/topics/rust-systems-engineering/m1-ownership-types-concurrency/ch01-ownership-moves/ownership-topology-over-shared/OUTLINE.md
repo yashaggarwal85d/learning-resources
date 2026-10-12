@@ -680,13 +680,13 @@ Every factual claim the topic makes, with its `SOURCES.md` section (by title) an
 - [x] 2.3 Adversarial fact-check (fresh Opus) on this file against `sources/*.txt`; corrections applied here; `FACT-CHECK.md` saved. Main changes: step 12 (a clone copies 261 bytes, not 64 KiB; `Buf` has four handle cells), step 13 (rebuilt on a closure that really borrows: the ring's stage closure compiles without `move`), step 16 (the owner's check was an identity that could not fail; now a FIFO id check, E6b), the ring's channels hold up to 4 messages (not 3), `HopSlotMap` deprecated, step 21's `Rc` argument, step 7's scoped-thread nuance; `SOURCES.md` 204 → 215 quotes, `sources.mjs check` green.
 - [x] 2.4 Coverage map `coverage.json` (syllabus clauses, 7 sources' contents item by item, the 20 blind-expert items as placed above; `gapReview` holds a placeholder until section 4 replaces it).
 - [x] 3 Build (Sonnet builder): `examples/*.rs` (28 files), `examples.py`, `reel.tsx`, `scenes.tsx`, `index.mdx`, `prerequisites.mdx`, `narration.json` (no audio), `coverage.json`, registry entry (`held`); `npm run build` and `npm run test:examples` green on rustc 1.97.0. The builder also ran `node scripts/check-all.mjs --only reels --topic ownership-topology-over-shared` three times and fixed what it found (label and value overlaps in the counters, text under 9 px when an 8-line code panel left no room on phones: the code now swaps out for the drawing on portrait in steps 9, 11, 13, 14 and 16 and the question frame of step 3 shows only the code, a pause glyph that sat on a counter); the last full run passed at desktop and phone size. One later edit (step 15's portrait height 330 instead of 400) was checked by build and typecheck only. The run's looks review is still to come.
-- [ ] 4 Content review (flow, gap hunt, expert reader) and fixes; `coverage.json` → `gapReview`.
+- [x] 4 Content review (fresh Opus, 2026-10-12): 21 findings (5 major, 16 minor), all fixed; `REVIEW.md` → "Content review"; new labs `ring_hangup.rs` and `owner_rpc.rs`; `coverage.json` → `gapReview` recorded.
 - [ ] 5 `check-all --skip narration --changed`; looks review on screenshots and fixes.
 - [ ] 6 Content final (`claim.mjs final`).
 - [ ] 7 Narration generated, listened to, committed.
 - [ ] 8 Ship (merge `origin/main`, continuity check against topic 3's real handoff and ids, `check-all --changed`, merge, CI green).
 
-Next: 4 content review (flow, gap hunt, expert reader), then 5 checks and the looks review.
+Next: 5 checks and the looks review.
 
 ## Changes from the chapter plan
 

@@ -9,7 +9,7 @@ title: Ownership topology over shared mutability
 
 - **Recognise the `Arc<Mutex<T>>` reflex** in a design or a pull request: the chain of compiler errors that leads to it (`E0499`, `E0373`, `E0382`, `E0596`, then `Arc<Mutex<_>>`, with `Rc<RefCell<_>>` as its single-threaded twin), **name the topology it hides**, and count what it costs in code: owners of one value (3 for the reviewed `Pool`), lock acquisitions per message (5), invariants spread across every lock holder, and a buffer count nobody bounds.
 - **Restructure shared mutable state** into a **tree** (one owner lends down, results come back up), an **arena with generational handles** (one owner for every node of a graph), or an **owner thread fed by messages** (one owner, everyone else sends it owned values); **pick between them** by the shape of the data and the access pattern; and say when `Arc<Mutex<T>>`, or plain `Arc<T>`, really is the right shape.
-- **Implement a minimal generational arena** (`Arena<T>`, `Handle { index, generation }`, about thirty lines, the idea behind the `slotmap` crate) and explain how the generation turns a stale handle into `None` instead of a silent hit on a reused slot.
+- **Implement a minimal generational arena** (`Arena<T>`, `Handle { index, generation }`, about forty lines of code, the idea behind the `slotmap` crate) and explain how the generation turns a stale handle into `None` instead of a silent hit on a reused slot.
 - **Move owned buffers between threads through channels** (`std::sync::mpsc`, `thread::spawn(move || …)`) and **account for every buffer's owner at every moment**: a send is a move (`E0382` if the binding is reused, `E0505` if it is still borrowed), `SendError` hands the value back, the owner checks that each buffer that comes home is the oldest one out (channels are first-in, first-out) and that the pool plus the buffers out in the ring equals every buffer ever made, and the number of buffers is bounded by the topology (3), not by luck.
 
 </section>
@@ -45,13 +45,13 @@ The same move one level out is global mutable state. In the 2024 edition, refere
 
 `Arc<T>` "provides shared ownership of a value of type T, allocated in the heap". `Arc::clone` "points to the same allocation on the heap as the source Arc, while increasing a reference count": measured, a clone makes 0 allocations, and `Arc::new(Mutex::new(Pool::new()))` makes 2 (the pool's free-list reservation and the `Arc`'s heap block); the pointer is 8 bytes on this target. "`Arc<T>` makes it thread safe to have multiple ownership of the same data, but it doesn't add thread safety to its data", so you "may need to pair `Arc<T>` with some sort of std::sync type, usually `Mutex<T>`". The last `Arc` dropped drops the value. The ways back to a single owner are `Arc::try_unwrap`, `Arc::into_inner` and `Arc::get_mut` (named here; Chapter 4).
 
-`Mutex<T>` owns the data it protects, reachable only "through the RAII guards returned from lock and try_lock". The guard unlocks when dropped: that is the previous topic's guard pattern. Two methods say the quiet part out loud. `get_mut(&mut self)` takes no lock, because "the mutable borrow statically guarantees no new locks can be acquired while this reference exists" (measured: the counting `lock` helper is never called; it still returns a `LockResult`, because poisoning is still reported). `into_inner(self)` consumes the mutex. Both are the type itself saying: if you own it, you do not need the lock. Locking again in a thread that already holds the lock "will not return" (it "might panic or deadlock"), as Lab 5 shows. A mutex becomes poisoned when the thread holding it panics (named only; Chapter 6).
+`Mutex<T>` owns the data it protects, reachable only "through the RAII guards returned from lock and try_lock". The guard unlocks when dropped: that is the RAII guard pattern of "RAII, drop order, and leak safety". In the Book's words, "`Mutex<T>` provides interior mutability, as the `Cell` family does": it is to `Arc` what `RefCell` is to `Rc` (mutation through a shared handle; interior mutability is Chapter 4). Two methods say the quiet part out loud. `get_mut(&mut self)` takes no lock, because "the mutable borrow statically guarantees no new locks can be acquired while this reference exists" (measured: the counting `lock` helper is never called; it still returns a `LockResult`, because poisoning is still reported). `into_inner(self)` consumes the mutex. Both are the type itself saying: if you own it, you do not need the lock. Locking again in a thread that already holds the lock "will not return" (it "might panic or deadlock"), as Lab 5 shows. A mutex becomes poisoned when the thread holding it panics (named only; Chapter 6).
 
 What `Mutex` does not do: Rust prevents data races, "mostly through Rust's ownership system alone" (the Rustonomicon), but "it is considered safe for Rust to get deadlocked", and the Book warns that "`Mutex<T>` comes with the risk of creating deadlocks". Shared ownership has a design cost too: "multiple ownership can add complexity because these different owners need managing". In the reviewed pipeline the pool has three owners and the counters four (`Arc::strong_count`, read while every thread is parked at a `Barrier`); every message takes 5 locks; an invariant like "every buffer is in the pool or in exactly one stage" lives in no single place, because each lock holder must keep it; and nothing bounds the number of buffers.
 
 ### Tree-shaped ownership
 
-Draw the program as an owns-graph. If it is a tree, there is one root (a `main`, a request, a pipeline run), parents own children, work is lent down as `&T` or `&mut T`, and results return up as owned values or `Copy` values. The function signatures from the first topic are the edges: `fill(&mut Buf, &[u8])`, `inspect(&Buf) -> Header`, `consume(Buf) -> Buf`, `Pool::put(&mut self, Buf)`. The API Guidelines state the rule for each edge: take ownership "if a function requires ownership of an argument", borrow "if a function does not require ownership".
+Draw the program as an owns-graph. If it is a tree, there is one root (a `main`, a request, a pipeline run), parents own children, work is lent down as `&T` or `&mut T`, and results return up as owned values or `Copy` values. The ownership contracts from the first topic (`T` takes, `&T` and `&mut T` lend, returning `T` hands back) are the edges, here as the pipeline's signatures: `fill(&mut Buf, &[u8])`, `inspect(&Buf) -> Header`, `consume(Buf) -> Buf`, `Pool::put(&mut self, Buf)`. The API Guidelines state the rule for each edge: take ownership "if a function requires ownership of an argument", borrow "if a function does not require ownership".
 
 ```rust
 struct Pipeline { pool: Pool, counts: Counts }
@@ -79,35 +79,9 @@ A graph with a cycle has no root. The pipeline is one: the pool feeds `fill`, an
 
 The Book's own remedy is "reorganizing your data structures so that some references express ownership and some references don't". That has two forms. `Weak` back-edges (Chapter 4) keep the shape and make some edges non-owning. Handles into an arena, below, make every edge non-owning and give the nodes one owner. The everyday version of the second form is indices into a `Vec`, and it needs one more idea as soon as anything is removed.
 
-### A generational arena in thirty lines
+### A generational arena in about forty lines
 
 ```rust
-#[derive(Clone, Copy, Debug, PartialEq)]
-pub struct Header { pub kind: u8, pub len: u32 }     // bytes[0], then bytes[1..5] little-endian
-
-pub struct Pool { free: Vec<Buf>, next_id: u32 }
-impl Pool {
-    pub fn new() -> Pool { Pool { free: Vec::with_capacity(POOL_SLOTS), next_id: 0 } }
-    pub fn get(&mut self) -> Buf {                   // the only place a buffer is allocated
-        match self.free.pop() {                      // a `match`, not `unwrap_or_else(|| ..)`: closures are Book ch. 13, past the baseline
-            Some(buf) => buf,
-            None => {
-                self.next_id += 1;
-                Buf { id: self.next_id, bytes: Vec::with_capacity(BUF_CAP) }
-            }
-        }
-    }
-    pub fn put(&mut self, mut buf: Buf) { buf.bytes.clear(); self.free.push(buf); } // takes ownership back
-}
-
-// ---- the three stages: one of each ownership contract ----
-pub fn fill(buf: &mut Buf, src: &[u8]) { buf.bytes.clear(); buf.bytes.extend_from_slice(src); } // &mut T: exclusive loan
-pub fn inspect(buf: &Buf) -> Header {                                                            // &T: shared loan, returns a Copy value
-    let b = &buf.bytes;
-    Header { kind: b[0], len: u32::from_le_bytes([b[1], b[2], b[3], b[4]]) }
-}
-pub fn consume(buf: Buf) -> Buf { /* write the payload out */ buf }                             // T in, T out: takes, then hands back
-
 // A generational arena, by hand (the idea behind the `slotmap` crate): one owner for
 // every node of a graph; edges are Copy handles (index + generation), never references.
 #[derive(Clone, Copy, Debug, PartialEq)]
@@ -172,11 +146,13 @@ The invariant: a handle `(i, g)` is live if and only if `slots[i].generation == 
 
 The costs: one bounds check and one compare per access; slots are never shrunk (the `slotmap` docs say the same of `SlotMap`: "It can never shrink the size of its underlying storage, because it must remember for each storage slot what the latest stored version was"); generations wrap (ours after 2^32 removals of one slot, `slotmap`'s after 2^31, and "in all circumstances is the behavior safe": a wrapped handle can again hit a reused slot, it just cannot corrupt memory); and a handle from another arena is not caught ("it's an error to use the key of one slot map on another slot map. The result is safe, but unspecified"; its `new_key_type!` makes a distinct key type per map).
 
+The other common answer to stale indices is keys that are never reused, such as a `u64` counter used as the key of a `HashMap`: no ABA until the counter wraps after 2^64 insertions, but a hash per access and no dense `Vec` of slots. The generation is what lets an arena reuse its slots and still catch a stale handle.
+
 The production crate is `slotmap` 1.1.1: `SlotMap` and `DenseSlotMap` (`HopSlotMap` is "Deprecated since 1.1.0: Use SlotMap or DenseSlotMap instead", so name it only as deprecated), and `SecondaryMap` for side data keyed by the same keys ("simply a Vec of slots like slot map is"); per-slot memory is "4 + max(sizeof(T), 4) rounded up to the alignment of T". This is not the same thing as an *allocation* arena (a bump allocator such as `bumpalo` that frees everything at once): that manages memory, this manages identity (Chapter 30, "Custom allocators and arenas"). The general ABA problem in lock-free code is Chapter 7.
 
 ### Owner thread fed by messages
 
-When stages must run at the same time, a tree is not enough, because a borrow cannot be lent to a thread that may outlive it. Move the owner into a thread and send it owned values. The `std::sync::mpsc` semantics the topology relies on, as the docs state them: a channel is first-in, first-out ("in the same order as it was sent"); `channel()` never blocks the sender (an "infinite buffer") while `sync_channel(n)` blocks when full and `sync_channel(0)` is a rendezvous; `Sender::send(&self, t: T)` takes the value by move and returns it "back if it could not be sent" inside `SendError<T>` (measured: `send failed; got buffer 1 back`); `recv` blocks while a sender exists and, after disconnect, "messages sent before the disconnect will still be properly received"; the receiver can only be owned by one thread.
+When stages must run at the same time, a tree is not enough, because a borrow cannot be lent to a thread that may outlive it. Move the owner into a thread and send it owned values. The `std::sync::mpsc` semantics the topology relies on, as the docs state them: a channel is first-in, first-out ("in the same order as it was sent"); `channel()` never blocks the sender (an "infinite buffer") while `sync_channel(n)` blocks when full and `sync_channel(0)` is a rendezvous; `Sender::send(&self, t: T)` takes the value by move and returns it "back if it could not be sent" inside `SendError<T>` (measured: `send failed; got buffer 1 back`); `recv` blocks while a sender exists and, after disconnect, "messages sent before the disconnect will still be properly received"; the receiver can only be owned by one thread; and next to the blocking `recv`, "the `try_recv` method doesn't block" (polling and timeouts are Chapter 10).
 
 `move` closures (new here): the Reference says "a closure can be forced to capture its environment by copying or moving values by prefixing it with the move keyword", and the Book that `move` "overrides Rust's conservative default of borrowing; it doesn't let us violate the ownership rules". Without `move` the closure captures each variable as lightly as its body allows. A closure whose body only calls `pool.get()` borrows `pool`, and `thread::spawn` refuses it:
 
@@ -187,7 +163,7 @@ let h = thread::spawn(|| {
 });
 ```
 
-With `move` it compiles, the thread owns the pool until it ends, and `join()` hands it back ("a thread can also return a value through its JoinHandle"); using `pool` after the spawn is `E0382`. The ring's stage closures pass their channels on by value, so they capture them by value even without `move` (measured: the ring compiles and prints the same output with `move` removed from every spawn); `move` just says so.
+With `move` it compiles, the thread owns the pool until it ends, and `join()` hands it back ("a thread can also return a value through its JoinHandle"); using `pool` after the spawn is `E0382`. If the thread panics, `join()` returns `Err` instead (measured in `examples/homebuf.rs`), and a handle dropped without `join()` lets the thread run on unowned: "If the join handle is dropped, the spawned thread will implicitly be detached." The ring's stage closures pass their channels on by value, so they capture them by value even without `move` (measured: the ring compiles and prints the same output with `move` removed from every spawn); `move` just says so.
 
 The ring itself (`examples/ring.rs`): one owner thread, three stage threads, four channels. The owner's state is a plain struct with plain `&mut self` methods; there is no lock because no one else can reach it.
 
@@ -236,13 +212,32 @@ impl Owner {
 }
 ```
 
-Every buffer has exactly one owner at every instant: a stage, the owner, or the channel it is in. The owner keeps a first-in, first-out queue of the ids it has sent out and asserts that each buffer coming home is the oldest one, then that the pool plus the queue equals every buffer made. (A first version of this check, `home + (sent - back) == made`, was an identity of the owner's own counters that could never fail; the fix is that the check compares what actually arrives with what must arrive. A stage that clones one buffer, or loses one, now fails at the first wrong return: measured, both variants exit non-zero at the assertion.) `join()` hands the `Owner`, and its pool, back to `main`. Measured, identical in three runs: 1,000 messages, 3 buffers created and 3 home at the end, the ids going round `1, 2, 3, 1, 2, 3`, the buffers making 334, 333 and 333 trips, and 1,000 passed checks. The channels' own bookkeeping allocates, so buffers are counted with `Pool::next_id`, not with `ALLOCS`.
+Every buffer has exactly one owner at every instant: a stage, the owner, or the channel it is in. The owner keeps a first-in, first-out queue of the ids it has sent out and asserts that each buffer coming home is the oldest one. That is the real check, because it compares what actually arrives with what must arrive: a stage that clones one buffer, or loses one, fails at the first wrong return (measured: both variants exit non-zero at the assertion). The second assertion, the pool plus the queue equals every buffer made, is the owner's books balancing. It follows from the owner's own bookkeeping once the first check has passed (every return pops the queue and then either re-sends, pushing it again, or puts the buffer in the pool), so it guards later edits to the owner rather than testing the stages; a first version that had only a balance of this kind, `home + (sent - back) == made`, could never fail. `join()` hands the `Owner`, and its pool, back to `main`. Measured, identical in three runs: 1,000 messages, 3 buffers created and 3 home at the end, the ids going round `1, 2, 3, 1, 2, 3`, the buffers making 334, 333 and 333 trips, and 1,000 returns checked. The counters of the reviewed design need no lock here either: each stage owns its own (`seen`, the ids it handled) and hands them back through its `join()`. The channels' own bookkeeping allocates, so buffers are counted with `Pool::next_id`, not with `ALLOCS`.
 
 "0 locks" here means no `Mutex` acquisition in our code. A channel send and receive is itself a synchronisation point (std's `mpsc` uses atomics and blocking internally): the redesign removes shared ownership and its locks, not synchronisation. And the owner thread serialises access just as a lock does; its gains are one owner, one place for invariants, a closed message API and bounded resources, not speed.
 
 The general recipe (Alice Ryhl, "Actors with Tokio", a secondary source): an owner task that exclusively owns a resource, a cloneable handle holding a `Sender`, a message enum as the API ("the ActorMessage enum defines the kind of messages we can send to the actor"), replies over a one-shot channel (with std, a fresh `mpsc::channel()` used once), `let _ =` on replies because "a send operation on a channel fails if the receiver has been dropped", and an owner that ends "when all senders to the receiver have been dropped". Async owner tasks (`tokio::spawn`, `tokio::sync::mpsc`, `oneshot`) are Milestone 2.
 
-Shutting down a cycle is the subtle part. In a ring each stage waits for its upstream to hang up, and Ryhl warns that in a cycle "the last sender is never dropped, preventing shutdown": hence the explicit `Stop` behind the last buffer (the owner could also drop its `Sender` first, since it is the one place that knows the work is done). Bounded channels: the ring's channels are unbounded but can never hold more than the 3 buffers plus the one `Stop`, because only 3 buffers exist. The ring is a cycle of channels, and Ryhl warns that "you must make sure that there are no cycles of channels with bounded capacity" (unbounded sends "always return immediately", so they cannot deadlock; here the 3 buffers are the bound instead). In an open pipeline use `sync_channel`, "so that the number of messages waiting in the channel don't grow without bound"; policy and sizing are Chapter 10.
+`examples/owner_rpc.rs` is that recipe with std, for the pool alone: one owner thread, a cloneable `PoolHandle`, and a `Get` that carries its own reply channel.
+
+```rust
+pub enum PoolMsg { Get(Sender<Buf>), Put(Buf) }
+
+#[derive(Clone)]
+pub struct PoolHandle { tx: Sender<PoolMsg> }
+impl PoolHandle {
+    pub fn get(&self) -> Buf {
+        let (reply, answer) = mpsc::channel();
+        self.tx.send(PoolMsg::Get(reply)).unwrap();
+        answer.recv().unwrap()
+    }
+    pub fn put(&self, buf: Buf) { self.tx.send(PoolMsg::Put(buf)).unwrap(); }
+}
+```
+
+Three stage threads each run 1,000 rounds of `get`, `fill`, `inspect`, `consume`, `put` through their own clone of the handle. Measured: `requests=3000 messages=9000 messages_per_request=3` (a `Get`, its reply and a `Put`: the count Prove it 6 uses), no `Mutex` or `Arc` in the file, every buffer home at the end, and at most 3 buffers ever made, because each stage holds one buffer at a time and its `Put` reaches the owner before its next `Get` (how many of the 3 get made depends on scheduling, so only the bound is asserted). The owner's loop ends when the last handle is dropped. Unlike the ring, this shape needs no fixed path: any number of callers, in any order. It also shows the price the ring avoids: two channel hops and a fresh reply channel for every `get`.
+
+Shutting down a cycle is the subtle part. Each stage's `for msg in rx` ends only when its upstream hangs up, and in a cycle every upstream is itself waiting in such a loop, so no loop ends on its own: Ryhl warns that in a cycle "the last sender is never dropped, preventing shutdown". The owner, the one place that knows the work is done, has to start it. Here it sends an explicit `Stop` behind the last buffer, which each stage passes on before it ends; hanging up instead (dropping its `Sender` after the last dispatch) works just as well, because "messages sent before the disconnect will still be properly received" (measured: `examples/ring_hangup.rs`, the ring with no `Stop`, drains and prints the same output as `ring.rs`). Bounded channels: the ring's channels are unbounded but can never hold more than the 3 buffers plus the one `Stop`, because only 3 buffers exist. The ring is a cycle of channels, and Ryhl warns that "you must make sure that there are no cycles of channels with bounded capacity" (unbounded sends "always return immediately", so they cannot deadlock; here the 3 buffers are the bound instead). In an open pipeline use `sync_channel`, "so that the number of messages waiting in the channel don't grow without bound"; policy and sizing are Chapter 10.
 
 ### A guard that sends its buffer home
 
@@ -262,7 +257,7 @@ impl Drop for HomeBuf {
 }
 ```
 
-`Sender`s clone, so any number of guards live at once (measured: 3 alive at once; one stage panics, its guard still sends the buffer home during unwinding; all 3 home, 3 created). If the owner is gone, `send` fails and the buffer is simply dropped; if the owner goes after a successful send, the buffer is dropped with the channel (the `Sender` docs: "a return value of Ok does not mean that the data will be received"). That is leak-safe in the previous topic's sense: soundness never depends on the send.
+`Sender`s clone, so any number of guards live at once (measured: 3 alive at once; one stage panics, its guard still sends the buffer home during unwinding; all 3 home, 3 created). If the owner is gone, `send` fails and the buffer is simply dropped; if the owner goes after a successful send, the buffer is dropped with the channel (the `Sender` docs: "a return value of Ok does not mean that the data will be received"). That is leak-safe in the sense of "RAII, drop order, and leak safety": soundness never depends on the send.
 
 ### Choosing a topology
 
@@ -274,6 +269,8 @@ impl Drop for HomeBuf {
 | Owner thread | 0 | 3 | 1 | many concurrent users of one piece of state | it becomes the bottleneck (every request serialises through one thread: the same serialisation as a lock, made explicit; Chapter 4 measures the trade) or request and reply round trips dominate |
 
 The Tokio tutorial states the same menu independently: "Generally you want to use the first approach for simple data, and the second approach for things that require asynchronous work such as I/O primitives", and for contention: "Let a dedicated task manage state and use message passing.", "Shard the mutex.", "Restructure the code to avoid the mutex." It also says that "using a blocking mutex to guard short critical sections is an acceptable strategy when contention is minimal", so the anti-pattern is the reflex, not the type.
+
+Between read-only data (`Arc<T>`, no lock) and `Arc<Mutex<T>>` sits data that is read often and written rarely, such as a config that is reloaded. The `Arc` docs list the options for mutating through an `Arc`: "Use interior mutability with synchronization primitives like Mutex, RwLock, or one of the Atomic types". An `RwLock` lets readers share the lock, and the `arc-swap` crate replaces the whole value read-copy-update style; both are named here and measured in Chapter 4 ("`Arc<Mutex<T>>` as hidden serialization").
 
 </section>
 
@@ -322,12 +319,12 @@ first_ids=[1, 2, 3, 1, 2, 3] trips=[334, 333, 333]
 buffer_bytes=196608 size_of_buf=32 size_of_msg=32
 ```
 
-`buffer_bytes` is 3 times 64 KiB, 192 KiB. `examples/homebuf.rs` prints `alive_at_once=3 created=3` and, with one stage panicking, `panics=1 home=3 created=3`. `examples/ring_clone.rs` and `examples/ring_drop.rs` (a stage that clones one buffer, or loses one) exit non-zero at the owner's first-in, first-out check. `examples/ring_one.rs` is the ring with one buffer in flight: `buffers_created=1 home_at_end=1`, `first_ids=[1, 1, 1] trips=[1000]`.
+`buffer_bytes` is 3 times 64 KiB, 192 KiB. `examples/homebuf.rs` prints `alive_at_once=3 created=3` and, with one stage panicking, `panics=1 home=3 created=3`. `examples/ring_clone.rs` and `examples/ring_drop.rs` (a stage that clones one buffer, or loses one) exit non-zero at the owner's first-in, first-out check. `examples/ring_one.rs` is the ring with one buffer in flight: `buffers_created=1 home_at_end=1`, `first_ids=[1, 1, 1] trips=[1000]`. `examples/ring_hangup.rs` shuts the ring down by the owner dropping its `Sender` instead of sending `Stop`, with output identical to `ring.rs`. `examples/owner_rpc.rs`, the request-and-reply owner, prints `requests=3000 messages=9000 messages_per_request=3` and `buffers_created_le_3=true all_home=true`.
 
 ### Lab 5 · Break it
 
 - **Stall stage 3.** In the reviewed design (`examples/stall.rs`), `fill` calls `pool.get()` itself and its channel never pushes back, so while `consume` waits it makes a buffer for every message: `created=1000`, 65,536,000 bytes requested (62.5 MiB). The same stall in the ring (`examples/ring_stall.rs`) leaves `made_while_stalled=3` and `buffers_created=3`. Both stalls use channel signals, not sleeps.
-- **Lock the same mutex twice in one statement.** `println!("{} {}", pool.lock().unwrap().next_id, pool.lock().unwrap().free.len());` never returns (`examples/selflock.rs` runs it as a child process killed after 5 seconds; the `try_lock` variant reports `second_lock_would_block=true`). The first guard is a temporary that lives to the end of the statement (the previous topic), and a `Mutex` locked again by its holder "will not return". The compiler does not catch it.
+- **Lock the same mutex twice in one statement.** `println!("{} {}", pool.lock().unwrap().next_id, pool.lock().unwrap().free.len());` never returns (`examples/selflock.rs` runs it as a child process killed after 5 seconds; the `try_lock` variant reports `second_lock_would_block=true`). The first guard is a temporary that lives to the end of the statement (temporary scopes, from "RAII, drop order, and leak safety"), and a `Mutex` locked again by its holder "will not return". The compiler does not catch it.
 - **The compile-fail set,** each first line asserted: `E0499`, `E0373`, `E0382` (closure in a loop), `E0596`, `E0382` (use after send: "borrow of moved value: `buf`"), `E0505` (send while a view borrows), `E0277` (`Rc<RefCell<Pool>>` across threads), and the 2024 `static_mut_refs` error.
 - **Clone a message buffer.** `Vec::clone` allocates for the length, not the capacity: cloning a `Buf` filled with a 261-byte message makes 1 allocation of 261 bytes, and cloning the empty buffer from `pool.get()` makes 0 (`examples/clonecost.rs`). That is an implementation behaviour, so it is asserted, not cited.
 
@@ -372,7 +369,7 @@ Answer first, then check. Each was compiled and run in `examples.py`.
 
 **5. Debug this.** `println!("{} {}", pool.lock().unwrap().next_id, pool.lock().unwrap().free.len());` hangs. Why, and give two fixes. *The first guard is a temporary that lives to the end of the statement, so the second `lock()` waits for it.* Bind the value first (`let n = pool.lock().unwrap().next_id;`), or take one guard and read both fields from it.
 
-**6. Estimate the cost (counts, no time).** A service has 8 worker threads and handles 10,000 requests per batch; each request touches the shared `Arc<Mutex<Stats>>` twice and the pool twice (a get and a put). Lock acquisitions per batch? *10,000 times 4 is 40,000.* After moving the stats into each worker and the pool into an owner thread: 0 mutex acquisitions, but a get becomes a request plus a reply and a put one message home, 3 messages per request, 30,000 per batch. A channel hop is itself a synchronisation; Chapter 4 measures it.
+**6. Estimate the cost (counts, no time).** A service has 8 worker threads and handles 10,000 requests per batch; each request touches the shared `Arc<Mutex<Stats>>` twice and the pool twice (a get and a put). Lock acquisitions per batch? *10,000 times 4 is 40,000.* After moving the stats into each worker and the pool into an owner thread: 0 mutex acquisitions, but a get becomes a request plus a reply and a put one message home, 3 messages per request (as `examples/owner_rpc.rs` measures), 30,000 per batch. A channel hop is itself a synchronisation; Chapter 4 measures it.
 
 **7. Defend a design.** A teammate argues the owner thread is "just a mutex with extra steps". *It serialises like a mutex, but* the state has one owner, the invariant is checked in one place, the API is a closed message enum, no caller can hold the state across a slow operation, and backpressure is a property of the topology; it costs a thread and a channel hop per request.
 
