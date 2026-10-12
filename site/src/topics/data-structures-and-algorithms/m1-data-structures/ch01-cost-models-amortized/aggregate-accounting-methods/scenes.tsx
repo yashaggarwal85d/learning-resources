@@ -105,15 +105,15 @@ export function Opening({ t }: StepCtx) {
   const lab = easeOut(seg(t, 2.8, 3.2));
   const both = easeOut(seg(t, 3.2, 3.6));
   return (
-    <Svg label="A million appends as one cost strip: 999,980 appends cost one write each, and one append, number 524,289, copies 524,288 keys" h={360}>
-      <T x={300} y={42} s={24} f={C.caramel} a="middle" serif w={700} o={claim}>“append is O(1)”</T>
-      <T x={300} y={66} s={13} f={C.taupe} a="middle" o={sub}>a vector of 64-bit keys</T>
-      <T x={300} y={90} s={13} f={C.taupe} a="middle" o={sub}>1,000,000 appends from empty</T>
-      <Strip1M x0={40} w={480} base={318} tall={180} p={sweep} />
-      <T x={280} y={146} s={15} f={C.cherryText} a="end" o={lab}>append 524,289</T>
-      <T x={280} y={170} s={15} f={C.cherryText} a="end" o={lab}>copies 524,288 keys</T>
-      <T x={300} y={116} s={17} f={C.crema} a="middle" w={700} o={both}>both true?</T>
-      <T x={300} y={344} s={13} f={C.taupe} a="middle" o={easeOut(seg(t, 1.8, 2.4))}>999,980 appends cost 1 write</T>
+    <Svg label="A million appends as one cost strip: 999,980 appends cost one write each, and one append, number 524,289, copies 524,288 keys" h={276}>
+      <T x={300} y={32} s={24} f={C.caramel} a="middle" serif w={700} o={claim}>“append is O(1)”</T>
+      <T x={300} y={56} s={15} f={C.taupe} a="middle" o={sub}>a vector of 64-bit keys</T>
+      <T x={300} y={78} s={15} f={C.taupe} a="middle" o={sub}>1,000,000 appends from empty</T>
+      <Strip1M x0={40} w={480} base={240} tall={112} p={sweep} />
+      <T x={280} y={142} s={15} f={C.cherryText} a="end" o={lab}>append 524,289</T>
+      <T x={280} y={164} s={15} f={C.cherryText} a="end" o={lab}>copies 524,288 keys</T>
+      <T x={300} y={106} s={17} f={C.crema} a="middle" w={700} o={both}>both true?</T>
+      <T x={300} y={266} s={15} f={C.taupe} a="middle" o={easeOut(seg(t, 1.8, 2.4))}>999,980 appends cost 1 write</T>
     </Svg>
   );
 }
@@ -127,23 +127,23 @@ export function MillionTotal({ t, answer }: StepCtx) {
   const wCherry = shown ? 167.8 * easeOut(seg(s, 0.4, 1.0)) : 0;
   const lab = shown ? easeOut(seg(s, 0.9, 1.3)) : 0;
   return (
-    <Svg label="Total element writes for a million appends: 1,000,000 new keys plus 1,048,575 copies is 2,048,575, under 3n which is 3,000,000" h={340}>
-      <Strip1M x0={40} w={480} base={112} tall={80} o={0.5 * a} />
-      <T x={40} y={152} s={13} f={C.taupe}>total element writes, 1,000,000 appends</T>
-      <rect x={40} y={192} width={480} height={32} rx={7} fill={C.cocoa} />
-      {shown && <rect x={40} y={192} width={Math.max(3, wCrema)} height={32} rx={7} fill={C.crema} />}
-      {shown && wCherry > 1 && <rect x={200} y={192} width={wCherry} height={32} fill={C.cherry} />}
-      {!shown && <T x={280} y={217} s={26} f={C.crema} a="middle" w={700}>?</T>}
+    <Svg label="Total element writes for a million appends: 1,000,000 new keys plus 1,048,575 copies is 2,048,575, under 3n which is 3,000,000" h={262}>
+      <Strip1M x0={40} w={480} base={92} tall={64} o={0.5 * a} />
+      <T x={40} y={122} s={15} f={C.taupe}>total element writes, 1,000,000 appends</T>
+      <rect x={40} y={160} width={480} height={32} rx={7} fill={C.cocoa} />
+      {shown && <rect x={40} y={160} width={Math.max(3, wCrema)} height={32} rx={7} fill={C.crema} />}
+      {shown && wCherry > 1 && <rect x={200} y={160} width={wCherry} height={32} fill={C.cherry} />}
+      {!shown && <T x={280} y={185} s={26} f={C.crema} a="middle" w={700}>?</T>}
       {shown && (
         <g>
-          <T x={120} y={246} s={15} f={C.crema} a="middle" w={600} o={lab}>1,000,000</T>
-          <T x={120} y={264} s={13} f={C.taupe} a="middle" o={lab}>new keys</T>
-          <T x={284} y={246} s={15} f={C.cherryText} a="middle" w={600} o={lab}>1,048,575</T>
-          <T x={284} y={264} s={13} f={C.taupe} a="middle" o={lab}>copies</T>
-          <T x={368} y={184} s={24} f={C.caramel} a="end" serif w={700} o={easeOut(seg(s, 1.0, 1.4))}>2,048,575</T>
-          <line x1={520} y1={180} x2={520} y2={232} stroke={C.caramel} strokeWidth={2} strokeDasharray="5 4" opacity={lab} />
-          <T x={532} y={252} s={13} f={C.caramel} a="end" o={lab}>3n =</T>
-          <T x={532} y={270} s={13} f={C.caramel} a="end" o={lab}>3,000,000</T>
+          <T x={120} y={214} s={16} f={C.crema} a="middle" w={600} o={lab}>1,000,000</T>
+          <T x={120} y={236} s={15} f={C.taupe} a="middle" o={lab}>new keys</T>
+          <T x={284} y={214} s={16} f={C.cherryText} a="middle" w={600} o={lab}>1,048,575</T>
+          <T x={284} y={236} s={15} f={C.taupe} a="middle" o={lab}>copies</T>
+          <T x={368} y={150} s={24} f={C.caramel} a="end" serif w={700} o={easeOut(seg(s, 1.0, 1.4))}>2,048,575</T>
+          <line x1={520} y1={150} x2={520} y2={200} stroke={C.caramel} strokeWidth={2} strokeDasharray="5 4" opacity={lab} />
+          <T x={532} y={218} s={15} f={C.caramel} a="end" o={lab}>3n =</T>
+          <T x={532} y={238} s={15} f={C.caramel} a="end" o={lab}>3,000,000</T>
         </g>
       )}
     </Svg>
@@ -200,15 +200,26 @@ export function SmallTrace({ t }: StepCtx) {
       rows = row(capAfter, 56, 1, (j) => (j < i ? 1 : j === i ? clamp(last) : 0));
     }
   }
+  const guides = easeOut(seg(t, TRACE.end, TRACE.end + 0.4));
   const prog = (e: (typeof TRACE.ev)[number]) => easeOut(seg(t, e.start + e.dur * 0.5, e.start + e.dur));
   const cost = Math.round(TRACE.ev.reduce((s, e) => s + e.cost * seg(t, e.start + e.dur * 0.5, e.start + e.dur), 0));
   const charged = Math.round(TRACE.ev.reduce((s, e) => s + 3 * seg(t, e.start, e.start + e.dur), 0));
   return (
-    <Svg label="Sixteen appends to the doubling vector: costs 1, 2, 3, 1, 5, 1, 1, 1, 9, then seven 1s, total 31 against 3 per append, 48" h={380}>
+    <Svg label="Sixteen appends to the doubling vector: costs 1, 2, 3, 1, 5, 1, 1, 1, 9, then seven 1s, total 31 against 3 per append, 48" h={404}>
       <T x={40} y={34} s={17} f={C.crema} w={700}>cost so far: {cost}</T>
-      <T x={520} y={34} s={15} f={C.caramel} a="end" w={600}>3 per append: {charged}</T>
+      <T x={520} y={34} s={15} f={C.caramel} a="end" w={600}>charged 3 each: {charged}</T>
       {rows}
       {arrows}
+      <g opacity={guides}>
+        {[1, 2, 4, 8, 16].map((c) => (
+          <g key={c}>
+            <T x={cx(c) + 28} y={104} s={13} f={C.taupe} a="middle">{c}</T>
+            <line x1={cx(c) + 28} y1={110} x2={cx(c) + 28} y2={350} stroke={C.taupe} strokeWidth={1} strokeDasharray="2 4" />
+          </g>
+        ))}
+        <T x={40} y={372} s={13} f={C.taupe}>dotted: the row is full (capacity 1, 2, 4, 8, 16)</T>
+        <T x={40} y={392} s={13} f={C.latte}>spikes cross the line; the total never does: 31 of 48</T>
+      </g>
       <line x1={40} y1={350} x2={520} y2={350} stroke={C.mocha} />
       <line x1={40} y1={296} x2={520} y2={296} stroke={C.caramel} strokeWidth={2} strokeDasharray="6 5" />
       <T x={32} y={300} s={13} f={C.caramel} a="end">3</T>
@@ -245,7 +256,7 @@ export function Aggregate({ t }: StepCtx) {
   const mv = (stag: number) => easeInOut(seg(t, 1.2 + stag, 2.4));
   const fade = (a: number, b: number) => easeOut(seg(t, a, b));
   return (
-    <Svg label="The aggregate method: the 16 writes stack into a column of 16, the copies 1 plus 2 plus 4 plus 8 stack into a column of 15, so the total 31 is under 3 times 16, which is 48" h={400}>
+    <Svg label="The aggregate method: the 16 writes stack into a column of 16, the copies 1 plus 2 plus 4 plus 8 stack into a column of 15, so the total 31 is under 3 times 16, which is 48" h={452}>
       <line x1={40} y1={BASE} x2={520} y2={BASE} stroke={C.mocha} opacity={1 - mv(0.3)} />
       {COSTS16.map((c, k) => {
         const i = k + 1;
@@ -266,11 +277,12 @@ export function Aggregate({ t }: StepCtx) {
       <T x={458} y={368} s={17} f={C.cherryText} a="middle" w={700} o={fade(2.4, 2.8)}>15</T>
       <T x={458} y={390} s={13} f={C.taupe} a="middle" o={fade(2.4, 2.8)}>1+2+4+8</T>
       <line x1={340} y1={BASE - U * 16} x2={490} y2={BASE - U * 16} stroke={C.caramel} strokeWidth={2} strokeDasharray="5 4" opacity={fade(2.6, 3)} />
-      <T x={458} y={BASE - U * 16 - 10} s={15} f={C.caramel} a="middle" w={700} o={fade(2.6, 3)}>15 &lt; 16</T>
-      <T x={40} y={78} s={17} f={C.crema} w={700} o={fade(3.2, 3.6)}>31 &lt; 3 · 16 = 48</T>
-      <T x={40} y={108} s={15} f={C.caramel} o={fade(3.2, 3.6)}>any n: copies &lt; 2n</T>
-      <T x={40} y={136} s={15} f={C.caramel} o={fade(3.2, 3.6)}>total &lt; 3n</T>
-      <T x={40} y={190} s={22} f={C.caramel} serif w={700} o={fade(3.8, 4.2)}>O(1) amortized</T>
+      <T x={520} y={BASE - U * 16 - 10} s={15} f={C.caramel} a="end" w={700} o={fade(2.6, 3)}>2 × last copy (8) = 16</T>
+      <T x={413} y={420} s={17} f={C.crema} a="middle" w={700} o={fade(3.0, 3.4)}>16 + 15 = 31</T>
+      <T x={413} y={444} s={17} f={C.crema} a="middle" w={700} o={fade(3.4, 3.8)}>31 &lt; 3 · 16 = 48</T>
+      <T x={40} y={96} s={15} f={C.caramel} o={fade(3.6, 4.0)}>any n: copies &lt; 2n</T>
+      <T x={40} y={124} s={15} f={C.caramel} o={fade(3.6, 4.0)}>total &lt; 3n</T>
+      <T x={40} y={178} s={22} f={C.caramel} serif w={700} o={fade(4.0, 4.4)}>O(1) amortized</T>
     </Svg>
   );
 }
@@ -318,6 +330,7 @@ export function Promise_({ t }: StepCtx) {
             <T x={60} y={y0 + 46} s={13} f={C.taupe}>{c.over}</T>
             {c.note.map((n, j) => <T key={n} x={60} y={y0 + 70 + j * 18} s={13} f={k === 2 ? C.caramel : C.latte}>{n}</T>)}
             {pic(k, y0)}
+            {k === 2 && <T x={520} y={y0 + 22} s={13} f={C.caramel} a="end">dashed: charge 3 per append</T>}
           </g>
         );
       })}
@@ -331,7 +344,7 @@ export function Coins({ t }: StepCtx) {
   const ox = (c: number) => 40 + 60 * (c - 1); // old row cell c (capacity 8)
   const nx = (c: number) => 40 + 30 * (c - 1); // new row cell c (capacity 16)
   const OY = 110, NY = 250;
-  const ghost = lerp(1, 0.25, easeOut(seg(t, 3.2, 3.6)));
+  const ghost = lerp(1, 0.5, easeOut(seg(t, 3.2, 3.6)));
   const fill = (c: number) => (c <= 4 ? 1 : easeOut(seg(t, TA[c - 5], TA[c - 5] + 0.2)));
   const drop = (t0: number) => {
     const p = seg(t, t0, t0 + 0.35);
@@ -381,7 +394,7 @@ export function Coins({ t }: StepCtx) {
       })}
       <Coin x={nx(9) + 13} y={NY + 36 + ownDrop.dy * 0.5} r={7} o={ownDrop.o} />
       <Coin x={nx(1) + 13} y={NY + 36 + ownDrop.dy * 0.5} r={7} o={ownDrop.o} />
-      <T x={40} y={316} s={15} f={C.caramel} w={600} o={easeOut(seg(t, 3.8, 4.2))}>copy 8 keys = 8 coins</T>
+      <T x={300} y={224} s={15} f={C.latte} a="middle" w={600} o={easeOut(seg(t, 3.8, 4.2))}>spent: 8 coins pay the 8 copies</T>
       <T x={40} y={336} s={13} f={C.taupe} o={easeOut(seg(t, 4.2, 4.6))}>append 9's own 3:</T>
       <T x={40} y={354} s={13} f={C.taupe} o={easeOut(seg(t, 4.2, 4.6))}>write · coin on 9 · coin on 1</T>
     </Svg>
@@ -404,16 +417,14 @@ export function Bank({ t }: StepCtx) {
   }).join(' ');
   const lab = easeOut(seg(t, 3.3, 3.8));
   return (
-    <Svg label="Running total of charges, 3 per append, against the running total of actual costs for 16 appends: the bank between them is never below zero after any append" h={444}>
+    <Svg label="Running total of charges, 3 per append, against the running total of actual costs for 16 appends: the bank between them is never below zero after any append" h={430}>
       <defs>
         <clipPath id="aam-bank-clip">
-          <rect x={X0} y={0} width={Math.max(0.01, sx - X0)} height={444} />
+          <rect x={X0} y={0} width={Math.max(0.01, sx - X0)} height={430} />
         </clipPath>
       </defs>
       <line x1={X0} y1={Y0} x2={X0 + XW} y2={Y0} stroke={C.mocha} />
       <line x1={X0} y1={Y0} x2={X0} y2={30} stroke={C.mocha} />
-      <T x={X0 + 6} y={30} s={13} f={C.taupe}>writes</T>
-      <T x={X0 + XW} y={338} s={13} f={C.taupe} a="end">append i</T>
       <g clipPath="url(#aam-bank-clip)">
         <path d={shade} fill={C.caramel} opacity={0.35} />
         <line x1={x(0)} y1={Y(0)} x2={x(16)} y2={Y(48)} stroke={C.caramel} strokeWidth={2.5} strokeDasharray="7 5" />
@@ -430,8 +441,7 @@ export function Bank({ t }: StepCtx) {
       ))}
       <T x={40} y={364} s={15} f={C.crema} w={600} o={lab}>bank = Σĉᵢ − Σcᵢ</T>
       <T x={40} y={390} s={15} f={C.crema} w={600} o={lab}>≥ 0 after every append</T>
-      <T x={40} y={412} s={13} f={C.caramel} o={lab}>the small 3s: the bank after each resize</T>
-      <T x={40} y={432} s={13} f={C.taupe} o={lab}>lowest: 2, after append 1</T>
+      <T x={40} y={414} s={13} f={C.caramel} o={lab}>small 3s: the bank after each resize · lowest: 2</T>
     </Svg>
   );
 }
@@ -440,24 +450,23 @@ export function Bank({ t }: StepCtx) {
 export function Additive({ t }: StepCtx) {
   const lx = (v: number) => 40 + ((Math.log10(v) - 6) / 6) * 480;
   const rows = [
-    { lab: 'grow by 1 slot', v: 500_000_500_000, f: C.cherry, o: 1 },
-    { lab: 'grow by 1,000 slots', v: 500_500_000, f: C.cherry, o: 0.7 },
-    { lab: 'double (g = 2)', v: 2_048_575, f: C.caramel, o: 1 },
+    { lab: 'grow by 1 slot', v: 500_000_500_000, f: C.cherry, o: 1, show: '500,000,500,000', shrink: '' },
+    { lab: 'grow by 1,000 slots', v: 500_500_000, f: C.cherry, o: 0.7, show: '500,500,000', shrink: '÷ 1,000 vs 1 slot' },
+    { lab: 'double (g = 2)', v: 2_048_575, f: C.caramel, o: 1, show: '2,048,575', shrink: '÷ 244,000 vs 1 slot' },
   ];
   return (
     <Svg label="Total writes for a million appends: growing by one slot costs 500,000,500,000, by 1,000 slots 500,500,000, doubling 2,048,575, on a log scale" h={340}>
       <T x={40} y={30} s={13} f={C.taupe}>total writes, 1,000,000 appends (log scale)</T>
       {rows.map((r, k) => {
-        const y = 80 + 90 * k;
+        const y = 70 + 80 * k;
         const a = easeOut(seg(t, 0.3 + 0.8 * k, 0.9 + 0.8 * k));
         const w = (lx(r.v) - 40) * a;
         return (
           <g key={r.lab} opacity={Math.min(1, a * 3)}>
             <T x={40} y={y} s={15} f={C.crema} w={600}>{r.lab}</T>
             <rect x={40} y={y + 10} width={Math.max(3, w)} height={22} rx={6} fill={r.f} opacity={r.o} />
-            {k === 0 && <T x={520} y={y + 52} s={15} f={C.cherryText} a="end" w={700}>500,000,500,000</T>}
-            {k === 1 && <T x={lx(r.v) + 12} y={y + 27} s={15} f={C.cherryText} w={700} o={a}>500,500,000</T>}
-            {k === 2 && <T x={lx(r.v) + 12} y={y + 28} s={17} f={C.caramel} w={700} o={a}>2,048,575</T>}
+            <T x={40} y={y + 54} s={k === 2 ? 17 : 15} f={k === 2 ? C.caramel : C.cherryText} w={700} o={a}>{r.show}</T>
+            {k > 0 && <T x={520} y={y + 54} s={15} f={C.caramel} a="end" w={600} o={a}>{r.shrink}</T>}
           </g>
         );
       })}
@@ -498,19 +507,27 @@ export function Factor({ t, answer }: StepCtx) {
   const SC15 = 160 / 699_912;
   const r1 = (j: number) => easeOut(seg(t, 0.2 + 0.05 * Math.min(j, 12), 0.7 + 0.05 * Math.min(j, 12)));
   const r2 = (j: number) => (j === 0 ? easeOut(seg(t, 0.4, 0.8)) : shown ? easeOut(seg(s, 0.05 * Math.min(j, 14), 0.45 + 0.05 * Math.min(j, 14))) : 0);
+  const ruler = (y: number, reps: number, vis: number) => (
+    <g>
+      <rect x={40} y={y} width={160} height={10} rx={3} fill={C.crema} opacity={r1(0)} />
+      {Array.from({ length: reps }, (_, k) => (
+        <rect key={k} x={200 + 160 * k + 1} y={y} width={158} height={10} rx={3} fill="none" stroke={C.taupe} strokeWidth={1.5} opacity={vis} />
+      ))}
+    </g>
+  );
   return (
-    <Svg label="Copies made up to just after a resize, latest first: for doubling they tile to twice the last copy, for a growth factor of 1.5 to three times" h={360}>
-      <T x={40} y={86} s={15} f={C.caramel} w={600}>g = 2</T>
-      <TileRow list={TILES2} x0={40} y={96} fill={C.caramel} scale={SC} reveal={r1} slide={0} />
-      <rect x={40} y={132} width={160} height={10} rx={3} fill={C.crema} opacity={r1(0)} />
-      <T x={40} y={160} s={13} f={C.taupe} o={r1(0)}>n ≈ last copy</T>
-      <T x={372} y={116} s={15} f={C.caramel} w={700} o={easeOut(seg(t, 1.0, 1.4))}>≈ 2 × n</T>
-      <T x={40} y={206} s={15} f={C.cinnamon} w={600}>g = 1.5</T>
-      <TileRow list={TILES15} x0={40} y={216} fill={C.cinnamon} scale={SC15} reveal={r2} slide={260} />
-      <rect x={40} y={252} width={160} height={10} rx={3} fill={C.crema} opacity={r1(0)} />
-      <T x={40} y={280} s={13} f={C.taupe} o={r1(0)}>n ≈ last copy</T>
-      {!shown && <T x={236} y={238} s={22} f={C.crema} w={700} o={easeOut(seg(t, 0.8, 1.2))}>?</T>}
-      {shown && <T x={530} y={286} s={17} f={C.cinnamon} a="end" w={700} o={easeOut(seg(s, 0.9, 1.3))}>≈ 3 × n</T>}
+    <Svg label="Copies made up to just after a resize, latest first: for doubling they tile to twice the last copy, for a growth factor of 1.5 to three times; a ruler of one last copy, repeated twice and three times, sits under each row" h={246}>
+      <T x={40} y={22} s={15} f={C.latte} w={600}>g = 2</T>
+      <TileRow list={TILES2} x0={40} y={32} fill={C.caramel} scale={SC} reveal={r1} slide={0} />
+      <T x={372} y={52} s={20} f={C.caramel} w={700} o={easeOut(seg(t, 1.0, 1.4))}>≈ 2 × n</T>
+      {ruler(70, 1, easeOut(seg(t, 1.0, 1.4)))}
+      <T x={40} y={104} s={15} f={C.taupe} o={r1(0)}>n ≈ last copy</T>
+      <T x={40} y={142} s={15} f={C.latte} w={600}>g = 1.5</T>
+      <TileRow list={TILES15} x0={40} y={152} fill={C.cinnamon} scale={SC15} reveal={r2} slide={260} />
+      {ruler(190, 2, shown ? easeOut(seg(s, 0.9, 1.3)) : 0)}
+      <T x={40} y={224} s={15} f={C.taupe} o={r1(0)}>n ≈ last copy</T>
+      {!shown && <T x={236} y={174} s={22} f={C.crema} w={700} o={easeOut(seg(t, 0.8, 1.2))}>?</T>}
+      {shown && <T x={520} y={226} s={22} f={C.cinnamon} a="end" w={700} o={easeOut(seg(s, 0.9, 1.3))}>≈ 3 × n</T>}
     </Svg>
   );
 }
@@ -542,18 +559,20 @@ export function Sawtooth({ t }: StepCtx) {
   return (
     <Svg label="Copies per append against n on a log scale: a sawtooth that jumps to about g over g minus 1 at each resize and falls to about 1 over g minus 1 before the next; at n equals 1,000,000 doubling is at 1.05 and 1.5 at 2.10" h={400}>
       <T x={X0} y={24} s={13} f={C.taupe}>copies per append</T>
-      <T x={520} y={24} s={13} f={C.caramel} a="end" w={600}>g = 2</T>
-      <T x={520} y={42} s={13} f={C.cinnamon} a="end" w={600}>g = 1.5</T>
+      <line x1={286} y1={20} x2={306} y2={20} stroke={C.caramel} strokeWidth={3} />
+      <T x={520} y={24} s={13} f={C.latte} a="end" w={600}>g = 2: peak 2, trough 1</T>
+      <line x1={286} y1={40} x2={306} y2={40} stroke={C.cinnamon} strokeWidth={3} />
+      <T x={520} y={44} s={13} f={C.latte} a="end" w={600}>g = 1.5: peak 3, trough 2</T>
+      <T x={520} y={62} s={13} f={C.taupe} a="end">peak g/(g − 1) · trough 1/(g − 1)</T>
       <g opacity={ax}>
         <line x1={X0} y1={Y0} x2={X0 + 400} y2={Y0} stroke={C.mocha} />
         <line x1={X0} y1={Y0} x2={X0} y2={py(3.2)} stroke={C.mocha} />
         {[1, 2, 3].map((v) => <T key={v} x={40} y={py(v) + 5} s={13} f={C.taupe} a="end">{v}</T>)}
         {[['1,024', 10], ['32,768', 15], ['1,048,576', 20]].map(([l, e]) => <T key={l as string} x={X0 + ((e as number) - 10) * 40} y={Y0 + 22} s={13} f={C.taupe} a="middle">{l}</T>)}
-        <line x1={X0} y1={py(2)} x2={X0 + 400} y2={py(2)} stroke={C.caramel} strokeWidth={1.5} strokeDasharray="6 5" />
+        <line x1={X0} y1={py(2)} x2={X0 + 400} y2={py(2)} stroke={C.caramel} strokeWidth={1.5} strokeDasharray="6 6" />
+        <line x1={X0} y1={py(2)} x2={X0 + 400} y2={py(2)} stroke={C.cinnamon} strokeWidth={1.5} strokeDasharray="6 6" strokeDashoffset={6} />
         <line x1={X0} y1={py(3)} x2={X0 + 400} y2={py(3)} stroke={C.cinnamon} strokeWidth={1.5} strokeDasharray="6 5" />
-        <T x={56} y={py(3) - 8} s={13} f={C.latte}>peaks g/(g − 1)</T>
-        <line x1={X0} y1={py(1)} x2={X0 + 400} y2={py(1)} stroke={C.taupe} strokeWidth={1} strokeDasharray="2 4" />
-        <T x={56} y={py(1) + 22} s={13} f={C.latte}>troughs 1/(g − 1)</T>
+        <line x1={X0} y1={py(1)} x2={X0 + 400} y2={py(1)} stroke={C.caramel} strokeWidth={1.5} strokeDasharray="2 4" />
       </g>
       <path d={path(CURVE2)} fill="none" stroke={C.caramel} strokeWidth={2.5} />
       <path d={path(CURVE15)} fill="none" stroke={C.cinnamon} strokeWidth={2.5} />
@@ -562,8 +581,8 @@ export function Sawtooth({ t }: StepCtx) {
         <circle cx={xm} cy={py(2.0997)} r={5} fill={C.cinnamon} />
         <circle cx={xm} cy={py(1.0486)} r={5} fill={C.caramel} />
       </g>
-      <T x={xm + 12} y={py(2.0997) + 6} s={17} f={C.cinnamon} w={700} o={vals}>2.10</T>
-      <T x={xm + 12} y={py(1.0486) + 6} s={17} f={C.caramel} w={700} o={vals}>1.05</T>
+      <T x={xm + 12} y={py(2.0997) + 7} s={20} f={C.cinnamon} w={700} o={vals}>2.10</T>
+      <T x={xm + 12} y={py(1.0486) + 7} s={20} f={C.caramel} w={700} o={vals}>1.05</T>
       <T x={X0 + 400} y={392} s={13} f={C.taupe} a="end">n, appends so far (log scale)</T>
     </Svg>
   );
@@ -579,35 +598,40 @@ export function Counter({ t, answer }: StepCtx) {
   const shown = answer !== null;
   const s = useSinceAnswer(shown);
   const gx = (c: number) => 120 + 64 * c;
-  const gy = (r: number) => 112 + 12 * r;
+  const gy = (r: number) => 106 + 11 * r;
   const a = easeOut(seg(t, 0.1, 0.6));
   const bits = [1, 0, 0, 0, 0];
   const tot = [1, 2, 4, 8, 16]; // bit 4 .. bit 0
   const vis = (r: number) => (shown ? easeOut(seg(s, 0.07 * r, 0.07 * r + 0.15)) : 0);
   return (
-    <Svg label="A binary counter's first 16 increments as a grid: bit 0 flips 16 times, bit 1 eight, bit 2 four, bit 3 twice, bit 4 once, 31 flips in all" h={350}>
-      <T x={280} y={22} s={15} f={C.cherryText} a="middle" w={600} o={a}>01111 → 10000 flips 5 bits</T>
+    <Svg label="A binary counter's first 16 increments as a grid, one row per increment and one column per bit: bit 0 flips 16 times, bit 1 eight, bit 2 four, bit 3 twice, bit 4 once, 31 flips in all" h={318}>
+      <T x={300} y={15} s={15} f={C.cherryText} a="middle" w={600} o={a}>01111 → 10000 flips 5 bits</T>
+      <T x={300} y={38} s={15} f={C.taupe} a="middle" o={a}>unit: one bit flip</T>
+      <T x={112} y={60} s={15} f={C.taupe} a="end" o={a}>bit</T>
       {bits.map((b, c) => (
         <g key={c} opacity={a}>
-          <rect x={gx(c) + 2} y={32} width={60} height={46} rx={8} fill={C.cherry} />
-          <T x={gx(c) + 32} y={64} s={24} f={C.crema} a="middle" w={700}>{b}</T>
+          <T x={gx(c) + 32} y={60} s={15} f={C.taupe} a="middle">{4 - c}</T>
+          <rect x={gx(c) + 2} y={68} width={60} height={32} rx={8} fill={C.cherry} />
+          <T x={gx(c) + 32} y={92} s={20} f={C.crema} a="middle" w={700}>{b}</T>
         </g>
       ))}
-      <T x={120} y={100} s={14} f={C.taupe}>unit: one bit flip</T>
+      <T x={112} y={gy(0) + 8} s={15} f={C.taupe} a="end">inc 1</T>
+      <T x={112} y={gy(15) + 8} s={15} f={C.taupe} a="end">inc 16</T>
+      <line x1={76} y1={gy(0) + 20} x2={76} y2={gy(15) - 14} stroke={C.taupe} strokeWidth={1} strokeDasharray="2 4" />
       {Array.from({ length: 16 }, (_, r) => (
         <g key={r}>
           {Array.from({ length: 5 }, (_, c) => {
             const flipped = 4 - c < FLIPS16[r];
             return (
               <g key={c}>
-                <rect x={gx(c) + 2} y={gy(r)} width={60} height={10} rx={3} fill="none" stroke={C.taupe} strokeWidth={0.8} opacity={0.45} />
-                {flipped && <rect x={gx(c) + 2} y={gy(r)} width={60} height={10} rx={3} fill={C.caramel} opacity={vis(r)} />}
+                <rect x={gx(c) + 2} y={gy(r)} width={60} height={9} rx={3} fill="none" stroke={C.taupe} strokeWidth={0.8} opacity={0.45} />
+                {flipped && <rect x={gx(c) + 2} y={gy(r)} width={60} height={9} rx={3} fill={C.caramel} opacity={vis(r)} />}
               </g>
             );
           })}
         </g>
       ))}
-      {shown && <rect x={gx(0)} y={gy(15) - 1} width={320} height={12} rx={4} fill="none" stroke={C.cherry} strokeWidth={2} opacity={easeOut(seg(s, 1.0, 1.3))} />}
+      {shown && <rect x={gx(0)} y={gy(15) - 1} width={320} height={11} rx={4} fill="none" stroke={C.cherry} strokeWidth={2} opacity={easeOut(seg(s, 1.0, 1.3))} />}
       {tot.map((v, c) => <T key={c} x={gx(c) + 32} y={gy(15) + 34} s={15} f={C.caramel} a="middle" w={700} o={shown ? easeOut(seg(s, 1.1, 1.4)) : 0}>{v}</T>)}
       <T x={452} y={gy(15) + 36} s={22} f={C.caramel} serif w={700} o={shown ? easeOut(seg(s, 1.1, 1.4)) : 0}>= 31</T>
     </Svg>
@@ -693,8 +717,7 @@ export function Multipop({ t }: StepCtx) {
   return (
     <Svg label="A stack with push and multipop: each key carries a coin for its own removal; ten operations cost 16, at most twice the 8 pushes" h={402}>
       <T x={40} y={26} s={15} f={C.crema} w={600}>push · pop · multipop(k)</T>
-      <T x={40} y={46} s={13} f={C.taupe}>multipop(k) pops min(k, size) keys</T>
-      <T x={40} y={68} s={13} f={C.taupe}>unit: one key in or out</T>
+      <T x={40} y={48} s={13} f={C.taupe}>unit: one key in or out</T>
       <path d={`M 56 190 L 56 ${BASE + 2} L 164 ${BASE + 2} L 164 190`} fill="none" stroke={C.taupe} strokeWidth={1.5} />
       {MP_KEYS.map((k) => {
         const op = MP_OPS[k.push], pop = MP_OPS[k.pop];
@@ -716,13 +739,28 @@ export function Multipop({ t }: StepCtx) {
       })}
       <line x1={220} y1={BASE} x2={520} y2={BASE} stroke={C.mocha} />
       <line x1={220} y1={BASE - 60} x2={520} y2={BASE - 60} stroke={C.caramel} strokeWidth={2} strokeDasharray="6 5" />
-      <T x={224} y={BASE - 68} s={13} f={C.caramel}>2 per operation</T>
+      <T x={224} y={BASE - 68} s={13} f={C.caramel}>charge: 2 per op</T>
       {MP_OPS.map((op, o) => {
         const h = 30 * op.cost * easeOut(seg(t, op.start + (op.kind === 'mp' ? 0.2 : 0.05), op.start + (op.kind === 'mp' ? 0.6 : 0.3)));
         return <rect key={o} x={bx(o)} y={BASE - h} width={22} height={h} rx={3} fill={op.cost > 1 ? C.cherry : C.crema} />;
       })}
-      <T x={110} y={292} s={13} f={C.crema} a="middle" o={tally}>8 in</T>
-      <T x={110} y={312} s={13} f={C.latte} a="middle" o={tally}>8 out</T>
+      <g opacity={0.55 * tally}>
+        {Array.from({ length: 8 }, (_, q) => {
+          const gxq = 62 + 50 * (q % 2), gyq = BASE - 30 * (Math.floor(q / 2) + 1) + 2;
+          return (
+            <g key={q}>
+              <rect x={gxq} y={gyq} width={46} height={24} rx={4} fill="none" stroke={C.taupe} strokeWidth={1.5} />
+              <Coin x={gxq + 23} y={gyq + 12} r={7} />
+            </g>
+          );
+        })}
+      </g>
+      <T x={110} y={178} s={13} f={C.latte} a="middle" o={tally}>8 in · 8 out</T>
+      {[6, 9].map((o) => (
+        <T key={o} x={o === 6 ? bx(o) + 22 : bx(o) - 2} y={BASE - 120 - 8} s={13} f={C.cherryText} a={o === 6 ? 'end' : 'start'} o={easeOut(seg(t, MP_OPS[o].start + 0.5, MP_OPS[o].start + 0.8))}>
+          multipop 4
+        </T>
+      ))}
       <T x={40} y={368} s={15} f={C.crema} w={600} o={tally}>10 operations · cost 16</T>
       <T x={40} y={394} s={15} f={C.caramel} w={600} o={tally}>≤ 2 × 8 pushes ≤ 2n</T>
     </Svg>
@@ -732,16 +770,21 @@ export function Multipop({ t }: StepCtx) {
 // 14 · Cheap operations pay for expensive ones, three times.
 export function Setup({ t }: StepCtx) {
   const rows = [
-    { chips: 4, left: 'appends 5–8 · 2 each', right: 'append 9: 8 copies', per: 2 },
-    { chips: 3, left: '3 bits set', right: 'increment 8: 3 resets', per: 1 },
-    { chips: 4, left: '4 pushes', right: 'multipop(4): 4 pops', per: 1 },
+    { chips: 4, left: 'appends 5–8', mid: '2 each = 8 copies', right: 'append 9', per: 2 },
+    { chips: 3, left: '3 bits set', mid: '1 each = 3 resets', right: 'increment 8', per: 1 },
+    { chips: 4, left: '4 pushes', mid: '1 each = 4 pops', right: 'multipop(4)', per: 1 },
   ];
   return (
-    <Svg label="The same move three times: cheap operations leave coins that pay for the expensive operation that follows: appends 5 to 8 pay append 9, three set bits pay increment 8, four pushes pay multipop of 4" h={380}>
+    <Svg label="The same move three times: cheap operations leave coins that pay for the expensive operation that follows: appends 5 to 8 pay append 9 with 8 coins, three set bits pay increment 8 with 3 coins, four pushes pay multipop of 4 with 4 coins" h={380}>
       {rows.map((r, k) => {
         const t0 = 0.2 + k * 1.0;
         const y0 = 30 + 120 * k;
         const paid = easeOut(seg(t, t0 + 1.0, t0 + 1.3));
+        const total = r.chips * r.per;
+        const slot = (c: number) => {
+          const two = total > 4;
+          return { x: 429 + 21 * (c % 4), y: two ? y0 + 14 + (c >= 4 ? 17 : 0) : y0 + 24 };
+        };
         return (
           <g key={r.left}>
             {Array.from({ length: r.chips }, (_, i) => (
@@ -749,12 +792,16 @@ export function Setup({ t }: StepCtx) {
             ))}
             <line x1={50 + 40 * r.chips} y1={y0 + 24} x2={408} y2={y0 + 24} stroke={C.caramel} strokeWidth={2} opacity={easeOut(seg(t, t0 + 0.3, t0 + 0.5))} />
             <rect x={414} y={y0 + 4} width={106} height={40} rx={8} fill={C.cherry} stroke={C.caramel} strokeWidth={3} strokeOpacity={paid} />
-            {Array.from({ length: r.chips * r.per }, (_, c) => {
-              const i = Math.floor(c / r.per);
-              const p = seg(t, t0 + 0.4 + 0.06 * c, t0 + 0.9 + 0.06 * c);
-              return p > 0 && p < 1 ? <Coin key={c} x={lerp(57 + 40 * i, 450 + (c % 3) * 12, easeInOut(p))} y={y0 + 24} r={6} /> : null;
+            {Array.from({ length: total }, (_, c) => {
+              const i = Math.floor(c / r.per), q = c % r.per;
+              const p = easeInOut(seg(t, t0 + 0.4 + 0.06 * c, t0 + 0.9 + 0.06 * c));
+              const from = { x: 57 + 40 * i + (r.per > 1 ? (q ? 8 : -8) : 0), y: y0 + 24 };
+              const to = slot(c);
+              const born = easeOut(seg(t, t0 + 0.05 * i, t0 + 0.3));
+              return <Coin key={c} x={lerp(from.x, to.x, p)} y={lerp(from.y, to.y, p)} r={6} o={p > 0 ? 1 : born} />;
             })}
             <T x={40} y={y0 + 70} s={13} f={C.crema}>{r.left}</T>
+            <T x={300} y={y0 + 70} s={13} f={C.caramel} a="middle" w={600} o={paid}>{r.mid}</T>
             <T x={520} y={y0 + 70} s={13} f={C.cherryText} a="end">{r.right}</T>
           </g>
         );
@@ -776,8 +823,9 @@ export function Breaks({ t }: StepCtx) {
         return <rect key={k} x={60 + 40 * k} y={150 - h} width={28} height={h} rx={3} fill={C.cherry} />;
       })}
       <line x1={50} y1={122} x2={400} y2={122} stroke={C.caramel} strokeWidth={2} strokeDasharray="6 5" />
-            <T x={536} y={96} s={15} f={C.cherryText} a="end" w={700} o={tot}>40 flips</T>
-      <T x={536} y={118} s={13} f={C.caramel} a="end" o={tot}>bound said 16</T>
+      <T x={536} y={80} s={15} f={C.cherryText} a="end" w={700} o={tot}>40 flips</T>
+      <T x={536} y={102} s={13} f={C.caramel} a="end" o={tot}>bound said 16</T>
+      <T x={406} y={127} s={13} f={C.caramel} o={tot}>charge 2 per op</T>
       <T x={50} y={168} s={13} f={C.taupe}>8 operations</T>
       <T x={40} y={218} s={15} f={C.crema} w={600}>append to the same full vector</T>
       <T x={50} y={358} s={13} f={C.taupe}>10 appends</T>
@@ -787,8 +835,9 @@ export function Breaks({ t }: StepCtx) {
         return <rect key={k} x={60 + 32 * k} y={340 - h} width={22} height={h} rx={3} fill={C.cherry} />;
       })}
       <line x1={50} y1={328} x2={400} y2={328} stroke={C.caramel} strokeWidth={2} strokeDasharray="6 5" />
-            <T x={536} y={282} s={15} f={C.cherryText} a="end" w={700} o={tot}>170 writes</T>
-      <T x={536} y={304} s={13} f={C.caramel} a="end" o={tot}>bound said 30</T>
+      <T x={536} y={264} s={15} f={C.cherryText} a="end" w={700} o={tot}>170 writes</T>
+      <T x={536} y={286} s={13} f={C.caramel} a="end" o={tot}>bound said 30</T>
+      <T x={406} y={333} s={13} f={C.caramel} o={tot}>charge 3 per op</T>
     </Svg>
   );
 }
@@ -844,31 +893,31 @@ export function Q1({ t, answer }: StepCtx) {
   const shown = answer !== null;
   const s = useSinceAnswer(shown);
   return (
-    <Svg label="A charge of 2 per append: the bank after each of 16 appends dips below zero at append 5 and again by append 9, and is back at plus 1 at each power of two" h={324}>
-      <T x={40} y={20} s={15} f={C.caramel} w={600}>charge 2 per append</T>
-      <T x={40} y={40} s={13} f={C.taupe}>1 write + 1 coin on the new key</T>
-      <T x={520} y={66} s={13} f={C.taupe} a="end">actual cost per append</T>
-      <line x1={40} y1={210} x2={520} y2={210} stroke={C.mocha} />
+    <Svg label="A charge of 2 per append: the bank after each of 16 appends dips below zero at append 5 and again by append 9, and is back at plus 1 at each power of two" h={306}>
+      <T x={40} y={16} s={15} f={C.caramel} w={600}>charge 2 per append</T>
+      <T x={40} y={40} s={15} f={C.taupe}>1 write + 1 coin on the new key</T>
+      <T x={520} y={64} s={15} f={C.taupe} a="end">actual cost per append</T>
+      <line x1={40} y1={194} x2={520} y2={194} stroke={C.mocha} />
       {COSTS16.map((c, k) => {
-        const h = c * 14 * easeOut(seg(t, 0.1 + 0.03 * k, 0.5 + 0.03 * k));
+        const h = c * 12 * easeOut(seg(t, 0.1 + 0.03 * k, 0.5 + 0.03 * k));
         return (
           <g key={k}>
-            <rect x={cx(k + 1)} y={210 - h} width={26} height={h} rx={3} fill={c > 1 ? C.cherry : C.crema} />
+            <rect x={cx(k + 1)} y={194 - h} width={26} height={h} rx={3} fill={c > 1 ? C.cherry : C.crema} />
           </g>
         );
       })}
       {shown && (
         <g>
-          <T x={40} y={234} s={13} f={C.taupe} o={easeOut(seg(s, 0, 0.4))}>bank after each append</T>
-          <line x1={40} y1={260} x2={520} y2={260} stroke={C.taupe} />
+          <T x={40} y={220} s={15} f={C.taupe} o={easeOut(seg(s, 0, 0.4))}>bank after each append</T>
+          <line x1={40} y1={244} x2={520} y2={244} stroke={C.taupe} />
           {BANK2.map((b, k) => {
             const e = easeOut(seg(s, 0.04 * k, 0.04 * k + 0.4));
             const h = Math.abs(b) * 6 * e;
-            return b >= 0 ? <rect key={k} x={cx(k + 1) + 6} y={260 - h} width={14} height={h} fill={C.caramel} /> : <rect key={k} x={cx(k + 1) + 6} y={260} width={14} height={h} fill={C.cherry} />;
+            return b >= 0 ? <rect key={k} x={cx(k + 1) + 6} y={244 - h} width={14} height={h} fill={C.caramel} /> : <rect key={k} x={cx(k + 1) + 6} y={244} width={14} height={h} fill={C.cherry} />;
           })}
-          <rect x={cx(5) + 3} y={256} width={20} height={20} rx={3} fill="none" stroke={C.cherryText} strokeWidth={1.5} opacity={easeOut(seg(s, 0.7, 1.0))} />
-          <T x={cx(5)} y={314} s={15} f={C.cherryText} w={700} o={easeOut(seg(s, 0.7, 1.0))}>append 5: −2</T>
-          <T x={520} y={234} s={13} f={C.taupe} a="end" o={easeOut(seg(s, 0.9, 1.2))}>ends at +1</T>
+          <rect x={cx(5) + 3} y={240} width={20} height={20} rx={3} fill="none" stroke={C.cherryText} strokeWidth={1.5} opacity={easeOut(seg(s, 0.7, 1.0))} />
+          <T x={cx(5)} y={298} s={15} f={C.cherryText} w={700} o={easeOut(seg(s, 0.7, 1.0))}>append 5: −2</T>
+          <T x={520} y={220} s={15} f={C.taupe} a="end" o={easeOut(seg(s, 0.9, 1.2))}>ends at +1</T>
         </g>
       )}
     </Svg>
@@ -883,19 +932,19 @@ export function Q2({ t, answer }: StepCtx) {
   const a = easeOut(seg(t, 0.1, 0.6));
   const r2 = (j: number) => (j === 0 ? a : shown ? easeOut(seg(s, 0.05 * Math.min(j, 14), 0.45 + 0.05 * Math.min(j, 14))) : 0);
   return (
-    <Svg label="For growth factor 1.5, the last resize before the millionth append copies 699,912 keys at append 699,913; all the copies tile to about three times that, 2,099,719, which is 2.10 per append" h={340}>
-      <T x={40} y={30} s={15} f={C.cinnamon} w={600} o={a}>last resize: append 699,913</T>
-      <T x={40} y={54} s={15} f={C.cinnamon} w={600} o={a}>copies 699,912</T>
-      <TileRow list={TILES15} x0={40} y={72} fill={C.cinnamon} scale={SC15} reveal={r2} slide={260} />
-      <rect x={40} y={112} width={228.6} height={10} rx={3} fill={C.crema} opacity={a} />
-      <T x={40} y={142} s={15} f={C.crema} w={600} o={a}>n = 1,000,000</T>
-      {!shown && <T x={40} y={200} s={17} f={C.crema} w={600} o={a}>total copies = ?</T>}
+    <Svg label="For growth factor 1.5, the last resize before the millionth append copies 699,912 keys at append 699,913; all the copies tile to about three times that, 2,099,719, which is 2.10 per append" h={262}>
+      <T x={40} y={22} s={15} f={C.latte} w={600} o={a}>last resize: append 699,913</T>
+      <T x={40} y={44} s={15} f={C.latte} w={600} o={a}>copies 699,912</T>
+      <TileRow list={TILES15} x0={40} y={56} fill={C.cinnamon} scale={SC15} reveal={r2} slide={260} />
+      <rect x={40} y={94} width={228.6} height={10} rx={3} fill={C.crema} opacity={a} />
+      <T x={40} y={126} s={15} f={C.crema} w={600} o={a}>n = 1,000,000</T>
+      {!shown && <T x={40} y={176} s={17} f={C.crema} w={600} o={a}>total copies = ?</T>}
       {shown && (
         <g>
-          <T x={40} y={186} s={13} f={C.taupe} o={easeOut(seg(s, 0.9, 1.2))}>total copies</T>
-          <T x={40} y={218} s={22} f={C.cinnamon} serif w={700} o={easeOut(seg(s, 0.9, 1.3))}>2,099,719</T>
-          <T x={40} y={248} s={15} f={C.cinnamon} o={easeOut(seg(s, 1.1, 1.5))}>÷ 1,000,000</T>
-          <T x={40} y={268} s={15} f={C.cinnamon} o={easeOut(seg(s, 1.1, 1.5))}>= 2.10 per append</T>
+          <T x={40} y={160} s={15} f={C.taupe} o={easeOut(seg(s, 0.9, 1.2))}>total copies</T>
+          <T x={40} y={192} s={22} f={C.cinnamon} serif w={700} o={easeOut(seg(s, 0.9, 1.3))}>2,099,719</T>
+          <T x={40} y={220} s={15} f={C.caramel} o={easeOut(seg(s, 1.1, 1.5))}>÷ 1,000,000</T>
+          <T x={40} y={242} s={15} f={C.caramel} o={easeOut(seg(s, 1.1, 1.5))}>= 2.10 per append</T>
         </g>
       )}
     </Svg>
@@ -910,21 +959,29 @@ export function Q3({ t, answer }: StepCtx) {
   const op = Math.min(9, Math.floor(s / 0.14));
   const q = clamp((s - op * 0.14) / 0.14);
   const level = shown ? (s >= 1.4 ? 0 : op % 2 === 0 ? q : 1 - q) : 0;
-  const BASE = 260;
+  const BASE = 200;
   return (
-    <Svg label="With multipush of k keys added, alternating multipush of 1,000 and multipop of 1,000 makes every one of 1,000 operations cost 1,000: 1,000,000 in all" h={360}>
-      <T x={40} y={24} s={15} f={C.crema} w={600} o={a}>new: multipush(k) pushes k keys in one operation</T>
-      <path d={`M 56 100 L 56 ${BASE + 2} L 164 ${BASE + 2} L 164 100`} fill="none" stroke={C.taupe} strokeWidth={1.5} opacity={a} />
-      <rect x={60} y={BASE - 150 * level} width={100} height={150 * level} rx={3} fill={C.crema} opacity={0.9} />
+    <Svg label="With multipush of k keys added, alternating multipush of 1,000 and multipop of 1,000 makes every one of 1,000 operations cost 1,000: 1,000,000 in all" h={306}>
+      <T x={40} y={22} s={15} f={C.crema} w={600} o={a}>new: multipush(k) pushes k keys in one operation</T>
+      <path d={`M 56 52 L 56 ${BASE + 2} L 164 ${BASE + 2} L 164 52`} fill="none" stroke={C.taupe} strokeWidth={1.5} opacity={a} />
+      <rect x={60} y={BASE - 140 * level} width={100} height={140 * level} rx={3} fill={C.crema} opacity={0.9} />
       <line x1={220} y1={BASE} x2={520} y2={BASE} stroke={C.mocha} />
       {Array.from({ length: 10 }, (_, k) => {
-        const h = shown ? 150 * easeOut(seg(s, 0.14 * k, 0.14 * k + 0.2)) : 0;
-        return <rect key={k} x={220 + 30 * k} y={BASE - h} width={22} height={h} rx={3} fill={C.cherry} />;
+        const e = shown ? easeOut(seg(s, 0.14 * k, 0.14 * k + 0.2)) : 0;
+        const h = 140 * e;
+        const push = k % 2 === 0;
+        return (
+          <g key={k}>
+            <rect x={220 + 30 * k} y={BASE - h} width={22} height={h} rx={3} fill={C.cherry} opacity={push ? 1 : 0.55} />
+            <T x={220 + 30 * k + 11} y={BASE + 20} s={15} f={push ? C.crema : C.latte} a="middle" w={700} o={e}>{push ? '+' : '−'}</T>
+          </g>
+        );
       })}
       {shown && (
         <g>
-          <T x={40} y={300} s={15} f={C.crema} w={600} o={easeOut(seg(s, 1.5, 1.9))}>1,000 operations, k = 1,000</T>
-          <T x={40} y={322} s={15} f={C.cherryText} w={600} o={easeOut(seg(s, 1.5, 1.9))}>cost 1,000,000: 1,000 each</T>
+          <T x={40} y={BASE + 44} s={15} f={C.taupe} o={easeOut(seg(s, 1.4, 1.8))}>+ multipush(k) · − multipop(k)</T>
+          <T x={40} y={BASE + 70} s={15} f={C.crema} w={600} o={easeOut(seg(s, 1.5, 1.9))}>1,000 operations, k = 1,000</T>
+          <T x={40} y={BASE + 96} s={15} f={C.cherryText} w={600} o={easeOut(seg(s, 1.5, 1.9))}>cost 1,000,000: 1,000 each</T>
         </g>
       )}
     </Svg>

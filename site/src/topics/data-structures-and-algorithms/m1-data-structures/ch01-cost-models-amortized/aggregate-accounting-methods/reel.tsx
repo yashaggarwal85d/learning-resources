@@ -41,7 +41,7 @@ const reel: Reel = {
       body: (
         <>
           The rule: an empty vector has capacity 0; the first append allocates 1; an append to a full vector allocates twice the capacity, copies every key, then
-          writes the new one. Sixteen appends cost 1, 2, 3, 1, 5, 1, 1, 1, 9, then seven 1s. Total 31, under the dashed 3 per append (48).
+          writes the new one. Sixteen appends cost 1, 2, 3, 1, 5, 1, 1, 1, 9, then seven 1s. Every append is charged 3 (the dashed line); the total, 31, stays under 48.
         </>
       ),
       duration: 5.2,
