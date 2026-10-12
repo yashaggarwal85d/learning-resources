@@ -4,7 +4,9 @@ import { readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 
 // scope: the topic's syllabus line after its title, which its coverage map must cover in full.
-export type Topic = { title: string; refresher: boolean; scope: string };
+// skipped: marked *(skipped)* in the syllabus (owner decision): it stays in the curriculum but no reel is made for it,
+// the claim script never hands it out, and the flow treats it as absent.
+export type Topic = { title: string; refresher: boolean; skipped: boolean; scope: string };
 export type Chapter = { number: number; title: string; topics: Topic[]; labs: number };
 export type Milestone = { number: number; title: string; chapters: Chapter[]; cases: number };
 export type Domain = {
@@ -13,7 +15,7 @@ export type Domain = {
   tagline: string;
   file: string;
   milestones: Milestone[];
-  counts: { milestones: number; chapters: number; topics: number; labs: number; cases: number };
+  counts: { milestones: number; chapters: number; topics: number; skipped: number; labs: number; cases: number };
 };
 
 const DOMAINS = [
@@ -84,7 +86,8 @@ function parse(md: string): Milestone[] {
       c.topics.push({
         title: clean(tm[1]).replace(/[.:]$/, ''),
         refresher: /\*\(refresher\)\*/.test(line),
-        scope: clean(tm[2].replace(/\*\(refresher\)\*/, '')).replace(/^—\s*/, ''),
+        skipped: /\*\(skipped\)\*/.test(line),
+        scope: clean(tm[2].replace(/\*\(refresher\)\*/, '').replace(/\*\(skipped\)\*/, '')).replace(/^—\s*/, ''),
       });
   }
   return milestones;
@@ -108,6 +111,7 @@ export function loadDomains(): Domain[] {
         milestones: milestones.length,
         chapters: chapters.length,
         topics: chapters.reduce((n, ch) => n + ch.topics.length, 0),
+        skipped: chapters.reduce((n, ch) => n + ch.topics.filter((t) => t.skipped).length, 0),
         labs: chapters.reduce((n, ch) => n + ch.labs, 0),
         cases: milestones.reduce((n, x) => n + x.cases, 0),
       },

@@ -1,0 +1,441 @@
+{
+ "topic": "de.software-delivery-workflow",
+ "voice": "tara-v1",
+ "clips": {
+  "01": {
+   "hash": "857ffab917504550",
+   "duration": 23.915,
+   "lines": [
+    {
+     "text": "The shell runs one job by hand.",
+     "start": 0.15,
+     "end": 2.295
+    },
+    {
+     "text": "A pipeline runs the same commands on every change. It stops at the first failure.",
+     "start": 2.715,
+     "end": 7.128
+    },
+    {
+     "text": "This refresher covers the loop around it: review, tests, continuous integration, version numbers, and pinned dependencies. The strip along the top marks where each step sits.",
+     "start": 7.948,
+     "end": 20.374
+    },
+    {
+     "text": "All familiar? Swipe on.",
+     "start": 20.794,
+     "end": 23.565
+    }
+   ],
+   "lufs": -16.6,
+   "true_peak": -1.4,
+   "wpm": 130,
+   "wer": 0.0
+  },
+  "02": {
+   "hash": "e399aa8c1c1bbb15",
+   "duration": 32.881,
+   "lines": [
+    {
+     "text": "A review has an order... design first, and style last.",
+     "start": 0.15,
+     "end": 4.666
+    },
+    {
+     "text": "Take the broad view first. Then the design of the main part; if something big is wrong, say so right away.",
+     "start": 5.086,
+     "end": 12.158
+    },
+    {
+     "text": "Then functionality, complexity, tests, and naming. Style is only a nit the author may skip.",
+     "start": 12.578,
+     "end": 18.128
+    },
+    {
+     "text": "Approve when the change clearly improves the code... not when it's perfect.",
+     "start": 18.848,
+     "end": 23.375
+    },
+    {
+     "text": "Keep pull requests small. About a hundred lines is reasonable. A thousand is usually too large.",
+     "start": 23.795,
+     "end": 29.652
+    },
+    {
+     "text": "And answer within one business day.",
+     "start": 30.072,
+     "end": 32.531
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.4,
+   "wpm": 146,
+   "wer": 0.0
+  },
+  "03": {
+   "hash": "91a368f599356096",
+   "duration": 37.331,
+   "lines": [
+    {
+     "text": "Now a unit test: the bisect oracle from the Git refresher, grown up.",
+     "start": 0.15,
+     "end": 6.534
+    },
+    {
+     "text": "One test, parametrized: one case per input, each passing or failing on its own.",
+     "start": 6.954,
+     "end": 12.535
+    },
+    {
+     "text": "A fixture hands each test its own fresh temporary folder.",
+     "start": 12.955,
+     "end": 17.392
+    },
+    {
+     "text": "But does it fail when the code is broken?",
+     "start": 18.212,
+     "end": 22.151
+    },
+    {
+     "text": "Six tests run. Four cases, the Git oracle, and a test of the main function.",
+     "start": 22.701,
+     "end": 27.37
+    },
+    {
+     "text": "At that commit, four tests fail. The two that pass have no stray spaces.",
+     "start": 27.79,
+     "end": 33.329
+    },
+    {
+     "text": "The run exits with one... and the gate closes.",
+     "start": 33.749,
+     "end": 36.981
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.4,
+   "wpm": 135,
+   "wer": 0.0
+  },
+  "04": {
+   "hash": "d1baaf25a3c7051d",
+   "duration": 31.436,
+   "lines": [
+    {
+     "text": "A job on the runner is a script that stops on error. Each step runs only if the one before it succeeded.",
+     "start": 0.15,
+     "end": 6.343
+    },
+    {
+     "text": "Each step is a new shell, and its exit status is its verdict.",
+     "start": 6.763,
+     "end": 10.555
+    },
+    {
+     "text": "The first non-zero status fails the job... and every step after it is skipped.",
+     "start": 10.975,
+     "end": 17.34
+    },
+    {
+     "text": "On the left, the fix goes green.",
+     "start": 18.06,
+     "end": 20.388
+    },
+    {
+     "text": "On the right, the regression stops at the tests. The diff step never runs.",
+     "start": 20.808,
+     "end": 26.125
+    },
+    {
+     "text": "Make the job a required check, and a red run blocks the merge.",
+     "start": 26.545,
+     "end": 31.086
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.4,
+   "wpm": 160,
+   "wer": 0.0
+  },
+  "05": {
+   "hash": "947caaf0bbe64824",
+   "duration": 18.139,
+   "lines": [
+    {
+     "text": "Here's the trap from the shell refresher, now on a runner.",
+     "start": 0.15,
+     "end": 3.645
+    },
+    {
+     "text": "This step sets no shell, so GitHub runs bash with stop-on-error. The first command can't open the file and fails; the other two succeed.",
+     "start": 4.065,
+     "end": 13.622
+    },
+    {
+     "text": "So... does the step pass, or fail?",
+     "start": 14.442,
+     "end": 17.789
+    }
+   ],
+   "lufs": -17.1,
+   "true_peak": -1.3,
+   "wpm": 146,
+   "wer": 0.0
+  },
+  "05a": {
+   "hash": "145a438ce261efa0",
+   "duration": 17.82,
+   "lines": [
+    {
+     "text": "It passes. Stop-on-error sees only a pipeline's last command... zero.",
+     "start": 0.15,
+     "end": 5.111
+    },
+    {
+     "text": "The failure is hidden, in any script, not just on a runner.",
+     "start": 5.531,
+     "end": 9.605
+    },
+    {
+     "text": "Ask for bash explicitly, pipe-fail switches on, and the step fails, as it should.",
+     "start": 10.025,
+     "end": 17.47
+    }
+   ],
+   "lufs": -16.6,
+   "true_peak": -1.4,
+   "wpm": 131,
+   "wer": 0.0
+  },
+  "06": {
+   "hash": "b2d768953d6635eb",
+   "duration": 27.29,
+   "lines": [
+    {
+     "text": "A flaky test passes and fails on the same code.",
+     "start": 0.15,
+     "end": 3.542
+    },
+    {
+     "text": "Here, the test compared the order of a set. That order isn't specified. For strings it depends on a hash value, and Python picks a different seed in every process.",
+     "start": 3.962,
+     "end": 13.922
+    },
+    {
+     "text": "Run it twenty times, and half the runs fail.",
+     "start": 14.342,
+     "end": 16.959
+    },
+    {
+     "text": "Re-running until it's green hides the problem. And a gate nobody trusts hides real failures, too.",
+     "start": 17.679,
+     "end": 23.425
+    },
+    {
+     "text": "Fix the cause. Here... sort first.",
+     "start": 23.845,
+     "end": 26.94
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -0.5,
+   "wpm": 158,
+   "wer": 0.0
+  },
+  "07": {
+   "hash": "5291da04960b283a",
+   "duration": 14.458,
+   "lines": [
+    {
+     "text": "A version number is a promise about what callers can rely on.",
+     "start": 0.15,
+     "end": 3.576
+    },
+    {
+     "text": "The library is at version one point five. A fix bumps the last number; a compatible addition, the middle one.",
+     "start": 3.996,
+     "end": 9.742
+    },
+    {
+     "text": "Now the next release renames an output column. Which version is it?",
+     "start": 10.562,
+     "end": 14.108
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -1.4,
+   "wpm": 183,
+   "wer": 0.0
+  },
+  "07a": {
+   "hash": "43a2a49ae47f06da",
+   "duration": 21.376,
+   "lines": [
+    {
+     "text": "Version two. Every reader of the old column breaks.",
+     "start": 0.15,
+     "end": 4.667
+    },
+    {
+     "text": "The first number goes up, and the other two reset to zero.",
+     "start": 5.087,
+     "end": 8.599
+    },
+    {
+     "text": "And a released version never changes, so you can't rebuild one point five.",
+     "start": 9.019,
+     "end": 13.373
+    },
+    {
+     "text": "For data, a rename isn't the only break: a new status value, a changed type, even an extra column.",
+     "start": 13.793,
+     "end": 21.026
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.4,
+   "wpm": 149,
+   "wer": 0.0
+  },
+  "08": {
+   "hash": "b3ecd4f7c9699f2c",
+   "duration": 17.748,
+   "lines": [
+    {
+     "text": "Works on my machine.",
+     "start": 0.15,
+     "end": 1.611
+    },
+    {
+     "text": "The requirements file says the library, version one point four or later.",
+     "start": 2.031,
+     "end": 6.212
+    },
+    {
+     "text": "Your laptop installed one point five last week. Today, version two is published, with the renamed column.",
+     "start": 6.632,
+     "end": 14.25
+    },
+    {
+     "text": "What does a brand new run start with?",
+     "start": 15.07,
+     "end": 17.398
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.4,
+   "wpm": 139,
+   "wer": 0.0
+  },
+  "08a": {
+   "hash": "1b1b0d0de805d880",
+   "duration": 21.033,
+   "lines": [
+    {
+     "text": "It gets version two... and the app fails with a missing-key error.",
+     "start": 0.15,
+     "end": 4.133
+    },
+    {
+     "text": "Or later admits every later version, and pip takes the newest.",
+     "start": 4.553,
+     "end": 9.193
+    },
+    {
+     "text": "The application should pin exactly, with a lock: next step.",
+     "start": 9.613,
+     "end": 13.821
+    },
+    {
+     "text": "For a library, always set a lower bound. Set a cap only for a known break.",
+     "start": 14.241,
+     "end": 20.683
+    }
+   ],
+   "lufs": -16.3,
+   "true_peak": -1.4,
+   "wpm": 143,
+   "wer": 0.0
+  },
+  "09": {
+   "hash": "105bdd573f57f8cb",
+   "duration": 28.774,
+   "lines": [
+    {
+     "text": "A lock file freezes the tree.",
+     "start": 0.15,
+     "end": 2.476
+    },
+    {
+     "text": "An application pins every package with an exact version and a checksum of the exact file, the same on every machine.",
+     "start": 2.896,
+     "end": 9.132
+    },
+    {
+     "text": "A lock tool writes those lines, not you.",
+     "start": 9.552,
+     "end": 12.693
+    },
+    {
+     "text": "With hash checking on, pip installs those bytes... or nothing.",
+     "start": 13.113,
+     "end": 16.787
+    },
+    {
+     "text": "If a file changes under a pinned version, the checksum fails, and pip refuses.",
+     "start": 17.507,
+     "end": 22.446
+    },
+    {
+     "text": "A lock guarantees the same install, wherever it fits. Not that it's correct.",
+     "start": 22.866,
+     "end": 28.424
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.4,
+   "wpm": 150,
+   "wer": 0.0
+  },
+  "10": {
+   "hash": "9e8242bc068b8513",
+   "duration": 36.046,
+   "lines": [
+    {
+     "text": "Eight things to keep.",
+     "start": 0.15,
+     "end": 1.256
+    },
+    {
+     "text": "Review design first, in small changes. Tests must fail on the bug.",
+     "start": 1.676,
+     "end": 6.923
+    },
+    {
+     "text": "The runner stops at the first non-zero exit. Explicit bash adds the pipe fail option. Flaky tests need their state fixed.",
+     "start": 7.343,
+     "end": 15.36
+    },
+    {
+     "text": "Versions: fix, add, or break. Applications pin, with a lock. Libraries set a lower bound, and cap only a known break.",
+     "start": 15.78,
+     "end": 23.882
+    },
+    {
+     "text": "The gate checks the answer... not what it costs as the data grows.",
+     "start": 24.302,
+     "end": 28.114
+    },
+    {
+     "text": "Next up... the last of the five refreshers: the notation for that, and the logarithms the chapter counts with.",
+     "start": 29.034,
+     "end": 35.696
+    }
+   ],
+   "lufs": -16.6,
+   "true_peak": -1.4,
+   "wpm": 151,
+   "wer": 0.0
+  }
+ }
+}
