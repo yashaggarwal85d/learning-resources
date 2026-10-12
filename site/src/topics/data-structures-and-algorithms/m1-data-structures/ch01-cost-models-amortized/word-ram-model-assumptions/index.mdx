@@ -1,0 +1,171 @@
+---
+id: dsa.word-ram-model-assumptions
+title: The word-RAM model and its assumptions
+---
+
+<section data-section="outcomes">
+
+## After this topic you can
+
+- Say which operations the word-RAM charges one unit for (C-style arithmetic, comparisons, bitwise operations and shifts, and a load or store at a computed address, each on one w-bit word), and why the word size is tied to log n from below (a word must hold an index) and bounded above (unbounded words would let one unit operation do the whole input's work).
+- Name two real costs the model hides, a cache miss and a branch misprediction, with their order of magnitude from a cited source, and say which later topics expose them: topics 8 and 9 model the memory hierarchy, topic 10 measures it, and Chapters 15 and 16 go branchless.
+- Explain how integer keys beat the comparison model: digits as array indices (radix sort, w / log₂ n passes), halving the key's bits (van Emde Boas, O(log w)), and many keys compared in one word (fusion trees, O(log n / log w)), and name the price of each.
+- Say, for a given cost claim, whether it was made in the comparison model or on the word-RAM, and whether a comparison-model lower bound (proved in topic 4) binds it.
+
+</section>
+
+<section data-section="internals">
+
+## Into the internals
+
+### The word-RAM, precisely
+
+Memory is an array of S cells of w bits each, addressed by words. The 6.851 notes put it as "Memory is divided into an array of size S made up of cells of size w", with "some fixed set of operations, each of which modifies O(1) memory cells", and "Words serve as pointers, so cells can be addressed arbitrarily". The operations are those "you would expect as primitives in a high-level language such as C": addition, subtraction, multiplication, division and remainder, the bitwise operations, shifts and comparisons. Mehlhorn and Sanders spell the instruction set out as machine instructions, including the load "Ri := S[Rj]" and the store "S[Rj] := Ri" at an address held in a register, and state the rule that matters here: "Each instruction takes one time step to execute." (The notes' own operator list loses one symbol in the PDF text, so XOR is cited from Mehlhorn and Sanders, who list it.)
+
+Two constraints on w make the model honest. **From below:** "It is practical to require w to be greater than log(S), as otherwise, you won't be able to access the whole array", and "If we let n be the problem size, then this also implies that w ≥ log(n)." The notes call this the transdichotomous RAM; this topic uses the name the way those notes do and attributes its coinage to no one. (The only candidate found is Fredman and Willard's "Trans-dichotomous algorithms for minimum spanning trees and shortest paths", *Journal of Computer and System Sciences* 48, 1994, whose title carries the word; the paper's text could not be opened for this topic, and the fusion-tree paper, which was opened, does not use the word, so nothing is attributed.) The universe is fixed: keys are w-bit integers from \{0, …, u − 1\} with u = 2<sup>w</sup> (the chapter writes this universe size U, and the reel's U is this u). **From above:** a cell that could hold an arbitrary number would be a different machine. Mehlhorn and Sanders: "allowing cells to store arbitrary numbers would lead to absurdly overoptimistic algorithms", and repeated squaring shows how, since it makes a number of 2<sup>n</sup> bits in n steps (<code>examples.py</code> squares 2 twenty times and gets 1,048,577 bits). Fredman and Willard say the same of an earlier sorting result: Paul and Simon's linear-time algorithm "suffers from an abuse of the unit cost assumption" because it generates operands much longer than the numbers being sorted, so they ask for a model that "allows for unit cost operations among operands of 'reasonable' size". The model is an abstraction: "real machines have a finite memory and a fixed number of bits per register (e.g., 32 or 64). In contrast, the word size and memory of a RAM scale with input size." The standard convention sits between the two constraints: w = Θ(log n), so that any integer polynomial in n fits one word (Mehlhorn and Sanders: "Our default assumption is that integers bounded by a polynomial in the size of the data being processed can be stored in a single cell."), which is CLRS's c·log n. The fixed-universe view instead takes w as given and lets n vary, which is why the predecessor bounds below are in w and n separately.
+
+The 6.851 notes order the models by power: "the cell probe model is stronger than the trandichotomous RAM model which is in turn stronger than the word RAM model, followed by the pointer machine and the BST." The cell-probe model charges only for reading and writing cells and lets all computation be free: "This model does not realistically reflect a modern processor, but its simplicity and generality make it appropriate for proving lower bounds." Topic 4 proves lower bounds in the comparison model; the cell-probe model is where lower bounds for word-RAM data structures are proved (see the frontier).
+
+### Which operations are unit cost is a choice
+
+Multiplication is the contested one. The AC⁰ RAM "is restricted to operations with constant-depth (but unbounded fan-in and fan-out) circuits. In particular, multiplication is not permitted, since it requires a circuit of logarithmic depth in the number of bits"; the notes add that the restriction mattered "when multiplication was very costly relative to other operations like additions", which "is no longer the case due to optimizations such as pipelining". Fredman and Willard's fusion trees use multiplication: their machine's instruction set is "addition, subtraction, multiplication, comparison, and bit-wise AND", and the multiply "produces a two-word product", the high and low b bits (their b is our w). They also observe that OR and XOR can be built from AND, subtraction and the constant 2<sup>b</sup> − 1, and they asked whether fusion trees can be built "with AC0 instructions"; the 6.851 notes cite the answer, Andersson, Miltersen and Thorup, "Fusion trees can be implemented with AC0 instructions only". So the honest sentence is that fusion trees on the standard word-RAM use multiplication, not that they need it. (That paper was not opened for this topic; it is named by its title from the notes' reference list.) The framing: a bound's model names its instruction set, and "O(1) for a multiply" is a modelling choice the standard word-RAM makes and the AC⁰ RAM does not.
+
+### Numbers longer than a word
+
+Unit cost is per word. A b-bit number occupies ⌈b/w⌉ words; adding two costs Θ(b/w) word additions (plus a constant number of loads, stores and carry steps per word), comparing them costs Θ(b/w) in the worst case, and schoolbook multiplication costs Θ((b/w)²) word multiplies. <code>examples.py</code> does it on two 4,096-bit integers: 64 words each, 64 word additions, and 64 × 64 = 4,096 word multiplies, counted on a multiply that returns the full two-word product, as Fredman and Willard assume. With only C's <code>*</code>, which keeps the low word, the digits become 32-bit halves and the count is 128 × 128 = 16,384, four times larger and still Θ((b/w)²). Mehlhorn and Sanders justify the logarithmic cell size by the same trade: "we could always spread out the contents of a single cell over logarithmically many cells with a logarithmic overhead in time and space". Topic 1's Θ(b) bit operations is this count with w = 1, and its trial-division example stayed unit cost because every number there fit one 64-bit word: the point about value against length, one word up.
+
+### What the unit hides
+
+**Memory.** The model charges every load one unit ("all memory accesses take the same amount of time"). Drepper's tour of the hierarchy lists "the numbers Intel lists for a Pentium M": register at most 1 cycle, first-level data cache about 3, second-level cache about 14, main memory about 240; elsewhere he writes "a main memory access takes 200+ cycles". Those are 2007 figures for one core and the table is labelled so on screen; the ratio, 240 to 3 or 80 to 1, is the lesson. For a current comparison point, Agner Fog's microarchitecture manual (edition of 2026-05-23) gives AMD Zen 5 a first-level data cache of 48 kB with "Latency 4 clocks" and a 1 MB second-level cache with "Latency 14 clocks", both with a "64 B line size"; it gives no main-memory figure, so none is quoted. Caches move "lines of several contiguous words", and Drepper writes that "nowadays the norm is 64 bytes". With 8-byte keys in a 64-byte-aligned array, a line holds 8 keys, and the 20 probes of the reel's query touch 17 distinct lines (16 or 17 over random queries; <code>examples.py</code> counts them). That is a cold-cache count, up to 17 trips: every query starts at the same midpoint, so in a service the first probes share lines and stay cached, and only the deep probes miss. It is arithmetic about the model's picture, not a measurement. Drepper's measured staircase, in his random-write test (figure 3.4): below 10 cycles per operation while the working set fits the first-level cache, around 28 once it exceeds it, "480 cycles and more" once it exceeds the second-level cache. In his random-read test (figure 3.15), main memory "makes it possible to access ... in 200-300 cycles but here we reach 450 cycles and more", and he attributes the rise to "a rising rate of TLB misses". Agner's verdict, from his chapters on the Pentium 4, Pentium M and Pentium Pro/II/III: "Accessing uncached data is so time consuming that all other optimization considerations are unimportant", and Mehlhorn and Sanders say the same of the model: "The worst-case time for a memory access to the main memory can be hundreds of times higher than the best-case time."
+
+**Branches.** A pipelined core executes speculatively: "the instructions are decoded and executed, but the results are not retired into the permanent register file, and memory writes are pending until the branch instruction is finally resolved". If the guess was wrong, "the pipeline is flushed, the results of the speculative execution are discarded ... The number of wasted clock cycles is approximately equal to the length of the pipeline." Agner's penalties, each with its processor: Intel Pentium MMX 4 to 5; Pentium Pro, II and III 10 to 20; Pentium M about 13; Core 2 about 15; Nehalem at least 17; Sandy and Ivy Bridge at least 15; Haswell to the Lakes 15 to 20, with "varies between 16 and 20 clock cycles" measured on Ice Lake and Tiger Lake and, on Alder Lake, a penalty that is "sometimes exceeding 20 clock cycles in my measurements". VIA Nano is typically 16, at most 20. AMD K8 and K10 are 10 or 12 by AMD's manuals, and at least 12 to 13 in his measurements; the Bulldozer family is specified as at least 20 for conditional branches and 15 for unconditional jumps; Zen 1 to 3 average about 18, Zen 4 is 15 to 18, Zen 5 is 15 to 25. For random queries each comparison of binary search goes either way with roughly equal odds, so no predictor can do much better than a coin flip on it; for repeated or sorted queries a predictor can learn the pattern.
+
+**Also left out**, one line each: SIMD (the model's "limited form of parallelism" is "simple operations on a logarithmic number of bits in constant time", while "many processors have 128–512-bit-wide SIMD registers"); multicore parallelism; memory allocation and freeing (counted as one unit or not at all); virtual memory and the TLB (Drepper chapter 4; topic 10); and I/O (topic 8). The next models of this chapter put a price on the hierarchy: topic 8 counts block transfers, topic 9 does it without knowing the block size, topic 10 measures the real staircase. Branchless search is Chapter 16 and branchless partitioning Chapter 15. Data Engineering's "CPU caches, SIMD and vectorization" reel covers the same costs from a query engine's side.
+
+### The comparison model and its escapes
+
+In the comparison model keys are opaque and the only operation on them is a comparison, which answers one yes/no question. Telling n + 1 places apart takes ⌈log₂(n + 1)⌉ answers: 9 places need 4, 1,000,001 places need 20. The 6.851 notes give Θ(log n) per predecessor query in the BST model, and 6.006 draws a comparison algorithm as a binary decision tree ("Comparison model implies that algorithm decision tree is binary (constant branching factor)"). The lower bounds, Ω(log n) for search and Ω(n log n) for sorting, are topic 4's. Pătraşcu and Thorup mark the escape: with "all the instructions on integers available in a standard programming language such as C ... we are no longer limited by the Ω(lg n) comparison based lower bound for searching". For predecessor they define the answer as max \{y ∈ Y | y ≤ x\}; the 6.851 notes say "less than", and <code>examples.py</code> uses the largest key at most x, checked against <code>bisect_right</code>.
+
+| Escape | Bound | Space | Price | Source |
+|---|---|---|---|---|
+| Radix sort | O(n · w / log n); linear if w = O(log n) | O(n) plus the buckets | scattered writes across 2<sup>r</sup> buckets; mechanism in Chapter 15 | 6.006, 6.851 lecture 14 |
+| van Emde Boas | O(log w) = O(log log u) per query | Θ(u) plain; Θ(n) hashed, with high probability | space or randomness | 6.851 lecture 11 |
+| Fusion tree | O(log n / log w) | O(n) | constants that make it theory only | 6.851 lecture 12; Fredman and Willard |
+
+The notes remark that "the query time of a fusion tree may or may not be better than that of a Y-fast tree, depending on our values of w and n". Taking the better of the two is at most about √(log n), because if log w ≤ √(log n) the first term is that small, and otherwise log n / log w is below √(log n) (the extracted text garbles the formula, so this is derived; <code>examples.py</code> checks it over a grid). At the running example, n = 10<sup>6</sup> and w = 64, log₂ w is 6 and log n / log w is about 3.3 before constants. vEB trees and fusion trees have no other home in this course, so this topic carries them; hashing (Chapter 3) is named, not taught.
+
+### van Emde Boas trees in full
+
+A vEB tree over u = 2<sup>w</sup> keys holds √u clusters of √u keys each, plus a summary that is itself a vEB tree over the cluster numbers: "Given an integer x, it is stored in block V.cluster[c] and within that block it is at position i", where c is the high half of the bits and i the low half. "Finally, each structure contains the minimum element, V.min (or None if it is empty), and a copy of the maximum element, V.max", and "at each level, the minimum is stored directly, and not recursively". With min and max at hand, successor, predecessor, insertion and deletion each decide in constant time whether the answer lies in the key's own cluster or must be found in the summary, and then "we only recurse once". The three procedures, with x split into its high half c and low half i (<code>examples.py</code> implements the first two):
+
+- **Predecessor of x** (largest stored key below x; the notes give successor and say predecessor "works in a very similar fashion").
+  1. If x is at most V.min, there is none; if x is above V.max, the answer is V.max.
+  2. If cluster c is non-empty and i is above that cluster's min, the answer is inside cluster c: recurse into the cluster on i, and put c back in front.
+  3. Otherwise ask the summary for the predecessor of c (the one recursion). If there is none, the answer is V.min, which is stored in no cluster; if there is a cluster c′, the answer is c′'s max, read in O(1).
+- **Insert x.**
+  1. If V is empty, set min and max to x and stop.
+  2. If x is below V.min, make x the new min and insert the old min instead.
+  3. If cluster c is empty, insert c into the summary (the one recursion) and then put i into the empty cluster, which takes constant time; otherwise just insert i into cluster c. Update V.max if x is above it.
+- **Delete x.** The notes: "we start with the case in which x is the minimum element."
+  1. If x is the min and the max, set both to None and stop.
+  2. If x is the min, the new min is the min of the first non-empty cluster, which is stored nowhere else: delete that key from its cluster and make it V.min.
+  3. Otherwise delete i from cluster c. If cluster c is now empty, that deletion took constant time, and only then is c deleted from the summary: still one real recursion. Finally fix V.max: if the summary is empty, V.max = V.min; otherwise it is the max of the summary's last cluster.
+
+The stored min is what makes this work: because it is "stored directly, and not recursively", inserting into an empty cluster and deleting a cluster's last key are O(1) at that level, so the second call (into the summary) never follows a first expensive one. So T(u) ≤ T(√u) + O(1), which solves to O(log log u) = O(log w) (topic 3 solves recurrences of this shape). Theorem 1 of the notes: "A vEB tree preforms the operations sucessor, predecessor, insertion and deletion in O(log log u) time." The binary-tree view in the notes finds the same bound by a binary search on the path of height w.
+
+**Space.** Plain vEB "can achieve O(log(w)) time per query, and Θ(u) space", impossible for u = 2<sup>64</sup> (the top level alone has 2<sup>32</sup> cluster slots). The fix in the notes: "we do not store empty clusters and replace child arrays by dynamic perfect hash tables", giving Θ(n) space, and with a hash table "with O(1) query and update with high probability, this allows us to obtain query and update bounds of O(lg lg u) with high probability". The x-fast tree is a different structure: it keeps a hash table of all w prefixes of every key, for O(log w) queries but "an O(w) update bound" and O(nw) space; the y-fast tree fixes both by indirection: "the O(lg w) query bound is maintained, but the top-level update can now be charged to the Θ(w) bottom-level updates". Fredman and Willard record the original cost of the plain structure in their introduction: the priority queue of van Emde Boas "accommodates priority queue operations in time log log U per operation ... This structure requires U words of memory, however."
+
+<code>examples.py</code> builds the toy: a <code>VEB</code> class with dictionary-backed clusters (so w = 64 is possible without arrays of 2<sup>32</sup> slots), min and max at every level and one recursive call per level. For w = 16 and w = 64 it inserts 1,000 seeded keys and compares 5,000 seeded queries with <code>bisect</code>, and the recursion depth never exceeds log₂ w, which is 4 and 6. The halving chain 64 → 32 → 16 → 8 → 4 → 2 → 1 is six steps, each a few word operations: shifts and masks to split the key, a comparison against the stored min or max. A halving is not one unit, so the honest comparison with 20 comparisons is about growth, and the win shows only for large n: Fredman and Willard note that such approaches "improve upon conventional sorting only for sufficiently large values of N".
+
+### Fusion trees: the idea, and what is left out
+
+A fusion tree is a B-tree with branching factor w<sup>1/5</sup> (any small constant power suffices), so its height is Θ(log<sub>w</sub> n) and it answers predecessor in O(log<sub>w</sub> n) time and O(n) space. The difficulty is searching a node in O(1): reading w<sup>1/5</sup> keys of w bits is O(w<sup>6/5</sup>) bits, "which appears impossible". The idea is to distinguish the node's keys "with less than w bits". At most k − 1 bit positions matter in ordering k keys (the branching points of their trie), so each key keeps only those positions, its **sketch**. "Clearly, the sketch operation preserves order among the xi", and the sketches together take "o(w) bits", so a node's sketches fit in one word.
+
+Parallel comparison: "We store all the sketches of the xi's at a node in a single word by prepending a 1 to each and concatenating them." Subtract the query's sketch with a 0 prepended, repeated in each block: "since 1sketch(xi) is always bigger than 0sketch(q), carrying will not cause the subtractions to interfere with each other", and "the first bit of each block will be 1 if and only if sketch(q) ≤ sketch(xi)". Counting the 1s is a multiplication by 000001…000001. The reel's toy: keys 21, 27, 100, 110 as 8 bits; the distinguishing positions are 6 and 3 (two of the at most k − 1 = 3); the sketches 00, 01, 10, 11; node word 100101110111 (2,423); for q = 25, sketch 01, query word 001001001001 (585); the difference 011100101110 (1,838) has leading bits 0, 1, 1, 1: three sketches are at least sketch(q), so the predecessor is the first key, 21. The toy keys are 8 bits and the node word 12 bits, which sits in a 64-bit word and would not fit an 8-bit one: Pătraşcu and Thorup's model allows word length w ≥ ℓ, the key length.
+
+**The sketch rank is not the rank.** The subtraction ranks sketch(q) among the sketches, and "the location of sketch(q) can be completely different from the location of q". For q = 22 = 00010110, the sketch is 00, the same as 21's, so all four leading bits are 1 ("no predecessor"), yet its predecessor is 21. Over all 256 eight-bit queries the sketch rank alone matches the true predecessor only 42 times. The repair, **desketchifying** (lecture 12, section 5): the sketch neighbours of q are found, the one sharing the longer common prefix with q is taken, and a value e that agrees with q up to that prefix and then follows the other branch is built and ranked instead ("Here, the sketch neighbours of q are x0 and x1, but x0 is neither a predecessor nor successor of q"). <code>examples.py</code> implements it and asserts the right predecessor for all 256 queries. What the notes name and this topic leaves out: the approximate sketch computed by multiplication with a mask ("using just multiplication and other standard operations"), the most significant set bit in O(1), and the dynamic variants (exponential trees: "O(logw n + lg lg n) deterministic update time"; hashing: "O(logw n) expected update time"). The full construction is out of scope.
+
+**Practicality.** Fredman and Willard: "Our algorithms have theoretical interest only; the constant factors involved in the execution times preclude practicality." Arithmetic from the notes' branching factor makes it concrete: with the notes' exponent 1/5 and w = 64 a node holds only 64<sup>1/5</sup> ≈ 2.3 keys, so for n = 10<sup>6</sup> the height is about log₂ n / log₂ 2.3 ≈ 16.6; with w<sup>1/3</sup> = 4 keys it is log₄ n ≈ 10. Either way the Θ(log<sub>w</sub> n) hides a constant that leaves it near binary search's 20 at this n (<code>examples.py</code> asserts both heights). Their original bound was O(log N / log log N) amortized per operation on a word-RAM "whose instruction set includes addition, subtraction, multiplication, comparison, and bit-wise AND operations", "the implicit constant inside the O-notation is independent of b".
+
+### Radix sort on the word-RAM
+
+Counting sort places n keys below u in O(n + u) time. With the 6.006 slides: direct-access sort runs in "Θ(u), which is Θ(n) if u = Θ(n)"; to sort larger keys, "represent each key k by tuple (a, b) where k = an + b and 0 ≤ b < n", and sort the digits one after another, which only works because "we want sort to be stable: repeated keys appear in output in same order as input" ("stability ensures previous sorts stay sorted"). A key below n<sup>c</sup> has "at most c digits base n", each sorted "in O(n) time", so "tuple sort with auxiliary counting sort runs in O(cn) time in total", linear when c is constant. For a w-bit key, u = 2<sup>w</sup> and c = log<sub>n</sub> u = w / log₂ n, which is lecture 14's "We can sort in linear time if w = O(lg n) using radix sort." The digit width is chosen so that 2<sup>r</sup> is at most about n, which keeps one counting-sort pass at O(n); a digit of about log₂ n bits makes the pass count w / log₂ n. For a million 64-bit keys, 16-bit digits give 4 passes and 65,536 buckets; other digit widths give the table below (<code>examples.py</code> counts passes, sorts 1,000 seeded keys with 8- and 16-bit digits and 1,000 32-bit keys with 11-bit digits, and counts the larger widths).
+
+| Digit bits r | Passes for 64-bit keys | Buckets per pass |
+|---|---|---|
+| 8 | 8 | 256 |
+| 16 | 4 | 65,536 |
+| 20 | 4 | 1,048,576 |
+| 32 | 2 | 4,294,967,296 |
+
+What the unit hides: every pass scatters writes across 2<sup>r</sup> buckets, which is the load of step 6 in disguise, so the best digit width balances passes against the buckets that fit in cache. The tally on screen counts placements (each key put into a bucket once per pass, which <code>examples.py</code> counts in its sort), not every read and write, and compares them with comparisons, each a few word operations; the point is growth. Four passes stay four as n grows, while log₂ n goes from 19.9 to 29.9 between a million and a billion keys. The comparison-sort floor is log₂(n!), about 18.5 million for n = 10<sup>6</sup> ("height lower bounded by log(n!)"), of order n log₂ n, about 19.9 million. Mechanism and engineering are in Chapter 15, "Counting, radix and bucket sort".
+
+</section>
+
+<section data-section="lab">
+
+## Try it
+
+Run `python3 examples.py` next to this topic's source; every number in the reel is an assertion in that file. Then change it. Set the radix digit width to 8, 20 and 32 and watch the pass count follow ⌈64 / r⌉. Set the vEB toy's word size to 16, 32 and 64 and watch the maximum recursion depth follow log₂ w. Add a fifth key to the fusion toy and see that the distinguishing positions stay at most k − 1. No latency is measured here on purpose: interpreter overhead in Python swamps cache and branch effects, so the real staircase is measured in the chapter lab (topic 10).
+
+## Prove it, in full
+
+The reel's three questions, with worked answers, then five more.
+
+1. **Billion keys.** A van Emde Boas query takes log₂ w = 6 halvings, not 30; the bound depends on w only.
+2. **Which model?** "Predecessor search is O(log n) and cannot be beaten" is a comparison-model statement (topic 4); on the word-RAM the bits can be halved or packed. Careful with lookup: hashing finds equal keys in expected O(1) on the word-RAM (6.006: "Hash tables give expected O(1) time operations"), which is why the question says predecessor.
+3. **Word additions.** 4,096 / 64 = 64.
+4. **(a) Estimate** the word operations to compare two 1,024-bit keys. 1,024 / 64 = 16 words, so up to 16 word comparisons in the worst case, Θ(b/w).
+5. **(b) Predict** the radix pass count for 32-bit keys with 11-bit digits: ⌈32 / 11⌉ = 3 passes, 2,048 buckets each. What grows when r grows? The bucket count, 2<sup>r</sup>.
+6. **(c) Name the model and two hidden costs** for the claim "our hash map lookups are O(1)". Model: the word-RAM, with expected time over the choice of hash function (6.006: "expected O(1)"; which families give that is Chapter 3), amortized across resizes; hidden: a cache miss per probe in a large table, and a branch misprediction on the probe loop.
+7. **(d) Debug.** A vEB toy with array clusters for w = 64 runs out of memory as soon as it builds its top level. Why? The top level needs 2<sup>32</sup> cluster slots: plain vEB is Θ(u) space. The fix is to store only the non-empty clusters in a dictionary or hash table.
+8. **(e) Defend a design.** A service picks binary search over a vEB tree for a million keys. Give two reasons the 20-against-6 count does not settle it: the vEB tree needs hashing or Θ(u) space, and the hidden costs of either, which topic 10 measures. A fusion tree's height here is about 16.6 with the notes' exponent, about 10 with four keys per node: hardly better.
+
+</section>
+
+<section data-section="production">
+
+## In code review
+
+- **"Array access is O(1)" read as "free".** The model charges one unit; a cold load can cost hundreds of cycles (step 6).
+- **"log n is a law" quoted without its model.** It is a law of the comparison model (steps 8 and 16). Ask which model, and which operations the key allows.
+- **"Radix sort is linear, so it wins"** without pricing the scattered writes (step 10). The real contest is Chapter 15's.
+- **"Multiplication is slow, avoid it"** as folklore the AC⁰ debate outlived: the notes record that multiplication being very costly "is no longer the case due to optimizations such as pipelining".
+- **Bignum code reviewed as if additions were unit cost** (step 5): the cost is per word.
+- **Comparison-model optimality claims.** Fredman and Willard warn that the model's "beguiling successes ... have led to many claims that various N log N algorithms are optimal, conclusions that should not be taken too seriously."
+- Pătraşcu and Thorup remark, in 2006, that for IP look-up "The fastest deployed software solutions use non-comparison-based RAM tricks"; it is their statement, dated, not a current fact. No source opened for this topic shows integer-key structures winning in practice, so none is claimed.
+
+The question to ask in review: which model, which unit, and what does the unit hide?
+
+</section>
+
+<section data-section="frontier">
+
+## The frontier
+
+- **Integer sorting.** Linear for w = O(log n) by radix sort, and for w = Ω(log<sup>2+ε</sup> n) by signature sort (Andersson, Hagerup, Nilsson and Raman, 1998: "It sorts n w-bit integers in O(n) time when w = Ω(log2+ε n) for some ε > 0"). Han gives O(n log log n) deterministic (the notes cite "Deterministic Sorting in O(n log log n) Time and Linear Space"), and Han and Thorup O(n √(log log n)) randomized (the notes' table row "Han & Thorup", "O(n lg lg n) for all w", with the root sign lost in the extracted text; "The best we have done in the general case is a randomized algorithm in" a bound of that kind). Whether O(n) is possible for all w is listed as "OPEN" in the 6.851 notes (2012, scribed 2017); no source opened for this topic dates the problem's status in 2026. Thorup showed that if n w-bit integers can be sorted in O(n·S(n, w)) time, then there is a priority queue to match (lecture 14), which ties integer sorting to integer priority queues.
+- **Predecessor search is tight.** Pătraşcu and Thorup give the optimal time-space trade-off. "In the important case of w = ℓ = γ lg n, for γ > 1 (i.e. polynomial universes), and near linear space ..., the optimal search time is Θ(lg ℓ). Thus, our lower bound implies the surprising conclusion that van Emde Boas' classic data structure from [FOCS'75] is optimal in this case." The scope matters: with space n<sup>1+ε</sup>, Beame and Fich achieved O(lg ℓ / lg lg ℓ). The fusion-tree branch log<sub>ℓ</sub> n matches the other regime. The lower bound is proved in the cell-probe model, which is "stronger than the word RAM or its variants", so it holds for every word-RAM algorithm. External memory adds nothing new here: with cells of B keys, Pătraşcu and Thorup write, "we show that it is always optimal to either use a standard B-tree, or the best RAM algorithm which completely ignores the benefits of external memory" (Chapter 5's B-trees are the first branch).
+- **Fusion trees, dynamic.** Exponential trees give O(log<sub>w</sub> n + lg lg n) deterministic update time; hashing gives O(log<sub>w</sub> n) expected (lecture 12). Andersson and Thorup's exponential search trees convert static structures into dynamic linear-space ones: "This leads to an optimal bound of O( log n/ log log n) for searching and updating a dynamic set of n integer keys in linear space" (the square root over the whole fraction is lost in the extracted text; the optimal bound is O(√(log n / log log n))).
+
+</section>
+
+<section data-section="sources">
+
+## Sources
+
+Last verified against these sources: 11 October 2026, with every example run in `examples.py`. Fact-check record: `FACT-CHECK.md`. Expert sign-off: pending.
+
+- Demaine et al., [6.851 Advanced Data Structures, lecture 11 scribe notes](https://courses.csail.mit.edu/6.851/spring21/scribe/lec11.pdf) (integer data structures, models, van Emde Boas and y-fast trees; lecture of 22 March 2012, scribes 2010 to 2017).
+- Demaine et al., [6.851, lecture 12: Fusion Trees](https://courses.csail.mit.edu/6.851/spring21/scribe/lec12.pdf) (3 April 2012).
+- Demaine et al., [6.851, lecture 14: Integer Sorting](https://courses.csail.mit.edu/6.851/spring21/scribe/lec14.pdf) (10 April 2012).
+- MIT 6.006 Introduction to Algorithms, Spring 2020, [lecture 5: Linear Sorting](https://ocw.mit.edu/courses/6-006-introduction-to-algorithms-spring-2020/78a3c3444de1ff837f81e52991c24a86_MIT6_006S20_lec5.pdf) (MIT OpenCourseWare).
+- M. L. Fredman and D. E. Willard, ["Surpassing the Information Theoretic Bound with Fusion Trees"](https://users.cs.utah.edu/~pandey/courses/cs6968/spring23/papers/fusiontree.pdf), *Journal of Computer and System Sciences* 47, 1993 (a course-hosted scan).
+- M. Pătraşcu and M. Thorup, ["Time-Space Trade-Offs for Predecessor Search"](https://arxiv.org/pdf/cs/0603043), arXiv cs/0603043, STOC 2006.
+- K. Mehlhorn and P. Sanders, [*Algorithms and Data Structures: The Basic Toolbox*](https://people.mpi-inf.mpg.de/~mehlhorn/ftp/Toolbox/Introduction.pdf), Springer 2008, chapter 2 (the authors' free chapter; a book, used for framing).
+- Agner Fog, [The microarchitecture of Intel, AMD and VIA CPUs](https://www.agner.org/optimize/microarchitecture.pdf) (last updated 2026-05-23).
+- A. Andersson and M. Thorup, ["Dynamic Ordered Sets with Exponential Search Trees"](https://arxiv.org/pdf/cs/0210006), arXiv cs/0210006 (journal version, 2007).
+- Ulrich Drepper, [What Every Programmer Should Know About Memory](https://people.freebsd.org/~lstewart/articles/cpumemory.pdf) (2007).
+
+Spotted an error or something unclear? [Report it](https://github.com/yashaggarwal85d/learning-resources/issues/new?title=word-ram-model-assumptions:%20).
+
+</section>

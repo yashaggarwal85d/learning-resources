@@ -1,0 +1,761 @@
+{
+ "topic": "dsa.aggregate-accounting-methods",
+ "voice": "tara-v1",
+ "clips": {
+  "01": {
+   "hash": "f912d558ec6b8183",
+   "duration": 24.623,
+   "lines": [
+    {
+     "text": "The lower bounds reel priced one run on its worst input.",
+     "start": 0.15,
+     "end": 3.517
+    },
+    {
+     "text": "A data structure lives through a whole sequence of operations.",
+     "start": 3.937,
+     "end": 7.669
+    },
+    {
+     "text": "Take a million appends to the vector.",
+     "start": 8.489,
+     "end": 10.547
+    },
+    {
+     "text": "One of them copies more than 524,000 keys... and yet we call each append constant time.",
+     "start": 10.967,
+     "end": 17.721
+    },
+    {
+     "text": "Both are true.",
+     "start": 18.441,
+     "end": 19.252
+    },
+    {
+     "text": "From here on, one unit of cost is one element written to memory.",
+     "start": 19.672,
+     "end": 24.273
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.4,
+   "wpm": 158,
+   "wer": 0.0
+  },
+  "02": {
+   "hash": "444b3b0a4dc47466",
+   "duration": 13.015,
+   "lines": [
+    {
+     "text": "When the vector is full, an append doubles its capacity and copies every key across.",
+     "start": 0.15,
+     "end": 4.804
+    },
+    {
+     "text": "Count one cost unit for each key added, and one for each key copied.",
+     "start": 5.224,
+     "end": 9.372
+    },
+    {
+     "text": "What do all million appends cost together?",
+     "start": 10.192,
+     "end": 12.665
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.4,
+   "wpm": 166,
+   "wer": 0.0
+  },
+  "02a": {
+   "hash": "591a68bcfc08c084",
+   "duration": 24.925,
+   "lines": [
+    {
+     "text": "About two million. Exactly, two million, forty eight thousand, five hundred seventy five.",
+     "start": 0.15,
+     "end": 5.942
+    },
+    {
+     "text": "That is a million new keys, plus about a million copies... one plus two plus four, and so on. Under three n.",
+     "start": 6.362,
+     "end": 15.513
+    },
+    {
+     "text": "Pricing every operation at the worst one's price would claim about half a trillion units of work. True as an upper bound, and useless.",
+     "start": 15.933,
+     "end": 24.575
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -1.4,
+   "wpm": 142,
+   "wer": 0.0
+  },
+  "03": {
+   "hash": "ef7d525969f06bc8",
+   "duration": 23.978,
+   "lines": [
+    {
+     "text": "Here is the rule. An empty vector has capacity zero. The first append allocates one.",
+     "start": 0.15,
+     "end": 7.461
+    },
+    {
+     "text": "An append to a full vector allocates twice the capacity, copies every key, then writes the new one.",
+     "start": 7.881,
+     "end": 14.386
+    },
+    {
+     "text": "Sixteen appends cost one, two, three, one, five, one, one, one, nine... and then seven ones.",
+     "start": 15.106,
+     "end": 22.12
+    },
+    {
+     "text": "Total, thirty one.",
+     "start": 22.54,
+     "end": 23.628
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -1.3,
+   "wpm": 130,
+   "wer": 0.0
+  },
+  "04": {
+   "hash": "eea1912a309689db",
+   "duration": 30.951,
+   "lines": [
+    {
+     "text": "This is the aggregate method.",
+     "start": 0.15,
+     "end": 2.139
+    },
+    {
+     "text": "Bound the total cost of any n operations... then divide by n.",
+     "start": 2.559,
+     "end": 7.499
+    },
+    {
+     "text": "The writes cost n. The last resize copied fewer than n keys, and each one before it copied half as many as the one after.",
+     "start": 8.219,
+     "end": 15.554
+    },
+    {
+     "text": "So the copies, one plus two plus four and so on, add up to less than twice the last one.",
+     "start": 15.974,
+     "end": 22.736
+    },
+    {
+     "text": "Fewer than two n in all.",
+     "start": 23.156,
+     "end": 24.843
+    },
+    {
+     "text": "The total is under three n. Big O of one, amortized, per append.",
+     "start": 25.563,
+     "end": 30.601
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -1.4,
+   "wpm": 157,
+   "wer": 0.0
+  },
+  "05": {
+   "hash": "8c285af588b0c28e",
+   "duration": 22.449,
+   "lines": [
+    {
+     "text": "The notation refresher separated the average case, over inputs, from the expected case, over coins.",
+     "start": 0.15,
+     "end": 5.458
+    },
+    {
+     "text": "Amortized is neither. Nothing is random.",
+     "start": 5.878,
+     "end": 9.697
+    },
+    {
+     "text": "It is a worst case bound on the total of a whole sequence... divided by its length.",
+     "start": 10.417,
+     "end": 15.155
+    },
+    {
+     "text": "Starting from empty, the first n appends together cost less than three n. One of them can still cost n.",
+     "start": 15.575,
+     "end": 22.099
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.4,
+   "wpm": 155,
+   "wer": 0.0
+  },
+  "06": {
+   "hash": "9d5f88bf86f41fb3",
+   "duration": 25.058,
+   "lines": [
+    {
+     "text": "Now the accounting method.",
+     "start": 0.15,
+     "end": 3.103
+    },
+    {
+     "text": "Charge each append three.",
+     "start": 3.523,
+     "end": 5.22
+    },
+    {
+     "text": "One pays for the key's own placement. One stays on the new key, as a coin. And one goes on a key in the old half, which has none.",
+     "start": 5.64,
+     "end": 14.308
+    },
+    {
+     "text": "When the row fills, every key holds a coin... exactly what its copy will cost.",
+     "start": 15.028,
+     "end": 20.865
+    },
+    {
+     "text": "The next append has its copy paid, key by key.",
+     "start": 21.285,
+     "end": 24.708
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -1.4,
+   "wpm": 148,
+   "wer": 0.0
+  },
+  "07": {
+   "hash": "7f97b50d60ff2e2c",
+   "duration": 24.336,
+   "lines": [
+    {
+     "text": "Write c i for the actual cost of operation i, and c hat i for its charge.",
+     "start": 0.15,
+     "end": 5.239
+    },
+    {
+     "text": "The proof needs the charges to cover the costs after every operation... not just at the end.",
+     "start": 5.659,
+     "end": 10.801
+    },
+    {
+     "text": "The bank, charges minus costs, never drops below zero.",
+     "start": 11.521,
+     "end": 17.443
+    },
+    {
+     "text": "Then n operations cost at most three n.",
+     "start": 17.863,
+     "end": 20.609
+    },
+    {
+     "text": "A bank that can drift negative proves nothing.",
+     "start": 21.029,
+     "end": 23.986
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.4,
+   "wpm": 145,
+   "wer": 0.0
+  },
+  "08": {
+   "hash": "2ee594bdec6850f1",
+   "duration": 25.454,
+   "lines": [
+    {
+     "text": "Why multiply?",
+     "start": 0.15,
+     "end": 1.133
+    },
+    {
+     "text": "Grow by one slot, and append i copies i minus one keys. So n appends cost about n squared over two. Half a trillion writes, at a million.",
+     "start": 1.683,
+     "end": 12.057
+    },
+    {
+     "text": "A step of a thousand slots divides that by about a thousand... and it is still quadratic.",
+     "start": 12.777,
+     "end": 18.122
+    },
+    {
+     "text": "Growing by a constant factor makes the copies a geometric series, and that sum is linear in n.",
+     "start": 18.542,
+     "end": 25.104
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -1.4,
+   "wpm": 153,
+   "wer": 0.0
+  },
+  "09": {
+   "hash": "4a40bfbf9e7da7e2",
+   "duration": 13.825,
+   "lines": [
+    {
+     "text": "Doubling copies at most about two keys for each append.",
+     "start": 0.15,
+     "end": 3.395
+    },
+    {
+     "text": "A growth factor of one point five leaves less empty space after each resize.",
+     "start": 3.815,
+     "end": 9.115
+    },
+    {
+     "text": "At most how many copies can each append cost, on average?",
+     "start": 10.035,
+     "end": 13.475
+    }
+   ],
+   "lufs": -16.2,
+   "true_peak": -1.4,
+   "wpm": 152,
+   "wer": 0.0
+  },
+  "09a": {
+   "hash": "15bb0efdbbbfee7a",
+   "duration": 34.288,
+   "lines": [
+    {
+     "text": "About three.",
+     "start": 0.15,
+     "end": 1.133
+    },
+    {
+     "text": "Just after a resize that copied c keys, all the copies so far add up to about c times g over g minus one. And n is about c.",
+     "start": 1.553,
+     "end": 13.5
+    },
+    {
+     "text": "For doubling that is two. For one point five, it is three.",
+     "start": 13.92,
+     "end": 18.204
+    },
+    {
+     "text": "Add the new key's own cost, and the accounting charge is one plus g over g minus one. Three for doubling, four for one point five.",
+     "start": 18.924,
+     "end": 26.982
+    },
+    {
+     "text": "The space saved: right after a resize, a third of the capacity is empty, not a half.",
+     "start": 27.402,
+     "end": 33.938
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.4,
+   "wpm": 150,
+   "wer": 0.0
+  },
+  "10": {
+   "hash": "cb4c150bbf5d9a93",
+   "duration": 29.461,
+   "lines": [
+    {
+     "text": "About g over g minus one is a peak. You come closest to it just after a resize, and never quite reach it.",
+     "start": 0.15,
+     "end": 7.595
+    },
+    {
+     "text": "Just before the next resize, it falls to about one over g minus one.",
+     "start": 8.015,
+     "end": 12.946
+    },
+    {
+     "text": "After a million appends, doubling has copied only about one point zero five keys for each one. Not two.",
+     "start": 13.666,
+     "end": 20.822
+    },
+    {
+     "text": "And one point five has copied about two point one.",
+     "start": 21.242,
+     "end": 24.62
+    },
+    {
+     "text": "So check measurements against the whole curve, not against a single number.",
+     "start": 25.34,
+     "end": 29.111
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -1.4,
+   "wpm": 159,
+   "wer": 0.0
+  },
+  "11": {
+   "hash": "989457d0a68c62c9",
+   "duration": 17.721,
+   "lines": [
+    {
+     "text": "A binary counter, counting up from zero.",
+     "start": 0.15,
+     "end": 2.277
+    },
+    {
+     "text": "An increment turns the trailing ones into zeros, and the next zero into a one. So one increment can flip every bit. The sixteenth flips five.",
+     "start": 2.697,
+     "end": 13.524
+    },
+    {
+     "text": "How many bits do sixteen increments flip in total?",
+     "start": 14.444,
+     "end": 17.371
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.4,
+   "wpm": 142,
+   "wer": 0.0
+  },
+  "11a": {
+   "hash": "5d8db83fe567ce2c",
+   "duration": 30.855,
+   "lines": [
+    {
+     "text": "Thirty one.",
+     "start": 0.15,
+     "end": 1.57
+    },
+    {
+     "text": "Bit zero flips on every increment. Bit one, on every second. Bit i, on every two to the i th. Sixteen plus eight plus four plus two plus one.",
+     "start": 1.99,
+     "end": 12.182
+    },
+    {
+     "text": "For any n, the total is under two n. So, big O of one amortized, against theta of log n for the worst single increment.",
+     "start": 12.902,
+     "end": 22.575
+    },
+    {
+     "text": "And a vector of sixteen appends also costs thirty one. At a power of two, both come to two times n, minus one.",
+     "start": 22.995,
+     "end": 30.505
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -1.3,
+   "wpm": 154,
+   "wer": 0.0
+  },
+  "12": {
+   "hash": "efda6aa6943a6f16",
+   "duration": 21.647,
+   "lines": [
+    {
+     "text": "Accounting for the counter. Charge two per increment.",
+     "start": 0.15,
+     "end": 3.616
+    },
+    {
+     "text": "Every increment sets exactly one bit from zero to one. One unit pays for that. The other stays on the bit, as a coin.",
+     "start": 4.036,
+     "end": 11.21
+    },
+    {
+     "text": "A carry resets bits that are ones, and each one has its own coin.",
+     "start": 11.93,
+     "end": 15.838
+    },
+    {
+     "text": "So the coins always equal the number of ones. The bank never goes negative.",
+     "start": 16.258,
+     "end": 21.297
+    }
+   ],
+   "lufs": -16.3,
+   "true_peak": -1.4,
+   "wpm": 166,
+   "wer": 0.0
+  },
+  "13": {
+   "hash": "3c4a5b7d7ddfbb8f",
+   "duration": 33.467,
+   "lines": [
+    {
+     "text": "Now a stack with push, pop, and multi-pop of k, which removes the top k keys, or all of them if there are fewer.",
+     "start": 0.15,
+     "end": 9.291
+    },
+    {
+     "text": "One unit is one key in or out.",
+     "start": 9.711,
+     "end": 12.554
+    },
+    {
+     "text": "One multipop can cost almost n. So a run of n operations looks like it could cost n squared.",
+     "start": 12.974,
+     "end": 19.158
+    },
+    {
+     "text": "But each key is popped at most once after it is pushed. The total is at most twice the pushes.",
+     "start": 19.878,
+     "end": 26.431
+    },
+    {
+     "text": "Charge a push two, and a pop or multi-pop nothing. Each key carries the coin for its own removal.",
+     "start": 26.851,
+     "end": 33.117
+    }
+   ],
+   "lufs": -16.3,
+   "true_peak": -1.4,
+   "wpm": 165,
+   "wer": 0.0
+  },
+  "14": {
+   "hash": "f1eafcb746abdd35",
+   "duration": 25.034,
+   "lines": [
+    {
+     "text": "The same move, three times.",
+     "start": 0.15,
+     "end": 2.039
+    },
+    {
+     "text": "An expensive operation can only follow cheap ones that set it up. So each cheap one pays a little extra in advance.",
+     "start": 2.459,
+     "end": 9.112
+    },
+    {
+     "text": "The aggregate method needs one total that covers every sequence. Charge per operation when operations differ, like a push and a multipop.",
+     "start": 9.832,
+     "end": 18.157
+    },
+    {
+     "text": "And the charges are a choice. Any charges that keep the bank at zero or above prove a bound.",
+     "start": 18.577,
+     "end": 24.684
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.4,
+   "wpm": 163,
+   "wer": 0.0
+  },
+  "15": {
+   "hash": "b0b8110d445eac3d",
+   "duration": 29.479,
+   "lines": [
+    {
+     "text": "The bound rests on two facts. Expensive operations come only after cheap ones set them up. And there is one history, from the start state.",
+     "start": 0.15,
+     "end": 9.313
+    },
+    {
+     "text": "Add decrement, and a five-bit counter can flip all five bits on every operation.",
+     "start": 10.033,
+     "end": 15.193
+    },
+    {
+     "text": "Or keep a saved snapshot of a full vector, and add to that same snapshot again and again... and every one of those appends duplicates all sixteen keys.",
+     "start": 15.613,
+     "end": 24.586
+    },
+    {
+     "text": "A later chapter returns to this, for persistent structures.",
+     "start": 25.006,
+     "end": 29.129
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -1.4,
+   "wpm": 157,
+   "wer": 0.0
+  },
+  "16": {
+   "hash": "78ac54409fe64f13",
+   "duration": 27.928,
+   "lines": [
+    {
+     "text": "Back to the vector with a million keys.",
+     "start": 0.15,
+     "end": 2.953
+    },
+    {
+     "text": "They wrote about two million elements. Under three n.",
+     "start": 3.373,
+     "end": 7.607
+    },
+    {
+     "text": "When that last big resize arrived, the bank held a coin for every key it copied, and one to spare.",
+     "start": 8.327,
+     "end": 14.777
+    },
+    {
+     "text": "But the spike is still one operation, and a request stuck behind it simply waits. Removing that wait is a different problem.",
+     "start": 15.497,
+     "end": 22.922
+    },
+    {
+     "text": "And a vector that also shrinks has nowhere to keep the coins for its shrink.",
+     "start": 23.342,
+     "end": 27.578
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -1.4,
+   "wpm": 159,
+   "wer": 0.0
+  },
+  "17": {
+   "hash": "579fc6868d203564",
+   "duration": 16.616,
+   "lines": [
+    {
+     "text": "Prove it. Part one.",
+     "start": 0.15,
+     "end": 2.193
+    },
+    {
+     "text": "A teammate charges two for each add, not three. One pays for the key's own placement, and one sits as a coin on the new key.",
+     "start": 2.613,
+     "end": 11.141
+    },
+    {
+     "text": "With doubling from empty, at which append does the bank first go negative?",
+     "start": 11.961,
+     "end": 16.266
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -1.4,
+   "wpm": 155,
+   "wer": 0.0
+  },
+  "17a": {
+   "hash": "55e7d53eb340641a",
+   "duration": 20.275,
+   "lines": [
+    {
+     "text": "The fifth.",
+     "start": 0.15,
+     "end": 0.701
+    },
+    {
+     "text": "The costs add up to twelve, against ten charged.",
+     "start": 1.121,
+     "end": 4.58
+    },
+    {
+     "text": "The coin on each new key pays its own copy. But every resize also copies the old half, and that holds no coins.",
+     "start": 5.0,
+     "end": 12.631
+    },
+    {
+     "text": "At each power of two the bank is back to plus one. So checking only at the end hides the failure.",
+     "start": 13.351,
+     "end": 19.925
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.3,
+   "wpm": 163,
+   "wer": 0.0
+  },
+  "18": {
+   "hash": "bd2d63e085d769a0",
+   "duration": 14.592,
+   "lines": [
+    {
+     "text": "Prove it. Part two.",
+     "start": 0.15,
+     "end": 2.122
+    },
+    {
+     "text": "With a growth factor of one point five, the last resize before the millionth one copies almost 700,000 keys.",
+     "start": 2.542,
+     "end": 10.961
+    },
+    {
+     "text": "Estimate the total copies after a million appends.",
+     "start": 11.781,
+     "end": 14.242
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -0.9,
+   "wpm": 136,
+   "wer": 0.0
+  },
+  "18a": {
+   "hash": "f67f27ac821f3007",
+   "duration": 16.537,
+   "lines": [
+    {
+     "text": "About two point one million.",
+     "start": 0.15,
+     "end": 2.429
+    },
+    {
+     "text": "The copies up to that resize add up to about three times the last one. And none follow it before the millionth append.",
+     "start": 2.849,
+     "end": 9.704
+    },
+    {
+     "text": "On average that is two point one per operation. It sits between the trough of two and the peak of three.",
+     "start": 10.124,
+     "end": 16.187
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.4,
+   "wpm": 178,
+   "wer": 0.0
+  },
+  "19": {
+   "hash": "2a9be2a368c2cbba",
+   "duration": 12.12,
+   "lines": [
+    {
+     "text": "Prove it. Part three.",
+     "start": 0.15,
+     "end": 2.124
+    },
+    {
+     "text": "Someone adds multi-push of k, which pushes k keys in one operation.",
+     "start": 2.544,
+     "end": 7.362
+    },
+    {
+     "text": "Is every stack operation still big O of one, amortized?",
+     "start": 8.182,
+     "end": 11.77
+    }
+   ],
+   "lufs": -16.3,
+   "true_peak": -1.3,
+   "wpm": 134,
+   "wer": 0.0
+  },
+  "19a": {
+   "hash": "e06d285122eee8c2",
+   "duration": 24.889,
+   "lines": [
+    {
+     "text": "No.",
+     "start": 0.15,
+     "end": 0.615
+    },
+    {
+     "text": "A thousand operations, alternating multi-push of a thousand and multi-pop of a thousand, cost a million. A thousand each.",
+     "start": 1.035,
+     "end": 10.152
+    },
+    {
+     "text": "Charging two per key still covers every removal, but a multi-push of k keys is then charged two k. The bound was per key... and an operation that creates k keys at once breaks it per operation.",
+     "start": 10.572,
+     "end": 24.539
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -1.4,
+   "wpm": 145,
+   "wer": 0.0
+  }
+ }
+}
