@@ -45,6 +45,8 @@ Table (constant Θ(1), logarithmic Θ(log n), linear Θ(n), quadratic Θ(n2), po
 > There's a big
 > difference between logarithmic, linear, and exponential. If n = 1000, log n ≈ 10
 
+The PDF prints "log n ≈ 10¹" (superscript 1, extracted as "101"), so the quote stops before the exponent; 10¹ = 10, and log₂ 1000 = 9.97.
+
 > So when
 > solving a problem on an input stored in n machine words, we will always assume our Word-RAM
 > has a word size of at least w > log2 n bits, or else the machine would not be able to access all of the
@@ -83,11 +85,17 @@ Note: the PDF is a scan with OCR. Symbols (Omega, Theta, the inequalities) are g
 
 > when they reject a particular sorting method
 
+> because its running time is
+
+The OCR renders the next words, O(n²), as "O(n 2)" (fact-check, 2026-10-12).
+
 > the following definitions will prove to be most useful for computer scientists:
 
 > can be read as "order at most f(n) ";
 
 > Cf(n) < g(n) < C'f(n)
+
+OCR caution (fact-check): the scan's inequalities in the Θ definition are ≤, not strict; the "<" above is an OCR artefact, so this line is never quoted as a strict inequality. The Θ definition used on screen is MIT's.
 
 > O-notation and its relatives are used in formulas, we are actually speaking about sets of functions rather than single functions.
 
@@ -160,6 +168,9 @@ Inverse of the exponential (eq. 4.2.25) and the only zero of ln (§4.2(i)):
 
 Value of ln 10 (eq. 4.2.18), used for mental conversions between base 10 and base e:
 > ln⁡10=2.30258 50929 94045 68401⁢….
+
+Value of log₁₀ e (eq. 4.2.17), added by the fact-check for claim 18:
+> log10⁡e=0.43429 44819 03251 82765⁢…,
 
 A whole-number power is repeated multiplication (eq. 4.2.27), so log_b x counts how many factors of b make x:
 > In particular, z0=1, and if a=n=1,2,3,…, then
@@ -328,3 +339,39 @@ Used only to state the index fan-out assumption (each index entry is a small hea
 > unsigned short t_info; /* various info about tuple */
 
 Contents: IndexTupleData = the heap TID (ItemPointerData, six bytes) plus t_info (holds the tuple size and flags); key values follow at a MAXALIGN boundary.
+
+## PostgreSQL source: src/include/access/nbtree.h
+URL: https://raw.githubusercontent.com/postgres/postgres/REL_18_STABLE/src/include/access/nbtree.h
+Version: REL_18_STABLE branch, fetched 2026-10-12. Added by the fact-check, to bound the fan-out estimate: the b-tree special space and the default fill.
+
+The b-tree's per-page special space (16 bytes: two 4-byte block numbers, a uint32 level, a uint16 flags field and a uint16 cycle id):
+> typedef struct BTPageOpaqueData
+
+> BlockNumber btpo_prev; /* left sibling, or P_NONE if leftmost */
+
+> BlockNumber btpo_next; /* right sibling, or P_NONE if rightmost */
+
+> uint32 btpo_level; /* tree level --- zero for leaf pages */
+
+> uint16 btpo_flags; /* flag bits, see below */
+
+> BTCycleId btpo_cycleid; /* vacuum cycle ID of latest split */
+
+> typedef uint16 BTCycleId;
+
+Default fill of leaf and upper pages:
+> The leaf-page fillfactor defaults to 90% but is user-adjustable.
+
+> For pages above the leaf level, we use a fixed 70% fillfactor.
+
+> The fillfactor is applied during index build and when splitting
+
+> a rightmost page; when splitting non-rightmost pages we try to
+
+(The comment's lines carry a leading "*" in the header, so each line is quoted separately.)
+
+> #define BTREE_DEFAULT_FILLFACTOR 90
+
+> #define BTREE_NONLEAF_FILLFACTOR 70
+
+Contents (only the parts this topic uses): BTPageOpaqueData (sibling links, level, flags, vacuum cycle id) in each page's special space; fillfactor constants (minimum 10, default leaf 90, non-leaf 70, single-value 96) and when they apply. BlockNumber's 4-byte width is from `block.h` (not fetched); the 16-byte total is stated as "on common builds".
