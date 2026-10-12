@@ -33,7 +33,7 @@ const reel: Reel = {
       title: 'Predict: eight calls on each half',
       body: (
         <>
-          Same tree shape, new recurrence: T(n) = 8T(n/2) + n². The root level costs 64² = 4,096. Every call makes 8 calls on half the keys, down to calls on
+          Same kind of tree, new recurrence: T(n) = 8T(n/2) + n². The root level costs 64² = 4,096. Every call makes 8 calls on half the keys, down to calls on
           1 key that cost 1 each. What does that bottom level total?
         </>
       ),
@@ -60,7 +60,7 @@ const reel: Reel = {
           whole proof.
         </>
       ),
-      duration: 3.6,
+      duration: 4,
       Visual: S.ThreeShapes,
     },
     {
@@ -71,7 +71,7 @@ const reel: Reel = {
           for some ε &gt; 0 (polynomially smaller), so T(n) = Θ(n^(log_b a)). <b>Case 2:</b> f(n) = Θ(n^(log_b a)) (the same size), so
           T(n) = Θ(n^(log_b a)·log n). <b>Case 3:</b> f(n) = Ω(n^(log_b a + ε)) <em>and</em> a·f(n/b) ≤ c·f(n) for some c &lt; 1 and all large n, so
           T(n) = Θ(f(n)). That regularity condition makes the column shrink geometrically; for f = n^d it holds automatically, with c = a/b^d, here 2/4 = ½. It is there to exclude an f that jumps
-          between n and n² from one size to the next (Deep dive). As restated from the CLRS 4th edition (2022), that edition relaxes a ≥ 1 to a &gt; 0 and builds floors and ceilings into the statement.
+          between n and n² from one size to the next (Deep dive).
         </>
       ),
       duration: 4,

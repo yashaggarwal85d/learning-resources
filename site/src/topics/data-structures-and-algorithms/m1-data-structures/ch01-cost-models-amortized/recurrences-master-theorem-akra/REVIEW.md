@@ -127,3 +127,78 @@ Resolution: fixed (narration 2: "A level is some number of nodes, all of one siz
 Resolution: fixed (options shortened to the claim: "No: Θ(n log n)", "Nothing", "No case applies: Θ(n log log n)"; the reasoning stays in explain)
 
 Counts: Flow 8 (1 major), Gap hunt 7 (0 major), Expert reader 13 (2 major). Total 28 findings, 3 major.
+
+## Looks and learning review (Opus, 2026-10-12)
+
+Judged from the 42 screenshots in `site/test-results/` (desktop 1440 × 900 and phone, every step, `-q` = question frame), against `OUTLINE.md`, `narration.json` and DESIGN.md → "The looks review checks". Step 2 (the merge-sort tree with its column of 64s summing to 448) is the reel at its best: one idea, the column is the point, the final frame teaches the step on its own at both sizes. No findings there.
+
+1. **Step 1 · phone: the caption is missing.** What: the phone frame shows the vector and three cards, then empty space down to the controls: no eyebrow, title, bridge, body or "Tap to continue". Every other phone frame has its caption. The opening step loses its bridge and its problem statement. Fix: open step 1 at phone width and find out whether this is a real rendering bug (caption sheet scrolled or hidden after the earlier swipe checks, or the bridge block pushing it out) or a state the test leaves behind. Fix the cause and re-shoot. Severity: major (verify first).
+
+Resolution: not fixed because it is not a bug in this topic: a fresh load of the reel at phone size (iPhone 13) shows step 1 with its bridge, eyebrow, title, body and "Tap to continue" (checked by loading the page and screenshotting after 5 s), and `site/tests/reels.mjs` reaches the step-1 screenshot only after its swipe, tap and vertical-swipe checks, which leave the page's snap scroller scrolled so the caption sits below the visible area (the visual is also shifted down in that capture). The step's own files are unchanged; the shared player/test state is outside this topic's files.
+
+2. **Step 1 · both: the bracket spine stops short of the third card.** What: the vertical taupe line from the vector ends level with the second card's branch. The third card's tick (median of medians) hangs off nothing. Fix: run the spine down to the last branch's y. Severity: minor.
+
+Resolution: fixed (the spine now runs down to the third card's branch, y = 96 + 2·92 + 38)
+
+3. **Step 3 · both: question frame wording and strips.** What: the caption and narration say "Same tree shape", but the tree is now 8-way. In the question frame only the bottom strip has a label (a lone taupe "?" at the far left), and the other strips have none. All four strips are the same length, so the picture never shows the level count growing; only the column does. Fix: say "Same kind of tree". In the question frame, show the 512 / 4,096 / 32,768 strip labels with "?" only on the bottom one, as the outline says. Severity: minor.
+
+Resolution: fixed (caption and narration say "Same kind of tree"; the question frame shows the strip labels 512, 4,096 and 32,768 with a "?" only on the bottom strip; strip lengths now grow with the node count, 75 units per level; the node counts are asserted in examples.py)
+
+4. **Steps 3, 8, 10, 13, 14 · phone answer frames: the drawing shrinks under the explain box and its text drops below the readable size.** What: once the "Not quite" box opens, the visual is scaled down by about 20–35% from its question frame. Examples: step 8's "333 / 111 / 222" labels, step 3's strip counts, step 10's whole inequality chain, and step 13/14's column labels all look about 8 px. In step 10 the new ratio bars and their "2¹" labels sit directly on top of the "10/15 · §1.1" eyebrow, with no gap. These reveals are the payoff of the predict steps, and on a phone they are the smallest text in the reel. Fix: on portrait (`portrait` in the step context), give the answer state a shorter canvas. For example, step 10 drops the chain after the answer and shows only the climbing bars, and steps 3 and 8 drop the dot/strip rows and keep the column. Alternatively, raise label sizes so that they stay ≥ 9.5 px at the answer-frame scale. Severity: major.
+
+Resolution: fixed (on a phone steps 3, 8, 10, 13 and 14 use a short 250-unit canvas, so the drawing keeps the full 0.62 scale next to the open "Not quite" box and labels stay at 13+ units at about 10 px or more; step 3 and 8 use a 30-unit row pitch, step 8's edges stop at level 3 and the deeper levels are dots; step 10 drops the first three chain lines after the answer and keeps only the failing step above the bars, so nothing sits on the eyebrow; steps 13 and 14 use 24-unit rows)
+
+5. **Steps 3, 8, 10, 13, 14 · both: the answer captures show half-finished reveals.** What: the test shoots 600 ms after the answer, but the reveals run about 2 s. Step 3 still shows three "?" with no 520,192 or "leaves win: Θ(n³)". Step 8 still shows three "?" with no "Θ(n log n)" line or exact count. Step 10 shows one of seven bars. Steps 13 and 14 show no verdict line. The final frames (which `scenes.tsx` does draw) could not be reviewed. Fix: shorten each reveal to about 1 s (0.12 s beats, verdict by 0.9 s). The aim is that the frame a learner sees right after choosing is already complete. Then re-shoot and look at the five answer frames. Severity: minor (but until it is done, the predict steps' final frames are unreviewed).
+
+Resolution: fixed (all five reveals, and step 15's, finish in about 0.5 to 0.7 s: 0.06 s column beats, verdict at 0.3 to 0.6 s; the captured answer frames now show the full column, totals, verdict lines and bars)
+
+6. **Step 4 · both: the third column ("leaves win") never reaches full opacity.** What: in `ThreeShapes` the third column's labels fade in over `seg(t, 3.5, 3.9)`, but the step's duration is 3.6 and the player clamps `t` at the duration. "× 2", "4,096 … 262,144", "leaves win" and "Θ(n³)" therefore stay at about 45% opacity forever. This is visible in both screenshots. The third verdict is the one that names the case step 3 just taught. Fix: set the step's duration to 4.0, or start the third column earlier (t0 = 0.2 + k·1.0). Severity: major.
+
+Resolution: fixed (step 4's duration is 4.0 and the columns start 1.1 s apart, so the third column's labels end at 3.7 s and reach full opacity)
+
+7. **Step 5 · phone: the recurrence column runs into the watershed column.** What: "8T(n/2) + n²" → "n³" and "2T(n/2) + n²" → "n" are about 18 units apart at phone scale (DESIGN asks for 24+). The rows read as one string. Fix: move the watershed column right by about 15 units and the f column with it (the case column has room), or set the recurrences at 13 units on portrait. Severity: minor.
+
+Resolution: fixed (on portrait the table columns sit at x = 30, 190, 315, 375, leaving 40 units between a recurrence and its watershed)
+
+8. **Step 5 · both: the heaviest caption in the reel, and the regularity line floats.** What: the body is 15 lines on desktop, dense with ASCII math ("O(n^(log_b a − ε))", "Ω(n^(log_b a + ε))"), while the drawing uses superscripts. The "regularity: …" line under the table is not visibly tied to the case-3 row it belongs to. Fix: move the 4th-edition hypotheses sentence to the Deep dive (it is there already) and keep the three cases plus regularity. Prefix the line with "row 5:" or draw a short caramel bracket from it to the last row. Severity: minor.
+
+Resolution: fixed (the 4th-edition sentence is gone from the caption; it is already in the Deep dive "a < 1" and "Erickson's form" bullets; the regularity line now starts "row 5 regularity:")
+
+9. **Step 6 · both: the point is the quietest thing on screen, and the verdict is missing.** What: the step is about the neighbour ratios drifting (0.83, 0.80 … 0.50), so that no constant fits. Those ratios are 13-unit taupe, detached at the far right (desktop x ≈ 1130 px, about 100 px from the nearest bar label). The eye lands on the six caramel bars, which shrink by a constant difference and look like an ordinary staircase, and then on "1,344" in 20 units. That number is a partial sum, and the real T(64) = 1,408 sits under it in a second line. The answer the caption gives, Θ(n log² n) by the extended case 2, is not on the drawing. Fix: bring the ratio column next to the bar labels (x ≈ 380) in latte at 15 units, and make it the step's caramel element. Demote 1,344 to latte and lead with "T(64) = 1,408 = Θ(n log² n): extended case 2" as the one 20-unit line. Severity: major.
+
+Resolution: fixed (the ratios are 15-unit caramel and sit right next to each bar's value, stepping left as the bars shrink; the bars are taupe so the ratios are the one accent; the lead line is "T(64) = 1,408" in 20 units, with "= 1,344 (64 × 21, six levels) + 64" in latte under it and "Θ(n log² n): extended case 2" in caramel)
+
+10. **Steps 7–8 · both: the lower tree levels read as barcode noise, and step 7 has no verdict.** What: from level 3 down, the stacked hair-thin boxes and edges ("|||| ||| |") are illegible at both sizes, and they draw the eye away from the column. In step 7 the "Θ(n)" the step concludes is not on the drawing (only "< 10,000"). The exact-count note ("exact, with floors and T(0) = T(1) = 1: T(1,000) = 6,532", about 55 characters) is wider than the column, and on phone it ends about 15 px from the screen edge. "40" and "140" on level 2 are about 10 px apart on phone. Fix: draw levels 4–5 as dot rows without edges (as step 2 does). Put "< 10n: Θ(n)" under the rule. Shorten the note to "exact: T(1,000) = 6,532" and leave the T(0) convention in the caption. Nudge the "40" label left. Severity: minor.
+
+Resolution: fixed (levels 4 and 5 are dot rows without edges, as in step 2; step 7 has "< 10,000 = 10n" and "so T(n) = Θ(n)" under the rule; the note is "exact: T(1,000) = 6,532" (and "exact: T(1,000) = 10,526" in step 8), the T(0) convention stays in the caption; the "40" label is nudged left)
+
+11. **Step 9 · both: crowded origin and unexplained cards.** What: on phone, the y-tick "0.5" and the x-tick "0" nearly touch at the origin, and the three card lines start right under the x tick labels. On desktop the three cards ("2T(n/2) + n / p = 1" …) have no heading, so a learner may read them as points on this curve. Fix: drop the "0.5" y-tick (or start the y axis at 0.5 with the x ticks 6 units lower). Give the cards a taupe heading "same p, other recurrences". On portrait, add 12 units above the cards. Severity: minor.
+
+Resolution: fixed (the 0.5 y-tick is dropped; the cards have a taupe heading, "same p, other recurrences" on a phone and "other recurrences" on desktop, where the longer text would not fit; on portrait the cards start 24 units lower)
+
+12. **Step 10 · desktop: the strike-through hides what it strikes.** What: the cherry bar runs through the middle of "= O(n)", so the struck claim is barely legible. A learner should still be able to read what was wrong. Fix: draw the strike 2 units thinner and slightly above the x-height, or dim the text to taupe and strike it at 60% opacity. Severity: minor.
+
+Resolution: fixed (the struck line is taupe, the strike is 1.5 units thick at 60% opacity and sits above the x-height, so "= O(n)" stays readable)
+
+13. **Steps 11 and 15 · both: three accents and two serif labels.** What: each step uses cinnamon (the failed guess's title), cherry (its border, ✗ and "not closed" text) and caramel (the good guess and the ✓). That is three accents, and both card titles are serif. DESIGN allows two accents and one serif word per step. Fix: make the failed card's title crema (or latte) and keep cherry for failure and caramel for success. Keep the serif only on the successful guess's title. Severity: minor.
+
+Resolution: fixed (the failed guess's title is crema and plain, cherry stays on the border, the cross and the "not closed" line, caramel is the good guess and its tick; only the successful title is serif)
+
+14. **Step 12 · both: the summary is all text.** What: the closing cards are well built and the loop closes with real numbers. But the caption opens "Read the shape of the column", and the closing picture shows no column. Nine lines of similar weight compete, and the three verdicts are the only colour. "Akra-Bazzi" uses a hyphen; everywhere else in the reel it is an en dash. Fix: add a tiny three-bar column glyph at the right of each card (flat, single short bars, shrinking), reusing step 4's bars. That makes the final frame recall the reel's idea. Use "Akra–Bazzi". Severity: minor.
+
+Resolution: fixed (each closing card has a small three-bar column glyph at the right: flat and wide for merge sort, flat and short for binary search, shrinking for median of medians; the text already had the en dash "Akra–Bazzi", no hyphen remains in the reel's text)
+
+15. **Step 13 · both: the column hugs the left, and its ratio label floats far away.** What: the bars are normalised to the bottom row (117,649), so the top rows are 3-unit stubs. The labels sit at x 30–110 and the only ratio "× 7/4" is at x = 440 (desktop about 1130 px), half a screen away. The right two-thirds of the drawing is empty. Fix: place the ratio label just right of the second row's value (x ≈ 200), or put it between the first two rows as step 7 does. Consider a log scale or a max bar of 400 units so the growth fills the canvas. Severity: minor.
+
+Resolution: fixed (bars scale to a 330-unit maximum; the ratio label sits just right of the lower row's value, between the rows; a log scale was not used so that bar length stays proportional to the total)
+
+16. **Step 14 · both: the drawing asks the wrong question.** What: the question frame's caramel prompt says "which end of the column wins?". That text is copied from step 13 through the shared `ColumnQuestion`. The caption asks "A colleague applies case 2 and writes Θ(n log n). Right?", and the correct answer is that no case applies, so neither end wins by a constant factor. The picture primes the learner towards a Master-theorem case. Fix: pass a `prompt` prop to `ColumnQuestion` ("case 2? the column says …" or "does any case apply?") and use it in Q2. Severity: major.
+
+Resolution: fixed (ColumnQuestion takes a `prompt`: step 13 asks "which end of the column wins?", step 14 asks "does any case fit this column?")
+
+17. **Step 15 · both: the question frame eliminates a distractor and half-answers.** What: before the learner chooses, the failed card already reads "> c·n²: a larger c never helps". That rules out the option "Choose a larger c" and hints at the right one. DESIGN: "the question frame shows the setup without giving the answer away". Fix: in the question frame the third line should read "> c·n²: the step does not close". Show "a larger c never helps" only after the answer. Severity: major.
+
+Resolution: fixed (the question frame's third line reads "> c·n²: the step does not close"; "a larger c never helps" appears only after the answer)
+
+
+Counts: 17 findings, 6 major (1, 4, 6, 9, 16, 17), 11 minor. Steps without findings: 2. Accent and label budget: over budget only on steps 11 and 15 (finding 13). Pacing: steps 5, 6 and 9 carry 13–15-line captions; the rest are within a glance.

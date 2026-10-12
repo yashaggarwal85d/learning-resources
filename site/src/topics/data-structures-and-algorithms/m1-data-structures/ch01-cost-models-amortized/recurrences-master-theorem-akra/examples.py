@@ -46,6 +46,7 @@ big = levels(8, 2, lambda m: m * m, 64)
 assert big == [4096, 8192, 16384, 32768, 65536, 131072, 262144]
 assert sum(big) == 520192 and 520192 < 2 * 262144
 assert 8**6 == 262144 == 64**3 and big[-1] == 64 * big[0] == 262144
+assert [8**i for i in range(3, 7)] == [512, 4096, 32768, 262144]  # nodes on levels 3..6: the strip labels
 assert 8 * (32**2) == 8192 == 2 * 4096  # one level of 8 calls on half the keys doubles the total
 assert (32 // 2) ** 2 * 8 == 2048 and 1024 == 32**2 and 1024 == (64 // 2) ** 2  # the first labelled box on level 1
 assert 4096 == 64**2 and 1024 * 4 == 4096
