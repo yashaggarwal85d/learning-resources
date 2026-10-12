@@ -16,7 +16,7 @@
     {
       "lines": [
         "Our repo is a small data cleaning script, and this branch adds deduplication. Two ways to bring it in.",
-        "A merge keeps both lines, and ties them together with a commit that has two parents. History, as it happened.",
+        "A merge keeps both lines, and ties them together with a commit that has two parents. The history is kept exactly as it happened.",
         "A rebase replays your commits on top of the target. One straight line, as if the work happened in order.",
         {
           "beat": 0.4
@@ -26,29 +26,29 @@
       "answer": [
         "Three new commits, with new IDs.",
         "Rebase replays each change onto main. And a commit's ID covers its parent, its files, who made it and when, and its message... so every replayed commit gets a new one.",
-        "The originals stay in the ref-log. A merge would have kept them, and added a commit with two parents.",
+        "Your old commits are still in the reference log. A merge would have kept them, and added a commit with two parents.",
         "But look at the end. Both ways finish with the very same files."
       ]
     },
     {
       "lines": [
         "Before you push this branch, rewrite freely.",
-        "An interactive rebase lets you reorder, reword, squash, fixup and drop commits.",
-        "Commit a fix with the fixup option... and autosquash moves it right under its target.",
+        "An interactive rebase lets you reorder, reword, squash, fix up, and drop commits.",
+        "Commit a fix with the fix up option, and auto squash moves it right under its target.",
         "The fix moves up under its target, and the debug commit is dropped.",
         "Here, four commits become two.",
         {
           "beat": 0.4
         },
         "One rule. Never rewrite what others have already pulled.",
-        "And any rewrite of your own is undoable. The old branch is one ref-log entry back."
+        "And any rewrite of your own is undoable. The old branch is one reference log entry back."
       ]
     },
     {
       "lines": [
-        "When both sides change the same lines, or neighbouring ones, Git stops, and keeps three versions.",
+        "When both sides change the same lines, or nearby ones, Git stops, and keeps three versions.",
         "The common ancestor. Yours. And theirs.",
-        "Set the conflict style to z-diff-three, and the file shows the ancestor too... so you can see what each side actually changed.",
+        "Turn on the three way conflict style, and the file shows the ancestor as well, so you can see what each side actually changed.",
         "Edit the file, add it, then continue. Or abort, to back out.",
         {
           "beat": 0.4
@@ -77,7 +77,7 @@
       "lines": [
         "Better still... let Git run the tests for you.",
         "Give bisect run a command, and it reads just one thing back: the exit code. That is the number every command ends with, and zero means it worked.",
-        "So zero means good. One to one hundred twenty-seven means bad... and a failing assert exits with one. Except one hundred twenty-five, which means, skip this one, I can't test it.",
+        "A good commit makes the command succeed. A bad commit makes it fail, and a failing assert counts as a failure. A special skip code tells bisect this commit can't be tested.",
         "Anything else stops the whole run.",
         {
           "beat": 0.4
@@ -117,7 +117,7 @@
     {
       "lines": [
         "So... eight things to keep.",
-        "A merge keeps both parents. A rebase replays, with new IDs. Rewrite only what you haven't pushed.",
+        "Merging keeps both parents. Rebasing replays your commits, with new IDs. Rewrite only what you haven't pushed.",
         "A conflict has a base, ours, and theirs. Bisect finds a bug in about ten tests, and bisect run reads the exit code.",
         "A pull request can land by merge, squash or rebase, and after a squash, retire the branch. And keep your branches short.",
         {
