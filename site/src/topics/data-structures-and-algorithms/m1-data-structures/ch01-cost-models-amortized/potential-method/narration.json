@@ -11,7 +11,7 @@
         },
         "A pop that leaves it less than half full halves its capacity... and copies every key.",
         "Start full, at sixteen keys. Push once. Then repeat: pop, pop, push, push.",
-        "One unit of cost is one element write, and a pop counts one, like a deletion."
+        "One unit of cost is one key written into the array, and a pop counts one, like a deletion."
       ]
     },
     {
@@ -21,7 +21,7 @@
         {
           "beat": 0.3
         },
-        "From seventeen keys in capacity thirty two, how many element writes does one round of pop, pop, push, push cost?"
+        "From seventeen keys in capacity thirty two, what is the total cost of one round of pop, pop, push, push?"
       ],
       "answer": [
         "Thirty five. One, plus sixteen, plus one, plus seventeen.",
@@ -33,20 +33,21 @@
     {
       "lines": [
         "After the fill, every round repeats.",
-        "Eight rounds cost two hundred eighty writes. Three hundred twenty eight in all.",
+        "Eight rounds cost two hundred and eighty. Three hundred and twenty eight in all.",
         {
           "beat": 0.3
         },
         "Each round copies nearly the whole vector... twice.",
         "Write C for the size the vector was full at: sixteen here.",
         "Per operation, the rounds cost two C plus three, divided by four. That grows with C.",
-        "At C equal to sixteen it is eight point seven five. At about a million, it is more than five hundred twenty four thousand.",
+        "At C equal to sixteen it is eight point seven five. At about a million, it is more than five hundred and twenty four thousand.",
         "No fixed charge can pay for that.",
         {
           "beat": 0.3
         },
         "An adversary only has to choose the sequence.",
-        "Fill with about half of m pushes first, and m operations cost theta of m squared."
+        "Fill with pushes for about half the operations first.",
+        "Then the total cost grows as the square of the number of operations."
       ]
     },
     {
@@ -62,7 +63,8 @@
         {
           "beat": 0.3
         },
-        "Add one to seven. Four bits flip, and phi falls from three to one.",
+        "Add one to seven. Four bits flip.",
+        "Phi falls from three to one.",
         "The amortized cost is two, like every increment."
       ]
     },
@@ -78,14 +80,16 @@
         {
           "beat": 0.3
         },
-        "Tarjan calls this the physicist's view. He credits it to Sleator, and calls it entirely equivalent to the banker's credits, the last reel's coins."
+        "Tarjan calls this the physicist's view. He credits it to Sleator, and calls it entirely equivalent to the banker's credits, the coins from the last reel."
       ]
     },
     {
       "lines": [
         "The stack's coins sat on its keys. So phi is the number of keys.",
-        "A push costs one, and raises phi by one. Amortized cost, two.",
-        "A multipop of k keys costs k, and lowers phi by k. Amortized cost, zero.",
+        "A push costs one. Phi rises by one.",
+        "The amortized cost is two.",
+        "Popping several keys costs one for each key. Phi falls by the same amount.",
+        "The amortized cost is zero.",
         {
           "beat": 0.3
         },
@@ -95,7 +99,7 @@
     {
       "lines": [
         "Which potential makes every append constant amortized?",
-        "It must drop on append nine, which copies eight keys, and rise only a little on the cheap appends."
+        "It must drop when an append copies eight keys, and rise only a little on the cheap ones."
       ],
       "answer": [
         "Phi equals two n minus cap. Twice the keys past the midpoint... Blum's piggy bank.",
@@ -106,13 +110,13 @@
     },
     {
       "lines": [
-        "Here is that gauge on the vector.",
+        "Here is the vector's gauge.",
         "Phi equals two n minus cap says how far past half full the vector is.",
         "Just after a grow, it is two... the new key counts twice. When the vector is full, it is n... exactly the keys the next grow copies.",
         {
           "beat": 0.3
         },
-        "The actual costs spike. The amortized costs are flat at three, and two for the first append.",
+        "The actual costs spike. The amortized costs are flat at three, and two for the very first one.",
         "It is the last reel's bank, without its spare coin."
       ]
     },
@@ -153,7 +157,8 @@
         "Before, alpha is a quarter, and phi is sixteen minus eight, which is eight.",
         "After, seven keys in sixteen, and phi is eight minus seven, which is one.",
         "So the amortized cost is eight, plus one, minus eight. One.",
-        "The pops from half full down to a quarter each paid two, one for the pop and one into phi. The shrink spends what they saved."
+        "The pops from half full down to a quarter each paid two: one for the pop, and one put into the gauge.",
+        "The shrink spends what they saved."
       ]
     },
     {
@@ -163,15 +168,16 @@
         {
           "beat": 0.3
         },
-        "So any m pushes and pops from empty cost at most three m.",
+        "So from empty, any sequence costs at most three times the number of operations.",
         "Amortized constant, for both, for every sequence.",
-        "The code checks every reachable state, up to capacity four thousand ninety six."
+        "The code checks every reachable state, up to capacity four thousand and ninety six."
       ]
     },
     {
       "lines": [
-        "A resize is paid for only if phi falls by about what it copies.",
-        "Under shrink at a quarter, the pops down to a quarter fill the gauge, and the shrink spends it.",
+        "Phi must fall by about what a resize copies. Then the resize is paid for.",
+        "Under shrink at a quarter, the pops fill the gauge.",
+        "Then the shrink spends it.",
         {
           "beat": 0.3
         },
@@ -183,27 +189,31 @@
       "lines": [
         "This is resize hysteresis.",
         "The grow and shrink thresholds must leave a gap proportional to the capacity.",
-        "So that after any resize, omega of cap operations pass before the next one... enough to refill the gauge.",
+        "So after any resize, a fixed fraction of the capacity in operations must pass before the next one... enough to refill the gauge.",
         {
           "beat": 0.3
         },
-        "Halving at a quarter lands the vector near half full. Halving at a half lands it one push from full.",
+        "Halving at a quarter lands the vector close to half full.",
+        "But halving at a half lands it only one push from full.",
         "Any fixed shrink fraction below a half works."
       ]
     },
     {
       "lines": [
         "The same move proves bounds you will meet later.",
-        "Splay trees: phi is the sum of log base two of every subtree's size, giving big O of log n amortized access. That is Sleator and Tarjan.",
+        "Splay trees: phi is the sum of log base two of every subtree's size, giving big O of log n amortized access.",
         "Fibonacci heaps: the trees in the root list, plus twice the marked nodes, giving big O of one decrease key, and big O of log n delete min.",
-        "Union find: Tarjan analysed it in nineteen seventy five. Lambert and colleagues, in twenty twenty three, reach its bound, big O of alpha of n, with a potential on node ranks, summed over the levels of the Ackermann function. Alpha of n is the inverse Ackermann function.",
+        "Union find: Tarjan studied it first.",
+        "More recently, Lambert and colleagues reach its bound, big O of alpha of n.",
+        "Their potential is on node ranks, summed over the levels of the Ackermann function.",
+        "Alpha of n is the inverse Ackermann function.",
         "Summing square roots of subtree sizes proves only log log n."
       ]
     },
     {
       "lines": [
         "Back to the problem.",
-        "Under shrink at a quarter, the same forty nine operations cost eighty writes, not three hundred twenty eight.",
+        "Under shrink at a quarter, the same forty nine operations cost only eighty, not three hundred and twenty eight.",
         "After the push that grows to thirty two, nothing resizes. And the bound now covers pops too: at most three per push and two per pop, for every sequence.",
         {
           "beat": 0.3
@@ -227,15 +237,16 @@
     },
     {
       "lines": [
-        "Fill the vector to two to the twentieth keys, more than a million. Push once.",
-        "Then run one thousand rounds of pop, pop, push, push, under shrink at a half.",
-        "About how many element writes do the thousand rounds cost?"
+        "Fill the vector with more than a million keys. Push once.",
+        "Under shrink at a half, run one thousand rounds of pop, pop, push, push.",
+        "About how much do the thousand rounds cost in total?"
       ],
       "answer": [
         "About two point one billion.",
-        "A thousand rounds at two C plus three each: two billion, ninety seven million, one hundred fifty five thousand writes. Almost all of them copies.",
+        "Each round costs twice the capacity, plus three.",
+        "A thousand rounds come to more than two billion. Almost all of it is copying.",
         "Under shrink at a quarter: four thousand. One per operation.",
-        "With C fixed, the thrash costs big O of C per operation. Theta of m squared for m operations needs C to grow with m."
+        "With C fixed, the thrash costs about C per operation. A quadratic total needs C to grow with the number of operations."
       ]
     },
     {
@@ -245,7 +256,7 @@
         "Which rules thrash?"
       ],
       "answer": [
-        "Only B.",
+        "Only rule B thrashes.",
         "After the first push there are seventeen keys in thirty two. A pop leaves sixteen... exactly half.",
         "Rule A does not shrink, and the next push fits. Alternation costs one per operation after the grow.",
         "Rule B shrinks to sixteen, which is full, and the next push doubles again. Seventeen writes, every operation.",
