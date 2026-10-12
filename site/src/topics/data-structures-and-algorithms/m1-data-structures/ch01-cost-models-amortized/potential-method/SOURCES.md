@@ -1,6 +1,6 @@
 # Sources: The potential method
 
-Checked 2026-10-12. Every source was fetched raw with scripts/sources.mjs; quotes are proven by `sources.mjs check`. CLRS (4th ed.) is a book and could not be opened: it is cited for framing only. Fibonacci heaps: only Kleinberg-Tardos lecture slides were opened (not the Fredman-Tarjan paper).
+Checked 2026-10-12 (the fact-check added 15 quotes the same day, T21–T24, ST6, FH7–FH8 and L8–L15, each after its source's original quotes, so the 74 original ids in OUTLINE.md are unchanged). Every source was fetched raw with scripts/sources.mjs; quotes are proven by `sources.mjs check`. CLRS (4th ed.) is a book and could not be opened: it is cited for framing only. Fibonacci heaps: only Kleinberg-Tardos lecture slides were opened (not the Fredman-Tarjan paper).
 
 ## R. E. Tarjan, Amortized computational complexity (SIAM J. Algebraic Discrete Methods 6(2), 1985)
 URL: https://courses.cs.duke.edu/fall11/cps234/reading/Tarjan85_AmortizedComplexity.pdf
@@ -110,6 +110,20 @@ Splay tree potential: sum over nodes of log of subtree weight; amortized access 
 > this, we define the potential of a splay tree to be the sum over all internal nodes x of
 > log w(x), where w(x) is the weight of x, defined to be the number of (internal node)
 > descendants of x, including x itself.
+
+Added at fact-check (2026-10-12). T21: the opening stack's operations, word for word (each operation is some pops followed by one push).
+> We wish to analyze the running time of a sequence of operations,
+> each composed of zero or more pops followed by a push.
+
+T22–T23: the union-find variant Tarjan 1985 describes is union by size (not union by rank), with Galler and Fischer credited for union by size and McIlroy and Morris for path compression (the OCR reads "Mcllroy").
+> When performing unite, we use union by size,
+> making the root of the smaller tree point to the root of the larger.
+
+> Union by size was proposed by Galler and Fischer [11]; Mcllroy and Morris
+> devised path compression [2].
+
+T24: reference [29], which ties "Tarjan [29]" (the union-find proof with debits and credits) to the 1975 J. ACM paper.
+> [29] R. E. TARJAN, Efficiency of a good but not linear set union algorithm, J. ACM, 22 (1975), pp. 215-225.
 
 Contents:
 - Section 1 (Introduction): defines "amortize" by analogy with a sinking fund; motivates amortization by sequences of operations; gives the push/pop stack example (m operations, at most 2m primitive steps although one operation may cost m).
@@ -310,6 +324,8 @@ Supports: the Ackermann function definition.
 
 > The Ackermann function is defined on 𝑚 ≥ 0 and 𝑛 ≥ 1.
 
+Note (fact-check): these notes state the theorem for union by rank; Tarjan 1985 (T22) describes Tarjan 1975's analysis as of union by size, and Lambert et al. (L15) also use union by size, so the topic says "union by size" and notes the rank version.
+
 Supports: the inverse-Ackermann bound statement and the definition of alpha.
 
 > Theorem: Using the disjoint-set forest with union by rank and path compression heuristics, 𝑚
@@ -382,6 +398,9 @@ The proof sums per-step amortized costs, which telescope.
 > The lemma follows by summing the amortized time estimates for all the splaying
 > steps, since the sum telescopes to yield an estimate of at most 3(r’(x)- r(x))+ 1
 
+Added at fact-check (2026-10-12). ST6: the paper's footnote fixing the base of the rank's logarithm (so the splay potential is a sum of log₂ of sizes).
+> Throughout this paper we use binary logarithms.
+
 Contents:
 - Defines amortized time as actual time plus the change in potential, and shows the sum over m operations telescopes to actual total = amortized total + net potential drop.
 - Splay-tree potential: item weights w(i), node size s(x), rank r(x) = log s(x), tree potential = sum of ranks of all nodes.
@@ -420,6 +439,13 @@ Summary of amortized bounds.
 > Delete-min.
 > O(rank(H)) amortized.
 > Decrease-key. O(1) amortized.
+
+Added at fact-check (2026-10-12). FH7: decrease-key with c cuts, the bound ΔΦ ≤ 4 − c (the slide's own derivation).
+> marks(Hʹ) ≤ marks(H) – c + 2.
+> ・ΔΦ ≤ c + 2 ⋅ (-c + 2) = 4 – c.
+
+FH8: the slides credit the theorem (not the potential's wording) to Fredman and Tarjan, dated 1986 on the slide.
+> Theorem. [Fredman–Tarjan 1986] Starting from an empty Fibonacci heap,
 
 Contents:
 - Amortized cost of operation i defined as ĉi = ci + ∆Φ.
@@ -521,6 +547,34 @@ Supports: the authors' own assessment of which new proofs are simpler than the A
 > only the O(log log n) and O(log∗ n)
 > proofs (Sections 3 and 4 respectively) are significantly simpler than proofs via the Ackermann
 > function.
+
+Added at fact-check (2026-10-12). L8–L9: the O(log* n) potential of Section 4, Size(p)/(3 + log Size(p))² (the fraction and the square are flattened by the text extraction), and the paper's base-2 convention.
+> Define the potential function as
+> Φ (p) :=
+> Size (p)
+> .
+> (3 + log Size (p))2
+
+> Logarithms are base 2 unless stated otherwise
+
+L10: the O(α(n)) proof of Section 6 uses the classical recursive Ackermann definitions (so "no explicit Ackermann function" does not describe it).
+> we also provide amortized analyses of the O(α(n)) amortized cost bound using the more classical
+> recursive definitions in Section 6.
+
+L11–L12: Section 6's potential is built on a rank r(p) = ⌊log Sizemax(p)⌋ (union-by-rank's rank also works) and summed over Ackermann levels k ≤ α(n) (the double sum itself is garbled in the extraction).
+> We will consider r(p) = ⌊log Sizemax (p)⌋ with two properties
+
+> use p’s rank at the end for r(p) in union-by-rank. For any non-root node p, define its potential as
+
+L13–L14: beyond log* n the potentials involve a node and its parent; the open question is whether Size-only potentials reach log** n or better.
+> Our current attempts at extending these proofs beyond log∗ n require potential functions
+> involving both a node and its parent
+
+> We pose as an open question whether potential
+> functions based solely on Size(p) can also give bounds of log∗∗ n or better.
+
+L15: the paper analyses the union-by-size version.
+> We work with the union-by-size version due to its closer connection with the log(Size(p)) potential function.
 
 Contents:
 - Abstract: potential-function proofs for O(log log n), O(log* n), O(log** n), O(alpha(n)); sketch of the sqrt(Size) argument.
