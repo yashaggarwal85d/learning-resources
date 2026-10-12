@@ -410,4 +410,61 @@ for _ in range(500):
 assert max(big) > 3 * 100_000 and sum(big) < 3 * N  # one append can cost far more than 3, yet the total is below 3n
 assert 524_289 > N // 2
 
+# ---- Content review additions (REVIEW.md, 2026-10-12) --------------------------------------------------------------
+# the constant 3 is tight: just after a resize, at n = 2^k + 1, the total is 3n - 3
+assert sum(c16) + costs(17)[16] == 48 == 3 * 17 - 3
+assert all(sum(costs(2**k + 1)) == 3 * (2**k + 1) - 3 for k in range(0, 15))
+assert totals(2**20 + 1)[0] == 3_145_728 == 3 * (2**20 + 1) - 3
+
+# the accounting charge 1 + g/(g - 1), epoch by epoch: the cap' - c appends from a resize (included) to the next bank
+# g/(g - 1) each beyond their write, at least the cap' copies of the next resize, rounding up included
+for gg in (Fraction(5, 4), G15, G2, Fraction(3)):
+    c = 1
+    while c < 10**6:
+        nc = grow(c, gg)
+        assert nc >= gg * c and (nc - c) >= nc * (gg - 1) / gg and (nc - c) * gg / (gg - 1) >= nc, (gg, c)
+        c = nc
+assert grow(8, G2) - 8 == 8 and 8 * 2 == 16  # g = 2: c appends, 2 coins each, for 2c copies
+
+# Erickson's second tax schedule: bit i collects 2^-i on every increment; it holds exactly 1 each time it flips
+W = 12
+held = [Fraction(0)] * W
+v = 0
+for _ in range(2**W):
+    for i in range(W):
+        held[i] += Fraction(1, 2**i)
+    nv = (v + 1) % 2**W
+    for i in range(W):
+        if ((v ^ nv) >> i) & 1:
+            assert held[i] == 1, (v, i)
+            held[i] = Fraction(0)
+    v = nv
+assert sum(Fraction(1, 2**i) for i in range(W)) < 2 and 2**W == 4096
+
+# multipop with a cost of 1 per call on top of the keys moved: total <= n + 2 * pushes <= 3n; charges (3, 1) keep bank = keys
+rs = random.Random(3)
+for _ in range(1000):
+    ops, size = [], 0
+    for _ in range(rs.randrange(1, 201)):
+        r = rs.random()
+        if r < 0.5:
+            ops.append(('push', 0)); size += 1
+        elif r < 0.7:
+            ops.append(('pop', 0)); size = max(0, size - 1)
+        else:
+            k = rs.randrange(0, 60); ops.append(('multi', k)); size = max(0, size - k)
+    moved = stack_run(ops)
+    pushes = sum(1 for op, _ in ops if op == 'push')
+    percall = [1 + m for m in moved]  # one for the call, plus the keys pushed or popped
+    assert sum(percall) <= len(ops) + 2 * pushes <= 3 * len(ops)
+    bank_c, size = 0, 0
+    for (op, k), c_, m in zip(ops, percall, moved):
+        bank_c += (3 if op == 'push' else 1) - c_
+        size += 1 if op == 'push' else -m
+        assert bank_c == size >= 0
+
+# More questions 2: f(k) = n at powers of two, 1 otherwise
+L = int(math.log2(1024))
+assert f_total == 1024 * (L + 1) + 1024 - L - 1 == 12_277 and round(f_total / 1024, 2) == 11.99 and L + 1 == 11
+
 print('aggregate-accounting-methods examples: all assertions hold')

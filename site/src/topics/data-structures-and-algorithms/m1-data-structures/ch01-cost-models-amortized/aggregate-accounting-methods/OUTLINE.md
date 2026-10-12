@@ -380,6 +380,8 @@ Not claimed: anything from CLRS or Tarjan 1985 (not opened; Tarjan only as credi
 
 - 2026-10-12: sources fetched and quotes checked (`SOURCES.md`, `sources/`, blind expert list `sources/expert.json`); this content plan and storyboard written.
 - 2026-10-12: fact-check, currency and red team done (`FACT-CHECK.md`); corrections applied here and in `SOURCES.md` (Okasaki's thesis added; quotes for claims 18, 24, 25, 27–29 added; all quotes pass `sources.mjs check`). **Next:** `coverage.json` (2.4) from the plan above (add Okasaki's thesis as a source: its section 3.1–3.2 → Deep dive "The frontier" and "Choosing a method", the rest → topic "Amortization under persistence"); then the build (section 3).
+- 2026-10-12: coverage map (2.4) and build (section 3) done: every file written, `npm run build` and `examples.py` pass.
+- 2026-10-12: content review (section 4) done by a fresh agent: 20 findings in `REVIEW.md` (4 major: step 2's predict before the growth rule, the Prerequisites panel renumbering topic 1's promises, Erickson's second tax schedule mapped but untaught, a false per-call multipop bound), all fixed except two closed with a reason; `coverage.json` → `gapReview` recorded. Captions and narration changed in steps 1, 2, 3, 4, 5, 10, 13, 14, 15 and 16 (no new step, no storyboard change). **Next:** section 5, checks and the looks review.
 
 ## Changes from the chapter plan
 

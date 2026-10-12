@@ -6,13 +6,14 @@ This reel assumes four things. If they are familiar, go straight in. If one is n
 
 ### <span class="n">01</span> Cost bounds and the machine they count
 
-You can read O(1), Θ(n) and Θ(log n), you know the difference between a best, worst, average and expected case, and you accept that a step of the machine (here, writing one element) costs one unit. Topic 1 teaches the notation and the cases; topic 2 the machine.
+You can read O(1), Θ(n) and Θ(log n), you know the difference between a best, worst, average and expected case, and you accept that a step of the machine (here, writing one element) costs one unit. “Asymptotic notation and case analysis” teaches the notation and the cases; “The word-RAM model and its assumptions” teaches the machine.
 
 <p class="check"><b>Check yourself:</b> an algorithm is O(n²) in the worst case and Θ(n) in the best case. Is it Θ(n²)? (Answer: no. Only its worst case is Θ(n²), if that bound is tight.)</p>
 
 <ul class="resources">
-  <Resource kind="reel" host={props.host} domain="data-structures-and-algorithms" title="Asymptotic notation and case analysis">Bounds, cases and the three kinds of promise this topic adds a fourth to.</Resource>
+  <Resource kind="reel" host={props.host} domain="data-structures-and-algorithms" title="Asymptotic notation and case analysis">Bounds, cases, and the average-case and expected promises; this topic is the third kind of promise that reel points to.</Resource>
   <Resource kind="reel" host={props.host} domain="data-structures-and-algorithms" title="The word-RAM model and its assumptions">The machine behind “one element write is one unit”.</Resource>
+  <Resource kind="reel" host={props.host} domain="data-structures-and-algorithms" title="Measuring the memory hierarchy">Where the chapter lab measures the doubling and 1.5 growth policies on a real machine.</Resource>
 </ul>
 
 </section>
@@ -51,9 +52,8 @@ You know that 1 + 2 + 4 + … + 2<sup>k</sup> = 2<sup>k+1</sup> − 1, and that 
 <p class="check"><b>Check yourself:</b> what is 1 + 2 + 4 + 8 + 16? (Answer: 31.)</p>
 
 <ul class="resources">
-  <Resource kind="reading" title="Lecture 9: Amortized Analysis" href="https://jeffe.cs.illinois.edu/teaching/algorithms/notes/09-amortize.pdf" by="Jeff Erickson, Algorithms">The counter analysed three ways; a good second explanation of everything in this topic.</Resource>
-  <Resource kind="reading" title="Amortized Analysis" href="https://www.cs.cmu.edu/~avrim/451f11/lectures/lect0922.pdf" by="Avrim Blum, CMU 15-451, Lecture 7">The doubling array by aggregate and by accounting, step by step.</Resource>
-  <Resource kind="reel" host={props.host} domain="data-structures-and-algorithms" title="Measuring the memory hierarchy">Where the chapter lab measures the doubling and 1.5 growth policies on a real machine.</Resource>
+  <Resource kind="reading" title="Amortized Analysis" href="https://www.cs.cmu.edu/~avrim/451f11/lectures/lect0922.pdf" by="Avrim Blum, CMU 15-451, Lecture 7">Sums the doubling array's copies, 1 + 2 + 4 + …, step by step, then does the same proof by accounting.</Resource>
+  <Resource kind="reading" title="Lecture 9: Amortized Analysis" href="https://jeffe.cs.illinois.edu/teaching/algorithms/notes/09-amortize.pdf" by="Jeff Erickson, Algorithms">Sums the counter's flips, n + n/2 + n/4 + …, and analyses the counter three more ways; a good second explanation of this whole topic.</Resource>
 </ul>
 
 </section>

@@ -9,8 +9,8 @@ const reel: Reel = {
       title: 'One append copied half a million keys',
       body: (
         <>
-          Topic 4 priced one run on its worst input. A data structure lives through a <em>sequence</em>. Of a million appends to the vector, one copies 524,288
-          keys, yet everyone says append is O(1). Both are true. From here on, one unit of cost is one element write.
+          The lower-bounds reel priced one run on its worst input. A data structure lives through a <em>sequence</em>. Of a million appends to the vector, one
+          copies 524,288 keys, yet everyone says append is O(1). Both are true. From here on, one unit of cost is one element write.
         </>
       ),
       duration: 3.8,
@@ -20,7 +20,8 @@ const reel: Reel = {
       title: 'What do a million appends cost?',
       body: (
         <>
-          Count one write per key appended and one per key a resize copies. What do all 1,000,000 appends cost together?
+          When the vector is full, an append doubles its capacity and copies every key across. Count one write per key appended and one per key copied. What do
+          all 1,000,000 appends cost together?
         </>
       ),
       duration: 1.5,
@@ -40,7 +41,7 @@ const reel: Reel = {
       body: (
         <>
           The rule: an empty vector has capacity 0; the first append allocates 1; an append to a full vector allocates twice the capacity, copies every key, then
-          writes the new one. Sixteen appends cost 1, 2, 3, 1, 5, 1, 1, 1, 9, then seven 1s. Total 31.
+          writes the new one. Sixteen appends cost 1, 2, 3, 1, 5, 1, 1, 1, 9, then seven 1s. Total 31, under the dashed 3 per append (48).
         </>
       ),
       duration: 5.2,
@@ -50,8 +51,8 @@ const reel: Reel = {
       title: 'Add up the whole sequence',
       body: (
         <>
-          The <b>aggregate method</b>: bound the total cost of any n operations, then divide by n. Writes: n. Copies: 1 + 2 + 4 + …, each resize copying at most
-          half as many as the next, so fewer than 2n in all. Total under 3n: O(1) amortized per append.
+          The <b>aggregate method</b>: bound the total cost of any n operations, then divide by n. Writes: n. Copies: the last resize copied fewer than n keys, and
+          each earlier one half as many as the one after it, so 1 + 2 + 4 + … sums to fewer than 2n. Total under 3n: O(1) amortized per append.
         </>
       ),
       duration: 4.6,
@@ -61,7 +62,7 @@ const reel: Reel = {
       title: 'A third kind of promise',
       body: (
         <>
-          Topic 1 separated average case (over inputs) from expected (over coins). <b>Amortized</b> is neither: nothing is random. It is a worst-case bound on the
+          The notation refresher separated average case (over inputs) from expected (over coins). <b>Amortized</b> is neither: nothing is random. It is a worst-case bound on the
           total of a whole sequence, divided by its length. Every n appends from empty cost less than 3n, and one of them can still cost n.
         </>
       ),
@@ -126,8 +127,9 @@ const reel: Reel = {
       title: 'Where n falls between resizes',
       body: (
         <>
-          “About g/(g − 1)” is a peak, reached just after a resize; just before the next it falls to about 1/(g − 1). At a million appends doubling has copied
-          1.05 keys per append, not 2; g = 1.5, 2.10. Topic 10’s lab measures this sawtooth: compare against the curve, not one number.
+          “About g/(g − 1)” is a peak, approached just after each resize, never reached; just before the next it falls to about 1/(g − 1). At a million
+          appends doubling has copied 1.05 keys per append, not 2; g = 1.5, 2.10. The chapter lab measures this sawtooth: compare against the curve, not one
+          number.
         </>
       ),
       duration: 4.6,
@@ -169,7 +171,8 @@ const reel: Reel = {
       title: 'Multipop: each key leaves once',
       body: (
         <>
-          A stack with push, pop and multipop(k), which pops min(k, size) keys. One multipop can cost almost n, so n operations look like n². But each key is
+          A stack with push, pop and multipop(k), which pops min(k, size) keys; one unit is one key in or out. One multipop can cost almost n, so n
+          operations look like n². But each key is
           popped at most once after its push: the total is at most twice the pushes. Accounting: charge push 2, pop and multipop 0; each key carries the coin for
           its own pop.
         </>
@@ -182,8 +185,8 @@ const reel: Reel = {
       body: (
         <>
           The same move three times: an expensive operation can only follow cheap ones that set it up, so each cheap one pays a little extra in advance. The
-          aggregate method needs one total that covers every sequence; charge per operation when operations differ, like push and multipop. The bounds you get
-          are not unique.
+          aggregate method needs one total that covers every sequence; charge per operation when operations differ, like push and multipop. The charges are a
+          choice, not unique: any that keep the bank at zero or above prove a bound.
         </>
       ),
       duration: 4,
@@ -193,8 +196,9 @@ const reel: Reel = {
       title: 'When the bound breaks',
       body: (
         <>
-          The bound needs the cheap operations first, in one history from the start state. Add decrement, and a counter at 01111 flips 5 bits on every operation.
-          Append again and again to one old, full version of the vector, and every append copies all 16 keys. Chapter 13 returns to this for persistent structures.
+          The bound rests on two facts: expensive operations come only after cheap ones set them up, in one history from the start state. Add decrement: a
+          counter at 01111 flips 5 bits every operation. Append again and again to one saved snapshot of a full 16-key vector: each append copies all 16 keys.
+          Chapter 13 returns to this.
         </>
       ),
       duration: 3.8,

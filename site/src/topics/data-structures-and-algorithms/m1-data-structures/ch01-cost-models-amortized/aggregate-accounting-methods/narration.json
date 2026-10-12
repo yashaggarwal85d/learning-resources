@@ -4,13 +4,13 @@
   "steps": [
     {
       "lines": [
-        "Topic four priced one run on its worst input.",
+        "The lower bounds reel priced one run on its worst input.",
         "A data structure lives through a whole sequence of operations.",
         {
           "beat": 0.4
         },
         "Take a million appends to the vector.",
-        "One of them copies five hundred twenty four thousand keys... and yet everyone says append is big O of one.",
+        "One of them copies more than five hundred twenty four thousand keys... and yet everyone says append is big O of one.",
         {
           "beat": 0.3
         },
@@ -20,7 +20,8 @@
     },
     {
       "lines": [
-        "Count one write for each key appended, and one for each key a resize copies.",
+        "When the vector is full, an append doubles its capacity and copies every key across.",
+        "Count one write for each key appended, and one for each key copied.",
         {
           "beat": 0.4
         },
@@ -50,8 +51,9 @@
         {
           "beat": 0.3
         },
-        "The writes cost n. The copies are one plus two plus four, and so on, each resize copying at most half as many as the next.",
-        "So fewer than two n in all.",
+        "The writes cost n. The last resize copied fewer than n keys, and each one before it copied half as many as the one after.",
+        "So the copies, one plus two plus four and so on, add up to less than twice the last one.",
+        "Fewer than two n in all.",
         {
           "beat": 0.3
         },
@@ -60,7 +62,7 @@
     },
     {
       "lines": [
-        "Topic one separated the average case, over inputs, from the expected case, over coins.",
+        "The notation refresher separated the average case, over inputs, from the expected case, over coins.",
         "Amortized is neither. Nothing is random.",
         {
           "beat": 0.3
@@ -126,7 +128,7 @@
     },
     {
       "lines": [
-        "About g over g minus one is a peak. It is reached just after a resize.",
+        "About g over g minus one is a peak. You come closest to it just after a resize, and never quite reach it.",
         "Just before the next resize, it falls to about one over g minus one.",
         {
           "beat": 0.3
@@ -172,6 +174,7 @@
     {
       "lines": [
         "Now a stack with push, pop, and multi-pop of k, which removes the top k keys, or all of them if there are fewer.",
+        "One unit is one key in or out.",
         "One multi-pop can cost almost n. So n operations look like n squared.",
         {
           "beat": 0.3
@@ -188,17 +191,17 @@
           "beat": 0.3
         },
         "The aggregate method needs one total that covers every sequence. Charge per operation when operations differ, like push and multi-pop.",
-        "And the bounds you get are not unique."
+        "And the charges are a choice. Any charges that keep the bank at zero or above prove a bound."
       ]
     },
     {
       "lines": [
-        "The bound needs the cheap operations first, in one history, from the start state.",
+        "The bound rests on two facts. Expensive operations come only after cheap ones set them up. And there is one history, from the start state.",
         {
           "beat": 0.3
         },
         "Add decrement, and a counter on zero one one one one flips five bits on every operation.",
-        "Or append again and again to one old, full version of the vector... and every append copies all sixteen keys.",
+        "Or keep a saved snapshot of a full vector, and append to that same snapshot again and again... and every append copies all sixteen keys.",
         "A later chapter returns to this, for persistent structures."
       ]
     },
@@ -209,7 +212,7 @@
         {
           "beat": 0.3
         },
-        "When append five hundred twenty four thousand, two hundred eighty nine arrived, the bank held exactly enough coins for its copies.",
+        "When append five hundred twenty four thousand, two hundred eighty nine arrived, the bank held a coin for every key it copied, and one to spare.",
         {
           "beat": 0.3
         },
