@@ -50,17 +50,17 @@
     },
     {
       "lines": [
-        "A mutex is an exclusive loan, checked at run time.",
+        "A mutex is an exclusive loan, checked while the program runs.",
         "It owns its data and hands out mutable access through a guard. A second caller waits.",
         "Hold a mutable borrow of it, and no one can lock it: no locking needed.",
-        "The lock is only for when you can't name one owner.",
+        "Use a lock only when no single owner can be named.",
         "An arc clone copies a pointer. Zero allocations."
       ]
     },
     {
       "lines": [
         "Now name the owner.",
-        "If the stages run in turn, one driver owns the pool and each stage's counters.",
+        "When the stages run in turn, one driver owns the pool, and each stage owns its own counters.",
         "Loans go down: exclusive to fill, shared to inspect. The buffer is handed to consume and back. Results come up as plain values.",
         "A thousand messages, one allocation, no locks.",
         "If the stages must overlap, a tree isn't enough."
@@ -81,7 +81,7 @@
     {
       "lines": [
         "Pipelines are graphs, and this one is a cycle.",
-        "A tree can't own a cycle. Try it with reference counted pointers.",
+        "A tree can't own a cycle. Try it with Rc pointers.",
         "Drop your handles and every count falls to one, never zero. The ring keeps itself alive.",
         "Four allocations, still live. The compiler won't stop a leak.",
         "Here, we change who owns."
@@ -100,12 +100,12 @@
       "lines": [
         "Here's why the generation matters.",
         "The inspect stage, at index two, is hot-swapped. It's removed, and a new stage called audit takes the freed slot.",
-        "Fill still holds the old handle: index two, generation zero.",
+        "The fill stage still holds the old handle, with slot number 2 and generation 0.",
         "What does looking it up return?"
       ],
       "answer": [
         "None.",
-        "Removing inspect moved the slot's generation on to one. The old handle still says zero, so the lookup refuses.",
+        "Removing inspect bumped the slot's generation to 1. The old handle still says 0, so the lookup refuses.",
         "A plain index would have quietly handed you the audit node. The wrong one."
       ]
     },
@@ -153,7 +153,7 @@
       "answer": [
         "A thousand in the pull request. Three in the ring.",
         "In the pull request, stage one makes its own buffers, and its channel never pushes back.",
-        "In the ring, only the owner makes buffers, and stage one just waits for one to come home. The backpressure came from the shape, not from a setting."
+        "In the ring, only the owner makes buffers. The first stage just waits for a buffer to come home. The waiting comes from the shape of the program, not from a setting."
       ]
     },
     {
@@ -161,13 +161,13 @@
         "One owner means one set of books.",
         "Every channel is first in, first out, so the owner knows which buffer must come home next, and checks it.",
         "A cloned or lost buffer fails at once. We tried both.",
-        "And the books balance: in the pool, plus out in the ring, equals every buffer made, at each of a thousand returns."
+        "And the books balance. Buffers in the pool plus buffers out in the ring equal every buffer made, at each of a thousand returns."
       ]
     },
     {
       "lines": [
-        "So how do you choose? By the shape of the data, not by the error message.",
-        "A natural parent: a tree, no synchronisation. A graph with cycles or removal: an arena.",
+        "How do you choose? Look at the shape of the data. Do not go by the error message.",
+        "A natural parent: a tree, and no locks at all. A graph with cycles or removal: an arena.",
         "Many concurrent users of one piece of state: an owner thread.",
         "Small simple data touched briefly: a mutex is fine.",
         "First ask: who should own this?"
@@ -185,7 +185,7 @@
     {
       "lines": [
         "Prove it. One of three.",
-        "A stage keeps a borrowed view of the first five bytes of its buffer, sends the buffer on, and then prints the view.",
+        "A stage borrows a view of the first five bytes of its buffer. It sends the buffer on. Then it prints the view.",
         "What does the compiler say?"
       ],
       "answer": [
@@ -201,7 +201,7 @@
       ],
       "answer": [
         "At the receive.",
-        "Stage one only works on a buffer someone sends it. With stage three stalled, none come back. Its sends never block."
+        "The first stage only works on a buffer that is sent to it. With the third stage stalled, none come back. Nothing it sends ever blocks."
       ]
     },
     {
