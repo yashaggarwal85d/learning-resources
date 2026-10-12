@@ -77,6 +77,12 @@ def axis_frac(seconds):
 TICKS = [(1e-6, '1 us'), (1e-3, '1 ms'), (1.0, '1 s'), (1e3, '1,000 s')]
 assert [round(axis_frac(s_), 3) for s_, _ in TICKS] == [0.067, 0.267, 0.467, 0.667]  # tick positions on the track
 assert all(round(TICKS[i + 1][0] / TICKS[i][0]) == 1_000 for i in range(3))  # each tick is x1,000
+# Two more named ticks, so the 116-day bar ends between labelled marks: 1 day and 1 year.
+DAY, YEAR = 86_400, 365 * 86_400
+assert [round(axis_frac(s_), 3) for s_ in (DAY, YEAR)] == [0.796, 0.967]
+assert 1_000 < DAY < 10_000_000 < YEAR  # 17 min < 1 day < 116 days < 1 year
+# The doubled sizes still fit: n^2 at 200 million rows is 4 x 10,000,000 s = 40,000,000 s, 463 days.
+assert 4 * 10_000_000 < 10**AXIS_HI and round(axis_frac(4 * 10_000_000), 3) == 0.973 and round(4 * 10_000_000 / DAY) == 463
 # Every bar fits on the axis, so no bar is cut off: the largest, n^2 at 100 million rows (10,000,000 s), sits at 14/15.
 assert 100e-9 <= 1e-6 and 10_000_000 < 10**AXIS_HI and round(axis_frac(10_000_000), 3) == 0.933
 # On this axis the gaps are still honest: a x1,000 gap is 3/15 = 20 percent of the track.
@@ -130,7 +136,7 @@ assert math.isclose(math.log(8, 2), 1 / math.log(2, 8))
 assert round(500 * math.log(2) / math.log(N9)) == 17 and round(500 * math.log(10) / math.log(N9)) == 56
 assert round(500 * math.log(1_000) / math.log(N9)) == 167
 
-# ---- Step 7: a large base flattens the tower ---------------------------------------------------------------------------------
+# ---- Step 7: a large base, few divisions ---------------------------------------------------------------------------------
 assert 1_000**3 == N9
 assert N9 // 16_384 == 61_035 and round(N9 / 16_384**2, 2) == 3.73
 assert round(math.log(N9, 16_384), 2) == 2.14
@@ -208,6 +214,11 @@ assert round(math.log(10**10 // 10**4, 10**7 // 10**4)) == 2
 
 # ---- Step 10: same steps, same Theta, unknown price per step ---------------------------------------------------------------
 assert ORDERS == 100_000_000
+# Illustrative prices per step (the next topic measures them): data in cache about 1 ns, a random read from an SSD about 100 us.
+# 100,000,000 steps: 0.1 s in cache against 10,000 s, about 2.8 hours, on disk.
+assert round(ORDERS * 1e-9, 9) == 0.1
+assert round(ORDERS * 100e-6) == 10_000 and round(10_000 / 3_600, 1) == 2.8
+assert round(10_000 / 0.1) == 100_000  # the same count, 100,000 times longer
 
 # Deep dive: a bigger constant can outweigh a lower growth class for a while. 100 steps per item on an n log2 n method
 # against 1 step per pair on an n^2 method: the quadratic one is cheaper for every n up to 996 and loses from 997 on.

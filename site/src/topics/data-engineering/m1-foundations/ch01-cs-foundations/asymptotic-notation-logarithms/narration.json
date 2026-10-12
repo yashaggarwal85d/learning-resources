@@ -49,8 +49,8 @@
         {
           "beat": 0.4
         },
-        "The bars are on a log scale... each tick is a thousand times longer.",
-        "Double the data, and n squared quadruples."
+        "The bars are on a log scale... from microseconds, all the way up to a year.",
+        "Double the data, and n doubles... n log n grows a little more... and n squared quadruples."
       ]
     },
     {
@@ -72,16 +72,14 @@
       "lines": [
         "Any base converts to any other.",
         "Divide the natural log of x by the natural log of the base.",
-        "It's one length, measured with three different rulers... so the base is just a constant factor.",
-        "In your head, log base two is about three point three two times log base ten. So a billion, nine zeros, is about thirty halvings.",
-        "Inside big O, a fixed base doesn't matter. But when you count levels or passes, or the base is a parameter like a page's fan-out... it does."
+        "It's one length, measured with three rulers... base two, base ten, and base one thousand.",
+        "In your head, log base two is about three point three two times log base ten. So a billion, nine zeros, is about thirty halvings."
       ]
     },
     {
       "lines": [
         "The bigger the base, the fewer the divisions.",
         "A billion needs about thirty halvings, but only three divisions by a thousand... and just over two by sixteen thousand, three hundred eighty four.",
-        "So the log of a million, in that base, is under one and a half.",
         {
           "beat": 0.4
         },
@@ -111,7 +109,6 @@
         "The nightly job sorts a tebibyte, and memory holds sixteen thousand, three hundred eighty four blocks.",
         "One pass makes sixty four sorted runs.",
         "The merge takes up to sixteen thousand at once, one block for each run and one for the output, so one more pass merges all sixty four.",
-        "Sixty four runs use only a sliver of that... but a pass can't be partial.",
         {
           "beat": 0.4
         },
@@ -122,7 +119,8 @@
       "lines": [
         "Big O throws away constants on purpose.",
         "So it can't tell you seconds.",
-        "Two scans of the same hundred million rows... same count, same growth... can take very different times, depending on where the data lives."
+        "Two scans of the same hundred million rows... same count, same growth... can take very different times, depending on where the data lives.",
+        "In the cache, a hundred million steps take a tenth of a second. If every step waits on a disk, it's hours."
       ]
     },
     {

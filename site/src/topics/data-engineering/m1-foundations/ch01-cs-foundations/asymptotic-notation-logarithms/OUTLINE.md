@@ -584,3 +584,19 @@ Each claim with its source (in `SOURCES.md`, every quote checked by `node script
 4. Powers of ten are written out on screen and in the Deep dive ("a billion", "100 million"); numbers shown (6-byte pointer, 8-byte key, 20-byte entry, 1,000,000,000 steps per second) are asserted in `examples.py`.
 5. Deep dive additions: log(n!), a counted constant-factor crossover (997), 964 upper pages (about 7.5 MiB), PostgreSQL's level numbering, a reworded "Bounded n"; the unsourced latency figures are gone. Knuth's "order at least" and "order exactly" are now quoted in `SOURCES.md`.
 6. `coverage.json`: the MIT exercise item is split (log(n!) mapped, binomial and 2^(n+1) out); multi-parameter bounds are mapped to the Deep dive and the I/O cost model topic; `gapReview` is now "builder + review fixes".
+
+## Changes after the looks review (2026-10-12)
+
+The drawings were changed as the looks review asked (`REVIEW.md` marks each finding). Where this OUTLINE's per-step plan above differs, this section wins:
+
+1. **Step 2** stages the ceiling line ("O: ceiling c = 4"), the floor line ("Ω: floor c = 3"), the ratio curve (named "cost ÷ n·log₂n" in its live readout) and then the Θ label; the y axis has ticks 3 and 4 and the x axis says "n (log scale)".
+2. **Step 3** has its correct option first and all options as "Yes/No: reason" one-liners; the n² bar is filled cinnamon with "1,139,909× too high".
+3. **Step 4** adds a fourth beat, "double it: 200,000,000 orders", with ghost tails labelled ×2, ×2.08 and ×4 (n² in cherry), and named ticks "1 day" and "1 year" (asserted in `examples.py`). The axis is "1 µs to 1 year".
+4. **Step 5** has the correct option third, "1 slab = 1 halving", and marks "after 10: 976,563", "after 20: 954", "after 30: under 1" with "÷ 1,024" between them.
+5. **Step 6** labels its rulers "base 2", "base 10" and "base 1,000" with the 29.9, 9 and 3 counts, and shows "29.9 ÷ 9 = 3.32". The sentence "Inside big O a fixed base doesn't matter..." is cut from the narration and caption.
+6. **Step 7** is "A large base, few divisions": three rows of cells (30, 3, 2.14), no towers. The log₁₆,₃₈₄ of a million (1.42) is no longer in the narration, caption or drawing; it stays asserted and in the Deep dive.
+7. **Step 8** has a one-sentence question caption (the byte arithmetic moved into the explanation), the correct option last, and an answer drawn on a log axis against a dashed "target: 100,000,000" line.
+8. **Step 9** shows pass 1 as 64 cells, pass 2 as one bar, "2 passes", "4 TiB of I/O" and seven thin cinnamon bars for the two-at-a-time alternative. The 20/14 line and "a pass can't be partial" are out of the reel (Deep dive only).
+9. **Step 10** labels the cache and disk scans, and shows "0.1 s" and "2.8 hours" (1 ns and 100 µs a step, illustrative, asserted in `examples.py`).
+10. **Step 11** has an icon per bullet. Θ, O, Ω are serif and log_b has a real subscript in every drawing.
+11. **Pacing.** The player runs animation time on `duration` and holds the last frame (like the live python-essentials reel, whose narration is also 27 to 50 words against 1.2 to 4.6 s), so reveals are staged to the spoken beats and the multi-beat steps got longer durations (5 to 6.6 s). The coverage.json step title for step 7 is updated.
