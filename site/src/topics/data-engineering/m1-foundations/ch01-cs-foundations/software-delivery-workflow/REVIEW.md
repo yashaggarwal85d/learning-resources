@@ -245,3 +245,121 @@ Overall, the topic is carefully sourced and executed. The fact-check's correctio
 - *Where:* `prerequisites.mdx` section 04 (resources: "Repeatable Installs" and "Semantic Versioning 2.0.0"). The panel's opening paragraph ("It assumes you have merged a pull request and installed a package with pip"). The registry entry has no `declared`. The previous topic declared `shell-basics`.
 - *What:* the semver link is in the wrong section, so a learner who is rusty on versioning has no section to find it under. And the panel states two assumptions (a merged PR, a pip install) that the concept ledger doesn't record, so the "taught before it is used" check can't see them.
 - *Fix:* move the semver link into its own short section, "05 Version numbers", with a one-line self-check ("1.9.0 or 1.10.0: which is newer?"). Add `declared: ['pip-install']`, or whichever id the chapter uses, to the registry entry, or show that an earlier topic introduces it.
+
+## Looks and learning review (2026-10-12)
+
+Scope: every frame in `site/test-results/{desktop,phone}-software-delivery-workflow-*.png` (13 at each size; `-q` is the question frame), read against `OUTLINE.md`, `narration.json` and DESIGN.md "The looks review checks". Phone sizes below are estimated from the 1170 px wide captures (3x), so "about 8 px" means CSS pixels. Nothing was changed. Severity: High = unreadable, overlapping or clipped; Medium = hurts the point or the summary; Low = polish.
+
+What already works: step 10 is a clean, complete summary at both sizes (eight rows, one idea each); steps 2, 4, 6 read at a glance on desktop; the gate strip, the cherry-for-failure and crema-for-value colours and the Fraunces titles clearly belong to this site; predict steps 5, 7 and 8 have finished answer pictures. 10 steps at about 30 s each fits a 5 minute refresher.
+
+### Findings
+
+1. **Step 5, question frame (5-q), phone. High.**
+   - **Fixed:** the strip is now one plain text line above the code panel (no longer inside the drawing), so the three boxes fill the full 600-unit width; the code panel is cut to the run line and its comment on phone. Labels are 13 to 17 units.
+   - *What:* the whole drawing is shrunk to about 40% of the screen width. The gate strip, `jq / sort / uniq -c` boxes and "the step's verdict:" label are about 5 px type, which cannot be read. The code panel above takes the space the drawing needed.
+   - *Fix:* give the drawing the full 360 unit width. Drop the strip from this frame, or move it into the code panel's title bar. Remove the empty margin left and right of the three boxes and let them fill the width. Target 10 px or more for every label.
+
+2. **Step 9, both sizes. High.**
+   - **Fixed:** the pytest tree is gone from the picture, so no line crosses a label (the 5 pins and 5 hashes are in the caption and Deep dive, still asserted by `lock_pins`).
+   - *What:* the lines from `pytest 9.1.1` to its four children run straight through the words in `iniconfig` and `packaging` (and across the `pluggy` corner). The tree is hard to read and the two labels are struck through.
+   - *Fix:* draw the edges from the bottom of the parent to the top of each child only, or draw them behind the boxes with an opaque fill, or stack the four children in one column. The text must never sit under a line.
+
+3. **Step 10, phone. High.**
+   - **Fixed:** the row now reads `app: pin; library: floor, cap known breaks`, which fits at phone scale.
+   - *What:* the `Ranges and pins` row's second line (`app: pin with ==; library: floor, cap known breaks`) runs past the right edge of its card, by about 10 px. It is the only row that does.
+   - *Fix:* shorten it to something like `app: pin; library: floor, cap known breaks`, or let the line wrap to two lines inside the card, or reduce the mono size for all rows.
+
+4. **Step 8, both frames, phone. High.**
+   - **Fixed:** the drawing is redrawn for the full width (three 170-unit version boxes in one row, labels 13 to 17 units, `package index` and the cap lines removed, `KeyError` moved into the CI box); caption cut to about 150 characters so the picture is larger. The cap lines stay in the Deep dive (already asserted).
+   - *What:* the drawing is about 65% of the screen width, so `requirements.txt`, `package index`, the three version boxes and the right-hand `>=1.4,<2 → 1.5.0` lines are about 7 px (`package index` is also dim). The question frame is mostly caption: the picture the learner must reason about is the smallest thing on screen.
+   - *Fix:* widen the drawing to the full width, put the three version boxes on one row of 100 units each, make labels 13 units or more (the DESIGN.md floor), and drop `package index` into the box row as a small header or remove it.
+
+5. **Step 2, both sizes. Medium.**
+   - **Fixed:** the orphan line is removed (the tests rung is reviewed in step 3).
+   - *What:* the orphan line `do they fail when the code is broken?` sits between the `tests` and `naming, comments` rungs, 4 px from each. It reads as part of the ladder (a seventh label), and its point (review the tests) belongs to step 3. The picture already has a strip, six rungs and a size bar, so this is a fifth competing label.
+   - *Fix:* remove it, or make it a right-aligned caramel note on the `tests` rung only (`→ step 3`), at a distance of 24 units or more from the next rung.
+
+6. **Steps 5, 7 and 8 answer frames, phone. Medium.**
+   - **Fixed:** question and explanation captions are shortened (step 5 about 150 characters, 7 about 130, 8 about 150; the moved detail is in index.mdx), answer options shortened in step 8, and the player now scrolls the explanation card into view after an answer (`ReelPlayer.tsx`, `showExplanation`). Checked in the phone screenshots: the card is fully on screen in 5, 7 and 8.
+   - *What:* the payoff, the explanation card, is below the fold. In 5 it shows only "NOT QUITE" and one line before the player bar; in 7 it is off screen entirely (ten lines of question plus four options fill the screen); in 8 only the card header shows. The learner sees the verdict colours and the picture but not why.
+   - *Fix:* once an option is chosen, collapse the question text to its last line, or scroll the explanation into view. Keep each predict caption near the 200 character plan: step 7's question is about 330 characters and step 8's about 250.
+
+7. **Step 9, both sizes. Medium.**
+   - **Fixed:** the lock step is redrawn with one idea: `requirements-dev.lock` excerpt, `load_orders` to `shopclean 1.5.0` (same bytes), and the republished crate with an arrow into one cherry `hash mismatch / refused, exit 1` token. The dark red bar and the pytest tree are gone; `5 pins, 5 hashes` moved to the caption and Deep dive.
+   - *What:* the final frame is not a clean summary. `hash mismatch → refused, exit 1` (cherry) sits at the bottom left, under the `shopclean` tree, while the `1.5.0 republished` crate it belongs to is at the bottom right with an unexplained dark red bar on its left edge. On phone the cherry text touches the red bar. Counting the strip, the lock excerpt, two trees, three annotations, the crate and the refusal, there are more than four competing labels.
+   - *Fix:* put the crate directly under the lock excerpt with an arrow into a single cherry `refused, exit 1` token next to it; delete the red bar; drop `the gate's tools: 5 pins, 5 hashes` into the caption, or keep the pytest tree and cut the republished crate to one line. Add the lock file's name (`requirements-dev.lock`) to the excerpt, as OUTLINE says.
+
+8. **Step 3, phone. Medium.**
+   - **Fixed:** on phone the code panel and the table take turns (code first, then the table at full width); row labels are `padded email` and `main() on a file`; totals are on separate lines (`4 failed` / `2 passed` / `exit 1`); labels are 15 units.
+   - *What:* the row labels (`padded email (Git's oracle)`, `main() on a padded file`) and the column headings are about 8.6 px. The two result lines `6 passed` and `4 failed, 2 passed` end and start only about 9 px apart, and the `strip().lower()` and `731: lower()` headings only about 5 px apart, so each pair reads as one string.
+   - *Fix:* give the label column a smaller share (shorten to `padded email`, `main() on a file`), move the two tokens columns apart, and put the totals on two lines under each column (`6 passed` / `exit 0`; `4 failed` / `2 passed` / `exit 1`) or use two lines of 20 unit type. Raise labels to 11 px or more.
+
+9. **Step 7 (both frames), phone. Medium.**
+   - **Fixed:** the drawing is top-aligned under the strip with the frame's normal gap to the caption, and fills the width; `reset to 0` is a caramel line with space above and below; the three rows fill the width.
+   - *What:* the version dial and the three release rows are about 8.8 px; the last row sits about 4 px above the `REFRESHER 7/10` kicker, and `reset to 0` (answer frame) is wedged between the dial labels and the first row. The drawing looks pasted onto the caption. The same tight gap between drawing and kicker shows in 5 (answer), 8 (answer) and 7.
+   - *Fix:* reserve 16 px or more under every drawing (or an inset divider), widen the rows to the full screen, and move `reset to 0` to a caramel mark between the dial and the rows with 20 units above and below.
+
+10. **Step 6, both sizes. Medium (teaching).**
+   - **Fixed:** two lines above the dots show the cause, `seed 1: ['refunded', 'paid']` (fails) and `seed 2: ['paid', 'refunded']` (passes). New executed example `flaky_order_seed_1` and `_2` in `examples.sh`, asserted in `examples.py` against the dot pattern.
+    - *What:* the picture shows the symptom (10 red, 10 amber dots) but not the cause the caption and narration blame: a set's order changing with the hash seed. A learner who skims the caption sees a code line with `{...}` and two rows of dots, but no set order. "Hash seeds 0 to 19" is the only hint.
+    - *Fix:* add two small lines above the dots: `seed 3: ['refunded', 'paid']` (cherry) and `seed 4: ['paid', 'refunded']` (crema), or label one pass and one fail dot with the list it produced. Keep the dots as the evidence.
+
+11. **Step 1, phone. Medium (verify).**
+   - **Fixed (not a bug):** the frame is a capture artefact. A fresh phone load of both this reel and python-essentials shows the title, caption and tap hint; the test's step-1 shot is taken after re-selecting the current step, when the caption is mid-transition (python-essentials step 1 looks the same in the test). Nothing to change in the topic; the caption is also shortened.
+    - *What:* the captured frame is only the `RefresherList`: no title, caption, kicker or tap hint, and an empty band of about 250 px above the right rail. If this is the real resting state, the opening step has no heading and nothing says what to do; if it is a capture before the text fades in, the screenshot is misleading.
+    - *Fix:* check at 1 s after mount. If the text is missing, show the title and the first caption line on phone as on desktop.
+
+12. **Strip, steps 3, 5 and 6 (desktop) and 5 (phone). Medium.**
+   - **Fixed:** the strip is a plain HTML line at the top of every step 2 to 9 on both sizes, above any code panel, sized once; the frame is top-aligned so it never moves.
+    - *What:* OUTLINE says the strip is at the top (y 8–40) so the learner can find it in the same place each time. Here it moves: top of the drawing in 2, 4, 6, 7, 8, 9, but in the middle (below the code panel) in 3 and 5, and about 164 to 365 px down the frame between steps, so it jumps between steps. On phone step 5 it is shrunk to unreadable type (finding 1).
+    - *Fix:* anchor it at one height under the nav on every step and on every size, and size it once. In steps with a code panel put it above the panel.
+
+13. **Step 5, both sizes. Low.**
+   - **Fixed:** step 5 lights `CI`.
+    - *What:* the strip lights `tests`, but the step teaches CI ("on a CI runner"; step 4 lights CI). Steps 8 and 9 (installing for CI) do light CI.
+    - *Fix:* light `CI` in step 5.
+
+14. **Steps 7 and 9, captions, both sizes. Medium (pacing).**
+   - **Fixed:** step 7's answer card is 3 sentences, and step 9's caption is 4 short sentences; the data-break list, the compromised or overwriting index case and the platform note (Python 3.11 and later, Linux or macOS) are in the Deep dive (the platform note is newly added there).
+    - *What:* step 7's answer card (`2.0.0 ... row['status'] ... KeyError ... a new status value or even an added column can break a reader (Deep dive)`) is ten lines of mixed prose and code, and step 9's caption packs `==`, SHA-256, a lock tool, `--require-hashes`, "compromised or overwriting index", "Python 3.11 and later, on Linux or macOS" into nine lines. Those are Deep dive material for a 5 minute refresher; the narration is shorter and cleaner than the caption.
+    - *Fix:* cut each to what the narration says (about 3 sentences, 250 characters); move the data-break list, the index-compromise case and the platform note to the Deep dive.
+
+15. **Step 6, both sizes. Low.**
+   - **Fixed:** pass is now a crema outline dot with a tick and fail a cherry dot with a cross, as in step 3, so shape carries the verdict.
+    - *What:* pass is caramel and fail is cherry in the dot rows, while step 3 uses crema ticks for pass and step 5 crema `0`. Caramel is meant to be "look here"; here it means "pass". The two hues are also both warm, so the rows rely on colour alone.
+    - *Fix:* make passing dots crema outline with a tick and failing dots cherry with a cross (as in step 3), so shape carries the verdict.
+
+16. **Step 6, both sizes. Low.**
+   - **Fixed:** `re-run until green = a broken alarm` is latte at 15 units.
+    - *What:* `re-run until green = a broken alarm` is dim taupe at about 3:1 contrast, the same level as the strip's inactive gates, yet it is the lesson.
+    - *Fix:* latte or crema, 15 units.
+
+17. **Step 8, answer frame, both sizes. Low.**
+   - **Fixed:** the two cap lines are removed from the answer frame (the narration already left them for the Deep dive); the chosen option colour is the player's.
+    - *What:* the two lines `>=1.4,<2 → 1.5.0` / `~=1.4 → 1.5.0` float at the top right with no heading (what are they?), and the frame carries three accents at once: caramel (chosen option, strip), cinnamon (the drifting curve) and cherry (token, KeyError).
+    - *Fix:* add a latte heading `with a cap:` above them, or leave them for the Deep dive as the narration does; keep the curve cinnamon and let the chosen option be crema.
+
+18. **Step 2, both sizes. Low.**
+   - **Fixed:** both labels share one baseline, one left-aligned and one right-aligned.
+    - *What:* the two size-bar labels do not share a baseline: `≈100 lines: reasonable` is about 11 px higher than `1,000: usually too large`.
+    - *Fix:* put both on one baseline, one left-aligned under its marker and one right-aligned.
+
+19. **Step 4, both sizes. Low.**
+   - **Fixed:** headings are `fix: restore strip()` and `regression: 731`, and the gate pills say `gate green` and `gate red`.
+    - *What:* the column headings `PR: restore strip()` and `commit 731: lower()` do not say which run is good and which is bad; the learner reads the cherry colour instead. The left column's `merge enabled` is plain crema, so the good result has no mark of its own beyond the caramel gate.
+    - *Fix:* `fix: restore strip()` / `regression: 731 lower()` or add `green` / `red` words under the gates.
+
+20. **Step 1, desktop. Low.**
+   - **Fixed in part:** the caption now ends `All familiar? Swipe on.` and the pointer to topic 5 is in step 10 only. Not fixed: the 24 px gap under the pull-quote and centring the text column are in the shared player layout (`ReelPlayer.tsx`), which every topic uses; left for a layout pass over all reels.
+    - *What:* the italic pull-quote (the caption) sits only about 8 px above the kicker, with a left rule, and the text column is top-heavy compared with every other step. The caption ends "Swipe on to the notation for how costs grow", which reads as what the next step is, but the next step is review.
+    - *Fix:* add 24 px under the quote, centre the column, and end the caption "All familiar? Swipe on." (put the pointer to topic 5 in step 10 only).
+
+21. **Steps 7 and 8 vs 2, 3, 4, 6, 9, phone. Low.**
+   - **Fixed:** every drawing now uses the full phone width (heights reduced to about 300 units where needed), so type sizes match across steps; verified in the screenshots of steps 2 to 9.
+    - *What:* drawing width is inconsistent: 2, 3, 4, 6 and 9 fill the screen, while 5, 7 and 8 are centred at about 65% width with empty margins, so type size jumps between steps (11 px in 6, 8 px in 7).
+    - *Fix:* use one phone drawing width (about 360 units) for every step and size the labels from that.
+
+22. **Reel idea, all steps. Low.**
+   - **Fixed:** the strip is a plain latte text line (`review · tests · CI · release`) with the current word in caramel; it no longer looks like tabs, and the saved space goes to the drawings. The card-on-a-conveyor idea was not drawn.
+    - *What:* the plan's own idea, a change card riding a conveyor of gates and emitting exit tokens, is now just the four-pill strip in steps 2 to 9. The pills look like tabs (they could invite a tap), and in 3, 5, 6 and 8 the strip is the largest outlined object after the real drawing. The picture of "a change moving through gates" is never shown.
+    - *Fix:* either draw a small card that sits on the lit gate (crema outline, `#restore strip()`) and moves one gate per step, or make the strip a plain latte text line (`review · tests · CI · release`) with the current word in caramel, and spend the saved space on the real drawing.

@@ -28,10 +28,10 @@ export const Stack = ({ children }: { children: ReactNode }) => <div className="
 
 /**
  * A drawing on the 600-unit-wide canvas. `fill` makes it take the space left in a Stack (under a code panel);
- * otherwise it fills the whole visual. Keep text at 13 units or more (DESIGN.md).
+ * `auto` gives it the height its width implies (so a line of text above it stays next to it in a Stack); otherwise it fills the whole visual. Keep text at 13 units or more (DESIGN.md).
  */
-export const Svg = ({ label, h = 360, fill = false, children }: { label: string; h?: number; fill?: boolean; children: ReactNode }) => (
-  <svg viewBox={`0 0 600 ${h}`} className={fill ? 'min-h-0 w-full flex-1' : 'h-full w-full'} role="img" aria-label={label}>
+export const Svg = ({ label, h = 360, fill = false, auto = false, children }: { label: string; h?: number; fill?: boolean; auto?: boolean; children: ReactNode }) => (
+  <svg viewBox={`0 0 600 ${h}`} className={fill ? 'min-h-0 w-full flex-1' : auto ? 'h-auto min-h-0 w-full' : 'h-full w-full'} role="img" aria-label={label}>
     {children}
   </svg>
 );

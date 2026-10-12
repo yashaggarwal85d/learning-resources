@@ -76,6 +76,9 @@ assert kv['sorted_pass_of_20'] == '20'
 assert kv['flaky_pattern'] == 'FFPPFFPFFPFFPPPFPPFP' and len(kv['flaky_pattern']) == 20
 assert kv['flaky_pattern'].count('P') == 10 and kv['flaky_pattern'].count('F') == 10
 assert list(range(0, 20)) == list(range(20))  # PYTHONHASHSEED 0 to 19
+# On screen: the same set gives two orders under two seeds; seed 1 fails the test, seed 2 passes it (pattern index 1 is F, index 2 is P).
+assert kv['flaky_order_seed_1'] == "['refunded', 'paid']" and kv['flaky_pattern'][1] == 'F'
+assert kv['flaky_order_seed_2'] == "['paid', 'refunded']" and kv['flaky_pattern'][2] == 'P'
 
 # ---- Step 7 · A version number is a promise ----------------------------------------------------------------
 assert kv['bump_fix'] == '1.5.1' and kv['bump_feature'] == '1.6.0' and kv['bump_breaking'] == '2.0.0'

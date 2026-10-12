@@ -175,6 +175,8 @@ for seed in $(seq 0 19); do
   (cd "$W/flaky" && PYTHONHASHSEED=$seed PT test_flaky.py::test_statuses_sorted > /dev/null 2>&1) && sorted_pass=$((sorted_pass + 1))
 done
 out flaky_pass_of_20 "$flaky_pass"; out sorted_pass_of_20 "$sorted_pass"
+# The cause itself, on screen: the order the same set gives under two seeds (one failing, one passing).
+for seed in 1 2; do out "flaky_order_seed_$seed" "$(cd "$W/flaky" && PYTHONHASHSEED=$seed python3 -c "from clean import clean; print(list({clean(r) for r in ['Paid', ' refunded', 'paid']}))")"; done
 out flaky_pattern "$pattern"   # pass (P) or fail (F) for PYTHONHASHSEED=0..19; same code every time
 check "$sorted_pass" 20 'the sorted version passes under every seed'
 [ "$flaky_pass" -gt 0 ] && [ "$flaky_pass" -lt 20 ] || { echo "FAIL: flaky test should pass for some seeds only" >&2; exit 1; }
