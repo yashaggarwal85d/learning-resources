@@ -5,7 +5,7 @@
     {
       "lines": [
         "The word RAM lets you count steps, and a recursive algorithm hands you that count as a recurrence.",
-        "Here is how to read the answer off it.",
+        "This is how to read the answer.",
         {
           "beat": 0.4
         },
@@ -27,20 +27,20 @@
         },
         "A level is some number of nodes, all of one size, so its total is that number times the work of one.",
         "For merge sort on sixty four keys, every level totals sixty four.",
-        "There are seven levels, so the answer is the sum of the column. Four hundred forty eight."
+        "Seven levels, so add up the column. That is four hundred and forty eight in all."
       ]
     },
     {
       "lines": [
         "Same kind of tree, new recurrence. Every call now makes eight calls on half the keys, and does n squared work itself.",
-        "The root level costs four thousand ninety six. The calls at the bottom are on one key, and cost one each.",
+        "The root alone does four thousand and ninety six units of work. The calls at the bottom are on one key, and do one unit each.",
         {
           "beat": 0.4
         },
-        "What does that bottom level total?"
+        "What do the calls at the bottom add up to?"
       ],
       "answer": [
-        "Two hundred sixty two thousand one hundred forty four.",
+        "The bottom level totals two to the power eighteen.",
         "Eight calls per node, six levels down... that is a lot of leaves, each doing one unit.",
         "The column doubles at every level, so the bottom row is sixty four times the root.",
         "That leaf count has a name. The watershed. When the leaves win, the answer is the watershed itself."
@@ -71,7 +71,7 @@
         {
           "beat": 0.3
         },
-        "For a plain power it holds by itself. A over b to the d... here two over four, one half.",
+        "For a simple power it holds by itself. The fraction here is two over four, which is one half.",
         "Binary search is case two, with a watershed of one. The log comes from the depth alone."
       ]
     },
@@ -82,13 +82,13 @@
         {
           "beat": 0.3
         },
-        "The column does shrink. But the ratio between neighbouring levels keeps drifting towards one at the top.",
+        "The column does shrink, yet the ratio of nearby levels creeps up towards one.",
         "So no constant below one fits, and none of the three cases applies.",
         "A log power patches this one. The extended case two allows the same size, up to a log power.",
         {
           "beat": 0.3
         },
-        "The gap that remains is from below. Akra Bazzi, in a moment, covers it. Recursion trees cover the rest."
+        "The gap that remains is from below. The general theorem, in a moment, covers it. Recursion trees cover the rest."
       ]
     },
     {
@@ -99,7 +99,7 @@
           "beat": 0.3
         },
         "The tree still can. A fifth plus seven tenths is nine tenths.",
-        "So each level's sizes add up to nine tenths of the level above, and the work shrinks by the same factor.",
+        "Each level now totals nine tenths of the level above, so the work shrinks by the same factor.",
         "The root dominates. The total stays under ten times n. Linear."
       ]
     },
@@ -120,7 +120,7 @@
     },
     {
       "lines": [
-        "Akra Bazzi turns that sum into an exponent.",
+        "The general theorem turns that sum into an exponent.",
         "Find the one number p where the fractions, each raised to the power p, add up to one.",
         {
           "beat": 0.3
@@ -157,7 +157,7 @@
         {
           "beat": 0.3
         },
-        "Subtract a lower order term. With c n minus d, the step closes, as soon as d is at least one.",
+        "Subtract a lower order term. Take the guess and subtract a constant. The step then closes, as soon as that constant is at least one.",
         "A stronger hypothesis is easier to prove."
       ]
     },
@@ -185,7 +185,7 @@
       ],
       "answer": [
         "The leaves. The watershed is n to the log base two of seven, about n to the two point eight one.",
-        "Cutting the number of calls from eight to seven moved the exponent from three to two point eight one."
+        "With seven calls instead of eight, the exponent falls from three to two point eight one."
       ]
     },
     {
@@ -196,7 +196,7 @@
       ],
       "answer": [
         "No case applies. This f sits below the watershed by only a log factor.",
-        "Akra Bazzi gives n log log n.",
+        "The general theorem gives n log log n.",
         "The tree agrees. The levels add up like a harmonic series."
       ]
     },
@@ -204,10 +204,10 @@
       "lines": [
         "Prove it, three of three.",
         "T of n equals four T of n over two, plus n. The Master theorem says n squared.",
-        "Your induction with c n squared ends at c n squared plus n. What now?"
+        "Your induction with a constant times n squared ends at that, plus n. What now?"
       ],
       "answer": [
-        "Strengthen the guess. A larger c never helps, because the plus n sits outside it.",
+        "Strengthen the guess. A bigger constant never helps, because the plus n sits outside it.",
         "Subtract a linear term, and the step closes. The theorem was right.",
         "A recurrence bounds what one algorithm costs. Next, how to prove that no algorithm can do better."
       ]
