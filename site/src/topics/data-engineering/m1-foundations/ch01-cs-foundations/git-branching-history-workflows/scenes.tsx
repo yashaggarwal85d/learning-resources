@@ -95,7 +95,7 @@ export function MergeOrRebase({ t, answer }: StepCtx) {
       <Pill x={528} y={254} w={76}>dedupe</Pill>
       <T x={30} y={334} s={15} f={C.taupe}>old commits:</T>
       <T x={30} y={358} s={15} f={C.taupe}>in the reflog</T>
-      {[['2f40780', 230], ['ebc701c', 340], ['f8b3630', 450]].map(([id, x]) => <Commit key={id} x={Number(x)} y={338} kind="ghost" id={String(id)} s={14} o={0.7} strike />)}
+      {[['2f40780', 290], ['ebc701c', 390], ['f8b3630', 490]].map(([id, x]) => <Commit key={id} x={Number(x)} y={338} kind="ghost" id={String(id)} s={14} o={0.7} strike />)}
     </Svg>
   );
 }
