@@ -5,7 +5,8 @@
 // through relative imports, so a chapter-level file such as refreshers.tsx counts), and the shared player code every
 // reel runs on (SHARED below). A change to any of them needs a commit in the range whose message has a line
 // "Unlock: <topic-id>" (or "Unlock: shared" for SHARED files), written only when the owner asked for that change
-// (ROUTINE.md section 0). Routine runs never write one.
+// (ROUTINE.md section 0). Routine runs never write one, except for the Basics backfill (ROUTINE.md section 1B), which
+// the owner approved on 2026-10-12: that commit changes a live topic's prerequisites.mdx and the backlog list only.
 import { spawnSync } from 'node:child_process';
 import { existsSync, readFileSync } from 'node:fs';
 import { dirname, join, normalize, resolve } from 'node:path';
