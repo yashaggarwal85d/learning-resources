@@ -1,8 +1,8 @@
 # Data Engineering — shortlist of topics to cut (12 October 2026)
 
-**Why.** The Data Engineering syllabus has 553 teaching topics (plus 71 Systems-in-Production cases); DSA has 257 and Rust 155. At one topic per routine run, the long tail is years of runs. This list names the topics that do not bear on the owner's goal: a Data Engineer role abroad (Germany, Austria, Netherlands, UK, Nordics, Switzerland; see the resumes repo, `_master/profile.md`) for a profile built on Python, SQL, Spark, Kafka, Flink, Airflow, Iceberg on MinIO, ClickHouse, Oracle/PostgreSQL/MySQL, YugabyteDB, Redis, Data Vault, Kubernetes/Docker/Helm/ArgoCD/Jenkins, Prometheus/Grafana, Power BI, with Databricks/Delta/dbt/AWS Glue/Terraform/Snowflake/BigQuery as the learnable extras, and semiconductor manufacturing + supply chain as the domain edge.
+**Why.** The Data Engineering syllabus has 553 teaching topics (plus 67 Systems-in-Production cases); DSA has 257 and Rust 155. At one topic per routine run, the long tail is years of runs. This list names the topics that do not bear on the owner's goal: a Data Engineer role abroad (Germany, Austria, Netherlands, UK, Nordics, Switzerland; see the resumes repo, `_master/profile.md`) for a profile built on Python, SQL, Spark, Kafka, Flink, Airflow, Iceberg on MinIO, ClickHouse, Oracle/PostgreSQL/MySQL, YugabyteDB, Redis, Data Vault, Kubernetes/Docker/Helm/ArgoCD/Jenkins, Prometheus/Grafana, Power BI, with Databricks/Delta/dbt/AWS Glue/Terraform/Snowflake/BigQuery as the learnable extras, and semiconductor manufacturing + supply chain as the domain edge.
 
-**Nothing is deleted by this file.** It is a proposal. Each line is a syllabus topic title, word for word, so it can be removed by title. Counts are per tier and per chapter.
+**Applied on 12 October 2026 (owner decision): every Tier A topic and case is marked *(skipped)* in `data-engineering.md`.** Skipped topics stay in the curriculum (the site shows them muted with a "skipped" tag) but get no reel: `scripts/claim.mjs` never hands them out, a chapter is complete without them, and the build's flow check lets a live topic follow them. Tier B is not applied. Each line is a syllabus topic title, word for word, so the tag can be added or removed by title.
 
 **The test for each cut**, in order:
 1. Does it appear in Data Engineer job descriptions or interviews in those markets? (Not: is it interesting.)
@@ -243,7 +243,7 @@ Keep the four that interviews test (negotiating contracts and SLOs, communicatin
 - Breaking changes and deprecation campaigns (taught in §11.3 "Schema-change rollout: expand/contract")
 - Proving data-platform value
 
-### Systems in Production (46 of 71 cases)
+### Systems in Production (46 of 67 cases)
 Keep the cases behind the owner's stack and the ones every interviewer knows (MapReduce, RDDs, Spark SQL, Bigtable, RocksDB, Dynamo, Kafka, the Dataflow Model, Flink state, Iceberg, Delta Lake, Snowflake once, Dremel once, Airflow, Spanner, Aurora, DataHub, Gorilla, Michelangelo, the cross-company pattern). Cut the rest, and the four duplicates (Dremel and Snowflake appear in both M1 and M2; FoundationDB in both M6 and M8; DBLog and "Debezium into Hudi/Iceberg/Delta" repeat §8.2).
 - M1: System R optimizer; PostgreSQL planner and executor; PostgreSQL MVCC and the Mandrill wraparound outage; Join Order Benchmark; MonetDB/X100 → Vectorwise; HyPer compiled execution and morsel-driven parallelism; DuckDB; Amazon Redshift; Apache Arrow; Free-threaded CPython; Dremel / BigQuery (the M2 copy stays); Snowflake (the M2 copy stays)
 - M2: DynamoDB; S3 consistency evolution; TAO; Memcache at Facebook; Hudi

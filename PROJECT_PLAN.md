@@ -61,7 +61,7 @@ The course must read as one continuous story. Every topic follows from the one b
 
 - **Taught before it is used.** Every concept, term and piece of notation a reel uses is either taught by an earlier topic in the same domain (a full topic or a refresher reel), declared as a prerequisite from another track, or explained on the spot in that reel. Each topic records the concepts it **introduces** and the concepts it **uses**; the build fails if a live topic uses a concept that no earlier live topic introduces and that it doesn't declare.
 - **Prerequisites come first in the syllabus.** If a topic needs another topic from the same domain, that topic is earlier in the order. A prerequisite found later is a syllabus bug, fixed by reordering.
-- **Released in order, no gaps.** A topic goes live only when every topic before it in its domain is live. A topic finished early is held back until then. The build enforces it.
+- **Released in order, no gaps.** A topic goes live only when every topic before it in its domain is live. A topic finished early is held back until then. The build enforces it. A topic the owner has marked *(skipped)* in the syllabus is not a gap: it stays in the curriculum for reference, gets no reel, and the order flows past it.
 - **Bridges at both ends.** Every reel opens by connecting to the topic before it ("you've just seen X; here is where it bites") and ends by handing off to the next ("this leaves one question open: Y"). Refresher reels do the same, briefly.
 - **A flow review before release.** A reviewer reads the previous topic, this topic and the next one in sequence and flags anything abrupt, unexplained or out of order; it is fixed before the topic ships.
 

@@ -4,11 +4,11 @@ import { TOPICS, type TopicMeta } from '../topics/registry';
 import { checkCoverage } from './coverage';
 import { checkTopicFiles } from './topic-checks';
 
-type Flat = { domain: string; title: string; refresher: boolean; m: number; mTitle: string; c: number; cTitle: string };
+type Flat = { domain: string; title: string; refresher: boolean; skipped: boolean; m: number; mTitle: string; c: number; cTitle: string };
 
 const flatten = (d: Domain): Flat[] =>
   d.milestones.flatMap((m) =>
-    m.chapters.flatMap((c) => c.topics.map((t) => ({ domain: d.id, title: t.title, refresher: t.refresher, m: m.number, mTitle: m.title, c: c.number, cTitle: c.title }))),
+    m.chapters.flatMap((c) => c.topics.map((t) => ({ domain: d.id, title: t.title, refresher: t.refresher, skipped: t.skipped, m: m.number, mTitle: m.title, c: c.number, cTitle: c.title }))),
   );
 
 let cache: ReturnType<typeof build> | null = null;
@@ -46,22 +46,23 @@ function build() {
   for (const t of ordered) {
     const list = flat.get(t.domain)!;
     const i = list.findIndex((x) => x.title === t.syllabusTitle);
-    const n = list[i + 1];
+    const n = list.slice(i + 1).find((x) => !x.skipped);
     nextAfter[t.id] = n ? { title: liveFor(t.domain, n.title)?.title ?? n.title, live: !!liveFor(t.domain, n.title) } : null;
   }
 
   // What's being produced next in each domain: the earliest topics without a live reel.
   const upcoming: Record<string, string[]> = {};
   for (const d of domains) {
-    upcoming[d.id] = flat.get(d.id)!.filter((x) => !liveFor(d.id, x.title)).slice(0, 3).map((x) => x.title);
+    upcoming[d.id] = flat.get(d.id)!.filter((x) => !x.skipped && !liveFor(d.id, x.title)).slice(0, 3).map((x) => x.title);
   }
 
-  const totalTopics = domains.reduce((n, d) => n + d.counts.topics, 0);
+  // Skipped topics stay in the curriculum but never get a reel, so they are not "coming".
+  const totalTopics = domains.reduce((n, d) => n + d.counts.topics - d.counts.skipped, 0);
   const tree = domains
     .map((d) => ({
       id: d.id,
       title: d.title,
-      coming: d.counts.topics - ordered.filter((t) => t.domain === d.id).length,
+      coming: d.counts.topics - d.counts.skipped - ordered.filter((t) => t.domain === d.id).length,
       milestones: d.milestones
         .map((m) => ({
           number: m.number,
@@ -107,7 +108,8 @@ function checkFlow(domains: Domain[], flat: Map<string, Flat[]>, liveFor: (d: st
     list.forEach((x, i) => {
       const t = liveFor(d.id, x.title);
       if (!t) return;
-      const gaps = list.slice(0, i).filter((y) => !liveFor(d.id, y.title));
+      if (x.skipped) errors.push(`${t.id} has a reel, but the syllabus marks "${x.title}" *(skipped)*: no reel is made for a skipped topic. Remove the mark or the topic.`);
+      const gaps = list.slice(0, i).filter((y) => !y.skipped && !liveFor(d.id, y.title));
       if (gaps.length)
         errors.push(`${t.id} is live, but ${gaps.length} topic(s) before it are not: ${gaps.slice(0, 3).map((g) => `"${g.title}"`).join(', ')}${gaps.length > 3 ? ', …' : ''}. Hold it until they are.`);
       const missing = t.uses.filter((c) => !taught.has(c) && !t.declared?.includes(c));
