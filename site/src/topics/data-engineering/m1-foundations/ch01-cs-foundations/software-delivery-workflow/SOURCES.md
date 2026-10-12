@@ -167,6 +167,10 @@ Added by the content plan (2026-10-12), same page:
 
 > It is also a convenient way to bootstrap your list of hashes, since it shows the hashes of the packages it fetched.
 
+Added by the fact-check (2026-10-12), same page:
+
+> This prevents a surprising hash mismatch upon the release of a new version that matches the requirement specifier.
+
 Contents:
 - Default pip does no tamper checks and may run arbitrary build code from source distributions.
 - Secure recipe: `--require-hashes` plus `--only-binary :all:`.
@@ -328,6 +332,10 @@ Version: Google Engineering Practices documentation (no edition date shown); fet
 
 > If you have several CLs that depend on each other, you need to find a way to make sure the whole system keeps working after each CL is submitted.
 
+Added by the fact-check (2026-10-12), same page:
+
+> sometimes to the point where important points get missed or dropped.
+
 Contents:
 - Why small: faster, more thorough, fewer bugs, less wasted work, easier merge/design/rollback.
 - What is small: one self-contained change with its tests; ~100 lines fine, ~1000 too large; file count matters.
@@ -448,6 +456,12 @@ Version: pytest stable docs (page shows no number; sibling pages show pytest-9.x
 > No tests were collected
 
 > They are represented by the pytest.ExitCode enum.
+
+Added by the fact-check (2026-10-12), same page:
+
+> Test execution was interrupted by the user
+
+> Maximum number of warnings exceeded (see --max-warnings)
 
 Contents:
 - 0 all passed; 1 some failed; 2 interrupted by user; 3 internal error; 4 command-line usage error; 5 no tests collected; 6 max warnings exceeded (`--max-warnings`).
@@ -718,6 +732,14 @@ Version: PEP 440, Status: Final, Created 18-Mar-2013, Replaces PEP 386; fetched 
 
 > are fully compatible with the version scheme defined in this PEP
 
+Added by the fact-check (2026-10-12), same page:
+
+> Pre-releases should allow a ., -, or _ separator between the
+> release segment and the pre-release segment.
+
+> Local version identifiers SHOULD NOT be used when publishing upstream
+> projects to a public index server
+
 Contents:
 - Abstract; Definitions (projects, releases, distributions, tools)
 - Version scheme: public version identifiers (epoch, release, pre-release, post-release, development segments); local version identifiers
@@ -820,6 +842,13 @@ Version: pip documentation v26.2.1
 
 > Generate a JSON file describing what pip did to install the provided requirements.
 
+Added by the fact-check (2026-10-12), same page:
+
+> Note that pip install prefers to leave the installed version as-is
+> unless --upgrade is specified.
+
+> Include pre-release and development versions. By default, pip only finds stable versions.
+
 Contents:
 - Options used here: `--dry-run`, `--ignore-installed`, `--report`, `--require-hashes`, `--only-binary`, `--no-index`, `--find-links`, `--target`.
 
@@ -829,6 +858,13 @@ Version: pip documentation v26.2.1
 > For source archives, download_info.archive_info.hashes may
 
 > be absent when the requirement was installed from the wheel cache
+
+Added by the fact-check (2026-10-12), same page:
+
+> this format is not meant to be a lock file format as such;
+
+> environment: an object describing the environment where the installation report was
+> generated.
 
 Contents:
 - The JSON report: `install` entries with `metadata`, `download_info` (URL, `archive_info.hashes`), `requested`; the environment markers it was resolved for.
@@ -904,3 +940,85 @@ Version: GitHub Docs (en, current); no edition shown, fetched 2026-10-12
 
 Contents:
 - What a GitHub-hosted runner is (a new VM, except single-CPU runners in a container), the OS images, preinstalled software updated weekly and listed in each run's log, IP addresses, permissions.
+
+## actions/checkout README
+URL: https://raw.githubusercontent.com/actions/checkout/main/README.md
+Version: `main` branch README ("Checkout v7"), fetched 2026-10-12
+> uses: actions/checkout@v7
+
+> Updated to the node24 runtime
+
+Release SHAs (not a quote; read with `git ls-remote` on 2026-10-12 because the GitHub API and release pages return 403 from the build machine): actions/checkout tags `v7` and `v7.0.1` → 3d3c42e5aac5ba805825da76410c181273ba90b1; actions/setup-python tags `v7` and `v7.0.0` → 5fda3b95a4ea91299a34e894583c3862153e4b97 (both lightweight tags on the commit).
+
+Contents:
+- Usage (`actions/checkout@v7`), inputs, scenarios; what changed in v7.
+
+## actions/runner-images README
+URL: https://raw.githubusercontent.com/actions/runner-images/main/README.md
+Version: `main` branch README, fetched 2026-10-12
+> `ubuntu-latest` or `ubuntu-24.04`
+
+> In general the `-latest` label is used for the latest OS image version that is GA.
+
+> To avoid unwanted migration, users can specify a specific OS version in the yaml file
+
+Contents:
+- The available images and their labels (`ubuntu-latest` = Ubuntu 24.04; `ubuntu-26.04`, `ubuntu-22.04`, `ubuntu-slim`); image release cadence; the `-latest` migration process.
+
+## Ubuntu 24.04 runner image README
+URL: https://raw.githubusercontent.com/actions/runner-images/main/images/ubuntu/Ubuntu2404-Readme.md
+Version: Image Version 20261004.327.1, fetched 2026-10-12
+> [Ubuntu] `ubuntu-latest` label will use Ubuntu 26.04 in November 2026
+
+> Image Version: 20261004.327.1
+
+> Bash 5.2.21(1)-release
+
+> Python 3.12.3
+
+> Pip 24.0
+
+> jq 1.7
+
+Contents:
+- Announcements; installed software (languages, package managers, tools) with versions; apt packages.
+
+## Ubuntu 26.04 runner image README
+URL: https://raw.githubusercontent.com/actions/runner-images/main/images/ubuntu/Ubuntu2604-Readme.md
+Version: Image Version 20260927.149.1, fetched 2026-10-12
+> Image Version: 20260927.149.1
+
+> Bash 5.3.9(1)-release
+
+> Python 3.14.4
+
+> Pip 25.1.1
+
+> jq 1.8.1
+
+Contents:
+- Installed software of the image `ubuntu-latest` moves to in November 2026.
+
+## Changelog - pip documentation v26.2.1
+URL: https://pip.pypa.io/en/stable/news/
+Version: pip documentation v26.2.1 (26.2.1, 2026-08-04), fetched 2026-10-12
+> Fix selecting pre-release versions when only pre-releases match.
+
+> Add --no-require-hashes to disable automatic enablement of
+
+> Allow unpinned requirements to use hashes from constraints.
+
+Contents:
+- Release notes per version; 26.0 (2026-01-30): pre-releases selected when they are the only match, `--all-releases`/`--only-final`; 26.1: unpinned requirements may take hashes from constraints; 26.2: `--no-require-hashes`.
+
+## pytest 9.1.1 on PyPI (JSON API)
+URL: https://pypi.org/pypi/pytest/9.1.1/json
+Version: pytest 9.1.1 (uploaded 2026-06-19), fetched 2026-10-12
+> colorama>=0.4; sys_platform == \"win32\"
+
+> "requires_python":">=3.10"
+
+Note: the text extraction drops everything between a `<` and the next `>`, so the `python_version < "3.11"` markers of `exceptiongroup` and `tomli` are not quotable here; the full list (read with `curl` the same day) is colorama (win32), exceptiongroup (< 3.11), iniconfig, packaging, pluggy, pygments, tomli (< 3.11).
+
+Contents:
+- The release's metadata: `requires_dist`, `requires_python`, files and upload times.

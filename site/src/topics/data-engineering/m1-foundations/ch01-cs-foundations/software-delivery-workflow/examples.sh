@@ -150,6 +150,10 @@ out pytest_bad "$(tail -1 "$W/bad.txt" | sed 's/ in [0-9.]*s.*//')"
 out pytest_bad_ids "$(grep '^FAILED' "$W/bad.txt" | sed 's/^FAILED tests\///; s/ - .*//' | tr '\n' ';' | sed 's/;$//')"
 mkdir -p "$W/empty"; set +e; (cd "$W/empty" && PT .) > /dev/null 2>&1; none_rc=$?; set -e
 out pytest_none_rc "$none_rc"; check "$none_rc" 5 'no tests collected exits 5'
+# Exit 2 is not only "the run is wrong": a clean.py that doesn't even import stops collection with 2, not 1.
+mkdir -p "$W/broken"; cp -r tests "$W/broken/"; printf 'def clean(value)\n    return value\n' > "$W/broken/clean.py"
+set +e; (cd "$W/broken" && PT tests) > /dev/null 2>&1; broken_rc=$?; set -e
+out pytest_import_error_rc "$broken_rc"; check "$broken_rc" 2 'a syntax error in the code under test: collection error, exit 2'
 # A flaky test: it depends on set order, which depends on the string hash seed (random per process).
 mkdir -p "$W/flaky"; cp clean.py "$W/flaky/"
 cat > "$W/flaky/test_flaky.py" << 'PY'
@@ -210,8 +214,8 @@ jobs:
       run:
         shell: bash            # bash --noprofile --norc -eo pipefail {0}: a failing pipe stage fails the step
     steps:
-      - uses: actions/checkout@v7
-      - uses: actions/setup-python@v7
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1      # v7.0.1
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97  # v7.0.0
         with:
           python-version: '3.13'
           cache: pip
@@ -328,8 +332,8 @@ def out(k, v):
     print(f'{k}={v}')
 
 # shopclean 1.5.0 is the library; each change decides the next number (semver 2.0.0 rules 6 to 8).
-out('bump_fix', bump('1.5.0', 'fix'))            # strip() restored: a backward compatible bug fix
-out('bump_feature', bump('1.5.0', 'feature'))    # a new optional argument: backward compatible functionality
+out('bump_fix', bump('1.5.0', 'fix'))            # blank lines skipped (1.5.0 crashes on one): a backward compatible bug fix
+out('bump_feature', bump('1.5.0', 'feature'))    # a new optional argument top_n= (1.5.0 already added min_orders=): backward compatible functionality
 out('bump_breaking', bump('1.5.0', 'breaking'))  # output column status renamed to order_status
 assert bump('1.5.0', 'fix') == '1.5.1' and bump('1.5.0', 'feature') == '1.6.0' and bump('1.5.0', 'breaking') == '2.0.0'
 vs = ['1.10.0', '1.9.0', '2.0.0', '1.9.1']
@@ -351,6 +355,7 @@ LIB = {
     '1.5.0': "def summarise(lines, min_orders=0):\n    counts = {}\n    for line in lines:\n        s = clean(json.loads(line)['status'])\n        counts[s] = counts.get(s, 0) + 1\n    return [{'status': s, 'orders': n} for s, n in sorted(counts.items()) if n >= min_orders]\n",
     '2.0.0': "def summarise(lines, min_orders=0):\n    counts = {}\n    for line in lines:\n        s = clean(json.loads(line)['status'])\n        counts[s] = counts.get(s, 0) + 1\n    return [{'order_status': s, 'orders': n} for s, n in sorted(counts.items()) if n >= min_orders]\n",
 }
+LIB['2.1.0rc1'] = LIB['2.0.0']  # a pre-release, for the pre-release rule only
 version, outdir = sys.argv[1], sys.argv[2]
 extra = sys.argv[3] if len(sys.argv) > 3 else ''
 code = f"import json\n__version__ = '{version}'\n\n\ndef clean(value):\n    return value.strip().lower()\n\n\n{LIB[version]}{extra}"
@@ -389,6 +394,12 @@ set +e; app "$W/ci" > /dev/null; ci_rc=$?; set -e
 out ci_installs "$(PYTHONPATH="$W/ci" python3 -c 'import shopclean; print(shopclean.__version__)')"
 out ci_app_rc "$ci_rc"; check "$ci_rc" 1 'same requirements, new day: the app test fails'
 out ci_app_error "$(tail -1 "$W/app_err.txt")"
+# The laptop doesn't move on its own: pip leaves an installed version as-is unless --upgrade is given.
+# (--dry-run with --report installs nothing, so it also runs on a PEP 668 "externally managed" Python.)
+would() { PYTHONPATH="$W/laptop" python3 -m pip install --quiet --dry-run --report "$W/would.json" --no-index --find-links "$W/index" "$@" -r "$W/requirements.txt" > /dev/null 2>&1
+          python3 -c "import json,sys; print(' '.join(i['metadata']['version'] for i in json.load(open(sys.argv[1]))['install']) or 'nothing')" "$W/would.json"; }
+out laptop_rerun_installs "$(would)"; check "$(would)" nothing 'a re-run on the laptop keeps 1.5.0'
+out laptop_upgrade_installs "$(would --upgrade)"; check "$(would --upgrade)" 2.0.0 'with --upgrade the laptop takes 2.0.0'
 # The library's consumers say what they can take: a range that stops before the next major.
 PIPI "$W/ranged" 'shopclean>=1.4,<2'; out range_installs "$(app "$W/ranged")"
 PIPI "$W/compat" 'shopclean~=1.4'; out compat_installs "$(app "$W/compat")"
@@ -410,11 +421,20 @@ set +e; python3 -m pip install --no-index --find-links "$W/tampered" --target "$
 out tamper_rc "$tamper_rc"; check "$tamper_rc" 1 'hash mismatch: pip refuses'
 grep -q 'DO NOT MATCH THE HASHES' "$W/tamper.txt" || { echo 'FAIL: no hash-mismatch message' >&2; exit 1; }
 out tamper_message "$(grep -o 'THESE PACKAGES DO NOT MATCH THE HASHES[A-Z ]*' "$W/tamper.txt" | head -1)"
-# Hash-checking mode needs every requirement pinned with ==: a range is refused.
+# A range with a hash. pip 24.0 refuses it for the missing == pin; pip 26.2.1 accepts the range, resolves 2.0.0 and refuses
+# it for the hash mismatch (the "surprising hash mismatch" the pip docs say pinning prevents). Either way: exit 1.
 printf 'shopclean>=1.4 \\\n    --hash=sha256:%s\n' "$H" > "$W/ranged.lock"
-set +e; python3 -m pip install --no-index --find-links "$W/index" --target "$W/t3" -r "$W/ranged.lock" > "$W/ranged.txt" 2>&1; ranged_lock_rc=$?; set -e
-out ranged_lock_rc "$ranged_lock_rc"; check "$ranged_lock_rc" 1 'a range under --hash is refused'
-out ranged_lock_message "$(grep -o 'must have their versions pinned with ==' "$W/ranged.txt" | head -1)"
+set +e; python3 -m pip install --no-index --find-links "$W/index" --target "$W/t3" --require-hashes -r "$W/ranged.lock" > "$W/ranged.txt" 2>&1; ranged_lock_rc=$?; set -e
+out ranged_lock_rc "$ranged_lock_rc"; check "$ranged_lock_rc" 1 'a hashed range is refused while 2.0.0 is on the index'
+out ranged_lock_message "$(grep -o -m1 'must have their versions pinned with ==\|THESE PACKAGES DO NOT MATCH THE HASHES' "$W/ranged.txt")"   # printed, not asserted: depends on the pip version
+# The same hashed range on last week's index (1.4.0 and 1.5.0 only): pip 24.0 refuses (none), pip 26.2.1 installs 1.5.0.
+mkdir -p "$W/lastweek"; cp "$W/index/shopclean-1.4.0-py3-none-any.whl" "$W/index/shopclean-1.5.0-py3-none-any.whl" "$W/lastweek/"
+set +e; python3 -m pip install --quiet --no-index --find-links "$W/lastweek" --target "$W/t4" --require-hashes -r "$W/ranged.lock" > /dev/null 2>&1; set -e
+out ranged_lock_lastweek_installs "$(PYTHONPATH="$W/t4" python3 -c 'import shopclean; print(shopclean.__version__)' 2>/dev/null || echo none)"   # printed, not asserted
+# Pre-releases: PEP 440 lets one in when it is the only match. pip 26.2.1 does (2.1.0rc1); pip 24.0 doesn't (none).
+mkdir -p "$W/pre"; python3 "$W/mkwheel.py" 2.1.0rc1 "$W/pre"
+set +e; python3 -m pip install --quiet --no-index --find-links "$W/pre" --target "$W/tpre" 'shopclean>=1.4' > /dev/null 2>&1; set -e
+out prerelease_only_installs "$(PYTHONPATH="$W/tpre" python3 -c 'import shopclean; print(shopclean.__version__)' 2>/dev/null || echo none)"   # printed, not asserted: depends on the pip version
 # pip freeze pins what is installed (here: the laptop's environment).
 out freeze_laptop "$(python3 -m pip freeze --path "$W/laptop")"
 
