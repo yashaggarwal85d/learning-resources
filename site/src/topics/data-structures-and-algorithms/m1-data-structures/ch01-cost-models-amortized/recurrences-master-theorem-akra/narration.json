@@ -5,7 +5,7 @@
     {
       "lines": [
         "The word RAM lets you count steps, and a recursive algorithm hands you that count as a recurrence.",
-        "This is how to read the answer.",
+        "Read the answer like this.",
         {
           "beat": 0.4
         },
@@ -33,16 +33,19 @@
     {
       "lines": [
         "Same kind of tree, new recurrence. Every call now makes eight calls on half the keys, and does n squared work itself.",
+        {
+          "beat": 0.6
+        },
         "The root alone does four thousand and ninety six units of work. The calls at the bottom are on one key, and do one unit each.",
         {
-          "beat": 0.4
+          "beat": 1.0
         },
-        "What do the calls at the bottom add up to?"
+        "What is the bottom total?"
       ],
       "answer": [
         "The bottom level totals two to the power eighteen.",
         "Eight calls per node, six levels down... that is a lot of leaves, each doing one unit.",
-        "The column doubles at every level, so the bottom row is sixty four times the root.",
+        "The column doubles... at every level... so the bottom row... is sixty four times the root.",
         "That leaf count has a name. The watershed. When the leaves win, the answer is the watershed itself."
       ]
     },
@@ -113,7 +116,7 @@
       ],
       "answer": [
         "No. A third plus two thirds is exactly one.",
-        "So every full level adds back up to n, and the levels run about log n deep.",
+        "So every full level... adds back up to n... and the levels run... about log n deep.",
         "That is n log n. This analysis can no longer show linear time.",
         "The sum of the fractions decides. Below one, the column shrinks. At exactly one, it ties."
       ]
@@ -121,7 +124,7 @@
     {
       "lines": [
         "The general theorem turns that sum into an exponent.",
-        "Find the one number p where the fractions, each raised to the power p, add up to one.",
+        "Find the one number p... where the fractions, each raised to the power p... add up to one.",
         {
           "beat": 0.3
         },
@@ -136,7 +139,7 @@
     {
       "lines": [
         "Now the proof side, substitution. Guess, then prove by induction.",
-        "Merge sort, guess T of n is at most c times n.",
+        "Merge sort... guess T of n is at most c times n.",
         "The step gives... c times n, plus n.",
         {
           "beat": 0.4
@@ -153,7 +156,7 @@
       "lines": [
         "A second trap. Here the guess is right.",
         "Counting merge sort's calls, the Master theorem says linear, and the counts say two n minus one.",
-        "But the induction still fails by the plus one.",
+        "It still misses by one.",
         {
           "beat": 0.3
         },
@@ -185,6 +188,9 @@
       ],
       "answer": [
         "The leaves. The watershed is n to the log base two of seven, about n to the two point eight one.",
+        {
+          "beat": 0.8
+        },
         "With seven calls instead of eight, the exponent falls from three to two point eight one."
       ]
     },
