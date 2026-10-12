@@ -30,6 +30,23 @@ Added by the content plan (2026-10-12):
 
 > In fact, the n − 1 lower bound for finding the maximum holds in a more powerful model called algebraic decision
 
+Added by the fact-check (2026-10-12), for claims 1, 2 and 13 (12.1 definitions, 12.2 model and cost, 12.3 dictionary outputs):
+
+> The worst-case complexity of a problem Π is the worst-case running time of the fastest algorithm
+
+> To prove an
+> inequality of the form TΠ (n) = Ω( f (n)), we must prove that every algorithm that solves Π has a
+
+> Unfortunately, there is no formal definition of the phrase ‘all algorithms’!
+
+> This specification is called a model of computation.
+
+> But the number of decisions is certainly a lower bound on
+> the actual running time, which is good enough to prove a lower bound on the complexity of a
+
+> Since there are n + 1
+> possible outputs, any decision tree must have at least n + 1 leaves
+
 Contents:
 - 12.1 What a lower bound is: worst-case complexity of a problem as min over algorithms of max over inputs; upper vs lower bounds.
 - 12.2 Decision trees: queries at internal nodes, outputs at leaves, running time is depth; k-ary trees; dictionary problem example.
@@ -68,6 +85,28 @@ Added by the content plan (2026-10-12), for the "adjacent in sorted order" move 
 > there must be an input that is consistent with the comparisons we’ve performed, in which x i and
 > x m are adjacent in sorted order. But then we can swap x i and x m , without changing the result of
 
+Added by the fact-check (2026-10-12), for claims 19, 21, 23 and 35:
+
+> the algorithm cannot distinguish between a malicious adversary
+> and an honest user who actually chooses an input in advance and answers all queries truthfully.
+
+> In every other case, the adversary
+> can answer so that at most one mark needs to be removed.
+
+> To prove a lower bound for this problem, we can use a combination of information theory and
+> two adversary arguments.
+
+> A more complicated adversary argument (also involving pruning the comparison tree with little
+> birdies) improves this lower bound to 2n − o(n).
+
+> Moreover, this lower bound is exactly tight when k = 1 or k = 2. In fact, these are the only values
+> of k ≤ n/2 for which the exact complexity of the selection problem is known. Even the case k = 3
+> is still open!
+
+> Prove that finding the second largest element in an n-element array requires exactly
+
+Note (fact-check): these notes are dated Fa'13 (© 2018). The "k = 3 is still open" remark is the notes' own status, not checked as current; the topic states the current status from the SEA 2025 paper below instead.
+
 Contents:
 - 13.1 Three-Card Monte: the dealer cheats, motivating the adversary idea.
 - 13.2 n-Card Monte: any algorithm that skips a bit loses to an adversary answering all zeros.
@@ -95,6 +134,19 @@ Version: 28 September 2016 (Tucker Section 3.4)
 > min of the losers (n/2 - 1 each) for a total of
 
 > This is actually optimal, as we can show with
+
+Added by the fact-check (2026-10-12), for claims 6, 9, 21 and 30:
+
+> log((n/2)n/2) = (n/2)(log n - 1). This proves
+
+> consistent orderings. After g guesses, there are at
+> least n!/2g.
+
+> worst case. (In fact exactly n(n-1)/2.)
+
+> items: A of untouched, B with wins and no
+> losses, C with losses and no wins, and D with
+> both wins and losses.
 
 Contents:
 - Review of sorting algorithms: insertion/selection n(n-1)/2, mergesort, heapsort at O(n log n).
@@ -126,6 +178,14 @@ Version: undated lecture notes (file lect0913.pdf), Lecture 5, chapter 5
 Added by the content plan (2026-10-12):
 
 > Let’s do an example with n = 3, and S as initially consisting of the 6 possible orderings of {1, 2, 3}:
+
+Added by the fact-check (2026-10-12), for claims 11 and 12:
+
+> In fact, if we are a bit more clever in the proof, we can get rid of the floor in the bound.
+
+> One way to think of the kinds of bounds we have been proving is to think of a matrix with one
+
+Note (fact-check): this file is word for word the text of Avrim Blum's CMU 15-451 Fall 2011 lecture 5 notes (https://www.cs.cmu.edu/~avrim/451f11/lectures/lect0913.pdf, fetched with `sources.mjs` and compared line by line: identical after the URL header; cached as `sources/cmu-lect0913.txt`). The Deep dive may credit it as "Blum, CMU 15-451 lecture 5 (2011), as hosted by Northeastern".
 
 Contents:
 - 5.1 Overview: worst case, average case, randomized, 2-player game view.
@@ -161,6 +221,25 @@ Added by the content plan (2026-10-12): the n! components (one per sorted order)
 
 > computations under varying sets of primitives. JCSS
 > 18, (1979) 86-91.
+
+Added by the fact-check (2026-10-12): the model's steps (arithmetic operations and tests are both counted), the discriminant reduction, and the method's stated limitation (Frontier).
+
+> Thus, a step of
+> the computation in our model will be either an Arithmetic
+> Operation or a Test
+
+> Any algorithm for this problem can, in one more step,
+> test if the discriminant yd 0, and this happens if and only
+> if all the x i are distinct.
+
+> Given a polynomial p of degree d in
+> n variables, the best lower bound that can be derived by our
+> method to the complexity of evaluating p is of order n log d.
+
+> Any general method that can pass this limitation
+> would be of great interest.
+
+Note (fact-check): the n! components are "a maximal connected component of W for each permutation" (quoted above); the words "one for each permutation" are a paraphrase, not a quote. The model also allows square roots and real constants (section 2: "f v := c o f", "f v := √f"), which the OCR garbles too badly to quote.
 
 Contents:
 - Abstract and 1. Introduction: topological method for algebraic computation trees; element distinctness as Example 1; Theorem 1 (Omega(n log n)).
@@ -239,6 +318,16 @@ Version: CS 466/666 notes, "Lectures: July 11 - 25" (2013 notes, Spring 2014 cou
 > comparisons are necessary and sufficient to find the maximum and
 > minimum in a set of n elements.
 
+Added by the fact-check (2026-10-12), for claims 10, 35 and 36:
+
+> is n lg n – n +1 if n is a power of 2.
+
+> that then number of comparisons used in the worst case is n lg n – an oscillating term.
+
+> Theorem: At least 1 ¾ n comparisons are necessary, in the worst case, to find the median
+
+Note (fact-check): the 1¾n median bound is the notes' classroom bound; the best known lower bound is about 2n (Bent and John 1985, as the SEA 2025 paper below cites it, and Erickson 13.8's "2n − o(n)").
+
 Note: in the PDF the bounds around these lines are ⌊n/2⌋ VV comparisons and ⌈3n/2⌉ − 2 comparisons, typeset with private-use floor and ceiling glyphs that the text layer keeps as unprintable characters, so the quotes stop short of them. The notes' Stirling line prints "+ n lg e" where the sign is minus (the next clause, "about n lg n – 1.44.. n", has it right). The table of adversary answers (V untested, W only won, L only lost, O both) is in the text but its layout does not survive extraction well enough to quote line by line; the topic uses the categories and the rule that only a V–V comparison removes two units.
 
 Contents:
@@ -265,8 +354,61 @@ Version: 15-451 Fall 2011 lecture notes, Lecture 6 (file lect0915.pdf). Added by
 > Theorem 6.9 (Lower bound) n(n − 1)/2 queries are necessary to determine connectivity in the
 > worst case.
 
+Added by the fact-check (2026-10-12), for claims 18 and 33:
+
+> Claim 6.4 (Lower bound) n − 1 comparisons are needed in the worst-case to find the maximum
+> of n elements.
+
+> Assume n is a power of 2 — in fact, let’s assume this for the entire rest of today’s lecture.
+
+Note (fact-check): Claim 6.7's n + lg n − 2 is stated under that power-of-2 assumption; the general n − 2 + ⌈lg n⌉ is from Erickson 13 (exercise 5) and the SEA 2025 paper below.
+
 Contents:
 - 6.2 Upper and lower bounds in a concrete model (what costs 1, what is free).
 - 6.3 Sorting in the exchange model: n − 1 swaps necessary and sufficient (cycle argument).
 - 6.4 Comparison model: lg M for M outputs; lg(n!) between n lg n − 1.443n and n lg n; binary insertion sort and mergesort within n lg n; maximum n − 1 (component argument); second-largest n − 1 lower, 2n − 3 and n + lg n − 2 upper, tight (Kislitsyn 1964).
 - 6.5 Query model: connectivity is evasive, n(n − 1)/2 probes (adversary answers 0 unless that disconnects).
+
+## Lecture 5: Hash Tables (Jeff Erickson, Algorithms lecture notes)
+URL: http://jeffe.cs.illinois.edu/teaching/algorithms/notes/05-hashing.pdf
+Version: Lecture 5 [Sp'17], copyright 2018 Jeff Erickson, CC BY-NC-SA 4.0. Added by the fact-check (2026-10-12) as the opened source for claim 27 (a hash set's O(1) per operation is expected, over a randomly chosen hash function, and any fixed hash function has bad inputs).
+
+> In fact, for any fixed
+> hash function, there is a subset of at least |U|/m items that all hash to the same location.
+
+> The only way to provably avoid this worst-case behavior is to choose our hash functions
+> randomly.
+
+> expected time for an unsuccessful search in a chained hash table, using near-universal hashing, is
+
+Contents:
+- Why hash functions must be random; universal, near-universal and k-uniform families.
+- Chaining: worst-case search O(1 + ℓ(x)); expected Θ(1 + α) with near-universal hashing; expected worst-case search is not constant.
+- Multiplicative and binary hash families; perfect hashing with constant expected worst-case search; open addressing and cuckoo hashing.
+
+## Exact Lower Bounds for the Number of Comparisons in Selection (Dörrer, Gendle, Betz, von Smercek, Steding, Stober; SEA 2025)
+URL: https://drops.dagstuhl.de/storage/00lipics/lipics-vol338-sea2025/LIPIcs.SEA.2025.16/LIPIcs.SEA.2025.16.pdf
+Version: LIPIcs vol. 338, SEA 2025, article 16, published 2025-07-15 (CC BY 4.0). Added by the fact-check (2026-10-12) to state the current status of exact selection (the Frontier), in place of the 2013 lecture-note remark.
+
+> For selecting the smallest element, optimal algorithms are known with V1 (n) = n − 1.
+
+> For the second smallest element, it is known that V2 (n) = n − 2 + ⌈log n⌉ [8] (all logarithms
+
+> Our results include optimal algorithms for n up to 15 and arbitrary i, and for n = 16 when i ≤ 6.
+
+> We
+> determine the precise values V7 (14) = 25, V6 (15) = V7 (15) = 26, and V8 (15) = 27, where previously,
+> only a range was known.
+
+> Looking at the special case of selecting the median i = n/2, the
+> best-known algorithm requires 2.95n comparisons [4].
+
+> Samuel W. Bent and John W. John. Finding the Median Requires 2n Comparisons.
+
+Note: the text layer garbles the paper's best-known general lower bound, "(1 + H(i/n)) · n + Ω(√n)" (√ lost), so it is not quoted; for the median that is about 2n, the Bent and John bound cited as [1].
+
+Contents:
+- 1 Motivation: V1(n) = n − 1, V2(n) = n − 2 + ⌈log n⌉; median between about 2n (lower) and 2.95n (upper); Paterson's conjecture.
+- 1.1 Contribution: forward (minimax) and backward computer search; optimal algorithms for n ≤ 15 (all i) and n = 16 (i ≤ 6); new exact values.
+- 2–4 Posets, compatible solutions, the two searches, results tables.
+- 5 Conclusion and open questions: bidirectional search, weight functions, Yao's conjecture.
