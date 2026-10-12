@@ -235,3 +235,4 @@ Fact-check record: `FACT-CHECK.md` (2.3, 2026-10-11). Source quotes: `SOURCES.md
 
 - Content review fixes (2026-10-11): step 5 states basic case 2 and step 6 introduces the log-power extension as the patch for the n log n gap (n/log n stays the remaining gap); step 12 numbers are the exact solutions of the recurrences with constant 1, not operation counts; Prove it 1 and 2 show only the root total before the answer.
 - Ledger: `integration` is declared (prerequisite 03). `word-ram` and `van-emde-boas-tree` are ids that topic 2 must introduce under exactly these names (release-seam check).
+- 2026-10-12: merged main; all checks except narration pass; looks review fixes done. Content final. Next: narration (7), ship (8).
