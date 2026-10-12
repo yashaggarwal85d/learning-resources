@@ -20,7 +20,7 @@
           "beat": 0.4
         },
         "This job takes three n log n, plus eight n steps... where log is the number of halvings from n down to one.",
-        "Divide it by n log n, and from two hundred fifty six on, the answer stays between three and four.",
+        "Divide it by n log n. From two hundred and fifty six on, the answer stays between three and four.",
         "So it's theta of n log n... and the constants, and the plus eight n, simply drop out."
       ]
     },
@@ -56,7 +56,7 @@
     {
       "lines": [
         "A logarithm counts divisions.",
-        "How many times do you divide by the base to get down to one?",
+        "How many times can you divide by the base before you reach one?",
         "Bisect needed about ten tests for a thousand commits.",
         {
           "beat": 0.4
@@ -100,19 +100,19 @@
       "answer": [
         "Four. Three levels of four hundred reach only sixty four million keys.",
         "The fourth reaches over twenty five billion.",
-        "Anything from a hundred to four hundred sixty four entries gives four levels. A binary tree would need twenty seven."
+        "Any fan-out from a hundred to four hundred and sixty four gives four levels. A binary tree would need twenty seven."
       ]
     },
     {
       "lines": [
         "Sorting is the same logarithm, with a big base.",
-        "The nightly job sorts a tebibyte, and memory holds sixteen thousand, three hundred eighty four blocks.",
+        "The nightly job sorts about a trillion bytes, and memory holds sixteen thousand, three hundred and eighty four blocks.",
         "One pass makes sixty four sorted runs.",
         "The merge takes up to sixteen thousand at once, one block for each run and one for the output, so one more pass merges all sixty four.",
         {
           "beat": 0.4
         },
-        "Two passes, and each one reads and writes the whole tebibyte. Merge two at a time, and it's seven."
+        "Two passes, and each one reads and writes all those bytes. Merge two at a time, and it's seven."
       ]
     },
     {
@@ -126,7 +126,7 @@
     {
       "lines": [
         "So... five things to keep.",
-        "Big O is a ceiling, omega a floor, theta both. A logarithm counts divisions. Any base converts with the natural log.",
+        "Big O is a ceiling, omega a floor, theta both. A logarithm counts divisions. Any base converts with a natural log.",
         "A big base makes a tiny log: four levels, two passes.",
         "And big O counts steps, not seconds.",
         {

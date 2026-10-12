@@ -1,0 +1,426 @@
+{
+ "topic": "de.asymptotic-notation-logarithms",
+ "voice": "tara-v1",
+ "clips": {
+  "01": {
+   "hash": "593d0443d85159ac",
+   "duration": 17.93,
+   "lines": [
+    {
+     "text": "Tests tell you a change is right. They don't tell you how its cost grows when the data grows.",
+     "start": 0.15,
+     "end": 5.546
+    },
+    {
+     "text": "For that you need big O, big theta and big omega... and logarithms in any base.",
+     "start": 5.966,
+     "end": 11.396
+    },
+    {
+     "text": "The last of the five refreshers. All familiar? Swipe on to the memory hierarchy.",
+     "start": 12.216,
+     "end": 17.58
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.3,
+   "wpm": 164,
+   "wer": 0.0
+  },
+  "02": {
+   "hash": "9520236c1a4166b2",
+   "duration": 33.499,
+   "lines": [
+    {
+     "text": "Big O is a ceiling. From some point on, the cost stays below some constant times the function.",
+     "start": 0.15,
+     "end": 6.293
+    },
+    {
+     "text": "Big omega is a floor. Big theta is both.",
+     "start": 6.713,
+     "end": 10.911
+    },
+    {
+     "text": "This job takes three n log n, plus eight n steps... where log is the number of halvings from n down to one.",
+     "start": 11.731,
+     "end": 20.365
+    },
+    {
+     "text": "Divide it by n log n. From two hundred and fifty six on, the answer stays between three and four.",
+     "start": 20.785,
+     "end": 27.241
+    },
+    {
+     "text": "So it's theta of n log n... and the constants, and the plus eight n, simply drop out.",
+     "start": 27.661,
+     "end": 33.149
+    }
+   ],
+   "lufs": -16.6,
+   "true_peak": -1.3,
+   "wpm": 158,
+   "wer": 0.0
+  },
+  "03": {
+   "hash": "b19263c28470309a",
+   "duration": 11.282,
+   "lines": [
+    {
+     "text": "Here's a trap.",
+     "start": 0.15,
+     "end": 0.925
+    },
+    {
+     "text": "You've just shown that job is theta of n log n.",
+     "start": 1.345,
+     "end": 4.531
+    },
+    {
+     "text": "A reviewer writes... it's big O of n squared.",
+     "start": 4.951,
+     "end": 8.674
+    },
+    {
+     "text": "Is that also true?",
+     "start": 9.494,
+     "end": 10.932
+    }
+   ],
+   "lufs": -16.2,
+   "true_peak": -1.5,
+   "wpm": 144,
+   "wer": 0.0
+  },
+  "03a": {
+   "hash": "b28769c8d1078a58",
+   "duration": 22.804,
+   "lines": [
+    {
+     "text": "Yes. Big O is only a ceiling, and n squared is a very high one... over a million times above the job, at a hundred million rows.",
+     "start": 0.15,
+     "end": 10.759
+    },
+    {
+     "text": "And it isn't a case, either. Best or worst, any cost can have a big O, a big omega and a big theta.",
+     "start": 11.179,
+     "end": 19.383
+    },
+    {
+     "text": "Say theta when you mean the growth rate.",
+     "start": 19.803,
+     "end": 22.454
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.4,
+   "wpm": 153,
+   "wer": 0.0
+  },
+  "04": {
+   "hash": "d498ec63ce0f423c",
+   "duration": 33.812,
+   "lines": [
+    {
+     "text": "Now let the data grow.",
+     "start": 0.15,
+     "end": 2.279
+    },
+    {
+     "text": "At a thousand rows, nothing matters. Everything is instant.",
+     "start": 2.699,
+     "end": 7.718
+    },
+    {
+     "text": "At a hundred million orders, and a billion steps a second... n takes a tenth of a second. N log n, under three seconds.",
+     "start": 8.138,
+     "end": 16.271
+    },
+    {
+     "text": "And n squared? A hundred and sixteen days.",
+     "start": 16.691,
+     "end": 20.472
+    },
+    {
+     "text": "The bars are on a log scale... from microseconds, all the way up to a year.",
+     "start": 21.292,
+     "end": 25.833
+    },
+    {
+     "text": "Double the data, and n doubles... n log n grows a little more... and n squared quadruples.",
+     "start": 26.253,
+     "end": 33.462
+    }
+   ],
+   "lufs": -16.3,
+   "true_peak": -1.4,
+   "wpm": 140,
+   "wer": 0.0
+  },
+  "05": {
+   "hash": "131021bc0c408f08",
+   "duration": 15.727,
+   "lines": [
+    {
+     "text": "A logarithm counts divisions.",
+     "start": 0.15,
+     "end": 2.632
+    },
+    {
+     "text": "How many times can you divide by the base before you reach one?",
+     "start": 3.052,
+     "end": 6.803
+    },
+    {
+     "text": "Bisect needed about ten tests for a thousand commits.",
+     "start": 7.353,
+     "end": 10.882
+    },
+    {
+     "text": "So how many halvings take a billion down to one?",
+     "start": 11.702,
+     "end": 15.377
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.4,
+   "wpm": 137,
+   "wer": 0.0
+  },
+  "05a": {
+   "hash": "0cd033a0cb529945",
+   "duration": 13.383,
+   "lines": [
+    {
+     "text": "About thirty. Every ten halvings divide by about a thousand... and a billion is a thousand, times a thousand, times a thousand.",
+     "start": 0.15,
+     "end": 8.254
+    },
+    {
+     "text": "A million times more data than bisect's, for only twenty more halvings.",
+     "start": 8.674,
+     "end": 13.033
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.4,
+   "wpm": 152,
+   "wer": 0.0
+  },
+  "06": {
+   "hash": "b13524ac9c1b30b8",
+   "duration": 23.816,
+   "lines": [
+    {
+     "text": "Any base converts to any other.",
+     "start": 0.15,
+     "end": 2.817
+    },
+    {
+     "text": "Divide the natural log of x by the natural log of the base.",
+     "start": 3.237,
+     "end": 6.985
+    },
+    {
+     "text": "It's one length, measured with three rulers... base two, base ten, and base one thousand.",
+     "start": 7.405,
+     "end": 13.446
+    },
+    {
+     "text": "In your head, log base two is about three point three two times log base ten. So a billion, nine zeros, is about thirty halvings.",
+     "start": 13.866,
+     "end": 23.466
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -1.4,
+   "wpm": 149,
+   "wer": 0.0
+  },
+  "07": {
+   "hash": "a438ccb1065e53b4",
+   "duration": 19.935,
+   "lines": [
+    {
+     "text": "The bigger the base, the fewer the divisions.",
+     "start": 0.15,
+     "end": 2.491
+    },
+    {
+     "text": "A billion needs about thirty halvings, but only three divisions by a thousand... and just over two by sixteen thousand, three hundred eighty four.",
+     "start": 2.911,
+     "end": 12.148
+    },
+    {
+     "text": "Indexes and sorts divide by hundreds, or thousands, at a time... so their logarithms are tiny.",
+     "start": 12.968,
+     "end": 19.585
+    }
+   ],
+   "lufs": -16.7,
+   "true_peak": -1.4,
+   "wpm": 144,
+   "wer": 0.0
+  },
+  "08": {
+   "hash": "609ef0e9489ea415",
+   "duration": 20.513,
+   "lines": [
+    {
+     "text": "Here's the orders index.",
+     "start": 0.15,
+     "end": 1.409
+    },
+    {
+     "text": "A hundred million orders, with a Postgres B-tree on the order id.",
+     "start": 1.829,
+     "end": 5.779
+    },
+    {
+     "text": "One page holds about four hundred entries... and on an inner page, each entry points to a page below.",
+     "start": 6.199,
+     "end": 12.443
+    },
+    {
+     "text": "So every level multiplies the reach by about four hundred.",
+     "start": 12.863,
+     "end": 16.03
+    },
+    {
+     "text": "How many levels, from the root down to a leaf?",
+     "start": 16.85,
+     "end": 20.163
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -1.4,
+   "wpm": 164,
+   "wer": 0.0
+  },
+  "08a": {
+   "hash": "2806760cc8bba87b",
+   "duration": 16.408,
+   "lines": [
+    {
+     "text": "Four. Three levels of four hundred reach only sixty four million keys.",
+     "start": 0.15,
+     "end": 5.053
+    },
+    {
+     "text": "The fourth reaches over twenty five billion.",
+     "start": 5.473,
+     "end": 7.897
+    },
+    {
+     "text": "Any fan-out from a hundred to four hundred and sixty four gives four levels. A binary tree would need twenty seven.",
+     "start": 8.317,
+     "end": 16.058
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.4,
+   "wpm": 150,
+   "wer": 0.0
+  },
+  "09": {
+   "hash": "38e291df162195f6",
+   "duration": 28.577,
+   "lines": [
+    {
+     "text": "Sorting is the same logarithm, with a big base.",
+     "start": 0.15,
+     "end": 2.867
+    },
+    {
+     "text": "The nightly job sorts about a trillion bytes, and memory holds sixteen thousand, three hundred and eighty four blocks.",
+     "start": 3.287,
+     "end": 10.291
+    },
+    {
+     "text": "One pass makes sixty four sorted runs.",
+     "start": 10.711,
+     "end": 13.399
+    },
+    {
+     "text": "The merge takes up to sixteen thousand at once, one block for each run and one for the output, so one more pass merges all sixty four.",
+     "start": 13.819,
+     "end": 21.833
+    },
+    {
+     "text": "Two passes, and each one reads and writes all those bytes. Merge two at a time, and it's seven.",
+     "start": 22.653,
+     "end": 28.227
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -1.4,
+   "wpm": 170,
+   "wer": 0.0
+  },
+  "10": {
+   "hash": "3885fb0204aa36e7",
+   "duration": 21.971,
+   "lines": [
+    {
+     "text": "Big O throws away constants on purpose.",
+     "start": 0.15,
+     "end": 2.129
+    },
+    {
+     "text": "So it can't tell you seconds.",
+     "start": 2.549,
+     "end": 4.259
+    },
+    {
+     "text": "Two scans of the same hundred million rows... same count, same growth... can take very different times, depending on where the data lives.",
+     "start": 4.679,
+     "end": 13.36
+    },
+    {
+     "text": "In the cache, a hundred million steps take a tenth of a second. If every step waits on a disk, it's hours.",
+     "start": 13.78,
+     "end": 21.621
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.4,
+   "wpm": 158,
+   "wer": 0.0
+  },
+  "11": {
+   "hash": "df1b2f79bf506af0",
+   "duration": 31.054,
+   "lines": [
+    {
+     "text": "So... five things to keep.",
+     "start": 0.15,
+     "end": 2.035
+    },
+    {
+     "text": "Big O is a ceiling, omega a floor, theta both. A logarithm counts divisions. Any base converts with a natural log.",
+     "start": 2.455,
+     "end": 13.424
+    },
+    {
+     "text": "A big base makes a tiny log: four levels, two passes.",
+     "start": 13.844,
+     "end": 18.398
+    },
+    {
+     "text": "And big O counts steps, not seconds.",
+     "start": 18.819,
+     "end": 23.265
+    },
+    {
+     "text": "Next up... the memory hierarchy, where one step can cost a nanosecond, or tens of milliseconds.",
+     "start": 24.185,
+     "end": 30.704
+    }
+   ],
+   "lufs": -16.3,
+   "true_peak": -1.4,
+   "wpm": 116,
+   "wer": 0.0
+  }
+ }
+}
