@@ -749,8 +749,8 @@ The chapter plan's lab part (A.3, third row) lands in "Build, break, measure": `
 - [x] 2.4 Coverage map `coverage.json` (syllabus clauses above, 11 sources' contents (60 items), the 40 expert items as mapped above, two `out` with reasons); `gapReview` is `builder (content review pending)` with `open: []` until step 4 replaces it.
 - [x] 3 Build (Sonnet builder): `examples.py` (green on rustc 1.97.0 and 1.99.0), the `prove5_ok.rs` rewrite, `reel.tsx`, `scenes.tsx`, `index.mdx`, `prerequisites.mdx` (every outside link curl-checked: 200 and matching title), `narration.json`, `coverage.json`, registry entry (`held`); `npm run build` green; `test:examples` green for this topic (`python-essentials` needs Python 3.12, `check-all` picks `python3.12`). Builder notes: the landscape layout uses the same vertical `Stack` as the earlier topics (code over drawing), not code-left/drawing-right; field cells show the field name and, for a hole, `moved` under it (the name stays so the hole is identifiable); step 14's lane labels and counters were rearranged to fit (H 312); step 23's handoff stacks `g1` over `g2` (H 476) so the edges do not cross.
 - [x] 4 Content review (flow, gap hunt, expert reader) and fixes; `coverage.json` → `gapReview` (content review agent (Opus), 2026-10-12, `open: []`). Resolutions in `REVIEW.md`.
-- [ ] 5 `check-all --skip narration --changed`; looks review on screenshots and fixes.
-- [ ] 6 Content final (`claim.mjs final`).
+- [x] 5 `check-all --skip narration --changed`; looks review on screenshots and fixes.
+- [x] 6 Content final (`claim.mjs final`).
 - [ ] 7 Narration generated, listened to, committed.
 - [ ] 8 Ship (merge `origin/main`, continuity check against the two earlier topics' real handoffs and ids, `check-all --changed`, merge, CI green).
 
