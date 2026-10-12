@@ -67,11 +67,11 @@ const reel: Reel = {
       title: 'The statement: f against the watershed',
       body: (
         <>
-          For T(n) = a·T(n/b) + f(n), with constants a ≥ 1 and b &gt; 1, compare f(n) with the watershed n^(log_b a). <b>Case 1:</b> f(n) = O(n^(log_b a − ε))
-          for some ε &gt; 0 (polynomially smaller), so T(n) = Θ(n^(log_b a)). <b>Case 2:</b> f(n) = Θ(n^(log_b a)·logᵏ n) for some k ≥ 0, so
-          T(n) = Θ(n^(log_b a)·logᵏ⁺¹ n). <b>Case 3:</b> f(n) = Ω(n^(log_b a + ε)) <em>and</em> a·f(n/b) ≤ c·f(n) for some c &lt; 1 and all large n, so
-          T(n) = Θ(f(n)). That regularity condition makes the column shrink geometrically; for f = n^d it holds automatically, with c = a/b^d, here 2/4 = ½.
-          The CLRS 4th edition (2022) relaxes a ≥ 1 to a &gt; 0 and builds floors and ceilings into the statement.
+          For T(n) = a·T(n/b) + f(n), with constants a ≥ 1 and b &gt; 1 and f(n) ≥ 0 for large n, compare f(n) with the watershed n^(log_b a). <b>Case 1:</b> f(n) = O(n^(log_b a − ε))
+          for some ε &gt; 0 (polynomially smaller), so T(n) = Θ(n^(log_b a)). <b>Case 2:</b> f(n) = Θ(n^(log_b a)) (the same size), so
+          T(n) = Θ(n^(log_b a)·log n). <b>Case 3:</b> f(n) = Ω(n^(log_b a + ε)) <em>and</em> a·f(n/b) ≤ c·f(n) for some c &lt; 1 and all large n, so
+          T(n) = Θ(f(n)). That regularity condition makes the column shrink geometrically; for f = n^d it holds automatically, with c = a/b^d, here 2/4 = ½. It is there to exclude an f that jumps
+          between n and n² from one size to the next (Deep dive). As restated from the CLRS 4th edition (2022), that edition relaxes a ≥ 1 to a &gt; 0 and builds floors and ceilings into the statement.
         </>
       ),
       duration: 4,
@@ -81,10 +81,11 @@ const reel: Reel = {
       title: 'The gaps between the cases',
       body: (
         <>
-          Here f = n log n sits above the watershed n, but not by any n^ε, and it is not Θ(n) either, so the basic cases are silent. The column shrinks, but the
-          ratio between neighbouring levels drifts towards 1 at the top, so no constant below 1 fits. (The extended case 2 with k = 1 gives Θ(n log² n), and
-          the column’s sum, 64 × 21, shows it.) The same silence falls on n/log n from below, on a non-constant number of subproblems such as √n·T(√n) + n, and on
-          full-history recurrences like the quicksort recurrence of the first reel. Akra–Bazzi, next, covers the gaps; recursion trees cover the rest.
+          Here f = n log n sits above the watershed n, but not by any n^ε, and it is not Θ(n) either, so the three cases are silent. The column shrinks, but the
+          ratio between neighbouring levels drifts towards 1 at the top, so no constant below 1 fits. The patch is the extended case 2: f(n) = Θ(n^(log_b a)·logᵏ n)
+          for some k ≥ 0 gives Θ(n^(log_b a)·logᵏ⁺¹ n), so k = 1 gives Θ(n log² n), and the column’s sum, 64 × 21, shows it. The gap that remains is from below:
+          n/log n is not Θ(n·logᵏ n) for any k ≥ 0 (Prove it 2). So are a non-constant number of subproblems such as √n·T(√n) + n, and full-history recurrences like the
+          quicksort recurrence stated and checked in the first topic’s Deep dive. Akra–Bazzi, in a moment, covers the gaps; recursion trees cover the rest.
         </>
       ),
       duration: 4,
@@ -109,10 +110,10 @@ const reel: Reel = {
       duration: 1.6,
       predict: {
         options: [
-          { label: 'Yes: both subproblems still shrink' },
-          { label: 'No: every full level sums to n, so Θ(n log n)', correct: true },
-          { label: 'No: the tree is lopsided, so Θ(n²)' },
-          { label: 'Yes, but with a larger constant' },
+          { label: 'Yes: Θ(n)' },
+          { label: 'No: Θ(n log n)', correct: true },
+          { label: 'No: Θ(n²)' },
+          { label: 'Yes: Θ(n), larger constant' },
         ],
         explain: (
           <>
@@ -143,16 +144,16 @@ const reel: Reel = {
       title: 'Predict: the proof that proves nothing',
       body: (
         <>
-          Merge sort, guess T(n) ≤ c·n. The induction step gives T(n) ≤ 2·c·(n/2) + n = c·n + n. What has this proved?
+          Now the proof side, <b>substitution</b>: guess, then prove by induction. Merge sort, guess T(n) ≤ c·n. The induction step gives T(n) ≤ 2·c·(n/2) + n = c·n + n. What has this proved?
         </>
       ),
       duration: 1.6,
       predict: {
         options: [
           { label: 'T(n) = O(n)' },
-          { label: 'Nothing: the step had to come back to c·n, and c·n + n is larger', correct: true },
+          { label: 'Nothing', correct: true },
           { label: 'T(n) = O(n log n)' },
-          { label: 'T(n) ≤ (c + 1)·n, which is still O(n)' },
+          { label: 'T(n) ≤ (c + 1)·n' },
         ],
         explain: (
           <>
@@ -170,7 +171,7 @@ const reel: Reel = {
         <>
           A second trap. The Master theorem (case 1) says C(n) = 2C(n/2) + 1 is Θ(n), and the counts say 2n − 1, so c·n is the right guess; the induction still fails
           by the “+ 1”. Subtract a lower-order term: with c·n − d the step comes back with room to spare when d ≥ 1. A stronger hypothesis is easier to prove. Base
-          cases are checked separately, with constants large enough to cover them. The same move proves the selection bound: (9/10)·k·n + n ≤ k·n when k ≥ 10, which is
+          cases are checked separately, with constants large enough to cover them. Substitution also proves the selection bound, with no subtraction needed: (9/10)·k·n + n ≤ k·n when k ≥ 10, which is
           the 10n of the tree (with floors the small n are base cases, checked directly).
         </>
       ),
@@ -181,9 +182,10 @@ const reel: Reel = {
       title: 'Back to the problem',
       body: (
         <>
-          Read the shape of the column, then confirm by substitution. The first recursion doubles but every level costs n: a tie, n log n. The third doubles but each
-          level costs 9/10 of the last: the root wins, linear. The second never doubles and costs 1 per level: log n. The counts are exact word operations at a
-          million keys, constants dropped; the next reel asks what <em>every</em> algorithm must pay.
+          Read the shape of the column, then confirm by substitution. The first recursion doubles but every level costs n: a tie, n log n. The second never doubles
+          and costs 1 per level: log n. The third recurses twice but each level costs 9/10 of the last: the root wins, linear. The counts are the exact solutions
+          of the three recurrences at a million keys with the constant in f set to 1 (the examples file), not operation counts of any implementation; the next reel
+          asks what <em>every</em> algorithm must pay.
         </>
       ),
       duration: 3.8,
@@ -225,14 +227,14 @@ const reel: Reel = {
         options: [
           { label: 'Yes: case 2' },
           { label: 'No: case 1, Θ(n)' },
-          { label: 'No case applies: f sits below the watershed n by only a log factor; Akra–Bazzi (p = 1) gives Θ(n log log n)', correct: true },
+          { label: 'No case applies: Θ(n log log n)', correct: true },
           { label: 'No: case 3, Θ(n/log n)' },
         ],
         explain: (
           <>
-            f = n/log n is not Θ(n·logᵏ n) for any k ≥ 0 (case 2 fails) and not O(n^(1−ε)) for any ε &gt; 0 (case 1 fails): the gap, from below. With p = 1 the integral
-            of (u/log u)/u² is ln ln n − ln ln 2, started at 2 because f is undefined at 1, so T(n) = Θ(n log log n). The tree agrees: level i sums to n/(lg n − i), a
-            harmonic series (64/6, 64/5, … 64/1 at n = 64), so T(n) = n·H = Θ(n lg lg n).
+            f = n/log n is not Θ(n·logᵏ n) for any k ≥ 0 (case 2, even extended, fails) and not O(n^(1−ε)) for any ε &gt; 0 (case 1 fails): the gap, from below. With p = 1
+            the integral ∫₂ⁿ du/(u ln u) = ln ln n − ln ln 2, started at 2 because f is undefined at 1, so T(n) = Θ(n log log n). The tree agrees: level i sums to
+            n/(log₂ n − i), a harmonic series (64/6, 64/5, … 64/1 at n = 64), so T(n) = n·H<sub>log₂ n</sub> = Θ(n log log n).
           </>
         ),
       },

@@ -25,7 +25,7 @@
         {
           "beat": 0.3
         },
-        "A level is a few nodes of one size, so its total is the number of nodes times the work of one.",
+        "A level is some number of nodes, all of one size, so its total is that number times the work of one.",
         "For merge sort on sixty four keys, every level totals sixty four.",
         "There are seven levels, so the answer is the sum of the column. Four hundred forty eight."
       ]
@@ -66,28 +66,29 @@
       "lines": [
         "The textbook statement compares f of n with the watershed.",
         "Polynomially smaller, case one. The leaves win.",
-        "Same size, up to a log power, case two. A tie, with one more log.",
+        "The same size, case two. A tie, with one more log.",
         "Polynomially larger, case three, and the root wins... but only if a regularity condition holds, so the column really shrinks.",
         {
           "beat": 0.3
         },
-        "For a plain power it holds by itself. Here, two over four, one half.",
+        "For a plain power it holds by itself. A over b to the d... here two over four, one half.",
         "Binary search is case two, with a watershed of one. The log comes from the depth alone."
       ]
     },
     {
       "lines": [
         "The three cases are not exhaustive.",
-        "Here f is n log n. It is above the watershed, but not by any power of n.",
+        "Here f is n log n. It is above the watershed, but not by any power of n, and it is not the same size either.",
         {
           "beat": 0.3
         },
         "The column does shrink. But the ratio between neighbouring levels keeps drifting towards one at the top.",
-        "So no constant below one fits, and no case applies.",
+        "So no constant below one fits, and none of the three cases applies.",
+        "A log power patches this one. The extended case two allows the same size, up to a log power.",
         {
           "beat": 0.3
         },
-        "Akra Bazzi, next, covers this gap. Recursion trees cover the rest."
+        "The gap that remains is from below. Akra Bazzi, in a moment, covers it. Recursion trees cover the rest."
       ]
     },
     {
@@ -134,7 +135,7 @@
     },
     {
       "lines": [
-        "Now substitution. Guess, then prove by induction.",
+        "Now the proof side, substitution. Guess, then prove by induction.",
         "Merge sort, guess T of n is at most c times n.",
         "The step gives... c times n, plus n.",
         {
@@ -164,12 +165,12 @@
       "lines": [
         "Back to the problem.",
         "Merge sort doubles, but every level costs n. A tie. N log n.",
-        "Median of medians doubles, but each level costs nine tenths of the last. The root wins. Linear.",
         "Binary search never doubles, and costs one per level. Log n.",
+        "Median of medians doubles, but each level costs nine tenths of the last. The root wins. Linear.",
         {
           "beat": 0.3
         },
-        "At a million keys, those are about twenty one million operations, eight point eight million, and twenty probes.",
+        "At a million keys, with the constant in each recurrence set to one, those solve to about twenty one million units of work, twenty probes, and eight point eight million units.",
         "Next, what every algorithm must pay."
       ]
     },

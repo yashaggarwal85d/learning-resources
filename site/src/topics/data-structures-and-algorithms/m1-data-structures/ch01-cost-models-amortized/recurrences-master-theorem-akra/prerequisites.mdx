@@ -6,7 +6,7 @@ This reel assumes four things. If they are familiar, skip straight in. If one is
 
 ### <span class="n">01</span> Asymptotic notation and the cost of a loop
 
-You can read Θ, O and Ω, you know that constants and lower-order terms are dropped, and you have met the quicksort recurrence that the first reel solved by differencing. This reel counts the cost of a recursive procedure, so it needs the language the costs are written in.
+You can read Θ, O and Ω, you know that constants and lower-order terms are dropped, and you have met the full-history quicksort recurrence, stated and checked in the first topic's Deep dive. This reel counts the cost of a recursive procedure, so it needs the language the costs are written in.
 
 <p class="check"><b>Check yourself:</b> is 3n² + 10n in Θ(n²), and is n log n in o(n²)? (Answer: yes to both; the first ratio tends to 3, the second to 0.)</p>
 
@@ -32,11 +32,11 @@ You know what one unit of cost is: a single operation on a machine word, with co
 
 <section class="prereq" data-section="induction">
 
-### <span class="n">03</span> Proof by induction and geometric series
+### <span class="n">03</span> Induction, geometric series and two integrals
 
-Induction: prove a statement for the base cases, then show that if it holds for smaller sizes it holds for this one. Geometric series: a sum whose terms shrink (or grow) by a constant factor is dominated by its largest term.
+Induction: prove a statement for the base cases, then show that if it holds for smaller sizes it holds for this one. Geometric series: a sum whose terms shrink (or grow) by a constant factor is dominated by its largest term. Integrals: the Akra–Bazzi step needs the integral of a power and of 1/u.
 
-<p class="check"><b>Check yourself:</b> what do 1 + ½ + ¼ + … and 1 + 9/10 + 81/100 + … add up to? (Answer: 2, and 10; the sum of a shrinking series is 1/(1 − ratio).)</p>
+<p class="check"><b>Check yourself:</b> what do 1 + ½ + ¼ + … and 1 + 9/10 + 81/100 + … add up to? (Answer: 2, and 10; the sum of a shrinking series is 1/(1 − ratio).) And ∫₁ⁿ du/u, and ∫₁ⁿ u<sup>−p</sup> du for p &lt; 1? (Answer: ln n, and about n<sup>1−p</sup>/(1 − p).)</p>
 
 <ul class="resources">
   <Resource kind="course" title="Mathematics for Computer Science" href="https://ocw.mit.edu/courses/6-042j-mathematics-for-computer-science-spring-2015/" by="MIT OpenCourseWare 6.042J, Spring 2015">Induction and sums, with the free course textbook.</Resource>

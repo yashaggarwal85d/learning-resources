@@ -143,7 +143,7 @@ export function LeafPredict({ t, answer }: StepCtx) {
     return { c, w };
   });
   return (
-    <Svg label="A recursion tree with eight calls on each half and n squared work per call on 64 keys: the root level costs 4,096, the column of level totals fills in once you answer" h={380}>
+    <Svg label="A recursion tree with eight calls on each half and n squared work per call on 64 keys: the root level costs 4,096, the leaf count and the column of level totals fill in once you answer" h={380}>
       {/* level 0 */}
       <g opacity={easeOut(seg(t, 0, 0.3))}>
         <rect x={204} y={ROW(0) - 12} width={52} height={24} rx={5} fill={C.roast} stroke={C.mocha} />
@@ -174,7 +174,7 @@ export function LeafPredict({ t, answer }: StepCtx) {
         return (
           <g key={i} opacity={a}>
             <rect x={110} y={ROW(i) - 5} width={300} height={10} rx={3} fill={C.taupe} opacity={0.3 + 0.12 * (i - 3)} />
-            {i < 6 ? <T x={30} y={ROW(i) + 5} s={13} f={C.taupe}>{counts[i - 3]}</T> : shown ? <T x={30} y={ROW(i) + 5} s={13} f={C.caramel} o={easeOut(seg(s, 1.2, 1.5))}>262,144</T> : <T x={30} y={ROW(i) + 5} s={13} f={C.taupe}>?</T>}
+            {i < 6 ? shown && <T x={30} y={ROW(i) + 5} s={13} f={C.taupe} o={easeOut(seg(s, 0, 0.4))}>{counts[i - 3]}</T> : shown ? <T x={30} y={ROW(i) + 5} s={13} f={C.caramel} o={easeOut(seg(s, 1.2, 1.5))}>262,144</T> : <T x={30} y={ROW(i) + 5} s={13} f={C.taupe}>?</T>}
           </g>
         );
       })}
@@ -375,7 +375,7 @@ export function SelectionTree({ t }: StepCtx) {
       <line x1={400} y1={ROW(5) + 46} x2={545} y2={ROW(5) + 46} stroke={C.latte} strokeWidth={1.5} opacity={end} />
       <T x={540} y={ROW(5) + 72} s={20} f={C.caramel} a="end" w={700} o={end}>&lt; 10,000</T>
       <T x={540} y={ROW(5) + 94} s={13} f={C.latte} a="end" o={end}>= 1,000 × (1 + 9/10 + 81/100 + …)</T>
-      <T x={30} y={ROW(5) + 118} s={13} f={C.latte} o={easeOut(seg(t, 4.4, 4.8))}>exact: T(1,000) = 6,532</T>
+      <T x={30} y={ROW(5) + 118} s={13} f={C.latte} o={easeOut(seg(t, 4.4, 4.8))}>exact, with floors and T(0) = T(1) = 1: T(1,000) = 6,532</T>
     </Svg>
   );
 }
@@ -404,7 +404,7 @@ export function ThirdsPredict({ t, answer }: StepCtx) {
           <T x={468} y={(ROW(0) + ROW(1)) / 2 + 12} s={13} f={C.taupe} a="end">× 1</T>
           <line x1={400} y1={ROW(5) + 46} x2={545} y2={ROW(5) + 46} stroke={C.latte} strokeWidth={1.5} />
           <T x={540} y={ROW(5) + 72} s={15} f={C.caramel} a="end" w={700}>× log n levels: <G>Θ</G>(n log n)</T>
-          <T x={30} y={ROW(5) + 94} s={13} f={C.latte}>exact: T(1,000) = 10,526 ≈ 1.06 · n log₂ n</T>
+          <T x={30} y={ROW(5) + 94} s={13} f={C.latte}>exact, with floors and T(0) = T(1) = 1: T(1,000) = 10,526 ≈ 1.06 · n log₂ n</T>
         </g>
       )}
     </Svg>
@@ -563,12 +563,12 @@ export function StrengthenGuess({ t }: StepCtx) {
 // 12 · Back to the problem: step 1's picture with every ? replaced by the answer.
 export function Closing({ t }: StepCtx) {
   const cards: { name: string; verdict: ReactNode; count: string }[] = [
-    { name: 'merge sort · T(n) = 2T(n/2) + n', verdict: <>case 2: <G>Θ</G>(n log n)</>, count: '1,000,000 keys: 20,951,424 ops' },
+    { name: 'merge sort · T(n) = 2T(n/2) + n', verdict: <>case 2: <G>Θ</G>(n log n)</>, count: '1,000,000 keys: T = 20,951,424 units' },
     { name: 'binary search · T(n) = T(n/2) + 1', verdict: <>case 2, watershed 1: <G>Θ</G>(log n)</>, count: '1,000,000 keys: 20 probes' },
-    { name: 'median of medians · T(n/5) + T(7n/10) + n', verdict: <>Akra–Bazzi, p ≈ 0.84: <G>Θ</G>(n)</>, count: '1,000,000 keys: 8,832,605 ops < 10n' },
+    { name: 'median of medians · T(n/5) + T(7n/10) + n', verdict: <>Akra–Bazzi, p ≈ 0.84: <G>Θ</G>(n)</>, count: '1,000,000 keys: T = 8,832,605 units < 10n' },
   ];
   return (
-    <Svg label="Back to the problem: merge sort is Theta of n log n, about 20,951,424 operations on a million keys; binary search is Theta of log n, 20 probes; median of medians is linear, 8,832,605 operations, under 10n" h={380}>
+    <Svg label="Back to the problem: merge sort is Theta of n log n, T = 20,951,424 units of work on a million keys; binary search is Theta of log n, 20 probes; median of medians is linear, T = 8,832,605 units, under 10n" h={380}>
       {Array.from({ length: 12 }, (_, i) => (
         <g key={i} opacity={easeOut(seg(t, i * 0.03, 0.2 + i * 0.03))}>
           <rect x={30 + i * 42} y={14} width={38} height={22} rx={4} fill={C.roast} stroke={C.mocha} />
@@ -601,16 +601,16 @@ function ColumnQuestion({ label, tot, shown, s, ratio, first, verdict, ratios }:
         {tot.map((v, i) => {
           const val = Number(v.replace(/,/g, ''));
           const max = Number(tot[tot.length - 1].replace(/,/g, ''));
-          const vis = i < 2 ? 1 : shown ? easeOut(seg(s, (i - 2) * 0.25 + 0.12, (i - 2) * 0.25 + 0.4)) : 0;
-          const q = i < 2 ? 0 : shown ? 1 - seg(s, (i - 2) * 0.25, (i - 2) * 0.25 + 0.12) : 1;
+          const vis = i < 1 ? 1 : shown ? easeOut(seg(s, (i - 1) * 0.25 + 0.12, (i - 1) * 0.25 + 0.4)) : 0;
+          const q = i < 1 ? 0 : shown ? 1 - seg(s, (i - 1) * 0.25, (i - 1) * 0.25 + 0.12) : 1;
           const y = 50 + i * 34;
           return (
             <g key={i}>
               <rect x={30} y={y} width={Math.max(3, (val / max) * 300) * vis} height={22} rx={4} fill={C.caramel} />
               <T x={30 + Math.max(3, (val / max) * 300) * vis + 10} y={y + 17} s={15} f={C.crema} w={600} o={vis}>{v}</T>
               {q > 0 && <T x={30} y={y + 17} s={15} f={C.taupe} o={q}>?</T>}
-              {ratios && i < tot.length - 1 && i >= 1 && <T x={440} y={y + 36} s={13} f={C.taupe} o={shown ? easeOut(seg(s, (i - 1) * 0.25 + 0.2, (i - 1) * 0.25 + 0.5)) : 0}>{ratios[i]}</T>}
-              {i === 0 && <T x={440} y={y + 36} s={13} f={C.taupe}>{ratios ? ratios[0] : ratio}</T>}
+              {ratios && i < tot.length - 1 && i >= 1 && <T x={440} y={y + 36} s={13} f={C.taupe} o={shown ? easeOut(seg(s, i * 0.25 + 0.2, i * 0.25 + 0.5)) : 0}>{ratios[i]}</T>}
+              {i === 0 && <T x={440} y={y + 36} s={13} f={C.taupe} o={shown ? easeOut(seg(s, 0.2, 0.5)) : 0}>{ratios ? ratios[0] : ratio}</T>}
             </g>
           );
         })}
@@ -627,7 +627,7 @@ export function Q1({ t, answer }: StepCtx) {
   const shown = answer !== null;
   const s = useSinceAnswer(shown);
   return (
-    <Svg label="Level totals of 7T(n/2) + n² on 64 keys: 4,096, 7,168, 12,544, 21,952, 38,416, 67,228, 117,649; each level is 7/4 of the one above, so the leaves win" h={340}>
+    <Svg label={shown ? 'Level totals of 7T(n/2) + n² on 64 keys: 4,096, 7,168, 12,544, 21,952, 38,416, 67,228, 117,649; each level is 7/4 of the one above, so the leaves win' : 'Level totals of 7T(n/2) + n² on 64 keys: the root level is 4,096; the rest of the column appears once you answer'} h={340}>
       <g opacity={easeOut(seg(t, 0, 0.5))}>
         <ColumnQuestion label="7T(n/2) + n², n = 64" tot={['4,096', '7,168', '12,544', '21,952', '38,416', '67,228', '117,649']} shown={shown} s={s} ratio="× 7/4" first={300} verdict={<>leaves win: <G>Θ</G>(n^2.81)</>} />
       </g>
@@ -639,7 +639,7 @@ export function Q2({ t, answer }: StepCtx) {
   const shown = answer !== null;
   const s = useSinceAnswer(shown);
   return (
-    <Svg label="Level totals of 2T(n/2) + n/log n on 64 keys: 10.7, 12.8, 16, 21.3, 32, 64; neighbouring ratios 1.2, 1.25, 1.33, 1.5, 2 keep growing, so no constant fits and no case applies" h={340}>
+    <Svg label={shown ? 'Level totals of 2T(n/2) + n/log n on 64 keys: 10.7, 12.8, 16, 21.3, 32, 64; neighbouring ratios 1.2, 1.25, 1.33, 1.5, 2 keep growing, so no constant fits and no case applies' : 'Level totals of 2T(n/2) + n/log n on 64 keys: the root level is 10.7; the rest of the column appears once you answer'} h={340}>
       <g opacity={easeOut(seg(t, 0, 0.5))}>
         <ColumnQuestion label="2T(n/2) + n/log n, n = 64" tot={['10.7', '12.8', '16', '21.3', '32', '64']} shown={shown} s={s} ratios={['× 1.2', '× 1.25', '× 1.33', '× 1.5', '× 2']} first={270} verdict="no constant fits: no case applies" />
       </g>

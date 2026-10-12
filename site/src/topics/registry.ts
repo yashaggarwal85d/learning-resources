@@ -97,9 +97,9 @@ export const TOPICS: TopicMeta[] = [
     minutes: 12,
     verified: '2026-10-11',
     introduces: ['recurrence-relations', 'recursion-tree', 'master-theorem', 'akra-bazzi', 'substitution-method'],
-    // word-ram and van-emde-boas-tree are introduced by topic 2 (planned in CHAPTER.md); the rest are assumed and listed in the Prerequisites panel.
-    uses: ['big-o-theta-omega', 'word-ram', 'van-emde-boas-tree', 'logarithms', 'standard-sorts', 'binary-search', 'induction', 'geometric-series'],
-    declared: ['logarithms', 'standard-sorts', 'binary-search', 'induction', 'geometric-series'],
+    // word-ram and van-emde-boas-tree are introduced by topic 2 (planned in CHAPTER.md; these two ids are a contract between topics 2 and 3); the rest are assumed and listed in the Prerequisites panel.
+    uses: ['big-o-theta-omega', 'word-ram', 'van-emde-boas-tree', 'logarithms', 'standard-sorts', 'binary-search', 'induction', 'geometric-series', 'integration'],
+    declared: ['logarithms', 'standard-sorts', 'binary-search', 'induction', 'geometric-series', 'integration'],
     bridge: 'The word-RAM lets you count steps, and a recursive algorithm hands you that count as a recurrence. Here is how to read the answer off it.',
     handoff: 'A recurrence bounds what one algorithm costs. Next: how to prove that no algorithm can do better.',
   },
