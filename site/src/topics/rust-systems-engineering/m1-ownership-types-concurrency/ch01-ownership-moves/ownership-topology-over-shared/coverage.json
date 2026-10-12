@@ -1,0 +1,983 @@
+{
+  "topic": "rust.ownership-topology-over-shared",
+  "syllabus": [
+    {
+      "clause": "the anti-pattern of reaching for Arc<Mutex<T>>",
+      "at": [
+        {
+          "step": "Three stages, one guard at a time"
+        },
+        {
+          "step": "Four errors, four patches"
+        },
+        {
+          "step": "How many locks per message?"
+        },
+        {
+          "step": "Everyone owns it, so no one does"
+        },
+        {
+          "step": "A lock is exclusivity checked at run time"
+        },
+        {
+          "deep": "How the reflex happens: four errors, four patches"
+        },
+        {
+          "deep": "What an Arc of Mutex is, exactly"
+        }
+      ]
+    },
+    {
+      "clause": "when the real problem is the wrong ownership topology",
+      "at": [
+        {
+          "step": "Everyone owns it, so no one does"
+        },
+        {
+          "step": "Which of these really has many owners?"
+        },
+        {
+          "step": "Pick the shape by the data"
+        },
+        {
+          "step": "When Arc<Mutex<T>> is the right shape"
+        },
+        {
+          "deep": "Choosing a topology"
+        }
+      ]
+    },
+    {
+      "clause": "Alternatives: tree-shaped ownership",
+      "at": [
+        {
+          "step": "Name the owner: a tree"
+        },
+        {
+          "step": "Which of these really has many owners?"
+        },
+        {
+          "deep": "Tree-shaped ownership"
+        }
+      ]
+    },
+    {
+      "clause": "arenas with generational indices for graphs",
+      "at": [
+        {
+          "step": "A cycle has no owner at the top"
+        },
+        {
+          "step": "One owner for every node: an arena"
+        },
+        {
+          "step": "Remove a node, reuse its slot"
+        },
+        {
+          "step": "The generation catches the stale handle"
+        },
+        {
+          "step": "Prove it · 3 of 3"
+        },
+        {
+          "deep": "Graphs: why single ownership can't hold a cycle"
+        },
+        {
+          "deep": "A generational arena in thirty lines"
+        }
+      ]
+    },
+    {
+      "clause": "and an owner task fed by messages (→ Ch.4, Ch.6)",
+      "at": [
+        {
+          "step": "Sending is moving"
+        },
+        {
+          "step": "move hands a thread what it owns"
+        },
+        {
+          "step": "One owner, fed by messages"
+        },
+        {
+          "step": "Stage 3 stalls. How many buffers?"
+        },
+        {
+          "step": "The owner can count every buffer"
+        },
+        {
+          "deep": "Owner thread fed by messages"
+        },
+        {
+          "deep": "A guard that sends its buffer home"
+        },
+        {
+          "topic": "Arc<Mutex<T>> as hidden serialization",
+          "quote": "an owner task with a channel"
+        },
+        {
+          "topic": "Explicit ownership-crossing points",
+          "quote": "channel sends are the only places ownership changes threads"
+        }
+      ]
+    }
+  ],
+  "sources": [
+    {
+      "source": "The Rust Programming Language, 16.2 Transfer Data Between Threads with Message Passing",
+      "items": [
+        {
+          "item": "Introduction: message passing as an approach to safe concurrency; the Go slogan \"Do not communicate by sharing memory; instead, share memory by communicating.\"",
+          "at": [
+            {
+              "step": "One owner, fed by messages"
+            },
+            {
+              "deep": "Owner thread fed by messages"
+            }
+          ]
+        },
+        {
+          "item": "Channels: a channel sends data from one thread to another; the river and rubber duck analogy; two halves (transmitter and receiver); a channel is closed if either half is dropped; example uses (chat system, many threads sending parts of a calculation to one aggregating thread)",
+          "at": [
+            {
+              "step": "Sending is moving"
+            },
+            {
+              "deep": "Owner thread fed by messages"
+            }
+          ]
+        },
+        {
+          "item": "Listing 16-6: creating a channel with `mpsc::channel` and destructuring into `tx` and `rx` (does not compile yet because the value type cannot be inferred); mpsc means multiple producer, single consumer; the function returns a tuple (transmitter, receiver)",
+          "at": [
+            {
+              "deep": "Owner thread fed by messages"
+            }
+          ]
+        },
+        {
+          "item": "Listing 16-7: moving `tx` into a spawned thread with a `move` closure and sending `\"hi\"` with `send`; `send` returns a `Result` and errors if the receiver was dropped",
+          "at": [
+            {
+              "step": "move hands a thread what it owns"
+            },
+            {
+              "step": "Sending is moving"
+            }
+          ]
+        },
+        {
+          "item": "Listing 16-8: receiving the value in the main thread with `recv`, which blocks; `try_recv`, which does not block and returns `Ok` or `Err` immediately; output `Got: hi`",
+          "at": [
+            {
+              "deep": "Owner thread fed by messages"
+            }
+          ]
+        },
+        {
+          "item": "Transferring Ownership Through Channels: why ownership rules matter for message sending; Listing 16-9, using `val` after sending, fails with error E0382 (borrow of moved value); `send` takes ownership of its parameter and the receiver takes ownership of the moved value",
+          "at": [
+            {
+              "step": "Sending is moving"
+            }
+          ]
+        },
+        {
+          "item": "Sending Multiple Values: Listing 16-10, a spawned thread sends four strings with a one-second pause between each; the main thread treats `rx` as an iterator in a `for` loop, which ends when the channel is closed",
+          "at": [
+            {
+              "step": "One owner, fed by messages"
+            }
+          ]
+        },
+        {
+          "item": "Creating Multiple Producers: Listing 16-11, cloning the transmitter (`tx.clone()`) so two spawned threads send to the same receiver; output order is nondeterministic",
+          "at": [
+            {
+              "deep": "A guard that sends its buffer home"
+            }
+          ]
+        },
+        {
+          "item": "Closing note: a pointer ahead to a different method of concurrency (shared state, next page)",
+          "at": [
+            {
+              "step": "Everyone owns it, so no one does"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "The Rust Programming Language, 16.3 Shared-State Concurrency",
+      "items": [
+        {
+          "item": "Opening: contrasts message passing (single ownership; a sent value is no longer used) with shared memory (multiple ownership, which needs managing); Rust's type system and ownership rules help.",
+          "at": [
+            {
+              "step": "Everyone owns it, so no one does"
+            }
+          ]
+        },
+        {
+          "item": "Controlling Access with Mutexes: Mutex means mutual exclusion; the lock is part of the mutex and guards the data; two rules (acquire before use, unlock after); the one-microphone panel metaphor; channels are popular because mutexes are tricky, yet Rust's types prevent getting locking and unlocking wrong.",
+          "at": [
+            {
+              "step": "A lock is exclusivity checked at run time"
+            },
+            {
+              "deep": "What an Arc of Mutex is, exactly"
+            }
+          ]
+        },
+        {
+          "item": "The API of Mutex<T> (Listing 16-12): Mutex::new, lock blocks the thread, can fail if another holder panicked (hence unwrap), the guard acts as a mutable reference, Mutex<i32> is not i32 so lock cannot be forgotten, MutexGuard has Deref and a Drop that releases the lock at scope end.",
+          "at": [
+            {
+              "step": "A lock is exclusivity checked at run time"
+            },
+            {
+              "deep": "What an Arc of Mutex is, exactly"
+            }
+          ]
+        },
+        {
+          "item": "Shared Access to Mutex<T> (Listing 16-13): ten threads increment a counter; the `move` closure moves `counter` into the first thread, giving E0382 \"borrow of moved value\" because ownership cannot move into multiple threads.",
+          "at": [
+            {
+              "step": "Four errors, four patches"
+            },
+            {
+              "deep": "How the reflex happens: four errors, four patches"
+            }
+          ]
+        },
+        {
+          "item": "Multiple Ownership with Multiple Threads (Listing 16-14): wrapping in Rc<T> fails with E0277, `Send` is not implemented for Rc<Mutex<i32>>; Rc's non-concurrent count updates could give wrong counts, leaks or early drops.",
+          "at": [
+            {
+              "deep": "How the reflex happens: four errors, four patches"
+            }
+          ]
+        },
+        {
+          "item": "Atomic Reference Counting with Arc<T> (Listing 16-15): Arc is the atomic Rc with the same API; atomics are a further concurrency primitive (std::sync::atomic); thread safety costs performance, so it is not the default; the fixed program prints `Result: 10`; the pattern splits work across threads that update a shared result; simple numeric cases can use std::sync::atomic types instead of Mutex.",
+          "at": [
+            {
+              "deep": "What an Arc of Mutex is, exactly"
+            }
+          ]
+        },
+        {
+          "item": "Comparing RefCell<T>/Rc<T> and Mutex<T>/Arc<T>: Mutex gives interior mutability like the Cell family (Mutex in Arc parallels RefCell in Rc); Mutex risks deadlocks as Rc risks reference cycles (two threads each hold one of two locks and wait forever); suggests studying deadlock mitigation and the Mutex and MutexGuard API docs.",
+          "at": [
+            {
+              "step": "Four errors, four patches"
+            },
+            {
+              "step": "Everyone owns it, so no one does"
+            }
+          ]
+        },
+        {
+          "item": "Closing: leads into the Send and Sync traits.",
+          "at": [
+            {
+              "topic": "Send and Sync as auto-traits",
+              "quote": "Send means ownership may move to another thread"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "std::sync::mpsc (std 1.99.0)",
+      "items": [
+        {
+          "item": "Overview: multi-producer, single-consumer FIFO; three types Sender, SyncSender, Receiver; both senders clone-able.",
+          "at": [
+            {
+              "deep": "Owner thread fed by messages"
+            }
+          ]
+        },
+        {
+          "item": "Two flavors: channel (asynchronous, infinitely buffered, returns (Sender, Receiver)); sync_channel (bounded, pre-allocated buffer, sends block when full, bound 0 is a rendezvous channel).",
+          "at": [
+            {
+              "deep": "Owner thread fed by messages"
+            },
+            {
+              "step": "Stage 3 stalls. How many buffers?"
+            }
+          ]
+        },
+        {
+          "item": "Disconnection: send and receive return Result; Err when the other half has been dropped; many applications unwrap, propagating failure across threads.",
+          "at": [
+            {
+              "step": "Sending is moving"
+            }
+          ]
+        },
+        {
+          "item": "Examples: simple usage (move tx into thread::spawn, rx.recv()); shared usage (tx.clone() per spawned thread); propagating panics (drop(tx) then rx.recv().is_err()); synchronous channels (sync_channel(0)); unbounded receive loop (clone tx per thread, drop the original tx, `while let Ok(msg) = rx.recv()` ends when all senders are dropped).",
+          "at": [
+            {
+              "deep": "Owner thread fed by messages"
+            }
+          ]
+        },
+        {
+          "item": "Structs: IntoIter, Iter, Receiver, RecvError, SendError, Sender, SyncSender, TryIter.",
+          "at": [
+            {
+              "out": "The module lists its types; only Sender, Receiver and SendError are used, and SyncSender is named in the Deep dive."
+            }
+          ]
+        },
+        {
+          "item": "Enums: RecvTimeoutError, TryRecvError, TrySendError.",
+          "at": [
+            {
+              "out": "TryRecvError, RecvTimeoutError and TrySendError belong to polling, timeouts and load shedding: Chapter 10, bounded channels and backpressure."
+            }
+          ]
+        },
+        {
+          "item": "Functions: channel, sync_channel.",
+          "at": [
+            {
+              "deep": "Owner thread fed by messages"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "std::thread::spawn (std 1.99.0)",
+      "items": [
+        {
+          "item": "Signature: spawn<F, T>(f: F) -> JoinHandle<T> with F: FnOnce() -> T + Send + 'static and T: Send + 'static.",
+          "at": [
+            {
+              "step": "move hands a thread what it owns"
+            }
+          ]
+        },
+        {
+          "item": "Behaviour: spawns a thread; join waits for it; a panic in the thread makes join return Err; dropping the JoinHandle detaches the thread (program must join or detach, else resource leak).",
+          "at": [
+            {
+              "step": "move hands a thread what it owns"
+            },
+            {
+              "deep": "Owner thread fed by messages"
+            }
+          ]
+        },
+        {
+          "item": "Builder: spawn uses default Builder parameters; Builder::spawn sets stack size or name and can recover from OS failure.",
+          "at": [
+            {
+              "out": "Builder (thread names and stack sizes) is not needed here."
+            }
+          ]
+        },
+        {
+          "item": "Constraints explained: 'static (closure and return value must outlive the caller because threads can outlive it); Send (closure passed by value to the new thread, return value passed back to the joining thread); Send vs Sync.",
+          "at": [
+            {
+              "step": "move hands a thread what it owns"
+            },
+            {
+              "topic": "Explicit ownership-crossing points",
+              "quote": "thread::spawn"
+            }
+          ]
+        },
+        {
+          "item": "Panics: if the OS fails to create a thread.",
+          "at": [
+            {
+              "out": "Spawn failure and OS errors are not part of ownership topology."
+            }
+          ]
+        },
+        {
+          "item": "Examples: basic spawn and join; sender/receiver threads using channel with move closures giving ownership of tx and rx to threads; returning a value (42) through JoinHandle::join.",
+          "at": [
+            {
+              "step": "move hands a thread what it owns"
+            }
+          ]
+        },
+        {
+          "item": "Notes: foreign unwinding gives the same minimal guarantee as catch_unwind (process aborts, or join returns Err with an opaque type).",
+          "at": [
+            {
+              "out": "Foreign unwinding is an FFI detail, outside this chapter."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "Struct std::sync::Arc (std 1.99.0)",
+      "items": [
+        {
+          "item": "Overview: Arc is the atomically reference-counted pointer giving shared ownership of a heap value; clone makes a new Arc to the same allocation and bumps the count (the data is not copied); the inner value is dropped when the last Arc is destroyed.",
+          "at": [
+            {
+              "step": "A lock is exclusivity checked at run time"
+            },
+            {
+              "deep": "What an Arc of Mutex is, exactly"
+            }
+          ]
+        },
+        {
+          "item": "Mutation: shared references disallow mutation, so Arc<T> gives only shared access; options are interior mutability (Mutex, RwLock, atomics), Arc::make_mut (clone-on-write), or Arc::get_mut (only when unshared).",
+          "at": [
+            {
+              "step": "Four errors, four patches"
+            },
+            {
+              "deep": "How the reflex happens: four errors, four patches"
+            }
+          ]
+        },
+        {
+          "item": "Thread Safety: unlike Rc, counting is atomic (costlier); Arc<T> is Send and Sync only if T is; Arc<RefCell<T>> is rejected; pair with Mutex<T>.",
+          "at": [
+            {
+              "deep": "What an Arc of Mutex is, exactly"
+            },
+            {
+              "topic": "Send and Sync as auto-traits",
+              "quote": "Send means ownership may move to another thread"
+            }
+          ]
+        },
+        {
+          "item": "Breaking cycles with Weak: downgrade gives non-owning Weak; upgrade returns None once the value is dropped; Arc cycles are never deallocated (leak), so use Weak for parent links.",
+          "at": [
+            {
+              "topic": "Reference cycles and Weak",
+              "quote": "Weak breaks cycles"
+            }
+          ]
+        },
+        {
+          "item": "Cloning references and Deref: Arc::clone(&x) and x.clone() are equivalent; Arc derefs to T; Arc methods are associated functions.",
+          "at": [
+            {
+              "step": "A lock is exclusivity checked at run time"
+            }
+          ]
+        },
+        {
+          "item": "Examples: sharing immutable data between threads; sharing an AtomicUsize.",
+          "at": [
+            {
+              "step": "Which of these really has many owners?"
+            },
+            {
+              "step": "When Arc<Mutex<T>> is the right shape"
+            }
+          ]
+        },
+        {
+          "item": "try_unwrap: returns the inner value if exactly one strong reference, else Err with the same Arc; prefer Arc::into_inner to avoid a race where neither thread gets the value.",
+          "at": [
+            {
+              "deep": "What an Arc of Mutex is, exactly"
+            }
+          ]
+        },
+        {
+          "item": "into_inner: Option<T>, Some only for the last Arc.",
+          "at": [
+            {
+              "deep": "What an Arc of Mutex is, exactly"
+            }
+          ]
+        },
+        {
+          "item": "strong_count: number of strong pointers; racy across threads.",
+          "at": [
+            {
+              "step": "Everyone owns it, so no one does"
+            }
+          ]
+        },
+        {
+          "item": "make_mut: clone-on-write; clones if other Arcs exist, dissociates Weak if only Weak remain.",
+          "at": [
+            {
+              "out": "Arc::make_mut (clone-on-write) is Chapter 4, Box, Rc, and Arc ownership shapes."
+            }
+          ]
+        },
+        {
+          "item": "get_mut: Option<&mut T>, None if any other Arc or Weak exists.",
+          "at": [
+            {
+              "deep": "What an Arc of Mutex is, exactly"
+            }
+          ]
+        },
+        {
+          "item": "unwrap_or_clone: unwraps if sole owner, else clones.",
+          "at": [
+            {
+              "out": "Arc::unwrap_or_clone is a convenience built on the same ideas as try_unwrap; not needed here."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "Struct std::sync::Mutex (std 1.99.0)",
+      "items": [
+        {
+          "item": "Overview: Mutex<T> owns the data it protects; access only through RAII guards from lock and try_lock, so the data is touched only while locked.",
+          "at": [
+            {
+              "step": "A lock is exclusivity checked at run time"
+            }
+          ]
+        },
+        {
+          "item": "Poisoning: a panic while holding the lock poisons the mutex; lock and try_lock return Result; usually unwrap() to propagate; PoisonError::into_inner recovers the guard; poisoning is advisory and unsafe code cannot rely on it.",
+          "at": [
+            {
+              "deep": "What an Arc of Mutex is, exactly"
+            },
+            {
+              "topic": "Arc shares, Mutex synchronizes",
+              "quote": "with poisoning semantics"
+            }
+          ]
+        },
+        {
+          "item": "Examples: Arc<Mutex<i32>> shared by 10 threads with lock released at end of scope; recovering from a poisoned mutex; releasing a guard early with an inner scope or drop(guard) to avoid deadlock.",
+          "at": [
+            {
+              "deep": "What an Arc of Mutex is, exactly"
+            }
+          ]
+        },
+        {
+          "item": "new: creates an unlocked mutex.",
+          "at": [
+            {
+              "deep": "What an Arc of Mutex is, exactly"
+            }
+          ]
+        },
+        {
+          "item": "lock: blocks until acquired; guard unlocks on drop; locking twice in the same thread does not return (panic or deadlock); errors if poisoned.",
+          "at": [
+            {
+              "step": "A lock is exclusivity checked at run time"
+            },
+            {
+              "deep": "Lab 5 · Break it"
+            }
+          ]
+        },
+        {
+          "item": "try_lock: non-blocking; Err(WouldBlock) if held, Poisoned if poisoned.",
+          "at": [
+            {
+              "deep": "Lab 5 · Break it"
+            }
+          ]
+        },
+        {
+          "item": "is_poisoned / clear_poison: query and reset poison state.",
+          "at": [
+            {
+              "out": "is_poisoned and clear_poison: poisoning is named in the Deep dive and taught with Mutex in Chapter 6."
+            }
+          ]
+        },
+        {
+          "item": "into_inner(self): consumes the mutex and returns the data (LockResult<T>).",
+          "at": [
+            {
+              "deep": "What an Arc of Mutex is, exactly"
+            }
+          ]
+        },
+        {
+          "item": "get_mut(&mut self): mutable reference to the data with no locking, justified by the exclusive borrow.",
+          "at": [
+            {
+              "step": "A lock is exclusivity checked at run time"
+            }
+          ]
+        },
+        {
+          "item": "Trait impls: Send and Sync require T: Send; Mutex<Rc<_>> would not protect other Rc copies.",
+          "at": [
+            {
+              "topic": "Send and Sync as auto-traits",
+              "quote": "Send means ownership may move to another thread"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "slotmap 1.1.1 (crate documentation)",
+      "items": [
+        {
+          "item": "Overview: a container with persistent unique keys; insert returns the key (unlike BTreeMap/HashMap, where the caller supplies it); insertion, removal, access O(1); suited to objects with no clear owner (game entities, graph nodes); SecondaryMap associates extra data by direct indexing, no hashing.",
+          "at": [
+            {
+              "step": "One owner for every node: an arena"
+            },
+            {
+              "deep": "A generational arena in thirty lines"
+            }
+          ]
+        },
+        {
+          "item": "Example: insert returns a key; remove, then insert reuses the space; the old key stays invalid (`contains_key` is false); SecondaryMap is keyed by keys the caller supplies.",
+          "at": [
+            {
+              "step": "Remove a node, reuse its slot"
+            }
+          ]
+        },
+        {
+          "item": "Serde / no_std: keys and maps (de)serialize and a key stays valid across a round trip; no_std needs alloc; SparseSecondaryMap needs std.",
+          "at": [
+            {
+              "out": "serde and no_std support are crate features, not part of the topology idea."
+            }
+          ]
+        },
+        {
+          "item": "Why not index a Vec, slab, stable-vec: they either cannot reclaim memory or suffer from the ABA problem; slotmap keys are versioned, so a removed key stays removed even when the slot is reused; uses carefully checked unsafe internally.",
+          "at": [
+            {
+              "step": "Remove a node, reuse its slot"
+            }
+          ]
+        },
+        {
+          "item": "Performance: each slot is a (value, version) tuple; key is valid only when versions match; version wraps after 2^31 delete/insert cycles on one slot (very unlikely, and safe); capacity 2^32 - 2 elements; per-slot memory 4 + max(sizeof(T), 4) for SlotMap, 4 + max(sizeof(T), 12) for HopSlotMap, DenseSlotMap 8 bytes per element and 8 per slot.",
+          "at": [
+            {
+              "step": "The generation catches the stale handle"
+            }
+          ]
+        },
+        {
+          "item": "Choosing SlotMap / HopSlotMap / DenseSlotMap: SlotMap fastest except iteration, never shrinks storage (must remember the latest version per slot); HopSlotMap iterates only filled slots but insertion/removal about twice as slow; DenseSlotMap contiguous storage, two indirections per random access, Vec-speed iteration.",
+          "at": [
+            {
+              "deep": "A generational arena in thirty lines"
+            }
+          ]
+        },
+        {
+          "item": "Choosing SecondaryMap / SparseSecondaryMap: SecondaryMap is a Vec of slots, may need memory as large as the primary; SparseSecondaryMap is hash-based and auto-removes outdated keys whose slot was reused.",
+          "at": [
+            {
+              "deep": "A generational arena in thirty lines"
+            }
+          ]
+        },
+        {
+          "item": "Custom key types: `new_key_type!` makes a distinct key type per map so the wrong key cannot be used on the wrong map; generic code uses the Key trait.",
+          "at": [
+            {
+              "deep": "The frontier"
+            }
+          ]
+        },
+        {
+          "item": "Items: modules basic, dense, hop, secondary, sparse_secondary; macro new_key_type; structs DefaultKey, DenseSlotMap, HopSlotMap (deprecated), KeyData, SecondaryMap, SlotMap, SparseSecondaryMap; trait Key.",
+          "at": [
+            {
+              "out": "The crate item list (modules, structs, macro): the Deep dive names the ones it uses."
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "independent blind expert list: a fresh Sonnet agent that had not seen the plan or any file of this topic, working only from primary sources it opened itself",
+    "date": "2026-10-12",
+    "items": [
+      {
+        "item": "Arc<Mutex<T>> is multiple ownership plus interior mutability: it models 'many owners', so first ask whether the data really has many owners or just one owner that others should reach indirectly.",
+        "at": [
+          {
+            "step": "Everyone owns it, so no one does"
+          },
+          {
+            "step": "Which of these really has many owners?"
+          },
+          {
+            "deep": "What an Arc of Mutex is, exactly"
+          }
+        ]
+      },
+      {
+        "item": "Channels are like single ownership (a sent value is no longer used by the sender); shared memory is like multiple ownership, which adds complexity because the owners need managing.",
+        "at": [
+          {
+            "step": "Sending is moving"
+          },
+          {
+            "step": "One owner, fed by messages"
+          },
+          {
+            "deep": "Owner thread fed by messages"
+          }
+        ]
+      },
+      {
+        "item": "Arc is only needed because spawned tasks/threads need 'static, Send ownership; Rc is not Send, and atomic counting costs performance, so pay for it only when needed.",
+        "at": [
+          {
+            "step": "Four errors, four patches"
+          },
+          {
+            "step": "move hands a thread what it owns"
+          },
+          {
+            "topic": "Box, Rc, and Arc ownership shapes",
+            "quote": "for an atomic refcount"
+          }
+        ]
+      },
+      {
+        "item": "Arc<T> is Send+Sync only if T is; Arc alone never gives mutation (needs Mutex/atomics, or Arc::get_mut when unshared). Arc<RefCell<T>> is rejected for good reason.",
+        "at": [
+          {
+            "step": "Four errors, four patches"
+          },
+          {
+            "topic": "Send and Sync as auto-traits",
+            "quote": "Send means ownership may move to another thread"
+          }
+        ]
+      },
+      {
+        "item": "Rust prevents data races, not deadlocks or other race conditions; a Mutex adds deadlock risk (two locks, opposite order) just as Rc adds cycle risk.",
+        "at": [
+          {
+            "step": "Everyone owns it, so no one does"
+          },
+          {
+            "deep": "What an Arc of Mutex is, exactly"
+          },
+          {
+            "deep": "Lab 5 · Break it"
+          }
+        ]
+      },
+      {
+        "item": "Safe Rust rules out data races (concurrent, one a write, one unsynchronized) mostly through ownership alone, since a mutable reference cannot be aliased.",
+        "at": [
+          {
+            "deep": "What an Arc of Mutex is, exactly"
+          },
+          {
+            "topic": "Aliasing XOR mutability",
+            "quote": "This rule gives data-race freedom"
+          }
+        ]
+      },
+      {
+        "item": "Mutex poisoning: a panic while holding the guard poisons the lock; lock() returns Result, and poisoning is advisory (into_inner recovers the guard).",
+        "at": [
+          {
+            "deep": "What an Arc of Mutex is, exactly"
+          },
+          {
+            "topic": "Arc shares, Mutex synchronizes",
+            "quote": "with poisoning semantics"
+          }
+        ]
+      },
+      {
+        "item": "Tokio's own guidance: a Mutex suits simple data, a managing task suits state needing async work such as I/O; Arc<Mutex<HashMap>> is a legitimate answer for short non-async operations. The anti-pattern is the reflex, not the type.",
+        "at": [
+          {
+            "step": "When Arc<Mutex<T>> is the right shape"
+          },
+          {
+            "deep": "Choosing a topology"
+          }
+        ]
+      },
+      {
+        "item": "Use std::sync::Mutex in async code when contention is low and the lock is never held across .await; tokio::sync::Mutex is not a free upgrade because it uses a synchronous mutex internally.",
+        "at": [
+          {
+            "deep": "In production"
+          },
+          {
+            "topic": "Arc shares, Mutex synchronizes",
+            "quote": "never hold a std guard across"
+          }
+        ]
+      },
+      {
+        "item": "A std MutexGuard held across .await makes the future non-Send (compile error from spawn); with Send-able guards from other crates it compiles but can deadlock. Fix by dropping the guard before the await.",
+        "at": [
+          {
+            "deep": "In production"
+          },
+          {
+            "topic": "Send and Sync as auto-traits",
+            "quote": "A future is Send only if everything held across an"
+          }
+        ]
+      },
+      {
+        "item": "Tree-shaped ownership: parents own children (Rc/Box down), back-pointers are Weak, so a Weak parent link does not keep anything alive and cannot form a leak-causing cycle.",
+        "at": [
+          {
+            "step": "Name the owner: a tree"
+          },
+          {
+            "deep": "Tree-shaped ownership"
+          },
+          {
+            "topic": "Reference cycles and Weak",
+            "quote": "Weak breaks cycles"
+          }
+        ]
+      },
+      {
+        "item": "Reference cycles of Rc leak memory and Rust still calls that memory safe; leaks are not prevented by the compiler, so the ownership topology must be designed acyclic.",
+        "at": [
+          {
+            "step": "A cycle has no owner at the top"
+          },
+          {
+            "deep": "Graphs: why single ownership can't hold a cycle"
+          }
+        ]
+      },
+      {
+        "item": "Weak::upgrade returns Option, so a Weak may find its target gone; the Weak keeps the allocation but not the value.",
+        "at": [
+          {
+            "topic": "Reference cycles and Weak",
+            "quote": "Rc::new_cyclic builds self-referencing structures"
+          }
+        ]
+      },
+      {
+        "item": "For graphs with no clear ownership, a slot map owns all nodes and hands out keys; edges store keys, not references, giving O(1) access with no lifetimes or cycles.",
+        "at": [
+          {
+            "step": "One owner for every node: an arena"
+          },
+          {
+            "step": "Remove a node, reuse its slot"
+          },
+          {
+            "step": "The generation catches the stale handle"
+          },
+          {
+            "deep": "A generational arena in thirty lines"
+          }
+        ]
+      },
+      {
+        "item": "Plain Vec indices suffer the ABA problem when slots are reused; a generational (versioned) key checks the slot's version, so a removed key stays dead. The version wraps after 2^31 reuses of one slot.",
+        "at": [
+          {
+            "step": "Remove a node, reuse its slot"
+          },
+          {
+            "step": "The generation catches the stale handle"
+          }
+        ]
+      },
+      {
+        "item": "Side data for arena nodes lives in secondary maps keyed by the same keys (direct indexing, no hashing), instead of fields on shared nodes.",
+        "at": [
+          {
+            "deep": "A generational arena in thirty lines"
+          }
+        ]
+      },
+      {
+        "item": "Owner-task recipe: a task that exclusively owns the resource plus a cloneable handle holding an mpsc Sender; requests carry a oneshot reply sender; the message enum defines the API.",
+        "at": [
+          {
+            "step": "One owner, fed by messages"
+          },
+          {
+            "deep": "Owner thread fed by messages"
+          }
+        ]
+      },
+      {
+        "item": "Actor lifecycle: the task ends when recv() returns None after all senders drop, so the handle keeps the actor alive; ignore send errors on replies (let _ =) because the asker may be gone.",
+        "at": [
+          {
+            "step": "The owner can count every buffer"
+          },
+          {
+            "deep": "Owner thread fed by messages"
+          },
+          {
+            "deep": "A guard that sends its buffer home"
+          }
+        ]
+      },
+      {
+        "item": "Use bounded channels for backpressure: a full buffer makes send wait, capacity 0 panics in tokio; std sync_channel(0) is a rendezvous channel.",
+        "at": [
+          {
+            "step": "Stage 3 stalls. How many buffers?"
+          },
+          {
+            "step": "Prove it · 2 of 3"
+          },
+          {
+            "deep": "Owner thread fed by messages"
+          },
+          {
+            "topic": "Bounded channels and backpressure",
+            "quote": "must use a bounded channel"
+          }
+        ]
+      },
+      {
+        "item": "Cycles of actors holding each other's handles block shutdown and can deadlock when every channel in the cycle is bounded; oneshot sends (which never wait) cannot be part of a deadlock.",
+        "at": [
+          {
+            "step": "The owner can count every buffer"
+          },
+          {
+            "deep": "Owner thread fed by messages"
+          },
+          {
+            "topic": "Structured shutdown with tokens and trackers",
+            "quote": "An explicit shutdown sequence"
+          }
+        ]
+      }
+    ]
+  },
+  "gapReview": {
+    "date": "2026-10-12",
+    "by": "pending: the content review (ROUTINE.md section 4) replaces this entry with its own",
+    "open": []
+  }
+}
