@@ -27,7 +27,7 @@
         "Fill borrows it exclusively. Inspect borrows it to read the header, a small copy type. Consume takes it and hands it back. And put returns it to the pool.",
         "A thousand small messages... one allocation.",
         "Every handover moves a thirty-two byte value, an id and the vector's twenty-four byte handle, never the payload.",
-        "Owning the buffer through that chain is this topic's job."
+        "This topic is about the last two: owning the buffer in consume and put."
       ]
     },
     {
@@ -61,7 +61,7 @@
     {
       "lines": [
         "Another prediction.",
-        "Four ways to take a buffer out of something that owns it.",
+        "Four ways to take a buffer out of something that holds it.",
         "Which line compiles?"
       ],
       "answer": [
@@ -152,6 +152,18 @@
     },
     {
       "lines": [
+        "Time to prove it.",
+        "A pattern takes the tail. Then the head goes to drop.",
+        "In what order do the three destructors run?"
+      ],
+      "answer": [
+        "Head, tail, body.",
+        "Head goes the moment you pass it to drop.",
+        "At the brace, the tail binding goes first... then the struct, which only has the body left."
+      ]
+    },
+    {
+      "lines": [
         "A pattern is where ownership of the parts changes hands.",
         "Each name in it either copies, moves, or borrows.",
         "A plain name copies a copy type, and moves anything else.",
@@ -199,18 +211,6 @@
         "Each one is an error now. And each has a fully explicit rewrite.",
         "Cargo fix will write that rewrite for you, and it keeps the old meaning.",
         "Which might be a bug you never noticed. So read what it writes."
-      ]
-    },
-    {
-      "lines": [
-        "Time to prove it.",
-        "A pattern takes the tail. Then the head goes to drop.",
-        "In what order do the three destructors run?"
-      ],
-      "answer": [
-        "Head, tail, body.",
-        "Head goes the moment you pass it to drop.",
-        "At the brace, the tail binding goes first... then the struct, which only has the body left."
       ]
     },
     {

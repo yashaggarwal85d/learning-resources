@@ -25,7 +25,7 @@ const reel: Reel = {
         <>
           The rest of this reel uses the chapter's pipeline. <code>Pool::get</code> is the only place a 64 KiB buffer is allocated; <code>fill</code> borrows it exclusively, <code>inspect</code>{' '}
           borrows it shared and returns a <code>Header</code> (kind and length, a small <code>Copy</code> value), <code>consume</code> takes it and hands it back, and <code>put</code> takes it
-          back into the pool. A thousand 261-byte messages: one allocation. Every handover moves the 32-byte <code>Buf</code> (an id and the vector's 24-byte handle), never the payload. Owning the buffer through this chain is this topic's job.
+          back into the pool. A thousand 261-byte messages: one allocation. Every handover moves the 32-byte <code>Buf</code> (an id and the vector's 24-byte handle), never the payload. This topic is about the last two: owning the buffer in <code>consume</code> and <code>put</code>.
         </>
       ),
       duration: 5.2,
@@ -85,7 +85,7 @@ const reel: Reel = {
       title: 'Which of these moves compiles?',
       body: (
         <>
-          Four ways to take a <code>Buf</code> out of something that owns it (<code>Rc</code> is shared ownership by reference count, Chapter 4). Which line compiles?
+          Four ways to take a <code>Buf</code> out of something that holds it (<code>Rc</code> is shared ownership by reference count, Chapter 4). Which line compiles?
         </>
       ),
       duration: 1.2,
@@ -241,6 +241,30 @@ const reel: Reel = {
       Visual: S.ErrorPath,
     },
     {
+      title: 'Prove it · 1 of 3',
+      body: (
+        <>
+          <code>p</code> holds three trace probes. A pattern takes <code>tail</code>, then <code>head</code> is passed to <code>drop</code>. In what order do the three destructors run?
+        </>
+      ),
+      duration: 1.2,
+      predict: {
+        options: [
+          { label: 'head, tail, body', correct: true },
+          { label: 'head, body, tail' },
+          { label: 'tail, body, head' },
+          { label: 'E0382 at drop(p.head)' },
+        ],
+        explain: (
+          <>
+            <code>head</code>, <code>tail</code>, <code>body</code>. <code>drop(p.head)</code> moves the field into <code>drop</code>, which ends it at once; using a still-initialized field of a partially moved
+            struct is fine. At the brace, locals go in reverse: <code>tail</code> (the pattern's binding, declared after <code>p</code>), then <code>p</code>, which holds only <code>body</code>.
+          </>
+        ),
+      },
+      Visual: S.Prove1,
+    },
+    {
       title: 'A pattern is a transfer point',
       body: (
         <>
@@ -326,30 +350,6 @@ const reel: Reel = {
       ),
       duration: 5.0,
       Visual: S.ThreeReservations,
-    },
-    {
-      title: 'Prove it · 1 of 3',
-      body: (
-        <>
-          <code>p</code> holds three trace probes. A pattern takes <code>tail</code>, then <code>head</code> is passed to <code>drop</code>. In what order do the three destructors run?
-        </>
-      ),
-      duration: 1.2,
-      predict: {
-        options: [
-          { label: 'head, tail, body', correct: true },
-          { label: 'head, body, tail' },
-          { label: 'tail, body, head' },
-          { label: 'E0382 at drop(p.head)' },
-        ],
-        explain: (
-          <>
-            <code>head</code>, <code>tail</code>, <code>body</code>. <code>drop(p.head)</code> moves the field into <code>drop</code>, which ends it at once; using a still-initialized field of a partially moved
-            struct is fine. At the brace, locals go in reverse: <code>tail</code> (the pattern's binding, declared after <code>p</code>), then <code>p</code>, which holds only <code>body</code>.
-          </>
-        ),
-      },
-      Visual: S.Prove1,
     },
     {
       title: 'Prove it · 2 of 3',
