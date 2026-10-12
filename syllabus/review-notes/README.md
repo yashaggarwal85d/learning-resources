@@ -22,4 +22,3 @@ After the review, every dated or uncertain claim was checked against primary sou
 | [fact-check/de.md](fact-check/de.md) | Data Engineering | 110+ | 11 |
 | [fact-check/rust.md](fact-check/rust.md) | Rust Systems Engineering | 61 | 5 |
 | [fact-check/dsa.md](fact-check/dsa.md) | Data Structures & Algorithms | 121 | 2 |
-| [fact-check/german.md](fact-check/german.md) | German Language | ~38 | 2 |

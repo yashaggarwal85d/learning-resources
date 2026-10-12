@@ -16,7 +16,7 @@ Every routine run and every audit finding, newest at the bottom: two lines each,
 
 `;
 
-const short = { 'data-engineering': 'DE', 'data-structures-and-algorithms': 'DSA', 'german-language': 'German', 'rust-systems-engineering': 'Rust' };
+const short = { 'data-engineering': 'DE', 'data-structures-and-algorithms': 'DSA', 'rust-systems-engineering': 'Rust' };
 const n = (x) => (x >= 1e6 ? `${(x / 1e6).toFixed(1)}M` : x >= 1e3 ? `${Math.round(x / 1e3)}k` : String(x));
 const modelName = (id) => id.replace(/^claude-/, '').replace(/-(\d+)-(\d+)$/, ' $1.$2').replace(/^\w/, (c) => c.toUpperCase());
 

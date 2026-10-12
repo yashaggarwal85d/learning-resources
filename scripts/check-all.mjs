@@ -1,6 +1,6 @@
 // Runs every pre-ship check from ROUTINE.md (sections 5 and 8) in one command and prints a timing summary.
 //   node scripts/check-all.mjs                  all checks (from the repo root or site/)
-//   node scripts/check-all.mjs --only reels     just the named checks (docs, examples, sources, build, narration, reels, links)
+//   node scripts/check-all.mjs --only reels     just the named checks (locked, docs, examples, sources, build, narration, reels, links)
 //   node scripts/check-all.mjs --skip links     everything except the named checks
 //   node scripts/check-all.mjs --only reels --topic asymptotic-notation   the reel test for matching reels only (while fixing)
 //   node scripts/check-all.mjs --changed [base]  every check, with the reel and link checks limited to what the changes
@@ -59,6 +59,7 @@ async function withPreview(fn) {
 
 const results = {};
 const checks = [
+  ['locked', () => run('node', ['scripts/check-locked.mjs'], root)],
   ['docs', () => run('node', ['scripts/check-docs.mjs'], root)],
   ['examples', () => run('npm', ['run', 'test:examples'])],
   // Quotes in SOURCES.md, word for word against the fetched sources, for the topics being checked (--topic or --changed).

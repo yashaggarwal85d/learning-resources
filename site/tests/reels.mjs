@@ -150,8 +150,11 @@ for (const [device, opts] of [
         await firstPredict.click();
         await page.waitForTimeout(400);
         const p0 = await stepNow();
-        await drag(320, y, 70, y);
+        for (let k = 0; k < 3; k++) await drag(320, y, 70, y);
         if ((await stepNow()) !== p0) fail(`${where}: swipe left skipped an unanswered predict step (${p0})`);
+        // Each of those swipes nudges the options; the step's text must still be there once (QUALITY.md #48: it piled up).
+        const bodies = await reel.locator('.reel-body').count();
+        if (bodies !== 1) fail(`${where}: after swiping on an unanswered predict step its text is shown ${bodies} times`);
       }
       // A swipe must work wherever it starts, on every step (code panels and charts must not swallow it).
       const total = await reel.locator('[aria-label^="Step "]').count();
@@ -238,13 +241,18 @@ for (const [device, opts] of [
     if (!steps) fail(`${where}: no steps`);
     for (let i = 0; i < steps; i++) {
       await reel.locator('[aria-label^="Step "]').nth(i).click();
-      await page.waitForTimeout(400);
-      await page.keyboard.press('ArrowRight'); // finish the animation
-      await page.waitForTimeout(250);
-      const options = reel.locator('button.rounded-xl:not([disabled])');
-      if (await options.count()) {
+      // Let the step's own clock finish (its progress bar fills); a key press to skip the animation could move on a step.
+      await page
+        .waitForFunction((el) => parseFloat(el.querySelector('span span')?.style.width ?? '0') >= 99, await reel.locator('[aria-current="step"]').elementHandle(), { timeout: 20000 })
+        .catch(() => fail(`${where}: step ${i + 1} never finished its animation`));
+      await page.waitForTimeout(300);
+      // A question step (its dot is marked data-predict) shows its answer options in a two-column grid in the caption.
+      const options = reel.locator('div.grid-cols-2 > button:not([disabled])');
+      if (await reel.locator('[aria-current="step"][data-predict]').count()) {
+        // The question frame, as the learner first sees it, for the looks review.
+        await page.screenshot({ path: `test-results/${device}-${slug.split('/').pop()}-${String(i + 1).padStart(2, '0')}-q.png` });
         await options.first().click();
-        await page.waitForTimeout(250);
+        await page.waitForTimeout(600);
       }
       const visual = await reel.locator('[data-visual]').last().evaluate((el) => el.querySelectorAll('svg, pre').length + el.innerText.trim().length);
       if (!visual) fail(`${where}: step ${i + 1} has an empty visual`);
