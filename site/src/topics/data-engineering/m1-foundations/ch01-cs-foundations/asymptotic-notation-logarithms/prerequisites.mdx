@@ -1,0 +1,49 @@
+import Resource from '../../../../../components/Resource.astro';
+
+This is a refresher, the last of the five that open Data Engineering. It assumes powers and roots from school algebra and the four refreshers before it. If a step moves too fast, the resources below are the quickest way back in; the reel is a recap, not a first course.
+
+<section class="prereq" data-section="algebra">
+
+### <span class="n">01</span> High-school algebra: powers and roots
+
+b<sup>k</sup> means k factors of b, so 10<sup>9</sup> is a billion and 1,000<sup>3</sup> is the same billion. A logarithm undoes a power: log<sub>b</sub> x = k means b<sup>k</sup> = x. That is all the reel assumes; the change of base is taught in the reel itself.
+
+<p class="check"><b>Check yourself:</b> what is 2<sup>10</sup>? (Answer: 1,024, close to a thousand. That near-coincidence is why a billion takes about 30 halvings.)</p>
+
+<ul class="resources">
+  <Resource kind="video" title="Change of base formula" href="https://www.youtube.com/watch?v=OkFdDqW9xxM" by="Khan Academy">Exactly the identity the reel uses to convert any logarithm to any other base.</Resource>
+  <Resource kind="reading" title="DLMF §4.2: Definitions" href="https://dlmf.nist.gov/4.2" by="NIST Digital Library of Mathematical Functions">The reference definitions of the logarithm, of logarithms to a general base, and of the change of base.</Resource>
+</ul>
+
+</section>
+
+<section class="prereq" data-section="refreshers">
+
+### <span class="n">02</span> The four refreshers before this one
+
+Python, Git, the shell and the delivery workflow. This reel leans on one thing from them: Git bisect halves a range of commits at every test, which is the same halving that a logarithm counts. The reel also mentions code review, CI and tests as the checks that say a change is right.
+
+<p class="check"><b>Check yourself:</b> about how many tests does Git bisect need to find one bad commit among 1,000? (Answer: about 10, because each test halves the range.)</p>
+
+<ul class="resources">
+  <Resource kind="reel" host={props.host} domain="data-engineering" title="Python language essentials">The first refresher.</Resource>
+  <Resource kind="reel" host={props.host} domain="data-engineering" title="Git branching and history workflows">Where bisect and its halving come from.</Resource>
+  <Resource kind="reel" host={props.host} domain="data-engineering" title="Linux shell and process toolkit">The third refresher.</Resource>
+  <Resource kind="reel" host={props.host} domain="data-engineering" title="Software delivery workflow">The fourth refresher: tests and CI say a change is right; this reel adds how its cost grows.</Resource>
+</ul>
+
+</section>
+
+<section class="prereq" data-section="bigo">
+
+### <span class="n">03</span> Going further: big-O and the full treatment
+
+The reel gives you enough to read O, Θ and Ω and to count with logarithms. The algorithms track has the full treatment: best, average and worst cases, little-o and little-ω, amortized and expected bounds.
+
+<ul class="resources">
+  <Resource kind="reel" host={props.host} domain="data-structures-and-algorithms" title="Asymptotic notation and case analysis">The full treatment of O, Θ and Ω in the algorithms track.</Resource>
+  <Resource kind="reading" title="Recitation 1: Introduction to Algorithms" href="https://ocw.mit.edu/courses/6-006-introduction-to-algorithms-spring-2020/resources/mit6_006s20_r01/" by="MIT OpenCourseWare, 6.006 Spring 2020">O, Θ and Ω defined precisely, with worked exercises.</Resource>
+  <Resource kind="video" title="Big O Notation" href="https://www.youtube.com/watch?v=v4cd1O4zkGw" by="HackerRank">A short practical introduction to reading and comparing growth rates.</Resource>
+</ul>
+
+</section>

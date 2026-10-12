@@ -543,7 +543,8 @@ Each claim with its source (in `SOURCES.md`, every quote checked by `node script
     - PostgreSQL `itup.h` and `itemptr.h` (the fan-out assumption).
     - Extra quotes from DLMF (4.2.18, 4.2.25, 4.2.27), MIT R01 (linear time) and PostgreSQL §66.6 (4-byte line pointers).
 - 2026-10-12, fact-check (2.3) done, see `FACT-CHECK.md`. Corrections applied here: step 3's ratio (1,139,909, not 1,139,912), step 3's fourth option (now the "worst case" misconception) and answer-frame axis, step 4's axis start, step 7's base-2 tower height, step 8's "full page" wording, special space and default fill, step 9's pass wording (1 + one merge pass, as the held topic words it, not "1.43 rounded up"), the Θ-glyph house rule, the halving-loop, float-log and bit_length traps in `examples.py` and Try it, and claims 6, 18, 24, 30, 30a (new) and 34. `SOURCES.md`: 94 quotes, 0 problems (added `nbtree.h`, DLMF 4.2.17, a Knuth fragment, two OCR notes).
-- **Next:** the coverage map `coverage.json` (2.4, the expert list is already in `EXPERT-LIST.md`), then the build (3).
+- 2026-10-12, coverage map `coverage.json` and build (3) done: `examples.py`, `reel.tsx`, `scenes.tsx`, `index.mdx`, `prerequisites.mdx`, `narration.json`, registry entry (held). `npm run build`, `npm run test:examples` and the reel test pass.
+- **Next:** content review (4), looks review (5), then narration (7).
 
 ## Changes from the chapter plan
 
@@ -559,6 +560,20 @@ Each claim with its source (in `SOURCES.md`, every quote checked by `node script
    - Knuth 1976 is cited only for passages whose words survived the OCR; the Ω and Θ definitions come from MIT 6.006.
    - Added: the Python `math` docs and two PostgreSQL headers.
 5. **`uses: ['git-bisect']` instead of none.** Step 5 calls back the Git refresher's bisect (about 10 tests for 1,000 commits) to make "a logarithm counts halvings" land on something the learner just did. Topic 2 introduces `git-bisect` earlier in this chapter. If the release seam check prefers no dependency, the callback can be reworded to "bisect's halving" without the number and the `uses` dropped.
+
+## Changes during build
+
+1. **Step 2's title is "O ceiling, Ω floor, Θ both"** (the plan had "O is a ceiling, Ω a floor, Θ both"), and **step 3's options and body are reworded.** The reel test swipes at the height of step 2's title right after returning to step 2 from step 3, while step 3's caption is still on screen for about 300 ms. A button of step 3's two-line options sat exactly under that point (a swipe that starts on a button is ignored by the player), so the swipe failed. Fixes, all content-neutral:
+   - Step 2's title fits one line on a phone.
+   - Step 3's options are one-liners: "No: only n log n", "Yes: a ceiling" (correct), "Only below n₀", "No: worst case". The explanation carries the nuance, as before.
+   - Step 3's body adds one sentence defining Θ as a growth rate, bounded above and below, so the options start lower. Its narration gains the matching line.
+2. **Text in the predict steps' drawings is 15 units, not 13** where the test measured 8 px on a phone (step 5's labels and footnote, step 8's footnote); step 9's two-line label has 20 units between lines. The plan's sizes were minimums, not targets.
+3. **Step 4: the counter and the assumption note stack** (counter above, note below) in landscape too, because the note is 55 characters and cannot share a row with the counter.
+4. **Step 8's answer frame:** the bands are centred at x = 290 and the caramel path runs down the right at x = 520, so the path never crosses a label; "short" sits to the left of the cherry band.
+5. **Step 2's labels:** "ceiling c = 4" and "floor c = 3" sit just right of the n₀ line (above and below their lines) and the Θ label sits above the ceiling at the right, so none of them lies on the curve; the "256" tick is replaced by the n₀ label.
+6. **Step 3's answer frame:** the job's bar is 13% of the n² bar (log₁₀ scale, 1 billion to 10 quadrillion), asserted in `examples.py`; the plan said "about 1/7".
+7. **Prerequisites:** the Khan Academy video's length is left out (oEmbed gives title and author, not duration); the HackerRank video is kept with author only. The registry's `uses: ['git-bisect']` is kept as planned.
+8. **Registry order:** the entry sits between `de.python-essentials` and `de.io-cost-model` (syllabus order: §1.1 before §1.3). The other §1.1 topics, built in parallel, will add theirs between the same two.
 
 ## Changes after final
 

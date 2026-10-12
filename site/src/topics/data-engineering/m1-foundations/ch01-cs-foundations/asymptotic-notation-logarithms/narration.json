@@ -1,0 +1,138 @@
+{
+  "topic": "de.asymptotic-notation-logarithms",
+  "note": "Written to be spoken: one sentence or phrase per line; {\"beat\": s} is a deliberate pause; numbers and names are spelled the way they are said. `answer` plays after the learner answers a predict step.",
+  "steps": [
+    {
+      "lines": [
+        "Tests tell you a change is right. They don't tell you how its cost grows when the data grows.",
+        "For that you need big O, big theta and big omega... and logarithms in any base.",
+        {
+          "beat": 0.4
+        },
+        "The last of the five refreshers. All familiar? Swipe on to the memory hierarchy."
+      ]
+    },
+    {
+      "lines": [
+        "Big O is a ceiling. From some point on, the cost stays below a constant times the function.",
+        "Big omega is a floor. Big theta is both.",
+        {
+          "beat": 0.4
+        },
+        "This job takes three n log n, plus eight n steps.",
+        "Divide it by n log n, and from two hundred fifty six on, the answer stays between three and four.",
+        "So it's theta of n log n... and the constants, and the plus eight n, simply drop out."
+      ]
+    },
+    {
+      "lines": [
+        "Here's a trap.",
+        "Theta pins a cost from above and from below, to within constant multiples.",
+        "That job is theta of n log n.",
+        {
+          "beat": 0.4
+        },
+        "Is it also big O of n squared?"
+      ],
+      "answer": [
+        "Yes. Big O is only a ceiling, and n squared is a very high one... over a million times above the job, at a hundred million rows.",
+        "And it isn't a case, either. Best or worst, any cost can have a big O, a big omega and a big theta.",
+        "Say theta when you mean the growth rate."
+      ]
+    },
+    {
+      "lines": [
+        "Now let the data grow.",
+        "At a thousand rows, nothing matters. Everything is instant.",
+        "At a hundred million orders, and a billion steps a second... n takes a tenth of a second. N log n, under three seconds.",
+        "And n squared? A hundred and sixteen days.",
+        {
+          "beat": 0.4
+        },
+        "Double the data, and n squared quadruples."
+      ]
+    },
+    {
+      "lines": [
+        "A logarithm counts divisions.",
+        "How many times do you divide by the base to get down to one?",
+        "Bisect needed about ten tests for a thousand commits.",
+        {
+          "beat": 0.4
+        },
+        "So how many halvings take a billion down to one?"
+      ],
+      "answer": [
+        "About thirty. Every ten halvings divide by about a thousand... and a billion is a thousand, times a thousand, times a thousand.",
+        "A million times more data than bisect's, for only twenty more halvings."
+      ]
+    },
+    {
+      "lines": [
+        "Any base converts to any other.",
+        "Divide the natural log of x by the natural log of the base.",
+        "It's one length, measured with three different rulers... so the base is just a constant factor.",
+        "In your head, log base two is about three point three two times log base ten. So a billion, nine zeros, is about thirty halvings.",
+        "Inside big O, a fixed base doesn't matter. But when you count levels or passes, or the base is a parameter like a page's fan-out... it does."
+      ]
+    },
+    {
+      "lines": [
+        "The bigger the base, the fewer the divisions.",
+        "A billion needs about thirty halvings, but only three divisions by a thousand... and just over two by sixteen thousand, three hundred eighty four.",
+        "So the log of a million, in that base, is under one and a half.",
+        {
+          "beat": 0.4
+        },
+        "Indexes and sorts divide by hundreds, or thousands, at a time... so their logarithms are tiny."
+      ]
+    },
+    {
+      "lines": [
+        "Here's the orders index.",
+        "A hundred million orders, with a B-tree on the order id.",
+        "One page holds about four hundred entries.",
+        {
+          "beat": 0.4
+        },
+        "How many levels, from the root down to a leaf?"
+      ],
+      "answer": [
+        "Four. Three levels of four hundred reach only sixty four million keys.",
+        "The fourth reaches twenty five billion.",
+        "Anything from a hundred to four hundred sixty four entries gives four levels. A binary tree would need twenty seven."
+      ]
+    },
+    {
+      "lines": [
+        "Sorting is the same logarithm, with a big base.",
+        "The nightly job sorts a terabyte, and memory holds sixteen thousand, three hundred eighty four blocks.",
+        "One pass makes sixty four sorted runs.",
+        "The merge takes up to sixteen thousand at once, so one more pass merges all sixty four.",
+        {
+          "beat": 0.4
+        },
+        "Two passes. Merge two at a time, and it's seven."
+      ]
+    },
+    {
+      "lines": [
+        "Big O throws away constants on purpose.",
+        "So it can't tell you seconds.",
+        "Two scans of the same hundred million rows... same count, same growth... can take very different times, depending on where the data lives."
+      ]
+    },
+    {
+      "lines": [
+        "So... five things to keep.",
+        "Big O is a ceiling, omega a floor, theta both. A logarithm counts divisions. Any base converts with the natural log.",
+        "A big base makes a tiny log: four levels, two passes.",
+        "And big O counts steps, not seconds.",
+        {
+          "beat": 0.5
+        },
+        "Next up... the memory hierarchy, where one step can cost a nanosecond, or tens of milliseconds."
+      ]
+    }
+  ]
+}
