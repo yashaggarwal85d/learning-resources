@@ -268,3 +268,203 @@ Each finding gives where, what, the evidence, the fix and its severity.
 - **Status:** Not changed: a record of checks that passed. The Knuth 'order at least' and 'order exactly' quotes are now in SOURCES.md (96 quotes, 0 problems); the other exceptions are findings 17, 24 and 25, fixed above.
 
 **Counts:** 27 findings, 2 major (14 and 15) and 25 minor; finding 27 is a record of checks that passed.
+
+## Looks and learning review
+
+- **Reviewer:** a fresh looks-and-learning review agent that wrote nothing in this topic.
+- **Date:** 2026-10-12.
+- **Looked at:** all 28 frames in `site/test-results/`: `desktop-` and `phone-asymptotic-notation-logarithms-01` to `-11`, including the `-03-q`, `-05-q` and `-08-q` question frames (14 desktop, 14 phone). Read against DESIGN.md ("The looks review checks"), PROJECT_PLAN.md Rule #4, CHAPTER.md "One visual language", this folder's `OUTLINE.md`, `reel.tsx`, `scenes.tsx` and `narration.json`.
+- **Phone sizes are estimates.** The phone frames are 1170 px wide, so I took them to be 3× a 390 px screen and measured text from the character widths in the frames. Treat the sizes as ±1 px.
+- **What works** (so the fixes below don't undo it):
+  - The reel has a clear chain: ceiling/floor, trap, growth, halvings, bases, tall/flat towers, B-tree, sort passes, caveat, recap.
+  - Colour is mostly on grammar: cherry for the 116 days, the 3-level index and the wrong picks; caramel for the answer; cinnamon for the binary alternative in steps 7 and 9; taupe for the waits in step 10.
+  - Step 6's three equal-length rulers and step 10's comb against stretched ticks are real ideas of their own.
+  - The predict question frames (3, 5, 8) don't give the answer away.
+  - Step 1's list and step 4's bars read at a glance.
+- **Summary:** 23 findings, 9 major and 14 minor. The majors, in order of how much they hurt: step 9 is three ideas and, on a phone, clipped text; step 7's empty space; step 4's title promises doubling that the picture never shows; step 8's answer never draws the 100 million it argues about; step 5's unexplained tick labels; phone text of about 6–8 px on steps 3, 5 and 8; step 10 not showing its cause; and the pacing (pictures finish in under 4 s, narration runs 15–37 s).
+
+Each finding gives step, size, what, fix and severity.
+
+### Major
+
+**1. "Double the data" never shows doubling** (major)
+- **Step / size:** 4, desktop and phone.
+- **What:** the title and the last sentence of the caption are about doubling: n doubles, n log₂n ×2.08, n² ×4. The picture shows one size only (100,000,000 orders) with three bars. The doubling, which is the growth idea the step exists for, is only in the caption. On a phone that sentence is behind "MORE" (the caption shows 3 lines). The step holds two ideas: what each cost comes to at 100 million rows, and how each grows.
+- **Fix:** keep the three bars, and after a beat grow a second, ghost tail on each bar to the doubled size, labelled ×2, ×2.08, ×4 (the n² tail in cherry). Or retitle "Three costs at 100 million rows" and move the doubling into its own half-step. The log axis has no tick between 1,000 s and 116 days (about 10 million s), so add "1 day" so the cherry bar ends at a labelled place.
+
+**2. Step 7 leaves a third of the drawing empty above the short towers** (major)
+- **Step / size:** 7, desktop and phone.
+- **What:**
+  - The 29.9 tower is about 300 px tall on desktop; the towers for 1,000 and 16,384 are 3 and 2 slabs high. The area above them is empty, which is the "lots of empty space" the builder noted.
+  - On the phone about 250 px of the drawing above the short towers is empty, and 90 px above the tall tower.
+  - The picture is a bar chart in the end: the eye has to compare heights across a gap.
+  - The caption's second number (log₁₆,₃₈₄ of a million = 1.42, narration "under one and a half") is not drawn.
+  - The 16,384 tower shows 2 slabs for 2.14, the 29.9 tower 30 slabs, so the fractions are lost.
+- **Fix:**
+  - Use the idea of step 6 instead: three horizontal rows, one per base, each a row of cells (30 thin cells; 3 wide; 2 wide plus a sliver for 2.14). Each row fills the width and the rows stack, so nothing floats and the phone has no empty top.
+  - If the towers stay, make the slab height at least 2.5× larger and draw the 29.9 tower's top as a dashed ghost line across the other two, so the gap itself is the picture.
+  - Either draw the million (a thin "1.42" tower under each) or drop it from the narration.
+
+**3. Step 9 on a phone: labels clipped and crowded** (major)
+- **Step / size:** 9, phone (desktop is fine).
+- **What:**
+  - "pass 2: 64 runs → 1 file" is cut to "1 fil" by the 7-pass tower, and "pass 1: 1 TiB → 64 runs" touches the tower.
+  - "two at a time: 7 passes" sits about 20 px under "(1 TiB ÷ 1 MiB)" and next to "2 passes", so three labels compete in the top 100 px.
+  - The log₁₆,₃₈₄ subscripts are about 6 px.
+  - The tower's last block touches the baseline rule of the bars.
+- **Fix:**
+  - On portrait, stack the two answers: the 2-pass bars on top and the 7-pass tower as a row of 7 blocks below (or to the right at half the width), never overlapping the labels.
+  - Put the label text above its bar, not beside it, so nothing runs under the tower.
+  - Write the log as "log base 16,384" in words, or drop it (see 4).
+
+**4. Step 9 is three ideas, and the formula block is heavy** (major)
+- **Step / size:** 9, desktop and phone.
+- **What:**
+  - It teaches the passes (pass 1 makes 64 runs, pass 2 merges them), the logarithm with a ceiling (20/14 = 1 + 0.43, ⌈0.43⌉, "a pass can't be partial"), and the I/O volume (4 TiB), and then contrasts 7 passes.
+  - Five lines of monospace maths sit under the picture, including "log₁₆,₃₈₄(1,048,576) = 20/14".
+  - Narration is 93 words, the longest in the reel.
+  - The picture that shows the idea is the two bars; the maths restates it.
+  - The desktop picture has a gap above the 2-pass bars (about 170 px) because the 7-tower sets the height.
+- **Fix:**
+  - Keep the picture, the two lines "2 passes" and "4 TiB of I/O" and the 7 tower; move 20/14 and the ceiling to the Deep dive (the OUTLINE already has it there).
+  - If the log is kept, show it as one line: "1 + ⌈0.43⌉ = 2".
+  - Draw pass 1 as 64 small cells flowing into pass 2's single bar so "64 runs" is visible, not only said.
+
+**5. Step 5's answer labels are unexplained** (major)
+- **Step / size:** 5 (answer frame), desktop and phone.
+- **What:**
+  - Three labels beside the 30-slab stack read "0.93 · done", "954" and "976,563". They are what is left after 30, 20 and 10 halvings, but nothing says so, and "0.93 · done" is odd for a count that should end at 1.
+  - Neither frame says that each slab is one halving, so the picture ("30 slabs of the same thing") is the answer without the mechanism.
+  - On a phone these labels are about 7 px.
+- **Fix:**
+  - Put "1 slab = 1 halving" on the question frame.
+  - Label the marks "after 10: 976,563", "after 20: 954", "after 30: under 1", all in taupe, and mark "÷1,024" between ticks.
+  - Delete "done".
+
+**6. Phone: drawing text of about 6–8 px on steps 3, 5 and 8** (major)
+- **Step / size:** phone, steps 3 (answer), 5 (answer), 8 (question and answer).
+- **What:** DESIGN.md says 13 units minimum, which should be about 9.5 px on a phone. These frames measure:
+  - Step 3 answer: "log scale from 1 billion" about 7 px; "c = 11 works from n = 1" about 7 px; "job: 8,772,627,428 steps" about 8 px.
+  - Step 5 answer: "976,563" and "0.93 · done" about 7 px; "log₂ of a billion = 29.9" about 8 px.
+  - Step 8 question: "1 page = 8 KB ≈ 400 entries" about 6 px; "100,000,000 order ids" about 7 px.
+  - Step 8 answer: "1 level: 400" to "4 levels: 25,600,000,000" and "binary tree: 27 levels" about 7 px.
+  - The cause: on these frames the drawing is scaled down to roughly 190–215 CSS px wide (about 60% of the screen width) while the caption takes 7–8 lines (step 8's question caption is 8 lines on the phone).
+- **Fix:**
+  - Shorten the question captions. Step 8: "A PostgreSQL B-tree index on order_id: 100 million orders, about 400 entries per 8 KB page, and each inner entry points to a page below. How many levels?" Move the 8-byte key / 6-byte pointer / headers arithmetic to the explain.
+  - Give these drawings a portrait viewBox (taller, 400 units wide) so the 13-unit labels fill the width.
+  - Re-run the reel test's under-9-px check on the answer frames. The question frames pass it today, which suggests the test samples only the question frame.
+
+**7. Step 8's answer never draws the 100 million it argues about** (major)
+- **Step / size:** 8 (answer), desktop and phone.
+- **What:** the answer says "three levels reach only 64 million, the fourth reaches 25.6 billion". The picture is four stacked bars of reach (400; 160,000; 64,000,000; 25,600,000,000) with "short" in front of the third. The 100,000,000 target (drawn as the base bar in the question frame) is gone, so "short" is a word you have to trust. The "×400 per level" multiplication, the mechanism the caption teaches, is not drawn either: the bars just widen. It is a pyramid, not an index.
+- **Fix:**
+  - Keep the 100,000,000 bar from the question frame as a thin caramel line across all four bars: the third bar stops short of it (cherry), the fourth passes it.
+  - Add "×400" in taupe between the bars.
+  - Optionally draw the root page as one box fanning to 400, which is the picture topic 13 will reuse.
+
+**8. Step 10 shows no cause, and its takeaway is the quietest text on the frame** (major)
+- **Step / size:** 10, desktop and phone.
+- **What:**
+  - The caption's point is where each step's data lives (cache, RAM, disk, network). The picture shows scan A as a dense comb and scan B as spaced ticks with taupe gaps, but the gaps carry no label, so nothing says what B is waiting for.
+  - Both scans say "time: ?" although B visibly runs far longer, so the question mark is contradicted by the picture.
+  - "same count, same Theta(n): the price of a step isn't in the O" is the lesson, and it is the dimmest, smallest line (taupe, 13 units).
+- **Fix:**
+  - Label the gaps "wait for data" (taupe), and A "data in cache", B "data on disk" (or similar).
+  - Replace "time: ?" by a time once the learner reaches the end ("about 0.1 s" against "about 100 s", asserted in `examples.py` first), or leave the question mark only while the bars are still drawing.
+  - Make the takeaway latte or crema at 15–17 units, and spell it "Θ(n)".
+
+**9. Pacing: pictures finish in 1–4 s, narration runs 15–37 s** (major)
+- **Step / size:** all steps, both sizes.
+- **What:**
+  - In `ReelPlayer.tsx` (lines 88–98) animation time runs on `duration` alone, 1.2–3.6 s here, while narration has 27–93 words per step (about 11–37 s at a speaking pace): step 2 has 88 words (about 35 s) for a 3.6 s animation, step 6 has 87 words (about 35 s) for 3.2 s, and step 9 has 93 words (about 37 s) for 3.6 s.
+  - Everything is on screen in the first seconds and then holds while the voice says four or five more things, so the learner hears "Big omega is a floor" while the drawing has long since shown everything, and it does not point at what is being said.
+- **Fix:** where a step has two or more spoken beats, stage the picture to them. Step 2: the ceiling and floor lines, then the example ratio curve, then the "Θ(n log n)" label. Step 6: one ruler per spoken sentence. Step 9: pass 1, pass 2, then the 7 tower. If the player cannot sync to narration, set `duration` close to the narration length so the reveal spreads across it, as the DESIGN.md "steady beat" rule asks.
+
+### Minor
+
+**10. In all three predict steps the correct answer is the second button** (minor)
+- **Step / size:** 3, 5, 8; both sizes.
+- **What:** options are "No: only n log n / Yes: a ceiling", "About 20 / About 30" and "3 / 4". A learner who sees the pattern can answer without thinking. Step 3's "Yes: a ceiling" also gives away its reason in the label, while the three wrong options have none.
+- **Fix:** move the correct answer to different positions (step 3 first or last, step 5 third or fourth, step 8 last), shuffling the values rather than keeping them sorted if need be. Give step 3's options the same shape, with the reason last in every label (for example "Yes: it is a ceiling", "No: it is exactly n log n", "Only below n₀", "No: it is the worst case").
+
+**11. Step 3's answer draws the ceiling as an empty box** (minor)
+- **Step / size:** 3 (answer frame), desktop and phone.
+- **What:** the n² bar is a hollow caramel outline next to a filled crema "job" bar. An empty bar reads as zero, not as "a loose ceiling far above". The job bar is about 15% of the track and the n² outline 100%, so the "over a million times" is only the log axis label. Under the grammar, the other thing being compared should be cinnamon, not caramel.
+- **Fix:** fill the n² bar cinnamon (or draw a vertical ceiling line at 10 quadrillion), put "÷ 1,139,909" or "1,139,909× too high" over the gap in crema, and keep the log-scale note on one taupe line.
+
+**12. "Theta(n log n)" is spelled out in the drawings, Θ everywhere else** (minor)
+- **Step / size:** 3 (question frame, `scenes.tsx` lines 80 and 88) and 10 (line 408), desktop and phone.
+- **What:** the captions, titles, step 2's label and step 11 use the Θ glyph (serif in steps 2 and 11); the drawings on 3 and 10 say "Theta(n log n)" and "Theta(n)" in mono. Same notation, two spellings in one frame (step 3's caption says Θ(n log n) just beside it). The note on line 14 suggests the mono font lacks the glyph, but step 11 already solves it with a serif `<tspan>`.
+- **Fix:** use the step 11 pattern (serif `Θ`) in all three spots, and keep O, Ω and Θ in the serif everywhere: step 3's "O(n²) ?" box and step 11's last bullet are mono O.
+
+**13. "log_b" shows the underscore in steps 6 and 11** (minor)
+- **Step / size:** 6 (formula, `scenes.tsx` line 245) and 11 (bullets 2 and 3), desktop and phone.
+- **What:** captions print log<sub>b</sub> x; the pictures print "log_b x = ln x / ln b". It reads as code, in a refresher that is teaching notation.
+- **Fix:** draw the subscript (`<tspan baselineShift>` or a smaller `T` at 0.7× and lowered by 4 units), the same as the "log₂" the other steps use.
+
+**14. In step 11 the letter O in the mono font reads as a zero** (minor)
+- **Step / size:** 11, desktop and phone.
+- **What:** "O counts steps, not seconds" starts with a plain mono O that looks like "0" next to "4 levels, 2 passes". The first bullet uses a serif O, so the two O's differ too.
+- **Fix:** put the O in the serif `<tspan>` as in bullet 1, or write "Big-O counts steps, not seconds".
+
+**15. Step 2: O and Ω are not drawn, and the curve's axes are unnamed** (minor)
+- **Step / size:** 2, desktop and phone.
+- **What:**
+  - The title is "O ceiling, Ω floor, Θ both", but the picture labels its lines "ceiling c = 4" and "floor c = 3" and only Θ(n log n). The glyphs never appear next to the lines they name, which is what a learner has to memorise.
+  - The curve has no label ("cost ÷ n·log₂n"), and the vertical axis has no tick at all; the x axis (2, 65,536, 100 M) doesn't say it is log-scaled.
+  - The curve's first part (left of n₀) rises above the ceiling line with nothing to say why; the "from n₀ on" is shown by the dotted line only.
+  - "ratio" is not introduced anywhere before the caption mentions "divided by n·log₂n".
+- **Fix:** label the lines "O: ceiling c = 4" and "Ω: floor c = 3", label the curve "cost ÷ n·log₂n", add "n (log scale)" under the axis and 3 and 4 ticks on the y axis.
+
+**16. Step 6 doesn't name the three bases** (minor)
+- **Step / size:** 6, desktop and phone.
+- **What:** each ruler is labelled "÷ ln 2 = 0.693", "÷ ln 10 = 2.303" and "÷ ln 1,000 = 6.908", counts 29.9, 9 and 3. The bases 2, 10 and 1,000 appear only as arguments of ln, so "one length, three rulers" doesn't say which ruler is which base, and the "3.32" the caption and narration tell you to remember isn't shown. The last ruler's final tick sits exactly on the bar's end and looks like a stray mark.
+- **Fix:** label each row "base 2: 29.9 halvings", "base 10: 9", "base 1,000: 3", with the ÷ ln b line in taupe beneath; add "29.9 ÷ 9 = 3.32" on the first two rows; leave a small gap at the end of the last ruler.
+
+**17. Phone: the caption's key sentence is behind "MORE", and explanations start below the fold** (minor)
+- **Step / size:** phone. Steps 2, 4, 6, 7, 9, 10, 11 (caption clamped to 3 lines); 3, 5, 8 (answer frames).
+- **What:**
+  - On every non-predict step the caption stops at "…" after about 20 words, so the formula of step 2, the doubling of step 4 and the 1.42 of step 7 are not seen unless the learner taps.
+  - In the answer frames of steps 3 and 5 the explanation starts under the options and is cut by the control bar, and in step 8 it is out of view entirely (only the four options show), so the learner sees the "why" only by scrolling.
+- **Fix:** the first 20 words of every caption should carry the point (step 4: "n doubles, n log₂n a bit more, n² quadruples" first), and on answer frames shorten the question caption so the explanation starts higher (see 6).
+
+**18. Step 1 on a phone: caption blurred in the capture, and the §1.1 label is tiny** (minor)
+- **Step / size:** 1, phone.
+- **What:**
+  - The caption, title and "New to this?" button are a blur of glowing shapes in the frame, so I can't judge them; the desktop frame is sharp. It may be a capture during the entrance transition. If it is real, the first thing a phone learner meets is unreadable.
+  - The "§1.1 · REFRESHERS · SKIM WHAT YOU KNOW" label is about 6 px, and the list takes only about 58% of the width, with the rows' titles about 11 px.
+- **Fix:** take the phone frame after the transition settles (and check it by eye once); on portrait let the list use the full 600 units, with a 13-unit label.
+
+**19. Step 11 is five lines of text, and the last frame has no pictures** (minor)
+- **Step / size:** 11, desktop and phone.
+- **What:** the recap is five caramel bullets with mono text and nothing visual. Rule #4 asks for memory, and the reel made five distinct pictures (the ceiling/floor band, the halving stack, the rulers, the flat tower, the stopwatch). The desktop frame is also left-heavy: the list ends at 1,135 px and 300 px of dark is left on the right.
+- **Fix:** give each bullet a 40×24-unit icon taken from its step (a band with two dashes; 3 slabs; three equal bars; a 4-block tower; a comb), in the same colours, and one line of text beside it.
+
+**20. Colour grammar is mostly right, with three slips** (minor)
+- **Step / size:** 3, 7/8/9.
+- **What:**
+  - The binary-base alternative is cinnamon in steps 7 and 9, but taupe in step 8 ("binary tree: 27 levels"). The step-7 tower is cinnamon while the other two are caramel, which is the right way round (the large base is the answer), but the step-9 "2 passes" in caramel and "7 passes" in cinnamon uses the same pairing, so keep it and fix step 8.
+  - Step 3's n² outline is caramel; the alternative should be cinnamon (finding 11).
+  - Step 6 uses crema bars with caramel ticks and caramel counts; there is no comparison there, so the colour is only decoration.
+  - On step 8's answer, the picture uses caramel, cherry, crema, a serif "4" and taupe: still two accents.
+- **Fix:** step 8 binary line in cinnamon; step 3 per finding 11; step 6 ticks in latte so caramel is saved for the count.
+
+**21. Desktop answer frames move the caption block up, and step 8's touches the header** (minor)
+- **Step / size:** 3, 5, 8 answer frames, desktop.
+- **What:** the column is vertically centred, so when the explanation appears the chip and title jump up, from about 270 px to 140 px on step 3, and to 62 px on step 8, where "REFRESHER 8/11" sits about 10 px under the logo and nav pill. The title jumps between frames.
+- **Fix:** anchor the caption block from the top (about 140 px) on predict steps, or cap the explanation height with its own scroll; shorten the step 8 question caption (finding 6).
+
+**22. Steps 2, 4 and 6 each carry two ideas** (minor)
+- **Step / size:** 2, 4, 6; both sizes.
+- **What:**
+  - Step 2: the definition (ceiling, floor, both) and a worked example (3n·log₂n + 8n, n₀ = 256, ratio 3.30).
+  - Step 4: the cost at 100 million and how each cost grows (finding 1).
+  - Step 6: the change-of-base formula and when the base matters (the last narration line, which no picture backs).
+- **Fix:** for each, keep one headline idea and let the other be a staged second beat (finding 9) or move it to the Deep dive. For step 6, cut "Inside big O a fixed base doesn't matter. But when you count levels…" from the narration or give it its own small picture (two lines: "O(log n): no base" and "levels: base matters").
+
+**23. Step 4's log axis ends before its most important bar** (minor)
+- **Step / size:** 4, desktop and phone.
+- **What:** the log axis ticks stop at 1,000 s while the n² bar ends at 116 days (about 10,000,000 s), so the most important bar finishes beyond the last tick, and "1 µs" is the first tick although the first bar (0.1 s) starts at the left edge. A reader cannot tell what the bar length means at the right end.
+- **Fix:** add ticks "1 day" and "1 year" in taupe (and let the axis run 1 ms to 1 year), so 0.1 s, 2.7 s and 116 days sit between named marks.
+
+**Counts:** 23 findings, 9 major (1–9) and 14 minor (10–23). No source files other than this REVIEW.md were changed.
