@@ -5,11 +5,11 @@
     {
       "lines": [
         "The shell runs one job by hand.",
-        "A C-I pipeline runs the same commands on every change... and stops at the first failure.",
+        "A pipeline runs the same commands on every change. It stops at the first failure.",
         {
           "beat": 0.4
         },
-        "This refresher covers the loop around it: review, tests, C-I, version numbers, and pinned dependencies. The strip along the top marks where each step sits.",
+        "This refresher covers the loop around it: review, tests, continuous integration, version numbers, and pinned dependencies. The strip along the top marks where each step sits.",
         "All familiar? Swipe on."
       ]
     },
@@ -35,14 +35,14 @@
           "beat": 0.4
         },
         "But does it fail when the code is broken?",
-        "Six tests run: these four cases, the Git oracle, and a test of the main function.",
-        "On commit seven hundred thirty-one... four fail. The two that pass have no stray spaces.",
+        "Six tests run. Four cases, the Git oracle, and a test of the main function.",
+        "At that commit, four tests fail. The two that pass have no stray spaces.",
         "The run exits with one... and the gate closes."
       ]
     },
     {
       "lines": [
-        "A C-I job is a script that stops on error: each step runs only if the one before it succeeded.",
+        "A job on the runner is a script that stops on error. Each step runs only if the one before it succeeded.",
         "Each step is a new shell, and its exit status is its verdict.",
         "The first non-zero status fails the job... and every step after it is skipped.",
         {
@@ -55,7 +55,7 @@
     },
     {
       "lines": [
-        "Here's the shell refresher's trap, on a C-I runner.",
+        "Here's the trap from the shell refresher, now on a runner.",
         "This step sets no shell, so GitHub runs bash with stop-on-error. The first command can't open the file and fails; the other two succeed.",
         {
           "beat": 0.4
@@ -104,13 +104,13 @@
         {
           "beat": 0.4
         },
-        "What does a fresh C-I run get?"
+        "What does a brand new run start with?"
       ],
       "answer": [
         "It gets version two... and the app fails with a missing-key error.",
         "Or later admits every later version, and pip takes the newest.",
         "The application should pin exactly, with a lock: next step.",
-        "A library is a trade-off: a lower bound always, a cap only for a known break."
+        "For a library, always set a lower bound. Set a cap only for a known break."
       ]
     },
     {
@@ -130,7 +130,7 @@
       "lines": [
         "Eight things to keep.",
         "Review design first, in small changes. Tests must fail on the bug.",
-        "C-I stops at the first non-zero exit; explicit bash adds pipe-fail. Flaky tests need their state fixed.",
+        "The runner stops at the first non-zero exit. Explicit bash adds the pipe fail option. Flaky tests need their state fixed.",
         "Versions: fix, add, or break. Applications pin, with a lock. Libraries set a lower bound, and cap only a known break.",
         "The gate checks the answer... not what it costs as the data grows.",
         {
