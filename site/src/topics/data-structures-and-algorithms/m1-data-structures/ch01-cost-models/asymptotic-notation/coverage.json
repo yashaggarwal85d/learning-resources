@@ -1,0 +1,533 @@
+{
+  "topic": "dsa.asymptotic-notation",
+  "syllabus": [
+    {
+      "clause": "O/Θ/Ω/o/ω",
+      "at": [
+        {
+          "step": "O, Ω, Θ are inequalities with witnesses"
+        },
+        {
+          "step": "A constant factor is fine; an exponent is not"
+        },
+        {
+          "step": "o and ω are strict: read the ratio"
+        },
+        {
+          "deep": "Definitions"
+        }
+      ]
+    },
+    {
+      "clause": "best, average, worst, expected and with-high-probability bounds",
+      "at": [
+        {
+          "step": "Bound and case are different axes"
+        },
+        {
+          "step": "Average over inputs, or expected over coins"
+        },
+        {
+          "step": "Expected is not a guarantee; w.h.p. is a tail"
+        },
+        {
+          "deep": "Cases and randomness"
+        }
+      ]
+    },
+    {
+      "clause": "time vs space trade-offs",
+      "at": [
+        {
+          "step": "Time and space trade, so name both"
+        },
+        {
+          "deep": "Resources, size and reality"
+        }
+      ]
+    }
+  ],
+  "sources": [
+    {
+      "source": "CLRS, Introduction to Algorithms, 4th ed., chapters 3, 2 and 7: asymptotic notation, analysis, quicksort analysis",
+      "items": [
+        {
+          "item": "Θ, O, Ω with constants c1, c2, n0 and 'for all n ≥ n0'",
+          "at": [
+            {
+              "step": "O, Ω, Θ are inequalities with witnesses"
+            },
+            {
+              "deep": "Definitions"
+            }
+          ]
+        },
+        {
+          "item": "o and ω with 'for every c > 0'; limit characterisation",
+          "at": [
+            {
+              "step": "o and ω are strict: read the ratio"
+            },
+            {
+              "deep": "Definitions"
+            }
+          ]
+        },
+        {
+          "item": "Asymptotic notation denotes sets; '=' is an abuse; anonymous functions in formulas",
+          "at": [
+            {
+              "deep": "Definitions"
+            }
+          ]
+        },
+        {
+          "item": "Standard rules: sums, products, polynomials, logarithm bases, exponentials",
+          "at": [
+            {
+              "step": "A constant factor is fine; an exponent is not"
+            },
+            {
+              "deep": "Definitions"
+            }
+          ]
+        },
+        {
+          "item": "Best, worst and average-case analysis of insertion sort",
+          "at": [
+            {
+              "step": "Bound and case are different axes"
+            },
+            {
+              "deep": "Cases and randomness"
+            }
+          ]
+        },
+        {
+          "item": "Expected running time of randomized quicksort and the pivot analysis",
+          "at": [
+            {
+              "step": "Average over inputs, or expected over coins"
+            },
+            {
+              "deep": "Cases and randomness"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "Knuth, Big Omicron and Big Omega and Big Theta (SIGACT News, 1976)",
+      "items": [
+        {
+          "item": "O, Ω, Θ defined with 'all large n', and why Ω is needed for lower bounds",
+          "at": [
+            {
+              "step": "O, Ω, Θ are inequalities with witnesses"
+            },
+            {
+              "deep": "Definitions"
+            }
+          ]
+        },
+        {
+          "item": "The Hardy–Littlewood meaning of Ω (infinitely often) and the one-way equality",
+          "at": [
+            {
+              "deep": "Definitions"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "Sedgewick and Wayne, Algorithms 4th ed., §1.4 Analysis of Algorithms",
+      "items": [
+        {
+          "item": "Order-of-growth classifications and what the constants do at real sizes",
+          "at": [
+            {
+              "step": "The constant hides inside the O"
+            },
+            {
+              "step": "The ladder, at a million items"
+            },
+            {
+              "deep": "Resources, size and reality"
+            }
+          ]
+        },
+        {
+          "item": "Doubling hypothesis for estimating the exponent",
+          "at": [
+            {
+              "deep": "Resources, size and reality"
+            }
+          ]
+        },
+        {
+          "item": "Memory use as a second resource",
+          "at": [
+            {
+              "step": "Time and space trade, so name both"
+            },
+            {
+              "deep": "Resources, size and reality"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "Mitzenmacher and Upfal, Probability and Computing, 2nd ed.: Markov's inequality, randomized quicksort, high-probability bounds",
+      "items": [
+        {
+          "item": "Markov's inequality bounds a tail from an expectation only weakly",
+          "at": [
+            {
+              "step": "Expected is not a guarantee; w.h.p. is a tail"
+            },
+            {
+              "deep": "Cases and randomness"
+            }
+          ]
+        },
+        {
+          "item": "High-probability bound: failure at most 1/n^c",
+          "at": [
+            {
+              "step": "Expected is not a guarantee; w.h.p. is a tail"
+            },
+            {
+              "deep": "Cases and randomness"
+            }
+          ]
+        },
+        {
+          "item": "Chernoff and Chebyshev tail bounds",
+          "at": [
+            {
+              "topic": "Concentration bounds: Markov to Chernoff",
+              "quote": "Markov, Chebyshev, Chernoff–Hoeffding"
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "independent reviewer agent, written without seeing the topic",
+    "date": "2026-10-11",
+    "items": [
+      {
+        "item": "Formal definition of O: exists c>0 and n0 with 0 ≤ f ≤ c·g for all n ≥ n0; constants independent of n",
+        "at": [
+          {
+            "step": "O, Ω, Θ are inequalities with witnesses"
+          },
+          {
+            "deep": "Definitions"
+          }
+        ]
+      },
+      {
+        "item": "Ω is the mirror image and Θ = O ∩ Ω; the notation expresses relative growth, not worst/best case",
+        "at": [
+          {
+            "step": "O, Ω, Θ are inequalities with witnesses"
+          },
+          {
+            "step": "Bound and case are different axes"
+          },
+          {
+            "deep": "Definitions"
+          }
+        ]
+      },
+      {
+        "item": "o and ω are strict: quantifier flips to 'for every c'; f is not in o(f)",
+        "at": [
+          {
+            "step": "o and ω are strict: read the ratio"
+          },
+          {
+            "deep": "Definitions"
+          }
+        ]
+      },
+      {
+        "item": "Limit test is sufficient not necessary: n vs n(2+sin n) is Θ with no limit",
+        "at": [
+          {
+            "step": "o and ω are strict: read the ratio"
+          },
+          {
+            "deep": "Definitions"
+          }
+        ]
+      },
+      {
+        "item": "Misconception: O means worst case and Ω best case; bound type and case are independent axes",
+        "at": [
+          {
+            "step": "Bound and case are different axes"
+          },
+          {
+            "deep": "Cases and randomness"
+          }
+        ]
+      },
+      {
+        "item": "'At least O(n²)' is meaningless; a lower bound needs Ω; Θ names a case and input family",
+        "at": [
+          {
+            "step": "Bound and case are different axes"
+          },
+          {
+            "deep": "Cases and randomness"
+          }
+        ]
+      },
+      {
+        "item": "O(g) is a set and f = O(g) is a one-way relation; O inside formulas is an anonymous function",
+        "at": [
+          {
+            "deep": "Definitions"
+          }
+        ]
+      },
+      {
+        "item": "Only asymptotic: 100n can be slower than n² below n=100; constants and crossovers matter",
+        "at": [
+          {
+            "step": "The constant hides inside the O"
+          },
+          {
+            "deep": "Resources, size and reality"
+          }
+        ]
+      },
+      {
+        "item": "Rules: sum/max, product, polynomial degree, log bases differ by a constant, exponential bases do not",
+        "at": [
+          {
+            "step": "A constant factor is fine; an exponent is not"
+          },
+          {
+            "deep": "Definitions"
+          }
+        ]
+      },
+      {
+        "item": "Multivariable bounds need a stated domain; textbook definitions differ (Howell, Rutanen)",
+        "at": [
+          {
+            "deep": "Definitions"
+          }
+        ]
+      },
+      {
+        "item": "Input size is encoding length: Θ(N) in the value is exponential in bits (trial division, knapsack DP): pseudo-polynomial",
+        "at": [
+          {
+            "step": "n is the size of the input, in bits"
+          },
+          {
+            "deep": "Resources, size and reality"
+          },
+          {
+            "topic": "Knapsack and coin change",
+            "quote": "pseudo-polynomial time"
+          }
+        ]
+      },
+      {
+        "item": "Counting-model caveat: unit-cost word operations break for big integers; state bit operations",
+        "at": [
+          {
+            "deep": "Resources, size and reality"
+          },
+          {
+            "topic": "The word-RAM model and its assumptions",
+            "quote": "unit-cost operations on w ≥ log n-bit words"
+          }
+        ]
+      },
+      {
+        "item": "Worst case is a max over inputs, best a min, average an expectation over an assumed distribution",
+        "at": [
+          {
+            "step": "Bound and case are different axes"
+          },
+          {
+            "step": "Average over inputs, or expected over coins"
+          },
+          {
+            "deep": "Cases and randomness"
+          }
+        ]
+      },
+      {
+        "item": "Expected time of a randomized algorithm holds for every fixed input; differs from average case over inputs",
+        "at": [
+          {
+            "step": "Average over inputs, or expected over coins"
+          },
+          {
+            "deep": "Cases and randomness"
+          }
+        ]
+      },
+      {
+        "item": "Expectation is not a tail guarantee: Markov gives only Pr[T ≥ kE[T]] ≤ 1/k",
+        "at": [
+          {
+            "step": "Expected is not a guarantee; w.h.p. is a tail"
+          },
+          {
+            "deep": "Cases and randomness"
+          }
+        ]
+      },
+      {
+        "item": "With high probability: failure at most 1/n^c, c chosen by the analyst at constant-factor cost",
+        "at": [
+          {
+            "step": "Expected is not a guarantee; w.h.p. is a tail"
+          },
+          {
+            "deep": "Cases and randomness"
+          }
+        ]
+      },
+      {
+        "item": "Expected and w.h.p. bounds do not imply each other; combining w.h.p. with a polynomial worst case bounds the expectation",
+        "at": [
+          {
+            "deep": "Cases and randomness"
+          }
+        ]
+      },
+      {
+        "item": "Amortized is neither average nor expected: worst-case over a sequence, single operations can be slow",
+        "at": [
+          {
+            "deep": "Cases and randomness"
+          },
+          {
+            "topic": "Aggregate and accounting methods",
+            "quote": "charging cheap operations to pay for expensive ones"
+          }
+        ]
+      },
+      {
+        "item": "Lower bounds on a problem versus upper bounds of an algorithm, in a stated model",
+        "at": [
+          {
+            "topic": "Lower bounds and adversary arguments",
+            "quote": "decision-tree Ω(n log n) for comparison sorting"
+          }
+        ]
+      },
+      {
+        "item": "Recurrences and the Master theorem convert recursive cost to asymptotics",
+        "at": [
+          {
+            "topic": "Recurrences: Master theorem and Akra–Bazzi",
+            "quote": "Master theorem"
+          }
+        ]
+      },
+      {
+        "item": "Space uses the same notation: auxiliary versus total space, recursion depth counts",
+        "at": [
+          {
+            "deep": "Resources, size and reality"
+          },
+          {
+            "step": "Time and space trade, so name both"
+          }
+        ]
+      },
+      {
+        "item": "Time-space trade-offs name both resources and the model",
+        "at": [
+          {
+            "step": "Time and space trade, so name both"
+          },
+          {
+            "deep": "Resources, size and reality"
+          }
+        ]
+      },
+      {
+        "item": "Real hardware: the RAM model hides the memory hierarchy; block transfers are the right measure there",
+        "at": [
+          {
+            "topic": "External-memory (I/O) model",
+            "quote": "bytes moved, not comparisons"
+          },
+          {
+            "deep": "Resources, size and reality"
+          }
+        ]
+      },
+      {
+        "item": "Practice: doubling test, and log n is at most about 64 on real machines",
+        "at": [
+          {
+            "step": "The ladder, at a million items"
+          },
+          {
+            "deep": "Resources, size and reality"
+          }
+        ]
+      },
+      {
+        "item": "Tilde notation and other Landau symbols beyond a pointer",
+        "at": [
+          {
+            "out": "Rarely changes an engineering decision; the Deep dive names the Hardy–Littlewood Ω as the one variant that does."
+          }
+        ]
+      }
+    ]
+  },
+  "gapReview": {
+    "date": "2026-10-11",
+    "by": "content review agent (ROUTINE section 4: flow, gap hunt, expert reader); read reel, scenes, narration, Deep dive, Prerequisites, registry entry, coverage map, FACT-CHECK.md and the next syllabus line; ran examples.py",
+    "resolved": [
+      "Flow: the sorts, hash set, logarithms, limits and expectation were used but neither taught nor declared; Prerequisites gained 'The algorithms used as examples' and 'Probability and expectation', and the registry declares them",
+      "Flow: the ladder step handed off to the next topic before the recap; the handoff now sits only on the recap, and the recap decodes the opening 'quicksort is O(n log n)' claim, closing the opening problem",
+      "Flow: the recap pointed rusty readers to Prerequisites; it now points to the Deep dive",
+      "Expert: case-grid drawing showed the average formula as n²/4 + n − Hₙ; corrected to n(n−1)/4 + n − Hₙ",
+      "Expert: bits-vs-value footnote said 16 more bits multiply the value by 65,536; corrected to 32 more bits multiply the steps by about 65,536 (asserted); aria label said 'linear in the value', now 'polynomial'",
+      "Expert: hash-set duplicate search shown as 'time n'; now expected time, in reel, Deep dive and a new code-review bullet on colliding keys (§3.1)",
+      "Expert: w.h.p. caption restated once, with steps, and the histogram no longer claims to show a w.h.p. promise",
+      "Expert: expected vs average step now says first-pivot quicksort averages the same count over random orders (asserted within 3%): same number, different promise",
+      "Expert: Deep dive log-base example compared different arguments, not bases; replaced by 2^(log₂ n) = n vs 2^(log₄ n) = √n (asserted)",
+      "Expert: quicksort stack-depth rule, heapsort count (includes the scan), Θ(b) bit operations, 1.39 n log₂ n as asymptotic only (13,816 asserted), doubling test blind to log factors (asserted), 'equal at 2 and 3' now asserted with ==, slowest/mean 1.42 asserted",
+      "Expert: crossover is strictly above n = 100 (tie at 100)",
+      "Gap: Learning design layer 8 missing; added 'The frontier' (smoothed analysis, beyond-worst-case models, algorithms with predictions), each from its opened arXiv abstract or introduction",
+      "Gap: coverage mapped 'time vs space trade-offs' to the constants step; mapping removed",
+      "Looks: Sandwich curve labels overlapped at the right edge (moved to a legend); ladder bars were not to scale and dark text sat on dark track (now log-scale time, labelled, steps text beside the label, 2ⁿ row shows steps and years); o/ω table printed 0.0000 (now 2.0e-5)"
+    ],
+    "open": [],
+    "earlier": [
+      {
+        "date": "2026-10-11",
+        "by": "independent gap-hunter agent (read reel, Deep dive, coverage map and examples.py against the syllabus; ran examples.py)",
+        "resolved": [
+          "Neither-implies-the-other for expected and w.h.p. bounds, and Las Vegas vs Monte Carlo: added to Cases and randomness",
+          "'At least O(n^2)' meaningless and Θ needs a case: added to Cases and randomness",
+          "Pseudo-polynomial definition and trial-division wording: reel and Deep dive",
+          "Rules to know cold extended (product rule, logs inside exponents, log n!, order relations)",
+          "Big-integer and log n ≤ 64 caveats: added to Resources, size and reality",
+          "Merge vs insertion sort claim restated for n = 4..8 and asserted for each",
+          "Reel wording: n0 may depend on c, comparison convention, Hn defined, w.h.p. quantifiers"
+        ],
+        "open": []
+      }
+    ]
+  }
+}

@@ -223,60 +223,10 @@ function Dijkstra({ t }: { t: number }) {
   );
 }
 
-/* ---------------------------------------------------------- German */
-// The verb bracket: the separable verb "anrufen" splits; "rufe" takes
-// position 2, "an" flies to the end, and the bracket closes around the
-// middle field.
-function VerbBracket({ t }: { t: number }) {
-  const cycle = 7;
-  const u = (t % cycle) / cycle;
-  const split = ease((u - 0.15) / 0.25);
-  const bracket = ease((u - 0.45) / 0.2);
-  const words = ['Ich', 'rufe', 'dich', 'morgen', 'um acht', 'an'];
-  const xs = [30, 82, 140, 196, 258, 306];
-  const anX = 82 + (306 - 82) * split;
-  const anY = 92 - Math.sin(Math.PI * split) * 40;
-  return (
-    <>
-      <text x={160} y={30} textAnchor="middle" fontSize={11} fill={C.latte} style={mono}>
-        anrufen → rufe … an
-      </text>
-      {words.slice(0, 5).map((w, i) => (
-        <g key={i} opacity={i >= 2 ? 0.35 + 0.65 * split : 1}>
-          <text x={xs[i] + (i === 1 ? -8 * (1 - split) : 0)} y={98} textAnchor="middle" fontSize={i === 1 ? 17 : 15} fill={i === 1 ? C.caramel : C.crema} style={{ fontFamily: 'Fraunces, Georgia, serif', fontWeight: i === 1 ? 700 : 500 }}>
-            {w}
-          </text>
-        </g>
-      ))}
-      <text x={anX} y={anY + 6} textAnchor="middle" fontSize={17} fill={C.caramel} style={{ fontFamily: 'Fraunces, Georgia, serif', fontWeight: 700 }}>
-        an
-      </text>
-      {/* the bracket */}
-      <path
-        d={`M82 112 V126 H306 V112`}
-        fill="none"
-        stroke={C.caramel}
-        strokeWidth={2}
-        pathLength={1}
-        strokeDasharray={`${bracket} 1`}
-      />
-      <text x={194} y={146} textAnchor="middle" fontSize={9} fill={C.latte} style={mono} opacity={bracket}>
-        MITTELFELD
-      </text>
-      {[1, 2].map((p, i) => (
-        <text key={p} x={xs[i]} y={70} textAnchor="middle" fontSize={8} fill={C.mocha} style={mono}>
-          {p}
-        </text>
-      ))}
-    </>
-  );
-}
-
 const ART: Record<string, { C: (p: { t: number }) => React.ReactNode; still: number; label: string }> = {
   'data-engineering': { C: Pipeline, still: 1.3, label: 'Change events flowing from databases through a log into the lakehouse' },
   'rust-systems-engineering': { C: Ownership, still: 2.2, label: 'A value moved between owners in Rust' },
   'data-structures-and-algorithms': { C: Dijkstra, still: 5.2, label: "Dijkstra's algorithm settling nodes in order of distance" },
-  'german-language': { C: VerbBracket, still: 4.5, label: 'The German verb bracket closing around the middle field' },
 };
 
 export default function DomainArt({ id }: { id: string }) {

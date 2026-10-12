@@ -4,7 +4,7 @@ Once a day an automated session audits every topic that was shipped or changed o
 
 ## 0. Ground rules
 
-- Everything in [ROUTINE.md](ROUTINE.md) section 0 applies (models: Opus judges, Sonnet everything else; agents in the foreground; never end the turn while anything runs; sources read raw with `scripts/sources.mjs`; privacy; no vendors for the voice; no pull requests; never leave `main` red; don't guess).
+- Everything in [ROUTINE.md](ROUTINE.md) section 0 applies (except models: the audit runs on Sonnet only, every agent included, never Opus, Fable or Haiku; fresh agents for every check; agents in the foreground; never end the turn while anything runs; sources read raw with `scripts/sources.mjs`; privacy; no vendors for the voice; no pull requests; never leave `main` red; don't guess).
 - **Scope is fixed by the script, not by judgment:** `node scripts/audit-scope.mjs` lists the topics and ledger runs since the last audit. Audit exactly those; nothing older. If the list is empty, record that (section 5) and stop.
 - **Don't collide with routine runs.** Before changing a topic, run `node scripts/claim.mjs status`; if a run holds a claim on that topic (a release, say), don't touch it: record the finding for that run's topic instead and leave the fix to it.
 - **Fix the reels, record the pipeline.** Fix every problem found in a topic in this run. Don't change the pipeline itself (ROUTINE.md, AUDIT.md, DESIGN.md, the scripts, the checks): name the gap and the guard that would close it in the ledger, so a person can change the pipeline with a few days of evidence. A new kind of problem also gets a QUALITY.md row, with "guard: proposed" until someone adds it.
@@ -21,9 +21,9 @@ node scripts/check-all.mjs --topic <slug-part>,<slug-part>,...    # every check,
 
 Every failure is a finding: the pipeline should never have shipped it.
 
-## 3. Fresh-eyes reviews (Opus)
+## 3. Fresh-eyes reviews (fresh Sonnet agents, effort high)
 
-For each topic, launch independent Opus agents (in one message, in parallel) that have not seen its `REVIEW.md` until they have written their own findings:
+For each topic, launch independent agents (in one message, in parallel) that have not seen its `REVIEW.md` until they have written their own findings.:
 
 - **Facts:** pick at least five claims from the reel and Deep dive (the numbers, the definitions, anything that sounds surprising) and re-derive each from its primary source, fetched raw. Any error, outdated statement or unsupported claim is a finding.
 - **Looks and learning:** every step's screenshots at desktop and phone (`site/test-results/`), by the checklist in DESIGN.md → "The looks review checks".
@@ -33,7 +33,9 @@ Then compare with the topic's `REVIEW.md` and `FACT-CHECK.md`: for every finding
 
 ## 4. Fix
 
-On a branch `audit/<date>` from a fresh `origin/main`: fix every finding (a fresh Sonnet fix agent per topic; Opus re-checks a fix that changes what is taught). A fix that changes a topic's concept ledger or handoff must keep the next topic consistent (its bridge and `uses`); check both. Run `node scripts/check-all.mjs --changed`, then merge into `main` the way ROUTINE.md section 8 does (merge `origin/main` first, full checks green, confirm CI and Deploy). Narration lines that change get new audio (`narration/narrate.sh`).
+Live reels are locked (ROUTINE.md section 0): don't change a live topic or the shared reel code. For a finding in one, write the exact fix you propose in the ledger and in the report under "needs the owner", and leave the reel as it is; the owner unlocks it if they want the change. Held topics are fixed as below.
+
+On a branch `audit/<date>` from a fresh `origin/main`: fix every finding (a fresh Sonnet fix agent per topic; another fresh Sonnet agent re-checks a fix that changes what is taught). A fix that changes a topic's concept ledger or handoff must keep the next topic consistent (its bridge and `uses`); check both. Run `node scripts/check-all.mjs --changed`, then merge into `main` the way ROUTINE.md section 8 does (merge `origin/main` first, full checks green, confirm CI and Deploy). Narration lines that change get new audio (`narration/narrate.sh`).
 
 ## 5. Ledger
 
