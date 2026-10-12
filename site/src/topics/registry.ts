@@ -60,7 +60,9 @@ export const TOPICS: TopicMeta[] = [
     minutes: 5,
     verified: '2026-10-12',
     introduces: ['code-review-norms', 'unit-tests', 'ci-pipelines', 'semantic-versioning', 'dependency-pinning'],
-    uses: ['python-functions', 'decorators', 'type-hints', 'exit-status', 'pr-merge-strategies', 'trunk-based-development', 'git-bisect', 'pipes-redirection', 'text-tools', 'signals'],
+    uses: ['python-functions', 'decorators', 'type-hints', 'exit-status', 'pr-merge-strategies', 'trunk-based-development', 'git-bisect', 'pipes-redirection', 'text-tools', 'signals', 'pip-install', 'github-actions-basics'],
+    // Assumed by the Prerequisites panel (sections 04 and 05): installing with pip and reading a workflow file.
+    declared: ['pip-install', 'github-actions-basics'],
     bridge: 'The shell runs one job by hand; a CI pipeline runs the same commands on every change and stops at the first non-zero exit.',
     handoff: 'Last of the five refreshers: the notation for how costs grow, and the logarithms the rest of the chapter counts with.',
   },

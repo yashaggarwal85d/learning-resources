@@ -6,8 +6,8 @@ import { C, Stack, Svg, T } from '../../../../../reels/kit';
 import { RefresherList } from '../refreshers';
 
 // Every number shown here comes from examples.sh and is asserted in examples.py.
-// One picture for the whole reel, a conveyor of gates: a change rides a belt through four gates (review, tests, build, publish).
-// A mini-map strip along the top of steps 2-9 shows which gate the step is about. The exit-status token is the shell refresher's
+// One picture for the whole reel, a conveyor of gates: the four stages a change passes (review, tests, CI, release).
+// A mini-map strip along the top of steps 2-9 shows which stage the step is about (step 1 says what the four stages are). The exit-status token is the shell refresher's
 // round token (crema = 0, cherry = non-zero). Colour keeps one meaning: crema = values as they are, latte = secondary labels,
 // taupe = belt, waiting and skipped, caramel = the thing to look at, cinnamon = the drifting alternative (large shapes only),
 // cherry fill with cherryText labels = a bad outcome. At most two accents in a step.
@@ -17,7 +17,7 @@ import { RefresherList } from '../refreshers';
 const pop = (t: number, at: number) => clamp(easeOutBack(seg(t, at, at + 0.4)));
 const fade = (t: number, at: number, len = 0.4) => clamp(easeOut(seg(t, at, at + len)));
 
-const GATES = ['review', 'tests', 'build', 'publish'] as const;
+const GATES = ['review', 'tests', 'CI', 'release'] as const;
 type Gate = (typeof GATES)[number];
 
 /** The mini-map: where in the delivery loop this step sits. */
@@ -64,7 +64,8 @@ function Box({ x, y, w, h = 44, label, sub, stroke = C.crema, dashed = false, o 
 export const Opening = (c: StepCtx) => <RefresherList {...c} current={3} />;
 
 // 2 · Review: a funnel of rungs that shrink, then a size bar.
-const RUNGS = ['1 design', '2 functionality', '3 complexity', '4 tests', '5 naming, comments', '6 style: "Nit:"'];
+const RUNGS = ['design: most important', 'functionality', 'complexity', 'tests', 'naming, comments', 'style: "Nit:", optional'];
+const RUNG_W = [520, 470, 470, 470, 470, 400]; // only design (first) and style (last) are ranked by the source
 const RUNG_Y = [52, 94, 136, 178, 242, 284];
 export function Review({ t }: StepCtx) {
   const subLine = fade(t, 2.6);
@@ -73,17 +74,17 @@ export function Review({ t }: StepCtx) {
   const X0 = 30;
   const scale = (n: number) => X0 + (n / 1000) * 540;
   return (
-    <Svg label="A review funnel: design first and widest, style last and narrowest, marked Nit; under it a size bar from 100 lines, reasonable, to 1,000, usually too large" h={420}>
+    <Svg label="A review funnel in reading order: design first and widest, style last and narrowest, marked Nit and optional; under it a size bar from 100 lines, reasonable, to 1,000, usually too large" h={420}>
       <MiniMap lit={['review']} />
       {RUNGS.map((r, i) => {
         const a = pop(t, 0.4 + i * 0.3);
-        const w = (520 - i * 50) * a;
+        const w = RUNG_W[i] * a;
         const first = i === 0;
         const last = i === RUNGS.length - 1;
         return (
           <g key={r}>
             <rect x={300 - w / 2} y={RUNG_Y[i]} width={Math.max(0, w)} height={34} rx={12} fill={first ? C.caramel : C.espresso} fillOpacity={first ? 0.16 : 1} stroke={first ? C.caramel : C.taupe} strokeWidth={first ? 2.5 : 1.5} />
-            <T x={300 - (520 - i * 50) / 2 + 16} y={RUNG_Y[i] + 23} s={15} f={last ? C.latte : C.crema} w={first ? 700 : 500} o={clamp(a * 1.5)}>{r}</T>
+            <T x={300 - RUNG_W[i] / 2 + 16} y={RUNG_Y[i] + 23} s={15} f={last ? C.latte : C.crema} w={first ? 700 : 500} o={clamp(a * 1.5)}>{r}</T>
           </g>
         );
       })}
@@ -104,7 +105,7 @@ export function Review({ t }: StepCtx) {
 }
 
 // 3 · A unit test pins the bug: the same six tests on the real clean() and on commit 731's.
-const TEST_ROWS = ["'paid'", "'Paid'", "'SHIPPED '", "' refunded'", "email (Git's oracle)", 'main() counts'];
+const TEST_ROWS = ["'paid'", "'Paid'", "'SHIPPED '", "' refunded'", "padded email (Git's oracle)", 'main() on a padded file'];
 const ON_731 = [true, true, false, false, false, false]; // Paid still passes: lower() fixes the case
 export function UnitTest({ t }: StepCtx) {
   const LX = 300;
@@ -119,7 +120,9 @@ export function UnitTest({ t }: StepCtx) {
         end={0.7}
         lines={['@pytest.mark.parametrize(', "    'raw, expected', [", "    ('paid', 'paid'), ('Paid', 'paid'),", "    ('SHIPPED ', 'shipped'), (' refunded', 'refunded'),", '])', 'def test_clean_status(raw, expected):', '    assert clean(raw) == expected']}
       />
-      <Svg fill label="Six tests: all six pass on the real clean, and on commit 731's clean four fail and two pass" h={290}>
+      <Svg fill label="Six tests: the four cases above, the Git refresher's email oracle and a main test on a fixture file; all six pass on the real clean, and on commit 731's clean the four with padded input fail and the two without pass" h={330}>
+        <MiniMap lit={['tests']} />
+        <g transform="translate(0 38)">
         <T x={LX} y={26} s={13} a="middle" f={C.crema} o={fade(t, 0.8)}>strip().lower()</T>
         <T x={RX} y={26} s={13} a="middle" f={C.cherryText} o={fade(t, 2.0)}>731: lower()</T>
         {TEST_ROWS.map((r, i) => {
@@ -140,6 +143,7 @@ export function UnitTest({ t }: StepCtx) {
           <T x={RX} y={252} s={15} a="middle" f={C.cherryText} w={700}>4 failed, 2 passed</T>
           <T x={RX} y={272} s={13} a="middle" f={C.cherryText}>exit 1</T>
         </g>
+        </g>
       </Svg>
     </Stack>
   );
@@ -151,7 +155,7 @@ export function CiChain({ t }: StepCtx) {
   const skipped = easeOut(seg(t, 1.9, 2.3));
   const Col = ({ x, bad, title }: { x: number; bad: boolean; title: string }) => {
     const ys = [96, 166, 236];
-    const names = ['install (locked)', 'pytest -q', 'pipeline | diff'];
+    const names = ['install tools', 'pytest -q', 'pipeline | diff'];
     // token times: left 0, right 0, left 0, right 1, (right skipped), left 0
     const at = bad ? [0.9, 1.5] : [0.6, 1.2, 2.2];
     return (
@@ -193,7 +197,7 @@ export function CiChain({ t }: StepCtx) {
   };
   return (
     <Svg label="Two runs of the same job: the fix passes install, tests and diff and may merge; commit 731 fails the tests with exit 1, the diff step is skipped and the merge is blocked" h={400}>
-      <MiniMap lit={['tests', 'build']} />
+      <MiniMap lit={['CI']} />
       <Col x={30} bad={false} title="PR: restore strip()" />
       <Col x={320} bad title="commit 731: lower()" />
     </Svg>
@@ -217,7 +221,7 @@ export function WhichShell({ t, answer, portrait }: StepCtx) {
   return (
     <Stack>
       {!(portrait && shown) && (
-        <Code title=".github/workflows/gate.yml" t={shown ? 10 : t} end={0.6} lines={['runs-on: ubuntu-latest', 'steps:', '  - run: jq -r .status missing.jsonl | sort | uniq -c']} highlight={[2]} />
+        <Code title=".github/workflows/gate.yml" t={shown ? 10 : t} end={0.6} lines={['runs-on: ubuntu-latest', 'steps:', '  - run: jq -r .status missing.jsonl | sort | uniq -c', '    # no shell: set, so GitHub runs: bash -e {0}']} highlight={[2]} />
       )}
       {!shown ? (
         <Svg fill label="Three commands in a pipeline: jq exits 2, sort and uniq exit 0; does the step pass or fail?" h={250}>
@@ -296,7 +300,7 @@ export function VersionDial({ t, answer }: StepCtx) {
   const names = ['MAJOR', 'MINOR', 'PATCH'];
   return (
     <Svg label="A version dial at 1.5.0 and three changes: a fix gives 1.5.1, an addition 1.6.0; the renamed column gives 2.0.0, with minor and patch reset to 0" h={350}>
-      <MiniMap lit={['publish']} />
+      <MiniMap lit={['release']} />
       <T x={300} y={72} s={15} a="middle" f={C.latte}>shopclean</T>
       {digits.map((d, i) => {
         const x = 125 + i * 130;
@@ -334,7 +338,7 @@ export function WorksOnMyMachine({ t, answer }: StepCtx) {
   const cx = (i: number) => 100 + i * 120;
   return (
     <Svg label="requirements.txt says shopclean at least 1.4, a loose branch reaching every version on the package index; the laptop got 1.5.0 last week, today a clean CI machine reaches for 2.0.0 and the app fails with a missing-key error" h={350}>
-      <MiniMap lit={['build']} />
+      <MiniMap lit={['CI']} />
       <g opacity={a}>
         <rect x={30} y={60} width={240} height={50} rx={6} fill={C.roast} stroke={C.latte} strokeWidth={2} />
         <T x={46} y={80} s={13} f={C.latte}>requirements.txt</T>
@@ -395,7 +399,7 @@ export function LockFile({ t }: StepCtx) {
   const wiggle = (1 - e) * 36;
   return (
     <Svg label="The lock file names shopclean 1.5.0 and the hash of its exact file; the dependency tree is frozen; a republished 1.5.0 with different bytes is stopped at a hash mismatch" h={400}>
-      <MiniMap lit={['build']} />
+      <MiniMap lit={['CI']} />
       <g opacity={tab}>
         <rect x={30} y={56} width={540} height={62} rx={6} fill={C.roast} stroke={C.latte} strokeWidth={2} />
         <T x={46} y={82} s={15} f={C.crema}>shopclean==1.5.0 \</T>
@@ -444,7 +448,7 @@ const RECAP = [
   ['shell: bash', "adds pipefail; the default doesn't"],
   ['Flaky', 'fix the uncontrolled state'],
   ['SemVer', 'fix 1.5.1 · add 1.6.0 · break 2.0.0'],
-  ['Ranges and pins', 'library: <2; application: =='],
+  ['Ranges and pins', 'app: pin with ==; library: floor, cap known breaks'],
   ['Lock', 'exact versions, hashes, same bytes'],
 ];
 export function Recap({ t }: StepCtx) {

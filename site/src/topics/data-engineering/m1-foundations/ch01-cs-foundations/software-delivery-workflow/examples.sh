@@ -179,6 +179,18 @@ out flaky_pattern "$pattern"   # pass (P) or fail (F) for PYTHONHASHSEED=0..19; 
 check "$sorted_pass" 20 'the sorted version passes under every seed'
 [ "$flaky_pass" -gt 0 ] && [ "$flaky_pass" -lt 20 ] || { echo "FAIL: flaky test should pass for some seeds only" >&2; exit 1; }
 
+# Test layout: `python -m pytest` puts the current directory on sys.path, so a flat layout tests the checked-out source tree.
+# In a src layout the package is not importable until it is installed, so a forgotten install fails loudly (exit 2) instead of passing.
+mkdir -p "$W/flat" "$W/srcl/src/pkg" "$W/srcl/tests"
+printf 'def f():\n    return 1\n' > "$W/flat/pkg.py"; printf 'from pkg import f\n\n\ndef test_f():\n    assert f() == 1\n' > "$W/flat/test_pkg.py"
+set +e; (cd "$W/flat" && python3 -m pytest -q -p no:cacheprovider > /dev/null 2>&1); flat_rc=$?
+printf 'def f():\n    return 1\n' > "$W/srcl/src/pkg/__init__.py"; cp "$W/flat/test_pkg.py" "$W/srcl/tests/"
+(cd "$W/srcl" && python3 -m pytest -q -p no:cacheprovider > /dev/null 2>&1); src_rc=$?
+(cd "$W/srcl" && PYTHONPATH="src:$W/tools" python3 -m pytest -q -p no:cacheprovider > /dev/null 2>&1); src_path_rc=$?; set -e
+out layout_flat_rc "$flat_rc"; check "$flat_rc" 0 'flat layout: the working tree is tested without any install'
+out layout_src_rc "$src_rc"; check "$src_rc" 2 'src layout, not installed: collection error, exit 2'
+out layout_src_path_rc "$src_path_rc"; check "$src_path_rc" 0 'src layout with src on the path: passes'
+
 # ---- 4 · CI: a chain of exit statuses ---------------------------------------------------------------
 # GitHub runs each `run:` in a new shell: `bash -e {0}` when no shell is set, `bash --noprofile --norc -eo pipefail {0}`
 # with `shell: bash`. Run the same step file both ways.
@@ -205,11 +217,17 @@ cat > .github/workflows/gate.yml << 'YML'
 name: refresher-gate
 on:
   push:
+    branches: [main]
   pull_request:
+permissions:
+  contents: read           # the least this job needs: it only reads the repository
+concurrency:
+  group: gate-${{ github.ref }}
+  cancel-in-progress: true  # a newer push to the same branch cancels the older, superseded run
 jobs:
   gate:
     runs-on: ubuntu-latest
-    timeout-minutes: 10
+    timeout-minutes: 10      # a hang guard, not the ten-minute speed target
     defaults:
       run:
         shell: bash            # bash --noprofile --norc -eo pipefail {0}: a failing pipe stage fails the step
@@ -236,6 +254,9 @@ for s in "$STEP_TEST" "jq -r .status order_events.jsonl" "diff shell.txt py.txt"
   grep -qF -- "$s" .github/workflows/gate.yml || { echo "FAIL: gate.yml lacks: $s" >&2; exit 1; }
 done
 check "$(grep -c 'shell: bash' .github/workflows/gate.yml)" 1 'one shell: bash default for every step'
+check "$(grep -c '^permissions:' .github/workflows/gate.yml)" 1 'least-privilege token'
+check "$(grep -c 'cancel-in-progress: true' .github/workflows/gate.yml)" 1 'superseded runs are cancelled'
+check "$(grep -c 'branches: \[main\]' .github/workflows/gate.yml)" 1 'push runs only on main, pull requests on their own'
 # job DIR: run the two oracle steps as GitHub would (one new shell each, explicit bash), stop at the first failure.
 job() {
   local dir=$1 n=0 rc=0 s; local -a steps=("$STEP_TEST" "$STEP_DIFF")
@@ -343,6 +364,39 @@ assert sorted(vs, key=Version) == ['1.9.0', '1.9.1', '1.10.0', '2.0.0']
 for spec in ['>=1.4', '>=1.4,<2', '~=1.4', '~=1.4.0', '~=0.4', '~=0.4.0', '==1.5.0']:
     ok = [v for v in ['1.4.0', '1.5.0', '2.0.0', '0.4.2', '0.5.0', '1.4.9'] if v in SpecifierSet(spec)]
     out('spec_' + spec.replace(',', '_'), ' '.join(ok))
+
+# What breaks a data consumer, besides a renamed column: each reader below is fine on 1.5.0's output and breaks on a change
+# that keeps the column names. (The new status value is 'returned': the shop's four statuses are paid, shipped, cancelled, refunded.)
+v1 = [{'status': 'paid', 'orders': 6000, 'amount': 12.5}, {'status': 'shipped', 'orders': 2500, 'amount': 20.0}]
+LABEL = {'paid': 'P', 'shipped': 'S', 'cancelled': 'C', 'refunded': 'R'}
+
+def total_orders(rows):
+    return sum(r['orders'] for r in rows)
+
+def labels(rows):  # an exhaustive mapping of the documented statuses
+    return [LABEL[r['status']] for r in rows]
+
+def by_position(rows):  # a reader that takes columns by position
+    return [(status, orders) for status, orders, amount in (tuple(r.values()) for r in rows)]
+
+def revenue(rows):
+    return sum(r['amount'] for r in rows)
+
+assert total_orders(v1) == 8500 and labels(v1) == ['P', 'S'] and len(by_position(v1)) == 2 and revenue(v1) == 32.5
+
+def fails(fn, rows):
+    try:
+        fn(rows)
+    except Exception as e:
+        return type(e).__name__
+    return 'silent'
+
+out('break_enum', fails(labels, v1 + [{'status': 'returned', 'orders': 3, 'amount': 1.0}]))   # a new enum value
+out('break_type', fails(total_orders, [dict(r, orders=str(r['orders'])) for r in v1]))         # int to str
+out('break_null', fails(total_orders, [dict(v1[0], orders=None), v1[1]]))                      # now nullable
+out('break_column', fails(by_position, [dict(r, currency='EUR') for r in v1]))                 # an added column
+out('break_meaning', fails(revenue, [dict(r, amount=r['amount'] * 100) for r in v1]))          # euros to cents: no error
+assert revenue([dict(r, amount=r['amount'] * 100) for r in v1]) == 3250.0
 PY
 
 # ---- 8 · Drift, pins and hashes, with a local package index -------------------------------------------
@@ -437,6 +491,78 @@ set +e; python3 -m pip install --quiet --no-index --find-links "$W/pre" --target
 out prerelease_only_installs "$(PYTHONPATH="$W/tpre" python3 -c 'import shopclean; print(shopclean.__version__)' 2>/dev/null || echo none)"   # printed, not asserted: depends on the pip version
 # pip freeze pins what is installed (here: the laptop's environment).
 out freeze_laptop "$(python3 -m pip freeze --path "$W/laptop")"
+
+# ---- 9 · Library ranges and release hygiene -------------------------------------------------------------
+# A cap in a library: shoplib 1.0.0 was published when shopclean 2.0.0 did not exist, and says shopclean<2. Its metadata can't be
+# loosened afterwards, so an application that wants shopclean>=2 can't install it next to shoplib, though nothing in shoplib breaks.
+cat > "$W/mkdummy.py" << 'PY'
+import base64, hashlib, sys, zipfile
+name, version, requires, outdir = sys.argv[1:5]
+di = f'{name}-{version}.dist-info'
+files = {f'{name}/__init__.py': 'X = 1\n', f'{di}/METADATA': f'Metadata-Version: 2.1\nName: {name}\nVersion: {version}\nRequires-Dist: {requires}\n',
+         f'{di}/WHEEL': 'Wheel-Version: 1.0\nGenerator: examples.sh\nRoot-Is-Purelib: true\nTag: py3-none-any\n'}
+record = ''.join(f"{p},sha256={base64.urlsafe_b64encode(hashlib.sha256(c.encode()).digest()).rstrip(b'=').decode()},{len(c.encode())}\n" for p, c in files.items())
+files[f'{di}/RECORD'] = record + f'{di}/RECORD,,\n'
+with zipfile.ZipFile(f'{outdir}/{name}-{version}-py3-none-any.whl', 'w', zipfile.ZIP_STORED) as z:
+    for p, c in files.items():
+        info = zipfile.ZipInfo(p, date_time=(2026, 1, 1, 0, 0, 0)); z.writestr(info, c)
+PY
+mkdir -p "$W/capidx"; cp "$W/index/"*.whl "$W/capidx/"; python3 "$W/mkdummy.py" shoplib 1.0.0 'shopclean<2' "$W/capidx"
+python3 -m pip install --quiet --no-index --find-links "$W/capidx" --target "$W/cap1" shoplib 'shopclean>=1.4'
+out cap_pulls_back "$(PYTHONPATH="$W/cap1" python3 -c 'import shopclean; print(shopclean.__version__)')"; check "$(PYTHONPATH="$W/cap1" python3 -c 'import shopclean; print(shopclean.__version__)')" 1.5.0 'the cap holds shopclean back to 1.5.0'
+set +e; python3 -m pip install --no-index --find-links "$W/capidx" --target "$W/cap2" shoplib 'shopclean>=2' > "$W/cap.txt" 2>&1; cap_rc=$?; set -e
+out cap_conflict_rc "$cap_rc"; check "$cap_rc" 1 'an application that needs shopclean>=2 cannot install shoplib'
+out cap_conflict_message "$(grep -o -m1 'conflicting dependencies\|ResolutionImpossible' "$W/cap.txt" || echo none)"
+# A range is a promise about every version in it, so test the lowest one. This library declares shopclean>=1.4 but calls
+# summarise(min_orders=...), which 1.5.0 added: fine with the newest version, a TypeError with the lowest.
+cat > "$W/lib_test.py" << 'PY'
+import sys
+from shopclean import summarise
+summarise(open(sys.argv[1]), min_orders=5)
+PY
+PIPI "$W/lib_new" 'shopclean>=1.4'; set +e
+PYTHONPATH="$W/lib_new" python3 "$W/lib_test.py" "$K/order_events.jsonl" 2> /dev/null; new_rc=$?
+echo 'shopclean==1.4.0' > "$W/lowest.txt"; PIPI "$W/lib_low" -c "$W/lowest.txt" 'shopclean>=1.4'
+PYTHONPATH="$W/lib_low" python3 "$W/lib_test.py" "$K/order_events.jsonl" 2> "$W/lowest_err.txt"; low_rc=$?; set -e
+out lowest_newest_rc "$new_rc"; check "$new_rc" 0 'the newest allowed version passes'
+out lowest_rc "$low_rc"; check "$low_rc" 1 'the lowest allowed version fails'
+out lowest_error "$(tail -1 "$W/lowest_err.txt" | sed "s/summarise() //")"
+# Yanking (PEP 592): the maintainer marks 2.0.0 as yanked. An index page with data-yanked, read by pip from a local file.
+mkdir -p "$W/yank"; cp "$W/index/shopclean-1.5.0-py3-none-any.whl" "$W/index/shopclean-2.0.0-py3-none-any.whl" "$W/yank/"
+cat > "$W/yank/index.html" << 'HTML'
+<a href="shopclean-1.5.0-py3-none-any.whl">shopclean-1.5.0-py3-none-any.whl</a>
+<a href="shopclean-2.0.0-py3-none-any.whl" data-yanked="renamed a column in a minor release">shopclean-2.0.0-py3-none-any.whl</a>
+HTML
+python3 -m pip install --quiet --no-index --find-links "$W/yank/index.html" --target "$W/y1" 'shopclean>=1.4'
+out yank_range_installs "$(PYTHONPATH="$W/y1" python3 -c 'import shopclean; print(shopclean.__version__)')"; check "$(PYTHONPATH="$W/y1" python3 -c 'import shopclean; print(shopclean.__version__)')" 1.5.0 'a range ignores the yanked 2.0.0'
+python3 -m pip install --no-index --find-links "$W/yank/index.html" --target "$W/y2" 'shopclean==2.0.0' > "$W/yank2.txt" 2>&1
+out yank_pin_installs "$(PYTHONPATH="$W/y2" python3 -c 'import shopclean; print(shopclean.__version__)')"; check "$(PYTHONPATH="$W/y2" python3 -c 'import shopclean; print(shopclean.__version__)')" 2.0.0 'an exact pin still installs the yanked 2.0.0'
+out yank_pin_warns "$(grep -c -i 'yanked' "$W/yank2.txt")"
+# A release can gain a file. The lock hashes the py3-none-any wheel; a more specific wheel (this interpreter's own tag) is added
+# to 1.5.0. Without hashes in the index's links (a plain directory, as a simple mirror may serve) pip prefers the new file and
+# refuses it; with hashes in the links (the way PyPI's pages carry them) pip picks the file whose hash is in the lock.
+TAG=$(python3 -c 'import sys; print(f"cp{sys.version_info[0]}{sys.version_info[1]}")')
+mkdir -p "$W/gain"; cp "$W/index/shopclean-1.5.0-py3-none-any.whl" "$W/gain/"
+sed "s/py3-none-any/$TAG-none-any/g" "$W/mkwheel.py" > "$W/mkwheel_tag.py"
+python3 "$W/mkwheel_tag.py" 1.5.0 "$W/gain" "
+NEW_FILE = True
+"
+set +e; python3 -m pip install --no-index --find-links "$W/gain" --target "$W/g1" --require-hashes -r "$W/requirements.lock" > "$W/gain1.txt" 2>&1; gain_dir_rc=$?; set -e
+H_NEW=$(sha256sum "$W/gain/shopclean-1.5.0-$TAG-none-any.whl" | cut -d' ' -f1)
+{ printf '<a href="shopclean-1.5.0-py3-none-any.whl#sha256=%s">a</a>\n' "$H"; printf '<a href="shopclean-1.5.0-%s-none-any.whl#sha256=%s">b</a>\n' "$TAG" "$H_NEW"; } > "$W/gain/index.html"
+python3 -m pip install --quiet --no-index --find-links "$W/gain/index.html" --target "$W/g2" --require-hashes -r "$W/requirements.lock"
+out gain_dir_rc "$gain_dir_rc"; check "$gain_dir_rc" 1 'no hashes in links: pip prefers the added file and refuses it'
+out gain_links_installs "$(PYTHONPATH="$W/g2" python3 -c 'import shopclean; print(shopclean.__version__)')"; check "$(PYTHONPATH="$W/g2" python3 -c 'import shopclean; print(shopclean.__version__)')" 1.5.0 'hashes in links: the locked file is chosen'
+check "$(PYTHONPATH="$W/g2" python3 -c 'import shopclean; print(hasattr(shopclean, "NEW_FILE"))')" False 'it is the locked file, not the added one'
+# pip's own lock command (experimental since pip 25.1) writes the standard pylock.toml (PEP 751). The system pip here is older,
+# so the command runs from a venv with the current pip (26.2.1).
+python3 -m venv "$W/pip26"; "$W/pip26/bin/python" -m pip install --quiet pip==26.2.1
+"$W/pip26/bin/python" -m pip lock --quiet --no-index --find-links "$W/index" -o "$W/pylock.toml" 'shopclean==1.5.0' > /dev/null 2>&1
+out pip_lock_version "$("$W/pip26/bin/python" -m pip --version | awk '{print $2}')"
+out pip_lock_has_hash "$(grep -c "sha256 = \"$H\"" "$W/pylock.toml")"; check "$(grep -c "sha256 = \"$H\"" "$W/pylock.toml")" 1 'pylock.toml carries the wheel digest'
+out pip_lock_has_pin "$(grep -c '^version = "1.5.0"' "$W/pylock.toml")"
+"$W/pip26/bin/python" -m pip install --quiet --no-index --find-links "$W/index" --target "$W/pl" -r "$W/pylock.toml"
+out pip_lock_installs "$(PYTHONPATH="$W/pl" python3 -c 'import shopclean; print(shopclean.__version__)')"
 
 # The lab kit, for the reader to keep.
 if [ -n "${KEEP:-}" ]; then mkdir -p "$KEEP"; cp -r "$K/." "$KEEP/"; rm -rf "$KEEP/__pycache__" "$KEEP/tests/__pycache__" "$KEEP/.pytest_cache" "$KEEP/shell.txt" "$KEEP/py.txt"; echo "kept=$KEEP"; fi

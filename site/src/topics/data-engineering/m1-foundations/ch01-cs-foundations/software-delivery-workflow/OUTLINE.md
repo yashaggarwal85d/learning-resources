@@ -74,7 +74,7 @@ Shared drawing rules (DESIGN.md, and what the Git and shell looks reviews learne
 
 ### Step 4 · "CI: a chain of exit statuses"
 
-- **The idea:** a CI job is the shell refresher's pipeline of processes, laid end to end: each step is a new shell whose exit token is its verdict, and the job stops at the first non-zero token. Two runs of the same `gate.yml`, side by side: the fix goes green and the merge button lights; the regression stops at the tests, the diff step greys out ("skipped"), the required check is red and the merge is blocked.
+- **The idea:** a CI job is a script with stop-on-error (not a pipe): each step is a new shell whose exit token is its verdict, and the job stops at the first non-zero token. Two runs of the same `gate.yml`, side by side: the fix goes green and the merge button lights; the regression stops at the tests, the diff step greys out ("skipped"), the required check is red and the merge is blocked.
 - **Portrait (`Svg h≈340`, mini-map: the belt itself caramel, i.e. "tests" and "build" both lit):**
   - Two columns (x 30–280 "PR #14 restore strip()" and x 320–570 "commit 731"), titles crema 15.
   - In each column three step boxes stacked (y 60, 140, 220; 50 tall; topic 3's process-box style): `install (locked)`, `pytest -q`, `pipeline | diff`, each with its token on the right edge.
@@ -190,7 +190,7 @@ Shared drawing rules (DESIGN.md, and what the Git and shell looks reviews learne
 
 ## Narration notes (for `narration.json`)
 
-One entry per step, `answer` on steps 5, 7 and 8 only. No digits, symbols or code names (QUALITY.md #29): "pytest" → "the test runner" (or lexicon "pie-test" if the voice handles it; prefer the job), "parametrize" → "one case per input", "fixture" fine, "tmp path" → "a fresh temporary file", "CI" → "C-I" (lexicon), "YAML" → avoid ("the workflow file"), "pipefail" → "pipe-fail" (lexicon, as topic 3), "bash dash e" → "bash with the stop-on-error option", "shopclean" → "the shop's cleaning library", "semver" → "semantic versioning", "one point five point zero" for 1.5.0, "two point oh point oh" → say "two, oh, oh"? Use "version two" where the exact form isn't needed and "one point six" / "one point five point one" otherwise (add to the lexicon), "SHA two fifty-six" → "a hash of the file", "KeyError" → "a missing-key error", "pip" → "pip" (lexicon "pip", rhymes with "tip"), "requirements dot t x t" → "the requirements file", "Nit" → "nit". Never read a hash aloud. Bridge line (step 1): "The shell runs one job by hand... A C-I pipeline runs the same commands on every change, and stops at the first failure." Handoff (step 10): "Next up... the last of the five refreshers: the notation for how costs grow."
+One entry per step, `answer` on steps 5, 7 and 8 only. No digits, symbols or code names (QUALITY.md #29): "pytest" → "the test runner" (or lexicon "pie-test" if the voice handles it; prefer the job), "parametrize" → "one case per input", "fixture" fine, "tmp path" → "a fresh temporary folder", "CI" → "C-I" (lexicon), "YAML" → avoid ("the workflow file"), "pipefail" → "pipe-fail" (lexicon, as topic 3), "bash dash e" → "bash with the stop-on-error option", "shopclean" → "the shop's cleaning library", "semver" → "semantic versioning", "one point five point zero" for 1.5.0, "two point oh point oh" → say "two, oh, oh"? Use "version two" where the exact form isn't needed and "one point six" / "one point five point one" otherwise (add to the lexicon), "SHA two fifty-six" → "a hash of the file", "KeyError" → "a missing-key error", "pip" → "pip" (lexicon "pip", rhymes with "tip"), "requirements dot t x t" → "the requirements file", "Nit" → "nit". Never read a hash aloud. Bridge line (step 1): "The shell runs one job by hand... A C-I pipeline runs the same commands on every change, and stops at the first failure." Handoff (step 10): "Next up... the last of the five refreshers: the notation for how costs grow."
 
 ## Deep dive (`index.mdx`)
 
@@ -287,10 +287,10 @@ Sections in the Python essentials pattern (`data-section` names): outcomes, inte
 
 ## Left out on purpose
 
-- uv, `pylock.toml`, `pip lock`, Poetry and other lock formats: §4.3 (syllabus pointer).
+- uv, `pylock.toml` in depth, Poetry and other lock formats: §4.3 (syllabus pointer). The Deep dive only names the tools that write a lock (`pip-compile --generate-hashes`, `pip lock`) and runs `pip lock` once.
 - Data tests, data contracts, deploy pipelines, environments: §11.4.
 - Merge queues, branch protection details, rulesets: already in the Git refresher's Deep dive (link, don't repeat).
-- Coverage percentages, mutation testing, property-based testing: no source fetched here; not in the syllabus line.
+- Coverage percentages, mutation testing, property-based testing: §4.2 "Testing data code" (the Deep dive points there; the syllabus line of this topic doesn't contain them).
 
 ## Progress
 
@@ -309,7 +309,24 @@ Sections in the Python essentials pattern (`data-section` names): outcomes, inte
 - **Added Deep dive section "Continuous integration practices"** (and a Fowler "Continuous Integration" section in `SOURCES.md`, quotes checked word for word). Reason: the blind expert list has four items (self-testing build, integrate daily and build every push, fix broken builds immediately and keep them fast, test in a clone of production) that the plan did not place anywhere.
 - Step 4's PR title is "PR: restore strip()" (the plan's "#14" is a number no example computes). Step 3's right-hand column header is "731: lower()" (the plan's "commit 731: lower()" collided with the left header at phone text scale). Step 10's one-line summaries are shortened to fit 540 units at phone scale.
 - The harness only runs `examples.py`, so `examples.py` runs `examples.sh` (as the shell refresher does) and asserts every on-screen value; `examples.sh` is unchanged.
-- The coverage map's `gapReview` is the builder's self-check, not an independent review; the content review should replace it.
+- The coverage map's `gapReview` is the builder's self-check, not an independent review; the content review should replace it. (Done in the content-review fix: see "Changes after the content review".)
+
+## Changes after the content review (12 October 2026)
+
+Made in response to `REVIEW.md` "Content review" (22 findings; each is marked Fixed or Not fixed there). Steps changed, and why:
+
+- **Step 1 caption and narration:** "how a change reaches production" becomes "gets merged and released", says the top strip marks where each step sits (review, tests, CI, release) and that deploying is later (finding 2). The four stages are renamed `review · tests · CI · release` (were `review · tests · build · publish`) and step 3 gets the strip too.
+- **Step 2:** narration "the order is a priority" becomes "design first, and style last"; the funnel numbers are dropped and only the first and last rungs differ in width, because the source ranks only design and style (finding 18).
+- **Step 3:** caption and narration name all six tests; the right-hand rows are labelled "padded email (Git's oracle)" and "main() on a padded file"; "temporary file" becomes "folder" (findings 3, 4).
+- **Step 4:** a CI job is "a script that stops on error", not the shell's pipeline; "a workflow file lists jobs; a job lists steps"; box "install tools" (findings 1, 5).
+- **Step 5:** the default `bash -e {0}` is in the question frame and the code panel, and the answer states the transferable rule (findings 5, 6).
+- **Step 6:** a set's order is unspecified; for strings it depends on `hash()` (finding 7).
+- **Step 7:** gloss of "public API"; the answer adds the data breaks (new status value, type, unit, nullability, added column) (findings 5, 9).
+- **Step 8:** the answer is "the application pins, with a lock"; the `<2` or `~=` advice moves to the Deep dive as a trade-off; `~=` is glossed (findings 5, 16). Recap row 7 follows.
+- **Step 9:** "a lock tool writes those lines"; "a SHA-256 checksum ... the same on every machine"; "a file that changed under a pinned version" replaces "a re-published file" (findings 7, 17, 19).
+- **Step 10:** the caption and narration plant the next topic's question (the gate checks the answer, not its cost) and restore "logarithms" (finding 8).
+- Narration is about 790 words (was 714); other lines were tightened to pay for it.
+- **Deep dive:** new bullets for what breaks a data consumer, test layout, step order, concurrency, a CI matrix, the cost of blocking review, yanking, automated updates, the cap trade-off, `pip lock`, files added to a release, two incidents, least-privilege tokens; the timeout wording; pointers to §4.2, §11.4 and §12.1. `examples.sh` runs the demonstrable ones.
 
 ## Changes after final
 

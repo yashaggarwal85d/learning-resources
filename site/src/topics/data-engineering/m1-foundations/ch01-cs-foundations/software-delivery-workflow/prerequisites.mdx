@@ -1,6 +1,6 @@
 import Resource from '../../../../../components/Resource.astro';
 
-This is a refresher, the fourth of five. It builds on the three before it: the Python you write, the Git history you change and the shell commands a CI job runs. It assumes you have merged a pull request and installed a package with pip; the reel is a recap of what happens around those two actions, not a first course.
+This is a refresher, the fourth of five. It builds on the three before it: the Python you write, the Git history you change and the shell commands a CI job runs. It assumes you have merged a pull request, installed a package with pip and seen a YAML file (sections 04 to 06 are short primers on the workflow file, pip and version numbers); the reel is a recap of what happens around those two actions, not a first course.
 
 <section class="prereq" data-section="python">
 
@@ -43,6 +43,19 @@ A CI job is a chain of shell commands, and each command ends with a number: 0 me
 
 <ul class="resources">
   <Resource kind="reel" title="Linux shell and process toolkit" domain="data-engineering" host="de.software-delivery-workflow" by="the third refresher" />
+</ul>
+
+</section>
+
+<section class="prereq" data-section="actions">
+
+### <span class="n">04</span> A GitHub Actions workflow
+
+A workflow is a YAML file (indentation-based <code>key: value</code> pairs and <code>- </code> list items) in <code>.github/workflows</code>. Its <code>jobs:</code> lists jobs, each job lists <code>steps:</code>, and a step either runs a shell command (<code>run:</code>) or a packaged action (<code>uses:</code>). The reel's CI step is that file, run on every change.
+
+<p class="check"><b>Check yourself:</b> in a workflow file, what is the difference between <code>uses:</code> and <code>run:</code>? (Answer: <code>uses:</code> runs a packaged action, such as checking out the repository; <code>run:</code> runs a shell command.)</p>
+
+<ul class="resources">
   <Resource kind="reading" title="Quickstart for GitHub Actions" href="https://docs.github.com/en/actions/get-started/quickstart" by="GitHub Docs">A first workflow file, from one commit to a green check.</Resource>
 </ul>
 
@@ -50,7 +63,7 @@ A CI job is a chain of shell commands, and each command ends with a number: 0 me
 
 <section class="prereq" data-section="pip">
 
-### <span class="n">04</span> Installing packages with pip
+### <span class="n">05</span> Installing packages with pip
 
 <code>pip install -r requirements.txt</code> installs whatever the file lists, choosing for each line the newest version that matches. <code>pip freeze</code> prints what is installed, every package pinned with <code>==</code>. The last two steps of the reel are about what that file should say.
 
@@ -58,6 +71,19 @@ A CI job is a chain of shell commands, and each command ends with a number: 0 me
 
 <ul class="resources">
   <Resource kind="reading" title="Repeatable Installs" href="https://pip.pypa.io/en/stable/topics/repeatable-installs/" by="pip documentation">Pinning, hash-checking and wheelhouses: the three levels the last step draws on.</Resource>
+</ul>
+
+</section>
+
+<section class="prereq" data-section="versions">
+
+### <span class="n">06</span> Version numbers
+
+A version such as <code>1.10.0</code> is three numbers, MAJOR.MINOR.PATCH, compared one part at a time as numbers, not as text. The reel uses them as a promise about what changed: step 7 says what each part means.
+
+<p class="check"><b>Check yourself:</b> which is newer, <code>1.9.0</code> or <code>1.10.0</code>? (Answer: <code>1.10.0</code>: the middle parts compare as numbers, and 10 is more than 9.)</p>
+
+<ul class="resources">
   <Resource kind="reading" title="Semantic Versioning 2.0.0" href="https://semver.org/" by="semver.org">The specification behind MAJOR.MINOR.PATCH; the rules are short.</Resource>
 </ul>
 

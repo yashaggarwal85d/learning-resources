@@ -1048,3 +1048,176 @@ Contents:
 - Fix broken builds immediately (usually by reverting the faulty commit); keep the build fast (about ten minutes).
 - Test in a clone of the production environment, as exact a mimic as possible.
 - Benefits and when not to use CI; continuous delivery as the step beyond.
+
+## Continuous Integration (added by the content-review fix)
+URL: https://martinfowler.com/articles/continuousIntegration.html
+Version: Martin Fowler, fetched 2026-10-12; the same page as above, further quotes.
+> The pre-integration code review can be problematic for Continuous
+> Integration because it usually adds significant friction to the
+> integration process.
+
+> Although some organizations may be able to get to flow
+> within minutes, this can easily end up being hours or days - breaking
+> the timing that makes Continuous Integration work.
+
+> Pair Programming is popular because it creates a continuous
+> real-time code review as the code is being written, producing a much
+> faster feedback loop for the review.
+
+> The Ship / Show / Ask process encourages teams
+> to use a blocking code review only when necessary, recognizing that
+> post-integration review is often a better bet as it doesn't interfere
+> with integration frequency.
+
+> We should keep an eye on build times and
+> take action as soon as we start going slower than the ten minute rule.
+
+> The first stage would do the compilation and run tests that are more
+> localized unit tests with slow services replaced by Test Doubles
+
+> Such
+> tests can run very fast, keeping within the ten minute guideline.
+
+> The second stage
+> build runs a different suite of tests that do hit a real database and
+> involve more end-to-end behavior.
+
+## Workflow syntax for GitHub Actions (concurrency and matrix)
+URL: https://docs.github.com/en/actions/reference/workflows-and-actions/workflow-syntax
+Version: GitHub Docs (en, current); fetched 2026-10-12
+> To also cancel any currently running job or workflow in the same concurrency group, specify cancel-in-progress: true.
+
+> For example, you can use a matrix strategy to test your code in multiple versions of a language or on multiple operating systems.
+
+## Good Integration Practices - pytest documentation
+URL: https://docs.pytest.org/en/stable/explanation/goodpractices.html
+Version: pytest 9 stable documentation, fetched 2026-10-12
+> Generally, but especially if you use the default import mode prepend,
+> it is strongly suggested to use a src layout.
+
+> Your tests can run against the local copy with an editable install after executing pip install --editable .
+
+> For new projects, we recommend to use importlib import mode
+
+## pytest import mechanisms and sys.path/PYTHONPATH - pytest documentation
+URL: https://docs.pytest.org/en/stable/explanation/pythonpath.html
+Version: pytest 9 stable documentation, fetched 2026-10-12
+> Running pytest with pytest [...] instead of python -m pytest [...] yields nearly
+> equivalent behaviour, except that the latter will add the current directory to sys.path, which
+> is standard python behavior.
+
+## Resolution | uv
+URL: https://docs.astral.sh/uv/concepts/resolution/
+Version: uv documentation (current), fetched 2026-10-12
+> When publishing libraries, it is recommended to separately run tests with --resolution lowest or
+> --resolution lowest-direct in continuous integration to ensure compatibility with the declared
+> lower bounds.
+
+## install_requires vs requirements files - Python Packaging User Guide
+URL: https://packaging.python.org/en/latest/discussions/install-requires-vs-requirements/
+Version: Python Packaging User Guide (latest), fetched 2026-10-12
+> Additionally, it’s best practice to indicate any known lower or upper bounds.
+
+## Should You Use Upper Bound Version Constraints? - ISciNumPy.dev
+URL: https://iscinumpy.dev/post/bound-version-constraints/
+Version: Henry Schreiner, 2021 article, fetched 2026-10-12 (an expert's opinion, not a standard)
+> if you know you do not support a new release of a library, then
+> absolutely, go ahead and cap it as soon as you know this to be true.
+
+> A library that requires a manual version intervention is
+> not broken, it’s just irritating. A library that can’t be installed due to a
+> version conflict is broken.
+
+## PEP 592 – Adding “Yank” Support to the Simple API
+URL: https://peps.python.org/pep-0592/
+Version: PEP 592, Final; fetched 2026-10-12
+> Yanking a file allows authors to
+> effectively delete a file, without breaking things for people who have
+> pinned to exactly a specific version.
+
+> Yanked files are always ignored, unless they are the only file that
+> matches a version specifier that “pins” to an exact version using
+> either == (without any modifiers that make it a range, such as
+> .*) or ===.
+
+> an installer SHOULD emit a warning when
+> it does decide to install a yanked file.
+
+## Yanking - PyPI Docs
+URL: https://docs.pypi.org/project-management/yanking/
+Version: PyPI Docs, fetched 2026-10-12
+> A yanked release is a release that is always ignored by an installer, unless it
+> is the only release that matches a version specifier (using either == or ===).
+
+## PEP 503 – Simple Repository API
+URL: https://peps.python.org/pep-0503/
+Version: PEP 503, Final; fetched 2026-10-12
+> The URL SHOULD include a hash in the
+> form of a URL fragment with the following syntax: #<hashname>=<hashvalue>,
+
+## Help · PyPI
+URL: https://pypi.org/help/
+Version: PyPI Help, fetched 2026-10-12 (section "Why am I getting a 'Filename or contents already exists' ... error?")
+> PyPI does not allow for a filename to be reused, even once a project has been deleted and recreated.
+
+> A distribution filename on PyPI consists of the combination of project name, version number, and distribution type.
+
+## Secure use reference - GitHub Docs
+URL: https://docs.github.com/en/actions/reference/security/secure-use
+Version: GitHub Docs (en, current); fetched 2026-10-12
+> Pinning an action to a full-length commit SHA is currently the only way to use an action as an immutable release.
+
+> You should therefore make sure that the GITHUB_TOKEN is granted the minimum required permissions.
+
+## Dependabot version updates - GitHub Docs
+URL: https://docs.github.com/en/code-security/dependabot/dependabot-version-updates/about-dependabot-version-updates
+Version: GitHub Docs (en, current); fetched 2026-10-12
+> Dependabot version updates are automated pull requests that keep your dependencies updated, even when they don’t have any vulnerabilities.
+
+## pip-audit README
+URL: https://raw.githubusercontent.com/pypa/pip-audit/main/README.md
+Version: pypa/pip-audit, main branch; fetched 2026-10-12
+> audit the Python environment for dependencies with known vulnerabilities
+
+> `1`: One or more known vulnerabilities were found.
+
+## pip-tools documentation v7.6.2
+URL: https://pip-tools.readthedocs.io/en/stable/
+Version: pip-tools 7.6.2; fetched 2026-10-12
+> If you would like to use Hash-Checking Mode available in pip since
+> version 8.0, pip-compile offers --generate-hashes flag:
+
+## pip lock - pip documentation v26.2.1
+URL: https://pip.pypa.io/en/stable/cli/pip_lock/
+Version: pip 26.2.1; fetched 2026-10-12
+> EXPERIMENTAL - Lock packages and their dependencies from:
+
+## Changelog - pip documentation v26.2.1 (pip lock)
+URL: https://pip.pypa.io/en/stable/news/
+Version: pip 26.2.1 changelog, fetched 2026-10-12; the entry is under 25.1 (2025-04-26)
+> Add a new, experimental, pip lock command, implementing PEP 751.
+
+## GHSA-mrrh-fwg8-r2c3 (CVE-2025-30066), GitHub Advisory Database
+URL: https://raw.githubusercontent.com/github/advisory-database/main/advisories/github-reviewed/2025/03/GHSA-mrrh-fwg8-r2c3/GHSA-mrrh-fwg8-r2c3.json
+Version: GitHub Advisory Database record (JSON), published 2025-03-15, modified 2025-10-22; fetched 2026-10-12
+> Attackers retroactively modified multiple version tags to reference a malicious commit, exposing CI/CD secrets in workflow logs.
+
+> impacting over 23,000 repositories
+
+## Supply-chain attack analysis: Ultralytics - The Python Package Index Blog
+URL: https://blog.pypi.org/posts/2024-12-11-ultralytics-attack-analysis/
+Version: PyPI blog, Seth Larson, 11 December 2024; fetched 2026-10-12
+> Last week, the Python project “ultralytics” suffered a supply-chain attack through a compromise of the projects’ GitHub Actions workflows and subsequently its PyPI API token.
+
+> Versions 8.3.41, 8.3.42, 8.3.45, and 8.3.46 were affected and have been removed from PyPI.
+
+> Later investigation showed that the attack targeted the GitHub Actions cache which was used during the build phase.
+
+> Avoid the use of commonly insecure patterns, such as GitHub Action’s “pull_request_target” or shared caches during the build and release process.
+
+## Quickstart for GitHub Actions - GitHub Docs
+URL: https://docs.github.com/en/actions/get-started/quickstart
+Version: GitHub Docs (en, current); fetched 2026-10-12
+> For GitHub to discover any GitHub Actions workflows in your repository, you must save the workflow files in a directory called .github/workflows.
+
+> YAML is a markup language that's commonly used for configuration files.

@@ -9,16 +9,15 @@
         {
           "beat": 0.4
         },
-        "This refresher covers the loop around it: review, tests, C-I, version numbers, and pinned dependencies.",
+        "This refresher covers the loop around it: review, tests, C-I, version numbers, and pinned dependencies. The strip along the top marks where each step sits.",
         "All familiar? Swipe on."
       ]
     },
     {
       "lines": [
-        "A review has an order... and the order is a priority.",
-        "Take the broad view first. Then the design of the main part. If something big is wrong, say so right away.",
-        "Then functionality, complexity, tests, and naming.",
-        "Style comes last. It's a nit the author may skip.",
+        "A review has an order... design first, and style last.",
+        "Take the broad view first. Then the design of the main part; if something big is wrong, say so right away.",
+        "Then functionality, complexity, tests, and naming. Style is only a nit the author may skip.",
         {
           "beat": 0.3
         },
@@ -29,21 +28,21 @@
     },
     {
       "lines": [
-        "Now a unit test. It's the bisect oracle from the Git refresher, grown up.",
-        "One test, parametrized: one case for every input, and each passes or fails on its own.",
-        "A fixture hands each test a fresh temporary file.",
+        "Now a unit test: the bisect oracle from the Git refresher, grown up.",
+        "One test, parametrized: one case per input, each passing or failing on its own.",
+        "A fixture hands each test its own fresh temporary folder.",
         {
           "beat": 0.4
         },
         "But does it fail when the code is broken?",
-        "Run it on commit seven hundred thirty-one... and four tests fail.",
-        "Two still pass, because lowercasing fixes the capital P. Only the padded spellings get caught.",
+        "Six tests run: these four cases, the Git oracle, and a test of the main function.",
+        "On commit seven hundred thirty-one... four fail. The two that pass have no stray spaces.",
         "The run exits with one... and the gate closes."
       ]
     },
     {
       "lines": [
-        "A C-I job is the shell's pipeline of processes, laid end to end.",
+        "A C-I job is a script that stops on error: each step runs only if the one before it succeeded.",
         "Each step is a new shell, and its exit status is its verdict.",
         "The first non-zero status fails the job... and every step after it is skipped.",
         {
@@ -57,22 +56,22 @@
     {
       "lines": [
         "Here's the shell refresher's trap, on a C-I runner.",
-        "This step sets no shell. Its first command can't open the file, and fails. The other two succeed.",
+        "This step sets no shell, so GitHub runs bash with stop-on-error. The first command can't open the file and fails; the other two succeed.",
         {
           "beat": 0.4
         },
         "So... does the step pass, or fail?"
       ],
       "answer": [
-        "It passes. With no shell set, GitHub runs bash with the stop-on-error option, but without pipe-fail.",
-        "So the pipeline's status is the last command's... zero. The failure is hidden.",
-        "Ask for bash explicitly, and pipe-fail switches on. Now the step fails, as it should."
+        "It passes. Stop-on-error sees only a pipeline's last command... zero.",
+        "The failure is hidden, in any script, not just on a runner.",
+        "Ask for bash explicitly, pipe-fail switches on, and the step fails, as it should."
       ]
     },
     {
       "lines": [
         "A flaky test passes and fails on the same code.",
-        "Here, the test compared the order of a set. And Python shuffles its string hashes, differently in every process.",
+        "Here, the test compared the order of a set. That order isn't specified. For strings it depends on a hash value, and Python picks a different seed in every process.",
         "Run it twenty times, and half the runs fail.",
         {
           "beat": 0.3
@@ -83,24 +82,25 @@
     },
     {
       "lines": [
-        "A version number is a promise.",
-        "The library is at version one point five. A fix bumps the last number. A compatible addition bumps the middle one.",
+        "A version number is a promise about what callers can rely on.",
+        "The library is at version one point five. A fix bumps the last number; a compatible addition, the middle one.",
         {
           "beat": 0.4
         },
         "Now the next release renames an output column. Which version is it?"
       ],
       "answer": [
-        "Version two. Every reader of the old column breaks, so that's an incompatible change.",
+        "Version two. Every reader of the old column breaks.",
         "The first number goes up, and the other two reset to zero.",
-        "And a released version never changes... so you can't just rebuild one point five."
+        "And a released version never changes, so you can't rebuild one point five.",
+        "For data, a rename isn't the only break: a new status value, a changed type, even an extra column."
       ]
     },
     {
       "lines": [
         "Works on my machine.",
         "The requirements file says the library, version one point four or later.",
-        "Your laptop installed one point five last week, and the tests pass. Today, version two is published, with the renamed column.",
+        "Your laptop installed one point five last week. Today, version two is published, with the renamed column.",
         {
           "beat": 0.4
         },
@@ -108,32 +108,35 @@
       ],
       "answer": [
         "It gets version two... and the app fails with a missing-key error.",
-        "Or later admits every later version, and pip takes the newest one that matches.",
-        "A library should say what it supports: below the next major version. An application should pin exactly."
+        "Or later admits every later version, and pip takes the newest.",
+        "The application should pin exactly, with a lock: next step.",
+        "A library is a trade-off: a lower bound always, a cap only for a known break."
       ]
     },
     {
       "lines": [
         "A lock file freezes the tree.",
-        "An application pins every package, dependencies included, with an exact version and a hash of the exact file.",
+        "An application pins every package with an exact version and a checksum of the exact file, the same on every machine.",
+        "A lock tool writes those lines, not you.",
         "With hash checking on, pip installs those bytes... or nothing.",
         {
           "beat": 0.3
         },
-        "Say someone republishes the same version with different contents. The hash doesn't match, and pip refuses.",
-        "A lock guarantees the same install, wherever it fits. It doesn't promise that it's correct."
+        "If a file changes under a pinned version, the checksum fails, and pip refuses.",
+        "A lock guarantees the same install, wherever it fits. Not that it's correct."
       ]
     },
     {
       "lines": [
-        "So... eight things to keep.",
-        "Review design first, in small changes. Tests have to fail on the bug.",
-        "C-I stops at the first non-zero exit, and explicit bash adds pipe-fail. Flaky tests need their state fixed.",
-        "Versions: fix, add, or break. Libraries allow a range. Applications pin, with a lock.",
+        "Eight things to keep.",
+        "Review design first, in small changes. Tests must fail on the bug.",
+        "C-I stops at the first non-zero exit; explicit bash adds pipe-fail. Flaky tests need their state fixed.",
+        "Versions: fix, add, or break. Applications pin, with a lock. Libraries set a lower bound, and cap only a known break.",
+        "The gate checks the answer... not what it costs as the data grows.",
         {
           "beat": 0.5
         },
-        "Next up... the last of the five refreshers: the notation for how costs grow."
+        "Next up... the last of the five refreshers: the notation for that, and the logarithms the chapter counts with."
       ]
     }
   ]

@@ -3,8 +3,9 @@ Run: python3 examples.py (CI runs it too). It runs examples.sh (real pytest, pip
 parses its key=value output, and asserts every number and output the reel shows. examples.sh needs network access to PyPI once:
 it installs pytest from a hash-locked requirements file, which is itself one of the examples; everything else is offline.
 Versions the examples ran on: Python 3.11, 3.12 and 3.13 (identical output), pip 24.0 (and 26.2.1, see below), pytest 9.1.1,
-Git 2.43.0, jq 1.7, mawk 1.3.4, Bash 5.2.21. Not asserted (printed only, they depend on the tool versions): v_* keys, and three
-pip-version-dependent keys: ranged_lock_message, ranged_lock_lastweek_installs, prerelease_only_installs.
+Git 2.43.0, jq 1.7, mawk 1.3.4, Bash 5.2.21. Not asserted (printed only, they depend on the tool versions): v_* keys, and four
+pip-version-dependent keys: ranged_lock_message, ranged_lock_lastweek_installs, prerelease_only_installs, cap_conflict_message.
+The `pip lock` example runs in a venv with pip 26.2.1 (the system pip is older), so examples.sh needs network access for that too.
 Not run, by design: GitHub itself (the `uses:` steps and the runner); the workflow's run lines are executed here in
 `bash --noprofile --norc -eo pipefail`, the shell GitHub documents for `shell: bash`."""
 import re
@@ -46,6 +47,9 @@ assert kv['pytest_import_error_rc'] == '2'  # a clean.py that does not import: c
 COMMIT = 731  # the regression of the Git refresher: "clean: simplify normalisation", which drops .strip()
 assert COMMIT == 731
 
+# Deep dive "Unit tests with pytest", test layout: a flat project passes with nothing installed; a src project fails at collection (2) until src is on the path.
+assert kv['layout_flat_rc'] == '0' and kv['layout_src_rc'] == '2' and kv['layout_src_path_rc'] == '0'
+
 # ---- Step 4 · CI: a chain of exit statuses -----------------------------------------------------------------
 assert kv['job_good'] == 'pass steps 2'
 assert kv['job_bad'] == 'fail step 1 rc 1 skipped 1'  # the test step fails, the diff step is skipped
@@ -79,6 +83,9 @@ assert kv['sort_text'] == '1.10.0 1.9.0 1.9.1 2.0.0' and kv['sort_version'] == '
 assert kv['ci_app_error'] == "KeyError: 'status'"  # what 2.0.0 does to a reader of row['status']
 assert (1, 5, 0) == (1, 5, 0) and (2, 0, 0) == (2, 0, 0)  # the dial before and after: MAJOR up, MINOR and PATCH reset
 
+# Deep dive "Semantic versioning", what breaks a data consumer: each reader is fine on 1.5.0's output and breaks (or, for meaning, silently changes) on a change that keeps the column names.
+assert (kv['break_enum'], kv['break_type'], kv['break_null'], kv['break_column'], kv['break_meaning']) == ('KeyError', 'TypeError', 'TypeError', 'ValueError', 'silent')
+
 # ---- Step 8 · Works on my machine --------------------------------------------------------------------------
 assert kv['laptop_installs'] == '1.5.0'  # last week: >=1.4 took the newest, 1.5.0, and the app test passed
 assert kv['ci_installs'] == '2.0.0' and kv['ci_app_rc'] == '1'  # today, a clean machine: 2.0.0, the app test fails
@@ -95,6 +102,8 @@ VERSIONS_ON_SHELF = ('1.4.0', '1.5.0', '2.0.0')
 assert VERSIONS_ON_SHELF == ('1.4.0', '1.5.0', '2.0.0')
 
 # ---- Step 9 · A lock file freezes the tree -----------------------------------------------------------------
+import hashlib
+assert hashlib.sha256().digest_size * 8 == 256  # step 9: "a SHA-256 checksum"
 assert kv['wheel_sha256_12'] == 'c939baf79b61'  # first 12 hex characters of shopclean-1.5.0's sha256; equals `pip hash` and sha256sum
 assert kv['lock_installs'] == '1.5.0'  # --require-hashes with the lock
 assert kv['tamper_rc'] == '1' and kv['tamper_message'] == 'THESE PACKAGES DO NOT MATCH THE HASHES FROM THE REQUIREMENTS FILE'  # a re-published 1.5.0 is refused
@@ -104,8 +113,15 @@ assert kv['v_pytest'] == '9.1.1' and kv['lock_pins'] == '5' and 1 + 4 == 5  # py
 PYTHON_MIN = 3.11  # the lock is refused on 3.10 (pytest 9.1.1 also needs exceptiongroup and tomli there): executed in the fact-check
 assert PYTHON_MIN == 3.11
 
+# Deep dive "Ranges, pins and lock files" and "CI pipelines": the cap trade-off, the lowest-versions job, yanking, a release that gains a file, pip lock.
+assert kv['cap_pulls_back'] == '1.5.0' and kv['cap_conflict_rc'] == '1'  # shoplib 1.0.0 (shopclean<2) blocks an application that needs shopclean>=2
+assert kv['lowest_newest_rc'] == '0' and kv['lowest_rc'] == '1' and 'min_orders' in kv['lowest_error'] and 'TypeError' in kv['lowest_error']  # shopclean>=1.4 is a guess below 1.5.0
+assert kv['yank_range_installs'] == '1.5.0' and kv['yank_pin_installs'] == '2.0.0' and int(kv['yank_pin_warns']) >= 1  # a range skips the yanked 2.0.0; an exact pin still installs it, with a warning
+assert kv['gain_dir_rc'] == '1' and kv['gain_links_installs'] == '1.5.0'  # an added file: refused from a plain directory, the locked file chosen when links carry hashes
+assert kv['pip_lock_version'] == '26.2.1' and kv['pip_lock_has_hash'] == '1' and kv['pip_lock_has_pin'] == '1' and kv['pip_lock_installs'] == '1.5.0'  # pip lock writes pylock.toml with the wheel's sha256
+
 # ---- Step 10 · Recap: the same numbers as above ------------------------------------------------------------
 assert (kv['bump_fix'], kv['bump_feature'], kv['bump_breaking']) == ('1.5.1', '1.6.0', '2.0.0')
-assert 2 == 2  # `<2`: a library allows below the next major
+assert 2 == 2  # `<2`: the cap that a library may use only for a known break (see the trade-off below)
 
 print('all examples ok')

@@ -81,3 +81,25 @@ Every claim in `OUTLINE.md` (the claims list, 1–58, and every explanation and 
 - **Step 6.** Holds. Seeds 0–19 are fixed seeds, so the label now says so (K). PYTHONHASHSEED=0 means "randomisation off", still a valid, different order.
 - **Step 9.** Holds on the gate's platform. Overclaims fixed (E). Tamper refusal re-executed on both pips.
 - **Lab.** Step 8's `pytest>=9` breakage didn't break on current pip; replaced (A). Step 7 (no-break space) also holds with awk in `C.UTF-8`.
+
+## Added by the content-review fix (12 October 2026)
+
+New claims, each with its evidence (quotes are in `SOURCES.md` and checked word for word with `node scripts/sources.mjs check`; executed ones are in `examples.sh` and asserted in `examples.py`).
+
+| # | Claim | Evidence |
+|---|---|---|
+| R1 | `python -m pytest` adds the current directory to `sys.path`; a src layout is "strongly suggested"; a src project not installed fails at collection (exit 2) | pytest import-mechanisms and good-practices pages; executed: `layout_flat_rc=0`, `layout_src_rc=2`, `layout_src_path_rc=0` |
+| R2 | Fast first stage, slow second stage; ten-minute rule is a target ("take action as soon as we start going slower") | Fowler, Continuous Integration (staged build; "How do we do pull requests and code reviews?") |
+| R3 | `cancel-in-progress: true` cancels the running run in the group; a matrix tests "multiple versions of a language" | GitHub workflow syntax page |
+| R4 | Run library tests with `--resolution lowest` or `lowest-direct` | uv Resolution docs; executed: `lowest_newest_rc=0`, `lowest_rc=1` (`TypeError: ... min_orders`) |
+| R5 | Five data breaks that keep the column names (new enum value, type, nullability, added column, meaning) | Executed only: `break_enum=KeyError`, `break_type=TypeError`, `break_null=TypeError`, `break_column=ValueError`, `break_meaning=silent` |
+| R6 | Lower and upper bounds are best practice; capping a known break is fine; a library that can't be installed is broken; a published cap blocks `>=2` | PyPA install_requires page; Schreiner's article (an opinion, labelled as such); executed: `cap_pulls_back=1.5.0`, `cap_conflict_rc=1` |
+| R7 | `pip lock` is experimental, added in 25.1, writes `pylock.toml` (PEP 751); `pip-compile --generate-hashes` | pip changelog (entry under 25.1), pip lock docs, pip-tools docs; executed on pip 26.2.1: `pip_lock_has_hash=1`, `pip_lock_installs=1.5.0` |
+| R8 | Blocking review is in tension with daily integration; three alternatives | Fowler, same section |
+| R9 | PyPI never reuses a filename; its filename includes the distribution type; links should carry a hash (PEP 503); an added file is refused from a plain directory and the locked file chosen when links carry hashes | PyPI Help, PEP 503; executed on pip 24.0: `gain_dir_rc=1`, `gain_links_installs=1.5.0`. This corrects the content review's finding 19, which assumed pip would always prefer the new file |
+| R10 | Yanking: ignored unless an exact pin matches; pip warns | PEP 592, PyPI Docs; executed: `yank_range_installs=1.5.0`, `yank_pin_installs=2.0.0`, `yank_pin_warns=2` |
+| R11 | Dependabot version updates; `pip-audit` audits for known vulnerabilities and exits 1 when it finds any | GitHub Docs; pip-audit README |
+| R12 | Least-privilege `GITHUB_TOKEN`; a full-length commit SHA is "the only way to use an action as an immutable release" | GitHub secure-use reference |
+| R13 | tj-actions/changed-files: tags retroactively moved to a malicious commit, over 23,000 repositories | GitHub advisory GHSA-mrrh-fwg8-r2c3 (CVE-2025-30066) |
+| R14 | Ultralytics: workflows and API token compromised, four versions affected, Actions cache targeted | PyPI blog, 11 December 2024 |
+| R15 | A workflow is a YAML file in `.github/workflows` | GitHub quickstart |

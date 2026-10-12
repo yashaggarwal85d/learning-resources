@@ -1265,10 +1265,10 @@
       {
         "item": "Unit-test layout: tests outside application code, src layout plus editable install so tests run against the installed package.",
         "source": "https://docs.pytest.org/en/stable/explanation/goodpractices.html",
-        "placement": "later: Python toolchain (§4.3)",
+        "placement": "here",
         "at": [
           {
-            "out": "Project layout (src layout plus an editable install) is packaging, which the syllabus line defers: \"Python toolchain in §4.3\""
+            "deep": "Unit tests with pytest"
           }
         ]
       },
@@ -1284,22 +1284,133 @@
         ]
       },
       {
-        "item": "Cancel stale in-flight CI runs on new commits and drop the per-PR schema on merge or close, to save warehouse cost and avoid collisions.",
+        "item": "Cancel stale in-flight CI runs on new commits (the general half of the item; dropping the per-PR schema on merge or close is data CI/CD).",
         "source": "https://docs.getdbt.com/docs/deploy/continuous-integration",
-        "placement": "later: data CI/CD (§11.4)",
+        "placement": "here (the cancel half); later: data CI/CD (§11.4) (the per-PR schema half)",
         "at": [
           {
-            "out": "Cancelling stale CI runs and dropping per-PR schemas is data CI/CD cost hygiene, deferred by the syllabus line: \"data CI/CD in §11.4\""
+            "deep": "CI pipelines"
+          },
+          {
+            "out": "Dropping per-PR schemas is data CI/CD cost hygiene, deferred by the syllabus line: \"data CI/CD in §11.4\""
           }
         ]
       },
       {
-        "item": "Lint SQL in CI (SQLFluff) before the expensive build step to fail cheap and early.",
+        "item": "Order a pipeline cheapest and most likely to fail first (lint and types before unit tests before slow integration tests), so it fails cheap and early; linting SQL (SQLFluff) is the data example.",
         "source": "https://docs.getdbt.com/docs/deploy/continuous-integration",
-        "placement": "later: data CI/CD (§11.4)",
+        "placement": "here (the general rule); later: data CI/CD (§11.4) (SQLFluff and data linting)",
         "at": [
           {
+            "deep": "CI pipelines"
+          },
+          {
             "out": "Linting SQL in CI is data CI/CD, deferred by the syllabus line: \"data CI/CD in §11.4\""
+          }
+        ]
+      },
+      {
+        "item": "What breaks a data consumer: a new enum value, a changed type, nullability or meaning, an added column (not only a renamed column).",
+        "source": "https://semver.org/",
+        "placement": "here",
+        "at": [
+          {
+            "step": "A version number is a promise"
+          },
+          {
+            "deep": "Semantic versioning"
+          }
+        ]
+      },
+      {
+        "item": "A library tests its declared ranges: a CI matrix over supported Pythons, and one job on the lowest allowed versions.",
+        "source": "https://docs.astral.sh/uv/concepts/resolution/",
+        "placement": "here",
+        "at": [
+          {
+            "deep": "CI pipelines"
+          }
+        ]
+      },
+      {
+        "item": "Yanking (PEP 592) is the maintainer's way to withdraw a broken release; Dependabot and an auditor keep a lock moving.",
+        "source": "https://peps.python.org/pep-0592/",
+        "placement": "here",
+        "at": [
+          {
+            "deep": "In production"
+          }
+        ]
+      },
+      {
+        "item": "Least-privilege GITHUB_TOKEN permissions and concurrency in the shipped workflow.",
+        "source": "https://docs.github.com/en/actions/reference/security/secure-use",
+        "placement": "here",
+        "at": [
+          {
+            "deep": "Continuous integration practices"
+          },
+          {
+            "deep": "Try it: the refresher gate"
+          }
+        ]
+      },
+      {
+        "item": "Upper caps in libraries are contested: lower bounds always, a cap only for a known break.",
+        "source": "https://iscinumpy.dev/post/bound-version-constraints/",
+        "placement": "here",
+        "at": [
+          {
+            "step": "Works on my machine"
+          },
+          {
+            "deep": "Ranges, pins and lock files"
+          }
+        ]
+      },
+      {
+        "item": "pip lock and PEP 751 pylock.toml; pip-compile --generate-hashes: lock tools write the lock.",
+        "source": "https://pip.pypa.io/en/stable/cli/pip_lock/",
+        "placement": "here (named and run once); tooling depth: later: Python toolchain (§4.3)",
+        "at": [
+          {
+            "step": "A lock file freezes the tree"
+          },
+          {
+            "deep": "Ranges, pins and lock files"
+          }
+        ]
+      },
+      {
+        "item": "Blocking pre-merge review is in tension with integrating daily (pair programming, Ship / Show / Ask, post-integration review).",
+        "source": "https://martinfowler.com/articles/continuousIntegration.html",
+        "placement": "here",
+        "at": [
+          {
+            "deep": "Continuous integration practices"
+          }
+        ]
+      },
+      {
+        "item": "A pinned version's bytes can change: PyPI never reuses a filename but a release can gain files.",
+        "source": "https://pypi.org/help/",
+        "placement": "here",
+        "at": [
+          {
+            "step": "A lock file freezes the tree"
+          },
+          {
+            "deep": "Ranges, pins and lock files"
+          }
+        ]
+      },
+      {
+        "item": "Real incidents: tj-actions/changed-files (March 2025) and Ultralytics (December 2024).",
+        "source": "https://blog.pypi.org/posts/2024-12-11-ultralytics-attack-analysis/",
+        "placement": "here",
+        "at": [
+          {
+            "deep": "In production"
           }
         ]
       }
@@ -1307,11 +1418,15 @@
   },
   "gapReview": {
     "date": "2026-10-12",
-    "by": "the builder agent, as a self-check of the syllabus line, the expert list and SOURCES.md against the finished reel and Deep dive (not an independent review)",
+    "by": "content review (Opus) + fix agent",
     "resolved": [
-      "Expert items on CI practice (self-testing build, daily integration, fast and fixed builds, production-like test environment) were not in the plan: added the Deep dive section 'Continuous integration practices' with quotes from Fowler's article, added to SOURCES.md and checked word for word",
-      "Pre-release spelling (PEP 440 against semver), the 0.y.z range trap and hashed ranges (pip 24.0 against 26.2.1): 'Ranges, pins and lock files' and 'Semantic versioning'; executed",
-      "Required checks pass when skipped, and exit codes 2 and 5 from pytest: 'CI pipelines', 'Unit tests with pytest' and 'In production'; executed"
+      "Flow (findings 1 to 8): the CI job is a script that stops on error, not a pipe; the four stages are named (review, tests, CI, release) and glossed in step 1; the narration says \"folder\"; step 3 names all six tests; the workflow vocabulary, the shell default, \"public API\", the compatible release and the hash words are explained where they are used; the step 5 question is framed around -e; the closing line plants the cost question and restores the logarithms.",
+      "Data-library gaps (9, 12, 13): what breaks a data consumer (new enum value, type, nullability, added column, changed meaning), executed; a CI matrix and a lowest-versions job, executed; yanking, Dependabot and pip-audit.",
+      "Coverage placement (10, 11): test layout, concurrency and step order are placed in the Deep dive (the former \"later\" items 18, 20 and 21); pointers to sections 4.2, 11.4 and 12.1 are in \"What's changing\"; the OUTLINE \"Left out\" reason is corrected.",
+      "Workflow hygiene and incidents (14, 20, 21): permissions, concurrency and a main-only push trigger in gate.yml; timeout-minutes is a hang guard, not the ten-minute target; the tj-actions and Ultralytics incidents are in \"In production\".",
+      "Expert points (16 to 19): the library upper-cap rule is now a trade-off with its source; pip lock, pip-compile and PEP 751 are named and run; blocking review against daily integration; the \"re-published file\" threat is described as PyPI allows it, with the added-file case executed.",
+      "Prerequisites and registry (22): a Version numbers section, a Workflow section, and pip-install and github-actions-basics are declared.",
+      "The builder's self-check gapReview is replaced by this one."
     ],
     "open": []
   }
