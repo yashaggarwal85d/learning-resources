@@ -108,8 +108,8 @@ export function Review({ t }: StepCtx) {
 const TEST_ROWS = ["'paid'", "'Paid'", "'SHIPPED '", "' refunded'", "padded email (Git's oracle)", 'main() on a padded file'];
 const ON_731 = [true, true, false, false, false, false]; // Paid still passes: lower() fixes the case
 export function UnitTest({ t }: StepCtx) {
-  const LX = 300;
-  const RX = 480;
+  const LX = 340;
+  const RX = 505;
   const leftSum = fade(t, 1.6);
   const rightSum = fade(t, 3.3);
   return (
@@ -337,7 +337,7 @@ export function WorksOnMyMachine({ t, answer }: StepCtx) {
   const a = shown ? 1 : fade(t, 0.3);
   const cx = (i: number) => 100 + i * 120;
   return (
-    <Svg label="requirements.txt says shopclean at least 1.4, a loose branch reaching every version on the package index; the laptop got 1.5.0 last week, today a clean CI machine reaches for 2.0.0 and the app fails with a missing-key error" h={350}>
+    <Svg label="requirements.txt says shopclean at least 1.4, a loose branch reaching every version on the package index; the laptop got 1.5.0 last week, today a clean CI machine reaches for 2.0.0 and the app fails with a missing-key error" h={380}>
       <MiniMap lit={['CI']} />
       <g opacity={a}>
         <rect x={30} y={60} width={240} height={50} rx={6} fill={C.roast} stroke={C.latte} strokeWidth={2} />
@@ -357,7 +357,7 @@ export function WorksOnMyMachine({ t, answer }: StepCtx) {
           </g>
         );
       })}
-      <T x={450} y={178} s={13} f={C.latte} o={fade(t, 0.9)}>new today</T>
+      <T x={450} y={178} s={15} f={C.latte} o={fade(t, 0.9)}>new today</T>
       <T x={100} y={222} s={13} f={C.taupe} o={fade(t, 0.9)}>package index</T>
       {shown && (
         <g>
@@ -366,22 +366,22 @@ export function WorksOnMyMachine({ t, answer }: StepCtx) {
         </g>
       )}
       <g opacity={fade(t, 0.8)}>
-        <rect x={30} y={244} width={250} height={62} rx={12} fill={C.espresso} stroke={C.crema} strokeWidth={2} />
+        <rect x={30} y={244} width={250} height={90} rx={12} fill={C.espresso} stroke={C.crema} strokeWidth={2} />
         <T x={46} y={270} s={13} f={C.latte}>laptop</T>
         <T x={46} y={290} s={13} f={C.latte}>last week</T>
-        <T x={196} y={282} s={17} a="end" f={C.crema} w={700}>1.5.0</T>
-        <Tok x={238} y={275} n="0" r={16} />
-        <rect x={320} y={244} width={250} height={62} rx={12} fill={C.espresso} stroke={shown ? C.cherryText : C.crema} strokeWidth={2} />
+        <T x={46} y={322} s={17} f={C.crema} w={700}>1.5.0</T>
+        <Tok x={238} y={304} n="0" r={16} />
+        <rect x={320} y={244} width={250} height={90} rx={12} fill={C.espresso} stroke={shown ? C.cherryText : C.crema} strokeWidth={2} />
         <T x={336} y={270} s={13} f={C.latte}>CI machine</T>
         <T x={336} y={290} s={13} f={C.latte}>clean, today</T>
         {shown ? (
           <>
-            <T x={486} y={282} s={17} a="end" f={C.crema} w={700}>2.0.0</T>
-            <Tok x={528} y={275} n="1" r={16} bad />
-            <T x={570} y={334} s={13} a="end" f={C.cherryText}>KeyError: 'status'</T>
+            <T x={336} y={322} s={17} f={C.crema} w={700}>2.0.0</T>
+            <Tok x={528} y={304} n="1" r={16} bad />
+            <T x={570} y={362} s={13} a="end" f={C.cherryText}>KeyError: 'status'</T>
           </>
         ) : (
-          <T x={470} y={290} s={26} a="middle" f={C.caramel} serif w={700}>?</T>
+          <T x={470} y={308} s={26} a="middle" f={C.caramel} serif w={700}>?</T>
         )}
       </g>
     </Svg>
@@ -398,7 +398,7 @@ export function LockFile({ t }: StepCtx) {
   const refused = fade(t, 3.3);
   const wiggle = (1 - e) * 36;
   return (
-    <Svg label="The lock file names shopclean 1.5.0 and the hash of its exact file; the dependency tree is frozen; a republished 1.5.0 with different bytes is stopped at a hash mismatch" h={400}>
+    <Svg label="The lock file names shopclean 1.5.0 and the hash of its exact file; the dependency tree is frozen; a republished 1.5.0 with different bytes is stopped at a hash mismatch" h={430}>
       <MiniMap lit={['CI']} />
       <g opacity={tab}>
         <rect x={30} y={56} width={540} height={62} rx={6} fill={C.roast} stroke={C.latte} strokeWidth={2} />
@@ -427,15 +427,15 @@ export function LockFile({ t }: StepCtx) {
       <T x={320} y={296} s={13} f={C.latte} o={fade(t, 2.4)}>the gate's tools:</T>
       <T x={320} y={314} s={13} f={C.latte} o={fade(t, 2.4)}>5 pins, 5 hashes</T>
       <g opacity={fade(t, 2.7)}>
-        <g transform={`translate(${lerp(600, 330, slide)} 332)`}>
-          <rect width={120} height={36} rx={8} fill={C.espresso} stroke={C.latte} strokeWidth={2} />
-          <T x={60} y={16} s={13} a="middle" f={C.crema}>1.5.0</T>
-          <T x={60} y={32} s={13} a="middle" f={C.latte} o={0.9}>republished</T>
+        <g transform={`translate(${lerp(600, 330, slide)} 340)`}>
+          <rect width={120} height={54} rx={8} fill={C.espresso} stroke={C.latte} strokeWidth={2} />
+          <T x={60} y={21} s={13} a="middle" f={C.crema}>1.5.0</T>
+          <T x={60} y={43} s={13} a="middle" f={C.latte} o={0.9}>republished</T>
         </g>
-        <rect x={316} y={326} width={8} height={48} rx={3} fill={C.cherry} opacity={refused} />
+        <rect x={316} y={334} width={8} height={66} rx={3} fill={C.cherry} opacity={refused} />
       </g>
-      <T x={30} y={356} s={15} f={C.cherryText} o={refused}>hash mismatch → refused,</T>
-      <T x={30} y={376} s={15} f={C.cherryText} o={refused}>exit 1</T>
+      <T x={30} y={366} s={15} f={C.cherryText} o={refused}>hash mismatch → refused,</T>
+      <T x={30} y={396} s={15} f={C.cherryText} o={refused}>exit 1</T>
     </Svg>
   );
 }
