@@ -1,0 +1,1139 @@
+{
+  "topic": "dsa.word-ram-model-assumptions",
+  "syllabus": [
+    {
+      "clause": "unit-cost operations on w ≥ log n-bit words",
+      "at": [
+        {
+          "step": "The machine behind the count"
+        },
+        {
+          "step": "A word must hold a pointer: w ≥ log₂ n"
+        },
+        {
+          "step": "Big numbers pay by the word"
+        },
+        {
+          "deep": "The word-RAM, precisely"
+        },
+        {
+          "deep": "Which operations are unit cost is a choice"
+        },
+        {
+          "deep": "Numbers longer than a word"
+        }
+      ]
+    },
+    {
+      "clause": "what that hides (cache misses, branch mispredicts)",
+      "at": [
+        {
+          "step": "One load, two prices"
+        },
+        {
+          "step": "A wrong guess flushes the pipeline"
+        },
+        {
+          "deep": "What the unit hides"
+        }
+      ]
+    },
+    {
+      "clause": "and why integer-key structures (radix sort, van Emde Boas trees, fusion trees) beat comparison-model bounds",
+      "at": [
+        {
+          "step": "The comparison model: one bit per question"
+        },
+        {
+          "step": "On the word-RAM, a key is a number"
+        },
+        {
+          "step": "Radix sort: digits as addresses"
+        },
+        {
+          "step": "van Emde Boas: halve the bits, not the keys"
+        },
+        {
+          "step": "The price: Θ(U) space, unless you hash"
+        },
+        {
+          "step": "Fusion trees: four comparisons in one subtraction"
+        },
+        {
+          "step": "Back to the problem"
+        },
+        {
+          "deep": "The comparison model and its escapes"
+        },
+        {
+          "deep": "Radix sort on the word-RAM"
+        },
+        {
+          "deep": "van Emde Boas trees in full"
+        },
+        {
+          "deep": "Fusion trees: the idea, and what is left out"
+        }
+      ]
+    }
+  ],
+  "sources": [
+    {
+      "source": "MIT 6.851 Advanced Data Structures, lecture 11 scribe notes (integer data structures, models, van Emde Boas and y-fast trees): https://courses.csail.mit.edu/6.851/spring21/scribe/lec11.pdf",
+      "items": [
+        {
+          "item": "1 Overview: integer data structures and the predecessor problem",
+          "at": [
+            {
+              "step": "A million keys, twenty probes"
+            },
+            {
+              "deep": "The comparison model and its escapes"
+            }
+          ]
+        },
+        {
+          "item": "2.1 Transdichotomous RAM: array of S cells of w bits, w > log S so w ≥ log n, words serve as pointers",
+          "at": [
+            {
+              "step": "A word must hold a pointer: w ≥ log₂ n"
+            },
+            {
+              "deep": "The word-RAM, precisely"
+            }
+          ]
+        },
+        {
+          "item": "2.2 word-RAM: C-style primitives, fixed universe of w-bit integers",
+          "at": [
+            {
+              "step": "The machine behind the count"
+            },
+            {
+              "deep": "The word-RAM, precisely"
+            }
+          ]
+        },
+        {
+          "item": "2.3 The cell-probe model: only memory reads and writes cost; stronger than the word-RAM, for lower bounds",
+          "at": [
+            {
+              "deep": "The word-RAM, precisely"
+            },
+            {
+              "deep": "The frontier"
+            }
+          ]
+        },
+        {
+          "item": "3 Successor/predecessor queries: BST model Θ(log n), word RAM, cell probe, pointer machine",
+          "at": [
+            {
+              "step": "The comparison model: one bit per question"
+            },
+            {
+              "deep": "The comparison model and its escapes"
+            }
+          ]
+        },
+        {
+          "item": "4 Van Emde Boas trees: successor, insert, delete, T(u) = T(√u) + O(1), Theorem 1",
+          "at": [
+            {
+              "step": "van Emde Boas: halve the bits, not the keys"
+            },
+            {
+              "deep": "van Emde Boas trees in full"
+            }
+          ]
+        },
+        {
+          "item": "5 Binary tree view of vEB: analysis and indirection",
+          "at": [
+            {
+              "deep": "van Emde Boas trees in full"
+            }
+          ]
+        },
+        {
+          "item": "6 Reducing space: hash tables in vEB (Θ(n) space), x-fast tries, y-fast tries",
+          "at": [
+            {
+              "step": "The price: Θ(U) space, unless you hash"
+            },
+            {
+              "deep": "van Emde Boas trees in full"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "MIT 6.851 Advanced Data Structures, lecture 12: Fusion Trees (scribe notes): https://courses.csail.mit.edu/6.851/spring21/scribe/lec12.pdf",
+      "items": [
+        {
+          "item": "1 Introduction: sketching, parallel comparison, most significant set bit in constant time",
+          "at": [
+            {
+              "step": "Fusion trees: four comparisons in one subtraction"
+            },
+            {
+              "deep": "Fusion trees: the idea, and what is left out"
+            }
+          ]
+        },
+        {
+          "item": "2 Overview of fusion trees: word RAM model, O(log_w n) static predecessor, AC0 / exponential-tree / hashing variants",
+          "at": [
+            {
+              "deep": "Which operations are unit cost is a choice"
+            },
+            {
+              "deep": "Fusion trees: the idea, and what is left out"
+            }
+          ]
+        },
+        {
+          "item": "3 The general idea: a B-tree with branching w^(1/5), O(1) node search as the goal",
+          "at": [
+            {
+              "step": "Fusion trees: four comparisons in one subtraction"
+            },
+            {
+              "deep": "Fusion trees: the idea, and what is left out"
+            }
+          ]
+        },
+        {
+          "item": "4 Sketching: at most k − 1 distinguishing bits, order preserved, total size o(w) bits",
+          "at": [
+            {
+              "step": "Fusion trees: four comparisons in one subtraction"
+            },
+            {
+              "deep": "Fusion trees: the idea, and what is left out"
+            }
+          ]
+        },
+        {
+          "item": "5 Desketchifying: queries that are not among the keys",
+          "at": [
+            {
+              "step": "Fusion trees: four comparisons in one subtraction"
+            },
+            {
+              "deep": "Fusion trees: the idea, and what is left out"
+            }
+          ]
+        },
+        {
+          "item": "6 Approximating the sketch by multiplication with a mask",
+          "at": [
+            {
+              "deep": "Fusion trees: the idea, and what is left out"
+            },
+            {
+              "deep": "Which operations are unit cost is a choice"
+            }
+          ]
+        },
+        {
+          "item": "7 Parallel comparison: node sketch, subtraction, counting the 1 bits by multiplication",
+          "at": [
+            {
+              "step": "Fusion trees: four comparisons in one subtraction"
+            },
+            {
+              "deep": "Fusion trees: the idea, and what is left out"
+            }
+          ]
+        },
+        {
+          "item": "8 Most significant set bit in O(1)",
+          "at": [
+            {
+              "deep": "Fusion trees: the idea, and what is left out"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "6.851 Advanced Data Structures, lecture 14: Integer Sorting (scribe notes): https://courses.csail.mit.edu/6.851/spring21/scribe/lec14.pdf",
+      "items": [
+        {
+          "item": "1 Overview of integer sorting",
+          "at": [
+            {
+              "step": "Radix sort: digits as addresses"
+            },
+            {
+              "deep": "Radix sort on the word-RAM"
+            }
+          ]
+        },
+        {
+          "item": "2 Priority queues: sorting and integer priority queues are tied (Thorup)",
+          "at": [
+            {
+              "deep": "The frontier"
+            }
+          ]
+        },
+        {
+          "item": "3 Survey of integer sorting: linear for w = O(lg n) by radix sort, open for all w",
+          "at": [
+            {
+              "step": "Radix sort: digits as addresses"
+            },
+            {
+              "deep": "Radix sort on the word-RAM"
+            },
+            {
+              "deep": "The frontier"
+            }
+          ]
+        },
+        {
+          "item": "4 Sorting for w = Ω(log^(2+ε) n): signature sort",
+          "at": [
+            {
+              "deep": "The frontier"
+            }
+          ]
+        },
+        {
+          "item": "4.1–4.3 Bitonic sequences, logarithmic merge, packed sorting",
+          "at": [
+            {
+              "out": "Internal machinery of signature sort; the Deep dive's frontier states the result and does not teach the algorithm"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "MIT 6.006 Introduction to Algorithms (Spring 2020), lecture 5: Linear Sorting: https://ocw.mit.edu/courses/6-006-introduction-to-algorithms-spring-2020/78a3c3444de1ff837f81e52991c24a86_MIT6_006S20_lec5.pdf",
+      "items": [
+        {
+          "item": "Comparison model: the algorithm's decision tree is binary; height at least log(n!)",
+          "at": [
+            {
+              "step": "The comparison model: one bit per question"
+            },
+            {
+              "deep": "The comparison model and its escapes"
+            },
+            {
+              "deep": "Radix sort on the word-RAM"
+            }
+          ]
+        },
+        {
+          "item": "Direct access array sort: Θ(u), which is Θ(n) if u = Θ(n)",
+          "at": [
+            {
+              "deep": "Radix sort on the word-RAM"
+            }
+          ]
+        },
+        {
+          "item": "Tuple sort: represent a key as (a, b) with k = a·n + b",
+          "at": [
+            {
+              "step": "Radix sort: digits as addresses"
+            },
+            {
+              "deep": "Radix sort on the word-RAM"
+            }
+          ]
+        },
+        {
+          "item": "Counting sort: stable, O(n + u)",
+          "at": [
+            {
+              "step": "Radix sort: digits as addresses"
+            },
+            {
+              "deep": "Radix sort on the word-RAM"
+            }
+          ]
+        },
+        {
+          "item": "Radix sort: c = log_n u digits base n, O(c·n), linear for constant c",
+          "at": [
+            {
+              "step": "Radix sort: digits as addresses"
+            },
+            {
+              "deep": "Radix sort on the word-RAM"
+            }
+          ]
+        },
+        {
+          "item": "Summary table of sorting algorithms",
+          "at": [
+            {
+              "deep": "Radix sort on the word-RAM"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "Agner Fog, The microarchitecture of Intel, AMD and VIA CPUs (last updated 2026-05-23): https://www.agner.org/optimize/microarchitecture.pdf",
+      "items": [
+        {
+          "item": "1 Introduction",
+          "at": [
+            {
+              "out": "Orientation to the manual; nothing the topic teaches"
+            }
+          ]
+        },
+        {
+          "item": "2 Out-of-order execution",
+          "at": [
+            {
+              "deep": "What the unit hides"
+            }
+          ]
+        },
+        {
+          "item": "3 Branch prediction: speculative execution, the flush, misprediction penalty by processor",
+          "at": [
+            {
+              "step": "A wrong guess flushes the pipeline"
+            },
+            {
+              "deep": "What the unit hides"
+            }
+          ]
+        },
+        {
+          "item": "4 Intel Pentium 1 and Pentium MMX pipeline (penalty 4 to 5 clocks)",
+          "at": [
+            {
+              "deep": "What the unit hides"
+            }
+          ]
+        },
+        {
+          "item": "5 Intel Pentium 4 (NetBurst) pipeline: cache misses make other optimisation unimportant",
+          "at": [
+            {
+              "deep": "What the unit hides"
+            }
+          ]
+        },
+        {
+          "item": "6 Intel Pentium Pro, II and III pipeline (penalty 10 to 20 clocks)",
+          "at": [
+            {
+              "deep": "What the unit hides"
+            }
+          ]
+        },
+        {
+          "item": "Latest AMD chapters: Zen 5 cache sizes and latencies, misprediction penalty 15 to 25",
+          "at": [
+            {
+              "step": "A wrong guess flushes the pipeline"
+            },
+            {
+              "deep": "What the unit hides"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "Ulrich Drepper, What Every Programmer Should Know About Memory (2007): https://people.freebsd.org/~lstewart/articles/cpumemory.pdf",
+      "items": [
+        {
+          "item": "1 Introduction: memory access is the limiting factor for most programs",
+          "at": [
+            {
+              "step": "One load, two prices"
+            },
+            {
+              "deep": "What the unit hides"
+            }
+          ]
+        },
+        {
+          "item": "2 Commodity hardware today",
+          "at": [
+            {
+              "out": "DRAM and bus hardware details; the cost they cause is shown by the cycle figures in step 'One load, two prices' and measured in the chapter's lab"
+            }
+          ]
+        },
+        {
+          "item": "3 CPU caches: cache hit and miss costs, cache lines, the access-time staircase",
+          "at": [
+            {
+              "step": "One load, two prices"
+            },
+            {
+              "deep": "What the unit hides"
+            }
+          ]
+        },
+        {
+          "item": "4 Virtual memory: page tables and the TLB",
+          "at": [
+            {
+              "topic": "Measuring the memory hierarchy",
+              "quote": "TLB reach"
+            },
+            {
+              "deep": "What the unit hides"
+            }
+          ]
+        },
+        {
+          "item": "5 NUMA support",
+          "at": [
+            {
+              "out": "Multi-socket memory topology; beyond a single-core cost model, named among the costs the model leaves out"
+            }
+          ]
+        },
+        {
+          "item": "6 What programmers can do",
+          "at": [
+            {
+              "topic": "Cache-friendly and branchless search",
+              "quote": "Eytzinger (BFS) layout with prefetching"
+            }
+          ]
+        },
+        {
+          "item": "7 Memory performance tools",
+          "at": [
+            {
+              "out": "Profiling tools; topic 10 builds and measures its own benchmarks"
+            }
+          ]
+        },
+        {
+          "item": "8 Upcoming technology",
+          "at": [
+            {
+              "out": "A 2007 outlook, superseded; no claim in the topic rests on it"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "Pătraşcu and Thorup, Time-Space Trade-Offs for Predecessor Search (arXiv cs/0603043, STOC 2006): https://arxiv.org/pdf/cs/0603043",
+      "items": [
+        {
+          "item": "1 Abstract: cell-probe lower bound, tight predecessor bound",
+          "at": [
+            {
+              "deep": "The frontier"
+            }
+          ]
+        },
+        {
+          "item": "1.1 The complexity-theoretic view: cell-probe model against word RAM",
+          "at": [
+            {
+              "deep": "The word-RAM, precisely"
+            },
+            {
+              "deep": "The frontier"
+            }
+          ]
+        },
+        {
+          "item": "1.2 The data-structural view: van Emde Boas, fusion trees, Beame and Fich, and the lower-bound story",
+          "at": [
+            {
+              "deep": "The comparison model and its escapes"
+            },
+            {
+              "deep": "The frontier"
+            }
+          ]
+        },
+        {
+          "item": "1.3 Our results: the branches of the trade-off and external memory",
+          "at": [
+            {
+              "deep": "The frontier"
+            }
+          ]
+        },
+        {
+          "item": "Upper-bound constructions: fusion or B-trees, tuned van Emde Boas",
+          "at": [
+            {
+              "deep": "Fusion trees: the idea, and what is left out"
+            },
+            {
+              "deep": "The frontier"
+            }
+          ]
+        },
+        {
+          "item": "Lower-bound proof by cell-probe round elimination",
+          "at": [
+            {
+              "out": "The proof technique is research-level; the topic states the result and its scope, and Chapter 1's lower-bound topic covers comparison-model proofs"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "Fredman and Willard, Surpassing the Information Theoretic Bound with Fusion Trees (JCSS 47, 1993): https://users.cs.utah.edu/~pandey/courses/cs6968/spring23/papers/fusiontree.pdf",
+      "items": [
+        {
+          "item": "1 Introduction: the information-theoretic bound, Paul and Simon's abuse of the unit-cost assumption, the b-bit word model",
+          "at": [
+            {
+              "step": "A word must hold a pointer: w ≥ log₂ n"
+            },
+            {
+              "deep": "The word-RAM, precisely"
+            },
+            {
+              "deep": "Fusion trees: the idea, and what is left out"
+            }
+          ]
+        },
+        {
+          "item": "2 Notation and preliminaries: two-word product, OR and XOR from AND and subtraction",
+          "at": [
+            {
+              "deep": "Which operations are unit cost is a choice"
+            }
+          ]
+        },
+        {
+          "item": "3 Overview of fusion trees: a B-tree whose node search takes constant time",
+          "at": [
+            {
+              "step": "Fusion trees: four comparisons in one subtraction"
+            },
+            {
+              "deep": "Fusion trees: the idea, and what is left out"
+            }
+          ]
+        },
+        {
+          "item": "4 Fusion tree construction, search and updates",
+          "at": [
+            {
+              "deep": "Fusion trees: the idea, and what is left out"
+            }
+          ]
+        },
+        {
+          "item": "5 Sorting application and the randomized, integer-division variant",
+          "at": [
+            {
+              "out": "The randomized variant with division is named by the source; the topic teaches the deterministic idea and says the full construction is out of scope"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "Mehlhorn and Sanders, Algorithms and Data Structures: The Basic Toolbox, chapter 2 Introduction (the RAM model): https://people.mpi-inf.mpg.de/~mehlhorn/ftp/Toolbox/Introduction.pdf",
+      "items": [
+        {
+          "item": "2.1 Asymptotic notation",
+          "at": [
+            {
+              "topic": "Asymptotic notation and case analysis",
+              "quote": "O/Θ/Ω/o/ω"
+            }
+          ]
+        },
+        {
+          "item": "2.2 The machine model: uniform memory, words of logarithmic size, the instruction set, why the word size is tied to the input, the RAM as an abstraction",
+          "at": [
+            {
+              "step": "The machine behind the count"
+            },
+            {
+              "step": "A word must hold a pointer: w ≥ log₂ n"
+            },
+            {
+              "deep": "The word-RAM, precisely"
+            },
+            {
+              "deep": "Numbers longer than a word"
+            }
+          ]
+        },
+        {
+          "item": "2.3 Pseudocode",
+          "at": [
+            {
+              "out": "Notation for algorithms in the book; this course writes its own"
+            }
+          ]
+        },
+        {
+          "item": "2.4 Designing correct algorithms and programs",
+          "at": [
+            {
+              "out": "Correctness practice, taught with each algorithm"
+            }
+          ]
+        },
+        {
+          "item": "2.5 An example: binary search",
+          "at": [
+            {
+              "step": "A million keys, twenty probes"
+            }
+          ]
+        },
+        {
+          "item": "2.6 Basic algorithm analysis",
+          "at": [
+            {
+              "topic": "Asymptotic notation and case analysis",
+              "quote": "best, average, worst, expected and with-high-probability bounds"
+            }
+          ]
+        },
+        {
+          "item": "2.7 Average-case analysis",
+          "at": [
+            {
+              "topic": "Asymptotic notation and case analysis",
+              "quote": "best, average, worst, expected and with-high-probability bounds"
+            }
+          ]
+        },
+        {
+          "item": "2.8 Randomized algorithms",
+          "at": [
+            {
+              "topic": "Asymptotic notation and case analysis",
+              "quote": "best, average, worst, expected and with-high-probability bounds"
+            }
+          ]
+        },
+        {
+          "item": "2.9 Graphs",
+          "at": [
+            {
+              "out": "Graph terminology, taught in Chapter 17 (Graph Traversal and Connectivity)"
+            }
+          ]
+        },
+        {
+          "item": "2.10 P and NP",
+          "at": [
+            {
+              "out": "Complexity classes are outside this course's data-structures focus"
+            }
+          ]
+        },
+        {
+          "item": "2.11 Implementation notes",
+          "at": [
+            {
+              "out": "Language-specific notes for the book's C++ code"
+            }
+          ]
+        },
+        {
+          "item": "2.12 Historical notes: Shepherdson and Sturgis define the RAM; cells hold a logarithmic number of bits",
+          "at": [
+            {
+              "deep": "The word-RAM, precisely"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "Andersson and Thorup, Dynamic Ordered Sets with Exponential Search Trees (arXiv cs/0210006, journal version 2007): https://arxiv.org/pdf/cs/0210006",
+      "items": [
+        {
+          "item": "Abstract: exponential search trees turn static polynomial-space search structures into dynamic linear-space ones; optimal O(sqrt(log n / log log n)) for dynamic integer searching and updating",
+          "at": [
+            {
+              "deep": "The frontier"
+            }
+          ]
+        },
+        {
+          "item": "Sections 2 to 6: the construction, finger and string search, trade-offs between n, W and U",
+          "at": [
+            {
+              "out": "Construction details of exponential search trees; the Deep dive's frontier states the headline bound and does not teach the technique"
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "independent Opus agent (blind: told not to read site/, each item with a primary source it opened); mapped to this topic's plan by the builder",
+    "date": "2026-10-11",
+    "items": [
+      {
+        "item": "The RAM model: a single processor, uniform memory of cells S[0], S[1], ..., a constant number of registers, and every instruction (load, store, arithmetic, jump) costs one time step; running time = number of instructions executed. [https://people.mpi-inf.mpg.de/~mehlhorn/ftp/Toolbox/Introduction.pdf]",
+        "at": [
+          {
+            "step": "The machine behind the count"
+          },
+          {
+            "deep": "The word-RAM, precisely"
+          }
+        ]
+      },
+      {
+        "item": "Word-size convention: a cell holds a w-bit word with w >= log n (usually w >= log S for space S), because a word must be able to hold a pointer/array index; integers polynomial in the input size fit in O(1) words. [https://courses.csail.mit.edu/6.851/spring12/scribe/L11.pdf]",
+        "at": [
+          {
+            "step": "A word must hold a pointer: w ≥ log₂ n"
+          },
+          {
+            "deep": "The word-RAM, precisely"
+          }
+        ]
+      },
+      {
+        "item": "Why words must be bounded: with unbounded unit-cost integers, n repeated squarings build a 2^n-bit number in n steps, giving absurdly optimistic algorithms (and P = NP with multiplication and shifts), so the word size is tied to the input size. [https://arxiv.org/pdf/cs/0210006]",
+        "at": [
+          {
+            "step": "A word must hold a pointer: w ≥ log₂ n"
+          },
+          {
+            "deep": "The word-RAM, precisely"
+          }
+        ]
+      },
+      {
+        "item": "Big numbers are not unit cost: an integer of k bits occupies about k/w words and arithmetic on it costs time growing with k/w; spreading a value over logarithmically many cells costs only a logarithmic overhead, which is why constant-size and log-size cell models are interchangeable up to that factor. [https://people.mpi-inf.mpg.de/~mehlhorn/ftp/Toolbox/Introduction.pdf]",
+        "at": [
+          {
+            "step": "Big numbers pay by the word"
+          },
+          {
+            "deep": "Numbers longer than a word"
+          }
+        ]
+      },
+      {
+        "item": "Transdichotomous RAM (Fredman-Willard): the word size scales with the problem size, w >= log n, and a fixed set of operations each touching O(1) cells; words double as pointers, so memory is addressed arbitrarily. [https://classes.csail.mit.edu/6.851/fall17/scribe/lec11.pdf]",
+        "at": [
+          {
+            "deep": "The word-RAM, precisely"
+          }
+        ]
+      },
+      {
+        "item": "Unit-cost operations on the word RAM are the C-style ones: + - * / % & | ^ << >> and comparisons, each O(1) on a w-bit word; this is the standard model for integer data structures. [https://courses.csail.mit.edu/6.851/spring12/scribe/L11.pdf]",
+        "at": [
+          {
+            "step": "The machine behind the count"
+          },
+          {
+            "deep": "The word-RAM, precisely"
+          }
+        ]
+      },
+      {
+        "item": "Multiplication is the contested operation: it is not in AC0 (needs depth growing with w), so the AC0 RAM allows only addition, shifts and bitwise ops; fusion trees rely heavily on multiplication, and AC0-only search results are weaker. [https://arxiv.org/pdf/cs/0210006]",
+        "at": [
+          {
+            "deep": "Which operations are unit cost is a choice"
+          }
+        ]
+      },
+      {
+        "item": "The RAM's key power over the comparison model: it can use keys to compute addresses (indexing, bucketing, bit extraction), which is exactly what bucket and radix sort exploit. [https://arxiv.org/pdf/cs/0210006]",
+        "at": [
+          {
+            "step": "On the word-RAM, a key is a number"
+          },
+          {
+            "deep": "The comparison model and its escapes"
+          }
+        ]
+      },
+      {
+        "item": "Integer keys cover more than integers: floating-point numbers order correctly when their bit patterns are read as integers (for negatives the bits must be flipped first, a detail the source leaves out), so integer-key algorithms apply to many other key types. [https://arxiv.org/pdf/cs/0210006]",
+        "at": [
+          {
+            "topic": "Counting, radix and bucket sort",
+            "quote": "key normalization of multi-column keys to byte strings"
+          }
+        ]
+      },
+      {
+        "item": "Comparison-sorting lower bound: any comparison-based sort needs n log n - O(n) comparisons worst case and on average; it cannot be broken within that model, only by enlarging the set of basic operations. [https://people.mpi-inf.mpg.de/~mehlhorn/ftp/Toolbox/SortingAndSelection.pdf]",
+        "at": [
+          {
+            "topic": "Lower bounds and adversary arguments",
+            "quote": "decision-tree Ω(n log n) for comparison sorting"
+          },
+          {
+            "step": "The comparison model: one bit per question"
+          }
+        ]
+      },
+      {
+        "item": "Counting/bucket sort (KSort) sorts n keys in 0..K-1 in O(n + K) and is stable; LSD radix sort applies it digit by digit for keys in 0..K^d - 1 in O(d(n + K)), relying on stability for correctness. [https://people.mpi-inf.mpg.de/~mehlhorn/ftp/Toolbox/SortingAndSelection.pdf]",
+        "at": [
+          {
+            "step": "Radix sort: digits as addresses"
+          },
+          {
+            "deep": "Radix sort on the word-RAM"
+          },
+          {
+            "topic": "Counting, radix and bucket sort",
+            "quote": "LSD vs MSD radix sort"
+          }
+        ]
+      },
+      {
+        "item": "Radix sort on the word RAM: with digit size log n bits, w-bit keys sort in O(n * w / log n) time, i.e. linear when w = O(log n); counting sort alone is O(n + 2^w). [https://courses.csail.mit.edu/6.851/spring12/scribe/L14.pdf]",
+        "at": [
+          {
+            "step": "Radix sort: digits as addresses"
+          },
+          {
+            "deep": "Radix sort on the word-RAM"
+          }
+        ]
+      },
+      {
+        "item": "State of integer sorting: signature sort is linear for w = Omega(log^(2+eps) n); Han gives O(n log log n) deterministic; Han-Thorup O(n sqrt(log log n)) randomized; whether O(n) sorting is possible for all w is open. [https://courses.csail.mit.edu/6.851/spring12/scribe/L14.pdf]",
+        "at": [
+          {
+            "deep": "The frontier"
+          }
+        ]
+      },
+      {
+        "item": "Thorup's equivalence: sorting n w-bit integers in O(n S(n,w)) time yields a priority queue with O(S(n,w)) per operation, so integer sorting and integer priority queues are tied. [https://courses.csail.mit.edu/6.851/spring12/scribe/L14.pdf]",
+        "at": [
+          {
+            "deep": "The frontier"
+          }
+        ]
+      },
+      {
+        "item": "Predecessor problem: maintain a set of integers from universe U = {0..u-1} under insert/delete and find predecessor/successor; it requires Theta(log n) in the BST/comparison model, which integer structures beat. [https://courses.csail.mit.edu/6.851/spring12/scribe/L11.pdf]",
+        "at": [
+          {
+            "step": "A million keys, twenty probes"
+          },
+          {
+            "deep": "The comparison model and its escapes"
+          }
+        ]
+      },
+      {
+        "item": "van Emde Boas trees: recursive sqrt(u) split into clusters plus a summary, min stored non-recursively so each operation recurses once: T(u) = T(sqrt u) + O(1) = O(log log u) = O(log w). [https://courses.csail.mit.edu/6.851/spring12/scribe/L11.pdf]",
+        "at": [
+          {
+            "step": "van Emde Boas: halve the bits, not the keys"
+          },
+          {
+            "deep": "van Emde Boas trees in full"
+          }
+        ]
+      },
+      {
+        "item": "vEB space is Theta(u), not Theta(n); replacing cluster arrays with dynamic perfect hash tables (storing only non-empty clusters) brings space to Theta(n) with O(log log u) bounds holding with high probability. [https://courses.csail.mit.edu/6.851/spring12/scribe/L11.pdf]",
+        "at": [
+          {
+            "step": "The price: Θ(U) space, unless you hash"
+          },
+          {
+            "deep": "van Emde Boas trees in full"
+          }
+        ]
+      },
+      {
+        "item": "x-fast and y-fast tries (Willard): a hash table of all prefixes of stored keys allows binary search on prefix length in O(log w); indirection with Theta(w)-size BST buckets gives y-fast tries O(log w) operations in O(n) space. [https://courses.csail.mit.edu/6.851/spring12/scribe/L11.pdf]",
+        "at": [
+          {
+            "deep": "van Emde Boas trees in full"
+          }
+        ]
+      },
+      {
+        "item": "Word-RAM hashing is itself a word-level trick: multiply-shift hashing (multiply by a random odd word, keep the high bits) is universal up to a factor 2 and far faster than mod-prime hashing; vEB/y-fast space bounds depend on such hashing. [https://arxiv.org/pdf/1504.06804]",
+        "at": [
+          {
+            "topic": "Universal and k-independent hashing",
+            "quote": "multiply-shift"
+          }
+        ]
+      },
+      {
+        "item": "Fusion trees (Fredman-Willard): a B-tree of branching factor w^(1/5) where each node's keys are sketched into one word and compared in parallel, giving predecessor in O(log_w n) time with O(n) space. [https://classes.csail.mit.edu/6.851/fall17/scribe/lec12.pdf]",
+        "at": [
+          {
+            "step": "Fusion trees: four comparisons in one subtraction"
+          },
+          {
+            "deep": "Fusion trees: the idea, and what is left out"
+          }
+        ]
+      },
+      {
+        "item": "Fusion-tree ingredients are word-level parallelism: sketching (compressing keys to their distinguishing bits via multiplication), parallel comparison of many small fields in one word, and computing the most significant set bit in O(1). [https://classes.csail.mit.edu/6.851/fall17/scribe/lec12.pdf]",
+        "at": [
+          {
+            "step": "Fusion trees: four comparisons in one subtraction"
+          },
+          {
+            "deep": "Fusion trees: the idea, and what is left out"
+          }
+        ]
+      },
+      {
+        "item": "Combining vEB and fusion trees gives O(min{log w, log_w n}), which is at most O(sqrt(log n)); exponential search trees make this dynamic, reaching the optimal O(sqrt(log n / log log n)) worst case in linear space. [https://arxiv.org/pdf/cs/0210006]",
+        "at": [
+          {
+            "deep": "The comparison model and its escapes"
+          },
+          {
+            "deep": "The frontier"
+          }
+        ]
+      },
+      {
+        "item": "Cell-probe model (Yao): memory of w-bit cells, only reads/writes cost, computation is free; it is stronger than the word RAM, so its lower bounds hold for any RAM algorithm. [https://arxiv.org/pdf/cs/0603043]",
+        "at": [
+          {
+            "deep": "The word-RAM, precisely"
+          },
+          {
+            "deep": "The frontier"
+          }
+        ]
+      },
+      {
+        "item": "Predecessor lower bounds: with polynomial space, Omega(min{log_w n, log w / log log n}) cell probes are needed (Beame-Fich, round elimination), and Patrascu-Thorup give the exact time-space trade-off, so vEB and fusion trees are essentially optimal. [https://classes.csail.mit.edu/6.851/fall17/scribe/lec13.pdf]",
+        "at": [
+          {
+            "deep": "The frontier"
+          }
+        ]
+      },
+      {
+        "item": "Predecessor and external memory: the fusion-tree branch log_w n matches B-tree behaviour, and with cells of B keys the optimum is either a B-tree or the best RAM structure (Patrascu-Thorup). [https://arxiv.org/pdf/cs/0603043]",
+        "at": [
+          {
+            "topic": "External-memory (I/O) model",
+            "quote": "parameters N, M, B"
+          },
+          {
+            "deep": "The frontier"
+          }
+        ]
+      },
+      {
+        "item": "What unit cost hides, memory: a RAM has uniform memory, a real machine a hierarchy; a main-memory access can cost hundreds of times a cache hit, so operation costs are not fixed. [https://people.mpi-inf.mpg.de/~mehlhorn/ftp/Toolbox/Introduction.pdf]",
+        "at": [
+          {
+            "step": "One load, two prices"
+          },
+          {
+            "deep": "What the unit hides"
+          }
+        ]
+      },
+      {
+        "item": "What unit cost hides, address translation: TLB misses force page-table walks; access patterns touching many pages slow down even when cache-line counts are equal. [https://people.freebsd.org/~lstewart/articles/cpumemory.pdf]",
+        "at": [
+          {
+            "deep": "What the unit hides"
+          },
+          {
+            "topic": "Measuring the memory hierarchy",
+            "quote": "TLB reach"
+          }
+        ]
+      },
+      {
+        "item": "What unit cost hides, branch mispredictions: data-dependent comparisons (e.g. in quicksort partitioning) cause mispredictions that dominate running time; separating control flow from data flow speeds sorting by over 80%. [https://arxiv.org/pdf/1604.06697]",
+        "at": [
+          {
+            "step": "A wrong guess flushes the pipeline"
+          },
+          {
+            "topic": "Quicksort and partitioning schemes",
+            "quote": "branchless block partitioning"
+          }
+        ]
+      },
+      {
+        "item": "Branch-free and prefetch-friendly search: conditional moves and the Eytzinger layout make comparison search much faster in practice than layouts with the same RAM cost. [https://arxiv.org/pdf/1509.05053]",
+        "at": [
+          {
+            "topic": "Cache-friendly and branchless search",
+            "quote": "branchless binary search with conditional moves"
+          }
+        ]
+      },
+      {
+        "item": "What unit cost hides, SIMD and instruction-level parallelism: 128-512-bit vector registers process many items per instruction (e.g. AVX2 popcount up to twice as fast as the scalar popcnt instruction); the word RAM models only one w-bit word per step. [https://arxiv.org/pdf/1611.07612]",
+        "at": [
+          {
+            "deep": "What the unit hides"
+          }
+        ]
+      },
+      {
+        "item": "What unit cost hides, parallelism: multicore, SMT, GPUs and distributed systems; the sequential RAM gives no single simple model for these. [https://people.mpi-inf.mpg.de/~mehlhorn/ftp/Toolbox/Introduction.pdf]",
+        "at": [
+          {
+            "deep": "What the unit hides"
+          }
+        ]
+      },
+      {
+        "item": "What unit cost hides, memory allocation: malloc/free are treated as O(1) but real allocators trade locality, contention and fast paths, and allocator choice measurably changes performance. [https://www.microsoft.com/en-us/research/uploads/prod/2019/06/mimalloc-tr-v1.pdf]",
+        "at": [
+          {
+            "deep": "What the unit hides"
+          }
+        ]
+      },
+      {
+        "item": "Real-world relevance: in-place radix sort (IPS2Ra) wins on near-uniform keys and small keys, yet a tuned branchless comparison samplesort (IPS4o) often beats integer sorters, so asymptotic wins over the comparison model depend on the hidden costs. [https://arxiv.org/pdf/2009.13569]",
+        "at": [
+          {
+            "topic": "SIMD and parallel sorting",
+            "quote": "IPS⁴o"
+          },
+          {
+            "deep": "In code review"
+          }
+        ]
+      }
+    ]
+  },
+  "gapReview": {
+    "date": "2026-10-11",
+    "by": "Fable content review",
+    "resolved": [
+      "Expert items 12 and 13 (state of integer sorting, Thorup's equivalence) are in the Deep dive's frontier, now with Han and Han-Thorup",
+      "Expert item 22, dynamic optimum: the Andersson-Thorup paper was opened and its abstract is quoted in the frontier",
+      "Expert item 25 (Patrascu-Thorup, B-tree or best RAM algorithm) is stated in the frontier with Chapter 5's B-trees as the forward pointer",
+      "Expert item 32 (IPS2Ra) makes a claim about speed in practice; no source opened for this topic supports it, so the Deep dive claims nothing and points to Chapter 15's SIMD and parallel sorting",
+      "All 24 findings of REVIEW.md (1 major, 23 minor) are fixed or answered with a status line there; finding 23's paper text could not be opened, so no attribution was added"
+    ],
+    "open": []
+  }
+}
