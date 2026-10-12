@@ -395,3 +395,5 @@ Not claimed: anything from CLRS or Tarjan 1985 (not opened; Tarjan only as credi
 
 ## Changes after final
 
+
+- 2026-10-12: narration wording only (about 30 lines reworded so the transcript check passes: e.g. "per append" phrasings, large numbers); nothing taught changed.
