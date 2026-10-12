@@ -7,11 +7,15 @@
         "Rust Systems Engineering starts here.",
         "You've read the Book through chapter ten. Now ownership becomes a design tool... starting with its smallest unit.",
         "One value. One owner. One destruction.",
-        { "beat": 0.4 },
+        {
+          "beat": 0.4
+        },
         "Picture an ingest service that ships batches of one million bytes.",
         "Calling ship on a batch was rejected by the compiler... the use-after-move error.",
         "The review took the compiler's own suggestion. Clone.",
-        { "beat": 0.4 },
+        {
+          "beat": 0.4
+        },
         "It works. But now every single batch pays one extra allocation, and a one million byte copy.",
         "By the end, you'll know why Rust refused... and fix it without copying a single byte."
       ]
@@ -20,7 +24,9 @@
       "lines": [
         "Let's start with the smallest case.",
         "A string is a small header on the stack... a pointer, a length, and a capacity... pointing at text on the heap.",
-        { "beat": 0.4 },
+        {
+          "beat": 0.4
+        },
         "So when you write let s two equals s one... what exactly gets copied?"
       ],
       "answer": [
@@ -33,7 +39,9 @@
         "Here's why s one has to die.",
         "Imagine both bindings still owned the buffer.",
         "At the closing brace, both would free it. A double free... the classic memory bug that can corrupt the allocator.",
-        { "beat": 0.4 },
+        {
+          "beat": 0.4
+        },
         "Rust's rule is simpler. After the move, s one is no longer valid, so it frees nothing.",
         "One owner. One free. And the compiler checks it before the program ever runs."
       ]
@@ -43,7 +51,9 @@
         "Let's measure it.",
         "We move a vector of one million bytes into a function.",
         "The heap pointer? The same. Zero allocations. Only the twenty-four byte header was copied, to a new address.",
-        { "beat": 0.3 },
+        {
+          "beat": 0.3
+        },
         "Now clone it. One allocation, a million bytes, and a brand new pointer.",
         "Rust never makes a deep copy... unless you write clone."
       ]
@@ -52,7 +62,9 @@
       "lines": [
         "Here's a subtle one.",
         "After a move, the variable is empty. But is it empty forever?",
-        { "beat": 0.4 },
+        {
+          "beat": 0.4
+        },
         "Line one makes it. Line two moves it. Line three assigns it again. What happens?"
       ],
       "answer": [
@@ -64,7 +76,9 @@
       "lines": [
         "If you come from a language with move constructors, this next one is for you.",
         "Standard move is only a cast. Your move constructor steals the buffer, and nulls out the source, because the source stays alive.",
-        { "beat": 0.3 },
+        {
+          "beat": 0.3
+        },
         "So at the closing brace, that language runs two destructors. One of them on an empty shell.",
         "Rust runs one drop.",
         "A Rust move runs no code at all. The bytes are copied, and the compiler simply stops you using the source."
@@ -75,7 +89,9 @@
         "One line of code. Six meanings.",
         "In Python, Java and Go, both names stay usable, and both point at the same data.",
         "That language can copy it, or steal it and leave the source valid but unspecified.",
-        { "beat": 0.3 },
+        {
+          "beat": 0.3
+        },
         "Rust copies the same few bytes that a shallow copy would, then ends the source.",
         "So there is still exactly one owner."
       ]
@@ -85,7 +101,9 @@
         "Some values are nothing but their bits.",
         "An integer. A float. A boolean. A character. Arrays and tuples of those.",
         "Those types are Copy. Assigning one duplicates it, and the source stays valid.",
-        { "beat": 0.3 },
+        {
+          "beat": 0.3
+        },
         "The test is simple: is the value just its bits? Does it own anything beyond them?",
         "A type can be Copy only if every field is. A shared reference is Copy. A mutable reference never is.",
         "And a type with a destructor... never."
@@ -96,7 +114,9 @@
         "Here's the most tempting mistake.",
         "A wrapper around an integer handle... with a destructor that closes it.",
         "The integer is plain bits. So surely it can be Copy?",
-        { "beat": 0.4 },
+        {
+          "beat": 0.4
+        },
         "Does this compile?"
       ],
       "answer": [
@@ -106,10 +126,12 @@
     },
     {
       "lines": [
-        "So where does the cost show up?",
+        "So where does the cost... actually show up?",
         "A copy allocates nothing. A move allocates nothing.",
         "Only the lines that clone light up.",
-        { "beat": 0.3 },
+        {
+          "beat": 0.3
+        },
         "In Rust, if it's expensive, it says clone.",
         "Search a hot path for the clone method... and for similar methods that copy data... and you will find its deep copies."
       ]
@@ -118,11 +140,16 @@
       "lines": [
         "People say moves are free. Are they?",
         "Here's a struct of four thousand and ninety-six bytes, moved into a function.",
-        { "beat": 0.4 },
+        {
+          "beat": 0.4
+        },
         "How many bytes does the call copy?"
       ],
       "answer": [
-        "A type of 4096 bytes. A move copies the whole value.",
+        "A type of four thousand and ninety-six bytes. A move copies the whole value.",
+        {
+          "beat": 0.8
+        },
         "The optimizer sometimes removes the copy, but you can only count on a move being cheap when the value is small."
       ]
     },
@@ -139,7 +166,9 @@
       "lines": [
         "Now comes the part that makes ownership a design tool.",
         "A signature tells you what a call does to your value... without opening the body.",
-        { "beat": 0.3 },
+        {
+          "beat": 0.3
+        },
         "Take the type itself, and the function owns it.",
         "Take a shared reference, and the function borrows it. Any number of borrows at once.",
         "Take a mutable reference, and the borrow is exclusive. Nobody else may touch the value meanwhile.",
@@ -152,7 +181,9 @@
         "The length method takes a shared reference. It reads.",
         "The push-string method takes a mutable reference. It mutates.",
         "The method that turns a string into bytes takes the string itself. It consumes it.",
-        { "beat": 0.3 },
+        {
+          "beat": 0.3
+        },
         "And consuming isn't copying. It returns a vector on the very same buffer. Zero allocations.",
         "Even the plus operator is a contract. It consumes the left side, and appends into its buffer, growing it if needed."
       ]
@@ -161,7 +192,9 @@
       "lines": [
         "Time to design an API.",
         "Checksum reads every byte, and the caller keeps using the batch afterwards.",
-        { "beat": 0.4 },
+        {
+          "beat": 0.4
+        },
         "Which signature would you ship?"
       ],
       "answer": [
@@ -176,7 +209,9 @@
         "One. Why it moved. Vector of bytes isn't Copy.",
         "Two. Where it moved. The call.",
         "Three. The later use that broke the rule.",
-        { "beat": 0.3 },
+        {
+          "beat": 0.3
+        },
         "Each span is a place to fix it. Plain data? Derive Copy. Or borrow at the move site. Or use the value first.",
         "The note even says the signature may be wrong. And the clone suggestion? Last resort."
       ]
@@ -186,20 +221,27 @@
         "A second error. The move-while-borrowed error.",
         "You borrowed a header out of the batch... and then moved the batch, while that borrow was still alive.",
         "A borrow lasts until its last use. Not to the end of the block.",
-        { "beat": 0.3 },
+        {
+          "beat": 0.3
+        },
         "So finish with the header first, and the move fits.",
         "The compiler suggests cloning here too... a million bytes copied to keep four. Copying just the four bytes is the better copy."
       ]
     },
     {
       "lines": [
-        "A loop is a path that comes back.",
+        "A loop is a path... that comes back.",
         "Ship takes the batch by value, and the loop runs three times.",
-        { "beat": 0.4 },
+        {
+          "beat": 0.4
+        },
         "What happens?"
       ],
       "answer": [
         "It doesn't compile. On the second pass through the loop, the batch is already gone.",
+        {
+          "beat": 0.8
+        },
         "The same rule means a for loop over a vector consumes it. Iterate over a reference to borrow."
       ]
     },
@@ -209,7 +251,9 @@
         "Read the original error by its spans. The vector moved at the call, and was used after.",
         "If ship only reads, the signature was wrong. Take a slice, pass a reference. Zero allocations. Zero bytes copied.",
         "If ship must own the batch, read the length first and move last. Also zero.",
-        { "beat": 0.3 },
+        {
+          "beat": 0.3
+        },
         "The clone was correct code... paying a million bytes per batch for nothing.",
         "The right signature costs nothing."
       ]
@@ -218,7 +262,9 @@
       "lines": [
         "Three questions to prove it.",
         "First. Run without arguments, so retry is false.",
-        { "beat": 0.4 },
+        {
+          "beat": 0.4
+        },
         "What happens?"
       ],
       "answer": [
@@ -230,7 +276,9 @@
       "lines": [
         "Second. Estimate the cost.",
         "Line one allocates the buffer.",
-        { "beat": 0.4 },
+        {
+          "beat": 0.4
+        },
         "How many allocations do lines two to four add?"
       ],
       "answer": [
@@ -242,7 +290,9 @@
       "lines": [
         "Third. Defend a design.",
         "A point of three small numbers is passed by value in a loop, and the compiler complains on the second pass.",
-        { "beat": 0.4 },
+        {
+          "beat": 0.4
+        },
         "Which fix fits this type best?"
       ],
       "answer": [
@@ -254,12 +304,14 @@
       "lines": [
         "In one breath.",
         "One owner, one drop.",
-        "A move copies the bytes and ends the source.",
+        "A move copies the bytes... and then ends the source.",
         "Copy means the bits are the whole value, and never with a destructor.",
         "Clone is the visible cost.",
         "A signature takes, borrows, borrows exclusively, or returns.",
         "For the use-after-move error, read why, where, and the later use. For the move-while-borrowed error, end the borrow first.",
-        { "beat": 0.3 },
+        {
+          "beat": 0.3
+        },
         "One owner decides who destroys a value. Next: exactly when that happens. Drop order, temporaries, and why leaking memory is still safe."
       ]
     }
