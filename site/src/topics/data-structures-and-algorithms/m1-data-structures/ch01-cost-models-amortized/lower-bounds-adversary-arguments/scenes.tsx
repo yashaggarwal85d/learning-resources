@@ -292,9 +292,15 @@ export function LeafBudget({ t }: StepCtx) {
               level {k}
             </T>
             <line x1={110} y1={LY(k)} x2={420} y2={LY(k)} stroke={C.mocha} strokeWidth={1} />
-            <T x={540} y={LY(k) + 5} s={15} f={k === 6 ? C.taupe : C.caramel} a="end" w={600} o={dimmed}>
-              {v}
-            </T>
+            {k === 6 ? (
+              <Struck x={516} y={LY(k) + 5} s={15} o={0.35 + 0.5 * (1 - dimmed)}>
+                {v}
+              </Struck>
+            ) : (
+              <T x={540} y={LY(k) + 5} s={15} f={C.caramel} a="end" w={600}>
+                {v}
+              </T>
+            )}
           </g>
         );
       })}
@@ -309,7 +315,8 @@ export function LeafBudget({ t }: StepCtx) {
       {/* 5! = 120 sits between level 6 (64) and level 7 (128) */}
       <g opacity={fade(t, 2.9, 3.2)} transform={`translate(${(1 - fade(t, 2.9, 3.2)) * -40} 0)`}>
         <line x1={110} y1={LY(6) + 18} x2={420} y2={LY(6) + 18} stroke={C.crema} strokeDasharray="6 5" strokeWidth={1.5} />
-        <T x={112} y={LY(6) + 14} s={15} f={C.crema}>
+        <rect x={112} y={LY(6) + 7} width={206} height={22} rx={11} fill={C.cocoa} stroke={C.crema} />
+        <T x={215} y={LY(6) + 22} s={13} f={C.crema} a="middle">
           5! = 120 orders
         </T>
       </g>
@@ -318,10 +325,10 @@ export function LeafBudget({ t }: StepCtx) {
       </T>
       <g opacity={fade(t, 3.9, 4.3)}>
         <T x={30} y={366} s={13} f={C.latte}>
-          n = 3 → 3 · n = 10 → 22
+          n = 3 → ≥ 3 · n = 10 → ≥ 22 comparisons
         </T>
         <T x={30} y={390} s={15} f={C.crema} w={600}>
-          n = 1,000,000 → 18,488,885
+          n = 1,000,000 → ≥ 18,488,885
         </T>
       </g>
     </Svg>
@@ -364,6 +371,8 @@ export function AverageDepth({ t }: StepCtx) {
   const shapes: Shape[] = [TREE1, TREE2, TREE3];
   const laid = shapes.map((sh, i) => layout(sh, cxs[i]));
   const appear = [0.2, 1.6, 2.8];
+  // the two deepest leaves of a tree (the last two laid out) are the ones the next tree moves; the last tree has none left to move
+  const movesNext = (k: number, id: number, count: number) => k < 2 && id >= count - 2;
   // caramel arcs from tree k's deepest leaves to the new pair's place under the shallowest leaf in tree k + 1
   const arcs: [[number, number], [number, number]][][] = [
     [
@@ -387,8 +396,8 @@ export function AverageDepth({ t }: StepCtx) {
             {nodes.map((n) =>
               n.leaf ? (
                 <g key={n.id}>
-                  <circle cx={n.x} cy={n.y} r={5} fill={C.crema} />
-                  <T x={n.x} y={n.y + 20} s={13} f={C.latte} a="middle">
+                  <circle cx={n.x} cy={n.y} r={5} fill={movesNext(k, n.id, nodes.length) ? C.caramel : C.crema} />
+                  <T x={n.x} y={n.y + 20} s={13} f={movesNext(k, n.id, nodes.length) ? C.caramel : C.latte} a="middle">
                     {n.depth}
                   </T>
                 </g>
@@ -421,7 +430,7 @@ export function AverageDepth({ t }: StepCtx) {
               pathLength={1}
               strokeDasharray="1"
               strokeDashoffset={1 - p}
-              opacity={p > 0 && p < 1 ? 1 : p >= 1 ? 0.22 : 0}
+              opacity={p > 0 ? 1 - fade(t, appear[k + 1] + 0.3, appear[k + 1] + 0.7) : 0}
             />
           );
         }),
@@ -443,19 +452,19 @@ export function AverageDepth({ t }: StepCtx) {
 }
 
 // 6 · Count the answers: three problems, three answer counts, three ceilings of log2 K, each met by a known algorithm.
-const ROWS: { title: string; k: string; bound: string; algo: string }[] = [
-  { title: 'search the sorted vector', k: 'K = 1,000,001', bound: '⌈log₂ K⌉ = 20', algo: 'binary search: 20 probes (3-way)' },
-  { title: 'merge two sorted runs of 4', k: 'K = 70', bound: '⌈log₂ K⌉ = 7', algo: 'standard merge: 7' },
-  { title: 'sort 5 keys', k: 'K = 120', bound: '⌈log₂ K⌉ = 7', algo: 'best tree: 7' },
+const ROWS: { title: string; k: string; bound: string; algo: string; n: number }[] = [
+  { title: 'search the sorted vector', k: 'K = 1,000,001', bound: '⌈log₂ K⌉ = 20', algo: 'binary search: 20 probes (3-way)', n: 20 },
+  { title: 'merge two sorted runs of 4', k: 'K = 70', bound: '⌈log₂ K⌉ = 7', algo: 'standard merge: 7', n: 7 },
+  { title: 'sort 5 keys', k: 'K = 120', bound: '⌈log₂ K⌉ = 7', algo: 'best tree: 7', n: 7 },
 ];
 export function CountAnswers({ t }: StepCtx) {
   return (
-    <Svg label="Three problems with their number of possible answers K: searching the sorted vector has 1,000,001 and needs 20 probes, merging two runs of 4 has 70 and needs 7, sorting 5 keys has 120 and needs 7; each matches a known algorithm" h={350}>
+    <Svg label="Three problems with their number of possible answers K: searching the sorted vector has 1,000,001 and needs 20 probes, merging two runs of 4 has 70 and needs 7, sorting 5 keys has 120 and needs 7; each matches a known algorithm" h={385}>
       <T x={30} y={26} s={13} f={C.taupe} o={fade(t, 0.2, 0.5)}>
         K answers → ≥ ⌈log₂ K⌉ yes/no questions
       </T>
       {ROWS.map((r, i) => {
-        const y0 = 70 + i * 100;
+        const y0 = 70 + i * 108;
         const b = 0.6 + i * 0.9;
         return (
           <g key={r.title}>
@@ -472,7 +481,11 @@ export function CountAnswers({ t }: StepCtx) {
             <T x={30} y={y0 + 52} s={13} f={C.latte} o={fade(t, b + 0.5, b + 0.8)}>
               {r.algo}
             </T>
-            <T x={540} y={y0 + 34} s={22} f={C.caramel} a="end" w={700} o={easeOutBack(seg(t, b + 0.7, b + 0.9))}>
+            {/* one pip per yes/no question the count demands (filled), each one met by a real probe or comparison of the algorithm (outline) */}
+            {Array.from({ length: r.n }, (_, j) => (
+              <rect key={j} x={30 + j * 14} y={y0 + 61} width={10} height={10} rx={2.5} fill={C.caramel} stroke={C.latte} fillOpacity={fade(t, b + 0.3 + j * 0.02, b + 0.5 + j * 0.02)} strokeOpacity={fade(t, b + 0.6 + j * 0.02, b + 0.8 + j * 0.02)} />
+            ))}
+            <T x={540} y={y0 + 71} s={22} f={C.caramel} a="end" w={700} o={easeOutBack(seg(t, b + 0.9, b + 1.1))}>
               =
             </T>
           </g>
@@ -497,13 +510,13 @@ export function MaxPredict({ t, answer }: StepCtx) {
         return (
           <g key={i}>
             <Cell x={30 + i * 62} y={40} w={50} h={34} label={`k${'₁₂₃₄₅₆₇₈'[i]}`} o={a} stroke={i === 7 && shown ? C.caramel : C.mocha} />
-            <T x={55 + i * 62} y={96} s={13} f={C.cherryText} a="middle" o={lost}>
+            <T x={55 + i * 62} y={96} s={13} f={C.caramel} a="middle" o={lost}>
               lost
             </T>
           </g>
         );
       })}
-      <T x={30} y={146} s={15} f={C.caramel} o={fade(t, 0.5, 0.8)}>
+      <T x={30} y={146} s={15} f={C.latte} o={fade(t, 0.5, 0.8)}>
         counting: ⌈log₂ 1,000,000⌉ = 20 questions
       </T>
       {shown ? (
@@ -542,9 +555,9 @@ const LOSERS = [1, 3, 5, 7, 2, 6]; // the keys that lost, in transcript order (k
 export function TwoInputs({ t }: StepCtx) {
   const lostAt = (k: number) => LOSERS.indexOf(k);
   return (
-    <Svg label="A tournament on eight keys that stops after six comparisons: keys k4 and k8 never lost; input A is the values 1 to 8 with maximum k8, input B raises k4 to 9 with maximum k4, and both give all six answers, so the algorithm is wrong on one of them" h={380}>
+    <Svg label="A tournament on eight keys that stops after six comparisons: keys k4 and k8 never lost; input A is the values 1 to 8 with maximum k8, input B raises k4 to 9 with maximum k4, and both give all six answers, so the algorithm is wrong on one of them" h={408}>
       {TR.map(([q, a], i) => (
-        <T key={i} x={i < 3 ? 30 : 200} y={46 + (i % 3) * 24} s={13} f={C.crema} o={fade(t, 0.2 + i * 0.3, 0.45 + i * 0.3)}>
+        <T key={i} x={i < 3 ? 30 : 200} y={46 + (i % 3) * 24} s={13} f={C.latte} o={fade(t, 0.2 + i * 0.3, 0.45 + i * 0.3)}>
           {q} {a}
         </T>
       ))}
@@ -569,28 +582,25 @@ export function TwoInputs({ t }: StepCtx) {
         );
       })}
       {(['A', 'B'] as const).map((name, r) => {
-        const y = 240 + r * 48;
+        const y = 250 + r * 60;
         const b = r === 0 ? 2.5 : 3.0;
         return (
           <g key={name} opacity={fade(t, b, b + 0.4)}>
-            <T x={30} y={y + 20} s={13} f={C.latte}>
-              input {name}
+            <T x={30} y={y} s={13} f={C.latte}>
+              input {name} · max {r === 0 ? 'k₈' : 'k₄'}
             </T>
             {Array.from({ length: 8 }, (_, i) => {
               const raised = r === 1 && i === 3;
               const v = raised ? 9 : i + 1;
               const rise = raised ? fade(t, 3.1, 3.5) : 1;
-              return <Cell key={i} x={118 + i * 38} y={y + (raised ? (1 - rise) * 4 : 0)} w={32} h={28} label={raised && rise < 0.5 ? '4' : v} stroke={raised ? C.caramel : C.mocha} f={raised ? C.caramel : C.crema} />;
+              return <Cell key={i} x={30 + i * 62} y={y + 8 + (raised ? (1 - rise) * 4 : 0)} w={50} h={28} label={raised && rise < 0.5 ? '4' : v} stroke={raised ? C.caramel : C.mocha} f={raised ? C.caramel : C.crema} />;
             })}
-            <T x={432} y={y + 20} s={15} f={C.crema} w={600}>
-              max {r === 0 ? 'k₈' : 'k₄'}
-            </T>
           </g>
         );
       })}
       <g opacity={fade(t, 3.9, 4.3)}>
-        <rect x={30} y={340} width={290} height={28} rx={14} fill={C.cherry} fillOpacity={0.4} stroke={C.cherry} />
-        <T x={46} y={359} s={15} f={C.cherryText} w={600}>
+        <rect x={30} y={372} width={290} height={28} rx={14} fill={C.cherry} fillOpacity={0.4} stroke={C.cherry} />
+        <T x={46} y={391} s={15} f={C.cherryText} w={600}>
           wrong on one of them
         </T>
       </g>
@@ -696,7 +706,7 @@ export function Scoreboard({ t }: StepCtx) {
   };
   const pulse = (e: number) => 1 - seg(t, EV_T[e], EV_T[e] + 0.35);
   return (
-    <Svg label="The referee's scoreboard for eight keys with four columns: untested, only won, only lost, both. The pairing algorithm makes 10 comparisons while the units counter climbs to 14, the 2n - 2 units any correct answer needs; at most 4 comparisons can give two units, and comparing an only-won key with an only-lost one gives 0, as the referee shows after the four pairs" h={410}>
+    <Svg label="The referee's scoreboard for eight keys with four columns: untested, only won, only lost, both. The pairing algorithm makes 10 comparisons while the units counter climbs to 14, the 2n - 2 units any correct answer needs; at most 4 comparisons can give two units, and comparing an only-won key with an only-lost one gives 0, as the referee shows after the four pairs" h={446}>
       <T x={30} y={20} s={13} f={C.taupe}>
         comparisons
       </T>
@@ -743,8 +753,11 @@ export function Scoreboard({ t }: StepCtx) {
       <T x={300} y={296} s={15} f={C.caramel} a="middle" w={700} o={fade(t, 1.6, 1.8) * (1 - fade(t, 2.0, 2.1))}>
         ask k₁ : k₄ → k₁ wins · 0 units
       </T>
-      <T x={30} y={396} s={15} f={C.caramel} w={700} o={fade(t, 4.5, 4.9)}>
-        ≥ 4 + (14 − 8) = 10
+      <T x={30} y={404} s={13} f={C.latte} o={fade(t, 4.5, 4.9)}>
+        4 pairs × 2 units = 8; the other 6 units ≥ 1 each
+      </T>
+      <T x={30} y={434} s={17} f={C.caramel} w={700} o={fade(t, 4.8, 5.2)}>
+        ≥ 4 + 6 = 10 comparisons
       </T>
     </Svg>
   );
@@ -761,7 +774,12 @@ export function DistinctPredict({ t, answer }: StepCtx) {
       </T>
       <g opacity={fade(t, 0.1, 0.5)}>
         {Array.from({ length: 12 }, (_, i) => (
-          <rect key={i} x={30 + i * 42} y={34} width={38} height={26} rx={5} fill={C.roast} stroke={C.mocha} />
+          <g key={i}>
+            <rect x={30 + i * 42} y={34} width={38} height={26} rx={5} fill={C.roast} stroke={C.mocha} />
+            <T x={30 + i * 42 + 19} y={52} s={13} f={C.taupe} a="middle">
+              ?
+            </T>
+          </g>
         ))}
       </g>
       {['yes', 'no'].map((a, i) => (
@@ -831,18 +849,26 @@ export function Neighbours({ t }: StepCtx) {
             d={`M ${x1} ${DOT_Y + 8} Q ${(x1 + x2) / 2} ${DOT_Y + 8 + peak * 2} ${x2} ${DOT_Y + 8}`}
             fill="none"
             stroke={neigh ? C.caramel : C.taupe}
-            strokeWidth={neigh ? 2.4 : 1.6}
+            strokeWidth={neigh ? 2.4 : 1.4}
+            strokeOpacity={neigh ? 1 : 0.55}
             pathLength={1}
             strokeDasharray="1"
             strokeDashoffset={1 - a}
           />
         );
       })}
-      <g opacity={fade(t, 2.9, 3.2) * (1 - 0.4 * slide)}>
+      {/* where k₂ was: it stays visible as an outline once the adversary has slid it onto k₅ */}
+      <g opacity={slide}>
+        <circle cx={PX(POS(2))} cy={DOT_Y} r={7} fill="none" stroke={C.taupe} strokeDasharray="3 3" />
+        <T x={PX(POS(2))} y={DOT_Y - 20} s={13} f={C.taupe} a="middle">
+          k₂
+        </T>
+      </g>
+      <g opacity={fade(t, 2.9, 3.2)}>
         <line x1={PX(3) + 8} y1={190} x2={PX(4) - 8} y2={190} stroke={C.taupe} strokeDasharray="4 4" />
         <line x1={PX(3) + 8} y1={184} x2={PX(3) + 8} y2={196} stroke={C.taupe} />
         <line x1={PX(4) - 8} y1={184} x2={PX(4) - 8} y2={196} stroke={C.taupe} />
-        <T x={(PX(3) + PX(4)) / 2} y={214} s={13} f={C.taupe} a="middle">
+        <T x={(PX(3) + PX(4)) / 2} y={214} s={13} f={C.latte} a="middle">
           never compared
         </T>
       </g>
@@ -859,7 +885,7 @@ export function Neighbours({ t }: StepCtx) {
         </T>
       </g>
       <T x={30} y={300} s={13} f={C.latte} o={fade(t, 4.3, 4.6)}>
-        'distinct' needs all 7 neighbours compared
+        ‘distinct’ needs all 7 neighbours compared
       </T>
       <T x={30} y={326} s={15} f={C.caramel} w={700} o={fade(t, 4.6, 4.9)}>
         ⇒ order known ⇒ 8 keys: ≥ ⌈log₂ 8!⌉ = 16
@@ -870,7 +896,7 @@ export function Neighbours({ t }: StepCtx) {
 
 // 13 · What a lower bound rules out: a fence around one model and one problem; the escapes go around it.
 const ESC = [
-  { x: 18, y: 14, a: 'radix sort', b: '4 passes, keys as digits', c: 'changes: the model', from: [150, 120], to: [120, 82] },
+  { x: 18, y: 14, a: 'radix sort', b: '4 passes over digits', c: 'changes: the model', from: [150, 120], to: [120, 82] },
   { x: 290, y: 14, a: 'hash set', b: 'distinct? expected O(n)', c: 'changes: the model', from: [450, 120], to: [480, 82] },
   { x: 18, y: 300, a: 'already sorted', b: 'checked in 999,999', c: 'changes: the input', from: [150, 260], to: [120, 298] },
   { x: 290, y: 300, a: 'smallest half first', b: 'linear time', c: 'changes: the problem', from: [450, 260], to: [480, 298] },
@@ -895,8 +921,11 @@ export function Scope({ t }: StepCtx) {
       <g opacity={fade(t, 1.2, 1.4)}>
         <line x1={24} y1={190} x2={fade(t, 1.2, 1.6) * 118 + 24} y2={190} stroke={C.taupe} strokeWidth={2} />
         <line x1={146} y1={178} x2={146} y2={202} stroke={C.taupe} strokeWidth={3} opacity={seg(t, 1.5, 1.6)} />
+        <T x={24} y={150} s={13} f={C.latte}>
+          sort in
+        </T>
         <T x={24} y={172} s={13} f={C.latte}>
-          sort, 15 M: no
+          15 M: no
         </T>
       </g>
       {ESC.map((e, i) => {
@@ -950,7 +979,7 @@ export function Closing({ t }: StepCtx) {
         return (
           <g key={v.l1}>
             <rect x={30} y={y} width={515} height={86} rx={14} fill={C.roast} stroke={C.mocha} />
-            <Struck x={48} y={y + 24} s={13}>
+            <Struck x={48} y={y + 24} s={13} f={C.latte} o={0.8}>
               {v.l1}
             </Struck>
             <T x={48} y={y + 50} s={15} f={C.caramel} w={700} o={fade(t, at, at + 0.4)}>
@@ -1048,7 +1077,7 @@ export function Q2Cycle({ t, answer }: StepCtx) {
         return (
           <g key={from + to} opacity={p > 0 ? 1 : 0}>
             <line x1={sx} y1={sy} x2={ex} y2={ey} stroke={C.crema} strokeWidth={2} />
-            <circle cx={ex} cy={ey} r={3.5} fill={C.crema} />
+            <polygon points={`${ex},${ey} ${ex - ux * 10 - uy * 5},${ey - uy * 10 + ux * 5} ${ex - ux * 10 + uy * 5},${ey - uy * 10 - ux * 5}`} fill={C.crema} />
           </g>
         );
       })}
@@ -1057,20 +1086,23 @@ export function Q2Cycle({ t, answer }: StepCtx) {
       ))}
       {shown && (
         <g opacity={fade(s, 0.5, 0.8)}>
-          <T x={314} y={140} s={13} f={C.crema}>
+          <T x={314} y={132} s={13} f={C.taupe}>
+            arrow → smaller key
+          </T>
+          <T x={314} y={156} s={13} f={C.crema}>
             a : b → a
           </T>
-          <T x={314} y={160} s={13} f={C.crema}>
+          <T x={314} y={176} s={13} f={C.crema}>
             b : c → b
           </T>
-          <T x={314} y={180} s={13} f={C.crema}>
+          <T x={314} y={196} s={13} f={C.crema}>
             c : a → c
           </T>
         </g>
       )}
       {shown ? (
-        <T x={30} y={222} s={15} f={C.cherryText} w={700} o={fade(s, 0.7, 1.0)}>
-          a &gt; b &gt; c &gt; a: no input
+        <T x={30} y={236} s={15} f={C.cherryText} w={700} o={fade(s, 0.7, 1.0)}>
+          a &gt; b &gt; c &gt; a: no input fits
         </T>
       ) : (
         <T x={30} y={222} s={15} f={C.taupe}>
@@ -1083,10 +1115,10 @@ export function Q2Cycle({ t, answer }: StepCtx) {
 
 // 17 · Prove it 3: which claim does the comparison-sorting bound refute?
 const CARDS: { lines: string[]; why: string; hit?: boolean }[] = [
-  { lines: ['Radix sort orders', 'them in 4 passes'], why: 'not comparisons' },
+  { lines: ['Radix sort orders', 'them in 4 passes'], why: 'other model' },
   { lines: ['A comparison sort', 'checks sorted input', 'in 999,999'], why: 'an easy input' },
   { lines: ['A comparison sort', 'averages 17 million', 'on random orders'], why: '', hit: true },
-  { lines: ['A selection finds', 'the 10 largest', 'in O(n)'], why: 'another problem' },
+  { lines: ['A selection finds', 'the 10 largest', 'in O(n)'], why: 'other problem' },
 ];
 export function Q3Refute({ t, answer }: StepCtx) {
   const shown = answer !== null;
@@ -1119,7 +1151,7 @@ export function Q3Refute({ t, answer }: StepCtx) {
           </g>
         );
       })}
-      <T x={30} y={246} s={15} f={C.taupe} o={fade(t, 0.8, 1.1)}>
+      <T x={30} y={246} s={15} f={C.taupe} o={fade(t, 0.8, 1.1) * (1 - fade(s, 0, 0.3))}>
         which one does the sorting bound refute?
       </T>
     </Svg>
