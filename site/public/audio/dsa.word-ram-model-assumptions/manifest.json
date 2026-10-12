@@ -1,0 +1,586 @@
+{
+ "topic": "dsa.word-ram-model-assumptions",
+ "voice": "tara-v1",
+ "clips": {
+  "01": {
+   "hash": "7732861fda73f4d7",
+   "duration": 33.189,
+   "lines": [
+    {
+     "text": "Every count in the last lesson relied on each step costing the same. Here is the machine that makes that true.",
+     "start": 0.15,
+     "end": 6.726
+    },
+    {
+     "text": "This chapter's running example is a vector... a growable array of sixty-four bit keys. Here it holds one million of them, sorted. A request wants the predecessor of a key... the largest stored key that is no bigger.",
+     "start": 7.546,
+     "end": 21.283
+    },
+    {
+     "text": "Binary search halves the range, and twenty comparisons finish the job.",
+     "start": 21.703,
+     "end": 25.716
+    },
+    {
+     "text": "Two questions for this lesson. Is twenty a floor? And what does one of those steps cost on a real core?",
+     "start": 26.536,
+     "end": 32.839
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.3,
+   "wpm": 166,
+   "wer": 0.0
+  },
+  "02": {
+   "hash": "341424baef01aac7",
+   "duration": 35.155,
+   "lines": [
+    {
+     "text": "The word RAM is the machine those step counts assume.",
+     "start": 0.15,
+     "end": 3.674
+    },
+    {
+     "text": "Memory is an array of cells, each w bits wide, addressed by an integer. Here, w is sixty-four.",
+     "start": 4.094,
+     "end": 13.087
+    },
+    {
+     "text": "A fixed set of operations like C's integer ones... arithmetic, comparisons, bit operations, shifts... each touching a constant number of words, plus a load or a store at a computed address. Each costs exactly one unit.",
+     "start": 13.807,
+     "end": 28.427
+    },
+    {
+     "text": "Five different operations, five units. That is the unit of this lesson: one word operation.",
+     "start": 28.847,
+     "end": 34.805
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -1.3,
+   "wpm": 137,
+   "wer": 0.0
+  },
+  "03": {
+   "hash": "f37912382d055efc",
+   "duration": 12.328,
+   "lines": [
+    {
+     "text": "Back to our million sorted keys. Binary search needs twenty comparisons.",
+     "start": 0.15,
+     "end": 7.147
+    },
+    {
+     "text": "On the word RAM, can a predecessor query not grow with n?",
+     "start": 7.567,
+     "end": 11.978
+    }
+   ],
+   "lufs": -16.7,
+   "true_peak": -1.4,
+   "wpm": 112,
+   "wer": 0.0
+  },
+  "03a": {
+   "hash": "51fb3acc31a9c1a0",
+   "duration": 19.323,
+   "lines": [
+    {
+     "text": "Yes. A tree that halves the bits of the key, not the range of keys. Six halvings for sixty-four bit keys, whatever n is.",
+     "start": 0.15,
+     "end": 9.316
+    },
+    {
+     "text": "Each halving is a few word operations. So the win is in how the count grows.",
+     "start": 9.736,
+     "end": 15.049
+    },
+    {
+     "text": "The twenty was only ever a law of the comparison model.",
+     "start": 15.469,
+     "end": 18.973
+    }
+   ],
+   "lufs": -16.7,
+   "true_peak": -1.3,
+   "wpm": 161,
+   "wer": 0.0
+  },
+  "04": {
+   "hash": "dd85473c631b7014",
+   "duration": 29.108,
+   "lines": [
+    {
+     "text": "The machine must be able to address its own memory. So a word must be able to hold an index.",
+     "start": 0.15,
+     "end": 6.13
+    },
+    {
+     "text": "For a million keys, twenty bits address more than a million cells. A sixty-four bit word has forty-four bits to spare.",
+     "start": 6.55,
+     "end": 15.13
+    },
+    {
+     "text": "An eight bit word would reach only two hundred and fifty-six cells.",
+     "start": 15.55,
+     "end": 20.001
+    },
+    {
+     "text": "Words can't be unbounded either. Or one unit operation could do the whole input's work. Twenty squarings make a million bit number.",
+     "start": 20.721,
+     "end": 28.758
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -1.4,
+   "wpm": 161,
+   "wer": 0.0
+  },
+  "05": {
+   "hash": "07a4cf99c80cdeb3",
+   "duration": 27.541,
+   "lines": [
+    {
+     "text": "Unit cost is per word.",
+     "start": 0.15,
+     "end": 1.692
+    },
+    {
+     "text": "A number of b bits is b over w words. So adding two costs about b over w word additions.",
+     "start": 2.112,
+     "end": 9.08
+    },
+    {
+     "text": "Four thousand and ninety-six bits is sixty-four words... so sixty-four additions, not one.",
+     "start": 9.5,
+     "end": 15.324
+    },
+    {
+     "text": "Schoolbook multiplication costs the square of that. Counted bit by bit, as topic one's deep dive did, that is theta of b... the same count with w equal to one.",
+     "start": 16.044,
+     "end": 27.191
+    }
+   ],
+   "lufs": -16.8,
+   "true_peak": -1.4,
+   "wpm": 155,
+   "wer": 0.0
+  },
+  "06": {
+   "hash": "2300561b4192612f",
+   "duration": 44.087,
+   "lines": [
+    {
+     "text": "The model charges one unit for a load.",
+     "start": 0.15,
+     "end": 2.717
+    },
+    {
+     "text": "A real core pays a few cycles for a hit in the nearest memory, and two hundred cycles for a trip to main memory.",
+     "start": 3.137,
+     "end": 9.928
+    },
+    {
+     "text": "Intel's Pentium M figures, listed by Drepper in two thousand and seven... are about three against about two hundred and forty. Eighty times.",
+     "start": 10.348,
+     "end": 20.741
+    },
+    {
+     "text": "And binary search is unkind to caches. Memory arrives in sixty-four byte cache lines, eight keys at a time. The twenty probes land far apart, on seventeen different lines. On a cold cache, up to seventeen trips. Hot queries share the first few.",
+     "start": 21.461,
+     "end": 38.807
+    },
+    {
+     "text": "That is a slow trip to memory. The model never sees it.",
+     "start": 39.227,
+     "end": 43.737
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -1.3,
+   "wpm": 151,
+   "wer": 0.0
+  },
+  "07": {
+   "hash": "cb41e8ec3c4d2499",
+   "duration": 26.46,
+   "lines": [
+    {
+     "text": "A modern core guesses which way a branch goes, and runs ahead.",
+     "start": 0.15,
+     "end": 3.79
+    },
+    {
+     "text": "A wrong guess throws that work away, and refills the pipeline.",
+     "start": 4.21,
+     "end": 7.773
+    },
+    {
+     "text": "The standard microarchitecture manual puts the penalty at fifteen to twenty cycles on recent Intel cores, a little more on the newest ones, and fifteen to twenty-five on AMD's Zen five. About the length of the pipeline.",
+     "start": 8.493,
+     "end": 20.994
+    },
+    {
+     "text": "The model charges one unit for the comparison. That is a branch misprediction.",
+     "start": 21.414,
+     "end": 26.11
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -1.4,
+   "wpm": 168,
+   "wer": 0.0
+  },
+  "08": {
+   "hash": "c56c6c9f920523eb",
+   "duration": 23.448,
+   "lines": [
+    {
+     "text": "Now the other side. In the comparison model, keys are opaque.",
+     "start": 0.15,
+     "end": 5.0
+    },
+    {
+     "text": "The only thing you can do with them is compare, and one comparison is one yes or no answer.",
+     "start": 5.42,
+     "end": 11.338
+    },
+    {
+     "text": "Nine places for x need four answers. A million and one places need twenty.",
+     "start": 12.058,
+     "end": 17.262
+    },
+    {
+     "text": "That is why binary search stops at twenty here. And topic four proves nothing in this model does better.",
+     "start": 17.682,
+     "end": 23.098
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.4,
+   "wpm": 161,
+   "wer": 0.0
+  },
+  "09": {
+   "hash": "ed647640a0e1ae9f",
+   "duration": 19.334,
+   "lines": [
+    {
+     "text": "On the word RAM, a key is a number.",
+     "start": 0.15,
+     "end": 2.804
+    },
+    {
+     "text": "It can be an address. It can be cut into bit fields. It can be subtracted from another key.",
+     "start": 3.224,
+     "end": 9.236
+    },
+    {
+     "text": "Exactly what the comparison model forbids.",
+     "start": 9.656,
+     "end": 11.848
+    },
+    {
+     "text": "Three escapes follow. Digits as addresses... splitting the key... and many keys in one word.",
+     "start": 12.568,
+     "end": 18.984
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -1.4,
+   "wpm": 152,
+   "wer": 0.0
+  },
+  "10": {
+   "hash": "0b7fe094017e9275",
+   "duration": 40.416,
+   "lines": [
+    {
+     "text": "First escape: radix sort.",
+     "start": 0.15,
+     "end": 2.475
+    },
+    {
+     "text": "A digit of about log n bits... sixteen here... is an array index into at most about n buckets. So one pass costs order n. A stable counting sort places a million keys by one digit in a single pass. Lowest digit first, and stable, so earlier passes survive.",
+     "start": 2.895,
+     "end": 20.67
+    },
+    {
+     "text": "So a sixty-four bit key needs sixty-four over sixteen... four passes. Each key is placed four times. Four million placements... against about twenty million for n log n comparisons.",
+     "start": 21.09,
+     "end": 32.853
+    },
+    {
+     "text": "The units differ, and every placement is a scattered store. But four passes stay four as n grows.",
+     "start": 33.573,
+     "end": 40.066
+    }
+   ],
+   "lufs": -16.3,
+   "true_peak": -1.4,
+   "wpm": 151,
+   "wer": 0.0
+  },
+  "11": {
+   "hash": "f91e3659045d1220",
+   "duration": 50.855,
+   "lines": [
+    {
+     "text": "Second escape: split the key in two.",
+     "start": 0.15,
+     "end": 2.959
+    },
+    {
+     "text": "Split the key into its high half, which picks a cluster... and its low half, the position inside it. Our key is three times two to the thirty-two, plus seven. Cluster three, position seven.",
+     "start": 3.379,
+     "end": 15.617
+    },
+    {
+     "text": "Every level stores its minimum and maximum. The cluster's minimum says at once whether the answer is inside the key's own cluster... or before it, where the summary gives the previous cluster and we take its maximum. One recursion either way.",
+     "start": 16.037,
+     "end": 30.688
+    },
+    {
+     "text": "And every level cuts the number of bits in half. Sixty-four, thirty-two, sixteen, eight, four, two, one.",
+     "start": 31.408,
+     "end": 40.94
+    },
+    {
+     "text": "Six halvings, whether n is a thousand or a billion. The count is a recurrence, T of U at most T of root U plus a constant, and topic three solves it.",
+     "start": 41.36,
+     "end": 50.505
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -0.6,
+   "wpm": 158,
+   "wer": 0.0
+  },
+  "12": {
+   "hash": "8bd90be97f6023ce",
+   "duration": 20.873,
+   "lines": [
+    {
+     "text": "There is a price. The basic structure needs space for every possible key: two to the sixty-four slots.",
+     "start": 0.15,
+     "end": 6.611
+    },
+    {
+     "text": "Keep only the non-empty clusters, stored in hash tables, and the space drops to theta of n. The bound then holds with high probability.",
+     "start": 7.031,
+     "end": 14.474
+    },
+    {
+     "text": "Time bought with space, or with randomness. Topic one's trade-off again.",
+     "start": 14.894,
+     "end": 20.523
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -1.2,
+   "wpm": 161,
+   "wer": 0.0
+  },
+  "13": {
+   "hash": "3b9e1bbb1a3d0aa5",
+   "duration": 44.79,
+   "lines": [
+    {
+     "text": "Third escape: fusion trees.",
+     "start": 0.15,
+     "end": 2.728
+    },
+    {
+     "text": "At most k minus one bit positions tell k keys apart. So each key shrinks to a tiny sketch, and a whole node's sketches fit in one word.",
+     "start": 3.148,
+     "end": 12.384
+    },
+    {
+     "text": "Put a one in front of each. Subtract the sketch of the query from every block at once. The leading bits show where the query sits.",
+     "start": 13.104,
+     "end": 21.249
+    },
+    {
+     "text": "That is word level parallelism.",
+     "start": 21.669,
+     "end": 24.491
+    },
+    {
+     "text": "One warning. Twenty-two has the same sketch as twenty-one, so the subtraction says there is no predecessor. One more step repairs it.",
+     "start": 25.211,
+     "end": 32.393
+    },
+    {
+     "text": "A node holds about the fifth root of w keys, and is searched in constant time this way. So the tree is a B-tree of height log n over log w. And the constants keep fusion trees in theory.",
+     "start": 32.813,
+     "end": 44.44
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -1.4,
+   "wpm": 170,
+   "wer": 0.0
+  },
+  "14": {
+   "hash": "bd606cfa46666f4b",
+   "duration": 38.633,
+   "lines": [
+    {
+     "text": "Back to the problem.",
+     "start": 0.15,
+     "end": 1.759
+    },
+    {
+     "text": "Twenty is a law of the comparison model only.",
+     "start": 2.179,
+     "end": 5.611
+    },
+    {
+     "text": "The word RAM allows six halvings, at the price of space or hashing. And on paper, log n over log w.",
+     "start": 6.031,
+     "end": 15.437
+    },
+    {
+     "text": "And every unit step hides a load that hits or misses, and a compare the pipeline predicted or paid for.",
+     "start": 16.157,
+     "end": 22.459
+    },
+    {
+     "text": "From here, say of every bound... which model, and what does its unit hide?",
+     "start": 22.879,
+     "end": 28.667
+    },
+    {
+     "text": "Counting a loop here is easy. A recursive algorithm hands you a recurrence instead. Next: how to read the answer off one.",
+     "start": 29.517,
+     "end": 38.283
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.1,
+   "wpm": 140,
+   "wer": 0.0
+  },
+  "15": {
+   "hash": "51cfad8a1dd00e51",
+   "duration": 7.97,
+   "lines": [
+    {
+     "text": "The vector grows to a billion sorted sixty-four bit keys.",
+     "start": 0.15,
+     "end": 4.048
+    },
+    {
+     "text": "How many steps does a search take in that tree?",
+     "start": 4.468,
+     "end": 7.62
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.4,
+   "wpm": 158,
+   "wer": 0.0
+  },
+  "15a": {
+   "hash": "bc0de07c18307569",
+   "duration": 8.103,
+   "lines": [
+    {
+     "text": "Six. The bound is log w, and w is still sixty-four.",
+     "start": 0.15,
+     "end": 4.63
+    },
+    {
+     "text": "The thirty is what a comparison search needs.",
+     "start": 5.05,
+     "end": 7.753
+    }
+   ],
+   "lufs": -16.8,
+   "true_peak": -1.2,
+   "wpm": 148,
+   "wer": 0.0
+  },
+  "16": {
+   "hash": "b33d1db8393f8d40",
+   "duration": 13.335,
+   "lines": [
+    {
+     "text": "A design document claims its sorted index's predecessor search is big O of log n, and cannot be beaten.",
+     "start": 0.15,
+     "end": 7.293
+    },
+    {
+     "text": "Which model is that true in, and does it hold on the word RAM?",
+     "start": 7.713,
+     "end": 12.985
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.4,
+   "wpm": 148,
+   "wer": 0.0
+  },
+  "16a": {
+   "hash": "c7d4649894caf261",
+   "duration": 12.442,
+   "lines": [
+    {
+     "text": "It is true in the comparison model, and topic four proves it.",
+     "start": 0.15,
+     "end": 4.432
+    },
+    {
+     "text": "On the word RAM the bits can be split or packed, and the bound falls. Hashing finds equal keys, not predecessors.",
+     "start": 4.852,
+     "end": 12.092
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.4,
+   "wpm": 159,
+   "wer": 0.0
+  },
+  "17": {
+   "hash": "523657f6a3769bca",
+   "duration": 10.402,
+   "lines": [
+    {
+     "text": "Add two four thousand and ninety-six bit integers on a word RAM with w equal to sixty-four.",
+     "start": 0.15,
+     "end": 5.658
+    },
+    {
+     "text": "One word at a time. How many word additions?",
+     "start": 6.078,
+     "end": 10.052
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.4,
+   "wpm": 162,
+   "wer": 0.0
+  },
+  "17a": {
+   "hash": "4b9da52e39da26b7",
+   "duration": 10.16,
+   "lines": [
+    {
+     "text": "Sixty-four. Four thousand and ninety-six over sixty-four is sixty-four words, one addition each.",
+     "start": 0.15,
+     "end": 6.793
+    },
+    {
+     "text": "Unit cost is per word, not per number.",
+     "start": 7.213,
+     "end": 9.81
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -1.4,
+   "wpm": 148,
+   "wer": 0.0
+  }
+ }
+}
