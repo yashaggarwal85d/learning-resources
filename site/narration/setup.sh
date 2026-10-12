@@ -25,8 +25,7 @@ if [ ! -x .venv-orph/bin/python ]; then
   uv venv -q -p 3.12 .venv-orph
   uv pip install -q --python .venv-orph/bin/python orpheus-cpp llama-cpp-python soundfile numpy
 fi
-if [ ! -x .venv-eval/bin/python ]; then
-  uv venv -q -p 3.12 .venv-eval
-  uv pip install -q --python .venv-eval/bin/python faster-whisper librosa soundfile numpy num2words
-fi
-echo "Narration ready (Orpheus weights download on first use)."
+[ -x .venv-eval/bin/python ] || uv venv -q -p 3.12 .venv-eval
+# Re-run every time (a no-op when satisfied) so an existing environment picks up a new checker dependency.
+uv pip install -q --python .venv-eval/bin/python faster-whisper librosa soundfile numpy num2words jellyfish
+echo "Narration ready (Orpheus weights and the checker's speech-to-text model download on first use)."

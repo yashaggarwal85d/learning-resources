@@ -18,7 +18,8 @@
 //   node scripts/claim.mjs expire <minutes>     after an outage (a usage limit): claims silent this long are dead now, free to resume
 //
 // <domain> is a domain id, title or topic-id prefix ("data-structures-and-algorithms", "Data Structures & Algorithms", "dsa", "Rust").
-// Settings: CLAIM_MAX_PARALLEL (default 4) runs per domain at once; a claim is stale after 90 minutes without a heartbeat;
+// Settings: CLAIM_MAX_PARALLEL (default 4) runs per domain at once (runs whose topic is content-final, narrating or
+// shipping, don't count against either limit); a claim is stale after 90 minutes without a heartbeat;
 // scripts/claim-settings.json: { "finishOnly": true } starts nothing new except the topics in "restart" (titles);
 // "maxTotal" overrides CLAIM_MAX_TOTAL.
 // a topic whose runs stopped 3 times (or vanished 6 times, as on a usage limit) is blocked (reported, not retried) until a
@@ -66,7 +67,9 @@ async function course(domainArg) {
   const want = domainArg.toLowerCase().replace(/&/g, 'and').replace(/[^a-z]+/g, ' ').trim();
   const d = domains.find((x) => [x.id, x.title].some((n) => { const s = n.toLowerCase().replace(/&/g, 'and').replace(/[^a-z]+/g, ' ').trim(); return s === want || s.startsWith(want + ' '); }));
   if (!d) die(`unknown domain "${domainArg}"`);
-  const order = d.milestones.flatMap((m) => m.chapters.flatMap((c) => c.topics.map((t) => ({ title: t.title, chapter: `${c.number} ${c.title}`, m, c }))));
+  // Topics marked *(skipped)* in the syllabus stay in the curriculum but get no reel: they are never handed out, never
+  // waited for, and a chapter is complete without them.
+  const order = d.milestones.flatMap((m) => m.chapters.flatMap((c) => c.topics.filter((t) => !t.skipped).map((t) => ({ title: t.title, chapter: `${c.number} ${c.title}`, m, c }))));
   const reg = new Map(TOPICS.filter((t) => t.domain === d.id).map((t) => [t.syllabusTitle, t]));
   return { domain: d.id, order, reg };
 }
@@ -196,9 +199,12 @@ function decide({ domain, order, reg, lost, plans, chapters }, owner) {
       if (!titles.has(c.title) || reg.get(c.title)?.status === 'live' || (c.kind === 'chapter-plan' && plans.has(c.chapterNumber))) write(c.file, null);
     const live = (t) => reg.get(t.title)?.status === 'live';
     const blocked = [];
-    const active = claims.filter((c) => titles.has(c.title) && reg.get(c.title)?.status !== 'live' && !(c.kind === 'chapter-plan' && plans.has(c.chapterNumber)) && !stale(c));
+    // A run whose topic is content-final is only narrating and shipping: the voice runs on the container's CPU and the run
+    // makes a few calls an hour, so it doesn't count against the run limits (the owner's choice, 2026-10-12).
+    const busy = (c) => !stale(c) && !c.final;
+    const active = claims.filter((c) => titles.has(c.title) && reg.get(c.title)?.status !== 'live' && !(c.kind === 'chapter-plan' && plans.has(c.chapterNumber)) && busy(c));
     if (active.length >= MAX) return { action: 'wait', reason: `${active.length} runs already working on this domain (limit ${MAX})`, working: active.map((c) => c.title) };
-    const elsewhere = all().filter((c) => c.domain !== domain && !stale(c)).length;
+    const elsewhere = all().filter((c) => c.domain !== domain && busy(c)).length;
     if (active.length + elsewhere >= MAX_TOTAL) return { action: 'wait', reason: `${active.length + elsewhere} runs already working across all domains (limit ${MAX_TOTAL})` };
     // A stale claim counts as a stop if its run said why (claim.mjs stop), else as a death (the run vanished).
     const stops = (c) => (c.stops ?? 0) + (c.note ? 1 : 0);
