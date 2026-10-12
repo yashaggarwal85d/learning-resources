@@ -62,10 +62,10 @@
     },
     {
       "lines": [
-        "If you come from C plus plus, this next one is for you.",
+        "If you come from a language with move constructors, this next one is for you.",
         "Standard move is only a cast. Your move constructor steals the buffer, and nulls out the source, because the source stays alive.",
         { "beat": 0.3 },
-        "So at the closing brace, C plus plus runs two destructors. One of them on an empty shell.",
+        "So at the closing brace, that language runs two destructors. One of them on an empty shell.",
         "Rust runs one drop.",
         "A Rust move runs no code at all. The bytes are copied, and the compiler simply stops you using the source."
       ]
@@ -74,9 +74,9 @@
       "lines": [
         "One line of code. Six meanings.",
         "In Python, Java and Go, both names stay usable, and both point at the same data.",
-        "C plus plus can copy it, or steal it and leave the source valid but unspecified.",
+        "That language can copy it, or steal it and leave the source valid but unspecified.",
         { "beat": 0.3 },
-        "Rust copies the same few bytes a shallow copy would... and ends the source.",
+        "Rust copies the same few bytes that a shallow copy would, then ends the source.",
         "So there is still exactly one owner."
       ]
     },
@@ -84,7 +84,7 @@
       "lines": [
         "Some values are nothing but their bits.",
         "An integer. A float. A boolean. A character. Arrays and tuples of those.",
-        "Those can be Copy. Assigning one duplicates it, and the source stays valid.",
+        "Those types are Copy. Assigning one duplicates it, and the source stays valid.",
         { "beat": 0.3 },
         "The test is simple: is the value just its bits? Does it own anything beyond them?",
         "A type can be Copy only if every field is. A shared reference is Copy. A mutable reference never is.",
@@ -100,7 +100,7 @@
         "Does this compile?"
       ],
       "answer": [
-        "It doesn't compile. A type with a destructor can never be Copy.",
+        "It doesn't compile. A type with a destructor can never implement Copy.",
         "Two copies would mean two closes."
       ]
     },
@@ -111,7 +111,7 @@
         "Only the lines that clone light up.",
         { "beat": 0.3 },
         "In Rust, if it's expensive, it says clone.",
-        "Search a hot path for clone... and for its cousins, the to-vec, to-owned and to-string methods... and you've found its deep copies."
+        "Search a hot path for the clone method... and for similar methods that copy data... and you will find its deep copies."
       ]
     },
     {
@@ -122,13 +122,13 @@
         "How many bytes does the call copy?"
       ],
       "answer": [
-        "Four thousand ninety-six. A move copies the whole value.",
-        "The optimiser sometimes removes the copy... but you can only count on a move being cheap when the value is small."
+        "A type of 4096 bytes. A move copies the whole value.",
+        "The optimizer sometimes removes the copy, but you can only count on a move being cheap when the value is small."
       ]
     },
     {
       "lines": [
-        "So the cost of a move is the size of the type.",
+        "So the cost of a move... depends on the size of the type.",
         "A sixteen byte array moves sixteen bytes. A sixty-five thousand byte array can cost all of them.",
         "But a vector holding a million bytes? Twenty-four bytes. Just the header.",
         "Put it in a box, and the box is one pointer. Eight bytes... however big the contents.",
@@ -137,11 +137,11 @@
     },
     {
       "lines": [
-        "Now the part that makes this a design tool.",
+        "Now comes the part that makes ownership a design tool.",
         "A signature tells you what a call does to your value... without opening the body.",
         { "beat": 0.3 },
-        "Take the type itself, and the callee owns it.",
-        "Take a shared reference, and the callee borrows it. Any number of borrows at once.",
+        "Take the type itself, and the function owns it.",
+        "Take a shared reference, and the function borrows it. Any number of borrows at once.",
         "Take a mutable reference, and the borrow is exclusive. Nobody else may touch the value meanwhile.",
         "Return the type, and ownership comes back to the caller."
       ]
@@ -151,7 +151,7 @@
         "Methods sign the same contract, in the receiver.",
         "The length method takes a shared reference. It reads.",
         "The push-string method takes a mutable reference. It mutates.",
-        "The into-bytes method takes the string itself. It consumes it.",
+        "The method that turns a string into bytes takes the string itself. It consumes it.",
         { "beat": 0.3 },
         "And consuming isn't copying. It returns a vector on the very same buffer. Zero allocations.",
         "Even the plus operator is a contract. It consumes the left side, and appends into its buffer, growing it if needed."
@@ -184,7 +184,7 @@
     {
       "lines": [
         "A second error. The move-while-borrowed error.",
-        "You borrowed a header out of the batch, then tried to move the batch while that borrow was still alive.",
+        "You borrowed a header out of the batch... and then moved the batch, while that borrow was still alive.",
         "A borrow lasts until its last use. Not to the end of the block.",
         { "beat": 0.3 },
         "So finish with the header first, and the move fits.",
@@ -199,7 +199,7 @@
         "What happens?"
       ],
       "answer": [
-        "It doesn't compile. The second time round the loop, the batch is already gone.",
+        "It doesn't compile. On the second pass through the loop, the batch is already gone.",
         "The same rule means a for loop over a vector consumes it. Iterate over a reference to borrow."
       ]
     },
@@ -241,7 +241,7 @@
     {
       "lines": [
         "Third. Defend a design.",
-        "A point of three plain numbers, passed by value in a loop, and the compiler complains on the second lap.",
+        "A point of three small numbers is passed by value in a loop, and the compiler complains on the second pass.",
         { "beat": 0.4 },
         "Which fix fits this type best?"
       ],

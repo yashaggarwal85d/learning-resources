@@ -1,0 +1,966 @@
+{
+ "topic": "rust.single-ownership-move-semantics",
+ "voice": "tara-v1",
+ "clips": {
+  "01": {
+   "hash": "1a27fbe5f5ae5647",
+   "duration": 40.405,
+   "lines": [
+    {
+     "text": "Rust Systems Engineering starts here.",
+     "start": 0.15,
+     "end": 3.073
+    },
+    {
+     "text": "You've read the Book through chapter ten. Now ownership becomes a design tool... starting with its smallest unit.",
+     "start": 3.493,
+     "end": 9.361
+    },
+    {
+     "text": "One value. One owner. One destruction.",
+     "start": 9.781,
+     "end": 13.709
+    },
+    {
+     "text": "Picture an ingest service that ships batches of one million bytes.",
+     "start": 14.529,
+     "end": 18.151
+    },
+    {
+     "text": "Calling ship on a batch was rejected by the compiler... the use-after-move error.",
+     "start": 18.571,
+     "end": 23.197
+    },
+    {
+     "text": "The review took the compiler's own suggestion. Clone.",
+     "start": 23.617,
+     "end": 27.177
+    },
+    {
+     "text": "It works. But now every single batch pays one extra allocation, and a one million byte copy.",
+     "start": 27.997,
+     "end": 34.674
+    },
+    {
+     "text": "By the end, you'll know why Rust refused... and fix it without copying a single byte.",
+     "start": 35.094,
+     "end": 40.055
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.4,
+   "wpm": 143,
+   "wer": 0.0
+  },
+  "02": {
+   "hash": "21ac5caf96c1f72d",
+   "duration": 14.793,
+   "lines": [
+    {
+     "text": "Let's start with the smallest case.",
+     "start": 0.15,
+     "end": 2.184
+    },
+    {
+     "text": "A string is a small header on the stack... a pointer, a length, and a capacity... pointing at text on the heap.",
+     "start": 2.604,
+     "end": 9.292
+    },
+    {
+     "text": "So when you write let s two equals s one... what exactly gets copied?",
+     "start": 10.112,
+     "end": 14.443
+    }
+   ],
+   "lufs": -16.3,
+   "true_peak": -1.4,
+   "wpm": 170,
+   "wer": 0.0
+  },
+  "02a": {
+   "hash": "ff3d209fbd79df5c",
+   "duration": 10.219,
+   "lines": [
+    {
+     "text": "Just the header. Pointer, length and capacity. Twenty-four bytes.",
+     "start": 0.15,
+     "end": 4.684
+    },
+    {
+     "text": "The text itself never moves... and Rust now treats s one as gone.",
+     "start": 5.104,
+     "end": 9.869
+    }
+   ],
+   "lufs": -16.3,
+   "true_peak": -1.3,
+   "wpm": 135,
+   "wer": 0.0
+  },
+  "03": {
+   "hash": "abcd40a036df0d8b",
+   "duration": 25.309,
+   "lines": [
+    {
+     "text": "Here's why s one has to die.",
+     "start": 0.15,
+     "end": 2.358
+    },
+    {
+     "text": "Imagine both bindings still owned the buffer.",
+     "start": 2.778,
+     "end": 4.875
+    },
+    {
+     "text": "At the closing brace, both would free it. A double free... the classic memory bug that can corrupt the allocator.",
+     "start": 5.295,
+     "end": 12.243
+    },
+    {
+     "text": "Rust's rule is simpler. After the move, s one is no longer valid, so it frees nothing.",
+     "start": 13.063,
+     "end": 19.376
+    },
+    {
+     "text": "One owner. One free. And the compiler checks it before the program ever runs.",
+     "start": 19.796,
+     "end": 24.959
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -1.4,
+   "wpm": 154,
+   "wer": 0.0
+  },
+  "04": {
+   "hash": "a5db1b52ac417adf",
+   "duration": 21.117,
+   "lines": [
+    {
+     "text": "Let's measure it.",
+     "start": 0.15,
+     "end": 0.887
+    },
+    {
+     "text": "We move a vector of one million bytes into a function.",
+     "start": 1.307,
+     "end": 4.428
+    },
+    {
+     "text": "The heap pointer? The same. Zero allocations. Only the twenty-four byte header was copied, to a new address.",
+     "start": 4.848,
+     "end": 11.628
+    },
+    {
+     "text": "Now clone it. One allocation, a million bytes, and a brand new pointer.",
+     "start": 12.348,
+     "end": 17.0
+    },
+    {
+     "text": "Rust never makes a deep copy... unless you write clone.",
+     "start": 17.42,
+     "end": 20.767
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -1.4,
+   "wpm": 159,
+   "wer": 0.0
+  },
+  "05": {
+   "hash": "49f02f7c95821220",
+   "duration": 16.125,
+   "lines": [
+    {
+     "text": "Here's a subtle one.",
+     "start": 0.15,
+     "end": 1.447
+    },
+    {
+     "text": "After a move, the variable is empty. But is it empty forever?",
+     "start": 1.867,
+     "end": 7.183
+    },
+    {
+     "text": "Line one makes it. Line two moves it. Line three assigns it again. What happens?",
+     "start": 8.133,
+     "end": 15.775
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.5,
+   "wpm": 115,
+   "wer": 0.0
+  },
+  "05a": {
+   "hash": "8390f1c896d67cee",
+   "duration": 9.063,
+   "lines": [
+    {
+     "text": "It compiles. Moving out leaves the variable empty, not cursed.",
+     "start": 0.15,
+     "end": 5.608
+    },
+    {
+     "text": "Assign a new value, and it's usable again.",
+     "start": 6.028,
+     "end": 8.713
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.5,
+   "wpm": 119,
+   "wer": 0.0
+  },
+  "06": {
+   "hash": "38529db509a94623",
+   "duration": 29.212,
+   "lines": [
+    {
+     "text": "If you come from a language with move constructors, this next one is for you.",
+     "start": 0.15,
+     "end": 5.782
+    },
+    {
+     "text": "Standard move is only a cast. Your move constructor steals the buffer, and nulls out the source, because the source stays alive.",
+     "start": 6.202,
+     "end": 13.579
+    },
+    {
+     "text": "So at the closing brace, that language runs two destructors. One of them on an empty shell.",
+     "start": 14.299,
+     "end": 20.395
+    },
+    {
+     "text": "Rust runs one drop.",
+     "start": 20.815,
+     "end": 22.457
+    },
+    {
+     "text": "A Rust move runs no code at all. The bytes are copied, and the compiler simply stops you using the source.",
+     "start": 22.877,
+     "end": 28.862
+    }
+   ],
+   "lufs": -16.6,
+   "true_peak": -1.3,
+   "wpm": 162,
+   "wer": 0.0
+  },
+  "07": {
+   "hash": "2e645772f499d13d",
+   "duration": 23.794,
+   "lines": [
+    {
+     "text": "One line of code. Six meanings.",
+     "start": 0.15,
+     "end": 2.986
+    },
+    {
+     "text": "In Python, Java and Go, both names stay usable, and both point at the same data.",
+     "start": 3.406,
+     "end": 10.286
+    },
+    {
+     "text": "That language can copy it, or steal it and leave the source valid but unspecified.",
+     "start": 10.706,
+     "end": 15.439
+    },
+    {
+     "text": "Rust copies the same few bytes that a shallow copy would, then ends the source.",
+     "start": 16.159,
+     "end": 20.676
+    },
+    {
+     "text": "So there is still exactly one owner.",
+     "start": 21.096,
+     "end": 23.444
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -1.4,
+   "wpm": 149,
+   "wer": 0.0
+  },
+  "08": {
+   "hash": "184031710b388ab6",
+   "duration": 31.9,
+   "lines": [
+    {
+     "text": "Some values are nothing but their bits.",
+     "start": 0.15,
+     "end": 2.429
+    },
+    {
+     "text": "An integer. A float. A boolean. A character. Arrays and tuples of those.",
+     "start": 2.849,
+     "end": 8.808
+    },
+    {
+     "text": "Those types are Copy. Assigning one duplicates it, and the source stays valid.",
+     "start": 9.228,
+     "end": 14.022
+    },
+    {
+     "text": "The test is simple: is the value just its bits? Does it own anything beyond them?",
+     "start": 14.742,
+     "end": 20.52
+    },
+    {
+     "text": "A type can be Copy only if every field is. A shared reference is Copy. A mutable reference never is.",
+     "start": 21.07,
+     "end": 27.603
+    },
+    {
+     "text": "And a type with a destructor... never.",
+     "start": 28.023,
+     "end": 31.55
+    }
+   ],
+   "lufs": -16.7,
+   "true_peak": -1.3,
+   "wpm": 143,
+   "wer": 0.0
+  },
+  "09": {
+   "hash": "1b06f755a4dce137",
+   "duration": 12.288,
+   "lines": [
+    {
+     "text": "Here's the most tempting mistake.",
+     "start": 0.15,
+     "end": 1.965
+    },
+    {
+     "text": "A wrapper around an integer handle... with a destructor that closes it.",
+     "start": 2.385,
+     "end": 6.276
+    },
+    {
+     "text": "The integer is plain bits. So surely it can be Copy?",
+     "start": 6.696,
+     "end": 9.98
+    },
+    {
+     "text": "Does this compile?",
+     "start": 10.93,
+     "end": 11.938
+    }
+   ],
+   "lufs": -16.7,
+   "true_peak": -1.4,
+   "wpm": 151,
+   "wer": 0.0
+  },
+  "09a": {
+   "hash": "5a0fc82c80bc00b8",
+   "duration": 7.091,
+   "lines": [
+    {
+     "text": "It doesn't compile. A type with a destructor can never implement Copy.",
+     "start": 0.15,
+     "end": 3.973
+    },
+    {
+     "text": "Two copies would mean two closes.",
+     "start": 4.393,
+     "end": 6.741
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -1.4,
+   "wpm": 152,
+   "wer": 0.0
+  },
+  "10": {
+   "hash": "8796de27c65b60d3",
+   "duration": 20.924,
+   "lines": [
+    {
+     "text": "So where does the cost show up?",
+     "start": 0.15,
+     "end": 2.192
+    },
+    {
+     "text": "A copy allocates nothing. A move allocates nothing.",
+     "start": 2.742,
+     "end": 7.156
+    },
+    {
+     "text": "Only the lines that clone light up.",
+     "start": 7.576,
+     "end": 9.665
+    },
+    {
+     "text": "In Rust, if it's expensive, it says clone.",
+     "start": 10.385,
+     "end": 13.021
+    },
+    {
+     "text": "Search a hot path for the clone method... and for similar methods that copy data... and you will find its deep copies.",
+     "start": 13.441,
+     "end": 20.574
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.4,
+   "wpm": 149,
+   "wer": 0.0
+  },
+  "11": {
+   "hash": "e99129af02f45b25",
+   "duration": 11.787,
+   "lines": [
+    {
+     "text": "People say moves are free. Are they?",
+     "start": 0.15,
+     "end": 3.409
+    },
+    {
+     "text": "Here's a struct of four thousand and ninety-six bytes, moved into a function.",
+     "start": 3.96,
+     "end": 8.567
+    },
+    {
+     "text": "How many bytes does the call copy?",
+     "start": 9.387,
+     "end": 11.437
+    }
+   ],
+   "lufs": -16.3,
+   "true_peak": -1.4,
+   "wpm": 143,
+   "wer": 0.0
+  },
+  "11a": {
+   "hash": "3b87cdb4202bf1f5",
+   "duration": 12.495,
+   "lines": [
+    {
+     "text": "A type of 4096 bytes. A move copies the whole value.",
+     "start": 0.15,
+     "end": 4.675
+    },
+    {
+     "text": "The optimizer sometimes removes the copy, but you can only count on a move being cheap when the value is small.",
+     "start": 5.095,
+     "end": 12.145
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -1.4,
+   "wpm": 173,
+   "wer": 0.0
+  },
+  "12": {
+   "hash": "2a44ec46800006a7",
+   "duration": 27.223,
+   "lines": [
+    {
+     "text": "So the cost of a move... depends on the size of the type.",
+     "start": 0.15,
+     "end": 3.789
+    },
+    {
+     "text": "A sixteen byte array moves sixteen bytes. A sixty-five thousand byte array can cost all of them.",
+     "start": 4.209,
+     "end": 11.181
+    },
+    {
+     "text": "But a vector holding a million bytes? Twenty-four bytes. Just the header.",
+     "start": 11.601,
+     "end": 17.761
+    },
+    {
+     "text": "Put it in a box, and the box is one pointer. Eight bytes... however big the contents.",
+     "start": 18.181,
+     "end": 25.058
+    },
+    {
+     "text": "Tap a type, and see.",
+     "start": 25.478,
+     "end": 26.873
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.4,
+   "wpm": 145,
+   "wer": 0.0
+  },
+  "13": {
+   "hash": "dc1dc3c5cf12b8e9",
+   "duration": 27.497,
+   "lines": [
+    {
+     "text": "Now comes the part that makes ownership a design tool.",
+     "start": 0.15,
+     "end": 3.508
+    },
+    {
+     "text": "A signature tells you what a call does to your value... without opening the body.",
+     "start": 3.928,
+     "end": 9.019
+    },
+    {
+     "text": "Take the type itself, and the function owns it.",
+     "start": 9.739,
+     "end": 12.891
+    },
+    {
+     "text": "Take a shared reference, and the function borrows it. Any number of borrows at once.",
+     "start": 13.311,
+     "end": 18.128
+    },
+    {
+     "text": "Take a mutable reference, and the borrow is exclusive. Nobody else may touch the value meanwhile.",
+     "start": 18.549,
+     "end": 23.634
+    },
+    {
+     "text": "Return the type, and ownership comes back to the caller.",
+     "start": 24.054,
+     "end": 27.147
+    }
+   ],
+   "lufs": -16.3,
+   "true_peak": -1.4,
+   "wpm": 164,
+   "wer": 0.0
+  },
+  "14": {
+   "hash": "e82346d03aa11f9e",
+   "duration": 31.847,
+   "lines": [
+    {
+     "text": "Methods sign the same contract, in the receiver.",
+     "start": 0.15,
+     "end": 4.261
+    },
+    {
+     "text": "The length method takes a shared reference. It reads.",
+     "start": 4.681,
+     "end": 8.119
+    },
+    {
+     "text": "The push-string method takes a mutable reference. It mutates.",
+     "start": 8.539,
+     "end": 12.417
+    },
+    {
+     "text": "The method that turns a string into bytes takes the string itself. It consumes it.",
+     "start": 12.837,
+     "end": 17.45
+    },
+    {
+     "text": "And consuming isn't copying. It returns a vector on the very same buffer. Zero allocations.",
+     "start": 18.17,
+     "end": 24.303
+    },
+    {
+     "text": "Even the plus operator is a contract. It consumes the left side, and appends into its buffer, growing it if needed.",
+     "start": 24.723,
+     "end": 31.497
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.3,
+   "wpm": 147,
+   "wer": 0.0
+  },
+  "15": {
+   "hash": "6c633aeba95a9596",
+   "duration": 9.604,
+   "lines": [
+    {
+     "text": "Time to design an API.",
+     "start": 0.15,
+     "end": 2.21
+    },
+    {
+     "text": "Checksum reads every byte, and the caller keeps using the batch afterwards.",
+     "start": 2.63,
+     "end": 6.643
+    },
+    {
+     "text": "Which signature would you ship?",
+     "start": 7.463,
+     "end": 9.254
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.4,
+   "wpm": 137,
+   "wer": 0.0
+  },
+  "15a": {
+   "hash": "d2684f2b9cb5c862",
+   "duration": 5.919,
+   "lines": [
+    {
+     "text": "The shared borrow.",
+     "start": 0.15,
+     "end": 1.342
+    },
+    {
+     "text": "The function only reads, so it shouldn't own the batch... or lock it.",
+     "start": 1.762,
+     "end": 5.569
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.7,
+   "wpm": 162,
+   "wer": 0.0
+  },
+  "16": {
+   "hash": "1886f5bed8ecd909",
+   "duration": 32.987,
+   "lines": [
+    {
+     "text": "Now let's read the compiler's error properly.",
+     "start": 0.15,
+     "end": 2.171
+    },
+    {
+     "text": "It has three spans, and they go in a fixed order.",
+     "start": 2.591,
+     "end": 6.101
+    },
+    {
+     "text": "One. Why it moved. Vector of bytes isn't Copy.",
+     "start": 6.521,
+     "end": 11.746
+    },
+    {
+     "text": "Two. Where it moved. The call.",
+     "start": 12.166,
+     "end": 15.252
+    },
+    {
+     "text": "Three. The later use that broke the rule.",
+     "start": 15.672,
+     "end": 18.73
+    },
+    {
+     "text": "Each span is a place to fix it. Plain data? Derive Copy. Or borrow at the move site. Or use the value first.",
+     "start": 19.45,
+     "end": 27.453
+    },
+    {
+     "text": "The note even says the signature may be wrong. And the clone suggestion? Last resort.",
+     "start": 27.873,
+     "end": 32.637
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -1.4,
+   "wpm": 144,
+   "wer": 0.0
+  },
+  "17": {
+   "hash": "cfa150f3dc0ca35d",
+   "duration": 26.802,
+   "lines": [
+    {
+     "text": "A second error. The move-while-borrowed error.",
+     "start": 0.15,
+     "end": 3.3
+    },
+    {
+     "text": "You borrowed a header out of the batch... and then moved the batch, while that borrow was still alive.",
+     "start": 3.72,
+     "end": 9.782
+    },
+    {
+     "text": "A borrow lasts until its last use. Not to the end of the block.",
+     "start": 10.202,
+     "end": 14.573
+    },
+    {
+     "text": "So finish with the header first, and the move fits.",
+     "start": 15.293,
+     "end": 18.284
+    },
+    {
+     "text": "The compiler suggests cloning here too... a million bytes copied to keep four. Copying just the four bytes is the better copy.",
+     "start": 18.704,
+     "end": 26.452
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -1.4,
+   "wpm": 163,
+   "wer": 0.0
+  },
+  "18": {
+   "hash": "562cb562c7226469",
+   "duration": 8.304,
+   "lines": [
+    {
+     "text": "A loop is a path that comes back.",
+     "start": 0.15,
+     "end": 2.403
+    },
+    {
+     "text": "Ship takes the batch by value, and the loop runs three times.",
+     "start": 2.823,
+     "end": 6.262
+    },
+    {
+     "text": "What happens?",
+     "start": 7.082,
+     "end": 7.954
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.3,
+   "wpm": 159,
+   "wer": 0.0
+  },
+  "18a": {
+   "hash": "95254b9ca80e6800",
+   "duration": 11.561,
+   "lines": [
+    {
+     "text": "It doesn't compile. On the second pass through the loop, the batch is already gone.",
+     "start": 0.15,
+     "end": 4.795
+    },
+    {
+     "text": "The same rule means a for loop over a vector consumes it. Iterate over a reference to borrow.",
+     "start": 5.215,
+     "end": 11.211
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.4,
+   "wpm": 171,
+   "wer": 0.0
+  },
+  "19": {
+   "hash": "a46a4be02ed8dc8f",
+   "duration": 28.563,
+   "lines": [
+    {
+     "text": "Back to the batch.",
+     "start": 0.15,
+     "end": 1.206
+    },
+    {
+     "text": "Read the original error by its spans. The vector moved at the call, and was used after.",
+     "start": 1.626,
+     "end": 6.819
+    },
+    {
+     "text": "If ship only reads, the signature was wrong. Take a slice, pass a reference. Zero allocations. Zero bytes copied.",
+     "start": 7.239,
+     "end": 15.044
+    },
+    {
+     "text": "If ship must own the batch, read the length first and move last. Also zero.",
+     "start": 15.464,
+     "end": 20.622
+    },
+    {
+     "text": "The clone was correct code... paying a million bytes per batch for nothing.",
+     "start": 21.342,
+     "end": 25.531
+    },
+    {
+     "text": "The right signature costs nothing.",
+     "start": 25.951,
+     "end": 28.213
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -1.3,
+   "wpm": 153,
+   "wer": 0.0
+  },
+  "20": {
+   "hash": "023f0d125c1cfbb7",
+   "duration": 7.929,
+   "lines": [
+    {
+     "text": "Three questions to prove it.",
+     "start": 0.15,
+     "end": 1.904
+    },
+    {
+     "text": "First. Run without arguments, so retry is false.",
+     "start": 2.324,
+     "end": 5.887
+    },
+    {
+     "text": "What happens?",
+     "start": 6.707,
+     "end": 7.579
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -1.4,
+   "wpm": 114,
+   "wer": 0.0
+  },
+  "20a": {
+   "hash": "a84a836dc040a20c",
+   "duration": 5.735,
+   "lines": [
+    {
+     "text": "It doesn't compile, even though the move might never happen.",
+     "start": 0.15,
+     "end": 3.161
+    },
+    {
+     "text": "Maybe moved counts as moved.",
+     "start": 3.581,
+     "end": 5.385
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -2.3,
+   "wpm": 157,
+   "wer": 0.0
+  },
+  "21": {
+   "hash": "4486c76c8e967db9",
+   "duration": 8.927,
+   "lines": [
+    {
+     "text": "Second. Estimate the cost.",
+     "start": 0.15,
+     "end": 2.275
+    },
+    {
+     "text": "Line one allocates the buffer.",
+     "start": 2.695,
+     "end": 4.599
+    },
+    {
+     "text": "How many allocations do lines two to four add?",
+     "start": 5.419,
+     "end": 8.577
+    }
+   ],
+   "lufs": -17.0,
+   "true_peak": -1.5,
+   "wpm": 121,
+   "wer": 0.0
+  },
+  "21a": {
+   "hash": "91a85cb3d71d604b",
+   "duration": 5.392,
+   "lines": [
+    {
+     "text": "Just one.",
+     "start": 0.15,
+     "end": 0.964
+    },
+    {
+     "text": "Two of those lines are moves, and moves never allocate.",
+     "start": 1.384,
+     "end": 5.042
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -1.4,
+   "wpm": 134,
+   "wer": 0.0
+  },
+  "22": {
+   "hash": "7ee01e450fc252c4",
+   "duration": 12.179,
+   "lines": [
+    {
+     "text": "Third. Defend a design.",
+     "start": 0.15,
+     "end": 1.945
+    },
+    {
+     "text": "A point of three small numbers is passed by value in a loop, and the compiler complains on the second pass.",
+     "start": 2.365,
+     "end": 8.317
+    },
+    {
+     "text": "Which fix fits this type best?",
+     "start": 9.137,
+     "end": 11.829
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -1.4,
+   "wpm": 153,
+   "wer": 0.0
+  },
+  "22a": {
+   "hash": "a1d4c562905984d8",
+   "duration": 5.648,
+   "lines": [
+    {
+     "text": "Derive Copy.",
+     "start": 0.15,
+     "end": 1.283
+    },
+    {
+     "text": "Twelve bytes of plain numbers... it's exactly what Copy is for.",
+     "start": 1.703,
+     "end": 5.298
+    }
+   ],
+   "lufs": -16.8,
+   "true_peak": -1.4,
+   "wpm": 138,
+   "wer": 0.0
+  },
+  "23": {
+   "hash": "381e92dd74983643",
+   "duration": 38.133,
+   "lines": [
+    {
+     "text": "In one breath.",
+     "start": 0.15,
+     "end": 1.366
+    },
+    {
+     "text": "One owner, one drop.",
+     "start": 1.786,
+     "end": 4.195
+    },
+    {
+     "text": "A move copies the bytes and ends the source.",
+     "start": 4.615,
+     "end": 7.359
+    },
+    {
+     "text": "Copy means the bits are the whole value, and never with a destructor.",
+     "start": 7.779,
+     "end": 12.05
+    },
+    {
+     "text": "Clone is the visible cost.",
+     "start": 12.47,
+     "end": 14.779
+    },
+    {
+     "text": "A signature takes, borrows, borrows exclusively, or returns.",
+     "start": 15.199,
+     "end": 19.959
+    },
+    {
+     "text": "For the use-after-move error, read why, where, and the later use. For the move-while-borrowed error, end the borrow first.",
+     "start": 20.379,
+     "end": 28.118
+    },
+    {
+     "text": "One owner decides who destroys a value. Next: exactly when that happens. Drop order, temporaries, and why leaking memory is still safe.",
+     "start": 28.838,
+     "end": 37.783
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -1.4,
+   "wpm": 137,
+   "wer": 0.0
+  }
+ }
+}
