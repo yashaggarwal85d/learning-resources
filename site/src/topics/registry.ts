@@ -119,7 +119,7 @@ export const TOPICS: TopicMeta[] = [
     uses: ['amortized-cost', 'aggregate-method', 'accounting-method', 'dynamic-array-doubling', 'growth-factor', 'binary-counter', 'multipop-stack', 'adversary-argument', 'big-o-theta-omega', 'binary-numbers', 'stacks', 'logarithms'],
     // Assumed, not taught first in this domain: listed in the Prerequisites panel.
     declared: ['binary-numbers', 'stacks', 'logarithms'],
-    bridge: 'Accounting stored credits on single elements. The potential method keeps them as one number for the whole structure, which is what a table that grows and shrinks needs.',
+    bridge: 'Accounting stored credits on single elements. The potential method keeps them as one number for the whole structure, which is the easiest way to handle a table that grows and shrinks.',
     handoff: 'Amortized O(1) still lets a single append copy the whole table. Next: deamortization, which spreads that copy out so no single operation spikes.',
   },
 ];

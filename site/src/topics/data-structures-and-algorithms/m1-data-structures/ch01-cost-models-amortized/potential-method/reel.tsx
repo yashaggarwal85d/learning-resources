@@ -10,7 +10,7 @@ const reel: Reel = {
       body: (
         <>
           The last reel’s vector only grew. This one gives memory back: a pop that leaves it less than half full halves its capacity, copying every key. Start full
-          at 16 keys, push once, then repeat pop, pop, push, push. One unit is one element write; a pop costs 1.
+          at 16 keys, push once, then repeat pop, pop, push, push. One unit is one element write, and a pop counts 1, like a deletion.
         </>
       ),
       duration: 3.8,
@@ -29,8 +29,8 @@ const reel: Reel = {
         options: [{ label: '4' }, { label: '19' }, { label: '35', correct: true }, { label: '64' }],
         explain: (
           <>
-            35 = 1 + 16 + 1 + 17. The second pop leaves 15 keys in 32, under half, so it halves to 16 and copies 15. Now 15 of 16 slots are full: the second push
-            finds the vector full and doubles, copying 16. The round ends where it began, so every round costs the same.
+            35 = 1 + 16 + 1 + 17. The second pop leaves 15 keys in 32, under half, so it halves to 16 and copies 15. Now 15 of 16 slots are full: the first push fills it, and the
+            second finds it full and doubles, copying 16. The round ends where it began, so every round costs the same.
           </>
         ),
       },
@@ -40,9 +40,9 @@ const reel: Reel = {
       title: 'Every second operation copies the vector',
       body: (
         <>
-          After the fill, every round repeats: 8 rounds cost 280 writes, 328 in all, each round copying nearly the whole vector twice. Per operation the rounds
-          cost (2C + 3)/4, which grows with C: no fixed charge can pay for it. An adversary only has to choose the sequence. Fill with about n/2 pushes first, and
-          n operations cost Θ(n²).
+          After the fill, every round repeats: 8 rounds cost 280 writes, 328 in all, each round copying nearly the whole vector twice. Write C for the size it was
+          full at (16 here). Per operation the rounds cost (2C + 3)/4, which grows with C: no fixed charge can pay for it. An adversary only has to choose the
+          sequence. Fill with about m/2 pushes first, and m operations cost Θ(m²).
         </>
       ),
       duration: 4.6,
@@ -52,7 +52,7 @@ const reel: Reel = {
       title: 'One number for the whole structure',
       body: (
         <>
-          Keep the savings as one number Φ of the whole state. An operation’s amortized cost is its actual cost plus the change in Φ: ĉᵢ = cᵢ + Φ(Dᵢ) − Φ(Dᵢ₋₁).
+          Keep the savings as one number Φ of the whole state; Φ lives in the proof, the vector never stores it. An operation’s amortized cost is its actual cost plus the change in Φ: ĉᵢ = cᵢ + Φ(Dᵢ) − Φ(Dᵢ₋₁).
           For the counter, Φ = number of 1 bits. Increment 8 flips 4 bits, Φ falls from 3 to 1: amortized 2, like every increment.
         </>
       ),
@@ -64,7 +64,7 @@ const reel: Reel = {
       body: (
         <>
           Sum the amortized costs and every Φ in the middle cancels: Σĉ = Σc + Φ(Dₘ) − Φ(D₀). Start at Φ = 0, never go negative, and the amortized total bounds the
-          actual total after every operation. Tarjan (1985) calls this the physicist’s view, credits it to Sleator, and calls it entirely equivalent to the banker’s credits.
+          actual total after every operation. Tarjan (1985) calls this the physicist’s view, credits it to Sleator, and calls it entirely equivalent to the banker’s credits, the last reel’s coins.
         </>
       ),
       duration: 4.4,
@@ -75,7 +75,7 @@ const reel: Reel = {
       body: (
         <>
           The stack’s coins sat on its keys, so Φ = the number of keys. A push costs 1 and raises Φ by 1: amortized 2. A multipop of k keys costs k and lowers Φ by
-          k: amortized 0. Tarjan’s opening stack (pops, then a push, per operation) gets the same bound: at most 2m.
+          k: amortized 0. Tarjan’s paper opens with a stack whose every operation pops some keys, then pushes one; the same Φ gives at most 2m.
         </>
       ),
       duration: 4.6,
@@ -104,7 +104,7 @@ const reel: Reel = {
       title: 'The gauge on the vector',
       body: (
         <>
-          Φ = 2n − cap measures how far the vector is from where a grow leaves it: 2 just after a grow, n when full, exactly the keys the next grow copies. The
+          Φ = 2n − cap measures how far past half full the vector is: 2 just after a grow (the new key counts twice), n when full, exactly the keys the next grow copies. The
           actual costs spike; the amortized costs are flat at 3 (the first append, 2). It is the last reel’s bank without its spare coin.
         </>
       ),
@@ -115,8 +115,9 @@ const reel: Reel = {
       title: 'Pops drive 2n − cap negative',
       body: (
         <>
-          With pops, 2n − cap goes negative below half full: after two pops it is −2, and the amortized total, 48, is now less than the actual 50. A potential that
-          can go negative proves nothing. Below half the vector is saving for the shrink, so its potential must grow again there.
+          From here on the vector shrinks only when a pop leaves it under a quarter full (shrink-at-¼); a later step shows why ½ cannot be saved. Keep Φ = 2n − cap
+          and pop: after two pops it is −2, and the amortized total, 48, is less than the actual 50. A potential that can go negative proves nothing. Below half the
+          vector is saving for the shrink, so its potential must grow again there.
         </>
       ),
       duration: 4.4,
@@ -126,7 +127,7 @@ const reel: Reel = {
       title: 'A second piece for pops',
       body: (
         <>
-          Write α = n/cap, the load factor. Charge for distance from half full in either direction: Φ = 2n − cap when α ≥ ½, cap/2 − n when α &lt; ½. Φ is never
+          Write α = n/cap, the load factor. Below half, a popped key is gone, so its coin cannot stay on it: cap/2 − n counts coins on the empty slots. Charge for distance from half full in either direction: Φ = 2n − cap when α ≥ ½, cap/2 − n when α &lt; ½. Φ is never
           negative, 0 at half full, cap when full (the next grow’s copies), cap/4 at a quarter (the next shrink’s).
         </>
       ),
@@ -193,7 +194,7 @@ const reel: Reel = {
       body: (
         <>
           The same move proves bounds you will meet later. Splay trees: Φ is the sum of log₂ of every subtree’s size (Sleator and Tarjan). Fibonacci heaps: trees in
-          the root list plus twice the marked nodes. Union–find: Tarjan analysed it in 1975; potential proofs now reach its O(α(n)) bound, α(n) the inverse Ackermann function.
+          the root list plus twice the marked nodes. Union–find: Tarjan analysed it in 1975; Lambert et al. (2023) reach O(α(n)), the inverse Ackermann function, with a potential on node ranks summed over Ackermann levels, while Σ√size alone proves only O(log log n).
         </>
       ),
       duration: 4.2,
@@ -203,8 +204,8 @@ const reel: Reel = {
       title: 'Back to the problem',
       body: (
         <>
-          Under shrink-at-¼ the same 49 operations cost 80 writes, not 328: after the one grow, nothing resizes, and the potential proves at most 3 per push and 2
-          per pop for every sequence. The push that copied 16 keys is still a single operation, though, and a request waiting on it still waits.
+          Under shrink-at-¼ the same 49 operations cost 80 writes, not 328: after the push that grows to 32, nothing resizes, and the bound now covers pops too: at most 3 per push and 2
+          per pop for every sequence. The push that copied 16 keys is still one push of 17.
         </>
       ),
       duration: 4.8,
@@ -244,7 +245,7 @@ const reel: Reel = {
         explain: (
           <>
             About 2.1 billion: 1,000 × (2C + 3) = 2,097,155,000, of which 2,097,151,000 are copies. Shrink-at-¼: 4,000, one per operation. With C fixed the thrash
-            costs Θ(C) per operation; Θ(n²) for n operations needs C to grow with n.
+            costs Θ(C) per operation; Θ(m²) for m operations needs C to grow with m.
           </>
         ),
       },

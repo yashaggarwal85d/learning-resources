@@ -566,7 +566,7 @@ export function Negative({ t }: StepCtx) {
   const end = at(t, 3.3, 3.7);
   return (
     <Svg label="Keeping Phi equal to 2n minus cap and popping: from 17 keys in capacity 32 the gauge falls to 0 at 16 keys, then below zero; after two pops Phi is minus 2 and the amortized total 48 is less than the actual total 50; at 8 keys Phi is minus 16" h={380}>
-      <T x={40} y={26} s={13} f={C.taupe}>17 pushes, then pops (shrink-at-¼)</T>
+      <T x={40} y={26} s={13} f={C.taupe}>17 pushes, then pops (shrink-at-¼ from here)</T>
       <Row x0={40} y={50} cap={32} pitch={15} w={12} h={14} fillOf={(j) => (j <= n ? 1 : 0)} />
       <T x={40} y={90} s={13} f={C.taupe}>n = {n} of 32</T>
       <T x={40} y={130} s={15} f={C.crema} w={600} o={pin}>after pop 2: Φ = −2</T>
@@ -806,7 +806,7 @@ export function Later({ t }: StepCtx) {
   const cards = [
     { y: 20, name: 'splay trees · Ch.4', phi: 'Φ = Σ log₂ (subtree size)', bound: ['access: O(log n) amortized'] },
     { y: 140, name: 'Fibonacci heaps · Ch.6', phi: 'Φ = trees + 2 · marks', bound: ['decrease-key O(1)', 'delete-min O(log n)'] },
-    { y: 260, name: 'union–find · Ch.11', phi: 'Φ: e.g. Σ √size', bound: ['O(log log n); full bound', 'O(α(n)), inverse Ackermann'] },
+    { y: 260, name: 'union–find · Ch.11', phi: 'Φ: ranks, summed over Ackermann levels', bound: ['rank = ⌊log₂ Sizemax⌋ → O(α(n))', 'Σ √size alone → O(log log n)'] },
   ];
   const sketch = (k: number, y: number) => {
     if (k === 0)
@@ -855,7 +855,7 @@ export function Later({ t }: StepCtx) {
     );
   };
   return (
-    <Svg label="Three structures that use the same move: splay trees with the sum of log base 2 of subtree sizes, Fibonacci heaps with trees in the root list plus twice the marked nodes, union-find with a potential such as the sum of square roots of sizes leading to the O of alpha of n bound, where alpha of n is the inverse Ackermann function" h={380}>
+    <Svg label="Three structures that use the same move: splay trees with the sum of log base 2 of subtree sizes, Fibonacci heaps with trees in the root list plus twice the marked nodes, union-find with a potential on node ranks, the floor of log base 2 of the largest size, summed over Ackermann levels, giving the O of alpha of n bound (Lambert and colleagues), where alpha of n is the inverse Ackermann function; the sum of square roots of sizes alone proves only O of log log n" h={380}>
       {cards.map((c, k) => {
         const o = at(t, 0.2 + 0.8 * k, 0.7 + 0.8 * k);
         return (

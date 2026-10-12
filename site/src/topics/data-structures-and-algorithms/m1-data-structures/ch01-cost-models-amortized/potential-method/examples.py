@@ -87,7 +87,7 @@ assert v.state() == (16, 32)  # 16 of 32 is exactly half: not less than half, no
 assert v.pop() == 16 and v.state() == (15, 16)  # the second pop leaves 15 of 32, under half: halve to 16, copy 15
 assert 1 + 15 == 16 and v.push() == 1 and v.state() == (16, 16)  # 15 of 16 slots: the push fits
 assert v.push() == 17 and v.state() == (17, 32)  # now full: doubles, copies 16, writes 1
-assert [1, 19, 4, 64] and 1 + 16 + 1 + 1 == 19 and 4 * 1 == 4 and 4 * 16 == 64  # the wrong options of the predict step
+assert 1 + 16 + 1 + 1 == 19 and 4 * 1 == 4 and 4 * 16 == 64  # the wrong options of the predict step
 
 # ---- Step 3, 16: the opening sequence under both rules, C = 16 -------------------------------------------------------
 C = 16
@@ -106,8 +106,10 @@ for a in (HALF, QUARTER):
     else:
         assert cs[:17] == costs_half[:17] and cs[17:] == [1] * 32 and sum(cs[17:]) == 32
         assert sum(cs) == 80 and v.copies == 31
-assert 16 + 1 + 32 * 0 == 17 and 33 == 16 + 1 + 16 and 16 == 8 * 2  # pushes 33, pops 16
-assert 3 * 33 + 2 * 16 == 131 >= 80
+ops49 = ['push'] * 17 + ROUND * 8  # the 49 operations just run: counted, not typed in
+pushes, pops = ops49.count('push'), ops49.count('pop')
+assert (pushes, pops) == (33, 16) and len(ops49) == 49
+assert 3 * pushes + 2 * pops == 131 >= 80
 assert 328 - 80 == 248 and 279 - 31 == 248
 assert 31 == 2 * C - 1 and 279 == 2 * C - 1 + 8 * (2 * C - 1) and 8 * (2 * C - 1) == 248
 assert [F(2 * c + 3, 4) for c in (16, 1024, 1_048_576)] == [F(35, 4), F(2051, 4), F(2097155, 4)]
@@ -398,7 +400,7 @@ cs, hs = run(v, ROUND)
 assert cs == [1, 1, 1, 1] and hs == [-1, 2, 0, 3]
 # the climb (step 13): quarter (8, 32) -> (7, 16) Phi 8 -> 1; half (16, 32) -> (15, 16) Phi 0 -> 14
 assert (phi2(8, 32), phi2(7, 16)) == (8, 1) and (phi2(16, 32), phi2(15, 16)) == (0, 14) and (phi2(16, 16), phi2(17, 32)) == (16, 2)
-assert 16 + 14 - 0 == 30 and 17 + 2 - 16 == 3 and 1 + 2 - 0 == 3 and 14 / 16 == 0.875 and F(8, 32) == QUARTER and F(1, 16) == F(1, 16)
+assert 16 + 14 - 0 == 30 and 17 + 2 - 16 == 3 and 1 + 2 - 0 == 3 and 14 / 16 == 0.875 and F(8, 32) == QUARTER
 for cap in (8, 16, 32, 64, 128, 256, 512, 1024, 2048, 4096):  # the shrinking pop under 1/2 has c-hat = cap - 2
     v = Vector(HALF, n=cap // 2, cap=cap)
     _, h = run(v, ['pop'])
@@ -454,7 +456,8 @@ for C in (16, 1024):
     v = Vector(HALF)
     cs = fill_and_push(v, C)
     assert sum(cs) == 3 * C and v.copies == 2 * C - 1
-assert 3 * 16 == 48 and 3 * 1024 == 3072 and 3 * 1_048_576 == 3_145_728
+v = Vector(HALF)
+assert sum(fill_and_push(v, 1_048_576)) == 3 * 1_048_576 == 3_145_728 and v.copies == 2 * 1_048_576 - 1
 for C, writes, copies in ((16, 35_000, 31_000), (1024, 2_051_000, 2_047_000), (1_048_576, 2_097_155_000, 2_097_151_000)):
     assert 1000 * (2 * C + 3) == writes and 1000 * (2 * C - 1) == copies
 assert 1000 * 4 == 4000
@@ -512,8 +515,11 @@ for i in range(1_000_000):
     ph = 3 * v.n - 2 * v.cap
     assert ph >= 1 and c + ph - prev <= 4
     prev = ph
-assert 1 + 2 == 3 and 1 + 3 == 4  # 1 + g/(g-1) for g = 2 and 1.5
-# the fixed-point claim that Phi_g is 0 just after a resize and cap when full is not asserted here: Phi >= 1 is
+assert 1 + F(2) / (2 - 1) == 3 and 1 + F(3, 2) / (F(3, 2) - 1) == 4  # 1 + g/(g-1) for g = 2 and 1.5
+# Phi_g = (g/(g-1)) * (n - cap/g) is 0 at n = cap/g, the load a resize copies into, and cap when full
+for g, cap in ((F(2), 64), (F(3, 2), 12)):
+    assert g / (g - 1) * (F(cap) / g - F(cap) / g) == 0 and g / (g - 1) * (cap - F(cap) / g) == cap
+# (just after a resize n = cap_old + 1 > cap_new/g, so Phi_g >= 1 there, as the loops above assert)
 
 # ---- Prove it 2 and 3 ------------------------------------------------------------------------------------------------
 C = 1_048_576
@@ -645,3 +651,20 @@ for _ in range(5000):
 assert tot == hats_sum + p0 - phi2(v.n, v.cap)
 
 print('potential-method examples: all assertions hold')
+
+
+def report(a=QUARTER, atmost=False, C=16, rounds=8):
+    """Measure one shrink rule on the opening sequence: writes per round and the largest amortized cost (two-piece Phi)."""
+    v = Vector(a, atmost=atmost)
+    fill = fill_and_push(v, C)
+    cs, hats = run(v, ROUND * rounds)
+    per_round = [sum(cs[i:i + 4]) for i in range(0, len(cs), 4)]
+    print(f'fill + push: {sum(fill)} writes; per round: {per_round}; max amortized: {max(hats)}')
+    return per_round, max(hats)
+
+
+if __name__ == '__main__':
+    for label, kw in (('shrink-at-1/2', dict(a=HALF)), ('shrink-at-1/4', dict(a=QUARTER)), ('at most half', dict(a=HALF, atmost=True))):
+        print(label, end=': ')
+        report(**kw)
+

@@ -11,7 +11,7 @@
         },
         "A pop that leaves it less than half full halves its capacity... and copies every key.",
         "Start full, at sixteen keys. Push once. Then repeat: pop, pop, push, push.",
-        "One unit of cost is one element write. A pop costs one."
+        "One unit of cost is one element write, and a pop counts one, like a deletion."
       ]
     },
     {
@@ -26,7 +26,7 @@
       "answer": [
         "Thirty five. One, plus sixteen, plus one, plus seventeen.",
         "The second pop leaves fifteen keys in thirty two. That is under half, so it halves to sixteen, and copies fifteen.",
-        "Now fifteen of sixteen slots are full, so the second push finds the vector full, and doubles it, copying sixteen.",
+        "Now fifteen of sixteen slots are full. The first push fills it, and the second finds it full, and doubles it, copying sixteen.",
         "The round ends where it began. So every round costs the same."
       ]
     },
@@ -38,6 +38,7 @@
           "beat": 0.3
         },
         "Each round copies nearly the whole vector... twice.",
+        "Write C for the size the vector was full at: sixteen here.",
         "Per operation, the rounds cost two C plus three, divided by four. That grows with C.",
         "At C equal to sixteen it is eight point seven five. At about a million, it is more than five hundred twenty four thousand.",
         "No fixed charge can pay for that.",
@@ -45,7 +46,7 @@
           "beat": 0.3
         },
         "An adversary only has to choose the sequence.",
-        "Fill with about half of n pushes first, and n operations cost theta of n squared."
+        "Fill with about half of m pushes first, and m operations cost theta of m squared."
       ]
     },
     {
@@ -55,7 +56,7 @@
         {
           "beat": 0.3
         },
-        "Call it phi.",
+        "Call it phi. It lives in the proof. The vector never stores it.",
         "The amortized cost of an operation is its actual cost, plus phi after the operation, minus phi before it.",
         "For the counter, phi is the number of one bits.",
         {
@@ -77,7 +78,7 @@
         {
           "beat": 0.3
         },
-        "Tarjan calls this the physicist's view. He credits it to Sleator, and calls it entirely equivalent to the banker's credits."
+        "Tarjan calls this the physicist's view. He credits it to Sleator, and calls it entirely equivalent to the banker's credits, the last reel's coins."
       ]
     },
     {
@@ -88,7 +89,7 @@
         {
           "beat": 0.3
         },
-        "Tarjan's opening stack, with some pops and then a push in each operation, gets the same bound: at most twice the number of operations."
+        "Tarjan's paper opens with a stack whose every operation pops some keys, and then pushes one. The same phi gives at most twice the number of operations."
       ]
     },
     {
@@ -106,8 +107,8 @@
     {
       "lines": [
         "Here is that gauge on the vector.",
-        "Phi equals two n minus cap says how far the vector is from where a grow leaves it.",
-        "Just after a grow, it is two. When the vector is full, it is n... exactly the keys the next grow copies.",
+        "Phi equals two n minus cap says how far past half full the vector is.",
+        "Just after a grow, it is two... the new key counts twice. When the vector is full, it is n... exactly the keys the next grow copies.",
         {
           "beat": 0.3
         },
@@ -117,7 +118,8 @@
     },
     {
       "lines": [
-        "Now let the vector shrink, and keep the same potential.",
+        "Now let the vector shrink. From here on, it shrinks only when a pop leaves it under a quarter full. A later step shows why half cannot be saved.",
+        "Keep the same potential.",
         "Pops drive it down. At half full it reaches zero, and then it keeps going, below zero.",
         {
           "beat": 0.3
@@ -135,6 +137,7 @@
           "beat": 0.3
         },
         "Phi is two n minus cap when alpha is at least a half. It is cap over two, minus n, when alpha is below a half.",
+        "Below half, a popped key is gone, so its coin cannot stay on it. Cap over two, minus n, counts the coins on the empty slots.",
         "It is never negative, and zero at half full.",
         "At full it is cap, which pays for the next grow's copies. At a quarter full it is cap over four, which pays for the next shrink's."
       ]
@@ -193,19 +196,19 @@
         "The same move proves bounds you will meet later.",
         "Splay trees: phi is the sum of log base two of every subtree's size. That is Sleator and Tarjan.",
         "Fibonacci heaps: the trees in the root list, plus twice the marked nodes.",
-        "Union find: Tarjan analysed it in nineteen seventy five, and potential proofs now reach its bound, order alpha of n, where alpha of n is the inverse Ackermann function."
+        "Union find: Tarjan analysed it in nineteen seventy five. Lambert and colleagues, in twenty twenty three, reach its bound, big O of alpha of n, with a potential on node ranks, summed over the levels of the Ackermann function. Alpha of n is the inverse Ackermann function.",
+        "Summing square roots of subtree sizes proves only log log n."
       ]
     },
     {
       "lines": [
         "Back to the problem.",
         "Under shrink at a quarter, the same forty nine operations cost eighty writes, not three hundred twenty eight.",
-        "After the one grow, nothing resizes. And the potential proves at most three per push and two per pop, for every sequence.",
+        "After the push that grows to thirty two, nothing resizes. And the bound now covers pops too: at most three per push and two per pop, for every sequence.",
         {
           "beat": 0.3
         },
-        "But the push that copied sixteen keys is still a single operation.",
-        "A request waiting on it still waits."
+        "But the push that copied sixteen keys is still one push of seventeen."
       ]
     },
     {
@@ -230,9 +233,9 @@
       ],
       "answer": [
         "About two point one billion.",
-        "One thousand times two C plus three: two billion, ninety seven million, one hundred fifty five thousand writes. Almost all of them copies.",
+        "A thousand rounds at two C plus three each: two billion, ninety seven million, one hundred fifty five thousand writes. Almost all of them copies.",
         "Under shrink at a quarter: four thousand. One per operation.",
-        "With C fixed, the thrash costs order C per operation. Theta of n squared for n operations needs C to grow with n."
+        "With C fixed, the thrash costs big O of C per operation. Theta of m squared for m operations needs C to grow with m."
       ]
     },
     {
