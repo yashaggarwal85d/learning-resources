@@ -65,6 +65,10 @@ export default function CurriculumMap({ domains, live }: { domains: Domain[]; li
           <span className="h-1.5 w-1.5 rounded-full bg-mocha" />
           in production, live as soon as it is verified
         </span>
+        <span className="inline-flex items-center gap-1.5">
+          <span className="font-mono text-[0.62rem] uppercase tracking-wider text-taupe">skipped</span>
+          in the curriculum for reference, no reel planned
+        </span>
       </p>
 
       <AnimatePresence mode="wait">
@@ -158,10 +162,11 @@ export default function CurriculumMap({ domains, live }: { domains: Domain[]; li
                                           </a>
                                         </li>
                                       ) : (
-                                        <li key={ti} className="flex items-center gap-2 text-[0.82rem] text-latte/60">
-                                          <span className="h-1.5 w-1.5 shrink-0 rounded-full bg-mocha" />
+                                        <li key={ti} className={`flex items-center gap-2 text-[0.82rem] ${tp.skipped ? 'text-latte/35' : 'text-latte/60'}`}>
+                                          <span className={`h-1.5 w-1.5 shrink-0 rounded-full ${tp.skipped ? 'bg-taupe/40' : 'bg-mocha'}`} />
                                           <span className="truncate" title={tp.title}>{tp.title}</span>
                                           {tp.refresher && <span className="font-mono text-[0.62rem] uppercase tracking-wider text-taupe">refresher</span>}
+                                          {tp.skipped && <span className="font-mono text-[0.62rem] uppercase tracking-wider text-taupe">skipped</span>}
                                         </li>
                                       );
                                     })}
