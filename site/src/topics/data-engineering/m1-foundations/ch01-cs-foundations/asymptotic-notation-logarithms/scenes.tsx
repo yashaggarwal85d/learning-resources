@@ -117,13 +117,21 @@ const LANES = [
   { name: 'n²', secs: [1e-3, 1000, 1e7], text: ['1 ms', '17 min', '116 days'] },
 ];
 const COUNT = ['n = 1,000 orders', 'n = 1,000,000 orders', 'n = 100,000,000 orders'];
-const logFrac = (s: number) => clamp((Math.log10(s) + 7) / Math.log10(86_400 * 1e7)); // 100 ns .. 1 day
+// A log axis from 100 ns (10^-7 s) to 100,000,000 s (10^8 s): 15 decades, ticks every 3 decades (×1,000), up to 1,000 s. See examples.py.
+const logFrac = (s: number) => clamp((Math.log10(s) + 7) / 15);
+const TICKS = [
+  { s: 1e-6, label: '1 µs' },
+  { s: 1e-3, label: '1 ms' },
+  { s: 1, label: '1 s' },
+  { s: 1e3, label: '1,000 s' },
+];
 export function Race({ t, portrait }: StepCtx) {
-  const H = portrait ? 400 : 320;
+  const H = portrait ? 440 : 360;
   const stage = t < 1.6 ? 0 : t < 2.6 ? 1 : 2;
   const starts = [0.6, 1.6, 2.6];
   const lanesIn = fade(t, 0.2, 0.6);
   const ys = portrait ? [150, 230, 310] : [118, 188, 258];
+  const axisY = ys[2] + 44;
   return (
     <Svg label="n, n log n and n squared at a thousand, a million and 100 million orders" h={H}>
       <T x={300} y={portrait ? 44 : 36} s={24} f={C.crema} a="middle" serif>{COUNT[stage]}</T>
@@ -145,6 +153,21 @@ export function Race({ t, portrait }: StepCtx) {
           </g>
         );
       })}
+      <g opacity={lanesIn}>
+        {ys.map((y) =>
+          TICKS.map((k) => (
+            <line key={`${y}${k.label}`} x1={40 + 500 * logFrac(k.s)} y1={y} x2={40 + 500 * logFrac(k.s)} y2={y + 26} stroke={C.taupe} strokeWidth={1.5} opacity={0.7} />
+          )),
+        )}
+        {TICKS.map((k) => (
+          <line key={k.label} x1={40 + 500 * logFrac(k.s)} y1={axisY - 6} x2={40 + 500 * logFrac(k.s)} y2={axisY + 4} stroke={C.taupe} />
+        ))}
+        <line x1={40} y1={axisY} x2={540} y2={axisY} stroke={C.taupe} />
+        {TICKS.map((k) => (
+          <T key={k.label} x={40 + 500 * logFrac(k.s)} y={axisY + 22} s={15} f={C.taupe} a="middle">{k.label}</T>
+        ))}
+        <T x={290} y={axisY + 48} s={15} f={C.taupe} a="middle">log scale: each tick ×1,000</T>
+      </g>
     </Svg>
   );
 }
@@ -199,7 +222,7 @@ export function Halvings({ t, answer, portrait }: StepCtx) {
               <T x={rx + 42} y={base - Number(k) * dy + dy / 2 + 5} s={15} f={C.crema}>{String(label)}</T>
             </g>
           ))}
-          <T x={rx} y={base + 42} s={15} f={C.taupe} a="middle">log₂(10⁹) = 29.9</T>
+          <T x={rx} y={base + 42} s={15} f={C.taupe} a="middle">log₂ of a billion = 29.9</T>
         </>
       )}
     </Svg>
@@ -320,35 +343,38 @@ export function IndexLevels({ t, answer, portrait }: StepCtx) {
 }
 
 // 9 · Sort passes are a logarithm too: 1 TiB, 16 GiB of memory, 1 MiB blocks.
+// Every pass is a whole block of the same height: two caramel passes beside seven cinnamon passes, at the same unit.
 export function SortPasses({ t, portrait }: StepCtx) {
-  const H = portrait ? 420 : 340;
-  const base = portrait ? 320 : 250;
-  const unit = portrait ? 60 : 50;
-  const u2 = portrait ? 28 : 22;
+  const H = portrait ? 460 : 384;
+  const base = portrait ? 320 : 244;
+  const unit = portrait ? 34 : 26;
   const cx = 110;
   const w = 130;
   const a = fade(t, 0.2, 0.6);
   const s1 = easeOut(seg(t, 0.8, 1.3));
   const s2 = easeOut(seg(t, 1.8, 2.3));
-  const sliver = 0.43 * unit;
+  const fin = fade(t, 2.6, 3.0);
   return (
-    <Svg label="Sorting 1 TiB with 16 GiB of memory takes 2 passes; merging two at a time would take 7" h={H}>
+    <Svg label="Sorting 1 TiB with 16 GiB of memory takes 2 whole passes, each reading and writing the whole terabyte; merging two at a time would take 7" h={H}>
       <T x={30} y={portrait ? 30 : 26} s={15} f={C.crema} o={a}>1,048,576 blocks (1 TiB ÷ 1 MiB)</T>
-      <T x={30} y={portrait ? 62 : 54} s={24} f={C.caramel} serif o={fade(t, 2.6, 3.0)}>2 passes</T>
-      <rect x={cx - w / 2} y={base - unit * s1} width={w} height={unit * s1} rx={3} fill={C.caramel} />
-      <rect x={cx - w / 2} y={base - unit - sliver * s2 - 2} width={w} height={Math.max(0, sliver * s2)} rx={3} fill={C.caramel} />
-      <T x={cx + w / 2 + 12} y={base - unit / 2 + 5} s={15} f={C.crema} o={s1}>64 runs · pass 1</T>
-      <T x={cx + w / 2 + 12} y={base - unit - sliver / 2 + 3} s={15} f={C.crema} o={s2}>1 sorted file · pass 2</T>
+      <T x={30} y={portrait ? 62 : 54} s={24} f={C.caramel} serif o={fin}>2 passes</T>
+      <rect x={cx - w / 2} y={base - 1 - (unit - 2) * s1} width={w} height={(unit - 2) * s1} rx={3} fill={C.caramel} />
+      <rect x={cx - w / 2} y={base - unit - 1 - (unit - 2) * s2} width={w} height={(unit - 2) * s2} rx={3} fill={C.caramel} />
+      <T x={cx + w / 2 + 12} y={base - unit / 2 + 5} s={15} f={C.crema} o={s1}>pass 1: 1 TiB → 64 runs</T>
+      <T x={cx + w / 2 + 12} y={base - unit - unit / 2 + 5} s={15} f={C.crema} o={s2}>pass 2: 64 runs → 1 file</T>
       <g opacity={fade(t, 3.0, 3.5)}>
-        <T x={470} y={base - 7 * u2 - 38} s={15} f={C.cinnamon} a="middle" w={600}>two at a time:</T>
-        <T x={470} y={base - 7 * u2 - 10} s={15} f={C.cinnamon} a="middle" w={600}>7 passes</T>
+        <T x={470} y={base - 7 * unit - 34} s={15} f={C.cinnamon} a="middle" w={600}>two at a time:</T>
+        <T x={470} y={base - 7 * unit - 10} s={15} f={C.cinnamon} a="middle" w={600}>7 passes</T>
         {Array.from({ length: 7 }, (_, i) => (
-          <rect key={i} x={450} y={base - (i + 1) * u2 + 1} width={40} height={u2 - 2} rx={2} fill={C.cinnamon} />
+          <rect key={i} x={450} y={base - (i + 1) * unit + 1} width={40} height={unit - 2} rx={2} fill={C.cinnamon} />
         ))}
       </g>
       <line x1={30} y1={base} x2={536} y2={base} stroke={C.taupe} />
-      <T x={30} y={base + 34} s={15} f={C.latte} o={fade(t, 2.6, 3.0)}>log₁₆,₃₈₄(1,048,576) = 20/14 ≈ 1.43</T>
-      <T x={30} y={base + 62} s={13} f={C.taupe} o={a}>memory holds 16,384 blocks (16 GiB ÷ 1 MiB)</T>
+      <T x={30} y={base + 30} s={15} f={C.latte} o={fin}>log₁₆,₃₈₄(1,048,576) = 20/14</T>
+      <T x={30} y={base + 54} s={15} f={C.latte} o={fin}>= 1 + log₁₆,₃₈₄ 64 ≈ 1 + 0.43</T>
+      <T x={30} y={base + 78} s={15} f={C.latte} o={fin}>passes = 1 + ⌈0.43⌉ = 2: a pass can't be partial</T>
+      <T x={30} y={base + 102} s={15} f={C.crema} o={fin}>each pass reads + writes 1 TiB: 4 TiB of I/O</T>
+      <T x={30} y={base + 124} s={13} f={C.taupe} o={a}>memory holds 16,384 blocks (16 GiB ÷ 1 MiB)</T>
     </Svg>
   );
 }

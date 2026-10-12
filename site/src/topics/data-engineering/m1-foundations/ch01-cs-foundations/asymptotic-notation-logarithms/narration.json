@@ -14,12 +14,12 @@
     },
     {
       "lines": [
-        "Big O is a ceiling. From some point on, the cost stays below a constant times the function.",
+        "Big O is a ceiling. From some point on, the cost stays below some constant times the function.",
         "Big omega is a floor. Big theta is both.",
         {
           "beat": 0.4
         },
-        "This job takes three n log n, plus eight n steps.",
+        "This job takes three n log n, plus eight n steps... where log is the number of halvings from n down to one.",
         "Divide it by n log n, and from two hundred fifty six on, the answer stays between three and four.",
         "So it's theta of n log n... and the constants, and the plus eight n, simply drop out."
       ]
@@ -27,12 +27,12 @@
     {
       "lines": [
         "Here's a trap.",
-        "Theta pins a cost from above and from below, to within constant multiples.",
-        "That job is theta of n log n.",
+        "You've just shown that job is theta of n log n.",
+        "A reviewer writes... it's big O of n squared.",
         {
           "beat": 0.4
         },
-        "Is it also big O of n squared?"
+        "Is that also true?"
       ],
       "answer": [
         "Yes. Big O is only a ceiling, and n squared is a very high one... over a million times above the job, at a hundred million rows.",
@@ -49,6 +49,7 @@
         {
           "beat": 0.4
         },
+        "The bars are on a log scale... each tick is a thousand times longer.",
         "Double the data, and n squared quadruples."
       ]
     },
@@ -90,8 +91,9 @@
     {
       "lines": [
         "Here's the orders index.",
-        "A hundred million orders, with a B-tree on the order id.",
-        "One page holds about four hundred entries.",
+        "A hundred million orders, with a Postgres B-tree on the order id.",
+        "One page holds about four hundred entries... and on an inner page, each entry points to a page below.",
+        "So every level multiplies the reach by about four hundred.",
         {
           "beat": 0.4
         },
@@ -99,20 +101,21 @@
       ],
       "answer": [
         "Four. Three levels of four hundred reach only sixty four million keys.",
-        "The fourth reaches twenty five billion.",
+        "The fourth reaches over twenty five billion.",
         "Anything from a hundred to four hundred sixty four entries gives four levels. A binary tree would need twenty seven."
       ]
     },
     {
       "lines": [
         "Sorting is the same logarithm, with a big base.",
-        "The nightly job sorts a terabyte, and memory holds sixteen thousand, three hundred eighty four blocks.",
+        "The nightly job sorts a tebibyte, and memory holds sixteen thousand, three hundred eighty four blocks.",
         "One pass makes sixty four sorted runs.",
-        "The merge takes up to sixteen thousand at once, so one more pass merges all sixty four.",
+        "The merge takes up to sixteen thousand at once, one block for each run and one for the output, so one more pass merges all sixty four.",
+        "Sixty four runs use only a sliver of that... but a pass can't be partial.",
         {
           "beat": 0.4
         },
-        "Two passes. Merge two at a time, and it's seven."
+        "Two passes, and each one reads and writes the whole tebibyte. Merge two at a time, and it's seven."
       ]
     },
     {

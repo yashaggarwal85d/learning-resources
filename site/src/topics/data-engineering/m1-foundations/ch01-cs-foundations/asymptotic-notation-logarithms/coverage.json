@@ -142,7 +142,7 @@
           ]
         },
         {
-          "item": "Asymptotics Exercises: ordering growth, binomial bound, logarithm rules (product, power, change of base), 2^(n+1) vs 2^n, polylog vs polynomial, Stirling and log(n!)",
+          "item": "Asymptotics Exercises: ordering growth, logarithm rules (product, power, change of base), polylog vs polynomial",
           "at": [
             {
               "step": "Double the data"
@@ -155,6 +155,27 @@
             },
             {
               "deep": "Logarithms and the change of base"
+            }
+          ]
+        },
+        {
+          "item": "Asymptotics Exercises: Stirling and log(n!) = Θ(n log n)",
+          "at": [
+            {
+              "deep": "Growth at data sizes"
+            },
+            {
+              "topic": "Lower bounds and adversary arguments",
+              "domain": "data-structures-and-algorithms",
+              "quote": "decision-tree Ω(n log n) for comparison sorting"
+            }
+          ]
+        },
+        {
+          "item": "Asymptotics Exercises: binomial bound, 2^(n+1) vs 2^n",
+          "at": [
+            {
+              "out": "Exponential-growth exercises for the algorithms track; a refresher on logarithms and O/Θ/Ω does not need them (the Deep dive says so in one sentence)."
             }
           ]
         }
@@ -527,7 +548,11 @@
         "item": "Multi-parameter bounds: cost often depends on several variables (N, B, M) and each bound should name its variable.",
         "at": [
           {
-            "out": "Not needed in a five-minute refresher: N, B and M appear only inside the sort example. Full treatment in the DSA track's Chapter 1."
+            "deep": "Large bases: index height and sort passes"
+          },
+          {
+            "topic": "The external-memory (I/O) cost model",
+            "quote": "sort bound (N/B)·log_{M/B}(N/B)"
           }
         ]
       }
@@ -535,7 +560,7 @@
   },
   "gapReview": {
     "date": "2026-10-12",
-    "by": "builder",
+    "by": "builder + review fixes",
     "open": []
   }
 }

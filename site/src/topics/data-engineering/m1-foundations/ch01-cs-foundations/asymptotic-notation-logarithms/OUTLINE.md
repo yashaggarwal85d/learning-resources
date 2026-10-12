@@ -253,7 +253,7 @@ Canvas: 600 units wide. Each step picks `h` from `portrait` (portrait height fir
   - N/B = 2⁴⁰ / 2²⁰ = 1,048,576 blocks; M/B = 2³⁴ / 2²⁰ = 16,384.
   - log = 20/14 = 1.43; runs N/M = 64; merge fan-in up to M/B − 1 = 16,383 ≥ 64.
   - Passes 1 + ⌈log₁₆,₃₈₃ 64⌉ = 2 (equal to ⌈1.43⌉); binary 1 + log₂ 64 = 7.
-- **Final frame:** a 1.43-step caramel staircase labelled pass 1 and pass 2, "2 passes", and a cinnamon 7-step tower beside it.
+- **Final frame (superseded by review fix 14, see "Changes after review"):** a 1.43-step caramel staircase labelled pass 1 and pass 2, "2 passes", and a cinnamon 7-step tower beside it.
 - **Caption point:** the pass count is the same logarithm with a big base, and powers of two make it mental. Draft: "The nightly job sorts 1 TiB in 1 MiB blocks with 16 GiB of memory: 1,048,576 blocks, 16,384 in memory. Pass one writes 64 memory-sized runs. The merge can take up to 16,383 runs at once, so pass two merges all 64. In powers of two, log is 20/14 ≈ 1.43: one pass of runs, then part of a merge, which still costs a whole pass. 2 passes. Two at a time: 7."
 - **Narration sketch:** "Sorting is the same logarithm with a big base. One pass makes sixty four sorted runs; one more merges them all at once. Two passes."
 
@@ -545,6 +545,7 @@ Each claim with its source (in `SOURCES.md`, every quote checked by `node script
 - 2026-10-12, fact-check (2.3) done, see `FACT-CHECK.md`. Corrections applied here: step 3's ratio (1,139,909, not 1,139,912), step 3's fourth option (now the "worst case" misconception) and answer-frame axis, step 4's axis start, step 7's base-2 tower height, step 8's "full page" wording, special space and default fill, step 9's pass wording (1 + one merge pass, as the held topic words it, not "1.43 rounded up"), the Θ-glyph house rule, the halving-loop, float-log and bit_length traps in `examples.py` and Try it, and claims 6, 18, 24, 30, 30a (new) and 34. `SOURCES.md`: 94 quotes, 0 problems (added `nbtree.h`, DLMF 4.2.17, a Knuth fragment, two OCR notes).
 - 2026-10-12, coverage map `coverage.json` and build (3) done: `examples.py`, `reel.tsx`, `scenes.tsx`, `index.mdx`, `prerequisites.mdx`, `narration.json`, registry entry (held). `npm run build`, `npm run test:examples` and the reel test pass.
 - **Next:** content review (4), looks review (5), then narration (7).
+- 2026-10-12, content review (4) done, see `REVIEW.md` (27 findings). Review fixes applied in the same pass (see "Changes after review" below). Finding 6 (information only): the previous topic, `de.software-delivery-workflow`, is not built yet (its branch holds only OUTLINE, SOURCES, FACT-CHECK and examples.sh), so the seam was checked against its plan only. The release seam check must re-read the built topic: its real handoff, and whether its step 3 still says "unit tests".
 
 ## Changes from the chapter plan
 
@@ -575,6 +576,11 @@ Each claim with its source (in `SOURCES.md`, every quote checked by `node script
 7. **Prerequisites:** the Khan Academy video's length is left out (oEmbed gives title and author, not duration); the HackerRank video is kept with author only. The registry's `uses: ['git-bisect']` is kept as planned.
 8. **Registry order:** the entry sits between `de.python-essentials` and `de.io-cost-model` (syllabus order: §1.1 before §1.3). The other §1.1 topics, built in parallel, will add theirs between the same two.
 
-## Changes after final
+## Changes after review
 
-(none yet)
+1. Step 1 no longer repeats the bridge; step 11 no longer repeats the handoff. Step 2 glosses log₂n and says "for some constant c > 0". Step 3 sets up the trap instead of redefining Θ. Step 8 says each inner entry points to a page below and names PostgreSQL.
+2. **Step 4's race has a labelled log axis** (ticks 1 µs, 1 ms, 1 s, 1,000 s; "log scale: each tick ×1,000"), now 100 ns to 100,000,000 s so no bar is cut off; tick positions are asserted in `examples.py`. The caption says n log₂n.
+3. **Step 9 draws two equal caramel pass blocks beside seven equal cinnamon blocks at one unit**, with the logarithm on its own line (20/14 = 1 + log 64 ≈ 1 + 0.43, passes = 1 + ⌈0.43⌉ = 2). It supersedes the "1.43-step caramel staircase" in the step 9 plan and final frame above. The caption gives the fan-in reason, says a pass cannot be partial, and states 4 TiB of I/O (asserted).
+4. Powers of ten are written out on screen and in the Deep dive ("a billion", "100 million"); numbers shown (6-byte pointer, 8-byte key, 20-byte entry, 1,000,000,000 steps per second) are asserted in `examples.py`.
+5. Deep dive additions: log(n!), a counted constant-factor crossover (997), 964 upper pages (about 7.5 MiB), PostgreSQL's level numbering, a reworded "Bounded n"; the unsourced latency figures are gone. Knuth's "order at least" and "order exactly" are now quoted in `SOURCES.md`.
+6. `coverage.json`: the MIT exercise item is split (log(n!) mapped, binomial and 2^(n+1) out); multi-parameter bounds are mapped to the Deep dive and the I/O cost model topic; `gapReview` is now "builder + review fixes".

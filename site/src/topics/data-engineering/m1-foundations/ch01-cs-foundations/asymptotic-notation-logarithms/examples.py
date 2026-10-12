@@ -51,6 +51,7 @@ assert round(axis) == 7 and round((math.log10(g(10**8)) - 9) / axis, 2) == 0.13
 
 # ---- Step 4: the race, at a stated round assumption of 10^9 simple steps per second ------------------------------
 SPEED = 10**9
+assert SPEED == 1_000_000_000  # the note on screen: 1,000,000,000 steps per second
 def steps(n):
     return n, round(n * math.log2(n)), n * n
 assert steps(1_000) == (1_000, 9_966, 1_000_000)
@@ -69,8 +70,17 @@ def nlogn(n):
     return n * math.log2(n)
 assert round(nlogn(2 * 10**8) / nlogn(10**8), 2) == 2.08
 assert (2 * 10**8) ** 2 // (10**8) ** 2 == 4
-# The time axis runs from 100 ns to 1 day; the n^2 bar at 100 M (116 days) is far past it.
-assert 100e-9 < 1e-6 and 86_400 < 10_000_000
+# The time axis is logarithmic: 100 ns (10^-7 s) to 100,000,000 s (10^8 s), 15 decades. Ticks sit every 3 decades (x1,000), up to 1,000 s.
+AXIS_LO, AXIS_HI = -7, 8
+def axis_frac(seconds):
+    return (math.log10(seconds) - AXIS_LO) / (AXIS_HI - AXIS_LO)
+TICKS = [(1e-6, '1 us'), (1e-3, '1 ms'), (1.0, '1 s'), (1e3, '1,000 s')]
+assert [round(axis_frac(s_), 3) for s_, _ in TICKS] == [0.067, 0.267, 0.467, 0.667]  # tick positions on the track
+assert all(round(TICKS[i + 1][0] / TICKS[i][0]) == 1_000 for i in range(3))  # each tick is x1,000
+# Every bar fits on the axis, so no bar is cut off: the largest, n^2 at 100 million rows (10,000,000 s), sits at 14/15.
+assert 100e-9 <= 1e-6 and 10_000_000 < 10**AXIS_HI and round(axis_frac(10_000_000), 3) == 0.933
+# On this axis the gaps are still honest: a x1,000 gap is 3/15 = 20 percent of the track.
+assert round(axis_frac(1e-3) - axis_frac(1e-6), 2) == 0.2 and round(axis_frac(1e-3) - axis_frac(1e-6), 2) == round(3 / 15, 2)
 
 # ---- Step 5: a logarithm counts divisions; bisect callback ---------------------------------------------------------------
 assert round(math.log2(1_000), 2) == 9.97 and math.ceil(math.log2(1_000)) == 10 and 2**10 == 1_024 > 1_000
@@ -102,6 +112,7 @@ assert round(N9 / 2**20) == 954 and round(N9 / 2**30, 2) == 0.93 and round(N9 / 
 assert 1_024 == 2**10  # every 10 halvings divide by 1,024, about a thousand
 assert round(math.log2(10**6), 1) == 19.9  # the million: about 20 (the classic slip of one factor of a thousand)
 assert math.floor(math.log2(N9)) + 1 == 30  # binary search over a billion keys: at most 30 comparisons
+# On screen: log2 of a billion = 29.9 (written out as a billion, not as a power of ten).
 
 # ---- Step 6: any base, one formula --------------------------------------------------------------------------------------
 for x, b in [(N9, 2), (N9, 10), (N9, 1_000)]:
@@ -129,6 +140,7 @@ assert round(math.log2(N9) - 29, 1) == 0.9 and round(math.log(N9, 16_384) - 2, 2
 
 # ---- Step 8: how tall is the orders index? -------------------------------------------------------------------------------------
 PAGE, HEADER, SPECIAL, ENTRY = 8_192, 24, 16, 20  # 8 KB page; header; b-tree special space; 8 (tuple) + 8 (key) + 4 (line pointer)
+assert 6 + 2 == 8 and 8 + 8 + 4 == ENTRY == 20  # TID (6-byte row pointer) + t_info (2) = 8-byte tuple header; 8-byte key; 4-byte line pointer
 assert (PAGE - HEADER) // ENTRY == 408 and (PAGE - HEADER - SPECIAL) // ENTRY == 407  # "about 400"
 LEAF_FILL, UPPER_FILL = 0.9, 0.7  # PostgreSQL defaults (nbtree.h)
 leaf_fanout = int((PAGE - HEADER - SPECIAL) * LEAF_FILL) // ENTRY
@@ -162,6 +174,8 @@ while n > 1:
         assert n == 4
 assert h == 4 and n == 1
 assert 1 - 1 / 400 > 0.99  # leaf pages are over 99 percent of the pages (PostgreSQL docs: "typically, over 99%")
+# Everything above the leaves: 959 + 4 + 1 pages of 8 KiB, about 7.5 MiB, against 273,225 leaves (Deep dive).
+assert 959 + 4 + 1 == 964 and 964 * 8 == 7_712 and round(964 * 8 / 1024, 1) == 7.5
 
 # ---- Step 9: sort passes -----------------------------------------------------------------------------------------------------------
 TiB, GiB, MiB = 2**40, 2**30, 2**20
@@ -178,15 +192,28 @@ assert blocks == 1_048_576 and mem_blocks == 16_384
 assert passes(TiB, 16 * GiB, MiB) == (2, 64, 16_383)  # same as io-cost-model/examples.py
 assert math.isclose(math.log(blocks, mem_blocks), 20 / 14, rel_tol=1e-12) and round(20 / 14, 2) == 1.43
 assert 1 + math.ceil(math.log(64, 16_383)) == 2 == math.ceil(math.log(blocks, mem_blocks))
+# The drawing's line: 20/14 = 1 + log(64) = 1 + 6/14, and 6/14 = 0.43. A pass cannot be partial, so the sliver rounds up to a whole pass.
+assert math.isclose(20 / 14, 1 + 6 / 14) and round(6 / 14, 2) == 0.43 and round(math.log(64, 16_384), 2) == 0.43
+assert 64 / 16_383 < 0.004  # 64 runs use under 0.4 percent of the fan-in
+# Each pass reads and writes the whole 1 TiB: 2 passes x (1 TiB read + 1 TiB written) = 4 TiB of I/O.
+assert 2 * (TiB + TiB) == 4 * TiB
 assert min(k for k in range(1, 10) if 16_383**k >= 64) == 1 and 64 <= 16_383
-assert passes(TiB, 16 * GiB, MiB, fan_in=2) == (7, 64, 2) and 1 + int(math.log2(64)) == 7  # two at a time
+assert passes(TiB, 16 * GiB, MiB, fan_in=2) == (7, 64, 2) and 1 + (64 - 1).bit_length() == 7  # two at a time (integer, no float log)
 # Why the ceiling goes on the merge log: 16,384 runs at fan-in 16,383 need 3 passes, but ceil of the whole log says 2.
 assert passes(16_384 * 16 * GiB, 16 * GiB, MiB)[0] == 3 and math.ceil(math.log(16_384 * 16_384, 16_384)) == 2
-# Vitter's example (Deep dive): N = 10^10, M = 10^7, B = 10^4 gives n = 10^6, m = 10^3 and log_m n = 2.
+# Vitter's example (Deep dive): N = 10 billion, M = 10 million, B = 10,000 gives n = 1 million, m = 1,000 and log_m n = 2.
+assert (10_000_000_000, 10_000_000, 10_000) == (10**10, 10**7, 10**4)
+assert 10_000_000_000 // 10_000 == 1_000_000 and 10_000_000 // 10_000 == 1_000
 assert round(math.log(10**10 // 10**4, 10**7 // 10**4)) == 2
 
 # ---- Step 10: same steps, same Theta, unknown price per step ---------------------------------------------------------------
 assert ORDERS == 100_000_000
+
+# Deep dive: a bigger constant can outweigh a lower growth class for a while. 100 steps per item on an n log2 n method
+# against 1 step per pair on an n^2 method: the quadratic one is cheaper for every n up to 996 and loses from 997 on.
+assert all(n * n <= 100 * n * math.log2(n) for n in range(2, 997))
+assert min(n for n in range(2, 5_000) if n * n > 100 * n * math.log2(n)) == 997
+assert 1_000 ** 2 == 1_000_000 and round(100 * 1_000 * math.log2(1_000)) == 996_578
 
 # ---- Try it 1: the float log gotchas -------------------------------------------------------------------------------------------------
 assert math.log(1000, 10) == 2.9999999999999996 and int(math.log(1000, 10)) == 2

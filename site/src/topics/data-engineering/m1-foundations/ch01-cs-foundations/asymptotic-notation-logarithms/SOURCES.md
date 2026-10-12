@@ -93,6 +93,10 @@ The OCR renders the next words, O(n²), as "O(n 2)" (fact-check, 2026-10-12).
 
 > can be read as "order at most f(n) ";
 
+> "order at least
+
+> as "order exactly
+
 > Cf(n) < g(n) < C'f(n)
 
 OCR caution (fact-check): the scan's inequalities in the Θ definition are ≤, not strict; the "<" above is an OCR artefact, so this line is never quoted as a strict inequality. The Θ definition used on screen is MIT's.
