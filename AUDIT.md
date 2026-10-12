@@ -4,7 +4,7 @@ Once a day an automated session audits every topic that was shipped or changed o
 
 ## 0. Ground rules
 
-- Everything in [ROUTINE.md](ROUTINE.md) section 0 applies (models: Sonnet only, fresh agents for every check; agents in the foreground; never end the turn while anything runs; sources read raw with `scripts/sources.mjs`; privacy; no vendors for the voice; no pull requests; never leave `main` red; don't guess).
+- Everything in [ROUTINE.md](ROUTINE.md) section 0 applies (except models: the audit runs on Sonnet only, every agent included, never Opus, Fable or Haiku; fresh agents for every check; agents in the foreground; never end the turn while anything runs; sources read raw with `scripts/sources.mjs`; privacy; no vendors for the voice; no pull requests; never leave `main` red; don't guess).
 - **Scope is fixed by the script, not by judgment:** `node scripts/audit-scope.mjs` lists the topics and ledger runs since the last audit. Audit exactly those; nothing older. If the list is empty, record that (section 5) and stop.
 - **Don't collide with routine runs.** Before changing a topic, run `node scripts/claim.mjs status`; if a run holds a claim on that topic (a release, say), don't touch it: record the finding for that run's topic instead and leave the fix to it.
 - **Fix the reels, record the pipeline.** Fix every problem found in a topic in this run. Don't change the pipeline itself (ROUTINE.md, AUDIT.md, DESIGN.md, the scripts, the checks): name the gap and the guard that would close it in the ledger, so a person can change the pipeline with a few days of evidence. A new kind of problem also gets a QUALITY.md row, with "guard: proposed" until someone adds it.
