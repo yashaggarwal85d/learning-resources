@@ -223,10 +223,13 @@ function decide({ domain, order, reg, lost, plans, chapters }, owner, role = 'an
       blocked.push(`"${title}" ${stops(c) >= MAX_STOPS ? `stopped ${stops(c)} times (last: ${c.note ?? c.lastNote ?? 'no reason given'})` : `lost its run ${deaths(c)} times (usage limits or lost containers)`}; needs a human`);
       return true;
     };
+    // A claim's stage: 'draft' (being drafted), 'review' (drafted, in review, or content-final and not yet shipped),
+    // 'release' (a release chain, the PC's). Claims from before the stages existed are placed by what they were doing.
+    const stageOf = (c) => c.stage ?? (c.action === 'release' ? 'release' : c.final ? 'review' : 'draft');
     const describe = (i) => {
       if (i < 0 || i >= order.length) return null;
       const t = order[i], r = reg.get(t.title), c = claimOf(t.title);
-      const status = r ? r.status : !c ? 'not started' : c.final ? 'content final' : c.drafted && stale(c) ? 'drafted, waiting for review' : stale(c) ? 'abandoned' : c.stage === 'review' ? 'in review' : 'being drafted';
+      const status = r ? r.status : !c ? 'not started' : c.final ? 'content final' : c.drafted && stale(c) ? 'drafted, waiting for review' : stale(c) ? 'abandoned' : stageOf(c) === 'review' ? 'in review' : 'being drafted';
       return { title: t.title, status, topicId: r?.id ?? c?.topicId ?? null, branch: !r && c?.topicId ? `topic/${c.topicId}` : null, folder: r ? `site/src/topics/${r.slug}` : c?.folder ?? null };
     };
     const claimJob = (title, fields) => {
@@ -260,7 +263,7 @@ function decide({ domain, order, reg, lost, plans, chapters }, owner, role = 'an
     //    stopped before shipping is resumed here too (the review stage ends with the ship).
     for (let i = 0; i < order.length && reviews; i++) {
       const t = order[i], r = reg.get(t.title), c = claimOf(t.title);
-      if (r || !c || !stale(c) || c.stage !== 'review' || tooOften(c, t.title)) continue;
+      if (r || !c || !stale(c) || stageOf(c) !== 'review' || tooOften(c, t.title)) continue;
       const { file, claim, previousRunStopped } = claimJob(t.title, { kind: 'topic', action: 'review', stage: 'review', index: i + 1, chapter: t.chapter, chapterNumber: t.c.number, milestone: t.m.number, topicId: c.topicId ?? null, folder: c.folder ?? null, final: !!c.final, drafted: true });
       return { action: 'review', file, attempt: claim.attempts, previousRunStopped: c.drafted && !c.reviewAttempts ? undefined : previousRunStopped, contentFinal: !!c.final, topic: { index: i + 1, title: t.title, chapter: chapterInfo(t.c), topicId: claim.topicId, branch: claim.topicId ? `topic/${claim.topicId}` : null, folder: claim.folder }, previous: describe(i - 1), next: describe(i + 1) };
     }
@@ -270,7 +273,7 @@ function decide({ domain, order, reg, lost, plans, chapters }, owner, role = 'an
       let c = claimOf(t.title);
       if (r) continue;
       if (!c && lost.get(t.title)) c = { ...lost.get(t.title), startedAt: 'before claims', beatAt: new Date(0).toISOString(), stage: 'draft' };
-      if (!c || !stale(c) || c.stage === 'review' || tooOften(c, t.title)) continue;
+      if (!c || !stale(c) || stageOf(c) !== 'draft' || tooOften(c, t.title)) continue;
       const { file, claim, previousRunStopped } = claimJob(t.title, { kind: 'topic', action: 'draft', stage: 'draft', index: i + 1, chapter: t.chapter, chapterNumber: t.c.number, milestone: t.m.number, topicId: c.topicId ?? null, folder: c.folder ?? null, final: false });
       return { action: 'draft', resumed: true, file, attempt: claim.attempts, previousRunStopped, topic: { index: i + 1, title: t.title, chapter: chapterInfo(t.c), topicId: claim.topicId, branch: claim.topicId ? `topic/${claim.topicId}` : null, folder: claim.folder }, previous: describe(i - 1), next: describe(i + 1) };
     }
