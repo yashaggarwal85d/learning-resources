@@ -2,6 +2,22 @@ import Resource from '../../../../../components/Resource.astro';
 
 This topic follows "Single ownership and move semantics" and "RAII, drop order, and leak safety": you should know that every value has one owner, that a move deinitializes its source, and that a value's fields are dropped in declaration order after its own `Drop::drop`. It builds the chapter's buffer pipeline (`Buf`, `Pool`, a guard called `PooledBuf`) from the ground up in the first two steps. A few things appear only as a one-line gloss on the spot (`Rc`, `Box`, `E0499`, and the `'p` lifetime on the guard, which says the guard cannot outlive its borrow of the pool); their Rust details are in Chapters 2 and 4.
 
+<section class="prereq basics" data-section="basics">
+
+### <span class="n">00</span> Basics: the terms this reel uses
+
+- **Partial move**: moving one field out of a struct, so the field has a new owner and the rest of the struct is still owned. The struct as a whole is then unusable (E0382). *Where you meet it:* `let payload = frame.payload;`.
+- **E0509**: the error for moving a field out of a type that implements `Drop`. `drop` may read every field, so none may be missing. *Where you meet it:* destructuring the `PooledBuf` guard.
+- **E0507**: the error for moving out of something behind a reference (`&`, `&mut`, a `Vec` index, an `Rc`). A borrower may not leave a hole. *Where you meet it:* moving `self.buf` out inside `drop`.
+- **`take`, `replace`, `swap`**: idioms that move a value out through a `&mut` by putting a valid value back in the same step. `Option::take` leaves `None`; `mem::replace` leaves what you pass. *Where you meet it:* `self.buf.take()` in a guard's `drop`.
+- **Option as a legal hole**: a field stored as `Option<T>` can say "already handed out". *Where you meet it:* the guard's `buf: Option<Buf>`.
+- **Drop flag (per field)**: a run-time boolean recording whether a conditionally moved field still needs dropping. *Where you meet it:* a field moved on only one branch of an `if`.
+- **Pattern as transfer point**: each binding in a `let`, `match` arm or `if let` decides what happens to its part: a plain name copies or moves, `ref` borrows, and `_` touches nothing. *Where you meet it:* `Some(_)` leaves the value usable, `Some(_b)` moves it.
+- **Default binding mode**: when you match a reference with a non-reference pattern, Rust switches the mode from `move` to `ref` (or `ref mut`), so bindings borrow. *Where you meet it:* `match &frame { ... }` moves nothing.
+- **Rust 2024 reservations**: in a pattern that is already borrowing implicitly, `mut` on a binding, explicit `ref`/`ref mut`, and `&`/`&mut` patterns are errors. *Where you meet it:* `cargo fix --edition` rewriting a pattern.
+
+</section>
+
 <section class="prereq" data-section="single-ownership">
 
 ### <span class="n">01</span> Single ownership and move semantics

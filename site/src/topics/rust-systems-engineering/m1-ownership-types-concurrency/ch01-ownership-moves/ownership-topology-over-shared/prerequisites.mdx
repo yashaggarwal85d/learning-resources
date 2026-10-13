@@ -2,6 +2,25 @@ import Resource from '../../../../../components/Resource.astro';
 
 This topic closes Chapter 1. You should know that every value has one owner, that a move deinitializes its source, how a guard does its job in `Drop`, and how to read a borrow-checker error. It adds threads, channels, locks and closures in the amount the reel needs: each is shown and glossed on the spot (`thread::spawn`, `mpsc::channel`, `Arc`, `Mutex`, `Rc`, `RefCell`, a `move` closure), and their full Rust semantics belong to Chapters 2, 4 and 6.
 
+<section class="prereq basics" data-section="basics">
+
+### <span class="n">00</span> Basics: the terms this reel uses
+
+- **Ownership topology**: the shape of who owns what in a program: a tree, an arena, an owner thread, or shared owners behind a lock. *Where you meet it:* three stages needing buffers.
+- **`Arc<Mutex<T>>` reflex**: wrapping data in `Arc<Mutex<_>>` to silence the compiler without asking who should own it. *Where you meet it:* a pull request that fixes E0499 by wrapping the `Pool`.
+- **`Arc`**: shared ownership by reference count. `Arc::clone` copies a pointer and bumps the count. *Where you meet it:* `Arc<Config>` read by many threads.
+- **`Mutex`**: owns its data and hands out `&mut` through a guard that unlocks when dropped: exclusivity checked at run time, where a second caller waits. *Where you meet it:* `pool.lock()`.
+- **Tree-shaped ownership**: one owner lends down (`&mut`, `&`) and results come back as values. No locks. *Where you meet it:* a driver that owns the pool and calls the stages in turn.
+- **`Rc` and `RefCell`**: `Rc` is the single-threaded `Arc`; `RefCell` checks borrow rules at run time. A cycle of them never reaches count 0 and leaks. *Where you meet it:* a pipeline ring.
+- **Arena and `Handle`**: one `Vec` of slots owns every node; edges are `Handle`s (index plus generation) instead of owning pointers. *Where you meet it:* a stage graph with cycles.
+- **Generation (stale handle)**: a counter bumped when a slot is removed, so an old handle fails the check and a lookup returns `None`, never someone else's node. *Where you meet it:* looking up a hot-swapped stage.
+- **Channel (`mpsc`)**: a first-in, first-out queue between threads; `send` takes its value by move. *Where you meet it:* `tx.send(buf)`, then E0382 if you use `buf` again.
+- **`move` closure**: a closure that owns what it uses, so a spawned thread cannot outlive a borrow (E0373). *Where you meet it:* `thread::spawn(move || ...)`.
+- **Owner thread**: one thread owns the data and other threads reach it only by messages. *Where you meet it:* the ring, where a stalled stage 3 leaves stage 1 waiting.
+- **E0499, E0505**: two exclusive loans at once; moving a value while it is borrowed. *Where you meet it:* a second `PooledBuf`, or sending a buffer while a `view` of it is alive.
+
+</section>
+
 <section class="prereq" data-section="chapter-so-far">
 
 ### <span class="n">01</span> The chapter so far
