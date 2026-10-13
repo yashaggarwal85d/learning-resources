@@ -1,0 +1,180 @@
+{
+  "topic": "de.linux-shell-process-toolkit",
+  "note": "Written to be spoken: one sentence or phrase per line; {\"beat\": s} is a deliberate pause; code is spelled the way it is said. `answer` plays after the learner answers a predict step.",
+  "steps": [
+    {
+      "lines": [
+        "Bisect trusted the exit code.",
+        "So here is where exit codes come from... processes, their signals, and the pipes between them.",
+        "Five minutes.",
+        {
+          "beat": 0.4
+        },
+        "All familiar? Swipe on to the delivery workflow."
+      ]
+    },
+    {
+      "lines": [
+        "Every program you run is three steps.",
+        "The shell forks a copy of itself. The copy execs the program, which replaces it, in place. And the shell waits for it to end.",
+        "What comes back is one number, the exit status. That is what the question mark variable shows, and what bisect read.",
+        {
+          "beat": 0.4
+        },
+        "The child starts with the same three open files. Zero is standard input. One is standard output. Two is standard error."
+      ]
+    },
+    {
+      "lines": [
+        "Every file has nine permission bits. Read, write and execute, for the owner, for the group, and for everyone else.",
+        "A new file usually starts as read and write for everyone. And a mask switches some of those bits off.",
+        "The nightly job sets a strict file creation mask, so new files are private to their owner.",
+        "The loader runs as another user, in the same group.",
+        {
+          "beat": 0.4
+        },
+        "Can it read the file?"
+      ],
+      "answer": [
+        "No.",
+        "That setting switches off every group and other permission bit.",
+        "So read and write for everyone becomes six hundred.",
+        "That is read and write for the owner, and nothing for anyone else.",
+        "A looser mask keeps the group read bit.",
+        "Then the group can read the file.",
+        "And on a directory, the execute bit means enter. Read alone lists the names, but opens nothing."
+      ]
+    },
+    {
+      "lines": [
+        "A job reads a file that is missing, and prints one error line on standard error.",
+        "The shell applies redirections from left to right. And the standard error redirection means, make two a copy of whatever one points at, right now.",
+        "Here the copy comes first, and only then is standard output sent to the log file.",
+        {
+          "beat": 0.4
+        },
+        "Where does that error line land, in the file or on the screen?"
+      ],
+      "answer": [
+        "On the terminal.",
+        "The copy of standard output was made first, while it still pointed at the terminal. Only afterwards did standard output move to the file.",
+        "So the log stays empty. Zero lines.",
+        "Put the file first, then the copy, and the error line lands in the file."
+      ]
+    },
+    {
+      "lines": [
+        "A pipe joins one command's output to the next one's input.",
+        "And a pipeline reports the exit status of its last command.",
+        "Here the JSON tool cannot open the file. But sort, and the counting step, are perfectly happy with nothing.",
+        {
+          "beat": 0.4
+        },
+        "So what does the shell report?"
+      ],
+      "answer": [
+        "Zero.",
+        "The last command succeeded, so the whole pipeline says success. The failure in the middle vanished.",
+        "With pipe fail set, the status of the last failing command is reported instead. Here, that is two.",
+        "Put strict mode at the top of the nightly script, with set minus e, minus u, and pipe fail, and it stops right there, instead of loading nothing."
+      ]
+    },
+    {
+      "lines": [
+        "An exit status is one byte.",
+        "So it can hold zero, up to two hundred and fifty-five, and nothing else.",
+        "A status of zero means success.",
+        "Every value from one to one hundred and twenty-five belongs to the program itself, and means whatever the author decided.",
+        "On top of those, the shell adds two special codes of its own.",
+        "One hundred and twenty-six means found but not executable, because the execute bit is missing.",
+        "And one hundred and twenty-seven means that the command was not found anywhere.",
+        "When a signal kills the program, Bash reports one hundred and twenty-eight added to the signal number.",
+        "So a kill gives one hundred and thirty-seven.",
+        "And a terminate gives one hundred and forty-three.",
+        "And pressing Control C in a terminal gives the status one hundred and thirty.",
+        "That is only a convention, since a program could itself exit with one hundred and thirty-seven.",
+        "Python's subprocess reads the wait status directly, and reports a kill as minus nine.",
+        {
+          "beat": 0.4
+        },
+        "This is why bisect keeps the code one hundred and twenty-five for its skip signal.",
+        "It also rechecks a first run that exits with either one."
+      ]
+    },
+    {
+      "lines": [
+        "A signal is a one number message. Here it goes to the nightly load job.",
+        "The terminate signal is the polite stop.",
+        "A program can catch it, flush its buffers, and close.",
+        "Then it raises the signal again, so the shell still sees one hundred and forty-three.",
+        "The kill signal cannot be caught or ignored.",
+        "The kernel ends it instantly.",
+        "Whatever sat in its own buffers is lost.",
+        "The shell sees one hundred and thirty-seven.",
+        "Interrupt is what Control C sends. Hang-up means your terminal went away. Both can be caught.",
+        "A child that has ended, but not been waited for, is a zombie. And when a parent dies, the first process on the machine, or a subreaper, adopts the child.",
+        {
+          "beat": 0.4
+        },
+        "So send terminate first, wait a few seconds, and only then send kill."
+      ]
+    },
+    {
+      "lines": [
+        "The nightly load has sat for an hour. Not finished, not failed.",
+        "The proc status file, the kernel's live record of the process, says it is sleeping, with two threads, sharing the same memory. The process list in thread mode shows them. And strace, which prints each system call, shows a read on file descriptor four, and nothing more.",
+        {
+          "beat": 0.4
+        },
+        "What is it doing?"
+      ],
+      "answer": [
+        "It is waiting in a read, on a socket that nobody writes to.",
+        "Sleeping means it wakes the moment data arrives, or a signal. A busy loop would show R, running, with a busy processor. A disk wait would show a D, which usually can't be killed until the disk read returns. And a zombie, a Z, has no open files at all.",
+        "This job has no term handler, so send term and it simply ends.",
+        "The shell sees one hundred and forty-three.",
+        "Use kill only for a job that ignores terminate, and then the shell reports one hundred and thirty-seven."
+      ]
+    },
+    {
+      "lines": [
+        "Here is the whole lab in one picture.",
+        "The JSON tool pulls one field per line. The text tool trims it and lowercases it. Then sort and count.",
+        "Compare that with the script's own output, and the difference is empty. Exit zero.",
+        {
+          "beat": 0.4
+        },
+        "Skip the cleaning step, and forty events with stray capitals or blanks make seven groups instead of four.",
+        "A text search for refunded or canceled misses blanks.",
+        "It skips the ones with a leading blank.",
+        "One thousand four hundred and ninety-five, not one thousand five hundred.",
+        "Count values after parsing, not strings."
+      ]
+    },
+    {
+      "lines": [
+        "Read these two lines first.",
+        "Five fields, minute to weekday, then the command. This one runs every day a quarter past two, and appends both streams to a log.",
+        "Cron gives the job a tiny environment, with nothing from your own shell's path. It runs in one time zone, and it has no guard against a run that is still going. So take a lock.",
+        "On nights when the clocks change, a quarter past two local time is missing, or comes twice, so run cron in universal time.",
+        {
+          "beat": 0.4
+        },
+        "To reach a database behind a bastion, forward a local port through it with the ssh tool. The bastion connects to the database for you."
+      ]
+    },
+    {
+      "lines": [
+        "So... nine things to keep.",
+        "Fork, exec and wait. Nine permission bits, and a mask that switches them off. Three standard files, and the copy that depends on order. A pipeline reports its last command.",
+        "A status is a byte, with its own codes for not executable, not found, and killed by a signal.",
+        "Terminate first, then kill. Inspect a hung job with the process list, the proc files, and strace. Pipe small tools together, and diff against the script.",
+        "The scheduler runs it with a tiny environment, and a secure shell tunnel brings a private port to you.",
+        {
+          "beat": 0.5
+        },
+        "Next up... how a change gets from your branch to production."
+      ]
+    }
+  ]
+}

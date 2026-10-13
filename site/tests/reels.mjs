@@ -181,7 +181,7 @@ for (const [device, opts] of [
           const now = Number(await stepNow());
           if (now !== before + delta && !(before === 1 && delta === -1)) fail(`${where}: swipe from the caption on step ${before} went to ${now}`);
           await reel.locator('[aria-label^="Step "]').nth(i).click();
-          await page.waitForTimeout(900); // the leaving step's caption must be gone: a swipe that starts on it loses its pointerup (QUALITY.md #49)
+          await page.waitForTimeout(1500); // the leaving step's caption must be gone (a swipe that starts on it loses its pointerup, QUALITY.md #49); after a swipe into a predict step the caption area is still re-flowing, and a swipe starting on its option buttons is (rightly) ignored
         }
       }
       // A tap works like Instagram stories: right side = next step at once (even mid-animation), left third = previous.
