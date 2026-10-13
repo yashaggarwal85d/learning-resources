@@ -4,7 +4,7 @@
   "steps": [
     {
       "lines": [
-        "Bisect trusted an exit code.",
+        "Bisect trusted the exit code.",
         "So here is where exit codes come from... processes, their signals, and the pipes between them.",
         "Five minutes.",
         {
@@ -27,8 +27,8 @@
     {
       "lines": [
         "Every file has nine permission bits. Read, write and execute, for the owner, for the group, and for everyone else.",
-        "A new file usually starts at six six six. And the umask switches bits off.",
-        "The nightly job writes the orders file under a umask of zero seven seven.",
+        "A new file usually starts as read and write for everyone. And a mask switches some of those bits off.",
+        "The nightly job sets a strict file creation mask, so new files are private to their owner.",
         "The loader runs as another user, in the same group.",
         {
           "beat": 0.4
@@ -37,8 +37,10 @@
       ],
       "answer": [
         "No.",
-        "Zero seven seven switches off every group and other bit. Six six six becomes six hundred, read and write for the owner, and nothing for anyone else.",
-        "A umask of zero two seven would leave the group able to read.",
+        "That setting switches off every group and other permission bit.",
+        "So read and write for everyone becomes six hundred.",
+        "That is read and write for the owner, and nothing for anyone else.",
+        "A looser mask that keeps the group read bit would let the group read the file.",
         "And on a directory, the execute bit means enter. Read alone lists the names, but opens nothing."
       ]
     },
@@ -50,7 +52,7 @@
         {
           "beat": 0.4
         },
-        "So where does that error line land?"
+        "Where does that error line land, in the file or on the screen?"
       ],
       "answer": [
         "On the terminal.",
@@ -62,7 +64,7 @@
     {
       "lines": [
         "A pipe joins one command's output to the next one's input.",
-        "And the pipeline's exit status is the last command's.",
+        "And a pipeline reports the exit status of its last command.",
         "Here the JSON tool cannot open the file. But sort, and the counting step, are perfectly happy with nothing.",
         {
           "beat": 0.4
@@ -72,41 +74,53 @@
       "answer": [
         "Zero.",
         "The last command succeeded, so the whole pipeline says success. The failure in the middle vanished.",
-        "The pipe-fail option makes it the rightmost failure instead, here a two.",
-        "Put set minus e, minus u, and pipe-fail at the top of the nightly script, nightly dot S-H, and it stops right there, instead of loading nothing."
+        "With pipe fail set, the status of the last failing command is reported instead. Here, that is two.",
+        "Put strict mode at the top of the nightly script, with set minus e, minus u, and pipe fail, and it stops right there, instead of loading nothing."
       ]
     },
     {
       "lines": [
-        "An exit status is one byte. Zero to two hundred fifty-five.",
-        "Zero is success. One to one hundred twenty-five mean whatever the program says.",
-        "The shell adds two of its own. One hundred twenty-six, found but not executable, because the execute bit is missing. And one hundred twenty-seven, not found.",
-        "Above one hundred twenty-eight, Bash reports one hundred twenty-eight plus the signal that killed the program. So one hundred thirty-seven means a kill, one hundred forty-three a terminate, and one hundred thirty a Control-C.",
-        "By convention. A program could exit with one hundred thirty-seven itself.",
+        "An exit status is one byte.",
+        "So it can hold zero, up to two hundred and fifty-five, and nothing else.",
+        "A status of zero means success.",
+        "Every value from one to one hundred and twenty-five belongs to the program itself, and means whatever the author decided.",
+        "On top of those, the shell adds two special codes of its own.",
+        "One hundred and twenty-six means found but not executable, because the execute bit is missing.",
+        "And one hundred and twenty-seven means that the command was not found anywhere.",
+        "When a signal kills the program, Bash reports one hundred and twenty-eight added to the signal number.",
+        "So a kill gives one hundred and thirty-seven.",
+        "And a terminate gives one hundred and forty-three.",
+        "And pressing Control C in a terminal gives the status one hundred and thirty.",
+        "That is only a convention, since a program could itself exit with one hundred and thirty-seven.",
         "Python's subprocess reads the wait status directly, and reports a kill as minus nine.",
         {
           "beat": 0.4
         },
-        "That is why bisect reserved one hundred twenty-five for skip... and re-checks a first run that exits with one hundred twenty-six or one hundred twenty-seven."
+        "This is why bisect keeps the code one hundred and twenty-five for its skip signal.",
+        "It also checks again when the very first run exits with either of the shell's two special codes."
       ]
     },
     {
       "lines": [
         "A signal is a one number message. Here it goes to the nightly load job.",
-        "Sig-term is the polite stop. A program can catch it, flush its buffers, and close. Then it raises the signal again, so the shell still sees one hundred forty-three.",
-        "Sig-kill cannot be caught or ignored. The kernel ends the process where it stands, whatever sat in its own buffers is lost, and the shell sees one hundred thirty-seven.",
-        "Sig-int is Control-C. Sig-hup means your terminal went away. Both can be caught.",
-        "A child that has ended, but not been waited for, is a zombie. And when a parent dies, init, or a sub-reaper, adopts the child.",
+        "The terminate signal is the polite stop.",
+        "A program can catch it, flush its buffers, and close.",
+        "Then it raises the signal again, so the shell still sees one hundred and forty-three.",
+        "The kill signal cannot be caught or ignored.",
+        "The kernel ends the process where it stands, and whatever sat in its own buffers is lost.",
+        "The shell sees one hundred and thirty-seven.",
+        "Interrupt is what Control C sends. Hang-up means your terminal went away. Both can be caught.",
+        "A child that has ended, but not been waited for, is a zombie. And when a parent dies, the first process on the machine, or a subreaper, adopts the child.",
         {
           "beat": 0.4
         },
-        "So, term first. Wait. Then kill."
+        "So send terminate first, wait a few seconds, and only then send kill."
       ]
     },
     {
       "lines": [
         "The nightly load has sat for an hour. Not finished, not failed.",
-        "The proc status file, the kernel's live record of the process, says it is sleeping, with two threads, sharing the same memory. P-S dash L lists them. And strace, which prints each system call, shows a read on file descriptor four, and nothing more.",
+        "The proc status file, the kernel's live record of the process, says it is sleeping, with two threads, sharing the same memory. The process list in thread mode shows them. And strace, which prints each system call, shows a read on file descriptor four, and nothing more.",
         {
           "beat": 0.4
         },
@@ -115,40 +129,44 @@
       "answer": [
         "It is waiting in a read, on a socket that nobody writes to.",
         "Sleeping means it wakes the moment data arrives, or a signal. A busy loop would show R, running, with a busy processor. A disk wait would show a D, which usually can't be killed until the disk read returns. And a zombie, a Z, has no open files at all.",
-        "This job has no term handler, so send term and it simply ends, and the shell sees one hundred forty-three. Kill is for a job that ignores term, and then the shell sees one hundred thirty-seven."
+        "This job has no term handler, so send term and it simply ends.",
+        "The shell sees one hundred and forty-three.",
+        "Use kill only for a job that ignores terminate, and then the shell reports one hundred and thirty-seven."
       ]
     },
     {
       "lines": [
         "Here is the whole lab in one picture.",
-        "The JSON tool pulls one field per line. Awk trims it and lowercases it. Then sort and count.",
+        "The JSON tool pulls one field per line. The text tool trims it and lowercases it. Then sort and count.",
         "Compare that with the script's own output, and the difference is empty. Exit zero.",
         {
           "beat": 0.4
         },
-        "Skip the awk step, and forty events with stray capitals or blanks make seven groups instead of four.",
-        "And a grep for refunded or cancelled misses the ones with a leading blank. One thousand four hundred ninety-five, not fifteen hundred. Count values after parsing, not strings."
+        "Skip the cleaning step, and forty events with stray capitals or blanks make seven groups instead of four.",
+        "And a text search for refunded or canceled misses the ones with a leading blank.",
+        "One thousand four hundred and ninety-five, not one thousand five hundred.",
+        "Count values after parsing, not strings."
       ]
     },
     {
       "lines": [
-        "Two lines you must read on sight.",
-        "Five fields, minute to weekday, then the command. This one runs at two fifteen every day, and appends both streams to a log.",
-        "Cron gives the job a tiny environment, with nothing from your own shell's path. It runs in one timezone. And it has no guard against a run that is still going. So take a lock.",
-        "On clock-change nights, two fifteen local time is missing, or comes twice. So run cron in universal time.",
+        "There are two lines you must be able to read at a glance.",
+        "Five fields, minute to weekday, then the command. This one runs every day a quarter past two, and appends both streams to a log.",
+        "Cron gives the job a tiny environment, with nothing from your own shell's path. It runs in one time zone, and it has no guard against a run that is still going. So take a lock.",
+        "On nights when the clocks change, a quarter past two local time is missing, or comes twice, so run cron in universal time.",
         {
           "beat": 0.4
         },
-        "To reach a database behind a bastion, forward a local port through it with S-S-H. The bastion connects to the database for you."
+        "To reach a database behind a bastion, forward a local port through it with the ssh tool. The bastion connects to the database for you."
       ]
     },
     {
       "lines": [
         "So... nine things to keep.",
-        "Fork, exec and wait. Nine permission bits, and a umask that switches them off. Three standard files, and the copy that depends on order. A pipeline reports its last command.",
+        "Fork, exec and wait. Nine permission bits, and a mask that switches them off. Three standard files, and the copy that depends on order. A pipeline reports its last command.",
         "A status is a byte, with its own codes for not executable, not found, and killed by a signal.",
-        "Term first, then kill. Look at a hung job with P-S, the proc files, and strace. Chain small tools, and diff against the script.",
-        "Cron runs it with a tiny environment, and ssh dash L brings a private port to you.",
+        "Terminate first, then kill. Inspect a hung job with the process list, the proc files, and strace. Pipe small tools together, and diff against the script.",
+        "The scheduler runs it with a tiny environment, and a secure shell tunnel brings a private port to you.",
         {
           "beat": 0.5
         },

@@ -1,0 +1,586 @@
+{
+ "topic": "de.linux-shell-process-toolkit",
+ "voice": "tara-v1",
+ "clips": {
+  "01": {
+   "hash": "e65d17543f32c69b",
+   "duration": 15.806,
+   "lines": [
+    {
+     "text": "Bisect trusted the exit code.",
+     "start": 0.15,
+     "end": 2.523
+    },
+    {
+     "text": "So here is where exit codes come from... processes, their signals, and the pipes between them.",
+     "start": 2.943,
+     "end": 9.371
+    },
+    {
+     "text": "Five minutes.",
+     "start": 9.791,
+     "end": 11.103
+    },
+    {
+     "text": "All familiar? Swipe on to the delivery workflow.",
+     "start": 11.923,
+     "end": 15.456
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -1.4,
+   "wpm": 118,
+   "wer": 0.0
+  },
+  "02": {
+   "hash": "75291f3aabbf55be",
+   "duration": 30.394,
+   "lines": [
+    {
+     "text": "Every program you run is three steps.",
+     "start": 0.15,
+     "end": 2.683
+    },
+    {
+     "text": "The shell forks a copy of itself. The copy execs the program, which replaces it, in place. And the shell waits for it to end.",
+     "start": 3.103,
+     "end": 11.136
+    },
+    {
+     "text": "What comes back is one number, the exit status. That is what the question mark variable shows, and what bisect read.",
+     "start": 11.556,
+     "end": 20.153
+    },
+    {
+     "text": "The child starts with the same three open files. Zero is standard input. One is standard output. Two is standard error.",
+     "start": 20.973,
+     "end": 30.044
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.4,
+   "wpm": 146,
+   "wer": 0.0
+  },
+  "03": {
+   "hash": "8039f522d208dbb7",
+   "duration": 24.341,
+   "lines": [
+    {
+     "text": "Every file has nine permission bits. Read, write and execute, for the owner, for the group, and for everyone else.",
+     "start": 0.15,
+     "end": 6.194
+    },
+    {
+     "text": "A new file usually starts as read and write for everyone. And a mask switches some of those bits off.",
+     "start": 6.614,
+     "end": 13.135
+    },
+    {
+     "text": "The nightly job sets a strict file creation mask, so new files are private to their owner.",
+     "start": 13.555,
+     "end": 18.286
+    },
+    {
+     "text": "The loader runs as another user, in the same group.",
+     "start": 18.706,
+     "end": 22.007
+    },
+    {
+     "text": "Can it read the file?",
+     "start": 22.827,
+     "end": 23.991
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -1.4,
+   "wpm": 177,
+   "wer": 0.0
+  },
+  "03a": {
+   "hash": "2e8deeb236693242",
+   "duration": 24.249,
+   "lines": [
+    {
+     "text": "No.",
+     "start": 0.15,
+     "end": 0.615
+    },
+    {
+     "text": "That setting switches off every group and other permission bit.",
+     "start": 1.035,
+     "end": 4.671
+    },
+    {
+     "text": "So read and write for everyone becomes six hundred.",
+     "start": 5.091,
+     "end": 7.975
+    },
+    {
+     "text": "That is read and write for the owner, and nothing for anyone else.",
+     "start": 8.395,
+     "end": 12.929
+    },
+    {
+     "text": "A looser mask that keeps the group read bit would let the group read the file.",
+     "start": 13.349,
+     "end": 17.815
+    },
+    {
+     "text": "And on a directory, the execute bit means enter. Read alone lists the names, but opens nothing.",
+     "start": 18.235,
+     "end": 23.899
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.4,
+   "wpm": 163,
+   "wer": 0.0
+  },
+  "04": {
+   "hash": "d8a4ebbeafee53a8",
+   "duration": 24.616,
+   "lines": [
+    {
+     "text": "A job reads a file that is missing, and prints one error line on standard error.",
+     "start": 0.15,
+     "end": 5.409
+    },
+    {
+     "text": "The shell applies redirections from left to right. And the standard error redirection means, make two a copy of whatever one points at, right now.",
+     "start": 5.829,
+     "end": 13.936
+    },
+    {
+     "text": "Here the copy comes first, and only then is standard output sent to the log file.",
+     "start": 14.356,
+     "end": 19.186
+    },
+    {
+     "text": "Where does that error line land, in the file or on the screen?",
+     "start": 20.006,
+     "end": 24.266
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.4,
+   "wpm": 171,
+   "wer": 0.0
+  },
+  "04a": {
+   "hash": "bd8fbbf5f05f26ba",
+   "duration": 17.912,
+   "lines": [
+    {
+     "text": "On the terminal.",
+     "start": 0.15,
+     "end": 1.505
+    },
+    {
+     "text": "The copy of standard output was made first, while it still pointed at the terminal. Only afterwards did standard output move to the file.",
+     "start": 1.925,
+     "end": 9.68
+    },
+    {
+     "text": "So the log stays empty. Zero lines.",
+     "start": 10.1,
+     "end": 12.758
+    },
+    {
+     "text": "Put the file first, then the copy, and the error line lands in the file.",
+     "start": 13.178,
+     "end": 17.562
+    }
+   ],
+   "lufs": -16.3,
+   "true_peak": -1.4,
+   "wpm": 164,
+   "wer": 0.0
+  },
+  "05": {
+   "hash": "f07f91175fbe3075",
+   "duration": 18.621,
+   "lines": [
+    {
+     "text": "A pipe joins one command's output to the next one's input.",
+     "start": 0.15,
+     "end": 4.166
+    },
+    {
+     "text": "And a pipeline reports the exit status of its last command.",
+     "start": 4.586,
+     "end": 8.019
+    },
+    {
+     "text": "Here the JSON tool cannot open the file. But sort, and the counting step, are perfectly happy with nothing.",
+     "start": 8.439,
+     "end": 15.545
+    },
+    {
+     "text": "So what does the shell report?",
+     "start": 16.365,
+     "end": 18.271
+    }
+   ],
+   "lufs": -16.6,
+   "true_peak": -1.4,
+   "wpm": 151,
+   "wer": 0.0
+  },
+  "05a": {
+   "hash": "f5595ac4d94886c3",
+   "duration": 23.263,
+   "lines": [
+    {
+     "text": "Zero.",
+     "start": 0.15,
+     "end": 0.67
+    },
+    {
+     "text": "The last command succeeded, so the whole pipeline says success. The failure in the middle vanished.",
+     "start": 1.091,
+     "end": 7.319
+    },
+    {
+     "text": "With pipe fail set, the status of the last failing command is reported instead. Here, that is two.",
+     "start": 7.739,
+     "end": 14.713
+    },
+    {
+     "text": "Put strict mode at the top of the nightly script, with set minus e, minus u, and pipe fail, and it stops right there, instead of loading nothing.",
+     "start": 15.133,
+     "end": 22.913
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.4,
+   "wpm": 162,
+   "wer": 0.0
+  },
+  "06": {
+   "hash": "4b1ecfe5050db321",
+   "duration": 73.65,
+   "lines": [
+    {
+     "text": "An exit status is one byte.",
+     "start": 0.15,
+     "end": 2.325
+    },
+    {
+     "text": "So it can hold zero, up to two hundred and fifty-five, and nothing else.",
+     "start": 2.745,
+     "end": 7.161
+    },
+    {
+     "text": "A status of zero means success.",
+     "start": 7.581,
+     "end": 10.027
+    },
+    {
+     "text": "Every value from one to one hundred and twenty-five belongs to the program itself, and means whatever the author decided.",
+     "start": 10.447,
+     "end": 16.866
+    },
+    {
+     "text": "On top of those, the shell adds two special codes of its own.",
+     "start": 17.286,
+     "end": 20.972
+    },
+    {
+     "text": "One hundred and twenty-six means found but not executable, because the execute bit is missing.",
+     "start": 21.392,
+     "end": 27.406
+    },
+    {
+     "text": "And one hundred and twenty-seven means that the command was not found anywhere.",
+     "start": 27.826,
+     "end": 33.468
+    },
+    {
+     "text": "When a signal kills the program, Bash reports one hundred and twenty-eight added to the signal number.",
+     "start": 33.888,
+     "end": 39.226
+    },
+    {
+     "text": "So a kill gives one hundred and thirty-seven.",
+     "start": 39.646,
+     "end": 42.277
+    },
+    {
+     "text": "And a terminate gives one hundred and forty-three.",
+     "start": 42.697,
+     "end": 45.775
+    },
+    {
+     "text": "And pressing Control C in a terminal gives the status one hundred and thirty.",
+     "start": 46.195,
+     "end": 50.662
+    },
+    {
+     "text": "That is only a convention, since a program could itself exit with one hundred and thirty-seven.",
+     "start": 51.082,
+     "end": 56.113
+    },
+    {
+     "text": "Python's subprocess reads the wait status directly, and reports a kill as minus nine.",
+     "start": 56.533,
+     "end": 62.285
+    },
+    {
+     "text": "This is why bisect keeps the code one hundred and twenty-five for its skip signal.",
+     "start": 63.105,
+     "end": 67.643
+    },
+    {
+     "text": "It also checks again when the very first run exits with either of the shell's two special codes.",
+     "start": 68.063,
+     "end": 73.3
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.4,
+   "wpm": 168,
+   "wer": 0.0
+  },
+  "07": {
+   "hash": "ec381d3d2ea1d190",
+   "duration": 49.688,
+   "lines": [
+    {
+     "text": "A signal is a one number message. Here it goes to the nightly load job.",
+     "start": 0.15,
+     "end": 4.569
+    },
+    {
+     "text": "The terminate signal is the polite stop.",
+     "start": 4.989,
+     "end": 7.168
+    },
+    {
+     "text": "A program can catch it, flush its buffers, and close.",
+     "start": 7.588,
+     "end": 11.398
+    },
+    {
+     "text": "Then it raises the signal again, so the shell still sees one hundred and forty-three.",
+     "start": 11.818,
+     "end": 16.402
+    },
+    {
+     "text": "The kill signal cannot be caught or ignored.",
+     "start": 16.822,
+     "end": 19.63
+    },
+    {
+     "text": "The kernel ends the process where it stands, and whatever sat in its own buffers is lost.",
+     "start": 20.05,
+     "end": 24.956
+    },
+    {
+     "text": "The shell sees one hundred and thirty-seven.",
+     "start": 25.376,
+     "end": 27.916
+    },
+    {
+     "text": "Interrupt is what Control C sends. Hang-up means your terminal went away. Both can be caught.",
+     "start": 28.336,
+     "end": 34.399
+    },
+    {
+     "text": "A child that has ended, but not been waited for, is a zombie. And when a parent dies, the first process on the machine, or a subreaper, adopts the child.",
+     "start": 34.819,
+     "end": 43.724
+    },
+    {
+     "text": "So send terminate first, wait a few seconds, and only then send kill.",
+     "start": 44.544,
+     "end": 49.338
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -1.4,
+   "wpm": 170,
+   "wer": 0.0
+  },
+  "08": {
+   "hash": "6a2b41790a82ca28",
+   "duration": 24.229,
+   "lines": [
+    {
+     "text": "The nightly load has sat for an hour. Not finished, not failed.",
+     "start": 0.15,
+     "end": 6.153
+    },
+    {
+     "text": "The proc status file, the kernel's live record of the process, says it is sleeping, with two threads, sharing the same memory. The process list in thread mode shows them. And strace, which prints each system call, shows a read on file descriptor four, and nothing more.",
+     "start": 6.573,
+     "end": 21.919
+    },
+    {
+     "text": "What is it doing?",
+     "start": 22.739,
+     "end": 23.879
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -1.4,
+   "wpm": 156,
+   "wer": 0.0
+  },
+  "08a": {
+   "hash": "01b29972e62a0bc5",
+   "duration": 34.346,
+   "lines": [
+    {
+     "text": "It is waiting in a read, on a socket that nobody writes to.",
+     "start": 0.15,
+     "end": 4.058
+    },
+    {
+     "text": "Sleeping means it wakes the moment data arrives, or a signal. A busy loop would show R, running, with a busy processor. A disk wait would show a D, which usually can't be killed until the disk read returns. And a zombie, a Z, has no open files at all.",
+     "start": 4.478,
+     "end": 19.63
+    },
+    {
+     "text": "This job has no term handler, so send term and it simply ends.",
+     "start": 20.05,
+     "end": 24.7
+    },
+    {
+     "text": "The shell sees one hundred and forty-three.",
+     "start": 25.12,
+     "end": 27.853
+    },
+    {
+     "text": "Use kill only for a job that ignores terminate, and then the shell reports one hundred and thirty-seven.",
+     "start": 28.273,
+     "end": 33.996
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.1,
+   "wpm": 180,
+   "wer": 0.0
+  },
+  "09": {
+   "hash": "2c6f56cd490c41b8",
+   "duration": 37.349,
+   "lines": [
+    {
+     "text": "Here is the whole lab in one picture.",
+     "start": 0.15,
+     "end": 2.696
+    },
+    {
+     "text": "The JSON tool pulls one field per line. The text tool trims it and lowercases it. Then sort and count.",
+     "start": 3.116,
+     "end": 10.574
+    },
+    {
+     "text": "Compare that with the script's own output, and the difference is empty. Exit zero.",
+     "start": 10.994,
+     "end": 17.242
+    },
+    {
+     "text": "Skip the cleaning step, and forty events with stray capitals or blanks make seven groups instead of four.",
+     "start": 18.062,
+     "end": 24.122
+    },
+    {
+     "text": "And a text search for refunded or canceled misses the ones with a leading blank.",
+     "start": 24.542,
+     "end": 29.131
+    },
+    {
+     "text": "One thousand four hundred and ninety-five, not one thousand five hundred.",
+     "start": 29.551,
+     "end": 33.943
+    },
+    {
+     "text": "Count values after parsing, not strings.",
+     "start": 34.363,
+     "end": 36.999
+    }
+   ],
+   "lufs": -16.6,
+   "true_peak": -1.3,
+   "wpm": 149,
+   "wer": 0.0
+  },
+  "10": {
+   "hash": "167f544445f13682",
+   "duration": 42.602,
+   "lines": [
+    {
+     "text": "There are two lines you must be able to read at a glance.",
+     "start": 0.15,
+     "end": 3.791
+    },
+    {
+     "text": "Five fields, minute to weekday, then the command. This one runs every day a quarter past two, and appends both streams to a log.",
+     "start": 4.211,
+     "end": 12.8
+    },
+    {
+     "text": "Cron gives the job a tiny environment, with nothing from your own shell's path. It runs in one time zone, and it has no guard against a run that is still going. So take a lock.",
+     "start": 13.22,
+     "end": 24.823
+    },
+    {
+     "text": "On nights when the clocks change, a quarter past two local time is missing, or comes twice, so run cron in universal time.",
+     "start": 25.243,
+     "end": 33.174
+    },
+    {
+     "text": "To reach a database behind a bastion, forward a local port through it with the ssh tool. The bastion connects to the database for you.",
+     "start": 33.994,
+     "end": 42.252
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.4,
+   "wpm": 170,
+   "wer": 0.0
+  },
+  "11": {
+   "hash": "d829c93cc0111c10",
+   "duration": 41.709,
+   "lines": [
+    {
+     "text": "So... nine things to keep.",
+     "start": 0.15,
+     "end": 2.403
+    },
+    {
+     "text": "Fork, exec and wait. Nine permission bits, and a mask that switches them off. Three standard files, and the copy that depends on order. A pipeline reports its last command.",
+     "start": 2.823,
+     "end": 13.677
+    },
+    {
+     "text": "A status is a byte, with its own codes for not executable, not found, and killed by a signal.",
+     "start": 14.097,
+     "end": 19.477
+    },
+    {
+     "text": "Terminate first, then kill. Inspect a hung job with the process list, the proc files, and strace. Pipe small tools together, and diff against the script.",
+     "start": 19.897,
+     "end": 31.227
+    },
+    {
+     "text": "The scheduler runs it with a tiny environment, and a secure shell tunnel brings a private port to you.",
+     "start": 31.647,
+     "end": 36.95
+    },
+    {
+     "text": "Next up... how a change gets from your branch to production.",
+     "start": 37.87,
+     "end": 41.359
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -1.4,
+   "wpm": 158,
+   "wer": 0.0
+  }
+ }
+}
