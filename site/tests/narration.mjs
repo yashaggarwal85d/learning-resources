@@ -11,6 +11,9 @@ const topics = [...registry.matchAll(/id: '([^']+)',[\s\S]*?slug: '([^']+)',[\s\
 const live = topics.filter((t) => t.status === 'live');
 // A live topic's problem fails the check. A held topic's is a warning: the release run that makes it live must run
 // narrate.sh on it first (ROUTINE.md section 1, `release`), and that run re-picks takes and re-masters from the cache.
+// A topic queued for re-narration (src/topics/renarration.json: its script was rewritten so the narrator teaches, the
+// PC generates the new audio in bulk) is a warning too, live or not: it keeps playing its old clips until then.
+const renarration = new Set(JSON.parse(readFileSync(`${site}src/topics/renarration.json`, 'utf8')).pending);
 const liveFailures = [];
 const warnings = [];
 // Must match narration/common.py clip_hash: lines joined by newlines, beats as [beat s], plus the voice version.
@@ -21,7 +24,7 @@ const hash = (items) =>
     .slice(0, 16);
 
 for (const t of topics) {
-  const failures = t.status === 'live' ? liveFailures : warnings;
+  const failures = t.status === 'live' && !renarration.has(t.id) ? liveFailures : warnings;
   const scriptPath = `${site}src/topics/${t.slug}/narration.json`;
   if (!existsSync(scriptPath)) {
     failures.push(`${t.id}: no narration.json`);
@@ -54,9 +57,9 @@ for (const t of topics) {
   }
   if (Object.keys(manifest.clips).length !== clips.length) failures.push(`${t.id}: manifest has ${Object.keys(manifest.clips).length} clips, script has ${clips.length}`);
 }
-if (warnings.length) console.warn(`Held reels whose narration must be regenerated before release (narration/narrate.sh):\n- ${warnings.join('\n- ')}`);
+if (warnings.length) console.warn(`Reels whose narration the PC must generate (held, or queued in src/topics/renarration.json; narration/narrate.sh):\n- ${warnings.join('\n- ')}`);
 if (liveFailures.length) {
   console.error(`Narration check failed:\n- ${liveFailures.join('\n- ')}`);
   process.exit(1);
 }
-console.log(`Narration check passed: ${live.length} live reel(s), ${topics.length - live.length} held.`);
+console.log(`Narration check passed: ${live.length} live reel(s), ${topics.length - live.length} held, ${[...renarration].filter((id) => topics.some((t) => t.id === id)).length} queued for re-narration.`);

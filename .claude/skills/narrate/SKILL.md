@@ -21,7 +21,7 @@ The PC half of making a topic (owner decision 2026-10-13). Routine runs on the c
 cd site && npm run test:narration
 ```
 
-Every warning line names a held topic whose narration is missing, stale (script changed) or out of standard. That list, plus any live topic the check fails, is the job. Nothing else is narrated.
+Every warning line names a topic whose narration is missing, stale (script changed) or out of standard: held topics, and the topics queued in `site/src/topics/renarration.json` (their scripts were rewritten so the narrator teaches; live ones keep playing their old clips until now). That list, plus any live topic the check fails, is the job. Nothing else is narrated. When a queued topic's clips match its current script again, remove its id from `renarration.json` in the same commit as its audio.
 
 ## 1b. The teacher pass: rewrite scripts that read the screen (before narrating them)
 
