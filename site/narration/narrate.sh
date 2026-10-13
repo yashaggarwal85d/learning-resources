@@ -8,7 +8,14 @@ topic=$1
 tools=${NARRATION_TOOLS:-$HOME/.cache/learning-narration/tools}
 ORPHEUS_PY=${ORPHEUS_PY:-$tools/.venv-orph/bin/python}
 EVAL_PY=${EVAL_PY:-$tools/.venv-eval/bin/python}
-for py in "$ORPHEUS_PY" "$EVAL_PY"; do [ -x "$py" ] || { echo "$py not found: run narration/setup.sh first" >&2; exit 1; }; done
+# The generator follows voice.json → model.engine: orpheus (the CPU voice, gen_takes.py) or qwen3-tts (the GPU voice on the
+# owner PC, gen_takes_qwen.py, run with TTS_PY; see pc/README.md).
+engine=$( (grep -o '"engine": *"[^"]*"' "$here/voice.json" || true) | head -1 | sed 's/.*"\([^"]*\)"$/\1/')
+case "${engine:-orpheus}" in
+  qwen3-tts) GEN_PY=${TTS_PY:?set TTS_PY to the python of the GPU environment, see pc/README.md}; GEN=gen_takes_qwen.py ;;
+  *) GEN_PY=$ORPHEUS_PY; GEN=gen_takes.py ;;
+esac
+for py in "$GEN_PY" "$EVAL_PY"; do [ -x "$py" ] || { echo "$py not found: run narration/setup.sh (cloud) or follow narration/pc/README.md (PC)" >&2; exit 1; }; done
 jobs=$(mktemp)
 # Takes are kept across sessions on the `narration-cache` branch: restore them now, save them every hour while we run
 # (a run that dies at a usage limit never reaches the exit trap, so it loses at most an hour) and when we stop.
@@ -20,7 +27,7 @@ saver=$!
 trap 'kill $saver 2>/dev/null || true; wait $saver 2>/dev/null || true; cache push' EXIT
 "$EVAL_PY" "$here/assemble.py" plan "$topic" "$jobs"
 for round in 1 2 3 4; do
-  "$ORPHEUS_PY" "$here/gen_takes.py" "$jobs"
+  "$GEN_PY" "$here/$GEN" "$jobs"
   set +e; "$EVAL_PY" "$here/assemble.py" build "$topic" "$jobs"; rc=$?; set -e
   [ $rc -eq 0 ] && exit 0
   [ $rc -ne 3 ] && exit $rc
