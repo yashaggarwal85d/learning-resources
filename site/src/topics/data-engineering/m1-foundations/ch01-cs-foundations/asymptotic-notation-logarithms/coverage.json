@@ -1,0 +1,566 @@
+{
+  "topic": "de.asymptotic-notation-logarithms",
+  "syllabus": [
+    {
+      "clause": "O/Θ/Ω and how costs grow with input size",
+      "at": [
+        {
+          "step": "O ceiling, Ω floor, Θ both"
+        },
+        {
+          "step": "Is it also O(n²)?"
+        },
+        {
+          "step": "Double the data"
+        },
+        {
+          "deep": "O, Ω and Θ, precisely"
+        },
+        {
+          "deep": "Growth at data sizes"
+        }
+      ]
+    },
+    {
+      "clause": "logarithms in any base and the change of base (log_b x = ln x / ln b)",
+      "at": [
+        {
+          "step": "Bisect, at a billion"
+        },
+        {
+          "step": "Any base, one formula"
+        },
+        {
+          "deep": "Logarithms and the change of base"
+        }
+      ]
+    },
+    {
+      "clause": "why a large base makes the logarithm tiny (B-tree height, external-sort passes)",
+      "at": [
+        {
+          "step": "A large base, few divisions"
+        },
+        {
+          "step": "How tall is the orders index?"
+        },
+        {
+          "step": "Sort passes are a logarithm too"
+        },
+        {
+          "deep": "Large bases: index height and sort passes"
+        }
+      ]
+    },
+    {
+      "clause": "full treatment → Data Structures & Algorithms Ch.1",
+      "at": [
+        {
+          "step": "In one breath"
+        },
+        {
+          "topic": "Asymptotic notation and case analysis",
+          "domain": "data-structures-and-algorithms",
+          "quote": "O/Θ/Ω/o/ω"
+        }
+      ]
+    }
+  ],
+  "sources": [
+    {
+      "source": "MIT OpenCourseWare 6.006 Introduction to Algorithms, Spring 2020, Recitation 1",
+      "items": [
+        {
+          "item": "Algorithms: problem, deterministic algorithm, birthday-matching example",
+          "at": [
+            {
+              "out": "A worked example of the course's first lecture, not about growth rates or logarithms."
+            }
+          ]
+        },
+        {
+          "item": "Correctness: proof by induction",
+          "at": [
+            {
+              "out": "Proof technique, not this topic; correctness is the delivery workflow's tests and DSA proofs."
+            }
+          ]
+        },
+        {
+          "item": "Efficiency: comparing algorithms by asymptotic performance, ignoring constant factors",
+          "at": [
+            {
+              "step": "O ceiling, Ω floor, Θ both"
+            },
+            {
+              "step": "Big-O is not a stopwatch"
+            },
+            {
+              "deep": "Why big-O doesn't predict wall-clock time"
+            }
+          ]
+        },
+        {
+          "item": "Asymptotic Notation: definitions of O, Omega, Theta; table of common growth shorthands (constant to exponential); binary search as logarithmic time; input-size conventions",
+          "at": [
+            {
+              "step": "O ceiling, Ω floor, Θ both"
+            },
+            {
+              "step": "Is it also O(n²)?"
+            },
+            {
+              "deep": "O, Ω and Θ, precisely"
+            },
+            {
+              "deep": "Growth at data sizes"
+            }
+          ]
+        },
+        {
+          "item": "Model of Computation: w-bit Word-RAM, word size w > log2 n",
+          "at": [
+            {
+              "deep": "Logarithms and the change of base"
+            }
+          ]
+        },
+        {
+          "item": "Data Structure: interface, static array",
+          "at": [
+            {
+              "out": "Data-structure interfaces belong to the DSA track."
+            }
+          ]
+        },
+        {
+          "item": "Running Time Analysis: birthday matching in O(n^2)",
+          "at": [
+            {
+              "out": "A worked example of the lecture; this topic's quadratic example is the shop's orders."
+            }
+          ]
+        },
+        {
+          "item": "Asymptotics Exercises: ordering growth, logarithm rules (product, power, change of base), polylog vs polynomial",
+          "at": [
+            {
+              "step": "Double the data"
+            },
+            {
+              "step": "Any base, one formula"
+            },
+            {
+              "deep": "Growth at data sizes"
+            },
+            {
+              "deep": "Logarithms and the change of base"
+            }
+          ]
+        },
+        {
+          "item": "Asymptotics Exercises: Stirling and log(n!) = Θ(n log n)",
+          "at": [
+            {
+              "deep": "Growth at data sizes"
+            },
+            {
+              "topic": "Lower bounds and adversary arguments",
+              "domain": "data-structures-and-algorithms",
+              "quote": "decision-tree Ω(n log n) for comparison sorting"
+            }
+          ]
+        },
+        {
+          "item": "Asymptotics Exercises: binomial bound, 2^(n+1) vs 2^n",
+          "at": [
+            {
+              "out": "Exponential-growth exercises for the algorithms track; a refresher on logarithms and O/Θ/Ω does not need them (the Deep dive says so in one sentence)."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "NIST Digital Library of Mathematical Functions, §4.2 Definitions",
+      "items": [
+        {
+          "item": "§4.2(i) The Logarithm: Ln z defined by the integral of dt/t from 1 to z; the principal value; the only zero of ln z is z=1",
+          "at": [
+            {
+              "deep": "Logarithms and the change of base"
+            },
+            {
+              "out": "Complex branches and the cut (−∞,0] are not needed: every logarithm here is of a positive real."
+            }
+          ]
+        },
+        {
+          "item": "§4.2(ii) Logarithms to a General Base a: log_a z = ln z / ln a (4.2.8); log_a z = log_b z / log_b a (4.2.9); log_a b = 1 / log_b a (4.2.10); ln 10 and log_10 e",
+          "at": [
+            {
+              "step": "Any base, one formula"
+            },
+            {
+              "deep": "Logarithms and the change of base"
+            }
+          ]
+        },
+        {
+          "item": "§4.2(iii) The Exponential Function: exp as inverse of Ln (exp z = ζ iff z = Ln ζ)",
+          "at": [
+            {
+              "deep": "Logarithms and the change of base"
+            }
+          ]
+        },
+        {
+          "item": "§4.2(iv) Powers: z^n as repeated product, z^a = exp(a Ln z)",
+          "at": [
+            {
+              "step": "Bisect, at a billion"
+            },
+            {
+              "deep": "Logarithms and the change of base"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "J. S. Vitter, Algorithms and Data Structures for External Memory (2008), the parts used",
+      "items": [
+        {
+          "item": "Ch. 2.1: the model's parameters N, M, B and the block units n = N/B, m = M/B",
+          "at": [
+            {
+              "step": "Sort passes are a logarithm too"
+            },
+            {
+              "deep": "Large bases: index height and sort passes"
+            }
+          ]
+        },
+        {
+          "item": "Ch. 3, Table 3.1: Scan, Sort, Search bounds; log terms are small constants; state bases and constants, do not hide them in big-oh",
+          "at": [
+            {
+              "step": "A large base, few divisions"
+            },
+            {
+              "step": "Any base, one formula"
+            },
+            {
+              "deep": "Logarithms and the change of base"
+            },
+            {
+              "deep": "Large bases: index height and sort passes"
+            },
+            {
+              "deep": "Why big-O doesn't predict wall-clock time"
+            }
+          ]
+        },
+        {
+          "item": "Ch. 5.2: merge sort: run formation leaves N/M runs; each merge pass merges up to R = Θ(m) runs; O(log_m n) passes",
+          "at": [
+            {
+              "step": "Sort passes are a logarithm too"
+            },
+            {
+              "deep": "Large bases: index height and sort passes"
+            }
+          ]
+        },
+        {
+          "item": "Ch. 11: B-trees: node degree Θ(B), height about log_B N; splits propagate to the root",
+          "at": [
+            {
+              "step": "How tall is the orders index?"
+            },
+            {
+              "deep": "Large bases: index height and sort passes"
+            }
+          ]
+        },
+        {
+          "item": "Parallel disks (D, P) and the other bounds of the monograph",
+          "at": [
+            {
+              "out": "Parallel disks and the monograph's other structures go beyond a refresher; the I/O cost model topic owns the model."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "PostgreSQL 18 documentation, 65.1 B-Tree Indexes and 66.6 Database Page Layout",
+      "items": [
+        {
+          "item": "65.1.4.1 B-Tree Structure: multi-level tree of pages; leaf pages are over 99% of pages; a root split adds one level",
+          "at": [
+            {
+              "step": "How tall is the orders index?"
+            },
+            {
+              "deep": "Large bases: index height and sort passes"
+            }
+          ]
+        },
+        {
+          "item": "66.6 Database Page Layout: 8 kB pages, 24-byte header, 4-byte item identifiers, special space",
+          "at": [
+            {
+              "step": "How tall is the orders index?"
+            },
+            {
+              "deep": "Large bases: index height and sort passes"
+            }
+          ]
+        },
+        {
+          "item": "65.1.1 to 65.1.3: operator classes, comparison, support functions",
+          "at": [
+            {
+              "out": "About how a B-tree orders keys, not how tall it is; B-tree internals come in the storage-engine chapters."
+            }
+          ]
+        },
+        {
+          "item": "65.1.4.2 Bottom-up index deletion and 65.1.4.3 Deduplication",
+          "at": [
+            {
+              "out": "Index maintenance and space; they move the fan-out slightly, covered by the 100 to 464 margin, and belong to the storage-engine chapters."
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "independent Sonnet agent, written blind (did not read the plan or site/)",
+    "date": "2026-10-12",
+    "items": [
+      {
+        "item": "O(g) is only an upper bound on growth. It is not 'worst case': the bound can describe best, average or worst-case running time.",
+        "at": [
+          {
+            "step": "Is it also O(n²)?"
+          },
+          {
+            "deep": "O, Ω and Θ, precisely"
+          },
+          {
+            "topic": "Asymptotic notation and case analysis",
+            "domain": "data-structures-and-algorithms",
+            "quote": "best, average, worst"
+          }
+        ]
+      },
+      {
+        "item": "Θ is the tight bound (both O and Ω). Writing O where Θ is meant is the usual sloppiness; say Θ when you mean 'grows like'.",
+        "at": [
+          {
+            "step": "O ceiling, Ω floor, Θ both"
+          },
+          {
+            "step": "Is it also O(n²)?"
+          }
+        ]
+      },
+      {
+        "item": "Ω is a lower bound, and f = Ω(g) iff g = O(f). A lower bound on a problem (not just one algorithm) needs an argument over all algorithms.",
+        "at": [
+          {
+            "step": "O ceiling, Ω floor, Θ both"
+          },
+          {
+            "deep": "O, Ω and Θ, precisely"
+          },
+          {
+            "topic": "Lower bounds and adversary arguments",
+            "quote": "what a lower bound does (and does not) rule out",
+            "domain": "data-structures-and-algorithms"
+          }
+        ]
+      },
+      {
+        "item": "'f(n) = O(g(n))' uses = as 'is a member of / is bounded by'. It is not symmetric.",
+        "at": [
+          {
+            "deep": "O, Ω and Θ, precisely"
+          }
+        ]
+      },
+      {
+        "item": "Asymptotics drop constants and lower-order terms, so they classify how cost grows, not how long a run takes. Constants and memory effects decide wall-clock time at real sizes.",
+        "at": [
+          {
+            "step": "O ceiling, Ω floor, Θ both"
+          },
+          {
+            "step": "Big-O is not a stopwatch"
+          },
+          {
+            "deep": "Why big-O doesn't predict wall-clock time"
+          },
+          {
+            "topic": "Memory hierarchy and latency numbers",
+            "quote": "order-of-magnitude latency and bandwidth per tier"
+          }
+        ]
+      },
+      {
+        "item": "In practice n is bounded: log2 n < 64 for any addressable data, so a logarithm is nearly constant.",
+        "at": [
+          {
+            "deep": "Logarithms and the change of base"
+          }
+        ]
+      },
+      {
+        "item": "Doubling the input and watching the cost ratio is how you measure order of growth empirically.",
+        "at": [
+          {
+            "step": "Double the data"
+          },
+          {
+            "deep": "Try it"
+          },
+          {
+            "out": "The log-log slope formula is benchmarking method, not a refresher; the doubling intuition is taught and Try it counts comparisons per doubling."
+          }
+        ]
+      },
+      {
+        "item": "Change of base: log_a z = ln z / ln a, so log_b x differs from log_2 x only by a constant factor and the base is irrelevant inside O().",
+        "at": [
+          {
+            "step": "Any base, one formula"
+          },
+          {
+            "deep": "Logarithms and the change of base"
+          }
+        ]
+      },
+      {
+        "item": "Base irrelevant in O, relevant in counts: in a number of I/Os or passes the base is the fan-out, so log_100 N and log_2 N differ by about 6.6x.",
+        "at": [
+          {
+            "step": "Any base, one formula"
+          },
+          {
+            "step": "A large base, few divisions"
+          },
+          {
+            "step": "How tall is the orders index?"
+          },
+          {
+            "step": "Sort passes are a logarithm too"
+          },
+          {
+            "deep": "Large bases: index height and sort passes"
+          }
+        ]
+      },
+      {
+        "item": "B-tree height is about log of the fan-out; real indexes with millions of rows are a few levels deep; height is a range, not one number.",
+        "at": [
+          {
+            "step": "How tall is the orders index?"
+          },
+          {
+            "deep": "Large bases: index height and sort passes"
+          },
+          {
+            "topic": "B+-trees vs LSM-trees at a glance",
+            "quote": "fan-out and height"
+          }
+        ]
+      },
+      {
+        "item": "External merge sort pass count is a ceiling of a logarithm; passes are integers and each pass reads and writes the whole file.",
+        "at": [
+          {
+            "step": "Sort passes are a logarithm too"
+          },
+          {
+            "deep": "Large bases: index height and sort passes"
+          },
+          {
+            "topic": "The external-memory (I/O) cost model",
+            "quote": "sort bound (N/B)·log_{M/B}(N/B)"
+          }
+        ]
+      },
+      {
+        "item": "Fan-out is bounded by memory: a k-way merge needs k input buffers plus an output buffer, so a larger k means smaller reads and eventually seek-dominated I/O.",
+        "at": [
+          {
+            "topic": "External merge sort and k-way merge",
+            "quote": "fan-in vs number of passes"
+          },
+          {
+            "topic": "The external-memory (I/O) cost model",
+            "quote": "cost counted in block transfers"
+          }
+        ]
+      },
+      {
+        "item": "Comparison sorting needs Ω(n log n) comparisons (n! orderings, one bit per comparison).",
+        "at": [
+          {
+            "topic": "Lower bounds and adversary arguments",
+            "quote": "decision-tree Ω(n log n) for comparison sorting",
+            "domain": "data-structures-and-algorithms"
+          }
+        ]
+      },
+      {
+        "item": "Best, worst, average and amortized are separate axes from O/Θ/Ω.",
+        "at": [
+          {
+            "deep": "O, Ω and Θ, precisely"
+          },
+          {
+            "topic": "Asymptotic notation and case analysis",
+            "domain": "data-structures-and-algorithms",
+            "quote": "best, average, worst"
+          }
+        ]
+      },
+      {
+        "item": "The cost model decides what you count: RAM-model step counts versus block transfers in the external-memory model.",
+        "at": [
+          {
+            "step": "Big-O is not a stopwatch"
+          },
+          {
+            "deep": "Why big-O doesn't predict wall-clock time"
+          },
+          {
+            "topic": "The external-memory (I/O) cost model",
+            "quote": "cost counted in block transfers"
+          }
+        ]
+      },
+      {
+        "item": "Multi-parameter bounds: cost often depends on several variables (N, B, M) and each bound should name its variable.",
+        "at": [
+          {
+            "deep": "Large bases: index height and sort passes"
+          },
+          {
+            "topic": "The external-memory (I/O) cost model",
+            "quote": "sort bound (N/B)·log_{M/B}(N/B)"
+          }
+        ]
+      }
+    ]
+  },
+  "gapReview": {
+    "date": "2026-10-12",
+    "by": "builder + review fixes",
+    "open": []
+  }
+}

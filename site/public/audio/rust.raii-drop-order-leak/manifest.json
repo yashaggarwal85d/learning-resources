@@ -1,0 +1,1246 @@
+{
+ "topic": "rust.raii-drop-order-leak",
+ "voice": "tara-v1",
+ "asr": "large-v3-turbo",
+ "clips": {
+  "01": {
+   "hash": "2c8aa03688076c07",
+   "takes": [
+    "612b80dbd75d77b8a86a",
+    "3da9d223f4c38fd2eb6c",
+    "a5fac4e4764da72a7c04",
+    "384b913b7aeb1004788b",
+    "710964aeb93f8db228c8",
+    "59caebcbecdedcf9a933",
+    "b54c5c5cbb91e1797bf0",
+    "74c42120a13b5e4f4609"
+   ],
+   "duration": 57.346,
+   "lines": [
+    {
+     "text": "You've seen that the single owner decides who destroys a value.",
+     "start": 0.15,
+     "end": 4.302
+    },
+    {
+     "text": "Now: exactly when that happens, in what order, and why Rust still lets you skip it.",
+     "start": 4.722,
+     "end": 11.682
+    },
+    {
+     "text": "Here is a pipeline stage. It reads a flag under a reader-writer lock, and if the flag isn't set, it takes the exclusive lock and sets it.",
+     "start": 12.502,
+     "end": 21.746
+    },
+    {
+     "text": "It's the Rust Edition Guide's own example.",
+     "start": 22.166,
+     "end": 24.677
+    },
+    {
+     "text": "Compiled with the two thousand and twenty-one edition, it deadlocks. Here, it hangs forever. Compiled with the two thousand and twenty-four edition, it runs.",
+     "start": 25.097,
+     "end": 34.582
+    },
+    {
+     "text": "Same source. The only thing that changed is when a temporary dies.",
+     "start": 35.002,
+     "end": 39.194
+    },
+    {
+     "text": "First what a destructor is and where it runs. Then when a temporary dies, which is what changed.",
+     "start": 39.614,
+     "end": 46.81
+    },
+    {
+     "text": "By the end, you'll place every destructor in a program on a timeline, build a wrapper that closes a file exactly once, and know why leaking is allowed.",
+     "start": 47.63,
+     "end": 56.996
+    }
+   ],
+   "lufs": -16.6,
+   "true_peak": -1.9,
+   "wpm": 151,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "02": {
+   "hash": "6e6e3a6c99ec2ec9",
+   "takes": [
+    "9c74542458379f103ed2",
+    "d81a6fbe0b2493b0f69e",
+    "a93442e2f1b38118b07a",
+    "0d273cd6b7c29cb9ef85",
+    "1fc0603b7755bc1f0467",
+    "b668e1b0400aa22d7d39"
+   ],
+   "duration": 35.017,
+   "lines": [
+    {
+     "text": "When a value is no longer needed, Rust runs its destructor.",
+     "start": 0.15,
+     "end": 4.131
+    },
+    {
+     "text": "And a destructor is two parts.",
+     "start": 4.551,
+     "end": 6.829
+    },
+    {
+     "text": "First, your drop, if the type has one. Then the compiler's own drop glue, which drops every field... in the order you wrote them.",
+     "start": 7.249,
+     "end": 15.481
+    },
+    {
+     "text": "So this stage logs its own name first, then name, input, and the spill file, which we build in a few steps.",
+     "start": 15.901,
+     "end": 23.357
+    },
+    {
+     "text": "Most types never write a drop at all. The glue already drops their fields.",
+     "start": 23.777,
+     "end": 28.365
+    },
+    {
+     "text": "Our probe, a trace... is just a value whose drop writes its name to a log.",
+     "start": 28.785,
+     "end": 34.667
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -1.4,
+   "wpm": 159,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "03": {
+   "hash": "fed92d8a5f9b3dfd",
+   "takes": [
+    "21805b5cc491437c4c96",
+    "0c098dd01ae5af1114b9",
+    "41e3dbb99eabedd7547f"
+   ],
+   "duration": 10.938,
+   "lines": [
+    {
+     "text": "Let's predict one.",
+     "start": 0.15,
+     "end": 1.592
+    },
+    {
+     "text": "Three locals are declared one after another: first a, then b, then c.",
+     "start": 2.012,
+     "end": 6.889
+    },
+    {
+     "text": "At the closing brace... in what order do they die?",
+     "start": 7.309,
+     "end": 10.588
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -1.9,
+   "wpm": 143,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "03a": {
+   "hash": "acd8bf55abd48156",
+   "takes": [
+    "6b077d6055beb8117bf3",
+    "68bd724e7a59420f8470"
+   ],
+   "duration": 14.406,
+   "lines": [
+    {
+     "text": "The reverse. C, then b, then a.",
+     "start": 0.15,
+     "end": 3.519
+    },
+    {
+     "text": "That's the opposite of struct fields. It's the stack discipline, and it keeps a later value that borrows an earlier one sound... the guard dies before what it points at.",
+     "start": 3.939,
+     "end": 14.056
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 154,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "04": {
+   "hash": "b92d3bd512269b46",
+   "takes": [
+    "fa36c3bde459b2130adc",
+    "b87c939ee844753b29b7",
+    "dc0edf2a34550e425188",
+    "09e3207a5d2ba992b690",
+    "1d6796e6f86571d8665b",
+    "94f3d08d489cad900c55",
+    "0547654705620d518490"
+   ],
+   "duration": 28.763,
+   "lines": [
+    {
+     "text": "Where does a value die? Where its last owner ends.",
+     "start": 0.15,
+     "end": 3.919
+    },
+    {
+     "text": "After a move, the owner is the new binding.",
+     "start": 4.339,
+     "end": 7.237
+    },
+    {
+     "text": "So the value dies there.",
+     "start": 7.657,
+     "end": 9.394
+    },
+    {
+     "text": "At the closing brace.",
+     "start": 9.814,
+     "end": 11.059
+    },
+    {
+     "text": "The brace in main... drops nothing for it, because nothing is left there.",
+     "start": 11.479,
+     "end": 15.876
+    },
+    {
+     "text": "The standard drop function isn't magic. It takes ownership and returns, so the value dies right there.",
+     "start": 16.296,
+     "end": 22.638
+    },
+    {
+     "text": "And overwriting a variable builds the new value first, then drops the old one.",
+     "start": 23.058,
+     "end": 28.413
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -1.9,
+   "wpm": 150,
+   "wer": 0.07692307692307693,
+   "exact": false,
+   "tolerated": [
+    {
+     "line": "The brace in main... drops nothing for it, because nothing is left there.",
+     "said": "main",
+     "heard": "maine"
+    }
+   ]
+  },
+  "05": {
+   "hash": "a61342a74cdbad19",
+   "takes": [
+    "aef0222e0686e0181e30",
+    "3a33e63bbd195cc858e7"
+   ],
+   "duration": 9.34,
+   "lines": [
+    {
+     "text": "Say your type implements drop. You hold a value, and you call its drop method directly.",
+     "start": 0.15,
+     "end": 5.172
+    },
+    {
+     "text": "Does the compiler let you run the destructor by hand?",
+     "start": 5.592,
+     "end": 8.99
+    }
+   ],
+   "lufs": -16.7,
+   "true_peak": -1.9,
+   "wpm": 167,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "05a": {
+   "hash": "481211aa51d7c775",
+   "takes": [
+    "893999092e7f817b6170",
+    "7e9c81aa037e5eed56d2"
+   ],
+   "duration": 14.671,
+   "lines": [
+    {
+     "text": "Rejected. The compiler gives the explicit destructor call error.",
+     "start": 0.15,
+     "end": 4.461
+    },
+    {
+     "text": "Your call would run drop, and then the brace would run it again... so Rust forbids the call, and offers the standard drop function instead.",
+     "start": 4.881,
+     "end": 14.321
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 139,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "06": {
+   "hash": "a3665eec92026d27",
+   "takes": [
+    "74b566c9f9e335f0439d",
+    "bd2724d36f123491e53b",
+    "17e405df3b0fa0e8aade",
+    "6e1c0199d80c5cbda0fa",
+    "d7a8e66892aa50666e94",
+    "975e2dcd028c09f45156"
+   ],
+   "duration": 36.461,
+   "lines": [
+    {
+     "text": "Why is a file handle... not allowed to be copied?",
+     "start": 0.15,
+     "end": 3.486
+    },
+    {
+     "text": "Because two copies would close the same file twice.",
+     "start": 4.036,
+     "end": 7.196
+    },
+    {
+     "text": "A type with a drop manages something besides its own bytes, so a bitwise copy would duplicate that responsibility.",
+     "start": 7.616,
+     "end": 13.789
+    },
+    {
+     "text": "That's why copy and drop never meet. The compiler rejects it.",
+     "start": 14.209,
+     "end": 18.172
+    },
+    {
+     "text": "Put three rules together. One owner. A move empties the source. And no copy on a type with a destructor.",
+     "start": 18.592,
+     "end": 26.094
+    },
+    {
+     "text": "Never twice isn't a convention... it's a theorem. Exactly once follows whenever the drop code runs at all. And Rust doesn't promise that.",
+     "start": 26.514,
+     "end": 36.111
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.8,
+   "wpm": 151,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "07": {
+   "hash": "f78a718b73015434",
+   "takes": [
+    "7fd8d288c47fdcb54b7a",
+    "d375e4c477e691ea4171",
+    "99655cbead3ece3344e4",
+    "38c092da524467a36c37",
+    "c5800171a7011df4cee3",
+    "55509f96e8cd5b5faffd"
+   ],
+   "duration": 36.54,
+   "lines": [
+    {
+     "text": "Now the real thing. A spill file is a temporary file that gets closed and deleted in its drop.",
+     "start": 0.15,
+     "end": 6.126
+    },
+    {
+     "text": "So in Rust, this pattern is simply ownership plus drop.",
+     "start": 6.546,
+     "end": 10.231
+    },
+    {
+     "text": "Hand it through two functions and back... one close, one unlink.",
+     "start": 10.651,
+     "end": 17.306
+    },
+    {
+     "text": "No defer. No finally. No with. There is exactly one owner, and its scope end is the release.",
+     "start": 17.726,
+     "end": 26.5
+    },
+    {
+     "text": "The file itself is four bytes, the descriptor.",
+     "start": 26.92,
+     "end": 29.624
+    },
+    {
+     "text": "One caveat: errors on close are ignored by drop. Call sync all first, if they matter.",
+     "start": 30.044,
+     "end": 36.19
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.8,
+   "wpm": 135,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "08": {
+   "hash": "375c734191d847b1",
+   "takes": [
+    "7753c96879b3aa2867e8",
+    "52bf665057907f4ad02a",
+    "d68906f296aae78fac3c"
+   ],
+   "duration": 14.712,
+   "lines": [
+    {
+     "text": "A spool owns a directory guard and a file guard, in that order.",
+     "start": 0.15,
+     "end": 5.121
+    },
+    {
+     "text": "The directory's drop removes the directory. The file's drop removes the file.",
+     "start": 5.541,
+     "end": 10.2
+    },
+    {
+     "text": "After the spool is dropped, what's left on disk?",
+     "start": 10.62,
+     "end": 14.362
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 139,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "08a": {
+   "hash": "a53e52ba2f8bb492",
+   "takes": [
+    "417f97916aaf7dc9469a",
+    "4550dcd4325cabddaa97",
+    "5c73e4e0eeabd8eacc58"
+   ],
+   "duration": 13.888,
+   "lines": [
+    {
+     "text": "The directory stays.",
+     "start": 0.15,
+     "end": 1.375
+    },
+    {
+     "text": "The directory guard is declared first, so it drops first, while the file is still inside... and removing a full directory fails.",
+     "start": 1.795,
+     "end": 10.209
+    },
+    {
+     "text": "Declare the spill file first, and both go.",
+     "start": 10.629,
+     "end": 13.538
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.4,
+   "wpm": 143,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "09": {
+   "hash": "ed2dad03aeb6ed01",
+   "takes": [
+    "958bcdda30e6e45ceaa5",
+    "e2f8aae2d03c881c09e5",
+    "09445bff1146a91d4583",
+    "5f10507837db3189994b",
+    "f6c043fe6e18fecc7503"
+   ],
+   "duration": 20.648,
+   "lines": [
+    {
+     "text": "A temporary is a value with no name.",
+     "start": 0.15,
+     "end": 2.771
+    },
+    {
+     "text": "It ends at the semicolon. That lock is released before the next statement.",
+     "start": 3.191,
+     "end": 7.315
+    },
+    {
+     "text": "Unless a let borrows it... then it lives to the end of the block.",
+     "start": 7.735,
+     "end": 12.326
+    },
+    {
+     "text": "And a match keeps its temporaries alive through every arm.",
+     "start": 12.746,
+     "end": 16.731
+    },
+    {
+     "text": "That's how a lock gets held longer than it looks.",
+     "start": 17.151,
+     "end": 20.298
+    }
+   ],
+   "lufs": -16.6,
+   "true_peak": -1.9,
+   "wpm": 160,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "10": {
+   "hash": "887beb413b3d8994",
+   "takes": [
+    "cfbc9cbe452fd544300a",
+    "073490496d0365f103b5",
+    "27a0074af4b0204a2b3e"
+   ],
+   "duration": 10.759,
+   "lines": [
+    {
+     "text": "Back to the stage under the old edition. The migration lint fires.",
+     "start": 0.15,
+     "end": 4.856
+    },
+    {
+     "text": "You run the automatic fix.",
+     "start": 5.276,
+     "end": 7.03
+    },
+    {
+     "text": "What does it produce... and is the deadlock gone?",
+     "start": 7.45,
+     "end": 10.409
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 145,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "10a": {
+   "hash": "c6f759f098bada06",
+   "takes": [
+    "bde4284ed1053837c122",
+    "24362bf4ce6f646b16e8"
+   ],
+   "duration": 13.291,
+   "lines": [
+    {
+     "text": "It rewrites the condition into a match... and the match keeps the old order. The deadlock stays.",
+     "start": 0.15,
+     "end": 6.848
+    },
+    {
+     "text": "The guide says: review each rewrite, and put the if let back where you want the shorter life.",
+     "start": 7.268,
+     "end": 12.941
+    }
+   ],
+   "lufs": -16.3,
+   "true_peak": -1.9,
+   "wpm": 158,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "11": {
+   "hash": "40eaca5926b1ce00",
+   "takes": [
+    "cd0ea9a6c651590d5180",
+    "41a5d23d7264963d6f43",
+    "6cec3e92d844cb2f2954",
+    "4504a512c5b6da4ddb6d",
+    "43810e10cd30fa7d6b20"
+   ],
+   "duration": 26.747,
+   "lines": [
+    {
+     "text": "Rust two thousand and twenty-four changes two temporary scopes. Both make a temporary die sooner.",
+     "start": 0.15,
+     "end": 6.554
+    },
+    {
+     "text": "In two thousand and twenty-four, a temporary made in the condition is gone before the else branch.",
+     "start": 6.974,
+     "end": 12.475
+    },
+    {
+     "text": "In a block's tail expression, they drop before the block's own locals.",
+     "start": 12.895,
+     "end": 17.244
+    },
+    {
+     "text": "That one badge, landing on the other side of the else, is the whole difference between hanging and running.",
+     "start": 17.664,
+     "end": 24.276
+    },
+    {
+     "text": "A match is unchanged.",
+     "start": 24.696,
+     "end": 26.397
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -1.9,
+   "wpm": 150,
+   "wer": 0.058823529411764705,
+   "exact": false,
+   "tolerated": [
+    {
+     "line": "In two thousand and twenty-four, a temporary made in the condition is gone before the else branch.",
+     "said": "made",
+     "heard": "maid"
+    }
+   ]
+  },
+  "12": {
+   "hash": "f868a6938504ca78",
+   "takes": [
+    "1ac625b413f042a587a3",
+    "856e91bf6b706aa51bef"
+   ],
+   "duration": 10.269,
+   "lines": [
+    {
+     "text": "The Rust two thousand and twenty-four migration guide shows another example. A function ends with a borrow of a ref cell, as its tail expression.",
+     "start": 0.15,
+     "end": 8.238
+    },
+    {
+     "text": "Which editions compile it?",
+     "start": 8.658,
+     "end": 9.919
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 169,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "12a": {
+   "hash": "9b65135aa1da19d7",
+   "takes": [
+    "166e46c17b3ad6305257",
+    "11afd56a35a4e8c3202b",
+    "7b9cb23515ef51342486"
+   ],
+   "duration": 17.079,
+   "lines": [
+    {
+     "text": "Only the two thousand and twenty-four edition.",
+     "start": 0.15,
+     "end": 2.466
+    },
+    {
+     "text": "In the old edition, the borrow guard outlived the cell itself, so the compiler refused... the does-not-live-long-enough error.",
+     "start": 2.886,
+     "end": 12.094
+    },
+    {
+     "text": "Now the guard goes first, and it compiles.",
+     "start": 12.514,
+     "end": 16.729
+    }
+   ],
+   "lufs": -16.6,
+   "true_peak": -1.8,
+   "wpm": 130,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "13": {
+   "hash": "b7bbfbb37a284bdc",
+   "takes": [
+    "98670d186db9750fbbe9",
+    "d448831aefe52761955e",
+    "9226f01621126be7a1bd",
+    "fc20e6e173534dc80a94"
+   ],
+   "duration": 21.846,
+   "lines": [
+    {
+     "text": "Here's a value moved on one path only.",
+     "start": 0.15,
+     "end": 3.35
+    },
+    {
+     "text": "So at the closing brace, who knows whether to drop it?",
+     "start": 3.77,
+     "end": 7.699
+    },
+    {
+     "text": "Only the running program does. So the compiler keeps a hidden boolean flag, and checks it at the brace.",
+     "start": 8.249,
+     "end": 14.64
+    },
+    {
+     "text": "You can see it in the compiler's intermediate code: a constant true, a constant false, and a switch.",
+     "start": 15.06,
+     "end": 21.496
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.8,
+   "wpm": 154,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "14": {
+   "hash": "a6a40361995dee96",
+   "takes": [
+    "e84a7271cd0f4410e0de",
+    "a91b60d388e58bdfbd1b",
+    "b2d2da726bee08352180",
+    "dc4f5296d3cd6c2ddf4b",
+    "9f0837ce10c9339ea302"
+   ],
+   "duration": 32.201,
+   "lines": [
+    {
+     "text": "Destructors run on the normal path. And a panic still drops everything on its way out, in the same reverse order.",
+     "start": 0.15,
+     "end": 7.423
+    },
+    {
+     "text": "But process exit drops nothing.",
+     "start": 7.843,
+     "end": 10.781
+    },
+    {
+     "text": "And with panic set to abort, nothing either.",
+     "start": 11.201,
+     "end": 14.214
+    },
+    {
+     "text": "So a spill file is cleaned up after a panic, but not after an exit. And when main returns, every other thread dies where it stands, destructors unrun.",
+     "start": 14.634,
+     "end": 24.037
+    },
+    {
+     "text": "One more rule. If a drop panics while already unwinding, the whole process aborts. Keep drop bodies simple.",
+     "start": 24.457,
+     "end": 31.851
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 149,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "15": {
+   "hash": "8365d2c1f18581d4",
+   "takes": [
+    "40afa5d18cb933737198",
+    "9ae4061832704479dd65",
+    "e6aaaf1f342ef8148b89",
+    "cbc950184e031c38ee69",
+    "d7f4a7c349782bdd1f22"
+   ],
+   "duration": 21.457,
+   "lines": [
+    {
+     "text": "Mem forget takes a value and never drops it.",
+     "start": 0.15,
+     "end": 2.975
+    },
+    {
+     "text": "The file stays open, and on disk. The path's buffer is never freed... the counting allocator sees one allocation too many.",
+     "start": 3.395,
+     "end": 10.992
+    },
+    {
+     "text": "And all of that is safe code.",
+     "start": 11.412,
+     "end": 13.732
+    },
+    {
+     "text": "Because Rust never promised destructors would run.",
+     "start": 14.152,
+     "end": 17.028
+    },
+    {
+     "text": "Leaking is usually a bug. But it's a memory-safe bug.",
+     "start": 17.448,
+     "end": 21.107
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 154,
+   "wer": 0.2222222222222222,
+   "exact": false,
+   "tolerated": [
+    {
+     "line": "Mem forget takes a value and never drops it.",
+     "said": "mem forget",
+     "heard": "memforget"
+    }
+   ]
+  },
+  "16": {
+   "hash": "b10cf349d0e9a40a",
+   "takes": [
+    "f7d287f09ae9f2764c95",
+    "9b270fe09d0885802e97"
+   ],
+   "duration": 8.475,
+   "lines": [
+    {
+     "text": "Four ways... to end up with a value that never drops.",
+     "start": 0.15,
+     "end": 4.155
+    },
+    {
+     "text": "Which of the first three needs unsafe? Or none?",
+     "start": 4.575,
+     "end": 8.125
+    }
+   ],
+   "lufs": -16.3,
+   "true_peak": -2.3,
+   "wpm": 142,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "16a": {
+   "hash": "fdc0badc990d2526",
+   "takes": [
+    "7d3d46d294df5684bd91",
+    "d931f434a3dfc14b9477"
+   ],
+   "duration": 15.988,
+   "lines": [
+    {
+     "text": "None of them. Leaking is safe... forget, box leak, a reference-count cycle, process exit.",
+     "start": 0.15,
+     "end": 8.103
+    },
+    {
+     "text": "The unsafe one is running a destructor by hand, with manually drop's drop, because nothing stops it running twice.",
+     "start": 8.523,
+     "end": 15.638
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -1.9,
+   "wpm": 128,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "17": {
+   "hash": "a6be7ef4ae333165",
+   "takes": [
+    "bde0eccbf37e2d515a6a",
+    "9ef5ad7b51ebee86e0da",
+    "63d6b87a1c44800332e8",
+    "870b77cc5a36bcd28528"
+   ],
+   "duration": 20.988,
+   "lines": [
+    {
+     "text": "Two honest ways to skip a destructor, on purpose.",
+     "start": 0.15,
+     "end": 3.871
+    },
+    {
+     "text": "Manually drop holds the same data, with no automatic drop. Take the value back out, and it drops again.",
+     "start": 4.291,
+     "end": 11.098
+    },
+    {
+     "text": "Box leak: cut the owner, keep the bytes for the whole program.",
+     "start": 11.518,
+     "end": 15.718
+    },
+    {
+     "text": "Neither one fixes drop order. For that, reorder your declarations.",
+     "start": 16.138,
+     "end": 20.638
+    }
+   ],
+   "lufs": -16.3,
+   "true_peak": -1.8,
+   "wpm": 143,
+   "wer": 0.25,
+   "exact": false,
+   "tolerated": [
+    {
+     "line": "Box leak: cut the owner, keep the bytes for the whole program.",
+     "said": "box leak",
+     "heard": "boxleak"
+    },
+    {
+     "line": "Box leak: cut the owner, keep the bytes for the whole program.",
+     "said": "bytes",
+     "heard": "bites"
+    }
+   ]
+  },
+  "18": {
+   "hash": "b261671b46ced1dc",
+   "takes": [
+    "d11121b2b2a33b25604e",
+    "7557d48d04821c4240a3",
+    "fd27f11a348158a1cfcc",
+    "7842f252d2f2864c7b8f",
+    "5a0f49b488f3d92e2acf",
+    "21226cc6ef48624e5a27"
+   ],
+   "duration": 30.486,
+   "lines": [
+    {
+     "text": "That was just before the first stable release of Rust.",
+     "start": 0.15,
+     "end": 3.287
+    },
+    {
+     "text": "Long ago, a thread API gave out a guard whose drop joined the child thread. The child borrowed the parent's stack, so the parent couldn't leave first.",
+     "start": 3.707,
+     "end": 12.557
+    },
+    {
+     "text": "Then someone forgot the guard, in safe code.",
+     "start": 12.977,
+     "end": 16.408
+    },
+    {
+     "text": "The parent's frame went away, and the child kept running, with a reference into it.",
+     "start": 16.828,
+     "end": 21.518
+    },
+    {
+     "text": "Safe code. And still unsound.",
+     "start": 21.938,
+     "end": 24.217
+    },
+    {
+     "text": "The fix wasn't to forbid leaks. It was to admit that destructors may never run.",
+     "start": 24.637,
+     "end": 30.136
+    }
+   ],
+   "lufs": -16.6,
+   "true_peak": -1.9,
+   "wpm": 157,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "19": {
+   "hash": "e8880afa4525950c",
+   "takes": [
+    "be8f90335228bec6ed5c",
+    "7bdf90a8ed8ae2b4c6ed",
+    "1842f421e816ab3c0d0b",
+    "d06b67bccfc000518b71",
+    "fe6fd83675aa6e8ed47c"
+   ],
+   "duration": 38.364,
+   "lines": [
+    {
+     "text": "So put the guarantee in a function call, not in a destructor.",
+     "start": 0.15,
+     "end": 3.972
+    },
+    {
+     "text": "A scoped thread block joins every thread before it returns. A return can't be forgotten.",
+     "start": 4.393,
+     "end": 10.586
+    },
+    {
+     "text": "The general rule: unsafe code must never rely on drop running.",
+     "start": 11.006,
+     "end": 14.873
+    },
+    {
+     "text": "And when you hand out a proxy, make the owner safe first. The vector sets its length to the start of the drained range before it gives out a drain, zero for a full drain. Forget the drain, and you only leak more.",
+     "start": 15.293,
+     "end": 32.827
+    },
+    {
+     "text": "Leaking one value can leak much more, and that is called leak amplification.",
+     "start": 33.247,
+     "end": 38.014
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -1.9,
+   "wpm": 147,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "20": {
+   "hash": "04eb273352e04cf8",
+   "takes": [
+    "4ded99c22b24e60ce5f5",
+    "95a9e1ba0fe7ca1c5c29",
+    "e2708078a8806904ae06"
+   ],
+   "duration": 11.794,
+   "lines": [
+    {
+     "text": "Prove it, one of three.",
+     "start": 0.15,
+     "end": 2.148
+    },
+    {
+     "text": "A function takes a parameter a, a tuple parameter with b and c, and has one local, d.",
+     "start": 2.568,
+     "end": 8.201
+    },
+    {
+     "text": "So, in what order do the four values drop?",
+     "start": 8.621,
+     "end": 11.444
+    }
+   ],
+   "lufs": -16.3,
+   "true_peak": -1.8,
+   "wpm": 163,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "20a": {
+   "hash": "a15edb1f311a0f5b",
+   "takes": [
+    "4cdd53f87a479f906148",
+    "93cb04cb722eb891664a"
+   ],
+   "duration": 11.73,
+   "lines": [
+    {
+     "text": "D, c, b, a.",
+     "start": 0.15,
+     "end": 2.72
+    },
+    {
+     "text": "The local first. Then the parameters, last and in reverse... and inside the tuple pattern, c before b.",
+     "start": 3.14,
+     "end": 11.38
+    }
+   ],
+   "lufs": -16.7,
+   "true_peak": -1.9,
+   "wpm": 113,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "21": {
+   "hash": "ca935800efdc7322",
+   "takes": [
+    "f16e383d865da9d1fc70",
+    "847c59e59ea6fb900821",
+    "489ec37d114087fa21c4"
+   ],
+   "duration": 9.321,
+   "lines": [
+    {
+     "text": "Two of three.",
+     "start": 0.15,
+     "end": 1.54
+    },
+    {
+     "text": "You write let underscore equals a lock on the shared value, and then increment a counter.",
+     "start": 1.96,
+     "end": 7.283
+    },
+    {
+     "text": "Is the counter protected?",
+     "start": 7.703,
+     "end": 8.971
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -1.5,
+   "wpm": 148,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "21a": {
+   "hash": "fdc58fc89c6ef80b",
+   "takes": [
+    "64a64dc6e1fe17e9e3de",
+    "905d15a0d766087facf4",
+    "d6476393010bce4c7b31"
+   ],
+   "duration": 13.538,
+   "lines": [
+    {
+     "text": "The compiler refuses it.",
+     "start": 0.15,
+     "end": 1.262
+    },
+    {
+     "text": "An underscore binds nothing, so the guard would be gone by the end of that statement... and the increment would run unlocked. That is exactly why that line is a lint.",
+     "start": 1.682,
+     "end": 11.822
+    },
+    {
+     "text": "Name the guard.",
+     "start": 12.242,
+     "end": 13.188
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 168,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "22": {
+   "hash": "efa75431b1c81bf9",
+   "takes": [
+    "d382a451696df31cc4da",
+    "73e9387c85d892a9a11d",
+    "5af531745ca14cc736b5"
+   ],
+   "duration": 12.147,
+   "lines": [
+    {
+     "text": "Three of three. A code review.",
+     "start": 0.15,
+     "end": 3.743
+    },
+    {
+     "text": "Someone proposes an API with a guard. The guard must be dropped, or the device keeps writing into the buffer.",
+     "start": 4.163,
+     "end": 10.53
+    },
+    {
+     "text": "Is it sound?",
+     "start": 10.95,
+     "end": 11.797
+    }
+   ],
+   "lufs": -16.3,
+   "true_peak": -1.9,
+   "wpm": 143,
+   "wer": 0.05,
+   "exact": false,
+   "tolerated": [
+    {
+     "line": "Someone proposes an API with a guard. The guard must be dropped, or the device keeps writing into the buffer.",
+     "said": "writing",
+     "heard": "riding"
+    }
+   ]
+  },
+  "22a": {
+   "hash": "79933d44e3815e2a",
+   "takes": [
+    "a93cf926ac0e6fac019e",
+    "f84c54078677c9a90cae",
+    "5ebdefd7606f52ff9c0c"
+   ],
+   "duration": 14.04,
+   "lines": [
+    {
+     "text": "Unsound. A safe caller can forget the guard, the buffer is freed, and the device keeps writing.",
+     "start": 0.15,
+     "end": 5.848
+    },
+    {
+     "text": "Soundness may never depend on drop running.",
+     "start": 6.268,
+     "end": 8.495
+    },
+    {
+     "text": "Move the stop into a function that takes a closure, like thread scope.",
+     "start": 8.915,
+     "end": 13.69
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 158,
+   "wer": 0.15384615384615385,
+   "exact": false,
+   "tolerated": [
+    {
+     "line": "Move the stop into a function that takes a closure, like thread scope.",
+     "said": "thread scope",
+     "heard": "threadscope"
+    }
+   ]
+  },
+  "23": {
+   "hash": "6fab9fae6f92e981",
+   "takes": [
+    "99d4a35e5c9a93469829",
+    "6d273527325532b138fb",
+    "b46bc9bc40e0b75dbf56",
+    "27db600349647f24c2f5",
+    "37b7a4cad98ad6faf156",
+    "5101302b5d713b373937",
+    "fdd0013bc630ec3933cc"
+   ],
+   "duration": 34.21,
+   "lines": [
+    {
+     "text": "Six things to keep.",
+     "start": 0.15,
+     "end": 1.25
+    },
+    {
+     "text": "A destructor is your drop, then the fields, in order. Locals go in reverse.",
+     "start": 1.67,
+     "end": 7.137
+    },
+    {
+     "text": "A temporary is gone at its semicolon... and the two thousand and twenty-four edition ends two of them sooner.",
+     "start": 7.557,
+     "end": 13.522
+    },
+    {
+     "text": "One owner means exactly one release, never two.",
+     "start": 13.942,
+     "end": 17.869
+    },
+    {
+     "text": "Leaking is safe. So soundness never depends on drop running.",
+     "start": 18.289,
+     "end": 21.893
+    },
+    {
+     "text": "A type with a drop... keeps its fields until it dies.",
+     "start": 22.613,
+     "end": 26.074
+    },
+    {
+     "text": "Next: how do you take one field out early... say, to hand the buffer back to its pool, from inside a guard?",
+     "start": 26.494,
+     "end": 33.86
+    }
+   ],
+   "lufs": -16.6,
+   "true_peak": -1.8,
+   "wpm": 154,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  }
+ }
+}

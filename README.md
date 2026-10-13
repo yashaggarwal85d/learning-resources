@@ -41,10 +41,11 @@ scripts/audit-scope.mjs                    the topics and runs since the last au
 scripts/run-metrics.mjs                    records a run's tokens (per model), calls and time, per stage
 site/                                      the website (Astro + React islands + Tailwind)
   src/topics/registry.ts                   every finished topic: live or held, concept ledger, bridge and handoff
+  src/topics/basics-backlog.json           topics made before the Basics rule (2026-10-12); a release run or the audit adds their section
   src/topics/<domain>/m<N>-…/ch<NN>-…/<topic>/
     reel.tsx, scenes.tsx                   the reel: steps and animations (each a pure function of time)
     index.mdx                              the Deep dive
-    prerequisites.mdx                      what to know first, with resources
+    prerequisites.mdx                      Basics (the topic's own terms, in brief), then what to know first, with resources
     narration.json                         the spoken script (lines and beats)
     coverage.json                          the coverage map (syllabus, sources, blind expert list, gap review)
     examples.py                            every example and number, executed with asserts
@@ -87,7 +88,7 @@ narration/setup.sh           # once per machine or session: builds every tool ou
 narration/narrate.sh src/topics/<domain>/<milestone>/<chapter>/<topic>
 ```
 
-- **English narrator:** Orpheus 3B, voice "tara".
+- **English narrator:** Orpheus 3B, voice "tara"; every take is checked by a local speech-to-text model (faster-whisper large-v3-turbo) and must say its line.
 
 Both are frozen in `site/narration/voice.json`. Details are in [site/narration/README.md](site/narration/README.md).
 

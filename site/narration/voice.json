@@ -48,7 +48,7 @@
       "seed": 79
     }
   ],
-  "selection": "Reject any take whose transcript differs from the line (after number and alias normalisation), or, for lines of six words or more, whose pace is outside 1.5–3.6 words/s; of the rest keep the one with the most pitch movement (std of F0 in semitones).",
+  "selection": "Reject any take whose transcript does not say the line: after normalisation (numbers and ordinals spelled out, aliases applied) every differing place must be the same words split or merged differently, or words that sound alike (homophones, the same metaphone code, a one-letter slip that keeps the first letter), in at most asr.max_tolerated_blocks places of at most asr.max_tolerated_words words each; a skipped, added or garbled word always fails. Reject a take of pace.min_words words or more whose pace is outside pace.wps words per second. Of the rest keep an exact take over a tolerated one, then the one with the most pitch movement (std of F0 in semitones); when a clip would fall outside pace.clip_wpm, swap in slower or faster passing takes, and ask for more takes of its fastest lines if that is not enough.",
   "pauses": {
     "between_lines": 0.42,
     "after_question": 0.55,
@@ -60,13 +60,278 @@
     "true_peak_dbtp": -1,
     "sample_rate": 48000,
     "mp3_kbps": 96,
-    "opus_kbps": 48
+    "opus_kbps": 48,
+    "encode_headroom_db": 0.5,
+    "note": "loudness_lufs and true_peak_dbtp are the standard the delivered files meet (tests/narration.mjs: within 1.5 LU, peak at most 0.3 dB over); the mastering pass aims encode_headroom_db below the peak because MP3 and Opus encoding overshoot."
   },
   "asr": {
-    "model": "faster-whisper small.en (int8, CPU)",
+    "model": "large-v3-turbo",
+    "compute_type": "int8",
+    "note": "faster-whisper model that checks every take on the CPU. Takes are scored once per model (scores-<model>.json in the cache). The frozen voice is unchanged by this; a better checker only rejects fewer correct takes.",
+    "max_tolerated_blocks": 2,
+    "max_tolerated_words": 2,
+    "max_tolerated_per_clip": 3,
     "aliases": {
       "dataclasses": "data classes",
-      "dataclass": "data class"
-    }
+      "dataclass": "data class",
+      "nginx": "engine x",
+      "postgres": "post gress",
+      "postgresql": "post gress q l",
+      "slater": "sleator",
+      "sleeter": "sleator",
+      "tarjin": "tarjan",
+      "ackerman": "ackermann",
+      "fi": "phi",
+      "fie": "phi",
+      "fy": "phi",
+      "bloom": "blum"
+    },
+    "homophones": [
+      [
+        "to",
+        "too",
+        "two"
+      ],
+      [
+        "for",
+        "four",
+        "fore"
+      ],
+      [
+        "one",
+        "won"
+      ],
+      [
+        "there",
+        "their",
+        "theyre"
+      ],
+      [
+        "hour",
+        "our"
+      ],
+      [
+        "hours",
+        "ours"
+      ],
+      [
+        "whole",
+        "hole"
+      ],
+      [
+        "write",
+        "right",
+        "rite"
+      ],
+      [
+        "read",
+        "red"
+      ],
+      [
+        "byte",
+        "bite"
+      ],
+      [
+        "bytes",
+        "bites"
+      ],
+      [
+        "sum",
+        "some"
+      ],
+      [
+        "buy",
+        "by",
+        "bye"
+      ],
+      [
+        "sea",
+        "see",
+        "c"
+      ],
+      [
+        "be",
+        "bee",
+        "b"
+      ],
+      [
+        "eye",
+        "i"
+      ],
+      [
+        "you",
+        "u"
+      ],
+      [
+        "are",
+        "r"
+      ],
+      [
+        "know",
+        "no"
+      ],
+      [
+        "new",
+        "knew"
+      ],
+      [
+        "weak",
+        "week"
+      ],
+      [
+        "wait",
+        "weight"
+      ],
+      [
+        "allowed",
+        "aloud"
+      ],
+      [
+        "cache",
+        "cash"
+      ],
+      [
+        "reel",
+        "real"
+      ],
+      [
+        "plain",
+        "plane"
+      ],
+      [
+        "key",
+        "quay"
+      ],
+      [
+        "rows",
+        "rose"
+      ],
+      [
+        "role",
+        "roll"
+      ],
+      [
+        "sync",
+        "sink"
+      ],
+      [
+        "queue",
+        "cue",
+        "q"
+      ],
+      [
+        "null",
+        "nul"
+      ],
+      [
+        "heap",
+        "heep"
+      ],
+      [
+        "node",
+        "nowed"
+      ],
+      [
+        "mutex",
+        "mutecs"
+      ],
+      [
+        "tuple",
+        "tupple"
+      ],
+      [
+        "json",
+        "jason"
+      ],
+      [
+        "yaml",
+        "yamal"
+      ],
+      [
+        "sql",
+        "sequel"
+      ],
+      [
+        "which",
+        "witch"
+      ],
+      [
+        "where",
+        "wear"
+      ],
+      [
+        "here",
+        "hear"
+      ],
+      [
+        "past",
+        "passed"
+      ],
+      [
+        "die",
+        "dye"
+      ],
+      [
+        "due",
+        "do"
+      ],
+      [
+        "seen",
+        "scene"
+      ],
+      [
+        "sent",
+        "cent"
+      ],
+      [
+        "cents",
+        "sense"
+      ],
+      [
+        "threw",
+        "through"
+      ],
+      [
+        "lead",
+        "led"
+      ],
+      [
+        "bytes",
+        "bights"
+      ],
+      [
+        "hash",
+        "hache"
+      ],
+      [
+        "tebibyte",
+        "tebabyte"
+      ],
+      [
+        "gibibyte",
+        "gibabyte"
+      ],
+      [
+        "mebibyte",
+        "mebabyte"
+      ],
+      [
+        "kibibyte",
+        "kibabyte"
+      ]
+    ]
+  },
+  "pace": {
+    "wps": [
+      1.5,
+      3.2
+    ],
+    "min_words": 6,
+    "clip_wpm": [
+      100,
+      170
+    ],
+    "max_words_per_line": 50,
+    "note": "wps gates a single take (lines shorter than min_words are dominated by their pauses); clip_wpm is the delivered clip including pauses, what tests/narration.mjs checks; max_words_per_line keeps a line inside the model's token budget (a longer line is truncated and never passes)."
   }
 }
