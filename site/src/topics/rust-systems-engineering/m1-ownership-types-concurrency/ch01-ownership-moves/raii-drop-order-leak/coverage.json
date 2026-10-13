@@ -1,0 +1,1546 @@
+{
+  "topic": "rust.raii-drop-order-leak",
+  "syllabus": [
+    {
+      "clause": "deterministic destruction",
+      "at": [
+        {
+          "step": "A destructor is two parts"
+        },
+        {
+          "step": "A value dies where its last owner ends"
+        },
+        {
+          "step": "Can you call x.drop() yourself?"
+        },
+        {
+          "step": "Exactly once: why Copy and Drop never meet"
+        },
+        {
+          "step": "Unwinding drops; exit does not"
+        },
+        {
+          "deep": "The destructor, as the Reference states it"
+        },
+        {
+          "deep": "Drop flags"
+        }
+      ]
+    },
+    {
+      "clause": "locals drop in reverse declaration order",
+      "at": [
+        {
+          "step": "Three locals, which dies first?"
+        },
+        {
+          "step": "Prove it · 1 of 3"
+        },
+        {
+          "deep": "Every drop-order rule, with a trace"
+        }
+      ]
+    },
+    {
+      "clause": "struct fields in declaration order",
+      "at": [
+        {
+          "step": "A destructor is two parts"
+        },
+        {
+          "step": "Which goes first, the file or its directory?"
+        },
+        {
+          "deep": "Every drop-order rule, with a trace"
+        }
+      ]
+    },
+    {
+      "clause": "temporaries at the end of the statement",
+      "at": [
+        {
+          "step": "Temporaries die at the semicolon"
+        },
+        {
+          "step": "Prove it · 2 of 3"
+        },
+        {
+          "deep": "Temporaries: scopes, extension, and the two 2024 changes"
+        }
+      ]
+    },
+    {
+      "clause": "(and Rust 2024's narrower if let/tail-expression temporary scopes)",
+      "at": [
+        {
+          "step": "One if let, two editions, one deadlock"
+        },
+        {
+          "step": "What does cargo fix --edition do to it?"
+        },
+        {
+          "step": "Rust 2024: two shorter temporary scopes"
+        },
+        {
+          "step": "c.borrow().len() as a tail expression"
+        },
+        {
+          "deep": "Temporaries: scopes, extension, and the two 2024 changes"
+        },
+        {
+          "deep": "Migrating: if_let_rescope, tail_expr_drop_order, and what cargo fix really does"
+        }
+      ]
+    },
+    {
+      "clause": "A RAII wrapper for an OS resource closes it exactly once",
+      "at": [
+        {
+          "step": "Exactly once: why Copy and Drop never meet"
+        },
+        {
+          "step": "SpillFile: an OS resource with one owner"
+        },
+        {
+          "step": "Which goes first, the file or its directory?"
+        },
+        {
+          "deep": "RAII in Rust against defer, with, try-with-resources and C++"
+        },
+        {
+          "deep": "Lab 3 · SpillFile, exactly once, and the field-order bug"
+        }
+      ]
+    },
+    {
+      "clause": "mem::forget/ManuallyDrop",
+      "at": [
+        {
+          "step": "mem::forget: the destructor you skip"
+        },
+        {
+          "step": "Which of these needs unsafe?"
+        },
+        {
+          "step": "ManuallyDrop and Box::leak, on purpose"
+        },
+        {
+          "deep": "Leaking is safe: RFC 1066 and the Reference's rule"
+        },
+        {
+          "deep": "Lab 4 · Leak it: forget, ManuallyDrop, Box::leak, measured"
+        }
+      ]
+    },
+    {
+      "clause": "and why leaking is safe",
+      "at": [
+        {
+          "step": "mem::forget: the destructor you skip"
+        },
+        {
+          "step": "Which of these needs unsafe?"
+        },
+        {
+          "step": "The leakpocalypse of 2015"
+        },
+        {
+          "deep": "Leaking is safe: RFC 1066 and the Reference's rule"
+        }
+      ]
+    },
+    {
+      "clause": "so an API's soundness may never depend on Drop running",
+      "at": [
+        {
+          "step": "Leak-safe: join in a call, not in a Drop"
+        },
+        {
+          "step": "Prove it · 3 of 3"
+        },
+        {
+          "step": "In one breath"
+        },
+        {
+          "deep": "Proxy types and leak amplification"
+        }
+      ]
+    },
+    {
+      "clause": "(the scoped-thread \"leakpocalypse\" lesson)",
+      "at": [
+        {
+          "step": "The leakpocalypse of 2015"
+        },
+        {
+          "step": "Leak-safe: join in a call, not in a Drop"
+        },
+        {
+          "deep": "Leaking is safe: RFC 1066 and the Reference's rule"
+        },
+        {
+          "deep": "Proxy types and leak amplification"
+        }
+      ]
+    }
+  ],
+  "sources": [
+    {
+      "source": "The Rust Reference, Destructors (doc.rust-lang.org/reference/destructors.html)",
+      "items": [
+        {
+          "item": "Intro: destructor runs when an initialized variable/temporary goes out of scope; assignment drops the old left-hand value; partially initialized variables drop only initialized fields.",
+          "at": [
+            {
+              "step": "A destructor is two parts"
+            },
+            {
+              "step": "A value dies where its last owner ends"
+            },
+            {
+              "deep": "The destructor, as the Reference states it"
+            }
+          ]
+        },
+        {
+          "item": "Destructor operation: Drop::drop then recursive field destructors; struct fields in declaration order; active enum variant fields in order; tuple fields in order; array/slice elements first to last; closure move-captures unspecified order; trait objects run the underlying destructor; ptr::drop_in_place for manual runs.",
+          "at": [
+            {
+              "step": "A destructor is two parts"
+            },
+            {
+              "step": "Three locals, which dies first?"
+            },
+            {
+              "deep": "The destructor, as the Reference states it"
+            },
+            {
+              "deep": "Every drop-order rule, with a trace"
+            }
+          ]
+        },
+        {
+          "item": "Examples: overwrite drops old value, moved-out value, uninitialized variable does not drop, partial move after mem::forget.",
+          "at": [
+            {
+              "step": "A value dies where its last owner ends"
+            },
+            {
+              "deep": "Every drop-order rule, with a trace"
+            }
+          ]
+        },
+        {
+          "item": "Drop scopes: scopes for function, statement, expression, block, match arm; nesting rules (function, body, statement, let initializer, match guard, arm); inner-to-outer dropping.",
+          "at": [
+            {
+              "step": "Three locals, which dies first?"
+            },
+            {
+              "step": "A value dies where its last owner ends"
+            },
+            {
+              "deep": "Every drop-order rule, with a trace"
+            }
+          ]
+        },
+        {
+          "item": "Scopes of function parameters: dropped last, after pattern bindings; example drop order 3 2 0 1.",
+          "at": [
+            {
+              "step": "Prove it · 1 of 3"
+            },
+            {
+              "deep": "Every drop-order rule, with a trace"
+            }
+          ]
+        },
+        {
+          "item": "Scopes of local variables: let bindings tied to enclosing block; match-arm and pattern-guard bindings (if-let guards); pattern variables dropped in reverse declaration order; or-patterns use first subpattern's order.",
+          "at": [
+            {
+              "step": "Prove it · 1 of 3"
+            },
+            {
+              "deep": "Every drop-order rule, with a trace"
+            }
+          ]
+        },
+        {
+          "item": "Temporary scopes: smallest enclosing scope from list (function, statement, if/while/loop body, else block, conditions, match arm guard/body, lazy boolean operands, tail expression of a block in 2024); match scrutinee is not a temporary scope; destructuring assignment note.",
+          "at": [
+            {
+              "step": "Temporaries die at the semicolon"
+            },
+            {
+              "deep": "Temporaries: scopes, extension, and the two 2024 changes"
+            }
+          ]
+        },
+        {
+          "item": "2024 Edition differences: if let temporaries dropped before else; block tail-expression temporaries dropped right after evaluation; annotated examples.",
+          "at": [
+            {
+              "step": "Rust 2024: two shorter temporary scopes"
+            },
+            {
+              "deep": "Temporaries: scopes, extension, and the two 2024 changes"
+            },
+            {
+              "deep": "Migrating: if_let_rescope, tail_expr_drop_order, and what cargo fix really does"
+            }
+          ]
+        },
+        {
+          "item": "Operands: operand temporaries dropped in reverse order if evaluation breaks out, returns or panics.",
+          "at": [
+            {
+              "step": "Temporaries die at the semicolon"
+            },
+            {
+              "deep": "Temporaries: scopes, extension, and the two 2024 changes"
+            }
+          ]
+        },
+        {
+          "item": "Constant promotion: promotion to 'static only for values without interior mutability or destructors.",
+          "at": [
+            {
+              "out": "Constant promotion to static is not part of drop timing; the Reference section is linked from the sources list and not taught in Chapter 1."
+            }
+          ]
+        },
+        {
+          "item": "Temporary lifetime extension: let statements, static/const; sub-expressions (borrow, deref, field, tuple index, indexing); extending patterns (ref bindings and containing patterns); extending expressions (initializer, borrow operand, array/cast/struct/tuple operands, tuple-struct args, block final expr, if/else, match arms, super macros like pin!/format_args!); non-extending cases (function args, method receivers, match scrutinee, async block, closure body, loop break operands, labelled break).",
+          "at": [
+            {
+              "step": "Temporaries die at the semicolon"
+            },
+            {
+              "deep": "Temporaries: scopes, extension, and the two 2024 changes"
+            }
+          ]
+        },
+        {
+          "item": "Not running destructors: mem::forget and ManuallyDrop; forgetting is safe, soundness must not rely on destructors running.",
+          "at": [
+            {
+              "step": "mem::forget: the destructor you skip"
+            },
+            {
+              "step": "Which of these needs unsafe?"
+            },
+            {
+              "step": "Leak-safe: join in a call, not in a Drop"
+            },
+            {
+              "deep": "Leaking is safe: RFC 1066 and the Reference's rule"
+            }
+          ]
+        },
+        {
+          "item": "Process termination without unwinding: process::exit, process::abort, panic=abort; non-unwinding ABI boundary caveat.",
+          "at": [
+            {
+              "step": "Unwinding drops; exit does not"
+            },
+            {
+              "deep": "Leaking is safe: RFC 1066 and the Reference's rule"
+            }
+          ]
+        },
+        {
+          "item": "Not covered in this source: drop flags, File close errors.",
+          "at": [
+            {
+              "out": "This item says the source does not cover drop flags or File close errors; those are taught from the Nomicon and the File docs (steps 13 and 7)."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "std::ops::Drop (doc.rust-lang.org/std/ops/trait.Drop.html)",
+      "items": [
+        {
+          "item": "Overview: destructor = Drop::drop call plus compiler-generated drop glue recursing into fields; Drop is mainly for types owning resources (memory, file descriptor, socket).",
+          "at": [
+            {
+              "step": "A destructor is two parts"
+            },
+            {
+              "deep": "The destructor, as the Reference states it"
+            }
+          ]
+        },
+        {
+          "item": "Example HasTwoDrops: output order Running!, outer drop, then fields; fields still dropped without a Drop impl.",
+          "at": [
+            {
+              "step": "A destructor is two parts"
+            },
+            {
+              "deep": "The destructor, as the Reference states it"
+            },
+            {
+              "deep": "Every drop-order rule, with a trace"
+            }
+          ]
+        },
+        {
+          "item": "Cannot call Drop::drop yourself (E0040); use mem::drop.",
+          "at": [
+            {
+              "step": "Can you call x.drop() yourself?"
+            },
+            {
+              "deep": "The destructor, as the Reference states it"
+            }
+          ]
+        },
+        {
+          "item": "Drop order: struct fields in declaration order (guaranteed by the language); locals in reverse order; example Foo/Bar.",
+          "at": [
+            {
+              "step": "Three locals, which dies first?"
+            },
+            {
+              "step": "A destructor is two parts"
+            },
+            {
+              "deep": "Every drop-order rule, with a trace"
+            }
+          ]
+        },
+        {
+          "item": "Copy and Drop are exclusive, with reason.",
+          "at": [
+            {
+              "step": "Exactly once: why Copy and Drop never meet"
+            },
+            {
+              "deep": "The destructor, as the Reference states it"
+            }
+          ]
+        },
+        {
+          "item": "Drop check: borrow checker rules, example rejected for cyclic references, drop-glue/owned-types analysis, generic params must be live if T: Drop, may_dangle is nightly-only.",
+          "at": [
+            {
+              "deep": "Drop check, in one paragraph"
+            }
+          ]
+        },
+        {
+          "item": "Provided method drop: self not yet deallocated during drop; Panics section (double panic aborts, value considered dropped even if drop panics, do not drop twice with ptr::drop_in_place).",
+          "at": [
+            {
+              "step": "A value dies where its last owner ends"
+            },
+            {
+              "step": "Unwinding drops; exit does not"
+            },
+            {
+              "deep": "The destructor, as the Reference states it"
+            },
+            {
+              "deep": "In production"
+            }
+          ]
+        },
+        {
+          "item": "Provided method pin_drop (nightly, pin_ergonomics).",
+          "at": [
+            {
+              "out": "pin_drop is nightly-only (pin_ergonomics); Pin belongs to Chapter 8."
+            }
+          ]
+        },
+        {
+          "item": "Dyn compatible; implementors list (Box, Rc, Arc, Vec, MutexGuard, BufWriter, OwnedFd, etc.).",
+          "at": [
+            {
+              "out": "The implementor list is reference material, not a concept."
+            }
+          ]
+        },
+        {
+          "item": "Not covered in this source: drop flags, File close errors, leaking (mem::forget).",
+          "at": [
+            {
+              "out": "This item says the source does not cover drop flags, File close errors or leaking; those are taught from other sources (steps 13, 7, 15)."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "Rust Edition Guide, if let temporary scope (Rust 2024)",
+      "items": [
+        {
+          "item": "Summary: temporaries from the if let scrutinee drop before the else branch in 2024 instead of after.",
+          "at": [
+            {
+              "step": "One if let, two editions, one deadlock"
+            },
+            {
+              "step": "Rust 2024: two shorter temporary scopes"
+            },
+            {
+              "deep": "Temporaries: scopes, extension, and the two 2024 changes"
+            }
+          ]
+        },
+        {
+          "item": "Details: scope change; pre-2024 temporaries could outlive the if let; RwLock example (read lock held into else, write lock deadlocks) in 2021 vs 2024 versions; cross-links to temporary scope rules and tail expression chapter.",
+          "at": [
+            {
+              "step": "One if let, two editions, one deadlock"
+            },
+            {
+              "step": "What does cargo fix --edition do to it?"
+            },
+            {
+              "deep": "Temporaries: scopes, extension, and the two 2024 changes"
+            },
+            {
+              "deep": "Lab 2 · One file, two editions"
+            }
+          ]
+        },
+        {
+          "item": "Migration: rewriting to match is always safe and preserves 2021 behaviour; if_let_rescope lint (non-trivial Drop temporaries); cargo fix output example (match with Some(x)/_ arms); caveat that it reintroduces the deadlock here; lint in rust-2024-compatibility group; cargo fix --edition; recommendation to review each rewrite and optionally revert to if let; #![warn(if_let_rescope)] for manual inspection.",
+          "at": [
+            {
+              "step": "What does cargo fix --edition do to it?"
+            },
+            {
+              "deep": "Migrating: if_let_rescope, tail_expr_drop_order, and what cargo fix really does"
+            },
+            {
+              "deep": "In production"
+            }
+          ]
+        },
+        {
+          "item": "Footnote defining scrutinee.",
+          "at": [
+            {
+              "deep": "Migrating: if_let_rescope, tail_expr_drop_order, and what cargo fix really does"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "Rust Edition Guide, Tail expression temporary scope (Rust 2024)",
+      "items": [
+        {
+          "item": "Summary: tail-expression temporaries may drop before locals and may not extend to the next larger temporary scope.",
+          "at": [
+            {
+              "step": "Rust 2024: two shorter temporary scopes"
+            },
+            {
+              "deep": "Temporaries: scopes, extension, and the two 2024 changes"
+            }
+          ]
+        },
+        {
+          "item": "Details: pre-2024 RefCell example (c.borrow().len()) failing with E0597, full compiler error text, 2024 fix (temporary dropped before c).",
+          "at": [
+            {
+              "step": "c.borrow().len() as a tail expression"
+            },
+            {
+              "deep": "Temporaries: scopes, extension, and the two 2024 changes"
+            },
+            {
+              "deep": "Lab 2 · One file, two editions"
+            }
+          ]
+        },
+        {
+          "item": "Temporary scope may be narrowed: pre-2024 extension to enclosing boundary vs 2024 drop at end of block; `{ &String::from(\"1234\") }.len()` compiles in 2021 and fails in 2024; fix by lifting to a local (relies on temporary lifetime extension); cross-link to if let chapter.",
+          "at": [
+            {
+              "step": "c.borrow().len() as a tail expression"
+            },
+            {
+              "deep": "Temporaries: scopes, extension, and the two 2024 changes"
+            }
+          ]
+        },
+        {
+          "item": "Migration: no semantics-preserving rewrite; tail_expr_drop_order lint; cargo fix --edition only warns, makes no changes; manual inspection; #![warn(tail_expr_drop_order)]; RFC 3606 footnote.",
+          "at": [
+            {
+              "deep": "Migrating: if_let_rescope, tail_expr_drop_order, and what cargo fix really does"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "The Rustonomicon, Leaking (doc.rust-lang.org/nomicon/leaking.html)",
+      "items": [
+        {
+          "item": "Thesis: RAII makes leaks rare in practice, but leaking is theoretically unpreventable (collection held forever; unreachable value never dropped).",
+          "at": [
+            {
+              "step": "mem::forget: the destructor you skip"
+            },
+            {
+              "step": "Which of these needs unsafe?"
+            },
+            {
+              "deep": "Leaking is safe: RFC 1066 and the Reference's rule"
+            }
+          ]
+        },
+        {
+          "item": "mem::forget consumes a value without running its destructor; formerly `unsafe` as a lint, untenable because safe code can leak (Rc cycles via interior mutability).",
+          "at": [
+            {
+              "step": "mem::forget: the destructor you skip"
+            },
+            {
+              "step": "Which of these needs unsafe?"
+            },
+            {
+              "deep": "Leaking is safe: RFC 1066 and the Reference's rule"
+            }
+          ]
+        },
+        {
+          "item": "Safe code may assume no leaks; unsafe code must not rely on destructors for safety. Proxy types (Drain, Rc, JoinGuard) are the risk.",
+          "at": [
+            {
+              "step": "Leak-safe: join in a call, not in a Drop"
+            },
+            {
+              "step": "Prove it · 3 of 3"
+            },
+            {
+              "deep": "Proxy types and leak amplification"
+            }
+          ]
+        },
+        {
+          "item": "vec::Drain: moves data out without consuming Vec; partial iteration leaves uninitialized slots; mem::forget(drainer) example gives use-after-free; fix is set len to 0 up front and repair in destructor; leak amplification.",
+          "at": [
+            {
+              "step": "Leak-safe: join in a call, not in a Drop"
+            },
+            {
+              "deep": "Proxy types and leak amplification"
+            },
+            {
+              "deep": "Lab 4 · Leak it: forget, ManuallyDrop, Box::leak, measured"
+            }
+          ]
+        },
+        {
+          "item": "Rc: simplified implementation; ref_count overflow via mem::forget enables use-after-free; std aborts.",
+          "at": [
+            {
+              "deep": "Proxy types and leak amplification"
+            }
+          ]
+        },
+        {
+          "item": "thread::scoped / JoinGuard: removed from std (issue #24292); lifetime-bound guard blocks on drop; usage example; mem::forget(guard) example gives data race/use-after-free; API scrapped.",
+          "at": [
+            {
+              "step": "The leakpocalypse of 2015"
+            },
+            {
+              "deep": "Leaking is safe: RFC 1066 and the Reference's rule"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "RFC 1066, safe mem::forget",
+      "items": [
+        {
+          "item": "Summary: make mem::forget safe; state that not running destructors is not unsafe behaviour.",
+          "at": [
+            {
+              "step": "mem::forget: the destructor you skip"
+            },
+            {
+              "step": "The leakpocalypse of 2015"
+            },
+            {
+              "deep": "Leaking is safe: RFC 1066 and the Reference's rule"
+            }
+          ]
+        },
+        {
+          "item": "Motivation: thread::scoped/JoinGuard unsoundness found by arielb1; Rc-cycle safe forget; panic bugs skipping destructors; Vec::drain_range also affected.",
+          "at": [
+            {
+              "step": "The leakpocalypse of 2015"
+            },
+            {
+              "deep": "Leaking is safe: RFC 1066 and the Reference's rule"
+            }
+          ]
+        },
+        {
+          "item": "Design: remove `unsafe` from mem::forget; std attempts but does not guarantee destructors; unsafe means memory unsafety, not \"avoid\"; blame lies with the type; breaking signature change for 1.0.",
+          "at": [
+            {
+              "step": "The leakpocalypse of 2015"
+            },
+            {
+              "step": "Prove it · 3 of 3"
+            },
+            {
+              "deep": "Leaking is safe: RFC 1066 and the Reference's rule"
+            }
+          ]
+        },
+        {
+          "item": "Drawbacks: loses the ability to rely on destructors for API design.",
+          "at": [
+            {
+              "deep": "Leaking is safe: RFC 1066 and the Reference's rule"
+            }
+          ]
+        },
+        {
+          "item": "Alternatives: guarantee destructors (needs fixes to panicking destructors, containers, Rc/Arc cycle prevention, audit); Leak marker trait (Send-like or Sized-like ?Leak) and why it is invasive.",
+          "at": [
+            {
+              "deep": "Leaking is safe: RFC 1066 and the Reference's rule"
+            }
+          ]
+        },
+        {
+          "item": "Unresolved question: other std APIs relying on destructors for safety.",
+          "at": [
+            {
+              "deep": "Leaking is safe: RFC 1066 and the Reference's rule"
+            },
+            {
+              "deep": "The frontier"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "std::mem::forget (doc.rust-lang.org/std/mem/fn.forget.html)",
+      "items": [
+        {
+          "item": "Signature pub const fn forget<T>(t: T); stable 1.0.0, const 1.46.0",
+          "at": [
+            {
+              "step": "mem::forget: the destructor you skip"
+            },
+            {
+              "deep": "Leaking is safe: RFC 1066 and the Reference's rule"
+            }
+          ]
+        },
+        {
+          "item": "Summary: takes ownership, skips destructor, resources linger unreachable",
+          "at": [
+            {
+              "step": "mem::forget: the destructor you skip"
+            },
+            {
+              "deep": "Leaking is safe: RFC 1066 and the Reference's rule"
+            }
+          ]
+        },
+        {
+          "item": "Pointers: no guarantee pointers to the memory stay valid",
+          "at": [
+            {
+              "step": "mem::forget: the destructor you skip"
+            },
+            {
+              "deep": "Leaking is safe: RFC 1066 and the Reference's rule"
+            }
+          ]
+        },
+        {
+          "item": "Cross-references: Box::leak, Box::into_raw, mem::drop",
+          "at": [
+            {
+              "step": "mem::forget: the destructor you skip"
+            },
+            {
+              "step": "Which of these needs unsafe?"
+            },
+            {
+              "step": "ManuallyDrop and Box::leak, on purpose"
+            }
+          ]
+        },
+        {
+          "item": "Safety section: why forget is safe (Rc cycles, process::exit); leaking usually undesirable; unsafe code must allow for forgetting",
+          "at": [
+            {
+              "step": "mem::forget: the destructor you skip"
+            },
+            {
+              "step": "Which of these needs unsafe?"
+            },
+            {
+              "deep": "Leaking is safe: RFC 1066 and the Reference's rule"
+            }
+          ]
+        },
+        {
+          "item": "Example: forgetting a File (fd handed to C code)",
+          "at": [
+            {
+              "step": "mem::forget: the destructor you skip"
+            },
+            {
+              "deep": "Lab 4 · Leak it: forget, ManuallyDrop, Box::leak, measured"
+            }
+          ]
+        },
+        {
+          "item": "Relationship with ManuallyDrop: forget+from_raw_parts double-free hazard vs ManuallyDrop robust version",
+          "at": [
+            {
+              "step": "ManuallyDrop and Box::leak, on purpose"
+            },
+            {
+              "deep": "Leaking is safe: RFC 1066 and the Reference's rule"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "std::mem::ManuallyDrop (doc.rust-lang.org/std/mem/struct.ManuallyDrop.html)",
+      "items": [
+        {
+          "item": "Struct docs: 0-cost wrapper inhibiting auto drop; same layout/bit validity as T",
+          "at": [
+            {
+              "step": "ManuallyDrop and Box::leak, on purpose"
+            },
+            {
+              "deep": "Lab 4 · Leak it: forget, ManuallyDrop, Box::leak, measured"
+            }
+          ]
+        },
+        {
+          "item": "Safe access, unsafe ManuallyDrop::drop",
+          "at": [
+            {
+              "step": "Which of these needs unsafe?"
+            },
+            {
+              "step": "ManuallyDrop and Box::leak, on purpose"
+            }
+          ]
+        },
+        {
+          "item": "Section ManuallyDrop and drop order: field declaration order guarantee, ManuallyDrop hazardous with unwinding",
+          "at": [
+            {
+              "step": "Which goes first, the file or its directory?"
+            },
+            {
+              "step": "ManuallyDrop and Box::leak, on purpose"
+            },
+            {
+              "deep": "Every drop-order rule, with a trace"
+            }
+          ]
+        },
+        {
+          "item": "Section Safety hazards storing ManuallyDrop in struct/enum (derive(Debug) unsound example)",
+          "at": [
+            {
+              "deep": "Leaking is safe: RFC 1066 and the Reference's rule"
+            }
+          ]
+        },
+        {
+          "item": "Section Pre-1.96 interaction with Box (UB before Rust 1.96.0)",
+          "at": [
+            {
+              "deep": "The frontier"
+            }
+          ]
+        },
+        {
+          "item": "Methods: new, into_inner, take (unsafe), drop (unsafe) with safety notes",
+          "at": [
+            {
+              "step": "ManuallyDrop and Box::leak, on purpose"
+            },
+            {
+              "deep": "Lab 4 · Leak it: forget, ManuallyDrop, Box::leak, measured"
+            }
+          ]
+        },
+        {
+          "item": "Trait impls list (Clone, Copy, Deref, DerefMut, etc.)",
+          "at": [
+            {
+              "out": "The trait impl list is reference material."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "The Rustonomicon, Drop Flags (doc.rust-lang.org/nomicon/drop-flags.html)",
+      "items": [
+        {
+          "item": "Problem: conditional init/deinit/reinit is safe, so Rust must know whether to run a destructor on assignment or scope exit.",
+          "at": [
+            {
+              "step": "Drop flags: when only the run knows"
+            },
+            {
+              "deep": "Drop flags"
+            }
+          ]
+        },
+        {
+          "item": "Assignment rules: `let` never drops; assignment through a deref always drops; only overwriting an initialized variable/subfield is the hard case.",
+          "at": [
+            {
+              "step": "Drop flags: when only the run knows"
+            },
+            {
+              "deep": "Drop flags"
+            }
+          ]
+        },
+        {
+          "item": "Runtime drop flag toggled as variable becomes (un)initialized, checked when it might need dropping.",
+          "at": [
+            {
+              "step": "Drop flags: when only the run knows"
+            },
+            {
+              "deep": "Drop flags"
+            }
+          ]
+        },
+        {
+          "item": "Static drop semantics: straight-line code and branches with identical init behaviour need no flag (annotated examples).",
+          "at": [
+            {
+              "step": "Drop flags: when only the run knows"
+            },
+            {
+              "deep": "Drop flags"
+            }
+          ]
+        },
+        {
+          "item": "Dynamic case: conditional initialization (`if condition { x = ... }`) requires the flag; can be refactored to static.",
+          "at": [
+            {
+              "step": "Drop flags: when only the run knows"
+            },
+            {
+              "deep": "Drop flags"
+            }
+          ]
+        },
+        {
+          "item": "Flags live on the stack; older Rust stored them in a hidden field of Drop types.",
+          "at": [
+            {
+              "step": "Drop flags: when only the run knows"
+            },
+            {
+              "deep": "Drop flags"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "FLS, Ownership and Destruction (rust-lang.github.io/fls/ownership-and-deconstruction.html)",
+      "items": [
+        {
+          "item": "15.7 Destructors: Drop::drop first, then fields (struct, enum active variant, tuple in declaration order; array and slice first to last; closure move-captures unspecified; trait object underlying destructor).",
+          "at": [
+            {
+              "step": "A destructor is two parts"
+            },
+            {
+              "deep": "The destructor, as the Reference states it"
+            }
+          ]
+        },
+        {
+          "item": "15.8 Drop scopes and 15.8.1 drop scope extension: the normative statement of temporary scopes and their extension.",
+          "at": [
+            {
+              "step": "Temporaries die at the semicolon"
+            },
+            {
+              "deep": "Temporaries: scopes, extension, and the two 2024 changes"
+            }
+          ]
+        },
+        {
+          "item": "15.9 Drop order: bindings in reverse declaration order; parameters right to left, each after its pattern bindings; inner scopes before outer; or-pattern order from the first alternative.",
+          "at": [
+            {
+              "step": "Three locals, which dies first?"
+            },
+            {
+              "step": "Prove it · 1 of 3"
+            },
+            {
+              "deep": "Every drop-order rule, with a trace"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "The Rust Reference, Operator expressions: assignment (doc.rust-lang.org/reference/expressions/operator-expr.html)",
+      "items": [
+        {
+          "item": "Assignment evaluates the assigned value operand first, then drops the value at the assigned place (unless uninitialized), then writes.",
+          "at": [
+            {
+              "step": "A value dies where its last owner ends"
+            },
+            {
+              "deep": "Every drop-order rule, with a trace"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "std::process::exit (doc.rust-lang.org/std/process/fn.exit.html)",
+      "items": [
+        {
+          "item": "exit runs no destructors on the current stack or any other thread's stack.",
+          "at": [
+            {
+              "step": "Unwinding drops; exit does not"
+            },
+            {
+              "deep": "Leaking is safe: RFC 1066 and the Reference's rule"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "std::thread module (doc.rust-lang.org/std/thread/index.html)",
+      "items": [
+        {
+          "item": "When the main thread terminates the whole program shuts down; destructors on the remaining threads' stacks may not be executed.",
+          "at": [
+            {
+              "step": "Unwinding drops; exit does not"
+            },
+            {
+              "deep": "Leaking is safe: RFC 1066 and the Reference's rule"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "std::thread::LocalKey (doc.rust-lang.org/std/thread/struct.LocalKey.html)",
+      "items": [
+        {
+          "item": "Thread-local destructors are best effort; on Unix with pthread TLS they are not run for the main thread at exit.",
+          "at": [
+            {
+              "deep": "Leaking is safe: RFC 1066 and the Reference's rule"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "std::ptr::drop_in_place (doc.rust-lang.org/std/ptr/fn.drop_in_place.html)",
+      "items": [
+        {
+          "item": "Runs the destructor through a pointer; required for unsized types; usable for pinned data; the pointee must not be used afterwards.",
+          "at": [
+            {
+              "deep": "The destructor, as the Reference states it"
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "independent blind expert list: a reviewer agent that had not seen the topic (sources/expert-list.json)",
+    "date": "2026-10-11",
+    "items": [
+      {
+        "item": "Destruction is deterministic and tied to scope: when an initialized variable or temporary goes out of scope its destructor runs; plain assignment first drops the old value of an initialized left-hand side; a moved-from variable is not dropped again, and after a partial move only the fields still initialized are dropped.",
+        "at": [
+          {
+            "step": "A destructor is two parts"
+          },
+          {
+            "step": "A value dies where its last owner ends"
+          },
+          {
+            "deep": "The destructor, as the Reference states it"
+          }
+        ]
+      },
+      {
+        "item": "A destructor is two parts: the type's own Drop::drop (if any), then compiler-generated drop glue that recursively drops every field. A struct with no Drop impl still drops its fields, so most types never need impl Drop; only types that directly manage a resource do.",
+        "at": [
+          {
+            "step": "A destructor is two parts"
+          },
+          {
+            "deep": "The destructor, as the Reference states it"
+          }
+        ]
+      },
+      {
+        "item": "Aggregates drop front to back: struct fields in declaration order, tuple elements in order, the active enum variant's fields in declaration order, array/owned-slice elements first to last; the outer Drop::drop runs before any field is dropped. The order in which a closure's move-captures drop is unspecified.",
+        "at": [
+          {
+            "step": "A destructor is two parts"
+          },
+          {
+            "step": "Three locals, which dies first?"
+          },
+          {
+            "deep": "Every drop-order rule, with a trace"
+          }
+        ]
+      },
+      {
+        "item": "Locals drop back to front: on leaving a drop scope, variables drop in reverse declaration order and temporaries in reverse creation order; when several scopes are left at once (return) they unwind inside-out; function parameters are in the outermost scope and drop last, each after the bindings made by its own pattern.",
+        "at": [
+          {
+            "step": "Three locals, which dies first?"
+          },
+          {
+            "step": "Prove it · 1 of 3"
+          },
+          {
+            "deep": "Every drop-order rule, with a trace"
+          }
+        ]
+      },
+      {
+        "item": "Bindings in one pattern (let (a, b) = ...) drop in reverse declaration order, and for or-patterns the order is fixed by the first sub-pattern even when a later alternative matched.",
+        "at": [
+          {
+            "step": "Prove it · 1 of 3"
+          },
+          {
+            "deep": "Every drop-order rule, with a trace"
+          }
+        ]
+      },
+      {
+        "item": "A temporary lives until the end of its temporary scope, usually the enclosing statement, so `m.lock().unwrap().push(x);` releases the lock at the semicolon. The scrutinee of a match is not a temporary scope, so a guard created there lives until the end of the whole statement, which is the classic way to hold a lock too long by accident. If-conditions, lazy && / || operands and match guards each get their own narrower scope.",
+        "at": [
+          {
+            "step": "Temporaries die at the semicolon"
+          },
+          {
+            "deep": "Temporaries: scopes, extension, and the two 2024 changes"
+          }
+        ]
+      },
+      {
+        "item": "Temporary lifetime extension: in `let x = &temp();` (and through tuple, struct, array, cast, braced-block tail, if/else and match-arm operands) the temporary lives to the end of the block. Function-call arguments, method receivers, match scrutinees, closure/async bodies and break operands are not extending, so `let x = identity(&temp());` does not compile.",
+        "at": [
+          {
+            "step": "Temporaries die at the semicolon"
+          },
+          {
+            "deep": "Temporaries: scopes, extension, and the two 2024 changes"
+          }
+        ]
+      },
+      {
+        "item": "When an expression is abandoned part-way through (break, return, ? or panic inside an operand), the operand temporaries already created drop in reverse creation order; operands never evaluated are never created.",
+        "at": [
+          {
+            "deep": "Temporaries: scopes, extension, and the two 2024 changes"
+          }
+        ]
+      },
+      {
+        "item": "Rust 2024 if-let rescoping: temporaries in an `if let` scrutinee now drop before the else block (previously they lived to the end of the whole if-let), which fixes the `if let Some(x) = *lock.read().unwrap() { .. } else { lock.write() }` self-deadlock. Rewriting it as `match` restores the old, longer lifetime; the if_let_rescope lint flags affected code during `cargo fix --edition`.",
+        "at": [
+          {
+            "step": "One if let, two editions, one deadlock"
+          },
+          {
+            "step": "What does cargo fix --edition do to it?"
+          },
+          {
+            "step": "Rust 2024: two shorter temporary scopes"
+          },
+          {
+            "deep": "Migrating: if_let_rescope, tail_expr_drop_order, and what cargo fix really does"
+          }
+        ]
+      },
+      {
+        "item": "Rust 2024 tail-expression scope: temporaries in a block's tail expression now drop before that block's locals, so `let c = RefCell::new(..); c.borrow().len()` compiles. The narrower scope can also break code that compiled under 2021 (`{ &String::from(..) }.len()`). There is no semantics-preserving automatic rewrite; the tail_expr_drop_order lint only warns.",
+        "at": [
+          {
+            "step": "Rust 2024: two shorter temporary scopes"
+          },
+          {
+            "step": "c.borrow().len() as a tail expression"
+          },
+          {
+            "deep": "Migrating: if_let_rescope, tail_expr_drop_order, and what cargo fix really does"
+          }
+        ]
+      },
+      {
+        "item": "Drop flags: when a value is moved out only conditionally, the compiler keeps a hidden runtime flag to decide whether to drop it at scope end. Assigning through a dereference always drops the old value; a `let` never does; straight-line code is resolved statically.",
+        "at": [
+          {
+            "step": "Drop flags: when only the run knows"
+          },
+          {
+            "deep": "Drop flags"
+          }
+        ]
+      },
+      {
+        "item": "`let _ = expr;` vs `let _g = expr;`: the wildcard `_` does not bind, move or borrow, so a guard returned by `let _ = mutex.lock();` is a temporary dropped at once and the lock is released immediately, while `_g` binds and holds the guard (MutexGuard: the lock is released when the guard is dropped) until the end of scope.",
+        "at": [
+          {
+            "step": "Prove it · 2 of 3"
+          },
+          {
+            "deep": "Every drop-order rule, with a trace"
+          },
+          {
+            "deep": "In production"
+          }
+        ]
+      },
+      {
+        "item": "You cannot call Drop::drop yourself (E0040), because the value would still be usable afterwards. To drop early, call std::mem::drop, which is literally `pub fn drop<T>(_x: T) {}`: it works by moving the value in, so it does nothing to a Copy value or a reference.",
+        "at": [
+          {
+            "step": "A value dies where its last owner ends"
+          },
+          {
+            "step": "Can you call x.drop() yourself?"
+          }
+        ]
+      },
+      {
+        "item": "A type cannot be both Copy and Drop: implicit bit-copies would make it unpredictable when, and how many times, the destructor runs.",
+        "at": [
+          {
+            "step": "Exactly once: why Copy and Drop never meet"
+          },
+          {
+            "deep": "The destructor, as the Reference states it"
+          }
+        ]
+      },
+      {
+        "item": "Drop gets &mut self, not self, so a destructor cannot move fields out, and you cannot move out of or destructure a value whose type implements Drop (E0509). Use Option::take / mem::take / mem::replace, or a ManuallyDrop field, to hand off the contents.",
+        "at": [
+          {
+            "step": "In one breath"
+          },
+          {
+            "topic": "Partial moves and destructuring as transfer",
+            "quote": "why you cannot partially move out of a type that implements Drop"
+          },
+          {
+            "deep": "The destructor, as the Reference states it"
+          }
+        ]
+      },
+      {
+        "item": "Destructors should not panic: drop can run during unwinding, and a second panic there will likely abort. Even if drop panics, the value counts as dropped and must never be dropped again (a real hazard in unsafe code using ptr::drop_in_place).",
+        "at": [
+          {
+            "step": "Can you call x.drop() yourself?"
+          },
+          {
+            "step": "Unwinding drops; exit does not"
+          },
+          {
+            "deep": "In production"
+          }
+        ]
+      },
+      {
+        "item": "To control drop order, reorder the declarations (for example, put the field that must outlive the others last). Using ManuallyDrop for this needs unsafe code and is hard to get right when unwinding.",
+        "at": [
+          {
+            "step": "Which goes first, the file or its directory?"
+          },
+          {
+            "deep": "Every drop-order rule, with a trace"
+          }
+        ]
+      },
+      {
+        "item": "The model RAII wrapper for an OS resource is OwnedFd (OwnedHandle on Windows). It closes the descriptor on drop and guarantees that nobody else will close it. It is repr(transparent) and never -1, so it can cross FFI as an owned argument or return value, and as_fd lends a BorrowedFd without giving up ownership.",
+        "at": [
+          {
+            "deep": "RAII in Rust against defer, with, try-with-resources and C++"
+          },
+          {
+            "topic": "File descriptors and I/O safety",
+            "quote": "OwnedFd closes on Drop"
+          }
+        ]
+      },
+      {
+        "item": "Closing exactly once is enforced by ownership, not by runtime checks. The wrapper is not Copy or Clone (duplication goes through try_clone, which makes a new descriptor). from_raw_fd is unsafe because the caller must hand over an open descriptor fit to be owned that needs no cleanup other than close. into_raw_fd gives up ownership, so drop no longer closes it.",
+        "at": [
+          {
+            "step": "SpillFile: an OS resource with one owner"
+          },
+          {
+            "topic": "File descriptors and I/O safety",
+            "quote": "into_raw_fd(self)/from_raw_fd are the explicit ownership handoffs that prevent use-after-close"
+          }
+        ]
+      },
+      {
+        "item": "I/O safety: a descriptor is owned or borrowed much like memory. A safe fn that takes a plain integer and acts on it as a descriptor is unsound, because closing a descriptor you do not own lets the number be reused, and the real owner then works on the wrong file (misbehavior, possibly UB).",
+        "at": [
+          {
+            "topic": "File descriptors and I/O safety",
+            "quote": "I/O safety (RFC 3128, stable 1.63)"
+          }
+        ]
+      },
+      {
+        "item": "Drop cannot report failure: File's Drop ignores errors detected on close. Where those errors matter, call an explicit fallible method (sync_all, or a consuming close/finish method on your own wrapper) and keep Drop as the best-effort fallback.",
+        "at": [
+          {
+            "step": "SpillFile: an OS resource with one owner"
+          },
+          {
+            "deep": "In production"
+          }
+        ]
+      },
+      {
+        "item": "mem::forget is a safe fn because Rust's safety guarantees do not include destructors always running (Rc cycles and process::exit already skip them). So any unsafe code must allow for it: you cannot return a value and rely on the caller running its destructor.",
+        "at": [
+          {
+            "step": "mem::forget: the destructor you skip"
+          },
+          {
+            "step": "Which of these needs unsafe?"
+          },
+          {
+            "step": "Prove it · 3 of 3"
+          }
+        ]
+      },
+      {
+        "item": "Prefer ManuallyDrop over forget when handing ownership to raw parts (Vec -> from_raw_parts). With forget, a panic between taking the raw parts and the forget call double-frees, and passing the now-invalid value to forget is itself UB; wrapping in ManuallyDrop first removes both problems.",
+        "at": [
+          {
+            "step": "ManuallyDrop and Box::leak, on purpose"
+          },
+          {
+            "deep": "Leaking is safe: RFC 1066 and the Reference's rule"
+          }
+        ]
+      },
+      {
+        "item": "ManuallyDrop<T> is zero-cost and has the same layout and validity as T (not a substitute for MaybeUninit). Reading the inner value is safe, so ManuallyDrop::drop is unsafe and a dropped value must never be reachable through a safe public API. Even #[derive(Debug/Clone/PartialEq/Hash)] on a struct holding one can be unsound.",
+        "at": [
+          {
+            "step": "ManuallyDrop and Box::leak, on purpose"
+          },
+          {
+            "deep": "Lab 4 · Leak it: forget, ManuallyDrop, Box::leak, measured"
+          }
+        ]
+      },
+      {
+        "item": "Version note: before Rust 1.96.0, moving a ManuallyDrop<T> whose T is or contains a Box after ManuallyDrop::drop had run was undefined behavior, even through a generic type that a downstream user filled in with Box.",
+        "at": [
+          {
+            "deep": "The frontier"
+          }
+        ]
+      },
+      {
+        "item": "Deliberate leaks are a supported, safe tool. Box::leak turns an owned allocation into a &'a mut T (often 'static) for data meant to live for the rest of the program; use Box::into_raw if it should be freed later.",
+        "at": [
+          {
+            "step": "Which of these needs unsafe?"
+          },
+          {
+            "step": "ManuallyDrop and Box::leak, on purpose"
+          }
+        ]
+      },
+      {
+        "item": "Safe code can leak with no unsafe at all: Rc/RefCell reference cycles are never freed. Preventing memory leaks is explicitly not one of Rust's guarantees (leaks are memory-safe); Weak breaks cycles.",
+        "at": [
+          {
+            "step": "Which of these needs unsafe?"
+          },
+          {
+            "topic": "Reference cycles and Weak",
+            "quote": "safe Rust can still leak through cyclic logical ownership"
+          }
+        ]
+      },
+      {
+        "item": "Destructors are skipped when the process ends without unwinding: process::exit (no destructors on any thread's stack), process::abort, panic=abort, and a panic reaching a non-unwinding ABI boundary. Static items are never dropped at program end.",
+        "at": [
+          {
+            "step": "Unwinding drops; exit does not"
+          },
+          {
+            "deep": "Leaking is safe: RFC 1066 and the Reference's rule"
+          }
+        ]
+      },
+      {
+        "item": "The Reference's rule: preventing a destructor (forget or otherwise) is safe even for non-'static types, and apart from the places where the Reference guarantees destructors run, a type may not rely on its destructor running for soundness.",
+        "at": [
+          {
+            "step": "Leak-safe: join in a call, not in a Drop"
+          },
+          {
+            "step": "Prove it · 3 of 3"
+          },
+          {
+            "deep": "Leaking is safe: RFC 1066 and the Reference's rule"
+          }
+        ]
+      },
+      {
+        "item": "The leakpocalypse (2015): thread::scoped returned a JoinGuard whose Drop joined the child thread, and soundness depended on that Drop always running. An Rc cycle could leak the guard in safe code, so the child could use the parent's freed stack (issue #24292). RFC 1066 then made mem::forget safe just before 1.0 and stated that not running destructors is not unsafe.",
+        "at": [
+          {
+            "step": "The leakpocalypse of 2015"
+          }
+        ]
+      },
+      {
+        "item": "Leaks matter for soundness mainly in proxy types, which manage access to data they do not own (vec::Drain, Rc, the old JoinGuard). Unsafe code cannot rely on destructors running in order to be safe; safe application code may treat a leak as a bug.",
+        "at": [
+          {
+            "step": "Leak-safe: join in a call, not in a Drop"
+          },
+          {
+            "deep": "Proxy types and leak amplification"
+          }
+        ]
+      },
+      {
+        "item": "Leak amplification ('pre-pooping your pants'): put the owner into a trivially safe state before handing out the proxy, and let Drop restore the good state. Vec::drain sets len to 0 up front, so a forgotten Drain only leaks more elements (std documents that the vector may lose elements arbitrarily) rather than exposing freed memory.",
+        "at": [
+          {
+            "step": "Leak-safe: join in a call, not in a Drop"
+          },
+          {
+            "deep": "Proxy types and leak amplification"
+          }
+        ]
+      },
+      {
+        "item": "Forget can also break counting invariants: forgetting Rc clones can overflow the refcount and cause a use-after-free, so std aborts on refcount overflow instead of assuming the count matches the live handles.",
+        "at": [
+          {
+            "deep": "Proxy types and leak amplification"
+          }
+        ]
+      },
+      {
+        "item": "The leak-proof redesign is std::thread::scope (1.63). The guarantee lives in a closure-taking function that joins every unjoined thread before it returns, not in a guard's Drop, so leaking a scoped thread handle cannot break it. The 'scope / 'env lifetimes express the borrow. Caveat: the join waits only for each thread's main function, not its thread-local destructors.",
+        "at": [
+          {
+            "step": "Leak-safe: join in a call, not in a Drop"
+          },
+          {
+            "deep": "Proxy types and leak amplification"
+          }
+        ]
+      },
+      {
+        "item": "Gankra's ranking of how much a type can rely on its destructor: no destructor; leaking just wastes resources; leaking skips other destructors; and 'leaves the world in an unexpected but safe state'. Push reliance as high up this list as practical; anything worse than the last, i.e. relying on Drop for memory safety, is forbidden in an API that claims to be safe.",
+        "at": [
+          {
+            "deep": "In production"
+          }
+        ]
+      },
+      {
+        "item": "Pin's Drop guarantee is the one place Drop interacts with soundness: the memory of a pinned !Unpin value must not be invalidated or reused until its drop has run. Leaking it (never freeing the memory) is still allowed; freeing or reusing the memory without dropping is not. Custom storage must call ptr::drop_in_place before reuse.",
+        "at": [
+          {
+            "deep": "The frontier"
+          },
+          {
+            "topic": "Pin and self-referential state",
+            "quote": "Pin exists because an async state machine may hold references into itself after its first poll"
+          }
+        ]
+      },
+      {
+        "item": "Drop check: if T implements Drop, all of T's generic lifetime and type parameters must still be live where T is dropped (this is why the mutual-reference Cell example is rejected). PhantomData<T> marks ownership for the check; #[may_dangle] (dropck eyepatch) is nightly-only.",
+        "at": [
+          {
+            "deep": "Drop check, in one paragraph"
+          }
+        ]
+      },
+      {
+        "item": "Manual destruction in custom containers and smart pointers goes through ptr::drop_in_place. It is required for unsized values and lets you drop pinned data; the pointer must be valid for reads and writes and aligned (packed fields must be copied out first), and the pointee counts as dropped afterwards.",
+        "at": [
+          {
+            "deep": "The destructor, as the Reference states it"
+          }
+        ]
+      },
+      {
+        "item": "Drop guards for panic safety: an RAII 'hole' or guard that restores a container's invariant in its Drop keeps partially completed unsafe operations memory-safe if a user callback panics (minimal vs maximal exception safety).",
+        "at": [
+          {
+            "deep": "In production"
+          }
+        ]
+      },
+      {
+        "item": "Edition 2021 disjoint closure captures change drop timing: a move closure that uses only t.0 now captures and drops only t.0 when the closure drops, while the rest of t drops at t's own scope end. The edition migration flags closures whose capture changes affect drop order.",
+        "at": [
+          {
+            "out": "Closure capture rules and their drop timing are not in Chapter 1 (CHAPTER.md A.7 defers closures to Chapter 2 section 2.2); the Deep dive notes that closure move-captures drop in an unspecified order."
+          }
+        ]
+      }
+    ]
+  },
+  "gapReview": {
+    "date": "2026-10-11",
+    "by": "Fable content review",
+    "open": []
+  }
+}

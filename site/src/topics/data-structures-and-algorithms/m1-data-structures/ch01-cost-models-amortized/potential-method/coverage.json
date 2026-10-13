@@ -1,0 +1,872 @@
+{
+  "topic": "dsa.potential-method",
+  "syllabus": [
+    {
+      "clause": "choosing Φ",
+      "at": [
+        {
+          "step": "One number for the whole structure"
+        },
+        {
+          "step": "The middle terms cancel"
+        },
+        {
+          "step": "The stack: Φ is the number of keys"
+        },
+        {
+          "step": "Which Φ pays for doubling?"
+        },
+        {
+          "step": "The gauge on the vector"
+        },
+        {
+          "step": "Pops drive 2n − cap negative"
+        },
+        {
+          "step": "Prove it · 1 of 3"
+        },
+        {
+          "deep": "The potential method, exactly"
+        },
+        {
+          "deep": "The last reel’s three examples, as potentials"
+        },
+        {
+          "deep": "Choosing Φ, and what a bad one looks like"
+        }
+      ]
+    },
+    {
+      "clause": "proving table expand/contract bounds",
+      "at": [
+        {
+          "step": "A second piece for pops"
+        },
+        {
+          "step": "Price the shrinking pop"
+        },
+        {
+          "step": "Every case, at most 3"
+        },
+        {
+          "deep": "A table that grows and shrinks"
+        }
+      ]
+    },
+    {
+      "clause": "and why shrinking at ½ occupancy thrashes while shrinking at ¼ does not",
+      "at": [
+        {
+          "step": "Halve when half empty"
+        },
+        {
+          "step": "What does one round cost?"
+        },
+        {
+          "step": "Every second operation copies the vector"
+        },
+        {
+          "step": "Shrink-at-½ climbs the V"
+        },
+        {
+          "step": "Resize hysteresis"
+        },
+        {
+          "step": "Back to the problem"
+        },
+        {
+          "step": "Prove it · 2 of 3"
+        },
+        {
+          "step": "Prove it · 3 of 3"
+        },
+        {
+          "deep": "Thrashing and hysteresis"
+        }
+      ]
+    },
+    {
+      "clause": "the tool behind splay trees, union–find and Fibonacci heaps",
+      "at": [
+        {
+          "step": "The tool behind three later structures"
+        },
+        {
+          "deep": "The tool behind splay trees, Fibonacci heaps and union–find"
+        }
+      ]
+    }
+  ],
+  "sources": [
+    {
+      "source": "Tarjan, Amortized computational complexity (SIAM J. Algebraic Discrete Methods 6(2), 1985)",
+      "items": [
+        {
+          "item": "Section 1: defines amortize by analogy with a sinking fund; the push and pop stack example (m operations, at most 2m pushes and pops although one operation may cost m)",
+          "at": [
+            {
+              "step": "The stack: Φ is the number of keys"
+            },
+            {
+              "deep": "The last reel’s three examples, as potentials"
+            }
+          ]
+        },
+        {
+          "item": "Section 2, banker's view: credits as coins, allocated credits are the amortized time, borrowing repaid by the end, credits stored in the structure only as an accounting device, the stack with two credits per operation",
+          "at": [
+            {
+              "deep": "The potential method, exactly"
+            },
+            {
+              "step": "The middle terms cancel"
+            }
+          ]
+        },
+        {
+          "item": "Section 2, physicist's view: potential Φ on configurations, amortized time = actual time + Φ after − Φ before, the telescoping sum, Φ₀ = 0 and Φ ≥ 0 give an upper bound, equivalent to the banker's view with no borrowing",
+          "at": [
+            {
+              "step": "One number for the whole structure"
+            },
+            {
+              "step": "The middle terms cancel"
+            },
+            {
+              "deep": "The potential method, exactly"
+            }
+          ]
+        },
+        {
+          "item": "The names banker's and physicist's; the physicist's view credited to D. Sleator (private communication)",
+          "at": [
+            {
+              "step": "The middle terms cancel"
+            },
+            {
+              "deep": "The potential method, exactly"
+            }
+          ]
+        },
+        {
+          "item": "Section 3: move-to-front list update with the potential = inversions against an arbitrary algorithm",
+          "at": [
+            {
+              "deep": "The tool behind splay trees, Fibonacci heaps and union–find"
+            }
+          ]
+        },
+        {
+          "item": "Section 3: red-black tree insertion by the banker's view, credits on black nodes",
+          "at": [
+            {
+              "topic": "Red-black trees",
+              "quote": "O(1) amortized recolourings"
+            }
+          ]
+        },
+        {
+          "item": "Section 3: union–find with union by size and path compression, O(m α(m, n)); the proof uses debits as well as credits",
+          "at": [
+            {
+              "step": "The tool behind three later structures"
+            },
+            {
+              "deep": "The tool behind splay trees, Fibonacci heaps and union–find"
+            },
+            {
+              "topic": "Union–find",
+              "quote": "the O(α(n)) amortized bound"
+            }
+          ]
+        },
+        {
+          "item": "Section 4: skew heaps, amortized O(log n), the credit on heavy right children",
+          "at": [
+            {
+              "out": "skew heaps are not in this syllabus; their credit invariant is a banker's argument, and Fibonacci heaps carry the heap potential here"
+            }
+          ]
+        },
+        {
+          "item": "Section 4: splay trees, potential = sum over internal nodes of log w(x), amortized access O(log n)",
+          "at": [
+            {
+              "step": "The tool behind three later structures"
+            },
+            {
+              "deep": "The tool behind splay trees, Fibonacci heaps and union–find"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "Erickson, Algorithms, Lecture 9: Amortized Analysis",
+      "items": [
+        {
+          "item": "9.1 Incrementing a binary counter (the Increment algorithm, Θ(log n) worst case)",
+          "at": [
+            {
+              "topic": "Aggregate and accounting methods",
+              "quote": "binary counter"
+            }
+          ]
+        },
+        {
+          "item": "9.2 Counting from 0 to n and 9.2.1 Summation (aggregate)",
+          "at": [
+            {
+              "topic": "Aggregate and accounting methods",
+              "quote": "binary counter"
+            }
+          ]
+        },
+        {
+          "item": "9.2.2 Taxation (accounting method)",
+          "at": [
+            {
+              "topic": "Aggregate and accounting methods",
+              "quote": "charging cheap operations to pay for expensive ones"
+            }
+          ]
+        },
+        {
+          "item": "9.2.3 Charging method",
+          "at": [
+            {
+              "topic": "Aggregate and accounting methods",
+              "quote": "charging cheap operations to pay for expensive ones"
+            }
+          ]
+        },
+        {
+          "item": "9.2.4 Potential method: potential = number of 1 bits, validity Φᵢ − Φ₀ ≥ 0, the amortized cost of each increment",
+          "at": [
+            {
+              "step": "One number for the whole structure"
+            },
+            {
+              "step": "The middle terms cancel"
+            },
+            {
+              "deep": "The potential method, exactly"
+            },
+            {
+              "deep": "The last reel’s three examples, as potentials"
+            }
+          ]
+        },
+        {
+          "item": "9.3 Incrementing and decrementing: the (P, N) counter, taxation and potential bounds",
+          "at": [
+            {
+              "deep": "The last reel’s three examples, as potentials"
+            }
+          ]
+        },
+        {
+          "item": "9.4 Gray codes: Ehrlich's loopless increment",
+          "at": [
+            {
+              "out": "a counter variant with no potential argument; the last reel's Deep dive names it in its frontier section"
+            }
+          ]
+        },
+        {
+          "item": "9.5 Generalities and warnings: how to choose a potential, bounds are not unique",
+          "at": [
+            {
+              "deep": "Choosing Φ, and what a bad one looks like"
+            },
+            {
+              "step": "Which Φ pays for doubling?"
+            }
+          ]
+        },
+        {
+          "item": "Exercises 1 to 14, including exercise 9 (grow at three quarters, shrink at a quarter), exercise 10 (Fibonacci-size table) and exercise 11 (a queue from two stacks)",
+          "at": [
+            {
+              "deep": "More questions"
+            },
+            {
+              "topic": "Aggregate and accounting methods",
+              "quote": "multipop stack"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "Blum, 15-451 Lecture 7: Amortized Analysis (CMU, Fall 2011)",
+      "items": [
+        {
+          "item": "7.1 and 7.2: motivation and Definition 7.1, amortized cost = total over n",
+          "at": [
+            {
+              "topic": "Aggregate and accounting methods",
+              "quote": "charging cheap operations to pay for expensive ones"
+            },
+            {
+              "deep": "The potential method, exactly"
+            }
+          ]
+        },
+        {
+          "item": "7.3: array stack cost model, grow by one costs n(n + 1)/2, doubling total under 3n",
+          "at": [
+            {
+              "topic": "Aggregate and accounting methods",
+              "quote": "charging cheap operations to pay for expensive ones"
+            }
+          ]
+        },
+        {
+          "item": "7.4: piggy bank as a potential function, Definition 7.2, seeding, the footnote on charging pops, the doubling potential as twice the elements past the midpoint",
+          "at": [
+            {
+              "step": "Which Φ pays for doubling?"
+            },
+            {
+              "step": "The gauge on the vector"
+            },
+            {
+              "step": "Pops drive 2n − cap negative"
+            },
+            {
+              "deep": "The potential method, exactly"
+            },
+            {
+              "deep": "Choosing Φ, and what a bad one looks like"
+            }
+          ]
+        },
+        {
+          "item": "7.5: binary counter, potential = number of 1 bits",
+          "at": [
+            {
+              "step": "One number for the whole structure"
+            },
+            {
+              "deep": "The last reel’s three examples, as potentials"
+            }
+          ]
+        },
+        {
+          "item": "7.6: counter where flipping bit k costs 2^k, amortized O(log n)",
+          "at": [
+            {
+              "topic": "Aggregate and accounting methods",
+              "quote": "binary counter"
+            }
+          ]
+        },
+        {
+          "item": "7.7: array-of-sorted-arrays dictionary, amortized O(log n) insert",
+          "at": [
+            {
+              "out": "a static-to-dynamic dictionary is not in this syllabus's amortized-analysis line; its cost is the same 1 + 2 + 4 + … counter sum"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "University of Waterloo CS466, Amortized Analysis Part 2: Union–Find (Fall 2014)",
+      "items": [
+        {
+          "item": "Union–Find interface, applications and the minimum spanning tree cost",
+          "at": [
+            {
+              "topic": "Union–find",
+              "quote": "Kruskal"
+            }
+          ]
+        },
+        {
+          "item": "Data structures I to V: arrays, size arrays, forests, union by rank, path compression",
+          "at": [
+            {
+              "topic": "Union–find",
+              "quote": "union by rank/size plus path compression"
+            }
+          ]
+        },
+        {
+          "item": "Attribution: Galler and Fischer 1964 first described it; Tarjan 1975 the first precise analysis",
+          "at": [
+            {
+              "deep": "The tool behind splay trees, Fibonacci heaps and union–find"
+            }
+          ]
+        },
+        {
+          "item": "The Ackermann function and the O(m α(m, n)) theorem with α at most 4 in practice",
+          "at": [
+            {
+              "step": "The tool behind three later structures"
+            },
+            {
+              "deep": "The tool behind splay trees, Fibonacci heaps and union–find"
+            }
+          ]
+        },
+        {
+          "item": "The weaker O(m log* n) proof: tower function, ranks, grouping by log* of rank",
+          "at": [
+            {
+              "topic": "Union–find",
+              "quote": "the O(α(n)) amortized bound"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "Sleator and Tarjan, Self-Adjusting Binary Search Trees (J. ACM 32(3), 1985)",
+      "items": [
+        {
+          "item": "Amortized time as actual time plus the change in potential; the sum telescopes",
+          "at": [
+            {
+              "step": "The middle terms cancel"
+            },
+            {
+              "deep": "The potential method, exactly"
+            }
+          ]
+        },
+        {
+          "item": "The splay potential: item weights, node size, rank = log size, sum of ranks",
+          "at": [
+            {
+              "step": "The tool behind three later structures"
+            },
+            {
+              "deep": "The tool behind splay trees, Fibonacci heaps and union–find"
+            }
+          ]
+        },
+        {
+          "item": "The Access Lemma and its proof by cases (zig, zig-zig, zig-zag)",
+          "at": [
+            {
+              "topic": "Splay trees",
+              "quote": "amortized O(log n) via the access lemma"
+            }
+          ]
+        },
+        {
+          "item": "Weight choices giving the balance and static optimality theorems",
+          "at": [
+            {
+              "topic": "Splay trees",
+              "quote": "working-set and static-optimality properties"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "Wayne, Fibonacci Heaps (Kleinberg–Tardos slides, 2017)",
+      "items": [
+        {
+          "item": "The potential Φ(H) = trees(H) + 2·marks(H) and the amortized cost ĉᵢ = cᵢ + ΔΦ",
+          "at": [
+            {
+              "step": "The tool behind three later structures"
+            },
+            {
+              "deep": "The tool behind splay trees, Fibonacci heaps and union–find"
+            }
+          ]
+        },
+        {
+          "item": "Insert, meld and decrease-key (ΔΦ ≤ 4 − c): O(1) amortized",
+          "at": [
+            {
+              "deep": "The tool behind splay trees, Fibonacci heaps and union–find"
+            },
+            {
+              "topic": "Fibonacci heaps",
+              "quote": "O(1) amortized decrease-key via the potential method"
+            }
+          ]
+        },
+        {
+          "item": "Extract-min: ΔΦ ≤ rank(H′) + 1 − trees(H), O(log n) amortized; delete",
+          "at": [
+            {
+              "deep": "The tool behind splay trees, Fibonacci heaps and union–find"
+            },
+            {
+              "topic": "Fibonacci heaps",
+              "quote": "lazy consolidation, cascading cuts"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "Okasaki, Purely Functional Data Structures, Chapter 3 (CMU-CS-96-177, 1996)",
+      "items": [
+        {
+          "item": "3.1 Traditional amortization: the banker's and physicist's methods, telescoping, conversion between them",
+          "at": [
+            {
+              "deep": "The potential method, exactly"
+            }
+          ]
+        },
+        {
+          "item": "3.1.1 and 3.2: the queue and persistence, the problem of multiple futures",
+          "at": [
+            {
+              "deep": "The frontier"
+            },
+            {
+              "topic": "Amortization under persistence",
+              "quote": "why amortized bounds break when an old version is reused"
+            }
+          ]
+        },
+        {
+          "item": "3.3 to 3.5: lazy evaluation, the banker's method with debits, the physicist's method",
+          "at": [
+            {
+              "topic": "Amortization under persistence",
+              "quote": "Okasaki's banker's and physicist's methods with lazy evaluation"
+            }
+          ]
+        },
+        {
+          "item": "3.6 Related work: attributions to Tarjan and Schoenmakers",
+          "at": [
+            {
+              "deep": "The potential method, exactly"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "Lambert, Huang, Nie and Peng, Simpler Analyses of Union-Find (arXiv:2308.09021, 2023)",
+      "items": [
+        {
+          "item": "Abstract and introduction: potential-function proofs of O(log log n), O(log* n), O(log** n) and O(α(n)); the √Size potential",
+          "at": [
+            {
+              "step": "The tool behind three later structures"
+            },
+            {
+              "deep": "The tool behind splay trees, Fibonacci heaps and union–find"
+            }
+          ]
+        },
+        {
+          "item": "Preliminaries: union by size with path compression, the potential-function framework",
+          "at": [
+            {
+              "topic": "Union–find",
+              "quote": "union by rank/size plus path compression"
+            }
+          ]
+        },
+        {
+          "item": "Sections 3 to 5: the log log n, log* n and log** n analyses",
+          "at": [
+            {
+              "deep": "The tool behind splay trees, Fibonacci heaps and union–find"
+            },
+            {
+              "topic": "Union–find",
+              "quote": "the O(α(n)) amortized bound"
+            }
+          ]
+        },
+        {
+          "item": "Section 6: the O(α(n)) proof from the classical Ackermann definition",
+          "at": [
+            {
+              "deep": "The tool behind splay trees, Fibonacci heaps and union–find"
+            }
+          ]
+        },
+        {
+          "item": "Section 7: conclusion and the open question on Size-only potentials",
+          "at": [
+            {
+              "deep": "The frontier"
+            }
+          ]
+        },
+        {
+          "item": "References and Appendix A: the Ackermann function and its alternate characterizations",
+          "at": [
+            {
+              "out": "the Ackermann function's definitions belong to Ch.11's union–find analysis; this topic only names α(n) as the inverse Ackermann function"
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "independent blind agent (EXPERT-BLIND.md): wrote the list from the syllabus line and four opened sources, without reading the topic",
+    "date": "2026-10-12",
+    "items": [
+      {
+        "item": "Definition: amortized cost aᵢ = cᵢ + Φ(Dᵢ) − Φ(Dᵢ₋₁), with Φ mapping a whole configuration to a real",
+        "at": [
+          {
+            "step": "One number for the whole structure"
+          },
+          {
+            "deep": "The potential method, exactly"
+          }
+        ]
+      },
+      {
+        "item": "Telescoping identity: total actual time = total amortized time + (Φ₀ − Φₘ)",
+        "at": [
+          {
+            "step": "The middle terms cancel"
+          },
+          {
+            "deep": "The potential method, exactly"
+          }
+        ]
+      },
+      {
+        "item": "Validity conditions: Φ₀ = 0 (or minimal) and Φ ≥ 0 always, so the amortized sum bounds the true cost",
+        "at": [
+          {
+            "step": "The middle terms cancel"
+          },
+          {
+            "deep": "The potential method, exactly"
+          }
+        ]
+      },
+      {
+        "item": "Φ is free to choose and is a proof artifact, not stored; a better Φ gives tighter amortized bounds",
+        "at": [
+          {
+            "step": "One number for the whole structure"
+          },
+          {
+            "deep": "Choosing Φ, and what a bad one looks like"
+          },
+          {
+            "step": "Which Φ pays for doubling?"
+          }
+        ]
+      },
+      {
+        "item": "Equivalence of the credit (banker's) and potential (physicist's) views; the potential is credit on the whole structure; the physicist's view is Sleator's",
+        "at": [
+          {
+            "step": "One number for the whole structure"
+          },
+          {
+            "step": "The middle terms cancel"
+          },
+          {
+            "deep": "The potential method, exactly"
+          }
+        ]
+      },
+      {
+        "item": "Warm-up potentials from the previous topic: stack Φ = size, binary counter Φ = number of 1 bits",
+        "at": [
+          {
+            "step": "The stack: Φ is the number of keys"
+          },
+          {
+            "step": "One number for the whole structure"
+          },
+          {
+            "deep": "The last reel’s three examples, as potentials"
+          }
+        ]
+      },
+      {
+        "item": "Expansion-only table: Φ = 2·num − size, zero initially, nonnegative, amortized insert cost 3",
+        "at": [
+          {
+            "step": "Which Φ pays for doubling?"
+          },
+          {
+            "step": "The gauge on the vector"
+          },
+          {
+            "deep": "The last reel’s three examples, as potentials"
+          }
+        ]
+      },
+      {
+        "item": "Two-piece Φ for expand and contract: 2·num − size if α ≥ ½, size/2 − num if α < ½; continuous (0 at α = ½) and nonnegative",
+        "at": [
+          {
+            "step": "A second piece for pops"
+          },
+          {
+            "deep": "A table that grows and shrinks"
+          }
+        ]
+      },
+      {
+        "item": "Intuition check: Φ = num at full pays for the copy on expansion, and Φ = num at α = ¼ pays for the copy on contraction",
+        "at": [
+          {
+            "step": "A second piece for pops"
+          },
+          {
+            "step": "Price the shrinking pop"
+          }
+        ]
+      },
+      {
+        "item": "Full case analysis: insert and delete cases (no resize, expansion, contraction) giving amortized cost at most 3 for insert and at most 2 for delete",
+        "at": [
+          {
+            "step": "Every case, at most 3"
+          },
+          {
+            "step": "Price the shrinking pop"
+          },
+          {
+            "deep": "A table that grows and shrinks"
+          }
+        ]
+      },
+      {
+        "item": "Thrashing at ½: after filling to n/2, the sequence insert, delete, delete, insert, insert, … forces a Θ(n) resize every two operations, Θ(n²) in total",
+        "at": [
+          {
+            "step": "Every second operation copies the vector"
+          },
+          {
+            "step": "What does one round cost?"
+          },
+          {
+            "deep": "Thrashing and hysteresis"
+          }
+        ]
+      },
+      {
+        "item": "Why ¼ works: after a resize the table is half full, so Θ(size) operations are needed before the next resize (a gap between the grow and shrink thresholds); load factor stays within [¼, 1]",
+        "at": [
+          {
+            "step": "Resize hysteresis"
+          },
+          {
+            "step": "Shrink-at-½ climbs the V"
+          },
+          {
+            "step": "Back to the problem"
+          },
+          {
+            "deep": "Thrashing and hysteresis"
+          }
+        ]
+      },
+      {
+        "item": "The potential method gives per-operation bounds for any interleaving, while the aggregate method gives an average; amortized means worst case over sequences, not a probabilistic average",
+        "at": [
+          {
+            "step": "The middle terms cancel"
+          },
+          {
+            "step": "Every case, at most 3"
+          },
+          {
+            "deep": "The potential method, exactly"
+          }
+        ]
+      },
+      {
+        "item": "Splay trees: Φ = Σ log w(x) with w(x) the subtree size gives O(log n) amortized access; it needs the access lemma, not table-style arithmetic",
+        "at": [
+          {
+            "step": "The tool behind three later structures"
+          },
+          {
+            "deep": "The tool behind splay trees, Fibonacci heaps and union–find"
+          },
+          {
+            "topic": "Splay trees",
+            "quote": "amortized O(log n) via the access lemma"
+          }
+        ]
+      },
+      {
+        "item": "Union–find: the O(m α(m, n)) bound by credits and debits or potentials; the proof is hard, so a syllabus line should cite it",
+        "at": [
+          {
+            "step": "The tool behind three later structures"
+          },
+          {
+            "deep": "The tool behind splay trees, Fibonacci heaps and union–find"
+          },
+          {
+            "topic": "Union–find",
+            "quote": "the O(α(n)) amortized bound"
+          }
+        ]
+      },
+      {
+        "item": "Fibonacci heaps: Φ = t(H) + 2m(H); insert +1, meld 0, decrease-key with cascading cuts amortizes to O(1) as 4 − c cancels the actual cost c",
+        "at": [
+          {
+            "step": "The tool behind three later structures"
+          },
+          {
+            "deep": "The tool behind splay trees, Fibonacci heaps and union–find"
+          },
+          {
+            "topic": "Fibonacci heaps",
+            "quote": "O(1) amortized decrease-key via the potential method"
+          }
+        ]
+      },
+      {
+        "item": "Fibonacci-heap extract-min is O(log n) amortized only with the structural lemma size(x) ≥ F(k+2) bounding the degree, separate from the potential argument",
+        "at": [
+          {
+            "deep": "The tool behind splay trees, Fibonacci heaps and union–find"
+          },
+          {
+            "topic": "Fibonacci heaps",
+            "quote": "lazy consolidation, cascading cuts"
+          }
+        ]
+      },
+      {
+        "item": "Limits: the amortized bound holds only from the Φ₀ state; one operation can still cost Θ(n), which motivates deamortization; persistence breaks the argument",
+        "at": [
+          {
+            "step": "Back to the problem"
+          },
+          {
+            "deep": "The frontier"
+          },
+          {
+            "topic": "Deamortization and global rebuilding",
+            "quote": "turning amortized bounds into worst-case ones"
+          },
+          {
+            "topic": "Amortization under persistence",
+            "quote": "why amortized bounds break when an old version is reused"
+          }
+        ]
+      }
+    ]
+  },
+  "gapReview": {
+    "date": "2026-10-12",
+    "by": "Opus content review (flow, gap hunt, expert reader) plus Sonnet looks review; every finding fixed, see REVIEW.md",
+    "open": []
+  }
+}

@@ -4,6 +4,8 @@
 
 **Applied on 12 October 2026 (owner decision): every Tier A topic and case is marked *(skipped)* in `data-engineering.md`.** Skipped topics stay in the curriculum (the site shows them muted with a "skipped" tag) but get no reel: `scripts/claim.mjs` never hands them out, a chapter is complete without them, and the build's flow check lets a live topic follow them. Tier B is not applied. Each line is a syllabus topic title, word for word, so the tag can be added or removed by title.
 
+**Already-made topics are excluded** (owner rule 2026-10-13): no title below has a registry entry, an open claim or a `topic/*` branch, checked against `main` on 13 October 2026. Apply the same check before marking anything: a topic with a reel stays.
+
 **The test for each cut**, in order:
 1. Does it appear in Data Engineer job descriptions or interviews in those markets? (Not: is it interesting.)
 2. Does a sibling topic, the DSA domain or the Rust domain already teach it? (Rust M3 covers mmap, page cache, io_uring, fsync; Rust M4 the storage engine; Rust M5 Raft and the replicated log. DSA Ch.3 covers hash tables, B-trees and LSM; DSA Ch.11 Bloom/cuckoo/xor filters; DSA Ch.17 sketches, HLL, MinHash, reservoir sampling; DSA covers external merge sort.)
@@ -384,3 +386,9 @@ Keep all 20.
 ## What stays, and why it is enough
 
 After Tier A the syllabus is 376 topics: CS foundations priced for data (Ch.1), SQL semantics, plans and physical design (Ch.2), modeling including Data Vault and dbt (Ch.3), production Python (Ch.4), storage engines, transactions, replication, serving and the two sketches everyone asks about (Ch.5), Parquet, Iceberg, Delta, the REST catalog and the engines over them (Ch.6), Spark in full (Ch.7), ingestion and CDC (Ch.8), Kafka and Flink (Ch.9), cloud mechanisms, Databricks, IaC, GDPR and residency, SAP and IT/OT, on-prem (Ch.10), Airflow 3 and data reliability (Ch.11), containers and Kubernetes for data (Ch.12), observability and governance basics (Ch.13), the distributed-systems results interviews test (Ch.14), the design method and the data-platform designs (Ch.15), all of industrial and time-series data (Ch.16), ML data foundations, the BI boundary and zero-ETL (Ch.17), benchmarking basics and the capstones (Ch.18), the four stakeholder skills interviews test (Ch.19). That is the whole of what a Data Engineer loop in Munich, Amsterdam, Zurich or London asks for, with the owner's manufacturing edge intact.
+
+---
+
+## Note, 12 October 2026 (content review of `de.memory-hierarchy-latency-numbers`): an orphaned lab clause
+
+Chapter 1's lab table (CHAPTER.md) gives the false-sharing part of the section 1.2 lab ("reproduce false sharing between two threads and remove it with padding") to "CPU caches, SIMD and vectorization", which Tier A skips. No remaining topic hosts it. The memory-hierarchy topic's Deep dive now says so in one sentence. For a human to decide: drop the clause from the section 1.2 lab line in `data-engineering.md`, or give it to another topic.

@@ -1,0 +1,986 @@
+{
+ "topic": "rust.partial-moves-destructuring-as",
+ "voice": "tara-v1",
+ "clips": {
+  "01": {
+   "hash": "ce93a4614d6f388b",
+   "duration": 55.595,
+   "lines": [
+    {
+     "text": "A destructor ties a struct's fields to its life.",
+     "start": 0.15,
+     "end": 3.051
+    },
+    {
+     "text": "Now: moving fields out one at a time, why a type with a destructor forbids it, and how a guard hands its buffer back to the pool anyway.",
+     "start": 3.471,
+     "end": 11.671
+    },
+    {
+     "text": "Here's the chapter's pipeline. Every message gets a sixty-four K buffer from a pool, and a guard should hand it back when the guard is dropped.",
+     "start": 12.491,
+     "end": 20.307
+    },
+    {
+     "text": "So inside drop, we try to move the buffer out. But there the guard is only borrowed, so it's refused: the move out of a borrow error.",
+     "start": 20.727,
+     "end": 29.005
+    },
+    {
+     "text": "The compiler suggests a clone. And it compiles... but a thousand full-size messages now cost a thousand and one allocations.",
+     "start": 29.425,
+     "end": 37.642
+    },
+    {
+     "text": "We wanted one.",
+     "start": 38.062,
+     "end": 39.071
+    },
+    {
+     "text": "By the end, you'll take fields out of structs and guards without a clone, fix the two move-out errors, and predict what every pattern binding does with ownership.",
+     "start": 39.491,
+     "end": 48.324
+    },
+    {
+     "text": "First the pipeline. Then why fields resist leaving. Then the free fix.",
+     "start": 49.044,
+     "end": 55.245
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.3,
+   "wpm": 168,
+   "wer": 0.0
+  },
+  "02": {
+   "hash": "71613c9b04ef1fa8",
+   "duration": 37.02,
+   "lines": [
+    {
+     "text": "Here is the pipeline that the rest of this reel will use.",
+     "start": 0.15,
+     "end": 3.655
+    },
+    {
+     "text": "One function gets a buffer from the pool. That's the only place a sixty-four K buffer is ever allocated.",
+     "start": 4.075,
+     "end": 9.837
+    },
+    {
+     "text": "Fill borrows it exclusively. Inspect borrows it to read the header, a small copy type. Consume takes it and hands it back. And put returns it to the pool.",
+     "start": 10.257,
+     "end": 20.748
+    },
+    {
+     "text": "A thousand small messages... one allocation.",
+     "start": 21.168,
+     "end": 24.307
+    },
+    {
+     "text": "Every handover moves a thirty-two byte value, an id and the vector's twenty-four byte handle, never the payload.",
+     "start": 24.727,
+     "end": 31.729
+    },
+    {
+     "text": "This topic is about the last two: owning the buffer in consume and put.",
+     "start": 32.149,
+     "end": 36.67
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -1.4,
+   "wpm": 164,
+   "wer": 0.0
+  },
+  "03": {
+   "hash": "2b5ccda4f975a7d3",
+   "duration": 21.906,
+   "lines": [
+    {
+     "text": "Take one field out of the value. The buffer moves to a new owner. The value keeps a gap.",
+     "start": 0.15,
+     "end": 6.304
+    },
+    {
+     "text": "The heap data never moves. Only the buffer value does.",
+     "start": 6.724,
+     "end": 10.302
+    },
+    {
+     "text": "The header is a copy type, so reading it just copies.",
+     "start": 10.722,
+     "end": 14.648
+    },
+    {
+     "text": "But the frame as a whole is now partially moved. That's the use-after-move error, in its partial form.",
+     "start": 15.068,
+     "end": 21.556
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.4,
+   "wpm": 164,
+   "wer": 0.0
+  },
+  "04": {
+   "hash": "2af9e45122bd095a",
+   "duration": 10.633,
+   "lines": [
+    {
+     "text": "Let's predict one.",
+     "start": 0.15,
+     "end": 1.592
+    },
+    {
+     "text": "A struct of three trace probes. One field has been moved out into a local.",
+     "start": 2.012,
+     "end": 6.593
+    },
+    {
+     "text": "At the closing brace, what gets dropped, and in what order?",
+     "start": 7.013,
+     "end": 10.283
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.4,
+   "wpm": 164,
+   "wer": 0.0
+  },
+  "04a": {
+   "hash": "fe56f3fc91fcb2d5",
+   "duration": 10.766,
+   "lines": [
+    {
+     "text": "Body first... it lives on in its new owner, declared last.",
+     "start": 0.15,
+     "end": 4.248
+    },
+    {
+     "text": "Then the struct drops what it still holds: head, then tail.",
+     "start": 4.668,
+     "end": 8.439
+    },
+    {
+     "text": "The hole drops nothing.",
+     "start": 8.859,
+     "end": 10.416
+    }
+   ],
+   "lufs": -16.6,
+   "true_peak": -1.2,
+   "wpm": 145,
+   "wer": 0.0
+  },
+  "05": {
+   "hash": "13ccd3c38f8f1b4c",
+   "duration": 21.846,
+   "lines": [
+    {
+     "text": "A hole can be filled again. Put a new value in, and the struct is whole.",
+     "start": 0.15,
+     "end": 5.949
+    },
+    {
+     "text": "It has to be declared mutable, and then you can move it as a unit.",
+     "start": 6.369,
+     "end": 10.723
+    },
+    {
+     "text": "Move a field on only one path, and the compiler keeps a drop flag for that one field.",
+     "start": 11.143,
+     "end": 16.25
+    },
+    {
+     "text": "At the brace, it checks the flag before dropping it. The other fields drop without a check.",
+     "start": 16.67,
+     "end": 21.496
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -1.4,
+   "wpm": 181,
+   "wer": 0.0
+  },
+  "06": {
+   "hash": "1b7194b3c663a273",
+   "duration": 8.781,
+   "lines": [
+    {
+     "text": "Another prediction.",
+     "start": 0.15,
+     "end": 1.353
+    },
+    {
+     "text": "There are four ways. Each one takes a buffer out of something that holds it.",
+     "start": 1.773,
+     "end": 6.737
+    },
+    {
+     "text": "Which line compiles?",
+     "start": 7.157,
+     "end": 8.431
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.4,
+   "wpm": 137,
+   "wer": 0.0
+  },
+  "06a": {
+   "hash": "9f47401d1fc8d136",
+   "duration": 17.209,
+   "lines": [
+    {
+     "text": "Only the box.",
+     "start": 0.15,
+     "end": 2.103
+    },
+    {
+     "text": "A vector index, a reference-counted pointer and a reference all reach the value through a borrow... and you can't move out through a borrow.",
+     "start": 2.523,
+     "end": 11.592
+    },
+    {
+     "text": "A box is the one kind of pointer that the language lets you move out of.",
+     "start": 12.012,
+     "end": 16.859
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.4,
+   "wpm": 153,
+   "wer": 0.0
+  },
+  "07": {
+   "hash": "465b9242eb5187c2",
+   "duration": 29.299,
+   "lines": [
+    {
+     "text": "Now give the struct a destructor, and it's sealed.",
+     "start": 0.15,
+     "end": 2.97
+    },
+    {
+     "text": "The guard holds the pool, and the buffer in an option, which we'll explain soon. It returns the buffer when it drops.",
+     "start": 3.39,
+     "end": 10.902
+    },
+    {
+     "text": "Try to destructure the guard. You get the error about moving out of a type that implements drop.",
+     "start": 11.322,
+     "end": 16.698
+    },
+    {
+     "text": "Why? Drop borrows the whole value, exclusively, and may read every field. A field moved out early would hand it a hole.",
+     "start": 17.118,
+     "end": 25.15
+    },
+    {
+     "text": "Copy fields can still be read, because a copy moves nothing.",
+     "start": 25.57,
+     "end": 28.949
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.2,
+   "wpm": 168,
+   "wer": 0.0
+  },
+  "08": {
+   "hash": "7ca2cf7cc8c75542",
+   "duration": 8.97,
+   "lines": [
+    {
+     "text": "Here's a debugging question.",
+     "start": 0.15,
+     "end": 2.027
+    },
+    {
+     "text": "The move out of a drop type error says: bind the field by reference instead.",
+     "start": 2.447,
+     "end": 6.919
+    },
+    {
+     "text": "Does that fix into inner?",
+     "start": 7.339,
+     "end": 8.62
+    }
+   ],
+   "lufs": -16.6,
+   "true_peak": -1.4,
+   "wpm": 161,
+   "wer": 0.0
+  },
+  "08a": {
+   "hash": "84874d49f8b343b9",
+   "duration": 16.646,
+   "lines": [
+    {
+     "text": "No. A ref binding only borrows... and expect takes the option by value.",
+     "start": 0.15,
+     "end": 5.417
+    },
+    {
+     "text": "So you trade one error for another.",
+     "start": 5.837,
+     "end": 8.048
+    },
+    {
+     "text": "A sealed guard has a drop. So to take its buffer, the field must be able to say that it is empty.",
+     "start": 8.468,
+     "end": 16.296
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -1.4,
+   "wpm": 151,
+   "wer": 0.0
+  },
+  "09": {
+   "hash": "4026b9b76f774fe2",
+   "duration": 24.585,
+   "lines": [
+    {
+     "text": "Through a borrow, you may never leave a hole.",
+     "start": 0.15,
+     "end": 2.792
+    },
+    {
+     "text": "The owner gets the value back when the loan ends, and will read it or drop it.",
+     "start": 3.212,
+     "end": 8.2
+    },
+    {
+     "text": "So moving a field out through an exclusive reference is refused. Even if you'd refill it on the very next line, a panic in between would hand the owner a hole.",
+     "start": 8.62,
+     "end": 17.71
+    },
+    {
+     "text": "That's the move out of a borrow error.",
+     "start": 18.13,
+     "end": 20.372
+    },
+    {
+     "text": "The way out: replace it in one step.",
+     "start": 20.792,
+     "end": 24.235
+    }
+   ],
+   "lufs": -16.6,
+   "true_peak": -1.4,
+   "wpm": 178,
+   "wer": 0.0
+  },
+  "10": {
+   "hash": "ad799c8e73269d1b",
+   "duration": 24.561,
+   "lines": [
+    {
+     "text": "Every one of these takes the value out and puts something back, in the same step.",
+     "start": 0.15,
+     "end": 4.734
+    },
+    {
+     "text": "Option take leaves none. Mem take leaves the default value. Mem replace leaves whatever you give it. And mem swap trades two places.",
+     "start": 5.154,
+     "end": 13.608
+    },
+    {
+     "text": "None of them allocates anything.",
+     "start": 14.028,
+     "end": 16.691
+    },
+    {
+     "text": "For collections, an owning removal avoids the hole another way: it shrinks the collection. Pop, swap remove, or drain.",
+     "start": 17.111,
+     "end": 24.211
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -1.3,
+   "wpm": 154,
+   "wer": 0.0
+  },
+  "11": {
+   "hash": "37e308b20805d075",
+   "duration": 12.13,
+   "lines": [
+    {
+     "text": "One more prediction.",
+     "start": 0.15,
+     "end": 1.973
+    },
+    {
+     "text": "Each stage hands a message's bytes to the writer by calling take, and then it returns the buffer to the pool.",
+     "start": 2.393,
+     "end": 8.322
+    },
+    {
+     "text": "How many allocations for a thousand messages?",
+     "start": 8.742,
+     "end": 11.78
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -1.4,
+   "wpm": 153,
+   "wer": 0.0
+  },
+  "11a": {
+   "hash": "ae03d310eed94c7b",
+   "duration": 15.734,
+   "lines": [
+    {
+     "text": "One thousand buffers. Take leaves an empty vector behind, with no capacity at all.",
+     "start": 0.15,
+     "end": 6.6
+    },
+    {
+     "text": "So the pool's sixty-four K left with the bytes, and every message after that allocates again.",
+     "start": 7.02,
+     "end": 11.974
+    },
+    {
+     "text": "Take the whole buffer, or hand the bytes back.",
+     "start": 12.394,
+     "end": 15.384
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.4,
+   "wpm": 153,
+   "wer": 0.0
+  },
+  "12": {
+   "hash": "016ae3c803aff5ba",
+   "duration": 26.05,
+   "lines": [
+    {
+     "text": "Now we can solve the first problem.",
+     "start": 0.15,
+     "end": 2.289
+    },
+    {
+     "text": "Make already handed back a state the field can be in. The guard stores its buffer in an option.",
+     "start": 2.709,
+     "end": 9.085
+    },
+    {
+     "text": "At the brace, drop calls option take. The buffer goes to the pool, and none takes its place. No field is ever missing.",
+     "start": 9.505,
+     "end": 18.183
+    },
+    {
+     "text": "A thousand full-size messages... one allocation.",
+     "start": 18.603,
+     "end": 21.868
+    },
+    {
+     "text": "And here, the option costs no space at all.",
+     "start": 22.288,
+     "end": 25.7
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.4,
+   "wpm": 150,
+   "wer": 0.0
+  },
+  "13": {
+   "hash": "61b3cf2ec0bd00f5",
+   "duration": 10.037,
+   "lines": [
+    {
+     "text": "The guard has a second way out.",
+     "start": 0.15,
+     "end": 2.465
+    },
+    {
+     "text": "Into inner takes the buffer out and returns it. Then the guard drops at the closing brace.",
+     "start": 2.885,
+     "end": 7.864
+    },
+    {
+     "text": "What does its drop do?",
+     "start": 8.284,
+     "end": 9.687
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -1.4,
+   "wpm": 173,
+   "wer": 0.0
+  },
+  "13a": {
+   "hash": "2bf62c4cf11cff56",
+   "duration": 13.957,
+   "lines": [
+    {
+     "text": "Nothing. The take left the option empty, so when the guard drops, there is nothing to put back.",
+     "start": 0.15,
+     "end": 6.309
+    },
+    {
+     "text": "And take only borrows the field, so it isn't a move out of a drop type.",
+     "start": 6.729,
+     "end": 11.319
+    },
+    {
+     "text": "The caller owns the buffer now.",
+     "start": 11.739,
+     "end": 13.607
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.4,
+   "wpm": 172,
+   "wer": 0.0
+  },
+  "14": {
+   "hash": "da77bd647a015883",
+   "duration": 32.964,
+   "lines": [
+    {
+     "text": "Here's where the guard earns its keep: the error path.",
+     "start": 0.15,
+     "end": 3.26
+    },
+    {
+     "text": "By hand, the put sits after the question mark. So every bad message throws its buffer away, and the next one has to allocate.",
+     "start": 3.68,
+     "end": 11.781
+    },
+    {
+     "text": "With the guard, the early return drops the guard, and the guard puts the buffer back.",
+     "start": 12.201,
+     "end": 18.293
+    },
+    {
+     "text": "A hundred allocations against one: the first buffer, plus ninety-nine replacements.",
+     "start": 18.713,
+     "end": 24.284
+    },
+    {
+     "text": "A panic that unwinds runs the same drop. Only a guard whose destructor never runs loses its buffer, and that is safe.",
+     "start": 24.704,
+     "end": 32.614
+    }
+   ],
+   "lufs": -16.6,
+   "true_peak": -1.4,
+   "wpm": 153,
+   "wer": 0.0
+  },
+  "15": {
+   "hash": "fa749a23a290b1c8",
+   "duration": 8.632,
+   "lines": [
+    {
+     "text": "Time to prove it.",
+     "start": 0.15,
+     "end": 1.144
+    },
+    {
+     "text": "A pattern takes the tail. Then the head goes to drop.",
+     "start": 1.564,
+     "end": 5.043
+    },
+    {
+     "text": "In what order do the three destructors run?",
+     "start": 5.463,
+     "end": 8.282
+    }
+   ],
+   "lufs": -16.7,
+   "true_peak": -1.6,
+   "wpm": 160,
+   "wer": 0.0
+  },
+  "15a": {
+   "hash": "a70e9697cde3bcde",
+   "duration": 12.461,
+   "lines": [
+    {
+     "text": "Head, tail, body.",
+     "start": 0.15,
+     "end": 2.442
+    },
+    {
+     "text": "Head goes the moment you pass it to drop.",
+     "start": 2.862,
+     "end": 5.597
+    },
+    {
+     "text": "At the closing brace, the tail binding is dropped first, and then the struct, which only has the body left.",
+     "start": 6.017,
+     "end": 12.111
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.4,
+   "wpm": 154,
+   "wer": 0.0
+  },
+  "16": {
+   "hash": "a2129eba530cf734",
+   "duration": 34.641,
+   "lines": [
+    {
+     "text": "A pattern is where ownership of the parts changes hands.",
+     "start": 0.15,
+     "end": 3.168
+    },
+    {
+     "text": "Each name in it either copies, moves, or borrows.",
+     "start": 3.588,
+     "end": 7.685
+    },
+    {
+     "text": "A plain name copies a copy type, and moves anything else.",
+     "start": 8.105,
+     "end": 11.53
+    },
+    {
+     "text": "Add ref, and that part is only borrowed. And an underscore touches nothing.",
+     "start": 11.95,
+     "end": 18.591
+    },
+    {
+     "text": "So destructuring the frame copies the header, moves the payload, and leaves the frame partially moved.",
+     "start": 19.011,
+     "end": 24.742
+    },
+    {
+     "text": "The guard's own drop does this. The buffer changes owner right there. Struct update syntax is an expression too, and it moves the fields that it fills in.",
+     "start": 25.162,
+     "end": 34.291
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -1.4,
+   "wpm": 151,
+   "wer": 0.0
+  },
+  "17": {
+   "hash": "dff5dbd4186292e5",
+   "duration": 8.795,
+   "lines": [
+    {
+     "text": "Two patterns that look alike.",
+     "start": 0.15,
+     "end": 1.634
+    },
+    {
+     "text": "A lone underscore, and an underscore followed by a letter.",
+     "start": 2.054,
+     "end": 5.411
+    },
+    {
+     "text": "Which one leaves the option usable afterwards?",
+     "start": 5.831,
+     "end": 8.445
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.4,
+   "wpm": 150,
+   "wer": 0.0
+  },
+  "17a": {
+   "hash": "086d34fa9bd8bb7f",
+   "duration": 9.797,
+   "lines": [
+    {
+     "text": "Only the single underscore. It binds nothing, so nothing moves.",
+     "start": 0.15,
+     "end": 4.896
+    },
+    {
+     "text": "An underscore-prefixed name is still a name... it takes the buffer.",
+     "start": 5.316,
+     "end": 9.447
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -1.4,
+   "wpm": 135,
+   "wer": 0.0
+  },
+  "18": {
+   "hash": "2f582e3770545b2f",
+   "duration": 22.808,
+   "lines": [
+    {
+     "text": "Match on a reference, and the names under the pattern become references.",
+     "start": 0.15,
+     "end": 3.965
+    },
+    {
+     "text": "The compiler carries a default binding mode. It starts at move.",
+     "start": 4.385,
+     "end": 8.191
+    },
+    {
+     "text": "Pass an ampersand, and the binding becomes ref. Pass a mutable reference, and it becomes the mutable ref.",
+     "start": 8.611,
+     "end": 14.92
+    },
+    {
+     "text": "And there's no way back from ref.",
+     "start": 15.34,
+     "end": 17.602
+    },
+    {
+     "text": "So matching on a reference moves nothing. This is match ergonomics.",
+     "start": 18.022,
+     "end": 22.458
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.4,
+   "wpm": 155,
+   "wer": 0.0
+  },
+  "19": {
+   "hash": "37972f4f2a4f58e2",
+   "duration": 9.407,
+   "lines": [
+    {
+     "text": "One pattern changed meaning.",
+     "start": 0.15,
+     "end": 2.245
+    },
+    {
+     "text": "A copy type. A pattern that borrows the frame, and asks for a mutable header.",
+     "start": 2.665,
+     "end": 7.008
+    },
+    {
+     "text": "What happens to the frame?",
+     "start": 7.428,
+     "end": 9.057
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.4,
+   "wpm": 153,
+   "wer": 0.0
+  },
+  "19a": {
+   "hash": "e2595a8b94e1c4cb",
+   "duration": 14.034,
+   "lines": [
+    {
+     "text": "In the older edition, it quietly edits a copy, and the frame keeps its zero.",
+     "start": 0.15,
+     "end": 6.405
+    },
+    {
+     "text": "In the current edition, it does not compile.",
+     "start": 6.825,
+     "end": 9.892
+    },
+    {
+     "text": "If you want to edit the frame, borrow it mutably.",
+     "start": 10.312,
+     "end": 13.684
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.4,
+   "wpm": 141,
+   "wer": 0.0
+  },
+  "20": {
+   "hash": "eec05558f3e63868",
+   "duration": 24.014,
+   "lines": [
+    {
+     "text": "The newest edition reserves three spellings inside a pattern that is already borrowing.",
+     "start": 0.15,
+     "end": 4.889
+    },
+    {
+     "text": "A mutable name. A ref. And an ampersand pattern.",
+     "start": 5.309,
+     "end": 9.212
+    },
+    {
+     "text": "Each one is an error now. And each has a fully explicit rewrite.",
+     "start": 9.632,
+     "end": 14.011
+    },
+    {
+     "text": "Running cargo fix writes that rewrite for you, and it keeps the old meaning intact.",
+     "start": 14.431,
+     "end": 19.44
+    },
+    {
+     "text": "Which might be a bug you never noticed. So read what it writes.",
+     "start": 19.86,
+     "end": 23.664
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.4,
+   "wpm": 157,
+   "wer": 0.0
+  },
+  "21": {
+   "hash": "ed2ceed55409b206",
+   "duration": 8.358,
+   "lines": [
+    {
+     "text": "Prove it, number two.",
+     "start": 0.15,
+     "end": 1.098
+    },
+    {
+     "text": "A stage hands its buffer out through an exclusive reference, and the compiler says no.",
+     "start": 1.518,
+     "end": 5.866
+    },
+    {
+     "text": "Which fix allocates nothing?",
+     "start": 6.286,
+     "end": 8.008
+    }
+   ],
+   "lufs": -16.7,
+   "true_peak": -1.4,
+   "wpm": 165,
+   "wer": 0.0
+  },
+  "21a": {
+   "hash": "518319faf119eb2d",
+   "duration": 26.339,
+   "lines": [
+    {
+     "text": "Swap in an empty buffer, using replace.",
+     "start": 0.15,
+     "end": 2.721
+    },
+    {
+     "text": "Fine here: the sink has no destructor, and it finishes once. If something later read the buffer, an empty one would be a lie.",
+     "start": 3.141,
+     "end": 12.044
+    },
+    {
+     "text": "The buffer goes out, an empty one goes in, and an empty vector costs nothing.",
+     "start": 12.464,
+     "end": 17.488
+    },
+    {
+     "text": "Cloning works, but it allocates memory. Taking needs a default value. And destructuring through the reference gives the same error again.",
+     "start": 17.908,
+     "end": 25.989
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.4,
+   "wpm": 153,
+   "wer": 0.0
+  },
+  "22": {
+   "hash": "82ecaf4d7343be78",
+   "duration": 12.495,
+   "lines": [
+    {
+     "text": "Prove it, number three.",
+     "start": 0.15,
+     "end": 1.205
+    },
+    {
+     "text": "Three ways to build the guard's buffer field. All three pass the happy path with one allocation.",
+     "start": 1.625,
+     "end": 7.04
+    },
+    {
+     "text": "Which design do you ship?",
+     "start": 7.46,
+     "end": 12.145
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.4,
+   "wpm": 125,
+   "wer": 0.0
+  },
+  "22a": {
+   "hash": "9868205d6ff5330a",
+   "duration": 17.777,
+   "lines": [
+    {
+     "text": "Keep the option.",
+     "start": 0.15,
+     "end": 1.187
+    },
+    {
+     "text": "A placeholder can't tell drop that the buffer is already gone, so the pool fills up with empty buffers.",
+     "start": 1.607,
+     "end": 7.568
+    },
+    {
+     "text": "Manually drop needs unsafe. None says exactly what happened, and here it costs nothing. Its price is a run-time check in each accessor.",
+     "start": 7.988,
+     "end": 17.427
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.4,
+   "wpm": 155,
+   "wer": 0.0
+  },
+  "23": {
+   "hash": "99f0467ed8748a1f",
+   "duration": 41.59,
+   "lines": [
+    {
+     "text": "Six things to keep.",
+     "start": 0.15,
+     "end": 1.25
+    },
+    {
+     "text": "Moving a field out leaves a hole, and the remaining fields are still dropped.",
+     "start": 1.67,
+     "end": 6.611
+    },
+    {
+     "text": "A type with a destructor is sealed.",
+     "start": 7.031,
+     "end": 9.745
+    },
+    {
+     "text": "Through a borrow, you never leave a hole. So take, replace and swap put one back.",
+     "start": 10.165,
+     "end": 16.418
+    },
+    {
+     "text": "A guard that hands its contents out keeps them in an option.",
+     "start": 16.838,
+     "end": 20.416
+    },
+    {
+     "text": "And every pattern binding moves, copies, or borrows.",
+     "start": 20.836,
+     "end": 24.345
+    },
+    {
+     "text": "The pooled buffer guard holds the pool by exclusive borrow, so only one guard can exist at a time.",
+     "start": 25.065,
+     "end": 31.634
+    },
+    {
+     "text": "Next: when three stages need buffers at once, do you reach for an arc of mutex around the pool, or change who owns what?",
+     "start": 32.054,
+     "end": 41.24
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -1.4,
+   "wpm": 150,
+   "wer": 0.0
+  }
+ }
+}

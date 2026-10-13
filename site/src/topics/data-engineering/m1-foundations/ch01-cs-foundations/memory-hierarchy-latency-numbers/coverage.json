@@ -1,0 +1,1680 @@
+{
+  "topic": "de.memory-hierarchy-latency-numbers",
+  "syllabus": [
+    {
+      "clause": "registers",
+      "at": [
+        {
+          "step": "Registers to RAM, in cycles"
+        },
+        {
+          "deep": "The latency and bandwidth table"
+        }
+      ]
+    },
+    {
+      "clause": "L1/L2/L3",
+      "at": [
+        {
+          "step": "Registers to RAM, in cycles"
+        },
+        {
+          "deep": "The latency and bandwidth table"
+        },
+        {
+          "deep": "Cycles, nanoseconds and the clock"
+        }
+      ]
+    },
+    {
+      "clause": "DRAM (local vs remote NUMA)",
+      "at": [
+        {
+          "step": "Registers to RAM, in cycles"
+        },
+        {
+          "step": "The same RAM, one socket away"
+        },
+        {
+          "step": "In order or at random, in RAM"
+        },
+        {
+          "deep": "The latency and bandwidth table"
+        },
+        {
+          "deep": "NUMA: local and remote memory"
+        },
+        {
+          "deep": "Lab · Sequential vs random reads in RAM"
+        }
+      ]
+    },
+    {
+      "clause": "NVMe SSD",
+      "at": [
+        {
+          "step": "Below RAM: drives and network"
+        },
+        {
+          "step": "One transfer: α + n/β"
+        },
+        {
+          "step": "Many requests in flight"
+        },
+        {
+          "deep": "The latency and bandwidth table"
+        },
+        {
+          "deep": "Drives: one at a time, or many in flight"
+        }
+      ]
+    },
+    {
+      "clause": "HDD",
+      "at": [
+        {
+          "step": "Below RAM: drives and network"
+        },
+        {
+          "step": "One transfer: α + n/β"
+        },
+        {
+          "step": "The floor is the larger term"
+        },
+        {
+          "step": "Scanning orders, three ways"
+        },
+        {
+          "deep": "The latency and bandwidth table"
+        },
+        {
+          "deep": "Drives: one at a time, or many in flight"
+        }
+      ]
+    },
+    {
+      "clause": "same-AZ network",
+      "at": [
+        {
+          "step": "Below RAM: drives and network"
+        },
+        {
+          "step": "Latency is not bandwidth"
+        },
+        {
+          "step": "Prove it · 2 of 3"
+        },
+        {
+          "deep": "The latency and bandwidth table"
+        },
+        {
+          "deep": "The network and object storage rungs"
+        }
+      ]
+    },
+    {
+      "clause": "object storage",
+      "at": [
+        {
+          "step": "RAM read vs object-store wait"
+        },
+        {
+          "step": "Below RAM: drives and network"
+        },
+        {
+          "step": "Latency is not bandwidth"
+        },
+        {
+          "step": "Back to the problem"
+        },
+        {
+          "step": "Prove it · 3 of 3"
+        },
+        {
+          "deep": "The latency and bandwidth table"
+        },
+        {
+          "deep": "The network and object storage rungs"
+        }
+      ]
+    },
+    {
+      "clause": "order-of-magnitude latency and bandwidth per tier",
+      "at": [
+        {
+          "step": "RAM read vs object-store wait"
+        },
+        {
+          "step": "Registers to RAM, in cycles"
+        },
+        {
+          "step": "Below RAM: drives and network"
+        },
+        {
+          "step": "Latency is not bandwidth"
+        },
+        {
+          "step": "One transfer: α + n/β"
+        },
+        {
+          "deep": "The latency and bandwidth table"
+        },
+        {
+          "deep": "Cycles, nanoseconds and the clock"
+        }
+      ]
+    },
+    {
+      "clause": "estimating a job's lower bound from them before running it",
+      "at": [
+        {
+          "step": "Many requests in flight"
+        },
+        {
+          "step": "The floor is the larger term"
+        },
+        {
+          "step": "Scanning orders, three ways"
+        },
+        {
+          "step": "Back to the problem"
+        },
+        {
+          "step": "Prove it · 1 of 3"
+        },
+        {
+          "step": "Prove it · 2 of 3"
+        },
+        {
+          "step": "Prove it · 3 of 3"
+        },
+        {
+          "deep": "T(n) = α + n/β, and the floor"
+        }
+      ]
+    }
+  ],
+  "sources": [
+    {
+      "source": "Drepper, What Every Programmer Should Know About Memory, v1.0, 2007 (akkadia.org)",
+      "items": [
+        {
+          "item": "Section 1: memory access as the limiting factor",
+          "at": [
+            {
+              "deep": "Why a hierarchy at all"
+            }
+          ]
+        },
+        {
+          "item": "Section 2: SRAM much more expensive than DRAM; DRAM cells smaller",
+          "at": [
+            {
+              "deep": "Why a hierarchy at all"
+            }
+          ]
+        },
+        {
+          "item": "Section 2: northbridge/southbridge, FSB, RAS/CAS timing, SDRAM/DDR, memory controllers",
+          "at": [
+            {
+              "out": "Bus and DRAM-timing details sit below the depth this topic needs; the ladder uses the resulting access times, not the signalling."
+            }
+          ]
+        },
+        {
+          "item": "Section 3: cache effectiveness example (200 vs 15 cycles) and cache line size (64 bytes)",
+          "at": [
+            {
+              "step": "Registers to RAM, in cycles"
+            },
+            {
+              "step": "In order or at random, in RAM"
+            },
+            {
+              "deep": "Why a hierarchy at all"
+            },
+            {
+              "deep": "Cycles, nanoseconds and the clock"
+            }
+          ]
+        },
+        {
+          "item": "Section 3: Pentium M table (register ≤1, L1d ~3, L2 ~14, main memory ~240 cycles)",
+          "at": [
+            {
+              "step": "Registers to RAM, in cycles"
+            },
+            {
+              "deep": "The latency and bandwidth table"
+            },
+            {
+              "deep": "Cycles, nanoseconds and the clock"
+            }
+          ]
+        },
+        {
+          "item": "Section 3: prefetching, and that the processor cannot reliably prefetch random access",
+          "at": [
+            {
+              "step": "In order or at random, in RAM"
+            },
+            {
+              "deep": "Lab · Sequential vs random reads in RAM"
+            }
+          ]
+        },
+        {
+          "item": "Section 3: cache coherency (MESI), associativity, hyper-threads",
+          "at": [
+            {
+              "out": "Coherency, associativity and hyper-threads are beyond the ladder's numbers; their syllabus home (CPU caches, SIMD and vectorization) is marked skipped, so no reel teaches them."
+            }
+          ]
+        },
+        {
+          "item": "Section 3: TLB (address translation cache)",
+          "at": [
+            {
+              "deep": "Lab · Sequential vs random reads in RAM"
+            }
+          ]
+        },
+        {
+          "item": "Section 4: virtual memory in full",
+          "at": [
+            {
+              "out": "Paging and address translation belong to the Virtual memory topic, marked skipped; this topic keeps one TLB line in the lab."
+            }
+          ]
+        },
+        {
+          "item": "Section 3.5.1: bandwidth per cycle graphs",
+          "at": [
+            {
+              "deep": "Cycles, nanoseconds and the clock"
+            }
+          ]
+        },
+        {
+          "item": "Section 5: NUMA hardware and OS support",
+          "at": [
+            {
+              "step": "The same RAM, one socket away"
+            },
+            {
+              "deep": "NUMA: local and remote memory"
+            }
+          ]
+        },
+        {
+          "item": "5.3: sysfs distances 10 and 20 and Drepper's caveat on their accuracy",
+          "at": [
+            {
+              "deep": "NUMA: local and remote memory"
+            }
+          ]
+        },
+        {
+          "item": "5.4: remote access costs (Fig. 5.3 hop slowdowns 9%, 30%, 49%; Fig. 5.4 reads 20% slower)",
+          "at": [
+            {
+              "step": "The same RAM, one socket away"
+            },
+            {
+              "deep": "The latency and bandwidth table"
+            },
+            {
+              "deep": "NUMA: local and remote memory"
+            }
+          ]
+        },
+        {
+          "item": "numa_maps",
+          "at": [
+            {
+              "deep": "NUMA: local and remote memory"
+            }
+          ]
+        },
+        {
+          "item": "Sections 6-7: what programmers can do, tools",
+          "at": [
+            {
+              "deep": "NUMA: local and remote memory"
+            },
+            {
+              "deep": "Lab · Sequential vs random reads in RAM"
+            }
+          ]
+        },
+        {
+          "item": "Dated-ness: written in 2007, so use structure and ratios, not absolute numbers",
+          "at": [
+            {
+              "deep": "The latency and bandwidth table"
+            },
+            {
+              "deep": "In production"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "numactl(8), Linux manual page (man7.org)",
+      "items": [
+        {
+          "item": "Memory policies: --localalloc, --preferred, --membind, --interleave, --cpunodebind, --hardware",
+          "at": [
+            {
+              "step": "The same RAM, one socket away"
+            },
+            {
+              "deep": "NUMA: local and remote memory"
+            },
+            {
+              "deep": "In production"
+            }
+          ]
+        },
+        {
+          "item": "--weighted-interleave and its per-node weights",
+          "at": [
+            {
+              "deep": "The frontier"
+            }
+          ]
+        },
+        {
+          "item": "Example: --cpunodebind with --membind",
+          "at": [
+            {
+              "step": "The same RAM, one socket away"
+            },
+            {
+              "deep": "NUMA: local and remote memory"
+            },
+            {
+              "deep": "Lab · Sequential vs random reads in RAM"
+            }
+          ]
+        },
+        {
+          "item": "Node specifiers (netdev:, file:, pci:) and --physcpubind, --balancing",
+          "at": [
+            {
+              "out": "Command-line detail beyond placing compute and memory on the same or on different nodes."
+            }
+          ]
+        },
+        {
+          "item": "Shared memory and file policy options (--shm, --file, --huge)",
+          "at": [
+            {
+              "out": "API and tool detail not needed to measure the local-versus-remote ratio."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "What is NUMA? Linux kernel documentation (docs.kernel.org/mm/numa.html)",
+      "items": [
+        {
+          "item": "Hardware view: cells, interconnect; access time and bandwidth vary with distance",
+          "at": [
+            {
+              "deep": "NUMA: local and remote memory"
+            }
+          ]
+        },
+        {
+          "item": "Nodes; local allocation by default; fallback to other nodes when the local node is full",
+          "at": [
+            {
+              "step": "The same RAM, one socket away"
+            },
+            {
+              "deep": "NUMA: local and remote memory"
+            }
+          ]
+        },
+        {
+          "item": "Scheduler and migration: under imbalance tasks can migrate away from their memory",
+          "at": [
+            {
+              "step": "The same RAM, one socket away"
+            },
+            {
+              "deep": "NUMA: local and remote memory"
+            },
+            {
+              "deep": "In production"
+            }
+          ]
+        },
+        {
+          "item": "Memoryless nodes, numa_mem_id",
+          "at": [
+            {
+              "out": "Kernel-internal detail with no bearing on latency or bandwidth per tier."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "numa(7), Linux manual page (man7.org)",
+      "items": [
+        {
+          "item": "Definition: NUMA, local memory node accessed faster than another CPU's",
+          "at": [
+            {
+              "deep": "NUMA: local and remote memory"
+            }
+          ]
+        },
+        {
+          "item": "/proc/pid/numa_maps format",
+          "at": [
+            {
+              "deep": "NUMA: local and remote memory"
+            }
+          ]
+        },
+        {
+          "item": "NUMA system calls (get_mempolicy, mbind, migrate_pages, move_pages, set_mempolicy)",
+          "at": [
+            {
+              "out": "Programming API detail; the topic measures placement with numactl instead."
+            }
+          ]
+        },
+        {
+          "item": "Library support (libnuma)",
+          "at": [
+            {
+              "out": "Programming API detail."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "Best practices design patterns: optimizing Amazon S3 performance (AWS S3 User Guide)",
+      "items": [
+        {
+          "item": "Request rates: at least 3,500 write-type and 5,500 read-type requests per second per prefix",
+          "at": [
+            {
+              "step": "Prove it · 3 of 3"
+            },
+            {
+              "deep": "The network and object storage rungs"
+            },
+            {
+              "deep": "T(n) = α + n/β, and the floor"
+            },
+            {
+              "topic": "Object storage as a storage tier",
+              "quote": "per-prefix request-rate limits"
+            }
+          ]
+        },
+        {
+          "item": "No limit on the number of prefixes in a bucket; scaling reads with prefixes",
+          "at": [
+            {
+              "deep": "T(n) = α + n/β, and the floor"
+            }
+          ]
+        },
+        {
+          "item": "Scaling is gradual, with temporary 503 Slow Down",
+          "at": [
+            {
+              "deep": "The network and object storage rungs"
+            },
+            {
+              "topic": "Object storage as a storage tier",
+              "quote": "per-prefix request-rate limits"
+            }
+          ]
+        },
+        {
+          "item": "Data lake pattern: up to 100 Gb/s on a single instance, more across instances",
+          "at": [
+            {
+              "step": "Latency is not bandwidth"
+            },
+            {
+              "step": "Back to the problem"
+            },
+            {
+              "deep": "The latency and bandwidth table"
+            },
+            {
+              "deep": "The network and object storage rungs"
+            }
+          ]
+        },
+        {
+          "item": "Latency-sensitive applications: roughly 100-200 ms small-object and first-byte latency",
+          "at": [
+            {
+              "step": "RAM read vs object-store wait"
+            },
+            {
+              "step": "Below RAM: drives and network"
+            },
+            {
+              "step": "Back to the problem"
+            },
+            {
+              "deep": "The latency and bandwidth table"
+            },
+            {
+              "deep": "The network and object storage rungs"
+            }
+          ]
+        },
+        {
+          "item": "CloudFront or ElastiCache for single-digit-millisecond reads",
+          "at": [
+            {
+              "deep": "The network and object storage rungs"
+            }
+          ]
+        },
+        {
+          "item": "S3 Express One Zone / directory buckets",
+          "at": [
+            {
+              "deep": "The network and object storage rungs"
+            },
+            {
+              "deep": "The frontier"
+            }
+          ]
+        },
+        {
+          "item": "Transfer Acceleration and KMS request limits",
+          "at": [
+            {
+              "out": "Not a property of the object-storage tier itself; they are features and limits around it."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "Performance guidelines for Amazon S3 (AWS S3 User Guide)",
+      "items": [
+        {
+          "item": "Measure performance: network throughput, CPU, DRAM; DNS time, latency, transfer speed; 503s",
+          "at": [
+            {
+              "deep": "T(n) = α + n/β, and the floor"
+            },
+            {
+              "step": "Prove it · 3 of 3"
+            }
+          ]
+        },
+        {
+          "item": "Multiple concurrent requests; S3 as a large distributed system, no connection limit",
+          "at": [
+            {
+              "step": "Many requests in flight"
+            },
+            {
+              "step": "Back to the problem"
+            },
+            {
+              "deep": "T(n) = α + n/β, and the floor"
+            }
+          ]
+        },
+        {
+          "item": "Byte-range fetches in parallel; smaller ranges improve retry",
+          "at": [
+            {
+              "step": "Back to the problem"
+            },
+            {
+              "deep": "The network and object storage rungs"
+            },
+            {
+              "topic": "Object storage as a storage tier",
+              "quote": "range GETs"
+            }
+          ]
+        },
+        {
+          "item": "Aggressive timeouts and retries for latency-sensitive applications",
+          "at": [
+            {
+              "topic": "Tail latency under fan-out",
+              "quote": "hedged and tied requests, timeouts"
+            },
+            {
+              "deep": "In production"
+            }
+          ]
+        },
+        {
+          "item": "Same-Region EC2 and S3 to reduce network latency and transfer cost",
+          "at": [
+            {
+              "deep": "The network and object storage rungs"
+            }
+          ]
+        },
+        {
+          "item": "Transfer Acceleration, latest SDKs and Transfer Manager",
+          "at": [
+            {
+              "out": "Tooling advice, not a latency or bandwidth property of a tier."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "Performance design patterns for Amazon S3 (AWS S3 User Guide)",
+      "items": [
+        {
+          "item": "Caching with CloudFront or ElastiCache for low latency",
+          "at": [
+            {
+              "deep": "The network and object storage rungs"
+            }
+          ]
+        },
+        {
+          "item": "Timeouts and retries: retry after 2 s, then 4 s; retry the slowest 5 percent of large requests; 503 backoff",
+          "at": [
+            {
+              "topic": "Tail latency under fan-out",
+              "quote": "hedged and tied requests, timeouts"
+            },
+            {
+              "deep": "In production"
+            }
+          ]
+        },
+        {
+          "item": "Small requests (under 512 KB): median latencies often tens of milliseconds",
+          "at": [
+            {
+              "deep": "The latency and bandwidth table"
+            },
+            {
+              "deep": "The network and object storage rungs"
+            },
+            {
+              "deep": "T(n) = α + n/β, and the floor"
+            }
+          ]
+        },
+        {
+          "item": "Horizontal scaling and parallelization; start with one request and measure the bottleneck resource",
+          "at": [
+            {
+              "step": "Many requests in flight"
+            },
+            {
+              "step": "Back to the problem"
+            },
+            {
+              "deep": "T(n) = α + n/β, and the floor"
+            }
+          ]
+        },
+        {
+          "item": "Transfer Acceleration",
+          "at": [
+            {
+              "out": "Not a property of the object-storage tier itself."
+            }
+          ]
+        },
+        {
+          "item": "S3 Express One Zone: single-digit millisecond latencies",
+          "at": [
+            {
+              "deep": "The network and object storage rungs"
+            },
+            {
+              "deep": "The frontier"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "Amazon EC2 instance network bandwidth (AWS EC2 User Guide)",
+      "items": [
+        {
+          "item": "Bandwidth applies to inbound and outbound traffic separately",
+          "at": [
+            {
+              "deep": "The latency and bandwidth table"
+            },
+            {
+              "deep": "The network and object storage rungs"
+            }
+          ]
+        },
+        {
+          "item": "Internet or local gateway: 5 Gbps under 32 vCPUs, 50% of the instance bandwidth above",
+          "at": [
+            {
+              "deep": "The latency and bandwidth table"
+            },
+            {
+              "deep": "The network and object storage rungs"
+            }
+          ]
+        },
+        {
+          "item": "Single-flow limits: 5 Gbps outside a cluster placement group, 10 Gbps inside, 25 Gbps with ENA Express in one AZ",
+          "at": [
+            {
+              "step": "One transfer: α + n/β"
+            },
+            {
+              "step": "Prove it · 2 of 3"
+            },
+            {
+              "deep": "The latency and bandwidth table"
+            },
+            {
+              "deep": "The network and object storage rungs"
+            }
+          ]
+        },
+        {
+          "item": "Bandwidth scales with vCPUs; 'up to' instances burst on credits for 5 to 60 minutes",
+          "at": [
+            {
+              "deep": "The network and object storage rungs"
+            },
+            {
+              "deep": "In production"
+            }
+          ]
+        },
+        {
+          "item": "m5.8xlarge 10 Gbps and m5.16xlarge 20 Gbps examples",
+          "at": [
+            {
+              "deep": "The latency and bandwidth table"
+            }
+          ]
+        },
+        {
+          "item": "c5 baseline examples (0.75 Gbps for c5.large to 25 Gbps for c5.18xlarge)",
+          "at": [
+            {
+              "out": "Per-instance-type catalogue values; the topic cites the m5 examples and the rule that bandwidth scales with size."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "Placement groups for your Amazon EC2 instances (AWS EC2 User Guide)",
+      "items": [
+        {
+          "item": "Cluster strategy: packs instances inside an AZ for low-latency node-to-node traffic; no number published",
+          "at": [
+            {
+              "step": "Below RAM: drives and network"
+            },
+            {
+              "deep": "The latency and bandwidth table"
+            },
+            {
+              "deep": "The network and object storage rungs"
+            }
+          ]
+        },
+        {
+          "item": "Partition, spread and precision-time strategies; default spreading across hardware",
+          "at": [
+            {
+              "out": "Failure-isolation and clock placement, not a latency or bandwidth tier."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "Intel 64 and IA-32 Architectures Optimization Reference Manual, Vol. 1, 248966-051 (Oct 2026)",
+      "items": [
+        {
+          "item": "Table 2-11: L1d 4-6 cycles, 192 bytes/cycle peak, 133 sustained (Skylake server)",
+          "at": [
+            {
+              "step": "Registers to RAM, in cycles"
+            },
+            {
+              "step": "Latency is not bandwidth"
+            },
+            {
+              "deep": "The latency and bandwidth table"
+            },
+            {
+              "deep": "Cycles, nanoseconds and the clock"
+            }
+          ]
+        },
+        {
+          "item": "Table 2-11: L2 14 cycles, 64 peak, 52 sustained",
+          "at": [
+            {
+              "step": "Registers to RAM, in cycles"
+            },
+            {
+              "deep": "The latency and bandwidth table"
+            },
+            {
+              "deep": "Cycles, nanoseconds and the clock"
+            }
+          ]
+        },
+        {
+          "item": "Table 2-11: L3 50-70 cycles, 32 peak, 15 sustained; the table does not say whether the bandwidth is per core",
+          "at": [
+            {
+              "step": "Registers to RAM, in cycles"
+            },
+            {
+              "deep": "The latency and bandwidth table"
+            },
+            {
+              "deep": "Cycles, nanoseconds and the clock"
+            }
+          ]
+        },
+        {
+          "item": "Cache line size of 64 bytes",
+          "at": [
+            {
+              "deep": "Cycles, nanoseconds and the clock"
+            }
+          ]
+        },
+        {
+          "item": "Chapter 4: Crestmont efficient core, 4-cycle load-to-use, L2 17 cycles shared by four cores",
+          "at": [
+            {
+              "deep": "Cycles, nanoseconds and the clock"
+            }
+          ]
+        },
+        {
+          "item": "Appendix: multiplying memory latency by miss count over-estimates because the core keeps several misses outstanding",
+          "at": [
+            {
+              "step": "In order or at random, in RAM"
+            },
+            {
+              "deep": "Lab · Sequential vs random reads in RAM"
+            }
+          ]
+        },
+        {
+          "item": "Chapter 2 microarchitecture descriptions beyond the cache tables",
+          "at": [
+            {
+              "out": "Core-pipeline detail beyond the cache latency and bandwidth rows."
+            }
+          ]
+        },
+        {
+          "item": "Chapter 10: Sub-NUMA Clustering",
+          "at": [
+            {
+              "out": "A one-socket NUMA split with no latency figure in the manual; the NUMA rung uses Drepper and the kernel documentation."
+            }
+          ]
+        },
+        {
+          "item": "Prefetching, software optimization and performance-event chapters",
+          "at": [
+            {
+              "out": "Not used: no tier latency or bandwidth numbers beyond those taken."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "Samsung SSD PM9A3 specification, Rev. 1.4, Nov 2021",
+      "items": [
+        {
+          "item": "Overview and Tables 3 and 4: up to 6,800 MB/s sequential read, 1,000 KIOPS random 4 KB read (QD32 x 4 workers), 128 KB sequential at QD32",
+          "at": [
+            {
+              "step": "Latency is not bandwidth"
+            },
+            {
+              "step": "Many requests in flight"
+            },
+            {
+              "step": "The floor is the larger term"
+            },
+            {
+              "step": "Prove it · 1 of 3"
+            },
+            {
+              "deep": "The latency and bandwidth table"
+            },
+            {
+              "deep": "Drives: one at a time, or many in flight"
+            }
+          ]
+        },
+        {
+          "item": "Table 6: QD1 latency, random read 80 us, sequential read 20 us",
+          "at": [
+            {
+              "step": "Below RAM: drives and network"
+            },
+            {
+              "step": "One transfer: α + n/β"
+            },
+            {
+              "step": "Many requests in flight"
+            },
+            {
+              "step": "The floor is the larger term"
+            },
+            {
+              "step": "Prove it · 1 of 3"
+            },
+            {
+              "deep": "The latency and bandwidth table"
+            },
+            {
+              "deep": "Drives: one at a time, or many in flight"
+            }
+          ]
+        },
+        {
+          "item": "Footnotes: FIO test conditions, PCIe Gen3 host for latency, MB = 1,000,000 bytes",
+          "at": [
+            {
+              "deep": "Drives: one at a time, or many in flight"
+            },
+            {
+              "deep": "The latency and bandwidth table"
+            }
+          ]
+        },
+        {
+          "item": "Capacities, power, endurance, NVMe/PCIe registers, SMART and commands",
+          "at": [
+            {
+              "out": "Not latency or bandwidth."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "PM9A3 product page, Samsung Semiconductor Global",
+      "items": [
+        {
+          "item": "First-party confirmation: PM9A3 current, up to 6,800 MB/s sequential read",
+          "at": [
+            {
+              "deep": "The latency and bandwidth table"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "Samsung PM9A3 NVMe PCIe SSD product brief",
+      "items": [
+        {
+          "item": "First-party confirmation of one million random-read IOPS",
+          "at": [
+            {
+              "deep": "The latency and bandwidth table"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "PM1743 | Enterprise SSD, Samsung Semiconductor Global",
+      "items": [
+        {
+          "item": "PCIe 5.0: up to 14,000 MB/s read, 2x faster than PCIe 4.0",
+          "at": [
+            {
+              "deep": "The frontier"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "Seagate Exos X24 SATA product manual, 205194300 Rev. A (2023)",
+      "items": [
+        {
+          "item": "7,200 rpm; average latency 4.16 ms (half a revolution)",
+          "at": [
+            {
+              "step": "Below RAM: drives and network"
+            },
+            {
+              "deep": "The latency and bandwidth table"
+            },
+            {
+              "deep": "Drives: one at a time, or many in flight"
+            }
+          ]
+        },
+        {
+          "item": "Max sustained transfer rate at the outer diameter: 272 MiB/s (285 MB/s)",
+          "at": [
+            {
+              "step": "Below RAM: drives and network"
+            },
+            {
+              "step": "One transfer: α + n/β"
+            },
+            {
+              "step": "The floor is the larger term"
+            },
+            {
+              "step": "Scanning orders, three ways"
+            },
+            {
+              "deep": "The latency and bandwidth table"
+            },
+            {
+              "deep": "Drives: one at a time, or many in flight"
+            }
+          ]
+        },
+        {
+          "item": "No seek time published (the 'performance seek' row is sound power)",
+          "at": [
+            {
+              "step": "Below RAM: drives and network"
+            },
+            {
+              "deep": "Drives: one at a time, or many in flight"
+            }
+          ]
+        },
+        {
+          "item": "Sustained rate by capacity (272 / 262 / 247 / 237 MiB/s)",
+          "at": [
+            {
+              "out": "Per-capacity variants; the topic quotes the 24 TB outer-diameter maximum and says the rate falls toward the inner tracks."
+            }
+          ]
+        },
+        {
+          "item": "Cache buffer, interface rate, workload rating, power, environment, reliability, SATA commands",
+          "at": [
+            {
+              "out": "Not latency or bandwidth per tier."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "Seagate Exos X24 data sheet, DS2080-2307US",
+      "items": [
+        {
+          "item": "285 MB/s (272 MiB/s) max sustained at the outer diameter",
+          "at": [
+            {
+              "step": "Below RAM: drives and network"
+            },
+            {
+              "step": "One transfer: α + n/β"
+            },
+            {
+              "step": "The floor is the larger term"
+            },
+            {
+              "step": "Scanning orders, three ways"
+            },
+            {
+              "deep": "The latency and bandwidth table"
+            },
+            {
+              "deep": "Drives: one at a time, or many in flight"
+            }
+          ]
+        },
+        {
+          "item": "Random 4K read at QD16: 168 IOPS, about 6 ms per read with 16 queued",
+          "at": [
+            {
+              "step": "Below RAM: drives and network"
+            },
+            {
+              "step": "One transfer: α + n/β"
+            },
+            {
+              "step": "The floor is the larger term"
+            },
+            {
+              "deep": "The latency and bandwidth table"
+            },
+            {
+              "deep": "Drives: one at a time, or many in flight"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "Norvig, Teach Yourself Programming in Ten Years, timing table (historical)",
+      "items": [
+        {
+          "item": "L1 0.5 ns, L2 7 ns, main memory 100 ns, seek 8 ms, read 1 MB from disk 20 ms",
+          "at": [
+            {
+              "step": "RAM read vs object-store wait"
+            },
+            {
+              "deep": "The latency and bandwidth table"
+            },
+            {
+              "deep": "In production"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "Dean, Designs, Lessons and Advice from Building Large Distributed Systems, LADIS 2009 (historical)",
+      "items": [
+        {
+          "item": "Numbers Everyone Should Know: 12 operations from L1 0.5 ns to a 150 ms intercontinental round trip",
+          "at": [
+            {
+              "step": "Below RAM: drives and network"
+            },
+            {
+              "deep": "The latency and bandwidth table"
+            },
+            {
+              "deep": "In production"
+            }
+          ]
+        },
+        {
+          "item": "Round trip within the same datacenter 500 us; disk seek 10 ms; read 1 MB sequentially from disk 20 ms",
+          "at": [
+            {
+              "step": "Below RAM: drives and network"
+            },
+            {
+              "deep": "The latency and bandwidth table"
+            },
+            {
+              "deep": "In production"
+            }
+          ]
+        },
+        {
+          "item": "Back-of-the-envelope examples (30 seeks at 10 ms plus reads at 30 MB/s = 560 ms)",
+          "at": [
+            {
+              "deep": "T(n) = α + n/β, and the floor"
+            }
+          ]
+        },
+        {
+          "item": "The rest of the talk: GFS, MapReduce, BigTable and design advice",
+          "at": [
+            {
+              "out": "Distributed-systems design advice, not a latency or bandwidth number."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "proc_meminfo(5), Linux manual page",
+      "items": [
+        {
+          "item": "'Cached': in-memory cache for files read from the disk (the page cache)",
+          "at": [
+            {
+              "deep": "In production"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "Documentation for /proc/sys/kernel/ (Linux kernel documentation)",
+      "items": [
+        {
+          "item": "numa_balancing: pages move automatically to nodes that access them often",
+          "at": [
+            {
+              "step": "The same RAM, one socket away"
+            },
+            {
+              "deep": "NUMA: local and remote memory"
+            },
+            {
+              "deep": "In production"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "Specifications for Amazon EC2 compute optimized instances (AWS EC2 instance types guide)",
+      "items": [
+        {
+          "item": "Per-type network bandwidth; the largest types list up to 600 Gigabit (c8gn.48xlarge)",
+          "at": [
+            {
+              "deep": "The latency and bandwidth table"
+            },
+            {
+              "deep": "The network and object storage rungs"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "66.6. Database Page Layout (PostgreSQL 18 documentation)",
+      "items": [
+        {
+          "item": "Tables and indexes are stored as 8 kB pages (8,192 bytes)",
+          "at": [
+            {
+              "step": "The floor is the larger term"
+            },
+            {
+              "step": "Scanning orders, three ways"
+            },
+            {
+              "step": "Prove it · 1 of 3"
+            },
+            {
+              "deep": "The latency and bandwidth table"
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "independent reviewer agent, written without seeing the topic",
+    "date": "2026-10-12",
+    "items": [
+      {
+        "item": "Latency is a ladder of orders of magnitude, not a table to memorise: register at most 1 cycle, L1d about 3, L2 about 14, main memory about 240 cycles; the ratio between rungs matters and the numbers date quickly.",
+        "at": [
+          {
+            "step": "RAM read vs object-store wait"
+          },
+          {
+            "step": "Registers to RAM, in cycles"
+          },
+          {
+            "step": "Below RAM: drives and network"
+          },
+          {
+            "deep": "The latency and bandwidth table"
+          },
+          {
+            "deep": "In production"
+          }
+        ]
+      },
+      {
+        "item": "Cycles must be converted to time using the clock of the machine at hand; write every tier in the same unit (ns) before comparing.",
+        "at": [
+          {
+            "step": "Registers to RAM, in cycles"
+          },
+          {
+            "deep": "Cycles, nanoseconds and the clock"
+          }
+        ]
+      },
+      {
+        "item": "Why the hierarchy exists: fast SRAM is costly, DRAM needs refresh and is slower; caches work because of locality, so a working set that fits a level runs at that level's speed.",
+        "at": [
+          {
+            "deep": "Why a hierarchy at all"
+          }
+        ]
+      },
+      {
+        "item": "Latency and bandwidth are separate axes: sequential access with prefetching hides DRAM latency, dependent random access exposes it; the same tier can look 100x different.",
+        "at": [
+          {
+            "step": "Latency is not bandwidth"
+          },
+          {
+            "step": "In order or at random, in RAM"
+          },
+          {
+            "deep": "Lab · Sequential vs random reads in RAM"
+          }
+        ]
+      },
+      {
+        "item": "Sustained bandwidth is not pin bandwidth: use measured steady-state bandwidth, not the datasheet peak, when estimating.",
+        "at": [
+          {
+            "deep": "Cycles, nanoseconds and the clock"
+          },
+          {
+            "deep": "In production"
+          }
+        ]
+      },
+      {
+        "item": "Lower bound by the roofline form: attainable rate = min(peak compute, peak memory bandwidth x operational intensity); for a scan-heavy job the bytes-moved term usually wins, so time >= bytes / slowest-link bandwidth.",
+        "at": [
+          {
+            "step": "The floor is the larger term"
+          },
+          {
+            "deep": "T(n) = α + n/β, and the floor"
+          }
+        ]
+      },
+      {
+        "item": "The back-of-envelope recipe: bytes x tier bandwidth plus serial requests x per-request latency, max across resources, then compare with the measured run.",
+        "at": [
+          {
+            "step": "The floor is the larger term"
+          },
+          {
+            "step": "Scanning orders, three ways"
+          },
+          {
+            "step": "Back to the problem"
+          },
+          {
+            "step": "Prove it · 2 of 3"
+          },
+          {
+            "step": "Prove it · 3 of 3"
+          },
+          {
+            "deep": "T(n) = α + n/β, and the floor"
+          }
+        ]
+      },
+      {
+        "item": "NUMA: memory attached to another socket costs more (Drepper: 2-hop reads and writes 30% and 49% slower than 0-hop reads); the factor is machine-specific, so measure on the target host.",
+        "at": [
+          {
+            "step": "The same RAM, one socket away"
+          },
+          {
+            "deep": "NUMA: local and remote memory"
+          },
+          {
+            "deep": "Lab · Sequential vs random reads in RAM"
+          }
+        ]
+      },
+      {
+        "item": "NUMA is observable and controllable on Linux: numa_hit / numa_miss / numa_foreign counters show whether allocations land on the preferred node, and memory policy (bind, preferred, interleave, first-touch default) decides placement.",
+        "at": [
+          {
+            "deep": "NUMA: local and remote memory"
+          }
+        ]
+      },
+      {
+        "item": "Page cache and write-back sit between DRAM and disk, so a 'disk' benchmark can really be a DRAM benchmark and a write can return before it is durable.",
+        "at": [
+          {
+            "deep": "In production"
+          },
+          {
+            "topic": "Storage devices and fsync durability",
+            "quote": "fsync semantics"
+          }
+        ]
+      },
+      {
+        "item": "Cloud block storage is specified in IOPS and MiB/s caps and a latency class, not by the medium (EBS gp3 vs io2 Block Express); local NVMe and network-attached volumes are different tiers.",
+        "at": [
+          {
+            "deep": "The latency and bandwidth table"
+          },
+          {
+            "deep": "Drives: one at a time, or many in flight"
+          }
+        ]
+      },
+      {
+        "item": "HDD volumes suit large streaming workloads where throughput dominates, SSD volumes suit small-I/O IOPS-dominated work; random vs sequential is the deciding pattern on spinning media.",
+        "at": [
+          {
+            "step": "One transfer: α + n/β"
+          },
+          {
+            "step": "The floor is the larger term"
+          },
+          {
+            "step": "Scanning orders, three ways"
+          },
+          {
+            "deep": "The latency and bandwidth table"
+          },
+          {
+            "deep": "Drives: one at a time, or many in flight"
+          }
+        ]
+      },
+      {
+        "item": "Flash is not ideal media: error rates, wear and drive failures are field-measured in millions of drive-days, so SSD capacity and speed come with failure and aging behaviour.",
+        "at": [
+          {
+            "out": "Reliability rather than latency or bandwidth; the nearest syllabus line (Storage devices and fsync durability: SSD internals, write amplification) does not promise field failure rates."
+          }
+        ]
+      },
+      {
+        "item": "The NVMe protocol is a family of specifications; the number of queues and their depth is why it scales parallelism.",
+        "at": [
+          {
+            "step": "Many requests in flight"
+          },
+          {
+            "deep": "Drives: one at a time, or many in flight"
+          }
+        ]
+      },
+      {
+        "item": "Instance network bandwidth is a per-instance limit applying to inbound and outbound separately, with baseline plus credit-based burst; a stated 'up to' figure is not guaranteed.",
+        "at": [
+          {
+            "deep": "The latency and bandwidth table"
+          },
+          {
+            "deep": "The network and object storage rungs"
+          },
+          {
+            "deep": "In production"
+          }
+        ]
+      },
+      {
+        "item": "Single-flow limits: 5 Gbps outside a cluster placement group, up to 10 Gbps inside one, ENA Express in the same AZ up to 25 Gbps; one connection never fills a large instance's NIC.",
+        "at": [
+          {
+            "step": "Prove it · 2 of 3"
+          },
+          {
+            "deep": "The network and object storage rungs"
+          },
+          {
+            "deep": "In production"
+          }
+        ]
+      },
+      {
+        "item": "Placement matters for latency: cluster placement groups pack instances within an AZ; same-AZ is the cheap and fast tier, cross-AZ and cross-Region are further rungs; AWS publishes no latency figure, so measure.",
+        "at": [
+          {
+            "step": "Below RAM: drives and network"
+          },
+          {
+            "deep": "The latency and bandwidth table"
+          },
+          {
+            "deep": "The network and object storage rungs"
+          }
+        ]
+      },
+      {
+        "item": "Bandwidth-delay product: to fill a long path the TCP window must reach bandwidth x RTT (64 KiB classic window cap, window scaling); latency limits throughput per connection.",
+        "at": [
+          {
+            "deep": "T(n) = α + n/β, and the floor"
+          },
+          {
+            "topic": "Bandwidth, latency and data locality",
+            "quote": "bandwidth-delay product"
+          }
+        ]
+      },
+      {
+        "item": "Object storage is high-latency, high-parallelism: first byte about 100-200 ms for small objects, so throughput comes from many concurrent connections and byte-range GETs, not one stream.",
+        "at": [
+          {
+            "step": "Below RAM: drives and network"
+          },
+          {
+            "step": "Latency is not bandwidth"
+          },
+          {
+            "step": "Back to the problem"
+          },
+          {
+            "deep": "The network and object storage rungs"
+          }
+        ]
+      },
+      {
+        "item": "Object storage has request-rate limits as well as bandwidth (3,500 writes and 5,500 reads per second per prefix, 503 Slow Down while scaling); a job with millions of small objects is request-bound, not byte-bound.",
+        "at": [
+          {
+            "step": "Prove it · 3 of 3"
+          },
+          {
+            "deep": "T(n) = α + n/β, and the floor"
+          },
+          {
+            "deep": "In production"
+          },
+          {
+            "topic": "Object storage as a storage tier",
+            "quote": "per-prefix request-rate limits"
+          }
+        ]
+      },
+      {
+        "item": "Single-instance S3 transfer can reach up to 100 Gb/s and aggregate scales across instances; the lower bound for reading a dataset is min(NIC, per-prefix request rate x object size, S3 throughput).",
+        "at": [
+          {
+            "step": "Latency is not bandwidth"
+          },
+          {
+            "step": "Back to the problem"
+          },
+          {
+            "deep": "T(n) = α + n/β, and the floor"
+          }
+        ]
+      },
+      {
+        "item": "Co-locate compute and data: S3 and EC2 in the same Region reduces latency and transfer cost, and egress price is a second cost axis.",
+        "at": [
+          {
+            "deep": "The network and object storage rungs"
+          },
+          {
+            "topic": "Bandwidth, latency and data locality",
+            "quote": "cross-AZ and cross-region transfer pricing"
+          }
+        ]
+      },
+      {
+        "item": "Tail latency changes the estimate: rare slow requests dominate a fan-out; S3 advises retrying the slowest 5% of large requests, or a small request after about 2 s.",
+        "at": [
+          {
+            "deep": "In production"
+          },
+          {
+            "topic": "Tail latency under fan-out",
+            "quote": "hedged and tied requests, timeouts"
+          }
+        ]
+      },
+      {
+        "item": "The lower bound is a floor, not a forecast: it ignores serialization, compression, skew, retries and cold caches; report the bound, the bottleneck tier, and the ratio measured/bound.",
+        "at": [
+          {
+            "step": "The floor is the larger term"
+          },
+          {
+            "step": "Scanning orders, three ways"
+          },
+          {
+            "step": "Prove it · 3 of 3"
+          },
+          {
+            "deep": "T(n) = α + n/β, and the floor"
+          },
+          {
+            "deep": "In production"
+          }
+        ]
+      },
+      {
+        "item": "Cost of keeping data in each tier is part of the hierarchy decision (when to hold data in DRAM versus on disk), the five-minute-rule idea.",
+        "at": [
+          {
+            "out": "The five-minute-rule paper could not be retrieved in a readable form, so no claim can be sourced; the expert list itself marked it out of scope. No syllabus line mentions it."
+          }
+        ]
+      }
+    ]
+  },
+  "gapReview": {
+    "date": "2026-10-12",
+    "by": "content-review agent (fresh Opus, wrote nothing in this topic): flow, basics, gap hunt, expert reader against the syllabus line, SOURCES.md, EXPERT-LIST.md and the AWS Network Manager docs; findings 1–27 in REVIEW.md fixed (findings 2, 7 and 17 recorded for other topics, not edited here)",
+    "resolved": [
+      "Socket-level DRAM bandwidth added, sourced and asserted (finding 12)",
+      "EBS / network block volumes: a Deep dive line and table row with current quoted figures; expert item remapped from 'out' (finding 13)",
+      "Same-AZ latency: AWS Network Manager Infrastructure Performance (intra-AZ and inter-AZ P50 round trip) cited; 'AWS publishes no figure' removed (findings 14, 18)",
+      "HDD 1/168 s labelled a QD16 per-read time and a floor value, not a latency (finding 19)",
+      "Basics names cache line and prefetching, NVMe SSD and HDD, latency- and bandwidth-bound, key prefix and flow (finding 8)",
+      "numastat counters and the NVMe queue mapping fixed (findings 15, 16)",
+      "Prove it 3 argued from measured ÷ floor; per-request rate assumptions stated (findings 20, 21, 22)"
+    ],
+    "open": []
+  }
+}
