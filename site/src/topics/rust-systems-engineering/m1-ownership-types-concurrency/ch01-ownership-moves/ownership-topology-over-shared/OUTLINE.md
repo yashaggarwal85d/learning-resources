@@ -64,7 +64,7 @@ Titles below are exact (coverage keys on them). Write each in `reel.tsx` as a 6-
 
 ---
 
-### Step 1 — `Three stages, one guard at a time`  (the problem; `duration: 5.0`)
+### Step 1 — `Three stages, one guard at a time`  (the problem; `duration: 8.6`)
 
 - **Visual idea:** the topic-3 guard hits its wall on the map: stage 1's guard holds the pool by an exclusive (cinnamon) loan; stage 2 reaches for a second exclusive loan and the edge turns cherry with `E0499`. Then a ghost of the pull request's fix fades in at the centre, `Arc<Mutex<Pool>>`, unlit: the question of the topic.
 - **On screen, portrait:** `Stack`: `Code` panel titled `stages.rs` (5 lines), `Svg h={300} fill` under it.
@@ -85,7 +85,7 @@ Titles below are exact (coverage keys on them). Write each in `reel.tsx` as a 6-
 - **Caption (body, ≤ 90 words):** "Three pipeline stages each want a buffer at the same time. The guard `PooledBuf` borrows the pool exclusively, so a second guard is `E0499`. The pull request in review wraps the pool in `Arc<Mutex<Pool>>` (shared ownership plus a lock) and every stage's counters in another, and it compiles. Was that the fix the compiler was asking for? By the end you'll name the topology behind this design, count what it costs, and rebuild the pipeline three ways that need no lock at all."
 - **Narration gist:** the bridge sentence in full first ("Your pooled buffer guard lets one buffer out of the pool at a time…"), then the double exclusive borrow error, the pull request's arc of mutex, the question, the promise. Spoken forms: "the double exclusive borrow error", "arc of mutex".
 
-### Step 2 — `Four errors, four patches`  (mechanism: how the reflex arises; `duration: 5.6`)
+### Step 2 — `Four errors, four patches`  (mechanism: how the reflex arises; `duration: 10.2`)
 
 - **Visual idea:** a ladder. Each rung is one real rustc error and the one-token patch that silences it; the learner climbs from `E0499` to a green build without anyone asking who should own the pool. The ladder *is* the reflex.
 - **On screen (both orientations, one `Svg h={420}`):** four rungs stacked bottom to top at y 340, 260, 180, 100, each a row: left an error chip (rect 96 × 30, fill `C.cherry`, code 15 units `C.crema` centred: `E0499`, `E0373`, `E0382`, `E0596`), then the error's gist 13 units `C.latte` at x 150 on the first line (≤ 40 chars) and the patch 15 units `C.caramel` on the second line (y + 20):
@@ -125,7 +125,7 @@ Titles below are exact (coverage keys on them). Write each in `reel.tsx` as a 6-
 - **Real values:** `locks=5000`, `locks_per_message=5`, `messages=1000` (measured, E2; deterministic: `lock()` blocks, nothing retries).
 - **Narration:** question lines; answer: "Five. Get and put lock the pool, and every stage locks the shared counters once. A thousand messages, five thousand locks."
 
-### Step 4 — `Everyone owns it, so no one does`  (mechanism: the design cost; `duration: 5.0`)
+### Step 4 — `Everyone owns it, so no one does`  (mechanism: the design cost; `duration: 4.0`)
 
 - **Visual idea:** the chapter's rule "one caramel arrow per payload" broken on the map: three caramel arrows converge on the hub. Then what that hides: no node can state an invariant alone, and nothing bounds how many buffers exist.
 - **On screen (both orientations, `Svg h={400}`):** full shared map. Owner corner labelled `main`. Caramel owner arrows from `main`, `fill`, `consume` into the `Hub` (the hub's own caramel stroke dims to `C.mocha` so the three arrows are the focus). A second smaller hub `Arc<Mutex<Stats>>` (rect 170 × 34 at (215, 250), stroke `C.latte`) with four thin `C.latte` arrows (main and the three stages) is drawn quieter. Counters: `OWNERS` (serif) `3` for the pool, `LOCKS` `5,000` in latte mono. Bottom, 13 units `C.latte`, two stacked lines at y 360 and 380: `invariants: in every lock holder` / `buffer count: bounded by nobody`.
@@ -227,7 +227,7 @@ Titles below are exact (coverage keys on them). Write each in `reel.tsx` as a 6-
 - **Real values:** `insp=Handle { index: 2, generation: 0 }`, `audit=Handle { index: 2, generation: 1 }`, `get(stale)=None`, `remove(stale)=None`, `plain_index=audit` (measured, E4).
 - **Narration:** question; answer: "None. The slot's generation moved on to one, the old handle still says zero, so the lookup refuses. A plain index would have handed you the audit node."
 
-### Step 11 — `The generation catches the stale handle`  (mechanism; `duration: 5.4`)
+### Step 11 — `The generation catches the stale handle`  (mechanism; `duration: 6.0`)
 
 - **Visual idea:** slow-motion of one slot's life: insert (gen 0) → remove (value slides out, an empty `None` is left, the generation digit ticks to 1, the index joins the free list) → insert reuses the slot with gen 1. Under it, two handle tags try the slot: `2·1` passes (caramel), `2·0` bounces (cherry).
 - **On screen, portrait:** `Stack`: `Code` titled `Arena::remove` (7 lines, exact from `examples/arena.rs`), `Svg h={280} fill`.
@@ -248,7 +248,7 @@ Titles below are exact (coverage keys on them). Write each in `reel.tsx` as a 6-
 - **Caption:** "Removal is three moves. `take()` moves the value out and leaves `None` (the previous topic's idiom). The generation goes up by one, so every handle made before is now stale. The index goes on the free list, and the next insert reuses the slot under the new generation. A lookup checks both numbers, so a stale handle gets `None`, never someone else's node, for one compare per access. Generations do wrap (ours after 2^32 removals of one slot, slotmap's after 2^31): still safe, just no longer caught."
 - **Narration gist:** "take the value, bump the generation, free the index"; "a lookup checks both numbers"; "one compare per access"; "it wraps eventually, and it's still safe".
 
-### Step 12 — `Sending is moving`  (mechanism; `duration: 5.0`)
+### Step 12 — `Sending is moving`  (mechanism; `duration: 4.2`)
 
 - **Visual idea:** the chapter's move picture across a thread boundary: a buffer's 32-byte handle slides from stage `fill` into a channel and on to `inspect`; the 64 KiB heap buffer doesn't move; `fill`'s slot shows `moved`. Then the line that reuses it turns cherry with `E0382`.
 - **On screen, portrait:** `Stack`: `Code` titled `send.rs` (3 lines, from `examples/send_e0382.rs`), `Svg h={300} fill`.
@@ -357,7 +357,7 @@ Titles below are exact (coverage keys on them). Write each in `reel.tsx` as a 6-
 - **Caption:** "Choose by the shape of the data, not by the error message. A natural parent (a request, a pipeline run): a tree, with no synchronisation at all. A graph with cycles or removal: an arena, paying one generation check per lookup. Many concurrent users of one piece of state: an owner thread, paying a channel hop per request. Small, simple data touched briefly by many threads: a `Mutex` is fine, paying a lock per access. First ask: who should own this?"
 - **Narration gist:** the four rows as sentences; "ask who should own it before you ask how to share it".
 
-### Step 18 — `When Arc<Mutex<T>> is the right shape`  (trade-offs; `duration: 4.6`)
+### Step 18 — `When Arc<Mutex<T>> is the right shape`  (trade-offs; `duration: 5.0`)
 
 - **Visual idea:** the hub, rehabilitated: one small `Arc<Mutex<Counts>>` box with three short lock cycles that each end quickly (guards appear and vanish fast), next to `Arc<Config>` with no padlock and eight latte arrows. The difference from the PR is drawn: the critical section is a few units long; nothing else is shared.
 - **On screen (both orientations, `Svg h={400}`):** left (x 40–280): `Arc<Config>` box (200 × 40, stroke `C.latte`) with eight thin latte arrows from small dots (threads) on the left edge; label `read-only: no lock` 13 `C.latte`. Right (x 320–560): `Arc<Mutex<Counts>>` box with padlock; three guard flashes; under it a tiny timeline (thin `C.mocha` line) where each lock is a short caramel tick (4 units wide), label `short critical sections` 13 `C.latte`. Bottom (y 380), 13 `C.taupe`: `the anti-pattern is the reflex, not the type`.
@@ -545,14 +545,14 @@ Every number on screen (`1,000`, `5`, `5,000`, `3`, `4`, `0`, `1`, `2`, `8`, `32
   minutes: 20,
   verified: '2026-10-12',
   introduces: ['ownership-topology', 'arc-mutex-reflex', 'tree-ownership', 'generational-arena', 'owner-task-messages', 'move-closures'],
-  uses: ['ownership', 'move-semantics', 'copy-trait', 'clone-cost', 'ownership-signatures', 'e0382', 'e0505', 'counting-allocator', 'drop-trait', 'raii-guard', 'take-replace-idioms'],
+  uses: ['ownership', 'move-semantics', 'copy-trait', 'clone-cost', 'move-cost', 'box-ownership', 'ownership-signatures', 'e0382', 'e0505', 'counting-allocator', 'drop-trait', 'raii-guard', 'leak-safety', 'take-replace-idioms', 'destructuring-as-transfer'],
   declared: ['rust-basics', 'references-basics', 'structs-enums', 'pattern-matching-basics', 'std-collections', 'traits-generics-basics', 'threads-and-channels', 'mutexes', 'closures-basics'],
   bridge: 'Your `PooledBuf` guard lets one buffer (`Buf`) out of the pool (`Pool`) at a time, because it holds the pool by exclusive borrow, and three stages need buffers at once. Now: why `Arc<Mutex<Pool>>` is the reflex, not the answer, and the shapes of ownership that fix it across a whole program.',
   handoff: 'Every topology still lends: `fill` borrows `&mut Buf`, `inspect` borrows `&Buf`. Next: the rule behind those loans, many shared borrows or one exclusive borrow, never both.',
 }
 ```
 
-- `uses` mapping: `single-ownership` → topic 1's `ownership`; `copy-vs-clone` → topic 1's `copy-trait` and `clone-cost`; `e0382-use-after-move` → `e0382`; `e0505-move-while-borrowed` → `e0505`; `counting-allocator`, `drop-trait`, `raii-guard` → topic 2's ids (unchanged); `take-replace-idioms` → topic 3's id as CHAPTER.md names it (check topic 3's real registry entry at ship time and use its id). If topic 1 is later corrected to register the plan's ids (the review note's step 1), switch back to the plan's ids.
+- `uses` mapping: `single-ownership` → topic 1's `ownership`; `copy-vs-clone` → topic 1's `copy-trait` and `clone-cost`; `e0382-use-after-move` → `e0382`; `e0505-move-while-borrowed` → `e0505`; `counting-allocator`, `drop-trait`, `raii-guard` → topic 2's ids (unchanged); `move-cost` (step 12) and `box-ownership` (Prove it 3) → topic 1's ids; `leak-safety` (step 8) → topic 2's id; `destructuring-as-transfer` (the owner loop's `Msg::Data(mut buf) =>`) → topic 3's id; `take-replace-idioms` → topic 3's id as CHAPTER.md names it (check topic 3's real registry entry at ship time and use its id). If topic 1 is later corrected to register the plan's ids (the review note's step 1), switch back to the plan's ids.
 - `status: 'held'` unless every earlier topic is live on `main` at ship time (ROUTINE.md section 8 step 3).
 
 ---
@@ -701,3 +701,5 @@ Next: 7 narration.
 6. **Deterministic stall measurement.** `ring_stall.rs` reads the owner's real buffer count through a `MADE` atomic while stage 3 is still stalled (`made_while_stalled=3`), instead of the planner's literal `3`.
 
 ## Changes after final
+
+(none)

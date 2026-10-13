@@ -185,14 +185,13 @@ export const TOPICS: TopicMeta[] = [
     title: 'Partial moves and destructuring as transfer',
     syllabusTitle: 'Partial moves and destructuring as transfer',
     kind: 'full',
-    // Built ahead of its turn: the two topics before it are content final on their branches, not live on main.
-    status: 'held',
+    status: 'live',
     milestone: { number: 1, title: 'Ownership, Types, and Concurrency Primitives' },
     chapter: { number: 1, title: 'Ownership and Moves', section: '1.1' },
     minutes: 20,
     verified: '2026-10-12',
     introduces: ['partial-moves', 'e0509-move-out-of-drop-type', 'e0507-move-out-of-borrow', 'take-replace-idioms', 'binding-modes', 'match-ergonomics-2024', 'destructuring-as-transfer'],
-    uses: ['ownership', 'move-semantics', 'deinitialized-place', 'copy-trait', 'clone-cost', 'box-ownership', 'ownership-signatures', 'e0382', 'counting-allocator', 'drop-trait', 'raii-guard', 'drop-order', 'temporary-scopes', 'drop-flags', 'mem-forget-manuallydrop', 'leak-safety'],
+    uses: ['ownership', 'move-semantics', 'deinitialized-place', 'copy-trait', 'clone-cost', 'move-cost', 'box-ownership', 'ownership-signatures', 'e0382', 'counting-allocator', 'drop-trait', 'raii-guard', 'drop-order', 'temporary-scopes', 'drop-flags', 'mem-forget-manuallydrop', 'leak-safety'],
     declared: ['rust-basics', 'references-basics', 'structs-enums', 'pattern-matching-basics', 'std-collections', 'error-handling-result', 'traits-generics-basics'],
     bridge: "`Drop` ties a struct's fields to its life. Now: moving fields out one at a time, why a type with `Drop` forbids it, and how a guard hands its buffer (`Buf`) back to the pool (`Pool`) anyway.",
     handoff: '`PooledBuf` holds the `Pool` by exclusive borrow, so only one guard can exist at a time. Next: when three stages need buffers at once, do you reach for `Arc<Mutex<Pool>>`, or change who owns what?',
@@ -204,8 +203,7 @@ export const TOPICS: TopicMeta[] = [
     title: 'Ownership topology over shared mutability',
     syllabusTitle: 'Ownership topology over shared mutability',
     kind: 'full',
-    // Built ahead of its turn: the three topics before it in Chapter 1 are not live yet.
-    status: 'held',
+    status: 'live',
     milestone: { number: 1, title: 'Ownership, Types, and Concurrency Primitives' },
     chapter: { number: 1, title: 'Ownership and Moves', section: '1.1' },
     minutes: 20,
@@ -213,7 +211,7 @@ export const TOPICS: TopicMeta[] = [
     introduces: ['ownership-topology', 'arc-mutex-reflex', 'tree-ownership', 'generational-arena', 'owner-task-messages', 'move-closures'],
     // The ids are the ones the earlier topics really register (single-ownership is topic 1's `ownership`, copy-vs-clone is its
     // `copy-trait` and `clone-cost`, and so on); `take-replace-idioms` is topic 3's id as the chapter plan names it.
-    uses: ['ownership', 'move-semantics', 'copy-trait', 'clone-cost', 'ownership-signatures', 'e0382', 'e0505', 'counting-allocator', 'drop-trait', 'raii-guard', 'take-replace-idioms'],
+    uses: ['ownership', 'move-semantics', 'copy-trait', 'clone-cost', 'move-cost', 'box-ownership', 'ownership-signatures', 'e0382', 'e0505', 'counting-allocator', 'drop-trait', 'raii-guard', 'leak-safety', 'take-replace-idioms', 'destructuring-as-transfer'],
     declared: ['rust-basics', 'references-basics', 'structs-enums', 'pattern-matching-basics', 'std-collections', 'traits-generics-basics', 'threads-and-channels', 'mutexes', 'closures-basics'],
     bridge: 'Your `PooledBuf` guard lets one buffer (`Buf`) out of the pool (`Pool`) at a time, because it holds the pool by exclusive borrow, and three stages need buffers at once. Now: why `Arc<Mutex<Pool>>` is the reflex, not the answer, and the shapes of ownership that fix it across a whole program.',
     handoff: 'Every topology still lends: `fill` borrows `&mut Buf`, `inspect` borrows `&Buf`. Next: the rule behind those loans, many shared borrows or one exclusive borrow, never both.',

@@ -1,6 +1,6 @@
 import Resource from '../../../../../components/Resource.astro';
 
-This topic follows "Single ownership and move semantics" and "RAII, drop order, and leak safety": you should know that every value has one owner, that a move deinitializes its source, and that a value's fields are dropped in declaration order after its own `Drop::drop`. It builds the chapter's buffer pipeline (`Buf`, `Pool`, a guard called `PooledBuf`) from the ground up in the first two steps. A few things appear only as a one-line gloss on the spot (`Rc`, `Box`, `E0499`, and the `'p` lifetime on the guard, which says the guard cannot outlive its borrow of the pool); their Rust details are in Chapters 2 and 4.
+This topic follows "Single ownership and move semantics" and "RAII, drop order, and leak safety": you should know that every value has one owner, that a move deinitializes its source, and that a value's fields are dropped in declaration order after its own `Drop::drop`. The first two steps set up the chapter's buffer pipeline (`Buf`, `Pool`); the guard `PooledBuf` is built in steps 7 and 12. `Rc` and `ManuallyDrop::take` get a one-line gloss on the spot, and so does the `'p` lifetime on the guard, which says the guard cannot outlive its borrow of the pool; their Rust details are in Chapters 2 and 4. `Box` is from the first reel, and `E0499` is the Book's two-`&mut` error.
 
 <section class="prereq basics" data-section="basics">
 

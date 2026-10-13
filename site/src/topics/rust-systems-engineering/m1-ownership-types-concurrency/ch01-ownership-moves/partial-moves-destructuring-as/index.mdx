@@ -52,7 +52,7 @@ destructure: ["destructured", "body", "head", "tail"]
 
 Struct update syntax "moves or copies the remaining fields from the base expression" (Reference), so `Frame { header: h2, ..frame }` partially moves `frame` when a non-`Copy` field comes from the base (E0382 on the next use, `update.rs`). If only `Copy` fields come from it, the base stays whole: `Frame { payload: pool.get(), ..frame }` copies just `header` (`update copied header only: frame whole id=1 next id=2`). And on a base that implements `Drop`, taking a field is E0509 (`update_drop.rs`).
 
-Closures make partial moves too, silently. From edition 2021, a `move ||` that uses `frame.payload` captures only that field: `let c = move || drop(frame.payload); c();` leaves `frame.header` readable (`closure_partial.rs` prints `closure moved only the payload: header kind=7` under 2021 and 2024; under 2018 it is `error[E0382]: borrow of moved value: `frame``). The capture rules themselves are the closures topic's (`move-closures`), so they are only noted here.
+Closures make partial moves too, silently. From edition 2021, a `move ||` that uses `frame.payload` captures only that field: `let c = move || drop(frame.payload); c();` leaves `frame.header` readable (`closure_partial.rs` prints `closure moved only the payload: header kind=7` under 2021 and 2024; under 2018 it is `error[E0382]: borrow of moved value: `frame``). The capture rules themselves are not taught in this chapter's reels, so they are only noted here.
 
 ### Why a Drop type is a single unit (E0509)
 
