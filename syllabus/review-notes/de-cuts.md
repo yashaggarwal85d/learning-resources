@@ -4,6 +4,8 @@
 
 **Applied on 12 October 2026 (owner decision): every Tier A topic and case is marked *(skipped)* in `data-engineering.md`.** Skipped topics stay in the curriculum (the site shows them muted with a "skipped" tag) but get no reel: `scripts/claim.mjs` never hands them out, a chapter is complete without them, and the build's flow check lets a live topic follow them. Tier B is not applied. Each line is a syllabus topic title, word for word, so the tag can be added or removed by title.
 
+**Already-made topics are excluded** (owner rule 2026-10-13): no title below has a registry entry, an open claim or a `topic/*` branch, checked against `main` on 13 October 2026. Apply the same check before marking anything: a topic with a reel stays.
+
 **The test for each cut**, in order:
 1. Does it appear in Data Engineer job descriptions or interviews in those markets? (Not: is it interesting.)
 2. Does a sibling topic, the DSA domain or the Rust domain already teach it? (Rust M3 covers mmap, page cache, io_uring, fsync; Rust M4 the storage engine; Rust M5 Raft and the replicated log. DSA Ch.3 covers hash tables, B-trees and LSM; DSA Ch.11 Bloom/cuckoo/xor filters; DSA Ch.17 sketches, HLL, MinHash, reservoir sampling; DSA covers external merge sort.)

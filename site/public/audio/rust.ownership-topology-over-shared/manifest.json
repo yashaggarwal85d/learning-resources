@@ -1,0 +1,1138 @@
+{
+ "topic": "rust.ownership-topology-over-shared",
+ "voice": "tara-v1",
+ "asr": "large-v3-turbo",
+ "clips": {
+  "01": {
+   "hash": "7ee82122d18413bd",
+   "takes": [
+    "15bb9551b334da3cf0a1",
+    "904268e7944275072d75",
+    "33d374c716c83d137cde",
+    "5928e5ec458bbf8ddd3e",
+    "661fc80c5f9aecd43353"
+   ],
+   "duration": 22.091,
+   "lines": [
+    {
+     "text": "The pooled buffer guard holds the pool by exclusive borrow.",
+     "start": 0.15,
+     "end": 4.202
+    },
+    {
+     "text": "A second guard on the same pool is the double exclusive borrow error.",
+     "start": 4.622,
+     "end": 8.768
+    },
+    {
+     "text": "The pull request wraps the pool in an arc of mutex, and it compiles.",
+     "start": 9.188,
+     "end": 13.985
+    },
+    {
+     "text": "Was that the fix the compiler was asking for?",
+     "start": 14.405,
+     "end": 17.608
+    },
+    {
+     "text": "By the end, you'll rebuild the pipeline with no locks.",
+     "start": 18.558,
+     "end": 21.741
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -1.8,
+   "wpm": 152,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "02": {
+   "hash": "ae0fa4892dc4940e",
+   "takes": [
+    "cea2f2d440ed7a1df6de",
+    "7fe4ee4f21b2303b5f48",
+    "4cab8c1f832b53c04fde",
+    "b20034f880b529da0d5d",
+    "babee45d146b226751b6",
+    "071bbaa8e2ad8a0380e3"
+   ],
+   "duration": 27.727,
+   "lines": [
+    {
+     "text": "Here's how the reflex happens.",
+     "start": 0.15,
+     "end": 2.267
+    },
+    {
+     "text": "Two exclusive loans of one pool. So give each stage a thread.",
+     "start": 2.687,
+     "end": 6.545
+    },
+    {
+     "text": "Now the closure may outlive the pool. Add move.",
+     "start": 6.965,
+     "end": 12.227
+    },
+    {
+     "text": "Now the pool moved into the first thread. Wrap it in an arc.",
+     "start": 12.647,
+     "end": 16.858
+    },
+    {
+     "text": "An arc gives no mutable access. Add a mutex.",
+     "start": 17.278,
+     "end": 22.9
+    },
+    {
+     "text": "Every patch was local. None asked who should own the pool.",
+     "start": 23.62,
+     "end": 27.377
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -1.9,
+   "wpm": 128,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "03": {
+   "hash": "97e5e6c4fb505e08",
+   "takes": [
+    "a452ce0a5028a90c94cb",
+    "701252c934e91601adbe",
+    "3ded503f674a33207314"
+   ],
+   "duration": 16.516,
+   "lines": [
+    {
+     "text": "Let's count.",
+     "start": 0.15,
+     "end": 1.459
+    },
+    {
+     "text": "This is the reviewed design, for one message. The fill stage takes a buffer and counts it. The inspect stage counts it. The consume stage counts it and gives the buffer back.",
+     "start": 1.879,
+     "end": 12.747
+    },
+    {
+     "text": "How many times does one message acquire a lock?",
+     "start": 13.167,
+     "end": 16.166
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 156,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "03a": {
+   "hash": "d2b86e8258dc2bc0",
+   "takes": [
+    "e0c4a4ac1bebbe2b1829",
+    "4362573a68e2c521d1db",
+    "8d23dd86428f2ec3153d"
+   ],
+   "duration": 20.23,
+   "lines": [
+    {
+     "text": "Five. Get and put lock the pool, and every stage locks the shared counters once.",
+     "start": 0.15,
+     "end": 5.232
+    },
+    {
+     "text": "A thousand messages, five thousand locks. Each one is a point where the stages must take turns, and chapter four measures what that costs.",
+     "start": 5.652,
+     "end": 15.529
+    },
+    {
+     "text": "And who owns the pool now? Next step.",
+     "start": 15.949,
+     "end": 19.88
+    }
+   ],
+   "lufs": -16.6,
+   "true_peak": -1.9,
+   "wpm": 139,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "04": {
+   "hash": "6fd6a170ff900c74",
+   "takes": [
+    "9dfbc6611f710d66ba38",
+    "ab947a5663d560cf3734",
+    "d6a12e1427fde4a409ec",
+    "f170de348f0d23d65da5",
+    "c33fda230f59140da7c9"
+   ],
+   "duration": 27.366,
+   "lines": [
+    {
+     "text": "Count the owners. The pool has three, main, fill and consume. The counters have four.",
+     "start": 0.15,
+     "end": 7.222
+    },
+    {
+     "text": "Every holder can call anything, any time. None is in charge.",
+     "start": 7.642,
+     "end": 13.37
+    },
+    {
+     "text": "So the invariant, every buffer is in the pool or in exactly one stage, lives in no single place.",
+     "start": 13.79,
+     "end": 20.121
+    },
+    {
+     "text": "Two locks in different orders can deadlock.",
+     "start": 20.541,
+     "end": 22.844
+    },
+    {
+     "text": "And how many buffers exist? Nothing here decides.",
+     "start": 23.264,
+     "end": 27.017
+    }
+   ],
+   "lufs": -16.3,
+   "true_peak": -1.9,
+   "wpm": 132,
+   "wer": 0.18181818181818182,
+   "exact": false,
+   "tolerated": [
+    {
+     "line": "Every holder can call anything, any time. None is in charge.",
+     "said": "any time",
+     "heard": "anytime"
+    }
+   ]
+  },
+  "05": {
+   "hash": "31e6b86de73b22c6",
+   "takes": [
+    "ce2141c944d746f3506b",
+    "31a113107e40d0f94f7d",
+    "87437594fc476f5b6771",
+    "712653c3d0d19cc01042",
+    "bda4a24d3be7c24d9699"
+   ],
+   "duration": 24.605,
+   "lines": [
+    {
+     "text": "A mutex is an exclusive loan, checked while the program runs.",
+     "start": 0.15,
+     "end": 4.018
+    },
+    {
+     "text": "It owns its data and hands out mutable access through a guard. A second caller waits.",
+     "start": 4.438,
+     "end": 10.059
+    },
+    {
+     "text": "Hold a mutable borrow of it, and no one can lock it: no locking needed.",
+     "start": 10.479,
+     "end": 15.312
+    },
+    {
+     "text": "Use a lock, but only when nobody can be named as the single owner.",
+     "start": 15.732,
+     "end": 20.147
+    },
+    {
+     "text": "An arc clone copies a pointer. Zero allocations.",
+     "start": 20.567,
+     "end": 24.255
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -1.9,
+   "wpm": 156,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "06": {
+   "hash": "a55afde0731b6a9b",
+   "takes": [
+    "941e802db151436e8e97",
+    "63231f409079a8617602",
+    "faaf260a940b75814451",
+    "d483cd52852f353f3eba",
+    "b41801bee9524183cd7e"
+   ],
+   "duration": 26.861,
+   "lines": [
+    {
+     "text": "Now name the owner.",
+     "start": 0.15,
+     "end": 1.484
+    },
+    {
+     "text": "When the stages run in turn, one driver owns the pool, and each stage owns its own counters.",
+     "start": 1.904,
+     "end": 8.199
+    },
+    {
+     "text": "Loans go down: exclusive to fill, shared to inspect. The buffer is handed to consume and back. Results come up as plain values.",
+     "start": 8.619,
+     "end": 17.347
+    },
+    {
+     "text": "A thousand messages, one allocation, no locks.",
+     "start": 17.767,
+     "end": 22.247
+    },
+    {
+     "text": "If the stages must overlap, a tree isn't enough.",
+     "start": 22.667,
+     "end": 26.511
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -1.9,
+   "wpm": 136,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "07": {
+   "hash": "c8be2eff66622089",
+   "takes": [
+    "21805b5cc491437c4c96",
+    "8584e8d87599baf93b20",
+    "8e4373482eb8e3b67aac"
+   ],
+   "duration": 12.634,
+   "lines": [
+    {
+     "text": "Let's predict one.",
+     "start": 0.15,
+     "end": 1.592
+    },
+    {
+     "text": "Four pieces of shared state from the pipeline: the pool, the per-stage counters, a read-only config, and one buffer.",
+     "start": 2.012,
+     "end": 8.631
+    },
+    {
+     "text": "Which one really has many owners?",
+     "start": 9.051,
+     "end": 12.284
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 142,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "07a": {
+   "hash": "68ebc960c299ca01",
+   "takes": [
+    "8fb384a97dbe2365392e",
+    "940b6f58a5ba28e7d70c",
+    "ce796d6a2ebfbf2b406f"
+   ],
+   "duration": 19.956,
+   "lines": [
+    {
+     "text": "Only the config.",
+     "start": 0.15,
+     "end": 1.514
+    },
+    {
+     "text": "Eight threads read it all run, and a spawned thread may outlive whoever would lend it. So it's an arc, with no mutex, since nobody writes.",
+     "start": 1.934,
+     "end": 10.939
+    },
+    {
+     "text": "Everything else has one owner at a time: the driver, each stage, and whoever holds the buffer.",
+     "start": 11.359,
+     "end": 19.606
+    }
+   ],
+   "lufs": -16.6,
+   "true_peak": -1.8,
+   "wpm": 138,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "08": {
+   "hash": "e73e99fdb4324f7a",
+   "takes": [
+    "1be793deb808f266ce9a",
+    "d574e18f7ec1f58ff4bd",
+    "2391381657015dacb316",
+    "d0a1b4a9d334dae30261",
+    "9d841beb3fd6ebcf83d9"
+   ],
+   "duration": 20.885,
+   "lines": [
+    {
+     "text": "Pipelines are graphs, and this one is a cycle.",
+     "start": 0.15,
+     "end": 3.014
+    },
+    {
+     "text": "A tree can't own a cycle. Try it with Rc pointers.",
+     "start": 3.434,
+     "end": 7.196
+    },
+    {
+     "text": "Drop your handles and every count falls to one, never zero. The ring keeps itself alive.",
+     "start": 7.616,
+     "end": 13.844
+    },
+    {
+     "text": "Four allocations, still live. The compiler won't stop a leak.",
+     "start": 14.264,
+     "end": 17.983
+    },
+    {
+     "text": "Here, we change who owns.",
+     "start": 18.403,
+     "end": 20.535
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 147,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "09": {
+   "hash": "86985aeff778832f",
+   "takes": [
+    "f5a80678b51b379f892e",
+    "9e61dde7032d1667c3f5",
+    "c27a3a5ac8e76aae4b04",
+    "612895e2364f1d172c31",
+    "75c53abfd688b3146672"
+   ],
+   "duration": 24.736,
+   "lines": [
+    {
+     "text": "Give every node one owner: an arena, a vector of slots.",
+     "start": 0.15,
+     "end": 4.539
+    },
+    {
+     "text": "Edges become handles, an index plus a generation, eight bytes, cheap to copy.",
+     "start": 4.959,
+     "end": 11.965
+    },
+    {
+     "text": "So the cycle is just data. No node owns another.",
+     "start": 12.385,
+     "end": 15.857
+    },
+    {
+     "text": "Drop the arena and everything goes at once: zero live allocations, against four for the ring.",
+     "start": 16.277,
+     "end": 21.998
+    },
+    {
+     "text": "What the generation is for, next.",
+     "start": 22.418,
+     "end": 24.386
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 136,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "10": {
+   "hash": "428468eeece0288e",
+   "takes": [
+    "9ec50b84ead6b778040c",
+    "8e356b883ba62b6e0d90",
+    "bc96d869488fe40b7f9f",
+    "45a123557bae2585fc48"
+   ],
+   "duration": 19.529,
+   "lines": [
+    {
+     "text": "Here's why the generation matters.",
+     "start": 0.15,
+     "end": 2.276
+    },
+    {
+     "text": "The inspect stage, at index two, is hot-swapped. It's removed, and a new stage called audit takes the freed slot.",
+     "start": 2.696,
+     "end": 10.192
+    },
+    {
+     "text": "The fill stage still holds the old handle, with slot number two and generation zero.",
+     "start": 10.612,
+     "end": 15.639
+    },
+    {
+     "text": "So, what does looking up the old handle return?",
+     "start": 16.059,
+     "end": 19.179
+    }
+   ],
+   "lufs": -16.6,
+   "true_peak": -1.9,
+   "wpm": 154,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "10a": {
+   "hash": "dc92e345c1501aee",
+   "takes": [
+    "3875bb3331463a1965fa",
+    "b5455b20d064804c7ef4",
+    "d78ef640432596c3d28b"
+   ],
+   "duration": 14.476,
+   "lines": [
+    {
+     "text": "None.",
+     "start": 0.15,
+     "end": 0.952
+    },
+    {
+     "text": "Removing inspect bumped the slot's generation to one. The old handle still says zero, so the lookup refuses.",
+     "start": 1.372,
+     "end": 8.309
+    },
+    {
+     "text": "A plain index would have quietly handed you the audit node. The wrong one.",
+     "start": 8.729,
+     "end": 14.126
+    }
+   ],
+   "lufs": -16.6,
+   "true_peak": -1.9,
+   "wpm": 137,
+   "wer": 0.07142857142857142,
+   "exact": false,
+   "tolerated": [
+    {
+     "line": "A plain index would have quietly handed you the audit node. The wrong one.",
+     "said": "node",
+     "heard": "note"
+    }
+   ]
+  },
+  "11": {
+   "hash": "0ebc9acd051d2b20",
+   "takes": [
+    "a371924685dc948ca445",
+    "0edd2798f606da10cd77",
+    "0374b671dcfec9b1a000",
+    "e1abd8388e62dabac32e",
+    "97edfe8546bb5785747a"
+   ],
+   "duration": 24.399,
+   "lines": [
+    {
+     "text": "Slow motion, one slot's life.",
+     "start": 0.15,
+     "end": 2.594
+    },
+    {
+     "text": "Removal is three steps. Take the value out. Bump the generation, so older handles go stale. Put the index on the free list.",
+     "start": 3.014,
+     "end": 11.211
+    },
+    {
+     "text": "The next insert reuses the slot under the new generation.",
+     "start": 11.631,
+     "end": 15.083
+    },
+    {
+     "text": "A lookup checks both numbers. The new handle passes. The old one gets none.",
+     "start": 15.503,
+     "end": 21.603
+    },
+    {
+     "text": "One compare per access.",
+     "start": 22.023,
+     "end": 24.049
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 138,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "12": {
+   "hash": "af5daa3fa9282e5b",
+   "takes": [
+    "e6cef0d4c0b5359fabe2",
+    "aa7fb498e7407b4feb20",
+    "a0714be6edf34adb87f1",
+    "7aad94433f84c523d226",
+    "84f370b92188b4b3d355"
+   ],
+   "duration": 25.198,
+   "lines": [
+    {
+     "text": "Sending is moving.",
+     "start": 0.15,
+     "end": 1.486
+    },
+    {
+     "text": "The sending half of a channel takes the buffer by value, like any other call.",
+     "start": 1.906,
+     "end": 6.899
+    },
+    {
+     "text": "The small part, id, pointer, capacity and length, crosses over. The big buffer stays.",
+     "start": 7.319,
+     "end": 14.938
+    },
+    {
+     "text": "Using the sender's variable afterwards is the use-after-move error.",
+     "start": 15.358,
+     "end": 18.88
+    },
+    {
+     "text": "Cloning would copy a second buffer, every message. Copy the id out first.",
+     "start": 19.3,
+     "end": 24.848
+    }
+   ],
+   "lufs": -16.6,
+   "true_peak": -1.9,
+   "wpm": 133,
+   "wer": 0.07692307692307693,
+   "exact": false,
+   "tolerated": [
+    {
+     "line": "Cloning would copy a second buffer, every message. Copy the id out first.",
+     "said": "id",
+     "heard": "idea"
+    }
+   ]
+  },
+  "13": {
+   "hash": "98cd36dc5d93173c",
+   "takes": [
+    "c63fbcb38e6fd7706295",
+    "81453aee7fea777fcfd3",
+    "35c8f7f46c455e575579",
+    "1020c0c437da18261b49"
+   ],
+   "duration": 23.908,
+   "lines": [
+    {
+     "text": "Now a move closure.",
+     "start": 0.15,
+     "end": 1.961
+    },
+    {
+     "text": "A closure captures what it uses as lightly as it can. This one only needs a mutable borrow of the pool.",
+     "start": 2.381,
+     "end": 9.336
+    },
+    {
+     "text": "But a thread may outlive its function, so the borrow is refused: the closure-may-outlive error.",
+     "start": 9.756,
+     "end": 16.797
+    },
+    {
+     "text": "Move makes the closure own the pool. The thread owns it until it ends, and join hands it back.",
+     "start": 17.217,
+     "end": 23.558
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 153,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "14": {
+   "hash": "fbe6764187f12651",
+   "takes": [
+    "bbf321b518151f3f031b",
+    "9d995e1391e56b06a371",
+    "edc0bfeb84c10c4b9797",
+    "5cdbca6c9396b041c136",
+    "a82786d9a211d34e1097"
+   ],
+   "duration": 27.214,
+   "lines": [
+    {
+     "text": "Now the stages run at once.",
+     "start": 0.15,
+     "end": 2.691
+    },
+    {
+     "text": "One thread owns the pool and alone makes buffers: three, one per stage.",
+     "start": 3.111,
+     "end": 9.166
+    },
+    {
+     "text": "Each stage receives a buffer, works on it, and sends it on. The last sends it home.",
+     "start": 9.586,
+     "end": 15.037
+    },
+    {
+     "text": "At every instant, each buffer has exactly one owner: a stage, the owner, or a channel.",
+     "start": 15.457,
+     "end": 23.171
+    },
+    {
+     "text": "A thousand messages, three buffers, no locks.",
+     "start": 23.591,
+     "end": 26.864
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -1.9,
+   "wpm": 130,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "15": {
+   "hash": "2346b7c59ae6e931",
+   "takes": [
+    "bebfbd6beeb3cf7d9c47",
+    "db2052c78f90405bcb7a",
+    "9b79a2a0334e3b5c9fdc"
+   ],
+   "duration": 10.667,
+   "lines": [
+    {
+     "text": "Now break it.",
+     "start": 0.15,
+     "end": 1.621
+    },
+    {
+     "text": "Stage three stalls, in the pull request, and in the ring.",
+     "start": 2.041,
+     "end": 5.967
+    },
+    {
+     "text": "How many buffers exist in each, by the time stage three wakes?",
+     "start": 6.387,
+     "end": 10.317
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -1.9,
+   "wpm": 146,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "15a": {
+   "hash": "a0ea68a89501acd3",
+   "takes": [
+    "acfe05b27b6eac1e5684",
+    "fc587467d6607146d384",
+    "71595b7e5cf7db0427ef"
+   ],
+   "duration": 20.538,
+   "lines": [
+    {
+     "text": "A thousand in the pull request. Three in the ring.",
+     "start": 0.15,
+     "end": 3.385
+    },
+    {
+     "text": "In the pull request, stage one makes its own buffers, and its channel never pushes back.",
+     "start": 3.805,
+     "end": 9.395
+    },
+    {
+     "text": "In the ring, only the owner makes buffers. The first stage just waits for a buffer to come home. The waiting comes from the shape of the program, not from a setting.",
+     "start": 9.815,
+     "end": 20.188
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 169,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "16": {
+   "hash": "42db28dfe97d1069",
+   "takes": [
+    "9a92b4f9473faa10aee5",
+    "bb879f1d3186ff364702",
+    "0ed92252d2101a8fa1af",
+    "a4972ccf5aa7e3c101d7"
+   ],
+   "duration": 23.797,
+   "lines": [
+    {
+     "text": "One owner means one set of books.",
+     "start": 0.15,
+     "end": 2.478
+    },
+    {
+     "text": "Every channel is first in, first out, so the owner knows which buffer must come home next, and checks it.",
+     "start": 2.898,
+     "end": 9.703
+    },
+    {
+     "text": "A cloned or lost buffer fails at once. We tried both.",
+     "start": 10.123,
+     "end": 13.962
+    },
+    {
+     "text": "And the books balance. Buffers in the pool plus buffers out in the ring equal every buffer made, at each of a thousand returns.",
+     "start": 14.382,
+     "end": 23.447
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -1.9,
+   "wpm": 156,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "17": {
+   "hash": "adc8cdf1b2dcf5e4",
+   "takes": [
+    "d00d9b1266ee917f6af5",
+    "c41f57983764a0901029",
+    "769218966e2551f935d2",
+    "39222f69080d8ccbf1f7",
+    "78c3bafb4169152f3db1"
+   ],
+   "duration": 28.898,
+   "lines": [
+    {
+     "text": "So how do you choose? Look at the shape of the data, and not at the error message.",
+     "start": 0.15,
+     "end": 7.41
+    },
+    {
+     "text": "A natural parent: a tree, and no locks at all. A graph with cycles or removal: an arena.",
+     "start": 7.83,
+     "end": 16.4
+    },
+    {
+     "text": "Many concurrent users of one piece of state: an owner thread.",
+     "start": 16.82,
+     "end": 21.363
+    },
+    {
+     "text": "Small simple data touched briefly: a mutex is fine.",
+     "start": 21.783,
+     "end": 25.578
+    },
+    {
+     "text": "First ask: who should own this?",
+     "start": 25.998,
+     "end": 28.548
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 129,
+   "wer": 0.05555555555555555,
+   "exact": false,
+   "tolerated": [
+    {
+     "line": "So how do you choose? Look at the shape of the data, and not at the error message.",
+     "said": "not",
+     "heard": "nod"
+    }
+   ]
+  },
+  "18": {
+   "hash": "a1e48191ef47ba9d",
+   "takes": [
+    "5cd4f15cf3cdc6d9ecf3",
+    "e23b1acf5a69fd68fc1b",
+    "639db21f1f002b43cb05",
+    "7be20b2165b273bdde95",
+    "041ceabc3df08dbb9260"
+   ],
+   "duration": 25.994,
+   "lines": [
+    {
+     "text": "An arc of mutex isn't wrong. Reaching for it to silence the compiler is.",
+     "start": 0.15,
+     "end": 5.569
+    },
+    {
+     "text": "The async runtime's guide puts a map of simple data behind a mutex, keeps critical sections short, and moves state into an owner task once the work needs input and output.",
+     "start": 5.989,
+     "end": 16.731
+    },
+    {
+     "text": "Read-only data needs just an arc.",
+     "start": 17.151,
+     "end": 19.37
+    },
+    {
+     "text": "Contended? Chapter four measures that.",
+     "start": 19.79,
+     "end": 22.666
+    },
+    {
+     "text": "Thread-safety rules: chapter six.",
+     "start": 23.086,
+     "end": 25.644
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -1.9,
+   "wpm": 143,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "19": {
+   "hash": "90cf3987e757c99b",
+   "takes": [
+    "374e32885f175540faf8",
+    "628fc740ccbf4388e2c3",
+    "1d80aba7815b92650880"
+   ],
+   "duration": 13.407,
+   "lines": [
+    {
+     "text": "Prove it. One of three.",
+     "start": 0.15,
+     "end": 2.278
+    },
+    {
+     "text": "One stage borrows a view of the first five bytes of its buffer. Next, it sends the whole buffer onward. Afterwards, it prints that view.",
+     "start": 2.698,
+     "end": 11.286
+    },
+    {
+     "text": "What does the compiler say?",
+     "start": 11.706,
+     "end": 13.057
+    }
+   ],
+   "lufs": -16.6,
+   "true_peak": -1.9,
+   "wpm": 157,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "19a": {
+   "hash": "96170639f611119e",
+   "takes": [
+    "5dcc8401606e682c2596",
+    "d1b5418f1d4456145201",
+    "af09921cf85f6fa807d0"
+   ],
+   "duration": 12.232,
+   "lines": [
+    {
+     "text": "The move-while-borrowed error.",
+     "start": 0.15,
+     "end": 1.873
+    },
+    {
+     "text": "The buffer cannot leave. The view still points into it. Another thread could change those bytes.",
+     "start": 2.293,
+     "end": 8.38
+    },
+    {
+     "text": "Take the header as a value first. Then send.",
+     "start": 8.8,
+     "end": 11.882
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 147,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "20": {
+   "hash": "138abfd1376e1cd1",
+   "takes": [
+    "d8252674b2ca8cd57a52",
+    "a345ac238a56b2bd2dc7"
+   ],
+   "duration": 7.886,
+   "lines": [
+    {
+     "text": "Prove it. Two of three.",
+     "start": 0.15,
+     "end": 2.194
+    },
+    {
+     "text": "In the ring, stage three stalls. Point to the exact line where stage one blocks.",
+     "start": 2.614,
+     "end": 7.536
+    }
+   ],
+   "lufs": -16.6,
+   "true_peak": -1.9,
+   "wpm": 152,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "20a": {
+   "hash": "5de8b75278be1d72",
+   "takes": [
+    "c22f3c2fda19763ab89e",
+    "810782061e4edbeafb7c"
+   ],
+   "duration": 10.403,
+   "lines": [
+    {
+     "text": "At the receive.",
+     "start": 0.15,
+     "end": 1.094
+    },
+    {
+     "text": "The first stage only works on a buffer that is sent to it. With the third stage stalled, none come back. Nothing it sends ever blocks.",
+     "start": 1.514,
+     "end": 10.053
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -1.9,
+   "wpm": 167,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "21": {
+   "hash": "53ab7531b777795c",
+   "takes": [
+    "649addffba7bf9b726b3",
+    "fdae749d1eecca01056e",
+    "db08218a882959ff66d7"
+   ],
+   "duration": 11.553,
+   "lines": [
+    {
+     "text": "Prove it. Three of three.",
+     "start": 0.15,
+     "end": 2.567
+    },
+    {
+     "text": "A job scheduler on one thread. Jobs depend on jobs, and a finished job is removed while others still list it.",
+     "start": 2.987,
+     "end": 9.594
+    },
+    {
+     "text": "Which ownership shape?",
+     "start": 10.014,
+     "end": 11.203
+    }
+   ],
+   "lufs": -16.6,
+   "true_peak": -1.9,
+   "wpm": 151,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "21a": {
+   "hash": "0ae8e37b50f20e73",
+   "takes": [
+    "b4042ef797a5361a1301",
+    "337d4dfaacad8e715da8"
+   ],
+   "duration": 7.661,
+   "lines": [
+    {
+     "text": "An arena.",
+     "start": 0.15,
+     "end": 0.855
+    },
+    {
+     "text": "One owner for every job, handles for the dependencies, and a finished job answers none.",
+     "start": 1.275,
+     "end": 7.311
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -1.9,
+   "wpm": 133,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "22": {
+   "hash": "bc09c178f45472c8",
+   "takes": [
+    "d51f0b1fe40d4467320f",
+    "432e9f202f0066837b48",
+    "26ead7b4598a158866fe",
+    "29834669ff1ffe567fa0",
+    "33d04989c347d02a2190",
+    "2a06b6e0fea4bf67a792"
+   ],
+   "duration": 29.469,
+   "lines": [
+    {
+     "text": "Four shapes for one pipeline.",
+     "start": 0.15,
+     "end": 1.656
+    },
+    {
+     "text": "An arc of mutex: many owners and a lock, hiding who should own the data.",
+     "start": 2.076,
+     "end": 8.191
+    },
+    {
+     "text": "A tree: one owner lends down. An arena: handles as edges.",
+     "start": 8.611,
+     "end": 13.826
+    },
+    {
+     "text": "An owner thread: sent owned values, one owner per buffer.",
+     "start": 14.246,
+     "end": 18.002
+    },
+    {
+     "text": "Every topology still lends: fill borrows exclusively, inspect shared.",
+     "start": 18.822,
+     "end": 23.793
+    },
+    {
+     "text": "Next: many shared borrows, or one exclusive borrow, never both.",
+     "start": 24.213,
+     "end": 29.119
+    }
+   ],
+   "lufs": -16.6,
+   "true_peak": -1.9,
+   "wpm": 122,
+   "wer": 0.1111111111111111,
+   "exact": false,
+   "tolerated": [
+    {
+     "line": "An owner thread: sent owned values, one owner per buffer.",
+     "said": "sent",
+     "heard": "send"
+    },
+    {
+     "line": "Every topology still lends: fill borrows exclusively, inspect shared.",
+     "said": "fill",
+     "heard": "phil"
+    }
+   ]
+  }
+ }
+}

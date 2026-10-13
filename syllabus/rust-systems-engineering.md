@@ -2,7 +2,7 @@
 
 Data-platform and infrastructure teams use Rust where a garbage collector's pauses, a GIL, or C/C++'s memory-unsafety are unaffordable: query engines, storage engines, connectors, agents, stream processors and hot paths (Polars, DataFusion/Comet, delta-rs, Vector, Materialize, RisingWave, the Linux kernel's newer drivers). Ownership gives predictable memory and tail latency without a GC, `Send`/`Sync` make data races a compile error, monomorphized generics cost nothing at run time, and the C ABI lets one Rust core sit under Python, the JVM and C++. This domain is for **senior engineers who already ship systems** in C/C++, Go, Java or Python. It teaches the hard parts: ownership as resource topology, async runtime internals, kernel I/O, storage-engine and consensus internals, unsafe code and its proof obligations, and how to measure, not the syntax. It is the deep track the *Data Engineering* domain points to for its storage, streaming and infrastructure specializations (→ *Data Engineering* Appendix B.3). Budget 3–5 months.
 
-**Structure:** Milestones → Chapters → Topics. 8 milestones and 43 chapters. Ch.34–36 and Ch.43 are capstone projects, and the domain closes with Systems in Production case studies. Toolchain baseline as of October 2026: stable Rust 1.99, **Rust 2024 edition** (stable since 1.85), Tokio 1.5x (LTS lines 1.51.x and 1.53.x).
+**Structure:** Milestones → Chapters → Topics. 8 milestones and 43 chapters. Topics marked *(skipped)* stay in the curriculum for reference but get no reel (owner decision of 13 October 2026, `review-notes/rust-cuts.md`): the routines never build them, and the course flows past them. Ch.34–36 and Ch.43 are capstone projects, and the domain closes with Systems in Production case studies. Toolchain baseline as of October 2026: stable Rust 1.99, **Rust 2024 edition** (stable since 1.85), Tokio 1.5x (LTS lines 1.51.x and 1.53.x).
 
 > **Prerequisites** *(refresher)* — *The Rust Programming Language* through ch. 10: ownership, borrowing, structs/enums, pattern matching, generics/traits, error handling (`Result`/`?`), collections and `cargo` basics. Ch.1 assumes you can compile Rust and read a borrow-checker error.
 
@@ -42,7 +42,7 @@ How the borrow checker proves aliasing safety, and how to design zero-copy APIs 
 ### 2.1 The borrow checker's model
 - **Aliasing XOR mutability** — many `&T` or exactly one `&mut T`, never both. This rule gives data-race freedom and the `noalias` facts the optimizer relies on (→ Ch.38). Reborrowing (`&mut *x`, implicit reborrows at call sites) and two-phase borrows (`v.push(v.len())`).
 - **Lifetimes as constraints, not durations** — a lifetime describes how existing references relate and never extends a value's life. Elision rules; variance (`&'a T` covariant, `&'a mut T` and `Cell<T>` invariant) and why invariance bites; higher-ranked bounds (`for<'a> Fn(&'a T)`). `T: 'static` ("holds no non-static borrows") differs from `&'static T` and is rarely the right fix for an error.
-- **NLL limits and the Polonius borrow checker** — non-lexical lifetimes (RFC 2094) are computed on MIR. The conditional-return-of-a-borrow pattern that NLL still rejects (NLL "problem case #3") and its workarounds. **Polonius alpha** has been enabled on nightly since Aug 2026 and is targeted for stabilization by the end of 2026. Rust 2024 `impl Trait` capture rules and precise capturing with `use<..>`.
+- **NLL limits and the Polonius borrow checker** *(skipped)* — non-lexical lifetimes (RFC 2094) are computed on MIR. The conditional-return-of-a-borrow pattern that NLL still rejects (NLL "problem case #3") and its workarounds. **Polonius alpha** has been enabled on nightly since Aug 2026 and is targeted for stabilization by the end of 2026. Rust 2024 `impl Trait` capture rules and precise capturing with `use<..>`.
 
 ### 2.2 Zero-copy data and borrow scope
 - **Zero-copy parsing with borrowed views** — `fn parse<'a>(buf: &'a [u8]) -> Header<'a>`; `Cow<'a, [u8]>` vs `&'a [u8]` vs an owned `Vec<u8>` for mostly-read workloads. Reference-counted zero-copy (`bytes::Bytes`) for when a borrow can't outlive the buffer's scope, as in network and async code. Self-referential structs and why `yoke`/`ouroboros` exist.
@@ -73,11 +73,11 @@ What the compiler does and does not promise about bytes in memory. The FFI proto
 
 ### 5.1 Layout
 - **Size, alignment, and padding rules** — size is a multiple of alignment, and padding depends on field order. `repr(Rust)` layout is chosen by the compiler and unstable (fields get reordered; `-Z randomize-layout` exposes code that assumes otherwise). Verify with `size_of`/`align_of`/`offset_of!` and compile-time assertions; never assume.
-- **repr attributes and niche optimization** — `repr(C)`, `repr(transparent)`, primitive enum reprs, `repr(packed)` (taking a reference to an unaligned field is UB, so use `&raw const`), and `repr(align(64))` for cache-line isolation. Niches make `Option<&T>`, `Option<Box<T>>` and `Option<NonZeroU32>` pointer- or integer-sized, and enum layout is only guaranteed in documented cases.
+- **repr attributes and niche optimization** *(skipped)* — `repr(C)`, `repr(transparent)`, primitive enum reprs, `repr(packed)` (taking a reference to an unaligned field is UB, so use `&raw const`), and `repr(align(64))` for cache-line isolation. Niches make `Option<&T>`, `Option<Box<T>>` and `Option<NonZeroU32>` pointer- or integer-sized, and enum layout is only guaranteed in documented cases.
 - **Safe byte-level views of structs** — reading wire and on-disk structs: alignment, endianness, and padding bytes (reading uninitialized padding as bytes is UB). `zerocopy`/`bytemuck` derive-checked `FromBytes`/`IntoBytes` replace hand-rolled `transmute` (→ Ch.16, Ch.19).
 
 ### 5.2 ABI and the declaration surface
-- **ABIs and Rust 2024 unsafe declarations** — the Rust ABI is unstable and `extern "C"` is the stable contract. A panic unwinding out of `extern "C"` aborts; use `"C-unwind"` when unwinding must cross. Rust 2024 requires `unsafe extern { .. }` blocks, where individually safe items can be declared `pub safe fn`, and makes `#[unsafe(no_mangle)]`/`export_name`/`link_section` unsafe attributes. v0 symbol mangling is the default since 1.97, and C-variadic function definitions are stable since 1.99.
+- **ABIs and Rust 2024 unsafe declarations** *(skipped)* — the Rust ABI is unstable and `extern "C"` is the stable contract. A panic unwinding out of `extern "C"` aborts; use `"C-unwind"` when unwinding must cross. Rust 2024 requires `unsafe extern { .. }` blocks, where individually safe items can be declared `pub safe fn`, and makes `#[unsafe(no_mangle)]`/`export_name`/`link_section` unsafe attributes. v0 symbol mangling is the default since 1.97, and C-variadic function definitions are stable since 1.99.
 - *Lab:* define a C-compatible packet header and verify `size_of`/`align_of`/field offsets against a C compiler. Add compile-time assertions, then show how `repr(Rust)` breaks the assumption and how a niche changes `Option<T>`'s size.
 
 ## Chapter 6 — Send, Sync, Arc, Mutex, and Ownership Across Threads
@@ -98,8 +98,8 @@ What an atomic guarantees, what an ordering guarantees, and how lock-free code g
 - **Acquire/Release publication and SeqCst** — the publication pattern: release-store a flag or pointer, then acquire-load it before reading the published data. `Relaxed` is fine for statistics counters. `SeqCst` matters only for store-load patterns such as Dekker or the store-buffer litmus test. Fences and `compiler_fence`; how orderings map to hardware (x86-TSO hides missing orderings that ARM exposes).
 
 ### 7.2 Lock-free building blocks
-- **CAS loops and the ABA problem** — `compare_exchange` vs `compare_exchange_weak` (spurious LL/SC failure) and `fetch_update`. The **ABA problem** and its mitigations: tagged/versioned pointers, epochs and hazard pointers (reclamation schemes → Ch.30). Lock-free vs wait-free progress guarantees.
-- **Spin locks, futexes, and thread parking** — how to build a spin lock correctly (test-and-test-and-set, `spin_loop` hint, backoff) and why userspace spinning is usually wrong under preemption. Futex-based mutexes and condvars, and `thread::park`/`unpark` as the primitive under channels and locks.
+- **CAS loops and the ABA problem** *(skipped)* — `compare_exchange` vs `compare_exchange_weak` (spurious LL/SC failure) and `fetch_update`. The **ABA problem** and its mitigations: tagged/versioned pointers, epochs and hazard pointers (reclamation schemes → Ch.30). Lock-free vs wait-free progress guarantees.
+- **Spin locks, futexes, and thread parking** *(skipped)* — how to build a spin lock correctly (test-and-test-and-set, `spin_loop` hint, backoff) and why userspace spinning is usually wrong under preemption. Futex-based mutexes and condvars, and `thread::park`/`unpark` as the primitive under channels and locks.
 - *Lab:* build an SPSC ring buffer with a `Mutex`, then with atomic indices. Define the slot-ownership invariant, check it with loom (→ Ch.42), and run on ARM to expose a deliberately weakened `Acquire`.
 
 # Milestone 2 — Async Runtime Internals
@@ -115,7 +115,7 @@ What `async` compiles to, and the 2026 language surface around it.
 
 ### 8.2 The async language surface
 - **Async fn in traits and Send bounds** — async fn in traits and return-position `impl Trait` in traits have been stable since 1.75. The "Send bound problem": callers cannot require the returned future to be `Send`. Return-type notation (RFC 3654) would fix it but is still unstable in 2026. Workarounds: `trait-variant`, the boxing `async-trait`, and `dynosaur` for `dyn` dispatch.
-- **Async closures and AsyncFn traits** — stable since 1.85 (RFC 3668). Closures can return futures that borrow from their captures, and `AsyncFn`/`AsyncFnMut`/`AsyncFnOnce` bounds replace the `F: Fn() -> Fut` higher-ranked workaround. Rust 2024 adds `Future`/`IntoFuture` to the prelude. Async drop is still unstable, so async cleanup has to be explicit.
+- **Async closures and AsyncFn traits** *(skipped)* — stable since 1.85 (RFC 3668). Closures can return futures that borrow from their captures, and `AsyncFn`/`AsyncFnMut`/`AsyncFnOnce` bounds replace the `F: Fn() -> Fut` higher-ranked workaround. Rust 2024 adds `Future`/`IntoFuture` to the prelude. Async drop is still unstable, so async cleanup has to be explicit.
 - *Lab:* write a future that returns `Pending` once and then `Ready`, logging every poll and wake. Build a tiny executor with a runnable queue and a `Waker` built from `Arc<Task>` (the `std::task::Wake` trait).
 
 ## Chapter 9 — Tokio Runtime Architecture
@@ -149,7 +149,7 @@ Learn the kernel and protocol layers that a runtime abstracts away, well enough 
 The user/kernel boundary and how Rust's types model kernel handles.
 
 ### 11.1 The user/kernel boundary
-- **Syscalls as boundary crossings** — mode-switch cost, the vDSO, and how Spectre/Meltdown-era mitigations raised it. Batching trade-offs (`writev`, `recvmmsg`, io_uring). Measure with `strace -c` and `perf trace`.
+- **Syscalls as boundary crossings** *(skipped)* — mode-switch cost, the vDSO, and how Spectre/Meltdown-era mitigations raised it. Batching trade-offs (`writev`, `recvmmsg`, io_uring). Measure with `strace -c` and `perf trace`.
 - **File descriptors and I/O safety** — an fd is a process-local handle to a kernel *open file description*, so duplicated or forked fds share an offset. I/O safety (RFC 3128, stable 1.63): `OwnedFd` closes on `Drop`, `BorrowedFd<'a>`/`AsFd` borrow, and `into_raw_fd(self)`/`from_raw_fd` are the explicit ownership handoffs that prevent use-after-close. std opens with `O_CLOEXEC` by default; fd leaks across exec; `RLIMIT_NOFILE`.
 - **Processes, signals, and environment safety** — `std::process::Command`, and why after `fork` in a multithreaded process only async-signal-safe operations are allowed. Signal handling in async code (`tokio::signal`, `signal-hook`), and pidfds for race-free process management. `std::env::set_var` is `unsafe` in Rust 2024 because of races with C `getenv`.
 - *Lab:* wrap a raw socket in `OwnedFd`, prove double-close is impossible and inspect `/proc/<pid>/fd`. Then leak an fd into a child with `CLOEXEC` cleared and find it.
@@ -158,8 +158,8 @@ The user/kernel boundary and how Rust's types model kernel handles.
 Address translation, mapping semantics, and why databases rarely trust `mmap`.
 
 ### 12.1 Virtual memory
-- **Address translation and page faults** — virtual address → page-table walk → physical frame, with permissions enforced. TLB reach and huge pages (THP, hugetlbfs), and the TLB shootdowns that `munmap`/`mprotect` trigger. Major vs minor faults. `/proc/<pid>/maps` and `/proc/<pid>/smaps` (RSS vs PSS).
-- **mmap semantics and Rust soundness** — anonymous vs file-backed, shared vs private copy-on-write, and `madvise` hints. Why `memmap2::Mmap::map` is `unsafe`: another process truncating or rewriting the file breaks the immutability `&[u8]` promises (UB or `SIGBUS`).
+- **Address translation and page faults** *(skipped)* — virtual address → page-table walk → physical frame, with permissions enforced. TLB reach and huge pages (THP, hugetlbfs), and the TLB shootdowns that `munmap`/`mprotect` trigger. Major vs minor faults. `/proc/<pid>/maps` and `/proc/<pid>/smaps` (RSS vs PSS).
+- **mmap semantics and Rust soundness** *(skipped)* — anonymous vs file-backed, shared vs private copy-on-write, and `madvise` hints. Why `memmap2::Mmap::map` is `unsafe`: another process truncating or rewriting the file breaks the immutability `&[u8]` promises (UB or `SIGBUS`).
 - **mmap versus an owned buffer pool** — the double-caching problem (page cache and application cache holding the same data), and direct I/O trading it for alignment constraints. Crotty, Leis & Pavlo (CIDR 2022): transactional-safety, I/O-stall, error-handling and TLB-shootdown problems explain why most DBMSs own their buffer pool (→ Ch.19), and when mmap is fine (read-mostly, LMDB-style).
 - *Lab:* map a multi-GB file, scan it sequentially and then randomly, and record page faults, RSS and throughput. Repeat with `read`-based I/O and with `MADV_RANDOM`/`MADV_SEQUENTIAL`.
 
@@ -167,18 +167,18 @@ Address translation, mapping semantics, and why databases rarely trust `mmap`.
 The readiness model under mio and Tokio.
 
 ### 13.1 Readiness
-- **Interest lists and ready lists** — the epoll interest list vs the ready list, and `epoll_wait`. Portability: kqueue is also readiness-based, while Windows IOCP is completion-based. mio is the Rust abstraction over all three.
-- **Level- versus edge-triggered semantics** — the edge-triggered rule: every readable event needs a read-until-`EAGAIN` loop, and every writable event needs a drain of the outbound buffer. `EPOLLONESHOT`; `EPOLLEXCLUSIVE` and `SO_REUSEPORT` against thundering-herd accept.
-- **Application-owned protocol state machines** — the kernel reports readiness, and the application owns the protocol state: input buffer, output buffer, parser state, deadlines and lifecycle. Tokio's `AsyncFd`/`poll_read_ready` encodes exactly this split.
+- **Interest lists and ready lists** *(skipped)* — the epoll interest list vs the ready list, and `epoll_wait`. Portability: kqueue is also readiness-based, while Windows IOCP is completion-based. mio is the Rust abstraction over all three.
+- **Level- versus edge-triggered semantics** *(skipped)* — the edge-triggered rule: every readable event needs a read-until-`EAGAIN` loop, and every writable event needs a drain of the outbound buffer. `EPOLLONESHOT`; `EPOLLEXCLUSIVE` and `SO_REUSEPORT` against thundering-herd accept.
+- **Application-owned protocol state machines** *(skipped)* — the kernel reports readiness, and the application owns the protocol state: input buffer, output buffer, parser state, deadlines and lifecycle. Tokio's `AsyncFd`/`poll_read_ready` encodes exactly this split.
 - *Lab:* implement a level-triggered echo server, convert it to edge-triggered, introduce partial writes and slow readers, and find where the state machine breaks.
 
 ## Chapter 14 — io_uring and Submission/Completion Queues
 Completion-based I/O, and why it collides with Rust's borrow-based I/O traits.
 
 ### 14.1 The io_uring model
-- **Submission and completion rings** — ring buffers shared between user space and the kernel (an SQE describes an operation, a CQE reports its completion), and `io_uring_enter` batching. SQPOLL kernel-thread polling changes the batching story. Linked SQEs, CQ overflow, registered files and buffers, provided buffer rings, multishot accept/recv, zero-copy send, and zero-copy receive (zcrx, Linux 6.15; needs NIC header split and flow steering).
-- **Completion I/O and Rust buffer ownership** — critical lifetime rule: a buffer referenced by an in-flight SQE must stay valid until its CQE arrives. A borrowed `&mut [u8]` plus a dropped future is a use-after-free, so io_uring runtimes use owned-buffer ("rent"/`IoBuf`) APIs (`tokio-uring`, `monoio`, `compio`; the low-level `io-uring` crate). Cancellation (`ASYNC_CANCEL`) still has to wait for the CQE.
-- **When io_uring wins, and its risks** — io_uring is not universally faster. Benchmark it against blocking `read` and epoll on submissions per batch, completions per batch, cache misses, syscalls, CPU and tail latency. Its security record counts too: Google reported in June 2023 that 60% of kCTF VRP kernel-exploit submissions over the preceding year used io_uring, and disabled or restricted it on ChromeOS, Android apps and its production servers, so check the seccomp policy of your target platform.
+- **Submission and completion rings** *(skipped)* — ring buffers shared between user space and the kernel (an SQE describes an operation, a CQE reports its completion), and `io_uring_enter` batching. SQPOLL kernel-thread polling changes the batching story. Linked SQEs, CQ overflow, registered files and buffers, provided buffer rings, multishot accept/recv, zero-copy send, and zero-copy receive (zcrx, Linux 6.15; needs NIC header split and flow steering).
+- **Completion I/O and Rust buffer ownership** *(skipped)* — critical lifetime rule: a buffer referenced by an in-flight SQE must stay valid until its CQE arrives. A borrowed `&mut [u8]` plus a dropped future is a use-after-free, so io_uring runtimes use owned-buffer ("rent"/`IoBuf`) APIs (`tokio-uring`, `monoio`, `compio`; the low-level `io-uring` crate). Cancellation (`ASYNC_CANCEL`) still has to wait for the CQE.
+- **When io_uring wins, and its risks** *(skipped)* — io_uring is not universally faster. Benchmark it against blocking `read` and epoll on submissions per batch, completions per batch, cache misses, syscalls, CPU and tail latency. Its security record counts too: Google reported in June 2023 that 60% of kCTF VRP kernel-exploit submissions over the preceding year used io_uring, and disabled or restricted it on ChromeOS, Android apps and its production servers, so check the seccomp policy of your target platform.
 - *Lab:* file-read microbenchmark, blocking `read` vs io_uring with fixed-size registered buffers and `O_DIRECT`. Measure CPU time per GB and the latency distribution.
 
 ## Chapter 15 — Filesystems, Page Cache, Direct I/O, and Durability
@@ -203,11 +203,11 @@ From byte stream to messages, with explicit overload behaviour.
 Where head-of-line blocking lives, and how to review a TLS deployment.
 
 ### 17.1 Transports and multiplexing
-- **HTTP/1.1 and HTTP/2 multiplexing** — RFC 9112/9113. HTTP/2 multiplexes streams over one TCP connection, so one lost packet stalls all of them. The general rule: when transport recovery is coarser than the application's unit of concurrency, failures get amplified. HTTP/2 flow-control windows, and Rapid Reset (CVE-2023-44487) as an abuse of stream concurrency. hyper 1.x as the Rust stack.
-- **QUIC and HTTP/3** — RFC 9000/9001/9002/9114. Flow-controlled independent streams over UDP, a 1-RTT handshake (0-RTT on resumption), connection IDs and path migration, integrated TLS, and congestion control in user space. Costs: CPU, plus UDP GSO/GRO needed to compete. Rust implementations: quinn, `h3`, quiche, s2n-quic.
+- **HTTP/1.1 and HTTP/2 multiplexing** *(skipped)* — RFC 9112/9113. HTTP/2 multiplexes streams over one TCP connection, so one lost packet stalls all of them. The general rule: when transport recovery is coarser than the application's unit of concurrency, failures get amplified. HTTP/2 flow-control windows, and Rapid Reset (CVE-2023-44487) as an abuse of stream concurrency. hyper 1.x as the Rust stack.
+- **QUIC and HTTP/3** *(skipped)* — RFC 9000/9001/9002/9114. Flow-controlled independent streams over UDP, a 1-RTT handshake (0-RTT on resumption), connection IDs and path migration, integrated TLS, and congestion control in user space. Costs: CPU, plus UDP GSO/GRO needed to compete. Rust implementations: quinn, `h3`, quiche, s2n-quic.
 
 ### 17.2 TLS
-- **TLS 1.3 review with rustls** — RFC 8446. Review checklist: certificate validation, SNI/ALPN, key establishment, session resumption, 0-RTT replay risk, and safe shutdown on authentication failure. rustls with the aws-lc-rs provider, including the hybrid post-quantum key exchange X25519MLKEM768. mTLS for service-to-service traffic.
+- **TLS 1.3 review with rustls** *(skipped)* — RFC 8446. Review checklist: certificate validation, SNI/ALPN, key establishment, session resumption, 0-RTT replay risk, and safe shutdown on authentication failure. rustls with the aws-lc-rs provider, including the hybrid post-quantum key exchange X25519MLKEM768. mTLS for service-to-service traffic.
 - *Lab:* trace one request over HTTP/1.1, HTTP/2 and HTTP/3 under injected packet loss (`tc netem`) and compare tail behaviour, not just wall-clock latency.
 
 ## Chapter 18 — Axum, Tower, and Production Service Boundaries
@@ -248,9 +248,9 @@ The read-optimized index, crash-safe and concurrent.
 
 ### 21.1 B+-tree mechanics
 - **B+-tree fanout and page splits** — PostgreSQL's B-tree (nbtree) as the reference. High fanout keeps the tree a few levels deep even at billions of records, at the cost of page splits and write amplification. Merges, prefix/suffix truncation and fill factor.
-- **Crash-safe structure modifications** — a partial split must never orphan or duplicate a key range. Structure modifications are WAL-logged, or avoided entirely by copy-on-write B-trees (LMDB, redb).
-- **Range scans and B-link trees** — range scans rely on leaf ordering and traversal to neighbouring leaves, not just balanced search. Right-links and high keys (Lehman & Yao, 1981) keep scans and descents correct while a concurrent split is in progress.
-- **Concurrent B-tree latching protocols** — latch crabbing (lock coupling) vs optimistic lock coupling with version counters (Leis et al., "The ART of Practical Synchronization", DaMoN 2016), and why reads should take no shared-memory writes.
+- **Crash-safe structure modifications** *(skipped)* — a partial split must never orphan or duplicate a key range. Structure modifications are WAL-logged, or avoided entirely by copy-on-write B-trees (LMDB, redb).
+- **Range scans and B-link trees** *(skipped)* — range scans rely on leaf ordering and traversal to neighbouring leaves, not just balanced search. Right-links and high keys (Lehman & Yao, 1981) keep scans and descents correct while a concurrent split is in progress.
+- **Concurrent B-tree latching protocols** *(skipped)* — latch crabbing (lock coupling) vs optimistic lock coupling with version counters (Leis et al., "The ART of Practical Synchronization", DaMoN 2016), and why reads should take no shared-memory writes.
 - *Lab:* disk-backed B-tree over fixed pages with point lookup, ascending range scan and splits. Kill the process mid-split and recover from the WAL.
 
 ## Chapter 22 — LSM Trees, Memtables, SSTables, and Compaction
@@ -260,7 +260,7 @@ The write-optimized engine and the amplification triangle.
 - **LSM write and read paths** — write path: durable log append → memtable → rotate to an immutable memtable → flush as a sorted SSTable. Reads check the newest structures first. Immutable flushed files simplify concurrent reads and recovery.
 - **Compaction strategies and amplification** — leveled vs tiered (universal) vs hybrid compaction, and the read/write/space amplification trade-off (RUM conjecture). Compaction must be budgeted against foreground I/O and CPU (rate limiting, write stalls).
 - **Bloom filters and their successors** — Bloom filters rule out SSTables that definitely lack a key: no false negatives, some false positives. A negative result is proof of absence; a positive result only gives permission to look. False-positive rate vs bits per key, per-level allocation (Monkey, SIGMOD 2017), Ribbon/xor filters, and prefix filters for range scans.
-- **Key-value separation and object-store LSMs** — WiscKey (FAST 2016) value logs for large values; LSMs written directly to object storage (SlateDB). The Rust engine landscape: `rust-rocksdb` bindings, fjall.
+- **Key-value separation and object-store LSMs** *(skipped)* — WiscKey (FAST 2016) value logs for large values; LSMs written directly to object storage (SlateDB). The Rust engine landscape: `rust-rocksdb` bindings, fjall.
 - *Lab:* LSM key-value store with a WAL, memtable, immutable memtable, SSTables, a Bloom filter and one compaction policy. Measure write and read amplification under skewed vs uniform workloads.
 
 ## Chapter 23 — MVCC, Visibility, and Transaction Isolation
@@ -294,7 +294,7 @@ What an acknowledgement promises, and how to prove it under failure.
 
 ### 25.1 Replication semantics
 - **Acknowledgement points define durability** — grounded in the Kafka design docs and the Raft paper. Durability vs availability is decided by *which* acknowledgement point is used: accepted by a subset, persisted by a quorum, or durably recorded by the leader. Kafka's `acks`, ISR and `min.insync.replicas`; Kafka has run KRaft-only (no ZooKeeper) since 4.0 (March 2025).
-- **Quorum intersection is not enough** — quorum intersection is necessary but not sufficient: you still need an explicit rule for which version wins (consensus order, vector clocks, or last-writer-wins with its clock hazards). Sloppy quorums and hinted handoff weaken it further (→ *Data Engineering* Ch.14).
+- **Quorum intersection is not enough** *(skipped)* — quorum intersection is necessary but not sufficient: you still need an explicit rule for which version wins (consensus order, vector clocks, or last-writer-wins with its clock hazards). Sloppy quorums and hinted handoff weaken it further (→ *Data Engineering* Ch.14).
 - **Failure injection and linearizability checking** — inject process death, partitions, delayed packets, duplicate requests, disk-full and clock skew together, not one at a time. Jepsen-style methodology: record histories and check them with a linearizability or isolation checker (Knossos, Porcupine, Elle). Deterministic simulation → Ch.42.
 - *Lab:* three-node replicated register. Inject delayed acks and leader failure, record which reads are permitted at each point, and check the history for linearizability.
 
@@ -306,8 +306,8 @@ Consensus from the paper to a correct, testable implementation.
 - **Log replication and commitment rules** — `AppendEntries{term, prev_log_index, prev_log_term, entries, leader_commit}`. An entry commits only once stored on a majority under the leader's current term (the Figure 8 hazard). Conflict repair: the leader backs up to a common prefix and overwrites a follower's divergent suffix, and it must be impossible to silently corrupt indexes. Separating consensus from the state machine lets you test consensus against a trivial KV state machine first.
 
 ### 26.2 Production concerns
-- **Linearizable reads: ReadIndex and leases** — why a correct Raft can still return stale reads from a follower or a deposed leader. ReadIndex (confirm leadership with a heartbeat round), leader leases (which assume bounded clock drift), and follower reads via ReadIndex.
-- **Membership changes and log compaction** — joint consensus vs single-server membership changes (and the published single-server bug and its fix). Snapshots with InstallSnapshot to collapse log prefixes. Rust implementations to read: `raft-rs` (TiKV) and `openraft`.
+- **Linearizable reads: ReadIndex and leases** *(skipped)* — why a correct Raft can still return stale reads from a follower or a deposed leader. ReadIndex (confirm leadership with a heartbeat round), leader leases (which assume bounded clock drift), and follower reads via ReadIndex.
+- **Membership changes and log compaction** *(skipped)* — joint consensus vs single-server membership changes (and the published single-server bug and its fix). Snapshots with InstallSnapshot to collapse log prefixes. Rust implementations to read: `raft-rs` (TiKV) and `openraft`.
 - *Lab:* 3-node Raft-like log, deterministic timers first, then randomized elections. Inject partitions and restarts and compare the observed history against a linearizable register spec. Then serve reads from a stale leader and fix it with ReadIndex.
 
 ## Chapter 27 — Kafka-Style Logs, Partitions, and Delivery Semantics
@@ -323,8 +323,8 @@ The log abstraction, built and broken. Product-level Kafka → *Data Engineering
 When state can merge without coordination, and when it cannot.
 
 ### 28.1 Convergence
-- **CRDT merge semantics: state, op, delta** — the real question is whether the state has a mathematically safe merge that matches user semantics, not whether CRDTs are fashionable. A merge must be commutative, associative and idempotent (a join-semilattice). State-based vs op-based vs delta-state CRDTs. Counters, OR-sets and registers with version metadata each need different merge rules, so the merge operator is part of the data model. Metadata and tombstone growth. Automerge and Loro as Rust references.
-- **Coordination avoidance: CALM and invariants** — CALM: monotonic programs need no coordination (Hellerstein & Alvaro, CACM 2020), and invariant confluence (Bailis et al., VLDB 2015) is the test. When NOT to use a CRDT: business rules that need a single lock holder (uniqueness, non-negative balances) or other global invariants require a coordination protocol instead.
+- **CRDT merge semantics: state, op, delta** *(skipped)* — the real question is whether the state has a mathematically safe merge that matches user semantics, not whether CRDTs are fashionable. A merge must be commutative, associative and idempotent (a join-semilattice). State-based vs op-based vs delta-state CRDTs. Counters, OR-sets and registers with version metadata each need different merge rules, so the merge operator is part of the data model. Metadata and tombstone growth. Automerge and Loro as Rust references.
+- **Coordination avoidance: CALM and invariants** *(skipped)* — CALM: monotonic programs need no coordination (Hellerstein & Alvaro, CACM 2020), and invariant confluence (Bailis et al., VLDB 2015) is the test. When NOT to use a CRDT: business rules that need a single lock holder (uniqueness, non-negative balances) or other global invariants require a coordination protocol instead.
 - **Idempotency keys for distributed APIs** — the practical cousin of exactly-once. Key scope and TTL, storing and replaying the response, and the race between concurrent retries carrying the same key.
 - *Lab:* model a replicated shopping-cart quantity (CRDT) vs a unique reservation (consensus). Explain why only one merges without coordination.
 
@@ -342,8 +342,8 @@ Measure first, then explain the curve with the hardware.
 
 ### 29.2 Hardware effects
 - **Cache lines and false sharing** — the cache line is the unit of memory movement. **False sharing** is a reason lock-free structures can underperform locked ones; fix it with padding (`crossbeam_utils::CachePadded`) and per-core sharding. Struct-of-arrays layout and prefetch-friendly access.
-- **Branch prediction and speculation** — misprediction cost, branchless selection, sorted vs unsorted data, and `#[cold]`/`#[inline(never)]` to shape the hot path.
-- **NUMA and CPU topology** — multi-socket memory-locality effects can overwhelm parallelism gains if ignored. First-touch allocation, `numactl`, thread pinning, chiplet/L3-domain boundaries on modern server CPUs, and why thread-per-core designs exploit topology (→ Ch.9).
+- **Branch prediction and speculation** *(skipped)* — misprediction cost, branchless selection, sorted vs unsorted data, and `#[cold]`/`#[inline(never)]` to shape the hot path.
+- **NUMA and CPU topology** *(skipped)* — multi-socket memory-locality effects can overwhelm parallelism gains if ignored. First-touch allocation, `numactl`, thread pinning, chiplet/L3-domain boundaries on modern server CPUs, and why thread-per-core designs exploit topology (→ Ch.9).
 - *Lab:* benchmark shared, sharded and padded counters at 1/2/4/8 threads with cache-miss and context-switch counters, and explain the scaling curve.
 
 ## Chapter 30 — Unsafe Rust, Allocators, and Memory Reclamation
@@ -355,8 +355,8 @@ Unsafe is a larger proof obligation, not a faster mode.
 - **Miri and sanitizers for UB detection** — Miri interprets MIR and detects provenance, aliasing and validity violations, data races and weak-memory behaviours (Jung et al., POPL 2026). Its limits: speed, FFI, and only the paths actually executed. Run `cargo +nightly miri test` in CI. The `-Zsanitizer` flag is still nightly-only, though the Tier 2 `x86_64-unknown-linux-gnuasan` target lets AddressSanitizer run from a stable compiler; AddressSanitizer/LeakSanitizer are close to stabilization, while MemorySanitizer/ThreadSanitizer need an instrumented std.
 
 ### 30.2 Memory management
-- **Custom allocators and arenas** — `GlobalAlloc` and `#[global_allocator]`; the still-unstable `Allocator` trait (and `allocator-api2`). Arenas (bump allocators such as bumpalo), fixed-size pools and region lifetimes with bulk deallocation are justified only when allocation topology is predictable.
-- **Lock-free memory reclamation schemes** — why freeing memory is the hard part of lock-free structures. Epoch-based reclamation (crossbeam-epoch; one stalled thread blocks reclamation), hazard pointers (a per-access fence, bounded garbage), and newer hybrids and RCU. Ties back to ABA (Ch.7).
+- **Custom allocators and arenas** *(skipped)* — `GlobalAlloc` and `#[global_allocator]`; the still-unstable `Allocator` trait (and `allocator-api2`). Arenas (bump allocators such as bumpalo), fixed-size pools and region lifetimes with bulk deallocation are justified only when allocation topology is predictable.
+- **Lock-free memory reclamation schemes** *(skipped)* — why freeing memory is the hard part of lock-free structures. Epoch-based reclamation (crossbeam-epoch; one stalled thread blocks reclamation), hazard pointers (a per-access fence, bounded garbage), and newer hybrids and RCU. Ties back to ABA (Ch.7).
 - *Lab:* implement a bump arena and prove individual drops aren't required. Expose one unsafe accessor with a documented safety contract and boundary-case tests, and run them under Miri with Tree Borrows.
 
 ## Chapter 31 — FFI, ABI, Dynamic Linking, and Native Interop
@@ -364,8 +364,8 @@ The FFI boundary is a protocol, not just `repr(C)`. Layout rules are in Ch.5.
 
 ### 31.1 Native interop
 - **FFI boundary as a protocol** — who allocates and who frees, how errors are represented, alignment, unwinding (`"C-unwind"`), thread affinity, and whether callbacks can arrive concurrently or reentrantly.
-- **Binding generation and linking** — prefer generated bindings over handwritten ones that drift: bindgen (C → Rust), cbindgen (Rust → C), `cxx` for safe C++ interop. `-sys` crate conventions with `build.rs` + `cc`/`pkg-config`; static vs dynamic linking, symbol visibility, and `dlopen` via `libloading`.
-- **Callbacks and cross-boundary lifetimes** — a native library that calls back after the initiating Rust function returns needs a stable heap allocation plus a context pointer (`Box::into_raw`/`from_raw`) and explicit synchronization and unregistration, not a stack-captured closure. Panics must never unwind through C frames.
+- **Binding generation and linking** *(skipped)* — prefer generated bindings over handwritten ones that drift: bindgen (C → Rust), cbindgen (Rust → C), `cxx` for safe C++ interop. `-sys` crate conventions with `build.rs` + `cc`/`pkg-config`; static vs dynamic linking, symbol visibility, and `dlopen` via `libloading`.
+- **Callbacks and cross-boundary lifetimes** *(skipped)* — a native library that calls back after the initiating Rust function returns needs a stable heap allocation plus a context pointer (`Box::into_raw`/`from_raw`) and explicit synchronization and unregistration, not a stack-captured closure. Panics must never unwind through C frames.
 - **Embedding Rust in Python and JVM** — the data-platform deployment model. PyO3 + maturin (Polars, delta-rs and pydantic-core ship this way): `Python<'py>` tokens, releasing the GIL around Rust work, and zero-copy exchange via the Arrow C Data Interface/PyCapsule. Free-threaded CPython is officially supported from 3.14 (PEP 779). JNI (`jni` crate) for Spark accelerators such as Comet: who owns JVM vs native memory.
 - *Lab:* wrap a tiny C library that allocates and frees buffers, add safe ownership, introduce a callback with explicit lifetime handling, and run under sanitizers. Then expose an Arrow array to Python through PyO3 without copying.
 
@@ -406,19 +406,19 @@ Integrates Ch.9–10, Ch.18 and Ch.33.
 Integrates Ch.15 and Ch.19–23; a four-version build progression.
 
 ### 35.1 Build
-- **V1 — WAL and memtable replay** — replay on startup proves durability first.
-- **V2 — SSTables with filters and indexes** — periodic freeze and flush and newest-first reads. Add Bloom filters and sparse indexes only after correctness is stable.
-- **V3 — Compaction with atomic manifest switch** — merge overlapping SSTables. A crash during compaction must resolve to exactly the old or the new state.
-- **V4 — MVCC snapshots and version GC** — versions plus snapshots, which creates a real garbage-collection problem.
+- **V1 — WAL and memtable replay** *(skipped)* — replay on startup proves durability first.
+- **V2 — SSTables with filters and indexes** *(skipped)* — periodic freeze and flush and newest-first reads. Add Bloom filters and sparse indexes only after correctness is stable.
+- **V3 — Compaction with atomic manifest switch** *(skipped)* — merge overlapping SSTables. A crash during compaction must resolve to exactly the old or the new state.
+- **V4 — MVCC snapshots and version GC** *(skipped)* — versions plus snapshots, which creates a real garbage-collection problem.
 - *Lab:* build in milestones with crash-injection tests. Benchmark point and range reads, and profile the time spent in parsing, I/O, compaction and synchronization.
 
 ## Chapter 36 — Capstone C: Raft-Backed Replicated State Machine *(capstone project)*
 Integrates Ch.25–26 and Ch.42.
 
 ### 36.1 Build
-- **Deterministic state machine first** — a pure-function state machine (identical histories → identical state) for testability, then the replicated log.
-- **Persist before acknowledging** — persist term, vote and log *before* acknowledging dependent operations. In-memory only is not the same algorithm.
-- **Chaos-tested transport and snapshots** — network chaos (delay, duplication, reordering, loss, partition) may stall the cluster but must never produce conflicting committed histories. Snapshotting collapses log prefixes and must itself be crash-safe and index-compatible.
+- **Deterministic state machine first** *(skipped)* — a pure-function state machine (identical histories → identical state) for testability, then the replicated log.
+- **Persist before acknowledging** *(skipped)* — persist term, vote and log *before* acknowledging dependent operations. In-memory only is not the same algorithm.
+- **Chaos-tested transport and snapshots** *(skipped)* — network chaos (delay, duplication, reordering, loss, partition) may stall the cluster but must never produce conflicting committed histories. Snapshotting collapses log prefixes and must itself be crash-safe and index-compatible.
 - *Lab:* deterministic simulator first, then a real TCP transport, with property-style tests over random failure schedules.
 
 ---
@@ -438,39 +438,39 @@ A repeatable method for design and optimization decisions.
 What rustc does with your code, and what unsafe code must not break.
 
 ### 38.1 Compiler internals
-- **rustc pipeline: HIR, THIR, MIR, LLVM** — the query-based compiler: parsing → HIR (type checking) → THIR → MIR (borrow checking, MIR optimizations, monomorphization collection) → LLVM IR → machine code. Alternative backends: Cranelift for faster debug builds, `rustc_codegen_gcc`, and the separate gccrs front end.
-- **Optimizations and the UB contract** — the optimizer may reorder or eliminate operations as long as the language-permitted behaviour is preserved. Unsafe code must uphold the validity and aliasing assumptions those optimizations rely on (`noalias`, niches): "it works on my CPU" is not proof that UB is harmless. Bounds-check elimination patterns (iterators, hoisted `assert!`, slicing up front) before `get_unchecked`.
-- **Inspecting and steering codegen** — `rustc --emit=llvm-ir,asm`, `cargo-show-asm`, Compiler Explorer, and `-C llvm-args`. `-C target-cpu`, `#[inline]`/`#[cold]`, LTO, PGO/BOLT. Compile-time engineering: `cargo build --timings`, the parallel front end (nightly). Record the compiler version and target flags with every benchmark.
+- **rustc pipeline: HIR, THIR, MIR, LLVM** *(skipped)* — the query-based compiler: parsing → HIR (type checking) → THIR → MIR (borrow checking, MIR optimizations, monomorphization collection) → LLVM IR → machine code. Alternative backends: Cranelift for faster debug builds, `rustc_codegen_gcc`, and the separate gccrs front end.
+- **Optimizations and the UB contract** *(skipped)* — the optimizer may reorder or eliminate operations as long as the language-permitted behaviour is preserved. Unsafe code must uphold the validity and aliasing assumptions those optimizations rely on (`noalias`, niches): "it works on my CPU" is not proof that UB is harmless. Bounds-check elimination patterns (iterators, hoisted `assert!`, slicing up front) before `get_unchecked`.
+- **Inspecting and steering codegen** *(skipped)* — `rustc --emit=llvm-ir,asm`, `cargo-show-asm`, Compiler Explorer, and `-C llvm-args`. `-C target-cpu`, `#[inline]`/`#[cold]`, LTO, PGO/BOLT. Compile-time engineering: `cargo build --timings`, the parallel front end (nightly). Record the compiler version and target flags with every benchmark.
 - *Lab:* inspect optimized IR and assembly for a bounds-check-heavy loop, a slice iterator and a hand-indexed loop, and benchmark all three on the same target.
 
 ## Chapter 39 — no_std, Embedded, Kernel, and Hardware-Facing Rust
 Rust without an operating system, and Rust inside one.
 
 ### 39.1 Bare metal
-- **no_std, core, and alloc** — `#![no_std]` relies on `core`, plus optional `alloc` with a platform allocator. Panic handlers, the `critical-section` crate, and fallible allocation.
-- **MMIO, volatile access, peripheral ownership** — memory-mapped I/O requires `ptr::read_volatile`/`write_volatile` and type-safe peripheral wrappers, not ordinary memory reads. svd2rust-generated PACs, singleton peripherals (ownership of hardware), type-state pins, and the embedded-hal 1.0 traits.
-- **Interrupts and async embedded executors** — an interrupt handler is a separate execution context, so state shared with main code needs atomics or critical sections chosen by the hardware's concurrency model. RTIC (priority-ceiling scheduling) and Embassy (async executors on bare metal); probe-rs and defmt tooling.
-- **Safety-critical Rust toolchains** — Ferrocene is a qualified rustc (ISO 26262 ASIL D, IEC 61508 SIL 3, IEC 62304 Class C) with a certified subset of `core` (IEC 61508 SIL 2 / ISO 26262 ASIL B, 2025–26). The FLS is the specification text these qualifications cite.
+- **no_std, core, and alloc** *(skipped)* — `#![no_std]` relies on `core`, plus optional `alloc` with a platform allocator. Panic handlers, the `critical-section` crate, and fallible allocation.
+- **MMIO, volatile access, peripheral ownership** *(skipped)* — memory-mapped I/O requires `ptr::read_volatile`/`write_volatile` and type-safe peripheral wrappers, not ordinary memory reads. svd2rust-generated PACs, singleton peripherals (ownership of hardware), type-state pins, and the embedded-hal 1.0 traits.
+- **Interrupts and async embedded executors** *(skipped)* — an interrupt handler is a separate execution context, so state shared with main code needs atomics or critical sections chosen by the hardware's concurrency model. RTIC (priority-ceiling scheduling) and Embassy (async executors on bare metal); probe-rs and defmt tooling.
+- **Safety-critical Rust toolchains** *(skipped)* — Ferrocene is a qualified rustc (ISO 26262 ASIL D, IEC 61508 SIL 3, IEC 62304 Class C) with a certified subset of `core` (IEC 61508 SIL 2 / ISO 26262 ASIL B, 2025–26). The FLS is the specification text these qualifications cite.
 
 ### 39.2 Kernel
-- **Rust in the Linux kernel** — the "experiment" label was removed in December 2025, and Rust is now a permanent part of the kernel. The `kernel` crate wraps C APIs in safe abstractions; `pin-init` handles pinned in-place initialization; allocation is fallible; kernel code uses the LKMM rather than C++20 atomics. Production drivers: Android Binder in Rust (merged in 6.18, with the C driver slated for removal). Nova (NVIDIA) and Tyr (Arm Mali) DRM drivers are in progress, and DRM maintainers expect to require Rust for new drivers.
+- **Rust in the Linux kernel** *(skipped)* — the "experiment" label was removed in December 2025, and Rust is now a permanent part of the kernel. The `kernel` crate wraps C APIs in safe abstractions; `pin-init` handles pinned in-place initialization; allocation is fallible; kernel code uses the LKMM rather than C++20 atomics. Production drivers: Android Binder in Rust (merged in 6.18, with the C driver slated for removal). Nova (NVIDIA) and Tyr (Arm Mali) DRM drivers are in progress, and DRM maintainers expect to require Rust for new drivers.
 - *Lab:* tiny no_std firmware module (one timer, one GPIO abstraction). Test the register-level logic on the host and isolate target-specific code behind a thin layer. Optionally, build the kernel's `rust_minimal` sample module and load it under QEMU.
 
 ## Chapter 40 — GPU and Heterogeneous Systems: Ownership Across the PCIe Boundary
 Device memory is another ownership domain with its own completion events.
 
 ### 40.1 Heterogeneous ownership
-- **Host-device buffer ownership and transfers** — host and device are separate: the host owns buffers, queues transfers, launches kernels (via FFI or a driver API) and waits on an event or stream. Copies are a first-class cost (CPU→GPU→CPU can dominate compute). Pinned (page-locked) host memory, and unified memory with its page-migration costs.
-- **Synchronization as ownership transfer** — a kernel-completion event means the device has finished using a buffer, which is the heterogeneous analogue of io_uring's in-flight buffer lifetime problem (Ch.14). Streams overlap copy and compute. Encode stream-ordered ownership in Rust types (e.g. `cudarc`'s stream-bound device slices).
-- **The Rust GPU ecosystem in 2026** — host-side: `cudarc` (CUDA driver/runtime bindings) and `wgpu` (portable WebGPU). Kernels written in Rust: Rust-GPU (SPIR-V), Rust-CUDA (rebooted 2025, still early), NVIDIA's experimental cuda-oxide (0.1, 2026), and CubeCL (Burn); nightly `std::offload`/`autodiff` experiments. Production kernels are still mostly CUDA C++ or Triton called through FFI.
+- **Host-device buffer ownership and transfers** *(skipped)* — host and device are separate: the host owns buffers, queues transfers, launches kernels (via FFI or a driver API) and waits on an event or stream. Copies are a first-class cost (CPU→GPU→CPU can dominate compute). Pinned (page-locked) host memory, and unified memory with its page-migration costs.
+- **Synchronization as ownership transfer** *(skipped)* — a kernel-completion event means the device has finished using a buffer, which is the heterogeneous analogue of io_uring's in-flight buffer lifetime problem (Ch.14). Streams overlap copy and compute. Encode stream-ordered ownership in Rust types (e.g. `cudarc`'s stream-bound device slices).
+- **The Rust GPU ecosystem in 2026** *(skipped)* — host-side: `cudarc` (CUDA driver/runtime bindings) and `wgpu` (portable WebGPU). Kernels written in Rust: Rust-GPU (SPIR-V), Rust-CUDA (rebooted 2025, still early), NVIDIA's experimental cuda-oxide (0.1, 2026), and CubeCL (Burn); nightly `std::offload`/`autodiff` experiments. Production kernels are still mostly CUDA C++ or Triton called through FFI.
 - *Lab:* GPU pipeline that processes batches on-device between ingest and writeback. Compare one copy per stage vs one transfer per batch.
 
 ## Chapter 41 — Security Engineering: Crypto APIs, Parsers, Secrets, and Supply Chain
 Memory safety removes one bug class; this chapter covers the rest.
 
 ### 41.1 Threat surfaces
-- **Using cryptography without implementing it** — never implement crypto primitives casually: the risk surface includes nonce handling, serialization, side channels and key lifecycle, not just the math. Use vetted providers (rustls with aws-lc-rs or ring, RustCrypto), misuse-resistant AEAD APIs, and constant-time comparison (`subtle`).
-- **Secrets in memory and telemetry** — `zeroize` and `secrecy` wrappers, redacting `Debug` impls, keeping secrets out of tracing fields (Ch.33), and core dumps and swap.
+- **Using cryptography without implementing it** *(skipped)* — never implement crypto primitives casually: the risk surface includes nonce handling, serialization, side channels and key lifecycle, not just the math. Use vetted providers (rustls with aws-lc-rs or ring, RustCrypto), misuse-resistant AEAD APIs, and constant-time comparison (`subtle`).
+- **Secrets in memory and telemetry** *(skipped)* — `zeroize` and `secrecy` wrappers, redacting `Debug` impls, keeping secrets out of tracing fields (Ch.33), and core dumps and swap.
 - **Parsers as security boundaries** — validate lengths before arithmetic can overflow; integer overflow checks are off in release builds by default, so use checked or saturating operations. Set maximum size and nesting policies. Fuzz with **cargo-fuzz** (libFuzzer) or AFL.rs, structure-aware via `arbitrary`, for truncated, oversized, duplicated and inconsistent fields.
 - **Supply-chain trust and provenance** — the **RustSec advisory database** with `cargo audit`/`cargo deny`; `cargo vet` audit sharing; `cargo auditable` dependency metadata in binaries. Build scripts and proc macros run arbitrary code at build time. Typosquatted malicious crates (e.g. `faster_log`/`async_println`, removed in Sep 2025) show why every new transitive dependency needs review. crates.io Trusted Publishing.
 - *Lab:* fuzz a binary parser with a max nesting/size policy, run a dependency audit, and write a short threat model.
@@ -479,10 +479,10 @@ Memory safety removes one bug class; this chapter covers the rest.
 Find the interleaving, the crash point and the invariant violation before production does.
 
 ### 42.1 Test techniques
-- **Exhaustive interleavings with loom** — **loom** systematically explores scheduler interleavings and C11-style weak-memory outcomes (bounded by a preemption limit), finding orderings a stress test might miss for days. Its limits; shuttle (randomized schedules) for larger code.
+- **Exhaustive interleavings with loom** *(skipped)* — **loom** systematically explores scheduler interleavings and C11-style weak-memory outcomes (bounded by a preemption limit), finding orderings a stress test might miss for days. Its limits; shuttle (randomized schedules) for larger code.
 - **Property-based and model-based testing** — `proptest!` for storage-page invariants (slots in bounds, no bad offset overlap, serialization round-trips), with shrinking. Stateful model-based tests compare the system against a simple reference model.
-- **Deterministic simulation testing** — FoundationDB-style: a single-threaded deterministic executor with simulated network, disk and clock, and seed-based replay. Rust tools: turmoil (Tokio) and madsim. Whole-system simulation (Antithesis) and TigerBeetle's VOPR as references.
-- **Fuzz findings to permanent regressions** — turn fuzz discoveries and crash-injection points into permanent, reproducible regression tests (minimized corpora, seeds as tests). Mutation testing (cargo-mutants) measures test strength. Bounded model checking with Kani for unsafe code, and the Rust standard-library verification challenge.
+- **Deterministic simulation testing** *(skipped)* — FoundationDB-style: a single-threaded deterministic executor with simulated network, disk and clock, and seed-based replay. Rust tools: turmoil (Tokio) and madsim. Whole-system simulation (Antithesis) and TigerBeetle's VOPR as references.
+- **Fuzz findings to permanent regressions** *(skipped)* — turn fuzz discoveries and crash-injection points into permanent, reproducible regression tests (minimized corpora, seeds as tests). Mutation testing (cargo-mutants) measures test strength. Bounded model checking with Kani for unsafe code, and the Rust standard-library verification challenge.
 - *Lab:* add property tests, fuzzed record bytes and crash points to the WAL/page engine, plus one deterministic concurrency model for the in-memory index.
 
 ## Chapter 43 — Capstone D: Zero-Copy ETL and Streaming Data Plane *(capstone project)*
