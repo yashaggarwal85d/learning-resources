@@ -1,0 +1,1211 @@
+{
+ "topic": "dsa.deamortization-global-rebuilding",
+ "voice": "tara-v1",
+ "asr": "large-v3-turbo",
+ "clips": {
+  "01": {
+   "hash": "62d55c3cd8202e83",
+   "takes": [
+    "86d88618777bf746f67d",
+    "f4d787cfac19f80b9979",
+    "7f15c12078075c23445f",
+    "37c9c55f737ae9a8f0d5",
+    "1ecc7589a4a4bba71a27",
+    "677770e5e5b5f97ae01d",
+    "cb88d9e3db1d3ded28c3"
+   ],
+   "duration": 35.322,
+   "lines": [
+    {
+     "text": "The last reel proved that append is big O of one, amortized.",
+     "start": 0.15,
+     "end": 4.116
+    },
+    {
+     "text": "Now put the vector behind a service.",
+     "start": 4.536,
+     "end": 7.325
+    },
+    {
+     "text": "Each request appends one key. One tick is the time to write one element, and a request arrives every four ticks.",
+     "start": 8.045,
+     "end": 14.849
+    },
+    {
+     "text": "This is a model of a service, not a measurement.",
+     "start": 15.269,
+     "end": 18.523
+    },
+    {
+     "text": "The append that finds it full, number five hundred twenty four thousand, two hundred eighty nine, copies every key before it.",
+     "start": 18.943,
+     "end": 26.573
+    },
+    {
+     "text": "While it runs, one hundred thirty one thousand, seventy two requests arrive. They all wait.",
+     "start": 26.993,
+     "end": 32.949
+    },
+    {
+     "text": "Is this service fast?",
+     "start": 33.369,
+     "end": 34.972
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.8,
+   "wpm": 153,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "02": {
+   "hash": "89ed351585d31abd",
+   "takes": [
+    "b14e7fc865aff353017c",
+    "0f631fa728ada4896ead",
+    "448fd04ee5347540819e",
+    "42dc148ebd1d1258558a"
+   ],
+   "duration": 29.047,
+   "lines": [
+    {
+     "text": "Percentiles describe a tail.",
+     "start": 0.15,
+     "end": 1.926
+    },
+    {
+     "text": "P fifty is the median. The ninety ninth percentile, p ninety nine, is the cost that ninety nine of every hundred appends stay at or under. For p ninety nine point nine, it is nine hundred ninety nine of every thousand.",
+     "start": 2.346,
+     "end": 15.936
+    },
+    {
+     "text": "Of a million appends to the doubling vector, twenty resize. The largest copies about five hundred twenty four thousand keys.",
+     "start": 16.356,
+     "end": 24.664
+    },
+    {
+     "text": "What is the p ninety nine cost of an append?",
+     "start": 25.084,
+     "end": 28.697
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.8,
+   "wpm": 155,
+   "wer": 0.024390243902439025,
+   "exact": false,
+   "tolerated": [
+    {
+     "line": "P fifty is the median. The ninety ninth percentile, p ninety nine, is the cost that ninety nine of every hundred appends stay at or under. For p ninety nine point nine, it is nine hundred ninety nine of every thousand.",
+     "said": "appends",
+     "heard": "append"
+    }
+   ]
+  },
+  "02a": {
+   "hash": "b4da3e60b32d178a",
+   "takes": [
+    "3874224c3f7910f244d6",
+    "e3d9d93dcc875ceb954d",
+    "087df3d6c16ebbf0d343",
+    "1a48d8d126863103acea",
+    "0010c720ebd583db99fe"
+   ],
+   "duration": 31.641,
+   "lines": [
+    {
+     "text": "One write.",
+     "start": 0.15,
+     "end": 1.378
+    },
+    {
+     "text": "Only twenty of a million appends resize. That is two thousandths of a percent.",
+     "start": 1.798,
+     "end": 6.633
+    },
+    {
+     "text": "So p fifty, p ninety nine, p ninety nine point nine, and even p ninety nine point nine nine are all one write.",
+     "start": 7.053,
+     "end": 16.631
+    },
+    {
+     "text": "The mean is about two, and the maximum is five hundred twenty four thousand, two hundred eighty nine.",
+     "start": 17.051,
+     "end": 23.353
+    },
+    {
+     "text": "Doubling does not hurt the p ninety nine of the appends themselves. The harm is in everything that waits, behind the one rare spike.",
+     "start": 23.773,
+     "end": 31.291
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -1.9,
+   "wpm": 154,
+   "wer": 0.5,
+   "exact": false,
+   "tolerated": [
+    {
+     "line": "One write.",
+     "said": "write",
+     "heard": "right"
+    },
+    {
+     "line": "So p fifty, p ninety nine, p ninety nine point nine, and even p ninety nine point nine nine are all one write.",
+     "said": "write",
+     "heard": "right"
+    }
+   ]
+  },
+  "03": {
+   "hash": "85206d261a644e54",
+   "takes": [
+    "67405b877925ab0f2f87",
+    "6d42e6bfb4737c9e7a24",
+    "0000333fd4fb29ac094e",
+    "bb162f57f3dbbc0e40a0",
+    "5d3916f8407de00e574b"
+   ],
+   "duration": 30.067,
+   "lines": [
+    {
+     "text": "Per append, the tail is one write.",
+     "start": 0.15,
+     "end": 3.281
+    },
+    {
+     "text": "Per request, with the wait included, p ninety nine is four hundred ninety four thousand, two hundred eighty nine ticks.",
+     "start": 4.001,
+     "end": 12.141
+    },
+    {
+     "text": "Three hundred forty nine thousand, five hundred fifteen requests wait behind a resize. That is thirty five percent.",
+     "start": 12.561,
+     "end": 19.986
+    },
+    {
+     "text": "A service is judged on its requests. So their tail is the one that counts.",
+     "start": 20.406,
+     "end": 25.477
+    },
+    {
+     "text": "The copy is one append. The wait is everyone's.",
+     "start": 25.897,
+     "end": 29.717
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 138,
+   "wer": 0.2857142857142857,
+   "exact": false,
+   "tolerated": [
+    {
+     "line": "Per append, the tail is one write.",
+     "said": "per",
+     "heard": "pair"
+    },
+    {
+     "line": "Per append, the tail is one write.",
+     "said": "write",
+     "heard": "right"
+    },
+    {
+     "line": "Per request, with the wait included, p ninety nine is four hundred ninety four thousand, two hundred eighty nine ticks.",
+     "said": "wait",
+     "heard": "weight"
+    },
+    {
+     "line": "The copy is one append. The wait is everyone's.",
+     "said": "wait",
+     "heard": "weight"
+    }
+   ]
+  },
+  "04": {
+   "hash": "8e76478aa59b9f71",
+   "takes": [
+    "b8c519a43586f46b386e",
+    "934fe575982b111f52b9",
+    "49caa2e430d035f4cce2",
+    "b2977dc6917f80446779",
+    "f1c08b2b2584c6a8f07e",
+    "672b042a208383d3ebd0"
+   ],
+   "duration": 38.758,
+   "lines": [
+    {
+     "text": "Fan out multiplies the tail.",
+     "start": 0.15,
+     "end": 2.488
+    },
+    {
+     "text": "Dean and Barroso give an example. A server answers in ten milliseconds, but takes a full second at its p ninety nine.",
+     "start": 2.908,
+     "end": 11.085
+    },
+    {
+     "text": "A request served by one such server is slow one time in a hundred.",
+     "start": 11.505,
+     "end": 15.931
+    },
+    {
+     "text": "Now take a request that has to wait for a hundred of them. It is slow, sixty three percent of the time.",
+     "start": 16.351,
+     "end": 24.178
+    },
+    {
+     "text": "A tail that you can safely ignore, on each single server, is the common case for a whole request.",
+     "start": 24.898,
+     "end": 31.903
+    },
+    {
+     "text": "With two thousand servers, and one in ten thousand slow, it is almost one request in five.",
+     "start": 32.323,
+     "end": 38.408
+    }
+   ],
+   "lufs": -16.6,
+   "true_peak": -1.9,
+   "wpm": 153,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "05": {
+   "hash": "6f91cad3e13bd62e",
+   "takes": [
+    "0694dba08d17bdd5ce8f",
+    "1ea090b474a8c415c040",
+    "4cefb3ab78aa8d59951f",
+    "7f8aa5165202b4213883",
+    "74a8c813838bc7688d2e",
+    "8ce11cef6ad185c849c1"
+   ],
+   "duration": 34.477,
+   "lines": [
+    {
+     "text": "Accounting charged three per append. One to write, two saved.",
+     "start": 0.15,
+     "end": 4.911
+    },
+    {
+     "text": "Deamortization spends the two right away.",
+     "start": 5.331,
+     "end": 7.928
+    },
+    {
+     "text": "When the vector of eight fills, append nine allocates sixteen slots, and moves two old keys.",
+     "start": 8.648,
+     "end": 15.167
+    },
+    {
+     "text": "The gauge of keys left to copy drains from eight down to zero, by two on each of the appends, nine to twelve.",
+     "start": 15.587,
+     "end": 22.889
+    },
+    {
+     "text": "Over sixteen appends, both vectors write thirty one elements.",
+     "start": 23.609,
+     "end": 28.121
+    },
+    {
+     "text": "But no append costs more than three. The dashed line is now a worst case bound.",
+     "start": 28.541,
+     "end": 34.127
+    }
+   ],
+   "lufs": -16.6,
+   "true_peak": -1.8,
+   "wpm": 139,
+   "wer": 0.3333333333333333,
+   "exact": false,
+   "tolerated": [
+    {
+     "line": "Deamortization spends the two right away.",
+     "said": "deamortization",
+     "heard": "de amortization"
+    }
+   ]
+  },
+  "06": {
+   "hash": "69cc2548a2f1a7d8",
+   "takes": [
+    "14908dc976c1c4253067",
+    "e2a3ace099d3f3fd9ac6",
+    "1784b3ff14fbb06c93bb",
+    "98dd641f5cd2b931a442",
+    "c464a6d57f873b4e6e4c"
+   ],
+   "duration": 32.391,
+   "lines": [
+    {
+     "text": "Here is the state after append ten.",
+     "start": 0.15,
+     "end": 2.755
+    },
+    {
+     "text": "The old buffer. The new one. The count n. And the frontier k: how many old keys have moved.",
+     "start": 3.175,
+     "end": 10.29
+    },
+    {
+     "text": "An append writes its key at slot n of the new buffer, then moves the next two old keys.",
+     "start": 10.71,
+     "end": 16.733
+    },
+    {
+     "text": "A read at index i uses the old buffer only if k is at most i, and i is below m, the old key count.",
+     "start": 17.454,
+     "end": 26.031
+    },
+    {
+     "text": "Everything else is in the new buffer. One comparison picks the buffer.",
+     "start": 26.451,
+     "end": 32.041
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -1.8,
+   "wpm": 152,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "07": {
+   "hash": "4ced06c5d5b01cc0",
+   "takes": [
+    "41ad8b1980d0b09f3dea",
+    "3b7365b5c70e66326b35",
+    "6342bb350f162ec606c2"
+   ],
+   "duration": 17.833,
+   "lines": [
+    {
+     "text": "Append nine allocated sixteen slots and moved two old keys. Six are left to copy, and seven slots are free.",
+     "start": 0.15,
+     "end": 7.736
+    },
+    {
+     "text": "Every later append writes one new key and moves two old ones.",
+     "start": 8.156,
+     "end": 11.947
+    },
+    {
+     "text": "How many of the sixteen slots are in use when the last old key moves?",
+     "start": 12.367,
+     "end": 17.483
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.8,
+   "wpm": 158,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "07a": {
+   "hash": "f7ef87d3e27ccdfd",
+   "takes": [
+    "8d84e2a52f0bcb4db8dc",
+    "7b3d95999321eb441b3e",
+    "91deb1f0ed5b3c31c79a",
+    "7dd80a7595c0101659fb",
+    "6792a862accea63d8f8b"
+   ],
+   "duration": 27.622,
+   "lines": [
+    {
+     "text": "Twelve.",
+     "start": 0.15,
+     "end": 0.726
+    },
+    {
+     "text": "Appends nine to twelve move two keys each, eight in all, while n goes from eight to twelve.",
+     "start": 1.146,
+     "end": 7.286
+    },
+    {
+     "text": "The copying finishes when the element count reaches one and a half times the previous capacity, leaving twenty five percent of the new buffer unused.",
+     "start": 7.706,
+     "end": 15.754
+    },
+    {
+     "text": "Moving one key per append would also finish, but exactly as the buffer fills, with no slack.",
+     "start": 16.174,
+     "end": 21.561
+    },
+    {
+     "text": "For growth factor g, move at least one over g minus one keys per append.",
+     "start": 21.981,
+     "end": 27.272
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -1.8,
+   "wpm": 165,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "08": {
+   "hash": "d7d774000f6472c1",
+   "takes": [
+    "493abe41b87f89e90ab6",
+    "3529c7f7def134845001",
+    "04a8532b205da691fa45",
+    "4673c0ccee18285f254a",
+    "fe3dfe11a4ca5168382c"
+   ],
+   "duration": 32.036,
+   "lines": [
+    {
+     "text": "Same total writes. A different bill.",
+     "start": 0.15,
+     "end": 2.798
+    },
+    {
+     "text": "Both buffers stay alive while the copy runs. At the last resize of a million appends, that is the same twelve mebibytes of peak as plain doubling, but held for about a quarter of a million appends, not one.",
+     "start": 3.518,
+     "end": 16.983
+    },
+    {
+     "text": "Every read pays a comparison with the frontier.",
+     "start": 17.403,
+     "end": 20.614
+    },
+    {
+     "text": "More than half the appends now cost three, so the median got worse.",
+     "start": 21.034,
+     "end": 25.637
+    },
+    {
+     "text": "And the big O of one worst case assumes that allocating a buffer is big O of one.",
+     "start": 26.057,
+     "end": 31.686
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -1.9,
+   "wpm": 157,
+   "wer": 0.16666666666666666,
+   "exact": false,
+   "tolerated": [
+    {
+     "line": "Same total writes. A different bill.",
+     "said": "writes",
+     "heard": "rights"
+    },
+    {
+     "line": "Both buffers stay alive while the copy runs. At the last resize of a million appends, that is the same twelve mebibytes of peak as plain doubling, but held for about a quarter of a million appends, not one.",
+     "said": "mebibytes",
+     "heard": "mbibites"
+    }
+   ]
+  },
+  "09": {
+   "hash": "3d2a960b242a2c8e",
+   "takes": [
+    "ec55306eb5a04ff232f0",
+    "4fd7b6e07c0dbb2c9008",
+    "a5ed7247ad544c9b4069",
+    "773c820e9198d1dc6bb1",
+    "23fd31c2ba367acf8525",
+    "8ec7aedb2546661c1136",
+    "7b1ecdb15f80252c326f"
+   ],
+   "duration": 37.765,
+   "lines": [
+    {
+     "text": "A second structure, apart from arrays that grow.",
+     "start": 0.15,
+     "end": 3.073
+    },
+    {
+     "text": "Global rebuilding: let a structure go stale, then rebuild all of it.",
+     "start": 3.493,
+     "end": 7.866
+    },
+    {
+     "text": "A sorted vector deletes by leaving a tombstone. A lookup reports a tombstoned key as absent.",
+     "start": 8.586,
+     "end": 14.231
+    },
+    {
+     "text": "Once half the slots are tombstones, copy the live keys into a compact vector.",
+     "start": 14.651,
+     "end": 19.502
+    },
+    {
+     "text": "That costs theta of n, after theta of n deletes. So it is big O of one, amortized.",
+     "start": 19.922,
+     "end": 28.393
+    },
+    {
+     "text": "The doubling vector does the very same thing, for growth.",
+     "start": 28.813,
+     "end": 32.198
+    },
+    {
+     "text": "And at about a million keys, one delete still copies half a million.",
+     "start": 32.918,
+     "end": 37.415
+    }
+   ],
+   "lufs": -16.6,
+   "true_peak": -1.9,
+   "wpm": 145,
+   "wer": 0.0625,
+   "exact": false,
+   "tolerated": [
+    {
+     "line": "A sorted vector deletes by leaving a tombstone. A lookup reports a tombstoned key as absent.",
+     "said": "tombstoned",
+     "heard": "tombstone"
+    }
+   ]
+  },
+  "10": {
+   "hash": "ad99b7a3ca87e6be",
+   "takes": [
+    "03275378c52c186ff38d",
+    "e822fd25824d125fc235",
+    "d380396d24dfec79577e",
+    "899ed2a06a5cb14e0197",
+    "82e2f7d7d5fe384d2e99",
+    "c5d3cfbfc8b19763a06f"
+   ],
+   "duration": 34.275,
+   "lines": [
+    {
+     "text": "Overmars's global rebuilding goes further. Start early, and rebuild while serving.",
+     "start": 0.15,
+     "end": 5.447
+    },
+    {
+     "text": "At four tombstones of sixteen, begin a new copy.",
+     "start": 5.867,
+     "end": 9.747
+    },
+    {
+     "text": "Each delete also scans eight slots of the old copy, and copies the live keys. Queries still use the old copy.",
+     "start": 10.167,
+     "end": 17.281
+    },
+    {
+     "text": "A key deleted after it was copied goes into a log. The log is replayed before the swap.",
+     "start": 18.001,
+     "end": 23.982
+    },
+    {
+     "text": "Eight slots a delete finish the copy before the old one is half tombstones. The vector's deadline again.",
+     "start": 24.402,
+     "end": 30.495
+    },
+    {
+     "text": "No delete writes more than ten.",
+     "start": 30.915,
+     "end": 33.925
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -1.9,
+   "wpm": 145,
+   "wer": 0.09090909090909091,
+   "exact": false,
+   "tolerated": [
+    {
+     "line": "Overmars's global rebuilding goes further. Start early, and rebuild while serving.",
+     "said": "overmarss",
+     "heard": "overmars"
+    }
+   ]
+  },
+  "11": {
+   "hash": "af9dfa1f9851b3e4",
+   "takes": [
+    "f7a2876a437219807107",
+    "60b6f3a2094541cce131",
+    "5d80af38cc34f96c72cd",
+    "ca6e4ac4aca512b66104",
+    "2e3f931b5ee5f6b914cc",
+    "439e6cc20b6b2c17f8ac"
+   ],
+   "duration": 40.016,
+   "lines": [
+    {
+     "text": "Now a tree where only a part goes bad.",
+     "start": 0.15,
+     "end": 3.687
+    },
+    {
+     "text": "A scapegoat tree is a plain binary search tree. Each node holds a key and two pointers, nothing else.",
+     "start": 4.107,
+     "end": 10.567
+    },
+    {
+     "text": "The root keeps two counts: the size, and the largest size since the last full rebuild.",
+     "start": 10.987,
+     "end": 16.184
+    },
+    {
+     "text": "Fix alpha strictly between one half and one. Here, alpha is two thirds. It is a balance parameter, not the last reel's load factor.",
+     "start": 16.904,
+     "end": 25.598
+    },
+    {
+     "text": "A node deeper than h of n, the floor of log base one point five of n, is too deep. Here n counts the new node.",
+     "start": 26.018,
+     "end": 35.26
+    },
+    {
+     "text": "Inserting sixty nine lands at depth six, below the limit of five.",
+     "start": 35.68,
+     "end": 39.666
+    }
+   ],
+   "lufs": -16.3,
+   "true_peak": -1.8,
+   "wpm": 159,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "12": {
+   "hash": "fdaf901c0b2586d3",
+   "takes": [
+    "711150d686d0bddc8a55",
+    "9e36d5959b47b579e249",
+    "d1f9893a5059cad7e08f",
+    "835df36f2404bc238a6f"
+   ],
+   "duration": 16.713,
+   "lines": [
+    {
+     "text": "Climb from sixty nine, the deep node.",
+     "start": 0.15,
+     "end": 2.818
+    },
+    {
+     "text": "At each ancestor, compare its heavier child's subtree with the ancestor's own subtree.",
+     "start": 3.238,
+     "end": 8.284
+    },
+    {
+     "text": "The scapegoat is the first ancestor where that child holds more than alpha, two thirds.",
+     "start": 8.704,
+     "end": 14.075
+    },
+    {
+     "text": "Which node is it?",
+     "start": 14.495,
+     "end": 16.363
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 140,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "12a": {
+   "hash": "2b92533287fcb624",
+   "takes": [
+    "c12b8624b7d9afe2d796",
+    "299cb5ff49ba5c8312c0",
+    "fba3cb7791812aaa5838",
+    "e34bb9d90043d4d1887e",
+    "0585abbf05d6b26ed6c7"
+   ],
+   "duration": 33.112,
+   "lines": [
+    {
+     "text": "Eighty seven.",
+     "start": 0.15,
+     "end": 1.365
+    },
+    {
+     "text": "From sixty nine going up: sixty three's heavier child holds one of its two nodes. Eighty's holds two of three. Exactly two thirds is still allowed.",
+     "start": 1.785,
+     "end": 12.605
+    },
+    {
+     "text": "Fifty four's holds three of five. That is under two thirds, though it looks lopsided.",
+     "start": 13.025,
+     "end": 19.461
+    },
+    {
+     "text": "Eighty seven's left child holds five of its six nodes. That is over two thirds, so eighty seven is the scapegoat.",
+     "start": 19.881,
+     "end": 28.54
+    },
+    {
+     "text": "The sizes are counted on the way up. No node stores one.",
+     "start": 28.96,
+     "end": 32.762
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -1.9,
+   "wpm": 138,
+   "wer": 0.15384615384615385,
+   "exact": false,
+   "tolerated": [
+    {
+     "line": "From sixty nine going up: sixty three's heavier child holds one of its two nodes. Eighty's holds two of three. Exactly two thirds is still allowed.",
+     "said": "threes",
+     "heard": "three s"
+    },
+    {
+     "line": "From sixty nine going up: sixty three's heavier child holds one of its two nodes. Eighty's holds two of three. Exactly two thirds is still allowed.",
+     "said": "eightys",
+     "heard": "eighty s"
+    },
+    {
+     "line": "Eighty seven's left child holds five of its six nodes. That is over two thirds, so eighty seven is the scapegoat.",
+     "said": "sevens",
+     "heard": "seven s"
+    }
+   ]
+  },
+  "13": {
+   "hash": "4c68ec61df4ee799",
+   "takes": [
+    "c4d2f9706f22f04328b7",
+    "edce79f7ede9368ed258",
+    "0717b7ce0584aa60ffd9",
+    "5733f75f9fdf7c6d68d9",
+    "002075674dfade5f011f",
+    "b9c06401d3b8d01932ba"
+   ],
+   "duration": 36.571,
+   "lines": [
+    {
+     "text": "Rebuild the scapegoat's subtree, perfectly balanced.",
+     "start": 0.15,
+     "end": 3.685
+    },
+    {
+     "text": "Walk its six nodes in order. Make the lower middle one, sixty three, the root. Then recurse.",
+     "start": 4.105,
+     "end": 10.934
+    },
+    {
+     "text": "The time is proportional to the subtree.",
+     "start": 11.654,
+     "end": 13.995
+    },
+    {
+     "text": "Who pays? Each node holds a constant times the difference between its left and right sizes, as potential.",
+     "start": 14.415,
+     "end": 20.974
+    },
+    {
+     "text": "An insert adds a little at each of its big O of log n ancestors, and an unbalanced node holds theta of its own size. That is enough for the climb, and for the rebuild.",
+     "start": 21.394,
+     "end": 32.38
+    },
+    {
+     "text": "So inserts cost big O of log n, amortized.",
+     "start": 32.8,
+     "end": 36.221
+    }
+   ],
+   "lufs": -16.6,
+   "true_peak": -0.9,
+   "wpm": 151,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "14": {
+   "hash": "3a32656c60f5e2b7",
+   "takes": [
+    "71a201f38da35f38bb3c",
+    "ab7dc6d6a65a434da17f",
+    "f52ad32985cdc813f4e2",
+    "930f041c1dd00a3735f9"
+   ],
+   "duration": 31.993,
+   "lines": [
+    {
+     "text": "Deletes never push a node deeper. But they shrink n, so the tree grows tall for its size.",
+     "start": 0.15,
+     "end": 6.838
+    },
+    {
+     "text": "The root's second count handles this. When the size drops below alpha times the largest size, rebuild the whole tree.",
+     "start": 7.258,
+     "end": 13.714
+    },
+    {
+     "text": "That is global rebuilding again, inside the scapegoat tree.",
+     "start": 14.134,
+     "end": 17.801
+    },
+    {
+     "text": "It takes theta of n deletes first. At a million keys, delete three hundred thirty three thousand, three hundred thirty four rebuilds six hundred sixty six thousand, six hundred sixty six nodes.",
+     "start": 18.521,
+     "end": 31.643
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -1.9,
+   "wpm": 148,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "15": {
+   "hash": "6013dfafbddd4713",
+   "takes": [
+    "d59f97ec22faef325a1f",
+    "278f90217dafafc3a1c8",
+    "b17b5de351fca989c951",
+    "b6f4ef34b77e65e7512b",
+    "ca746c7c77afb53e8fe4"
+   ],
+   "duration": 34.886,
+   "lines": [
+    {
+     "text": "Be honest about the tree. It is amortized, not deamortized.",
+     "start": 0.15,
+     "end": 4.319
+    },
+    {
+     "text": "Big O of log n per insert, over any sequence. But one insert can rebuild most of the tree.",
+     "start": 4.739,
+     "end": 13.074
+    },
+    {
+     "text": "A million increasing keys cost twenty eight writes per insert on average. The p ninety nine is two hundred forty six.",
+     "start": 13.494,
+     "end": 20.429
+    },
+    {
+     "text": "One insert, near the nine hundred thousandth, rebuilds about three quarters of a million nodes.",
+     "start": 20.849,
+     "end": 26.535
+    },
+    {
+     "text": "Searches never restructure anything. Their worst case stays big O of log n, and the depth is at most thirty four here.",
+     "start": 27.255,
+     "end": 34.536
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 150,
+   "wer": 0.2,
+   "exact": false,
+   "tolerated": [
+    {
+     "line": "Be honest about the tree. It is amortized, not deamortized.",
+     "said": "deamortized",
+     "heard": "de amortized"
+    }
+   ]
+  },
+  "16": {
+   "hash": "94264bdd05fa8e11",
+   "takes": [
+    "3fd397ba14bde5777adf",
+    "18d78a1d748babc36c1b",
+    "9dbf5fe80f44359b13b6",
+    "6f3bf9f500d932b4f7cb",
+    "a4909ccf569186a9b38c"
+   ],
+   "duration": 27.228,
+   "lines": [
+    {
+     "text": "Back to the service.",
+     "start": 0.15,
+     "end": 1.321
+    },
+    {
+     "text": "With two moves per append, no append takes more than three ticks. Requests arrive four apart. So no queue ever forms.",
+     "start": 1.741,
+     "end": 9.657
+    },
+    {
+     "text": "Request p ninety nine and the maximum are three ticks, against more than four hundred ninety thousand before.",
+     "start": 10.077,
+     "end": 16.038
+    },
+    {
+     "text": "The total writes are the same. The median rose from one to three.",
+     "start": 16.758,
+     "end": 21.047
+    },
+    {
+     "text": "And every tick charged a write the same, wherever in memory it landed.",
+     "start": 21.467,
+     "end": 26.878
+    }
+   ],
+   "lufs": -16.3,
+   "true_peak": -1.9,
+   "wpm": 152,
+   "wer": 0.07692307692307693,
+   "exact": false,
+   "tolerated": [
+    {
+     "line": "The total writes are the same. The median rose from one to three.",
+     "said": "writes",
+     "heard": "rates"
+    },
+    {
+     "line": "And every tick charged a write the same, wherever in memory it landed.",
+     "said": "write",
+     "heard": "right"
+    }
+   ]
+  },
+  "17": {
+   "hash": "4c6817eacc536b51",
+   "takes": [
+    "d90442b11ffa24124177",
+    "6540601e358f6010b976",
+    "c161a7b591ec1e81e92d"
+   ],
+   "duration": 15.951,
+   "lines": [
+    {
+     "text": "The vector holds one million, forty eight thousand, five hundred seventy six keys, and is full.",
+     "start": 0.15,
+     "end": 6.555
+    },
+    {
+     "text": "With incremental copying at two keys per append, for how many appends are both buffers alive?",
+     "start": 6.975,
+     "end": 12.177
+    },
+    {
+     "text": "And what does the costliest append write?",
+     "start": 12.727,
+     "end": 15.601
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -1.9,
+   "wpm": 147,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "17a": {
+   "hash": "787c48252aecfb61",
+   "takes": [
+    "bfef5afe8e025cd0b6ce",
+    "24b906309d0520b55382",
+    "b327ee088f548e14c9eb",
+    "637125ad390e48271f09",
+    "52f97358777bd47c8b70"
+   ],
+   "duration": 32.139,
+   "lines": [
+    {
+     "text": "Five hundred twenty four thousand, two hundred eighty eight appends, and three writes.",
+     "start": 0.15,
+     "end": 4.723
+    },
+    {
+     "text": "The next append allocates twice the slots. Moving the keys at two per append then takes five hundred twenty four thousand, two hundred eighty eight appends.",
+     "start": 5.143,
+     "end": 14.305
+    },
+    {
+     "text": "That ends when n is one million, five hundred seventy two thousand, eight hundred sixty four.",
+     "start": 14.725,
+     "end": 22.892
+    },
+    {
+     "text": "Meanwhile both buffers, twenty four mebibytes, stay alive.",
+     "start": 23.312,
+     "end": 27.803
+    },
+    {
+     "text": "Each of those appends writes its key and moves two.",
+     "start": 28.223,
+     "end": 31.789
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.8,
+   "wpm": 136,
+   "wer": 0.125,
+   "exact": false,
+   "tolerated": [
+    {
+     "line": "Five hundred twenty four thousand, two hundred eighty eight appends, and three writes.",
+     "said": "writes",
+     "heard": "rights"
+    },
+    {
+     "line": "Meanwhile both buffers, twenty four mebibytes, stay alive.",
+     "said": "mebibytes",
+     "heard": "mebbytes"
+    },
+    {
+     "line": "Each of those appends writes its key and moves two.",
+     "said": "two",
+     "heard": "too"
+    }
+   ]
+  },
+  "18": {
+   "hash": "447c492e902d036f",
+   "takes": [
+    "9ae289afe8478be66351",
+    "cc52f87810ef86d7b811",
+    "5cb959d713a4e961721a"
+   ],
+   "duration": 15.66,
+   "lines": [
+    {
+     "text": "A teammate's get of i reads the new buffer, for every index, while a copy runs.",
+     "start": 0.15,
+     "end": 5.964
+    },
+    {
+     "text": "Right after append number nine, the old size is eight, and the frontier, k, is two.",
+     "start": 6.384,
+     "end": 12.446
+    },
+    {
+     "text": "What does get of five return?",
+     "start": 12.866,
+     "end": 15.31
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -1.9,
+   "wpm": 146,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "18a": {
+   "hash": "cbb774f548a26c14",
+   "takes": [
+    "d29d90b8cc92c144f7e3",
+    "8204f160f5cdcf25ab5c",
+    "cae8d1d57d864e063860",
+    "23af680aa0b62f3b34b7"
+   ],
+   "duration": 25.517,
+   "lines": [
+    {
+     "text": "An empty slot.",
+     "start": 0.15,
+     "end": 1.134
+    },
+    {
+     "text": "Only indices below two have moved. New slots two to seven are still empty, and slot eight holds key nine.",
+     "start": 1.554,
+     "end": 8.32
+    },
+    {
+     "text": "Reads must check the frontier. Index i is in the old buffer if k is at most i, and i is below m. Otherwise, the read goes to the new buffer.",
+     "start": 8.74,
+     "end": 19.154
+    },
+    {
+     "text": "Writes need the same rule, or a later move overwrites the new value with the old one.",
+     "start": 19.574,
+     "end": 25.167
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -1.9,
+   "wpm": 167,
+   "wer": 0.03225806451612903,
+   "exact": false,
+   "tolerated": [
+    {
+     "line": "Reads must check the frontier. Index i is in the old buffer if k is at most i, and i is below m. Otherwise, the read goes to the new buffer.",
+     "said": "reads",
+     "heard": "read"
+    }
+   ]
+  },
+  "19": {
+   "hash": "368c8aace28dbcb8",
+   "takes": [
+    "d2c2460d415ef1b1174a",
+    "88ecfbd8b9db9ab6ecb8"
+   ],
+   "duration": 12.908,
+   "lines": [
+    {
+     "text": "A nightly batch job appends a billion keys to a vector. Only its total running time matters.",
+     "start": 0.15,
+     "end": 6.569
+    },
+    {
+     "text": "A reviewer asks you to switch to incremental copying. Do you agree?",
+     "start": 6.989,
+     "end": 12.558
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 135,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "19a": {
+   "hash": "cd3f35676d0e094c",
+   "takes": [
+    "da1733186af497cd0230",
+    "56a027867b5c83902636",
+    "d2f2dad89a653e17fdfd",
+    "4d7086a502226c56703c",
+    "95d64438ad90f00eadcf"
+   ],
+   "duration": 24.063,
+   "lines": [
+    {
+     "text": "No.",
+     "start": 0.15,
+     "end": 0.615
+    },
+    {
+     "text": "Both vectors write about two point one billion elements.",
+     "start": 1.035,
+     "end": 4.232
+    },
+    {
+     "text": "The incremental one also pays a comparison on every read, and holds two buffers longer.",
+     "start": 4.652,
+     "end": 10.213
+    },
+    {
+     "text": "Its gain is the tail. In a batch, no request waits behind the one append that writes over half a billion.",
+     "start": 10.633,
+     "end": 17.308
+    },
+    {
+     "text": "Deamortize when something waits on single operations: requests, frames, or a fan out.",
+     "start": 17.728,
+     "end": 23.713
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -1.9,
+   "wpm": 147,
+   "wer": 0.15384615384615385,
+   "exact": false,
+   "tolerated": [
+    {
+     "line": "Deamortize when something waits on single operations: requests, frames, or a fan out.",
+     "said": "deamortize",
+     "heard": "de amortize"
+    }
+   ]
+  }
+ }
+}

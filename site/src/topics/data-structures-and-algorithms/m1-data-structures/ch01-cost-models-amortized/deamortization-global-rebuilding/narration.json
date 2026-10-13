@@ -28,7 +28,7 @@
         "Only twenty of a million appends resize. That is two thousandths of a percent.",
         "So p fifty, p ninety nine, p ninety nine point nine, and even p ninety nine point nine nine are all one write.",
         "The mean is about two, and the maximum is five hundred twenty four thousand, two hundred eighty nine.",
-        "Doubling does not hurt the p ninety nine of appends. The harm is in what waits behind the rare one."
+        "Doubling does not hurt the p ninety nine of the appends themselves. The harm is in everything that waits, behind the one rare spike."
       ]
     },
     {
@@ -48,11 +48,11 @@
         "Fan out multiplies the tail.",
         "Dean and Barroso give an example. A server answers in ten milliseconds, but takes a full second at its p ninety nine.",
         "A request served by one such server is slow one time in a hundred.",
-        "A request that waits for a hundred of them is slow sixty three percent of the time.",
+        "Now take a request that has to wait for a hundred of them. It is slow, sixty three percent of the time.",
         {
           "beat": 0.3
         },
-        "A tail you can ignore per server is the common case per request.",
+        "A tail that you can safely ignore, on each single server, is the common case for a whole request.",
         "With two thousand servers, and one in ten thousand slow, it is almost one request in five."
       ]
     },
@@ -64,7 +64,7 @@
           "beat": 0.3
         },
         "When the vector of eight fills, append nine allocates sixteen slots, and moves two old keys.",
-        "The gauge of keys left to copy drains from eight to zero, by two on each of appends nine to twelve.",
+        "The gauge of keys left to copy drains from eight down to zero, by two on each of the appends, nine to twelve.",
         {
           "beat": 0.3
         },
@@ -93,7 +93,7 @@
       "answer": [
         "Twelve.",
         "Appends nine to twelve move two keys each, eight in all, while n goes from eight to twelve.",
-        "The copy ends at one and a half times the old size, with a quarter of the new buffer free.",
+        "The copying finishes when the element count reaches one and a half times the previous capacity, leaving twenty five percent of the new buffer unused.",
         "Moving one key per append would also finish, but exactly as the buffer fills, with no slack.",
         "For growth factor g, move at least one over g minus one keys per append."
       ]
@@ -120,7 +120,7 @@
         "A sorted vector deletes by leaving a tombstone. A lookup reports a tombstoned key as absent.",
         "Once half the slots are tombstones, copy the live keys into a compact vector.",
         "That costs theta of n, after theta of n deletes. So it is big O of one, amortized.",
-        "The doubling vector does the same for growth.",
+        "The doubling vector does the very same thing, for growth.",
         {
           "beat": 0.3
         },
@@ -177,7 +177,7 @@
         },
         "The time is proportional to the subtree.",
         "Who pays? Each node holds a constant times the difference between its left and right sizes, as potential.",
-        "An insert adds a little at each of its big O of log n ancestors. An unbalanced node holds theta of its own size, enough for the climb and the rebuild.",
+        "An insert adds a little at each of its big O of log n ancestors, and an unbalanced node holds theta of its own size. That is enough for the climb, and for the rebuild.",
         "So inserts cost big O of log n, amortized."
       ]
     },
@@ -201,7 +201,7 @@
         {
           "beat": 0.3
         },
-        "Searches never restructure. Their worst case stays big O of log n, with depth at most thirty four here."
+        "Searches never restructure anything. Their worst case stays big O of log n, and the depth is at most thirty four here."
       ]
     },
     {
@@ -224,7 +224,7 @@
       ],
       "answer": [
         "Five hundred twenty four thousand, two hundred eighty eight appends, and three writes.",
-        "The next append allocates twice the slots, and moving the keys at two per append takes five hundred twenty four thousand, two hundred eighty eight appends.",
+        "The next append allocates twice the slots. Moving the keys at two per append then takes five hundred twenty four thousand, two hundred eighty eight appends.",
         "That ends when n is one million, five hundred seventy two thousand, eight hundred sixty four.",
         "Meanwhile both buffers, twenty four mebibytes, stay alive.",
         "Each of those appends writes its key and moves two."
@@ -232,14 +232,14 @@
     },
     {
       "lines": [
-        "A teammate's get of i reads the new buffer for every index while a copy runs.",
-        "Right after append nine, the old size is eight and the frontier k is two.",
+        "A teammate's get of i reads the new buffer, for every index, while a copy runs.",
+        "Right after append number nine, the old size is eight, and the frontier, k, is two.",
         "What does get of five return?"
       ],
       "answer": [
         "An empty slot.",
         "Only indices below two have moved. New slots two to seven are still empty, and slot eight holds key nine.",
-        "Reads must check the frontier: old buffer if k is at most i and i is below m, else the new one.",
+        "Reads must check the frontier. Index i is in the old buffer if k is at most i, and i is below m. Otherwise, the read goes to the new buffer.",
         "Writes need the same rule, or a later move overwrites the new value with the old one."
       ]
     },
