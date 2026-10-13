@@ -703,3 +703,5 @@ Next: 7 narration.
 ## Changes after final
 
 (none)
+
+- Release run stopped by owner (2026-10-13; narration moves to the PC). Done: seam checks and fixes, Basics section, registry `uses` and `status: 'live'`, new first line in step 1's narration ("Three stages each need a buffer at the same time."). Not done: narration; clip 01 is stale and must be regenerated. Not merged to main.

@@ -778,3 +778,5 @@ Logged here, not fixed, because this run must not edit another topic's files or 
 ## Changes after final
 
 (none yet)
+
+- Release run stopped by owner (2026-10-13; narration moves to the PC). Done: seam checks (REVIEW findings 3-9 fixed; findings 1-2 are in the locked live topic raii-drop-order-leak and reported only), Basics section, registry `uses` and `status: 'live'`. Not done: narration. Clips 05, 09, 13, 13a still fail pace (181/178/173/172 wpm); the take run was killed during its second round (14 of 64 extra takes) with ~15 lines still failing the transcript check (e.g. "A hole can be filled again...", "Move a field on only one path...", "The owner gets the value back..."). Takes made so far are saved with `cache_sync.py push`. No audio was re-assembled; not merged to main.
