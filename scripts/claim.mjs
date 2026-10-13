@@ -1,14 +1,19 @@
 // Lets several routine runs of one domain work at once without clashing (ROUTINE.md section 1).
 // Each run claims one topic on the `claims` branch (one JSON file per claimed topic). A run keeps its claim alive
 // with a heartbeat; a claim whose heartbeat stops (the run hit a limit or died) can be taken over and resumed.
-// Chapters go in sequence, topics in parallel: one run plans a chapter (CHAPTER.md: every topic's scope, outcomes,
-// concepts, bridge and handoff) once every topic of the chapter before is content-final; then all topics of the planned
-// chapter are built in parallel, each to its part of the plan. Topics finished out of order ship held, and a later run
-// releases them in order, as a chain.
+// Three stages, decoupled (owner decision 2026-10-13): DRAFT runs plan a chapter (CHAPTER.md: every topic's scope,
+// outcomes, concepts, bridge and handoff) once every topic of the chapter before is drafted, and draft its topics in
+// parallel (research, content plan, fact-check, every file including the professor's narration script), each pushed as
+// a topic branch and handed over; REVIEW runs take a drafted topic, review it, fix it, check it and ship it held (parked);
+// the owner's PC narrates and releases (.claude/skills/narrate). Topics finished out of order ship held, and a release
+// run (the PC) makes them live in order, as a chain.
 //
-//   node scripts/claim.mjs next <domain>        claim this run's job; prints JSON: action plan | make | resume | release | wait
+//   node scripts/claim.mjs next <domain> [--role draft|review]
+//                                               claim this run's job; prints JSON: action plan | draft | review | release | wait
+//                                               (--role draft: plan and draft jobs only; --role review: review jobs only; no role: any)
+//   node scripts/claim.mjs drafted              this topic's draft is pushed: hand it to a review run (the draft run goes on to its next job)
 //   node scripts/claim.mjs set <topic-id> <topic-folder>   record the topic's id and folder on this run's claim
-//   node scripts/claim.mjs final                this topic's content is final and pushed: the next topic may start
+//   node scripts/claim.mjs final                this topic's content is final (reviewed, checked) and pushed
 //   node scripts/claim.mjs keepalive            run in the background: a heartbeat every 15 minutes while this run works
 //   node scripts/claim.mjs mine                 exit 2 if another run has taken this claim over (then stop)
 //   node scripts/claim.mjs stop "<reason>"      this run can't finish: hand the topic back at once (the next run resumes it)
@@ -185,7 +190,9 @@ async function context(domainArg) {
 }
 
 // The job the next run of a domain gets, as a transaction over the claims (`next` saves it; `open` only simulates it).
-function decide({ domain, order, reg, lost, plans, chapters }, owner) {
+function decide({ domain, order, reg, lost, plans, chapters }, owner, role = 'any') {
+  const drafts = role !== 'review'; // may plan chapters and draft topics
+  const reviews = role !== 'draft'; // may review drafted topics
   return ({ all, write }) => {
     // Claims are found by title (a topic's syllabus title, or "Chapter N plan" for a chapter plan), never by position,
     // so a syllabus reorder can't point a claim at the wrong job. New claims are filed under the title's slug.
@@ -219,7 +226,8 @@ function decide({ domain, order, reg, lost, plans, chapters }, owner) {
     const describe = (i) => {
       if (i < 0 || i >= order.length) return null;
       const t = order[i], r = reg.get(t.title), c = claimOf(t.title);
-      return { title: t.title, status: r ? r.status : c ? (stale(c) ? 'abandoned' : c.final ? 'content final' : 'in progress') : 'not started', topicId: r?.id ?? c?.topicId ?? null, branch: !r && c?.topicId ? `topic/${c.topicId}` : null, folder: r ? `site/src/topics/${r.slug}` : c?.folder ?? null };
+      const status = r ? r.status : !c ? 'not started' : c.final ? 'content final' : c.drafted && stale(c) ? 'drafted, waiting for review' : stale(c) ? 'abandoned' : c.stage === 'review' ? 'in review' : 'being drafted';
+      return { title: t.title, status, topicId: r?.id ?? c?.topicId ?? null, branch: !r && c?.topicId ? `topic/${c.topicId}` : null, folder: r ? `site/src/topics/${r.slug}` : c?.folder ?? null };
     };
     const claimJob = (title, fields) => {
       const c = claimOf(title);
@@ -247,25 +255,35 @@ function decide({ domain, order, reg, lost, plans, chapters }, owner) {
       }
     }
 
-    // 2. Resume: a topic or a chapter plan whose run stopped (or an unclaimed topic branch from before claims).
-    for (let i = 0; i < order.length; i++) {
+    // 2. Review: a drafted topic handed over by its draft run (claim.mjs drafted), or a review that stopped; in syllabus order.
+    //    A review run starts at ROUTINE.md section 4 on the topic's branch. A topic whose content is final but whose run
+    //    stopped before shipping is resumed here too (the review stage ends with the ship).
+    for (let i = 0; i < order.length && reviews; i++) {
+      const t = order[i], r = reg.get(t.title), c = claimOf(t.title);
+      if (r || !c || !stale(c) || c.stage !== 'review' || tooOften(c, t.title)) continue;
+      const { file, claim, previousRunStopped } = claimJob(t.title, { kind: 'topic', action: 'review', stage: 'review', index: i + 1, chapter: t.chapter, chapterNumber: t.c.number, milestone: t.m.number, topicId: c.topicId ?? null, folder: c.folder ?? null, final: !!c.final, drafted: true });
+      return { action: 'review', file, attempt: claim.attempts, previousRunStopped: c.drafted && !c.reviewAttempts ? undefined : previousRunStopped, contentFinal: !!c.final, topic: { index: i + 1, title: t.title, chapter: chapterInfo(t.c), topicId: claim.topicId, branch: claim.topicId ? `topic/${claim.topicId}` : null, folder: claim.folder }, previous: describe(i - 1), next: describe(i + 1) };
+    }
+    // 2b. Resume a draft whose run stopped (or an unclaimed topic branch from before claims): the draft run continues it.
+    for (let i = 0; i < order.length && drafts; i++) {
       const t = order[i], r = reg.get(t.title);
       let c = claimOf(t.title);
       if (r) continue;
-      if (!c && lost.get(t.title)) c = { ...lost.get(t.title), startedAt: 'before claims', beatAt: new Date(0).toISOString() };
-      if (!c || !stale(c) || tooOften(c, t.title)) continue;
-      const { file, claim, previousRunStopped } = claimJob(t.title, { kind: 'topic', action: 'resume', index: i + 1, chapter: t.chapter, chapterNumber: t.c.number, milestone: t.m.number, topicId: c.topicId ?? null, folder: c.folder ?? null, final: !!c.final });
-      return { action: 'resume', file, attempt: claim.attempts, previousRunStopped, topic: { index: i + 1, title: t.title, chapter: chapterInfo(t.c), topicId: claim.topicId, branch: claim.topicId ? `topic/${claim.topicId}` : null, folder: claim.folder }, previous: describe(i - 1), next: describe(i + 1) };
+      if (!c && lost.get(t.title)) c = { ...lost.get(t.title), startedAt: 'before claims', beatAt: new Date(0).toISOString(), stage: 'draft' };
+      if (!c || !stale(c) || c.stage === 'review' || tooOften(c, t.title)) continue;
+      const { file, claim, previousRunStopped } = claimJob(t.title, { kind: 'topic', action: 'draft', stage: 'draft', index: i + 1, chapter: t.chapter, chapterNumber: t.c.number, milestone: t.m.number, topicId: c.topicId ?? null, folder: c.folder ?? null, final: false });
+      return { action: 'draft', resumed: true, file, attempt: claim.attempts, previousRunStopped, topic: { index: i + 1, title: t.title, chapter: chapterInfo(t.c), topicId: claim.topicId, branch: claim.topicId ? `topic/${claim.topicId}` : null, folder: claim.folder }, previous: describe(i - 1), next: describe(i + 1) };
     }
     for (const ch of chapters) {
       const c = claimOf(planTitle(ch));
-      if (c && stale(c) && !plans.has(ch.number) && !tooOften(c, planTitle(ch))) return planJob(ch, true);
+      if (drafts && c && stale(c) && !plans.has(ch.number) && !tooOften(c, planTitle(ch))) return planJob(ch, true);
     }
 
-    // 3. Plan the next chapter (never while finishing started work only). Chapters go in sequence: a chapter is planned once every topic of the chapter before it is
-    // content-final (live, held, or marked final), so its plan builds on what that chapter really teaches.
-    const complete = (ch) => order.filter((t) => t.c.number === ch.number).every((t) => reg.get(t.title) || claimOf(t.title)?.final);
-    for (let k = 0; k < chapters.length && !SETTINGS.finishOnly; k++) {
+    // 3. Plan the next chapter (never while finishing started work only). Chapters go in sequence: a chapter is planned once
+    // every topic of the chapter before it is at least drafted (in the registry, content-final, or handed to review), so its
+    // plan builds on what that chapter really teaches while the reviews of that chapter go on in parallel (the decoupling).
+    const complete = (ch) => order.filter((t) => t.c.number === ch.number).every((t) => reg.get(t.title) || claimOf(t.title)?.final || claimOf(t.title)?.drafted);
+    for (let k = 0; k < chapters.length && drafts && !SETTINGS.finishOnly; k++) {
       const ch = chapters[k];
       if (plans.has(ch.number)) continue;
       if (claimOf(planTitle(ch))) break; // being planned (or blocked)
@@ -274,17 +292,18 @@ function decide({ domain, order, reg, lost, plans, chapters }, owner) {
       return planJob(ch, false);
     }
 
-    // 4. Make: the first topic nobody is on, in a planned chapter.
-    for (let i = 0; i < order.length; i++) {
+    // 4. Draft: the first topic nobody is on, in a planned chapter.
+    for (let i = 0; i < order.length && drafts; i++) {
       const t = order[i];
       if (reg.get(t.title) || claimOf(t.title) || lost.get(t.title)) continue;
       if (!plans.has(t.c.number)) continue;
       if (SETTINGS.finishOnly && !restart.has(t.title)) continue; // finishing: only topics whose runs died are started again
       const place = placeFor(domain, t, reg, claims, plans);
-      const { file, claim } = claimJob(t.title, { kind: 'topic', action: 'make', index: i + 1, chapter: t.chapter, chapterNumber: t.c.number, milestone: t.m.number, topicId: place.topicId, folder: place.folder, final: false });
-      return { action: 'make', file, attempt: claim.attempts, topic: { index: i + 1, title: t.title, chapter: chapterInfo(t.c), topicId: place.topicId, branch: `topic/${place.topicId}`, folder: place.folder, use: place }, previous: describe(i - 1), next: describe(i + 1) };
+      const { file, claim } = claimJob(t.title, { kind: 'topic', action: 'draft', stage: 'draft', index: i + 1, chapter: t.chapter, chapterNumber: t.c.number, milestone: t.m.number, topicId: place.topicId, folder: place.folder, final: false });
+      return { action: 'draft', file, attempt: claim.attempts, topic: { index: i + 1, title: t.title, chapter: chapterInfo(t.c), topicId: place.topicId, branch: `topic/${place.topicId}`, folder: place.folder, use: place }, previous: describe(i - 1), next: describe(i + 1) };
     }
-    return { action: 'wait', reason: blocked.length ? blocked.join('; ') : SETTINGS.finishOnly ? 'finishing started topics only (scripts/claim-settings.json): nothing new is started' : 'every topic of the planned chapter is taken; the next chapter is planned once they are all content-final', ...(blocked.length ? { blocked } : {}) };
+    const reason = blocked.length ? blocked.join('; ') : role === 'review' ? 'no drafted topic is waiting for review' : role === 'draft' ? (SETTINGS.finishOnly ? 'finishing started topics only (scripts/claim-settings.json): nothing new is drafted' : 'every topic of the planned chapter is drafted or being drafted; the next chapter is planned once they are all drafted') : SETTINGS.finishOnly ? 'finishing started topics only (scripts/claim-settings.json): nothing new is started' : 'nothing to draft or review now';
+    return { action: 'wait', reason, ...(blocked.length ? { blocked } : {}) };
 
     function planJob(ch, resuming) {
       const first = order.find((t) => t.c.number === ch.number);
@@ -301,14 +320,17 @@ function decide({ domain, order, reg, lost, plans, chapters }, owner) {
 }
 
 if (cmd === 'next') {
-  const ctx = await context(args[0] ?? die('usage: next <domain>'));
+  const roleIdx = args.indexOf('--role');
+  const role = roleIdx >= 0 ? args[roleIdx + 1] : 'any';
+  if (!['draft', 'review', 'any'].includes(role)) die('usage: next <domain> [--role draft|review]');
+  const ctx = await context(args.filter((a, i) => a !== '--role' && i !== roleIdx + 1)[0] ?? die('usage: next <domain> [--role draft|review]'));
   const { domain } = ctx;
   const owner = randomUUID();
-  const res = transact(decide(ctx, owner));
+  const res = transact(decide(ctx, owner, role));
   const files = res.files ?? (res.file ? [res.file] : []);
   if (files.length) writeFileSync(local, JSON.stringify({ domain, files, owner }));
   console.log(JSON.stringify(res, null, 2));
-} else if (['set', 'final', 'outlined', 'beat', 'done', 'stop'].includes(cmd)) {
+} else if (['set', 'final', 'outlined', 'beat', 'done', 'stop', 'drafted'].includes(cmd)) {
   const me = mine();
   if (cmd === 'set' && !(args[0] && args[1])) die('usage: set <topic-id> <topic-folder>');
   const ok = transact(({ read, write }) => {
@@ -318,12 +340,14 @@ if (cmd === 'next') {
       if (cmd === 'done') write(f, null);
       // stop: stale at once, so the next run resumes it; the note says why, for that run and for a human.
       else if (cmd === 'stop') write(f, { ...c, beatAt: new Date(0).toISOString(), note: args.join(' ') || 'stopped' });
+      // drafted: the draft is pushed; hand the topic to a review run at once (stale, stage review), with no stop counted.
+      else if (cmd === 'drafted') write(f, { ...c, beatAt: new Date(0).toISOString(), stage: 'review', drafted: true, draftedAt: now(), note: undefined, lastNote: c.note ?? c.lastNote, stops: 0, deaths: 0 });
       else write(f, { ...c, beatAt: now(), ...(cmd === 'set' ? { topicId: args[0], folder: args[1] } : {}), ...(cmd === 'final' ? { final: true } : {}) });
     }
     return true;
   });
   if (!ok) die('another run has taken this claim over: stop, and leave its branch alone');
-  if (cmd === 'done' || cmd === 'stop') { rmSync(local, { force: true }); rmSync(legacy, { force: true }); }
+  if (cmd === 'done' || cmd === 'stop' || cmd === 'drafted') { rmSync(local, { force: true }); rmSync(legacy, { force: true }); }
   console.log(`claim: ${cmd} ok`);
 } else if (cmd === 'mine') {
   const me = mine();
@@ -380,8 +404,8 @@ if (cmd === 'next') {
   console.log(gone.length ? `expired ${gone.length}: ${gone.join('; ')}` : 'nothing to expire');
 } else if (cmd === 'status') {
   const rows = transact(({ all }) => all()).filter((c) => !args[0] || c.domain.includes(args[0].toLowerCase()));
-  for (const c of rows) console.log(`${c.domain} ${c.kind === 'chapter-plan' ? '' : `#${c.index} `}${c.title} [${c.action}${c.final ? ', content final' : ''}, attempt ${c.attempts ?? 1}] ${c.topicId ?? ''} heartbeat ${Math.round(ageMin(c.beatAt))} min ago${stale(c) ? ' (stale)' : ''}${c.note ? ` — stopped: ${c.note}` : ''}`);
+  for (const c of rows) console.log(`${c.domain} ${c.kind === 'chapter-plan' ? '' : `#${c.index} `}${c.title} [${c.action}${c.stage ? `, stage ${c.stage}` : ''}${c.drafted && !c.final ? ', drafted' : ''}${c.final ? ', content final' : ''}, attempt ${c.attempts ?? 1}] ${c.topicId ?? ''} heartbeat ${Math.round(ageMin(c.beatAt))} min ago${stale(c) ? ' (stale)' : ''}${c.note ? ` — stopped: ${c.note}` : ''}`);
   if (!rows.length) console.log('no claims');
 } else {
-  die('usage: next <domain> | set <topic-id> <folder> | final | keepalive | mine | stop "<reason>" | done | status [<domain>] | open [<domain>...] | expire <minutes>');
+  die('usage: next <domain> [--role draft|review] | set <topic-id> <folder> | drafted | final | keepalive | mine | stop "<reason>" | done | status [<domain>] | open [<domain>...] | expire <minutes>');
 }

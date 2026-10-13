@@ -15,13 +15,15 @@ This is the learning site: every syllabus topic becomes a short animated, narrat
 
 ## Where work happens (owner decision 2026-10-13)
 
-- **The cloud** (Claude routines, one per domain, currently paused): builds a topic end to end **except narration** and ships it to `main` as **held**, without audio. That is a **parked** topic: finished content, no page on the site yet, waiting for its voice. Skill: `.claude/skills/make-topic`.
+- **The cloud, draft runs** (`.claude/skills/draft-chapter`, role `draft`): plan the next chapter and write every topic's first draft (research, content plan, fact-check, coverage map, every file including the narration script in the professor's voice), one topic branch each, handed over with `claim.mjs drafted`. Chapter N+1 is drafted as soon as chapter N is fully drafted.
+- **The cloud, review runs** (`.claude/skills/review-topic`, role `review`, the three domain routines, currently paused): take one drafted topic, review it, fix it, run every check, mark it content-final and ship it to `main` as **held**, without audio. That is a **parked** topic: finished content, no page on the site yet, waiting for its voice.
 - **The owner's PC** (Windows 11, Radeon RX 9070 XT, this machine when the working directory is a checkout of this repo on Windows): narrates the parked topics in bulk on the GPU and **releases** them, in syllabus order, as live reels. Skills: `.claude/skills/voice-showcase` (once, to pick the voice) and `.claude/skills/narrate` (every time).
 
-`scripts/claim-settings.json` → `"narration": "pc"` is the switch that keeps release jobs away from the cloud; the PC takes them with `CLAIM_RELEASE=1`.
+`scripts/claim.mjs next "<domain>" --role draft|review` hands out the jobs (`plan`, `draft`, `review`; `release` only on the PC with `CLAIM_RELEASE=1`); `scripts/claim-settings.json` → `"narration": "pc"` keeps release jobs away from the cloud, `finishOnly` stops new drafts and plans.
 
 ## Vocabulary the owner uses
 
+- **"Draft the next chapter", "write the first drafts"** → `/draft-chapter <domain>`. **"Review the drafts", "ready the topics"** → `/review-topic <domain>` (what a routine run does).
 - **"Narrate", "do the narration", "the parked topics", "release the held topics"** → `/narrate` (`.claude/skills/narrate/SKILL.md`). The work list is `cd site && npm run test:narration`: every warning names a held topic without audio.
 - **"The voice showcase", "show me the voices", "audition", "pick the voice"** → `/voice-showcase` (`.claude/skills/voice-showcase/SKILL.md`): render every candidate voice on real script lines into `site/narration/pc/audition/` with an `index.html` to listen from, and wait for the owner to pick. **Production narration never starts until the owner has picked and the voice is frozen** (`site/narration/voice.json` → `version` is no longer `tara-v1`).
 - **"The narration just reads the screen", "make it teach", "like an MIT professor"** → the rule and the persona in `PROJECT_PLAN.md` (Narration → Three texts, one rule; The narrator's persona), the writing brief `.claude/skills/narrate/teacher-pass.md`. Three texts per step: the **on-screen text** in the drawing, the **description** (the paragraph under the animation), and the **narration**, which is both the voice and the captions. The narration is an MIT professor explaining the picture; it never reads the description. The build enforces a floor; `site/src/topics/narration-backlog.json` lists the old scripts still to rewrite, which `/narrate` step 1b does before narrating them.

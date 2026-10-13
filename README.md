@@ -8,16 +8,16 @@ Three tracks, each with a full syllabus:
 
 | Track | Syllabus | Status |
 |---|---|---|
-| Data Engineering | [syllabus/data-engineering.md](syllabus/data-engineering.md) | in production (routine every 4 hours) |
-| Data Structures & Algorithms | [syllabus/data-structures-and-algorithms.md](syllabus/data-structures-and-algorithms.md) | in production (routine every 4 hours) |
-| Rust Systems Engineering | [syllabus/rust-systems-engineering.md](syllabus/rust-systems-engineering.md) | in production (routine every 4 hours) |
+| Data Engineering | [syllabus/data-engineering.md](syllabus/data-engineering.md) | in production (draft and review routines, every 4 hours; narration on the owner's PC) |
+| Data Structures & Algorithms | [syllabus/data-structures-and-algorithms.md](syllabus/data-structures-and-algorithms.md) | in production (draft and review routines, every 4 hours; narration on the owner's PC) |
+| Rust Systems Engineering | [syllabus/rust-systems-engineering.md](syllabus/rust-systems-engineering.md) | in production (draft and review routines, every 4 hours; narration on the owner's PC) |
 
 ## The documents that run the project
 
 | File | What it is |
 |---|---|
 | [PROJECT_PLAN.md](PROJECT_PLAN.md) | The rules (animate first; one topic at a time; verified, state-of-the-art content; beautiful and memorable; a natural flow; complete coverage, proven), what every topic contains, the Definition of Done, the narration standard and the tech stack. **The plan wins any conflict.** |
-| [ROUTINE.md](ROUTINE.md) | The step-by-step procedure the per-domain routines (every 4 hours) follow to make, check and ship the next topic. |
+| [ROUTINE.md](ROUTINE.md) | The step-by-step procedure the per-domain routines (every 4 hours) follow: draft runs plan a chapter and write first drafts, review runs review, check and ship the next topic held. |
 | [DESIGN.md](DESIGN.md) | The house style for reel steps: canvas, text sizes, colour, motion, and what the looks review checks. |
 | [LEDGER.md](LEDGER.md) | Two lines per routine run and per audit finding: time, tokens per model, checks passed, what went wrong. The data for improving the pipeline. |
 | [AUDIT.md](AUDIT.md) | The daily audit: re-checks every reel shipped since the last audit, fixes what is wrong, and records which part of the pipeline let it through. |
@@ -96,11 +96,13 @@ Both are frozen in `site/narration/voice.json`. Details are in [site/narration/R
 
 Each domain has a routine that fires every 4 hours (an automated session; up to four runs of one domain and six in all work at once; runs only narrating or shipping don't count, each on its own job) that follows [ROUTINE.md](ROUTINE.md). Chapters go in sequence, the topics of a chapter in parallel. A dispatcher session starts runs every hour, one per free job (`node scripts/claim.mjs open` counts them), because a routine session can't start runs itself.
 
-1. Before a chapter is built, one run plans it: an Opus planner writes the chapter's `CHAPTER.md` (each topic's scope, concepts introduced and used, bridge and handoff), a fresh Opus agent reviews it, and it is pushed to `main`. That plan is the contract every topic of the chapter follows, so they can all be built at once and still follow on from each other. The next chapter is planned once every topic of this one is content-final.
-2. Each other run claims the first topic of a planned chapter that no run is working on.
-3. It researches the topic from primary sources; an Opus agent plans and storyboards it, a fresh Opus agent fact-checks the plan, and a blind expert list starts the coverage map. Opus does the five judgment jobs (chapter plan and its review, content plan, fact-check, content review); everything else is Sonnet; checks go to fresh agents that didn't write what they check.
-4. A builder agent writes the reel, Deep dive, Prerequisites, narration script and executed examples; fresh agents review the content and the looks; every check except narration must pass.
-5. The topic is marked content-final (the next chapter may be planned once all its siblings are too), checked once more in full, and shipped to `main` **held, without audio**: narration is parked for the owner's PC, which narrates the parked topics in bulk on a GPU and releases them in order (`.claude/skills/narrate`).
+The work is split in three stages (owner decision 2026-10-13): draft runs plan chapters and write first drafts, review runs review and ready them, the owner's PC narrates and releases.
+
+1. Before a chapter is built, one draft run plans it: an Opus planner writes the chapter's `CHAPTER.md` (each topic's scope, concepts introduced and used, bridge and handoff), a fresh Opus agent reviews it, and it is pushed to `main`. That plan is the contract every topic of the chapter follows, so they can all be built at once and still follow on from each other. The next chapter is planned once every topic of this one is content-final.
+2. Draft runs claim the topics of the planned chapter, one at a time, as many runs in parallel as the limits allow; a draft run goes on to the next topic until the chapter is drafted.
+3. A draft run researches the topic from primary sources; an Opus agent plans and storyboards it, a fresh Opus agent fact-checks the plan, and a blind expert list starts the coverage map. Opus does the five judgment jobs (chapter plan and its review, content plan, fact-check, content review); everything else is Sonnet; checks go to fresh agents that didn't write what they check.
+4. A builder agent writes the reel, Deep dive, Prerequisites, the narration script in the voice of an MIT professor (never the description read aloud) and executed examples; the draft is pushed as a topic branch and handed over. The next chapter is planned and drafted as soon as this one is fully drafted.
+5. A review run takes one drafted topic: fresh agents review the content and the looks, every check except narration must pass, and the topic is marked content-final (the next chapter may be planned once all its siblings are too), checked once more in full, and shipped to `main` **held, without audio**: narration is parked for the owner's PC, which narrates the parked topics in bulk on a GPU and releases them in order (`.claude/skills/narrate`).
 
 A topic goes live only when every topic before it in its domain is live; one finished early is held until then. If a check fails, the routine fixes the cause and never loosens the check.
 
