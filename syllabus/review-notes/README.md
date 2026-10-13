@@ -15,13 +15,13 @@ Change logs from the topic-by-topic review of the three syllabi. Each file lists
 
 ## Cut shortlists (October 2026)
 
-Topics that do not bear on the owner's goal (a Data Engineer or Rust data-infrastructure role abroad), in two tiers, each title word for word. Tier A of the Data Engineering list is applied as `*(skipped)*` marks in the syllabus; the other two are proposals. A topic that already has a reel, a claim or a topic branch is never listed: it is made, so skipping it gains nothing (owner rule 2026-10-13).
+Topics that do not bear on the owner's goal (a Data Engineer or Rust data-infrastructure role abroad), in two tiers, each title word for word. Applied as `*(skipped)*` marks in the syllabi: Tier A for Data Engineering (12 October), Tiers A and B for Rust and DSA (13 October). A topic that already has a reel, a claim or a topic branch is never listed: it is made, so skipping it gains nothing (owner rule 2026-10-13).
 
 | File | Domain | Tier A | Tier B |
 |---|---|---|---|
 | [de-cuts.md](de-cuts.md) | Data Engineering | 177 topics + 46 cases (applied) | 82 |
-| [rust-cuts.md](rust-cuts.md) | Rust Systems Engineering | 16 | 40 |
-| [dsa-cuts.md](dsa-cuts.md) | Data Structures & Algorithms | 73 topics + 5 cases | 56 |
+| [rust-cuts.md](rust-cuts.md) | Rust Systems Engineering | 16 (applied) | 40 (applied) |
+| [dsa-cuts.md](dsa-cuts.md) | Data Structures & Algorithms | 73 topics + 5 cases (applied) | 56 (applied) |
 
 ## Fact-check logs
 
