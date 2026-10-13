@@ -4,7 +4,7 @@ The reels' voice-over is generated here, on our own machine, with an open-source
 
 - `voice.json` — the frozen voices: the English narrator (Orpheus "tara": model, sampling, takes, pauses, audio standard). Changing it regenerates every clip.
 - `<topic>/narration.json` (next to each reel) — the script, written to be spoken: one line per sentence or phrase; `{"beat": s}` for a deliberate pause; an `answer` clip for predict steps.
-- `setup.sh` — one-time setup of everything below for the CPU voice, on any fresh machine or session. The owner's PC (GPU) is set up by `pc/README.md` instead; `gen_takes_qwen.py` is its generator and `audition.py` picks its voice.
+- `setup.sh` — one-time setup of everything below for the CPU voice, on any fresh machine or session. The owner's PC (GPU) is set up by `pc/README.md` instead; `gen_takes_breeze.py` (Breeze TTS 2 on Vulkan) and `gen_takes_qwen.py` (Qwen3-TTS on ROCm) are its generators and `audition.py` picks its voice.
 - `narrate.sh` — runs the rounds: generate takes (`gen_takes.py`), check and assemble (`assemble.py`), more takes for any line that failed.
 - Output: `public/audio/<topic id>/NN.webm` (Opus) and `NN.mp3`, plus `manifest.json` (script hash, line timings for captions, loudness, peak, pace).
 

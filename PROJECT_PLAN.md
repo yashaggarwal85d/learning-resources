@@ -269,7 +269,7 @@ Reels can carry an optional voice-over that narrates each step, which makes them
 
 #### Generating it ourselves
 
-- **Model.** An open-source text-to-speech model run on our own machines. Its code and weights must carry a licence that allows commercial use; models whose weights are limited to non-commercial use are excluded.
+- **Model.** An open-source text-to-speech model run on our own machines. The site is a personal, non-commercial project (owner decision 2026-10-13), so a model's licence must allow self-hosted personal and non-commercial use; weights released under a research or non-commercial licence qualify, and the licence is recorded in `voice.json` → `model.licence`. If the site ever becomes commercial, the voice is re-chosen among commercially licensed models first and every clip regenerated.
 - **The chosen voice (October 2026).** After listening comparisons of Kokoro, Qwen3-TTS (designed voices), VoxCPM2, Chatterbox and Orpheus, the site owner chose **Orpheus 3B ("tara")**: Canopy Labs' fine-tuned model, run as a quantised GGUF on CPU (Apache-2.0 model card; built on Llama 3.2, so it carries a "Built with Llama" credit). The frozen settings live in `site/narration/voice.json`.
 - **Natural delivery, by method.** Orpheus is most natural when driven well, so every clip is made the same way:
   - the script is written for speaking (short lines, questions that rise, ellipses where a thought lands), separate from the on-screen text;

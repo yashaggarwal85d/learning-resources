@@ -8,10 +8,11 @@ topic=$1
 tools=${NARRATION_TOOLS:-$HOME/.cache/learning-narration/tools}
 ORPHEUS_PY=${ORPHEUS_PY:-$tools/.venv-orph/bin/python}
 EVAL_PY=${EVAL_PY:-$tools/.venv-eval/bin/python}
-# The generator follows voice.json → model.engine: orpheus (the CPU voice, gen_takes.py) or qwen3-tts (the GPU voice on the
-# owner PC, gen_takes_qwen.py, run with TTS_PY; see pc/README.md).
+# The generator follows voice.json → model.engine: orpheus (the CPU voice, gen_takes.py), or on the owner PC (pc/README.md)
+# breeze-tts-2 (gen_takes_breeze.py, Breeze-TTS-2.cpp on Vulkan) or qwen3-tts (gen_takes_qwen.py, PyTorch on ROCm), run with TTS_PY.
 engine=$( (grep -o '"engine": *"[^"]*"' "$here/voice.json" || true) | head -1 | sed 's/.*"\([^"]*\)"$/\1/')
 case "${engine:-orpheus}" in
+  breeze-tts-2) GEN_PY=${TTS_PY:?set TTS_PY to the python of the GPU environment, see pc/README.md}; GEN=gen_takes_breeze.py ;;
   qwen3-tts) GEN_PY=${TTS_PY:?set TTS_PY to the python of the GPU environment, see pc/README.md}; GEN=gen_takes_qwen.py ;;
   *) GEN_PY=$ORPHEUS_PY; GEN=gen_takes.py ;;
 esac
