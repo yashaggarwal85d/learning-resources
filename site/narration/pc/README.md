@@ -44,6 +44,8 @@ export EVAL_PY="$TTS_PY"
 
 ## 2. Audition: the owner picks the voice by listening (QUALITY.md #25)
 
+The skill for this is `/voice-showcase` (`.claude/skills/voice-showcase/SKILL.md`); it runs the commands below, opens the listening page `narration/pc/audition/index.html`, waits for the pick, and freezes it (section 3). `/narrate` refuses to start until that has happened.
+
 The voice must be female, one narrator for the whole site, consistent across every line, warm and unhurried (PROJECT_PLAN.md, Narration → The voice). No cloning of a real, identifiable person: every candidate is a voice the model designed from a description, rendered once on a reference line and then cloned from that one clip, so the narrator is the same speaker on every line.
 
 ```sh

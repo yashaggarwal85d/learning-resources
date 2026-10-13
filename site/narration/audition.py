@@ -82,8 +82,33 @@ def qwen():
         print("rendered qwen", name, flush=True)
 
 
+def index():
+    """A listening page: one row per candidate, a player per line, so the owner can compare in the browser."""
+    import html
+    cands = sorted(d for d in os.listdir(OUT) if os.path.isdir(os.path.join(OUT, d))) if os.path.isdir(OUT) else []
+    rows = []
+    for c in cands:
+        players = "".join(
+            f'<div class="line"><div class="t">{i}. {html.escape(LINES[i-1])}</div><audio controls preload="none" src="{c}/{i}.wav"></audio></div>'
+            for i in range(1, len(LINES) + 1) if os.path.exists(os.path.join(OUT, c, f"{i}.wav")))
+        ref = f'<div class="line"><div class="t">reference (the designed clip the voice is cloned from)</div><audio controls preload="none" src="{c}/reference.wav"></audio></div>' if os.path.exists(os.path.join(OUT, c, "reference.wav")) else ""
+        rows.append(f'<section><h2>{html.escape(c)}</h2>{ref}{players}</section>')
+    page = f"""<!doctype html><meta charset="utf-8"><title>Voice showcase</title>
+<style>body{{font:16px/1.5 system-ui;margin:2rem auto;max-width:60rem;padding:0 1rem;background:#1b1512;color:#f3e9dd}}
+h1{{font-size:1.6rem}}h2{{font-size:1.2rem;margin:2rem 0 .5rem;color:#d9a46a}}section{{border-top:1px solid #4a3a30;padding-top:.5rem}}
+.line{{display:grid;grid-template-columns:1fr 20rem;gap:1rem;align-items:center;padding:.3rem 0}}.t{{color:#cdbba8}}audio{{width:20rem}}
+p{{color:#cdbba8}}</style>
+<h1>Voice showcase: {len(cands)} candidate(s)</h1>
+<p>Each candidate is one designed voice reading the same six script lines. Listen in order at normal volume, then tell Claude which one, or what to change (warmer, lower, slower). Nothing is frozen until you choose.</p>
+{"".join(rows) or "<p>No candidates rendered yet.</p>"}"""
+    os.makedirs(OUT, exist_ok=True)
+    open(os.path.join(OUT, "index.html"), "w", encoding="utf-8").write(page)
+    return os.path.join(OUT, "index.html")
+
+
 if __name__ == "__main__":
     which = sys.argv[1:] or ["breeze", "qwen"]
     if "breeze" in which: breeze()
     if "qwen" in which: qwen()
-    print(f"Listen in {OUT}. The chosen candidate's reference.wav becomes narration/pc/reference.wav (pc/README.md section 3).")
+    page = index()
+    print(f"Listening page: {page}  (open it in the browser). The chosen candidate's reference.wav becomes narration/pc/reference.wav (pc/README.md section 3).")
