@@ -1,0 +1,80 @@
+import Resource from '../../../../../components/Resource.astro';
+
+This reel assumes three things. If they're familiar, skip straight in. If one isn't, a few minutes with the matching resource is enough to follow every step. Reels on this site are marked **Before this** (earlier in the course), **Goes deeper later** (not needed now) or with the name of another track.
+
+<section class="prereq basics" data-section="basics">
+
+### <span class="n">00</span> Basics: terms this reel uses
+
+- **Latency (α)**: the wait before a request's first byte arrives. *Where you meet it:* 80 µs for a random NVMe read.
+- **Bandwidth (β)**: bytes per second once data flows. *Where you meet it:* 6,800 MB/s from NVMe.
+- **T(n) = α + n/β**: one transfer costs a wait plus the bytes. *Where you meet it:* below α·β bytes, reads mostly wait.
+- **Memory hierarchy**: tiers from registers to object storage, each with a longer first-byte wait, and larger. *Where you meet it:* "which tier is this read from?"
+- **Cache (L1, L2, L3) and clock cycle**: small, fast CPU memories, timed in cycles (0.5 ns at 2 GHz). *Where you meet it:* a loop whose data fits in L2.
+- **Cache line and prefetching**: memory moves in 64-byte lines; the CPU prefetches the next ones for an in-order loop. *Where you meet it:* in-order scans beat random reads.
+- **DRAM**: main memory, about 100 ns a read. *Where you meet it:* "the table is in memory".
+- **NUMA node**: one socket's own memory; another node's is slower. *Where you meet it:* a thread on one socket, its data on the other.
+- **Requests in flight (queue depth, k)**: requests outstanding at once; their waits overlap. *Where you meet it:* NVMe needs dozens.
+- **NVMe SSD and HDD**: a flash drive on PCIe; a spinning disk whose random read waits for a seek plus half a turn (Seagate: 4.16 ms at 7,200 rpm). *Where you meet it:* the two local drives compared.
+- **Same-AZ round trip, flow, placement group**: a message to a machine in the same availability zone (one or more data centres) and back; one TCP connection is one *flow*; a cluster placement group packs instances nearby. *Where you meet it:* an app calling its database.
+- **First byte and key prefix**: the wait before a range arrives over HTTP; request limits apply per key prefix (the start of an object's name). *Where you meet it:* Parquet in a bucket.
+- **Floor; latency- or bandwidth-bound**: the least time a job can take, max(bytes / β, requests × α / k); latency-bound if the waits term is larger, else bandwidth-bound. *Where you meet it:* checking a job first.
+- **Log scale**: equal steps are equal multiples. *Where you meet it:* every latency chart here.
+
+</section>
+
+<section class="prereq" data-section="logs">
+
+### <span class="n">01</span> Big-O and logarithms, and reading a log axis
+
+The reel's charts are logarithmic: each tick is ten (or a thousand) times the one before. Big-O appears once, to say that two walks over an array both do the same number of steps, Θ(n) as in the refresher (the steps grow in proportion to n), and still differ in time. If a log axis or Θ(n) is new, start with the refresher before this one.
+
+<p class="check"><b>Check yourself:</b> on an axis with ticks 1 ns, 1 µs, 1 ms and 1 s, how many times longer is 1 s than 1 ns? (Answer: a billion, three ticks of a thousand each.)</p>
+
+<ul class="resources">
+  <Resource kind="reel" host={props.host} domain="data-engineering" title="Asymptotic notation and logarithms">The refresher just before this reel: Θ(n) and logarithms.</Resource>
+</ul>
+
+</section>
+
+<section class="prereq" data-section="bits">
+
+### <span class="n">02</span> Bits, bytes and binary prefixes
+
+Network rates are quoted in bits per second, so divide by 8 for bytes: 10 Gbit/s is 1.25 GB/s. File sizes here are binary (1 GiB = 1,073,741,824 bytes, 1 TiB = 2<sup>40</sup> bytes), while vendors quote decimal rates (Samsung: 1 MB/s = 1,000,000 bytes/s). Mixing them is a 7% error per prefix step, which is small next to the gaps in this reel but matters when you compare a measurement with a datasheet.
+
+<p class="check"><b>Check yourself:</b> how many GB/s is 100 Gbit/s? (Answer: 12.5.)</p>
+
+</section>
+
+<section class="prereq" data-section="example">
+
+### <span class="n">03</span> The running example
+
+The chapter's table is <code>orders</code>: 1,000,000 pages of 8 KB in PostgreSQL, 8,192,000,000 bytes in all. <code>order_events</code> is 1 TiB of events, kept in object storage and also on a local NVMe drive for the nightly job. Every estimate in the reel is about one of the two.
+
+<p class="check"><b>Check yourself:</b> how many GiB is 1,000,000 pages of 8,192 bytes? (Answer: about 7.6.)</p>
+
+<ul class="resources">
+  <Resource kind="reading" title="Database Page Layout" href="https://www.postgresql.org/docs/current/storage-page-layout.html" by="PostgreSQL documentation">How an 8 kB PostgreSQL page is laid out, and why it is the unit the database reads and writes.</Resource>
+</ul>
+
+</section>
+
+<section class="prereq" data-section="more">
+
+### <span class="n">04</span> Going further: the numbers and where they come from
+
+The reel gives you the ladder and the arithmetic. These are the sources it is built on, and the reels that take the lower rungs further.
+
+<ul class="resources">
+  <Resource kind="reading" title="Latency Numbers Every Programmer Should Know" href="https://gist.github.com/jboner/2841832" by="Jonas Bonér, after Jeff Dean and Peter Norvig">The classic table. History, not a spec: its numbers are from 2009 to 2012, and this reel says which of them have moved.</Resource>
+  <Resource kind="reading" title="Designs, Lessons and Advice from Building Large Distributed Systems" href="https://www.cs.cornell.edu/projects/ladis2009/talks/dean-keynote-ladis2009.pdf" by="Jeff Dean, LADIS 2009 keynote slides (PDF)">The slide "Numbers Everyone Should Know" that the table descends from, plus the back-of-envelope example that overlaps seeks.</Resource>
+  <Resource kind="reading" title="What Every Programmer Should Know About Memory" href="https://akkadia.org/drepper/cpumemory.pdf" by="Ulrich Drepper, 2007 (PDF)">Why DRAM and SRAM differ, how caches and NUMA behave, with measurements. Dated hardware, still the best explanation.</Resource>
+  <Resource kind="reading" title="numactl(8) - Linux manual page" href="https://man7.org/linux/man-pages/man8/numactl.8.html" by="man7.org">Pin a program's threads and memory to NUMA nodes, the tool the reel's NUMA step ends on.</Resource>
+  <Resource kind="video" title="The numbers EVERY ENGINEER should know (napkin math)" href="https://www.youtube.com/watch?v=PFEBo7SMX3M" by="Ben Dicken">Latency and bandwidth per tier, used for back-of-envelope estimates.</Resource>
+  <Resource kind="reel" host={props.host} domain="data-engineering" title="Storage devices and fsync durability">Goes deeper into the drives in the middle of the ladder.</Resource>
+  <Resource kind="reel" host={props.host} domain="data-engineering" title="Object storage as a storage tier">Goes deeper into the last rung: measuring first-byte latency and per-request throughput.</Resource>
+</ul>
+
+</section>
