@@ -3,7 +3,7 @@ import type { StepCtx } from '../../../../../reels/types';
 import { Code } from '../../../../../reels/Code';
 import { clamp, easeInOut, easeOut, easeOutBack, lerp, seg } from '../../../../../reels/anim';
 import { C, Stack, Svg, T } from '../../../../../reels/kit';
-import { RefresherList } from '../refreshers';
+import { REFRESHERS } from '../refreshers';
 
 // Every number shown here comes from examples.sh and is asserted in examples.py.
 // One grammar across the reel, a process tree: a process is a rounded box with sockets 0, 1, 2 (standard input, output, error);
@@ -58,7 +58,27 @@ const pop = (t: number, at: number) => clamp(easeOutBack(seg(t, at, at + 0.4)));
 const fade = (t: number, at: number, len = 0.4) => clamp(easeOut(seg(t, at, at + len)));
 
 // 1 · Where we are: the five refreshers that open the chapter.
-export const Opening = (c: StepCtx) => <RefresherList {...c} current={2} />;
+// The chapter's list of refreshers (as ../refreshers draws it), with type large enough to read on a phone.
+export function Opening({ t }: StepCtx) {
+  const MONO = '"JetBrains Mono", ui-monospace, monospace';
+  return (
+    <svg viewBox="0 0 600 420" className="h-full w-full" role="img" aria-label="Chapter 1 opens with five refreshers; this is number 3">
+      <text x={30} y={34} fontSize={19} fill={C.taupe} fontFamily={MONO}>§1.1 · REFRESHERS</text>
+      {REFRESHERS.map((r, i) => {
+        const a = clamp(easeOutBack(seg(t, 0.2 + i * 0.22, 0.8 + i * 0.22)));
+        const on = i === 2;
+        const done = i < 2;
+        return (
+          <g key={r} transform={`translate(${30 + (1 - a) * -40} ${56 + i * 72})`} opacity={a}>
+            <rect width={540} height={60} rx={14} fill={on ? C.caramel : C.roast} stroke={on ? C.caramel : C.mocha} />
+            <text x={18} y={38} fontSize={19} fill={on ? C.espresso : C.taupe} fontFamily={MONO} fontWeight={600}>{done ? '✓' : String(i + 1).padStart(2, '0')}</text>
+            <text x={62} y={38} fontSize={22} fill={on ? C.espresso : done ? C.taupe : C.crema} fontFamily="Fraunces, Georgia, serif" fontWeight={700}>{r}</text>
+          </g>
+        );
+      })}
+    </svg>
+  );
+}
 
 // 2 · fork, then exec, then wait: the shell, its child, and the status that rides back.
 export function ForkExecWait({ t }: StepCtx) {
