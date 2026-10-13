@@ -6,9 +6,11 @@
 //   3. every number in the reel's on-screen text (reel.tsx) is computed or asserted in examples.py;
 //   4. prerequisites.mdx opens with a Basics section (the topic's own terms, in brief; QUALITY.md #50), unless the topic
 //      was finished before that rule (2026-10-12) and is listed in src/topics/basics-backlog.json, which only shrinks;
-//   5. the narration teaches instead of reading the caption (owner rule 2026-10-13, QUALITY.md #54): no step's narration
-//      shares half or more of its four-word phrases with its caption, and no caption sentence of eight words or more is
-//      spoken verbatim, unless the topic predates the rule and is listed in src/topics/narration-backlog.json (only shrinks).
+//   5. the narration teaches instead of reading the description (the step's body; owner rule 2026-10-13, QUALITY.md #54):
+//      no step's narration shares half or more of its four-word phrases with its description, and no description sentence
+//      of eight words or more is spoken verbatim, unless the topic predates the rule and is listed in
+//      src/topics/narration-backlog.json (only shrinks). The narration is the voice and the captions; the persona is the
+//      MIT professor of PROJECT_PLAN.md (Narration → The narrator's persona).
 import { existsSync, readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import type { TopicMeta } from '../topics/registry';
@@ -62,7 +64,8 @@ export function basicsProblems(src: string, body: string) {
   return problems;
 }
 
-/** The caption of each reel step (its `body`), as plain words, in step order: `body: (<>…</>)` or `body: <>…</>`. */
+/** The description of each reel step (its `body`, the paragraph under the animation), as plain words, in step order:
+ * `body: (<>…</>)` or `body: <>…</>`. */
 export function captions(src: string) {
   const out: string[] = [];
   for (const m of src.matchAll(/body:\s*\(?\s*<>([\s\S]*?)<\/>/g)) out.push(m[1].replace(/\{[^}]*\}/g, ' ').replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim());
@@ -70,8 +73,8 @@ export function captions(src: string) {
 }
 const words = (s: string) => s.toLowerCase().replace(/[^a-z0-9 ]+/g, ' ').split(/\s+/).filter(Boolean);
 const grams = (w: string[], n = 4) => new Set(w.slice(0, Math.max(0, w.length - n + 1)).map((_, i) => w.slice(i, i + n).join(' ')));
-/** How much of a step's narration is its caption read aloud: the share of the narration's four-word phrases that occur in
- * the caption (0–1), and the first caption sentence of eight words or more that the narration says verbatim, if any. */
+/** How much of a step's narration is its description read aloud: the share of the narration's four-word phrases that
+ * occur in the description (0–1), and the first description sentence of eight words or more said verbatim, if any. */
 export function readsTheScreen(caption: string, narration: string) {
   const n = words(narration), c = words(caption);
   const g = grams(n), cg = grams(c);
@@ -114,14 +117,14 @@ export function checkTopicFiles(topics: TopicMeta[]) {
         narr.forEach((n, i) => {
           const spoken = [...n.lines, ...(n.answer ?? [])].filter((x): x is string => typeof x === 'string').join(' ');
           const r = readsTheScreen(caps[i], spoken);
-          if (r.share >= 0.5) reading.push(`step ${i + 1} ("${steps[i].title}"): ${Math.round(r.share * 100)}% of its narration is the caption word for word`);
-          else if (r.verbatim) reading.push(`step ${i + 1} ("${steps[i].title}"): speaks the caption sentence "${r.verbatim.slice(0, 60)}…" verbatim`);
+          if (r.share >= 0.5) reading.push(`step ${i + 1} ("${steps[i].title}"): ${Math.round(r.share * 100)}% of its narration is the description word for word`);
+          else if (r.verbatim) reading.push(`step ${i + 1} ("${steps[i].title}"): speaks the description sentence "${r.verbatim.slice(0, 60)}…" verbatim`);
         });
-      } else errors.push(`${t.id}: reel.tsx has ${steps.length} steps but ${caps.length} caption bodies could be read; write each step's caption as body: (<>…</>).`);
+      } else errors.push(`${t.id}: reel.tsx has ${steps.length} steps but ${caps.length} descriptions could be read; write each step's description as body: (<>…</>).`);
       if (narrBacklog.includes(t.id)) {
         if (!reading.length) errors.push(`${t.id}: its narration teaches now, but it is still listed in src/topics/narration-backlog.json. Remove it from the list.`);
       } else if (reading.length) {
-        errors.push(`${t.id}: the narration reads the screen instead of teaching (PROJECT_PLAN.md, Narration → The narrator teaches): ${reading.join('; ')}. Rewrite those steps' lines as a teacher's explanation of the picture (why, what to watch, what goes wrong otherwise), not the caption. Only a topic finished before 2026-10-13 may be listed in src/topics/narration-backlog.json instead.`);
+        errors.push(`${t.id}: the narration reads the description instead of teaching (PROJECT_PLAN.md, Narration → The narrator's persona; .claude/skills/narrate/teacher-pass.md): ${reading.join('; ')}. Rewrite those steps' lines as the professor's explanation of the picture (why, what to watch, what goes wrong otherwise), not the description. Only a topic finished before 2026-10-13 may be listed in src/topics/narration-backlog.json instead.`);
       }
       // 2. Speakable lines.
       narr.forEach((n, i) =>

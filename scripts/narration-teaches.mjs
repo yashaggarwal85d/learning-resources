@@ -1,8 +1,8 @@
 // Does a topic's narration teach, and is it speakable? The same checks the build runs (site/src/lib/topic-checks.ts,
 // checks 1, 2 and 5), on one or more topic folders, without a build: for the teacher pass and for a quick look.
 //   node scripts/narration-teaches.mjs site/src/topics/<domain>/<milestone>/<chapter>/<topic> [...]
-// Prints, per step: the share of the narration's four-word phrases found in the caption (must be under 50%), any caption
-// sentence of eight words or more spoken verbatim (must be none), the word count of the longest line (at most 50), and
+// Prints, per step: the share of the narration's four-word phrases found in the description (the step's body; must be
+// under 50%), any description sentence of eight words or more spoken verbatim (must be none), the word count of the longest line (at most 50), and
 // unspeakable lines (digits, symbols, code names). Exit 1 if any topic fails.
 import { readFileSync } from 'node:fs';
 import { dirname, join, resolve } from 'node:path';
@@ -41,7 +41,7 @@ for (const arg of process.argv.slice(2)) {
     if (longest > MAX_WORDS) flags.push(`line of ${longest} words (limit ${MAX_WORDS})`);
     for (const l of bad) flags.push(`unspeakable: "${l.slice(0, 50)}"`);
     if (flags.length) failed = true;
-    rows.push(`  step ${String(i + 1).padStart(2)}  caption-overlap ${String(Math.round(r.share * 100)).padStart(3)}%  longest ${String(longest).padStart(2)}w  ${flags.join('; ')}`);
+    rows.push(`  step ${String(i + 1).padStart(2)}  description-overlap ${String(Math.round(r.share * 100)).padStart(3)}%  longest ${String(longest).padStart(2)}w  ${flags.join('; ')}`);
   });
   if (problems.length) failed = true;
   console.log(`${arg}${problems.length ? '\n  ' + problems.join('\n  ') : ''}\n${rows.join('\n')}`);
