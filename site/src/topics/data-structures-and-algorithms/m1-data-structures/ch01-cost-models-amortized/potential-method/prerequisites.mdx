@@ -1,0 +1,79 @@
+import Resource from '../../../../../components/Resource.astro';
+
+This reel assumes five things. If they are familiar, go straight in. If one is not, a few minutes with the matching resource is enough to follow every step. Reels on this site are marked **Before this** (earlier in the course), **Goes deeper later** (not needed now) or with the name of another track.
+
+<section class="prereq" data-section="amortized">
+
+### <span class="n">01</span> Aggregate and accounting methods
+
+You know that an amortized bound is a worst-case bound on the total of a whole sequence divided by its length, never an average over random inputs. You have seen the doubling vector, the bank of coins that must stay at zero or above after every operation, the binary counter and the multipop stack, and the charge of 3 per append (4 for a growth factor of 1.5).
+
+<p class="check"><b>Check yourself:</b> with a charge of 3 per append, what is the bank after 16 appends from empty? (Answer: 17, since 48 is charged and 31 is spent.)</p>
+
+<ul class="resources">
+  <Resource kind="reel" host={props.host} domain="data-structures-and-algorithms" title="Aggregate and accounting methods">The bank, coins on cells, the 16-append trace and the charges this reel turns into one number.</Resource>
+  <Resource kind="reading" title="Amortized Analysis" href="https://www.cs.cmu.edu/~avrim/451f11/lectures/lect0922.pdf" by="Avrim Blum, CMU 15-451, Lecture 7">The doubling array by accounting, then the same proof as a potential function (section 7.4).</Resource>
+  <Resource kind="reading" title="Lecture 9: Amortized Analysis" href="https://jeffe.cs.illinois.edu/teaching/algorithms/notes/09-amortize.pdf" by="Jeff Erickson, Algorithms">The counter by aggregate, taxation and potential in turn (sections 9.2.1 to 9.2.4).</Resource>
+</ul>
+
+</section>
+
+<section class="prereq" data-section="adversary">
+
+### <span class="n">02</span> Lower bounds and adversary arguments
+
+You know that an adversary may choose the input that makes an algorithm pay the most. Here the adversary chooses the sequence of operations.
+
+<p class="check"><b>Check yourself:</b> why is a bound proved for every sequence stronger than one proved for a random sequence? (Answer: it holds even for the sequence an adversary picks to be the worst.)</p>
+
+<ul class="resources">
+  <Resource kind="reel" host={props.host} domain="data-structures-and-algorithms" title="Lower bounds and adversary arguments">What an adversary is, and what a bound that survives it means.</Resource>
+</ul>
+
+</section>
+
+<section class="prereq" data-section="stacks">
+
+### <span class="n">03</span> Stacks
+
+You know a stack holds items last in, first out: push adds on top, pop removes the top.
+
+<p class="check"><b>Check yourself:</b> push a, push b, push c, then pop twice. What is left? (Answer: a.)</p>
+
+</section>
+
+<section class="prereq" data-section="binary">
+
+### <span class="n">04</span> Binary numbers
+
+You can count in binary: adding 1 turns the trailing 1s into 0s and the next 0 into a 1.
+
+<p class="check"><b>Check yourself:</b> how many 1 bits does 10111 have, and how many bits change when you add 1? (Answer: four 1 bits; four bits change, 10111 becomes 11000.)</p>
+
+</section>
+
+<section class="prereq" data-section="logarithms">
+
+### <span class="n">05</span> Logarithms
+
+You can read log₂ of a size: the number of times you halve it to reach 1. The splay-tree potential on the later-structures step is a sum of such logarithms.
+
+<p class="check"><b>Check yourself:</b> what is log₂ 1,024? (Answer: 10.)</p>
+
+</section>
+
+<section class="prereq" data-section="later">
+
+### <span class="n">06</span> Where this tool is used next
+
+You do not need these to follow the reel. Each later chapter uses the potential method on a structure of its own.
+
+<ul class="resources">
+  <Resource kind="reel" host={props.host} domain="data-structures-and-algorithms" title="Splay trees">The potential Σ log₂ (subtree size) and the access lemma, proved.</Resource>
+  <Resource kind="reel" host={props.host} domain="data-structures-and-algorithms" title="Fibonacci heaps">Trees plus twice the marked nodes, and O(1) amortized decrease-key.</Resource>
+  <Resource kind="reel" host={props.host} domain="data-structures-and-algorithms" title="Union–find">Where the inverse Ackermann bound comes from.</Resource>
+  <Resource kind="reel" host={props.host} domain="data-structures-and-algorithms" title="Measuring the memory hierarchy">The chapter lab, which runs the adversarial push and pop sequence on a real machine.</Resource>
+  <Resource kind="reading" title="Amortized computational complexity" href="https://courses.cs.duke.edu/fall11/cps234/reading/Tarjan85_AmortizedComplexity.pdf" by="Robert E. Tarjan, SIAM J. Algebraic Discrete Methods 6(2), 1985 (course-reading copy)">The paper that names the banker’s and the physicist’s views.</Resource>
+</ul>
+
+</section>
