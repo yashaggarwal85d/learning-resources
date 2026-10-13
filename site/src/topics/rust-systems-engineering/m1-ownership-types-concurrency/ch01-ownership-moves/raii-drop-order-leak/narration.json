@@ -11,7 +11,7 @@
         },
         "Here is a pipeline stage. It reads a flag under a reader-writer lock, and if the flag isn't set, it takes the exclusive lock and sets it.",
         "It's the Rust Edition Guide's own example.",
-        "Compiled with the 2021 edition, it deadlocks. Here, it hangs forever. Compiled with the 2024 edition, it runs.",
+        "Compiled with the two thousand and twenty-one edition, it deadlocks. Here, it hangs forever. Compiled with the two thousand and twenty-four edition, it runs.",
         "Same source. The only thing that changed is when a temporary dies.",
         "First what a destructor is and where it runs. Then when a temporary dies, which is what changed.",
         {
@@ -27,14 +27,14 @@
         "First, your drop, if the type has one. Then the compiler's own drop glue, which drops every field... in the order you wrote them.",
         "So this stage logs its own name first, then name, input, and the spill file, which we build in a few steps.",
         "Most types never write a drop at all. The glue already drops their fields.",
-        "Our probe, a trace, is just a value whose drop writes its name to a log."
+        "Our probe, a trace... is just a value whose drop writes its name to a log."
       ]
     },
     {
       "lines": [
         "Let's predict one.",
         "Three locals are declared one after another: first a, then b, then c.",
-        "At the closing brace, in what order do they die?"
+        "At the closing brace... in what order do they die?"
       ],
       "answer": [
         "The reverse. C, then b, then a.",
@@ -44,7 +44,10 @@
     {
       "lines": [
         "Where does a value die? Where its last owner ends.",
-        "After a move, the owner is the new binding. So the value dies at the closing brace of the function it was handed to, and the brace in main drops nothing for it.",
+        "After a move, the owner is the new binding.",
+        "So the value dies there.",
+        "At the closing brace.",
+        "The brace in main... drops nothing for it, because nothing is left there.",
         "The standard drop function isn't magic. It takes ownership and returns, so the value dies right there.",
         "And overwriting a variable builds the new value first, then drops the old one."
       ]
@@ -61,7 +64,7 @@
     },
     {
       "lines": [
-        "Why is a file handle not allowed to be copied?",
+        "Why is a file handle... not allowed to be copied?",
         "Because two copies would close the same file twice.",
         "A type with a drop manages something besides its own bytes, so a bitwise copy would duplicate that responsibility.",
         "That's why copy and drop never meet. The compiler rejects it.",
@@ -113,8 +116,8 @@
     },
     {
       "lines": [
-        "Rust 2024 changes two temporary scopes. Both make a temporary die sooner.",
-        "In 2024, a temporary made in the condition is gone before the else branch.",
+        "Rust two thousand and twenty-four changes two temporary scopes. Both make a temporary die sooner.",
+        "In two thousand and twenty-four, a temporary made in the condition is gone before the else branch.",
         "In a block's tail expression, they drop before the block's own locals.",
         "That one badge, landing on the other side of the else, is the whole difference between hanging and running.",
         "A match is unchanged."
@@ -122,11 +125,11 @@
     },
     {
       "lines": [
-        "The Rust 2024 migration guide shows another example. A function ends with a borrow of a ref cell, as its tail expression.",
+        "The Rust two thousand and twenty-four migration guide shows another example. A function ends with a borrow of a ref cell, as its tail expression.",
         "Which editions compile it?"
       ],
       "answer": [
-        "Only the 2024 edition.",
+        "Only the two thousand and twenty-four edition.",
         "In the old edition, the borrow guard outlived the cell itself, so the compiler refused... the does-not-live-long-enough error.",
         "Now the guard goes first, and it compiles."
       ]
@@ -159,7 +162,7 @@
     },
     {
       "lines": [
-        "Four ways to end up with a value that never drops.",
+        "Four ways... to end up with a value that never drops.",
         "Which of the first three needs unsafe? Or none?"
       ],
       "answer": [
@@ -177,7 +180,7 @@
     },
     {
       "lines": [
-        "2015, just before Rust 1.0.",
+        "That was just before the first stable release of Rust.",
         "Long ago, a thread API gave out a guard whose drop joined the child thread. The child borrowed the parent's stack, so the parent couldn't leave first.",
         "Then someone forgot the guard, in safe code.",
         "The parent's frame went away, and the child kept running, with a reference into it.",
@@ -191,7 +194,7 @@
         "A scoped thread block joins every thread before it returns. A return can't be forgotten.",
         "The general rule: unsafe code must never rely on drop running.",
         "And when you hand out a proxy, make the owner safe first. The vector sets its length to the start of the drained range before it gives out a drain, zero for a full drain. Forget the drain, and you only leak more.",
-        "That's called leak amplification."
+        "Leaking one value can leak much more, and that is called leak amplification."
       ]
     },
     {
@@ -213,7 +216,7 @@
       ],
       "answer": [
         "The compiler refuses it.",
-        "An underscore binds nothing, so the guard would be gone by the end of that statement and the increment would run unlocked. That is exactly why that line is a lint.",
+        "An underscore binds nothing, so the guard would be gone by the end of that statement... and the increment would run unlocked. That is exactly why that line is a lint.",
         "Name the guard."
       ]
     },
@@ -233,13 +236,13 @@
       "lines": [
         "Six things to keep.",
         "A destructor is your drop, then the fields, in order. Locals go in reverse.",
-        "A temporary is gone at its semicolon, and the 2024 edition ends two of them sooner.",
+        "A temporary is gone at its semicolon... and the two thousand and twenty-four edition ends two of them sooner.",
         "One owner means exactly one release, never two.",
         "Leaking is safe. So soundness never depends on drop running.",
         {
           "beat": 0.3
         },
-        "A type with a drop keeps its fields until it dies.",
+        "A type with a drop... keeps its fields until it dies.",
         "Next: how do you take one field out early... say, to hand the buffer back to its pool, from inside a guard?"
       ]
     }

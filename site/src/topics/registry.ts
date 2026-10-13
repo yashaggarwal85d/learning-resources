@@ -167,8 +167,7 @@ export const TOPICS: TopicMeta[] = [
     title: 'RAII, drop order, and leak safety',
     syllabusTitle: 'RAII, drop order, and leak safety',
     kind: 'full',
-    // Built ahead of its turn: the topic before it is content final but not live yet.
-    status: 'held',
+    status: 'live',
     milestone: { number: 1, title: 'Ownership, Types, and Concurrency Primitives' },
     chapter: { number: 1, title: 'Ownership and Moves', section: '1.1' },
     minutes: 20,
