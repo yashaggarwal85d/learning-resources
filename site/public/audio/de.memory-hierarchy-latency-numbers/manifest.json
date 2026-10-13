@@ -1,0 +1,924 @@
+{
+ "topic": "de.memory-hierarchy-latency-numbers",
+ "voice": "tara-v1",
+ "asr": "large-v3-turbo",
+ "clips": {
+  "01": {
+   "hash": "c7fd2b99fecb9856",
+   "takes": [
+    "46a5e57b2771ca96ac0d",
+    "201bcef887170b1a74ea",
+    "92a93eff21936525cbf6",
+    "da8d6e151444c89ee19f"
+   ],
+   "duration": 19.734,
+   "lines": [
+    {
+     "text": "The nightly job reads one terabyte of order events... from a fast local drive.",
+     "start": 0.15,
+     "end": 4.82
+    },
+    {
+     "text": "The team wants to read it... straight from object storage instead.",
+     "start": 5.24,
+     "end": 8.998
+    },
+    {
+     "text": "Before anyone runs it... what is the least time each way could take?",
+     "start": 9.818,
+     "end": 13.99
+    },
+    {
+     "text": "By the end, you'll compute both... and the least setting that could make them match.",
+     "start": 14.54,
+     "end": 19.384
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -1.9,
+   "wpm": 161,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "02": {
+   "hash": "ce65d6d94bab27d6",
+   "takes": [
+    "6f319e4a10df7d27244d",
+    "24b4cb3295be09062a29",
+    "529696627b15fbf17cfb",
+    "a23b8b83dcf9c3a8b70b"
+   ],
+   "duration": 13.158,
+   "lines": [
+    {
+     "text": "Let's predict first.",
+     "start": 0.15,
+     "end": 1.509
+    },
+    {
+     "text": "One read from RAM takes about a hundred nanoseconds.",
+     "start": 1.929,
+     "end": 4.753
+    },
+    {
+     "text": "Object storage takes about a hundred milliseconds to send the first byte.",
+     "start": 5.173,
+     "end": 8.941
+    },
+    {
+     "text": "How many RAM reads fit into one object storage wait?",
+     "start": 9.361,
+     "end": 12.808
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -1.9,
+   "wpm": 155,
+   "wer": 0.1,
+   "exact": false,
+   "tolerated": [
+    {
+     "line": "How many RAM reads fit into one object storage wait?",
+     "said": "wait",
+     "heard": "weight"
+    }
+   ]
+  },
+  "02a": {
+   "hash": "41ec06ea00acf781",
+   "takes": [
+    "f6c779f0f35a3d2b8d70",
+    "246a41c540e672714d18",
+    "010ab0a28f747a487b9b"
+   ],
+   "duration": 19.99,
+   "lines": [
+    {
+     "text": "About a million. A hundred milliseconds, divided by a hundred nanoseconds.",
+     "start": 0.15,
+     "end": 6.266
+    },
+    {
+     "text": "That's the gap between one second... and eleven and a half days.",
+     "start": 6.686,
+     "end": 11.545
+    },
+    {
+     "text": "On a straight axis, the RAM read would vanish. So every latency chart from here on is logarithmic... equal steps are equal multiples.",
+     "start": 11.965,
+     "end": 19.64
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -1.9,
+   "wpm": 138,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "03": {
+   "hash": "34b02188efc0c78e",
+   "takes": [
+    "2823cf120bd80358454d",
+    "9bf19938165bb4f0e406",
+    "fa99e0f8d3927edd8469",
+    "58845a4db4a43581a4c1"
+   ],
+   "duration": 29.165,
+   "lines": [
+    {
+     "text": "Inside the chip, latency is counted in clock cycles.",
+     "start": 0.15,
+     "end": 3.219
+    },
+    {
+     "text": "Intel says a Skylake server core needs four to six cycles for the first level cache. The second level needs fourteen. The third level needs fifty to seventy.",
+     "start": 3.639,
+     "end": 13.2
+    },
+    {
+     "text": "A well known paper from two thousand seven puts main memory at two hundred cycles or more.",
+     "start": 13.62,
+     "end": 19.5
+    },
+    {
+     "text": "At two gigahertz, a cycle is half a nanosecond. So L one is two to three nanoseconds... and D RAM, about a hundred.",
+     "start": 19.92,
+     "end": 28.815
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -1.4,
+   "wpm": 158,
+   "wer": 0.08695652173913043,
+   "exact": false,
+   "tolerated": [
+    {
+     "line": "At two gigahertz, a cycle is half a nanosecond. So L one is two to three nanoseconds... and D RAM, about a hundred.",
+     "said": "d ram",
+     "heard": "dram"
+    }
+   ]
+  },
+  "04": {
+   "hash": "5cc345f75c68370b",
+   "takes": [
+    "aa97f1bfb210517a9ad2",
+    "e48009365b1d4ec98d9f",
+    "55803dc7aa89597dd273",
+    "e37c919ff17a160451eb",
+    "ee417b18c28b385eadac",
+    "f546551237af436e20d4"
+   ],
+   "duration": 47.321,
+   "lines": [
+    {
+     "text": "Off the chip, the waits jump to microseconds, and then milliseconds.",
+     "start": 0.15,
+     "end": 3.989
+    },
+    {
+     "text": "A random read of four kilobytes from a fast server drive takes eighty microseconds, says Samsung's datasheet.",
+     "start": 4.409,
+     "end": 10.679
+    },
+    {
+     "text": "A hard disk waits for the platter to spin around... Seagate says four point one six milliseconds on average, at seven thousand two hundred turns a minute.",
+     "start": 11.099,
+     "end": 19.73
+    },
+    {
+     "text": "That drive did one hundred sixty eight random reads a second, measured with sixteen reads queued. So each read takes at least six milliseconds.",
+     "start": 20.15,
+     "end": 28.553
+    },
+    {
+     "text": "Object storage... a hundred to two hundred milliseconds to the first byte. Medians for small requests are in the tens of milliseconds.",
+     "start": 28.973,
+     "end": 36.19
+    },
+    {
+     "text": "The five hundred microsecond round trip is from two thousand nine. Amazon shows a live median in its network console, but no fixed number. Read yours, or measure.",
+     "start": 36.61,
+     "end": 46.971
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.8,
+   "wpm": 164,
+   "wer": 0.09090909090909091,
+   "exact": false,
+   "tolerated": [
+    {
+     "line": "Off the chip, the waits jump to microseconds, and then milliseconds.",
+     "said": "waits",
+     "heard": "weights"
+    }
+   ]
+  },
+  "05": {
+   "hash": "27b0c010db8aebbc",
+   "takes": [
+    "a437f91a68c56f05dc8b",
+    "685e017e16e3bbeed94e",
+    "c4371b956e04612228c0",
+    "8c3249b22000b96d68b6",
+    "38cc85b46a9a67c7821b",
+    "374d77ca468c8cf9536e",
+    "f263f64e6d3d821e0101",
+    "d215973ae82f14fe5613"
+   ],
+   "duration": 28.742,
+   "lines": [
+    {
+     "text": "A server with several sockets gives each one its own memory. That's a Numa node.",
+     "start": 0.15,
+     "end": 5.071
+    },
+    {
+     "text": "Memory on another node is slower to reach.",
+     "start": 5.491,
+     "end": 8.3
+    },
+    {
+     "text": "On two thousand seven Opterons, Drepper measured remote reads twenty percent slower.",
+     "start": 8.72,
+     "end": 13.221
+    },
+    {
+     "text": "Linux places a page on the node",
+     "start": 13.641,
+     "end": 15.887
+    },
+    {
+     "text": "of the processor that first touches it.",
+     "start": 16.307,
+     "end": 18.631
+    },
+    {
+     "text": "So a thread that moves sockets",
+     "start": 19.051,
+     "end": 21.202
+    },
+    {
+     "text": "can leave its memory behind.",
+     "start": 21.622,
+     "end": 23.226
+    },
+    {
+     "text": "Pin memory to each node with numa control, and time the lab's walk.",
+     "start": 23.646,
+     "end": 28.392
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.7,
+   "wpm": 152,
+   "wer": 0.07692307692307693,
+   "exact": false,
+   "tolerated": [
+    {
+     "line": "Pin memory to each node with numa control, and time the lab's walk.",
+     "said": "numa",
+     "heard": "pneuma"
+    }
+   ]
+  },
+  "06": {
+   "hash": "e2ce6492df46be92",
+   "takes": [
+    "0254d33582b286bf2861",
+    "835a70df9f81102365e0",
+    "dad3f0bba2240e09f738",
+    "58a2723931e3aff94a95",
+    "1b6309266172d9ee44f8"
+   ],
+   "duration": 33.152,
+   "lines": [
+    {
+     "text": "Latency is how long until the first byte.",
+     "start": 0.15,
+     "end": 2.698
+    },
+    {
+     "text": "Bandwidth is how fast the bytes come after that.",
+     "start": 3.118,
+     "end": 5.999
+    },
+    {
+     "text": "They rank the tiers differently. RAM alone runs from twelve billion bytes a second on one core... to four hundred sixty point eight billion on one twelve channel socket, a peak from the spec sheet.",
+     "start": 6.419,
+     "end": 20.031
+    },
+    {
+     "text": "Object storage is the slowest rung to answer... yet Amazon says one machine can pull up to a hundred gigabits per second from it, given enough requests at once.",
+     "start": 20.451,
+     "end": 30.409
+    },
+    {
+     "text": "Hard disk... slow on both.",
+     "start": 30.829,
+     "end": 32.802
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -1.9,
+   "wpm": 156,
+   "wer": 0.125,
+   "exact": false,
+   "tolerated": [
+    {
+     "line": "Latency is how long until the first byte.",
+     "said": "byte",
+     "heard": "bite"
+    }
+   ]
+  },
+  "07": {
+   "hash": "ab9148ba4248b197",
+   "takes": [
+    "c7b4321e4952a8772272",
+    "56e6b21c6ef3b4ca8686",
+    "329b9836e0338c4fdab1",
+    "582e905d9a3192d0fa2c",
+    "8dc1082e6091d0cdc453",
+    "e8a42daed92174ca3403",
+    "9be1ae0741e2618999f5",
+    "14f962fbfcc49e28fd1f",
+    "320761d68de96d08ba99",
+    "78f9d886da1c33c7e326"
+   ],
+   "duration": 37.421,
+   "lines": [
+    {
+     "text": "Every transfer costs a wait, plus the bytes.",
+     "start": 0.15,
+     "end": 3.454
+    },
+    {
+     "text": "T of n equals alpha plus n over beta.",
+     "start": 3.874,
+     "end": 6.743
+    },
+    {
+     "text": "Read one megabyte.",
+     "start": 7.163,
+     "end": 8.105
+    },
+    {
+     "text": "The split depends on tier.",
+     "start": 8.525,
+     "end": 10.214
+    },
+    {
+     "text": "On the drive,",
+     "start": 10.634,
+     "end": 11.557
+    },
+    {
+     "text": "the wait is a third.",
+     "start": 11.977,
+     "end": 13.667
+    },
+    {
+     "text": "On a hard disk,",
+     "start": 14.087,
+     "end": 15.262
+    },
+    {
+     "text": "at least sixty two percent.",
+     "start": 15.682,
+     "end": 18.031
+    },
+    {
+     "text": "On object storage, ninety eight percent... even if one request streamed at five gigabits a second. That top speed is assumed.",
+     "start": 18.451,
+     "end": 27.509
+    },
+    {
+     "text": "Below n equals alpha times beta, a read is mostly waiting. About half a megabyte on this drive. At least one point seven on the disk.",
+     "start": 27.929,
+     "end": 37.071
+    }
+   ],
+   "lufs": -16.3,
+   "true_peak": -1.7,
+   "wpm": 143,
+   "wer": 0.25,
+   "exact": false,
+   "tolerated": [
+    {
+     "line": "Every transfer costs a wait, plus the bytes.",
+     "said": "wait",
+     "heard": "weight"
+    },
+    {
+     "line": "Every transfer costs a wait, plus the bytes.",
+     "said": "bytes",
+     "heard": "bites"
+    },
+    {
+     "line": "the wait is a third.",
+     "said": "wait",
+     "heard": "weight"
+    }
+   ]
+  },
+  "08": {
+   "hash": "dae64f12258515af",
+   "takes": [
+    "f9e4f4a1c63f12fff788",
+    "607ca8a9be016e15d856",
+    "88952c9d1a055559da19"
+   ],
+   "duration": 12.449,
+   "lines": [
+    {
+     "text": "Here's the lab. Read every number in an array of one gigabyte, first in order, then in a random order.",
+     "start": 0.15,
+     "end": 6.704
+    },
+    {
+     "text": "Same count. Same RAM.",
+     "start": 7.124,
+     "end": 9.16
+    },
+    {
+     "text": "How much longer does each random read take?",
+     "start": 9.58,
+     "end": 12.099
+    }
+   ],
+   "lufs": -16.6,
+   "true_peak": -1.9,
+   "wpm": 154,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "08a": {
+   "hash": "ba24ce3134aeacc7",
+   "takes": [
+    "9c262db3f67a59e36611",
+    "0d14eb4e540813377953",
+    "9d352093eafba3e01d5e",
+    "1c28a286370b7269e6a6",
+    "b2f0d0e65b13e6c9aa4e"
+   ],
+   "duration": 30.478,
+   "lines": [
+    {
+     "text": "About twenty times, on this machine.",
+     "start": 0.15,
+     "end": 2.625
+    },
+    {
+     "text": "Memory moves in sixty four byte lines. In order, one line serves eight numbers, and the processor fetches the next lines before you ask.",
+     "start": 3.045,
+     "end": 10.827
+    },
+    {
+     "text": "At random, each read uses just one number from its line, and then it stalls. But the processor overlaps several of those stalls.",
+     "start": 11.247,
+     "end": 19.927
+    },
+    {
+     "text": "Make each address depend on the last read, and nothing overlaps: a hundred and fifty eight nanoseconds, the whole D RAM wait.",
+     "start": 20.347,
+     "end": 27.265
+    },
+    {
+     "text": "Big O counted all three the same.",
+     "start": 27.685,
+     "end": 30.128
+    }
+   ],
+   "lufs": -16.6,
+   "true_peak": -1.9,
+   "wpm": 159,
+   "wer": 0.09523809523809523,
+   "exact": false,
+   "tolerated": [
+    {
+     "line": "Make each address depend on the last read, and nothing overlaps: a hundred and fifty eight nanoseconds, the whole D RAM wait.",
+     "said": "d ram",
+     "heard": "dram"
+    }
+   ]
+  },
+  "09": {
+   "hash": "67b97b3ae6a7edf9",
+   "takes": [
+    "9fc0469dd4c2c538bdea",
+    "705e055744657b7c4534",
+    "52a10572d765ad6bbd0a",
+    "48bd4b39530034dffbea"
+   ],
+   "duration": 26.526,
+   "lines": [
+    {
+     "text": "One request at a time... pays alpha every time.",
+     "start": 0.15,
+     "end": 3.911
+    },
+    {
+     "text": "With k in flight, the waits overlap. So they cost about requests times alpha, divided by k.",
+     "start": 4.331,
+     "end": 12.135
+    },
+    {
+     "text": "One read from the fast drive takes eighty microseconds alone... twelve thousand five hundred reads a second.",
+     "start": 12.555,
+     "end": 18.755
+    },
+    {
+     "text": "To reach the drive's million a second... you need at least eighty in flight. Samsung measured it with a hundred and twenty eight.",
+     "start": 19.175,
+     "end": 26.176
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.8,
+   "wpm": 147,
+   "wer": 0.11764705882352941,
+   "exact": false,
+   "tolerated": [
+    {
+     "line": "With k in flight, the waits overlap. So they cost about requests times alpha, divided by k.",
+     "said": "waits",
+     "heard": "weights"
+    },
+    {
+     "line": "With k in flight, the waits overlap. So they cost about requests times alpha, divided by k.",
+     "said": "requests",
+     "heard": "request"
+    }
+   ]
+  },
+  "10": {
+   "hash": "4364114e1a2cd548",
+   "takes": [
+    "a2e294ddf425cb7434ae",
+    "4318d0fe3a420cfa3e1b",
+    "71b77f4956bb4075775a",
+    "f442fc68d7201dd02655"
+   ],
+   "duration": 34.546,
+   "lines": [
+    {
+     "text": "A job can't finish faster than its bytes take at bandwidth beta... or its waits take with k in flight. The floor is the larger.",
+     "start": 0.15,
+     "end": 8.008
+    },
+    {
+     "text": "One terabyte, read in order from the fast drive: a hundred and sixty two seconds moving bytes, five seconds of delay. Bandwidth bound.",
+     "start": 8.428,
+     "end": 17.797
+    },
+    {
+     "text": "The orders table, at random from a hard disk: twenty nine seconds of bytes, five thousand nine hundred fifty two of delay, at a floor of six thousandths of a second each. Latency bound.",
+     "start": 18.217,
+     "end": 29.512
+    },
+    {
+     "text": "A floor ignores everything else. So a real run is slower.",
+     "start": 29.932,
+     "end": 34.196
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -1.8,
+   "wpm": 160,
+   "wer": 0.04,
+   "exact": false,
+   "tolerated": [
+    {
+     "line": "A job can't finish faster than its bytes take at bandwidth beta... or its waits take with k in flight. The floor is the larger.",
+     "said": "waits",
+     "heard": "weights"
+    }
+   ]
+  },
+  "11": {
+   "hash": "b9d448451134aad9",
+   "takes": [
+    "7341c37f6bef81d30274",
+    "11ebdea9a1d73cd771d3",
+    "b13ce202ce05f8718b5a",
+    "5eab546f18cae28f4bf0",
+    "cb370dcc9a383fcfbbfe",
+    "00638870c6e53e90f227",
+    "5552e953bf5082a4321a",
+    "909427a7245c48c95921"
+   ],
+   "duration": 27.223,
+   "lines": [
+    {
+     "text": "A full scan is sequential, so its floor is bytes over beta.",
+     "start": 0.15,
+     "end": 4.279
+    },
+    {
+     "text": "The orders table is eight point two gigabytes.",
+     "start": 4.699,
+     "end": 8.064
+    },
+    {
+     "text": "Seven tenths of a second from RAM on one core, measured here. One point two from one fast drive. Twenty nine from one hard disk.",
+     "start": 8.484,
+     "end": 17.275
+    },
+    {
+     "text": "Your scan takes a minute.",
+     "start": 17.695,
+     "end": 19.026
+    },
+    {
+     "text": "On a fast drive.",
+     "start": 19.446,
+     "end": 20.924
+    },
+    {
+     "text": "Then it's not the drive.",
+     "start": 21.344,
+     "end": 22.941
+    },
+    {
+     "text": "Find what is spending",
+     "start": 23.361,
+     "end": 24.838
+    },
+    {
+     "text": "the other fifty nine seconds.",
+     "start": 25.258,
+     "end": 26.873
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -1.8,
+   "wpm": 150,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "12": {
+   "hash": "276ba62000a58197",
+   "takes": [
+    "81b90a521c6edacea90d",
+    "3d98af12a1ff76a070cb",
+    "6be058dd75cbc8a5203a",
+    "4d5135901f7f51f9cabb"
+   ],
+   "duration": 36.787,
+   "lines": [
+    {
+     "text": "Back to the problem. Reading one terabyte from the local drive is bandwidth bound: a hundred and sixty two seconds.",
+     "start": 0.15,
+     "end": 8.06
+    },
+    {
+     "text": "From object storage, in sixteen megabyte ranges, that is sixty five thousand five hundred thirty six requests. One at a time, the waits alone take one point eight hours.",
+     "start": 8.48,
+     "end": 19.15
+    },
+    {
+     "text": "With k in flight, they take six thousand five hundred fifty four seconds divided by k. At k equals forty one, the floor matches the drive.",
+     "start": 19.57,
+     "end": 28.159
+    },
+    {
+     "text": "Each request also streams sixteen megabytes, so a real run needs more... Measure the rate per request before you promise it.",
+     "start": 28.579,
+     "end": 36.437
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -1.9,
+   "wpm": 155,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "13": {
+   "hash": "2a6f94d6d77bad9b",
+   "takes": [
+    "374e32885f175540faf8",
+    "e6bffc039bab0e481f4b",
+    "32e8616c8f99b9d0639c"
+   ],
+   "duration": 13.639,
+   "lines": [
+    {
+     "text": "Prove it. One of three.",
+     "start": 0.15,
+     "end": 2.278
+    },
+    {
+     "text": "A query goes row by row through an index. Two million random eight kilobyte page reads of orders, one at a time, from one local drive.",
+     "start": 2.698,
+     "end": 11.798
+    },
+    {
+     "text": "What is the floor?",
+     "start": 12.218,
+     "end": 13.289
+    }
+   ],
+   "lufs": -16.6,
+   "true_peak": -1.9,
+   "wpm": 154,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "13a": {
+   "hash": "07cc30271d251047",
+   "takes": [
+    "5b60d7dccc210620b881",
+    "2928d2f1d61360f7106a",
+    "53f4fa8dc251f4842c43"
+   ],
+   "duration": 23.901,
+   "lines": [
+    {
+     "text": "A hundred and sixty seconds. One at a time, every read pays its eighty microsecond wait.",
+     "start": 0.15,
+     "end": 6.436
+    },
+    {
+     "text": "That's a hundred and thirty times... the one point two seconds it takes to scan the whole table in order.",
+     "start": 6.856,
+     "end": 13.108
+    },
+    {
+     "text": "With eighty reads in flight, the waits fall to two seconds, and the bytes, at the drive's best rate, become the floor. Same reads, a floor sixty six times lower.",
+     "start": 13.528,
+     "end": 23.551
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 161,
+   "wer": 0.06666666666666667,
+   "exact": false,
+   "tolerated": [
+    {
+     "line": "A hundred and sixty seconds. One at a time, every read pays its eighty microsecond wait.",
+     "said": "wait",
+     "heard": "weight"
+    },
+    {
+     "line": "With eighty reads in flight, the waits fall to two seconds, and the bytes, at the drive's best rate, become the floor. Same reads, a floor sixty six times lower.",
+     "said": "waits",
+     "heard": "weights"
+    },
+    {
+     "line": "With eighty reads in flight, the waits fall to two seconds, and the bytes, at the drive's best rate, become the floor. Same reads, a floor sixty six times lower.",
+     "said": "bytes",
+     "heard": "bites"
+    }
+   ]
+  },
+  "14": {
+   "hash": "2b9d4194e582f82c",
+   "takes": [
+    "d8252674b2ca8cd57a52",
+    "7848108384743e3dc011",
+    "32e8616c8f99b9d0639c"
+   ],
+   "duration": 13.734,
+   "lines": [
+    {
+     "text": "Prove it. Two of three.",
+     "start": 0.15,
+     "end": 2.194
+    },
+    {
+     "text": "You copy orders from a local fast drive to another instance, over one connection. Not in a cluster placement group, which packs instances close together.",
+     "start": 2.614,
+     "end": 11.893
+    },
+    {
+     "text": "What is the floor?",
+     "start": 12.313,
+     "end": 13.384
+    }
+   ],
+   "lufs": -16.6,
+   "true_peak": -1.9,
+   "wpm": 149,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "14a": {
+   "hash": "99036e26bf2078f2",
+   "takes": [
+    "11f0cff1dd096e7772d0",
+    "2e9d3e2b88013db66db8",
+    "491d3277b6631ac2179c"
+   ],
+   "duration": 20.419,
+   "lines": [
+    {
+     "text": "Thirteen seconds. A chain runs at its slowest link.",
+     "start": 0.15,
+     "end": 3.407
+    },
+    {
+     "text": "Amazon caps one connection at five gigabits per second, between instances outside a cluster placement group. That is six hundred twenty five megabytes per second, however fast the drive is.",
+     "start": 3.827,
+     "end": 15.732
+    },
+    {
+     "text": "Several connections in parallel can use the instance's full bandwidth instead.",
+     "start": 16.152,
+     "end": 20.069
+    }
+   ],
+   "lufs": -16.6,
+   "true_peak": -1.9,
+   "wpm": 147,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "15": {
+   "hash": "cbaa97979a5f0f01",
+   "takes": [
+    "649addffba7bf9b726b3",
+    "af3840ac0d381676dc44",
+    "5b9d569f7df92a86474b",
+    "4432c16c81c5a9ceeb2f"
+   ],
+   "duration": 14.696,
+   "lines": [
+    {
+     "text": "Prove it. Three of three.",
+     "start": 0.15,
+     "end": 2.561
+    },
+    {
+     "text": "The nightly job reads the tebibyte from object storage with eight requests in flight. It takes eighteen minutes.",
+     "start": 2.981,
+     "end": 9.381
+    },
+    {
+     "text": "A teammate says object storage is throttling you.",
+     "start": 9.801,
+     "end": 12.701
+    },
+    {
+     "text": "Is something broken?",
+     "start": 13.121,
+     "end": 14.346
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 139,
+   "wer": 0.05555555555555555,
+   "exact": false,
+   "tolerated": [
+    {
+     "line": "The nightly job reads the tebibyte from object storage with eight requests in flight. It takes eighteen minutes.",
+     "said": "tebibyte",
+     "heard": "tebabyte"
+    }
+   ]
+  },
+  "15a": {
+   "hash": "67699d0ed3acaef0",
+   "takes": [
+    "370c5fd41a87eb6238b3",
+    "8370626f8bf0f403d740",
+    "d82fa8405dcfe5fd8d53"
+   ],
+   "duration": 22.835,
+   "lines": [
+    {
+     "text": "Nothing is broken.",
+     "start": 0.15,
+     "end": 1.901
+    },
+    {
+     "text": "With eight in flight, the waits alone take thirteen point seven minutes. Eighteen is only one point three times that... near the floor, so k is the limit.",
+     "start": 2.321,
+     "end": 11.769
+    },
+    {
+     "text": "The job sends at most eighty requests a second, against at least five thousand five hundred allowed per key prefix. It's latency bound. Raise k... or use fewer, larger ranges.",
+     "start": 12.189,
+     "end": 22.485
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -1.9,
+   "wpm": 160,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  }
+ }
+}
