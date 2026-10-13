@@ -23,6 +23,16 @@ cd site && npm run test:narration
 
 Every warning line names a held topic whose narration is missing, stale (script changed) or out of standard. That list, plus any live topic the check fails, is the job. Nothing else is narrated.
 
+## 1b. The teacher pass: rewrite scripts that read the screen (before narrating them)
+
+`site/src/topics/narration-backlog.json` lists the topics whose `narration.json` was written before the rule that the narrator teaches instead of reading the caption (PROJECT_PLAN.md, Narration → The narrator teaches; QUALITY.md #54). Every listed topic gets its script rewritten **before** its narration is generated, so no audio is ever made twice:
+
+1. For each listed topic, launch a fresh **Opus** agent (effort high) with the topic's `reel.tsx`, `scenes.tsx`, `narration.json`, `OUTLINE.md` and the plan's Narration section. It rewrites `narration.json` step by step as a teacher's explanation of what is on screen: why the picture looks like that, what to watch as it moves, what goes wrong otherwise, the intuition or analogy, the question before a reveal; a number only when the number is the point; never a caption sentence. It keeps the step count, the `answer` clips, the beats, the speakable-line rules (no digits, symbols or code names; at most 50 words a line) and the voice (short sentences, second person, no filler).
+2. Remove the topic's id from `narration-backlog.json`, run `npm run build` (check 5 must pass for it now, and the build refuses a listed topic that passes), and read the new script yourself once as the listener: does it teach?
+3. Commit `Narration script: <topic-id> teaches` with the two files. For a **live** topic the script is part of a locked reel: the commit also carries `Unlock: <topic-id>`, which the owner's decision of 2026-10-13 authorises for this change and the regeneration that follows.
+
+Then narrate it (section 2).
+
 ## 2. Narrate in bulk
 
 For each topic in the list, from `site/`:

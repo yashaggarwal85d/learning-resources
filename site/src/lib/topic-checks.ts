@@ -5,7 +5,10 @@
 //      and no line longer than the voice's token budget allows (narration/voice.json → pace.max_words_per_line);
 //   3. every number in the reel's on-screen text (reel.tsx) is computed or asserted in examples.py;
 //   4. prerequisites.mdx opens with a Basics section (the topic's own terms, in brief; QUALITY.md #50), unless the topic
-//      was finished before that rule (2026-10-12) and is listed in src/topics/basics-backlog.json, which only shrinks.
+//      was finished before that rule (2026-10-12) and is listed in src/topics/basics-backlog.json, which only shrinks;
+//   5. the narration teaches instead of reading the caption (owner rule 2026-10-13, QUALITY.md #54): no step's narration
+//      shares half or more of its four-word phrases with its caption, and no caption sentence of eight words or more is
+//      spoken verbatim, unless the topic predates the rule and is listed in src/topics/narration-backlog.json (only shrinks).
 import { existsSync, readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import type { TopicMeta } from '../topics/registry';
@@ -59,10 +62,33 @@ export function basicsProblems(src: string, body: string) {
   return problems;
 }
 
+/** The caption of each reel step (its `body`), as plain words, in step order: `body: (<>…</>)` or `body: <>…</>`. */
+export function captions(src: string) {
+  const out: string[] = [];
+  for (const m of src.matchAll(/body:\s*\(?\s*<>([\s\S]*?)<\/>/g)) out.push(m[1].replace(/\{[^}]*\}/g, ' ').replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim());
+  return out;
+}
+const words = (s: string) => s.toLowerCase().replace(/[^a-z0-9 ]+/g, ' ').split(/\s+/).filter(Boolean);
+const grams = (w: string[], n = 4) => new Set(w.slice(0, Math.max(0, w.length - n + 1)).map((_, i) => w.slice(i, i + n).join(' ')));
+/** How much of a step's narration is its caption read aloud: the share of the narration's four-word phrases that occur in
+ * the caption (0–1), and the first caption sentence of eight words or more that the narration says verbatim, if any. */
+export function readsTheScreen(caption: string, narration: string) {
+  const n = words(narration), c = words(caption);
+  const g = grams(n), cg = grams(c);
+  let hit = 0;
+  for (const x of g) if (cg.has(x)) hit++;
+  const share = g.size ? hit / g.size : 0;
+  const spoken = ' ' + n.join(' ') + ' ';
+  const verbatim = caption.split(/(?<=[.!?])\s+/).map((s) => words(s)).find((s) => s.length >= 8 && spoken.includes(' ' + s.join(' ') + ' '));
+  return { share, verbatim: verbatim ? verbatim.join(' ') : null };
+}
+
 export function checkTopicFiles(topics: TopicMeta[]) {
   const errors: string[] = [];
   const backlogPath = resolve(process.cwd(), 'src/topics/basics-backlog.json');
   const backlog: string[] = existsSync(backlogPath) ? JSON.parse(readFileSync(backlogPath, 'utf8')).pending : [];
+  const narrBacklogPath = resolve(process.cwd(), 'src/topics/narration-backlog.json');
+  const narrBacklog: string[] = existsSync(narrBacklogPath) ? JSON.parse(readFileSync(narrBacklogPath, 'utf8')).pending : [];
   for (const t of topics) {
     const dir = resolve(process.cwd(), 'src/topics', t.slug);
     const reelSrc = readFileSync(resolve(dir, 'reel.tsx'), 'utf8');
@@ -80,6 +106,23 @@ export function checkTopicFiles(topics: TopicMeta[]) {
         if (s.predict && !n.answer?.length) errors.push(`${t.id}: step ${i + 1} ("${s.title}") is a predict step but its narration has no "answer".`);
         if (!s.predict && n.answer) errors.push(`${t.id}: step ${i + 1} ("${s.title}") has an "answer" in narration.json but no predict question.`);
       });
+      // 5. The narrator teaches; the caption is the written anchor (owner rule 2026-10-13). A step whose narration is its
+      //    caption read aloud fails, unless the topic predates the rule and is listed in src/topics/narration-backlog.json.
+      const caps = captions(reelSrc);
+      const reading: string[] = [];
+      if (caps.length === steps.length) {
+        narr.forEach((n, i) => {
+          const spoken = [...n.lines, ...(n.answer ?? [])].filter((x): x is string => typeof x === 'string').join(' ');
+          const r = readsTheScreen(caps[i], spoken);
+          if (r.share >= 0.5) reading.push(`step ${i + 1} ("${steps[i].title}"): ${Math.round(r.share * 100)}% of its narration is the caption word for word`);
+          else if (r.verbatim) reading.push(`step ${i + 1} ("${steps[i].title}"): speaks the caption sentence "${r.verbatim.slice(0, 60)}…" verbatim`);
+        });
+      } else errors.push(`${t.id}: reel.tsx has ${steps.length} steps but ${caps.length} caption bodies could be read; write each step's caption as body: (<>…</>).`);
+      if (narrBacklog.includes(t.id)) {
+        if (!reading.length) errors.push(`${t.id}: its narration teaches now, but it is still listed in src/topics/narration-backlog.json. Remove it from the list.`);
+      } else if (reading.length) {
+        errors.push(`${t.id}: the narration reads the screen instead of teaching (PROJECT_PLAN.md, Narration → The narrator teaches): ${reading.join('; ')}. Rewrite those steps' lines as a teacher's explanation of the picture (why, what to watch, what goes wrong otherwise), not the caption. Only a topic finished before 2026-10-13 may be listed in src/topics/narration-backlog.json instead.`);
+      }
       // 2. Speakable lines.
       narr.forEach((n, i) =>
         [...n.lines, ...(n.answer ?? [])].forEach((x) => {
@@ -124,5 +167,5 @@ export function checkTopicFiles(topics: TopicMeta[]) {
       for (const p of basicsProblems(pre, basics)) errors.push(`${t.id}: the Basics section ${p}`);
     }
   }
-  if (errors.length) throw new Error(`Topic file checks failed (QUALITY.md #35, #50):\n- ${errors.join('\n- ')}`);
+  if (errors.length) throw new Error(`Topic file checks failed (QUALITY.md #35, #50, #54):\n- ${errors.join('\n- ')}`);
 }
