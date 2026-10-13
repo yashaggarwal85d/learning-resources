@@ -282,7 +282,7 @@ Reels can carry an optional voice-over that narrates each step, which makes them
   - Then **freeze it**: the model version, voice settings and any seed are pinned in the repo, so every reel sounds identical forever. A change of voice is a deliberate, reviewed decision that regenerates every clip.
 - **Original, never an imitation.** The voice is never cloned from recordings of a real, identifiable person or an existing product voice (including the actual Sky and Sol voices). That needs consent and invites right-of-publicity disputes. No voice cloning of anyone, ever.
 - **Build-time generation.**
-  - Audio is generated when a topic is built, never in the visitor's browser.
+  - Audio is generated when a topic is built, never in the visitor's browser. Since 13 October 2026 it is generated on the owner's PC (GPU), in bulk, after the cloud routines have built and parked the topics (ROUTINE.md section 7, `.claude/skills/narrate`); a topic goes live only once its narration exists.
   - Each clip is cached by a hash of its script, voice and settings, so only steps whose wording changed are regenerated.
   - The site serves the finished files.
 

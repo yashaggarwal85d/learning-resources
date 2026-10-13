@@ -1,0 +1,59 @@
+---
+name: narrate
+description: On the owner's PC (GPU): narrate every parked topic in bulk, fit the clips to each topic, run the full checks, and release the complete chains in order. Use for "/narrate", "narrate the parked topics", "release the held topics". Never run on the cloud.
+---
+
+# /narrate
+
+The PC half of making a topic (owner decision 2026-10-13). Routine runs on the cloud build topics and ship them **held without audio** (ROUTINE.md section 7). This skill, run on the owner's PC with the GPU, turns the parked topics into live ones.
+
+## 0. Preconditions
+
+- A clean checkout of `main`: `git fetch origin && git checkout main && git reset --hard origin/main`, then `cd site && npm ci`.
+- The narration toolchain for this machine (see `site/narration/README.md`): the voice generator, the checker (faster-whisper, model in `voice.json` → `asr.model`), ffmpeg, `jellyfish`. On this PC the generator runs on the AMD GPU; the pipeline's contract is unchanged: `gen_takes.py` writes one WAV per take at `take_path(line, take)`, `assemble.py` checks, picks, assembles and masters.
+- **The voice is frozen.** Every clip on the site must be the same narrator (PROJECT_PLAN.md, Narration: one signature voice). Changing the model, voice or settings is a deliberate decision: bump `voice.json` → `version`, and then **every** topic's clips are stale (`test:narration` fails them) and must be regenerated, live ones included; that is a locked-reel change, so it carries an `Unlock:` line per live topic in the commit and the owner's explicit approval in the session. Do not mix voices across topics.
+
+## 1. The work list
+
+```sh
+cd site && npm run test:narration
+```
+
+Every warning line names a held topic whose narration is missing, stale (script changed) or out of standard. That list, plus any live topic the check fails, is the job. Nothing else is narrated.
+
+## 2. Narrate in bulk
+
+For each topic in the list, from `site/`:
+
+```sh
+narration/narrate.sh src/topics/<domain>/<milestone>/<chapter>/<topic>
+```
+
+Run them back to back (one process at a time: the generator owns the GPU). `narrate.sh` restores the take cache from the `narration-cache` branch first and saves it when it stops, so nothing is generated twice. The script's lint runs before any take (a line over 50 words or with hyphen-joined letters is refused: fix the line first). The transcript check tolerates a mishearing a listener would not notice and lists each one in the build output and the manifest; a line no take can pass is listed at the end, together with every other such line: rewrite every one (plainer words, names and numbers as they are said), add the change under `OUTLINE.md` → "Changes after final" if it changes what is taught, and run that topic again (only the new takes are generated).
+
+**Fit to the topic** is what `assemble.py build` does at the end: it chooses takes per clip so the clip meets the pace limit, masters to the audio standard, writes `public/audio/<topic-id>/NN.webm`, `NN.mp3` and `manifest.json` (script hash, per-line timings the captions use, loudness, peak, pace, the takes behind each clip, tolerated mishearings). Nothing else fits clips to a topic; do not edit the manifest by hand.
+
+Listen to each topic end to end, the clips with tolerated mishearings first ("listen: 'reel' heard 'real'" in the output). A clip that sounds wrong is a take to reject: add the heard word to `voice.json` → `asr.homophones` only if the voice really said the line; otherwise rewrite the line.
+
+Commit the audio per topic: `Narration: <topic-id>` with `public/audio/<topic-id>/` and any `narration.json` or `OUTLINE.md` change, and push to `main` (narration of a held topic is not a locked-reel change). Then `npm run test:narration` again: the topic must have left the warning list.
+
+## 3. Release the complete chains
+
+Narrated topics go live in syllabus order, as chains, through the release job, which only the PC may take:
+
+```sh
+CLAIM_RELEASE=1 node scripts/claim.mjs next "<domain>"
+```
+
+It returns `release` with the chain of held topics whose earlier topics are all live, or `wait` when none is complete yet (then stop: a later `/narrate` releases it). Follow ROUTINE.md section 1, `release`, exactly: a branch `release/<first-topic-id>` from `origin/main`, each topic's `status: 'live'`, the seam check (content review of each topic's previous topic against its bridge, Prerequisites and `uses`), the full release check for a topic held longer than 14 days, the Basics section for topics still in `site/src/topics/basics-backlog.json`; then section 8 (merge `main`, `node scripts/check-all.mjs --changed` all green, `node scripts/claim.mjs mine`, merge, push, CI and Deploy green) and `node scripts/claim.mjs done`. Repeat per domain until every answer is `wait`.
+
+## 4. Report
+
+Per domain: topics narrated (and the lines rewritten), topics released with their live links, topics still parked and what they wait for, and the ledger line (`node scripts/run-metrics.mjs finish`).
+
+## Never
+
+- Run this on the cloud, or let a routine run narrate (ROUTINE.md section 7).
+- Change the voice without a `version` bump, the owner's approval and a full regeneration.
+- Release a topic whose narration check still warns, or out of syllabus order.
+- Loosen a check to get a clip through; rewrite the line instead.

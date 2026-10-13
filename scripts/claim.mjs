@@ -21,7 +21,9 @@
 // Settings: CLAIM_MAX_PARALLEL (default 4) runs per domain at once (runs whose topic is content-final, narrating or
 // shipping, don't count against either limit); a claim is stale after 90 minutes without a heartbeat;
 // scripts/claim-settings.json: { "finishOnly": true } starts nothing new except the topics in "restart" (titles);
-// "maxTotal" overrides CLAIM_MAX_TOTAL.
+// "maxTotal" overrides CLAIM_MAX_TOTAL; "narration": "pc" parks finished topics (shipped held, no narration) for the
+// owner's PC, which narrates in bulk and releases them (.claude/skills/narrate): release jobs are then handed out only
+// when CLAIM_RELEASE=1 is set (the PC), never to a routine run.
 // a topic whose runs stopped 3 times (or vanished 6 times, as on a usage limit) is blocked (reported, not retried) until a
 // human looks at it and deletes its claim. CLAIM_MAX_TOTAL (default 8) caps the runs of all domains together.
 import { spawnSync } from 'node:child_process';
@@ -228,8 +230,10 @@ function decide({ domain, order, reg, lost, plans, chapters }, owner) {
     const chapterInfo = (ch) => ({ number: ch.number, title: ch.title, plan: plans.has(ch.number) ? `site/src/topics/${domain}/${plans.get(ch.number)}/CHAPTER.md` : null });
 
     // 1. Release: held topics whose earlier topics are all live, as one consecutive chain (each gets a seam check).
+    // With narration parked for the PC, only the PC releases (it narrates first): routines never get this job.
+    const releaseHere = SETTINGS.narration !== 'pc' || process.env.CLAIM_RELEASE === '1';
     const firstOpen = order.findIndex((t) => !live(t));
-    if (firstOpen >= 0 && reg.get(order[firstOpen].title)?.status === 'held') {
+    if (releaseHere && firstOpen >= 0 && reg.get(order[firstOpen].title)?.status === 'held') {
       const chain = [];
       for (let i = firstOpen; i < order.length && reg.get(order[i].title)?.status === 'held'; i++) {
         const c = claimOf(order[i].title);

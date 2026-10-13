@@ -100,7 +100,7 @@ Each domain has a routine that fires every 4 hours (an automated session; up to 
 2. Each other run claims the first topic of a planned chapter that no run is working on.
 3. It researches the topic from primary sources; an Opus agent plans and storyboards it, a fresh Opus agent fact-checks the plan, and a blind expert list starts the coverage map. Opus does the five judgment jobs (chapter plan and its review, content plan, fact-check, content review); everything else is Sonnet; checks go to fresh agents that didn't write what they check.
 4. A builder agent writes the reel, Deep dive, Prerequisites, narration script and executed examples; fresh agents review the content and the looks; every check except narration must pass.
-5. The topic is marked content-final (the next chapter may be planned once all its siblings are too), then narrated, checked once more in full, and shipped to `main`.
+5. The topic is marked content-final (the next chapter may be planned once all its siblings are too), checked once more in full, and shipped to `main` **held, without audio**: narration is parked for the owner's PC, which narrates the parked topics in bulk on a GPU and releases them in order (`.claude/skills/narrate`).
 
 A topic goes live only when every topic before it in its domain is live; one finished early is held until then. If a check fails, the routine fixes the cause and never loosens the check.
 
