@@ -1,0 +1,70 @@
+{
+  "topic": "de.gaps-islands-sessionization",
+  "note": "Written to be spoken: one idea per line; {\"beat\": s} is a deliberate pause; numbers are phrased the way they are said, never as digits. Tool and flag names are spoken as their job, not their symbol. `answer` plays after the learner answers a predict step. Opens on the chapter bridge line and closes on the handoff line.",
+  "steps": [
+    {
+      "lines": [
+        "Rows arrive scattered across time.",
+        "Now: pulling them back together into one coherent story."
+      ]
+    },
+    {
+      "lines": [
+        "A click, a page view, an event... each one lands as its own separate row, with no idea what came before it.",
+        "But the real question almost never cares about one event alone. It cares about the visit the event belonged to.",
+        "So the first thing you need is simple: for each row, what did the row right before it look like."
+      ]
+    },
+    {
+      "lines": [
+        "That's one small tool, looking one row back.",
+        "From it, you can measure the gap since the last thing this same person did.",
+        "A short gap means... still the same visit. A long enough gap means something new just started."
+      ]
+    },
+    {
+      "lines": [
+        "Here's where it gets clever.",
+        "Mark every row where a new visit starts with a little flag... just a one, everywhere else a zero.",
+        {
+          "beat": 0.4
+        },
+        "Now take a running total of that flag, row by row, for one person at a time.",
+        "What does that running total actually give you?"
+      ],
+      "answer": [
+        "A visit number. Exactly that.",
+        "The running total sits still for every row inside one visit, because nothing there bumped the flag.",
+        "And it climbs by exactly one the instant a new visit starts.",
+        "A running total of a flag just became a label for every separate episode."
+      ]
+    },
+    {
+      "lines": [
+        "But remember the trap from a few topics back... ties.",
+        "If two events land at the exact same recorded moment, and you leave that running total on its default behavior, both of those tied rows can end up folded together in a way you didn't intend.",
+        "The fix is the same one as before: tell it to climb strictly one row at a time, not by matching values.",
+        "Same trap, same fix, just showing up again in a new costume."
+      ]
+    },
+    {
+      "lines": [
+        "Once every single event carries its visit number, the heavy lifting is basically done.",
+        "Group by that number, and a hundred million raw events collapse down into a much smaller table... one row per actual visit, with a start, an end, and a size.",
+        "That's the table worth querying, over and over. Not the raw flood underneath it."
+      ]
+    },
+    {
+      "lines": [
+        "So: look one row back, measure the gap, flag where a new episode begins, and let a running total turn that flag into an episode number.",
+        "Watch for ties the same way you always have to.",
+        "And once the episodes are labeled, collapse the flood down to them... that's the table every later question actually wants.",
+        {
+          "beat": 0.4
+        },
+        "Grouping events into episodes answers what happened.",
+        "Next: smoother statistics over the numbers themselves, running and moving, instead of just marking where one episode ends and the next begins."
+      ]
+    }
+  ]
+}

@@ -1,0 +1,72 @@
+{
+  "topic": "de.query-rewrites-subquery-unnesting",
+  "note": "Written to be spoken: one idea per line; {\"beat\": s} is a deliberate pause; numbers are phrased the way they are said, never as digits. Tool and flag names are spoken as their job, not their symbol. `answer` plays after the learner answers a predict step. Opens on the chapter bridge line and closes on the handoff line.",
+  "steps": [
+    {
+      "lines": [
+        "Right now, every plan has only ever meant exactly what it said.",
+        "Now: the rewrites that quietly turn one legal plan into a cheaper, equally legal one."
+      ]
+    },
+    {
+      "lines": [
+        "Some of these rewrites are almost too simple to call clever.",
+        "Move a filter as close as possible to the table it filters. Drop a column the moment nobody needs it anymore. Work out a fixed arithmetic answer once, instead of once per row.",
+        "None of these need any guessing about cost. They're just always at least as good, so the engine does them for free, before anything else even starts."
+      ]
+    },
+    {
+      "lines": [
+        "Here's a sharper one. Sometimes an entire join can be thrown away.",
+        "Picture joining to a second table, but never actually reading a single column from it... just checking that a match exists.",
+        {
+          "beat": 0.4
+        },
+        "If that second table is guaranteed to have at most one matching row for each one on the first side... does the join still need to run at all?"
+      ],
+      "answer": [
+        "No. It can be deleted outright.",
+        "If nothing from that table is read, and it can only ever contribute at most one matching row, the whole join changes nothing about the final answer.",
+        "So the engine just... removes it. The second table's scan never happens. One less table touched, for free."
+      ]
+    },
+    {
+      "lines": [
+        "Another one, in the opposite direction.",
+        "A certain kind of join promises to keep every row from one side, filling in blanks when there's no match.",
+        "Now say a later filter throws away every row that has one of those blanks.",
+        {
+          "beat": 0.4
+        },
+        "Did that join actually need to keep the unmatched rows at all?"
+      ],
+      "answer": [
+        "No. If the filter was always going to throw them out anyway, the join can quietly become an ordinary, stricter join instead... one with far more freedom to be reordered.",
+        "And push it one step further: if the filter specifically wants the rows with no match... the engine recognizes that as asking for exactly the opposite kind of join, and switches to it directly.",
+        "Two completely different-looking ways of writing the same question, and the engine proves, underneath, that they were always the same operator all along."
+      ]
+    },
+    {
+      "lines": [
+        "Last one, and it's the hardest of the five.",
+        "A subquery that looks back at the row currently being processed, re-run fresh for every single row... has a formal name: a dependent join.",
+        "And dependent joins are exactly the slow, nested-loop shape you'd expect.",
+        "The fix, in general, is to keep reshaping that dependent join, pushing it deeper and deeper through the query, until the piece that needed the outer row's value finally doesn't need it anymore.",
+        "The instant that happens, it stops being a dependent join at all. It's just an ordinary join, free to be reordered like any other."
+      ]
+    },
+    {
+      "lines": [
+        "So: some rewrites are free and automatic, no guessing required.",
+        "A join can vanish entirely when it was never contributing anything.",
+        "A join's own strictness can quietly change, in either direction, once a later filter proves it was always going to behave that way.",
+        "And a correlated subquery, pushed and reshaped far enough, eventually stops needing the row that once made it slow.",
+        {
+          "beat": 0.4
+        },
+        "All of this ran purely on proof, no numbers involved.",
+        "Next: a different kind of rewrite, one that decides whether a shortcut helps or hurts by actually running it, or not."
+      ]
+    }
+  ]
+}

@@ -1,0 +1,30 @@
+import Resource from '../../../../../components/Resource.astro';
+
+This is a full topic in §2.1, right after user-defined functions and optimizer opacity (topic 8), and the last topic of §2.1 before window functions begin in §2.2.
+
+<section class="prereq" data-section="basics">
+
+### <span class="n">00</span> The terms this topic uses
+
+A few words, each defined in full inside the reel; this is just so they are not a surprise.
+
+- **`MERGE`** — one statement that joins a target to a source and performs INSERT/UPDATE/DELETE conditionally per row, branch by branch.
+- **`UPSERT` (`INSERT ... ON CONFLICT`)** — "insert, or update if it already exists," guaranteed atomic under concurrency.
+- **`merge_action()`** — a `RETURNING`-clause function (PostgreSQL 17+) reporting which action (`INSERT`/`UPDATE`/`DELETE`) produced a given output row.
+- **`OLD`/`NEW` in `RETURNING`** — PostgreSQL 18+ support for returning a row's before-and-after values from `INSERT`/`UPDATE`/`DELETE`/`MERGE`.
+
+<p class="check"><b>Check yourself:</b> can MERGE's INSERT branch ever raise a uniqueness-violation error, even though MERGE already checked which rows were "not matched"? (Answer: yes — MERGE decides from a snapshot taken before its own INSERT runs, and does not retry if a concurrent transaction inserts the same key in between; ON CONFLICT DO UPDATE is the one built to avoid exactly this.)</p>
+
+</section>
+
+<section class="prereq" data-section="sql-select">
+
+### <span class="n">01</span> Basic SQL, joins and transactions (declared)
+
+Ordinary `INSERT`/`UPDATE`/`DELETE` and a basic sense of what a transaction and an isolation level are assumed; this topic is specifically about `MERGE`'s own semantics on top of that.
+
+<ul class="resources">
+  <Resource kind="reading" title="PostgreSQL Tutorial, ch. 2–4" href="https://www.postgresql.org/docs/current/tutorial.html" by="PostgreSQL 18 documentation" length="30 min">A refresher on everyday SQL, if any of it is rusty. Before this.</Resource>
+</ul>
+
+</section>

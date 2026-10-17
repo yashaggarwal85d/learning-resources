@@ -1,0 +1,52 @@
+{
+  "topic": "de.user-defined-functions-optimizer-opacity",
+  "syllabus": [
+    { "clause": "scalar, table and aggregate UDFs;", "at": [{ "step": "Three kinds of UDF" }, { "deep": "Three kinds of UDF" }] },
+    { "clause": "why opaque UDFs block pushdown, costing and parallelism;", "at": [{ "step": "A function the planner cannot see into" }, { "step": "VOLATILE by default: nothing may be folded" }, { "step": "PARALLEL UNSAFE by default: one call serialises the plan" }, { "step": "Predict: one unmarked UDF in a filter" }, { "step": "An unknown cost schedules it too early" }, { "step": "Three declarations lift three penalties" }, { "deep": "What \"opaque\" costs you, exactly" }] },
+    { "clause": "inlining (PostgreSQL SQL-function inlining, SQL Server's \"Froid\" scalar-UDF inlining)", "at": [{ "step": "A SQL function can be spliced in" }, { "step": "Predict: the same body in plpgsql" }, { "step": "Froid inlines imperative UDFs" }, { "deep": "Two ways to make the UDF's body visible again" }] },
+    { "clause": "and vectorized Arrow-batch Python UDFs vs row-at-a-time ones.", "at": [{ "step": "Python UDFs pay per row, or per batch" }, { "deep": "Row-at-a-time vs vectorized, Arrow-batch UDFs" }] }
+  ],
+  "sources": [
+    {
+      "source": "PostgreSQL 18 Documentation, CREATE FUNCTION",
+      "items": [
+        { "item": "VOLATILE is the default; IMMUTABLE and STABLE definitions", "at": [{ "step": "VOLATILE by default: nothing may be folded" }, { "deep": "What \"opaque\" costs you, exactly" }] },
+        { "item": "PARALLEL UNSAFE is the default and forces a serial plan", "at": [{ "step": "PARALLEL UNSAFE by default: one call serialises the plan" }, { "step": "Prove it · 1 of 2" }, { "deep": "What \"opaque\" costs you, exactly" }] },
+        { "item": "COST and ROWS tell the planner a function's price and output size", "at": [{ "step": "An unknown cost schedules it too early" }, { "step": "Three declarations lift three penalties" }] }
+      ]
+    },
+    {
+      "source": "PostgreSQL source clauses.c (inline_function); Ramachandra et al., Froid (PVLDB 2017); Microsoft Learn, Scalar UDF Inlining",
+      "items": [
+        { "item": "Only simple LANGUAGE sql functions are inlined; not SECURITY DEFINER, set-returning or recursive", "at": [{ "step": "A SQL function can be spliced in" }, { "step": "Predict: the same body in plpgsql" }, { "step": "Prove it · 2 of 2" }] },
+        { "item": "Froid turns an imperative UDF into one relational expression with APPLY; one to three orders of magnitude", "at": [{ "step": "Froid inlines imperative UDFs" }, { "deep": "Two ways to make the UDF's body visible again" }] },
+        { "item": "Scalar UDF inlining is available from SQL Server 2019", "at": [{ "step": "Froid inlines imperative UDFs" }] }
+      ]
+    },
+    {
+      "source": "Databricks Engineering Blog, Introducing Pandas UDF for PySpark",
+      "items": [
+        { "item": "Row-at-a-time UDFs pay serialization and invocation overhead per row; vectorized UDFs 3x to over 100x faster", "at": [{ "step": "Python UDFs pay per row, or per batch" }, { "deep": "Row-at-a-time vs vectorized, Arrow-batch UDFs" }] }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "Claude (single session, written from the syllabus line before mapping to the topic; not independent of the builder, so the cloud review run should repeat it)",
+    "date": "2026-10-17",
+    "items": [
+      { "item": "Scalar, set-returning and aggregate UDF forms", "at": [{ "step": "Three kinds of UDF" }] },
+      { "item": "Volatility categories and their effect on optimization", "at": [{ "step": "VOLATILE by default: nothing may be folded" }] },
+      { "item": "Parallel safety categories and the serial-plan effect", "at": [{ "step": "PARALLEL UNSAFE by default: one call serialises the plan" }] },
+      { "item": "Cost estimation for UDFs and filter ordering", "at": [{ "step": "An unknown cost schedules it too early" }] },
+      { "item": "Predicate pushdown blocked by opaque functions", "at": [{ "step": "A function the planner cannot see into" }] },
+      { "item": "Index use blocked by a function on an indexed column, and expression indexes as the remedy", "at": [{ "topic": "Covering, partial and expression indexes", "quote": "expression indexes" }] },
+      { "item": "SQL function inlining and its conditions", "at": [{ "step": "A SQL function can be spliced in" }] },
+      { "item": "Froid and scalar UDF inlining in SQL Server", "at": [{ "step": "Froid inlines imperative UDFs" }] },
+      { "item": "Python UDF serialization overhead", "at": [{ "step": "Python UDFs pay per row, or per batch" }] },
+      { "item": "Arrow-based vectorized UDFs", "at": [{ "step": "Python UDFs pay per row, or per batch" }] },
+      { "item": "Security and correctness risks of mislabelled volatility", "at": [{ "step": "Three declarations lift three penalties" }] },
+      { "item": "Native engine functions as the first resort over UDFs", "at": [{ "deep": "In production — a review checklist" }] }
+    ]
+  },
+  "gapReview": { "date": "2026-10-17", "by": "Claude (single session)", "open": [] }
+}

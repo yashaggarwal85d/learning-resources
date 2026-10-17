@@ -1,0 +1,124 @@
+{
+  "topic": "de.lateral-joins-correlated-subqueries",
+  "steps": [
+    {
+      "lines": [
+        "Every total so far summed rows that were already sitting next to each other in one table. Now we pull one extra row in from the table beside it, computed just where we need it.",
+        "Look at the picture: four customers, each with a different number of orders.",
+        { "beat": 0.4 },
+        "Ask for the newest three orders of each customer. The orders table alone cannot answer that, because whether an order qualifies depends on the other orders of its own customer."
+      ]
+    },
+    {
+      "lines": [
+        "So the customer has to come first, and the question has to be asked again for each one.",
+        "Here is the obstacle. An ordinary subquery in the from clause is evaluated by itself. Watch the wall between the two boxes: it cannot see a column of its neighbour.",
+        "The keyword lateral removes the wall. The subquery may now use the current row of the item before it.",
+        "That one permission is the whole feature. Everything else is what you can do with it."
+      ]
+    },
+    {
+      "lines": [
+        "Watch the highlighted customer. For that row, the subquery runs with that customer's key substituted in.",
+        "It sorts only that customer's orders, takes the newest three, and the picks light up next to their customer.",
+        "Then the spotlight moves down, and the same thing happens for the next row.",
+        "Notice the shape: it is a loop, and the inner query is the loop body. That is why it can do things a join condition cannot."
+      ]
+    },
+    {
+      "lines": [
+        "Now use the picture to count. The four customers own five, two, none, and four orders, and the cap is three each.",
+        "The version of the join in question drops an outer row whenever its subquery returns nothing.",
+        { "beat": 0.4 },
+        "How many rows come back?"
+      ],
+      "answer": [
+        "Eight. Three, two, none and three.",
+        "The customer with no orders vanishes, because there was nothing to join to. And nobody can return more than the cap, which rules out twelve.",
+        "Eleven and nine come from counting the empty customer or ignoring the cap. A ceiling is not a quota, so a customer with two orders returns two."
+      ]
+    },
+    {
+      "lines": [
+        "That disappearing customer is sometimes a bug. Often you want every customer, orders or not.",
+        "Change the join to a left join with a condition that is always true. Now look at the dashed box.",
+        "The customer with nothing still appears, once, with nulls where the orders would be.",
+        "Same query, nine rows instead of eight. And you chose which behaviour you wanted by choosing the join."
+      ]
+    },
+    {
+      "lines": [
+        "Why not just use an anti join to find the customer with no orders? Compare the two rows on screen.",
+        "An anti join answers yes or no, and for the customers who do have orders it gives nothing back.",
+        "The lateral version keeps everyone, and for each one it brings back the matched rows' own columns.",
+        "So it answers the existence question and hands you the best match. That is something an existence test cannot do by construction."
+      ]
+    },
+    {
+      "lines": [
+        "If you work in SQL Server, none of this is new under a different name. It is called apply.",
+        "Cross apply keeps only outer rows that produced something. Outer apply keeps the rest as well.",
+        "Read the two pairs on screen. They match one to one with the two forms we just used, so translating a query is mechanical."
+      ]
+    },
+    {
+      "lines": [
+        "Now a point about what lateral costs. Suppose the subquery only restates an equality, nothing more.",
+        "Then the planner does not run it per row at all. It pulls the subquery up into an ordinary join.",
+        "That matters because an ordinary join can be reordered like any other. A per row loop cannot.",
+        "So for a plain equality the keyword adds nothing. Save it for work that needs its own sorting and cutting off, per outer row."
+      ]
+    },
+    {
+      "lines": [
+        "Take the equality case that was flattened. Now add a sort and a cap to the subquery.",
+        "Think about what a cap means: keep one row for each outer row, not one row overall.",
+        { "beat": 0.4 },
+        "Can the planner still flatten it?"
+      ],
+      "answer": [
+        "No.",
+        "A cap per outer row cannot be turned into one big join without changing the answer, so the planner refuses to pull up a subquery that sorts or limits.",
+        "It stays a per row loop. Saying any subquery can be flattened is exactly the assumption that fails here, and it has nothing to do with the dialect. An index only makes each run cheap."
+      ]
+    },
+    {
+      "lines": [
+        "So the price of this pattern is the price of one inner run, repeated for each outer row.",
+        "With an index on the customer and the time, each run walks a few index entries and stops at the cap. Look at the short bar.",
+        "Without it, each run sorts that customer's orders. And the window function alternative sorts the whole joined set once, which is the long bar.",
+        "Neither always wins. It depends on the data and on whether the index exists, so check the plan."
+      ]
+    },
+    {
+      "lines": [
+        "To sum up. Use lateral when the per row work cannot be a join condition: its own sort and cap, or a function of the outer row.",
+        "Use the left form when every outer row must survive. And index the correlated columns, because that index is the whole performance story.",
+        { "beat": 0.4 },
+        "This whole section has been about what a query means. Next: what SQL means for data that is not flat at all."
+      ]
+    },
+    {
+      "lines": [
+        "Two checks. First, the SQL Server operator that keeps outer rows with no result.",
+        { "beat": 0.4 },
+        "Which lateral form is its match?"
+      ],
+      "answer": [
+        "The left join with an always true condition.",
+        "Both keep the outer row when the subquery returns nothing. The cross join form is the match for cross apply, and the not exists form tests existence only."
+      ]
+    },
+    {
+      "lines": [
+        "Second check. A customer with two orders, and a subquery capped at three.",
+        { "beat": 0.4 },
+        "How many rows does that customer contribute?"
+      ],
+      "answer": [
+        "Two.",
+        "A cap is a ceiling, not a quota. The subquery returns what exists, up to the limit, so you get two rows and not three."
+      ]
+    }
+  ]
+}

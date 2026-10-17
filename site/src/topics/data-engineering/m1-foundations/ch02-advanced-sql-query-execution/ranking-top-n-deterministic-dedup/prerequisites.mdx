@@ -1,0 +1,30 @@
+import Resource from '../../../../../components/Resource.astro';
+
+This is a full topic in §2.2, right after window function execution internals (topic 11). It assumes topic 10's PARTITION BY/ORDER BY vocabulary and topic 6's LATERAL+LIMIT top-N pattern.
+
+<section class="prereq" data-section="basics">
+
+### <span class="n">00</span> The terms this topic uses
+
+A few words, each defined in full inside the reel; this is just so they are not a surprise.
+
+- **`ROW_NUMBER`/`RANK`/`DENSE_RANK`** — three ways to number rows within a partition, differing only in how they handle ties.
+- **Tie-breaker** — an extra, guaranteed-unique `ORDER BY` column added purely to make a ranking's output deterministic.
+- **`QUALIFY`** — a clause (not in PostgreSQL) that filters on a window function's result directly, instead of staging it through a subquery/CTE.
+
+<p class="check"><b>Check yourself:</b> if three rows tie for the top amount, what does RANK() assign to the next, fourth-highest row? (Answer: four — RANK leaves gaps, so three rows tied at rank one are followed by rank four, not rank two.)</p>
+
+</section>
+
+<section class="prereq" data-section="window">
+
+### <span class="n">01</span> Window frame semantics and execution internals (topics 10–11, before this)
+
+This topic builds directly on PARTITION BY/ORDER BY and the sorted-pass execution model from the two topics before it.
+
+<ul class="resources">
+  <Resource kind="topic" title="Window frame semantics" href="../window-frame-semantics/" by="This chapter, topic 10" length="14 min">PARTITION BY/ORDER BY and the nested-window CTE staging pattern reused here for QUALIFY-less engines. Before this.</Resource>
+  <Resource kind="topic" title="LATERAL joins and correlated subqueries" href="../lateral-joins-correlated-subqueries/" by="This chapter, topic 6" length="13 min">The other top-N-per-group plan shape this topic compares against. Before this.</Resource>
+</ul>
+
+</section>

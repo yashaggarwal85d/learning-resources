@@ -1,0 +1,135 @@
+{
+  "topic": "de.grouping-sets-rollup-cube-pivots",
+  "steps": [
+    {
+      "lines": [
+        "Every question so far has produced one row per group, or one row per path. Now we split one aggregate into several levels, in a single pass.",
+        "Picture the report your finance team asks for: orders by status and month, then by status alone, then one grand total.",
+        "The obvious way is three queries stacked together. Look at the first row on screen: that is three scans of the same table, for one report.",
+        "Grouping sets do the same job in one scan. The rest of the topic is how, and the traps along the way."
+      ]
+    },
+    {
+      "lines": [
+        "A grouping sets clause is just a list of levels. Each sublist is aggregated as if it were its own group by, and the results come back stacked.",
+        "Read the table from the top. The first rows group by status and month. The next groups by status alone, so the month cell is empty. The last has nothing in it at all.",
+        "Those empty cells are columns the level ignored. Hold that thought, because that is where this topic gets dangerous."
+      ]
+    },
+    {
+      "lines": [
+        "Nobody writes out every level by hand, so there are two shorthands for the shapes people use constantly.",
+        "Rollup keeps every prefix of the list: both columns, then the first, then nothing. That is the shape of a hierarchy, from detail up to the grand total.",
+        "Cube keeps every subset, so it also includes the second column alone. Use it when there is no natural order, and you want every combination.",
+        "The rows on the right are what that costs over our data: seven for the rollup, nine for the cube."
+      ]
+    },
+    {
+      "lines": [
+        "Two columns gave us three sets for a rollup and four for a cube. Now try a third column.",
+        "Think about what a cube is. It is every subset of the columns, including none of them.",
+        { "beat": 0.4 },
+        "How many sets does it expand to?"
+      ],
+      "answer": [
+        "Eight. Each column is either in a subset or out of it, so three columns give two times two times two.",
+        "Six or seven would mean some combination is missing, and nine overshoots.",
+        "That doubling is the reason to be careful with cube. A rollup over three columns is only four sets, one per prefix, so the two shorthands diverge quickly."
+      ]
+    },
+    {
+      "lines": [
+        "Now look at the rows of a rollup as a ladder. Detail rows at the bottom, subtotals above them, the grand total on top.",
+        "In each subtotal row, the dashed cell is a column that row ignored. In the grand total, every grouping column is dashed.",
+        "That dashed cell reads as a NULL in the output. So the report now has three different kinds of row, and the NULL means not part of this grouping."
+      ]
+    },
+    {
+      "lines": [
+        "Here is the trap. Suppose the column you group by already contains NULLs, like orders with no referrer.",
+        "Watch the two highlighted cells. One is a real order with no referrer. One is the grand total, where the column was ignored.",
+        "They are both blank, and nothing in the value tells them apart. The report cannot say which is which.",
+        { "beat": 0.4 },
+        "That is not a corner case. Any nullable column you roll up does this."
+      ]
+    },
+    {
+      "lines": [
+        "Now see what that does to an ordinary filter. After the rollup, you keep the rows where the referrer is null, to count orders with no referrer.",
+        "Remember what is null test looks at: only the value.",
+        { "beat": 0.4 },
+        "Which rows does it keep?"
+      ],
+      "answer": [
+        "Both kinds. The count is off by exactly one.",
+        "The test is a plain two valued check on the value, and the value is blank in both rows. So the grand total gets counted as one more order with no referrer.",
+        "Keeping only the real rows would need extra information the filter does not have, and keeping only the total makes no sense. That missing information is what the next function supplies."
+      ]
+    },
+    {
+      "lines": [
+        "That function tells you, for each row, which columns it grouped on. It returns a bitmask.",
+        "Read the three rows. A detail row grouped on both columns, so both bits are zero. A status subtotal ignored the month, so the low bit is set.",
+        "The grand total ignored both, so both bits are set, and the number is three.",
+        "Now the fix is mechanical: ask for the grouping value to be zero, together with the null test. Only then is the blank a real data value."
+      ]
+    },
+    {
+      "lines": [
+        "One more trap, for when you combine these shorthands. Several of them in one group by multiply together.",
+        "Look at the nine boxes on screen. Some of them are the same grouping set listed twice, and the red ones are the repeats.",
+        "Those repeats produce repeated subtotal rows. Putting distinct directly on the group by removes them.",
+        "Be careful with the name. That is not the same as distinct in the select list, which only removes identical output rows."
+      ]
+    },
+    {
+      "lines": [
+        "Now the other half of the topic: turning rows into columns, the pivot.",
+        "Watch the tall strip fold sideways. One row per month and status becomes one row per month with a column per status.",
+        "The portable way to do it is conditional aggregation. Each output column is a sum, restricted by a filter to the rows of one status.",
+        "Nothing exotic is happening. It is an ordinary group by with one aggregate per column."
+      ]
+    },
+    {
+      "lines": [
+        "There are three spellings, and which one you use depends on where your query runs.",
+        "The filter clause is standard, and works in both engines we use. The case expression inside the sum is the same computation for older engines.",
+        "Some warehouses add a native pivot operator, and an unpivot to go back. PostgreSQL has neither.",
+        "So default to the portable form. It is the same work underneath, and it travels."
+      ]
+    },
+    {
+      "lines": [
+        "Back to the report. One scan, every level.",
+        "Use rollup for hierarchies, and cube only when you really want every combination.",
+        "Always separate rollup blanks from data blanks with the grouping function, and pivot with a filter.",
+        { "beat": 0.4 },
+        "Every total so far summed rows that were already sitting next to each other in one table. Next: pulling in one extra row, from the table beside it, computed just once, right where you need it."
+      ]
+    },
+    {
+      "lines": [
+        "Two checks. First, a rollup over three columns.",
+        "It keeps one set per prefix.",
+        { "beat": 0.4 },
+        "How many sets is that?"
+      ],
+      "answer": [
+        "Four: all three columns, the first two, the first, and none.",
+        "Three forgets the empty set, and eight is the cube, which keeps every subset instead of every prefix."
+      ]
+    },
+    {
+      "lines": [
+        "Second check. A two column rollup, and the grand total row.",
+        "Think about the bits.",
+        { "beat": 0.4 },
+        "What value does the grouping function report for the two columns together?"
+      ],
+      "answer": [
+        "Three, which is binary one one.",
+        "Both bits are set because neither column was grouped on. Zero would be a detail row, and one would be a subtotal that dropped only the month."
+      ]
+    }
+  ]
+}

@@ -1,0 +1,41 @@
+import Resource from '../../../../../components/Resource.astro';
+
+This topic follows relational algebra and bags directly. It assumes ordinary two-valued logic and everyday SQL. Reels on this site are marked **Before this** (earlier in the course), **Goes deeper later** or with the name of another track.
+
+<section class="prereq basics" data-section="basics">
+
+### <span class="n">00</span> Basics: words the reel takes for granted
+
+- **Boolean logic (AND, OR, NOT)**: AND is true when both sides are, OR when at least one is, NOT flips. *Where you meet it:* every `WHERE a AND (b OR NOT c)` you have written.
+- **Predicate**: an expression that is true or false for a row. *Where you meet it:* `amount > 100` in a `WHERE` clause.
+- **Subquery**: a `SELECT` used as a value or a list inside another query. *Where you meet it:* `WHERE id IN (SELECT id FROM blocked)`.
+- **Constraint**: a rule the database enforces on stored data. *Where you meet it:* `UNIQUE`, `NOT NULL`, `PRIMARY KEY`.
+- **Placeholder / sentinel value**: a made-up value standing in for "no data", such as 0 or an empty string. *Where you meet it:* legacy tables that use `-1` for "unknown"; NULL exists to avoid this.
+
+<p class="check"><b>Check yourself:</b> in ordinary logic, what is <code>TRUE AND FALSE</code> and <code>TRUE OR FALSE</code>? (Answer: FALSE and TRUE.)</p>
+
+</section>
+
+<section class="prereq" data-section="bags">
+
+### <span class="n">01</span> Relational algebra and bags
+
+You should know that a query result is a bag of rows, and that `WHERE` keeps rows and `GROUP BY` collapses them.
+
+<ul class="resources">
+  <Resource kind="reel" host={props.host} domain="data-engineering" title="Relational algebra and bag semantics">The previous reel; its handoff is this topic's opening line.</Resource>
+</ul>
+
+</section>
+
+<section class="prereq" data-section="sql-select">
+
+### <span class="n">02</span> Everyday SQL
+
+You should be able to read a `SELECT` with `WHERE`, `JOIN`, `GROUP BY` and a simple subquery.
+
+<ul class="resources">
+  <Resource kind="reading" title="Comparison Functions and Operators" href="https://www.postgresql.org/docs/current/functions-comparison.html" by="PostgreSQL documentation" length="15 min">The reference for how comparisons treat NULL, which this topic builds on.</Resource>
+</ul>
+
+</section>

@@ -1,0 +1,45 @@
+{
+  "topic": "de.grouping-sets-rollup-cube-pivots",
+  "syllabus": [
+    { "clause": "multi-level aggregation in one pass,", "at": [{ "step": "One GROUP BY is one level" }, { "step": "GROUPING SETS lists the levels" }, { "step": "ROLLUP and CUBE are shorthands" }, { "step": "Predict: how many sets in CUBE of three columns?" }, { "step": "Combined rollups repeat sets" }, { "deep": "`GROUPING SETS`, and the two shorthands for it" }, { "deep": "Duplicate grouping sets, and `DISTINCT ROLLUP`" }] },
+    { "clause": "GROUPING() to tell subtotal NULLs from data NULLs;", "at": [{ "step": "A rolled-up column reads as NULL" }, { "step": "A real NULL looks identical" }, { "step": "Predict: which rows does IS NULL keep?" }, { "step": "GROUPING() is a bitmask" }, { "deep": "The ambiguity `GROUPING()` exists to resolve" }] },
+    { "clause": "PIVOT/UNPIVOT vs conditional aggregation (FILTER (WHERE …), CASE) and their dialect portability.", "at": [{ "step": "A pivot folds a tall strip into a wide one" }, { "step": "FILTER, CASE and native PIVOT" }, { "deep": "Pivots: a construct most engines don't share" }] }
+  ],
+  "sources": [
+    {
+      "source": "PostgreSQL 18 Documentation, §7.2.4 GROUPING SETS, CUBE, and ROLLUP",
+      "items": [
+        { "item": "GROUPING SETS aggregates each sublist separately; omitted columns come back NULL", "at": [{ "step": "GROUPING SETS lists the levels" }, { "deep": "`GROUPING SETS`, and the two shorthands for it" }] },
+        { "item": "ROLLUP expands to every prefix and CUBE to every subset", "at": [{ "step": "ROLLUP and CUBE are shorthands" }, { "deep": "`GROUPING SETS`, and the two shorthands for it" }] },
+        { "item": "Combined items can produce duplicate grouping sets; GROUP BY DISTINCT removes them", "at": [{ "step": "Combined rollups repeat sets" }, { "deep": "Duplicate grouping sets, and `DISTINCT ROLLUP`" }] }
+      ]
+    },
+    {
+      "source": "PostgreSQL 18 Documentation, §9.21 Grouping Operations and §4.2.7 Aggregate Expressions; Snowflake and BigQuery PIVOT references",
+      "items": [
+        { "item": "GROUPING() returns a bitmask of which expressions were not grouped on", "at": [{ "step": "GROUPING() is a bitmask" }, { "deep": "The ambiguity `GROUPING()` exists to resolve" }] },
+        { "item": "FILTER (WHERE …) limits the rows an aggregate sees", "at": [{ "step": "A pivot folds a tall strip into a wide one" }, { "deep": "Pivots: a construct most engines don't share" }] },
+        { "item": "Native PIVOT and UNPIVOT exist in Snowflake and BigQuery, not in PostgreSQL", "at": [{ "step": "FILTER, CASE and native PIVOT" }, { "deep": "Pivots: a construct most engines don't share" }] }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "Claude (single session, written from the syllabus line before mapping to the topic; not independent of the builder, so the cloud review run should repeat it)",
+    "date": "2026-10-17",
+    "items": [
+      { "item": "GROUPING SETS semantics and its use to replace UNION ALL of GROUP BYs", "at": [{ "step": "One GROUP BY is one level" }] },
+      { "item": "ROLLUP for hierarchies and CUBE for all combinations", "at": [{ "step": "ROLLUP and CUBE are shorthands" }] },
+      { "item": "Number of grouping sets for ROLLUP and CUBE of n columns", "at": [{ "step": "Predict: how many sets in CUBE of three columns?" }, { "step": "Prove it · 1 of 2" }] },
+      { "item": "Subtotal NULL versus data NULL ambiguity", "at": [{ "step": "A real NULL looks identical" }] },
+      { "item": "GROUPING() and GROUPING_ID bitmask values", "at": [{ "step": "GROUPING() is a bitmask" }, { "step": "Prove it · 2 of 2" }] },
+      { "item": "Partial rollups and composite grouping items", "at": [{ "step": "Combined rollups repeat sets" }] },
+      { "item": "Duplicate grouping sets and DISTINCT", "at": [{ "step": "Combined rollups repeat sets" }] },
+      { "item": "Conditional aggregation with FILTER and CASE", "at": [{ "step": "A pivot folds a tall strip into a wide one" }, { "step": "FILTER, CASE and native PIVOT" }] },
+      { "item": "Native PIVOT and UNPIVOT by dialect", "at": [{ "step": "FILTER, CASE and native PIVOT" }] },
+      { "item": "Dynamic pivots when the column list is not known in advance", "at": [{ "out": "A pivot's columns must be known when the query is written in every engine here; building them dynamically is application-side SQL generation, outside what the syllabus line asks." }] },
+      { "item": "Cost: grouping sets share one scan but can need one sort or hash per set", "at": [{ "topic": "Hash vs sort aggregation", "quote": "hash aggregation vs streaming aggregation over sorted input" }] },
+      { "item": "UNPIVOT as the reverse (wide to long)", "at": [{ "step": "FILTER, CASE and native PIVOT" }] }
+    ]
+  },
+  "gapReview": { "date": "2026-10-17", "by": "Claude (single session)", "open": [] }
+}

@@ -1,0 +1,42 @@
+import Resource from '../../../../../components/Resource.astro';
+
+This topic uses bags and three-valued logic from the two topics before it. Reels on this site are marked **Before this** (earlier in the course), **Goes deeper later** or with the name of another track.
+
+<section class="prereq basics" data-section="basics">
+
+### <span class="n">00</span> Basics: words the reel takes for granted
+
+- **Correlated subquery**: a subquery that refers to a column of the outer query, so it is evaluated against each outer row. *Where you meet it:* `WHERE EXISTS (SELECT 1 FROM orders o WHERE o.customer_id = c.customer_id)`.
+- **Foreign key and primary key**: a primary key uniquely identifies a row; a foreign key points at another table's key. *Where you meet it:* `orders.customer_id` refers to `customers.customer_id`.
+- **NOT NULL constraint**: a declared rule that a column can never hold NULL. *Where you meet it:* `customer_id INTEGER NOT NULL` in a `CREATE TABLE`.
+- **Planner and plan node**: the planner chooses how a query will run; each step of the chosen plan is a node. *Where you meet it:* the lines of `EXPLAIN` output.
+- **Join (inner, left outer)**: an inner join keeps matched pairs; a left outer join also keeps unmatched left rows with NULLs on the right. *Where you meet it:* `LEFT JOIN` to find rows with no match.
+
+<p class="check"><b>Check yourself:</b> after <code>customers LEFT JOIN orders ON …</code>, what do the order columns hold for a customer with no orders? (Answer: NULL in every order column.)</p>
+
+</section>
+
+<section class="prereq" data-section="earlier-topics">
+
+### <span class="n">01</span> Bags and three-valued logic
+
+The reel assumes that results are bags, so joins can duplicate rows, and that a comparison with NULL is UNKNOWN. The NOT IN trap is explained again here from the planner's side.
+
+<ul class="resources">
+  <Resource kind="reel" host={props.host} domain="data-engineering" title="Relational algebra and bag semantics">Why a join can multiply rows and what a bag is.</Resource>
+  <Resource kind="reel" host={props.host} domain="data-engineering" title="NULLs and three-valued logic">UNKNOWN, and why NOT IN over a NULL returns nothing.</Resource>
+</ul>
+
+</section>
+
+<section class="prereq" data-section="sql-reading">
+
+### <span class="n">02</span> Reading EXPLAIN
+
+You should be able to read an indented `EXPLAIN` plan and name its join nodes.
+
+<ul class="resources">
+  <Resource kind="reading" title="Using EXPLAIN" href="https://www.postgresql.org/docs/current/using-explain.html" by="PostgreSQL documentation" length="20 min">How to read a plan, node by node.</Resource>
+</ul>
+
+</section>

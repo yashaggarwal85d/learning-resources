@@ -1,0 +1,120 @@
+---
+id: de.grouping-sets-rollup-cube-pivots
+title: Grouping sets, ROLLUP, CUBE and pivots
+---
+
+<section data-section="outcomes">
+
+## After this topic you can
+
+- Write `GROUPING SETS`, `ROLLUP` and `CUBE` and predict exactly which set of groupings each one expands to, without running the query first.
+- Use `GROUPING()` to tell a subtotal row's NULL (a column this grouping set ignored) apart from a genuine data NULL in the same column.
+- Build a wide ("pivoted") result with conditional aggregation (`FILTER (WHERE …)` or `CASE`), and know which engines offer native `PIVOT`/`UNPIVOT` instead.
+- Predict when combining several grouping items produces duplicate grouping sets, and apply the `DISTINCT` fix.
+
+</section>
+
+<section data-section="internals">
+
+## Into the internals
+
+A single `GROUP BY` gives one level of aggregation. Reporting often wants several at once — orders by status and by month, then by status alone, then the grand total — in one pass over the data rather than one query per level unioned together.
+
+### `GROUPING SETS`, and the two shorthands for it
+
+A `GROUP BY GROUPING SETS ((e1), (e2), ())` computes the query's aggregates once for *each* listed sublist of columns, as if each sublist had been its own `GROUP BY`, then returns all the results together: "the data selected by the `FROM` and `WHERE` clauses is grouped separately by each specified grouping set, aggregates computed for each group just as for simple `GROUP BY` clauses, and then the results returned" (PostgreSQL 18 docs, §7.2.4). Columns not part of a given grouping set come back as NULL in that set's rows: "references to the grouping columns or expressions are replaced by null values in result rows for grouping sets in which those columns do not appear" (same source).
+
+`ROLLUP` and `CUBE` are shorthand for the two grouping-set shapes used constantly in reporting:
+
+- `ROLLUP(e1, e2, e3)` = `GROUPING SETS ((e1,e2,e3), (e1,e2), (e1), ())` — every *prefix* of the list, down to the grand total. "This is commonly used for analysis over hierarchical data; e.g., total salary by department, division, and company-wide total" (same source).
+- `CUBE(e1, e2)` = `GROUPING SETS ((e1,e2), (e1), (e2), ())` — every *subset* (the power set), for when there's no natural prefix order and you want every combination of breakdowns.
+
+**Worked example.** Orders broken out by status and by month, with per-status subtotals and a grand total, in one query:
+
+```sql
+SELECT status, date_trunc('month', event_time) AS order_month, SUM(amount)
+FROM orders
+GROUP BY ROLLUP(status, order_month);
+```
+
+This expands to `GROUPING SETS ((status, order_month), (status), ())`: one row per status-and-month (the detail), one row per status with `order_month` as NULL (the per-status subtotal), and one grand-total row with both NULL — all from a single scan, instead of three separate queries `UNION`ed together.
+
+### The ambiguity `GROUPING()` exists to resolve
+
+Here is the trap: a rolled-up column reads as NULL in a subtotal row for exactly the same reason a genuinely-NULL data value reads as NULL in a detail row — they look identical. PostgreSQL's documentation states this plainly: "If any of the ungrouped columns contains NULL, it will be indistinguishable from the NULL used when that same column is grouped" (§7.2.4). Roll up on `orders.referred_by_customer_id` — nullable since topic 2, for exactly the organically-acquired customers with no referrer — and the collision is immediate:
+
+```sql
+SELECT referred_by_customer_id, SUM(amount), GROUPING(referred_by_customer_id) AS g
+FROM orders
+GROUP BY ROLLUP(referred_by_customer_id);
+```
+
+Two completely different kinds of row now show `referred_by_customer_id = NULL`: the detail row for every order with no real referrer, and the grand-total row where the rollup simply didn't group by this column at all. `GROUPING(group_by_expression)` is built to tell them apart: it "returns a bit mask indicating which `GROUP BY` expressions are not included in the current grouping set... each bit is 0 if the corresponding expression is included in the grouping criteria of the grouping set generating the current result row, and 1 if it is not included" (PostgreSQL 18 docs, §9.21, Table 9.66). On the official worked example (two columns rolled up together), the output makes the bitmask concrete: detail rows show `grouping = 0`, a subtotal that dropped the second column shows `grouping = 1`, and the grand total that dropped both shows `grouping = 3` (binary `11`) — "the grouping value 0 in the first four rows shows that those have been grouped normally... the value 3 indicates that neither make nor model was grouped by" (same source). On our one-column rollup, `g = 0` means "this is a real detail row, and its NULL — if it has one — is a genuine missing referrer," while `g = 1` means "this NULL is the rollup's grand total, not a data value at all."
+
+**The bug this prevents:** filtering `WHERE referred_by_customer_id IS NULL` after a rollup to find "orders with no referrer" would also catch the grand-total row, double-counting it as if it were one more "no referrer" order. `WHERE GROUPING(referred_by_customer_id) = 0 AND referred_by_customer_id IS NULL` is the version that actually means what it says.
+
+### Duplicate grouping sets, and `DISTINCT ROLLUP`
+
+Grouping items in one `GROUP BY` combine as a Cartesian product, and combining more than one `ROLLUP`/`CUBE` can produce the *same* grouping set more than once: "`GROUP BY ROLLUP (a, b), ROLLUP (a, c)` is equivalent to `GROUP BY GROUPING SETS ((a,b,c), (a,b), (a,b), (a,c), (a), (a), (a,c), (a), ())`" (PostgreSQL 18 docs, §7.2.4) — `(a,b)` and `(a)` each appear twice. "If these duplicates are undesirable, they can be removed using the `DISTINCT` clause directly on the `GROUP BY`": `GROUP BY DISTINCT ROLLUP (a, b), ROLLUP (a, c)` collapses the list down to one row per distinct grouping set — and the documentation is careful to note "this is not the same as using `SELECT DISTINCT`, because the output rows may still contain duplicates" (duplicate *values*, from different, non-duplicate groupings, are untouched).
+
+### Pivots: a construct most engines don't share
+
+A pivot turns long data (one row per category) into wide data (one column per category) — PostgreSQL has no `PIVOT` keyword at all, while several other engines do. Three ways to get there:
+
+1. **Conditional aggregation with `FILTER (WHERE …)`** — the portable, standard-SQL way in any engine that supports it. `FILTER` restricts which rows feed one specific aggregate call, inside an otherwise ordinary `GROUP BY`: "only the rows for which `filter_clause` evaluates to true are fed to the aggregate function; other rows are discarded" (PostgreSQL 18 docs, §4.2.7, "Aggregate Expressions"), demonstrated there with `count(*) FILTER (WHERE i < 5)`. Pivoting order amounts by status:
+   ```sql
+   SELECT date_trunc('month', event_time) AS order_month,
+     SUM(amount) FILTER (WHERE status = 'paid')     AS paid,
+     SUM(amount) FILTER (WHERE status = 'refunded') AS refunded,
+     SUM(amount) FILTER (WHERE status = 'cancelled') AS cancelled
+   FROM orders
+   GROUP BY order_month;
+   ```
+2. **`CASE` inside the aggregate** — the even-more-portable fallback for engines without `FILTER` (`SUM(CASE WHEN status = 'paid' THEN amount END)` instead of `SUM(amount) FILTER (WHERE status = 'paid')`); semantically identical, just older syntax.
+3. **A native `PIVOT` operator** — Snowflake, BigQuery and SQL Server all implement a `PIVOT` clause directly in `FROM`: Snowflake's reads `PIVOT (aggregate_function(pivot_column) FOR value_column IN (value1, value2, …))` (Snowflake SQL reference, "PIVOT"); BigQuery's standard SQL has an equivalent `PIVOT operator`, with a matching `UNPIVOT operator` to go the other way (Google Cloud, BigQuery "Query syntax" reference). Where available, native `PIVOT` names the pivoted values once instead of writing one `FILTER`/`CASE` branch per value — less typing for a fixed, known value list, at the cost of being non-portable to engines (PostgreSQL among them) that don't have it. PostgreSQL users needing exactly this shape without hand-writing every branch can install the bundled `tablefunc` extension's `crosstab()` function, which "produces a 'pivot table' containing row names plus N value columns" (PostgreSQL 18 docs, §F.43).
+
+Conditional aggregation (option 1) is the one worth defaulting to: it is standard SQL, needs no extension, and runs unchanged on every engine in this chapter's lab (PostgreSQL and DuckDB both support `FILTER`).
+
+</section>
+
+<section data-section="lab">
+
+## Build, break, measure
+
+### Lab · `GROUPING()` vs data NULLs
+
+This hosts the §2.1 chapter lab's `GROUPING()` part.
+
+1. **Build the collision.** Run the one-column rollup over `orders.referred_by_customer_id` above and confirm two different rows show `referred_by_customer_id = NULL`: at least one genuine "no referrer" detail row (`GROUPING = 0`) and exactly one grand-total row (`GROUPING = 1`).
+2. **Plant the bug, then fix it.** Write the naive "count orders with no referrer" query as `SELECT COUNT(*) FROM (<the rollup query>) x WHERE referred_by_customer_id IS NULL` and confirm it overcounts by exactly one (the grand-total row) compared to the correct `WHERE GROUPING(referred_by_customer_id) = 0 AND referred_by_customer_id IS NULL` version — check the two counts differ by exactly one, not approximately (*measure in build* for the base count, which depends on the generated data, but the off-by-one gap is guaranteed by the mechanism, not by chance).
+3. **Pivot three ways.** Write the status-pivot query with `FILTER (WHERE …)`, again with `CASE WHEN … THEN … END`, and — if targeting an engine with native `PIVOT` for comparison — once more with it; confirm all three produce byte-identical output, demonstrating the three are genuinely the same computation in different syntax.
+
+</section>
+
+<section data-section="production">
+
+## In production — a review checklist
+
+- **Never test a rolled-up column for `IS NULL` alone.** Pair it with `GROUPING(column) = 0` whenever the column is itself nullable, or a subtotal/grand-total row will silently be counted as a data row.
+- **Prefer `ROLLUP` for hierarchical breakdowns (region → sub-region → total) and `CUBE` only when every combination of breakdowns is genuinely wanted** — `CUBE` on more than two or three columns produces a power-set's worth of grouping sets, which grows fast.
+- **Check for accidental duplicate grouping sets when combining more than one `ROLLUP`/`CUBE`/`GROUPING SETS` in one `GROUP BY`,** and add `DISTINCT` to the `GROUP BY` if the duplicated subtotal rows aren't wanted.
+- **Default to `FILTER (WHERE …)` (or `CASE`) for pivots unless the engine's native `PIVOT` meaningfully simplifies a fixed, known value list** — it's portable, needs no extension, and is exactly as fast since both compile to the same conditional aggregation underneath.
+
+</section>
+
+<section data-section="sources">
+
+## Sources
+
+Last verified: 2026-10-14.
+
+- PostgreSQL 18 Documentation, [§7.2.4, "GROUPING SETS, CUBE, and ROLLUP"](https://www.postgresql.org/docs/current/queries-table-expressions.html) — the grouping-set expansion rules for `ROLLUP`/`CUBE`, the NULL-ambiguity note, and the `DISTINCT ROLLUP` duplicate-removal example, quoted verbatim.
+- PostgreSQL 18 Documentation, [§9.21, Table 9.66, "Grouping Operations"](https://www.postgresql.org/docs/current/functions-aggregate.html) — the `GROUPING()` bitmask definition and worked example.
+- PostgreSQL 18 Documentation, [§4.2.7, "Aggregate Expressions"](https://www.postgresql.org/docs/current/sql-expressions.html) — the `FILTER (WHERE …)` clause, quoted verbatim with its `count(*) FILTER` example.
+- PostgreSQL 18 Documentation, [§F.43, "tablefunc"](https://www.postgresql.org/docs/current/tablefunc.html) — the `crosstab()` pivot-table function, for engines without native `PIVOT`.
+- Snowflake SQL Reference, ["PIVOT"](https://docs.snowflake.com/en/sql-reference/constructs/pivot) — native `PIVOT` syntax, for the dialect-portability contrast.
+- Google Cloud, [BigQuery "Query syntax" reference, "PIVOT operator"/"UNPIVOT operator"](https://cloud.google.com/bigquery/docs/reference/standard-sql/query-syntax) — a second engine's native `PIVOT`/`UNPIVOT`.
+
+Spotted an error or something unclear? [Report it](https://github.com/yashaggarwal85d/learning-resources/issues/new?title=grouping-sets-rollup-cube-pivots:%20).
+
+</section>

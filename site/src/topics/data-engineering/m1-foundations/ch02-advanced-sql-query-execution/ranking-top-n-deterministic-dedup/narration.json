@@ -1,0 +1,75 @@
+{
+  "topic": "de.ranking-top-n-deterministic-dedup",
+  "note": "Written to be spoken: one idea per line; {\"beat\": s} is a deliberate pause; numbers are phrased the way they are said, never as digits. Tool and flag names are spoken as their job, not their symbol. `answer` plays after the learner answers a predict step. Opens on the chapter bridge line and closes on the handoff line.",
+  "steps": [
+    {
+      "lines": [
+        "Everything so far has climbed one row at a time.",
+        "Now: counting positions, and picking exactly one winner when several rows tie for first."
+      ]
+    },
+    {
+      "lines": [
+        "Three different ways to count a row's position in line, and they only disagree about one thing: what happens at a tie.",
+        "One gives every row its own distinct spot, tie or no tie, no matter what.",
+        "One lets tied rows share a spot, and then jumps the count ahead by however many just tied.",
+        "One lets tied rows share a spot too, but never jumps... the next distinct spot is always just one more.",
+        {
+          "beat": 0.4
+        },
+        "None of the three is the correct one, in the abstract. Which one is right depends entirely on what you're about to do with the number."
+      ]
+    },
+    {
+      "lines": [
+        "Here's the sharper trap, and it's a quiet one.",
+        "Say two rows tie, and you assign the first one position one, the second position two.",
+        {
+          "beat": 0.4
+        },
+        "Run the exact same query again, same data, nothing changed. Does the engine promise to hand out those two positions in the same order a second time?"
+      ],
+      "answer": [
+        "No. Not unless you forced it to.",
+        "A tie leaves the order of the tied rows completely up to however they happened to come out of the earlier steps... and that can shift.",
+        "The fix costs you nothing: add one more thing to sort by, something that can never repeat, just to settle every tie for good.",
+        "Do that, and the same query, on the same data, gives you the same answer, every single time, forever."
+      ]
+    },
+    {
+      "lines": [
+        "Now, something that looks obvious but quietly fails.",
+        "You try to filter directly on one of these position numbers, in the same place you'd normally filter rows.",
+        {
+          "beat": 0.4
+        },
+        "Does that work?"
+      ],
+      "answer": [
+        "No. That filter runs before the position was ever computed.",
+        "Some engines give you a dedicated word for filtering after the position exists... a shortcut for exactly this.",
+        "It's genuinely convenient where it exists. It just isn't everywhere. Where it's missing, you stage it: compute the position first, filter one level up."
+      ]
+    },
+    {
+      "lines": [
+        "And one last choice worth making on purpose, not by habit.",
+        "Want the top few from every single group? There are two completely different ways to get there.",
+        "One re-sorts each group on its own, over and over, once per group.",
+        "The other sorts everything once, hands out one position number to every row, and only afterward throws away whatever didn't make the cut.",
+        "Neither one wins every time. It depends on what else the data already has going for it."
+      ]
+    },
+    {
+      "lines": [
+        "So: three ways to count a tie, each one answering a slightly different question.",
+        "An incomplete order means an unreliable answer, and the fix is one extra, never-repeating column.",
+        "Filtering on a position needs that position to already exist, one way or another.",
+        {
+          "beat": 0.4
+        },
+        "Rows arrive scattered across time. Next: pulling them back together into one coherent story."
+      ]
+    }
+  ]
+}

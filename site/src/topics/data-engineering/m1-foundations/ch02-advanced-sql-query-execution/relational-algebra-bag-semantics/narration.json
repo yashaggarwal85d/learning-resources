@@ -1,0 +1,152 @@
+{
+  "topic": "de.relational-algebra-bag-semantics",
+  "steps": [
+    {
+      "lines": [
+        "Chapter one priced the machine. Next chapter: SQL, starting with what a query really computes, which is relational algebra over bags.",
+        "Look at the drawing. The words you typed, select, where, join, group by, are gone. What remains is a tree of small operations with tables at the leaves.",
+        { "beat": 0.4 },
+        "That tree is what the engine reasons about. Once it is clear in your head, rewrites and costs in the next sections stop being magic."
+      ]
+    },
+    {
+      "lines": [
+        "There are only six kinds of box in that tree, and you should be able to name each one's job.",
+        "Two of them shrink a table: one drops rows, one drops columns. Two combine tables, matched up or paired every possible way.",
+        "One stacks results or keeps what they share. One collapses rows into groups.",
+        "That is the entire vocabulary. Every query you have ever written is some arrangement of these six."
+      ]
+    },
+    {
+      "lines": [
+        "Now a question people get wrong the first time. One customer has placed five orders.",
+        "You select only their customer id from the orders table. No grouping, nothing that removes rows.",
+        { "beat": 0.4 },
+        "How many rows come back?"
+      ],
+      "answer": [
+        "Five.",
+        "Each row records a separate event: an order happened. The engine returns one row per event, and the id repeats because five events share it.",
+        "One would be right only if the result were a set, and SQL tables are not sets. Zero is wrong because nothing deduplicates behind your back.",
+        "Collapse those five to one and you have quietly deleted four facts."
+      ]
+    },
+    {
+      "lines": [
+        "So what is a table, if not a set? Compare the two collections on screen.",
+        "A set refuses repeats. A bag, also called a multiset, keeps every repeat and remembers how many there were.",
+        "SQL chose the bag on purpose. Every table and every query result is one. The reason is practical: deduplicating costs work, so the language only does it when you ask."
+      ]
+    },
+    {
+      "lines": [
+        "Here is how that choice bites. A total that depends on every order being counted once.",
+        "Run a distinct on the customer id before the sum, and four of the five rows vanish before the sum ever sees them.",
+        "There is no error and no warning. The total is simply wrong. The mistake is not in the sum, it is in forgetting that you were holding a bag."
+      ]
+    },
+    {
+      "lines": [
+        "The same choice matters wherever two lists are combined. An order gets flagged twice, once by an automatic check and once by a reviewer.",
+        "Stack the lists keeping every row, and that order appears twice. Stack them removing repeats, and it appears once.",
+        "Neither is a bug. They answer different questions: how many flags were raised, or which orders were flagged. The bug is choosing the wrong one for the question."
+      ]
+    },
+    {
+      "lines": [
+        "Two more combinations ask sharper questions, so go slowly. Read the two small bags on screen, and notice that each has a value twice.",
+        "Intersect with counting keeps the smaller count of each shared value. Subtract with counting keeps whatever is left after taking counts away.",
+        "Now watch what dropping the counting does. The leftover can vanish entirely, even where the counted version still keeps a row.",
+        "Without counting, a value is either present or absent, and the number of copies is thrown away."
+      ]
+    },
+    {
+      "lines": [
+        "Here is a law that is true for sets and false for bags. Combine a set with a copy of itself, and nothing changes.",
+        "Hold the bag version in mind, the stack that keeps every row.",
+        { "beat": 0.4 },
+        "Does combining a list with itself change anything?"
+      ],
+      "answer": [
+        "It doubles every row.",
+        "The version that keeps everything has no idea the two sides are identical, so it keeps both copies of each row.",
+        "Only the version that removes repeats returns you to the start, because removing repeats is secretly a full deduplication pass. Saying nothing changes borrows the set intuition, which is exactly what fails here."
+      ]
+    },
+    {
+      "lines": [
+        "Now we use the tree. A planner leans on this rewrite constantly: filter early.",
+        "Watch the numbers on screen. Filter the products down to the electronics first, and the join only ever sees a small slice.",
+        "Filter after the join and the engine has already paid to build every pairing, only to throw most of them away.",
+        "The answer is identical either way. That is the point: the rewrite is free, and it changes only the cost."
+      ]
+    },
+    {
+      "lines": [
+        "The same idea works on columns. Carry only the columns the query needs, and carry them as early as possible.",
+        "Compare the two byte counts. Carrying every column out of habit moves tens of gigabytes. Carrying three moves a few.",
+        "Nobody asked for the other columns. The data you move but never read is pure waste."
+      ]
+    },
+    {
+      "lines": [
+        "One more rewrite matters more than the last two. Join two tables in either order, or regroup three however you like, and the bag you get back is identical.",
+        "Pause on why that matters. If every order gave the same answer, the engine is free to try them all and keep the cheapest.",
+        "That is the entire justification for a cost based optimizer. It is not guessing at answers, it is choosing among proven equals."
+      ]
+    },
+    {
+      "lines": [
+        "Now we can say exactly why the two ways of stacking results differ in cost.",
+        "Look at the two plans side by side. Keeping every row is one append: nothing to compare, nothing to check.",
+        "Promising no duplicates adds a second pass on top, a hash or a sort over every row, hunting for repeats.",
+        "And it pays that pass even when nothing overlaps. The cost is in the promise, not in what the pass finds."
+      ]
+    },
+    {
+      "lines": [
+        "Back to the flagged orders. Keeping every row costs one pass over the rows. Removing repeats costs two.",
+        "Either way the distinct flagged orders are the same set. The extra pass changes what you pay, never which orders are flagged.",
+        { "beat": 0.4 },
+        "Every operator here assumed every value was present. Next: the value that means unknown, and the three valued logic it forces on every predicate."
+      ]
+    },
+    {
+      "lines": [
+        "First test. A customer placed seven orders.",
+        "Select only their customer id. Think about what, if anything, is merging rows.",
+        { "beat": 0.4 },
+        "How many rows come back?"
+      ],
+      "answer": [
+        "Seven.",
+        "Nothing merges rows: no grouping, no deduplication. A plain select returns one row per source row, so a repeated id repeats."
+      ]
+    },
+    {
+      "lines": [
+        "Second test. Bag P holds three three times and five once. Bag Q holds three once and five twice.",
+        "Work value by value, and remember a count cannot go below zero.",
+        { "beat": 0.4 },
+        "How many rows does P minus Q return, with counting?"
+      ],
+      "answer": [
+        "Two.",
+        "Three appears three times in P and once in Q, leaving two copies. Five appears once in P and twice in Q, leaving none, because the count stops at zero, it does not go negative."
+      ]
+    },
+    {
+      "lines": [
+        "Last one. Two branches of fifty thousand rows each, and you know for a fact they share nothing.",
+        "You want the version that promises no duplicates. The branches never overlap, so surely it can skip its pass.",
+        { "beat": 0.4 },
+        "Can it?"
+      ],
+      "answer": [
+        "No.",
+        "The planner cannot know the branches are disjoint without doing the work to find out. So it still hashes or sorts every row, finds nothing, and pays for the pass anyway.",
+        "The fix lives in your hands: if you know the branches are disjoint, say so by keeping every row. The engine cannot read your mind."
+      ]
+    }
+  ]
+}

@@ -1,0 +1,51 @@
+{
+  "topic": "de.nested-semi-structured-data-sql",
+  "syllabus": [
+    { "clause": "arrays, structs and maps;", "at": [{ "step": "Rows are not always flat" }, { "step": "Three nested shapes" }, { "deep": "Three nested shapes, one relational engine" }] },
+    { "clause": "UNNEST/explode and its cardinality traps;", "at": [{ "step": "unnest turns an array into rows" }, { "step": "Predict: two unnests in FROM" }, { "step": "One call, both arrays, paired by position" }, { "step": "WITH ORDINALITY keeps the position" }, { "deep": "Unnesting one array is safe; unnesting two, carelessly, is not" }] },
+    { "clause": "SQL/JSON path and JSON_TABLE (PostgreSQL 17);", "at": [{ "step": "Arrow operators drill into JSON" }, { "step": "JSON_TABLE makes JSON a table" }, { "step": "Prove it · 2 of 2" }, { "deep": "Querying JSON: operators, then a relational view" }] },
+    { "clause": "binary semi-structured types (Snowflake and Databricks VARIANT, the Parquet/Iceberg v3 variant type with shredding) vs JSON text.", "at": [{ "step": "JSON text is parsed again and again" }, { "step": "Shredding makes fields real columns" }, { "deep": "Binary semi-structured types: not just \"JSON, but faster\"" }] }
+  ],
+  "sources": [
+    {
+      "source": "PostgreSQL 18 Documentation, §9.19 Array Functions, §7.2.1.4 Table Functions",
+      "items": [
+        { "item": "unnest expands an array into rows in storage order; the multi-argument form pads shorter arrays with NULLs", "at": [{ "step": "unnest turns an array into rows" }, { "step": "One call, both arrays, paired by position" }, { "deep": "Unnesting one array is safe; unnesting two, carelessly, is not" }] },
+        { "item": "WITH ORDINALITY adds a bigint position column starting from 1", "at": [{ "step": "WITH ORDINALITY keeps the position" }] }
+      ]
+    },
+    {
+      "source": "PostgreSQL 18 Documentation §9.16 JSON Functions (including JSON_TABLE) and PostgreSQL 17 release notes",
+      "items": [
+        { "item": "-> and ->> operators; JSON_TABLE builds a relational view laterally joined to its source row", "at": [{ "step": "Arrow operators drill into JSON" }, { "step": "JSON_TABLE makes JSON a table" }, { "deep": "Querying JSON: operators, then a relational view" }] },
+        { "item": "JSON_TABLE was added in PostgreSQL 17", "at": [{ "step": "Prove it · 2 of 2" }] }
+      ]
+    },
+    {
+      "source": "Apache Parquet Variant Shredding specification; Snowflake and Databricks VARIANT documentation",
+      "items": [
+        { "item": "Variant values are binary; shredding extracts fields into columns with statistics and projection", "at": [{ "step": "Shredding makes fields real columns" }, { "deep": "Binary semi-structured types: not just \"JSON, but faster\"" }] },
+        { "item": "Snowflake and Databricks VARIANT; Iceberg v3 supports it, v2 does not", "at": [{ "step": "Shredding makes fields real columns" }, { "deep": "Binary semi-structured types: not just \"JSON, but faster\"" }] }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "Claude (single session, written from the syllabus line before mapping to the topic; not independent of the builder, so the cloud review run should repeat it)",
+    "date": "2026-10-17",
+    "items": [
+      { "item": "Array, struct and map types and their SQL syntax", "at": [{ "step": "Three nested shapes" }] },
+      { "item": "UNNEST/explode produces one row per element", "at": [{ "step": "unnest turns an array into rows" }] },
+      { "item": "Cartesian explosion from unnesting two arrays separately", "at": [{ "step": "Predict: two unnests in FROM" }] },
+      { "item": "Positional zip and NULL padding of unequal arrays", "at": [{ "step": "One call, both arrays, paired by position" }, { "step": "Prove it · 1 of 2" }] },
+      { "item": "Preserving element order (ordinality / posexplode)", "at": [{ "step": "WITH ORDINALITY keeps the position" }] },
+      { "item": "Empty and NULL arrays and outer-explode behaviour", "at": [{ "out": "Empty-array and NULL-array behaviour differs by engine (PostgreSQL's unnest yields no row; Spark's explode_outer keeps one); each engine's manual states it, and the cardinality trap taught here is the same." }] },
+      { "item": "JSON operators and path expressions", "at": [{ "step": "Arrow operators drill into JSON" }] },
+      { "item": "JSON_TABLE for turning JSON into rows and columns", "at": [{ "step": "JSON_TABLE makes JSON a table" }] },
+      { "item": "JSON text versus binary encodings (JSONB, VARIANT)", "at": [{ "step": "JSON text is parsed again and again" }] },
+      { "item": "Variant shredding and pruning", "at": [{ "step": "Shredding makes fields real columns" }] },
+      { "item": "Indexing JSON (GIN) and when to flatten into columns", "at": [{ "step": "Back to order 42" }, { "deep": "In production — a review checklist" }] },
+      { "item": "Schema evolution of nested columns", "at": [{ "topic": "Schema evolution rules across formats", "quote": "Avro writer/reader schema resolution", "domain": "data-engineering" }] }
+    ]
+  },
+  "gapReview": { "date": "2026-10-17", "by": "Claude (single session)", "open": [] }
+}

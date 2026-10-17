@@ -1,0 +1,31 @@
+import Resource from '../../../../../components/Resource.astro';
+
+This is a full topic in §2.3, right after "From SQL text to plan tree" (topic 16). It reuses topic 1's pushdown equivalences, topic 3's semi/anti-joins, topic 6's LATERAL, and topic 8's Froid reference.
+
+<section class="prereq" data-section="basics">
+
+### <span class="n">00</span> The terms this topic uses
+
+A few words, each defined in full inside the reel; this is just so they are not a surprise.
+
+- **Join elimination** — deleting a join entirely when it's provably redundant (matches at most one row, and nothing from it is used).
+- **Outer-join strength reduction** — converting a LEFT JOIN to a plain or anti-join once a later filter proves it behaves that way.
+- **Dependent join** — Neumann & Kemper's formal name for a correlated subquery: a nested-loop-shaped join where the right side depends on the left row's values.
+- **Unnesting (decorrelation)** — transforming a dependent join into an ordinary, reorderable join.
+
+<p class="check"><b>Check yourself:</b> can a LEFT JOIN followed by `WHERE right_table.key IS NULL` ever be converted into the same plan as a NOT EXISTS anti-join? (Answer: yes — PostgreSQL's planner proves the LEFT JOIN only ever lets null-extended rows survive that filter and switches the join type to Anti directly, the same type NOT EXISTS compiles to.)</p>
+
+</section>
+
+<section class="prereq" data-section="semi-anti">
+
+### <span class="n">01</span> Semi-joins, anti-joins, and LATERAL (topics 3 and 6, before this)
+
+This topic's outer-to-inner conversion closes the loop on topic 3's anti-join material, and its decorrelation section formalizes topic 6's LATERAL as a "dependent join."
+
+<ul class="resources">
+  <Resource kind="topic" title="Semi-joins, anti-joins and existence" href="../semi-joins-anti-joins-existence/" by="This chapter, topic 3" length="13 min">The LEFT JOIN...IS NULL idiom this topic shows the planner deriving independently. Before this.</Resource>
+  <Resource kind="topic" title="LATERAL joins and correlated subqueries" href="../lateral-joins-correlated-subqueries/" by="This chapter, topic 6" length="13 min">The per-row evaluation this topic formalizes as a dependent join. Before this.</Resource>
+</ul>
+
+</section>

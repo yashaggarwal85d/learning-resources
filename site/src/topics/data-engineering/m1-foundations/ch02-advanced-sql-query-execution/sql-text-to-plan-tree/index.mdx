@@ -1,0 +1,82 @@
+---
+id: de.sql-text-to-plan-tree
+title: From SQL text to plan tree
+---
+
+<section data-section="outcomes">
+
+## After this topic you can
+
+- Name the five stages a SQL statement passes through, in PostgreSQL's own terms, and say exactly what each stage does and does not know yet.
+- Distinguish a logical plan (what to compute, as an algebra tree) from a physical plan (how, with a specific algorithm per operator), and say why the split exists.
+- Read a plan tree bottom-up, from scan leaves to the final result at the root.
+- Name a physical property an operator can require or provide, and predict when a required sort can be satisfied for free instead of with an explicit `Sort` step.
+
+</section>
+
+<section data-section="internals">
+
+## Into the internals
+
+Every topic in §2.1 and §2.2 fixed what a query *means*. This topic opens §2.3 by tracing what actually happens between typing that query and getting an answer back — the pipeline every later topic in this section is a deeper look into one stage of.
+
+### Five stages, in PostgreSQL's own account
+
+PostgreSQL's internals manual gives this exact account of "the path of a query" (§51.1, §51.3, §51.5):
+
+1. **Parse.** "The parser has to check the query string... for valid syntax. If the syntax is correct a parse tree is built up" (§51.3.1). This stage "does not make any lookups in the system catalogs, so there is no possibility to understand the detailed semantics of the requested operations" (§51.3.2) — it knows the query is grammatically a `SELECT` with a `WHERE` clause; it has no idea yet whether `orders` or `WHERE status` even exist.
+2. **Bind / analyze (the "transformation process").** "The transformation process takes the tree handed back by the parser as input and does the semantic interpretation needed to understand which tables, functions, and operators are referenced by the query," producing the **query tree** — PostgreSQL's own example: "a `FuncCall` node in the parse tree... might be transformed to either a `FuncExpr` or `Aggref` node depending on whether the referenced name turns out to be an ordinary function or an aggregate function" (§51.3.2) — this is exactly where a catalog lookup decides, for instance, that `count(*)` is an aggregate and not some same-named scalar function.
+3. **Rewrite.** "The rewrite system takes the query tree created by the parser stage and looks for any rules... to apply... one application of the rewrite system is in the realization of views... the rewrite system rewrites the user's query to a query that accesses the base tables given in the view definition instead" (§51.1, §51.4). By the time this stage finishes, a query against a view is indistinguishable from the equivalent query written directly against its base tables — the planner never has to know a view was involved at all. (Topic 17 covers the rewrite step's other transformations — predicate pushdown, decorrelation — in full; topic 18 covers CTE-specific rewrite decisions.)
+4. **Plan / optimize.** "The planner/optimizer takes the (rewritten) query tree and creates a query plan... by first creating all possible paths leading to the same result... [estimating] the cost for the execution of each path... the cheapest path is chosen [and] expanded into a complete plan" (§51.1). (Topics 19–20 cover cardinality estimation and cost-based search in full.)
+5. **Execute.** "The executor recursively steps through the plan tree and retrieves rows in the way represented by the plan... makes use of the storage system while scanning relations, performs sorts and joins, evaluates qualifications and finally hands back the rows" (§51.1). (Topics 21–24 cover the executor's own algorithms and models.)
+
+### Logical plan vs physical plan
+
+The query tree that comes out of rewrite is, in substance, topic 1's algebra tree: σ, π, ⋈, γ — **what** to compute, with no commitment yet to **how**. This is the **logical plan**. The planner's job is to turn each logical operator into one or more candidate **physical** implementations and pick among them — PostgreSQL's internal name for a candidate physical implementation is a **path**: "a simply cut-down representatio[n] of plans containing only as much information as the planner needs to make its decisions" (§51.5). A single logical scan of `orders` has (at least) two physical paths: "there is always the possibility of performing a sequential scan... [or], if `relation.attribute` happens to match the key of [an] index... another plan is created using the index" (§51.5.1). A single logical join similarly has (at least) three physical paths — nested loop, merge, or hash (§51.5.1; topic 21 covers all three in full). This is the practical payoff of topic 1's commutativity/associativity equivalences: because many different physical plans compute the identical logical result, the optimizer has real choices to search over, and that search (topic 20) only makes sense because the logical/physical split exists in the first place.
+
+### Physical properties: what a path requires, and what it provides
+
+A path isn't just "rows of this relation" — it may also come with **physical properties**: a particular sort order, in particular, is one every later topic in this section leans on. PostgreSQL's planner tracks exactly this: "index scan plans are also generated for indexes that have a sort ordering that can match the query's `ORDER BY` clause (if any), or a sort ordering that might be useful for merge joining" (§51.5.1). Read that both ways: an index scan on `orders (event_time)` **provides** the sort order "`event_time` ascending" as a free side effect of how it reads the table; a query's `ORDER BY event_time` or a merge join on `event_time` **requires** that exact order. When a provided property matches a required one, the planner can feed the index scan's output straight into the operator that needs it, with no separate `Sort` node at all — the identical idea topic 11 already demonstrated for sharing one sort across several window functions, now generalized to the whole plan: *any* operator that already produces a useful order can save a later operator from re-earning it.
+
+### Reading the tree
+
+A plan tree has the same shape as the algebra tree it realizes: leaves are scans of base tables (or indexes), internal nodes are the physical join/aggregate/sort operators chosen for each logical step, and the root is the final result handed to the client. Reading `EXPLAIN` output is reading this tree — bottom-up, from the leaves' access methods up through each join and aggregate to the root — which is exactly the discipline topic 27 turns into a full triage procedure, and the one every topic between here and there assumes you already have.
+
+</section>
+
+<section data-section="lab">
+
+## Build, break, measure
+
+### Try it · Watch a provided sort order cancel an explicit one
+
+1. **See a free sort order.** Create an index on `orders (event_time)` and run `EXPLAIN SELECT * FROM orders ORDER BY event_time LIMIT 100;`. Confirm the plan is a single `Index Scan` with no separate `Sort` node — the index already provides the required order. Now run the identical query ordered by a column with no matching index (`ORDER BY amount`, say) and confirm an explicit `Sort` node now appears.
+2. **Watch the rewrite step erase a view.** Create a view over `orders` with a `WHERE status = 'paid'` filter, query the view with an additional filter of your own, and run `EXPLAIN` on it. Confirm the plan shows a single scan of `orders` with both filters combined, not a scan of the view "wrapping" a separate scan of the base table — the rewrite stage already flattened the view away before planning started.
+3. **See one logical plan, two physical ones.** Run the same join query with `SET enable_hashjoin = off;` and then with it back on, and confirm `EXPLAIN` shows two different physical plans (a merge or nested-loop join vs a hash join) while both return byte-identical result sets — direct proof that the logical meaning and the physical execution are genuinely separate layers.
+
+</section>
+
+<section data-section="production">
+
+## In production — a review checklist
+
+- **Read an unfamiliar `EXPLAIN` plan bottom-up, from the leaves,** not top to bottom — the leaves are the only nodes with no dependency on anything else in the plan, and every cost above them is built from what they produce.
+- **Before assuming a `Sort` step is unavoidable, check whether an existing index could provide the required order for free** — adding or reordering an index's columns can sometimes delete a `Sort` node entirely rather than just making it faster.
+- **Remember a view is invisible to the planner by the time costing starts.** Debugging a slow query against a view means reading the plan as if the view's definition had been pasted in directly, because by rewrite time, it has been.
+- **Don't be surprised that the same query can produce different plan shapes on different runs or data distributions.** That's the physical layer responding to statistics and configuration; the logical meaning hasn't changed at all.
+
+</section>
+
+<section data-section="sources">
+
+## Sources
+
+Last verified: 2026-10-14.
+
+- PostgreSQL 18 Documentation, [§51.1, "The Path of a Query"](https://www.postgresql.org/docs/current/query-path.html) — the five-stage pipeline overview, quoted verbatim.
+- PostgreSQL 18 Documentation, [§51.3, "The Parser Stage"](https://www.postgresql.org/docs/current/parser-stage.html) — the parse/transformation (bind-analyze) split and the `FuncCall`-to-`FuncExpr`/`Aggref` example, quoted verbatim.
+- PostgreSQL 18 Documentation, [§51.5, "Planner/Optimizer"](https://www.postgresql.org/docs/current/planner-optimizer.html) — paths, the scan and join physical alternatives, and the sort-order-for-merge-joining example, quoted verbatim.
+
+Spotted an error or something unclear? [Report it](https://github.com/yashaggarwal85d/learning-resources/issues/new?title=sql-text-to-plan-tree:%20).
+
+</section>

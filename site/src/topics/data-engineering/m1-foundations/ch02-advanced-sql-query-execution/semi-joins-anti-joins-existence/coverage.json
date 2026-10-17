@@ -1,0 +1,49 @@
+{
+  "topic": "de.semi-joins-anti-joins-existence",
+  "syllabus": [
+    { "clause": "EXISTS / IN / NOT EXISTS / NOT IN vs LEFT JOIN … IS NULL;", "at": [{ "step": "Five spellings, two safety classes" }, { "step": "A semi-join keeps each row once" }, { "step": "An anti-join keeps the unmatched" }, { "deep": "Four SQL spellings, two different safety classes" }] },
+    { "clause": "why NOT IN over a NULL-bearing subquery returns nothing;", "at": [{ "step": "NOT IN must show a NOT NULL certificate" }, { "step": "Prove it · 1 of 2" }, { "deep": "What the planner is actually allowed to do" }] },
+    { "clause": "how planners turn these into semi-, anti- and null-aware anti-join operators.", "at": [{ "step": "EXISTS goes through the planner gate unchecked" }, { "step": "NOT IN must show a NOT NULL certificate" }, { "step": "Predict: drop NOT NULL, keep the data" }, { "step": "Reading it in EXPLAIN" }, { "deep": "Reading it in `EXPLAIN`" }] }
+  ],
+  "sources": [
+    {
+      "source": "PostgreSQL source, src/backend/optimizer/plan/subselect.c (convert_ANY_sublink_to_join, convert_EXISTS_sublink_to_join)",
+      "items": [
+        { "item": "EXISTS and NOT EXISTS convert to a semi-join or anti-join unconditionally", "at": [{ "step": "EXISTS goes through the planner gate unchecked" }, { "deep": "What the planner is actually allowed to do" }] },
+        { "item": "NOT IN converts to an anti-join only when neither side can be NULL; otherwise a SubPlan", "at": [{ "step": "NOT IN must show a NOT NULL certificate" }, { "step": "Predict: drop NOT NULL, keep the data" }, { "deep": "What the planner is actually allowed to do" }] }
+      ]
+    },
+    {
+      "source": "PostgreSQL source, src/backend/commands/explain.c, and PostgreSQL 18 release notes",
+      "items": [
+        { "item": "EXPLAIN prints Semi and Anti join types; PostgreSQL 18 adds Right Semi Join", "at": [{ "step": "Reading it in EXPLAIN" }, { "deep": "Reading it in `EXPLAIN`" }] }
+      ]
+    },
+    {
+      "source": "PostgreSQL 18 Documentation, §9.24 Subquery Expressions",
+      "items": [
+        { "item": "NOT IN yields NULL when a right-hand row is NULL and nothing matches", "at": [{ "step": "NOT IN must show a NOT NULL certificate" }, { "deep": "What the planner is actually allowed to do" }] },
+        { "item": "EXISTS tests only whether the subquery returns any row", "at": [{ "step": "A semi-join keeps each row once" }] }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "Claude (single session, written from the syllabus line before mapping to the topic; not independent of the builder, so the cloud review run should repeat it)",
+    "date": "2026-10-17",
+    "items": [
+      { "item": "Definition of semi-join and anti-join, and that neither duplicates rows", "at": [{ "step": "A semi-join keeps each row once" }, { "step": "An anti-join keeps the unmatched" }] },
+      { "item": "EXISTS versus IN equivalence and NOT EXISTS versus NOT IN non-equivalence", "at": [{ "step": "Five spellings, two safety classes" }] },
+      { "item": "LEFT JOIN … IS NULL as a manual anti-join and which column to test", "at": [{ "step": "Five spellings, two safety classes" }, { "deep": "Worked examples, with the running tables" }] },
+      { "item": "Why NOT IN with a NULL in the subquery returns no rows", "at": [{ "step": "Predict: drop NOT NULL, keep the data" }, { "step": "Prove it · 1 of 2" }] },
+      { "item": "The planner's NOT NULL proof obligation for NOT IN", "at": [{ "step": "NOT IN must show a NOT NULL certificate" }] },
+      { "item": "Semi-join versus join plus DISTINCT cost", "at": [{ "step": "Predict: which is less work for \"who ordered\"?" }] },
+      { "item": "Reading Semi, Anti and SubPlan nodes in EXPLAIN", "at": [{ "step": "Reading it in EXPLAIN" }] },
+      { "item": "Physical algorithms implementing semi/anti joins (hash, merge, nested loop)", "at": [{ "topic": "Join algorithms: nested-loop, hash, sort-merge", "quote": "block and index nested loops, build/probe hash joins" }] },
+      { "item": "Decorrelating more general correlated subqueries", "at": [{ "topic": "Query rewrites and subquery unnesting", "quote": "subquery unnesting" }] },
+      { "item": "Null-aware anti-join in other engines (Spark, Snowflake)", "at": [{ "out": "The syllabus line names planners generally; this topic teaches PostgreSQL's mechanism in depth and the lesson (schema-gated safety) carries over; per-engine variants are documented in each engine's own manual." }] },
+      { "item": "Multi-column NOT IN and row-value comparisons", "at": [{ "out": "A multi-column NOT IN is the same chain over tuples; the NULL rule is identical and adds no new idea." }] },
+      { "item": "Consequences for ORMs that emit NOT IN", "at": [{ "deep": "In production — a review checklist" }] }
+    ]
+  },
+  "gapReview": { "date": "2026-10-17", "by": "Claude (single session)", "open": [] }
+}

@@ -1,0 +1,42 @@
+import Resource from '../../../../../components/Resource.astro';
+
+This is the first topic of §2.2, right after §2.1 closed on MERGE and concurrent writers. It assumes ordinary `GROUP BY`/aggregate fluency; window functions are taught from scratch here.
+
+<section class="prereq" data-section="basics">
+
+### <span class="n">00</span> The terms this topic uses
+
+A few words, each defined in full inside the reel; this is just so they are not a surprise.
+
+- **Partition** — the group of rows (set by `PARTITION BY`) a window function processes together, without collapsing them into one row.
+- **Peer group** — the set of rows tied on the window's `ORDER BY` expression.
+- **Frame** — the specific subset of the current partition a frame-sensitive window function reads for a given row; set by `ROWS`/`RANGE`/`GROUPS`.
+- **`EXCLUDE`** — a frame modifier that drops the current row and/or its peers from an otherwise-included frame.
+
+<p class="check"><b>Check yourself:</b> with no explicit frame, does <code>SUM(amount) OVER (ORDER BY event_time)</code> give two rows with the exact same event_time two different running totals? (Answer: no — the default RANGE frame extends through every peer of the current row, so tied rows get the identical total, including both of their amounts.)</p>
+
+</section>
+
+<section class="prereq" data-section="nulls">
+
+### <span class="n">01</span> NULLs, aggregates, and GROUP BY (topics 2 and 5, before this)
+
+This topic's "average excluding this row" example reuses the rule that an aggregate over zero rows is NULL, from topic 2's aggregate coverage.
+
+<ul class="resources">
+  <Resource kind="topic" title="NULLs and three-valued logic" href="../nulls-three-valued-logic/" by="This chapter, topic 2" length="13 min">Why SUM/AVG over zero rows comes back NULL, not zero. Before this.</Resource>
+</ul>
+
+</section>
+
+<section class="prereq" data-section="sql-select">
+
+### <span class="n">02</span> Basic SQL and GROUP BY (declared)
+
+Ordinary `GROUP BY`/aggregate fluency is assumed; this topic is specifically about the non-collapsing window variant.
+
+<ul class="resources">
+  <Resource kind="reading" title="PostgreSQL Tutorial, ch. 2.7, Aggregate Functions" href="https://www.postgresql.org/docs/current/tutorial-agg.html" by="PostgreSQL 18 documentation" length="10 min">A refresher on plain GROUP BY, if rusty. Before this.</Resource>
+</ul>
+
+</section>

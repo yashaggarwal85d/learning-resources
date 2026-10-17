@@ -1,0 +1,116 @@
+{
+  "topic": "de.semi-joins-anti-joins-existence",
+  "steps": [
+    {
+      "lines": [
+        "Every rule so far was about one missing value at a time. Now a row might match several others at once, and you only want to know whether any of them exist.",
+        "Look at the two columns. Five customers on the left, the orders that point at them on the right.",
+        { "beat": 0.4 },
+        "Notice what the question never asks for: the order's columns. It asks about the existence of a line, and that changes which operators are safe to use."
+      ]
+    },
+    {
+      "lines": [
+        "Start with the plain join and count the rows it produces. Customer one has three lines going out, so it appears three times.",
+        "That is just bag semantics from the first topic: a join multiplies rows by their matches.",
+        "Now watch the lines collapse. The semi join asks a smaller question, does at least one line exist, and keeps the customer once.",
+        "So it cannot multiply rows. Whatever the number of matches, the left row survives exactly once, or not at all."
+      ]
+    },
+    {
+      "lines": [
+        "The anti join is the mirror image. Look for the rows with no line at all.",
+        "Those are the survivors, customers two, four and five.",
+        "And the same guarantee holds. An anti join returns left rows only, and never anything from the right side, so it cannot duplicate anything either."
+      ]
+    },
+    {
+      "lines": [
+        "Two queries answer who has ordered. One uses exists. The other joins, then removes duplicates.",
+        "Count the boxes in each row on screen, and think about what the second one produces before it cleans up.",
+        { "beat": 0.4 },
+        "Which does less work?"
+      ],
+      "answer": [
+        "Exists.",
+        "It is a semi join, so each customer is produced once and there is nothing to clean up. The join produces a row for every order, then pays a whole extra pass to discard most of them.",
+        "The join is not fastest here, and the work is not the same: the dedup pass is pure overhead. Indexes can help either, but they are not what separates these two."
+      ]
+    },
+    {
+      "lines": [
+        "Now the part that matters in production. There are five common ways to write an existence test, and they look interchangeable.",
+        "Watch the last one, not in, turn red. Exists, not exists and in are always safe. The left join with a null test is safe if you test a column that is never missing on a real match.",
+        "Not in is the odd one. It builds a chain of comparisons, and comparisons are exactly where unknown can enter.",
+        "So the question for each spelling is not whether it reads right. It is whether a missing value anywhere can change the answer."
+      ]
+    },
+    {
+      "lines": [
+        "Here is why the planner treats them differently. Picture it as a gate that decides whether a query may take the fast path.",
+        "Exists walks through without showing anything. The planner converts it to a semi join, or an anti join for not exists, every time.",
+        "The reason is that a row either exists or it does not. That is a plain true or false fact, with no unknown in it, so there is nothing to protect."
+      ]
+    },
+    {
+      "lines": [
+        "Not in is stopped at the gate and asked for a certificate.",
+        "The planner may convert it to an anti join only if it can prove that neither side can ever be missing. That proof has to come from a declared constraint.",
+        "Watch the two outcomes. With the proof, fast anti join. Without it, a side path that evaluates the real semantics, correct but slower.",
+        "That side path is why the query still returns the right answer, even when the answer is the surprising empty result."
+      ]
+    },
+    {
+      "lines": [
+        "Start from the fast plan, an anti join. Then someone removes the guarantee that the column is never missing, though every stored row stays exactly as it was.",
+        "Think about what the planner can see when it plans tomorrow's query.",
+        { "beat": 0.4 },
+        "What happens to the plan?"
+      ],
+      "answer": [
+        "It changes to the side path. The result stays the same.",
+        "The planner cannot rely on today's data, because tomorrow a missing value could arrive and make the rewrite wrong. It trusts only what the schema promises.",
+        "So the data does not decide the plan, and the query does not error or change its rows. The safety of not in belongs to the schema, not to the query."
+      ]
+    },
+    {
+      "lines": [
+        "Now read it in the plan. Four labels are worth recognising.",
+        "A semi join or an anti join in the plan means the fast path was found. Version eighteen added a right sided semi join, which lets the engine build its hash table from the other input.",
+        "And the label to be suspicious of is the one at the bottom: a sub plan hanging under a not in. That is the fallback.",
+        "So when a not in is slow, look at the join type before you tune anything. Usually the fix is a constraint, or a rewrite, not an index."
+      ]
+    },
+    {
+      "lines": [
+        "So for an existence question, default to exists and not exists.",
+        "They need no certificate, they never duplicate rows, and the planner always has a fast path for them.",
+        "Treat not in as safe only when a constraint says so.",
+        { "beat": 0.4 },
+        "So far every question has been about one table at a time. Next: climbing a hierarchy, one level at a time, until there are no more levels left to climb."
+      ]
+    },
+    {
+      "lines": [
+        "Two checks. First, one spelling can return nothing when its subquery column contains a missing value.",
+        { "beat": 0.4 },
+        "Which one?"
+      ],
+      "answer": [
+        "Not in.",
+        "It is a chain of not equal comparisons, and one missing value makes the whole chain unknown. The other three test whether a row exists, which cannot be unknown."
+      ]
+    },
+    {
+      "lines": [
+        "Second check. A customer has three matching orders, and you run a semi join.",
+        { "beat": 0.4 },
+        "How many rows does that customer produce?"
+      ],
+      "answer": [
+        "One.",
+        "A semi join asks only whether a match exists. The number of matches never multiplies the row, which is exactly what separates it from a plain join."
+      ]
+    }
+  ]
+}

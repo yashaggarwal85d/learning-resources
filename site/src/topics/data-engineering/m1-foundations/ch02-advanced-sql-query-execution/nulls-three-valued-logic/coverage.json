@@ -1,0 +1,55 @@
+{
+  "topic": "de.nulls-three-valued-logic",
+  "syllabus": [
+    { "clause": "UNKNOWN propagation through predicates,", "at": [{ "step": "Three truth values, not two" }, { "step": "Predict: what is NOT UNKNOWN?" }, { "step": "x = NULL is never true" }, { "deep": "The three-valued truth tables" }] },
+    { "clause": "IS [NOT] DISTINCT FROM,", "at": [{ "step": "IS DISTINCT FROM compares NULLs safely" }, { "deep": "Ordinary comparisons: `x = NULL` is always wrong" }] },
+    { "clause": "NULLs in aggregates, GROUP BY, joins, UNIQUE constraints and ORDER BY;", "at": [{ "step": "Five places, five different rules" }, { "deep": "Five places, five different rules" }] },
+    { "clause": "the classic silent bugs (vanishing rows, COUNT(col) vs COUNT()).", "at": [{ "step": "Predict: NOT IN with one NULL in the list" }, { "step": "The chain goes dim; NOT EXISTS fixes it" }, { "step": "COUNT(*) is not COUNT(column)" }, { "deep": "Vanishing rows: the `NOT IN` trap" }, { "deep": "`COUNT(column)` vs `COUNT(*)`: the silent undercount" }] }
+  ],
+  "sources": [
+    {
+      "source": "PostgreSQL 18 Documentation, §9.1 Logical Operators and §9.2 Comparison Functions and Operators",
+      "items": [
+        { "item": "AND, OR and NOT truth tables over TRUE, FALSE and NULL", "at": [{ "step": "Three truth values, not two" }, { "deep": "The three-valued truth tables" }] },
+        { "item": "Comparisons with NULL yield NULL; use IS NULL; IS [NOT] DISTINCT FROM treats NULL as an ordinary value", "at": [{ "step": "x = NULL is never true" }, { "step": "IS DISTINCT FROM compares NULLs safely" }, { "deep": "Ordinary comparisons: `x = NULL` is always wrong" }] }
+      ]
+    },
+    {
+      "source": "PostgreSQL 18 Documentation, §7.3.3 DISTINCT, §7.5 Sorting Rows, §9.21 Aggregate Functions and CREATE TABLE",
+      "items": [
+        { "item": "DISTINCT and GROUP BY treat NULLs as equal", "at": [{ "step": "Five places, five different rules" }, { "deep": "Five places, five different rules" }] },
+        { "item": "NULLs sort as if larger than any non-null value (NULLS FIRST is the DESC default)", "at": [{ "step": "Five places, five different rules" }, { "deep": "Five places, five different rules" }] },
+        { "item": "count(*) vs count(expression); sum of no rows is NULL", "at": [{ "step": "COUNT(*) is not COUNT(column)" }, { "step": "Prove it · 2 of 2" }, { "deep": "`COUNT(column)` vs `COUNT(*)`: the silent undercount" }] },
+        { "item": "UNIQUE treats NULLs as distinct unless NULLS NOT DISTINCT (PostgreSQL 15)", "at": [{ "step": "Five places, five different rules" }, { "deep": "Five places, five different rules" }] }
+      ]
+    },
+    {
+      "source": "PostgreSQL 18 Documentation, §9.24 Subquery Expressions (IN, NOT IN, EXISTS)",
+      "items": [
+        { "item": "NOT IN yields NULL when no right-hand value matches and one right-hand row is NULL", "at": [{ "step": "Predict: NOT IN with one NULL in the list" }, { "deep": "Vanishing rows: the `NOT IN` trap" }] },
+        { "item": "EXISTS tests row existence, with no NULL failure mode", "at": [{ "step": "The chain goes dim; NOT EXISTS fixes it" }] }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "Claude (single session, written from the syllabus line before mapping to the topic; not independent of the builder, so the cloud review run should repeat it)",
+    "date": "2026-10-17",
+    "items": [
+      { "item": "The three truth values and the AND/OR/NOT tables", "at": [{ "step": "Three truth values, not two" }] },
+      { "item": "NOT UNKNOWN is UNKNOWN", "at": [{ "step": "Predict: what is NOT UNKNOWN?" }] },
+      { "item": "WHERE/ON keep a row only when the predicate is TRUE", "at": [{ "step": "x = NULL is never true" }] },
+      { "item": "x = NULL and x <> NULL are never true; use IS NULL", "at": [{ "step": "x = NULL is never true" }, { "deep": "Ordinary comparisons: `x = NULL` is always wrong" }] },
+      { "item": "IS DISTINCT FROM as a NULL-safe comparison", "at": [{ "step": "IS DISTINCT FROM compares NULLs safely" }] },
+      { "item": "GROUP BY and DISTINCT put NULLs in one group", "at": [{ "step": "Five places, five different rules" }] },
+      { "item": "ORDER BY NULL placement and NULLS FIRST/LAST", "at": [{ "step": "Five places, five different rules" }, { "deep": "In production — a review checklist" }] },
+      { "item": "Aggregates skip NULL; COUNT(*) does not; empty SUM is NULL", "at": [{ "step": "COUNT(*) is not COUNT(column)" }, { "step": "Prove it · 2 of 2" }] },
+      { "item": "UNIQUE allows multiple NULLs unless NULLS NOT DISTINCT", "at": [{ "step": "Five places, five different rules" }] },
+      { "item": "A NULL join key never matches; outer joins keep the row", "at": [{ "step": "Five places, five different rules" }, { "deep": "Five places, five different rules" }] },
+      { "item": "The NOT IN trap and its NOT EXISTS fix", "at": [{ "step": "Predict: NOT IN with one NULL in the list" }, { "step": "The chain goes dim; NOT EXISTS fixes it" }] },
+      { "item": "COUNT(col) versus COUNT(*) undercount", "at": [{ "step": "COUNT(*) is not COUNT(column)" }] },
+      { "item": "NULLs across dialects: ordering differences and SQLGlot transpile checks", "at": [{ "deep": "Build, break, measure" }] },
+      { "item": "COALESCE and NULLIF as tools for taming NULL", "at": [{ "out": "Functions for replacing NULLs are ordinary scalar functions; the production checklist names COALESCE where it matters, and the syllabus line asks for behaviour, not the function catalogue." }] }
+    ]
+  },
+  "gapReview": { "date": "2026-10-17", "by": "Claude (single session)", "open": [] }
+}

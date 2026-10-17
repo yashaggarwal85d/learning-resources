@@ -1,0 +1,30 @@
+import Resource from '../../../../../components/Resource.astro';
+
+This is a full topic in §2.2, right after ranking, top-N and deterministic dedup (topic 12). It composes LAG/LEAD and running sums with topic 10's explicit-frame fix.
+
+<section class="prereq" data-section="basics">
+
+### <span class="n">00</span> The terms this topic uses
+
+A few words, each defined in full inside the reel; this is just so they are not a surprise.
+
+- **`LAG`/`LEAD`** — window functions that read a value from a previous/next row of the same partition.
+- **Island** — a maximal run of contiguous rows satisfying some condition (or within one time-gap threshold of each other).
+- **Row-number-difference trick** — subtracting a filtered row-number from an unfiltered one to get a constant-within-island grouping key.
+- **Sessionization** — splitting an event stream into episodes using an inactivity threshold.
+
+<p class="check"><b>Check yourself:</b> what does LAG(event_time) return for the very first row of a customer's history? (Answer: NULL — there is no previous row in that partition, which is exactly the signal used to flag the start of a new session.)</p>
+
+</section>
+
+<section class="prereq" data-section="window">
+
+### <span class="n">01</span> Window frame semantics (topic 10, before this)
+
+This topic's sessionization query reuses topic 10's explicit `ROWS` frame fix directly, for the same tie-safety reason.
+
+<ul class="resources">
+  <Resource kind="topic" title="Window frame semantics" href="../window-frame-semantics/" by="This chapter, topic 10" length="14 min">The default-frame tie trap and its ROWS fix, reused here for sessionization. Before this.</Resource>
+</ul>
+
+</section>

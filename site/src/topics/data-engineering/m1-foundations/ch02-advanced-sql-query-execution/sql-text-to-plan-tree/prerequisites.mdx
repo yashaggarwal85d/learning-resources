@@ -1,0 +1,42 @@
+import Resource from '../../../../../components/Resource.astro';
+
+This is the first topic of §2.3, right after §2.2 closed on point-in-time joins. It reuses topic 1's operator-tree vocabulary and topic 11's sort-reuse idea, now at the whole-plan level.
+
+<section class="prereq" data-section="basics">
+
+### <span class="n">00</span> The terms this topic uses
+
+A few words, each defined in full inside the reel; this is just so they are not a surprise.
+
+- **Query tree** — PostgreSQL's name for the semantically-resolved, logical representation of a statement, built by the parser's "transformation process."
+- **Path** — PostgreSQL's name for a candidate physical implementation of (part of) a plan; the planner compares many paths and keeps the cheapest.
+- **Logical plan / physical plan** — what to compute (an algebra tree) vs. how (a specific algorithm and access method per operator).
+- **Physical property** — a characteristic of a path's output, such as sort order, that a later operator may require or that an earlier one may already provide for free.
+
+<p class="check"><b>Check yourself:</b> at the parse stage, does PostgreSQL already know whether a name in your query refers to a real table? (Answer: no — the parser only checks grammar and has no catalog access; resolving names to real tables/functions/operators happens in the next stage, the "transformation process.")</p>
+
+</section>
+
+<section class="prereq" data-section="relational-algebra">
+
+### <span class="n">01</span> Relational algebra and bag semantics (topic 1, before this)
+
+The algebra tree this topic calls the "logical plan" is exactly topic 1's operator tree.
+
+<ul class="resources">
+  <Resource kind="topic" title="Relational algebra and bag semantics" href="../relational-algebra-bag-semantics/" by="This chapter, topic 1" length="12 min">The σ/π/⋈/γ operator tree this topic calls a logical plan. Before this.</Resource>
+</ul>
+
+</section>
+
+<section class="prereq" data-section="window-internals">
+
+### <span class="n">02</span> Window function execution internals (topic 11, as a reading)
+
+This topic's "a provided sort order can cancel a required one" idea is the whole-plan generalization of topic 11's window-sort-reuse mechanism.
+
+<ul class="resources">
+  <Resource kind="topic" title="Window function execution internals" href="../window-function-execution-internals/" by="This chapter, topic 11" length="14 min">The sort-reuse idea this topic generalizes to any operator, not just windows. Useful background, not required.</Resource>
+</ul>
+
+</section>

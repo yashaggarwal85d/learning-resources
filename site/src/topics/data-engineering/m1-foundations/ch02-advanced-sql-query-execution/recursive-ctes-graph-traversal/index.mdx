@@ -1,0 +1,145 @@
+---
+id: de.recursive-ctes-graph-traversal
+title: Recursive CTEs and graph traversal
+---
+
+<section data-section="outcomes">
+
+## After this topic you can
+
+- Trace the exact fixpoint algorithm a recursive CTE runs: a working table seeded once, then repeatedly fed back through the recursive term until it adds no new rows.
+- Write a bill-of-materials-style parts explosion and a general graph-reachability query with `WITH RECURSIVE`.
+- Use the `SEARCH` and `CYCLE` clauses, or the portable hand-written path-array equivalent, to get a defined traversal order and guaranteed termination on data that might contain a cycle.
+- Tell apart the two distinct failure modes — infinite looping on a true cycle, and combinatorial row blow-up on a cycle-free but heavily shared structure — because they need different fixes.
+
+</section>
+
+<section data-section="internals">
+
+## Into the internals
+
+Every topic so far asked a question about one row's relationship to a fixed set of other rows. A hierarchy — a bundle made of parts that are themselves bundles, a customer referred by a customer who was themselves referred — needs a query that can refer to *its own output*, an unbounded number of times. That's what `RECURSIVE` adds to `WITH`.
+
+### The fixpoint algorithm, exactly
+
+A recursive CTE is always shaped as a **non-recursive term**, combined with `UNION` or `UNION ALL`, then a **recursive term** that is the only part allowed to reference the CTE's own name. PostgreSQL's documentation specifies the execution as a literal loop, not a recursive call (PostgreSQL 18 docs, §7.8.2, "Recursive Queries"):
+
+1. Evaluate the non-recursive term. For `UNION` (not `UNION ALL`), discard duplicate rows.
+2. Put all remaining rows into the result, **and** into a working table.
+3. While the working table is non-empty, repeat: evaluate the recursive term with the current working table substituted for the self-reference; for `UNION`, discard rows that duplicate any row seen so far; add the survivors to the result and to a fresh intermediate table; then replace the working table with that intermediate table (emptying it when nothing new was added, which is what stops the loop).
+
+This is the fixpoint from the name: the process stops exactly when a step contributes zero new rows — nothing left to iterate on. "While `RECURSIVE` allows queries to be specified recursively, internally such queries are evaluated iteratively" (same source) — there is one working table, repeatedly replaced, never a call stack.
+
+### Bill-of-materials explosion
+
+The shop sells bundles: a kit product can contain other products as components, in a quantity each, and a component can itself be a bundle (nested one or two levels deep) — `product_components(product_id, component_product_id, quantity)`. "All the parts inside kit X, with total quantity needed" is the textbook recursive-CTE problem, and it is solved almost exactly as PostgreSQL's own manual states it for "all the direct and indirect sub-parts of a product" (§7.8.2):
+
+```sql
+WITH RECURSIVE exploded(component_product_id, quantity) AS (
+  -- Non-recursive term: the kit's direct components.
+  SELECT component_product_id, quantity
+  FROM product_components
+  WHERE product_id = 4242  -- the kit we're exploding
+
+  UNION ALL
+
+  -- Recursive term: each component's own components, with quantities
+  -- multiplied down the tree (two of a sub-kit means two of everything inside it).
+  SELECT pc.component_product_id, e.quantity * pc.quantity
+  FROM exploded e
+  JOIN product_components pc ON pc.product_id = e.component_product_id
+)
+SELECT component_product_id, SUM(quantity) AS total_quantity
+FROM exploded
+GROUP BY component_product_id;
+```
+
+Each pass of the loop finds one more level of nesting; the loop ends on its own the moment a level's components have no further components of their own — the working table for that step comes back empty.
+
+### Reachability on a graph that might not be a tree
+
+A bill of materials is normally a tree or a DAG; a general graph can have cycles, and the shop has one hiding in plain sight: `orders.referred_by_customer_id` (topics 2–3) forms a referral graph — customer A refers B, B refers C — that is *supposed* to be acyclic (nobody should end up in their own downline) but is not *guaranteed* to be, because it comes from user-entered data. "Find everyone in customer 7's referral downline, however many levels deep" is reachability:
+
+```sql
+WITH RECURSIVE downline(customer_id, depth) AS (
+  SELECT customer_id, 1 FROM orders WHERE referred_by_customer_id = 7
+  UNION ALL
+  SELECT o.customer_id, d.depth + 1
+  FROM downline d
+  JOIN orders o ON o.referred_by_customer_id = d.customer_id
+)
+SELECT DISTINCT customer_id, MIN(depth) FROM downline GROUP BY customer_id;
+```
+
+If the referral data ever contains a loop (a data-entry mistake makes someone their own distant referrer), this query **does not terminate** — it is exactly the risk PostgreSQL's manual warns about: "it is important to be sure that the recursive part of the query will eventually return no tuples, or else the query will loop indefinitely... often a cycle does not involve output rows that are completely duplicate [so] just changing `UNION ALL` to `UNION` would not eliminate the looping" (§7.8.2.2, "Cycle Detection"). Here the `depth` column alone keeps every row from a cyclic path "unique" to `UNION`'s eyes, so switching to `UNION` does not help at all — the loop needs to be broken explicitly, by remembering which nodes a given path has already visited.
+
+### Cycle detection: path arrays, and the standard sugar for them
+
+The portable technique is to carry an array of visited keys down each path and refuse to step onto a key already in it. PostgreSQL's own worked example for a graph with cycles:
+
+```sql
+WITH RECURSIVE search_graph(id, link, data, depth, is_cycle, path) AS (
+  SELECT g.id, g.link, g.data, 0, false, ARRAY[g.id]
+  FROM graph g
+  UNION ALL
+  SELECT g.id, g.link, g.data, sg.depth + 1, g.id = ANY(path), path || g.id
+  FROM graph g, search_graph sg
+  WHERE g.id = sg.link AND NOT is_cycle
+)
+SELECT * FROM search_graph;
+```
+
+`is_cycle` becomes true the instant a step would revisit a node already on `path`, and `AND NOT is_cycle` in the next iteration's join condition stops expanding that path any further — the recursion still terminates even on a cyclic graph, because every path either runs out of new nodes to visit or hits a node it's already seen. PostgreSQL 14 (released 2021-09-30) added `SEARCH`/`CYCLE` as standard-SQL sugar for exactly this pattern: "There is built-in syntax to simplify cycle detection... `CYCLE id SET is_cycle USING path`... internally rewritten to the above form" (same section; PostgreSQL 14 release notes, "The SQL-standard SEARCH and CYCLE options for common table expressions have been implemented"). Likewise `SEARCH DEPTH FIRST BY id SET ordercol` or `SEARCH BREADTH FIRST BY id SET ordercol` expands to the same path-tracking idiom used purely for a deterministic sort column, because, as the manual notes, "the recursive query evaluation algorithm produces its output in breadth-first search order... [but] this is an implementation detail... perhaps unsound to rely on."
+
+DuckDB implements the identical fixpoint model for `WITH RECURSIVE` — "the query must be formulated in a way that ensures termination, otherwise, it may run into an infinite loop" (DuckDB docs, "Recursive CTEs") — but has no `SEARCH`/`CYCLE` convenience syntax; its own graph-traversal example uses the hand-written array technique directly (`list_position(paths.path, node2id) IS NULL` in the join condition, DuckDB docs, "Graph Traversal"). The path-array form is therefore the one worth knowing cold: it is standard, portable, and exactly what the sugar expands to anyway.
+
+### Two different failure modes, two different fixes
+
+A **true cycle** causes an infinite loop and must be prevented structurally (the path array, or `CYCLE`) — there is no amount of hardware that fixes an unbounded loop. A **row blow-up** is a different risk entirely: the shop's bundles can share components (a "studio kit" and a "streaming kit" might both include the same microphone, and a "creator mega-bundle" might include both kits), so exploding the mega-bundle visits the microphone twice — once down each kit's path. This is **not a bug**: the two visits are two genuinely different reasons the microphone is needed, and the `GROUP BY ... SUM(quantity)` at the end correctly adds them together. But the *number of paths* through a richly cross-linked, cycle-free DAG can still grow combinatorially with depth and fan-out, long before any cycle is involved — DuckDB's own all-paths example notes plainly that result rows are "not restricted to shortest paths," so a node reachable several ways appears several times by design. The fix for this risk is a depth cap, a row-count guard, or switching from "enumerate all paths" to "shortest path" / "any single path" framing — none of which a cycle detector helps with, because there is no cycle to detect.
+
+### A debugging trick, and why it isn't a production technique
+
+"A helpful trick for testing queries when you are not certain if they might loop is to place a `LIMIT` in the parent query" (PostgreSQL 18 docs, §7.8.2.2) — `SELECT n FROM t LIMIT 100` on an otherwise-unbounded recursive CTE stops after a hundred rows because PostgreSQL only evaluates as many rows of a `WITH` query as the outer query actually fetches. The documentation is explicit that this is not something to rely on in production: "other systems might work differently," and "it usually won't work if you make the outer query sort the recursive query's results or join them to some other table, because in such cases the outer query will usually try to fetch all of the `WITH` query's output anyway." Use it to probe a query you're not yet sure terminates; ship the cycle-detection logic, not the `LIMIT`.
+
+</section>
+
+<section data-section="lab">
+
+## Build, break, measure
+
+### Lab · Recursive BOM with a planted cycle
+
+This hosts the §2.1 chapter lab's recursive-CTE part.
+
+1. **Build the clean explosion.** Load `product_components` with a few genuinely nested bundles (a mega-bundle containing two kits, each kit containing a handful of plain products, with one component — the shared microphone — reachable through both kits) and run the parts-explosion query above. Confirm the shared component's `total_quantity` correctly sums its contribution from every path (*measure in build* for the actual totals, which depend on the quantities you load).
+2. **Plant the cycle.** Insert one row that makes a kit a component of one of its own sub-components (`product_components` row: mega-bundle → kit A → kit B → mega-bundle). Run the plain `UNION ALL` version from the first worked example and confirm it either runs away (cap it with a `LIMIT` per the debugging trick above, and watch it still growing when the limit cuts it off) or hits a statement timeout — this is the failure mode, induced on purpose.
+3. **Fix it with `CYCLE`, or the hand-written path array.** Rewrite the query with PostgreSQL's `CYCLE` clause (or the equivalent array-based form, if targeting a second engine) and confirm it now terminates, reports `is_cycle = true` on the row that would have re-entered the mega-bundle, and that every non-cyclic path's total is unaffected by the fix.
+4. **Separate the blow-up risk from the cycle risk.** With the cycle removed again, deepen the fan-out (make every kit share two or three components with every other kit) and watch the clean, cycle-free query's row count grow much faster than linearly with depth — confirming that this growth is not something the cycle fix from step 3 touches at all, because there is no cycle to find.
+
+</section>
+
+<section data-section="production">
+
+## In production — a review checklist
+
+- **Never assume real hierarchical data is acyclic just because the business rule says it should be.** A referral chain, an org chart, a BOM — all of them can and do get a cycle from a data-entry mistake or a bad migration; include cycle protection (`CYCLE`, or a path array) whenever the data isn't under a database constraint that structurally forbids it.
+- **Tell a cycle apart from a blow-up before reaching for a fix.** If the query never finishes, check whether it's truly looping (a `path` column would show a repeating node) or just visiting an enormous but finite number of distinct paths through heavily shared structure — the first needs cycle detection, the second needs a depth cap or a different question ("shortest path," not "all paths").
+- **Don't rely on PostgreSQL's `LIMIT`-stops-the-recursion trick outside of ad hoc debugging.** It depends on an evaluation-order detail that breaks the moment the outer query sorts or joins the CTE's output, and other engines may not share it at all.
+- **State a traversal order explicitly (`SEARCH DEPTH FIRST`/`BREADTH FIRST`) rather than depending on the engine's internal order,** which PostgreSQL's own documentation calls an implementation detail not safe to rely on.
+- **When a query must run on more than one engine, write the portable path-array form,** since `SEARCH`/`CYCLE` (PostgreSQL 14+) is standard-SQL sugar that not every engine — DuckDB among them — implements.
+
+</section>
+
+<section data-section="sources">
+
+## Sources
+
+Last verified: 2026-10-14.
+
+- PostgreSQL 18 Documentation, [§7.8.2, "Recursive Queries"](https://www.postgresql.org/docs/current/queries-with.html) — the exact working-table fixpoint algorithm, the bill-of-materials example, `SEARCH DEPTH FIRST`/`BREADTH FIRST`, the `CYCLE` clause, and the `LIMIT` debugging trick with its stated caveats.
+- PostgreSQL 14 Release Notes, [§E.25.1](https://www.postgresql.org/docs/14/release-14.html) — "The SQL-standard SEARCH and CYCLE options for common table expressions have been implemented," dated to the 2021-09-30 release.
+- DuckDB Documentation, ["Recursive CTEs"](https://duckdb.org/docs/current/sql/query_syntax/with.html) — the same fixpoint model, the tree-traversal and graph-traversal (LDBC Graphalytics) worked examples, and the hand-written `list_position`-based cycle guard used in place of `SEARCH`/`CYCLE`.
+
+Spotted an error or something unclear? [Report it](https://github.com/yashaggarwal85d/learning-resources/issues/new?title=recursive-ctes-graph-traversal:%20).
+
+</section>

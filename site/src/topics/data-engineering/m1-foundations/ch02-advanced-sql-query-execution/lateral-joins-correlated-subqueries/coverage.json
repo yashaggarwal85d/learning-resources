@@ -1,0 +1,44 @@
+{
+  "topic": "de.lateral-joins-correlated-subqueries",
+  "syllabus": [
+    { "clause": "LATERAL / CROSS APPLY as a per-row table function in FROM;", "at": [{ "step": "Plain subqueries cannot see their neighbours" }, { "step": "LATERAL runs once per outer row" }, { "step": "LEFT JOIN LATERAL keeps the empty ones" }, { "step": "CROSS APPLY is the same idea" }, { "deep": "What `LATERAL` actually changes" }, { "deep": "`CROSS APPLY` / `OUTER APPLY`: the same idea, a different name" }] },
+    { "clause": "top-N-per-group via LATERAL + LIMIT;", "at": [{ "step": "Some questions need the outer row first" }, { "step": "Predict: how many rows come back?" }, { "step": "The index decides the price" }, { "deep": "Top-N-per-group, the pattern a plain join can't express" }] },
+    { "clause": "when the planner can decorrelate and when it falls back to per-row execution (→ §2.3).", "at": [{ "step": "A simple LATERAL is just a join" }, { "step": "Predict: add LIMIT, can it still be flattened?" }, { "deep": "What the planner can and can't flatten" }, { "topic": "Query rewrites and subquery unnesting", "quote": "subquery unnesting" }] }
+  ],
+  "sources": [
+    {
+      "source": "PostgreSQL 18 Documentation, §7.2.1.5 LATERAL Subqueries",
+      "items": [
+        { "item": "Without LATERAL each FROM subquery is evaluated independently and cannot reference earlier items", "at": [{ "step": "Plain subqueries cannot see their neighbours" }, { "deep": "What `LATERAL` actually changes" }] },
+        { "item": "A LATERAL item is evaluated once per row of the source it references, and results are joined back", "at": [{ "step": "LATERAL runs once per outer row" }, { "deep": "What `LATERAL` actually changes" }] },
+        { "item": "LEFT JOIN to a LATERAL subquery keeps source rows that produce no rows", "at": [{ "step": "LEFT JOIN LATERAL keeps the empty ones" }, { "deep": "`LEFT JOIN LATERAL ... ON TRUE`: keeping the outer row even with no match" }] }
+      ]
+    },
+    {
+      "source": "PostgreSQL source prepjointree.c (is_simple_subquery) and Microsoft Learn, FROM clause plus JOIN, APPLY, PIVOT",
+      "items": [
+        { "item": "A subquery with grouping, aggregation, sorting or limiting cannot be pulled up into a join", "at": [{ "step": "Predict: add LIMIT, can it still be flattened?" }, { "deep": "What the planner can and can't flatten" }] },
+        { "item": "CROSS APPLY and OUTER APPLY correspond to LATERAL and LEFT JOIN LATERAL ON true", "at": [{ "step": "CROSS APPLY is the same idea" }, { "deep": "`CROSS APPLY` / `OUTER APPLY`: the same idea, a different name" }] }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "Claude (single session, written from the syllabus line before mapping to the topic; not independent of the builder, so the cloud review run should repeat it)",
+    "date": "2026-10-17",
+    "items": [
+      { "item": "Correlated subqueries and why FROM subqueries cannot reference siblings without LATERAL", "at": [{ "step": "Plain subqueries cannot see their neighbours" }] },
+      { "item": "Per-row evaluation semantics of LATERAL", "at": [{ "step": "LATERAL runs once per outer row" }] },
+      { "item": "Top-N per group with LATERAL, ORDER BY and LIMIT", "at": [{ "step": "Some questions need the outer row first" }, { "step": "Predict: how many rows come back?" }] },
+      { "item": "CROSS JOIN LATERAL versus LEFT JOIN LATERAL ON true", "at": [{ "step": "LEFT JOIN LATERAL keeps the empty ones" }] },
+      { "item": "CROSS APPLY and OUTER APPLY in SQL Server", "at": [{ "step": "CROSS APPLY is the same idea" }] },
+      { "item": "Set-returning and table functions called with outer-row arguments", "at": [{ "deep": "What `LATERAL` actually changes" }] },
+      { "item": "Window-function alternative to top-N per group", "at": [{ "step": "The index decides the price" }, { "topic": "Ranking, top-N and deterministic dedup", "quote": "ROW_NUMBER vs RANK vs DENSE_RANK" }] },
+      { "item": "Index on the correlated columns to make the per-row subquery cheap", "at": [{ "step": "The index decides the price" }] },
+      { "item": "When the planner can decorrelate and flatten a subquery", "at": [{ "step": "A simple LATERAL is just a join" }] },
+      { "item": "When it falls back to a nested loop with the inner side rerun per outer row", "at": [{ "step": "Predict: add LIMIT, can it still be flattened?" }] },
+      { "item": "Unnesting algorithms in the literature (Neumann and Kemper)", "at": [{ "topic": "Query rewrites and subquery unnesting", "quote": "subquery unnesting" }] },
+      { "item": "LATERAL in other engines (DuckDB, Snowflake, Spark)", "at": [{ "out": "The syntax is near-identical across engines; this topic teaches the semantics and the PostgreSQL planner boundary, and each engine's manual lists its own support." }] }
+    ]
+  },
+  "gapReview": { "date": "2026-10-17", "by": "Claude (single session)", "open": [] }
+}

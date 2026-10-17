@@ -1,0 +1,43 @@
+import Resource from '../../../../../components/Resource.astro';
+
+This topic needs everyday SQL and two ideas from the earlier topics. Reels on this site are marked **Before this** (earlier in the course), **Goes deeper later** or with the name of another track.
+
+<section class="prereq basics" data-section="basics">
+
+### <span class="n">00</span> Basics: words the reel takes for granted
+
+- **CTE (WITH clause)**: a named subquery defined before the main query. *Where you meet it:* `WITH recent AS (SELECT …) SELECT … FROM recent`.
+- **Tree and graph**: a tree is nodes joined with no cycles and one root; a graph may have cycles and several routes between nodes. *Where you meet it:* a folder tree versus a road map.
+- **Adjacency table**: a table that stores edges as rows of (from, to). *Where you meet it:* `product_components(product_id, component_product_id, quantity)`.
+- **Fixed point**: a state where applying a step again changes nothing. *Where you meet it:* repeating "add everything reachable" until nothing new is added.
+- **Array / path value**: a value that holds an ordered list. *Where you meet it:* PostgreSQL `ARRAY[1,2,3]`, or a comma-separated string standing in for one.
+
+<p class="check"><b>Check yourself:</b> if kit A holds 2 microphones and the bundle holds 3 kit As, how many microphones does the bundle need? (Answer: 6, since quantities multiply down the tree.)</p>
+
+</section>
+
+<section class="prereq" data-section="earlier-topics">
+
+### <span class="n">01</span> Bags and joins
+
+The recursive term is a join, and its results stack with `UNION ALL` or `UNION`. You should know the difference between keeping and dropping duplicates.
+
+<ul class="resources">
+  <Resource kind="reel" host={props.host} domain="data-engineering" title="Relational algebra and bag semantics">UNION versus UNION ALL, and bags.</Resource>
+  <Resource kind="reel" host={props.host} domain="data-engineering" title="Semi-joins, anti-joins and existence">The previous reel; its handoff is this topic's opening.</Resource>
+</ul>
+
+</section>
+
+<section class="prereq" data-section="graph-basics">
+
+### <span class="n">02</span> Graph vocabulary
+
+You should recognise a node, an edge, a cycle and a path.
+
+<ul class="resources">
+  <Resource kind="reel" host={props.host} domain="data-engineering" title="Graph algorithms for pipeline DAGs">Directed graphs, cycles and traversal, from the pipeline side.</Resource>
+  <Resource kind="reading" title="WITH Queries (Common Table Expressions)" href="https://www.postgresql.org/docs/current/queries-with.html" by="PostgreSQL documentation" length="25 min">The primary reference for recursive queries, including cycle detection.</Resource>
+</ul>
+
+</section>

@@ -1,0 +1,162 @@
+{
+  "topic": "de.relational-algebra-bag-semantics",
+  "syllabus": [
+    {
+      "clause": "selection, projection, join, aggregation and set operators",
+      "at": [
+        { "step": "A query is secretly a tree" },
+        { "step": "The six operators" }
+      ]
+    },
+    {
+      "clause": "(UNION vs UNION ALL, INTERSECT/EXCEPT [ALL]) as algebra over multisets;",
+      "at": [
+        { "step": "A bag, not a set" },
+        { "step": "Two ways to stack results" },
+        { "step": "INTERSECT and EXCEPT, with or without ALL" },
+        { "deep": "The set-operator pairs, union-compatible, bag by default" }
+      ]
+    },
+    {
+      "clause": "the equivalences optimizers exploit and where bag semantics break set intuition",
+      "at": [
+        { "step": "Selection pushdown" },
+        { "step": "Projection pushdown" },
+        { "step": "Join order does not change the answer" },
+        { "step": "Predict: combine a list with itself" },
+        { "deep": "The equivalences an optimizer relies on" },
+        { "deep": "Where bag intuition breaks: idempotence" }
+      ]
+    },
+    {
+      "clause": "(why UNION pays for a dedup).",
+      "at": [
+        { "step": "Why UNION pays for a dedup" },
+        { "step": "Back to the problem" },
+        { "deep": "Why `UNION` pays for a dedup, and `UNION ALL` doesn't" }
+      ]
+    }
+  ],
+  "sources": [
+    {
+      "source": "A. Pavlo, Lecture #01: Relational Model & Algebra, 15-445/645 Database Systems, Fall 2024, Carnegie Mellon University",
+      "items": [
+        {
+          "item": "A relation is defined as an unordered collection that may contain duplicated elements",
+          "at": [{ "step": "A bag, not a set" }, { "deep": "Why SQL is a bag language, not a set language" }]
+        },
+        {
+          "item": "The operator set and symbols: selection, projection, join, product, union/intersect/except, aggregation",
+          "at": [{ "step": "The six operators" }, { "deep": "The operators, as a tree" }]
+        },
+        {
+          "item": "Selection-pushdown cost example: filtering a huge relation before a join beats filtering after",
+          "at": [{ "step": "Selection pushdown" }, { "deep": "The equivalences an optimizer relies on" }]
+        }
+      ]
+    },
+    {
+      "source": "PostgreSQL 18 Documentation, §7.4, \"Combining Queries (UNION, INTERSECT, EXCEPT)\"",
+      "items": [
+        {
+          "item": "UNION eliminates duplicates like DISTINCT unless UNION ALL is used; operands must be union-compatible",
+          "at": [{ "step": "Two ways to stack results" }, { "deep": "The set-operator pairs, union-compatible, bag by default" }]
+        },
+        {
+          "item": "INTERSECT binds tighter than UNION/EXCEPT, which associate left to right",
+          "at": [{ "deep": "The set-operator pairs, union-compatible, bag by default" }]
+        },
+        {
+          "item": "INTERSECT ALL / EXCEPT ALL use per-value multiplicities (min, or max of the difference)",
+          "at": [{ "step": "INTERSECT and EXCEPT, with or without ALL" }]
+        }
+      ]
+    },
+    {
+      "source": "PostgreSQL source (prepunion.c, function generate_union_paths; nodeSetOp.c)",
+      "items": [
+        {
+          "item": "UNION ALL compiles to a plain Append; UNION compiles to that Append plus a cost-chosen HashAggregate or Sort + Unique",
+          "at": [{ "step": "Why UNION pays for a dedup" }, { "deep": "Why `UNION` pays for a dedup, and `UNION ALL` doesn't" }]
+        },
+        {
+          "item": "The dedicated SetOp node (SETOP_SORTED / SETOP_HASHED) is not used for UNION or UNION ALL",
+          "at": [{ "step": "INTERSECT and EXCEPT, with or without ALL" }, { "deep": "Why `UNION` pays for a dedup, and `UNION ALL` doesn't" }]
+        }
+      ]
+    },
+    {
+      "source": "E. F. Codd, \"A Relational Model of Data for Large Shared Data Banks,\" CACM 13(6), 1970",
+      "items": [
+        {
+          "item": "The original relational model defined a relation as a set of tuples, with no duplicates",
+          "at": [{ "deep": "Why SQL is a bag language, not a set language" }]
+        }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "independent reviewer agent, written without seeing the topic",
+    "date": "2026-10-14",
+    "items": [
+      {
+        "item": "The core relational-algebra operator set — selection, projection, join, Cartesian product, union, difference (plus rename) — is closed under composition into a tree, the shape a planner builds and rewrites",
+        "at": [{ "step": "The six operators" }, { "step": "A query is secretly a tree" }]
+      },
+      {
+        "item": "SQL tables and query results are multisets: duplicate rows persist unless DISTINCT, GROUP BY, or a non-ALL set operator removes them",
+        "at": [{ "step": "A bag, not a set" }]
+      },
+      {
+        "item": "UNION ALL concatenates bags; UNION is bag union followed by duplicate elimination; INTERSECT/EXCEPT ALL use min/max of per-value multiplicities, and drop to set semantics without ALL",
+        "at": [{ "step": "Two ways to stack results" }, { "step": "INTERSECT and EXCEPT, with or without ALL" }]
+      },
+      {
+        "item": "Union-compatibility: operands of a set operator need the same column count and pairwise-compatible types",
+        "at": [{ "deep": "The set-operator pairs, union-compatible, bag by default" }]
+      },
+      {
+        "item": "The rewrite equivalences an optimizer relies on: selection pushdown through joins, projection pushdown, and join commutativity/associativity",
+        "at": [{ "step": "Selection pushdown" }, { "step": "Projection pushdown" }, { "step": "Join order does not change the answer" }]
+      },
+      {
+        "item": "Idempotence (A union A = A) holds for sets but fails for the ALL-flavoured bag operators, a classic trap after a refactor merges two branches that turn out identical",
+        "at": [{ "step": "Predict: combine a list with itself" }]
+      },
+      {
+        "item": "UNION pays for an extra duplicate-elimination pass (a hash or a sort) that UNION ALL never pays, visible in a query plan as an extra node atop an Append",
+        "at": [{ "step": "Why UNION pays for a dedup" }]
+      },
+      {
+        "item": "Relational division (a universal-quantification pattern, 'for every row of S') is usually built from the core operators via a double negation, and is taught alongside NOT EXISTS and anti-joins rather than here",
+        "at": [{ "topic": "Semi-joins, anti-joins and existence", "quote": "NOT EXISTS" }]
+      },
+      {
+        "item": "Codd's completeness theorem (relational algebra, tuple calculus and domain calculus are equivalent in expressive power) is the formal backdrop; an engineering-focused topic teaches the algebra operationally instead",
+        "at": [{ "out": "Tuple and domain relational calculus and Codd's completeness theorem are formal-semantics theory with no direct operational payoff for a data-engineering course; the topic teaches the algebra operationally instead." }]
+      },
+      {
+        "item": "Aggregation depends on bag multiplicities: COUNT(*) counts rows, COUNT(column) counts non-null values, and SUM needs every row counted once, which is why collapsing duplicates before an aggregate silently changes the answer",
+        "at": [{ "step": "Collapsing by accident" }]
+      },
+      {
+        "item": "Operator precedence and associativity among the set operators (INTERSECT tighter than UNION/EXCEPT; UNION/EXCEPT left-to-right) changes what an unparenthesized multi-operator query actually means",
+        "at": [{ "deep": "The set-operator pairs, union-compatible, bag by default" }]
+      },
+      {
+        "item": "Real engines route UNION ALL, UNION, and INTERSECT/EXCEPT through three distinct execution paths (Append only; Append plus Agg/Sort; a dedicated SetOp node), so defaulting to the cheapest form that is still correct is a real, measurable choice",
+        "at": [{ "step": "Back to the problem" }]
+      }
+    ]
+  },
+  "gapReview": {
+    "date": "2026-10-14",
+    "by": "independent gap-hunter agent",
+    "resolved": [
+      "Confirmed EXCEPT (without ALL) can drop to zero rows even where EXCEPT ALL keeps one, not merely 'fewer rows'; added as its own worked case rather than assumed",
+      "Confirmed the extra UNION pass is paid even when the two branches are known to be disjoint, since the planner cannot know that without doing the work",
+      "Checked every pushdown and dedup number against examples.py rather than restating the draft's prose numbers"
+    ],
+    "open": []
+  }
+}

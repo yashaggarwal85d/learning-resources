@@ -1,0 +1,78 @@
+{
+  "topic": "de.window-frame-semantics",
+  "note": "Written to be spoken: one idea per line; {\"beat\": s} is a deliberate pause; numbers are phrased the way they are said, never as digits. Tool and flag names are spoken as their job, not their symbol. `answer` plays after the learner answers a predict step. Opens on the chapter bridge line and closes on the handoff line.",
+  "steps": [
+    {
+      "lines": [
+        "Every clause this chapter has covered so far answers one question at a time.",
+        "Now: a construct that looks at its neighbors on purpose, one window at a time."
+      ]
+    },
+    {
+      "lines": [
+        "An ordinary total collapses many rows into one. This doesn't.",
+        "Every row keeps its own place, and still gets to peek at the rows around it... a running total, a moving average, whatever a window asks for.",
+        "You pick which rows count as neighbors two ways: which group a row belongs to, and which order the rows fall in inside that group.",
+        "On top of that... exactly how far the neighborhood reaches is its own separate decision. That's the frame."
+      ]
+    },
+    {
+      "lines": [
+        "Here's where almost everyone gets surprised, at least once.",
+        "Say you're building a running total, ordered by time, and you never specified the frame yourself.",
+        "Now say two of those rows happen to land at the exact same moment, a tie.",
+        {
+          "beat": 0.4
+        },
+        "Predict: do those two tied rows get two different running totals, each one up to its own row? Or something else?"
+      ],
+      "answer": [
+        "Something else. They get the exact same total. Both of them.",
+        "Left unspecified, the frame doesn't stop at \"this row.\" It stops at the last row tied with this one.",
+        "So a tie doesn't just affect the tied rows... it quietly breaks the running total's climb, right at that tie, for both of them at once.",
+        "The running total isn't broken. It's doing exactly what it was told. It just wasn't told what you thought it was."
+      ]
+    },
+    {
+      "lines": [
+        "The fix is almost embarrassingly direct.",
+        "Break every tie with something that can never repeat... and tell the frame to count physical rows, one at a time, instead of counting by value.",
+        "Do both, and the running total climbs exactly one row at a time, no surprises, no shared totals."
+      ]
+    },
+    {
+      "lines": [
+        "There's also a frame trick for the opposite need: deliberately leaving the current row, or its ties, out of its own neighborhood.",
+        "An average that compares a row against everyone else... but not itself... needs exactly that."
+      ]
+    },
+    {
+      "lines": [
+        "One more hard rule, and it surprises almost everyone the first time they hit it.",
+        "You've got a running total. You want to rank customers by that running total.",
+        {
+          "beat": 0.4
+        },
+        "Can you just drop one of these window calculations straight inside the other, in one single breath?"
+      ],
+      "answer": [
+        "No. Flatly not allowed.",
+        "A plain total can sit inside one of these. But one of these can never sit inside another one of these.",
+        "The fix is simple once you know it: compute the first one, let it finish and settle into its own column, and only then, one level up, rank by that column.",
+        "One layer of neighbor-watching per breath. Stack a second layer on top, in a level of its own, whenever you need one."
+      ]
+    },
+    {
+      "lines": [
+        "So: a window keeps every row separate, but lets it see its neighbors.",
+        "Left to the default, that neighborhood quietly swallows ties.",
+        "And stacking two layers of neighbor-watching in one breath is simply off the table... stage it instead.",
+        {
+          "beat": 0.4
+        },
+        "Defining the neighborhood is one job.",
+        "Next: what the engine actually does, physically, to deliver an answer for every single row in it."
+      ]
+    }
+  ]
+}

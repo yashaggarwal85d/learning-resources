@@ -1,0 +1,83 @@
+---
+id: de.query-rewrites-subquery-unnesting
+title: Query rewrites and subquery unnesting
+---
+
+<section data-section="outcomes">
+
+## After this topic you can
+
+- Name five rewrites a planner applies before costing anything: predicate/projection pushdown, constant folding, join elimination, outer-to-inner join conversion, and subquery decorrelation.
+- Explain, from PostgreSQL's own source, exactly when a join can be deleted entirely and when a `LEFT JOIN` can be strength-reduced to a plain or anti-join.
+- Describe a correlated subquery as a formal "dependent join," and explain the two decorrelation strategies Neumann and Kemper's general approach uses to turn it into an ordinary, reorderable join.
+
+</section>
+
+<section data-section="internals">
+
+## Into the internals
+
+Topic 16 placed rewrite between bind/analyze and planning. This topic is what actually happens inside that stage: a set of **semantics-preserving transformations** applied to the query tree before the optimizer ever estimates a cost — each one turns one correct plan into a different, cheaper-to-cost (or outright cheaper) correct plan, exploiting the algebraic equivalences topic 1 first named.
+
+### Predicate and projection pushdown, and constant folding
+
+Topic 1 already introduced these: moving a filter as close as possible to the table it filters (so fewer rows survive to later, more expensive operators), and dropping unneeded columns as early as possible (so less data moves through the rest of the tree). **Constant folding** is a third, related rewrite: an expression whose inputs are all literal constants is evaluated once, during rewrite, instead of once per row during execution — topic 8 already named this exact mechanism as one benefit of PostgreSQL's SQL-function inlining ("this can expose opportunities for constant-folding within the function expression"). All three are cheap, purely syntactic transformations that never need a cost model to justify — they're correct, and strictly no worse, by construction.
+
+### Join elimination: deleting a join entirely
+
+Sometimes a join contributes nothing to the final answer and can be removed outright. PostgreSQL's planner states the exact rule for when (`src/backend/optimizer/plan/analyzejoins.c`, `join_is_removable`): a `LEFT JOIN` "will just duplicate its left input" — and can be deleted — when "the join condition cannot match more than one inner-side row" (provable, for instance, from a unique constraint or a foreign key on the join column) **and** "the inner side doesn't generate any variables needed above the join." Concretely: `SELECT o.order_id, o.amount FROM orders o LEFT JOIN customers c ON o.customer_id = c.customer_id` never actually reads a column of `c` — the join exists only because someone wrote it, perhaps left over from an earlier version of the query — and since `customer_id` uniquely identifies at most one `customers` row, the whole join (and the entire scan of `customers`) can be dropped, with the result unchanged. This single rewrite can remove a real scan and a real join from a plan before the optimizer even starts estimating costs.
+
+### Outer-to-inner join conversion: strength reduction, in both directions
+
+A `LEFT JOIN` promises to keep every row of its left side, filling in `NULL`s where the right side has no match. If a later `WHERE` clause then filters out exactly those null-extended rows, the outer join was never actually needed. PostgreSQL's planner names this precisely (`src/backend/optimizer/prep/prepjointree.c`, `reduce_outer_joins`): "given a query like `SELECT ... FROM a LEFT JOIN b ON (...) WHERE b.y = 42`, we can reduce the `LEFT JOIN` to a plain `JOIN` if the `=` operator in `WHERE` is strict. The strict operator will always return NULL... on any row where the `LEFT JOIN` filled in NULLs for `b`'s columns. Therefore, there's no need for the join to produce null-extended rows in the first place." A plain inner join is strictly more reorderable than an outer join (topic 20's join-order search has far more freedom with it), so this rewrite can unlock search space the original outer join syntax would have blocked.
+
+The same mechanism runs in the opposite direction, too, and this is the one worth knowing by heart because it closes the loop on topic 3's own anti-join material: "`SELECT ... FROM a LEFT JOIN b ON (a.x = b.y) WHERE b.z IS NULL`... **only null-extended rows could pass the upper `WHERE`**, and we can conclude that what the query is really specifying is an anti-semijoin. We change the join type from `JOIN_LEFT` to `JOIN_ANTI`." This is the planner independently *deriving* topic 3's `LEFT JOIN ... WHERE ... IS NULL` idiom and converting it to the same `Anti` join type that topic 3's `NOT EXISTS` already compiles to directly — two different-looking SQL spellings, provably the same operator, recognized by the rewrite stage before either one is costed.
+
+### Decorrelation: a correlated subquery is formally a "dependent join"
+
+Everything above handles *un*correlated structure. A correlated subquery — one that references a column from its enclosing query, re-evaluated per outer row — is a fundamentally different shape, and Neumann and Kemper give it a precise algebraic name: the **dependent join**, written `T1 ▷ₚ T2`, "where the right hand side is evaluated for every tuple of the left hand side" (Neumann & Kemper, "Unnesting Arbitrary Queries," BTW 2015). This is the exact formal description of topic 6's `LATERAL`/`APPLY` and topic 8's Froid-algebrized UDF body: a nested-loop-shaped evaluation where the inner side genuinely needs a value from the outer row before it can even start. Dependent joins are "very unfortunate from a performance perspective," and the paper's goal is "manipulat[ing] the algebraic expression until the right hand side no longer depends on the left hand side" — at which point the dependent join becomes an ordinary join, free to be reordered, hashed, or merge-joined like any other.
+
+Two strategies get there:
+
+- **Simple unnesting** handles correlation that exists "just because [queries are] simpler to formulate in SQL" — their own example is an `EXISTS` subquery whose dependent predicate can simply be pulled up the tree until it no longer depends on the outer row, at which point `l1 ▷ σ(l2)` becomes a plain semi-join `l1 ⋉ l2` directly — "this predicate pull-up happens purely for decorrelation reasons."
+- **General unnesting** handles the harder cases simple pull-up can't reach (a correlated subquery with its own aggregation, say): translate the dependent join into "a 'nicer' dependent join... easier to manipulate," then **push it down** through the query tree — through joins, through group-by, through outer joins, each with its own careful transformation rule — until the correlation reaches a point where the required values are already available locally and the dependent join finally reduces to a regular one.
+
+Every engine's own heuristic unnesting rules (including PostgreSQL's `convert_ANY_sublink_to_join`/`convert_EXISTS_sublink_to_join` from topic 3, and SQL Server's Froid from topic 8) are special cases of this same general goal — "no existing system can de-correlate queries in the general case," the paper notes of the state of the art it's responding to, which is exactly why some correlated subqueries still fall back to the slower `SubPlan` execution topic 3 described: the engine's heuristics didn't happen to cover that particular shape, even though a general unnesting procedure could.
+
+</section>
+
+<section data-section="lab">
+
+## Build, break, measure
+
+### Try it · Watch three rewrites happen before costing
+
+1. **Trigger join elimination.** Write `SELECT o.order_id FROM orders o LEFT JOIN customers c ON o.customer_id = c.customer_id;` (reading no column of `c`) and confirm `EXPLAIN` shows a single scan of `orders`, with no `customers` scan or join node present at all.
+2. **Trigger both directions of outer-join strength reduction.** Run a `LEFT JOIN` with a strict equality filter on the right side's column in `WHERE` and confirm `EXPLAIN` shows `Join Type: Inner`, not `Left`. Then run a `LEFT JOIN ... WHERE right.key IS NULL` (topic 3's manual anti-join pattern) and confirm `EXPLAIN` shows `Join Type: Anti` — the exact same join type topic 3's `NOT EXISTS` version produces.
+3. **Confirm decorrelation changes the plan shape, not the answer.** Take a correlated subquery that PostgreSQL's heuristics can unnest (an `EXISTS` with a simple equality) and one deliberately shaped so it can't (one with a correlated aggregate inside), and confirm the first gets a `Semi`/`Anti` join plan while the second falls back to a `SubPlan` node — both returning identical, correct results either way.
+
+</section>
+
+<section data-section="production">
+
+## In production — a review checklist
+
+- **Don't manually "optimize away" a join you believe is redundant** before checking whether the planner already proves and removes it — a stray `LEFT JOIN` to an unused table is often already free, and manually restructuring the query for no real gain just adds risk.
+- **Prefer the SQL spelling that reads most clearly to your team between an equivalent `LEFT JOIN ... IS NULL` and `NOT EXISTS`** — the rewrite stage proves they're the same operator either way, so clarity, not cleverness, should decide.
+- **When a correlated subquery stubbornly won't unnest (a `SubPlan` persists in `EXPLAIN` after trying the obvious rewrites), suspect an aggregate or a construct inside it that heuristic unnesting doesn't cover** — rewriting it by hand into an explicit join, or restructuring the aggregate, is often the practical fix when the general case isn't implemented.
+
+</section>
+
+<section data-section="sources">
+
+## Sources
+
+Last verified: 2026-10-14.
+
+- PostgreSQL source (`master` branch, checked 2026-10-14), [`src/backend/optimizer/plan/analyzejoins.c`](https://github.com/postgres/postgres/blob/master/src/backend/optimizer/plan/analyzejoins.c), function `join_is_removable` — the exact join-elimination condition, quoted verbatim.
+- PostgreSQL source (`master` branch, checked 2026-10-14), [`src/backend/optimizer/prep/prepjointree.c`](https://github.com/postgres/postgres/blob/master/src/backend/optimizer/prep/prepjointree.c), function `reduce_outer_joins` — the LEFT-to-INNER and LEFT-to-ANTI strength-reduction rules, quoted verbatim.
+- T. Neumann, A. Kemper, ["Unnesting Arbitrary Queries"](http://www.btw-2015.de/res/proceedings/Hauptband/Wiss/Neumann-Unnesting_Arbitrary_Querie.pdf), BTW 2015 — the dependent-join formalism, simple unnesting (predicate pull-up), and general unnesting (dependent-join push-down), quoted and paraphrased directly.
+
+Spotted an error or something unclear? [Report it](https://github.com/yashaggarwal85d/learning-resources/issues/new?title=query-rewrites-subquery-unnesting:%20).
+
+</section>

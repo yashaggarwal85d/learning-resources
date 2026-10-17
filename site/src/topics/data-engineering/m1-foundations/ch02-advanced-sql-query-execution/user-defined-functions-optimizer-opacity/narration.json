@@ -1,0 +1,133 @@
+{
+  "topic": "de.user-defined-functions-optimizer-opacity",
+  "steps": [
+    {
+      "lines": [
+        "Every construct so far ran inside the database engine itself, so the optimizer understood all of it. Now the logic that decides a row's fate is a function you wrote.",
+        "Look at the dark box. From the planner's side, that is all a function is: a name, the types going in, the type coming out.",
+        { "beat": 0.4 },
+        "It cannot look inside. And that ignorance is not neutral, because every default the planner picks is the safe one, not the fast one."
+      ]
+    },
+    {
+      "lines": [
+        "First, the three shapes a function can take.",
+        "A scalar function returns one value per call. A table function returns rows, so it can sit in the from clause. An aggregate keeps a state, updates it once per input row, and returns one result at the end.",
+        "The rest of the topic is mostly about the first kind, because it is the one people write by the dozen and forget about."
+      ]
+    },
+    {
+      "lines": [
+        "The first penalty is about whether the answer can change. Unless you say otherwise, the planner assumes it can, even within a single scan.",
+        "Count the red marks. A call with a constant argument is evaluated once for every row.",
+        "Declare the function immutable, a promise that the same input always gives the same output, and the planner calls it once and uses the value. One mark.",
+        "Notice that the planner cannot work this out for itself. You have to tell it."
+      ]
+    },
+    {
+      "lines": [
+        "The second penalty is bigger, and it is not local. Compare the two rows of workers.",
+        "By default a function is assumed unsafe for parallel execution. Not just the call, the whole statement.",
+        "So one forgotten annotation, anywhere in an otherwise parallel plan, quietly removes every worker from it.",
+        "That is why a slow function can make a query slow in parts that have nothing to do with it."
+      ]
+    },
+    {
+      "lines": [
+        "Make it concrete. A big scan that would normally get several workers.",
+        "Now add one filter that calls a function you wrote, with no annotations at all.",
+        { "beat": 0.4 },
+        "What happens to the plan?"
+      ],
+      "answer": [
+        "The whole statement runs without workers.",
+        "The planner cannot read the body to prove the call is safe, so refusing parallelism for everything is its only safe default.",
+        "Only the filter going serial would be a local penalty, and that is not what the planner applies. Nothing changing would assume the planner can read the body, which it cannot. Mark the function safe, when it truly is, and the workers return."
+      ]
+    },
+    {
+      "lines": [
+        "The third penalty is about order. Look at the two filters in the top row.",
+        "With no cost declared, the planner treats the function as if it were cheap. So it may run the expensive call first.",
+        "Compare the bottom row. Declare a realistic cost and the cheap, selective condition goes first, so only the survivors pay for the function.",
+        "Same query, same result, very different amount of work."
+      ]
+    },
+    {
+      "lines": [
+        "So three declarations lift three penalties. Immutable or stable lets calls be folded. Parallel safe brings the workers back. Cost puts the call after the cheap filters.",
+        "But read the red line. Each declaration is a promise, and the planner believes you.",
+        "Mark a function immutable when it secretly depends on a table, and you do not get a missed optimization. You get wrong answers.",
+        "So declare only what is true."
+      ]
+    },
+    {
+      "lines": [
+        "Annotations make an opaque function cheaper. Inlining makes it transparent.",
+        "Watch the expression slide out of the function and into the query. The planner pastes the body in, as if you had written it there.",
+        "Then everything it knows applies: constant folding, pushing filters down, reordering. And the cost of calling a function, once per row, disappears.",
+        "The condition is that the function is a single plain expression in the sql language."
+      ]
+    },
+    {
+      "lines": [
+        "Test the rule. You have a one line helper, and you rewrite it in the procedural language, with exactly the same body.",
+        "Think about what the planner needs in order to splice something in.",
+        { "beat": 0.4 },
+        "Is it inlined?"
+      ],
+      "answer": [
+        "No.",
+        "Only simple functions in the sql language qualify, and they must not be security definer or return sets. The procedural language is always opaque, however trivial the body.",
+        "The body being identical does not matter, and marking it immutable does not change the language. So if you want the planner to see through a helper, write it as a plain sql expression."
+      ]
+    },
+    {
+      "lines": [
+        "Real functions are not one expression. They have variables, branches, loops.",
+        "Follow the arrow on the right. SQL Server's Froid converts such a body into one relational expression, built from the same apply operator you met in the lateral topic.",
+        "Then the existing machinery for flattening subqueries does the rest. It shipped as scalar function inlining in version twenty nineteen, and the paper reports one to three orders of magnitude on function heavy workloads.",
+        "PostgreSQL has no equivalent for its procedural language. That is a real difference between the two engines."
+      ]
+    },
+    {
+      "lines": [
+        "A different kind of opacity: a function that lives in another process. A Python function called from Spark.",
+        "Watch the two rows of marks. Row at a time, every row crosses the boundary: serialized, sent, computed, sent back.",
+        "A vectorized function sends a whole batch across in one Arrow buffer. The same thousand rows cross in ten trips, not a thousand.",
+        "That is the same argument Chapter one made for batch execution, applied to the cost of crossing a boundary."
+      ]
+    },
+    {
+      "lines": [
+        "So, when you write a function: declare its volatility, its parallel safety and its cost, truthfully.",
+        "Write small helpers as single expressions in the sql language, so the planner can see through them.",
+        "And before you accept that functions are simply slow, look for your engine's way to open the box.",
+        { "beat": 0.4 },
+        "Writing meaning into a query is one thing. Next: what happens when two different sessions try to write the same row at once."
+      ]
+    },
+    {
+      "lines": [
+        "Two checks. First, a function created with no parallel clause at all.",
+        { "beat": 0.4 },
+        "What is its parallel safety?"
+      ],
+      "answer": [
+        "Unsafe.",
+        "The default is the cautious one. Safe would let workers run it without a promise from you, and restricted is a middle setting you must request."
+      ]
+    },
+    {
+      "lines": [
+        "Second check. PostgreSQL will consider only one function language for inlining.",
+        { "beat": 0.4 },
+        "Which?"
+      ],
+      "answer": [
+        "The sql language, and only for single expression functions.",
+        "The procedural language is never inlined, and it is not true of any language."
+      ]
+    }
+  ]
+}

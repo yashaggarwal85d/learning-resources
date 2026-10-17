@@ -1,0 +1,117 @@
+{
+  "topic": "de.recursive-ctes-graph-traversal",
+  "steps": [
+    {
+      "lines": [
+        "So far every question has been about one table at a time. Now we climb a hierarchy, one level at a time, until there are no more levels left to climb.",
+        "Look at the picture: a bundle, two kits, and parts underneath, with one part shared. How many levels is that?",
+        "You cannot write a fixed number of joins for it, because the depth lives in the data, and next month's bundle may be deeper.",
+        "Recursive queries are the answer: a query allowed to read its own output."
+      ]
+    },
+    {
+      "lines": [
+        "Do not picture a function calling itself. Picture a loop over one small table.",
+        "Watch the three rows of boxes. The first is the seed, the bundle's direct parts. The second is what you get by joining that batch to the parts table. The third comes back empty.",
+        "That empty batch is the stopping rule. The loop ends the moment a pass adds nothing new.",
+        "That stopping point is called the fixpoint, and it is the only reason these queries terminate at all."
+      ]
+    },
+    {
+      "lines": [
+        "Every batch the loop produced is kept in the result. Count them from the boxes you just saw.",
+        "Notice one part turning up twice, under each kit.",
+        { "beat": 0.4 },
+        "How many rows does the explosion hold before any grouping?"
+      ],
+      "answer": [
+        "Six.",
+        "Two kits plus four parts, and the microphone is one of the four twice, because the two kits each need it for a separate reason.",
+        "Five is the count of distinct components, which you only get after grouping. Four forgets the kits themselves, and three forgets half the second batch."
+      ]
+    },
+    {
+      "lines": [
+        "Now the arithmetic that makes a parts list useful. Follow the labels on the arrows.",
+        "Two of a kit means two of everything inside it, so as the loop descends, the recursive term multiplies the quantities.",
+        "The microphone is reached by two different routes, carrying two and one.",
+        "The final group by adds them up to three. That sum is the answer the factory actually needs."
+      ]
+    },
+    {
+      "lines": [
+        "Now suppose the data is wrong. Someone enters a kit as a component of one of its own sub components.",
+        "Trace the dashed ring on screen. Every pass finds a next step around the ring, so the batch is never empty.",
+        "And the stopping rule never fires. Look at the counter: nothing stops it but a limit or a timeout.",
+        "The query is correct and the data is not. That is a bug no error message will point at."
+      ]
+    },
+    {
+      "lines": [
+        "A tempting fix: change the plain stack to the one that removes duplicates. Surely a repeated row will be recognised and dropped.",
+        "Look at the rows on screen. The query also tracks how deep it is.",
+        { "beat": 0.4 },
+        "Does that stop the loop?"
+      ],
+      "answer": [
+        "No.",
+        "Each trip round the ring arrives with a larger depth, so it is a different row, and removing duplicates sees nothing to remove.",
+        "It would work only if the rows were otherwise identical. The loop has to be broken by remembering where this particular path has already been."
+      ]
+    },
+    {
+      "lines": [
+        "So give every row its own memory. Each row carries the list of nodes on the path that produced it.",
+        "Watch the path grow: bundle, then kit A, then kit B. The fourth step would land back on the bundle.",
+        "A step onto a node already in the list is flagged as a cycle and not expanded any further.",
+        "Now every path ends. It either runs out of new nodes, or meets one it has already seen."
+      ]
+    },
+    {
+      "lines": [
+        "You do not have to write that bookkeeping by hand in recent PostgreSQL. The cycle clause writes it for you.",
+        "A second clause adds a sort column, so depth first or breadth first order is something you ask for, not something you hope for.",
+        "Read the last line. Some engines do not have either clause, so the hand written path is the one worth knowing cold, because it works everywhere."
+      ]
+    },
+    {
+      "lines": [
+        "There are two different ways these queries go wrong, and people mix them up.",
+        "A cycle never ends, and the path guard fixes it.",
+        "A blow up has no cycle at all. Look at the rising bars. With shared parts the number of paths grows with every level, long before any ring appears.",
+        "A path guard does nothing for that. You need a depth cap, or you should ask a smaller question, like the shortest path."
+      ]
+    },
+    {
+      "lines": [
+        "Back to the bundle. Seed the table, iterate, and stop when a pass adds nothing.",
+        "Multiply quantities as you descend and add them up at the end.",
+        "And never trust real data to be acyclic, whatever the business rule says. Carry a path, or use the cycle clause, and keep a depth cap in your pocket for the other failure.",
+        { "beat": 0.4 },
+        "Every question so far has produced one row per group, or one row per path. Next: splitting one aggregate into several, at several levels, all in a single pass over the data."
+      ]
+    },
+    {
+      "lines": [
+        "Two checks. First, a clause from the standard, available since version fourteen, that detects a cycle for you.",
+        { "beat": 0.4 },
+        "Which one?"
+      ],
+      "answer": [
+        "Cycle.",
+        "It flags a row whose key is already on its own path. The search clause only adds an ordering column, and neither the limit nor distinct detects anything about paths."
+      ]
+    },
+    {
+      "lines": [
+        "Second check. On its third evaluation, the recursive term returns no new rows.",
+        { "beat": 0.4 },
+        "What does the loop do?"
+      ],
+      "answer": [
+        "It stops.",
+        "An empty step is the fixpoint. There is nothing left to feed into the next pass, so the loop has nothing to do."
+      ]
+    }
+  ]
+}

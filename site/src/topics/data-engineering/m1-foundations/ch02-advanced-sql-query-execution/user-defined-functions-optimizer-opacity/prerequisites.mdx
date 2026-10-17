@@ -1,0 +1,41 @@
+import Resource from '../../../../../components/Resource.astro';
+
+This topic needs a feel for what a query planner does and everyday function use in SQL. Reels on this site are marked **Before this** (earlier in the course), **Goes deeper later** or with the name of another track.
+
+<section class="prereq basics" data-section="basics">
+
+### <span class="n">00</span> Basics: words the reel takes for granted
+
+- **Query planner / optimizer**: the part of a database that picks how to run a query, using cost estimates. *Where you meet it:* it is the reason `EXPLAIN` output differs from your query's shape.
+- **Pushdown**: applying a filter or projection as early as possible in the plan. *Where you meet it:* the earlier "filter before the join" rewrite.
+- **Constant folding**: replacing an expression of constants by its value before execution. *Where you meet it:* `WHERE x > 2 + 3` is planned as `x > 5`.
+- **Parallel workers**: extra processes that split one query's scan or aggregation. *Where you meet it:* `Gather` and `Workers Planned` in a PostgreSQL plan.
+- **Serialization**: converting a value to a byte form to send it across a boundary. *Where you meet it:* passing data between a JVM and a Python process.
+
+<p class="check"><b>Check yourself:</b> why can the planner evaluate <code>2 + 3</code> once but not <code>random()</code>? (Answer: the sum never changes; <code>random()</code> may return a different value on every call.)</p>
+
+</section>
+
+<section class="prereq" data-section="earlier-topics">
+
+### <span class="n">01</span> Per-row computation and nested data
+
+The previous topic treated unpacking as a per-row computation; a UDF call is the same shape. LATERAL showed what the planner can and cannot flatten.
+
+<ul class="resources">
+  <Resource kind="reel" host={props.host} domain="data-engineering" title="LATERAL joins and correlated subqueries">Per-row evaluation and the limits of flattening.</Resource>
+  <Resource kind="reel" host={props.host} domain="data-engineering" title="Nested and semi-structured data in SQL">The previous reel; its handoff is this topic's opening.</Resource>
+</ul>
+
+</section>
+
+<section class="prereq" data-section="reference">
+
+### <span class="n">02</span> Reference
+
+<ul class="resources">
+  <Resource kind="reading" title="CREATE FUNCTION" href="https://www.postgresql.org/docs/current/sql-createfunction.html" by="PostgreSQL documentation" length="20 min">Volatility, parallel safety, COST and ROWS, with the defaults stated.</Resource>
+  <Resource kind="reading" title="Froid: Optimization of Imperative Programs in a Relational Database" href="https://www.vldb.org/pvldb/vol11/p432-ramachandra.pdf" by="Ramachandra et al., PVLDB 2017" length="paper">The primary source for the Froid step.</Resource>
+</ul>
+
+</section>

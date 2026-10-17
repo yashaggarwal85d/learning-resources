@@ -1,0 +1,75 @@
+{
+  "topic": "de.running-moving-statistics",
+  "note": "Written to be spoken: one idea per line; {\"beat\": s} is a deliberate pause; numbers are phrased the way they are said, never as digits. Tool and flag names are spoken as their job, not their symbol. `answer` plays after the learner answers a predict step. Opens on the chapter bridge line and closes on the handoff line.",
+  "steps": [
+    {
+      "lines": [
+        "Grouping events into episodes answered what happened.",
+        "Now: smoother statistics over the numbers themselves, running and moving, instead of just marking where one episode ends and the next begins."
+      ]
+    },
+    {
+      "lines": [
+        "A total that only ever grows is cheap to keep. Add the new number, move on.",
+        "A total over a sliding stretch... the last so many, nothing older... has to drop old numbers out just as often as it adds new ones in.",
+        "Same idea, total so far, but one of them has to remember how to let go, and that costs more."
+      ]
+    },
+    {
+      "lines": [
+        "Now, a trap that looks harmless.",
+        "Say you want last week's revenue, and you grab it by counting back a fixed number of rows.",
+        {
+          "beat": 0.4
+        },
+        "On a day with twice the normal number of orders... does counting back that same fixed number of rows still cover a full week?"
+      ],
+      "answer": [
+        "No. It covers less time than usual, because more orders landed in the same stretch of rows.",
+        "Counting rows measures rows. It was never measuring days.",
+        "If you actually mean a week, you have to ask for a week, measured in time itself, not in how many rows happened to show up."
+      ]
+    },
+    {
+      "lines": [
+        "Two more useful numbers, and they answer slightly different questions.",
+        "Ask for the middle value of a whole set, and one version will happily hand you a number that never actually appeared anywhere in your data... it just split the difference between two real values.",
+        "The other version refuses to invent anything. It always hands you back a value that was genuinely there.",
+        "Neither is wrong. One promises a smooth estimate. The other promises a real, traceable row. Pick the one your situation actually needs."
+      ]
+    },
+    {
+      "lines": [
+        "And one more worth knowing: splitting a whole group into even buckets... deciles, quartiles, whatever size you ask for... with no manual boundary math at all."
+      ]
+    },
+    {
+      "lines": [
+        "Here's the catch behind all of this.",
+        "A running total can be kept cheaply, one new number at a time, forever.",
+        {
+          "beat": 0.4
+        },
+        "Can the middle value, or the ninety-ninth percentile, be kept just as cheaply, the same running way?"
+      ],
+      "answer": [
+        "No. Not for free.",
+        "The middle value of everything so far can shift because of any single new number, anywhere in the pile... not just the newest one.",
+        "So getting it exactly right means holding onto the whole ordered pile, every time.",
+        "At real scale, that's expensive enough that people often trade a little exactness away for a much cheaper estimate instead... a trade worth making on purpose, not by accident."
+      ]
+    },
+    {
+      "lines": [
+        "So: a growing total is cheap, a sliding one costs a bit more, and both are still just totals.",
+        "A real week means time, not a row count.",
+        "And the middle of a pile, exactly, needs the whole pile in hand... which is exactly why people start trading exactness for speed, on purpose.",
+        {
+          "beat": 0.4
+        },
+        "Comparing a row to its own neighbors is one kind of question.",
+        "Next: comparing a row to the exact value another table held, at that very moment in time."
+      ]
+    }
+  ]
+}

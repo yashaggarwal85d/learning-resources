@@ -1,0 +1,71 @@
+{
+  "topic": "de.window-function-execution-internals",
+  "note": "Written to be spoken: one idea per line; {\"beat\": s} is a deliberate pause; numbers are phrased the way they are said, never as digits. Tool and flag names are spoken as their job, not their symbol. `answer` plays after the learner answers a predict step. Opens on the chapter bridge line and closes on the handoff line.",
+  "steps": [
+    {
+      "lines": [
+        "Defining the neighborhood was one job.",
+        "Now: what the engine actually does, physically, to deliver an answer for every single row in it."
+      ]
+    },
+    {
+      "lines": [
+        "Before windows existed, people answered these same questions a different way: for every row, go look up its neighbors again, from scratch, with a fresh little query.",
+        {
+          "beat": 0.4
+        },
+        "Predict: if every single row re-scans its own neighborhood independently... what happens to the total work as the table grows?"
+      ],
+      "answer": [
+        "It explodes. Doubling the rows doesn't double the work... it roughly quadruples it.",
+        "Every row's lookup redoes work the row right next to it just finished doing a moment ago, and nothing remembers any of it.",
+        "A window, done properly, sorts once and then carries the running answer forward, row to row. That memory is the entire difference."
+      ]
+    },
+    {
+      "lines": [
+        "But \"carries the answer forward\" hides a real design decision, and it has levels.",
+        "The laziest version still starts over every time. Quadratic, same as before.",
+        "A smarter version keeps the running answer and just adds whatever's new... as long as the neighborhood only ever grows. The moment it also has to shrink, that trick alone isn't enough.",
+        "A sturdier version can also take values back out, not just add them in... which handles a sliding neighborhood just fine.",
+        "And when the neighborhood's size jumps around unpredictably, row to row, with no pattern at all... even that stops being enough, and you need a real structure built for answering \"sum of any range\" quickly, no matter which range gets asked for."
+      ]
+    },
+    {
+      "lines": [
+        "Here's a free win worth knowing about.",
+        "Ask for two different running calculations in the same query, both grouped and ordered the exact same way... and a good engine notices.",
+        "It sorts the data once, and lets both calculations ride along on that single sort, instead of paying for the sort twice.",
+        "Sorting is usually the single most expensive part of the whole operation. Sharing it, instead of repeating it, is not a small saving."
+      ]
+    },
+    {
+      "lines": [
+        "Last piece: splitting this work across many cores.",
+        "Each group has to stay together and stay in order, so the natural way to split the work is one whole group per core.",
+        "That's fine, right up until one group is enormous and the rest are small.",
+        {
+          "beat": 0.4
+        },
+        "What happens to the other cores while one of them is still grinding through that one giant group?"
+      ],
+      "answer": [
+        "They sit idle. Finished, with nothing left to do, while one core carries the whole imbalance alone.",
+        "The real fix is splitting that one oversized group's own work across several cores too, not just handing whole groups out one at a time.",
+        "Not every engine goes that far. Some simply accept that one giant group becomes the bottleneck."
+      ]
+    },
+    {
+      "lines": [
+        "So: a window beats re-scanning from scratch because it remembers, pass to pass.",
+        "How it remembers... grow-only, grow-and-shrink, or a real structure for any range at all... decides whether that memory stays cheap.",
+        "Share one sort across several calculations whenever you can, and watch out for one lopsided group starving every other core of work.",
+        {
+          "beat": 0.4
+        },
+        "Everything so far has climbed one row at a time.",
+        "Next: counting positions, and picking exactly one winner when several rows tie for first."
+      ]
+    }
+  ]
+}

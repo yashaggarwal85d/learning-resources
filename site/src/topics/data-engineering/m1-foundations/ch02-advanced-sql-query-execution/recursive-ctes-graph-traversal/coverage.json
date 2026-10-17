@@ -1,0 +1,47 @@
+{
+  "topic": "de.recursive-ctes-graph-traversal",
+  "syllabus": [
+    { "clause": "fixpoint evaluation via a working table,", "at": [{ "step": "A loop over one working table" }, { "step": "Prove it · 2 of 2" }, { "deep": "The fixpoint algorithm, exactly" }] },
+    { "clause": "hierarchy and bill-of-materials explosion, reachability,", "at": [{ "step": "A hierarchy needs a query that reads itself" }, { "step": "Quantities multiply down the tree" }, { "step": "Predict: how many rows does the explosion hold?" }, { "deep": "Bill-of-materials explosion" }, { "deep": "Reachability on a graph that might not be a tree" }] },
+    { "clause": "cycle detection with the standard SEARCH/CYCLE clauses (PostgreSQL 14+) or path arrays;", "at": [{ "step": "Carry the path; refuse to revisit" }, { "step": "SEARCH and CYCLE are sugar for that" }, { "step": "Prove it · 1 of 2" }, { "deep": "Cycle detection: path arrays, and the standard sugar for them" }] },
+    { "clause": "termination and row blow-up risks.", "at": [{ "step": "A cycle never runs out of rows" }, { "step": "Predict: does UNION fix it?" }, { "step": "Two failures need two fixes" }, { "deep": "Two different failure modes, two different fixes" }] }
+  ],
+  "sources": [
+    {
+      "source": "PostgreSQL 18 Documentation, §7.8.2 Recursive Queries",
+      "items": [
+        { "item": "The evaluation algorithm: non-recursive term, working table, repeat until empty", "at": [{ "step": "A loop over one working table" }, { "deep": "The fixpoint algorithm, exactly" }] },
+        { "item": "The bill-of-materials example for all direct and indirect sub-parts", "at": [{ "step": "Quantities multiply down the tree" }, { "deep": "Bill-of-materials explosion" }] },
+        { "item": "Cycle detection: UNION does not stop a cycle when a depth column differs; the path-array form; SEARCH and CYCLE", "at": [{ "step": "Predict: does UNION fix it?" }, { "step": "Carry the path; refuse to revisit" }, { "deep": "Cycle detection: path arrays, and the standard sugar for them" }] },
+        { "item": "LIMIT in the parent query as a debugging trick, with its caveats", "at": [{ "deep": "A debugging trick, and why it isn't a production technique" }] }
+      ]
+    },
+    {
+      "source": "PostgreSQL 14 release notes and DuckDB documentation, Recursive CTEs",
+      "items": [
+        { "item": "SEARCH and CYCLE implemented in PostgreSQL 14", "at": [{ "step": "SEARCH and CYCLE are sugar for that" }] },
+        { "item": "DuckDB has the same fixpoint model, no SEARCH/CYCLE, and a hand-written path guard", "at": [{ "step": "SEARCH and CYCLE are sugar for that" }, { "deep": "Cycle detection: path arrays, and the standard sugar for them" }] },
+        { "item": "All-paths results are not restricted to shortest paths, so shared nodes repeat", "at": [{ "step": "Two failures need two fixes" }, { "deep": "Two different failure modes, two different fixes" }] }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "Claude (single session, written from the syllabus line before mapping to the topic; not independent of the builder, so the cloud review run should repeat it)",
+    "date": "2026-10-17",
+    "items": [
+      { "item": "Anchor member, recursive member, and the iterative working-table evaluation", "at": [{ "step": "A loop over one working table" }] },
+      { "item": "UNION versus UNION ALL in the recursive CTE", "at": [{ "step": "Predict: does UNION fix it?" }] },
+      { "item": "Termination: the recursive term must eventually return no rows", "at": [{ "step": "Prove it · 2 of 2" }] },
+      { "item": "Parts explosion with quantity multiplication", "at": [{ "step": "Quantities multiply down the tree" }] },
+      { "item": "Hierarchy traversal (org chart, referral downline) and depth tracking", "at": [{ "deep": "Reachability on a graph that might not be a tree" }] },
+      { "item": "Graph reachability and shortest-path framing", "at": [{ "deep": "Two different failure modes, two different fixes" }] },
+      { "item": "Path array cycle detection", "at": [{ "step": "Carry the path; refuse to revisit" }] },
+      { "item": "SEARCH DEPTH FIRST / BREADTH FIRST ordering", "at": [{ "step": "SEARCH and CYCLE are sugar for that" }] },
+      { "item": "CYCLE clause syntax and the is_cycle column", "at": [{ "step": "SEARCH and CYCLE are sugar for that" }] },
+      { "item": "Row blow-up on shared sub-structure in a DAG", "at": [{ "step": "Two failures need two fixes" }] },
+      { "item": "Depth caps and safety limits", "at": [{ "deep": "In production — a review checklist" }] },
+      { "item": "Engine differences: SQL Server, Oracle and Snowflake recursion limits and syntax", "at": [{ "out": "Per-engine recursion limits (for example MAXRECURSION in SQL Server) are documented by each vendor; the topic teaches the standard semantics and PostgreSQL and DuckDB behaviour." }] }
+    ]
+  },
+  "gapReview": { "date": "2026-10-17", "by": "Claude (single session)", "open": [] }
+}

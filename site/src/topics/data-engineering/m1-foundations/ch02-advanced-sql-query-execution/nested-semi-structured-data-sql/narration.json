@@ -1,0 +1,117 @@
+{
+  "topic": "de.nested-semi-structured-data-sql",
+  "steps": [
+    {
+      "lines": [
+        "This whole section has been about what a query means. Now: what SQL means for data that is not flat at all.",
+        "Look at order forty two. It has a list of tags, a matching list of discounts, and a small document of checkout details.",
+        { "beat": 0.4 },
+        "None of those is a plain value. Each one needs a way to be read, unpacked and queried, and each has a trap."
+      ]
+    },
+    {
+      "lines": [
+        "Start with names. There are three nested shapes, and you will meet all of them.",
+        "An array is a list where every element has the same type. A struct is a bundle of labelled fields. A map is key and value pairs.",
+        "In PostgreSQL there is no map type, so a JSON document fills that role. Keep that in mind, because it decides what tools you use later."
+      ]
+    },
+    {
+      "lines": [
+        "The first tool turns an array back into rows. Watch the three tags drop out of the list, one per row.",
+        "Order is the order the array was stored in, and there is exactly one row per element.",
+        "For one array there is nothing to go wrong. The trouble starts when a row has two arrays that are meant to line up."
+      ]
+    },
+    {
+      "lines": [
+        "Order forty two has tags and discounts that line up: the first tag has the first discount, and so on.",
+        "Now write the two unpackings as two separate items in the from clause, and think about how many things the engine will pair up.",
+        { "beat": 0.4 },
+        "How many rows do you get?"
+      ],
+      "answer": [
+        "Nine.",
+        "Two separate from items with nothing relating them combine as a product, so every tag pairs with every discount. Look at the thick lines: only three of the nine pairings are right.",
+        "You have rebuilt the Cartesian product from the first topic, using two function calls instead of two tables. Three would be the intended answer, which is exactly why this bug passes review."
+      ]
+    },
+    {
+      "lines": [
+        "The fix is to unpack both arrays in one call. Then they are zipped by position.",
+        "Watch the lines: each tag meets only the discount in the same slot. Three rows, each correct.",
+        "Now the second case. If one array is longer, the shorter is padded with nulls, so you get a row for the extra tag with a missing discount.",
+        "That is the safe failure. The bad one is the product, which fails silently and looks plausible."
+      ]
+    },
+    {
+      "lines": [
+        "Sometimes position carries meaning: the first tag applied, the primary one.",
+        "Add the ordinality clause and each row also reports its place in the array, counting from one.",
+        "Do not rely on row order to recover that. The engine promises nothing about it once other operators are involved."
+      ]
+    },
+    {
+      "lines": [
+        "Now the document. Two arrows do almost all the work, and the difference between them matters.",
+        "The single arrow goes one level down and keeps the result as JSON, so you can keep going. The double arrow returns text and ends the chain.",
+        "Read the three lines in order: the whole document, then the nested object, then the string at the end."
+      ]
+    },
+    {
+      "lines": [
+        "Chains of arrows get hard to read quickly. Past a field or two, there is a cleaner tool.",
+        "JSON table takes a path expression and a list of columns, and produces ordinary rows with ordinary types. Look at the two output columns on the right.",
+        "Notice what it joins to. Each output row is joined laterally to the row that held the document, which is the idea from the previous topic.",
+        "It arrived in version seventeen. On older versions you stay with the arrows."
+      ]
+    },
+    {
+      "lines": [
+        "Where you store the document matters as much as how you query it. Stored as text, a JSON value has to be parsed to be read.",
+        "Watch the top bar fill: even to reach one field, the engine parses the whole thing byte by byte.",
+        "And to the storage layer it is one opaque string, so there are no statistics and nothing to skip.",
+        "A binary variant type keeps the parsed form instead, so reading one field is a jump, as the short bar shows."
+      ]
+    },
+    {
+      "lines": [
+        "The open version of this idea goes one step further, and it is where columnar formats get their advantage.",
+        "Shredding pulls common fields out of the variant into columns of their own. Watch the timestamp field slide to the right.",
+        "Now that field has a column, with min and max values, so a query that needs only the timestamp reads only that column.",
+        "Two warehouses ship their own variant type as well, and the table format has to support it. Check that before you plan around it."
+      ]
+    },
+    {
+      "lines": [
+        "Back to order forty two. Unpack both arrays in one call and keep the positions you need.",
+        "Use the table function for anything beyond a field or two of JSON.",
+        "And for the fields you query constantly, give them real typed columns, because that is what every engine prunes best.",
+        { "beat": 0.4 },
+        "Every construct so far ran inside the database engine itself. Next: what happens when the logic that decides a row's fate is a function you wrote, not a built-in operator."
+      ]
+    },
+    {
+      "lines": [
+        "Two checks. First, four tags and three discounts go into one call that unpacks both.",
+        { "beat": 0.4 },
+        "How many rows?"
+      ],
+      "answer": [
+        "Four.",
+        "The shorter array is padded with nulls, so the longer one sets the count. Twelve is what two separate calls would produce, and three would drop a tag."
+      ]
+    },
+    {
+      "lines": [
+        "Second check. A function that builds a table from a JSON document, available only in recent versions.",
+        { "beat": 0.4 },
+        "Which release added it?"
+      ],
+      "answer": [
+        "Seventeen, in September of twenty twenty four.",
+        "Earlier releases have the arrow operators and path functions, but not this relational view."
+      ]
+    }
+  ]
+}

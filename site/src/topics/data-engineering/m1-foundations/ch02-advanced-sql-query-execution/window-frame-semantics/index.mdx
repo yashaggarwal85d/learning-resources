@@ -1,0 +1,133 @@
+---
+id: de.window-frame-semantics
+title: Window frame semantics
+---
+
+<section data-section="outcomes">
+
+## After this topic you can
+
+- Write `PARTITION BY`/`ORDER BY` and read exactly which rows a window function sees for a given current row.
+- Choose correctly between `ROWS`, `RANGE` and `GROUPS` framing, and predict the default frame's behavior on tied `ORDER BY` values before running the query.
+- Use the `EXCLUDE` clause to drop the current row or its peers from a frame on purpose.
+- Name a window result with `WINDOW`, and explain why computing a window function *of* another window function needs a CTE, not a single `SELECT`.
+
+</section>
+
+<section data-section="internals">
+
+## Into the internals
+
+Every aggregate so far collapsed many rows into one. A window function does something different: it looks at a group of neighboring rows *without* collapsing anything — "unlike non-window aggregate calls, this is not tied to grouping of the selected rows into a single output row — each row remains separate in the query output" (PostgreSQL 18 docs, §4.2.8, "Window Function Calls"). Each output row still gets its own answer, computed from a window of rows around it.
+
+### `PARTITION BY`, `ORDER BY`, and the frame
+
+`PARTITION BY` splits the query's rows into independent groups, "similar to a query-level `GROUP BY` clause" but without collapsing rows (same source). `ORDER BY` fixes the order within each partition that the window function reads rows in. On top of both, the **frame** — the actual subset of the current partition a frame-sensitive function (a running sum, a moving average) sees for a given row — is set by the frame clause:
+
+```
+{ RANGE | ROWS | GROUPS } frame_start [ frame_exclusion ]
+{ RANGE | ROWS | GROUPS } BETWEEN frame_start AND frame_end [ frame_exclusion ]
+```
+
+### `ROWS` vs `RANGE` vs `GROUPS`
+
+- **`ROWS`** counts physical rows: "`CURRENT ROW` simply means the current row," and `offset PRECEDING`/`FOLLOWING` means exactly that many rows before/after it, by position (PostgreSQL 18 docs, §4.2.8). `ROWS` doesn't know or care whether neighboring rows tie on the `ORDER BY` key.
+- **`RANGE`** counts by value, through **peer groups**: "a `frame_start` of `CURRENT ROW` means the frame starts with the current row's first peer row (a row that the window's `ORDER BY` clause sorts as equivalent to the current row)" (same source). A peer group is every row tied on the `ORDER BY` expression.
+- **`GROUPS`** counts whole peer groups as units: an `offset` in `GROUPS` mode "means that the frame starts or ends the specified number of peer groups before or after the current row's peer group" (same source) — "3 peer groups back," regardless of how many rows are in each one.
+
+### The default-frame trap, exactly as documented
+
+Here is the one fact in this topic worth memorizing cold: "the default framing option is `RANGE UNBOUNDED PRECEDING`, which is the same as `RANGE BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW`. With `ORDER BY`, this sets the frame to be all rows from the partition start up through the current row's **last** `ORDER BY` peer" (PostgreSQL 18 docs, §4.2.8, emphasis added). Not "up through the current row" — up through every row tied with it.
+
+Concretely: `SUM(amount) OVER (PARTITION BY customer_id ORDER BY event_time)` with no explicit frame looks like it should produce a strictly increasing running total, one row at a time. If two of that customer's orders share the exact same `event_time` (plausible if the column's resolution is coarser than the real gap between two near-simultaneous orders), both tied rows get the **same** running total — the one that includes *both* amounts — because `RANGE`'s default frame extends through "the current row's last `ORDER BY` peer," and both rows are peers of each other. The running total doesn't strictly increase row by row the way most people expect; it jumps once per *distinct* `event_time` value, not once per row.
+
+The fix is to say what you actually meant:
+
+```sql
+-- Strictly one-row-at-a-time running total, immune to ties, by adding
+-- a tie-breaking secondary ORDER BY key and switching to ROWS:
+SUM(amount) OVER (
+  PARTITION BY customer_id
+  ORDER BY event_time, order_id
+  ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW
+)
+```
+
+`ROWS` ignores ties entirely and always advances by exactly one physical row, so pairing it with a fully-deterministic `ORDER BY` (break ties with a unique column like `order_id`) is what actually gives "the running total up to and including this specific row," which is what the default `RANGE` frame does *not* give you the moment there's a tie.
+
+### `EXCLUDE`: dropping the current row or its peers on purpose
+
+Sometimes the opposite problem matters: you want a frame that leaves the current row (or its peers) *out*. "`EXCLUDE CURRENT ROW` excludes the current row from the frame. `EXCLUDE GROUP` excludes the current row and its ordering peers from the frame. `EXCLUDE TIES` excludes any peers of the current row from the frame, but not the current row itself. `EXCLUDE NO OTHERS`... specifies explicitly the default behavior" (PostgreSQL 18 docs, §4.2.8). "This customer's average order size, excluding this order itself" is `AVG(amount) OVER (PARTITION BY customer_id ROWS BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED FOLLOWING EXCLUDE CURRENT ROW)` — the full partition, minus the one row being computed for.
+
+### Named windows
+
+Repeating the same `PARTITION BY`/`ORDER BY`/frame across several function calls in one query invites a copy-paste mismatch. The `WINDOW` clause names a definition once and reuses it:
+
+```sql
+SELECT customer_id, event_time, amount,
+  SUM(amount) OVER w AS running_total,
+  COUNT(*) OVER w AS running_count
+FROM orders
+WINDOW w AS (PARTITION BY customer_id ORDER BY event_time, order_id ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW);
+```
+
+A subtlety worth knowing: `OVER w` (bare name) and `OVER (w ...)` (name plus additions) are not the same thing — "the latter implies copying and modifying the window definition, and will be rejected if the referenced window specification includes a frame clause" (same source). You can extend a named window that has no frame clause of its own; you cannot layer a frame on top of one that already has one.
+
+### Why a window function can't take another window function as input
+
+Rank the running totals computed above — "give me the top five customers by their own running total at the time of their latest order" — and the instinct is to nest: `RANK() OVER (ORDER BY SUM(amount) OVER (...))`. PostgreSQL rejects this outright. The planner's own parser states the rule and its reasoning: "a window function call can't contain another one (but aggs are OK)" (`src/backend/parser/parse_agg.c`, `transformWindowFuncCall`) — raising exactly `window function calls cannot be nested` when you try. (Unlike aggregates, where PostgreSQL also forbids directly nesting one aggregate inside another's arguments, a window function call is allowed to contain an *aggregate* — `SUM(x) OVER (...)` is itself fine as a window function; what's forbidden is a window function appearing inside another window function's own arguments or `ORDER BY`/`PARTITION BY` list.)
+
+The fix is exactly what topic 4's recursive-CTE lesson and topic 9's `MERGE` both already modeled: stage the computation. Compute the first window function's result in one query level, then apply the second window function to that already-materialized column in the next level up — a CTE (or subquery) in between is what "nesting" window functions actually looks like in SQL:
+
+```sql
+WITH totals AS (
+  SELECT customer_id, event_time, amount,
+    SUM(amount) OVER w AS running_total
+  FROM orders
+  WINDOW w AS (PARTITION BY customer_id ORDER BY event_time, order_id ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW)
+)
+SELECT customer_id, event_time, running_total,
+  RANK() OVER (ORDER BY running_total DESC) AS rank_by_running_total
+FROM totals;
+```
+
+Each `SELECT` level has exactly one layer of window functions over the rows the level before it produced — never two layers computed in the same breath.
+
+</section>
+
+<section data-section="lab">
+
+## Build, break, measure
+
+### Try it · Catch the tie trap on purpose
+
+1. **Reproduce the default-frame trap.** Load a handful of orders for one customer with two rows sharing the exact same `event_time` and run `SUM(amount) OVER (PARTITION BY customer_id ORDER BY event_time)` with no explicit frame. Confirm the two tied rows report the *identical* running total (both including each other's amount), not two different, strictly increasing values.
+2. **Fix it, and verify strict monotonicity.** Rewrite with `ORDER BY event_time, order_id` and an explicit `ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW` frame, and assert the running total is now strictly non-decreasing row by row (strictly increasing wherever `amount > 0`), with the tie broken deterministically by `order_id`.
+3. **Exercise `EXCLUDE`.** Compute "this order's amount vs. this customer's average order size excluding this order" with `EXCLUDE CURRENT ROW`, and confirm removing a customer down to a single order makes that average come back `NULL` (an empty frame, same aggregate-over-zero-rows rule from topic 2).
+4. **Confirm the no-nesting rule, and its CTE fix.** Try writing the ranked-running-total query as a single `SELECT` with a window function nested inside another's `ORDER BY`, confirm PostgreSQL raises `window function calls cannot be nested`, then run the two-level CTE version above and confirm it succeeds and ranks correctly.
+
+</section>
+
+<section data-section="production">
+
+## In production — a review checklist
+
+- **Never leave a window's frame on the implicit default when there's any chance of a tie on the `ORDER BY` key.** Decide explicitly between `ROWS` (strict row-by-row) and `RANGE` (peer-aware), and add a tie-breaking column to `ORDER BY` if you want strict `ROWS`-style determinism.
+- **State the frame explicitly in code review, even when the default happens to be correct for today's data.** A tie that doesn't exist yet can appear the moment a timestamp's resolution is coarser than the real event rate, or an upstream system starts batching.
+- **Use named windows (`WINDOW w AS (...)`) whenever more than one function shares a definition,** so a later edit to the partition/order/frame can't silently drift between calls.
+- **When "nesting" a window function is tempting, reach for a CTE immediately** — PostgreSQL will reject the direct nesting outright, and the CTE version is also the clearer one to read.
+
+</section>
+
+<section data-section="sources">
+
+## Sources
+
+Last verified: 2026-10-14.
+
+- PostgreSQL 18 Documentation, [§4.2.8, "Window Function Calls"](https://www.postgresql.org/docs/current/sql-expressions.html) — `PARTITION BY`/`ORDER BY`/frame syntax, the `ROWS`/`RANGE`/`GROUPS` peer-group definitions, the default-frame statement, and `EXCLUDE`, all quoted verbatim.
+- PostgreSQL source (`master` branch, checked 2026-10-14), [`src/backend/parser/parse_agg.c`](https://github.com/postgres/postgres/blob/master/src/backend/parser/parse_agg.c), function `transformWindowFuncCall` — the exact no-nesting rule and its `ERRCODE_WINDOWING_ERROR` message.
+
+Spotted an error or something unclear? [Report it](https://github.com/yashaggarwal85d/learning-resources/issues/new?title=window-frame-semantics:%20).
+
+</section>

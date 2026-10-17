@@ -1,0 +1,30 @@
+import Resource from '../../../../../components/Resource.astro';
+
+This is a full topic in §2.2, right after gaps-and-islands and sessionization (topic 13). It reuses topic 11's cumulative/removable-cumulative framing and topic 10's frame vocabulary.
+
+<section class="prereq" data-section="basics">
+
+### <span class="n">00</span> The terms this topic uses
+
+A few words, each defined in full inside the reel; this is just so they are not a surprise.
+
+- **Cumulative aggregate** — a frame that only grows (e.g. `UNBOUNDED PRECEDING AND CURRENT ROW`).
+- **Moving (sliding) aggregate** — a fixed-width frame that both grows and shrinks as it advances.
+- **Ordered-set aggregate** — an aggregate (like `PERCENTILE_CONT`) called with `WITHIN GROUP (ORDER BY ...)` because it needs the whole ordered set, not a running value.
+- **`NTILE`/`CUME_DIST`** — splitting a partition into equal-sized buckets, and reading a row's position as a fraction of the whole partition.
+
+<p class="check"><b>Check yourself:</b> does `ROWS BETWEEN 6 PRECEDING AND CURRENT ROW` always cover exactly seven calendar days of orders? (Answer: no — it covers exactly seven rows, whatever span of time that happens to be on a given day's order volume; only a RANGE frame with an INTERVAL offset covers a genuine calendar window.)</p>
+
+</section>
+
+<section class="prereq" data-section="window">
+
+### <span class="n">01</span> Window frame semantics and execution internals (topics 10–11, before this)
+
+This topic's cumulative-vs-moving distinction is exactly the frame-shape choice topic 11 already explained the engine's cost model for.
+
+<ul class="resources">
+  <Resource kind="topic" title="Window function execution internals" href="../window-function-execution-internals/" by="This chapter, topic 11" length="14 min">Why a growing frame is cheap and a sliding frame needs the removable-cumulative algorithm. Before this.</Resource>
+</ul>
+
+</section>

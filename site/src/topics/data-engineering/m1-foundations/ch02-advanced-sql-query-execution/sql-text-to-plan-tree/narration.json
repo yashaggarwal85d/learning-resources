@@ -1,0 +1,66 @@
+{
+  "topic": "de.sql-text-to-plan-tree",
+  "note": "Written to be spoken: one idea per line; {\"beat\": s} is a deliberate pause; numbers are phrased the way they are said, never as digits. Tool and flag names are spoken as their job, not their symbol. `answer` plays after the learner answers a predict step. Opens on the chapter bridge line and closes on the handoff line.",
+  "steps": [
+    {
+      "lines": [
+        "Every clause so far answered what a query means.",
+        "Now: what actually happens between typing that query and getting an answer back."
+      ]
+    },
+    {
+      "lines": [
+        "Five separate stages carry your words to an actual answer, and each one is only allowed to know a little more than the one before it.",
+        "First, nothing but grammar. Does this even look like a valid sentence. No idea yet what any of the names refer to.",
+        "Then, meaning. Now it looks up every name you used, and learns exactly what table, what function, what operator you meant.",
+        "Then, rewriting. Anything built on a shortcut, like a view, gets quietly unfolded back into the real tables underneath it.",
+        "Then, choosing. Many different ways could compute the same answer, and one gets picked.",
+        "And only then... running it, for real, and handing back rows."
+      ]
+    },
+    {
+      "lines": [
+        "Here's the idea worth holding onto through everything in this part of the chapter.",
+        "What a query computes, and how it's actually carried out, are two separate layers.",
+        "The first layer is just the shape: filter, then join, then total. Nothing about which exact method does the filtering, or which exact method does the joining.",
+        {
+          "beat": 0.4
+        },
+        "So, predict: for one single logical shape like that, is there usually only one physical way to carry it out?"
+      ],
+      "answer": [
+        "No. Almost never just one.",
+        "Scan every row, or hop straight to the ones that matter through an index... two different ways to do the exact same filter.",
+        "Loop through one side for every row of the other, or sort both sides first, or build a quick lookup table... three different ways to do the exact same join.",
+        "Same shape, same answer at the end. Genuinely different amounts of work to get there."
+      ]
+    },
+    {
+      "lines": [
+        "And here's a detail that pays for itself constantly.",
+        "A way of reading a table doesn't just hand back rows. Sometimes it hands them back already sitting in a useful order... for free, as a side effect of how it reads them.",
+        {
+          "beat": 0.4
+        },
+        "So if something later in the plan needed exactly that order anyway... what happens to the separate step that would normally have had to produce it?"
+      ],
+      "answer": [
+        "It simply disappears. There's nothing left for it to do.",
+        "One part of the plan already handed over the order the next part needed. Paying twice for the same thing would just be waste.",
+        "That's the entire trick behind a surprising number of fast plans: something upstream already did the work something downstream was about to ask for."
+      ]
+    },
+    {
+      "lines": [
+        "So: five stages, each one knowing a little more than the last.",
+        "What a query means, and how it's actually run, are genuinely two different layers, and there's real choice in the second one.",
+        "And a useful order, earned once, doesn't need to be earned twice.",
+        {
+          "beat": 0.4
+        },
+        "Right now, every plan has only ever meant exactly what it said.",
+        "Next: the rewrites that quietly turn one legal plan into a cheaper, equally legal one."
+      ]
+    }
+  ]
+}

@@ -1,0 +1,121 @@
+{
+  "topic": "de.nulls-three-valued-logic",
+  "steps": [
+    {
+      "lines": [
+        "Every operator in the last topic assumed a value was simply there. In real data, often it is not.",
+        "Look at the dashed cells. Order one thousand two has no ship date yet, and several customers have no referrer.",
+        { "beat": 0.4 },
+        "SQL has one marker for all of that, and it breaks ordinary logic in ways that never raise an error. This topic is about those breaks."
+      ]
+    },
+    {
+      "lines": [
+        "Ordinary logic has two answers. SQL's has three: true, false, and unknown.",
+        "Read the two tables. Find the cell where one side is true, and an unknown sits on the other, in the table for or. It is true. One sure branch is enough.",
+        "Now the mirror: false with unknown, in the table for and, is false.",
+        "Everywhere else, unknown spreads. That is the whole rule: a sure answer on one side wins, otherwise the doubt wins."
+      ]
+    },
+    {
+      "lines": [
+        "One more cell, and it is the one that causes the most trouble.",
+        "You know that not true is false, and not false is true. Now apply not to something you do not know.",
+        { "beat": 0.4 },
+        "What comes out?"
+      ],
+      "answer": [
+        "Still unknown.",
+        "If you do not know whether something holds, you do not know whether it fails either. Negation cannot create knowledge.",
+        "True and false are wrong for the same reason, and an error is wrong because the engine just carries the doubt forward. That single fact is behind most of the silent bugs coming up."
+      ]
+    },
+    {
+      "lines": [
+        "So what does a comparison with a missing value give? Watch the three rows against seven.",
+        "Seven equals seven is true. Three equals seven is false. And a missing value compared with seven is unknown, not false.",
+        "Even a missing value compared with itself is unknown. If you do not know either side, you do not know that they match.",
+        "Now the part that hides it. A filter keeps a row only when the predicate is true, so unknown is dropped, silently, looking exactly like false."
+      ]
+    },
+    {
+      "lines": [
+        "Sometimes you genuinely want to compare two values that might be missing and get a plain answer.",
+        "Look at the right hand column. It treats two missing values as the same, and a missing value against a real one as different.",
+        "So this operator never returns unknown. It answers a different question: are these two the same, counting missing as a value.",
+        "Reach for it whenever either side of a comparison might be absent."
+      ]
+    },
+    {
+      "lines": [
+        "Now the point most people learn the hard way: missing values are not handled one way. They are handled five ways.",
+        "Grouping puts every missing value into one group. Sorting treats them as larger than everything. Aggregates skip them.",
+        "A uniqueness rule allows as many as you like. And a join never matches them, because equality with a missing value is unknown.",
+        "There is no single mental model that covers all five. The only reliable approach is to know which clause you are in."
+      ]
+    },
+    {
+      "lines": [
+        "Now the famous one. You keep a list of customers who must not be emailed. Somewhere in that list, one row has no customer id at all.",
+        "You ask for every customer whose id is not in the list. Think about what not in really expands to.",
+        { "beat": 0.4 },
+        "How many rows come back?"
+      ],
+      "answer": [
+        "None. Not most of them, none.",
+        "Not in means: different from the first entry, and different from the second, and so on down the list. One of those entries is a gap, and different from a gap is unknown.",
+        "A chain of ands with one unknown in it can never be true. So for every customer not on the list, the filter drops the row.",
+        "Nineteen and a half million is what a correct query returns, and five hundred thousand is just the size of the list. Nothing raises an error to warn you."
+      ]
+    },
+    {
+      "lines": [
+        "Watch the chain. Three links hold, and the last one, different from a gap, goes dim.",
+        "That one dim link is enough to turn the whole chain unknown, and the row is dropped.",
+        "The fix is to change the question. Stop asking what each row differs from, and ask whether any matching row exists at all.",
+        "That is not exists. It never compares against the gap, so it returns the customers you meant."
+      ]
+    },
+    {
+      "lines": [
+        "One more silent bug, smaller but common. Compare the two bars.",
+        "Counting every row gives the number of orders. Counting a column gives only the rows where that column has a value.",
+        "Both are valid, and they answer different questions. The gap between them is exactly the orders with no ship date.",
+        "So the habit is simple: whenever you write a count, say out loud which of the two you mean."
+      ]
+    },
+    {
+      "lines": [
+        "Pull it together. Three truth values, five different rules, and two bugs that raise no error.",
+        "Use the distinct from operator when either side might be missing. Use not exists instead of not in over a nullable column.",
+        "And choose your count on purpose.",
+        { "beat": 0.4 },
+        "Every rule here was about one missing value at a time. Next: what happens when a row might match several others at once, and you only want to know whether any of them exist."
+      ]
+    },
+    {
+      "lines": [
+        "Two quick checks. First, a missing value joined to true by or.",
+        "Use the rule from earlier: a sure answer on one side wins.",
+        { "beat": 0.4 },
+        "True, false, or unknown?"
+      ],
+      "answer": [
+        "True.",
+        "One sure true settles an or, whatever the other side is. Unknown would be right only if neither side were certain."
+      ]
+    },
+    {
+      "lines": [
+        "Second check. A column holds ten, five, and a gap.",
+        "Remember what aggregates do with gaps.",
+        { "beat": 0.4 },
+        "What does the sum return?"
+      ],
+      "answer": [
+        "Fifteen.",
+        "Aggregates skip missing values. Only a column with no values at all sums to a gap, and a sum is never unknown just because one row is."
+      ]
+    }
+  ]
+}

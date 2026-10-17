@@ -1,0 +1,30 @@
+import Resource from '../../../../../components/Resource.astro';
+
+This is a full topic in §2.2, right after running and moving statistics (topic 14), and the last topic of §2.2 before §2.3's optimizer internals begin.
+
+<section class="prereq" data-section="basics">
+
+### <span class="n">00</span> The terms this topic uses
+
+A few words, each defined in full inside the reel; this is just so they are not a surprise.
+
+- **Point-in-time / as-of join** — matching each row to the latest row of another table whose own timestamp is at or before the first row's timestamp.
+- **`ASOF JOIN`** — native syntax (DuckDB, Snowflake, ClickHouse) for exactly this pattern.
+- **Temporal leakage** — a training-data bug where a feature is joined to a "current" value instead of the value genuinely knowable at the training example's own time.
+- **Bitemporal** — tracking two independent time axes (when something became true, and when the system learned about it), a strictly harder problem than the single-timestamp as-of join here.
+
+<p class="check"><b>Check yourself:</b> can "join each order to the price in effect at order time" be written as a plain equality join on product_id alone? (Answer: no — equality alone would match every historical price for that product; the as-of behavior needs an added inequality (at or before the order's timestamp) plus "keep only the closest one.")</p>
+
+</section>
+
+<section class="prereq" data-section="lateral">
+
+### <span class="n">01</span> LATERAL joins and correlated subqueries (topic 6, before this)
+
+This topic's hand-rolled as-of join reuses topic 6's top-N-per-group LATERAL pattern directly, just applied to "closest in time" instead of "top N by any order."
+
+<ul class="resources">
+  <Resource kind="topic" title="LATERAL joins and correlated subqueries" href="../lateral-joins-correlated-subqueries/" by="This chapter, topic 6" length="13 min">The ORDER BY ... LIMIT 1 LATERAL pattern reused here. Before this.</Resource>
+</ul>
+
+</section>
