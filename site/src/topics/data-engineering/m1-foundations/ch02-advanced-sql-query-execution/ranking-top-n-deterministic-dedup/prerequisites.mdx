@@ -1,30 +1,40 @@
 import Resource from '../../../../../components/Resource.astro';
 
-This is a full topic in §2.2, right after window function execution internals (topic 11). It assumes topic 10's PARTITION BY/ORDER BY vocabulary and topic 6's LATERAL+LIMIT top-N pattern.
+This topic builds on window functions, frames and peers. Reels on this site are marked **Before this** (earlier in the course), **Goes deeper later** or with the name of another track.
 
-<section class="prereq" data-section="basics">
+<section class="prereq basics" data-section="basics">
 
-### <span class="n">00</span> The terms this topic uses
+### <span class="n">00</span> Basics: words the reel takes for granted
 
-A few words, each defined in full inside the reel; this is just so they are not a surprise.
+- **Tie**: two rows with the same value in the ordering column. *Where you meet it:* two customers with the same order count.
+- **Top-N per group**: the first N rows of each group, not of the whole table. *Where you meet it:* the three newest orders of every customer.
+- **Primary key**: a column whose values are unique per row. *Where you meet it:* `order_id`.
+- **Idempotent job**: a job that gives the same result however many times it runs. *Where you meet it:* a nightly dedup that must not change its answer on a rerun.
+- **Logical order of clauses**: the order in which SQL conceptually evaluates `FROM`, `WHERE`, `GROUP BY`, `HAVING`, window functions and `ORDER BY`. *Where you meet it:* why an alias from the select list is not visible in `WHERE`.
 
-- **`ROW_NUMBER`/`RANK`/`DENSE_RANK`** — three ways to number rows within a partition, differing only in how they handle ties.
-- **Tie-breaker** — an extra, guaranteed-unique `ORDER BY` column added purely to make a ranking's output deterministic.
-- **`QUALIFY`** — a clause (not in PostgreSQL) that filters on a window function's result directly, instead of staging it through a subquery/CTE.
-
-<p class="check"><b>Check yourself:</b> if three rows tie for the top amount, what does RANK() assign to the next, fourth-highest row? (Answer: four — RANK leaves gaps, so three rows tied at rank one are followed by rank four, not rank two.)</p>
+<p class="check"><b>Check yourself:</b> why is <code>ORDER BY score DESC</code> alone not a total order if two rows share a score? (Answer: the order of the tied rows is unspecified.)</p>
 
 </section>
 
-<section class="prereq" data-section="window">
+<section class="prereq" data-section="earlier-topics">
 
-### <span class="n">01</span> Window frame semantics and execution internals (topics 10–11, before this)
-
-This topic builds directly on PARTITION BY/ORDER BY and the sorted-pass execution model from the two topics before it.
+### <span class="n">01</span> Windows, and a related pattern
 
 <ul class="resources">
-  <Resource kind="topic" title="Window frame semantics" href="../window-frame-semantics/" by="This chapter, topic 10" length="14 min">PARTITION BY/ORDER BY and the nested-window CTE staging pattern reused here for QUALIFY-less engines. Before this.</Resource>
-  <Resource kind="topic" title="LATERAL joins and correlated subqueries" href="../lateral-joins-correlated-subqueries/" by="This chapter, topic 6" length="13 min">The other top-N-per-group plan shape this topic compares against. Before this.</Resource>
+  <Resource kind="reel" host={props.host} domain="data-engineering" title="Window frame semantics">Partitions, order, frames and peers.</Resource>
+  <Resource kind="reel" host={props.host} domain="data-engineering" title="Window function execution internals">The previous reel; the sort that ranking functions share.</Resource>
+  <Resource kind="reel" host={props.host} domain="data-engineering" title="LATERAL joins and correlated subqueries">The other way to write top-N per group.</Resource>
+</ul>
+
+</section>
+
+<section class="prereq" data-section="reference">
+
+### <span class="n">02</span> Reference
+
+<ul class="resources">
+  <Resource kind="reading" title="Window Functions" href="https://www.postgresql.org/docs/current/functions-window.html" by="PostgreSQL documentation" length="10 min">The exact definitions of row_number, rank and dense_rank.</Resource>
+  <Resource kind="reading" title="QUALIFY" href="https://docs.snowflake.com/en/sql-reference/constructs/qualify" by="Snowflake documentation" length="5 min">The clause and its evaluation order.</Resource>
 </ul>
 
 </section>

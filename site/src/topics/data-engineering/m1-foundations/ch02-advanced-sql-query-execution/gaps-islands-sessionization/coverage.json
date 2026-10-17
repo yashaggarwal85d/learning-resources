@@ -1,0 +1,42 @@
+{
+  "topic": "de.gaps-islands-sessionization",
+  "syllabus": [
+    { "clause": "LAG/LEAD change detection,", "at": [{ "step": "LAG looks at the row before" }, { "step": "Predict: the gap of the first event" }, { "step": "Prove it · 1 of 2" }, { "deep": "`LAG`/`LEAD`: looking at the previous or next row directly" }] },
+    { "clause": "the row-number-difference trick,", "at": [{ "step": "Runs of a fixed condition: subtract two row numbers" }, { "step": "Predict: which technique for a 30-minute timeout?" }, { "deep": "Two ways to build an island identifier" }] },
+    { "clause": "running-sum session IDs with inactivity thresholds,", "at": [{ "step": "Flag the rows that start a session" }, { "step": "A running sum of flags is the session id" }, { "step": "Predict: the id of the fourth event" }, { "step": "Ties do not change the ids" }, { "step": "Prove it · 2 of 2" }, { "deep": "Sessionizing the clickstream, correctly" }] },
+    { "clause": "compressing event streams into state intervals.", "at": [{ "step": "Compress the stream into state intervals" }, { "step": "Events are points; questions are about episodes" }, { "deep": "Compressing the stream into state intervals" }] }
+  ],
+  "sources": [
+    {
+      "source": "PostgreSQL 18 Documentation, §9.22 Window Functions (lag, lead) and §4.2.8 Window Function Calls",
+      "items": [
+        { "item": "lag returns the value offset rows before the current row, or the default (NULL) when there is none", "at": [{ "step": "LAG looks at the row before" }, { "deep": "`LAG`/`LEAD`: looking at the previous or next row directly" }] },
+        { "item": "The default RANGE frame includes peers; ROWS counts physical rows", "at": [{ "step": "Ties do not change the ids" }, { "deep": "Sessionizing the clickstream, correctly" }] }
+      ]
+    },
+    {
+      "source": "Ranking window functions (ROW_NUMBER) as defined in the SQL standard and PostgreSQL 18 §9.22",
+      "items": [
+        { "item": "Subtracting a filtered row number from a global row number is constant across a consecutive run", "at": [{ "step": "Runs of a fixed condition: subtract two row numbers" }, { "deep": "Two ways to build an island identifier" }] }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "Claude (single session, written from the syllabus line before mapping to the topic; not independent of the builder, so the cloud review run should repeat it)",
+    "date": "2026-10-17",
+    "items": [
+      { "item": "LAG and LEAD with offset and default", "at": [{ "step": "LAG looks at the row before" }] },
+      { "item": "Change detection by comparing a row to its predecessor", "at": [{ "step": "Flag the rows that start a session" }] },
+      { "item": "Gaps and islands definition", "at": [{ "step": "Events are points; questions are about episodes" }] },
+      { "item": "Row-number difference for consecutive runs", "at": [{ "step": "Runs of a fixed condition: subtract two row numbers" }] },
+      { "item": "Sessionization with an inactivity timeout", "at": [{ "step": "A running sum of flags is the session id" }] },
+      { "item": "Handling the first row (NULL gap)", "at": [{ "step": "Predict: the gap of the first event" }] },
+      { "item": "Ties on the ordering timestamp", "at": [{ "step": "Ties do not change the ids" }] },
+      { "item": "Compressing to start, end, count per session or state", "at": [{ "step": "Compress the stream into state intervals" }] },
+      { "item": "Session windows in stream processors (Flink, Beam)", "at": [{ "out": "Streaming session windows solve the same problem incrementally and belong to the stream-processing chapters; the syllabus line here is the batch SQL form." }] },
+      { "item": "Incremental sessionization of late-arriving events", "at": [{ "out": "Late data and incremental maintenance are covered with materialised views and streaming; this topic is the full-recompute SQL pattern." }] },
+      { "item": "Choosing the threshold as a business parameter", "at": [{ "deep": "In production — a review checklist" }] }
+    ]
+  },
+  "gapReview": { "date": "2026-10-17", "by": "Claude (single session)", "open": [] }
+}

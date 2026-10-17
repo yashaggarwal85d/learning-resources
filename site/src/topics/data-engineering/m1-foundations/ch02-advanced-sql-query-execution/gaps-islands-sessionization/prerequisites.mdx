@@ -1,30 +1,40 @@
 import Resource from '../../../../../components/Resource.astro';
 
-This is a full topic in §2.2, right after ranking, top-N and deterministic dedup (topic 12). It composes LAG/LEAD and running sums with topic 10's explicit-frame fix.
+This topic composes window functions you have already met. Reels on this site are marked **Before this** (earlier in the course), **Goes deeper later** or with the name of another track.
 
-<section class="prereq" data-section="basics">
+<section class="prereq basics" data-section="basics">
 
-### <span class="n">00</span> The terms this topic uses
+### <span class="n">00</span> Basics: words the reel takes for granted
 
-A few words, each defined in full inside the reel; this is just so they are not a surprise.
+- **Event stream**: a log of timestamped records, one per thing that happened. *Where you meet it:* a clickstream or an application log.
+- **Session**: a burst of activity by one user, ended by a period of inactivity. *Where you meet it:* "visits" in a web analytics report.
+- **Inactivity threshold**: the pause that ends a session. *Where you meet it:* 30 minutes in many analytics tools.
+- **Interval**: a span of time, as a subtraction of two timestamps. *Where you meet it:* `INTERVAL '30 minutes'` in SQL.
+- **Run (island)**: an unbroken stretch of consecutive rows meeting a condition. *Where you meet it:* consecutive days a user logged in.
 
-- **`LAG`/`LEAD`** — window functions that read a value from a previous/next row of the same partition.
-- **Island** — a maximal run of contiguous rows satisfying some condition (or within one time-gap threshold of each other).
-- **Row-number-difference trick** — subtracting a filtered row-number from an unfiltered one to get a constant-within-island grouping key.
-- **Sessionization** — splitting an event stream into episodes using an inactivity threshold.
-
-<p class="check"><b>Check yourself:</b> what does LAG(event_time) return for the very first row of a customer's history? (Answer: NULL — there is no previous row in that partition, which is exactly the signal used to flag the start of a new session.)</p>
+<p class="check"><b>Check yourself:</b> activity on days 1, 2, 3, 5, 6. How many unbroken runs are there? (Answer: two, days 1 to 3 and days 5 to 6.)</p>
 
 </section>
 
-<section class="prereq" data-section="window">
+<section class="prereq" data-section="earlier-topics">
 
-### <span class="n">01</span> Window frame semantics (topic 10, before this)
+### <span class="n">01</span> Windows, frames and ranking
 
-This topic's sessionization query reuses topic 10's explicit `ROWS` frame fix directly, for the same tie-safety reason.
+The reel uses an ordered window, a cumulative frame and `ROW_NUMBER`.
 
 <ul class="resources">
-  <Resource kind="topic" title="Window frame semantics" href="../window-frame-semantics/" by="This chapter, topic 10" length="14 min">The default-frame tie trap and its ROWS fix, reused here for sessionization. Before this.</Resource>
+  <Resource kind="reel" host={props.host} domain="data-engineering" title="Window frame semantics">Ordered windows, ROWS versus RANGE, and the default frame.</Resource>
+  <Resource kind="reel" host={props.host} domain="data-engineering" title="Ranking, top-N and deterministic dedup">The previous reel; its handoff is this topic's opening.</Resource>
+</ul>
+
+</section>
+
+<section class="prereq" data-section="reference">
+
+### <span class="n">02</span> Reference
+
+<ul class="resources">
+  <Resource kind="reading" title="Window Functions" href="https://www.postgresql.org/docs/current/functions-window.html" by="PostgreSQL documentation" length="10 min">The definitions of lag, lead and the ranking functions.</Resource>
 </ul>
 
 </section>

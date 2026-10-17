@@ -1,77 +1,126 @@
 {
   "topic": "de.window-frame-semantics",
-  "note": "Written to be spoken: one idea per line; {\"beat\": s} is a deliberate pause; numbers are phrased the way they are said, never as digits. Tool and flag names are spoken as their job, not their symbol. `answer` plays after the learner answers a predict step. Opens on the chapter bridge line and closes on the handoff line.",
   "steps": [
     {
       "lines": [
-        "Every clause this chapter has covered so far answers one question at a time.",
-        "Now: a construct that looks at its neighbors on purpose, one window at a time."
+        "Every clause this section covered answers one question at a time. Now a construct that looks at its neighbours on purpose, one window at a time.",
+        "Watch the bracket move down the four orders. An aggregate would collapse them into a single number. This does not.",
+        "Every order keeps its own row, and gets an answer computed from the rows around it.",
+        "The whole topic is one question: which neighbours, exactly?"
       ]
     },
     {
       "lines": [
-        "An ordinary total collapses many rows into one. This doesn't.",
-        "Every row keeps its own place, and still gets to peek at the rows around it... a running total, a moving average, whatever a window asks for.",
-        "You pick which rows count as neighbors two ways: which group a row belongs to, and which order the rows fall in inside that group.",
-        "On top of that... exactly how far the neighborhood reaches is its own separate decision. That's the frame."
+        "Three pieces decide that. Partition splits the rows into independent groups, like a group by, but without collapsing anything.",
+        "Order fixes the sequence inside each group, which is what makes the word neighbour mean something.",
+        "And the frame is the slice a function actually sees for one current row. Most of the surprises in this topic live in that third piece."
       ]
     },
     {
       "lines": [
-        "Here's where almost everyone gets surprised, at least once.",
-        "Say you're building a running total, ordered by time, and you never specified the frame yourself.",
-        "Now say two of those rows happen to land at the exact same moment, a tie.",
-        {
-          "beat": 0.4
-        },
-        "Predict: do those two tied rows get two different running totals, each one up to its own row? Or something else?"
+        "There are three ways to count a frame, and the difference only shows when rows tie. Look at the two orders with the same timestamp, outlined in red.",
+        "Rows counts physical rows. It stops at the current row and does not care that another row is tied with it.",
+        "Range counts by value. Rows that tie on the ordering key are peers, and a frame that reaches one peer reaches all of them together.",
+        "Hold that difference, because the next question is a trap."
+      ]
+    },
+    {
+      "lines": [
+        "Four orders: a hundred, fifty, twenty five, and ten. The fifty and the twenty five share a timestamp.",
+        "You ask for a running total ordered by time, and you write no frame at all.",
+        { "beat": 0.4 },
+        "What do the two tied rows show?"
       ],
       "answer": [
-        "Something else. They get the exact same total. Both of them.",
-        "Left unspecified, the frame doesn't stop at \"this row.\" It stops at the last row tied with this one.",
-        "So a tie doesn't just affect the tied rows... it quietly breaks the running total's climb, right at that tie, for both of them at once.",
-        "The running total isn't broken. It's doing exactly what it was told. It just wasn't told what you thought it was."
+        "Both show a hundred and seventy five.",
+        "With no frame written, the default is the range kind, and it runs to the last peer of the current row. Each tied row is a peer of the other, so each includes both amounts.",
+        "A hundred and fifty and a hundred and seventy five would be the answer you wanted, one row at a time, but that needs a different frame. And the amounts alone are not totals."
       ]
     },
     {
       "lines": [
-        "The fix is almost embarrassingly direct.",
-        "Break every tie with something that can never repeat... and tell the frame to count physical rows, one at a time, instead of counting by value.",
-        "Do both, and the running total climbs exactly one row at a time, no surprises, no shared totals."
+        "Watch the totals appear as the bracket moves. The first order shows a hundred.",
+        "Then the bracket reaches the tie. It cannot stop at the fifty, because the twenty five is a peer, so the frame jumps to include both.",
+        "That is why the total steps once per distinct timestamp, not once per row.",
+        "Nothing is broken. This is exactly what the default promises, and it is rarely what anyone expects."
       ]
     },
     {
       "lines": [
-        "There's also a frame trick for the opposite need: deliberately leaving the current row, or its ties, out of its own neighborhood.",
-        "An average that compares a row against everyone else... but not itself... needs exactly that."
+        "So say what you meant. Break the tie with a unique second key, and ask for rows.",
+        "Now the bracket moves one physical row at a time, and each row advances the total by itself: a hundred, a hundred and fifty, a hundred and seventy five, a hundred and eighty five.",
+        "Notice that both changes are needed. Rows alone, without a unique key, leaves the order among tied rows undefined, so which one goes first can change from run to run."
       ]
     },
     {
       "lines": [
-        "One more hard rule, and it surprises almost everyone the first time they hit it.",
-        "You've got a running total. You want to rank customers by that running total.",
-        {
-          "beat": 0.4
-        },
-        "Can you just drop one of these window calculations straight inside the other, in one single breath?"
+        "The third mode counts in peer groups. Look at the dashed outlines: four orders, but only three groups.",
+        "One group back means one tie group, however many rows it holds. So the offset follows the data, not the row count.",
+        "Use it when ties are meaningful, for example all events in the same second, and you want the previous second as a unit."
+      ]
+    },
+    {
+      "lines": [
+        "Sometimes you want to leave something out of the frame. That is what exclude is for.",
+        "Excluding the current row gives you the others. Excluding the group drops the row and its peers. Excluding ties drops the peers but keeps the row itself.",
+        "The classic use is a comparison to the average of everything else, without the row itself leaking into the average."
+      ]
+    },
+    {
+      "lines": [
+        "If several functions share a definition, repeating it is asking for drift.",
+        "Name the window once, and refer to it by name. Every call is then guaranteed to use exactly the same frame.",
+        "One subtlety: naming it and adding to it are different. Adding is refused if the named window already has a frame."
+      ]
+    },
+    {
+      "lines": [
+        "Here is a rule that surprises people. A window function cannot contain another window function.",
+        "Look at the red box. Putting a running total inside a rank is refused outright.",
+        "The reason is order of evaluation: the inner one has to produce a value before the outer one can read it.",
+        "So give it a boundary. Compute the first in an inner query, and let the outer query read the result as an ordinary column."
+      ]
+    },
+    {
+      "lines": [
+        "Apply it. You want to rank customers by a running total, and the running total is itself a window.",
+        { "beat": 0.4 },
+        "How do you write that?"
       ],
       "answer": [
-        "No. Flatly not allowed.",
-        "A plain total can sit inside one of these. But one of these can never sit inside another one of these.",
-        "The fix is simple once you know it: compute the first one, let it finish and settle into its own column, and only then, one level up, rank by that column.",
-        "One layer of neighbor-watching per breath. Stack a second layer on top, in a level of its own, whenever you need one."
+        "Stage it. Compute the running total in an inner query, then rank that column in the outer one.",
+        "Nesting the two in one expression is rejected, and two over clauses on one call does not exist. It can certainly be done, which rules out the last option."
       ]
     },
     {
       "lines": [
-        "So: a window keeps every row separate, but lets it see its neighbors.",
-        "Left to the default, that neighborhood quietly swallows ties.",
-        "And stacking two layers of neighbor-watching in one breath is simply off the table... stage it instead.",
-        {
-          "beat": 0.4
-        },
-        "Defining the neighborhood is one job.",
-        "Next: what the engine actually does, physically, to deliver an answer for every single row in it."
+        "Take three habits from this.",
+        "If ties can happen, do not trust the default frame. Add a unique key to the ordering, and write the rows frame out.",
+        "Name any definition shared by more than one call. And when you need a window of a window, stage it with a CTE.",
+        { "beat": 0.4 },
+        "Defining the neighbourhood is one job. Next: what the engine actually does, physically, to deliver an answer for every single row in it."
+      ]
+    },
+    {
+      "lines": [
+        "Two checks. First, one of the three frame modes pays no attention to ties.",
+        { "beat": 0.4 },
+        "Which one?"
+      ],
+      "answer": [
+        "Rows.",
+        "It counts physical rows, so peers make no difference. Range and groups both work through peers, in different ways."
+      ]
+    },
+    {
+      "lines": [
+        "Second check. An ordering is given, and no frame clause.",
+        { "beat": 0.4 },
+        "Which rows does the frame include?"
+      ],
+      "answer": [
+        "From the start of the partition up to the last peer of the current row.",
+        "Only the current row would be the rows frame, and the whole partition is what you get with no ordering at all."
       ]
     }
   ]

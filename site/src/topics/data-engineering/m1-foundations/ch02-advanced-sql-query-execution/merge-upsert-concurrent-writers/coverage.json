@@ -1,0 +1,50 @@
+{
+  "topic": "de.merge-upsert-concurrent-writers",
+  "syllabus": [
+    { "clause": "MERGE vs INSERT … ON CONFLICT: matching semantics, duplicate-source-row errors,", "at": [{ "step": "MERGE: one join, several actions" }, { "step": "At most one source row per target row" }, { "step": "Predict: two source rows, one target row" }, { "step": "ON CONFLICT is one atomic step" }, { "deep": "`MERGE`: one join, several conditional actions" }, { "deep": "The duplicate-source-row error" }] },
+    { "clause": "why PostgreSQL's MERGE can still hit unique violations under concurrency while ON CONFLICT is race-safe;", "at": [{ "step": "MERGE decides from a snapshot" }, { "step": "Predict: the other session wins the gap" }, { "step": "Which one to use" }, { "step": "Prove it · 1 of 2" }, { "deep": "Why `MERGE` can still race, and `ON CONFLICT` cannot" }] },
+    { "clause": "RETURNING with MERGE (PostgreSQL 17) and OLD/NEW (PostgreSQL 18);", "at": [{ "step": "RETURNING says what happened" }, { "step": "Prove it · 2 of 2" }, { "deep": "`RETURNING`, `merge_action()`, and `OLD`/`NEW`" }] },
+    { "clause": "lakehouse MERGE as file rewrites (→ §6.3).", "at": [{ "step": "On a lakehouse, MERGE rewrites files" }, { "deep": "Lakehouse `MERGE INTO`: a file-rewrite, not a row-level update" }] }
+  ],
+  "sources": [
+    {
+      "source": "PostgreSQL 18 Documentation, MERGE and INSERT (ON CONFLICT Clause)",
+      "items": [
+        { "item": "MERGE classifies rows and runs the first fitting WHEN clause; at most one change per target row", "at": [{ "step": "MERGE: one join, several actions" }, { "step": "At most one source row per target row" }, { "deep": "The duplicate-source-row error" }] },
+        { "item": "ON CONFLICT DO UPDATE guarantees an atomic insert-or-update outcome", "at": [{ "step": "ON CONFLICT is one atomic step" }, { "deep": "Why `MERGE` can still race, and `ON CONFLICT` cannot" }] }
+      ]
+    },
+    {
+      "source": "PostgreSQL 18 Documentation §13.2 Transaction Isolation, and release notes 17 and 18",
+      "items": [
+        { "item": "MERGE does not guarantee insert-or-update; a concurrent insert raises a uniqueness violation without restarting evaluation", "at": [{ "step": "MERGE decides from a snapshot" }, { "step": "Predict: the other session wins the gap" }, { "deep": "Why `MERGE` can still race, and `ON CONFLICT` cannot" }] },
+        { "item": "RETURNING with merge_action() in 17; OLD and NEW in RETURNING in 18", "at": [{ "step": "RETURNING says what happened" }, { "deep": "`RETURNING`, `merge_action()`, and `OLD`/`NEW`" }] }
+      ]
+    },
+    {
+      "source": "Delta Lake documentation, Table deletes, updates, and merges",
+      "items": [
+        { "item": "MERGE INTO rewrites files; an unconditional NOT MATCHED BY SOURCE delete can rewrite the whole table", "at": [{ "step": "On a lakehouse, MERGE rewrites files" }, { "deep": "Lakehouse `MERGE INTO`: a file-rewrite, not a row-level update" }] }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "Claude (single session, written from the syllabus line before mapping to the topic; not independent of the builder, so the cloud review run should repeat it)",
+    "date": "2026-10-17",
+    "items": [
+      { "item": "MERGE syntax with WHEN MATCHED and WHEN NOT MATCHED branches", "at": [{ "step": "MERGE: one join, several actions" }] },
+      { "item": "Duplicate source rows raise an error", "at": [{ "step": "At most one source row per target row" }] },
+      { "item": "ON CONFLICT DO UPDATE and DO NOTHING semantics", "at": [{ "step": "ON CONFLICT is one atomic step" }] },
+      { "item": "The conflict target and the unique index requirement", "at": [{ "step": "ON CONFLICT is one atomic step" }] },
+      { "item": "Why MERGE is not race-safe on inserts", "at": [{ "step": "MERGE decides from a snapshot" }] },
+      { "item": "Retrying on a unique violation", "at": [{ "step": "Which one to use" }, { "step": "Predict: the other session wins the gap" }] },
+      { "item": "Isolation level effects on MERGE", "at": [{ "deep": "Why `MERGE` can still race, and `ON CONFLICT` cannot" }] },
+      { "item": "RETURNING, merge_action() and OLD/NEW", "at": [{ "step": "RETURNING says what happened" }] },
+      { "item": "WHEN NOT MATCHED BY SOURCE (PostgreSQL 17)", "at": [{ "deep": "`MERGE`: one join, several conditional actions" }] },
+      { "item": "Lakehouse MERGE cost and conditional clauses", "at": [{ "step": "On a lakehouse, MERGE rewrites files" }] },
+      { "item": "Copy-on-write versus merge-on-read for lakehouse MERGE", "at": [{ "topic": "Copy-on-write vs merge-on-read", "quote": "COW rewrites every touched file", "domain": "data-engineering" }] },
+      { "item": "Idempotent loads using MERGE keys", "at": [{ "step": "Back to the load" }] }
+    ]
+  },
+  "gapReview": { "date": "2026-10-17", "by": "Claude (single session)", "open": [] }
+}

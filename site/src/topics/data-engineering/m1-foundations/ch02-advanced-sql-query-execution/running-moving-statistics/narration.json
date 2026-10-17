@@ -1,74 +1,121 @@
 {
   "topic": "de.running-moving-statistics",
-  "note": "Written to be spoken: one idea per line; {\"beat\": s} is a deliberate pause; numbers are phrased the way they are said, never as digits. Tool and flag names are spoken as their job, not their symbol. `answer` plays after the learner answers a predict step. Opens on the chapter bridge line and closes on the handoff line.",
   "steps": [
     {
       "lines": [
-        "Grouping events into episodes answered what happened.",
-        "Now: smoother statistics over the numbers themselves, running and moving, instead of just marking where one episode ends and the next begins."
+        "Grouping events into episodes answers what happened. Now smoother statistics over the numbers themselves, running and moving, instead of just marking where one episode ends.",
+        "Read the three lines. A running total needs only a tally. A moving average needs a tally from which old rows leave.",
+        "And a median needs something different in kind: the whole ordered set, because no running number can tell you where the middle is."
       ]
     },
     {
       "lines": [
-        "A total that only ever grows is cheap to keep. Add the new number, move on.",
-        "A total over a sliding stretch... the last so many, nothing older... has to drop old numbers out just as often as it adds new ones in.",
-        "Same idea, total so far, but one of them has to remember how to let go, and that costs more."
+        "Start with the shape of the frame, because the cost follows from it. Watch the top row: the highlighted block only ever grows.",
+        "That is cheap. Keep the previous total, add the new row, and you are done.",
+        "In the bottom row the block slides. It gains a row at the right and loses one at the left.",
+        "Now the old row has to be taken back out, which is why moving aggregates need the removable strategy from the window internals topic."
       ]
     },
     {
       "lines": [
-        "Now, a trap that looks harmless.",
-        "Say you want last week's revenue, and you grab it by counting back a fixed number of rows.",
-        {
-          "beat": 0.4
-        },
-        "On a day with twice the normal number of orders... does counting back that same fixed number of rows still cover a full week?"
+        "Here is a request you will hear all the time: revenue for the last seven days. The tempting answer is a frame of the last seven rows.",
+        "Look at the two lines of dots. Same number of orders, completely different stretches of time.",
+        { "beat": 0.4 },
+        "Is a frame of seven rows a week?"
       ],
       "answer": [
-        "No. It covers less time than usual, because more orders landed in the same stretch of rows.",
-        "Counting rows measures rows. It was never measuring days.",
-        "If you actually mean a week, you have to ask for a week, measured in time itself, not in how many rows happened to show up."
+        "No. It is seven rows, however long that takes.",
+        "Rows count positions and have no idea what time it is. On a quiet stretch those seven orders spread over twelve days, and on a busy one they fit in two.",
+        "Yes would be right only for exactly one order a day, and sorting the table changes nothing about it. A calendar window has to be measured in time, not in rows."
       ]
     },
     {
       "lines": [
-        "Two more useful numbers, and they answer slightly different questions.",
-        "Ask for the middle value of a whole set, and one version will happily hand you a number that never actually appeared anywhere in your data... it just split the difference between two real values.",
-        "The other version refuses to invent anything. It always hands you back a value that was genuinely there.",
-        "Neither is wrong. One promises a smooth estimate. The other promises a real, traceable row. Pick the one your situation actually needs."
+        "So measure in time. The range frame with an interval includes every row whose timestamp is within seven days of the current row.",
+        "Watch the bracket grow back from the current dot. It stops at a date, not at a count.",
+        "That might be one order or a hundred, which is exactly the point.",
+        "It needs exactly one ordering column, because it works by subtracting values."
       ]
     },
     {
       "lines": [
-        "And one more worth knowing: splitting a whole group into even buckets... deciles, quartiles, whatever size you ask for... with no manual boundary math at all."
+        "Now percentiles. A running total is a single number you can update. A median is not.",
+        "Watch the values sort themselves. The middle only exists once the order exists.",
+        "That is why percentiles are written differently, with the ordering attached to the aggregate itself. The engine has to sort before it can answer."
       ]
     },
     {
       "lines": [
-        "Here's the catch behind all of this.",
-        "A running total can be kept cheaply, one new number at a time, forever.",
-        {
-          "beat": 0.4
-        },
-        "Can the middle value, or the ninety-ninth percentile, be kept just as cheaply, the same running way?"
+        "Four values: ten, twenty, thirty, forty. Look at the two in the middle.",
+        "There are two percentile functions, and they handle an even count differently.",
+        { "beat": 0.4 },
+        "What does the continuous one give for the median?"
       ],
       "answer": [
-        "No. Not for free.",
-        "The middle value of everything so far can shift because of any single new number, anywhere in the pile... not just the newest one.",
-        "So getting it exactly right means holding onto the whole ordered pile, every time.",
-        "At real scale, that's expensive enough that people often trade a little exactness away for a much cheaper estimate instead... a trade worth making on purpose, not by accident."
+        "Twenty five.",
+        "It interpolates between the two middle values, the way the textbook median of an even set does.",
+        "Twenty is what the discrete one gives, and thirty or thirty five would be neither definition. The continuous answer is a number that is not in your data at all."
       ]
     },
     {
       "lines": [
-        "So: a growing total is cheap, a sliding one costs a bit more, and both are still just totals.",
-        "A real week means time, not a row count.",
-        "And the middle of a pile, exactly, needs the whole pile in hand... which is exactly why people start trading exactness for speed, on purpose.",
-        {
-          "beat": 0.4
-        },
-        "Comparing a row to its own neighbors is one kind of question.",
-        "Next: comparing a row to the exact value another table held, at that very moment in time."
+        "Compare the circles. The filled dots are real values, and the outlined ones are what the continuous function returns.",
+        "Between ten and forty, the median lands at twenty five, a value nobody recorded. The ninetieth percentile lands at thirty seven.",
+        "The discrete one only ever returns a real value: twenty, then forty.",
+        "So pick discrete when you need a row you can trace back, and continuous when a smooth estimate is what you want."
+      ]
+    },
+    {
+      "lines": [
+        "A dashboard rarely wants one percentile. It wants the median, the ninetieth and the ninety ninth.",
+        "Look at the top row. Three separate calls sort the data three times.",
+        "Pass an array of fractions instead, and the engine sorts once and reads all three answers from the sorted data."
+      ]
+    },
+    {
+      "lines": [
+        "Two more tools. The first splits rows into buckets as evenly as it can.",
+        "Watch ten rows go into four buckets. They cannot divide evenly, so the remainder goes to the first buckets: three, three, two, two.",
+        "The second reports, for each row, the fraction of rows at or below it, counting its peers. Together they answer where a row stands in a distribution."
+      ]
+    },
+    {
+      "lines": [
+        "Finally, why exactness has a price. There is no cheap running version of a percentile, because it changes with every value seen.",
+        "Compare the two bars. On a hundred million rows, an exact answer on every dashboard refresh means a full sort every time.",
+        "Approximate sketches trade a small error for one pass and bounded memory. That trade is real, and it is covered in full in a later chapter."
+      ]
+    },
+    {
+      "lines": [
+        "To sum up. Use a range frame with an interval for calendar windows, and rows only when you really mean positions.",
+        "Say whether a percentile is continuous or discrete, and why.",
+        "Take several percentiles in one call, and measure the cost of an exact one before you put it on a page that refreshes.",
+        { "beat": 0.4 },
+        "Comparing a row to its own neighbors is one kind of question. Next: comparing a row to the exact value another table held, at that very moment in time."
+      ]
+    },
+    {
+      "lines": [
+        "Two checks. First, one of the two percentile functions never returns a number that is missing from your data.",
+        { "beat": 0.4 },
+        "Which one?"
+      ],
+      "answer": [
+        "The discrete one.",
+        "It returns the first value whose position reaches the fraction, so it is always a real value. The continuous one interpolates."
+      ]
+    },
+    {
+      "lines": [
+        "Second check. Ten rows are dealt into four buckets.",
+        "Remember where the leftover rows go.",
+        { "beat": 0.4 },
+        "How big is the first bucket?"
+      ],
+      "answer": [
+        "Three.",
+        "Ten does not divide by four, so the two spare rows go to the first two buckets, giving three, three, two, two."
       ]
     }
   ]

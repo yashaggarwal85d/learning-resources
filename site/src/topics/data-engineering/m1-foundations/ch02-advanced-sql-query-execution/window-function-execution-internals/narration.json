@@ -1,70 +1,130 @@
 {
   "topic": "de.window-function-execution-internals",
-  "note": "Written to be spoken: one idea per line; {\"beat\": s} is a deliberate pause; numbers are phrased the way they are said, never as digits. Tool and flag names are spoken as their job, not their symbol. `answer` plays after the learner answers a predict step. Opens on the chapter bridge line and closes on the handoff line.",
   "steps": [
     {
       "lines": [
-        "Defining the neighborhood was one job.",
-        "Now: what the engine actually does, physically, to deliver an answer for every single row in it."
+        "Defining the neighbourhood is one job. This topic is about what the engine actually does, physically, to deliver an answer for every single row in it.",
+        "Look at the two rows of cells. The top row is the definition: which rows does one row see. The bottom is the delivery: do that for every row, and do it cheaply.",
+        { "beat": 0.4 },
+        "The obvious way to deliver it is quadratic. Most of this topic is how real operators avoid that."
       ]
     },
     {
       "lines": [
-        "Before windows existed, people answered these same questions a different way: for every row, go look up its neighbors again, from scratch, with a fresh little query.",
-        {
-          "beat": 0.4
-        },
-        "Predict: if every single row re-scans its own neighborhood independently... what happens to the total work as the table grows?"
+        "Start with what you would write before windows existed. A moving average as a correlated subquery.",
+        "Watch the rows stack up. For each output row, the engine goes back to the table and finds the neighbours again.",
+        "Nothing carries over from the previous row, even though the previous row's neighbours were almost identical.",
+        "That forgetting is the whole cost."
+      ]
+    },
+    {
+      "lines": [
+        "Put a number on the forgetting. A thousand readings, and the correlated version looks at the whole table for each one.",
+        "Think of the grid on screen: a thousand rows by a thousand columns.",
+        { "beat": 0.4 },
+        "How many comparisons is that?"
       ],
       "answer": [
-        "It explodes. Doubling the rows doesn't double the work... it roughly quadruples it.",
-        "Every row's lookup redoes work the row right next to it just finished doing a moment ago, and nothing remembers any of it.",
-        "A window, done properly, sorts once and then carries the running answer forward, row to row. That memory is the entire difference."
+        "One million.",
+        "Every one of the thousand rows is compared with every one of the thousand. That is a thousand times a thousand.",
+        "A thousand would be a single pass, and eleven thousand is what the neighbours alone would cost. Double the table and this work quadruples, which is what quadratic means."
       ]
     },
     {
       "lines": [
-        "But \"carries the answer forward\" hides a real design decision, and it has levels.",
-        "The laziest version still starts over every time. Quadratic, same as before.",
-        "A smarter version keeps the running answer and just adds whatever's new... as long as the neighborhood only ever grows. The moment it also has to shrink, that trick alone isn't enough.",
-        "A sturdier version can also take values back out, not just add them in... which handles a sliding neighborhood just fine.",
-        "And when the neighborhood's size jumps around unpredictably, row to row, with no pattern at all... even that stops being enough, and you need a real structure built for answering \"sum of any range\" quickly, no matter which range gets asked for."
+        "The window operator does something different. It partitions and sorts once, then walks the rows in order.",
+        "Watch the bright cells slide. Between one row and the next, the frame barely changes.",
+        "So the answer for this row is almost the answer for the last one. The question is how much of that overlap you can reuse, and the four strategies are four answers."
       ]
     },
     {
       "lines": [
-        "Here's a free win worth knowing about.",
-        "Ask for two different running calculations in the same query, both grouped and ordered the exact same way... and a good engine notices.",
-        "It sorts the data once, and lets both calculations ride along on that single sort, instead of paying for the sort twice.",
-        "Sorting is usually the single most expensive part of the whole operation. Sharing it, instead of repeating it, is not a small saving."
+        "Here are the four, from worst to best. The first one, naive, is the correlated subquery all over again: recompute the frame every time.",
+        "Cumulative adds only the rows that are new. Removable cumulative also takes rows out. And the segment tree answers any frame in logarithmic time.",
+        "Each one handles a wider family of frame shapes than the one before. The art is knowing which one your frame needs."
       ]
     },
     {
       "lines": [
-        "Last piece: splitting this work across many cores.",
-        "Each group has to stay together and stay in order, so the natural way to split the work is one whole group per core.",
-        "That's fine, right up until one group is enormous and the rest are small.",
-        {
-          "beat": 0.4
-        },
-        "What happens to the other cores while one of them is still grinding through that one giant group?"
+        "Take the default frame, from the start of the partition to the current row. Watch the total grow.",
+        "The frame only ever gains rows, so you keep the previous total and add the new one. One addition per row.",
+        "A thousand rows cost a thousand additions. Recomputing each time would cost about half a million.",
+        "Now read the red line. The moment a frame also has to shrink, this stops working, because you cannot take a row back out of a running total you have not kept."
+      ]
+    },
+    {
+      "lines": [
+        "A sliding frame loses rows as well as gaining them. Watch the marks at each end of the bracket.",
+        "For a sum or a count, taking a row out is just a subtraction. So constant work per row, and the sliding frame stays linear.",
+        "A minimum or a maximum is different. If the row that left was the maximum, you do not know the next one without looking, so you need an ordered structure over the frame.",
+        "And if the bounds vary wildly between neighbouring rows, even the subtraction trick breaks down."
+      ]
+    },
+    {
+      "lines": [
+        "Consider a frame whose start and end come from columns of the row itself. Look at the three rows of cells: the frames have nothing in common.",
+        "Neighbours no longer share most of their frame, so there is nothing to reuse cheaply.",
+        { "beat": 0.4 },
+        "Which strategy keeps the cost down?"
       ],
       "answer": [
-        "They sit idle. Finished, with nothing left to do, while one core carries the whole imbalance alone.",
-        "The real fix is splitting that one oversized group's own work across several cores too, not just handing whole groups out one at a time.",
-        "Not every engine goes that far. Some simply accept that one giant group becomes the bottleneck."
+        "A segment tree.",
+        "It stores aggregates of blocks of the whole partition, so any frame is answered by combining a handful of them, however the bounds move.",
+        "Cumulative needs a growing frame and the removable kind needs neighbours that look alike. Naive recomputation is exactly the quadratic cost we are avoiding."
       ]
     },
     {
       "lines": [
-        "So: a window beats re-scanning from scratch because it remembers, pass to pass.",
-        "How it remembers... grow-only, grow-and-shrink, or a real structure for any range at all... decides whether that memory stays cheap.",
-        "Share one sort across several calculations whenever you can, and watch out for one lopsided group starving every other core of work.",
-        {
-          "beat": 0.4
-        },
-        "Everything so far has climbed one row at a time.",
-        "Next: counting positions, and picking exactly one winner when several rows tie for first."
+        "Look at the tree. Each box holds the total for a block, and the highlighted ones are the nodes needed for one frame.",
+        "A frame is covered by a few of them, and their values are simply combined.",
+        "For a thousand rows, that is about ten node visits, wherever the frame sits. That is the price of generality, a small data structure, and it is cheap."
+      ]
+    },
+    {
+      "lines": [
+        "Now a saving that has nothing to do with frames. Sorting is the expensive phase of this operator.",
+        "Two windows with the same partition and order need one sort, even if their frames differ. The sort only depends on how the rows are arranged.",
+        "And if one window's arrangement is a prefix of another's, sort once for the stronger one and reuse it.",
+        "So write shared definitions identically, or the planner may not notice they match."
+      ]
+    },
+    {
+      "lines": [
+        "Finally, parallelism. A partition has to stay in one piece, so the natural unit of work is a whole partition.",
+        "Watch the four bars. Three partitions of a hundred rows, one of seven hundred.",
+        "The finish time is set by the slowest worker, the seven hundred, while the rest sit idle. That is skew, and the more parallel your plan, the more it hurts.",
+        "A skew resistant operator splits the big partition's own work across workers where it can."
+      ]
+    },
+    {
+      "lines": [
+        "Bring it back to the moving average. Prefer a window to a correlated subquery, because the gap is the difference between linear and quadratic.",
+        "Spell out shared windows the same way each time, so the planner can reuse one sort.",
+        "Fixed offsets keep the cheap strategies in play, and wild frame bounds do not. And expect one oversized partition to dominate.",
+        { "beat": 0.4 },
+        "Everything so far has climbed one row at a time. Next: counting positions, and picking exactly one winner when several rows tie for first."
+      ]
+    },
+    {
+      "lines": [
+        "Two checks. First, the default frame, from the start of the partition up to the current row.",
+        { "beat": 0.4 },
+        "Which strategy suits it?"
+      ],
+      "answer": [
+        "Cumulative.",
+        "The frame only grows, so adding the new rows to the previous total is enough. Naive would redo everything, and a segment tree is more machinery than the shape needs."
+      ]
+    },
+    {
+      "lines": [
+        "Second check. Two window functions share the same partition and the same ordering, but their frames differ.",
+        { "beat": 0.4 },
+        "How many sorts does the plan need?"
+      ],
+      "answer": [
+        "One.",
+        "Sorting depends only on partition and order, not on the frame. So the same sorted input feeds both."
       ]
     }
   ]

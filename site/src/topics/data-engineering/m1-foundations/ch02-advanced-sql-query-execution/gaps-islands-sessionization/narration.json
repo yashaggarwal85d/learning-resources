@@ -1,69 +1,129 @@
 {
   "topic": "de.gaps-islands-sessionization",
-  "note": "Written to be spoken: one idea per line; {\"beat\": s} is a deliberate pause; numbers are phrased the way they are said, never as digits. Tool and flag names are spoken as their job, not their symbol. `answer` plays after the learner answers a predict step. Opens on the chapter bridge line and closes on the handoff line.",
   "steps": [
     {
       "lines": [
-        "Rows arrive scattered across time.",
-        "Now: pulling them back together into one coherent story."
+        "Rows arrive scattered across time. Now we pull them back together into one coherent story.",
+        "Watch the dots land on the line. A single event is a point, and almost nobody asks questions about points.",
+        "They ask how long a visit lasted, or how many visits a customer made. Look at the outlines: eight clicks hide three visits, with two long pauses between them.",
+        "This topic is how to find those outlines with nothing but window functions."
       ]
     },
     {
       "lines": [
-        "A click, a page view, an event... each one lands as its own separate row, with no idea what came before it.",
-        "But the real question almost never cares about one event alone. It cares about the visit the event belonged to.",
-        "So the first thing you need is simple: for each row, what did the row right before it look like."
+        "The first tool looks backwards. For each row, it reads the row before it in the same partition.",
+        "Subtract, and you get the gap since the last event. Read the numbers under the dots: twelve minutes, thirteen, then a long fifty five.",
+        "And look at the very first one. There is no row before it, so there is no gap. That empty value is going to be useful."
       ]
     },
     {
       "lines": [
-        "That's one small tool, looking one row back.",
-        "From it, you can measure the gap since the last thing this same person did.",
-        "A short gap means... still the same visit. A long enough gap means something new just started."
-      ]
-    },
-    {
-      "lines": [
-        "Here's where it gets clever.",
-        "Mark every row where a new visit starts with a little flag... just a one, everywhere else a zero.",
-        {
-          "beat": 0.4
-        },
-        "Now take a running total of that flag, row by row, for one person at a time.",
-        "What does that running total actually give you?"
+        "You ask for the previous row's time for the first event of a customer's history.",
+        "Think about what is before it.",
+        { "beat": 0.4 },
+        "What comes back?"
       ],
       "answer": [
-        "A visit number. Exactly that.",
-        "The running total sits still for every row inside one visit, because nothing there bumped the flag.",
-        "And it climbs by exactly one the instant a new visit starts.",
-        "A running total of a flag just became a label for every separate episode."
+        "Nothing, which SQL spells as null.",
+        "There is no earlier row, so the function returns its default, and the default is null unless you set one. Zero would be a claim about a gap that does not exist.",
+        "That null is not a nuisance. It is the signal that a visit starts here."
       ]
     },
     {
       "lines": [
-        "But remember the trap from a few topics back... ties.",
-        "If two events land at the exact same recorded moment, and you leave that running total on its default behavior, both of those tied rows can end up folded together in a way you didn't intend.",
-        "The fix is the same one as before: tell it to climb strictly one row at a time, not by matching values.",
-        "Same trap, same fix, just showing up again in a new costume."
+        "Now decide which rows begin a visit. A row begins one if its gap is missing, or longer than the threshold.",
+        "Read the row of numbers: a one marks a start, a zero means the row continues the visit before it.",
+        "Three ones, because the first event, the one after the long pause, and the one after the longer pause all start something.",
+        "Nothing has been grouped yet. We have only marked where the boundaries are."
       ]
     },
     {
       "lines": [
-        "Once every single event carries its visit number, the heavy lifting is basically done.",
-        "Group by that number, and a hundred million raw events collapse down into a much smaller table... one row per actual visit, with a start, an end, and a size.",
-        "That's the table worth querying, over and over. Not the raw flood underneath it."
+        "Now turn the marks into labels. Add them up, row by row, down the ordered list.",
+        "The sum only changes at a row that starts a visit. So it stays the same inside a visit and goes up by exactly one at the next.",
+        "Look at the sequence under the dots: one, one, one, two, two, three, three, three.",
+        "That counter is a session identifier, built without a single join."
       ]
     },
     {
       "lines": [
-        "So: look one row back, measure the gap, flag where a new episode begins, and let a running total turn that flag into an episode number.",
-        "Watch for ties the same way you always have to.",
-        "And once the episodes are labeled, collapse the flood down to them... that's the table every later question actually wants.",
-        {
-          "beat": 0.4
-        },
-        "Grouping events into episodes answers what happened.",
-        "Next: smoother statistics over the numbers themselves, running and moving, instead of just marking where one episode ends and the next begins."
+        "Check you can do it by hand. These are the flags, in order.",
+        "The running total through the fourth row is the answer.",
+        { "beat": 0.4 },
+        "What session does the fourth event belong to?"
+      ],
+      "answer": [
+        "The second.",
+        "One, plus zero, plus zero, plus one. The fourth event is the first of the second visit.",
+        "One would mean the pause did not count, and three or four would count starts that have not happened yet."
+      ]
+    },
+    {
+      "lines": [
+        "There is a second technique, for a different kind of question: runs of a fixed condition, with no time threshold at all.",
+        "Look at the days a user was active, and give every row its position. Then subtract the position from the day.",
+        "Inside an unbroken run the difference does not change, because both numbers rise by one together. When a day is missing, the difference jumps.",
+        "Same difference, same run. It finds islands with no flags and no sums."
+      ]
+    },
+    {
+      "lines": [
+        "Now choose between the two techniques for a visit that ends after thirty minutes of silence.",
+        "Think about what each one needs to know to decide where a run breaks.",
+        { "beat": 0.4 },
+        "Which fits?"
+      ],
+      "answer": [
+        "The running sum of a flag.",
+        "A time threshold means the break depends on the size of the gap, not just on whether two rows are consecutive, and the flag carries that decision.",
+        "The difference trick only sees whether rows are neighbours in a fixed sequence, so it cannot express a threshold. They are not interchangeable."
+      ]
+    },
+    {
+      "lines": [
+        "Real clickstreams have ties: two events with the same timestamp. Do they break any of this?",
+        "Look at the two dots stacked on the right. The gap between them is zero, which never exceeds the threshold, so neither starts a visit on its own.",
+        "Whichever one is read first, one of them carries the start flag and the running total reaches the same value for both.",
+        "We checked every ordering. Ties change which event is first in a visit, not which visit an event belongs to."
+      ]
+    },
+    {
+      "lines": [
+        "Last step: shrink the stream. Group by customer and session, and keep the earliest time, the latest, and the count.",
+        "Watch the eight dots turn into three rows. Each row is a visit with a start, an end and a size.",
+        "That table is what most reports want: average visit length, visits per day, bounce rate. None of them should re derive the boundaries from raw events."
+      ]
+    },
+    {
+      "lines": [
+        "Take it away as three steps. Find the gap and flag the starts. Add up the flags to number the visits. Group to get one row per visit.",
+        "Treat the threshold as a business decision, not a constant of nature, and write down which one you used.",
+        "And store the compressed table, so nobody recomputes it from a hundred million events.",
+        { "beat": 0.4 },
+        "Grouping events into episodes answers what happened. Next: smoother statistics over the numbers themselves, running and moving, instead of just marking where one episode ends and the next begins."
+      ]
+    },
+    {
+      "lines": [
+        "Two checks. First, the function that reads the row before.",
+        { "beat": 0.4 },
+        "Which one?"
+      ],
+      "answer": [
+        "Lag.",
+        "Lead reads the next row, and first value reads the start of the frame."
+      ]
+    },
+    {
+      "lines": [
+        "Second check. The threshold is thirty minutes. After a first event the gaps are five, forty five and ten minutes.",
+        "Count how many exceed the threshold.",
+        { "beat": 0.4 },
+        "How many sessions are there?"
+      ],
+      "answer": [
+        "Two.",
+        "Only the forty five minute gap is longer than the threshold. So there is the first session, and one more that starts after that gap."
       ]
     }
   ]

@@ -1,30 +1,39 @@
 import Resource from '../../../../../components/Resource.astro';
 
-This is a full topic in §2.2, right after gaps-and-islands and sessionization (topic 13). It reuses topic 11's cumulative/removable-cumulative framing and topic 10's frame vocabulary.
+This topic uses the frame and execution ideas of the window topics. Reels on this site are marked **Before this** (earlier in the course), **Goes deeper later** or with the name of another track.
 
-<section class="prereq" data-section="basics">
+<section class="prereq basics" data-section="basics">
 
-### <span class="n">00</span> The terms this topic uses
+### <span class="n">00</span> Basics: words the reel takes for granted
 
-A few words, each defined in full inside the reel; this is just so they are not a surprise.
+- **Percentile**: the value below which a given fraction of observations fall. *Where you meet it:* "p99 latency" on a dashboard.
+- **Median**: the 50th percentile, the middle value of the sorted data. *Where you meet it:* median income, less distorted by extremes than the mean.
+- **Interpolation**: estimating a value between two known ones. *Where you meet it:* the median of an even-sized set is the average of the two middle values.
+- **Decile / quartile**: one of ten or four equal-sized slices of ranked data. *Where you meet it:* "top decile of customers by spend".
+- **Moving average**: the average of a sliding window of recent values. *Where you meet it:* smoothed charts of daily metrics.
 
-- **Cumulative aggregate** — a frame that only grows (e.g. `UNBOUNDED PRECEDING AND CURRENT ROW`).
-- **Moving (sliding) aggregate** — a fixed-width frame that both grows and shrinks as it advances.
-- **Ordered-set aggregate** — an aggregate (like `PERCENTILE_CONT`) called with `WITHIN GROUP (ORDER BY ...)` because it needs the whole ordered set, not a running value.
-- **`NTILE`/`CUME_DIST`** — splitting a partition into equal-sized buckets, and reading a row's position as a fraction of the whole partition.
-
-<p class="check"><b>Check yourself:</b> does `ROWS BETWEEN 6 PRECEDING AND CURRENT ROW` always cover exactly seven calendar days of orders? (Answer: no — it covers exactly seven rows, whatever span of time that happens to be on a given day's order volume; only a RANGE frame with an INTERVAL offset covers a genuine calendar window.)</p>
+<p class="check"><b>Check yourself:</b> what is the median of 10, 20, 30, 40? (Answer: 25, the average of the two middle values.)</p>
 
 </section>
 
-<section class="prereq" data-section="window">
+<section class="prereq" data-section="earlier-topics">
 
-### <span class="n">01</span> Window frame semantics and execution internals (topics 10–11, before this)
-
-This topic's cumulative-vs-moving distinction is exactly the frame-shape choice topic 11 already explained the engine's cost model for.
+### <span class="n">01</span> Windows and how they run
 
 <ul class="resources">
-  <Resource kind="topic" title="Window function execution internals" href="../window-function-execution-internals/" by="This chapter, topic 11" length="14 min">Why a growing frame is cheap and a sliding frame needs the removable-cumulative algorithm. Before this.</Resource>
+  <Resource kind="reel" host={props.host} domain="data-engineering" title="Window frame semantics">Frames, ROWS and RANGE.</Resource>
+  <Resource kind="reel" host={props.host} domain="data-engineering" title="Window function execution internals">The cumulative and removable strategies this topic refers to.</Resource>
+  <Resource kind="reel" host={props.host} domain="data-engineering" title="Gaps-and-islands and sessionization">The previous reel; its handoff is this topic's opening.</Resource>
+</ul>
+
+</section>
+
+<section class="prereq" data-section="reference">
+
+### <span class="n">02</span> Reference
+
+<ul class="resources">
+  <Resource kind="reading" title="Aggregate Functions" href="https://www.postgresql.org/docs/current/functions-aggregate.html" by="PostgreSQL documentation" length="20 min">The ordered-set aggregates percentile_cont and percentile_disc.</Resource>
 </ul>
 
 </section>

@@ -1,63 +1,122 @@
 {
   "topic": "de.merge-upsert-concurrent-writers",
-  "note": "Written to be spoken: one idea per line; {\"beat\": s} is a deliberate pause; numbers are phrased the way they are said, never as digits. Tool and flag names are spoken as their job, not their symbol. `answer` plays after the learner answers a predict step. Opens on the chapter bridge line and closes on the handoff line.",
   "steps": [
     {
       "lines": [
-        "Writing meaning into a query is one thing.",
-        "Now: what happens when two different sessions try to write the same row at once."
+        "Writing meaning into a query is one thing. Now two sessions write at once, and you do not know whether the row already exists.",
+        "Look at the five staged rows. Each might be new, or might already be in the target, or might be a deletion in disguise.",
+        { "beat": 0.4 },
+        "Handling that row by row in application code is slow, and it is exactly where races hide. SQL has two statements for it, and they are not interchangeable."
       ]
     },
     {
       "lines": [
-        "One statement can match rows between a target and a source, and decide, row by row: insert this one, update that one, delete this other one.",
-        "Powerful. One pass, several different outcomes.",
-        "But power has a sharp edge here. If the source accidentally offers two rows for the very same target... the statement doesn't quietly pick one and move on. It raises an error, on purpose, the second time it tries to touch that row.",
-        "A silent duplicate becomes a loud failure instead. That's deliberate."
+        "The first statement is merge. Think of it as a join with actions attached.",
+        "It joins source to target, decides for every source row whether a match exists, and runs the first branch that fits.",
+        "Watch the bars. Out of five rows, two are inserted, two are updated, and one is deleted, in one statement. Nothing else can do all three together."
       ]
     },
     {
       "lines": [
-        "Now, the sharper edge, and the one worth sitting with.",
-        "There's an older, narrower statement that only ever does one thing: insert, or update if it's already there.",
-        "That older one makes a hard promise: one of those two outcomes always happens, no matter how many other sessions are racing it at the same instant.",
-        {
-          "beat": 0.4
-        },
-        "Does the newer, richer statement make that same hard promise?"
+        "But the join has a rule you must enforce yourself. Look at the two lines going to the same target row.",
+        "Only one source row may change a given target row. The second attempt raises an error.",
+        "That is a feature. The alternative is quietly keeping one change and throwing the other away, which is silent data loss."
+      ]
+    },
+    {
+      "lines": [
+        "Test it. The staging table has two rows for the same existing wine, and both would change its stock.",
+        "Imagine the engine being kind to you. Then imagine it being strict.",
+        { "beat": 0.4 },
+        "Which does it do?"
       ],
       "answer": [
-        "No. And that's the whole point to remember.",
-        "The richer statement decides which branch to take by looking at a snapshot, taken a moment earlier.",
-        "If another session slips in and inserts that exact same row in the gap right after... the richer statement doesn't notice and switch branches. It just tries its own insert, and collides.",
-        "The narrow one is built, down at the index itself, to never leave that gap open. The richer one simply wasn't built that way... it trades that guarantee for being able to do more things at once."
+        "It raises an error.",
+        "The standard requires it. Applying both in order would depend on an order nobody promised, and applying the last silently would lose a change.",
+        "Skipping the wine is wrong too. The right fix is on your side: make sure each key appears once in the source before you merge."
       ]
     },
     {
       "lines": [
-        "So the choice isn't \"which one is better.\" It's \"which one actually matches what you need.\"",
-        "Need a guarantee, with no race, for exactly one simple pattern... reach for the narrow one.",
-        "Need several branches, several kinds of action, maybe a second source entirely... reach for the richer one, and be ready to catch the occasional honest collision."
+        "The second statement is the upsert. Insert, and if the key is taken, turn into an update.",
+        "The important part is where that decision is made. Look at the box: inside the unique index, atomically.",
+        "So whatever the other sessions do, you get one of two outcomes, an insert or an update, and never a failure from the race."
       ]
     },
     {
       "lines": [
-        "One more wrinkle, in a completely different kind of storage.",
-        "In an ordinary table, updating a row changes that row, in place.",
-        "In a lakehouse table built from files, there is no \"in place.\" Changing even one row means rewriting the whole file it lives in.",
-        "Write a careless, catch-all branch on a statement like this, and you can quietly force every single file in the table to be rewritten... for a change that only touched a few rows."
+        "Merge cannot make the same promise, and the timeline shows why. Read the top line first.",
+        "Merge reads, and concludes that the row is not matched. Only afterwards does it insert. Between those two points is a gap.",
+        "Now the bottom line. If another session commits the same key inside that gap, the insert collides with it like any other insert.",
+        "Merge does not go back and take the update branch. Nothing in it restarts the decision."
       ]
     },
     {
       "lines": [
-        "So: a richer merge can do more, but it can still collide for real, on purpose, under real concurrency.",
-        "The narrow upsert trades flexibility for a promise that never breaks.",
-        "And on file-based storage, the same four letters hide an entirely different, heavier cost.",
-        {
-          "beat": 0.4
-        },
-        "Every clause this section covered answers one question at a time.",
-        "Next: a construct that looks at its neighbors on purpose, one window at a time."
+        "Put yourself in session A. Your merge has decided to insert a brand new key.",
+        "Session B inserts the same key, and its commit lands first.",
+        { "beat": 0.4 },
+        "What happens to you?"
+      ],
+      "answer": [
+        "You fail with a uniqueness violation.",
+        "Merge decided from a read that is now out of date, and it does not switch to the update branch. Only the upsert does that.",
+        "Both rows being stored would break the unique key, and the other session is not rolled back, because it committed. So code that merges concurrently has to be ready to retry."
+      ]
+    },
+    {
+      "lines": [
+        "So which should you reach for?",
+        "If the need is insert, or update if present, use the upsert. It is race free by construction.",
+        "If the logic is richer, several branches, a delete, or a second source table, use merge, and accept that a real collision needs a retry.",
+        "Choose by the shape of the need, not by habit."
+      ]
+    },
+    {
+      "lines": [
+        "A statement that may insert, update or delete needs to say what it did. That is what returning is for.",
+        "Read the three rows. Merge action names the branch that ran. In version seventeen it became available.",
+        "Version eighteen added old and new values, so you can see before and after together. An insert has no old, and a delete has no new.",
+        "It saves you re querying afterwards to find out what happened."
+      ]
+    },
+    {
+      "lines": [
+        "Everything so far assumed a row store. On a lakehouse, the same four letters mean something different.",
+        "Look at the file with the red mark. A table of Parquet files has no in place update, so a single touched row means rewriting the whole file that holds it.",
+        "And a catch all branch, delete everything not in the source, can touch every file.",
+        "So on a lakehouse, write your merge conditions to touch as few files as possible."
+      ]
+    },
+    {
+      "lines": [
+        "Back to the load. Make sure each key appears once in the source.",
+        "Use the upsert for the plain case, and merge for richer logic with a retry in your pocket.",
+        "On a lakehouse, remember that cost is counted in files, not rows.",
+        { "beat": 0.4 },
+        "Every clause this section covered answers one question at a time. Next: a construct that looks at its neighbors on purpose, one window at a time."
+      ]
+    },
+    {
+      "lines": [
+        "Two checks. First, which statement guarantees an insert or an update outcome under concurrency.",
+        { "beat": 0.4 },
+        "Which one?"
+      ],
+      "answer": [
+        "The upsert.",
+        "It decides inside the index, atomically. Merge decides from a snapshot and can race, so it is not the one."
+      ]
+    },
+    {
+      "lines": [
+        "Second check. The release that let merge report which action it took on each row.",
+        { "beat": 0.4 },
+        "Seventeen, eighteen, or earlier?"
+      ],
+      "answer": [
+        "Seventeen.",
+        "Eighteen came later and added old and new values, which is a different feature."
       ]
     }
   ]

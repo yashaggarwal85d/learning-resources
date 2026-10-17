@@ -1,0 +1,44 @@
+{
+  "topic": "de.running-moving-statistics",
+  "syllabus": [
+    { "clause": "cumulative and sliding aggregates,", "at": [{ "step": "Cumulative grows; moving slides" }, { "step": "Smoother numbers over an ordered set" }, { "deep": "Cumulative vs moving: the same frame-shape choice from topic 11" }] },
+    { "clause": "time-range frames (RANGE with INTERVAL),", "at": [{ "step": "Predict: do 7 rows equal 7 days?" }, { "step": "RANGE with INTERVAL measures time" }, { "deep": "Calendar time, not row count: `RANGE` with `INTERVAL`" }] },
+    { "clause": "ordered-set aggregates (PERCENTILE_CONT/DISC … WITHIN GROUP),", "at": [{ "step": "Percentiles need the whole ordered set" }, { "step": "Predict: the median of 10, 20, 30, 40" }, { "step": "CONT interpolates; DISC picks a real value" }, { "step": "Many percentiles, one sort" }, { "step": "Prove it · 1 of 2" }, { "deep": "Exact percentiles: `PERCENTILE_CONT` vs `PERCENTILE_DISC`" }] },
+    { "clause": "NTILE and CUME_DIST;", "at": [{ "step": "NTILE and CUME_DIST" }, { "step": "Prove it · 2 of 2" }, { "deep": "`NTILE` and `CUME_DIST`" }] },
+    { "clause": "exact vs approximate percentiles (→ §5.6).", "at": [{ "step": "Exact percentiles do not scale for free" }, { "deep": "Why exact percentiles motivate an approximate one" }] }
+  ],
+  "sources": [
+    {
+      "source": "PostgreSQL 18 Documentation, §4.2.8 Window Function Calls (RANGE with offsets)",
+      "items": [
+        { "item": "RANGE with a datetime ordering column takes an interval offset and needs exactly one ordering column", "at": [{ "step": "RANGE with INTERVAL measures time" }, { "deep": "Calendar time, not row count: `RANGE` with `INTERVAL`" }] },
+        { "item": "ROWS counts rows regardless of elapsed time", "at": [{ "step": "Predict: do 7 rows equal 7 days?" }] }
+      ]
+    },
+    {
+      "source": "PostgreSQL 18 Documentation, §9.21 Aggregate Functions (ordered-set) and §9.22 Window Functions (ntile, cume_dist)",
+      "items": [
+        { "item": "percentile_cont interpolates; percentile_disc returns the first value whose position reaches the fraction; array forms exist", "at": [{ "step": "CONT interpolates; DISC picks a real value" }, { "step": "Many percentiles, one sort" }, { "deep": "Exact percentiles: `PERCENTILE_CONT` vs `PERCENTILE_DISC`" }] },
+        { "item": "ntile divides the partition as equally as possible; cume_dist is rows preceding or peers over total rows", "at": [{ "step": "NTILE and CUME_DIST" }, { "deep": "`NTILE` and `CUME_DIST`" }] }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "Claude (single session, written from the syllabus line before mapping to the topic; not independent of the builder, so the cloud review run should repeat it)",
+    "date": "2026-10-17",
+    "items": [
+      { "item": "Running totals and moving averages with frames", "at": [{ "step": "Cumulative grows; moving slides" }] },
+      { "item": "ROWS versus RANGE for time windows", "at": [{ "step": "Predict: do 7 rows equal 7 days?" }] },
+      { "item": "RANGE with INTERVAL offsets", "at": [{ "step": "RANGE with INTERVAL measures time" }] },
+      { "item": "Gaps in time series and what a moving window should do with them", "at": [{ "deep": "Calendar time, not row count: `RANGE` with `INTERVAL`" }] },
+      { "item": "Continuous versus discrete percentile definitions", "at": [{ "step": "CONT interpolates; DISC picks a real value" }] },
+      { "item": "WITHIN GROUP syntax and ordered-set aggregates", "at": [{ "step": "Percentiles need the whole ordered set" }] },
+      { "item": "NTILE bucket sizing with remainders", "at": [{ "step": "NTILE and CUME_DIST" }] },
+      { "item": "CUME_DIST and PERCENT_RANK definitions", "at": [{ "step": "NTILE and CUME_DIST" }] },
+      { "item": "Why exact percentiles are expensive and approximate sketches (t-digest)", "at": [{ "step": "Exact percentiles do not scale for free" }] },
+      { "item": "Median as a robust statistic versus the mean", "at": [{ "deep": "Exact percentiles: `PERCENTILE_CONT` vs `PERCENTILE_DISC`" }] },
+      { "item": "Windowed percentiles (percentile over a frame) are not supported by ordered-set aggregates in PostgreSQL", "at": [{ "out": "Ordered-set aggregates cannot take a window frame in PostgreSQL; engines that support them (DuckDB quantile_cont OVER) document it themselves, and the syllabus line is the aggregate form." }] }
+    ]
+  },
+  "gapReview": { "date": "2026-10-17", "by": "Claude (single session)", "open": [] }
+}

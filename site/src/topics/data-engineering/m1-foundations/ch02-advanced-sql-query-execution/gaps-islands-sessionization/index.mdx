@@ -9,7 +9,7 @@ title: Gaps-and-islands and sessionization
 
 - Use `LAG`/`LEAD` to detect a change between consecutive rows of an ordered partition.
 - Build a contiguous-group ("island") identifier two ways: the row-number-difference trick for a fixed condition, and a running-sum of a "new group starts here" flag for a time-based gap threshold.
-- Sessionize a raw event stream with an inactivity threshold, reusing topic 10's explicit-frame fix to get a correct, strictly cumulative session counter.
+- Sessionize a raw event stream with an inactivity threshold, using an explicit cumulative frame, and say why timestamp ties do not change the session ids but do change which event is "first".
 - Compress a long event stream down to one row per contiguous state interval.
 
 </section>
@@ -61,7 +61,7 @@ SELECT customer_id, event_time,
 FROM flagged;
 ```
 
-The explicit `ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW` here is not decoration — it is exactly topic 10's default-frame fix, reused for a reason that matters even more in this setting: a clickstream frequently has two events at the *exact same* `event_time` (a page load firing two tracked events in the same millisecond-rounded timestamp). Left on the default `RANGE` frame, those two tied rows would both get the sum computed through the *last* peer, which is fine for the running total itself, but can misassign a session boundary that happens to land exactly on a tie. `ROWS`, with the partition's own `ORDER BY` already unique enough within a `customer_id` (or made so with a tie-breaking id column, same fix as always), keeps every row's cumulative session count exactly where it belongs regardless of timestamp ties.
+The explicit `ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW` frame spells out what the counter means: add one per flagged row, in order. Ties are worth checking here, and the result is reassuring: a clickstream often has two events at the exact same `event_time`, but the gap between two tied events is zero, which never exceeds the threshold, so the tied row never starts a session by itself. Whichever of the two tied rows `LAG` happens to see first, one of them carries the flag and the running sum reaches the same value for both, with the default `RANGE` frame or with `ROWS` (we ran every ordering of a small tied example to confirm). So here, unlike topic 10's running total, ties do not change the session ids. The explicit frame is still the better habit: it skips the peer-group handling the default frame needs, it lets the engine use the cheap cumulative strategy of topic 11, and it makes the intent readable. Ties do matter for anything that picks a *particular* row inside a session, such as the first page of the visit, so break them with a unique column in the `ORDER BY` there.
 
 ### Compressing the stream into state intervals
 
@@ -89,7 +89,7 @@ A hundred million raw events become a far smaller table of actual visits — eac
 This hosts the §2.2 chapter lab's sessionization part.
 
 1. **Build and verify the session IDs.** Run the full sessionization query over `page_views` and assert, per customer: `session_id` is non-decreasing in `event_time` order, it increments by exactly one at each row where the previous gap exceeded thirty minutes (or there was no previous row), and stays flat everywhere else.
-2. **Prove the tie-safety matters.** Construct a small customer history with two events at the identical `event_time` that straddle a thirty-minute boundary from the row before them, and confirm the `ROWS`-framed version assigns both tied rows to the *same* session id consistently, while a version left on the default `RANGE` frame can assign them inconsistently (*measure in build* — confirm which specific inconsistency appears for your constructed tie, since the exact failure shape depends on where exactly the tie falls relative to the threshold).
+2. **Check what ties do.** Construct a small customer history with two events at the identical `event_time` that sit more than thirty minutes after the row before them. Run the sessionization with the default `RANGE` frame and with the explicit `ROWS` frame, in every row order you can force, and confirm both tied rows always get the same session id and the sessions after them are unchanged. Then ask for the first event of each session and watch that one *does* depend on tie order until you add a unique tie-breaker.
 3. **Compress and compare.** Run the final `GROUP BY customer_id, session_id` aggregation and report the row-count reduction (hundred million events down to however many actual sessions your data has) alongside average session length and events per session (*measure in build* for the actual figures, which depend on the generated clickstream).
 
 </section>
@@ -98,7 +98,7 @@ This hosts the §2.2 chapter lab's sessionization part.
 
 ## In production — a review checklist
 
-- **Always frame a sessionization's running counter with `ROWS`, not the default `RANGE`**, exactly as topic 10 warned — clickstream timestamps tie far more often than people expect, especially after any rounding or batched ingestion.
+- **Write the sessionization's running counter with an explicit `ROWS` frame.** Ties do not change the session ids here, but the explicit frame is cheaper to execute and states the intent; break ties with a unique column wherever you pick a particular event inside a session (the first page, the last click).
 - **Pick the island technique that matches the question.** The row-number-difference trick is simpler when there's no explicit time/value threshold (just "runs of a fixed condition"); the running-sum-of-a-flag technique is the one that generalizes to a numeric gap threshold like a session timeout.
 - **Materialize the compressed session table rather than re-deriving it on every query.** A hundred-million-row raw stream recomputed per dashboard load is a lot more work than reading an already-compressed sessions table; refresh it incrementally if the raw stream is append-only.
 - **Treat the inactivity threshold as a tunable business parameter, not a universal constant.** Thirty minutes is a common convention, not a law of nature; document wherever a different threshold is actually in use so a count of "sessions" is comparable across reports.

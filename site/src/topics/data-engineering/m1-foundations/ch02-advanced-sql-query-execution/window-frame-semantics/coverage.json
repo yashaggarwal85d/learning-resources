@@ -1,0 +1,45 @@
+{
+  "topic": "de.window-frame-semantics",
+  "syllabus": [
+    { "clause": "PARTITION BY / ORDER BY, ROWS vs RANGE vs GROUPS,", "at": [{ "step": "A window looks at neighbours, keeps every row" }, { "step": "Partition, order, frame" }, { "step": "ROWS counts rows, RANGE counts peers" }, { "step": "GROUPS counts whole peer groups" }, { "deep": "`PARTITION BY`, `ORDER BY`, and the frame" }, { "deep": "`ROWS` vs `RANGE` vs `GROUPS`" }] },
+    { "clause": "peer groups and the default-frame trap with ties,", "at": [{ "step": "Predict: the running total with a tie" }, { "step": "The default frame ends at the last peer" }, { "step": "Say what you meant: ROWS and a tie-break" }, { "step": "Prove it · 2 of 2" }, { "deep": "The default-frame trap, exactly as documented" }] },
+    { "clause": "the EXCLUDE clause, named windows;", "at": [{ "step": "EXCLUDE drops the row, or its peers" }, { "step": "Name a window once" }, { "deep": "`EXCLUDE`: dropping the current row or its peers on purpose" }, { "deep": "Named windows" }] },
+    { "clause": "staging \"nested\" windows through CTEs because window calls cannot nest.", "at": [{ "step": "Window calls cannot nest" }, { "step": "Predict: ranking a running total" }, { "deep": "Why a window function can't take another window function as input" }] }
+  ],
+  "sources": [
+    {
+      "source": "PostgreSQL 18 Documentation, §4.2.8 Window Function Calls",
+      "items": [
+        { "item": "Window functions keep every row; PARTITION BY like GROUP BY without collapsing", "at": [{ "step": "A window looks at neighbours, keeps every row" }, { "deep": "`PARTITION BY`, `ORDER BY`, and the frame" }] },
+        { "item": "ROWS counts rows, RANGE works through peer groups, GROUPS counts peer groups", "at": [{ "step": "ROWS counts rows, RANGE counts peers" }, { "step": "GROUPS counts whole peer groups" }, { "deep": "`ROWS` vs `RANGE` vs `GROUPS`" }] },
+        { "item": "Default frame is RANGE UNBOUNDED PRECEDING, through the current row's last ORDER BY peer", "at": [{ "step": "The default frame ends at the last peer" }, { "deep": "The default-frame trap, exactly as documented" }] },
+        { "item": "EXCLUDE CURRENT ROW, GROUP, TIES, NO OTHERS", "at": [{ "step": "EXCLUDE drops the row, or its peers" }, { "deep": "`EXCLUDE`: dropping the current row or its peers on purpose" }] },
+        { "item": "WINDOW clause; OVER w versus OVER (w …)", "at": [{ "step": "Name a window once" }, { "deep": "Named windows" }] }
+      ]
+    },
+    {
+      "source": "PostgreSQL source parse_agg.c (transformWindowFuncCall)",
+      "items": [
+        { "item": "A window function call cannot contain another one", "at": [{ "step": "Window calls cannot nest" }, { "deep": "Why a window function can't take another window function as input" }] }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "Claude (single session, written from the syllabus line before mapping to the topic; not independent of the builder, so the cloud review run should repeat it)",
+    "date": "2026-10-17",
+    "items": [
+      { "item": "Order of evaluation: windows run after WHERE, GROUP BY and HAVING", "at": [{ "deep": "Why a window function can't take another window function as input" }] },
+      { "item": "PARTITION BY versus GROUP BY", "at": [{ "step": "A window looks at neighbours, keeps every row" }] },
+      { "item": "Default frame with and without ORDER BY", "at": [{ "step": "The default frame ends at the last peer" }, { "step": "Prove it · 2 of 2" }] },
+      { "item": "Tie behaviour of RANGE and the fix with ROWS and a tie-breaker", "at": [{ "step": "Predict: the running total with a tie" }, { "step": "Say what you meant: ROWS and a tie-break" }] },
+      { "item": "GROUPS mode", "at": [{ "step": "GROUPS counts whole peer groups" }] },
+      { "item": "RANGE with value offsets (numeric and interval)", "at": [{ "topic": "Running and moving statistics", "quote": "time-range frames (RANGE with INTERVAL)" }] },
+      { "item": "EXCLUDE options", "at": [{ "step": "EXCLUDE drops the row, or its peers" }] },
+      { "item": "Named windows and inheritance rules", "at": [{ "step": "Name a window once" }] },
+      { "item": "Window functions cannot be nested, and cannot appear in WHERE", "at": [{ "step": "Window calls cannot nest" }] },
+      { "item": "Frame-sensitive versus frame-insensitive functions (ranking and LAG ignore the frame)", "at": [{ "deep": "`PARTITION BY`, `ORDER BY`, and the frame" }] },
+      { "item": "Empty frames give NULL aggregates", "at": [{ "deep": "Build, break, measure" }] }
+    ]
+  },
+  "gapReview": { "date": "2026-10-17", "by": "Claude (single session)", "open": [] }
+}

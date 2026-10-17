@@ -1,0 +1,43 @@
+{
+  "topic": "de.window-function-execution-internals",
+  "syllabus": [
+    { "clause": "partition-and-sort cost and sort reuse across compatible windows,", "at": [{ "step": "Sort once, then slide" }, { "step": "Several windows, one sort" }, { "step": "Prove it · 2 of 2" }, { "deep": "Reusing one sort for several windows" }] },
+    { "clause": "segment trees and removable cumulative aggregation for arbitrary frames (Leis et al., PVLDB 2015),", "at": [{ "step": "Four ways to aggregate a frame" }, { "step": "Cumulative: frames that only grow" }, { "step": "Removable: sliding frames" }, { "step": "Predict: bounds that jump around" }, { "step": "Segment tree: any frame in log time" }, { "deep": "Four ways to aggregate over a frame, from worst to best" }] },
+    { "clause": "parallel evaluation and skewed partitions;", "at": [{ "step": "Parallel by partition, until one is huge" }, { "deep": "Parallelizing across partitions, and what skew does to it" }] },
+    { "clause": "why a window beats an equivalent self-join.", "at": [{ "step": "The self-join rescans for every row" }, { "step": "Predict: how much work for 1,000 rows?" }, { "deep": "Why a window beats the self-join / correlated-subquery version" }] }
+  ],
+  "sources": [
+    {
+      "source": "Leis, Kundhikanjana, Kemper, Neumann, Efficient Processing of Window Functions in Analytical SQL Queries, PVLDB 8(10), 2015",
+      "items": [
+        { "item": "Correlated-subquery formulations are quadratic", "at": [{ "step": "The self-join rescans for every row" }, { "deep": "Why a window beats the self-join / correlated-subquery version" }] },
+        { "item": "Naive, cumulative, removable cumulative and segment tree aggregation, and the frame shapes each handles", "at": [{ "step": "Four ways to aggregate a frame" }, { "step": "Cumulative: frames that only grow" }, { "step": "Removable: sliding frames" }, { "step": "Segment tree: any frame in log time" }] },
+        { "item": "Inter- and intra-partition parallelism; skew resistance", "at": [{ "step": "Parallel by partition, until one is huge" }] }
+      ]
+    },
+    {
+      "source": "PostgreSQL source planner.c (select_active_windows); Cao, Chan, Li, Tan, PVLDB 2012",
+      "items": [
+        { "item": "Windows with the same partitioning and ordering are adjacent so no extra Sort is added; a prefix reuses the stronger sort", "at": [{ "step": "Several windows, one sort" }, { "deep": "Reusing one sort for several windows" }] }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "Claude (single session, written from the syllabus line before mapping to the topic; not independent of the builder, so the cloud review run should repeat it)",
+    "date": "2026-10-17",
+    "items": [
+      { "item": "Physical plan of a window operator: partition, sort, evaluate", "at": [{ "step": "Sort once, then slide" }] },
+      { "item": "Cost of the sort phase dominating the operator", "at": [{ "step": "Several windows, one sort" }] },
+      { "item": "Sort sharing across windows with compatible clauses", "at": [{ "step": "Several windows, one sort" }] },
+      { "item": "Hash partitioning versus sort-based partitioning", "at": [{ "deep": "Parallelizing across partitions, and what skew does to it" }] },
+      { "item": "Naive, cumulative, removable and segment-tree frame evaluation", "at": [{ "step": "Four ways to aggregate a frame" }] },
+      { "item": "min/max are not invertible", "at": [{ "step": "Removable: sliding frames" }] },
+      { "item": "Distinct aggregates and holistic aggregates in windows", "at": [{ "out": "DISTINCT and percentile aggregates over frames need extra structures; the Leis et al. paper treats them, and the syllabus line asks for the four core strategies, which this topic teaches." }] },
+      { "item": "Parallelism across partitions and skew", "at": [{ "step": "Parallel by partition, until one is huge" }] },
+      { "item": "Window versus self-join complexity", "at": [{ "step": "The self-join rescans for every row" }] },
+      { "item": "Memory for buffering a partition", "at": [{ "topic": "Memory budgets, spilling and grace hash join", "quote": "external-sort spills" }] },
+      { "item": "Ranking functions are cheap because they ignore the frame", "at": [{ "topic": "Ranking, top-N and deterministic dedup", "quote": "ROW_NUMBER vs RANK vs DENSE_RANK" }] }
+    ]
+  },
+  "gapReview": { "date": "2026-10-17", "by": "Claude (single session)", "open": [] }
+}

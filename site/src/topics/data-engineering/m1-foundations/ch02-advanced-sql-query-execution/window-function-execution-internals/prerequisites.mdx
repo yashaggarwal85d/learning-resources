@@ -1,42 +1,40 @@
 import Resource from '../../../../../components/Resource.astro';
 
-This is a full topic in §2.2, right after window frame semantics (topic 10), whose vocabulary (partition, peer group, frame) it assumes.
+This topic builds directly on the previous one. Reels on this site are marked **Before this** (earlier in the course), **Goes deeper later** or with the name of another track.
 
-<section class="prereq" data-section="basics">
+<section class="prereq basics" data-section="basics">
 
-### <span class="n">00</span> The terms this topic uses
+### <span class="n">00</span> Basics: words the reel takes for granted
 
-A few words, each defined in full inside the reel; this is just so they are not a surprise.
+- **Linear vs quadratic cost**: work that grows in proportion to n, versus in proportion to n squared. *Where you meet it:* doubling a table doubles a scan but quadruples a naive all-pairs comparison.
+- **Segment tree**: a binary tree where each node stores an aggregate of a block of an array. *Where you meet it:* range-sum queries in competitive programming.
+- **Invertible aggregate**: one where a removed value can be subtracted back out. *Where you meet it:* sum and count are; min and max are not.
+- **Data skew**: an uneven spread of rows over keys. *Where you meet it:* one customer with half of all events.
+- **Worker / thread**: a unit of parallel execution. *Where you meet it:* `Workers Planned: 4` in a plan.
 
-- **Cumulative aggregation** — reusing the previous row's aggregate and adding only new rows, valid as long as the frame only grows.
-- **Removable cumulative aggregation** — the same idea, extended to also subtract rows leaving the frame, for a sliding window.
-- **Segment tree (here)** — a precomputed structure over sub-ranges of a partition that answers "aggregate over any range" in logarithmic time, used when frame bounds move unpredictably.
-- **Inter-/intra-partition parallelism** — splitting work across whole partitions vs. splitting one oversized partition's own work across several threads.
-
-<p class="check"><b>Check yourself:</b> does PostgreSQL's cumulative-aggregation algorithm handle a sliding frame like ROWS BETWEEN 5 PRECEDING AND 5 FOLLOWING as cheaply as the default growing frame? (Answer: no — cumulative aggregation only stays cheap while the frame grows; a frame that must also shrink needs the removable-cumulative extension or it degrades toward quadratic cost.)</p>
+<p class="check"><b>Check yourself:</b> after removing a value from a running sum, you subtract it. Why can't you do the same for a running maximum? (Answer: the removed value may have been the maximum, and the second largest is not stored.)</p>
 
 </section>
 
-<section class="prereq" data-section="window-frame">
+<section class="prereq" data-section="earlier-topics">
 
-### <span class="n">01</span> Window frame semantics (topic 10, before this)
+### <span class="n">01</span> What a window and a frame mean
 
-This topic assumes you already know what PARTITION BY, ORDER BY, peer groups and a frame are; here the question is how the engine actually computes over them.
+The reel assumes frames, peers and the default frame from the previous topic.
 
 <ul class="resources">
-  <Resource kind="topic" title="Window frame semantics" href="../window-frame-semantics/" by="This chapter, topic 10" length="14 min">PARTITION BY/ORDER BY/frame vocabulary this topic assumes. Before this.</Resource>
+  <Resource kind="reel" host={props.host} domain="data-engineering" title="Window frame semantics">The previous reel: partitions, frames and the default-frame trap.</Resource>
+  <Resource kind="reel" host={props.host} domain="data-engineering" title="LATERAL joins and correlated subqueries">The correlated-subquery form that windows replace.</Resource>
 </ul>
 
 </section>
 
-<section class="prereq" data-section="chapter-one">
+<section class="prereq" data-section="reference">
 
-### <span class="n">02</span> Hash join partitioning and key skew (Chapter 1, as a reading)
-
-The inter-partition parallelism and skew discussion here mirrors Chapter 1's hash-join partitioning material directly.
+### <span class="n">02</span> Reference
 
 <ul class="resources">
-  <Resource kind="topic" title="Hash tables inside query engines" href="../../ch01-cs-foundations/hash-tables-inside-query/" by="Chapter 1, topic 15" length="14 min">The same partition-skew problem, in a hash-join setting. Useful background, not required.</Resource>
+  <Resource kind="reading" title="Efficient Processing of Window Functions in Analytical SQL Queries" href="http://www.vldb.org/pvldb/vol8/p1058-leis.pdf" by="Leis, Kundhikanjana, Kemper, Neumann, PVLDB 2015" length="paper">The source of the four strategies and the skew-resistant parallelism.</Resource>
 </ul>
 
 </section>

@@ -36,7 +36,7 @@ Three customers tied for the most orders this month: `row_number()` arbitrarily 
 
 ### `QUALIFY`: filtering on a window function without a subquery
 
-Filtering on a window function's result the obvious way doesn't work — `WHERE row_number() OVER (...) <= 3` is rejected, because `WHERE` runs before window functions are computed, the same ordering problem topic 5's aggregate `FILTER` and `HAVING` already illustrated for `GROUP BY`. The textbook fix is to compute the ranking in a subquery or CTE and filter in the level above (exactly topic 10's "nested windows" staging pattern). Several analytical engines offer a shorter spelling instead: **`QUALIFY`**, which "does with window functions what `HAVING` does with aggregate functions and `GROUP BY` clauses" (Snowflake SQL reference, "QUALIFY"), evaluated in a fixed position after window functions and before `DISTINCT`/`ORDER BY`/`LIMIT`:
+Filtering on a window function's result the obvious way doesn't work — `WHERE row_number() OVER (...) <= 3` is rejected, because `WHERE` runs before window functions are computed, the same reason `HAVING`, not `WHERE`, filters on an aggregate. The textbook fix is to compute the ranking in a subquery or CTE and filter in the level above (exactly topic 10's "nested windows" staging pattern). Several analytical engines offer a shorter spelling instead: **`QUALIFY`**, which "does with window functions what `HAVING` does with aggregate functions and `GROUP BY` clauses" (Snowflake SQL reference, "QUALIFY"), evaluated in a fixed position after window functions and before `DISTINCT`/`ORDER BY`/`LIMIT`:
 
 ```
 FROM → WHERE → GROUP BY/aggregation → HAVING → WINDOW → QUALIFY → DISTINCT → ORDER BY → LIMIT
@@ -51,6 +51,10 @@ QUALIFY ROW_NUMBER() OVER (PARTITION BY customer_id ORDER BY event_time DESC, or
 ```
 
 `QUALIFY` is supported by Snowflake, Google BigQuery, DuckDB and Databricks SQL — all four confirmed directly in their own current syntax references — but it is **not part of the ISO/ANSI SQL standard**; PostgreSQL does not have it, and the two-level CTE/subquery form from topic 10 remains the portable way to write the same filter anywhere `QUALIFY` isn't available.
+
+### Deterministic dedup: keep one row per key
+
+Deduplicating is the same pattern with a cutoff of one. "Keep the latest record per customer" is `ROW_NUMBER() OVER (PARTITION BY customer_id ORDER BY updated_at DESC, record_id DESC) = 1`, filtered with `QUALIFY` or a CTE. Two details make it safe to rerun: the tie-breaker (`record_id`) so that two records with the same `updated_at` always resolve the same way, and using `ROW_NUMBER` rather than `RANK`, because `RANK` would return several rows for a tied first place and the "dedup" would keep duplicates. A job that dedups with an incomplete `ORDER BY` can pass its tests and still flip which record survives between runs.
 
 ### Two physical shapes for the same top-N-per-group question
 

@@ -1,0 +1,41 @@
+{
+  "topic": "de.ranking-top-n-deterministic-dedup",
+  "syllabus": [
+    { "clause": "ROW_NUMBER vs RANK vs DENSE_RANK under ties,", "at": [{ "step": "Three numberings, three answers to a tie" }, { "step": "Predict: the row after a three-way tie" }, { "step": "Prove it · 2 of 2" }, { "deep": "`ROW_NUMBER`, `RANK`, `DENSE_RANK`: three different answers to ties" }] },
+    { "clause": "tie-breakers for reproducible output,", "at": [{ "step": "Among tied rows, ROW_NUMBER picks arbitrarily" }, { "step": "Predict: same query, same data, run twice" }, { "step": "Add a unique tie-breaker" }, { "step": "Dedup is a cutoff of one" }, { "deep": "Reproducible output needs a reproducible order" }, { "deep": "Deterministic dedup: keep one row per key" }] },
+    { "clause": "QUALIFY (Teradata origin; Snowflake, BigQuery, DuckDB, Databricks; not ISO) as the idiomatic filter,", "at": [{ "step": "WHERE runs before the window" }, { "step": "QUALIFY filters on a window directly" }, { "step": "Prove it · 1 of 2" }, { "deep": "`QUALIFY`: filtering on a window function without a subquery" }] },
+    { "clause": "and top-N-per-partition optimizations.", "at": [{ "step": "Two plans for top-N per group" }, { "deep": "Two physical shapes for the same top-N-per-group question" }] }
+  ],
+  "sources": [
+    {
+      "source": "PostgreSQL 18 Documentation, §9.22 Window Functions",
+      "items": [
+        { "item": "row_number counts from 1; rank has gaps (row number of the first peer); dense_rank counts peer groups", "at": [{ "step": "Three numberings, three answers to a tie" }, { "deep": "`ROW_NUMBER`, `RANK`, `DENSE_RANK`: three different answers to ties" }] }
+      ]
+    },
+    {
+      "source": "Snowflake, BigQuery, DuckDB and Databricks QUALIFY references",
+      "items": [
+        { "item": "QUALIFY does for window functions what HAVING does for aggregates, evaluated after WINDOW and before DISTINCT/ORDER BY/LIMIT", "at": [{ "step": "QUALIFY filters on a window directly" }, { "deep": "`QUALIFY`: filtering on a window function without a subquery" }] },
+        { "item": "QUALIFY is supported by these four engines and is not ISO SQL", "at": [{ "step": "QUALIFY filters on a window directly" }, { "step": "Prove it · 1 of 2" }] }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "Claude (single session, written from the syllabus line before mapping to the topic; not independent of the builder, so the cloud review run should repeat it)",
+    "date": "2026-10-17",
+    "items": [
+      { "item": "ROW_NUMBER, RANK and DENSE_RANK behaviour with ties", "at": [{ "step": "Three numberings, three answers to a tie" }] },
+      { "item": "Non-determinism of ties and the unique tie-breaker", "at": [{ "step": "Add a unique tie-breaker" }] },
+      { "item": "Latest-record deduplication with ROW_NUMBER", "at": [{ "step": "Dedup is a cutoff of one" }] },
+      { "item": "Why WHERE cannot filter on a window function", "at": [{ "step": "WHERE runs before the window" }] },
+      { "item": "QUALIFY and the CTE equivalent", "at": [{ "step": "QUALIFY filters on a window directly" }] },
+      { "item": "Top-N per group with ranking versus LATERAL", "at": [{ "step": "Two plans for top-N per group" }] },
+      { "item": "Optimizer top-N window optimization (run-condition / early stop) in some engines", "at": [{ "deep": "Two physical shapes for the same top-N-per-group question" }] },
+      { "item": "NTILE and PERCENT_RANK as related ranking functions", "at": [{ "topic": "Running and moving statistics", "quote": "ordered-set aggregates" }] },
+      { "item": "Choosing RANK versus ROW_NUMBER for leaderboards", "at": [{ "step": "Back to the leaderboard" }] },
+      { "item": "NULL ordering in the ranking ORDER BY", "at": [{ "topic": "NULLs and three-valued logic", "quote": "ORDER BY" }] }
+    ]
+  },
+  "gapReview": { "date": "2026-10-17", "by": "Claude (single session)", "open": [] }
+}
