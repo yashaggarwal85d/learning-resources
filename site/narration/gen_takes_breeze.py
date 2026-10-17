@@ -23,7 +23,7 @@ print(f"{len(todo)} take(s) to generate", flush=True)
 if not todo:
     sys.exit(0)
 
-cli, gguf = M["cli"], M["gguf"]
+cli, gguf = os.path.expandvars(M["cli"]), os.path.expandvars(M["gguf"])  # "$BREEZE_CLI" in voice.json: no machine path in git
 helptext = subprocess.run([cli, "--help"], capture_output=True, text=True).stdout + subprocess.run([cli, "--help"], capture_output=True, text=True).stderr
 has = lambda flag: flag in helptext
 if not has("--seed"):
