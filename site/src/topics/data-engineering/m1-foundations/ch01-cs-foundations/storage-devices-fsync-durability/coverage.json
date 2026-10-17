@@ -1,0 +1,201 @@
+{
+  "topic": "de.storage-devices-fsync-durability",
+  "syllabus": [
+    {
+      "clause": "sequential vs random I/O",
+      "at": [
+        { "step": "A hard disk pays for every seek" },
+        { "step": "Predict: does flash still favor sequential?" },
+        { "deep": "Sequential vs random, and why the gap outlives the disk head" }
+      ]
+    },
+    {
+      "clause": "block size and alignment",
+      "at": [
+        { "step": "Below one block, a write becomes two" },
+        { "deep": "Block size and alignment" }
+      ]
+    },
+    {
+      "clause": "SSD internals (FTL, erase blocks, garbage collection, write amplification)",
+      "at": [
+        { "step": "Flash can only erase in bulk" },
+        { "step": "Predict: which pattern amplifies writes?" },
+        { "step": "Spare flash and TRIM push back" },
+        { "deep": "Inside an SSD: FTL, erase blocks, garbage collection, write amplification" }
+      ]
+    },
+    {
+      "clause": "async I/O via io_uring (now an io_method option in PostgreSQL 18)",
+      "at": [
+        { "step": "io_uring keeps a fast drive fed" },
+        { "deep": "Keeping a fast device busy: io_uring and PostgreSQL 18" }
+      ]
+    },
+    {
+      "clause": "fsync semantics",
+      "at": [
+        { "step": "fsync forces the cache down" },
+        { "step": "The directory needs its own fsync" },
+        { "deep": "Durability: what fsync actually promises" }
+      ]
+    },
+    {
+      "clause": "the 2018 \"fsyncgate\" lesson that a failed fsync cannot simply be retried",
+      "at": [
+        { "step": "Predict: is a retried fsync safe?" },
+        { "deep": "fsyncgate 2018: a failed fsync must not be retried" }
+      ]
+    }
+  ],
+  "sources": [
+    {
+      "source": "Linux man-pages 6.19: fsync(2)/fdatasync(2), open(2), io_uring(7)",
+      "items": [
+        {
+          "item": "fsync forces a file's dirty pages and metadata to the device and flushes the device's own write cache, blocking until it reports done",
+          "at": [{ "step": "fsync forces the cache down" }, { "deep": "Durability: what fsync actually promises" }]
+        },
+        {
+          "item": "fsync on a file does not flush the directory entry that names it; the directory needs its own fsync after create or rename",
+          "at": [{ "step": "The directory needs its own fsync" }, { "deep": "Durability: what fsync actually promises" }]
+        },
+        {
+          "item": "O_DIRECT requires the buffer address, file offset and length to all be aligned, or the I/O fails or falls back to buffered",
+          "at": [{ "deep": "Block size and alignment" }]
+        },
+        {
+          "item": "io_uring: one completion queue entry per submission queue entry, reaped without a syscall per operation",
+          "at": [{ "step": "io_uring keeps a fast drive fed" }, { "deep": "Keeping a fast device busy: io_uring and PostgreSQL 18" }]
+        }
+      ]
+    },
+    {
+      "source": "A. Rebello et al., \"Can Applications Recover from fsync Failures?\", USENIX ATC 2020",
+      "items": [
+        {
+          "item": "ext4, XFS and Btrfs all mark failed dirty pages clean and discard their contents after a writeback error",
+          "at": [{ "step": "Predict: is a retried fsync safe?" }, { "deep": "fsyncgate 2018: a failed fsync must not be retried" }]
+        },
+        {
+          "item": "No application-level failure-handling strategy tested was sufficient to avoid data loss or corruption on fsync failure",
+          "at": [{ "deep": "fsyncgate 2018: a failed fsync must not be retried" }]
+        }
+      ]
+    },
+    {
+      "source": "Seagate Exos datasheet (7,200 rpm enterprise HDD)",
+      "items": [
+        {
+          "item": "About 168 random 4 KiB read IOPS at queue depth 16",
+          "at": [{ "step": "A hard disk pays for every seek" }]
+        },
+        {
+          "item": "About 285 MB/s sequential streaming throughput",
+          "at": [{ "step": "A hard disk pays for every seek" }]
+        }
+      ]
+    },
+    {
+      "source": "N. Agrawal et al., \"Design Tradeoffs for SSD Performance\", USENIX ATC 2008",
+      "items": [
+        {
+          "item": "The FTL allocates logical pages from a pool of flash and writes out-of-place, repointing the map on every update",
+          "at": [{ "step": "Flash can only erase in bulk" }, { "deep": "Inside an SSD: FTL, erase blocks, garbage collection, write amplification" }]
+        },
+        {
+          "item": "Garbage collection copies an erase block's still-live pages to a fresh block before erasing the victim",
+          "at": [{ "step": "Predict: which pattern amplifies writes?" }, { "deep": "Inside an SSD: FTL, erase blocks, garbage collection, write amplification" }]
+        }
+      ]
+    },
+    {
+      "source": "PostgreSQL 18 documentation, Resource Consumption and Write Ahead Log",
+      "items": [
+        {
+          "item": "io_method defaults to worker (a pool of io_workers processes); io_uring and sync are the alternatives",
+          "at": [{ "step": "io_uring keeps a fast drive fed" }]
+        },
+        {
+          "item": "io_workers defaults to 3; io_max_concurrency defaults to -1, resolved and capped at 64 per backend",
+          "at": [{ "step": "io_uring keeps a fast drive fed" }]
+        },
+        {
+          "item": "wal_sync_method defaults to fdatasync on Linux",
+          "at": [{ "deep": "Durability: what fsync actually promises" }]
+        }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "independent reviewer agent, written without seeing the topic",
+    "date": "2026-10-14",
+    "items": [
+      {
+        "item": "The sequential-to-random throughput gap on a spinning disk is mechanical (seek plus rotational latency) and is a property of the device, not a universal constant",
+        "at": [{ "step": "A hard disk pays for every seek" }]
+      },
+      {
+        "item": "On flash, a single outstanding read is latency-bound; the drive's rated bandwidth is only reached with many reads in flight across its internal parallelism",
+        "at": [{ "step": "Predict: does flash still favor sequential?" }]
+      },
+      {
+        "item": "The physical block (commonly 4 KiB) can differ from the historical 512-byte logical block; a write smaller than or straddling the physical block forces a read-modify-write",
+        "at": [{ "step": "Below one block, a write becomes two" }, { "deep": "Block size and alignment" }]
+      },
+      {
+        "item": "O_DIRECT bypasses the page cache and DMAs straight to the device, so its alignment rules bite in a way buffered I/O's do not",
+        "at": [{ "deep": "Block size and alignment" }]
+      },
+      {
+        "item": "A flash page is programmed once; the erase block containing it must be fully erased before any of its space is reused, so updates are never in place",
+        "at": [{ "step": "Flash can only erase in bulk" }]
+      },
+      {
+        "item": "The Flash Translation Layer maps logical addresses to physical pages and writes out-of-place, repointing the map and marking the old page stale",
+        "at": [{ "step": "Flash can only erase in bulk" }, { "deep": "Inside an SSD: FTL, erase blocks, garbage collection, write amplification" }]
+      },
+      {
+        "item": "Garbage collection's cost depends on the write pattern: sequential writes fill whole erase blocks leaving little live data to copy, random writes scatter live and stale pages together",
+        "at": [{ "step": "Predict: which pattern amplifies writes?" }]
+      },
+      {
+        "item": "Write amplification is flash bytes physically written divided by host bytes logically written, and is always at least one",
+        "at": [{ "step": "Predict: which pattern amplifies writes?" }]
+      },
+      {
+        "item": "Over-provisioning and TRIM both push write amplification down, by giving garbage collection emptier victims or skipping already-deleted pages entirely",
+        "at": [{ "step": "Spare flash and TRIM push back" }]
+      },
+      {
+        "item": "fsync forces a file's dirty pages and metadata to the device and flushes the device's own volatile write cache, blocking until the device confirms",
+        "at": [{ "step": "fsync forces the cache down" }]
+      },
+      {
+        "item": "A file's data and the directory entry naming it are two separate durability facts; the directory needs its own fsync after a create or rename",
+        "at": [{ "step": "The directory needs its own fsync" }]
+      },
+      {
+        "item": "A failed fsync must never be retried as if it were transient: the kernel marks the failed pages clean and discards them, so a retry can report success over data that is already gone",
+        "at": [{ "step": "Predict: is a retried fsync safe?" }, { "deep": "fsyncgate 2018: a failed fsync must not be retried" }]
+      },
+      {
+        "item": "io_uring submits and completes I/O through two ring buffers shared with the kernel, letting one thread keep many operations outstanding without a syscall each",
+        "at": [{ "step": "io_uring keeps a fast drive fed" }]
+      },
+      {
+        "item": "PostgreSQL 18's io_method is an asynchronous I/O option that speeds up prefetchable reads and changes nothing about fsync's durability contract",
+        "at": [{ "step": "io_uring keeps a fast drive fed" }, { "deep": "Keeping a fast device busy: io_uring and PostgreSQL 18" }]
+      },
+      {
+        "item": "Engineering an async I/O runtime and a write-ahead log from scratch is deeper material than this topic covers",
+        "at": [{ "out": "Async I/O engineering is Rust Systems Engineering M3; write-ahead logging and crash recovery are Chapter 5 of this track, both out of scope for this foundations topic." }]
+      }
+    ]
+  },
+  "gapReview": {
+    "date": "2026-10-14",
+    "by": "builder self-review",
+    "open": []
+  }
+}

@@ -1,0 +1,83 @@
+import Resource from '../../../../../components/Resource.astro';
+
+This is the last topic of Chapter 1. It builds a benchmark that measures the machine the chapter's models stand for, and reconciles the measurement with the amortized proofs. Reels on this site are marked **Before this** (earlier in the course), **Goes deeper later** or with the name of another track.
+
+<section class="prereq basics" data-section="basics">
+
+### <span class="n">00</span> Basics: words the reel takes for granted
+
+- **Cache and cache line**: a small, fast memory between the processor and main memory, which moves data in fixed chunks called lines. *Where you meet it:* a program that walks an array in order runs faster than one that jumps around, because each line fetched serves several neighbouring items.
+- **Working set**: the amount of memory a program actively touches during a stretch of execution. *Where you meet it:* a loop over a 10 KB array has a 10 KB working set.
+- **Virtual address and page**: programs use virtual addresses, which the processor translates to physical ones in fixed-size pages. *Where you meet it:* a 4 KiB page is the default unit on x86-64 Linux.
+- **Nanosecond**: a billionth of a second, the natural unit for one memory access. *Where you meet it:* a main-memory load is on the order of tens to a hundred nanoseconds.
+- **Pointer dereference**: reading the value at an address a variable holds. *Where you meet it:* `p = next[p]` in C, or following a link in a linked list.
+
+<p class="check"><b>Check yourself:</b> in <code>for (i = n-1; i &gt; 0; i--) swap(a[i], a[rand_below(i)]);</code>, what does drawing the partner from strictly below <code>i</code> guarantee? (Answer: a single cycle through all elements, Sattolo's algorithm.)</p>
+
+</section>
+
+<section class="prereq" data-section="amortized-vector">
+
+### <span class="n">01</span> The vector's amortized cost
+
+The growth rule (empty, then capacity 1, then g times capacity), the cost unit of one element write, and the aggregate, accounting and potential bounds for a table that grows and shrinks. The lab measures what those proofs counted.
+
+<ul class="resources">
+  <Resource kind="reel" host={props.host} domain="data-structures-and-algorithms" title="Aggregate and accounting methods">The growth factor g and the copies per append this lab measures.</Resource>
+  <Resource kind="reel" host={props.host} domain="data-structures-and-algorithms" title="The potential method">The potential Φ and the shrink-at-½ thrash this lab reproduces.</Resource>
+  <Resource kind="reel" host={props.host} domain="data-structures-and-algorithms" title="Deamortization and global rebuilding">Why tail latency, not average cost, is what a service feels.</Resource>
+</ul>
+
+</section>
+
+<section class="prereq" data-section="io-model">
+
+### <span class="n">02</span> The external-memory model
+
+Where M, B and the memory hierarchy come from: the models took them as given, and this topic measures them.
+
+<ul class="resources">
+  <Resource kind="reel" host={props.host} domain="data-structures-and-algorithms" title="External-memory (I/O) model">Block transfers, M and B.</Resource>
+</ul>
+
+</section>
+
+<section class="prereq" data-section="reading-c">
+
+### <span class="n">03</span> Reading a short C program
+
+The lab's benchmark is a few dozen lines of C: a loop, a pointer dereference, an array of indices and a timer. You do not need to be a C programmer, but you should be able to read `p = next[p]` and see that it forms a dependency chain.
+
+<ul class="resources">
+  <Resource kind="reading" title="The C Programming Language" href="https://en.wikipedia.org/wiki/The_C_Programming_Language" by="Wikipedia (on Kernighan and Ritchie)" length="reference">Background on the language the lab's code is written in; chapter 5 of the book covers pointers and arrays.</Resource>
+</ul>
+
+</section>
+
+<section class="prereq" data-section="virtual-memory">
+
+### <span class="n">04</span> Virtual memory and pages
+
+Each process sees its own address space, split into fixed-size pages (4 KiB on x86-64 by default); every access translates its virtual page to a physical one, and the translation is cached in the TLB.
+
+<p class="check"><b>Check yourself:</b> if a TLB has 64 entries and pages are 4 KiB, how much memory can it map without a miss? (Answer: 64 × 4 KiB = 256 KiB, its reach.)</p>
+
+<ul class="resources">
+  <Resource kind="reading" title="HugeTLB Pages" href="https://docs.kernel.org/admin-guide/mm/hugetlbpage.html" by="The Linux Kernel documentation" length="20 min">Page sizes, and the common 2 MiB huge page on x86-64.</Resource>
+</ul>
+
+</section>
+
+<section class="prereq" data-section="other-tracks">
+
+### <span class="n">05</span> Another track: the same ladder, and benchmarking discipline
+
+This topic measures; it does not teach benchmarking statistics, profilers or NUMA in depth.
+
+<ul class="resources">
+  <Resource kind="reel" host={props.host} domain="data-engineering" title="Memory hierarchy and latency numbers">The latency ladder from the data-engineering side.</Resource>
+  <Resource kind="reel" host={props.host} domain="rust-systems-engineering" title="Benchmarking discipline and statistics">How to run a benchmark honestly. Goes deeper later.</Resource>
+  <Resource kind="reel" host={props.host} domain="rust-systems-engineering" title="Cache lines and false sharing">Cache lines and false sharing between cores. Goes deeper later.</Resource>
+</ul>
+
+</section>

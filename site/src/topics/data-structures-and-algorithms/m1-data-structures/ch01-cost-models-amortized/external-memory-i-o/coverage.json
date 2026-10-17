@@ -1,0 +1,150 @@
+{
+  "topic": "dsa.external-memory-i-o",
+  "syllabus": [
+    {
+      "clause": "Aggarwal & Vitter (CACM 1988): parameters N, M, B",
+      "at": [
+        { "step": "The model: Aggarwal and Vitter, 1988" },
+        { "step": "Three numbers describe the job" },
+        { "deep": "The model, as Aggarwal and Vitter stated it" }
+      ]
+    },
+    {
+      "clause": "scan(N) = Θ(N/B)",
+      "at": [{ "step": "A scan touches every block once" }, { "deep": "The three bounds every later chapter quotes" }]
+    },
+    {
+      "clause": "sort(N) = Θ((N/B) log_{M/B}(N/B))",
+      "at": [
+        { "step": "Predict: how many passes to sort it?" },
+        { "step": "The sort bound is a pass count" },
+        { "deep": "Where the log<sub>M/B</sub> comes from: a pass count" }
+      ]
+    },
+    {
+      "clause": "why bytes moved, not comparisons, dominate data systems",
+      "at": [
+        { "step": "Count the same sort twice" },
+        { "step": "Predict: lookups vs sort-then-scan" },
+        { "deep": "Why bytes moved, not comparisons, dominate" }
+      ]
+    },
+    {
+      "clause": "Data Engineering §1.2, §1.3",
+      "at": [{ "deep": "What the Data Engineering track adds" }]
+    }
+  ],
+  "sources": [
+    {
+      "source": "A. Aggarwal and J. S. Vitter, \"The Input/Output Complexity of Sorting and Related Problems\", CACM 1988",
+      "items": [
+        {
+          "item": "The model's parameters N, M, B, P, with internal computation free and only block transfers counted",
+          "at": [{ "step": "The model: Aggarwal and Vitter, 1988" }, { "deep": "The model, as Aggarwal and Vitter stated it" }]
+        },
+        {
+          "item": "The sorting bound and its matching lower bound for indivisible records",
+          "at": [{ "step": "The sort bound is a pass count" }, { "deep": "The three bounds every later chapter quotes" }]
+        }
+      ]
+    },
+    {
+      "source": "J. S. Vitter, Algorithms and Data Structures for External Memory, 2008",
+      "items": [
+        {
+          "item": "The PDM constraint M < N and B <= M/2 for the single-disk case",
+          "at": [{ "deep": "The model, as Aggarwal and Vitter stated it" }]
+        },
+        {
+          "item": "Table 3.1's four fundamental bounds: Scan, Search, Sort and reporting Z answers",
+          "at": [{ "step": "A scan touches every block once" }, { "step": "Search costs log base B, not log base two" }, { "deep": "The three bounds every later chapter quotes" }]
+        },
+        {
+          "item": "Search = Theta(log base B of N) under the comparison model; a hash lookup is Theta(1) I/Os on average",
+          "at": [{ "step": "Search costs log base B, not log base two" }, { "deep": "The three bounds every later chapter quotes" }]
+        }
+      ]
+    },
+    {
+      "source": "M. Frigo, C. E. Leiserson, H. Prokop, S. Ramachandran, \"Cache-Oblivious Algorithms\", FOCS 1999",
+      "items": [
+        {
+          "item": "An algorithm optimal in the external-memory model without being told M or B, the handoff to the next topic",
+          "at": [{ "out": "Named only as the forward reference to the next topic; the cache-oblivious model itself is taught there, not here." }]
+        }
+      ]
+    },
+    {
+      "source": "Data Engineering, \"Memory hierarchy and latency numbers\" (§1.2) and \"The I/O cost model\" (§1.3)",
+      "items": [
+        {
+          "item": "The sourced device latencies and bandwidths this topic deliberately leaves off the screen",
+          "at": [{ "deep": "What the Data Engineering track adds" }]
+        },
+        {
+          "item": "The same bounds applied to real query plans: index crossovers, clustered order, external-sort pass counts and the network tier",
+          "at": [{ "deep": "What the Data Engineering track adds" }]
+        }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "independent reviewer agent, written without seeing the topic",
+    "date": "2026-10-14",
+    "items": [
+      {
+        "item": "The external-memory model charges one unit per block transfer and treats computation on data already in the fast level as free",
+        "at": [{ "step": "The model: Aggarwal and Vitter, 1988" }]
+      },
+      {
+        "item": "N, M and B are counted in items, not bytes, and the model requires M < N and at least two blocks to fit in memory at once (B <= M/2)",
+        "at": [{ "step": "Three numbers describe the job" }]
+      },
+      {
+        "item": "A scan costs Theta(N/B) transfers and is the floor for any computation that must look at all the data",
+        "at": [{ "step": "A scan touches every block once" }]
+      },
+      {
+        "item": "A sorted search costs Theta(log base B of N) transfers rather than Theta(log base 2 of N), because one block transfer rules out a 1/B share of the range",
+        "at": [{ "step": "Search costs log base B, not log base two" }]
+      },
+      {
+        "item": "The sort bound's logarithm is a count of merge passes: run formation makes N/M runs, and each merge pass folds the run count by the fan-in M/B",
+        "at": [{ "step": "Predict: how many passes to sort it?" }, { "step": "The sort bound is a pass count" }]
+      },
+      {
+        "item": "Because the fan-in is typically in the thousands, almost every realistic external sort finishes in two or three passes regardless of data size, until the run count first exceeds the fan-in",
+        "at": [{ "step": "Predict: does it stay two passes forever?" }]
+      },
+      {
+        "item": "Random access to N items costs about N block transfers (one per item), B times worse than sorting the same items first and scanning them, which is why engines sort or partition before probing one at a time",
+        "at": [{ "step": "Predict: lookups vs sort-then-scan" }]
+      },
+      {
+        "item": "Counted in block transfers, a sort that needs billions of comparisons in the word-RAM model needs only a few hundred thousand transfers, and real wall-clock time tracks the transfer count",
+        "at": [{ "step": "Count the same sort twice" }]
+      },
+      {
+        "item": "The doubling vector's amortized O(1) element-write bound becomes O(1/B) amortized block transfers once resizes are counted as scans, a strictly stronger result under the same proof",
+        "at": [{ "step": "Repricing the doubling vector" }]
+      },
+      {
+        "item": "The same two-parameter model applies at every boundary of the memory hierarchy; only M and B change, for example B = 8 keys at a 64-byte cache line versus B = 512 keys at a disk page",
+        "at": [{ "step": "The same model at every boundary" }]
+      },
+      {
+        "item": "The I/O model predicts the shape of a cost (its growth and pass structure) but not the constant; device latency, bandwidth, caching and prefetching set the constant and must be measured",
+        "at": [{ "step": "The honest caveat: measure the constant" }]
+      },
+      {
+        "item": "The model's full parameter P (parallel block transfers, or D independent disks) is set aside at P = 1 here, deferring the multi-disk speedup to the source survey rather than this topic",
+        "at": [{ "out": "Explicitly set to the single-disk case (P = 1) by this topic's own scope; the parallel-disk extension is named only in the sources." }]
+      }
+    ]
+  },
+  "gapReview": {
+    "date": "2026-10-14",
+    "by": "builder self-review",
+    "open": []
+  }
+}

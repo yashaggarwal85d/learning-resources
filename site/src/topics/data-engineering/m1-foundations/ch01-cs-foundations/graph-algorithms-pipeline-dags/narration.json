@@ -1,0 +1,104 @@
+{
+  "topic": "de.graph-algorithms-pipeline-dags",
+  "steps": [
+    {
+      "lines": [
+        "A pipeline is many sorts, joins and loads, with dependencies between them. Graph algorithms decide their order, catch cycles, and find what sets the finish time.",
+        "So draw the shop's pipeline the way an engineer would on a whiteboard. Every task is a dot, and every arrow says: this must finish before that starts.",
+        { "beat": 0.4 },
+        "Once it is a picture, a lot of scheduling questions turn into questions about a picture."
+      ]
+    },
+    {
+      "lines": [
+        "Two properties make this particular graph easy to work with. Look at the arrows first.",
+        "They point one way. A dependency is not symmetric: clean must finish before load, and load does not have to finish before clean.",
+        "And follow any arrow chain forward. It never returns to where it began, because a task that waits on itself could never start.",
+        "A graph with those two properties is a DAG, and it is the shape nearly every scheduler assumes before it will run anything."
+      ]
+    },
+    {
+      "lines": [
+        "Here is a question you will be asked at two in the morning. You just changed the cleaning step.",
+        "Look at the graph and think about which direction the damage travels.",
+        { "beat": 0.4 },
+        "Which tasks have to run again?"
+      ],
+      "answer": [
+        "Everything the cleaning step feeds, directly or through others: load orders, the metrics branch, daily revenue and publish.",
+        "Ingest and the customer load sit above the change, so they are untouched. That is why only clean itself is too little, and why every task is too much.",
+        "Only the immediate successor misses the tasks further down. The rule is to walk the arrows forward as far as they go."
+      ]
+    },
+    {
+      "lines": [
+        "That forward walk has a mirror image. Walk the same arrows backwards, and you find what a task depends on.",
+        "That is the set a backfill needs. To rebuild daily revenue you need the ingest, the clean, the orders and the customers.",
+        "Both are one traversal, whether breadth first or depth first, and each visits every vertex and edge once.",
+        "So the cost grows with the number of tasks plus the number of arrows. A pipeline ten times bigger is ten times the work, not a hundred."
+      ]
+    },
+    {
+      "lines": [
+        "Now, in what order do you actually run them? Keep one number per task: how many of its dependencies have not finished. That is its in-degree.",
+        "Start everything with a count of zero. Each time a task finishes, subtract one from every task it feeds.",
+        "Whatever reaches zero is ready, and it joins the queue. That is Kahn's algorithm.",
+        "The useful part is what you get for free. Release the whole ready queue at once and you have the waves of parallel work a scheduler launches."
+      ]
+    },
+    {
+      "lines": [
+        "Use the counts to predict the schedule. Ingest and the customer load have nothing to wait on, so they open the first wave.",
+        "From there, follow the zeros as they appear. Each wave is whatever became ready when the last one finished.",
+        { "beat": 0.4 },
+        "How many waves does the whole pipeline take?"
+      ],
+      "answer": [
+        "Five. The two roots, then clean, then load orders and the metrics branch together, then daily revenue, then publish.",
+        "The width of each wave is the parallelism you actually have at that moment. Seven waves would mean no two tasks ever overlap, and three would skip a dependency.",
+        "One wave is impossible, because publish needs the whole chain before it. Python's standard library does this bookkeeping for you."
+      ]
+    },
+    {
+      "lines": [
+        "What if someone wires a loop by mistake? Think about the counts. Every task in the loop is waiting on another task in the loop.",
+        "So none of them ever reaches zero, and no valid order exists.",
+        "Kahn's algorithm notices when tasks are left stuck above zero. A depth first walk notices the moment it steps back onto a task already on its own path.",
+        "A good orchestrator runs this check before anything starts. A cycle becomes an error at import time, not a hang at three in the morning."
+      ]
+    },
+    {
+      "lines": [
+        "Last idea, and the most useful. Give yourself all the workers you want. When does the pipeline finish?",
+        "Not the sum of all the tasks, because they overlap. And not the longest chain counted in tasks, because tasks differ in length.",
+        "It is the longest path when each task is weighted by its duration. That is the critical path.",
+        { "beat": 0.4 },
+        "Now the quiet surprise. Finding a longest path is usually brutally hard. On a DAG it is one sweep in dependency order, because acyclicity means you never have to revisit a vertex."
+      ]
+    },
+    {
+      "lines": [
+        "Put numbers on it. The revenue branch runs about fifty five minutes end to end. The metrics branch runs sixty two.",
+        "So the pipeline finishes at sixty two, and the metrics branch is the critical one.",
+        "Now load orders sits on the revenue branch. You make it twice as fast.",
+        { "beat": 0.4 },
+        "By how much does the finish time move?"
+      ],
+      "answer": [
+        "Not one minute sooner.",
+        "That branch has slack. It was never setting the finish time, so shaving it only gives you more slack.",
+        "A few minutes sooner and exactly as much as you saved both assume every task matters equally. Only a task on the critical path moves the clock, and cut it far enough and the path shifts to the other branch.",
+        "Which workers are available does not change this, since we assumed enough of them."
+      ]
+    },
+    {
+      "lines": [
+        "One more lens. Tasks that share no dependency, even indirectly, form separate components.",
+        "They can run on different workers, fail without affecting each other, and belong to different teams.",
+        "Finding them is one more walk over the graph. And that is the pattern for this whole topic: order the tasks, catch the cycle, trace what reruns, find what sets the clock, all linear in the size of the graph.",
+        { "beat": 0.4 },
+        "The tasks of a DAG run on many machines. Next: what the network between them costs, in bandwidth, latency and where the data lives."
+      ]
+    }
+  ]
+}

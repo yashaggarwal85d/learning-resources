@@ -1,0 +1,137 @@
+{
+  "topic": "dsa.external-memory-i-o",
+  "steps": [
+    {
+      "lines": [
+        "The word RAM charged one step for any memory access. Once the vector outgrows memory, what you pay for is blocks moved, and the count changes completely.",
+        "Here is our vector again, grown to a gibibyte of sixty four bit keys. It no longer fits in the memory the program is given.",
+        { "beat": 0.4 },
+        "So every touch might mean something travelling in from disk. Watch what that does to the arithmetic."
+      ]
+    },
+    {
+      "lines": [
+        "Before we count anything, commit to a guess. Visit a million keys of this vector.",
+        "First in sorted order, in one sweep. Then in random order, jumping around.",
+        "The disk moves data in blocks of five hundred and twelve keys.",
+        { "beat": 0.4 },
+        "Which visit moves fewer blocks, and by how much?"
+      ],
+      "answer": [
+        "The sweep costs about five hundred and twelve times fewer transfers.",
+        "In a sweep, five hundred and twelve keys arrive together, so you pay one transfer per block. A random visit lands every key in its own block, so you pay about one per key.",
+        "The same work, a factor of five hundred apart. Saying they cost about the same, or that random is cheaper, ignores that a block is delivered whole.",
+        "That gap is the whole reason we need a new cost model."
+      ]
+    },
+    {
+      "lines": [
+        "Here is the model, from Aggarwal and Vitter, nineteen eighty eight. Look at its shape: two levels.",
+        "A fast memory that holds M items, and a slow store that only ever moves whole blocks of B items.",
+        "Everything you do to data already in memory is free. That sounds like cheating, but it is the honest simplification when a block costs more than thousands of comparisons.",
+        "The meter runs only when a block crosses the boundary."
+      ]
+    },
+    {
+      "lines": [
+        "Three numbers describe any job. N is the items in the problem. M is the items that fit in memory. B is the items in one block.",
+        "For our gibibyte vector, read the values off the screen. N is a hundred and thirty four million keys, and the whole vector is just sixteen memory loads long.",
+        "Hold onto that sixteen. It is going to decide how the sort finishes."
+      ]
+    },
+    {
+      "lines": [
+        "The simplest operation is a scan, reading every item once.",
+        "Each block is touched exactly once, in order. So the cost is N over B, about two hundred and sixty thousand transfers, all sequential.",
+        "That number is a floor. Nothing that must read all the data can beat it, which is why every other bound is measured against it."
+      ]
+    },
+    {
+      "lines": [
+        "Now searching one key among sorted keys. On the word RAM, binary search costs log base two of N, here twenty seven probes.",
+        "But look at what one transfer buys you now. A whole block of keys arrives, so it rules out all but one Bth of the range.",
+        "So the search costs log base B of N: three reads instead of twenty seven.",
+        "A binary tree wastes the block. A tree whose nodes are blocks, which is a B tree, uses all of it. We come back to that in a later chapter."
+      ]
+    },
+    {
+      "lines": [
+        "Sorting next. Fill memory, sort what is there in place, and write it out as a sorted run. Then merge runs together.",
+        "Do the arithmetic from the numbers you already hold. The vector is sixteen memory loads long, and memory holds sixteen thousand blocks.",
+        { "beat": 0.4 },
+        "How many passes over the data does the whole sort take?"
+      ],
+      "answer": [
+        "Two.",
+        "The first pass writes sixteen sorted runs. One merge can swallow up to sixteen thousand runs at once, so sixteen is nothing, and a single merge finishes the job.",
+        "Run formation, then one merge. One pass would need the whole vector in memory, and sixteen or four passes assume a far smaller fan in than memory gives."
+      ]
+    },
+    {
+      "lines": [
+        "That is where the famous sort bound comes from. Read the logarithm in it as a count of passes.",
+        "Each merge holds one block from about M over B runs in memory at once, so every pass divides the number of runs by that fan in.",
+        "And the fan in is in the thousands. A two way merge of the same runs would need four passes instead of one.",
+        "Comparisons gave us a log in base two. Blocks give us a log in base M over B. The base is the memory."
+      ]
+    },
+    {
+      "lines": [
+        "Step back and count the same sort twice.",
+        "By comparisons it is billions. By block transfers it is about half a million, the two scans from before.",
+        "In practice the stopwatch tracks the transfers, since one block off a disk costs more than thousands of comparisons in memory.",
+        "That is the lesson of the model: once data lives out of memory, bytes moved decide the cost, not operations counted."
+      ]
+    },
+    {
+      "lines": [
+        "This also pays a debt from the amortized chapter. We proved the doubling vector costs one write per append on balance. What is that in blocks?",
+        "A resize copies the contents, and a copy is a scan. Add up every resize: fewer than two N items copied in total.",
+        "So at most about two N over B transfers, which is about one over B of a transfer per append.",
+        "The amortized proof and the block model agree, and the bound only got stronger."
+      ]
+    },
+    {
+      "lines": [
+        "One more gift: this is the same model at every level of the machine.",
+        "At the disk, a block is a page of five hundred and twelve keys. At the processor, a block is a cache line, just eight keys, and M becomes the cache.",
+        "Only M and B change. The counting is identical.",
+        "So the next time a loop is slow, ask which boundary its blocks are crossing."
+      ]
+    },
+    {
+      "lines": [
+        "Now test the model on a design choice. A hash table too big for memory, with N records, and you probe every one of them in turn.",
+        "Compare it against sorting the table first and sweeping it once.",
+        { "beat": 0.4 },
+        "How do the transfer counts compare?"
+      ],
+      "answer": [
+        "About N transfers for the lookups, since each lands in its own block.",
+        "Sorting first costs only a couple of passes of about N over B. So sorting wins by a factor close to B.",
+        "Neither is cheaper just because lookups are fewer. The count depends on B, and that is why external engines sort or partition before they probe."
+      ]
+    },
+    {
+      "lines": [
+        "Hold N and B fixed, and let the data grow far past memory.",
+        "Think about what has to change for the sort to need a third pass.",
+        { "beat": 0.4 },
+        "Is two passes a ceiling the sort will outgrow, or does it hold forever?"
+      ],
+      "answer": [
+        "It does grow, but it stays small for a very long way.",
+        "The pass count ticks up only when the number of runs, N over M, first exceeds the fan in, M over B.",
+        "That is the moment memory starts to matter, long after the data stopped fitting in it. Two forever and growing with every doubling are both wrong, and B alone does not decide it."
+      ]
+    },
+    {
+      "lines": [
+        "Last, an honest caveat. The model counts transfers. It does not give you nanoseconds.",
+        "Device latency, bandwidth and prefetching set the constant. So the count predicts the shape of the cost, and you measure the rest.",
+        { "beat": 0.4 },
+        "The model needs M and B, and every level of the hierarchy has different ones. Next: how to measure them on the machine in front of you."
+      ]
+    }
+  ]
+}

@@ -1,0 +1,114 @@
+{
+  "topic": "de.b-trees-vs-lsm",
+  "steps": [
+    {
+      "lines": [
+        "You know what each tier of the machine costs. An index decides how many of those costs a lookup has to pay.",
+        "There are two great families, and the whole topic is the question of where each one makes you pay.",
+        { "beat": 0.4 },
+        "One pays when it writes. The other pays when it reads."
+      ]
+    },
+    {
+      "lines": [
+        "The first family keeps data sorted, in place, in a tree. Look at the shape: every node is exactly one page.",
+        "The leaves hold the rows. The nodes above hold only signposts, telling a search which child to take.",
+        "The number that matters is how many signposts fit in a page. Page size divided by the size of one entry. That is the fan-out.",
+        "Hold on to it. Everything about this tree's speed comes from that one number being large."
+      ]
+    },
+    {
+      "lines": [
+        "A hundred million keys, a fan-out of a few hundred.",
+        "Do not count nodes. Ask how many times you can divide a hundred million by a few hundred before one is left.",
+        { "beat": 0.4 },
+        "How many levels is that?"
+      ],
+      "answer": [
+        "Three or four.",
+        "The height is a logarithm of the key count, in the base of the fan-out. A large base makes a logarithm small.",
+        "Twenty or ten levels would be right for a binary tree, where the base is two. The tree is short because it is wide, and key size changes the answer only through the fan-out."
+      ]
+    },
+    {
+      "lines": [
+        "So a point lookup walks one path from root to leaf. Three or four pages.",
+        "But look at which pages. The root is one page. The level below it is a few megabytes at most.",
+        "Those pages are touched by every lookup, so after a handful of queries they sit in memory for good.",
+        "That is the real cost: about one read from the drive, at the leaf. And a range scan descends once, then walks sideways along linked leaves."
+      ]
+    },
+    {
+      "lines": [
+        "The second family refuses to write in place. Watch what a write does here: it only ever appends.",
+        "It goes into a small sorted table in memory. When that fills, the table is frozen and flushed in one long sequential sweep. That output is a sorted run.",
+        "Notice what is missing. No page to hunt for, no seek, no read before the write.",
+        "That is why ingestion is so cheap. The structure was designed so the disk only ever sees sequential writes."
+      ]
+    },
+    {
+      "lines": [
+        "But there is a price. Runs are never modified, so they pile up, and a reader has to look in more of them.",
+        "So a background job merges several runs into fewer, larger ones. That is compaction, and it is the same merge of sorted inputs you will meet in external sorting.",
+        "The catch is on the right of the picture. Each level is about ten times the one above, and a byte is rewritten every time it moves down.",
+        "So the cheap writes were not free. The cost moved to the background, where the disk does the rewriting."
+      ]
+    },
+    {
+      "lines": [
+        "Now weigh the two, on three costs: reading, writing, and space.",
+        "The in-place tree reads beautifully, one cached path. But a tiny change rewrites a whole page, and the log writes it again.",
+        "The append-only tree writes beautifully. But a read may touch several runs, and compaction rewrites data many times over.",
+        "Read the two numbers at the bottom: leveled write amplification near thirty three, space near one point one four. Those are RocksDB's own worked example, not a law."
+      ]
+    },
+    {
+      "lines": [
+        "Researchers gave this trade a name. Reads, updates, memory.",
+        "The conjecture says you can push at most two of them down, and the third pays.",
+        "Our two families sit at opposite corners of that triangle. The in-place tree buys cheap reads. The append-only tree buys cheap writes.",
+        "So no design wins everywhere. The question is always which cost your workload can afford."
+      ]
+    },
+    {
+      "lines": [
+        "An obvious objection: if a read must check many runs, surely it is slow.",
+        "That is what the membership sketch is for. Before opening a run, you ask whether the key could possibly be inside.",
+        "Most of the time the answer is no, so a point read touches about one run. The default spends ten bits per key for roughly a one percent mistake rate.",
+        "Now notice what the sketch cannot do. It answers exact keys only. A range scan has nothing to ask it, so it still merges every overlapping run."
+      ]
+    },
+    {
+      "lines": [
+        "Make it concrete with the shop. You look up one order by its id, over and over. Reads dominate.",
+        { "beat": 0.4 },
+        "Which family do you reach for?"
+      ],
+      "answer": [
+        "The in-place tree.",
+        "A short descent through pages that are already cached, then a tidy walk along the leaves if you need neighbours.",
+        "The append-only tree would work, but you would be paying for run checks on every read to gain a write speed you are not using. That is why operational databases default to the tree."
+      ]
+    },
+    {
+      "lines": [
+        "Now the opposite extreme. A terabyte of order events arriving as a stream, mostly appends.",
+        { "beat": 0.4 },
+        "Which family wants that workload?"
+      ],
+      "answer": [
+        "The append-only tree.",
+        "It takes the stream at memory speed and leaves the sorting to background compaction, so the write path never seeks.",
+        "The in-place tree would rewrite a page for each small change, which turns a stream into a storm of random writes. You pay for it in reads and disk work later, but the ingest never stalls."
+      ]
+    },
+    {
+      "lines": [
+        "One sentence decides it. The in-place tree trades write cost for read cost. The append-only tree trades read and space cost for write cost.",
+        "So do not ask which is better. Ask where your hot path is, and choose the structure whose cheap side is that path.",
+        { "beat": 0.4 },
+        "Next: what a lookup really costs when the index finds thousands of rows, counted in block transfers."
+      ]
+    }
+  ]
+}

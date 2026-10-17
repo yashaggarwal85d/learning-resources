@@ -1,0 +1,178 @@
+{
+  "topic": "de.object-storage-as-storage",
+  "syllabus": [
+    {
+      "clause": "S3-class semantics",
+      "at": [{ "step": "A flat namespace, not a filesystem" }, { "deep": "What an object store is, and what it is not" }]
+    },
+    {
+      "clause": "strong read-after-write consistency",
+      "at": [{ "step": "Strong read-after-write, since 2020" }, { "deep": "The consistency contract" }]
+    },
+    {
+      "clause": "first-byte latency in tens of milliseconds",
+      "at": [{ "step": "The cost of one request: α + n/β" }, { "deep": "The cost of one request: α + n/β" }]
+    },
+    {
+      "clause": "per-prefix request-rate limits",
+      "at": [{ "step": "Each prefix has its own ceiling" }, { "deep": "Per-prefix request-rate limits" }]
+    },
+    {
+      "clause": "range GETs",
+      "at": [{ "step": "A range GET reads just a slice" }, { "deep": "Range GETs and the Parquet footer" }]
+    },
+    {
+      "clause": "multipart upload",
+      "at": [{ "step": "Large objects upload in parts" }, { "deep": "Multipart upload" }]
+    },
+    {
+      "clause": "conditional writes",
+      "at": [{ "step": "Predict: two writers, one key" }, { "deep": "Conditional writes" }]
+    },
+    {
+      "clause": "why lakehouse engines coalesce, cache and parallelize requests (economics in §3.3; table formats in Ch.6)",
+      "at": [{ "step": "Back to the tier: count requests, not bytes" }, { "deep": "Why lakehouse engines coalesce, cache and parallelize" }]
+    }
+  ],
+  "sources": [
+    {
+      "source": "Amazon S3 User Guide: data consistency model, performance guidelines, multipart upload limits, conditional requests",
+      "items": [
+        {
+          "item": "Strong read-after-write consistency for PUT and DELETE, in all regions, since December 2020, at no extra cost",
+          "at": [{ "step": "Strong read-after-write, since 2020" }, { "deep": "The consistency contract" }]
+        },
+        {
+          "item": "Single-key atomicity: a concurrent read sees the old object or the new one, never a torn mix",
+          "at": [{ "step": "Strong read-after-write, since 2020" }, { "deep": "The consistency contract" }]
+        },
+        {
+          "item": "At least 3,500 PUT/COPY/POST/DELETE and 5,500 GET/HEAD requests per second per partitioned prefix, with no limit on the number of prefixes",
+          "at": [{ "step": "Each prefix has its own ceiling" }, { "deep": "Per-prefix request-rate limits" }]
+        },
+        {
+          "item": "503 Slow Down signals back-pressure while a prefix repartitions; the SDKs retry with backoff",
+          "at": [{ "step": "Each prefix has its own ceiling" }, { "deep": "Per-prefix request-rate limits" }]
+        },
+        {
+          "item": "Multipart upload: up to 10,000 parts, 5 MiB to 5 GiB each (no minimum on the last part), max object size 48.8 TiB",
+          "at": [{ "step": "Large objects upload in parts" }, { "deep": "Multipart upload" }]
+        },
+        {
+          "item": "If-None-Match: * (August 2024) succeeds only if the key is absent; If-Match: <etag> (November 2024) succeeds only if unchanged",
+          "at": [{ "step": "Predict: two writers, one key" }, { "deep": "Conditional writes" }]
+        }
+      ]
+    },
+    {
+      "source": "AWS whitepaper, Best Practices Design Patterns: Optimizing Amazon S3 Performance (2019)",
+      "items": [
+        {
+          "item": "Consistent latencies of roughly 100-200 ms for small objects, with medians in the tens of milliseconds under 512 KB",
+          "at": [{ "step": "The cost of one request: α + n/β" }, { "deep": "The cost of one request: α + n/β" }]
+        },
+        {
+          "item": "About 85-90 MB/s per request, and recommended byte-range sizes of 8 MB or 16 MB",
+          "at": [{ "step": "Predict: where does waiting equal transferring?" }, { "deep": "The cost of one request: α + n/β" }]
+        }
+      ]
+    },
+    {
+      "source": "Google Cloud Storage docs: Consistency, Request rate and access distribution guidelines",
+      "items": [
+        {
+          "item": "Strongly consistent object read-after-write and bucket/object listing; IAM changes are eventually consistent",
+          "at": [{ "deep": "The consistency contract" }]
+        },
+        {
+          "item": "A bucket auto-scales from a baseline of roughly 1,000 writes/s and 5,000 reads/s; ramp request rate up gradually",
+          "at": [{ "deep": "Per-prefix request-rate limits" }]
+        }
+      ]
+    },
+    {
+      "source": "D. Durner, V. Leis, T. Neumann, \"Exploiting Cloud Object Storage for High-Performance Analytics\", PVLDB 2023",
+      "items": [
+        {
+          "item": "A download manager that coalesces nearby small ranges and picks cost- and throughput-optimal request sizes and concurrency",
+          "at": [{ "step": "Back to the tier: count requests, not bytes" }, { "deep": "Why lakehouse engines coalesce, cache and parallelize" }]
+        },
+        {
+          "item": "A query engine reading straight from object storage can match warehouses that cache on local SSDs",
+          "at": [{ "deep": "Why lakehouse engines coalesce, cache and parallelize" }]
+        }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "independent reviewer agent, written without seeing the topic",
+    "date": "2026-10-14",
+    "items": [
+      {
+        "item": "An object store is a flat key-to-blob namespace with no filesystem underneath; a prefix is a shared leading substring, not a directory",
+        "at": [{ "step": "A flat namespace, not a filesystem" }]
+      },
+      {
+        "item": "Writes are whole-object: PUT replaces the whole object, and a general-purpose bucket has no append and no rename, only COPY then DELETE",
+        "at": [{ "step": "A flat namespace, not a filesystem" }]
+      },
+      {
+        "item": "Strong read-after-write consistency (since December 2020 on S3) means the next read sees a successful write, and a racing read never returns a torn object",
+        "at": [{ "step": "Strong read-after-write, since 2020" }]
+      },
+      {
+        "item": "What strong consistency still does not give: a cross-key transaction, so swapping or atomically creating several objects together is not possible",
+        "at": [{ "step": "Strong read-after-write, since 2020" }]
+      },
+      {
+        "item": "A request's cost is alpha plus bytes over beta, with alpha in the tens to hundreds of milliseconds; this is the T(n) model at its most latency-dominated extreme",
+        "at": [{ "step": "The cost of one request: α + n/β" }]
+      },
+      {
+        "item": "Because request latency is a distribution, a job that waits on many requests is bounded by a high percentile (p99 or worse), not the median",
+        "at": [{ "step": "The cost of one request: α + n/β" }]
+      },
+      {
+        "item": "The break-even range size is alpha times beta; below it a request is latency-bound, above it bandwidth-bound, which is why cloud vendors recommend multi-megabyte ranges",
+        "at": [{ "step": "Predict: where does waiting equal transferring?" }]
+      },
+      {
+        "item": "Throughput on object storage comes from concurrency, not from any single fast request, and there is no per-bucket bandwidth cap",
+        "at": [{ "step": "Predict: how many requests fill the link?" }]
+      },
+      {
+        "item": "Each prefix has its own request-rate ceiling; exceeding it returns 503 Slow Down as back-pressure, and the fix is spreading keys across more prefixes, not retrying forever on one",
+        "at": [{ "step": "Each prefix has its own ceiling" }]
+      },
+      {
+        "item": "A Range GET reads a contiguous slice of an object; combined with a columnar footer at the end of the file, a query can fetch only the column chunks it needs",
+        "at": [{ "step": "A range GET reads just a slice" }]
+      },
+      {
+        "item": "Multipart upload makes large-object writes resumable per part and keeps the object invisible to readers until the final assembly call succeeds, preserving whole-object atomicity",
+        "at": [{ "step": "Large objects upload in parts" }]
+      },
+      {
+        "item": "Conditional writes (If-None-Match / If-Match) are a compare-and-set primitive that, combined with strong consistency, lets a table format commit without an external lock service",
+        "at": [{ "step": "Predict: two writers, one key" }]
+      },
+      {
+        "item": "S3 Express One Zone directory buckets are the one exception to the whole-object, no-append, no-rename model, trading availability-zone scope for append and atomic rename",
+        "at": [{ "out": "A named exception the reel does not animate; covered in index.mdx's deep dive, not central to the general-purpose contract this topic teaches." }]
+      },
+      {
+        "item": "Lakehouse engines coalesce small ranges toward the alpha-beta size, parallelize requests across prefixes, cache hot objects locally, and hedge the slow tail",
+        "at": [{ "step": "Back to the tier: count requests, not bytes" }]
+      },
+      {
+        "item": "Per-request and egress pricing economics, and how table formats use conditional writes for commits, are developed in later chapters, not this foundations topic",
+        "at": [{ "out": "Explicitly deferred by the syllabus line itself to §3.3 (economics) and Chapter 6 (table formats)." }]
+      }
+    ]
+  },
+  "gapReview": {
+    "date": "2026-10-14",
+    "by": "builder self-review",
+    "open": []
+  }
+}

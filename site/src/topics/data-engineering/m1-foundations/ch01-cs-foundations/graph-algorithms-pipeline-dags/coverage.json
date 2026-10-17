@@ -1,0 +1,163 @@
+{
+  "topic": "de.graph-algorithms-pipeline-dags",
+  "syllabus": [
+    {
+      "clause": "BFS/DFS",
+      "at": [{ "step": "Forward or backward, one traversal each" }, { "deep": "Traversal: what is reachable, downstream and upstream" }]
+    },
+    {
+      "clause": "topological sort (Kahn) for task scheduling",
+      "at": [
+        { "step": "Kahn’s algorithm: zero in-degree runs first" },
+        { "step": "Predict: how many waves to run them all?" },
+        { "deep": "Topological order, and Kahn's algorithm" }
+      ]
+    },
+    {
+      "clause": "cycle detection",
+      "at": [{ "step": "A cycle means no order exists" }, { "deep": "Cycle detection" }]
+    },
+    {
+      "clause": "critical path",
+      "at": [
+        { "step": "The critical path, not the task sum" },
+        { "step": "Predict: speed up a task off the path" },
+        { "deep": "The critical path" }
+      ]
+    },
+    {
+      "clause": "connected components",
+      "at": [{ "step": "Back to the shop: order, cycle, clock, split" }, { "deep": "Connected components" }]
+    },
+    {
+      "clause": "full treatment → Data Structures & Algorithms Ch.8",
+      "at": [{ "deep": "The costs, in one table" }]
+    }
+  ],
+  "sources": [
+    {
+      "source": "A. B. Kahn, \"Topological sorting of large networks\", Communications of the ACM 1962",
+      "items": [
+        {
+          "item": "An in-degree, ready-queue algorithm builds a valid execution order in O(V + E) by repeatedly removing zero-in-degree vertices",
+          "at": [{ "step": "Kahn’s algorithm: zero in-degree runs first" }, { "deep": "Topological order, and Kahn's algorithm" }]
+        },
+        {
+          "item": "If the output holds fewer than V vertices when the queue empties, the leftovers sit on or downstream of a cycle",
+          "at": [{ "step": "A cycle means no order exists" }, { "deep": "Cycle detection" }]
+        }
+      ]
+    },
+    {
+      "source": "J. E. Kelley and M. R. Walker, \"Critical-Path Planning and Scheduling\", 1959",
+      "items": [
+        {
+          "item": "The critical path is the longest path through a task network weighted by duration, computed by a single topological-order sweep",
+          "at": [{ "step": "The critical path, not the task sum" }, { "deep": "The critical path" }]
+        },
+        {
+          "item": "Tasks not on the critical path have slack and can be delayed or sped up without changing the finish time",
+          "at": [{ "step": "Predict: speed up a task off the path" }, { "deep": "The critical path" }]
+        }
+      ]
+    },
+    {
+      "source": "Python documentation, graphlib (TopologicalSorter, prepare, get_ready, done, CycleError)",
+      "items": [
+        {
+          "item": "get_ready() returns a tuple of currently runnable nodes, batching Kahn's algorithm into parallel waves",
+          "at": [{ "step": "Predict: how many waves to run them all?" }, { "deep": "Topological order, and Kahn's algorithm" }]
+        },
+        {
+          "item": "prepare() checks for cycles up front and raises CycleError carrying the offending node list",
+          "at": [{ "step": "A cycle means no order exists" }, { "deep": "Cycle detection" }]
+        }
+      ]
+    },
+    {
+      "source": "T. H. Cormen, C. E. Leiserson, R. L. Rivest, C. Stein, Introduction to Algorithms, 4th ed., ch. 20",
+      "items": [
+        {
+          "item": "BFS and DFS both visit every reachable vertex and edge once, in O(V + E) time, and differ in traversal order and in what they expose",
+          "at": [{ "step": "Forward or backward, one traversal each" }, { "deep": "Traversal: what is reachable, downstream and upstream" }]
+        },
+        {
+          "item": "Longest simple path is NP-hard in a general graph, but acyclicity collapses it to a single linear-time sweep on a DAG",
+          "at": [{ "step": "The critical path, not the task sum" }, { "deep": "The critical path" }]
+        },
+        {
+          "item": "Connected components (weak connectivity for a directed graph) are found by one more O(V + E) traversal from each unvisited vertex",
+          "at": [{ "step": "Back to the shop: order, cycle, clock, split" }, { "deep": "Connected components" }]
+        }
+      ]
+    },
+    {
+      "source": "Apache Airflow documentation, DAGs",
+      "items": [
+        {
+          "item": "Airflow treats the acyclic requirement literally and rejects a graph with a loop rather than deadlocking at run time",
+          "at": [{ "step": "A cycle means no order exists" }, { "deep": "Cycle detection" }]
+        }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "independent reviewer agent, written without seeing the topic",
+    "date": "2026-10-14",
+    "items": [
+      {
+        "item": "A pipeline's tasks and dependencies form a directed acyclic graph, and a topological order exists if and only if the graph has no cycle",
+        "at": [{ "step": "Directed and acyclic: a DAG" }]
+      },
+      {
+        "item": "A task's downstream set (descendants) and upstream set (ancestors) are each found by one BFS or DFS traversal, forward or on the edge-reversed graph",
+        "at": [{ "step": "Forward or backward, one traversal each" }, { "step": "Predict: what reruns after clean changes?" }]
+      },
+      {
+        "item": "Kahn's algorithm removes zero-in-degree vertices repeatedly, decrementing successors' in-degrees, to build a valid serial execution order in O(V + E)",
+        "at": [{ "step": "Kahn’s algorithm: zero in-degree runs first" }]
+      },
+      {
+        "item": "Batching Kahn's ready queue into whole ready-sets instead of popping one at a time yields the maximum-parallelism wave schedule",
+        "at": [{ "step": "Predict: how many waves to run them all?" }]
+      },
+      {
+        "item": "A cycle can be detected either by Kahn's leftover vertices with positive in-degree, or by a DFS finding a back edge into a vertex on the current recursion stack",
+        "at": [{ "step": "A cycle means no order exists" }]
+      },
+      {
+        "item": "An orchestrator checks for cycles before scheduling anything, turning a structurally impossible run into a parse-time or import-time error rather than a runtime hang",
+        "at": [{ "step": "A cycle means no order exists" }]
+      },
+      {
+        "item": "The pipeline's finish time under unlimited workers is the longest duration-weighted path (the critical path), not the sum of all task durations or the longest chain by task count",
+        "at": [{ "step": "The critical path, not the task sum" }]
+      },
+      {
+        "item": "Longest path is NP-hard on a general graph but linear-time on a DAG, because a topological order lets a dynamic program solve each vertex after all its predecessors",
+        "at": [{ "step": "The critical path, not the task sum" }]
+      },
+      {
+        "item": "Tasks off the critical path have slack; speeding them up does not change the pipeline's finish time, and the critical path itself can shift once a bottleneck task is sped up enough",
+        "at": [{ "step": "Predict: speed up a task off the path" }]
+      },
+      {
+        "item": "Two tasks with no path connecting them in either direction belong to different (weakly) connected components and can be scheduled, retried and backfilled independently",
+        "at": [{ "step": "Back to the shop: order, cycle, clock, split" }]
+      },
+      {
+        "item": "Every one of these pipeline questions costs O(V + E), linear in the graph's size, so the graph itself is never the bottleneck in a real data pipeline",
+        "at": [{ "step": "Back to the shop: order, cycle, clock, split" }]
+      },
+      {
+        "item": "A full proof-level treatment of these traversals and topological sort via DFS finishing times belongs to a dedicated algorithms track, not this scheduling-focused refresher",
+        "at": [{ "out": "Explicitly deferred to Data Structures & Algorithms Ch.8, per this topic's own scope line." }]
+      }
+    ]
+  },
+  "gapReview": {
+    "date": "2026-10-14",
+    "by": "builder self-review",
+    "open": []
+  }
+}

@@ -1,0 +1,117 @@
+{
+  "topic": "de.numeric-representation-data-bugs",
+  "steps": [
+    {
+      "lines": [
+        "Storage returns your bytes intact. Their type decides whether a total, an amount or a timestamp is still right.",
+        "Read the four columns on the screen: an id, a status, an amount, a time. Three of them are numbers, and each is a fixed-width box.",
+        { "beat": 0.4 },
+        "That is the thread through this whole topic. The box has a fixed size, the idea inside it does not, and every bug here is the idea spilling out of the box."
+      ]
+    },
+    {
+      "lines": [
+        "Start with the id, because it fails loudest. Thirty-two bits is about two billion distinct values.",
+        "Do the arithmetic yourself. A few thousand events every second fills two billion in well under two weeks.",
+        "So overflow is not a rare event on a busy table. The only real question is what your system does when it happens."
+      ]
+    },
+    {
+      "lines": [
+        "You add one to the largest value a thirty-two-bit integer can hold.",
+        "Think about where the arithmetic is running before you answer, because the answer is not a property of the number.",
+        { "beat": 0.4 },
+        "What happens?"
+      ],
+      "answer": [
+        "It depends on the engine, which is exactly the danger.",
+        "Postgres refuses and raises an error. Spark does the same by default since version four.",
+        "A numeric array library wraps around to a large negative number and says nothing. Plain Python never overflows, because its integers have no fixed width.",
+        "So there is no single right answer to give. That is why code that passes in a notebook can corrupt data in a cluster."
+      ]
+    },
+    {
+      "lines": [
+        "Now the amount, stored as a floating point number. Look at the number line and the tick marks on it.",
+        "Each tick is a value the format can represent exactly. Near one they are packed tightly. As the numbers grow, they spread apart.",
+        "Past about nine quadrillion the ticks are two apart, so odd whole numbers do not exist there at all.",
+        "Add one and you are rounded back to the tick you started on. The sum looks fine and did nothing."
+      ]
+    },
+    {
+      "lines": [
+        "This is the one that catches experienced engineers, so slow down.",
+        "One tenth, two tenths and three tenths, added in two groupings. In algebra the grouping cannot matter.",
+        { "beat": 0.4 },
+        "Does it matter here?"
+      ],
+      "answer": [
+        "Yes. The two totals differ in the last decimal place.",
+        "Addition on floats is commutative but not associative. Every step rounds to the nearest tick, and which tick you land on depends on what was already in the running total.",
+        "So the grouping decides the rounding. Saying the grouping does not matter is the mathematician's habit, and the machine does not share it."
+      ]
+    },
+    {
+      "lines": [
+        "Now scale that to a million amounts. Watch the two totals disagree.",
+        "The error is worst when a large running total swallows a tiny amount whole, the same effect as adding one past the nine quadrillion line.",
+        "In a distributed job it gets worse, because the rows of one group arrive from many machines in no fixed order.",
+        "So the same query on the same data can return a different total on different runs, and nothing is wrong with the cluster."
+      ]
+    },
+    {
+      "lines": [
+        "The network is not the only thing that reorders a sum.",
+        "A vectorized engine adds several values per instruction, so its additions form a wider, shallower tree than a simple loop.",
+        "And many cores each build a partial sum, merged in whatever order they finish.",
+        "Change the parallelism, and the last digits move. You never wrote a bug. You changed the order of additions."
+      ]
+    },
+    {
+      "lines": [
+        "So how do you get a total that does not depend on order?",
+        "Compensated summation keeps the bits that fall off the end of each addition, and shrinks the error a great deal.",
+        "An exactly rounded sum goes further and returns one answer in any order. But both are repairs.",
+        "The better fix for money is to avoid the binary float, which is the next step."
+      ]
+    },
+    {
+      "lines": [
+        "A fixed point decimal stores cents exactly. There is nothing to round, so there is no drift.",
+        "But watch what happens to the digits when you multiply. The scale of the result is the sum of the two scales.",
+        "An amount times a tax rate therefore needs more digits than either input. Chain a few of these and you reach the engine's ceiling.",
+        "At the ceiling the engine either errors or quietly drops digits. So work out the result's precision before you ship the query, not after."
+      ]
+    },
+    {
+      "lines": [
+        "The last number is the time. A timestamp is a count of ticks since nineteen seventy, and the size of the tick is a choice.",
+        "Some systems count microseconds. Some older tools count nanoseconds.",
+        "Think about what a sixty-four-bit integer can hold, and how big a nanosecond is.",
+        { "beat": 0.4 },
+        "How many years can a nanosecond counter reach, in either direction?"
+      ],
+      "answer": [
+        "Only about two hundred and ninety years in total, which reaches roughly from the sixteen hundreds to the twenty two sixties.",
+        "A smaller tick buys finer resolution and pays for it in range.",
+        "Step outside that window and the counter overflows, so dates far from now need a coarser tick."
+      ]
+    },
+    {
+      "lines": [
+        "Now the quiet failure, the one that raises no error.",
+        "Write microsecond times to a file, then read them somewhere that rounds to milliseconds. The two integers differ, though they name the same instant.",
+        "Join on that column, and rows silently fall out of the result.",
+        "A join key has to carry the same tick size on both sides. Pin it explicitly, and never let a default decide."
+      ]
+    },
+    {
+      "lines": [
+        "If you keep one rule from this topic, keep this one: never store currency as a binary float.",
+        "Store the cents exactly, in a decimal or as whole minor units. Keep floats for quantities where a tiny relative error is harmless.",
+        { "beat": 0.4 },
+        "That closes the hardware. Next: the algorithms that decide how many bytes a query moves, starting with the two index families most databases are built on."
+      ]
+    }
+  ]
+}

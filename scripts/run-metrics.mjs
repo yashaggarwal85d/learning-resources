@@ -10,8 +10,9 @@ import { readdirSync, readFileSync, statSync, existsSync, appendFileSync, writeF
 import { join, dirname, resolve } from 'node:path';
 import { homedir, tmpdir } from 'node:os';
 import { publish, runEntry } from './ledger.mjs';
+import { fileURLToPath } from 'node:url';
 
-const root = resolve(dirname(new URL(import.meta.url).pathname), '..');
+const root = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const projects = join(process.env.CLAUDE_CONFIG_DIR ?? join(homedir(), '.claude'), 'projects');
 const state = join(tmpdir(), 'run-metrics-marks.json');
 

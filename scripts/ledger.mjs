@@ -6,8 +6,9 @@ import { spawnSync } from 'node:child_process';
 import { appendFileSync, existsSync, mkdtempSync, rmSync, writeFileSync } from 'node:fs';
 import { dirname, join, resolve } from 'node:path';
 import { tmpdir } from 'node:os';
+import { fileURLToPath, pathToFileURL } from 'node:url';
 
-const root = resolve(dirname(new URL(import.meta.url).pathname), '..');
+const root = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const git = (args, cwd) => spawnSync('git', args, { cwd, encoding: 'utf8' });
 
 const HEADER = `# Ledger
@@ -61,7 +62,7 @@ export function publish({ ledger = [], runs = [] }, message = 'Ledger: record a 
   return false;
 }
 
-if (import.meta.url === `file://${process.argv[1]}`) {
+if (import.meta.url === pathToFileURL(process.argv[1]).href) {
   const [cmd, ...lines] = process.argv.slice(2);
   if (cmd !== 'add' || !lines.length) {
     console.error('usage: ledger.mjs add "<line>" ["<second line>"]');

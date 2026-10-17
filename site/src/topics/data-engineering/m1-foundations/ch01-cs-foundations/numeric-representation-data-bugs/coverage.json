@@ -1,0 +1,165 @@
+{
+  "topic": "de.numeric-representation-data-bugs",
+  "syllabus": [
+    {
+      "clause": "integer width and overflow",
+      "at": [
+        { "step": "A thirty-two-bit box runs out fast" },
+        { "step": "Predict: one past the limit" },
+        { "deep": "Integer width and overflow" }
+      ]
+    },
+    {
+      "clause": "IEEE-754 rounding and non-associativity (a float SUM changes with shuffle order)",
+      "at": [
+        { "step": "A number line with uneven spacing" },
+        { "step": "Predict: does grouping change the sum?" },
+        { "step": "A shuffle scrambles the order" },
+        { "deep": "IEEE-754 binary64: a number line with uneven spacing" },
+        { "deep": "Why a float sum depends on the order" }
+      ]
+    },
+    {
+      "clause": "DECIMAL precision/scale propagation for money",
+      "at": [{ "step": "Multiply two decimals, precision grows" }, { "deep": "DECIMAL for money: how precision and scale propagate" }]
+    },
+    {
+      "clause": "timestamp resolution (ns vs µs: pandas 3.0 now infers µs when parsing strings)",
+      "at": [
+        { "step": "Predict: how far can nanoseconds reach?" },
+        { "step": "Two clocks, two tick sizes, a silent miss" },
+        { "deep": "Timestamp resolution: ns, µs, and the round-trip mismatch" }
+      ]
+    },
+    {
+      "clause": "\"never store currency as a float\"",
+      "at": [{ "step": "Back to the shop: one rule for money" }, { "deep": "The rule: never store currency as a float" }]
+    }
+  ],
+  "sources": [
+    {
+      "source": "D. Goldberg, \"What Every Computer Scientist Should Know About Floating-Point Arithmetic\", ACM Computing Surveys 1991",
+      "items": [
+        {
+          "item": "The ulp (unit in the last place) and why representable doubles are not evenly spaced",
+          "at": [{ "step": "A number line with uneven spacing" }, { "deep": "IEEE-754 binary64: a number line with uneven spacing" }]
+        },
+        {
+          "item": "Floating-point addition is commutative but not associative, so a sum's result depends on the order of operations",
+          "at": [{ "step": "Predict: does grouping change the sum?" }, { "deep": "Why a float sum depends on the order" }]
+        },
+        {
+          "item": "Compensated summation recovers most of the rounding error lost to order-dependence",
+          "at": [{ "step": "A careful sum stops depending on order" }, { "deep": "Why a float sum depends on the order" }]
+        }
+      ]
+    },
+    {
+      "source": "PostgreSQL 18 documentation, Numeric Types",
+      "items": [
+        {
+          "item": "Fixed-width integer overflow raises an error; numeric is exact and effectively unbounded",
+          "at": [{ "step": "Predict: one past the limit" }, { "deep": "Integer width and overflow" }]
+        },
+        {
+          "item": "A product's scale is the sum of the input scales, with rounding only on storage into a smaller declared scale",
+          "at": [{ "step": "Multiply two decimals, precision grows" }, { "deep": "DECIMAL for money: how precision and scale propagate" }]
+        }
+      ]
+    },
+    {
+      "source": "NumPy documentation, Data types",
+      "items": [
+        {
+          "item": "Fixed-width integers wrap modulo two to the n, following C casting rules",
+          "at": [{ "step": "Predict: one past the limit" }, { "deep": "Integer width and overflow" }]
+        },
+        {
+          "item": "A power computed in a narrow dtype like int32 can wrap silently, while the same call in int64 has enough headroom to stay exact",
+          "at": [{ "deep": "Integer width and overflow" }]
+        }
+      ]
+    },
+    {
+      "source": "pandas 3.0.0 release notes, Datetime/timedelta resolution inference",
+      "items": [
+        {
+          "item": "Parsing strings now infers microsecond resolution by default, falling back to nanoseconds only when the string's precision requires it",
+          "at": [{ "step": "Two clocks, two tick sizes, a silent miss" }, { "deep": "Timestamp resolution: ns, µs, and the round-trip mismatch" }]
+        },
+        {
+          "item": "An int64 count of nanoseconds since 1970 spans only about 292 years, roughly 1677 to 2262",
+          "at": [{ "step": "Predict: how far can nanoseconds reach?" }, { "deep": "Timestamp resolution: ns, µs, and the round-trip mismatch" }]
+        }
+      ]
+    },
+    {
+      "source": "Apache Spark documentation, ANSI Compliance",
+      "items": [
+        {
+          "item": "ANSI mode, on by default since Spark 4.0, raises ARITHMETIC_OVERFLOW on numeric overflow instead of wrapping",
+          "at": [{ "step": "Predict: one past the limit" }, { "deep": "Integer width and overflow" }]
+        }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "independent reviewer agent, written without seeing the topic",
+    "date": "2026-10-14",
+    "items": [
+      {
+        "item": "A fixed-width signed integer has a hard range, and what happens past it (raise vs. silent wrap) is a per-engine policy choice, not a property of the number itself",
+        "at": [{ "step": "A thirty-two-bit box runs out fast" }, { "step": "Predict: one past the limit" }]
+      },
+      {
+        "item": "Python's arbitrary-precision int never overflows, which is exactly why an overflow bug can be invisible in a notebook and reappear in a database or array engine",
+        "at": [{ "step": "Predict: one past the limit" }]
+      },
+      {
+        "item": "A binary64 double's representable values are unevenly spaced; the spacing (the ulp) grows with magnitude, so large integers eventually cannot be represented exactly",
+        "at": [{ "step": "A number line with uneven spacing" }]
+      },
+      {
+        "item": "Floating-point addition is commutative but not associative, because each intermediate result rounds to the nearest representable value",
+        "at": [{ "step": "Predict: does grouping change the sum?" }]
+      },
+      {
+        "item": "A distributed shuffle delivers rows for one aggregation group in a nondeterministic order, so a float SUM over the same data is not guaranteed to reproduce across runs",
+        "at": [{ "step": "A shuffle scrambles the order" }]
+      },
+      {
+        "item": "SIMD lane reduction and per-core partial aggregation each build a different addition tree than a scalar left-to-right loop, which is a second and third independent source of order-dependence",
+        "at": [{ "step": "Lanes and cores reorder it again" }]
+      },
+      {
+        "item": "Compensated summation (Kahan, or Python's fsum) tracks the rounding error that would otherwise be dropped, making the result order-independent without changing the number's type",
+        "at": [{ "step": "A careful sum stops depending on order" }]
+      },
+      {
+        "item": "A DECIMAL multiplication's result scale and precision are computed from the operands by engine-specific rules, and can hit a precision ceiling even when every input was within range",
+        "at": [{ "step": "Multiply two decimals, precision grows" }]
+      },
+      {
+        "item": "A timestamp is an integer tick count with a type-chosen unit (ms, us or ns); comparing or joining on timestamps with different units silently fails to match even for the same instant",
+        "at": [{ "step": "Two clocks, two tick sizes, a silent miss" }]
+      },
+      {
+        "item": "An int64 nanosecond timestamp has a bounded range (roughly 1677 to 2262); dates outside it overflow rather than silently losing precision",
+        "at": [{ "step": "Predict: how far can nanoseconds reach?" }]
+      },
+      {
+        "item": "The single rule that prevents most of these bugs for money specifically: store currency as a DECIMAL or integer minor units, never a binary float",
+        "at": [{ "step": "Back to the shop: one rule for money" }]
+      },
+      {
+        "item": "Property-based or golden-dataset tests that compare floats or timestamps for exact equality are themselves a source of flaky tests; they need explicit tolerances",
+        "at": [{ "out": "A testing-practice consequence covered in index.mdx's production checklist, not demonstrated as a reel step." }]
+      }
+    ]
+  },
+  "gapReview": {
+    "date": "2026-10-14",
+    "by": "builder self-review",
+    "open": []
+  }
+}

@@ -1,0 +1,68 @@
+import Resource from '../../../../../components/Resource.astro';
+
+This reel is the last of §1.4. The syllabus skips the dedicated networking reels (TCP, DNS, tail latency), so it assumes the few networking words below and the hardware floor from §1.2. Reels on this site are marked **Before this** (earlier in the course), **Goes deeper later** or with the name of another track.
+
+<section class="prereq basics" data-section="basics">
+
+### <span class="n">00</span> Basics: words the reel takes for granted
+
+- **Round-trip time (RTT)**: the time for a small message to reach a machine and for its reply to come back. *Where you meet it:* the number `ping` prints, about 0.5 ms inside a data centre and tens of milliseconds between regions.
+- **Acknowledgement and receive window**: TCP receivers confirm what they got, and advertise how many unconfirmed bytes they are willing to accept. *Where you meet it:* the `rwnd` field in a packet capture, or the `net.ipv4.tcp_rmem` kernel setting.
+- **Availability zone and region**: a zone is one data-centre site within a region; a region is a cluster of zones in one metropolitan area or country. *Where you meet it:* `us-east-1a` is a zone in the region `us-east-1`.
+- **Shuffle and broadcast (join strategies)**: a shuffle sends rows to machines by hashing the join key; a broadcast sends a whole small table to every machine. *Where you meet it:* Spark's `BroadcastHashJoin` versus `SortMergeJoin` in a query plan.
+- **Egress**: data leaving a cloud provider's network or crossing a billing boundary. *Where you meet it:* the "data transfer out" line on a cloud bill.
+
+<p class="check"><b>Check yourself:</b> a path runs at 1.25 GB/s with a 60 ms round trip. Roughly how much data must be in flight to fill it? (Answer: 1.25 GB/s × 0.06 s = 75,000,000 bytes, about 71.5 MiB.)</p>
+
+</section>
+
+<section class="prereq" data-section="latency-bandwidth">
+
+### <span class="n">01</span> Latency, bandwidth and the cost of one transfer
+
+Every tier moves data at a cost of the shape T(n) = α + n/β: a fixed latency α plus the size n over a bandwidth β. You should be able to place a tier on a log scale of latency and bandwidth.
+
+<ul class="resources">
+  <Resource kind="reel" host={props.host} domain="data-engineering" title="Memory hierarchy and latency numbers">Where T(n) = α + n/β, the tiers and the floor estimate come from.</Resource>
+  <Resource kind="reading" title="Latency Numbers Every Programmer Should Know" href="https://gist.github.com/jboner/2841832" by="Jonas Bonér, after Jeff Dean and Peter Norvig" length="1 page">The classic table to keep in your head.</Resource>
+</ul>
+
+</section>
+
+<section class="prereq" data-section="io-model">
+
+### <span class="n">02</span> The I/O cost model, and the network as a tier
+
+The cost model counts work in block transfers and shows that the N you move is the thing to shrink. Its network section counts a message as α + n/β and prices a distributed join in bytes sent.
+
+<ul class="resources">
+  <Resource kind="reel" host={props.host} domain="data-engineering" title="The external-memory (I/O) cost model">Block transfers, the scan and sort bounds, and the network counted the same way.</Resource>
+</ul>
+
+</section>
+
+<section class="prereq" data-section="tcp">
+
+### <span class="n">03</span> TCP windows
+
+The reel builds on how TCP limits the data in flight. The RFC below is the primary source for the 64 KiB window limit and window scaling.
+
+<ul class="resources">
+  <Resource kind="reading" title="RFC 7323: TCP Extensions for High Performance" href="https://www.rfc-editor.org/rfc/rfc7323.txt" by="IETF" length="reference">The long-fat-network problem, the 64 KiB window limit and window scaling.</Resource>
+</ul>
+
+</section>
+
+<section class="prereq" data-section="locality-track">
+
+### <span class="n">04</span> Where data locality is taught in depth
+
+The principle that moving computation is cheaper than moving data comes from the systems that made it famous. You do not need them to follow the reel, but they are the primary sources behind its data-locality step.
+
+<ul class="resources">
+  <Resource kind="reading" title="HDFS Architecture" href="https://hadoop.apache.org/docs/stable/hadoop-project-dist/hadoop-hdfs/HdfsDesign.html" by="Apache Hadoop documentation" length="20 min">States "Moving Computation is Cheaper than Moving Data" as a design goal.</Resource>
+  <Resource kind="reading" title="MapReduce: Simplified Data Processing on Large Clusters" href="https://research.google/pubs/mapreduce-simplified-data-processing-on-large-clusters/" by="Dean &amp; Ghemawat, OSDI 2004" length="§3.4, 1 page">The scheduler that places tasks near their input replica to save network bandwidth.</Resource>
+  <Resource kind="reel" host={props.host} domain="data-engineering" title="Hybrid connectivity, egress and latency">Egress pricing and where compute lives (data gravity), in a later milestone. Goes deeper later.</Resource>
+</ul>
+
+</section>

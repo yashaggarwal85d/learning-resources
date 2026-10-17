@@ -6,10 +6,11 @@
 // unspeakable lines (digits, symbols, code names). Exit 1 if any topic fails.
 import { readFileSync } from 'node:fs';
 import { dirname, join, resolve } from 'node:path';
+import { fileURLToPath, pathToFileURL } from 'node:url';
 
-const root = resolve(dirname(new URL(import.meta.url).pathname), '..');
+const root = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 process.chdir(join(root, 'site'));
-const { captions, readsTheScreen, reelSteps } = await import(join(root, 'site/src/lib/topic-checks.ts'));
+const { captions, readsTheScreen, reelSteps } = await import(pathToFileURL(join(root, 'site/src/lib/topic-checks.ts')).href);
 const VOICE = JSON.parse(readFileSync(join(root, 'site/narration/voice.json'), 'utf8'));
 const MAX_WORDS = VOICE.pace.max_words_per_line;
 const UNSPEAKABLE = /[0-9_=<>{}[\]()/\\*#@|~^$%&`+]/;

@@ -1,0 +1,77 @@
+import Resource from '../../../../../components/Resource.astro';
+
+This is a refresher: it assumes you have met graphs before and can read a few lines of Python. If both are familiar, skip straight in. If one isn't, a few minutes with the matching resource is enough to follow every step. Reels on this site are marked **Before this** (earlier in the course), **Goes deeper later** (not needed now) or with the name of another track.
+
+<section class="prereq basics" data-section="basics">
+
+### <span class="n">00</span> Basics: words the reel takes for granted
+
+- **Graph, vertex, edge**: a graph is a set of vertices (things) joined by edges (relationships). *Where you meet it:* a road map, a social network, or a list of which task depends on which.
+- **Directed vs undirected edge**: a directed edge is an arrow from one vertex to another; an undirected edge joins two vertices with no direction. *Where you meet it:* "follows" on a social network is directed, "friends" is not.
+- **Path**: a sequence of vertices where each is joined to the next by an edge. *Where you meet it:* a route from one city to another through intermediate stops.
+- **Queue**: a first-in, first-out list: the oldest item leaves first. *Where you meet it:* a print queue, or Python's `collections.deque`.
+- **O(V + E)**: a cost that grows with the number of vertices plus the number of edges. *Where you meet it:* "a traversal visits every vertex and edge once" is O(V + E).
+
+<p class="check"><b>Check yourself:</b> in the chain <code>ingest → clean → load</code>, which vertices can you reach from <code>clean</code> by following arrows? (Answer: <code>load</code> only.)</p>
+
+</section>
+
+<section class="prereq" data-section="graph-basics">
+
+### <span class="n">01</span> Graph vocabulary: vertices, edges, directed vs undirected
+
+You should be comfortable with vertices and edges, directed vs undirected graphs, degree, paths and cycles, and the idea that a graph can be stored as an adjacency list or a matrix. This reel does not prove graph theorems; it applies six algorithms. If the vocabulary above read cleanly, you are ready.
+
+<p class="check"><b>Check yourself:</b> why is an adjacency list, not a matrix, the natural store for a pipeline graph? (Answer: pipelines are sparse — the number of edges is close to the number of tasks, not its square — so a list is linear space while a matrix is quadratic.)</p>
+
+<ul class="resources">
+  <Resource kind="reading" title="Graphs and their representations" href="https://www.khanacademy.org/computing/computer-science/algorithms/graph-representation/a/describing-graphs" by="Khan Academy" length="15 min">Vertices, edges, directedness, degree and the two standard representations.</Resource>
+  <Resource kind="video" title="Graph Theory Introduction" href="https://www.youtube.com/watch?v=09_LlHjoEiY" by="William Fiset" length="12 min">A quick, visual tour of graph terminology before the algorithms.</Resource>
+  <Resource kind="reel" host={props.host} domain="data-structures-and-algorithms" title="Adjacency lists, matrices and edge lists">The full treatment in the DSA track.</Resource>
+</ul>
+
+</section>
+
+<section class="prereq" data-section="big-o">
+
+### <span class="n">02</span> Big-O, to read O(V + E)
+
+Every algorithm here costs **O(V + E)**: linear in the number of tasks plus the number of dependencies. You only need to read that bound — big-O describes how a cost grows with input size, dropping constant factors — not to derive it. If "linear in the size of the graph" means something to you, that's enough.
+
+<p class="check"><b>Check yourself:</b> a pipeline doubles its tasks and its dependencies. Roughly what happens to an O(V + E) traversal's running time? (Answer: it roughly doubles.)</p>
+
+<ul class="resources">
+  <Resource kind="reel" host={props.host} domain="data-engineering" title="Asymptotic notation and logarithms">The refresher earlier in this chapter. <b>Before this.</b></Resource>
+  <Resource kind="video" title="Big O Notation" href="https://www.youtube.com/watch?v=v4cd1O4zkGw" by="HackerRank (Gayle Laakmann McDowell)" length="9 min">A fast, practical refresher on reading growth rates.</Resource>
+</ul>
+
+</section>
+
+<section class="prereq" data-section="python">
+
+### <span class="n">03</span> A little Python: functions and dicts
+
+The lab reads and writes small Python: functions, dictionaries, sets and a `deque`, plus the standard library's `graphlib`. Nothing advanced — if you can read a function that walks a dict of lists, you can read every snippet here.
+
+<p class="check"><b>Check yourself:</b> what does <code>{'{'}v: [] for v in nodes{'}'}</code> build? (Answer: a dict mapping each node to a fresh empty list — here, an empty adjacency list.)</p>
+
+<ul class="resources">
+  <Resource kind="reel" host={props.host} domain="data-engineering" title="Python language essentials">The first refresher in this chapter: functions, comprehensions, generators. <b>Before this.</b></Resource>
+  <Resource kind="reading" title="graphlib — operate with graph-like structures" href="https://docs.python.org/3/library/graphlib.html" by="Python documentation" length="10 min">The standard-library <code>TopologicalSorter</code> the reel uses, including its cycle check.</Resource>
+</ul>
+
+</section>
+
+<section class="prereq" data-section="dsa">
+
+### <span class="n">04</span> The full treatment: graph traversal and connectivity
+
+This reel is the data-engineering slice of graph algorithms — just enough to schedule a pipeline. The Data Structures &amp; Algorithms track proves the traversals, the topological sort via DFS finishing times, and connectivity in full. **Goes deeper later**, in another track; not needed now.
+
+<ul class="resources">
+  <Resource kind="reel" host={props.host} domain="data-structures-and-algorithms" title="Topological sort">Kahn's algorithm and the DFS variant, proved. Another track.</Resource>
+  <Resource kind="reel" host={props.host} domain="data-structures-and-algorithms" title="Breadth-first search">BFS in depth, with its multi-source and 0-1 variants. Another track.</Resource>
+  <Resource kind="reading" title="Introduction to Algorithms, ch. 20 (Elementary Graph Algorithms)" href="https://mitpress.mit.edu/9780262046305/introduction-to-algorithms/" by="Cormen, Leiserson, Rivest, Stein, 4th ed." length="book chapter">BFS, DFS, topological sort and strongly connected components, with proofs.</Resource>
+</ul>
+
+</section>

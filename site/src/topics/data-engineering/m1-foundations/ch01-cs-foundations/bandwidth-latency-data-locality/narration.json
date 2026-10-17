@@ -1,0 +1,100 @@
+{
+  "topic": "de.bandwidth-latency-data-locality",
+  "steps": [
+    {
+      "lines": [
+        "The tasks of a DAG run on many machines, and the data between them crosses a network. Round trips price the start of a call. For big transfers, bandwidth and distance decide, and so does the bill.",
+        "Picture the path between two machines as a pipe. Its width is the bandwidth. Its length, measured in time, is the round trip.",
+        { "beat": 0.4 },
+        "The volume of that pipe is the data that has to be in flight to keep it full. Everything in this topic is about that volume."
+      ]
+    },
+    {
+      "lines": [
+        "Give the volume a name: the bandwidth delay product. Bandwidth times round trip time.",
+        "You have met its twin. Latency times bandwidth was the size where waiting and moving cost the same on object storage. Here the round trip plays the part of the latency.",
+        "Now read the two cases on screen. Inside one zone it is about six hundred kibibytes. Across regions, the same link needs seventy one mebibytes in flight.",
+        "The catch is the limit on the other side. A sender may only have so many unacknowledged bytes outstanding, and that limit is the receive window."
+      ]
+    },
+    {
+      "lines": [
+        "So what happens when the window is smaller than the pipe?",
+        "Think of a sender who fills the window, then has to stop and wait for the receiver to acknowledge something.",
+        { "beat": 0.4 },
+        "What does that do to your throughput?"
+      ],
+      "answer": [
+        "It is capped at the window divided by the round trip time.",
+        "You send a window's worth, then sit idle for a whole round trip waiting for the first acknowledgement. The pipe runs part empty.",
+        "That is true however fast the link is, which is why bandwidth alone does not decide, and it does not fall to zero. Packet loss makes it worse but is not the cause here."
+      ]
+    },
+    {
+      "lines": [
+        "Now the cruel detail. The oldest version of the protocol stored the window in a sixteen bit field.",
+        "So the largest window you could advertise was sixty four kibibytes. On a cross region path, that caps a ten gigabit link at under a tenth of one percent of its speed.",
+        { "beat": 0.4 },
+        "The fix is window scaling, negotiated once at the handshake, which lifts the ceiling to a gibibyte. On a healthy machine the kernel then sizes the buffer for you, up to a limit that you set."
+      ]
+    },
+    {
+      "lines": [
+        "Step back, because fast is not one number. Latency is how long one trip takes, and distance sets it. You cannot buy it down.",
+        "Throughput is how much finishes per second, and that you can buy up by doing more at once.",
+        "One law ties the two together. The amount in flight equals the throughput times the latency. That is Little's law.",
+        "Read one way, it is the bandwidth delay product. Read the other way, it tells you how much concurrency a throughput target demands."
+      ]
+    },
+    {
+      "lines": [
+        "Use that to settle an argument engineers have. You are copying a terabyte across a region.",
+        "One stream with default settings, or ten streams at once. Work out how much each needs in flight to fill a seventy one mebibyte pipe.",
+        { "beat": 0.4 },
+        "Which finishes first?"
+      ],
+      "answer": [
+        "Ten streams, easily.",
+        "One default stream has far too little in flight to fill a long pipe, so it crawls. Ten windows add up to the whole pipe between them, each needing only about seven mebibytes.",
+        "It is not about the processor, and they do not tie. This is why every bulk copy tool opens many connections by default."
+      ]
+    },
+    {
+      "lines": [
+        "But the cheapest byte is the one you never send.",
+        "That is data locality, and it is one of the oldest ideas in big data: moving computation is cheaper than moving data. So the scheduler sends the work to the machine that already holds the bytes.",
+        "The modern form is pushdown. Read only the columns the query needs, and skip the blocks whose statistics prove they cannot match.",
+        "Notice what that does to the formula. It shrinks n, before any byte crosses the wire."
+      ]
+    },
+    {
+      "lines": [
+        "See it decide a join. Orders is large, customers is small, and there are a hundred machines.",
+        "Shuffle both by key and about nine hundred and ninety gigabytes cross the network, roughly eight seconds of sending per machine.",
+        "Broadcast the small table instead and it is just under ten gigabytes, under a tenth of a second.",
+        "Same answer, same work for the processors. A hundred times less traffic, because you moved the small table to the data, not the big table to one place."
+      ]
+    },
+    {
+      "lines": [
+        "Now the same choice, with a price tag. That shuffle crosses availability zones, and the cloud charges a cent a gigabyte in each direction.",
+        { "beat": 0.4 },
+        "How does the bill for the shuffle compare with the bill for the broadcast?"
+      ],
+      "answer": [
+        "About twenty dollars against about twenty cents. A hundred to one, exactly the ratio of the bytes.",
+        "Notice that the bill scales with bytes, so the cheaper plan is also the faster one here.",
+        "It is not the same, and the broadcast does not cost more for touching every machine. And that charge lands every night the pipeline runs."
+      ]
+    },
+    {
+      "lines": [
+        "So treat the meter as a design constraint, not an afterthought.",
+        "Traffic inside one zone is free. Across zones it is metered. Out to the internet, it is metered and one way.",
+        "Data flows in cheaply and is expensive to drag out. That is data gravity, and it pins compute next to its storage.",
+        { "beat": 0.4 },
+        "That closes the hardware and the network. Next: the language you use to ask for the data, starting with what a SQL query actually means."
+      ]
+    }
+  ]
+}

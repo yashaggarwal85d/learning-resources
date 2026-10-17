@@ -12,8 +12,9 @@ import { spawn, spawnSync } from 'node:child_process';
 import { existsSync } from 'node:fs';
 import { dirname, resolve } from 'node:path';
 import { setTimeout as sleep } from 'node:timers/promises';
+import { fileURLToPath } from 'node:url';
 
-const root = resolve(dirname(new URL(import.meta.url).pathname), '..');
+const root = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const site = `${root}/site`;
 const arg = (name) => (process.argv.includes(name) ? process.argv[process.argv.indexOf(name) + 1].split(',') : null);
 const only = arg('--only');

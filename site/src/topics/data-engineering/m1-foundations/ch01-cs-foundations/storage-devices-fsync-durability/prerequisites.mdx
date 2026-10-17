@@ -1,0 +1,54 @@
+import Resource from '../../../../../components/Resource.astro';
+
+This is a full topic in §1.2. It assumes the memory hierarchy and the idea of a page cache; the resources below patch either if they are hazy. Reels on this site are marked **Before this** (earlier in the course), **Goes deeper later** or with the name of another track.
+
+<section class="prereq basics" data-section="basics">
+
+### <span class="n">00</span> Basics: words the reel takes for granted
+
+- **Page cache and dirty page**: the kernel keeps recently used file data in RAM so repeat reads and writes skip the device; a page changed in RAM but not yet written back is dirty. *Where you meet it:* a `write()` that returns quickly has only dirtied a page, which is why a freshly written file reads back instantly.
+- **IOPS and queue depth**: IOPS counts I/O operations per second; queue depth is how many requests are outstanding at the device at once. *Where you meet it:* a benchmark reporting "4K random read, QD32" is measuring many requests in flight, not one at a time.
+- **Latency vs bandwidth**: latency is the wait for one request; bandwidth is bytes per second once data flows. *Where you meet it:* a drive can have excellent bandwidth and still feel slow to a program that issues one small read at a time.
+- **NVMe SSD vs HDD**: an HDD stores data on spinning magnetic platters read by a moving head; an NVMe SSD stores it in flash chips reached over the PCIe bus. *Where you meet it:* the spec sheet for any server disk lists one of these two.
+- **Inode and directory entry**: a file's data and metadata live under its inode; a directory entry is a name that points to an inode. *Where you meet it:* `ls -i` prints inode numbers, and two names can point to the same inode.
+
+<p class="check"><b>Check yourself:</b> a program calls <code>write()</code> and gets success. Where are the bytes? (Answer: in the page cache in RAM, marked dirty; nothing guarantees they reached the device.)</p>
+
+</section>
+
+<section class="prereq" data-section="page-cache">
+
+### <span class="n">01</span> The page cache and `O_DIRECT`
+
+The Linux page cache holds file data in RAM, writeback flushes dirty pages lazily, and `O_DIRECT` bypasses the cache. The syllabus marks the dedicated topic (virtual memory, page cache and mmap) as skipped, so these two readings stand in for it.
+
+<ul class="resources">
+  <Resource kind="reading" title="open(2): O_DIRECT, O_SYNC, O_DSYNC" href="https://man7.org/linux/man-pages/man2/open.2.html" by="Linux man-pages 6.19" length="20 min">The flags that decide whether a write touches the cache and when it is forced to the device, plus the O_DIRECT alignment rules.</Resource>
+  <Resource kind="reading" title="The page cache" href="https://docs.kernel.org/mm/page_cache.html" by="Linux kernel documentation" length="5 min">What the cache holds and how pages move between it and the device.</Resource>
+</ul>
+
+</section>
+
+<section class="prereq" data-section="memory-hierarchy">
+
+### <span class="n">02</span> The memory hierarchy and the cost shape
+
+The reel reuses the cost shape T(n) = α + n/β: a fixed per-I/O latency plus a per-byte term. You should be able to place an NVMe SSD and a hard disk on the latency and bandwidth ladder.
+
+<ul class="resources">
+  <Resource kind="reel" host={props.host} domain="data-engineering" title="Memory hierarchy and latency numbers">The latency and bandwidth of each tier, and estimating a job's floor from them.</Resource>
+</ul>
+
+</section>
+
+<section class="prereq" data-section="goes-deeper">
+
+### <span class="n">03</span> Goes deeper later
+
+Asynchronous I/O rings and durable logs built from scratch are Rust Systems Engineering, Milestone 3; write-ahead logging and crash recovery come in Data Engineering Chapter 5.
+
+<ul class="resources">
+  <Resource kind="reading" title="io_uring(7)" href="https://man7.org/linux/man-pages/man7/io_uring.7.html" by="Linux man-pages 6.19" length="30 min">The submission and completion ring model behind modern async I/O.</Resource>
+</ul>
+
+</section>

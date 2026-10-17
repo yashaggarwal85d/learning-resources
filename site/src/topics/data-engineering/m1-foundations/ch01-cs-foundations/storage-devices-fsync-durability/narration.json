@@ -1,0 +1,126 @@
+{
+  "topic": "de.storage-devices-fsync-durability",
+  "steps": [
+    {
+      "lines": [
+        "Past the page cache are real devices. Here is what makes them fast or slow, and what it takes for a write to survive a crash.",
+        "Look at the picture. Your bytes go into memory, and the call returns. Everything after that arrow is still a question mark.",
+        { "beat": 0.4 },
+        "So a successful write tells you almost nothing about the drive. The cache did its job too well."
+      ]
+    },
+    {
+      "lines": [
+        "Start with the spinning disk, because its slowness has a physical cause you can point at.",
+        "Watch the timeline fill. The head has to move to the right track, then the platter has to turn the sector under it. Those two waits happen one after the other.",
+        "Nothing is read until both are done, so a random read costs milliseconds, and the drive has no way to hurry.",
+        "Now the bars below. Reading in order skips both waits after the first, so the same drive streams hundreds of megabytes a second.",
+        "The ratio lands on screen last. It is not a bug in any software. It is the head and the platter."
+      ]
+    },
+    {
+      "lines": [
+        "Now a solid-state drive. No head, no platter, nothing to seek.",
+        "So you might expect order to stop mattering. Hold that thought and commit to an answer.",
+        { "beat": 0.4 },
+        "Is a random read on flash still slower than a sequential one?"
+      ],
+      "answer": [
+        "Yes, but the reason has changed. It is no longer a head. It is how many requests are in flight.",
+        "One read at a time waits out the drive's full latency, so a single thread tops out no matter what the label says.",
+        "Sequential access gives the drive many chips to work on at once without you asking. A lone random read touches one die.",
+        "The first answer is wrong because latency has not gone away. The last two are wrong because reads depend on parallelism, not on how full the drive is."
+      ]
+    },
+    {
+      "lines": [
+        "Before writes, a smaller trap that costs you on every device: the block size.",
+        "Watch where the write lands. It straddles the line between two blocks, and that line is the whole problem.",
+        "A drive cannot write half a block. So it reads the whole block, patches your bytes in, and writes it all back.",
+        "That is how one small write turns into a read plus a write. Aligning to the block removes the extra step entirely."
+      ]
+    },
+    {
+      "lines": [
+        "Now the real constraint on flash, and it explains almost everything that follows.",
+        "Watch the eight pages. A page can be written once. To use it again, the whole erase block holding it must be wiped, and wiping is slow and wears the cells out.",
+        "So the drive makes a decision you never see: it never updates in place.",
+        "New data goes to a fresh page, the mapping is repointed, and the old page is simply marked stale. That bookkeeping layer is the flash translation layer."
+      ]
+    },
+    {
+      "lines": [
+        "Stale pages are space nobody can use yet. When free pages run low, the drive has to clean.",
+        "It picks a block, copies the pages that are still live somewhere new, and only then erases it. Every one of those copies is a write you did not ask for.",
+        "So here is the question the animation is about to settle. Same amount of data, written two ways: one long stream, or scattered small writes.",
+        { "beat": 0.4 },
+        "Which one forces the drive to copy more live data while it cleans?"
+      ],
+      "answer": [
+        "The scattered writes.",
+        "A long stream fills whole erase blocks, so by the time the drive cleans one, there is almost nothing live in it to copy.",
+        "Scattered writes leave live and stale pages mixed in every block, so every cleaning pass copies live data again.",
+        "Flash written divided by data you asked to write is write amplification. The sequential answer is wrong because it does the opposite, and cleanup is never free, because the copies are real writes.",
+        "The consequence is not just speed. Random writes use up the drive's life faster."
+      ]
+    },
+    {
+      "lines": [
+        "Two defences, and the picture shows what each one changes.",
+        "Spare flash that the host can never fill means the drive can always find a block with little live data in it.",
+        "And when a file is deleted, TRIM tells the drive those pages are garbage the moment it happens. Without that, the drive keeps faithfully copying dead data through every clean.",
+        "Skip both on a full, write-heavy drive and you fall off a cliff. That is why leaving free space is a performance setting, not a waste."
+      ]
+    },
+    {
+      "lines": [
+        "Now durability, which is a different problem from speed.",
+        "Follow the arrow from the page cache to the device. Until something pushes those dirty pages along, a power cut takes them.",
+        "That something is fsync. It writes the pages and metadata down, and, this is the part people forget, it also tells the drive to empty its own cache.",
+        "And it blocks until the drive says it is done. Waiting is the price of the promise."
+      ]
+    },
+    {
+      "lines": [
+        "Here is the catch that surprises smart people. Creating a file is two facts, not one.",
+        "Left side, the file's data. Right side, the directory entry that gives it a name. Watch which side turns green after the first fsync.",
+        "Only the file side. The directory is a separate object with its own durability, so it needs its own fsync.",
+        "Skip it and a crash leaves you with a durable file that nothing points to. From the outside, that looks exactly like data loss."
+      ]
+    },
+    {
+      "lines": [
+        "This next one cost a database community a very bad week in twenty eighteen.",
+        "An fsync fails with a disk error. You do what any careful engineer would do: you call it again.",
+        "Second call returns success.",
+        { "beat": 0.4 },
+        "Is the data now on disk?"
+      ],
+      "answer": [
+        "No, and that is the trap.",
+        "When writeback failed, the kernel marked those pages clean and dropped their contents. The error was reported once and then forgotten.",
+        "So the second call has nothing dirty to flush, and it reports success over data that no longer exists anywhere.",
+        "That is why retrying is wrong in every variant. Journaling does not change it, and neither does synchronous writing, because the pages are already gone.",
+        "The only honest response is the one Postgres adopted: crash, and recover from the log."
+      ]
+    },
+    {
+      "lines": [
+        "Last piece. A fast drive is only fast if you keep many requests in flight, and the old way, one call and one blocked thread per request, cannot do that cheaply.",
+        "The picture shows the fix. Two rings shared with the kernel: you post requests on one, and completions come back on the other.",
+        "So one thread can keep dozens of operations outstanding without a system call each. The cost of asking drops, and the drive stays busy.",
+        "Postgres eighteen offers this for scans and vacuum. Notice what it does not touch: whether a write is durable. That is still fsync's job."
+      ]
+    },
+    {
+      "lines": [
+        "Take three things away, in the order they will bite you.",
+        "First, order matters on every device, but the reason is different on each: a head on the disk, parallelism on flash.",
+        "Second, small random writes cost more underneath than they appear to, because of the cleaning.",
+        "Third, durability is a recipe: write, fsync the file, fsync the directory, and never trust a retry.",
+        { "beat": 0.4 },
+        "One machine's disks end here. Next: object storage, the bottom tier where lakehouses keep their data."
+      ]
+    }
+  ]
+}

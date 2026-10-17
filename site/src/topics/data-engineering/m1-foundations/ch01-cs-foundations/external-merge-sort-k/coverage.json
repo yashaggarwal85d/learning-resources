@@ -1,0 +1,161 @@
+{
+  "topic": "de.external-merge-sort-k",
+  "syllabus": [
+    {
+      "clause": "run generation (including replacement selection)",
+      "at": [
+        { "step": "Load, sort, spill: quicksort runs" },
+        { "step": "A snowplow heap makes longer runs" },
+        { "step": "Predict: why give up the longer runs?" },
+        { "deep": "Phase one: run generation" }
+      ]
+    },
+    {
+      "clause": "heap-driven k-way merge",
+      "at": [
+        { "step": "Merge all the runs at once, not two at a time" },
+        { "step": "The merge barely touches memory" },
+        { "deep": "Phase two: the k-way merge" }
+      ]
+    },
+    {
+      "clause": "fan-in vs number of passes as a function of the memory budget",
+      "at": [
+        { "step": "Memory sets the fan-in" },
+        { "step": "Predict: how many passes in total?" },
+        { "step": "More fan-in, smaller buffers, more seeks" },
+        { "deep": "Fan-in, passes and the memory budget" }
+      ]
+    },
+    {
+      "clause": "the one mechanism behind ORDER BY spills, sort-merge joins, LSM compaction (§5.1) and shuffle merges (Ch.7)",
+      "at": [{ "step": "Back to the pipeline: one merge, everywhere" }, { "deep": "The same merge, everywhere" }]
+    }
+  ],
+  "sources": [
+    {
+      "source": "D. E. Knuth, The Art of Computer Programming, Vol. 3, §5.4 and §5.4.1",
+      "items": [
+        {
+          "item": "Replacement selection's snowplow analysis gives an expected run length of about 2M on random input",
+          "at": [{ "step": "A snowplow heap makes longer runs" }, { "deep": "Phase one: run generation" }]
+        },
+        {
+          "item": "A loser tree is the cache-friendlier variant of the k-way merge heap, one comparison per level instead of two",
+          "at": [{ "deep": "Phase two: the k-way merge" }]
+        }
+      ]
+    },
+    {
+      "source": "PostgreSQL source (REL_18_STABLE), src/backend/utils/sort/tuplesort.c",
+      "items": [
+        {
+          "item": "The module's own comment: historically used replacement selection, \"but now we always use quicksort for run generation\"",
+          "at": [{ "step": "Predict: why give up the longer runs?" }, { "deep": "Phase one: run generation" }]
+        },
+        {
+          "item": "The merge heap holds just the frontmost tuple from each source run and repeatedly outputs the smallest",
+          "at": [{ "step": "Merge all the runs at once, not two at a time" }, { "deep": "Phase two: the k-way merge" }]
+        },
+        {
+          "item": "Pre-reading about work_mem / M bytes from each tape keeps the merge's access pattern sequential",
+          "at": [{ "step": "More fan-in, smaller buffers, more seeks" }, { "deep": "Fan-in, passes and the memory budget" }]
+        },
+        {
+          "item": "MINORDER = 6 and MAXORDER = 500 cap the fan-in well below the memory-budget upper bound, trading passes for cache locality",
+          "at": [{ "step": "Predict: does maximizing fan-in make it faster?" }, { "deep": "Fan-in, passes and the memory budget" }]
+        }
+      ]
+    },
+    {
+      "source": "PostgreSQL 9.6 release notes and PostgreSQL 18 Resource Consumption documentation",
+      "items": [
+        {
+          "item": "PostgreSQL 9.6 switched external sort run generation from replacement selection to quicksort for better CPU cache use (replacement_sort_tuples)",
+          "at": [{ "step": "Predict: why give up the longer runs?" }, { "deep": "Phase one: run generation" }]
+        },
+        {
+          "item": "work_mem defaults to 4 MB; a sort exceeding it spills to temporary files and merges them",
+          "at": [{ "deep": "Fan-in, passes and the memory budget" }]
+        }
+      ]
+    },
+    {
+      "source": "L. Kuiper, \"Fastest Table Sort in the West\", DuckDB blog 2021",
+      "items": [
+        {
+          "item": "A k-way merge folds K lists into one sorted list in a single pass because it minimizes I/O, unlike a cascade (two-way) merge",
+          "at": [{ "step": "Merge all the runs at once, not two at a time" }, { "deep": "Phase two: the k-way merge" }]
+        }
+      ]
+    },
+    {
+      "source": "Python documentation, heapq.merge",
+      "items": [
+        {
+          "item": "heapq.merge(*iterables) merges any number of sorted inputs into one sorted iterator in bounded memory",
+          "at": [{ "step": "The merge barely touches memory" }, { "deep": "Phase two: the k-way merge" }]
+        }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "independent reviewer agent, written without seeing the topic",
+    "date": "2026-10-14",
+    "items": [
+      {
+        "item": "External sort has two phases, run generation and merging, and both are governed by the same memory budget split in different ways",
+        "at": [{ "step": "Two phases: make runs, then merge them" }]
+      },
+      {
+        "item": "Load-sort-spill (quicksort) run generation produces runs of about M items, so about N/M runs for N items and a memory budget M",
+        "at": [{ "step": "Load, sort, spill: quicksort runs" }]
+      },
+      {
+        "item": "Replacement selection produces runs of about 2M items on random input via a heap-based snowplow, half as many runs as quicksort generation",
+        "at": [{ "step": "A snowplow heap makes longer runs" }]
+      },
+      {
+        "item": "Modern engines prefer quicksort run generation over replacement selection because the cost model counts block transfers, not the scattered-memory-access comparisons that dominate on real hardware",
+        "at": [{ "step": "Predict: why give up the longer runs?" }]
+      },
+      {
+        "item": "A k-way merge using a min-heap (or loser tree) of each run's front item folds all runs down in a single pass, at about log2(k) comparisons per output item but only one read and one write of each block",
+        "at": [{ "step": "Merge all the runs at once, not two at a time" }]
+      },
+      {
+        "item": "A cascade (two-way) merge of k runs needs about log2(k) passes over all the data, which a single k-way merge pass avoids entirely",
+        "at": [{ "step": "Merge all the runs at once, not two at a time" }, { "step": "Predict: how many passes in total?" }]
+      },
+      {
+        "item": "The merge's own memory cost is bounded by the number of runs, not the data size, which is why heapq.merge-style streaming merges work in constant memory",
+        "at": [{ "step": "The merge barely touches memory" }]
+      },
+      {
+        "item": "Fan-in is set by memory divided by block size minus one (for the output buffer), and the pass count is 1 + the ceiling of log base fan-in of the run count",
+        "at": [{ "step": "Memory sets the fan-in" }, { "step": "Predict: how many passes in total?" }]
+      },
+      {
+        "item": "Splitting a fixed memory budget across a larger fan-in shrinks each run's read buffer, which can turn sequential reads into seeks and make a lower pass count slower in wall-clock time",
+        "at": [{ "step": "More fan-in, smaller buffers, more seeks" }, { "step": "Predict: does maximizing fan-in make it faster?" }]
+      },
+      {
+        "item": "Real engines cap the fan-in well below the theoretical memory-budget maximum to preserve buffer size and cache locality, trading an extra pass for sequential I/O",
+        "at": [{ "step": "Predict: does maximizing fan-in make it faster?" }]
+      },
+      {
+        "item": "The same k-way merge mechanism underlies ORDER BY and DISTINCT spills, sort-merge joins, and LSM-tree compaction",
+        "at": [{ "step": "Back to the pipeline: one merge, everywhere" }]
+      },
+      {
+        "item": "The crossover between sort-based and hash-based aggregation turns on the number of distinct groups (cardinality), not the row count, and sorting wins for free when output order is already required",
+        "at": [{ "out": "Covered in index.mdx's own section and lab on sort-based vs hash-based aggregation, not animated as a reel step in this already twelve-step reel." }]
+      }
+    ]
+  },
+  "gapReview": {
+    "date": "2026-10-14",
+    "by": "builder self-review",
+    "open": []
+  }
+}

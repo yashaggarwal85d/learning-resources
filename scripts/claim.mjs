@@ -36,8 +36,9 @@ import { existsSync, mkdirSync, mkdtempSync, readdirSync, readFileSync, rmSync, 
 import { homedir, tmpdir } from 'node:os';
 import { dirname, join, resolve } from 'node:path';
 import { randomUUID } from 'node:crypto';
+import { fileURLToPath, pathToFileURL } from 'node:url';
 
-const root = resolve(dirname(new URL(import.meta.url).pathname), '..');
+const root = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const BRANCH = 'claims';
 const STALE_MIN = Number(process.env.CLAIM_STALE_MIN ?? 90);
 const BEAT_MIN = Number(process.env.CLAIM_BEAT_MIN ?? 15);
@@ -65,8 +66,8 @@ process.on('uncaughtException', (e) => { console.error(`claim: ${e.message}`); p
 // The syllabus order and the registry, read the same way the build reads them.
 async function course(domainArg) {
   process.chdir(join(root, 'site'));
-  const { loadDomains } = await import(join(root, 'site/src/lib/syllabus.ts'));
-  const { TOPICS } = await import(join(root, 'site/src/topics/registry.ts'));
+  const { loadDomains } = await import(pathToFileURL(join(root, 'site/src/lib/syllabus.ts')).href);
+  const { TOPICS } = await import(pathToFileURL(join(root, 'site/src/topics/registry.ts')).href);
   const domains = loadDomains(); // reads ../syllabus relative to site/
   process.chdir(root);
   const alias = { de: 'data-engineering', dsa: 'data-structures-and-algorithms', rust: 'rust-systems-engineering' };

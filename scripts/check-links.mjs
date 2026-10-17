@@ -7,8 +7,9 @@
 // Never sends anything but the URL itself (no personal information in any request).
 import { readFileSync, readdirSync, statSync } from 'node:fs';
 import { join, relative } from 'node:path';
+import { fileURLToPath } from 'node:url';
 
-const root = new URL('..', import.meta.url).pathname;
+const root = fileURLToPath(new URL('..', import.meta.url));
 const walk = (d) => readdirSync(d).flatMap((f) => (statSync(join(d, f)).isDirectory() ? walk(join(d, f)) : f.endsWith('.mdx') ? [join(d, f)] : []));
 const files = process.argv.slice(2).length ? process.argv.slice(2) : walk(join(root, 'site/src/topics'));
 

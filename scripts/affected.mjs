@@ -6,8 +6,9 @@
 // Prerequisites files (for the link check). The weekly full runs and a change to shared code still test everything.
 import { spawnSync } from 'node:child_process';
 import { dirname, resolve } from 'node:path';
+import { fileURLToPath, pathToFileURL } from 'node:url';
 
-const root = resolve(dirname(new URL(import.meta.url).pathname), '..');
+const root = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const git = (...a) => spawnSync('git', a, { cwd: root, encoding: 'utf8' });
 
 // Registry entries (id, slug, status, and the whole entry text) at a revision, read without importing it.
@@ -51,4 +52,4 @@ export function affected(base = 'origin/main') {
   return { all: false, slugs, mdx: slugs.flatMap((s) => [`site/src/topics/${s}/index.mdx`, `site/src/topics/${s}/prerequisites.mdx`]) };
 }
 
-if (import.meta.url === `file://${process.argv[1]}`) console.log(JSON.stringify(affected(process.argv[2])));
+if (import.meta.url === pathToFileURL(process.argv[1]).href) console.log(JSON.stringify(affected(process.argv[2])));

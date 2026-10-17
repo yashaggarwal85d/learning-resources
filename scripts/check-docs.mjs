@@ -4,8 +4,9 @@
 // spaces to hyphens, -1/-2 for repeats). No dependencies: `node scripts/check-docs.mjs`.
 import { readdirSync, readFileSync, existsSync, statSync } from 'node:fs';
 import { join, dirname, resolve, relative } from 'node:path';
+import { fileURLToPath } from 'node:url';
 
-const ROOT = resolve(dirname(new URL(import.meta.url).pathname), '..');
+const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const SKIP = new Set(['.git', 'node_modules', 'dist']);
 
 function mdFiles(dir) {

@@ -3,8 +3,9 @@
 // line word-perfect, loudness, peak and pace within the audio standard.
 import { createHash } from 'node:crypto';
 import { existsSync, readFileSync } from 'node:fs';
+import { fileURLToPath } from 'node:url';
 
-const site = new URL('..', import.meta.url).pathname;
+const site = fileURLToPath(new URL('..', import.meta.url));
 const voice = JSON.parse(readFileSync(`${site}narration/voice.json`, 'utf8'));
 const registry = readFileSync(`${site}src/topics/registry.ts`, 'utf8');
 const topics = [...registry.matchAll(/id: '([^']+)',[\s\S]*?slug: '([^']+)',[\s\S]*?status: '(live|held)'/g)].map((m) => ({ id: m[1], slug: m[2], status: m[3] }));

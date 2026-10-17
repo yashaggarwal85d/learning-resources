@@ -1,0 +1,111 @@
+{
+  "topic": "de.object-storage-as-storage",
+  "steps": [
+    {
+      "lines": [
+        "Local disks gave you microseconds, and a way to force a write all the way down. Object storage trades both away for something else.",
+        "Look at what the picture offers: almost unlimited room, cheap and durable, reached over a web request.",
+        { "beat": 0.4 },
+        "The bill comes in time. Every request is slow, and the rules you relied on for files are not the same rules here. This topic is about those rules."
+      ]
+    },
+    {
+      "lines": [
+        "Begin with what the thing actually is, because most surprises come from assuming it is a filesystem.",
+        "A key is a string. It points at a blob. The slashes inside the key are just characters, so there are no folders to open or rename.",
+        "Now the consequence. You replace a whole object at once. There is no appending and no renaming.",
+        "To move one, you copy it and then delete the original. Two steps, and a crash can land between them. Keep that in mind, because the commit protocols later are built around it."
+      ]
+    },
+    {
+      "lines": [
+        "Now the contract. For years this tier was eventually consistent, so you could write an object and then read the old one.",
+        "That ended in December of twenty twenty. Write, then read, and you see the write.",
+        "Watch the reader that overlaps a writer. It gets the old object or the new one, never a blend of the two.",
+        "What is still missing is the ability to change two keys as one step. Hold that gap; the end of the topic uses it."
+      ]
+    },
+    {
+      "lines": [
+        "Here is the familiar cost shape at its most extreme. Fixed latency, then bytes over bandwidth.",
+        "The first term is huge here, a hundred milliseconds or more for a small object. So a small request is almost all waiting.",
+        "And that wait is not one number. It is a spread. Some requests take twice the median, and a few take much longer.",
+        "That spread is why percentiles start to matter. A job that waits on a thousand requests will hit the slow ones."
+      ]
+    },
+    {
+      "lines": [
+        "Let us put numbers on that waiting. One request has a hundred milliseconds of latency and streams at ninety megabytes a second.",
+        "Think about it as a race between the two terms. For tiny requests, latency wins. For huge ones, transfer wins.",
+        { "beat": 0.4 },
+        "At what size do the two cost the same?"
+      ],
+      "answer": [
+        "Multiply them: a tenth of a second times ninety megabytes a second is about nine megabytes.",
+        "That is the break-even, and it is why the vendor advises ranges of eight or sixteen megabytes.",
+        "Ninety kilobytes and nine hundred megabytes are each off by a factor of a hundred, because the break-even is the product of the two numbers, not either one alone.",
+        "So the practical rule: make each request carry megabytes, or you are paying mostly for the call."
+      ]
+    },
+    {
+      "lines": [
+        "One request at ninety megabytes a second moves a terabyte in about three and a half hours. That is the number to beat.",
+        "Notice that nothing in the model says a single stream has to be the unit. You can run many.",
+        "So: the machine has a ten gigabit link, a little over a thousand megabytes a second.",
+        { "beat": 0.4 },
+        "How many ninety megabyte requests must be running at once to fill it?"
+      ],
+      "answer": [
+        "About fourteen. Divide the link by one request's speed.",
+        "That is small enough to do from one machine, which is the whole point. Throughput here comes from parallelism, not from any single fast request.",
+        "One is wrong because a single stream cannot fill the link. A hundred and forty overshoots by ten. And there is no bucket bandwidth cap that stops you, only the request limits on the next screen."
+      ]
+    },
+    {
+      "lines": [
+        "But you cannot add requests without limit. Watch the bar fill up on one prefix.",
+        "A prefix is a shared start of the key. Each prefix is good for a few thousand writes and several thousand reads per second.",
+        "Past that, the store answers with a slow down error and repartitions in the background. This is back-pressure, not a fault.",
+        "The engineering response is to retry with backoff, and to spread hot keys over many prefixes so no one of them carries the whole load."
+      ]
+    },
+    {
+      "lines": [
+        "Here is why columnar files work so well on this tier. Watch which bytes get highlighted.",
+        "A range request fetches only a slice. A columnar file keeps a directory at its very end, so you read that first.",
+        "Then the directory tells you exactly which byte ranges hold the columns you want, and nothing else is fetched.",
+        "Three columns out of thirty is about a tenth of the bytes. On a tier where bytes are cheap and requests are not, you still win, because the unread columns never cross the network."
+      ]
+    },
+    {
+      "lines": [
+        "Writes get the same treatment in reverse. Watch the parts flowing in parallel.",
+        "Large objects are uploaded in parts, up to ten thousand of them, each between five mebibytes and five gibibytes.",
+        "That solves two problems. A stalled part is retried alone, and nothing exists under the key until the final call assembles them, so no reader ever sees half a file.",
+        "The limit on part count has a cost, though. A one tebibyte object over ten thousand parts forces parts of about one hundred and five mebibytes."
+      ]
+    },
+    {
+      "lines": [
+        "Remember the missing piece from earlier: no way to change two keys atomically. We can still get a commit out of one primitive.",
+        "Two writers race to create the same key. Each says: write this, but only if nothing is there yet.",
+        { "beat": 0.4 },
+        "What happens?"
+      ],
+      "answer": [
+        "Exactly one succeeds. The other is refused with a precondition failure and retries against the next version.",
+        "That is compare and set, on a bare object store. With strong consistency, it is enough to commit a table with no separate lock service.",
+        "Both succeeding would mean last write wins, which silently loses a commit. Both failing would mean no progress at all. And size is irrelevant, because the check is on whether the key exists."
+      ]
+    },
+    {
+      "lines": [
+        "So the tier asks you to think in requests, not in bytes.",
+        "Size each one near the break-even, run about as many as it takes to fill the link, and spread them across prefixes.",
+        "When the tail hurts, coalesce small reads, cache the hot ones, and send a second copy of a slow request.",
+        { "beat": 0.4 },
+        "The bytes come back exactly as written. Next: whether those bytes still mean the right number."
+      ]
+    }
+  ]
+}

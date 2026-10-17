@@ -1,0 +1,102 @@
+import Resource from '../../../../../components/Resource.astro';
+
+This reel assumes a handful of things from earlier in the chapter and a little from the Data Engineering track. If they're familiar, skip straight in. Reels on this site are marked **Before this** (earlier in the course), **Goes deeper later** (not needed now) or with the name of another track.
+
+<section class="prereq basics" data-section="basics">
+
+### <span class="n">00</span> Basics: words the reel takes for granted
+
+- **Word-RAM**: the standard model in which every memory access and arithmetic step on a machine word costs one unit. *Where you meet it:* the cost counts in every earlier topic of this chapter.
+- **Disk page / block read**: storage devices hand data over in whole fixed-size chunks, not single bytes. *Where you meet it:* a database reading an 8 KB page to return one row.
+- **Binary search**: finding a key in a sorted array by repeatedly halving the range, about log base 2 of N probes. *Where you meet it:* `bisect` in Python.
+- **Merge sort**: sort halves, then merge two sorted lists into one by repeatedly taking the smaller front item. *Where you meet it:* the sort inside many standard libraries.
+- **Logarithm base**: log base b of x counts how many times you divide by b to reach 1, and a larger base gives a smaller number. *Where you meet it:* log base 1000 of a billion is 3.
+
+<p class="check"><b>Check yourself:</b> how many halvings does binary search need on 1,024 sorted items? (Answer: 10, since 2<sup>10</sup> = 1,024.)</p>
+
+</section>
+
+<section class="prereq" data-section="word-ram">
+
+### <span class="n">01</span> The word-RAM model, and what it hides
+
+This topic is the answer to a debt the word-RAM left open: it charged one unit for every memory access, and noted that a real access can be a cache hit or a trip to main memory (the **cache miss**). Here that hidden cost becomes the only cost. You should recall what the word-RAM counts and why it treats one `a[i]` load as free.
+
+<p class="check"><b>Check yourself:</b> in the word-RAM, what does one array load cost, and what does that gloss over? (Answer: one unit, regardless of whether the datum is in a register or must be fetched as a block from disk.)</p>
+
+<ul class="resources">
+  <Resource kind="reel" host={props.host} domain="data-structures-and-algorithms" title="The word-RAM model and its assumptions">Before this: the machine whose free memory access this topic re-prices.</Resource>
+</ul>
+
+</section>
+
+<section class="prereq" data-section="recurrences">
+
+### <span class="n">02</span> Recursion trees and reading a level sum
+
+The sort bound is read off a merge tree: log<sub>M/B</sub>(N/B) levels, each level one scan. You should be comfortable drawing a tree of a divide-and-conquer process and summing its per-level cost, the recursion-tree habit from earlier in the chapter.
+
+<p class="check"><b>Check yourself:</b> a tree has L levels and each level does the same amount of work w. What is the total? (Answer: L · w.)</p>
+
+<ul class="resources">
+  <Resource kind="reel" host={props.host} domain="data-structures-and-algorithms" title="Recurrences: Master theorem and Akra–Bazzi">Before this: the recursion tree and its per-level totals.</Resource>
+</ul>
+
+</section>
+
+<section class="prereq" data-section="lower-bounds">
+
+### <span class="n">03</span> The comparison-sorting lower bound
+
+The reel re-prices sorting in block transfers, and contrasts the transfer count with the Ω(N log N) comparisons a comparison sort must do. You need that comparison bound as a fact (proved earlier in the chapter), not its proof.
+
+<p class="check"><b>Check yourself:</b> about how many comparisons does any comparison sort of N keys do in the worst case? (Answer: on the order of N log<sub>2</sub> N.)</p>
+
+<ul class="resources">
+  <Resource kind="reel" host={props.host} domain="data-structures-and-algorithms" title="Lower bounds and adversary arguments">Before this: where the Ω(N log N) sorting bound comes from.</Resource>
+</ul>
+
+</section>
+
+<section class="prereq" data-section="amortized">
+
+### <span class="n">04</span> The doubling vector and its amortized cost
+
+One payoff of this topic is re-pricing the doubling (dynamic) array in block transfers. You should recall its growth rule and the §1.2 result that n appends cost O(1) element writes each, amortized, because the copies form a geometric series.
+
+<p class="check"><b>Check yourself:</b> growing a vector by doubling from empty to n elements, roughly how many element copies happen in total? (Answer: fewer than 2n, since 1 + 2 + 4 + … < 2n.)</p>
+
+<ul class="resources">
+  <Resource kind="reel" host={props.host} domain="data-structures-and-algorithms" title="Aggregate and accounting methods">Before this: the doubling vector's amortized O(1) append, counted in element writes.</Resource>
+</ul>
+
+</section>
+
+<section class="prereq" data-section="merge-sort">
+
+### <span class="n">05</span> Merge sort and the k-way merge
+
+External sorting is merge sort with a very wide merge: sort memory-sized runs, then merge up to M/B of them at once. You need to know that merging k sorted runs reads each run once and takes about log<sub>2</sub> k comparisons per output item; the analysis is the reel's job.
+
+<p class="check"><b>Check yourself:</b> merging 16 sorted runs with a heap, about how many comparisons does each output element cost? (Answer: about log<sub>2</sub> 16 = 4.)</p>
+
+<ul class="resources">
+  <Resource kind="reading" title="Mergesort" href="https://algs4.cs.princeton.edu/22mergesort/" by="Sedgewick and Wayne, Algorithms 4th ed., section 2.4" length="20 min">Merging sorted runs; the priority-queue section adds the multiway merge.</Resource>
+  <Resource kind="reel" host={props.host} domain="data-structures-and-algorithms" title="External merge sort">Goes deeper later: replacement selection, loser trees and pass counts, in Chapter 15.</Resource>
+</ul>
+
+</section>
+
+<section class="prereq" data-section="another-track">
+
+### <span class="n">06</span> Another track: the same model from the database side
+
+Data Engineering teaches this model with real device numbers and real query plans. Its two topics are a parallel route: the latency ladder this reel keeps off the screen, and the model applied to PostgreSQL and distributed joins. Not required, but they add the systems detail this topic points to.
+
+<ul class="resources">
+  <Resource kind="reel" host={props.host} domain="data-engineering" title="Memory hierarchy and latency numbers">Another track (§1.2): the device latencies and bandwidths behind the constant.</Resource>
+  <Resource kind="reel" host={props.host} domain="data-engineering" title="The external-memory (I/O) cost model">Another track (§1.3): the same bounds applied to query plans, index crossovers and the network tier.</Resource>
+  <Resource kind="reel" host={props.host} domain="data-structures-and-algorithms" title="B-tree and B+-tree mechanics">Goes deeper later: the structure that achieves the Θ(log<sub>B</sub> N) search bound, in Chapter 5.</Resource>
+</ul>
+
+</section>

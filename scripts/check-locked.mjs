@@ -10,8 +10,9 @@
 import { spawnSync } from 'node:child_process';
 import { existsSync, readFileSync } from 'node:fs';
 import { dirname, join, normalize, resolve } from 'node:path';
+import { fileURLToPath } from 'node:url';
 
-const root = resolve(dirname(new URL(import.meta.url).pathname), '..');
+const root = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const git = (...a) => spawnSync('git', a, { cwd: root, encoding: 'utf8' });
 const SHARED = ['site/src/reels/ReelPlayer.tsx', 'site/src/reels/ReelFeed.tsx', 'site/src/reels/narration.ts', 'site/src/reels/progress.ts', 'site/src/layouts/', 'site/src/styles/', 'site/src/pages/'];
 

@@ -1,0 +1,140 @@
+{
+  "topic": "dsa.measuring-memory-hierarchy",
+  "syllabus": [
+    {
+      "clause": "pointer-chasing and strided-access microbenchmarks that expose cache-line size, TLB reach and prefetcher behaviour",
+      "at": [
+        { "step": "Timing one load means breaking the overlap" },
+        { "step": "Predict: cost per access as the stride grows" },
+        { "step": "A prefetcher can hide the knee" },
+        { "step": "A second miss, hiding underneath" },
+        { "deep": "The pointer-chasing benchmark" },
+        { "deep": "The strided-access benchmark" },
+        { "deep": "The TLB and TLB reach" },
+        { "deep": "Prefetchers, told apart from cache hits" }
+      ]
+    },
+    {
+      "clause": "reading the latency staircase",
+      "at": [
+        { "step": "Predict: the shape of the latency curve" },
+        { "step": "Reading the staircase" },
+        { "deep": "Reading the latency staircase" }
+      ]
+    },
+    {
+      "clause": "Rust Systems Engineering Ch.29",
+      "at": [{ "deep": "Sources" }]
+    }
+  ],
+  "sources": [
+    {
+      "source": "L. McVoy and C. Staelin, \"lmbench: Portable tools for performance analysis\", USENIX ATC 1996",
+      "items": [
+        {
+          "item": "The back-to-back-load latency benchmark: a dependency chain so each load cannot overlap the next",
+          "at": [{ "step": "Timing one load means breaking the overlap" }, { "deep": "The pointer-chasing benchmark" }]
+        },
+        {
+          "item": "The strided memory sweep used to find cache-line size and TLB behaviour",
+          "at": [{ "step": "Predict: cost per access as the stride grows" }, { "deep": "The strided-access benchmark" }]
+        }
+      ]
+    },
+    {
+      "source": "S. Sattolo, \"An algorithm to generate a random cyclic permutation\", 1986",
+      "items": [
+        {
+          "item": "Drawing each shuffle partner from strictly below the current index guarantees a single cycle of full length",
+          "at": [{ "step": "One cycle, visited in random order" }, { "deep": "The pointer-chasing benchmark" }]
+        }
+      ]
+    },
+    {
+      "source": "R. H. Saavedra and A. J. Smith, \"Measuring cache and TLB performance and their effect on benchmark runtimes\", 1995",
+      "items": [
+        {
+          "item": "The strided method: cost per access climbs then flattens at the cache-line size, the knee of the curve",
+          "at": [{ "step": "Predict: cost per access as the stride grows" }, { "deep": "The strided-access benchmark" }]
+        }
+      ]
+    },
+    {
+      "source": "Intel 64 and IA-32 Architectures Optimization Reference Manual, Volume 1 (hardware prefetching chapters)",
+      "items": [
+        {
+          "item": "An adjacent-line (spatial) prefetcher pulls in the neighbouring cache line, which can make a stride sweep misreport the true line size",
+          "at": [{ "step": "A prefetcher can hide the knee" }, { "deep": "Prefetchers, told apart from cache hits" }]
+        }
+      ]
+    },
+    {
+      "source": "The Linux Kernel documentation, HugeTLB Pages and Transparent Hugepage Support",
+      "items": [
+        {
+          "item": "x86 CPUs normally support 4K and 2M (1G if architecturally supported) page sizes; valid and default huge-page sizes are architecture-dependent",
+          "at": [{ "step": "A second miss, hiding underneath" }, { "deep": "The TLB and TLB reach" }]
+        }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "independent reviewer agent, written without seeing the topic",
+    "date": "2026-10-14",
+    "items": [
+      {
+        "item": "A pointer-chasing benchmark must create a true data dependency between consecutive loads, or an out-of-order core overlaps the misses and the result measures bandwidth rather than latency",
+        "at": [{ "step": "Timing one load means breaking the overlap" }]
+      },
+      {
+        "item": "The chase must traverse a single permutation cycle covering every slot, since multiple short cycles revisit a small cache-resident set and under-report latency",
+        "at": [{ "step": "One cycle, visited in random order" }]
+      },
+      {
+        "item": "The latency-versus-working-set curve forms a staircase: flat plateaus are levels, and the knee between plateaus is that level's measured capacity (M)",
+        "at": [{ "step": "Predict: the shape of the latency curve" }, { "step": "Reading the staircase" }]
+      },
+      {
+        "item": "A strided-access sweep finds the cache-line size (B): cost per access is flat below the line size (several accesses share a line) and rises to a plateau once the stride matches or exceeds it",
+        "at": [{ "step": "Predict: cost per access as the stride grows" }]
+      },
+      {
+        "item": "Hardware prefetchers can mask or shift the measured knee by fetching ahead of the access pattern, so a stride sweep's apparent line size must be checked against known prefetcher behavior or defeated with random order",
+        "at": [{ "step": "A prefetcher can hide the knee" }]
+      },
+      {
+        "item": "The TLB is a separate cache from the data caches; a TLB miss (page walk) can occur even when the referenced data is already resident in a data cache",
+        "at": [{ "step": "A second miss, hiding underneath" }]
+      },
+      {
+        "item": "TLB reach equals entry count times page size, so larger pages increase reach without adding entries, which is why huge pages help large, pointer-heavy working sets",
+        "at": [{ "step": "A second miss, hiding underneath" }]
+      },
+      {
+        "item": "Comparing a sequential walk against a random walk over the same footprint isolates the prefetcher's contribution: the gap between the two curves is exactly what the prefetcher is hiding",
+        "at": [{ "step": "Sequential vs random tells the prefetcher apart" }]
+      },
+      {
+        "item": "Measured latency and block-size results from one machine describe only that machine; the qualitative shape of the staircase, not the specific nanosecond or byte figures, is what transfers across hardware",
+        "at": [{ "step": "Back to the vector: count and clock agree" }]
+      },
+      {
+        "item": "An amortized cost proof bounds a count of operations (such as element copies); it does not bound wall-clock time, because a single operation's real cost depends on where in the memory hierarchy it lands",
+        "at": [{ "step": "Predict: why would the clock still spike?" }]
+      },
+      {
+        "item": "Benchmark results should be reported as a distribution with tail percentiles (p50, p99, p99.9), not a single mean, because associativity, cache sharing and OS scheduling perturb individual runs",
+        "at": [{ "out": "Covered in index.mdx's own text on reading the staircase and in the production checklist, not demonstrated as a distinct reel visual." }]
+      },
+      {
+        "item": "A fixed CPU frequency (no turbo or frequency scaling) is required for a latency benchmark's nanosecond figures to be meaningful at all",
+        "at": [{ "out": "A benchmarking-hygiene detail from the lab and production checklist, not central enough to warrant its own reel step in an eleven-step reel." }]
+      }
+    ]
+  },
+  "gapReview": {
+    "date": "2026-10-14",
+    "by": "builder self-review",
+    "open": []
+  }
+}

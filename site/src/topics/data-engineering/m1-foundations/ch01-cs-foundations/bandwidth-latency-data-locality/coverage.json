@@ -1,0 +1,152 @@
+{
+  "topic": "de.bandwidth-latency-data-locality",
+  "syllabus": [
+    {
+      "clause": "bandwidth-delay product",
+      "at": [
+        { "step": "The bandwidth-delay product" },
+        { "step": "Predict: window smaller than the pipe" },
+        { "deep": "The pipe: the bandwidth-delay product" }
+      ]
+    },
+    {
+      "clause": "throughput vs latency",
+      "at": [
+        { "step": "Latency and throughput are different axes" },
+        { "step": "Predict: one stream or ten?" },
+        { "deep": "Throughput and latency are different axes" }
+      ]
+    },
+    {
+      "clause": "why moving compute to data beats moving data to compute",
+      "at": [{ "step": "The cheapest byte is the one never sent" }, { "deep": "Why moving compute to the data wins" }]
+    },
+    {
+      "clause": "cross-AZ and cross-region transfer pricing as a design constraint (wire-format costs: §6.1 and §4.1)",
+      "at": [
+        { "step": "The shop join, repriced in time" },
+        { "step": "Predict: shuffle vs broadcast, in dollars" },
+        { "step": "Back to the shop: the meter is a design constraint" },
+        { "deep": "The bill is a design constraint" }
+      ]
+    }
+  ],
+  "sources": [
+    {
+      "source": "RFC 7323, TCP Extensions for High Performance (Borman, Braden, Jacobson, Scheffenegger, 2014)",
+      "items": [
+        {
+          "item": "The bandwidth-delay product and the \"long, fat network\" definition: the receive window limits throughput over a high-BDP path",
+          "at": [{ "step": "The bandwidth-delay product" }, { "deep": "The pipe: the bandwidth-delay product" }]
+        },
+        {
+          "item": "The 16-bit receive-window field limits the advertised window to 65,535 bytes without scaling",
+          "at": [{ "step": "A sixteen-bit field caps the window at 64 KiB" }, { "deep": "The pipe: the bandwidth-delay product" }]
+        },
+        {
+          "item": "The Window Scale option multiplies the window by two to the shift, capped at 14, for a maximum permissible window of 1 GiB",
+          "at": [{ "step": "A sixteen-bit field caps the window at 64 KiB" }, { "deep": "The pipe: the bandwidth-delay product" }]
+        }
+      ]
+    },
+    {
+      "source": "J. D. C. Little, \"A Proof for the Queuing Formula: L = lambda W\", 1961",
+      "items": [
+        {
+          "item": "For a stable system, items inside equal arrival rate times time inside; here, bytes or requests in flight equal throughput times latency",
+          "at": [{ "step": "Latency and throughput are different axes" }, { "deep": "Throughput and latency are different axes" }]
+        }
+      ]
+    },
+    {
+      "source": "Apache Hadoop HDFS Architecture, and J. Dean & S. Ghemawat, MapReduce (OSDI 2004, section 3.4)",
+      "items": [
+        {
+          "item": "\"Moving Computation is Cheaper than Moving Data\": a computation is more efficient executed near the data it operates on",
+          "at": [{ "step": "The cheapest byte is the one never sent" }, { "deep": "Why moving compute to the data wins" }]
+        },
+        {
+          "item": "The MapReduce scheduler conserves network bandwidth by placing map tasks on a machine already holding a replica of the input",
+          "at": [{ "step": "The cheapest byte is the one never sent" }, { "deep": "Why moving compute to the data wins" }]
+        }
+      ]
+    },
+    {
+      "source": "AWS, EC2 On-Demand pricing, Data Transfer",
+      "items": [
+        {
+          "item": "Data transfer across Availability Zones in the same region is charged at $0.01/GB in each direction; ingress is free, egress is tiered",
+          "at": [{ "step": "Predict: shuffle vs broadcast, in dollars" }, { "deep": "The bill is a design constraint" }]
+        }
+      ]
+    },
+    {
+      "source": "Cross-reference: the held I/O cost model's network section (shuffle vs broadcast byte counts on 100 machines)",
+      "items": [
+        {
+          "item": "Shuffling both sides of a join moves about 990 GB across the network; broadcasting the small side moves about 9.9 GB",
+          "at": [{ "step": "The shop join, repriced in time" }]
+        }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "independent reviewer agent, written without seeing the topic",
+    "date": "2026-10-14",
+    "items": [
+      {
+        "item": "The bandwidth-delay product is bandwidth times round-trip time, the data that must be outstanding to keep a path running at full speed",
+        "at": [{ "step": "The bandwidth-delay product" }]
+      },
+      {
+        "item": "Throughput is capped at the receive window divided by the round-trip time once congestion control has opened up, regardless of raw link speed",
+        "at": [{ "step": "Predict: window smaller than the pipe" }]
+      },
+      {
+        "item": "A classic 16-bit window field tops out at 65,535 bytes; window scaling, negotiated once at connection setup, is what lets a single flow fill a high-BDP path",
+        "at": [{ "step": "A sixteen-bit field caps the window at 64 KiB" }]
+      },
+      {
+        "item": "Latency and throughput are independent axes: latency is set by distance and cannot be bought down, while throughput can be increased by widening the pipe or adding concurrency",
+        "at": [{ "step": "Latency and throughput are different axes" }]
+      },
+      {
+        "item": "Little's law (in-flight = throughput times latency) both derives the BDP and tells you how many parallel streams or requests a throughput target needs",
+        "at": [{ "step": "Latency and throughput are different axes" }, { "step": "Predict: one stream or ten?" }]
+      },
+      {
+        "item": "A transfer that is slow with its window pinned at maximum is window-bound (fix: bigger buffer or more streams); one with a near-empty window is latency- or loss-bound instead",
+        "at": [{ "step": "Predict: one stream or ten?" }]
+      },
+      {
+        "item": "Data locality (moving computation to the data) is cheaper than moving data to the computation, because the cheapest byte is the one never sent over the network",
+        "at": [{ "step": "The cheapest byte is the one never sent" }]
+      },
+      {
+        "item": "Projection and predicate pushdown are the lakehouse-era form of data locality: they shrink the bytes that must move before any transfer starts",
+        "at": [{ "step": "The cheapest byte is the one never sent" }]
+      },
+      {
+        "item": "The same join's byte counts translate directly into time (bytes divided by per-machine bandwidth) and into money (bytes times a per-GB cross-AZ rate), and both track the same hundredfold ratio as the bytes",
+        "at": [{ "step": "The shop join, repriced in time" }, { "step": "Predict: shuffle vs broadcast, in dollars" }]
+      },
+      {
+        "item": "Cloud network pricing is asymmetric: ingress is free and egress or cross-zone traffic is metered, which is the economic form of data gravity that keeps compute pinned near storage",
+        "at": [{ "step": "Back to the shop: the meter is a design constraint" }]
+      },
+      {
+        "item": "The exact wire-format byte counts that this topic prices in time and money are fixed elsewhere (the serialization and table-format chapters), not derived fresh here",
+        "at": [{ "out": "Explicitly deferred by the syllabus line itself to §6.1 and §4.1 (wire-format costs)." }]
+      },
+      {
+        "item": "Hand-setting a socket's send or receive buffer disables the kernel's autotuning for that socket, so a buffer set too small is worse than leaving autotuning on",
+        "at": [{ "deep": "The pipe: the bandwidth-delay product" }]
+      }
+    ]
+  },
+  "gapReview": {
+    "date": "2026-10-14",
+    "by": "builder self-review",
+    "open": []
+  }
+}

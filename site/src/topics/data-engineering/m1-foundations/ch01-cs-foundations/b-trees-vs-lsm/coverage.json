@@ -1,0 +1,155 @@
+{
+  "topic": "de.b-trees-vs-lsm",
+  "syllabus": [
+    {
+      "clause": "fan-out and height",
+      "at": [
+        { "step": "A B+-tree node is one page wide" },
+        { "step": "Predict: how many levels deep?" },
+        { "deep": "A B+-tree is short because it is wide" }
+      ]
+    },
+    {
+      "clause": "read vs write amplification",
+      "at": [
+        { "step": "Three costs, opposite corners" },
+        { "step": "Pick two of three: the RUM conjecture" },
+        { "deep": "Read, write and space amplification — the RUM trade-off" }
+      ]
+    },
+    {
+      "clause": "why one favors point reads and the other ingest",
+      "at": [
+        { "step": "Predict: orders lookups want which family?" },
+        { "step": "Predict: order_events ingest wants which family?" },
+        { "deep": "Why one favours point reads and the other ingest" }
+      ]
+    },
+    {
+      "clause": "internals live in §5.1 and → Data Structures & Algorithms Ch.3",
+      "at": [{ "deep": "A little deeper" }]
+    }
+  ],
+  "sources": [
+    {
+      "source": "R. Bayer and E. McCreight, \"Organization and Maintenance of Large Ordered Indexes\", Acta Informatica 1972",
+      "items": [
+        {
+          "item": "A B-tree node holds a bounded number of keys and children; height grows logarithmically in the fan-out",
+          "at": [{ "step": "A B+-tree node is one page wide" }, { "deep": "A B+-tree is short because it is wide" }]
+        }
+      ]
+    },
+    {
+      "source": "P. O'Neil, E. Cheng, D. Gawlick and E. O'Neil, \"The Log-Structured Merge-Tree (LSM-Tree)\", Acta Informatica 1996",
+      "items": [
+        {
+          "item": "Writes buffer in an in-memory component and are merged with an on-disk component by a rolling merge",
+          "at": [{ "step": "An LSM-tree never writes in place" }, { "deep": "An LSM-tree is fast to write because it never seeks" }]
+        },
+        {
+          "item": "Flushing a full memtable is one sequential write, avoiding the seek a random in-place update would pay",
+          "at": [{ "step": "An LSM-tree never writes in place" }]
+        }
+      ]
+    },
+    {
+      "source": "M. Athanassoulis et al., \"Designing Access Methods: The RUM Conjecture\", EDBT 2016",
+      "items": [
+        {
+          "item": "A design can minimize at most two of read, update and memory overhead at the third's expense",
+          "at": [{ "step": "Pick two of three: the RUM conjecture" }, { "deep": "Read, write and space amplification — the RUM trade-off" }]
+        }
+      ]
+    },
+    {
+      "source": "RocksDB wiki, \"RocksDB Tuning Guide\" and \"Leveled Compaction\"",
+      "items": [
+        {
+          "item": "Definitions of read, write and space amplification used to compare the two structures",
+          "at": [{ "step": "Three costs, opposite corners" }, { "deep": "Read, write and space amplification — the RUM trade-off" }]
+        },
+        {
+          "item": "Leveled compaction's own worked example: write amplification near 33x, space amplification near 1.14x",
+          "at": [{ "step": "Three costs, opposite corners" }]
+        },
+        {
+          "item": "Each level is about ten times larger than the one above it (max_bytes_for_level_multiplier = 10)",
+          "at": [{ "step": "Runs pile up, so compaction merges them" }]
+        },
+        {
+          "item": "The default Bloom filter spends 10 bits per key for about a 1% false-positive rate, so most point reads touch one file",
+          "at": [{ "step": "A Bloom filter answers \"maybe\" cheaply" }]
+        }
+      ]
+    },
+    {
+      "source": "PostgreSQL 18 documentation and source README, B-Tree Indexes (Lehman-Yao design)",
+      "items": [
+        {
+          "item": "A B-link tree's leaves carry a right-link and high key so a range scan walks the leaf chain without climbing back up",
+          "at": [{ "step": "The top of the tree is free after the first query" }, { "deep": "A B+-tree is short because it is wide" }]
+        }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "independent reviewer agent, written without seeing the topic",
+    "date": "2026-10-14",
+    "items": [
+      {
+        "item": "A B+-tree's height is a logarithm of the key count in the base of its fan-out, so a large fan-out keeps the tree at a handful of levels regardless of data size",
+        "at": [{ "step": "Predict: how many levels deep?" }]
+      },
+      {
+        "item": "Only the leaf level needs a real page read on a warm B+-tree, because the small number of upper-level pages stay resident in cache",
+        "at": [{ "step": "The top of the tree is free after the first query" }]
+      },
+      {
+        "item": "A B-link tree's leaf-to-leaf right links let a range scan proceed without re-ascending the tree between leaves",
+        "at": [{ "step": "The top of the tree is free after the first query" }]
+      },
+      {
+        "item": "An LSM-tree converts every write into an append to an in-memory structure, deferring all seeking and sorting to a background process",
+        "at": [{ "step": "An LSM-tree never writes in place" }]
+      },
+      {
+        "item": "Because sorted runs are immutable, compaction must periodically merge them, and that merge is itself a form of external k-way merge",
+        "at": [{ "step": "Runs pile up, so compaction merges them" }]
+      },
+      {
+        "item": "Read amplification, write amplification and space amplification are the three distinct costs that trade off between the two structures",
+        "at": [{ "step": "Three costs, opposite corners" }]
+      },
+      {
+        "item": "The RUM conjecture formalizes why no single index structure minimizes read, update and memory overhead simultaneously",
+        "at": [{ "step": "Pick two of three: the RUM conjecture" }]
+      },
+      {
+        "item": "A Bloom filter lets an LSM point read skip most runs cheaply, but gives no benefit to a range scan, which must still merge every overlapping run",
+        "at": [{ "step": "A Bloom filter answers \"maybe\" cheaply" }]
+      },
+      {
+        "item": "Structural write amplification (compaction) and device write amplification (flash garbage collection) are separate, multiplicative costs, and only the structural figure here is a sourced, measured number; a combined device-times-structural figure is illustrative only",
+        "at": [{ "deep": "A little deeper" }]
+      },
+      {
+        "item": "Workload shape, point-read-heavy versus high-rate append, determines which structure's cheap side matters, which is why operational databases default to B+-trees and most time-series or event stores default to LSM-trees",
+        "at": [{ "step": "Predict: orders lookups want which family?" }, { "step": "Predict: order_events ingest wants which family?" }]
+      },
+      {
+        "item": "The exact crossover arithmetic between index-lookup and full-scan costs, and the block-transfer counting behind these shapes, is developed precisely in the next topic, not this refresher",
+        "at": [{ "out": "Deferred by this topic's own text to the I/O cost model, the next topic in the chapter." }]
+      },
+      {
+        "item": "The concurrency mechanics of B-link trees (latching, the high key protecting against concurrent splits) are implementation detail beyond a glance-level refresher",
+        "at": [{ "out": "Explicitly deferred to §5.1 and to Data Structures & Algorithms's build-from-scratch treatment, per this topic's own scope." }]
+      }
+    ]
+  },
+  "gapReview": {
+    "date": "2026-10-14",
+    "by": "builder self-review",
+    "open": []
+  }
+}

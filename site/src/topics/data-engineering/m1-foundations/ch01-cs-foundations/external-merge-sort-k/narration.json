@@ -1,0 +1,117 @@
+{
+  "topic": "de.external-merge-sort-k",
+  "steps": [
+    {
+      "lines": [
+        "The hash table ran out of memory and had to spill. A sort never has that problem, and the reason is worth seeing.",
+        "The cost model counted this algorithm in passes. Now we open one up and look at what a pass is.",
+        { "beat": 0.4 },
+        "The key idea is that a sort can be built from pieces, none of which needs to fit."
+      ]
+    },
+    {
+      "lines": [
+        "You have a terabyte of events and sixteen gibibytes of memory. You cannot sort it in one go.",
+        "So split the work in two. Look at the left half first: phase one makes sorted pieces, each small enough to fit. We call them runs.",
+        "Then look at the right: phase two merges the runs into one sorted output.",
+        "Everything in this topic is a question about those two phases, how long the runs are and how many you can merge at once."
+      ]
+    },
+    {
+      "lines": [
+        "Phase one is almost embarrassingly simple. Read until memory is full, sort what you have, write it out as a run, and repeat.",
+        "Watch the count as it climbs. Each run is one memory load, so a terabyte over sixteen gibibytes gives sixty four runs.",
+        "Plain quicksort is enough, it works on a block that sits in cache, and every worker can do its own runs independently."
+      ]
+    },
+    {
+      "lines": [
+        "There is a cleverer way to make runs, and it is worth seeing because it teaches you where the cost really is.",
+        "Keep a heap of everything in memory. Pop the smallest, write it out, and read one more item in.",
+        "If the new item is bigger than what you just wrote, it can still join this run. Picture a snowplow collecting snow as it drives, so the run keeps growing.",
+        "On random data the runs come out about twice the size of memory. On data that is already sorted, you get a single run for the whole file."
+      ]
+    },
+    {
+      "lines": [
+        "Longer runs mean fewer runs, and fewer runs can save a whole pass over the data. That sounds like a clear win.",
+        "And yet almost every modern engine gave this method up and went back to plain quicksort.",
+        { "beat": 0.4 },
+        "Why would you give up longer runs?"
+      ],
+      "answer": [
+        "Because the cost model counts transfers, but the processor pays for something the model does not count.",
+        "The heap sifts one item at a time, jumping around memory. Quicksort partitions a block that sits in cache.",
+        "The longer runs rarely saved a whole pass, and the scattered access cost more than one extra cheap merge. PostgreSQL made this switch.",
+        "The lesson is general: count the resource that dominates. Here it was the cache, not the disk. Saying the longer runs were a myth is wrong, since they do occur; and the disk did not get slower."
+      ]
+    },
+    {
+      "lines": [
+        "Now phase two. The naive plan merges two runs at a time, over and over.",
+        "Do the arithmetic on that. Each round reads and writes the entire dataset, and you need a round for every level of the merge tree. It is far too much disk traffic.",
+        "So merge all of them at once. Watch the heap on screen. It holds the front item of every run, pops the smallest to the output, and refills from the run it came from.",
+        "One read and one write of every block. That is one pass, however many runs there are, as long as they all fit."
+      ]
+    },
+    {
+      "lines": [
+        "Notice how little memory that merge needs. The heap holds one item per run, not the runs themselves.",
+        "That is why the whole merge phase fits in a few lines over generators: hold one record per stream, yield the smallest, and move on.",
+        "The merge is almost free in memory. The thing it needs is a buffer for each run, and that is what limits it next."
+      ]
+    },
+    {
+      "lines": [
+        "So how many runs can you merge at once? That is the fan-in, and memory sets it.",
+        "Every run needs a read buffer, and the output needs one too.",
+        "Sixteen gibibytes cut into one mebibyte blocks gives sixteen thousand three hundred and eighty four buffers. One goes to the output.",
+        "So the fan-in is sixteen thousand three hundred and eighty three. Remember that it is a ceiling set by memory, not a choice."
+      ]
+    },
+    {
+      "lines": [
+        "Now put the two phases together. Phase one made sixty four runs, and the fan-in is over sixteen thousand.",
+        "Count the passes over the data: one for building runs, and however many it takes to merge them.",
+        { "beat": 0.4 },
+        "How many in total?"
+      ],
+      "answer": [
+        "Two.",
+        "One pass builds sixty four runs. One merge pass folds all of them at once, because the fan-in dwarfs the run count.",
+        "Merging two at a time would have taken seven passes. A third pass appears only when the runs outnumber the fan-in, and we are nowhere near that.",
+        "One is wrong because you cannot sort without writing the runs first, and sixty four is the number of runs, not passes."
+      ]
+    },
+    {
+      "lines": [
+        "Here is a tension worth feeling. More fan-in means fewer passes, which pulls you toward one giant merge.",
+        "But memory is fixed. Split it across more runs and every buffer shrinks.",
+        "Small buffers mean the merge reads a few kilobytes from here, then a few from there. The disk goes from streaming to seeking.",
+        "So the model's number is an upper bound on fan-in. It is not a free lunch."
+      ]
+    },
+    {
+      "lines": [
+        "Take that to the extreme: use the largest fan-in memory permits, so the pass count drops by one.",
+        "You saved a pass over the data. But each buffer is now tiny.",
+        { "beat": 0.4 },
+        "Does the sort finish sooner?"
+      ],
+      "answer": [
+        "Often, no. It can get slower.",
+        "Thousands of tiny buffers turn sequential reads into a storm of seeks. That is why real engines cap fan-in at a few hundred, and will pay for an extra pass to keep reads sequential.",
+        "It is not only true on hard disks, and it is not about whether the data is already sorted. The cost is in how the buffers are sized, which is true of any device that prefers large reads."
+      ]
+    },
+    {
+      "lines": [
+        "Once you can see this merge, you will find it everywhere.",
+        "An order by that spills to disk is this. A sort-merge join streaming two sorted inputs is this. Compaction folding the sorted runs of a log-structured tree is this.",
+        "Learn to tune it once, in the only two places that matter: how long the runs come out, and how many merge at a time.",
+        { "beat": 0.4 },
+        "Sorted, joined, aggregated: a pipeline is many such jobs in order. Next refresher: the graph algorithms that schedule them."
+      ]
+    }
+  ]
+}
