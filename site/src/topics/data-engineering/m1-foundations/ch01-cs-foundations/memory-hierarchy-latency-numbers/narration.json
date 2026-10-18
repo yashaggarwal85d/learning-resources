@@ -1,169 +1,148 @@
 {
   "topic": "de.memory-hierarchy-latency-numbers",
-  "note": "Written to be spoken: one sentence or phrase per line; {\"beat\": s} is a deliberate pause; numbers are phrased the way they are said. `answer` plays after the learner answers a predict step.",
   "steps": [
     {
       "lines": [
-        "The nightly job reads one terabyte of order events... from a fast local drive.",
-        "The team wants to read it... straight from object storage instead.",
-        {
-          "beat": 0.4
-        },
-        "Before anyone runs it... what is the least time each way could take?",
-        "By the end, you'll compute both... and the least setting that could make them match."
+        "Here is the question this topic answers. A nightly job reads one terabyte of order events from a fast local drive, and the team wants to read it from object storage instead.",
+        "Before anyone runs anything, ask what the best case could be. Not the typical case, the least time physics allows, each way.",
+        { "beat": 0.4 },
+        "By the end you will compute both numbers, and you will know the smallest setting that would make them match."
       ]
     },
     {
       "lines": [
-        "Let's predict first.",
-        "One read from RAM takes about a hundred nanoseconds.",
-        "Object storage takes about a hundred milliseconds to send the first byte.",
-        "How many RAM reads fit into one object storage wait?"
+        "Begin with a feel for the scale. A read from memory costs about a hundred nanoseconds. The first byte from object storage takes about a hundred milliseconds.",
+        "Say the ratio to yourself before you pick: milliseconds are a thousand times a microsecond, and a microsecond a thousand times a nanosecond.",
+        { "beat": 0.4 },
+        "How many memory reads fit in one object storage wait?"
       ],
       "answer": [
-        "About a million. A hundred milliseconds, divided by a hundred nanoseconds.",
-        "That's the gap between one second... and eleven and a half days.",
-        "On a straight axis, the RAM read would vanish. So every latency chart from here on is logarithmic... equal steps are equal multiples."
+        "About a million.",
+        "A hundred milliseconds divided by a hundred nanoseconds. Scale it up: if a memory read took one second, the storage wait would take eleven and a half days.",
+        "That is why every latency chart in this course is logarithmic. On an ordinary axis the memory read would be invisible. Equal steps here mean equal multiples."
       ]
     },
     {
       "lines": [
-        "Inside the chip, latency is counted in clock cycles.",
-        "Intel says a Skylake server core needs four to six cycles for the first level cache. The second level needs fourteen. The third level needs fifty to seventy.",
-        "A well known paper from two thousand seven puts main memory at two hundred cycles or more.",
-        "At two gigahertz, a cycle is half a nanosecond. So L one is two to three nanoseconds... and D RAM, about a hundred."
+        "Now zoom into the chip. Inside it, latency is counted in clock cycles, not in seconds.",
+        "Intel's manual gives the first level of cache a handful of cycles, the second a few more, the third dozens. Main memory is two hundred or more.",
+        "At two gigahertz a cycle is half a nanosecond, so the first cache costs two or three nanoseconds and main memory about a hundred.",
+        "The two ends of that scale differ by a factor of about forty. Keep that ratio in mind."
       ]
     },
     {
       "lines": [
-        "Off the chip, the waits jump to microseconds, and then milliseconds.",
-        "A random read of four kilobytes from a fast server drive takes eighty microseconds, says Samsung's datasheet.",
-        "A hard disk waits for the platter to spin around... Seagate says four point one six milliseconds on average, at seven thousand two hundred turns a minute.",
-        "That drive did one hundred sixty eight random reads a second, measured with sixteen reads queued. So each read takes at least six milliseconds.",
-        "Object storage... a hundred to two hundred milliseconds to the first byte. Medians for small requests are in the tens of milliseconds.",
-        "The five hundred microsecond round trip is from two thousand nine. Amazon shows a live median in its network console, but no fixed number. Read yours, or measure."
+        "Below memory, the waits jump by orders of magnitude. A random four kilobyte read from a fast server drive takes about eighty microseconds, according to the maker's datasheet.",
+        "A hard disk must wait for the platter to turn. The average rotational wait alone is over four milliseconds, and measured with sixteen requests queued, each random read still costs at least six.",
+        "Object storage answers in a hundred to two hundred milliseconds for the first byte, with medians in the tens for small requests.",
+        "Every drop down the page costs you roughly a thousandfold in latency."
       ]
     },
     {
       "lines": [
-        "A server with several sockets gives each one its own memory. That's a Numa node.",
-        "Memory on another node is slower to reach.",
-        "On two thousand seven Opterons, Drepper measured remote reads twenty percent slower.",
-        "Linux places a page on the node",
-        "of the processor that first touches it.",
-        "So a thread that moves sockets",
-        "can leave its memory behind.",
-        "Pin memory to each node with numa control, and time the lab's walk."
+        "One more wrinkle inside a single machine. A server with several sockets gives each its own memory, and memory attached to another socket is slower to reach.",
+        "In the measurements Drepper published for older server chips, remote reads were about a fifth slower.",
+        "The operating system places a page on the socket of the processor that first touches it. So a thread that later moves to another socket can leave its data behind.",
+        "The remedy is to pin memory to each node, and measure."
       ]
     },
     {
       "lines": [
-        "Latency is how long until the first byte.",
-        "Bandwidth is how fast the bytes come after that.",
-        "They rank the tiers differently. RAM alone runs from twelve billion bytes a second on one core... to four hundred sixty point eight billion on one twelve channel socket, a peak from the spec sheet.",
-        "Object storage is the slowest rung to answer... yet Amazon says one machine can pull up to a hundred gigabits per second from it, given enough requests at once.",
-        "Hard disk... slow on both."
+        "Now a distinction that people blur. Latency is the wait before the first byte arrives. Bandwidth is the rate at which the bytes then flow.",
+        "The two rank the tiers differently. Memory alone ranges from about twelve gigabytes a second on one core to hundreds on a full socket.",
+        "Object storage is the slowest to answer, and yet one machine can pull up to a hundred gigabits a second from it, if you give it enough requests at once.",
+        "A hard disk is slow on both counts. So a tier can be a poor first answer and a good firehose."
       ]
     },
     {
       "lines": [
-        "Every transfer costs a wait, plus the bytes.",
-        "T of n equals alpha plus n over beta.",
-        "Read one megabyte.",
-        "The split depends on tier.",
-        "On the drive,",
-        "the wait is a third.",
-        "On a hard disk,",
-        "at least sixty two percent.",
-        "On object storage, ninety eight percent... even if one request streamed at five gigabits a second. That top speed is assumed.",
-        "Below n equals alpha times beta, a read is mostly waiting. About half a megabyte on this drive. At least one point seven on the disk."
+        "Put both into one formula. The time for a transfer is a wait plus the bytes over the bandwidth. Alpha is the wait, beta is the bandwidth.",
+        "Read a megabyte and look at where the time goes. On the fast drive about a third is waiting. On a hard disk, most of it. On object storage, nearly all of it.",
+        "That tells you a rule of thumb. A request smaller than alpha times beta is mostly waiting. On this drive that is about half a megabyte, and on the disk more than three times that.",
+        "So small requests are the thing to avoid, and the formula says exactly how small."
       ]
     },
     {
       "lines": [
-        "Here's the lab. Read every number in an array of one gigabyte, first in order, then in a random order.",
-        "Same count. Same RAM.",
-        "How much longer does each random read take?"
+        "A lab you can run on your own machine. Read every number in a one gibibyte array of numbers, once in order and once in a random order.",
+        "It is the same count and the same memory. Think about what changes between the two walks.",
+        { "beat": 0.4 },
+        "How much longer does a random read take?"
       ],
       "answer": [
-        "About twenty times, on this machine.",
-        "Memory moves in sixty four byte lines. In order, one line serves eight numbers, and the processor fetches the next lines before you ask.",
-        "At random, each read uses just one number from its line, and then it stalls. But the processor overlaps several of those stalls.",
-        "Make each address depend on the last read, and nothing overlaps: a hundred and fifty eight nanoseconds, the whole D RAM wait.",
-        "Big O counted all three the same."
+        "About twenty times, here.",
+        "Memory moves in lines of sixty four bytes. In order, one line serves eight numbers, and the processor fetches the next lines before you ask. At random, each read uses one number from its line and waits.",
+        "The processor overlaps several waits, which is why it is twenty times and not a thousand. Make each address depend on the previous read and the overlap disappears. Saying it is the same because it is random access memory is the mistake this topic exists to cure."
       ]
     },
     {
       "lines": [
-        "One request at a time... pays alpha every time.",
-        "With k in flight, the waits overlap. So they cost about requests times alpha, divided by k.",
-        "One read from the fast drive takes eighty microseconds alone... twelve thousand five hundred reads a second.",
-        "To reach the drive's million a second... you need at least eighty in flight. Samsung measured it with a hundred and twenty eight."
+        "Latency is not a fixed tax. One request at a time pays the wait every time. With several in flight, the waits overlap.",
+        "Look at the arithmetic. One read on the fast drive takes eighty microseconds alone, which is twelve and a half thousand reads a second.",
+        "The drive can do a million a second, so reaching that needs at least eighty requests in flight. The maker measured it with a hundred and twenty eight.",
+        "The lesson: concurrency is how you buy back latency."
       ]
     },
     {
       "lines": [
-        "A job can't finish faster than its bytes take at bandwidth beta... or its waits take with k in flight. The floor is the larger.",
-        "One terabyte, read in order from the fast drive: a hundred and sixty two seconds moving bytes, five seconds of delay. Bandwidth bound.",
-        "The orders table, at random from a hard disk: twenty nine seconds of bytes, five thousand nine hundred fifty two of delay, at a floor of six thousandths of a second each. Latency bound.",
-        "A floor ignores everything else. So a real run is slower."
+        "Now the floor. A job cannot finish faster than its bytes take at full bandwidth, or its waits take with the chosen number in flight. The floor is the larger of the two.",
+        "Compare the two examples. A terabyte read in order from the fast drive: a hundred and sixty two seconds of bytes against five of waiting, so bandwidth sets the floor.",
+        "The orders table read page by page at random from a hard disk: twenty nine seconds of bytes against nearly six thousand of waiting. Now latency sets it.",
+        "A floor leaves out every other cost, so a real run takes longer. But it tells you which term to attack first."
       ]
     },
     {
       "lines": [
-        "A full scan is sequential, so its floor is bytes over beta.",
-        "The orders table is eight point two gigabytes.",
-        "Seven tenths of a second from RAM on one core, measured here. One point two from one fast drive. Twenty nine from one hard disk.",
-        "Your scan takes a minute.",
-        "On a fast drive.",
-        "Then it's not the drive.",
-        "Find what is spending",
-        "the other fifty nine seconds."
+        "Apply that to something routine, scanning the orders table. A full scan is sequential, so its floor is the bytes over the bandwidth.",
+        "That is under a second from memory on one core, about a second from one fast drive, and about half a minute from one hard disk.",
+        "Now the useful consequence. If your scan takes a minute on that fast drive, the drive is not the problem. Look for what is spending the other fifty nine seconds."
       ]
     },
     {
       "lines": [
-        "Back to the problem. Reading one terabyte from the local drive is bandwidth bound: a hundred and sixty two seconds.",
-        "From object storage, in sixteen megabyte ranges, that is sixty five thousand five hundred thirty six requests. One at a time, the waits alone take one point eight hours.",
-        "With k in flight, they take six thousand five hundred fifty four seconds divided by k. At k equals forty one, the floor matches the drive.",
-        "Each request also streams sixteen megabytes, so a real run needs more... Measure the rate per request before you promise it."
+        "Back to the question we opened with. From the local drive, a terabyte is bandwidth bound: a hundred and sixty two seconds.",
+        "From object storage in sixteen mebibyte ranges, that is sixty five thousand requests. One at a time, the waits alone take almost two hours.",
+        "With many in flight the waits shrink in proportion, and with about forty one in flight the floor matches the drive.",
+        "But each request also streams its own bytes, so a real run needs more. Measure the per request rate before you promise anything."
       ]
     },
     {
       "lines": [
-        "Prove it. One of three.",
-        "A query goes row by row through an index. Two million random eight kilobyte page reads of orders, one at a time, from one local drive.",
+        "Test yourself with three cases. A query goes row by row through an index, making two million random page reads, one at a time, from one fast drive.",
+        "Each read waits its full eighty microseconds. Multiply.",
+        { "beat": 0.4 },
         "What is the floor?"
       ],
       "answer": [
-        "A hundred and sixty seconds. One at a time, every read pays its eighty microsecond wait.",
-        "That's a hundred and thirty times... the one point two seconds it takes to scan the whole table in order.",
-        "With eighty reads in flight, the waits fall to two seconds, and the bytes, at the drive's best rate, become the floor. Same reads, a floor sixty six times lower."
+        "About a hundred and sixty seconds.",
+        "Two million times eighty microseconds. That is a hundred and thirty times the time to scan the whole table in order.",
+        "With eighty reads in flight, the waits fall to about two seconds, and then the bytes become the limit. The same count of reads, a floor sixty six times lower."
       ]
     },
     {
       "lines": [
-        "Prove it. Two of three.",
-        "You copy orders from a local fast drive to another instance, over one connection. Not in a cluster placement group, which packs instances close together.",
+        "Second case. You copy the orders table from a local drive to another instance, over one connection, with the instances not packed in one cluster group.",
+        "Think of the path as a chain. It runs at its slowest link.",
+        { "beat": 0.4 },
         "What is the floor?"
       ],
       "answer": [
-        "Thirteen seconds. A chain runs at its slowest link.",
-        "Amazon caps one connection at five gigabits per second, between instances outside a cluster placement group. That is six hundred twenty five megabytes per second, however fast the drive is.",
-        "Several connections in parallel can use the instance's full bandwidth instead."
+        "About thirteen seconds.",
+        "A single flow between ordinary instances is limited to five gigabits a second, which is six hundred and twenty five megabytes a second. The table's eight gigabytes takes thirteen seconds however fast the drive is.",
+        "A placement group raises one flow's limit, and several connections raise the total. The drive was never the slow link."
       ]
     },
     {
       "lines": [
-        "Prove it. Three of three.",
-        "The nightly job reads the tebibyte from object storage with eight requests in flight. It takes eighteen minutes.",
-        "A teammate says object storage is throttling you.",
-        "Is something broken?"
+        "Third case. The nightly job reads the terabyte from object storage with eight requests in flight, and it takes eighteen minutes.",
+        "A teammate says the store is throttling you.",
+        { "beat": 0.4 },
+        "Is anything broken?"
       ],
       "answer": [
         "Nothing is broken.",
-        "With eight in flight, the waits alone take thirteen point seven minutes. Eighteen is only one point three times that... near the floor, so k is the limit.",
-        "The job sends at most eighty requests a second, against at least five thousand five hundred allowed per key prefix. It's latency bound. Raise k... or use fewer, larger ranges."
+        "With eight in flight, the waits alone come to nearly fourteen minutes. Eighteen is only about one and a third times that, so the job is near its floor. The number in flight is the limit.",
+        "The job sends far fewer requests a second than a key prefix allows, and its bytes need only about a minute and a half of a hundred gigabit card. Raise the number in flight, or use fewer, larger ranges."
       ]
     }
   ]

@@ -22,16 +22,17 @@
     },
     {
       "lines": [
-        "Let's start with the smallest case.",
-        "A string is a small header on the stack... a pointer, a length, and a capacity... pointing at text on the heap.",
+        "Take the smallest case first, because the whole topic is hiding in it.",
+        "A string is two things: a small header on the stack, and the text itself on the heap. The header is what you hold.",
         {
           "beat": 0.4
         },
-        "So when you write let s two equals s one... what exactly gets copied?"
+        "Now write one string name equal to another. Which of those two things gets copied?"
       ],
       "answer": [
-        "Just the header. Pointer, length and capacity. Twenty-four bytes.",
-        "The text itself never moves... and Rust now treats s one as gone."
+        "Only the header: the pointer, the length and the capacity, twenty four bytes.",
+        "The text never moves, because copying it would be the expensive thing, and Rust refuses to do expensive things silently.",
+        "Copying the heap bytes too would be a deep copy, and just the pointer misses the length and capacity. What the compiler does next is declare the first name gone."
       ]
     },
     {
@@ -48,14 +49,13 @@
     },
     {
       "lines": [
-        "Let's measure it.",
-        "We move a vector of one million bytes into a function.",
-        "The heap pointer? The same. Zero allocations. Only the twenty-four byte header was copied, to a new address.",
+        "Now measure instead of believing.",
+        "We hand a vector of a million bytes to a function. Watch the pointer to the text: the same value, before and after. Zero allocations happened.",
+        "Only the twenty four byte header was copied, to a new address, which is where the function finds its parameter.",
         {
-          "beat": 0.3
+          "beat": 0.4
         },
-        "Now clone it. One allocation, a million bytes, and a brand new pointer.",
-        "Rust never makes a deep copy... unless you write clone."
+        "Clone it, and you see the contrast: one allocation, a million bytes, a brand new pointer. If you ever want a deep copy in Rust, you must write the word."
       ]
     },
     {
@@ -98,15 +98,10 @@
     },
     {
       "lines": [
-        "Some values are nothing but their bits.",
-        "An integer. A float. A boolean. A character. Arrays and tuples of those.",
-        "Those types are Copy. Assigning one duplicates it, and the source stays valid.",
-        {
-          "beat": 0.3
-        },
-        "The test is simple: is the value just its bits? Does it own anything beyond them?",
-        "A type can be Copy only if every field is. A shared reference is Copy. A mutable reference never is.",
-        "And a type with a destructor... never."
+        "Some values are nothing but their bits, and for those, copying is free of drama.",
+        "Integers, floats, booleans, characters, and arrays and tuples built from them. Assign one and both names stay usable.",
+        "The test to apply is: does this value own anything beyond its own bytes? If it does, copying the bytes would create two owners, which is the problem we started with.",
+        "That is why a type with a destructor can never be a plain copy, and why a mutable reference never is: two of them would be two writers."
       ]
     },
     {
@@ -164,15 +159,11 @@
     },
     {
       "lines": [
-        "Now comes the part that makes ownership a design tool.",
-        "A signature tells you what a call does to your value... without opening the body.",
-        {
-          "beat": 0.3
-        },
-        "Take the type itself, and the function owns it.",
-        "Take a shared reference, and the function borrows it. Any number of borrows at once.",
-        "Take a mutable reference, and the borrow is exclusive. Nobody else may touch the value meanwhile.",
-        "Return the type, and ownership comes back to the caller."
+        "Now the idea that turns all this into a design tool: the signature tells you what a call does to your value, without reading its body.",
+        "Take the type by value, and the function becomes the owner. It will drop it, store it, or hand it on.",
+        "Take a shared reference, and it borrows. Any number of those can exist at once, because nobody is writing.",
+        "Take a mutable reference, and the borrow is exclusive: nobody else may touch the value for as long as it lasts.",
+        "And if it returns the type, ownership comes back to you."
       ]
     },
     {
@@ -230,19 +221,17 @@
     },
     {
       "lines": [
-        "A loop is a path... that comes back.",
-        "Ship takes the batch by value, and the loop runs three times.",
+        "A loop is a path that returns to where it began. Keep that in mind.",
+        "The function takes the batch by value, and the loop calls it three times.",
         {
           "beat": 0.4
         },
-        "What happens?"
+        "Does it compile?"
       ],
       "answer": [
-        "It doesn't compile. On the second pass through the loop, the batch is already gone.",
-        {
-          "beat": 0.8
-        },
-        "The same rule means a for loop over a vector consumes it. Iterate over a reference to borrow."
+        "It does not.",
+        "The compiler follows every path, including the one that goes round the loop. On the second pass, the batch has already been given away.",
+        "The same rule is why a for loop over a vector uses the vector up. To keep it, iterate over a reference."
       ]
     },
     {

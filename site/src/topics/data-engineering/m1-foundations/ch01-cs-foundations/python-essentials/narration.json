@@ -1,135 +1,119 @@
 {
   "topic": "de.python-essentials",
-  "note": "Written to be spoken: one sentence or phrase per line; {\"beat\": s} is a deliberate pause; code is spelled the way it is said. `answer` plays after the learner answers a predict step.",
   "steps": [
     {
       "lines": [
-        "Data Engineering opens with five quick refreshers.",
-        "This one is Python... the parts a senior engineer leans on in code review, and the language our pipelines are written in.",
-        {
-          "beat": 0.4
-        },
-        "All familiar? Swipe on to Git."
+        "Data Engineering opens with five short refreshers. They are not lessons, they are checks.",
+        "This first one is Python: the parts a senior engineer relies on when reviewing someone else's code, and the language our pipelines are written in.",
+        { "beat": 0.4 },
+        "If every slide feels familiar, good. Swipe on to Git. If one surprises you, that is the one worth ten minutes."
       ]
     },
     {
       "lines": [
-        "Here's a classic.",
-        "A function's default value is created once... when the function is defined. Not on every call.",
-        {
-          "beat": 0.5
-        },
-        "So, what will the second call give you?"
+        "Start with a trap that catches experienced people. A function has a default argument, an empty list.",
+        "Ask yourself when that list is made. Not when you call the function, but when the definition runs, once.",
+        { "beat": 0.4 },
+        "So what does the second call return?"
       ],
       "answer": [
-        "Both calls share the same list... the one made when the function was defined.",
-        "The fix? Default to None, and create the list inside the function."
+        "Both calls share one list, so the second call returns the first call's item as well.",
+        "A function is an object, and its defaults are stored on it. Every call that omits the argument gets the same list.",
+        "The usual fix is to default to nothing, and build the list inside the function. The other three answers all assume a fresh list per call."
       ]
     },
     {
       "lines": [
-        "Here's its cousin.",
-        "A lambda reads the value of a name when it runs... not when it's created.",
-        {
-          "beat": 0.4
-        },
-        "So three lambdas, built in a loop. What do they return?"
+        "Its cousin lives in loops. Three small functions are created inside a loop, each returning the loop variable.",
+        "Think about when a function looks a name up. When it is created, or when it runs?",
+        { "beat": 0.4 },
+        "What do the three return?"
       ],
       "answer": [
-        "Two, two, two. All three look up i after the loop has finished.",
-        "The fix? Bind the value now, with a default. Defaults are evaluated once, remember... at the moment the function is made."
+        "The last value, three times.",
+        "Each function looks the name up when it runs, and by then the loop has finished, so the variable holds its final value.",
+        "To capture the value now, give it as a default argument, which is evaluated at definition time, the same fact as the last slide, used on purpose."
       ]
     },
     {
       "lines": [
-        "A comprehension reads almost like a sentence.",
-        "Keep the items that pass the test... transform them... and collect the result.",
-        "The same shape builds dictionaries and sets.",
-        "And the loop variable? It stays inside."
+        "A comprehension is a filter and a map written as one expression. Read it left to right: what to produce, then where from, then the test.",
+        "The same shape builds dictionaries and sets, not just lists.",
+        "One small detail worth remembering: the loop variable stays inside the comprehension and does not leak into the surrounding code."
       ]
     },
     {
       "lines": [
-        "Both of these lines compute the same sum.",
-        "But the list version builds a million items first... about forty megabytes.",
-        "The generator hands them over one at a time, in half a kilobyte.",
-        {
-          "beat": 0.4
-        },
-        "That's how a pipeline reads files bigger than memory."
+        "Now memory, which is where Python stops being only a convenience. Look at the two lines on screen.",
+        "They compute the same sum. The first builds a list of a million numbers before it adds anything. The second hands them over one at a time.",
+        "The difference is tens of megabytes against half a kilobyte, and it grows with the input.",
+        "That is how a pipeline can read a file larger than its memory. It never holds the file."
       ]
     },
     {
       "lines": [
-        "Put yield in a function, and it becomes a generator.",
-        "Each time you ask for the next value, it runs up to the next yield... hands that value back... and pauses right there, remembering everything.",
-        "Batching a stream takes just a few lines."
+        "How does a function hand over one value at a time? With the keyword that makes it a generator.",
+        "Follow the pointer in the code. Each request runs the body up to the next yield, returns that value, and freezes right there with all its local state.",
+        "The next request wakes it exactly where it stopped.",
+        "That is enough to batch a stream in a handful of lines, with nothing held in between."
       ]
     },
     {
       "lines": [
-        "A with block guarantees cleanup.",
-        "When the block ends, the exit code runs... even if something blew up inside.",
-        "Files, connections, locks, transactions... they all rely on it.",
-        "With context manager, setup goes before the yield, and teardown goes in finally."
+        "Resources need a guarantee: whatever happens, release them. A file, a connection, a lock, a transaction.",
+        "The with block gives it. When the block ends, normally or by an error, the cleanup code runs.",
+        "Writing your own is short with a decorator: setup before the yield, and teardown after it, inside a finally so that an error cannot skip it.",
+        "The finally is the part people forget, and it is the whole point."
       ]
     },
     {
       "lines": [
-        "Put timed above a function, and Python replaces it with timed of that function. A new function, wrapping the old one.",
-        "Retrying, caching, timing, checking access... those are usually decorators.",
-        "Just remember to copy the original function's name across, with the wraps helper. Otherwise every log line says wrapper."
+        "A decorator is a function that takes a function and returns a replacement. Placing it above a definition is only shorthand for that reassignment.",
+        "Retrying, caching, timing and permission checks are almost always written this way, because they wrap behaviour around code without touching it.",
+        "One thing to remember: copy the original's name and documentation across with the standard helper. Otherwise every log line says wrapper, and nobody can tell which function ran."
       ]
     },
     {
       "lines": [
-        "A dataclass writes the boring parts for you: the constructor, a readable printout, and equality.",
-        "Frozen makes it immutable.",
-        "And slots drops the per-instance dictionary... so millions of small records take less memory."
+        "Classes carry a lot of boilerplate, and a dataclass writes it for you: the constructor, a readable printout, and equality.",
+        "Two options matter in data work. Frozen makes instances immutable, which makes them safe to share.",
+        "Slots removes the per object dictionary. With millions of small records, that is a real memory saving, not a micro optimisation."
       ]
     },
     {
       "lines": [
-        "Classes plug into Python through special methods.",
-        "One lets a for loop walk through your object. Another gives it a length. A third decides what equal means.",
-        "But define equals... and Python quietly removes the hash.",
-        "A dataclass defines equals for you.",
-        {
-          "beat": 0.4
-        },
-        "So, can this record be a dictionary key?"
+        "Special methods are how a class plugs into the language. One lets a loop walk through it, one gives it a length, one defines what equal means.",
+        "Here is the catch. The moment you define equality, Python quietly removes the hash. A dataclass defines equality for you.",
+        "A dictionary key has to be hashable, and equal objects must hash equally, otherwise lookups break.",
+        { "beat": 0.4 },
+        "So can this record be used as a key?"
       ],
       "answer": [
-        "No. You get a type error. Unhashable.",
-        "Equal objects must hash the same... and a record that can change could break the dictionary after it's stored.",
-        "Freeze it, and it works as a key."
+        "No, you get an error saying the type is unhashable.",
+        "A record that can change after it is stored could silently break the dictionary, so Python refuses to hash it.",
+        "Freeze it and it works. Frozen means it cannot change, so equal objects keep hashing equally."
       ]
     },
     {
       "lines": [
-        "Last one.",
-        "This function says it takes an int.",
-        {
-          "beat": 0.4
-        },
-        "So... what happens if you pass it a string?"
+        "Last trap. A function says its argument is a whole number.",
+        "Think about who enforces that statement while the program runs.",
+        { "beat": 0.4 },
+        "What happens if you pass it a string?"
       ],
       "answer": [
-        "It simply returns the string, twice.",
-        "Python doesn't check type hints when the code runs. A type checker does.",
-        "Run one in CI, and it catches this before it ships."
+        "It just works, and returns the string repeated. Nothing at runtime checks the hint.",
+        "Hints are for tools. A type checker reads them and finds this before it ships.",
+        "So the hint only protects you if something is checking it. Run a checker in CI, or treat the hint as a comment."
       ]
     },
     {
       "lines": [
-        "So... nine things to keep.",
-        "Defaults run once. Closures look names up late. Comprehensions filter, then map. Generators stream.",
-        "A with block always cleans up. Decorators wrap. Dataclasses write the boilerplate. Equal objects need equal hashes.",
-        "And hints are checked by tools, not at runtime.",
-        {
-          "beat": 0.5
-        },
-        "Next up... Git."
+        "Nine things to keep, in a sentence each.",
+        "Defaults run once. Closures look names up late. Comprehensions filter, then map. Generators stream, lists pile up.",
+        "A with block always cleans up. Decorators wrap. Dataclasses write the boilerplate. Equal objects need equal hashes. Hints are checked by tools, not by Python.",
+        { "beat": 0.4 },
+        "Anything rusty? The prerequisites panel points to good places to refresh it. Otherwise, on to Git."
       ]
     }
   ]

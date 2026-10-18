@@ -1,6 +1,6 @@
 {
-  "what": "Topics queued for re-narration on the owner's PC (owner decision 2026-10-13): their narration.json was rewritten so the narrator teaches (QUALITY.md #54), and their audio, where it exists, is the old reading of the old script. A live topic listed here keeps playing its old clips until the PC generates the new ones (the player reads manifest.json, which still matches the old audio), so the site never loses a voice. npm run test:narration reports a listed topic's stale or missing audio as a warning, not a failure. /narrate (.claude/skills/narrate) generates the new audio for every listed topic, in bulk, after the voice is frozen, and removes the id once its clips match the current script. Never add a topic by hand except with the owner's decision; new topics are narrated once, from their teaching script.",
-  "listed": "2026-10-13: every topic in the registry on that day (18).",
+  "what": "Topics queued for re-narration on the owner's PC (owner decision 2026-10-13): their narration.json was rewritten so the narrator teaches (QUALITY.md #54), and their audio, where it exists, is the old reading of the old script. A live topic listed here keeps playing its old clips until the PC generates the new ones (the player reads manifest.json, which still matches the old audio), so the site never loses a voice. npm run test:narration reports a listed topic's stale or missing audio as a warning, not a failure. /narrate (.claude/skills/narrate) generates the new audio for every listed topic, in bulk, after the voice is frozen, and removes the id once its clips match the current script. Never add a topic by hand except with the owner's decision (2026-10-13 for the first 18; 2026-10-17: topics may go live before they are narrated, so every new live topic without audio is listed here until /narrate generates it); new topics are narrated once, from their teaching script.",
+  "listed": "2026-10-13: every topic in the registry on that day (18). 2026-10-17: the 27 topics imported from the fork (9 in Chapter 1 and the DSA chapter, 18 in Data Engineering Chapter 2) go live without audio by owner decision, and are listed so that missing audio is a warning, not a failure, until the owner's PC narrates them.",
   "pending": [
     "de.python-essentials",
     "de.asymptotic-notation-logarithms",
@@ -19,6 +19,33 @@
     "dsa.lower-bounds-adversary-arguments",
     "dsa.aggregate-accounting-methods",
     "dsa.potential-method",
-    "dsa.deamortization-global-rebuilding"
+    "dsa.deamortization-global-rebuilding",
+    "de.storage-devices-fsync-durability",
+    "de.object-storage-as-storage",
+    "de.numeric-representation-data-bugs",
+    "de.b-trees-vs-lsm",
+    "de.external-merge-sort-k",
+    "de.graph-algorithms-pipeline-dags",
+    "de.bandwidth-latency-data-locality",
+    "dsa.measuring-memory-hierarchy",
+    "dsa.external-memory-i-o",
+    "de.relational-algebra-bag-semantics",
+    "de.nulls-three-valued-logic",
+    "de.semi-joins-anti-joins-existence",
+    "de.recursive-ctes-graph-traversal",
+    "de.grouping-sets-rollup-cube-pivots",
+    "de.lateral-joins-correlated-subqueries",
+    "de.nested-semi-structured-data-sql",
+    "de.user-defined-functions-optimizer-opacity",
+    "de.merge-upsert-concurrent-writers",
+    "de.window-frame-semantics",
+    "de.window-function-execution-internals",
+    "de.ranking-top-n-deterministic-dedup",
+    "de.gaps-islands-sessionization",
+    "de.running-moving-statistics",
+    "de.point-in-time-as-of-joins",
+    "de.sql-text-to-plan-tree",
+    "de.query-rewrites-subquery-unnesting",
+    "de.cte-inlining-vs-materialization"
   ]
 }

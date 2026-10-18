@@ -1,0 +1,42 @@
+{
+  "topic": "de.point-in-time-as-of-joins",
+  "syllabus": [
+    { "clause": "joining each event to the latest value at or before its timestamp;", "at": [{ "step": "What price was in effect when the order was placed?" }, { "step": "Equality alone matches every price" }, { "step": "Predict: add the inequality" }, { "step": "Keep only the closest one" }, { "step": "Prove it · 1 of 2" }, { "deep": "Why this is an inequality join" }] },
+    { "clause": "range-join plans vs native ASOF JOIN (DuckDB, Snowflake, ClickHouse);", "at": [{ "step": "Two hand-built versions" }, { "step": "A native ASOF JOIN says it directly" }, { "step": "Predict: an order before the first price" }, { "step": "A native plan walks both sides once" }, { "step": "Prove it · 2 of 2" }, { "deep": "Three ways to write it" }] },
+    { "clause": "leakage-free training sets (→ Ch.17)", "at": [{ "step": "Joining to \"now\" leaks the future" }, { "deep": "Leakage-free training sets" }] },
+    { "clause": "and bitemporal as-of queries (→ §3.2).", "at": [{ "step": "Bitemporal: a second time axis" }, { "deep": "Bitemporal as-of queries: one more time axis" }] }
+  ],
+  "sources": [
+    {
+      "source": "DuckDB Documentation, FROM Clauses (ASOF JOIN)",
+      "items": [
+        { "item": "ASOF JOIN needs an inequality condition and joins each left row with at most one right row; outer variants null-pad", "at": [{ "step": "A native ASOF JOIN says it directly" }, { "step": "Predict: an order before the first price" }, { "deep": "Three ways to write it" }] }
+      ]
+    },
+    {
+      "source": "ClickHouse JOIN reference and Snowflake ASOF JOIN reference",
+      "items": [
+        { "item": "ClickHouse ASOF: closest match on the last USING column; supported by the hash and full_sorting_merge algorithms", "at": [{ "step": "A native plan walks both sides once" }, { "deep": "Three ways to write it" }] },
+        { "item": "Snowflake MATCH_CONDITION names the as-of comparison; unmatched left rows are null-padded", "at": [{ "step": "A native ASOF JOIN says it directly" }, { "step": "Prove it · 2 of 2" }] }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "Claude (single session, written from the syllabus line before mapping to the topic; not independent of the builder, so the cloud review run should repeat it)",
+    "date": "2026-10-17",
+    "items": [
+      { "item": "As-of join semantics: latest value at or before a timestamp", "at": [{ "step": "Keep only the closest one" }] },
+      { "item": "Why an equi-join and a plain range join are wrong or wasteful", "at": [{ "step": "Equality alone matches every price" }, { "step": "Predict: add the inequality" }] },
+      { "item": "Correlated subquery and LATERAL implementations", "at": [{ "step": "Two hand-built versions" }] },
+      { "item": "Window-function implementation (union and last value)", "at": [{ "deep": "Three ways to write it" }] },
+      { "item": "Indexing for point-in-time lookups", "at": [{ "step": "Two hand-built versions" }] },
+      { "item": "Native ASOF JOIN syntax in several engines", "at": [{ "step": "A native ASOF JOIN says it directly" }] },
+      { "item": "Left versus inner as-of join for unmatched rows", "at": [{ "step": "Predict: an order before the first price" }] },
+      { "item": "Tolerance or maximum lookback windows on as-of matches", "at": [{ "out": "Some engines allow a staleness tolerance on the match; it is an engine-specific option on the same operator, documented by each engine, and does not change the semantics taught here." }] },
+      { "item": "Temporal leakage in ML features", "at": [{ "step": "Joining to \"now\" leaks the future" }] },
+      { "item": "Slowly changing dimensions as the usual source of such tables", "at": [{ "topic": "SCD Type 2 implementation", "quote": "effective/expiry timestamps", "domain": "data-engineering" }] },
+      { "item": "Bitemporal modelling: valid time and transaction time", "at": [{ "step": "Bitemporal: a second time axis" }] }
+    ]
+  },
+  "gapReview": { "date": "2026-10-17", "by": "Claude (single session)", "open": [] }
+}

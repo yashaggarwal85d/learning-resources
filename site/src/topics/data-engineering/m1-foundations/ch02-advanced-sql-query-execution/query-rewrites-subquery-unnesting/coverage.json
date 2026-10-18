@@ -1,0 +1,44 @@
+{
+  "topic": "de.query-rewrites-subquery-unnesting",
+  "syllabus": [
+    { "clause": "predicate and projection pushdown, constant folding,", "at": [{ "step": "Rewrites run before anything is costed" }, { "step": "The always-safe three" }, { "deep": "Predicate and projection pushdown, and constant folding" }] },
+    { "clause": "join elimination,", "at": [{ "step": "Join elimination deletes a join" }, { "step": "Predict: the unused LEFT JOIN" }, { "step": "Prove it · 1 of 2" }, { "deep": "Join elimination: deleting a join entirely" }] },
+    { "clause": "outer-to-inner join conversion,", "at": [{ "step": "A WHERE can make an outer join inner" }, { "step": "Or turn it into an anti-join" }, { "step": "Predict: the join type of LEFT JOIN … IS NULL" }, { "deep": "Outer-to-inner join conversion: strength reduction, in both directions" }] },
+    { "clause": "and decorrelation of arbitrary subqueries (Neumann & Kemper, BTW 2015) that turns per-row subqueries into joins.", "at": [{ "step": "A correlated subquery is a dependent join" }, { "step": "Simple unnesting: pull the predicate up" }, { "step": "General unnesting: push the dependency down" }, { "step": "Prove it · 2 of 2" }, { "deep": "Decorrelation: a correlated subquery is formally a \"dependent join\"" }] }
+  ],
+  "sources": [
+    {
+      "source": "PostgreSQL source analyzejoins.c (join_is_removable) and prepjointree.c (reduce_outer_joins)",
+      "items": [
+        { "item": "A LEFT JOIN is removable when it matches at most one inner row and the inner side's variables are not needed above", "at": [{ "step": "Join elimination deletes a join" }, { "deep": "Join elimination: deleting a join entirely" }] },
+        { "item": "LEFT JOIN becomes JOIN under a strict WHERE on the inner side, and JOIN_ANTI when only null-extended rows pass", "at": [{ "step": "A WHERE can make an outer join inner" }, { "step": "Or turn it into an anti-join" }, { "deep": "Outer-to-inner join conversion: strength reduction, in both directions" }] }
+      ]
+    },
+    {
+      "source": "Neumann and Kemper, Unnesting Arbitrary Queries, BTW 2015",
+      "items": [
+        { "item": "Dependent join: the right side is evaluated for every tuple of the left; goal is to remove the dependency", "at": [{ "step": "A correlated subquery is a dependent join" }, { "deep": "Decorrelation: a correlated subquery is formally a \"dependent join\"" }] },
+        { "item": "Simple unnesting by predicate pull-up; general unnesting by pushing the dependent join down", "at": [{ "step": "Simple unnesting: pull the predicate up" }, { "step": "General unnesting: push the dependency down" }] }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "Claude (single session, written from the syllabus line before mapping to the topic; not independent of the builder, so the cloud review run should repeat it)",
+    "date": "2026-10-17",
+    "items": [
+      { "item": "Predicate pushdown through joins, projections and aggregates", "at": [{ "step": "The always-safe three" }] },
+      { "item": "Projection (column) pruning", "at": [{ "step": "The always-safe three" }] },
+      { "item": "Constant folding and expression simplification", "at": [{ "step": "The always-safe three" }] },
+      { "item": "Join elimination using unique keys and foreign keys", "at": [{ "step": "Join elimination deletes a join" }] },
+      { "item": "Outer join to inner join conversion with null-rejecting predicates", "at": [{ "step": "A WHERE can make an outer join inner" }] },
+      { "item": "LEFT JOIN IS NULL as an anti-join", "at": [{ "step": "Or turn it into an anti-join" }] },
+      { "item": "Correlated subqueries and dependent joins", "at": [{ "step": "A correlated subquery is a dependent join" }] },
+      { "item": "Unnesting EXISTS / IN to semi-joins", "at": [{ "step": "Simple unnesting: pull the predicate up" }, { "topic": "Semi-joins, anti-joins and existence", "quote": "semi-, anti- and null-aware anti-join operators" }] },
+      { "item": "Unnesting subqueries with aggregates", "at": [{ "step": "General unnesting: push the dependency down" }] },
+      { "item": "Subquery pull-up (merging a FROM subquery into the parent)", "at": [{ "topic": "LATERAL joins and correlated subqueries", "quote": "when the planner can decorrelate" }] },
+      { "item": "Rewrites that are heuristic versus cost-based", "at": [{ "topic": "CTE inlining vs materialization", "quote": "optimization fences" }] },
+      { "item": "Transitive closure of equalities (derived predicates)", "at": [{ "out": "Equivalence-class derivation of extra predicates is part of the planner's join-order machinery and is covered with cost models; the syllabus line here lists the five rewrite families this topic teaches." }] }
+    ]
+  },
+  "gapReview": { "date": "2026-10-17", "by": "Claude (single session)", "open": [] }
+}

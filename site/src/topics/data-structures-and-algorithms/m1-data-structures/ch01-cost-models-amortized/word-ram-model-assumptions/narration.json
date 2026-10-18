@@ -29,13 +29,17 @@
     },
     {
       "lines": [
-        "Back to our million sorted keys. Binary search needs twenty comparisons.",
-        "On the word RAM, can a predecessor query not grow with n?"
+        "A million sorted keys, each sixty four bits wide. Binary search settles any query in twenty comparisons.",
+        "Ask what that twenty is really counting. It counts questions that answer only yes or no about two keys.",
+        {
+          "beat": 0.4
+        },
+        "A machine that can work on a whole word at a time might do better. Can the cost of a predecessor query stop growing with the number of keys?"
       ],
       "answer": [
-        "Yes. A tree that halves the bits of the key, not the range of keys. Six halvings for sixty-four bit keys, whatever n is.",
-        "Each halving is a few word operations. So the win is in how the count grows.",
-        "The twenty was only ever a law of the comparison model."
+        "Yes. Split the key itself, not the range of keys: halve the bits, then halve them again.",
+        "Sixty four bits halve six times, and that is true whatever n is. Each halving costs a few word operations.",
+        "So twenty was never a law of searching. It was a law of the comparison model, and this model plays by different rules."
       ]
     },
     {
@@ -62,14 +66,13 @@
     },
     {
       "lines": [
-        "The model charges one unit for a load.",
-        "A real core pays a few cycles for a hit in the nearest memory, and two hundred cycles for a trip to main memory.",
-        "Intel's Pentium M figures, listed by Drepper in two thousand and seven... are about three against about two hundred and forty. Eighty times.",
+        "The model charges one unit for any load. Look at what that hides.",
+        "A core that finds its data in the nearest cache pays about three cycles. One that must go to main memory pays about two hundred and forty. Those are the Pentium M figures Drepper tabulated in two thousand and seven, and the ratio is eighty.",
         {
-          "beat": 0.3
+          "beat": 0.4
         },
-        "And binary search is unkind to caches. Memory arrives in sixty-four byte cache lines, eight keys at a time. The twenty probes land far apart, on seventeen different lines. On a cold cache, up to seventeen trips. Hot queries share the first few.",
-        "That is a slow trip to memory. The model never sees it."
+        "Binary search is unkind here. Memory arrives in lines of sixty four bytes, eight keys at once, but the twenty probes jump so far apart that they land on seventeen different lines.",
+        "Seventeen trips to memory on a cold cache, though repeated queries share the first few. The count of steps is twenty; the cost is dominated by the misses, and the model cannot see them."
       ]
     },
     {
@@ -153,18 +156,17 @@
     },
     {
       "lines": [
-        "Back to the problem.",
-        "Twenty is a law of the comparison model only.",
-        "The word RAM allows six halvings, at the price of space or hashing. And on paper, log n over log w.",
+        "Return to our million keys. Twenty was a fact about comparisons, not about searching.",
+        "With whole word operations the same query takes six halvings, paid for in space or in hashing, and on paper the cost is log n over log w.",
         {
-          "beat": 0.3
+          "beat": 0.4
         },
-        "And every unit step hides a load that hits or misses, and a compare the pipeline predicted or paid for.",
-        "From here, say of every bound... which model, and what does its unit hide?",
+        "Yet even that unit step hides a load that hits or misses, and a branch the processor guessed right or wrong.",
+        "So make it a habit. For any bound you meet, ask which model it lives in, and what its unit conceals.",
         {
-          "beat": 0.3
+          "beat": 0.4
         },
-        "Counting a loop here is easy. A recursive algorithm hands you a recurrence instead. Next: how to read the answer off one."
+        "Loops are easy to count in any model. A recursive algorithm gives you an equation instead, and reading the answer off that equation is the next reel."
       ]
     },
     {

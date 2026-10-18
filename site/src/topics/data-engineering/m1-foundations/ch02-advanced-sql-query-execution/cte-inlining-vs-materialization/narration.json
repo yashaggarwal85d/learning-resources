@@ -1,0 +1,118 @@
+{
+  "topic": "de.cte-inlining-vs-materialization",
+  "steps": [
+    {
+      "lines": [
+        "All of this ran purely on proof, no numbers involved. Now a different kind of choice, about a very ordinary piece of syntax.",
+        "A with clause gives a name to a query. Look at the two boxes on the right: the engine can let the rest of the query see inside it, or compute it once and pass up a sealed result.",
+        { "beat": 0.4 },
+        "Neither is always better, and the right answer depends on how the name is used."
+      ]
+    },
+    {
+      "lines": [
+        "Begin with how it used to work. Before version twelve of PostgreSQL, every named query was sealed, however simple.",
+        "Watch the red bar go up. The filter on the left cannot get past it, so the index on key is out of reach.",
+        "The engine scanned the whole table, copied it, and only then filtered. A one line query could cost a full scan.",
+        "That sealed box has a name: an optimization fence."
+      ]
+    },
+    {
+      "lines": [
+        "Since version twelve the default is smarter. Look at the three ticks.",
+        "A named query is inlined if it has no side effects, is not recursive, and is used exactly once.",
+        "Then the filter slides through and the index is used. The fence is gone, because there was no reason for it.",
+        "Use it twice, though, and the default flips back to computing it once."
+      ]
+    },
+    {
+      "lines": [
+        "Here are two queries over the same big table with an index on key. In one, the named query is used once, in the other twice, in a self join.",
+        "Think about which of them can pass the filter inside.",
+        { "beat": 0.4 },
+        "Which one uses the index by default?"
+      ],
+      "answer": [
+        "Only the single use one.",
+        "The self join refers to the name twice, so by default it is computed once as a temporary copy with no index. Both sides of the join read that copy.",
+        "Both using it would be true only with an override, and neither is not the case for the single use. Next, the override."
+      ]
+    },
+    {
+      "lines": [
+        "You can force the inline with not materialized. Watch both references light up.",
+        "Now the filter reaches the table through each reference, and the index is used twice.",
+        "But there is a price. The base table is read once per reference, instead of once in total.",
+        "It wins when each use needs only a small slice, and loses when each one needs the lot."
+      ]
+    },
+    {
+      "lines": [
+        "The opposite case matters just as much. Suppose the named query calls an expensive function.",
+        "Compare the two rows. Materialized runs the function once for each base row. The other recomputes it for every reference.",
+        "Used twice, that is double the work, and for a volatile function it can be a different answer.",
+        "So write materialized when once is the point. A later edit that changes the number of references cannot then silently undo it."
+      ]
+    },
+    {
+      "lines": [
+        "Make it concrete. A named query calls an expensive function for each row, and it is referenced twice.",
+        "You mark it not materialized, to get the index.",
+        { "beat": 0.4 },
+        "How many times does the function run for each base row?"
+      ],
+      "answer": [
+        "Twice, once for each reference.",
+        "Each reference is inlined and evaluates the function itself. That is the duplicated computation the documentation warns about.",
+        "It is not once, because the single evaluation was exactly what materialization gave you. And the index does not decide it."
+      ]
+    },
+    {
+      "lines": [
+        "Not every engine offers the choice. SQL Server does not materialize a named query at all.",
+        "Look at the two red boxes: every reference runs the definition again.",
+        "There is no keyword to reach for. The documented answer is to compute the result once into a temporary object and refer to that.",
+        "It is the same fix as the materialized hint, done by hand."
+      ]
+    },
+    {
+      "lines": [
+        "So when do you want the fence? Three cases.",
+        "When repeating the work would duplicate something expensive. When a side effect means once is a correctness requirement. And when a separate, named step simply reads better.",
+        "Remove it when letting the optimizer reach inside saves more than the repeated work costs.",
+        "The point is that it is a trade, and you can choose it on purpose."
+      ]
+    },
+    {
+      "lines": [
+        "To sum up. Find out which behaviour your engine and version give you, because the default changed in version twelve.",
+        "State the hint explicitly where the choice matters, since a later edit can change the reference count and flip the default.",
+        "And test single evaluation with a real count, not just by reading the plan.",
+        { "beat": 0.4 },
+        "Whether to look inside a query is settled. Next: the numbers the optimizer leans on to choose, and how it estimates them."
+      ]
+    },
+    {
+      "lines": [
+        "Two checks. First, the release from which a once used, side effect free named query is inlined by default.",
+        { "beat": 0.4 },
+        "Which version?"
+      ],
+      "answer": [
+        "Twelve.",
+        "Before that, every named query was a fence, which is why code written for older versions may rely on behaviour that no longer holds."
+      ]
+    },
+    {
+      "lines": [
+        "Second check. On SQL Server, a named query is referenced twice.",
+        { "beat": 0.4 },
+        "How many times does it execute?"
+      ],
+      "answer": [
+        "Twice.",
+        "It re runs for each reference, and there is no materialization switch. A temporary table is the way to compute it once."
+      ]
+    }
+  ]
+}

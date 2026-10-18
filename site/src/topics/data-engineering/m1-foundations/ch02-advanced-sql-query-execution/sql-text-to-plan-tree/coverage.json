@@ -1,0 +1,41 @@
+{
+  "topic": "de.sql-text-to-plan-tree",
+  "syllabus": [
+    { "clause": "parse → bind/analyze → rewrite → optimize → execute;", "at": [{ "step": "Typing a query is not running it" }, { "step": "Five stages" }, { "step": "Predict: a query on a table that does not exist" }, { "step": "Bind turns names into meaning" }, { "step": "Rewrite erases views" }, { "step": "Prove it · 1 of 2" }, { "deep": "Five stages, in PostgreSQL's own account" }] },
+    { "clause": "logical vs physical plans;", "at": [{ "step": "Logical plan: what; physical plan: how" }, { "step": "Paths: candidates, then the cheapest" }, { "step": "Prove it · 2 of 2" }, { "deep": "Logical plan vs physical plan" }] },
+    { "clause": "operator trees and the physical properties (sort order, partitioning) operators require and provide.", "at": [{ "step": "Physical properties: provided and required" }, { "step": "Predict: ORDER BY with a matching index" }, { "step": "Read the plan from the leaves up" }, { "deep": "Physical properties: what a path requires, and what it provides" }, { "deep": "Reading the tree" }] }
+  ],
+  "sources": [
+    {
+      "source": "PostgreSQL 18 Documentation, §51.1 The Path of a Query and §51.3 The Parser Stage",
+      "items": [
+        { "item": "The pipeline: parser, rewrite system, planner/optimizer, executor", "at": [{ "step": "Five stages" }, { "deep": "Five stages, in PostgreSQL's own account" }] },
+        { "item": "The parser does no catalog lookups; the transformation process resolves names and produces the query tree", "at": [{ "step": "Predict: a query on a table that does not exist" }, { "step": "Bind turns names into meaning" }] }
+      ]
+    },
+    {
+      "source": "PostgreSQL 18 Documentation, §51.4 The Rewrite System and §51.5 Planner/Optimizer",
+      "items": [
+        { "item": "Views are realised by rewriting the query against the base tables", "at": [{ "step": "Rewrite erases views" }, { "deep": "Five stages, in PostgreSQL's own account" }] },
+        { "item": "Paths: sequential and index scans, nested-loop, merge and hash joins; sort order useful for ORDER BY and merge join", "at": [{ "step": "Paths: candidates, then the cheapest" }, { "step": "Physical properties: provided and required" }, { "deep": "Logical plan vs physical plan" }] }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "Claude (single session, written from the syllabus line before mapping to the topic; not independent of the builder, so the cloud review run should repeat it)",
+    "date": "2026-10-17",
+    "items": [
+      { "item": "Lexing and parsing to a parse tree", "at": [{ "step": "Five stages" }] },
+      { "item": "Name resolution, type checking and the catalog", "at": [{ "step": "Bind turns names into meaning" }] },
+      { "item": "View expansion and rule rewriting", "at": [{ "step": "Rewrite erases views" }] },
+      { "item": "Logical algebra versus physical operators", "at": [{ "step": "Logical plan: what; physical plan: how" }] },
+      { "item": "Cost-based choice among paths", "at": [{ "step": "Paths: candidates, then the cheapest" }] },
+      { "item": "Interesting orders and required/provided properties", "at": [{ "step": "Physical properties: provided and required" }] },
+      { "item": "Distribution/partitioning as a physical property in distributed engines", "at": [{ "topic": "Parallel and distributed query plans", "quote": "exchange operators" }] },
+      { "item": "Reading EXPLAIN as a tree", "at": [{ "step": "Read the plan from the leaves up" }] },
+      { "item": "Prepared statements and plan caching", "at": [{ "out": "Plan caching and plan regressions is marked skipped in the syllabus and is not taught as its own topic." }] },
+      { "item": "The Volcano/Cascades optimizer frameworks", "at": [{ "topic": "Cost models and join-order search", "quote": "top-down transformation search" }] }
+    ]
+  },
+  "gapReview": { "date": "2026-10-17", "by": "Claude (single session)", "open": [] }
+}

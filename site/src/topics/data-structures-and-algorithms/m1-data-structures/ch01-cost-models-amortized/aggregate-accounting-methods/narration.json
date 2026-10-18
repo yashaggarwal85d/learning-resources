@@ -4,33 +4,28 @@
   "steps": [
     {
       "lines": [
-        "The lower bounds reel priced one run on its worst input.",
-        "A data structure lives through a whole sequence of operations.",
+        "Every bound so far priced a single run. But a data structure is used again and again, so ask about the whole sequence.",
         {
           "beat": 0.4
         },
-        "Take a million appends to the vector.",
-        "One of them copies more than five hundred and twenty four thousand keys... and yet we call each append constant time.",
-        {
-          "beat": 0.3
-        },
-        "Both are true.",
-        "From here on, one unit of cost is one element written to memory."
+        "A vector takes a million appends. Exactly one of them copies more than half a million keys, and yet people say append is constant time.",
+        "These two statements do not contradict each other, and the rest of this reel is why.",
+        "One housekeeping choice first. From here a unit of cost is one element written to memory."
       ]
     },
     {
       "lines": [
-        "When the vector is full, an append doubles its capacity and copies every key across.",
-        "Count one cost unit for each key added, and one for each key copied.",
+        "The vector doubles its capacity whenever it is full, copying every key across.",
+        "Count one unit for each key you add and one for each key you copy.",
         {
           "beat": 0.4
         },
-        "What do all million appends cost together?"
+        "Now add up the bill for all million appends. What do they cost together?"
       ],
       "answer": [
         "About two million. Exactly, two million, forty eight thousand, five hundred seventy five.",
-        "That is a million new keys, plus about a million copies... one plus two plus four, and so on. Under three n.",
-        "Pricing every operation at the worst one's price would claim about half a trillion units of work. True as an upper bound, and useless."
+        "A million units for the new keys, plus roughly a million for the copies, which come in the sizes one, two, four, and so on. Together, under three n.",
+        "Compare that with charging every append the price of the worst one: roughly half a trillion units. That is a true upper bound and a useless one."
       ]
     },
     {
@@ -46,53 +41,49 @@
     },
     {
       "lines": [
-        "This is the aggregate method.",
-        "Bound the total cost of any n operations... then divide by n.",
+        "This is the aggregate method: bound the total for any n operations, then divide by n.",
         {
-          "beat": 0.3
+          "beat": 0.4
         },
-        "The writes cost n. The last resize copied fewer than n keys, and each one before it copied half as many as the one after.",
-        "So the copies, one plus two plus four and so on, add up to less than twice the last one.",
-        "Fewer than two n in all.",
+        "The writes cost n. The last resize copied under n keys, and each earlier resize copied half as many as the next one.",
+        "So the copies form the sum one, two, four, and so on, and that is less than twice its last term. Under two n.",
         {
-          "beat": 0.3
+          "beat": 0.4
         },
-        "The total is under three n. Big O of one, amortized, per append."
+        "Total: under three n for n appends, so each append is constant time, amortized."
       ]
     },
     {
       "lines": [
-        "The notation refresher separated the average case, over inputs, from the expected case, over coins.",
-        "Amortized is neither. Nothing is random.",
+        "There are now three different kinds of promise, so keep them apart.",
+        "Average case averages over inputs. Expected case averages over the algorithm's own coin flips. Amortized does neither, since nothing here is random.",
         {
-          "beat": 0.3
+          "beat": 0.4
         },
-        "It is a worst case bound on the total of a whole sequence... divided by its length.",
-        "Starting from empty, the first n appends together cost less than three n. One of them can still cost n."
+        "It is a worst case guarantee, but about the total of a whole sequence, then divided by its length.",
+        "So from empty, any n appends cost less than three n together, while a single one among them may still cost n."
       ]
     },
     {
       "lines": [
-        "Now the accounting method.",
-        "Charge each append three.",
-        "One pays for the key's own placement. One stays on the new key, as a coin. And one goes on a key in the old half, which has none.",
+        "The accounting method reaches the same bound with a different picture: pay in advance.",
+        "Charge every append three units. One pays for writing the key. One stays on the new key as a coin. And one goes onto a key in the older half, which has no coin yet.",
         {
-          "beat": 0.3
+          "beat": 0.4
         },
-        "When the row fills, every key holds a coin... exactly what its copy will cost.",
-        "The next append has its copy paid, key by key."
+        "When the row fills, every key carries a coin, and a coin is exactly what that key's copy will cost.",
+        "So the next doubling is already paid for, one key at a time."
       ]
     },
     {
       "lines": [
-        "Write c i for the actual cost of operation i, and c hat i for its charge.",
-        "The proof needs the charges to cover the costs after every operation... not just at the end.",
+        "A proof needs more care than the picture. Call the real cost of operation i c sub i, and the charge for it c hat sub i.",
         {
-          "beat": 0.3
+          "beat": 0.4
         },
-        "The bank, charges minus costs, never drops below zero.",
-        "Then n operations cost at most three n.",
-        "A bank that can drift negative proves nothing."
+        "The charges must cover the costs after every operation, not merely at the end. Think of a bank balance: charges in, costs out, and it must never dip below zero.",
+        "If it does, you have spent money you never collected, and the bound is worth nothing.",
+        "Keep it non negative and n operations cost at most three n."
       ]
     },
     {
@@ -185,13 +176,13 @@
     },
     {
       "lines": [
-        "The same move, three times.",
-        "An expensive operation can only follow cheap ones that set it up. So each cheap one pays a little extra in advance.",
+        "Look back at the three methods. They are one idea in three forms.",
         {
-          "beat": 0.3
+          "beat": 0.4
         },
-        "The aggregate method needs one total that covers every sequence. Charge per operation when operations differ, like a push and a multipop.",
-        "And the charges are a choice. Any charges that keep the bank at zero or above prove a bound."
+        "An expensive operation can happen only after cheap ones that set it up. So each cheap one pays a little extra in advance.",
+        "Use the aggregate method when one total covers every sequence. Charge per operation when the operations differ, like a push and a multipop.",
+        "And the charges are your choice. Any charges that keep the balance at zero or above prove a bound."
       ]
     },
     {
@@ -222,21 +213,20 @@
     },
     {
       "lines": [
-        "Prove it. Part one.",
-        "A teammate charges two for each add, not three. One pays for the key's own placement, and one sits as a coin on the new key.",
+        "Time to try it. A teammate suggests charging two per append instead of three: one unit for the write, and one coin on the new key.",
         {
           "beat": 0.4
         },
-        "With doubling from empty, at which append does the bank first go negative?"
+        "Then run the doubling vector from empty and watch the bank. At which append does it first go negative?"
       ],
       "answer": [
         "The fifth.",
-        "The costs add up to twelve, against ten charged.",
-        "The coin on each new key pays its own copy. But every resize also copies the old half, and that holds no coins.",
+        "By then the costs total twelve, against ten charged.",
+        "The coin on each new key pays for its own copy. But a resize copies the older half too, and those keys hold no coins.",
         {
-          "beat": 0.3
+          "beat": 0.4
         },
-        "At each power of two the bank is back to plus one. So checking only at the end hides the failure."
+        "At each power of two the bank is back at plus one, so checking only the end would hide the failure completely."
       ]
     },
     {

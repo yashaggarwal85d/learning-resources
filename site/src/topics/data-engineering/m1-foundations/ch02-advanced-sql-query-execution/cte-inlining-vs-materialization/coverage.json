@@ -1,0 +1,41 @@
+{
+  "topic": "de.cte-inlining-vs-materialization",
+  "syllabus": [
+    { "clause": "CTEs as optimization fences,", "at": [{ "step": "Look inside the CTE, or seal it?" }, { "step": "The old fence: always materialised" }, { "deep": "The optimization fence, before PostgreSQL 12" }] },
+    { "clause": "PostgreSQL 12+ inlining of side-effect-free single-reference CTEs and the [NOT] MATERIALIZED override,", "at": [{ "step": "PostgreSQL 12 and later: inline when safe" }, { "step": "Predict: one reference, then two" }, { "step": "NOT MATERIALIZED forces the inline" }, { "step": "MATERIALIZED protects expensive work" }, { "step": "Predict: an expensive function in a twice-used CTE" }, { "step": "Prove it · 1 of 2" }, { "deep": "PostgreSQL 12+: inlined by default, with one exception" }] },
+    { "clause": "engines that always inline (and recompute);", "at": [{ "step": "Some engines always recompute" }, { "step": "Prove it · 2 of 2" }, { "deep": "Engines that always re-execute, no fence at all" }] },
+    { "clause": "when a fence is what you want.", "at": [{ "step": "When a fence is what you want" }, { "deep": "When a fence is what you want" }] }
+  ],
+  "sources": [
+    {
+      "source": "PostgreSQL 18 Documentation §7.8.3 Common Table Expression Materialization; PostgreSQL 12 release notes",
+      "items": [
+        { "item": "Before 12 CTEs were never inlined; since 12 they are inlined if side-effect free, non-recursive and referenced once", "at": [{ "step": "The old fence: always materialised" }, { "step": "PostgreSQL 12 and later: inline when safe" }, { "deep": "PostgreSQL 12+: inlined by default, with one exception" }] },
+        { "item": "MATERIALIZED and NOT MATERIALIZED override the default; NOT MATERIALIZED risks duplicate computation", "at": [{ "step": "NOT MATERIALIZED forces the inline" }, { "step": "MATERIALIZED protects expensive work" }] }
+      ]
+    },
+    {
+      "source": "Microsoft Learn, WITH common_table_expression (Transact-SQL)",
+      "items": [
+        { "item": "SQL Server does not materialise CTE results; each reference re-executes it; use a temporary object for multiple references", "at": [{ "step": "Some engines always recompute" }, { "deep": "Engines that always re-execute, no fence at all" }] }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "Claude (single session, written from the syllabus line before mapping to the topic; not independent of the builder, so the cloud review run should repeat it)",
+    "date": "2026-10-17",
+    "items": [
+      { "item": "What an optimization fence is and what it blocks (pushdown, index use)", "at": [{ "step": "The old fence: always materialised" }] },
+      { "item": "PostgreSQL 12 default rule for inlining", "at": [{ "step": "PostgreSQL 12 and later: inline when safe" }] },
+      { "item": "MATERIALIZED and NOT MATERIALIZED hints", "at": [{ "step": "NOT MATERIALIZED forces the inline" }] },
+      { "item": "Duplicate computation as the cost of inlining a multiply-referenced CTE", "at": [{ "step": "Predict: an expensive function in a twice-used CTE" }] },
+      { "item": "Side effects and volatile functions require materialisation", "at": [{ "step": "When a fence is what you want" }] },
+      { "item": "Recursive CTEs are always materialised", "at": [{ "topic": "Recursive CTEs and graph traversal", "quote": "fixpoint evaluation via a working table" }] },
+      { "item": "Engines that always inline (SQL Server, others) and the temp-table workaround", "at": [{ "step": "Some engines always recompute" }] },
+      { "item": "Engines with their own heuristics (Snowflake, BigQuery, DuckDB, Spark)", "at": [{ "out": "Each warehouse has its own CTE policy and documents it; the syllabus line names the PostgreSQL regime and the always-inline regime, which together frame the question for any engine." }] },
+      { "item": "CTE versus subquery versus view versus temp table as modelling tools", "at": [{ "step": "When a fence is what you want" }] },
+      { "item": "How to detect which regime applies from EXPLAIN (CTE Scan nodes)", "at": [{ "deep": "Build, break, measure" }] }
+    ]
+  },
+  "gapReview": { "date": "2026-10-17", "by": "Claude (single session)", "open": [] }
+}

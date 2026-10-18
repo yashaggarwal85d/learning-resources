@@ -1,31 +1,39 @@
 import Resource from '../../../../../components/Resource.astro';
 
-This is a full topic in §2.3, right after "From SQL text to plan tree" (topic 16). It reuses topic 1's pushdown equivalences, topic 3's semi/anti-joins, topic 6's LATERAL, and topic 8's Froid reference.
+This topic goes inside the rewrite stage of the pipeline. Reels on this site are marked **Before this** (earlier in the course), **Goes deeper later** or with the name of another track.
 
-<section class="prereq" data-section="basics">
+<section class="prereq basics" data-section="basics">
 
-### <span class="n">00</span> The terms this topic uses
+### <span class="n">00</span> Basics: words the reel takes for granted
 
-A few words, each defined in full inside the reel; this is just so they are not a surprise.
+- **Primary / unique key**: a column or set of columns whose values never repeat in a table. *Where you meet it:* `customer_id` in `customers`.
+- **Outer join**: a join that keeps unmatched rows of one side, filling the other side with NULLs. *Where you meet it:* `LEFT JOIN`.
+- **Strict (null-rejecting) predicate**: a condition that is never true when an input is NULL. *Where you meet it:* `b.y = 42` is strict; `b.y IS NULL` is not.
+- **Correlated subquery**: a subquery that refers to a column of the outer query. *Where you meet it:* `EXISTS (SELECT 1 FROM c WHERE c.id = o.customer_id)`.
+- **Semantics-preserving**: a transformation that never changes the result. *Where you meet it:* refactoring a function without changing what it returns.
 
-- **Join elimination** — deleting a join entirely when it's provably redundant (matches at most one row, and nothing from it is used).
-- **Outer-join strength reduction** — converting a LEFT JOIN to a plain or anti-join once a later filter proves it behaves that way.
-- **Dependent join** — Neumann & Kemper's formal name for a correlated subquery: a nested-loop-shaped join where the right side depends on the left row's values.
-- **Unnesting (decorrelation)** — transforming a dependent join into an ordinary, reorderable join.
-
-<p class="check"><b>Check yourself:</b> can a LEFT JOIN followed by `WHERE right_table.key IS NULL` ever be converted into the same plan as a NOT EXISTS anti-join? (Answer: yes — PostgreSQL's planner proves the LEFT JOIN only ever lets null-extended rows survive that filter and switches the join type to Anti directly, the same type NOT EXISTS compiles to.)</p>
+<p class="check"><b>Check yourself:</b> after <code>a LEFT JOIN b</code>, can <code>WHERE b.y = 42</code> ever be true for a row where b was missing? (Answer: no, b.y is NULL there, and NULL = 42 is unknown.)</p>
 
 </section>
 
-<section class="prereq" data-section="semi-anti">
+<section class="prereq" data-section="earlier-topics">
 
-### <span class="n">01</span> Semi-joins, anti-joins, and LATERAL (topics 3 and 6, before this)
-
-This topic's outer-to-inner conversion closes the loop on topic 3's anti-join material, and its decorrelation section formalizes topic 6's LATERAL as a "dependent join."
+### <span class="n">01</span> The pipeline and the join family
 
 <ul class="resources">
-  <Resource kind="topic" title="Semi-joins, anti-joins and existence" href="../semi-joins-anti-joins-existence/" by="This chapter, topic 3" length="13 min">The LEFT JOIN...IS NULL idiom this topic shows the planner deriving independently. Before this.</Resource>
-  <Resource kind="topic" title="LATERAL joins and correlated subqueries" href="../lateral-joins-correlated-subqueries/" by="This chapter, topic 6" length="13 min">The per-row evaluation this topic formalizes as a dependent join. Before this.</Resource>
+  <Resource kind="reel" host={props.host} domain="data-engineering" title="From SQL text to plan tree">The previous reel: where rewrite sits in the pipeline.</Resource>
+  <Resource kind="reel" host={props.host} domain="data-engineering" title="Semi-joins, anti-joins and existence">The Semi and Anti operators this topic derives from other spellings.</Resource>
+  <Resource kind="reel" host={props.host} domain="data-engineering" title="LATERAL joins and correlated subqueries">The per-row evaluation that unnesting removes.</Resource>
+</ul>
+
+</section>
+
+<section class="prereq" data-section="reference">
+
+### <span class="n">02</span> Reference
+
+<ul class="resources">
+  <Resource kind="reading" title="Unnesting Arbitrary Queries" href="http://www.btw-2015.de/res/proceedings/Hauptband/Wiss/Neumann-Unnesting_Arbitrary_Querie.pdf" by="Neumann and Kemper, BTW 2015" length="paper">The source of the dependent-join formalism.</Resource>
 </ul>
 
 </section>

@@ -4,30 +4,24 @@
   "steps": [
     {
       "lines": [
-        "The word RAM lets you count steps, and a recursive algorithm hands you that count as a recurrence.",
-        "Read the answer like this.",
+        "Counting a loop is just adding. Counting a recursive procedure gives you an equation, because the cost of the whole is written in terms of the cost of its smaller copies.",
         {
           "beat": 0.4
         },
-        "Take the vector of a million keys, and three recursive procedures on it. Merge sort. Binary search. And median of medians.",
-        "Each one's count is an equation that defines T of n through T at smaller sizes.",
-        {
-          "beat": 0.3
-        },
-        "Two of them recurse twice. One of those two is linear, and the other is not.",
-        "By the end, you will read all three off their trees."
+        "Here are three procedures on a vector of a million keys: merge sort, binary search, and the median of medians selection.",
+        "Notice they do not all look alike. Two call themselves twice, yet one of those is linear and the other is not. The equation alone will not tell you which; the shape of the calls will.",
+        "By the end you will read all three answers off their trees."
       ]
     },
     {
       "lines": [
-        "Draw the recurrence as what it is... a tree of calls.",
-        "Each node does its own work, then calls itself twice on halves.",
+        "Stop thinking about the equation and draw what the program actually does: a tree of calls.",
+        "Every node pays for its own work, say a merge, and then hands two halves to its children.",
         {
-          "beat": 0.3
+          "beat": 0.4
         },
-        "A level is some number of nodes, all of one size, so its total is that number times the work of one.",
-        "For merge sort on sixty four keys, every level totals sixty four.",
-        "Seven levels, so add up the column. That is four hundred and forty eight in all."
+        "Look across one level. The nodes there are all the same size, so the level costs the number of nodes times one node's work.",
+        "Do it for merge sort on sixty four keys. Every level comes to sixty four. There are seven levels, so the column adds up to four hundred and forty eight."
       ]
     },
     {
@@ -51,18 +45,17 @@
     },
     {
       "lines": [
-        "The Master theorem is nothing but three shapes the column can take.",
-        "Compare one level with the next.",
+        "The Master theorem sounds grand, but it is a classification of one picture: how does the cost change as you go down the levels?",
         {
-          "beat": 0.3
+          "beat": 0.4
         },
-        "Smaller by a constant factor... the column shrinks, and the root is the answer.",
-        "Equal... every level ties, so you multiply by the number of levels. That is the log.",
-        "Larger by a constant factor... the leaves win.",
+        "If each level costs a constant fraction less than the one above, the top dominates and the answer is the root's own work.",
+        "If every level costs the same, multiply by the number of levels. That multiplication is where the log comes from.",
+        "If each level costs more, the bottom dominates and the leaves decide.",
         {
-          "beat": 0.3
+          "beat": 0.4
         },
-        "A geometric series is a constant times its largest term. That is the whole proof."
+        "The reason is one fact about geometric series: such a sum is within a constant of its biggest term. That is the whole proof."
       ]
     },
     {
@@ -138,18 +131,17 @@
     },
     {
       "lines": [
-        "Now the proof side, substitution. Guess, then prove by induction.",
-        "Merge sort... guess T of n is at most c times n.",
-        "The step gives... c times n, plus n.",
+        "Now the other side of the coin: proving a bound you have guessed. Guess, then check by induction.",
         {
           "beat": 0.4
         },
-        "What has this proved?"
+        "Suppose you guess that merge sort costs at most c times n. Assume it for halves and plug in: two halves give c times n, and the merge adds another n.",
+        "So the step produces c times n plus n. Is that a proof of the guess?"
       ],
       "answer": [
-        "Nothing. The step has to come back to exactly c times n, and c times n plus n is larger, for any c.",
-        "The constant may not grow. You cannot induct over big O.",
-        "The guess was simply wrong. The real ratio climbs by three, every time n grows eight times."
+        "No. It proves nothing.",
+        "The step must return exactly to c times n, and c times n plus n exceeds it whatever c you pick. You cannot absorb the extra n by hiding it in a big O during induction.",
+        "The failure is honest: the guess was too small. The true cost grows by a bit more than eight, every time the input grows by eight."
       ]
     },
     {

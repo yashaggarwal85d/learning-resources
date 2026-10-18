@@ -1,71 +1,123 @@
 {
   "topic": "de.query-rewrites-subquery-unnesting",
-  "note": "Written to be spoken: one idea per line; {\"beat\": s} is a deliberate pause; numbers are phrased the way they are said, never as digits. Tool and flag names are spoken as their job, not their symbol. `answer` plays after the learner answers a predict step. Opens on the chapter bridge line and closes on the handoff line.",
   "steps": [
     {
       "lines": [
-        "Right now, every plan has only ever meant exactly what it said.",
-        "Now: the rewrites that quietly turn one legal plan into a cheaper, equally legal one."
+        "Right now, every plan has only ever meant exactly what it said. This topic is about the rewrites that quietly turn one legal plan into a cheaper, equally legal one.",
+        "Look at the middle box. It runs before the planner puts a single number on anything.",
+        { "beat": 0.4 },
+        "So it cannot use row counts or costs. Every move here has to be justified by proof, which is why each one is correct by construction."
       ]
     },
     {
       "lines": [
-        "Some of these rewrites are almost too simple to call clever.",
-        "Move a filter as close as possible to the table it filters. Drop a column the moment nobody needs it anymore. Work out a fixed arithmetic answer once, instead of once per row.",
-        "None of these need any guessing about cost. They're just always at least as good, so the engine does them for free, before anything else even starts."
+        "Three rewrites are so safe that no cost model is needed. You have met two of them already.",
+        "Push a filter down, so fewer rows reach the expensive operators. Push a projection down, so fewer columns travel.",
+        "And fold constants: an expression made only of literals is evaluated once, before any row is read. Two plus three becomes five at planning time, not once per row.",
+        "None of the three can make a plan worse, so the planner just does them."
       ]
     },
     {
       "lines": [
-        "Here's a sharper one. Sometimes an entire join can be thrown away.",
-        "Picture joining to a second table, but never actually reading a single column from it... just checking that a match exists.",
-        {
-          "beat": 0.4
-        },
-        "If that second table is guaranteed to have at most one matching row for each one on the first side... does the join still need to run at all?"
+        "Now a bolder one: deleting a join entirely. Watch the right branch of the tree fade.",
+        "A left join can be dropped when two things are true. It cannot match more than one inner row, which a unique key proves, and nothing from the inner side is used above it.",
+        "The first condition means the join cannot add rows. The second means it cannot add anything else either, so it contributes nothing and its scan goes with it."
+      ]
+    },
+    {
+      "lines": [
+        "Test it. A query reads only order columns. It left joins customers on customer id, which is the customers primary key.",
+        "Check the two conditions in your head before answering.",
+        { "beat": 0.4 },
+        "What is left in the plan?"
       ],
       "answer": [
-        "No. It can be deleted outright.",
-        "If nothing from that table is read, and it can only ever contribute at most one matching row, the whole join changes nothing about the final answer.",
-        "So the engine just... removes it. The second table's scan never happens. One less table touched, for free."
+        "A scan of orders and nothing else.",
+        "The key guarantees at most one match, so the row count cannot change, and no customer column is read. The join and the whole scan of customers are removed.",
+        "A hash join or a merge join would still read customers for nothing, and nothing makes this an error. A stray join left over from an earlier version of the query is often already free."
       ]
     },
     {
       "lines": [
-        "Another one, in the opposite direction.",
-        "A certain kind of join promises to keep every row from one side, filling in blanks when there's no match.",
-        "Now say a later filter throws away every row that has one of those blanks.",
-        {
-          "beat": 0.4
-        },
-        "Did that join actually need to keep the unmatched rows at all?"
+        "Next, joins that change type. Remember what an outer join guarantees: no left row is ever lost, even when its partner is missing.",
+        "Now add a filter on the right side, one that is never true for a null. Look at the red line.",
+        "Every null extended row is thrown away again, so the promise was never needed. The left join becomes an ordinary join.",
+        "That matters because an ordinary join can be reordered much more freely than an outer one."
+      ]
+    },
+    {
+      "lines": [
+        "The same logic runs the other way, and it connects back to the anti join topic.",
+        "Keep a left join, and then require that a column of the right side is missing.",
+        "Only the null extended rows can pass that filter, which is exactly the left rows with no match. The planner recognizes that and changes the join type to anti.",
+        "Look at the picture: two spellings arrive at the same operator."
+      ]
+    },
+    {
+      "lines": [
+        "Check it on a concrete shape. A left join with a missing value test on a right column that cannot be missing on a real match.",
+        { "beat": 0.4 },
+        "What join type does the plan show?"
       ],
       "answer": [
-        "No. If the filter was always going to throw them out anyway, the join can quietly become an ordinary, stricter join instead... one with far more freedom to be reordered.",
-        "And push it one step further: if the filter specifically wants the rows with no match... the engine recognizes that as asking for exactly the opposite kind of join, and switches to it directly.",
-        "Two completely different-looking ways of writing the same question, and the engine proves, underneath, that they were always the same operator all along."
+        "Anti.",
+        "Only the rows that found no partner can have that column missing, so the query asks for left rows with no match.",
+        "Left or inner would keep matched rows, and full is something else again. The two spellings are one operator."
       ]
     },
     {
       "lines": [
-        "Last one, and it's the hardest of the five.",
-        "A subquery that looks back at the row currently being processed, re-run fresh for every single row... has a formal name: a dependent join.",
-        "And dependent joins are exactly the slow, nested-loop shape you'd expect.",
-        "The fix, in general, is to keep reshaping that dependent join, pushing it deeper and deeper through the query, until the piece that needed the outer row's value finally doesn't need it anymore.",
-        "The instant that happens, it stops being a dependent join at all. It's just an ordinary join, free to be reordered like any other."
+        "Everything so far was about structure that does not depend on the outer row. Correlated subqueries are different.",
+        "Watch the two rows of marks. For every outer row, the inner query runs again, from scratch.",
+        "Researchers give this shape a name, a dependent join: the right side is evaluated for every row of the left.",
+        "With a thousand outer rows that is a thousand evaluations. The goal of unnesting is to rewrite until the right side stops depending on the left."
       ]
     },
     {
       "lines": [
-        "So: some rewrites are free and automatic, no guessing required.",
-        "A join can vanish entirely when it was never contributing anything.",
-        "A join's own strictness can quietly change, in either direction, once a later filter proves it was always going to behave that way.",
-        "And a correlated subquery, pushed and reshaped far enough, eventually stops needing the row that once made it slow.",
-        {
-          "beat": 0.4
-        },
-        "All of this ran purely on proof, no numbers involved.",
-        "Next: a different kind of rewrite, one that decides whether a shortcut helps or hurts by actually running it, or not."
+        "There are two methods, and the first is the gentle one. For many existence tests, the correlation is only there because it was easier to write.",
+        "Pull the dependent predicate up the tree until it no longer needs the outer row. Watch the box change.",
+        "What remains is an ordinary semi join: one pass over both sides, instead of a thousand evaluations of the inner query."
+      ]
+    },
+    {
+      "lines": [
+        "The harder cases defeat pulling up. A subquery with its own aggregate is a good example.",
+        "The general method goes the other way: push the dependent join down. Watch the highlight descend through a join, then a group by, then an outer join.",
+        "Each operator has its own careful rule for letting the dependency pass through it.",
+        "Eventually the values it needs are already local, and the dependent join turns into a regular one."
+      ]
+    },
+    {
+      "lines": [
+        "Three things to take away. Do not hand optimize a join the planner already proves redundant.",
+        "When two spellings are the same operator, choose the one your team reads best.",
+        "And if a stubborn sub plan survives your obvious rewrites, suspect a shape the heuristics do not cover.",
+        { "beat": 0.4 },
+        "All of this ran purely on proof, no numbers involved. Next: a different kind of rewrite, one that decides whether a shortcut helps or hurts by actually running it, or not."
+      ]
+    },
+    {
+      "lines": [
+        "Two checks. First, when can a left join be deleted outright.",
+        "Recall the two conditions together.",
+        { "beat": 0.4 },
+        "Which pair is it?"
+      ],
+      "answer": [
+        "At most one inner match, and no inner column used above.",
+        "The first means it cannot multiply rows, and the second means it adds nothing else. Size, indexes and column types are not what the proof depends on."
+      ]
+    },
+    {
+      "lines": [
+        "Second check. A subquery needs a value from the outer row.",
+        { "beat": 0.4 },
+        "What is the formal name for that join?"
+      ],
+      "answer": [
+        "A dependent join.",
+        "The right side is evaluated for every tuple of the left. A semi join is what it can become once the dependency is removed."
       ]
     }
   ]

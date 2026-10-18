@@ -1,30 +1,40 @@
 import Resource from '../../../../../components/Resource.astro';
 
-This is a full topic in §2.2, right after running and moving statistics (topic 14), and the last topic of §2.2 before §2.3's optimizer internals begin.
+This topic closes §2.2. It reuses the per-row subquery and the window-versus-self-join argument. Reels on this site are marked **Before this** (earlier in the course), **Goes deeper later** or with the name of another track.
 
-<section class="prereq" data-section="basics">
+<section class="prereq basics" data-section="basics">
 
-### <span class="n">00</span> The terms this topic uses
+### <span class="n">00</span> Basics: words the reel takes for granted
 
-A few words, each defined in full inside the reel; this is just so they are not a surprise.
+- **Reference (history) table**: a table with a row per change of a value, with the time it took effect. *Where you meet it:* a price list or an address history.
+- **Equi-join vs inequality join**: matching on equal keys versus on a comparison such as `<=`. *Where you meet it:* `ON a.id = b.id` versus `ON b.valid_from <= a.event_time`.
+- **Feature (in machine learning)**: an input value computed for a training example. *Where you meet it:* "the customer's order count so far".
+- **Training / serving**: building a model from history, versus using it on new data as it arrives. *Where you meet it:* offline accuracy versus production accuracy.
+- **Valid time vs transaction time**: when a fact was true in the world, versus when the database recorded it. *Where you meet it:* a back-dated correction.
 
-- **Point-in-time / as-of join** — matching each row to the latest row of another table whose own timestamp is at or before the first row's timestamp.
-- **`ASOF JOIN`** — native syntax (DuckDB, Snowflake, ClickHouse) for exactly this pattern.
-- **Temporal leakage** — a training-data bug where a feature is joined to a "current" value instead of the value genuinely knowable at the training example's own time.
-- **Bitemporal** — tracking two independent time axes (when something became true, and when the system learned about it), a strictly harder problem than the single-timestamp as-of join here.
-
-<p class="check"><b>Check yourself:</b> can "join each order to the price in effect at order time" be written as a plain equality join on product_id alone? (Answer: no — equality alone would match every historical price for that product; the as-of behavior needs an added inequality (at or before the order's timestamp) plus "keep only the closest one.")</p>
+<p class="check"><b>Check yourself:</b> a price is 10 from day 1 and 12 from day 10. What is the price on day 9? (Answer: 10, the latest change on or before day 9.)</p>
 
 </section>
 
-<section class="prereq" data-section="lateral">
+<section class="prereq" data-section="earlier-topics">
 
-### <span class="n">01</span> LATERAL joins and correlated subqueries (topic 6, before this)
-
-This topic's hand-rolled as-of join reuses topic 6's top-N-per-group LATERAL pattern directly, just applied to "closest in time" instead of "top N by any order."
+### <span class="n">01</span> Per-row subqueries and windows
 
 <ul class="resources">
-  <Resource kind="topic" title="LATERAL joins and correlated subqueries" href="../lateral-joins-correlated-subqueries/" by="This chapter, topic 6" length="13 min">The ORDER BY ... LIMIT 1 LATERAL pattern reused here. Before this.</Resource>
+  <Resource kind="reel" host={props.host} domain="data-engineering" title="LATERAL joins and correlated subqueries">The per-row form with ORDER BY and LIMIT used here.</Resource>
+  <Resource kind="reel" host={props.host} domain="data-engineering" title="Window function execution internals">Why a correlated subquery rescans and a window does not.</Resource>
+  <Resource kind="reel" host={props.host} domain="data-engineering" title="Running and moving statistics">The previous reel; its handoff is this topic's opening.</Resource>
+</ul>
+
+</section>
+
+<section class="prereq" data-section="reference">
+
+### <span class="n">02</span> Reference
+
+<ul class="resources">
+  <Resource kind="reading" title="FROM Clauses (ASOF JOIN)" href="https://duckdb.org/docs/current/sql/query_syntax/from.html" by="DuckDB documentation" length="15 min">The native operator and its inequality requirement.</Resource>
+  <Resource kind="reading" title="ASOF JOIN" href="https://docs.snowflake.com/en/sql-reference/constructs/asof-join" by="Snowflake documentation" length="10 min">The MATCH_CONDITION spelling.</Resource>
 </ul>
 
 </section>

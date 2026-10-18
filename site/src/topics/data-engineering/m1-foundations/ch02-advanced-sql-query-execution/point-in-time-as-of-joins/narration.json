@@ -1,71 +1,122 @@
 {
   "topic": "de.point-in-time-as-of-joins",
-  "note": "Written to be spoken: one idea per line; {\"beat\": s} is a deliberate pause; numbers are phrased the way they are said, never as digits. Tool and flag names are spoken as their job, not their symbol. `answer` plays after the learner answers a predict step. Opens on the chapter bridge line and closes on the handoff line.",
   "steps": [
     {
       "lines": [
-        "Comparing a row to its own neighbors is one kind of question.",
-        "Now: comparing a row to the exact value another table held, at that very moment in time."
+        "Comparing a row to its own neighbors is one kind of question. Now comparing a row to the exact value another table held, at that very moment in time.",
+        "Look at the timeline. Prices change on three days, and four orders land between them.",
+        "An order on day twelve must be matched to the price that was in effect on day twelve. Not the first price, and not today's.",
+        "The question is about a moment, and that is not a question a plain join was designed to answer."
       ]
     },
     {
       "lines": [
-        "A price list doesn't store one row per sale. It stores one row per time the price changed.",
-        "So \"what was the price when this order happened\" isn't asking for a match. It's asking for the most recent change that had already happened by then.",
-        {
-          "beat": 0.4
-        },
-        "Can an ordinary, equal-to-equal join answer that by itself?"
+        "See what a plain join does. It matches on the product alone, so every order meets every price.",
+        "Count the lines: four orders, three prices, twelve pairings. Almost all of them are wrong.",
+        "The data is fine. The matching rule just has no notion of before and after."
+      ]
+    },
+    {
+      "lines": [
+        "The natural repair is to add a condition: the price must have started on or before the order.",
+        "Run it in your head against the four orders. Count the prices that satisfy the condition for each.",
+        { "beat": 0.4 },
+        "How many rows survive?"
       ],
       "answer": [
-        "No. Equal-to-equal only tells it which product. It says nothing about which moment in that product's price history is the right one.",
-        "You need a second condition entirely... at or before this exact moment... and then, out of everything that qualifies, keep only the closest one.",
-        "That's a genuinely different shape of question, not just a stricter join."
+        "Seven. One, one, two and three.",
+        "The inequality removed the prices from the future, but every older price still qualifies. The order on day twelve matches both the first price and the second.",
+        "Twelve is the unfiltered product, and four is what we actually want. The missing step is to keep only the closest."
       ]
     },
     {
       "lines": [
-        "There are a few honest ways to answer it.",
-        "Look it up fresh, per row, with a small nested query.",
-        "Or use the same per-row trick from a few topics back... sort just that product's history, and keep the one closest match.",
-        "Or, on an engine that built this in on purpose, just say what you mean directly: join each row to its closest match in time, full stop.",
-        "All three give the identical answer. They just differ in how much the engine has to work for it, and how clearly the intent reads on the page."
+        "So the rule has three parts. Equality on the product narrows the candidates. An inequality on time removes the future. And of what is left, the latest one wins.",
+        "Watch the thick lines: each order points at the nearest earlier price, and nothing else.",
+        "That shape is called an as of join. Exactly one row per order, which is the number you started with."
       ]
     },
     {
       "lines": [
-        "Here's where this becomes more than a syntax curiosity.",
-        "Imagine training a model, and for every past example, you hand it today's current value of some signal... not the value that signal actually had, back when that example happened.",
-        {
-          "beat": 0.4
-        },
-        "Does that model, trained that way, know something it genuinely shouldn't?"
+        "You can write that rule with tools you already have. A subquery ordered by start date, newest first, cut off at one row.",
+        "Or the lateral form with the same ending, which you met two topics ago.",
+        "Both are cheap only if an index on the product and the start date lets each lookup jump straight to the right place.",
+        "Without that index, every order rescans the whole history, which is the quadratic habit from the window internals topic."
+      ]
+    },
+    {
+      "lines": [
+        "Several engines have the operator built in. Read the three spellings.",
+        "They differ in punctuation but not in meaning. An inequality, and each left row joins at most one right row, the closest.",
+        "Snowflake adds a named clause for the comparison, so the as of condition is separate from the plain equality.",
+        "Where you have the native form, use it. It says what you mean."
+      ]
+    },
+    {
+      "lines": [
+        "Edge case. An order is placed on day zero, before the product's first price existed.",
+        "Think about what the closest earlier price is.",
+        { "beat": 0.4 },
+        "What does the left version of the join return for that order?"
       ],
       "answer": [
-        "Yes. It's quietly seeing the future, relative to each example it's learning from.",
-        "It looks great in testing, because the future it's peeking at is sitting right there in the training data too.",
-        "Then it ships, where the future genuinely isn't available yet... and the whole advantage evaporates.",
-        "Matching every example to the value that was actually knowable at that exact moment is the fix, by construction. That's exactly what this closest-match join enforces."
+        "The order, with a missing price.",
+        "There is nothing to match, and a left join keeps the left row with nulls on the right. An inner version would drop the order entirely.",
+        "It does not invent the first price, because that price did not yet exist, and it does not raise an error."
       ]
     },
     {
       "lines": [
-        "One more distinction, just so the next layer doesn't get confused with this one.",
-        "Everything here tracked one clock: when something became true in the real world.",
-        "A harder version tracks two clocks at once: when it became true, and separately, when your own system actually found out about it.",
-        "Most of what you'll touch day to day only needs the one clock. Save the two-clock version for when a correction, learned late, genuinely needs to not rewrite what an earlier report already said."
+        "The native operator also plans differently. Watch the two rows.",
+        "Both inputs are naturally in time order, so the engine can walk them together in one pass.",
+        "The hand built forms seek once per order, and that is what the nested loop line shows.",
+        "That is why one engine lists the operator as supported only by specific algorithms: it has a dedicated path, not the general join machinery."
       ]
     },
     {
       "lines": [
-        "So: a closest-match-in-time join is a real, different shape of question, not a stricter ordinary join.",
-        "Three honest ways to write it, same answer, different cost.",
-        "And matching to what was knowable at the time, instead of what's current now, is the whole difference between a model that works and one that only looks like it does.",
-        {
-          "beat": 0.4
-        },
-        "Every clause so far answered what a query means.",
-        "Next: what actually happens between typing that query and getting an answer back."
+        "Here is why this matters beyond reports. Suppose you train a model, and one feature is the price.",
+        "Join a training example from day five to today's price, and the example has seen eleven, a value that did not exist on day five.",
+        "The model learns from the future. Offline accuracy looks wonderful, and production fails, because the future is not available there.",
+        "The as of value is ten, and the as of join gives you that by construction. That is how you build a training set without leakage."
+      ]
+    },
+    {
+      "lines": [
+        "One last wrinkle. Everything so far used a single axis of time: when the fact was true.",
+        "Look at the second axis. A bitemporal system also records when the database learned the fact.",
+        "That matters when a correction arrives late. The question becomes: as of the time we asked, what did we believe was true at the earlier time.",
+        "It is a harder problem, and it gets its own chapter. Know it exists, and do not reach for it unless the requirement has two independent axes."
+      ]
+    },
+    {
+      "lines": [
+        "To sum up. Use the native operator where the engine has one, and an indexed lateral where it does not.",
+        "Audit every join to a current value in a feature pipeline, because that is where leakage hides.",
+        { "beat": 0.4 },
+        "Every clause so far answered what a query means. Next: what actually happens between typing that query and getting an answer back."
+      ]
+    },
+    {
+      "lines": [
+        "Two checks. First, is an as of join just an equi join with extra steps.",
+        { "beat": 0.4 },
+        "Is it an equi join?"
+      ],
+      "answer": [
+        "No.",
+        "It uses equality to narrow the candidates, but it needs an inequality on time and a closest wins rule to choose one. An equi join alone cannot say before or after."
+      ]
+    },
+    {
+      "lines": [
+        "Second check. In Snowflake, the as of comparison is named in its own clause.",
+        { "beat": 0.4 },
+        "Which clause?"
+      ],
+      "answer": [
+        "Match condition.",
+        "It sits apart from the ordinary equality condition, so the join says separately which columns must be equal and which must be ordered."
       ]
     }
   ]

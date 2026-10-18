@@ -74,24 +74,25 @@
     },
     {
       "lines": [
-        "Now the real thing. A spill file is a temporary file that gets closed and deleted in its drop.",
-        "So in Rust, this pattern is simply ownership plus drop.",
-        "Hand it through two functions and back... one close, one unlink.",
-        "No defer. No finally. No with. There is exactly one owner, and its scope end is the release.",
-        "The file itself is four bytes, the descriptor.",
-        "One caveat: errors on close are ignored by drop. Call sync all first, if they matter."
+        "Now a resource that is not memory. A temporary spill file: creating it opens it, and dropping it deletes it.",
+        "In Rust this pattern needs no special feature. It is just ownership plus a drop method.",
+        "Follow the file through two functions and back. It is closed once and unlinked once, and nowhere do you write the cleanup.",
+        "No defer, no finally, no with. There is exactly one owner, and the end of that owner's scope is the release.",
+        "One honest caveat: errors during the close are ignored by drop, so call sync all first if you need to know."
       ]
     },
     {
       "lines": [
-        "A spool owns a directory guard and a file guard, in that order.",
-        "The directory's drop removes the directory. The file's drop removes the file.",
-        "After the spool is dropped, what's left on disk?"
+        "Two guards live in one struct: a directory guard declared first, a file guard second. Each cleans up its own thing when dropped.",
+        {
+          "beat": 0.4
+        },
+        "Fields drop in the order they were declared. Predict the state of the disk afterwards."
       ],
       "answer": [
-        "The directory stays.",
-        "The directory guard is declared first, so it drops first, while the file is still inside... and removing a full directory fails.",
-        "Declare the spill file first, and both go."
+        "The directory is left behind.",
+        "The directory guard drops first, while the file is still inside, and removing a directory that is not empty fails.",
+        "Declare the file guard first and both go. When one resource lives inside another, order the fields so the inner one is released first."
       ]
     },
     {
@@ -199,13 +200,16 @@
     },
     {
       "lines": [
-        "Prove it, one of three.",
-        "A function takes a parameter a, a tuple parameter with b and c, and has one local, d.",
-        "So, in what order do the four values drop?"
+        "Last drill of the drop order. A function has a parameter, a tuple pattern parameter, and one local.",
+        {
+          "beat": 0.4
+        },
+        "In what order do the four values go?"
       ],
       "answer": [
-        "D, c, b, a.",
-        "The local first. Then the parameters, last and in reverse... and inside the tuple pattern, c before b."
+        "The local first, then the parameters in reverse.",
+        "Locals drop in the reverse order of creation, and the parameters come after the body, last declared first. Inside the tuple pattern, the second element goes before the first.",
+        "So the answer reads backwards from how you wrote the signature."
       ]
     },
     {

@@ -4,50 +4,43 @@
   "steps": [
     {
       "lines": [
-        "The last reel's vector only grew.",
-        "This one gives memory back.",
+        "The vector of the last reel only grew. This one also gives memory back.",
         {
-          "beat": 0.3
+          "beat": 0.4
         },
-        "A pop that leaves it less than half full halves its capacity... and copies every key.",
-        "Start full, at sixteen keys. Push once. Then repeat: pop, pop, push, push.",
-        "One unit of cost is one key written into the array, and a pop counts one, like a deletion."
+        "When a pop leaves it less than half full, it halves its capacity, and that means copying every key.",
+        "Start full at sixteen keys, push once, then repeat: pop, pop, push, push.",
+        "Same unit as before: one write per key, and a pop counts as one."
       ]
     },
     {
       "lines": [
-        "The rules again. A full vector doubles on a push. A pop that leaves it less than half full halves it.",
-        "Both copy every key.",
+        "Follow the machine by hand. A full vector doubles on a push; a pop that leaves it under half full halves it. Either way, every key is copied.",
         {
-          "beat": 0.3
+          "beat": 0.4
         },
-        "From seventeen keys in capacity thirty two, what is the total cost of one round of pop, pop, push, push?"
+        "Begin with seventeen keys in a capacity of thirty two. How much does one round of pop, pop, push, push cost in total?"
       ],
       "answer": [
         "Thirty five. One, plus sixteen, plus one, plus seventeen.",
-        "The second pop leaves fifteen keys in thirty two. That is under half, so it halves to sixteen, and copies fifteen.",
-        "Now fifteen of sixteen slots are full. The first push fills it, and the second finds it full, and doubles it, copying sixteen.",
-        "The round ends where it began. So every round costs the same."
+        "The second pop leaves fifteen keys in thirty two, which is under half, so it halves to sixteen and copies fifteen.",
+        "Now fifteen of sixteen slots are used. One push fills it, and the next finds it full and doubles it, copying sixteen.",
+        "We end where we began, so every round costs the same."
       ]
     },
     {
       "lines": [
-        "After the fill, every round repeats.",
-        "Eight rounds cost two hundred and eighty. Three hundred and twenty eight in all.",
+        "After the first fill, the rounds simply repeat. Eight of them cost two hundred and eighty, and with the fill, three hundred and twenty eight.",
         {
-          "beat": 0.3
+          "beat": 0.4
         },
-        "Each round copies nearly the whole vector... twice.",
-        "Write C for the size the vector was full at: sixteen here.",
-        "Per operation, the rounds cost two C plus three, divided by four. That grows with C.",
-        "At C equal to sixteen it is eight point seven five. At about a million, it is more than five hundred and twenty four thousand.",
-        "No fixed charge can pay for that.",
+        "Each round copies nearly the whole vector, twice. Call the size at which it was full C. Per operation the cost is two C plus three over four. At sixteen that is nearly nine; at a million it is above half a million.",
+        "The bill grows with C, so no fixed charge can pay for it.",
         {
-          "beat": 0.3
+          "beat": 0.4
         },
-        "An adversary only has to choose the sequence.",
-        "Fill with pushes for about half the operations first.",
-        "Then the total cost is quadratic, the square of the operation count."
+        "The adversary only has to pick the sequence: push for about half the operations to build a big vector, then alternate.",
+        "The total becomes quadratic in the number of operations."
       ]
     },
     {
@@ -110,27 +103,25 @@
     },
     {
       "lines": [
-        "Here is the vector's gauge.",
-        "Phi equals two n minus cap says how far past half full the vector is.",
-        "Just after a grow, it is two... the new key counts twice. When the vector is full, it is n... exactly the keys the next grow copies.",
+        "Now meet the potential, the gauge that tells how much work is stored up in the structure.",
+        "Define it as two n minus the capacity. It measures how far past half full the vector is.",
         {
-          "beat": 0.3
+          "beat": 0.4
         },
-        "The actual costs spike. The amortized costs are flat at three, and two for the very first one.",
-        "It is the last reel's bank, without its spare coin."
+        "Just after a grow, it is two. When the vector is full, it equals n, which is exactly what the next grow will copy.",
+        "Plot it and the real cost spikes while the amortized cost stays flat at three, two for the first push.",
+        "It is the bank from the last reel, only now read straight off the structure, without a spare coin."
       ]
     },
     {
       "lines": [
-        "Now let the vector shrink. From here on, it shrinks only when a pop leaves it under a quarter full. A later step shows why half cannot be saved.",
-        "Keep the same potential.",
-        "Pops drive it down. At half full it reaches zero, and then it keeps going, below zero.",
+        "Now let the vector shrink, but only when a pop leaves it under a quarter full. A later step shows why half cannot work.",
         {
-          "beat": 0.3
+          "beat": 0.4
         },
-        "After two pops it is minus two, and the amortized total, forty eight, is already less than the actual total, fifty.",
-        "A potential that can go negative proves nothing.",
-        "Below half full the vector is saving for its shrink, so its potential has to grow again there."
+        "Try the same potential. Pops push it down, through zero at half full, and then below zero.",
+        "After two pops it is minus two, and the amortized total, forty eight, is smaller than the actual fifty. The accounting is lying.",
+        "A negative balance means the proof has spent what it never collected. Below half, the vector is saving up for a shrink, so the potential must climb back up there."
       ]
     },
     {
@@ -201,14 +192,14 @@
     },
     {
       "lines": [
-        "The same move proves bounds you will meet later.",
-        "Splay trees: phi is the sum of log base two of every subtree's size, giving big O of log n amortized access.",
-        "Fibonacci heaps: the trees in the root list, plus twice the marked nodes, giving big O of one decrease key, and big O of log n delete min.",
-        "Union find: Tarjan studied it first.",
-        "More recently, Lambert and colleagues reach its bound, big O of alpha of n.",
-        "Their potential is on node ranks, summed over the levels of the Ackermann function.",
-        "Alpha of n is the inverse Ackermann function.",
-        "Summing square roots of subtree sizes proves only log log n."
+        "This one move will carry you through several later structures.",
+        {
+          "beat": 0.4
+        },
+        "For splay trees, the potential is the sum of log of every subtree's size, and it gives logarithmic amortized access.",
+        "For Fibonacci heaps, it counts the trees in the root list plus twice the marked nodes. That gives constant decrease key and logarithmic delete min.",
+        "For union find, Tarjan analysed it first. Lambert and colleagues recently reached the bound alpha of n, the inverse Ackermann function, by using a potential on node ranks, summed over levels of the Ackermann function.",
+        "Summing square roots of subtree sizes would prove only log log n."
       ]
     },
     {
@@ -253,16 +244,18 @@
     },
     {
       "lines": [
-        "Start full at sixteen keys, and strictly alternate push, pop.",
-        "Rule A halves when a pop leaves the vector less than half full. Rule B, when it leaves it at most half full.",
+        "Last problem. Start full at sixteen keys, and strictly alternate push and pop.",
+        {
+          "beat": 0.4
+        },
+        "Compare two shrink rules. Rule A halves when a pop leaves the vector under half full. Rule B halves when a pop leaves it at most half full.",
         "Which rules thrash?"
       ],
       "answer": [
         "Only the at most half rule thrashes.",
-        "After the first push there are seventeen keys in thirty two. A pop leaves sixteen... exactly half.",
-        "Rule A does not shrink, and the next push fits. Alternation costs one per operation after the grow.",
-        "Rule B shrinks to sixteen, which is full, and the next push doubles again. Seventeen writes, every operation.",
-        "Rule A still thrashes on pop, pop, push, push. The gap must be a fraction of the capacity, not one key."
+        "After the first push there are seventeen keys in thirty two. A pop leaves sixteen, exactly half.",
+        "Rule A does not shrink, so the next push fits and the cost is one per operation. Rule B shrinks to sixteen, which is full, and the next push doubles again, seventeen writes, every single time.",
+        "Rule A still thrashes on pop, pop, push, push, so the gap must be a fraction of the capacity, not a single key."
       ]
     }
   ]

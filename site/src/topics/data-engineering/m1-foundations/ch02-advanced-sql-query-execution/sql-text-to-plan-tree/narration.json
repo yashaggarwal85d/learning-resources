@@ -1,65 +1,119 @@
 {
   "topic": "de.sql-text-to-plan-tree",
-  "note": "Written to be spoken: one idea per line; {\"beat\": s} is a deliberate pause; numbers are phrased the way they are said, never as digits. Tool and flag names are spoken as their job, not their symbol. `answer` plays after the learner answers a predict step. Opens on the chapter bridge line and closes on the handoff line.",
   "steps": [
     {
       "lines": [
-        "Every clause so far answered what a query means.",
-        "Now: what actually happens between typing that query and getting an answer back."
+        "Every clause so far answered what a query means. Now what actually happens between typing that query and getting an answer back.",
+        "Look at the strip. Text goes in on the left, rows come out on the right, and a pipeline sits between them.",
+        "Every later topic in this section is a closer look at one box of it. So take a minute to see the whole route first."
       ]
     },
     {
       "lines": [
-        "Five separate stages carry your words to an actual answer, and each one is only allowed to know a little more than the one before it.",
-        "First, nothing but grammar. Does this even look like a valid sentence. No idea yet what any of the names refer to.",
-        "Then, meaning. Now it looks up every name you used, and learns exactly what table, what function, what operator you meant.",
-        "Then, rewriting. Anything built on a shortcut, like a view, gets quietly unfolded back into the real tables underneath it.",
-        "Then, choosing. Many different ways could compute the same answer, and one gets picked.",
-        "And only then... running it, for real, and handing back rows."
+        "Five boxes, and each one knows a little more than the one before.",
+        "Parse checks only the grammar. Bind looks names up in the catalog. Rewrite applies rules, views being the main example.",
+        "Plan chooses the cheapest way to compute the result. Execute runs that plan and returns rows.",
+        "Remember that ordering, because the interesting question for any problem is: at which stage does it get decided."
       ]
     },
     {
       "lines": [
-        "Here's the idea worth holding onto through everything in this part of the chapter.",
-        "What a query computes, and how it's actually carried out, are two separate layers.",
-        "The first layer is just the shape: filter, then join, then total. Nothing about which exact method does the filtering, or which exact method does the joining.",
-        {
-          "beat": 0.4
-        },
-        "So, predict: for one single logical shape like that, is there usually only one physical way to carry it out?"
+        "Test the ordering. This query is perfectly good grammar, but the table it names does not exist.",
+        "Think about which stage has the information needed to notice.",
+        { "beat": 0.4 },
+        "Where does it fail?"
       ],
       "answer": [
-        "No. Almost never just one.",
-        "Scan every row, or hop straight to the ones that matter through an index... two different ways to do the exact same filter.",
-        "Loop through one side for every row of the other, or sort both sides first, or build a quick lookup table... three different ways to do the exact same join.",
-        "Same shape, same answer at the end. Genuinely different amounts of work to get there."
+        "At bind.",
+        "The parser checks only the shape of the text and never opens the catalog, so it cannot know the table is missing. Binding is the first stage that resolves names.",
+        "Plan and execute never see this query at all. It does not get that far, which is why the error is a message about a relation, not about syntax."
       ]
     },
     {
       "lines": [
-        "And here's a detail that pays for itself constantly.",
-        "A way of reading a table doesn't just hand back rows. Sometimes it hands them back already sitting in a useful order... for free, as a side effect of how it reads them.",
-        {
-          "beat": 0.4
-        },
-        "So if something later in the plan needed exactly that order anyway... what happens to the separate step that would normally have had to produce it?"
+        "Bind is where text becomes meaning. Follow the arrow through the catalog box.",
+        "The parser sees a call named count, and nothing more. The catalog says whether that name is an ordinary function or an aggregate.",
+        "The tree changes shape depending on the answer. So until this step, the query does not yet have a meaning, only a form."
+      ]
+    },
+    {
+      "lines": [
+        "Next, rewrite. A view is a stored query, and this is the stage that unfolds it.",
+        "Watch the top box fade. The reference to the view is replaced by its definition, so what reaches the planner names only base tables.",
+        "That has a practical consequence. When you debug a slow query over a view, read the plan as though you had pasted the view's text in yourself."
+      ]
+    },
+    {
+      "lines": [
+        "After rewrite, the query is a tree of algebra, the one from the first topic. That is the what.",
+        "The planner now has to decide the how. Compare the two trees: the same shape, but each box has become a specific algorithm.",
+        "The reason this works is that many different physical plans compute exactly the same result. If only one did, there would be nothing to choose, and no need for an optimizer."
+      ]
+    },
+    {
+      "lines": [
+        "Each candidate implementation is called a path. Look at the options.",
+        "A scan of a table has at least two: read it from start to finish, or go through an index. A join has at least three: nested loop, merge, or hash.",
+        "The planner estimates the cost of each path and expands the cheapest into the final plan.",
+        "That estimate is where the next several topics live: how it is made, and how it goes wrong."
+      ]
+    },
+    {
+      "lines": [
+        "Paths carry more than rows. They can come with properties, and sort order is the one you will meet most.",
+        "Look at the two labels. An index scan on a column provides that order for free, as a side effect of how it reads.",
+        "On the other side, an ordering clause or a merge join demands a particular order. If what is provided meets what is demanded, the sort step is simply never added.",
+        "Another property is how rows are spread across workers. The idea is the same."
+      ]
+    },
+    {
+      "lines": [
+        "Apply it. There is an index on the timestamp column.",
+        "The query asks for the first hundred rows ordered by that column.",
+        { "beat": 0.4 },
+        "Does the plan contain a separate sort?"
       ],
       "answer": [
-        "It simply disappears. There's nothing left for it to do.",
-        "One part of the plan already handed over the order the next part needed. Paying twice for the same thing would just be waste.",
-        "That's the entire trick behind a surprising number of fast plans: something upstream already did the work something downstream was about to ask for."
+        "No.",
+        "The index scan already reads in that order, so the requirement is met and the sort step is deleted.",
+        "Saying that an order by always sorts forgets that an order can arrive for free. And the size of the table and the limit are not what removes the sort."
       ]
     },
     {
       "lines": [
-        "So: five stages, each one knowing a little more than the last.",
-        "What a query means, and how it's actually run, are genuinely two different layers, and there's real choice in the second one.",
-        "And a useful order, earned once, doesn't need to be earned twice.",
-        {
-          "beat": 0.4
-        },
-        "Right now, every plan has only ever meant exactly what it said.",
-        "Next: the rewrites that quietly turn one legal plan into a cheaper, equally legal one."
+        "Now how to read what the planner produced. A plan has the same shape as the algebra tree it realizes.",
+        "Watch the highlight move. Scans at the leaves come first, then the join that combines them, then the aggregate at the root.",
+        "Read it from the leaves up. The leaves depend on nothing, and every cost above them is built from what they produce."
+      ]
+    },
+    {
+      "lines": [
+        "Three things to keep. The meaning of a query is fixed by the end of the rewrite stage. The choices are made in the planner.",
+        "When you read a plan, start at the leaves.",
+        { "beat": 0.4 },
+        "Right now, every plan has only ever meant exactly what it said. Next: the rewrites that quietly turn one legal plan into a cheaper, equally legal one."
+      ]
+    },
+    {
+      "lines": [
+        "Two checks. First, one stage turns a reference to a view into its definition.",
+        { "beat": 0.4 },
+        "Which one?"
+      ],
+      "answer": [
+        "Rewrite.",
+        "After it, the planner sees only base tables. Parse and bind do not expand views, and execute comes after the plan is chosen."
+      ]
+    },
+    {
+      "lines": [
+        "Second check. PostgreSQL has a name for a candidate implementation of an operator.",
+        { "beat": 0.4 },
+        "What is it?"
+      ],
+      "answer": [
+        "A path.",
+        "It is a cut down plan holding only what the planner needs to compare costs. A rule is what the rewrite stage applies, and a view is a stored query."
       ]
     }
   ]

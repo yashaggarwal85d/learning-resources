@@ -33,14 +33,13 @@
     },
     {
       "lines": [
-        "Per append, the tail is one write.",
+        "Which tail should we measure? Per append, the tail is one write, which looks wonderful.",
         {
-          "beat": 0.3
+          "beat": 0.4
         },
-        "Per request, with the wait included, p ninety nine is four hundred ninety four thousand, two hundred eighty nine ticks.",
-        "Three hundred forty nine thousand, five hundred fifteen requests wait behind a resize. That is thirty five percent.",
-        "A service is judged on its requests. So their tail is the one that counts.",
-        "The copy is one append. The wait is everyone's."
+        "But clients do not experience appends, they experience requests, and a request queues behind a resize that is still running.",
+        "Count the waiting and the ninety ninth percentile is about half a million ticks. More than a third of all requests, three hundred and forty nine thousand, five hundred and fifteen, sat behind a resize.",
+        "The copy is one append's work, but the wait is paid by everyone behind it. A service is graded by its requests, so that is the tail to fix."
       ]
     },
     {
@@ -74,14 +73,14 @@
     },
     {
       "lines": [
-        "Here is the state after append ten.",
-        "The old buffer. The new one. The count n. And the frontier k: how many old keys have moved.",
-        "An append writes its key at slot n of the new buffer, then moves the next two old keys.",
+        "Here is the machine, frozen just after the tenth append.",
         {
-          "beat": 0.3
+          "beat": 0.4
         },
-        "A read at index i uses the old buffer only if k is at most i, and i is below m, the old key count.",
-        "Everything else is in the new buffer. One comparison picks the buffer."
+        "It holds the old buffer, the new one, the count n, and a frontier k: how many old keys have already moved across.",
+        "Each append writes its own key into the new buffer, then moves the next two old keys.",
+        "Reading is the clever part. Index i is served from the old buffer only when it is at or beyond the frontier and below the old key count. Anything else is in the new one.",
+        "So a single comparison chooses the buffer."
       ]
     },
     {
@@ -100,14 +99,13 @@
     },
     {
       "lines": [
-        "Same total writes. A different bill.",
+        "Look at what this really changed. The total writes are the same, but who pays and when has shifted.",
         {
-          "beat": 0.3
+          "beat": 0.4
         },
-        "Both buffers stay alive while the copy runs. At the last resize of a million appends, that is the same twelve mebibytes of peak as plain doubling, but held for about a quarter of a million appends, not one.",
-        "Every read pays a comparison with the frontier.",
-        "More than half the appends now cost three, so the median got worse.",
-        "And the big O of one worst case assumes that allocating a buffer is big O of one."
+        "Both buffers are alive during the copy. At the last resize of a million appends the peak is twelve mebibytes, same as plain doubling, but it is held for about a quarter of a million appends, not for one.",
+        "Every read now pays a comparison against the frontier. More than half of the appends cost three, so the typical append got slower, not faster.",
+        "And the constant worst case holds only if asking for a buffer is itself constant time, which is an assumption about the allocator."
       ]
     },
     {
@@ -155,16 +153,17 @@
     },
     {
       "lines": [
-        "Climb from sixty nine, the deep node.",
-        "At each ancestor, compare its heavier child's subtree with the ancestor's own subtree.",
-        "The scapegoat is the first ancestor where that child holds more than alpha, two thirds.",
-        "Which node is it?"
+        "A scapegoat tree repairs itself by finding one culprit. Start at sixty nine, the node that went too deep, and walk up.",
+        {
+          "beat": 0.4
+        },
+        "At each ancestor, compare how big its heavier child is with the ancestor itself. The first ancestor where that child holds more than two thirds is the scapegoat.",
+        "Work up the path. Which node is it?"
       ],
       "answer": [
         "Eighty seven.",
-        "From sixty nine going up: sixty three's heavier child holds one of its two nodes. Eighty's holds two of three. Exactly two thirds is still allowed.",
-        "Fifty four's holds three of five. That is under two thirds, though it looks lopsided.",
-        "Eighty seven's left child holds five of its six nodes. That is over two thirds, so eighty seven is the scapegoat.",
+        "From sixty nine going up: sixty three's heavier child holds one of its two nodes. Eighty's holds two of three, and exactly two thirds is still allowed.",
+        "Fifty four's holds three of five, which is under two thirds even though it looks lopsided. Eighty seven's left child holds five of its six nodes, over two thirds, so eighty seven is the scapegoat.",
         "The sizes are counted on the way up. No node stores one."
       ]
     },
@@ -183,13 +182,16 @@
     },
     {
       "lines": [
-        "Deletes never push a node deeper. But they shrink n, so the tree grows tall for its size.",
-        "The root's second count handles this. When the size drops below alpha times the largest size, rebuild the whole tree.",
-        "That is global rebuilding again, inside the scapegoat tree.",
+        "Deletes cannot push any node deeper, but they shrink n, so the tree can end up tall for what it holds.",
         {
-          "beat": 0.3
+          "beat": 0.4
         },
-        "It takes theta of n deletes first. At a million keys, delete three hundred thirty three thousand, three hundred thirty four rebuilds six hundred sixty six thousand, six hundred sixty six nodes."
+        "The root keeps a second count for this. When the size falls below alpha times the largest size since the last full rebuild, the whole tree is rebuilt.",
+        "That is global rebuilding again, this time inside the scapegoat tree.",
+        {
+          "beat": 0.4
+        },
+        "It needs order n deletes first. At a million keys, the three hundred and thirty three thousand, three hundred and thirty fourth delete rebuilds the remaining six hundred sixty six thousand, six hundred sixty six nodes."
       ]
     },
     {
@@ -206,14 +208,13 @@
     },
     {
       "lines": [
-        "Back to the service.",
-        "With two moves per append, no append takes more than three ticks. Requests arrive four apart. So no queue ever forms.",
-        "Request p ninety nine and the maximum are three ticks, against more than four hundred ninety thousand before.",
+        "Back to the service. Each append now moves two keys, so none takes more than three ticks, and requests arrive four ticks apart.",
         {
-          "beat": 0.3
+          "beat": 0.4
         },
-        "The total writes are the same. The median rose from one to three.",
-        "And every tick charged a write the same, wherever in memory it landed."
+        "That means no queue ever forms. Request p ninety nine and the maximum are three ticks, where before they were nearly five hundred thousand.",
+        "Notice what it cost: the total writes did not change, and the median rose from one to three.",
+        "One more caution. A tick here counts a write the same wherever it lands in memory, which a real machine does not."
       ]
     },
     {
@@ -245,14 +246,16 @@
     },
     {
       "lines": [
-        "A nightly batch job appends a billion keys to a vector. Only its total running time matters.",
-        "A reviewer asks you to switch to incremental copying. Do you agree?"
+        "One last case. A nightly batch job appends a billion keys, and only the total running time matters.",
+        {
+          "beat": 0.4
+        },
+        "A teammate proposes copying incrementally, as in this reel. Would you accept that change?"
       ],
       "answer": [
         "No.",
-        "Both vectors write about two point one billion elements.",
-        "The incremental one also pays a comparison on every read, and holds two buffers longer.",
-        "Its gain is the tail. In a batch, no request waits behind the one append that writes over half a billion.",
+        "Both vectors write about two point one billion elements in all.",
+        "The incremental one also pays a comparison on every read and keeps two buffers alive for longer. Its only gain is the tail, and in a batch job nobody waits behind the single append that writes over half a billion keys.",
         "Deamortize when something waits on single operations: requests, frames, or a fan out."
       ]
     }

@@ -22,12 +22,11 @@
     },
     {
       "lines": [
-        "Here is the pipeline that the rest of this reel will use.",
-        "One function gets a buffer from the pool. That's the only place a sixty-four K buffer is ever allocated.",
-        "Fill borrows it exclusively. Inspect borrows it to read the header, a small copy type. Consume takes it and hands it back. And put returns it to the pool.",
-        "A thousand small messages... one allocation.",
-        "Every handover moves a thirty-two byte value, an id and the vector's twenty-four byte handle, never the payload.",
-        "This topic is about the last two: owning the buffer in consume and put."
+        "Here is the pipeline we will use for the rest of this topic, so learn its shape once.",
+        "One function fetches a buffer from the pool, and it is the only place a sixty four kibibyte buffer is ever allocated.",
+        "Follow the four stages. Fill borrows the buffer exclusively. Inspect borrows it to read a small header. Consume takes it and hands it back. And put returns it to the pool.",
+        "A thousand small messages cost one allocation, because every handover moves a thirty two byte value, an id and the vector's handle, never the payload.",
+        "Our subject is the last two stages, where the function owns the buffer."
       ]
     },
     {
@@ -131,35 +130,38 @@
     },
     {
       "lines": [
-        "The guard has a second way out.",
-        "Into inner takes the buffer out and returns it. Then the guard drops at the closing brace.",
-        "What does its drop do?"
+        "The guard has a second way out: you can take the buffer out of it and use it yourself.",
+        {
+          "beat": 0.4
+        },
+        "After that, the guard still reaches the end of its scope and its drop runs. What does the drop find?"
       ],
       "answer": [
-        "Nothing. The take left the option empty, so when the guard drops, there is nothing to put back.",
-        "And take only borrows the field, so it isn't a move out of a drop type.",
-        "The caller owns the buffer now."
+        "Nothing to do.",
+        "The take left the guard's slot empty, so there is no buffer for the drop to put back. And because the take only borrows the field, it is not a move out of a type that has a destructor, which would be refused.",
+        "The caller owns the buffer now, and the guard has quietly stood down."
       ]
     },
     {
       "lines": [
-        "Here's where the guard earns its keep: the error path.",
-        "By hand, the put sits after the question mark. So every bad message throws its buffer away, and the next one has to allocate.",
-        "With the guard, the early return drops the guard, and the guard puts the buffer back.",
-        "A hundred allocations against one: the first buffer, plus ninety-nine replacements.",
-        "A panic that unwinds runs the same drop. Only a guard whose destructor never runs loses its buffer, and that is safe."
+        "This is where the guard earns its keep, on the error path.",
+        "Do it by hand and the put sits after the question mark, so every message that fails throws its buffer away, and the next message must allocate a fresh one.",
+        "Use the guard and the early return drops it, and its drop puts the buffer back. A hundred bad messages in a thousand cost one allocation, instead of a hundred.",
+        "The same holds if the code panics and unwinds. The only way to lose the buffer is a guard whose drop never runs, and that is safe, merely wasteful."
       ]
     },
     {
       "lines": [
-        "Time to prove it.",
-        "A pattern takes the tail. Then the head goes to drop.",
-        "In what order do the three destructors run?"
+        "Three values each print a trace line when dropped, so we can watch the order. A pattern pulls out the tail, and the head is passed to the drop function.",
+        {
+          "beat": 0.4
+        },
+        "Which runs first, and which last?"
       ],
       "answer": [
-        "Head, tail, body.",
-        "Head goes the moment you pass it to drop.",
-        "At the closing brace, the tail binding is dropped first, and then the struct, which only has the body left."
+        "The head, then the tail, then the body.",
+        "The head goes the moment you hand it to drop, because that is a move into a function that ends it. Nothing else has left scope yet.",
+        "At the closing brace, the tail binding is dropped first, as a later declaration, and then the original struct, which now has only the body left."
       ]
     },
     {

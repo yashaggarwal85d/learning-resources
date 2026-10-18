@@ -4,39 +4,38 @@
   "steps": [
     {
       "lines": [
-        "The pooled buffer guard holds the pool by exclusive borrow.",
-        "A second guard on the same pool is the double exclusive borrow error.",
-        "The pull request wraps the pool in an arc of mutex, and it compiles.",
-        "Was that the fix the compiler was asking for?",
+        "Three stages want a buffer at the same moment. The guard that holds a buffer borrows the whole pool exclusively, so a second guard is refused: two exclusive borrows of one thing.",
+        "In the pull request, someone wrapped the pool in a shared pointer and a mutex, and the error went away.",
         {
           "beat": 0.4
         },
-        "By the end, you'll rebuild the pipeline with no locks."
+        "The compiler went quiet. Was that what it was asking for? Keep that question open, because the rest of the topic answers it, and rebuilds the pipeline with no locks at all."
       ]
     },
     {
       "lines": [
-        "Here's how the reflex happens.",
-        "Two exclusive loans of one pool. So give each stage a thread.",
-        "Now the closure may outlive the pool. Add move.",
-        "Now the pool moved into the first thread. Wrap it in an arc.",
-        "An arc gives no mutable access. Add a mutex.",
+        "See how the reflex happens, one real error at a time. Each patch fixes the message in front of you.",
+        "Two exclusive loans: so give each stage a thread. Now the closure may outlive the pool: so add move. Now the pool has moved into the first thread: so wrap it for sharing.",
+        "Sharing gives no mutable access: so add a mutex. Four errors, four patches.",
         {
-          "beat": 0.3
+          "beat": 0.4
         },
-        "Every patch was local. None asked who should own the pool."
+        "Look back over them. Every patch was local, and none of them asked the question that matters: who should own the pool?"
       ]
     },
     {
       "lines": [
-        "Let's count.",
-        "This is the reviewed design, for one message. The fill stage takes a buffer and counts it. The inspect stage counts it. The consume stage counts it and gives the buffer back.",
-        "How many times does one message acquire a lock?"
+        "Count the cost of the design that was merged. One message passes through three stages.",
+        "Fill takes a buffer and counts it, inspect counts it, consume counts it and hands the buffer back.",
+        {
+          "beat": 0.4
+        },
+        "How many times does a single message take a lock?"
       ],
       "answer": [
-        "Five. Get and put lock the pool, and every stage locks the shared counters once.",
-        "A thousand messages, five thousand locks. Each one is a point where the stages must take turns, and chapter four measures what that costs.",
-        "And who owns the pool now? Next step."
+        "Five.",
+        "Getting a buffer and putting it back each lock the pool, and each of the three stages locks the shared counters once.",
+        "A thousand messages make five thousand locks, and every one is a point where the stages must take turns. A later chapter measures that cost. For now, notice the question we have not asked yet: who owns the pool?"
       ]
     },
     {
@@ -68,14 +67,16 @@
     },
     {
       "lines": [
-        "Let's predict one.",
-        "Four pieces of shared state from the pipeline: the pool, the per-stage counters, a read-only config, and one buffer.",
-        "Which one really has many owners?"
+        "Be careful with the word shared. Four things in this pipeline get called that: the pool, the per stage counters, a read only configuration, and one buffer.",
+        {
+          "beat": 0.4
+        },
+        "Which of them really has many owners at once?"
       ],
       "answer": [
-        "Only the config.",
-        "Eight threads read it all run, and a spawned thread may outlive whoever would lend it. So it's an arc, with no mutex, since nobody writes.",
-        "Everything else has one owner at a time: the driver, each stage, and whoever holds the buffer."
+        "Only the configuration.",
+        "Eight threads read it for the whole run, and a spawned thread may outlive whoever would lend it, so it needs shared ownership. And since nobody writes it, it needs no mutex.",
+        "Everything else has exactly one owner at any moment: the driver, each stage in turn, or whoever holds the buffer. The rest only looked shared."
       ]
     },
     {
@@ -158,10 +159,10 @@
     },
     {
       "lines": [
-        "One owner means one set of books.",
-        "Every channel is first in, first out, so the owner knows which buffer must come home next, and checks it.",
-        "A cloned or lost buffer fails at once. We tried both.",
-        "And the books balance. Buffers in the pool plus buffers out in the ring equal every buffer made, at each of a thousand returns."
+        "One owner means one set of books, and that is a real advantage, not a slogan.",
+        "Every channel is first in, first out and every buffer takes the same route, so the owner always knows which buffer must come home next.",
+        "If a buffer were cloned or lost, the check fails immediately. We tried both, and both were caught.",
+        "And while the check passes the books balance, at every one of a thousand returns: buffers in the pool plus buffers out in the ring equal every buffer ever made."
       ]
     },
     {
@@ -175,11 +176,10 @@
     },
     {
       "lines": [
-        "An arc of mutex isn't wrong. Reaching for it to silence the compiler is.",
-        "The async runtime's guide puts a map of simple data behind a mutex, keeps critical sections short, and moves state into an owner task once the work needs input and output.",
-        "Read-only data needs just an arc.",
-        "Contended? Chapter four measures that.",
-        "Thread-safety rules: chapter six."
+        "The mutex is not the villain, so do not over learn the lesson. Using it to silence the compiler is the mistake, not the tool.",
+        "The async runtime's own guide puts a map of simple values behind a mutex, keeps each critical section short, and moves state into a task that owns it once the work needs input and output.",
+        "Read only data shared for the whole run needs only the shared pointer, with no lock.",
+        "If a lock does become contended, the fixes are an owner task, splitting the data, or restructuring to avoid it. Measuring that is chapter four, and the thread safety rules are chapter six."
       ]
     },
     {

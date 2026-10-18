@@ -60,33 +60,27 @@
     },
     {
       "lines": [
-        "Here's the most common slip.",
-        "Big O is not worst case.",
+        "People say Big O means worst case. It does not, and the confusion costs real mistakes.",
+        "Two separate questions are hiding here. First, which input do you mean: the best, the typical, or the worst? That choice gives you one cost function.",
         {
           "beat": 0.4
         },
-        "A case picks a function. Take insertion sort on eight items. Sorted input costs seven comparisons. Random input costs about nineteen. Reversed input costs twenty eight. We checked every order.",
-        "A bound then relates that function to another.",
-        {
-          "beat": 0.3
-        },
-        "So best case Theta of n and worst case Theta of n squared are both exact.",
-        "Two axes. Don't mix them up."
+        "Second, how does that function compare with a simple one like n squared? That comparison is the bound.",
+        "Insertion sort on eight items shows it: seven comparisons on sorted input, about nineteen on a random one, twenty eight reversed. Each case has its own exact growth rate, and either axis can be chosen freely."
       ]
     },
     {
       "lines": [
-        "A quicksort that always pivots on the first key does almost five hundred thousand comparisons... on a thousand sorted keys.",
+        "Quicksort that always takes the first key as pivot does nearly half a million comparisons on a thousand keys that are already sorted.",
         {
-          "beat": 0.9
+          "beat": 0.4
         },
-        "Pick the pivot at random instead. How many comparisons do you expect on that same sorted input?"
+        "Now let it choose the pivot by a coin flip instead. Same sorted input. What do you expect it to cost?"
       ],
       "answer": [
-        "The count is about ten thousand, nine hundred and eighty six. It is the same for every input order.",
-        "The first pivot version averages that same count over random orders. Same number... different promise.",
-        "Average case assumes a distribution over inputs... and breaks when real inputs aren't like it, such as sorted data.",
-        "Expected time uses the algorithm's own coin flips... so it holds for every fixed input."
+        "About eleven thousand comparisons, and that holds for every input order, not just this one.",
+        "The average is a different promise. It averages over inputs, and it fails the moment real data stops looking like your assumption, sorted data being the classic case.",
+        "The expectation over the algorithm's own coins asks nothing of the input. The adversary picks the data, and the guarantee still holds."
       ]
     },
     {
@@ -130,26 +124,24 @@
     },
     {
       "lines": [
-        "One more trap.",
-        "Trial division is order square root of the value... sixty five thousand steps for a thirty two bit prime.",
-        "Double the bits... and it's over four billion.",
+        "Here is a trap that fools people who know the notation well. Trial division tests a number by trying every divisor up to its square root.",
         {
-          "beat": 0.3
+          "beat": 0.4
         },
-        "In the length of the input, that's exponential.",
-        "A cost polynomial in the value, but exponential in the bit length, is called pseudo-polynomial."
+        "For a thirty two bit prime that is about sixty five thousand tries. Give the number twice the bits and it needs over four billion.",
+        "The input grew by a factor of two, and the work grew by a factor of sixty five thousand. Measured in bits, which is what the input really occupies, that is exponential.",
+        "The name for it is pseudo-polynomial: fine in the value, terrible in the length."
       ]
     },
     {
       "lines": [
-        "Now let us get a feel for each rung, with one million items.",
-        "Log n is about twenty steps. And n log n takes about two hundredths of a second.",
-        "N squared takes a thousand seconds... nearly seventeen minutes.",
-        "And two to the n is hopeless by sixty four... centuries.",
+        "Time for a feel for the ladder. Take a million items and a machine doing a billion steps a second.",
         {
           "beat": 0.4
         },
-        "Every count here assumes each step costs the same. Hold that thought."
+        "A logarithmic algorithm needs a handful of steps; you will not notice it. Linearithmic takes a few hundredths of a second. Quadratic takes about a quarter of an hour.",
+        "An exponential one never finishes at this size: at sixty four items it already needs centuries.",
+        "But every one of those times quietly assumed that all steps cost the same. That assumption is what the rest of the course tests."
       ]
     },
     {
