@@ -110,7 +110,8 @@ export function Zip({ t }: StepCtx) {
             {i < 3 ? <Chip x={190} y={190 + i * 36 - 10} w={60} label={DISC[i]} /> : <rect x={190} y={190 + i * 36 - 10} width={60} height={32} rx={8} fill="none" stroke={C.latte} strokeDasharray="5 4" />}
           </g>
         ))}
-        <T x={300} y={236} s={14} f={C.latte}>4 tags, 3 discounts: 4 rows, last discount NULL</T>
+        <T x={290} y={232} s={14} f={C.latte}>4 tags, 3 discounts: 4 rows,</T>
+        <T x={290} y={252} s={14} f={C.latte}>last discount NULL</T>
       </g>
     </Svg>
   );
@@ -232,8 +233,8 @@ export function ProveZip({ t, answer }: StepCtx) {
   const answered = answer !== null;
   return (
     <Svg label="4 tags and 3 discounts into one unnest" h={240}>
-      <T x={40} y={100} s={18} f={C.latte}>unnest(4 tags, 3 discounts) →</T>
-      {answered ? <T x={420} y={102} s={24} f={C.caramel} w={700}>4 rows</T> : <T x={430} y={110} s={40} f={C.caramel} o={0.75 + 0.25 * Math.sin(t * 3)}>?</T>}
+      <T x={40} y={84} s={18} f={C.latte}>unnest(4 tags, 3 discounts) →</T>
+      {answered ? <T x={40} y={140} s={28} f={C.caramel} w={700}>4 rows</T> : <T x={40} y={150} s={40} f={C.caramel} o={0.75 + 0.25 * Math.sin(t * 3)}>?</T>}
     </Svg>
   );
 }
@@ -241,8 +242,8 @@ export function ProveVersion({ t, answer }: StepCtx) {
   const answered = answer !== null;
   return (
     <Svg label="The PostgreSQL release that added JSON_TABLE" h={240}>
-      <T x={40} y={100} s={18} f={C.latte}>JSON_TABLE arrived in PostgreSQL</T>
-      {answered ? <T x={430} y={102} s={26} f={C.caramel} w={700}>17</T> : <T x={430} y={110} s={40} f={C.caramel} o={0.75 + 0.25 * Math.sin(t * 3)}>?</T>}
+      <T x={40} y={84} s={18} f={C.latte}>JSON_TABLE arrived in PostgreSQL</T>
+      {answered ? <T x={40} y={140} s={28} f={C.caramel} w={700}>17</T> : <T x={40} y={150} s={40} f={C.caramel} o={0.75 + 0.25 * Math.sin(t * 3)}>?</T>}
     </Svg>
   );
 }

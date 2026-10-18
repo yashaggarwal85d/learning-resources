@@ -9,7 +9,8 @@ const TIMES = [0, 12, 25, 80, 95, 200, 202, 230];
 const GAP = [null, 12, 13, 55, 15, 105, 2, 28];
 const FLAG = [1, 0, 0, 1, 0, 1, 0, 0];
 const SESS = [1, 1, 1, 2, 2, 3, 3, 3];
-const px = (m: number) => 30 + (m / 230) * 520;
+// Events are spaced evenly, not by clock time: two clicks two minutes apart (200 and 202) would sit on top of each other.
+const px = (m: number) => 50 + TIMES.indexOf(m) * (500 / 7);
 
 function Axis({ y = 120, upTo = 8, color = (i: number) => C.crema }: { y?: number; upTo?: number; color?: (i: number) => string }) {
   return (
@@ -120,10 +121,10 @@ export function Difference({ t }: StepCtx) {
         const f = diff === 0 ? C.caramel : diff === 1 ? C.cinnamon : C.cherryText;
         return (
           <g key={i} opacity={clamp(a)}>
-            <T x={170 + i * 66} y={36} s={16} f={C.crema} a="middle">{String(d)}</T>
-            <T x={170 + i * 66} y={84} s={16} f={C.crema} a="middle">{String(rn[i])}</T>
-            <rect x={146 + i * 66} y={100} width={48} height={42} rx={8} fill="none" stroke={f} strokeWidth={2} />
-            <T x={170 + i * 66} y={128} s={18} f={f} a="middle" w={700}>{String(diff)}</T>
+            <T x={205 + i * 62} y={36} s={16} f={C.crema} a="middle">{String(d)}</T>
+            <T x={205 + i * 62} y={84} s={16} f={C.crema} a="middle">{String(rn[i])}</T>
+            <rect x={181 + i * 62} y={100} width={48} height={42} rx={8} fill="none" stroke={f} strokeWidth={2} />
+            <T x={205 + i * 62} y={128} s={18} f={f} a="middle" w={700}>{String(diff)}</T>
           </g>
         );
       })}

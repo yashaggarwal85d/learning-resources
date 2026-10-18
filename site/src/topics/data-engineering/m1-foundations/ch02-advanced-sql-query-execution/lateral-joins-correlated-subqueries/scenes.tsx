@@ -210,8 +210,8 @@ export function ProveApply({ t, answer }: StepCtx) {
   const answered = answer !== null;
   return (
     <Svg label="OUTER APPLY corresponds to LEFT JOIN LATERAL ON true" h={240}>
-      <T x={40} y={100} s={20} f={C.latte}>OUTER APPLY =</T>
-      {answered ? <T x={230} y={104} s={20} f={C.caramel} w={700}>LEFT JOIN LATERAL … ON true</T> : <T x={290} y={110} s={40} f={C.caramel} o={0.75 + 0.25 * Math.sin(t * 3)}>?</T>}
+      <T x={40} y={84} s={20} f={C.latte}>OUTER APPLY =</T>
+      {answered ? <T x={40} y={140} s={24} f={C.caramel} w={700}>LEFT JOIN LATERAL … ON true</T> : <T x={40} y={150} s={40} f={C.caramel} o={0.75 + 0.25 * Math.sin(t * 3)}>?</T>}
     </Svg>
   );
 }

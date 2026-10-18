@@ -139,7 +139,7 @@ export function Collision({ t }: StepCtx) {
         <Cell x={320} y={50} w={110} v="300" />
         <Cell x={25} y={96} w={150} kind="data" hi />
         <Cell x={320} y={96} w={110} v="500" />
-        <T x={450} y={116} s={13} f={C.latte}>no referrer: real</T>
+        <T x={450} y={116} s={13} f={C.latte}>real NULL</T>
       </g>
       <g opacity={b}>
         <Cell x={25} y={168} w={150} kind="rollup" hi />
@@ -291,8 +291,8 @@ export function ProveBits({ t, answer }: StepCtx) {
   const answered = answer !== null;
   return (
     <Svg label="GROUPING on the grand total of two columns" h={240}>
-      <T x={40} y={100} s={20} f={C.latte}>grand total → GROUPING =</T>
-      {answered ? <T x={400} y={102} s={26} f={C.caramel} w={700}>3</T> : <T x={400} y={110} s={40} f={C.caramel} o={0.75 + 0.25 * Math.sin(t * 3)}>?</T>}
+      <T x={40} y={84} s={20} f={C.latte}>grand total → GROUPING =</T>
+      {answered ? <T x={40} y={140} s={30} f={C.caramel} w={700}>3</T> : <T x={40} y={150} s={40} f={C.caramel} o={0.75 + 0.25 * Math.sin(t * 3)}>?</T>}
     </Svg>
   );
 }

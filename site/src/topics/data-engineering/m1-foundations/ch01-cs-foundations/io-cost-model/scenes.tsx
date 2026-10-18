@@ -18,16 +18,17 @@ const C = {
 const MONO = '"JetBrains Mono", ui-monospace, monospace';
 const SERIF = 'Fraunces, Georgia, serif';
 
-function Frame({ label, children }: { label: string; children: ReactNode }) {
+function Frame({ label, children, h = 520 }: { label: string; children: ReactNode; h?: number }) {
   return (
-    <svg viewBox="0 0 600 520" className="h-full w-full overflow-visible" role="img" aria-label={label}>
+    <svg viewBox={`0 0 600 ${h}`} className="h-full w-full overflow-visible" role="img" aria-label={label}>
       {children}
     </svg>
   );
 }
 
-const Mono = ({ x, y, size = 13, fill = C.latte, anchor = 'start', o = 1, children, weight = 500 }: { x: number; y: number; size?: number; fill?: string; anchor?: 'start' | 'middle' | 'end'; o?: number; children: ReactNode; weight?: number }) => (
-  <text x={x} y={y} fontFamily={MONO} fontSize={size} fill={fill} textAnchor={anchor} opacity={o} fontWeight={weight} letterSpacing="0.04em">
+// `ph`: scale up on phones like kit.T (--svg-text-scale); used by the scenes whose text came out under the 9px floor there.
+const Mono = ({ x, y, size = 13, fill = C.latte, anchor = 'start', o = 1, children, weight = 500, ph = false }: { x: number; y: number; size?: number; fill?: string; anchor?: 'start' | 'middle' | 'end'; o?: number; children: ReactNode; weight?: number; ph?: boolean }) => (
+  <text x={x} y={y} fontFamily={MONO} fontSize={size} style={ph ? { fontSize: `calc(${size}px * var(--svg-text-scale, 1))` } : undefined} fill={fill} textAnchor={anchor} opacity={o} fontWeight={weight} letterSpacing="0.04em">
     {children}
   </text>
 );
@@ -67,15 +68,15 @@ export function Problem({ t }: StepCtx) {
   const n = GRID.cols * GRID.rows;
   const ask = easeOutBack(seg(t, 2.6, 3.4));
   return (
-    <Frame label="A table of one million pages and a query that matches 2% of its rows: index or full scan?">
+    <Frame h={490} label="A table of one million pages and a query that matches 2% of its rows: index or full scan?">
       <Serif x={25} y={36} size={28}>orders</Serif>
-      <Mono x={130} y={34} size={15}>100,000,000 rows · 1,000,000 pages</Mono>
+      <Mono ph x={130} y={34} size={17}>100,000,000 rows · 1,000,000 pages</Mono>
       <rect x={25} y={52} width={550} height={40} rx={10} fill={C.roast} stroke={C.mocha} />
-      <Mono x={42} y={77} size={14} fill={C.crema}>
+      <Mono ph x={42} y={77} size={16} fill={C.crema}>
         {sql.slice(0, chars)}
         {t < 2.6 && <tspan fill={C.caramel}>{Math.floor(t * 2.5) % 2 ? '▌' : ' '}</tspan>}
       </Mono>
-      <Mono x={25} y={118} size={13} fill={C.taupe}>EACH TILE ≈ 3,500 PAGES · 2% OF ROWS MATCH · INDEX ON status</Mono>
+      <Mono ph x={25} y={118} size={17} fill={C.taupe}>EACH TILE ≈ 3,500 PAGES · 2% MATCH</Mono>
       {Array.from({ length: n }, (_, i) => {
         const c = i % GRID.cols;
         const r = Math.floor(i / GRID.cols);
@@ -85,11 +86,11 @@ export function Problem({ t }: StepCtx) {
       })}
       <g transform={`translate(300 452) scale(${ask})`} opacity={clamp(ask)}>
         <rect x={-270} y={-26} width={200} height={52} rx={26} fill={C.roast} stroke={C.caramel} strokeWidth={2} />
-        <Mono x={-170} y={6} size={16} anchor="middle" fill={C.crema} weight={600}>INDEX</Mono>
+        <Mono ph x={-170} y={6} size={17} anchor="middle" fill={C.crema} weight={600}>INDEX</Mono>
         <circle r={30} fill={C.caramel} />
         <Serif x={0} y={12} size={34} anchor="middle" fill={C.espresso}>?</Serif>
         <rect x={70} y={-26} width={200} height={52} rx={26} fill={C.roast} stroke={C.caramel} strokeWidth={2} />
-        <Mono x={170} y={6} size={16} anchor="middle" fill={C.crema} weight={600}>FULL SCAN</Mono>
+        <Mono ph x={170} y={6} size={17} anchor="middle" fill={C.crema} weight={600}>FULL SCAN</Mono>
       </g>
     </Frame>
   );
@@ -101,18 +102,18 @@ export function Seesaw({ t, answer }: StepCtx) {
   const tilt = answered ? 0 : Math.sin(t * 2.2) * 7;
   const reveal = answered ? 1 : 0;
   return (
-    <Frame label="A balance between reading through the index and scanning the whole table">
+    <Frame h={450} label="A balance between reading through the index and scanning the whole table">
       <g transform={`translate(300 360) rotate(${tilt})`}>
         <rect x={-230} y={-6} width={460} height={12} rx={6} fill={C.mocha} />
         <g transform={`translate(-200 0) rotate(${-tilt})`}>
           <line x1={0} y1={0} x2={0} y2={-40} stroke={C.taupe} strokeWidth={2} />
           <rect x={-70} y={-96} width={140} height={56} rx={14} fill={C.roast} stroke={C.caramel} strokeWidth={2} />
-          <Mono x={0} y={-62} size={15} anchor="middle" fill={C.crema} weight={600}>INDEX</Mono>
+          <Mono ph x={0} y={-62} size={17} anchor="middle" fill={C.crema} weight={600}>INDEX</Mono>
         </g>
         <g transform={`translate(200 0) rotate(${-tilt})`}>
           <line x1={0} y1={0} x2={0} y2={-40} stroke={C.taupe} strokeWidth={2} />
           <rect x={-70} y={-96} width={140} height={56} rx={14} fill={C.roast} stroke={C.caramel} strokeWidth={2} />
-          <Mono x={0} y={-62} size={15} anchor="middle" fill={C.crema} weight={600}>FULL SCAN</Mono>
+          <Mono ph x={0} y={-62} size={17} anchor="middle" fill={C.crema} weight={600}>FULL SCAN</Mono>
         </g>
       </g>
       <path d="M300 366 l-34 70 h68 Z" fill={C.cocoa} />
@@ -120,7 +121,7 @@ export function Seesaw({ t, answer }: StepCtx) {
       {answered && (
         <g opacity={reveal}>
           <Serif x={300} y={150} size={84} anchor="middle" fill={C.caramel}>1 / B</Serif>
-          <Mono x={300} y={200} size={18} anchor="middle" fill={C.crema}>≈ 1% when a page holds 100 rows</Mono>
+          <Mono ph x={300} y={200} size={18} anchor="middle" fill={C.crema}>≈ 1% when a page holds 100 rows</Mono>
         </g>
       )}
     </Frame>
@@ -237,7 +238,7 @@ export function Scan({ t }: StepCtx) {
   const head = tilePos(Math.min(n - 1, Math.floor(lit)), 132);
   return (
     <Frame label="A full scan reads every page once, in order: one million sequential page reads">
-      <Mono x={25} y={50} size={14} fill={C.latte}>PAGE READS</Mono>
+      <Mono x={25} y={34} size={14} fill={C.latte}>PAGE READS</Mono>
       <Serif x={25} y={100} size={50} fill={C.caramel}>{fmt(e * 1e6)}</Serif>
       <Mono x={575} y={100} size={15} anchor="end" fill={C.crema}>SEQUENTIAL →</Mono>
       {Array.from({ length: n }, (_, i) => {
@@ -773,23 +774,23 @@ export function Verdict({ t }: StepCtx) {
 // ── Prove it ───────────────────────────────────────────────────────────────
 export function Quiz({ t, answer, chips, work }: StepCtx & { chips: string[]; work: string[] }) {
   return (
-    <Frame label="A question with its numbers">
-      <Serif x={300} y={110} size={100} anchor="middle" fill={C.caramel} o={answer === null ? 0.9 : 0.25} italic>
+    <Frame h={430} label="A question with its numbers">
+      <Serif x={300} y={100} size={100} anchor="middle" fill={C.caramel} o={answer === null ? 0.9 : 0.25} italic>
         ?
       </Serif>
       {chips.map((c, i) => {
         const a = easeOutBack(seg(t, 0.2 + i * 0.18, 0.7 + i * 0.18));
-        const y = 170 + i * 52;
+        const y = 150 + i * 44;
         return (
           <g key={c} transform={`translate(300 ${y}) scale(${a})`} opacity={clamp(a)}>
-            <rect x={-170} y={-21} width={340} height={42} rx={21} fill={C.roast} stroke={C.mocha} />
-            <Mono x={0} y={5} size={15} anchor="middle" fill={C.crema} weight={600}>{c}</Mono>
+            <rect x={-190} y={-19} width={380} height={38} rx={19} fill={C.roast} stroke={C.mocha} />
+            <Mono ph x={0} y={5} size={17} anchor="middle" fill={C.crema} weight={600}>{c}</Mono>
           </g>
         );
       })}
       {answer !== null &&
         work.map((w, i) => (
-          <Mono key={w} x={300} y={190 + chips.length * 52 + i * 30} size={15} anchor="middle" fill={C.caramel} weight={600}>
+          <Mono ph key={w} x={300} y={162 + chips.length * 44 + i * 30} size={17} anchor="middle" fill={C.caramel} weight={600}>
             {w}
           </Mono>
         ))}

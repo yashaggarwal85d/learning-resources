@@ -36,11 +36,11 @@ export function Route({ t }: StepCtx) {
 
 // 2 · Five stages.
 export function FiveStages({ t }: StepCtx) {
-  const notes = ['grammar only', 'names via the catalog', 'rules, e.g. views', 'cheapest path', 'run it'];
+  const notes = ['grammar', 'catalog', 'views', 'cheapest', 'run'];
   return (
     <Svg label="Parse, bind, rewrite, plan, execute" h={260}>
       <Pipeline lit={Math.min(4, Math.floor(t / 0.8))} />
-      {notes.map((n, i) => <T key={n} x={70 + i * 112} y={140} s={12} f={C.latte} a="middle" o={easeOut(seg(t, 0.3 + i * 0.7, 0.8 + i * 0.7))}>{n}</T>)}
+      {notes.map((n, i) => <T key={n} x={70 + i * 112} y={140} s={13} f={C.latte} a="middle" o={easeOut(seg(t, 0.3 + i * 0.7, 0.8 + i * 0.7))}>{n}</T>)}
     </Svg>
   );
 }
@@ -153,7 +153,8 @@ export function Properties({ t }: StepCtx) {
       <T x={330} y={174} s={14} f={C.caramel} o={a}>provides: event_time order</T>
       <rect x={150 - 62} y={110} width={124} height={34} rx={8} fill="none" stroke={C.cherryText} strokeDasharray="5 4" opacity={1 - b} />
       <T x={150} y={132} s={13} f={C.cherryText} a="middle" o={1 - b}>Sort</T>
-      <T x={330} y={238} s={15} f={C.caramel} o={b}>a match: no Sort node needed</T>
+      <T x={330} y={232} s={15} f={C.caramel} o={b}>a match:</T>
+      <T x={330} y={254} s={15} f={C.caramel} o={b}>no Sort node needed</T>
     </Svg>
   );
 }
@@ -201,8 +202,8 @@ export function ProveRewrite({ t, answer }: StepCtx) {
   const answered = answer !== null;
   return (
     <Svg label="The stage that expands views" h={240}>
-      <T x={40} y={100} s={18} f={C.latte}>view → base tables:</T>
-      {answered ? <T x={300} y={104} s={24} f={C.caramel} w={700}>rewrite</T> : <T x={310} y={110} s={40} f={C.caramel} o={0.75 + 0.25 * Math.sin(t * 3)}>?</T>}
+      <T x={40} y={84} s={18} f={C.latte}>view → base tables:</T>
+      {answered ? <T x={40} y={140} s={24} f={C.caramel} w={700}>rewrite</T> : <T x={40} y={150} s={40} f={C.caramel} o={0.75 + 0.25 * Math.sin(t * 3)}>?</T>}
     </Svg>
   );
 }
@@ -210,8 +211,8 @@ export function ProvePath({ t, answer }: StepCtx) {
   const answered = answer !== null;
   return (
     <Svg label="The planner's name for a candidate" h={240}>
-      <T x={40} y={100} s={18} f={C.latte}>a candidate implementation →</T>
-      {answered ? <T x={380} y={104} s={24} f={C.caramel} w={700}>a path</T> : <T x={390} y={110} s={40} f={C.caramel} o={0.75 + 0.25 * Math.sin(t * 3)}>?</T>}
+      <T x={40} y={84} s={18} f={C.latte}>a candidate implementation →</T>
+      {answered ? <T x={40} y={140} s={24} f={C.caramel} w={700}>a path</T> : <T x={40} y={150} s={40} f={C.caramel} o={0.75 + 0.25 * Math.sin(t * 3)}>?</T>}
     </Svg>
   );
 }

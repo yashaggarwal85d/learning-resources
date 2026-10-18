@@ -94,7 +94,7 @@ export function Gap({ t }: StepCtx) {
   const p = clamp(t / 4.2);
   return (
     <Svg label="MERGE reads, decides, then inserts; another session commits inside the gap" h={300}>
-      <T x={25} y={44} s={14} f={C.latte}>session A: MERGE</T>
+      <T x={25} y={20} s={14} f={C.latte}>session A: MERGE</T>
       <line x1={25} y1={60} x2={575} y2={60} stroke={C.taupe} strokeWidth={2} />
       <circle cx={140} cy={60} r={9} fill={C.crema} />
       <T x={140} y={44} s={13} f={C.crema} a="middle">reads: not matched</T>
@@ -197,8 +197,8 @@ export function ProveAtomic({ t, answer }: StepCtx) {
   const answered = answer !== null;
   return (
     <Svg label="The race-free upsert" h={240}>
-      <T x={40} y={100} s={18} f={C.latte}>race-free →</T>
-      {answered ? <T x={180} y={104} s={20} f={C.caramel} w={700}>INSERT … ON CONFLICT</T> : <T x={240} y={110} s={40} f={C.caramel} o={0.75 + 0.25 * Math.sin(t * 3)}>?</T>}
+      <T x={40} y={84} s={18} f={C.latte}>race-free →</T>
+      {answered ? <T x={40} y={140} s={24} f={C.caramel} w={700}>INSERT … ON CONFLICT</T> : <T x={40} y={150} s={40} f={C.caramel} o={0.75 + 0.25 * Math.sin(t * 3)}>?</T>}
     </Svg>
   );
 }
@@ -206,8 +206,8 @@ export function ProveRelease({ t, answer }: StepCtx) {
   const answered = answer !== null;
   return (
     <Svg label="merge_action arrived in this release" h={240}>
-      <T x={40} y={100} s={18} f={C.latte}>merge_action() →</T>
-      {answered ? <T x={250} y={104} s={24} f={C.caramel} w={700}>PostgreSQL 17</T> : <T x={270} y={110} s={40} f={C.caramel} o={0.75 + 0.25 * Math.sin(t * 3)}>?</T>}
+      <T x={40} y={84} s={18} f={C.latte}>merge_action() →</T>
+      {answered ? <T x={40} y={140} s={24} f={C.caramel} w={700}>PostgreSQL 17</T> : <T x={40} y={150} s={40} f={C.caramel} o={0.75 + 0.25 * Math.sin(t * 3)}>?</T>}
     </Svg>
   );
 }

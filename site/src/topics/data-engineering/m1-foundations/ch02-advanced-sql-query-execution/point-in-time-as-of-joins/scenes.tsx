@@ -152,7 +152,7 @@ export function Leakage({ t }: StepCtx) {
     <Svg label="Joining a day-5 example to today's price 11 leaks the future; the as-of value is 10" h={300}>
       <Timeline y={130} />
       <line x1={x(5)} y1={130} x2={x(20)} y2={96} stroke={C.cherryText} strokeWidth={3} strokeDasharray="6 5" opacity={a} />
-      <T x={x(12)} y={80} s={13} f={C.cherryText} a="middle" o={a}>current price: 11 (future)</T>
+      <T x={300} y={54} s={13} f={C.cherryText} a="middle" o={a}>current price: 11 (future)</T>
       <line x1={x(5)} y1={130} x2={x(1)} y2={96} stroke={C.caramel} strokeWidth={3} opacity={b} />
       <T x={x(1) + 40} y={200} s={14} f={C.caramel} o={b}>as-of price: 10 (known then)</T>
     </Svg>

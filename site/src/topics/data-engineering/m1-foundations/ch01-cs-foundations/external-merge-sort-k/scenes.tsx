@@ -140,7 +140,8 @@ export function HeapqMerge({ t }: StepCtx) {
       <path d="M180 40 Q 260 110 350 110" stroke={C.taupe} strokeWidth={2} fill="none" opacity={yield_} />
       <rect x={350} y={94} width={120} height={32} rx={8} fill={C.caramel} opacity={yield_} />
       <T x={410} y={116} s={13} f={C.espresso} a="middle" w={600} o={yield_}>yielded, in order</T>
-      <T x={300} y={200} s={14} f={C.crema} a="middle" o={yield_}>one item per stream: M tuples for an M-way merge</T>
+      <T x={300} y={200} s={14} f={C.crema} a="middle" o={yield_}>one item per stream:</T>
+      <T x={300} y={222} s={14} f={C.crema} a="middle" o={yield_}>M tuples for an M-way merge</T>
     </Svg>
   );
 }

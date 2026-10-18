@@ -20,9 +20,10 @@ export function Problem({ t }: StepCtx) {
       <circle cx={lerp(180, 240, toCache) + 20} cy={83} r={6} fill={C.caramel} opacity={clamp(toCache * 3)} />
       <T x={420} y={88} s={14} f={C.taupe} a="middle">RAM</T>
       <line x1={420} y1={106} x2={420} y2={190} stroke={C.taupe} strokeDasharray="4 5" />
-      <rect x={120} y={210} width={360} height={70} rx={10} fill="none" stroke={C.mocha} strokeWidth={1.5} />
+      <rect x={120} y={210} width={360} height={80} rx={10} fill="none" stroke={C.mocha} strokeWidth={1.5} />
       <T x={300} y={238} s={14} f={C.latte} a="middle">the real device</T>
-      <T x={300} y={262} s={13} f={C.taupe} a="middle">platters that must be sought, or flash that cannot overwrite in place</T>
+      <T x={300} y={256} s={13} f={C.taupe} a="middle">platters that must be sought,</T>
+      <T x={300} y={280} s={13} f={C.taupe} a="middle">or flash that cannot overwrite in place</T>
       <g transform={`translate(300 320) scale(${question})`} opacity={clamp(question)}>
         <circle r={22} fill={C.roast} stroke={C.caramel} strokeWidth={2} />
         <T x={0} y={7} s={22} f={C.caramel} a="middle" w={700}>?</T>
@@ -119,7 +120,7 @@ export function BlockAlignment({ t }: StepCtx) {
         <T x={25} y={316} s={14} f={C.latte}>write the whole block back</T>
         <rect x={25} y={330} width={200} height={26} rx={6} fill={C.cherry} />
       </g>
-      <T x={420} y={300} s={20} f={C.caramel} w={700} o={rmw}>one write → read + write</T>
+      <T x={575} y={300} s={18} f={C.caramel} w={700} a="end" o={rmw}>one write → read + write</T>
     </Svg>
   );
 }
@@ -161,7 +162,7 @@ export function AmplifyPredict({ t, answer }: StepCtx) {
       <T x={25} y={y - 10} s={14} f={C.latte}>{label}</T>
       <rect x={25} y={y} width={300} height={26} rx={6} fill={C.cocoa} />
       <rect x={25} y={y} width={300 * clamp(frac)} height={26} rx={6} fill={color} />
-      <T x={340} y={y + 19} s={13} f={C.taupe}>live pages a cleanup pass must copy</T>
+      <T x={340} y={y + 19} s={13} f={C.taupe}>live pages to copy</T>
     </g>
   );
   return (
@@ -216,7 +217,7 @@ export function FlushPath({ t }: StepCtx) {
       <T x={510} y={90} s={14} f={C.crema} a="middle">device</T>
 
       <rect x={450} y={150} width={120} height={40} rx={8} fill={C.cherry} opacity={flushCache} />
-      <T x={510} y={175} s={13} f={C.cherryText} a="middle" o={flushCache}>device write cache: flushed too</T>
+      <T x={510} y={175} s={13} f={C.cherryText} a="middle" o={flushCache}>cache flushed too</T>
       <T x={300} y={250} s={15} f={C.latte} a="middle" o={easeOut(seg(t, 3.0, 3.6))}>blocks until the device reports: done</T>
     </Svg>
   );

@@ -98,7 +98,7 @@ export function ReachabilityTraversal({ t }: StepCtx) {
   const UP: NodeKey[] = ['ingest_events', 'clean', 'load_orders', 'load_customers'];
   return (
     <Svg label="Walking edges forward finds descendants; walking them backward from a task finds its ancestors" h={300}>
-      <T x={25} y={34} s={13} f={C.latte} o={fwd}>forward from clean: descendants</T>
+      <T x={25} y={34} s={13} f={C.latte} o={fwd}>forward from clean</T>
       <Dag o={fwd} lit={(k) => (DOWN.includes(k) ? C.caramel : k === 'clean' ? C.cherry : C.cocoa)} />
       <T x={25} y={270} s={13} f={C.latte} o={bwd}>backward from daily_revenue: ancestors</T>
     </Svg>

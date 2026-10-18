@@ -99,7 +99,7 @@ export function FilterOrder({ t }: StepCtx) {
       <T x={25} y={36} s={14} f={C.cherryText}>cost unknown</T>
       <Box x={25} y={50} w={150} label="udf(x) > 10" bad o={a} />
       <Box x={200} y={50} w={150} label="status = 'rare'" o={a} />
-      <T x={380} y={78} s={13} f={C.latte} o={a}>every row pays for the UDF</T>
+      <T x={380} y={78} s={13} f={C.latte} o={a}>each row pays</T>
       <T x={25} y={160} s={14} f={C.caramel}>COST declared</T>
       <Box x={25} y={174} w={150} label="status = 'rare'" hi o={b} />
       <Box x={200} y={174} w={150} label="udf(x) > 10" o={b} />
@@ -215,8 +215,8 @@ export function ProveLanguage({ t, answer }: StepCtx) {
   const answered = answer !== null;
   return (
     <Svg label="Inlinable language" h={240}>
-      <T x={40} y={100} s={18} f={C.latte}>inlined if LANGUAGE</T>
-      {answered ? <T x={300} y={104} s={26} f={C.caramel} w={700}>sql</T> : <T x={310} y={110} s={40} f={C.caramel} o={0.75 + 0.25 * Math.sin(t * 3)}>?</T>}
+      <T x={40} y={84} s={18} f={C.latte}>inlined if LANGUAGE</T>
+      {answered ? <T x={40} y={140} s={26} f={C.caramel} w={700}>sql</T> : <T x={40} y={150} s={40} f={C.caramel} o={0.75 + 0.25 * Math.sin(t * 3)}>?</T>}
     </Svg>
   );
 }

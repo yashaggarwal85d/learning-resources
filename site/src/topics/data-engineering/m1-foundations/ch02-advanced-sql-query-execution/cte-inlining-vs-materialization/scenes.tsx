@@ -21,7 +21,7 @@ export function Choice({ t }: StepCtx) {
     <Svg label="A CTE can be seen through, or sealed" h={260}>
       <Box x={25} y={60} w={240} h={70} label="WITH w AS (…)" />
       <Box x={310} y={40} w={260} label="inline: the optimizer sees inside" hi o={a} />
-      <Box x={310} y={110} w={260} label="materialise: computed once, sealed" bad o={a} />
+      <Box x={310} y={110} w={260} label="materialise: sealed copy" bad o={a} />
       <T x={300} y={200} s={14} f={C.latte} a="middle" o={easeOut(seg(t, 2.0, 2.8))}>each is right sometimes</T>
     </Svg>
   );
@@ -35,8 +35,8 @@ export function Fence({ t }: StepCtx) {
       <Box x={25} y={50} w={150} label="WHERE key = 123" />
       <rect x={215} y={40} width={16} height={100} rx={4} fill={C.cherryText} opacity={a} />
       <T x={223} y={32} s={13} f={C.cherryText} a="middle" o={a}>fence</T>
-      <Box x={260} y={50} w={160} label="scan all of big" bad o={a} />
-      <Box x={440} y={50} w={130} label="copy, then filter" bad o={a} />
+      <Box x={250} y={50} w={165} label="scan all of big" bad o={a} />
+      <Box x={425} y={50} w={145} label="copy, filter" bad o={a} />
       <T x={25} y={190} s={14} f={C.latte} o={easeOut(seg(t, 2.2, 3.0))}>the index on key is unreachable through the fence</T>
       <T x={25} y={220} s={13} f={C.cherryText} o={easeOut(seg(t, 2.6, 3.4))}>before PostgreSQL 12 this was every CTE</T>
     </Svg>
@@ -66,7 +66,7 @@ export function RefPredict({ t, answer }: StepCtx) {
       <Box x={25} y={48} w={170} label="Index Scan" hi={answered} />
       <T x={25} y={140} s={14} f={C.latte}>referenced twice</T>
       <Box x={25} y={152} w={170} label="Materialised copy" bad={answered} />
-      {!answered ? <T x={430} y={140} s={48} f={C.caramel} a="middle" o={0.75 + 0.25 * Math.sin(t * 3)}>?</T> : <T x={400} y={140} s={16} f={C.caramel} w={700}>only one uses the index</T>}
+      {!answered ? <T x={430} y={140} s={48} f={C.caramel} a="middle" o={0.75 + 0.25 * Math.sin(t * 3)}>?</T> : <T x={215} y={104} s={16} f={C.caramel} w={700}>only one uses the index</T>}
     </Svg>
   );
 }
@@ -160,8 +160,8 @@ export function ProveRelease({ t, answer }: StepCtx) {
   const answered = answer !== null;
   return (
     <Svg label="The release that inlines single-reference CTEs" h={240}>
-      <T x={40} y={100} s={18} f={C.latte}>inlined by default from PostgreSQL</T>
-      {answered ? <T x={460} y={104} s={26} f={C.caramel} w={700}>12</T> : <T x={470} y={110} s={40} f={C.caramel} o={0.75 + 0.25 * Math.sin(t * 3)}>?</T>}
+      <T x={40} y={84} s={18} f={C.latte}>inlined by default from PostgreSQL</T>
+      {answered ? <T x={40} y={140} s={26} f={C.caramel} w={700}>12</T> : <T x={40} y={150} s={40} f={C.caramel} o={0.75 + 0.25 * Math.sin(t * 3)}>?</T>}
     </Svg>
   );
 }

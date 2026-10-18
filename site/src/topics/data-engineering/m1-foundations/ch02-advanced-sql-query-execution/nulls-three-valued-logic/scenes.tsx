@@ -45,7 +45,8 @@ export function Missing({ t }: StepCtx) {
           </g>
         );
       })}
-      <T x={300} y={282} s={15} f={C.caramel} a="middle" o={easeOut(seg(t, 2.0, 2.8))}>an empty dashed cell is NULL: not zero, not blank text</T>
+      <T x={300} y={270} s={15} f={C.caramel} a="middle" o={easeOut(seg(t, 2.0, 2.8))}>an empty dashed cell is NULL:</T>
+      <T x={300} y={292} s={15} f={C.caramel} a="middle" o={easeOut(seg(t, 2.0, 2.8))}>not zero, not blank text</T>
     </Svg>
   );
 }
@@ -306,8 +307,8 @@ export function ProveSum({ t, answer }: StepCtx) {
       <Cell x={60} y={60} w={80} v="10" />
       <Cell x={160} y={60} w={80} v="5" />
       <Cell x={260} y={60} w={80} />
-      <T x={380} y={86} s={22} f={C.latte}>SUM =</T>
-      {answered ? <T x={470} y={88} s={22} f={C.caramel} w={700}>15</T> : <T x={470} y={92} s={34} f={C.caramel} o={0.75 + 0.25 * Math.sin(t * 3)}>?</T>}
+      <T x={355} y={86} s={22} f={C.latte}>SUM =</T>
+      {answered ? <T x={490} y={88} s={22} f={C.caramel} w={700}>15</T> : <T x={490} y={92} s={34} f={C.caramel} o={0.75 + 0.25 * Math.sin(t * 3)}>?</T>}
     </Svg>
   );
 }

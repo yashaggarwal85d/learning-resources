@@ -63,7 +63,7 @@ export function ModelIntro({ t }: StepCtx) {
 export function ThreeNumbers({ t }: StepCtx) {
   const cards = [
     { k: 'N', v: '134,217,728', d: 'keys in the vector' },
-    { k: 'M', v: '8,388,608', d: 'keys that fit in memory' },
+    { k: 'M', v: '8,388,608', d: 'keys in memory' },
     { k: 'B', v: '512', d: 'keys per block' },
   ];
   return (
@@ -76,7 +76,7 @@ export function ThreeNumbers({ t }: StepCtx) {
             <rect width={170} height={170} rx={16} fill={C.roast} stroke={C.caramel} strokeWidth={1.5} />
             <T x={20} y={60} s={40} f={C.caramel} w={700}>{c.k}</T>
             <T x={20} y={100} s={16} f={C.crema} w={600}>{c.v}</T>
-            <T x={20} y={130} s={12} f={C.taupe}>{c.d}</T>
+            <T x={20} y={130} s={13} f={C.taupe}>{c.d}</T>
           </g>
         );
       })}

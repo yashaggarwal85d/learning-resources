@@ -134,7 +134,7 @@ export function CostTable({ t }: StepCtx) {
       <T x={25} y={40} s={14} f={C.latte} o={a}>in-place: 16-byte update</T>
       <rect x={25} y={54} width={10} height={30} rx={3} fill={C.caramel} opacity={a} />
       <rect x={60} y={54} width={300} height={30} rx={6} fill={C.cherry} opacity={a} />
-      <T x={370} y={76} s={13} f={C.cherryText} o={a}>dirties the whole 8 KB page</T>
+      <T x={60} y={106} s={13} f={C.cherryText} o={a}>dirties the whole 8 KB page</T>
 
       <T x={25} y={150} s={14} f={C.latte} o={b}>out-of-place: compaction (leveled)</T>
       <rect x={25} y={164} width={330 * clamp(b)} height={30} rx={6} fill={C.cinnamon} opacity={b} />
@@ -231,7 +231,8 @@ export function Verdict({ t }: StepCtx) {
       <g opacity={b}>
         <T x={25} y={140} s={16} f={C.cinnamon} w={600}>LSM-tree: read and space cost for write cost</T>
       </g>
-      <T x={25} y={200} s={14} f={C.taupe} o={easeOut(seg(t, 2.0, 2.8))}>pick the structure whose cheap side matches your hot path</T>
+      <T x={25} y={200} s={14} f={C.taupe} o={easeOut(seg(t, 2.0, 2.8))}>pick the structure whose cheap side</T>
+      <T x={25} y={222} s={14} f={C.taupe} o={easeOut(seg(t, 2.0, 2.8))}>matches your hot path</T>
     </Svg>
   );
 }

@@ -189,8 +189,8 @@ export function ProveDependent({ t, answer }: StepCtx) {
   const answered = answer !== null;
   return (
     <Svg label="The name for a subquery that needs the outer row" h={240}>
-      <T x={40} y={100} s={18} f={C.latte}>needs the outer row →</T>
-      {answered ? <T x={330} y={104} s={22} f={C.caramel} w={700}>dependent join</T> : <T x={340} y={110} s={40} f={C.caramel} o={0.75 + 0.25 * Math.sin(t * 3)}>?</T>}
+      <T x={40} y={84} s={18} f={C.latte}>needs the outer row →</T>
+      {answered ? <T x={40} y={140} s={24} f={C.caramel} w={700}>dependent join</T> : <T x={40} y={150} s={40} f={C.caramel} o={0.75 + 0.25 * Math.sin(t * 3)}>?</T>}
     </Svg>
   );
 }

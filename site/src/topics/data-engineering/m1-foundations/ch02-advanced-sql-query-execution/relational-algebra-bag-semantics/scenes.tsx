@@ -9,7 +9,7 @@ const fmt = (n: number) => Math.round(n).toLocaleString('en-US');
 
 // 1 · The problem: a query is secretly a tree.
 export function QueryTree({ t }: StepCtx) {
-  const sql = "SELECT * FROM orders JOIN order_items ... WHERE status = 'refunded'";
+  const sql = "SELECT * FROM orders JOIN items WHERE refunded";
   const chars = Math.floor(seg(t, 0.2, 1.8) * sql.length);
   const nodes = easeOut(seg(t, 2.0, 3.2));
   return (
@@ -54,9 +54,9 @@ export function OperatorTable({ t }: StepCtx) {
         const y = 36 + i * 54;
         return (
           <g key={op.sym} opacity={clamp(a)} transform={`translate(${(1 - a) * -20} 0)`}>
-            <T x={25} y={y} s={24} f={C.caramel} w={700}>{op.sym}</T>
-            <T x={110} y={y} s={14} f={C.crema} w={600}>{op.sql}</T>
-            <T x={320} y={y} s={13} f={C.latte}>{op.d}</T>
+            <T x={25} y={y} s={22} f={C.caramel} w={700}>{op.sym}</T>
+            <T x={130} y={y} s={14} f={C.crema} w={600}>{op.sql}</T>
+            <T x={130} y={y + 20} s={13} f={C.latte}>{op.d}</T>
           </g>
         );
       })}
@@ -110,7 +110,8 @@ export function CollapseByAccident({ t }: StepCtx) {
   const gone = easeInOut(seg(t, 1.6, 2.8));
   return (
     <Svg label="Collapsing repeats before an aggregate deletes facts a sum needs to count" h={320}>
-      <T x={25} y={36} s={14} f={C.latte}>SELECT customer_id, SUM(amount) FROM orders GROUP BY customer_id;</T>
+      <T x={25} y={28} s={14} f={C.latte}>SELECT customer_id, SUM(amount)</T>
+      <T x={25} y={50} s={14} f={C.latte}>FROM orders GROUP BY customer_id;</T>
       {Array.from({ length: 5 }, (_, i) => {
         const fade = i > 0 ? gone : 0;
         return (
@@ -129,7 +130,8 @@ export function CollapseByAccident({ t }: StepCtx) {
         );
       })}
       <T x={25} y={176} s={13} f={C.cherryText} o={gone}>DISTINCT first throws away four of the five amounts</T>
-      <T x={300} y={240} s={16} f={C.crema} a="middle" o={easeOut(seg(t, 2.8, 3.4))}>every row must survive long enough to be counted once each</T>
+      <T x={300} y={236} s={16} f={C.crema} a="middle" o={easeOut(seg(t, 2.8, 3.4))}>every row must survive long enough</T>
+      <T x={300} y={260} s={16} f={C.crema} a="middle" o={easeOut(seg(t, 2.8, 3.4))}>to be counted once each</T>
     </Svg>
   );
 }
@@ -140,7 +142,8 @@ export function UnionStack({ t }: StepCtx) {
   const b = easeOut(seg(t, 1.6, 2.8));
   return (
     <Svg label="Stacking a hundred twenty thousand automatically flagged orders with ninety five thousand manually flagged orders: keep everything, two hundred fifteen thousand rows; or drop the forty two thousand that overlap, one hundred seventy three thousand rows" h={340}>
-      <T x={25} y={36} s={13} f={C.latte}>flagged_auto: 120,000 · flagged_manual: 95,000 · both: 42,000</T>
+      <T x={25} y={26} s={13} f={C.latte}>flagged_auto: 120,000 · flagged_manual: 95,000</T>
+      <T x={25} y={46} s={13} f={C.latte}>both: 42,000</T>
       <Bar x={25} y={70} w={420 * a} h={30} full={420} fill={C.caramel} />
       <T x={25} y={118} s={16} f={C.crema} o={a}>UNION ALL → {fmt(215_000 * a)} rows</T>
       <Bar x={25} y={160} w={420 * b * (173 / 215)} h={30} full={420} fill={C.cinnamon} />
@@ -252,7 +255,8 @@ export function JoinCommute({ t }: StepCtx) {
         <T x={450} y={125} s={11} f={C.espresso} a="middle" w={700}>S</T>
       </g>
       <T x={300} y={200} s={16} f={C.crema} a="middle" o={easeOut(seg(t, 2.2, 2.8))}>same rows, every order, every grouping</T>
-      <T x={300} y={240} s={14} f={C.taupe} a="middle" o={easeOut(seg(t, 2.4, 3.0))}>this is the whole reason a planner can search join orders at all</T>
+      <T x={300} y={238} s={14} f={C.taupe} a="middle" o={easeOut(seg(t, 2.4, 3.0))}>this is the whole reason a planner</T>
+      <T x={300} y={260} s={14} f={C.taupe} a="middle" o={easeOut(seg(t, 2.4, 3.0))}>can search join orders at all</T>
     </Svg>
   );
 }

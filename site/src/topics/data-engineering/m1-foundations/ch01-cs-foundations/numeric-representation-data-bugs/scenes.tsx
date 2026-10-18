@@ -28,7 +28,8 @@ export function Problem({ t }: StepCtx) {
           </g>
         );
       })}
-      <T x={300} y={180} s={15} f={C.cherryText} a="middle" o={easeOut(seg(t, 2.0, 2.8))}>a fixed-width box, each standing in for an idea with no limit</T>
+      <T x={300} y={176} s={15} f={C.cherryText} a="middle" o={easeOut(seg(t, 2.0, 2.8))}>a fixed-width box, each standing in</T>
+      <T x={300} y={198} s={15} f={C.cherryText} a="middle" o={easeOut(seg(t, 2.0, 2.8))}>for an idea with no limit</T>
     </Svg>
   );
 }
@@ -90,7 +91,8 @@ export function UlpLine({ t }: StepCtx) {
       {Array.from({ length: 8 }, (_, i) => (
         <line key={i} x1={25 + i * 40} y1={166 + 92} x2={25 + i * 40} y2={166 + 92 + 26} stroke={C.caramel} strokeWidth={2} opacity={spread} />
       ))}
-      <T x={300} y={320} s={16} f={C.cherryText} a="middle" o={far}>past 9,007,199,254,740,992 the gap is 2: odd integers vanish</T>
+      <T x={300} y={318} s={16} f={C.cherryText} a="middle" o={far}>past 9,007,199,254,740,992 the gap is 2:</T>
+      <T x={300} y={340} s={16} f={C.cherryText} a="middle" o={far}>odd integers vanish</T>
     </Svg>
   );
 }
@@ -171,7 +173,7 @@ export function Compensated({ t }: StepCtx) {
       <T x={25} y={34} s={14} f={C.latte}>running total</T>
       <rect x={25} y={48} width={300} height={30} rx={7} fill={C.caramel} />
       <rect x={330} y={48} width={60 * drop} height={30} rx={7} fill={C.cherry} opacity={drop} />
-      <T x={400} y={68} s={12} f={C.cherryText} o={drop}>bits that fall off the end</T>
+      <T x={575} y={68} s={13} f={C.cherryText} a="end" o={drop}>bits that fall off the end</T>
       <path d="M360 90 Q 360 140 180 150" stroke={C.taupe} strokeWidth={2} fill="none" opacity={recover} />
       <rect x={25} y={150} width={300} height={30} rx={7} fill={C.caramel} opacity={recover} />
       <rect x={25} y={150} width={60 * recover} height={30} rx={7} fill={C.caramel} opacity={recover} />
@@ -193,7 +195,8 @@ export function DecimalPrecision({ t }: StepCtx) {
       <T x={200} y={90} s={16} f={C.latte} o={b}>scale 4</T>
       <line x1={25} y1={120} x2={400} y2={120} stroke={C.taupe} opacity={result} />
       <T x={25} y={160} s={20} f={C.caramel} w={700} o={result}>result scale: 6</T>
-      <T x={25} y={200} s={14} f={C.cherryText} o={easeOut(seg(t, 3.0, 3.6))}>chain a few more: the engine's precision ceiling, then overflow</T>
+      <T x={25} y={200} s={14} f={C.cherryText} o={easeOut(seg(t, 3.0, 3.6))}>chain a few more: the engine's precision</T>
+      <T x={25} y={220} s={14} f={C.cherryText} o={easeOut(seg(t, 3.0, 3.6))}>ceiling, then overflow</T>
     </Svg>
   );
 }

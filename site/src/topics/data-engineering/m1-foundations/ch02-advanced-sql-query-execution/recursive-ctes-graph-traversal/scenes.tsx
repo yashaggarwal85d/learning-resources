@@ -157,7 +157,7 @@ export function UnionPredict({ t, answer }: StepCtx) {
           <T x={200} y={64 + i * 50} s={13} f={C.caramel}>{r[1]}</T>
         </g>
       ))}
-      {!answered ? <T x={470} y={140} s={48} f={C.caramel} a="middle" o={0.75 + 0.25 * Math.sin(t * 3)}>?</T> : <T x={340} y={120} s={15} f={C.cherryText}>same bundle, new depth: not a duplicate</T>}
+      {!answered ? <T x={470} y={140} s={48} f={C.caramel} a="middle" o={0.75 + 0.25 * Math.sin(t * 3)}>?</T> : <g><T x={300} y={100} s={14} f={C.cherryText}>same bundle, new depth:</T><T x={300} y={120} s={14} f={C.cherryText}>not a duplicate</T></g>}
     </Svg>
   );
 }

@@ -22,7 +22,7 @@ export function Problem({ t }: StepCtx) {
       <rect x={60} y={246} width={30} height={30} rx={6} fill={C.taupe} />
       <T x={110} y={267} s={13} f={C.taupe}>local disk: microseconds</T>
       <rect x={60} y={296} width={lerp(0, 420, cost)} height={30} rx={6} fill={C.cherry} />
-      <T x={485} y={318} s={13} f={C.cherryText} o={cost}>object store: tens–hundreds of ms</T>
+      <T x={575} y={318} s={13} f={C.cherryText} a="end" o={cost}>object store: tens–hundreds of ms</T>
     </Svg>
   );
 }
@@ -75,7 +75,8 @@ export function Consistency({ t }: StepCtx) {
       <T x={260} y={180} s={12} f={C.espresso} a="middle" w={600} o={after}>GET → new</T>
       <line x1={145} y1={175} x2={195} y2={175} stroke={C.caramel} strokeWidth={2.5} opacity={after} />
 
-      <T x={300} y={250} s={15} f={C.crema} a="middle" o={easeOut(seg(t, 2.6, 3.2))}>a racing read: the old object, or the new, never a torn mix</T>
+      <T x={300} y={246} s={15} f={C.crema} a="middle" o={easeOut(seg(t, 2.6, 3.2))}>a racing read: the old object, or the new,</T>
+      <T x={300} y={268} s={15} f={C.crema} a="middle" o={easeOut(seg(t, 2.6, 3.2))}>never a torn mix</T>
       <T x={300} y={300} s={13} f={C.cherryText} a="middle" o={easeOut(seg(t, 3.0, 3.6))}>still not atomic: swapping two keys at once</T>
     </Svg>
   );

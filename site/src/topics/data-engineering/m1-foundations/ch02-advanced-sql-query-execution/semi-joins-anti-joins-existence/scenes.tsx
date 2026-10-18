@@ -83,11 +83,11 @@ export function SemiJoin({ t }: StepCtx) {
 export function AntiJoin({ t }: StepCtx) {
   const a = easeOut(seg(t, 0.6, 1.6));
   return (
-    <Svg label="The anti-join keeps the 3 customers with no matching order" h={320}>
+    <Svg label="The anti-join keeps the 3 customers with no matching order" h={350}>
       <Left mark={(c) => (!ORD[c] && a > 0.5 ? C.caramel : C.mocha)} />
       <Right />
       <Bundles collapse={0} show={1} />
-      <T x={300} y={296} s={16} f={C.caramel} a="middle" w={700} o={a}>anti-join: 3 rows, the ones with no line</T>
+      <T x={300} y={332} s={16} f={C.caramel} a="middle" w={700} o={a}>anti-join: 3 rows, none with an order</T>
     </Svg>
   );
 }
@@ -186,7 +186,8 @@ export function GateNotIn({ t }: StepCtx) {
       <T x={500} y={142} s={13} f={C.latte} a="middle" o={ok}>with the proof: fast</T>
       <rect x={430} y={190} width={140} height={42} rx={8} fill="none" stroke={C.cherryText} strokeDasharray="5 4" opacity={bad} />
       <T x={500} y={216} s={14} f={C.cherryText} a="middle" o={bad}>SubPlan</T>
-      <T x={500} y={252} s={13} f={C.latte} a="middle" o={bad}>without it: correct, slower</T>
+      <T x={500} y={252} s={13} f={C.latte} a="middle" o={bad}>without it:</T>
+      <T x={500} y={270} s={13} f={C.latte} a="middle" o={bad}>correct, slower</T>
     </Svg>
   );
 }

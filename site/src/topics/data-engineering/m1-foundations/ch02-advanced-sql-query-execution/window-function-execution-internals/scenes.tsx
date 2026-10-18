@@ -206,8 +206,8 @@ export function ProveCumulative({ t, answer }: StepCtx) {
   const answered = answer !== null;
   return (
     <Svg label="The default frame" h={240}>
-      <T x={40} y={100} s={18} f={C.latte}>start → current row →</T>
-      {answered ? <T x={330} y={104} s={22} f={C.caramel} w={700}>cumulative</T> : <T x={350} y={110} s={40} f={C.caramel} o={0.75 + 0.25 * Math.sin(t * 3)}>?</T>}
+      <T x={40} y={84} s={18} f={C.latte}>start → current row →</T>
+      {answered ? <T x={40} y={140} s={24} f={C.caramel} w={700}>cumulative</T> : <T x={40} y={150} s={40} f={C.caramel} o={0.75 + 0.25 * Math.sin(t * 3)}>?</T>}
     </Svg>
   );
 }
@@ -215,8 +215,8 @@ export function ProveSorts({ t, answer }: StepCtx) {
   const answered = answer !== null;
   return (
     <Svg label="Two windows, one sort" h={240}>
-      <T x={40} y={100} s={18} f={C.latte}>same partition and order →</T>
-      {answered ? <T x={400} y={104} s={22} f={C.caramel} w={700}>1 sort</T> : <T x={410} y={110} s={40} f={C.caramel} o={0.75 + 0.25 * Math.sin(t * 3)}>?</T>}
+      <T x={40} y={84} s={18} f={C.latte}>same partition and order →</T>
+      {answered ? <T x={40} y={140} s={24} f={C.caramel} w={700}>1 sort</T> : <T x={40} y={150} s={40} f={C.caramel} o={0.75 + 0.25 * Math.sin(t * 3)}>?</T>}
     </Svg>
   );
 }

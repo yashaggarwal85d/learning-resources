@@ -59,7 +59,7 @@ export function GapPredict({ t, answer }: StepCtx) {
       {[0, 1, 2].map((i) => <g key={i}><rect x={25} y={40 + i * 40} width={170} height={30} rx={7} fill={C.cocoa} stroke={C.caramel} /><T x={110} y={60 + i * 40} s={13} f={C.crema} a="middle">tied for first</T></g>)}
       <rect x={25} y={170} width={170} height={30} rx={7} fill={C.cocoa} stroke={C.mocha} />
       <T x={110} y={190} s={13} f={C.crema} a="middle">next customer</T>
-      {!answered ? <T x={330} y={196} s={44} f={C.caramel} a="middle" o={0.75 + 0.25 * Math.sin(t * 3)}>?</T> : <T x={330} y={196} s={22} f={C.caramel} w={700}>rank 4 · dense_rank 2</T>}
+      {!answered ? <T x={330} y={196} s={44} f={C.caramel} a="middle" o={0.75 + 0.25 * Math.sin(t * 3)}>?</T> : <T x={215} y={196} s={20} f={C.caramel} w={700}>rank 4 · dense_rank 2</T>}
     </Svg>
   );
 }

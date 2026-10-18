@@ -200,8 +200,8 @@ export function ProveRows({ t, answer }: StepCtx) {
   const answered = answer !== null;
   return (
     <Svg label="The frame mode that ignores ties" h={240}>
-      <T x={40} y={100} s={18} f={C.latte}>ignores ties →</T>
-      {answered ? <T x={230} y={104} s={26} f={C.caramel} w={700}>ROWS</T> : <T x={240} y={110} s={40} f={C.caramel} o={0.75 + 0.25 * Math.sin(t * 3)}>?</T>}
+      <T x={40} y={84} s={18} f={C.latte}>ignores ties →</T>
+      {answered ? <T x={40} y={140} s={28} f={C.caramel} w={700}>ROWS</T> : <T x={40} y={150} s={40} f={C.caramel} o={0.75 + 0.25 * Math.sin(t * 3)}>?</T>}
     </Svg>
   );
 }

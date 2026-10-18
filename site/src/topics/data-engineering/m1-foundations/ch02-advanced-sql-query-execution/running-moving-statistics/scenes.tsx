@@ -187,8 +187,8 @@ export function ProveDisc({ t, answer }: StepCtx) {
   const answered = answer !== null;
   return (
     <Svg label="The percentile that returns a real value" h={240}>
-      <T x={40} y={100} s={18} f={C.latte}>always in the data →</T>
-      {answered ? <T x={300} y={104} s={22} f={C.caramel} w={700}>percentile_disc</T> : <T x={320} y={110} s={40} f={C.caramel} o={0.75 + 0.25 * Math.sin(t * 3)}>?</T>}
+      <T x={40} y={84} s={18} f={C.latte}>always in the data →</T>
+      {answered ? <T x={40} y={140} s={24} f={C.caramel} w={700}>percentile_disc</T> : <T x={40} y={150} s={40} f={C.caramel} o={0.75 + 0.25 * Math.sin(t * 3)}>?</T>}
     </Svg>
   );
 }
@@ -196,8 +196,8 @@ export function ProveNtile({ t, answer }: StepCtx) {
   const answered = answer !== null;
   return (
     <Svg label="First bucket of NTILE(4) over 10 rows" h={240}>
-      <T x={40} y={100} s={18} f={C.latte}>first bucket →</T>
-      {answered ? <T x={230} y={104} s={24} f={C.caramel} w={700}>3 rows</T> : <T x={240} y={110} s={40} f={C.caramel} o={0.75 + 0.25 * Math.sin(t * 3)}>?</T>}
+      <T x={40} y={84} s={18} f={C.latte}>first bucket →</T>
+      {answered ? <T x={40} y={140} s={24} f={C.caramel} w={700}>3 rows</T> : <T x={40} y={150} s={40} f={C.caramel} o={0.75 + 0.25 * Math.sin(t * 3)}>?</T>}
     </Svg>
   );
 }

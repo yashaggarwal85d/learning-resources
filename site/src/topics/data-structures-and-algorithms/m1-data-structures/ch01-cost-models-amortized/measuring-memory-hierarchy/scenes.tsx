@@ -130,10 +130,10 @@ export function PrefetcherCaveat({ t }: StepCtx) {
   const b = easeOut(seg(t, 1.8, 2.8));
   return (
     <Svg label="An adjacent-line prefetcher pulls in the neighbouring line too, which can make a sixty four byte line look one hundred twenty eight bytes wide" h={300}>
-      <rect x={60} y={80} width={60} height={40} rx={6} fill={C.caramel} opacity={a} />
-      <T x={90} y={104} s={12} f={C.espresso} a="middle" w={600} o={a}>64 B</T>
-      <rect x={125} y={80} width={60} height={40} rx={6} fill={C.cherry} opacity={b} />
-      <T x={155} y={104} s={12} f={C.cherryText} a="middle" w={600} o={b}>fetched too</T>
+      <rect x={40} y={80} width={110} height={40} rx={6} fill={C.caramel} opacity={a} />
+      <T x={95} y={105} s={13} f={C.espresso} a="middle" w={600} o={a}>64 B</T>
+      <rect x={155} y={80} width={150} height={40} rx={6} fill={C.cherry} opacity={b} />
+      <T x={230} y={105} s={13} f={C.cherryText} a="middle" w={600} o={b}>fetched too</T>
       <T x={300} y={160} s={16} f={C.crema} a="middle" o={b}>looks like 128 bytes, measured naively</T>
     </Svg>
   );
