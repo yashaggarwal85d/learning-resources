@@ -1,0 +1,5 @@
+- **Input size (n)**: the number that says how big the problem is, such as the rows in a table or the lines in a file. *Where you meet it:* "this query scans n rows".
+- **Step**: one basic operation the machine performs, such as comparing two numbers or reading one value. Cost is stated by counting steps. *Where you meet it:* a loop over a list does one comparison per item.
+- **Exponent and root**: 2 to the power 10 means ten twos multiplied together, which is 1,024; a square root undoes a square. *Where you meet it:* 2 to the power 20 is about a million, which is why a million rows is only about twenty doublings.
+- **Function of n**: a rule that turns an input size into a number, written f(n). *Where you meet it:* "the loop does 3n + 5 steps" is the function f(n) = 3n + 5.
+- **Ratio**: how many times larger one number is than another. Growth is judged by ratios, not by differences. *Where you meet it:* "twice as slow once the data doubled".

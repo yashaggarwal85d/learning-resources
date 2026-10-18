@@ -1,0 +1,5 @@
+- **Dynamic array (vector)**: an array that holds a length and a capacity; when it is full, an append allocates a larger one and copies every key across. *Where you meet it:* Python's `list.append` and Rust's `Vec::push`.
+- **Stack**: a collection where the last item added is the first one removed, using push and pop. *Where you meet it:* the undo history of an editor.
+- **Geometric series**: a sum in which each term is a fixed multiple of the one before it; with a multiple below one it stays within a constant of its largest term. *Where you meet it:* the sizes 1, 2, 4, 8 … of repeated doubling.
+- **Unit of cost**: what one step is counted as; in this reel, one element write. *Where you meet it:* copying 8 keys costs 8 units.
+- **Sequence of operations**: a data structure is used many times in a row, and what matters is the total over the whole run. *Where you meet it:* a million appends to one list.

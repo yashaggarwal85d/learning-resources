@@ -1,21 +1,5 @@
 import Resource from '../../../../../components/Resource.astro';
 
-This topic follows the rewrite topic and uses the idea of the optimizer seeing inside a query. Reels on this site are marked **Before this** (earlier in the course), **Goes deeper later** or with the name of another track.
-
-<section class="prereq basics" data-section="basics">
-
-### <span class="n">00</span> Basics: words the reel takes for granted
-
-- **CTE (`WITH` clause)**: a named query defined before the main query and used by name. *Where you meet it:* `WITH recent AS (SELECT …) SELECT … FROM recent`.
-- **Side effect**: something a query does besides returning rows, such as writing a row or consuming a sequence value. *Where you meet it:* a data-modifying statement inside a `WITH`.
-- **Volatile function**: one whose value can change from call to call. *Where you meet it:* `random()` or `nextval()`.
-- **Inlining**: replacing a name by its definition so that later steps can optimise through it. *Where you meet it:* views being expanded at rewrite time.
-- **Temporary table**: a table that lives only for a session and holds an intermediate result. *Where you meet it:* `CREATE TEMP TABLE` for a step you reuse.
-
-<p class="check"><b>Check yourself:</b> if a CTE calls <code>random()</code> and is used twice, should both uses see the same values? (Answer: usually yes, which is why a volatile CTE needs to be computed once.)</p>
-
-</section>
-
 <section class="prereq" data-section="earlier-topics">
 
 ### <span class="n">01</span> Rewrites and the pipeline

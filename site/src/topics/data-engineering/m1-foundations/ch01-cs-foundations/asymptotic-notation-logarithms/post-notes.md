@@ -1,0 +1,141 @@
+---
+id: de.asymptotic-notation-logarithms
+title: Asymptotic notation and logarithms
+---
+
+<section data-section="outcomes">
+
+## After this refresher you can
+
+- Read and compare O, Θ and Ω statements: O is a ceiling (at most), Ω a floor (at least), Θ both, all "for every n from some n₀ on", with constants dropped. And say why "it's O(n²)" does not mean "it's slow".
+- Convert a logarithm between bases in your head: log<sub>b</sub> x = ln x / ln b, log₂ x ≈ 3.32 · log₁₀ x, and 2¹⁰ ≈ 1,000.
+- Estimate a B-tree's height and a sort's pass count from a large base: the `orders` index is 4 levels at about 400 entries per page, and the 1 TiB sort takes 2 passes.
+- Say why big-O alone doesn't predict wall-clock time: it drops constants on purpose and counts every step as if it cost the same, whatever memory tier the step touches.
+
+</section>
+
+<section data-section="internals">
+
+## A little deeper
+
+### O, Ω and Θ, precisely
+
+- **The definitions.** MIT 6.006 states them with a constant c and a threshold n₀. A non-negative function g(n) is in O(f(n)) if and only if there exist a positive real c and a positive integer n₀ such that g(n) ≤ c · f(n) for all n ≥ n₀; it is in Ω(f(n)) if c · f(n) ≤ g(n) for all n ≥ n₀; and it is in Θ(f(n)) if it is in both, g ∈ O(f) ∩ Ω(f), which MIT calls a tight bound. The definition "upper bounds the asymptotic growth of a function for sufficiently large n", and it holds "even if we were to scale or shift our function by a constant amount".
+- **The equals sign is one-way.** "g is O(f)" or "g = O(f)" really means set membership, g ∈ O(f). Knuth makes the same point: "we are actually speaking about sets of functions rather than single functions", so `1 + O(1/n) = O(1)` is true and the reverse is not. Read the sign left to right only.
+- **Symmetry.** From the two definitions, f = Ω(g) exactly when g = O(f): swap c for 1/c and keep n₀.
+- **Why Ω and Θ exist.** Knuth's 1976 letter complains that O gets used for lower bounds, as when people reject a sorting method "because its running time is O(n²)". That says only "at most", never "at least". His fix is the notation this reel uses, read as "order at most", "order at least" and "order exactly". (The scan's Ω and Θ symbols are garbled by OCR, so the definitions above are MIT's.)
+- **A lower bound you can see.** A problem that must read its whole input needs at least linear time: reading every row of `orders` is Ω(n) before any other work.
+- **A bound is not a case.** O, Ω and Θ describe a function. Which function, the best-case, average-case or worst-case cost, is a separate choice, so each case can have its own O, Ω and Θ. The algorithms track has the full treatment, including little-o and little-ω, amortized and expected bounds: see "Asymptotic notation and case analysis" in the Prerequisites panel.
+
+### Growth at data sizes
+
+- **The shorthand.** MIT's table of common growth rates runs constant, logarithmic, linear, quadratic, polynomial, exponential. Between the first three and the last two sits the difference that matters: "If n = 1000, log n ≈ 10" (the exact value is 9.97).
+- **The race, at a stated round assumption of 1,000,000,000 simple steps per second** (not a measured speed):
+
+| rows n | n | n · log₂n | n² |
+|---|---|---|---|
+| 1,000 | 1,000 steps, 1 µs | 9,966 steps, 10 µs | 1,000,000 steps, 1 ms |
+| 1,000,000 | 1 ms | 19,931,569 steps, 20 ms | 1,000 s, 17 min |
+| 100,000,000 | 0.1 s | 2,657,542,476 steps, 2.7 s | 10,000,000 s, 116 days |
+
+- **Doubling the data** at 100 million rows multiplies n by 2, n · log₂n by 2.08 and n² by 4. A growth rate is how the cost reacts to doubling, not how long it takes.
+- **Polylogarithms grow more slowly than any power:** (log n)<sup>a</sup> = O(n<sup>b</sup>) for all positive a and b (MIT, exercise 5). Binary search over a sorted in-memory array is logarithmic (MIT).
+- **Where n₀ comes from.** For the reel's job 3n · log₂n + 8n, the ceiling 4n · log₂n holds exactly when 8n ≤ n · log₂n, which is n ≥ 2⁸ = 256. At n = 128 the cost is 3,712 and the ceiling is 3,584; at n = 256 both are 8,192. The threshold comes paired with the constant: with c = 5 it is 16, with c = 11 it is 2. No c works at n = 1, because n · log₂n is 0 there while the cost is 8. That is exactly why the definitions say "from some n₀ on".
+- **Why a comparison sort cannot beat n log n.** n items can come in n! orders, and each comparison has two outcomes, so a comparison sort needs at least log₂(n!) comparisons; by Stirling's formula log(n!) = Θ(n log n) (one of MIT's exercises). That is the Ω(n log n) lower bound for comparison sorting, proved in the algorithms track under "Lower bounds and adversary arguments". (MIT's exercises also cover the binomial bound and 2<sup>n+1</sup> against 2<sup>n</sup>; this refresher leaves them to the algorithms track.)
+
+### Logarithms and the change of base
+
+- **What a logarithm is.** NIST's DLMF defines the natural logarithm as the integral of dt/t from 1 to z, real-valued on the positive reals, with its only zero at 1. The exponential is its inverse (4.2.25), and a whole-number power is repeated multiplication (4.2.27). So log<sub>b</sub> x = k means b<sup>k</sup> = x: k is how many factors of b make x, which is how many divisions by b take x down to 1. For a number that is not an exact power, such as a billion in base 2, the count is fractional (29.9), and a whole count of divisions rounds up to 30.
+- **The change of base** (DLMF 4.2.8 to 4.2.10): log<sub>a</sub> z = ln z / ln a; log<sub>a</sub> z = log<sub>b</sub> z / log<sub>b</sub> a; and log<sub>a</sub> b = 1 / log<sub>b</sub> a. Two other rules the exercises use (MIT): the log of a product is the sum of the logs, and log(a<sup>b</sup>) = b · log a.
+- **Constants worth remembering.** ln 10 = 2.302585…, and log₁₀ e = 0.4342944819… (DLMF). Hence log₂ x = log₁₀ x / log₁₀ 2 ≈ 3.32 · log₁₀ x, and a billion (9 zeros) is about 9 × 3.32 = 29.9 halvings. Also 2¹⁰ = 1,024 ≈ 10³, and log<sub>2^a</sub>(2^b) = b/a, which is how the sort's 20/14 arises.
+- **When the base disappears, and when it doesn't.** For a fixed base, log<sub>b</sub> n = log₂ n / log₂ b differs from log₂ n by a constant factor, so O(log n) needs no base. When the base is a parameter of the problem (a page's fan-out B, the memory in blocks M/B), log<sub>B</sub> N = log N / log B and the factor 1/log B is not constant. Vitter says to state such terms and "not hide them within the big-oh or big-theta factors, since the terms can have a significant effect in practice". Counts of levels or passes need their base for the same reason.
+- **Bounded n.** MIT's word-RAM assumes a word size w > log₂ n bits, or the machine could not address its input. On a 64-bit machine log₂ of anything addressable is under 64, so it never grows large. But a factor of 30 is not free: binary search over a billion keys makes up to 30 probes where a hash lookup makes one, and a binary tree over 100 million keys is 27 levels against a B-tree's 4. Vitter's point is that the large-base logarithms, log<sub>m</sub> n and log<sub>B</sub> N, are the ones that are "small constants" in practice.
+
+### Large bases: index height and sort passes
+
+- **B-tree height.** Vitter describes Bayer and McCreight's B-tree: the degree of each node, except the root, is Θ(B), "which guarantees that the height of a B-tree storing N items is roughly log<sub>B</sub> N". Splits "propagate up to the root, which is how the tree grows in height". PostgreSQL 18's documentation agrees: when the root cannot fit a new downlink, a root split "adds a new level to the tree structure", and typically over 99% of all pages are leaf pages (the flip side of a big base).
+- **The `orders` estimate, with its assumptions.** PostgreSQL stores indexes as 8 kB pages with a 24-byte header and 4-byte line pointers. An index tuple is a 6-byte heap pointer plus a 2-byte info field (padded to 8 bytes), then the key at a MAXALIGN boundary, which is 8 bytes on common 64-bit builds (an assumption). A bigint key therefore costs about 8 + 8 + 4 = 20 bytes per entry. (8,192 − 24) / 20 = 408, or 407 after the b-tree's 16-byte special space at the end of every page (`BTPageOpaqueData` in `nbtree.h`): about 400 per full page. Then 400³ = 64,000,000 < 100,000,000 ≤ 400⁴ = 25,600,000,000, so 4 levels, root to leaf (log₄₀₀ of 100 million = 3.07, rounded up). PostgreSQL itself numbers a tree's levels from 0 at the leaves, so it calls this tree's levels 0 to 3 (`btpo_level` is "tree level --- zero for leaf pages" in `nbtree.h`); `bt_metap` in `pageinspect` would report level 3 for this root.
+- **How robust is that?** The level count for 100 million keys at a given fan-out: 99 gives 5, 100 gives 4 (100⁴ is exactly 100 million), 400 gives 4, 464 gives 4 (464³ = 99,897,344, just short), 465 gives 3. An 8-byte key on 8 kB pages cannot reach 465, so 4 holds.
+- **Real pages are not all full.** PostgreSQL's `nbtree.h` sets a default leaf fillfactor of 90% and a fixed 70% above the leaves, applied at index build and when the rightmost page splits (which is where an ascending `order_id` inserts). That is about 366 entries per leaf and 285 per internal page: 273,225 leaves, then 959, then 4, then the root. Still 4 levels. Deduplication and wider keys move the number further; the range from 100 to 464 is the margin. And most of those 4 levels are small: the pages above the leaves are 959 + 4 + 1 = 964 pages of 8 KiB, about 7.5 MiB, against 273,225 leaves. That is the flip side of PostgreSQL's "over 99% of all pages are leaf pages". Pages that few can plausibly stay in memory (an assumption about the machine), so a lookup often costs one or two device reads rather than four: the same step count at a different price per step, which the next topic prices. B-tree vs LSM covers fill and splits, and node layout comes later in the course.
+- **Sort passes.** In Vitter's description of merge sort, run formation leaves N/M sorted runs, and each merge pass merges groups of up to R = Θ(m) runs, so the passes number O(log<sub>m</sub> n), with n = N/B and m = M/B. His own example, N = 10 billion, M = 10 million and B = 10,000 (so n = 1 million and m = 1,000), gives log<sub>m</sub> n = 2. The bound names its variables on purpose: N items, memory M, block size B, in block units n = N/B and m = M/B. And "the nonlinear I/O bound Θ(n log<sub>m</sub> n) usually indicates that multiple or extra passes over the data are required."
+- **The chapter's sort, exactly.** N/B = 2²⁰ = 1,048,576 blocks and M/B = 2¹⁴ = 16,384, so log<sub>M/B</sub>(N/B) = 20/14 ≈ 1.43, which equals 1 + log<sub>M/B</sub>(N/M): one pass cuts the data into N/M = 64 runs, and the rest is merging. Merging needs one buffer per input run and one for the output, so the fan-in is at most M/B − 1 = 16,383, and the passes are 1 + ⌈log₁₆,₃₈₃ 64⌉ = 1 + 1 = 2. Passes are whole numbers, so the ceiling matters, but it goes on the merge logarithm: rounding the whole logarithm up gives the same 2 here, and can be one short when the run count falls between (M/B − 1)<sup>k</sup> and (M/B)<sup>k</sup>. Merging two at a time takes 1 + log₂ 64 = 7 passes. The 0.43 in 1.43 is log₁₆,₃₈₄ 64 = 6/14: 64 runs use under 0.4% of the 16,383-way fan-in. A pass cannot be partial, so the sliver costs a whole pass, and **every pass reads and writes the whole 1 TiB**: 2 passes are 2 × (1 TiB read + 1 TiB written) = 4 TiB of I/O. That is why the pass count matters at all; the cost of each pass is in the I/O cost model topic.
+- **Where this goes next.** B-tree mechanics are in the B+-tree topic, the I/O model and the cost of each pass in "The external-memory (I/O) cost model", and the fan-in under a memory budget and the merge itself in external merge sort.
+
+### Why big-O doesn't predict wall-clock time
+
+- **Constants are dropped on purpose.** MIT compares algorithms by asymptotic performance "in order to ignore constant factor differences in hardware performance". Vitter adds that "it is equally important to consider any other constants hidden in big-oh and big-theta notations".
+- **A bigger constant can outweigh a lower growth class for a while.** Take a Θ(n²) method that costs n² steps and a Θ(n log n) method that costs 100 · n · log₂n steps. The quadratic one is cheaper for every n up to 996 and loses from 997 on (at 1,000 rows: 1,000,000 steps against 996,578). Compare two O's at small n only with their constants.
+- **Lower-order terms matter at small n.** At n = 16 the 8n term of the reel's job is 40% of its cost (128 of 320 steps). Θ drops it because it fades as n grows, not because it is small.
+- **Every step costs the same only in the model.** In the RAM model each step counts one. On hardware the price of one step varies by orders of magnitude, depending on where its data lives; the next topic measures and sources that ladder, and the I/O model later counts block transfers instead of steps.
+
+</section>
+
+<section data-section="lab">
+
+## Try it
+
+Every snippet below is executed in `examples.py`, next to this topic's source.
+
+**1. Change of base in code, and its float traps.** `math.log(x, b)` is computed as `log(x)/log(b)` (Python docs), so a float result can land just off an integer:
+
+```python
+import math
+math.log(1000, 10)        # 2.9999999999999996 -> int() gives 2, not 3
+math.log(10**9, 10)       # 8.999999999999998  -> int() gives 8
+math.log(125, 5)          # 3.0000000000000004 -> math.ceil gives 4, not 3
+math.log10(1000)          # 3.0 (exact here, but not a general fix)
+(2**10).bit_length()      # 11: n.bit_length() is floor(log2 n) + 1
+(2**10 - 1).bit_length()  # 10: (n - 1).bit_length() is ceil(log2 n)
+```
+
+Count levels with integers instead, and round, never truncate, a float log you only display.
+
+**2. Count levels and passes exactly.**
+
+```python
+def levels(n, fanout):
+    h, reach = 0, 1
+    while reach < n:
+        reach *= fanout
+        h += 1
+    return h
+
+levels(100_000_000, 400)   # 4
+levels(100_000_000, 465)   # 3
+levels(100_000_000, 99)    # 5
+
+def halvings(x):
+    k = 0
+    while x > 1:
+        x = (x + 1) // 2   # round up: x //= 2 stops one short (29 for a billion)
+        k += 1
+    return k
+
+halvings(10**9)            # 30
+```
+
+**3. Watch n log n grow by counting, not by timing.** Wrap keys in a class that counts `__lt__` calls and sort 2¹⁴, 2¹⁵ and 2¹⁶ seeded random keys. The count stays under n · log₂n and grows about 2.1× per doubling, while a pairwise duplicate check makes n(n − 1)/2 comparisons and grows 4×. (The exact counts depend on the CPython sort, so `examples.py` asserts ranges and ratios, not exact counts.)
+
+</section>
+
+<section data-section="production">
+
+## Common slips
+
+- **"O(n²) means slow."** It is a ceiling. The reel's Θ(n log n) job is also O(n²), over a million times too high at 100 million rows. Say Θ when you mean the growth rate.
+- **"O means worst case."** A bound is not a case: any case can have an O, an Ω and a Θ.
+- **Dropping the base** in a count of levels or passes, or inside O when the base is a parameter. log<sub>B</sub> N = log N / log B, so writing O(log N) is still true but loses the factor log B and is no longer tight.
+- **Forgetting the ceiling** on passes and levels, or putting it in the wrong place: passes are 1 + ⌈merge log⌉, not always ⌈whole log⌉.
+- **The float `log` floor and ceil bugs,** and the integer halving loop with `//= 2` that counts one short.
+- **Comparing two O's at small n** without the constants.
+- **Reading a Θ(n) as a time.** Two Θ(n) scans of the same rows can differ by orders of magnitude, depending on where each step's data lives.
+
+</section>
+
+<section data-section="next">
+
+## Where this goes next
+
+Big-O counts steps as if each cost the same. Next: the memory hierarchy, where the same step costs anything from a nanosecond to tens of milliseconds.
+
+</section>

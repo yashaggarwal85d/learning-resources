@@ -1,0 +1,106 @@
+---
+id: de.gaps-islands-sessionization
+title: Gaps-and-islands and sessionization
+---
+
+<section data-section="outcomes">
+
+## After this topic you can
+
+- Use `LAG`/`LEAD` to detect a change between consecutive rows of an ordered partition.
+- Build a contiguous-group ("island") identifier two ways: the row-number-difference trick for a fixed condition, and a running-sum of a "new group starts here" flag for a time-based gap threshold.
+- Sessionize a raw event stream with an inactivity threshold, using an explicit cumulative frame, and say why timestamp ties do not change the session ids but do change which event is "first".
+- Compress a long event stream down to one row per contiguous state interval.
+
+</section>
+
+<section data-section="internals">
+
+## Into the internals
+
+This chapter's `page_views` clickstream (100,000,000 rows: `customer_id`, `event_time`, `page`, `event_type`) is a sequence of individual events. Most analytical questions about it aren't about individual events at all — they're about *episodes*: how long did this visit last, how many distinct visits did this customer make. Turning a point-in-time event stream into episodes ("islands" of contiguous activity, separated by "gaps" of inactivity) is one composed pattern, built entirely from pieces this chapter has already introduced.
+
+### `LAG`/`LEAD`: looking at the previous or next row directly
+
+`lag(value, offset, default)` "returns `value` evaluated at the row that is `offset` rows before the current row within the partition; if there is no such row, instead returns `default`" — `offset` defaults to 1, `default` to `NULL` (PostgreSQL 18 docs, §9.22, Table 9.67). `lead` is the mirror image, looking forward instead of back. These are exactly the tool for "how much time passed since this customer's last event":
+
+```sql
+SELECT customer_id, event_time,
+  event_time - LAG(event_time) OVER (PARTITION BY customer_id ORDER BY event_time) AS gap
+FROM page_views;
+```
+
+The first event of each customer's history has no previous row to look back to, so `gap` comes back `NULL` there — exactly the signal that a new episode is starting.
+
+### Two ways to build an island identifier
+
+**The row-number-difference trick**, for a fixed condition (no time threshold involved): if you number every row (`ROW_NUMBER() OVER (ORDER BY x)`) and separately number only the rows that satisfy some condition (`ROW_NUMBER() OVER (ORDER BY x)` computed just over the filtered subset), the *difference* between the two numbers stays constant for every row inside one contiguous run of the condition, and jumps to a new constant the moment the run breaks. Grouping by that difference groups exactly the contiguous islands together — a classic, self-contained SQL technique for "find each run of consecutive matching rows" that needs no explicit threshold at all.
+
+**A running-sum of a "new group starts here" flag**, for a threshold-based gap (session timeouts, state-change detection): flag every row where the gap since the previous row exceeds some threshold (or where there is no previous row at all), then take a cumulative sum of that flag. The running sum only increases at the rows that started a new episode, so it stays constant across every row of one episode and increments by exactly one at the start of the next — precisely the counter a session ID needs.
+
+### Sessionizing the clickstream, correctly
+
+Put the running-sum technique together, over `page_views`, with a thirty-minute inactivity threshold:
+
+```sql
+WITH gaps AS (
+  SELECT customer_id, event_time,
+    event_time - LAG(event_time) OVER (PARTITION BY customer_id ORDER BY event_time) AS gap
+  FROM page_views
+),
+flagged AS (
+  SELECT customer_id, event_time,
+    CASE WHEN gap IS NULL OR gap > INTERVAL '30 minutes' THEN 1 ELSE 0 END AS new_session
+  FROM gaps
+)
+SELECT customer_id, event_time,
+  SUM(new_session) OVER (
+    PARTITION BY customer_id ORDER BY event_time
+    ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW
+  ) AS session_id
+FROM flagged;
+```
+
+The explicit `ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW` frame spells out what the counter means: add one per flagged row, in order. Ties are worth checking here, and the result is reassuring: a clickstream often has two events at the exact same `event_time`, but the gap between two tied events is zero, which never exceeds the threshold, so the tied row never starts a session by itself. Whichever of the two tied rows `LAG` happens to see first, one of them carries the flag and the running sum reaches the same value for both, with the default `RANGE` frame or with `ROWS` (we ran every ordering of a small tied example to confirm). So here, unlike topic 10's running total, ties do not change the session ids. The explicit frame is still the better habit: it skips the peer-group handling the default frame needs, it lets the engine use the cheap cumulative strategy of topic 11, and it makes the intent readable. Ties do matter for anything that picks a *particular* row inside a session, such as the first page of the visit, so break them with a unique column in the `ORDER BY` there.
+
+### Compressing the stream into state intervals
+
+Once every event carries a `session_id`, the long event stream collapses to one row per session with an ordinary `GROUP BY`:
+
+```sql
+SELECT customer_id, session_id,
+  MIN(event_time) AS session_start,
+  MAX(event_time) AS session_end,
+  COUNT(*) AS event_count
+FROM sessionized
+GROUP BY customer_id, session_id;
+```
+
+A hundred million raw events become a far smaller table of actual visits — each one a state interval with a start, an end and a size — which is the shape almost every downstream question (average session length, sessions per day, bounce rate) actually wants to query against, instead of re-deriving session boundaries from raw events every time.
+
+</section>
+
+<section data-section="lab">
+
+## Build, break, measure
+
+### Lab · Sessionize the clickstream with a thirty-minute gap
+
+This hosts the §2.2 chapter lab's sessionization part.
+
+1. **Build and verify the session IDs.** Run the full sessionization query over `page_views` and assert, per customer: `session_id` is non-decreasing in `event_time` order, it increments by exactly one at each row where the previous gap exceeded thirty minutes (or there was no previous row), and stays flat everywhere else.
+2. **Check what ties do.** Construct a small customer history with two events at the identical `event_time` that sit more than thirty minutes after the row before them. Run the sessionization with the default `RANGE` frame and with the explicit `ROWS` frame, in every row order you can force, and confirm both tied rows always get the same session id and the sessions after them are unchanged. Then ask for the first event of each session and watch that one *does* depend on tie order until you add a unique tie-breaker.
+3. **Compress and compare.** Run the final `GROUP BY customer_id, session_id` aggregation and report the row-count reduction (hundred million events down to however many actual sessions your data has) alongside average session length and events per session (*measure in build* for the actual figures, which depend on the generated clickstream).
+
+</section>
+
+<section data-section="production">
+
+## In production — a review checklist
+
+- **Write the sessionization's running counter with an explicit `ROWS` frame.** Ties do not change the session ids here, but the explicit frame is cheaper to execute and states the intent; break ties with a unique column wherever you pick a particular event inside a session (the first page, the last click).
+- **Pick the island technique that matches the question.** The row-number-difference trick is simpler when there's no explicit time/value threshold (just "runs of a fixed condition"); the running-sum-of-a-flag technique is the one that generalizes to a numeric gap threshold like a session timeout.
+- **Materialize the compressed session table rather than re-deriving it on every query.** A hundred-million-row raw stream recomputed per dashboard load is a lot more work than reading an already-compressed sessions table; refresh it incrementally if the raw stream is append-only.
+- **Treat the inactivity threshold as a tunable business parameter, not a universal constant.** Thirty minutes is a common convention, not a law of nature; document wherever a different threshold is actually in use so a count of "sessions" is comparable across reports.
+
+</section>

@@ -1,26 +1,8 @@
 import Resource from '../../../../../components/Resource.astro';
 
-This topic closes §2.1 with writes. It needs the idea of a transaction and a snapshot read. Reels on this site are marked **Before this** (earlier in the course), **Goes deeper later** or with the name of another track.
-
-<section class="prereq basics" data-section="basics">
-
-### <span class="n">00</span> Basics: words the reel takes for granted
-
-- **Transaction**: a group of statements that succeed or fail together. *Where you meet it:* `BEGIN … COMMIT`.
-- **Snapshot read**: a query sees the data as of one moment, not changes committed afterwards. *Where you meet it:* two sessions in `READ COMMITTED` seeing different data between statements.
-- **Unique index / constraint**: a rule, backed by an index, that no two rows share a key. *Where you meet it:* a primary key.
-- **Upsert**: insert a row, or update it if it already exists. *Where you meet it:* loading daily files that may overlap.
-- **Parquet data file**: an immutable columnar file; a table is a set of them. *Where you meet it:* lakehouse tables.
-
-<p class="check"><b>Check yourself:</b> two sessions insert the same primary key at once. What does the second one get? (Answer: a unique-violation error, or it waits for the first to commit and then fails.)</p>
-
-</section>
-
 <section class="prereq" data-section="earlier-topics">
 
 ### <span class="n">01</span> Where this follows from
-
-NULLs and existence tests explain why a "not matched" decision is a read; the previous topic's handoff leads here.
 
 <ul class="resources">
   <Resource kind="reel" host={props.host} domain="data-engineering" title="Semi-joins, anti-joins and existence">An existence check is exactly the read MERGE performs.</Resource>

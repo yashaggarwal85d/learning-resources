@@ -1,26 +1,8 @@
 import Resource from '../../../../../components/Resource.astro';
 
-This topic composes window functions you have already met. Reels on this site are marked **Before this** (earlier in the course), **Goes deeper later** or with the name of another track.
-
-<section class="prereq basics" data-section="basics">
-
-### <span class="n">00</span> Basics: words the reel takes for granted
-
-- **Event stream**: a log of timestamped records, one per thing that happened. *Where you meet it:* a clickstream or an application log.
-- **Session**: a burst of activity by one user, ended by a period of inactivity. *Where you meet it:* "visits" in a web analytics report.
-- **Inactivity threshold**: the pause that ends a session. *Where you meet it:* 30 minutes in many analytics tools.
-- **Interval**: a span of time, as a subtraction of two timestamps. *Where you meet it:* `INTERVAL '30 minutes'` in SQL.
-- **Run (island)**: an unbroken stretch of consecutive rows meeting a condition. *Where you meet it:* consecutive days a user logged in.
-
-<p class="check"><b>Check yourself:</b> activity on days 1, 2, 3, 5, 6. How many unbroken runs are there? (Answer: two, days 1 to 3 and days 5 to 6.)</p>
-
-</section>
-
 <section class="prereq" data-section="earlier-topics">
 
 ### <span class="n">01</span> Windows, frames and ranking
-
-The reel uses an ordered window, a cumulative frame and `ROW_NUMBER`.
 
 <ul class="resources">
   <Resource kind="reel" host={props.host} domain="data-engineering" title="Window frame semantics">Ordered windows, ROWS versus RANGE, and the default frame.</Resource>

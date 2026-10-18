@@ -9,6 +9,7 @@
     "preview": "astro preview",
     "test:examples": "find src/topics -name examples.py -print0 | xargs -0 -r -n1 ${PYTHON:-python3}",
     "test:reels": "node tests/reels.mjs",
+    "test:editor": "node tests/editor.mjs",
     "test:narration": "node tests/narration.mjs",
     "check:links": "node ../scripts/check-links.mjs"
   },
@@ -17,6 +18,8 @@
     "@astrojs/react": "7.0.1",
     "@tailwindcss/vite": "4.3.3",
     "astro": "7.3.8",
+    "dompurify": "3.2.7",
+    "marked": "16.4.1",
     "motion": "14.1.0",
     "react": "19.3.0",
     "react-dom": "19.3.0",

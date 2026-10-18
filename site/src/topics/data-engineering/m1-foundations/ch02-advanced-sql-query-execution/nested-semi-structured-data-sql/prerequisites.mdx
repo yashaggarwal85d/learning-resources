@@ -1,26 +1,8 @@
 import Resource from '../../../../../components/Resource.astro';
 
-This topic needs joins and the idea of a per-row computation. Reels on this site are marked **Before this** (earlier in the course), **Goes deeper later** or with the name of another track.
-
-<section class="prereq basics" data-section="basics">
-
-### <span class="n">00</span> Basics: words the reel takes for granted
-
-- **Scalar column**: a column holding one atomic value per row, such as an integer or a short string. *Where you meet it:* nearly every column in a classic schema.
-- **JSON**: a text format for nested data made of objects (key-value pairs), arrays and scalars. *Where you meet it:* the body of almost every web API.
-- **Cartesian product**: every row of one input paired with every row of another. *Where you meet it:* a join with a missing condition returns one.
-- **Columnar file format**: a file layout that stores each column's values together, often with min and max statistics per block. *Where you meet it:* Parquet.
-- **Set-returning function**: a function that returns rows, usable in `FROM`. *Where you meet it:* `generate_series` or `unnest` in PostgreSQL.
-
-<p class="check"><b>Check yourself:</b> two tables of 3 rows each are joined with no condition. How many rows result? (Answer: 9, the Cartesian product.)</p>
-
-</section>
-
 <section class="prereq" data-section="earlier-topics">
 
 ### <span class="n">01</span> Bags, joins and per-row subqueries
-
-The unnest trap is the Cartesian product of the first topic, and JSON_TABLE is a lateral join.
 
 <ul class="resources">
   <Resource kind="reel" host={props.host} domain="data-engineering" title="Relational algebra and bag semantics">Why two unrelated FROM items multiply.</Resource>

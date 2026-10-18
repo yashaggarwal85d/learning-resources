@@ -1,0 +1,12 @@
+Last verified: 2026-10-13.
+
+- [RFC 7323, *TCP Extensions for High Performance*](https://www.rfc-editor.org/rfc/rfc7323.txt) (Borman, Braden, Jacobson, Scheffenegger, 2014): bandwidth-delay product and the "long, fat network" definition, the 16-bit window field and the 64 KiB limit, and the Window Scale option (shift capped at 14 for a 1 GiB maximum window).
+- [Linux kernel networking: `ip-sysctl` documentation](https://www.kernel.org/doc/Documentation/networking/ip-sysctl.txt): `tcp_rmem` / `tcp_wmem` (min/default/max vectors, the ~87,380-byte default and its 65,535-byte window) and `tcp_moderate_rcvbuf` receive-buffer autotuning toward `tcp_rmem[2]`.
+- [tcp(7) man page](https://man7.org/linux/man-pages/man7/tcp.7.html): `SO_RCVBUF`/`SO_SNDBUF` behaviour and that setting them disables per-socket autotuning.
+- [Apache Hadoop, *HDFS Architecture*](https://hadoop.apache.org/docs/stable/hadoop-project-dist/hadoop-hdfs/HdfsDesign.html): "Moving Computation is Cheaper than Moving Data."
+- J. Dean and S. Ghemawat, ["MapReduce: Simplified Data Processing on Large Clusters"](https://www.usenix.org/legacy/events/osdi04/tech/full_papers/dean/dean.pdf), OSDI 2004, §3.4 "Locality" (the full paper PDF, not the abstract-only research.google landing page): conserving scarce network bandwidth by scheduling computation near its input replica.
+- J. D. C. Little, "A Proof for the Queuing Formula: L = λW", *Operations Research* 9(3), 1961, [doi:10.1287/opre.9.3.383](https://doi.org/10.1287/opre.9.3.383): the stationary relation L = λW used here as in-flight = throughput × latency.
+- [AWS, EC2 On-Demand pricing, "Data Transfer"](https://aws.amazon.com/ec2/pricing/on-demand/): data transfer within an AWS Region across Availability Zones is charged at $0.01/GB in each direction; ingress from the internet is free and egress is tiered (first 100 GB/month free). This page renders some region-specific tables dynamically; the cross-AZ sentence quoted here was independently re-verified as static prose in the page's own HTML on 2026-10-14, not just the templated tables, but re-check it on the live page before relying on the exact figure.
+- Cross-reference (same chapter): the held I/O cost model's "The network, counted the same way" fixes the shuffle-vs-broadcast byte counts (≈ 990 GB vs ≈ 9.9 GB on 100 machines) and the α·β break-even reused here as the BDP.
+
+Spotted an error or something unclear? [Report it](https://github.com/yashaggarwal85d/learning-resources/issues/new?title=bandwidth-latency-data-locality:%20).

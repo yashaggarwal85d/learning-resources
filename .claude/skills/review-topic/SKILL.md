@@ -11,7 +11,7 @@ The second stage of making topics (ROUTINE.md, "Three stages, decoupled"). Draft
 
 1. `node scripts/claim.mjs next "<domain>" --role review` first, before reading anything. `wait` → stop with the reason. `review` → check out `topic.branch` (`git fetch origin && git checkout -B <branch> origin/<branch>`), start the heartbeat, read `OUTLINE.md` → "Progress": a first review starts at ROUTINE.md section 4; a stopped review continues at its first unfinished step; `contentFinal: true` means only section 8 is left.
 2. `npm run build` once, to confirm the draft builds as handed over; a draft that does not build is fixed first (a fix agent), and the cause goes into the report.
-3. ROUTINE.md section 4: the Opus content review (flow, Basics, gap hunt, expert reader, **narration teaches in the professor's voice**), every finding fixed.
+3. ROUTINE.md section 4: the Opus content review (flow, pre-notes, gap hunt, expert reader, **narration teaches in the professor's voice**), every finding fixed.
 4. Section 5: every check except narration (`node scripts/check-all.mjs --skip narration --changed`), then the looks and learning review on the screenshots, every finding fixed.
 5. Section 6: content final (`claim.mjs final`, "Changes after final" from here on).
 6. Section 8: ship **held**, without audio, every check green on the merged branch, CI and Deploy green; `claim.mjs done`.

@@ -1,14 +1,8 @@
 import Resource from '../../../../../components/Resource.astro';
 
-This reel builds on the notation of the topic before it and on a little about how numbers sit in a computer. If a point below is familiar, skip it; if not, a few minutes with the matching resource is enough to follow every step.
-
 <section class="prereq" data-section="asymptotics">
 
 ### <span class="n">01</span> Asymptotic notation and logarithms
-
-You read O(·), Ω(·) and Θ(·) as bounds on how a cost grows, and you know that log₂ n is the number of times you can halve n. Every count in this reel is written in that language, and the reel opens by asking what machine those counts assume.
-
-<p class="check"><b>Check yourself:</b> roughly how many times can you halve 1,000,000 before you reach 1? (Answer: about 20, since 2²⁰ = 1,048,576.)</p>
 
 <ul class="resources">
   <Resource kind="reel" title="Asymptotic notation and case analysis" domain="data-structures-and-algorithms" host={props.host} by="Data Structures and Algorithms §1.1">The topic before this one: what a bound claims, which case it is about, and what it leaves out.</Resource>
@@ -19,10 +13,6 @@ You read O(·), Ω(·) and Θ(·) as bounds on how a cost grows, and you know th
 <section class="prereq" data-section="binary-numbers">
 
 ### <span class="n">02</span> Binary numbers, bits and bitwise operations
-
-You know that a w-bit word holds a number from 0 to 2ʷ − 1, that a shift right by k bits divides by 2ᵏ (rounding down), and that & keeps only the bits set in both operands. The reel cuts a 64-bit key into halves and digits, so reading a number as a row of bits should feel natural.
-
-<p class="check"><b>Check yourself:</b> what are 13 &gt;&gt; 2 and 13 &amp; 6? (Answers: 3, since 13 is 1101 in binary and shifting drops the last two bits; and 4, since 1101 &amp; 0110 = 0100.)</p>
 
 <ul class="resources">
   <Resource kind="reading" title="Bitwise operation" href="https://en.wikipedia.org/wiki/Bitwise_operation">AND, OR, XOR, NOT and the shifts, with worked examples.</Resource>
@@ -35,10 +25,6 @@ You know that a w-bit word holds a number from 0 to 2ʷ − 1, that a shift righ
 
 ### <span class="n">03</span> Binary search on a sorted array
 
-You can describe how binary search finds a key (or the largest key at most x) in a sorted array by probing the middle and discarding half of the range, and why that takes about log₂ n probes.
-
-<p class="check"><b>Check yourself:</b> how many probes does binary search need, at most, for 1,000 sorted keys? (Answer: 10, since 2¹⁰ = 1,024 ≥ 1,000.)</p>
-
 <ul class="resources">
   <Resource kind="reading" title="Programming Model" href="https://algs4.cs.princeton.edu/11model/" by="Sedgewick and Wayne, Algorithms 4th ed., section 1.1">Includes binary search as the worked example of the programming model.</Resource>
   <Resource kind="reading" title="Binary search" href="https://en.wikipedia.org/wiki/Binary_search">The algorithm, its cost and its variants, including predecessor and successor search.</Resource>
@@ -50,10 +36,6 @@ You can describe how binary search finds a key (or the largest key at most x) in
 
 ### <span class="n">04</span> The standard comparison sorts
 
-The reel compares them with radix sort, so you need only know that merge sort and quicksort order keys by comparing pairs of them. Their analysis is not needed here; the lower bound on comparison sorting comes in a later topic of this chapter.
-
-<p class="check"><b>Check yourself:</b> what does merge sort do after sorting the two halves of a list? (Answer: merges them into one sorted list by repeatedly taking the smaller front element.)</p>
-
 <ul class="resources">
   <Resource kind="reading" title="Mergesort" href="https://algs4.cs.princeton.edu/22mergesort/" by="Sedgewick and Wayne, Algorithms 4th ed., section 2.2">Top-down and bottom-up merge sort, with traces.</Resource>
 </ul>
@@ -63,8 +45,6 @@ The reel compares them with radix sort, so you need only know that merge sort an
 <section class="prereq" data-section="hidden-costs">
 
 ### <span class="n">05</span> Optional: why a memory access is not one step
-
-Steps 6 and 7 name two costs the model hides, the cache miss and the branch misprediction, and introduce each on the spot. If you want the hardware side first or afterwards, the Data Engineering reel covers it from the other direction, and Drepper&rsquo;s paper is the classic long read.
 
 <ul class="resources">
   <Resource kind="reel" title="CPU caches, SIMD and vectorization" domain="data-engineering" host={props.host} by="Data Engineering">Cache lines, locality, prefetching and branch misprediction, from a query engine&rsquo;s point of view.</Resource>

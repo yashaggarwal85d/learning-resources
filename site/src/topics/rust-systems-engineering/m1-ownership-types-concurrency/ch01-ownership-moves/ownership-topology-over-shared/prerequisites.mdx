@@ -1,14 +1,8 @@
 import Resource from '../../../../../components/Resource.astro';
 
-This topic closes Chapter 1. You should know that every value has one owner, that a move deinitializes its source, how a guard does its job in `Drop`, and how to read a borrow-checker error. It adds threads, channels, locks and closures in the amount the reel needs: each is shown and glossed on the spot (`thread::spawn`, `mpsc::channel`, `Arc`, `Mutex`, `Rc`, `RefCell`, a `move` closure), and their full Rust semantics belong to Chapters 2, 4 and 6.
-
 <section class="prereq" data-section="chapter-so-far">
 
 ### <span class="n">01</span> The chapter so far
-
-One owner per value; a move copies the handle and leaves the source moved-from (E0382); signatures are ownership contracts (`T` takes, `&T` borrows, `&mut T` borrows exclusively); a guard does its job in `Drop`; `Option::take` moves a value out of a `&mut`; and the guard `PooledBuf` holds the pool by exclusive borrow, so one guard exists at a time. This topic asks what to do when three stages need buffers at once.
-
-<p class="check"><b>Check yourself:</b> who owns a value after <code>let b = a;</code> for a type that is not <code>Copy</code>? (Answer: <code>b</code>. The place <code>a</code> is moved-from, so using it is E0382.)</p>
 
 <ul class="resources">
   <Resource kind="reel" host={props.host} domain="rust-systems-engineering" title="Single ownership and move semantics">Moves, <code>Copy</code> against <code>Clone</code>, and reading E0382 and E0505.</Resource>
@@ -18,23 +12,9 @@ One owner per value; a move copies the handle and leaves the source moved-from (
 
 </section>
 
-<section class="prereq" data-section="signatures">
-
-### <span class="n">02</span> The running example in five signatures
-
-The whole chapter uses one byte pipeline. Its parts, each in one line: <code>Pool::get(&amp;mut self) -&gt; Buf</code> hands out a buffer (the only place one is allocated), <code>Pool::put(&amp;mut self, buf: Buf)</code> takes it back, <code>fill(&amp;mut Buf, &amp;[u8])</code> writes into it, <code>inspect(&amp;Buf) -&gt; Header</code> reads a small <code>Copy</code> summary out of it, and <code>consume(Buf) -&gt; Buf</code> takes it, does its work and hands it back.
-
-<p class="check"><b>Check yourself:</b> which of these takes ownership, and which only borrows? (Answer: <code>put</code> and <code>consume</code> take the <code>Buf</code>; <code>fill</code> borrows it exclusively and <code>inspect</code> borrows it shared.)</p>
-
-</section>
-
 <section class="prereq" data-section="borrowing-rule">
 
 ### <span class="n">03</span> The Book's borrowing rule
-
-At any given time you can have either one mutable reference or any number of immutable references. This topic uses the rule only as the Book states it, as an ownership statement: two stages both wanting the pool's exclusive borrow is E0499. The model behind the rule (and why "mutable" there really means exclusive) is the next chapter.
-
-<p class="check"><b>Check yourself:</b> why can't two <code>&amp;mut Pool</code> exist at once? (Answer: each would be allowed to change the pool while the other relies on it; the compiler refuses the second as E0499.)</p>
 
 <ul class="resources">
   <Resource kind="reading" title="References and Borrowing" href="https://doc.rust-lang.org/book/ch04-02-references-and-borrowing.html" by="Klabnik, Nichols and Krycho, The Rust Programming Language">The rule, in the Book's words.</Resource>
@@ -46,22 +26,10 @@ At any given time you can have either one mutable reference or any number of imm
 
 ### <span class="n">04</span> Threads, channels, locks and lambdas as general ideas
 
-From whatever language you came from: an OS thread you start and join, a FIFO queue between threads, a mutex around shared data, and a lambda that captures variables from its surroundings. Rust's <code>thread::spawn</code>, <code>mpsc</code>, <code>Mutex</code> and <code>|| …</code> are the same ideas, shown and glossed on the spot in the reel.
-
-<p class="check"><b>Check yourself:</b> in a producer/consumer queue, who owns an item after it is enqueued? (Answer: the queue, and then the consumer that dequeues it; the producer must not use it again. That is exactly what a Rust send enforces.)</p>
-
 <ul class="resources">
   <Resource kind="reading" title="Using Threads to Run Code Simultaneously" href="https://doc.rust-lang.org/book/ch16-01-threads.html" by="Klabnik, Nichols and Krycho, The Rust Programming Language">Optional: <code>thread::spawn</code>, <code>join</code> and <code>move</code> closures (past the chapter 10 baseline; the reel explains what it uses).</Resource>
   <Resource kind="reading" title="Transfer Data Between Threads with Message Passing" href="https://doc.rust-lang.org/book/ch16-02-message-passing.html" by="Klabnik, Nichols and Krycho, The Rust Programming Language">Optional: channels, and why sending a value moves it.</Resource>
   <Resource kind="reading" title="Shared-State Concurrency" href="https://doc.rust-lang.org/book/ch16-03-shared-state.html" by="Klabnik, Nichols and Krycho, The Rust Programming Language">Optional: <code>Mutex</code>, <code>Arc</code>, and the Book's own road from <code>Rc</code> to <code>Arc</code> for a counter.</Resource>
 </ul>
-
-</section>
-
-<section class="prereq" data-section="later">
-
-### <span class="n">05</span> Later, deeper
-
-This topic only names what comes next. Chapter 2 explains the rule behind the borrows (aliasing XOR mutability) and borrows across thread boundaries; Chapter 4 covers <code>Arc</code>, <code>Rc</code>, <code>Weak</code> and what contention on a lock really costs; Chapter 6 covers <code>Send</code> and <code>Sync</code>, poisoning and lock order; Chapter 10 covers bounded channels and structured shutdown. They get their own links here once those reels exist.
 
 </section>

@@ -1,5 +1,6 @@
+import type { Tab } from './NotesPanel';
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { AnimatePresence, motion } from 'motion/react';
+import { AnimatePresence, motion, useAnimationControls } from 'motion/react';
 import type { Reel } from './types';
 import type { TopicMeta } from '../topics/registry';
 import { saveProgress } from './progress';
@@ -16,7 +17,7 @@ type Props = {
   startStep: number;
   next: Next;
   onPlayNext: () => void;
-  onOpenSheet: (section?: string, panel?: 'deep' | 'prereq') => void;
+  onOpenSheet: (tab?: Tab, section?: string) => void;
   onOpenTree: () => void;
   onToast: (msg: string) => void;
 };
@@ -44,6 +45,12 @@ export default function ReelPlayer({ meta, reel, active, startStep, next, onPlay
   const [paused, setPaused] = useState(false);
   const [ended, setEnded] = useState(false);
   const [nudge, setNudge] = useState(0); // shakes the options when "next" is pressed unanswered
+  // The shake runs on controls, not on a changing key: remounting the options under a finger that is still down made the
+  // browser drop the next touch (the swipe that triggers a nudge ends on the very element that is replaced).
+  const shake = useAnimationControls();
+  useEffect(() => {
+    if (nudge) shake.start({ x: [0, -8, 8, -5, 5, 0], transition: { duration: 0.4 } });
+  }, [nudge, shake]);
   const portrait = usePortrait();
   const tRef = useRef(0);
   const cur = steps[step];
@@ -313,18 +320,13 @@ export default function ReelPlayer({ meta, reel, active, startStep, next, onPlay
               <h2 className="mt-2 font-display text-[clamp(1.45rem,3.2vw,2.6rem)] font-bold leading-[1.05] text-crema [text-wrap:balance]">
                 {cur.title}
               </h2>
-              {/* Keys are namespaced: the options' key counts nudges, and a nudge equal to the step number used to collide
-                  with this one, so React left an orphan copy of the text behind on every nudge (QUALITY.md #48). */}
+              {/* The caption's key carries the step, and nothing else shares it: an options key that counted nudges once
+                  collided with it and left an orphan copy of the text behind on every nudge (QUALITY.md #48). */}
               <Caption key={`caption-${step}`} portrait={portrait && !cur.predict}>
                 {cur.body}
               </Caption>
               {cur.predict && (
-                <motion.div
-                  key={`nudge-${nudge}`}
-                  animate={nudge ? { x: [0, -8, 8, -5, 5, 0] } : {}}
-                  transition={{ duration: 0.4 }}
-                  className="mt-3 grid grid-cols-2 gap-2"
-                >
+                <motion.div animate={shake} className="mt-3 grid grid-cols-2 gap-2">
                   {cur.predict.options.map((o, i) => {
                     const picked = answer === i;
                     const show = answer !== null;
@@ -364,11 +366,11 @@ export default function ReelPlayer({ meta, reel, active, startStep, next, onPlay
               {step === 0 && (
                 <button
                   type="button"
-                  onClick={() => onOpenSheet(undefined, 'prereq')}
+                  onClick={() => onOpenSheet('pre')}
                   className="mt-3 inline-flex items-center gap-2 rounded-full border border-crema/15 bg-crema/5 px-3 py-1.5 text-[0.78rem] text-latte transition hover:border-caramel hover:text-crema"
                 >
                   <IconSteps size={14} />
-                  New to this? Start with the prerequisites
+                  New to this? Read the pre-notes first
                 </button>
               )}
               <NextHint visible={done && !needsAnswer && !ended} paused={paused} predict={needsAnswer && done} />
@@ -379,8 +381,9 @@ export default function ReelPlayer({ meta, reel, active, startStep, next, onPlay
 
       {/* Side rail */}
       <div className="absolute bottom-16 right-2.5 z-20 flex flex-col items-center gap-2 landscape:gap-4 landscape:bottom-auto landscape:right-4 landscape:top-1/2 landscape:-translate-y-1/2">
-        <RailButton label="Prereqs" title="Prerequisites" onClick={() => onOpenSheet(undefined, 'prereq')} icon={<IconSteps />} />
-        <RailButton label="Deep dive" onClick={() => onOpenSheet()} icon={<IconLayers />} />
+        <RailButton label="Prereqs" title="Prerequisites" onClick={() => onOpenSheet('prereq')} icon={<IconSteps />} />
+        <RailButton label="Pre-notes" onClick={() => onOpenSheet('pre')} icon={<IconBook />} />
+        <RailButton label="Post-notes" onClick={() => onOpenSheet('post')} icon={<IconLayers />} />
         <RailButton label="Sources" onClick={() => onOpenSheet('sources')} icon={<IconBook />} />
         <RailButton label="Share" onClick={share} icon={<IconSend />} />
       </div>
@@ -462,7 +465,7 @@ export default function ReelPlayer({ meta, reel, active, startStep, next, onPlay
             onBack={() => setEnded(false)}
             onPlayNext={onPlayNext}
             onOpenTree={onOpenTree}
-            onOpenSheet={() => onOpenSheet()}
+            onOpenSheet={() => onOpenSheet('post')}
             active={active}
           />
         )}
@@ -610,7 +613,7 @@ function EndCard({
 
         <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 1.8 }} className="mt-5 flex flex-wrap justify-center gap-2">
           <button type="button" onClick={onOpenSheet} className="rounded-full border border-crema/20 px-4 py-2 text-sm text-crema hover:border-caramel">
-            Deep dive
+            Post-notes
           </button>
           <button type="button" onClick={onReplay} className="rounded-full border border-crema/20 px-4 py-2 text-sm text-crema hover:border-caramel">
             Replay

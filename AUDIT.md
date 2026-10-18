@@ -25,7 +25,7 @@ Every failure is a finding: the pipeline should never have shipped it.
 
 For each topic, launch independent agents (in one message, in parallel) that have not seen its `REVIEW.md` until they have written their own findings.:
 
-- **Facts:** pick at least five claims from the reel and Deep dive (the numbers, the definitions, anything that sounds surprising) and re-derive each from its primary source, fetched raw. Any error, outdated statement or unsupported claim is a finding.
+- **Facts:** pick at least five claims from the reel and post-notes (the numbers, the definitions, anything that sounds surprising) and re-derive each from its primary source, fetched raw. Any error, outdated statement or unsupported claim is a finding.
 - **Looks and learning:** every step's screenshots at desktop and phone (`site/test-results/`), by the checklist in DESIGN.md → "The looks review checks".
 - **Flow:** the seam with the topic before and after it (bridge, handoff, concept ledger, Prerequisites).
 
@@ -35,7 +35,7 @@ Then compare with the topic's `REVIEW.md` and `FACT-CHECK.md`: for every finding
 
 Live reels are locked (ROUTINE.md section 0): don't change a live topic or the shared reel code. For a finding in one, write the exact fix you propose in the ledger and in the report under "needs the owner", and leave the reel as it is; the owner unlocks it if they want the change. Held topics are fixed as below.
 
-**One standing exception, approved by the owner on 2026-10-12: the Basics backfill** (ROUTINE.md section 1B). After its fixes, every audit adds the Basics section to every topic `site/src/topics/basics-backlog.json` still lists that no run holds a claim on, live topics included (that commit carries `Unlock: <topic-id>` and changes only the topic's `prerequisites.mdx` and the list), on the same `audit/<date>` branch, and names the ids in the report. It is the one piece of backlog work the audit does; it is cheap, and it never re-plans, re-reviews or re-narrates anything.
+The Basics backfill (approved 2026-10-12) is retired: every topic has pre-notes since the panel was rebuilt on 2026-10-17, and `basics-backlog.json` is gone.
 
 On a branch `audit/<date>` from a fresh `origin/main`: fix every finding (a fresh Sonnet fix agent per topic; another fresh Sonnet agent re-checks a fix that changes what is taught). A fix that changes a topic's concept ledger or handoff must keep the next topic consistent (its bridge and `uses`); check both. Run `node scripts/check-all.mjs --changed`, then merge into `main` the way ROUTINE.md section 8 does (merge `origin/main` first, full checks green, confirm CI and Deploy). Narration lines that change get new audio (`narration/narrate.sh`).
 

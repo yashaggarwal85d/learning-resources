@@ -70,7 +70,7 @@ const checks = [
   }],
   ['build', () => run('npm', ['run', 'build'])],
   ['narration', () => run('npm', ['run', 'test:narration'])],
-  ['reels', () => (results.build?.ok === false ? (console.error('skipped: build failed'), false) : run('npm', ['run', 'build'], site, HELD) && withPreview(() => run('npm', ['run', 'test:reels', '--', URL_ROOT, ...(topic ? [topic] : [])], site, HELD)))],
+  ['reels', () => (results.build?.ok === false ? (console.error('skipped: build failed'), false) : run('npm', ['run', 'build'], site, HELD) && withPreview(() => run('npm', ['run', 'test:reels', '--', URL_ROOT, ...(topic ? [topic] : [])], site, HELD) && run('npm', ['run', 'test:editor', '--', URL_ROOT], site, HELD)))],
   ['links', () => (linkFiles === null ? (console.log('no topic changed: no links to check'), true) : run('node', ['scripts/check-links.mjs', ...linkFiles], root))],
 ];
 

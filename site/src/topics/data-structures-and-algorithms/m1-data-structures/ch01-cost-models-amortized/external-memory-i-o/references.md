@@ -1,0 +1,6 @@
+Last verified: 2026-10-13.
+
+- A. Aggarwal and J. S. Vitter, "The Input/Output Complexity of Sorting and Related Problems", *Communications of the ACM* 31(9), 1988, pp. 1116–1127 — the originating model (N, M, B, P), the sorting bound Θ((N/B)·log(1 + N/B) / log(1 + M/B)) and the matching lower bound for indivisible records. [doi:10.1145/48529.48535](https://doi.org/10.1145/48529.48535)
+- J. S. Vitter, *Algorithms and Data Structures for External Memory*, Foundations and Trends in Theoretical Computer Science 2(4), 2008 — §2.1 (the PDM parameters N, M, B, D, P, with M < N and B ≤ M/2) and Table 3.1 (the Scan, Sort, Search and Output I/O bounds used above, including Search = Θ(log<sub>B</sub> N) under the comparison model and the "typically less than 2" multi-disk search speed-up). [Author's copy (PDF)](https://www.ittc.ku.edu/~jsv/Papers/Vit.IO_book.pdf)
+- M. Frigo, C. E. Leiserson, H. Prokop and S. Ramachandran, "Cache-Oblivious Algorithms", FOCS 1999 — named for the handoff: an algorithm optimal in this model without knowing M or B. [doi:10.1109/SFFCS.1999.814600](https://doi.org/10.1109/SFFCS.1999.814600)
+- Data Engineering, "The external-memory (I/O) cost model" (§1.3) and "Memory hierarchy and latency numbers" (§1.2) — the companion track with the sourced device figures and real query-plan pricing this topic points to rather than repeating.

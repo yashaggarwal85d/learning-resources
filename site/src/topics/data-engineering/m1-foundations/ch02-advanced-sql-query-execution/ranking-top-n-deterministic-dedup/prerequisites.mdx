@@ -1,21 +1,5 @@
 import Resource from '../../../../../components/Resource.astro';
 
-This topic builds on window functions, frames and peers. Reels on this site are marked **Before this** (earlier in the course), **Goes deeper later** or with the name of another track.
-
-<section class="prereq basics" data-section="basics">
-
-### <span class="n">00</span> Basics: words the reel takes for granted
-
-- **Tie**: two rows with the same value in the ordering column. *Where you meet it:* two customers with the same order count.
-- **Top-N per group**: the first N rows of each group, not of the whole table. *Where you meet it:* the three newest orders of every customer.
-- **Primary key**: a column whose values are unique per row. *Where you meet it:* `order_id`.
-- **Idempotent job**: a job that gives the same result however many times it runs. *Where you meet it:* a nightly dedup that must not change its answer on a rerun.
-- **Logical order of clauses**: the order in which SQL conceptually evaluates `FROM`, `WHERE`, `GROUP BY`, `HAVING`, window functions and `ORDER BY`. *Where you meet it:* why an alias from the select list is not visible in `WHERE`.
-
-<p class="check"><b>Check yourself:</b> why is <code>ORDER BY score DESC</code> alone not a total order if two rows share a score? (Answer: the order of the tied rows is unspecified.)</p>
-
-</section>
-
 <section class="prereq" data-section="earlier-topics">
 
 ### <span class="n">01</span> Windows, and a related pattern

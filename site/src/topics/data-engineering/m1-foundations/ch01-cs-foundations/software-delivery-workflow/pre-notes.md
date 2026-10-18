@@ -1,0 +1,7 @@
+- **Pull request**: a request on a hosting site to merge a branch into another one, with teammates reviewing the change first. *Where you meet it:* the page on GitHub where reviewers comment line by line.
+- **Test**: code that runs your code on chosen inputs and passes or fails depending on the result. *Where you meet it:* `pytest` printing a row of dots and one `F`.
+- **Continuous integration (CI)**: a service that runs a fixed list of commands on every push and reports pass or fail. *Where you meet it:* the green tick or red cross beside a commit.
+- **Workflow file**: the text file, kept in the repository, that lists those commands. *Where you meet it:* a YAML file under `.github/workflows/`.
+- **Dependency**: a package your code needs but you did not write. *Where you meet it:* the lines of a `requirements.txt`.
+- **Package index and `pip`**: the public catalogue that packages are published to, and the tool that downloads them from it. *Where you meet it:* `pip install requests`.
+- **Version number**: the dotted number, such as 1.4.2, that labels one published state of a package. *Where you meet it:* `pip list`.

@@ -9,7 +9,7 @@
 //   gapReview the adversarial gap hunt: its date, and no open items.
 // A place ("at") is one of:
 //   { "step": "<reel step title>" }            a step in this topic's reel.tsx
-//   { "deep": "<Deep dive heading>" }          a ## or ### heading in index.mdx
+//   { "deep": "<Deep dive heading>" }          a ## or ### heading in post-notes.md (or "Sources")
 //   { "topic": "<syllabus title>", "quote": "<words from its syllabus line>", "domain"?: "<id>" }
 //                                              another topic whose syllabus line says it covers it
 //   { "out": "<why>" }                         deliberately left out (sources and expert items only)
@@ -62,7 +62,8 @@ export function checkCoverage(domains: Domain[], topics: TopicMeta[]) {
 
     const own = scopes.get(`${t.domain}::${t.syllabusTitle}`)!;
     const steps = new Set([...readFileSync(resolve(dir, 'reel.tsx'), 'utf8').matchAll(/^\s*title: (['"`])(.*?)\1,?$/gm)].map((m) => m[2]));
-    const headings = new Set([...readFileSync(resolve(dir, 'index.mdx'), 'utf8').matchAll(/^#{2,3} (.+)$/gm)].map((m) => m[1].trim()));
+    const headings = new Set([...readFileSync(resolve(dir, 'post-notes.md'), 'utf8').matchAll(/^#{2,3} (.+)$/gm)].map((m) => m[1].trim()));
+    headings.add('Sources'); // the Sources tab (references.md) has no heading of its own
 
     const checkAt = (label: string, at: At[] | undefined, allowOut: boolean) => {
       if (!at?.length) return errors.push(`${where}: "${label}" is not mapped anywhere. Teach it, or point to the topic that does.`);
@@ -70,7 +71,7 @@ export function checkCoverage(domains: Domain[], topics: TopicMeta[]) {
         if (a.step !== undefined) {
           if (!steps.has(a.step)) errors.push(`${where}: "${label}" points to reel step "${a.step}", which reel.tsx doesn't have.`);
         } else if (a.deep !== undefined) {
-          if (!headings.has(a.deep)) errors.push(`${where}: "${label}" points to Deep dive section "${a.deep}", which index.mdx doesn't have.`);
+          if (!headings.has(a.deep)) errors.push(`${where}: "${label}" points to Deep dive section "${a.deep}", which post-notes.md doesn't have.`);
         } else if (a.topic !== undefined) {
           const other = scopes.get(`${a.domain ?? t.domain}::${a.topic}`);
           if (!other) errors.push(`${where}: "${label}" points to "${a.topic}", which is not a topic in syllabus/${a.domain ?? t.domain}.md.`);

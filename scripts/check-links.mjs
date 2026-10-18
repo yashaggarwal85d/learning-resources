@@ -1,6 +1,6 @@
 // Checks every outside link in the topics (Deep dive, Prerequisites): that it loads, and for <Resource>
 // links that the page is what the title says (YouTube titles via oEmbed, other pages via <title>).
-//   node scripts/check-links.mjs [file.mdx ...]      (default: every .mdx under site/src/topics)
+//   node scripts/check-links.mjs [file ...]      (default: every .mdx and notes .md under site/src/topics)
 // Fails (exit 1) only on links that are really gone: 404/410, or a domain that doesn't exist.
 // Reported for a human, without failing: 401/403/429 (sites that block bots), 5xx and other errors (often a
 // proxy or a temporary outage), and titles that don't match.
@@ -10,7 +10,7 @@ import { join, relative } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 const root = fileURLToPath(new URL('..', import.meta.url));
-const walk = (d) => readdirSync(d).flatMap((f) => (statSync(join(d, f)).isDirectory() ? walk(join(d, f)) : f.endsWith('.mdx') ? [join(d, f)] : []));
+const walk = (d) => readdirSync(d).flatMap((f) => (statSync(join(d, f)).isDirectory() ? walk(join(d, f)) : /\.mdx?$/.test(f) && !/^(REVIEW|OUTLINE|FACT-CHECK|CHAPTER|SOURCES)\.md$/.test(f) ? [join(d, f)] : []));
 const files = process.argv.slice(2).length ? process.argv.slice(2) : walk(join(root, 'site/src/topics'));
 
 const decode = (s) => s.replace(/&amp;/g, '&').replace(/&#39;|&#x27;/g, "'").replace(/&quot;/g, '"').replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/<[^>]+>/g, '');

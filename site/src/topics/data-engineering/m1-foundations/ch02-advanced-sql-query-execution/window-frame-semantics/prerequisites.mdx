@@ -1,26 +1,8 @@
 import Resource from '../../../../../components/Resource.astro';
 
-This topic opens §2.2. It needs aggregates and the idea of ordering, nothing more. Reels on this site are marked **Before this** (earlier in the course), **Goes deeper later** or with the name of another track.
-
-<section class="prereq basics" data-section="basics">
-
-### <span class="n">00</span> Basics: words the reel takes for granted
-
-- **Running total**: an aggregate that grows as you move down an ordered list. *Where you meet it:* a bank statement's balance column.
-- **Timestamp tie**: two rows with exactly the same value in the ordering column. *Where you meet it:* events logged in the same millisecond, or dates without a time.
-- **CTE / subquery**: a named or inline query whose result an outer query reads. *Where you meet it:* `WITH t AS (SELECT …) SELECT … FROM t`.
-- **Deterministic ordering**: an `ORDER BY` whose result is the same every run, which needs a unique tiebreaker. *Where you meet it:* paging through results without rows moving between pages.
-- **Rank**: the position of a row in an ordering. *Where you meet it:* a leaderboard.
-
-<p class="check"><b>Check yourself:</b> three rows have amounts 5, 5 and 7, and the first two tie on the ordering key. Is "the order of the two 5s" defined by <code>ORDER BY key</code> alone? (Answer: no, it is arbitrary, so add a unique tiebreaker.)</p>
-
-</section>
-
 <section class="prereq" data-section="earlier-topics">
 
 ### <span class="n">01</span> Aggregates and the end of §2.1
-
-You should be comfortable with `GROUP BY` and aggregates; a window function is the same idea without collapsing rows.
 
 <ul class="resources">
   <Resource kind="reel" host={props.host} domain="data-engineering" title="Grouping sets, ROLLUP, CUBE and pivots">Aggregation over several levels.</Resource>

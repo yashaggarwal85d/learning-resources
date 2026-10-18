@@ -1,26 +1,8 @@
 import Resource from '../../../../../components/Resource.astro';
 
-This is the first topic of Chapter 2. It assumes you can already write a `SELECT` with a `WHERE`, a `JOIN` and a `GROUP BY`; it does not reteach them, it fixes exactly what they mean. Reels on this site are marked **Before this** (earlier in the course), **Goes deeper later** or with the name of another track.
-
-<section class="prereq basics" data-section="basics">
-
-### <span class="n">00</span> Basics: words the reel takes for granted
-
-- **Table, row, column**: a table is a collection of rows, each row has the same named columns. *Where you meet it:* `orders` has a row per order and columns such as `customer_id` and `amount`.
-- **Query result**: what a `SELECT` returns is itself a table, which another query can read. *Where you meet it:* a subquery in `FROM`, or a CTE.
-- **Join key**: the column(s) two tables are matched on. *Where you meet it:* `orders.customer_id = customers.customer_id`.
-- **Tree**: nodes connected by edges, with one root and no cycles; each node has children below it. *Where you meet it:* a file-system directory listing.
-- **Query plan (`EXPLAIN`)**: the engine's printed description of how it will run a query. *Where you meet it:* `EXPLAIN SELECT ...` in PostgreSQL.
-
-<p class="check"><b>Check yourself:</b> can you say what <code>SELECT customer_id, COUNT(*) FROM orders GROUP BY customer_id</code> returns? (Answer: one row per customer, with the number of that customer's orders.)</p>
-
-</section>
-
 <section class="prereq" data-section="sql-select">
 
 ### <span class="n">01</span> Basic SQL: SELECT, WHERE, JOIN, GROUP BY
-
-Chapter 2 assumes you can write and read everyday SQL. If any of these is shaky, patch it before this topic, not during it.
 
 <ul class="resources">
   <Resource kind="reading" title="PostgreSQL Tutorial, ch. 2–4: The Relational Database, Advanced Features, SQL Language" href="https://www.postgresql.org/docs/current/tutorial.html" by="PostgreSQL documentation" length="30 min">A fast, example-driven refresher on SELECT, WHERE, JOIN and GROUP BY against a running example database.</Resource>
@@ -31,8 +13,6 @@ Chapter 2 assumes you can write and read everyday SQL. If any of these is shaky,
 <section class="prereq" data-section="chapter-one">
 
 ### <span class="n">02</span> The machine it runs on
-
-This topic reuses the running example's tables (`orders`, now joined by `order_items`, `products` and `page_views`). It does not reuse Chapter 1's cost machinery yet; that returns in §2.3.
 
 <ul class="resources">
   <Resource kind="reel" host={props.host} domain="data-engineering" title="Bandwidth, latency and data locality">The last reel of Chapter 1, whose handoff is this topic's opening line.</Resource>

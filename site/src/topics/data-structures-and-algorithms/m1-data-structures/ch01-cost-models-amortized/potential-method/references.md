@@ -1,0 +1,13 @@
+Last verified against these sources: 2026-10-12, with every example run in `examples.py`. Fact-check record: `FACT-CHECK.md`. Expert sign-off: pending.
+
+- Robert E. Tarjan, [Amortized computational complexity](https://courses.cs.duke.edu/fall11/cps234/reading/Tarjan85_AmortizedComplexity.pdf) (SIAM J. Algebraic Discrete Methods 6(2), 1985; the course-reading copy): the banker’s and physicist’s views, the stack, the telescoping sum, move-to-front, and the description of the union–find proof as using debits as well as credits.
+- Jeff Erickson, [Algorithms, Lecture 9: Amortized Analysis](https://jeffe.cs.illinois.edu/teaching/algorithms/notes/09-amortize.pdf) (Fa’13 notes, © 2018, CC BY-NC-SA 4.0): the potential method for the counter, the increment-and-decrement counter, the choice of Φ, and exercise 9.
+- Avrim Blum, [15-451 Algorithms, Lecture 7: Amortized Analysis](https://www.cs.cmu.edu/~avrim/451f11/lectures/lect0922.pdf) (CMU, Fall 2011): Definitions 7.1 and 7.2, the potential for the doubling array, the seed, and the footnote on charging pops.
+- University of Waterloo CS466, [Amortized Analysis, Part 2: Union–Find](https://student.cs.uwaterloo.ca/~cs466/Old_courses/F14/4-AmortizedAnalysis-part2.pdf) (Fall 2014): the union–find operations, the O(m·α(m, n)) theorem and the Ackermann function.
+- Daniel D. Sleator and Robert E. Tarjan, [Self-Adjusting Binary Search Trees](https://www.cs.cmu.edu/~sleator/papers/self-adjusting.pdf) (J. ACM 32(3), 1985): the splay potential and the access lemma.
+- Kevin Wayne, [Fibonacci Heaps](https://www.cs.princeton.edu/~wayne/kleinberg-tardos/pdf/FibonacciHeaps.pdf) (Kleinberg–Tardos lecture slides, 2017): the Fibonacci-heap potential and each operation’s change in it. A secondary source; the Fredman–Tarjan paper was not opened.
+- Chris Okasaki, [Purely Functional Data Structures](https://www.cs.cmu.edu/~rwh/students/okasaki.pdf) (PhD thesis, CMU-CS-96-177, 1996), Chapter 3: the conversions between the banker’s and physicist’s methods, and why they break under persistence.
+- Lambert, Huang, Nie and Peng, [Simpler Analyses of Union-Find](https://arxiv.org/pdf/2308.09021) (arXiv:2308.09021v1, 2023): potential-function proofs of the log log n, log* n, log** n and α(n) bounds.
+- Cormen, Leiserson, Rivest and Stein, *Introduction to Algorithms*, 4th ed. (MIT Press, 2022), the chapter on amortized analysis: cited for framing only; it was not opened for this topic and no chapter number is claimed. Fredman and Tarjan (1987) and Tarjan (1975) are named only through the sources above.
+
+Spotted an error or something unclear? [Report it](https://github.com/yashaggarwal85d/learning-resources/issues/new?title=potential-method:%20).

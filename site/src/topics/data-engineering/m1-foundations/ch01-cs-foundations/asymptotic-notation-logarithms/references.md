@@ -1,0 +1,10 @@
+Last verified: 12 October 2026, against the sources below (every quoted passage is checked word for word by the repository's source check; every number and example is run in `examples.py`). Expert sign-off: pending.
+
+- MIT OpenCourseWare, [6.006 Introduction to Algorithms, Spring 2020, Recitation 1](https://ocw.mit.edu/courses/6-006-introduction-to-algorithms-spring-2020/resources/mit6_006s20_r01/): the definitions of O, Ω and Θ, the growth table, linear-time lower bounds, binary search, the word-RAM and the logarithm rules.
+- D. E. Knuth, "Big Omicron and big Omega and big Theta", SIGACT News 8(2), 1976, pp. 18–24 ([scan](https://danluu.com/knuth-big-o.pdf)): the case for Ω and Θ, one-way equality, and the sets view. Only passages whose OCR is intact are quoted.
+- NIST, [Digital Library of Mathematical Functions §4.2](https://dlmf.nist.gov/4.2) (version 1.2.8, 2026-09-15): the logarithm, logarithms to a general base, and the change of base.
+- J. S. Vitter, [Algorithms and Data Structures for External Memory](https://www.ittc.ku.edu/~jsv/Papers/Vit.IO_book.pdf), Foundations and Trends in Theoretical Computer Science 2(4), 2008: B-tree height, merge-sort passes and why bases stay out of the big-oh.
+- PostgreSQL 18 documentation, [65.1 B-Tree Indexes](https://www.postgresql.org/docs/current/btree.html) and [66.6 Database Page Layout](https://www.postgresql.org/docs/current/storage-page-layout.html); PostgreSQL source (REL_18_STABLE), [itemptr.h](https://raw.githubusercontent.com/postgres/postgres/REL_18_STABLE/src/include/storage/itemptr.h), [itup.h](https://raw.githubusercontent.com/postgres/postgres/REL_18_STABLE/src/include/access/itup.h) and [nbtree.h](https://raw.githubusercontent.com/postgres/postgres/REL_18_STABLE/src/include/access/nbtree.h): page size, header, line pointers, index tuples, special space and default fill.
+- Python documentation, [math](https://docs.python.org/3/library/math.html) (Python 3.15.0): two-argument `log`, `log2`, `log10` and `int.bit_length()`.
+
+Spotted an error or something unclear? [Report it](https://github.com/yashaggarwal85d/learning-resources/issues/new?title=asymptotic-notation-logarithms:%20).

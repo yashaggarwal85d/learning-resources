@@ -1,0 +1,6 @@
+- **Shell**: an ordinary program that reads the line you type and starts other programs for it. *Where you meet it:* bash or zsh in a terminal window.
+- **Process and PID**: a running program, with its own memory and a number that identifies it (the PID). *Where you meet it:* the first column of `ps` output.
+- **Working directory and path**: the folder a process is "in", and the text that names a file, relative to it or from the root. *Where you meet it:* `./load.sh` against `/opt/jobs/load.sh`.
+- **Environment variable**: a named setting that a process hands down to every program it starts. *Where you meet it:* `echo $PATH` shows where the shell looks for commands.
+- **Script**: a text file of shell commands that runs as a program. *Where you meet it:* a nightly `load.sh` that calls three tools in a row.
+- **Host, port and connection**: a host is a machine on the network, a port is a numbered door on it that one program listens at, and a connection is two such ends talking. *Where you meet it:* a database at `db.internal:5432`.

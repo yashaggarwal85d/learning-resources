@@ -1,14 +1,8 @@
 import Resource from '../../../../../components/Resource.astro';
 
-This reel assumes seven things. If they're familiar, skip straight in. If one isn't, a few minutes with the matching resource is enough to follow every step. Reels on this site are marked **Before this** (earlier in the course), **Goes deeper later** (not needed now) or with the name of another track.
-
 <section class="prereq" data-section="logs">
 
 ### <span class="n">01</span> Big-O and logarithms in any base
-
-You'll read costs like Θ(N/B) and (N/B) · log<sub>M/B</sub>(N/B) throughout. Big-O describes how a cost grows with input size, ignoring constant factors. A logarithm in base b counts how many times you can divide by b, and any base converts to another: log<sub>b</sub> x = ln x / ln b. The key point here is that **a large base makes the logarithm tiny**: log<sub>16,384</sub> of a million is under 1.5. That one fact is why sorting a terabyte takes only two passes.
-
-<p class="check"><b>Check yourself:</b> what is log<sub>1000</sub>(10⁹)? (Answer: 3, since 1000³ = 10⁹.)</p>
 
 <ul class="resources">
   <Resource kind="reel" host={props.host} domain="data-engineering" title="Asymptotic notation and logarithms">The refresher at the start of this chapter.</Resource>
@@ -24,10 +18,6 @@ You'll read costs like Θ(N/B) and (N/B) · log<sub>M/B</sub>(N/B) throughout. B
 
 ### <span class="n">02</span> The memory hierarchy, and why sequential beats random
 
-Data lives in tiers: CPU caches, RAM, SSD, hard disk, and storage across the network. Each tier is slower than the one above, often by 10× to 1000×, and each moves data in chunks: 64-byte cache lines, 4–8 KB pages, multi-megabyte ranges. Within any tier, reading the next chunk is far cheaper than jumping somewhere else, because a jump pays a fixed delay (a seek, a request, a cache miss) before any data arrives.
-
-<p class="check"><b>Check yourself:</b> on a hard disk, why can reading 1 GB in order be faster than reading 10,000 scattered 8 KB pages, only 80 MB? (Answer: each scattered read pays a seek of several milliseconds, about 10,000 × 7 ms ≈ 70 s, while 1 GB streams at a couple of hundred MB/s in about 5 s.)</p>
-
 <ul class="resources">
   <Resource kind="reel" host={props.host} domain="data-engineering" title="Memory hierarchy and latency numbers">The tiers and their numbers, in §1.2.</Resource>
   <Resource kind="reel" host={props.host} domain="data-engineering" title="Storage devices and fsync durability">Sequential vs random I/O on real devices, in §1.2.</Resource>
@@ -42,10 +32,6 @@ Data lives in tiers: CPU caches, RAM, SSD, hard disk, and storage across the net
 
 ### <span class="n">03</span> How a database stores a table: pages
 
-A table is stored as a file of fixed-size **pages** (8 KB in PostgreSQL). Each page holds many rows, and the database always reads and writes whole pages, never single rows. So the number of rows per page, roughly the page size divided by the row size, is the **B** of this topic: it decides how many page reads a query costs.
-
-<p class="check"><b>Check yourself:</b> with rows of about 80 bytes in 8 KB pages, roughly how many rows fit on a page? (Answer: about 100; this is the B used in the reel.)</p>
-
 <ul class="resources">
   <Resource kind="video" title="#03 Database Storage: Files &amp; Pages" href="https://www.youtube.com/watch?v=dSxV5Sob5V8" by="CMU Database Group (Intro to Database Systems)" length="82 min">Pages, heap files and tuple layout, from the best free database course.</Resource>
   <Resource kind="reading" title="Database Page Layout" href="https://www.postgresql.org/docs/current/storage-page-layout.html" by="PostgreSQL documentation" length="10 min">How an 8 kB PostgreSQL page is laid out.</Resource>
@@ -58,10 +44,6 @@ A table is stored as a file of fixed-size **pages** (8 KB in PostgreSQL). Each p
 <section class="prereq" data-section="btree">
 
 ### <span class="n">04</span> What a B-tree index lookup does
-
-An index is a separate structure, usually a **B+tree**, that keeps a column's values in sorted order and points to where each row lives. A lookup walks from the root to a leaf, typically 3–4 page reads and most of them already in cache, and then follows the pointer to the row's page in the table. The index is in sorted order; the table usually isn't. That gap is the whole story of this reel.
-
-<p class="check"><b>Check yourself:</b> an index finds 1,000 matching rows. How many table pages might it have to read? (Answer: anywhere from about 10, if the rows sit next to each other, to 1,000, if every row is on a different page.)</p>
 
 <ul class="resources">
   <Resource kind="reel" host={props.host} domain="data-engineering" title="B+-trees vs LSM-trees at a glance">The refresher just before this topic.</Resource>
@@ -77,10 +59,6 @@ An index is a separate structure, usually a **B+tree**, that keeps a column's va
 
 ### <span class="n">05</span> Merge sort and merging many sorted lists
 
-Merge sort sorts pieces and then merges sorted runs into one. Merging **k** runs at once uses a min-heap holding the current head of each run: take the smallest, then refill from the run it came from. Each output costs about log<sub>2</sub> k comparisons, so merging 16,000 runs at once is cheap in CPU, and in I/O each run is read exactly once.
-
-<p class="check"><b>Check yourself:</b> merging 16 sorted runs with a heap, about how many comparisons does each output element cost? (Answer: about log<sub>2</sub> 16 = 4.)</p>
-
 <ul class="resources">
   <Resource kind="reading" title="Mergesort" href="https://algs4.cs.princeton.edu/22mergesort/" by="Sedgewick and Wayne, Algorithms 4th ed." length="20 min">Merging sorted runs; section 2.4 (Priority Queues) adds a heap-based multiway merge.</Resource>
   <Resource kind="video" title="Merge K Sorted Arrays: Min Heap Algorithm" href="https://www.youtube.com/watch?v=ptYUCjfNhJY" by="Back To Back SWE" length="11 min">The k-way merge with a heap, step by step.</Resource>
@@ -95,10 +73,6 @@ Merge sort sorts pieces and then merges sorted runs into one. Merging **k** runs
 
 ### <span class="n">06</span> Reading a query plan with EXPLAIN
 
-`EXPLAIN` shows the plan a database chose for a query. In PostgreSQL, a **Seq Scan** reads the whole table in order; an **Index Scan** follows the index and fetches rows one at a time; a **Bitmap Heap Scan** collects the matching row locations, sorts them by page and reads each page once. `EXPLAIN (ANALYZE, BUFFERS)` also runs the query and reports actual rows and pages read, which is how the Deep dive's lab checks the reel's numbers.
-
-<p class="check"><b>Check yourself:</b> in a plan, what does <code>Heap Blocks: exact=17647</code> tell you? (Answer: the bitmap heap scan read 17,647 table pages.)</p>
-
 <ul class="resources">
   <Resource kind="reading" title="Using EXPLAIN" href="https://www.postgresql.org/docs/current/using-explain.html" by="PostgreSQL documentation" length="30 min">The official guide: seq, index and bitmap scans side by side.</Resource>
   <Resource kind="reading" title="PostgreSQL execution plan operations" href="https://use-the-index-luke.com/sql/explain-plan/postgresql/operations" by="Markus Winand, Use The Index, Luke" length="10 min">A compact reference for every scan and join node.</Resource>
@@ -111,10 +85,6 @@ Merge sort sorts pieces and then merges sorted runs into one. Merging **k** runs
 <section class="prereq" data-section="distributed-joins">
 
 ### <span class="n">07</span> Joining tables spread across machines
-
-On a cluster each table is split into **partitions**, one or more per machine. To join two tables on a key, rows with the same key must meet on the same machine. **Hash partitioning** sends each row to machine hash(key) mod p, so equal keys always land together. A **shuffle** re-partitions a table this way, sending most rows across the network; a **shuffle join** does it to both tables. A **broadcast join** instead copies the whole small table to every machine, and the big table stays where it is. The reel's network step counts the bytes each one moves.
-
-<p class="check"><b>Check yourself:</b> on 4 machines, a table is shuffled by key. Roughly what share of its rows has to move? (Answer: about 3/4: a row stays only if its key hashes to the machine it is already on, 1 chance in 4.)</p>
 
 <ul class="resources">
   <Resource kind="reading" title="Lecture #23: Distributed OLAP Databases" href="https://15445.courses.cs.cmu.edu/fall2024/notes/24-distributedolap.pdf" by="Andy Pavlo, CMU 15-445/645 (Fall 2024)" length="6-page PDF">Its “Distributed Join Algorithms” section walks through the four cases, broadcast join and shuffle join included.</Resource>

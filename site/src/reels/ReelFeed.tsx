@@ -3,6 +3,7 @@ import { AnimatePresence, motion } from 'motion/react';
 import type { TopicMeta } from '../topics/registry';
 import type { Reel } from './types';
 import ReelPlayer from './ReelPlayer';
+import NotesPanel, { type Panel, type Tab } from './NotesPanel';
 import { allProgress, getProgress, lastTopic, setLastTopic, type TopicProgress } from './progress';
 
 export type FeedDomain = { id: string; title: string; live: number };
@@ -35,7 +36,8 @@ export default function ReelFeed({ base, domains, topics, initialDomain, initial
   const [active, setActive] = useState(-1);
   const [reels, setReels] = useState<Record<string, Reel>>({});
   const [starts, setStarts] = useState<Record<string, { step: number; epoch: number }>>({});
-  const [sheet, setSheet] = useState<Sheet | null>(null);
+  const [sheet, setSheet] = useState<Panel | null>(null);
+  const dirty = useRef(false); // the panel holds unsaved edits
   const [treeOpen, setTreeOpen] = useState(false);
   const [toast, setToast] = useState<{ msg: string; action?: { label: string; run: () => void } } | null>(null);
   const scroller = useRef<HTMLDivElement>(null);
@@ -115,11 +117,17 @@ export default function ReelFeed({ base, domains, topics, initialDomain, initial
     document.title = `${t.title} · The Learning Experience`;
   }, [active, list, base, domain]);
 
+  const closeSheet = useCallback(() => {
+    if (dirty.current && !window.confirm('Discard your unsaved edits?')) return;
+    dirty.current = false;
+    setSheet(null);
+  }, []);
+
   // ↑ / ↓ move between topics.
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
       if (e.key === 'Escape') {
-        setSheet(null);
+        closeSheet();
         setTreeOpen(false);
         return;
       }
@@ -134,7 +142,7 @@ export default function ReelFeed({ base, domains, topics, initialDomain, initial
     };
     window.addEventListener('keydown', onKey);
     return () => window.removeEventListener('keydown', onKey);
-  }, [active, list.length, scrollToIndex, sheet, treeOpen]);
+  }, [active, list.length, scrollToIndex, sheet, treeOpen, closeSheet]);
 
   const playTopic = (id: string) => {
     const t = topics.find((x) => x.id === id);
@@ -222,7 +230,7 @@ export default function ReelFeed({ base, domains, topics, initialDomain, initial
                   startStep={start.step}
                   next={nextAfter[t.id] ?? null}
                   onPlayNext={() => scrollToIndex(i + 1)}
-                  onOpenSheet={(section, panel = 'deep') => setSheet({ id: t.id, section, panel })}
+                  onOpenSheet={(tab: Tab = 'post', section?: string) => setSheet({ id: t.id, tab, section })}
                   onOpenTree={() => setTreeOpen(true)}
                   onToast={(m) => showToast(m)}
                 />
@@ -275,7 +283,7 @@ export default function ReelFeed({ base, domains, topics, initialDomain, initial
         </section>
       </div>
 
-      <DeepSheet sheet={sheet} onClose={() => setSheet(null)} />
+      <NotesPanel panel={sheet} topics={topics} dirty={dirty} onTab={(tab) => setSheet((p) => (p ? { id: p.id, tab } : p))} onClose={closeSheet} />
       <AnimatePresence>{treeOpen && <Tree tree={tree} coming={comingTotal} current={list[active]?.id} onClose={() => setTreeOpen(false)} onPlay={playTopic} />}</AnimatePresence>
 
       <AnimatePresence>
@@ -304,69 +312,6 @@ export default function ReelFeed({ base, domains, topics, initialDomain, initial
         )}
       </AnimatePresence>
     </div>
-  );
-}
-
-type Sheet = { id: string; section?: string; panel: 'deep' | 'prereq' };
-
-/** A bottom sheet holding a topic's Deep dive or Prerequisites (rendered by Astro, copied in here). */
-function DeepSheet({ sheet, onClose }: { sheet: Sheet | null; onClose: () => void }) {
-  const body = useRef<HTMLDivElement>(null);
-  useEffect(() => {
-    if (!sheet || !body.current) return;
-    // Copy, don't move: the sheet unmounts on close and would take the original with it.
-    const node = document.getElementById(`${sheet.panel}-${sheet.id}`);
-    if (node) {
-      const copy = node.cloneNode(true) as HTMLElement;
-      copy.removeAttribute('id');
-      copy.hidden = false;
-      copy.querySelectorAll<HTMLAnchorElement>('a[href^="http"]').forEach((a) => {
-        a.target = '_blank';
-        a.rel = 'noopener';
-      });
-      body.current.replaceChildren(copy);
-    }
-    requestAnimationFrame(() => {
-      const target = sheet.section ? body.current?.querySelector(`[data-section="${sheet.section}"]`) : null;
-      if (target) target.scrollIntoView({ block: 'start' });
-      else body.current?.parentElement?.scrollTo({ top: 0 });
-    });
-  }, [sheet]);
-
-  return (
-    <AnimatePresence>
-      {sheet && (
-        <motion.div className="fixed inset-0 z-[55]" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
-          <button type="button" aria-label="Close" className="absolute inset-0 bg-void/70 backdrop-blur-sm" onClick={onClose} />
-          <motion.div
-            role="dialog"
-            aria-modal="true"
-            aria-label={sheet.panel === 'prereq' ? 'Prerequisites' : 'Deep dive'}
-            className="absolute inset-x-0 bottom-0 mx-auto flex max-h-[88dvh] max-w-3xl flex-col rounded-t-[28px] border border-b-0 border-crema/10 bg-roast shadow-[0_-30px_80px_rgba(0,0,0,.6)]"
-            initial={{ y: '100%' }}
-            animate={{ y: 0 }}
-            exit={{ y: '100%' }}
-            transition={{ type: 'spring', stiffness: 260, damping: 32 }}
-            drag="y"
-            dragConstraints={{ top: 0, bottom: 0 }}
-            dragElastic={{ top: 0, bottom: 0.6 }}
-            dragListener={false}
-            onDragEnd={(_, info) => info.offset.y > 120 && onClose()}
-          >
-            <div className="flex items-center justify-between px-5 pb-2 pt-3">
-              <span className="eyebrow text-[0.62rem] text-caramel">{sheet.panel === 'prereq' ? 'Prerequisites' : 'Deep dive'}</span>
-              <span className="h-1.5 w-12 rounded-full bg-crema/20" />
-              <button type="button" onClick={onClose} className="grid h-8 w-8 place-items-center rounded-full text-latte hover:bg-crema/10 hover:text-crema" aria-label="Close panel">
-                ✕
-              </button>
-            </div>
-            <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain px-5 pb-10 sm:px-8">
-              <div ref={body} className="deep" />
-            </div>
-          </motion.div>
-        </motion.div>
-      )}
-    </AnimatePresence>
   );
 }
 

@@ -1,0 +1,8 @@
+- **Name binding**: in Python a variable is a name attached to an object, and assignment moves the name; it never copies the object. *Where you meet it:* after `b = a` on a list, `b.append(1)` changes what `a` shows too.
+- **Mutable and immutable**: a mutable object (list, dict, set) changes in place; an immutable one (int, str, tuple) cannot, so every "change" builds a new object. *Where you meet it:* `s += "x"` makes a new string, while `lst += [1]` grows the same list.
+- **Function object**: a function is a value like any other: you can store it in a variable, pass it to another function and return it. *Where you meet it:* `sorted(rows, key=len)` hands `len` over as an argument.
+- **Scope**: the region of code where a name can be seen. A function body has its own; a `for` loop does not make one for its loop variable. *Where you meet it:* reading `i` after the loop and finding its last value.
+- **Iterable**: anything a `for` loop can walk through: lists, dicts, ranges, open files. *Where you meet it:* `for line in open(path)`.
+- **Hash**: a whole number computed from a value, which dicts and sets use to find it quickly; two equal values must hash the same. *Where you meet it:* a list used as a dict key raises `TypeError: unhashable type`.
+- **Resource handle**: something the operating system lends you and expects back, such as an open file or a database connection. *Where you meet it:* a long-running script that fails with "too many open files".
+- **Type hint**: an annotation such as `n: int` that documents what a function expects and returns. *Where you meet it:* `def f(n: int) -> str:` in modern code and in editor tooltips.

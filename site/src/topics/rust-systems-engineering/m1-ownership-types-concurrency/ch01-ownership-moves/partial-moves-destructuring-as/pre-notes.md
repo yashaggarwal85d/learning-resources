@@ -1,0 +1,5 @@
+- **Pattern and destructuring**: a pattern describes the shape of a value so that its parts can be named in one step. *Where you meet it:* `let Point { x, y } = p;`.
+- **`Option<T>`**: either `Some(value)` or `None`; Rust's way to say "maybe nothing here". *Where you meet it:* `map.get(&key)` returns an `Option`.
+- **Struct field**: one named part of a struct, reached with a dot. *Where you meet it:* `pool.buf`.
+- **Struct with a lifetime parameter**: a struct that holds a reference declares how long it may live, as in `struct Guard<'a>`. *Where you meet it:* a guard borrowing the pool that created it.
+- **`Drop` from the last reel**: a type may run code when it is destroyed, and a value with such code must be destroyed whole. *Where you meet it:* a guard that returns a buffer to its pool.

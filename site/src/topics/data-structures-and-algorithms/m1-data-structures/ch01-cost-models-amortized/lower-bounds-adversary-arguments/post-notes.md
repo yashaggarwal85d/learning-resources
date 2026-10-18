@@ -1,0 +1,131 @@
+---
+id: dsa.lower-bounds-adversary-arguments
+title: "Lower bounds and adversary arguments"
+---
+
+<section data-section="outcomes">
+
+## After this topic you can
+
+- Prove the Ω(n log n) comparison-sorting bound from the decision tree: n! leaves force height ⌈log₂ n!⌉ in the worst case, and the average leaf depth over random orders is at least ⌊log₂ n!⌋.
+- Use an adversary to prove a tight bound: n − 1 comparisons for the maximum, ⌈3n/2⌉ − 2 for the minimum and maximum together. Say what makes an adversary valid: every answer consistent with some input, and no assumption about the algorithm.
+- Turn the number of possible answers K into the information-theoretic bound ⌈log₂ K⌉ (search, sorting, merging), and recognise when an adversary beats it (the maximum, merging, element distinctness).
+- Say exactly which algorithms a lower bound rules out (comparison algorithms for that problem, in the worst or average case) and which it does not (radix sort and hashing, better constants, easy inputs, a different problem), and tell a problem's lower bound from one algorithm's cost.
+
+</section>
+
+<section data-section="internals">
+
+## A little deeper
+
+### A lower bound is a claim about every algorithm
+
+- **Upper and lower bounds are different kinds of statement.** Erickson (lecture 12): the worst-case complexity of a problem is "the worst-case running time of the fastest algorithm", that is, the minimum over algorithms of each algorithm's maximum over inputs. An upper bound needs one algorithm. A lower bound must hold for every algorithm, and "there is no formal definition of the phrase ‘all algorithms’!", so a **model of computation** has to be fixed first: what an algorithm may do, and what it pays.
+- **The decision-tree model.** A decision tree has a query at each internal node, an answer on each edge and an output at each leaf; the running time on an input is the depth of its leaf, so the tree's height is the worst case. There is one tree for each n, so the bound holds even for an algorithm written for one n (a non-uniform bound, UMass). With k-way queries and N possible outputs the height is at least ⌈log_k N⌉. Erickson: counting decisions "is certainly a lower bound on the actual running time", because the rest of the work only adds to it.
+- **The comparison model** is topic 2's: the algorithm learns about the keys only by comparing pairs of them (Blum, Definition 5.1 in the lecture notes; Definition 6.2 in lecture 6), and moving keys is free. "Comparison trees describe almost all well-known sorting algorithms … but not radix sort or bucket sort." Bubble, selection, insertion, shell, quick, heap and merge sort are all comparison trees.
+- **The hashing objection, and its answer.** A hash set answers membership in O(1) expected time, which looks like a contradiction of an Ω(log n) search bound. It is not: "hashing involves a query with more than a constant number of outcomes". Erickson's moral: "choosing the right model of computation is absolutely crucial".
+- **When the two meet, the problem is settled in that model.** Merge sort's Θ(n log n), solved in the previous topic, meets the Ω(n log n) proved here, so sorting costs Θ(n log n) comparisons. Unit of cost: one comparison, and everything else is free, so a comparison count is a lower bound on running time and never an upper bound.
+
+### The sorting bound, in full
+
+- **The proof.** Sorting n distinct keys must be able to output any of the n! orders, so the tree has at least n! leaves. A binary tree of height h has at most 2ʰ leaves, so 2ʰ ≥ n! and h ≥ ⌈log₂ n!⌉.
+- **log₂ n! = Θ(n log n), two ways.** The elementary bracket: (n/2)(log₂ n − 1) ≤ log₂ n! ≤ n log₂ n (UMass). Stirling's: n log₂ n − 1.443n &lt; log₂ n! &lt; n log₂ n (Blum, lecture 6). At a million keys: 18,488,569 &lt; 18,488,885 &lt; 19,931,569.
+- **The adversary form.** Answer each comparison with the side that keeps more orders consistent; after g answers at least n!/2ᵍ orders remain, so the algorithm cannot stop before 2ᵍ ≥ n!. Blum's n = 3 run: 6, then 3, then 2 orders. It is "like a game of 20 Questions in which the responder … doesn't actually decide", and Barrington's guessing game ends at ⌈log(n + 1)⌉ guesses.
+- **Exact values for small n.** ⌈log₂ n!⌉ for n = 3 … 12 is 3, 5, 7, 10, 13, 16, 19, 22, 26, 29. For n = 3, 4, 5 the bound is exact: an exhaustive search over every tree (in `examples.py`) shows that 3, 5 and 7 comparisons suffice and one fewer does not. For n = 6 the bound says 10; trying to confirm it by exhaustive search takes minutes (Try it).
+- **How close real sorts get.** Merge sort's worst case is n⌈log₂ n⌉ − 2^⌈log₂ n⌉ + 1 comparisons (checked against the recurrence C(n) = C(⌈n/2⌉) + C(⌊n/2⌋) + n − 1 for every n up to 100,000): 18,951,425 at a million, 2.5 % above the floor. Note that the previous topic's 20,951,424 for a million keys is the exact solution of its simplified recurrence (n per level), not a comparison count; the comparison count is n − 1 per merge. Ford and Johnson's merge insertion (1959) is, in the Waterloo CS 466 notes' words, "(essentially) the sorting method that takes the fewest comparisons (in the worst case)", and its count is n lg n minus an oscillating term.
+- **Three-way comparisons change nothing** on distinct keys: the “=” branch is never taken, so the tree is binary where it matters.
+- **Where it is quoted.** Chapter 15's elementary sorts topic cites this bound as "the Ω(n log n) bound from Ch.1".
+
+### Average case and randomized sorts
+
+- **Average over inputs** (Blum, Theorem 5.2): over all n! orders equally likely, any deterministic comparison sort has average leaf depth at least ⌊log₂ n!⌋. Proof: if two leaves differ in depth by 2 or more, take the two deepest sibling leaves and hang them under the shallowest leaf; the average falls. So the cheapest tree is balanced, and a balanced tree with n! leaves has every leaf at depth ⌊log₂ n!⌋ or ⌈log₂ n!⌉. The move proves only ⌊log₂ n!⌋; Blum remarks that "if we are a bit more clever in the proof, we can get rid of the floor", giving the sharper log₂ n! that the reel draws as the dashed line. The reel's example: depths 1, 2, 3, 4, 5, 5 (average 3.33) → 2, 2, 2, 3, 4, 4 (2.83) → 2, 2, 3, 3, 3, 3 (2.67), against the bound log₂ 6 = 2.585 (the dashed tick). The minimum sum of depths of a binary tree with L leaves is L·⌊log₂ L⌋ + 2(L − 2^⌊log₂ L⌋), checked in `examples.py`.
+- **Randomized sorts** (Theorems 5.3 and 5.4 there): a randomized algorithm is a probability distribution over deterministic ones. For every input its expected cost is an average over the algorithm's coins; averaged over inputs as well, it is at least the best deterministic algorithm's average, so even the best randomized comparison sort has an input on which its expected count is at least ⌊log₂ n!⌋. The matrix view (rows algorithms, columns inputs) is the game the adversary plays.
+- **Two averages, not one.** Topic 1 distinguishes average-case (over inputs) from expected (over the algorithm's coins). The bound holds for both. This is the easy direction of Yao's minimax principle (a hard input distribution gives a randomized lower bound); the general principle is not taught elsewhere in this course.
+
+### Counting answers: when it is tight and when it is not
+
+- **The bound.** A problem with K possible answers needs at least ⌈log_k K⌉ k-way questions in the worst case; with yes/no questions, ⌈log₂ K⌉ (Erickson 12.3; Blum, lecture 6).
+- **Tight.** Searching a sorted array has n + 1 outcomes, and binary search uses ⌊log₂ n⌋ + 1 = ⌈log₂(n + 1)⌉ probes: 20 at a million. Why three-way probes (&lt;, =, >) still meet a yes/no count, two ways. (a) Counting: on an absent key no probe can answer “=”, so on those inputs every probe is a yes/no question, and the n + 1 gaps need ⌈log₂(n + 1)⌉ probes. (b) Amenta's, Example 3: every index must appear as a probe node and the “=” branch is a leaf, so the probe nodes form a binary tree with n nodes, and 2ᵏ − 1 ≥ n. With yes/no comparisons only (“x &lt; A[i]?” and “x = A[i]?”) the minimum is ⌈log₂ n⌉ + 1, which is 21 at a million, because “equal” can no longer share a probe with “less” and “greater” (exhaustive search for n ≤ 10 in `examples.py`). Plain counting with three-way questions would only give ⌈log₃(n + 1)⌉ = 13: too weak. Sorting, up to lower-order terms. Merging 4 + 4: log₂ C(8, 4) = log₂ 70 → 7, met by the standard merge.
+- **Loose.** The maximum: ⌈log₂ n⌉ against n − 1; the counting bound is tight only for unrestricted questions (“is the index of the maximum odd?”, Erickson). Min and max together: ⌈log₂ n(n − 1)⌉ = 40 at a million against 1,499,998. Merging two runs of n: log₂ C(2n, n) ≈ 2n − ½ log₂ n − ½ log₂ π (NMSU) against 2n − 1 (Amenta): exhaustive search gives 3, 5, 7, 9 for n = 2 … 5 against counts 3, 5, 7, 8. Element distinctness: 1 against ⌈log₂ n!⌉. The second-largest key has n possible answers (counting: ⌈log₂ n⌉), yet n + ⌈log₂ n⌉ − 2 comparisons are necessary and sufficient (a tournament; Kislitsyn 1964 for the lower bound, as Blum's lecture 6 states it for n a power of 2; for general n it is Erickson's exercise and the 2025 selection paper cited below).
+- **The median.** Erickson 13.8 combines counting with two adversary arguments for 3n/2 − O(log n) and cites 2n − o(n); the Waterloo notes prove a weaker 1¾n by an adversary. The best known lower bound is about 2n (Bent and John 1985, as the SEA 2025 paper cites it) against a best known algorithm of about 2.95n.
+- **Why an adversary can beat counting.** Counting sees only how many leaves there are. An adversary sees which pairs of inputs a comparison must tell apart.
+
+### Adversary arguments: the rules
+
+- **Three rules.** (1) Answer so that, at every moment, the answers so far fit some input. (2) Assume nothing about the algorithm; Erickson: the strategy "can’t depend on some predetermined order", and the algorithm "cannot distinguish between a malicious adversary and an honest user". (3) At the end, exhibit an input the algorithm gets wrong, or a run that was long.
+- **The n-card monte** (Erickson 13.2): to learn whether any of n hidden bits is 1 you must look at all of them, because an adversary answers 0 until the last one. This is the trivial Ω(n) for reading the input.
+- **The maximum** (Erickson 12.6): pretend xᵢ = i, mark each key that loses a comparison, and when the algorithm stops with two unmarked keys raise one of them above everything. Blum's equivalent: components of the graph of comparisons. The same n − 1 holds for algebraic decision trees (Erickson, footnote).
+- **Minimum and maximum together, in full.** Keys are in one of four states: untested (Waterloo's V), only won (W), only lost (L), both (O). Erickson uses + and − marks; UMass names the categories A to D. A correct answer needs 2n − 2 units: every key but the maximum must lose and every key but the minimum must win. The referee's table, with the units each answer gives:
+
+  - untested against untested: any answer, 2 units (the winner is placed above everything so far, the loser below);
+  - untested against only won: the untested key loses, 1 unit;
+  - untested against only lost: the untested key wins, 1 unit;
+  - untested against both: the untested key wins (or loses), 1 unit;
+  - only won against only lost: the only-won key wins, 0 units (the one answer that teaches nothing);
+  - only won against only won, only lost against only lost, or either against both: by the values, at most 1 unit.
+
+  So only the first row gives 2 (“In every other case, the adversary can answer so that at most one mark needs to be removed”). Each answer fits the value rule below: a new key is placed on the side its answer needs, and every other answer reads the values. There are at most ⌊n/2⌋ comparisons of two untested keys, so at least ⌊n/2⌋ + (2n − 2 − 2⌊n/2⌋) = ⌈3n/2⌉ − 2 are needed. Odd n: the pairing algorithm lets the odd key out join both groups.
+- **Why the referee's answers are consistent.** Keep a value for every key. A key gets its value at its first comparison: above every value so far if it wins, below every value so far if it loses; every comparison between two keys that already have values is answered by the values. Values never change after a key's first comparison, so earlier answers stay true; an only-won key always beats an only-lost one, because whichever of the two got its value later was placed above or below everything, the other included. Raising a key that has already lost would break an earlier answer, which is why a value is fixed at a key's first comparison. `examples.py` runs this referee against the pairing algorithm (the trace 2, 4, 6, 8, 9, 10, 11, 12, 13, 14 units) and against 1,000 seeded random correct strategies at n = 8 (and 300 each at n = 5 … 10): every answer fits the final values, every run uses at least ⌈3n/2⌉ − 2 comparisons, and at most ⌊n/2⌋ comparisons give two units.
+- **Outside comparisons.** Connectivity of an n-vertex graph from adjacency-matrix probes needs all n(n − 1)/2 probes (Blum, Theorem 6.9; Erickson 13.5): the adversary answers “no edge” unless that would disconnect the graph. A property that needs every probe is called evasive.
+
+### Element distinctness in three models
+
+- **The comparison-model proof.** Suppose an algorithm answers “distinct” on an all-distinct input without having compared two keys that are adjacent in sorted order. Move the larger of the two onto the smaller. Every comparison against a third key keeps its answer, since no key lies strictly between them; the pair itself was never compared; so the run is identical and “distinct” is wrong. Hence every “distinct” leaf reached by a distinct input has all n − 1 neighbour comparisons on its path, which fix one sorted order, and two inputs with different orders cannot share a leaf. Distinct inputs never take an “=” branch, so the “distinct” leaves sit in a binary tree: at least n! of them, height at least ⌈log₂ n!⌉. Exhaustive search over all inputs with ties (13, 75 and 541 of them for 3, 4 and 5 keys) gives exactly 3, 5 and 7 three-way comparisons, equal to ⌈log₂ n!⌉.
+- **Its one assumption.** Comparisons are between two keys (the comparison model). If the algorithm could also compare a key with a constant c lying between two neighbours, moving one onto the other could change that answer; the bound for such algorithms comes from the linear decision tree and algebraic models below. With yes/no “&lt;” comparisons that have no “=” answer the same bound holds but the exact cost is higher: 4, 7 and 10 for 3, 4 and 5 keys.
+- **Algebraic computation trees** (Ben-Or, STOC 1983): nodes compute +, −, ×, ÷ or √ of earlier values and real constants, or test the sign of one, and every operation and test counts as a step. Theorem 1: any such tree for n-element distinctness has complexity Ω(n log n). The proof counts connected components: the set of inputs with all keys distinct has "a maximal connected component of W for each permutation", n! of them, and a tree of small depth cannot separate that many. Theorem 11 gives the same bound in expectation for keys uniform in [0, 1].
+- **Linear decision trees** (Dobkin and Lipton 1979): cited only as Ben-Or cites them: "This result extends the lower bounds of Dobkin and Lipton [5] for the linear decision tree model." Their paper was not opened for this page.
+- **What follows.** Sort-then-scan is optimal up to lower-order terms in all three models: Θ(n log n). Outside them, a hash set gives expected O(n), where the expectation is over a randomly chosen hash function: it computes a hash value, which none of the three models can (Ben-Or's has no floor or mod), and any fixed hash function has inputs that collide ("for any fixed hash function, there is a subset of at least |U|/m items that all hash to the same location", Erickson's lecture 5). With integer keys, one of topic 2's integer sorts followed by a scan beats n log n deterministically.
+- **Lower bounds travel by reduction.** Ben-Or's discriminant example: any algorithm for it can test distinctness in one more step, so the distinctness bound transfers. Carrying proven or conjectured lower bounds between problems this way is the subject of the later topic on fine-grained complexity.
+
+### What a lower bound does not rule out
+
+- **Another model.** Radix sort reads a 64-bit key as four 16-bit digits: 4 passes over 65,536 buckets. A hash set decides distinctness in expected O(n) and loses the worst-case guarantee. vEB trees (topic 2) answer predecessor queries in O(log w) on w-bit keys, beating the Ω(log n) search bound of the comparison model.
+- **Another input.** Verifying that a vector is already sorted takes n − 1 = 999,999 comparisons; adaptive sorts run fast on nearly sorted data (Chapter 15). A worst-case bound says nothing about one easy input.
+- **Another problem.** Putting the smallest half before the largest half, with no order inside the halves, has many correct outputs and takes linear time (Blum's question 5.2). Top-k and selection have far fewer answers than sorting (Chapter 16).
+- **A better constant.** Merge sort sits 2.5 % above the floor at a million keys.
+- **Not one algorithm's cost.** Insertion sort and selection sort make exactly n(n − 1)/2 comparisons in the worst case: 499,999,500,000 at a million. That is their cost, not sorting's bound.
+- **Not every model.** The I/O model's sorting and permuting bounds are stated in topic 8 and proved in Chapter 31; streaming lower bounds are Chapter 30.
+- **And the trivial bound.** Every correct algorithm must read every key: Ω(n).
+
+</section>
+
+<section data-section="lab">
+
+## Try it
+
+Run `python3 examples.py` next to this topic's source. Then change it: sorting 6 keys needs ⌈log₂ 720⌉ = 10 comparisons, and the exhaustive search will confirm it (it takes minutes); play the min/max referee by hand against your own strategy for n = 6 and count the units; write the max adversary and run it against a tournament that stops one comparison early; break the student's adversary of Prove it 2 by finding a comparison sequence it contradicts itself on. Every number in the reel is an assertion in that file.
+
+</section>
+
+<section data-section="production">
+
+## In code review
+
+- "We can't beat n log n", said about integer keys: the bound is about comparisons, and topic 2's integer sorts leave that model.
+- "A hash set is O(n)" without “expected”, or without saying the guarantee that was given up.
+- Quoting an algorithm's worst case as the problem's lower bound (insertion sort's n(n − 1)/2).
+- A “proof” by an adversary whose answers can contradict each other (Prove it 2).
+- Using ⌈log₂ K⌉ for a yes/no problem and concluding it is cheap (the maximum, distinctness).
+- "Min and max needs 2n comparisons": pairing does it in ⌈3n/2⌉ − 2.
+- Claiming a sort beats the bound because it was fast on the test inputs.
+
+</section>
+
+<section data-section="frontier">
+
+## The frontier
+
+- **Exact minimum-comparison sorting is known only for small n.** In the Waterloo CS 466 notes' words, Ford–Johnson (1959) is "(essentially) the sorting method that takes the fewest comparisons (in the worst case)", and its count oscillates against log₂ n!; the notes call these "some very simple questions that have remained open for a long time" (2013 notes).
+- **Exact selection.** The exact worst-case number of comparisons V_i(n) is known in general only for the smallest and second smallest: V₁(n) = n − 1 and V₂(n) = n − 2 + ⌈log₂ n⌉. Otherwise it is known for small n by computer search: every i for n ≤ 15, and i ≤ 6 for n = 16, with V₇(14) = 25, V₆(15) = V₇(15) = 26 and V₈(15) = 27 first determined in 2025 (Dörrer et al., SEA 2025). For the median the gap is between about 2n and 2.95n, as that paper cites it. Erickson's 2013 notes say "Even the case k = 3 is still open!"; that is their status in 2013 and is not claimed as current.
+- **Evasiveness.** The Aanderaa–Karp–Rosenberg conjecture, that every nontrivial monotone graph property is evasive, was open as of Erickson 13.6's notes.
+- **Algebraic lower bounds.** Ben-Or's own limitation, as he stated it in 1983: his degree-based method gives at most order n log d for evaluating a degree-d polynomial, and "Any general method that can pass this limitation would be of great interest". That is his 1983 remark, not a statement of today's frontier.
+
+</section>
+
+<section data-section="next">
+
+## Where this goes next
+
+Every bound so far priced one run on its worst input. A data structure lives through a sequence of operations, where one expensive step can be paid for by many cheap ones, with no probability involved. Next: amortized analysis.
+
+</section>

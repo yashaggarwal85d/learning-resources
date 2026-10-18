@@ -1,14 +1,8 @@
 import Resource from '../../../../../components/Resource.astro';
 
-This is a refresher, the third of five. It assumes you already work at a shell prompt: move around, list files, run a command, edit a file. The syllabus treats basic shell use as known, so the reel is a recap of the parts a data engineer leans on (redirection, exit codes, signals, a hung job, a few text tools), not a first course.
-
 <section class="prereq" data-section="shell-basics">
 
 ### <span class="n">01</span> Everyday shell use
-
-Using a terminal: <code>cd</code>, <code>ls</code>, running a program with arguments, and editing a file. If you have only ever used a graphical file manager, the book below takes a weekend and covers every command the reel assumes.
-
-<p class="check"><b>Check yourself:</b> how do you run a script in the current directory that is not on your <code>PATH</code>? (Answer: <code>./script</code>, with the dot-slash.)</p>
 
 <ul class="resources">
   <Resource kind="reading" title="The Linux Command Line" href="https://linuxcommand.org/tlcl.php" by="William Shotts, free to read">A book-length tour of the shell, from navigation to scripts.</Resource>
@@ -21,10 +15,6 @@ Using a terminal: <code>cd</code>, <code>ls</code>, running a program with argum
 
 ### <span class="n">02</span> Exit status, as bisect reads it
 
-Every command ends with a number, its exit status, and 0 means success. The Git refresher met it through <code>git bisect run</code>, which treats 0 as good and 1 to 127 (except 125) as bad. This topic starts from there and shows where those numbers come from.
-
-<p class="check"><b>Check yourself:</b> which exit status means a test could not be run, so bisect should skip the commit? (Answer: 125.)</p>
-
 <ul class="resources">
   <Resource kind="reel" title="Git branching and history workflows" domain="data-engineering" host="de.linux-shell-process-toolkit" by="the refresher before this one" />
 </ul>
@@ -34,10 +24,6 @@ Every command ends with a number, its exit status, and 0 means success. The Git 
 <section class="prereq" data-section="ip-addresses">
 
 ### <span class="n">03</span> A host, a port and a connection
-
-Two steps of the reel mention them: a hung job waits on a connection to a database, and an ssh tunnel forwards one port to another. A server listens on a numbered port on a host (PostgreSQL on 5432), a client connects to it, and a socket is a program's end of that connection. You need only that picture here; the networking topics later in this chapter build it out.
-
-<p class="check"><b>Check yourself:</b> a program asks to connect to <code>db.internal:5432</code>. Which part names the machine and which names the program on it? (Answer: <code>db.internal</code> is the host; port 5432 picks the program listening there, PostgreSQL by convention.)</p>
 
 <ul class="resources">
   <Resource kind="reading" title="Beej's Guide to Network Programming" href="https://beej.us/guide/bgnet/" by="Brian Hall, free to read">The chapters on sockets, ports and how a client connects to a server.</Resource>

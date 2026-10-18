@@ -1,0 +1,6 @@
+- **Bit and binary number**: a bit is a 0 or a 1, and a binary number writes a value with them, so 1011 is eleven. *Where you meet it:* 2 to the power 10 is a 1 followed by ten zeros.
+- **Bitwise operations**: AND, OR, XOR and shifts act on the bits of a number directly. *Where you meet it:* `x >> 3` divides by eight and `x & 1` tells whether x is odd.
+- **Address and pointer**: every byte of memory has a number, its address, and a pointer is a value that holds one. *Where you meet it:* a linked-list node storing where the next node lives.
+- **Binary search**: finds a key in a sorted array by repeatedly looking at the middle and discarding half. *Where you meet it:* looking a word up in a printed dictionary.
+- **Comparison sort**: a sorting method that learns about the data only by asking whether one item is smaller than another. *Where you meet it:* merge sort and quicksort.
+- **Cache**: a small, fast memory between the processor and main memory that keeps recently used data. *Where you meet it:* a loop that is quicker the second time it passes over the same array.

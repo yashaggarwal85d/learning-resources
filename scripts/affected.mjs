@@ -49,7 +49,7 @@ export function affected(base = 'origin/main') {
     return all; // shared code, tests, packages, workflows: everything is affected
   }
   const slugs = [...hit];
-  return { all: false, slugs, mdx: slugs.flatMap((s) => [`site/src/topics/${s}/index.mdx`, `site/src/topics/${s}/prerequisites.mdx`]) };
+  return { all: false, slugs, mdx: slugs.flatMap((s) => ['prerequisites.mdx', 'pre-notes.md', 'post-notes.md', 'references.md'].map((f) => `site/src/topics/${s}/${f}`)) };
 }
 
 if (import.meta.url === pathToFileURL(process.argv[1]).href) console.log(JSON.stringify(affected(process.argv[2])));

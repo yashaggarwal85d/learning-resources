@@ -1,0 +1,6 @@
+- **Units of time and size**: a nanosecond is a billionth of a second, a microsecond a millionth and a millisecond a thousandth; a gigabyte is a billion bytes. *Where you meet it:* a memory read takes about 100 ns, a flash read about 80 µs.
+- **Clock cycle and CPU cache**: a processor does work in clock cycles (0.5 ns at 2 GHz), and keeps recently used data in small, fast memories called L1, L2 and L3. *Where you meet it:* a loop whose data fits in L2 runs much faster than one that does not.
+- **DRAM**: the machine's main memory, large compared with the cache and far smaller than a disk. *Where you meet it:* "the table is cached in memory".
+- **NVMe SSD and HDD**: a flash drive attached over PCIe, and a spinning disk whose head must move to the data before it can read. *Where you meet it:* the two kinds of local drive in a server.
+- **Availability zone and TCP connection**: an availability zone is one or more data centres inside a cloud region, and a TCP connection is one ordered stream of bytes between two machines. *Where you meet it:* an application server calling its database in the same zone.
+- **Object storage**: a service that keeps objects (files) in buckets under names called keys and serves them over HTTP. *Where you meet it:* Parquet files in an S3 bucket.

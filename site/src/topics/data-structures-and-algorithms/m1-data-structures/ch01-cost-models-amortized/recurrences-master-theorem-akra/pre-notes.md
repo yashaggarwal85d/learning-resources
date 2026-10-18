@@ -1,0 +1,6 @@
+- **Recursion and base case**: a procedure that calls itself on a smaller input, and the smallest input where it stops. *Where you meet it:* merge sort splits the array until single items are left.
+- **Merge sort and binary search**: merge sort sorts two halves and merges them; binary search checks the middle and recurses into one half. *Where you meet it:* the first two recurrences in this reel.
+- **Induction**: prove a claim for the smallest case, then prove that if it holds for smaller cases it holds for the next. *Where you meet it:* checking a closed form for a sum.
+- **Geometric series**: a sum where each term is a fixed multiple of the one before, such as 1 + 1/2 + 1/4 + …, which stays within a constant of its largest term when the multiple is below one. *Where you meet it:* the work per level of a recursion tree.
+- **Floor and ceiling**: rounding down and rounding up. *Where you meet it:* splitting an array of seven items into halves of three and four.
+- **Integral as a sum**: for a smooth, steadily rising or falling function, the area under its curve approximates the sum of its values. *Where you meet it:* estimating a long sum by an integral.

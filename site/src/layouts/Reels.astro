@@ -10,11 +10,13 @@ const live = liveData();
 const base = import.meta.env.BASE_URL.endsWith('/') ? import.meta.env.BASE_URL : `${import.meta.env.BASE_URL}/`;
 const initialDomain = domain ?? live.feedDomains.find((d) => d.live)?.id ?? live.feedDomains[0].id;
 
-// Each topic's Deep dive is rendered here, hidden, and moved into the sheet when opened.
-const deep = import.meta.glob<{ Content: any }>('../topics/**/index.mdx', { eager: true });
-const deepFor = (slug: string) => deep[`../topics/${slug}/index.mdx`]?.Content;
+// Each topic's four panel tabs are rendered here, hidden, and copied into the right-hand panel when opened:
+// Prerequisites (links), Pre-notes, Post-notes and Sources (Markdown files next to the reel).
 const prereq = import.meta.glob<{ Content: any }>('../topics/**/prerequisites.mdx', { eager: true });
-const prereqFor = (slug: string) => prereq[`../topics/${slug}/prerequisites.mdx`]?.Content;
+const pre = import.meta.glob<{ Content: any }>('../topics/**/pre-notes.md', { eager: true });
+const post = import.meta.glob<{ Content: any }>('../topics/**/post-notes.md', { eager: true });
+const sources = import.meta.glob<{ Content: any }>('../topics/**/references.md', { eager: true });
+const pick = (g: Record<string, { Content: any }>, slug: string, file: string) => g[`../topics/${slug}/${file}`]?.Content;
 ---
 <Base title={title} description={description}>
   <ReelFeed
@@ -31,19 +33,27 @@ const prereqFor = (slug: string) => prereq[`../topics/${slug}/prerequisites.mdx`
   />
   <div hidden>
     {live.ordered.map((t) => {
-      const Content = deepFor(t.slug);
-      const Prereq = prereqFor(t.slug);
+      const Prereq = pick(prereq, t.slug, 'prerequisites.mdx');
+      const Pre = pick(pre, t.slug, 'pre-notes.md');
+      const Post = pick(post, t.slug, 'post-notes.md');
+      const Sources = pick(sources, t.slug, 'references.md');
       return (
         <>
-          <article id={`deep-${t.id}`} hidden>
-            <p class="eyebrow text-[0.62rem] text-latte">§{t.chapter.section} · Milestone {t.milestone.number} · Ch.{t.chapter.number}</p>
-            <h2 class="mt-1 font-display text-3xl font-bold text-crema">{t.title}</h2>
-            {Content ? <Content /> : <p>Deep dive coming soon.</p>}
-          </article>
           <article id={`prereq-${t.id}`} hidden>
-            <p class="eyebrow text-[0.62rem] text-latte">Before you watch</p>
-            <h2 class="mt-1 font-display text-3xl font-bold text-crema">{t.title}</h2>
+            <p class="eyebrow text-[0.62rem] text-latte">Before you watch: where to learn it</p>
             {Prereq ? <Prereq host={t.id} /> : <p>This topic has no prerequisites beyond the ones before it in the curriculum.</p>}
+          </article>
+          <article id={`pre-${t.id}`} hidden>
+            <p class="eyebrow text-[0.62rem] text-latte">Before you watch: what to know</p>
+            {Pre ? <Pre /> : <p>Pre-notes coming soon.</p>}
+          </article>
+          <article id={`post-${t.id}`} hidden>
+            <p class="eyebrow text-[0.62rem] text-latte">After you watch: going deeper</p>
+            {Post ? <Post /> : <p>Post-notes coming soon.</p>}
+          </article>
+          <article id={`sources-${t.id}`} hidden>
+            <p class="eyebrow text-[0.62rem] text-latte">What this topic rests on</p>
+            {Sources ? <Sources /> : <p>No sources listed.</p>}
           </article>
         </>
       );

@@ -1,0 +1,9 @@
+Last verified: 2026-10-14.
+
+- A. Pavlo, [Lecture #01: Relational Model & Algebra](https://15445.courses.cs.cmu.edu/fall2024/notes/01-relationalmodel.pdf), 15-445/645 Database Systems, Fall 2024, Carnegie Mellon University — relation-as-bag ("it is possible to have repeated / duplicated elements in a relation"), the operator definitions and symbols, and the selection-pushdown cost example (§4, §6).
+- PostgreSQL 18 Documentation, [§7.4, "Combining Queries (UNION, INTERSECT, EXCEPT)"](https://www.postgresql.org/docs/current/queries-union.html) — the `ALL`/non-`ALL` semantics, union-compatibility requirement, and operator precedence/associativity.
+- PostgreSQL source (`master` branch, checked 2026-10-14), [`src/backend/optimizer/prep/prepunion.c`](https://github.com/postgres/postgres/blob/master/src/backend/optimizer/prep/prepunion.c), function `generate_union_paths` — `UNION ALL` as a plain `Append`/append-relation flattening; `UNION` as `Append` plus a cost-chosen `HashAggregate` or `Sort`+`Unique`; the `distinct(A ∪ B) ≤ distinct(A) + distinct(B)` row-estimate rule.
+- PostgreSQL source (`master` branch, checked 2026-10-14), [`src/backend/executor/nodeSetOp.c`](https://github.com/postgres/postgres/blob/master/src/backend/executor/nodeSetOp.c) — the `SetOp` node's `SETOP_SORTED`/`SETOP_HASHED` modes for `INTERSECT`/`EXCEPT` [`ALL`], and the explicit note that this machinery is "not used for UNION or UNION ALL."
+- E. F. Codd, "A Relational Model of Data for Large Shared Data Banks," *Communications of the ACM* 13(6), 1970 (a paper; for the set-based origin of the relational model that SQL's bag semantics departs from).
+
+Spotted an error or something unclear? [Report it](https://github.com/yashaggarwal85d/learning-resources/issues/new?title=relational-algebra-bag-semantics:%20).

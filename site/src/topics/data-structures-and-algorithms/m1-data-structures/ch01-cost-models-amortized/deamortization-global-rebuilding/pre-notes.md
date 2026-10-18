@@ -1,0 +1,5 @@
+- **Percentile and tail latency**: the p99 of a set of measurements is the value that 99 of every 100 stay at or under; the slow end, the tail, is what a service is judged on. *Where you meet it:* "p99 is 120 ms" means at most 1 request in 100 is slower.
+- **Fan-out**: one request split across many servers, which finishes only when the slowest of them answers. *Where you meet it:* a search that asks 100 index shards at once.
+- **Amortized cost**: the total over a sequence of operations divided by their number, a bound that holds for every sequence. *Where you meet it:* the bank and potential arguments of the last two reels.
+- **Dynamic array with doubling**: an array that, when full, allocates one of twice the capacity and copies every key across. *Where you meet it:* Python's `list.append`.
+- **Binary search tree**: a tree in which every key in a node's left subtree is smaller and every key in its right subtree is larger; a lookup walks one path from the root. *Where you meet it:* an ordered map such as C++'s `std::map`.

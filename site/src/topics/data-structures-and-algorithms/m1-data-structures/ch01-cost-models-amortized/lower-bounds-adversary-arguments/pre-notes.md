@@ -1,0 +1,6 @@
+- **Comparison sort**: a sorting method that learns about the data only by asking whether one item is smaller than another. *Where you meet it:* merge sort, quicksort and insertion sort.
+- **Permutation and factorial**: a permutation is one ordering of n items, and there are n factorial of them: n × (n − 1) × … × 1. *Where you meet it:* three cards can be laid out in 6 orders.
+- **Binary tree**: nodes that each have at most two children; a leaf has none, and the height is the longest path from the root to a leaf. *Where you meet it:* a tree of yes or no questions.
+- **Logarithm, rounded up**: log base 2 of K, rounded up, is the fewest yes or no answers that can tell K cases apart. *Where you meet it:* 20 questions are enough to pick one of a million.
+- **Worst case and average case**: the cost on the most unlucky input, against the cost averaged over inputs. *Where you meet it:* quicksort on sorted data.
+- **Hash set**: a collection that tests membership by computing a hash of the key rather than by comparing keys in order. *Where you meet it:* Python's `set`.

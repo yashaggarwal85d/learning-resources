@@ -4,8 +4,8 @@
 //   2. narration lines are speakable: no digits, symbols or code-style names (numbers and names are written as said),
 //      and no line longer than the voice's token budget allows (narration/voice.json → pace.max_words_per_line);
 //   3. every number in the reel's on-screen text (reel.tsx) is computed or asserted in examples.py;
-//   4. prerequisites.mdx opens with a Basics section (the topic's own terms, in brief; QUALITY.md #50), unless the topic
-//      was finished before that rule (2026-10-12) and is listed in src/topics/basics-backlog.json, which only shrinks;
+//   4. the panel's tabs have their files: prerequisites.mdx (links only), pre-notes.md (the topic's own terms, in brief;
+//      QUALITY.md #50), post-notes.md (the Deep dive) and references.md, each obeying lib/notes-rules.ts;
 //   5. the narration teaches instead of reading the description (the step's body; owner rule 2026-10-13, QUALITY.md #54):
 //      no step's narration shares half or more of its four-word phrases with its description, and no description sentence
 //      of eight words or more is spoken verbatim, unless the topic predates the rule and is listed in
@@ -14,6 +14,7 @@
 import { existsSync, readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import type { TopicMeta } from '../topics/registry';
+import { postNotesProblems, preNotesProblems, sourcesProblems } from './notes-rules';
 
 const VOICE = JSON.parse(readFileSync(resolve(process.cwd(), 'narration/voice.json'), 'utf8'));
 const MAX_WORDS: number = VOICE.pace.max_words_per_line;
@@ -46,24 +47,6 @@ function numbersIn(src: string) {
 }
 const near = (a: number, b: number) => Math.abs(a - b) <= 1e-9 * Math.max(1, Math.abs(a), Math.abs(b));
 
-// The Basics section of a Prerequisites panel: <section class="prereq basics" data-section="basics"> … </section>,
-// first in the file, 4–14 bullets of the form "- **Term**: definition. *Where you meet it:* scenario.", under 400
-// words, no links (ROUTINE.md section 3).
-const BASICS_RE = /<section\b[^>]*\bdata-section="basics"[^>]*>([\s\S]*?)<\/section>/;
-export function basicsSection(src: string) {
-  return src.match(BASICS_RE)?.[1] ?? null;
-}
-export function basicsProblems(src: string, body: string) {
-  const problems: string[] = [];
-  if (src.search(/<section\b/) !== src.search(BASICS_RE)) problems.push('must be the first section in prerequisites.mdx.');
-  const bullets = body.match(/^\s*- \*\*[^*\n]+\*\*/gm)?.length ?? 0;
-  if (bullets < 4 || bullets > 14) problems.push(`has ${bullets} term bullet(s) ("- **Term**: …"); it needs 4 to 14.`);
-  const words = body.replace(/<[^>]+>/g, ' ').split(/\s+/).filter(Boolean).length;
-  if (words > 400) problems.push(`is ${words} words; keep it under 400: a primer, not a lesson.`);
-  if (/<Resource\b|href=|\]\(/.test(body)) problems.push('has a link; resources belong in the sections below it.');
-  return problems;
-}
-
 /** The description of each reel step (its `body`, the paragraph under the animation), as plain words, in step order:
  * `body: (<>…</>)` or `body: <>…</>`. */
 export function captions(src: string) {
@@ -88,8 +71,6 @@ export function readsTheScreen(caption: string, narration: string) {
 
 export function checkTopicFiles(topics: TopicMeta[]) {
   const errors: string[] = [];
-  const backlogPath = resolve(process.cwd(), 'src/topics/basics-backlog.json');
-  const backlog: string[] = existsSync(backlogPath) ? JSON.parse(readFileSync(backlogPath, 'utf8')).pending : [];
   const narrBacklogPath = resolve(process.cwd(), 'src/topics/narration-backlog.json');
   const narrBacklog: string[] = existsSync(narrBacklogPath) ? JSON.parse(readFileSync(narrBacklogPath, 'utf8')).pending : [];
   for (const t of topics) {
@@ -155,20 +136,23 @@ export function checkTopicFiles(topics: TopicMeta[]) {
     if (missing.size)
       errors.push(`${t.id}: reel.tsx shows ${[...missing].join(', ')}, which examples.py doesn't compute or assert. Every number on screen comes from executed truth.`);
 
-    // 4. The Prerequisites panel opens with a Basics section (PROJECT_PLAN.md, "Prerequisites first"; owner rule 2026-10-12),
-    //    unless the topic predates the rule and is listed in src/topics/basics-backlog.json (ROUTINE.md section 1B adds it).
+    // 4. The panel's four tabs have their files (PROJECT_PLAN.md, "Prerequisites first" and the notes; owner decision 2026-10-17):
+    //    prerequisites.mdx is links only; pre-notes.md, post-notes.md and references.md are Markdown that obey notes-rules.ts
+    //    (the same rules the in-page editor applies before it saves).
     const prePath = resolve(dir, 'prerequisites.mdx');
     const pre = existsSync(prePath) ? readFileSync(prePath, 'utf8') : '';
-    const basics = basicsSection(pre);
-    if (backlog.includes(t.id)) {
-      if (basics) errors.push(`${t.id}: has a Basics section but is still listed in src/topics/basics-backlog.json. Remove it from the list.`);
-    } else if (!basics) {
-      errors.push(
-        `${t.id}: prerequisites.mdx has no Basics section (<section class="prereq basics" data-section="basics">, first in the file). Write it as ROUTINE.md section 3 says: the topic's own terms, one bold-term bullet each with a definition and a scenario. Only a topic finished before 2026-10-12 may be listed in src/topics/basics-backlog.json instead.`,
-      );
-    } else {
-      for (const p of basicsProblems(pre, basics)) errors.push(`${t.id}: the Basics section ${p}`);
+    if (/data-section="basics"|class="check"/.test(pre)) errors.push(`${t.id}: prerequisites.mdx is links only now; move the Basics section to pre-notes.md and delete the prose around the links.`);
+    const notes: [string, (s: string) => string[]][] = [
+      ['pre-notes.md', preNotesProblems],
+      ['post-notes.md', postNotesProblems],
+      ['references.md', sourcesProblems],
+    ];
+    for (const [file, problems] of notes) {
+      const p = resolve(dir, file);
+      if (!existsSync(p)) errors.push(`${t.id}: no ${file}. Every topic has pre-notes.md, post-notes.md and references.md next to its reel (ROUTINE.md section 3).`);
+      else for (const msg of problems(readFileSync(p, 'utf8'))) errors.push(`${t.id}: ${file} ${msg}`);
     }
+    if (existsSync(resolve(dir, 'index.mdx'))) errors.push(`${t.id}: index.mdx is gone; the Deep dive is post-notes.md and the sources are references.md.`);
   }
   if (errors.length) throw new Error(`Topic file checks failed (QUALITY.md #35, #50, #54):\n- ${errors.join('\n- ')}`);
 }

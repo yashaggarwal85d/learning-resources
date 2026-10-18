@@ -1,0 +1,178 @@
+---
+id: de.io-cost-model
+title: The I/O cost model
+---
+
+<section data-section="outcomes">
+
+## After this topic you can
+
+- Estimate the I/O cost of a scan, an index lookup and an external sort before running them.
+- Predict where an index stops paying off for a given table (about 1/(r·B) of the rows) and say why physical order changes the answer.
+- Work out how many passes an external sort needs from the data size, the memory budget and the block size.
+- Pick the block size that matters for a job by finding the storage tier that dominates it.
+- Price a distributed join in bytes moved across the network, and say when a broadcast beats a shuffle.
+
+</section>
+
+<section data-section="internals">
+
+## Into the internals
+
+### The model, as stated
+
+Aggarwal and Vitter define the problem by four numbers: **N** records, **M** records that fit in internal memory, **B** records per block, and **P** blocks that can move at once (P = 1 is the single-disk case used in the reel). Records are treated as indivisible, and "we do not count internal computation time". Their theorems are the sorting and permuting bounds. Vitter's 2008 survey (Table 3.1) collects the four bounds later analyses use, scan, sort, search and output, and gives them for **D** disks; the table below adds the permuting bound:
+
+| Problem | One disk | D disks | Source |
+|---|---|---|---|
+| Scan | Θ(N/B) | Θ(N/(DB)) | Vitter 2008 |
+| Sort | Θ((N/B) · log<sub>M/B</sub>(N/B)) | Θ((N/(DB)) · log<sub>M/B</sub>(N/B)) | Aggarwal and Vitter 1988, stated as Θ((N/B) · log(1 + N/B) / log(1 + M/B)); D disks: Vitter 2008 |
+| Permute | Θ(min(N, sort bound)) | Θ(min(N/D, sort bound)) | Aggarwal and Vitter 1988 (their P plays the role of D) |
+| Search | Θ(log<sub>B</sub> N) | Θ(log<sub>DB</sub> N) | the B-tree (Bayer and McCreight 1972); bounds as in Vitter 2008 |
+| Report Z answers | Θ(max(1, Z/B)) | Θ(max(1, Z/(DB))) | Vitter 2008 |
+
+**The sort bound is a pass count.** log<sub>M/B</sub>(N/B) = 1 + log<sub>M/B</sub>(N/M): one pass cuts the input into N/M memory-sized runs, and the rest is merging. Merge sort with fan-in M/B − 1 (one block of memory per input run, one for the output) takes **1 + ⌈log<sub>M/B−1</sub>(N/M)⌉ passes**, and every pass reads and writes all the data: 2N/B transfers. For the reel's terabyte, N/M = 64 runs and M/B = 16,384, so log<sub>M/B</sub>(N/B) ≈ 1.43 and the sort takes 2 passes, 4 TiB of I/O.
+
+**Parallel disks.** Vitter and Shriver's parallel disk model gives the machine **D** independent disks, each able to move one block per I/O step. *Striping* (block i of every disk forms one stripe) makes them behave like one disk with blocks of DB items, which gives the full D× speed-up for scanning, searching and reporting. For sorting, striping alone falls short by a factor of about log(M/B) / log(M/(DB)), and optimal algorithms balance load across the disks to reach the D× bound. Search is the exception that matters in practice: Θ(log<sub>B</sub> N) only becomes Θ(log<sub>DB</sub> N), a speed-up of 1 + log D / log B, "typically less than 2" (Vitter). With 8 disks the reel's million-page scan takes 125,000 parallel I/Os, but a B-tree search with 100 keys per page still needs about 3 dependent reads instead of 4. **Parallelism cuts volume, not the length of a chain of dependent reads**: each level must arrive before the next one can be requested. The PostgreSQL section below shows what this means for index scans.
+
+Two consequences experts tend to miss. **Permuting is as hard as sorting** for realistic M and B: moving records to known destinations costs as much as sorting them, because every record still has to travel through memory in blocks. And the sort lower bound does not depend on comparisons except when M and B are tiny relative to N; it follows from the permuting bound. Standard multi-way merge sort meets the bound.
+
+### How PostgreSQL turns this into costs
+
+The planner prices work in units where one sequential page read costs `seq_page_cost` (default 1.0) and one random page read `random_page_cost` (default 4.0). The current documentation explains the 4.0: *"Random access to durable storage is normally much more expensive than four times sequential access. However, a lower default is used (4.0) because the majority of random accesses to storage, such as indexed reads, are assumed to be in cache."* For a sense of the gap it covers, take a cold-cache 7,200 rpm disk: about 168 random 4K reads a second at queue depth 16 (Seagate's Exos datasheet), so about 6 ms each even with the drive reordering a queue of requests, against about 29 µs to stream an 8 KB page at 285 MB/s. That is **r ≈ 200**, and with B = 100 a cold-cache crossover of 1/(r·B) ≈ **0.005%** of the rows, fifty times below the 0.25% that r = 4 gives. And 200 is a lower bound: a plain index scan reads one page at a time (queue depth 1), so each read also pays a full seek on top of the 4.16 ms average rotational latency, and r is higher still.
+
+- **Sequential scan:** pages × `seq_page_cost` + rows × `cpu_tuple_cost` (0.01) + the cost of evaluating the WHERE clause per row (`cpu_operator_cost`, 0.0025 per operator). For a scan, the CPU term is often as large as the I/O term, which is why a scan loses more often than pure I/O counting predicts.
+- **Index scan** (`cost_index` in `costsize.c`): the heap I/O is interpolated between a perfectly uncorrelated worst case (`max_IO_cost`, every page fetch random) and a perfectly correlated best case (`min_IO_cost`), weighted by the **square** of the index correlation: `run_cost += max_IO_cost + csquared * (min_IO_cost - max_IO_cost)`. Pages fetched are estimated with the Mackert–Lohman formula for an LRU buffer of b pages, and `index_pages_fetched` takes b from `effective_cache_size` (default 4 GB), shared across the tables in the query. So **`effective_cache_size` plays the role of M** in the planner's page-fetch estimate: the bigger it is, the fewer repeat reads the planner expects. It is only an estimate and allocates no memory.
+- **Bitmap heap scan** (`cost_bitmap_heap_scan`): the matching row locations are sorted into physical order and each heap page is read once. Three things set its price.
+  - *Pages.* `compute_bitmap_pages` does not use the reel's 1 − 0.98<sup>100</sup> ≈ 87%. That is the true expected share for rows scattered at random, but the planner uses the Mackert–Lohman estimate for t tuples on T pages, **2Tt/(2T + t)**, which is higher. For the reel's T = 1,000,000 pages and t = 2,000,000 rows it gives exactly T: every page.
+  - *Cost per page.* It slides from random to sequential as the fraction fetched grows: `cost_per_page = random_page_cost − (random_page_cost − seq_page_cost) · sqrt(pages_fetched / T)`. At every page that is 1.0, a sequential read; the true 87% would have cost about 1.2 per page.
+  - *Memory.* The bitmap has to fit in `work_mem` (default 4 MB). `tbm_calculate_entries` counts 64 bytes per page entry, so 4 MB holds 65,536 entries. Beyond that the bitmap goes **lossy**: it keeps whole pages, not rows, and every row on a lossy page is rechecked against the condition. The planner models this by treating all but 32,768 pages as lossy (97% here) and charging CPU for every row on them.
+- **Prefetching: where D and P show up.** A plain index scan fetches heap pages one at a time: the next read is issued only after the previous one has arrived, a queue depth of 1. Its effective r is therefore set by the device's latency, even on NVMe drives that could serve dozens of reads at once. A bitmap heap scan knows its page list in advance and keeps up to `effective_io_concurrency` reads in flight (default 16 since PostgreSQL 18; it was 1). Sequential scans get operating-system readahead and, in 18, asynchronous I/O. That is the parallel disk model's lesson in practice: parallel reads help when you know what to read next, and do nothing for a chain of dependent reads.
+
+**The reel's query, priced.** With PostgreSQL 18's defaults, 100,000,000 rows on 1,000,000 pages and one condition matching 2%:
+
+| Plan | Heap I/O | CPU | Total |
+|---|---|---|---|
+| Sequential scan | 1,000,000 pages × 1.0 | 100,000,000 rows × (0.01 + 0.0025) = 1,250,000 | **2,250,000** |
+| Bitmap heap scan | 1,000,000 pages × 1.0 | 96,788,736 rows rechecked × 0.0125 = 1,209,859 | 2,209,859 |
+| … plus its bitmap index scan | 4.0 per index page | 2,000,000 entries × (0.005 + 0.0025), + 500 for the bitmap = 15,500 | **2,225,359 + 4 per index page** |
+
+The two serial plans land 1.1% apart before the bitmap pays for its index pages, and the bitmap loses once it reads more than about 6,160 of them, which depends on the index's size (B-tree deduplication shrinks an index on a low-cardinality column like `status` a lot). With the default two parallel workers, both plans divide their per-row CPU by 2.4 (the leader counts as 0.4 of a worker; the bitmap index scan's startup CPU is not divided) but keep their I/O whole, and the Gather above them adds 0.1 per returned row plus 1,000: 1,721,833 for the scan against 1,720,608 plus index pages for the bitmap, a dead heat. So the honest prediction is **a close call**. The model rules out the row-by-row index; the choice between the other two turns on `work_mem`, the index's size, parallel settings and per-row CPU costs the model leaves out. Lab 1 reproduces this at a small scale.
+
+The correlation the planner uses is `pg_stats.correlation`: *"Statistical correlation between physical row ordering and logical ordering of the column values. This ranges from -1 to +1."*
+
+### Why CPU big-O misleads
+
+In RAM, an O(N) algorithm beats an O(N log N) one. Out of memory, the count that matters is block transfers, and the two can swap places:
+
+- **The headline case.** In the RAM model an index answers in O(log N + k) and a scan in O(N), so the index wins for any k much smaller than N: at 2% just as at 0.01%. In the I/O model the index costs about k random reads (plus log<sub>B</sub> N) and the scan N/B sequential ones, so they cross at **k ≈ N/B**, a share of 1/B, or 1/(r·B) once random reads cost r times more. The RAM model misses the crossover by a factor of B, here 100.
+- **Random access costs a transfer per item.** Hashing N records into a table larger than memory, or chasing pointers through a linked structure on disk, does O(N) work but about **N** random I/Os: B times the N/B a scan needs. Sorting the same records costs only a few passes of 2N/B transfers each, because the pass count 1 + ⌈log<sub>M/B−1</sub>(N/M)⌉ is 2 or 3 at realistic sizes (log<sub>M/B</sub>(N/B) itself is often below 2). That's why external engines partition or sort first, and why a B-tree (log<sub>B</sub> N reads) beats binary search over sorted pages (log<sub>2</sub>(N/B) reads).
+- **N is what you actually move.** The scan bound counts the bytes transferred, not the logical table: reading 3 of 30 columns from a columnar file, compression, and skipping blocks by their min/max statistics all shrink N before the bound applies.
+- **The model is a hypothesis; measure it.** Count real transfers before trusting the arithmetic. `EXPLAIN (ANALYZE, BUFFERS)` reports, per plan node, pages found in PostgreSQL's shared buffers (`shared hit`) and pages that were not (`shared read`); since PostgreSQL 18, `ANALYZE` includes these counts without asking. A `read` is a shared-buffers miss, not necessarily a storage read: PostgreSQL also relies on the operating system's page cache, so a page can be cached twice (*double caching*) and a "read" may come from RAM in microseconds. Turn on `track_io_timing` (off by default, because reading the clock can be slow on some platforms) to see how long those reads took. Profiling of Spark jobs (Ousterhout et al., NSDI 2015) found that CPU, not I/O, was often the bottleneck, and that improving network performance could improve job completion time by a median of at most 2%. Count transfers at the tier that really dominates.
+
+### The network, counted the same way
+
+On a cluster the slowest transfer is often between machines, and the same idea applies: the network moves data in messages, and each message has a fixed cost plus a cost per byte.
+
+- **A message costs latency plus size over bandwidth**, roughly α + n/β. That is the affine shape from the frontier section below, so the same rule holds: at about α·β bytes (latency × bandwidth) a message spends as long waiting as transferring, so batch small messages well past that size. Object storage is the extreme case. AWS says latency-sensitive applications can expect consistent latencies of roughly 100–200 ms for small objects (and for the first byte of larger ones), with medians in the tens of milliseconds for requests under 512 KB, and S3 supports at least 3,500 writes or 5,500 reads per second per prefix. With α ≈ 100 ms and about 90 MB/s per concurrent request (AWS's whitepaper suggests one request per 85–90 MB/s of throughput), α·β ≈ **9 MB**, right where AWS puts typical byte-range sizes, 8 MB or 16 MB. So you count requests and fetch multi-megabyte ranges, several in parallel.
+- **Parallel models count communication.** BSP (Valiant, 1990) charges each superstep for its local work, the largest number of messages any processor sends or receives (h) times a per-message cost g, plus a synchronisation cost (Valiant's periodicity L; the later standard form is w + g·h + l). LogP (Culler et al., 1993) separates latency L, per-message processor overhead o, the gap g between messages and the processor count P. The MPC model (Beame, Koutris and Suciu, 2013) used for distributed query processing counts **rounds** of communication and the **maximum load** on any one server.
+- **Joins, priced in bytes moved.** A shuffle join re-partitions both tables by key, so on p machines about (p−1)/p of both tables crosses the network: ≈ |R| + |S|. A broadcast join sends the small table to every machine: ≈ |S| · (p−1). The reel's example (1 TB and 100 MB on 100 machines) gives about 990 GB against 9.9 GB, with the same CPU work. At 10 Gbit/s per machine (1.25 GB/s each way) that is about 8 s of sending per machine for the shuffle against about 0.08 s of receiving for the broadcast (the small table starts spread across the machines, so every machine sends its slice to every other).
+  - *The crossover.* Broadcast moves fewer bytes when |S|·(p−1) is less than (p−1)/p · (|R| + |S|), that is when **|S| is below |R|/(p−1) ≈ |R|/p**. The line is relative and moves with the cluster: on 100 machines a broadcast wins on bytes up to a small side of about 10 GB, on 1,000 machines only up to about 1 GB.
+  - *Memory.* Every executor must hold the whole small side to build its hash table, so a broadcast is also capped by memory. Spark's `spark.sql.autoBroadcastJoinThreshold` (default 10 MB) is a fixed size, not a ratio: it mostly guards that memory limit and does not track the bytes crossover. It would not broadcast the reel's 100 MB table unless raised or overridden with a hint.
+  - *Skew.* In the MPC view a skew-free one-round hash join puts about (|R| + |S|)/p on each server, but the cost is the *maximum* load, so one hot key sets it. Each shuffle is a pass over the data through the network, so count shuffles the way you count sort passes. How engines choose between these joins, and fix skew, is Chapter 7.
+
+</section>
+
+<section data-section="lab">
+
+## Build, break, measure
+
+### Lab 1 · Watch the crossover in PostgreSQL
+
+A 2-million-row table with about 100 rows per page, and an indexed column `k` with 10,000 evenly spread values, so `k < x` matches x/100 percent of the rows.
+
+```sql
+CREATE TABLE orders (id int, k int, pad text);
+INSERT INTO orders
+SELECT g, (random() * 10000)::int % 10000, repeat('x', 40)
+FROM generate_series(1, 2000000) g;
+CREATE INDEX ON orders (k);
+VACUUM ANALYZE orders;
+
+-- About 100 rows per page?
+SELECT relpages, round(reltuples / relpages) AS rows_per_page
+FROM pg_class WHERE relname = 'orders';
+
+-- 2% of rows: how many heap pages does it touch?
+SET max_parallel_workers_per_gather = 0;
+EXPLAIN (ANALYZE, BUFFERS, COSTS OFF, TIMING OFF)
+SELECT * FROM orders WHERE k < 200;
+```
+
+Then switch bitmap scans off to compare the plain index scan against the sequential scan, and walk the selectivity up until the plan flips. Do it with `random_page_cost` at 4 and at 1.1, with `effective_cache_size` set to `'8MB'` throughout (a table much bigger than the cache, as the model assumes; we did not measure other cache sizes).
+
+```sql
+SET enable_bitmapscan = off;
+SET random_page_cost = 4;
+SET effective_cache_size = '8MB';
+EXPLAIN SELECT * FROM orders WHERE k < 45;   -- 0.45%
+```
+
+Finally, the reel's close call at small scale. With `k < 206` about two rows match per page, as in the reel, and `work_mem = '84kB'` makes the bitmap hold the same share of the table (about 6.5%) as 4 MB does for a million pages:
+
+```sql
+RESET enable_bitmapscan; RESET random_page_cost; RESET effective_cache_size;
+SET work_mem = '84kB';
+SET max_parallel_workers_per_gather = 0;
+EXPLAIN SELECT * FROM orders WHERE k < 206;   -- serial: the bitmap wins
+SET enable_bitmapscan = off;                  -- the runner-up's price: the seq scan
+EXPLAIN SELECT * FROM orders WHERE k < 206;
+RESET enable_bitmapscan; RESET max_parallel_workers_per_gather;   -- two workers, the default
+EXPLAIN SELECT * FROM orders WHERE k < 206;   -- the parallel seq scan wins
+SET enable_seqscan = off;                     -- the runner-up's price: the bitmap
+EXPLAIN SELECT * FROM orders WHERE k < 206;
+```
+
+**What we measured** on **PostgreSQL 16.15**, not 18, in October 2026: PostgreSQL 18 was not installed on the machine we used. The planner functions this lab exercises (`cost_seqscan`, `cost_index`, `cost_bitmap_heap_scan`, `compute_bitmap_pages`, `tbm_calculate_entries`, `cost_gather`) compute the same costs in 16 and 18; only the way disabled plan types are flagged changed. In 16, `BUFFERS` must be asked for explicitly. Your exact numbers will differ slightly because the data is random.
+
+- The table had 20,619 pages, 97 rows per page. The 2% query touched **17,647 heap pages** (`Heap Blocks: exact=17647`); the formula 20,619 · (1 − 0.98⁹⁷) predicts 17,714.
+- With bitmap scans allowed, the planner chose a **bitmap heap scan from 0.1% up to 50%**, and a sequential scan only from about 60%.
+- Bitmap off, small cache: the index scan gave way to a sequential scan at **0.45%** with `random_page_cost = 4` (the model predicts 1/(4 · 97) ≈ 0.26%) and at **1.8%** with 1.1 (model: ≈ 0.94%). Same order of magnitude, shifted by CPU costs the model ignores.
+- The close call (estimated 40,722 matching rows): with parallel workers off, the planner priced the bitmap heap scan at **45,335** and the sequential scan at **45,619**, and chose the bitmap (0.6% cheaper). With two workers it priced the parallel sequential scan at **36,108** and the parallel bitmap heap scan at **36,293**, and chose the scan (0.5% cheaper). All four agree with the formulas in "How PostgreSQL turns this into costs" to within a cent; `examples.py` recomputes them.
+
+**Break it.** `CLUSTER orders USING orders_k_idx;` then `ANALYZE` and repeat: the correlation jumps to 1 and the index scan wins far past 1%. Now update 20% of the rows and `ANALYZE` again: clustering is a one-time operation, so the correlation decays and the plans move back.
+
+### Lab 2 · External merge sort against the prediction
+
+Implement external merge sort over a file ten times larger than an enforced memory limit (run it in a container or cgroup with that limit). Vary the run size and the merge fan-in, and plot the number of passes and the wall-clock time against the prediction `passes = 1 + ceil(log_fanin(runs))`. Then implement a spilling hash aggregation and find the key cardinality at which sort-based aggregation wins.
+
+</section>
+
+<section data-section="production">
+
+## In production
+
+- **Most bad plans come from bad row estimates, not bad cost models.** Leis et al. ("How Good Are Query Optimizers, Really?", PVLDB 2015) found that cardinality estimates are often off by orders of magnitude, with errors that grow with the number of joins, and that these errors, not the cost model, are usually the reason for bad plans. When a plan flips unexpectedly, check `EXPLAIN ANALYZE` estimated rows against actual rows first.
+- **Fast storage, old defaults.** On SSD or NVMe storage a random read is far closer to a sequential one than the default 4.0 assumes. Teams commonly lower `random_page_cost` towards 1.1–1.5, which makes index scans win more often. Measure before and after; it changes every plan in the database.
+- **Correlation decays silently.** A table loaded in key order starts with correlation near 1, so range queries use the index. Months of updates and deletes later the correlation drifts towards 0 and the same queries switch to scans. `pg_stats.correlation` makes it visible.
+- **Object storage punishes small reads.** AWS says latency-sensitive applications can expect consistent S3 latencies of roughly 100–200 ms for small objects (and for the first byte of larger ones), with medians in the tens of milliseconds for requests under 512 KB. An engine that issues one request per small block is latency-bound long before it is bandwidth-bound, so lakehouse readers coalesce nearby reads and fetch byte ranges in parallel; AWS names 8 MB or 16 MB as typical range sizes, about latency × per-request bandwidth.
+
+</section>
+
+<section data-section="frontier">
+
+## The frontier
+
+- **Parallelism is back in the model.** Bender et al. ("Small Refinements to the DAM Can Have Big Consequences for Data-Structure Design", SPAA 2019) argue for two small refinements and validate them on real devices: the *affine* model, where an I/O of k words costs 1 + αk (a setup cost plus a per-word cost), which fits hard drives; and the *PDAM*, which revives Aggarwal and Vitter's P so that P block transfers can happen in parallel, which fits SSDs and NVMe drives. Data structures tuned for the refined models can differ from the classic B-tree-optimal designs.
+- **Algorithms that don't need to know B.** Cache-oblivious algorithms (Frigo, Leiserson, Prokop and Ramachandran, FOCS 1999) are asymptotically optimal at every level of the hierarchy at once, without knowing M or B (the sorting result assumes a "tall cache", M = Ω(B²)).
+- **Asynchronous I/O in mainstream databases.** PostgreSQL 18 added an asynchronous I/O subsystem (`io_method`: `worker` by default, `io_uring`, or `sync`) that queues multiple reads for sequential scans, bitmap heap scans and vacuum. Keeping many I/Os in flight is exactly what the PDAM's P models.
+
+</section>
+
+<section data-section="next">
+
+## Where this goes next
+
+Next: hash tables, the other structure behind every join and aggregation, and what they cost when memory runs out.
+
+</section>

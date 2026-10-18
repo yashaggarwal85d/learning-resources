@@ -1,0 +1,13 @@
+Last verified: 2026-10-13. Expert sign-off: pending.
+
+- Linux man-pages 6.19: [fsync(2) / fdatasync(2)](https://man7.org/linux/man-pages/man2/fsync.2.html) (page-cache flush, device cache flush, the directory-fsync requirement, EIO reporting since Linux 4.13); [open(2)](https://man7.org/linux/man-pages/man2/open.2.html) (`O_DIRECT`, `O_SYNC`, `O_DSYNC`, and the `O_DIRECT` alignment NOTES / `STATX_DIOALIGN`); [io_uring(7)](https://man7.org/linux/man-pages/man7/io_uring.7.html) (submission/completion rings, one CQE per SQE).
+- PostgreSQL 18 documentation: [Resource Consumption](https://www.postgresql.org/docs/18/runtime-config-resource.html) (`io_method` = worker/io_uring/sync, `io_workers`, `io_combine_limit`, `io_max_concurrency`); [Write Ahead Log](https://www.postgresql.org/docs/18/runtime-config-wal.html) (`fsync`, `wal_sync_method` default `fdatasync` on Linux, `full_page_writes`).
+- PostgreSQL wiki, [Fsync Errors](https://wiki.postgresql.org/wiki/Fsync_Errors) (PANIC-on-fsync-failure committed for 12 and back-patched; per-OS writeback behaviour).
+- J. Corbet, ["PostgreSQL's fsync() surprise"](https://lwn.net/Articles/752063/), LWN.net, 18 April 2018.
+- A. Rebello, Y. Patel, R. Alagappan, A. C. Arpaci-Dusseau, R. H. Arpaci-Dusseau, ["Can Applications Recover from fsync Failures?"](https://www.usenix.org/conference/atc20/presentation/rebello), USENIX ATC 2020 (ext4/XFS/Btrfs always mark failed pages clean; no application strategy is sufficient).
+- N. Agrawal, V. Prabhakaran, T. Wobber, J. D. Davis, M. Manasse, R. Panigrahy, ["Design Tradeoffs for SSD Performance"](https://www.usenix.org/legacy/events/usenix08/tech/full_papers/agrawal/agrawal_html/index.html), USENIX ATC 2008 (FTL allocation pools, out-of-place writes, cleaning).
+- Linux kernel documentation, [block/queue-sysfs](https://docs.kernel.org/5.15/block/queue-sysfs.html) (`logical_block_size`, `physical_block_size`, `minimum_io_size`, `optimal_io_size`, `rotational`, `discard_granularity`). The versionless `docs.kernel.org/block/queue-sysfs.html` returned 404 at check time; the 5.15 copy carries the same attribute definitions.
+- Hardware figures (orders of magnitude): 7,200 rpm enterprise HDD — 4.16 ms average rotational latency, ~168 random 4K read IOPS at QD16, ~285 MB/s sequential ([Seagate Exos datasheet](https://www.seagate.com/content/dam/seagate/migrated-assets/www-content/datasheets/pdfs/exos-x22-channel-DS2080-2111US-en_US.pdf)); the chapter's held prerequisites use a round 7 ms HDD seek.
+- [fio documentation](https://fio.readthedocs.io/en/latest/fio_doc.html) for the lab job files.
+
+Spotted an error or something unclear? [Report it](https://github.com/yashaggarwal85d/learning-resources/issues/new?title=storage-devices-fsync-durability:%20).

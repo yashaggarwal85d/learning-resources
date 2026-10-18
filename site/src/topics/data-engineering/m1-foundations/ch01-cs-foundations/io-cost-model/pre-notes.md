@@ -1,0 +1,7 @@
+- **Table scan**: reading every row of a table, in the order it is stored. *Where you meet it:* `Seq Scan` in an `EXPLAIN` output.
+- **Index**: a separate structure that finds where the matching rows are, by value, without reading the whole table. *Where you meet it:* `CREATE INDEX ON orders (status)`.
+- **Selectivity**: the share of rows a filter keeps. *Where you meet it:* `WHERE status = 'refunded'` keeping 2 rows in every 100.
+- **Memory against disk**: memory is small and fast, disk is large and slow, and data must be brought from disk into memory before a program can use it. *Where you meet it:* a query that is quick the second time because its pages are already cached.
+- **Sequential and random access**: reading neighbouring data in order, against jumping from place to place. *Where you meet it:* streaming a log file from top to bottom, against looking up scattered customer ids.
+- **Merge sort**: sorts by cutting the data into parts, sorting each part and merging the sorted parts. *Where you meet it:* `ORDER BY` on a table too big for memory.
+- **Query plan**: the steps a database picks to answer a query, which `EXPLAIN` prints. *Where you meet it:* choosing between an index scan and a full scan.

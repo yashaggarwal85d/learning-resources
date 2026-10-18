@@ -1,28 +1,8 @@
 import Resource from '../../../../../components/Resource.astro';
 
-This is a full topic in §1.2. It assumes how whole numbers are written in binary and how to read a SQL `SELECT`. The reel explains "shuffle" on the spot, so you do not need Chapter 7 yet. Reels on this site are marked **Before this** (earlier in the course), **Goes deeper later** or with the name of another track.
-
-<section class="prereq basics" data-section="basics">
-
-### <span class="n">00</span> Basics: words the reel takes for granted
-
-- **Fixed-width integer**: a whole number stored in a set number of bits, so it can hold only a finite range of values. *Where you meet it:* a column typed `INT` in SQL is a 32-bit signed integer.
-- **Signed vs unsigned**: a signed integer spends one bit on the sign and can be negative; an unsigned one cannot. *Where you meet it:* a database id column is usually signed, an array index in Rust is unsigned.
-- **Decimal vs binary fraction**: people write numbers in base ten; hardware stores them in base two, where some tenths have no finite representation. *Where you meet it:* `0.1` typed into a program is already a slightly different number inside it.
-- **Epoch timestamp**: an instant stored as a count of time units since a fixed start, usually 1 January 1970 UTC. *Where you meet it:* log files and APIs often hand you an integer like `1760000000`.
-- **Aggregate and GROUP BY**: an aggregate (`SUM`, `COUNT`) collapses many rows into one value; `GROUP BY` does so once per distinct key. *Where you meet it:* revenue per day is a `SUM` grouped by day.
-
-<p class="check"><b>Check yourself:</b> can you say what <code>SELECT status, SUM(amount) FROM orders GROUP BY status</code> returns? (Answer: one row per distinct <code>status</code>, with the total <code>amount</code> for that status.)</p>
-
-</section>
-
 <section class="prereq" data-section="binary-numbers">
 
 ### <span class="n">01</span> How whole numbers are written in binary
-
-Place value in base two, and that an n-bit signed integer covers −2<sup>n−1</sup> to 2<sup>n−1</sup>−1. You do not need to do binary arithmetic by hand; you need to accept that the range is fixed and finite.
-
-<p class="check"><b>Check yourself:</b> what is the largest value a signed 32-bit integer can hold, roughly? (Answer: about two billion; 2<sup>31</sup>−1 = 2,147,483,647.)</p>
 
 <ul class="resources">
   <Resource kind="reading" title="Two's complement" href="https://en.wikipedia.org/wiki/Two%27s_complement" by="Wikipedia" length="20 min">How signed integers are laid out, and why one past the maximum wraps to the most negative value.</Resource>
@@ -33,8 +13,6 @@ Place value in base two, and that an n-bit signed integer covers −2<sup>n−1<
 <section class="prereq" data-section="sql-select">
 
 ### <span class="n">02</span> Reading a SQL `SELECT`
-
-The examples show `SELECT SUM(amount) ... GROUP BY ...` and column types such as `DECIMAL(12,2)`. The course teaches SQL properly in Chapter 2; here you only need to read a grouped aggregate.
 
 <ul class="resources">
   <Resource kind="reading" title="The SELECT statement" href="https://www.postgresql.org/docs/18/sql-select.html" by="PostgreSQL 18 documentation" length="reference">Skim the synopsis; you only need the shape of a grouped aggregate.</Resource>

@@ -1,6 +1,6 @@
 # Learning Resources
 
-An expert-level learning site where every topic is a short animated, narrated **reel**, backed by a Deep dive and checked against primary sources.
+An expert-level learning site where every topic is a short animated, narrated **reel**, backed by pre-notes, post-notes and sources, and checked against primary sources.
 
 **Live:** https://yashaggarwal85d.github.io/learning-resources/ (the Reels tab plays every finished topic in course order).
 
@@ -41,11 +41,12 @@ scripts/audit-scope.mjs                    the topics and runs since the last au
 scripts/run-metrics.mjs                    records a run's tokens (per model), calls and time, per stage
 site/                                      the website (Astro + React islands + Tailwind)
   src/topics/registry.ts                   every finished topic: live or held, concept ledger, bridge and handoff
-  src/topics/basics-backlog.json           topics made before the Basics rule (2026-10-12); a release run or the audit adds their section
   src/topics/<domain>/m<N>-…/ch<NN>-…/<topic>/
     reel.tsx, scenes.tsx                   the reel: steps and animations (each a pure function of time)
-    index.mdx                              the Deep dive
-    prerequisites.mdx                      Basics (the topic's own terms, in brief), then what to know first, with resources
+    pre-notes.md                           what to know before watching: the topic's prerequisite vocabulary, in brief (editable in the page)
+    post-notes.md                          the Deep dive: after the reel (editable in the page)
+    references.md                             the sources actually used, with their last-verified date
+    prerequisites.mdx                      links only: where to learn what the topic assumes
     narration.json                         the spoken script (lines and beats)
     coverage.json                          the coverage map (syllabus, sources, blind expert list, gap review)
     examples.py                            every example and number, executed with asserts
@@ -92,6 +93,18 @@ narration/narrate.sh src/topics/<domain>/<milestone>/<chapter>/<topic>
 
 Both are frozen in `site/narration/voice.json`. Details are in [site/narration/README.md](site/narration/README.md).
 
+## Editing notes in the page
+
+Every topic's panel has **Pre-notes** and **Post-notes** tabs. With an edit token set in your browser, each shows an **Edit** button that opens the Markdown file in an editor with a live preview; **Save to GitHub** commits it to `main` through the GitHub API, the Deploy workflow rebuilds the site, and the panel says "live in about 4 minutes" (it shows your text meanwhile). Without a token there is no Edit button.
+
+One-time setup, per browser:
+
+1. On GitHub: **Settings → Developer settings → Personal access tokens → Fine-grained tokens → Generate new token**.
+2. **Repository access:** only `yashaggarwal85d/learning-resources`. **Permissions → Repository permissions → Contents: Read and write** (nothing else). Pick an expiry you are happy to renew (30 to 90 days).
+3. Copy the token, open any topic's panel, click **Editing is off · set an edit token** at the bottom, paste it, **Keep in this browser**. It lives in that browser's localStorage only; it is never in the repository or sent anywhere except `api.github.com`. **Remove** forgets it.
+
+What the editor guards: it applies the same rules as the build (`site/src/lib/notes-rules.ts`: pre-notes are 4–14 bullets, under 400 words, no links; no scripts or event handlers), so a save that would turn `main` red is refused before it is sent. If the file changed on GitHub while you were editing, nothing is overwritten: you see the differences and can take GitHub's version or copy your text. Each save is one commit whose message carries `Unlock: <topic-id>`, which is what lets the locked-reel check accept a change to a live topic.
+
 ## How a topic is made
 
 Each domain has a routine that fires every 4 hours (an automated session; up to four runs of one domain and six in all work at once; runs only narrating or shipping don't count, each on its own job) that follows [ROUTINE.md](ROUTINE.md). Chapters go in sequence, the topics of a chapter in parallel. A dispatcher session starts runs every hour, one per free job (`node scripts/claim.mjs open` counts them), because a routine session can't start runs itself.
@@ -101,7 +114,7 @@ The work is split in three stages (owner decision 2026-10-13): draft runs plan c
 1. Before a chapter is built, one draft run plans it: an Opus planner writes the chapter's `CHAPTER.md` (each topic's scope, concepts introduced and used, bridge and handoff), a fresh Opus agent reviews it, and it is pushed to `main`. That plan is the contract every topic of the chapter follows, so they can all be built at once and still follow on from each other. The next chapter is planned once every topic of this one is content-final.
 2. Draft runs claim the topics of the planned chapter, one at a time, as many runs in parallel as the limits allow; a draft run goes on to the next topic until the chapter is drafted.
 3. A draft run researches the topic from primary sources; an Opus agent plans and storyboards it, a fresh Opus agent fact-checks the plan, and a blind expert list starts the coverage map. Opus does the five judgment jobs (chapter plan and its review, content plan, fact-check, content review); everything else is Sonnet; checks go to fresh agents that didn't write what they check.
-4. A builder agent writes the reel, Deep dive, Prerequisites, the narration script in the voice of an MIT professor (never the description read aloud) and executed examples; the draft is pushed as a topic branch and handed over. The next chapter is planned and drafted as soon as this one is fully drafted.
+4. A builder agent writes the reel, pre-notes, post-notes, sources, prerequisite links, the narration script in the voice of an MIT professor (never the description read aloud) and executed examples; the draft is pushed as a topic branch and handed over. The next chapter is planned and drafted as soon as this one is fully drafted.
 5. A review run takes one drafted topic: fresh agents review the content and the looks, every check except narration must pass, and the topic is marked content-final (the next chapter may be planned once all its siblings are too), checked once more in full, and shipped to `main` **held, without audio**: narration is parked for the owner's PC, which narrates the parked topics in bulk on a GPU and releases them in order (`.claude/skills/narrate`).
 
 A topic goes live only when every topic before it in its domain is live; one finished early is held until then. If a check fails, the routine fixes the cause and never loosens the check.

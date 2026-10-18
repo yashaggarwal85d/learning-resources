@@ -1,26 +1,8 @@
 import Resource from '../../../../../components/Resource.astro';
 
-This is a §1.3 refresher: it opens the algorithms section by comparing the two index families most data systems are built on. It assumes logarithms in a large base and the behaviour of storage devices. Reels on this site are marked **Before this** (earlier in the course), **Goes deeper later** or with the name of another track.
-
-<section class="prereq basics" data-section="basics">
-
-### <span class="n">00</span> Basics: words the reel takes for granted
-
-- **Index**: a separate structure that maps column values to the rows holding them, so a query can find rows without scanning the table. *Where you meet it:* `CREATE INDEX` on a column you filter by often.
-- **Key and separator**: a key is the value an index orders by; a separator is a key stored in an inner node to tell a search which way to go. *Where you meet it:* a phone book's header "Ma–Mo" at the top of a page.
-- **Sorted run**: a sequence of key-value pairs stored in key order, which is what makes it searchable by binary search and mergeable with other runs. *Where you meet it:* the output of `sort` on a text file.
-- **Point lookup vs range scan**: a point lookup fetches one key; a range scan fetches every key between two bounds. *Where you meet it:* `WHERE id = 7` versus `WHERE created_at BETWEEN a AND b`.
-- **Write-ahead log (WAL)**: an append-only record of changes written before the changes themselves, so a crash can be replayed. *Where you meet it:* PostgreSQL's `pg_wal` directory.
-
-<p class="check"><b>Check yourself:</b> a tree with fan-out one thousand over a billion keys is how many levels deep? (Answer: three, since log<sub>1000</sub>(10<sup>9</sup>) = 3.)</p>
-
-</section>
-
 <section class="prereq" data-section="logarithms">
 
 ### <span class="n">01</span> Logarithms in a large base, and change of base
-
-A tree's height is a logarithm in the base of its fan-out, and a large base makes the logarithm tiny. You should be able to say why log<sub>1000</sub>(10<sup>9</sup>) = 3 in your head, and convert between bases with log<sub>b</sub> x = ln x / ln b.
 
 <ul class="resources">
   <Resource kind="reel" host={props.host} domain="data-engineering" title="Asymptotic notation and logarithms">O/Θ/Ω, logarithms in any base, and why a large base flattens a tree's height.</Resource>
@@ -32,23 +14,9 @@ A tree's height is a logarithm in the base of its fan-out, and a large base make
 
 ### <span class="n">02</span> Devices, pages and write amplification
 
-Why an in-place update is expensive and a sequential append is cheap comes from the devices: random versus sequential I/O, how a write reaches stable storage, and the SSD's own write amplification, which multiplies with an LSM-tree's. The page cache is why a B+-tree's upper levels cost almost nothing after the first query.
-
 <ul class="resources">
   <Resource kind="reel" host={props.host} domain="data-engineering" title="Storage devices and fsync durability">Sequential vs random I/O, block alignment, SSD internals and device-level write amplification.</Resource>
   <Resource kind="reading" title="The page cache" href="https://docs.kernel.org/mm/page_cache.html" by="Linux kernel documentation" length="5 min">Where the cache that keeps a B+-tree's top levels hot lives.</Resource>
-</ul>
-
-</section>
-
-<section class="prereq" data-section="deeper">
-
-### <span class="n">03</span> Goes deeper later
-
-This is a glance. Page splits, concurrency, memtables and SSTables, leveled versus tiered compaction and the trade-off re-decided per workload are later material and another track.
-
-<ul class="resources">
-  <Resource kind="reel" host={props.host} domain="data-structures-and-algorithms" title="B-tree and B+-tree mechanics">Fanout, splits and merges, built from scratch.</Resource>
 </ul>
 
 </section>

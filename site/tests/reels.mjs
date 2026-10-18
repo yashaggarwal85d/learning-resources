@@ -2,6 +2,7 @@
 // the issues each check guards against). Usage:
 //   node tests/reels.mjs http://localhost:4321/learning-resources/ [slug-part,slug-part,...]
 // With slug parts (e.g. asymptotic-notation), only the matching reels are tested; "none" tests no reel.
+// REEL_DEVICES=desktop (or phone) tests one size only, so the two sizes can run side by side.
 // With PREVIEW_HELD=1 (and a site built with it), held topics are tested too.
 // scripts/affected.mjs picks the parts for a change (check-all --changed, and CI).
 // Fails (exit 1) on any page error, sideways scroll, empty panel, missing
@@ -90,7 +91,7 @@ const browser = await chromium
 for (const [device, opts] of [
   ['desktop', { viewport: { width: 1440, height: 900 } }],
   ['phone', { ...devices['iPhone 13'] }],
-]) {
+].filter(([d]) => !process.env.REEL_DEVICES || process.env.REEL_DEVICES.split(',').includes(d))) {
   for (const { slug, title } of slugs) {
     const ctx = await browser.newContext(opts);
     const page = await ctx.newPage();
@@ -194,11 +195,21 @@ for (const [device, opts] of [
         await page.waitForTimeout(500);
       };
       await reel.locator('[aria-label^="Step "]').nth(from).click();
+      // A swipe to go back from the first step scrolls the feed to the previous reel, so the reel may not be in view and the point
+      // measured earlier is stale: bring this reel to the top and measure the tap point again (a finger that lands on a scrolling
+      // feed only stops it, and sends no tap).
+      await reel.evaluate((el) => el.scrollIntoView({ block: 'start', behavior: 'instant' }));
+      await page.waitForTimeout(600);
+      const vb = await reel.locator('[data-visual]').last().boundingBox();
+      const ty = vb.y + vb.height / 2;
       await page.waitForTimeout(300); // the step is still animating
       const t0 = Number(await stepNow());
-      await tap(250, y);
-      if (Number(await stepNow()) !== t0 + 1) fail(`${where}: a tap on the right didn't go to the next step at once (${t0} -> ${await stepNow()})`);
-      await tap(40, y);
+      await tap(250, ty);
+      if (Number(await stepNow()) !== t0 + 1) {
+        const under = await page.evaluate(([x, yy]) => { const e = document.elementFromPoint(x, yy); return e ? `${e.tagName.toLowerCase()}${e.getAttribute('aria-label') ? `[${e.getAttribute('aria-label').slice(0, 30)}]` : ''}` : 'nothing'; }, [250, ty]);
+        fail(`${where}: a tap on the right didn't go to the next step at once (${t0} -> ${await stepNow()}); under the tap at y=${Math.round(ty)}: ${under}; visual now at y=${Math.round((await reel.locator('[data-visual]').last().boundingBox()).y)}`);
+      }
+      await tap(40, ty);
       if (Number(await stepNow()) !== t0) fail(`${where}: a tap on the left didn't go back (${await stepNow()} instead of ${t0})`);
       const before = await stepNow();
       await drag(200, y, 210, y - 120);
@@ -262,14 +273,33 @@ for (const [device, opts] of [
       await page.screenshot({ path: `test-results/${device}-${slug.split('/').pop()}-${String(i + 1).padStart(2, '0')}.png` });
     }
 
-    // Panels open with content, and still do on the second open (issue: empty sheet after reopening).
-    for (const [button, label] of [['Prerequisites', 'Prerequisites'], ['Deep dive', 'Deep dive'], ['Sources', 'Deep dive'], ['Prerequisites', 'Prerequisites']]) {
+    // The right-hand panel: each of its four tabs opens with content (and still does on the second open), outside links
+    // open in a new tab, the Edit button stays hidden without an edit token, and on a phone it is a full-height drawer.
+    const MIN = { Prerequisites: 30, 'Pre-notes': 150, 'Post-notes': 600, Sources: 80 };
+    for (const button of ['Prerequisites', 'Pre-notes', 'Post-notes', 'Sources', 'Prerequisites']) {
       await reel.getByRole('button', { name: button, exact: true }).first().click();
       await page.waitForTimeout(700);
-      const text = await page.getByRole('dialog', { name: label }).innerText().catch(() => '');
-      if (text.length < 200) fail(`${where}: ${button} panel is empty or missing`);
+      const dialog = page.getByRole('dialog', { name: 'Notes' });
+      if (!(await dialog.count())) { fail(`${where}: ${button} did not open the notes panel`); break; }
+      const tabs = await dialog.getByRole('tab').allInnerTexts();
+      if (tabs.join('|') !== 'Prerequisites|Pre-notes|Post-notes|Sources') fail(`${where}: the panel tabs are "${tabs.join('|')}", expected exactly Prerequisites, Pre-notes, Post-notes, Sources`);
+      const selected = await dialog.getByRole('tab', { selected: true }).innerText().catch(() => '');
+      if (selected !== button) fail(`${where}: ${button} opened the "${selected}" tab`);
+      const text = await dialog.innerText().catch(() => '');
+      if (text.length < MIN[button] + 120) fail(`${where}: ${button} tab is empty or too short`);
       const sameTab = await page.locator('[role="dialog"] a[href^="http"]:not([target="_blank"])').count();
       if (sameTab) fail(`${where}: ${sameTab} outside link(s) in ${button} open in the same tab`);
+      if (await dialog.getByRole('button', { name: /^Edit (pre|post)-notes$/ }).count()) fail(`${where}: an Edit button shows although no edit token is set`);
+      if (button === 'Pre-notes' && device === 'phone') {
+        const box = await dialog.boundingBox();
+        const vp = page.viewportSize();
+        if (!box || box.width < vp.width - 2 || box.height < vp.height - 2) fail(`${where}: on a phone the panel should be a full-height drawer, it is ${Math.round(box?.width ?? 0)}x${Math.round(box?.height ?? 0)} in ${vp.width}x${vp.height}`);
+      }
+      if (button === 'Pre-notes' && device === 'desktop') {
+        const box = await dialog.boundingBox();
+        const vp = page.viewportSize();
+        if (!box || box.width > 600 || box.x + box.width < vp.width - 2) fail(`${where}: on a desktop the panel should hug the right edge (at most 576px wide), it is ${Math.round(box?.width ?? 0)}px wide at x=${Math.round(box?.x ?? 0)}`);
+      }
       await page.keyboard.press('Escape');
       await page.waitForTimeout(400);
     }

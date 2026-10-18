@@ -1,0 +1,6 @@
+- **Limit of a ratio**: the value a fraction such as f(n) over g(n) settles towards as n grows without bound. *Where you meet it:* comparing 3n + 7 with n, where the ratio settles at 3.
+- **Logarithm**: the power you raise a base to in order to get a number; log base 2 of n counts how many times n can be halved. *Where you meet it:* binary search on a million keys takes about twenty steps.
+- **Summation**: the sigma sign adds a pattern over a range; the sum 1 + 2 + … + n equals n(n + 1) over 2. *Where you meet it:* the comparisons made by a nested loop.
+- **Expected value**: the average of a random quantity, with each outcome weighted by its probability. *Where you meet it:* the expected number of coin flips before the first head.
+- **Insertion sort and quicksort**: two sorting procedures. Insertion sort grows a sorted prefix one item at a time; quicksort picks a pivot and splits the rest around it. *Where you meet it:* examples throughout this reel.
+- **Trial division**: testing whether a number is prime by trying every divisor up to its square root. *Where you meet it:* the last example in this reel.

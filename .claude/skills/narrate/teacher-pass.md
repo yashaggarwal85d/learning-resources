@@ -27,7 +27,7 @@ The narration never reads the description. Listening with eyes closed, the learn
 - One line per spoken sentence or short phrase; at most 50 words a line, usually 8 to 24. Per step, usually 1.5 to 2.5 times the description's length; an answer clip 3 to 6 lines.
 - Speakable lines only: no digits (write numbers as words: "sixteen thousand, three hundred and eighty four", "two percent", "version one point five"); no symbols or code punctuation (`_ = < > { } [ ] ( ) / \ * # @ | ~ ^ $ % & +` and backticks); no code-style names (no camelCase or snake_case: say "snake case", "the with statement", "fix up", "reference log"); acronyms as plain capitals ("CI", "CPU"), never "C-I".
 - Per step: under 50% of the narration's four-word phrases may occur in the description, and no description sentence of eight or more words may be spoken verbatim. Do not paraphrase the description sentence by sentence either: say different things.
-- Everything true: every fact and claim agrees with the reel, the Deep dive (`index.mdx`) and `examples.py`.
+- Everything true: every fact and claim agrees with the reel, the post-notes (`post-notes.md`) and `examples.py`.
 
 ## Two examples
 

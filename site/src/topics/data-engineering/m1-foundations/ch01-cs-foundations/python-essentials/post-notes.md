@@ -1,0 +1,92 @@
+---
+id: de.python-essentials
+title: Python essentials
+---
+
+<section data-section="outcomes">
+
+## After this refresher you can
+
+- Spot the classic review bugs: shared mutable defaults, late-binding closures, unhashable keys, whole files read into memory, resources that never close.
+- Choose a generator over a list when the data may not fit in memory, and say what it costs.
+- Write a decorator that keeps the wrapped function's identity, and a context manager that always cleans up.
+- Say what type hints do at runtime (nothing) and where they earn their keep (a type checker in CI).
+
+</section>
+
+<section data-section="internals">
+
+## A little deeper
+
+### Functions
+
+- **Where the default lives.** A default value is evaluated when `def` runs and stored on the function object, in `append_one.__defaults__`. That's why every call sees the same list. Dataclasses refuse the same trap outright: a field declared as `xs: list = []` raises `ValueError` ("use default_factory"); write `field(default_factory=list)`. `@dataclass(kw_only=True)` makes every field keyword-only, so records with many fields can't be built with arguments in the wrong order.
+- **Closures bind late.** A nested function or lambda reads a free variable's value when it is called, so lambdas built in a loop all see the loop's last value. Bind it at creation with a default (`lambda i=i: i`) or `functools.partial`.
+- **Say how arguments may be passed.** Parameters after a bare `*` are keyword-only, so `write(path, *, overwrite=False)` can't be called as `write(p, True)`; parameters before `/` are positional-only (Python 3.8+, PEP 570), so they can be renamed later without breaking callers. Both make pipeline signatures safer to evolve.
+- **Catch narrowly and chain.** `except Exception: pass` hides real failures. Catch the specific exception and, when you translate it, keep the cause with `raise LoadError(...) from err`. Never `return` (or `break`/`continue`) inside `finally`: it silently swallows the exception in flight, and Python 3.14+ warns about it (`SyntaxWarning`, PEP 765).
+
+### Classes
+
+- **Special methods are protocols.** `__iter__` makes an object work in `for`, `sum()` and `list()`; `__len__` makes `len()` work; `__enter__`/`__exit__` make `with` work; `__eq__` defines `==`; `__repr__` is what logs and debuggers show.
+- **Equal must mean same hash.** Defining `__eq__` sets `__hash__` to `None` unless you define it too, so instances can't be dict keys or set members. `@dataclass` (with its default `eq=True`) does the same; `frozen=True` gives a hash from the fields. Keys must not change while stored.
+- **Class attributes are shared.** `class Buffer: rows = []` makes one list for every instance: the mutable-default trap again. Set per-instance state in `__init__` (or use a dataclass field).
+- **`@property` and `@classmethod`.** A property computes an attribute on read, keeping the interface stable when the storage changes; a classmethod is the idiom for alternative constructors such as `Batch.from_rows(...)`.
+- **Prefer composition; type by behaviour.** Deep inheritance trees are hard to review. A `typing.Protocol` describes "anything with `.write(bytes)`" without inheritance, and a type checker checks it structurally. `TypedDict` types JSON-shaped records, but at runtime it is a plain `dict`.
+
+### Iterators and generators
+
+- **Comprehensions and generator expressions.** A comprehension has its own scope, so its loop variable doesn't leak. Pass a generator expression straight to `sum()`, `any()`, `max()` or `str.join()` to avoid building a list. Python 3.15 adds unpacking in comprehensions, so `[*xs for xs in batches]` flattens (PEP 798).
+- **Generators keep their frame.** A generator object holds its paused stack frame, so local variables survive between values. Iteration is a protocol: `iter()` returns an iterator, `next()` advances it, and `StopIteration` ends it; `for` loops, `sum()` and `list()` all speak it.
+- **Single pass, lazy start.** An iterator is used up once consumed: a second `sum()` over the same generator silently returns `0`. So a function typed `Iterable` that loops twice works on a list and is silently wrong on a generator; materialise once, or split the stream with `itertools.tee` (which buffers whatever one copy has read ahead of the other, so it can grow without bound). A generator's body doesn't run until the first `next()`, so argument errors surface late, at first use. `yield from` delegates to another iterable. A `StopIteration` raised inside a generator becomes `RuntimeError` (PEP 479).
+- **Cleanup in generators.** A generator holding a file or cursor runs its `finally` (or `with` exit) only when it is exhausted or closed (`close()` raises `GeneratorExit` at the paused `yield`). One abandoned halfway relies on garbage collection; close it, or wrap it with `contextlib.closing`. The reverse bug is as common: `with open(p) as fh: return (line for line in fh)` hands back a generator over a file that closes on `return`, so the first `next()` raises `ValueError: I/O operation on closed file`. Put `yield from fh` *inside* the `with`, or keep the `with` in the caller.
+- **itertools for streams, and silent truncation.** `itertools.batched(rows, n)` (3.12+) chunks a stream for bulk writes (`strict=True`, 3.13+, raises on a short last batch); `chain.from_iterable` flattens lazily; `groupby` groups only *consecutive* equal keys, so sort first; `islice` takes a window without materialising. `zip()` stops at the shortest input without a word: use `zip(a, b, strict=True)` (3.10+, PEP 618) when the lengths must match.
+
+### Context managers and decorators
+
+- **Context managers are `__enter__` and `__exit__`.** `with` calls `__exit__` however the block ends. If `__exit__` returns a true value the exception is suppressed, which is rarely what you want; when you do mean it, say so with `contextlib.suppress(FileNotFoundError)`. With `@contextmanager`, `yield` exactly once and put the teardown in `finally` around it, or it is skipped when the body raises. `contextlib.ExitStack` manages a variable number of resources, such as one file per partition.
+- **A `with` guarantees only what its `__exit__` does.** `with sqlite3.connect(db) as con:` commits or rolls back the transaction, but does not close the connection (the docs suggest `contextlib.closing`); many database drivers' connection context managers manage the transaction rather than the connection. Know what the object you are given actually releases.
+- **Decorators with arguments** are factories: `@retry(times=3)` calls `retry(times=3)`, which returns the actual decorator. Decorators run once, at import time, when the function is defined.
+- **Caches are decorators too.** Both `functools.cache` and `lru_cache` need hashable arguments (a list raises `TypeError`). `cache` never evicts; `lru_cache` keeps 128 entries by default. A cached mutable result is shared by every caller, so one caller mutating it changes it for all. On a method, the cache holds `self`, which keeps instances alive.
+
+### Type hints
+
+- **Annotations are data.** Hints are kept on the object and ignored at runtime. Since Python 3.14 they are evaluated lazily (PEP 649 and PEP 749): forward references work without quotes or `from __future__ import annotations`, and reading `f.__annotations__` evaluates them then, raising `NameError` for a name that doesn't exist. Libraries read them with `annotationlib.get_annotations(f, format=Format.FORWARDREF)`. None of this makes Python enforce them.
+- **Modern syntax.** Built-in generics and unions: `list[int]`, `dict[str, Row]`, `int | None` (PEP 585, PEP 604); generic functions with `def first[T](xs: Iterable[T]) -> T | None` (PEP 695, 3.12+). Accept abstract types (`Iterable`, `Mapping`) and return concrete ones; type a generator function as `Iterator[T]`. Type decorators with `ParamSpec` so the wrapped signature survives.
+
+</section>
+
+<section data-section="lab">
+
+## Try it
+
+Write a generator that reads a large CSV in batches of 10,000 rows, and a context manager that times each batch. Measure peak memory with `tracemalloc` against a version that calls `readlines()` first. Every example in this reel is executed and checked in `examples.py`, next to this topic's source.
+
+</section>
+
+<section data-section="production">
+
+## In code review
+
+- `def f(..., opts={})` or `=[]`: a shared mutable default. Use `None`, or `default_factory` in dataclasses.
+- `f.read()` or `readlines()` on input of unknown size: stream it with iteration or a generator.
+- `open()` or a connection without `with`: a leak waiting for the first exception.
+- A decorator without `functools.wraps`: logs, tracebacks and introspection now say `wrapper`.
+- Type hints with no checker in CI: documentation that can silently drift from the code.
+- `if row.get('amount'):` or `if not value`: `0`, `0.0`, `''` and empty containers count as missing, so valid rows are dropped. Test `is None`.
+- A generator returned from inside a `with` block: it outlives the resource.
+- `zip()` over inputs that must line up, without `strict=True`.
+- `print()` for diagnostics, or f-strings inside log calls: use a module-level `logging.getLogger(__name__)`, `%`-style arguments (formatted only if the record is emitted), and `logger.exception(...)` inside `except`.
+- `open()` without `encoding=` (and `newline=''` for the `csv` module). Python 3.15 makes UTF-8 the default everywhere (PEP 686), so code that relied on the platform encoding changes behaviour.
+- Lambdas or callbacks built in a loop: check what they capture.
+- `__eq__` on a class used as a key, without `frozen=True` or a matching `__hash__`.
+- A bare `except:` or `except Exception: pass`, or a translated exception without `from err`.
+
+</section>
+
+<section data-section="next">
+
+## Where this goes next
+
+Next refresher: Git, the history behind every pipeline change.
+
+</section>

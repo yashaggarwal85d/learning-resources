@@ -1,14 +1,8 @@
 import Resource from '../../../../../components/Resource.astro';
 
-This reel assumes six things. If they are familiar, skip straight in. If one is not, a few minutes with the matching resource is enough to follow every step. Reels on this site are marked **Before this** (earlier in the course) or **Goes deeper later** (not needed now).
-
 <section class="prereq" data-section="asymptotics">
 
 ### <span class="n">01</span> Asymptotic notation, cases and averages
-
-You can read Ω, Θ and O, you know what a worst-case bound claims, and you know the difference between an average over inputs and an expectation over an algorithm's coins. A lower bound is an Ω statement about a worst case or an average, so this is its language.
-
-<p class="check"><b>Check yourself:</b> if every algorithm for a problem needs Ω(n log n) steps in the worst case, is it still possible that one algorithm is fast on a particular input? (Answer: yes; a worst-case bound says nothing about easy inputs.)</p>
 
 <ul class="resources">
   <Resource kind="reel" host={props.host} domain="data-structures-and-algorithms" title="Asymptotic notation and case analysis">The notation and the cases this reel's bounds are written in.</Resource>
@@ -19,10 +13,6 @@ You can read Ω, Θ and O, you know what a worst-case bound claims, and you know
 <section class="prereq" data-section="word-ram">
 
 ### <span class="n">02</span> The word-RAM and the comparison model
-
-You know what one step costs on the word-RAM, and that the comparison model counts only comparisons of keys. You know radix sort, van Emde Boas trees and fusion trees as the structures that leave the comparison model by using keys as numbers; this reel proves the bounds they escape.
-
-<p class="check"><b>Check yourself:</b> why can radix sort beat n log n without contradicting any proof? (Answer: it reads the digits of a key, which no comparison does, so it is outside the model the proof is about.)</p>
 
 <ul class="resources">
   <Resource kind="reel" host={props.host} domain="data-structures-and-algorithms" title="The word-RAM model and its assumptions">The machine, the comparison model, and the integer-key structures that escape it.</Resource>
@@ -35,10 +25,6 @@ You know what one step costs on the word-RAM, and that the comparison model coun
 
 ### <span class="n">03</span> Recurrences, and merge sort's Θ(n log n)
 
-You can read the cost of a divide-and-conquer algorithm off its recurrence. This reel meets that upper bound with a lower bound: merge sort's Θ(n log n), solved in the previous topic, is the answer the decision tree proves optimal.
-
-<p class="check"><b>Check yourself:</b> what does T(n) = 2T(n/2) + n solve to, and which case of the Master theorem is it? (Answer: Θ(n log n); case 2, every level of the recursion tree costs n.)</p>
-
 <ul class="resources">
   <Resource kind="reel" host={props.host} domain="data-structures-and-algorithms" title="Recurrences: Master theorem and Akra–Bazzi">Reading a bound off a recurrence; this reel asks whether any algorithm can do better.</Resource>
 </ul>
@@ -48,10 +34,6 @@ You can read the cost of a divide-and-conquer algorithm off its recurrence. This
 <section class="prereq" data-section="logarithms">
 
 ### <span class="n">04</span> Logarithms and n!
-
-log₂ is the number of times you can halve a number, or the height of a binary tree with that many leaves. n! is the number of orders of n keys. The sorting bound is log₂ of n!, so you need to be comfortable with how large it is.
-
-<p class="check"><b>Check yourself:</b> about how large is log₂(10!)? (Answer: about 21.8, so 22 comparisons are needed to sort 10 keys in the worst case. 10! = 3,628,800 lies between 2²¹ and 2²².)</p>
 
 <ul class="resources">
   <Resource kind="reading" title="Logarithm" href="https://en.wikipedia.org/wiki/Logarithm" by="Wikipedia">The definition, the binary logarithm and the rules this reel uses.</Resource>
@@ -67,10 +49,6 @@ log₂ is the number of times you can halve a number, or the height of a binary 
 
 ### <span class="n">05</span> Hash sets
 
-A hash set answers “is this key present?” in O(1) time on average, with a randomly chosen hash function. You need to know that the promise is an expected one, not a worst case: the reel uses a hash set to decide distinctness and says what it gives up.
-
-<p class="check"><b>Check yourself:</b> what does a hash set's O(1) lookup promise, the worst case or the expected case? (Answer: the expected case, over the choice of hash function; some inputs make any one fixed function collide.)</p>
-
 <ul class="resources">
   <Resource kind="reading" title="Hash Tables" href="https://algs4.cs.princeton.edu/34hash/" by="Sedgewick and Wayne, Algorithms 4th ed., section 3.4">Separate chaining and linear probing, with the expected cost.</Resource>
   <Resource kind="reading" title="Hash table" href="https://en.wikipedia.org/wiki/Hash_table" by="Wikipedia">The structure, its operations and its performance.</Resource>
@@ -81,10 +59,6 @@ A hash set answers “is this key present?” in O(1) time on average, with a ra
 <section class="prereq" data-section="procedures">
 
 ### <span class="n">06</span> The standard sorts and binary search as procedures
-
-You need to know what insertion sort, merge sort and binary search do, not their analysis: this reel draws insertion sort as a tree of comparisons and counts binary search's probes.
-
-<p class="check"><b>Check yourself:</b> how many probes does binary search make on 1,000,000 sorted keys in the worst case? (Answer: 20, which is ⌊log₂ 1,000,000⌋ + 1.)</p>
 
 <ul class="resources">
   <Resource kind="reading" title="Elementary Sorts" href="https://algs4.cs.princeton.edu/21elementary/" by="Sedgewick and Wayne, Algorithms 4th ed., section 2.1">Selection and insertion sort, with traces.</Resource>

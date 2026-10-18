@@ -1,0 +1,7 @@
+- **Page cache and dirty page**: the kernel keeps recently used file data in RAM so repeat reads and writes skip the device; a page changed in RAM but not yet written back is dirty. *Where you meet it:* a `write()` that returns quickly has only dirtied a page, which is why a freshly written file reads back instantly.
+- **IOPS and queue depth**: IOPS counts I/O operations per second; queue depth is how many requests are outstanding at the device at once. *Where you meet it:* a benchmark reporting "4K random read, QD32" is measuring many requests in flight, not one at a time.
+- **Latency vs bandwidth**: latency is the wait for one request; bandwidth is bytes per second once data flows. *Where you meet it:* a drive can have excellent bandwidth and still feel slow to a program that issues one small read at a time.
+- **NVMe SSD vs HDD**: an HDD stores data on spinning magnetic platters read by a moving head; an NVMe SSD stores it in flash chips reached over the PCIe bus. *Where you meet it:* the spec sheet for any server disk lists one of these two.
+- **Inode and directory entry**: a file's data and metadata live under its inode; a directory entry is a name that points to an inode. *Where you meet it:* `ls -i` prints inode numbers, and two names can point to the same inode.
+
+**Check yourself:** a program calls `write()` and gets success. Where are the bytes? (Answer: in the page cache in RAM, marked dirty; nothing guarantees they reached the device.)

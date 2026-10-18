@@ -1,21 +1,5 @@
 import Resource from '../../../../../components/Resource.astro';
 
-This topic opens §2.3 and ties §2.1 and §2.2 together. It needs the algebra tree from the first topic and a first look at `EXPLAIN`. Reels on this site are marked **Before this** (earlier in the course), **Goes deeper later** or with the name of another track.
-
-<section class="prereq basics" data-section="basics">
-
-### <span class="n">00</span> Basics: words the reel takes for granted
-
-- **Catalog (system tables)**: the database's own tables describing its tables, columns, functions and types. *Where you meet it:* `information_schema` or `pg_catalog`.
-- **Parse tree**: the grammatical structure of the query text, before any names are looked up. *Where you meet it:* the first thing a SQL linter builds.
-- **View**: a stored query used like a table. *Where you meet it:* `CREATE VIEW paid_orders AS SELECT …`.
-- **Index**: a structure that lets the database find rows by a column without scanning the whole table. *Where you meet it:* `CREATE INDEX` on a column you filter by often.
-- **Cost estimate**: the planner's guess at the work a plan will do, in internal units. *Where you meet it:* `cost=0.00..35.50` in `EXPLAIN`.
-
-<p class="check"><b>Check yourself:</b> can a SQL parser, which does no catalog lookups, tell that <code>SELECT * FROM missing</code> is wrong? (Answer: no, the grammar is fine; the missing table is found when names are resolved.)</p>
-
-</section>
-
 <section class="prereq" data-section="earlier-topics">
 
 ### <span class="n">01</span> The algebra tree and the section so far

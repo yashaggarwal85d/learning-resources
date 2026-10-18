@@ -34,6 +34,15 @@ The house style for every reel, in one page. The content-plan agent storyboards 
 - Animate position, scale and opacity only. No filters or blur on moving layers.
 - Predict steps: the question frame shows the setup without giving the answer away; the answer is revealed by the visual after the learner chooses (`answer` in the step context).
 
+## The notes panel
+
+Everything that is not the reel lives in one panel that opens from the side buttons (owner decision 2026-10-17):
+
+- **Shape.** On a desktop it slides in from the right edge, at most 36rem wide, over a dimmed reel that is paused while it is open; on a phone it is a full-height drawer, edge to edge, with a close button at the top right. Escape and a tap on the dimmed reel close it (with a confirmation if an edit is unsaved).
+- **Four tabs, always in this order and with these names:** Prerequisites (links only), Pre-notes (what to know before watching), Post-notes (the Deep dive), Sources. The tab named by the button you pressed is open; switching tabs keeps the panel.
+- **Prose** uses the same type as the Deep dive always had (`.deep` in `global.css`): body in latte, terms and headings in crema, links in caramel and opening in a new tab, code in the mono face. Pre-notes are one bullet per term with an italic "Where you meet it".
+- **Editing** (only with an edit token in that browser): an Edit button above the text; the editor is the Markdown text with a Preview toggle, Save to GitHub, Cancel, and the build's problems listed in caramel under it. A conflict shows the differences (GitHub in red, yours in green) and offers GitHub's version or a copy of yours, never an overwrite. After a save the panel says when the site will be rebuilt.
+
 ## The looks review checks
 
 For every step at desktop and phone size: is the point visible at a glance; is the final frame a complete summary; is any text crowded, overlapping, clipped, under-sized or low-contrast; are there more than two accents or more than four labels competing; does the caption say what the picture shows; does the step look like it belongs to this site and still have its own idea.

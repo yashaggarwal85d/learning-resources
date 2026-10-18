@@ -1,0 +1,5 @@
+- **Thread and spawn**: a thread is an independent line of execution inside one program, and `thread::spawn` starts one. *Where you meet it:* one thread per pipeline stage.
+- **Channel**: a queue for passing values between threads: one end sends, the other receives. *Where you meet it:* `mpsc::channel()`.
+- **Mutex**: a lock that lets one thread at a time use the data inside it. *Where you meet it:* two threads updating a shared counter.
+- **Reference counting**: a shared pointer that keeps a count of its owners and frees the data when the count reaches zero. *Where you meet it:* `Rc` on one thread, `Arc` across threads.
+- **The borrowing rule**: at any moment a value has either one mutable reference or any number of shared ones, never both. *Where you meet it:* the compiler error when two parts of the code try to change the same pool.

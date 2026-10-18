@@ -1,0 +1,5 @@
+- **Amortized cost**: the total cost of a sequence of operations divided by their number, proved to hold for every sequence. *Where you meet it:* the bank argument of the last reel.
+- **State of a structure**: everything the structure currently holds, such as its size and its capacity. *Where you meet it:* a vector with 17 keys in room for 32.
+- **Function of the state**: a rule that turns the current state into one number. *Where you meet it:* "keys minus half the capacity" read straight off the vector.
+- **Telescoping sum**: a sum in which each term cancels part of its neighbour, leaving only the ends. *Where you meet it:* (a − b) + (b − c) + (c − d) = a − d.
+- **Dynamic array and stack**: an array that grows by copying into a larger one, and a collection with push and pop at one end. *Where you meet it:* the vector and the multipop stack of the last reel.

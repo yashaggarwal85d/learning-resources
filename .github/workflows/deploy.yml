@@ -68,6 +68,7 @@ jobs:
           npx astro preview --host 127.0.0.1 --port 4321 > preview.log 2>&1 &
           for i in $(seq 1 30); do curl -sf http://127.0.0.1:4321/learning-resources/ > /dev/null && break; sleep 1; done
           npm run test:reels -- http://127.0.0.1:4321/learning-resources/ ${{ steps.affected.outputs.reels }}
+          npm run test:editor -- http://127.0.0.1:4321/learning-resources/
       - uses: actions/upload-artifact@v4
         if: always()
         with:

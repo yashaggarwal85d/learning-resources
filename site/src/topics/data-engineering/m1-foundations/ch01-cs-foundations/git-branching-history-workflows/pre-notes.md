@@ -1,0 +1,7 @@
+- **Commit**: a saved snapshot of the whole project, with a message and a pointer to the commit it was built on (its parent). *Where you meet it:* each entry in `git log`.
+- **Branch**: a movable name that points at one commit; making one costs nothing. *Where you meet it:* `git switch -c fix-null-handling` before you start work.
+- **Commit graph**: the commits and their parent links. History is this graph, not a flat list. *Where you meet it:* `git log --graph --oneline`.
+- **Working tree and staging area**: the files on disk, and the snapshot you are assembling for the next commit. *Where you meet it:* `git add` moves a change into the staging area, `git commit` records it.
+- **Remote and push**: a shared copy of the repository, by default called `origin`, and the command that sends your commits to it. *Where you meet it:* `git push` after finishing a feature.
+- **Pull request**: a request on a hosting site such as GitHub to merge one branch into another, with review before it lands. *Where you meet it:* the page where teammates comment on your change.
+- **Exit status**: the number a command returns when it finishes, 0 for success, anything else for failure. *Where you meet it:* `echo $?` right after a command.

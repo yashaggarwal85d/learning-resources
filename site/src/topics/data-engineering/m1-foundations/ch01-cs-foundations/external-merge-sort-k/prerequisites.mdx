@@ -1,26 +1,8 @@
 import Resource from '../../../../../components/Resource.astro';
 
-This is a §1.3 full topic. It opens up the sort bound the I/O cost model quoted, so it assumes that model, binary heaps and merge sort. Reels on this site are marked **Before this** (earlier in the course), **Goes deeper later** or with the name of another track.
-
-<section class="prereq basics" data-section="basics">
-
-### <span class="n">00</span> Basics: words the reel takes for granted
-
-- **Merge of two sorted lists**: repeatedly compare the front items of two sorted lists and move the smaller to the output. *Where you meet it:* the combine step of merge sort.
-- **Min-heap**: a structure that always gives you its smallest item in logarithmic time and accepts new items in logarithmic time. *Where you meet it:* Python's `heapq` module, or a priority queue.
-- **Generator**: a function that hands out values one at a time and remembers where it stopped, so a long stream never has to sit in memory at once. *Where you meet it:* a Python function with `yield`.
-- **Memory M and block size B**: the I/O model counts memory in items (M) and the unit the disk moves in items (B). *Where you meet it:* the cost model topic, where a scan costs N/B block transfers.
-- **ORDER BY, sort-merge join**: the SQL clause that sorts a result, and a join that sorts both inputs on the key and walks them together. *Where you meet it:* `EXPLAIN` showing `Sort` or `Merge Join`.
-
-<p class="check"><b>Check yourself:</b> merging two sorted lists of one million items each, how many items do you hold in memory at the same time? (Answer: two, one from the front of each list, if you stream the output.)</p>
-
-</section>
-
 <section class="prereq" data-section="io-model">
 
 ### <span class="n">01</span> The external-memory (I/O) cost model
-
-You need the sort bound (N/B)·log<sub>M/B</sub>(N/B) and the fact that it counts passes over the data, not comparisons. This topic opens that formula up.
 
 <ul class="resources">
   <Resource kind="reel" host={props.host} domain="data-engineering" title="The external-memory (I/O) cost model">Where the sort bound and the pass count come from. Essential.</Resource>
@@ -31,8 +13,6 @@ You need the sort bound (N/B)·log<sub>M/B</sub>(N/B) and the fact that it count
 <section class="prereq" data-section="heaps">
 
 ### <span class="n">02</span> Binary heaps and merge sort
-
-The merge phase is driven by a binary heap, and the whole algorithm is merge sort taken to disk. If "sift down" or "merge two sorted lists" are rusty, revise them first.
 
 <ul class="resources">
   <Resource kind="reading" title="heapq — Heap queue algorithm" href="https://docs.python.org/3/library/heapq.html" by="Python documentation" length="20 min">The standard-library heap, and <code>heapq.merge</code>, which merges sorted iterables in bounded memory.</Resource>

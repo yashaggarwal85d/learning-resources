@@ -1,0 +1,6 @@
+- **Stack and heap**: the stack holds local values in fixed-size frames that vanish when a function returns; the heap holds memory you ask for at run time, which can grow and outlive a frame. *Where you meet it:* a `Vec` keeps its length on the stack and its items on the heap.
+- **Pointer**: a value that holds the address of other memory. *Where you meet it:* a `String` stores a pointer to its text.
+- **Reference (`&T`)**: a borrow of a value that lets you read it without owning it. *Where you meet it:* a function that takes `&str` instead of `String`.
+- **`String` and `Vec<T>`**: growable collections that own their buffer on the heap. *Where you meet it:* building text with `push_str`.
+- **Struct, trait and `derive`**: a struct groups fields, a trait names behaviour a type can have, and `#[derive(Clone)]` asks the compiler to write the trait for you. *Where you meet it:* `#[derive(Debug, Clone)]` above a struct.
+- **Closure**: an unnamed function written inline that can use variables from where it was created. *Where you meet it:* `|x| x + offset` passed to `map`.

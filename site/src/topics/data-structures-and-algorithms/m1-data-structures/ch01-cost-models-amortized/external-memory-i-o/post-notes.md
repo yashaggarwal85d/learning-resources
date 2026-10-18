@@ -1,0 +1,144 @@
+---
+id: dsa.external-memory-i-o
+title: External-memory (I/O) model
+---
+
+<section data-section="outcomes">
+
+## After this topic you can
+
+- State the external-memory (I/O) model and its parameters N, M and B, and count a scan, a search and a sort in block transfers.
+- Explain where the log<sub>M/B</sub> in the sort bound comes from, and read it as a pass count.
+- Re-price an amortized structure, the doubling vector of §1.2, in block transfers instead of element writes.
+- Show with the running example's numbers why block transfers, not comparisons, decide a data system's cost.
+- Say which pair of levels of the memory hierarchy a given M and B describe, and switch the same model to the cache level.
+
+</section>
+
+<section data-section="internals">
+
+## A little deeper
+
+### The model, as Aggarwal and Vitter stated it
+
+The word-RAM of §1.1 charged one unit for every memory access, whether the datum was already in a register or sat a thousand kilometres away on a spinning disk. That is the fiction §1.2 inherited: every element write cost the same. Once the vector grows past the memory a program is given, the fiction breaks, and the cost that remains is the one the word-RAM hid: **moving data between a fast level and a slow one, in blocks**.
+
+Aggarwal and Vitter (CACM 1988) made that cost the unit. Their model has three numbers:
+
+| Symbol | Meaning | In the running example (the 1 GiB vector) |
+|---|---|---|
+| **N** | items in the problem | N = 2²⁷ keys (64-bit words: 1 GiB) |
+| **M** | items that fit in the fast level | M = 2²³ keys (64 MiB) |
+| **B** | items per block, moved as a unit | B = 512 keys (a 4 KiB disk block) |
+
+All three are counted in **items, not bytes**, exactly as Aggarwal and Vitter and the Data Engineering I/O topic count them. The fast level (memory) holds M items; the slow level (disk) is unbounded; a transfer moves one **block** of B contiguous items in either direction. The model requires M < N (the problem does not fit) and B ≤ M/2 (at least two blocks fit in memory at once, as Vitter's survey states it for the single-disk case).
+
+Two rules make it a cost model and not just a picture:
+
+1. **The only thing counted is the number of block transfers** (I/Os). An algorithm may do any amount of computation on the items already in memory for free.
+2. **Items are indivisible.** A record is moved whole; the algorithm cannot encode an item into a fraction of a block. This is the condition under which the sorting lower bound below holds.
+
+Aggarwal and Vitter's full model also has a parameter **P**, the number of blocks that can be transferred in one parallel step (Vitter's later survey writes this as D independent disks). This chapter sets **P = 1**: one block moves at a time, the single-disk case. Everything below is stated for P = 1.
+
+For the running example the derived counts are the chapter's canonical numbers:
+
+- **N / B = 2²⁷ / 2⁹ = 2¹⁸ = 262,144** blocks span the whole vector.
+- **M / B = 2²³ / 2⁹ = 2¹⁴ = 16,384** blocks fit in memory at once.
+- **N / M = 2²⁷ / 2²³ = 2⁴ = 16** memory-sized pieces make up the vector.
+
+### The memory hierarchy, and why just two levels
+
+A real machine is not one fast level over one slow one; it is a **memory hierarchy** of many levels, each larger and slower than the one above it: registers, the L1, L2 and L3 caches, main memory (DRAM), the SSD or disk, and beyond that the network and object storage. Each level moves data to the one above it in fixed-size blocks, and each block transfer across a boundary is far more expensive than a computation on data already in the faster level. That gap is the real cost the word-RAM's `cache-miss` note (§1.1) pointed at.
+
+The I/O model looks at **one adjacent pair of levels** at a time: everything above the boundary is "memory" (size M), everything below is "disk", and B is the block size at that boundary. The same two-parameter model is reused at every boundary; only M and B change. At the disk boundary B is a page (here 512 keys); at the CPU-cache boundary the block is a **cache line**, the unit a cache fetches from memory. For a 64-byte line and 64-bit keys that is **B = 8 keys**, and M becomes the size of the cache. The word "block" always means the model's unit of transfer; "cache line" is the name that block carries at the CPU-cache level. The next topic (the cache-oblivious model) asks what happens when an algorithm must be good at *every* boundary at once without being told M or B; here we take them as given.
+
+### The three bounds every later chapter quotes
+
+Vitter's 2008 survey collects the four fundamental I/O bounds in one table (his Table 3.1). For the single-disk case (P = 1) they are:
+
+| Operation | I/O bound (P = 1) | In block units |
+|---|---|---|
+| **Scan(N)** | Θ(N / B) | Θ(n) |
+| **Search(N)** | Θ(log<sub>B</sub> N) | — |
+| **Sort(N)** | Θ((N / B) · log<sub>M/B</sub>(N / B)) | Θ(n log<sub>m</sub> n) |
+| Report Z answers | Θ(max(1, Z / B)) | Θ(max(1, z)) |
+
+(Vitter writes lower-case n = N/B and m = M/B to compress the formulas; this chapter writes N/B and M/B in full, because n already means the number of elements.)
+
+**scan(N) = Θ(N / B).** Reading or writing every item once, in order, touches each of the N/B blocks exactly once. It is the floor for any task that must look at all the data: for the 1 GiB vector, 262,144 sequential transfers. Scanning is the operation §1.2's `aggregate-method` quietly assumed was cheap; here it has a name and a price.
+
+**Search(N) = Θ(log<sub>B</sub> N).** Finding one key among N sorted ones costs Θ(log<sub>B</sub> N) transfers, not Θ(log₂ N): a B-tree node holds B keys, so one transfer rules out all but a 1/B share of the range, and the base of the logarithm is B rather than 2. For the running example log<sub>512</sub>(2²⁷) = 27 / 9 = 3, against log₂(2²⁷) = 27 for a binary search over sorted blocks: three transfers instead of twenty-seven. Vitter notes this bound **assumes the comparison model**; a hash lookup finds a key in Θ(1) I/Os on average. The B-tree that achieves the search bound is Chapter 5's subject; this topic only names the bound.
+
+**Sort(N) = Θ((N / B) · log<sub>M/B</sub>(N / B)).** This is the bound that reshapes data systems, and the next section unpacks the logarithm. Aggarwal and Vitter proved it is both achievable and optimal for comparison-based sorting of indivisible items; the matching lower bound and the permuting bound are Chapter 31's subject, so here the lower bound is stated with its condition, not proved.
+
+### Where the log<sub>M/B</sub> comes from: a pass count
+
+The sort bound looks forbidding until you read the logarithm as **a count of passes over the data**. Multiway merge sort in external memory runs in two phases:
+
+1. **Run formation.** Read the input a memory-load at a time: M items, sort them in memory for free, write them back as a sorted **run**. This makes N/M runs, each M items long, in one scan in and one scan out. The running example makes N/M = **16** runs.
+2. **Merging.** Repeatedly merge groups of runs into longer runs. With M items of memory and blocks of B, you can keep one block from each of up to about M/B input runs plus one output block in memory at once, so the **merge fan-in is Θ(M/B)**. Each merge pass reads and writes all the data once (a scan, 2N/B transfers), and reduces the number of runs by the fan-in factor. The number of merge passes is therefore log<sub>M/B</sub>(number of runs) = log<sub>M/B</sub>(N/M), and the total pass count is **1 + log<sub>M/B</sub>(N/M) = log<sub>M/B</sub>(N/B)**.
+
+Each pass is Θ(N/B) transfers and there are log<sub>M/B</sub>(N/B) of them, which multiplies out to the bound. Drawn as a merge tree (top-down, as the chapter draws its trees), the tree has log<sub>M/B</sub>(N/B) levels and each level is one scan.
+
+For the running example the arithmetic collapses: there are N/M = 16 runs after phase 1, and the fan-in is M/B = 16,384. Sixteen runs is far fewer than 16,384, so **one merge pass takes all of them at once**. The whole sort is run formation plus a single merge: two scans of the data, log<sub>M/B</sub>(N/B) = log<sub>16384</sub>(262144) = 18/14 ≈ 1.29. Against this, a binary (two-way) merge would need log₂(16) = 4 merge passes. The large fan-in is the whole point: once M/B is in the thousands, almost every realistic sort finishes in two or three passes, and the log<sub>M/B</sub> term is a small constant.
+
+### Re-pricing the doubling vector in block transfers
+
+§1.2 proved that n appends to the doubling vector cost O(1) each *amortized*, counting element writes. What does an append cost in **block transfers**? Count the resizes. Growing from capacity c to 2c copies c items, and copying c items is a scan: Θ(c/B) transfers, plus at most one partial block at each end. Summing over the ⌈log₂ N⌉ resizes (capacities 1, 2, 4, …, up to N), the copied items total fewer than 2N, so the data movement is at most 2N/B transfers, and the partial blocks add at most two per resize, O(log N) in all:
+
+> total resize I/O = O(N / B + log N).
+
+Divided over N appends, that is **O(1/B + (log N)/N) per append, which is O(1/B)** once N/B outweighs log N — as it does for the 1 GiB vector, where N/B = 262,144 dwarfs log₂N = 27. So the §1.2 bound survives the change of unit and gets *stronger*: an append is not just O(1) amortized element writes, it is O(1/B) amortized block transfers, because the copies are sequential and ride B items to a block. This is the payoff the chapter promised: the amortized analysis of §1.2 and the I/O unit of §1.3 agree, and the agreement is what Topic 10's lab measures.
+
+### Why bytes moved, not comparisons, dominate
+
+In the word-RAM an O(N) algorithm beats an O(N log N) one. In the I/O model the count that decides the winner is block transfers, and the two can trade places. Three facts make the point.
+
+- **Count the same sort twice.** Comparison-sorting the 1 GiB vector does about N·log₂N ≈ 2²⁷ · 27 ≈ 3.6 billion comparisons. The I/O model does not care: it counts the transfers, ≈ 2 · N/B ≈ half a million for the two passes above. A counter of comparisons spins into the billions while the transfer counter ticks a few hundred thousand times. On real hardware the sort's wall-clock time tracks the transfers, not the comparisons, because a comparison on data in memory is thousands of times cheaper than a block fetched from disk. Pricing the two with any realistic per-transfer and per-comparison cost (device latencies and bandwidths from a measured source — **measure in build**, or see Topic 10 and the Data Engineering latency numbers) makes the transfer term dominate by orders of magnitude.
+- **Random access costs a transfer per item.** Chasing N items by their locations — a pointer walk through a structure larger than memory, or N unsorted probes into a table — does O(N) work but about **N** block transfers, because each item lands in its own block: B times the N/B a scan needs. Sorting the same N items first costs only the two or three passes above. That is why external engines sort or partition before they look things up one by one, and why a B-tree's log<sub>B</sub> N beats a binary search's log₂(N/B) over sorted blocks.
+- **N is what you actually move.** The scan bound counts items transferred, not the logical problem size. Reading three of thirty columns, compression, and skipping blocks by their summaries all shrink the N that enters the bound before any of this arithmetic applies.
+
+### What the Data Engineering track adds
+
+The Data Engineering course teaches this same model from the database side: its "Memory hierarchy and latency numbers" topic (§1.2) gives the sourced device latencies and bandwidths this topic deliberately leaves off the screen, and its "The external-memory (I/O) cost model" topic (§1.3) prices real query plans — index crossovers (where an index scan stops beating a sequential scan, at about a 1/(r·B) share of rows), clustered-versus-unclustered order, external-sort pass counts in a planner's cost units, and the network as a further tier. Those are the same bounds applied to PostgreSQL and distributed joins; this topic grounds the model and its proofs, and points there for the systems detail rather than repeating it.
+
+</section>
+
+<section data-section="lab">
+
+## Try it
+
+No measurement here needs a special machine; these are pencil-and-counter exercises that make the bounds concrete on the running example. The *measured* version — a pointer-chasing benchmark that reveals the real B and M of each level, and a count of the doubling vector's transfers against this prediction — is the chapter lab, hosted by Topic 10 "Measuring the memory hierarchy"; this topic supplies the predictions it reconciles against.
+
+1. **Count the three bounds for the 1 GiB vector.** With N = 2²⁷, B = 512, M = 2²³: confirm N/B = 262,144 (scan), log<sub>512</sub>(2²⁷) = 3 (search), and that the sort takes exactly two passes because N/M = 16 runs is far below the fan-in M/B = 16,384. Then redo all three at the **cache level**, with B = 8 keys and M a 32 MiB last-level cache (= 2²² keys), and note which bound changes most.
+
+2. **Watch the sort bound become a constant.** Tabulate the pass count 1 + ⌈log<sub>M/B</sub>(N/M)⌉ as N climbs from 2²⁷ to 2⁴⁰ with M and B fixed. See that it stays at 2 for a very long way and only reaches 3 when the run count N/M first exceeds the fan-in M/B — the point at which memory starts to matter, long after the data stops fitting in it.
+
+3. **Re-price the doubling vector.** Simulate g = 2 appends up to N and count, per resize, the blocks a copy of the current contents moves (⌈c/B⌉ reads + ⌈c/B⌉ writes). Sum them, divide by N, and watch the per-append transfer count fall toward the O(1/B) the proof predicts as N/B overtakes log N. (This is the prediction Topic 10's lab part 2 measures against wall-clock time; the two diverge exactly where part 1's latency staircase explains why.)
+
+4. **Make random access hurt.** Count the transfers to visit N items in a random order (≈ N, one block each) against sorting them first and scanning (≈ 2·N/B per pass × a couple of passes). Find the N at which sorting-then-scanning overtakes the random walk for your chosen B.
+
+</section>
+
+<section data-section="production">
+
+## In production
+
+A review checklist for any cost claim once the data outgrows memory:
+
+- **Name the two levels.** "Blocks moved" is meaningless until you say moved *across which boundary*. State M and B for the pair that dominates the job: cache line and cache size at the CPU, page and buffer-pool size at a database, object size and local cache at a lakehouse. The arithmetic is identical; only M and B change.
+- **Count transfers, not operations.** An O(N) algorithm that touches N random blocks loses to an O(N log N) one that makes two sequential passes. Ask how many *blocks* each design moves, and whether they are sequential (one scan) or random (one transfer per item).
+- **Read the sort bound as passes.** 1 + ⌈log<sub>M/B</sub>(N/M)⌉ is almost always 2 or 3 at real sizes, because M/B is in the thousands. If a design claims many passes, either M is tiny or the fan-in is being thrown away (a two-way merge instead of a multiway one).
+- **Prefer sorting or partitioning to one-at-a-time lookups** when you will touch a large share of the data: random access is the B× penalty the scan bound exists to avoid.
+- **The model is a hypothesis — measure it.** The I/O count predicts the *shape* of the cost; device latency, bandwidth, caching between the two levels, and prefetching set the constant. Count real transfers (Topic 10's benchmarks; a database's buffer-hit statistics) before trusting the arithmetic, and re-price at whichever tier actually dominates.
+- **Shrink N before the bound applies.** Columnar projection, compression and block-level min/max skipping all reduce the items transferred; the scan bound is Θ(N/B) of whatever you still have to move.
+
+</section>
+
+<section data-section="next">
+
+## Where this goes next
+
+The I/O model needs M and B, and every level of the hierarchy has different ones. Next: how to measure them on the machine in front of you.
+
+</section>

@@ -1,26 +1,8 @@
 import Resource from '../../../../../components/Resource.astro';
 
-This topic builds directly on the previous one. Reels on this site are marked **Before this** (earlier in the course), **Goes deeper later** or with the name of another track.
-
-<section class="prereq basics" data-section="basics">
-
-### <span class="n">00</span> Basics: words the reel takes for granted
-
-- **Linear vs quadratic cost**: work that grows in proportion to n, versus in proportion to n squared. *Where you meet it:* doubling a table doubles a scan but quadruples a naive all-pairs comparison.
-- **Segment tree**: a binary tree where each node stores an aggregate of a block of an array. *Where you meet it:* range-sum queries in competitive programming.
-- **Invertible aggregate**: one where a removed value can be subtracted back out. *Where you meet it:* sum and count are; min and max are not.
-- **Data skew**: an uneven spread of rows over keys. *Where you meet it:* one customer with half of all events.
-- **Worker / thread**: a unit of parallel execution. *Where you meet it:* `Workers Planned: 4` in a plan.
-
-<p class="check"><b>Check yourself:</b> after removing a value from a running sum, you subtract it. Why can't you do the same for a running maximum? (Answer: the removed value may have been the maximum, and the second largest is not stored.)</p>
-
-</section>
-
 <section class="prereq" data-section="earlier-topics">
 
 ### <span class="n">01</span> What a window and a frame mean
-
-The reel assumes frames, peers and the default frame from the previous topic.
 
 <ul class="resources">
   <Resource kind="reel" host={props.host} domain="data-engineering" title="Window frame semantics">The previous reel: partitions, frames and the default-frame trap.</Resource>

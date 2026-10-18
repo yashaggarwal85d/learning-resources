@@ -1,26 +1,8 @@
 import Resource from '../../../../../components/Resource.astro';
 
-This topic needs joins, existence tests and a feel for subqueries. Reels on this site are marked **Before this** (earlier in the course), **Goes deeper later** or with the name of another track.
-
-<section class="prereq basics" data-section="basics">
-
-### <span class="n">00</span> Basics: words the reel takes for granted
-
-- **Subquery in FROM**: a `SELECT` used like a table, with an alias. *Where you meet it:* `FROM (SELECT … ) AS recent`.
-- **Correlated**: referring to a column of an outer query. *Where you meet it:* `WHERE o.customer_id = c.customer_id` inside a subquery.
-- **ORDER BY … LIMIT n**: sort and keep the first n rows. *Where you meet it:* "latest five orders" in a dashboard query.
-- **Table function (set-returning function)**: a function that returns rows rather than one value. *Where you meet it:* `generate_series(1, 10)` in PostgreSQL.
-- **Nested loop**: a join method that, for each row of one side, searches the other. *Where you meet it:* `Nested Loop` in `EXPLAIN` output.
-
-<p class="check"><b>Check yourself:</b> what does <code>SELECT * FROM orders ORDER BY event_time DESC LIMIT 3</code> return? (Answer: the three most recent orders in the whole table, not per customer.)</p>
-
-</section>
-
 <section class="prereq" data-section="earlier-topics">
 
 ### <span class="n">01</span> Joins and existence
-
-You should be comfortable with joins and with the idea that a join can multiply rows, and with anti-joins for "no match".
 
 <ul class="resources">
   <Resource kind="reel" host={props.host} domain="data-engineering" title="Semi-joins, anti-joins and existence">Existence tests, and the anti-join this topic's LEFT form compares with.</Resource>

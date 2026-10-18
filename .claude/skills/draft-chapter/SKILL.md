@@ -1,6 +1,6 @@
 ---
 name: draft-chapter
-description: Draft run on the cloud (role draft). Plans the next chapter of one domain when it needs a plan, then writes every topic's first draft in turn (research, content plan, fact-check, coverage map, reel, Deep dive, Prerequisites, the narration script in the professor's voice, executed examples), pushing each as a topic branch and handing it to the review runs. Use for "/draft-chapter <domain>", "draft the next chapter", "write the first drafts", or as the body of a draft routine.
+description: Draft run on the cloud (role draft). Plans the next chapter of one domain when it needs a plan, then writes every topic's first draft in turn (research, content plan, fact-check, coverage map, reel, pre-notes, post-notes, sources, prerequisite links, the narration script in the professor's voice, executed examples), pushing each as a topic branch and handing it to the review runs. Use for "/draft-chapter <domain>", "draft the next chapter", "write the first drafts", or as the body of a draft routine.
 ---
 
 # /draft-chapter <domain>

@@ -1,26 +1,8 @@
 import Resource from '../../../../../components/Resource.astro';
 
-This topic needs everyday `GROUP BY` and the NULL rules from the earlier topics. Reels on this site are marked **Before this** (earlier in the course), **Goes deeper later** or with the name of another track.
-
-<section class="prereq basics" data-section="basics">
-
-### <span class="n">00</span> Basics: words the reel takes for granted
-
-- **Aggregate function**: a function that collapses many rows into one value, such as `SUM`, `COUNT`, `AVG`. *Where you meet it:* `SUM(amount)` in a revenue report.
-- **GROUP BY**: splits rows into groups by the listed columns and runs the aggregates once per group. *Where you meet it:* `GROUP BY status`.
-- **Subtotal and grand total**: a total over one group of a hierarchy, and a total over everything. *Where you meet it:* a spreadsheet with a total row under each section.
-- **Long vs wide table**: long has one row per observation; wide has one column per category. *Where you meet it:* a month-by-status matrix versus a list of (month, status, amount) rows.
-- **Bitmask**: an integer read as a row of on/off bits. *Where you meet it:* Unix file permissions such as 7 = 111.
-
-<p class="check"><b>Check yourself:</b> what does <code>SELECT status, SUM(amount) FROM orders GROUP BY status</code> return? (Answer: one row per status with that status's total.)</p>
-
-</section>
-
 <section class="prereq" data-section="earlier-topics">
 
 ### <span class="n">01</span> Bags and NULLs
-
-The reel assumes you know that a result is a bag and that NULL needs special handling, because rollups produce NULLs of their own.
 
 <ul class="resources">
   <Resource kind="reel" host={props.host} domain="data-engineering" title="NULLs and three-valued logic">Why NULL needs its own rules, including how GROUP BY treats it.</Resource>

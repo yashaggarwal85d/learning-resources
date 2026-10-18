@@ -1,14 +1,8 @@
 import Resource from '../../../../../components/Resource.astro';
 
-This is the first topic of Rust Systems Engineering. It assumes you have read *The Rust Programming Language* through chapter 10, plus the closures section of chapter 13 (item 05), and can compile and run a Rust file; everything about ownership is rebuilt from the memory level up, but the syntax is not taught. If one of the five items below is shaky, a few minutes with the matching resource is enough to follow every step.
-
 <section class="prereq" data-section="compile">
 
 ### <span class="n">01</span> Compile and run Rust
-
-`rustc` and `cargo`, and the 2024 edition. Every example in this topic is a single file you can compile with `rustc --edition 2024 main.rs` and run.
-
-<p class="check"><b>Check yourself:</b> can you compile a single file with <code>rustc --edition 2024 main.rs</code> and run the result?</p>
 
 <ul class="resources">
   <Resource kind="reading" title="Hello, World!" href="https://doc.rust-lang.org/book/ch01-02-hello-world.html" by="Klabnik, Nichols and Krycho, The Rust Programming Language">Writing, compiling and running a first program with rustc.</Resource>
@@ -20,10 +14,6 @@ This is the first topic of Rust Systems Engineering. It assumes you have read *T
 
 ### <span class="n">02</span> The stack, the heap and pointers
 
-What lives in a stack frame, what a heap allocation is, and what a pointer is. A `String` is a small fixed-size header on the stack that points at its text on the heap; the whole topic is about that split.
-
-<p class="check"><b>Check yourself:</b> where do the characters of a <code>String</code> live, and where does the <code>String</code> itself live when it's a local? (Answer: the characters on the heap; the 24-byte header in the local's stack frame.)</p>
-
 <ul class="resources">
   <Resource kind="reading" title="What is Ownership?" href="https://doc.rust-lang.org/book/ch04-01-what-is-ownership.html" by="Klabnik, Nichols and Krycho, The Rust Programming Language">Read "The Stack and the Heap", then the ownership rules and the move example.</Resource>
 </ul>
@@ -33,10 +23,6 @@ What lives in a stack frame, what a heap allocation is, and what a pointer is. A
 <section class="prereq" data-section="borrowing">
 
 ### <span class="n">03</span> References, borrowing and slices
-
-`&` and `&mut`, and how `&[u8]` and `&str` borrow part of something else. You should know that a shared reference lets you read and that a mutable reference lets you change a value, one at a time.
-
-<p class="check"><b>Check yourself:</b> why can you still use <code>s</code> after <code>let r = &amp;s;</code>? (Answer: a reference borrows the value without taking ownership, so <code>s</code> is still its owner.)</p>
 
 <ul class="resources">
   <Resource kind="reading" title="References and Borrowing" href="https://doc.rust-lang.org/book/ch04-02-references-and-borrowing.html" by="Klabnik, Nichols and Krycho, The Rust Programming Language">Shared and mutable references, and why the compiler limits them.</Resource>
@@ -48,10 +34,6 @@ What lives in a stack frame, what a heap allocation is, and what a pointer is. A
 <section class="prereq" data-section="traits">
 
 ### <span class="n">04</span> Structs, traits and derive
-
-`struct`, `impl`, `#[derive(...)]` and trait bounds. The reel talks about `Copy`, `Clone` and `Drop` as traits, and about types that implement them. You do not need to have implemented `Drop` yet: it is the trait for a destructor, code that runs when the owner goes away, and the next topic is about it. The Book's section on it is linked below.
-
-<p class="check"><b>Check yourself:</b> what does <code>fn f&lt;T: Clone&gt;(x: &amp;T) -&gt; T {'{'} x.clone() {'}'}</code> require of <code>T</code>? (Answer: that <code>T</code> implements <code>Clone</code>; the caller picks the type, and the bound lets the function call <code>clone</code>.)</p>
 
 <ul class="resources">
   <Resource kind="reading" title="Using Structs to Structure Related Data" href="https://doc.rust-lang.org/book/ch05-00-structs.html" by="Klabnik, Nichols and Krycho, The Rust Programming Language">Defining structs, methods and associated functions.</Resource>
@@ -65,10 +47,6 @@ What lives in a stack frame, what a heap allocation is, and what a pointer is. A
 <section class="prereq" data-section="closures">
 
 ### <span class="n">05</span> Closures
-
-What a closure is, how it captures the variables around it, and what `move` does. The Deep dive uses a `move` closure that is returned from a function (`-> impl Fn() -> usize`, return-position `impl Trait` is in the Book's chapter 10.2) to show a move you cannot see at a call site.
-
-<p class="check"><b>Check yourself:</b> after <code>let f = move || data.len();</code>, can you still use <code>data</code>? (Answer: not if <code>data</code> is not <code>Copy</code>: the closure took ownership of it. A <code>Copy</code> capture is copied and the original stays usable.)</p>
 
 <ul class="resources">
   <Resource kind="reading" title="Closures: Anonymous Functions that Capture Their Environment" href="https://doc.rust-lang.org/book/ch13-01-closures.html" by="Klabnik, Nichols and Krycho, The Rust Programming Language">Capturing references or taking ownership, and the <code>move</code> keyword.</Resource>

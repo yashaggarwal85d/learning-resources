@@ -1,0 +1,6 @@
+- **Scope**: a block of code between braces; the variables declared in it are visible until the closing brace. *Where you meet it:* a `let` inside an `if` block.
+- **Resource**: something with a lifetime outside your program's memory: an open file, a lock or a socket. *Where you meet it:* a file you must close, or a lock you must release.
+- **Mutex and lock guard**: a mutex lets one thread at a time touch its data, and locking it returns a guard whose existence means "the lock is held". *Where you meet it:* `let g = m.lock().unwrap();`.
+- **`Result` and `?`**: `Result` is either `Ok(value)` or `Err(error)`, and `?` returns the error early from the current function. *Where you meet it:* `File::open(path)?`.
+- **`Drop`**: the trait whose `drop` method runs when a value is destroyed. *Where you meet it:* `impl Drop for Connection`.
+- **Edition**: a language version a crate opts into, set in `Cargo.toml`; editions may change small rules. *Where you meet it:* `edition = "2024"`.

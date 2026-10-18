@@ -1,0 +1,159 @@
+---
+id: dsa.deamortization-global-rebuilding
+title: Deamortization and global rebuilding
+---
+
+<section data-section="outcomes">
+
+## After this topic you can
+
+- Deamortize a doubling array with incremental copying and state its worst-case cost and space overhead. Two buffers and a frontier k: every append writes its key and moves 2 old keys, so the copy of c keys finishes after c/2 appends, at n = 1.5c, with a quarter of the new buffer to spare. Every append costs at most 3 writes (pops and shrink-at-¼ included), and reads pick the buffer by k ≤ i &lt; m. The total work is unchanged (31 writes for 16 appends, 2,048,575 for a million), the median append rises from 1 to 3, both buffers stay alive for c/2 appends (12 MiB for 262,144 appends at c = 524,288), and the O(1) worst case assumes O(1) allocation. For growth factor g, move at least 1/(g − 1) keys per append.
+- Explain global rebuilding and how to run it in the background. Let a structure degrade for Θ(n) updates, then rebuild all of it in f(n) time, for O(f(n)/n) amortized extra (the tombstone vector rebuilt when half its slots are tombstones; the doubling vector is itself one). In the background, which is what Overmars named global rebuilding (Okasaki’s thesis): start early, at a quarter; keep serving from the old copy; build the new one 8 slots of work per update; log the updates that hit already-copied keys and replay them; then swap. Every delete then costs at most 10 writes at any size, and the old copy never passes 39% tombstones.
+- Explain a scapegoat tree’s partial rebuild and its amortized cost. No balance data in nodes, only the size and the largest size at the root; α strictly between ½ and 1; a node deeper than h(n) = ⌊log<sub>1/α</sub> n⌋ (n counting the new node) triggers a climb to the first ancestor with a child holding more than α of its subtree, the scapegoat, whose subtree is rebuilt perfectly balanced in time proportional to its size and O(log n) extra space. A potential, c·|left size − right size| per node for a constant c (as Galperin and Rivest scale it), pays for it: inserts and deletes are O(log n) amortized and searches O(log n) worst case. A single insert can still rebuild most of the tree (751,332 nodes for one of a million sorted inserts).
+- Decide when a service needs a worst-case bound instead of an amortized one, from the size of the spike and the requests behind it: in this topic’s model service 131,072 requests arrive during the last copy, 349,515 of 1,000,000 wait behind some resize, and the request p99 is 494,289 ticks against an append p99 of 1; multiplied by fan-out (63% of requests slow at 100 servers in Dean and Barroso’s hypothetical example); weighed against the price (the same total writes, a worse median, memory held longer, more complex reads). A batch job judged on total time does not need it.
+
+</section>
+
+<section data-section="internals">
+
+## Into the internals
+
+One cost unit throughout: **one element write**. An empty vector has capacity 0 and the first append allocates 1; an append to a full vector allocates twice the capacity (the growth factor is 2 except where a section says 1.5), copies its n keys, then writes the new one; a pop counts 1. For trees the unit is **one node written**: the new node, plus every node of a rebuilt subtree. Allocation and freeing are not counted; the incremental-copying section says what that hides.
+
+The **time model** is a model, and every request number below is a statement about it, not a measurement: one server that handles requests in arrival order, each request appends one key, **one tick is the time of one element write**, and a request arrives every 4 ticks. Request latency is the time a request waits plus its own append’s ticks. Real time per write is “Measuring the memory hierarchy”’s business. Every number below is an assertion in `examples.py`.
+
+### Percentiles, exactly
+
+The **nearest-rank** percentile: the p-th percentile of N values is the value at rank ⌈p·N/100⌉ in sorted order, the smallest value that at least p% of the values are at or under. `examples.py` computes the rank with integers, never a float: a float product put the p99.9 of the requests one rank too high (521,292 for 521,289). Other definitions interpolate between ranks; this topic uses none. Dean and Barroso write “99th-percentile latency” and “one user request in 100 will be slow” for the same idea.
+
+- **The appends.** Of a million appends, 999,980 cost 1 and 20 resize. The p50, p99, p99.9 and p99.99 are all 1, the p99.999 is 513, the maximum is 524,289 and the mean is 2.048575. The mean is pulled up by the spikes and the percentiles are not: neither shows the harm.
+- **The requests.** The queue in words: a request starts when it arrives or when the one before it finishes, whichever is later (Lindley’s recursion). With a request every 4 ticks, the server is busy about half the time (2.05 writes of every 4 ticks, 51%), and the request latencies behind the last copy are 524,289 − 3j ticks for the j-th request after the long append (j = 0 is the append itself). The result: p50 1, p90 243,218, p99 494,289, p99.9 521,289, maximum 524,289, mean 61,085.5 ticks; 349,515 requests (35%) waited, and 131,072 arrive during the last copy.
+- **The gap matters, the shape does not.** Every 3 ticks (busy 68%): p50 5,771, p99 504,289, 524,268 requests waited. Every 8 ticks (busy 26%): p50 1, p99 454,289, 149,790 waited. With incremental copying, whose largest append is 3 writes, and any gap of at least 3 ticks, no request ever waits.
+- **Fan-out.** P(slow) = 1 − (1 − p)<sup>k</sup> for k independent servers that are each slow with probability p: 100 servers at 1 in 100 give 63%; 2,000 at 1 in 10,000 give about 18%, Dean and Barroso’s “almost one in five”. Both are the paper’s hypothetical scenario, a calculation, not a measurement. Their measured example is Table 1: the 99th-percentile latency for a single random request to finish, measured at the root, is 10 ms; for all requests to finish, 140 ms.
+
+### Incremental copying, exactly
+
+State: `buf` (capacity `cap`), `old` (the previous buffer, or none), `m` (how many old keys must move), `k` (the **frontier**: old indices below k have moved) and `n`.
+
+- **Append x.** If n = cap: with cap = 0 allocate 1 slot; otherwise start a migration (`old = buf`, `m = n`, `k = 0`, a new buffer of 2·cap slots). Write `buf[n] = x`, `n += 1`, then **move up to 2**: while fewer than 2 have moved and k &lt; min(m, n), copy `old[k]` to `buf[k]` and add 1 to k. When k reaches min(m, n) the migration ends and `old` is freed.
+- **Read and write.** `get(i)` and `set(i, x)` use the old buffer if a migration is running and k ≤ i &lt; m, else the new one. A `set` that always wrote the new buffer would be overwritten by the later move.
+- **Pop.** `n −= 1`; if migrating, `m = min(m, n)` (popped old keys need not move); move up to 2. Then, if no migration is running and n &lt; cap/4 (shrink-at-¼): if n = 0 free the buffer, otherwise start a migration into a buffer of cap/2 slots and move up to 2.
+- **Cost.** 1 plus the keys moved: at most **3 writes per operation**. The invariant behind it: *the work left is at most 2 × the operations that must happen before the next resize can start.* After a grow at capacity c (n = c) the copy needs at most c keys, hence at most c/2 operations. A further grow needs c more appends; a shrink needs n below c/2, so at least c/2 pops; and every operation during the migration reduces the keys left by 2 (a pop of an unmoved key by up to 3). After a shrink (n just under cap/4, into cap/2) the copy needs at most cap/8 operations, a grow needs over cap/4 appends, and the next shrink needs at least cap/8 pops. So no resize ever starts while a migration runs, and at most two buffers exist.
+
+`examples.py` checks it rather than trusting the argument: every state (cap, n, migrating, m, k) reachable from empty up to capacity 256, 17,570 of them, costs at most 3 per operation, starts no resize during a migration and has at most two buffers; 300 seeded random sequences of 4,000 operations have every `get` compared with a plain list every 97th step; and the adversarial pop, pop, push, push sequence of the last reel costs at most 3 per operation too. The 16-append trace costs 1, 2, 3, 1, 3, 3, 1, 1, 3, 3, 3, 3, 1, 1, 1, 1; a million appends cost 2,048,575 in all, the largest append 3, the median 3, and 524,287 appends cost 3.
+
+- **Why 2 moves.** For growth factor g the copy of c keys must finish within the (g − 1)c appends before the new buffer fills, so move at least 1/(g − 1) keys per append. For g = 2 that is 1: one move per operation is a valid design (exhaustively, pops and shrinks included: at most 2 writes, no resize during a migration), but with zero slack, the copy ending exactly as the buffer fills. This topic moves 2 because that spends exactly the 2 coins the accounting charge of 3 saved, and it leaves a quarter of the new buffer spare. With the chapter’s rounding for g = 1.5 (⌈1.5·cap⌉, at least cap + 1: capacities 1, 2, 3, 5, 8, 12, 18, …), 2 per append works but with zero slack at **every** resize: the copy finishes on the append that fills the new buffer (asserted for all 33 resizes up to a million appends). One move per append at g = 1.5 fails: the fourth append already needs a new buffer while the copy runs.
+- **Space.** While a copy runs both buffers are alive: at the last resize of a million appends (c = 524,288) that is 524,288 + 1,048,576 = 1,572,864 slots, 12 MiB of 8-byte keys, held for 262,144 appends. The plain vector also holds both while it copies, but only during that one append. Tarjan and Zwick write of an exact-fit structure that it “temporarily needs 2N + O(1) space, since two arrays need to stored together”; here only the fact that two arrays must coexist during a copy is used.
+- **Reads.** One extra comparison. An iterator that is aware of a migration must do the same. Reading index k from the new buffer before it has moved is the classic bug; `examples.py` asserts that `get(k)` during a migration returns the old buffer’s key.
+- **Allocation.** The O(1) worst case holds if allocating a buffer is O(1). Tarjan and Zwick assume constant-time allocation and note that their amortized bounds still hold if allocating an array of size N takes O(N); Brodnik et al.’s worst-case structure is stated “assuming that memory allocation takes O(1) worst-case time” (both through Tarjan and Zwick). If allocating c slots cost Θ(c), the worst case would be Θ(c) again unless the allocation were spread out too. One way that could be so: some languages require every slot of a new array to be initialized (Java: “each component of the array is initialized to its default value”, JLS SE 26 §15.10.2). That is the language’s semantics, not a cost, and no claim is made about what any runtime does; what a real allocator costs is measured in “Measuring the memory hierarchy”.
+- **The name.** Tarjan and Zwick call this “a standard background-rebuilding technique”: the time for an increase or decrease “can be made O(1) worst-case” that way.
+
+### Deamortizing as a recipe
+
+1. Prove the amortized bound with credits or a potential.
+2. Find the expensive job and the deadline before which it must finish (here: before the new buffer fills).
+3. Charge each operation a fixed slice of the job, at least the work divided by the operations left before the deadline.
+4. Keep the old structure answering until the job is done. The dsbook says it so: “we must keep the old structures until the construction finishes”.
+5. Check that no second job can start before the first ends.
+
+The same recipe applies to the queue made of two stacks: its amortized reversal, done a step per operation, is the real-time queue (Ch.13 “Amortization under persistence”, Goes deeper later; Okasaki, chapter 5.5, credits global rebuilding for real-time queues). The price list applies to every instance: a larger constant on cheap operations, memory held, more complex reads, more code. The dsbook: deamortization comes “for the price that the resulting … data structure will be more complicated”; Tarjan and Zwick on a deamortized hashed array tree: “the resulting data structure becomes more complicated”. The first counter of the chapter has a deamortized cousin: Ehrlich’s 1973 Gray-code algorithm, which Erickson presents as maintaining “a Gray code counter in constant worst-case time per increment” (`examples.py` runs his pseudo-code for 4 bits: all 16 codes, one bit changing at a time, at most 4 array writes per increment).
+
+### Global rebuilding
+
+Rebuild a structure from scratch after Θ(n) updates. If building takes f(n), the rebuild adds O(f(n)/n) amortized, “given that n does not change asymptotically between the rebuilds” (dsbook). Its examples: the array that doubles; the y-fast trie, rebuilt when n changes by a constant factor (named only); tombstones, ignored by queries, with a rebuild once n/2 of the slots are tombstones. Erickson’s hash table has the same “global rebuilding rules”: grow when more than ¾ full, shrink when less than ¼ full, O(1) amortized per operation, the last reel’s grow-and-shrink pattern with growth at ¾ instead of at full.
+
+The tombstone vector at scale: the delete that makes half of 1,048,576 slots tombstones copies the 524,288 live keys, so it costs 524,289. A tombstone keeps its key and a deleted mark, so the order is preserved and a lookup stays a binary search, O(log n), reporting a tombstoned key as absent. A **predecessor** or successor query is different: from where the search lands it must step to the nearest live key, and a run of tombstones can be long. Delete the smallest keys first and the run reaches 524,287 slots just before the rebuild (262,144 after a quarter of the deletes), so the walk is Θ(n) in the worst case. Global rebuilding bounds the *share* of tombstones, not the length of a run.
+
+**Two meanings of the name.** The dsbook and Erickson call the all-at-once rebuild “global rebuilding”. Okasaki calls that *batched rebuilding* and reserves *global rebuilding* for Overmars’s incremental, worst-case version: “Overmars [Ove83] developed a technique for eliminating the amortization from batched rebuilding. He called this technique global rebuilding.” Erickson credits Overmars with the lazy, rebuilding-based balanced trees “in the early 1980s”. The reel keeps the dsbook’s sense for the sorted vector and names Overmars for the background version. Overmars’s book (LNCS 156, 1983) is cited through these two opened sources and was not opened itself.
+
+### Global rebuilding in the background
+
+The tombstone vector, rebuilt the way the vector was copied. **Trigger** at a quarter of the slots. Each delete does **8 units of work**; a unit is one old slot scanned (a live key is copied into the new copy) or one log entry replayed. Deletes during the rebuild tombstone the old copy, which keeps answering queries. A delete behind the scan is also appended to a log and replayed as a tombstone in the new copy. When the scan and the log are done, **swap**.
+
+- **The numbers.** The 16-key example: deletes 3, 6, 10 only mark; delete 14 reaches 4 of 16 and scans slots 0 to 7; delete 2 hits an already-copied key (log entry) and scans 8 to 15; delete 15 does the same and replays both entries. The costs are 1, 1, 1, 7, 8, 4 writes, the new copy has 12 slots and 2 tombstones, and the old copy peaked at 6 of 16.
+- **The proof.** The work is at most S + d for S slots and d deletes during the rebuild, so 8d ≥ S + d once d ≥ S/7. The old copy then has at most S/4 + S/7 = 11S/28 tombstones (39%, under ½). The new copy has at least S − 11S/28 = 17S/28 slots and at most S/7 tombstones, at most 4/17 of its slots, so it starts below its own trigger. At most two copies exist, and each delete writes at most 1 + 1 + 8 = **10**: its tombstone, a log entry when the key is behind the scan, and 8 units of work, each at most one write. Executed at 1,048,576 keys deleting every key smallest first, largest first and in a seeded random order: the most writes in one delete is 10 (9 without the log entry), the most work units 8, and the old copy’s tombstone share stays at or under 11/28 (the runs reach 0.389, 0.383 and 0.384).
+- **A write budget is not a time budget.** If the budget counted only live keys copied (8 per delete), a delete could scan a long run of tombstones for free. `examples.py` measures it: one delete scans 262,152 slots when keys are deleted smallest first, 349,528 largest first. The budget must count slots scanned, and it must be a hard cap: a budget that adapts upward, repeating the slice while much work remains, would re-create the pause. The cap of 8 units per delete is what makes the worst case a worst case.
+- **The general form.** The dsbook’s worst-case semi-dynamization builds blocks a few steps per insertion, keeping “at most three finished blocks and at most one block in construction” per rank, and Tarjan and Zwick’s background rebuilding is the same shape. Buffering updates during the rebuild and replaying them before the swap is Overmars’s pattern as Okasaki describes it: “these updates to the secondary copy are buffered and executed, a few at a time, after the secondary copy has been rebuilt, but before it takes over as the working copy”. The rebuild “must be started early enough that it can finish by the time the rebuilt structure is needed”, which is why this design starts at a quarter, not at a half. Okasaki: “global rebuilding is often quite complicated.”
+
+### Scapegoat trees, exactly
+
+Galperin and Rivest (SODA 1993); Erickson credits the same idea first to Arne Andersson in 1989, found “independently” by Galperin and Rivest (Andersson’s papers were not opened). A node holds a key and two pointers; the tree holds `size` and `max-size`.
+
+- **Definitions.** A node is **α-weight-balanced** if each child’s subtree has at most α times its size. The definition allows ½ ≤ α &lt; 1, but the scheme fixes ½ &lt; α &lt; 1: at α = ½ an unbalanced node could have |left − right| = 2, too little potential. A tree is **α-height-balanced** if its height is at most h<sub>α</sub>(n) = ⌊log<sub>1/α</sub> n⌋. With inserts only the tree stays α-height-balanced (Galperin and Rivest’s Theorem 5.1); with deletes it is *loosely* α-height-balanced, height at most h<sub>α</sub>(n) + 1. The exponent’s floor is computed exactly (`examples.py` finds the largest h with (1/α)<sup>h</sup> ≤ n in exact integer arithmetic, not with floating logarithms).
+- **Insert.** As in a binary search tree; update the size and max-size; if the new node is deeper than h<sub>α</sub>(n), climb and stop at the first ancestor that is not α-weight-balanced, the scapegoat (one must exist: Lemma 5.1). Sizes are computed on the way up as size(x<sub>j+1</sub>) = size(x<sub>j</sub>) + size(brother of x<sub>j</sub>) + 1, so finding the scapegoat costs O(size of its subtree). Rebuild it ½-weight-balanced. The paper also gives an alternative rule, the deepest ancestor x<sub>i</sub> with i &gt; h<sub>α</sub>(size(x<sub>i</sub>)), which its experiments preferred; on this topic’s example it picks 31, not 87, and rebuilds 7 nodes instead of 6; on a million sorted keys it costs 19.50 writes per insert with a largest of 596,467. The reel states the first-ancestor rule, so its answer stays 87.
+- **Rebuild.** In-order walk into a list, then build recursively: the root’s two halves differ by at most one node. O(size) time and O(height) extra space; a non-recursive in-place version with two logarithmic stacks was 25–30% faster in their experiments. The paper’s BUILD-TREE gives the left subtree ⌈(n − 1)/2⌉ nodes, so its root is the upper middle (69 in the example); this topic uses the **lower middle** (63) and every million-key number below assumes it. Both are ½-weight-balanced with height 4 on the example.
+- **Delete.** As in a binary search tree; decrement the size; if size &lt; α·max-size (strict, read on the paper’s page image; Wikipedia writes ≤ and is not followed) rebuild the whole tree and set max-size to the size. That takes Θ(n) deletes between such rebuilds.
+- **Analysis.** The potential of a node is Δ(x) = |size(left) − size(right)| when that is at least 2, else 0, “an accounting fiction” of prepaid work, and the tree's potential is the sum over its nodes. Δ alone does not pay for a rebuild; the potential is scaled, as Galperin and Rivest put it: “by increasing their cost by only a constant factor, the insertion operations … can pay for the increases in potential at the nodes”. An insert raises the potential by at most 2 at each of the O(log n) ancestors it passes, so it adds O(log n) scaled potential. A node that is not α-weight-balanced holds Θ(its size): for α = 2/3 and size s, the heavier child has more than 2s/3, so Δ > s/3 + 1 and 3Δ > s + 3, enough to pay for the climb and the rebuild with a suitable constant c. In the reel's example the scapegoat 87 has s = 6 and Δ = 5; the rebuild writes 6 nodes and the climb counts at most 6 more, so with c = 3 the 15 units of potential cover the 12 of work. (c = 3 happens to suffice here; in general c must be large enough to cover about 2s units.) The rebuilt subtree has potential 0, so all of it is spent. The theorems (5.2 and 5.3): O(log n) amortized per insert or delete and O(log k) worst-case search, k the size of the tree. Searches never restructure, unlike splay trees (Ch.4 “Splay trees”).
+- **The numbers.** The example (α = 2/3, insertion order 22, 31, 18, 87, 54, 51, 80, 63, then 69): 69 lands at depth 6, h(9) = 5, the scapegoat is 87, the rebuild writes 6 nodes (the insert costs 7) and the height falls from 6 to 4; four deletes (18, 51, 69, 87) cost 1, 1, 1 and 6, with a rebuild of 5 nodes when the size 5 drops below 2/3 × 9 = 6. A million increasing keys: 28.24 writes per insert, p50 5, p99 246, p99.9 2,460, a largest of 751,333 at insert 900,961, a final height of 33 against h(1,000,000) = 34, and the height bound held after every insert. A million keys in a seeded random order: 1.04 per insert, largest 191, p99 1. At a million keys, 333,334 deletes bring the size from 1,000,000 below 2/3 of its maximum.
+- **Choosing α.** On 100,000 sorted inserts, in this topic’s unit: α = 0.55 costs 55.74 writes per insert and gives height 19; α = 2/3, 22.81 and 27; α = 0.75, 17.04 and 40. A larger α allows deeper trees and rebuilds less. The paper’s timing tables agree on inserts (Figures 4 and 5, read from the page images: as α rises from 0.55 to 0.75, inserts get faster, and on uniform keys searches and deletes get slower). One sentence in its text states the reverse of its own tables and is never cited. The reel says nothing about timings.
+- **Compared with balanced trees.** Red-black trees store one extra bit per node for worst-case O(log n) updates (Ch.4 “Red-black trees”, Goes deeper later); scapegoat trees store nothing per node and pay with amortized updates. In the paper’s experiments scapegoat trees were noticeably slower on sorted insertions than red-black and splay trees. The paper also shows the same idea working in k-d trees and other tree-like structures.
+
+### Spreading a partial rebuild out
+
+No opened source gives a worst-case scapegoat tree, so this is the recipe applied, and labelled so. Build the balanced copy of the scapegoat’s subtree in installments while the old subtree keeps serving, buffer the inserts and deletes that land in it, replay them, swap. The difficulty is that a second scapegoat can appear inside or above the one being rebuilt before it finishes, so the schedule must account for nesting. Worst-case O(log n) updates are what stored balance information buys (red-black and AVL trees: Ch.4). Andersson’s “General balanced trees” (J. Algorithms 30:1–28, 1999) is named as a reference through Erickson’s Lecture 10; the paper was not opened, so nothing is said about its content.
+
+</section>
+
+<section data-section="lab">
+
+## Build, break, measure
+
+Run `python3 examples.py` next to this topic’s source: the last lines print the exhaustive state counts, the queue numbers, the tombstone runs and the scapegoat runs. Then break it, one change at a time, and predict before you run:
+
+1. Move 1 key per append: the copy ends exactly as the buffer fills (16 of 16 at c = 8), and the exhaustive search with pops still finds no resize during a migration (worst case 2 writes): 1 is the boundary, not a bug. Now move 1 key per append with g = 1.5, and the script reports the first append that grows while a copy runs: append 4.
+2. Read the new buffer for every index (Prove it 2): the reads go wrong at once; `examples.py` shows `get(5)` finding an empty slot right after append 9.
+3. Let `set` write to the new buffer below m: a later move overwrites it.
+4. Budget the background rebuild by copies only: one delete scans 262,152 slots (smallest first).
+5. Insert sorted keys into the scapegoat tree at α = 0.55, 2/3 and 0.75 and compare writes per insert and height.
+6. Change the arrival gap to 3, 4 and 8 ticks and watch the count of requests that waited.
+
+**Predictions for the chapter lab.** Part 2 of the chapter lab, in “Measuring the memory hierarchy” (Goes deeper later), reports per-append time; it is not repeated here. The counts to reconcile against, per append: the plain vector at a million appends has p50 1, p99 1, p99.9 1 and a largest of 524,289 writes (copies 524,288); the incremental vector has a largest of 3 and p50 3. Where measured time departs from writes (allocation, the cache) is the lab’s question, not this topic’s.
+
+</section>
+
+<section data-section="production">
+
+## In production
+
+Dean and Barroso (each claim quoted from the paper) name the background work this topic is about: “periodic log compactions” and “periodic garbage collection” cause periodic spikes in latency, and “Multiple layers of queueing in intermediate servers and network switches amplify this variability.” Their remedies match the recipe: “A combination of throttling, breaking down heavyweight operations into smaller operations, and triggering such operations at times of lower overall load is often able to reduce the effect of background activities on interactive request latency”, and a system may “break long-running requests into a sequence of smaller requests to allow interleaving” (Google’s Web search uses such time-slicing). They also argue variability cannot be eliminated, only tolerated: “tail-tolerant”.
+
+Misreadings to catch in review, each with this topic’s numbers:
+
+- “Amortized O(1) means every append is fast.” One append is 524,289 writes.
+- “Doubling hurts the p99 of appends.” It does not: the p99 is 1. The harm is the queue behind the rare one.
+- “Deamortized means faster.” Same total work, a worse median (1 to 3).
+- “The operation’s p99 is the request’s p99.” 1 against 494,289 in the model service.
+
+Where the pattern lives later: incremental rehashing across two tables (Ch.3 “Resizing and incremental rehashing”, Goes deeper later); compaction debt and write stalls (Ch.5 “LSM compaction and amplification”, named only); resizing off the request path in concurrent tables (Ch.14 “Concurrent hash maps”, named only). No real library’s resize behaviour and no incident is claimed here.
+
+</section>
+
+<section data-section="frontier">
+
+## The frontier
+
+Tarjan and Zwick (2023) store resizable arrays in N + O(N<sup>1/r</sup>) space, if N + O(N<sup>1−1/r</sup>) space can be used briefly during a resize, with O(r) amortized time per resize, which they prove optimal for a wide class of structures. They state that the time “cannot be made worst-case, unless r = 2”, giving as the reason that background rebuilding cannot be used. That is the authors’ statement for their setting, a case where the standard deamortization is ruled out by the space budget; what they prove is the amortized lower bound, not a worst-case impossibility theorem. Brodnik et al. and Sitarski’s structures reach N + O(√N) space; Brodnik et al.’s with O(1) worst-case grow and shrink (assuming O(1) allocation) and “items are never moved”.
+
+Amortized bounds also break when an old version is reused (persistence): global rebuilding in Overmars’s sense “yields worst-case bounds rather than amortized bounds” and suits persistent structures, and Okasaki’s real-time structures schedule the work instead (Ch.13 “Amortization under persistence”, Goes deeper later). The average-case analysis of scapegoat trees was left open by Galperin and Rivest in 1993; this topic did not check whether it has been settled since.
+
+</section>
+
+<section data-section="questions">
+
+## More questions
+
+1. **Prove it 1, 2 and 3** are the three questions at the end of the reel, with the worked answers above.
+2. For g = 1.5, what is the fewest keys per append that always finishes the copy in time? Answer: 2. With the chapter’s rounding it ends exactly at full on every resize (8 to 12, 12 to 18, …); for g = 2 the answer is 1.
+3. Why does the tombstone rebuild start at a quarter and not at a half? Answer: the rebuild needs about S/7 deletes to run in. Started at ½, the old copy would reach ½ + 1/7, about 64% tombstones, before the swap, past the half the amortized version never exceeds. Okasaki: it “must be started early enough”.
+4. In the scapegoat example, which node would be the scapegoat with α = 0.8? Answer: none. h<sub>0.8</sub>(9) = ⌊log<sub>1.25</sub> 9⌋ = 9, so 69 at depth 6 is not deep and nothing is rebuilt, although 87’s 5 of 6 = 0.83 is over 0.8: the climb only starts from a deep node.
+5. A service fans out to 100 shards that each resize like the plain vector. What fraction of its requests can hit a resize? Answer, with the model’s numbers: a request is hit if any shard made it wait, 1 − (1 − 0.349515)<sup>100</sup>, which is 1 − 2·10<sup>−19</sup>: essentially every request. Independence makes even 35% catastrophic; real shards would not resize in lockstep.
+
+</section>
+
+<section data-section="next">
+
+## Where this goes next
+
+Every count so far charged the same for every memory access. Next: the external-memory model, where the only cost is moving blocks between memory and disk.
+
+</section>

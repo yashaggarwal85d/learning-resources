@@ -1,14 +1,8 @@
 import Resource from '../../../../../components/Resource.astro';
 
-This topic follows "Single ownership and move semantics" and "RAII, drop order, and leak safety": you should know that every value has one owner, that a move deinitializes its source, and that a value's fields are dropped in declaration order after its own `Drop::drop`. It builds the chapter's buffer pipeline (`Buf`, `Pool`, a guard called `PooledBuf`) from the ground up in the first two steps. A few things appear only as a one-line gloss on the spot (`Rc`, `Box`, `E0499`, and the `'p` lifetime on the guard, which says the guard cannot outlive its borrow of the pool); their Rust details are in Chapters 2 and 4.
-
 <section class="prereq" data-section="single-ownership">
 
 ### <span class="n">01</span> Single ownership and move semantics
-
-One owner per value; a move copies the handle and deinitializes the source; `Copy` against `Clone`; reading E0382. This topic asks what happens when only *part* of a value moves.
-
-<p class="check"><b>Check yourself:</b> after <code>let t = s;</code> for a <code>String</code>, can you use <code>s</code>? (Answer: no. The place <code>s</code> is moved-from, deinitialized until it is assigned again.)</p>
 
 <ul class="resources">
   <Resource kind="reel" host={props.host} domain="rust-systems-engineering" title="Single ownership and move semantics">The first reel: the owner that this topic splits field by field.</Resource>
@@ -20,10 +14,6 @@ One owner per value; a move copies the handle and deinitializes the source; `Cop
 
 ### <span class="n">02</span> RAII, drop order, and leak safety
 
-`Drop::drop` runs first, then the fields in declaration order; locals drop in reverse; drop flags track a conditional move at run time; leaking is safe. A type with `Drop` keeps its fields until it dies, which is where this topic starts.
-
-<p class="check"><b>Check yourself:</b> what does <code>Drop::drop</code> receive, and why does that matter for the struct's fields? (Answer: <code>&amp;mut self</code>. The destructor may read every field, so every field must still be there.)</p>
-
 <ul class="resources">
   <Resource kind="reel" host={props.host} domain="rust-systems-engineering" title="RAII, drop order, and leak safety">The previous reel: drop order, drop flags and the guard idea.</Resource>
 </ul>
@@ -33,10 +23,6 @@ One owner per value; a move copies the handle and deinitializes the source; `Cop
 <section class="prereq" data-section="patterns">
 
 ### <span class="n">03</span> Patterns: <code>match</code>, <code>if let</code>, <code>let</code> destructuring
-
-Destructuring a struct, a tuple or an enum with <code>let</code>, <code>match</code> and <code>if let</code>; binding a name, <code>_</code>, <code>..</code>. The reel teaches what each binding does with ownership; the syntax is the Book's.
-
-<p class="check"><b>Check yourself:</b> after <code>let Frame {'{'} header, payload {'}'} = frame;</code>, can you use <code>frame</code>? (Answer: <code>frame.header</code> yes, it was copied; <code>frame</code> as a whole no, it is partially moved.)</p>
 
 <ul class="resources">
   <Resource kind="reading" title="Enums and Pattern Matching" href="https://doc.rust-lang.org/book/ch06-00-enums.html" by="Klabnik, Nichols and Krycho, The Rust Programming Language">Chapter 6: enums, <code>match</code> and <code>if let</code>.</Resource>
@@ -50,10 +36,6 @@ Destructuring a struct, a tuple or an enum with <code>let</code>, <code>match</c
 
 ### <span class="n">04</span> <code>Option</code>, <code>Result</code> and <code>?</code>
 
-<code>Option&lt;T&gt;</code> is <code>Some(T)</code> or <code>None</code>; <code>?</code> returns an <code>Err</code> from the enclosing function at once. The guard keeps its buffer in an <code>Option</code>, and the error-path step uses <code>?</code>.
-
-<p class="check"><b>Check yourself:</b> what does <code>?</code> do on an <code>Err</code>, and what happens to the function's locals? (Answer: it returns the error early; the locals are dropped on the way out.)</p>
-
 <ul class="resources">
   <Resource kind="reading" title="Defining an Enum" href="https://doc.rust-lang.org/book/ch06-01-defining-an-enum.html" by="Klabnik, Nichols and Krycho, The Rust Programming Language">Includes the <code>Option</code> enum.</Resource>
   <Resource kind="reading" title="Recoverable Errors with Result" href="https://doc.rust-lang.org/book/ch09-02-recoverable-errors-with-result.html" by="Klabnik, Nichols and Krycho, The Rust Programming Language">The <code>Result</code> type and the <code>?</code> operator.</Resource>
@@ -64,10 +46,6 @@ Destructuring a struct, a tuple or an enum with <code>let</code>, <code>match</c
 <section class="prereq" data-section="lifetime-param">
 
 ### <span class="n">05</span> A lifetime parameter on a struct
-
-The guard is written <code>PooledBuf&lt;'p&gt;</code> because it holds <code>&amp;'p mut Pool</code>. The reel only reads it; lifetimes as constraints are Chapter 2.
-
-<p class="check"><b>Check yourself:</b> what does <code>'p</code> promise about the guard and the pool? (Answer: the guard cannot outlive its borrow of the pool.)</p>
 
 <ul class="resources">
   <Resource kind="reading" title="Validating References with Lifetimes" href="https://doc.rust-lang.org/book/ch10-03-lifetime-syntax.html" by="Klabnik, Nichols and Krycho, The Rust Programming Language">Optional: the lifetime syntax the guard uses.</Resource>

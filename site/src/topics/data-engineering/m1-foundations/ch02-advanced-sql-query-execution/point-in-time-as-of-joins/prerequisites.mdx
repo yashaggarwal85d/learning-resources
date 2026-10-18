@@ -1,21 +1,5 @@
 import Resource from '../../../../../components/Resource.astro';
 
-This topic closes §2.2. It reuses the per-row subquery and the window-versus-self-join argument. Reels on this site are marked **Before this** (earlier in the course), **Goes deeper later** or with the name of another track.
-
-<section class="prereq basics" data-section="basics">
-
-### <span class="n">00</span> Basics: words the reel takes for granted
-
-- **Reference (history) table**: a table with a row per change of a value, with the time it took effect. *Where you meet it:* a price list or an address history.
-- **Equi-join vs inequality join**: matching on equal keys versus on a comparison such as `<=`. *Where you meet it:* `ON a.id = b.id` versus `ON b.valid_from <= a.event_time`.
-- **Feature (in machine learning)**: an input value computed for a training example. *Where you meet it:* "the customer's order count so far".
-- **Training / serving**: building a model from history, versus using it on new data as it arrives. *Where you meet it:* offline accuracy versus production accuracy.
-- **Valid time vs transaction time**: when a fact was true in the world, versus when the database recorded it. *Where you meet it:* a back-dated correction.
-
-<p class="check"><b>Check yourself:</b> a price is 10 from day 1 and 12 from day 10. What is the price on day 9? (Answer: 10, the latest change on or before day 9.)</p>
-
-</section>
-
 <section class="prereq" data-section="earlier-topics">
 
 ### <span class="n">01</span> Per-row subqueries and windows
