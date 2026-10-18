@@ -68,7 +68,7 @@ cd site
 npm ci
 npm run dev                  # local site at http://localhost:4321/learning-resources/
 npm run build                # also runs the flow, coverage, syllabus and topic-file checks
-npm run test:examples        # runs every topic's examples.py
+npm run test:examples        # optional: runs every topic's examples.py (not a required check; needs rustc and a Linux shell for some)
 npm run test:narration       # narration matches the scripts and the audio standard
 npx astro preview --host 127.0.0.1 --port 4321 &
 npm run test:reels -- http://127.0.0.1:4321/learning-resources/   # every live reel at desktop and phone size

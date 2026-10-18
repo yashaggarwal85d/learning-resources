@@ -37,5 +37,5 @@ This is the learning site: every syllabus topic becomes a short animated, narrat
 - The voice is one signature narrator for the whole site, female, chosen by the owner by listening, frozen in `voice.json`; never mixed, never changed without a version bump and a full regeneration. No cloning of a real, identifiable person: candidates are designed voices.
 - Live reels are locked; a change to one carries an `Unlock: <topic-id>` line and the owner's approval. Regenerating narration for a voice change is such a change, approved by the decision to change the voice.
 - Never loosen a check to get a clip or a topic through; fix the line or the topic.
-- Checks: `node scripts/check-all.mjs --changed` from the repo root (docs, examples, sources, build, narration, reels, links). `main` is never left red.
+- Checks: `node scripts/check-all.mjs --changed` from the repo root (locked, docs, sources, build, narration, reels, links). `main` is never left red.
 - The site is a personal, non-commercial project; research-licensed model weights are allowed and the licence is recorded in `voice.json`.

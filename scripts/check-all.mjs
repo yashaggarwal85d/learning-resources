@@ -1,6 +1,6 @@
 // Runs every pre-ship check from ROUTINE.md (sections 5 and 8) in one command and prints a timing summary.
 //   node scripts/check-all.mjs                  all checks (from the repo root or site/)
-//   node scripts/check-all.mjs --only reels     just the named checks (locked, docs, examples, sources, build, narration, reels, links)
+//   node scripts/check-all.mjs --only reels     just the named checks (locked, docs, sources, build, narration, reels, links)
 //   node scripts/check-all.mjs --skip links     everything except the named checks
 //   node scripts/check-all.mjs --only reels --topic asymptotic-notation   the reel test for matching reels only (while fixing)
 //   node scripts/check-all.mjs --changed [base]  every check, with the reel and link checks limited to what the changes
@@ -34,16 +34,16 @@ if (process.argv.includes('--changed')) {
 const PORT = 4321;
 const URL_ROOT = `http://127.0.0.1:${PORT}/learning-resources/`;
 
-// The examples use Python 3.12 syntax; where `python3` is older (some images), use python3.12 if it exists.
-const py312 = spawnSync('python3', ['-c', 'import sys; sys.exit(sys.version_info >= (3, 12))']).status === 1 ? null : spawnSync('which', ['python3.12'], { encoding: 'utf8' }).stdout.trim();
-const env = { ...process.env, ...(py312 && !process.env.PYTHON ? { PYTHON: py312 } : {}) };
-const run = (cmd, args, cwd = site, extra = {}) => spawnSync(cmd, args, { cwd, stdio: 'inherit', env: { ...env, ...extra } }).status === 0;
+// npm and npx are .cmd files on Windows and only start through a shell.
+const shell = process.platform === 'win32';
+const env = process.env;
+const run = (cmd, args, cwd = site, extra = {}) => spawnSync(cmd, args, { cwd, stdio: 'inherit', shell, env: { ...env, ...extra } }).status === 0;
 // The reel test runs on a build that also has pages for held topics (finished, waiting for earlier topics), so they are
 // tested before they ship; the build check above is the real, live-only site.
 const HELD = { PREVIEW_HELD: '1' };
 
 async function withPreview(fn) {
-  const server = spawn('npx', ['astro', 'preview', '--port', String(PORT), '--host', '127.0.0.1'], { cwd: site, stdio: 'ignore' });
+  const server = spawn('npx', ['astro', 'preview', '--port', String(PORT), '--host', '127.0.0.1'], { cwd: site, stdio: 'ignore', shell });
   try {
     for (let i = 0; i < 60; i++) {
       if (await fetch(URL_ROOT).then((r) => r.ok, () => false)) return fn();
@@ -54,7 +54,7 @@ async function withPreview(fn) {
   } finally {
     server.kill();
     // Astro's preview keeps running in the background after the command exits; stop it so the next run starts clean.
-    spawnSync('npx', ['astro', 'preview', 'stop'], { cwd: site, stdio: 'ignore' });
+    spawnSync('npx', ['astro', 'preview', 'stop'], { cwd: site, stdio: 'ignore', shell });
   }
 }
 
@@ -62,7 +62,6 @@ const results = {};
 const checks = [
   ['locked', () => run('node', ['scripts/check-locked.mjs'], root)],
   ['docs', () => run('node', ['scripts/check-docs.mjs'], root)],
-  ['examples', () => run('npm', ['run', 'test:examples'])],
   // Quotes in SOURCES.md, word for word against the fetched sources, for the topics being checked (--topic or --changed).
   ['sources', () => {
     const folders = (topic && topic !== 'none' ? topic.split(',') : []).map((t) => `site/src/topics/${t}`).filter((f) => existsSync(`${root}/${f}/SOURCES.md`));

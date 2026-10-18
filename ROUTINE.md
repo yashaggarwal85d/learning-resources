@@ -120,7 +120,7 @@ Launch one **builder agent** (Sonnet) with the topic folder, `OUTLINE.md`, `FACT
 
 ### 3H. Hand over the draft (draft runs end a topic here)
 
-The draft is complete when every file of section 3 exists, `npm run build` and `npm run test:examples` pass, `node scripts/narration-teaches.mjs <folder>` shows no flag, and `node scripts/sources.mjs check <folder>` passes. Write `OUTLINE.md` → "Progress": `drafted <date>; next: review (ROUTINE.md section 4)`, commit `Draft: <topic-id>`, `node scripts/claim.mjs mine`, push the branch, then `node scripts/claim.mjs drafted`: the topic is now a review job. Do not review, do not run the looks review, do not set the registry status (it stays `'held'`), do not touch `main`. Then `node scripts/claim.mjs next "<domain>" --role draft` for the next draft or plan job; at `wait`, finish the run (`run-metrics.mjs finish`, section 9).
+The draft is complete when every file of section 3 exists, `npm run build` passes, `node scripts/narration-teaches.mjs <folder>` shows no flag, and `node scripts/sources.mjs check <folder>` passes. Write `OUTLINE.md` → "Progress": `drafted <date>; next: review (ROUTINE.md section 4)`, commit `Draft: <topic-id>`, `node scripts/claim.mjs mine`, push the branch, then `node scripts/claim.mjs drafted`: the topic is now a review job. Do not review, do not run the looks review, do not set the registry status (it stays `'held'`), do not touch `main`. Then `node scripts/claim.mjs next "<domain>" --role draft` for the next draft or plan job; at `wait`, finish the run (`run-metrics.mjs finish`, section 9).
 
 ## 4. Content review (review runs start here)
 

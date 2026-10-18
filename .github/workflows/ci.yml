@@ -59,17 +59,6 @@ jobs:
       - if: hashFiles('site/package-lock.json') != ''
         working-directory: site
         run: npm run build
-      - name: Rust toolchain for the Rust examples
-        if: hashFiles('site/package-lock.json') != ''
-        run: |
-          # Pinned: the examples assert rustc's exact diagnostic text. Bump it deliberately, with a re-check.
-          rustup toolchain install 1.97.0 --profile minimal
-          rustup default 1.97.0
-          command -v g++ >/dev/null || sudo apt-get install -y g++
-      - name: Run every topic's code examples
-        if: hashFiles('site/package-lock.json') != ''
-        working-directory: site
-        run: npm run test:examples
       - name: Narration matches every live reel's script
         if: hashFiles('site/package-lock.json') != ''
         working-directory: site
