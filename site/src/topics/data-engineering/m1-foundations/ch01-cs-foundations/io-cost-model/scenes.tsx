@@ -70,7 +70,7 @@ export function Problem({ t }: StepCtx) {
   return (
     <Frame h={490} label="A table of one million pages and a query that matches 2% of its rows: index or full scan?">
       <Serif x={25} y={36} size={28}>orders</Serif>
-      <Mono ph x={130} y={34} size={17}>100,000,000 rows · 1,000,000 pages</Mono>
+      <Mono ph x={160} y={34} size={17}>100,000,000 rows · 1,000,000 pages</Mono>
       <rect x={25} y={52} width={550} height={40} rx={10} fill={C.roast} stroke={C.mocha} />
       <Mono ph x={42} y={77} size={16} fill={C.crema}>
         {sql.slice(0, chars)}
