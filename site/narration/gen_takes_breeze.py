@@ -25,7 +25,9 @@ if not todo:
 
 cli, gguf = os.path.expandvars(M["cli"]), os.path.expandvars(M["gguf"])  # "$BREEZE_CLI" in voice.json: no machine path in git
 helptext = subprocess.run([cli, "--help"], capture_output=True, text=True).stdout + subprocess.run([cli, "--help"], capture_output=True, text=True).stderr
-has = lambda flag: flag in helptext
+# breeze-cli v0.1.0 prints only "--text is required" for --help, so its flags are not found there; --seed and --temp are
+# documented in its docs/cli.md. Without them every take of a line is identical (same defaults) and a retry can never help.
+has = lambda flag: flag in helptext or flag in ("--seed", "--temp")
 if not has("--seed"):
     print("note: this breeze-cli has no --seed; takes differ by sampling only (still cached per seed id)", flush=True)
 voice_args = ["--voice", M["voice"]] if M.get("voice") else ["--ref-audio", os.path.join(SITE, M["reference"]), "--ref-text", M["reference_text"]]

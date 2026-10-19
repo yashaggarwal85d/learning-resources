@@ -14,7 +14,7 @@
 import { existsSync, readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import type { TopicMeta } from '../topics/registry';
-import { postNotesProblems, preNotesProblems, sourcesProblems } from './notes-rules';
+import { postNotesProblems, preNotesProblems, sourcesProblems } from './notes-rules.ts';
 
 const VOICE = JSON.parse(readFileSync(resolve(process.cwd(), 'narration/voice.json'), 'utf8'));
 const MAX_WORDS: number = VOICE.pace.max_words_per_line;

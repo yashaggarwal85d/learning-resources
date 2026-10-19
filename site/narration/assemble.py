@@ -213,7 +213,7 @@ def build(topic_dir, jobs_path):
         wav = np.concatenate(parts)
         raw = os.path.join(CACHE, f"{topic}-{cid}.wav"); sf.write(raw, wav, sr)
         meas = subprocess.run(["ffmpeg", "-hide_banner", "-i", raw, "-af", f"loudnorm=I={A['loudness_lufs']}:TP={tp}:LRA=11:print_format=json", "-f", "null", "-"], capture_output=True, text=True).stderr
-        m = json.loads(meas[meas.rindex("{"):])
+        m = json.loads(meas[meas.rindex("{"): meas.index("}", meas.rindex("{")) + 1])  # newer ffmpeg prints a summary line after the JSON
         ln = (f"loudnorm=I={A['loudness_lufs']}:TP={tp}:LRA=11:measured_I={m['input_i']}:measured_TP={m['input_tp']}:"
               f"measured_LRA={m['input_lra']}:measured_thresh={m['input_thresh']}:offset={m['target_offset']}:linear=true")
         mp3, opus = os.path.join(out_dir, f"{cid}.mp3"), os.path.join(out_dir, f"{cid}.webm")

@@ -33,7 +33,9 @@ def clip_hash(items):
 
 
 def take_key(line, take, lang="en"):
-    blob = json.dumps({"line": line, "voice": VOICE["voice"], "model": VOICE["model"]["repo"], "sampling": VOICE["sampling"], "take": take}, sort_keys=True)
+    # The whole model block (engine, weights, reference clip and its text, cfg scale) and the sampling are part of the key, so a
+    # change to either never reuses an old take (pc/README.md section 3); the Orpheus-only fields may be absent.
+    blob = json.dumps({"line": line, "voice": VOICE.get("voice"), "model": VOICE["model"], "sampling": VOICE.get("sampling"), "take": take}, sort_keys=True)
     return hashlib.sha256(blob.encode()).hexdigest()[:20]
 
 
