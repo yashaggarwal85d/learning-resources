@@ -101,7 +101,8 @@
         "It ends at the semicolon. That lock is released before the next statement.",
         "Unless a let borrows it... then it lives to the end of the block.",
         "And a match keeps its temporaries alive through every arm.",
-        "That's how a lock gets held longer than it looks."
+        "That is how a lock",
+        "stays held too long."
       ]
     },
     {
@@ -139,7 +140,7 @@
       "lines": [
         "Here's a value moved on one path only.",
         "So at the closing brace, who knows whether to drop it?",
-        "Only the running program does. So the compiler keeps a hidden boolean flag, and checks it at the brace.",
+        "Only the running program does. So the compiler keeps a hidden true or false flag, and checks it at the brace.",
         "You can see it in the compiler's intermediate code: a constant true, a constant false, and a switch."
       ]
     },

@@ -1,0 +1,789 @@
+{
+ "topic": "de.io-cost-model",
+ "voice": "breeze-mellow-v2",
+ "asr": "large-v3-turbo",
+ "clips": {
+  "01": {
+   "hash": "6cb40893f68d5e63",
+   "takes": [
+    "25e4321cc416975ac001",
+    "3b0a9b9afd6dd52dd999",
+    "6cb7aa36f0a7fd228f43"
+   ],
+   "duration": 26.935,
+   "lines": [
+    {
+     "text": "Your orders table has a hundred million rows, spread across a million pages, and there is an index on status.",
+     "start": 0.15,
+     "end": 8.794
+    },
+    {
+     "text": "You want the two percent that were refunded. Two percent sounds small, so most engineers reach straight for the index.",
+     "start": 9.214,
+     "end": 16.525
+    },
+    {
+     "text": "Hold that instinct. It comes from counting rows, and a disk does not serve rows. Count pages instead and the answer flips.",
+     "start": 17.345,
+     "end": 26.585
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 138,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "02": {
+   "hash": "e21b07f2935ad2fb",
+   "takes": [
+    "cb2bfa99196524a060bb",
+    "efa390bd784db3151c2f",
+    "bdfe94a0abacd71483fb"
+   ],
+   "duration": 21.768,
+   "lines": [
+    {
+     "text": "Predict it before we derive it. Assume every page read costs the same, and each page holds a hundred rows.",
+     "start": 0.15,
+     "end": 8.269
+    },
+    {
+     "text": "Think about what the index must do for each matching row, compared with what a scan does for each page.",
+     "start": 8.689,
+     "end": 15.078
+    },
+    {
+     "text": "Up to what share of the rows does the index read fewer pages than the scan?",
+     "start": 15.898,
+     "end": 21.418
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 154,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "02a": {
+   "hash": "55562ae70c88fa29",
+   "takes": [
+    "a333adecf8f0463dab3d",
+    "fa83b85c65880f0af790",
+    "578c523559f59591dd7a"
+   ],
+   "duration": 29.722,
+   "lines": [
+    {
+     "text": "About one percent.",
+     "start": 0.15,
+     "end": 1.316
+    },
+    {
+     "text": "The reason is simple: a page holds a hundred rows, so a scan reads one page for every hundred rows it covers. The index pays about one page per match. They break even when the matches are one in a hundred.",
+     "start": 1.736,
+     "end": 16.916
+    },
+    {
+     "text": "Fifty or ten percent would be right only if a page held two or ten rows. And the next few steps show why real storage pushes the crossover even lower.",
+     "start": 17.336,
+     "end": 29.372
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 149,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "03": {
+   "hash": "ad07c55e7593d870",
+   "takes": [
+    "b6bee8b5c849c2a9b429",
+    "0830ce954487553c00b6",
+    "e0a97abd1c76acae4bd0",
+    "732f592309868c780e9d"
+   ],
+   "duration": 30.945,
+   "lines": [
+    {
+     "text": "Here is the model that makes this counting precise, from Aggarwal and Vitter, nineteen eighty eight.",
+     "start": 0.15,
+     "end": 6.911
+    },
+    {
+     "text": "Two levels. A fast memory that holds M items, and a slow disk that hands data over in blocks of B items.",
+     "start": 7.331,
+     "end": 15.271
+    },
+    {
+     "text": "Work on data already in memory is free. That sounds like cheating, but it is the honest simplification when one block costs more than thousands of comparisons.",
+     "start": 15.691,
+     "end": 26.735
+    },
+    {
+     "text": "So the only thing counted is block transfers.",
+     "start": 27.155,
+     "end": 30.595
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 142,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "04": {
+   "hash": "7a12a635a9c38666",
+   "takes": [
+    "219586d72899c906a487",
+    "9ad5583c4176899cd5c0",
+    "25160c7011caa0c087fe"
+   ],
+   "duration": 27.887,
+   "lines": [
+    {
+     "text": "Three numbers describe any job. N is the items in the problem, M the items that fit in memory, B the items in a block.",
+     "start": 0.15,
+     "end": 9.557
+    },
+    {
+     "text": "For our table N is a hundred million rows, and a page holds a hundred of them.",
+     "start": 9.977,
+     "end": 16.61
+    },
+    {
+     "text": "So the table spans N over B pages. Read the number on screen: one million. Everything that follows is measured in that unit.",
+     "start": 17.03,
+     "end": 27.537
+    }
+   ],
+   "lufs": -16.1,
+   "true_peak": -2.1,
+   "wpm": 140,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "05": {
+   "hash": "e48d93aa22225220",
+   "takes": [
+    "ec0ae835a9c132da53aa",
+    "30b29fd3c1c5de17c311",
+    "92eea4bd2bed8b56645b"
+   ],
+   "duration": 18.497,
+   "lines": [
+    {
+     "text": "The simplest job is a full scan. Every block is touched exactly once, in order.",
+     "start": 0.15,
+     "end": 6.01
+    },
+    {
+     "text": "So it costs N over B, here a million reads, all of them sequential.",
+     "start": 6.43,
+     "end": 11.279
+    },
+    {
+     "text": "That number is a floor for anything that must look at all the data, and a yardstick for everything else.",
+     "start": 11.699,
+     "end": 18.147
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 159,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "06": {
+   "hash": "260e2078e7f9d9f0",
+   "takes": [
+    "d56d20b49b6bb68c9436",
+    "d5fce560ee3ad16c5131",
+    "a40905d15dcf312d92f0",
+    "5e6979c8ec610502b6b1"
+   ],
+   "duration": 30.353,
+   "lines": [
+    {
+     "text": "Now the index. Finding the matching entries is fast, because the upper levels of the tree are almost always in cache.",
+     "start": 0.15,
+     "end": 7.789
+    },
+    {
+     "text": "But the entries only point at rows. Each matching row lives on its own page, somewhere in the table.",
+     "start": 8.209,
+     "end": 15.553
+    },
+    {
+     "text": "Unless the table happens to be stored in index order, every match therefore costs about one random page read.",
+     "start": 15.973,
+     "end": 22.833
+    },
+    {
+     "text": "That is the hidden cost: the index is quick at finding rows and expensive at fetching them.",
+     "start": 23.253,
+     "end": 30.003
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 150,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "07": {
+   "hash": "18a72920d789641a",
+   "takes": [
+    "29d936cf4769c162287c",
+    "41265561b52275db80e3",
+    "fde4797cae938e6a3643",
+    "88d8c80695b052790365"
+   ],
+   "duration": 41.365,
+   "lines": [
+    {
+     "text": "Draw both on one chart. The scan is a flat line at N over B. The index climbs by one read for each matching row.",
+     "start": 0.15,
+     "end": 10.217
+    },
+    {
+     "text": "Find where they meet: at one over B of the table, which is one percent here.",
+     "start": 10.637,
+     "end": 16.39
+    },
+    {
+     "text": "Notice what this says about the usual intuition. In the CPU view, the index wins whenever the matches are a small part of the table. In block transfers it wins only below one in B.",
+     "start": 16.81,
+     "end": 32.01
+    },
+    {
+     "text": "At our two percent, the index reads twice as many pages as the scan. Drag the slider and watch the lines cross.",
+     "start": 32.43,
+     "end": 41.015
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -1.9,
+   "wpm": 142,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "08": {
+   "hash": "2a65919a8102cea4",
+   "takes": [
+    "3eb3824a4b86771507e4",
+    "b89a099e16f6772b4831",
+    "9e95d93efbd9620acf00",
+    "91eb8aa18d2bc3986f31"
+   ],
+   "duration": 34.998,
+   "lines": [
+    {
+     "text": "Smarter engines do better than row by row. They collect the matches, sort them by page, and read each page at most once. Postgres calls it a bitmap heap scan.",
+     "start": 0.15,
+     "end": 12.664
+    },
+    {
+     "text": "That helps. But work out how many pages two percent of the rows land on, when a page holds a hundred rows.",
+     "start": 13.084,
+     "end": 20.455
+    },
+    {
+     "text": "Almost nine in ten of them, because with so many rows per page, nearly every page has at least one match.",
+     "start": 20.875,
+     "end": 28.23
+    },
+    {
+     "text": "So the sorted version reads close to a full scan's worth of pages, in order, but with gaps.",
+     "start": 28.65,
+     "end": 34.648
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -2.0,
+   "wpm": 158,
+   "wer": 0.03225806451612903,
+   "exact": false,
+   "tolerated": [
+    {
+     "line": "Smarter engines do better than row by row. They collect the matches, sort them by page, and read each page at most once. Postgres calls it a bitmap heap scan.",
+     "said": "bitmap",
+     "heard": "bitnap"
+    }
+   ]
+  },
+  "09": {
+   "hash": "a7c0b6d5e1855627",
+   "takes": [
+    "70f5967a7d00fbd07e3d",
+    "006cf64c851fd306454c",
+    "e7391701aef7ab1137ad",
+    "dd3e5ddff3a84085cc3a"
+   ],
+   "duration": 42.205,
+   "lines": [
+    {
+     "text": "So far every read cost the same. Real storage does not play fair.",
+     "start": 0.15,
+     "end": 5.458
+    },
+    {
+     "text": "A random read waits for a seek or a fresh request, and a plain index scan issues them one at a time. Sequential reads stream ahead.",
+     "start": 5.878,
+     "end": 15.631
+    },
+    {
+     "text": "Let a random read cost r sequential ones. Then the crossover drops to one over r times B. Postgres assumes r is four, a quarter of a percent.",
+     "start": 16.051,
+     "end": 29.236
+    },
+    {
+     "text": "And four is low on purpose, because it assumes most random reads hit cache. On a cold hard disk r can be two hundred or more, and the crossover falls to a few thousandths of a percent.",
+     "start": 29.656,
+     "end": 41.855
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 149,
+   "wer": 0.07692307692307693,
+   "exact": false,
+   "tolerated": [
+    {
+     "line": "So far every read cost the same. Real storage does not play fair.",
+     "said": "cost",
+     "heard": "costs"
+    }
+   ]
+  },
+  "10": {
+   "hash": "22559e6d3355c05c",
+   "takes": [
+    "7547cecac5d4ce0c9539",
+    "7163910bc40edf73f4e8",
+    "a7267a35690484dd866d",
+    "2b223f4209aa8801dcdb"
+   ],
+   "duration": 31.33,
+   "lines": [
+    {
+     "text": "There is one escape: store the table in the order of the indexed column.",
+     "start": 0.15,
+     "end": 5.256
+    },
+    {
+     "text": "Then the matches sit side by side, and k matches cost about k over B reads, not k.",
+     "start": 5.676,
+     "end": 12.243
+    },
+    {
+     "text": "The index now wins at almost any share. Planners estimate how close a table is to that state with a correlation statistic, which runs from minus one to plus one.",
+     "start": 12.663,
+     "end": 24.768
+    },
+    {
+     "text": "So the same index can be a bargain on one table and a trap on another.",
+     "start": 25.188,
+     "end": 30.98
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 149,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "11": {
+   "hash": "c1f95c2fa0fb6b80",
+   "takes": [
+    "418dbf0014c17ae9090b",
+    "4b87494714e3f56ae125",
+    "ede3f9aaba43b0478f2d",
+    "2ae3fb025d759d11b93f"
+   ],
+   "duration": 30.077,
+   "lines": [
+    {
+     "text": "Sorting follows the same logic. In memory we count comparisons. On disk we count how many times all the data is read and written.",
+     "start": 0.15,
+     "end": 8.305
+    },
+    {
+     "text": "External merge sort fills memory, sorts it, and writes a sorted run. Then it merges many runs at once, up to the number of blocks that fit in memory.",
+     "start": 8.725,
+     "end": 19.954
+    },
+    {
+     "text": "That gives the sort bound you see on screen, and it is optimal in this model.",
+     "start": 20.374,
+     "end": 25.88
+    },
+    {
+     "text": "The key phrase is passes, not comparisons.",
+     "start": 26.3,
+     "end": 29.727
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 152,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "12": {
+   "hash": "a9848227b0a12e03",
+   "takes": [
+    "c4b4c535192791db0dec",
+    "108616b6a8ce0af19d04",
+    "cb30f622c461c34ebe56",
+    "7ae7f5fc5161f67b3c2b"
+   ],
+   "duration": 32.883,
+   "lines": [
+    {
+     "text": "Put numbers on it. A terabyte, sorted with sixteen gigabytes of memory and one mebibyte blocks.",
+     "start": 0.15,
+     "end": 8.061
+    },
+    {
+     "text": "The first pass writes sixty four sorted runs. The merge can take over sixteen thousand runs at once, so one more pass finishes everything.",
+     "start": 8.481,
+     "end": 17.954
+    },
+    {
+     "text": "Two passes in total, each reading and writing the whole terabyte. Merge two at a time and it would be seven.",
+     "start": 18.374,
+     "end": 25.398
+    },
+    {
+     "text": "Notice what this means: memory barely matters until the runs outnumber what a single merge can take.",
+     "start": 25.818,
+     "end": 32.533
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 142,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "13": {
+   "hash": "4b4f032ad6d9bf3f",
+   "takes": [
+    "c0e6323fe267e838ae10",
+    "6181aeb9f7128acf0eae",
+    "b59bae3c14910806f727"
+   ],
+   "duration": 29.381,
+   "lines": [
+    {
+     "text": "The same model works at every level of the hierarchy. Only the block size and the price of a transfer change.",
+     "start": 0.15,
+     "end": 7.3
+    },
+    {
+     "text": "A processor moves lines of sixty four bytes. A database moves pages of eight kilobytes. An object store wants ranges of several megabytes, because every request waits before its first byte.",
+     "start": 7.72,
+     "end": 22.402
+    },
+    {
+     "text": "So the discipline is the same each time: count the transfers at the tier that dominates.",
+     "start": 22.822,
+     "end": 29.031
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 139,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "14": {
+   "hash": "d98cab5dad1bfb59",
+   "takes": [
+    "b53075288a37f08a2740",
+    "81d4653be1b0665ce518",
+    "4babc69cc86417e48720",
+    "1d02f297d52cac7b86cf"
+   ],
+   "duration": 41.135,
+   "lines": [
+    {
+     "text": "And the network is just another tier. On a cluster, the slowest move is often between machines, and the counting is the same: bytes moved and requests made.",
+     "start": 0.15,
+     "end": 11.874
+    },
+    {
+     "text": "Join a terabyte table with a hundred megabyte one, on a hundred machines. Shuffle both by key and about nine hundred and ninety gigabytes cross the wire.",
+     "start": 12.294,
+     "end": 22.916
+    },
+    {
+     "text": "Broadcast the small table to every machine and it is under ten.",
+     "start": 23.336,
+     "end": 27.927
+    },
+    {
+     "text": "Same join, same work for the processor, a hundred times less traffic. Broadcast wins while the small table is smaller than the big one divided by the number of machines.",
+     "start": 28.347,
+     "end": 40.785
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -1.9,
+   "wpm": 140,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "15": {
+   "hash": "77b5184486285b53",
+   "takes": [
+    "993f430cb52eb9b600c2",
+    "22b78631e46440ee662b",
+    "e55b0417694955d235b7",
+    "13394b1ee28601ebcf98"
+   ],
+   "duration": 35.417,
+   "lines": [
+    {
+     "text": "Back to the query we started with. Row by row through the index is two million random reads, and at four times the price that is eight times the scan.",
+     "start": 0.15,
+     "end": 10.537
+    },
+    {
+     "text": "Sorted lookups touch most of the pages, in order, with gaps. The scan makes one sweep over all million.",
+     "start": 10.957,
+     "end": 19.075
+    },
+    {
+     "text": "The real contest is between the last two, and that is exactly the call a planner's cost model makes. At this size Postgres prices them within about one percent of each other.",
+     "start": 19.495,
+     "end": 30.879
+    },
+    {
+     "text": "A close call, settled by details the deep dive works through.",
+     "start": 31.299,
+     "end": 35.067
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 158,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "16": {
+   "hash": "1703eaa5b1adf783",
+   "takes": [
+    "8b9ffe35622a25ce517d",
+    "84752dd80227661dedde",
+    "6cd0b743b2c4f508b106"
+   ],
+   "duration": 18.504,
+   "lines": [
+    {
+     "text": "Test yourself on three cases. First: fifty million rows, fifty to a page, an unclustered index, and a query matching four hundred thousand rows.",
+     "start": 0.15,
+     "end": 11.145
+    },
+    {
+     "text": "Work out the table's pages, and the index's random reads.",
+     "start": 11.565,
+     "end": 15.619
+    },
+    {
+     "text": "Index or full scan?",
+     "start": 16.439,
+     "end": 18.154
+    }
+   ],
+   "lufs": -16.6,
+   "true_peak": -2.1,
+   "wpm": 123,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "16a": {
+   "hash": "04c17cb134f5ebb7",
+   "takes": [
+    "c8855826d49ec1fd3057",
+    "f6c263f51a31b4e87576",
+    "b9f94331bc822519a9e3"
+   ],
+   "duration": 25.582,
+   "lines": [
+    {
+     "text": "It depends on how expensive a random read is.",
+     "start": 0.15,
+     "end": 3.156
+    },
+    {
+     "text": "The table is a million pages, and the index needs four hundred thousand random reads. If random and sequential reads cost the same, the index wins.",
+     "start": 3.576,
+     "end": 15.141
+    },
+    {
+     "text": "At four times the price that is one and a half million sequential equivalents, and the scan wins. Neither answer holds without stating the price.",
+     "start": 15.561,
+     "end": 25.232
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -2.0,
+   "wpm": 141,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "17": {
+   "hash": "b7b993acff8744fe",
+   "takes": [
+    "07aaa75b16579b928906",
+    "f23cfb4bf3aafa11ec20",
+    "1600e9721b4e57d3ddb5"
+   ],
+   "duration": 16.484,
+   "lines": [
+    {
+     "text": "Second case. Sort four terabytes with eight gigabytes of memory and eight mebibyte blocks.",
+     "start": 0.15,
+     "end": 8.122
+    },
+    {
+     "text": "Count the runs the first pass makes, then how many runs one merge can take.",
+     "start": 8.542,
+     "end": 13.396
+    },
+    {
+     "text": "How many passes over the data?",
+     "start": 14.216,
+     "end": 16.134
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 127,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "17a": {
+   "hash": "1f3f24414a78b88f",
+   "takes": [
+    "e7c39d1754e0187d5d32",
+    "8cc6976e1a4253a1cedf",
+    "66fa60fed8589fdae518"
+   ],
+   "duration": 19.217,
+   "lines": [
+    {
+     "text": "Two.",
+     "start": 0.15,
+     "end": 0.629
+    },
+    {
+     "text": "The first pass writes five hundred and twelve runs. One merge can take over a thousand at once, so a single merge pass finishes.",
+     "start": 1.049,
+     "end": 9.626
+    },
+    {
+     "text": "Three or four passes would need a fan in too small for these numbers, and twelve is the figure you get by merging only two at a time.",
+     "start": 10.046,
+     "end": 18.867
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 162,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "18": {
+   "hash": "64a51fb4f99a03b8",
+   "takes": [
+    "82d207578476755d2945",
+    "be5011f4fde850f8313b",
+    "fd2371b721de28c0aeee"
+   ],
+   "duration": 13.664,
+   "lines": [
+    {
+     "text": "Last case. Our terabyte sort again, with memory cut to a quarter.",
+     "start": 0.15,
+     "end": 5.222
+    },
+    {
+     "text": "Think about whether the runs now outnumber what one merge can take.",
+     "start": 5.642,
+     "end": 10.585
+    },
+    {
+     "text": "What happens to the pass count?",
+     "start": 11.405,
+     "end": 13.314
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 132,
+   "wer": 0.08333333333333333,
+   "exact": false,
+   "tolerated": [
+    {
+     "line": "Last case. Our terabyte sort again, with memory cut to a quarter.",
+     "said": "sort",
+     "heard": "soared"
+    }
+   ]
+  },
+  "18a": {
+   "hash": "73545b358fa15742",
+   "takes": [
+    "036758b693ba48de96a8",
+    "875781577fb299aee220",
+    "9f0044590a4a8ed2f850"
+   ],
+   "duration": 21.536,
+   "lines": [
+    {
+     "text": "It stays at two.",
+     "start": 0.15,
+     "end": 1.214
+    },
+    {
+     "text": "There are now two hundred and fifty six runs, and one merge can still take over four thousand. So one merge pass is enough.",
+     "start": 1.634,
+     "end": 11.175
+    },
+    {
+     "text": "Memory only starts to matter once the runs outnumber what you can merge at once. Four times slower and no longer sorting are both wrong.",
+     "start": 11.595,
+     "end": 21.186
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 145,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  }
+ }
+}

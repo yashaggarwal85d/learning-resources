@@ -31,12 +31,18 @@ for group in ASR.get("homophones", []):
 NUMBER_WORDS = {"hundred", "thousand", "million", "billion", "trillion"}
 
 
-def norm(s, lang="en"):
-    """Lowercase words, numbers spelled out, aliases applied: what was said, independent of how it was written."""
+def norm(s, lang="en", years=False):
+    """Lowercase words, numbers spelled out, aliases applied: what was said, independent of how it was written.
+    years=True reads a four digit number from 1100 to 2099 the way a year is said ("nineteen eighty eight")."""
     s = s.lower().replace("%", " percent")
     s = re.sub(r"(\d),(\d)", r"\1\2", s)
     s = re.sub(r"\b(\d+)(st|nd|rd|th)\b", lambda m: " " + num2words(int(m.group(1)), to="ordinal") + " ", s)
-    s = re.sub(r"\d+(\.\d+)?", lambda m: " " + num2words(float(m.group()) if "." in m.group() else int(m.group())) + " ", s)
+    def spell(m):
+        t = m.group()
+        if years and re.fullmatch(r"\d{4}", t) and 1100 <= int(t) <= 2099:
+            return " " + num2words(int(t), to="year") + " "
+        return " " + num2words(float(t) if "." in t else int(t)) + " "
+    s = re.sub(r"\d+(\.\d+)?", spell, s)
     s = s.replace("-", " ")
     s = re.sub(r"[^a-z' ]", " ", s).replace("'", "")
     words = " ".join(s.split())
@@ -117,6 +123,12 @@ def block_ok(ref, hyp):
 def compare(line, transcript, lang="en"):
     r, h = norm(line, lang), norm(transcript, lang)
     ops, dist = align(r, h)
+    if dist and re.search(r"(?<![\d,.])(1[1-9]\d\d|20\d\d)(?![\d,])", transcript):
+        # A year is said "nineteen eighty eight" or "one thousand nine hundred eighty eight": take whichever reading the line used.
+        h2 = norm(transcript, lang, years=True)
+        ops2, dist2 = align(r, h2)
+        if dist2 < dist:
+            ops, dist = ops2, dist2
     wer = dist / max(1, len(r))
     diffs = blocks(ops)
     tolerated = [{"said": " ".join(a), "heard": " ".join(b)} for a, b in diffs]
@@ -144,6 +156,10 @@ CASES = [
     ("Data classes hold plain values.", "Dataclasses hold plane values.", True),
     ("The neighbouring block is read too.", "The neighboring block is read two.", True),
     ("The query runs in one pass.", "The queery runs in one pass.", True),
+    ("from Vitter, nineteen eighty eight.", "From Vitter, 1988.", True),
+    ("a count of one thousand nine hundred eighty eight", "a count of 1988", True),
+    ("with eighty reads, the waits fall", "With 80 reeds, the weights fall", True),
+    ("the bytes become the limit", "the bites become the limit", True),
     # the voice garbled the line, or dropped or added a word: still rejected
     ("functools caches the result", "folk cells caches the result", False),
     ("Then the endpoints answer.", "Then the engineers answer.", False),

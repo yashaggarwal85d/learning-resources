@@ -37,7 +37,9 @@ def pitch_sd(a, sr):
 def score(line, take, cache, lang="en"):
     key = take_key(line, take, lang)
     if key in cache and "ok" in cache[key]:
-        return cache[key]
+        c = cache[key]
+        # The transcript is cached, the verdict is not: aliases, homophones and tolerances in voice.json may have changed since.
+        return {**c, **compare(line, c["hyp"], lang)} if "hyp" in c else c
     a, sr = sf.read(take_path(line, take, lang))
     a = trim(a.astype(np.float32), sr)
     hyp = transcribe(a, sr, lang)
@@ -129,9 +131,27 @@ def choose_for_clip(items, ok_takes, P):
     return choice, wpm, stuck
 
 
+
+def load_scores():
+    """The score cache, tolerating a half-written file (another worker may be saving it)."""
+    try:
+        return json.load(open(SCORES)) if os.path.exists(SCORES) else {}
+    except (json.JSONDecodeError, OSError):
+        return {}
+
+
+def save_scores(cache):
+    """Merge into the file as it is now and replace it atomically, so parallel narration workers never lose or tear entries."""
+    merged = load_scores()
+    merged.update(cache)
+    tmp = f"{SCORES}.{os.getpid()}.tmp"
+    json.dump(merged, open(tmp, "w"))
+    os.replace(tmp, SCORES)
+
+
 def build(topic_dir, jobs_path):
     topic, cs, lines = lines_of(topic_dir)
-    cache = json.load(open(SCORES)) if os.path.exists(SCORES) else {}
+    cache = load_scores()
     ok_takes, more, dead = {}, [], []
     for lang, line in lines:
         all_takes = sum(voice_takes(lang), [])
@@ -148,7 +168,7 @@ def build(topic_dir, jobs_path):
             print(f"needs more takes ({len(made)} failed): {line[:70]}  e.g. heard {closest['hyp']!r}")
         else:
             dead.append((line, closest))
-    json.dump(cache, open(SCORES, "w"))
+    save_scores(cache)
 
     # Pick takes per clip, and ask for more takes of the fastest lines of a clip that no swap brings into pace.
     P = VOICE["pauses"]; A = VOICE["audio"]

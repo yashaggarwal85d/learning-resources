@@ -62,7 +62,7 @@
     },
     {
       "lines": [
-        "Smarter engines do better than row by row. They collect the matches, sort them by page, and read each page at most once. PostgreSQL calls it a bitmap heap scan.",
+        "Smarter engines do better than row by row. They collect the matches, sort them by page, and read each page at most once. Postgres calls it a bitmap heap scan.",
         "That helps. But work out how many pages two percent of the rows land on, when a page holds a hundred rows.",
         "Almost nine in ten of them, because with so many rows per page, nearly every page has at least one match.",
         "So the sorted version reads close to a full scan's worth of pages, in order, but with gaps."
@@ -72,7 +72,7 @@
       "lines": [
         "So far every read cost the same. Real storage does not play fair.",
         "A random read waits for a seek or a fresh request, and a plain index scan issues them one at a time. Sequential reads stream ahead.",
-        "Let a random read cost r sequential ones. Then the crossover drops to one over r times B. PostgreSQL assumes r is four, a quarter of a percent.",
+        "Let a random read cost r sequential ones. Then the crossover drops to one over r times B. Postgres assumes r is four, a quarter of a percent.",
         "And four is low on purpose, because it assumes most random reads hit cache. On a cold hard disk r can be two hundred or more, and the crossover falls to a few thousandths of a percent."
       ]
     },
@@ -119,7 +119,7 @@
       "lines": [
         "Back to the query we started with. Row by row through the index is two million random reads, and at four times the price that is eight times the scan.",
         "Sorted lookups touch most of the pages, in order, with gaps. The scan makes one sweep over all million.",
-        "The real contest is between the last two, and that is exactly the call a planner's cost model makes. At this size PostgreSQL prices them within about one percent of each other.",
+        "The real contest is between the last two, and that is exactly the call a planner's cost model makes. At this size Postgres prices them within about one percent of each other.",
         "A close call, settled by details the deep dive works through."
       ]
     },

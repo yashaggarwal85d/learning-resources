@@ -32,7 +32,8 @@
     },
     {
       "lines": [
-        "Below memory, the waits jump by orders of magnitude. A random four kilobyte read from a fast server drive takes about eighty microseconds, according to the maker's datasheet.",
+        "Below memory, the waits jump by orders of magnitude.",
+        "A random four kilobyte read from a fast server drive takes about eighty microseconds, according to the maker's own figures.",
         "A hard disk must wait for the platter to turn. The average rotational wait alone is over four milliseconds, and measured with sixteen requests queued, each random read still costs at least six.",
         "Object storage answers in a hundred to two hundred milliseconds for the first byte, with medians in the tens for small requests.",
         "Every drop down the page costs you roughly a thousandfold in latency."
@@ -67,7 +68,8 @@
         "A lab you can run on your own machine. Read every number in a one gibibyte array of numbers, once in order and once in a random order.",
         "It is the same count and the same memory. Think about what changes between the two walks.",
         { "beat": 0.4 },
-        "How much longer does a random read take?"
+        "Compare the two walks.",
+        "How much longer is random?"
       ],
       "answer": [
         "About twenty times, here.",
@@ -78,7 +80,8 @@
     {
       "lines": [
         "Latency is not a fixed tax. One request at a time pays the wait every time. With several in flight, the waits overlap.",
-        "Look at the arithmetic. One read on the fast drive takes eighty microseconds alone, which is twelve and a half thousand reads a second.",
+        "Look at the arithmetic.",
+        "One read on the fast drive takes eighty microseconds alone, which is twelve thousand five hundred reads a second.",
         "The drive can do a million a second, so reaching that needs at least eighty requests in flight. The maker measured it with a hundred and twenty eight.",
         "The lesson: concurrency is how you buy back latency."
       ]
@@ -122,7 +125,8 @@
     {
       "lines": [
         "Second case. You copy the orders table from a local drive to another instance, over one connection, with the instances not packed in one cluster group.",
-        "Think of the path as a chain. It runs at its slowest link.",
+        "Think of the path as a chain.",
+        "Slowest link sets the speed.",
         { "beat": 0.4 },
         "What is the floor?"
       ],
