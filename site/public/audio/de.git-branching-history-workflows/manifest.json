@@ -1,401 +1,445 @@
 {
  "topic": "de.git-branching-history-workflows",
- "voice": "tara-v1",
+ "voice": "breeze-mellow-v2",
+ "asr": "large-v3-turbo",
  "clips": {
   "01": {
-   "hash": "ef2eeede62c4bd25",
-   "duration": 13.044,
+   "hash": "1986d012ec7bcc9e",
+   "takes": [
+    "840d6612b1b10555b221",
+    "ebdc0bfb90fcb65a8101",
+    "a6506fc42aaa8ff22895"
+   ],
+   "duration": 14.89,
    "lines": [
     {
-     "text": "You've got the Python.",
+     "text": "You have the Python. Every change to it lands as a commit.",
      "start": 0.15,
-     "end": 1.255
+     "end": 4.176
     },
     {
-     "text": "And every change to it lands as a commit.",
-     "start": 1.675,
-     "end": 4.755
-    },
-    {
-     "text": "So here are five minutes on shaping that history... searching it... and sharing it.",
-     "start": 5.175,
-     "end": 9.345
+     "text": "So this refresher covers how to reshape that history, how to search it, and how to share it.",
+     "start": 4.596,
+     "end": 10.83
     },
     {
      "text": "All familiar? Swipe on to the shell.",
-     "start": 10.165,
-     "end": 12.694
-    }
-   ],
-   "lufs": -16.3,
-   "true_peak": -1.4,
-   "wpm": 156,
-   "wer": 0.0
-  },
-  "02": {
-   "hash": "1c65595becf9b980",
-   "duration": 26.549,
-   "lines": [
-    {
-     "text": "Our repo is a small data cleaning script, and this branch adds deduplication. Two ways to bring it in.",
-     "start": 0.15,
-     "end": 7.016
-    },
-    {
-     "text": "A merge keeps both lines, and ties them together with a commit that has two parents. The history is kept exactly as it happened.",
-     "start": 7.436,
-     "end": 14.232
-    },
-    {
-     "text": "A rebase replays your commits on top of the target. One straight line, as if the work happened in order.",
-     "start": 15.252,
-     "end": 21.553
-    },
-    {
-     "text": "So rebase this branch onto main. What happens to its commits?",
-     "start": 22.573,
-     "end": 26.199
+     "start": 11.65,
+     "end": 14.541
     }
    ],
    "lufs": -16.4,
-   "true_peak": -1.4,
-   "wpm": 167,
-   "wer": 0.0
+   "true_peak": -1.9,
+   "wpm": 149,
+   "wer": 0.14285714285714285,
+   "exact": false,
+   "tolerated": [
+    {
+     "line": "All familiar? Swipe on to the shell.",
+     "said": "shell",
+     "heard": "shelf"
+    }
+   ]
+  },
+  "02": {
+   "hash": "6925c6ce37823131",
+   "takes": [
+    "c57f7497fbd0e585bd93",
+    "bb1001caa03d89a80f25",
+    "68e6565a4b616df93974",
+    "9fd72a6bca536a489b5e"
+   ],
+   "duration": 30.415,
+   "lines": [
+    {
+     "text": "Our repository is a small data cleaning script, and this branch adds deduplication. There are two ways to bring it in.",
+     "start": 0.15,
+     "end": 9.098
+    },
+    {
+     "text": "A merge keeps both lines of history, tied together by a commit with two parents. Nothing is rewritten.",
+     "start": 9.518,
+     "end": 16.314
+    },
+    {
+     "text": "A rebase takes your commits and replays them on top of the target, giving one straight line, as if the work had happened in order.",
+     "start": 16.734,
+     "end": 25.01
+    },
+    {
+     "text": "Rebase the branch onto main. What happens to its commits?",
+     "start": 25.83,
+     "end": 30.065
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 146,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
   },
   "02a": {
-   "hash": "f65f9046b315df37",
-   "duration": 27.304,
+   "hash": "1e7106502c81e20c",
+   "takes": [
+    "581fef61511c92b9600c",
+    "c92417233176ccd3a5e2",
+    "b3a5f83cf73e089dfc40"
+   ],
+   "duration": 27.851,
    "lines": [
     {
-     "text": "Three new commits, with new IDs.",
+     "text": "They become three new commits with new identifiers.",
      "start": 0.15,
-     "end": 2.338
+     "end": 4.3
     },
     {
-     "text": "Rebase replays each change onto main. And a commit's ID covers its parent, its files, who made it and when, and its message... so every replayed commit gets a new one.",
-     "start": 2.758,
-     "end": 13.806
+     "text": "A commit's identifier is a hash of its parent, its files, its author and dates, and its message. Replay it on a different parent and the hash has to change.",
+     "start": 4.72,
+     "end": 14.954
     },
     {
-     "text": "Your old commits are still in the reference log. A merge would have kept them, and added a commit with two parents.",
-     "start": 14.226,
-     "end": 21.662
-    },
-    {
-     "text": "But look at the end. Both ways finish with the very same files.",
-     "start": 22.082,
-     "end": 26.954
+     "text": "The old commits are still reachable in the reference log. A merge would have kept them and added one more commit. But look at the end: both routes finish with exactly the same files.",
+     "start": 15.374,
+     "end": 27.501
     }
    ],
-   "lufs": -16.5,
-   "true_peak": -1.4,
-   "wpm": 158,
-   "wer": 0.0
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 155,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
   },
   "03": {
-   "hash": "2aed9382c748b7ff",
-   "duration": 32.913,
+   "hash": "2fac6eeb7239a72e",
+   "takes": [
+    "b87d11a68c4e61934f00",
+    "6c260efee5788ba1fb11",
+    "19f5b40f173c30e2981e",
+    "7417e1d2e61286663889"
+   ],
+   "duration": 40.263,
    "lines": [
     {
-     "text": "Before you push this branch, rewrite freely.",
+     "text": "Before you push a branch, you are free to tidy it. An interactive rebase lets you reorder, reword, squash, fix up and drop commits.",
      "start": 0.15,
-     "end": 3.8
+     "end": 9.683
     },
     {
-     "text": "An interactive rebase lets you reorder, reword, squash, fix up, and drop commits.",
-     "start": 4.22,
-     "end": 10.283
+     "text": "A small trick: commit a correction with the fix up option, and the auto squash option moves it directly under the commit it repairs.",
+     "start": 10.103,
+     "end": 19.579
     },
     {
-     "text": "Commit a fix with the fix up option, and auto squash moves it right under its target.",
-     "start": 10.703,
-     "end": 15.664
+     "text": "Watch the four commits become two, with the debug commit gone.",
+     "start": 19.999,
+     "end": 24.409
     },
     {
-     "text": "The fix moves up under its target, and the debug commit is dropped.",
-     "start": 16.084,
-     "end": 19.75
-    },
-    {
-     "text": "Here, four commits become two.",
-     "start": 20.17,
-     "end": 22.091
-    },
-    {
-     "text": "One rule. Never rewrite what others have already pulled.",
-     "start": 22.911,
-     "end": 27.209
-    },
-    {
-     "text": "And any rewrite of your own is undoable. The old branch is one reference log entry back.",
-     "start": 27.629,
-     "end": 32.563
+     "text": "The rule is simple. Never rewrite what other people have already pulled, because they would have to repair their copy. And your own rewrite is undoable: the old branch is one reference log entry back.",
+     "start": 24.829,
+     "end": 39.913
     }
    ],
    "lufs": -16.5,
-   "true_peak": -1.3,
-   "wpm": 148,
-   "wer": 0.0
+   "true_peak": -1.9,
+   "wpm": 140,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
   },
   "04": {
-   "hash": "55277595eaa39b3b",
-   "duration": 35.003,
-   "lines": [
-    {
-     "text": "When both sides change the same lines, or nearby ones, Git stops, and keeps three versions.",
-     "start": 0.15,
-     "end": 6.192
-    },
-    {
-     "text": "The common ancestor. Yours. And theirs.",
-     "start": 6.612,
-     "end": 10.268
-    },
-    {
-     "text": "Turn on the three way conflict style, and the file shows the ancestor as well, so you can see what each side actually changed.",
-     "start": 10.688,
-     "end": 18.079
-    },
-    {
-     "text": "Edit the file, add it, then continue. Or abort, to back out.",
-     "start": 18.499,
-     "end": 23.552
-    },
-    {
-     "text": "One trap. In a rebase, ours and theirs swap.",
-     "start": 24.372,
-     "end": 27.502
-    },
-    {
-     "text": "Ours is the branch you're rebasing onto, plus your commits replayed so far. Theirs is the commit being replayed.",
-     "start": 27.922,
-     "end": 34.653
-    }
+   "hash": "15338f518df8bd09",
+   "takes": [
+    "5485de4b8d9fdf21e4c5",
+    "872cc24cd806cde5614f",
+    "de60ca0628e59bba8146",
+    "3a0a16138a9f292c172c"
    ],
-   "lufs": -16.3,
-   "true_peak": -1.4,
-   "wpm": 147,
-   "wer": 0.0
-  },
-  "05": {
-   "hash": "f7ae1a82cf534fd6",
-   "duration": 18.042,
+   "duration": 38.071,
    "lines": [
     {
-     "text": "Bisect is a binary search through history.",
+     "text": "When both sides change the same lines, or lines next to each other, Git stops and keeps three versions of the file.",
      "start": 0.15,
-     "end": 3.969
+     "end": 8.735
     },
     {
-     "text": "Mark one commit good, and one bad. It checks out the middle, you test it... and every answer halves the suspects.",
-     "start": 4.389,
-     "end": 11.893
+     "text": "The common ancestor, yours, and theirs. Turn on the three way conflict style and the file shows the ancestor as well, so you can see what each side actually changed rather than guessing.",
+     "start": 9.155,
+     "end": 20.93
     },
     {
-     "text": "So, a thousand commits. How many tests until you find the first bad one?",
-     "start": 12.713,
-     "end": 17.692
+     "text": "Edit, add the file, continue. Or abort to back out completely.",
+     "start": 21.35,
+     "end": 26.748
+    },
+    {
+     "text": "One trap: during a rebase, ours and theirs swap. Ours is the branch you are rebasing onto, and theirs is your own commit being replayed.",
+     "start": 27.168,
+     "end": 37.721
     }
    ],
    "lufs": -16.5,
-   "true_peak": -1.4,
-   "wpm": 140,
-   "wer": 0.0
+   "true_peak": -1.9,
+   "wpm": 143,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "05": {
+   "hash": "f7485114adf69297",
+   "takes": [
+    "d17ac516e00547e62c51",
+    "b2cc3702bfa9d017dc90",
+    "3661313781593b0f7f82"
+   ],
+   "duration": 20.605,
+   "lines": [
+    {
+     "text": "Now searching history. Bisect is a binary search over commits: you name one good and one bad, and it checks out the middle for you to test.",
+     "start": 0.15,
+     "end": 10.546
+    },
+    {
+     "text": "Every answer throws away half of the suspects.",
+     "start": 10.966,
+     "end": 14.127
+    },
+    {
+     "text": "With a thousand commits between them, how many tests until it finds the first bad one?",
+     "start": 14.947,
+     "end": 20.255
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 149,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
   },
   "05a": {
-   "hash": "59ebfd9062d225b0",
-   "duration": 15.465,
+   "hash": "3b70e9a5a045bf7a",
+   "takes": [
+    "7f27076dbcf9e57be5a0",
+    "d45e4fbfef12b9059d63",
+    "c17eb4a7c42385980d98"
+   ],
+   "duration": 17.611,
    "lines": [
     {
      "text": "About ten.",
      "start": 0.15,
-     "end": 0.921
+     "end": 0.924
     },
     {
-     "text": "Each test halves the suspects. A thousand commits need about ten tests, because ten halvings take about a thousand down to one.",
-     "start": 1.341,
-     "end": 9.057
+     "text": "Each test halves the range, and ten halvings take about a thousand down to one. Checking one by one could take nearly a thousand tests.",
+     "start": 1.344,
+     "end": 10.566
     },
     {
-     "text": "Checking them one by one could take nearly a thousand.",
-     "start": 9.477,
-     "end": 12.602
-    },
-    {
-     "text": "That's the power of halving.",
-     "start": 13.022,
-     "end": 15.115
+     "text": "That is the same logarithm from the last refresher, applied to history instead of data.",
+     "start": 10.986,
+     "end": 17.261
     }
    ],
-   "lufs": -16.8,
-   "true_peak": -1.3,
-   "wpm": 151,
-   "wer": 0.0
+   "lufs": -16.2,
+   "true_peak": -2.1,
+   "wpm": 143,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
   },
   "06": {
-   "hash": "1e4e2833211b5e9a",
-   "duration": 35.588,
-   "lines": [
-    {
-     "text": "Better still... let Git run the tests for you.",
-     "start": 0.15,
-     "end": 3.505
-    },
-    {
-     "text": "Give bisect run a command, and it reads just one thing back: the exit code. That is the number every command ends with, and zero means it worked.",
-     "start": 3.925,
-     "end": 13.454
-    },
-    {
-     "text": "A good commit makes the command succeed. A bad commit makes it fail, and a failing assert counts as a failure. A special skip code tells bisect this commit can't be tested.",
-     "start": 13.874,
-     "end": 24.66
-    },
-    {
-     "text": "Anything else stops the whole run.",
-     "start": 25.08,
-     "end": 27.156
-    },
-    {
-     "text": "The best test fails only because of the bug. And keep it outside the repo, so old commits can't change it.",
-     "start": 27.976,
-     "end": 35.238
-    }
+   "hash": "011470babf41508d",
+   "takes": [
+    "7ea64782b4c0d0d05ae9",
+    "e3e2d2f516a11b2369b1",
+    "793d82e9a9b9b67245f0",
+    "65dc98f4efee081441e6"
    ],
-   "lufs": -16.5,
-   "true_peak": -1.3,
-   "wpm": 162,
-   "wer": 0.0
-  },
-  "07": {
-   "hash": "f6e0f0e7ddbb25a3",
-   "duration": 30.509,
+   "duration": 37.148,
    "lines": [
     {
-     "text": "A pull request asks for review, and automated build and test checks, before a branch lands.",
+     "text": "Better still, let Git do the testing. Give bisect run a command, and it reads exactly one thing back: the exit status.",
      "start": 0.15,
-     "end": 6.084
+     "end": 9.675
     },
     {
-     "text": "GitHub can land it three ways.",
-     "start": 6.504,
-     "end": 8.494
+     "text": "Zero means the commit is good. A failure code means it is bad. One special code means this commit cannot be tested, so skip it. Anything else stops the run.",
+     "start": 10.095,
+     "end": 22.472
     },
     {
-     "text": "A merge commit keeps every commit. Squash makes one commit. And rebase and merge replays them as new commits in a line.",
-     "start": 8.914,
-     "end": 18.471
+     "text": "So the best test fails only because of the bug, and it should live outside the repository, otherwise checking out an old commit changes the test itself.",
+     "start": 22.892,
+     "end": 33.031
     },
     {
-     "text": "Squash suits short-lived branches.",
-     "start": 18.891,
-     "end": 21.13
-    },
-    {
-     "text": "Say you squash a three commit pull request, then add one more commit to the same branch and open a new pull request. How many commits does it list?",
-     "start": 21.95,
-     "end": 30.159
-    }
-   ],
-   "lufs": -16.5,
-   "true_peak": -1.4,
-   "wpm": 153,
-   "wer": 0.0
-  },
-  "07a": {
-   "hash": "29129ac8f4729c6c",
-   "duration": 21.827,
-   "lines": [
-    {
-     "text": "The next pull request shows four commits.",
-     "start": 0.15,
-     "end": 3.577
-    },
-    {
-     "text": "The squash commit isn't made of your three commits... so Git still sees them as unmerged. They come back, along with the new one. The three old ones are only duplicates.",
-     "start": 3.997,
-     "end": 14.147
-    },
-    {
-     "text": "And here, they even conflict.",
-     "start": 14.567,
-     "end": 17.467
-    },
-    {
-     "text": "After a squash merge, start a fresh branch from main.",
-     "start": 17.887,
-     "end": 21.477
-    }
-   ],
-   "lufs": -16.5,
-   "true_peak": -1.4,
-   "wpm": 146,
-   "wer": 0.0
-  },
-  "08": {
-   "hash": "e6b679e1a802e606",
-   "duration": 27.377,
-   "lines": [
-    {
-     "text": "Branch length is the risk.",
-     "start": 0.15,
-     "end": 1.544
-    },
-    {
-     "text": "In trunk-based development, everyone merges into one trunk, at least daily, through short-lived branches that exist for review and checks.",
-     "start": 1.964,
-     "end": 9.787
-    },
-    {
-     "text": "Bigger changes still land in small steps, with feature flags and branch by abstraction.",
-     "start": 10.207,
-     "end": 15.869
-    },
-    {
-     "text": "A long-lived branch drifts. The gap grows every day, so the longer it lives, the bigger the final merge... and keeping it in step means resolving the same conflicts again.",
-     "start": 16.689,
-     "end": 27.026
+     "text": "Those exit codes will come back in the next refresher.",
+     "start": 33.451,
+     "end": 36.798
     }
    ],
    "lufs": -16.4,
-   "true_peak": -1.4,
-   "wpm": 158,
-   "wer": 0.0
+   "true_peak": -1.9,
+   "wpm": 144,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
   },
-  "09": {
-   "hash": "5afcaf8c3a31bcaa",
-   "duration": 34.165,
+  "07": {
+   "hash": "b0d4e4a2272cd0fa",
+   "takes": [
+    "00407dea357b73156cf5",
+    "be6ed8b64644f482915f",
+    "488e50478dd2811c2b81",
+    "cd142d3b523992b6a63c"
+   ],
+   "duration": 31.698,
    "lines": [
     {
-     "text": "So... eight things to keep.",
+     "text": "A pull request asks for review and automated checks before a branch lands. It can land in three ways.",
      "start": 0.15,
-     "end": 2.201
+     "end": 8.122
     },
     {
-     "text": "Merging keeps both parents. Rebasing replays your commits, with new IDs. Rewrite only what you haven't pushed.",
-     "start": 2.621,
-     "end": 9.741
+     "text": "A merge commit keeps every commit. A squash turns the whole branch into one commit. Rebase and merge replays the commits in a line.",
+     "start": 8.542,
+     "end": 18.233
     },
     {
-     "text": "A conflict has a base, ours, and theirs. Bisect finds a bug in about ten tests, and bisect run reads the exit code.",
-     "start": 10.161,
-     "end": 20.526
+     "text": "Now a subtle consequence. You squash a three commit request, then add one more commit to the same branch and open a new request.",
+     "start": 18.653,
+     "end": 27.604
     },
     {
-     "text": "A pull request can land by merge, squash or rebase, and after a squash, retire the branch. And keep your branches short.",
-     "start": 20.946,
-     "end": 29.573
-    },
-    {
-     "text": "Next up... the shell, where those exit codes come from.",
-     "start": 30.493,
-     "end": 33.815
+     "text": "How many commits does the new request list?",
+     "start": 28.424,
+     "end": 31.348
     }
    ],
-   "lufs": -16.6,
-   "true_peak": -1.3,
-   "wpm": 135,
-   "wer": 0.0
+   "lufs": -16.7,
+   "true_peak": -1.9,
+   "wpm": 142,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "07a": {
+   "hash": "96ab76a103a01a94",
+   "takes": [
+    "419903b7623bc159628d",
+    "52eb4e1b466726e33d2c",
+    "e0812c28d7e05408e47a"
+   ],
+   "duration": 16.87,
+   "lines": [
+    {
+     "text": "Four.",
+     "start": 0.15,
+     "end": 0.778
+    },
+    {
+     "text": "The squash commit is not made of your three commits, so Git still sees those three as unmerged and lists them again, with the new one.",
+     "start": 1.198,
+     "end": 10.451
+    },
+    {
+     "text": "Here they even conflict. So after a squash merge, start a fresh branch from main.",
+     "start": 10.871,
+     "end": 16.52
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -2.0,
+   "wpm": 149,
+   "wer": 0.06666666666666667,
+   "exact": false,
+   "tolerated": [
+    {
+     "line": "Here they even conflict. So after a squash merge, start a fresh branch from main.",
+     "said": "main",
+     "heard": "maine"
+    }
+   ]
+  },
+  "08": {
+   "hash": "cd8b14b8f22a4943",
+   "takes": [
+    "6e05d4d163fddd23ce67",
+    "6fe2e9065a2b6ee70949",
+    "8808d876977173c536e5",
+    "1bf4bd59997049f3c3ac"
+   ],
+   "duration": 34.062,
+   "lines": [
+    {
+     "text": "The last point is about branch length, which is the real risk.",
+     "start": 0.15,
+     "end": 4.181
+    },
+    {
+     "text": "In trunk based development everyone merges into one trunk at least daily, through branches that live only long enough to be reviewed and checked.",
+     "start": 4.601,
+     "end": 14.756
+    },
+    {
+     "text": "Bigger changes still land in small steps, hidden behind flags.",
+     "start": 15.176,
+     "end": 20.021
+    },
+    {
+     "text": "A long lived branch drifts. The gap grows every day, so the final merge grows with it, and keeping it current means resolving the same conflicts again and again.",
+     "start": 20.441,
+     "end": 33.712
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 132,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "09": {
+   "hash": "80094a3df11e1c41",
+   "takes": [
+    "0e55dc05ffad438792c6",
+    "0cee7000bf9697133da1",
+    "e5e0f11bad34932adb29",
+    "28b10296e4797c5e2e93"
+   ],
+   "duration": 35.633,
+   "lines": [
+    {
+     "text": "Eight things to keep. Merge keeps both parents. Rebase replays with new identifiers. Rewrite only what you have not pushed.",
+     "start": 0.15,
+     "end": 11.095
+    },
+    {
+     "text": "A conflict has a base, ours and theirs. Bisect finds a bug in about ten tests, and bisect run reads the exit status.",
+     "start": 11.515,
+     "end": 21.194
+    },
+    {
+     "text": "A pull request can land by merge, squash or rebase, and after a squash you retire the branch. And keep your branches short.",
+     "start": 21.614,
+     "end": 30.471
+    },
+    {
+     "text": "Next up: the shell, where those exit codes come from.",
+     "start": 31.291,
+     "end": 35.283
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -1.9,
+   "wpm": 128,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
   }
  }
 }

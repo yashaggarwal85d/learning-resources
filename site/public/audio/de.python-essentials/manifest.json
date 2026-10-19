@@ -1,431 +1,594 @@
 {
  "topic": "de.python-essentials",
- "voice": "tara-v1",
+ "voice": "breeze-mellow-v2",
+ "asr": "large-v3-turbo",
  "clips": {
   "01": {
-   "hash": "fe920639f1c8c011",
-   "duration": 13.406,
+   "hash": "078d5c46e623f6ff",
+   "takes": [
+    "66f8daa2e0b596f7677f",
+    "55bd9412359e7e0ebb31",
+    "522127340b14bf83988a"
+   ],
+   "duration": 28.527,
    "lines": [
     {
-     "text": "Data Engineering opens with five quick refreshers.",
+     "text": "Data Engineering opens with five short refreshers. They are not lessons, they are checks.",
      "start": 0.15,
-     "end": 2.935
+     "end": 7.736
     },
     {
-     "text": "This one is Python... the parts a senior engineer leans on in code review, and the language our pipelines are written in.",
-     "start": 3.355,
-     "end": 9.512
+     "text": "This first one is Python: the parts a senior engineer relies on when reviewing someone else's code, and the language our pipelines are written in.",
+     "start": 8.156,
+     "end": 18.424
     },
     {
-     "text": "All familiar? Swipe on to Git.",
-     "start": 10.332,
-     "end": 13.056
+     "text": "If every slide feels familiar, good. Swipe on to Git. If one surprises you, that is the one worth ten minutes.",
+     "start": 19.244,
+     "end": 28.177
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -2.5,
+   "wpm": 126,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "02": {
+   "hash": "9e56029cd8144a91",
+   "takes": [
+    "57ff9ab668534f848032",
+    "b57b48be00c6f417c2f2",
+    "4e6c955d9617f97dc56a"
+   ],
+   "duration": 18.915,
+   "lines": [
+    {
+     "text": "Start with a trap that catches experienced people. A function has a default argument, an empty list.",
+     "start": 0.15,
+     "end": 7.393
+    },
+    {
+     "text": "Ask yourself when that list is made. Not when you call the function, but when the definition runs, once.",
+     "start": 7.813,
+     "end": 15.536
+    },
+    {
+     "text": "So what does the second call return?",
+     "start": 16.356,
+     "end": 18.565
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 136,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "02a": {
+   "hash": "72a021073465b642",
+   "takes": [
+    "45d83f34734ddf419876",
+    "befd0b0078bde9ee4ebf",
+    "5a2163e4a520ee6b3879"
+   ],
+   "duration": 24.596,
+   "lines": [
+    {
+     "text": "Both calls share one list, so the second call returns the first call's item as well.",
+     "start": 0.15,
+     "end": 5.619
+    },
+    {
+     "text": "A function is an object, and its defaults are stored on it. Every call that omits the argument gets the same list.",
+     "start": 6.039,
+     "end": 14.388
+    },
+    {
+     "text": "The usual fix is to default to nothing, and build the list inside the function. The other three answers all assume a fresh list per call.",
+     "start": 14.808,
+     "end": 24.246
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 156,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "03": {
+   "hash": "8647abf99d25a175",
+   "takes": [
+    "d93a4778fc98b3b99bf5",
+    "81a5b051c3b1d3dcaf13",
+    "e7e41a33f996bb83153e"
+   ],
+   "duration": 16.999,
+   "lines": [
+    {
+     "text": "Its cousin lives in loops. Three small functions are created inside a loop, each returning the loop variable.",
+     "start": 0.15,
+     "end": 8.264
+    },
+    {
+     "text": "Think about when a function looks a name up. When it is created, or when it runs?",
+     "start": 8.684,
+     "end": 14.364
+    },
+    {
+     "text": "What do the three return?",
+     "start": 15.314,
+     "end": 16.649
     }
    ],
    "lufs": -16.5,
-   "true_peak": -1.4,
-   "wpm": 157,
-   "wer": 0.0
-  },
-  "02": {
-   "hash": "5542d2a548952b89",
-   "duration": 11.952,
-   "lines": [
-    {
-     "text": "Here's a classic.",
-     "start": 0.15,
-     "end": 1.391
-    },
-    {
-     "text": "A function's default value is created once... when the function is defined. Not on every call.",
-     "start": 1.811,
-     "end": 7.905
-    },
-    {
-     "text": "So, what will the second call give you?",
-     "start": 8.825,
-     "end": 11.602
-    }
-   ],
-   "lufs": -16.4,
-   "true_peak": -1.4,
-   "wpm": 136,
-   "wer": 0.0
-  },
-  "02a": {
-   "hash": "102fdcb335f86509",
-   "duration": 10.034,
-   "lines": [
-    {
-     "text": "Both calls share the same list... the one made when the function was defined.",
-     "start": 0.15,
-     "end": 4.83
-    },
-    {
-     "text": "The fix? Default to None, and create the list inside the function.",
-     "start": 5.25,
-     "end": 9.684
-    }
-   ],
-   "lufs": -16.4,
-   "true_peak": -1.4,
-   "wpm": 155,
-   "wer": 0.0
-  },
-  "03": {
-   "hash": "d6bef330124e4026",
-   "duration": 12.117,
-   "lines": [
-    {
-     "text": "Here's its cousin.",
-     "start": 0.15,
-     "end": 1.637
-    },
-    {
-     "text": "A lambda reads the value of a name when it runs... not when it's created.",
-     "start": 2.057,
-     "end": 6.995
-    },
-    {
-     "text": "So three lambdas, built in a loop. What do they return?",
-     "start": 7.815,
-     "end": 11.768
-    }
-   ],
-   "lufs": -16.4,
-   "true_peak": -1.4,
-   "wpm": 144,
-   "wer": 0.0
+   "true_peak": -1.9,
+   "wpm": 141,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
   },
   "03a": {
-   "hash": "99fe8edc40255a00",
-   "duration": 13.827,
+   "hash": "9b87e025e4458db2",
+   "takes": [
+    "3f5c5518d368ea4e9a7c",
+    "4631eccbb1b01c4328ba",
+    "5c07b249ea87c6d410bb"
+   ],
+   "duration": 20.746,
    "lines": [
     {
-     "text": "Two, two, two. All three look up i after the loop has finished.",
+     "text": "The last value, three times.",
      "start": 0.15,
-     "end": 5.974
+     "end": 1.976
     },
     {
-     "text": "The fix? Bind the value now, with a default. Defaults are evaluated once, remember... at the moment the function is made.",
-     "start": 6.394,
-     "end": 13.477
+     "text": "Each function looks the name up when it runs, and by then the loop has finished, so the variable holds its final value.",
+     "start": 2.396,
+     "end": 9.962
+    },
+    {
+     "text": "To capture the value now, give it as a default argument, which is evaluated at definition time, the same fact as the last slide, used on purpose.",
+     "start": 10.382,
+     "end": 20.396
     }
    ],
    "lufs": -16.3,
-   "true_peak": -1.4,
-   "wpm": 148,
-   "wer": 0.0
+   "true_peak": -2.2,
+   "wpm": 159,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
   },
   "04": {
-   "hash": "06bda929e76a9ebd",
-   "duration": 14.904,
+   "hash": "e74d36c9e9215b99",
+   "takes": [
+    "5c3d039325bccfb39d03",
+    "314fdf0ac59df882104f",
+    "598c825fe08255842afa"
+   ],
+   "duration": 26.54,
    "lines": [
     {
-     "text": "A comprehension reads almost like a sentence.",
+     "text": "A comprehension is a filter and a map written as one expression. Read it left to right: what to produce, then where from, then the test.",
      "start": 0.15,
-     "end": 2.903
+     "end": 12.95
     },
     {
-     "text": "Keep the items that pass the test... transform them... and collect the result.",
-     "start": 3.323,
-     "end": 7.462
+     "text": "The same shape builds dictionaries and sets, not just lists.",
+     "start": 13.37,
+     "end": 17.681
     },
     {
-     "text": "The same shape builds dictionaries and sets.",
-     "start": 7.882,
-     "end": 10.47
-    },
-    {
-     "text": "And the loop variable? It stays inside.",
-     "start": 10.89,
-     "end": 14.554
+     "text": "One small detail worth remembering: the loop variable stays inside the comprehension and does not leak into the surrounding code.",
+     "start": 18.101,
+     "end": 26.19
     }
    ],
    "lufs": -16.4,
-   "true_peak": -1.4,
-   "wpm": 137,
-   "wer": 0.0
+   "true_peak": -1.9,
+   "wpm": 127,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
   },
   "05": {
-   "hash": "7e1a251ffa7b9b14",
-   "duration": 17.026,
+   "hash": "95d4aa89ba2ed163",
+   "takes": [
+    "d2817d7e5533aaf80d2a",
+    "66c0e4b1c1e99f6a1d96",
+    "6ff3a498a8cac1aa6dae",
+    "123799102472d791775e"
+   ],
+   "duration": 29.678,
    "lines": [
     {
-     "text": "Both of these lines compute the same sum.",
+     "text": "Now memory, which is where Python stops being only a convenience. Look at the two lines on screen.",
      "start": 0.15,
-     "end": 3.11
+     "end": 6.821
     },
     {
-     "text": "But the list version builds a million items first... about forty megabytes.",
-     "start": 3.53,
-     "end": 8.881
+     "text": "They compute the same sum. The first builds a list of a million numbers before it adds anything. The second hands them over one at a time.",
+     "start": 7.241,
+     "end": 16.584
     },
     {
-     "text": "The generator hands them over one at a time, in half a kilobyte.",
-     "start": 9.301,
-     "end": 12.924
+     "text": "The difference is tens of megabytes against half a kilobyte, and it grows with the input.",
+     "start": 17.004,
+     "end": 22.75
     },
     {
-     "text": "That's how a pipeline reads files bigger than memory.",
-     "start": 13.744,
-     "end": 16.676
+     "text": "That is how a pipeline can read a file larger than its memory. It never holds the file.",
+     "start": 23.17,
+     "end": 29.328
     }
    ],
-   "lufs": -16.6,
-   "true_peak": -1.4,
-   "wpm": 148,
-   "wer": 0.0
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 160,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
   },
   "06": {
-   "hash": "e743db3f89daf226",
-   "duration": 16.492,
+   "hash": "57a03e0ef948c4a0",
+   "takes": [
+    "ae86119d39e47849f348",
+    "2ee64ab7101f211ab197",
+    "b985494a15650a5a0806",
+    "a22c9ec225665583c223"
+   ],
+   "duration": 27.251,
    "lines": [
     {
-     "text": "Put yield in a function, and it becomes a generator.",
+     "text": "How does a function hand over one value at a time? With the keyword that makes it a generator.",
      "start": 0.15,
-     "end": 2.967
+     "end": 6.962
     },
     {
-     "text": "Each time you ask for the next value, it runs up to the next yield... hands that value back... and pauses right there, remembering everything.",
-     "start": 3.387,
-     "end": 12.66
+     "text": "Follow the pointer in the code. Each request runs the body up to the next yield, returns that value, and freezes right there with all its local state.",
+     "start": 7.382,
+     "end": 17.332
     },
     {
-     "text": "Batching a stream takes just a few lines.",
-     "start": 13.08,
-     "end": 16.142
+     "text": "The next request wakes it exactly where it stopped.",
+     "start": 17.752,
+     "end": 20.886
+    },
+    {
+     "text": "That is enough to batch a stream in a handful of lines, with nothing held in between.",
+     "start": 21.306,
+     "end": 26.901
     }
    ],
    "lufs": -16.4,
-   "true_peak": -1.4,
-   "wpm": 156,
-   "wer": 0.0
+   "true_peak": -1.9,
+   "wpm": 161,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
   },
   "07": {
-   "hash": "41dfad20a479fb22",
-   "duration": 19.291,
+   "hash": "3f393f425261a1b3",
+   "takes": [
+    "3f4881dccb90b30ecfe6",
+    "6c91fcd14151141e280b",
+    "208147a5471eeb3b6062",
+    "3b994b0b90486122a564"
+   ],
+   "duration": 33.225,
    "lines": [
     {
-     "text": "A with block guarantees cleanup.",
+     "text": "Resources need a guarantee: whatever happens, release them. A file, a connection, a lock, a transaction.",
      "start": 0.15,
-     "end": 2.398
+     "end": 10.03
     },
     {
-     "text": "When the block ends, the exit code runs... even if something blew up inside.",
-     "start": 2.818,
-     "end": 7.516
+     "text": "The with block gives it. When the block ends, normally or by an error, the cleanup code runs.",
+     "start": 10.45,
+     "end": 17.589
     },
     {
-     "text": "Files, connections, locks, transactions... they all rely on it.",
-     "start": 7.936,
-     "end": 13.209
+     "text": "Writing your own is short with a decorator: setup before the yield, and teardown after it, inside a finally so that an error cannot skip it.",
+     "start": 18.009,
+     "end": 27.582
     },
     {
-     "text": "With context manager, setup goes before the yield, and teardown goes in finally.",
-     "start": 13.629,
-     "end": 18.941
+     "text": "The finally is the part people forget, and it is the whole point.",
+     "start": 28.002,
+     "end": 32.875
     }
    ],
    "lufs": -16.4,
-   "true_peak": -1.4,
-   "wpm": 128,
-   "wer": 0.0
+   "true_peak": -1.9,
+   "wpm": 132,
+   "wer": 0.15384615384615385,
+   "exact": false,
+   "tolerated": [
+    {
+     "line": "The with block gives it. When the block ends, normally or by an error, the cleanup code runs.",
+     "said": "with",
+     "heard": "width"
+    },
+    {
+     "line": "Writing your own is short with a decorator: setup before the yield, and teardown after it, inside a finally so that an error cannot skip it.",
+     "said": "setup",
+     "heard": "set up"
+    },
+    {
+     "line": "Writing your own is short with a decorator: setup before the yield, and teardown after it, inside a finally so that an error cannot skip it.",
+     "said": "teardown",
+     "heard": "tear down"
+    }
+   ]
   },
   "08": {
-   "hash": "a127244b870de43f",
-   "duration": 21.084,
+   "hash": "5a24d0942fe8f9d3",
+   "takes": [
+    "c7da00ac829208321c09",
+    "cec377875787858723f0",
+    "7f62ff203be6d0877fd8"
+   ],
+   "duration": 32.908,
    "lines": [
     {
-     "text": "Put timed above a function, and Python replaces it with timed of that function. A new function, wrapping the old one.",
+     "text": "A decorator is a function that takes a function and returns a replacement. Placing it above a definition is only shorthand for that reassignment.",
      "start": 0.15,
-     "end": 7.728
+     "end": 9.681
     },
     {
-     "text": "Retrying, caching, timing, checking access... those are usually decorators.",
-     "start": 8.148,
-     "end": 13.971
+     "text": "Retrying, caching, timing and permission checks are almost always written this way, because they wrap behaviour around code without touching it.",
+     "start": 10.101,
+     "end": 19.764
     },
     {
-     "text": "Just remember to copy the original function's name across, with the wraps helper. Otherwise every log line says wrapper.",
-     "start": 14.391,
-     "end": 20.734
+     "text": "One thing to remember: copy the original's name and documentation across with the standard helper. Otherwise every log line says wrapper, and nobody can tell which function ran.",
+     "start": 20.184,
+     "end": 32.558
     }
    ],
-   "lufs": -16.5,
-   "true_peak": -1.3,
-   "wpm": 139,
-   "wer": 0.0
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 133,
+   "wer": 0.07142857142857142,
+   "exact": false,
+   "tolerated": [
+    {
+     "line": "Retrying, caching, timing and permission checks are almost always written this way, because they wrap behaviour around code without touching it.",
+     "said": "behaviour",
+     "heard": "behavior"
+    },
+    {
+     "line": "One thing to remember: copy the original's name and documentation across with the standard helper. Otherwise every log line says wrapper, and nobody can tell which function ran.",
+     "said": "log line",
+     "heard": "logline"
+    }
+   ]
   },
   "09": {
-   "hash": "07c463bf8f840c70",
-   "duration": 15.735,
+   "hash": "c4e9f0c28bdd3102",
+   "takes": [
+    "a7abc62a7aea874e57d4",
+    "b5cb08b848e34a1254e9",
+    "c65b24e55027dc9a7ba5"
+   ],
+   "duration": 27.316,
    "lines": [
     {
-     "text": "A dataclass writes the boring parts for you: the constructor, a readable printout, and equality.",
+     "text": "Classes carry a lot of boilerplate, and a dataclass writes it for you: the constructor, a readable printout, and equality.",
      "start": 0.15,
-     "end": 7.469
+     "end": 9.018
     },
     {
-     "text": "Frozen makes it immutable.",
-     "start": 7.889,
-     "end": 9.918
+     "text": "Two options matter in data work. Frozen makes instances immutable, which makes them safe to share.",
+     "start": 9.438,
+     "end": 17.033
     },
     {
-     "text": "And slots drops the per-instance dictionary... so millions of small records take less memory.",
-     "start": 10.338,
-     "end": 15.385
+     "text": "Slots removes the per object dictionary. With millions of small records, that is a real memory saving, not a micro optimisation.",
+     "start": 17.453,
+     "end": 26.966
     }
    ],
    "lufs": -16.4,
-   "true_peak": -1.4,
-   "wpm": 133,
-   "wer": 0.0
+   "true_peak": -1.9,
+   "wpm": 127,
+   "wer": 0.047619047619047616,
+   "exact": false,
+   "tolerated": [
+    {
+     "line": "Slots removes the per object dictionary. With millions of small records, that is a real memory saving, not a micro optimisation.",
+     "said": "optimisation",
+     "heard": "optimization"
+    }
+   ]
   },
   "10": {
-   "hash": "c62f64e263c1316f",
-   "duration": 21.841,
-   "lines": [
-    {
-     "text": "Classes plug into Python through special methods.",
-     "start": 0.15,
-     "end": 3.58
-    },
-    {
-     "text": "One lets a for loop walk through your object. Another gives it a length. A third decides what equal means.",
-     "start": 4.0,
-     "end": 10.835
-    },
-    {
-     "text": "But define equals... and Python quietly removes the hash.",
-     "start": 11.255,
-     "end": 15.519
-    },
-    {
-     "text": "A dataclass defines equals for you.",
-     "start": 15.939,
-     "end": 17.952
-    },
-    {
-     "text": "So, can this record be a dictionary key?",
-     "start": 18.772,
-     "end": 21.491
-    }
+   "hash": "575ed0133807e7e2",
+   "takes": [
+    "71b5f8ba41c96dfcafdc",
+    "be35ccb68e5451957d51",
+    "6b9eea6db0504f4c7a80",
+    "20b95ee879a924bed8b8"
    ],
-   "lufs": -16.5,
-   "true_peak": -1.4,
-   "wpm": 140,
-   "wer": 0.0
-  },
-  "10a": {
-   "hash": "fbfa8b223c14ca50",
-   "duration": 14.641,
+   "duration": 31.861,
    "lines": [
     {
-     "text": "No. You get a type error. Unhashable.",
+     "text": "Special methods are how a class plugs into the language. One lets a loop walk through it, one gives it a length, one defines what equal means.",
      "start": 0.15,
-     "end": 4.384
+     "end": 9.071
     },
     {
-     "text": "Equal objects must hash the same... and a record that can change could break the dictionary after it's stored.",
-     "start": 4.804,
-     "end": 11.223
+     "text": "Here is the catch. The moment you define equality, Python quietly removes the hash. A dataclass defines equality for you.",
+     "start": 9.491,
+     "end": 19.999
     },
     {
-     "text": "Freeze it, and it works as a key.",
-     "start": 11.643,
-     "end": 14.291
-    }
-   ],
-   "lufs": -16.6,
-   "true_peak": -1.4,
-   "wpm": 139,
-   "wer": 0.0
-  },
-  "11": {
-   "hash": "e9bbafc0f5e80922",
-   "duration": 8.193,
-   "lines": [
-    {
-     "text": "Last one.",
-     "start": 0.15,
-     "end": 1.492
+     "text": "A dictionary key has to be hashable, and equal objects must hash equally, otherwise lookups break.",
+     "start": 20.419,
+     "end": 27.284
     },
     {
-     "text": "This function says it takes an int.",
-     "start": 1.912,
-     "end": 4.055
-    },
-    {
-     "text": "So... what happens if you pass it a string?",
-     "start": 4.875,
-     "end": 7.843
-    }
-   ],
-   "lufs": -17.0,
-   "true_peak": -1.4,
-   "wpm": 132,
-   "wer": 0.0
-  },
-  "11a": {
-   "hash": "97ae0a70a74e04f8",
-   "duration": 11.266,
-   "lines": [
-    {
-     "text": "It simply returns the string, twice.",
-     "start": 0.15,
-     "end": 2.158
-    },
-    {
-     "text": "Python doesn't check type hints when the code runs. A type checker does.",
-     "start": 2.578,
-     "end": 6.467
-    },
-    {
-     "text": "Run one in CI, and it catches this before it ships.",
-     "start": 6.887,
-     "end": 10.916
+     "text": "So, can this record serve as a dictionary key?",
+     "start": 28.104,
+     "end": 31.511
     }
    ],
    "lufs": -16.4,
-   "true_peak": -1.4,
-   "wpm": 160,
-   "wer": 0.0
+   "true_peak": -1.9,
+   "wpm": 137,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
   },
-  "12": {
-   "hash": "9976f05a61364b31",
-   "duration": 27.102,
+  "10a": {
+   "hash": "3c1109bae8823a9e",
+   "takes": [
+    "af9d92acb6512b8411af",
+    "129428ea911ebd12c7da",
+    "a3e27486cd9dee2b6406"
+   ],
+   "duration": 20.963,
    "lines": [
     {
-     "text": "So... nine things to keep.",
+     "text": "No, you get an error saying the type is unhashable.",
      "start": 0.15,
-     "end": 2.223
+     "end": 3.411
     },
     {
-     "text": "Defaults run once. Closures look names up late. Comprehensions filter, then map. Generators stream.",
-     "start": 2.643,
+     "text": "A record that can change after it is stored could silently break the dictionary, so Python refuses to hash it.",
+     "start": 3.831,
      "end": 11.916
     },
     {
-     "text": "A with block always cleans up. Decorators wrap. Dataclasses write the boilerplate. Equal objects need equal hashes.",
+     "text": "Freeze it and it works. Frozen means it cannot change, so equal objects keep hashing equally.",
      "start": 12.336,
-     "end": 20.877
-    },
-    {
-     "text": "And hints are checked by tools, not at runtime.",
-     "start": 21.297,
-     "end": 24.176
-    },
-    {
-     "text": "Next up... Git.",
-     "start": 25.096,
-     "end": 26.752
+     "end": 20.614
     }
    ],
-   "lufs": -16.5,
-   "true_peak": -1.4,
-   "wpm": 108,
-   "wer": 0.0
+   "lufs": -16.4,
+   "true_peak": -3.0,
+   "wpm": 132,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "11": {
+   "hash": "a0838dc34fb0b8bd",
+   "takes": [
+    "13de9b5d722f102b705b",
+    "5f8b2c6903d53dad5ac4",
+    "da47fbfa32319257cc80",
+    "15b9348e3b5218cd4819"
+   ],
+   "duration": 13.44,
+   "lines": [
+    {
+     "text": "Last trap. A function says its argument is a whole number.",
+     "start": 0.15,
+     "end": 5.27
+    },
+    {
+     "text": "Think about who enforces that statement while the program runs.",
+     "start": 5.69,
+     "end": 9.109
+    },
+    {
+     "text": "Now pass it a string.",
+     "start": 9.929,
+     "end": 11.817
+    },
+    {
+     "text": "What happens?",
+     "start": 12.237,
+     "end": 13.09
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 125,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "11a": {
+   "hash": "b13ac67c69a10ead",
+   "takes": [
+    "743421010b60fae4f862",
+    "a037991f22ff7903751b",
+    "10a79b7f54d3c057d609"
+   ],
+   "duration": 20.065,
+   "lines": [
+    {
+     "text": "It just works, and returns the string repeated. Nothing at runtime checks the hint.",
+     "start": 0.15,
+     "end": 5.908
+    },
+    {
+     "text": "Hints are for tools. A type checker reads them and finds this before it ships.",
+     "start": 6.328,
+     "end": 11.988
+    },
+    {
+     "text": "So the hint only protects you if something is checking it. Run a checker in CI, or treat the hint as a comment.",
+     "start": 12.408,
+     "end": 19.715
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 155,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "12": {
+   "hash": "8a616bc18f9ad37e",
+   "takes": [
+    "0b7145fc523e4d85f9d2",
+    "621b679dbdde5523a3cb",
+    "322e8e9059afa63f2712",
+    "d399d13c6e3ac8e11322"
+   ],
+   "duration": 39.552,
+   "lines": [
+    {
+     "text": "Nine things to keep, in a sentence each.",
+     "start": 0.15,
+     "end": 3.356
+    },
+    {
+     "text": "Defaults run once. Closures look names up late. Comprehensions filter, then map. Generators stream, lists pile up.",
+     "start": 3.776,
+     "end": 14.124
+    },
+    {
+     "text": "A with block always cleans up. Decorators wrap. Dataclasses write the boilerplate. Equal objects need equal hashes. Hints are checked by tools, not by Python.",
+     "start": 14.544,
+     "end": 29.662
+    },
+    {
+     "text": "Anything rusty? The prerequisites panel points to good places to refresh it. Otherwise, on to Git.",
+     "start": 30.482,
+     "end": 39.202
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 102,
+   "wer": 0.038461538461538464,
+   "exact": false,
+   "tolerated": [
+    {
+     "line": "A with block always cleans up. Decorators wrap. Dataclasses write the boilerplate. Equal objects need equal hashes. Hints are checked by tools, not by Python.",
+     "said": "with",
+     "heard": "width"
+    }
+   ]
   }
  }
 }

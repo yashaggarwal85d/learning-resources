@@ -86,7 +86,7 @@
         "Here is the catch. The moment you define equality, Python quietly removes the hash. A dataclass defines equality for you.",
         "A dictionary key has to be hashable, and equal objects must hash equally, otherwise lookups break.",
         { "beat": 0.4 },
-        "So can this record be used as a key?"
+        "So, can this record serve as a dictionary key?"
       ],
       "answer": [
         "No, you get an error saying the type is unhashable.",
@@ -99,7 +99,8 @@
         "Last trap. A function says its argument is a whole number.",
         "Think about who enforces that statement while the program runs.",
         { "beat": 0.4 },
-        "What happens if you pass it a string?"
+        "Now pass it a string.",
+        "What happens?"
       ],
       "answer": [
         "It just works, and returns the string repeated. Nothing at runtime checks the hint.",

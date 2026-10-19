@@ -1,441 +1,483 @@
 {
  "topic": "de.software-delivery-workflow",
- "voice": "tara-v1",
+ "voice": "breeze-mellow-v2",
+ "asr": "large-v3-turbo",
  "clips": {
   "01": {
-   "hash": "857ffab917504550",
-   "duration": 23.915,
-   "lines": [
-    {
-     "text": "The shell runs one job by hand.",
-     "start": 0.15,
-     "end": 2.295
-    },
-    {
-     "text": "A pipeline runs the same commands on every change. It stops at the first failure.",
-     "start": 2.715,
-     "end": 7.128
-    },
-    {
-     "text": "This refresher covers the loop around it: review, tests, continuous integration, version numbers, and pinned dependencies. The strip along the top marks where each step sits.",
-     "start": 7.948,
-     "end": 20.374
-    },
-    {
-     "text": "All familiar? Swipe on.",
-     "start": 20.794,
-     "end": 23.565
-    }
+   "hash": "16a5f165e2757eb4",
+   "takes": [
+    "3a676f748f672b043749",
+    "31bc078d43763870ef5a",
+    "af6cebd936aced80caf4"
    ],
-   "lufs": -16.6,
-   "true_peak": -1.4,
-   "wpm": 130,
-   "wer": 0.0
-  },
-  "02": {
-   "hash": "e399aa8c1c1bbb15",
-   "duration": 32.881,
+   "duration": 26.304,
    "lines": [
     {
-     "text": "A review has an order... design first, and style last.",
+     "text": "You have the Python, the history, and the shell. Now: how a change gets merged and released.",
      "start": 0.15,
-     "end": 4.666
+     "end": 7.35
     },
     {
-     "text": "Take the broad view first. Then the design of the main part; if something big is wrong, say so right away.",
-     "start": 5.086,
-     "end": 12.158
+     "text": "Five minutes on review, tests, continuous integration, version numbers and pinned dependencies. The strip along the top marks where each step sits in the flow.",
+     "start": 7.77,
+     "end": 20.81
     },
     {
-     "text": "Then functionality, complexity, tests, and naming. Style is only a nit the author may skip.",
-     "start": 12.578,
-     "end": 18.128
-    },
-    {
-     "text": "Approve when the change clearly improves the code... not when it's perfect.",
-     "start": 18.848,
-     "end": 23.375
-    },
-    {
-     "text": "Keep pull requests small. About a hundred lines is reasonable. A thousand is usually too large.",
-     "start": 23.795,
-     "end": 29.652
-    },
-    {
-     "text": "And answer within one business day.",
-     "start": 30.072,
-     "end": 32.531
-    }
-   ],
-   "lufs": -16.4,
-   "true_peak": -1.4,
-   "wpm": 146,
-   "wer": 0.0
-  },
-  "03": {
-   "hash": "91a368f599356096",
-   "duration": 37.331,
-   "lines": [
-    {
-     "text": "Now a unit test: the bisect oracle from the Git refresher, grown up.",
-     "start": 0.15,
-     "end": 6.534
-    },
-    {
-     "text": "One test, parametrized: one case per input, each passing or failing on its own.",
-     "start": 6.954,
-     "end": 12.535
-    },
-    {
-     "text": "A fixture hands each test its own fresh temporary folder.",
-     "start": 12.955,
-     "end": 17.392
-    },
-    {
-     "text": "But does it fail when the code is broken?",
-     "start": 18.212,
-     "end": 22.151
-    },
-    {
-     "text": "Six tests run. Four cases, the Git oracle, and a test of the main function.",
-     "start": 22.701,
-     "end": 27.37
-    },
-    {
-     "text": "At that commit, four tests fail. The two that pass have no stray spaces.",
-     "start": 27.79,
-     "end": 33.329
-    },
-    {
-     "text": "The run exits with one... and the gate closes.",
-     "start": 33.749,
-     "end": 36.981
-    }
-   ],
-   "lufs": -16.4,
-   "true_peak": -1.4,
-   "wpm": 135,
-   "wer": 0.0
-  },
-  "04": {
-   "hash": "d1baaf25a3c7051d",
-   "duration": 31.436,
-   "lines": [
-    {
-     "text": "A job on the runner is a script that stops on error. Each step runs only if the one before it succeeded.",
-     "start": 0.15,
-     "end": 6.343
-    },
-    {
-     "text": "Each step is a new shell, and its exit status is its verdict.",
-     "start": 6.763,
-     "end": 10.555
-    },
-    {
-     "text": "The first non-zero status fails the job... and every step after it is skipped.",
-     "start": 10.975,
-     "end": 17.34
-    },
-    {
-     "text": "On the left, the fix goes green.",
-     "start": 18.06,
-     "end": 20.388
-    },
-    {
-     "text": "On the right, the regression stops at the tests. The diff step never runs.",
-     "start": 20.808,
-     "end": 26.125
-    },
-    {
-     "text": "Make the job a required check, and a red run blocks the merge.",
-     "start": 26.545,
-     "end": 31.086
-    }
-   ],
-   "lufs": -16.4,
-   "true_peak": -1.4,
-   "wpm": 160,
-   "wer": 0.0
-  },
-  "05": {
-   "hash": "947caaf0bbe64824",
-   "duration": 18.139,
-   "lines": [
-    {
-     "text": "Here's the trap from the shell refresher, now on a runner.",
-     "start": 0.15,
-     "end": 3.645
-    },
-    {
-     "text": "This step sets no shell, so GitHub runs bash with stop-on-error. The first command can't open the file and fails; the other two succeed.",
-     "start": 4.065,
-     "end": 13.622
-    },
-    {
-     "text": "So... does the step pass, or fail?",
-     "start": 14.442,
-     "end": 17.789
-    }
-   ],
-   "lufs": -17.1,
-   "true_peak": -1.3,
-   "wpm": 146,
-   "wer": 0.0
-  },
-  "05a": {
-   "hash": "145a438ce261efa0",
-   "duration": 17.82,
-   "lines": [
-    {
-     "text": "It passes. Stop-on-error sees only a pipeline's last command... zero.",
-     "start": 0.15,
-     "end": 5.111
-    },
-    {
-     "text": "The failure is hidden, in any script, not just on a runner.",
-     "start": 5.531,
-     "end": 9.605
-    },
-    {
-     "text": "Ask for bash explicitly, pipe-fail switches on, and the step fails, as it should.",
-     "start": 10.025,
-     "end": 17.47
-    }
-   ],
-   "lufs": -16.6,
-   "true_peak": -1.4,
-   "wpm": 131,
-   "wer": 0.0
-  },
-  "06": {
-   "hash": "b2d768953d6635eb",
-   "duration": 27.29,
-   "lines": [
-    {
-     "text": "A flaky test passes and fails on the same code.",
-     "start": 0.15,
-     "end": 3.542
-    },
-    {
-     "text": "Here, the test compared the order of a set. That order isn't specified. For strings it depends on a hash value, and Python picks a different seed in every process.",
-     "start": 3.962,
-     "end": 13.922
-    },
-    {
-     "text": "Run it twenty times, and half the runs fail.",
-     "start": 14.342,
-     "end": 16.959
-    },
-    {
-     "text": "Re-running until it's green hides the problem. And a gate nobody trusts hides real failures, too.",
-     "start": 17.679,
-     "end": 23.425
-    },
-    {
-     "text": "Fix the cause. Here... sort first.",
-     "start": 23.845,
-     "end": 26.94
+     "text": "Deploying comes later in the course. All familiar? Swipe on.",
+     "start": 21.63,
+     "end": 25.954
     }
    ],
    "lufs": -16.5,
-   "true_peak": -0.5,
-   "wpm": 158,
-   "wer": 0.0
+   "true_peak": -1.9,
+   "wpm": 119,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
   },
-  "07": {
-   "hash": "5291da04960b283a",
-   "duration": 14.458,
+  "02": {
+   "hash": "063c45258a2d9c30",
+   "takes": [
+    "d796c491507359c8656b",
+    "0ec759a55be390900e55",
+    "91cca406a7d61e6f6ca0",
+    "0f3bf892b7218da46e4e"
+   ],
+   "duration": 36.642,
    "lines": [
     {
-     "text": "A version number is a promise about what callers can rely on.",
+     "text": "Start with review, and its order matters. A reviewer takes the broad view first, then the design of the main part.",
      "start": 0.15,
-     "end": 3.576
+     "end": 7.946
     },
     {
-     "text": "The library is at version one point five. A fix bumps the last number; a compatible addition, the middle one.",
-     "start": 3.996,
+     "text": "Big problems go back immediately, before anyone reads the details. Only then come functionality, complexity, tests and naming.",
+     "start": 8.366,
+     "end": 17.812
+    },
+    {
+     "text": "Style comments are labelled as nits, meaning the author may skip them. And approve when the change clearly improves the code, not when it is perfect.",
+     "start": 18.232,
+     "end": 28.707
+    },
+    {
+     "text": "Two habits keep it fast: small changes, around a hundred lines, and an answer within one working day.",
+     "start": 29.127,
+     "end": 36.292
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 136,
+   "wer": 0.038461538461538464,
+   "exact": false,
+   "tolerated": [
+    {
+     "line": "Style comments are labelled as nits, meaning the author may skip them. And approve when the change clearly improves the code, not when it is perfect.",
+     "said": "labelled",
+     "heard": "labeled"
+    }
+   ]
+  },
+  "03": {
+   "hash": "4b79fb92c3c7c347",
+   "takes": [
+    "f1e01478c5e1d20cc2b6",
+    "94558d5aff18420d1145",
+    "a6c8867a2cf86ddc37c2",
+    "48da09912d84fd64102f"
+   ],
+   "duration": 37.007,
+   "lines": [
+    {
+     "text": "A good test pins a bug in place. Read the output on screen: six tests run, and four are cases of one test with different inputs.",
+     "start": 0.15,
+     "end": 10.978
+    },
+    {
+     "text": "A fixture hands each test a fresh directory, so tests never share state.",
+     "start": 11.398,
+     "end": 16.827
+    },
+    {
+     "text": "The question to ask of every test is whether it fails when the code is broken. On the broken commit, four fail and two pass.",
+     "start": 17.247,
+     "end": 26.121
+    },
+    {
+     "text": "Look at which ones fail: only the padded inputs, which is exactly the bug. A test that passes on broken code proves nothing.",
+     "start": 26.541,
+     "end": 36.657
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 141,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "04": {
+   "hash": "503a3826e63c50e0",
+   "takes": [
+    "654db7c20567c998987f",
+    "8f68ead45b2d4f812d3f",
+    "5d8b163859de55cbf470",
+    "aec1d60c9aec018a1667"
+   ],
+   "duration": 31.651,
+   "lines": [
+    {
+     "text": "Continuous integration looks complicated, but it is one idea. The runner does not understand your tests. It understands exit codes.",
+     "start": 0.15,
+     "end": 9.028
+    },
+    {
+     "text": "Watch the chain on the left. Each box is a fresh shell, and the only thing it hands back is a number. Zero means go on.",
+     "start": 9.448,
+     "end": 17.915
+    },
+    {
+     "text": "Now the right hand chain. The second step exits with one, and the two boxes after it never run.",
+     "start": 18.335,
+     "end": 24.934
+    },
+    {
+     "text": "Make the job a required check and a red run blocks the merge. That is the whole gate.",
+     "start": 25.354,
+     "end": 31.301
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 157,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "05": {
+   "hash": "e7e75b5751256887",
+   "takes": [
+    "d230e1f03f5b08f635fc",
+    "645fd5f9d78062177180",
+    "e72cc08734a8614750b4",
+    "005439c529e550aee0a6"
+   ],
+   "duration": 25.176,
+   "lines": [
+    {
+     "text": "Here is where the previous refresher bites. A step runs a pipeline, and the step names no shell.",
+     "start": 0.15,
+     "end": 6.615
+    },
+    {
+     "text": "So the runner picks its default, which stops on the first error but does not check every stage of a pipe.",
+     "start": 7.035,
+     "end": 13.767
+    },
+    {
+     "text": "The first command can't open its file and fails with a two. The later ones are happy with empty input.",
+     "start": 14.187,
+     "end": 21.446
+    },
+    {
+     "text": "Does the step pass or fail?",
+     "start": 22.266,
+     "end": 24.826
+    }
+   ],
+   "lufs": -16.7,
+   "true_peak": -1.9,
+   "wpm": 155,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "05a": {
+   "hash": "e103b7e9c94164fa",
+   "takes": [
+    "8a4c5d83c30e00a64026",
+    "016dd22af2e5dc037fa1",
+    "60cd99eadcd4cb2555ab"
+   ],
+   "duration": 20.485,
+   "lines": [
+    {
+     "text": "It passes.",
+     "start": 0.15,
+     "end": 1.044
+    },
+    {
+     "text": "A pipeline's status is its last command's, which succeeded, so the stop on error option never sees the failure at the front.",
+     "start": 1.464,
+     "end": 9.799
+    },
+    {
+     "text": "Name the shell explicitly and the stricter pipe option comes with it. Now the step fails with the two, which is what you wanted all along.",
+     "start": 10.219,
+     "end": 20.135
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 146,
+   "wer": 0.045454545454545456,
+   "exact": false,
+   "tolerated": [
+    {
+     "line": "A pipeline's status is its last command's, which succeeded, so the stop on error option never sees the failure at the front.",
+     "said": "pipelines",
+     "heard": "pipeline"
+    }
+   ]
+  },
+  "06": {
+   "hash": "f3997070627e21c8",
+   "takes": [
+    "a223923ea11f10006fd4",
+    "1b16d593cf437463ff82",
+    "ac0e65eff47e200d1879",
+    "6dac86311643015dc6f4"
+   ],
+   "duration": 30.55,
+   "lines": [
+    {
+     "text": "A flaky test gives different verdicts on identical code. Look at the count: half of twenty runs fail.",
+     "start": 0.15,
+     "end": 7.566
+    },
+    {
+     "text": "This one compared the order of a set. Set order depends on a hash, and Python seeds that hash differently in every process.",
+     "start": 7.986,
+     "end": 17.225
+    },
+    {
+     "text": "Re running until green hides the cause and teaches the team to ignore red.",
+     "start": 17.645,
+     "end": 22.442
+    },
+    {
+     "text": "The fix is to remove the unspecified order, here by sorting before comparing.",
+     "start": 22.862,
+     "end": 30.2
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 134,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "07": {
+   "hash": "cd8a77b5a71213bc",
+   "takes": [
+    "f3111893b3eb59cf482a",
+    "b8319af8da263fdc6e67",
+    "92d8d15bb6ebdb461b22"
+   ],
+   "duration": 15.891,
+   "lines": [
+    {
+     "text": "A version number is a promise. Three parts: a fix bumps the last, a compatible addition bumps the middle.",
+     "start": 0.15,
      "end": 9.742
     },
     {
-     "text": "Now the next release renames an output column. Which version is it?",
-     "start": 10.562,
-     "end": 14.108
-    }
-   ],
-   "lufs": -16.5,
-   "true_peak": -1.4,
-   "wpm": 183,
-   "wer": 0.0
-  },
-  "07a": {
-   "hash": "43a2a49ae47f06da",
-   "duration": 21.376,
-   "lines": [
-    {
-     "text": "Version two. Every reader of the old column breaks.",
-     "start": 0.15,
-     "end": 4.667
+     "text": "Now the next release renames an output column.",
+     "start": 10.162,
+     "end": 13.589
     },
     {
-     "text": "The first number goes up, and the other two reset to zero.",
-     "start": 5.087,
-     "end": 8.599
-    },
-    {
-     "text": "And a released version never changes, so you can't rebuild one point five.",
-     "start": 9.019,
-     "end": 13.373
-    },
-    {
-     "text": "For data, a rename isn't the only break: a new status value, a changed type, even an extra column.",
-     "start": 13.793,
-     "end": 21.026
-    }
-   ],
-   "lufs": -16.4,
-   "true_peak": -1.4,
-   "wpm": 149,
-   "wer": 0.0
-  },
-  "08": {
-   "hash": "b3ecd4f7c9699f2c",
-   "duration": 17.748,
-   "lines": [
-    {
-     "text": "Works on my machine.",
-     "start": 0.15,
-     "end": 1.611
-    },
-    {
-     "text": "The requirements file says the library, version one point four or later.",
-     "start": 2.031,
-     "end": 6.212
-    },
-    {
-     "text": "Your laptop installed one point five last week. Today, version two is published, with the renamed column.",
-     "start": 6.632,
-     "end": 14.25
-    },
-    {
-     "text": "What does a brand new run start with?",
-     "start": 15.07,
-     "end": 17.398
-    }
-   ],
-   "lufs": -16.4,
-   "true_peak": -1.4,
-   "wpm": 139,
-   "wer": 0.0
-  },
-  "08a": {
-   "hash": "1b1b0d0de805d880",
-   "duration": 21.033,
-   "lines": [
-    {
-     "text": "It gets version two... and the app fails with a missing-key error.",
-     "start": 0.15,
-     "end": 4.133
-    },
-    {
-     "text": "Or later admits every later version, and pip takes the newest.",
-     "start": 4.553,
-     "end": 9.193
-    },
-    {
-     "text": "The application should pin exactly, with a lock: next step.",
-     "start": 9.613,
-     "end": 13.821
-    },
-    {
-     "text": "For a library, always set a lower bound. Set a cap only for a known break.",
-     "start": 14.241,
-     "end": 20.683
+     "text": "Which version is it?",
+     "start": 14.409,
+     "end": 15.541
     }
    ],
    "lufs": -16.3,
-   "true_peak": -1.4,
-   "wpm": 143,
-   "wer": 0.0
+   "true_peak": -2.3,
+   "wpm": 117,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
   },
-  "09": {
-   "hash": "105bdd573f57f8cb",
-   "duration": 28.774,
+  "07a": {
+   "hash": "99bc32882ea7cfbb",
+   "takes": [
+    "0df9905d67f896825a6f",
+    "acaccfd3f9d30918ca2b",
+    "d0f4e6b81cf66d2b06f0"
+   ],
+   "duration": 22.117,
    "lines": [
     {
-     "text": "A lock file freezes the tree.",
+     "text": "The next major version.",
      "start": 0.15,
-     "end": 2.476
+     "end": 1.502
     },
     {
-     "text": "An application pins every package with an exact version and a checksum of the exact file, the same on every machine.",
-     "start": 2.896,
-     "end": 9.132
+     "text": "Every reader that looks up the old column name breaks, and that is exactly what a major bump warns about. The others reset to zero.",
+     "start": 1.922,
+     "end": 11.393
     },
     {
-     "text": "A lock tool writes those lines, not you.",
-     "start": 9.552,
-     "end": 12.693
-    },
-    {
-     "text": "With hash checking on, pip installs those bytes... or nothing.",
-     "start": 13.113,
-     "end": 16.787
-    },
-    {
-     "text": "If a file changes under a pinned version, the checksum fails, and pip refuses.",
-     "start": 17.507,
-     "end": 22.446
-    },
-    {
-     "text": "A lock guarantees the same install, wherever it fits. Not that it's correct.",
-     "start": 22.866,
-     "end": 28.424
+     "text": "A minor or patch bump would promise compatibility that is not there, and a released version must never change, so rebuilding it is not allowed.",
+     "start": 11.813,
+     "end": 21.767
     }
    ],
    "lufs": -16.4,
-   "true_peak": -1.4,
-   "wpm": 150,
-   "wer": 0.0
+   "true_peak": -1.9,
+   "wpm": 146,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
   },
-  "10": {
-   "hash": "9e8242bc068b8513",
-   "duration": 36.046,
+  "08": {
+   "hash": "297d29a05dd6da93",
+   "takes": [
+    "2327a46a2aab691ddfcf",
+    "359c8659eda2183b7187",
+    "bd49e9b935120420d207"
+   ],
+   "duration": 21.309,
    "lines": [
     {
-     "text": "Eight things to keep.",
+     "text": "Now why an application should pin exactly. The requirements file says the package at one point four, with a loose rule that allows later versions.",
      "start": 0.15,
-     "end": 1.256
+     "end": 10.749
     },
     {
-     "text": "Review design first, in small changes. Tests must fail on the bug.",
-     "start": 1.676,
-     "end": 6.923
+     "text": "Your laptop installed one point five last week. Today a new major version is out, with the renamed column.",
+     "start": 11.169,
+     "end": 17.799
     },
     {
-     "text": "The runner stops at the first non-zero exit. Explicit bash adds the pipe fail option. Flaky tests need their state fixed.",
-     "start": 7.343,
-     "end": 15.36
-    },
-    {
-     "text": "Versions: fix, add, or break. Applications pin, with a lock. Libraries set a lower bound, and cap only a known break.",
-     "start": 15.78,
-     "end": 23.882
-    },
-    {
-     "text": "The gate checks the answer... not what it costs as the data grows.",
-     "start": 24.302,
-     "end": 28.114
-    },
-    {
-     "text": "Next up... the last of the five refreshers: the notation for that, and the logarithms the chapter counts with.",
-     "start": 29.034,
-     "end": 35.696
+     "text": "What does a fresh CI run install?",
+     "start": 18.619,
+     "end": 20.959
     }
    ],
-   "lufs": -16.6,
-   "true_peak": -1.4,
-   "wpm": 151,
-   "wer": 0.0
+   "lufs": -16.3,
+   "true_peak": -2.3,
+   "wpm": 144,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "08a": {
+   "hash": "dd6273e2b6683fd2",
+   "takes": [
+    "312a6b6c53a76d0cf684",
+    "65803de0adcf00c55f41",
+    "73dcce4a8f7c13042f2b"
+   ],
+   "duration": 21.385,
+   "lines": [
+    {
+     "text": "The new major version, and the app fails with a missing key error.",
+     "start": 0.15,
+     "end": 4.94
+    },
+    {
+     "text": "A loose rule admits every later version, so a clean machine picks up whatever is newest. Your laptop only worked because it was old.",
+     "start": 5.36,
+     "end": 14.556
+    },
+    {
+     "text": "An application should pin exactly, with a lock. That is the next step.",
+     "start": 14.976,
+     "end": 21.035
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -1.9,
+   "wpm": 140,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "09": {
+   "hash": "59d2c0b990161b6a",
+   "takes": [
+    "c06f8ad70171716bbfcb",
+    "8bc7f5a0be76840c1758",
+    "797e6361fcf31f8c5f3a",
+    "06969b1690b8fef12317"
+   ],
+   "duration": 38.049,
+   "lines": [
+    {
+     "text": "A lock file freezes the whole tree. Every package, including the ones you never named, is pinned to an exact version and the checksum of the exact file.",
+     "start": 0.15,
+     "end": 13.27
+    },
+    {
+     "text": "With the strict install option, the installer takes those bytes or nothing: a changed file is refused.",
+     "start": 13.69,
+     "end": 21.893
+    },
+    {
+     "text": "The gate's own tools are locked the same way.",
+     "start": 22.313,
+     "end": 25.126
+    },
+    {
+     "text": "One caution. A lock repeats an installation exactly. It cannot tell you the installed code is right, so it freezes today's mistakes along with today's versions.",
+     "start": 25.546,
+     "end": 37.699
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 126,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "10": {
+   "hash": "dfb7031fe5b36583",
+   "takes": [
+    "264a8f44a97cf38d2fab",
+    "bf3012e7f390372ee818",
+    "0c059dca66b1c9cf728f",
+    "bc0b00161b5ff6ec712f"
+   ],
+   "duration": 46.408,
+   "lines": [
+    {
+     "text": "Eight things to keep. Review the design first and keep changes small. Pin a bug with a test that fails on broken code.",
+     "start": 0.15,
+     "end": 9.746
+    },
+    {
+     "text": "The gate is a chain of exit statuses. Know which shell runs your step. Fix flakiness at the cause. A version number is a promise. Pin dependencies exactly, with a lock.",
+     "start": 10.166,
+     "end": 24.094
+    },
+    {
+     "text": "Notice the limit of the gate: it checks whether the answer is right, not what that answer costs as the data grows.",
+     "start": 24.514,
+     "end": 32.14
+    },
+    {
+     "text": "Anything rusty? The prerequisites panel points to good places to refresh it. Otherwise, on to the last of the five refreshers: the notation for that cost, and the logarithms the chapter counts with.",
+     "start": 32.96,
+     "end": 46.058
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 141,
+   "wer": 0.06451612903225806,
+   "exact": false,
+   "tolerated": [
+    {
+     "line": "The gate is a chain of exit statuses. Know which shell runs your step. Fix flakiness at the cause. A version number is a promise. Pin dependencies exactly, with a lock.",
+     "said": "a version",
+     "heard": "aversion"
+    }
+   ]
   }
  }
 }
