@@ -93,9 +93,11 @@
     {
       "lines": [
         "Through a borrow, you may never leave a hole.",
-        "The owner gets the value back when the loan ends, and will read it or drop it.",
+        "The owner gets the value back when the loan ends.",
+        "It will read it, or drop it.",
         "So moving a field out through an exclusive reference is refused. Even if you'd refill it on the very next line, a panic in between would hand the owner a hole.",
-        "That's the move out of a borrow error.",
+        "That is the move out",
+        "of a borrow error.",
         "The way out: replace it in one step."
       ]
     },
@@ -201,7 +203,7 @@
         "What happens to the frame?"
       ],
       "answer": [
-        "In the older edition, it quietly edits a copy, and the frame keeps its zero.",
+        "In the older edition, it quietly edits a copy, and the frame stays at zero.",
         "In the current edition, it does not compile.",
         "If you want to edit the frame, borrow it mutably."
       ]
