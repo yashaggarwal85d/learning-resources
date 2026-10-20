@@ -1,11 +1,48 @@
 """Shared by gen_takes.py and assemble.py: the voice config, clip texts and cache keys.
 
 Script items (narration.json): "a line" (the narrator) or {"beat": s} (a deliberate pause)."""
-import hashlib, json, os
+import contextlib, hashlib, json, os, time
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 VOICE = json.load(open(os.path.join(HERE, "voice.json")))
 CACHE = os.environ.get("NARRATION_CACHE", os.path.expanduser("~/.cache/learning-narration"))
+
+GPU_SLOTS = int(os.environ.get("NARRATION_GPU_SLOTS", 3))
+GPU_LOCK_DIR = os.path.join(CACHE, "gpu-slots")
+GPU_SLOT_STALE_S = 120  # no single take takes this long to generate; a lock this old is a dead process's
+
+
+@contextlib.contextmanager
+def gpu_slot():
+    """Block until one of GPU_SLOTS is free, then hold it: several narrate.sh workers each generate takes on their
+    own schedule (generate, then score on CPU, repeat), so this lets whichever one is ready claim a free GPU slot
+    the instant another worker's generation call finishes, instead of capping concurrency at the worker count."""
+    os.makedirs(GPU_LOCK_DIR, exist_ok=True)
+    path = None
+    while path is None:
+        for i in range(GPU_SLOTS):
+            p = os.path.join(GPU_LOCK_DIR, f"slot-{i}")
+            try:
+                fd = os.open(p, os.O_CREAT | os.O_EXCL | os.O_WRONLY)
+                os.write(fd, str(os.getpid()).encode())
+                os.close(fd)
+                path = p
+                break
+            except FileExistsError:
+                if time.time() - os.path.getmtime(p) > GPU_SLOT_STALE_S:
+                    try:
+                        os.remove(p)
+                    except OSError:
+                        pass
+        if path is None:
+            time.sleep(0.2)
+    try:
+        yield
+    finally:
+        try:
+            os.remove(path)
+        except OSError:
+            pass
 
 
 def spoken(x):

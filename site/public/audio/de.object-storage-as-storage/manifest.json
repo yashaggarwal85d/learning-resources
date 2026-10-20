@@ -1,0 +1,549 @@
+{
+ "topic": "de.object-storage-as-storage",
+ "voice": "breeze-mellow-v2",
+ "asr": "large-v3-turbo",
+ "clips": {
+  "01": {
+   "hash": "45b629b043d04c0e",
+   "takes": [
+    "9737f993b9dc7f3d2fd9",
+    "3926db7b6ee56984edf8",
+    "3f3f394bfb5744f9b4a4"
+   ],
+   "duration": 30.152,
+   "lines": [
+    {
+     "text": "Local disks gave you microseconds, and a way to force a write all the way down. Object storage trades both away for something else.",
+     "start": 0.15,
+     "end": 9.35
+    },
+    {
+     "text": "Look at what the picture offers: almost unlimited room, cheap and durable, reached over a web request.",
+     "start": 9.77,
+     "end": 17.653
+    },
+    {
+     "text": "The bill comes in time. Every request is slow, and the rules you relied on for files are not the same rules here. This topic is about those rules.",
+     "start": 18.473,
+     "end": 29.802
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 139,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "02": {
+   "hash": "42effd6a2dd251ba",
+   "takes": [
+    "481dbb2684c532d85a53",
+    "555fac3315818e5cf059",
+    "900fb11961ea85a4ee6b",
+    "32aec80ba803e122da86"
+   ],
+   "duration": 37.06,
+   "lines": [
+    {
+     "text": "Begin with what the thing actually is, because most surprises come from assuming it is a file system.",
+     "start": 0.15,
+     "end": 6.941
+    },
+    {
+     "text": "A key is a string. It points at a blob. The slashes inside the key are just characters, so there are no folders to open or rename.",
+     "start": 7.361,
+     "end": 17.601
+    },
+    {
+     "text": "Now the consequence. You replace a whole object at once. There is no appending and no renaming.",
+     "start": 18.021,
+     "end": 24.877
+    },
+    {
+     "text": "To move one, you copy it and then delete the original. Two steps, and a crash can land between them. Keep that in mind, because the commit protocols later are built around it.",
+     "start": 25.297,
+     "end": 36.71
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 154,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "03": {
+   "hash": "e69c1515655595cc",
+   "takes": [
+    "a1765befb46454d5ebd9",
+    "e5a2c11ef7c162a0eecd",
+    "bb331196c375efdbb316",
+    "cfab987bf9a90fc069ef"
+   ],
+   "duration": 32.324,
+   "lines": [
+    {
+     "text": "Now the contract. For years this tier was eventually consistent, so you could write an object and then read the old one.",
+     "start": 0.15,
+     "end": 7.693
+    },
+    {
+     "text": "That ended in December of twenty twenty. Write, then read, and you see the write.",
+     "start": 8.113,
+     "end": 13.714
+    },
+    {
+     "text": "Watch the reader that overlaps a writer. It gets the old object or the new one, never a blend of the two.",
+     "start": 14.134,
+     "end": 22.186
+    },
+    {
+     "text": "What is still missing is the ability to change two keys as one step. Hold that gap; the end of the topic uses it.",
+     "start": 22.606,
+     "end": 31.974
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 154,
+   "wer": 0.06666666666666667,
+   "exact": false,
+   "tolerated": [
+    {
+     "line": "That ended in December of twenty twenty. Write, then read, and you see the write.",
+     "said": "write",
+     "heard": "right"
+    }
+   ]
+  },
+  "04": {
+   "hash": "231206aa77adb737",
+   "takes": [
+    "eb4b4fa35a92255389d8",
+    "a4a2ab92f826cb79ff46",
+    "1b486ce8c4ec6d27b25a",
+    "a9e6db688bde5a6c42ad"
+   ],
+   "duration": 35.569,
+   "lines": [
+    {
+     "text": "Here is the familiar cost shape at its most extreme. Fixed latency, then bytes over bandwidth.",
+     "start": 0.15,
+     "end": 6.775
+    },
+    {
+     "text": "The first term is huge here, a hundred milliseconds or more for a small object. So a small request is almost all waiting.",
+     "start": 7.195,
+     "end": 16.509
+    },
+    {
+     "text": "And that wait is not one number. It is a spread. Some requests take twice the median, and a few take much longer.",
+     "start": 16.929,
+     "end": 26.658
+    },
+    {
+     "text": "That spread is why percentiles start to matter. A job that waits on a thousand requests will hit the slow ones.",
+     "start": 27.078,
+     "end": 35.219
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 140,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "05": {
+   "hash": "51de4fa42646dcc7",
+   "takes": [
+    "735293eb0c57f4c69622",
+    "c8e056d54cef9c1ff480",
+    "d2c74fdd36ea07d04aff"
+   ],
+   "duration": 21.081,
+   "lines": [
+    {
+     "text": "Let us put numbers on that waiting. One request has a hundred milliseconds of latency and streams at ninety megabytes a second.",
+     "start": 0.15,
+     "end": 9.621
+    },
+    {
+     "text": "Think about it as a race between the two terms. For tiny requests, latency wins. For huge ones, transfer wins.",
+     "start": 10.041,
+     "end": 18.884
+    },
+    {
+     "text": "Where do they meet?",
+     "start": 19.704,
+     "end": 20.731
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -2.6,
+   "wpm": 131,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "05a": {
+   "hash": "b502f08272b78b28",
+   "takes": [
+    "578a7fb3151a84b8678e",
+    "aa2d30914519a9e5dce3",
+    "15a18e78c7311faebf3d",
+    "3e6eb74eaf95bd5e5e20"
+   ],
+   "duration": 34.293,
+   "lines": [
+    {
+     "text": "Multiply them: a tenth of a second times ninety megabytes a second is about nine megabytes.",
+     "start": 0.15,
+     "end": 7.446
+    },
+    {
+     "text": "That is the break-even, and it is why the vendor advises ranges of eight or sixteen megabytes.",
+     "start": 7.866,
+     "end": 14.71
+    },
+    {
+     "text": "Ninety kilobytes and nine hundred megabytes are each off by a factor of a hundred, because the break-even is the product of the two numbers, not either one alone.",
+     "start": 15.13,
+     "end": 26.65
+    },
+    {
+     "text": "So the practical rule: make each request carry megabytes, or you are paying mostly for the call.",
+     "start": 27.07,
+     "end": 33.943
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 142,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "06": {
+   "hash": "ec107cdf0acc37f1",
+   "takes": [
+    "6411a409f78b879b22a1",
+    "e3268e10bca9a6a02026",
+    "18e04aeb1d002addd98f",
+    "16b44f9a25b33db777a9"
+   ],
+   "duration": 27.628,
+   "lines": [
+    {
+     "text": "One request at ninety megabytes a second moves a terabyte in about three and a half hours. That is the number to beat.",
+     "start": 0.15,
+     "end": 7.425
+    },
+    {
+     "text": "Notice that nothing in the model says a single stream has to be the unit. You can run many.",
+     "start": 7.845,
+     "end": 15.3
+    },
+    {
+     "text": "So: the machine has a ten gigabit link, a little over a thousand megabytes a second.",
+     "start": 15.72,
+     "end": 21.64
+    },
+    {
+     "text": "How many ninety megabyte requests must be running at once to fill it?",
+     "start": 22.46,
+     "end": 27.278
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 154,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "06a": {
+   "hash": "51859d01f733d15a",
+   "takes": [
+    "38365817f2e1a3e5c66e",
+    "146c6a3db92d267577d3",
+    "b1e09dde3e5a0ca6b399"
+   ],
+   "duration": 31.007,
+   "lines": [
+    {
+     "text": "About fourteen. Divide the link by one request's speed.",
+     "start": 0.15,
+     "end": 4.947
+    },
+    {
+     "text": "That is small enough to do from one machine, which is the whole point. Throughput here comes from parallelism, not from any single fast request.",
+     "start": 5.367,
+     "end": 18.24
+    },
+    {
+     "text": "One is wrong because a single stream cannot fill the link. A hundred and forty overshoots by ten. And there is no bucket bandwidth cap that stops you, only the request limits on the next screen.",
+     "start": 18.66,
+     "end": 30.657
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -2.5,
+   "wpm": 134,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "07": {
+   "hash": "f8f14b74fd499ae4",
+   "takes": [
+    "0afda4701dc8b4af4d6d",
+    "4b87a32dbb51075611d4",
+    "c06d1acc4bea0cb9683a",
+    "9b9710486c8f9a867356"
+   ],
+   "duration": 33.645,
+   "lines": [
+    {
+     "text": "But you cannot add requests without limit. Watch the bar fill up on one prefix.",
+     "start": 0.15,
+     "end": 5.507
+    },
+    {
+     "text": "A prefix is a shared start of the key. Each prefix is good for a few thousand writes and several thousand reads per second.",
+     "start": 5.927,
+     "end": 15.096
+    },
+    {
+     "text": "Past that, the store answers with a slow down error and repartitions in the background. This is back-pressure, not a fault.",
+     "start": 15.516,
+     "end": 23.999
+    },
+    {
+     "text": "The engineering response is to retry with backoff, and to spread hot keys over many prefixes so no one of them carries the whole load.",
+     "start": 24.419,
+     "end": 33.295
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 153,
+   "wer": 0.08,
+   "exact": false,
+   "tolerated": [
+    {
+     "line": "Past that, the store answers with a slow down error and repartitions in the background. This is back-pressure, not a fault.",
+     "said": "repartitions",
+     "heard": "reperditions"
+    },
+    {
+     "line": "The engineering response is to retry with backoff, and to spread hot keys over many prefixes so no one of them carries the whole load.",
+     "said": "hot keys",
+     "heard": "hotkeys"
+    }
+   ]
+  },
+  "08": {
+   "hash": "35add9b525929c5d",
+   "takes": [
+    "54bd3988360e141e7d64",
+    "983d1e381650627a4b54",
+    "ccd5f24ed66babb0e6ee",
+    "1d75cb2714490b4857b0"
+   ],
+   "duration": 36.19,
+   "lines": [
+    {
+     "text": "Here is why columnar files work so well on this tier. Watch which bytes get highlighted.",
+     "start": 0.15,
+     "end": 5.392
+    },
+    {
+     "text": "A range request fetches only a slice. A columnar file keeps a directory at its very end, so you read that first.",
+     "start": 5.812,
+     "end": 14.682
+    },
+    {
+     "text": "Then the directory tells you exactly which byte ranges hold the columns you want, and nothing else is fetched.",
+     "start": 15.102,
+     "end": 22.544
+    },
+    {
+     "text": "Three columns out of thirty is about a tenth of the bytes. On a tier where bytes are cheap and requests are not, you still win, because the unread columns never cross the network.",
+     "start": 22.964,
+     "end": 35.84
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 151,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "09": {
+   "hash": "b82395706850c292",
+   "takes": [
+    "409a298095476d4ab9b9",
+    "ca9370cf4c1074b14121",
+    "8d647f6f7121e6b4f348",
+    "e52da8720905bae284ad"
+   ],
+   "duration": 36.626,
+   "lines": [
+    {
+     "text": "Writes get the same treatment in reverse. Watch the parts flowing in parallel.",
+     "start": 0.15,
+     "end": 5.212
+    },
+    {
+     "text": "Large objects are uploaded in parts, up to ten thousand of them, each between five mebibytes and five gibibytes.",
+     "start": 5.632,
+     "end": 13.072
+    },
+    {
+     "text": "That solves two problems. A stalled part is retried alone, and nothing exists under the key until the final call assembles them, so no reader ever sees half a file.",
+     "start": 13.492,
+     "end": 25.954
+    },
+    {
+     "text": "The limit on part count has a cost, though. A one tebibyte object over ten thousand parts forces parts of about one hundred and five mebibytes.",
+     "start": 26.374,
+     "end": 36.276
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 143,
+   "wer": 0.07692307692307693,
+   "exact": false,
+   "tolerated": [
+    {
+     "line": "Writes get the same treatment in reverse. Watch the parts flowing in parallel.",
+     "said": "writes",
+     "heard": "rites"
+    },
+    {
+     "line": "Large objects are uploaded in parts, up to ten thousand of them, each between five mebibytes and five gibibytes.",
+     "said": "mebibytes",
+     "heard": "maybebytes"
+    }
+   ]
+  },
+  "10": {
+   "hash": "bca3a6ecfc041b63",
+   "takes": [
+    "9ee3d8aef90afd49be86",
+    "9181eac11b128e2d13c4",
+    "15b9348e3b5218cd4819"
+   ],
+   "duration": 18.501,
+   "lines": [
+    {
+     "text": "Remember the missing piece from earlier: no way to change two keys atomically. We can still get a commit out of one primitive.",
+     "start": 0.15,
+     "end": 8.674
+    },
+    {
+     "text": "Two writers race to create the same key. Each says: write this, but only if nothing is there yet.",
+     "start": 9.094,
+     "end": 16.478
+    },
+    {
+     "text": "What happens?",
+     "start": 17.298,
+     "end": 18.151
+    }
+   ],
+   "lufs": -16.3,
+   "true_peak": -2.5,
+   "wpm": 143,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "10a": {
+   "hash": "57ca26c119a776cd",
+   "takes": [
+    "9e7e5116a9ca7aa3697b",
+    "265754c7ab99ac742112",
+    "9c452f1ce3cf49c9641b"
+   ],
+   "duration": 32.227,
+   "lines": [
+    {
+     "text": "Exactly one succeeds. The other is refused with a precondition failure and retries against the next version.",
+     "start": 0.15,
+     "end": 8.517
+    },
+    {
+     "text": "That is compare and set, on a bare object store. With strong consistency, it is enough to commit a table with no separate lock service.",
+     "start": 8.937,
+     "end": 18.595
+    },
+    {
+     "text": "Both succeeding would mean last write wins, which silently loses a commit. Both failing would mean no progress at all. And size is irrelevant, because the check is on whether the key exists.",
+     "start": 19.015,
+     "end": 31.877
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 140,
+   "wer": 0.030303030303030304,
+   "exact": false,
+   "tolerated": [
+    {
+     "line": "Both succeeding would mean last write wins, which silently loses a commit. Both failing would mean no progress at all. And size is irrelevant, because the check is on whether the key exists.",
+     "said": "write",
+     "heard": "right"
+    }
+   ]
+  },
+  "11": {
+   "hash": "19ad74e23f914ead",
+   "takes": [
+    "676f6f0b32f6790fc692",
+    "e4366ed2017d1ab3c641",
+    "176e4babf6cd593f2306",
+    "394c1da9ca502feed7e1"
+   ],
+   "duration": 27.781,
+   "lines": [
+    {
+     "text": "So the tier asks you to think in requests, not in bytes.",
+     "start": 0.15,
+     "end": 3.946
+    },
+    {
+     "text": "Size each one near the break-even, run about as many as it takes to fill the link, and spread them across prefixes.",
+     "start": 4.366,
+     "end": 12.253
+    },
+    {
+     "text": "When the tail hurts, coalesce small reads, cache the hot ones, and send a second copy of a slow request.",
+     "start": 12.673,
+     "end": 20.265
+    },
+    {
+     "text": "The bytes come back exactly as written. Next: whether those bytes still mean the right number.",
+     "start": 21.085,
+     "end": 27.431
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 153,
+   "wer": 0.08333333333333333,
+   "exact": false,
+   "tolerated": [
+    {
+     "line": "So the tier asks you to think in requests, not in bytes.",
+     "said": "tier",
+     "heard": "tear"
+    }
+   ]
+  }
+ }
+}

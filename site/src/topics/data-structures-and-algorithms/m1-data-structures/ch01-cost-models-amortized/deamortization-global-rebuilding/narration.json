@@ -19,9 +19,9 @@
     {
       "lines": [
         "Percentiles describe a tail.",
-        "P fifty is the median. The ninety ninth percentile, p ninety nine, is the cost that ninety nine of every hundred appends stay at or under. For p ninety nine point nine, it is nine hundred ninety nine of every thousand.",
+        "P fifty is the median. The ninety ninth percentile, p ninety nine, is the cost that ninety nine of every one hundred appends stay at or under. For p ninety nine point nine, it is nine hundred ninety nine of every one thousand.",
         "Of a million appends to the doubling vector, twenty resize. The largest copies about five hundred twenty four thousand keys.",
-        "What is the p ninety nine cost of an append?"
+        "So, what is the p ninety nine cost of an append?"
       ],
       "answer": [
         "One write.",
@@ -87,7 +87,8 @@
       "lines": [
         "Append nine allocated sixteen slots and moved two old keys. Six are left to copy, and seven slots are free.",
         "Every later append writes one new key and moves two old ones.",
-        "How many of the sixteen slots are in use when the last old key moves?"
+        "How many slots are used?",
+        "When does it move?"
       ],
       "answer": [
         "Twelve.",
@@ -169,7 +170,7 @@
     },
     {
       "lines": [
-        "Rebuild the scapegoat's subtree, perfectly balanced.",
+        "Rebuild the scapegoat's branch, perfectly balanced.",
         "Walk its six nodes in order. Make the lower middle one, sixty three, the root. Then recurse.",
         {
           "beat": 0.3
@@ -191,7 +192,7 @@
         {
           "beat": 0.4
         },
-        "It needs order n deletes first. At a million keys, the three hundred and thirty three thousand, three hundred and thirty fourth delete rebuilds the remaining six hundred sixty six thousand, six hundred sixty six nodes."
+        "It needs about as many deletes as keys, first. At a million keys, the three hundred and thirty three thousand, three hundred and thirty fourth delete rebuilds the remaining six hundred sixty six thousand, six hundred sixty six nodes."
       ]
     },
     {
@@ -235,7 +236,7 @@
       "lines": [
         "A teammate's get of i reads the new buffer, for every index, while a copy runs.",
         "Right after append number nine, the old size is eight, and the frontier, k, is two.",
-        "What does get of five return?"
+        "For five, what does get return?"
       ],
       "answer": [
         "An empty slot.",

@@ -23,7 +23,11 @@ _asr = {}
 def transcribe(a, sr, lang="en"):
     if lang not in _asr:
         from faster_whisper import WhisperModel
-        _asr[lang] = WhisperModel(ASR["model"], device="cpu", compute_type=ASR.get("compute_type", "int8"), cpu_threads=os.cpu_count())
+        # Several of these run at once (one per GPU worker/retry, now decoupled from the 3-slot GPU semaphore so
+        # more workers can overlap CPU scoring with GPU generation); os.cpu_count() threads each oversubscribes the
+        # machine and the model just thrashes. Split the cores between them instead.
+        threads = int(os.environ.get("NARRATION_CPU_THREADS", max(1, os.cpu_count() // 4)))
+        _asr[lang] = WhisperModel(ASR["model"], device="cpu", compute_type=ASR.get("compute_type", "int8"), cpu_threads=threads)
     segs, _ = _asr[lang].transcribe(librosa.resample(a, orig_sr=sr, target_sr=16000), language=lang, beam_size=5)
     return " ".join(s.text for s in segs).strip()
 

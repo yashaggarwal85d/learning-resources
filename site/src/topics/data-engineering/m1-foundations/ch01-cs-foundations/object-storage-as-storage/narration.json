@@ -11,7 +11,7 @@
     },
     {
       "lines": [
-        "Begin with what the thing actually is, because most surprises come from assuming it is a filesystem.",
+        "Begin with what the thing actually is, because most surprises come from assuming it is a file system.",
         "A key is a string. It points at a blob. The slashes inside the key are just characters, so there are no folders to open or rename.",
         "Now the consequence. You replace a whole object at once. There is no appending and no renaming.",
         "To move one, you copy it and then delete the original. Two steps, and a crash can land between them. Keep that in mind, because the commit protocols later are built around it."
@@ -38,7 +38,7 @@
         "Let us put numbers on that waiting. One request has a hundred milliseconds of latency and streams at ninety megabytes a second.",
         "Think about it as a race between the two terms. For tiny requests, latency wins. For huge ones, transfer wins.",
         { "beat": 0.4 },
-        "At what size do the two cost the same?"
+        "Where do they meet?"
       ],
       "answer": [
         "Multiply them: a tenth of a second times ninety megabytes a second is about nine megabytes.",

@@ -1,0 +1,706 @@
+{
+ "topic": "de.storage-devices-fsync-durability",
+ "voice": "breeze-mellow-v2",
+ "asr": "large-v3-turbo",
+ "clips": {
+  "01": {
+   "hash": "e9b8e311e570a94c",
+   "takes": [
+    "8825e7ec76293f29d9bd",
+    "6ad2d9e4ef68818c70e3",
+    "68d28f56ada50de9b739"
+   ],
+   "duration": 26.679,
+   "lines": [
+    {
+     "text": "Past the page cache are real devices. Here is what makes them fast or slow, and what it takes for a write to survive a crash.",
+     "start": 0.15,
+     "end": 9.748
+    },
+    {
+     "text": "Look at the picture. Your bytes go into memory, and the call returns. Everything after that arrow is still a question mark.",
+     "start": 10.168,
+     "end": 18.843
+    },
+    {
+     "text": "So a successful write tells you almost nothing about the drive. The cache did its job too well.",
+     "start": 19.663,
+     "end": 26.329
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 148,
+   "wer": 0.05555555555555555,
+   "exact": false,
+   "tolerated": [
+    {
+     "line": "Past the page cache are real devices. Here is what makes them fast or slow, and what it takes for a write to survive a crash.",
+     "said": "write",
+     "heard": "right"
+    },
+    {
+     "line": "So a successful write tells you almost nothing about the drive. The cache did its job too well.",
+     "said": "cache",
+     "heard": "cash"
+    }
+   ]
+  },
+  "02": {
+   "hash": "20374f13b47ed80d",
+   "takes": [
+    "ea12600eab7969010a7b",
+    "fa596a0893ad6dcc305c",
+    "3b267d92a35710d97a4c",
+    "26456b9d7d292e46db0a",
+    "0cbc276bb659c5057b1f"
+   ],
+   "duration": 42.282,
+   "lines": [
+    {
+     "text": "Start with the spinning disk, because its slowness has a physical cause you can point at.",
+     "start": 0.15,
+     "end": 5.365
+    },
+    {
+     "text": "Watch the timeline fill. The head has to move to the right track, then the platter has to turn the sector under it. Those two waits happen one after the other.",
+     "start": 5.785,
+     "end": 16.495
+    },
+    {
+     "text": "Nothing is read until both are done, so a random read costs milliseconds, and the drive has no way to hurry.",
+     "start": 16.915,
+     "end": 24.561
+    },
+    {
+     "text": "Now the bars below. Reading in order skips both waits after the first, so the same drive streams hundreds of megabytes a second.",
+     "start": 24.981,
+     "end": 34.103
+    },
+    {
+     "text": "The ratio lands on screen last. It is not a bug in any software. It is the head and the platter.",
+     "start": 34.523,
+     "end": 41.932
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 159,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "03": {
+   "hash": "0699a605e1dcce0e",
+   "takes": [
+    "9e76ef18737918e5eb85",
+    "1373e789790aab6ac35f",
+    "460a426c39ca75310c5c"
+   ],
+   "duration": 17.36,
+   "lines": [
+    {
+     "text": "Now a solid-state drive. No head, no platter, nothing to seek.",
+     "start": 0.15,
+     "end": 5.989
+    },
+    {
+     "text": "So you might expect order to stop mattering. Hold that thought and commit to an answer.",
+     "start": 6.409,
+     "end": 12.367
+    },
+    {
+     "text": "Is a random read on flash still slower than a sequential one?",
+     "start": 13.187,
+     "end": 17.01
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -2.3,
+   "wpm": 138,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "03a": {
+   "hash": "a73f5148f3e41311",
+   "takes": [
+    "22ede0867f900c5f5b0c",
+    "0b8895676db5ab6a8427",
+    "9c11142bd3e3ec0db762",
+    "e33fda137a29c2cccdb3"
+   ],
+   "duration": 37.328,
+   "lines": [
+    {
+     "text": "Yes, but the reason has changed. It is no longer a head. It is how many requests are in flight.",
+     "start": 0.15,
+     "end": 7.637
+    },
+    {
+     "text": "One read at a time waits out the drive's full latency, so a single thread tops out no matter what the label says.",
+     "start": 8.057,
+     "end": 15.362
+    },
+    {
+     "text": "Sequential access gives the drive many chips to work on at once without you asking. A lone random read touches one die.",
+     "start": 15.782,
+     "end": 24.776
+    },
+    {
+     "text": "The first answer is wrong because latency has not gone away. The last two are wrong because reads depend on parallelism, not on how full the drive is.",
+     "start": 25.196,
+     "end": 36.979
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 149,
+   "wer": 0.1,
+   "exact": false,
+   "tolerated": [
+    {
+     "line": "Yes, but the reason has changed. It is no longer a head. It is how many requests are in flight.",
+     "said": "a head",
+     "heard": "ahead"
+    }
+   ]
+  },
+  "04": {
+   "hash": "511bba3ff8441306",
+   "takes": [
+    "fe21f07be2d2837359a1",
+    "f1e0ba93986bfaf489e7",
+    "f473eb748a253038065e",
+    "225f07068a1289f225e7"
+   ],
+   "duration": 30.951,
+   "lines": [
+    {
+     "text": "Before writes, a smaller trap that costs you on every device: the block size.",
+     "start": 0.15,
+     "end": 7.072
+    },
+    {
+     "text": "Watch where the write lands. It straddles the line between two blocks, and that line is the whole problem.",
+     "start": 7.492,
+     "end": 14.441
+    },
+    {
+     "text": "A drive cannot write half a block. So it reads the whole block, patches your bytes in, and writes it all back.",
+     "start": 14.861,
+     "end": 22.27
+    },
+    {
+     "text": "That is how one small write turns into an extra block read. Aligning removes that extra step entirely.",
+     "start": 22.69,
+     "end": 30.601
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -2.0,
+   "wpm": 142,
+   "wer": 0.1111111111111111,
+   "exact": false,
+   "tolerated": [
+    {
+     "line": "Watch where the write lands. It straddles the line between two blocks, and that line is the whole problem.",
+     "said": "write",
+     "heard": "right"
+    },
+    {
+     "line": "That is how one small write turns into an extra block read. Aligning removes that extra step entirely.",
+     "said": "write",
+     "heard": "right"
+    },
+    {
+     "line": "That is how one small write turns into an extra block read. Aligning removes that extra step entirely.",
+     "said": "read",
+     "heard": "rate"
+    }
+   ]
+  },
+  "05": {
+   "hash": "50f34d1890812c22",
+   "takes": [
+    "0a392ba8b7815ce500e2",
+    "49c93ba90cbe546c6120",
+    "7ce659f8cbe96e510039",
+    "077de35e9d40e5ebde4a"
+   ],
+   "duration": 35.635,
+   "lines": [
+    {
+     "text": "Now the real constraint on flash, and it explains almost everything that follows.",
+     "start": 0.15,
+     "end": 5.232
+    },
+    {
+     "text": "Watch the eight pages. A page can be written once. To use it again, the whole erase block holding it must be wiped, and wiping is slow and wears the cells out.",
+     "start": 5.652,
+     "end": 17.785
+    },
+    {
+     "text": "So the drive makes a decision you never see: it never updates in place.",
+     "start": 18.205,
+     "end": 24.025
+    },
+    {
+     "text": "New data goes to a fresh page, the mapping is repointed, and the old page is simply marked stale. That bookkeeping layer is the flash translation layer.",
+     "start": 24.445,
+     "end": 35.285
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 145,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "06": {
+   "hash": "13530249593a54a8",
+   "takes": [
+    "b6017d9b554a4f3fc59b",
+    "4dc9493680edc5682db9",
+    "3cd91b3ff8a0d6978fb2",
+    "4d86683d11567c959e2f"
+   ],
+   "duration": 36.342,
+   "lines": [
+    {
+     "text": "Stale pages are space nobody can use yet. When free pages run low, the drive has to clean.",
+     "start": 0.15,
+     "end": 6.974
+    },
+    {
+     "text": "It picks a block, copies the pages that are still live somewhere new, and only then erases it. Every one of those copies is a write you did not ask for.",
+     "start": 7.394,
+     "end": 18.482
+    },
+    {
+     "text": "So here is the question the animation is about to settle. Same amount of data, written two ways: one long stream, or scattered small writes.",
+     "start": 18.902,
+     "end": 30.502
+    },
+    {
+     "text": "Which one forces the drive to copy more live data while it cleans?",
+     "start": 31.322,
+     "end": 35.992
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -2.0,
+   "wpm": 144,
+   "wer": 0.03225806451612903,
+   "exact": false,
+   "tolerated": [
+    {
+     "line": "It picks a block, copies the pages that are still live somewhere new, and only then erases it. Every one of those copies is a write you did not ask for.",
+     "said": "write",
+     "heard": "right"
+    }
+   ]
+  },
+  "06a": {
+   "hash": "54b1008532685865",
+   "takes": [
+    "c80b7f405cb394ef6c43",
+    "b39652276075e132e6ec",
+    "30f2778545771d20b4b3",
+    "dd8f91b08ac6b4fe71d4",
+    "b9e308f6e6528e7ac2b6"
+   ],
+   "duration": 39.357,
+   "lines": [
+    {
+     "text": "The scattered writes.",
+     "start": 0.15,
+     "end": 1.407
+    },
+    {
+     "text": "A long stream fills whole erase blocks, so by the time the drive cleans one, there is almost nothing live in it to copy.",
+     "start": 1.827,
+     "end": 9.881
+    },
+    {
+     "text": "Scattered writes leave live and stale pages mixed in every block, so every cleaning pass copies live data again.",
+     "start": 10.301,
+     "end": 18.135
+    },
+    {
+     "text": "Flash written divided by data you asked to write is write amplification. The sequential answer is wrong because it does the opposite, and cleanup is never free, because the copies are real writes.",
+     "start": 18.555,
+     "end": 33.374
+    },
+    {
+     "text": "The consequence is not just speed. Random writes use up the drive's life faster.",
+     "start": 33.794,
+     "end": 39.007
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 142,
+   "wer": 0.07142857142857142,
+   "exact": false,
+   "tolerated": [
+    {
+     "line": "Flash written divided by data you asked to write is write amplification. The sequential answer is wrong because it does the opposite, and cleanup is never free, because the copies are real writes.",
+     "said": "write",
+     "heard": "right"
+    },
+    {
+     "line": "Flash written divided by data you asked to write is write amplification. The sequential answer is wrong because it does the opposite, and cleanup is never free, because the copies are real writes.",
+     "said": "writes",
+     "heard": "rights"
+    },
+    {
+     "line": "The consequence is not just speed. Random writes use up the drive's life faster.",
+     "said": "writes",
+     "heard": "rights"
+    }
+   ]
+  },
+  "07": {
+   "hash": "7702cf5351828450",
+   "takes": [
+    "803fdf6e878f6630cf78",
+    "cc32f6b87be2359bd101",
+    "c541238fe64301a0f876",
+    "8fe627b3007273da2618"
+   ],
+   "duration": 35.045,
+   "lines": [
+    {
+     "text": "Two defences, and the picture shows what each one changes.",
+     "start": 0.15,
+     "end": 3.96
+    },
+    {
+     "text": "Spare flash that the host can never fill means the drive can always find a block with little live data in it.",
+     "start": 4.38,
+     "end": 11.73
+    },
+    {
+     "text": "And when a file is deleted, TRIM tells the drive those pages are garbage the moment it happens. Without that, the drive keeps faithfully copying dead data through every clean.",
+     "start": 12.15,
+     "end": 24.513
+    },
+    {
+     "text": "Skip both on a full, write-heavy drive and you fall off a cliff. That is why leaving free space is a performance setting, not a waste.",
+     "start": 24.933,
+     "end": 34.695
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -1.9,
+   "wpm": 152,
+   "wer": 0.1,
+   "exact": false,
+   "tolerated": [
+    {
+     "line": "Two defences, and the picture shows what each one changes.",
+     "said": "defences",
+     "heard": "defenses"
+    },
+    {
+     "line": "Skip both on a full, write-heavy drive and you fall off a cliff. That is why leaving free space is a performance setting, not a waste.",
+     "said": "write",
+     "heard": "right"
+    }
+   ]
+  },
+  "08": {
+   "hash": "7c12ed9f7853073f",
+   "takes": [
+    "41670bd4b70776d04102",
+    "f3d4eb1f5807f13510c6",
+    "2f6bd7d0abf76b8b5cf9",
+    "c064a543f67f01474341"
+   ],
+   "duration": 31.852,
+   "lines": [
+    {
+     "text": "Now durability, which is a different problem from speed.",
+     "start": 0.15,
+     "end": 3.89
+    },
+    {
+     "text": "Follow the arrow from the page cache to the device. Until something pushes those dirty pages along, a power cut takes them.",
+     "start": 4.31,
+     "end": 12.883
+    },
+    {
+     "text": "That something is fsync. It writes the pages and metadata down, and, this is the part people forget, it also tells the drive to empty its own cache.",
+     "start": 13.303,
+     "end": 25.054
+    },
+    {
+     "text": "And it blocks until the drive says it is done. Waiting is the price of the promise.",
+     "start": 25.474,
+     "end": 31.502
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 143,
+   "wer": 0.07142857142857142,
+   "exact": false,
+   "tolerated": [
+    {
+     "line": "That something is fsync. It writes the pages and metadata down, and, this is the part people forget, it also tells the drive to empty its own cache.",
+     "said": "fsync",
+     "heard": "f sync"
+    }
+   ]
+  },
+  "09": {
+   "hash": "20fbf58599a66b23",
+   "takes": [
+    "a699d5ea0d1cf225ce34",
+    "f100031390e672891a56",
+    "35006c427191e331f378",
+    "e85fbff7040ce33a849d"
+   ],
+   "duration": 37.178,
+   "lines": [
+    {
+     "text": "Here is the catch that surprises smart people. Creating a file is two facts, not one.",
+     "start": 0.15,
+     "end": 6.71
+    },
+    {
+     "text": "Left side, the file's data. Right side, the directory entry that gives it a name. Watch which side turns green after the first fsync.",
+     "start": 7.13,
+     "end": 17.538
+    },
+    {
+     "text": "Only the file side. The directory is a separate object with its own durability, so it needs its own fsync.",
+     "start": 17.958,
+     "end": 26.582
+    },
+    {
+     "text": "Skip it and a crash leaves you with a durable file that nothing points to. From the outside, that looks exactly like data loss.",
+     "start": 27.002,
+     "end": 36.828
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 136,
+   "wer": 0.08333333333333333,
+   "exact": false,
+   "tolerated": [
+    {
+     "line": "Left side, the file's data. Right side, the directory entry that gives it a name. Watch which side turns green after the first fsync.",
+     "said": "fsync",
+     "heard": "f sync"
+    }
+   ]
+  },
+  "10": {
+   "hash": "6d2c7e2e33d0067a",
+   "takes": [
+    "c3318d5baa3bd6907fd8",
+    "b291c3ecf7e702846f23",
+    "f415207f145c648e8889",
+    "1c1fd0ee1fff6f6d60d4"
+   ],
+   "duration": 18.585,
+   "lines": [
+    {
+     "text": "This next one cost a database community a very bad week in twenty eighteen.",
+     "start": 0.15,
+     "end": 5.735
+    },
+    {
+     "text": "An fsync fails with a disk error. You do what any careful engineer would do: you call it again.",
+     "start": 6.155,
+     "end": 13.755
+    },
+    {
+     "text": "Second call returns success.",
+     "start": 14.175,
+     "end": 15.983
+    },
+    {
+     "text": "Is the data on disk?",
+     "start": 16.803,
+     "end": 18.235
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 136,
+   "wer": 0.10526315789473684,
+   "exact": false,
+   "tolerated": [
+    {
+     "line": "An fsync fails with a disk error. You do what any careful engineer would do: you call it again.",
+     "said": "fsync",
+     "heard": "f sync"
+    }
+   ]
+  },
+  "10a": {
+   "hash": "1c90654a33da4591",
+   "takes": [
+    "ea0e0b42d06039c001ad",
+    "7ddf4b7ec05648c770ba",
+    "99638523ead0396510e0",
+    "789a094865716f05e360",
+    "adb36960c4bfbdfcbbeb"
+   ],
+   "duration": 43.379,
+   "lines": [
+    {
+     "text": "No, and that is the trap.",
+     "start": 0.15,
+     "end": 2.311
+    },
+    {
+     "text": "When writeback failed, the kernel marked those pages clean and dropped their contents. The error was reported once and then forgotten.",
+     "start": 2.731,
+     "end": 13.288
+    },
+    {
+     "text": "So the second call has nothing dirty to flush, and it reports success over data that no longer exists anywhere.",
+     "start": 13.708,
+     "end": 22.717
+    },
+    {
+     "text": "That is why retrying is wrong in every variant. Journaling does not change it, and neither does synchronous writing, because the pages are already gone.",
+     "start": 23.137,
+     "end": 35.569
+    },
+    {
+     "text": "The only honest response is the one Postgres adopted: crash, and recover from the log.",
+     "start": 35.989,
+     "end": 43.029
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 122,
+   "wer": 0.16666666666666666,
+   "exact": false,
+   "tolerated": [
+    {
+     "line": "No, and that is the trap.",
+     "said": "no",
+     "heard": "now"
+    },
+    {
+     "line": "When writeback failed, the kernel marked those pages clean and dropped their contents. The error was reported once and then forgotten.",
+     "said": "writeback",
+     "heard": "write back"
+    }
+   ]
+  },
+  "11": {
+   "hash": "3c1f05aced922b9a",
+   "takes": [
+    "bdc98813758136e81a5f",
+    "f1d56dabd1cb4e06ce96",
+    "5180aa123c0cace5821b",
+    "8d00bfa9417a920d54ec"
+   ],
+   "duration": 44.842,
+   "lines": [
+    {
+     "text": "Last piece. A fast drive is only fast if you keep many requests in flight, and the old way, one call and one blocked thread per request, cannot do that cheaply.",
+     "start": 0.15,
+     "end": 12.219
+    },
+    {
+     "text": "The picture shows the fix. Two rings shared with the kernel: you post requests on one, and completions come back on the other.",
+     "start": 12.639,
+     "end": 21.494
+    },
+    {
+     "text": "So one thread can keep dozens of operations outstanding without a system call each. The cost of asking drops, and the drive stays busy.",
+     "start": 21.914,
+     "end": 31.831
+    },
+    {
+     "text": "Postgres eighteen offers this for scans and vacuum. Notice what it does not touch: whether a write is durable. That is still fsync's job.",
+     "start": 32.251,
+     "end": 44.492
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 138,
+   "wer": 0.08,
+   "exact": false,
+   "tolerated": [
+    {
+     "line": "Postgres eighteen offers this for scans and vacuum. Notice what it does not touch: whether a write is durable. That is still fsync's job.",
+     "said": "fsyncs",
+     "heard": "f syncs"
+    }
+   ]
+  },
+  "12": {
+   "hash": "7e8c03c979e05fa8",
+   "takes": [
+    "0f4efe7d9dc1a3e4ed8e",
+    "7fa88bbedf312123b890",
+    "4341551e33f55105b750",
+    "22109fc80d7051b30f6c",
+    "f4b8c3fb861f958567b9"
+   ],
+   "duration": 40.109,
+   "lines": [
+    {
+     "text": "Take three things away, in the order they will bite you.",
+     "start": 0.15,
+     "end": 3.822
+    },
+    {
+     "text": "First, order matters on every device, but the reason is different on each: a head on the disk, parallelism on flash.",
+     "start": 4.242,
+     "end": 14.06
+    },
+    {
+     "text": "Second, small random writes cost more underneath than they appear to, because of the cleaning.",
+     "start": 14.48,
+     "end": 21.014
+    },
+    {
+     "text": "Third, durability is a recipe: write, fsync the file, fsync the directory, and never trust a retry.",
+     "start": 21.434,
+     "end": 31.287
+    },
+    {
+     "text": "One machine's disks end here. Next: object storage, the bottom tier where lakehouses keep their data.",
+     "start": 32.107,
+     "end": 39.759
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 120,
+   "wer": 0.125,
+   "exact": false,
+   "tolerated": [
+    {
+     "line": "First, order matters on every device, but the reason is different on each: a head on the disk, parallelism on flash.",
+     "said": "disk",
+     "heard": "disc"
+    },
+    {
+     "line": "Second, small random writes cost more underneath than they appear to, because of the cleaning.",
+     "said": "writes",
+     "heard": "rights"
+    },
+    {
+     "line": "One machine's disks end here. Next: object storage, the bottom tier where lakehouses keep their data.",
+     "said": "lakehouses",
+     "heard": "lake houses"
+    }
+   ]
+  }
+ }
+}

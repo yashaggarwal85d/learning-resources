@@ -37,7 +37,7 @@
         "Before writes, a smaller trap that costs you on every device: the block size.",
         "Watch where the write lands. It straddles the line between two blocks, and that line is the whole problem.",
         "A drive cannot write half a block. So it reads the whole block, patches your bytes in, and writes it all back.",
-        "That is how one small write turns into a read plus a write. Aligning to the block removes the extra step entirely."
+        "That is how one small write turns into an extra block read. Aligning removes that extra step entirely."
       ]
     },
     {
@@ -94,7 +94,7 @@
         "An fsync fails with a disk error. You do what any careful engineer would do: you call it again.",
         "Second call returns success.",
         { "beat": 0.4 },
-        "Is the data now on disk?"
+        "Is the data on disk?"
       ],
       "answer": [
         "No, and that is the trap.",

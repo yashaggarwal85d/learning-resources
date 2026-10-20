@@ -11,7 +11,7 @@ evaluation environment (soundfile, numpy)."""
 import json, os, subprocess, sys, time
 import numpy as np, soundfile as sf
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
-from common import VOICE, take_path
+from common import VOICE, take_path, gpu_slot
 
 SITE = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 M = VOICE["model"]
@@ -41,7 +41,8 @@ for n, (line, take) in enumerate(todo, 1):
         cmd += ["--seed", str(take["seed"])]
     if has("--temp") and "temperature" in take:
         cmd += ["--temp", str(take["temperature"])]
-    r = subprocess.run(cmd, capture_output=True, text=True)
+    with gpu_slot():
+        r = subprocess.run(cmd, capture_output=True, text=True)
     if r.returncode or not os.path.exists(tmp):
         sys.exit(f"breeze-cli failed on {line[:60]!r}: {(r.stderr or r.stdout)[-800:]}")
     a, sr = sf.read(tmp, dtype="float32")

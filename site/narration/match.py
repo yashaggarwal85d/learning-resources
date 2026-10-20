@@ -126,7 +126,7 @@ def block_ok(ref, hyp):
 def compare(line, transcript, lang="en"):
     r, h = norm(line, lang), norm(transcript, lang)
     ops, dist = align(r, h)
-    if dist and re.search(r"(?<![\d,.])(1[1-9]\d\d|20\d\d)(?![\d,])", transcript):
+    if dist and re.search(r"(?<![\d,.])(1[1-9]\d\d|20\d\d)(?!\d)", transcript):
         # A year is said "nineteen eighty eight" or "one thousand nine hundred eighty eight": take whichever reading the line used.
         h2 = norm(transcript, lang, years=True)
         ops2, dist2 = align(r, h2)
@@ -175,6 +175,7 @@ CASES = [
     ("sixteen thousand, three hundred and eighty four blocks", "16,384 blocks", True),
     ("does every algorithm need n minus one comparisons", "does every algorithm need n-1 comparisons", True),
     ("use three n minus two cap instead", "use 3N-2 cap instead", True),
+    ("a count of ticks since nineteen seventy, and the rest", "a count of ticks since 1970, and the rest", True),
 ]
 
 if __name__ == "__main__":
