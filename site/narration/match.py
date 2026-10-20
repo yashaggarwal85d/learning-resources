@@ -35,6 +35,9 @@ def norm(s, lang="en", years=False):
     """Lowercase words, numbers spelled out, aliases applied: what was said, independent of how it was written.
     years=True reads a four digit number from 1100 to 2099 the way a year is said ("nineteen eighty eight")."""
     s = s.lower().replace("%", " percent")
+    # A hyphen right after a letter and before a digit is a transcribed "minus" ("n-1", "3n-2"): say so before the
+    # generic hyphen strip below throws it away, or an algebraic line never matches ("n minus one" vs "n 1").
+    s = re.sub(r"([a-z])-(\d)", r"\1 minus \2", s)
     s = re.sub(r"(\d),(\d)", r"\1\2", s)
     s = re.sub(r"\b(\d+)(st|nd|rd|th)\b", lambda m: " " + num2words(int(m.group(1)), to="ordinal") + " ", s)
     def spell(m):
@@ -170,6 +173,8 @@ CASES = [
     ("The reel shows the cache, the real cash.", "The real shows the cash, the reel cache.", False),  # too many places
     ("one pass makes sixty four sorted runs", "one pass makes 64 sorted runs", True),
     ("sixteen thousand, three hundred and eighty four blocks", "16,384 blocks", True),
+    ("does every algorithm need n minus one comparisons", "does every algorithm need n-1 comparisons", True),
+    ("use three n minus two cap instead", "use 3N-2 cap instead", True),
 ]
 
 if __name__ == "__main__":
