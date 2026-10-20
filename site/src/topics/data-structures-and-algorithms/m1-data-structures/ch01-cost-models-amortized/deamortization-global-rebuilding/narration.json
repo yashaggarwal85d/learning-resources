@@ -33,11 +33,11 @@
     },
     {
       "lines": [
-        "Which tail should we measure? Per append, the tail is one write, which looks wonderful.",
+        "Which tail should we measure? Per append, the tail is one operation, which looks wonderful.",
         {
           "beat": 0.4
         },
-        "But clients do not experience appends, they experience requests, and a request queues behind a resize that is still running.",
+        "But clients do not experience appends, they experience requests, and a request waits behind a resize that is still running.",
         "Count the waiting and the ninety ninth percentile is about half a million ticks. More than a third of all requests, three hundred and forty nine thousand, five hundred and fifteen, sat behind a resize.",
         "The copy is one append's work, but the wait is paid by everyone behind it. A service is graded by its requests, so that is the tail to fix."
       ]
