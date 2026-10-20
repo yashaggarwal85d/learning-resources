@@ -1,820 +1,825 @@
 {
  "topic": "dsa.recurrences-master-theorem-akra",
- "voice": "tara-v1",
+ "voice": "breeze-mellow-v2",
  "asr": "large-v3-turbo",
  "clips": {
   "01": {
-   "hash": "7b0b5e7d0b6dec1e",
+   "hash": "582e8326247f2948",
    "takes": [
-    "aef373e443b832f2c00c",
-    "666aecffc9c4d4a1f362",
-    "7770083b43d235bffafb",
-    "a8b21644b43820a127e3",
-    "9f10dbcdda134962f534",
-    "88aa6f5288bbea6ec915"
+    "b02a04bfe769c2e771af",
+    "a9f6a837ef193abe69c3",
+    "fc5d797ebfed19fae2d6",
+    "0de6401971e80129df6c"
    ],
-   "duration": 35.15,
+   "duration": 37.388,
    "lines": [
     {
-     "text": "The word RAM lets you count steps, and a recursive algorithm hands you that count as a recurrence.",
+     "text": "Counting a loop is just adding. Counting a recursive procedure gives you an equation, because the cost of the whole is written in terms of the cost of its smaller copies.",
      "start": 0.15,
-     "end": 6.515
+     "end": 10.819
     },
     {
-     "text": "Read the answer like this.",
-     "start": 6.935,
-     "end": 8.348
+     "text": "Here are three procedures on a vector of a million keys: merge sort, binary search, and the median of medians selection.",
+     "start": 11.639,
+     "end": 20.553
     },
     {
-     "text": "Take the vector of a million keys, and three recursive procedures on it. Merge sort. Binary search. And median of medians.",
-     "start": 9.168,
-     "end": 18.269
+     "text": "Notice they do not all look alike. Two call themselves twice, yet one of those is linear and the other is not. The equation alone will not tell you which; the shape of the calls will.",
+     "start": 20.973,
+     "end": 32.739
     },
     {
-     "text": "Each one's count is an equation that defines T of n through T at smaller sizes.",
-     "start": 18.689,
-     "end": 24.915
-    },
-    {
-     "text": "Two of them recurse twice. One of those two is linear, and the other is not.",
-     "start": 25.635,
-     "end": 30.745
-    },
-    {
-     "text": "By the end, you will read all three off their trees.",
-     "start": 31.165,
-     "end": 34.8
+     "text": "By the end you will read all three answers off their trees.",
+     "start": 33.159,
+     "end": 37.038
     }
    ],
    "lufs": -16.4,
    "true_peak": -1.9,
-   "wpm": 149,
-   "wer": 0.0,
-   "exact": true,
-   "tolerated": []
+   "wpm": 160,
+   "wer": 0.047619047619047616,
+   "exact": false,
+   "tolerated": [
+    {
+     "line": "Here are three procedures on a vector of a million keys: merge sort, binary search, and the median of medians selection.",
+     "said": "medians",
+     "heard": "median"
+    }
+   ]
   },
   "02": {
-   "hash": "1907f963dbd44949",
+   "hash": "d76903d2660c72d5",
    "takes": [
-    "a0d205961ae19e1a252d",
-    "2318f95968ab09ff9e23",
-    "9e1a5e0ee32dceedb00c",
-    "7757f790169b4afef05e",
-    "14ae0abf490facaacaaa"
+    "a72f9447f24832931751",
+    "52ca35eff8691463ee70",
+    "f220e0897fd0df4f4c18",
+    "349865d663c2770f39df"
    ],
-   "duration": 26.592,
+   "duration": 34.247,
    "lines": [
     {
-     "text": "Draw the recurrence as what it is... a tree of calls.",
+     "text": "Stop thinking about the equation and draw what the program actually does: a tree of calls.",
      "start": 0.15,
-     "end": 3.898
+     "end": 5.906
     },
     {
-     "text": "Each node does its own work, then calls itself twice on halves.",
-     "start": 4.318,
-     "end": 8.73
+     "text": "Every node pays for its own work, say a merge, and then hands two halves to its children.",
+     "start": 6.326,
+     "end": 12.886
     },
     {
-     "text": "A level is some number of nodes, all of one size, so its total is that number times the work of one.",
-     "start": 9.45,
-     "end": 16.661
+     "text": "Look across one level. The nodes there are all the same size, so the level costs the number of nodes times one node's work.",
+     "start": 13.706,
+     "end": 22.997
     },
     {
-     "text": "For merge sort on sixty four keys, every level totals sixty four.",
-     "start": 17.081,
-     "end": 20.833
-    },
-    {
-     "text": "Seven levels, so add up the column. That is four hundred and forty eight in all.",
-     "start": 21.253,
-     "end": 26.242
+     "text": "Do it for merge sort on sixty four keys. Every level comes to sixty four. There are seven levels, so the column adds up to four hundred and forty eight.",
+     "start": 23.417,
+     "end": 33.897
     }
    ],
-   "lufs": -16.5,
-   "true_peak": -1.9,
-   "wpm": 162,
-   "wer": 0.0,
-   "exact": true,
-   "tolerated": []
-  },
-  "03": {
-   "hash": "75d408208653fd78",
-   "takes": [
-    "1fa8fca155943fea4037",
-    "8f92fee3f44b791b27c7",
-    "fe6668d6bac4a2691501"
-   ],
-   "duration": 20.498,
-   "lines": [
-    {
-     "text": "Same kind of tree, new recurrence. Every call now makes eight calls on half the keys, and does n squared work itself.",
-     "start": 0.15,
-     "end": 7.453
-    },
-    {
-     "text": "The root alone does four thousand and ninety six units of work. The calls at the bottom are on one key, and do one unit each.",
-     "start": 8.473,
-     "end": 16.65
-    },
-    {
-     "text": "What is the bottom total?",
-     "start": 18.07,
-     "end": 20.148
-    }
-   ],
-   "lufs": -16.5,
+   "lufs": -16.4,
    "true_peak": -1.9,
    "wpm": 152,
    "wer": 0.0,
    "exact": true,
    "tolerated": []
   },
-  "03a": {
-   "hash": "a07ad35ef213691a",
+  "03": {
+   "hash": "778fe7ff424a1fa5",
    "takes": [
-    "290e6a365466d5ae40c6",
-    "73f916a44868f2e23a6c",
-    "f97f4b7cffaf422999a2",
-    "5f156cb0f7bb8796c8da"
+    "5126b07729d4f098484b",
+    "b8de8f369e8a32f32d39",
+    "b80ea61d1034b4779224"
    ],
-   "duration": 23.533,
+   "duration": 24.018,
+   "lines": [
+    {
+     "text": "Same kind of tree, new recurrence. Every call now makes eight calls on half the keys, and does n squared work itself.",
+     "start": 0.15,
+     "end": 10.47
+    },
+    {
+     "text": "The root alone does four thousand and ninety six units of work. The calls at the bottom are on one key, and do one unit each.",
+     "start": 11.49,
+     "end": 20.278
+    },
+    {
+     "text": "What is the bottom total?",
+     "start": 21.698,
+     "end": 23.669
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 130,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "03a": {
+   "hash": "62eb7773509bca71",
+   "takes": [
+    "71ff3b98b929eadb911f",
+    "09e0dc51316e8e8dfd33",
+    "e67136ea38e01bf9e6b8",
+    "73a962cd5ba57effd174"
+   ],
+   "duration": 26.826,
    "lines": [
     {
      "text": "The bottom level totals two to the power eighteen.",
      "start": 0.15,
-     "end": 3.075
+     "end": 3.232
     },
     {
      "text": "Eight calls per node, six levels down... that is a lot of leaves, each doing one unit.",
-     "start": 3.495,
-     "end": 10.209
+     "start": 3.652,
+     "end": 10.664
     },
     {
      "text": "The column doubles... at every level... so the bottom row... is sixty four times the root.",
-     "start": 10.629,
-     "end": 16.075
+     "start": 11.084,
+     "end": 17.918
     },
     {
      "text": "That leaf count has a name. The watershed. When the leaves win, the answer is the watershed itself.",
-     "start": 16.495,
-     "end": 23.183
+     "start": 18.338,
+     "end": 26.476
     }
    ],
    "lufs": -16.4,
-   "true_peak": -1.9,
-   "wpm": 153,
-   "wer": 0.0,
-   "exact": true,
-   "tolerated": []
-  },
-  "04": {
-   "hash": "1d323a568679bb61",
-   "takes": [
-    "916879722031e7ee4ee6",
-    "421b9b9fef73b75d7ddc",
-    "bc835b6118553a3dbd17",
-    "e21d43b806c04b77f0b9",
-    "3d87cf04d3c5b662d3bf",
-    "06fce1bbf1eb846ccd8e"
-   ],
-   "duration": 30.49,
-   "lines": [
-    {
-     "text": "The Master theorem is nothing but three shapes the column can take.",
-     "start": 0.15,
-     "end": 3.919
-    },
-    {
-     "text": "Compare one level with the next.",
-     "start": 4.339,
-     "end": 6.324
-    },
-    {
-     "text": "Smaller by a constant factor... the column shrinks, and the root is the answer.",
-     "start": 7.044,
-     "end": 12.072
-    },
-    {
-     "text": "Equal... every level ties, so you multiply by the number of levels. That is the log.",
-     "start": 12.492,
-     "end": 19.858
-    },
-    {
-     "text": "Larger by a constant factor... the leaves win.",
-     "start": 20.278,
-     "end": 23.616
-    },
-    {
-     "text": "A geometric series is a constant times its largest term. That is the whole proof.",
-     "start": 24.336,
-     "end": 30.14
-    }
-   ],
-   "lufs": -16.4,
-   "true_peak": -1.9,
-   "wpm": 140,
-   "wer": 0.0,
-   "exact": true,
-   "tolerated": []
-  },
-  "05": {
-   "hash": "63d52d8a901a9b5d",
-   "takes": [
-    "97407445d39e46e26dc9",
-    "fb44db15ea06cddb9f98",
-    "29ecdef5f0ea156dbd73",
-    "b5cb4ab60b8ea24dee89",
-    "38693eeb4d2e3da52899",
-    "0617786d2891f207c86d"
-   ],
-   "duration": 37.66,
-   "lines": [
-    {
-     "text": "The textbook statement compares f of n with the watershed.",
-     "start": 0.15,
-     "end": 3.382
-    },
-    {
-     "text": "Polynomially smaller, case one. The leaves win.",
-     "start": 3.802,
-     "end": 8.1
-    },
-    {
-     "text": "The same size, case two. A tie, with one more log.",
-     "start": 8.52,
-     "end": 12.869
-    },
-    {
-     "text": "Polynomially larger, case three, and the root wins... but only if a regularity condition holds, so the column really shrinks.",
-     "start": 13.289,
-     "end": 22.454
-    },
-    {
-     "text": "For a simple power it holds by itself. The fraction here is two over four, which is one half.",
-     "start": 23.174,
-     "end": 30.937
-    },
-    {
-     "text": "Binary search is case two, with a watershed of one. The log comes from the depth alone.",
-     "start": 31.357,
-     "end": 37.31
-    }
-   ],
-   "lufs": -16.5,
-   "true_peak": -1.7,
+   "true_peak": -2.0,
    "wpm": 134,
    "wer": 0.0,
    "exact": true,
    "tolerated": []
   },
-  "06": {
-   "hash": "db3ae740455ac1da",
+  "04": {
+   "hash": "b00e5c56b484008f",
    "takes": [
-    "27f7b9d9d2f24fd85251",
-    "9a9cc94cc6d80330f14f",
-    "fd3d9662af80f4765957",
-    "af51ddfad636772e67c7",
-    "df12641ddcae1638de7c",
-    "dae93300e8aa40f77653"
+    "5c8c0afd94d21b1f78f0",
+    "b3392381edbe90a280a4",
+    "c7e0e04264aa65572afa",
+    "ede6e1bdc9c41c9afb44",
+    "3f9e9eeeeb81769cf2db"
    ],
-   "duration": 36.633,
+   "duration": 42.617,
    "lines": [
     {
-     "text": "The three cases are not exhaustive.",
+     "text": "The Master theorem sounds grand, but it is a classification of one picture: how does the cost change as you go down the levels?",
      "start": 0.15,
-     "end": 2.138
+     "end": 9.988
     },
     {
-     "text": "Here f is n log n. It is above the watershed, but not by any power of n, and it is not the same size either.",
-     "start": 2.558,
-     "end": 11.238
+     "text": "If each level costs a constant fraction less than the one above, the top dominates and the answer is the root's own work.",
+     "start": 10.938,
+     "end": 19.735
     },
     {
-     "text": "The column does shrink, yet the ratio of nearby levels creeps up towards one.",
-     "start": 11.958,
-     "end": 17.463
+     "text": "If every level costs the same, multiply by the number of levels. That multiplication is where the log comes from.",
+     "start": 20.155,
+     "end": 27.42
     },
     {
-     "text": "So no constant below one fits, and none of the three cases applies.",
-     "start": 17.883,
-     "end": 22.115
+     "text": "If each level costs more, the bottom dominates and the leaves decide.",
+     "start": 27.84,
+     "end": 33.223
     },
     {
-     "text": "A log power patches this one. The extended case two allows the same size, up to a log power.",
-     "start": 22.535,
-     "end": 28.958
-    },
-    {
-     "text": "The gap that remains is from below. The general theorem, in a moment, covers it. Recursion trees cover the rest.",
-     "start": 29.678,
-     "end": 36.283
+     "text": "The reason is one fact about geometric series: such a sum is within a constant of its biggest term. That is the whole proof.",
+     "start": 34.043,
+     "end": 42.267
     }
    ],
-   "lufs": -16.5,
+   "lufs": -16.4,
    "true_peak": -1.9,
-   "wpm": 161,
+   "wpm": 145,
    "wer": 0.0,
    "exact": true,
    "tolerated": []
   },
-  "07": {
-   "hash": "734ec7d646365355",
+  "05": {
+   "hash": "f117065d95b55591",
    "takes": [
-    "de3868ae6987c7c33e5b",
-    "4dd663c08ac217ef8b9c",
-    "21de41a5267741f260f2",
-    "a038bd8c9becea4d19f6",
-    "85652c43d78a78e06645"
+    "634670d431dbf87753f2",
+    "cd2ddbbedbbbe7f141e6",
+    "b9379307c3b9f2883635",
+    "cb73d3886b76dc94ff36",
+    "aad3c927c2e469f9d580",
+    "2c08f4bc006f7dcd7c06"
    ],
-   "duration": 25.985,
+   "duration": 40.274,
+   "lines": [
+    {
+     "text": "The textbook statement compares f of n with the watershed.",
+     "start": 0.15,
+     "end": 4.469
+    },
+    {
+     "text": "Polynomially smaller, case one. The leaves win.",
+     "start": 4.889,
+     "end": 8.687
+    },
+    {
+     "text": "The same size, case two. A tie, with one more log.",
+     "start": 9.107,
+     "end": 14.445
+    },
+    {
+     "text": "Polynomially larger, case three, and the root wins... but only if a regularity condition holds, so the column really shrinks.",
+     "start": 14.865,
+     "end": 23.885
+    },
+    {
+     "text": "For a simple power it holds by itself. The fraction here is two over four, which is one half.",
+     "start": 24.605,
+     "end": 31.925
+    },
+    {
+     "text": "Binary search is case two, with a watershed of one. The log comes from the depth alone.",
+     "start": 32.345,
+     "end": 39.924
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 125,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "06": {
+   "hash": "5f9d7225e567e830",
+   "takes": [
+    "1cd388a990babcb60707",
+    "b69ff0db4b067913a1d4",
+    "73a452d0bace7c81a668",
+    "abe193b48efb2fedd7bd",
+    "3d9dea3ec7a28ea07677",
+    "d2457acdb4eb1051bf3a"
+   ],
+   "duration": 44.022,
+   "lines": [
+    {
+     "text": "The three cases are not exhaustive.",
+     "start": 0.15,
+     "end": 2.779
+    },
+    {
+     "text": "Here f is n log n. It is above the watershed, but not by any power of n, and it is not the same size either.",
+     "start": 3.199,
+     "end": 13.984
+    },
+    {
+     "text": "The column does shrink, yet the ratio of nearby levels creeps up towards one.",
+     "start": 14.704,
+     "end": 20.22
+    },
+    {
+     "text": "So no constant below one fits, and none of the three cases applies.",
+     "start": 20.64,
+     "end": 26.334
+    },
+    {
+     "text": "A log power patches this one. The extended case two allows the same size, up to a log power.",
+     "start": 26.754,
+     "end": 34.461
+    },
+    {
+     "text": "The gap that remains is from below. The general theorem, in a moment, covers it. Recursion trees cover the rest.",
+     "start": 35.181,
+     "end": 43.672
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 134,
+   "wer": 0.05263157894736842,
+   "exact": false,
+   "tolerated": [
+    {
+     "line": "A log power patches this one. The extended case two allows the same size, up to a log power.",
+     "said": "two",
+     "heard": "too"
+    }
+   ]
+  },
+  "07": {
+   "hash": "97ac824b73792b43",
+   "takes": [
+    "1cad94e2f14ff0cdbc49",
+    "65ab2457a1e758140015",
+    "27629e165e8ed8efb163",
+    "b530793cdf4bb20a4068",
+    "4a0cf3595cdb308c0519"
+   ],
+   "duration": 28.772,
    "lines": [
     {
      "text": "Median of medians recurses on two different sizes... a fifth, and seven tenths.",
      "start": 0.15,
-     "end": 5.326
+     "end": 6.143
     },
     {
      "text": "The Master theorem has one split factor. It cannot take this.",
-     "start": 5.746,
-     "end": 10.055
+     "start": 6.562,
+     "end": 10.261
     },
     {
      "text": "The tree still can. A fifth plus seven tenths is nine tenths.",
-     "start": 10.775,
-     "end": 14.578
+     "start": 10.981,
+     "end": 16.054
     },
     {
      "text": "Each level now totals nine tenths of the level above, so the work shrinks by the same factor.",
-     "start": 14.998,
-     "end": 20.695
+     "start": 16.474,
+     "end": 22.95
     },
     {
      "text": "The root dominates. The total stays under ten times n. Linear.",
-     "start": 21.115,
-     "end": 25.635
+     "start": 23.37,
+     "end": 28.422
     }
    ],
-   "lufs": -16.6,
+   "lufs": -16.5,
    "true_peak": -1.9,
-   "wpm": 150,
+   "wpm": 136,
    "wer": 0.0,
    "exact": true,
    "tolerated": []
   },
   "08": {
-   "hash": "2033c2b0e97fc2e4",
+   "hash": "aa2a25ba30cc6ebc",
    "takes": [
-    "667f32c3437cdc4c3736",
-    "cb124977676dac4444e8"
+    "b1d9dc57fa39ff7fcc52",
+    "839e285f9fb697bc5a8c"
    ],
-   "duration": 10.188,
+   "duration": 12.213,
    "lines": [
     {
      "text": "Now change the groups. Groups of three give T of n over three, plus T of two n over three, plus n.",
      "start": 0.15,
-     "end": 8.241
+     "end": 10.245
     },
     {
      "text": "Still linear?",
-     "start": 9.061,
-     "end": 9.838
+     "start": 11.065,
+     "end": 11.863
     }
    ],
    "lufs": -16.5,
    "true_peak": -1.9,
-   "wpm": 141,
+   "wpm": 118,
    "wer": 0.0,
    "exact": true,
    "tolerated": []
   },
   "08a": {
-   "hash": "f8ea5b712577f610",
+   "hash": "9aa3a5e3bdd529f4",
    "takes": [
-    "63127937704daafde641",
-    "b2df4db4f18dabfb8f1c",
-    "1d0fe03b26800281d10d",
-    "9e6f4aa55d54cac38aab"
+    "8f1090a423026a7f476f",
+    "dd5157823920142a06b2",
+    "04031e3488d5ca4c30de",
+    "9e847b6652a7dbb00a8e"
    ],
-   "duration": 23.532,
+   "duration": 26.102,
    "lines": [
     {
      "text": "No. A third plus two thirds is exactly one.",
      "start": 0.15,
-     "end": 4.674
+     "end": 4.47
     },
     {
      "text": "So every full level... adds back up to n... and the levels run... about log n deep.",
-     "start": 5.094,
-     "end": 11.107
+     "start": 4.89,
+     "end": 11.157
     },
     {
      "text": "That is n log n. This analysis can no longer show linear time.",
-     "start": 11.527,
-     "end": 16.463
+     "start": 11.577,
+     "end": 17.276
     },
     {
      "text": "The sum of the fractions decides. Below one, the column shrinks. At exactly one, it ties.",
-     "start": 16.883,
-     "end": 23.182
+     "start": 17.696,
+     "end": 25.752
     }
    ],
-   "lufs": -16.4,
-   "true_peak": -1.9,
-   "wpm": 140,
+   "lufs": -16.3,
+   "true_peak": -2.4,
+   "wpm": 126,
    "wer": 0.0,
    "exact": true,
    "tolerated": []
   },
   "09": {
-   "hash": "f800f67441353a60",
+   "hash": "27a6c37da34b497d",
    "takes": [
-    "298e941764be030382ea",
-    "fe72dba0ac969a4aed96",
-    "a6f347a8b130653ce616",
-    "236d6e8f5e4a5a344cce",
-    "6349fa12a05a1b1f1c6a"
+    "2859d4d31a877f8b07cf",
+    "c169d3da8616eaeef927",
+    "67c7413d10d1ebefe945",
+    "12680a9c3468f76c2642",
+    "8a7ee9c14ffa46e3de8c"
    ],
-   "duration": 30.883,
+   "duration": 36.202,
    "lines": [
     {
      "text": "The general theorem turns that sum into an exponent.",
      "start": 0.15,
-     "end": 3.181
+     "end": 4.221
     },
     {
      "text": "Find the one number p... where the fractions, each raised to the power p... add up to one.",
-     "start": 3.601,
-     "end": 9.507
+     "start": 4.641,
+     "end": 11.094
     },
     {
      "text": "For selection, p is about zero point eight four.",
-     "start": 10.227,
-     "end": 13.547
+     "start": 11.814,
+     "end": 16.766
     },
     {
      "text": "With f equal to n, the integral grows like n to the one minus p, and n to the p times that is just n. Linear.",
-     "start": 13.967,
-     "end": 22.412
+     "start": 17.186,
+     "end": 26.181
     },
     {
      "text": "The Master theorem is the one term case. And floors, ceilings and plus six are absorbed by small perturbations.",
-     "start": 23.132,
-     "end": 30.533
+     "start": 26.901,
+     "end": 35.852
     }
    ],
-   "lufs": -16.6,
+   "lufs": -16.5,
    "true_peak": -1.9,
-   "wpm": 157,
+   "wpm": 134,
    "wer": 0.0,
    "exact": true,
    "tolerated": []
   },
   "10": {
-   "hash": "428ac952647403d0",
+   "hash": "2aa5e6359e462271",
    "takes": [
-    "f3d1c6d558765c3cdc2d",
-    "53203bd0a8e9c4dc78d3",
-    "01f8d802a19179d03b17",
-    "277817cf01bd6361a97b"
+    "495d64048fcfae15ee07",
+    "235a03ca4b95a69b54b2",
+    "61877c10f84da7b29b59",
+    "8095475aed9076efdd93"
    ],
-   "duration": 16.535,
+   "duration": 26.098,
    "lines": [
     {
-     "text": "Now the proof side, substitution. Guess, then prove by induction.",
+     "text": "Now the other side of the coin: proving a bound you have guessed. Guess, then check by induction.",
      "start": 0.15,
-     "end": 4.295
+     "end": 6.971
     },
     {
-     "text": "Merge sort... guess T of n is at most c times n.",
-     "start": 4.715,
-     "end": 8.986
+     "text": "Suppose you guess that merge sort costs at most c times n. Assume it for halves and plug in: two halves give c times n, and the merge adds another n.",
+     "start": 7.791,
+     "end": 19.833
     },
     {
-     "text": "The step gives... c times n, plus n.",
-     "start": 9.406,
-     "end": 13.099
+     "text": "So the step produces c times n plus n.",
+     "start": 20.253,
+     "end": 24.297
     },
     {
-     "text": "What has this proved?",
-     "start": 13.919,
-     "end": 16.185
+     "text": "Is that a proof?",
+     "start": 24.717,
+     "end": 25.748
     }
    ],
-   "lufs": -16.5,
+   "lufs": -16.4,
    "true_peak": -1.9,
-   "wpm": 123,
+   "wpm": 143,
    "wer": 0.0,
    "exact": true,
    "tolerated": []
   },
   "10a": {
-   "hash": "40cc0cc6123eedc8",
+   "hash": "2494c6452ecb0edf",
    "takes": [
-    "653e142cef8a4e0fecf7",
-    "d097e9304013fe7884b3",
-    "1b9098860f2405ad4fa4"
+    "5265020fd682009fe997",
+    "8fd9274eb7b7f790ae21",
+    "c59460b7c8e2910de61b"
    ],
-   "duration": 19.283,
+   "duration": 27.064,
    "lines": [
     {
-     "text": "Nothing. The step has to come back to exactly c times n, and c times n plus n is larger, for any c.",
+     "text": "No. It proves nothing.",
      "start": 0.15,
-     "end": 8.399
+     "end": 1.909
     },
     {
-     "text": "The constant may not grow. You cannot induct over big O.",
-     "start": 8.819,
-     "end": 12.415
+     "text": "The step must return exactly to c times n, and c times n plus n exceeds it whatever c you pick. You cannot absorb the extra n by hiding it in a big O during induction.",
+     "start": 2.329,
+     "end": 16.715
     },
     {
-     "text": "The guess was simply wrong. The real ratio climbs by three, every time n grows eight times.",
-     "start": 12.835,
-     "end": 18.933
+     "text": "The failure is honest: the guess was too small. The true cost grows by a bit more than eight, every time the input grows by eight.",
+     "start": 17.135,
+     "end": 26.714
     }
    ],
    "lufs": -16.5,
    "true_peak": -1.9,
-   "wpm": 159,
+   "wpm": 146,
    "wer": 0.0,
    "exact": true,
    "tolerated": []
   },
   "11": {
-   "hash": "af1a0af1c3fbd63d",
+   "hash": "64fec50af88cc4e0",
    "takes": [
-    "2f3c2eafc7c6d77ff990",
-    "528d4bcab5ddd6441354",
-    "355eb81bb9d34245592f",
-    "5333aa07bb2f9ead6ee1",
-    "58f23f2bcd2c60b1f018"
+    "f5d36bddc6fc5a348736",
+    "68979e998c7e0f742e64",
+    "951d8d40280491890c68",
+    "f3879b3bf43203c745de",
+    "182c016a0bd9b54d30e6",
+    "5f0169c4b5d6d8533339"
    ],
-   "duration": 23.855,
+   "duration": 28.744,
    "lines": [
     {
      "text": "A second trap. Here the guess is right.",
      "start": 0.15,
-     "end": 2.833
+     "end": 3.126
     },
     {
-     "text": "Counting merge sort's calls, the Master theorem says linear, and the counts say two n minus one.",
-     "start": 3.253,
-     "end": 9.329
+     "text": "Counting merge sort's calls, the Master theorem says it is linear.",
+     "start": 3.546,
+     "end": 8.043
+    },
+    {
+     "text": "The counts say two n minus one.",
+     "start": 8.463,
+     "end": 11.297
     },
     {
      "text": "It still misses by one.",
-     "start": 9.749,
-     "end": 11.279
+     "start": 11.717,
+     "end": 13.218
     },
     {
      "text": "Subtract a lower order term. Take the guess and subtract a constant. The step then closes, as soon as that constant is at least one.",
-     "start": 11.999,
-     "end": 20.357
+     "start": 13.938,
+     "end": 24.626
     },
     {
      "text": "A stronger hypothesis is easier to prove.",
-     "start": 20.777,
-     "end": 23.505
+     "start": 25.046,
+     "end": 28.394
     }
    ],
-   "lufs": -16.5,
-   "true_peak": -1.8,
-   "wpm": 156,
+   "lufs": -16.4,
+   "true_peak": -2.0,
+   "wpm": 132,
    "wer": 0.0,
    "exact": true,
    "tolerated": []
   },
   "12": {
-   "hash": "c003c8f7d5bb60b5",
+   "hash": "be25b7c268a2894a",
    "takes": [
-    "ccaf14fe276efbb93eaa",
-    "362437010f64bbb90607",
-    "8dbb638a4e3a505156a8",
-    "a3d272fd86f27ad9c92b",
-    "e657cf58aa0977647c8c",
-    "2bdaeca18c92aa24bd30"
+    "247b9a54499abc9e057e",
+    "e03b302b55fa59d119be",
+    "44279dd9d06c00025572",
+    "40a2db9574cdf143dec5",
+    "9b0a725f9048320cdf0a",
+    "d6769214cd7faa16c495"
    ],
-   "duration": 38.463,
+   "duration": 38.195,
    "lines": [
     {
      "text": "Back to the problem.",
      "start": 0.15,
-     "end": 1.759
+     "end": 1.262
     },
     {
      "text": "Merge sort doubles, but every level costs n. A tie. N log n.",
-     "start": 2.179,
-     "end": 8.76
+     "start": 1.682,
+     "end": 7.479
     },
     {
      "text": "Binary search never doubles, and costs one per level. Log n.",
-     "start": 9.18,
-     "end": 15.205
+     "start": 7.899,
+     "end": 12.557
     },
     {
      "text": "Median of medians doubles, but each level costs nine tenths of the last. The root wins. Linear.",
-     "start": 15.625,
-     "end": 23.513
+     "start": 12.977,
+     "end": 21.457
     },
     {
      "text": "At a million keys, with the constant in each recurrence set to one, those solve to about twenty one million units of work, twenty probes, and eight point eight million units.",
-     "start": 24.233,
-     "end": 35.197
+     "start": 22.177,
+     "end": 34.23
     },
     {
      "text": "Next, what every algorithm must pay.",
-     "start": 35.617,
-     "end": 38.113
+     "start": 34.65,
+     "end": 37.845
     }
    ],
    "lufs": -16.4,
-   "true_peak": -1.8,
-   "wpm": 128,
-   "wer": 0.0,
-   "exact": true,
-   "tolerated": []
+   "true_peak": -1.9,
+   "wpm": 129,
+   "wer": 0.18181818181818182,
+   "exact": false,
+   "tolerated": [
+    {
+     "line": "Binary search never doubles, and costs one per level. Log n.",
+     "said": "log n",
+     "heard": "login"
+    },
+    {
+     "line": "At a million keys, with the constant in each recurrence set to one, those solve to about twenty one million units of work, twenty probes, and eight point eight million units.",
+     "said": "solve",
+     "heard": "solved"
+    }
+   ]
   },
   "13": {
-   "hash": "aa10af8ca1061b4f",
+   "hash": "ca285b162ed69e9b",
    "takes": [
-    "4ded99c22b24e60ce5f5",
-    "5245682c7f1435212d94",
-    "69390f593a5548f9a9ee"
+    "4c414c73ff38b8aeb344",
+    "40aaa15df20904bad038",
+    "16b2260964589857c274"
    ],
-   "duration": 10.296,
+   "duration": 9.29,
    "lines": [
     {
      "text": "Prove it, one of three.",
      "start": 0.15,
-     "end": 2.148
+     "end": 1.667
     },
     {
      "text": "T of n equals seven T of n over two, plus n squared.",
-     "start": 2.568,
-     "end": 6.808
+     "start": 2.087,
+     "end": 7.126
     },
     {
-     "text": "Which end of the column wins?",
-     "start": 7.628,
-     "end": 9.946
+     "text": "Which end wins?",
+     "start": 7.946,
+     "end": 8.94
     }
    ],
-   "lufs": -16.3,
+   "lufs": -16.4,
    "true_peak": -1.9,
-   "wpm": 140,
+   "wpm": 136,
    "wer": 0.0,
    "exact": true,
    "tolerated": []
   },
   "13a": {
-   "hash": "b35157c2adfc8896",
+   "hash": "35348f7cc819913e",
    "takes": [
-    "544f730bf3471b8a7981",
-    "c53ebe7970a7a334a547"
+    "9e5c9d6b5867d28d867a",
+    "66da3e872f7ea4a918fb"
    ],
-   "duration": 13.573,
+   "duration": 15.2,
    "lines": [
     {
      "text": "The leaves. The watershed is n to the log base two of seven, about n to the two point eight one.",
      "start": 0.15,
-     "end": 6.92
+     "end": 6.993
     },
     {
      "text": "With seven calls instead of eight, the exponent falls from three to two point eight one.",
-     "start": 8.14,
-     "end": 13.223
+     "start": 8.213,
+     "end": 14.85
     }
    ],
-   "lufs": -16.6,
-   "true_peak": -1.8,
-   "wpm": 164,
+   "lufs": -16.1,
+   "true_peak": -2.6,
+   "wpm": 146,
    "wer": 0.0,
    "exact": true,
    "tolerated": []
   },
   "14": {
-   "hash": "a1315834ecf32d18",
+   "hash": "1daf410905e757b5",
    "takes": [
-    "c640a8e1eb5cbe9bf303",
-    "c957f6b8c9ee93750e3a",
-    "5fce7e418225977855dc"
+    "e9c13cfe51f7772371df",
+    "df59bed84abe8d6536d1",
+    "448e7aab1b641d63f30e"
    ],
-   "duration": 12.912,
+   "duration": 14.637,
    "lines": [
     {
      "text": "Prove it, two of three.",
      "start": 0.15,
-     "end": 2.301
+     "end": 1.866
     },
     {
      "text": "T of n equals two T of n over two, plus n over log n.",
-     "start": 2.721,
-     "end": 7.748
+     "start": 2.286,
+     "end": 8.987
     },
     {
      "text": "A colleague applies case two, and writes n log n. Right?",
-     "start": 8.168,
-     "end": 12.562
+     "start": 9.407,
+     "end": 14.287
     }
    ],
-   "lufs": -16.6,
-   "true_peak": -1.9,
-   "wpm": 144,
+   "lufs": -16.2,
+   "true_peak": -2.0,
+   "wpm": 127,
    "wer": 0.0,
    "exact": true,
    "tolerated": []
   },
   "14a": {
-   "hash": "db700d664149fae9",
+   "hash": "10f4756b20397197",
    "takes": [
-    "c65534d19c9f0df9304f",
-    "6903a4871516d9bd4b98",
-    "e5cf32cfb325a69078f9"
+    "4d09736cedbfe6a30663",
+    "8127c1c6ac3f8e77eb36",
+    "f902e9551b8573b85e7d"
    ],
-   "duration": 12.862,
+   "duration": 15.587,
    "lines": [
     {
      "text": "No case applies. This f sits below the watershed by only a log factor.",
      "start": 0.15,
-     "end": 5.407
+     "end": 5.587
     },
     {
      "text": "The general theorem gives n log log n.",
-     "start": 5.827,
-     "end": 8.469
+     "start": 6.007,
+     "end": 9.625
     },
     {
      "text": "The tree agrees. The levels add up like a harmonic series.",
-     "start": 8.889,
-     "end": 12.512
+     "start": 10.045,
+     "end": 15.237
     }
    ],
-   "lufs": -16.6,
-   "true_peak": -1.9,
-   "wpm": 154,
+   "lufs": -16.4,
+   "true_peak": -2.2,
+   "wpm": 127,
    "wer": 0.0,
    "exact": true,
    "tolerated": []
   },
   "15": {
-   "hash": "dacbe5e4e9e8dfe2",
+   "hash": "c7d88a91928c448c",
    "takes": [
-    "fc1e6fcf28a1184f0407",
-    "c2bc5cdb858d89a119b6",
-    "ba3f3c958abf18828d92"
+    "aacb3f2e18c1502620aa",
+    "43c44dd5cc44c160901b",
+    "341bc3746e9aa9bf5168"
    ],
-   "duration": 15.368,
+   "duration": 17.048,
    "lines": [
     {
      "text": "Prove it, three of three.",
      "start": 0.15,
-     "end": 1.939
+     "end": 2.118
     },
     {
      "text": "T of n equals four T of n over two, plus n. The Master theorem says n squared.",
-     "start": 2.359,
-     "end": 8.601
+     "start": 2.538,
+     "end": 10.732
     },
     {
      "text": "Your induction with a constant times n squared ends at that, plus n. What now?",
-     "start": 9.021,
-     "end": 15.018
+     "start": 11.152,
+     "end": 16.698
     }
    ],
-   "lufs": -16.6,
-   "true_peak": -1.9,
-   "wpm": 148,
+   "lufs": -16.0,
+   "true_peak": -2.2,
+   "wpm": 134,
    "wer": 0.0,
    "exact": true,
    "tolerated": []
   },
   "15a": {
-   "hash": "a9bc1bddb1280773",
+   "hash": "f8303ea5a6ce8186",
    "takes": [
-    "f454094b86945363ae23",
-    "9c70ee277aac4363f4fd",
-    "8093f8de4d11a11ca726"
+    "ba696507300bc8dfbf19",
+    "69bddff128c385e67dba",
+    "83a52e8688ba258b5a50"
    ],
-   "duration": 17.49,
+   "duration": 19.488,
    "lines": [
     {
      "text": "Strengthen the guess. A bigger constant never helps, because the plus n sits outside it.",
      "start": 0.15,
-     "end": 5.522
+     "end": 6.522
     },
     {
      "text": "Subtract a linear term, and the step closes. The theorem was right.",
-     "start": 5.942,
-     "end": 10.068
+     "start": 6.942,
+     "end": 11.598
     },
     {
      "text": "A recurrence bounds what one algorithm costs. Next, how to prove that no algorithm can do better.",
-     "start": 10.488,
-     "end": 17.14
+     "start": 12.018,
+     "end": 19.138
     }
    ],
-   "lufs": -16.5,
-   "true_peak": -1.8,
-   "wpm": 151,
+   "lufs": -16.4,
+   "true_peak": -2.3,
+   "wpm": 135,
    "wer": 0.0,
    "exact": true,
    "tolerated": []

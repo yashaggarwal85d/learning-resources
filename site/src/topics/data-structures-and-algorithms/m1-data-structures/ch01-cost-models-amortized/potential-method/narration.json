@@ -81,7 +81,8 @@
         "The stack's coins sat on its keys. So phi is the number of keys.",
         "A push costs one. Phi rises by one.",
         "The amortized cost is two.",
-        "Popping several keys costs one for each key. Phi falls by the same amount.",
+        "Popping several keys costs one for each key.",
+        "The potential falls by the same amount.",
         "The amortized cost is zero.",
         {
           "beat": 0.3
@@ -166,10 +167,11 @@
     },
     {
       "lines": [
-        "The potential must drop by about the number of keys that get copied.",
+        "The potential must drop by about the number of keys",
+        "that get copied.",
         "Then the resize is paid for.",
         "Under shrink at a quarter, the pops fill the gauge.",
-        "Then the shrink spends it.",
+        "Then the shrink pays it.",
         {
           "beat": 0.3
         },
@@ -181,11 +183,13 @@
       "lines": [
         "This is resize hysteresis.",
         "The grow and shrink thresholds must leave a gap proportional to the capacity.",
-        "So after any resize, a fixed fraction of the capacity in operations must pass before the next one... enough to refill the gauge.",
+        "So after any resize, operations equal to a fixed fraction of the capacity must pass before the next one.",
+        "Enough to refill the gauge.",
         {
           "beat": 0.3
         },
-        "Halving at a quarter lands the vector close to half full.",
+        "Halving at a quarter",
+        "lands the vector close to half full.",
         "Shrinking at a half leaves the vector one push from full.",
         "Any fixed shrink fraction below a half works."
       ]
@@ -224,15 +228,19 @@
         "Before, phi is twenty four minus twelve, which is twelve. After, twenty six minus eighteen, which is eight.",
         "The gauge drops only four, because growing by one and a half leaves the vector two thirds full, not half.",
         "So the amortized cost is thirteen minus four. Nine. And it keeps growing with the vector.",
-        "Use three n minus two cap instead, zero at two thirds. Then every append costs at most four."
+        "Use three n minus two cap instead.",
+        "Zero it at two thirds.",
+        "Then every append costs at most four."
       ]
     },
     {
       "lines": [
         "Fill the vector with more than a million keys. Push once.",
-        "Now use the rule that shrinks at half full.",
+        "Now use the rule.",
+        "It shrinks at half full.",
         "Run one thousand rounds of pop, pop, push, push.",
-        "About how much do the thousand rounds cost in total?"
+        "About how much do the thousand rounds cost?",
+        "In total?"
       ],
       "answer": [
         "About two point one billion.",

@@ -1,731 +1,899 @@
 {
  "topic": "dsa.lower-bounds-adversary-arguments",
- "voice": "tara-v1",
+ "voice": "breeze-mellow-v2",
+ "asr": "large-v3-turbo",
  "clips": {
   "01": {
-   "hash": "18dd098caa2b7d22",
-   "duration": 38.68,
+   "hash": "856fca8cf6dce2b0",
+   "takes": [
+    "b0c565d6fa025619d12b",
+    "9d54548ca09cef5dd016",
+    "8670511da2bd003b0ac3",
+    "fd7fa10142af2112c77b"
+   ],
+   "duration": 47.516,
    "lines": [
     {
-     "text": "You can now bound what an algorithm costs.",
+     "text": "So far we priced what one algorithm costs. A lower bound asks the opposite: what must every algorithm pay?",
      "start": 0.15,
-     "end": 2.502
+     "end": 9.045
     },
     {
-     "text": "A lower bound says what every algorithm in a model must pay, and an adversary is how you prove it.",
-     "start": 2.922,
-     "end": 8.705
+     "text": "Take a million keys and three colleagues, who may only compare keys. One promises to sort any input in fifteen million comparisons. One promises to find the smallest and largest in one point two million. One promises to decide whether all keys differ in five million.",
+     "start": 9.995,
+     "end": 32.232
     },
     {
-     "text": "Take the vector of a million keys. Three colleagues, who only compare keys, each promise something about every input.",
-     "start": 9.525,
-     "end": 17.132
+     "text": "You cannot test your way to a refutation, because you would have to find the bad input first.",
+     "start": 32.652,
+     "end": 39.39
     },
     {
-     "text": "Sort any input in at most fifteen million comparisons. Find the minimum and the maximum in at most one point two million. Say whether all keys are distinct in at most five million.",
-     "start": 17.552,
-     "end": 28.728
-    },
-    {
-     "text": "No test can refute the words any input... you would need the bad input in hand.",
-     "start": 29.448,
-     "end": 34.308
-    },
-    {
-     "text": "By the end, you will refute all three without running anything.",
-     "start": 34.728,
-     "end": 38.33
+     "text": "So we will use an adversary instead, and refute all three without running a single program.",
+     "start": 39.81,
+     "end": 47.166
     }
    ],
    "lufs": -16.4,
-   "true_peak": -1.4,
-   "wpm": 166,
-   "wer": 0.0
+   "true_peak": -1.9,
+   "wpm": 125,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
   },
   "02": {
-   "hash": "1ce186783dbb16ca",
-   "duration": 35.116,
+   "hash": "26cb19c8ad605cf0",
+   "takes": [
+    "9e28c7ce70fd0cb933c2",
+    "7e85b36e912278a9f99d",
+    "13e9ce3a796622d03cec",
+    "1eed5dd9c1e06343fbaa"
+   ],
+   "duration": 42.481,
    "lines": [
     {
-     "text": "Only comparisons tell the algorithm anything about the keys.",
+     "text": "If the only thing an algorithm may do is compare, then everything it learns is a string of yes or no answers.",
      "start": 0.15,
-     "end": 3.561
+     "end": 7.84
     },
     {
-     "text": "So, its whole run on one input is nothing but the path of answers that it gets.",
-     "start": 3.981,
-     "end": 9.033
+     "text": "Draw every possible string for three keys and you get a binary tree. Each internal node is one comparison; each leaf is a finished run that reports one ordering.",
+     "start": 8.66,
+     "end": 19.629
     },
     {
-     "text": "Draw every path for three keys, and you get a tree. A node for each comparison. A leaf for each finished run, holding the order it reports.",
-     "start": 9.753,
-     "end": 19.277
+     "text": "How much a given input costs is how deep its leaf sits. The worst case is the height of the tree.",
+     "start": 20.049,
+     "end": 27.315
     },
     {
-     "text": "An input's cost is the depth of its leaf. The worst case is the height of the tree.",
-     "start": 19.697,
-     "end": 25.093
-    },
-    {
-     "text": "From here, one unit of cost is one comparison. Everything else is free, so a lower bound on comparisons is a lower bound on time, never an upper bound.",
-     "start": 25.813,
-     "end": 34.766
+     "text": "Notice the unit has changed. We now count comparisons, not word operations, and everything else is free, so a lower bound here limits time from below only; it can never serve as an upper bound.",
+     "start": 27.735,
+     "end": 42.131
     }
    ],
    "lufs": -16.4,
-   "true_peak": -1.4,
-   "wpm": 171,
-   "wer": 0.0
+   "true_peak": -1.9,
+   "wpm": 151,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
   },
   "03": {
-   "hash": "63e3a51f5ab6128e",
-   "duration": 6.959,
+   "hash": "093dc3b84bf7d9ae",
+   "takes": [
+    "9abd570cc9e29e5ba19e",
+    "7a068a58a5aac59e97e6"
+   ],
+   "duration": 13.097,
    "lines": [
     {
-     "text": "Three keys, six possible orders.",
+     "text": "Three keys can arrive in six different orders.",
      "start": 0.15,
-     "end": 2.495
+     "end": 3.15
     },
     {
-     "text": "Can any comparison sort finish every input within two comparisons?",
-     "start": 3.315,
-     "end": 6.609
+     "text": "Think about what two comparisons can distinguish. Can any comparison sort finish every input of three keys with just two?",
+     "start": 3.97,
+     "end": 12.747
     }
    ],
-   "lufs": -16.4,
-   "true_peak": -1.4,
-   "wpm": 129,
-   "wer": 0.0
+   "lufs": -16.5,
+   "true_peak": -1.9,
+   "wpm": 128,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
   },
   "03a": {
-   "hash": "4dd2132205c6d870",
-   "duration": 21.044,
+   "hash": "7a2b5bfeed67c04a",
+   "takes": [
+    "181a5dfb0c437d4efe06",
+    "3e6198c3888515e018cc",
+    "d802defec50a9c373924"
+   ],
+   "duration": 28.69,
    "lines": [
     {
      "text": "No. Some input needs three.",
      "start": 0.15,
-     "end": 3.561
+     "end": 2.406
     },
     {
-     "text": "Two yes or no answers have four outcomes, so a tree of height two has at most four leaves. Six orders need six.",
-     "start": 3.981,
-     "end": 11.038
+     "text": "Two yes or no answers give four outcomes, so a tree of height two has at most four leaves, but six orders need six.",
+     "start": 2.826,
+     "end": 12.212
     },
     {
-     "text": "An adversary that always keeps the larger half of the orders still has two alive after two comparisons.",
-     "start": 11.458,
-     "end": 16.831
-    },
-    {
-     "text": "Three comparisons do suffice... insertion sort's tree shows it.",
-     "start": 17.251,
-     "end": 20.694
+     "text": "Another way to say it: an adversary always keeps the bigger half of the orders alive, and two orders are still alive after two comparisons. Three do suffice, as insertion sort's tree shows.",
+     "start": 12.632,
+     "end": 28.34
     }
    ],
    "lufs": -16.5,
-   "true_peak": -1.4,
-   "wpm": 157,
-   "wer": 0.0
+   "true_peak": -1.9,
+   "wpm": 130,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
   },
   "04": {
-   "hash": "35e149a5fb83060d",
-   "duration": 47.067,
+   "hash": "de996871d42a62bb",
+   "takes": [
+    "29b09d169e2539b4fea5",
+    "a1c0e2944052a9689433",
+    "1f1aa3bb34cea1ca0a2f",
+    "a2d4277b7f11ab582a72",
+    "1135cd9d3d1717517ec4",
+    "edb9fe8f76567cbe4e41"
+   ],
+   "duration": 51.692,
    "lines": [
     {
-     "text": "A sort must be able to output any of the n factorial orders, so its tree has at least that many leaves.",
+     "text": "Generalise the counting. A correct sort must be able to produce every one of the n factorial orders, so its tree needs at least that many leaves.",
      "start": 0.15,
-     "end": 7.055
+     "end": 10.574
     },
     {
-     "text": "A tree of height h has at most two to the h leaves. So the height is at least log base two of n factorial.",
-     "start": 7.475,
-     "end": 14.788
+     "text": "A tree of height h has at most two to the h leaves. So the height is at least log of n factorial, and that is order n log n.",
+     "start": 10.994,
+     "end": 20.988
     },
     {
-     "text": "That is theta of n log n.",
-     "start": 15.508,
-     "end": 18.012
+     "text": "Try it on five keys. There are a hundred and twenty orders, between sixty four and a hundred and twenty eight, so seven comparisons are unavoidable.",
+     "start": 21.808,
+     "end": 32.169
     },
     {
-     "text": "Five keys: one hundred and twenty orders sit between sixty-four and one hundred and twenty-eight, so the height is at least seven.",
-     "start": 18.432,
-     "end": 26.715
+     "text": "For a million keys, some input costs at least eighteen and a half million.",
+     "start": 32.589,
+     "end": 39.149
     },
     {
-     "text": "At a million keys, every comparison sort has an input that costs about eighteen and a half million comparisons.",
-     "start": 27.435,
-     "end": 33.234
+     "text": "The worst case of merge sort is only two point five percent above that.",
+     "start": 39.569,
+     "end": 45.401
     },
     {
-     "text": "Merge sort's worst case is two point five percent above that floor. Last reel's number counted a unit for every key at every level, so it was higher.",
-     "start": 33.654,
-     "end": 42.931
-    },
-    {
-     "text": "Upper and lower bound meet, so sorting is settled.",
-     "start": 43.351,
-     "end": 46.717
+     "text": "The upper bound and the lower bound meet. Sorting by comparison is settled.",
+     "start": 46.221,
+     "end": 51.342
     }
    ],
    "lufs": -16.4,
-   "true_peak": -1.3,
-   "wpm": 171,
-   "wer": 0.0
+   "true_peak": -1.9,
+   "wpm": 142,
+   "wer": 0.037037037037037035,
+   "exact": false,
+   "tolerated": [
+    {
+     "line": "Generalise the counting. A correct sort must be able to produce every one of the n factorial orders, so its tree needs at least that many leaves.",
+     "said": "generalise",
+     "heard": "generalize"
+    }
+   ]
   },
   "05": {
-   "hash": "9fe41c6eed4b5854",
-   "duration": 25.546,
+   "hash": "4a8d14eaa59d0dd0",
+   "takes": [
+    "1aa311aad2080ea61000",
+    "ea2990a805491d273b64",
+    "1cb2656a3a9790c0d1f2",
+    "4a1e8c5f06ec17220e4d"
+   ],
+   "duration": 29.628,
    "lines": [
     {
      "text": "The bound holds on average too.",
      "start": 0.15,
-     "end": 2.59
+     "end": 2.184
     },
     {
      "text": "With every order equally likely, any comparison sort's average leaf depth is at least the floor of log base two of n factorial. A sharper count even removes the floor.",
-     "start": 3.01,
-     "end": 13.225
+     "start": 2.604,
+     "end": 16.069
     },
     {
      "text": "The proof is the move you just watched. Hang the two deepest sibling leaves under the shallowest leaf, and the average drops.",
-     "start": 13.945,
-     "end": 21.097
+     "start": 16.789,
+     "end": 24.411
     },
     {
      "text": "So the cheapest tree is balanced, and luck does not help on average.",
-     "start": 21.517,
-     "end": 25.196
-    }
-   ],
-   "lufs": -16.4,
-   "true_peak": -1.4,
-   "wpm": 167,
-   "wer": 0.0
-  },
-  "06": {
-   "hash": "e5dae288f2db2498",
-   "duration": 34.943,
-   "lines": [
-    {
-     "text": "The argument used nothing about sorting, except the number of possible answers.",
-     "start": 0.15,
-     "end": 5.164
-    },
-    {
-     "text": "A problem with K answers needs at least log base two of K yes or no questions. Round it up.",
-     "start": 5.584,
-     "end": 12.438
-    },
-    {
-     "text": "Searching the sorted vector: a million and one answers, twenty questions, and binary search uses twenty. On a key that is absent, no probe can say equal.",
-     "start": 13.158,
-     "end": 22.264
-    },
-    {
-     "text": "Merging two runs of four: seventy interleavings, so seven comparisons. The standard merge uses seven. Sorting five keys: seven, and seven.",
-     "start": 22.684,
-     "end": 32.73
-    },
-    {
-     "text": "Here, counting is tight.",
-     "start": 33.15,
-     "end": 34.593
-    }
-   ],
-   "lufs": -16.7,
-   "true_peak": -1.3,
-   "wpm": 144,
-   "wer": 0.0
-  },
-  "07": {
-   "hash": "7ba50f31bf1e7315",
-   "duration": 12.061,
-   "lines": [
-    {
-     "text": "The largest of a million keys has a million possible answers, so counting gives twenty yes or no questions.",
-     "start": 0.15,
-     "end": 6.239
-    },
-    {
-     "text": "How many comparisons must every comparison algorithm make in its worst case?",
-     "start": 7.059,
-     "end": 11.711
-    }
-   ],
-   "lufs": -16.4,
-   "true_peak": -1.4,
-   "wpm": 154,
-   "wer": 0.0
-  },
-  "07a": {
-   "hash": "4402f75b3920ee00",
-   "duration": 23.471,
-   "lines": [
-    {
-     "text": "Nine hundred and ninety-nine thousand, nine hundred and ninety-nine.",
-     "start": 0.15,
-     "end": 4.793
-    },
-    {
-     "text": "Until a key has lost a comparison, it might be the largest.",
-     "start": 5.213,
-     "end": 9.108
-    },
-    {
-     "text": "So every key but one must lose, and one comparison makes at most one loser.",
-     "start": 9.528,
-     "end": 14.245
-    },
-    {
-     "text": "Counting is a true bound, just a weak one. Twenty unrestricted questions could find the maximum, but a comparison cannot ask them.",
-     "start": 14.665,
-     "end": 23.121
+     "start": 24.831,
+     "end": 29.278
     }
    ],
    "lufs": -16.5,
-   "true_peak": -1.4,
-   "wpm": 153,
-   "wer": 0.0
+   "true_peak": -1.9,
+   "wpm": 144,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "06": {
+   "hash": "da929f6e2c11bd1d",
+   "takes": [
+    "498a560d5ab1659aebae",
+    "7017b42e996116541cf8",
+    "e1f47559ee5c39ddd1ff",
+    "c3521e9952b9fdbab94b"
+   ],
+   "duration": 44.35,
+   "lines": [
+    {
+     "text": "Look at what the argument actually used. Nothing about sorting, only the number of possible answers.",
+     "start": 0.15,
+     "end": 7.092
+    },
+    {
+     "text": "With K answers you need at least log base two of K yes or no questions, rounded up, whatever those questions are.",
+     "start": 7.512,
+     "end": 15.06
+    },
+    {
+     "text": "Try it. Searching the sorted vector has a million and one answers, so twenty questions, and binary search uses exactly twenty. Merging two runs of four has seventy interleavings, so seven, and the standard merge meets it. Sorting five keys: seven again.",
+     "start": 15.88,
+     "end": 38.2
+    },
+    {
+     "text": "In these cases counting is tight. Hold that thought, because the next case will break it.",
+     "start": 38.62,
+     "end": 44.0
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 129,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "07": {
+   "hash": "487788ff1781595f",
+   "takes": [
+    "ae6be3f05a0837f97b6a",
+    "f5c9f692f0bed733b8cc"
+   ],
+   "duration": 20.477,
+   "lines": [
+    {
+     "text": "Finding the largest of a million keys has a million answers. Counting says twenty questions.",
+     "start": 0.15,
+     "end": 7.248
+    },
+    {
+     "text": "Before you trust that, ask what a comparison can tell you. It names a winner and a loser. How many comparisons must every comparison algorithm make in the worst case?",
+     "start": 8.068,
+     "end": 20.127
+    }
+   ],
+   "lufs": -16.1,
+   "true_peak": -2.3,
+   "wpm": 132,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "07a": {
+   "hash": "4bdc2e0cf36cdcbc",
+   "takes": [
+    "a953cda81fa00c9f82ca",
+    "230c7f82d35a8044a76e",
+    "62dae37e0f34e4c35e70"
+   ],
+   "duration": 27.693,
+   "lines": [
+    {
+     "text": "Nine hundred and ninety nine thousand, nine hundred and ninety nine.",
+     "start": 0.15,
+     "end": 5.524
+    },
+    {
+     "text": "A key might still be the largest until it has lost once. So all keys but one must lose, and each comparison produces just one loser.",
+     "start": 5.944,
+     "end": 16.338
+    },
+    {
+     "text": "Counting gave a true bound, but a very weak one: twenty free-form questions could find the maximum, but a comparison is not allowed to ask them.",
+     "start": 16.759,
+     "end": 27.343
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -2.2,
+   "wpm": 134,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
   },
   "08": {
-   "hash": "ad7eb816ef4db8b9",
-   "duration": 35.262,
+   "hash": "7effa2b7b1b92ac2",
+   "takes": [
+    "8c3266065b3400b12051",
+    "30767874233848de5c2b",
+    "79c9b461038be5671e23",
+    "5db07630e45ed40db71e",
+    "6ed1d71b5026ef12d209",
+    "a2bac220b4e1ca0ba298"
+   ],
+   "duration": 41.401,
    "lines": [
     {
      "text": "That was an adversary argument. Its answers pretended that each key's value was its own number.",
      "start": 0.15,
-     "end": 5.969
+     "end": 6.37
     },
     {
      "text": "The adversary answers each comparison as it likes, with one rule. The answers so far must always fit some real input.",
-     "start": 6.389,
-     "end": 13.432
+     "start": 6.79,
+     "end": 16.388
     },
     {
      "text": "It assumes nothing about the algorithm, so it covers every algorithm at once.",
-     "start": 13.852,
-     "end": 18.26
+     "start": 16.808,
+     "end": 22.634
     },
     {
      "text": "Here, a tournament stops after six comparisons. Two keys were never beaten.",
-     "start": 18.98,
-     "end": 23.767
+     "start": 23.354,
+     "end": 29.431
     },
     {
      "text": "Raise one of them, and every answer still holds... but the maximum changes.",
-     "start": 24.187,
-     "end": 29.631
+     "start": 29.851,
+     "end": 35.359
     },
     {
      "text": "The algorithm cannot tell the two inputs apart. It is wrong on one of them.",
-     "start": 30.051,
-     "end": 34.912
+     "start": 35.779,
+     "end": 41.051
     }
    ],
    "lufs": -16.4,
-   "true_peak": -1.4,
-   "wpm": 153,
-   "wer": 0.0
+   "true_peak": -1.9,
+   "wpm": 130,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
   },
   "09": {
-   "hash": "9337a5cc6116a041",
-   "duration": 12.832,
+   "hash": "a8b61073861fb046",
+   "takes": [
+    "3d0730be179c115bbee8",
+    "1cdf5925f4b3cd8aac37"
+   ],
+   "duration": 16.403,
    "lines": [
     {
-     "text": "Two scans find the maximum, and then the minimum of the rest, in seven and then six... thirteen comparisons.",
+     "text": "Two scans find the largest and then the smallest of the rest in seven plus six, thirteen comparisons. That is an upper bound.",
      "start": 0.15,
-     "end": 7.998
+     "end": 8.899
     },
     {
-     "text": "What is the fewest any algorithm can guarantee for eight keys?",
-     "start": 8.818,
-     "end": 12.482
+     "text": "Can you do better? What is the fewest comparisons any algorithm can guarantee on eight keys?",
+     "start": 9.719,
+     "end": 16.053
     }
    ],
-   "lufs": -16.5,
-   "true_peak": -1.4,
-   "wpm": 140,
-   "wer": 0.0
+   "lufs": -16.4,
+   "true_peak": -2.9,
+   "wpm": 143,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
   },
   "09a": {
-   "hash": "76de33d1aa35c586",
-   "duration": 19.691,
+   "hash": "7905b9c75884eaa7",
+   "takes": [
+    "843d9540dd6815865d7f",
+    "37204c60d17ac4c01f30",
+    "69f8b2c5b650c660fd4b"
+   ],
+   "duration": 18.325,
    "lines": [
     {
      "text": "Ten.",
      "start": 0.15,
-     "end": 1.08
+     "end": 0.637
     },
     {
-     "text": "Pair the keys first. Four comparisons.",
-     "start": 1.5,
-     "end": 4.315
+     "text": "Pair the keys up first, four comparisons. The largest can only be a winner of a pair, and the smallest only a loser, so three more comparisons each.",
+     "start": 1.057,
+     "end": 11.034
     },
     {
-     "text": "The maximum can only be a pair's winner, and the minimum only a pair's loser. So three more for each.",
-     "start": 4.735,
-     "end": 10.37
-    },
-    {
-     "text": "Four plus three plus three, ten. That is an upper bound. The next step shows nobody can guarantee nine.",
-     "start": 10.79,
-     "end": 19.341
+     "text": "Four plus three plus three makes ten. The next step shows that nobody can guarantee nine.",
+     "start": 11.454,
+     "end": 17.975
     }
    ],
-   "lufs": -16.4,
-   "true_peak": -1.4,
-   "wpm": 140,
-   "wer": 0.0
+   "lufs": -16.5,
+   "true_peak": -1.9,
+   "wpm": 147,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
   },
   "10": {
-   "hash": "105c0729c0c078a0",
-   "duration": 51.097,
+   "hash": "aabceaf135af251f",
+   "takes": [
+    "398efa8ab65980176394",
+    "fd603ca38dc6d0cfd510",
+    "65766019db200c814176",
+    "3e0f50608e9f571ea4de",
+    "da15e7419e61fc601ebe",
+    "9dd0d3616be5a99d2b3f",
+    "158f45d87f9bd690bff0",
+    "5b955f18c45f37e5d2cc"
+   ],
+   "duration": 56.603,
    "lines": [
     {
      "text": "Now the referee keeps a scoreboard, with four columns.",
      "start": 0.15,
-     "end": 2.968
+     "end": 3.49
     },
     {
      "text": "Until a key has lost, it could be the maximum. Until it has won, it could be the minimum.",
-     "start": 3.388,
-     "end": 10.215
+     "start": 3.91,
+     "end": 10.025
     },
     {
      "text": "So a correct answer needs fourteen units: every key but the maximum must lose once, and every key but the minimum must win once.",
-     "start": 10.635,
-     "end": 18.458
+     "start": 10.445,
+     "end": 18.605
     },
     {
      "text": "Only a comparison of two untested keys gives two units, and there are at most four of those. The referee answers every other comparison so that it gives at most one. A key that only won always beats a key that only lost, for nothing.",
-     "start": 19.178,
-     "end": 34.067
+     "start": 19.325,
+     "end": 40.2
     },
     {
      "text": "Watch the units climb to fourteen, while the comparisons stop at ten.",
-     "start": 34.487,
-     "end": 38.823
+     "start": 40.62,
+     "end": 45.122
     },
     {
-     "text": "So every algorithm needs at least three n over two, minus two. Pairing meets it. For a million keys, about one and a half million.",
-     "start": 39.243,
-     "end": 50.747
+     "text": "So every algorithm needs at least three n over two, minus two.",
+     "start": 45.542,
+     "end": 51.189
+    },
+    {
+     "text": "Pairing meets it.",
+     "start": 51.609,
+     "end": 52.645
+    },
+    {
+     "text": "For a million keys, about one and a half million.",
+     "start": 53.065,
+     "end": 56.253
     }
    ],
    "lufs": -16.4,
-   "true_peak": -1.4,
-   "wpm": 157,
-   "wer": 0.0
+   "true_peak": -1.9,
+   "wpm": 142,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
   },
   "11": {
-   "hash": "72638914f3863615",
-   "duration": 11.046,
+   "hash": "a222fea17de66c13",
+   "takes": [
+    "4cb6075920054221106a",
+    "3611a2dbd6bbf44358f9"
+   ],
+   "duration": 14.041,
    "lines": [
     {
-     "text": "Are all the keys distinct? Two possible answers, so counting gives one question.",
+     "text": "Now a yes or no question: are all the keys distinct? Counting gives two answers, so one question.",
      "start": 0.15,
-     "end": 5.099
+     "end": 7.338
     },
     {
-     "text": "What must a comparison algorithm pay on a million keys, in its worst case?",
-     "start": 5.919,
-     "end": 10.696
+     "text": "But be careful. What must a comparison algorithm pay on a million keys in the worst case?",
+     "start": 8.158,
+     "end": 13.691
     }
    ],
    "lufs": -16.5,
-   "true_peak": -1.4,
-   "wpm": 147,
-   "wer": 0.0
+   "true_peak": -1.9,
+   "wpm": 150,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
   },
   "11a": {
-   "hash": "0580983c7b9bd394",
-   "duration": 19.385,
+   "hash": "2379f43210ffabcf",
+   "takes": [
+    "7d6c33cd90dc200c5200",
+    "e580afc8acee0f915ea2",
+    "f7b69b21097184818384"
+   ],
+   "duration": 19.81,
    "lines": [
     {
      "text": "About eighteen and a half million.",
      "start": 0.15,
-     "end": 3.16
+     "end": 2.055
     },
     {
-     "text": "The answer has two values, but the work behind it does not.",
-     "start": 3.58,
-     "end": 7.255
-    },
-    {
-     "text": "To say distinct safely, an algorithm must have learned the whole sorted order. So it pays at least the sorting bound.",
-     "start": 7.675,
-     "end": 13.795
+     "text": "The answer has two values, but the knowledge behind it is large. To say distinct safely, the algorithm must effectively learn the whole sorted order, so it pays the sorting bound.",
+     "start": 2.475,
+     "end": 14.8
     },
     {
      "text": "One question is the counting bound: true, and useless here.",
-     "start": 14.215,
-     "end": 19.035
+     "start": 15.22,
+     "end": 19.46
     }
    ],
    "lufs": -16.5,
-   "true_peak": -1.4,
-   "wpm": 152,
-   "wer": 0.0
+   "true_peak": -1.9,
+   "wpm": 142,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
   },
   "12": {
-   "hash": "093f092de5560660",
-   "duration": 37.288,
+   "hash": "f76aa43a8668614d",
+   "takes": [
+    "918092cecf007c475982",
+    "5bd91a74df3c2f27a24f",
+    "246978f60cd0b417d9cf",
+    "fad049a0de315f086a4d",
+    "0f1f067d668b87d751fe",
+    "8800cf9fda75e3091c70"
+   ],
+   "duration": 43.85,
    "lines": [
     {
      "text": "Suppose an algorithm says distinct, without ever comparing two keys that are neighbors in sorted order.",
      "start": 0.15,
-     "end": 5.869
+     "end": 6.705
     },
     {
      "text": "Nothing lies between them, so the adversary makes them equal.",
-     "start": 6.289,
-     "end": 10.131
+     "start": 7.125,
+     "end": 11.097
     },
     {
      "text": "Every answer stays the same. The algorithm still says distinct... and now it is wrong.",
-     "start": 10.851,
-     "end": 17.776
+     "start": 11.817,
+     "end": 18.079
     },
     {
      "text": "So every distinct answer rests on all the neighbor comparisons. Together they spell out the whole sorted order.",
-     "start": 18.196,
-     "end": 24.137
+     "start": 18.499,
+     "end": 26.767
     },
     {
      "text": "The tree needs at least n factorial leaves, and the sorting bound applies.",
-     "start": 24.557,
-     "end": 29.056
+     "start": 27.187,
+     "end": 33.212
     },
     {
      "text": "It even survives a stronger model, algebraic computation trees, which may also add, multiply, divide and take square roots.",
-     "start": 29.476,
-     "end": 36.938
-    }
-   ],
-   "lufs": -16.5,
-   "true_peak": -1.4,
-   "wpm": 146,
-   "wer": 0.0
-  },
-  "13": {
-   "hash": "1b40071aaf9fc96c",
-   "duration": 42.86,
-   "lines": [
-    {
-     "text": "The sorting bound is about one model, and one problem.",
-     "start": 0.15,
-     "end": 3.622
-    },
-    {
-     "text": "The model: only comparisons tell you about the keys. The problem: output the sorted order of any input.",
-     "start": 4.042,
-     "end": 12.327
-    },
-    {
-     "text": "It does not rule out radix sort, which reads keys as digits. Or a hash set, which computes with the bits of the keys, outside the model, and in exchange promises only expected linear time.",
-     "start": 13.047,
-     "end": 24.453
-    },
-    {
-     "text": "Nor a sort that is fast on an easy input, or a different problem, like putting the smallest half first, or a better constant.",
-     "start": 24.873,
-     "end": 32.482
-    },
-    {
-     "text": "And a problem's lower bound is not one algorithm's cost. Insertion sort's quadratic count is its own.",
-     "start": 32.902,
-     "end": 39.442
-    },
-    {
-     "text": "To beat a bound, change something it assumed.",
-     "start": 39.862,
-     "end": 42.51
-    }
-   ],
-   "lufs": -16.6,
-   "true_peak": -1.4,
-   "wpm": 157,
-   "wer": 0.0
-  },
-  "14": {
-   "hash": "bd8413ebc953d036",
-   "duration": 39.82,
-   "lines": [
-    {
-     "text": "Back to the three promises.",
-     "start": 0.15,
-     "end": 2.608
-    },
-    {
-     "text": "No comparison algorithm can keep any of the three, and you proved it without running anything.",
-     "start": 3.028,
-     "end": 7.894
-    },
-    {
-     "text": "A tree with n factorial leaves for the sort. A scoreboard of units for the minimum and maximum. The neighbor argument for distinctness.",
-     "start": 8.314,
-     "end": 15.415
-    },
-    {
-     "text": "Sorting and distinctness become possible once the keys are used as numbers. Sort them digit by digit, then make one scan for equal neighbors.",
-     "start": 16.135,
-     "end": 24.861
-    },
-    {
-     "text": "For the minimum and maximum, pairing is the best any comparison algorithm can do.",
-     "start": 25.281,
-     "end": 29.701
-    },
-    {
-     "text": "Every bound so far priced one run, on its worst input or on average. A data structure lives through a sequence. The next reel pulls that thread.",
-     "start": 30.121,
-     "end": 39.47
-    }
-   ],
-   "lufs": -16.5,
-   "true_peak": -1.3,
-   "wpm": 164,
-   "wer": 0.0
-  },
-  "15": {
-   "hash": "393a243d7e776bb7",
-   "duration": 10.109,
-   "lines": [
-    {
-     "text": "Merge two sorted runs of eight keys. Counting their interleavings gives fourteen comparisons.",
-     "start": 0.15,
-     "end": 6.056
-    },
-    {
-     "text": "What must every merge pay in its worst case?",
-     "start": 6.876,
-     "end": 9.759
+     "start": 33.632,
+     "end": 43.5
     }
    ],
    "lufs": -16.4,
-   "true_peak": -1.4,
-   "wpm": 131,
-   "wer": 0.0
+   "true_peak": -1.9,
+   "wpm": 125,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "13": {
+   "hash": "d205f67043b9d8f1",
+   "takes": [
+    "41e6970794c74131a9c9",
+    "7c7a01d1868f53f7098a",
+    "4e26c7cb678bed0539b8",
+    "2d727e58423df3e0b4ce",
+    "21d23e95ab3f6dc7984f"
+   ],
+   "duration": 48.359,
+   "lines": [
+    {
+     "text": "A lower bound is a precise statement, so be precise about what it excludes. Nothing more.",
+     "start": 0.15,
+     "end": 6.309
+    },
+    {
+     "text": "It covers one model: only comparisons reveal anything about the keys. And one problem: output the sorted order of any input.",
+     "start": 7.129,
+     "end": 17.608
+    },
+    {
+     "text": "So it leaves radix sort alone, which reads digits. It leaves hash sets alone, which compute on the bits and promise only expected linear time. It leaves fast cases alone, and different problems such as the smallest half first, and better constants.",
+     "start": 18.029,
+     "end": 36.216
+    },
+    {
+     "text": "And it is not the cost of any one algorithm: insertion sort's quadratic count is its own.",
+     "start": 36.636,
+     "end": 42.594
+    },
+    {
+     "text": "The practical lesson: to beat a bound, change something it assumed.",
+     "start": 43.014,
+     "end": 48.009
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 133,
+   "wer": 0.023809523809523808,
+   "exact": false,
+   "tolerated": [
+    {
+     "line": "So it leaves radix sort alone, which reads digits. It leaves hash sets alone, which compute on the bits and promise only expected linear time. It leaves fast cases alone, and different problems such as the smallest half first, and better constants.",
+     "said": "radix",
+     "heard": "radex"
+    }
+   ]
+  },
+  "14": {
+   "hash": "68a826f09728017a",
+   "takes": [
+    "7c6129543e4b78f63300",
+    "c077a2e12b7bc5952733",
+    "69458aff30f7c8fb27b3",
+    "43ae2d3d80733ee6a38c"
+   ],
+   "duration": 47.909,
+   "lines": [
+    {
+     "text": "Return to the three promises. None can be kept by a comparison algorithm, and you showed it without running anything.",
+     "start": 0.15,
+     "end": 8.222
+    },
+    {
+     "text": "The sort needed a tree with n factorial leaves. The minimum and maximum needed a scoreboard of units. The distinctness check needed a neighbour argument.",
+     "start": 9.042,
+     "end": 20.876
+    },
+    {
+     "text": "Escape is possible by using the keys as numbers: sort digit by digit and scan for equal neighbours. But for minimum and maximum, pairing is the best any comparison algorithm can do.",
+     "start": 21.296,
+     "end": 34.783
+    },
+    {
+     "text": "One more observation. Everything so far priced one run on its worst input. A data structure lives through a whole sequence of operations, and that is the next reel.",
+     "start": 35.203,
+     "end": 47.559
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -2.2,
+   "wpm": 133,
+   "wer": 0.04,
+   "exact": false,
+   "tolerated": [
+    {
+     "line": "The sort needed a tree with n factorial leaves. The minimum and maximum needed a scoreboard of units. The distinctness check needed a neighbour argument.",
+     "said": "neighbour",
+     "heard": "neighbor"
+    },
+    {
+     "line": "Escape is possible by using the keys as numbers: sort digit by digit and scan for equal neighbours. But for minimum and maximum, pairing is the best any comparison algorithm can do.",
+     "said": "neighbours",
+     "heard": "neighbors"
+    }
+   ]
+  },
+  "15": {
+   "hash": "b689fd6630757485",
+   "takes": [
+    "bc9b73dc4925958a6e00",
+    "36d083c181b2a62b4f1d"
+   ],
+   "duration": 15.609,
+   "lines": [
+    {
+     "text": "Merge two sorted runs of eight keys each. There are twelve thousand, eight hundred and seventy ways they can interleave, and counting gives fourteen comparisons.",
+     "start": 0.15,
+     "end": 10.465
+    },
+    {
+     "text": "Is that enough? What must every merge pay in the worst case?",
+     "start": 11.285,
+     "end": 15.259
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 138,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
   },
   "15a": {
-   "hash": "9d51424d788a0ce2",
-   "duration": 21.079,
+   "hash": "40f8e3a077dd44f3",
+   "takes": [
+    "7e63017c431a200d8502",
+    "7c7ffc82481c704219e4",
+    "60e4bd8b6130e29ca266"
+   ],
+   "duration": 20.206,
    "lines": [
     {
      "text": "Fifteen.",
      "start": 0.15,
-     "end": 0.949
+     "end": 0.838
     },
     {
-     "text": "Take the odd numbers as one run, and the even numbers as the other. In the merged order, every adjacent pair comes from different runs.",
-     "start": 1.369,
-     "end": 9.746
+     "text": "Let one run hold the odd numbers and the other the even ones. In the merged order, every neighbouring pair comes from different runs.",
+     "start": 1.258,
+     "end": 10.357
     },
     {
-     "text": "Only a direct comparison tells them apart, so all fifteen adjacent pairs must be compared.",
-     "start": 10.166,
-     "end": 15.327
-    },
-    {
-     "text": "Counting gave fourteen. An adversary can beat the count.",
-     "start": 15.747,
-     "end": 20.729
+     "text": "Only a direct comparison can separate those neighbours, so all fifteen must be compared. The adversary beat counting by one.",
+     "start": 10.777,
+     "end": 19.856
     }
    ],
-   "lufs": -16.6,
-   "true_peak": -1.2,
-   "wpm": 142,
-   "wer": 0.0
+   "lufs": -16.5,
+   "true_peak": -1.9,
+   "wpm": 134,
+   "wer": 0.05,
+   "exact": false,
+   "tolerated": [
+    {
+     "line": "Let one run hold the odd numbers and the other the even ones. In the merged order, every neighbouring pair comes from different runs.",
+     "said": "neighbouring",
+     "heard": "neighboring"
+    },
+    {
+     "line": "Only a direct comparison can separate those neighbours, so all fifteen must be compared. The adversary beat counting by one.",
+     "said": "neighbours",
+     "heard": "neighbors"
+    }
+   ]
   },
   "16": {
-   "hash": "a0127151302935a5",
-   "duration": 11.517,
+   "hash": "94b6c43842b4fb69",
+   "takes": [
+    "62b10980598d906790ef",
+    "ebb7d5503a3d642f6902",
+    "ebcc76aefa15d5e0791b"
+   ],
+   "duration": 15.623,
    "lines": [
     {
      "text": "A student's adversary for the maximum answers every comparison the same way: the first key named is larger.",
      "start": 0.15,
-     "end": 6.977
+     "end": 9.182
     },
     {
-     "text": "Does it prove that every algorithm needs n minus one comparisons?",
-     "start": 7.797,
-     "end": 11.167
+     "text": "Does that prove it?",
+     "start": 10.002,
+     "end": 10.925
+    },
+    {
+     "text": "Does every algorithm need one fewer than n comparisons?",
+     "start": 11.475,
+     "end": 15.273
     }
    ],
-   "lufs": -16.4,
-   "true_peak": -1.4,
-   "wpm": 151,
-   "wer": 0.0
+   "lufs": -16.5,
+   "true_peak": -1.9,
+   "wpm": 119,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
   },
   "16a": {
-   "hash": "9a4d3614a3868199",
-   "duration": 26.845,
+   "hash": "395f8ba082d50218",
+   "takes": [
+    "8aa1d6f56cf173d91a46",
+    "e7ad37403654ba522bbe",
+    "521818b76edea99b067b",
+    "3e7ef596233a438cab20"
+   ],
+   "duration": 25.668,
    "lines": [
     {
      "text": "No. Its answers can fit no input.",
      "start": 0.15,
-     "end": 3.437
+     "end": 3.51
     },
     {
      "text": "Ask a against b, b against c, then c against a. It says a beats b beats c beats a. No input fits that.",
-     "start": 3.857,
-     "end": 16.716
+     "start": 3.93,
+     "end": 15.03
     },
     {
      "text": "So the run it forces is not a run on any input, and it proves nothing.",
-     "start": 17.136,
-     "end": 22.024
+     "start": 15.45,
+     "end": 20.534
     },
     {
      "text": "An adversary may decide late, but never inconsistently.",
-     "start": 22.444,
-     "end": 26.495
+     "start": 20.954,
+     "end": 25.318
     }
    ],
    "lufs": -16.4,
-   "true_peak": -1.4,
-   "wpm": 123,
-   "wer": 0.0
+   "true_peak": -1.9,
+   "wpm": 129,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
   },
   "17": {
-   "hash": "685f45d91350d9dd",
-   "duration": 5.4,
+   "hash": "8cf593df0ba83591",
+   "takes": [
+    "b5023e8f4b02d400a18f"
+   ],
+   "duration": 6.371,
    "lines": [
     {
      "text": "Which of these claims about a million keys does the comparison sorting lower bound refute?",
      "start": 0.15,
-     "end": 5.05
+     "end": 6.021
     }
    ],
    "lufs": -16.1,
-   "true_peak": -1.6,
-   "wpm": 167,
-   "wer": 0.0
+   "true_peak": -4.8,
+   "wpm": 141,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
   },
   "17a": {
-   "hash": "825980e1e0b08424",
-   "duration": 15.616,
+   "hash": "5dd57162c7c47be2",
+   "takes": [
+    "066c8ea1b780d5bc00ea",
+    "3b3d89b641590a4c79ff",
+    "57469480053dbd3b043d"
+   ],
+   "duration": 17.427,
    "lines": [
     {
      "text": "The comparison sort that averages seventeen million.",
      "start": 0.15,
-     "end": 3.052
+     "end": 3.306
     },
     {
      "text": "The average cost is at least about eighteen point five million comparisons.",
-     "start": 3.472,
-     "end": 7.251
+     "start": 3.726,
+     "end": 8.886
     },
     {
      "text": "Radix sort is outside the model. A sorted input is one easy input. And the ten largest is a different problem.",
-     "start": 7.671,
-     "end": 15.266
+     "start": 9.306,
+     "end": 17.077
     }
    ],
-   "lufs": -16.4,
-   "true_peak": -1.4,
-   "wpm": 154,
-   "wer": 0.0
+   "lufs": -16.5,
+   "true_peak": -1.9,
+   "wpm": 138,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
   }
  }
 }

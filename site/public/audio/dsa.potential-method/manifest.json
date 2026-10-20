@@ -1,891 +1,1106 @@
 {
  "topic": "dsa.potential-method",
- "voice": "tara-v1",
+ "voice": "breeze-mellow-v2",
+ "asr": "large-v3-turbo",
  "clips": {
   "01": {
-   "hash": "efb7d08a8fa49e2a",
-   "duration": 25.266,
+   "hash": "49e2aca974ed3397",
+   "takes": [
+    "c71e0c2d60191a0a126a",
+    "02f6c6e5235ab2000aa4",
+    "633f13f20e9c9d4fcdc1",
+    "dd9b2b1b2b1586d7cfbc"
+   ],
+   "duration": 27.098,
    "lines": [
     {
-     "text": "The last reel's vector only grew.",
+     "text": "The vector of the last reel only grew. This one also gives memory back.",
      "start": 0.15,
-     "end": 1.992
+     "end": 4.778
     },
     {
-     "text": "This one gives memory back.",
-     "start": 2.412,
-     "end": 4.931
+     "text": "When a pop leaves it less than half full, it halves its capacity, and that means copying every key.",
+     "start": 5.598,
+     "end": 12.364
     },
     {
-     "text": "A pop that leaves it less than half full halves its capacity... and copies every key.",
-     "start": 5.651,
-     "end": 10.366
+     "text": "Start full at sixteen keys, push once, then repeat: pop, pop, push, push.",
+     "start": 12.784,
+     "end": 21.171
     },
     {
-     "text": "Start full, at sixteen keys. Push once. Then repeat: pop, pop, push, push.",
-     "start": 10.786,
-     "end": 18.315
-    },
-    {
-     "text": "One unit of cost is one key written into the array, and a pop counts one, like a deletion.",
-     "start": 18.735,
-     "end": 24.916
+     "text": "Same unit as before: one write per key, and a pop counts as one.",
+     "start": 21.591,
+     "end": 26.748
     }
    ],
    "lufs": -16.5,
-   "true_peak": -1.4,
-   "wpm": 140,
-   "wer": 0.0
+   "true_peak": -1.9,
+   "wpm": 133,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
   },
   "02": {
-   "hash": "1b8f0a9b66e55462",
-   "duration": 18.756,
+   "hash": "a663fda517ee650a",
+   "takes": [
+    "1bae596d3b6b9417116d",
+    "5f647b32a3bf6ba19fb5"
+   ],
+   "duration": 21.717,
    "lines": [
     {
-     "text": "The rules again. A full vector doubles on a push. A pop that leaves it less than half full halves it.",
+     "text": "Follow the machine by hand. A full vector doubles on a push; a pop that leaves it under half full halves it. Either way, every key is copied.",
      "start": 0.15,
-     "end": 6.246
+     "end": 12.138
     },
     {
-     "text": "Both copy every key.",
-     "start": 6.666,
-     "end": 8.343
-    },
-    {
-     "text": "From seventeen keys in capacity thirty two, what is the total cost of one round of pop, pop, push, push?",
-     "start": 9.063,
-     "end": 18.406
+     "text": "Begin with seventeen keys in a capacity of thirty two. How much does one round of pop, pop, push, push cost in total?",
+     "start": 12.958,
+     "end": 21.367
     }
    ],
-   "lufs": -16.5,
-   "true_peak": -1.3,
-   "wpm": 144,
-   "wer": 0.0
+   "lufs": -16.4,
+   "true_peak": -2.2,
+   "wpm": 141,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
   },
   "02a": {
-   "hash": "ef1e888979f105ca",
-   "duration": 26.582,
+   "hash": "b33a3c54f01e3a0a",
+   "takes": [
+    "bdc070cda946c24e5b6d",
+    "5afd04388b9c5b32d808",
+    "4137dd039c3956fea8f5",
+    "f782969e9df07dbdda8e"
+   ],
+   "duration": 27.168,
    "lines": [
     {
      "text": "Thirty five. One, plus sixteen, plus one, plus seventeen.",
      "start": 0.15,
-     "end": 5.625
+     "end": 4.429
     },
     {
-     "text": "The second pop leaves fifteen keys in thirty two. That is under half, so it halves to sixteen, and copies fifteen.",
-     "start": 6.045,
-     "end": 12.889
+     "text": "The second pop leaves fifteen keys in thirty two, which is under half, so it halves to sixteen and copies fifteen.",
+     "start": 4.849,
+     "end": 13.753
     },
     {
-     "text": "Now fifteen of sixteen slots are full. The first push fills it, and the second finds it full, and doubles it, copying sixteen.",
-     "start": 13.309,
-     "end": 21.446
+     "text": "Now fifteen of sixteen slots are used. One push fills it, and the next finds it full and doubles it, copying sixteen.",
+     "start": 14.173,
+     "end": 22.392
     },
     {
-     "text": "The round ends where it began. So every round costs the same.",
-     "start": 21.866,
-     "end": 26.232
+     "text": "We end where we began, so every round costs the same.",
+     "start": 22.812,
+     "end": 26.818
     }
    ],
    "lufs": -16.4,
-   "true_peak": -1.4,
-   "wpm": 147,
-   "wer": 0.0
+   "true_peak": -1.9,
+   "wpm": 139,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
   },
   "03": {
-   "hash": "b78f7c872dbe4d3f",
-   "duration": 47.939,
+   "hash": "defa75cf283aad8f",
+   "takes": [
+    "9ae9c3d859371f87616c",
+    "ab487e53bb8b31aaa302",
+    "2d6679aae241dff74b24",
+    "35dc0dd3578c87713217",
+    "3a65bde5dad241b4fca6"
+   ],
+   "duration": 44.065,
    "lines": [
     {
-     "text": "After the fill, every round repeats.",
+     "text": "After the first fill, the rounds simply repeat. Eight of them cost two hundred and eighty, and with the fill, three hundred and twenty eight.",
      "start": 0.15,
-     "end": 3.437
+     "end": 8.958
     },
     {
-     "text": "Eight rounds cost two hundred and eighty. Three hundred and twenty eight in all.",
-     "start": 3.857,
-     "end": 8.444
+     "text": "Each round copies nearly the whole vector, twice. Call the size at which it was full C. Per operation the cost is two C plus three over four. At sixteen that is nearly nine; at a million it is above half a million.",
+     "start": 9.778,
+     "end": 25.174
     },
     {
-     "text": "Each round copies nearly the whole vector... twice.",
-     "start": 9.164,
-     "end": 12.591
+     "text": "The bill grows with C, so no fixed charge can pay for it.",
+     "start": 25.594,
+     "end": 30.141
     },
     {
-     "text": "Write C for the size the vector was full at: sixteen here.",
-     "start": 13.011,
-     "end": 17.057
+     "text": "The adversary only has to pick the sequence: push for about half the operations to build a big vector, then alternate.",
+     "start": 30.961,
+     "end": 39.838
     },
     {
-     "text": "Per operation, the rounds cost two C plus three, divided by four. That grows with C.",
-     "start": 17.477,
-     "end": 25.289
-    },
-    {
-     "text": "At C equal to sixteen it is eight point seven five. At about a million, it is more than five hundred and twenty four thousand.",
-     "start": 25.709,
-     "end": 34.271
-    },
-    {
-     "text": "No fixed charge can pay for that.",
-     "start": 34.691,
-     "end": 36.639
-    },
-    {
-     "text": "An adversary only has to choose the sequence.",
-     "start": 37.359,
-     "end": 40.046
-    },
-    {
-     "text": "Fill with pushes for about half the operations first.",
-     "start": 40.466,
-     "end": 43.666
-    },
-    {
-     "text": "Then the total cost is quadratic, the square of the operation count.",
-     "start": 44.086,
-     "end": 47.589
+     "text": "The total becomes quadratic in the number of operations.",
+     "start": 40.258,
+     "end": 43.715
     }
    ],
-   "lufs": -16.6,
-   "true_peak": -1.3,
-   "wpm": 146,
-   "wer": 0.0
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 148,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
   },
   "04": {
-   "hash": "867d30b3216898d4",
-   "duration": 33.793,
+   "hash": "5a179d17ae210562",
+   "takes": [
+    "0105991f5d6b1882dce3",
+    "0ebf63e9847b95bf4b73",
+    "9beab66c24c686e72f8f",
+    "cdd86e1121d680ea32b8",
+    "e1a9c0bd4d7ce17e6dfb",
+    "8f5007b70edd84064fca",
+    "aba0425dc99036f5def7",
+    "0196dee82abd0c31d4cb"
+   ],
+   "duration": 35.557,
    "lines": [
     {
      "text": "The last reel stored credits on elements.",
      "start": 0.15,
-     "end": 2.755
+     "end": 2.666
     },
     {
      "text": "Now keep the savings as one number, for the whole structure.",
-     "start": 3.175,
-     "end": 6.445
+     "start": 3.086,
+     "end": 6.633
     },
     {
      "text": "Call it phi. It lives in the proof. The vector never stores it.",
-     "start": 7.165,
-     "end": 11.722
+     "start": 7.353,
+     "end": 12.385
     },
     {
      "text": "The amortized cost of an operation is its actual cost, plus phi after the operation, minus phi before it.",
-     "start": 12.142,
-     "end": 18.675
+     "start": 12.805,
+     "end": 21.986
     },
     {
      "text": "For the counter, phi is the number of one bits.",
-     "start": 19.095,
-     "end": 22.004
+     "start": 22.406,
+     "end": 25.926
     },
     {
      "text": "Add one to seven. Four bits flip.",
-     "start": 22.724,
-     "end": 26.404
+     "start": 26.646,
+     "end": 29.145
     },
     {
      "text": "Phi falls from three to one.",
-     "start": 26.824,
-     "end": 28.831
+     "start": 29.565,
+     "end": 31.628
     },
     {
      "text": "The amortized cost is two, like every increment.",
-     "start": 29.251,
-     "end": 33.443
+     "start": 32.048,
+     "end": 35.207
     }
    ],
    "lufs": -16.4,
-   "true_peak": -1.4,
-   "wpm": 144,
-   "wer": 0.0
+   "true_peak": -1.9,
+   "wpm": 137,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
   },
   "05": {
-   "hash": "6c444811b59bfd0e",
-   "duration": 35.754,
+   "hash": "e955318f677b8898",
+   "takes": [
+    "884bc8d7f429dee3e9dc",
+    "96e42ec63d47f329cce5",
+    "bb2dd2a8554e0e9a8fdb",
+    "6b6cf18511f1ae82c270",
+    "e9f201c6ed3f7b0b99e7"
+   ],
+   "duration": 38.639,
    "lines": [
     {
      "text": "Add up the amortized costs, and every phi in the middle cancels.",
      "start": 0.15,
-     "end": 4.315
+     "end": 5.483
     },
     {
      "text": "Each plus phi meets the minus phi on the next line.",
-     "start": 4.735,
-     "end": 8.008
+     "start": 5.903,
+     "end": 10.614
     },
     {
      "text": "Only the ends survive. The amortized total is the actual total, plus the last phi, minus the first.",
-     "start": 8.728,
-     "end": 16.338
+     "start": 11.334,
+     "end": 18.415
     },
     {
      "text": "Start phi at zero, never let it go negative, and the amortized total bounds the actual total after every operation.",
-     "start": 16.758,
-     "end": 24.37
+     "start": 18.835,
+     "end": 27.325
     },
     {
      "text": "Tarjan calls this the physicist's view. He credits it to Sleator, and calls it entirely equivalent to the banker's credits, the coins from the last reel.",
-     "start": 25.09,
-     "end": 35.404
+     "start": 28.045,
+     "end": 38.289
     }
    ],
-   "lufs": -16.5,
-   "true_peak": -1.4,
-   "wpm": 146,
-   "wer": 0.0
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 135,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
   },
   "06": {
-   "hash": "a671248540add056",
-   "duration": 29.076,
+   "hash": "8c745381007ea016",
+   "takes": [
+    "ddf9b2c776bfc868ba7d",
+    "283d91a1a3e9ef53f380",
+    "5a1a8df6ffe3dbb04a3b",
+    "ab34c4b50f5128de0e56",
+    "f58588c39e0b46f40c0a",
+    "c19e818524b15c6c5946",
+    "cd84e2ef6d9da0ef63ac"
+   ],
+   "duration": 33.446,
    "lines": [
     {
      "text": "The stack's coins sat on its keys. So phi is the number of keys.",
      "start": 0.15,
-     "end": 4.454
+     "end": 5.703
     },
     {
      "text": "A push costs one. Phi rises by one.",
-     "start": 4.874,
-     "end": 8.831
+     "start": 6.123,
+     "end": 10.116
     },
     {
      "text": "The amortized cost is two.",
-     "start": 9.251,
-     "end": 11.762
+     "start": 10.536,
+     "end": 12.389
     },
     {
-     "text": "Popping several keys costs one for each key. Phi falls by the same amount.",
-     "start": 12.182,
-     "end": 17.276
+     "text": "Popping several keys costs one for each key.",
+     "start": 12.809,
+     "end": 16.275
+    },
+    {
+     "text": "The potential falls by the same amount.",
+     "start": 16.695,
+     "end": 19.34
     },
     {
      "text": "The amortized cost is zero.",
-     "start": 17.696,
-     "end": 19.378
+     "start": 19.76,
+     "end": 22.059
     },
     {
      "text": "Tarjan's paper opens with a stack whose every operation pops some keys, and then pushes one. The same phi gives at most twice the number of operations.",
-     "start": 20.098,
-     "end": 28.726
+     "start": 22.779,
+     "end": 33.096
     }
    ],
-   "lufs": -16.5,
-   "true_peak": -1.4,
-   "wpm": 151,
-   "wer": 0.0
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 133,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
   },
   "07": {
-   "hash": "b38b0bfcafa089a3",
-   "duration": 11.254,
+   "hash": "fdf57474d7eec767",
+   "takes": [
+    "c8a37ebc4a917d3a6820",
+    "06e6ca409f02f7357bf9"
+   ],
+   "duration": 10.622,
    "lines": [
     {
      "text": "Which potential makes every append constant amortized?",
      "start": 0.15,
-     "end": 4.297
+     "end": 4.059
     },
     {
      "text": "It must drop when an append copies eight keys, and rise only a little on the cheap ones.",
-     "start": 4.847,
-     "end": 10.904
+     "start": 4.609,
+     "end": 10.272
     }
    ],
-   "lufs": -16.4,
-   "true_peak": -1.4,
-   "wpm": 133,
-   "wer": 0.0
+   "lufs": -16.3,
+   "true_peak": -2.9,
+   "wpm": 141,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
   },
   "07a": {
-   "hash": "45e8906515c1d9bf",
-   "duration": 26.404,
+   "hash": "af5c4a60ffbb3e0c",
+   "takes": [
+    "46762abd72abf784625a",
+    "e63c48649e81cac66870",
+    "704c707f13d2837a8f09",
+    "fd9375051a1d9b3eaae9"
+   ],
+   "duration": 28.422,
    "lines": [
     {
      "text": "Phi equals two n minus cap. Twice the keys past the midpoint... Blum's piggy bank.",
      "start": 0.15,
-     "end": 5.876
+     "end": 7.19
     },
     {
      "text": "Each cheap append raises it by two. Just before a resize it equals n, exactly the keys to copy. Just after, it is two.",
-     "start": 6.296,
-     "end": 16.276
+     "start": 7.61,
+     "end": 17.447
     },
     {
      "text": "So append nine costs nine minus six, which is three. So does every append but the first.",
-     "start": 16.696,
-     "end": 22.665
+     "start": 17.867,
+     "end": 24.334
     },
     {
      "text": "The other three potentials don't drop when the copy comes.",
-     "start": 23.085,
-     "end": 26.054
+     "start": 24.754,
+     "end": 28.072
     }
    ],
-   "lufs": -16.7,
-   "true_peak": -1.4,
-   "wpm": 150,
-   "wer": 0.0
+   "lufs": -16.4,
+   "true_peak": -1.8,
+   "wpm": 139,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
   },
   "08": {
-   "hash": "db646c248f17a742",
-   "duration": 28.427,
+   "hash": "48a849876c152ee4",
+   "takes": [
+    "8eabf4d6f4654b337860",
+    "74d43d138a89e1a98efb",
+    "042887216e4e5f72268f",
+    "f66fa7b7e3dee3e61d2a",
+    "f58b3cf81d1ecc31c1d9"
+   ],
+   "duration": 39.698,
    "lines": [
     {
-     "text": "Here is the vector's gauge.",
+     "text": "Now meet the potential, the gauge that tells how much work is stored up in the structure.",
      "start": 0.15,
-     "end": 1.8
+     "end": 5.526
     },
     {
-     "text": "Phi equals two n minus cap says how far past half full the vector is.",
-     "start": 2.22,
-     "end": 6.557
+     "text": "Define it as two n minus the capacity. It measures how far past half full the vector is.",
+     "start": 5.946,
+     "end": 13.405
     },
     {
-     "text": "Just after a grow, it is two... the new key counts twice. When the vector is full, it is n... exactly the keys the next grow copies.",
-     "start": 6.977,
-     "end": 18.02
+     "text": "Just after a grow, it is two. When the vector is full, it equals n, which is exactly what the next grow will copy.",
+     "start": 14.225,
+     "end": 23.324
     },
     {
-     "text": "The actual costs spike. The amortized costs are flat at three, and two for the very first one.",
-     "start": 18.74,
-     "end": 24.835
+     "text": "Plot it and the real cost spikes while the amortized cost stays flat at three, two for the first push.",
+     "start": 23.744,
+     "end": 32.46
     },
     {
-     "text": "It is the last reel's bank, without its spare coin.",
-     "start": 25.255,
-     "end": 28.077
+     "text": "It is the bank from the last reel, only now read straight off the structure, without a spare coin.",
+     "start": 32.88,
+     "end": 39.348
     }
    ],
    "lufs": -16.4,
-   "true_peak": -1.4,
-   "wpm": 158,
-   "wer": 0.0
+   "true_peak": -1.9,
+   "wpm": 148,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
   },
   "09": {
-   "hash": "ff1fe0b09092110e",
-   "duration": 38.559,
+   "hash": "11071a3d4a576b86",
+   "takes": [
+    "6c7b8bc4af159deccb55",
+    "a0e3157aed77e673fbc7",
+    "a88847563e1ee76a654d",
+    "2a60b573a34c4017b008"
+   ],
+   "duration": 38.324,
    "lines": [
     {
-     "text": "Now let the vector shrink. From here on, it shrinks only when a pop leaves it under a quarter full. A later step shows why half cannot be saved.",
+     "text": "Now let the vector shrink, but only when a pop leaves it under a quarter full. A later step shows why half cannot work.",
      "start": 0.15,
-     "end": 10.87
+     "end": 8.873
     },
     {
-     "text": "Keep the same potential.",
-     "start": 11.29,
-     "end": 12.59
+     "text": "Try the same potential. Pops push it down, through zero at half full, and then below zero.",
+     "start": 9.693,
+     "end": 16.392
     },
     {
-     "text": "Pops drive it down. At half full it reaches zero, and then it keeps going, below zero.",
-     "start": 13.01,
-     "end": 20.722
+     "text": "After two pops it is minus two, and the amortized total, forty eight, is smaller than the actual fifty. The accounting is lying.",
+     "start": 16.812,
+     "end": 26.624
     },
     {
-     "text": "After two pops it is minus two, and the amortized total, forty eight, is already less than the actual total, fifty.",
-     "start": 21.442,
-     "end": 29.038
-    },
-    {
-     "text": "A potential that can go negative proves nothing.",
-     "start": 29.458,
-     "end": 32.427
-    },
-    {
-     "text": "Below half full the vector is saving for its shrink, so its potential has to grow again there.",
-     "start": 32.847,
-     "end": 38.209
+     "text": "A negative balance means the proof has spent what it never collected. Below half, the vector is saving up for a shrink, so the potential must climb back up there.",
+     "start": 27.044,
+     "end": 37.974
     }
    ],
    "lufs": -16.4,
-   "true_peak": -1.4,
-   "wpm": 151,
-   "wer": 0.0
+   "true_peak": -1.9,
+   "wpm": 147,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
   },
   "10": {
-   "hash": "c6897a21966a4a20",
-   "duration": 40.447,
+   "hash": "01939120dc4751a5",
+   "takes": [
+    "a0ca2792680625171196",
+    "a5ddd55a8d896601f835",
+    "b4a8734f0375d4c66be6",
+    "b46ccee8aed6778af0b4",
+    "a1419b849c3b25e982be",
+    "1bbcaf273e59c78fefac"
+   ],
+   "duration": 42.468,
    "lines": [
     {
      "text": "Write alpha for n over cap, the load factor.",
      "start": 0.15,
-     "end": 3.618
+     "end": 3.74
     },
     {
      "text": "Charge for the distance from half full, in either direction.",
-     "start": 4.038,
-     "end": 7.128
+     "start": 4.16,
+     "end": 7.79
     },
     {
      "text": "Phi is two n minus cap when alpha is at least a half. It is cap over two, minus n, when alpha is below a half.",
-     "start": 7.848,
-     "end": 16.836
+     "start": 8.511,
+     "end": 18.24
     },
     {
      "text": "Below half, a popped key is gone, so its coin cannot stay on it. Cap over two, minus n, counts the coins on the empty slots.",
-     "start": 17.256,
-     "end": 26.449
+     "start": 18.66,
+     "end": 28.275
     },
     {
      "text": "It is never negative, and zero at half full.",
-     "start": 26.869,
-     "end": 29.405
+     "start": 28.695,
+     "end": 32.186
     },
     {
      "text": "At full it is cap, which pays for the next grow's copies. At a quarter full it is cap over four, which pays for the next shrink's.",
-     "start": 29.825,
-     "end": 40.097
+     "start": 32.606,
+     "end": 42.118
     }
    ],
    "lufs": -16.5,
-   "true_peak": -1.4,
-   "wpm": 159,
-   "wer": 0.0
+   "true_peak": -1.9,
+   "wpm": 151,
+   "wer": 0.037037037037037035,
+   "exact": false,
+   "tolerated": [
+    {
+     "line": "At full it is cap, which pays for the next grow's copies. At a quarter full it is cap over four, which pays for the next shrink's.",
+     "said": "grows",
+     "heard": "gross"
+    }
+   ]
   },
   "11": {
-   "hash": "f57967e94a2db1ce",
-   "duration": 17.536,
+   "hash": "2773d683d83da0bd",
+   "takes": [
+    "651c9ff7fce398cab271",
+    "0621df2f192f6fa3a0a8",
+    "6f2bb2d8d0d450a57525"
+   ],
+   "duration": 20.661,
    "lines": [
     {
      "text": "Under shrink at a quarter, a pop takes the vector from eight keys in capacity thirty two, to seven. That is under a quarter.",
      "start": 0.15,
-     "end": 7.678
+     "end": 8.854
     },
     {
      "text": "It halves to sixteen and copies seven. Actual cost, eight.",
-     "start": 8.098,
-     "end": 13.089
+     "start": 9.274,
+     "end": 15.506
     },
     {
      "text": "With the two piece potential, what is its amortized cost?",
-     "start": 13.509,
-     "end": 17.186
+     "start": 15.926,
+     "end": 20.311
     }
    ],
    "lufs": -16.4,
-   "true_peak": -1.4,
-   "wpm": 151,
-   "wer": 0.0
+   "true_peak": -1.9,
+   "wpm": 128,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
   },
   "11a": {
-   "hash": "749e4ba98258023a",
-   "duration": 27.571,
+   "hash": "af2de32afab82643",
+   "takes": [
+    "b9e7d2efcb2ee96a4328",
+    "e3512bc34f860ec93373",
+    "8cf221e6924028930987",
+    "4dce3e0a5a999cf35af6",
+    "e264fb5ff1e758c3d5fd",
+    "c2efd339d6eae276d345"
+   ],
+   "duration": 30.419,
    "lines": [
     {
      "text": "One.",
      "start": 0.15,
-     "end": 0.6
+     "end": 0.792
     },
     {
      "text": "Before, alpha is a quarter, and phi is sixteen minus eight, which is eight.",
-     "start": 1.02,
-     "end": 7.489
+     "start": 1.212,
+     "end": 7.441
     },
     {
      "text": "After, seven keys in sixteen, and phi is eight minus seven, which is one.",
-     "start": 7.909,
-     "end": 13.336
+     "start": 7.861,
+     "end": 13.924
     },
     {
      "text": "So the amortized cost is eight, plus one, minus eight. One.",
-     "start": 13.756,
-     "end": 17.955
+     "start": 14.344,
+     "end": 19.766
     },
     {
      "text": "The pops from half full down to a quarter each paid two: one for the pop, and one put into the gauge.",
-     "start": 18.375,
-     "end": 24.944
+     "start": 20.186,
+     "end": 27.715
     },
     {
      "text": "The shrink spends what they saved.",
-     "start": 25.364,
-     "end": 27.221
+     "start": 28.135,
+     "end": 30.069
     }
    ],
-   "lufs": -16.7,
-   "true_peak": -1.4,
-   "wpm": 148,
-   "wer": 0.0
+   "lufs": -16.5,
+   "true_peak": -1.9,
+   "wpm": 134,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
   },
   "12": {
-   "hash": "b451d40f57cb9177",
-   "duration": 25.006,
+   "hash": "d5b188f5b9075381",
+   "takes": [
+    "e110c5d091ac2078ad2b",
+    "03dfad409aed375b527c",
+    "6abce62979b42e8ee8e2",
+    "ea12ee9cbd7870f51ea3",
+    "1699813a82a5bc77c375"
+   ],
+   "duration": 27.862,
    "lines": [
     {
      "text": "Every case, checked.",
      "start": 0.15,
-     "end": 1.743
+     "end": 1.558
     },
     {
      "text": "A push costs at most three amortized. A pop, at most two. Including the ones that resize.",
-     "start": 2.163,
-     "end": 9.364
+     "start": 1.978,
+     "end": 9.925
     },
     {
      "text": "So from empty, any sequence costs at most three times the number of operations.",
-     "start": 10.084,
-     "end": 14.936
+     "start": 10.645,
+     "end": 16.38
     },
     {
      "text": "Amortized constant, for both, for every sequence.",
-     "start": 15.356,
-     "end": 19.681
+     "start": 16.8,
+     "end": 20.952
     },
     {
      "text": "The code checks every reachable state, up to capacity four thousand and ninety six.",
-     "start": 20.101,
-     "end": 24.656
+     "start": 21.372,
+     "end": 27.512
     }
    ],
-   "lufs": -16.5,
-   "true_peak": -1.4,
-   "wpm": 132,
-   "wer": 0.0
+   "lufs": -16.4,
+   "true_peak": -1.8,
+   "wpm": 116,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
   },
   "13": {
-   "hash": "640a0bbb311a4365",
-   "duration": 24.465,
+   "hash": "da3b9e8bd7358b54",
+   "takes": [
+    "8bd88761e6a244bbf49b",
+    "c1d2725fc46ac4a17aa3",
+    "432e57d35a08774f3d84",
+    "e1b8f0b72ce3ca93e881",
+    "6c3c540a2ed047d91ca9",
+    "be2eea71fb37e29f2d30",
+    "a43db1372f14b9a991e2"
+   ],
+   "duration": 31.136,
    "lines": [
     {
-     "text": "The potential must drop by about the number of keys that get copied.",
+     "text": "The potential must drop by about the number of keys",
      "start": 0.15,
-     "end": 3.814
+     "end": 3.719
+    },
+    {
+     "text": "that get copied.",
+     "start": 4.139,
+     "end": 5.269
     },
     {
      "text": "Then the resize is paid for.",
-     "start": 4.234,
-     "end": 6.096
+     "start": 5.689,
+     "end": 7.588
     },
     {
      "text": "Under shrink at a quarter, the pops fill the gauge.",
-     "start": 6.516,
-     "end": 9.806
+     "start": 8.008,
+     "end": 11.633
     },
     {
-     "text": "Then the shrink spends it.",
-     "start": 10.226,
-     "end": 11.571
+     "text": "Then the shrink pays it.",
+     "start": 12.053,
+     "end": 13.405
     },
     {
      "text": "Under shrink at a half, the shrink fires at half full, where phi is zero. It lands at fifteen of sixteen, nearly full.",
-     "start": 12.291,
-     "end": 18.816
+     "start": 14.125,
+     "end": 23.114
     },
     {
      "text": "Phi jumps to fourteen, and that pop costs thirty amortized... growing with the vector.",
-     "start": 19.236,
-     "end": 24.115
+     "start": 23.534,
+     "end": 30.786
     }
    ],
-   "lufs": -16.6,
-   "true_peak": -1.3,
-   "wpm": 174,
-   "wer": 0.0
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 137,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
   },
   "14": {
-   "hash": "57a674bec85eb441",
-   "duration": 26.199,
+   "hash": "c3cef3a331665082",
+   "takes": [
+    "91b8b76d7ca59f3b9e74",
+    "561570a695e21943871e",
+    "5bb7f36aae35b230c8b5",
+    "900918a2abf07254e4ea",
+    "acac8b72d387e5e8a6f0",
+    "497555ed1fa67444f258",
+    "b01aedf77aeabad21794",
+    "83e6661587e0e7f768f1"
+   ],
+   "duration": 32.082,
    "lines": [
     {
      "text": "This is resize hysteresis.",
      "start": 0.15,
-     "end": 1.912
+     "end": 2.585
     },
     {
      "text": "The grow and shrink thresholds must leave a gap proportional to the capacity.",
-     "start": 2.332,
-     "end": 6.468
+     "start": 3.005,
+     "end": 8.176
     },
     {
-     "text": "So after any resize, a fixed fraction of the capacity in operations must pass before the next one... enough to refill the gauge.",
-     "start": 6.888,
-     "end": 13.895
+     "text": "So after any resize, operations equal to a fixed fraction of the capacity must pass before the next one.",
+     "start": 8.596,
+     "end": 16.351
     },
     {
-     "text": "Halving at a quarter lands the vector close to half full.",
-     "start": 14.615,
-     "end": 18.284
+     "text": "Enough to refill the gauge.",
+     "start": 16.771,
+     "end": 18.389
+    },
+    {
+     "text": "Halving at a quarter",
+     "start": 19.11,
+     "end": 20.899
+    },
+    {
+     "text": "lands the vector close to half full.",
+     "start": 21.319,
+     "end": 23.868
     },
     {
      "text": "Shrinking at a half leaves the vector one push from full.",
-     "start": 18.704,
-     "end": 21.946
+     "start": 24.288,
+     "end": 28.115
     },
     {
      "text": "Any fixed shrink fraction below a half works.",
-     "start": 22.366,
-     "end": 25.849
+     "start": 28.535,
+     "end": 31.732
     }
    ],
    "lufs": -16.5,
-   "true_peak": -1.3,
-   "wpm": 160,
-   "wer": 0.0
+   "true_peak": -1.9,
+   "wpm": 133,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
   },
   "15": {
-   "hash": "6937ca35de3f93f6",
-   "duration": 41.703,
+   "hash": "229064263cf54f37",
+   "takes": [
+    "f032cd247f5979c4aee0",
+    "2e50abd61e6a2dd74dbe",
+    "518656bc730eaa933ed3",
+    "6a28aecbbab79aba2c76",
+    "3a35418259fb0f103f07"
+   ],
+   "duration": 45.228,
    "lines": [
     {
-     "text": "The same move proves bounds you will meet later.",
+     "text": "This one move will carry you through several later structures.",
      "start": 0.15,
-     "end": 2.906
+     "end": 3.511
     },
     {
-     "text": "Splay trees: phi is the sum of log base two of every subtree's size, giving big O of log n amortized access.",
-     "start": 3.326,
-     "end": 10.659
+     "text": "For splay trees, the potential is the sum of log of every subtree's size, and it gives logarithmic amortized access.",
+     "start": 4.331,
+     "end": 11.492
     },
     {
-     "text": "Fibonacci heaps: the trees in the root list, plus twice the marked nodes, giving big O of one decrease key, and big O of log n delete min.",
-     "start": 11.079,
-     "end": 20.328
+     "text": "For Fibonacci heaps, it counts the trees in the root list plus twice the marked nodes. That gives constant decrease key and logarithmic delete min.",
+     "start": 11.912,
+     "end": 22.493
     },
     {
-     "text": "Union find: Tarjan studied it first.",
-     "start": 20.748,
-     "end": 23.529
+     "text": "For union find, Tarjan analysed it first. Lambert and colleagues recently reached the bound alpha of n, the inverse Ackermann function, by using a potential on node ranks, summed over levels of the Ackermann function.",
+     "start": 22.913,
+     "end": 39.45
     },
     {
-     "text": "More recently, Lambert and colleagues reach its bound, big O of alpha of n.",
-     "start": 23.949,
-     "end": 29.632
-    },
-    {
-     "text": "Their potential is on node ranks, summed over the levels of the Ackermann function.",
-     "start": 30.052,
-     "end": 34.295
-    },
-    {
-     "text": "Alpha of n is the inverse Ackermann function.",
-     "start": 34.715,
-     "end": 37.393
-    },
-    {
-     "text": "Summing square roots of subtree sizes proves only log log n.",
-     "start": 37.813,
-     "end": 41.353
+     "text": "Summing square roots of subtree sizes would prove only log log n.",
+     "start": 39.87,
+     "end": 44.878
     }
    ],
-   "lufs": -16.6,
-   "true_peak": -1.4,
-   "wpm": 161,
-   "wer": 0.0
+   "lufs": -16.4,
+   "true_peak": -1.8,
+   "wpm": 135,
+   "wer": 0.05714285714285714,
+   "exact": false,
+   "tolerated": [
+    {
+     "line": "For splay trees, the potential is the sum of log of every subtree's size, and it gives logarithmic amortized access.",
+     "said": "subtrees",
+     "heard": "subtree"
+    },
+    {
+     "line": "For union find, Tarjan analysed it first. Lambert and colleagues recently reached the bound alpha of n, the inverse Ackermann function, by using a potential on node ranks, summed over levels of the Ackermann function.",
+     "said": "tarjan analysed",
+     "heard": "tarzan analyzed"
+    }
+   ]
   },
   "16": {
-   "hash": "aa373ae1a026a8b7",
-   "duration": 25.3,
+   "hash": "986e7b95dcef02dc",
+   "takes": [
+    "247b9a54499abc9e057e",
+    "5974cfa372c9bb0cf8a6",
+    "11d66942cec464fd2ee0",
+    "d4c1375bcc554ff3a083"
+   ],
+   "duration": 26.559,
    "lines": [
     {
      "text": "Back to the problem.",
      "start": 0.15,
-     "end": 1.759
+     "end": 1.262
     },
     {
      "text": "Under shrink at a quarter, the same forty nine operations cost only eighty, not three hundred and twenty eight.",
-     "start": 2.179,
-     "end": 8.675
+     "start": 1.682,
+     "end": 8.801
     },
     {
      "text": "After the push that grows to thirty two, nothing resizes. And the bound now covers pops too: at most three per push and two per pop, for every sequence.",
-     "start": 9.095,
-     "end": 19.788
+     "start": 9.221,
+     "end": 20.943
     },
     {
      "text": "But the push that copied sixteen keys is still one push of seventeen.",
-     "start": 20.508,
-     "end": 24.95
+     "start": 21.663,
+     "end": 26.209
     }
    ],
-   "lufs": -16.5,
-   "true_peak": -1.4,
-   "wpm": 154,
-   "wer": 0.0
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 145,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
   },
   "17": {
-   "hash": "a55adb0c4d41676c",
-   "duration": 18.086,
+   "hash": "b9d93187dab0e398",
+   "takes": [
+    "ddd230ca049a9b3a7fbe",
+    "6e90f4d2a02ec0a128e9",
+    "47c788d80d7b735fbe31"
+   ],
+   "duration": 21.399,
    "lines": [
     {
      "text": "A teammate reuses phi equals two n minus cap, for a vector that grows by one and a half.",
      "start": 0.15,
-     "end": 6.203
+     "end": 6.724
     },
     {
      "text": "Append thirteen finds twelve keys in capacity twelve, grows to eighteen, and copies twelve. Actual cost, thirteen.",
-     "start": 6.623,
-     "end": 14.864
+     "start": 7.144,
+     "end": 17.802
     },
     {
      "text": "What is its amortized cost under that phi?",
-     "start": 15.284,
-     "end": 17.736
+     "start": 18.222,
+     "end": 21.05
     }
    ],
-   "lufs": -16.5,
-   "true_peak": -1.4,
-   "wpm": 146,
-   "wer": 0.0
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 123,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
   },
   "17a": {
-   "hash": "2f83b30b0f645e71",
-   "duration": 29.481,
+   "hash": "c7617db80d7b5cca",
+   "takes": [
+    "d1b738071049d52271a7",
+    "85ed8619e5615427c2cc",
+    "cf02948d844692885ad2",
+    "c48b195f84929798257b",
+    "8b467a328eacc2d533c8",
+    "ff97486572ec6de3802f",
+    "2acb93afc002b2369e2c"
+   ],
+   "duration": 33.751,
    "lines": [
     {
      "text": "Nine.",
      "start": 0.15,
-     "end": 1.238
+     "end": 0.788
     },
     {
      "text": "Before, phi is twenty four minus twelve, which is twelve. After, twenty six minus eighteen, which is eight.",
-     "start": 1.658,
-     "end": 8.354
+     "start": 1.208,
+     "end": 9.444
     },
     {
      "text": "The gauge drops only four, because growing by one and a half leaves the vector two thirds full, not half.",
-     "start": 8.774,
-     "end": 15.146
+     "start": 9.864,
+     "end": 17.412
     },
     {
      "text": "So the amortized cost is thirteen minus four. Nine. And it keeps growing with the vector.",
-     "start": 15.566,
-     "end": 21.023
+     "start": 17.832,
+     "end": 24.476
     },
     {
-     "text": "Use three n minus two cap instead, zero at two thirds. Then every append costs at most four.",
-     "start": 21.443,
-     "end": 29.131
+     "text": "Use three n minus two cap instead.",
+     "start": 24.896,
+     "end": 27.529
+    },
+    {
+     "text": "Zero it at two thirds.",
+     "start": 27.949,
+     "end": 29.678
+    },
+    {
+     "text": "Then every append costs at most four.",
+     "start": 30.098,
+     "end": 33.401
     }
    ],
-   "lufs": -16.5,
-   "true_peak": -1.4,
-   "wpm": 149,
-   "wer": 0.0
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 132,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
   },
   "18": {
-   "hash": "80182839cff8cfae",
-   "duration": 16.29,
+   "hash": "537b9d28ad8aed5e",
+   "takes": [
+    "7acfd2f37dc79649e241",
+    "8c1c5ebd25ec118bb6fe",
+    "0ef74cbeb51befbfddb8",
+    "18f7aa1ec570c5616192",
+    "22e35570dd1422818dec",
+    "2a024ca6bcbdf9511e89"
+   ],
+   "duration": 17.564,
    "lines": [
     {
      "text": "Fill the vector with more than a million keys. Push once.",
      "start": 0.15,
-     "end": 4.012
+     "end": 4.14
     },
     {
-     "text": "Now use the rule that shrinks at half full.",
-     "start": 4.432,
-     "end": 7.107
+     "text": "Now use the rule.",
+     "start": 4.56,
+     "end": 5.618
+    },
+    {
+     "text": "It shrinks at half full.",
+     "start": 6.038,
+     "end": 8.017
     },
     {
      "text": "Run one thousand rounds of pop, pop, push, push.",
-     "start": 7.527,
-     "end": 12.495
+     "start": 8.437,
+     "end": 12.457
     },
     {
-     "text": "About how much do the thousand rounds cost in total?",
-     "start": 12.915,
-     "end": 15.94
+     "text": "About how much do the thousand rounds cost?",
+     "start": 12.877,
+     "end": 15.578
+    },
+    {
+     "text": "In total?",
+     "start": 16.128,
+     "end": 17.214
     }
    ],
-   "lufs": -16.5,
-   "true_peak": -1.4,
-   "wpm": 144,
-   "wer": 0.0
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 133,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
   },
   "18a": {
-   "hash": "8a81d2a7b4b08d2b",
-   "duration": 22.807,
+   "hash": "2608c8235004ae6b",
+   "takes": [
+    "abae077b1664e14a9832",
+    "279abff318e937be0c83",
+    "db6e47ebae3989555d6a",
+    "8726e9d6b740c9bdc714",
+    "513e18c57ccfc6a0f139"
+   ],
+   "duration": 25.659,
    "lines": [
     {
      "text": "About two point one billion.",
      "start": 0.15,
-     "end": 2.169
+     "end": 1.905
     },
     {
      "text": "Each round costs twice the capacity, plus three.",
-     "start": 2.589,
-     "end": 5.829
+     "start": 2.325,
+     "end": 5.483
     },
     {
      "text": "A thousand rounds come to more than two billion. Almost all of it is copying.",
-     "start": 6.249,
-     "end": 10.812
+     "start": 5.903,
+     "end": 10.869
     },
     {
      "text": "Under shrink at a quarter: four thousand. One per operation.",
-     "start": 11.232,
-     "end": 15.56
+     "start": 11.289,
+     "end": 15.649
     },
     {
      "text": "With C fixed, the thrash costs about C per operation. A quadratic total needs C to grow with the number of operations.",
-     "start": 15.98,
-     "end": 22.457
+     "start": 16.069,
+     "end": 25.309
     }
    ],
-   "lufs": -16.5,
-   "true_peak": -1.4,
-   "wpm": 158,
-   "wer": 0.0
+   "lufs": -16.4,
+   "true_peak": -2.0,
+   "wpm": 140,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
   },
   "19": {
-   "hash": "683bd20b5e32affa",
-   "duration": 14.216,
+   "hash": "47e5ac5610e72951",
+   "takes": [
+    "18253138a1e19b0c392f",
+    "a307411b3788bf1c464c",
+    "3ceedf022db2a3d40802"
+   ],
+   "duration": 20.394,
    "lines": [
     {
-     "text": "Start full at sixteen keys, and strictly alternate push, pop.",
+     "text": "Last problem. Start full at sixteen keys, and strictly alternate push and pop.",
      "start": 0.15,
-     "end": 4.118
+     "end": 6.051
     },
     {
-     "text": "Rule A halves when a pop leaves the vector less than half full. Rule B, when it leaves it at most half full.",
-     "start": 4.538,
-     "end": 11.336
+     "text": "Compare two shrink rules. Rule A halves when a pop leaves the vector under half full. Rule B halves when a pop leaves it at most half full.",
+     "start": 6.871,
+     "end": 18.385
     },
     {
      "text": "Which rules thrash?",
-     "start": 11.756,
-     "end": 13.866
+     "start": 18.805,
+     "end": 20.044
     }
    ],
-   "lufs": -16.1,
-   "true_peak": -1.4,
-   "wpm": 152,
-   "wer": 0.0
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 129,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
   },
   "19a": {
-   "hash": "60d0837c913b5df4",
-   "duration": 33.918,
+   "hash": "eff83039965990a8",
+   "takes": [
+    "163d6405384e67c4960b",
+    "e3d598091fa835dfa003",
+    "0407c83fa57bc57ff9ba",
+    "c239a33dd5016a62d862"
+   ],
+   "duration": 35.764,
    "lines": [
     {
      "text": "Only the at most half rule thrashes.",
      "start": 0.15,
-     "end": 2.767
+     "end": 2.662
     },
     {
-     "text": "After the first push there are seventeen keys in thirty two. A pop leaves sixteen... exactly half.",
-     "start": 3.187,
-     "end": 11.283
+     "text": "After the first push there are seventeen keys in thirty two. A pop leaves sixteen, exactly half.",
+     "start": 3.082,
+     "end": 10.36
     },
     {
-     "text": "Rule A does not shrink, and the next push fits. Alternation costs one per operation after the grow.",
-     "start": 11.703,
-     "end": 17.984
+     "text": "Rule A does not shrink, so the next push fits and the cost is one per operation. Rule B shrinks to sixteen, which is full, and the next push doubles again, seventeen writes, every single time.",
+     "start": 10.78,
+     "end": 26.496
     },
     {
-     "text": "Rule B shrinks to sixteen, which is full, and the next push doubles again. Seventeen writes, every operation.",
-     "start": 18.404,
-     "end": 25.423
-    },
-    {
-     "text": "Rule A still thrashes on pop, pop, push, push. The gap must be a fraction of the capacity, not one key.",
-     "start": 25.843,
-     "end": 33.568
+     "text": "Rule A still thrashes on pop, pop, push, push, so the gap must be a fraction of the capacity, not a single key.",
+     "start": 26.916,
+     "end": 35.414
     }
    ],
-   "lufs": -16.5,
-   "true_peak": -1.3,
-   "wpm": 143,
-   "wer": 0.0
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 139,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
   }
  }
 }
