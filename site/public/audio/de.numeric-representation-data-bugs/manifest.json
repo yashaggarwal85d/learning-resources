@@ -1,0 +1,558 @@
+{
+ "topic": "de.numeric-representation-data-bugs",
+ "voice": "breeze-mellow-v2",
+ "asr": "large-v3-turbo",
+ "clips": {
+  "01": {
+   "hash": "9b6816a94af34c57",
+   "takes": [
+    "d57251478bf0f3e74772",
+    "33e6feeae6c3279095ad",
+    "512427f1f276ddfd95f9"
+   ],
+   "duration": 33.953,
+   "lines": [
+    {
+     "text": "Storage returns your bytes intact. Their type decides whether a total, an amount or a timestamp is still right.",
+     "start": 0.15,
+     "end": 8.23
+    },
+    {
+     "text": "Read the four columns on the screen: an id, a status, an amount, a time. Three of them are numbers, and each is a fixed-width box.",
+     "start": 8.65,
+     "end": 21.606
+    },
+    {
+     "text": "That is the thread through this whole topic. The box has a fixed size, the idea inside it does not, and every bug here is the idea spilling out of the box.",
+     "start": 22.426,
+     "end": 33.603
+    }
+   ],
+   "lufs": -16.6,
+   "true_peak": -1.9,
+   "wpm": 138,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "02": {
+   "hash": "a6311e2ec42d34de",
+   "takes": [
+    "8f1082b6887ca5b888b8",
+    "e9097923f8339f3a0c53",
+    "309f352f1535acc3082b"
+   ],
+   "duration": 24.955,
+   "lines": [
+    {
+     "text": "Start with the id, because it fails loudest. Thirty-two bits is about two billion distinct values.",
+     "start": 0.15,
+     "end": 6.983
+    },
+    {
+     "text": "Do the arithmetic yourself. A few thousand events every second fills two billion in well under two weeks.",
+     "start": 7.403,
+     "end": 16.588
+    },
+    {
+     "text": "So overflow is not a rare event on a busy table. The only real question is what your system does when it happens.",
+     "start": 17.008,
+     "end": 24.605
+    }
+   ],
+   "lufs": -16.3,
+   "true_peak": -1.9,
+   "wpm": 139,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "03": {
+   "hash": "84f949e939e145af",
+   "takes": [
+    "f3132e395d6a4cf1c931",
+    "6e81b1d72c21cb240a66",
+    "15b9348e3b5218cd4819"
+   ],
+   "duration": 12.961,
+   "lines": [
+    {
+     "text": "A thirty-two-bit integer maxes out.",
+     "start": 0.15,
+     "end": 3.056
+    },
+    {
+     "text": "Think about where the arithmetic is running before you answer, because the answer is not a property of the number.",
+     "start": 3.476,
+     "end": 10.938
+    },
+    {
+     "text": "What happens?",
+     "start": 11.758,
+     "end": 12.611
+    }
+   ],
+   "lufs": -16.2,
+   "true_peak": -2.2,
+   "wpm": 134,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "03a": {
+   "hash": "8b5bfcfdc1958915",
+   "takes": [
+    "45728854b0e826e86b1e",
+    "6bb440cff918832a17ca",
+    "5138a9dd1a42b4985aa3",
+    "f8f77b4a09fd1c9b8023"
+   ],
+   "duration": 31.015,
+   "lines": [
+    {
+     "text": "It depends on the engine, which is exactly the danger.",
+     "start": 0.15,
+     "end": 3.642
+    },
+    {
+     "text": "Postgres refuses and raises an error. Spark does the same by default since version four.",
+     "start": 4.062,
+     "end": 10.058
+    },
+    {
+     "text": "A numeric array library wraps around to a large negative number and says nothing. Plain Python never overflows, because its integers have no fixed width.",
+     "start": 10.478,
+     "end": 22.456
+    },
+    {
+     "text": "So there is no single right answer to give. That is why code that passes in a notebook can corrupt data in a cluster.",
+     "start": 22.876,
+     "end": 30.665
+    }
+   ],
+   "lufs": -16.1,
+   "true_peak": -2.5,
+   "wpm": 145,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "04": {
+   "hash": "b3e83b12101ff672",
+   "takes": [
+    "dcf7ae3203dc67fb851b",
+    "f4dfdaf90a45fdb27bf4",
+    "afdc38a3dd397860846a",
+    "46cf761152ec0212e8f6"
+   ],
+   "duration": 31.586,
+   "lines": [
+    {
+     "text": "Now the amount, stored as a floating point number. Look at the number line and the tick marks on it.",
+     "start": 0.15,
+     "end": 6.682
+    },
+    {
+     "text": "Each tick is a value the format can represent exactly. Near one they are packed tightly. As the numbers grow, they spread apart.",
+     "start": 7.102,
+     "end": 16.429
+    },
+    {
+     "text": "Past about nine quadrillion the ticks are two apart, so odd whole numbers do not exist there at all.",
+     "start": 16.849,
+     "end": 24.277
+    },
+    {
+     "text": "Add one and you are rounded back to the tick you started on. The sum looks fine and did nothing.",
+     "start": 24.697,
+     "end": 31.236
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -1.9,
+   "wpm": 156,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "05": {
+   "hash": "e098ef596705fda7",
+   "takes": [
+    "82d78dc9aadcd33ae872",
+    "1bcbee9a536599dac498",
+    "f2a2e840124d968ed115"
+   ],
+   "duration": 13.82,
+   "lines": [
+    {
+     "text": "This is the one that catches experienced engineers, so slow down.",
+     "start": 0.15,
+     "end": 4.133
+    },
+    {
+     "text": "One tenth, two tenths and three tenths, added in two groupings. In algebra the grouping cannot matter.",
+     "start": 4.553,
+     "end": 11.639
+    },
+    {
+     "text": "Does it matter here?",
+     "start": 12.459,
+     "end": 13.47
+    }
+   ],
+   "lufs": -16.3,
+   "true_peak": -2.7,
+   "wpm": 139,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "05a": {
+   "hash": "7b654e09bf1f5b68",
+   "takes": [
+    "81f82d4393c785252ad0",
+    "938f57d658fea7f36e11",
+    "5dd6b994ed4220fa4839"
+   ],
+   "duration": 24.704,
+   "lines": [
+    {
+     "text": "Yes. The two totals differ in the last decimal place.",
+     "start": 0.15,
+     "end": 4.07
+    },
+    {
+     "text": "Addition on floats is commutative but not associative. Every step rounds to the nearest tick, and which tick you land on depends on what was already in the running total.",
+     "start": 4.49,
+     "end": 15.544
+    },
+    {
+     "text": "So the grouping decides the rounding. Saying the grouping does not matter is the mathematician's habit, and the machine does not share it.",
+     "start": 15.964,
+     "end": 24.354
+    }
+   ],
+   "lufs": -16.3,
+   "true_peak": -2.3,
+   "wpm": 153,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "06": {
+   "hash": "63d3239dbbfc5399",
+   "takes": [
+    "9ede321ff7a2c8b0bc47",
+    "329757236d96b9e0b9ef",
+    "4bcfe908f0806480eca6",
+    "a363e8759dc701bc31b7"
+   ],
+   "duration": 32.127,
+   "lines": [
+    {
+     "text": "Now scale that to a million amounts. Watch the two totals disagree.",
+     "start": 0.15,
+     "end": 4.783
+    },
+    {
+     "text": "The error is worst when a large running total swallows a tiny amount whole, the same effect as adding one past the nine quadrillion line.",
+     "start": 5.203,
+     "end": 15.426
+    },
+    {
+     "text": "In a distributed job it gets worse, because the rows of one group arrive from many machines in no fixed order.",
+     "start": 15.846,
+     "end": 22.56
+    },
+    {
+     "text": "So the same query on the same data can return a different total on different runs, and nothing is wrong with the cluster.",
+     "start": 22.98,
+     "end": 31.777
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 151,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "07": {
+   "hash": "8a679d568abed79b",
+   "takes": [
+    "791956598ce2f3bc8cdc",
+    "aca65349d12ecb7bedc4",
+    "1de2b51f291b261bb4a0",
+    "7d01c873bae6c7ccf71e"
+   ],
+   "duration": 26.668,
+   "lines": [
+    {
+     "text": "The network is not the only thing that reorders a sum.",
+     "start": 0.15,
+     "end": 3.668
+    },
+    {
+     "text": "A vectorized engine adds several values per instruction, so its additions form a wider, shallower tree than a simple loop.",
+     "start": 4.088,
+     "end": 12.504
+    },
+    {
+     "text": "And many cores each build a partial sum, merged in whatever order they finish.",
+     "start": 12.924,
+     "end": 18.15
+    },
+    {
+     "text": "Change the parallelism, and the last digits move. You never wrote a bug. You changed the order of additions.",
+     "start": 18.57,
+     "end": 26.318
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -2.2,
+   "wpm": 144,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "08": {
+   "hash": "2260884f5638d03c",
+   "takes": [
+    "0fcbd8a7c2a4b89d1b6a",
+    "636539ce812589e4077e",
+    "1f860f31487ba325392d",
+    "2e415ecb913a5e7c0bf8"
+   ],
+   "duration": 25.722,
+   "lines": [
+    {
+     "text": "So how do you get a total that does not depend on order?",
+     "start": 0.15,
+     "end": 4.37
+    },
+    {
+     "text": "Compensated summation keeps the bits that fall off the end of each addition, and shrinks the error a great deal.",
+     "start": 4.92,
+     "end": 11.953
+    },
+    {
+     "text": "An exactly rounded sum goes further and returns one answer in any order. But both are repairs.",
+     "start": 12.373,
+     "end": 19.84
+    },
+    {
+     "text": "The better fix for money is to avoid the binary float, which is the next step.",
+     "start": 20.26,
+     "end": 25.372
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 154,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "09": {
+   "hash": "a7758d76158c86b2",
+   "takes": [
+    "f4c83c7039515c40bb9a",
+    "b65fc6e506e1fda1faeb",
+    "1ee204d0b873b9977c66",
+    "dd7d12d60269c0be1295"
+   ],
+   "duration": 34.771,
+   "lines": [
+    {
+     "text": "A fixed point decimal stores cents exactly. There is nothing to round, so there is no drift.",
+     "start": 0.15,
+     "end": 8.31
+    },
+    {
+     "text": "But watch what happens to the digits when you multiply. The scale of the result is the sum of the two scales.",
+     "start": 8.73,
+     "end": 16.267
+    },
+    {
+     "text": "An amount times a tax rate therefore needs more digits than either input. Chain a few of these and you reach the engine's ceiling.",
+     "start": 16.688,
+     "end": 24.596
+    },
+    {
+     "text": "At the ceiling the engine either errors or quietly drops digits. So work out the result's precision before you ship the query, not after.",
+     "start": 25.016,
+     "end": 34.421
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 150,
+   "wer": 0.058823529411764705,
+   "exact": false,
+   "tolerated": [
+    {
+     "line": "A fixed point decimal stores cents exactly. There is nothing to round, so there is no drift.",
+     "said": "cents",
+     "heard": "sense"
+    },
+    {
+     "line": "An amount times a tax rate therefore needs more digits than either input. Chain a few of these and you reach the engine's ceiling.",
+     "said": "engines",
+     "heard": "engine"
+    }
+   ]
+  },
+  "10": {
+   "hash": "2f0393ff201949c2",
+   "takes": [
+    "0ea45bc32f0b1e6c881a",
+    "78e23b279887dbcc6235",
+    "ae7e50d49676c6f9e4cb",
+    "4b7273f5ac889cf7eeda"
+   ],
+   "duration": 25.882,
+   "lines": [
+    {
+     "text": "The last number is the time. A timestamp is a count of ticks since nineteen seventy, and the size of the tick is a choice.",
+     "start": 0.15,
+     "end": 9.022
+    },
+    {
+     "text": "Some systems count microseconds. Some older tools count nanoseconds.",
+     "start": 9.442,
+     "end": 14.045
+    },
+    {
+     "text": "Think about what a sixty-four-bit integer can hold, and how big a nanosecond is.",
+     "start": 14.465,
+     "end": 19.837
+    },
+    {
+     "text": "How many years can a nanosecond counter reach, in either direction?",
+     "start": 20.657,
+     "end": 25.532
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 141,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "10a": {
+   "hash": "eabd5ff7b888a11d",
+   "takes": [
+    "2c93e948de7bed2ab984",
+    "d17e20dcbaaad2255e1c",
+    "a6fa2b5e7c34306514ae"
+   ],
+   "duration": 22.753,
+   "lines": [
+    {
+     "text": "Only about two hundred and ninety years in total, which reaches roughly from the sixteen hundreds to about two thousand two hundred sixty.",
+     "start": 0.15,
+     "end": 8.86
+    },
+    {
+     "text": "A smaller tick buys finer resolution and pays for it in range.",
+     "start": 9.28,
+     "end": 14.793
+    },
+    {
+     "text": "Step outside that window and the counter overflows, so dates far from now need a coarser tick.",
+     "start": 15.213,
+     "end": 22.403
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.8,
+   "wpm": 134,
+   "wer": 0.09090909090909091,
+   "exact": false,
+   "tolerated": [
+    {
+     "line": "Only about two hundred and ninety years in total, which reaches roughly from the sixteen hundreds to about two thousand two hundred sixty.",
+     "said": "hundreds",
+     "heard": "hundred s"
+    }
+   ]
+  },
+  "11": {
+   "hash": "23e80e757b114833",
+   "takes": [
+    "c14b5f6f14ce2cc2fbed",
+    "74036befcaf52dd1669e",
+    "fe55469feab3064d961e",
+    "ba9ddbb50c016ac48187"
+   ],
+   "duration": 27.419,
+   "lines": [
+    {
+     "text": "Now the quiet failure, the one that raises no error.",
+     "start": 0.15,
+     "end": 3.799
+    },
+    {
+     "text": "Write microsecond times to a file, then read them somewhere that rounds to milliseconds. The two integers differ, though they name the same instant.",
+     "start": 4.219,
+     "end": 14.405
+    },
+    {
+     "text": "Join on that column, and rows silently fall out of the result.",
+     "start": 14.825,
+     "end": 19.157
+    },
+    {
+     "text": "A join key has to carry the same tick size on both sides. Pin it explicitly, and never let a default decide.",
+     "start": 19.577,
+     "end": 27.069
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -2.6,
+   "wpm": 149,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "12": {
+   "hash": "3d840b45491727bd",
+   "takes": [
+    "122571adda27c34b7161",
+    "db1b6b53bc8a425d2d72",
+    "af5eacd39250815d54a9"
+   ],
+   "duration": 29.786,
+   "lines": [
+    {
+     "text": "If you keep one rule from this topic, keep this one: never store currency as a binary float.",
+     "start": 0.15,
+     "end": 7.473
+    },
+    {
+     "text": "Store the cents exactly, in a decimal or as whole minor units. Keep floats for quantities where a tiny relative error is harmless.",
+     "start": 7.893,
+     "end": 17.391
+    },
+    {
+     "text": "That closes the hardware. Next: the algorithms that decide how many bytes a query moves, starting with the two index families most databases are built on.",
+     "start": 18.211,
+     "end": 29.436
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -1.9,
+   "wpm": 135,
+   "wer": 0.043478260869565216,
+   "exact": false,
+   "tolerated": [
+    {
+     "line": "Store the cents exactly, in a decimal or as whole minor units. Keep floats for quantities where a tiny relative error is harmless.",
+     "said": "cents",
+     "heard": "sense"
+    }
+   ]
+  }
+ }
+}
