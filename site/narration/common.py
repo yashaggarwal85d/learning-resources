@@ -9,7 +9,22 @@ CACHE = os.environ.get("NARRATION_CACHE", os.path.expanduser("~/.cache/learning-
 
 GPU_SLOTS = int(os.environ.get("NARRATION_GPU_SLOTS", 3))
 GPU_LOCK_DIR = os.path.join(CACHE, "gpu-slots")
-GPU_SLOT_STALE_S = 120  # no single take takes this long to generate; a lock this old is a dead process's
+
+
+def _pid_alive(pid):
+    """Windows-only liveness check (no extra dependency): a lock is only ever reclaimed once its owning process is
+    verifiably gone, never by guessing from a time limit — under real contention a legitimate take can take longer
+    than any fixed timeout, and reclaiming a still-live holder's slot just lets more processes pile onto the GPU at
+    once, which is the exact overload this lock exists to prevent."""
+    try:
+        import ctypes
+        handle = ctypes.windll.kernel32.OpenProcess(0x1000, False, pid)  # PROCESS_QUERY_LIMITED_INFORMATION
+        if not handle:
+            return False
+        ctypes.windll.kernel32.CloseHandle(handle)
+        return True
+    except Exception:
+        return True  # can't tell: assume alive, never steal
 
 
 @contextlib.contextmanager
@@ -29,7 +44,11 @@ def gpu_slot():
                 path = p
                 break
             except FileExistsError:
-                if time.time() - os.path.getmtime(p) > GPU_SLOT_STALE_S:
+                try:
+                    holder = int(open(p).read().strip())
+                except (OSError, ValueError):
+                    holder = None
+                if holder is None or not _pid_alive(holder):
                     try:
                         os.remove(p)
                     except OSError:

@@ -42,7 +42,17 @@ for n, (line, take) in enumerate(todo, 1):
     if has("--temp") and "temperature" in take:
         cmd += ["--temp", str(take["temperature"])]
     with gpu_slot():
-        r = subprocess.run(cmd, capture_output=True, text=True)
+        try:
+            r = subprocess.run(cmd, capture_output=True, text=True, timeout=120)
+        except subprocess.TimeoutExpired:
+            # breeze-cli itself occasionally wedges on a particular line/seed (observed: 20-30 minutes, never
+            # returning); the GPU slot it held is correctly never stolen (the holder is genuinely alive), so without
+            # this the slot is gone for good. Skip this one take rather than exit: the line still has its other
+            # takes, and a later round or retry asks for a fresh one if too many of a line's takes are missing.
+            print(f"breeze-cli wedged on {line[:60]!r}, skipping this take", flush=True)
+            if os.path.exists(tmp):
+                os.remove(tmp)
+            continue
     if r.returncode or not os.path.exists(tmp):
         sys.exit(f"breeze-cli failed on {line[:60]!r}: {(r.stderr or r.stdout)[-800:]}")
     a, sr = sf.read(tmp, dtype="float32")

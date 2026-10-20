@@ -1,0 +1,586 @@
+{
+ "topic": "de.b-trees-vs-lsm",
+ "voice": "breeze-mellow-v2",
+ "asr": "large-v3-turbo",
+ "clips": {
+  "01": {
+   "hash": "255e850b7e340f38",
+   "takes": [
+    "e2256e50f0b8eec23a19",
+    "5b354972ef73e1ecc8f3",
+    "56a4fd76995166889121"
+   ],
+   "duration": 19.868,
+   "lines": [
+    {
+     "text": "You know what each tier of the machine costs. An index decides how many of those costs a lookup has to pay.",
+     "start": 0.15,
+     "end": 8.396
+    },
+    {
+     "text": "There are two great families, and the whole topic is the question of where each one makes you pay.",
+     "start": 8.816,
+     "end": 14.924
+    },
+    {
+     "text": "One pays when it writes. The other pays when it reads.",
+     "start": 15.744,
+     "end": 19.518
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 157,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "02": {
+   "hash": "f9bc5f0fe500f924",
+   "takes": [
+    "fd4e96c0a56ce8d2b664",
+    "2a367a11f5068c2cb1f3",
+    "a50e4c9b6a66a9fcdf1b",
+    "e8c40c6d4c3bfac77fe8"
+   ],
+   "duration": 33.618,
+   "lines": [
+    {
+     "text": "The first family keeps data sorted, in place, in a tree. Look at the shape: every node is exactly one page.",
+     "start": 0.15,
+     "end": 8.78
+    },
+    {
+     "text": "The leaves hold the rows. The nodes above hold only signposts, telling a search which child to take.",
+     "start": 9.2,
+     "end": 17.246
+    },
+    {
+     "text": "The number that matters is how many signposts fit in a page. Page size divided by the size of one entry. That is the fan-out.",
+     "start": 17.666,
+     "end": 26.856
+    },
+    {
+     "text": "Hold on to it. Everything about this tree's speed comes from that one number being large.",
+     "start": 27.276,
+     "end": 33.268
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 145,
+   "wer": 0.05555555555555555,
+   "exact": false,
+   "tolerated": [
+    {
+     "line": "The leaves hold the rows. The nodes above hold only signposts, telling a search which child to take.",
+     "said": "rows",
+     "heard": "rose"
+    }
+   ]
+  },
+  "03": {
+   "hash": "7455650486c05d3a",
+   "takes": [
+    "fd75c5b99394b6c7e7bd",
+    "aa33b49f9d8c06f19661",
+    "875f2769b071ace58c3d"
+   ],
+   "duration": 14.406,
+   "lines": [
+    {
+     "text": "A hundred million keys, a fan-out of a few hundred.",
+     "start": 0.15,
+     "end": 3.8
+    },
+    {
+     "text": "Do not count nodes. Ask how many times you can divide a hundred million by a few hundred before one is left.",
+     "start": 4.22,
+     "end": 12.002
+    },
+    {
+     "text": "How many levels is that?",
+     "start": 12.822,
+     "end": 14.056
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 158,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "03a": {
+   "hash": "8b4a1d772c357c33",
+   "takes": [
+    "fdd751b38a57c26d7e9c",
+    "6167fd7fbaa76f0f919b",
+    "f2384ef64cec2f296ca4"
+   ],
+   "duration": 23.217,
+   "lines": [
+    {
+     "text": "Three or four.",
+     "start": 0.15,
+     "end": 1.824
+    },
+    {
+     "text": "The height is a logarithm of the key count, in the base of the fan-out. A large base makes a logarithm small.",
+     "start": 2.244,
+     "end": 9.457
+    },
+    {
+     "text": "Twenty or ten levels would be right for a binary tree, where the base is two. The tree is short because it is wide, and key size changes the answer only through the fan-out.",
+     "start": 9.877,
+     "end": 22.867
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 158,
+   "wer": 0.08695652173913043,
+   "exact": false,
+   "tolerated": [
+    {
+     "line": "The height is a logarithm of the key count, in the base of the fan-out. A large base makes a logarithm small.",
+     "said": "fan out",
+     "heard": "fanout"
+    }
+   ]
+  },
+  "04": {
+   "hash": "c2234d50b7726b9e",
+   "takes": [
+    "144309e337762539c80e",
+    "fc61dc66c6a21a20c47c",
+    "9421ee3ad1195677bb6b",
+    "98b2e734c265fbc36823"
+   ],
+   "duration": 32.832,
+   "lines": [
+    {
+     "text": "So a point lookup walks one path from root to leaf. Three or four pages.",
+     "start": 0.15,
+     "end": 4.972
+    },
+    {
+     "text": "But look at which pages. The root is one page. The level below it is a few megabytes at most.",
+     "start": 5.392,
+     "end": 12.901
+    },
+    {
+     "text": "Those pages are touched by every lookup, so after a handful of queries they sit in memory for good.",
+     "start": 13.321,
+     "end": 20.194
+    },
+    {
+     "text": "That is the real cost: about one read from the drive, at the leaf. And a range scan descends once, then walks sideways along linked leaves.",
+     "start": 20.614,
+     "end": 32.482
+    }
+   ],
+   "lufs": -16.3,
+   "true_peak": -1.9,
+   "wpm": 146,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "05": {
+   "hash": "18ec17aeb39236ac",
+   "takes": [
+    "223fcebaf50e18f798c6",
+    "a2961f687d011ac8edd4",
+    "a94f12ea8dcbdb2860f1",
+    "ce6337fdc469a300a871"
+   ],
+   "duration": 34.593,
+   "lines": [
+    {
+     "text": "The second family refuses to write in place. Watch what a write does here: it only ever appends.",
+     "start": 0.15,
+     "end": 7.385
+    },
+    {
+     "text": "It goes into a small sorted table in memory. When that fills, the table is frozen and flushed in one long sequential sweep. That output is a sorted run.",
+     "start": 7.805,
+     "end": 19.701
+    },
+    {
+     "text": "Notice what is missing. No page to hunt for, no seek, no read before the write.",
+     "start": 20.121,
+     "end": 26.515
+    },
+    {
+     "text": "That is why ingestion is so cheap. The structure was designed so the disk only ever sees sequential writes.",
+     "start": 26.935,
+     "end": 34.243
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 142,
+   "wer": 0.0625,
+   "exact": false,
+   "tolerated": [
+    {
+     "line": "Notice what is missing. No page to hunt for, no seek, no read before the write.",
+     "said": "write",
+     "heard": "right"
+    },
+    {
+     "line": "That is why ingestion is so cheap. The structure was designed so the disk only ever sees sequential writes.",
+     "said": "writes",
+     "heard": "rights"
+    }
+   ]
+  },
+  "06": {
+   "hash": "4a72dd471079bcbf",
+   "takes": [
+    "638f4413597b486eb421",
+    "01551677787c0217484b",
+    "55245e9daf05644a5e40",
+    "44883194fb6ba1bd84b5"
+   ],
+   "duration": 38.658,
+   "lines": [
+    {
+     "text": "But there is a price. Runs are never modified, so they pile up, and a reader has to look in more of them.",
+     "start": 0.15,
+     "end": 8.133
+    },
+    {
+     "text": "So a background job merges several runs into fewer, larger ones. That is compaction, and it is the same merge of sorted inputs you will meet in external sorting.",
+     "start": 8.553,
+     "end": 20.074
+    },
+    {
+     "text": "The catch is on the right of the picture. Each level is about ten times the one above, and a byte is rewritten every time it moves down.",
+     "start": 20.494,
+     "end": 31.357
+    },
+    {
+     "text": "So the cheap writes were not free. The cost moved to the background, where the disk does the rewriting.",
+     "start": 31.777,
+     "end": 38.308
+    }
+   ],
+   "lufs": -16.2,
+   "true_peak": -2.1,
+   "wpm": 154,
+   "wer": 0.10526315789473684,
+   "exact": false,
+   "tolerated": [
+    {
+     "line": "So the cheap writes were not free. The cost moved to the background, where the disk does the rewriting.",
+     "said": "writes",
+     "heard": "rights"
+    },
+    {
+     "line": "So the cheap writes were not free. The cost moved to the background, where the disk does the rewriting.",
+     "said": "disk",
+     "heard": "disc"
+    }
+   ]
+  },
+  "07": {
+   "hash": "2b1b42cc05371c53",
+   "takes": [
+    "ca8167cfc76923ecd584",
+    "13ea130c9155fd9216fc",
+    "ed9bbded15857a3c9ac9",
+    "5d566188e798125da3a4"
+   ],
+   "duration": 42.232,
+   "lines": [
+    {
+     "text": "Now weigh the two, on three costs: reading, writing, and space.",
+     "start": 0.15,
+     "end": 6.133
+    },
+    {
+     "text": "The in-place tree reads beautifully, one cached path. But a tiny change rewrites a whole page, and the log writes it again.",
+     "start": 6.553,
+     "end": 16.726
+    },
+    {
+     "text": "The append-only tree writes beautifully. But a read may touch several runs, and compaction rewrites data many times over.",
+     "start": 17.146,
+     "end": 27.166
+    },
+    {
+     "text": "Read the two numbers at the bottom: leveled write amplification near thirty three, space near one point one four. Those are RocksDB's own worked example, not a law.",
+     "start": 27.586,
+     "end": 41.882
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 116,
+   "wer": 0.07142857142857142,
+   "exact": false,
+   "tolerated": [
+    {
+     "line": "Read the two numbers at the bottom: leveled write amplification near thirty three, space near one point one four. Those are RocksDB's own worked example, not a law.",
+     "said": "write",
+     "heard": "right"
+    },
+    {
+     "line": "Read the two numbers at the bottom: leveled write amplification near thirty three, space near one point one four. Those are RocksDB's own worked example, not a law.",
+     "said": "rocksdbs",
+     "heard": "roxdbs"
+    }
+   ]
+  },
+  "08": {
+   "hash": "139ec3084ac8705e",
+   "takes": [
+    "9c656031e8bb191fa93c",
+    "aa881b001911823b029b",
+    "a5b2d5e570c79796ed49",
+    "993277c97b8db077481b"
+   ],
+   "duration": 29.286,
+   "lines": [
+    {
+     "text": "Researchers gave this trade a name. Reads, updates, memory.",
+     "start": 0.15,
+     "end": 5.354
+    },
+    {
+     "text": "The conjecture says you can push at most two of them down, and the third pays.",
+     "start": 5.774,
+     "end": 11.49
+    },
+    {
+     "text": "Our two families sit at opposite corners of that triangle. The in-place tree buys cheap reads. The append-only tree buys cheap writes.",
+     "start": 11.91,
+     "end": 21.983
+    },
+    {
+     "text": "So no design wins everywhere. The question is always which cost your workload can afford.",
+     "start": 22.403,
+     "end": 28.936
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -2.0,
+   "wpm": 131,
+   "wer": 0.041666666666666664,
+   "exact": false,
+   "tolerated": [
+    {
+     "line": "Our two families sit at opposite corners of that triangle. The in-place tree buys cheap reads. The append-only tree buys cheap writes.",
+     "said": "writes",
+     "heard": "rights"
+    }
+   ]
+  },
+  "09": {
+   "hash": "ae92db9d4c783bc0",
+   "takes": [
+    "0f4f6cfb42c7db3dc48e",
+    "a301e5e768d0a8b3368d",
+    "0403bf47dd90b0cc456b",
+    "f630dfdbf6b92c6099ba"
+   ],
+   "duration": 37.587,
+   "lines": [
+    {
+     "text": "An obvious objection: if a read must check many runs, surely it is slow.",
+     "start": 0.15,
+     "end": 6.336
+    },
+    {
+     "text": "That is what the membership sketch is for. Before opening a run, you ask whether the key could possibly be inside.",
+     "start": 6.756,
+     "end": 14.003
+    },
+    {
+     "text": "Most of the time the answer is no, so a point read touches about one run. The default spends ten bits per key for roughly a one percent mistake rate.",
+     "start": 14.423,
+     "end": 24.954
+    },
+    {
+     "text": "Now notice what the sketch cannot do. It answers exact keys only. A range scan has nothing to ask it, so it still merges every overlapping run.",
+     "start": 25.374,
+     "end": 37.237
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 147,
+   "wer": 0.07142857142857142,
+   "exact": false,
+   "tolerated": [
+    {
+     "line": "An obvious objection: if a read must check many runs, surely it is slow.",
+     "said": "read",
+     "heard": "reed"
+    }
+   ]
+  },
+  "10": {
+   "hash": "7e11e3c242b8c79d",
+   "takes": [
+    "3a0e3c84ea9950c2e281",
+    "e9e8e944e62748f96e3a"
+   ],
+   "duration": 10.897,
+   "lines": [
+    {
+     "text": "Make it concrete with the shop. You look up one order by its id, over and over. Reads dominate.",
+     "start": 0.15,
+     "end": 7.759
+    },
+    {
+     "text": "Which family do you reach for?",
+     "start": 8.579,
+     "end": 10.547
+    }
+   ],
+   "lufs": -16.2,
+   "true_peak": -2.2,
+   "wpm": 138,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "10a": {
+   "hash": "c7c4195ef0af4360",
+   "takes": [
+    "52502fb6c48b1700dd76",
+    "11e7189d8e81dc080204",
+    "fcd54941e9914cbd2f54"
+   ],
+   "duration": 21.473,
+   "lines": [
+    {
+     "text": "The in-place tree.",
+     "start": 0.15,
+     "end": 1.658
+    },
+    {
+     "text": "A short descent through pages that are already cached, then a tidy walk along the leaves if you need neighbours.",
+     "start": 2.078,
+     "end": 9.256
+    },
+    {
+     "text": "The append-only tree would work, but you would be paying for run checks on every read to gain a write speed you are not using. That is why operational databases default to the tree.",
+     "start": 9.676,
+     "end": 21.123
+    }
+   ],
+   "lufs": -16.1,
+   "true_peak": -2.2,
+   "wpm": 165,
+   "wer": 0.05,
+   "exact": false,
+   "tolerated": [
+    {
+     "line": "A short descent through pages that are already cached, then a tidy walk along the leaves if you need neighbours.",
+     "said": "neighbours",
+     "heard": "neighbors"
+    }
+   ]
+  },
+  "11": {
+   "hash": "c00ea72d4ec472ff",
+   "takes": [
+    "54a9c19cb1c39c2ef11a",
+    "4f70229cf4317a078f16"
+   ],
+   "duration": 10.492,
+   "lines": [
+    {
+     "text": "Now the opposite extreme. A terabyte of order events arriving as a stream, mostly appends.",
+     "start": 0.15,
+     "end": 7.483
+    },
+    {
+     "text": "Which family wants that workload?",
+     "start": 8.303,
+     "end": 10.142
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 114,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "11a": {
+   "hash": "2e1d91c0932703ad",
+   "takes": [
+    "be98e87856e5ae18ba1c",
+    "2a86e31a07991af068ee",
+    "c2f98b20cd0b3c8ae407"
+   ],
+   "duration": 25.129,
+   "lines": [
+    {
+     "text": "The append-only tree.",
+     "start": 0.15,
+     "end": 1.893
+    },
+    {
+     "text": "It takes the stream at memory speed and leaves the sorting to background compaction, so the write path never seeks.",
+     "start": 2.313,
+     "end": 10.425
+    },
+    {
+     "text": "The in-place tree would rewrite a page for each small change, which turns a stream into a storm of random writes. You pay for it in reads and disk work later, but the ingest never stalls.",
+     "start": 10.845,
+     "end": 24.779
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 146,
+   "wer": 0.05,
+   "exact": false,
+   "tolerated": [
+    {
+     "line": "It takes the stream at memory speed and leaves the sorting to background compaction, so the write path never seeks.",
+     "said": "write",
+     "heard": "right"
+    }
+   ]
+  },
+  "12": {
+   "hash": "4045d84a0fd712f2",
+   "takes": [
+    "23c7cb5be6129be3eb8a",
+    "9f0ddb9a0bbe0a799ff7",
+    "e1ecff58630c1f2b6be3"
+   ],
+   "duration": 27.705,
+   "lines": [
+    {
+     "text": "One sentence decides it. The in-place tree trades write cost for read cost. The append-only tree trades read and space cost for write cost.",
+     "start": 0.15,
+     "end": 10.705
+    },
+    {
+     "text": "So do not ask which is better. Ask where your hot path is, and choose the structure whose cheap side is that path.",
+     "start": 11.125,
+     "end": 18.979
+    },
+    {
+     "text": "Next: what a lookup really costs when the index finds thousands of rows, counted in block transfers.",
+     "start": 19.799,
+     "end": 27.355
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -2.0,
+   "wpm": 143,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  }
+ }
+}
