@@ -72,7 +72,8 @@ export function Problem({ t }: StepCtx) {
       <Serif x={25} y={36} size={28}>orders</Serif>
       <Mono ph x={160} y={34} size={17}>100,000,000 rows · 1,000,000 pages</Mono>
       <rect x={25} y={52} width={550} height={40} rx={10} fill={C.roast} stroke={C.mocha} />
-      <Mono ph x={42} y={77} size={16} fill={C.crema}>
+      {/* fixed size, not `ph`: at 49 characters this line already nearly fills the 550-wide box; the phone text-scale would push it past the edge */}
+      <Mono x={42} y={77} size={16} fill={C.crema}>
         {sql.slice(0, chars)}
         {t < 2.6 && <tspan fill={C.caramel}>{Math.floor(t * 2.5) % 2 ? '▌' : ' '}</tspan>}
       </Mono>
