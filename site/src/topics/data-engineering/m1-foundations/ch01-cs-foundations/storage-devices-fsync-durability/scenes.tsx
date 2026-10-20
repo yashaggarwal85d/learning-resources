@@ -11,7 +11,7 @@ export function Problem({ t }: StepCtx) {
   const toCache = easeOut(seg(t, 0.2, 1.1));
   const question = easeOutBack(seg(t, 1.6, 2.4));
   return (
-    <Svg label="write() lands bytes in the page cache; the real device below has not seen them yet" h={360}>
+    <Svg label="write() lands bytes in the page cache; the real device below has not seen them yet" h={392}>
       <T x={300} y={40} s={16} f={C.latte} a="middle">write(fd, bytes)</T>
       <rect x={60} y={60} width={120} height={46} rx={10} fill={C.cocoa} stroke={C.mocha} />
       <T x={120} y={88} s={14} f={C.crema} a="middle">your bytes</T>
@@ -20,15 +20,15 @@ export function Problem({ t }: StepCtx) {
       <circle cx={lerp(180, 240, toCache) + 20} cy={83} r={6} fill={C.caramel} opacity={clamp(toCache * 3)} />
       <T x={420} y={88} s={14} f={C.taupe} a="middle">RAM</T>
       <line x1={420} y1={106} x2={420} y2={190} stroke={C.taupe} strokeDasharray="4 5" />
-      <rect x={120} y={210} width={360} height={80} rx={10} fill="none" stroke={C.mocha} strokeWidth={1.5} />
-      <T x={300} y={238} s={14} f={C.latte} a="middle">the real device</T>
-      <T x={300} y={256} s={13} f={C.taupe} a="middle">platters that must be sought,</T>
-      <T x={300} y={280} s={13} f={C.taupe} a="middle">or flash that cannot overwrite in place</T>
-      <g transform={`translate(300 320) scale(${question})`} opacity={clamp(question)}>
+      <rect x={120} y={210} width={360} height={96} rx={10} fill="none" stroke={C.mocha} strokeWidth={1.5} />
+      <T x={300} y={236} s={14} f={C.latte} a="middle">the real device</T>
+      <T x={300} y={264} s={13} f={C.taupe} a="middle">platters that must be sought,</T>
+      <T x={300} y={290} s={13} f={C.taupe} a="middle">or flash that cannot overwrite in place</T>
+      <g transform={`translate(300 336) scale(${question})`} opacity={clamp(question)}>
         <circle r={22} fill={C.roast} stroke={C.caramel} strokeWidth={2} />
         <T x={0} y={7} s={22} f={C.caramel} a="middle" w={700}>?</T>
       </g>
-      <T x={300} y={352} s={13} f={C.taupe} a="middle" o={clamp(question)}>durable yet?</T>
+      <T x={300} y={376} s={13} f={C.taupe} a="middle" o={clamp(question)}>durable yet?</T>
     </Svg>
   );
 }

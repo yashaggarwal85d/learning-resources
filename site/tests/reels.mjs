@@ -162,12 +162,15 @@ for (const [device, opts] of [
       for (let i = 1; i < total; i++) {
         await reel.locator('[aria-label^="Step "]').nth(i).click();
         await page.waitForTimeout(500);
+        // The visual's height changes from step to step once narration captions are on, so measure the tap point on every step.
+        const vb = await reel.locator('[data-visual]').last().boundingBox();
+        const yv = vb.y + vb.height / 2;
         for (const x0 of [60, 200]) {
-          await drag(x0, y, x0 + 250 > 380 ? 380 : x0 + 250, y);
+          await drag(x0, yv, x0 + 250 > 380 ? 380 : x0 + 250, yv);
           const now = Number(await stepNow());
           if (now !== i) fail(`${where}: swipe right from x=${x0} on step ${i + 1} went to step ${now} instead of ${i}`);
           await reel.locator('[aria-label^="Step "]').nth(i).click();
-          await page.waitForTimeout(300);
+          await page.waitForTimeout(600);
         }
       }
       // ...including from the caption (title and text): it is its own scroll container, and a swipe there used to be cancelled by the browser (QUALITY.md #36).

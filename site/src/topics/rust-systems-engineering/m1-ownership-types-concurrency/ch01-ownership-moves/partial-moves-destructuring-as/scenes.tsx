@@ -164,7 +164,7 @@ function Counter({ x = 556, y = 28, label = 'ALLOCS', v, text, t, a, d = 0.6, ba
   return (
     <g opacity={fa(t, a - 0.2, 0.2)}>
       <T x={x} y={y} s={13} a="end" f={C.latte}>{label}</T>
-      <T x={x} y={y + 26} s={20} a="end" f={bad ? C.cherryText : C.crema} serif w={700}>{shown}</T>
+      <T x={x} y={y + 32} s={20} a="end" f={bad ? C.cherryText : C.crema} serif w={700}>{shown}</T>
     </g>
   );
 }
@@ -714,7 +714,7 @@ export function OptionHole({ t, portrait }: StepCtx) {
         <T x={442} y={121} s={13} f={C.latte} o={fa(t, 1.4)}>end of scope</T>
         <g opacity={pulse}>
           <Counter t={t} a={1.4} text="1" />
-          <T x={556} y={74} s={13} a="end" f={C.latte} o={fa(t, 3.4, 0.2)}>{`msgs ${msgs}`}</T>
+          <T x={556} y={84} s={13} a="end" f={C.latte} o={fa(t, 3.4, 0.2)}>{`msgs ${msgs}`}</T>
         </g>
         <T x={260} y={TY + 12} s={13} f={C.latte} o={0.7 * fa(t, 4.6, 0.5)}>with clone: 1,001</T>
         <T x={260} y={TY + 38} s={13} f={C.latte} o={fa(t, 4.8, 0.5)}>Option&lt;Buf&gt;: 32 bytes, as Buf</T>

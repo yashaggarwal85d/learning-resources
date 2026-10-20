@@ -221,7 +221,7 @@ export function Opening({ t }: StepCtx) {
       <Row x0={40} y={70} cap={16} pitch={30} w={26} h={26} labels fillOf={(j) => easeOut(seg(fillP * 16, j - 1, j))} />
       <T x={40} y={134} s={15} f={C.latte} o={grow}>grow: an append to a full vector doubles it</T>
       <T x={40} y={162} s={15} f={C.cinnamon} w={600} o={sh1}>shrink-at-½: a pop that leaves it</T>
-      <T x={40} y={182} s={15} f={C.cinnamon} w={600} o={sh2}>less than half full halves it</T>
+      <T x={40} y={188} s={15} f={C.cinnamon} w={600} o={sh2}>less than half full halves it</T>
       {chips.map((c, i) => {
         const o = at(t, 2.2 + 0.11 * i, 2.5 + 0.11 * i);
         const x = 40 + 60 * i;
