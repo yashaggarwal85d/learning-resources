@@ -1,0 +1,545 @@
+{
+ "topic": "de.sql-text-to-plan-tree",
+ "voice": "breeze-mellow-v2",
+ "asr": "large-v3-turbo",
+ "clips": {
+  "01": {
+   "hash": "bb1992c16024928d",
+   "takes": [
+    "77ffefb4a4d0591c3304",
+    "8594d3375b41707a54b0",
+    "d61fe11b71a374d9c97c"
+   ],
+   "duration": 26.679,
+   "lines": [
+    {
+     "text": "Every clause so far answered what a query means. Now what actually happens between typing that query and getting an answer back.",
+     "start": 0.15,
+     "end": 9.617
+    },
+    {
+     "text": "Look at the strip. Text goes in on the left, rows come out on the right, and a pipeline sits between them.",
+     "start": 10.037,
+     "end": 17.796
+    },
+    {
+     "text": "Every later topic in this section is a closer look at one box of it. So take a minute to see the whole route first.",
+     "start": 18.216,
+     "end": 26.329
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 155,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "02": {
+   "hash": "bbf969b125aab1a6",
+   "takes": [
+    "21b9975b47508275af5d",
+    "00304d532c7d05bf696b",
+    "d3c653c7398e6e3ca29a",
+    "c816651bf42c5ed9d653"
+   ],
+   "duration": 29.637,
+   "lines": [
+    {
+     "text": "Five boxes, and each one knows a little more than the one before.",
+     "start": 0.15,
+     "end": 4.587
+    },
+    {
+     "text": "Parse checks only the grammar. Bind looks names up in the catalog. Rewrite applies rules, views being the main example.",
+     "start": 5.007,
+     "end": 12.753
+    },
+    {
+     "text": "Plan chooses the cheapest way to compute the result. Execute runs that plan and returns rows.",
+     "start": 13.173,
+     "end": 20.687
+    },
+    {
+     "text": "Remember that ordering, because the interesting question for any problem is: at which stage does it get decided.",
+     "start": 21.107,
+     "end": 29.287
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 136,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "03": {
+   "hash": "269a6da20e75718e",
+   "takes": [
+    "6d7fb3845876821197d2",
+    "994f54ec63450523314c",
+    "01ac69851929d26523a6"
+   ],
+   "duration": 14.33,
+   "lines": [
+    {
+     "text": "Test the ordering. This query is perfectly good grammar, but the table it names does not exist.",
+     "start": 0.15,
+     "end": 7.487
+    },
+    {
+     "text": "Think about which stage has the information needed to notice.",
+     "start": 7.907,
+     "end": 11.98
+    },
+    {
+     "text": "Where does it fail?",
+     "start": 12.8,
+     "end": 13.98
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 130,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "03a": {
+   "hash": "8ab8daac8d437a6e",
+   "takes": [
+    "7d97e35753d8cf10fab5",
+    "b3da752501a3d2b42a44",
+    "ca6421efe33066ebec19"
+   ],
+   "duration": 24.452,
+   "lines": [
+    {
+     "text": "At bind.",
+     "start": 0.15,
+     "end": 0.99
+    },
+    {
+     "text": "The parser checks only the shape of the text and never opens the catalog, so it cannot know the table is missing. Binding is the first stage that resolves names.",
+     "start": 1.41,
+     "end": 13.07
+    },
+    {
+     "text": "Plan and execute never see this query at all. It does not get that far, which is why the error is a message about a relation, not about syntax.",
+     "start": 13.49,
+     "end": 24.102
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 150,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "04": {
+   "hash": "22d0be6a14a8a99e",
+   "takes": [
+    "0a495eb913dac8a0fb0c",
+    "fa59aa912dde5304f83e",
+    "ef6a991fcc9f0219948b"
+   ],
+   "duration": 25.397,
+   "lines": [
+    {
+     "text": "Bind is where text becomes meaning. Follow the arrow through the catalog box.",
+     "start": 0.15,
+     "end": 6.249
+    },
+    {
+     "text": "The parser sees a call named count, and nothing more. The catalog says whether that name is an ordinary function or an aggregate.",
+     "start": 6.669,
+     "end": 16.597
+    },
+    {
+     "text": "The tree changes shape depending on the answer. So until this step, the query does not yet have a meaning, only a form.",
+     "start": 17.017,
+     "end": 25.047
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 139,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "05": {
+   "hash": "de67d5e32154ed24",
+   "takes": [
+    "6f99ba09e9bef07f2d24",
+    "b42bbda13a3dc40c7679",
+    "a16f6ce89a12a23acb07"
+   ],
+   "duration": 26.733,
+   "lines": [
+    {
+     "text": "Next, rewrite. A view is a stored query, and this is the stage that unfolds it.",
+     "start": 0.15,
+     "end": 5.743
+    },
+    {
+     "text": "Watch the top box fade. The reference to the view is replaced by its definition, so what reaches the planner names only base tables.",
+     "start": 6.163,
+     "end": 15.652
+    },
+    {
+     "text": "That has a practical consequence. When you debug a slow query over a view, read the plan as though you had pasted the view's text in yourself.",
+     "start": 16.072,
+     "end": 26.384
+    }
+   ],
+   "lufs": -16.2,
+   "true_peak": -2.0,
+   "wpm": 150,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "06": {
+   "hash": "604493618e920ebd",
+   "takes": [
+    "86434706e9f25cf73bfa",
+    "98f131b0310537ecccb5",
+    "abb0573bd9796dfacf43"
+   ],
+   "duration": 29.341,
+   "lines": [
+    {
+     "text": "After rewrite, the query is a tree of algebra, the one from the first topic. That is the what.",
+     "start": 0.15,
+     "end": 8.49
+    },
+    {
+     "text": "The planner now has to decide the how. Compare the two trees: the same shape, but each box has become a specific algorithm.",
+     "start": 8.91,
+     "end": 17.252
+    },
+    {
+     "text": "The reason this works is that many different physical plans compute exactly the same result. If only one did, there would be nothing to choose, and no need for an optimizer.",
+     "start": 17.672,
+     "end": 28.991
+    }
+   ],
+   "lufs": -16.3,
+   "true_peak": -2.0,
+   "wpm": 149,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "07": {
+   "hash": "10e49776916ce7d9",
+   "takes": [
+    "157f284962e8bdfca123",
+    "13b58d927d5a14928258",
+    "709108173c189c5a7448",
+    "fe6a5b76af5ec2d8d00b"
+   ],
+   "duration": 31.469,
+   "lines": [
+    {
+     "text": "Each candidate implementation is called a path. Look at the options.",
+     "start": 0.15,
+     "end": 5.016
+    },
+    {
+     "text": "A scan of a table has at least two: read it from start to finish, or go through an index. A join has at least three: nested loop, merge, or hash.",
+     "start": 5.436,
+     "end": 17.737
+    },
+    {
+     "text": "The planner estimates the cost of each path and expands the cheapest into the final plan.",
+     "start": 18.157,
+     "end": 24.069
+    },
+    {
+     "text": "That estimate is where the next several topics live: how it is made, and how it goes wrong.",
+     "start": 24.489,
+     "end": 31.119
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 145,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "08": {
+   "hash": "da914c6039bb5bc6",
+   "takes": [
+    "76cd3ac068f1cfb2f03b",
+    "5f6c25f7573c43159bc5",
+    "6dbf9d37d350e652d326",
+    "1f7d9df225dca76b79b9"
+   ],
+   "duration": 35.37,
+   "lines": [
+    {
+     "text": "Paths carry more than rows. They can come with properties, and sort order is the one you will meet most.",
+     "start": 0.15,
+     "end": 8.065
+    },
+    {
+     "text": "Look at the two labels. An index scan on a column provides that order for free, as a side effect of how it reads.",
+     "start": 8.485,
+     "end": 16.906
+    },
+    {
+     "text": "On the other side, an ordering clause or a merge join demands a particular order. If what is provided meets what is demanded, the sort step is simply never added.",
+     "start": 17.326,
+     "end": 28.837
+    },
+    {
+     "text": "Another property is how rows are spread across workers. The idea is the same.",
+     "start": 29.257,
+     "end": 35.02
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 149,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "09": {
+   "hash": "386ff12cd25d4a47",
+   "takes": [
+    "5adb12d4c88196f3e3c7",
+    "6b664097a00d5bb2152a",
+    "2ddb2cc8ba311520e94f"
+   ],
+   "duration": 12.579,
+   "lines": [
+    {
+     "text": "Apply it. There is an index on the timestamp column.",
+     "start": 0.15,
+     "end": 4.134
+    },
+    {
+     "text": "The query asks for the first hundred rows ordered by that column.",
+     "start": 4.554,
+     "end": 8.713
+    },
+    {
+     "text": "Does the plan contain a separate sort?",
+     "start": 9.533,
+     "end": 12.229
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -2.1,
+   "wpm": 138,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "09a": {
+   "hash": "d46062a981308652",
+   "takes": [
+    "12f9269709fe56730f79",
+    "3a1dc3843e4956373a27",
+    "48177a20fdfba9843dbb"
+   ],
+   "duration": 18.436,
+   "lines": [
+    {
+     "text": "No.",
+     "start": 0.15,
+     "end": 0.624
+    },
+    {
+     "text": "The index scan already reads in that order, so the requirement is met and the sort step is deleted.",
+     "start": 1.044,
+     "end": 7.436
+    },
+    {
+     "text": "Saying that an order by always sorts forgets that an order can arrive for free. And the size of the table and the limit are not what removes the sort.",
+     "start": 7.856,
+     "end": 18.086
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -2.1,
+   "wpm": 163,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "10": {
+   "hash": "7cbeb0eabedbb52c",
+   "takes": [
+    "2db76d42c4cb8a9851ae",
+    "326a0fb1e27aff6453d7",
+    "7ed3eb074b152a991d09"
+   ],
+   "duration": 25.865,
+   "lines": [
+    {
+     "text": "Now how to read what the planner produced. A plan has the same shape as the algebra tree it realizes.",
+     "start": 0.15,
+     "end": 7.477
+    },
+    {
+     "text": "Watch the highlight move. Scans at the leaves come first, then the join that combines them, then the aggregate at the root.",
+     "start": 7.897,
+     "end": 17.536
+    },
+    {
+     "text": "Read it from the leaves up. The leaves depend on nothing, and every cost above them is built from what they produce.",
+     "start": 17.956,
+     "end": 25.515
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 148,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "11": {
+   "hash": "8b4d19a5b52c807c",
+   "takes": [
+    "10422869950089b93bee",
+    "ddb491de81dfc0cf888c",
+    "b83fa9766dfc1a0d5802"
+   ],
+   "duration": 24.268,
+   "lines": [
+    {
+     "text": "Three things to keep. The meaning of a query is fixed by the end of the rewrite stage. The choices are made in the planner.",
+     "start": 0.15,
+     "end": 8.593
+    },
+    {
+     "text": "Start at the leaves.",
+     "start": 9.013,
+     "end": 10.453
+    },
+    {
+     "text": "Right now, every plan has only ever meant exactly what it said. Next: the rewrites that quietly turn one legal plan into a cheaper, equally legal one.",
+     "start": 11.273,
+     "end": 23.918
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -2.0,
+   "wpm": 138,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "12": {
+   "hash": "7630675bab99d502",
+   "takes": [
+    "3a8e99010e16425f1bc0",
+    "729f79da346e247f854d"
+   ],
+   "duration": 7.939,
+   "lines": [
+    {
+     "text": "Two checks. First, one stage turns a reference to a view into its definition.",
+     "start": 0.15,
+     "end": 5.658
+    },
+    {
+     "text": "Which one?",
+     "start": 6.478,
+     "end": 7.588
+    }
+   ],
+   "lufs": -16.3,
+   "true_peak": -3.3,
+   "wpm": 121,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "12a": {
+   "hash": "7366bada5e5dbaf5",
+   "takes": [
+    "bafbe0cc34974793ac75",
+    "b24182c79a152ce7bb64"
+   ],
+   "duration": 12.049,
+   "lines": [
+    {
+     "text": "Rewrite.",
+     "start": 0.15,
+     "end": 0.788
+    },
+    {
+     "text": "After it, the planner sees only base tables. Parse and bind do not expand views, and execute comes after the plan is chosen.",
+     "start": 1.208,
+     "end": 11.699
+    }
+   ],
+   "lufs": -16.1,
+   "true_peak": -2.1,
+   "wpm": 120,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "13": {
+   "hash": "b49fc1d5f4ad4af0",
+   "takes": [
+    "15881a60632ca95d767d",
+    "684fedcbf183f85036dd"
+   ],
+   "duration": 8.931,
+   "lines": [
+    {
+     "text": "Second check. Postgres has a name for a candidate implementation of an operator.",
+     "start": 0.15,
+     "end": 6.164
+    },
+    {
+     "text": "What is it?",
+     "start": 6.984,
+     "end": 8.581
+    }
+   ],
+   "lufs": -16.2,
+   "true_peak": -3.4,
+   "wpm": 114,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "13a": {
+   "hash": "59a9c6a9d56c9397",
+   "takes": [
+    "77a3cf6e5558b27b60f0",
+    "657cbeff324757f16e31"
+   ],
+   "duration": 13.279,
+   "lines": [
+    {
+     "text": "A path.",
+     "start": 0.15,
+     "end": 0.843
+    },
+    {
+     "text": "It is a cut down plan holding only what the planner needs to compare costs. A rule is what the rewrite stage applies, and a view is a stored query.",
+     "start": 1.263,
+     "end": 12.929
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 145,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  }
+ }
+}

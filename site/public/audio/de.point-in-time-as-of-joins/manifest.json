@@ -1,0 +1,569 @@
+{
+ "topic": "de.point-in-time-as-of-joins",
+ "voice": "breeze-mellow-v2",
+ "asr": "large-v3-turbo",
+ "clips": {
+  "01": {
+   "hash": "8e28c90e2e9101f7",
+   "takes": [
+    "fac744ad0b27319d9ed9",
+    "c787fa7b4d9d6d7844af",
+    "024869f1e4389f995ea5",
+    "92127fc3ebff1b9fd142"
+   ],
+   "duration": 33.921,
+   "lines": [
+    {
+     "text": "Comparing a row to its own neighbors is one kind of question. Now comparing a row to the exact value another table held, at that very moment in time.",
+     "start": 0.15,
+     "end": 11.048
+    },
+    {
+     "text": "Look at the timeline. Prices change on three days, and four orders land between them.",
+     "start": 11.468,
+     "end": 17.523
+    },
+    {
+     "text": "An order on day twelve must be matched to the price that was in effect on day twelve. Not the first price, and not today's.",
+     "start": 17.943,
+     "end": 26.431
+    },
+    {
+     "text": "The question is about a moment, and that is not a question a plain join was designed to answer.",
+     "start": 26.851,
+     "end": 33.571
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 156,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "02": {
+   "hash": "69adbc8b7408164b",
+   "takes": [
+    "dd0a996e570a9089f83d",
+    "354e5a7f153447da4d74",
+    "57904287ea2b58440fab"
+   ],
+   "duration": 21.212,
+   "lines": [
+    {
+     "text": "See what a plain join does. It matches on the product alone, so every order meets every price.",
+     "start": 0.15,
+     "end": 7.067
+    },
+    {
+     "text": "Count the lines: four orders, three prices, twelve pairings. Almost all of them are wrong.",
+     "start": 7.487,
+     "end": 15.009
+    },
+    {
+     "text": "The data is fine. The matching rule just has no notion of before and after.",
+     "start": 15.429,
+     "end": 20.862
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -1.9,
+   "wpm": 136,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "03": {
+   "hash": "7e2a59dd4322a8e0",
+   "takes": [
+    "0ddf15fe5bd80cbf0b89",
+    "0638e749734253add9f1",
+    "fbe16749eb58834b2b65"
+   ],
+   "duration": 15.691,
+   "lines": [
+    {
+     "text": "The natural repair is to add a condition: the price must have started on or before the order.",
+     "start": 0.15,
+     "end": 6.816
+    },
+    {
+     "text": "Run it in your head against the four orders. Count the prices that satisfy the condition for each.",
+     "start": 7.236,
+     "end": 13.297
+    },
+    {
+     "text": "How many rows survive?",
+     "start": 14.117,
+     "end": 15.341
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 153,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "03a": {
+   "hash": "03b0c54fdc458184",
+   "takes": [
+    "c46162e84d30d9b1ab92",
+    "6270d92cb2a72e9181de",
+    "9410c4abb951a3657fc2"
+   ],
+   "duration": 23.978,
+   "lines": [
+    {
+     "text": "Seven. One, one, two and three.",
+     "start": 0.15,
+     "end": 2.339
+    },
+    {
+     "text": "The inequality removed the prices from the future, but every older price still qualifies. The order on day twelve matches both the first price and the second.",
+     "start": 2.759,
+     "end": 14.2
+    },
+    {
+     "text": "Twelve is the unfiltered product, and four is what we actually want. The missing step is to keep only the closest.",
+     "start": 14.62,
+     "end": 23.628
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 135,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "04": {
+   "hash": "1bbe462295d09944",
+   "takes": [
+    "041e3ddf8c68dcd2e004",
+    "50f1f9c4cae9a2b7eb2d",
+    "165defe7215254bac6cb"
+   ],
+   "duration": 27.835,
+   "lines": [
+    {
+     "text": "So the rule has three parts. Equality on the product narrows the candidates. An inequality on time removes the future. And of what is left, the latest one wins.",
+     "start": 0.15,
+     "end": 11.982
+    },
+    {
+     "text": "Watch the thick lines: each order points at the nearest earlier price, and nothing else.",
+     "start": 12.402,
+     "end": 19.198
+    },
+    {
+     "text": "That shape is called an as of join. Exactly one row per order, which is the number you started with.",
+     "start": 19.618,
+     "end": 27.485
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 138,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "05": {
+   "hash": "799ec0895c5c0c40",
+   "takes": [
+    "7b15df714be1769e7dd1",
+    "d27472a7b87d02b12153",
+    "fb15c3bf7e0ffacbc214",
+    "4e54d108178ae8b6a628"
+   ],
+   "duration": 31.262,
+   "lines": [
+    {
+     "text": "You can write that rule with tools you already have. A subquery ordered by start date, newest first, cut off at one row.",
+     "start": 0.15,
+     "end": 8.638
+    },
+    {
+     "text": "Or the lateral form with the same ending, which you met two topics ago.",
+     "start": 9.058,
+     "end": 13.561
+    },
+    {
+     "text": "Both are cheap only if an index on the product and the start date lets each lookup jump straight to the right place.",
+     "start": 13.981,
+     "end": 22.43
+    },
+    {
+     "text": "Without that index, every order rescans the whole history, which is the quadratic habit from the window internals topic.",
+     "start": 22.85,
+     "end": 30.912
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -1.7,
+   "wpm": 152,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "06": {
+   "hash": "84aff672f6afba34",
+   "takes": [
+    "3f0438a9b7a93eebc427",
+    "7d97923c7e921472a635",
+    "5e60ee85a2a11d452244",
+    "6cdeab0b9fb3a0cc98fb"
+   ],
+   "duration": 28.034,
+   "lines": [
+    {
+     "text": "Several engines have the operator built in. Read the three spellings.",
+     "start": 0.15,
+     "end": 4.784
+    },
+    {
+     "text": "They differ in punctuation but not in meaning. An inequality, and each left row joins at most one right row, the closest.",
+     "start": 5.204,
+     "end": 15.178
+    },
+    {
+     "text": "Snowflake adds a named clause for the comparison, so the as of condition is separate from the plain equality.",
+     "start": 15.598,
+     "end": 22.666
+    },
+    {
+     "text": "Where you have the native form, use it. It says what you mean.",
+     "start": 23.086,
+     "end": 27.684
+    }
+   ],
+   "lufs": -16.3,
+   "true_peak": -2.3,
+   "wpm": 139,
+   "wer": 0.05263157894736842,
+   "exact": false,
+   "tolerated": [
+    {
+     "line": "Snowflake adds a named clause for the comparison, so the as of condition is separate from the plain equality.",
+     "said": "plain",
+     "heard": "plane"
+    }
+   ]
+  },
+  "07": {
+   "hash": "0921d6b334df2863",
+   "takes": [
+    "08f6e9897016023abb70",
+    "784e22b0ea6bb1d06ce4",
+    "dcb538c11532c96c69a2"
+   ],
+   "duration": 14.846,
+   "lines": [
+    {
+     "text": "Edge case. An order is placed on day zero, before the product's first price existed.",
+     "start": 0.15,
+     "end": 6.347
+    },
+    {
+     "text": "Think about what the closest earlier price is.",
+     "start": 6.767,
+     "end": 9.516
+    },
+    {
+     "text": "What does the left version of the join return for that order?",
+     "start": 10.336,
+     "end": 14.496
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -1.9,
+   "wpm": 141,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "07a": {
+   "hash": "04ee19dbbcb8f5e2",
+   "takes": [
+    "0dbafa5b9519e8de9f8a",
+    "f14e5c248b77863cf800",
+    "f96fee27680aff01e09c"
+   ],
+   "duration": 20.355,
+   "lines": [
+    {
+     "text": "The order, with a missing price.",
+     "start": 0.15,
+     "end": 2.704
+    },
+    {
+     "text": "There is nothing to match, and a left join keeps the left row with nulls on the right. An inner version would drop the order entirely.",
+     "start": 3.124,
+     "end": 12.317
+    },
+    {
+     "text": "It does not invent the first price, because that price did not yet exist, and it does not raise an error.",
+     "start": 12.737,
+     "end": 20.005
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -2.0,
+   "wpm": 156,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "08": {
+   "hash": "e7bda0566aa7dcb1",
+   "takes": [
+    "460780f39e341eb66403",
+    "3f3dd4b5257c48aafa57",
+    "e78abe92337b02ca2f45",
+    "d2796de6da7bbfacf944"
+   ],
+   "duration": 29.917,
+   "lines": [
+    {
+     "text": "The native operator also plans differently. Watch the two rows.",
+     "start": 0.15,
+     "end": 5.055
+    },
+    {
+     "text": "Both inputs are naturally in time order, so the engine can walk them together in one pass.",
+     "start": 5.475,
+     "end": 11.734
+    },
+    {
+     "text": "The hand built forms seek once per order, and that is what the nested loop line shows.",
+     "start": 12.154,
+     "end": 18.871
+    },
+    {
+     "text": "That is why one engine lists the operator as supported only by specific algorithms: it has a dedicated path, not the general join machinery.",
+     "start": 19.291,
+     "end": 29.567
+    }
+   ],
+   "lufs": -16.3,
+   "true_peak": -2.1,
+   "wpm": 136,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "09": {
+   "hash": "784eb3a9b57e9c8e",
+   "takes": [
+    "716acf89ace6f32ff742",
+    "407db178e370e9d9b4ef",
+    "a2bc7288fa03612f6365",
+    "619487f54625fe137b0b"
+   ],
+   "duration": 37.43,
+   "lines": [
+    {
+     "text": "Here is why this matters beyond reports. Suppose you train a model, and one feature is the price.",
+     "start": 0.15,
+     "end": 6.188
+    },
+    {
+     "text": "Join a training example from day five to today's price, and the example has seen eleven, a value that did not exist on day five.",
+     "start": 6.608,
+     "end": 16.788
+    },
+    {
+     "text": "The model learns from the future. Offline accuracy looks wonderful, and production fails, because the future is not available there.",
+     "start": 17.208,
+     "end": 26.506
+    },
+    {
+     "text": "The as of value is ten, and the as of join gives you that by construction. That is how you build a training set without leakage.",
+     "start": 26.926,
+     "end": 37.08
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 143,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "10": {
+   "hash": "64c9655b3018a6b6",
+   "takes": [
+    "35960988e1d3840332f8",
+    "7d9d64299a34242fc6e0",
+    "76bf21a37073b35a2ef8",
+    "09e8d6c7b89c9c118051"
+   ],
+   "duration": 38.753,
+   "lines": [
+    {
+     "text": "One last wrinkle. Everything so far used a single axis of time: when the fact was true.",
+     "start": 0.15,
+     "end": 7.59
+    },
+    {
+     "text": "Look at the second axis. A bitemporal system also records when the database learned the fact.",
+     "start": 8.01,
+     "end": 16.002
+    },
+    {
+     "text": "That matters when a correction arrives late. The question becomes: as of the time we asked, what did we believe was true at the earlier time.",
+     "start": 16.422,
+     "end": 26.894
+    },
+    {
+     "text": "It is a harder problem, and it gets its own chapter. Know it exists, and do not reach for it unless the requirement has two independent axes.",
+     "start": 27.314,
+     "end": 38.403
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -1.9,
+   "wpm": 133,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "11": {
+   "hash": "8f94221d4d53aa5d",
+   "takes": [
+    "00d192b5a3487523116f",
+    "2b79e7b73d44caf39f0f",
+    "ea9493b71c4236676e8d"
+   ],
+   "duration": 24.741,
+   "lines": [
+    {
+     "text": "To sum up. Use the native operator where the engine has one, and an indexed lateral where it does not.",
+     "start": 0.15,
+     "end": 7.338
+    },
+    {
+     "text": "Audit every join to a current value in a feature pipeline, because that is where leakage hides.",
+     "start": 7.758,
+     "end": 15.118
+    },
+    {
+     "text": "Every clause so far answered what a query means. Next: what actually happens between typing that query and getting an answer back.",
+     "start": 15.938,
+     "end": 24.391
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 143,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "12": {
+   "hash": "b9c6388aa8e96e29",
+   "takes": [
+    "a6d779f01f0f72f3e88e",
+    "1d26640065c1ae171a6f"
+   ],
+   "duration": 8.415,
+   "lines": [
+    {
+     "text": "Two checks. First, is an as of join just an equi join with extra steps.",
+     "start": 0.15,
+     "end": 6.04
+    },
+    {
+     "text": "Is it an equi join?",
+     "start": 6.86,
+     "end": 8.065
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -3.2,
+   "wpm": 143,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "12a": {
+   "hash": "1fb05b0a3d187cab",
+   "takes": [
+    "12f9269709fe56730f79",
+    "32f70fc875e5b6f24acb"
+   ],
+   "duration": 12.86,
+   "lines": [
+    {
+     "text": "No.",
+     "start": 0.15,
+     "end": 0.624
+    },
+    {
+     "text": "It uses equality to narrow the candidates, but it needs an inequality on time and a closest wins rule to choose one. An equi join alone cannot say before or after.",
+     "start": 1.044,
+     "end": 12.51
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 149,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "13": {
+   "hash": "ac1abecd334d3eef",
+   "takes": [
+    "26468de6d17b94dba892",
+    "660f78eb64bb3e229a00"
+   ],
+   "duration": 8.133,
+   "lines": [
+    {
+     "text": "Second check. In Snowflake, the as of comparison is named in its own clause.",
+     "start": 0.15,
+     "end": 6.158
+    },
+    {
+     "text": "Which clause?",
+     "start": 6.978,
+     "end": 7.783
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 118,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "13a": {
+   "hash": "f4267c2a3d7417df",
+   "takes": [
+    "72bd8c0841a3464f98c1",
+    "290776b3f3cc80b7e318"
+   ],
+   "duration": 11.056,
+   "lines": [
+    {
+     "text": "Match condition.",
+     "start": 0.15,
+     "end": 1.165
+    },
+    {
+     "text": "It sits apart from the ordinary equality condition, so the join says separately which columns must be equal and which must be ordered.",
+     "start": 1.585,
+     "end": 10.707
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 136,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  }
+ }
+}
