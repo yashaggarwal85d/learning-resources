@@ -1,0 +1,580 @@
+{
+ "topic": "de.running-moving-statistics",
+ "voice": "breeze-mellow-v2",
+ "asr": "large-v3-turbo",
+ "clips": {
+  "01": {
+   "hash": "59eb6a49ad7cfaf7",
+   "takes": [
+    "dfb0826b15bac851c7ee",
+    "fa5323db80df1dc7cb5c",
+    "db64557b993db8aee61a"
+   ],
+   "duration": 33.281,
+   "lines": [
+    {
+     "text": "Grouping events into episodes answers what happened. Now smoother statistics over the numbers themselves, running and moving, instead of just marking where one episode ends.",
+     "start": 0.15,
+     "end": 13.106
+    },
+    {
+     "text": "Read the three lines. A running total needs only a tally. A moving average needs a tally from which old rows leave.",
+     "start": 13.526,
+     "end": 22.918
+    },
+    {
+     "text": "And a median needs something different in kind: the whole ordered set, because no running number can tell you where the middle is.",
+     "start": 23.338,
+     "end": 32.931
+    }
+   ],
+   "lufs": -16.3,
+   "true_peak": -3.1,
+   "wpm": 126,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "02": {
+   "hash": "2981f3b00658ba58",
+   "takes": [
+    "64ea4f0aba6f8190ded2",
+    "4ecbf0498bbc5ebf911b",
+    "33e4a0832e003849b600",
+    "1dd2695726d0eff19a2b"
+   ],
+   "duration": 32.099,
+   "lines": [
+    {
+     "text": "Start with the shape of the frame, because the cost follows from it. Watch the top row: the highlighted block only ever grows.",
+     "start": 0.15,
+     "end": 9.628
+    },
+    {
+     "text": "That is cheap. Keep the previous total, add the new row, and you are done.",
+     "start": 10.048,
+     "end": 15.588
+    },
+    {
+     "text": "In the bottom row the block slides. It gains a row at the right and loses one at the left.",
+     "start": 16.008,
+     "end": 22.838
+    },
+    {
+     "text": "Now the old row has to be taken back out, which is why moving aggregates need the removable strategy from the window internals topic.",
+     "start": 23.258,
+     "end": 31.749
+    }
+   ],
+   "lufs": -16.3,
+   "true_peak": -1.9,
+   "wpm": 153,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "03": {
+   "hash": "82f82743b8e5d194",
+   "takes": [
+    "e5ef47ad69b79426d38b",
+    "b6abd03c30eeb9857d22",
+    "231463712785fb3f59f5"
+   ],
+   "duration": 20.25,
+   "lines": [
+    {
+     "text": "Here is a request you will hear all the time: revenue for the last seven days. The tempting answer is a frame of the last seven rows.",
+     "start": 0.15,
+     "end": 10.05
+    },
+    {
+     "text": "Look at the two lines of dots. Same number of orders, completely different stretches of time.",
+     "start": 10.47,
+     "end": 16.462
+    },
+    {
+     "text": "Is a frame of seven rows a week?",
+     "start": 17.282,
+     "end": 19.9
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -2.0,
+   "wpm": 151,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "03a": {
+   "hash": "9a2b3bc7b25eb8c4",
+   "takes": [
+    "853db74f133e7a593581",
+    "d65ea6cc35fa80849242",
+    "a9bc24cc7f8b535c36d1"
+   ],
+   "duration": 28.497,
+   "lines": [
+    {
+     "text": "No. It is seven rows, however long that takes.",
+     "start": 0.15,
+     "end": 4.092
+    },
+    {
+     "text": "Rows count positions and have no idea what time it is. On a quiet stretch those seven orders spread over twelve days, and on a busy one they fit in two.",
+     "start": 4.512,
+     "end": 17.087
+    },
+    {
+     "text": "Yes would be right only for exactly one order a day, and sorting the table changes nothing about it. A calendar window has to be measured in time, not in rows.",
+     "start": 17.507,
+     "end": 28.147
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -2.2,
+   "wpm": 149,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "04": {
+   "hash": "798d1e75600290ed",
+   "takes": [
+    "55472e53b333ec9bb2bb",
+    "0864b92ebf8897487a1e",
+    "872decfb980dcf920e51",
+    "7a1e01dd25a5d56fb4fa"
+   ],
+   "duration": 26.765,
+   "lines": [
+    {
+     "text": "So measure in time. The range frame with an interval includes every row whose timestamp is within seven days of the current row.",
+     "start": 0.15,
+     "end": 9.19
+    },
+    {
+     "text": "Watch the bracket grow back from the current dot. It stops at a date, not at a count.",
+     "start": 9.61,
+     "end": 15.375
+    },
+    {
+     "text": "That might be one order or a hundred, which is exactly the point.",
+     "start": 15.795,
+     "end": 20.407
+    },
+    {
+     "text": "It needs exactly one ordering column, because it works by subtracting values.",
+     "start": 20.827,
+     "end": 26.415
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -1.9,
+   "wpm": 148,
+   "wer": 0.08695652173913043,
+   "exact": false,
+   "tolerated": [
+    {
+     "line": "So measure in time. The range frame with an interval includes every row whose timestamp is within seven days of the current row.",
+     "said": "timestamp",
+     "heard": "time stamp"
+    }
+   ]
+  },
+  "05": {
+   "hash": "b6829a3c198e5a9e",
+   "takes": [
+    "78cfca8b3d43cf77c79f",
+    "dcc66c6d8701a03f8c02",
+    "a60e71fcc1be5a64205c"
+   ],
+   "duration": 23.998,
+   "lines": [
+    {
+     "text": "Now percentiles. A running total is a single number you can update. A median is not.",
+     "start": 0.15,
+     "end": 7.182
+    },
+    {
+     "text": "Watch the values sort themselves. The middle only exists once the order exists.",
+     "start": 7.602,
+     "end": 13.276
+    },
+    {
+     "text": "That is why percentiles are written differently, with the ordering attached to the aggregate itself. The engine has to sort before it can answer.",
+     "start": 13.696,
+     "end": 23.648
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 133,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "06": {
+   "hash": "4a4c7473ec9147e3",
+   "takes": [
+    "6f9a4b30460f1521ada2",
+    "fe7dca635630e8f8d536",
+    "2bbc02845140c7020ca8"
+   ],
+   "duration": 15.738,
+   "lines": [
+    {
+     "text": "Four values: ten, twenty, thirty, forty. Look at the two in the middle.",
+     "start": 0.15,
+     "end": 6.79
+    },
+    {
+     "text": "There are two percentile functions, and they handle an even count differently.",
+     "start": 7.21,
+     "end": 11.68
+    },
+    {
+     "text": "What does the continuous one give for the median?",
+     "start": 12.5,
+     "end": 15.388
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -2.0,
+   "wpm": 130,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "06a": {
+   "hash": "ecfd4dddf4702511",
+   "takes": [
+    "b3bd7f8e3b0a938f81e1",
+    "072e79b348614bc434a4",
+    "85a125735a9f126f1eca"
+   ],
+   "duration": 20.02,
+   "lines": [
+    {
+     "text": "Twenty five.",
+     "start": 0.15,
+     "end": 0.93
+    },
+    {
+     "text": "It interpolates between the two middle values, the way the textbook median of an even set does.",
+     "start": 1.35,
+     "end": 8.078
+    },
+    {
+     "text": "Twenty is what the discrete one gives, and thirty or thirty five would be neither definition. The continuous answer is a number that is not in your data at all.",
+     "start": 8.498,
+     "end": 19.67
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -2.0,
+   "wpm": 147,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "07": {
+   "hash": "60b8b6f88e87c351",
+   "takes": [
+    "affd7cae11db0713af34",
+    "4af26bc7e883df292153",
+    "db9727e915485e0d89fb",
+    "537aaaeab346d2bffda6"
+   ],
+   "duration": 30.676,
+   "lines": [
+    {
+     "text": "Compare the circles. The filled dots are real values, and the outlined ones are what the continuous function returns.",
+     "start": 0.15,
+     "end": 7.912
+    },
+    {
+     "text": "Between ten and forty, the median lands at twenty five, a value nobody recorded. The ninetieth percentile lands at thirty seven.",
+     "start": 8.332,
+     "end": 17.222
+    },
+    {
+     "text": "The discrete one only ever returns a real value: twenty, then forty.",
+     "start": 17.642,
+     "end": 22.907
+    },
+    {
+     "text": "So pick discrete when you need a row you can trace back, and continuous when a smooth estimate is what you want.",
+     "start": 23.327,
+     "end": 30.326
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -2.0,
+   "wpm": 145,
+   "wer": 0.08333333333333333,
+   "exact": false,
+   "tolerated": [
+    {
+     "line": "The discrete one only ever returns a real value: twenty, then forty.",
+     "said": "discrete",
+     "heard": "discreet"
+    },
+    {
+     "line": "So pick discrete when you need a row you can trace back, and continuous when a smooth estimate is what you want.",
+     "said": "discrete",
+     "heard": "discreet"
+    }
+   ]
+  },
+  "08": {
+   "hash": "b017f2309a8c1520",
+   "takes": [
+    "59680ac53455752593e8",
+    "baff9d92519a09f1612f",
+    "00f388e0814330f6f10f"
+   ],
+   "duration": 20.627,
+   "lines": [
+    {
+     "text": "A dashboard rarely wants one percentile. It wants the median, the ninetieth and the ninety ninth.",
+     "start": 0.15,
+     "end": 7.383
+    },
+    {
+     "text": "Look at the top row. Three separate calls sort the data three times.",
+     "start": 7.803,
+     "end": 12.859
+    },
+    {
+     "text": "Pass an array of fractions instead, and the engine sorts once and reads all three answers from the sorted data.",
+     "start": 13.279,
+     "end": 20.277
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -2.5,
+   "wpm": 143,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "09": {
+   "hash": "1b5672789a03c8e2",
+   "takes": [
+    "062814279ce4a6160e0d",
+    "e7563dd7853546c80279",
+    "87f3d0d319143028080f"
+   ],
+   "duration": 27.186,
+   "lines": [
+    {
+     "text": "Two more tools. The first splits rows into buckets as evenly as it can.",
+     "start": 0.15,
+     "end": 5.079
+    },
+    {
+     "text": "Watch ten rows go into four buckets. They cannot divide evenly, so the remainder goes to the first buckets: three, three, two, two.",
+     "start": 5.499,
+     "end": 15.873
+    },
+    {
+     "text": "The second reports, for each row, the fraction of rows at or below it, counting its peers. Together they answer where a row stands in a distribution.",
+     "start": 16.293,
+     "end": 26.836
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 141,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "10": {
+   "hash": "e202fd82c9501d1b",
+   "takes": [
+    "bd860f8aa31464cb7532",
+    "dd94d95a7ae4efe305b4",
+    "fb4fdf36c2db8df4efa5"
+   ],
+   "duration": 32.199,
+   "lines": [
+    {
+     "text": "Finally, why exactness has a price. There is no cheap running version of a percentile, because it changes with every value seen.",
+     "start": 0.15,
+     "end": 10.846
+    },
+    {
+     "text": "Compare the two bars. On a hundred million rows, an exact answer on every dashboard refresh means a full sort every time.",
+     "start": 11.266,
+     "end": 21.052
+    },
+    {
+     "text": "Approximate sketches trade a small error for one pass and bounded memory. That trade is real, and it is covered in full in a later chapter.",
+     "start": 21.472,
+     "end": 31.849
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 130,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "11": {
+   "hash": "eb2c7a5e916b8fa2",
+   "takes": [
+    "c4e4e832b891ccb13206",
+    "077ed23340c32973b0f0",
+    "091bda42be742db2443c",
+    "94bebbbd12a2dc02447a"
+   ],
+   "duration": 35.025,
+   "lines": [
+    {
+     "text": "To sum up. Use a range frame with an interval for calendar windows, and rows only when you really mean positions.",
+     "start": 0.15,
+     "end": 8.819
+    },
+    {
+     "text": "Say whether a percentile is continuous or discrete, and why.",
+     "start": 9.239,
+     "end": 14.919
+    },
+    {
+     "text": "Take several percentiles in one call, and measure the cost of an exact one before you put it on a page that refreshes.",
+     "start": 15.339,
+     "end": 22.997
+    },
+    {
+     "text": "Comparing a row to its own neighbors is one kind of question. Next: comparing a row to the exact value another table held, at that very moment in time.",
+     "start": 23.817,
+     "end": 34.675
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.8,
+   "wpm": 142,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "12": {
+   "hash": "adb4d94ddb1283d3",
+   "takes": [
+    "6fb4221a3b7720dcd3fc",
+    "729f79da346e247f854d"
+   ],
+   "duration": 9.443,
+   "lines": [
+    {
+     "text": "Two checks. First, one of the two percentile functions never returns a number that is missing from your data.",
+     "start": 0.15,
+     "end": 7.162
+    },
+    {
+     "text": "Which one?",
+     "start": 7.982,
+     "end": 9.093
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -2.3,
+   "wpm": 133,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "12a": {
+   "hash": "0f57103b36f46f9b",
+   "takes": [
+    "356717a9d0c97fe360bb",
+    "fba977552fc951ec90aa"
+   ],
+   "duration": 11.43,
+   "lines": [
+    {
+     "text": "The discrete one.",
+     "start": 0.15,
+     "end": 1.225
+    },
+    {
+     "text": "It returns the first value whose position reaches the fraction, so it is always a real value. The continuous one interpolates.",
+     "start": 1.645,
+     "end": 11.08
+    }
+   ],
+   "lufs": -16.3,
+   "true_peak": -2.2,
+   "wpm": 126,
+   "wer": 0.3333333333333333,
+   "exact": false,
+   "tolerated": [
+    {
+     "line": "The discrete one.",
+     "said": "discrete",
+     "heard": "discreet"
+    }
+   ]
+  },
+  "13": {
+   "hash": "986efc41bc302155",
+   "takes": [
+    "29b6cf2eb5e2c6e41bfe",
+    "742aff8abcdaedfde56a",
+    "dd17e863557d29472e6f"
+   ],
+   "duration": 9.521,
+   "lines": [
+    {
+     "text": "Second check. Ten rows are dealt into four buckets.",
+     "start": 0.15,
+     "end": 4.117
+    },
+    {
+     "text": "Remember where the leftover rows go.",
+     "start": 4.537,
+     "end": 6.753
+    },
+    {
+     "text": "How big is bucket one?",
+     "start": 7.573,
+     "end": 9.171
+    }
+   ],
+   "lufs": -16.1,
+   "true_peak": -3.3,
+   "wpm": 126,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "13a": {
+   "hash": "29eabf919b40f44d",
+   "takes": [
+    "b00ef77f52db7d98d4ed",
+    "1da10c058654337db86e"
+   ],
+   "duration": 11.396,
+   "lines": [
+    {
+     "text": "Three.",
+     "start": 0.15,
+     "end": 0.578
+    },
+    {
+     "text": "Ten does not divide by four, so the two spare rows go to the first two buckets, giving three, three, two, two.",
+     "start": 0.998,
+     "end": 11.046
+    }
+   ],
+   "lufs": -16.6,
+   "true_peak": -1.9,
+   "wpm": 121,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  }
+ }
+}
