@@ -1,0 +1,542 @@
+{
+ "topic": "de.nested-semi-structured-data-sql",
+ "voice": "breeze-mellow-v2",
+ "asr": "large-v3-turbo",
+ "clips": {
+  "01": {
+   "hash": "0707122d3bc7556c",
+   "takes": [
+    "c874759d8178f14569a0",
+    "61a5eb9c895b2a6ab306",
+    "8792135ef7902f1ac7d9"
+   ],
+   "duration": 27.176,
+   "lines": [
+    {
+     "text": "This whole section has been about what a query means. Now: what SQL means for data that is not flat at all.",
+     "start": 0.15,
+     "end": 8.342
+    },
+    {
+     "text": "Look at order forty two. It has a list of tags, a matching list of discounts, and a small document of checkout details.",
+     "start": 8.762,
+     "end": 17.437
+    },
+    {
+     "text": "None of those is a plain value. Each one needs a way to be read, unpacked and queried, and each has a trap.",
+     "start": 18.257,
+     "end": 26.826
+    }
+   ],
+   "lufs": -16.2,
+   "true_peak": -2.3,
+   "wpm": 150,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "02": {
+   "hash": "bca813713fef6cb7",
+   "takes": [
+    "4618ae86f64a46389bb0",
+    "b62a5c0c1a61d97b9713",
+    "a5b384818f2ee4ccc78d"
+   ],
+   "duration": 27.977,
+   "lines": [
+    {
+     "text": "Start with names. There are three nested shapes, and you will meet all of them.",
+     "start": 0.15,
+     "end": 5.136
+    },
+    {
+     "text": "An array is a list where every element has the same type. A struct is a bundle of labelled fields. A map is key and value pairs.",
+     "start": 5.556,
+     "end": 16.931
+    },
+    {
+     "text": "In Postgres there is no map type, so a JSON document fills that role. Keep that in mind, because it decides what tools you use later.",
+     "start": 17.351,
+     "end": 27.627
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -1.9,
+   "wpm": 148,
+   "wer": 0.037037037037037035,
+   "exact": false,
+   "tolerated": [
+    {
+     "line": "An array is a list where every element has the same type. A struct is a bundle of labelled fields. A map is key and value pairs.",
+     "said": "labelled",
+     "heard": "labeled"
+    }
+   ]
+  },
+  "03": {
+   "hash": "84f9e0a5195dd5a5",
+   "takes": [
+    "fb919dc71d8605825256",
+    "14761d0598027c536bb2",
+    "7b00aff3c6026f115049"
+   ],
+   "duration": 22.373,
+   "lines": [
+    {
+     "text": "The first tool turns an array back into rows. Watch the three tags drop out of the list, one per row.",
+     "start": 0.15,
+     "end": 6.972
+    },
+    {
+     "text": "Order is the order the array was stored in, and there is exactly one row per element.",
+     "start": 7.392,
+     "end": 13.975
+    },
+    {
+     "text": "For one array there is nothing to go wrong. The trouble starts when a row has two arrays that are meant to line up.",
+     "start": 14.395,
+     "end": 22.023
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 166,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "04": {
+   "hash": "30d55201335cb8ed",
+   "takes": [
+    "3bd5ad4fcd759bc7ab34",
+    "ea68bb5135b9205e9474",
+    "17e3e1a850225099ba5e"
+   ],
+   "duration": 19.772,
+   "lines": [
+    {
+     "text": "Order forty two has tags and discounts that line up: the first tag has the first discount, and so on.",
+     "start": 0.15,
+     "end": 8.083
+    },
+    {
+     "text": "Now write the two unpackings as two separate items in the from clause, and think about how many things the engine will pair up.",
+     "start": 8.503,
+     "end": 17.506
+    },
+    {
+     "text": "How many rows?",
+     "start": 18.326,
+     "end": 19.422
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -2.0,
+   "wpm": 143,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "04a": {
+   "hash": "2f93eebc34e59fc1",
+   "takes": [
+    "d1b738071049d52271a7",
+    "9552cd68dacc8bb59d9e",
+    "3c58817607b6ee2b29aa"
+   ],
+   "duration": 29.358,
+   "lines": [
+    {
+     "text": "Nine.",
+     "start": 0.15,
+     "end": 0.788
+    },
+    {
+     "text": "Two separate from items with nothing relating them combine as a product, so every tag pairs with every discount. Look at the thick lines: only three of the nine pairings are right.",
+     "start": 1.208,
+     "end": 14.325
+    },
+    {
+     "text": "You have rebuilt the Cartesian product from the first topic, using two function calls instead of two tables. Three would be the intended answer, which is exactly why this bug passes review.",
+     "start": 14.745,
+     "end": 29.008
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 133,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "05": {
+   "hash": "7d8b20747323f3da",
+   "takes": [
+    "50ccaff41e06e533eaa1",
+    "eb51d7e268726440995e",
+    "30125dddbb6b162c91c6",
+    "2b936b354add9e643952"
+   ],
+   "duration": 32.438,
+   "lines": [
+    {
+     "text": "The fix is to unpack both arrays in one call. Then they are zipped by position.",
+     "start": 0.15,
+     "end": 5.78
+    },
+    {
+     "text": "Watch the lines: each tag meets only the discount in the same slot. Three rows, each correct.",
+     "start": 6.2,
+     "end": 13.55
+    },
+    {
+     "text": "Now the second case. If one array is longer, the shorter is padded with nulls, so you get a row for the extra tag with a missing discount.",
+     "start": 13.97,
+     "end": 24.151
+    },
+    {
+     "text": "That is the safe failure. The bad one is the product, which fails silently and looks plausible.",
+     "start": 24.571,
+     "end": 32.088
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 144,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "06": {
+   "hash": "2413f5c0fd9ec0aa",
+   "takes": [
+    "4e36dd123c1320260bb7",
+    "41795d70c6f1d53e4f2a",
+    "280a9a35c6950d59ef3e"
+   ],
+   "duration": 22.427,
+   "lines": [
+    {
+     "text": "Sometimes position carries meaning: the first tag applied, the primary one.",
+     "start": 0.15,
+     "end": 6.125
+    },
+    {
+     "text": "Add the ordinality clause and each row also reports its place in the array, counting from one.",
+     "start": 6.545,
+     "end": 13.103
+    },
+    {
+     "text": "Do not rely on row order to recover that. The engine promises nothing about it once other operators are involved.",
+     "start": 13.523,
+     "end": 22.077
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 128,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "07": {
+   "hash": "ed1a532f28fc17e6",
+   "takes": [
+    "28229cb7c974ce0e2688",
+    "cff35ff06b334e0892e4",
+    "e38a6d6ddd4574f686e7"
+   ],
+   "duration": 25.559,
+   "lines": [
+    {
+     "text": "Now the document. Two arrows do almost all the work, and the difference between them matters.",
+     "start": 0.15,
+     "end": 5.963
+    },
+    {
+     "text": "The single arrow goes one level down and keeps the result as JSON, so you can keep going. The double arrow returns text and ends the chain.",
+     "start": 6.383,
+     "end": 17.502
+    },
+    {
+     "text": "Read the three lines in order: the whole document, then the nested object, then the string at the end.",
+     "start": 17.922,
+     "end": 25.209
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 146,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "08": {
+   "hash": "dd2d6c31d23fe8b3",
+   "takes": [
+    "ac30f3316fceb54e2423",
+    "3760f90710697e6db87e",
+    "8f45b0364526cb62742a",
+    "c8700beef12c16ceefda"
+   ],
+   "duration": 33.309,
+   "lines": [
+    {
+     "text": "Chains of arrows get hard to read quickly. Past a field or two, there is a cleaner tool.",
+     "start": 0.15,
+     "end": 5.91
+    },
+    {
+     "text": "JSON table takes a path expression and a list of columns, and produces ordinary rows with ordinary types. Look at the two output columns on the right.",
+     "start": 6.33,
+     "end": 18.168
+    },
+    {
+     "text": "Notice what it joins to. Each output row is joined laterally to the row that held the document, which is the idea from the previous topic.",
+     "start": 18.588,
+     "end": 27.288
+    },
+    {
+     "text": "It arrived in version seventeen. On older versions you stay with the arrows.",
+     "start": 27.708,
+     "end": 32.959
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 151,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "09": {
+   "hash": "aaf3ee9a0198c45f",
+   "takes": [
+    "796792740ecfce15c55e",
+    "3d74f724ef8c33472754",
+    "3c502a30397721e10edb",
+    "c668dc0e23bfa7506c97"
+   ],
+   "duration": 33.117,
+   "lines": [
+    {
+     "text": "Where you store the document matters as much as how you query it. Stored as text, a JSON value has to be parsed to be read.",
+     "start": 0.15,
+     "end": 9.202
+    },
+    {
+     "text": "Watch the top bar fill: even to reach one field, the engine parses the whole thing byte by byte.",
+     "start": 9.622,
+     "end": 16.572
+    },
+    {
+     "text": "And to the storage layer it is one opaque string, so there are no statistics and nothing to skip.",
+     "start": 16.992,
+     "end": 24.165
+    },
+    {
+     "text": "A binary variant type keeps the parsed form instead, so reading one field is a jump, as the short bar shows.",
+     "start": 24.585,
+     "end": 32.767
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.8,
+   "wpm": 154,
+   "wer": 0.10526315789473684,
+   "exact": false,
+   "tolerated": [
+    {
+     "line": "Watch the top bar fill: even to reach one field, the engine parses the whole thing byte by byte.",
+     "said": "byte",
+     "heard": "bite"
+    },
+    {
+     "line": "Watch the top bar fill: even to reach one field, the engine parses the whole thing byte by byte.",
+     "said": "byte",
+     "heard": "bite"
+    }
+   ]
+  },
+  "10": {
+   "hash": "3c8c6c476fadda02",
+   "takes": [
+    "cf45e56a67f6993ba17c",
+    "d335d1cd07fa007e0880",
+    "72ac8d379912fe2daabd",
+    "7a8d606da9f45c564ff9"
+   ],
+   "duration": 32.703,
+   "lines": [
+    {
+     "text": "The open version of this idea goes one step further, and it is where columnar formats get their advantage.",
+     "start": 0.15,
+     "end": 7.529
+    },
+    {
+     "text": "Shredding pulls common fields out of the variant into columns of their own. Watch the timestamp field slide to the right.",
+     "start": 7.949,
+     "end": 15.049
+    },
+    {
+     "text": "Now that field has a column, with min and max values, so a query that needs only the timestamp reads only that column.",
+     "start": 15.469,
+     "end": 23.4
+    },
+    {
+     "text": "Two warehouses ship their own variant type as well, and the table format has to support it. Check that before you plan around it.",
+     "start": 23.82,
+     "end": 32.353
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 160,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "11": {
+   "hash": "c2eeaf5ae2ee51ae",
+   "takes": [
+    "fd36663e97fbe55abab9",
+    "4a87331c93a33a307cda",
+    "a9b6ac5da5e48fef543b",
+    "82483861a98d2ce9cab4"
+   ],
+   "duration": 36.084,
+   "lines": [
+    {
+     "text": "Back to order forty two. Unpack both arrays in one call and keep the positions you need.",
+     "start": 0.15,
+     "end": 6.114
+    },
+    {
+     "text": "Use the table function for anything beyond a field or two of JSON.",
+     "start": 6.534,
+     "end": 10.693
+    },
+    {
+     "text": "And for the fields you query constantly, give them real typed columns, because that is what every engine prunes best.",
+     "start": 11.113,
+     "end": 21.486
+    },
+    {
+     "text": "Every construct so far ran inside the database engine itself. Next: what happens when the logic that decides a row's fate is a function you wrote, not a built-in operator.",
+     "start": 22.306,
+     "end": 35.734
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 135,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "12": {
+   "hash": "e85f00904e01d1c6",
+   "takes": [
+    "d8263154b3bb8eb8ff3a",
+    "17e3e1a850225099ba5e"
+   ],
+   "duration": 9.134,
+   "lines": [
+    {
+     "text": "Two checks. First, four tags and three discounts go into one call that unpacks both.",
+     "start": 0.15,
+     "end": 6.868
+    },
+    {
+     "text": "How many rows?",
+     "start": 7.688,
+     "end": 8.784
+    }
+   ],
+   "lufs": -16.6,
+   "true_peak": -2.4,
+   "wpm": 118,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "12a": {
+   "hash": "2f3b3e7bdb0c4859",
+   "takes": [
+    "419903b7623bc159628d",
+    "25cfad44ee049b81a843"
+   ],
+   "duration": 12.335,
+   "lines": [
+    {
+     "text": "Four.",
+     "start": 0.15,
+     "end": 0.778
+    },
+    {
+     "text": "The shorter array is padded with nulls, so the longer one sets the count. Twelve is what two separate calls would produce, and three would drop a tag.",
+     "start": 1.198,
+     "end": 11.985
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -2.0,
+   "wpm": 141,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "13": {
+   "hash": "3b53afe911fdb7a5",
+   "takes": [
+    "28c81b46a17047b0b176",
+    "ae7f7d0838a28b7ff268"
+   ],
+   "duration": 10.415,
+   "lines": [
+    {
+     "text": "Second check. A function that builds a table from a JSON document, available only in recent versions.",
+     "start": 0.15,
+     "end": 7.929
+    },
+    {
+     "text": "Which release added it?",
+     "start": 8.749,
+     "end": 10.066
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -3.2,
+   "wpm": 121,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "13a": {
+   "hash": "e2a45464d13cea5d",
+   "takes": [
+    "b3d96dac1ffc48ada0c0",
+    "f022fbda34f5b99a79e8"
+   ],
+   "duration": 11.368,
+   "lines": [
+    {
+     "text": "Seventeen, in September of twenty twenty four.",
+     "start": 0.15,
+     "end": 4.11
+    },
+    {
+     "text": "Earlier releases have the arrow operators and path functions, but not this relational view.",
+     "start": 4.53,
+     "end": 11.018
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 111,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  }
+ }
+}
