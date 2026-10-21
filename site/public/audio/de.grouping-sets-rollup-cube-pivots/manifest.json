@@ -1,0 +1,694 @@
+{
+ "topic": "de.grouping-sets-rollup-cube-pivots",
+ "voice": "breeze-mellow-v2",
+ "asr": "large-v3-turbo",
+ "clips": {
+  "01": {
+   "hash": "7a4de25b9fc5782a",
+   "takes": [
+    "3494f81be56d94295504",
+    "11bd48be1bb459edc420",
+    "540d37e6c110ece15fd5",
+    "c5415f5f43ea633787c3"
+   ],
+   "duration": 39.005,
+   "lines": [
+    {
+     "text": "Every question so far has produced one row per group, or one row per path. Now we split one aggregate into several levels, in a single pass.",
+     "start": 0.15,
+     "end": 10.827
+    },
+    {
+     "text": "Picture the report your finance team asks for: orders by status and month, then by status alone, then one grand total.",
+     "start": 11.247,
+     "end": 20.798
+    },
+    {
+     "text": "The obvious way is three queries stacked together. Look at the first row on screen: that is three scans of the same table, for one report.",
+     "start": 21.218,
+     "end": 31.079
+    },
+    {
+     "text": "Grouping sets do the same job in one scan. The rest of the topic is how, and the traps along the way.",
+     "start": 31.499,
+     "end": 38.655
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 148,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "02": {
+   "hash": "34d31c3641b48ec3",
+   "takes": [
+    "750dfe1ee7b3889b1fb9",
+    "51aa73de69e0af4590b9",
+    "8971ab2131b51888dbf2"
+   ],
+   "duration": 31.266,
+   "lines": [
+    {
+     "text": "A grouping sets clause is just a list of levels. Each sublist is aggregated as if it were its own group by, and the results come back stacked.",
+     "start": 0.15,
+     "end": 9.858
+    },
+    {
+     "text": "Read the table from the top. The first rows group by status and month. The next groups by status alone, so the month cell is empty. The last has nothing in it at all.",
+     "start": 10.278,
+     "end": 22.937
+    },
+    {
+     "text": "Those empty cells are columns the level ignored. Hold that thought, because that is where this topic gets dangerous.",
+     "start": 23.357,
+     "end": 30.916
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 155,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "03": {
+   "hash": "1d3d6a227d700eca",
+   "takes": [
+    "e6db63b83b0d25b56151",
+    "a0ab98ea16896d3a320a",
+    "a4bd44d2aeda0b405e00",
+    "6208db3ad7666b837d78"
+   ],
+   "duration": 36.406,
+   "lines": [
+    {
+     "text": "Nobody writes out every level by hand, so there are two shorthands for the shapes people use constantly.",
+     "start": 0.15,
+     "end": 6.353
+    },
+    {
+     "text": "Rollup keeps every prefix of the list: both columns, then the first, then nothing. That is the shape of a hierarchy, from detail up to the grand total.",
+     "start": 6.773,
+     "end": 18.694
+    },
+    {
+     "text": "Cube keeps every subset, so it also includes the second column alone. Use it when there is no natural order, and you want every combination.",
+     "start": 19.114,
+     "end": 28.314
+    },
+    {
+     "text": "The rows on the right are what that costs over our data: seven for the rollup, nine for the cube.",
+     "start": 28.734,
+     "end": 36.056
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -1.9,
+   "wpm": 150,
+   "wer": 0.1,
+   "exact": false,
+   "tolerated": [
+    {
+     "line": "Rollup keeps every prefix of the list: both columns, then the first, then nothing. That is the shape of a hierarchy, from detail up to the grand total.",
+     "said": "rollup",
+     "heard": "roll up"
+    },
+    {
+     "line": "The rows on the right are what that costs over our data: seven for the rollup, nine for the cube.",
+     "said": "rollup",
+     "heard": "roll up"
+    }
+   ]
+  },
+  "04": {
+   "hash": "4bc37dc947434dfc",
+   "takes": [
+    "03391e584377370a34a5",
+    "db29cb3797b3ba967993",
+    "830093eaa9c0d7501e2d"
+   ],
+   "duration": 16.557,
+   "lines": [
+    {
+     "text": "Two columns gave us three sets for a rollup and four for a cube. Now try a third column.",
+     "start": 0.15,
+     "end": 6.702
+    },
+    {
+     "text": "Think about what a cube is. It is every subset of the columns, including none of them.",
+     "start": 7.122,
+     "end": 13.078
+    },
+    {
+     "text": "How many sets does it expand to?",
+     "start": 13.898,
+     "end": 16.207
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 156,
+   "wer": 0.10526315789473684,
+   "exact": false,
+   "tolerated": [
+    {
+     "line": "Two columns gave us three sets for a rollup and four for a cube. Now try a third column.",
+     "said": "rollup",
+     "heard": "roll up"
+    }
+   ]
+  },
+  "04a": {
+   "hash": "528a62c15033e6eb",
+   "takes": [
+    "1caa542e862edf62a188",
+    "2b8d4f8e7b81ca683105",
+    "11173092febfe38009b2"
+   ],
+   "duration": 26.389,
+   "lines": [
+    {
+     "text": "Eight. Each column is either in a subset or out of it, so three columns give two times two times two.",
+     "start": 0.15,
+     "end": 7.072
+    },
+    {
+     "text": "Six or seven would mean some combination is missing, and nine overshoots.",
+     "start": 7.492,
+     "end": 13.726
+    },
+    {
+     "text": "That doubling is the reason to be careful with cube. A rollup over three columns is only four sets, one per prefix, so the two shorthands diverge quickly.",
+     "start": 14.146,
+     "end": 26.039
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 139,
+   "wer": 0.07142857142857142,
+   "exact": false,
+   "tolerated": [
+    {
+     "line": "That doubling is the reason to be careful with cube. A rollup over three columns is only four sets, one per prefix, so the two shorthands diverge quickly.",
+     "said": "rollup",
+     "heard": "roll up"
+    }
+   ]
+  },
+  "05": {
+   "hash": "eea2b4501fb7d972",
+   "takes": [
+    "b01a2b7752abade7891b",
+    "6b5438129dfdfae8e0a9",
+    "ceb95099c27247d9db6a"
+   ],
+   "duration": 28.988,
+   "lines": [
+    {
+     "text": "Now look at the rows of a rollup as a ladder. Detail rows at the bottom, subtotals above them, the grand total on top.",
+     "start": 0.15,
+     "end": 8.928
+    },
+    {
+     "text": "In each subtotal row, the dashed cell is a column that row ignored. In the grand total, every grouping column is dashed.",
+     "start": 9.348,
+     "end": 18.392
+    },
+    {
+     "text": "That dashed cell reads as a NULL in the output. So the report now has three different kinds of row, and the NULL means not part of this grouping.",
+     "start": 18.812,
+     "end": 28.638
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.8,
+   "wpm": 155,
+   "wer": 0.08333333333333333,
+   "exact": false,
+   "tolerated": [
+    {
+     "line": "Now look at the rows of a rollup as a ladder. Detail rows at the bottom, subtotals above them, the grand total on top.",
+     "said": "rollup",
+     "heard": "roll up"
+    }
+   ]
+  },
+  "06": {
+   "hash": "f19d8f9537c03a55",
+   "takes": [
+    "81e5af16066b47c4005d",
+    "ce7d85a836c2cf94d176",
+    "9599a16b5ea0f6168fd9",
+    "51762515bd8191bbe265"
+   ],
+   "duration": 30.648,
+   "lines": [
+    {
+     "text": "Here is the trap. Suppose the column you group by already contains NULLs, like orders with no referrer.",
+     "start": 0.15,
+     "end": 7.512
+    },
+    {
+     "text": "Watch the two highlighted cells. One is a real order with no referrer. One is the grand total, where the column was ignored.",
+     "start": 7.932,
+     "end": 17.194
+    },
+    {
+     "text": "They are both blank, and nothing in the value tells them apart. The report cannot say which is which.",
+     "start": 17.614,
+     "end": 24.486
+    },
+    {
+     "text": "That is not a corner case. Any nullable column you roll up does this.",
+     "start": 25.306,
+     "end": 30.298
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 145,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "07": {
+   "hash": "de44088fc3666ddb",
+   "takes": [
+    "8f4340ec9f441bd591c3",
+    "0355d7c0a24f1206672a",
+    "7f5c9bbb12de4e659536"
+   ],
+   "duration": 16.663,
+   "lines": [
+    {
+     "text": "Now see what that does to an ordinary filter. After the rollup, you keep the rows where the referrer is null, to count orders with no referrer.",
+     "start": 0.15,
+     "end": 9.928
+    },
+    {
+     "text": "Remember what is null test looks at: only the value.",
+     "start": 10.348,
+     "end": 14.101
+    },
+    {
+     "text": "Which rows does it keep?",
+     "start": 14.921,
+     "end": 16.313
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -2.0,
+   "wpm": 151,
+   "wer": 0.2,
+   "exact": false,
+   "tolerated": [
+    {
+     "line": "Now see what that does to an ordinary filter. After the rollup, you keep the rows where the referrer is null, to count orders with no referrer.",
+     "said": "rollup",
+     "heard": "roll up"
+    },
+    {
+     "line": "Which rows does it keep?",
+     "said": "rows",
+     "heard": "rose"
+    }
+   ]
+  },
+  "07a": {
+   "hash": "1f40f138c3516eea",
+   "takes": [
+    "000d2a6e34bb4283a73e",
+    "7335f7a92b947b83ad29",
+    "49e9a3a71bc17d2741b8"
+   ],
+   "duration": 29.209,
+   "lines": [
+    {
+     "text": "Both kinds. The count is off by exactly one.",
+     "start": 0.15,
+     "end": 3.584
+    },
+    {
+     "text": "The test is a plain two valued check on the value, and the value is blank in both rows. So the grand total gets counted as one more order with no referrer.",
+     "start": 4.004,
+     "end": 15.632
+    },
+    {
+     "text": "Keeping only the real rows would need extra information the filter does not have, and keeping only the total makes no sense. That missing information is what the next function supplies.",
+     "start": 16.052,
+     "end": 28.859
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 148,
+   "wer": 0.03125,
+   "exact": false,
+   "tolerated": [
+    {
+     "line": "The test is a plain two valued check on the value, and the value is blank in both rows. So the grand total gets counted as one more order with no referrer.",
+     "said": "valued",
+     "heard": "value"
+    }
+   ]
+  },
+  "08": {
+   "hash": "f5b70f90f5451ec2",
+   "takes": [
+    "954b491742a236c6ef38",
+    "ca5a3a19db5bad13a81d",
+    "1a4f6706cd1708291bd0",
+    "ca92c32e32df9668eeaf"
+   ],
+   "duration": 33.993,
+   "lines": [
+    {
+     "text": "That function tells you, for each row, which columns it grouped on. It returns a bitmask.",
+     "start": 0.15,
+     "end": 6.259
+    },
+    {
+     "text": "Read the three rows. A detail row grouped on both columns, so both bits are zero. A status subtotal ignored the month, so the low bit is set.",
+     "start": 6.679,
+     "end": 16.847
+    },
+    {
+     "text": "The grand total ignored both, so both bits are set, and the number is three.",
+     "start": 17.267,
+     "end": 22.438
+    },
+    {
+     "text": "Now the fix is mechanical: ask for the grouping value to be zero, together with the null test. Only then is the blank a real data value.",
+     "start": 22.858,
+     "end": 33.643
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 152,
+   "wer": 0.125,
+   "exact": false,
+   "tolerated": [
+    {
+     "line": "That function tells you, for each row, which columns it grouped on. It returns a bitmask.",
+     "said": "bitmask",
+     "heard": "bit mask"
+    }
+   ]
+  },
+  "09": {
+   "hash": "0d48533df73e29dc",
+   "takes": [
+    "76ea0d6504435fe32451",
+    "3082b419a9733dab86f9",
+    "1e9e4e60ce14859e63c8",
+    "056935fdbc99c1789bb3"
+   ],
+   "duration": 33.714,
+   "lines": [
+    {
+     "text": "One more trap, for when you combine these shorthands. Several of them in one group by multiply together.",
+     "start": 0.15,
+     "end": 7.946
+    },
+    {
+     "text": "Look at the nine boxes on screen. Some of them are the same grouping set listed twice, and the red ones are the repeats.",
+     "start": 8.366,
+     "end": 17.502
+    },
+    {
+     "text": "Those repeats produce repeated subtotal rows. Putting distinct directly on the group by removes them.",
+     "start": 17.922,
+     "end": 25.354
+    },
+    {
+     "text": "Be careful with the name. That is not the same as distinct in the select list, which only removes identical output rows.",
+     "start": 25.774,
+     "end": 33.364
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -2.2,
+   "wpm": 141,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "10": {
+   "hash": "aaef89e3c078e771",
+   "takes": [
+    "757e0f7e440a7f0ea245",
+    "c3e0a55a7cd45141878f",
+    "d7308057fd021191cf8f",
+    "df89114dd1da241662eb"
+   ],
+   "duration": 30.293,
+   "lines": [
+    {
+     "text": "Now the other half of the topic: turning rows into columns, the pivot.",
+     "start": 0.15,
+     "end": 4.785
+    },
+    {
+     "text": "Watch the tall strip fold sideways. One row per month and status becomes one row per month with a column per status.",
+     "start": 5.205,
+     "end": 14.513
+    },
+    {
+     "text": "The portable way to do it is conditional aggregation. Each output column is a sum, restricted by a filter to the rows of one status.",
+     "start": 14.933,
+     "end": 23.682
+    },
+    {
+     "text": "Nothing exotic is happening. It is an ordinary group by with one aggregate per column.",
+     "start": 24.102,
+     "end": 29.943
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 149,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "11": {
+   "hash": "807be3da45b8f42f",
+   "takes": [
+    "13282fef5edea4d45ed3",
+    "cb99d5e4d98e703675a2",
+    "954fa4cfb126a5f6f96a",
+    "62afc157d48e3726a9be"
+   ],
+   "duration": 32.117,
+   "lines": [
+    {
+     "text": "There are three spellings, and which one you use depends on where your query runs.",
+     "start": 0.15,
+     "end": 6.31
+    },
+    {
+     "text": "The filter clause is standard, and works in both engines we use. The case expression inside the sum is the same computation for older engines.",
+     "start": 6.73,
+     "end": 18.244
+    },
+    {
+     "text": "Some warehouses add a native pivot operator, and an unpivot to go back. Postgres has neither.",
+     "start": 18.664,
+     "end": 25.443
+    },
+    {
+     "text": "So default to the portable form. It is the same work underneath, and it travels.",
+     "start": 25.863,
+     "end": 31.767
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 135,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "12": {
+   "hash": "82c68dc93923a277",
+   "takes": [
+    "a9b5de0cf6c8c20f3407",
+    "9678951410a0c0a1546d",
+    "ef4ed2c8cf6cd35286de",
+    "9db41a10824c01552a03"
+   ],
+   "duration": 31.885,
+   "lines": [
+    {
+     "text": "Back to the report. One scan, every level.",
+     "start": 0.15,
+     "end": 3.662
+    },
+    {
+     "text": "Use rollup for hierarchies, and cube only when you really want every combination.",
+     "start": 4.082,
+     "end": 9.372
+    },
+    {
+     "text": "Always separate rollup blanks from data blanks with the grouping function, and pivot with a filter.",
+     "start": 9.792,
+     "end": 15.914
+    },
+    {
+     "text": "Every total so far summed rows that were already sitting next to each other in one table. Next: pulling in one extra row, from the table beside it, computed just once, right where you need it.",
+     "start": 16.734,
+     "end": 31.535
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 137,
+   "wer": 0.15384615384615385,
+   "exact": false,
+   "tolerated": [
+    {
+     "line": "Use rollup for hierarchies, and cube only when you really want every combination.",
+     "said": "rollup",
+     "heard": "roll up"
+    },
+    {
+     "line": "Always separate rollup blanks from data blanks with the grouping function, and pivot with a filter.",
+     "said": "rollup",
+     "heard": "roll up"
+    }
+   ]
+  },
+  "13": {
+   "hash": "43eac434a3eb6447",
+   "takes": [
+    "6652f500d6413bb7bcdf",
+    "3d8691fcb09bd76f6ed7",
+    "bac4412c753f5e285a93"
+   ],
+   "duration": 8.824,
+   "lines": [
+    {
+     "text": "Two checks. First, a rollup over three columns.",
+     "start": 0.15,
+     "end": 3.747
+    },
+    {
+     "text": "It keeps one set per prefix.",
+     "start": 4.167,
+     "end": 6.502
+    },
+    {
+     "text": "How many sets is that?",
+     "start": 7.322,
+     "end": 8.474
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -1.9,
+   "wpm": 129,
+   "wer": 0.25,
+   "exact": false,
+   "tolerated": [
+    {
+     "line": "Two checks. First, a rollup over three columns.",
+     "said": "rollup",
+     "heard": "roll up"
+    }
+   ]
+  },
+  "13a": {
+   "hash": "b68303a5c999a4c1",
+   "takes": [
+    "ceeeb8a15f8c7c53c6f3",
+    "4f2fc79b6db24e5f661e"
+   ],
+   "duration": 14.927,
+   "lines": [
+    {
+     "text": "Four: all three columns, the first two, the first, and none.",
+     "start": 0.15,
+     "end": 6.579
+    },
+    {
+     "text": "Three forgets the empty set, and eight is the cube, which keeps every subset instead of every prefix.",
+     "start": 6.998,
+     "end": 14.577
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 117,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "14": {
+   "hash": "2f320083ced06e14",
+   "takes": [
+    "152ed72990a16e047757",
+    "e7469d959c8c1a5120cb",
+    "f6d2da7efdde029b7ad4"
+   ],
+   "duration": 11.496,
+   "lines": [
+    {
+     "text": "Second check. A two column rollup, and the grand total row.",
+     "start": 0.15,
+     "end": 4.542
+    },
+    {
+     "text": "Think about the bits.",
+     "start": 4.962,
+     "end": 6.092
+    },
+    {
+     "text": "What value does the grouping function report for the two columns together?",
+     "start": 6.912,
+     "end": 11.146
+    }
+   ],
+   "lufs": -16.2,
+   "true_peak": -2.8,
+   "wpm": 141,
+   "wer": 0.18181818181818182,
+   "exact": false,
+   "tolerated": [
+    {
+     "line": "Second check. A two column rollup, and the grand total row.",
+     "said": "rollup",
+     "heard": "roll up"
+    }
+   ]
+  },
+  "14a": {
+   "hash": "9bdbffc748162d66",
+   "takes": [
+    "53fe3e48c8853de5c222",
+    "61d65a90bc3dfad5e87c"
+   ],
+   "duration": 14.368,
+   "lines": [
+    {
+     "text": "Three, which is binary one one.",
+     "start": 0.15,
+     "end": 3.11
+    },
+    {
+     "text": "Both bits are set because neither column was grouped on. Zero would be a detail row, and one would be a subtotal that dropped only the month.",
+     "start": 3.53,
+     "end": 14.018
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 138,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  }
+ }
+}
