@@ -1,0 +1,477 @@
+{
+ "topic": "de.graph-algorithms-pipeline-dags",
+ "voice": "breeze-mellow-v2",
+ "asr": "large-v3-turbo",
+ "clips": {
+  "01": {
+   "hash": "b2270438b6fac332",
+   "takes": [
+    "a68feec0ecbb375f9d4b",
+    "10898f0a6efc8e98ff7b",
+    "808935a7a74e44bb0b57"
+   ],
+   "duration": 32.919,
+   "lines": [
+    {
+     "text": "A pipeline is many sorts, joins and loads, with dependencies between them. Graph algorithms decide their order, catch cycles, and find what sets the finish time.",
+     "start": 0.15,
+     "end": 13.645
+    },
+    {
+     "text": "So draw the shop's pipeline the way an engineer would on a whiteboard. Every task is a dot, and every arrow says: this must finish before that starts.",
+     "start": 14.065,
+     "end": 25.803
+    },
+    {
+     "text": "Once it is a picture, a lot of scheduling questions turn into questions about a picture.",
+     "start": 26.623,
+     "end": 32.569
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -2.0,
+   "wpm": 128,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "02": {
+   "hash": "4b5fbd8484556f9c",
+   "takes": [
+    "e2391754df9aeb8abf68",
+    "2a573d847595927b355f",
+    "a0f713eaf8621115a32e",
+    "0bc4081fc31363ee8a93"
+   ],
+   "duration": 33.276,
+   "lines": [
+    {
+     "text": "Two properties make this particular graph easy to work with. Look at the arrows first.",
+     "start": 0.15,
+     "end": 5.408
+    },
+    {
+     "text": "They point one way. A dependency is not symmetric: clean must finish before load, and load does not have to finish before clean.",
+     "start": 5.828,
+     "end": 14.66
+    },
+    {
+     "text": "And follow any arrow chain forward. It never returns to where it began, because a task that waits on itself could never start.",
+     "start": 15.08,
+     "end": 23.97
+    },
+    {
+     "text": "A graph with those two properties is a DAG, and it is the shape nearly every scheduler assumes before it will run anything.",
+     "start": 24.39,
+     "end": 32.926
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 151,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "03": {
+   "hash": "bf34433861bb5214",
+   "takes": [
+    "2713d8c21ca2a760c27a",
+    "ce640ec3f04122eb9b1f",
+    "c7670298f7a028a2bd2f"
+   ],
+   "duration": 14.314,
+   "lines": [
+    {
+     "text": "Now, here is a question you will be asked at two in the morning. You just changed the cleaning step.",
+     "start": 0.15,
+     "end": 6.699
+    },
+    {
+     "text": "Look at the graph and think about which direction the damage travels.",
+     "start": 7.119,
+     "end": 11.117
+    },
+    {
+     "text": "Which tasks have to run again?",
+     "start": 11.937,
+     "end": 13.964
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -2.3,
+   "wpm": 159,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "03a": {
+   "hash": "b5866ac5c3f4c902",
+   "takes": [
+    "1874558dcda2b3902655",
+    "96274999344bc9f161a3",
+    "50fb7d7a58703e1c3723"
+   ],
+   "duration": 31.316,
+   "lines": [
+    {
+     "text": "Everything the cleaning step feeds, directly or through others: load orders, the metrics branch, daily revenue and publish.",
+     "start": 0.15,
+     "end": 10.45
+    },
+    {
+     "text": "Ingest and the customer load sit above the change, so they are untouched. That is why only clean itself is too little, and why every task is too much.",
+     "start": 10.87,
+     "end": 22.923
+    },
+    {
+     "text": "Only the immediate successor misses the tasks further down. The rule is to walk the arrows forward as far as they go.",
+     "start": 23.343,
+     "end": 30.966
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 132,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "04": {
+   "hash": "c9b8a7ebd3b20fb7",
+   "takes": [
+    "68cce69897f7d00bbaa5",
+    "4bb358e6b03c9dfdead7",
+    "6e0de92216adb06dc91f",
+    "65c01208ba328a4db3e2"
+   ],
+   "duration": 36.315,
+   "lines": [
+    {
+     "text": "That forward walk has a mirror image. Walk the same arrows backwards, and you find what a task depends on.",
+     "start": 0.15,
+     "end": 7.743
+    },
+    {
+     "text": "That is the set a backfill needs. To rebuild daily revenue you need the ingest, the clean, the orders and the customers.",
+     "start": 8.163,
+     "end": 16.558
+    },
+    {
+     "text": "Both are one traversal, whether breadth first or depth first, and each visits every vertex and edge once.",
+     "start": 16.978,
+     "end": 25.649
+    },
+    {
+     "text": "So the cost grows with the number of tasks plus the number of arrows. A pipeline ten times bigger is ten times the work, not a hundred.",
+     "start": 26.069,
+     "end": 35.965
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 144,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "05": {
+   "hash": "1e7e011b58835f9e",
+   "takes": [
+    "25e1a23c748feadfd98d",
+    "e5e406d65ab27134ff49",
+    "ce4cad40fbaa631fb340",
+    "e8b9bad854a5af66fa37"
+   ],
+   "duration": 36.575,
+   "lines": [
+    {
+     "text": "Now, in what order do you actually run them? Keep one number per task: how many of its dependencies have not finished. That is its in-degree.",
+     "start": 0.15,
+     "end": 10.829
+    },
+    {
+     "text": "Start everything with a count of zero. Each time a task finishes, subtract one from every task it feeds.",
+     "start": 11.249,
+     "end": 18.991
+    },
+    {
+     "text": "Whatever reaches zero is ready, and it joins the queue. That is Kahn's algorithm.",
+     "start": 19.411,
+     "end": 25.045
+    },
+    {
+     "text": "The useful part is what you get for free. Release the whole ready queue at once and you have the waves of parallel work a scheduler launches.",
+     "start": 25.465,
+     "end": 36.225
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 143,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "06": {
+   "hash": "0231ed03b76efa85",
+   "takes": [
+    "9ee53e2287bd8b04154a",
+    "4a2e143b31af16eba536",
+    "8c9fc5c376d1fbc09e0b"
+   ],
+   "duration": 17.648,
+   "lines": [
+    {
+     "text": "Use the counts to predict the schedule. Ingest and the customer load have nothing to wait on, so they open the first wave.",
+     "start": 0.15,
+     "end": 7.457
+    },
+    {
+     "text": "From there, follow the zeros as they appear. Each wave is whatever became ready when the last one finished.",
+     "start": 7.877,
+     "end": 15.06
+    },
+    {
+     "text": "How many waves total?",
+     "start": 15.88,
+     "end": 17.298
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -2.4,
+   "wpm": 156,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "06a": {
+   "hash": "4a3035bcff23b315",
+   "takes": [
+    "45c6facaadcf7f21a18e",
+    "fb4d7eea679e7eb807ab",
+    "f341a42bb1b077003974"
+   ],
+   "duration": 32.015,
+   "lines": [
+    {
+     "text": "Five. The two roots, then clean, then load orders and the metrics branch together, then daily revenue, then publish.",
+     "start": 0.15,
+     "end": 10.278
+    },
+    {
+     "text": "The width of each wave is the parallelism you actually have at that moment. Seven waves would mean no two tasks ever overlap, and three would skip a dependency.",
+     "start": 10.698,
+     "end": 21.492
+    },
+    {
+     "text": "One wave is impossible, because publish needs the whole chain before it. Python's standard library does this bookkeeping for you.",
+     "start": 21.912,
+     "end": 31.665
+    }
+   ],
+   "lufs": -16.1,
+   "true_peak": -2.1,
+   "wpm": 127,
+   "wer": 0.05,
+   "exact": false,
+   "tolerated": [
+    {
+     "line": "One wave is impossible, because publish needs the whole chain before it. Python's standard library does this bookkeeping for you.",
+     "said": "pythons",
+     "heard": "python"
+    }
+   ]
+  },
+  "07": {
+   "hash": "b91742b770d5112d",
+   "takes": [
+    "ca8cc7e9f8ebbe1bfe04",
+    "dbf8d2a5e9eb78faf36b",
+    "c5bf3c0e5489861f3338",
+    "658c3b138784fe2af8e7"
+   ],
+   "duration": 34.247,
+   "lines": [
+    {
+     "text": "What if someone wires a loop by mistake? Think about the counts. Every task in the loop is waiting on another task in the loop.",
+     "start": 0.15,
+     "end": 9.051
+    },
+    {
+     "text": "So none of them ever reaches zero, and no valid order exists.",
+     "start": 9.471,
+     "end": 14.306
+    },
+    {
+     "text": "Kahn's algorithm notices when tasks are left stuck above zero. A depth first walk notices the moment it steps back onto a task already on its own path.",
+     "start": 14.726,
+     "end": 24.962
+    },
+    {
+     "text": "A good orchestrator runs this check before anything starts. A cycle becomes an error at import time, not a hang at three in the morning.",
+     "start": 25.382,
+     "end": 33.897
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 158,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "08": {
+   "hash": "9bb6ce42365464c1",
+   "takes": [
+    "8399f219788dd27220cc",
+    "92c4cb7495b5279e51ef",
+    "7206703e6d731ad8d372",
+    "e2d354bd614c74bf1395"
+   ],
+   "duration": 37.503,
+   "lines": [
+    {
+     "text": "Last idea, and the most useful. Give yourself all the workers you want. When does the pipeline finish?",
+     "start": 0.15,
+     "end": 7.774
+    },
+    {
+     "text": "Not the sum of all the tasks, because they overlap. And not the longest chain counted in tasks, because tasks differ in length.",
+     "start": 8.324,
+     "end": 16.273
+    },
+    {
+     "text": "It is the longest path when each task is weighted by its duration. That is the critical path.",
+     "start": 16.693,
+     "end": 23.453
+    },
+    {
+     "text": "Now the quiet surprise. Finding a longest path is usually brutally hard. On a DAG it is one sweep in dependency order, because acyclicity means you never have to revisit a vertex.",
+     "start": 24.273,
+     "end": 37.153
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 146,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "09": {
+   "hash": "004cac787c957813",
+   "takes": [
+    "730b854c3dd1538c0047",
+    "7e4a3274ffd78fc502d3",
+    "0ecdd077dd84d15788e9",
+    "41fb1e431ba4a97447fd"
+   ],
+   "duration": 22.274,
+   "lines": [
+    {
+     "text": "Put numbers on it. The revenue branch runs about fifty five minutes end to end. The metrics branch runs sixty two.",
+     "start": 0.15,
+     "end": 9.422
+    },
+    {
+     "text": "So the pipeline finishes at sixty two, and the metrics branch is the critical one.",
+     "start": 9.842,
+     "end": 15.04
+    },
+    {
+     "text": "Now load orders sits on the revenue branch. You make it twice as fast.",
+     "start": 15.46,
+     "end": 19.95
+    },
+    {
+     "text": "How much does it move?",
+     "start": 20.77,
+     "end": 21.924
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 148,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "09a": {
+   "hash": "3cc9c1d12e3b667b",
+   "takes": [
+    "fd90af01c264d0396c1a",
+    "fc9d34873192539fa84b",
+    "333d693be0daf69d8dcc",
+    "83c9897b03b508da7a41"
+   ],
+   "duration": 29.724,
+   "lines": [
+    {
+     "text": "Not one minute sooner.",
+     "start": 0.15,
+     "end": 1.566
+    },
+    {
+     "text": "That branch has slack. It was never setting the finish time, so shaving it only gives you more slack.",
+     "start": 1.986,
+     "end": 8.278
+    },
+    {
+     "text": "A few minutes sooner and exactly as much as you saved both assume every task matters equally. Only a task on the critical path moves the clock, and cut it far enough and the path shifts to the other branch.",
+     "start": 8.698,
+     "end": 23.384
+    },
+    {
+     "text": "Which workers are available does not change this, since we assumed enough of them.",
+     "start": 23.804,
+     "end": 29.374
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -2.0,
+   "wpm": 155,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "10": {
+   "hash": "6840058b0aaf3e38",
+   "takes": [
+    "49497689b72f3e3220ab",
+    "47b4c4b429142d26fb10",
+    "62eb428c2fbed11a6440",
+    "bc7c0da6775c20c88e78"
+   ],
+   "duration": 41.175,
+   "lines": [
+    {
+     "text": "One more lens. Tasks that share no dependency, even indirectly, form separate components.",
+     "start": 0.15,
+     "end": 8.014
+    },
+    {
+     "text": "They can run on different workers, fail without affecting each other, and belong to different teams.",
+     "start": 8.434,
+     "end": 14.807
+    },
+    {
+     "text": "Finding them is one more walk over the graph. And that is the pattern for this whole topic: order the tasks, catch the cycle, trace what reruns, find what sets the clock, all linear in the size of the graph.",
+     "start": 15.227,
+     "end": 29.692
+    },
+    {
+     "text": "The tasks of a DAG run on many machines. Next: what the network between them costs, in bandwidth, latency and where the data lives.",
+     "start": 30.512,
+     "end": 40.825
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 136,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  }
+ }
+}

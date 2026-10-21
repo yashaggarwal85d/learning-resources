@@ -19,7 +19,7 @@
     },
     {
       "lines": [
-        "Here is a question you will be asked at two in the morning. You just changed the cleaning step.",
+        "Now, here is a question you will be asked at two in the morning. You just changed the cleaning step.",
         "Look at the graph and think about which direction the damage travels.",
         { "beat": 0.4 },
         "Which tasks have to run again?"
@@ -51,7 +51,7 @@
         "Use the counts to predict the schedule. Ingest and the customer load have nothing to wait on, so they open the first wave.",
         "From there, follow the zeros as they appear. Each wave is whatever became ready when the last one finished.",
         { "beat": 0.4 },
-        "How many waves does the whole pipeline take?"
+        "How many waves total?"
       ],
       "answer": [
         "Five. The two roots, then clean, then load orders and the metrics branch together, then daily revenue, then publish.",
@@ -82,7 +82,7 @@
         "So the pipeline finishes at sixty two, and the metrics branch is the critical one.",
         "Now load orders sits on the revenue branch. You make it twice as fast.",
         { "beat": 0.4 },
-        "By how much does the finish time move?"
+        "How much does it move?"
       ],
       "answer": [
         "Not one minute sooner.",
