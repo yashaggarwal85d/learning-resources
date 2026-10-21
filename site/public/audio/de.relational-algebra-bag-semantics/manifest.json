@@ -1,0 +1,730 @@
+{
+ "topic": "de.relational-algebra-bag-semantics",
+ "voice": "breeze-mellow-v2",
+ "asr": "large-v3-turbo",
+ "clips": {
+  "01": {
+   "hash": "b7077774b60e34ea",
+   "takes": [
+    "032d6e24c95852fccb22",
+    "58009460b1b7427d8575",
+    "c1dab3c52b0087757579"
+   ],
+   "duration": 34.658,
+   "lines": [
+    {
+     "text": "Chapter one priced the machine. Next chapter: SQL, starting with what a query really computes, which is relational algebra over bags.",
+     "start": 0.15,
+     "end": 11.172
+    },
+    {
+     "text": "Look at the drawing. The words you typed, select, where, join, group by, are gone. What remains is a tree of small operations with tables at the leaves.",
+     "start": 11.592,
+     "end": 23.881
+    },
+    {
+     "text": "That tree is what the engine reasons about. Once it is clear in your head, rewrites and costs in the next sections stop being magic.",
+     "start": 24.701,
+     "end": 34.308
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 128,
+   "wer": 0.047619047619047616,
+   "exact": false,
+   "tolerated": [
+    {
+     "line": "Chapter one priced the machine. Next chapter: SQL, starting with what a query really computes, which is relational algebra over bags.",
+     "said": "priced",
+     "heard": "price"
+    },
+    {
+     "line": "Look at the drawing. The words you typed, select, where, join, group by, are gone. What remains is a tree of small operations with tables at the leaves.",
+     "said": "where",
+     "heard": "wear"
+    },
+    {
+     "line": "That tree is what the engine reasons about. Once it is clear in your head, rewrites and costs in the next sections stop being magic.",
+     "said": "sections",
+     "heard": "section"
+    }
+   ]
+  },
+  "02": {
+   "hash": "fb9137ad465943fd",
+   "takes": [
+    "77cfbdf0e68953c23aa2",
+    "19e5bd0815feb82cefbe",
+    "0966dc5d1f3ba7475e5a",
+    "d8ad61336b4833e72ac6"
+   ],
+   "duration": 31.136,
+   "lines": [
+    {
+     "text": "There are only six kinds of box in that tree, and you should be able to name each one's job.",
+     "start": 0.15,
+     "end": 6.707
+    },
+    {
+     "text": "Two of them shrink a table: one drops rows, one drops columns. Two combine tables, matched up or paired every possible way.",
+     "start": 7.127,
+     "end": 16.838
+    },
+    {
+     "text": "One stacks results or keeps what they share. One collapses rows into groups.",
+     "start": 17.259,
+     "end": 22.788
+    },
+    {
+     "text": "That is the entire vocabulary. Every query you have ever written is some arrangement of these six.",
+     "start": 23.208,
+     "end": 30.786
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.8,
+   "wpm": 139,
+   "wer": 0.045454545454545456,
+   "exact": false,
+   "tolerated": [
+    {
+     "line": "Two of them shrink a table: one drops rows, one drops columns. Two combine tables, matched up or paired every possible way.",
+     "said": "combine",
+     "heard": "combined"
+    }
+   ]
+  },
+  "03": {
+   "hash": "27bf8f2a9056d9b0",
+   "takes": [
+    "80595ef059513d7a7d2a",
+    "fe3df63e9c6cd68a9722",
+    "973ea4a56798839adaaf"
+   ],
+   "duration": 15.734,
+   "lines": [
+    {
+     "text": "Now a question people get wrong the first time. One customer has placed five orders.",
+     "start": 0.15,
+     "end": 6.528
+    },
+    {
+     "text": "You select only their customer id from the orders table. No grouping, nothing that removes rows.",
+     "start": 6.948,
+     "end": 13.245
+    },
+    {
+     "text": "How many rows come back?",
+     "start": 14.065,
+     "end": 15.384
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 137,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "03a": {
+   "hash": "1702f113ae869106",
+   "takes": [
+    "e79e99a201faf1bc012e",
+    "9f06fddae2d4ef352ad9",
+    "bad711951d8a11089557",
+    "71e203de7f49a1a6b1aa"
+   ],
+   "duration": 28.688,
+   "lines": [
+    {
+     "text": "Five.",
+     "start": 0.15,
+     "end": 0.757
+    },
+    {
+     "text": "Each row records a separate event: an order happened. The engine returns one row per event, and the id repeats because five events share it.",
+     "start": 1.177,
+     "end": 12.892
+    },
+    {
+     "text": "One would be right only if the result were a set, and SQL tables are not sets. Zero is wrong because nothing deduplicates behind your back.",
+     "start": 13.312,
+     "end": 23.39
+    },
+    {
+     "text": "Collapse those five to one and you have quietly deleted four facts.",
+     "start": 23.81,
+     "end": 28.338
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 134,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "04": {
+   "hash": "e5d8acfbabf4c731",
+   "takes": [
+    "c192d67e1137725a7e41",
+    "002436037af439027d22",
+    "0a155c0d0ab579291b2c"
+   ],
+   "duration": 28.124,
+   "lines": [
+    {
+     "text": "So what is a table, if not a set? Compare the two collections on screen.",
+     "start": 0.15,
+     "end": 4.854
+    },
+    {
+     "text": "A set refuses repeats. A bag, also called a multiset, keeps every repeat and remembers how many there were.",
+     "start": 5.274,
+     "end": 14.314
+    },
+    {
+     "text": "SQL chose the bag on purpose. Every table and every query result is one. The reason is practical: deduplicating costs work, so the language only does it when you ask.",
+     "start": 14.734,
+     "end": 27.774
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 137,
+   "wer": 0.10526315789473684,
+   "exact": false,
+   "tolerated": [
+    {
+     "line": "A set refuses repeats. A bag, also called a multiset, keeps every repeat and remembers how many there were.",
+     "said": "multiset",
+     "heard": "multi set"
+    },
+    {
+     "line": "SQL chose the bag on purpose. Every table and every query result is one. The reason is practical: deduplicating costs work, so the language only does it when you ask.",
+     "said": "deduplicating",
+     "heard": "de duplicating"
+    }
+   ]
+  },
+  "05": {
+   "hash": "0c2326c96f916dcd",
+   "takes": [
+    "23b4f317d33768e29498",
+    "ccdfa24935a168a1d936",
+    "6ab52707cf0f55f7c4f6"
+   ],
+   "duration": 25.633,
+   "lines": [
+    {
+     "text": "Here is how that choice bites. A total that depends on every order being counted once.",
+     "start": 0.15,
+     "end": 7.023
+    },
+    {
+     "text": "Run a distinct on the customer id before the sum, and four of the five rows vanish before the sum ever sees them.",
+     "start": 7.443,
+     "end": 15.705
+    },
+    {
+     "text": "There is no error and no warning. The total is simply wrong. The mistake is not in the sum, it is in forgetting that you were holding a bag.",
+     "start": 16.125,
+     "end": 25.283
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 159,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "06": {
+   "hash": "9e197a13bbbdf385",
+   "takes": [
+    "e814fc0b72bea515c980",
+    "93689301223de2d2e7f6",
+    "1e3423eb9da2aa7d157b"
+   ],
+   "duration": 32.973,
+   "lines": [
+    {
+     "text": "The same choice matters wherever two lists are combined. An order gets flagged twice, once by an automatic check and once by a reviewer.",
+     "start": 0.15,
+     "end": 10.293
+    },
+    {
+     "text": "Stack the lists keeping every row, and that order appears twice. Stack them removing repeats, and it appears once.",
+     "start": 10.713,
+     "end": 20.073
+    },
+    {
+     "text": "Neither is a bug. They answer different questions: how many flags were raised, or which orders were flagged. The bug is choosing the wrong one for the question.",
+     "start": 20.493,
+     "end": 32.623
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 129,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "07": {
+   "hash": "009534b98592e444",
+   "takes": [
+    "9fdecf361b93041e3a17",
+    "70c3d4b856d96fe23b39",
+    "2f632d1efd4f0bc50a8f",
+    "1db35c74683c02b3c3cd"
+   ],
+   "duration": 37.424,
+   "lines": [
+    {
+     "text": "Two more combinations ask sharper questions, so go slowly. Read the two small bags on screen, and notice that each has a value twice.",
+     "start": 0.15,
+     "end": 9.857
+    },
+    {
+     "text": "Intersect with counting keeps the smaller count of each shared value. Subtract with counting keeps whatever is left after taking counts away.",
+     "start": 10.277,
+     "end": 20.106
+    },
+    {
+     "text": "Now watch what dropping the counting does. The leftover can vanish entirely, even where the counted version still keeps a row.",
+     "start": 20.526,
+     "end": 28.122
+    },
+    {
+     "text": "Without counting, a value is either present or absent, and the number of copies is thrown away.",
+     "start": 28.542,
+     "end": 37.074
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 135,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "08": {
+   "hash": "80763a1fb80dbcda",
+   "takes": [
+    "b5f42d964ddd07a745fb",
+    "067af4d71008a468a6b0",
+    "ca341b86897f10b12ad0"
+   ],
+   "duration": 18.385,
+   "lines": [
+    {
+     "text": "Here is a law that is true for sets and false for bags. Combine a set with a copy of itself, and nothing changes.",
+     "start": 0.15,
+     "end": 8.931
+    },
+    {
+     "text": "Hold the bag version in mind, the stack that keeps every row.",
+     "start": 9.351,
+     "end": 13.863
+    },
+    {
+     "text": "Does combining a list with itself change anything?",
+     "start": 14.683,
+     "end": 18.035
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 144,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "08a": {
+   "hash": "f291285ec4bbc6a7",
+   "takes": [
+    "9ae9c686be7bea29f63d",
+    "c7ca93952f837dea5de7",
+    "9f025a6a36dd8ee00163"
+   ],
+   "duration": 25.423,
+   "lines": [
+    {
+     "text": "It doubles every row.",
+     "start": 0.15,
+     "end": 1.819
+    },
+    {
+     "text": "The version that keeps everything has no idea the two sides are identical, so it keeps both copies of each row.",
+     "start": 2.239,
+     "end": 9.468
+    },
+    {
+     "text": "Only the version that removes repeats returns you to the start, because removing repeats is secretly a full deduplication pass. Saying nothing changes borrows the set intuition, which is exactly what fails here.",
+     "start": 9.888,
+     "end": 25.073
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.8,
+   "wpm": 137,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "09": {
+   "hash": "07dc8dced0b907a0",
+   "takes": [
+    "cb233f661e285d3e0d2a",
+    "774773d66fac94dcf9de",
+    "de9b9f1a5a51f56f39cc",
+    "303f7cbb12b746fe369b"
+   ],
+   "duration": 32.777,
+   "lines": [
+    {
+     "text": "Now we use the tree. A planner leans on this rewrite constantly: filter early.",
+     "start": 0.15,
+     "end": 5.745
+    },
+    {
+     "text": "Watch the numbers on screen. Filter the products down to the electronics first, and the join only ever sees a small slice.",
+     "start": 6.165,
+     "end": 15.481
+    },
+    {
+     "text": "Filter after the join and the engine has already paid to build every pairing, only to throw most of them away.",
+     "start": 15.901,
+     "end": 24.232
+    },
+    {
+     "text": "The answer is identical either way. That is the point: the rewrite is free, and it changes only the cost.",
+     "start": 24.652,
+     "end": 32.427
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 141,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "10": {
+   "hash": "f020cfd5454fd9c7",
+   "takes": [
+    "ad62f641055d0c22289f",
+    "9781ecf30271ef8ad522",
+    "c5271bee9c3ed37baa08"
+   ],
+   "duration": 24.544,
+   "lines": [
+    {
+     "text": "The same idea works on columns. Carry only the columns the query needs, and carry them as early as possible.",
+     "start": 0.15,
+     "end": 8.534
+    },
+    {
+     "text": "Compare the two byte counts. Carrying every column out of habit moves tens of gigabytes. Carrying three moves a few.",
+     "start": 8.954,
+     "end": 17.567
+    },
+    {
+     "text": "Nobody asked for the other columns. The data you move but never read is pure waste.",
+     "start": 17.987,
+     "end": 24.194
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 137,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "11": {
+   "hash": "cf9a9e70bfeef6d6",
+   "takes": [
+    "b18fe4ab167ef75a6a85",
+    "c982a55fbad47769a2f0",
+    "b68450838b5a657c4c5d"
+   ],
+   "duration": 30.918,
+   "lines": [
+    {
+     "text": "One more rewrite matters more than the last two. Join two tables in either order, or regroup three however you like, and the bag you get back is identical.",
+     "start": 0.15,
+     "end": 11.03
+    },
+    {
+     "text": "Pause on why that matters. If every order gave the same answer, the engine is free to try them all and keep the cheapest.",
+     "start": 11.45,
+     "end": 19.684
+    },
+    {
+     "text": "That is the entire justification for a cost based optimizer. It is not guessing at answers, it is choosing among proven equals.",
+     "start": 20.104,
+     "end": 30.568
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 146,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "12": {
+   "hash": "342f873c75c5631d",
+   "takes": [
+    "9f46249f1c400839ed4c",
+    "4b6f761a84773d70249e",
+    "7e712048e0155a4f4880",
+    "fe4e98cfc5f0e1f7ad52"
+   ],
+   "duration": 30.679,
+   "lines": [
+    {
+     "text": "Now we can say exactly why the two ways of stacking results differ in cost.",
+     "start": 0.15,
+     "end": 5.317
+    },
+    {
+     "text": "Look at the two plans side by side. Keeping every row is one append: nothing to compare, nothing to check.",
+     "start": 5.737,
+     "end": 13.232
+    },
+    {
+     "text": "Promising no duplicates adds a second pass on top, a hash or a sort over every row, hunting for repeats.",
+     "start": 13.652,
+     "end": 21.485
+    },
+    {
+     "text": "And it pays that pass even when nothing overlaps. The cost is in the promise, not in what the pass finds.",
+     "start": 21.905,
+     "end": 30.329
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -2.0,
+   "wpm": 149,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "13": {
+   "hash": "95db03a587ac8284",
+   "takes": [
+    "feb1b84b0853894f8e80",
+    "39e24a875f42f5db4ea5",
+    "6ae2b61b709f52e35943"
+   ],
+   "duration": 29.243,
+   "lines": [
+    {
+     "text": "Back to the flagged orders. Keeping every row costs one pass over the rows. Removing repeats costs two.",
+     "start": 0.15,
+     "end": 7.817
+    },
+    {
+     "text": "Either way the distinct flagged orders are the same set. The extra pass changes what you pay, never which orders are flagged.",
+     "start": 8.237,
+     "end": 16.895
+    },
+    {
+     "text": "Every operator here assumed every value was present. Next: the value that means unknown, and the three valued logic it forces on every predicate.",
+     "start": 17.715,
+     "end": 28.893
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 131,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "14": {
+   "hash": "ea19b4b110ceabac",
+   "takes": [
+    "d9964262f0dfa69bdfe4",
+    "2b8ee8502e6fa42e1480",
+    "973ea4a56798839adaaf"
+   ],
+   "duration": 13.495,
+   "lines": [
+    {
+     "text": "First test. A customer placed seven orders.",
+     "start": 0.15,
+     "end": 4.155
+    },
+    {
+     "text": "Select only their customer id. Think about what, if anything, is merging rows.",
+     "start": 4.575,
+     "end": 11.007
+    },
+    {
+     "text": "How many rows come back?",
+     "start": 11.827,
+     "end": 13.146
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -4.2,
+   "wpm": 111,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "14a": {
+   "hash": "224a0275663965e6",
+   "takes": [
+    "306b3c0f6725f49f64a4",
+    "571d0236de5dc9119b7c"
+   ],
+   "duration": 12.71,
+   "lines": [
+    {
+     "text": "Seven.",
+     "start": 0.15,
+     "end": 0.66
+    },
+    {
+     "text": "Nothing merges rows: no grouping, no deduplication. A plain select returns one row per source row, so a repeated id repeats.",
+     "start": 1.08,
+     "end": 12.36
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 104,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "15": {
+   "hash": "30ef0609baf57adb",
+   "takes": [
+    "e6ffd955ae4eac22bad8",
+    "46476da44c93a8a29d43",
+    "6f3bdc79486ed2d3ee7f"
+   ],
+   "duration": 18.734,
+   "lines": [
+    {
+     "text": "Second test. Bag P holds three three times and five once. Bag Q holds three once and five twice.",
+     "start": 0.15,
+     "end": 8.732
+    },
+    {
+     "text": "Work value by value, and remember a count cannot go below zero.",
+     "start": 9.152,
+     "end": 14.197
+    },
+    {
+     "text": "How many rows does P minus Q return, with counting?",
+     "start": 15.017,
+     "end": 18.384
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -2.0,
+   "wpm": 131,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "15a": {
+   "hash": "96a85d564ea5c3cb",
+   "takes": [
+    "e7c39d1754e0187d5d32",
+    "220ba31ce4108acad129"
+   ],
+   "duration": 16.999,
+   "lines": [
+    {
+     "text": "Two.",
+     "start": 0.15,
+     "end": 0.629
+    },
+    {
+     "text": "Three appears three times in P and once in Q, leaving two copies. Five appears once in P and twice in Q, leaving none, because the count stops at zero, it does not go negative.",
+     "start": 1.049,
+     "end": 16.649
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 127,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "16": {
+   "hash": "68adcf3ce26b6ec9",
+   "takes": [
+    "39baed553a2422484e12",
+    "f094ea2005804e9a8573",
+    "b53fff97b807d4eed5d3"
+   ],
+   "duration": 16.6,
+   "lines": [
+    {
+     "text": "Last one. Two branches of fifty thousand rows each, and you know for a fact they share nothing.",
+     "start": 0.15,
+     "end": 6.912
+    },
+    {
+     "text": "You want the version that promises no duplicates. The branches never overlap, so surely it can skip its pass.",
+     "start": 7.332,
+     "end": 14.941
+    },
+    {
+     "text": "Can it?",
+     "start": 15.761,
+     "end": 16.25
+    }
+   ],
+   "lufs": -16.1,
+   "true_peak": -2.9,
+   "wpm": 141,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "16a": {
+   "hash": "37df319b7d8bf104",
+   "takes": [
+    "12f9269709fe56730f79",
+    "9c91b926ed98ec25eaf7",
+    "1b0df3f19adcaff8902a"
+   ],
+   "duration": 22.262,
+   "lines": [
+    {
+     "text": "No.",
+     "start": 0.15,
+     "end": 0.624
+    },
+    {
+     "text": "The planner cannot know the branches are disjoint without doing the work to find out. So it still hashes or sorts every row, finds nothing, and pays for the pass anyway.",
+     "start": 1.044,
+     "end": 12.774
+    },
+    {
+     "text": "The fix lives in your hands: if you know the branches are disjoint, say so by keeping every row. The engine cannot read your mind.",
+     "start": 13.194,
+     "end": 21.912
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -2.4,
+   "wpm": 154,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  }
+ }
+}
