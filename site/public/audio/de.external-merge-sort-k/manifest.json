@@ -1,0 +1,553 @@
+{
+ "topic": "de.external-merge-sort-k",
+ "voice": "breeze-mellow-v2",
+ "asr": "large-v3-turbo",
+ "clips": {
+  "01": {
+   "hash": "507c78028b7d1579",
+   "takes": [
+    "f0059a8906e446b0ff70",
+    "6488263919ed1fbda68a",
+    "82b8ef0e0ab26b1ee37d"
+   ],
+   "duration": 24.382,
+   "lines": [
+    {
+     "text": "The hash table ran out of memory and had to spill. A sort never has that problem, and the reason is worth seeing.",
+     "start": 0.15,
+     "end": 8.384
+    },
+    {
+     "text": "The cost model counted this algorithm in passes. Now we open one up and look at what a pass is.",
+     "start": 8.804,
+     "end": 16.818
+    },
+    {
+     "text": "The key idea is that a sort can be built from pieces, none of which needs to fit.",
+     "start": 17.638,
+     "end": 24.032
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -2.1,
+   "wpm": 150,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "02": {
+   "hash": "06b1d9cc8ef69a5c",
+   "takes": [
+    "a79f74d6d22dd118fe1d",
+    "ff773ee2f0a5e6c500ca",
+    "3a0589b88ec40c8f7fef",
+    "78560fe18eabca699417"
+   ],
+   "duration": 34.722,
+   "lines": [
+    {
+     "text": "You have a terabyte of events and sixteen gigabytes of memory. You cannot sort it in one go.",
+     "start": 0.15,
+     "end": 7.025
+    },
+    {
+     "text": "So split the work in two. Look at the left half first: phase one makes sorted pieces, each small enough to fit. We call them runs.",
+     "start": 7.445,
+     "end": 17.493
+    },
+    {
+     "text": "Then look at the right: phase two merges the runs into one sorted output.",
+     "start": 17.913,
+     "end": 24.544
+    },
+    {
+     "text": "Everything in this topic is a question about those two phases, how long the runs are and how many you can merge at once.",
+     "start": 24.964,
+     "end": 34.372
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 142,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "03": {
+   "hash": "8da05cc78c2a2240",
+   "takes": [
+    "fa9718b94927992f530b",
+    "a2de97d0d3e2edd97a54",
+    "634e09769d41a515c7ad"
+   ],
+   "duration": 28.923,
+   "lines": [
+    {
+     "text": "Phase one is almost embarrassingly simple. Read until memory is full, sort what you have, write it out as a run, and repeat.",
+     "start": 0.15,
+     "end": 9.479
+    },
+    {
+     "text": "Watch the count as it climbs. Each run is one memory load, so a terabyte over sixteen gigabytes gives sixty four runs.",
+     "start": 9.899,
+     "end": 19.538
+    },
+    {
+     "text": "Plain sorting is enough, it works on a block that sits in cache, and every worker can do its own runs independently.",
+     "start": 19.958,
+     "end": 28.573
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -1.9,
+   "wpm": 139,
+   "wer": 0.045454545454545456,
+   "exact": false,
+   "tolerated": [
+    {
+     "line": "Plain sorting is enough, it works on a block that sits in cache, and every worker can do its own runs independently.",
+     "said": "cache",
+     "heard": "cash"
+    }
+   ]
+  },
+  "04": {
+   "hash": "8ef7ad7a27c538d2",
+   "takes": [
+    "ceb79b524e1d6a9b4364",
+    "7b494291f0ea73097bc6",
+    "8de04cf8c4c27b93424e",
+    "fe5b4a8388baf3feb97d"
+   ],
+   "duration": 36.06,
+   "lines": [
+    {
+     "text": "There is a cleverer way to make runs, and it is worth seeing because it teaches you where the cost really is.",
+     "start": 0.15,
+     "end": 7.078
+    },
+    {
+     "text": "Keep a heap of everything in memory. Pop the smallest, write it out, and read one more item in.",
+     "start": 7.498,
+     "end": 14.268
+    },
+    {
+     "text": "If the new item is bigger than what you just wrote, it can still join this run. Picture a snowplow collecting snow as it drives, so the run keeps growing.",
+     "start": 14.688,
+     "end": 25.776
+    },
+    {
+     "text": "On random data the runs come out about twice the size of memory. On data that is already sorted, you get a single run for the whole file.",
+     "start": 26.196,
+     "end": 35.71
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 165,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "05": {
+   "hash": "8b36a8f5fbf72770",
+   "takes": [
+    "f9222aa14e8937dbbc98",
+    "28c7876f76dafa5d9119",
+    "d2faf86af95de2abaca7"
+   ],
+   "duration": 17.555,
+   "lines": [
+    {
+     "text": "Longer runs mean fewer runs, and fewer runs can save a whole pass over the data. That sounds like a clear win.",
+     "start": 0.15,
+     "end": 8.355
+    },
+    {
+     "text": "And yet almost every modern engine gave this method up and went back to plain sorting.",
+     "start": 8.775,
+     "end": 13.861
+    },
+    {
+     "text": "Why would you give up longer runs?",
+     "start": 14.681,
+     "end": 17.205
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 154,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "05a": {
+   "hash": "8354be15ce722d9b",
+   "takes": [
+    "eff7788c4c0d8171f0e6",
+    "667031cfa4039b2a1252",
+    "c5f063d9977dad327c8a",
+    "9140c97d635e55775eba"
+   ],
+   "duration": 40.509,
+   "lines": [
+    {
+     "text": "Because the cost model counts transfers, but the processor pays for something the model does not count.",
+     "start": 0.15,
+     "end": 6.966
+    },
+    {
+     "text": "The heap sifts one item at a time, jumping around memory. Quicksort partitions a block that sits in cache.",
+     "start": 7.386,
+     "end": 16.119
+    },
+    {
+     "text": "The longer runs rarely saved a whole pass, and the scattered access cost more than one extra cheap merge. Postgres made this switch.",
+     "start": 16.539,
+     "end": 25.137
+    },
+    {
+     "text": "The lesson is general: count the resource that dominates. Here it was the cache, not the disk. Saying the longer runs were a myth is wrong, since they do occur; and the disk did not get slower.",
+     "start": 25.557,
+     "end": 40.159
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 144,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "06": {
+   "hash": "ff8e7f40c02214c0",
+   "takes": [
+    "5c6230f428e4e7c5891e",
+    "76428768ed53a5dee029",
+    "a6e47b4cae377a0d255b",
+    "cffde5c7ef5e5178842f"
+   ],
+   "duration": 40.182,
+   "lines": [
+    {
+     "text": "Now phase two. The naive plan merges two runs at a time, over and over.",
+     "start": 0.15,
+     "end": 6.378
+    },
+    {
+     "text": "Do the arithmetic on that. Each round reads and writes the entire dataset, and you need a round for every level of the merge tree. It is far too much disk traffic.",
+     "start": 6.798,
+     "end": 19.466
+    },
+    {
+     "text": "So merge all of them at once. Watch the heap on screen. It holds the front item of every run, pops the smallest to the output, and refills from the run it came from.",
+     "start": 19.886,
+     "end": 30.919
+    },
+    {
+     "text": "One read and one write of every block. That is one pass, however many runs there are, as long as they all fit.",
+     "start": 31.339,
+     "end": 39.832
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 155,
+   "wer": 0.0625,
+   "exact": false,
+   "tolerated": [
+    {
+     "line": "Do the arithmetic on that. Each round reads and writes the entire dataset, and you need a round for every level of the merge tree. It is far too much disk traffic.",
+     "said": "dataset",
+     "heard": "data set"
+    }
+   ]
+  },
+  "07": {
+   "hash": "0eed2099a1fc568f",
+   "takes": [
+    "8dba8d19460a0139fa60",
+    "156735ededfcd8669f03",
+    "a9d7981ce05ac469523f"
+   ],
+   "duration": 26.118,
+   "lines": [
+    {
+     "text": "Notice how little memory that merge needs. The heap holds one item per run, not the runs themselves.",
+     "start": 0.15,
+     "end": 6.715
+    },
+    {
+     "text": "That is why the whole merge phase fits in a few lines over generators: hold one record per stream, yield the smallest, and move on.",
+     "start": 7.135,
+     "end": 17.513
+    },
+    {
+     "text": "The merge is almost free in memory. The thing it needs is a buffer for each run, and that is what limits it next.",
+     "start": 17.933,
+     "end": 25.768
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 154,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "08": {
+   "hash": "25f0db384327dd85",
+   "takes": [
+    "d61fa2fdea980319e782",
+    "089c8fbce1146f52cc81",
+    "6e16f54040caf8bb35e6",
+    "b5c3efa8a7a9bd92c408"
+   ],
+   "duration": 29.34,
+   "lines": [
+    {
+     "text": "So how many runs can you merge at once? That is the fan-in, and memory sets it.",
+     "start": 0.15,
+     "end": 5.935
+    },
+    {
+     "text": "Every run needs a read buffer, and the output needs one too.",
+     "start": 6.355,
+     "end": 10.158
+    },
+    {
+     "text": "Sixteen gigabytes cut into one megabyte blocks gives sixteen thousand three hundred and eighty four buffers. One goes to the output.",
+     "start": 10.578,
+     "end": 19.538
+    },
+    {
+     "text": "So the fan-in is sixteen thousand three hundred and eighty three. Remember that it is a ceiling set by memory, not a choice.",
+     "start": 19.958,
+     "end": 28.99
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 149,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "09": {
+   "hash": "d932ab2f312db2cb",
+   "takes": [
+    "16f52f437f24d8b0c253",
+    "af7723436b7ce908c092",
+    "3d30398afd6a066cec29"
+   ],
+   "duration": 15.308,
+   "lines": [
+    {
+     "text": "Now put the two phases together. Phase one made sixty four runs, and the fan-in is over sixteen thousand.",
+     "start": 0.15,
+     "end": 6.751
+    },
+    {
+     "text": "Count the passes over the data: one for building runs, and however many it takes to merge them.",
+     "start": 7.171,
+     "end": 13.184
+    },
+    {
+     "text": "How many in total?",
+     "start": 14.004,
+     "end": 14.958
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -2.0,
+   "wpm": 165,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "09a": {
+   "hash": "68d83fdf264fa618",
+   "takes": [
+    "e7c39d1754e0187d5d32",
+    "5828a649cd795926e203",
+    "f351ad8b2b3513986dbf",
+    "65ff69b49f61814774ba"
+   ],
+   "duration": 27.761,
+   "lines": [
+    {
+     "text": "Two.",
+     "start": 0.15,
+     "end": 0.629
+    },
+    {
+     "text": "One pass builds sixty four runs. One merge pass folds all of them at once, because the fan-in dwarfs the run count.",
+     "start": 1.049,
+     "end": 9.121
+    },
+    {
+     "text": "Merging two at a time would have taken seven passes. A third pass appears only when the runs outnumber the fan-in, and we are nowhere near that.",
+     "start": 9.541,
+     "end": 19.856
+    },
+    {
+     "text": "One is wrong because you cannot sort without writing the runs first, and sixty four is the number of runs, not passes.",
+     "start": 20.276,
+     "end": 27.411
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 160,
+   "wer": 0.08695652173913043,
+   "exact": false,
+   "tolerated": [
+    {
+     "line": "One pass builds sixty four runs. One merge pass folds all of them at once, because the fan-in dwarfs the run count.",
+     "said": "fan in",
+     "heard": "fanon"
+    }
+   ]
+  },
+  "10": {
+   "hash": "accac8a57cbb74af",
+   "takes": [
+    "c56feaf4ccacba6896d7",
+    "9ffafab80064696ca0d8",
+    "3bcef07a4cb6af5a580d",
+    "f9f19e761513f1849e0b"
+   ],
+   "duration": 29.025,
+   "lines": [
+    {
+     "text": "Here is a tension worth feeling. More fan-in means fewer passes, which pulls you toward one giant merge.",
+     "start": 0.15,
+     "end": 8.128
+    },
+    {
+     "text": "But memory is fixed. Split it across more runs and every buffer shrinks.",
+     "start": 8.548,
+     "end": 13.428
+    },
+    {
+     "text": "Small buffers mean the merge reads a few kilobytes from here, then a few from there. The disk goes from streaming to seeking.",
+     "start": 13.848,
+     "end": 22.593
+    },
+    {
+     "text": "So the model's number is an upper bound on fan-in. It is not a free lunch.",
+     "start": 23.013,
+     "end": 28.675
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 149,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "11": {
+   "hash": "c3cdd3cd84fa8c49",
+   "takes": [
+    "0f94300799dd811ff24e",
+    "1caa30137d4c737443a1",
+    "e01be7392dc348e899d5"
+   ],
+   "duration": 14.62,
+   "lines": [
+    {
+     "text": "Take that to the extreme: use the largest fan-in memory permits, so the pass count drops by one.",
+     "start": 0.15,
+     "end": 6.348
+    },
+    {
+     "text": "You saved a pass over the data. But each buffer is now tiny.",
+     "start": 6.768,
+     "end": 11.298
+    },
+    {
+     "text": "Does the sort finish sooner?",
+     "start": 12.118,
+     "end": 14.27
+    }
+   ],
+   "lufs": -16.9,
+   "true_peak": -2.4,
+   "wpm": 152,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "11a": {
+   "hash": "ec03083aebb0f768",
+   "takes": [
+    "769f4b0b8b4b189fab03",
+    "32d3213c1e8236122fef",
+    "c5925ba2e5585ba7b764"
+   ],
+   "duration": 30.01,
+   "lines": [
+    {
+     "text": "Often, no. It can get slower.",
+     "start": 0.15,
+     "end": 2.379
+    },
+    {
+     "text": "Thousands of tiny buffers turn sequential reads into a storm of seeks. That is why real engines cap fan-in at a few hundred, and will pay for an extra pass to keep reads sequential.",
+     "start": 2.799,
+     "end": 15.415
+    },
+    {
+     "text": "It is not only true on hard disks, and it is not about whether the data is already sorted. The cost is in how the buffers are sized, which is true of any device that prefers large reads.",
+     "start": 15.835,
+     "end": 29.66
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -1.9,
+   "wpm": 156,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "12": {
+   "hash": "80aa77146df9590e",
+   "takes": [
+    "30ded0a1345aba219c22",
+    "d00b12a84ac4b1b070e3",
+    "7f8d75b678220a868b5a",
+    "d2a5dd983e5cd4ed3f06"
+   ],
+   "duration": 38.888,
+   "lines": [
+    {
+     "text": "Once you can see this merge, you will find it everywhere.",
+     "start": 0.15,
+     "end": 3.964
+    },
+    {
+     "text": "An order by that spills to disk is this. A sort-merge join streaming two sorted inputs is this. Compaction folding the sorted runs of a log-structured tree is this.",
+     "start": 4.384,
+     "end": 19.153
+    },
+    {
+     "text": "Learn to tune it once, in the only two places that matter: how long the runs come out, and how many merge at a time.",
+     "start": 19.573,
+     "end": 27.932
+    },
+    {
+     "text": "Sorted, joined, aggregated: a pipeline is many such jobs in order. Next refresher: the graph algorithms that schedule them.",
+     "start": 28.752,
+     "end": 38.538
+    }
+   ],
+   "lufs": -16.3,
+   "true_peak": -2.7,
+   "wpm": 133,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  }
+ }
+}

@@ -11,7 +11,7 @@
     },
     {
       "lines": [
-        "You have a terabyte of events and sixteen gibibytes of memory. You cannot sort it in one go.",
+        "You have a terabyte of events and sixteen gigabytes of memory. You cannot sort it in one go.",
         "So split the work in two. Look at the left half first: phase one makes sorted pieces, each small enough to fit. We call them runs.",
         "Then look at the right: phase two merges the runs into one sorted output.",
         "Everything in this topic is a question about those two phases, how long the runs are and how many you can merge at once."
@@ -20,8 +20,8 @@
     {
       "lines": [
         "Phase one is almost embarrassingly simple. Read until memory is full, sort what you have, write it out as a run, and repeat.",
-        "Watch the count as it climbs. Each run is one memory load, so a terabyte over sixteen gibibytes gives sixty four runs.",
-        "Plain quicksort is enough, it works on a block that sits in cache, and every worker can do its own runs independently."
+        "Watch the count as it climbs. Each run is one memory load, so a terabyte over sixteen gigabytes gives sixty four runs.",
+        "Plain sorting is enough, it works on a block that sits in cache, and every worker can do its own runs independently."
       ]
     },
     {
@@ -35,14 +35,14 @@
     {
       "lines": [
         "Longer runs mean fewer runs, and fewer runs can save a whole pass over the data. That sounds like a clear win.",
-        "And yet almost every modern engine gave this method up and went back to plain quicksort.",
+        "And yet almost every modern engine gave this method up and went back to plain sorting.",
         { "beat": 0.4 },
         "Why would you give up longer runs?"
       ],
       "answer": [
         "Because the cost model counts transfers, but the processor pays for something the model does not count.",
         "The heap sifts one item at a time, jumping around memory. Quicksort partitions a block that sits in cache.",
-        "The longer runs rarely saved a whole pass, and the scattered access cost more than one extra cheap merge. PostgreSQL made this switch.",
+        "The longer runs rarely saved a whole pass, and the scattered access cost more than one extra cheap merge. Postgres made this switch.",
         "The lesson is general: count the resource that dominates. Here it was the cache, not the disk. Saying the longer runs were a myth is wrong, since they do occur; and the disk did not get slower."
       ]
     },
@@ -65,7 +65,7 @@
       "lines": [
         "So how many runs can you merge at once? That is the fan-in, and memory sets it.",
         "Every run needs a read buffer, and the output needs one too.",
-        "Sixteen gibibytes cut into one mebibyte blocks gives sixteen thousand three hundred and eighty four buffers. One goes to the output.",
+        "Sixteen gigabytes cut into one megabyte blocks gives sixteen thousand three hundred and eighty four buffers. One goes to the output.",
         "So the fan-in is sixteen thousand three hundred and eighty three. Remember that it is a ceiling set by memory, not a choice."
       ]
     },
