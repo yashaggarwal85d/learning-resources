@@ -4,7 +4,7 @@
     {
       "lines": [
         "The word RAM charged one step for any memory access. Once the vector outgrows memory, what you pay for is blocks moved, and the count changes completely.",
-        "Here is our vector again, grown to a gibibyte of sixty four bit keys. It no longer fits in the memory the program is given.",
+        "Here is our vector again, grown to a gigabyte of sixty four bit keys. It no longer fits in the memory the program is given.",
         { "beat": 0.4 },
         "So every touch might mean something travelling in from disk. Watch what that does to the arithmetic."
       ]
@@ -35,7 +35,7 @@
     {
       "lines": [
         "Three numbers describe any job. N is the items in the problem. M is the items that fit in memory. B is the items in one block.",
-        "For our gibibyte vector, read the values off the screen. N is a hundred and thirty four million keys, and the whole vector is just sixteen memory loads long.",
+        "For our gigabyte vector, read the values off the screen. N is a hundred and thirty four million keys, and the whole vector is just sixteen memory loads long.",
         "Hold onto that sixteen. It is going to decide how the sort finishes."
       ]
     },
@@ -49,7 +49,7 @@
     {
       "lines": [
         "Now searching one key among sorted keys. On the word RAM, binary search costs log base two of N, here twenty seven probes.",
-        "But look at what one transfer buys you now. A whole block of keys arrives, so it rules out all but one Bth of the range.",
+        "But look at what one transfer buys you now. A whole block of keys arrives, so it rules out all but one of B equal slices of the range.",
         "So the search costs log base B of N: three reads instead of twenty seven.",
         "A binary tree wastes the block. A tree whose nodes are blocks, which is a B tree, uses all of it. We come back to that in a later chapter."
       ]
@@ -59,7 +59,7 @@
         "Sorting next. Fill memory, sort what is there in place, and write it out as a sorted run. Then merge runs together.",
         "Do the arithmetic from the numbers you already hold. The vector is sixteen memory loads long, and memory holds sixteen thousand blocks.",
         { "beat": 0.4 },
-        "How many passes over the data does the whole sort take?"
+        "How many passes, total?"
       ],
       "answer": [
         "Two.",

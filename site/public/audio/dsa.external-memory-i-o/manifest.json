@@ -1,0 +1,655 @@
+{
+ "topic": "dsa.external-memory-i-o",
+ "voice": "breeze-mellow-v2",
+ "asr": "large-v3-turbo",
+ "clips": {
+  "01": {
+   "hash": "63967f75ac839827",
+   "takes": [
+    "5aeac3b5d844c079b534",
+    "c74ffc93a4624839d01d",
+    "cfeec7f16b0933389cbc"
+   ],
+   "duration": 27.147,
+   "lines": [
+    {
+     "text": "The word RAM charged one step for any memory access. Once the vector outgrows memory, what you pay for is blocks moved, and the count changes completely.",
+     "start": 0.15,
+     "end": 11.52
+    },
+    {
+     "text": "Here is our vector again, grown to a gigabyte of sixty four bit keys. It no longer fits in the memory the program is given.",
+     "start": 11.94,
+     "end": 20.311
+    },
+    {
+     "text": "So every touch might mean something travelling in from disk. Watch what that does to the arithmetic.",
+     "start": 21.131,
+     "end": 26.797
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 153,
+   "wer": 0.058823529411764705,
+   "exact": false,
+   "tolerated": [
+    {
+     "line": "So every touch might mean something travelling in from disk. Watch what that does to the arithmetic.",
+     "said": "travelling",
+     "heard": "traveling"
+    }
+   ]
+  },
+  "02": {
+   "hash": "a0001541edff5c31",
+   "takes": [
+    "58db86e1669974bed7cc",
+    "a9746b240b360ea0e507",
+    "88365eabef38fd1e8734",
+    "f402cb553a98d026bf7b"
+   ],
+   "duration": 21.852,
+   "lines": [
+    {
+     "text": "Before we count anything, commit to a guess. Visit a million keys of this vector.",
+     "start": 0.15,
+     "end": 5.966
+    },
+    {
+     "text": "First in sorted order, in one sweep. Then in random order, jumping around.",
+     "start": 6.386,
+     "end": 12.928
+    },
+    {
+     "text": "The disk moves data in blocks of five hundred and twelve keys.",
+     "start": 13.348,
+     "end": 17.529
+    },
+    {
+     "text": "Which visit moves fewer blocks, and by how much?",
+     "start": 18.349,
+     "end": 21.502
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -1.9,
+   "wpm": 132,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "02a": {
+   "hash": "4328b500090cb46e",
+   "takes": [
+    "10d512a287fbe70e6764",
+    "424237c9d3c3932c11d6",
+    "5340db11549064082ddf",
+    "40f5f034895dafc4bf12"
+   ],
+   "duration": 35.511,
+   "lines": [
+    {
+     "text": "The sweep costs about five hundred and twelve times fewer transfers.",
+     "start": 0.15,
+     "end": 5.096
+    },
+    {
+     "text": "In a sweep, five hundred and twelve keys arrive together, so you pay one transfer per block. A random visit lands every key in its own block, so you pay about one per key.",
+     "start": 5.516,
+     "end": 19.366
+    },
+    {
+     "text": "The same work, a factor of five hundred apart. Saying they cost about the same, or that random is cheaper, ignores that a block is delivered whole.",
+     "start": 19.786,
+     "end": 30.262
+    },
+    {
+     "text": "That gap is the whole reason we need a new cost model.",
+     "start": 30.682,
+     "end": 35.161
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 139,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "03": {
+   "hash": "87af6969f1e62f0b",
+   "takes": [
+    "8b9ea284c1931d3a54c5",
+    "44fd3e016cd37e249dd7",
+    "3f4c5bbdb675f99d0294",
+    "aca4750ba6a6bf03537d"
+   ],
+   "duration": 31.114,
+   "lines": [
+    {
+     "text": "Here is the model, from Aggarwal and Vitter, nineteen eighty eight. Look at its shape: two levels.",
+     "start": 0.15,
+     "end": 6.676
+    },
+    {
+     "text": "A fast memory that holds M items, and a slow store that only ever moves whole blocks of B items.",
+     "start": 7.096,
+     "end": 15.341
+    },
+    {
+     "text": "Everything you do to data already in memory is free. That sounds like cheating, but it is the honest simplification when a block costs more than thousands of comparisons.",
+     "start": 15.761,
+     "end": 27.116
+    },
+    {
+     "text": "The meter runs only when a block crosses the boundary.",
+     "start": 27.536,
+     "end": 30.764
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -1.9,
+   "wpm": 147,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "04": {
+   "hash": "28b31bdf1a01b9b6",
+   "takes": [
+    "fb80b91cafa19a1ccd48",
+    "1a16730be3c86e0409ee",
+    "35cb257d9bc015b740b6"
+   ],
+   "duration": 28.848,
+   "lines": [
+    {
+     "text": "Three numbers describe any job. N is the items in the problem. M is the items that fit in memory. B is the items in one block.",
+     "start": 0.15,
+     "end": 10.899
+    },
+    {
+     "text": "For our gigabyte vector, read the values off the screen. N is a hundred and thirty four million keys, and the whole vector is just sixteen memory loads long.",
+     "start": 11.319,
+     "end": 22.648
+    },
+    {
+     "text": "Hold onto that sixteen. It is going to decide how the sort finishes.",
+     "start": 23.068,
+     "end": 28.498
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -2.0,
+   "wpm": 141,
+   "wer": 0.15384615384615385,
+   "exact": false,
+   "tolerated": [
+    {
+     "line": "Hold onto that sixteen. It is going to decide how the sort finishes.",
+     "said": "onto",
+     "heard": "on to"
+    }
+   ]
+  },
+  "05": {
+   "hash": "62e8989c373eae94",
+   "takes": [
+    "23efce6164d64736fabf",
+    "5f18dc32f52bd4ed52da",
+    "d021bd7ef65aaa1ce185"
+   ],
+   "duration": 24.459,
+   "lines": [
+    {
+     "text": "The simplest operation is a scan, reading every item once.",
+     "start": 0.15,
+     "end": 4.446
+    },
+    {
+     "text": "Each block is touched exactly once, in order. So the cost is N over B, about two hundred and sixty thousand transfers, all sequential.",
+     "start": 4.866,
+     "end": 15.82
+    },
+    {
+     "text": "That number is a floor. Nothing that must read all the data can beat it, which is why every other bound is measured against it.",
+     "start": 16.24,
+     "end": 24.109
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -1.9,
+   "wpm": 142,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "06": {
+   "hash": "817598df7cbb2ba6",
+   "takes": [
+    "559676e7382fe38e21ae",
+    "c7fe881b89062f79c9c7",
+    "1e3a3b1465ca8f62f2e8",
+    "b9e896fa7e97c7bce1f5"
+   ],
+   "duration": 38.726,
+   "lines": [
+    {
+     "text": "Now searching one key among sorted keys. On the word RAM, binary search costs log base two of N, here twenty seven probes.",
+     "start": 0.15,
+     "end": 10.536
+    },
+    {
+     "text": "But look at what one transfer buys you now. A whole block of keys arrives, so it rules out all but one of B equal slices of the range.",
+     "start": 10.956,
+     "end": 21.8
+    },
+    {
+     "text": "So the search costs log base B of N: three reads instead of twenty seven.",
+     "start": 22.22,
+     "end": 28.513
+    },
+    {
+     "text": "A binary tree wastes the block. A tree whose nodes are blocks, which is a B tree, uses all of it. We come back to that in a later chapter.",
+     "start": 28.933,
+     "end": 38.376
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -2.2,
+   "wpm": 150,
+   "wer": 0.03333333333333333,
+   "exact": false,
+   "tolerated": [
+    {
+     "line": "A binary tree wastes the block. A tree whose nodes are blocks, which is a B tree, uses all of it. We come back to that in a later chapter.",
+     "said": "b",
+     "heard": "bee"
+    }
+   ]
+  },
+  "07": {
+   "hash": "54e540b82c246455",
+   "takes": [
+    "e25ff369b8c2ac4452de",
+    "d846eb200ecbea5d31e6",
+    "31210ad55cfe4bd200d9"
+   ],
+   "duration": 21.55,
+   "lines": [
+    {
+     "text": "Sorting next. Fill memory, sort what is there in place, and write it out as a sorted run. Then merge runs together.",
+     "start": 0.15,
+     "end": 8.818
+    },
+    {
+     "text": "Do the arithmetic from the numbers you already hold. The vector is sixteen memory loads long, and memory holds sixteen thousand blocks.",
+     "start": 9.238,
+     "end": 18.626
+    },
+    {
+     "text": "How many passes, total?",
+     "start": 19.446,
+     "end": 21.2
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -3.3,
+   "wpm": 134,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "07a": {
+   "hash": "cd6da1bdc824070b",
+   "takes": [
+    "e7c39d1754e0187d5d32",
+    "c8231690b3c57ed5fa02",
+    "7305be65466dc06ebda6"
+   ],
+   "duration": 26.42,
+   "lines": [
+    {
+     "text": "Two.",
+     "start": 0.15,
+     "end": 0.629
+    },
+    {
+     "text": "The first pass writes sixteen sorted runs. One merge can swallow up to sixteen thousand runs at once, so sixteen is nothing, and a single merge finishes the job.",
+     "start": 1.049,
+     "end": 13.318
+    },
+    {
+     "text": "Run formation, then one merge. One pass would need the whole vector in memory, and sixteen or four passes assume a far smaller fan in than memory gives.",
+     "start": 13.738,
+     "end": 26.07
+    }
+   ],
+   "lufs": -16.2,
+   "true_peak": -2.0,
+   "wpm": 132,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "08": {
+   "hash": "01d0abe3ffa688e5",
+   "takes": [
+    "14d9967be00c5df6107b",
+    "e5c8381042dd0c47e4ac",
+    "2d5ba4992f1e09a83aba",
+    "1c625ba3a05ca34546c8"
+   ],
+   "duration": 34.845,
+   "lines": [
+    {
+     "text": "That is where the famous sort bound comes from. Read the logarithm in it as a count of passes.",
+     "start": 0.15,
+     "end": 6.707
+    },
+    {
+     "text": "Each merge holds one block from about M over B runs in memory at once, so every pass divides the number of runs by that fan in.",
+     "start": 7.127,
+     "end": 16.623
+    },
+    {
+     "text": "And the fan in is in the thousands. A two way merge of the same runs would need four passes instead of one.",
+     "start": 17.043,
+     "end": 24.328
+    },
+    {
+     "text": "Comparisons gave us a log in base two. Blocks give us a log in base M over B. The base is the memory.",
+     "start": 24.748,
+     "end": 34.495
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 158,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "09": {
+   "hash": "07da22041f071dea",
+   "takes": [
+    "1513f0699b3e57379e6f",
+    "9dd94f9825e1056dd120",
+    "d3e6af681d3af3671026",
+    "1a1f03fdb6eaad5a6a04"
+   ],
+   "duration": 29.89,
+   "lines": [
+    {
+     "text": "Step back and count the same sort twice.",
+     "start": 0.15,
+     "end": 3.03
+    },
+    {
+     "text": "By comparisons it is billions. By block transfers it is about half a million, the two scans from before.",
+     "start": 3.45,
+     "end": 11.752
+    },
+    {
+     "text": "In practice the stopwatch tracks the transfers, since one block off a disk costs more than thousands of comparisons in memory.",
+     "start": 12.172,
+     "end": 20.766
+    },
+    {
+     "text": "That is the lesson of the model: once data lives out of memory, bytes moved decide the cost, not operations counted.",
+     "start": 21.186,
+     "end": 29.54
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 139,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "10": {
+   "hash": "fc9c63a8c01d98c5",
+   "takes": [
+    "43fe8cac17608b08ca88",
+    "7e0e32996364b9e6de37",
+    "60c4edc62fe898f39163",
+    "1db5ab2c8178eec89b9b"
+   ],
+   "duration": 37.329,
+   "lines": [
+    {
+     "text": "This also pays a debt from the amortized chapter. We proved the doubling vector costs one write per append on balance. What is that in blocks?",
+     "start": 0.15,
+     "end": 11.15
+    },
+    {
+     "text": "A resize copies the contents, and a copy is a scan. Add up every resize: fewer than two N items copied in total.",
+     "start": 11.7,
+     "end": 22.716
+    },
+    {
+     "text": "So at most about two N over B transfers, which is about one over B of a transfer per append.",
+     "start": 23.136,
+     "end": 30.802
+    },
+    {
+     "text": "The amortized proof and the block model agree, and the bound only got stronger.",
+     "start": 31.222,
+     "end": 36.979
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 133,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "11": {
+   "hash": "3a494f22329f1c3d",
+   "takes": [
+    "3e1156dcf62be325a937",
+    "667222bc7c5c5b270cf9",
+    "a3168beb6b5ce37cb1e2",
+    "751c0c62e5a8f253104c"
+   ],
+   "duration": 26.976,
+   "lines": [
+    {
+     "text": "One more gift: this is the same model at every level of the machine.",
+     "start": 0.15,
+     "end": 5.047
+    },
+    {
+     "text": "At the disk, a block is a page of five hundred and twelve keys. At the processor, a block is a cache line, just eight keys, and M becomes the cache.",
+     "start": 5.467,
+     "end": 16.746
+    },
+    {
+     "text": "Only M and B change. The counting is identical.",
+     "start": 17.166,
+     "end": 20.965
+    },
+    {
+     "text": "So the next time a loop is slow, ask which boundary its blocks are crossing.",
+     "start": 21.385,
+     "end": 26.626
+    }
+   ],
+   "lufs": -16.1,
+   "true_peak": -2.2,
+   "wpm": 151,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "12": {
+   "hash": "2989d98c1b160b01",
+   "takes": [
+    "5a80d52650e2c23189cb",
+    "b0bf8f0204ba8a18096d",
+    "4bc7806cf9a3caf73b31"
+   ],
+   "duration": 17.216,
+   "lines": [
+    {
+     "text": "Now test the model on a design choice. A hash table too big for memory, with N records, and you probe every one of them in turn.",
+     "start": 0.15,
+     "end": 9.294
+    },
+    {
+     "text": "Compare it against sorting the table first and sweeping it once.",
+     "start": 9.714,
+     "end": 13.927
+    },
+    {
+     "text": "How do the transfer counts compare?",
+     "start": 14.747,
+     "end": 16.866
+    }
+   ],
+   "lufs": -16.6,
+   "true_peak": -2.3,
+   "wpm": 153,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "12a": {
+   "hash": "af726cae63350b15",
+   "takes": [
+    "f9e201a6db1fd8dd56c7",
+    "12aa951ec741b3b5ac3f",
+    "d28a84c46beba6421fbf"
+   ],
+   "duration": 25.624,
+   "lines": [
+    {
+     "text": "About N transfers for the lookups, since each lands in its own block.",
+     "start": 0.15,
+     "end": 5.067
+    },
+    {
+     "text": "Sorting first costs only a couple of passes of about N over B. So sorting wins by a factor close to B.",
+     "start": 5.487,
+     "end": 13.885
+    },
+    {
+     "text": "Neither is cheaper just because lookups are fewer. The count depends on B, and that is why external engines sort or partition before they probe.",
+     "start": 14.305,
+     "end": 25.274
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -2.2,
+   "wpm": 140,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "13": {
+   "hash": "c6b7b04d56236666",
+   "takes": [
+    "5bc341b75aa5208671b1",
+    "72fc3fc0d62c0a5fdfeb",
+    "121e8c08146a7d4a9d59"
+   ],
+   "duration": 16.877,
+   "lines": [
+    {
+     "text": "Hold N and B fixed, and let the data grow far past memory.",
+     "start": 0.15,
+     "end": 5.209
+    },
+    {
+     "text": "Think about what has to change for the sort to need a third pass.",
+     "start": 5.629,
+     "end": 10.019
+    },
+    {
+     "text": "Is two passes a ceiling the sort will outgrow, or does it hold forever?",
+     "start": 10.839,
+     "end": 16.527
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 146,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "13a": {
+   "hash": "2ff1a61e4b755a07",
+   "takes": [
+    "b2ac86b522e4118e26e1",
+    "09458cab8f8123f4ea20",
+    "c4d65cd4756b221e56e9"
+   ],
+   "duration": 26.398,
+   "lines": [
+    {
+     "text": "It does grow, but it stays small for a very long way.",
+     "start": 0.15,
+     "end": 4.375
+    },
+    {
+     "text": "The pass count ticks up only when the number of runs, N over M, first exceeds the fan in, M over B.",
+     "start": 4.795,
+     "end": 13.334
+    },
+    {
+     "text": "That is the moment memory starts to matter, long after the data stopped fitting in it. Two forever and growing with every doubling are both wrong, and B alone does not decide it.",
+     "start": 13.754,
+     "end": 26.048
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -2.1,
+   "wpm": 152,
+   "wer": 0.030303030303030304,
+   "exact": false,
+   "tolerated": [
+    {
+     "line": "That is the moment memory starts to matter, long after the data stopped fitting in it. Two forever and growing with every doubling are both wrong, and B alone does not decide it.",
+     "said": "b",
+     "heard": "be"
+    }
+   ]
+  },
+  "14": {
+   "hash": "855b3d16a14cdce5",
+   "takes": [
+    "51fdbc75ac8d610df136",
+    "271a003167420daebbb1",
+    "5c4033868b1f2ddfe765"
+   ],
+   "duration": 27.968,
+   "lines": [
+    {
+     "text": "Last, an honest caveat. The model counts transfers. It does not give you nanoseconds.",
+     "start": 0.15,
+     "end": 7.124
+    },
+    {
+     "text": "Device latency, bandwidth and prefetching set the constant. So the count predicts the shape of the cost, and you measure the rest.",
+     "start": 7.544,
+     "end": 17.051
+    },
+    {
+     "text": "The model needs M and B, and every level of the hierarchy has different ones. Next: how to measure them on the machine in front of you.",
+     "start": 17.871,
+     "end": 27.618
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 135,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  }
+ }
+}
