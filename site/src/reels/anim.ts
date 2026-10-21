@@ -19,3 +19,8 @@ export const rng = (seed: number) => () => {
   return seed / 4294967296;
 };
 export const fmt = (n: number) => Math.round(n).toLocaleString('en-US');
+/** The house entrance curve (ease-brief): fast out, long settle, no overshoot. */
+export const easeOutExpo = (x: number) => {
+  const c = clamp(x);
+  return c >= 1 ? 1 : 1 - Math.pow(2, -10 * c);
+};

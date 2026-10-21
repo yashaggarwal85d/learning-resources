@@ -1,22 +1,9 @@
 import { useState, type ReactNode } from 'react';
 import type { StepCtx } from '../../../../../reels/types';
 import { clamp, easeInOut, easeOut, easeOutBack, fmt, lerp, rng, seg } from '../../../../../reels/anim';
+import { C, MONO, SERIF } from '../../../../../reels/kit';
 
-// Every scene is drawn on a 600 × 520 canvas and is a pure function of time.
-const C = {
-  espresso: '#17100c',
-  roast: '#2a1d16',
-  cocoa: '#3b2a21',
-  mocha: '#5a4032',
-  taupe: '#8b7766',
-  latte: '#c8ac8c',
-  crema: '#e9d9bf',
-  caramel: '#d49a57',
-  cinnamon: '#b8612f',
-  cherry: '#8e2f2a',
-};
-const MONO = '"JetBrains Mono", ui-monospace, monospace';
-const SERIF = 'Fraunces, Georgia, serif';
+// Every scene is drawn on a 600 × 520 canvas and is a pure function of time. Colours and fonts come from the kit (DESIGN.md).
 
 function Frame({ label, children, h = 520 }: { label: string; children: ReactNode; h?: number }) {
   return (
@@ -328,7 +315,7 @@ function Axes({ yLabel }: { yLabel: string }) {
         <g key={k}>
           <Mono x={cx(k / 100)} y={CH.y0 + 22} size={14} anchor="middle">{k}%</Mono>
           <line x1={CH.x0 - 5} y1={cy(k * 1e6)} x2={CH.x1} y2={cy(k * 1e6)} stroke={C.crema} opacity={k ? 0.06 : 0} />
-          <Mono x={CH.x0 - 10} y={cy(k * 1e6) + 4} size={14} anchor="end">{k ? `${k}M` : '0'}</Mono>
+          <Mono x={CH.x0 - 10} y={cy(k * 1e6) + 4} size={15} anchor="end">{k ? `${k}M` : '0'}</Mono>
         </g>
       ))}
       <Mono x={(CH.x0 + CH.x1) / 2} y={CH.y0 + 46} size={13} anchor="middle" fill={C.taupe}>SHARE OF ROWS THAT MATCH</Mono>
@@ -523,11 +510,17 @@ const rowX = (i: number) => (600 - (NV * (SB + sbGap) - sbGap)) / 2 + i * (SB + 
 const memX = (i: number) => 300 - (4 * (SB + sbGap) - sbGap) / 2 + i * (SB + sbGap);
 const RUN_W = 4 * (SB + sbGap) - sbGap + 14;
 const runX = (run: number, j: number) => (600 - (NRUNS * RUN_W - 14)) / 2 + run * RUN_W + j * (SB + sbGap);
-const shade = (v: number) => {
-  const a = [233, 217, 191];
-  const b = [142, 47, 42];
+const shadeRgb = (v: number) => {
+  const a = [200, 200, 200];
+  const b = [132, 36, 31]; // C.cherry
   const k = v / (NV - 1);
-  return `rgb(${a.map((c, i) => Math.round(lerp(c, b[i], k))).join(',')})`;
+  return a.map((c, i) => Math.round(lerp(c, b[i], k)));
+};
+const shade = (v: number) => `rgb(${shadeRgb(v).join(',')})`;
+// The cell's number in whichever ink reads on its shade (relative luminance, as WCAG computes it).
+const shadeInk = (v: number) => {
+  const [r, g, b] = shadeRgb(v).map((c) => (c / 255 <= 0.03928 ? c / 255 / 12.92 : ((c / 255 + 0.055) / 1.055) ** 2.4));
+  return 0.2126 * r + 0.7152 * g + 0.0722 * b > 0.14 ? C.espresso : C.crema;
 };
 const ROWS = { input: 78, mem: 178, runs: 282, out: 400 };
 
@@ -568,7 +561,7 @@ export function MergeSort({ t }: StepCtx) {
         return (
           <g key={i}>
             <rect x={x} y={y} width={SB} height={SB} rx={6} fill={shade(v)} />
-            <Mono x={x + SB / 2} y={y + SB / 2 + 4} size={13} anchor="middle" fill={v > 6 ? C.crema : C.espresso} weight={600}>
+            <Mono x={x + SB / 2} y={y + SB / 2 + 4} size={13} anchor="middle" fill={shadeInk(v)} weight={600}>
               {v}
             </Mono>
           </g>

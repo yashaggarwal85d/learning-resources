@@ -1,27 +1,42 @@
 @import 'tailwindcss';
 @import './fonts.css';
 
-/* The coffee theme (PROJECT_PLAN.md → Theme — coffee). */
-@theme {
-  --color-espresso: #17100c;
-  --color-roast: #2a1d16;
-  --color-cocoa: #3b2a21;
-  --color-mocha: #5a4032;
-  --color-taupe: #8b7766;
-  --color-taupe-ink: #766556;
-  --color-latte: #c8ac8c;
-  --color-crema: #e9d9bf;
-  --color-oat: #f3eadb;
-  --color-foam: #fbf7ef;
-  --color-caramel: #d49a57;
-  --color-cinnamon: #b8612f;
-  --color-cinnamon-ink: #9c5227;
-  --color-cherry: #8e2f2a;
-  --color-void: #0d0806;
+/* The briefing theme (PROJECT_PLAN.md → Theme — briefing). Black and white carry everything; colour is rare and always
+   means something. The token names are the old coffee names, kept so every reel's scenes follow the theme without an
+   edit: each name keeps its role (caramel is still "the thing to look at"), only the value changed. New code uses the
+   role names below the line (chalk, ink, line, signal, cold). */
+@theme static {
+  --color-void: #050505;
+  --color-espresso: #0b0b0b;
+  --color-roast: #141414;
+  --color-cocoa: #1c1c1c;
+  --color-mocha: #3d3d3d;
+  --color-taupe: #808080;
+  --color-taupe-ink: #8a8a8a;
+  --color-latte: #a3a3a3;
+  --color-crema: #c8c8c8;
+  --color-oat: #ececec;
+  --color-foam: #f5f5f5;
+  --color-caramel: #ffffff;
+  --color-cinnamon: #8fb4e8;
+  --color-cinnamon-ink: #8fb4e8;
+  --color-cherry: #84241f;
 
-  --font-display: 'Fraunces', ui-serif, Georgia, serif;
-  --font-sans: 'Inter', ui-sans-serif, system-ui, sans-serif;
+  /* Role names for new code. */
+  --color-ink: #0b0b0b;
+  --color-panel: #101010;
+  --color-line: #262626;
+  --color-chalk: #ededed;
+  --color-signal: #ff6b5e;
+  --color-cold: #8fb4e8;
+
+  --font-display: 'Source Serif 4', 'Iowan Old Style', Georgia, serif;
+  --font-sans: 'IBM Plex Sans', ui-sans-serif, system-ui, sans-serif;
   --font-mono: 'JetBrains Mono', ui-monospace, monospace;
+
+  /* The motion language (DESIGN.md → Motion): two curves, four durations. */
+  --ease-brief: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-swap: cubic-bezier(0.65, 0, 0.35, 1);
 }
 
 html {
@@ -34,100 +49,136 @@ body {
   overflow-x: clip;
   font-family: var(--font-sans);
   -webkit-font-smoothing: antialiased;
+  font-optical-sizing: auto;
 }
+::selection { background: var(--color-chalk); color: var(--color-ink); }
 @media (prefers-reduced-motion: reduce) {
   html { scroll-behavior: auto; }
   *, *::before, *::after { animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; transition-duration: 0.01ms !important; }
 }
 
-/* Signature gradient for hero words. */
+/* Hero words: chalk fading to grey. */
 .text-brew {
-  background: linear-gradient(100deg, var(--color-crema), var(--color-caramel) 40%, var(--color-cinnamon) 75%, var(--color-cherry));
+  background: linear-gradient(100deg, var(--color-chalk), var(--color-latte) 70%, var(--color-taupe));
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
 }
 
-/* Film grain over dark sections. */
+/* Film grain over dark sections, very faint. */
 .grain::after {
   content: '';
   position: absolute;
   inset: 0;
   pointer-events: none;
-  opacity: 0.08;
-  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/></filter><rect width='100%' height='100%' filter='url(%23n)' opacity='0.9'/></svg>");
+  opacity: 0.05;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/><feColorMatrix type='saturate' values='0'/></filter><rect width='100%' height='100%' filter='url(%23n)' opacity='0.9'/></svg>");
+}
+
+/* The drafting grid behind reels and the hub hero: 48 px squares, fading out from the centre. */
+.grid-bg {
+  background-image:
+    linear-gradient(to right, color-mix(in oklab, var(--color-chalk) 4%, transparent) 1px, transparent 1px),
+    linear-gradient(to bottom, color-mix(in oklab, var(--color-chalk) 4%, transparent) 1px, transparent 1px);
+  background-size: 48px 48px;
+  mask-image: radial-gradient(ellipse at 60% 40%, #000 0%, transparent 75%);
+}
+
+/* Corner ticks: the frame around a figure. Static gradients, no extra elements. */
+.ticks {
+  --tk: 12px;
+  --tc: color-mix(in oklab, var(--color-chalk) 38%, transparent);
+  background:
+    linear-gradient(var(--tc), var(--tc)) top left / var(--tk) 1px no-repeat,
+    linear-gradient(var(--tc), var(--tc)) top left / 1px var(--tk) no-repeat,
+    linear-gradient(var(--tc), var(--tc)) top right / var(--tk) 1px no-repeat,
+    linear-gradient(var(--tc), var(--tc)) top right / 1px var(--tk) no-repeat,
+    linear-gradient(var(--tc), var(--tc)) bottom left / var(--tk) 1px no-repeat,
+    linear-gradient(var(--tc), var(--tc)) bottom left / 1px var(--tk) no-repeat,
+    linear-gradient(var(--tc), var(--tc)) bottom right / var(--tk) 1px no-repeat,
+    linear-gradient(var(--tc), var(--tc)) bottom right / 1px var(--tk) no-repeat;
 }
 
 .eyebrow {
   font-family: var(--font-mono);
   text-transform: uppercase;
-  letter-spacing: 0.28em;
-  font-size: 0.72rem;
+  letter-spacing: 0.22em;
+  font-size: 0.7rem;
 }
 
-:focus-visible { outline: 2px solid var(--color-caramel); outline-offset: 3px; border-radius: 6px; }
+:focus-visible { outline: 1.5px solid var(--color-chalk); outline-offset: 3px; border-radius: 4px; }
 
 /* Reels */
 /* Touch-action only reaches down to the nearest scroll container, and the caption and visual are scroll containers
    (overflow). Without this a sideways swipe that starts on the caption is claimed by the browser and cancelled. */
 .reel-stage, .reel-stage * { touch-action: pan-y; }
+.reel-bg { background: radial-gradient(ellipse at 70% 30%, #161616 0%, #0b0b0b 58%, #050505 100%); }
 .no-scrollbar { scrollbar-width: none; }
 .no-scrollbar::-webkit-scrollbar { display: none; }
-.reel-body b { color: var(--color-crema); font-weight: 600; }
-.reel-body em { font-style: italic; color: var(--color-crema); }
+.reel-body b { color: var(--color-chalk); font-weight: 600; }
+.reel-body em { font-style: italic; color: var(--color-chalk); }
 .reel-body code,
 .deep code {
   font-family: var(--font-mono);
   font-size: 0.86em;
   padding: 0.08em 0.36em;
-  border-radius: 6px;
-  background: color-mix(in oklab, var(--color-caramel) 14%, transparent);
-  color: var(--color-crema);
+  border-radius: 4px;
+  background: color-mix(in oklab, var(--color-chalk) 9%, transparent);
+  color: var(--color-chalk);
 }
-.next-pulse { animation: next-pulse 1.4s ease-in-out infinite; }
-@keyframes next-pulse { 50% { transform: scale(1.9); opacity: 0.35; } }
+/* Narration captions: the words already spoken are bright. */
+.reel-captions .text-crema { color: var(--color-chalk); }
+.next-pulse { animation: next-pulse 1.6s var(--ease-swap) infinite; }
+@keyframes next-pulse { 50% { transform: scale(1.9); opacity: 0.3; } }
+/* The scan line that sweeps a figure as a step arrives. */
+.scan { animation: scan 0.9s var(--ease-brief) both; }
+@keyframes scan { from { transform: translateY(0); opacity: 0.6; } to { transform: translateY(100%); opacity: 0; } }
 
 .reel-range { appearance: none; height: 28px; background: transparent; cursor: pointer; }
-.reel-range::-webkit-slider-runnable-track { height: 4px; border-radius: 4px; background: color-mix(in oklab, var(--color-crema) 22%, transparent); }
-.reel-range::-moz-range-track { height: 4px; border-radius: 4px; background: color-mix(in oklab, var(--color-crema) 22%, transparent); }
-.reel-range::-webkit-slider-thumb { appearance: none; width: 22px; height: 22px; margin-top: -9px; border-radius: 50%; background: var(--color-caramel); box-shadow: 0 0 0 6px color-mix(in oklab, var(--color-caramel) 25%, transparent); }
-.reel-range::-moz-range-thumb { width: 22px; height: 22px; border: 0; border-radius: 50%; background: var(--color-caramel); }
+.reel-range::-webkit-slider-runnable-track { height: 2px; border-radius: 2px; background: color-mix(in oklab, var(--color-chalk) 22%, transparent); }
+.reel-range::-moz-range-track { height: 2px; border-radius: 2px; background: color-mix(in oklab, var(--color-chalk) 22%, transparent); }
+.reel-range::-webkit-slider-thumb { appearance: none; width: 16px; height: 16px; margin-top: -7px; border-radius: 50%; background: var(--color-chalk); }
+.reel-range::-moz-range-thumb { width: 16px; height: 16px; border: 0; border-radius: 50%; background: var(--color-chalk); }
 
-/* The Deep dive sheet's prose. */
-.deep { color: var(--color-latte); line-height: 1.7; font-size: 0.98rem; }
+/* The notes panel's prose. */
+.deep { color: var(--color-crema); line-height: 1.72; font-size: 0.97rem; }
 .deep section { padding-top: 1.75rem; }
-.deep h2 { font-family: var(--font-display); font-weight: 700; font-size: 1.6rem; color: var(--color-crema); margin-bottom: 0.75rem; }
-.deep h3 { font-weight: 600; font-size: 1.05rem; color: var(--color-crema); margin: 1.4rem 0 0.4rem; }
+.deep h2 { font-family: var(--font-display); font-weight: 400; font-size: 1.65rem; line-height: 1.15; color: var(--color-chalk); margin-bottom: 0.75rem; letter-spacing: -0.01em; }
+.deep h3 { font-weight: 600; font-size: 1.02rem; color: var(--color-chalk); margin: 1.4rem 0 0.4rem; }
 .deep p, .deep ul, .deep table, .deep pre { margin: 0.7rem 0; }
 .deep ul { padding-left: 1.2rem; list-style: disc; }
+.deep ol { padding-left: 1.4rem; list-style: decimal; }
 .deep li { margin: 0.35rem 0; }
-.deep li::marker { color: var(--color-caramel); }
-.deep strong { color: var(--color-crema); }
-.deep a { color: var(--color-caramel); text-decoration: underline; text-underline-offset: 3px; }
+.deep li::marker { color: var(--color-taupe); }
+.deep strong { color: var(--color-chalk); font-weight: 600; }
+.deep a { color: var(--color-chalk); text-decoration: underline; text-decoration-color: var(--color-taupe); text-underline-offset: 3px; transition: text-decoration-color 0.2s; }
+.deep a:hover { text-decoration-color: var(--color-chalk); }
+.deep blockquote { border-left: 1px solid var(--color-mocha); padding-left: 1rem; font-family: var(--font-display); font-style: italic; color: var(--color-chalk); }
 .deep table { width: 100%; border-collapse: collapse; font-size: 0.9rem; display: block; overflow-x: auto; }
-.deep th, .deep td { text-align: left; padding: 0.45rem 0.75rem 0.45rem 0; border-bottom: 1px solid color-mix(in oklab, var(--color-crema) 12%, transparent); }
-.deep th { color: var(--color-crema); font-weight: 600; }
-.deep pre { padding: 1rem; border-radius: 14px; overflow-x: auto; font-size: 0.82rem; line-height: 1.55; background: var(--color-espresso) !important; border: 1px solid color-mix(in oklab, var(--color-crema) 10%, transparent); }
+.deep th, .deep td { text-align: left; padding: 0.45rem 0.75rem 0.45rem 0; border-bottom: 1px solid var(--color-line); }
+.deep th { color: var(--color-chalk); font-weight: 600; font-family: var(--font-mono); font-size: 0.72rem; letter-spacing: 0.12em; text-transform: uppercase; }
+.deep pre { padding: 1rem; border-radius: 6px; overflow-x: auto; font-size: 0.82rem; line-height: 1.55; background: var(--color-ink) !important; border: 1px solid var(--color-line); }
 .deep pre code { background: none; padding: 0; font-size: inherit; }
 
 /* Prerequisites panel */
-.deep .prereq { border-top: 1px solid color-mix(in oklab, var(--color-crema) 10%, transparent); padding-top: 1.1rem; margin-top: 1.2rem; }
+.deep .prereq { border-top: 1px solid var(--color-line); padding-top: 1.1rem; margin-top: 1.2rem; }
 .deep .prereq h3 { display: flex; gap: 0.6rem; align-items: baseline; margin-top: 0; }
-.deep .prereq h3 .n { font-family: var(--font-mono); font-size: 0.8rem; color: var(--color-caramel); }
+.deep .prereq h3 .n { font-family: var(--font-mono); font-size: 0.78rem; color: var(--color-taupe); }
 .deep ul.resources { list-style: none; padding: 0; display: grid; gap: 0.5rem; margin-top: 0.8rem; }
-.deep .res { display: flex; gap: 0.75rem; align-items: flex-start; padding: 0.6rem 0.75rem; border-radius: 12px; background: color-mix(in oklab, var(--color-espresso) 70%, transparent); border: 1px solid color-mix(in oklab, var(--color-crema) 8%, transparent); margin: 0; }
+.deep .res { display: flex; gap: 0.75rem; align-items: flex-start; padding: 0.65rem 0.8rem; border-radius: 6px; background: color-mix(in oklab, var(--color-ink) 70%, transparent); border: 1px solid var(--color-line); margin: 0; transition: border-color 0.2s; }
+.deep .res:hover { border-color: var(--color-mocha); }
 .deep .res::marker { content: ''; }
-.deep .res-kind { flex-shrink: 0; margin-top: 0.15rem; min-width: 4.6rem; text-align: center; font-family: var(--font-mono); font-size: 0.6rem; text-transform: uppercase; letter-spacing: 0.1em; padding: 0.2rem 0.45rem; border-radius: 999px; border: 1px solid color-mix(in oklab, var(--color-crema) 18%, transparent); color: var(--color-latte); }
-.deep .res-video { color: var(--color-caramel); border-color: color-mix(in oklab, var(--color-caramel) 45%, transparent); }
-.deep .res-live { background: var(--color-caramel); color: var(--color-espresso); border-color: var(--color-caramel); font-weight: 600; }
+.deep .res-kind { flex-shrink: 0; margin-top: 0.15rem; min-width: 4.6rem; text-align: center; font-family: var(--font-mono); font-size: 0.6rem; text-transform: uppercase; letter-spacing: 0.12em; padding: 0.22rem 0.45rem; border-radius: 3px; border: 1px solid var(--color-mocha); color: var(--color-latte); }
+.deep .res-video { color: var(--color-chalk); border-color: var(--color-taupe); }
+.deep .res-live { background: var(--color-chalk); color: var(--color-ink); border-color: var(--color-chalk); font-weight: 600; }
 .deep .res-body { display: flex; flex-direction: column; min-width: 0; }
-.deep .res-body a, .deep .res-title { font-weight: 600; color: var(--color-crema); text-decoration: none; }
-.deep .res-body a:hover { color: var(--color-caramel); text-decoration: underline; }
+.deep .res-body a, .deep .res-title { font-weight: 600; color: var(--color-chalk); text-decoration: none; }
+.deep .res-body a:hover { text-decoration: underline; }
 .deep .res-meta { font-family: var(--font-mono); font-size: 0.68rem; color: var(--color-taupe); margin-top: 0.1rem; }
 .deep .res-note { font-size: 0.86rem; color: var(--color-latte); margin-top: 0.15rem; }
-.deep .check { margin-top: 0.6rem; font-size: 0.88rem; color: var(--color-crema); }
-.deep .check b { color: var(--color-caramel); font-weight: 600; }
-.deep .res-role-before .res-kind { background: color-mix(in oklab, var(--color-caramel) 18%, transparent); color: var(--color-caramel); border-color: color-mix(in oklab, var(--color-caramel) 45%, transparent); }
+.deep .check { margin-top: 0.6rem; font-size: 0.88rem; color: var(--color-chalk); }
+.deep .check b { color: var(--color-chalk); font-weight: 600; }
+.deep .res-role-before .res-kind { background: color-mix(in oklab, var(--color-chalk) 10%, transparent); color: var(--color-chalk); border-color: var(--color-taupe); }
 .deep .res-role-later { opacity: 0.72; }
 .deep .res-role-later .res-kind, .deep .res-role-other .res-kind { border-style: dashed; }
 

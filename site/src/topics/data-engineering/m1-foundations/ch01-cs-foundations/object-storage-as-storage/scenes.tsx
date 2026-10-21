@@ -48,7 +48,7 @@ export function FlatNamespace({ t }: StepCtx) {
 
       <T x={25} y={246} s={14} f={C.latte} o={copyDel}>moving one: copy, then delete</T>
       <rect x={25} y={260} width={120} height={28} rx={6} fill={C.cinnamon} opacity={copyDel} />
-      <T x={85} y={279} s={12} f={C.crema} a="middle" o={copyDel}>copy</T>
+      <T x={85} y={279} s={12} f={C.espresso} a="middle" o={copyDel}>copy</T>
       <rect x={165} y={260} width={120} height={28} rx={6} fill={C.cherry} opacity={copyDel} />
       <T x={225} y={279} s={12} f={C.crema} a="middle" o={copyDel}>delete</T>
       <T x={320} y={279} s={13} f={C.cherryText} o={copyDel}>two steps, not one</T>

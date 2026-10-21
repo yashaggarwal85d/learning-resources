@@ -1,4 +1,4 @@
-// Runs every pre-ship check from ROUTINE.md (sections 5 and 8) in one command and prints a timing summary.
+// Runs every pre-ship check from /make-topic (.claude/skills/make-topic, sections 9 and 11) in one command and prints a timing summary.
 //   node scripts/check-all.mjs                  all checks (from the repo root or site/)
 //   node scripts/check-all.mjs --only reels     just the named checks (locked, docs, sources, build, narration, reels, links)
 //   node scripts/check-all.mjs --skip links     everything except the named checks

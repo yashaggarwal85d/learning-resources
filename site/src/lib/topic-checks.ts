@@ -11,7 +11,9 @@
 //      of eight words or more is spoken verbatim, unless the topic predates the rule and is listed in
 //      src/topics/narration-backlog.json (only shrinks). The narration is the voice and the captions; the persona is the
 //      MIT professor of PROJECT_PLAN.md (Narration → The narrator's persona).
-import { existsSync, readFileSync } from 'node:fs';
+//   6. colours and fonts come from the kit, and topics drafted after the briefing redesign meet the engagement rules
+//      (predict steps, takeaways; DESIGN.md), unless listed in src/topics/briefing-legacy.json (only shrinks).
+import { existsSync, readdirSync, readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import type { TopicMeta } from '../topics/registry';
 import { postNotesProblems, preNotesProblems, sourcesProblems } from './notes-rules.ts';
@@ -73,6 +75,7 @@ export function checkTopicFiles(topics: TopicMeta[]) {
   const errors: string[] = [];
   const narrBacklogPath = resolve(process.cwd(), 'src/topics/narration-backlog.json');
   const narrBacklog: string[] = existsSync(narrBacklogPath) ? JSON.parse(readFileSync(narrBacklogPath, 'utf8')).pending : [];
+  const legacy: string[] = JSON.parse(readFileSync(resolve(process.cwd(), 'src/topics/briefing-legacy.json'), 'utf8')).topics;
   for (const t of topics) {
     const dir = resolve(process.cwd(), 'src/topics', t.slug);
     const reelSrc = readFileSync(resolve(dir, 'reel.tsx'), 'utf8');
@@ -149,10 +152,35 @@ export function checkTopicFiles(topics: TopicMeta[]) {
     ];
     for (const [file, problems] of notes) {
       const p = resolve(dir, file);
-      if (!existsSync(p)) errors.push(`${t.id}: no ${file}. Every topic has pre-notes.md, post-notes.md and references.md next to its reel (ROUTINE.md section 3).`);
+      if (!existsSync(p)) errors.push(`${t.id}: no ${file}. Every topic has pre-notes.md, post-notes.md and references.md next to its reel (.claude/skills/make-topic, section 7).`);
       else for (const msg of problems(readFileSync(p, 'utf8'))) errors.push(`${t.id}: ${file} ${msg}`);
     }
     if (existsSync(resolve(dir, 'index.mdx'))) errors.push(`${t.id}: index.mdx is gone; the Deep dive is post-notes.md and the sources are references.md.`);
+
+    // 6. The briefing design (owner decision 2026-10-20; DESIGN.md, QUALITY.md #59). Every topic takes its colours and
+    //    fonts from the kit, never a literal (a copied palette or face can't follow the theme). Every topic drafted after
+    //    the redesign, i.e. not listed in src/topics/briefing-legacy.json, also meets the engagement rules: predict steps
+    //    (one in a refresher, two in a full topic, the first within the first four steps) and at least three takeaways of
+    //    at most 20 words.
+    for (const f of readdirSync(dir).filter((f) => f.endsWith('.tsx'))) {
+      const src = readFileSync(resolve(dir, f), 'utf8');
+      const colour = src.match(/['"`]#[0-9a-fA-F]{3,8}['"`]|rgba?\(\s*\d/);
+      if (colour) errors.push(`${t.id}: ${f} has the colour literal ${colour[0]}; use the kit's C (DESIGN.md → Colour and type), so the scene follows the theme.`);
+      const face = src.match(/fontFamily=["'][^"']*["']|['"`][^'"`]*\bFraunces\b[^'"`]*['"`]/);
+      if (face) errors.push(`${t.id}: ${f} names a font itself (${face[0].slice(0, 50)}); use the kit's T, Eq, MONO or SERIF.`);
+    }
+    if (!legacy.includes(t.id)) {
+      const predicts = steps.map((s, i) => (s.predict ? i : -1)).filter((i) => i >= 0);
+      const need = t.kind === 'refresher' ? 1 : 2;
+      if (predicts.length < need) errors.push(`${t.id}: ${predicts.length} predict step(s); a ${t.kind} topic asks at least ${need} (DESIGN.md → What makes a reel engaging).`);
+      else if (predicts[0] > 3) errors.push(`${t.id}: the first predict step is step ${predicts[0] + 1}; ask within the first four steps.`);
+      const takeaways = [...reelSrc.matchAll(/^ {6}takeaway: (['"`])(.*?)\1,?$/gm)].map((m) => m[2]);
+      if (takeaways.length < 3) errors.push(`${t.id}: ${takeaways.length} takeaway(s); a reel carries at least three, one sentence each on its key steps (DESIGN.md → What makes a reel engaging).`);
+      for (const k of takeaways) {
+        const n = k.split(/\s+/).filter(Boolean).length;
+        if (n > 20) errors.push(`${t.id}: the takeaway "${k.slice(0, 50)}…" has ${n} words; keep it to 20.`);
+      }
+    }
   }
-  if (errors.length) throw new Error(`Topic file checks failed (QUALITY.md #35, #50, #54):\n- ${errors.join('\n- ')}`);
+  if (errors.length) throw new Error(`Topic file checks failed (QUALITY.md #35, #50, #54, #59):\n- ${errors.join('\n- ')}`);
 }

@@ -19,6 +19,10 @@ export type Step = {
   duration: number; // seconds of animation before the step waits
   hold?: boolean; // wait for the learner at the end (default true)
   predict?: Predict;
+  /** The figure's name in its frame, e.g. "ratio to n²" (optional; the frame shows the step number either way). */
+  fig?: string;
+  /** One sentence the learner keeps: shown under the description once the step's animation ends, and on the debrief. */
+  takeaway?: string;
   Visual: ComponentType<StepCtx>;
 };
 

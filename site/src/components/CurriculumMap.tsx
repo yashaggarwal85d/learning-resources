@@ -42,12 +42,12 @@ export default function CurriculumMap({ domains, live }: { domains: Domain[]; li
             }`}
           >
             {i === active && (
-              <motion.span layoutId="tab-pill" className="absolute inset-0 -z-0 rounded-full bg-crema" transition={{ type: 'spring', stiffness: 420, damping: 34 }} />
+              <motion.span layoutId="tab-pill" className="absolute inset-0 -z-0 rounded-full bg-chalk" transition={{ type: 'spring', stiffness: 420, damping: 34 }} />
             )}
             <span className="relative">
               {dom.title}
               {Object.keys(live[dom.id] ?? {}).length > 0 && (
-                <span className={`ml-2 font-mono text-[0.62rem] uppercase tracking-wider ${i === active ? 'text-cinnamon-ink' : 'text-caramel'}`}>
+                <span className={`ml-2 font-mono text-[0.62rem] uppercase tracking-wider ${i === active ? 'text-espresso/60' : 'text-chalk'}`}>
                   ▶ {Object.keys(live[dom.id]).length} live
                 </span>
               )}
@@ -85,23 +85,23 @@ export default function CurriculumMap({ domains, live }: { domains: Domain[]; li
             const topics = m.chapters.reduce((n, c) => n + c.topics.length, 0);
             const mLive = liveIn(m.chapters.flatMap((c) => c.topics.map((t) => t.title)));
             return (
-              <li key={m.number} className="overflow-hidden rounded-[22px] border border-crema/10 bg-roast/60 backdrop-blur">
+              <li key={m.number} className="overflow-hidden rounded-md border border-line bg-panel/70 backdrop-blur transition-colors duration-300 hover:border-crema/25">
                 <button
                   onClick={() => setOpenM(open ? null : mi)}
                   aria-expanded={open}
                   className="group flex w-full items-center gap-5 px-5 py-5 text-left sm:px-7"
                 >
-                  <span className="font-display text-4xl font-bold italic text-caramel/80 tabular-nums sm:text-5xl">
+                  <span className="font-display text-4xl font-[300] text-taupe tabular-nums sm:text-5xl">
                     {String(m.number).padStart(2, '0')}
                   </span>
                   <span className="min-w-0 flex-1">
-                    <span className="block font-display text-xl font-semibold leading-tight text-crema sm:text-2xl">{m.title}</span>
+                    <span className="block font-display text-xl font-[400] leading-tight text-chalk sm:text-2xl">{m.title}</span>
                     <span className="eyebrow mt-1 block text-latte/80">
                       {m.chapters.length} chapters · {topics} topics{m.cases ? ` · ${m.cases} case studies` : ''}
                       {mLive > 0 && <span className="text-caramel"> · ▶ {mLive} live</span>}
                     </span>
                   </span>
-                  <motion.span animate={{ rotate: open ? 45 : 0 }} className="grid h-9 w-9 shrink-0 place-items-center rounded-full border border-crema/20 text-xl text-crema">
+                  <motion.span animate={{ rotate: open ? 45 : 0 }} className="grid h-9 w-9 shrink-0 place-items-center rounded-md border border-crema/20 text-xl text-crema">
                     +
                   </motion.span>
                 </button>
@@ -124,14 +124,14 @@ export default function CurriculumMap({ domains, live }: { domains: Domain[]; li
                               initial={{ opacity: 0, y: 8 }}
                               animate={{ opacity: 1, y: 0 }}
                               transition={{ delay: ci * 0.035 }}
-                              className={`rounded-2xl border border-crema/8 bg-espresso/60 ${cOpen ? 'sm:col-span-2' : ''}`}
+                              className={`rounded-md border border-line bg-espresso/70 ${cOpen ? 'sm:col-span-2' : ''}`}
                             >
                               <button
                                 onClick={() => setOpenC(cOpen ? null : key)}
                                 aria-expanded={cOpen}
                                 className="flex w-full items-baseline gap-3 px-4 py-3 text-left"
                               >
-                                <span className="font-mono text-xs text-caramel">Ch.{c.number}</span>
+                                <span className="font-mono text-xs text-chalk">Ch.{c.number}</span>
                                 <span className="flex-1 text-sm font-medium text-crema">{c.title}</span>
                                 {cLive > 0 && (
                                   <span className="rounded-full bg-caramel px-2 py-0.5 font-mono text-[0.6rem] font-semibold uppercase tracking-wider text-espresso">
@@ -154,7 +154,7 @@ export default function CurriculumMap({ domains, live }: { domains: Domain[]; li
                                         <li key={ti} className="sm:col-span-2">
                                           <a
                                             href={href}
-                                            className="group -mx-2 flex items-center gap-2.5 rounded-xl border border-caramel/40 bg-caramel/10 px-2 py-2 text-[0.88rem] font-medium text-crema transition hover:bg-caramel/20"
+                                            className="group -mx-2 flex items-center gap-2.5 rounded-md border border-crema/25 bg-crema/[0.05] px-2 py-2 text-[0.88rem] font-medium text-chalk transition hover:border-crema/50 hover:bg-crema/10"
                                           >
                                             <span className="rounded-full bg-caramel px-2 py-0.5 font-mono text-[0.6rem] font-semibold uppercase tracking-wider text-espresso">▶ Live</span>
                                             <span className="truncate">{tp.title}</span>

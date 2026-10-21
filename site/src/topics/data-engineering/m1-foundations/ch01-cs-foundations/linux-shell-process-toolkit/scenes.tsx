@@ -2,7 +2,7 @@ import type { ReactNode } from 'react';
 import type { StepCtx } from '../../../../../reels/types';
 import { Code } from '../../../../../reels/Code';
 import { clamp, easeInOut, easeOut, easeOutBack, lerp, seg } from '../../../../../reels/anim';
-import { C, Stack, Svg, T } from '../../../../../reels/kit';
+import { C, SERIF, Stack, Svg, T } from '../../../../../reels/kit';
 import { REFRESHERS } from '../refreshers';
 
 // Every number shown here comes from examples.sh and is asserted in examples.py.
@@ -72,7 +72,7 @@ export function Opening({ t }: StepCtx) {
           <g key={r} transform={`translate(${30 + (1 - a) * -40} ${56 + i * 72})`} opacity={a}>
             <rect width={540} height={60} rx={14} fill={on ? C.caramel : C.roast} stroke={on ? C.caramel : C.mocha} />
             <text x={18} y={38} fontSize={19} fill={on ? C.espresso : C.taupe} fontFamily={MONO} fontWeight={600}>{done ? '✓' : String(i + 1).padStart(2, '0')}</text>
-            <text x={62} y={38} fontSize={22} fill={on ? C.espresso : done ? C.taupe : C.crema} fontFamily="Fraunces, Georgia, serif" fontWeight={700}>{r}</text>
+            <text x={62} y={38} fontSize={22} fill={on ? C.espresso : done ? C.taupe : C.crema} fontFamily={SERIF} fontWeight={700}>{r}</text>
           </g>
         );
       })}

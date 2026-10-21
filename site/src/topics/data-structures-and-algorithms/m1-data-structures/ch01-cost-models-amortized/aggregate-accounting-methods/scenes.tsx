@@ -106,7 +106,7 @@ export function Opening({ t }: StepCtx) {
   const both = easeOut(seg(t, 3.2, 3.6));
   return (
     <Svg label="A million appends as one cost strip: 999,980 appends cost one write each, and one append, number 524,289, copies 524,288 keys" h={276}>
-      <T x={300} y={32} s={24} f={C.caramel} a="middle" serif w={700} o={claim}>“append is O(1)”</T>
+      <T x={300} y={30} s={24} f={C.caramel} a="middle" serif w={700} o={claim}>“append is O(1)”</T>
       <T x={300} y={56} s={15} f={C.taupe} a="middle" o={sub}>a vector of 64-bit keys</T>
       <T x={300} y={78} s={15} f={C.taupe} a="middle" o={sub}>1,000,000 appends from empty</T>
       <Strip1M x0={40} w={480} base={240} tall={112} p={sweep} />

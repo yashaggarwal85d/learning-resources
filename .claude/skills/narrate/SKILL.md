@@ -1,11 +1,11 @@
 ---
 name: narrate
-description: On the owner's PC (GPU): narrate every parked topic in bulk, fit the clips to each topic, run the full checks, and release the complete chains in order. Use for "/narrate", "narrate the parked topics", "release the held topics". Never run on the cloud.
+description: On the owner's PC (GPU): narrate every topic whose audio is missing or stale (the re-narration queue, held topics) in bulk, fit the clips to each topic, run the full checks and push. Use for "/narrate", "narrate the parked topics", "do the narration", "release the held topics". Never run on the cloud.
 ---
 
 # /narrate
 
-The PC half of making a topic (owner decision 2026-10-13). Routine runs on the cloud build topics and ship them **held without audio** (ROUTINE.md section 7). This skill, run on the owner's PC with the GPU, turns the parked topics into live ones.
+Narration in bulk on the owner's PC. New topics are narrated by `/make-topic` as it finishes them (`.claude/skills/make-topic`, section 10); this skill handles everything else: topics that went live before they were narrated (`site/src/topics/renarration.json`), scripts rewritten by the teacher pass, and any topic still held. Do every step yourself, in this session, without subagents (owner rule).
 
 ## 0. Preconditions
 
@@ -27,8 +27,8 @@ Every warning line names a topic whose narration is missing, stale (script chang
 
 `site/src/topics/narration-backlog.json` lists the topics whose `narration.json` was written before the rule that the narrator teaches instead of reading the caption (PROJECT_PLAN.md, Narration → The narrator teaches; QUALITY.md #54). Every listed topic gets its script rewritten **before** its narration is generated, so no audio is ever made twice:
 
-1. For each listed topic, launch a fresh **Opus** agent (effort high) with the brief `.claude/skills/narrate/teacher-pass.md` (the MIT-professor persona, the constraints, the procedure and the examples) and the topic folder. It rewrites `narration.json` in place and validates it with `node scripts/narration-teaches.mjs <folder>`.
-2. Then launch a second fresh **Opus** agent as the reviewer, with the same brief and the rewritten script: it judges every step as the professor's peer (would she say this; reasons before rules; wrong intuition corrected; no restating of the description; facts match the reel and the Deep dive) and lists the steps to redo with the reason. Send the list back to a fresh writer agent; repeat until the reviewer passes every step (usually one round). Remove the topic's id from `narration-backlog.json`, run `npm run build` (check 5 must pass for it now, and the build refuses a listed topic that passes), and read the new script yourself once as the listener: does it teach?
+1. For each listed topic, follow the brief `.claude/skills/narrate/teacher-pass.md` (the MIT-professor persona, the constraints, the procedure and the examples) and rewrite its `narration.json` in place; validate with `node scripts/narration-teaches.mjs <folder>`.
+2. Then review it cold, as the professor's peer: re-read the script against the reel and the Deep dive, step by step (would she say this; reasons before rules; wrong intuition corrected; no restating of the description; facts match the reel and the Deep dive), and redo every step that fails. Remove the topic's id from `narration-backlog.json`, run `npm run build` (check 5 must pass for it now, and the build refuses a listed topic that passes), and read the new script once more as the listener: does it teach?
 3. Commit `Narration script: <topic-id> teaches` with the two files. For a **live** topic the script is part of a locked reel: the commit also carries `Unlock: <topic-id>`, which the owner's decision of 2026-10-13 authorises for this change and the regeneration that follows.
 
 Then narrate it (section 2).
@@ -47,25 +47,19 @@ Run them back to back (one process at a time: the generator owns the GPU). `narr
 
 Listen to each topic end to end, the clips with tolerated mishearings first ("listen: 'reel' heard 'real'" in the output). A clip that sounds wrong is a take to reject: add the heard word to `voice.json` → `asr.homophones` only if the voice really said the line; otherwise rewrite the line.
 
-Commit the audio per topic: `Narration: <topic-id>` with `public/audio/<topic-id>/` and any `narration.json` or `OUTLINE.md` change, and push to `main` (narration of a held topic is not a locked-reel change). Then `npm run test:narration` again: the topic must have left the warning list.
+Commit the audio per topic: `Narration: <topic-id>` with `public/audio/<topic-id>/`, any `narration.json` or `OUTLINE.md` change, and the topic's id removed from `renarration.json`. A live topic's audio is part of a locked reel, so the commit carries `Unlock: <topic-id>`, which the owner's decision of 2026-10-17 (topics may go live before they are narrated) authorises for this change. Stage only those paths (other sessions may share the checkout), run `npm run test:narration` (the topic must have left the warning list) and push to `main`.
 
-## 3. Release the complete chains
+## 3. Held topics
 
-Narrated topics go live in syllabus order, as chains, through the release job, which only the PC may take:
-
-```sh
-CLAIM_RELEASE=1 node scripts/claim.mjs next "<domain>"
-```
-
-It returns `release` with the chain of held topics whose earlier topics are all live, or `wait` when none is complete yet (then stop: a later `/narrate` releases it). If `origin/release/<first-topic-id>` already exists (a release run stopped by the owner pushed its progress there: seam fixes, Basics sections, an `OUTLINE.md` → "Progress" note), check that branch out and continue from its Progress note instead of starting over. Follow ROUTINE.md section 1, `release`, exactly: a branch `release/<first-topic-id>` from `origin/main`, each topic's `status: 'live'`, the seam check (content review of each topic's previous topic against its bridge, Prerequisites and `uses`), the full release check for a topic held longer than 14 days, the Basics section for topics still in `site/src/topics/basics-backlog.json`; then section 8 (merge `main`, `node scripts/check-all.mjs --changed` all green, `node scripts/claim.mjs mine`, merge, push, CI and Deploy green) and `node scripts/claim.mjs done`. Repeat per domain until every answer is `wait`.
+Topics are made in order and ship live (`/make-topic`), so normally nothing is held. If the registry still has a `status: 'held'` topic whose earlier topics are all live and whose narration passes, make it live: set `status: 'live'`, check its seam (its bridge, Prerequisites and `uses` against the previous topic as it really is), run `node scripts/check-all.mjs --changed` until green, push, and watch CI and Deploy.
 
 ## 4. Report
 
-Per domain: topics narrated (and the lines rewritten), topics released with their live links, topics still parked and what they wait for, and the ledger line (`node scripts/run-metrics.mjs finish`).
+Topics narrated (and the lines rewritten), topics made live with their links, what is still queued and why, and optionally the ledger line (`node scripts/run-metrics.mjs finish`).
 
 ## Never
 
-- Run this on the cloud, or let a routine run narrate (ROUTINE.md section 7).
+- Run this on the cloud.
 - Change the voice without a `version` bump, the owner's approval and a full regeneration.
 - Release a topic whose narration check still warns, or out of syllabus order.
 - Loosen a check to get a clip through; rewrite the line instead.

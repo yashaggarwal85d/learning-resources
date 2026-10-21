@@ -1,6 +1,6 @@
 # Narration on the owner's PC (Windows 11, Radeon RX 9070 XT)
 
-The cloud routines build topics and park them without audio (ROUTINE.md section 7). This machine narrates them in bulk on the GPU and releases them (`.claude/skills/narrate`). This page is the one-time setup for this card, the audition that picks the voice, and how the pipeline is switched to it.
+This machine narrates topics on the GPU: each new topic as `/make-topic` finishes it (`.claude/skills/make-topic`, section 10), and the topics queued in `site/src/topics/renarration.json` in bulk (`.claude/skills/narrate`). This page is the one-time setup for this card, the audition that picks the voice, and how the pipeline is switched to it.
 
 The site is a personal, non-commercial project (PROJECT_PLAN.md, Narration → Model, owner decision 2026-10-13), so research-licensed weights qualify. That puts **Breeze TTS 2** first: the only open-weight model above ElevenLabs v3 on the Artificial Analysis Speech Arena (1223 Elo in October 2026), English and Mandarin, voice design from a description and cloning from a clip, weights under the BreezeBlue Research and Non-Commercial License. **Qwen3-TTS 1.7B** (Apache 2.0) is the second candidate. The owner picks by listening (section 2).
 
