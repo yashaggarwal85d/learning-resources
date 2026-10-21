@@ -1,0 +1,646 @@
+{
+ "topic": "de.window-frame-semantics",
+ "voice": "breeze-mellow-v2",
+ "asr": "large-v3-turbo",
+ "clips": {
+  "01": {
+   "hash": "bdac0ae54c485a8d",
+   "takes": [
+    "bbd5b51311b85a368865",
+    "2f7dabdb76d7b34e4b24",
+    "3498f32e17925d02fb63",
+    "aa23a035d16344f74120"
+   ],
+   "duration": 27.895,
+   "lines": [
+    {
+     "text": "Every clause this section covered answers one question at a time. Now a construct that looks at its neighbours on purpose, one window at a time.",
+     "start": 0.15,
+     "end": 10.483
+    },
+    {
+     "text": "Watch the bracket move down the four orders. An aggregate would collapse them into a single number. This does not.",
+     "start": 10.903,
+     "end": 17.443
+    },
+    {
+     "text": "Every order keeps its own row, and gets an answer computed from the rows around it.",
+     "start": 17.863,
+     "end": 23.372
+    },
+    {
+     "text": "The whole topic is one question: which neighbours, exactly?",
+     "start": 23.792,
+     "end": 27.545
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 153,
+   "wer": 0.1111111111111111,
+   "exact": false,
+   "tolerated": [
+    {
+     "line": "Every clause this section covered answers one question at a time. Now a construct that looks at its neighbours on purpose, one window at a time.",
+     "said": "neighbours",
+     "heard": "neighbors"
+    },
+    {
+     "line": "The whole topic is one question: which neighbours, exactly?",
+     "said": "neighbours",
+     "heard": "neighbors"
+    }
+   ]
+  },
+  "02": {
+   "hash": "271a6d3d2862ca34",
+   "takes": [
+    "93351c9c8438f665c0a4",
+    "6adae050850935a526c5",
+    "63495386fec112fc8740"
+   ],
+   "duration": 27.103,
+   "lines": [
+    {
+     "text": "Three pieces decide that. Partition splits the rows into independent groups, like a group by, but without collapsing anything.",
+     "start": 0.15,
+     "end": 9.168
+    },
+    {
+     "text": "Order fixes the sequence inside each group, which is what makes the word neighbour mean something.",
+     "start": 9.588,
+     "end": 15.07
+    },
+    {
+     "text": "And the frame is the slice a function actually sees for one current row. Most of the surprises in this topic live in that third piece.",
+     "start": 15.49,
+     "end": 26.753
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -1.9,
+   "wpm": 135,
+   "wer": 0.0625,
+   "exact": false,
+   "tolerated": [
+    {
+     "line": "Order fixes the sequence inside each group, which is what makes the word neighbour mean something.",
+     "said": "neighbour",
+     "heard": "neighbor"
+    }
+   ]
+  },
+  "03": {
+   "hash": "f0b18a84c9b98bd1",
+   "takes": [
+    "fc6c6c8a3ef1ea695319",
+    "ef1ff2ce11d9bbf2e2a9",
+    "49df76aa9cf1c5a02dbd",
+    "9514fc0de01b00c7272c"
+   ],
+   "duration": 32.996,
+   "lines": [
+    {
+     "text": "There are three ways to count a frame, and the difference only shows when rows tie. Look at the two orders with the same timestamp, outlined in red.",
+     "start": 0.15,
+     "end": 9.506
+    },
+    {
+     "text": "Rows counts physical rows. It stops at the current row and does not care that another row is tied with it.",
+     "start": 9.926,
+     "end": 17.025
+    },
+    {
+     "text": "Range counts by value. Rows that tie on the ordering key are peers, and a frame that reaches one peer reaches all of them together.",
+     "start": 17.445,
+     "end": 27.737
+    },
+    {
+     "text": "Hold that difference, because the next question is a trap.",
+     "start": 28.157,
+     "end": 32.646
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 153,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "04": {
+   "hash": "404e4c3b16ff67c6",
+   "takes": [
+    "4dc4597317bf43bfb3d2",
+    "82a61a3ac68d1e1a4676",
+    "32359125e22ee68b622b"
+   ],
+   "duration": 18.951,
+   "lines": [
+    {
+     "text": "Four orders: a hundred, fifty, twenty five, and ten. The fifty and the twenty five share a timestamp.",
+     "start": 0.15,
+     "end": 9.481
+    },
+    {
+     "text": "You ask for a running total ordered by time, and you write no frame at all.",
+     "start": 9.901,
+     "end": 15.419
+    },
+    {
+     "text": "What do the two tied rows show?",
+     "start": 16.239,
+     "end": 18.601
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 130,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "04a": {
+   "hash": "8ce7a908fd9c330f",
+   "takes": [
+    "e312956f47b6c9a8dcc7",
+    "ea8c4e2ec7931f0139c9",
+    "0cc46a1e1c961e0305b9"
+   ],
+   "duration": 27.929,
+   "lines": [
+    {
+     "text": "Both show a hundred and seventy five.",
+     "start": 0.15,
+     "end": 2.164
+    },
+    {
+     "text": "With no frame written, the default is the range kind, and it runs to the last peer of the current row. Each tied row is a peer of the other, so each includes both amounts.",
+     "start": 2.584,
+     "end": 14.846
+    },
+    {
+     "text": "A hundred and fifty and a hundred and seventy five would be the answer you wanted, one row at a time, but that needs a different frame. And the amounts alone are not totals.",
+     "start": 15.266,
+     "end": 27.579
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -2.5,
+   "wpm": 157,
+   "wer": 0.05714285714285714,
+   "exact": false,
+   "tolerated": [
+    {
+     "line": "With no frame written, the default is the range kind, and it runs to the last peer of the current row. Each tied row is a peer of the other, so each includes both amounts.",
+     "said": "peer",
+     "heard": "pier"
+    },
+    {
+     "line": "With no frame written, the default is the range kind, and it runs to the last peer of the current row. Each tied row is a peer of the other, so each includes both amounts.",
+     "said": "peer",
+     "heard": "pier"
+    }
+   ]
+  },
+  "05": {
+   "hash": "9f177595cacff29d",
+   "takes": [
+    "73b9e66acbf4f69850eb",
+    "0cbf628b82bb8de8c8a7",
+    "f5058d553c5f73f052f7",
+    "f1d71e5bee90ab94fd49"
+   ],
+   "duration": 31.894,
+   "lines": [
+    {
+     "text": "Watch the totals appear as the bracket moves. The first order shows a hundred.",
+     "start": 0.15,
+     "end": 5.873
+    },
+    {
+     "text": "Then the bracket reaches the tie. It cannot stop at the fifty, because the twenty five is a peer, so the frame jumps to include both.",
+     "start": 6.293,
+     "end": 17.013
+    },
+    {
+     "text": "That is why the total steps once per distinct timestamp, not once per row.",
+     "start": 17.433,
+     "end": 23.062
+    },
+    {
+     "text": "Nothing is broken. This is exactly what the default promises, and it is rarely what anyone expects.",
+     "start": 23.482,
+     "end": 31.544
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 134,
+   "wer": 0.038461538461538464,
+   "exact": false,
+   "tolerated": [
+    {
+     "line": "Then the bracket reaches the tie. It cannot stop at the fifty, because the twenty five is a peer, so the frame jumps to include both.",
+     "said": "peer",
+     "heard": "pier"
+    }
+   ]
+  },
+  "06": {
+   "hash": "20d051ecbf84b502",
+   "takes": [
+    "010b65c62761271d414f",
+    "67e62d39496cd0d2e205",
+    "50cd2155ca9e4d26f08e"
+   ],
+   "duration": 35.408,
+   "lines": [
+    {
+     "text": "So say what you meant. Break the tie with a unique second key, and ask for rows.",
+     "start": 0.15,
+     "end": 6.96
+    },
+    {
+     "text": "Now the bracket moves one physical row at a time, and each row advances the total by itself: a hundred, a hundred and fifty, a hundred and seventy five, a hundred and eighty five.",
+     "start": 7.38,
+     "end": 20.651
+    },
+    {
+     "text": "Notice that both changes are needed. Rows alone, without a unique key, leaves the order among tied rows undefined, so which one goes first can change from run to run.",
+     "start": 21.071,
+     "end": 35.058
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 132,
+   "wer": 0.058823529411764705,
+   "exact": false,
+   "tolerated": [
+    {
+     "line": "So say what you meant. Break the tie with a unique second key, and ask for rows.",
+     "said": "rows",
+     "heard": "rose"
+    }
+   ]
+  },
+  "07": {
+   "hash": "cb00cd61a5ae3cf8",
+   "takes": [
+    "0858dceb510b4e2e4fc7",
+    "00452f3b8e7d152423e2",
+    "13b4c48fcc0377a69c9d"
+   ],
+   "duration": 25.532,
+   "lines": [
+    {
+     "text": "The third mode counts in peer groups. Look at the dashed outlines: four orders, but only three groups.",
+     "start": 0.15,
+     "end": 7.343
+    },
+    {
+     "text": "One group back means one tie group, however many rows it holds. So the offset follows the data, not the row count.",
+     "start": 7.763,
+     "end": 16.648
+    },
+    {
+     "text": "Use it when ties are meaningful, for example all events in the same second, and you want the previous second as a unit.",
+     "start": 17.068,
+     "end": 25.182
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 148,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "08": {
+   "hash": "a6919ecf7e473588",
+   "takes": [
+    "d9b4d7fb17bdc1e106b4",
+    "e8cca05f0ea8231abd4c",
+    "9d67a32e44f5937d4cbe"
+   ],
+   "duration": 27.584,
+   "lines": [
+    {
+     "text": "Sometimes you want to leave something out of the frame. That is what exclude is for.",
+     "start": 0.15,
+     "end": 5.86
+    },
+    {
+     "text": "Excluding the current row gives you the others. Excluding the group drops the row and its peers. Excluding ties drops the peers but keeps the row itself.",
+     "start": 6.28,
+     "end": 19.153
+    },
+    {
+     "text": "The classic use is a comparison to the average of everything else, without the row itself leaking into the average.",
+     "start": 19.573,
+     "end": 27.234
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 137,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "09": {
+   "hash": "9ab4fc3c35358948",
+   "takes": [
+    "b81882f9f3d106b7a927",
+    "2d2a23115899e4b89313",
+    "6f93d9031c018fcf6ba6"
+   ],
+   "duration": 21.738,
+   "lines": [
+    {
+     "text": "If several functions share a definition, repeating it is asking for drift.",
+     "start": 0.15,
+     "end": 4.989
+    },
+    {
+     "text": "Name the window once, and refer to it by name. Every call is then guaranteed to use exactly the same frame.",
+     "start": 5.409,
+     "end": 13.593
+    },
+    {
+     "text": "One subtlety: naming it and adding to it are different. Adding is refused if the named window already has a frame.",
+     "start": 14.013,
+     "end": 21.388
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 149,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "10": {
+   "hash": "ef33261c3519d3b7",
+   "takes": [
+    "9dea518c9c41db53fe62",
+    "60a90f939c19b2bf480a",
+    "ea68a485316480015b0d",
+    "faf5fff8ad25ed29fda1"
+   ],
+   "duration": 30.249,
+   "lines": [
+    {
+     "text": "Here is a rule that surprises people. A window function cannot contain another window function.",
+     "start": 0.15,
+     "end": 7.743
+    },
+    {
+     "text": "Look at the red box. Putting a running total inside a rank is refused outright.",
+     "start": 8.163,
+     "end": 13.093
+    },
+    {
+     "text": "The reason is order of evaluation: the inner one has to produce a value before the outer one can read it.",
+     "start": 13.513,
+     "end": 20.446
+    },
+    {
+     "text": "So give it a boundary. Compute the first in an inner query, and let the outer query read the result as an ordinary column.",
+     "start": 20.866,
+     "end": 29.899
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 149,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "11": {
+   "hash": "579824cb5dade12f",
+   "takes": [
+    "d573e49d0947bca54184",
+    "03a2eeeb83559b503c15"
+   ],
+   "duration": 9.093,
+   "lines": [
+    {
+     "text": "Apply it. You want to rank customers by a running total, and the running total is itself a window.",
+     "start": 0.15,
+     "end": 6.863
+    },
+    {
+     "text": "How do you write that?",
+     "start": 7.683,
+     "end": 8.743
+    }
+   ],
+   "lufs": -16.3,
+   "true_peak": -3.1,
+   "wpm": 158,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "11a": {
+   "hash": "bdc014e39f31b1b6",
+   "takes": [
+    "ca99240acff6e97e7f3d",
+    "e0f2dd33ab50efeed7ca"
+   ],
+   "duration": 18.186,
+   "lines": [
+    {
+     "text": "Stage it. Compute the running total in an inner query, then rank that column in the outer one.",
+     "start": 0.15,
+     "end": 6.945
+    },
+    {
+     "text": "Nesting the two in one expression is rejected, and two over clauses on one call does not exist. It can certainly be done, which rules out the last option.",
+     "start": 7.365,
+     "end": 17.837
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -1.9,
+   "wpm": 155,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "12": {
+   "hash": "6a13b1e44f4207d3",
+   "takes": [
+    "12c9b5fd21d44b89e981",
+    "957af0c78df261f42b7d",
+    "debea96d1b172ef16514",
+    "632ca2d0a5d1651f2277"
+   ],
+   "duration": 31.985,
+   "lines": [
+    {
+     "text": "Take three habits from this.",
+     "start": 0.15,
+     "end": 1.901
+    },
+    {
+     "text": "If ties can happen, do not trust the default frame. Add a unique key to the ordering, and write the rows frame out.",
+     "start": 2.321,
+     "end": 10.527
+    },
+    {
+     "text": "Name any definition shared by more than one call. And when you need a window of a window, stage it with a CTE.",
+     "start": 10.947,
+     "end": 20.026
+    },
+    {
+     "text": "Defining the neighbourhood is one job. Next: what the engine actually does, physically, to deliver an answer for every single row in it.",
+     "start": 20.846,
+     "end": 31.635
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 139,
+   "wer": 0.043478260869565216,
+   "exact": false,
+   "tolerated": [
+    {
+     "line": "If ties can happen, do not trust the default frame. Add a unique key to the ordering, and write the rows frame out.",
+     "said": "rows",
+     "heard": "rose"
+    },
+    {
+     "line": "Defining the neighbourhood is one job. Next: what the engine actually does, physically, to deliver an answer for every single row in it.",
+     "said": "neighbourhood",
+     "heard": "neighborhood"
+    }
+   ]
+  },
+  "13": {
+   "hash": "5f32fa45cfd379e3",
+   "takes": [
+    "4fbd82fe21a40ed46b6d",
+    "729f79da346e247f854d"
+   ],
+   "duration": 8.469,
+   "lines": [
+    {
+     "text": "Two checks. First, one of the three frame modes pays no attention to ties.",
+     "start": 0.15,
+     "end": 6.188
+    },
+    {
+     "text": "Which one?",
+     "start": 7.008,
+     "end": 8.119
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 113,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "13a": {
+   "hash": "547191e6d55e4aec",
+   "takes": [
+    "695d53d32f3b981664d9",
+    "85e15f8eae4fc88a9624"
+   ],
+   "duration": 9.982,
+   "lines": [
+    {
+     "text": "Rows.",
+     "start": 0.15,
+     "end": 0.898
+    },
+    {
+     "text": "It counts physical rows, so peers make no difference. Range and groups both work through peers, in different ways.",
+     "start": 1.318,
+     "end": 9.632
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -1.9,
+   "wpm": 120,
+   "wer": 1.0,
+   "exact": false,
+   "tolerated": [
+    {
+     "line": "Rows.",
+     "said": "rows",
+     "heard": "rose"
+    }
+   ]
+  },
+  "14": {
+   "hash": "96404e35c9991c5f",
+   "takes": [
+    "0bd568ab60d88b0d9f63",
+    "cec314be68ace27e6f08"
+   ],
+   "duration": 8.672,
+   "lines": [
+    {
+     "text": "Second check. An ordering is given, and no frame clause.",
+     "start": 0.15,
+     "end": 4.978
+    },
+    {
+     "text": "Which rows does the frame include?",
+     "start": 5.798,
+     "end": 8.322
+    }
+   ],
+   "lufs": -16.7,
+   "true_peak": -3.4,
+   "wpm": 111,
+   "wer": 0.16666666666666666,
+   "exact": false,
+   "tolerated": [
+    {
+     "line": "Which rows does the frame include?",
+     "said": "rows",
+     "heard": "rose"
+    }
+   ]
+  },
+  "14a": {
+   "hash": "b2301d50623097ed",
+   "takes": [
+    "f877682144b9cb416bb7",
+    "ec0faea25998274c3e5a"
+   ],
+   "duration": 14.342,
+   "lines": [
+    {
+     "text": "From the start of the partition up to the last peer of the current row.",
+     "start": 0.15,
+     "end": 5.668
+    },
+    {
+     "text": "Only the current row would be the rows frame, and the whole partition is what you get with no ordering at all.",
+     "start": 6.088,
+     "end": 13.992
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 155,
+   "wer": 0.06666666666666667,
+   "exact": false,
+   "tolerated": [
+    {
+     "line": "From the start of the partition up to the last peer of the current row.",
+     "said": "peer",
+     "heard": "pier"
+    }
+   ]
+  }
+ }
+}
