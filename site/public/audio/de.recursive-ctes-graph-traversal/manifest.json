@@ -1,0 +1,572 @@
+{
+ "topic": "de.recursive-ctes-graph-traversal",
+ "voice": "breeze-mellow-v2",
+ "asr": "large-v3-turbo",
+ "clips": {
+  "01": {
+   "hash": "0809ed8c933d4c09",
+   "takes": [
+    "a47677804d28e6551f85",
+    "5d0ada8d0d6447c21c59",
+    "629e5c384475cb9a81b3",
+    "e04de14179ab10fa03c1"
+   ],
+   "duration": 35.289,
+   "lines": [
+    {
+     "text": "So far every question has been about one table at a time. Now we climb a hierarchy, one level at a time, until there are no more levels left to climb.",
+     "start": 0.15,
+     "end": 12.049
+    },
+    {
+     "text": "Look at the picture: a bundle, two kits, and parts underneath, with one part shared. How many levels is that?",
+     "start": 12.469,
+     "end": 20.334
+    },
+    {
+     "text": "You cannot write a fixed number of joins for it, because the depth lives in the data, and next month's bundle may be deeper.",
+     "start": 20.884,
+     "end": 29.713
+    },
+    {
+     "text": "Recursive queries are the answer: a query allowed to read its own output.",
+     "start": 30.133,
+     "end": 34.939
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 150,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "02": {
+   "hash": "72aba104eabfa554",
+   "takes": [
+    "6ddb94ee01c77828ae3a",
+    "e867d5fce8151cc75ae9",
+    "f7aca75b9e74a5abbda7",
+    "ab2dac10edcb1bae8814"
+   ],
+   "duration": 34.165,
+   "lines": [
+    {
+     "text": "Do not picture a function calling itself. Picture a loop over one small table.",
+     "start": 0.15,
+     "end": 6.787
+    },
+    {
+     "text": "Watch the three rows of boxes. The first is the seed, the bundle's direct parts. The second is what you get by joining that batch to the parts table. The third comes back empty.",
+     "start": 7.207,
+     "end": 19.171
+    },
+    {
+     "text": "That empty batch is the stopping rule. The loop ends the moment a pass adds nothing new.",
+     "start": 19.591,
+     "end": 26.216
+    },
+    {
+     "text": "That stopping point is called the fixpoint, and it is the only reason these queries terminate at all.",
+     "start": 26.636,
+     "end": 33.815
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 146,
+   "wer": 0.1111111111111111,
+   "exact": false,
+   "tolerated": [
+    {
+     "line": "That stopping point is called the fixpoint, and it is the only reason these queries terminate at all.",
+     "said": "fixpoint",
+     "heard": "fix point"
+    }
+   ]
+  },
+  "03": {
+   "hash": "66b0245cce637b0c",
+   "takes": [
+    "fa0e3f9bc85c890c4bca",
+    "d193cb682e8baf3b4b32",
+    "a37ec6febd4cf75c0227"
+   ],
+   "duration": 15.133,
+   "lines": [
+    {
+     "text": "Every batch the loop produced is kept in the result. Count them from the boxes you just saw.",
+     "start": 0.15,
+     "end": 6.248
+    },
+    {
+     "text": "Notice one part turning up twice, under each kit.",
+     "start": 6.668,
+     "end": 10.268
+    },
+    {
+     "text": "How many rows does the explosion hold before any grouping?",
+     "start": 11.088,
+     "end": 14.783
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -2.2,
+   "wpm": 147,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "03a": {
+   "hash": "8ef7dda4ed663d65",
+   "takes": [
+    "fba4f07821c33646796d",
+    "faa12de50c48e2944723",
+    "60a8cd62605d76aa5131"
+   ],
+   "duration": 21.259,
+   "lines": [
+    {
+     "text": "Six.",
+     "start": 0.15,
+     "end": 0.682
+    },
+    {
+     "text": "Two kits plus four parts, and the microphone is one of the four twice, because the two kits each need it for a separate reason.",
+     "start": 1.102,
+     "end": 9.762
+    },
+    {
+     "text": "Five is the count of distinct components, which you only get after grouping. Four forgets the kits themselves, and three forgets half the second batch.",
+     "start": 10.182,
+     "end": 20.909
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -1.9,
+   "wpm": 144,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "04": {
+   "hash": "2fd06c17b72c5de0",
+   "takes": [
+    "f6427025a3f03f9cd787",
+    "816005e07aec5e97dcf0",
+    "e78cab74347dc2e086c4",
+    "3dda24b94ffaa424585c"
+   ],
+   "duration": 28.688,
+   "lines": [
+    {
+     "text": "Now the arithmetic that makes a parts list useful. Follow the labels on the arrows.",
+     "start": 0.15,
+     "end": 5.615
+    },
+    {
+     "text": "Two of a kit means two of everything inside it, so as the loop descends, the recursive term multiplies the quantities.",
+     "start": 6.035,
+     "end": 15.714
+    },
+    {
+     "text": "The microphone is reached by two different routes, carrying two and one.",
+     "start": 16.134,
+     "end": 21.376
+    },
+    {
+     "text": "The final group by adds them up to three. That sum is the answer the factory actually needs.",
+     "start": 21.796,
+     "end": 28.338
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -1.9,
+   "wpm": 138,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "05": {
+   "hash": "05be8c0eea561dd5",
+   "takes": [
+    "be510c773e6aef8f0f99",
+    "dc7c27b90f51dc45cb00",
+    "0123826b31377d74a310",
+    "4817fd3d7a295b3e423b"
+   ],
+   "duration": 31.751,
+   "lines": [
+    {
+     "text": "Now suppose the data is wrong. Someone enters a kit as a component of one of its own sub components.",
+     "start": 0.15,
+     "end": 7.265
+    },
+    {
+     "text": "Trace the dashed ring on screen. Every pass finds a next step around the ring, so the batch is never empty.",
+     "start": 7.685,
+     "end": 15.275
+    },
+    {
+     "text": "And the stopping rule never fires. Look at the counter: nothing stops it but a limit or a timeout.",
+     "start": 15.695,
+     "end": 24.153
+    },
+    {
+     "text": "The query is correct and the data is not. That is a bug no error message will point at.",
+     "start": 24.573,
+     "end": 31.401
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 149,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "06": {
+   "hash": "93e59d2422df2340",
+   "takes": [
+    "c4dd1a8dc8f40820d003",
+    "1d213643a4aba581802d",
+    "a9bb2f62ce4589bbb514"
+   ],
+   "duration": 16.364,
+   "lines": [
+    {
+     "text": "A tempting fix: change the plain stack to the one that removes duplicates. Surely a repeated row will be recognised and dropped.",
+     "start": 0.15,
+     "end": 9.229
+    },
+    {
+     "text": "Look at the rows on screen. The query also tracks how deep it is.",
+     "start": 9.649,
+     "end": 14.09
+    },
+    {
+     "text": "Does that stop the loop?",
+     "start": 14.91,
+     "end": 16.014
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 150,
+   "wer": 0.09090909090909091,
+   "exact": false,
+   "tolerated": [
+    {
+     "line": "A tempting fix: change the plain stack to the one that removes duplicates. Surely a repeated row will be recognised and dropped.",
+     "said": "plain",
+     "heard": "plane"
+    },
+    {
+     "line": "A tempting fix: change the plain stack to the one that removes duplicates. Surely a repeated row will be recognised and dropped.",
+     "said": "recognised",
+     "heard": "recognized"
+    }
+   ]
+  },
+  "06a": {
+   "hash": "f0bd2623aa95d89f",
+   "takes": [
+    "12f9269709fe56730f79",
+    "a967073bee19f0e48c94",
+    "7e2211e56433c2768174"
+   ],
+   "duration": 19.707,
+   "lines": [
+    {
+     "text": "No.",
+     "start": 0.15,
+     "end": 0.624
+    },
+    {
+     "text": "Each trip round the ring arrives with a larger depth, so it is a different row, and removing duplicates sees nothing to remove.",
+     "start": 1.044,
+     "end": 9.828
+    },
+    {
+     "text": "It would work only if the rows were otherwise identical. The loop has to be broken by remembering where this particular path has already been.",
+     "start": 10.248,
+     "end": 19.357
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -2.7,
+   "wpm": 149,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "07": {
+   "hash": "d18cf860b5377c6c",
+   "takes": [
+    "ee81ae5be3bdaf681a9d",
+    "7be90b147a564d6fffc6",
+    "058816fd449f031b1090",
+    "f2e8b29cd79bd168e516"
+   ],
+   "duration": 30.434,
+   "lines": [
+    {
+     "text": "So give every row its own memory. Each row carries the list of nodes on the path that produced it.",
+     "start": 0.15,
+     "end": 7.071
+    },
+    {
+     "text": "Watch the path grow: bundle, then kit A, then kit B. The fourth step would land back on the bundle.",
+     "start": 7.491,
+     "end": 16.421
+    },
+    {
+     "text": "A step onto a node already in the list is flagged as a cycle and not expanded any further.",
+     "start": 16.841,
+     "end": 23.88
+    },
+    {
+     "text": "Now every path ends. It either runs out of new nodes, or meets one it has already seen.",
+     "start": 24.3,
+     "end": 30.084
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 152,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "08": {
+   "hash": "fae1ee226b100bff",
+   "takes": [
+    "ff6aeea8edca4febe0bb",
+    "1194a1019442bc7660f2",
+    "859d53d9a650ba71cc8f"
+   ],
+   "duration": 28.309,
+   "lines": [
+    {
+     "text": "You do not have to write that bookkeeping by hand in recent Postgres. The cycle clause writes it for you.",
+     "start": 0.15,
+     "end": 7.059
+    },
+    {
+     "text": "A second clause adds a sort column, so depth first or breadth first order is something you ask for, not something you hope for.",
+     "start": 7.479,
+     "end": 17.731
+    },
+    {
+     "text": "Read the last line. Some engines do not have either clause, so the hand written path is the one worth knowing cold, because it works everywhere.",
+     "start": 18.151,
+     "end": 27.959
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -2.3,
+   "wpm": 150,
+   "wer": 0.07692307692307693,
+   "exact": false,
+   "tolerated": [
+    {
+     "line": "Read the last line. Some engines do not have either clause, so the hand written path is the one worth knowing cold, because it works everywhere.",
+     "said": "hand written",
+     "heard": "handwritten"
+    }
+   ]
+  },
+  "09": {
+   "hash": "c94c981541780314",
+   "takes": [
+    "6984b21a3c2f329f43e9",
+    "50bba7dcc90d15184c3a",
+    "308a2ced708379183cf3",
+    "c966a30a122fecec9fbf"
+   ],
+   "duration": 28.908,
+   "lines": [
+    {
+     "text": "There are two different ways these queries go wrong, and people mix them up.",
+     "start": 0.15,
+     "end": 5.418
+    },
+    {
+     "text": "A cycle never ends, and the path guard fixes it.",
+     "start": 5.838,
+     "end": 9.434
+    },
+    {
+     "text": "A blow up has no cycle at all. Look at the rising bars. With shared parts the number of paths grows with every level, long before any ring appears.",
+     "start": 9.854,
+     "end": 20.243
+    },
+    {
+     "text": "A path guard does nothing for that. You need a depth cap, or you should ask a smaller question, like the shortest path.",
+     "start": 20.663,
+     "end": 28.558
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -2.3,
+   "wpm": 158,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "10": {
+   "hash": "fc0132ff725b1b77",
+   "takes": [
+    "ee0ca1e8929e990ab22f",
+    "b189aee46908c29793ae",
+    "86a6ca336c3b63fb2313",
+    "20ee306659c1cb351fa1"
+   ],
+   "duration": 40.539,
+   "lines": [
+    {
+     "text": "Back to the bundle. Seed the table, iterate, and stop when a pass adds nothing.",
+     "start": 0.15,
+     "end": 6.683
+    },
+    {
+     "text": "Multiply quantities as you descend and add them up at the end.",
+     "start": 7.103,
+     "end": 12.139
+    },
+    {
+     "text": "And never trust real data to be acyclic, whatever the business rule says. Carry a path, or use the cycle clause, and keep a depth cap in your pocket for the other failure.",
+     "start": 12.559,
+     "end": 25.102
+    },
+    {
+     "text": "Every question so far has produced one row per group, or one row per path. Next: splitting one aggregate into several, at several levels, all in a single pass over the data.",
+     "start": 25.922,
+     "end": 40.189
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.7,
+   "wpm": 136,
+   "wer": 0.030303030303030304,
+   "exact": false,
+   "tolerated": [
+    {
+     "line": "And never trust real data to be acyclic, whatever the business rule says. Carry a path, or use the cycle clause, and keep a depth cap in your pocket for the other failure.",
+     "said": "acyclic",
+     "heard": "acycliic"
+    }
+   ]
+  },
+  "11": {
+   "hash": "88367ef41b7ad2e2",
+   "takes": [
+    "6de823b3d2f7e1b3e20e",
+    "729f79da346e247f854d"
+   ],
+   "duration": 10.341,
+   "lines": [
+    {
+     "text": "Two checks. First, a clause from the standard, available since version fourteen, that detects a cycle for you.",
+     "start": 0.15,
+     "end": 8.06
+    },
+    {
+     "text": "Which one?",
+     "start": 8.88,
+     "end": 9.991
+    }
+   ],
+   "lufs": -16.3,
+   "true_peak": -2.6,
+   "wpm": 116,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "11a": {
+   "hash": "b3541c98ec11cb75",
+   "takes": [
+    "7ad2d0e7c1c0c07ca1b7",
+    "53f153337a20f778698f"
+   ],
+   "duration": 12.84,
+   "lines": [
+    {
+     "text": "Cycle.",
+     "start": 0.15,
+     "end": 1.19
+    },
+    {
+     "text": "It flags a row whose key is already on its own path. The search clause only adds an ordering column, and neither the limit nor distinct detects anything about paths.",
+     "start": 1.61,
+     "end": 12.49
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -1.9,
+   "wpm": 145,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "12": {
+   "hash": "d23f15ae7eac5026",
+   "takes": [
+    "7cc22e67555b6ff4903e",
+    "0d55f40febb810dbdab1"
+   ],
+   "duration": 8.951,
+   "lines": [
+    {
+     "text": "Second check. On its third evaluation, the recursive term returns no new rows.",
+     "start": 0.15,
+     "end": 6.414
+    },
+    {
+     "text": "What does the loop do?",
+     "start": 7.234,
+     "end": 8.601
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 121,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "12a": {
+   "hash": "f9eb80a105e6f26c",
+   "takes": [
+    "8fa104979625651016a0",
+    "b42e10be7abe6b9b4c26"
+   ],
+   "duration": 9.539,
+   "lines": [
+    {
+     "text": "It stops.",
+     "start": 0.15,
+     "end": 0.959
+    },
+    {
+     "text": "An empty step is the fixpoint. There is nothing left to feed into the next pass, so the loop has nothing to do.",
+     "start": 1.379,
+     "end": 9.189
+    }
+   ],
+   "lufs": -16.1,
+   "true_peak": -2.8,
+   "wpm": 157,
+   "wer": 0.08695652173913043,
+   "exact": false,
+   "tolerated": [
+    {
+     "line": "An empty step is the fixpoint. There is nothing left to feed into the next pass, so the loop has nothing to do.",
+     "said": "fixpoint",
+     "heard": "fix point"
+    }
+   ]
+  }
+ }
+}
