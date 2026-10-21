@@ -1,0 +1,593 @@
+{
+ "topic": "de.lateral-joins-correlated-subqueries",
+ "voice": "breeze-mellow-v2",
+ "asr": "large-v3-turbo",
+ "clips": {
+  "01": {
+   "hash": "88c7d208cec3a00a",
+   "takes": [
+    "bc89d56c8cf7d4418267",
+    "3244cb6f92f80e867195",
+    "b13a0814abfef4ddaa6e"
+   ],
+   "duration": 29.513,
+   "lines": [
+    {
+     "text": "Every total so far summed rows that were already sitting next to each other in one table. Now we pull one extra row in from the table beside it, computed just where we need it.",
+     "start": 0.15,
+     "end": 11.508
+    },
+    {
+     "text": "Look at the picture: four customers, each with a different number of orders.",
+     "start": 11.928,
+     "end": 17.64
+    },
+    {
+     "text": "Ask for the newest three orders of each customer. The orders table alone cannot answer that, because whether an order qualifies depends on the other orders of its own customer.",
+     "start": 18.46,
+     "end": 29.163
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 159,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "02": {
+   "hash": "19a86c4404d7eecb",
+   "takes": [
+    "735960b81573b0d46562",
+    "9d036ea3e4b47eb32f5b",
+    "fae1bd55d84c15db2245",
+    "6e37f82e19ccffe11219"
+   ],
+   "duration": 31.127,
+   "lines": [
+    {
+     "text": "So the customer has to come first, and the question has to be asked again for each one.",
+     "start": 0.15,
+     "end": 5.906
+    },
+    {
+     "text": "Here is the obstacle. An ordinary subquery in the from clause is evaluated by itself. Watch the wall between the two boxes: it cannot see a column of its neighbour.",
+     "start": 6.326,
+     "end": 18.776
+    },
+    {
+     "text": "The keyword lateral removes the wall. The subquery may now use the current row of the item before it.",
+     "start": 19.196,
+     "end": 25.258
+    },
+    {
+     "text": "That one permission is the whole feature. Everything else is what you can do with it.",
+     "start": 25.678,
+     "end": 30.777
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 160,
+   "wer": 0.03333333333333333,
+   "exact": false,
+   "tolerated": [
+    {
+     "line": "Here is the obstacle. An ordinary subquery in the from clause is evaluated by itself. Watch the wall between the two boxes: it cannot see a column of its neighbour.",
+     "said": "neighbour",
+     "heard": "neighbor"
+    }
+   ]
+  },
+  "03": {
+   "hash": "68a597ec383d1fc7",
+   "takes": [
+    "c4cea8b97a4bc443c895",
+    "0b54cb4a158453b85812",
+    "fc49ed72de07a53023c4",
+    "cdef57f2bce69f2596b1"
+   ],
+   "duration": 30.404,
+   "lines": [
+    {
+     "text": "Watch the highlighted customer. For that row, the subquery runs with that customer's key substituted in.",
+     "start": 0.15,
+     "end": 8.131
+    },
+    {
+     "text": "It sorts only that customer's orders, takes the newest three, and the picks light up next to their customer.",
+     "start": 8.551,
+     "end": 15.277
+    },
+    {
+     "text": "Then the spotlight moves down, and the same thing happens for the next row.",
+     "start": 15.697,
+     "end": 21.234
+    },
+    {
+     "text": "Notice the shape: it is a loop, and the inner query is the loop body. That is why it can do things a join condition cannot.",
+     "start": 21.654,
+     "end": 30.054
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 148,
+   "wer": 0.038461538461538464,
+   "exact": false,
+   "tolerated": [
+    {
+     "line": "Notice the shape: it is a loop, and the inner query is the loop body. That is why it can do things a join condition cannot.",
+     "said": "join",
+     "heard": "joint"
+    }
+   ]
+  },
+  "04": {
+   "hash": "f11c5e6c0be91ebb",
+   "takes": [
+    "004ee7a7e52460c9d713",
+    "828400970852711ebd02",
+    "973ea4a56798839adaaf"
+   ],
+   "duration": 18.288,
+   "lines": [
+    {
+     "text": "Now use the picture to count. The four customers own five, two, none, and four orders, and the cap is three each.",
+     "start": 0.15,
+     "end": 8.88
+    },
+    {
+     "text": "The version of the join in question drops an outer row whenever its subquery returns nothing.",
+     "start": 9.3,
+     "end": 15.799
+    },
+    {
+     "text": "How many rows come back?",
+     "start": 16.619,
+     "end": 17.938
+    }
+   ],
+   "lufs": -16.7,
+   "true_peak": -3.3,
+   "wpm": 141,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "04a": {
+   "hash": "872d5d0eb3e0415c",
+   "takes": [
+    "3504824d035d58673061",
+    "e122428d05ed92076a49",
+    "73ead9580d564ec09c35"
+   ],
+   "duration": 24.369,
+   "lines": [
+    {
+     "text": "Eight. Three, two, none and three.",
+     "start": 0.15,
+     "end": 3.347
+    },
+    {
+     "text": "The customer with no orders vanishes, because there was nothing to join to. And nobody can return more than the cap, which rules out twelve.",
+     "start": 3.767,
+     "end": 13.439
+    },
+    {
+     "text": "Eleven and nine come from counting the empty customer or ignoring the cap. A ceiling is not a quota, so a customer with two orders returns two.",
+     "start": 13.859,
+     "end": 24.019
+    }
+   ],
+   "lufs": -16.3,
+   "true_peak": -3.4,
+   "wpm": 143,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "05": {
+   "hash": "088c0b3d02fda480",
+   "takes": [
+    "5914b48a5eefb48f40cd",
+    "52f99468eecd927026a9",
+    "f44f68f56d91403fbdcb",
+    "c1783011dca568e1534f"
+   ],
+   "duration": 29.691,
+   "lines": [
+    {
+     "text": "That disappearing customer is sometimes a bug. Often you want every customer, orders or not.",
+     "start": 0.15,
+     "end": 7.349
+    },
+    {
+     "text": "Change the join to a left join with a condition that is always true. Now look at the dashed box.",
+     "start": 7.769,
+     "end": 15.093
+    },
+    {
+     "text": "The customer with nothing still appears, once, with nulls where the orders would be.",
+     "start": 15.513,
+     "end": 21.58
+    },
+    {
+     "text": "Same query, nine rows instead of eight. And you chose which behaviour you wanted by choosing the join.",
+     "start": 22.0,
+     "end": 29.341
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 135,
+   "wer": 0.05555555555555555,
+   "exact": false,
+   "tolerated": [
+    {
+     "line": "Same query, nine rows instead of eight. And you chose which behaviour you wanted by choosing the join.",
+     "said": "behaviour",
+     "heard": "behavior"
+    }
+   ]
+  },
+  "06": {
+   "hash": "cec20ebc957f0455",
+   "takes": [
+    "62f7a9fa0c8a4e351f90",
+    "a2d9a6452137f495fe31",
+    "b553dd67184ec007f34b",
+    "43f9cbf6745e4f28575c"
+   ],
+   "duration": 32.09,
+   "lines": [
+    {
+     "text": "Why not just use an anti join to find the customer with no orders? Compare the two rows on screen.",
+     "start": 0.15,
+     "end": 6.926
+    },
+    {
+     "text": "An anti join answers yes or no, and for the customers who do have orders it gives nothing back.",
+     "start": 7.346,
+     "end": 14.355
+    },
+    {
+     "text": "The lateral version keeps everyone, and for each one it brings back the matched rows' own columns.",
+     "start": 14.775,
+     "end": 21.162
+    },
+    {
+     "text": "So it answers the existence question and hands you the best match. That is something an existence test cannot do by construction.",
+     "start": 21.582,
+     "end": 31.74
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 146,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "07": {
+   "hash": "887ffadcf3b93e64",
+   "takes": [
+    "b1098db2aa5f94dd64ff",
+    "95e5d0f9aa1912054a8e",
+    "16b96bf099e16c526566"
+   ],
+   "duration": 21.949,
+   "lines": [
+    {
+     "text": "If you work in SQL Server, none of this is new under a different name. It is called apply.",
+     "start": 0.15,
+     "end": 6.295
+    },
+    {
+     "text": "Cross apply keeps only outer rows that produced something. Outer apply keeps the rest as well.",
+     "start": 6.715,
+     "end": 13.264
+    },
+    {
+     "text": "Read the two pairs on screen. They match one to one with the two forms we just used, so translating a query is mechanical.",
+     "start": 13.684,
+     "end": 21.599
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 161,
+   "wer": 0.0625,
+   "exact": false,
+   "tolerated": [
+    {
+     "line": "Cross apply keeps only outer rows that produced something. Outer apply keeps the rest as well.",
+     "said": "produced",
+     "heard": "produce"
+    }
+   ]
+  },
+  "08": {
+   "hash": "55be230d4a507eb8",
+   "takes": [
+    "8222029d134c0245baf6",
+    "2b55456d180f81cd4f71",
+    "f2e45d02b58e342b0504",
+    "136c693f84847c500427"
+   ],
+   "duration": 32.921,
+   "lines": [
+    {
+     "text": "Now a point about what lateral costs. Suppose the subquery only restates a plain equals, nothing more.",
+     "start": 0.15,
+     "end": 7.884
+    },
+    {
+     "text": "Then the planner does not run it per row at all. It pulls the subquery up into an ordinary join.",
+     "start": 8.304,
+     "end": 14.861
+    },
+    {
+     "text": "That matters because an ordinary join can be reordered like any other. A per row loop cannot.",
+     "start": 15.281,
+     "end": 22.317
+    },
+    {
+     "text": "So for a plain equality the keyword adds nothing. Save it for work that needs its own sorting and cutting off, per outer row.",
+     "start": 22.737,
+     "end": 32.571
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 142,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "09": {
+   "hash": "09687e4e93ac55d6",
+   "takes": [
+    "3b12a13b5869734eeac0",
+    "137655c4e3db7ca4fd38",
+    "4d3271823d5eefca51ab"
+   ],
+   "duration": 15.038,
+   "lines": [
+    {
+     "text": "Take the equality case that was flattened. Now add a sort and a cap to the subquery.",
+     "start": 0.15,
+     "end": 6.019
+    },
+    {
+     "text": "Think about what a cap means: keep one row for each outer row, not one row overall.",
+     "start": 6.439,
+     "end": 12.038
+    },
+    {
+     "text": "Can it still be flattened?",
+     "start": 12.858,
+     "end": 14.688
+    }
+   ],
+   "lufs": -16.3,
+   "true_peak": -1.9,
+   "wpm": 156,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "09a": {
+   "hash": "7005f5ecf3bc3882",
+   "takes": [
+    "12f9269709fe56730f79",
+    "4d9330f255ab085213a4",
+    "02dfc6691a734d3dda0e"
+   ],
+   "duration": 25.312,
+   "lines": [
+    {
+     "text": "No.",
+     "start": 0.15,
+     "end": 0.624
+    },
+    {
+     "text": "A cap per outer row cannot be turned into one big join without changing the answer, so the planner refuses to pull up a subquery that sorts or limits.",
+     "start": 1.044,
+     "end": 11.272
+    },
+    {
+     "text": "It stays a per row loop. Saying any subquery can be flattened is exactly the assumption that fails here, and it has nothing to do with the dialect. An index only makes each run cheap.",
+     "start": 11.692,
+     "end": 24.962
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 154,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "10": {
+   "hash": "f77feaee937f72e3",
+   "takes": [
+    "08930b0b3514b26db719",
+    "4a4e12062ebf0da10cda",
+    "1de21ff90afb06c945c9",
+    "9e8f99dc60d0c4c6d9cf"
+   ],
+   "duration": 33.441,
+   "lines": [
+    {
+     "text": "So the price of this pattern is the price of one inner run, repeated for each outer row.",
+     "start": 0.15,
+     "end": 6.384
+    },
+    {
+     "text": "With an index on the customer and the time, each run walks a few index entries and stops at the cap. Look at the short bar.",
+     "start": 6.804,
+     "end": 15.103
+    },
+    {
+     "text": "Without it, each run sorts that customer's orders. And the window function alternative sorts the whole combined set once, which is the long bar.",
+     "start": 15.523,
+     "end": 25.545
+    },
+    {
+     "text": "Neither always wins. It depends on the data and on whether the index exists, so check the plan.",
+     "start": 25.965,
+     "end": 33.091
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 154,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "11": {
+   "hash": "95329635f7756a35",
+   "takes": [
+    "8602e05ca3c0beb4fba9",
+    "4bee2a6128c358325d2c",
+    "94e5df802eefd008ed0e"
+   ],
+   "duration": 29.303,
+   "lines": [
+    {
+     "text": "To sum up. Use lateral when the per row work cannot be a join condition: its own sort and cap, or a function of the outer row.",
+     "start": 0.15,
+     "end": 9.77
+    },
+    {
+     "text": "Use the left form when every outer row must survive. And index the correlated columns, because that index is the whole performance story.",
+     "start": 10.19,
+     "end": 20.057
+    },
+    {
+     "text": "This whole section has been about what a query means. Next: what SQL means for data that is not flat at all.",
+     "start": 20.877,
+     "end": 28.953
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -1.9,
+   "wpm": 147,
+   "wer": 0.037037037037037035,
+   "exact": false,
+   "tolerated": [
+    {
+     "line": "To sum up. Use lateral when the per row work cannot be a join condition: its own sort and cap, or a function of the outer row.",
+     "said": "join",
+     "heard": "joint"
+    }
+   ]
+  },
+  "12": {
+   "hash": "79e2cad7841b2ad1",
+   "takes": [
+    "a39ce6bc183fba8b1fad",
+    "4120130557a60ca6a24b"
+   ],
+   "duration": 10.139,
+   "lines": [
+    {
+     "text": "Two checks. First, the SQL Server operator that keeps outer rows with no result.",
+     "start": 0.15,
+     "end": 6.365
+    },
+    {
+     "text": "Which lateral form is its match?",
+     "start": 7.185,
+     "end": 9.789
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 118,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "12a": {
+   "hash": "f8ec2124e0d67c8d",
+   "takes": [
+    "c9b4f907e8ae5b58ce3d",
+    "7d59a86e8b7d92f2f72f"
+   ],
+   "duration": 15.581,
+   "lines": [
+    {
+     "text": "The left join with an always true condition.",
+     "start": 0.15,
+     "end": 2.941
+    },
+    {
+     "text": "Both keep the outer row when the subquery returns nothing. The cross join form is the match for cross apply, and the not exists form tests existence only.",
+     "start": 3.361,
+     "end": 15.231
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 139,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "13": {
+   "hash": "136f8ea022b4db32",
+   "takes": [
+    "9e2a7b944b564d820181",
+    "eb3080bd2664d3359dde"
+   ],
+   "duration": 9.471,
+   "lines": [
+    {
+     "text": "Second check. A customer with two orders, and a subquery capped at three.",
+     "start": 0.15,
+     "end": 5.642
+    },
+    {
+     "text": "How many rows does that customer contribute?",
+     "start": 6.462,
+     "end": 9.121
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -2.0,
+   "wpm": 127,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "13a": {
+   "hash": "76fe6dbe0d8260cd",
+   "takes": [
+    "e7c39d1754e0187d5d32",
+    "38aec1382f0e024dc895"
+   ],
+   "duration": 11.109,
+   "lines": [
+    {
+     "text": "Two.",
+     "start": 0.15,
+     "end": 0.629
+    },
+    {
+     "text": "A cap is a ceiling, not a quota. The subquery returns what exists, up to the limit, so you get two rows and not three.",
+     "start": 1.049,
+     "end": 10.759
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 140,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  }
+ }
+}

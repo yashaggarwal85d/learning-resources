@@ -63,7 +63,7 @@
     },
     {
       "lines": [
-        "Now a point about what lateral costs. Suppose the subquery only restates an equality, nothing more.",
+        "Now a point about what lateral costs. Suppose the subquery only restates a plain equals, nothing more.",
         "Then the planner does not run it per row at all. It pulls the subquery up into an ordinary join.",
         "That matters because an ordinary join can be reordered like any other. A per row loop cannot.",
         "So for a plain equality the keyword adds nothing. Save it for work that needs its own sorting and cutting off, per outer row."
@@ -74,7 +74,7 @@
         "Take the equality case that was flattened. Now add a sort and a cap to the subquery.",
         "Think about what a cap means: keep one row for each outer row, not one row overall.",
         { "beat": 0.4 },
-        "Can the planner still flatten it?"
+        "Can it still be flattened?"
       ],
       "answer": [
         "No.",
@@ -86,7 +86,7 @@
       "lines": [
         "So the price of this pattern is the price of one inner run, repeated for each outer row.",
         "With an index on the customer and the time, each run walks a few index entries and stops at the cap. Look at the short bar.",
-        "Without it, each run sorts that customer's orders. And the window function alternative sorts the whole joined set once, which is the long bar.",
+        "Without it, each run sorts that customer's orders. And the window function alternative sorts the whole combined set once, which is the long bar.",
         "Neither always wins. It depends on the data and on whether the index exists, so check the plan."
       ]
     },
