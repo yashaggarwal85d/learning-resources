@@ -1,0 +1,559 @@
+{
+ "topic": "de.semi-joins-anti-joins-existence",
+ "voice": "breeze-mellow-v2",
+ "asr": "large-v3-turbo",
+ "clips": {
+  "01": {
+   "hash": "3e4564296c3cf4dc",
+   "takes": [
+    "b452dbc36226d2a74330",
+    "49db7b401e954ce2f3ba",
+    "b69d6351ec49dc0d9fc6"
+   ],
+   "duration": 31.449,
+   "lines": [
+    {
+     "text": "Every rule so far was about one missing value at a time. Now a row might match several others at once, and you only want to know whether any of them exist.",
+     "start": 0.15,
+     "end": 11.822
+    },
+    {
+     "text": "Look at the two columns. Five customers on the left, the orders that point at them on the right.",
+     "start": 12.242,
+     "end": 18.839
+    },
+    {
+     "text": "Notice what the question never asks for: the order's columns. It asks about the existence of a line, and that changes which operators are safe to use.",
+     "start": 19.659,
+     "end": 31.099
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 149,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "02": {
+   "hash": "8db5cea46bf5add3",
+   "takes": [
+    "ac5d41835de4890c144b",
+    "4a9474f155baff304fb3",
+    "954bcdd4affae1524815",
+    "1b15efa05946a6de9b89"
+   ],
+   "duration": 35.173,
+   "lines": [
+    {
+     "text": "Start with the plain join and count the rows it produces. Customer one has three lines going out, so it appears three times.",
+     "start": 0.15,
+     "end": 8.759
+    },
+    {
+     "text": "That is just bag semantics from the first topic: a join multiplies rows by their matches.",
+     "start": 9.179,
+     "end": 15.584
+    },
+    {
+     "text": "Now watch the lines collapse. The semi join asks a smaller question, does at least one line exist, and keeps the customer once.",
+     "start": 16.004,
+     "end": 25.443
+    },
+    {
+     "text": "So it cannot multiply rows. Whatever the number of matches, the left row survives exactly once, or not at all.",
+     "start": 25.863,
+     "end": 34.823
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 140,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "03": {
+   "hash": "1bef27a7e3037806",
+   "takes": [
+    "f71e4b2e1da4dc8d7454",
+    "a1bcb5f3abf4673fbdbf",
+    "1534888d50f7eacf5d1e"
+   ],
+   "duration": 21.514,
+   "lines": [
+    {
+     "text": "The anti join is the mirror image. Look for the rows with no line at all.",
+     "start": 0.15,
+     "end": 6.081
+    },
+    {
+     "text": "Those are the survivors, customers two, four and five.",
+     "start": 6.501,
+     "end": 11.095
+    },
+    {
+     "text": "And the same guarantee holds. An anti join returns left rows only, and never anything from the right side, so it cannot duplicate anything either.",
+     "start": 11.515,
+     "end": 21.164
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 139,
+   "wer": 0.0625,
+   "exact": false,
+   "tolerated": [
+    {
+     "line": "The anti join is the mirror image. Look for the rows with no line at all.",
+     "said": "rows",
+     "heard": "rose"
+    }
+   ]
+  },
+  "04": {
+   "hash": "fe02400194963bd0",
+   "takes": [
+    "d2f62c2cac9882703e33",
+    "f082b84acfefede2463d",
+    "71f3af8f0d10f8a92536"
+   ],
+   "duration": 17.762,
+   "lines": [
+    {
+     "text": "Two queries answer who has ordered. One uses exists. The other joins, then removes duplicates.",
+     "start": 0.15,
+     "end": 7.922
+    },
+    {
+     "text": "Count the boxes in each row on screen, and think about what the second one produces before it cleans up.",
+     "start": 8.342,
+     "end": 14.835
+    },
+    {
+     "text": "Which does less work?",
+     "start": 15.655,
+     "end": 17.412
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 132,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "04a": {
+   "hash": "aaa1e8cd8c856048",
+   "takes": [
+    "928b582d58c53a2688af",
+    "4ce10fc6ca62b99313d7",
+    "da3b1e0063eb9a1a7cb7"
+   ],
+   "duration": 25.995,
+   "lines": [
+    {
+     "text": "Exists.",
+     "start": 0.15,
+     "end": 0.908
+    },
+    {
+     "text": "It is a semi join, so each customer is produced once and there is nothing to clean up. The join produces a row for every order, then pays a whole extra pass to discard most of them.",
+     "start": 1.328,
+     "end": 14.079
+    },
+    {
+     "text": "The join is not fastest here, and the work is not the same: the dedup pass is pure overhead. Indexes can help either, but they are not what separates these two.",
+     "start": 14.499,
+     "end": 25.645
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -1.9,
+   "wpm": 159,
+   "wer": 0.06451612903225806,
+   "exact": false,
+   "tolerated": [
+    {
+     "line": "The join is not fastest here, and the work is not the same: the dedup pass is pure overhead. Indexes can help either, but they are not what separates these two.",
+     "said": "dedup",
+     "heard": "dead up"
+    }
+   ]
+  },
+  "05": {
+   "hash": "7b7e756a8b4e977f",
+   "takes": [
+    "c521abc6c5d4c0a1b841",
+    "190fdb8f91002b369fb0",
+    "fe354fba7afc9f945c25",
+    "70ca9d3fe12fa8e6a19e"
+   ],
+   "duration": 41.808,
+   "lines": [
+    {
+     "text": "Now the part that matters in production. There are five common ways to write an existence test, and they look interchangeable.",
+     "start": 0.15,
+     "end": 8.483
+    },
+    {
+     "text": "Watch the last one, not in, turn red. Exists, not exists and in are always safe. The left join with a null test is safe if you test a column that is never missing on a real match.",
+     "start": 8.903,
+     "end": 24.039
+    },
+    {
+     "text": "Not in is the odd one. It builds a chain of comparisons, and comparisons are exactly where unknown can enter.",
+     "start": 24.459,
+     "end": 32.944
+    },
+    {
+     "text": "So the question for each spelling is not whether it reads right. It is whether a missing value anywhere can change the answer.",
+     "start": 33.364,
+     "end": 41.458
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 146,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "06": {
+   "hash": "76524c2d9613d8de",
+   "takes": [
+    "922c3af13e34f43b7688",
+    "886427065bcd0e09cdf2",
+    "634e61d1bf946088bc7f"
+   ],
+   "duration": 30.33,
+   "lines": [
+    {
+     "text": "Here is why the planner treats them differently. Picture it as a gate that decides whether a query may take the fast path.",
+     "start": 0.15,
+     "end": 7.558
+    },
+    {
+     "text": "Exists walks through without showing anything. The planner converts it to a semi join, or an anti join for not exists, every time.",
+     "start": 7.978,
+     "end": 18.786
+    },
+    {
+     "text": "The reason is that a row either exists or it does not. That is a plain true or false fact, with no unknown in it, so there is nothing to protect.",
+     "start": 19.206,
+     "end": 29.98
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 152,
+   "wer": 0.03225806451612903,
+   "exact": false,
+   "tolerated": [
+    {
+     "line": "The reason is that a row either exists or it does not. That is a plain true or false fact, with no unknown in it, so there is nothing to protect.",
+     "said": "row",
+     "heard": "roe"
+    }
+   ]
+  },
+  "07": {
+   "hash": "54c457b8bf4848d5",
+   "takes": [
+    "5b1f2e9a18fff0e2c81c",
+    "b3c5094bf2f73e2d419d",
+    "fbf22866caab9e86fea6",
+    "b56273c88d2a9b8ac63e"
+   ],
+   "duration": 35.419,
+   "lines": [
+    {
+     "text": "Not in is stopped at the gate and asked for a certificate.",
+     "start": 0.15,
+     "end": 4.366
+    },
+    {
+     "text": "The planner may convert it to an anti join only if it can prove that neither side can ever be missing. That proof has to come from a declared constraint.",
+     "start": 4.786,
+     "end": 16.734
+    },
+    {
+     "text": "Watch the two outcomes. With the proof, fast anti join. Without it, a side path that evaluates the real semantics, correct but slower.",
+     "start": 17.154,
+     "end": 27.182
+    },
+    {
+     "text": "That side path is why the query still returns the right answer, even when the answer is the surprising empty result.",
+     "start": 27.602,
+     "end": 35.069
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 146,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "08": {
+   "hash": "6b6fd018d122486d",
+   "takes": [
+    "5739f9f5e95fbc1afbc8",
+    "d44d358caa59d4251cac",
+    "b995e392a6b7f0ea2f34"
+   ],
+   "duration": 20.776,
+   "lines": [
+    {
+     "text": "Start from the fast plan, an anti join. Then someone removes the guarantee that the column is never missing, though every stored row stays exactly as it was.",
+     "start": 0.15,
+     "end": 12.847
+    },
+    {
+     "text": "Think about what the planner can see when it plans tomorrow's query.",
+     "start": 13.267,
+     "end": 17.708
+    },
+    {
+     "text": "What happens to the plan?",
+     "start": 18.528,
+     "end": 20.426
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 130,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "08a": {
+   "hash": "0e6f9d18fa3de43d",
+   "takes": [
+    "4a2b518403fc246ffe09",
+    "48fd1156e729575b90d5",
+    "c7e19094a572e86f0b71"
+   ],
+   "duration": 27.642,
+   "lines": [
+    {
+     "text": "It changes to the side path. The result stays the same.",
+     "start": 0.15,
+     "end": 4.402
+    },
+    {
+     "text": "The planner cannot rely on today's data, because tomorrow a missing value could arrive and make the rewrite wrong. It trusts only what the schema promises.",
+     "start": 4.822,
+     "end": 15.972
+    },
+    {
+     "text": "So the data does not decide the plan, and the query does not error or change its rows. The safety of not in belongs to the schema, not to the query.",
+     "start": 16.392,
+     "end": 27.292
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -2.0,
+   "wpm": 148,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "09": {
+   "hash": "44fdfdc10239a2e4",
+   "takes": [
+    "5db4fc8b80fc59781a47",
+    "077025eb05dcb4f0e83d",
+    "6ae72aec66dc0eb0665c",
+    "1c9ebc72e46553c312da"
+   ],
+   "duration": 38.183,
+   "lines": [
+    {
+     "text": "Now read it in the plan. Four labels are worth recognising.",
+     "start": 0.15,
+     "end": 4.226
+    },
+    {
+     "text": "A semi join or an anti join in the plan means the fast path was found. Version eighteen added a right sided semi join, which lets the engine build its hash table from the other input.",
+     "start": 4.646,
+     "end": 17.659
+    },
+    {
+     "text": "And the label to be suspicious of is the one at the bottom: a sub plan hanging under a not in. That is the fallback.",
+     "start": 18.079,
+     "end": 28.161
+    },
+    {
+     "text": "So when a not in is slow, look at the join type before you tune anything. Usually the fix is a constraint, or a rewrite, not an index.",
+     "start": 28.581,
+     "end": 37.833
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -1.9,
+   "wpm": 157,
+   "wer": 0.09090909090909091,
+   "exact": false,
+   "tolerated": [
+    {
+     "line": "Now read it in the plan. Four labels are worth recognising.",
+     "said": "recognising",
+     "heard": "recognizing"
+    },
+    {
+     "line": "And the label to be suspicious of is the one at the bottom: a sub plan hanging under a not in. That is the fallback.",
+     "said": "not",
+     "heard": "knot"
+    },
+    {
+     "line": "So when a not in is slow, look at the join type before you tune anything. Usually the fix is a constraint, or a rewrite, not an index.",
+     "said": "not",
+     "heard": "knot"
+    }
+   ]
+  },
+  "10": {
+   "hash": "35dc8495e65c91b3",
+   "takes": [
+    "4ea85a03ccf6706e6c24",
+    "0586e9c5cee3c11d60ad",
+    "e2a092e2ea5b9d19310d",
+    "aedb4920a09d8e97a75c"
+   ],
+   "duration": 28.703,
+   "lines": [
+    {
+     "text": "So for an existence question, default to exists and not exists.",
+     "start": 0.15,
+     "end": 4.832
+    },
+    {
+     "text": "They need no certificate, they never duplicate rows, and the planner always has a fast path for them.",
+     "start": 5.252,
+     "end": 12.315
+    },
+    {
+     "text": "Treat not in as safe only when a constraint says so.",
+     "start": 12.735,
+     "end": 16.511
+    },
+    {
+     "text": "So far every question has been about one table at a time. Next: climbing a hierarchy, one level at a time, until there are no more levels left to climb.",
+     "start": 17.331,
+     "end": 28.354
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -2.2,
+   "wpm": 146,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "11": {
+   "hash": "81811eff5e681944",
+   "takes": [
+    "63cf26b646d6af0153b4",
+    "729f79da346e247f854d"
+   ],
+   "duration": 9.641,
+   "lines": [
+    {
+     "text": "Two checks. First, one spelling can return nothing when its subquery column contains a missing value.",
+     "start": 0.15,
+     "end": 7.361
+    },
+    {
+     "text": "Which one?",
+     "start": 8.181,
+     "end": 9.291
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 112,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "11a": {
+   "hash": "3a65235466e32b53",
+   "takes": [
+    "de99759975410ad2820f",
+    "2c5044b2087fdbc86c7f"
+   ],
+   "duration": 13.064,
+   "lines": [
+    {
+     "text": "Not in.",
+     "start": 0.15,
+     "end": 0.854
+    },
+    {
+     "text": "It is a chain of not equal comparisons, and one missing value makes the whole chain unknown. The other three test whether a row exists, which cannot be unknown.",
+     "start": 1.274,
+     "end": 12.714
+    }
+   ],
+   "lufs": -15.8,
+   "true_peak": -2.1,
+   "wpm": 142,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "12": {
+   "hash": "f3b8c7b3ecb738ea",
+   "takes": [
+    "b1a58e5351e7453aa3af",
+    "76819bcdb098a298d7aa"
+   ],
+   "duration": 9.173,
+   "lines": [
+    {
+     "text": "Second check. A customer has three matching orders, and you run a semi join.",
+     "start": 0.15,
+     "end": 5.445
+    },
+    {
+     "text": "How many rows does that customer produce?",
+     "start": 6.265,
+     "end": 8.823
+    }
+   ],
+   "lufs": -16.8,
+   "true_peak": -4.5,
+   "wpm": 137,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "12a": {
+   "hash": "7e6d04b06b4eabf5",
+   "takes": [
+    "b9e7d2efcb2ee96a4328",
+    "ee92bd62531660d8c8d1"
+   ],
+   "duration": 11.456,
+   "lines": [
+    {
+     "text": "One.",
+     "start": 0.15,
+     "end": 0.792
+    },
+    {
+     "text": "A semi join asks only whether a match exists. The number of matches never multiplies the row, which is exactly what separates it from a plain join.",
+     "start": 1.212,
+     "end": 11.106
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -2.1,
+   "wpm": 147,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  }
+ }
+}
