@@ -67,7 +67,8 @@
     },
     {
       "lines": [
-        "Now you want only the top three. The natural thing to write is a filter on the number.",
+        "Now you want only the top three.",
+        "The natural thing to write is a filter on the number.",
         "Follow the boxes left to right. The filter step comes before the window step, so at that point there is no number to filter on.",
         "That is the same reason you filter an aggregate with having, not where.",
         "The portable fix is to compute the number in an inner query and filter in the outer one."
@@ -76,8 +77,9 @@
     {
       "lines": [
         "Several engines give you a shorter spelling. It filters on a window function directly, and it runs right after the window step.",
-        "Four engines on screen have it. It is not in the ISO standard, and PostgreSQL does not have it.",
-        "So treat it as a convenience where you have it, and keep the portable form in your head for where you do not."
+        "Four engines on screen have it. It is not in the ISO standard, and Postgres does not have it.",
+        "So treat it as a convenience where you have it.",
+        "And keep the portable form in your head for where you do not."
       ]
     },
     {
@@ -105,7 +107,7 @@
       ],
       "answer": [
         "No.",
-        "It came from Teradata and several engines have adopted it, but the standard does not include it, and PostgreSQL does not implement it."
+        "It came from Teradata and several engines have adopted it, but the standard does not include it, and Postgres does not implement it."
       ]
     },
     {

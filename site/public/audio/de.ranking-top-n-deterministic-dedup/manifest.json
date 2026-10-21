@@ -1,0 +1,587 @@
+{
+ "topic": "de.ranking-top-n-deterministic-dedup",
+ "voice": "breeze-mellow-v2",
+ "asr": "large-v3-turbo",
+ "clips": {
+  "01": {
+   "hash": "84f01edf4d4bcab1",
+   "takes": [
+    "9311edfd9d9c0145d7b0",
+    "ab3e3e5bb1e53036575d",
+    "cf3c0795e32528e86475"
+   ],
+   "duration": 21.985,
+   "lines": [
+    {
+     "text": "Now we count positions, and pick exactly one winner when several rows tie for first.",
+     "start": 0.15,
+     "end": 5.969
+    },
+    {
+     "text": "Look at the four scores. Two of them are the same, and that single fact is the source of every trap in this topic.",
+     "start": 6.389,
+     "end": 14.378
+    },
+    {
+     "text": "Who is second? There is no right answer in the data, only a decision you have to make.",
+     "start": 15.198,
+     "end": 21.635
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -2.0,
+   "wpm": 156,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "02": {
+   "hash": "c08940d4b8b82d7c",
+   "takes": [
+    "28ca279142e19d63ca12",
+    "66e0ad55d301d07c4bc3",
+    "b5ff4854e27cf9ae89b5",
+    "7d0765949fdfd2a0bcf1"
+   ],
+   "duration": 31.169,
+   "lines": [
+    {
+     "text": "SQL gives you three ways to number, and they only disagree about ties. Read the three columns left to right.",
+     "start": 0.15,
+     "end": 6.98
+    },
+    {
+     "text": "Row number gives everyone a distinct number, so it has to pick between the tied pair. Rank gives them both second place, and the next row skips to fourth.",
+     "start": 7.4,
+     "end": 18.359
+    },
+    {
+     "text": "Dense rank gives them both second and the next row third, with no gap.",
+     "start": 18.779,
+     "end": 23.904
+    },
+    {
+     "text": "None is the correct one. Which you want depends on what you do with the number afterwards.",
+     "start": 24.324,
+     "end": 30.819
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -1.9,
+   "wpm": 154,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "03": {
+   "hash": "d8a7f0332e027a34",
+   "takes": [
+    "1d05be938c3a37f8d78f",
+    "5d1fb405ab971c05e1f2",
+    "634d63f5abf52959020d"
+   ],
+   "duration": 14.759,
+   "lines": [
+    {
+     "text": "Make the gap concrete. Picture three customers sharing the top spot on this month's orders.",
+     "start": 0.15,
+     "end": 6.247
+    },
+    {
+     "text": "Remember what rank means: the row number of the first row of the group.",
+     "start": 6.667,
+     "end": 11.461
+    },
+    {
+     "text": "What does the next customer get?",
+     "start": 12.281,
+     "end": 14.409
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 142,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "03a": {
+   "hash": "df63b06b9f780d8b",
+   "takes": [
+    "419903b7623bc159628d",
+    "a818280baea3c2161dcc",
+    "dd721ee968360e6f610d"
+   ],
+   "duration": 21.735,
+   "lines": [
+    {
+     "text": "Four.",
+     "start": 0.15,
+     "end": 0.778
+    },
+    {
+     "text": "Three rows came before it, so the next position is fourth. Dense rank would say two, because it counts groups of ties, not rows.",
+     "start": 1.198,
+     "end": 10.558
+    },
+    {
+     "text": "Two or three would only be right if the tied rows counted as one, or as part of the next group, and one is the rank the tied rows themselves share.",
+     "start": 10.978,
+     "end": 21.385
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 155,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "04": {
+   "hash": "86a646547a5790c7",
+   "takes": [
+    "ddd4505a11ecf08a61e9",
+    "214637c857b4f4032945",
+    "957cda7f481d0e40113a"
+   ],
+   "duration": 24.943,
+   "lines": [
+    {
+     "text": "Watch the two tied rows trade numbers. Row number must give one of them two and the other three.",
+     "start": 0.15,
+     "end": 7.539
+    },
+    {
+     "text": "But nothing in the language says which. It depends on the order the rows arrive in from the scan beneath it.",
+     "start": 7.959,
+     "end": 14.545
+    },
+    {
+     "text": "So the same query can number the same two rows differently on a different day. The data did not change. The order they were read in did.",
+     "start": 14.965,
+     "end": 24.593
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 161,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "05": {
+   "hash": "c836b6a1fe6622e6",
+   "takes": [
+    "6293f85b980e66e3c802",
+    "0b6ec7ec37677c392fef",
+    "85dbe0a0a699ba938a1d"
+   ],
+   "duration": 12.872,
+   "lines": [
+    {
+     "text": "Test that claim. The ordering does not fully separate two of the rows.",
+     "start": 0.15,
+     "end": 4.78
+    },
+    {
+     "text": "You run the same ranking twice on unchanged data.",
+     "start": 5.2,
+     "end": 8.755
+    },
+    {
+     "text": "Are the two results guaranteed to match?",
+     "start": 9.575,
+     "end": 12.522
+    }
+   ],
+   "lufs": -16.3,
+   "true_peak": -3.9,
+   "wpm": 135,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "05a": {
+   "hash": "bf5e0510798238ca",
+   "takes": [
+    "12f9269709fe56730f79",
+    "5d666b6901f80cf32bf9",
+    "fa91623f63f337581479"
+   ],
+   "duration": 23.859,
+   "lines": [
+    {
+     "text": "No.",
+     "start": 0.15,
+     "end": 0.624
+    },
+    {
+     "text": "A single run often repeats, which is what hides the problem. A different scan order after maintenance, or a plan change, can swap the tied rows.",
+     "start": 1.044,
+     "end": 13.038
+    },
+    {
+     "text": "An index does not make it deterministic, and this is not specific to one engine. A reproducible ranking needs a reproducible order.",
+     "start": 13.458,
+     "end": 23.509
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -2.1,
+   "wpm": 123,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "06": {
+   "hash": "7d8bf41f45cac56e",
+   "takes": [
+    "edbd30887944b911d5c3",
+    "0bccfec4734db77fa818",
+    "ab3e534a46e76ffeca82"
+   ],
+   "duration": 22.224,
+   "lines": [
+    {
+     "text": "The fix is cheap and mechanical. End the ordering with a column that is unique, usually the primary key.",
+     "start": 0.15,
+     "end": 7.148
+    },
+    {
+     "text": "Now no two rows can tie. Look at the two boxes: the same number every run.",
+     "start": 7.568,
+     "end": 13.483
+    },
+    {
+     "text": "That matters the moment the numbering feeds something else: a limit, a dedup, or a test that asserts on the result.",
+     "start": 13.903,
+     "end": 21.874
+    }
+   ],
+   "lufs": -16.2,
+   "true_peak": -2.1,
+   "wpm": 151,
+   "wer": 0.09523809523809523,
+   "exact": false,
+   "tolerated": [
+    {
+     "line": "That matters the moment the numbering feeds something else: a limit, a dedup, or a test that asserts on the result.",
+     "said": "dedup",
+     "heard": "date up"
+    }
+   ]
+  },
+  "07": {
+   "hash": "b221dd22dcb083b8",
+   "takes": [
+    "d3a5c84b2c517a6be6a2",
+    "2894bc9198c4f2e8717e",
+    "199b5e22d1e17b8ff0f4",
+    "210d52f863a19adb577a"
+   ],
+   "duration": 31.564,
+   "lines": [
+    {
+     "text": "Deduplication is just this pattern with a cutoff of one. Five records for three customers.",
+     "start": 0.15,
+     "end": 6.646
+    },
+    {
+     "text": "Number each customer's records newest first, and keep the ones numbered one. Watch three survive.",
+     "start": 7.066,
+     "end": 14.271
+    },
+    {
+     "text": "Two details make it safe to rerun. The unique tie-breaker, so two records with the same timestamp always resolve the same way.",
+     "start": 14.691,
+     "end": 23.302
+    },
+    {
+     "text": "And row number, not rank. Rank would keep every tied first, so the duplicates you meant to remove would survive.",
+     "start": 23.722,
+     "end": 31.214
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 139,
+   "wer": 0.08695652173913043,
+   "exact": false,
+   "tolerated": [
+    {
+     "line": "Two details make it safe to rerun. The unique tie-breaker, so two records with the same timestamp always resolve the same way.",
+     "said": "tie breaker",
+     "heard": "tiebreaker"
+    }
+   ]
+  },
+  "08": {
+   "hash": "305210577585dca4",
+   "takes": [
+    "5e8c9c88e0e9b85b2b55",
+    "c812a5960e8473b5f34d",
+    "08c736b6eb0674e38c88",
+    "a945acbbb9ee87635019",
+    "afbdb4058b3ed3680796"
+   ],
+   "duration": 28.925,
+   "lines": [
+    {
+     "text": "Now you want only the top three.",
+     "start": 0.15,
+     "end": 2.705
+    },
+    {
+     "text": "The natural thing to write is a filter on the number.",
+     "start": 3.125,
+     "end": 6.577
+    },
+    {
+     "text": "Follow the boxes left to right. The filter step comes before the window step, so at that point there is no number to filter on.",
+     "start": 6.997,
+     "end": 15.852
+    },
+    {
+     "text": "That is the same reason you filter an aggregate with having, not where.",
+     "start": 16.272,
+     "end": 20.992
+    },
+    {
+     "text": "The portable fix is to compute the number in an inner query and filter in the outer one.",
+     "start": 21.412,
+     "end": 28.575
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -2.2,
+   "wpm": 154,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "09": {
+   "hash": "310d8c843be1cde0",
+   "takes": [
+    "3e5e839ae8d14450fd75",
+    "eb2312f4a1454aa90765",
+    "0c4e252a23cb5e67d573",
+    "89750b1898c9b4919d5b"
+   ],
+   "duration": 25.634,
+   "lines": [
+    {
+     "text": "Several engines give you a shorter spelling. It filters on a window function directly, and it runs right after the window step.",
+     "start": 0.15,
+     "end": 8.227
+    },
+    {
+     "text": "Four engines on screen have it. It is not in the ISO standard, and Postgres does not have it.",
+     "start": 8.647,
+     "end": 16.647
+    },
+    {
+     "text": "So treat it as a convenience where you have it.",
+     "start": 17.067,
+     "end": 20.605
+    },
+    {
+     "text": "And keep the portable form in your head for where you do not.",
+     "start": 21.025,
+     "end": 25.284
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 152,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "10": {
+   "hash": "ea14171049b10dc3",
+   "takes": [
+    "25954d914dd7ccbfdc30",
+    "33a6754081f601021d0b",
+    "fa772710db40fd8500c2",
+    "320efeaddc7cc802cdb4"
+   ],
+   "duration": 30.458,
+   "lines": [
+    {
+     "text": "There are two ways to run the same top N per group, and the plans differ.",
+     "start": 0.15,
+     "end": 5.576
+    },
+    {
+     "text": "Ranking sorts everything once, numbers every row, and throws away the rest. If that sort is already needed for other windows, the numbering is almost free.",
+     "start": 5.996,
+     "end": 16.357
+    },
+    {
+     "text": "The lateral form takes each group on its own. With an index on the group and the order, each is a short bounded scan.",
+     "start": 16.777,
+     "end": 24.574
+    },
+    {
+     "text": "Neither always wins. The index, and the shared sort, decide.",
+     "start": 24.994,
+     "end": 30.108
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 150,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "11": {
+   "hash": "e2227c65dcdb35f9",
+   "takes": [
+    "24a73888c84f1b2c2378",
+    "01131ef93b7d3a3a3b07",
+    "8cb38b2bd603dcec0126",
+    "8aafd78f7c37ee34e9c0"
+   ],
+   "duration": 28.915,
+   "lines": [
+    {
+     "text": "To sum up. Say which numbering you mean, and why, because ties are exactly where the three disagree.",
+     "start": 0.15,
+     "end": 6.677
+    },
+    {
+     "text": "Finish every ranking order with a column that is unique.",
+     "start": 7.097,
+     "end": 10.746
+    },
+    {
+     "text": "Use the direct filter where you have it and the inner query where you do not, and choose between the two plans by the index and the shared sort.",
+     "start": 11.166,
+     "end": 20.594
+    },
+    {
+     "text": "Rows arrive scattered across time. Next: pulling them back together into one coherent story.",
+     "start": 21.414,
+     "end": 28.565
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -1.9,
+   "wpm": 147,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "12": {
+   "hash": "c5d21306845d3b83",
+   "takes": [
+    "7b019da8ccdad44bef9f",
+    "7c7e815a3f9301ff0946"
+   ],
+   "duration": 7.757,
+   "lines": [
+    {
+     "text": "Two checks. First, whether that direct filter clause belongs to the ISO standard.",
+     "start": 0.15,
+     "end": 5.99
+    },
+    {
+     "text": "Does it?",
+     "start": 6.81,
+     "end": 7.407
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -2.5,
+   "wpm": 116,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "12a": {
+   "hash": "d6c843c6d2319068",
+   "takes": [
+    "12f9269709fe56730f79",
+    "0474f3821531740a784d"
+   ],
+   "duration": 10.81,
+   "lines": [
+    {
+     "text": "No.",
+     "start": 0.15,
+     "end": 0.624
+    },
+    {
+     "text": "It came from Teradata and several engines have adopted it, but the standard does not include it, and Postgres does not implement it.",
+     "start": 1.044,
+     "end": 10.46
+    }
+   ],
+   "lufs": -16.6,
+   "true_peak": -1.9,
+   "wpm": 139,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "13": {
+   "hash": "2323c9b1c43f1b9d",
+   "takes": [
+    "082277ae8ba25a17885c",
+    "77b71b63221a587aed5e",
+    "9dc57d79003f47fd9482"
+   ],
+   "duration": 13.499,
+   "lines": [
+    {
+     "text": "Second check. Scores of ninety, eighty, eighty and seventy.",
+     "start": 0.15,
+     "end": 5.83
+    },
+    {
+     "text": "Count the groups of distinct scores, not the rows.",
+     "start": 6.25,
+     "end": 9.733
+    },
+    {
+     "text": "What is the dense rank of the seventy?",
+     "start": 10.553,
+     "end": 13.149
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 116,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "13a": {
+   "hash": "9510126b2ec75fd9",
+   "takes": [
+    "b00ef77f52db7d98d4ed",
+    "557ec9b4dde05d1e525b"
+   ],
+   "duration": 10.774,
+   "lines": [
+    {
+     "text": "Three.",
+     "start": 0.15,
+     "end": 0.578
+    },
+    {
+     "text": "There are three distinct scores down to it: ninety, eighty, seventy. Plain rank would say four, because three rows come before it.",
+     "start": 0.998,
+     "end": 10.424
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 128,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  }
+ }
+}
