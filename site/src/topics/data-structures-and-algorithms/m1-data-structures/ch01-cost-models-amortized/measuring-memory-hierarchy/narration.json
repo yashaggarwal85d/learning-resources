@@ -12,10 +12,10 @@
     {
       "lines": [
         "Before we earn the technique, look at the shape it produces.",
-        "Take a working set that starts tiny and doubles, up to a gibibyte. At each size, time one memory load.",
+        "Take a working set that starts tiny and doubles, up to a gigabyte. At each size, time one memory load.",
         "Think about what changes as the set outgrows each level of the machine.",
         { "beat": 0.4 },
-        "What does the curve look like?"
+        "What shape is the curve?"
       ],
       "answer": [
         "A staircase. Flat while the working set fits in one level, then a step up as it spills into the next, slower one.",
@@ -103,7 +103,7 @@
         "That closes the loop. You proved what the doubling array costs in copies, and now you have measured the machine that turns copies into nanoseconds.",
         "The shape of the staircase carries to any machine. The exact numbers belong only to the one you measured.",
         { "beat": 0.4 },
-        "Chapter two opens with the container itself: growth by two or by one and a half, reserve and shrink, and why contiguous storage keeps winning on this very staircase."
+        "Chapter two opens with the container itself: growth by two or by one point five, reserve and shrink, and why contiguous storage keeps winning on this very staircase."
       ]
     }
   ]

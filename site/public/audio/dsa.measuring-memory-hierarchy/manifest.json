@@ -1,0 +1,537 @@
+{
+ "topic": "dsa.measuring-memory-hierarchy",
+ "voice": "breeze-mellow-v2",
+ "asr": "large-v3-turbo",
+ "clips": {
+  "01": {
+   "hash": "12e253e19b658cf4",
+   "takes": [
+    "647fdef5fc4f7d150afa",
+    "0def0fdaf403c0c73cfb",
+    "9299124d40474cb95b03"
+   ],
+   "duration": 30.738,
+   "lines": [
+    {
+     "text": "For two topics we have taken a memory level's two numbers as a gift: the block size, and how much fits in the fast level. Every bound we proved rested on them.",
+     "start": 0.15,
+     "end": 12.338
+    },
+    {
+     "text": "Your machine does not hand them over. It has cache lines, caches of several sizes, a translation buffer and a prefetcher.",
+     "start": 12.758,
+     "end": 22.57
+    },
+    {
+     "text": "So today we stop assuming and measure each one, then read the staircase of latencies they make together.",
+     "start": 23.39,
+     "end": 30.388
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 139,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "02": {
+   "hash": "6a04890c6f7cdd7a",
+   "takes": [
+    "a6e7da98be9f06a3aaa4",
+    "e5fb2f58a3503cd3d80c",
+    "0623f15cef4adb656096",
+    "bce42d4f6aea0432d9a9"
+   ],
+   "duration": 20.68,
+   "lines": [
+    {
+     "text": "Before we earn the technique, look at the shape it produces.",
+     "start": 0.15,
+     "end": 3.849
+    },
+    {
+     "text": "Take a working set that starts tiny and doubles, up to a gigabyte. At each size, time one memory load.",
+     "start": 4.269,
+     "end": 13.161
+    },
+    {
+     "text": "Think about what changes as the set outgrows each level of the machine.",
+     "start": 13.581,
+     "end": 18.414
+    },
+    {
+     "text": "What shape is the curve?",
+     "start": 19.234,
+     "end": 20.33
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -1.9,
+   "wpm": 142,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "02a": {
+   "hash": "de00cacf7f2b76ca",
+   "takes": [
+    "62fcdb22eb1058534abc",
+    "144bd6697dcb046f1e13",
+    "01e5c140855b1b7b0653"
+   ],
+   "duration": 31.29,
+   "lines": [
+    {
+     "text": "A staircase. Flat while the working set fits in one level, then a step up as it spills into the next, slower one.",
+     "start": 0.15,
+     "end": 10.137
+    },
+    {
+     "text": "A smooth rise would mean no level has a fixed size, which is not how caches work. A straight line would mean every access costs the same, and a falling curve would mean bigger is faster.",
+     "start": 10.557,
+     "end": 24.463
+    },
+    {
+     "text": "Each flat run is a level. Each step is a capacity. That staircase is the whole topic.",
+     "start": 24.883,
+     "end": 30.94
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 146,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "03": {
+   "hash": "7c4fb2a7f6b83d57",
+   "takes": [
+    "767ac67f99e42cbdba13",
+    "21dc808e3c808fdd6908",
+    "1c7ee8702eeb4ee61ae3",
+    "5f61d8c762415addd753"
+   ],
+   "duration": 36.842,
+   "lines": [
+    {
+     "text": "The first trap is how to time one load. A modern core runs dozens of independent loads at once.",
+     "start": 0.15,
+     "end": 7.388
+    },
+    {
+     "text": "So a loop that adds up an array measures throughput, because the misses hide behind each other.",
+     "start": 7.808,
+     "end": 15.162
+    },
+    {
+     "text": "The fix is old and clever: make each load depend on the one before. Store in every slot the index of the next slot to visit.",
+     "start": 15.582,
+     "end": 26.065
+    },
+    {
+     "text": "Now follow the chain on screen. The next address is the previous result, so nothing can overlap, and the time per step is the latency of one load.",
+     "start": 26.485,
+     "end": 36.492
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 147,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "04": {
+   "hash": "5ecb9a2fba479269",
+   "takes": [
+    "266f5934b1356abded19",
+    "db86550002da1d0f9fc7",
+    "df318187d6ce68e31d2e",
+    "34272f22ac7c90d9097f"
+   ],
+   "duration": 35.337,
+   "lines": [
+    {
+     "text": "The chain needs care. It must be one single cycle that visits every slot exactly once.",
+     "start": 0.15,
+     "end": 7.393
+    },
+    {
+     "text": "Break it into short loops and the walk keeps revisiting a few slots that live happily in cache. You would be measuring nothing.",
+     "start": 7.813,
+     "end": 15.233
+    },
+    {
+     "text": "Sattolo's algorithm, from nineteen eighty six, guarantees a single cycle. Its whole trick is that the swap partner is always drawn from strictly below.",
+     "start": 15.653,
+     "end": 27.616
+    },
+    {
+     "text": "And the walk goes in random order, not address order. Hold that thought, because it is about to matter.",
+     "start": 28.036,
+     "end": 34.987
+    }
+   ],
+   "lufs": -16.3,
+   "true_peak": -2.0,
+   "wpm": 139,
+   "wer": 0.043478260869565216,
+   "exact": false,
+   "tolerated": [
+    {
+     "line": "Break it into short loops and the walk keeps revisiting a few slots that live happily in cache. You would be measuring nothing.",
+     "said": "cache",
+     "heard": "cash"
+    },
+    {
+     "line": "Sattolo's algorithm, from nineteen eighty six, guarantees a single cycle. Its whole trick is that the swap partner is always drawn from strictly below.",
+     "said": "sattolos",
+     "heard": "sotolos"
+    }
+   ]
+  },
+  "05": {
+   "hash": "69f31b8c7c81ae86",
+   "takes": [
+    "2432072ddc8cc708a2f4",
+    "1030bd7b527ffdb72df9",
+    "ef8a6a80e0de66013119",
+    "be3dac1be8e9cd1cbc67"
+   ],
+   "duration": 33.198,
+   "lines": [
+    {
+     "text": "Now read the staircase. While the set fits in the first cache, every load hits: about a nanosecond.",
+     "start": 0.15,
+     "end": 7.228
+    },
+    {
+     "text": "Past that cache the curve steps up. Past the next, up again. Past the last one you land in main memory, fifty to a hundred nanoseconds.",
+     "start": 7.648,
+     "end": 19.136
+    },
+    {
+     "text": "That is a hundredfold between the top step and the bottom.",
+     "start": 19.556,
+     "end": 23.139
+    },
+    {
+     "text": "And here is the gift. The size where the curve climbs is the capacity of the level you just left. You did not look it up. You measured it.",
+     "start": 23.559,
+     "end": 32.848
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -1.9,
+   "wpm": 152,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "06": {
+   "hash": "9d0a8b1dd84d29da",
+   "takes": [
+    "7a21e39f84a159e3936c",
+    "364e4d7260fa462d7d0e",
+    "34f8b0fa5614148e8047"
+   ],
+   "duration": 26.246,
+   "lines": [
+    {
+     "text": "The chase finds the sizes. A second experiment finds the block. Walk a set bigger than the cache, but touch only every so many bytes. That gap is the stride.",
+     "start": 0.15,
+     "end": 12.531
+    },
+    {
+     "text": "Think about what is happening to the lines. When the stride is small, several touches land in the same line.",
+     "start": 12.951,
+     "end": 20.388
+    },
+    {
+     "text": "As the stride grows past a line, what does the cost per access do?",
+     "start": 21.208,
+     "end": 25.896
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 146,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "06a": {
+   "hash": "de135d30fd5d4644",
+   "takes": [
+    "3bdd9e2ce9d5b0a79c8c",
+    "0992d02a92d207e01b8e",
+    "b1a7afdb79afc170a0f3",
+    "94537b8d9bfe21d88227"
+   ],
+   "duration": 31.124,
+   "lines": [
+    {
+     "text": "It climbs, then flattens.",
+     "start": 0.15,
+     "end": 2.117
+    },
+    {
+     "text": "While the stride is smaller than a line, several touches share one transfer. Once the stride reaches the line, every touch needs its own, and the cost stops rising.",
+     "start": 2.537,
+     "end": 13.856
+    },
+    {
+     "text": "So the stride at the knee is the line size. For sixty four bit keys, a sixty four byte line holds eight of them.",
+     "start": 14.276,
+     "end": 21.993
+    },
+    {
+     "text": "Staying flat throughout or falling would both mean the line size does not matter, which the measurement refutes.",
+     "start": 22.413,
+     "end": 30.774
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 145,
+   "wer": 0.041666666666666664,
+   "exact": false,
+   "tolerated": [
+    {
+     "line": "So the stride at the knee is the line size. For sixty four bit keys, a sixty four byte line holds eight of them.",
+     "said": "byte",
+     "heard": "bit"
+    }
+   ]
+  },
+  "07": {
+   "hash": "32ffd87b10ce4209",
+   "takes": [
+    "a1366fe5228f28f9cd7a",
+    "e2da922e8a9d9ec17cd4",
+    "6aef9156a613d1eb2b8f",
+    "9f22aab9ed84fe5cfeb3"
+   ],
+   "duration": 30.864,
+   "lines": [
+    {
+     "text": "Now some honesty about that knee. A real chip has a prefetcher: it guesses your next line and fetches it early.",
+     "start": 0.15,
+     "end": 7.268
+    },
+    {
+     "text": "One common guesser also grabs the neighbouring line, which can make a sixty four byte line look twice as wide as it is.",
+     "start": 7.688,
+     "end": 14.926
+    },
+    {
+     "text": "So either visit the strided addresses in random order, so nothing can be guessed, or report the knee and name the prefetcher that moved it.",
+     "start": 15.346,
+     "end": 26.226
+    },
+    {
+     "text": "A measurement without that caveat is a story, not a number.",
+     "start": 26.646,
+     "end": 30.514
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -1.9,
+   "wpm": 156,
+   "wer": 0.09523809523809523,
+   "exact": false,
+   "tolerated": [
+    {
+     "line": "Now some honesty about that knee. A real chip has a prefetcher: it guesses your next line and fetches it early.",
+     "said": "prefetcher",
+     "heard": "pre fetcher"
+    },
+    {
+     "line": "One common guesser also grabs the neighbouring line, which can make a sixty four byte line look twice as wide as it is.",
+     "said": "neighbouring",
+     "heard": "neighboring"
+    }
+   ]
+  },
+  "08": {
+   "hash": "d96594868d1e5daf",
+   "takes": [
+    "3c0603ec97d08cce0e91",
+    "28d2a3a7b3ae50222b42",
+    "a2fd16ba2305f1aea162",
+    "b5fa21b1722309f1b25f"
+   ],
+   "duration": 31.212,
+   "lines": [
+    {
+     "text": "There is a second kind of miss, hiding underneath. Every access first translates its page to a physical one.",
+     "start": 0.15,
+     "end": 7.907
+    },
+    {
+     "text": "Those translations are cached in a small table, and its reach is the number of entries times the page size.",
+     "start": 8.327,
+     "end": 15.229
+    },
+    {
+     "text": "Stride across more pages than it holds and a new step appears, even when the data itself still fits in cache.",
+     "start": 15.649,
+     "end": 22.685
+    },
+    {
+     "text": "Bigger pages buy more reach from the same entries, which is why they help sprawling, pointer heavy programs.",
+     "start": 23.105,
+     "end": 30.862
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -1.9,
+   "wpm": 150,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "09": {
+   "hash": "7812bdacdd4e3adb",
+   "takes": [
+    "5e039d6138af59a49e0b",
+    "372e057706adf41b0a21",
+    "e34236e74adec84d4903",
+    "3e0ef6d66f43de4f3350"
+   ],
+   "duration": 35.412,
+   "lines": [
+    {
+     "text": "Now back to that word, random. Walk the same footprint in address order, and the prefetcher predicts every step. Watch the staircase nearly vanish.",
+     "start": 0.15,
+     "end": 11.447
+    },
+    {
+     "text": "Walk it as Sattolo's random cycle, and it can predict nothing. The staircase returns in full.",
+     "start": 11.867,
+     "end": 19.948
+    },
+    {
+     "text": "Lay the two curves on top of each other. The low flat one is the prefetcher working. The climbing one is the memory as it really is.",
+     "start": 20.368,
+     "end": 30.013
+    },
+    {
+     "text": "The gap between them is the prefetcher, measured, and nothing else.",
+     "start": 30.433,
+     "end": 35.062
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -1.9,
+   "wpm": 132,
+   "wer": 0.0625,
+   "exact": false,
+   "tolerated": [
+    {
+     "line": "Walk it as Sattolo's random cycle, and it can predict nothing. The staircase returns in full.",
+     "said": "sattolos",
+     "heard": "satolos"
+    }
+   ]
+  },
+  "10": {
+   "hash": "4227641658e482d2",
+   "takes": [
+    "c154b8704ff63bbaef67",
+    "69ace584b47b4c7b2a81",
+    "30bc2ef9d2aa55a734c9"
+   ],
+   "duration": 23.963,
+   "lines": [
+    {
+     "text": "One last thing to reconcile, and it closes the chapter. We proved that a doubling array costs about one copy per append, on average.",
+     "start": 0.15,
+     "end": 10.237
+    },
+    {
+     "text": "For a million appends we counted just over a million copies in total. That is a clean, correct count.",
+     "start": 10.657,
+     "end": 17.635
+    },
+    {
+     "text": "So why might the clock still show one append that stalls far longer than the rest?",
+     "start": 18.455,
+     "end": 23.613
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -1.9,
+   "wpm": 148,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "10a": {
+   "hash": "4d8fbe8fe40869ee",
+   "takes": [
+    "a57678f204147762f9e8",
+    "68dd78e30725fd95dcd9",
+    "dc83a14aa168f225eae7"
+   ],
+   "duration": 29.252,
+   "lines": [
+    {
+     "text": "Because a count is not a time.",
+     "start": 0.15,
+     "end": 2.467
+    },
+    {
+     "text": "The copies are right. But the one resize near the end copies hundreds of thousands of elements, and if that copy spills into slower memory, each element costs far more nanoseconds.",
+     "start": 2.887,
+     "end": 16.677
+    },
+    {
+     "text": "The count was not wrong, and the doubling rule did not break. The potential proof bounds the work. The staircase prices it, and both are true at once.",
+     "start": 17.097,
+     "end": 28.902
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -2.1,
+   "wpm": 135,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "11": {
+   "hash": "519871b3a9e8a815",
+   "takes": [
+    "532f7732e89da601aa95",
+    "d7de837adf1db98e3031",
+    "e77e0d36b08c3cdc982c"
+   ],
+   "duration": 32.371,
+   "lines": [
+    {
+     "text": "That closes the loop. You proved what the doubling array costs in copies, and now you have measured the machine that turns copies into nanoseconds.",
+     "start": 0.15,
+     "end": 10.823
+    },
+    {
+     "text": "The shape of the staircase carries to any machine. The exact numbers belong only to the one you measured.",
+     "start": 11.243,
+     "end": 18.162
+    },
+    {
+     "text": "Chapter two opens with the container itself: growth by two or by one point five, reserve and shrink, and why contiguous storage keeps winning on this very staircase.",
+     "start": 18.982,
+     "end": 32.021
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 133,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  }
+ }
+}
