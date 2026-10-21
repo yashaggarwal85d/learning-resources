@@ -1,0 +1,579 @@
+{
+ "topic": "de.merge-upsert-concurrent-writers",
+ "voice": "breeze-mellow-v2",
+ "asr": "large-v3-turbo",
+ "clips": {
+  "01": {
+   "hash": "353c52f1f4f128e0",
+   "takes": [
+    "286883d078710b8b7934",
+    "1f2d776f1cfa0803013b",
+    "93d47a7806e983b30db2"
+   ],
+   "duration": 29.969,
+   "lines": [
+    {
+     "text": "Writing meaning into a query is one thing. Now two sessions write at once, and you do not know whether the row already exists.",
+     "start": 0.15,
+     "end": 9.18
+    },
+    {
+     "text": "Look at the five staged rows. Each might be new, or might already be in the target, or might be a deletion in disguise.",
+     "start": 9.6,
+     "end": 17.602
+    },
+    {
+     "text": "Handling that row by row in application code is slow, and it is exactly where races hide. SQL has two statements for it, and they are not interchangeable.",
+     "start": 18.422,
+     "end": 29.619
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 152,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "02": {
+   "hash": "361f6ca48e378346",
+   "takes": [
+    "6165a152efe879a78b71",
+    "b609e1b57ddf7682c6de",
+    "0085e62e917cd740fed2"
+   ],
+   "duration": 26.632,
+   "lines": [
+    {
+     "text": "The first statement is merge. Think of it as a join with actions attached.",
+     "start": 0.15,
+     "end": 5.798
+    },
+    {
+     "text": "It joins source to target, decides for every source row whether a match exists, and runs the first branch that fits.",
+     "start": 6.218,
+     "end": 14.014
+    },
+    {
+     "text": "Watch the bars. Out of five rows, two are inserted, two are updated, and one is deleted, in one statement. Nothing else can do all three together.",
+     "start": 14.434,
+     "end": 26.282
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 140,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "03": {
+   "hash": "330d94f7f7ea255b",
+   "takes": [
+    "ec427238b24528764d87",
+    "8fdf3cda3f02f4558eca",
+    "c67de9b8c87342783de7"
+   ],
+   "duration": 22.445,
+   "lines": [
+    {
+     "text": "But the join has a rule you must enforce yourself. Look at the two lines going to the same target row.",
+     "start": 0.15,
+     "end": 7.724
+    },
+    {
+     "text": "Only one source row may change a given target row. The second attempt raises an error.",
+     "start": 8.144,
+     "end": 13.915
+    },
+    {
+     "text": "That is a feature. The alternative is quietly keeping one change and throwing the other away, which is silent data loss.",
+     "start": 14.335,
+     "end": 22.095
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 155,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "04": {
+   "hash": "85811c6c89bc2b91",
+   "takes": [
+    "a2086cd6e2c3d9822240",
+    "c4145bc01ae73385d264",
+    "6cb0b52ee563b2c24f0a"
+   ],
+   "duration": 15.197,
+   "lines": [
+    {
+     "text": "Test it. The staging table has two rows for the same existing wine, and both would change its stock.",
+     "start": 0.15,
+     "end": 7.144
+    },
+    {
+     "text": "Imagine the engine being kind to you. Then imagine it being strict.",
+     "start": 7.564,
+     "end": 13.031
+    },
+    {
+     "text": "Which does it do?",
+     "start": 13.851,
+     "end": 14.847
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 138,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "04a": {
+   "hash": "70aa5be211609aaf",
+   "takes": [
+    "a861869799b3a2f0d806",
+    "21e94f7edf9b53c8db89",
+    "81803476d87ec42b42ef"
+   ],
+   "duration": 21.998,
+   "lines": [
+    {
+     "text": "It raises an error.",
+     "start": 0.15,
+     "end": 1.604
+    },
+    {
+     "text": "The standard requires it. Applying both in order would depend on an order nobody promised, and applying the last silently would lose a change.",
+     "start": 2.024,
+     "end": 13.098
+    },
+    {
+     "text": "Skipping the wine is wrong too. The right fix is on your side: make sure each key appears once in the source before you merge.",
+     "start": 13.518,
+     "end": 21.648
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -3.0,
+   "wpm": 145,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "05": {
+   "hash": "30249b05986dfc64",
+   "takes": [
+    "731860555c410feb9825",
+    "e5d47a7a4e4ff61a03bf",
+    "7fb3dcf51686a45917b4"
+   ],
+   "duration": 24.092,
+   "lines": [
+    {
+     "text": "The second statement is the upsert. Insert, and if the key is taken, turn into an update.",
+     "start": 0.15,
+     "end": 6.693
+    },
+    {
+     "text": "The important part is where that decision is made. Look at the box: inside the unique index, atomically.",
+     "start": 7.113,
+     "end": 14.475
+    },
+    {
+     "text": "So whatever the other sessions do, you get one of two outcomes, an insert or an update, and never a failure from the race.",
+     "start": 14.895,
+     "end": 23.742
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -2.1,
+   "wpm": 147,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "06": {
+   "hash": "3e9ba062a074034a",
+   "takes": [
+    "5c4260378bdb270d4779",
+    "e3398ca7bf783370ade6",
+    "7447c74e93715e2bcd72",
+    "b0beea0c15a535b3d63b"
+   ],
+   "duration": 33.503,
+   "lines": [
+    {
+     "text": "Merge cannot make the same promise, and the timeline shows why. Read the top line first.",
+     "start": 0.15,
+     "end": 6.594
+    },
+    {
+     "text": "Merge reads, and concludes that the row is not matched. Only afterwards does it insert. Between those two points is a gap.",
+     "start": 7.014,
+     "end": 16.914
+    },
+    {
+     "text": "Now the bottom line. If another session commits the same key inside that gap, the insert collides with it like any other insert.",
+     "start": 17.334,
+     "end": 26.475
+    },
+    {
+     "text": "Merge does not go back and take the update branch. Nothing in it restarts the decision.",
+     "start": 26.895,
+     "end": 33.153
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -1.9,
+   "wpm": 138,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "07": {
+   "hash": "e1472fbf18a86395",
+   "takes": [
+    "db816b2ea098e9300abd",
+    "757fdb9f0a72554eed7e",
+    "618a3429450bc3b61bd3"
+   ],
+   "duration": 13.377,
+   "lines": [
+    {
+     "text": "Put yourself in session A. Your merge has decided to insert a brand new key.",
+     "start": 0.15,
+     "end": 5.743
+    },
+    {
+     "text": "Session B inserts the same key, and its commit lands first.",
+     "start": 6.163,
+     "end": 11.177
+    },
+    {
+     "text": "What happens to you?",
+     "start": 11.997,
+     "end": 13.027
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -2.1,
+   "wpm": 135,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "07a": {
+   "hash": "41551cd2a08f365a",
+   "takes": [
+    "8ee4add62e01a7f99d33",
+    "4e586ffd529ff73b2cc4",
+    "baed4da3b43476255817"
+   ],
+   "duration": 23.812,
+   "lines": [
+    {
+     "text": "You fail with a uniqueness violation.",
+     "start": 0.15,
+     "end": 2.944
+    },
+    {
+     "text": "Merge decided from a read that is now out of date, and it does not switch to the update branch. Only the upsert does that.",
+     "start": 3.364,
+     "end": 11.291
+    },
+    {
+     "text": "Both rows being stored would break the unique key, and the other session is not rolled back, because it committed. So code that merges concurrently has to be ready to retry.",
+     "start": 11.711,
+     "end": 23.462
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -2.0,
+   "wpm": 156,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "08": {
+   "hash": "eda56384add98f24",
+   "takes": [
+    "9f5b4ba1e1e97df70071",
+    "cc38004b53a5745d3889",
+    "8fcf1771474742f3275d",
+    "3f7a7a6ff9416f558a88"
+   ],
+   "duration": 26.294,
+   "lines": [
+    {
+     "text": "So which should you reach for?",
+     "start": 0.15,
+     "end": 2.15
+    },
+    {
+     "text": "If the need is insert, or update if present, use the upsert. It is race free by construction.",
+     "start": 2.7,
+     "end": 11.169
+    },
+    {
+     "text": "If the logic is richer, several branches, a delete, or a second source table, use merge, and accept that a real collision needs a retry.",
+     "start": 11.589,
+     "end": 21.981
+    },
+    {
+     "text": "Choose by the shape of the need, not by habit.",
+     "start": 22.401,
+     "end": 25.944
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.7,
+   "wpm": 135,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "09": {
+   "hash": "8f90fc017b0db89a",
+   "takes": [
+    "bacc493bd942137e2509",
+    "5093f12d91919d29e9e3",
+    "575556f48c0951af17ab",
+    "e2ff510eeec10267bb96"
+   ],
+   "duration": 31.593,
+   "lines": [
+    {
+     "text": "A statement that may insert, update or delete needs to say what it did. That is what returning is for.",
+     "start": 0.15,
+     "end": 7.779
+    },
+    {
+     "text": "Read the three rows. Merge action names the branch that ran. In version seventeen it became available.",
+     "start": 8.199,
+     "end": 15.564
+    },
+    {
+     "text": "Version eighteen added old and new values, so you can see before and after together. An insert has no old, and a delete has no new.",
+     "start": 15.984,
+     "end": 26.995
+    },
+    {
+     "text": "It saves you re querying afterwards to find out what happened.",
+     "start": 27.416,
+     "end": 31.243
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 141,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "10": {
+   "hash": "e3ab3837681351a8",
+   "takes": [
+    "4aeb507052fd1b6c95f3",
+    "3b7078c1935d665933fa",
+    "1665da3b67a32550f0d7",
+    "57482d9d8ed74fd73fb0"
+   ],
+   "duration": 31.265,
+   "lines": [
+    {
+     "text": "Everything so far assumed a row store. On a lakehouse, the same four letters mean something different.",
+     "start": 0.15,
+     "end": 7.907
+    },
+    {
+     "text": "Look at the file with the red mark. A table of Parquet files has no in place update, so a single touched row means rewriting the whole file that holds it.",
+     "start": 8.327,
+     "end": 18.629
+    },
+    {
+     "text": "And a catch all branch, delete everything not in the source, can touch every file.",
+     "start": 19.049,
+     "end": 24.658
+    },
+    {
+     "text": "So on a lakehouse, write your merge conditions to touch as few files as possible.",
+     "start": 25.078,
+     "end": 30.915
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.8,
+   "wpm": 150,
+   "wer": 0.23529411764705882,
+   "exact": false,
+   "tolerated": [
+    {
+     "line": "Everything so far assumed a row store. On a lakehouse, the same four letters mean something different.",
+     "said": "row store",
+     "heard": "rose door"
+    },
+    {
+     "line": "Everything so far assumed a row store. On a lakehouse, the same four letters mean something different.",
+     "said": "lakehouse",
+     "heard": "lake house"
+    },
+    {
+     "line": "So on a lakehouse, write your merge conditions to touch as few files as possible.",
+     "said": "lakehouse",
+     "heard": "lake house"
+    }
+   ]
+  },
+  "11": {
+   "hash": "a542d37150632290",
+   "takes": [
+    "e728bc71d2f68f43976d",
+    "b1435e139fa03a59f74a",
+    "5c0f03020c33661447c5",
+    "bb8191a30f603874abc4"
+   ],
+   "duration": 27.897,
+   "lines": [
+    {
+     "text": "Back to the load. Make sure each key appears once in the source.",
+     "start": 0.15,
+     "end": 4.372
+    },
+    {
+     "text": "Use the upsert for the plain case, and merge for richer logic with a retry in your pocket.",
+     "start": 4.792,
+     "end": 10.984
+    },
+    {
+     "text": "On a lakehouse, remember that cost is counted in files, not rows.",
+     "start": 11.404,
+     "end": 16.091
+    },
+    {
+     "text": "Every clause this section covered answers one question at a time. Next: a construct that looks at its neighbors on purpose, one window at a time.",
+     "start": 16.911,
+     "end": 27.547
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -1.9,
+   "wpm": 148,
+   "wer": 0.16666666666666666,
+   "exact": false,
+   "tolerated": [
+    {
+     "line": "On a lakehouse, remember that cost is counted in files, not rows.",
+     "said": "lakehouse",
+     "heard": "lake house"
+    }
+   ]
+  },
+  "12": {
+   "hash": "27814e74a40251e0",
+   "takes": [
+    "4b52d6e7461578bbd56d",
+    "729f79da346e247f854d"
+   ],
+   "duration": 9.316,
+   "lines": [
+    {
+     "text": "Two checks. First, which statement guarantees an insert or an update outcome under concurrency.",
+     "start": 0.15,
+     "end": 7.035
+    },
+    {
+     "text": "Which one?",
+     "start": 7.855,
+     "end": 8.966
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -1.9,
+   "wpm": 103,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "12a": {
+   "hash": "9123e43d3b19e66d",
+   "takes": [
+    "09fdd3f40b8e4a771809",
+    "cb445ba5514efa11aa9f"
+   ],
+   "duration": 11.65,
+   "lines": [
+    {
+     "text": "It is the upsert.",
+     "start": 0.15,
+     "end": 1.905
+    },
+    {
+     "text": "It decides inside the index, atomically. Merge decides from a snapshot and can race, so it is not the one.",
+     "start": 2.325,
+     "end": 11.3
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 124,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "13": {
+   "hash": "1a81aa36a36150e1",
+   "takes": [
+    "bf6415d02372b6a7d5b3",
+    "f1d3c52d6d5ae924586a"
+   ],
+   "duration": 9.035,
+   "lines": [
+    {
+     "text": "Second check. The release that let merge report which action it took on each row.",
+     "start": 0.15,
+     "end": 5.651
+    },
+    {
+     "text": "Seventeen, eighteen, or earlier?",
+     "start": 6.471,
+     "end": 8.685
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 126,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "13a": {
+   "hash": "c932cdb55ecea911",
+   "takes": [
+    "aa34f7369775c4268a1a",
+    "09a007700b228f17d534"
+   ],
+   "duration": 7.546,
+   "lines": [
+    {
+     "text": "Seventeen.",
+     "start": 0.15,
+     "end": 1.19
+    },
+    {
+     "text": "Eighteen came later and added old and new values, which is a different feature.",
+     "start": 1.61,
+     "end": 7.196
+    }
+   ],
+   "lufs": -15.7,
+   "true_peak": -2.3,
+   "wpm": 119,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  }
+ }
+}
