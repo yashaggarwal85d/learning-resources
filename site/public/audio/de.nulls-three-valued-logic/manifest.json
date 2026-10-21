@@ -1,0 +1,561 @@
+{
+ "topic": "de.nulls-three-valued-logic",
+ "voice": "breeze-mellow-v2",
+ "asr": "large-v3-turbo",
+ "clips": {
+  "01": {
+   "hash": "d14078fea2857283",
+   "takes": [
+    "e323c9eedf2265278c26",
+    "2d9da286e7c24f11978b",
+    "5e12be52551e359b6d54"
+   ],
+   "duration": 26.339,
+   "lines": [
+    {
+     "text": "Every operator in the last topic assumed a value was simply there. In real data, often it is not.",
+     "start": 0.15,
+     "end": 7.045
+    },
+    {
+     "text": "Look at the dashed cells. Order one thousand two has no ship date yet, and several customers have no referrer.",
+     "start": 7.465,
+     "end": 15.619
+    },
+    {
+     "text": "SQL has one marker for all of that, and it breaks ordinary logic in ways that never raise an error. This topic is about those breaks.",
+     "start": 16.439,
+     "end": 25.989
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 148,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "02": {
+   "hash": "de319c93ca5863d0",
+   "takes": [
+    "cddaca7616a643320f5d",
+    "5c471b827a6a4423da53",
+    "8c2b564f096b4f95c715",
+    "f879cdf7b2e325b956f0"
+   ],
+   "duration": 37.992,
+   "lines": [
+    {
+     "text": "Ordinary logic has two answers. SQL's has three: true, false, and unknown.",
+     "start": 0.15,
+     "end": 7.355
+    },
+    {
+     "text": "Read the two tables. Find the cell where one side is true, and an unknown sits on the other, in the table for or. It is true. One sure branch is enough.",
+     "start": 7.775,
+     "end": 19.994
+    },
+    {
+     "text": "Now the mirror: false with unknown, in the table for and, is false.",
+     "start": 20.414,
+     "end": 27.129
+    },
+    {
+     "text": "Everywhere else, unknown spreads. That is the whole rule: a sure answer on one side wins, otherwise the doubt wins.",
+     "start": 27.549,
+     "end": 37.642
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 122,
+   "wer": 0.03125,
+   "exact": false,
+   "tolerated": [
+    {
+     "line": "Read the two tables. Find the cell where one side is true, and an unknown sits on the other, in the table for or. It is true. One sure branch is enough.",
+     "said": "or",
+     "heard": "ore"
+    }
+   ]
+  },
+  "03": {
+   "hash": "e61f9b43d683d84a",
+   "takes": [
+    "fe40dd03b670a1400ab8",
+    "77946a4bb625be28801b",
+    "84e7e2db0f3ec936ffa7"
+   ],
+   "duration": 14.097,
+   "lines": [
+    {
+     "text": "One more cell, and it is the one that causes the most trouble.",
+     "start": 0.15,
+     "end": 4.217
+    },
+    {
+     "text": "You know that not true is false, and not false is true. Now apply not to something you do not know.",
+     "start": 4.637,
+     "end": 12.159
+    },
+    {
+     "text": "What comes out?",
+     "start": 12.979,
+     "end": 13.747
+    }
+   ],
+   "lufs": -16.1,
+   "true_peak": -2.6,
+   "wpm": 157,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "03a": {
+   "hash": "5c8a41d40cf9e33b",
+   "takes": [
+    "3df827b0579f17ba9ffe",
+    "5f27392b14814393b904",
+    "2751125c7d692cecbd6f"
+   ],
+   "duration": 21.28,
+   "lines": [
+    {
+     "text": "Still unknown.",
+     "start": 0.15,
+     "end": 1.007
+    },
+    {
+     "text": "If you do not know whether something holds, you do not know whether it fails either. Negation cannot create knowledge.",
+     "start": 1.427,
+     "end": 8.909
+    },
+    {
+     "text": "True and false are wrong for the same reason, and an error is wrong because the engine just carries the doubt forward. That single fact is behind most of the silent bugs coming up.",
+     "start": 9.329,
+     "end": 20.93
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -1.9,
+   "wpm": 158,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "04": {
+   "hash": "ad20633dce3bc07b",
+   "takes": [
+    "05e85c00410d747af3dd",
+    "20f75463e9f070efded0",
+    "9d7df67cffbc18aafbd0",
+    "153e64f4d9df5f65b78e"
+   ],
+   "duration": 35.792,
+   "lines": [
+    {
+     "text": "So what does a comparison with a missing value give? Watch the three rows against seven.",
+     "start": 0.15,
+     "end": 5.225
+    },
+    {
+     "text": "Seven equals seven is true. Three equals seven is false. And a missing value compared with seven is unknown, not false.",
+     "start": 5.645,
+     "end": 15.083
+    },
+    {
+     "text": "Even a missing value compared with itself is unknown. If you do not know either side, you do not know that they match.",
+     "start": 15.503,
+     "end": 23.982
+    },
+    {
+     "text": "Now the part that hides it. A filter keeps a row only when the predicate is true, so unknown is dropped, silently, looking exactly like false.",
+     "start": 24.402,
+     "end": 35.442
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 144,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "05": {
+   "hash": "20981ce30786d29d",
+   "takes": [
+    "6495eedc6a9e13c5bcfe",
+    "350aa6e0ff84de185d4a",
+    "a3343425c3ae7115231d",
+    "411cae89d113831f5bf8"
+   ],
+   "duration": 29.692,
+   "lines": [
+    {
+     "text": "Sometimes you genuinely want to compare two values that might be missing and get a plain answer.",
+     "start": 0.15,
+     "end": 6.155
+    },
+    {
+     "text": "Look at the right hand column. It treats two missing values as the same, and a missing value against a real one as different.",
+     "start": 6.575,
+     "end": 14.595
+    },
+    {
+     "text": "So this operator never returns unknown. It answers a different question: are these two the same, counting missing as a value.",
+     "start": 15.014,
+     "end": 24.991
+    },
+    {
+     "text": "Reach for it whenever either side of a comparison might be absent.",
+     "start": 25.411,
+     "end": 29.342
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -2.8,
+   "wpm": 150,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "06": {
+   "hash": "ff746951130f502d",
+   "takes": [
+    "2600b465959969a22b7c",
+    "76704947fa589a7e28c4",
+    "ba2f811e2fc403efd6bd",
+    "8d99f3b54d95c20540eb"
+   ],
+   "duration": 34.96,
+   "lines": [
+    {
+     "text": "Now the point most people learn the hard way: missing values are not handled one way. They are handled five ways.",
+     "start": 0.15,
+     "end": 7.794
+    },
+    {
+     "text": "Grouping puts every missing value into one group. Sorting treats them as larger than everything. Aggregates skip them.",
+     "start": 8.214,
+     "end": 17.376
+    },
+    {
+     "text": "A uniqueness rule allows as many as you like. And a join never matches them, because equality with a missing value is unknown.",
+     "start": 17.796,
+     "end": 27.29
+    },
+    {
+     "text": "There is no single mental model that covers all five. The only reliable approach is to know which clause you are in.",
+     "start": 27.71,
+     "end": 34.61
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -2.0,
+   "wpm": 144,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "07": {
+   "hash": "ecc2b36252138c52",
+   "takes": [
+    "8c4b419c28a34ecbb1d5",
+    "274ce925e344d9fd444b",
+    "973ea4a56798839adaaf"
+   ],
+   "duration": 21.375,
+   "lines": [
+    {
+     "text": "Now the famous one. You keep a list of customers who must not be emailed. Somewhere in that list, one row has no customer id at all.",
+     "start": 0.15,
+     "end": 10.313
+    },
+    {
+     "text": "You ask for every customer whose id is not in the list. Think about what not in really expands to.",
+     "start": 10.733,
+     "end": 18.887
+    },
+    {
+     "text": "How many rows come back?",
+     "start": 19.707,
+     "end": 21.026
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -2.0,
+   "wpm": 146,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "07a": {
+   "hash": "4c41cf940e0706d2",
+   "takes": [
+    "45aa183b574554347312",
+    "7a7e0d74458d821c80eb",
+    "549475491b91a2de48b7",
+    "a508b4e3b4f9a6102051"
+   ],
+   "duration": 37.143,
+   "lines": [
+    {
+     "text": "None. Not most of them, none.",
+     "start": 0.15,
+     "end": 2.95
+    },
+    {
+     "text": "Not in means: different from the first entry, and different from the second, and so on down the list. One of those entries is a gap, and different from a gap is unknown.",
+     "start": 3.37,
+     "end": 14.992
+    },
+    {
+     "text": "A chain of ands with one unknown in it can never be true. So for every customer not on the list, the filter drops the row.",
+     "start": 15.412,
+     "end": 24.747
+    },
+    {
+     "text": "Nineteen point five million is what a correct query returns, and five hundred thousand is just the size of the list. Nothing raises an error to warn you.",
+     "start": 25.167,
+     "end": 36.793
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -1.9,
+   "wpm": 150,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "08": {
+   "hash": "c6ad4853c800121b",
+   "takes": [
+    "e1ecb6ce980e764f6a12",
+    "71b7b286e8a418576895",
+    "c560dd942f451a40c3f6",
+    "e1ef064c43536d84ef78"
+   ],
+   "duration": 29.401,
+   "lines": [
+    {
+     "text": "Watch the chain. Three links hold, and the last one, different from a gap, goes dim.",
+     "start": 0.15,
+     "end": 7.144
+    },
+    {
+     "text": "That one dim link is enough to turn the whole chain unknown, and the row is dropped.",
+     "start": 7.564,
+     "end": 13.554
+    },
+    {
+     "text": "The fix is to change the question. Stop asking what each row differs from, and ask whether any matching row exists at all.",
+     "start": 13.974,
+     "end": 22.438
+    },
+    {
+     "text": "That is not exists. It never compares against the gap, so it returns the customers you meant.",
+     "start": 22.858,
+     "end": 29.051
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -2.0,
+   "wpm": 149,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "09": {
+   "hash": "96320f5846706f77",
+   "takes": [
+    "30e0f065eccec67e2774",
+    "f809f729d812893fed9e",
+    "d257dda5df5725e9c72f",
+    "e5f4d7e2e313ba38083a"
+   ],
+   "duration": 27.746,
+   "lines": [
+    {
+     "text": "One more silent bug, smaller but common. Compare the two bars.",
+     "start": 0.15,
+     "end": 4.985
+    },
+    {
+     "text": "Counting every row gives the number of orders. Counting a column gives only the rows where that column has a value.",
+     "start": 5.405,
+     "end": 12.647
+    },
+    {
+     "text": "Both are valid, and they answer different questions. The gap between them is exactly the orders with no ship date.",
+     "start": 13.067,
+     "end": 20.851
+    },
+    {
+     "text": "So the habit is simple: whenever you write a count, say out loud which of the two you mean.",
+     "start": 21.271,
+     "end": 27.396
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 154,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "10": {
+   "hash": "f37610028ad0e986",
+   "takes": [
+    "2646d64e90339e4efacf",
+    "a21f28e4f3cfe3899100",
+    "12a2c8afd27014ad1b03",
+    "bed4994c0fbd4df49101"
+   ],
+   "duration": 32.935,
+   "lines": [
+    {
+     "text": "Pull it together. Three truth values, five different rules, and two bugs that raise no error.",
+     "start": 0.15,
+     "end": 7.002
+    },
+    {
+     "text": "Use the distinct from operator when either side might be missing. Use not exists instead of not in over a nullable column.",
+     "start": 7.422,
+     "end": 15.827
+    },
+    {
+     "text": "And choose your count on purpose.",
+     "start": 16.247,
+     "end": 18.47
+    },
+    {
+     "text": "Every rule here was about one missing value at a time. Next: what happens when a row might match several others at once, and you only want to know whether any of them exist.",
+     "start": 19.29,
+     "end": 32.585
+    }
+   ],
+   "lufs": -16.2,
+   "true_peak": -2.4,
+   "wpm": 142,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "11": {
+   "hash": "a42871bb58c5bac6",
+   "takes": [
+    "261004aac3b85de5a9d2",
+    "90b2b1828c33fe7c6be1",
+    "e6489f3150815d242279"
+   ],
+   "duration": 13.129,
+   "lines": [
+    {
+     "text": "Two quick checks. First, a missing value joined to true by or.",
+     "start": 0.15,
+     "end": 5.564
+    },
+    {
+     "text": "Use the rule from earlier: a sure answer on one side wins.",
+     "start": 5.984,
+     "end": 10.136
+    },
+    {
+     "text": "True, false, or unknown?",
+     "start": 10.956,
+     "end": 12.779
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 128,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "11a": {
+   "hash": "014a3bd4fe48dc55",
+   "takes": [
+    "e123ed8d6645d1773f3d",
+    "b4b9da4761806b6213ef"
+   ],
+   "duration": 11.511,
+   "lines": [
+    {
+     "text": "True.",
+     "start": 0.15,
+     "end": 0.624
+    },
+    {
+     "text": "One sure true settles an or, whatever the other side is. Unknown would be right only if neither side were certain.",
+     "start": 1.044,
+     "end": 11.16
+    }
+   ],
+   "lufs": -16.3,
+   "true_peak": -3.0,
+   "wpm": 115,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "12": {
+   "hash": "57c9bc0e58605e45",
+   "takes": [
+    "507c9ccfc6cc4a5c8bf9",
+    "79a631b88e1c35ef826e",
+    "1c481390d69d9e4346c5"
+   ],
+   "duration": 11.087,
+   "lines": [
+    {
+     "text": "Second check. A column holds ten, five, and a gap.",
+     "start": 0.15,
+     "end": 5.509
+    },
+    {
+     "text": "Remember what aggregates do with gaps.",
+     "start": 5.929,
+     "end": 8.493
+    },
+    {
+     "text": "What does the sum return?",
+     "start": 9.313,
+     "end": 10.737
+    }
+   ],
+   "lufs": -16.1,
+   "true_peak": -3.4,
+   "wpm": 114,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "12a": {
+   "hash": "cd1e91e86233a2dd",
+   "takes": [
+    "7e63017c431a200d8502",
+    "9f06dd5e30409c7cf62f"
+   ],
+   "duration": 11.681,
+   "lines": [
+    {
+     "text": "Fifteen.",
+     "start": 0.15,
+     "end": 0.838
+    },
+    {
+     "text": "Aggregates skip missing values. Only a column with no values at all sums to a gap, and a sum is never unknown just because one row is.",
+     "start": 1.258,
+     "end": 11.331
+    }
+   ],
+   "lufs": -15.9,
+   "true_peak": -2.2,
+   "wpm": 144,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  }
+ }
+}
