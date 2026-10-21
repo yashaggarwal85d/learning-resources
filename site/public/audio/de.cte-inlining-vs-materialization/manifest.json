@@ -1,0 +1,555 @@
+{
+ "topic": "de.cte-inlining-vs-materialization",
+ "voice": "breeze-mellow-v2",
+ "asr": "large-v3-turbo",
+ "clips": {
+  "01": {
+   "hash": "689af9e01c1df880",
+   "takes": [
+    "338b1ffc26b366c82039",
+    "f387d1954876460fcd5c",
+    "a83488a5fff0dfc11ab8"
+   ],
+   "duration": 28.593,
+   "lines": [
+    {
+     "text": "All of this ran purely on proof, no numbers involved. Now a different kind of choice, about a very ordinary piece of syntax.",
+     "start": 0.15,
+     "end": 8.663
+    },
+    {
+     "text": "A with clause gives a name to a query. Look at the two boxes on the right: the engine can let the rest of the query see inside it, or compute it once and pass up a sealed result.",
+     "start": 9.083,
+     "end": 22.171
+    },
+    {
+     "text": "Neither is always better, and the right answer depends on how the name is used.",
+     "start": 22.991,
+     "end": 28.243
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 162,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "02": {
+   "hash": "e2678f8da3dd813c",
+   "takes": [
+    "7d3e20746efa87acbad4",
+    "db1658893623ba0cdc21",
+    "68dd02d297104ff0f1ed",
+    "72c45a0f514aadd0219c"
+   ],
+   "duration": 31.474,
+   "lines": [
+    {
+     "text": "Begin with how it used to work. Before version twelve of Postgres, every named query was sealed, however simple.",
+     "start": 0.15,
+     "end": 8.867
+    },
+    {
+     "text": "Watch the red bar go up. The filter on the left cannot get past it, so the index on key is out of reach.",
+     "start": 9.287,
+     "end": 17.438
+    },
+    {
+     "text": "The engine scanned the whole table, copied it, and only then filtered. A one line query could cost a full scan.",
+     "start": 17.858,
+     "end": 26.241
+    },
+    {
+     "text": "That sealed box has a name: an optimization fence.",
+     "start": 26.661,
+     "end": 31.124
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 141,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "03": {
+   "hash": "eb8db00bf19d4aec",
+   "takes": [
+    "ac1f79d38828ce703116",
+    "eb8173c810e3d6f060f9",
+    "ed1e00f6d09004cd96bd",
+    "f0f641deb112273f2aa3"
+   ],
+   "duration": 24.165,
+   "lines": [
+    {
+     "text": "Since version twelve the default is smarter. Look at the three ticks.",
+     "start": 0.15,
+     "end": 4.363
+    },
+    {
+     "text": "A named query is inlined if it has no side effects, is not recursive, and is used exactly once.",
+     "start": 4.783,
+     "end": 11.539
+    },
+    {
+     "text": "Then the filter slides through and the index is used. The fence is gone, because there was no reason for it.",
+     "start": 11.959,
+     "end": 19.079
+    },
+    {
+     "text": "Use it twice, though, and the default flips back to computing once.",
+     "start": 19.499,
+     "end": 23.815
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 159,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "04": {
+   "hash": "715944ce719eaf08",
+   "takes": [
+    "20e37a70ebe315fb8c9b",
+    "0fc485a6b73318e23ea0",
+    "e96ca6371f0e15eb4a52"
+   ],
+   "duration": 19.622,
+   "lines": [
+    {
+     "text": "Here are two queries over the same big table with an index on key. In one, the named query is used once, in the other twice, in a self join.",
+     "start": 0.15,
+     "end": 12.308
+    },
+    {
+     "text": "Think about which of them can pass the filter inside.",
+     "start": 12.728,
+     "end": 15.982
+    },
+    {
+     "text": "Which one uses the index by default?",
+     "start": 16.802,
+     "end": 19.272
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 144,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "04a": {
+   "hash": "c52e5f4e6a5e004c",
+   "takes": [
+    "98150546eacab97dbe5d",
+    "c71349d9367554b73d23",
+    "165e058e568aaf8c73fa"
+   ],
+   "duration": 24.355,
+   "lines": [
+    {
+     "text": "Only the single use one.",
+     "start": 0.15,
+     "end": 2.0
+    },
+    {
+     "text": "The self join refers to the name twice, so by default it is computed once as a temporary copy with no index. Both sides of the join read that copy.",
+     "start": 2.42,
+     "end": 14.284
+    },
+    {
+     "text": "Both using it would be true only with an override, and neither is not the case for the single use. Next, the override.",
+     "start": 14.704,
+     "end": 24.005
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 143,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "05": {
+   "hash": "b3a1713260462dfd",
+   "takes": [
+    "c603c52b1e1a1d4d1e44",
+    "72795baa4e5210ff4c8d",
+    "c9d8ffc4f7cd373eb9d0",
+    "84fd2b37ab80b9afc022"
+   ],
+   "duration": 26.275,
+   "lines": [
+    {
+     "text": "You can force the inline with not materialized. Watch both references light up.",
+     "start": 0.15,
+     "end": 5.816
+    },
+    {
+     "text": "Now the filter reaches the table through each reference, and the index is used twice.",
+     "start": 6.236,
+     "end": 12.04
+    },
+    {
+     "text": "But there is a price. The base table is read once per reference, instead of once in total.",
+     "start": 12.46,
+     "end": 18.387
+    },
+    {
+     "text": "It wins when each use needs only a small slice, and loses when each one needs the lot.",
+     "start": 18.807,
+     "end": 25.925
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 146,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "06": {
+   "hash": "8afd2f9d64ea9801",
+   "takes": [
+    "f13dc645fb54e2a8630a",
+    "65b5b5b06deb784d8d24",
+    "f8eff8a8046f094f23e8",
+    "6cb5b774a1537b16bbf5"
+   ],
+   "duration": 34.819,
+   "lines": [
+    {
+     "text": "The opposite case matters just as much. Suppose the named query calls an expensive function.",
+     "start": 0.15,
+     "end": 6.938
+    },
+    {
+     "text": "Compare the two rows. Materialized runs the function once for each base row. The other recomputes it for every reference.",
+     "start": 7.357,
+     "end": 16.234
+    },
+    {
+     "text": "Call it twice, and that is double the work, and for a volatile function it can be a different answer.",
+     "start": 16.654,
+     "end": 24.128
+    },
+    {
+     "text": "So write materialized when once is the point. A later edit that changes the number of references cannot then silently undo it.",
+     "start": 24.548,
+     "end": 34.469
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 133,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "07": {
+   "hash": "876d66b820626631",
+   "takes": [
+    "57fd7b90140c413043eb",
+    "46986b72947b00871f91",
+    "dd21610ebbdaa219cb79"
+   ],
+   "duration": 17.3,
+   "lines": [
+    {
+     "text": "Make it concrete. A named query calls an expensive function for each row, and it is referenced twice.",
+     "start": 0.15,
+     "end": 8.463
+    },
+    {
+     "text": "You mark it not materialized, to get the index.",
+     "start": 8.883,
+     "end": 12.475
+    },
+    {
+     "text": "How many times does the function run for each base row?",
+     "start": 13.295,
+     "end": 16.95
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -2.2,
+   "wpm": 132,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "07a": {
+   "hash": "4f9812aa9a37c3bd",
+   "takes": [
+    "5b29f7d038399429df42",
+    "542dfd75a8e27788bcf8",
+    "3e90e8f17f9de9e63ad5"
+   ],
+   "duration": 21.703,
+   "lines": [
+    {
+     "text": "Twice, once for each reference.",
+     "start": 0.15,
+     "end": 2.498
+    },
+    {
+     "text": "Each reference is inlined and evaluates the function itself. That is the duplicated computation the documentation warns about.",
+     "start": 2.918,
+     "end": 11.738
+    },
+    {
+     "text": "It is not once, because the single evaluation was exactly what materialization gave you. And the index does not decide it.",
+     "start": 12.158,
+     "end": 21.353
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -2.3,
+   "wpm": 122,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "08": {
+   "hash": "eb31d6f4584aea13",
+   "takes": [
+    "b4224d2b75b66e5a83ec",
+    "8df7233745150b64b52e",
+    "7bb410578857098f0ae3",
+    "d04a87aa5f7472fc26c2"
+   ],
+   "duration": 26.404,
+   "lines": [
+    {
+     "text": "Not every engine offers the choice. SQL Server does not materialize a named query at all.",
+     "start": 0.15,
+     "end": 7.038
+    },
+    {
+     "text": "Look at the two red boxes: every reference runs the definition again.",
+     "start": 7.458,
+     "end": 11.839
+    },
+    {
+     "text": "There is no keyword to reach for. The documented answer is to compute the result once into a temporary object and refer to that.",
+     "start": 12.259,
+     "end": 21.334
+    },
+    {
+     "text": "It is the same fix as the materialized hint, done by hand.",
+     "start": 21.754,
+     "end": 26.054
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 145,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "09": {
+   "hash": "a476e378607273f0",
+   "takes": [
+    "cf9a0f690072b18ef9cd",
+    "b9c590645929493b7272",
+    "947b3e84ca7cf96bb15c",
+    "e3716b89dbcc384adc43"
+   ],
+   "duration": 28.964,
+   "lines": [
+    {
+     "text": "So when do you want the fence? Three cases.",
+     "start": 0.15,
+     "end": 3.59
+    },
+    {
+     "text": "When repeating the work would duplicate something expensive. When a side effect means once is a correctness requirement. And when a separate, named step simply reads better.",
+     "start": 4.01,
+     "end": 16.696
+    },
+    {
+     "text": "Remove it when letting the optimizer reach inside saves more than the repeated work costs.",
+     "start": 17.116,
+     "end": 23.148
+    },
+    {
+     "text": "The point is that it is a trade, and you can choose it on purpose.",
+     "start": 23.568,
+     "end": 28.614
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 137,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "10": {
+   "hash": "669aeb15d07229a3",
+   "takes": [
+    "a5baac0724c756767eea",
+    "870db82f38ce8bcb76f9",
+    "90698308890bae56dc6a",
+    "7d47ca3bb46534d907a1"
+   ],
+   "duration": 32.092,
+   "lines": [
+    {
+     "text": "To sum up. Find out which behaviour your engine and version give you, because the default changed in version twelve.",
+     "start": 0.15,
+     "end": 8.047
+    },
+    {
+     "text": "State the hint explicitly where the choice matters, since a later edit can change the reference count and flip the default.",
+     "start": 8.467,
+     "end": 15.876
+    },
+    {
+     "text": "And test single evaluation with a real count, not just by reading the plan.",
+     "start": 16.296,
+     "end": 21.331
+    },
+    {
+     "text": "Whether to look inside a query is settled. Next: the numbers the optimizer leans on to choose, and how it estimates them.",
+     "start": 22.151,
+     "end": 31.742
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 144,
+   "wer": 0.05,
+   "exact": false,
+   "tolerated": [
+    {
+     "line": "To sum up. Find out which behaviour your engine and version give you, because the default changed in version twelve.",
+     "said": "behaviour",
+     "heard": "behavior"
+    }
+   ]
+  },
+  "11": {
+   "hash": "73764181353370ba",
+   "takes": [
+    "5b2c13e24e51100d7022",
+    "7afe82643fd41b2e93c2"
+   ],
+   "duration": 9.647,
+   "lines": [
+    {
+     "text": "Two checks. First, the release from which a once used, side effect free named query is inlined by default.",
+     "start": 0.15,
+     "end": 7.689
+    },
+    {
+     "text": "Which version?",
+     "start": 8.509,
+     "end": 9.297
+    }
+   ],
+   "lufs": -15.9,
+   "true_peak": -3.0,
+   "wpm": 131,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "11a": {
+   "hash": "509123b9e339f448",
+   "takes": [
+    "337b36362373012991a8",
+    "b9c199e1a68df1fa67df"
+   ],
+   "duration": 10.368,
+   "lines": [
+    {
+     "text": "Twelve.",
+     "start": 0.15,
+     "end": 0.807
+    },
+    {
+     "text": "Before that, every named query was a fence, which is why code written for older versions may rely on behaviour that no longer holds.",
+     "start": 1.227,
+     "end": 10.018
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -1.9,
+   "wpm": 145,
+   "wer": 0.041666666666666664,
+   "exact": false,
+   "tolerated": [
+    {
+     "line": "Before that, every named query was a fence, which is why code written for older versions may rely on behaviour that no longer holds.",
+     "said": "behaviour",
+     "heard": "behavior"
+    }
+   ]
+  },
+  "12": {
+   "hash": "e4ff8215512f7603",
+   "takes": [
+    "81ec35d99f4a27c51652",
+    "1f8414e43962f8eae15b"
+   ],
+   "duration": 9.772,
+   "lines": [
+    {
+     "text": "Second check. On SQL Server, a named query is referenced twice.",
+     "start": 0.15,
+     "end": 6.045
+    },
+    {
+     "text": "How many times does it execute?",
+     "start": 6.865,
+     "end": 9.422
+    }
+   ],
+   "lufs": -16.7,
+   "true_peak": -2.8,
+   "wpm": 104,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "12a": {
+   "hash": "06a297fe1ce351ef",
+   "takes": [
+    "197bc4455f3bffb3fd0b",
+    "77a20a76692225336880"
+   ],
+   "duration": 11.668,
+   "lines": [
+    {
+     "text": "Twice.",
+     "start": 0.15,
+     "end": 0.829
+    },
+    {
+     "text": "It re runs for each reference, and there is no materialization switch. A temporary table is the way to compute it once.",
+     "start": 1.249,
+     "end": 11.318
+    }
+   ],
+   "lufs": -15.9,
+   "true_peak": -2.9,
+   "wpm": 118,
+   "wer": 0.09090909090909091,
+   "exact": false,
+   "tolerated": [
+    {
+     "line": "It re runs for each reference, and there is no materialization switch. A temporary table is the way to compute it once.",
+     "said": "re runs",
+     "heard": "reruns"
+    }
+   ]
+  }
+ }
+}

@@ -11,7 +11,7 @@
     },
     {
       "lines": [
-        "Begin with how it used to work. Before version twelve of PostgreSQL, every named query was sealed, however simple.",
+        "Begin with how it used to work. Before version twelve of Postgres, every named query was sealed, however simple.",
         "Watch the red bar go up. The filter on the left cannot get past it, so the index on key is out of reach.",
         "The engine scanned the whole table, copied it, and only then filtered. A one line query could cost a full scan.",
         "That sealed box has a name: an optimization fence."
@@ -22,7 +22,7 @@
         "Since version twelve the default is smarter. Look at the three ticks.",
         "A named query is inlined if it has no side effects, is not recursive, and is used exactly once.",
         "Then the filter slides through and the index is used. The fence is gone, because there was no reason for it.",
-        "Use it twice, though, and the default flips back to computing it once."
+        "Use it twice, though, and the default flips back to computing once."
       ]
     },
     {
@@ -50,7 +50,7 @@
       "lines": [
         "The opposite case matters just as much. Suppose the named query calls an expensive function.",
         "Compare the two rows. Materialized runs the function once for each base row. The other recomputes it for every reference.",
-        "Used twice, that is double the work, and for a volatile function it can be a different answer.",
+        "Call it twice, and that is double the work, and for a volatile function it can be a different answer.",
         "So write materialized when once is the point. A later edit that changes the number of references cannot then silently undo it."
       ]
     },
