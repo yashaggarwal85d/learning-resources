@@ -1,0 +1,492 @@
+{
+ "topic": "de.bandwidth-latency-data-locality",
+ "voice": "breeze-mellow-v2",
+ "asr": "large-v3-turbo",
+ "clips": {
+  "01": {
+   "hash": "e29c6eab869aa245",
+   "takes": [
+    "1f977a9d730d49cad6f8",
+    "6d7b51e73f3eab6c79ea",
+    "0e36aaee6926aad904f8"
+   ],
+   "duration": 31.384,
+   "lines": [
+    {
+     "text": "The tasks of a DAG run on many machines, and the data between them crosses a network. Round trips price the start of a call. For big transfers, bandwidth and distance decide, and so does the bill.",
+     "start": 0.15,
+     "end": 13.1
+    },
+    {
+     "text": "Picture the path between two machines as a pipe. Its width is the bandwidth. Its length, measured in time, is the round trip.",
+     "start": 13.52,
+     "end": 21.978
+    },
+    {
+     "text": "The volume of that pipe is the data that has to be in flight to keep it full. Everything in this topic is about that volume.",
+     "start": 22.798,
+     "end": 31.034
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 164,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "02": {
+   "hash": "54cf90c64684abb5",
+   "takes": [
+    "ba53c852391c3d0542ff",
+    "45d77c485964c35a7f54",
+    "d7386e12c347fef6c1d9",
+    "9b4340b06c43d3d4b94b"
+   ],
+   "duration": 42.842,
+   "lines": [
+    {
+     "text": "Give the volume a name: the bandwidth delay product. Bandwidth times round trip time.",
+     "start": 0.15,
+     "end": 6.782
+    },
+    {
+     "text": "You have met its twin. Latency times bandwidth was the size where waiting and moving cost the same on object storage. Here the round trip plays the part of the latency.",
+     "start": 7.202,
+     "end": 19.196
+    },
+    {
+     "text": "Now read the two cases on screen. Inside one zone it is about six hundred kibibytes. Across regions, the same link needs seventy one mebibytes in flight.",
+     "start": 19.616,
+     "end": 31.985
+    },
+    {
+     "text": "The catch is the limit on the other side. A sender may only have so many unacknowledged bytes outstanding, and that limit is the receive window.",
+     "start": 32.405,
+     "end": 42.492
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -1.9,
+   "wpm": 137,
+   "wer": 0.07407407407407407,
+   "exact": false,
+   "tolerated": [
+    {
+     "line": "Now read the two cases on screen. Inside one zone it is about six hundred kibibytes. Across regions, the same link needs seventy one mebibytes in flight.",
+     "said": "kibibytes",
+     "heard": "kibabytes"
+    },
+    {
+     "line": "Now read the two cases on screen. Inside one zone it is about six hundred kibibytes. Across regions, the same link needs seventy one mebibytes in flight.",
+     "said": "mebibytes",
+     "heard": "mibabytes"
+    }
+   ]
+  },
+  "03": {
+   "hash": "178c236e9969d281",
+   "takes": [
+    "e3e61afa7c85a10d9835",
+    "94d6128d26032c430a3f",
+    "df5ed7b92d15f94fb855"
+   ],
+   "duration": 13.192,
+   "lines": [
+    {
+     "text": "So what happens when the window is smaller than the pipe?",
+     "start": 0.15,
+     "end": 3.747
+    },
+    {
+     "text": "Think of a sender who fills the window, then has to stop and wait for the receiver to acknowledge something.",
+     "start": 4.297,
+     "end": 10.687
+    },
+    {
+     "text": "What happens to throughput?",
+     "start": 11.507,
+     "end": 12.842
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 159,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "03a": {
+   "hash": "8fbdc586266032c2",
+   "takes": [
+    "ee453a210d04e077fb7e",
+    "149771430229e8b6bb95",
+    "a303187099a5b325dfb4"
+   ],
+   "duration": 27.008,
+   "lines": [
+    {
+     "text": "So, it is capped at the window divided by the round trip time.",
+     "start": 0.15,
+     "end": 4.637
+    },
+    {
+     "text": "You send a window's worth, then sit idle for a whole round trip waiting for the first acknowledgement. The pipe runs part empty.",
+     "start": 5.057,
+     "end": 13.719
+    },
+    {
+     "text": "That is true however fast the link is, which is why bandwidth alone does not decide, and it does not fall to zero. Packet loss makes it worse but is not the cause here.",
+     "start": 14.139,
+     "end": 26.658
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 156,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "04": {
+   "hash": "121cfb3ff342f1a6",
+   "takes": [
+    "3fd994f8d7f9bf113680",
+    "32395a28eb2f7cf79855",
+    "8bc2460a338e28467583"
+   ],
+   "duration": 31.622,
+   "lines": [
+    {
+     "text": "Now the cruel detail. The oldest version of the protocol stored the window in a sixteen bit field.",
+     "start": 0.15,
+     "end": 6.754
+    },
+    {
+     "text": "So the largest window you could advertise was sixty four kibibytes. On a cross region path, that caps a ten gigabit link at under a tenth of one percent of its speed.",
+     "start": 7.174,
+     "end": 18.29
+    },
+    {
+     "text": "The fix is window scaling, negotiated once at the handshake, which lifts the ceiling to a gibibyte. On a healthy machine the kernel then sizes the buffer for you, up to a limit that you set.",
+     "start": 19.11,
+     "end": 31.272
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 163,
+   "wer": 0.05555555555555555,
+   "exact": false,
+   "tolerated": [
+    {
+     "line": "The fix is window scaling, negotiated once at the handshake, which lifts the ceiling to a gibibyte. On a healthy machine the kernel then sizes the buffer for you, up to a limit that you set.",
+     "said": "gibibyte",
+     "heard": "jibby bite"
+    }
+   ]
+  },
+  "05": {
+   "hash": "ae779d2988920ded",
+   "takes": [
+    "fd06b030c795e22a1878",
+    "b107005c47f38f9ff515",
+    "496cc46269976704832d",
+    "7962c4b85ad40738973f"
+   ],
+   "duration": 35.361,
+   "lines": [
+    {
+     "text": "Step back, because fast is not one number. Latency is how long one trip takes, and distance sets it. You cannot buy it down.",
+     "start": 0.15,
+     "end": 9.892
+    },
+    {
+     "text": "Throughput is how much finishes per second, and that you can buy up by doing more at once.",
+     "start": 10.312,
+     "end": 16.56
+    },
+    {
+     "text": "One law ties the two together. The amount in flight equals the throughput times the latency. That is Little's law.",
+     "start": 16.98,
+     "end": 26.148
+    },
+    {
+     "text": "Read one way, it is the bandwidth delay product. Read the other way, it tells you how much concurrency a throughput target demands.",
+     "start": 26.568,
+     "end": 35.011
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 144,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "06": {
+   "hash": "d3653c230736679a",
+   "takes": [
+    "f585cb72988b01114a34",
+    "fd30bcbaa6ed4bd703f0",
+    "1e5aca8ff1a46007db2f"
+   ],
+   "duration": 18.748,
+   "lines": [
+    {
+     "text": "Use that to settle an argument engineers have. You are copying a terabyte across a region.",
+     "start": 0.15,
+     "end": 6.061
+    },
+    {
+     "text": "One stream with default settings, or ten streams at once. Work out how much each needs in flight to fill a seventy one mebibyte pipe.",
+     "start": 6.481,
+     "end": 15.67
+    },
+    {
+     "text": "Which finishes first?",
+     "start": 16.49,
+     "end": 18.398
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 141,
+   "wer": 0.08,
+   "exact": false,
+   "tolerated": [
+    {
+     "line": "One stream with default settings, or ten streams at once. Work out how much each needs in flight to fill a seventy one mebibyte pipe.",
+     "said": "mebibyte",
+     "heard": "maybe byte"
+    }
+   ]
+  },
+  "06a": {
+   "hash": "5ba8d38220339ae7",
+   "takes": [
+    "05a070a84d4f4130beef",
+    "30ae4b97319fb5556f33",
+    "141d28a2c7ba84d80726"
+   ],
+   "duration": 26.403,
+   "lines": [
+    {
+     "text": "Ten streams, easily.",
+     "start": 0.15,
+     "end": 2.272
+    },
+    {
+     "text": "One default stream has far too little in flight to fill a long pipe, so it crawls. Ten windows add up to the whole pipe between them, each needing only about seven mebibytes.",
+     "start": 2.692,
+     "end": 16.637
+    },
+    {
+     "text": "It is not about the processor, and they do not tie. This is why every bulk copy tool opens many connections by default.",
+     "start": 17.057,
+     "end": 26.053
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -2.0,
+   "wpm": 134,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "07": {
+   "hash": "6b203859e1dd83d9",
+   "takes": [
+    "92aefad1f94541c261cd",
+    "a63f2909b1e57b5a51ed",
+    "a247d7f631b876f9f22b",
+    "c1ed63f738f85f559044"
+   ],
+   "duration": 34.048,
+   "lines": [
+    {
+     "text": "But the cheapest byte is the one you never send.",
+     "start": 0.15,
+     "end": 3.452
+    },
+    {
+     "text": "That is data locality, and it is one of the oldest ideas in big data: moving computation is cheaper than moving data. So the scheduler sends the work to the machine that already holds the bytes.",
+     "start": 3.872,
+     "end": 17.376
+    },
+    {
+     "text": "The modern form is pushdown. Read only the columns the query needs, and skip the blocks whose statistics prove they cannot match.",
+     "start": 17.796,
+     "end": 26.402
+    },
+    {
+     "text": "Notice what that does to the formula. It shrinks n, before any byte crosses the wire.",
+     "start": 26.822,
+     "end": 33.698
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 148,
+   "wer": 0.125,
+   "exact": false,
+   "tolerated": [
+    {
+     "line": "But the cheapest byte is the one you never send.",
+     "said": "byte",
+     "heard": "bite"
+    },
+    {
+     "line": "Notice what that does to the formula. It shrinks n, before any byte crosses the wire.",
+     "said": "n",
+     "heard": "no"
+    },
+    {
+     "line": "Notice what that does to the formula. It shrinks n, before any byte crosses the wire.",
+     "said": "byte",
+     "heard": "bite"
+    }
+   ]
+  },
+  "08": {
+   "hash": "ba6c05ae25a9925d",
+   "takes": [
+    "682d094a1a0b539461b8",
+    "d8e8f78faa6b5b6fc4a6",
+    "95c4ebf1f61ba1c3108b",
+    "78c3398122c20895d9b0"
+   ],
+   "duration": 36.657,
+   "lines": [
+    {
+     "text": "See it decide a join. Orders is large, customers is small, and there are a hundred machines.",
+     "start": 0.15,
+     "end": 7.891
+    },
+    {
+     "text": "Shuffle both by key and about nine hundred and ninety gigabytes cross the network, roughly eight seconds of sending per machine.",
+     "start": 8.311,
+     "end": 16.971
+    },
+    {
+     "text": "Broadcast the small table instead and it is just under ten gigabytes, under a tenth of a second.",
+     "start": 17.391,
+     "end": 24.485
+    },
+    {
+     "text": "Same answer, same work for the processors. A hundred times less traffic, because you moved the small table to the data, not the big table to one place.",
+     "start": 24.905,
+     "end": 36.307
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -1.9,
+   "wpm": 136,
+   "wer": 0.11764705882352941,
+   "exact": false,
+   "tolerated": [
+    {
+     "line": "See it decide a join. Orders is large, customers is small, and there are a hundred machines.",
+     "said": "a join",
+     "heard": "adjoin"
+    }
+   ]
+  },
+  "09": {
+   "hash": "13702a9f1c805038",
+   "takes": [
+    "8b60acd65f83653b592d",
+    "351a67b7bb8469aee449"
+   ],
+   "duration": 15.866,
+   "lines": [
+    {
+     "text": "Now the same choice, with a price tag. That shuffle crosses availability zones, and the cloud charges a cent a gigabyte in each direction.",
+     "start": 0.15,
+     "end": 9.824
+    },
+    {
+     "text": "How does the bill for the shuffle compare with the bill for the broadcast?",
+     "start": 10.644,
+     "end": 15.516
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -1.9,
+   "wpm": 144,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "09a": {
+   "hash": "3ed2d0409035fa79",
+   "takes": [
+    "4666297077f8a81e6712",
+    "a23b271b57e50c591e8f",
+    "c976fe9ef8780e539712"
+   ],
+   "duration": 24.01,
+   "lines": [
+    {
+     "text": "About twenty dollars against about twenty cents. A hundred to one, exactly the ratio of the bytes.",
+     "start": 0.15,
+     "end": 7.43
+    },
+    {
+     "text": "Notice that the bill scales with bytes, so the cheaper plan is also the faster one here.",
+     "start": 7.85,
+     "end": 13.37
+    },
+    {
+     "text": "It is not the same, and the broadcast does not cost more for touching every machine. And that charge lands every night the pipeline runs.",
+     "start": 13.79,
+     "end": 23.66
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -1.9,
+   "wpm": 147,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "10": {
+   "hash": "e9b13839f2440235",
+   "takes": [
+    "e64ac43ff3dadb741025",
+    "00e0b088c45e720f5399",
+    "21811a62f3f67ef8a3e7",
+    "0b382ee7711535b74e7a"
+   ],
+   "duration": 37.218,
+   "lines": [
+    {
+     "text": "So treat the meter as a design constraint, not an afterthought.",
+     "start": 0.15,
+     "end": 4.783
+    },
+    {
+     "text": "Traffic inside one zone is free. Across zones it is metered. Out to the internet, it is metered and one way.",
+     "start": 5.203,
+     "end": 14.762
+    },
+    {
+     "text": "Data flows in cheaply and is expensive to drag out. That is data gravity, and it pins compute next to its storage.",
+     "start": 15.182,
+     "end": 24.379
+    },
+    {
+     "text": "That closes the hardware and the network. Next: the language you use to ask for the data, starting with what a SQL query actually means.",
+     "start": 25.199,
+     "end": 36.868
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 127,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  }
+ }
+}

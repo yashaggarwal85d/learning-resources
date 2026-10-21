@@ -22,10 +22,10 @@
         "So what happens when the window is smaller than the pipe?",
         "Think of a sender who fills the window, then has to stop and wait for the receiver to acknowledge something.",
         { "beat": 0.4 },
-        "What does that do to your throughput?"
+        "What happens to throughput?"
       ],
       "answer": [
-        "It is capped at the window divided by the round trip time.",
+        "So, it is capped at the window divided by the round trip time.",
         "You send a window's worth, then sit idle for a whole round trip waiting for the first acknowledgement. The pipe runs part empty.",
         "That is true however fast the link is, which is why bandwidth alone does not decide, and it does not fall to zero. Packet loss makes it worse but is not the cause here."
       ]
