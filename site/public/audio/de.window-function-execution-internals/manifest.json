@@ -1,0 +1,636 @@
+{
+ "topic": "de.window-function-execution-internals",
+ "voice": "breeze-mellow-v2",
+ "asr": "large-v3-turbo",
+ "clips": {
+  "01": {
+   "hash": "e1d09993b32efd28",
+   "takes": [
+    "2d7c0b355432541d9237",
+    "bb8d90c18dd8ad667885",
+    "a76a91f97e87fc5d4f25"
+   ],
+   "duration": 29.777,
+   "lines": [
+    {
+     "text": "Defining the neighbourhood is one job. This topic is about what the engine actually does, physically, to deliver an answer for every single row in it.",
+     "start": 0.15,
+     "end": 9.899
+    },
+    {
+     "text": "Look at the two rows of cells. The top row is the definition: which rows does one row see. The bottom is the delivery: do that for every row, and do it cheaply.",
+     "start": 10.319,
+     "end": 21.431
+    },
+    {
+     "text": "The obvious way to deliver it is quadratic. Most of this topic is how real operators avoid that.",
+     "start": 22.251,
+     "end": 29.427
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -1.9,
+   "wpm": 155,
+   "wer": 0.07692307692307693,
+   "exact": false,
+   "tolerated": [
+    {
+     "line": "Defining the neighbourhood is one job. This topic is about what the engine actually does, physically, to deliver an answer for every single row in it.",
+     "said": "neighbourhood is",
+     "heard": "neighborhood as"
+    }
+   ]
+  },
+  "02": {
+   "hash": "c1ac8e716f8e01d1",
+   "takes": [
+    "290dad58ef1db1d33000",
+    "1f8aa093faf1a40203a8",
+    "be065402eb894d5002b4",
+    "08ba0d53c801648772ec"
+   ],
+   "duration": 24.013,
+   "lines": [
+    {
+     "text": "Start with what you would write before windows existed. A moving average as a correlated subquery.",
+     "start": 0.15,
+     "end": 5.498
+    },
+    {
+     "text": "Watch the rows stack up. For each output row, the engine goes back to the table and finds the neighbours again.",
+     "start": 5.918,
+     "end": 14.057
+    },
+    {
+     "text": "Nothing carries over from the previous row, even though the previous row's neighbours were almost identical.",
+     "start": 14.477,
+     "end": 21.163
+    },
+    {
+     "text": "That forgetting is the whole cost.",
+     "start": 21.583,
+     "end": 23.663
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -2.0,
+   "wpm": 147,
+   "wer": 0.0625,
+   "exact": false,
+   "tolerated": [
+    {
+     "line": "Watch the rows stack up. For each output row, the engine goes back to the table and finds the neighbours again.",
+     "said": "neighbours",
+     "heard": "neighbors"
+    },
+    {
+     "line": "Nothing carries over from the previous row, even though the previous row's neighbours were almost identical.",
+     "said": "neighbours",
+     "heard": "neighbors"
+    }
+   ]
+  },
+  "03": {
+   "hash": "5b211c7b85d0f7aa",
+   "takes": [
+    "35af362119c6de8fca1b",
+    "66a13560671cb4b9748b",
+    "ae9b151b58d1b49ef132"
+   ],
+   "duration": 16.263,
+   "lines": [
+    {
+     "text": "Put a number on the forgetting. A thousand readings, and the correlated version looks at the whole table for each one.",
+     "start": 0.15,
+     "end": 8.301
+    },
+    {
+     "text": "Think of the grid on screen: a thousand rows by a thousand columns.",
+     "start": 8.721,
+     "end": 13.338
+    },
+    {
+     "text": "How many comparisons is that?",
+     "start": 14.158,
+     "end": 15.913
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 144,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "03a": {
+   "hash": "5344fc580ac22ec9",
+   "takes": [
+    "8cfe0dbaf55d118cc416",
+    "13984eacd6a7c601f655",
+    "4e8140d2504a537f8f03"
+   ],
+   "duration": 19.921,
+   "lines": [
+    {
+     "text": "One million.",
+     "start": 0.15,
+     "end": 1.025
+    },
+    {
+     "text": "Every one of the thousand rows is compared with every one of the thousand. That is a thousand times a thousand.",
+     "start": 1.445,
+     "end": 8.623
+    },
+    {
+     "text": "A thousand would be a single pass, and eleven thousand is what the neighbours alone would cost. Double the table and this work quadruples, which is what quadratic means.",
+     "start": 9.043,
+     "end": 19.571
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -1.9,
+   "wpm": 157,
+   "wer": 0.034482758620689655,
+   "exact": false,
+   "tolerated": [
+    {
+     "line": "A thousand would be a single pass, and eleven thousand is what the neighbours alone would cost. Double the table and this work quadruples, which is what quadratic means.",
+     "said": "neighbours",
+     "heard": "neighbors"
+    }
+   ]
+  },
+  "04": {
+   "hash": "b39510de8e2f3219",
+   "takes": [
+    "e3dfe763ff5f44649ca0",
+    "7067596bbf26c206d440",
+    "49d06f17fe8a7a425dab"
+   ],
+   "duration": 27.803,
+   "lines": [
+    {
+     "text": "The window operator does something different. It partitions and sorts once, then walks the rows in order.",
+     "start": 0.15,
+     "end": 8.275
+    },
+    {
+     "text": "Watch the bright cells slide. Between one row and the next, the frame barely changes.",
+     "start": 8.695,
+     "end": 14.982
+    },
+    {
+     "text": "So the answer for this row is almost the answer for the last one. The question is how much of that overlap you can reuse, and the four strategies are four answers.",
+     "start": 15.402,
+     "end": 27.453
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.8,
+   "wpm": 138,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "05": {
+   "hash": "9acf7b4bad4907e4",
+   "takes": [
+    "ebf942e34bd56e6e2f91",
+    "684860942da3c195c35a",
+    "83c57323ff114f93c373"
+   ],
+   "duration": 31.801,
+   "lines": [
+    {
+     "text": "Here are the four, from worst to best. The first one, naive, is the correlated subquery all over again: recompute the frame every time.",
+     "start": 0.15,
+     "end": 12.879
+    },
+    {
+     "text": "Cumulative adds only the rows that are new. Removable cumulative also takes rows out. And the segment tree answers any frame in logarithmic time.",
+     "start": 13.299,
+     "end": 23.625
+    },
+    {
+     "text": "Each one handles a wider family of frame shapes than the one before. The art is knowing which one your frame needs.",
+     "start": 24.045,
+     "end": 31.451
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 132,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "06": {
+   "hash": "20a5784d6aed4ec9",
+   "takes": [
+    "7db6dc2a589e6b7e5e81",
+    "c6ea65c457efe3b5a1c1",
+    "72d194c30bbe52743e24",
+    "37f06b40bfe0a6b7a605"
+   ],
+   "duration": 34.12,
+   "lines": [
+    {
+     "text": "Take the default frame, from the start of the partition to the current row. Watch the total grow.",
+     "start": 0.15,
+     "end": 7.343
+    },
+    {
+     "text": "The frame only ever gains rows, so you keep the previous total and add the new one. One addition per row.",
+     "start": 7.763,
+     "end": 15.961
+    },
+    {
+     "text": "A thousand rows cost a thousand additions. Recomputing each time would cost about half a million.",
+     "start": 16.381,
+     "end": 23.286
+    },
+    {
+     "text": "Now read the red line. The moment a frame also has to shrink, this stops working, because you cannot take a row back out of a running total you have not kept.",
+     "start": 23.706,
+     "end": 33.77
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 153,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "07": {
+   "hash": "8079da1146f1fa2d",
+   "takes": [
+    "e303d6c3946c7a32fb1d",
+    "c483780e59b40fe44280",
+    "4f18d5907e8924036084",
+    "37692bbe59e544b9029a"
+   ],
+   "duration": 36.535,
+   "lines": [
+    {
+     "text": "A sliding frame loses rows as well as gaining them. Watch the marks at each end of the bracket.",
+     "start": 0.15,
+     "end": 6.817
+    },
+    {
+     "text": "For a sum or a count, taking a row out is just a subtraction. So constant work per row, and the sliding frame stays linear.",
+     "start": 7.237,
+     "end": 16.997
+    },
+    {
+     "text": "A minimum or a maximum is different. If the row that left was the maximum, you do not know the next one without looking, so you need an ordered structure over the frame.",
+     "start": 17.417,
+     "end": 28.485
+    },
+    {
+     "text": "And if the bounds vary wildly between neighbouring rows, even the subtraction trick breaks down.",
+     "start": 28.905,
+     "end": 36.185
+    }
+   ],
+   "lufs": -16.3,
+   "true_peak": -2.4,
+   "wpm": 151,
+   "wer": 0.06666666666666667,
+   "exact": false,
+   "tolerated": [
+    {
+     "line": "And if the bounds vary wildly between neighbouring rows, even the subtraction trick breaks down.",
+     "said": "neighbouring",
+     "heard": "neighboring"
+    }
+   ]
+  },
+  "08": {
+   "hash": "e7ae1a33ce34bee0",
+   "takes": [
+    "4f46e59b222a0f4883e7",
+    "3641190ff2ca49822103",
+    "577a100b4a5237ecf55b"
+   ],
+   "duration": 19.712,
+   "lines": [
+    {
+     "text": "Consider a frame whose start and end come from columns of the row itself. Look at the three rows of cells: the frames have nothing in common.",
+     "start": 0.15,
+     "end": 9.46
+    },
+    {
+     "text": "Neighbours no longer share most of their frame, so there is nothing to reuse cheaply.",
+     "start": 9.88,
+     "end": 15.51
+    },
+    {
+     "text": "Which strategy keeps the cost down?",
+     "start": 16.33,
+     "end": 19.362
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -2.3,
+   "wpm": 146,
+   "wer": 0.06666666666666667,
+   "exact": false,
+   "tolerated": [
+    {
+     "line": "Neighbours no longer share most of their frame, so there is nothing to reuse cheaply.",
+     "said": "neighbours",
+     "heard": "neighbors"
+    }
+   ]
+  },
+  "08a": {
+   "hash": "8e56f0d4538051a8",
+   "takes": [
+    "250a2f56ce98934801b1",
+    "117b8a7484276b68266a",
+    "1c4ea7ed7ad538b49185"
+   ],
+   "duration": 24.174,
+   "lines": [
+    {
+     "text": "A segment tree.",
+     "start": 0.15,
+     "end": 1.442
+    },
+    {
+     "text": "It stores aggregates of blocks of the whole partition, so any frame is answered by combining a handful of them, however the bounds move.",
+     "start": 1.862,
+     "end": 11.947
+    },
+    {
+     "text": "Cumulative needs a growing frame and the removable kind needs neighbours that look alike. Naive recomputation is exactly the quadratic cost we are avoiding.",
+     "start": 12.367,
+     "end": 23.824
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -1.9,
+   "wpm": 127,
+   "wer": 0.041666666666666664,
+   "exact": false,
+   "tolerated": [
+    {
+     "line": "Cumulative needs a growing frame and the removable kind needs neighbours that look alike. Naive recomputation is exactly the quadratic cost we are avoiding.",
+     "said": "neighbours",
+     "heard": "neighbors"
+    }
+   ]
+  },
+  "09": {
+   "hash": "646c02acc80d25a2",
+   "takes": [
+    "8c5f4c85a997e0eb440c",
+    "7999b0465a9a01e8074f",
+    "6ffd8712f713959cc9a7"
+   ],
+   "duration": 27.455,
+   "lines": [
+    {
+     "text": "Look at the tree. Each box holds the total for a block, and the highlighted ones are the nodes needed for one frame.",
+     "start": 0.15,
+     "end": 8.71
+    },
+    {
+     "text": "A frame is covered by a few of them, and their values are simply combined.",
+     "start": 9.13,
+     "end": 13.951
+    },
+    {
+     "text": "For a thousand rows, that is about ten node visits, wherever the frame sits. That is the price of generality, a small data structure, and it is cheap.",
+     "start": 14.371,
+     "end": 27.105
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 144,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "10": {
+   "hash": "8722d52f5726c614",
+   "takes": [
+    "4076c950cc6cc8740f60",
+    "58cdb9cc25f92e993eb3",
+    "a3f1554a3f158f768985",
+    "b2b0187b9687eee21b9a"
+   ],
+   "duration": 30.752,
+   "lines": [
+    {
+     "text": "Now a saving that has nothing to do with frames. Sorting is the expensive phase of this operator.",
+     "start": 0.15,
+     "end": 7.062
+    },
+    {
+     "text": "Two windows with the same partition and order need one sort, even if their frames differ. The sort only depends on how the rows are arranged.",
+     "start": 7.482,
+     "end": 17.636
+    },
+    {
+     "text": "And if one window's arrangement is a prefix of another's, sort once for the stronger one and reuse it.",
+     "start": 18.056,
+     "end": 24.798
+    },
+    {
+     "text": "So write shared definitions identically, or the planner may not notice they match.",
+     "start": 25.218,
+     "end": 30.402
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -2.4,
+   "wpm": 148,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "11": {
+   "hash": "e4ddb3b0840f71a9",
+   "takes": [
+    "db04e1b008c154f4772f",
+    "0ea184703a9d248154d6",
+    "6e8a95378d75df07d147",
+    "c7afcb3858b6b96d90d2"
+   ],
+   "duration": 33.285,
+   "lines": [
+    {
+     "text": "Finally, parallelism. A partition has to stay in one piece, so the natural unit of work is a whole partition.",
+     "start": 0.15,
+     "end": 7.906
+    },
+    {
+     "text": "Watch the four bars. Three partitions of a hundred rows, one of seven hundred.",
+     "start": 8.326,
+     "end": 14.746
+    },
+    {
+     "text": "The finish time is set by the slowest worker, the seven hundred, while the rest sit idle. That is skew, and the more parallel your plan, the more it hurts.",
+     "start": 15.166,
+     "end": 26.387
+    },
+    {
+     "text": "A skew resistant operator splits the big partition's own work across workers where it can.",
+     "start": 26.807,
+     "end": 32.935
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 142,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "12": {
+   "hash": "4d0ed135250a97e0",
+   "takes": [
+    "54c5fcb96771c243ea16",
+    "f55f5258134ea2d6a650",
+    "cf8f2f45e9997667423f",
+    "781d0c28d3faeb8e1e02"
+   ],
+   "duration": 40.227,
+   "lines": [
+    {
+     "text": "Bring it back to the moving average. Prefer a window to a correlated subquery, because the gap is the difference between linear and quadratic.",
+     "start": 0.15,
+     "end": 9.355
+    },
+    {
+     "text": "Spell out shared windows the same way each time, so the planner can reuse one sort.",
+     "start": 9.775,
+     "end": 16.048
+    },
+    {
+     "text": "Fixed offsets keep the cheap strategies in play, and wild frame bounds do not. And expect one oversized partition to dominate.",
+     "start": 16.468,
+     "end": 26.98
+    },
+    {
+     "text": "Everything so far has climbed one row at a time. Next: counting positions, and picking exactly one winner when several rows tie for first.",
+     "start": 27.8,
+     "end": 39.877
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 127,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "13": {
+   "hash": "1c2da2fe56bc8b3c",
+   "takes": [
+    "d14daf5afbb3fe513626",
+    "1498c4259b0ad504a8ab"
+   ],
+   "duration": 10.029,
+   "lines": [
+    {
+     "text": "Two checks. First, the default frame, from the start of the partition up to the current row.",
+     "start": 0.15,
+     "end": 7.466
+    },
+    {
+     "text": "Which strategy suits it?",
+     "start": 8.286,
+     "end": 9.679
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 126,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "13a": {
+   "hash": "957c199ee7aa7fa3",
+   "takes": [
+    "bb5e9698905a4112e3f6",
+    "0e3719ea0f19bd5fe7b8"
+   ],
+   "duration": 12.795,
+   "lines": [
+    {
+     "text": "Cumulative.",
+     "start": 0.15,
+     "end": 1.007
+    },
+    {
+     "text": "The frame only grows, so adding the new rows to the previous total is enough. Naive would redo everything, and a segment tree is more machinery than the shape needs.",
+     "start": 1.427,
+     "end": 12.445
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 145,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "14": {
+   "hash": "6f1bc4741353ec7e",
+   "takes": [
+    "9762b3b657233de1f588",
+    "a3a4065ef9cca2d4f35b"
+   ],
+   "duration": 11.606,
+   "lines": [
+    {
+     "text": "Second check. Two window functions share the same partition and the same ordering, but their frames differ.",
+     "start": 0.15,
+     "end": 7.876
+    },
+    {
+     "text": "How many sorts does the plan need?",
+     "start": 8.696,
+     "end": 11.256
+    }
+   ],
+   "lufs": -16.6,
+   "true_peak": -2.7,
+   "wpm": 124,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "14a": {
+   "hash": "68ae3c35036e43d2",
+   "takes": [
+    "b9e7d2efcb2ee96a4328",
+    "40ae58405c5a976c8415"
+   ],
+   "duration": 9.306,
+   "lines": [
+    {
+     "text": "One.",
+     "start": 0.15,
+     "end": 0.792
+    },
+    {
+     "text": "Sorting depends only on partition and order, not on the frame. So the same sorted input feeds both.",
+     "start": 1.212,
+     "end": 8.956
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -2.6,
+   "wpm": 123,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  }
+ }
+}
