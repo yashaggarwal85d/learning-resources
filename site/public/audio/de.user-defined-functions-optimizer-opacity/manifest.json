@@ -1,0 +1,625 @@
+{
+ "topic": "de.user-defined-functions-optimizer-opacity",
+ "voice": "breeze-mellow-v2",
+ "asr": "large-v3-turbo",
+ "clips": {
+  "01": {
+   "hash": "0e3ed246dcabff7b",
+   "takes": [
+    "e35a646d5f1a74453f43",
+    "9a6ca23e64f8e08961f4",
+    "ad12079f661e88b6747d"
+   ],
+   "duration": 34.896,
+   "lines": [
+    {
+     "text": "Every construct so far ran inside the database engine itself, so the optimizer understood all of it. Now the logic that decides a row's fate is a function you wrote.",
+     "start": 0.15,
+     "end": 12.63
+    },
+    {
+     "text": "Look at the dark box. From the planner's side, that is all a function is: a name, the types going in, the type coming out.",
+     "start": 13.05,
+     "end": 22.454
+    },
+    {
+     "text": "It cannot look inside. And that ignorance is not neutral, because every default the planner picks is the safe one, not the fast one.",
+     "start": 23.274,
+     "end": 34.546
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 136,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "02": {
+   "hash": "84e9ed69aebb38ed",
+   "takes": [
+    "82ad0ed28c3a512f149d",
+    "4496d0aaa5bc8f62000e",
+    "ff9bec64a2e1a60e25fd"
+   ],
+   "duration": 28.955,
+   "lines": [
+    {
+     "text": "First, the three shapes a function can take.",
+     "start": 0.15,
+     "end": 3.662
+    },
+    {
+     "text": "A scalar function returns one value per call. A table function returns rows, so it can sit in the from clause. An aggregate keeps a state, updates it once per input row, and returns one result at the end.",
+     "start": 4.082,
+     "end": 20.617
+    },
+    {
+     "text": "The rest of the topic is mostly about the first kind, because it is the one people write by the dozen and forget about.",
+     "start": 21.037,
+     "end": 28.605
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.8,
+   "wpm": 147,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "03": {
+   "hash": "734250f83746cbbd",
+   "takes": [
+    "e588a12a7b090431c91f",
+    "0092a8a65f7d0bbbb664",
+    "2ad470b6c35ec5e70e20",
+    "adad42bd8264f5945681"
+   ],
+   "duration": 33.167,
+   "lines": [
+    {
+     "text": "The first penalty is about whether the answer can change. Unless you say otherwise, the planner assumes it can, even within a single scan.",
+     "start": 0.15,
+     "end": 10.141
+    },
+    {
+     "text": "Count the red marks. A call with a constant argument is evaluated once for every row.",
+     "start": 10.561,
+     "end": 16.04
+    },
+    {
+     "text": "Declare the function immutable, a promise that the same input always gives the same output, and the planner calls it once and uses the value. One mark.",
+     "start": 16.46,
+     "end": 27.633
+    },
+    {
+     "text": "Notice that the planner cannot work this out for itself. You have to tell it.",
+     "start": 28.053,
+     "end": 32.817
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -2.0,
+   "wpm": 148,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "04": {
+   "hash": "80a8b6866449dc27",
+   "takes": [
+    "b91e521f3a927d6ce8bf",
+    "48ee377fa4d04a00b12b",
+    "494139a5e0d5e3478e91",
+    "8eb26b85c5516407a9bc"
+   ],
+   "duration": 30.082,
+   "lines": [
+    {
+     "text": "The second penalty is bigger, and it is not local. Compare the two rows of workers.",
+     "start": 0.15,
+     "end": 6.254
+    },
+    {
+     "text": "By default a function is assumed unsafe for parallel execution. Not just the call, the whole statement.",
+     "start": 6.674,
+     "end": 14.038
+    },
+    {
+     "text": "So one forgotten annotation, anywhere in an otherwise parallel plan, quietly removes every worker from it.",
+     "start": 14.458,
+     "end": 21.981
+    },
+    {
+     "text": "Put simply, that is why a slow function can make a query slow in parts that have nothing to do with it.",
+     "start": 22.401,
+     "end": 29.732
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 142,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "05": {
+   "hash": "fa0d955671fbe3a0",
+   "takes": [
+    "e0eafea2e937c4780429",
+    "a81f4be9662373c21652",
+    "b995e392a6b7f0ea2f34"
+   ],
+   "duration": 14.328,
+   "lines": [
+    {
+     "text": "Make it concrete. A big scan that would normally get several workers.",
+     "start": 0.15,
+     "end": 5.723
+    },
+    {
+     "text": "Now add one filter that calls a function you wrote, with no annotations at all.",
+     "start": 6.143,
+     "end": 11.26
+    },
+    {
+     "text": "What happens to the plan?",
+     "start": 12.08,
+     "end": 13.978
+    }
+   ],
+   "lufs": -16.6,
+   "true_peak": -2.3,
+   "wpm": 134,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "05a": {
+   "hash": "0135e91df4d1d334",
+   "takes": [
+    "4a64a2ce9a295d9fa0a0",
+    "fa6e455976c37e7d1093",
+    "0bd61ba74c08f602349a"
+   ],
+   "duration": 29.49,
+   "lines": [
+    {
+     "text": "The whole statement runs without workers.",
+     "start": 0.15,
+     "end": 2.666
+    },
+    {
+     "text": "The planner cannot read the body to prove the call is safe, so refusing parallelism for everything is its only safe default.",
+     "start": 3.086,
+     "end": 11.807
+    },
+    {
+     "text": "Only the filter going serial would be a local penalty, and that is not what the planner applies. Nothing changing would assume the planner can read the body, which it cannot. Mark the function safe, when it truly is, and the workers return.",
+     "start": 12.227,
+     "end": 29.14
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -1.9,
+   "wpm": 144,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "06": {
+   "hash": "eede0f7eea247291",
+   "takes": [
+    "9439ae218eaeeefef717",
+    "8003f10911c7ba2668bf",
+    "a30ace837bc03923343e",
+    "3d2733bfc2cae9ad3bed"
+   ],
+   "duration": 27.709,
+   "lines": [
+    {
+     "text": "The third penalty is about order. Look at the two filters in the top row.",
+     "start": 0.15,
+     "end": 5.3
+    },
+    {
+     "text": "With no cost declared, the planner treats the function as if it were cheap. So it may run the expensive call first.",
+     "start": 5.72,
+     "end": 13.128
+    },
+    {
+     "text": "Compare the bottom row. Declare a realistic cost and the cheap, selective condition goes first, so only the survivors pay for the function.",
+     "start": 13.548,
+     "end": 23.099
+    },
+    {
+     "text": "Same query, same result, very different amount of work.",
+     "start": 23.519,
+     "end": 27.359
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -2.0,
+   "wpm": 149,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "07": {
+   "hash": "3ae2330015a6640b",
+   "takes": [
+    "f78d4344d0aebd310221",
+    "676bb5c95b5001f14b30",
+    "a231b5efcac521e85087",
+    "8b46bc90d60b802f6684"
+   ],
+   "duration": 32.065,
+   "lines": [
+    {
+     "text": "So three declarations lift three penalties. Immutable or stable lets calls be folded. Parallel safe brings the workers back. Cost puts the call after the cheap filters.",
+     "start": 0.15,
+     "end": 12.555
+    },
+    {
+     "text": "But read the red line. Each declaration is a promise, and the planner believes you.",
+     "start": 12.975,
+     "end": 19.499
+    },
+    {
+     "text": "Mark a function immutable when it secretly depends on a table, and you do not get a missed optimization. You get wrong answers.",
+     "start": 19.919,
+     "end": 29.401
+    },
+    {
+     "text": "So declare only what is true.",
+     "start": 29.821,
+     "end": 31.715
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 133,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "08": {
+   "hash": "849a21e9b0e16776",
+   "takes": [
+    "c7b928e1f09e90060b12",
+    "30e9893d86da1f97bfce",
+    "0bf842fd6fc45a26ee94",
+    "be1fb91a8ac5c52a86c5"
+   ],
+   "duration": 33.364,
+   "lines": [
+    {
+     "text": "Annotations make an opaque function cheaper. Inlining makes it transparent.",
+     "start": 0.15,
+     "end": 6.022
+    },
+    {
+     "text": "Watch the expression slide out of the function and into the query. The planner pastes the body in, as if you had written it there.",
+     "start": 6.442,
+     "end": 15.471
+    },
+    {
+     "text": "Then everything it knows applies: constant folding, pushing filters down, reordering. And the cost of calling a function, once per row, disappears.",
+     "start": 15.891,
+     "end": 27.801
+    },
+    {
+     "text": "The condition is that the function is a single plain expression in the sql language.",
+     "start": 28.221,
+     "end": 33.014
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -1.8,
+   "wpm": 129,
+   "wer": 0.06666666666666667,
+   "exact": false,
+   "tolerated": [
+    {
+     "line": "The condition is that the function is a single plain expression in the sql language.",
+     "said": "plain",
+     "heard": "plane"
+    }
+   ]
+  },
+  "09": {
+   "hash": "85576429043e83eb",
+   "takes": [
+    "6cb7b504b3c75bf8e121",
+    "0a5f5b4633b4b5ae165a",
+    "f8abc2d1ed9d1f941da3"
+   ],
+   "duration": 14.518,
+   "lines": [
+    {
+     "text": "Test the rule. You have a one line helper, and you rewrite it in the procedural language, with exactly the same body.",
+     "start": 0.15,
+     "end": 7.839
+    },
+    {
+     "text": "Think about what the planner needs in order to splice something in.",
+     "start": 8.259,
+     "end": 12.196
+    },
+    {
+     "text": "Is it inlined?",
+     "start": 13.016,
+     "end": 14.168
+    }
+   ],
+   "lufs": -16.3,
+   "true_peak": -2.8,
+   "wpm": 153,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "09a": {
+   "hash": "d869dfb212e9919c",
+   "takes": [
+    "12f9269709fe56730f79",
+    "9038e3ae2a13154335f2",
+    "0e442dc10cd176709ef1"
+   ],
+   "duration": 27.428,
+   "lines": [
+    {
+     "text": "No.",
+     "start": 0.15,
+     "end": 0.624
+    },
+    {
+     "text": "Only simple functions in the sql language qualify, and they must not be security definer or return sets. The procedural language is always opaque, however trivial the body.",
+     "start": 1.044,
+     "end": 13.181
+    },
+    {
+     "text": "The body being identical does not matter, and marking it immutable does not change the language. So if you want the planner to see through a helper, write it as a plain sql expression.",
+     "start": 13.601,
+     "end": 27.078
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -2.3,
+   "wpm": 138,
+   "wer": 0.029411764705882353,
+   "exact": false,
+   "tolerated": [
+    {
+     "line": "The body being identical does not matter, and marking it immutable does not change the language. So if you want the planner to see through a helper, write it as a plain sql expression.",
+     "said": "sql",
+     "heard": "sequel"
+    }
+   ]
+  },
+  "10": {
+   "hash": "6cfcb4940d896894",
+   "takes": [
+    "dcb13bac2c8d0bde32d3",
+    "17b78830fc6ce5163992",
+    "16b626b468532a80c93e",
+    "58034e55ca40083be9c7"
+   ],
+   "duration": 39.92,
+   "lines": [
+    {
+     "text": "Real functions are not one expression. They have variables, branches, loops.",
+     "start": 0.15,
+     "end": 6.099
+    },
+    {
+     "text": "Follow the arrow on the right. SQL Server's Froid converts such a body into one relational expression, built from the same apply operator you met in the lateral topic.",
+     "start": 6.519,
+     "end": 17.283
+    },
+    {
+     "text": "Then the existing machinery for flattening subqueries does the rest. It shipped as scalar function inlining in version twenty nineteen, and the paper reports one to three orders of magnitude on function heavy workloads.",
+     "start": 17.703,
+     "end": 32.709
+    },
+    {
+     "text": "Postgres has no equivalent for its procedural language. That is a real difference between the two engines.",
+     "start": 33.129,
+     "end": 39.57
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -1.9,
+   "wpm": 138,
+   "wer": 0.034482758620689655,
+   "exact": false,
+   "tolerated": [
+    {
+     "line": "Follow the arrow on the right. SQL Server's Froid converts such a body into one relational expression, built from the same apply operator you met in the lateral topic.",
+     "said": "froid",
+     "heard": "freud"
+    }
+   ]
+  },
+  "11": {
+   "hash": "d19a56bbd3bb86da",
+   "takes": [
+    "9078ee306e49ba78ba66",
+    "13206078de52ce2e6ba2",
+    "2445bb7bf9e0df9e9229",
+    "87e9b463db41df9af76a"
+   ],
+   "duration": 34.015,
+   "lines": [
+    {
+     "text": "A different kind of opacity: a function that lives in another process. A Python function called from Spark.",
+     "start": 0.15,
+     "end": 7.764
+    },
+    {
+     "text": "Watch the two rows of marks. Row at a time, every row crosses the boundary: serialized, sent, computed, sent back.",
+     "start": 8.184,
+     "end": 17.611
+    },
+    {
+     "text": "A vectorized function sends a whole batch across in one Arrow buffer. The same thousand rows cross in ten trips, not a thousand.",
+     "start": 18.031,
+     "end": 26.42
+    },
+    {
+     "text": "That is the same argument Chapter one made for batch execution, applied to the cost of crossing a boundary.",
+     "start": 26.84,
+     "end": 33.665
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -1.9,
+   "wpm": 141,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "12": {
+   "hash": "e4142dd5f3975c8b",
+   "takes": [
+    "15c3c0263e5564d7309e",
+    "dbc5e485dd8abf31eeee",
+    "106f80c1ff438b830e07",
+    "e488a33f799c148037e1"
+   ],
+   "duration": 30.404,
+   "lines": [
+    {
+     "text": "So, when you write a function: declare its volatility, its parallel safety and its cost, truthfully.",
+     "start": 0.15,
+     "end": 7.158
+    },
+    {
+     "text": "Write small helpers as single expressions in the sql language, so the planner can see through them.",
+     "start": 7.578,
+     "end": 13.381
+    },
+    {
+     "text": "And before you accept that functions are simply slow, look for your engine's way to open the box.",
+     "start": 13.801,
+     "end": 19.713
+    },
+    {
+     "text": "Writing meaning into a query is one thing. Next: what happens when two different sessions try to write the same row at once.",
+     "start": 20.533,
+     "end": 30.054
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -2.0,
+   "wpm": 146,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "13": {
+   "hash": "37affc2f262649d2",
+   "takes": [
+    "f3452be2c317c2d94d8a",
+    "8ffbf59101d0abe8042d"
+   ],
+   "duration": 8.583,
+   "lines": [
+    {
+     "text": "Two checks. First, a function created with no parallel clause at all.",
+     "start": 0.15,
+     "end": 5.738
+    },
+    {
+     "text": "What is its parallel safety?",
+     "start": 6.558,
+     "end": 8.233
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -1.9,
+   "wpm": 119,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "13a": {
+   "hash": "8592104304a8fe4a",
+   "takes": [
+    "2d151364efbf9dd167e3",
+    "187dcbaf9fb36282174c"
+   ],
+   "duration": 11.032,
+   "lines": [
+    {
+     "text": "Unsafe.",
+     "start": 0.15,
+     "end": 0.829
+    },
+    {
+     "text": "The default is the cautious one. Safe would let workers run it without a promise from you, and restricted is a middle setting you must request.",
+     "start": 1.249,
+     "end": 10.682
+    }
+   ],
+   "lufs": -16.2,
+   "true_peak": -2.3,
+   "wpm": 147,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "14": {
+   "hash": "3db4b026e8dbe57b",
+   "takes": [
+    "f873a7cf608defbf942f",
+    "ec2405bb66cfd29f558d"
+   ],
+   "duration": 7.423,
+   "lines": [
+    {
+     "text": "Second check. Postgres will consider only one function language for inlining.",
+     "start": 0.15,
+     "end": 5.622
+    },
+    {
+     "text": "Which?",
+     "start": 6.442,
+     "end": 7.073
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 105,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "14a": {
+   "hash": "6154323e952f5054",
+   "takes": [
+    "5e6b1d92dcb88c552823",
+    "b210fccda6c169ea142c"
+   ],
+   "duration": 10.243,
+   "lines": [
+    {
+     "text": "The sql language, and only for single expression functions.",
+     "start": 0.15,
+     "end": 4.448
+    },
+    {
+     "text": "The procedural language is never inlined, and it is not true of any language.",
+     "start": 4.868,
+     "end": 9.893
+    }
+   ],
+   "lufs": -16.1,
+   "true_peak": -3.1,
+   "wpm": 135,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  }
+ }
+}

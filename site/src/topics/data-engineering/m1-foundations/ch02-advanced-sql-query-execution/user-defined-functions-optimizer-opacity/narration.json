@@ -29,7 +29,7 @@
         "The second penalty is bigger, and it is not local. Compare the two rows of workers.",
         "By default a function is assumed unsafe for parallel execution. Not just the call, the whole statement.",
         "So one forgotten annotation, anywhere in an otherwise parallel plan, quietly removes every worker from it.",
-        "That is why a slow function can make a query slow in parts that have nothing to do with it."
+        "Put simply, that is why a slow function can make a query slow in parts that have nothing to do with it."
       ]
     },
     {
@@ -87,7 +87,7 @@
         "Real functions are not one expression. They have variables, branches, loops.",
         "Follow the arrow on the right. SQL Server's Froid converts such a body into one relational expression, built from the same apply operator you met in the lateral topic.",
         "Then the existing machinery for flattening subqueries does the rest. It shipped as scalar function inlining in version twenty nineteen, and the paper reports one to three orders of magnitude on function heavy workloads.",
-        "PostgreSQL has no equivalent for its procedural language. That is a real difference between the two engines."
+        "Postgres has no equivalent for its procedural language. That is a real difference between the two engines."
       ]
     },
     {
@@ -120,7 +120,7 @@
     },
     {
       "lines": [
-        "Second check. PostgreSQL will consider only one function language for inlining.",
+        "Second check. Postgres will consider only one function language for inlining.",
         { "beat": 0.4 },
         "Which?"
       ],
