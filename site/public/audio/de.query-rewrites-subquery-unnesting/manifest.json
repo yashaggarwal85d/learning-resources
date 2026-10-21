@@ -1,0 +1,569 @@
+{
+ "topic": "de.query-rewrites-subquery-unnesting",
+ "voice": "breeze-mellow-v2",
+ "asr": "large-v3-turbo",
+ "clips": {
+  "01": {
+   "hash": "c035689fcc2e9072",
+   "takes": [
+    "7c77ba146dad5e41dd7b",
+    "3b2da775fff7a22c9287",
+    "1e6359d42005df8a9776"
+   ],
+   "duration": 28.831,
+   "lines": [
+    {
+     "text": "Right now, every plan has only ever meant exactly what it said. This topic is about the rewrites that quietly turn one legal plan into a cheaper, equally legal one.",
+     "start": 0.15,
+     "end": 12.121
+    },
+    {
+     "text": "Look at the middle box. It runs before the planner puts a single number on anything.",
+     "start": 12.541,
+     "end": 17.8
+    },
+    {
+     "text": "So it cannot use row counts or costs. Every move here has to be justified by proof, which is why each one is correct by construction.",
+     "start": 18.62,
+     "end": 28.481
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -1.9,
+   "wpm": 150,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "02": {
+   "hash": "07cbc788283d5650",
+   "takes": [
+    "6d132b3ce6b74c3a1813",
+    "b54e283489406fb8ef0b",
+    "4154bc0b832e138724d9",
+    "416c8f48ac085003161b"
+   ],
+   "duration": 34.421,
+   "lines": [
+    {
+     "text": "Three rewrites are so safe that no cost model is needed. You have met two of them already.",
+     "start": 0.15,
+     "end": 6.782
+    },
+    {
+     "text": "Push a filter down, so fewer rows reach the expensive operators. Push a projection down, so fewer columns travel.",
+     "start": 7.202,
+     "end": 14.922
+    },
+    {
+     "text": "And fold constants: an expression made only of literals is evaluated once, before any row is read. Two plus three becomes five at planning time, not once per row.",
+     "start": 15.342,
+     "end": 28.299
+    },
+    {
+     "text": "None of the three can make a plan worse, so the planner just does them.",
+     "start": 28.719,
+     "end": 34.071
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 141,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "03": {
+   "hash": "09d66dcda3d2d279",
+   "takes": [
+    "fc7d826063defafbda53",
+    "a3e087c6e28305cc7e58",
+    "5cd320fbbf260ee99310"
+   ],
+   "duration": 32.11,
+   "lines": [
+    {
+     "text": "Now a bolder one: deleting a join entirely. Watch the right branch of the tree fade.",
+     "start": 0.15,
+     "end": 7.995
+    },
+    {
+     "text": "A left join can be dropped when two things are true. It cannot match more than one inner row, which a unique key proves, and nothing from the inner side is used above it.",
+     "start": 8.415,
+     "end": 19.874
+    },
+    {
+     "text": "The first condition means the join cannot add rows. The second means it cannot add anything else either, so it contributes nothing and its scan goes with it.",
+     "start": 20.294,
+     "end": 31.76
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 146,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "04": {
+   "hash": "f81733d08b91d33c",
+   "takes": [
+    "29592457046643d9fea2",
+    "60f7179986e64d7d2915",
+    "00c31432e2ecbae22a01"
+   ],
+   "duration": 15.179,
+   "lines": [
+    {
+     "text": "Test it. A query reads only order columns. It left joins customers on customer id, which is the customers primary key.",
+     "start": 0.15,
+     "end": 9.495
+    },
+    {
+     "text": "Check the two conditions in your head before answering.",
+     "start": 9.915,
+     "end": 12.781
+    },
+    {
+     "text": "What's left in the plan?",
+     "start": 13.601,
+     "end": 14.829
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 138,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "04a": {
+   "hash": "2fe06373ec963208",
+   "takes": [
+    "cfa0806df03c80ac68f4",
+    "1492d0f83a712954d89e",
+    "0cf334649ba996b352e4"
+   ],
+   "duration": 29.756,
+   "lines": [
+    {
+     "text": "A scan of orders and nothing else.",
+     "start": 0.15,
+     "end": 2.728
+    },
+    {
+     "text": "The key guarantees at most one match, so the row count cannot change, and no customer column is read. The join and the whole scan of customers are removed.",
+     "start": 3.148,
+     "end": 15.9
+    },
+    {
+     "text": "A hash join or a merge join would still read customers for nothing, and nothing makes this an error. A stray join left over from an earlier version of the query is often already free.",
+     "start": 16.32,
+     "end": 29.406
+    }
+   ],
+   "lufs": -16.3,
+   "true_peak": -2.4,
+   "wpm": 143,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "05": {
+   "hash": "d87520b6827a8bc2",
+   "takes": [
+    "55fa8e758fe93b2d2edd",
+    "19c49bc1acdc15ef5f3f",
+    "1104322e1b67f8a1752d",
+    "97ae64f3e4564ef1225f"
+   ],
+   "duration": 34.824,
+   "lines": [
+    {
+     "text": "Next, joins that change type. Remember what an outer join guarantees: no left row is ever lost, even when its partner is missing.",
+     "start": 0.15,
+     "end": 11.06
+    },
+    {
+     "text": "Now add a filter on the right side, one that is never true for a null. Look at the red line.",
+     "start": 11.48,
+     "end": 18.426
+    },
+    {
+     "text": "Every null extended row is thrown away again, so the promise was never needed. The left join becomes an ordinary join.",
+     "start": 18.846,
+     "end": 27.287
+    },
+    {
+     "text": "That matters because an ordinary join can be reordered much more freely than an outer one.",
+     "start": 27.707,
+     "end": 34.474
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 140,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "06": {
+   "hash": "4fd3e2bb5242940b",
+   "takes": [
+    "774cf4b125b07744b981",
+    "e52ca0c4250d7be9fdb0",
+    "e707b2f7ac0fe3bf22de",
+    "31a04c5fc9a3c1a94f17"
+   ],
+   "duration": 28.278,
+   "lines": [
+    {
+     "text": "The same logic runs the other way, and it connects back to the anti join topic.",
+     "start": 0.15,
+     "end": 5.881
+    },
+    {
+     "text": "Keep a left join, and then require that a column of the right side is missing.",
+     "start": 6.301,
+     "end": 11.653
+    },
+    {
+     "text": "Only the null extended rows can pass that filter, which is exactly the left rows with no match. The planner recognizes that and changes the join type to anti.",
+     "start": 12.073,
+     "end": 23.61
+    },
+    {
+     "text": "Look at the picture: two spellings arrive at the same operator.",
+     "start": 24.03,
+     "end": 27.928
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 153,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "07": {
+   "hash": "fa5fe9df8851073f",
+   "takes": [
+    "279d55e7688b7e96ea1f",
+    "8f0cf699ba0c84531e80",
+    "bffe7d4fc2a59a800e37"
+   ],
+   "duration": 12.218,
+   "lines": [
+    {
+     "text": "Check it on a concrete shape.",
+     "start": 0.15,
+     "end": 2.065
+    },
+    {
+     "text": "A left join with a missing value test on a right column that cannot be missing on a real match.",
+     "start": 2.485,
+     "end": 8.738
+    },
+    {
+     "text": "What join type does the plan show?",
+     "start": 9.558,
+     "end": 11.868
+    }
+   ],
+   "lufs": -16.3,
+   "true_peak": -3.9,
+   "wpm": 162,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "07a": {
+   "hash": "5aa394b734f59de6",
+   "takes": [
+    "0186abaf3ec1c493fd42",
+    "59ddfbc72b2a12a6160a",
+    "83ea41e287120ab1a428"
+   ],
+   "duration": 18.244,
+   "lines": [
+    {
+     "text": "Anti.",
+     "start": 0.15,
+     "end": 0.764
+    },
+    {
+     "text": "Only the rows that found no partner can have that column missing, so the query asks for left rows with no match.",
+     "start": 1.184,
+     "end": 8.969
+    },
+    {
+     "text": "Left or inner would keep matched rows, and full is something else again. The two spellings are one operator.",
+     "start": 9.389,
+     "end": 17.894
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 138,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "08": {
+   "hash": "7dbab8d2c2b79c13",
+   "takes": [
+    "9fa47c35573cca6de998",
+    "730662477fcd8504deb2",
+    "9b6f220f1c7abec009d7",
+    "4379527c19e740a547f4"
+   ],
+   "duration": 36.452,
+   "lines": [
+    {
+     "text": "Everything so far was about structure that does not depend on the outer row. Correlated subqueries are different.",
+     "start": 0.15,
+     "end": 7.406
+    },
+    {
+     "text": "Watch the two rows of marks. For every outer row, the inner query runs again, from scratch.",
+     "start": 7.826,
+     "end": 15.256
+    },
+    {
+     "text": "Researchers give this shape a name, a dependent join: the right side is evaluated for every row of the left.",
+     "start": 15.676,
+     "end": 23.681
+    },
+    {
+     "text": "With a thousand outer rows that is a thousand evaluations. The goal of unnesting is to rewrite until the right side stops depending on the left.",
+     "start": 24.102,
+     "end": 36.102
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 133,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "09": {
+   "hash": "4a81ae27005050e7",
+   "takes": [
+    "d72f44b5f9c7f84acde3",
+    "9379229032f6fca4fba1",
+    "179d59fd3699f0ed0979"
+   ],
+   "duration": 26.325,
+   "lines": [
+    {
+     "text": "There are two methods, and the first is the gentle one. For many existence tests, the correlation is only there because it was easier to write.",
+     "start": 0.15,
+     "end": 9.285
+    },
+    {
+     "text": "Pull the dependent predicate up the tree until it no longer needs the outer row. Watch the box change.",
+     "start": 9.705,
+     "end": 16.533
+    },
+    {
+     "text": "What remains is an ordinary semi join: one pass over both sides, instead of a thousand evaluations of the inner query.",
+     "start": 16.953,
+     "end": 25.975
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -2.0,
+   "wpm": 150,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "10": {
+   "hash": "b53093dfcb9b8b4d",
+   "takes": [
+    "24823f2fe7e2263efe9c",
+    "e53166be56c33d9dcf10",
+    "4fb61d45492bba3c40bc",
+    "f43d369ae262a708e9da"
+   ],
+   "duration": 32.535,
+   "lines": [
+    {
+     "text": "The harder cases defeat pulling up. A subquery with its own aggregate is a good example.",
+     "start": 0.15,
+     "end": 6.034
+    },
+    {
+     "text": "The general method goes the other way: push the dependent join down. Watch the highlight descend through a join, then a group by, then an outer join.",
+     "start": 6.454,
+     "end": 19.326
+    },
+    {
+     "text": "Each operator has its own careful rule for letting the dependency pass through it.",
+     "start": 19.746,
+     "end": 24.591
+    },
+    {
+     "text": "Eventually the values it needs are already local, and the dependent join turns into a regular one.",
+     "start": 25.011,
+     "end": 32.186
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 136,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "11": {
+   "hash": "ff4ccdd19c69c62d",
+   "takes": [
+    "d8e10836fc431430a841",
+    "518f3f7c962eda67103c",
+    "4e4e23fae7b8b3486c06",
+    "00c5354ceb3a2a362990"
+   ],
+   "duration": 34.202,
+   "lines": [
+    {
+     "text": "Three things to take away. Do not hand optimize a join the planner already proves redundant.",
+     "start": 0.15,
+     "end": 6.549
+    },
+    {
+     "text": "When two spellings are the same operator, choose the one your team reads best.",
+     "start": 6.969,
+     "end": 11.945
+    },
+    {
+     "text": "And if a stubborn sub plan survives your obvious rewrites, suspect a shape the heuristics do not cover.",
+     "start": 12.365,
+     "end": 19.679
+    },
+    {
+     "text": "All of this ran purely on proof, no numbers involved. Next: a different kind of rewrite, one that decides whether a shortcut helps or hurts by actually running it, or not.",
+     "start": 20.499,
+     "end": 33.852
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 139,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "12": {
+   "hash": "d148a12ff9f897a9",
+   "takes": [
+    "c40a2f749e64f59c0980",
+    "7a3e6c51941c663dc3fa",
+    "fe2994e25b6320feb3b4"
+   ],
+   "duration": 9.437,
+   "lines": [
+    {
+     "text": "Two checks. First, when can a left join be deleted outright.",
+     "start": 0.15,
+     "end": 4.39
+    },
+    {
+     "text": "Recall the two conditions together.",
+     "start": 4.81,
+     "end": 7.231
+    },
+    {
+     "text": "Which pair is it?",
+     "start": 8.051,
+     "end": 9.087
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -2.3,
+   "wpm": 127,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "12a": {
+   "hash": "303146966a37dfda",
+   "takes": [
+    "4c0dafe13bfcd30b129f",
+    "6af5a7900966df7fbec6"
+   ],
+   "duration": 16.463,
+   "lines": [
+    {
+     "text": "At most one inner match, and no inner column used above.",
+     "start": 0.15,
+     "end": 4.591
+    },
+    {
+     "text": "The first means it cannot multiply rows, and the second means it adds nothing else. Size, indexes and column types are not what the proof depends on.",
+     "start": 5.011,
+     "end": 16.113
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 138,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "13": {
+   "hash": "b19fec552549b208",
+   "takes": [
+    "3aec0d5d0a660bef58c2",
+    "47a0834cae44b063c4d3"
+   ],
+   "duration": 8.027,
+   "lines": [
+    {
+     "text": "Second check. A subquery needs a value from the outer row.",
+     "start": 0.15,
+     "end": 4.308
+    },
+    {
+     "text": "What is the formal name for that join?",
+     "start": 5.128,
+     "end": 7.677
+    }
+   ],
+   "lufs": -16.3,
+   "true_peak": -1.9,
+   "wpm": 142,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "13a": {
+   "hash": "c3a1edce8e9a24a1",
+   "takes": [
+    "356158db77bab89c267d",
+    "67bb598a3419a79c19c8"
+   ],
+   "duration": 10.512,
+   "lines": [
+    {
+     "text": "A dependent join.",
+     "start": 0.15,
+     "end": 1.99
+    },
+    {
+     "text": "The right side is evaluated for every tuple of the left. A semi join is what it can become once the dependency is removed.",
+     "start": 2.41,
+     "end": 10.162
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 154,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  }
+ }
+}

@@ -29,7 +29,7 @@
         "Test it. A query reads only order columns. It left joins customers on customer id, which is the customers primary key.",
         "Check the two conditions in your head before answering.",
         { "beat": 0.4 },
-        "What is left in the plan?"
+        "What's left in the plan?"
       ],
       "answer": [
         "A scan of orders and nothing else.",
@@ -55,7 +55,8 @@
     },
     {
       "lines": [
-        "Check it on a concrete shape. A left join with a missing value test on a right column that cannot be missing on a real match.",
+        "Check it on a concrete shape.",
+        "A left join with a missing value test on a right column that cannot be missing on a real match.",
         { "beat": 0.4 },
         "What join type does the plan show?"
       ],
