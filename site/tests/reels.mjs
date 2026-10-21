@@ -70,6 +70,32 @@ const layoutProblems = (reel) =>
       const h = r.height; // rendered line height, so scaled drawings count at their real size
       if (h < minPx) out.push(`text "${text}" is ${h.toFixed(1)}px tall (minimum ${minPx})`);
     }
+    // A label drawn on a filled shape must read against it, at least 3:1 (QUALITY.md #63: the briefing palette turned
+    // caramel fills white, so light labels on lit boxes vanished).
+    const lum = (c) => {
+      const [r, g, b] = (c.match(/[\d.]+/g) ?? ['0', '0', '0']).slice(0, 3).map((v) => (v / 255 <= 0.03928 ? v / 255 / 12.92 : ((v / 255 + 0.055) / 1.055) ** 2.4));
+      return 0.2126 * r + 0.7152 * g + 0.0722 * b;
+    };
+    const opacity = (el) => {
+      let o = 1;
+      for (let e = el; e && e !== root.parentElement; e = e.parentElement) o *= parseFloat(getComputedStyle(e).opacity || '1');
+      return o;
+    };
+    for (const { text, r, node } of items) {
+      if (node.nodeType !== 1 || node.tagName.toLowerCase() !== 'text' || opacity(node) < 0.6) continue;
+      for (const e of document.elementsFromPoint(r.left + r.width / 2, r.top + r.height / 2)) {
+        const tag = e.tagName.toLowerCase();
+        if (e === node || node.contains(e) || ['text', 'tspan', 'line', 'g'].includes(tag)) continue;
+        if (tag === 'svg' || e === root) break;
+        if (!['rect', 'path', 'circle', 'ellipse', 'polygon'].includes(tag)) continue;
+        const cs = getComputedStyle(e);
+        if (!cs.fill || cs.fill === 'none' || opacity(e) * parseFloat(cs.fillOpacity || '1') < 0.5) continue;
+        const [hi, lo] = [lum(getComputedStyle(node).fill), lum(cs.fill)].sort((p, q) => q - p);
+        const k = (hi + 0.05) / (lo + 0.05);
+        if (k < 3) out.push(`text "${text}" is hard to read on its fill (contrast ${k.toFixed(2)}:1, minimum 3)`);
+        break;
+      }
+    }
     for (let i = 0; i < items.length; i++)
       for (let j = i + 1; j < items.length; j++) {
         const a = items[i].r, b = items[j].r;

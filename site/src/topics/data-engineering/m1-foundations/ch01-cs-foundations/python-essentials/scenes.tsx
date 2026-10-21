@@ -3,11 +3,9 @@ import type { StepCtx } from '../../../../../reels/types';
 import { clamp, easeInOut, easeOut, easeOutBack, lerp, seg } from '../../../../../reels/anim';
 import { Code } from '../../../../../reels/Code';
 import { RefresherList } from '../refreshers';
+import { C, MONO, SERIF } from '../../../../../reels/kit';
 
 // Every example shown here is executed and checked by examples.py.
-const C = { roast: '#2a1d16', cocoa: '#3b2a21', mocha: '#5a4032', taupe: '#8b7766', latte: '#c8ac8c', crema: '#e9d9bf', caramel: '#d49a57', cinnamon: '#b8612f', cherry: '#8e2f2a', espresso: '#17100c' };
-const MONO = '"JetBrains Mono", ui-monospace, monospace';
-const SERIF = 'Fraunces, Georgia, serif';
 
 const Stack = ({ children }: { children: ReactNode }) => <div className="flex h-full w-full flex-col justify-center gap-3 landscape:gap-5">{children}</div>;
 const Svg = ({ label, h = 260, children }: { label: string; h?: number; children: ReactNode }) => (
@@ -201,7 +199,7 @@ export function ContextManager({ t }: StepCtx) {
           return (
             <g key={s.k} transform={`translate(${x} 60) scale(${clamp(a)})`} opacity={clamp(a)}>
               <circle r={14} fill={s.c} />
-              <T x={0} y={44} s={14} a="middle" f={s.c === C.cherry ? '#e07a6e' : C.crema} w={600}>{s.k}</T>
+              <T x={0} y={44} s={14} a="middle" f={s.c === C.cherry ? C.cherryText : C.crema} w={600}>{s.k}</T>
             </g>
           );
         })}

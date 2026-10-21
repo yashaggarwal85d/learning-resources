@@ -161,30 +161,30 @@ export default function NotesPanel({ panel, topics, onTab, onClose, dirty }: { p
     <AnimatePresence>
       {panel && topic && (
         <motion.div className="fixed inset-0 z-[55]" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
-          <button type="button" aria-label="Close" className="absolute inset-0 hidden bg-void/55 sm:block" onClick={onClose} />
+          <button type="button" aria-label="Close" className="absolute inset-0 hidden bg-void/60 sm:block" onClick={onClose} />
           <motion.div
             role="dialog"
             aria-modal="true"
             aria-label="Notes"
-            className="absolute inset-y-0 right-0 flex h-dvh w-full flex-col border-l border-crema/10 bg-roast shadow-[-30px_0_80px_rgba(0,0,0,.55)] sm:w-[min(36rem,92vw)]"
+            className="absolute inset-y-0 right-0 flex h-dvh w-full flex-col border-l border-line bg-panel shadow-[-30px_0_80px_rgba(0,0,0,.6)] sm:w-[min(36rem,92vw)]"
             initial={{ x: '100%' }}
             animate={{ x: 0 }}
             exit={{ x: '100%' }}
-            transition={{ type: 'spring', stiffness: 280, damping: 34 }}
+            transition={{ type: 'spring', stiffness: 260, damping: 36 }}
           >
-            <div className="flex items-start justify-between gap-3 px-4 pb-1 pt-[max(0.75rem,env(safe-area-inset-top))] sm:px-6">
+            <div className="flex items-start justify-between gap-3 px-4 pb-2 pt-[max(0.9rem,env(safe-area-inset-top))] sm:px-6">
               <div className="min-w-0">
-                <p className="eyebrow text-[0.62rem] text-caramel">
-                  §{topic.chapter.section} · Milestone {topic.milestone.number} · Ch.{topic.chapter.number}
+                <p className="eyebrow text-[0.6rem] text-taupe">
+                  Dossier · §{topic.chapter.section} · Milestone {topic.milestone.number} · Ch.{topic.chapter.number}
                 </p>
-                <h2 className="truncate font-display text-xl font-bold text-crema">{topic.title}</h2>
+                <h2 className="mt-1 truncate font-display text-[1.35rem] font-[350] text-chalk">{topic.title}</h2>
               </div>
-              <button type="button" onClick={onClose} className="grid h-9 w-9 shrink-0 place-items-center rounded-full text-latte hover:bg-crema/10 hover:text-crema" aria-label="Close panel">
+              <button type="button" onClick={onClose} className="grid h-9 w-9 shrink-0 place-items-center rounded-md border border-crema/12 text-latte transition hover:border-crema/45 hover:text-chalk" aria-label="Close panel">
                 ✕
               </button>
             </div>
 
-            <div role="tablist" aria-label="Notes" className="flex gap-1 overflow-x-auto px-3 pb-2 pt-1 sm:px-5">
+            <div role="tablist" aria-label="Notes" className="no-scrollbar flex gap-1 overflow-x-auto border-b border-line px-3 sm:px-5">
               {TABS.map((t) => (
                 <button
                   key={t.id}
@@ -192,22 +192,24 @@ export default function NotesPanel({ panel, topics, onTab, onClose, dirty }: { p
                   role="tab"
                   aria-selected={tab === t.id}
                   onClick={() => requestTab(t.id)}
-                  className={`shrink-0 whitespace-nowrap rounded-full px-3 py-1.5 text-sm transition ${tab === t.id ? 'bg-caramel text-espresso font-semibold' : 'border border-crema/15 text-latte hover:border-caramel hover:text-crema'}`}
+                  className={`relative shrink-0 whitespace-nowrap px-2.5 pb-2.5 pt-2 text-[0.86rem] transition-colors duration-300 ${tab === t.id ? 'text-chalk' : 'text-taupe hover:text-crema'}`}
                 >
                   {t.label}
+                  {tab === t.id && <motion.span layoutId="notes-tab" className="absolute inset-x-2 -bottom-px h-[1.5px] bg-caramel" transition={{ duration: 0.45, ease: [0.16, 1, 0.3, 1] }} />}
                 </button>
               ))}
             </div>
+            <div className="h-3 shrink-0" />
 
             {status.kind === 'saved' && !editing && (
-              <p role="status" className="mx-4 mb-2 rounded-xl border border-caramel/40 bg-caramel/10 px-3 py-2 text-[0.82rem] text-crema sm:mx-6">
+              <p role="status" className="mx-4 mb-2 rounded-md border border-crema/25 bg-crema/[0.05] px-3 py-2 text-[0.82rem] text-chalk sm:mx-6">
                 Saved to GitHub.{' '}
                 {minutesLeft > 0 ? `Live on the site in about ${minutesLeft} min; this panel shows your text until then.` : 'The site should be rebuilt now; reload to see the published page.'}
               </p>
             )}
             {status.kind === 'busy' && <p role="status" className="mx-4 mb-2 text-[0.82rem] text-latte sm:mx-6">{status.msg}</p>}
             {status.kind === 'error' && (
-              <p role="alert" className="mx-4 mb-2 rounded-xl border border-red-400/40 bg-red-400/10 px-3 py-2 text-[0.82rem] text-crema sm:mx-6">
+              <p role="alert" className="mx-4 mb-2 rounded-md border border-signal/40 bg-signal/10 px-3 py-2 text-[0.82rem] text-chalk sm:mx-6">
                 {status.msg}
               </p>
             )}
@@ -216,7 +218,7 @@ export default function NotesPanel({ panel, topics, onTab, onClose, dirty }: { p
               <div className="flex min-h-0 flex-1 flex-col px-4 pb-3 sm:px-6">
                 <div className="mb-2 flex items-center gap-2">
                   {(['write', 'preview'] as const).map((m) => (
-                    <button key={m} type="button" onClick={() => setMode(m)} aria-pressed={mode === m} className={`rounded-full px-3 py-1 text-sm ${mode === m ? 'bg-crema/15 text-crema' : 'text-latte hover:text-crema'}`}>
+                    <button key={m} type="button" onClick={() => setMode(m)} aria-pressed={mode === m} className={`rounded-md px-3 py-1 text-sm ${mode === m ? 'bg-crema/12 text-chalk' : 'text-taupe hover:text-crema'}`}>
                       {m === 'write' ? 'Markdown' : 'Preview'}
                     </button>
                   ))}
@@ -228,20 +230,20 @@ export default function NotesPanel({ panel, topics, onTab, onClose, dirty }: { p
                     value={text}
                     onChange={(e) => setText(e.target.value)}
                     spellCheck
-                    className="min-h-0 flex-1 resize-none rounded-xl border border-crema/15 bg-espresso/70 p-3 font-mono text-[0.8rem] leading-relaxed text-crema outline-none focus:border-caramel"
+                    className="min-h-0 flex-1 resize-none rounded-md border border-line bg-espresso/80 p-3 font-mono text-[0.8rem] leading-relaxed text-crema outline-none focus:border-crema/60"
                   />
                 ) : (
-                  <div className="deep min-h-0 flex-1 overflow-y-auto overscroll-contain rounded-xl border border-crema/10 p-3" dangerouslySetInnerHTML={{ __html: previewHtml }} />
+                  <div className="deep min-h-0 flex-1 overflow-y-auto overscroll-contain rounded-md border border-line p-3" dangerouslySetInnerHTML={{ __html: previewHtml }} />
                 )}
                 {problems.length > 0 && (
-                  <ul className="mt-2 list-disc pl-5 text-[0.78rem] text-caramel" aria-label="Problems that would fail the build">
+                  <ul className="mt-2 list-disc pl-5 text-[0.78rem] text-signal" aria-label="Problems that would fail the build">
                     {problems.map((p) => (
                       <li key={p}>This file {p}</li>
                     ))}
                   </ul>
                 )}
                 {conflict && (
-                  <div className="mt-2 max-h-48 overflow-y-auto rounded-xl border border-crema/15 bg-espresso/60 p-2 font-mono text-[0.72rem] leading-snug" aria-label="Differences from the version on GitHub">
+                  <div className="mt-2 max-h-48 overflow-y-auto rounded-md border border-line bg-espresso/70 p-2 font-mono text-[0.72rem] leading-snug" aria-label="Differences from the version on GitHub">
                     <p className="mb-1 font-sans text-[0.78rem] text-latte">GitHub (red, −) against yours (green, +):</p>
                     {diff
                       .filter((d, i) => d.op !== ' ' || diff.slice(Math.max(0, i - 1), i + 2).some((n) => n.op !== ' '))
@@ -257,7 +259,7 @@ export default function NotesPanel({ panel, topics, onTab, onClose, dirty }: { p
                     <>
                       <button
                         type="button"
-                        className="rounded-full bg-caramel px-4 py-2 text-sm font-semibold text-espresso"
+                        className="rounded-full bg-caramel px-4 py-2 text-sm font-semibold text-espresso transition hover:bg-chalk"
                         onClick={() => {
                           setBase({ text: conflict.theirs, sha: conflict.sha });
                           setText(conflict.theirs);
@@ -267,7 +269,7 @@ export default function NotesPanel({ panel, topics, onTab, onClose, dirty }: { p
                       >
                         Take GitHub’s version
                       </button>
-                      <button type="button" className="rounded-full border border-crema/20 px-4 py-2 text-sm text-crema" onClick={() => navigator.clipboard?.writeText(text)}>
+                      <button type="button" className="rounded-full border border-crema/20 px-4 py-2 text-sm text-crema transition hover:border-crema/60 hover:text-chalk" onClick={() => navigator.clipboard?.writeText(text)}>
                         Copy my text
                       </button>
                     </>
@@ -276,14 +278,14 @@ export default function NotesPanel({ panel, topics, onTab, onClose, dirty }: { p
                       type="button"
                       disabled={!changed || problems.length > 0 || status.kind === 'busy'}
                       onClick={save}
-                      className="rounded-full bg-caramel px-4 py-2 text-sm font-semibold text-espresso disabled:opacity-40"
+                      className="rounded-full bg-caramel px-4 py-2 text-sm font-semibold text-espresso transition hover:bg-chalk disabled:opacity-40"
                     >
                       Save to GitHub
                     </button>
                   )}
                   <button
                     type="button"
-                    className="rounded-full border border-crema/20 px-4 py-2 text-sm text-crema"
+                    className="rounded-full border border-crema/20 px-4 py-2 text-sm text-crema transition hover:border-crema/60 hover:text-chalk"
                     onClick={() => {
                       if (changed && !window.confirm('Discard your unsaved edits?')) return;
                       setEditing(false);
@@ -298,7 +300,7 @@ export default function NotesPanel({ panel, topics, onTab, onClose, dirty }: { p
             ) : (
               <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain px-4 pb-6 sm:px-6">
                 {token && tab && EDITABLE(tab) && (
-                  <button type="button" onClick={startEdit} disabled={status.kind === 'busy'} className="mb-2 mt-1 rounded-full border border-crema/20 px-4 py-1.5 text-sm text-crema hover:border-caramel disabled:opacity-50">
+                  <button type="button" onClick={startEdit} disabled={status.kind === 'busy'} className="mb-2 mt-1 rounded-full border border-crema/20 px-4 py-1.5 text-sm text-crema transition hover:border-crema/60 hover:text-chalk disabled:opacity-50">
                     Edit {tab === 'pre' ? 'pre-notes' : 'post-notes'}
                   </button>
                 )}
@@ -306,7 +308,7 @@ export default function NotesPanel({ panel, topics, onTab, onClose, dirty }: { p
               </div>
             )}
 
-            <div className="border-t border-crema/10 px-4 py-2 pb-[max(0.5rem,env(safe-area-inset-bottom))] text-[0.74rem] text-latte sm:px-6">
+            <div className="border-t border-line px-4 py-2 pb-[max(0.5rem,env(safe-area-inset-bottom))] text-[0.74rem] text-taupe sm:px-6">
               {tokenForm ? (
                 <form
                   className="flex flex-wrap items-center gap-2"
@@ -319,8 +321,8 @@ export default function NotesPanel({ panel, topics, onTab, onClose, dirty }: { p
                   }}
                 >
                   <label className="sr-only" htmlFor="edit-token">GitHub token</label>
-                  <input id="edit-token" name="token" type="password" autoComplete="off" placeholder="Fine-grained token (Contents: read and write)" className="min-w-0 flex-1 rounded-lg border border-crema/20 bg-espresso/70 px-2 py-1 text-crema outline-none focus:border-caramel" />
-                  <button type="submit" className="rounded-full bg-caramel px-3 py-1 font-semibold text-espresso">Keep in this browser</button>
+                  <input id="edit-token" name="token" type="password" autoComplete="off" placeholder="Fine-grained token (Contents: read and write)" className="min-w-0 flex-1 rounded-md border border-line bg-espresso/80 px-2 py-1 text-chalk outline-none focus:border-crema/60" />
+                  <button type="submit" className="rounded-full bg-caramel px-3 py-1 font-semibold text-espresso transition hover:bg-chalk">Keep in this browser</button>
                   {token && (
                     <button type="button" className="rounded-full border border-crema/20 px-3 py-1 text-crema" onClick={() => { setToken(null); setTokenState(null); setTokenForm(false); }}>
                       Remove

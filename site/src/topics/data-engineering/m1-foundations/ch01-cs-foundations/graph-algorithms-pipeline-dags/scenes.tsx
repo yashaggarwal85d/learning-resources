@@ -41,7 +41,7 @@ function Dag({ lit, edgeLit, o = 1 }: { lit?: (k: NodeKey) => string | null; edg
         return (
           <g key={k}>
             <rect x={n.x - 24} y={n.y - 14} width={48} height={28} rx={6} fill={fill} stroke={C.taupe} strokeWidth={1} />
-            <T x={n.x} y={n.y + 4} s={10} f={C.crema} a="middle">{n.label}</T>
+            <T x={n.x} y={n.y + 4} s={12} f={fill === C.caramel ? C.espresso : C.crema} a="middle">{n.label}</T>
           </g>
         );
       })}

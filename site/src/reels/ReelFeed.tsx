@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { AnimatePresence, motion } from 'motion/react';
+import { AnimatePresence, MotionConfig, motion } from 'motion/react';
+import Mark from '../components/Mark';
 import type { TopicMeta } from '../topics/registry';
 import type { Reel } from './types';
 import ReelPlayer from './ReelPlayer';
@@ -160,17 +161,18 @@ export default function ReelFeed({ base, domains, topics, initialDomain, initial
   };
 
   return (
+    <MotionConfig reducedMotion="user">
     <div className="fixed inset-0 bg-espresso text-crema">
       {/* Top bar */}
       <header className="pointer-events-none absolute inset-x-0 top-0 z-50 flex items-center gap-2 px-3 pt-[max(0.75rem,env(safe-area-inset-top))] sm:px-5">
         <a
           href={base}
-          className="pointer-events-auto grid h-10 w-10 shrink-0 place-items-center rounded-xl border border-crema/10 bg-espresso/80 backdrop-blur"
+          className="pointer-events-auto grid h-10 w-10 shrink-0 place-items-center rounded-md border border-crema/12 bg-espresso/80 text-chalk backdrop-blur transition hover:border-crema/45"
           aria-label="Home"
         >
-          <span className="grid h-6 w-6 place-items-center rounded-md bg-caramel font-display text-sm font-bold italic text-espresso">L</span>
+          <Mark size={22} />
         </a>
-        <nav className="no-scrollbar pointer-events-auto mx-auto flex min-w-0 gap-1 overflow-x-auto rounded-full border border-crema/10 bg-espresso/80 p-1 backdrop-blur" aria-label="Domains">
+        <nav className="no-scrollbar pointer-events-auto mx-auto flex min-w-0 gap-1 overflow-x-auto rounded-full border border-crema/12 bg-espresso/80 p-1 backdrop-blur" aria-label="Domains">
           {domains.map((d) => {
             const on = d.id === domain;
             return (
@@ -179,9 +181,9 @@ export default function ReelFeed({ base, domains, topics, initialDomain, initial
                 type="button"
                 disabled={!d.live}
                 onClick={() => setDomain(d.id)}
-                className={`relative shrink-0 rounded-full px-3 py-1.5 text-[0.8rem] transition sm:px-4 ${on ? 'text-espresso' : d.live ? 'text-latte hover:text-crema' : 'cursor-not-allowed text-latte/40'}`}
+                className={`relative shrink-0 rounded-full px-3 py-1.5 text-[0.8rem] transition sm:px-4 ${on ? 'text-espresso' : d.live ? 'text-latte hover:text-chalk' : 'cursor-not-allowed text-latte/40'}`}
               >
-                {on && <motion.span layoutId="feed-chip" className="absolute inset-0 rounded-full bg-crema" transition={{ type: 'spring', stiffness: 380, damping: 32 }} />}
+                {on && <motion.span layoutId="feed-chip" className="absolute inset-0 rounded-full bg-chalk" transition={{ type: 'spring', stiffness: 380, damping: 36 }} />}
                 <span className="relative whitespace-nowrap">
                   {d.title}
                   {!d.live && <span className="ml-1.5 font-mono text-[0.58rem] uppercase tracking-wider">soon</span>}
@@ -193,7 +195,7 @@ export default function ReelFeed({ base, domains, topics, initialDomain, initial
         <button
           type="button"
           onClick={() => setTreeOpen(true)}
-          className="pointer-events-auto grid h-10 w-10 shrink-0 place-items-center rounded-xl border border-crema/10 bg-espresso/80 text-crema backdrop-blur hover:border-caramel"
+          className="pointer-events-auto grid h-10 w-10 shrink-0 place-items-center rounded-md border border-crema/12 bg-espresso/80 text-crema backdrop-blur transition hover:border-crema/45 hover:text-chalk"
           aria-label="Curriculum"
         >
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round">
@@ -218,9 +220,10 @@ export default function ReelFeed({ base, domains, topics, initialDomain, initial
                 sections.current[i] = el;
               }}
               data-index={i}
-              className="grain relative h-[100dvh] snap-start snap-always overflow-hidden bg-[radial-gradient(ellipse_at_70%_30%,#2a1d16_0%,#17100c_60%,#0d0806_100%)]"
+              className="grain reel-bg relative h-[100dvh] snap-start snap-always overflow-hidden"
               aria-label={t.title}
             >
+              <div className="grid-bg pointer-events-none absolute inset-0" aria-hidden="true" />
               {reel ? (
                 <ReelPlayer
                   key={`${t.id}-${start.epoch}`}
@@ -236,7 +239,7 @@ export default function ReelFeed({ base, domains, topics, initialDomain, initial
                 />
               ) : (
                 <div className="grid h-full place-items-center">
-                  <span className="h-8 w-8 animate-spin rounded-full border-2 border-crema/20 border-t-caramel" />
+                  <span className="h-8 w-8 animate-spin rounded-full border border-crema/15 border-t-chalk" />
                 </div>
               )}
             </section>
@@ -250,21 +253,22 @@ export default function ReelFeed({ base, domains, topics, initialDomain, initial
           className="grain relative grid h-[100dvh] snap-start place-items-center bg-void px-6"
         >
           <div className="w-full max-w-md text-center">
-            <svg className="mx-auto" width="56" height="56" viewBox="0 0 24 24" fill="none" stroke="#d49a57" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
+            <svg className="mx-auto text-chalk" width="56" height="56" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round">
               <circle cx="12" cy="12" r="10" />
               <path d="m7.5 12.5 3 3 6-7" />
             </svg>
-            <h2 className="mt-5 font-display text-3xl font-bold">You're all caught up</h2>
+            <p className="eyebrow mt-5 text-[0.62rem] text-taupe">End of the feed</p>
+            <h2 className="mt-2 font-display text-3xl font-[350] text-chalk">You're all caught up</h2>
             <p className="mt-2 text-latte">
               {list.length === 1 ? 'That is the one reel live in this domain so far.' : `That is all ${list.length} reels live in this domain so far.`} New topics go live one at a time, as each one is finished and verified.
             </p>
             {upcoming[domain]?.length > 0 && (
-              <div className="mt-8 rounded-2xl border border-crema/10 bg-roast/70 p-5 text-left">
-                <p className="eyebrow text-[0.6rem] text-latte">Next in production</p>
+              <div className="mt-8 rounded-md border border-line bg-panel p-5 text-left">
+                <p className="eyebrow text-[0.6rem] text-taupe">Next in production</p>
                 <ol className="mt-3 space-y-2.5">
                   {upcoming[domain].map((u, i) => (
                     <li key={u} className="flex gap-3 text-sm text-crema">
-                      <span className="font-mono text-caramel">{String(i + 1).padStart(2, '0')}</span>
+                      <span className="font-mono text-taupe">{String(i + 1).padStart(2, '0')}</span>
                       {u}
                     </li>
                   ))}
@@ -272,10 +276,10 @@ export default function ReelFeed({ base, domains, topics, initialDomain, initial
               </div>
             )}
             <div className="mt-6 flex justify-center gap-2">
-              <button type="button" onClick={() => setTreeOpen(true)} className="rounded-full bg-caramel px-5 py-2.5 font-semibold text-espresso">
+              <button type="button" onClick={() => setTreeOpen(true)} className="rounded-full bg-caramel px-5 py-2.5 font-semibold text-espresso transition hover:bg-chalk">
                 Open curriculum
               </button>
-              <a href={base} className="rounded-full border border-crema/20 px-5 py-2.5 text-crema hover:border-caramel">
+              <a href={base} className="rounded-full border border-crema/20 px-5 py-2.5 text-crema transition hover:border-crema/60 hover:text-chalk">
                 Home
               </a>
             </div>
@@ -292,14 +296,14 @@ export default function ReelFeed({ base, domains, topics, initialDomain, initial
             initial={{ opacity: 0, y: -12 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -12 }}
-            className="fixed left-1/2 top-20 z-[60] flex max-w-[calc(100vw-2rem)] -translate-x-1/2 items-center gap-3 rounded-full border border-crema/15 bg-roast/95 px-4 py-2 text-sm text-crema shadow-2xl backdrop-blur"
+            className="fixed left-1/2 top-20 z-[60] flex max-w-[calc(100vw-2rem)] -translate-x-1/2 items-center gap-3 rounded-md border border-crema/15 bg-panel/95 px-4 py-2 text-sm text-chalk shadow-2xl backdrop-blur"
             role="status"
           >
             <span className="truncate">{toast.msg}</span>
             {toast.action && (
               <button
                 type="button"
-                className="shrink-0 font-semibold text-caramel"
+                className="shrink-0 font-mono text-[0.7rem] font-semibold uppercase tracking-[0.14em] text-chalk underline underline-offset-4"
                 onClick={() => {
                   toast.action?.run();
                   setToast(null);
@@ -312,6 +316,7 @@ export default function ReelFeed({ base, domains, topics, initialDomain, initial
         )}
       </AnimatePresence>
     </div>
+    </MotionConfig>
   );
 }
 
@@ -323,23 +328,23 @@ function Tree({ tree, coming, current, onClose, onPlay }: { tree: TreeDomain[]; 
     <motion.div className="fixed inset-0 z-[56] overflow-y-auto bg-espresso/96 backdrop-blur-xl" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} role="dialog" aria-modal="true" aria-label="Curriculum">
       <div className="mx-auto max-w-2xl px-5 pb-16 pt-[max(1.25rem,env(safe-area-inset-top))]">
         <div className="flex items-center justify-between">
-          <p className="eyebrow text-caramel">Curriculum · live reels</p>
-          <button type="button" onClick={onClose} className="grid h-10 w-10 place-items-center rounded-full border border-crema/15 text-crema hover:border-caramel" aria-label="Close curriculum">
+          <p className="eyebrow text-latte">Library · live reels</p>
+          <button type="button" onClick={onClose} className="grid h-10 w-10 place-items-center rounded-md border border-crema/15 text-crema transition hover:border-crema/50 hover:text-chalk" aria-label="Close curriculum">
             ✕
           </button>
         </div>
         {tree.map((d, di) => (
-          <motion.section key={d.id} initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.05 + di * 0.06 }} className="mt-8">
-            <h2 className="font-display text-3xl font-bold">{d.title}</h2>
+          <motion.section key={d.id} initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.05 + di * 0.06, duration: 0.7, ease: [0.16, 1, 0.3, 1] }} className="mt-10">
+            <h2 className="font-display text-3xl font-[350] text-chalk">{d.title}</h2>
             {d.milestones.map((m) => (
               <div key={m.number} className="mt-5">
-                <p className="font-mono text-[0.7rem] uppercase tracking-[0.16em] text-latte">
+                <p className="font-mono text-[0.66rem] uppercase tracking-[0.2em] text-taupe">
                   Milestone {m.number} · {m.title}
                 </p>
                 {m.chapters.map((c) => (
-                  <div key={c.number} className="mt-3 border-l border-crema/12 pl-4">
+                  <div key={c.number} className="mt-3 border-l border-line pl-4">
                     <p className="text-sm text-latte">
-                      <span className="font-mono text-caramel">Ch.{c.number}</span> {c.title}
+                      <span className="font-mono text-[0.75rem] text-chalk">Ch.{c.number}</span> {c.title}
                     </p>
                     <ul className="mt-2 space-y-1.5">
                       {c.topics.map((t) => {
@@ -351,17 +356,17 @@ function Tree({ tree, coming, current, onClose, onPlay }: { tree: TreeDomain[]; 
                             <button
                               type="button"
                               onClick={() => onPlay(t.id)}
-                              className={`flex w-full items-center gap-3 rounded-xl border px-3 py-3 text-left transition hover:border-caramel ${isCur ? 'border-caramel/60 bg-caramel/10' : 'border-crema/10 bg-roast/60'}`}
+                              className={`flex w-full items-center gap-3 rounded-md border px-3 py-3 text-left transition duration-200 hover:border-crema/45 ${isCur ? 'border-crema/50 bg-crema/[0.06]' : 'border-line bg-panel/70'}`}
                             >
                               <Ring frac={frac} done={!!pr?.done} />
                               <span className="min-w-0 flex-1">
-                                <span className="block font-medium text-crema">{t.title}</span>
-                                <span className="font-mono text-[0.62rem] uppercase tracking-wider text-latte">
+                                <span className="block font-medium text-chalk">{t.title}</span>
+                                <span className="font-mono text-[0.6rem] uppercase tracking-[0.14em] text-taupe">
                                   {pr?.done ? 'Watched' : pr ? `Step ${pr.step + 1} of ${pr.steps}` : 'Not started'}
                                   {isCur ? ' · playing' : ''}
                                 </span>
                               </span>
-                              <span className="text-caramel">▶</span>
+                              <span className="text-[0.7rem] text-crema">▶</span>
                             </button>
                           </li>
                         );
@@ -383,9 +388,9 @@ function Ring({ frac, done }: { frac: number; done: boolean }) {
   const c = 2 * Math.PI * 9;
   return (
     <svg width="26" height="26" viewBox="0 0 24 24" className="shrink-0">
-      <circle cx="12" cy="12" r="9" fill="none" stroke="rgba(233,217,191,.15)" strokeWidth="2.5" />
-      <circle cx="12" cy="12" r="9" fill="none" stroke="#d49a57" strokeWidth="2.5" strokeDasharray={c} strokeDashoffset={c * (1 - frac)} strokeLinecap="round" transform="rotate(-90 12 12)" />
-      {done && <path d="m8 12.3 2.6 2.6L16 9.5" fill="none" stroke="#d49a57" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />}
+      <circle cx="12" cy="12" r="9" fill="none" stroke="rgba(237,237,237,.14)" strokeWidth="2" />
+      <circle cx="12" cy="12" r="9" fill="none" stroke="#ededed" strokeWidth="2" strokeDasharray={c} strokeDashoffset={c * (1 - frac)} strokeLinecap="round" transform="rotate(-90 12 12)" />
+      {done && <path d="m8 12.3 2.6 2.6L16 9.5" fill="none" stroke="#ededed" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />}
     </svg>
   );
 }

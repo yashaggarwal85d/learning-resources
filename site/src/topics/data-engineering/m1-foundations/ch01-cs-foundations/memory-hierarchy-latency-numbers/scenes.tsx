@@ -1,7 +1,7 @@
 import { useState, type ComponentType } from 'react';
 import type { StepCtx } from '../../../../../reels/types';
 import { clamp, easeInOut, easeOut, easeOutBack, lerp, rng, seg } from '../../../../../reels/anim';
-import { C, SERIF, Svg, T } from '../../../../../reels/kit';
+import { C, MONO, SERIF, Svg, T } from '../../../../../reels/kit';
 
 // Every number drawn here is computed from the constants below or asserted in examples.py, and every scene is a pure function of time.
 // The chapter's colour grammar: crema values, latte labels, taupe axes and WAITING (the α part of every bar), caramel the cost being
@@ -790,7 +790,7 @@ export function OrdersRace({ t, portrait }: StepCtx) {
             <rect x={X0} y={y + 8} width={Math.max(3, w)} height={22} rx={4} fill={C.caramel} />
             {done && (
               <g transform={`translate(560 ${y}) scale(${clamp(pop, 0, 1.2)})`} opacity={clamp(pop)}>
-                <text x={0} y={0} textAnchor="end" fill={C.crema} fontFamily="JetBrains Mono, monospace" fontWeight={500} style={{ fontSize: 'calc(17px * var(--svg-text-scale, 1))' }}>
+                <text x={0} y={0} textAnchor="end" fill={C.crema} fontFamily={MONO} fontWeight={500} style={{ fontSize: 'calc(17px * var(--svg-text-scale, 1))' }}>
                   {l.s.toFixed(1)} s
                 </text>
               </g>

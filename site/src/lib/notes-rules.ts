@@ -1,7 +1,7 @@
 // The rules a topic's notes files must meet. Pure functions, no Node APIs: the build check (topic-checks.ts) and the
 // in-page editor (reels/NotesPanel.tsx) run the same code, so a save that would turn `main` red is refused in the browser.
 //   pre-notes.md   what must be known before watching: 4–14 bullets "- **Term**: definition. *Where you meet it:* scenario.",
-//                  under 400 words, no links, nothing the reel itself explains (ROUTINE.md section 3).
+//                  under 400 words, no links, nothing the reel itself explains (.claude/skills/make-topic, section 7).
 //   post-notes.md  the Deep dive: sections after the reel, with a heading, no unsafe HTML.
 //   references.md     the sources actually used: a list with the date they were last verified.
 

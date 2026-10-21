@@ -8,36 +8,35 @@ Three tracks, each with a full syllabus:
 
 | Track | Syllabus | Status |
 |---|---|---|
-| Data Engineering | [syllabus/data-engineering.md](syllabus/data-engineering.md) | in production (draft and review routines, every 4 hours; narration on the owner's PC) |
-| Data Structures & Algorithms | [syllabus/data-structures-and-algorithms.md](syllabus/data-structures-and-algorithms.md) | in production (draft and review routines, every 4 hours; narration on the owner's PC) |
-| Rust Systems Engineering | [syllabus/rust-systems-engineering.md](syllabus/rust-systems-engineering.md) | in production (draft and review routines, every 4 hours; narration on the owner's PC) |
+| Data Engineering | [syllabus/data-engineering.md](syllabus/data-engineering.md) | in production (`/make-topic`, run by the owner in Claude Code; narration on the owner's PC) |
+| Data Structures & Algorithms | [syllabus/data-structures-and-algorithms.md](syllabus/data-structures-and-algorithms.md) | in production (`/make-topic`, run by the owner in Claude Code; narration on the owner's PC) |
+| Rust Systems Engineering | [syllabus/rust-systems-engineering.md](syllabus/rust-systems-engineering.md) | in production (`/make-topic`, run by the owner in Claude Code; narration on the owner's PC) |
 
 ## The documents that run the project
 
 | File | What it is |
 |---|---|
 | [PROJECT_PLAN.md](PROJECT_PLAN.md) | The rules (animate first; one topic at a time; verified, state-of-the-art content; beautiful and memorable; a natural flow; complete coverage, proven), what every topic contains, the Definition of Done, the narration standard and the tech stack. **The plan wins any conflict.** |
-| [ROUTINE.md](ROUTINE.md) | The step-by-step procedure the per-domain routines (every 4 hours) follow: draft runs plan a chapter and write first drafts, review runs review, check and ship the next topic held. |
+| [`.claude/skills/make-topic/SKILL.md`](.claude/skills/make-topic/SKILL.md) | How a topic is made: the step-by-step procedure `/make-topic <domain>` follows in one Claude Code session, from the chapter plan to the live, narrated reel. |
 | [DESIGN.md](DESIGN.md) | The house style for reel steps: canvas, text sizes, colour, motion, and what the looks review checks. |
-| [LEDGER.md](LEDGER.md) | Two lines per routine run and per audit finding: time, tokens per model, checks passed, what went wrong. The data for improving the pipeline. |
-| [AUDIT.md](AUDIT.md) | The daily audit: re-checks every reel shipped since the last audit, fixes what is wrong, and records which part of the pipeline let it through. |
+| [LEDGER.md](LEDGER.md) | Two lines per recorded session (and, until 2026-10-20, per routine run and audit finding): time, tokens per model, checks passed, what went wrong. |
 | [QUALITY.md](QUALITY.md) | Every problem ever found, its fix and the guard that stops it recurring, plus the automatic checks and the "before shipping" list. |
 | `syllabus/` | The course order, topic by topic; `syllabus/review-notes/` records syllabus changes and why. |
 
 ## Repository layout
 
 ```
-PROJECT_PLAN.md  ROUTINE.md  QUALITY.md   rules, procedure, quality record
+PROJECT_PLAN.md  DESIGN.md  QUALITY.md    rules, house style, quality record
+.claude/skills/make-topic/                 how a topic is made (/make-topic)
 syllabus/                                  the four syllabi (the build reads them)
 scripts/check-docs.mjs                     checks links and anchors in the docs
 site/src/reels/kit.tsx                     the drawing kit every topic's scenes are built from (colours, canvas, text)
-scripts/check-all.mjs                      runs every pre-ship check with a timing summary (ROUTINE.md sections 5 and 8)
+scripts/check-all.mjs                      runs every pre-ship check with a timing summary (make-topic sections 9 and 11)
 scripts/check-links.mjs                    checks every topic's outside links (status and title)
-scripts/claim.mjs                          hands each routine run its topic (claims on the `claims` branch, heartbeats)
+scripts/next-topic.mjs                     the next topic of a domain to make, with its id, folder and chapter plan
 scripts/affected.mjs                       which reels and links a change can affect (CI and check-all --changed test those)
 scripts/sources.mjs                        fetches sources raw and proves every quote in SOURCES.md word for word
-scripts/ledger.mjs                         appends entries to LEDGER.md on main (run-metrics.mjs finish and the audit use it)
-scripts/audit-scope.mjs                    the topics and runs since the last audit (AUDIT.md)
+scripts/ledger.mjs                         appends entries to LEDGER.md on main (run-metrics.mjs finish uses it)
 scripts/run-metrics.mjs                    records a run's tokens (per model), calls and time, per stage
 site/                                      the website (Astro + React islands + Tailwind)
   src/topics/registry.ts                   every finished topic: live or held, concept ledger, bridge and handoff
@@ -107,17 +106,16 @@ What the editor guards: it applies the same rules as the build (`site/src/lib/no
 
 ## How a topic is made
 
-Each domain has a routine that fires every 4 hours (an automated session; up to four runs of one domain and six in all work at once; runs only narrating or shipping don't count, each on its own job) that follows [ROUTINE.md](ROUTINE.md). Chapters go in sequence, the topics of a chapter in parallel. A dispatcher session starts runs every hour, one per free job (`node scripts/claim.mjs open` counts them), because a routine session can't start runs itself.
+The owner opens Claude Code in this repository and asks for one (owner decision 2026-10-20; the cloud routines, the claims and the daily audit are retired): `/make-topic <domain> [count]` ([the skill](.claude/skills/make-topic/SKILL.md)) makes the next topic of that domain end to end in one session, without subagents:
 
-The work is split in three stages (owner decision 2026-10-13): draft runs plan chapters and write first drafts, review runs review and ready them, the owner's PC narrates and releases.
+1. `scripts/next-topic.mjs` names the next topic in syllabus order, its permanent id and folder, and whether its chapter has a plan; a chapter without one is planned first (`CHAPTER.md`: each topic's scope, concepts introduced and used, bridge and handoff), reviewed and pushed to `main`.
+2. Research from primary sources, fetched raw and quoted word for word (`scripts/sources.mjs`), and an expert list written before any plan.
+3. The content plan and storyboard to the briefing design (every step moves; hook, early prediction, takeaways, recap), an adversarial fact-check against the fetched sources, and the coverage map.
+4. Every file: the reel, executed examples, pre-notes, post-notes, sources, prerequisite links and the narration script in the voice of an MIT professor (never the description read aloud).
+5. A content review and a looks review of every screenshot, both done as cold self-reviews and recorded in `REVIEW.md`; every check green (`node scripts/check-all.mjs --changed`).
+6. Narration on the PC's GPU with the frozen voice, then the topic is pushed to `main` live, and CI and Deploy are watched until green.
 
-1. Before a chapter is built, one draft run plans it: an Opus planner writes the chapter's `CHAPTER.md` (each topic's scope, concepts introduced and used, bridge and handoff), a fresh Opus agent reviews it, and it is pushed to `main`. That plan is the contract every topic of the chapter follows, so they can all be built at once and still follow on from each other. The next chapter is planned once every topic of this one is content-final.
-2. Draft runs claim the topics of the planned chapter, one at a time, as many runs in parallel as the limits allow; a draft run goes on to the next topic until the chapter is drafted.
-3. A draft run researches the topic from primary sources; an Opus agent plans and storyboards it, a fresh Opus agent fact-checks the plan, and a blind expert list starts the coverage map. Opus does the five judgment jobs (chapter plan and its review, content plan, fact-check, content review); everything else is Sonnet; checks go to fresh agents that didn't write what they check.
-4. A builder agent writes the reel, pre-notes, post-notes, sources, prerequisite links, the narration script in the voice of an MIT professor (never the description read aloud) and executed examples; the draft is pushed as a topic branch and handed over. The next chapter is planned and drafted as soon as this one is fully drafted.
-5. A review run takes one drafted topic: fresh agents review the content and the looks, every check except narration must pass, and the topic is marked content-final (the next chapter may be planned once all its siblings are too), checked once more in full, and shipped to `main` **held, without audio**: narration is parked for the owner's PC, which narrates the parked topics in bulk on a GPU and releases them in order (`.claude/skills/narrate`).
-
-A topic goes live only when every topic before it in its domain is live; one finished early is held until then. If a check fails, the routine fixes the cause and never loosens the check.
+A topic goes live only when every topic before it in its domain is live, so topics are made in order. If a check fails, the session fixes the cause and never loosens the check.
 
 ## Rules that never bend
 

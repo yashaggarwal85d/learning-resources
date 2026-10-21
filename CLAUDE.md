@@ -1,34 +1,34 @@
 # CLAUDE.md — orientation for Claude Code in this repo
 
-This is the learning site: every syllabus topic becomes a short animated, narrated reel, built by automated routines and checked against primary sources. Read this file first; the documents below hold the rules.
+This is the learning site: every syllabus topic becomes a short animated, narrated reel, made one at a time in Claude Code with `/make-topic` and checked against primary sources. Read this file first; the documents below hold the rules.
 
 | File | What it is |
 |---|---|
 | `PROJECT_PLAN.md` | The rules. It wins any conflict. |
-| `ROUTINE.md` | The procedure a cloud routine run follows to make one topic. |
+| `.claude/skills/make-topic/SKILL.md` | How a topic is made, start to finish, in one session (`/make-topic <domain>`). |
 | `QUALITY.md` | Every problem found, its fix, its guard; the automatic checks; the before-shipping list. |
 | `DESIGN.md` | House style for reels. |
-| `LEDGER.md`, `AUDIT.md` | Run records and the daily audit. |
+| `LEDGER.md` | Run records (routine runs until 2026-10-20, sessions after). |
 | `syllabus/*.md` | The three curricula. Topics marked `*(skipped)*` stay in the curriculum and get no reel (`syllabus/review-notes/*-cuts.md`). |
 | `site/` | The Astro site: topics in `src/topics/`, the registry in `src/topics/registry.ts`, narration pipeline in `narration/`, audio in `public/audio/`. |
-| `scripts/claim.mjs` | Hands out jobs (plan, make, resume, release) and the switches in `scripts/claim-settings.json`. |
+| `scripts/next-topic.mjs` | The next topic of a domain to make: id, folder, chapter plan, neighbours. |
 
-## Where work happens (owner decision 2026-10-13)
+## Where work happens (owner decision 2026-10-20)
 
-- **The cloud, draft runs** (`.claude/skills/draft-chapter`, role `draft`): plan the next chapter and write every topic's first draft (research, content plan, fact-check, coverage map, every file including the narration script in the professor's voice), one topic branch each, handed over with `claim.mjs drafted`. Chapter N+1 is drafted as soon as chapter N is fully drafted.
-- **The cloud, review runs** (`.claude/skills/review-topic`, role `review`, the three domain routines, currently paused): take one drafted topic, review it, fix it, run every check, mark it content-final and ship it to `main` as **held**, without audio. That is a **parked** topic: finished content, no page on the site yet, waiting for its voice.
-- **The owner's PC** (Windows 11, Radeon RX 9070 XT, this machine when the working directory is a checkout of this repo on Windows): narrates the parked topics in bulk on the GPU and **releases** them, in syllabus order, as live reels. Skills: `.claude/skills/voice-showcase` (once, to pick the voice) and `.claude/skills/narrate` (every time).
-
-`scripts/claim.mjs next "<domain>" --role draft|review` hands out the jobs (`plan`, `draft`, `review`; `release` only on the PC with `CLAIM_RELEASE=1`); `scripts/claim-settings.json` → `"narration": "pc"` keeps release jobs away from the cloud, `finishOnly` stops new drafts and plans.
+- **No routines.** The cloud routines, the claims branch and the daily audit are retired. The owner opens Claude Code on the PC (Windows 11, Radeon RX 9070 XT, this machine when the working directory is a checkout of this repo on Windows) and asks for topics.
+- **Making topics:** `.claude/skills/make-topic` does everything for one topic in one session, without subagents: plan the chapter if needed, research, storyboard, fact-check, coverage map, every file, content and looks reviews, every check, narration on the GPU, ship live.
+- **Narration and the voice:** `.claude/skills/narrate` (topics queued in `renarration.json`, the teacher pass) and `.claude/skills/voice-showcase` (once, to pick the voice).
+- **Another session may share this checkout** (a narration run commits audio to `main`): check `git status` and running processes first, stage only your own files, and use a worktree for a topic when something else is working here.
 
 ## Vocabulary the owner uses
 
-- **"Draft the next chapter", "write the first drafts"** → `/draft-chapter <domain>`. **"Review the drafts", "ready the topics"** → `/review-topic <domain>` (what a routine run does).
+- **"Make the next topic", "create a new topic", "make the next N topics", "plan the next chapter"** → `/make-topic <domain> [count]` (`.claude/skills/make-topic/SKILL.md`).
 - **"Narrate", "do the narration", "the parked topics", "release the held topics"** → `/narrate` (`.claude/skills/narrate/SKILL.md`). The work list is `cd site && npm run test:narration`: every warning names a held topic without audio.
 - **"The voice showcase", "show me the voices", "audition", "pick the voice"** → `/voice-showcase` (`.claude/skills/voice-showcase/SKILL.md`): render every candidate voice on real script lines into `site/narration/pc/audition/` with an `index.html` to listen from, and wait for the owner to pick. **Production narration never starts until the owner has picked and the voice is frozen** (`site/narration/voice.json` → `version` is no longer `tara-v1`).
 - **"The narration just reads the screen", "make it teach", "like an MIT professor"** → the rule and the persona in `PROJECT_PLAN.md` (Narration → Three texts, one rule; The narrator's persona), the writing brief `.claude/skills/narrate/teacher-pass.md`. Three texts per step: the **on-screen text** in the drawing, the **description** (the paragraph under the animation), and the **narration**, which is both the voice and the captions. The narration is an MIT professor explaining the picture; it never reads the description. The build enforces a floor; `site/src/topics/narration-backlog.json` lists the old scripts still to rewrite, which `/narrate` step 1b does before narrating them.
 - **"Re-narrate", "the re-narration queue"** → `site/src/topics/renarration.json`: topics whose scripts were rewritten and whose audio the PC must generate; live ones keep their old clips until then. `/narrate` works through it.
 - **"Freeze the voice"** → `site/narration/pc/README.md` section 3: a new `voice.json` version and model block, the frozen reference clip committed, every existing clip regenerated.
+- **"The briefing look", "the theme", "make it pretty"** → `PROJECT_PLAN.md` (Theme — briefing) and `DESIGN.md` (owner decision 2026-10-20): black and white carry everything, colour is rare and means something (red failure, pale blue second series); Source Serif 4, IBM Plex Sans, JetBrains Mono; every step moves, built from the kit's moves; hook, early prediction, takeaways, recap. The 45 topics live that day keep their scenes (`site/src/topics/briefing-legacy.json`); every new topic is drafted to the new rules, which the build checks.
 - **"Parked" / "held"** → a finished topic on `main` with `status: 'held'` in the registry; **"live"** → released, on the site; **"skipped"** → a syllabus topic that gets no reel.
 - **"The PC setup"** → `site/narration/pc/README.md` section 1 (Breeze-TTS-2.cpp on Vulkan, Qwen3-TTS on ROCm, the checker, `TTS_PY` and `EVAL_PY`).
 

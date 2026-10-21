@@ -49,7 +49,7 @@ export default function ReelAnatomy() {
 
   const L = LAYERS[i];
   return (
-    <div ref={box} className="relative mx-auto max-w-3xl overflow-hidden rounded-[28px] border border-crema/10 bg-roast p-6 shadow-[0_30px_80px_rgba(0,0,0,.45)] sm:p-9">
+    <div ref={box} className="relative mx-auto max-w-3xl overflow-hidden rounded-lg border border-line bg-panel p-6 shadow-[0_30px_80px_rgba(0,0,0,.5)] sm:p-9">
       <div className="flex gap-1.5" role="tablist" aria-label="Layers of a reel">
         {LAYERS.map((l, k) => (
           <button
@@ -63,7 +63,7 @@ export default function ReelAnatomy() {
             }}
             className="group relative h-6 flex-1"
           >
-            <span className="absolute inset-x-0 top-1/2 h-[3px] -translate-y-1/2 overflow-hidden rounded-full bg-crema/15 transition-[height] group-hover:h-[5px]">
+            <span className="absolute inset-x-0 top-1/2 h-[2px] -translate-y-1/2 overflow-hidden rounded-full bg-crema/15 transition-[height] group-hover:h-[5px]">
               <span
                 className="block h-full rounded-full bg-caramel"
                 style={{ width: `${k < i ? 100 : k === i ? (reduce ? 100 : p * 100) : 0}%` }}
@@ -81,10 +81,10 @@ export default function ReelAnatomy() {
             exit={{ opacity: 0, y: -12, filter: 'blur(4px)' }}
             transition={{ duration: 0.45, ease: [0.16, 1, 0.3, 1] }}
           >
-            <p className="eyebrow text-caramel">
+            <p className="eyebrow text-latte">
               Layer {String(i + 1).padStart(2, '0')} / {LAYERS.length}
             </p>
-            <h3 className="mt-3 font-display text-4xl font-bold italic leading-none text-crema sm:text-5xl">{L.name}</h3>
+            <h3 className="mt-3 font-display text-4xl font-[350] leading-none text-chalk sm:text-5xl">{L.name}</h3>
             <p className="mt-4 max-w-md text-[0.98rem] leading-relaxed text-latte">{L.text}</p>
           </motion.div>
         </AnimatePresence>
@@ -93,24 +93,24 @@ export default function ReelAnatomy() {
           initial={{ scale: 0.6, rotate: -40, opacity: 0 }}
           animate={{ scale: 1, rotate: 0, opacity: 1 }}
           transition={{ type: 'spring', stiffness: 220, damping: 18 }}
-          className="hidden h-40 w-40 place-items-center rounded-full border border-caramel/30 sm:grid"
+          className="hidden h-40 w-40 place-items-center rounded-full border border-crema/15 sm:grid"
           aria-hidden="true"
         >
           <svg viewBox="0 0 100 100" className="h-36 w-36 -rotate-90">
-            <circle cx="50" cy="50" r="44" fill="none" stroke="rgba(233,217,191,.12)" strokeWidth="5" />
+            <circle cx="50" cy="50" r="44" fill="none" stroke="rgba(237,237,237,.1)" strokeWidth="5" />
             <circle
               cx="50"
               cy="50"
               r="44"
               fill="none"
-              stroke="#d49a57"
+              stroke="#ffffff"
               strokeWidth="5"
               strokeLinecap="round"
               pathLength={1}
               strokeDasharray={`${(i + (reduce ? 1 : p)) / LAYERS.length} 1`}
             />
           </svg>
-          <span className="absolute font-display text-5xl font-bold italic text-caramel">{i + 1}</span>
+          <span className="absolute font-display text-5xl font-[300] text-chalk">{i + 1}</span>
         </motion.div>
       </div>
       <p className="mt-6 font-mono text-[0.7rem] uppercase tracking-[0.24em] text-taupe">

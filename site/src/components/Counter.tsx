@@ -14,8 +14,8 @@ export default function Counter({ value, label }: { value: number; label: string
   }, [inView, value]);
   return (
     <div ref={ref}>
-      <div className="font-display text-4xl font-bold tabular-nums text-crema sm:text-5xl">{v.toLocaleString('en-US')}</div>
-      <div className="eyebrow mt-1 text-latte/80">{label}</div>
+      <div className="font-display text-4xl font-[300] tabular-nums text-chalk sm:text-5xl">{v.toLocaleString('en-US')}</div>
+      <div className="eyebrow mt-2 text-[0.62rem] text-taupe">{label}</div>
     </div>
   );
 }

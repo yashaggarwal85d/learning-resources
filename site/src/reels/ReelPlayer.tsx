@@ -5,7 +5,8 @@ import type { Reel } from './types';
 import type { TopicMeta } from '../topics/registry';
 import { saveProgress } from './progress';
 import { clamp } from './anim';
-import { Brewed } from './Brewed';
+import { Debrief } from './Debrief';
+import { decodeText } from './kit';
 import { useNarration, type Clip } from './narration';
 
 type Next = { title: string; live: boolean } | null;
@@ -35,6 +36,10 @@ const usePortrait = () => {
 };
 
 const reduceMotion = () => typeof window !== 'undefined' && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+/** The house entrance curve (DESIGN.md → Motion): fast out, long settle, no overshoot. */
+const EASE = [0.16, 1, 0.3, 1] as const;
+const DOMAIN_CODE: Record<string, string> = { 'data-engineering': 'DE', 'data-structures-and-algorithms': 'DSA', 'rust-systems-engineering': 'RUST' };
+const nn = (n: number) => String(n).padStart(2, '0');
 
 export default function ReelPlayer({ meta, reel, active, startStep, next, onPlayNext, onOpenSheet, onOpenTree, onToast }: Props) {
   const steps = reel.steps;
@@ -267,13 +272,25 @@ export default function ReelPlayer({ meta, reel, active, startStep, next, onPlay
     }
   };
 
+  // Keep the current step in view in the step index (long reels scroll it); scrolls the list only, never the feed.
+  const indexList = useRef<HTMLOListElement>(null);
+  useEffect(() => {
+    const ol = indexList.current;
+    const li = ol?.children[step] as HTMLElement | undefined;
+    if (!ol || !li || !ol.offsetParent) return;
+    const target = li.offsetTop - ol.offsetTop - ol.clientHeight / 2 + li.offsetHeight / 2;
+    ol.scrollTo({ top: Math.max(0, target), behavior: reduceMotion() ? 'auto' : 'smooth' });
+  }, [step]);
+
   const Visual = cur.Visual;
   const p = cur.duration > 0 ? clamp(t / cur.duration) : 1;
+  const code = DOMAIN_CODE[meta.domain] ?? meta.domain.toUpperCase();
+  const eyebrow = `${code} §${meta.chapter.section}${meta.kind === 'refresher' ? ' · Refresher' : ''} · ${nn(step + 1)}/${nn(steps.length)}`;
 
   return (
     <div className="relative flex h-full w-full select-none flex-col overflow-hidden" aria-roledescription="reel">
       <div
-        className="reel-stage relative flex min-h-0 flex-1 cursor-pointer flex-col landscape:grid landscape:grid-cols-[minmax(300px,0.8fr)_1.45fr]"
+        className="reel-stage relative flex min-h-0 flex-1 cursor-pointer flex-col landscape:grid landscape:grid-cols-[minmax(300px,0.8fr)_1.45fr] xl:landscape:grid-cols-[12.5rem_minmax(300px,0.8fr)_1.45fr]"
         style={{ touchAction: 'pan-y' }}
         onPointerDown={onPointerDown}
         onPointerMove={onPointerMove}
@@ -282,17 +299,39 @@ export default function ReelPlayer({ meta, reel, active, startStep, next, onPlay
         onPointerCancel={onPointerCancel}
         onPointerLeave={onPointerCancel}
       >
-        {/* Visual */}
-        <div className="relative min-h-[38%] flex-1 landscape:order-2 landscape:min-h-0">
+        {/* Step index: wide screens only */}
+        <nav aria-label="Reel steps" className="relative z-10 hidden min-h-0 flex-col justify-center py-24 pl-7 xl:landscape:flex">
+          <p className="eyebrow mb-3 text-[0.56rem] leading-relaxed text-taupe">{meta.title}</p>
+          <ol ref={indexList} className="no-scrollbar min-h-0 overflow-y-auto [mask-image:linear-gradient(to_bottom,black_88%,transparent)]">
+            {steps.map((s, i) => (
+              <li key={i} className="relative">
+                {i === step && <motion.span layoutId={`index-${meta.id}`} className="absolute inset-y-1 -left-3 w-px bg-caramel" transition={{ duration: 0.5, ease: EASE }} />}
+                <button
+                  type="button"
+                  onClick={() => goTo(i, i < step)}
+                  aria-label={`Go to step ${i + 1}: ${s.title}`}
+                  className={`grid w-full grid-cols-[1.7rem_1fr] gap-1 py-[0.4rem] pr-3 text-left text-[0.74rem] leading-snug transition-colors duration-300 ${i === step ? 'text-chalk' : i < step ? 'text-latte hover:text-chalk' : 'text-taupe hover:text-crema'}`}
+                >
+                  <span className="pt-px font-mono text-[0.6rem] tabular-nums">{nn(i + 1)}</span>
+                  <span className="line-clamp-2">{s.title}</span>
+                </button>
+              </li>
+            ))}
+          </ol>
+        </nav>
+
+        {/* Visual, in its frame */}
+        <div className="relative min-h-[38%] flex-1 landscape:order-2 landscape:min-h-0 xl:landscape:order-3">
+          <Frame step={step} fig={cur.fig} t={t} />
           <AnimatePresence mode="popLayout" initial={false}>
             <motion.div
               key={step}
               data-visual
               className="absolute inset-0 overflow-hidden px-2 pt-16 landscape:py-20 landscape:pl-6 landscape:pr-24"
-              initial={{ opacity: 0, scale: 0.96, filter: 'blur(10px)' }}
-              animate={{ opacity: 1, scale: 1, filter: 'blur(0px)' }}
-              exit={{ opacity: 0, scale: 1.03, filter: 'blur(8px)' }}
-              transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
+              initial={{ opacity: 0, y: 14, scale: 0.985 }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
+              exit={{ opacity: 0, scale: 1.01 }}
+              transition={{ duration: 0.55, ease: EASE }}
             >
               <Visual t={t} p={p} portrait={portrait} answer={answer} />
             </motion.div>
@@ -300,52 +339,59 @@ export default function ReelPlayer({ meta, reel, active, startStep, next, onPlay
         </div>
 
         {/* Caption */}
-        <div className="no-scrollbar relative z-10 flex max-h-[62%] shrink-0 flex-col overflow-y-auto px-5 pb-3 pr-16 landscape:order-1 landscape:max-h-none landscape:justify-center landscape:py-24 landscape:pl-[max(2rem,5vw)] landscape:pr-4">
+        <div className="no-scrollbar relative z-10 flex max-h-[62%] shrink-0 flex-col overflow-y-auto px-5 pb-3 pr-16 landscape:order-1 landscape:max-h-none landscape:justify-center landscape:py-24 landscape:pl-[max(2rem,5vw)] landscape:pr-4 xl:landscape:order-2 xl:landscape:pl-6">
           <AnimatePresence mode="wait" initial={false}>
-            <motion.div
-              key={step}
-              initial={{ opacity: 0, y: 18, filter: 'blur(6px)' }}
-              animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
-              exit={{ opacity: 0, y: -10, filter: 'blur(4px)' }}
-              transition={{ duration: 0.45, ease: [0.16, 1, 0.3, 1] }}
-            >
+            <motion.div key={step} initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0, y: -8 }} transition={{ duration: 0.3, ease: EASE }}>
               {step === 0 && (
-                <p className="mb-3 max-w-[34rem] border-l-2 border-caramel/60 pl-3 text-[0.85rem] italic leading-snug text-latte/90">{meta.bridge}</p>
+                <div className="mb-3 max-w-[34rem] border-l border-mocha pl-3 landscape:mb-4">
+                  <p className="eyebrow text-[0.56rem] text-taupe portrait:hidden">From the last topic</p>
+                  <p className="font-display text-[0.88rem] italic leading-snug text-crema landscape:mt-1 landscape:text-[0.98rem]">{meta.bridge}</p>
+                </div>
               )}
-              <p className="eyebrow text-[0.62rem] text-caramel">
-                {meta.kind === 'refresher' && <span className="mr-2 rounded-full bg-crema/10 px-2 py-0.5 text-crema">Refresher</span>}
-                {step + 1}/{steps.length} · §{meta.chapter.section}
-                <span className="max-sm:hidden"> · {meta.title}</span>
+              <p className="eyebrow text-[0.6rem] text-latte">
+                <DecodeText text={eyebrow} />
+                <span className="text-taupe max-sm:hidden xl:landscape:hidden"> · {meta.title}</span>
               </p>
-              <h2 className="mt-2 font-display text-[clamp(1.45rem,3.2vw,2.6rem)] font-bold leading-[1.05] text-crema [text-wrap:balance]">
-                {cur.title}
-              </h2>
+              {/* The mask's padding keeps descenders visible; the negative margin gives the height back (phones need it for the drawing). */}
+              <div className="-mb-1 mt-2 overflow-hidden pb-1">
+                <motion.h2
+                  initial={{ y: '105%' }}
+                  animate={{ y: 0 }}
+                  transition={{ duration: 0.8, ease: EASE, delay: 0.06 }}
+                  className="font-display text-[clamp(1.45rem,3.1vw,2.7rem)] font-[350] leading-[1.05] tracking-[-0.012em] text-chalk [text-wrap:balance]"
+                >
+                  {cur.title}
+                </motion.h2>
+              </div>
+              <motion.div initial={{ scaleX: 0 }} animate={{ scaleX: 1 }} transition={{ duration: 0.9, ease: EASE, delay: 0.18 }} className="mt-2 h-px max-w-[38rem] origin-left bg-line portrait:hidden" />
               {/* The caption's key carries the step, and nothing else shares it: an options key that counted nudges once
                   collided with it and left an orphan copy of the text behind on every nudge (QUALITY.md #48). */}
               <Caption key={`caption-${step}`} portrait={portrait && !cur.predict}>
                 {cur.body}
               </Caption>
               {cur.predict && (
-                <motion.div animate={shake} className="mt-3 grid grid-cols-2 gap-2">
+                <motion.div animate={shake} className="mt-3 grid grid-cols-2 gap-2 landscape:mt-4">
                   {cur.predict.options.map((o, i) => {
                     const picked = answer === i;
                     const show = answer !== null;
                     const tone = !show
-                      ? 'border-crema/20 bg-crema/5 text-crema hover:border-caramel hover:bg-caramel/10'
+                      ? 'border-crema/15 bg-crema/[0.03] text-chalk hover:border-crema/50 hover:bg-crema/[0.07]'
                       : o.correct
                         ? 'border-caramel bg-caramel text-espresso'
                         : picked
-                          ? 'border-cherry bg-cherry/30 text-crema'
-                          : 'border-crema/10 text-latte/60';
+                          ? 'border-cherry bg-cherry/25 text-chalk'
+                          : 'border-crema/8 text-latte/50';
                     return (
                       <button
                         key={i}
                         type="button"
                         disabled={show}
                         onClick={() => setAnswers((a) => ({ ...a, [step]: i }))}
-                        className={`rounded-xl border px-3 py-2 text-left text-[0.82rem] font-medium leading-snug transition sm:px-4 sm:py-2.5 sm:text-sm ${tone}`}
+                        className={`flex items-start gap-2.5 rounded-md border px-3 py-2 text-left text-[0.82rem] font-medium leading-snug transition duration-300 sm:py-2.5 sm:text-sm ${tone}`}
                       >
-                        {o.label}
+                        {/* The letter is for wide screens; on a phone the two columns are too narrow to spare its width. */}
+                        <span className="mt-px font-mono text-[0.66rem] opacity-60 portrait:hidden">{'ABCDEF'[i]}</span>
+                        <span>{o.label}</span>
                       </button>
                     );
                   })}
@@ -355,19 +401,26 @@ export default function ReelPlayer({ meta, reel, active, startStep, next, onPlay
                 <motion.div
                   initial={{ opacity: 0, y: 8 }}
                   animate={{ opacity: 1, y: 0 }}
-                  className="reel-body mt-3 rounded-xl border border-caramel/30 bg-caramel/10 p-3 text-[0.86rem] leading-relaxed text-crema sm:p-4 sm:text-[0.95rem]"
+                  transition={{ duration: 0.5, ease: EASE }}
+                  className="reel-body mt-3 rounded-md border border-crema/15 bg-crema/[0.04] p-3 text-[0.86rem] leading-relaxed text-crema sm:p-4 sm:text-[0.95rem]"
                 >
-                  <p className="eyebrow mb-1 text-[0.6rem] text-caramel">
-                    {cur.predict.options[answer].correct ? 'Right' : 'Not quite'}
+                  <p className={`eyebrow mb-1 text-[0.58rem] ${cur.predict.options[answer].correct ? 'text-chalk' : 'text-signal'}`}>
+                    {cur.predict.options[answer].correct ? 'Correct' : 'Not quite'}
                   </p>
                   {cur.predict.explain}
+                </motion.div>
+              )}
+              {cur.takeaway && done && !needsAnswer && (
+                <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6, ease: EASE }} className="mt-4 max-w-[38rem] border-t border-line pt-3">
+                  <p className="eyebrow text-[0.56rem] text-taupe">Takeaway</p>
+                  <p className="mt-1 font-display text-[1.06rem] italic leading-snug text-chalk">{cur.takeaway}</p>
                 </motion.div>
               )}
               {step === 0 && (
                 <button
                   type="button"
                   onClick={() => onOpenSheet('pre')}
-                  className="mt-3 inline-flex items-center gap-2 rounded-full border border-crema/15 bg-crema/5 px-3 py-1.5 text-[0.78rem] text-latte transition hover:border-caramel hover:text-crema"
+                  className="mt-3 inline-flex items-center gap-2 rounded-md border border-crema/15 px-3 py-1.5 text-left font-mono text-[0.64rem] uppercase tracking-[0.14em] text-latte portrait:tracking-[0.05em] landscape:mt-4 transition hover:border-crema/45 hover:text-chalk"
                 >
                   <IconSteps size={14} />
                   New to this? Read the pre-notes first
@@ -380,7 +433,7 @@ export default function ReelPlayer({ meta, reel, active, startStep, next, onPlay
       </div>
 
       {/* Side rail */}
-      <div className="absolute bottom-16 right-2.5 z-20 flex flex-col items-center gap-2 landscape:gap-4 landscape:bottom-auto landscape:right-4 landscape:top-1/2 landscape:-translate-y-1/2">
+      <div className="absolute bottom-16 right-2.5 z-20 flex flex-col items-center gap-2 landscape:gap-3.5 landscape:bottom-auto landscape:right-4 landscape:top-1/2 landscape:-translate-y-1/2">
         <RailButton label="Prereqs" title="Prerequisites" onClick={() => onOpenSheet('prereq')} icon={<IconSteps />} />
         <RailButton label="Pre-notes" onClick={() => onOpenSheet('pre')} icon={<IconBook />} />
         <RailButton label="Post-notes" onClick={() => onOpenSheet('post')} icon={<IconLayers />} />
@@ -398,8 +451,8 @@ export default function ReelPlayer({ meta, reel, active, startStep, next, onPlay
               <path d="M8 5.5v13l11-6.5z" fill="currentColor" stroke="none" />
             ) : (
               <>
-                <rect x="6.5" y="5" width="4" height="14" rx="1.2" fill="currentColor" stroke="none" />
-                <rect x="13.5" y="5" width="4" height="14" rx="1.2" fill="currentColor" stroke="none" />
+                <rect x="6.5" y="5" width="4" height="14" rx="1" fill="currentColor" stroke="none" />
+                <rect x="13.5" y="5" width="4" height="14" rx="1" fill="currentColor" stroke="none" />
               </>
             )}
           </ControlButton>
@@ -425,12 +478,15 @@ export default function ReelPlayer({ meta, reel, active, startStep, next, onPlay
             </ControlButton>
           )}
           {narr.available && !narr.on && (
-            <button type="button" onClick={narr.toggle} className="hidden rounded-full border border-caramel/40 px-3 py-1 font-mono text-[0.62rem] uppercase tracking-[0.12em] text-caramel transition hover:bg-caramel/10 sm:inline-block">
+            <button type="button" onClick={narr.toggle} className="hidden rounded-full border border-crema/25 px-3 py-1 font-mono text-[0.6rem] uppercase tracking-[0.14em] text-crema transition hover:border-crema/60 hover:text-chalk sm:inline-block">
               Turn on narration
             </button>
           )}
-          <span className="ml-2 font-mono text-[0.62rem] uppercase tracking-[0.14em] text-latte/70" aria-live="polite">
+          <span className="ml-2 font-mono text-[0.6rem] uppercase tracking-[0.16em] text-latte" aria-live="polite">
             {paused ? 'Paused' : ''}
+          </span>
+          <span className="ml-auto font-mono text-[0.6rem] uppercase tracking-[0.16em] text-taupe tabular-nums max-sm:hidden" aria-hidden="true">
+            Step {nn(step + 1)} / {nn(steps.length)}
           </span>
         </div>
         <div className="flex items-center gap-1" role="group" aria-label="Steps">
@@ -446,7 +502,7 @@ export default function ReelPlayer({ meta, reel, active, startStep, next, onPlay
                 data-predict={s.predict ? '' : undefined}
                 onClick={() => goTo(i, i < step)}
               >
-                <span className="block h-[3px] overflow-hidden rounded-full bg-crema/15 transition group-hover:bg-crema/30">
+                <span className={`block h-[2px] overflow-hidden rounded-full transition-colors duration-300 ${s.predict ? 'bg-crema/25 group-hover:bg-crema/45' : 'bg-crema/12 group-hover:bg-crema/30'}`}>
                   <span className="block h-full rounded-full bg-caramel" style={{ width: `${fill * 100}%` }} />
                 </span>
               </button>
@@ -455,11 +511,12 @@ export default function ReelPlayer({ meta, reel, active, startStep, next, onPlay
         </div>
       </div>
 
-
       <AnimatePresence>
         {ended && (
           <EndCard
             meta={meta}
+            steps={steps.length}
+            takeaways={steps.flatMap((s) => (s.takeaway ? [s.takeaway] : []))}
             next={next}
             onReplay={() => goTo(0)}
             onBack={() => setEnded(false)}
@@ -474,23 +531,64 @@ export default function ReelPlayer({ meta, reel, active, startStep, next, onPlay
   );
 }
 
+/** A short mono label that resolves left to right when it changes (DESIGN.md → Motion, "Decode"). */
+function DecodeText({ text }: { text: string }) {
+  const [k, setK] = useState(() => (reduceMotion() ? 1 : 0));
+  useEffect(() => {
+    if (reduceMotion()) return setK(1);
+    let raf = 0;
+    const start = performance.now();
+    const loop = (now: number) => {
+      const v = clamp((now - start) / 650);
+      setK(v);
+      if (v < 1) raf = requestAnimationFrame(loop);
+    };
+    raf = requestAnimationFrame(loop);
+    return () => cancelAnimationFrame(raf);
+  }, [text]);
+  return (
+    <>
+      <span className="sr-only">{text}</span>
+      <span aria-hidden="true">{decodeText(text, k)}</span>
+    </>
+  );
+}
+
+/** The figure's frame: corner ticks, a scan line as the step arrives, and on wide screens the figure's name and clock. */
+function Frame({ step, fig, t }: { step: number; fig?: string; t: number }) {
+  return (
+    <div aria-hidden="true" className="pointer-events-none absolute inset-x-1 bottom-0 top-14 landscape:inset-x-auto landscape:bottom-14 landscape:left-3 landscape:right-[5.25rem] landscape:top-16">
+      <motion.div key={`ticks-${step}`} className="ticks absolute inset-0" initial={{ opacity: 0, scale: 1.025 }} animate={{ opacity: 1, scale: 1 }} transition={{ duration: 0.7, ease: EASE }} />
+      <div key={`scan-${step}`} className="scan absolute inset-0 border-t border-crema/35" />
+      <div className="absolute inset-x-6 top-0 hidden -translate-y-1/2 items-center justify-between gap-4 font-mono text-[0.56rem] uppercase tracking-[0.2em] text-taupe landscape:flex">
+        <span className="truncate">
+          Fig {nn(step + 1)}
+          {fig ? ` · ${fig}` : ''}
+        </span>
+        <span className="shrink-0 tabular-nums">T+{t.toFixed(1).padStart(4, '0')}s</span>
+      </div>
+    </div>
+  );
+}
+
 /** On phones a long caption shows three lines and a "more", like an Instagram caption. */
 function Caption({ portrait, children }: { portrait: boolean; children: React.ReactNode }) {
   const [open, setOpen] = useState(false);
   const clamp = portrait && !open;
   return (
-    <div className="reel-body mt-2 max-w-[38rem] text-[0.92rem] leading-relaxed text-latte sm:text-[1.05rem] landscape:mt-3">
+    <motion.div
+      initial={{ opacity: 0, y: 8 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.6, ease: EASE, delay: 0.16 }}
+      className="reel-body mt-2 max-w-[38rem] text-[0.92rem] leading-[1.6] text-crema sm:text-[1.03rem] landscape:mt-3 landscape:leading-[1.65]"
+    >
       <div className={clamp ? 'line-clamp-3' : ''}>{children}</div>
       {portrait && (
-        <button
-          type="button"
-          onClick={() => setOpen((v) => !v)}
-          className="mt-1 font-mono text-[0.68rem] uppercase tracking-[0.14em] text-caramel"
-        >
+        <button type="button" onClick={() => setOpen((v) => !v)} className="mt-1 font-mono text-[0.64rem] uppercase tracking-[0.16em] text-chalk">
           {open ? 'less' : 'more'}
         </button>
       )}
-    </div>
+    </motion.div>
   );
 }
 
@@ -499,19 +597,14 @@ function NextHint({ visible, paused, predict }: { visible: boolean; paused: bool
     <div className="mt-3 h-5 landscape:mt-5 landscape:h-6">
       <AnimatePresence>
         {(visible || predict) && !paused && (
-          <motion.p
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="flex items-center gap-2 font-mono text-[0.68rem] uppercase tracking-[0.18em] text-latte/80"
-          >
+          <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="flex items-center gap-2 font-mono text-[0.64rem] uppercase tracking-[0.2em] text-latte">
             {predict ? (
               'Pick an answer to continue'
             ) : (
               <>
                 <span className="next-pulse inline-block h-1.5 w-1.5 rounded-full bg-caramel" />
                 Tap to continue
-                <span className="hidden landscape:inline text-latte/50">· → or space</span>
+                <span className="hidden landscape:inline text-taupe">· → or space</span>
               </>
             )}
           </motion.p>
@@ -523,6 +616,8 @@ function NextHint({ visible, paused, predict }: { visible: boolean; paused: bool
 
 function EndCard({
   meta,
+  steps,
+  takeaways,
   next,
   onReplay,
   onBack,
@@ -532,6 +627,8 @@ function EndCard({
   active,
 }: {
   meta: TopicMeta;
+  steps: number;
+  takeaways: string[];
   next: Next;
   onReplay: () => void;
   onBack: () => void;
@@ -548,7 +645,7 @@ function EndCard({
     const start = performance.now();
     let raf = 0;
     const loop = (now: number) => {
-      const l = Math.max(0, 3 + 1.4 - (now - start) / 1000);
+      const l = Math.max(0, 3 + 1.6 - (now - start) / 1000);
       setLeft(l);
       if (l <= 0) onPlayNext();
       else raf = requestAnimationFrame(loop);
@@ -556,50 +653,48 @@ function EndCard({
     raf = requestAnimationFrame(loop);
     return () => cancelAnimationFrame(raf);
   }, [auto, onPlayNext]);
+  const after = 0.25 + steps * 0.05;
+  const rise = (d: number) => ({ initial: { opacity: 0, y: 12 }, animate: { opacity: 1, y: 0 }, transition: { delay: after + d, duration: 0.7, ease: EASE } });
+  const ghost = 'rounded-full border border-crema/20 px-4 py-2 text-sm text-crema transition hover:border-crema/60 hover:text-chalk';
 
   return (
-    <motion.div
-      className="absolute inset-0 z-40 grid place-items-center overflow-y-auto bg-espresso/92 px-5 py-20 backdrop-blur-md"
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      exit={{ opacity: 0 }}
-    >
+    <motion.div className="absolute inset-0 z-40 grid place-items-center overflow-y-auto bg-espresso/96 px-5 py-20" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.4 }}>
       <div className="flex w-full max-w-md flex-col items-center text-center">
-        <Brewed />
-        <motion.p initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 1.1 }} className="eyebrow mt-4 text-caramel">
-          Topic complete
+        <Debrief steps={steps} />
+        <motion.p {...rise(0.3)} className="eyebrow mt-5 text-[0.62rem] text-latte">
+          Debrief · {steps} of {steps} steps
         </motion.p>
-        <motion.h3
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 1.2 }}
-          className="mt-2 font-display text-3xl font-bold text-crema [text-wrap:balance]"
-        >
-          {meta.title}, brewed.
+        <motion.h3 {...rise(0.4)} className="mt-2 font-display text-[1.9rem] font-[350] leading-tight text-chalk [text-wrap:balance]">
+          {meta.title}
         </motion.h3>
+        {takeaways.length > 0 && (
+          <motion.ul {...rise(0.5)} className="mt-5 w-full space-y-2 border-t border-line pt-4 text-left">
+            {takeaways.map((k, i) => (
+              <li key={i} className="grid grid-cols-[1.6rem_1fr] text-[0.88rem] leading-snug text-crema">
+                <span className="pt-px font-mono text-[0.62rem] text-taupe">{nn(i + 1)}</span>
+                <span className="font-display italic">{k}</span>
+              </li>
+            ))}
+          </motion.ul>
+        )}
 
-        <motion.div
-          initial={{ opacity: 0, y: 24 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 1.5, type: 'spring', stiffness: 160, damping: 20 }}
-          className="mt-8 w-full rounded-2xl border border-crema/12 bg-roast p-5 text-left"
-        >
-          <p className="eyebrow text-[0.6rem] text-latte">{next?.live ? 'Up next' : next ? 'Next reel · in production' : 'That was the last reel'}</p>
-          {next && <p className="mt-1.5 font-display text-xl font-semibold text-crema">{next.title}</p>}
+        <motion.div {...rise(0.6)} className="mt-7 w-full rounded-md border border-line bg-panel p-5 text-left">
+          <p className="eyebrow text-[0.58rem] text-taupe">{next?.live ? 'Up next' : next ? 'Next reel · in production' : 'That was the last reel'}</p>
+          {next && <p className="mt-1.5 font-display text-xl text-chalk">{next.title}</p>}
           <p className="mt-1.5 text-sm leading-relaxed text-latte">{meta.handoff}</p>
           {next?.live ? (
             <div className="mt-4 flex items-center gap-3">
-              <button type="button" onClick={onPlayNext} className="relative inline-flex items-center gap-2 rounded-full bg-caramel px-5 py-2.5 font-semibold text-espresso">
+              <button type="button" onClick={onPlayNext} className="relative inline-flex items-center gap-2 rounded-full bg-caramel px-5 py-2.5 font-semibold text-espresso transition hover:bg-chalk">
                 {!cancelled && (
                   <svg className="-ml-1" width="20" height="20" viewBox="0 0 20 20">
-                    <circle cx="10" cy="10" r="8" fill="none" stroke="rgba(23,16,12,.25)" strokeWidth="2.5" />
-                    <circle cx="10" cy="10" r="8" fill="none" stroke="#17100c" strokeWidth="2.5" strokeDasharray={50.3} strokeDashoffset={50.3 * (Math.min(left, 3) / 3)} transform="rotate(-90 10 10)" />
+                    <circle cx="10" cy="10" r="8" fill="none" stroke="rgba(11,11,11,.2)" strokeWidth="2.5" />
+                    <circle cx="10" cy="10" r="8" fill="none" stroke="#0b0b0b" strokeWidth="2.5" strokeDasharray={50.3} strokeDashoffset={50.3 * (Math.min(left, 3) / 3)} transform="rotate(-90 10 10)" />
                   </svg>
                 )}
                 Play now
               </button>
               {!cancelled && (
-                <button type="button" onClick={() => setCancelled(true)} className="text-sm text-latte underline-offset-4 hover:underline">
+                <button type="button" onClick={() => setCancelled(true)} className="text-sm text-latte underline-offset-4 hover:text-chalk hover:underline">
                   Cancel
                 </button>
               )}
@@ -611,17 +706,17 @@ function EndCard({
           )}
         </motion.div>
 
-        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 1.8 }} className="mt-5 flex flex-wrap justify-center gap-2">
-          <button type="button" onClick={onOpenSheet} className="rounded-full border border-crema/20 px-4 py-2 text-sm text-crema hover:border-caramel">
+        <motion.div {...rise(0.75)} className="mt-5 flex flex-wrap justify-center gap-2">
+          <button type="button" onClick={onOpenSheet} className={ghost}>
             Post-notes
           </button>
-          <button type="button" onClick={onReplay} className="rounded-full border border-crema/20 px-4 py-2 text-sm text-crema hover:border-caramel">
+          <button type="button" onClick={onReplay} className={ghost}>
             Replay
           </button>
-          <button type="button" onClick={onOpenTree} className="rounded-full border border-crema/20 px-4 py-2 text-sm text-crema hover:border-caramel">
+          <button type="button" onClick={onOpenTree} className={ghost}>
             Curriculum
           </button>
-          <button type="button" onClick={onBack} className="rounded-full px-4 py-2 text-sm text-latte hover:text-crema">
+          <button type="button" onClick={onBack} className="rounded-full px-4 py-2 text-sm text-latte hover:text-chalk">
             ← Last step
           </button>
         </motion.div>
@@ -638,10 +733,10 @@ function Captions({ clip, time, playing }: { clip: Clip; time: number; playing: 
   const progress = Math.max(0, Math.min(1, (time - line.start) / Math.max(0.1, line.end - line.start)));
   const lit = Math.ceil(progress * words.length);
   return (
-    <div className="pointer-events-none relative z-20 px-4 pb-1 text-center" aria-live="off">
-      <p lang={line.lang ?? 'en'} className={`mx-auto inline-block max-w-3xl rounded-xl bg-void/75 px-3 py-1.5 text-[0.9rem] leading-snug backdrop-blur sm:text-base ${line.lang === 'de' ? 'font-semibold italic' : ''}`}>
+    <div className="reel-captions pointer-events-none relative z-20 px-4 pb-1 text-center" aria-live="off">
+      <p lang={line.lang ?? 'en'} className={`mx-auto inline-block max-w-3xl rounded-md border border-crema/10 bg-void/85 px-3 py-1.5 text-[0.92rem] leading-snug sm:text-base ${line.lang === 'de' ? 'font-semibold italic' : ''}`}>
         {words.map((w, i) => (
-          <span key={i} className={i < lit ? (line.lang === 'de' ? 'text-caramel' : 'text-crema') : 'text-latte/55'}>
+          <span key={i} className={`transition-colors duration-150 ${i < lit ? (line.lang === 'de' ? 'text-caramel' : 'text-crema') : 'text-latte/50'}`}>
             {w}{' '}
           </span>
         ))}
@@ -657,7 +752,7 @@ function ControlButton({ label, onClick, primary, children }: { label: string; o
       onClick={onClick}
       aria-label={label}
       title={label}
-      className={`grid h-9 w-9 place-items-center rounded-full border transition active:scale-90 ${primary ? 'border-caramel/60 bg-caramel/15 text-caramel hover:bg-caramel/25' : 'border-crema/12 bg-espresso/60 text-crema hover:border-caramel hover:text-caramel'}`}
+      className={`grid h-9 w-9 place-items-center rounded-full border transition duration-200 active:scale-90 ${primary ? 'border-caramel bg-caramel text-espresso hover:bg-chalk' : 'border-crema/15 bg-espresso/60 text-crema hover:border-crema/50 hover:text-chalk'}`}
     >
       <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
         {children}
@@ -669,15 +764,15 @@ function ControlButton({ label, onClick, primary, children }: { label: string; o
 function RailButton({ label, title, icon, onClick }: { label: string; title?: string; icon: React.ReactNode; onClick: () => void }) {
   return (
     <button type="button" onClick={onClick} className="group flex flex-col items-center gap-1 text-crema" aria-label={title ?? label}>
-      <span className="grid h-10 w-10 place-items-center rounded-full border border-crema/10 bg-espresso/60 backdrop-blur transition group-hover:border-caramel group-hover:text-caramel group-active:scale-90 landscape:h-11 landscape:w-11">
+      <span className="grid h-10 w-10 place-items-center rounded-md border border-crema/12 bg-espresso/70 backdrop-blur transition duration-200 group-hover:border-crema/50 group-hover:text-chalk group-active:scale-90 landscape:h-11 landscape:w-11">
         {icon}
       </span>
-      <span className="font-mono text-[0.55rem] uppercase tracking-[0.12em] text-latte max-sm:portrait:hidden">{label}</span>
+      <span className="font-mono text-[0.52rem] uppercase tracking-[0.14em] text-latte max-sm:portrait:hidden">{label}</span>
     </button>
   );
 }
 
-const svg = { width: 20, height: 20, viewBox: '0 0 24 24', fill: 'none', stroke: 'currentColor', strokeWidth: 1.8, strokeLinecap: 'round', strokeLinejoin: 'round' } as const;
+const svg = { width: 20, height: 20, viewBox: '0 0 24 24', fill: 'none', stroke: 'currentColor', strokeWidth: 1.6, strokeLinecap: 'round', strokeLinejoin: 'round' } as const;
 const IconSteps = ({ size = 20 }: { size?: number }) => (
   <svg {...svg} width={size} height={size}>
     <path d="M3 20h5v-5h5v-5h5V5h3" />

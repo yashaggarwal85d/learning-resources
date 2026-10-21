@@ -34,15 +34,15 @@ function useTime(still: number) {
 }
 
 const C = {
-  espresso: '#17100c',
-  roast: '#2a1d16',
-  cocoa: '#3b2a21',
-  mocha: '#5a4032',
-  latte: '#c8ac8c',
-  crema: '#e9d9bf',
-  foam: '#fbf7ef',
-  caramel: '#d49a57',
-  cinnamon: '#b8612f',
+  espresso: '#0b0b0b',
+  roast: '#141414',
+  cocoa: '#1c1c1c',
+  mocha: '#3d3d3d',
+  latte: '#a3a3a3',
+  crema: '#c8c8c8',
+  foam: '#f5f5f5',
+  caramel: '#ffffff',
+  cinnamon: '#8fb4e8',
 };
 const clamp01 = (x: number) => Math.max(0, Math.min(1, x));
 const ease = (x: number) => 1 - Math.pow(1 - clamp01(x), 3);

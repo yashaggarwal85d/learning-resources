@@ -163,13 +163,13 @@ A topic page is complete only when:
 
 ## How to Create a Topic — the workflow
 
-One topic at a time is produced start to finish as a single scrollable reel, following these steps:
+One topic at a time is produced start to finish as a single scrollable reel, following these steps. Since 2026-10-20 the owner asks for each topic in Claude Code and one session does every step (`/make-topic`, `.claude/skills/make-topic/SKILL.md`, which holds the order of work); the reviews in step 8 are then done in the same session as deliberate cold re-reads, recorded in the topic's `REVIEW.md`.
 
 1. **Pick the next topic.** Take the next topic in curriculum order (Domain → Milestone → Chapter → Topic) from the master map.
 2. **Research & verify.** Run the state-of-the-art scan, then gather from primary sources first (official docs, specs, source code, papers), using books and talks for framing; record every claim with its source and version; cross-check for correctness and currency and regressively re-verify. Nothing incorrect, outdated, or missing passes. Start the coverage map here: the syllabus clauses, the sources' contents, and a blind expert list from an independent reviewer. _(Rule #3, Rule #6)_
 3. **Distill the explanation.** Start from the hard problem and what the reader will be able to do afterwards, then find the clearest framing that stays fully precise. Draft every layer of the [learning design](#learning-design--what-every-topic-contains) alongside: predictions, trade-offs and numbers, internals, the lab, production failures, the frontier and the self-assessment. _(Rule #4)_
 4. **Decide what to animate.** For every concept ask "can this be shown with a pretty animation?" — if yes, it becomes an animation; and "can the reader learn more by driving it?" — if yes, it becomes interactive. Storyboard the motion. _(Rule #1)_
-5. **Build the reel.** Assemble the animations + content into one self-contained, scrollable reel following the [animation principles](#animation-principles) and the [coffee theme](#theme--coffee): topic visuals designed for this concept, built on the [shared components](#shared-components); add the looping motion-graphics; scrolling advances to the next topic. _(Rule #1, Rule #2)_
+5. **Build the reel.** Assemble the animations + content into one self-contained, scrollable reel following the [animation principles](#animation-principles) and the [briefing theme](#theme--briefing): topic visuals designed for this concept, built on the [shared components](#shared-components); add the looping motion-graphics; scrolling advances to the next topic. _(Rule #1, Rule #2)_
 6. **Polish for beauty & memorability.** Refine visuals, layout, and pacing until it looks exceptional and sticks in memory. _(Rule #4)_
 7. **Flow review.** Read the previous topic, this one and the next in sequence; make sure every concept used was introduced earlier or declared, the opening bridge and closing handoff read naturally, and nothing arrives as a surprise. Record the topic's `introduces` and `uses` concepts. _(Rule #5)_
 8. **Review.** Launch the brutal, hardcore critic review agents described in [Correctness and currency](#correctness-and-currency--how-we-make-sure) (fact-checker, red team, currency checker, expert reader, gap hunter), plus reviewers for learning design, accessibility and looks. CI must be green (every example runs, every claim is sourced, every link resolves). Each finished milestone also gets a human practitioner's sign-off. If it's not up to the mark, go back to step 2.
@@ -204,8 +204,8 @@ A new shared component is added when a second topic would need the same thing; u
 | Site | **Astro** (static output) + **TypeScript** (strict) | Every page pre-rendered to HTML; JavaScript loads only where a page needs it. Built on Vite |
 | Content | **MDX**, one file per topic | Prose in Markdown with the topic's animations embedded; front matter holds objectives, prerequisites, sources and last-verified date |
 | Interactive parts | **React 19** islands | Animations, simulations and the shared learning machinery, hydrated only where they appear |
-| Styling | **Tailwind CSS v4** (`@tailwindcss/vite`) | Theme colours as CSS variables (see [Theme](#theme--coffee)) |
-| UI motion | **motion** (`motion/react`) 12 | Springs, page transitions, in-view reveals |
+| Styling | **Tailwind CSS v4** (`@tailwindcss/vite`) | Theme colours as CSS variables (see [Theme](#theme--briefing)) |
+| UI motion | **motion** (`motion/react`) 14 | Springs, layout transitions, in-view reveals; one motion language (DESIGN.md → Motion) |
 | Teaching animations | **Hand-built per topic** | Driven by time, see [Animation principles](#animation-principles) |
 | 3D | **three.js** 0.170 | Only where a topic genuinely needs depth |
 | Icons | **lucide-react**, Simple Icons | Brand marks for tools (Kafka, Spark, Flink, dbt…) |
@@ -219,7 +219,7 @@ A new shared component is added when a second topic would need the same thing; u
 
 ### How the site maps to the curriculum
 
-- **Master page (hub):** the domains, and inside each the curriculum map (Milestones → Chapters → Topics), generated from each domain's syllabus file in `syllabus/` and the topics' front matter, so the hub always matches the syllabus and shows what's published. Live topics are marked everywhere: a **Reels** tab with the live count in the header, a "Start watching" button, a live chip on each domain card, a "▶ Live" badge that opens the reel in the curriculum map (topics in production are dimmed), and a pulsing star in the hero sky.
+- **Master page (hub):** the domains, and inside each the curriculum map (Milestones → Chapters → Topics), generated from each domain's syllabus file in `syllabus/` and the topics' front matter, so the hub always matches the syllabus and shows what's published. Live topics are marked everywhere: a **Reels** tab with the live count in the header, a "Start watching" button, a live chip on each domain card, a "▶ Live" badge that opens the reel in the curriculum map (topics in production are dimmed). The hero is a turning wireframe surface (z = x² − y²) with its saddle point in red.
 - **Domain pages:** one landing page per domain (e.g. `/data-engineering/`) showing its milestones, its progress and its own looping motion-graphics.
 - **Topic folders:** one folder per topic, `topics/<domain>/<milestone>/<chapter>/<topic>/` (e.g. `topics/data-engineering/m1-foundations/ch02-advanced-sql/window-functions/`), holding its `post-notes.md`, `pre-notes.md`, `references.md` and `prerequisites.mdx` (prose, questions, sources and links) and the animation and lab files it embeds. Search, the glossary, the prerequisite map and the review queue are generated from these files.
 - **URLs** follow the same path: `/<domain>/<milestone>/<chapter>/<topic>`.
@@ -228,7 +228,8 @@ A new shared component is added when a second topic would need the same thing; u
   - **Opens where you left off:** at the topic and step where the learner stopped ("Resumed at step 6 · Start over").
   - **Curriculum tree:** an icon at the top opens the tree of live reels only (Domain → Milestone → Chapter → Topic), with each reel's progress; tap one to play it. A single line counts the topics still in production.
   - **Side buttons:** Prerequisites, Pre-notes, Post-notes, Sources and Share (copies a link to the current step). No saving, no streaks.
-  - **The end of a reel:** a short "brewed" moment, then **Up next**: the next live reel starts after a 3-second countdown (or on a swipe); if the next topic is still in production, the card says so. After the last live reel, a "You're all caught up" card lists what is in production next.
+  - **Desktop layout (owner decision 2026-10-20):** on wide screens a reel is a briefing room in three columns: the step index on the left (every step's number and title, the current one marked), the caption in the middle (eyebrow, serif title, description, takeaway, predictions), and the figure on the right in its frame (corner ticks, "Fig NN", the step clock).
+  - **The end of a reel:** a short debrief (every step's cell fills, brackets close on a check mark, the step takeaways listed when the topic has them), then **Up next**: the next live reel starts after a 3-second countdown (or on a swipe); if the next topic is still in production, the card says so. After the last live reel, a "You're all caught up" card lists what is in production next.
   - **Phones:** a portrait layout with the animation on top and the caption below, clamped to three lines with a "more", like an Instagram caption.
 - **Deep links:** every topic has its own URL, and `?t=12.5` opens a reel paused on an exact moment (useful for sharing and reviewing).
 
@@ -245,6 +246,8 @@ These are rules for how animations behave. The building blocks are shared; the v
 - **Steady rhythm inside a step.** Within a step, motion lands on a regular beat, so the pacing is predictable and easy to remember; between steps, the learner sets the pace.
 - **Repeatable.** Any randomness is seeded, so a reel plays identically every time.
 - **Calm when asked.** With reduced motion turned on, each reel shows a chosen still frame instead of playing.
+- **Full of motion, never idle (owner decision 2026-10-20).** Every step moves: something draws, lands, counts, flows or locks on, so the learner is always watching the mechanism happen, never a static slide with a caption. A step whose figure would make sense as a still image hasn't found its motion yet. One motion language everywhere (DESIGN.md → Motion): two easing curves, a handful of named moves (draw, plot, decode, lock-on, rise, file change), position, scale and opacity only, so it stays smooth at 60 fps on a phone.
+- **Engaging by design.** Every reel opens on a hard, concrete problem; asks the learner to predict at least once before it explains (a `predict` step); shows the surprising number; and ends each key step with one sentence worth keeping (the step's `takeaway`). The debrief collects those sentences.
 
 ### Narration (voice-over)
 
@@ -255,7 +258,7 @@ Reels can carry an optional voice-over that narrates each step, which makes them
 #### The voice
 
 - **Female, always.** The narrator **must be a female voice**. This is a fixed requirement, not a preference, and every model, voice or setting we evaluate is judged against it first.
-- **One signature voice.** A single narrator for the whole site, identical in every reel, chapter and domain, so the voice becomes part of the identity like the coffee theme.
+- **One signature voice.** A single narrator for the whole site, identical in every reel, chapter and domain, so the voice becomes part of the identity like the briefing theme.
 - **Reference qualities.** The brief is modelled on the qualities of two ChatGPT voices, "Sky" and "Sol" (which OpenAI describes as savvy and relaxed). We take their qualities, not their sound.
 - **Character:** a trusted expert sitting next to you. She is charming, calm and confident, warm without being sweet, and never theatrical, salesy or robotic.
 - **Tone:** warm and soothing, with a light smile in the voice; friendly but serious about the subject.
@@ -282,7 +285,7 @@ Reels can carry an optional voice-over that narrates each step, which makes them
   - Then **freeze it**: the model version, voice settings and any seed are pinned in the repo, so every reel sounds identical forever. A change of voice is a deliberate, reviewed decision that regenerates every clip.
 - **Original, never an imitation.** The voice is never cloned from recordings of a real, identifiable person or an existing product voice (including the actual Sky and Sol voices). That needs consent and invites right-of-publicity disputes. No voice cloning of anyone, ever.
 - **Build-time generation.**
-  - Audio is generated when a topic is built, never in the visitor's browser. Since 13 October 2026 it is generated on the owner's PC (GPU), in bulk, after the cloud routines have built and parked the topics (ROUTINE.md section 7, `.claude/skills/narrate`); a topic goes live only once its narration exists.
+  - Audio is generated when a topic is built, never in the visitor's browser. It is generated on the owner's PC (GPU) with the frozen voice: by `/make-topic` as it finishes each topic, and in bulk by `/narrate` for topics that went live before they were narrated (owner decision 2026-10-17: such a topic is listed in `site/src/topics/renarration.json` until its audio exists).
   - Each clip is cached by a hash of its script, voice and settings, so only steps whose wording changed are regenerated.
   - The site serves the finished files.
 
@@ -329,42 +332,40 @@ Reels can carry an optional voice-over that narrates each step, which makes them
 - **Automated checks.** At generation, a local speech-to-text model (faster-whisper, the model named in `voice.json`) transcribes every take, and only takes that say the line are used (above); the manifest lists every tolerated mishearing, so the listening review knows which clips to play first. In CI (`npm run test:narration`), every live reel must have narration whose clips match the current script hash (a changed line without new audio fails), with both audio formats present, loudness at −16 ± 1.5 LUFS, true peak at or below −1 dBTP, a pace within the clip limits and at most a few tolerated mishearings per clip; held reels get the same checks as warnings, and the run that releases them regenerates what the warnings name.
 - **Kept in sync.** Audio is regenerated whenever its script changes; unchanged lines reuse their cached takes.
 
-### Theme — coffee
+### Theme — briefing
 
-The one thing every page shares. The hub, every domain, milestone, chapter and topic use exactly this theme, so the product reads as one whole while each topic's visuals are new. It runs from roasted dark to steamed light.
+The one thing every page shares (owner decision 2026-10-20, replacing the coffee theme): a mission briefing, a highly intellectual rundown. **Black and white carry everything; colour is rare and always means something.** The hub, every domain, milestone, chapter and topic use exactly this theme, so the product reads as one whole while each topic's visuals are new. Dark only: there is no light reading surface.
 
-| Token | Hex | Use |
-|---|---|---|
-| `espresso` | `#17100c` | Reel background, primary text on light pages |
-| `roast` | `#2a1d16` | Dark-roast panels |
-| `cocoa` | `#3b2a21` | Deep surfaces |
-| `mocha` | `#5a4032` | Secondary text on light pages |
-| `taupe` | `#8b7766` | Dividers; large text only |
-| `taupe-ink` | `#766556` | Subtle small text on light pages (AA) |
-| `latte` | `#c8ac8c` | Secondary text on dark |
-| `crema` | `#e9d9bf` | Primary text on dark |
-| `oat` | `#f3eadb` | Reading-page background |
-| `foam` | `#fbf7ef` | Raised surfaces on light pages |
-| `caramel` | `#d49a57` | Accent, highlights, progress |
-| `cinnamon` | `#b8612f` | Primary accent; text only on dark, or large text on light |
-| `cinnamon-ink` | `#9c5227` | Cinnamon for small text, links and button fills on light pages (AA) |
-| `cherry` | `#8e2f2a` | End of the signature gradient |
-| `void` | `#0d0806` | Deepest shadow |
+The token names are the coffee names, kept so every existing scene follows the theme without an edit; each keeps its role, only its value changed. New code may use the role names in the last column (`C.focus`, `C.bad`… in `kit.tsx`; `chalk`, `line`, `signal`… in Tailwind).
 
-- **Contrast (WCAG AA).** Normal text needs 4.5:1, large text 3:1. On light pages, small text uses `espresso`, `mocha`, `taupe-ink` or `cinnamon-ink`; `caramel` is never used for text on light backgrounds (2.1:1); buttons on light pages use `cinnamon-ink` with `foam` text (5.4:1). On dark reels, `crema`, `latte` and `caramel` all pass; `cinnamon` is for large text only (4.3:1).
-- **Signature gradient** for hero words: crema → caramel (40%) → cinnamon (75%) → cherry, at 100°.
+| Token | Hex | Use | Role name |
+|---|---|---|---|
+| `void` | `#050505` | Deepest black | |
+| `espresso` | `#0b0b0b` | Page and reel background | `ink` |
+| `roast` | `#141414` | Panels | `panel` |
+| `cocoa` | `#1c1c1c` | Bands, bar tracks, deep surfaces | `band` |
+| `mocha` | `#3d3d3d` | Axes, rules, hairlines in drawings | `line` |
+| `taupe` | `#808080` | Quiet captions, axis labels (5.0:1) | `quiet` |
+| `latte` | `#a3a3a3` | Secondary labels (7.8:1) | `secondary` |
+| `crema` | `#c8c8c8` | Primary labels, values, body text (11.8:1) | `primary` |
+| `chalk` | `#ededed` | Headings and UI text (Tailwind only) | |
+| `caramel` | `#ffffff` | The thing to look at; progress; primary buttons (19.7:1) | `focus` |
+| `cinnamon` | `#8fb4e8` | Pale blue, the rare second accent (9.2:1) | `second` |
+| `cherry` | `#84241f` | Bad outcome, fills only (rare); `cherryText` and `crema` read on it | `bad` |
+| `cherryText` | `#ff6b5e` | Bad outcome, text; the saddle-point red (7.1:1) | `badText`, `signal` |
+
+- **Contrast (WCAG AA).** Every text colour above passes 4.5:1 on the background (ratios in the table). `mocha` and `cherry` are never text.
+- **Hierarchy by brightness, not hue.** White is the focus, then light, mid and dark greys. Because the focus and a plain label differ by brightness only (white against `crema`, 1.7:1), show focus with weight, size, a solid shape or the lock-on as well, never by colour alone.
+- **Colour budget.** Red means failure or danger (and marks the one saddle point in the mark and the hub). Pale blue is the second accent: before/after, a second series, strings in code. At most these two per step, and most steps use none.
+- **Hero words** fade chalk → grey (`.text-brew`).
 - **Type:**
-  - **Fraunces**, italic 800, for kinetic headlines;
-  - **Inter** for body;
-  - **JetBrains Mono**, uppercase, tracked 0.2–0.35 em, for labels and eyebrows.
-- **Surfaces:**
-  - **Reels:** dark roast.
-  - **Reading:** oat and foam pages.
-  - **Inverted sections:** dark-roast panels flip the same colours.
-- **Texture:**
-  - a faint film grain (≈8% opacity) over reels;
-  - generous rounded corners (18–26 px).
-- **Voice:** short, confident lines; numbers over adjectives.
+  - **Source Serif 4** (optical sizes, light 300–400) for headings and step titles, italic for takeaways, formulas and quotes; it has Greek, so Ω, Θ and λ match their line;
+  - **IBM Plex Sans** for body text, descriptions and notes;
+  - **JetBrains Mono**, uppercase, tracked 0.16–0.24 em, for labels, eyebrows, figure numbers and every label inside a drawing.
+- **Surfaces:** near-black with a faint drafting grid (48 px) and film grain (≈5%); panels one step lighter with a 1 px hairline (`line`); figures framed by corner ticks (`.ticks`), with "Fig NN" and the step clock on the frame.
+- **Shape:** small radii (4–8 px) for cards and panels, pills only for buttons and chips; hairlines over shadows.
+- **The mark:** three lines of a wireframe surface with one red saddle point (`site/src/components/Mark.tsx`).
+- **Voice:** short, confident lines; numbers over adjectives; labels in the register of a technical briefing ("Fig 02", "Debrief · 12 of 12 steps", "File 01").
 
 ### Performance rules
 

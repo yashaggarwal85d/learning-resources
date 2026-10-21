@@ -1,5 +1,5 @@
-// Records what a routine run cost, from the session transcript Claude Code keeps (~/.claude/projects/**.jsonl).
-//   node scripts/run-metrics.mjs mark <stage>                     at the start of each ROUTINE.md section: snapshot of tokens and time so far
+// Records what a session (a /make-topic run; routine runs until 2026-10-20) cost, from the session transcript Claude Code keeps (~/.claude/projects/**.jsonl).
+//   node scripts/run-metrics.mjs mark <stage>                     at the start of each make-topic section: snapshot of tokens and time so far
 //   node scripts/run-metrics.mjs finish <domain> <topic-id> <outcome> --checks "<what passed>" --issues "<what went wrong, or none>"
 //       at the end: totals and per-stage deltas go to metrics/runs.jsonl and a two-line entry to LEDGER.md, both pushed
 //       straight to main (scripts/ledger.mjs), so every run is on record whether it shipped or stopped.

@@ -1,6 +1,6 @@
 # Teacher pass: writing a topic's narration as an MIT professor
 
-The brief for the agent that writes or rewrites one topic's `narration.json` (ROUTINE.md section 3 for new topics; `/narrate` step 1b for the topics in `site/src/topics/narration-backlog.json`). It is the plan's rule (PROJECT_PLAN.md, Narration → Three texts, one rule; The narrator's persona) made concrete. Work in place; do not commit, do not run `npm run build`, do not edit any file other than the topic's `narration.json`.
+The brief for the agent that writes or rewrites one topic's `narration.json` (`.claude/skills/make-topic` section 7 for new topics; `/narrate` step 1b for the topics in `site/src/topics/narration-backlog.json`). It is the plan's rule (PROJECT_PLAN.md, Narration → Three texts, one rule; The narrator's persona) made concrete. Work in place; do not commit, do not run `npm run build`, do not edit any file other than the topic's `narration.json`.
 
 ## The three texts of a step
 
