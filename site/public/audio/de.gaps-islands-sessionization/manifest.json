@@ -1,0 +1,630 @@
+{
+ "topic": "de.gaps-islands-sessionization",
+ "voice": "breeze-mellow-v2",
+ "asr": "large-v3-turbo",
+ "clips": {
+  "01": {
+   "hash": "a86246e47c487de2",
+   "takes": [
+    "52b2282f1ebda784ae22",
+    "4bfa4d7a16af864dd77b",
+    "d4c228c1f34ff66a1eaa",
+    "020f6f5373e797ffecad"
+   ],
+   "duration": 35.173,
+   "lines": [
+    {
+     "text": "Rows arrive scattered across time. Now we pull them back together into one coherent story.",
+     "start": 0.15,
+     "end": 7.761
+    },
+    {
+     "text": "Watch the dots land on the line. A single event is a point, and almost nobody asks questions about points.",
+     "start": 8.181,
+     "end": 16.006
+    },
+    {
+     "text": "They ask how long a visit lasted, or how many visits a customer made. Look at the outlines: eight clicks hide three visits, with two long pauses between them.",
+     "start": 16.426,
+     "end": 28.651
+    },
+    {
+     "text": "This topic is how to find those outlines with nothing but window functions.",
+     "start": 29.071,
+     "end": 34.823
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -1.9,
+   "wpm": 131,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "02": {
+   "hash": "c2add7ee909b6846",
+   "takes": [
+    "985006618bbd5147a02d",
+    "0b1605d84f3dafe5fab2",
+    "d1a905fff58ff8ee9464"
+   ],
+   "duration": 26.613,
+   "lines": [
+    {
+     "text": "The first tool looks backwards. For each row, it reads the row before it in the same partition.",
+     "start": 0.15,
+     "end": 6.696
+    },
+    {
+     "text": "Subtract, and you get the gap since the last event. Read the numbers under the dots: twelve minutes, thirteen, then a long fifty five.",
+     "start": 7.115,
+     "end": 17.224
+    },
+    {
+     "text": "And look at the very first one. There is no row before it, so there is no gap. That empty value is going to be useful.",
+     "start": 17.644,
+     "end": 26.263
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 153,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "03": {
+   "hash": "543071edf10a3048",
+   "takes": [
+    "ba352317632712799009",
+    "d239cb40d461a8c2ff95",
+    "82d7d7dc39b34f8c41c7"
+   ],
+   "duration": 10.269,
+   "lines": [
+    {
+     "text": "You ask for the previous row's time for the first event of a customer's history.",
+     "start": 0.15,
+     "end": 5.982
+    },
+    {
+     "text": "Think about what came before.",
+     "start": 6.402,
+     "end": 8.23
+    },
+    {
+     "text": "What comes back?",
+     "start": 9.05,
+     "end": 9.919
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 134,
+   "wer": 0.06666666666666667,
+   "exact": false,
+   "tolerated": [
+    {
+     "line": "You ask for the previous row's time for the first event of a customer's history.",
+     "said": "rows",
+     "heard": "rose"
+    }
+   ]
+  },
+  "03a": {
+   "hash": "a2598eb0d3e3201f",
+   "takes": [
+    "11318c967aba2ee9436c",
+    "1fd1ea59c90a7536c08b",
+    "3f5fab4980c6c6dab5e7"
+   ],
+   "duration": 20.872,
+   "lines": [
+    {
+     "text": "Nothing, which SQL spells as null.",
+     "start": 0.15,
+     "end": 2.959
+    },
+    {
+     "text": "There is no earlier row, so the function returns its default, and the default is null unless you set one. Zero would be a claim about a gap that does not exist.",
+     "start": 3.379,
+     "end": 15.215
+    },
+    {
+     "text": "That null is not a nuisance. It is the signal that a visit starts here.",
+     "start": 15.635,
+     "end": 20.522
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 152,
+   "wer": 0.16666666666666666,
+   "exact": false,
+   "tolerated": [
+    {
+     "line": "Nothing, which SQL spells as null.",
+     "said": "sql",
+     "heard": "sequel"
+    }
+   ]
+  },
+  "04": {
+   "hash": "466d0789edd77db4",
+   "takes": [
+    "ae5c99bd8bdd8f0c5671",
+    "6dc8c297dc2a5f8579b1",
+    "01c04e34d2c44b144579",
+    "e360b25b4cd43a76b3bb"
+   ],
+   "duration": 29.03,
+   "lines": [
+    {
+     "text": "Now decide which rows begin a visit. A row begins one if its gap is missing, or longer than the threshold.",
+     "start": 0.15,
+     "end": 8.053
+    },
+    {
+     "text": "Read the row of numbers: a one marks a start, a zero means the row continues the visit before it.",
+     "start": 8.473,
+     "end": 15.177
+    },
+    {
+     "text": "Three ones, because the first event, the one after the long pause, and the one after the longer pause all start something.",
+     "start": 15.597,
+     "end": 23.509
+    },
+    {
+     "text": "Nothing has been grouped yet. We have only marked where the boundaries are.",
+     "start": 23.929,
+     "end": 28.68
+    }
+   ],
+   "lufs": -16.3,
+   "true_peak": -2.5,
+   "wpm": 157,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "05": {
+   "hash": "5a476d4a9df28656",
+   "takes": [
+    "a4f523d77ebdfdb03990",
+    "a1b00c435682d1201482",
+    "276f5d4d606327624a48",
+    "35322fc9c088743fc907"
+   ],
+   "duration": 29.36,
+   "lines": [
+    {
+     "text": "Now turn the marks into labels. Add them up, row by row, down the ordered list.",
+     "start": 0.15,
+     "end": 5.909
+    },
+    {
+     "text": "The sum only changes at a row that starts a visit. So it stays the same inside a visit and goes up by exactly one at the next.",
+     "start": 6.329,
+     "end": 15.95
+    },
+    {
+     "text": "Look at the sequence under the dots: one, one, one, two, two, three, three, three.",
+     "start": 16.37,
+     "end": 23.284
+    },
+    {
+     "text": "That counter is a session identifier, built without a single join.",
+     "start": 23.704,
+     "end": 29.01
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 143,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "06": {
+   "hash": "6d46e51bc27abec9",
+   "takes": [
+    "24a27d8685ad36fcc5f8",
+    "ced7748130e6c3c1c511",
+    "f275f8ad75370c6979c4"
+   ],
+   "duration": 12.43,
+   "lines": [
+    {
+     "text": "Check you can do it by hand. These are the flags, in order.",
+     "start": 0.15,
+     "end": 4.556
+    },
+    {
+     "text": "The running total through the fourth row is the answer.",
+     "start": 4.976,
+     "end": 8.388
+    },
+    {
+     "text": "What session does the fourth event belong to?",
+     "start": 9.208,
+     "end": 12.08
+    }
+   ],
+   "lufs": -16.2,
+   "true_peak": -3.2,
+   "wpm": 150,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "06a": {
+   "hash": "d897be0432b2c9fa",
+   "takes": [
+    "9505b24b993046a94f69",
+    "1b67c1aa47b1edae4809",
+    "eaf3521dc86d7d9ac74e"
+   ],
+   "duration": 16.539,
+   "lines": [
+    {
+     "text": "The second.",
+     "start": 0.15,
+     "end": 1.123
+    },
+    {
+     "text": "One, plus zero, plus zero, plus one. The fourth event is the first of the second visit.",
+     "start": 1.543,
+     "end": 9.114
+    },
+    {
+     "text": "One would mean the pause did not count, and three or four would count starts that have not happened yet.",
+     "start": 9.534,
+     "end": 16.189
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -1.9,
+   "wpm": 141,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "07": {
+   "hash": "1776b13e5c44f841",
+   "takes": [
+    "37eaabc7a464953bcc3e",
+    "50b0c5a03d31786bbbc9",
+    "38bafd7dc14334d4eb2a",
+    "26c16f546a4592946d9c"
+   ],
+   "duration": 33.46,
+   "lines": [
+    {
+     "text": "There is a second technique, for a different kind of question: runs of a fixed condition, with no time threshold at all.",
+     "start": 0.15,
+     "end": 8.368
+    },
+    {
+     "text": "Look at the days a user was active, and give every row its position. Then subtract the position from the day.",
+     "start": 8.788,
+     "end": 15.965
+    },
+    {
+     "text": "Inside an unbroken run the difference does not change, because both numbers rise by one together. When a day is missing, the difference jumps.",
+     "start": 16.385,
+     "end": 26.77
+    },
+    {
+     "text": "Same difference, same run. It finds islands with no flags and no sums.",
+     "start": 27.19,
+     "end": 33.11
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 143,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "08": {
+   "hash": "7faf62652278cc9c",
+   "takes": [
+    "98bbd5b41c2ed21fbcf3",
+    "fe83a04739e5e99c38f1",
+    "ce3be1121767c232ade2"
+   ],
+   "duration": 12.646,
+   "lines": [
+    {
+     "text": "Now choose between the two techniques for a visit that ends after thirty minutes of silence.",
+     "start": 0.15,
+     "end": 5.654
+    },
+    {
+     "text": "Think about what each one needs to know to decide where a run breaks.",
+     "start": 6.074,
+     "end": 10.701
+    },
+    {
+     "text": "Which fits?",
+     "start": 11.521,
+     "end": 12.296
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 152,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "08a": {
+   "hash": "f7338b631d2e9a20",
+   "takes": [
+    "dae0c87243ce83c798bd",
+    "13fc5d272b1e9bb1ab42",
+    "e9c42a0570f382175a89"
+   ],
+   "duration": 22.093,
+   "lines": [
+    {
+     "text": "A flag's running sum.",
+     "start": 0.15,
+     "end": 1.59
+    },
+    {
+     "text": "A time threshold means the break depends on the size of the gap, not just on whether two rows are consecutive, and the flag carries that decision.",
+     "start": 2.01,
+     "end": 11.891
+    },
+    {
+     "text": "The difference trick only sees whether rows are neighbours in a fixed sequence, so it cannot express a threshold. They are not interchangeable.",
+     "start": 12.311,
+     "end": 21.743
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -1.9,
+   "wpm": 147,
+   "wer": 0.25,
+   "exact": false,
+   "tolerated": [
+    {
+     "line": "A flag's running sum.",
+     "said": "sum",
+     "heard": "some"
+    },
+    {
+     "line": "The difference trick only sees whether rows are neighbours in a fixed sequence, so it cannot express a threshold. They are not interchangeable.",
+     "said": "neighbours",
+     "heard": "neighbors"
+    }
+   ]
+  },
+  "09": {
+   "hash": "300058059dd318f6",
+   "takes": [
+    "5a33f6f4e5c547f686ca",
+    "78fec2b5f8d80efd13b3",
+    "a66e66ea6754a690b68f",
+    "72f8cf7dd543cbe9166f"
+   ],
+   "duration": 33.858,
+   "lines": [
+    {
+     "text": "Real clickstreams have ties: two events with the same timestamp. Do they break any of this?",
+     "start": 0.15,
+     "end": 6.831
+    },
+    {
+     "text": "Look at the two dots stacked on the right. The gap between them is zero, which never exceeds the threshold, so neither starts a visit on its own.",
+     "start": 7.381,
+     "end": 16.561
+    },
+    {
+     "text": "Whichever one is read first, one of them carries the start flag and the running total reaches the same value for both.",
+     "start": 16.981,
+     "end": 25.261
+    },
+    {
+     "text": "We checked every ordering. Ties change which event is first in a visit, not which visit an event belongs to.",
+     "start": 25.681,
+     "end": 33.508
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -2.0,
+   "wpm": 152,
+   "wer": 0.125,
+   "exact": false,
+   "tolerated": [
+    {
+     "line": "Real clickstreams have ties: two events with the same timestamp. Do they break any of this?",
+     "said": "clickstreams",
+     "heard": "click streams"
+    }
+   ]
+  },
+  "10": {
+   "hash": "a312680234ed8b0b",
+   "takes": [
+    "1bf4d345b1bef354db2c",
+    "30da080e8159d9c29f8f",
+    "eb8efe19009774752f32"
+   ],
+   "duration": 28.55,
+   "lines": [
+    {
+     "text": "Last step: shrink the stream. Group by customer and session, and keep the earliest time, the latest, and the count.",
+     "start": 0.15,
+     "end": 8.337
+    },
+    {
+     "text": "Watch the eight dots turn into three rows. Each row is a visit with a start, an end and a size.",
+     "start": 8.757,
+     "end": 16.829
+    },
+    {
+     "text": "That table is what most reports want: average visit length, visits per day, bounce rate. None of them should re derive the boundaries from raw events.",
+     "start": 17.249,
+     "end": 28.2
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 141,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "11": {
+   "hash": "b684c25527c171c6",
+   "takes": [
+    "1114dd7ee20e1279780d",
+    "fa71afc3dd7993829c60",
+    "725de7285e2a34310500",
+    "548a1de5fea39e1ce295"
+   ],
+   "duration": 38.504,
+   "lines": [
+    {
+     "text": "Take it away as three steps. Find the gap and flag the starts. Add up the flags to number the visits. Group to get one row per visit.",
+     "start": 0.15,
+     "end": 9.964
+    },
+    {
+     "text": "Treat the threshold as a business decision, not a constant of nature, and write down which one you used.",
+     "start": 10.384,
+     "end": 17.592
+    },
+    {
+     "text": "And store the compressed table, so nobody recomputes it from a hundred million events.",
+     "start": 18.012,
+     "end": 23.372
+    },
+    {
+     "text": "Grouping events into episodes answers what happened. Next: smoother statistics over the numbers themselves, running and moving, instead of just marking where one episode ends and the next begins.",
+     "start": 24.192,
+     "end": 38.154
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 140,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "12": {
+   "hash": "64efc347cd5bf05d",
+   "takes": [
+    "b4c78d9d14855a2f54fc",
+    "729f79da346e247f854d"
+   ],
+   "duration": 6.519,
+   "lines": [
+    {
+     "text": "Two checks. First, the function that reads the row before.",
+     "start": 0.15,
+     "end": 4.239
+    },
+    {
+     "text": "Which one?",
+     "start": 5.059,
+     "end": 6.17
+    }
+   ],
+   "lufs": -15.9,
+   "true_peak": -2.7,
+   "wpm": 110,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "12a": {
+   "hash": "9fff84769448d1a6",
+   "takes": [
+    "12f295282498cdf4eb4f",
+    "50d1690e897cb8f2d86c"
+   ],
+   "duration": 6.411,
+   "lines": [
+    {
+     "text": "Lag.",
+     "start": 0.15,
+     "end": 0.649
+    },
+    {
+     "text": "Lead reads the next row, and first value reads the start of the frame.",
+     "start": 1.069,
+     "end": 6.061
+    }
+   ],
+   "lufs": -15.6,
+   "true_peak": -2.0,
+   "wpm": 140,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "13": {
+   "hash": "dec0d17046224dd7",
+   "takes": [
+    "6947324a98542497b35f",
+    "b6ca8de2f313bc246be2",
+    "896f467be34c63f66399"
+   ],
+   "duration": 14.746,
+   "lines": [
+    {
+     "text": "Second check. The threshold is thirty minutes. After a first event the gaps are five, forty five and ten minutes.",
+     "start": 0.15,
+     "end": 9.484
+    },
+    {
+     "text": "Count how many exceed the threshold.",
+     "start": 9.904,
+     "end": 12.15
+    },
+    {
+     "text": "How many sessions are there?",
+     "start": 12.97,
+     "end": 14.396
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 126,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "13a": {
+   "hash": "91521a9695450208",
+   "takes": [
+    "e7c39d1754e0187d5d32",
+    "f469bd8a2958023a74a1"
+   ],
+   "duration": 9.913,
+   "lines": [
+    {
+     "text": "Two.",
+     "start": 0.15,
+     "end": 0.629
+    },
+    {
+     "text": "Only the forty five minute gap is longer than the threshold. So there is the first session, and one more that starts after that gap.",
+     "start": 1.049,
+     "end": 9.563
+    }
+   ],
+   "lufs": -16.3,
+   "true_peak": -2.3,
+   "wpm": 157,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  }
+ }
+}
