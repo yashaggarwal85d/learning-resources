@@ -1510,4 +1510,24 @@ export const TOPICS: TopicMeta[] = [
     handoff:
       "Type 2 was one specific point on a much larger menu of ways to handle a changing attribute. Next: the full SCD 0 through 7 menu that Type 2 is one point in, and how to choose a different point by query pattern and churn rate.",
   },
+  {
+    id: 'de.scd-types-0-7',
+    domain: 'data-engineering',
+    slug: 'data-engineering/m1-foundations/ch03-data-modeling-analytical/scd-types-0-7',
+    title: 'SCD types 0–7 and selection',
+    syllabusTitle: 'SCD types 0–7 and selection',
+    kind: 'full',
+    status: 'live',
+    milestone: { number: 1, title: 'Foundations' },
+    chapter: { number: 3, title: 'Data modeling and analytical architecture', section: '3.2' },
+    minutes: 14,
+    verified: '2026-10-22',
+    introduces: ['scd-types-0-1-3-4-5-6-7'],
+    uses: ['scd-type-2', 'hash-diff-change-detection'],
+    declared: ['sql-select'],
+    bridge:
+      "Type 2 was one specific point on a much larger menu of ways to handle a changing attribute. This topic is the full SCD 0 through 7 menu that Type 2 is one point in, and how to choose a different point by query pattern and churn rate.",
+    handoff:
+      "Every SCD type here assumed a dimension row's own data was itself correct and on time. Next: what happens when it genuinely isn't — facts that arrive before their own dimension row exists, or that arrive late enough to require mapping them onto a dimension's own historical versions.",
+  },
 ];
