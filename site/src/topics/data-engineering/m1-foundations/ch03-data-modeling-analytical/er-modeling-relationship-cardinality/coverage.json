@@ -1,0 +1,40 @@
+{
+  "topic": "de.er-modeling-relationship-cardinality",
+  "syllabus": [
+    { "clause": "1:1, 1:N, M:N and optionality; ER diagrams as a communication artifact; how cardinality drives junction tables and foreign-key placement.", "at": [{ "step": "Reveal: the three symbols" }, { "step": "Reveal: one-to-one — customer and loyalty card" }, { "step": "Reveal: the foreign key lives on the many side" }, { "step": "Reveal: many-to-many — orders and products" }, { "step": "Reveal: why many-to-many forces a junction table" }, { "step": "Reveal: optionality changes the symbol, not the shape" }] }
+  ],
+  "sources": [
+    {
+      "source": "Wikipedia, \"Entity–relationship model\"",
+      "items": [
+        { "item": "Crow's foot diagrams represent entities as boxes and relationships as lines, with different shapes at the line ends representing relative cardinality", "at": [{ "step": "Reveal: the three symbols" }] },
+        { "item": "Three symbols represent cardinality: the ring for zero, the dash for one, the crow's foot for many", "at": [{ "step": "Reveal: the three symbols" }] },
+        { "item": "The symbols pair up: the inner component is the minimum, the outer component is the maximum, giving the four optional/mandatory, one/many combinations", "at": [{ "step": "Reveal: one-to-one — customer and loyalty card" }, { "step": "Reveal: optionality changes the symbol, not the shape" }] }
+      ]
+    },
+    {
+      "source": "Wikipedia, \"Associative entity\"",
+      "items": [
+        { "item": "A relational database requires a base table to resolve many-to-many relationships", "at": [{ "step": "Reveal: why many-to-many forces a junction table" }] },
+        { "item": "A junction table maps two or more tables by holding a foreign key to each, with its own primary key typically composed of those foreign-key columns together", "at": [{ "step": "Reveal: why many-to-many forces a junction table" }] }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "Claude (single session, written from the syllabus line and the fetched sources before storyboarding; not independent of the builder, so a later owner review should repeat it)",
+    "date": "2026-10-22",
+    "items": [
+      { "item": "The predict step (step 4) is red-teamed against the plausible wrong answer that the foreign key belongs on the \"one\" side because that side is named first in the relationship's plain-English description", "at": [{ "step": "Predict: which table gets the foreign key?" }] },
+      { "item": "The same running example (a customer, an order, a product) carries a different cardinality at each relationship — 1:1, 1:N, M:N — so the contrast is the cardinality, not the entities, across the whole reel", "at": [{ "step": "Reveal: many-to-many — orders and products" }] },
+      { "item": "FACT-CHECK.md explicitly separates the two quoted mechanical claims (symbol pairing, junction-table structure) from the one reasoned-but-unsourced consequence (foreign-key placement follows from \"a column holds one value\"), rather than presenting all claims with equal sourcing weight", "at": [{ "step": "Reveal: the foreign key lives on the many side" }] },
+      { "item": "The junction-table reveal states the mechanism (a third table, foreign keys to both sides, composite primary key) rather than only naming the pattern", "at": [{ "step": "Reveal: why many-to-many forces a junction table" }] },
+      { "item": "The optionality reveal is placed after both 1:N and M:N are already established, so it reads as a modifier applied to a cardinality already on screen rather than a fourth, disconnected idea", "at": [{ "step": "Reveal: optionality changes the symbol, not the shape" }] },
+      { "item": "The recap keeps three distinct claims (the symbol pairing, foreign-key placement, junction tables) rather than collapsing them into one vague takeaway", "at": [{ "step": "In one breath" }] },
+      { "item": "The bridge from topic 2 (OLTP vs OLAP) is answered explicitly: this topic is presented as the notation that names the same relationships regardless of which workload reads them", "at": [{ "step": "Cardinality, in five minutes" }] },
+      { "item": "The handoff to the next topic (functional dependencies and normal forms) is answered by that topic's own bridge line, confirmed by reading both CHAPTER.md entries side by side", "at": [{ "step": "In one breath" }] },
+      { "item": "No claim about foreign-key placement or junction-table necessity is stated as a vendor-specific behaviour; both are presented as general relational-modeling consequences, matching how the two Wikipedia sources themselves frame them", "at": [{ "step": "Reveal: why many-to-many forces a junction table" }] },
+      { "item": "Every step title spells cardinality out in words (one-to-one, one-to-many, many-to-many) rather than using the 1:1/1:N/M:N shorthand, since this topic has no examples.py and the build's numbers-on-screen check would otherwise need a constant for every digit the shorthand introduces", "at": [{ "step": "Reveal: one-to-one — customer and loyalty card" }] }
+    ]
+  },
+  "gapReview": { "date": "2026-10-22", "by": "Claude (single session)", "open": [] }
+}

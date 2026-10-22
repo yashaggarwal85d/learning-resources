@@ -1290,4 +1290,24 @@ export const TOPICS: TopicMeta[] = [
     handoff:
       "Point reads and large scans pull physical layout in opposite directions, but both still need the same underlying relationships named precisely. Next: the notation — ER diagrams and cardinality — that names those relationships the same way regardless of which workload ends up reading them.",
   },
+  {
+    id: 'de.er-modeling-relationship-cardinality',
+    domain: 'data-engineering',
+    slug: 'data-engineering/m1-foundations/ch03-data-modeling-analytical/er-modeling-relationship-cardinality',
+    title: 'ER modeling and relationship cardinality',
+    syllabusTitle: 'ER modeling and relationship cardinality',
+    kind: 'refresher',
+    status: 'live',
+    milestone: { number: 1, title: 'Foundations' },
+    chapter: { number: 3, title: 'Data modeling and analytical architecture', section: '3.1' },
+    minutes: 5,
+    verified: '2026-10-22',
+    introduces: ['er-cardinality-notation', 'junction-table'],
+    uses: ['conceptual-logical-physical-split', 'oltp-vs-olap-shape'],
+    declared: ['sql-create-table'],
+    bridge:
+      "Point reads and large scans pull physical layout in opposite directions, but both still need the same underlying relationships named precisely. This topic is that notation: cardinality, drawn the same way regardless of which workload ends up reading it.",
+    handoff:
+      "Cardinality decided where a foreign key lives and when a junction table is unavoidable. Next: a sharper question about the same tables — which columns actually determine which others, and what that implies about how far a table should be normalized.",
+  },
 ];

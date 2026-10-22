@@ -1,0 +1,6 @@
+- **Cardinality**: how many of one entity can relate to how many of another across a relationship. *Where you meet it:* the shapes drawn at the ends of a relationship line.
+- **Crow's foot notation**: a diagramming style where a branching, foot-like mark at the end of a relationship line means "many." *Where you meet it:* most ER diagramming tools' default notation.
+- **Optionality**: whether a relationship requires at least one related row on a given side, or allows zero. *Where you meet it:* a ring symbol instead of a dash at one end of a line.
+- **Foreign key**: a column in one table that holds the identifying value of a row in another table. *Where you meet it:* `customer_id` on an `orders` table, pointing back to `customers`.
+- **Junction table (associative table)**: a table introduced solely to hold a many-to-many relationship, with a foreign key to each side it connects. *Where you meet it:* an `order_product` table between `orders` and `products`.
+- **Primary key**: the column or columns that uniquely identify a row in a table. *Where you meet it:* a junction table's primary key is often just its two foreign keys together.

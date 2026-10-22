@@ -1,0 +1,62 @@
+{
+  "topic": "de.er-modeling-relationship-cardinality",
+  "steps": [
+    {
+      "lines": [
+        "Every relationship line on one of these diagrams is answering exactly one question.",
+        "How many of this thing, for how many of that one."
+      ]
+    },
+    {
+      "lines": [
+        "Three shapes do all the work here: a ring, a dash, and a crow's foot.",
+        "Put two of them together on one end of a line, and you get a minimum and a maximum at once."
+      ]
+    },
+    {
+      "lines": [
+        "A dash on both ends of this line. One customer, one card, and neither side gets to skip the other."
+      ]
+    },
+    {
+      "lines": [
+        "A customer can have many orders, but every single order points back to just one customer.",
+        "So which table actually stores that connection?"
+      ],
+      "answer": [
+        "The order table. Each order only ever needs to name one customer, so that fits in a single column.",
+        "The customer side would need a column holding a whole list of orders, and an ordinary column just can't do that."
+      ]
+    },
+    {
+      "lines": [
+        "Watch where the key actually sits once you draw it out.",
+        "One value per order, pointing at exactly one customer. That is the whole reason it lands here and not there."
+      ]
+    },
+    {
+      "lines": [
+        "Now both ends of the line get a crow's foot.",
+        "An order lists many products, and the same product shows up on many different orders."
+      ]
+    },
+    {
+      "lines": [
+        "Neither table can hold that on its own, so a third one shows up.",
+        "It carries a key pointing to each side, and together those two keys usually become its own primary key."
+      ]
+    },
+    {
+      "lines": [
+        "Swap just one symbol, from a dash to a ring, and that one end goes from required to optional.",
+        "Nothing else about the shape changes. Read it straight off the diagram, never off the relationship's name."
+      ]
+    },
+    {
+      "lines": [
+        "Three paired symbols, the key on the many side, and a third table whenever both sides say many.",
+        "Carry that forward, because the next refresher asks a sharper question about these same tables."
+      ]
+    }
+  ]
+}
