@@ -1,7 +1,11 @@
 name: Deploy site to GitHub Pages
-# The reel smoke test gating this deploy runs only the reels a push can affect (scripts/affected.mjs): a fixed
-# canary, one topic per domain, when the push touched shared code, so publishing stays fast as topics grow. The
-# true full sweep is .github/workflows/full-sweep.yml, daily and on demand.
+# Owner decision 2026-10-22 (after the canary fix still wasn't fast enough): Deploy no longer re-runs the reel,
+# narration and editor tests itself. ci.yml already runs the same tests on every push to main and is never
+# cancelled there (see its concurrency group), so it's a reliable gate on its own; Deploy re-testing was redundant
+# work, and at ~15-20 minutes it kept losing the race to the next routine push under `concurrency: pages`
+# (cancel-in-progress), so the live site could go hours without actually publishing. Deploy now just builds and
+# publishes (~2-3 minutes); a bad build can be briefly live until CI flags it, fixed forward like any other
+# CI-red commit, never by skipping or loosening a check.
 
 on:
   push:
@@ -46,15 +50,6 @@ jobs:
         working-directory: site
     steps:
       - uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-      - name: Reels this change can affect
-        id: affected
-        working-directory: .
-        run: |
-          A=$(node scripts/affected.mjs "${{ github.event.before }}")
-          echo "$A"
-          echo "reels=$(node -e 'const a=JSON.parse(process.argv[1]); console.log(a.all ? a.canary.join(",") : (a.slugs.join(",") || "none"))' "$A")" >> "$GITHUB_OUTPUT"
       - uses: actions/setup-node@v4
         with:
           node-version: 22
@@ -62,22 +57,6 @@ jobs:
           cache-dependency-path: site/package-lock.json
       - run: npm ci
       - run: npm run build
-      - name: Narration matches every live reel's script
-        run: npm run test:narration
-      - name: Install Chromium for the reel smoke test
-        run: npx playwright install --with-deps chromium
-      - name: Reel smoke test (desktop and phone)
-        run: |
-          npx astro preview --host 127.0.0.1 --port 4321 > preview.log 2>&1 &
-          for i in $(seq 1 30); do curl -sf http://127.0.0.1:4321/learning-resources/ > /dev/null && break; sleep 1; done
-          npm run test:reels -- http://127.0.0.1:4321/learning-resources/ ${{ steps.affected.outputs.reels }}
-          npm run test:editor -- http://127.0.0.1:4321/learning-resources/
-      - uses: actions/upload-artifact@v4
-        if: always()
-        with:
-          name: reel-screenshots
-          path: site/test-results
-          if-no-files-found: ignore
       - uses: actions/configure-pages@v5
       - uses: actions/upload-pages-artifact@v3
         with:
