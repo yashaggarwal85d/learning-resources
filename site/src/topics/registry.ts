@@ -1490,4 +1490,24 @@ export const TOPICS: TopicMeta[] = [
     handoff:
       "Every pattern in this section so far assumed a dimension's own attributes don't change over time. Next: the mechanism — SCD Type 2 — for when they genuinely do, and how to keep every version of the truth without losing any of it.",
   },
+  {
+    id: 'de.scd-type-2-implementation',
+    domain: 'data-engineering',
+    slug: 'data-engineering/m1-foundations/ch03-data-modeling-analytical/scd-type-2-implementation',
+    title: 'SCD Type 2 implementation',
+    syllabusTitle: 'SCD Type 2 implementation',
+    kind: 'full',
+    status: 'live',
+    milestone: { number: 1, title: 'Foundations' },
+    chapter: { number: 3, title: 'Data modeling and analytical architecture', section: '3.2' },
+    minutes: 15,
+    verified: '2026-10-22',
+    introduces: ['scd-type-2', 'hash-diff-change-detection', 'idempotent-merge-load'],
+    uses: ['bridge-table-multivalued-dimension', 'key-types-natural-surrogate-durable-hash'],
+    declared: ['sql-select'],
+    bridge:
+      "Every pattern in this section so far assumed a dimension's own attributes don't change over time. This topic is the mechanism — SCD Type 2 — for when they genuinely do, and how to keep every version of the truth without losing any of it.",
+    handoff:
+      "Type 2 was one specific point on a much larger menu of ways to handle a changing attribute. Next: the full SCD 0 through 7 menu that Type 2 is one point in, and how to choose a different point by query pattern and churn rate.",
+  },
 ];

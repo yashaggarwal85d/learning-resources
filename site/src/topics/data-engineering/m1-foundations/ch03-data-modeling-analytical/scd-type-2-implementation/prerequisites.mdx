@@ -1,0 +1,23 @@
+import Resource from '../../../../../components/Resource.astro';
+
+<section class="prereq" data-section="before-this">
+
+### <span class="n">01</span> Before this: dimensions assumed not to change over time
+
+<ul class="resources">
+  <Resource kind="reel" title="Bridge tables and many-to-many" domain="data-engineering" host="de.bridge-tables-many-many" by="the topic right before this one" />
+  <Resource kind="reel" title="Key design: natural, surrogate, durable, hash" domain="data-engineering" host="de.key-design-natural-surrogate-durable-hash" by="earlier in this chapter" />
+</ul>
+
+</section>
+
+<section class="prereq" data-section="scd2-merge">
+
+### <span class="n">02</span> SCD Type 2 and MERGE, straight from the source
+
+<ul class="resources">
+  <Resource kind="reading" title="Type 2: Add New Row" href="https://www.kimballgroup.com/data-warehouse-business-intelligence-resources/kimball-techniques/dimensional-modeling-techniques/type-2/" by="Kimball Group">A new row, a new surrogate key, per version.</Resource>
+  <Resource kind="reading" title="MERGE" href="https://www.postgresql.org/docs/current/sql-merge.html" by="PostgreSQL Documentation">One statement, conditional insert, update, or delete.</Resource>
+</ul>
+
+</section>
