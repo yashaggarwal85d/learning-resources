@@ -1,9 +1,8 @@
 // The in-page notes editor, against a fake GitHub API (nothing is sent to GitHub). Usage:
 //   node tests/editor.mjs http://localhost:4321/learning-resources/
-// Checks: without a token the file loads with no credentials and a save opens a prefilled GitHub issue (topic, file, the sha
-// it read, the text) instead of writing; with one, text that would fail the build cannot be saved; a save sends the sha it
-// read, a commit message with the topic's Unlock line and the edited text; a file that changed on GitHub is never
-// overwritten (the differences are shown); the phone panel is a full-height drawer.
+// Checks: the file loads with no credentials; text that would fail the build cannot be saved; a save opens a prefilled
+// GitHub issue (topic, file, the sha it read, the exact edited text) instead of writing anywhere; the phone panel is a
+// full-height drawer.
 import { chromium, devices } from 'playwright';
 import { readFileSync, existsSync, readdirSync } from 'node:fs';
 
@@ -28,21 +27,18 @@ const browser = await chromium.launch().catch((err) => {
   return chromium.launch({ executablePath: exe });
 });
 
-/** A page with a fake GitHub: `remote` is what GET returns, `puts` records each PUT, `putStatus(n)` the answer to the n-th. */
-async function open(opts, { token, putStatus = () => 200, remote = original }) {
+/** A page with a fake GitHub: `remote` is what GET returns. Any write would show up as a request on `gets`/other methods. */
+async function open(opts) {
   const ctx = await browser.newContext(opts);
-  if (token) await ctx.addInitScript((t) => localStorage.setItem('lr.edit.token', t), token);
-  const state = { puts: [], gets: 0, remote };
+  const state = { gets: 0, others: [] };
   await ctx.route('https://api.github.com/**', async (route) => {
     const req = route.request();
     if (req.method() === 'GET') {
       state.gets++;
-      return route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify({ content: Buffer.from(state.remote).toString('base64'), sha: `sha${state.gets}`, encoding: 'base64' }) });
+      return route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify({ content: Buffer.from(original).toString('base64'), sha: `sha${state.gets}`, encoding: 'base64' }) });
     }
-    const body = JSON.parse(req.postData());
-    state.puts.push({ url: req.url(), auth: req.headers().authorization, body });
-    const status = putStatus(state.puts.length);
-    return route.fulfill({ status, contentType: 'application/json', body: JSON.stringify(status === 200 ? { content: { sha: 'newsha' } } : { message: 'conflict' }) });
+    state.others.push({ method: req.method(), url: req.url() });
+    return route.fulfill({ status: 404, contentType: 'application/json', body: '{}' });
   });
   const page = await ctx.newPage();
   page.on('pageerror', (e) => fail(`page error: ${e.message}`));
@@ -58,10 +54,10 @@ const openPre = async (page) => {
   return page.getByRole('dialog', { name: 'Notes' });
 };
 
-// 1. No token (any device): the file loads without credentials, and a save opens a prefilled GitHub issue in a new tab
-// (the notes-edit workflow applies it) instead of writing; nothing is sent to the contents API.
+// 1. The file loads without credentials; invalid text cannot be saved; a valid save opens a prefilled GitHub issue
+// (the notes-edit workflow applies it with the repository's NOTES_EDIT_TOKEN) instead of writing to the contents API.
 {
-  const { ctx, page, state } = await open({ viewport: { width: 1440, height: 900 } }, {});
+  const { ctx, page, state } = await open({ viewport: { width: 1440, height: 900 } });
   const opened = [];
   await ctx.route('https://github.com/**', (route) => route.fulfill({ status: 200, contentType: 'text/html', body: '<p>issue form</p>' }));
   ctx.on('page', (p) => opened.push(p.url()));
@@ -72,14 +68,23 @@ const openPre = async (page) => {
   await d.getByRole('button', { name: 'Edit pre-notes', exact: true }).click();
   const box = d.getByRole('textbox', { name: /pre-notes\.md/ });
   await box.waitFor();
-  if (auths.some(Boolean)) fail('the file was read with credentials although no token is set');
+  if (auths.some(Boolean)) fail('the file was read with credentials, although it never sends a token');
+  const save = d.getByRole('button', { name: 'Save via GitHub issue', exact: true });
+  if (!(await save.isDisabled())) fail('Save is enabled before anything changed');
+  await box.fill('- **Only one**: a note.\n');
+  if (!(await save.isDisabled())) fail('Save is enabled for pre-notes that fail the build rules');
+  if (!(await d.getByLabel('Problems that would fail the build').count())) fail('the problems list is missing for invalid pre-notes');
   const edited = original.replace(/\n$/, '') + '\n- **Write amplification**: bytes written to the device per byte the application writes. *Where you meet it:* compaction tuning.\n';
   await box.fill(edited);
-  await d.getByRole('button', { name: 'Save via GitHub issue', exact: true }).click();
+  await d.getByRole('button', { name: 'Preview', exact: true }).click();
+  await page.waitForTimeout(700);
+  if (!(await d.locator('.deep strong', { hasText: 'Write amplification' }).count())) fail('the preview does not show the edited text');
+  await d.getByRole('button', { name: 'Markdown', exact: true }).click();
+  await save.click();
   await page.waitForTimeout(1500);
-  if (state.puts.length) fail('a save without a token wrote to the contents API');
+  if (state.others.length) fail(`the save wrote to the contents API (${state.others.map((o) => `${o.method} ${o.url}`).join(', ')})`);
   const url = opened.find((u) => u.startsWith('https://github.com/yashaggarwal85d/learning-resources/issues/new'));
-  if (!url) fail(`a save without a token did not open a new GitHub issue (opened: ${opened.join(', ') || 'nothing'})`);
+  if (!url) fail(`a save did not open a new GitHub issue (opened: ${opened.join(', ') || 'nothing'})`);
   else {
     const q = new URL(url).searchParams;
     const body = q.get('body') ?? '';
@@ -92,68 +97,9 @@ const openPre = async (page) => {
   await ctx.close();
 }
 
-// 2. Token set: edit, validate, save.
+// 2. A phone gets a full-height drawer, and the editor fits in it.
 {
-  const { ctx, page, state } = await open({ viewport: { width: 1440, height: 900 } }, { token: 'test-token' });
-  const d = await openPre(page);
-  await d.getByRole('button', { name: 'Edit pre-notes', exact: true }).click();
-  const ta = d.getByRole('textbox', { name: /pre-notes\.md/ });
-  await ta.waitFor();
-  if ((await ta.inputValue()) !== original) fail('the editor did not load the file from GitHub');
-  const save = d.getByRole('button', { name: 'Save to GitHub' });
-  if (!(await save.isDisabled())) fail('Save is enabled before anything changed');
-  await ta.fill('- **Only one**: a note.\n');
-  if (!(await save.isDisabled())) fail('Save is enabled for pre-notes that fail the build rules');
-  if (!(await d.getByLabel('Problems that would fail the build').count())) fail('the problems list is missing for invalid pre-notes');
-  const edited = original.replace('- **Index**:', '- **Index (edited)**:');
-  await ta.fill(edited);
-  await d.getByRole('button', { name: 'Preview', exact: true }).click();
-  await page.waitForTimeout(700);
-  if (!(await d.locator('.deep strong', { hasText: 'Index (edited)' }).count())) fail('the preview does not show the edited text');
-  await d.getByRole('button', { name: 'Markdown', exact: true }).click();
-  await save.click();
-  await page.waitForTimeout(700);
-  const put = state.puts[0];
-  if (!put) fail('Save sent nothing');
-  else {
-    if (!put.url.endsWith(`/contents/${FILE}`)) fail(`saved to ${put.url}`);
-    if (put.auth !== 'Bearer test-token') fail('the token was not sent as a Bearer token');
-    if (put.body.sha !== 'sha1') fail(`the save quoted sha ${put.body.sha}, not the one it read`);
-    if (put.body.branch !== 'main') fail(`the save went to branch ${put.body.branch}`);
-    if (Buffer.from(put.body.content, 'base64').toString('utf8') !== edited) fail('the saved text differs from the edited text');
-    if (!put.body.message.includes(`Unlock: ${ID}`)) fail('the commit message has no Unlock line for the topic');
-  }
-  if (!(await d.getByRole('status').filter({ hasText: 'Saved to GitHub' }).count())) fail('no "Saved to GitHub" state after a save');
-  if (!(await d.getByRole('status').filter({ hasText: 'about 4 min' }).count())) fail('the saved state does not say when it goes live');
-  if (!(await d.locator('.deep strong', { hasText: 'Index (edited)' }).count())) fail('the panel does not show the saved text');
-  await ctx.close();
-}
-
-// 3. The file changed on GitHub: never overwrite, show the differences.
-{
-  const { ctx, page, state } = await open({ viewport: { width: 1440, height: 900 } }, { token: 'test-token', putStatus: () => 409 });
-  const d = await openPre(page);
-  await d.getByRole('button', { name: 'Edit pre-notes', exact: true }).click();
-  const ta = d.getByRole('textbox', { name: /pre-notes\.md/ });
-  await ta.waitFor();
-  const mine = original.replace('- **Index**:', '- **Index (mine)**:');
-  await ta.fill(mine);
-  state.remote = original.replace('- **Index**:', '- **Index (theirs)**:');
-  await d.getByRole('button', { name: 'Save to GitHub' }).click();
-  await page.waitForTimeout(800);
-  if (state.puts.length !== 1) fail(`a conflicting save was sent ${state.puts.length} times`);
-  if (!(await d.getByRole('alert').filter({ hasText: 'Nothing was overwritten' }).count())) fail('no conflict message');
-  const diff = await d.getByLabel('Differences from the version on GitHub').innerText().catch(() => '');
-  if (!diff.includes('Index (theirs)') || !diff.includes('Index (mine)')) fail('the conflict view does not show both versions');
-  if (await d.getByRole('button', { name: 'Save to GitHub' }).count()) fail('the conflict view still offers to save over GitHub’s version');
-  await d.getByRole('button', { name: 'Take GitHub’s version' }).click();
-  if (!(await ta.inputValue()).includes('Index (theirs)')) fail('taking GitHub’s version did not load it');
-  await ctx.close();
-}
-
-// 4. A phone gets a full-height drawer, and the editor fits in it.
-{
-  const { ctx, page } = await open({ ...devices['iPhone 13'] }, { token: 'test-token' });
+  const { ctx, page } = await open({ ...devices['iPhone 13'] });
   const d = await openPre(page);
   await d.getByRole('button', { name: 'Edit pre-notes', exact: true }).click();
   await d.getByRole('textbox', { name: /pre-notes\.md/ }).waitFor();
@@ -170,4 +116,4 @@ if (failures.length) {
   console.error(`Editor test failed:\n- ${failures.join('\n- ')}`);
   process.exit(1);
 }
-console.log('Editor test passed: issue route without a token, validation, save with sha and Unlock line, conflict without overwrite, phone drawer.');
+console.log('Editor test passed: no credentials sent, validation, issue route with sha and exact text, phone drawer.');

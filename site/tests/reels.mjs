@@ -303,8 +303,8 @@ for (const [device, opts] of [
     }
 
     // The right-hand panel: each of its four tabs opens with content (and still does on the second open), outside links
-    // open in a new tab, Pre- and Post-notes offer an Edit button (any device: without a token a save becomes a GitHub
-    // issue) and the other tabs don't, and on a phone it is a full-height drawer.
+    // open in a new tab, Pre- and Post-notes offer an Edit button (any device: a save always becomes a GitHub issue)
+    // and the other tabs don't, and on a phone it is a full-height drawer.
     const MIN = { Prerequisites: 30, 'Pre-notes': 150, 'Post-notes': 600, Sources: 80 };
     for (const button of ['Prerequisites', 'Pre-notes', 'Post-notes', 'Sources', 'Prerequisites']) {
       await reel.getByRole('button', { name: button, exact: true }).first().click();
