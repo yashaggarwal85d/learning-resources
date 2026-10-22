@@ -1,0 +1,39 @@
+{
+  "topic": "de.oltp-vs-olap-workload-shapes",
+  "syllabus": [
+    { "clause": "point reads/writes vs large scans and aggregates; normalization pressure, row vs column layout and indexing, and why one schema rarely serves both.", "at": [{ "step": "Reveal: the OLTP access pattern" }, { "step": "Reveal: the OLAP access pattern" }, { "step": "Reveal: row storage reads whole rows regardless" }, { "step": "Reveal: what column storage changes" }, { "step": "Reveal: normalization pressure pulls the other way for each" }] }
+  ],
+  "sources": [
+    {
+      "source": "Amazon Redshift, \"Columnar storage\"",
+      "items": [
+        { "item": "Row-wise storage stores an entire record's values together per block; OLTP applications typically read or write entire records, so row-wise storage is optimal for them", "at": [{ "step": "Reveal: the OLTP access pattern" }, { "step": "Reveal: row storage reads whole rows regardless" }] },
+        { "item": "Columnar storage stores each column's values together; a query over five of a hundred columns reads about five percent of the table, versus a row-wise database reading the other ninety-five columns' blocks too", "at": [{ "step": "Reveal: what column storage changes" }] }
+      ]
+    },
+    {
+      "source": "Azure Architecture Center, \"Online Transaction Processing (OLTP)\"",
+      "items": [
+        { "item": "OLTP's normalization splits data into smaller, less redundant tables so independent transactions can be processed without colliding", "at": [{ "step": "Reveal: normalization pressure pulls the other way for each" }] },
+        { "item": "Querying highly normalized data for analytics needs joins to denormalize it, and aggregate queries over many transactions are resource-intensive for an OLTP system", "at": [{ "step": "Reveal: normalization pressure pulls the other way for each" }] }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "Claude (single session, written from the syllabus line and the fetched sources before storyboarding; not independent of the builder, so a later owner review should repeat it)",
+    "date": "2026-10-22",
+    "items": [
+      { "item": "Both the OLTP and OLAP access patterns are measured on the same single table (the existing 2.4-million-row `orders` table), isolating the query shape as the variable rather than comparing two different tables", "at": [{ "step": "Reveal: the OLTP access pattern" }, { "step": "Reveal: the OLAP access pattern" }] },
+      { "item": "The predict step (step 4) is red-teamed against the plausible wrong answer that a row-oriented engine reads only the bytes a query needs; the reveal and the Redshift source both rule this out structurally, not just by assertion", "at": [{ "step": "Predict: does the engine read less, needing only one column?" }] },
+      { "item": "The row-width evidence (amount is six of forty-eight average bytes) is this topic's own measurement (pg_stats.avg_width), not asserted from the source, and is used to make the \"reads whole rows anyway\" claim concrete rather than abstract", "at": [{ "step": "Reveal: row storage reads whole rows regardless" }] },
+      { "item": "The columnar reveal reuses the source's own hundred-column example rather than inventing a new one, since this topic has no columnar engine available to measure directly and the source's example is already concrete and sourced", "at": [{ "step": "Reveal: what column storage changes" }] },
+      { "item": "Normalization pressure is stated as a trade (helps one workload, costs the other) rather than as a general virtue or vice of normalization in isolation", "at": [{ "step": "Reveal: normalization pressure pulls the other way for each" }] },
+      { "item": "The recap keeps three distinct claims (point reads want rows, scans want columns, one schema rarely serves both) rather than collapsing them into one vague takeaway", "at": [{ "step": "In one breath" }] },
+      { "item": "The bridge from topic 1 (conceptual/logical/physical) is answered explicitly: this topic is presented as the clearest case of the physical level committing the same business entities to two different engine-specific layouts", "at": [{ "step": "Same entities, two workloads, in five minutes" }] },
+      { "item": "The handoff to the next topic (ER modeling and cardinality) is answered by that topic's own bridge line, confirmed by reading both CHAPTER.md entries side by side", "at": [{ "step": "In one breath" }] },
+      { "item": "No claim about row-wise or columnar storage mechanics is asserted without a direct vendor-documentation quote; this topic's own measurement is used only for the specific numbers belonging to its own running example", "at": [{ "step": "Reveal: row storage reads whole rows regardless" }] },
+      { "item": "The full-scan measurement explicitly disables index and bitmap scans to force the sequential path that demonstrates the row-read-whole-row behaviour, rather than relying on whichever plan the optimizer happened to pick", "at": [{ "step": "Reveal: the OLAP access pattern" }] }
+    ]
+  },
+  "gapReview": { "date": "2026-10-22", "by": "Claude (single session)", "open": [] }
+}

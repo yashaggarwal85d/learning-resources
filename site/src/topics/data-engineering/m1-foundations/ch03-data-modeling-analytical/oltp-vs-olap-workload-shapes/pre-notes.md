@@ -1,0 +1,7 @@
+- **OLTP (online transaction processing)**: a workload of many small, independent reads and writes, usually one or a few rows at a time. *Where you meet it:* a checkout service looking up one order by id.
+- **OLAP (online analytical processing)**: a workload of large scans and aggregates over many rows at once. *Where you meet it:* a dashboard summing revenue across a quarter.
+- **Normalization**: splitting data into smaller tables so each fact is stored once, avoiding redundant copies that could drift out of sync. *Where you meet it:* a `customers` table and a separate `orders` table, joined by a foreign key.
+- **Row-oriented storage**: a storage layout where a table's disk blocks hold one row's columns together, in sequence. *Where you meet it:* PostgreSQL's default heap storage.
+- **Column-oriented (columnar) storage**: a storage layout where a table's disk blocks hold one column's values together, across many rows. *Where you meet it:* a cloud data warehouse's table storage.
+- **Buffers**: the 8-kilobyte pages a database reads from disk or cache to answer a query; `EXPLAIN (BUFFERS)` counts them. *Where you meet it:* comparing how much work two query plans actually did.
+- **Sequential scan**: reading every row of a table in storage order, rather than jumping to specific rows through an index. *Where you meet it:* `EXPLAIN`'s "Seq Scan" line.

@@ -1,0 +1,57 @@
+{
+  "topic": "de.oltp-vs-olap-workload-shapes",
+  "steps": [
+    {
+      "lines": [
+        "Same table, two very different questions.",
+        "Watch how differently each one gets answered."
+      ]
+    },
+    {
+      "lines": [
+        "One order, found by its id, through an index that was already sitting there.",
+        "A handful of pages touched, and it is done before you would notice."
+      ]
+    },
+    {
+      "lines": [
+        "Now ask for a total instead, across every single row.",
+        "The index cannot help with that, so the engine has to walk the entire table."
+      ]
+    },
+    {
+      "lines": [
+        "That total only actually needs one column out of the six this table has.",
+        "So does the engine get to skip the other five, or does it read them anyway?"
+      ],
+      "answer": [
+        "It reads them anyway. A row's columns sit packed together in the same block on disk.",
+        "There is no way to grab just one column's bytes without pulling the whole row along with it."
+      ]
+    },
+    {
+      "lines": [
+        "Here is exactly how little of each row that one column really is.",
+        "And none of that waste is a bug. It is just what storing by row means."
+      ]
+    },
+    {
+      "lines": [
+        "Flip the storage around, column by column instead of row by row, and the waste disappears.",
+        "Needing five columns out of a hundred now means reading roughly five percent of the table."
+      ]
+    },
+    {
+      "lines": [
+        "Splitting data into small tables is exactly what makes independent transactions cheap and safe.",
+        "That same split is also what forces a big aggregate query to stitch everything back together first."
+      ]
+    },
+    {
+      "lines": [
+        "Few rows, read whole, for point work. Few columns, read whole, for scans.",
+        "Carry that forward, because the next refresher names the relationships underneath both of them."
+      ]
+    }
+  ]
+}

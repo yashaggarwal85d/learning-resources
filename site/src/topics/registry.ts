@@ -1270,4 +1270,24 @@ export const TOPICS: TopicMeta[] = [
     handoff:
       "The conceptual level fixed business entities; the physical level fixed engine-specific layout. Next: the two workload shapes, OLTP and OLAP, that pull physical-level decisions in opposite directions for the exact same conceptual model.",
   },
+  {
+    id: 'de.oltp-vs-olap-workload-shapes',
+    domain: 'data-engineering',
+    slug: 'data-engineering/m1-foundations/ch03-data-modeling-analytical/oltp-vs-olap-workload-shapes',
+    title: 'OLTP vs OLAP workload shapes',
+    syllabusTitle: 'OLTP vs OLAP workload shapes',
+    kind: 'refresher',
+    status: 'live',
+    milestone: { number: 1, title: 'Foundations' },
+    chapter: { number: 3, title: 'Data modeling and analytical architecture', section: '3.1' },
+    minutes: 5,
+    verified: '2026-10-22',
+    introduces: ['oltp-vs-olap-shape'],
+    uses: ['conceptual-logical-physical-split'],
+    declared: ['sql-select'],
+    bridge:
+      "The conceptual level fixed business entities; the physical level fixed engine-specific layout. This topic is the clearest case of that: the same business entities, physically laid out two completely different ways, for two different workloads.",
+    handoff:
+      "Point reads and large scans pull physical layout in opposite directions, but both still need the same underlying relationships named precisely. Next: the notation — ER diagrams and cardinality — that names those relationships the same way regardless of which workload ends up reading them.",
+  },
 ];
