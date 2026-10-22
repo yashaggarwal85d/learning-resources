@@ -1,0 +1,85 @@
+{
+  "topic": "dsa.ring-buffers-bounded-queues",
+  "steps": [
+    {
+      "lines": [
+        "Every structure so far in this chapter eventually had to answer the question: what happens when you run out of room?",
+        "This one refuses to ask it. Watch the shape on screen: a closed loop, not a line that can be extended. There is no far end to reach.",
+        "That refusal is not a limitation bolted on afterward. It's the entire design, chosen on purpose, and it's what buys everything else this topic covers."
+      ]
+    },
+    {
+      "lines": [
+        "So how do you keep writing into something that never gets bigger? You walk back to the start.",
+        "Follow the two markers going around the circle. One marks where the next read will come from, the other where the next write will land.",
+        "Neither one ever runs off the edge, because the edge simply isn't there: once a marker reaches the last slot, the very next step takes it back to the first."
+      ]
+    },
+    {
+      "lines": [
+        "Now, how is that wrap actually computed? The honest answer most people reach for is a remainder: divide the index by the capacity, keep what's left over.",
+        "Here's the part worth slowing down for: a division is one of the most expensive single operations a processor does. Compare a bar of bitwise operations, each one about a single tick of the clock, against a bar of division, which can run into the dozens.",
+        "If the capacity happens to be a power of two, there's a shortcut: chop off everything above the low bits, with a single bitwise comparison. Same wrapped result. A fraction of the cost."
+      ]
+    },
+    {
+      "lines": [
+        "Try it yourself. Capacity sixteen, the write marker currently sitting at position eleven. Five more writes land, one after another.",
+        "Where does the marker end up, and what operation actually gets it there?"
+      ],
+      "answer": [
+        "Eleven plus five is sixteen, and sixteen is exactly one full lap past where you started counting, so the marker lands back at position zero.",
+        "The operation that gets it there isn't a division at all. It's a single bitwise trim against capacity minus one, because capacity is a power of two.",
+        "Hold onto that number, zero. It's about to cause a problem."
+      ]
+    },
+    {
+      "lines": [
+        "Here's the problem the last step was setting up: watch both markers land on the exact same slot.",
+        "Ask yourself honestly which situation you're looking at. Is the ring completely empty, having never been touched? Or is it completely full, having wrapped all the way around? From the two marker positions alone, you genuinely cannot tell. Both situations look identical on screen."
+      ]
+    },
+    {
+      "lines": [
+        "The fix is to stop trimming the markers down to size so early.",
+        "Let them climb forever, uncapped, every single write and read nudging one of them up by exactly one, no wraparound at all. Only at the last possible moment, when a marker actually needs to touch a slot in memory, do you trim it down.",
+        { "beat": 0.3 },
+        "Now the gap between the two uncapped markers is the honest count of what's stored, and it tells empty from full without any ambiguity at all.",
+        "Two other fixes exist too, each paying a different price: give up one slot of capacity forever, or carry a separate counter and update it on every single operation."
+      ]
+    },
+    {
+      "lines": [
+        "Suppose the ring is completely full and one more write shows up anyway. What now?",
+        "This is a choice, and it has nothing to do with the marker arithmetic you just watched. One answer: let the newest write bump out whichever entry has been sitting there longest. A second answer: refuse the write outright, and make it wait."
+      ]
+    },
+    {
+      "lines": [
+        "A ring of recent readings, completely full, tracking only the latest few values anyone actually cares about. One more reading comes in.",
+        "What happens to it, and does a ring that refuses to lose data handle it the same way?"
+      ],
+      "answer": [
+        "The oldest reading is simply gone, replaced. The newest one takes its slot, and nobody ever asked for it back, because keeping only the latest handful was the entire point of this particular ring.",
+        "A ring built around never losing anything would not make that trade at all. That write would instead sit and wait, exactly as long as it takes for the oldest reading to finally be consumed and make room.",
+        "Same full ring, same extra write arriving — two entirely different outcomes, depending on which promise the ring was built to keep."
+      ]
+    },
+    {
+      "lines": [
+        "Here's where the refusal to make room stops being just an implementation detail and starts shaping the behavior of an entire system.",
+        "A structure that waits instead of losing data hands something back to whoever's producing faster than it's being consumed: a wait. Not a crash, not silent data loss — a forced pause, exactly as long as it takes the slower side to catch up.",
+        { "beat": 0.3 },
+        "Compare that to a structure that just keeps making room for more. It never forces that pause, which sounds generous right up until it quietly runs out of room to make — at the worst possible moment, under the worst possible load."
+      ]
+    },
+    {
+      "lines": [
+        "Time to find out whether any of this holds up outside of an argument on a board.",
+        "The timing you're looking at didn't come from a textbook figure plugged into a slide — it came out of a real program, compiled and run, with the capacity handed in as an argument specifically so the compiler couldn't quietly perform the shortcut on your behalf.",
+        { "beat": 0.3 },
+        "Every capacity tested lands the same way: the bitwise version wins, and wins by a wide, consistent margin. That's not a coincidence of one lucky run. It's the exact gap this whole topic has been pointing at, measured instead of merely asserted."
+      ]
+    }
+  ]
+}

@@ -1,0 +1,24 @@
+import Resource from '../../../../../components/Resource.astro';
+
+<section class="prereq" data-section="before-this">
+
+### <span class="n">01</span> Before this: a dimension assumed to be correct and on time
+
+<ul class="resources">
+  <Resource kind="reel" title="SCD Type 2 implementation" domain="data-engineering" host="de.scd-type-2-implementation" by="earlier in this chapter" />
+  <Resource kind="reel" title="SCD types 0–7 and selection" domain="data-engineering" host="de.scd-types-0-7" by="the topic right before this one" />
+</ul>
+
+</section>
+
+<section class="prereq" data-section="late-arriving">
+
+### <span class="n">02</span> Late-arriving data, straight from the source
+
+<ul class="resources">
+  <Resource kind="reading" title="Late Arriving Dimension" href="https://www.kimballgroup.com/data-warehouse-business-intelligence-resources/kimball-techniques/dimensional-modeling-techniques/late-arriving-dimension/" by="Kimball Group">A placeholder row, resolved with a Type 1 overwrite.</Resource>
+  <Resource kind="reading" title="Late Arriving Fact" href="https://www.kimballgroup.com/data-warehouse-business-intelligence-resources/kimball-techniques/dimensional-modeling-techniques/late-arriving-fact/" by="Kimball Group">Search for the keys effective when the event occurred.</Resource>
+  <Resource kind="reading" title="Beam Programming Guide" href="https://beam.apache.org/documentation/programming-guide/" by="Apache Beam">Watermarks and late data: allowed lateness, a named bounded horizon.</Resource>
+</ul>
+
+</section>

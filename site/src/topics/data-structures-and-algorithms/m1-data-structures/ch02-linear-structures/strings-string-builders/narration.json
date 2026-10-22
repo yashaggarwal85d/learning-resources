@@ -1,0 +1,77 @@
+{
+  "topic": "dsa.strings-string-builders",
+  "steps": [
+    {
+      "lines": [
+        "Every structure you've met this chapter, you could point at a slot and say exactly where it sits, no extra work required.",
+        "A string quietly breaks that promise. It still looks like one simple row of characters on the page, but what's actually stored underneath doesn't have to match what you're reading at all.",
+        "By the end of this one, you'll see three separate costs hiding inside something that looks like plain text, and all three trace straight back to ideas this chapter already built."
+      ]
+    },
+    {
+      "lines": [
+        "Here's a habit worth examining: when a line like this one runs, nothing about the original string actually changes.",
+        "Picture two separate boxes sitting side by side, not one box getting new contents. The old box stays exactly as it was, and some other part of your program might still be holding onto it.",
+        "That guarantee, that nobody can quietly rewrite what you're holding, is why a string can safely sit as a key in a lookup table. Its identity can never shift out from under you."
+      ]
+    },
+    {
+      "lines": [
+        "Watch the size of each discarded buffer as this loop runs. It isn't growing by one piece each time; look at how much wider every new one gets.",
+        "Each piece you add makes the next copy more expensive, because that copy has to drag along everything built so far, not just the new piece.",
+        "Add that up across the whole loop, and the total grows like the piece count multiplied by itself, not like the piece count alone."
+      ]
+    },
+    {
+      "lines": [
+        "Before you choose, notice what isn't an option here: an immutable string can't simply get smarter about this loop. Immutable means it never changes after it's made, full stop.",
+        "So whatever fixes this has to live somewhere else entirely, in a different kind of object with a different set of rules.",
+        "Which choice actually hands you that different object?"
+      ],
+      "answer": [
+        "A bigger starting string sounds reasonable, but think through what it would need: filling in an immutable string after it already exists, which it refuses to do by definition.",
+        "The real fix is a second, genuinely mutable object that does the collecting. You only pay the immutable-string cost once, right at the very end."
+      ]
+    },
+    {
+      "lines": [
+        "That mutable collector already has a name, and you've essentially met its trick before.",
+        "Give it a little spare room, and when that runs out, double the room instead of growing it by one slot. That's the exact same policy a growing array used, several topics back, under a different name.",
+        "Nothing new gets proven here. This is topic one's own result, wearing a different costume."
+      ]
+    },
+    {
+      "lines": [
+        "Look closely at the widths of these cells. They're not all equal, even though each one holds exactly one character.",
+        "A single character can cost anywhere from one byte up to four, and which width you land on depends entirely on which character it is. Plain English text barely notices; many other scripts, and most emoji, pay more.",
+        "That one design choice is the reason the rest of this topic has to exist at all."
+      ]
+    },
+    {
+      "lines": [
+        "Grabbing a single byte at a known position never has to inspect anything else. It jumps straight there.",
+        "Now ask the harder question: if you want the fifth character rather than the fifth byte, does the computer get to jump the same way?",
+        "Think about what it would need to already know before you pick an answer."
+      ],
+      "answer": [
+        "It would need to know exactly how wide every character before the fifth one turned out to be, and the only way to learn that is to walk through and decode them, one at a time.",
+        "Jumping to a byte and jumping to a character are not the same operation, even though they look identical when every character happens to be exactly one byte wide."
+      ]
+    },
+    {
+      "lines": [
+        "Two real languages looked at this same problem and made opposite bets.",
+        "One hands you the byte directly and instantly, and only decodes characters when you explicitly ask it to walk through them one at a time, slower, but only when you asked for it.",
+        "The other refuses to let you index by character at all, and even its fast byte-based shortcut will stop your program outright if you slice it in the wrong spot.",
+        "Neither choice is a mistake. Each one is simply honest about which promise it's willing to keep."
+      ]
+    },
+    {
+      "lines": [
+        "None of this is a story about one slow machine. It's a shape, and shapes only become obvious once you measure across a wide enough range of sizes.",
+        "Watch the naive approach's bar as the input doubles. It doesn't just get a little longer; it roughly quadruples.",
+        "Now watch the collector's bar at inputs a hundred times as large. It only roughly doubles. That gap between quadrupling and doubling is the whole quadratic-versus-linear story, measured, not assumed."
+      ]
+    }
+  ]
+}
