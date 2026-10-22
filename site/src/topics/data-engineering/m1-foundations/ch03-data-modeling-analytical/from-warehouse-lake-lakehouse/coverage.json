@@ -1,0 +1,48 @@
+{
+  "topic": "de.from-warehouse-lake-lakehouse",
+  "syllabus": [
+    { "clause": "coupled MPP columnar warehouses", "at": [{ "step": "One box owns the storage and the compute" }, { "step": "Reveal: the first generation, quoted directly" }] },
+    { "clause": "cheap schema-on-read lakes without transactions (the \"swamp\")", "at": [{ "step": "Predict: does splitting storage from compute cleanly solve the cost problem?" }, { "step": "Reveal: the second generation, quoted directly" }, { "step": "Reveal: the swamp risk, quoted directly" }, { "step": "Reveal: the two-tier architecture, quoted directly" }] },
+    { "clause": "open table formats + catalogs + many engines over object storage", "at": [{ "step": "Predict: can an open table format give the lake transactions back without recoupling it to one engine?" }, { "step": "Reveal: the lakehouse, quoted directly" }] },
+    { "clause": "(internals in Ch.6)", "at": [{ "deep": "Internals: how a transaction happens over files with no native transaction support" }] },
+    { "clause": "what each still does best", "at": [{ "step": "Reveal: one capability, three stages" }, { "step": "Recap" }, { "step": "Prove it" }] }
+  ],
+  "sources": [
+    {
+      "source": "Armbrust, Ghodsi, Xin, Zaharia, \"Lakehouse\" (CIDR 2021)",
+      "items": [
+        { "item": "The first generation of data analytics platforms coupled compute and storage into one appliance", "at": [{ "step": "Reveal: the first generation, quoted directly" }] },
+        { "item": "The second generation offloaded raw data into low-cost, open-format, schema-on-read data lakes, with a downstream warehouse still serving the important BI", "at": [{ "step": "Reveal: the second generation, quoted directly" }] },
+        { "item": "Cloud object storage (S3, ADLS, GCS) started replacing HDFS from 2015 onward", "at": [{ "step": "Reveal: the two-tier architecture, quoted directly" }] },
+        { "item": "The two-tier data lake plus warehouse architecture is dominant in industry, used at virtually all Fortune 500 enterprises", "at": [{ "step": "Reveal: the two-tier architecture, quoted directly" }] },
+        { "item": "Delta Lake and Apache Iceberg provide transactional views of a data lake and enable management features back", "at": [{ "step": "Reveal: the lakehouse, quoted directly" }] }
+      ]
+    },
+    {
+      "source": "Databricks, \"Introduction to Data Lakes\"",
+      "items": [
+        { "item": "Data lakes lack transactions, data-quality or governance enforcement, and performance optimizations by default", "at": [{ "step": "Reveal: the swamp risk, quoted directly" }] },
+        { "item": "Most enterprise data lakes became known as data swamps as a result of that gap", "at": [{ "step": "Reveal: the swamp risk, quoted directly" }] }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "Claude (single session, written from the syllabus line and the fetched sources before storyboarding; not independent of the builder, so a later owner review should repeat it)",
+    "date": "2026-10-22",
+    "items": [
+      { "item": "The first predict (step 3) is red-teamed against the plausible wrong answer that cheaper object storage alone solves the warehouse's cost problem; the reveal path (steps 4-6) shows what a lake gives up to get that cost down, resolving the predict before the swamp risk is even named", "at": [{ "step": "Predict: does splitting storage from compute cleanly solve the cost problem?" }] },
+      { "item": "The swamp risk is quoted directly from Databricks' own glossary, not framed as a hostile outside critique of lakes, which keeps the topic from overstating or understating a real, well documented failure mode", "at": [{ "step": "Reveal: the swamp risk, quoted directly" }] },
+      { "item": "The second predict (step 7) is red-teamed against the plausible wrong answer that the lake-plus-warehouse shape is strictly simpler because it is the newer, dominant architecture; the reveal distinguishes 'dominant' from 'fewer steps' by counting the actual load stages", "at": [{ "step": "Predict: does the two-tier architecture need more or fewer pipeline steps than the first generation?" }] },
+      { "item": "The pipeline-step count (step 8) is explicitly disclosed, in examples.py and in the reveal itself, as this topic's own count derived from the paper's description of the two architectures, not a number the paper states outright — the claim is the shape (an added stop), not a quoted statistic", "at": [{ "step": "Reveal: the step count, by this topic's own account" }] },
+      { "item": "The third predict (step 9) is red-teamed against the plausible wrong answer that transactions always require one owning engine, the intuition a reader would carry over directly from the first generation's warehouse; the reveal shows the mechanism (a transactional layer over otherwise open files) rather than asserting the conclusion alone", "at": [{ "step": "Predict: can an open table format give the lake transactions back without recoupling it to one engine?" }] },
+      { "item": "The lakehouse reveal (step 10) names both Delta Lake and Apache Iceberg, matching the paper's own wording ('a recent family of systems such as'), rather than treating either one alone as the definition of a lakehouse", "at": [{ "step": "Reveal: the lakehouse, quoted directly" }] },
+      { "item": "The running thread (one capability, three stages, by a different mechanism each time) is stated explicitly at step 11 and is the spine the whole topic is organized around, not a label applied after the fact; it is also what distinguishes this topic from a flat 'history of three architectures' retelling", "at": [{ "step": "Reveal: one capability, three stages" }] },
+      { "item": "The internals of how Delta Lake and Iceberg actually implement transactions over files with no native transaction support (a commit log, an atomic pointer swap) are deliberately deferred to post-notes and to Chapter 6, not claimed here beyond what the direct quote supports — the reel never asserts a mechanism it hasn't sourced", "at": [{ "step": "Reveal: the lakehouse, quoted directly" }] },
+      { "item": "The closing check (Prove it) is a genuinely new scenario, not a restatement of any reveal: a one-off dashboard with no multi-engine requirement, which tests whether the learner understands that the lakehouse's extra machinery earns its keep only when multiple engines actually need the same data, not that it is unconditionally the best choice", "at": [{ "step": "Prove it" }] },
+      { "item": "The bridge from the previous section (dimensional modeling assumed the warehouse's physical home was already settled) and the handoff to the next topic (object storage economics drove every stage of this history) are both taken verbatim from CHAPTER.md and checked against this topic's own content before being used, rather than invented fresh", "at": [{ "step": "One box owns the storage and the compute" }] },
+      { "item": "Every quote used for a Reveal step traces to a word-for-word match verified by scripts/sources.mjs against the two fetched source files, not a paraphrase presented as a quote; only claim 5's step count is explicitly marked as this topic's own derivation rather than a quote", "at": [{ "step": "Reveal: the first generation, quoted directly" }, { "step": "Reveal: the second generation, quoted directly" }, { "step": "Reveal: the swamp risk, quoted directly" }, { "step": "Reveal: the two-tier architecture, quoted directly" }, { "step": "Reveal: the lakehouse, quoted directly" }] },
+      { "item": "A third candidate source (Stonebraker's CACM \"data lake is a data swamp\" post) could not be fetched (a 403 on the live page and a 404 on an archived path) and was deliberately not forced in; the Databricks glossary's own swamp quote covers the same claim without requiring an unverifiable source", "at": [{ "step": "Reveal: the swamp risk, quoted directly" }] }
+    ]
+  },
+  "gapReview": { "date": "2026-10-22", "by": "Claude (single session)", "open": [] }
+}
