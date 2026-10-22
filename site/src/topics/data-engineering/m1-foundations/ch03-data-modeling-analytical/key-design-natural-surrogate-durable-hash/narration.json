@@ -1,0 +1,112 @@
+{
+  "topic": "de.key-design-natural-surrogate-durable-hash",
+  "steps": [
+    {
+      "lines": [
+        "Watch what one ordinary event does to two schemas built around the same email address.",
+        "One of them simply refuses the change. The other barely notices."
+      ]
+    },
+    {
+      "lines": [
+        "Suppose that email address is the key, referenced everywhere a customer's orders live.",
+        "She changes it. What happens to every row that pointed at the old value?"
+      ],
+      "answer": [
+        "Either the database blocks the update outright, or every one of those references has to be rewritten at once.",
+        "Nothing updates itself quietly in the background."
+      ]
+    },
+    {
+      "lines": [
+        "Here is that refusal, happening for real, not described.",
+        "An order still points at the email about to change, so the database stops the update cold."
+      ]
+    },
+    {
+      "lines": [
+        "Now swap in a separate, meaningless id for the same job.",
+        "The email changes in one row, and every order still finds its way back, because nothing it relies on moved."
+      ]
+    },
+    {
+      "lines": [
+        "That is the whole difference between these two kinds of key.",
+        "One borrows meaning from the business and inherits its instability. The other has no meaning to lose."
+      ]
+    },
+    {
+      "lines": [
+        "Now picture several writers, in different places, generating rows with nobody coordinating between them.",
+        "Can a plain increasing counter still do the job?"
+      ],
+      "answer": [
+        "Not safely. A counter like that lives in one place, and every writer needs to ask it for the next number.",
+        "That round trip is exactly the coordination a spread-out pipeline is trying to avoid."
+      ]
+    },
+    {
+      "lines": [
+        "The documentation for that counter admits as much, in its own words.",
+        "A value it hands out is never undone, so it can't promise no gaps, and letting it hand out several at once breaks the strict order across writers entirely."
+      ]
+    },
+    {
+      "lines": [
+        "So three ways of generating a key were timed against each other, inserting into a table that already had its index built.",
+        "The counter came out fastest every time. The time-ordered random id came next. The fully random one was slowest."
+      ]
+    },
+    {
+      "lines": [
+        "Then the shape of each index itself was inspected directly, after all that inserting.",
+        "The counter and the time-ordered id both kept their index tight and full. The fully random one left it visibly emptier, spread across more pages for the same number of rows."
+      ]
+    },
+    {
+      "lines": [
+        "Here is why the time-ordered one keeps that tightness.",
+        "Its leading bits are a timestamp, so two ids made moments apart share that whole beginning, and land near each other in the index almost by construction."
+      ]
+    },
+    {
+      "lines": [
+        "One more distinction, worth having ready before it matters later in this chapter.",
+        "When a row gets versioned over time, something about it has to stay the same across every version, even while its own identifier changes with each one."
+      ]
+    },
+    {
+      "lines": [
+        "One pattern hashes a business attribute instead of generating a fresh id for it.",
+        "Is a collision there something to actually worry about, or just a line to mention and move past?"
+      ],
+      "answer": [
+        "It depends entirely on how wide that hash is.",
+        "A wide one is safe by an enormous margin. A narrow one, trimmed down to save space, is not."
+      ]
+    },
+    {
+      "lines": [
+        "Here is that dependence, worked out properly instead of waved at.",
+        "A narrow hash reaches even odds of a collision after surprisingly few values. A mid-sized one still carries a real risk once a pipeline grows large. A genuinely wide one does not, by an enormous margin."
+      ]
+    },
+    {
+      "lines": [
+        "One key that borrows meaning breaks when that meaning changes. One that doesn't, absorbs it.",
+        "A single counter is fastest but needs one coordinator. The time-ordered id gets most of that speed without one. The fully random id gives up tightness entirely for no coordination at all.",
+        "And a hash's safety is a number you can check against your own scale, not a feeling."
+      ]
+    },
+    {
+      "lines": [
+        "One last question before moving on.",
+        "Several writers, nobody coordinating, and the key still has to land close to where it was inserted in the index. Which of today's options actually does both?"
+      ],
+      "answer": [
+        "The time-ordered random id.",
+        "Nothing coordinates it, and its own leading bits are exactly what keeps it landing close together."
+      ]
+    }
+  ]
+}

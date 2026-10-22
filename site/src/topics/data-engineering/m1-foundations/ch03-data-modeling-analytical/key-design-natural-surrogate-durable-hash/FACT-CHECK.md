@@ -1,0 +1,20 @@
+# Fact-check — key design: natural, surrogate, durable, hash
+
+| # | Claim | Status |
+|---|---|---|
+| 1 | `nextval`/`setval` calls are never rolled back, so gapless sequence assignment isn't available from a sequence object. | Confirmed, quoted directly (PostgreSQL docs, CREATE SEQUENCE). |
+| 2 | A `CACHE` setting greater than one means multiple sessions' `nextval` values are only guaranteed distinct, not purely sequential across sessions. | Confirmed, quoted directly (same source). |
+| 3 | `gen_random_uuid()`/`uuidv4()` generates a version 4 (random) UUID; `uuidv7()` generates a version 7 (time-ordered) UUID from a millisecond Unix timestamp plus randomness. | Confirmed, quoted directly (PostgreSQL docs, UUID Functions). |
+| 4 | UUID versions that are not time-ordered (UUIDv4) have poor database-index locality: successive values land at random index locations, which can dramatically hurt B-tree performance. | Confirmed, quoted directly (RFC 9562 §"Motivation"). |
+| 5 | Auto-increment schemes don't work well in distributed applications because coordinating sequential numeric identifiers across a network is a burden. | Confirmed, quoted directly (RFC 9562, same section). |
+| 6 | UUIDv7 places a 48-bit Unix millisecond timestamp in the most significant bits, with the remaining 74 bits (excluding version/variant) filled with randomness. | Confirmed, quoted directly (RFC 9562 §5.7, bit-layout figure and field table). |
+| 7 | UUIDv4-style random UUIDs reserve 122 bits for implementation-specific (random) content once version/variant bits are set aside. | Confirmed, quoted directly (RFC 9562 §5.4). |
+| 8 | A natural key (here, `customer_email` as primary/foreign key) blocks an ordinary update when referenced rows exist, unless the FK is set to cascade. | Measured directly: real `UPDATE ... customer_email` on a PostgreSQL FK-constrained pair raised the actual FK-violation error shown in `examples.py`'s comment. |
+| 9 | A surrogate key (`customer_id`) absorbs the same email-change event without disturbing any referencing row. | Measured directly: the same event against a surrogate-keyed pair succeeded with `UPDATE 1`, and all 3 orders still resolved by `customer_id`. |
+| 10 | A sequence generates values faster than UUIDv7, which generates faster than UUIDv4, for bulk inserts into a table with a pre-built index. | Measured directly: 100,000-row inserts, PostgreSQL 18.6 — 221.9ms / 347.4ms / 444.3ms respectively (`examples.py`). |
+| 11 | A sequence-keyed and a UUIDv7-keyed index keep nearly identical leaf-page density after the same bulk insert; a UUIDv4-keyed index is measurably more bloated (lower density, more leaf pages for the same row count). | Measured directly: `pgstatindex()` on the three tables above — 89.78% / 89.79% / 65.52% leaf density (`examples.py`). |
+| 12 | Two UUIDv7 values generated back-to-back share a long leading substring (the shared millisecond timestamp); a `gen_random_uuid()` value alongside them shares no such prefix. | Measured directly on this sandbox (PostgreSQL 18.6, port 5433); see SOURCES.md's "Measured directly" section. |
+| 13 | A durable key (stable across every SCD2 version of a dimension row) and a surrogate key (changes per version) solve different problems — previewed here, not built out (topic 13 owns SCD2 itself). | Reasoned, not independently sourced here: this is a forward reference per CHAPTER.md's own handoff note, not a claim needing its own citation in this topic. |
+| 14 | A 32-bit hash key reaches 50% collision odds under 100,000 generated values; a 64-bit hash key still carries a non-trivial (several-percent) collision risk at a billion rows; a full 128-bit hash (e.g., MD5, as used for Data Vault hash keys) does not, by many orders of magnitude. | Computed directly by the standard birthday-bound formula in `examples.py` (`birthday_n_for_p`, `collision_probability`) — a real calculation, not an assertion. |
+
+No claim in this topic is left as an unverified assumption: every quoted claim traces to PostgreSQL's own docs or RFC 9562's own text, and every numeric claim is either measured on this sandbox or computed by a stated, checkable formula.
