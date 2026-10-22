@@ -1,0 +1,81 @@
+{
+  "topic": "rust.aliasing-xor-mutability",
+  "note": "Written to be spoken: one sentence or phrase per line; {\"beat\": s} is a deliberate pause; numbers and codes are said the way a person would say them, never shown as digits. `answer` plays after the learner answers a predict step.",
+  "steps": [
+    {
+      "lines": [
+        "Here is the rule every borrow in the last chapter was quietly obeying. A place in memory may be read by as many borrows as you like at once, or written to by exactly one, but never both at the same time.",
+        { "beat": 0.3 },
+        "Notice the exact shape of the ban. It is not simply mutable versus immutable. It is about overlap: nothing else may be looking while one borrow is writing."
+      ]
+    },
+    {
+      "lines": [
+        "Picture two threads each holding what they believe is exclusive access to the same value. That is the textbook shape of a data race, and borrowed code refuses to let it exist.",
+        "You already met a looser version of this same promise: a lock, which enforces the identical exclusivity, only while the program is running instead of before it starts."
+      ]
+    },
+    {
+      "lines": [
+        "Look at this small function. It checks one value twice, and depending on what it finds, it can write a second value up to twice as well.",
+        "A clever compiler would rather check once and write once. Before you see that shortcut, answer one question for yourself.",
+        { "beat": 0.3 },
+        "If the two parameters secretly pointed at the same place, could that shortcut ever land on a different answer than the careful version?"
+      ],
+      "answer": [
+        "Yes, and here is exactly when. Once the first value climbs high enough, the careful version's own write also changes the very value it is about to check next, so it stops one step earlier than the shortcut does.",
+        "The shortcut never sees that interference, so it always lands on the same result. The two versions disagree precisely when the parameters overlap.",
+        "The whole point of what comes next is that this disagreement can never actually happen, because the overlapping call is the one input the language refuses to let you write."
+      ]
+    },
+    {
+      "lines": [
+        "Try to pass the same variable as both the readable argument and the writable one, and the compiler stops you before the optimizer's part of the job even begins.",
+        "It is not warning you that the shortcut is risky here. It is telling you the dangerous input was never going to exist in the first place."
+      ]
+    },
+    {
+      "lines": [
+        "Ask the compiler to show you what it produced under optimization, and you can read its promise directly in the output. Each reference parameter carries a tag that means no other pointer touches this memory for the whole call.",
+        "Hand it two raw addresses doing the identical arithmetic instead, and that tag disappears, because nothing about a raw address's type makes the same promise on its own."
+      ]
+    },
+    {
+      "lines": [
+        "Hand the same exclusive reference to a function twice in a row, and it still compiles, which looks at first glance like two overlapping claims on one binding.",
+        "What actually happens is subtler. Each call borrows a shorter claim from the original reference and hands it back the moment the call ends, so the original is free again for the very next call."
+      ]
+    },
+    {
+      "lines": [
+        "Here is a line that trips up beginners constantly. A method that needs exclusive access to a list is also handed an argument that reads that very same list's length.",
+        { "beat": 0.3 },
+        "Does the compiler accept it?"
+      ],
+      "answer": [
+        "It compiles cleanly, and has for years across every edition.",
+        "The reason is the next step: the exclusive claim that method is about to take doesn't actually start out exclusive."
+      ]
+    },
+    {
+      "lines": [
+        "The exclusive claim push is about to take begins life in a softer state. While it is only reserved, it behaves exactly like an ordinary shared borrow, so reading the list's length right beside it causes no conflict at all.",
+        "Only once the call itself actually happens does that reservation harden into a true, fully exclusive claim. The opening rule never relaxed; it is simply applied one instant later than you might expect."
+      ]
+    },
+    {
+      "lines": [
+        "Now try to stretch that softer phase too far, by keeping a borrow alive past the point where the reservation hardens, and the compiler catches it anyway.",
+        "That is the detail worth keeping: the softer phase is a genuine exception to when exclusivity begins, never an exception to whether the rule still applies."
+      ]
+    },
+    {
+      "lines": [
+        "So: many readers, or one writer, never together. That single promise is what keeps two threads from racing, and it is the very fact the optimizer leans on whenever it reorders work or drops a needless read.",
+        "A reborrow lends from an exclusive reference without ever taking it away. A reserved claim is a shared borrow wearing a disguise, right up until the instant it is used.",
+        { "beat": 0.3 },
+        "One question is still wide open: the rule says how many borrows, and of what kind. It never said how long any of them are allowed to last."
+      ]
+    }
+  ]
+}

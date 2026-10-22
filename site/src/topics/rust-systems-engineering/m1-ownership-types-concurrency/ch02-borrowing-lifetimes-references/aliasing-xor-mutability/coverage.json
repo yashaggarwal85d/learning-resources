@@ -1,0 +1,57 @@
+{
+  "topic": "rust.aliasing-xor-mutability",
+  "syllabus": [
+    { "clause": "many &T or exactly one &mut T, never both", "at": [{ "step": "Two readers or one writer, never both" }] },
+    { "clause": "This rule gives data-race freedom", "at": [{ "step": "What the rule buys: no two threads both holding the pen" }] },
+    { "clause": "and the noalias facts the optimizer relies on (→ Ch.38)", "at": [{ "step": "A function the compiler wants to shrink" }, { "step": "compute(&x, &mut x) does not compile" }, { "step": "The optimizer is told, not just lucky" }, { "deep": "Where this goes next" }] },
+    { "clause": "Reborrowing (&mut x, implicit reborrows at call sites)", "at": [{ "step": "Lending from a mutable reference without losing it" }] },
+    { "clause": "two-phase borrows (v.push(v.len()))", "at": [{ "step": "Does v.push(v.len()) compile?" }, { "step": "Reserved, then activated" }, { "step": "A reservation still is not a free pass" }] }
+  ],
+  "sources": [
+    {
+      "source": "nomicon-aliasing",
+      "items": [
+        { "item": "The working definition of aliasing (overlapping regions of memory)", "at": [{ "step": "Two readers or one writer, never both" }] },
+        { "item": "The compute()/compute(&x,&mut x) example and why the optimization relies on the rule", "at": [{ "step": "A function the compiler wants to shrink" }, { "step": "compute(&x, &mut x) does not compile" }] },
+        { "item": "The four classes of alias-dependent optimization (register-caching reads, eliminating dead reads, eliminating dead writes, reordering)", "at": [{ "deep": "Internals: noalias and LLVM" }] },
+        { "item": "Writes as the primary hazard for optimizations", "at": [{ "deep": "Internals: noalias and LLVM" }] },
+        { "item": "The caveat that a full aliasing model also needs function calls, raw pointers and UnsafeCell", "at": [{ "deep": "Frontier" }] }
+      ]
+    },
+    {
+      "source": "reference-pointer-types",
+      "items": [
+        { "item": "Shared references: any number may exist, Copy, prevent direct mutation modulo interior mutability", "at": [{ "step": "Two readers or one writer, never both" }] },
+        { "item": "Exclusive references: the sole access path while unborrowed, not Copy", "at": [{ "step": "Two readers or one writer, never both" }] },
+        { "item": "Interior mutability as the named exception to 'a shared reference prevents direct mutation'", "at": [{ "out": "Cell/RefCell/UnsafeCell are taught fully by a later Chapter 4 topic on interior mutability; named in post-notes only as the boundary of this topic's rule." }] },
+        { "item": "Raw pointers have no aliasing requirements of their own; reborrowing via &*/&mut * converts one to a reference", "at": [{ "out": "Raw pointers and unsafe code are Ch.11's topic; mentioned in post-notes only as where the checked rule stops applying." }] }
+      ]
+    },
+    {
+      "source": "rfc-2025-two-phase-borrows",
+      "items": [
+        { "item": "The reservation/activation two-phase model, limited to desugared method calls", "at": [{ "step": "Reserved, then activated" }] },
+        { "item": "The v.push(v.len()) motivating example and its MIR desugaring", "at": [{ "step": "Does v.push(v.len()) compile?" }, { "step": "Reserved, then activated" }] },
+        { "item": "A reservation behaves exactly like a shared borrow", "at": [{ "step": "Reserved, then activated" }] },
+        { "item": "The activation-point check and the rejected 'sneaky' example", "at": [{ "step": "A reservation still is not a free pass" }] }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "self-review",
+    "date": "2026-10-22",
+    "items": [
+      { "item": "State the rule as banning overlap between a write and anything else, not merely 'one mutable xor many immutable'", "at": [{ "step": "Two readers or one writer, never both" }] },
+      { "item": "Two threads both holding &mut to the same place is the compile-time version of the run-time exclusivity a Mutex gives", "at": [{ "step": "What the rule buys: no two threads both holding the pen" }] },
+      { "item": "noalias is an LLVM attribute the compiler attaches to &mut (and, with caveats, &) parameters because the aliasing rule guarantees no overlap; a raw-pointer version of the same logic gets no such attribute", "at": [{ "step": "The optimizer is told, not just lucky" }] },
+      { "item": "A reborrow is an implicit shorter &mut taken from an existing &mut at a call site, not a move of the reference", "at": [{ "step": "Lending from a mutable reference without losing it" }] },
+      { "item": "A reservation is a real, checked state, not an informal relaxation: a borrow that spans past activation is still rejected", "at": [{ "step": "A reservation still is not a free pass" }] },
+      { "item": "Two-phase borrows are deliberately limited to desugared method-call receivers, not a general relaxation of the aliasing rule for any &mut", "at": [{ "step": "Reserved, then activated" }] },
+      { "item": "A reborrow's shorter borrow ends no later than the original &mut's own scope; it can never outlive what it was carved from", "at": [{ "step": "Lending from a mutable reference without losing it" }] },
+      { "item": "The rule is checked by the borrow checker at compile time; a Mutex re-creates the same exclusivity guarantee at run time for data the checker can't statically track across threads", "at": [{ "step": "What the rule buys: no two threads both holding the pen" }] },
+      { "item": "Interior mutability types are the one place a shared reference is still allowed to permit mutation, by moving the exclusivity check out of the compiler and into the type's own runtime discipline", "at": [{ "out": "Named only as the rule's boundary; taught in full by a later Chapter 4 topic on interior mutability." }] },
+      { "item": "A reservation behaving like a shared borrow is why multiple ordinary shared reads can coexist with it, but a second attempt at an ordinary exclusive borrow during the same reservation still fails", "at": [{ "step": "Reserved, then activated" }] }
+    ]
+  },
+  "gapReview": { "date": "2026-10-22", "by": "self-review", "open": [] }
+}
