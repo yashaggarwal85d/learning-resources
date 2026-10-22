@@ -1,24 +1,74 @@
 {
   "topic": "dsa.strings-string-builders",
-  "syllabus": [],
-  "sources": [],
+  "syllabus": [
+    { "clause": "immutability", "at": [
+      { "step": "Immutability: every edit is a new string" }
+    ] },
+    { "clause": "quadratic repeated concatenation", "at": [
+      { "step": "The real cost of building one, piece by piece" },
+      { "step": "What actually fixes the loop?" },
+      { "step": "The string builder: topic one's mechanism, applied here" }
+    ] },
+    { "clause": "UTF-8 byte vs code-point indexing costs.", "at": [
+      { "step": "One character, one to four bytes" },
+      { "step": "Is indexing the nth character O(1)?" },
+      { "step": "Two real languages, two real trade-offs" }
+    ] }
+  ],
+  "sources": [
+    {
+      "source": "The Unicode Standard FAQ, UTF-8/16/32 & BOM",
+      "items": [
+        { "item": "each character is represented as a sequence of one to four 8-bit bytes in UTF-8", "at": [{ "step": "One character, one to four bytes" }] },
+        { "item": "a UTF is an algorithmic mapping from every code point to a unique byte sequence", "at": [{ "step": "One character, one to four bytes" }] }
+      ]
+    },
+    {
+      "source": "Python 3 documentation, Glossary — immutable",
+      "items": [
+        { "item": "an immutable object cannot be altered; a new object has to be created to store a different value", "at": [{ "step": "Immutability: every edit is a new string" }] },
+        { "item": "immutable objects are inherently thread-safe and play an important role as dictionary keys needing a constant hash", "at": [{ "step": "Immutability: every edit is a new string" }] }
+      ]
+    },
+    {
+      "source": "Go blog, Strings, bytes, runes and characters in Go",
+      "items": [
+        { "item": "a Go string is in effect a read-only slice of bytes, and indexing it accesses individual bytes, not characters", "at": [{ "step": "Two real languages, two real trade-offs" }] },
+        { "item": "a for range loop decodes one UTF-8-encoded rune per iteration, with the loop index giving the rune's starting byte position", "at": [{ "step": "Two real languages, two real trade-offs" }, { "step": "Is indexing the nth character O(1)?" }] }
+      ]
+    },
+    {
+      "source": "Rust documentation, std::string::String",
+      "items": [
+        { "item": "indexing a str with a single integer does not compile; range-indexing takes byte indices specifically to be constant-time", "at": [{ "step": "Two real languages, two real trade-offs" }] },
+        { "item": "byte-range slicing panics if a boundary does not land on a character boundary", "at": [{ "step": "Two real languages, two real trade-offs" }] }
+      ]
+    },
+    {
+      "source": "Java SE 21 API documentation, java.lang.StringBuilder",
+      "items": [
+        { "item": "a string builder has a capacity; appending within it needs no new buffer, and overflow makes the buffer automatically larger", "at": [{ "step": "The string builder: topic one's mechanism, applied here" }] }
+      ]
+    }
+  ],
   "expert": {
     "by": "self-review",
     "date": "2026-10-22",
     "items": [
-      { "item": "A string's immutability means every apparent in-place edit (concatenation, slicing, case change) actually allocates a brand-new string object and copies into it; the original is untouched.", "at": "step" },
-      { "item": "Immutability is why a string can be used as a dictionary/hash-map key at all in most languages: a mutable key could change its hash after insertion and silently break the hash table's invariant.", "at": "step" },
-      { "item": "Immutability also buys safe sharing: two references to the same string can never observe each other's edits, because there are no edits — this is why interning (sharing one copy of equal strings) is safe for immutable strings but not for mutable ones.", "at": "step" },
-      { "item": "Building a string by looping `s = s + piece` is Θ(k²) for k pieces because each `+` allocates a whole new buffer sized to the current total length and copies everything built so far into it — the same shape as a dynamic array that never pre-reserves and reallocates by exactly 1 element each time, not by doubling.", "at": "step" },
-      { "item": "A string builder (Java's StringBuilder, C#'s StringBuilder, Python's list-of-parts + str.join, C++'s std::string itself via reserve/append) is precisely a dynamic array of bytes/characters with the same doubling-capacity policy as topic 1 — it is not a new mechanism, it is topic 1's mechanism applied to a different element type.", "at": "step" },
-      { "item": "A UTF-8 code point takes between one and four bytes; ASCII code points (U+0000–U+007F) take exactly one byte and are byte-identical to ASCII, which is why UTF-8 can represent all of Unicode while staying backward-compatible with ASCII-only text and tools.", "at": "step" },
-      { "item": "Indexing a UTF-8-encoded string by byte offset is O(1) (it's just array indexing), but indexing by code-point ordinal (\"give me the nth character\") is O(n) in general, because the byte offset of code point n depends on how many of code points 0..n-1 were multi-byte — there is no way to compute it without walking and decoding them.", "at": "step" },
-      { "item": "Go's own design makes this concrete: `s[i]` indexes bytes directly (O(1)), and the only code-point-aware traversal the language gives you, `for range`, is defined to decode one UTF-8 rune per iteration — i.e. it is an O(n) walk by construction, not an optimization that was simply never written.", "at": "step" },
-      { "item": "Rust's design makes the opposite trade-off visible: `str` has no single-integer indexing operator at all (code does not compile), and byte-range slicing panics at runtime if either boundary doesn't land on a UTF-8 character boundary — the language chose to keep slicing O(1) by making it unsafe to use without already knowing where characters start.", "at": "step" },
-      { "item": "A structure that wants O(1) code-point indexing anyway (e.g. Swift's String internals historically, or any design that keeps a side table of code-point-boundary offsets) pays for it elsewhere: either extra memory for the offset table, or a fixed-width internal representation (e.g. always 4 bytes per code point, like UTF-32) that gives up UTF-8's space efficiency.", "at": "step" },
-      { "item": "What a person casually calls \"one character\" can be a grapheme cluster spanning multiple code points (e.g. an emoji plus a skin-tone modifier, or a base letter plus a combining accent) — this topic names that gap once and defers the mechanism entirely; no reel step claims to solve it.", "at": "out", "note": "named once per CHAPTER.md, no mechanism taught" },
-      { "item": "String hashing (turning a string into a fast, well-distributed integer for use as a hash-table key) and string interning (sharing one copy of equal immutable strings) are both deferred whole to Chapter 3, which is this topic's handoff.", "at": "out", "note": "Chapter 3: dsa.practical-hash-functions-hashdos and beyond" }
+      { "item": "a string's immutability means every apparent in-place edit (concatenation, slicing, case change) actually allocates a brand-new string object and copies into it; the original is untouched", "at": [{ "step": "Immutability: every edit is a new string" }] },
+      { "item": "immutability is why a string can be used as a dictionary/hash-map key: a mutable key could change its hash after insertion and silently break the hash table's invariant", "at": [{ "step": "Immutability: every edit is a new string" }] },
+      { "item": "immutability also buys safe sharing between references, since neither can observe an edit the other made, because there are no edits — this is what makes interning equal strings safe", "at": [{ "step": "Immutability: every edit is a new string" }] },
+      { "item": "building a string by looping s = s + piece is Θ(k²) for k pieces because each + allocates a whole new buffer sized to the current total length and copies everything built so far into it — the same shape as a dynamic array that reallocates by exactly one element every time instead of doubling", "at": [{ "step": "The real cost of building one, piece by piece" }] },
+      { "item": "a string builder is precisely a dynamic array of bytes/characters with the same doubling-capacity policy as topic one — not a new mechanism, topic one's mechanism applied to a different element type", "at": [{ "step": "The string builder: topic one's mechanism, applied here" }] },
+      { "item": "a UTF-8 code point takes between one and four bytes; ASCII code points take exactly one byte and are byte-identical to ASCII, which is why UTF-8 stays backward-compatible with ASCII-only text and tools", "at": [{ "step": "One character, one to four bytes" }] },
+      { "item": "indexing a UTF-8-encoded string by byte offset is O(1), but indexing by code-point ordinal is O(n) in general, because the byte offset of code point n depends on how many of code points zero through n minus one were multi-byte", "at": [{ "step": "Is indexing the nth character O(1)?" }] },
+      { "item": "Go's s[i] indexes bytes directly in O(1), and the only code-point-aware traversal the language gives, for range, is defined to decode one UTF-8 rune per iteration — an O(n) walk by construction, not a missed optimization", "at": [{ "step": "Two real languages, two real trade-offs" }] },
+      { "item": "Rust's str has no single-integer indexing operator at all, and byte-range slicing panics at runtime off a character boundary — the language chose to keep slicing O(1) by making it unsafe without already knowing where characters start", "at": [{ "step": "Two real languages, two real trade-offs" }] },
+      { "item": "a structure that wants O(1) code-point indexing anyway pays for it elsewhere: a side table of code-point-boundary offsets, or a fixed-width internal representation that gives up UTF-8's space efficiency", "at": [{ "step": "Two real languages, two real trade-offs" }] },
+      { "item": "CPython's own str type is not a counterexample to the quadratic-concatenation claim: it is internally fixed-width per string (PEP 393), so code-point indexing is already O(1) on str, and separately its interpreter has a refcount-based optimization that can mask the quadratic cost of naive concatenation — neither fact is part of the Python language, and examples.py measures the claim on Java instead for exactly this reason", "at": [{ "step": "Prove it" }] },
+      { "item": "what a person casually calls \"one character\" can be a grapheme cluster spanning multiple code points (an emoji plus a modifier, a letter plus a combining accent) — named once with no mechanism taught", "at": [{ "out": "named once per CHAPTER.md; grapheme clusters are out of scope for this topic" }] },
+      { "item": "string hashing and string interning are both deferred whole to Chapter 3", "at": [{ "out": "Chapter 3 (Hashing), starting with Practical hash functions and HashDoS — this topic's own handoff" }] }
     ]
   },
-  "gapReview": { "date": "", "by": "", "open": [] }
+  "gapReview": { "date": "2026-10-22", "by": "self-review", "open": [] }
 }

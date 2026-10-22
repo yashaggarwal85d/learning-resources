@@ -49,7 +49,16 @@ A UTF-8 string's byte array supports `bytes[i]` in O(1) — it's just array inde
 Go indexes a string by byte directly — `s[i]` is a byte, O(1) — and gives you exactly one code-point-aware traversal, `for range`, which is defined to decode one UTF-8 rune per iteration: an O(n) walk by construction, not a missed optimization. Rust goes further: `str` has no single-integer indexing operator at all (`s[0]` does not compile); byte-range slicing is offered instead, chosen "to be constant-time," and it panics at runtime if a boundary doesn't land on a real character start. Both languages chose O(1) byte access and paid for it by making character-aware access either an explicit walk (Go) or a possible panic (Rust) — the alternative, paying up front for O(1) code-point indexing (a side offset table, or a fixed 4-bytes-per-code-point layout), is also real and used elsewhere, at the cost of memory or UTF-8's compactness. **Takeaway** (≤20 words): "O(1) byte indexing and O(1) character indexing are different promises — no language gets both for free."
 
 ### 9. Prove it
-`examples.py` builds the same ten-thousand-line log two ways — naive `s = s + line` versus a list-of-parts joined once — and counts bytes copied (not just wall-clock time, which is too noisy for a shape claim): the naive loop's copied-byte total grows quadratically with line count while the builder's grows linearly, matching the Θ(k²) vs Θ(k) prediction. A second check walks a string containing multi-byte UTF-8 characters and times "get the nth byte" against "get the nth code point" as n grows, confirming the first stays flat while the second grows with n.
+`examples.py` compiles and runs two small Java programs (mirroring topic 5's compiled-C-microbenchmark
+pattern, and for the same reason: Python's own interpreter has an internal optimization that masks
+this exact cost for its own strings — see `FACT-CHECK.md`). The first times naive `s = s + piece`
+concatenation at growing sizes: the measured time roughly quadruples each time the size doubles,
+converging on the predicted Θ(k²). The second times `StringBuilder.append` at sizes a hundred times
+larger, where it still only roughly doubles each time the size doubles — Θ(k). A third check builds a
+UTF-8-encoded byte string containing real multi-byte characters (an emoji, CJK characters, accented
+Latin, plain ASCII) and hand-walks it the way Go's `for range` does, counting how many bytes must be
+inspected to reach code point n: byte indexing stays one step regardless of n; the decode walk's step
+count grows linearly with n.
 
 ## Claims list
 
