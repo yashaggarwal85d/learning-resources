@@ -1470,4 +1470,24 @@ export const TOPICS: TopicMeta[] = [
     handoff:
       "Every pattern here still assumed a fact row joins to exactly one row per dimension. Next: the one place that clean one-to-many assumption breaks on its own, and the bridge table that repairs it.",
   },
+  {
+    id: 'de.bridge-tables-many-many',
+    domain: 'data-engineering',
+    slug: 'data-engineering/m1-foundations/ch03-data-modeling-analytical/bridge-tables-many-many',
+    title: 'Bridge tables and many-to-many',
+    syllabusTitle: 'Bridge tables and many-to-many',
+    kind: 'full',
+    status: 'live',
+    milestone: { number: 1, title: 'Foundations' },
+    chapter: { number: 3, title: 'Data modeling and analytical architecture', section: '3.2' },
+    minutes: 14,
+    verified: '2026-10-22',
+    introduces: ['bridge-table-multivalued-dimension', 'weighting-factor-double-counting-fix'],
+    uses: ['degenerate-dimension', 'fact-grain', 'measure-additivity-classes'],
+    declared: ['sql-select'],
+    bridge:
+      "Every pattern in the previous topic still assumed a fact row joins to exactly one row per dimension. This topic is the one place that clean one-to-many assumption breaks on its own, and the bridge table that repairs it.",
+    handoff:
+      "Every pattern in this section so far assumed a dimension's own attributes don't change over time. Next: the mechanism — SCD Type 2 — for when they genuinely do, and how to keep every version of the truth without losing any of it.",
+  },
 ];

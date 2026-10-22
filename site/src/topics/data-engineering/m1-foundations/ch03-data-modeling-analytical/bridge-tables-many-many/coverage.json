@@ -1,0 +1,49 @@
+{
+  "topic": "de.bridge-tables-many-many",
+  "syllabus": [
+    { "clause": "multivalued dimensions and ragged hierarchies through bridges", "at": [{ "step": "Reveal: multivalued dimension, quoted directly" }, { "step": "Reveal: ragged hierarchy, quoted directly" }] },
+    { "clause": "weighting factors against double counting", "at": [{ "step": "Reveal: the double-count, measured" }, { "step": "Reveal: the weighting fix, measured" }] },
+    { "clause": "flattened vs recursive hierarchy bridges", "at": [{ "step": "Reveal: the flattened bridge, measured" }, { "step": "Reveal: the recursive check, measured" }] }
+  ],
+  "sources": [
+    {
+      "source": "Kimball Group, \"Multivalued Dimensions and Bridge Tables\"",
+      "items": [
+        { "item": "A dimension attached to a fact table normally has a single value at the grain, but some dimensions are legitimately multivalued", "at": [{ "step": "Reveal: multivalued dimension, quoted directly" }] },
+        { "item": "A multivalued dimension attaches through a group key to a bridge table, one row per simultaneous value", "at": [{ "step": "Reveal: multivalued dimension, quoted directly" }] }
+      ]
+    },
+    {
+      "source": "Kimball Group, Design Tip #166, \"Potential Bridge (Table) Detours\"",
+      "items": [
+        { "item": "A common approach for handling multivalued dimensions is to introduce a bridge table", "at": [{ "step": "Predict: does joining through the bridge and summing give the order's real total?" }] },
+        { "item": "Grouping by a multivalued dimension over-counts a fact row's own metrics across its linked rows unless each bridge row carries an allocation/weighting factor", "at": [{ "step": "Reveal: the weighting fix, quoted directly" }] }
+      ]
+    },
+    {
+      "source": "Kimball Group, \"Ragged/Variable Depth Hierarchies\"",
+      "items": [
+        { "item": "Ragged hierarchies of indeterminate depth are difficult to model and query in a relational database", "at": [{ "step": "Reveal: ragged hierarchy, quoted directly" }] },
+        { "item": "A specially constructed bridge table with one row per possible path lets all traversal use standard SQL instead of special extensions", "at": [{ "step": "Reveal: ragged hierarchy, quoted directly" }] },
+        { "item": "A pathstring attribute is an alternative to the bridge, but doesn't support rapid substitution of alternative or shared-ownership hierarchies", "at": [{ "step": "Reveal: ragged hierarchy, quoted directly" }] }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "Claude (single session, written from the syllabus line and the fetched sources before storyboarding; not independent of the builder, so a later owner review should repeat it)",
+    "date": "2026-10-22",
+    "items": [
+      { "item": "The first predict (step 3) is red-teamed against the plausible wrong answer that a bridge join just naturally reproduces the order's own total; the reveal shows the join inflates it instead, exactly because the bridge adds rows the fact table never had", "at": [{ "step": "Predict: does joining through the bridge and summing give the order's real total?" }] },
+      { "item": "The double-count (step 4) and weighting-fix (step 6) demonstrations are both run against a real, disclosed throwaway order and bridge table built for this topic, not a described hypothetical — the three-times-over sum and the exact-total weighted sum are both executed, not asserted", "at": [{ "step": "Reveal: the double-count, measured" }, { "step": "Reveal: the weighting fix, measured" }] },
+      { "item": "The weighting-fix reveal explicitly confirms the three weights sum to exactly one before crediting the fix, rather than simply asserting the weighted sum came out correct, matching Kimball's own \"weighting factor\" framing rather than an arbitrary scaling", "at": [{ "step": "Reveal: the weighting fix, measured" }] },
+      { "item": "The second predict (step 8) is red-teamed against the plausible wrong answer that any bridge-table traversal still needs a recursive query at read time; the reveal shows the flattened bridge answering the same question with a single flat WHERE clause", "at": [{ "step": "Predict: does a flattened bridge table need recursion at query time?" }] },
+      { "item": "The flattened-bridge (step 9) and recursive-check (step 10) demonstrations both run against a real, disclosed four-category hierarchy of genuinely uneven depth (one branch three levels deep, one branch a single leaf), not a uniform tree dressed up as ragged", "at": [{ "step": "Reveal: the flattened bridge, measured" }, { "step": "Reveal: the recursive check, measured" }] },
+      { "item": "The recursive check is run as a fully independent second query against the raw parent-child table, not a re-read of the bridge's own construction query, so the agreement between the two results is genuine cross-validation", "at": [{ "step": "Reveal: the recursive check, measured" }] },
+      { "item": "The closing check (Prove it) applies the weighting fix to a new, undemonstrated case (a product with two overlapping tags) rather than re-testing the exact promo-tag numbers from the reveals", "at": [{ "step": "Prove it" }] },
+      { "item": "The recap keeps the bridge-table mechanism, the weighting fix, and the flattened-vs-recursive hierarchy choice as three separate ideas rather than collapsing them into one vague \"handle many-to-many carefully\" takeaway", "at": [{ "step": "Recap" }] },
+      { "item": "The bridge from topic 11 (special-purpose dimension patterns) is answered explicitly: this topic is framed as the one place the clean one-row-per-dimension assumption breaks on its own, and the handoff to the next topic (SCD Type 2 implementation) is confirmed by reading both CHAPTER.md entries side by side", "at": [{ "step": "One order, three promo tags, one question" }] },
+      { "item": "Every number that appears on screen (the promo-tag count, the double-counted and weighted sums, the bridge row count and the category counts) traces to a literal constant in examples.py; every other quantity in reel.tsx is spelled in words, so no on-screen number is asserted without a matching computed value", "at": [{ "step": "Reveal: the double-count, measured" }, { "step": "Reveal: the weighting fix, measured" }, { "step": "Reveal: the flattened bridge, measured" }] }
+    ]
+  },
+  "gapReview": { "date": "2026-10-22", "by": "Claude (single session)", "open": [] }
+}

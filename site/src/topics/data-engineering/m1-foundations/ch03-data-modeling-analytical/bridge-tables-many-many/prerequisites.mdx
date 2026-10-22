@@ -1,0 +1,24 @@
+import Resource from '../../../../../components/Resource.astro';
+
+<section class="prereq" data-section="before-this">
+
+### <span class="n">01</span> Before this: one fact row, one row per dimension
+
+<ul class="resources">
+  <Resource kind="reel" title="Special-purpose dimension patterns" domain="data-engineering" host="de.special-purpose-dimension-patterns" by="the topic right before this one" />
+  <Resource kind="reel" title="Fact table types" domain="data-engineering" host="de.fact-table-types" by="earlier in this chapter" />
+</ul>
+
+</section>
+
+<section class="prereq" data-section="kimball-bridges">
+
+### <span class="n">02</span> Kimball's own bridge-table and weighting-factor material
+
+<ul class="resources">
+  <Resource kind="reading" title="Multivalued Dimensions and Bridge Tables" href="https://www.kimballgroup.com/data-warehouse-business-intelligence-resources/kimball-techniques/dimensional-modeling-techniques/multivalued-dimension-bridge-table/" by="Kimball Group">One group key, one bridge row per simultaneous value.</Resource>
+  <Resource kind="reading" title="Design Tip #166: Potential Bridge (Table) Detours" href="https://www.kimballgroup.com/2014/05/design-tip-166-potential-bridge-table-detours/" by="Kimball Group, Margy Ross">Over-counting without an allocation/weighting factor.</Resource>
+  <Resource kind="reading" title="Ragged/Variable Depth Hierarchies" href="https://www.kimballgroup.com/data-warehouse-business-intelligence-resources/kimball-techniques/dimensional-modeling-techniques/ragged-variable-depth-hierarchy/" by="Kimball Group">A bridge of every path, or a pathstring attribute.</Resource>
+</ul>
+
+</section>
