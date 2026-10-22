@@ -1,0 +1,43 @@
+{
+  "topic": "de.conceptual-logical-physical-models",
+  "syllabus": [
+    { "clause": "what each level fixes (business entities, platform-neutral structure, engine-specific layout) and how decisions flow from one to the next.", "at": [{ "step": "Reveal: the conceptual level" }, { "step": "Reveal: the logical level" }, { "step": "Reveal: the physical level" }, { "step": "Reveal: how the decisions flow" }] }
+  ],
+  "sources": [
+    {
+      "source": "Wikipedia, \"Data modeling\"",
+      "items": [
+        { "item": "Three model types are produced progressing from requirements to the database: conceptual, then logical, then physical", "at": [{ "step": "Reveal: the conceptual level" }, { "step": "Reveal: the logical level" }, { "step": "Reveal: the physical level" }] },
+        { "item": "The conceptual model is a technology-independent specification used to discuss requirements with business stakeholders", "at": [{ "step": "Reveal: the conceptual level" }] },
+        { "item": "The logical model documents structures that can be implemented in databases; one conceptual model may require multiple logical models", "at": [{ "step": "Reveal: the logical level" }] },
+        { "item": "The physical model organizes data into tables and accounts for access, performance and storage details", "at": [{ "step": "Reveal: the physical level" }] },
+        { "item": "In many environments, the distinction between a logical and a physical data model is blurred", "at": [{ "step": "Reveal: the boundary blurs in practice" }] }
+      ]
+    },
+    {
+      "source": "G. Everest (University of Minnesota), \"Conceptual vs. Logical vs. Physical Data Models\"",
+      "items": [
+        { "item": "The conceptual model is commonly thought of as a high-level, enterprise-wide, abstract data model, presented to executives for an initial understanding", "at": [{ "step": "Reveal: the conceptual level" }] },
+        { "item": "The logical model is something in between, adding detail to the conceptual model but free of physical implementation details", "at": [{ "step": "Reveal: the logical level" }] },
+        { "item": "The physical model, at the bottom, is how the data is stored in a database implemented in some DBMS or NoSQL tool", "at": [{ "step": "Reveal: the physical level" }] }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "Claude (single session, written from the syllabus line and the fetched source before storyboarding; not independent of the builder, so a later owner review should repeat it)",
+    "date": "2026-10-22",
+    "items": [
+      { "item": "The predict step (step 3) is red-teamed against the plausible wrong answer that naming a relationship at the conceptual level already fixes its cardinality — the reveal draws the line exactly where the source does, at the logical level", "at": [{ "step": "Predict: does the conceptual level fix how that is stored?" }] },
+      { "item": "The same running example (a customer with more than one address) is carried through all three levels unchanged, so the contrast is the level, not the example, matching the chapter's shared running example", "at": [{ "step": "Reveal: the physical level" }] },
+      { "item": "No claim is presented as a measurement; FACT-CHECK.md discloses that this refresher has no runnable system behind it and every claim traces to the one fetched source or is a hand-traced worked example", "at": [{ "step": "Reveal: how the decisions flow" }] },
+      { "item": "The recap keeps three distinct jobs (what exists, how it is shaped, how it runs) rather than collapsing them into one vague takeaway", "at": [{ "step": "In one breath" }] },
+      { "item": "The opening frames the whole refresher around a question (which of three decisions is which) rather than a bare definition list, matching the chapter's own framing of this topic as the decision before Chapter 2's query-execution material", "at": [{ "step": "Three levels, in five minutes" }] },
+      { "item": "The conceptual reveal explicitly withholds cardinality and storage, naming what is missing rather than only what is present, so the gap the predict step tests is visible before the predict step asks about it", "at": [{ "step": "Reveal: the conceptual level" }] },
+      { "item": "The logical reveal states the platform-neutral property positively (could be implemented in more than one database product) rather than only negatively (no engine chosen yet), so the physical reveal's contrast has something concrete to land against", "at": [{ "step": "Reveal: the logical level" }] },
+      { "item": "The physical reveal names the two concrete engine-specific choices (foreign key, index) rather than gesturing at \"implementation details\" generically, keeping the three levels equally concrete", "at": [{ "step": "Reveal: the physical level" }] },
+      { "item": "The decision-flow reveal uses a timing example (fixing a column type too early, while a stakeholder is still being consulted) rather than an abstract claim about ordering, so the cost of collapsing levels is concrete", "at": [{ "step": "Reveal: how the decisions flow" }] },
+      { "item": "The handoff to the next topic (OLTP vs. OLAP) is answered by that topic's own bridge line verbatim, confirmed by reading both CHAPTER.md entries side by side", "at": [{ "step": "In one breath" }] }
+    ]
+  },
+  "gapReview": { "date": "2026-10-22", "by": "Claude (single session)", "open": [] }
+}

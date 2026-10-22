@@ -1,0 +1,58 @@
+{
+  "topic": "de.conceptual-logical-physical-models",
+  "steps": [
+    {
+      "lines": [
+        "Before a single table exists, a schema already passed through three separate decisions.",
+        "This refresher is about telling those three apart."
+      ]
+    },
+    {
+      "lines": [
+        "A customer. An address. One can have more than one of the other.",
+        "Notice what is missing here on purpose: no numbers, no columns, nothing about a database at all.",
+        "That absence is the whole point of this level."
+      ]
+    },
+    {
+      "lines": [
+        "That phrase already says more than one address is possible.",
+        "So has the hard part already been decided, or is this level stopping short on purpose?"
+      ],
+      "answer": [
+        "It stops on purpose. Naming a relationship is not the same as fixing its shape.",
+        "Cardinality and storage both wait for the next level, deliberately."
+      ]
+    },
+    {
+      "lines": [
+        "Now the same fact gets a shape: exactly one customer, exactly many addresses, drawn with a crow's foot.",
+        "Still no engine has been chosen. Any database product could implement this structure."
+      ]
+    },
+    {
+      "lines": [
+        "Here is the fact a third time, and now it finally has to run somewhere.",
+        "A real foreign key, a real column type, a real index underneath it."
+      ]
+    },
+    {
+      "lines": [
+        "Watch the pattern across all three: each level fixes exactly what the one before it refused to.",
+        "Fix a column type while a stakeholder is still agreeing on what a customer even is, and you have closed a door nobody meant to close yet."
+      ]
+    },
+    {
+      "lines": [
+        "In a real project built for one engine, the middle step often just disappears.",
+        "Keeping it on paper only pays off once more than one engine, or more than one logical shape, is actually in play."
+      ]
+    },
+    {
+      "lines": [
+        "Three levels, three separate jobs: what exists, how it is shaped, how it runs.",
+        "Carry that distinction forward, because the next refresher pulls the physical level in two directions at once."
+      ]
+    }
+  ]
+}

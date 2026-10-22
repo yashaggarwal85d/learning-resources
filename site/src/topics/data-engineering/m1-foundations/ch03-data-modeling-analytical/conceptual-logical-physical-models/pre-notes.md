@@ -1,0 +1,7 @@
+- **Data model**: an abstract description of how data is organized, structured and connected, used to plan and communicate before (and instead of) building anything. *Where you meet it:* the artifact a team agrees on before writing a single `CREATE TABLE`.
+- **Business entity**: a thing the business cares about and talks about, independent of any database (a customer, an order). *Where you meet it:* the nouns a stakeholder uses in a requirements conversation.
+- **Cardinality**: how many of one thing can relate to how many of another (one-to-many, many-to-many). *Where you meet it:* an entity-relationship diagram's crow's-foot notation.
+- **Entity-relationship (ER) diagram**: a drawing of entities as boxes and their relationships as lines between them, with cardinality marked on each line. *Where you meet it:* a database design review.
+- **Foreign key**: a column in one table that points to the identifying column of another table, enforcing that a row in the first corresponds to a real row in the second. *Where you meet it:* `REFERENCES` in a `CREATE TABLE` statement.
+- **Database engine**: the specific software that stores and runs queries against data (a particular relational database, a particular warehouse). *Where you meet it:* the product name on the connection string.
+- **Stakeholder**: someone outside the database team whose business knowledge a model has to capture correctly. *Where you meet it:* the person a conceptual model is drawn for, before any engine is chosen.

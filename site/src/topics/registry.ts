@@ -1250,4 +1250,24 @@ export const TOPICS: TopicMeta[] = [
     handoff:
       "A full refresh costs the same whether a tiny change happened or none did; incremental maintenance instead tracks the size of the change itself, and CONCURRENTLY trades a UNIQUE-index requirement for never blocking readers. This closes out query execution and physical design; next: node scripts/next-topic.mjs de names what starts chapter 3's modeling work.",
   },
+  {
+    id: 'de.conceptual-logical-physical-models',
+    domain: 'data-engineering',
+    slug: 'data-engineering/m1-foundations/ch03-data-modeling-analytical/conceptual-logical-physical-models',
+    title: 'Conceptual, logical and physical models',
+    syllabusTitle: 'Conceptual, logical and physical models',
+    kind: 'refresher',
+    status: 'live',
+    milestone: { number: 1, title: 'Foundations' },
+    chapter: { number: 3, title: 'Data modeling and analytical architecture', section: '3.1' },
+    minutes: 5,
+    verified: '2026-10-22',
+    introduces: ['conceptual-logical-physical-split'],
+    uses: [],
+    declared: ['sql-create-table'],
+    bridge:
+      "Chapter two priced and explained a query against a schema that already existed. This chapter starts from the decision before that: what the schema should even be, and why — starting with the three levels every one of those decisions passes through.",
+    handoff:
+      "The conceptual level fixed business entities; the physical level fixed engine-specific layout. Next: the two workload shapes, OLTP and OLAP, that pull physical-level decisions in opposite directions for the exact same conceptual model.",
+  },
 ];
