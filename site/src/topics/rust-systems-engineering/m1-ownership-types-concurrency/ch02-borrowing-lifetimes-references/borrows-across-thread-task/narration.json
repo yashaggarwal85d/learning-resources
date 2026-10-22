@@ -1,0 +1,89 @@
+{
+  "topic": "rust.borrows-across-thread-task",
+  "note": "Written to be spoken: one sentence or phrase per line; {\"beat\": s} is a deliberate pause; numbers and codes are said the way a person would say them, never shown as digits. `answer` plays after the learner answers a predict step.",
+  "steps": [
+    {
+      "lines": [
+        "Spawn a new thread, and the function that spawned it keeps running on its own. Nothing says those two have to finish in any particular order.",
+        { "beat": 0.3 },
+        "So when the function that did the spawning returns first, and its own local variables disappear, the thread it started may still be going. Whatever that thread was allowed to touch has to survive that moment."
+      ]
+    },
+    {
+      "lines": [
+        "Here is a plain whole number sitting in a local variable, and a new thread spawned right next to it that only reads that variable, never takes it over.",
+        "The surrounding function could, in principle, return before that new thread ever gets around to running.",
+        { "beat": 0.3 },
+        "Given everything just said about a thread outliving the function that started it, does this compile?"
+      ],
+      "answer": [
+        "It does not, and it is rejected before the program ever runs, not after.",
+        "The thread borrowed a variable that belongs to a function that might vanish before the thread is done with it. The compiler isn't willing to find out whether that actually happens at run time."
+      ]
+    },
+    {
+      "lines": [
+        "Compile that exact attempt for real, and the compiler names the danger precisely: the closure handed to the new thread might outlive the very function it was written inside, and the variable it's reading belongs to that function, not to the thread.",
+        "That is the whole shape of the problem, stated by the tool that actually has to prevent it."
+      ]
+    },
+    {
+      "lines": [
+        "Now spawn the identical closure a different way: inside a scope built specifically for this. Same local variable, same borrow, same reading-only closure.",
+        "This time it compiles, and here is why that is actually sound rather than a loophole: the call that creates the scope will not hand control back to its caller until every thread spawned inside it has already finished.",
+        "The borrow never had a chance to outlive the thread, because the surrounding call refused to let go until the thread was done."
+      ]
+    },
+    {
+      "lines": [
+        "Different shape of problem now. Wrap a lockable counter in a reference-counted handle, clone that handle, and hand the clone to an ordinary new thread, the kind with no enclosing scope at all, from a function built to return immediately.",
+        { "beat": 0.3 },
+        "That thread genuinely needs to keep running after the function that launched it has already returned. Does handing it the cloned handle this way still compile?"
+      ],
+      "answer": [
+        "It compiles, and for a completely different reason than the scoped case a moment ago: the closure never borrows anything at all.",
+        "It takes full ownership of its own clone of the handle. Nothing inside it points back at a variable that might disappear, so there was never a borrow for the surrounding function's lifetime to threaten."
+      ]
+    },
+    {
+      "lines": [
+        "That reference-counted handle, once it has been moved rather than borrowed, already satisfies the exact requirement a new thread demands, with no extra work at all.",
+        "The requirement never asked how long the surrounding function keeps running. It only asked whether the thing you handed over contains a reference to something that might go away. An owned handle contains no such reference."
+      ]
+    },
+    {
+      "lines": [
+        "Switch from threads to an asynchronous runtime's own way of starting background work, and you meet the exact same shape of requirement again, word for word: own everything you hand over, borrow nothing.",
+        "But look for the asynchronous equivalent of that scope from a few steps back, the one that waited for everything inside it to finish before letting go, and it simply isn't there."
+      ]
+    },
+    {
+      "lines": [
+        "Suppose someone built one anyway: a scope for background work that hands you a small guard object the moment you start it, and promises the work is truly finished the instant that guard is destroyed.",
+        { "beat": 0.3 },
+        "Could completely ordinary, everyday safe code ever break that promise, without reaching for anything marked unsafe?"
+      ],
+      "answer": [
+        "Yes, and the tool that breaks it is itself perfectly ordinary and perfectly safe: a standard library function whose entire job is to take a value and skip whatever cleanup it was supposed to run when it disappeared.",
+        "Hand that guard to it, and the guard disappears without ever announcing that the work is done. The promise it was built to keep simply never fires, and nothing unsafe was needed to make that happen."
+      ]
+    },
+    {
+      "lines": [
+        "Build exactly that guard for real: something that is supposed to announce, the moment it is destroyed, that the background work it stood for has truly finished.",
+        "Then hand that very guard to the function whose whole job is skipping destruction, and run the program.",
+        "The announcement never happens. Nothing prints. The guard existed, and then it simply stopped existing, with its one promised duty left undone."
+      ]
+    },
+    {
+      "lines": [
+        "So: a new thread needs full ownership of everything it touches, because it can keep running after the function that started it is already gone.",
+        "A scope earns the right to lend out a borrow instead, by refusing to let go until every thread inside it has actually finished.",
+        "An owned, reference-counted handle already satisfies that same requirement, for free, the moment it stops being a borrow and becomes something fully owned.",
+        "Background asynchronous work asks for the identical ownership, but there is no sound version of that waiting scope for it, because the one tool that would have to enforce the promise can always be slipped past by ordinary, everyday code.",
+        { "beat": 0.3 },
+        "Next time: a world where none of this borrowing machinery has anything left to say at all."
+      ]
+    }
+  ]
+}

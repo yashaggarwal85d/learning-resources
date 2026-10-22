@@ -1,0 +1,9 @@
+- **`thread::spawn`**: starts a new OS thread running a closure, returning a `JoinHandle`. *Where you meet it:* `thread::spawn(|| { ... })`.
+- **`Send` bound**: a trait marking a type safe to move from one thread to another. *Where you meet it:* `F: Send + 'static` on `thread::spawn`'s closure parameter.
+- **`JoinHandle`**: the value `thread::spawn` returns; calling `.join()` on it blocks until that thread finishes. *Where you meet it:* `handle.join().unwrap()`.
+- **`thread::scope`**: creates a scope whose own call doesn't return until every thread spawned inside it has joined. *Where you meet it:* `thread::scope(|s| { s.spawn(...); })`.
+- **`Arc`**: a thread-safe reference-counted pointer; cloning it bumps a shared count instead of copying the data. *Where you meet it:* `Arc::clone(&counter)` before moving a clone into a spawned thread.
+- **`Mutex`**: a lock guaranteeing only one thread reads or writes its contents at a time. *Where you meet it:* `counter.lock().unwrap()` inside a spawned closure.
+- **`Future`**: a value representing work that hasn't finished yet, driven forward by being polled. *Where you meet it:* whatever `async fn` returns, and what `tokio::spawn` takes.
+- **`mem::forget`**: takes ownership of a value and skips its destructor entirely, with no `unsafe` required. *Where you meet it:* `mem::forget(guard)`, defeating a `Drop`-based guarantee.
+- **`Drop`**: the trait whose `drop` method runs automatically when a value's owner goes out of scope — unless something like `mem::forget` skips it. *Where you meet it:* a guard type that prints or signals on drop.
