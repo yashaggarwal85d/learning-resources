@@ -1,0 +1,56 @@
+{
+  "topic": "de.inmon-vs-kimball-warehouse",
+  "syllabus": [
+    { "clause": "normalized enterprise warehouse feeding marts vs bus-architecture dimensional marts", "at": [{ "step": "Reveal: Inmon's definition, and his direction" }, { "step": "Reveal: Kimball's bus, and his direction" }] },
+    { "clause": "time to value, integration cost, tolerance to change", "at": [{ "step": "Reveal: time to value favors the bus" }, { "step": "Reveal: integration cost favors the normalized model" }, { "step": "Reveal: tolerance to change is genuinely contested" }, { "step": "Reveal: the three axes, side by side" }] },
+    { "clause": "how ELT on columnar engines shifted the balance", "at": [{ "step": "Reveal: what ELT on a columnar engine changed" }, { "step": "Reveal: how that narrows the original gap" }] }
+  ],
+  "sources": [
+    {
+      "source": "Wikipedia, \"Bill Inmon\"",
+      "items": [
+        { "item": "Inmon created the accepted definition of a data warehouse: subject-oriented, non-volatile, integrated, time-variant, in support of management's decisions", "at": [{ "step": "Reveal: Inmon's definition, and his direction" }] },
+        { "item": "Compared with Kimball, Inmon's approach is often characterized as top-down", "at": [{ "step": "Reveal: Inmon's definition, and his direction" }] }
+      ]
+    },
+    {
+      "source": "Wikipedia, \"Dimensional modeling\"",
+      "items": [
+        { "item": "Kimball's Business Dimensional Lifecycle focuses on identifying key business processes and modeling them first, as a bottom-up approach", "at": [{ "step": "Reveal: Kimball's bus, and his direction" }] },
+        { "item": "An alternative approach from Inmon advocates top-down design of the model of all enterprise data using ER modeling", "at": [{ "step": "Reveal: Inmon's definition, and his direction" }] },
+        { "item": "Conformed dimensions achieve consistency across business process areas by using one copy of a shared dimension across subject areas", "at": [{ "step": "Reveal: Kimball's bus, and his direction" }] }
+      ]
+    },
+    {
+      "source": "Kimball Group, \"Enterprise Data Warehouse Bus Architecture\"",
+      "items": [
+        { "item": "The bus architecture provides an incremental approach, decomposing planning by business process while delivering integration via conformed dimensions reused across processes", "at": [{ "step": "Reveal: Kimball's bus, and his direction" }] },
+        { "item": "The bus architecture is technology and database platform independent; both relational and OLAP dimensional structures can participate", "at": [{ "step": "Reveal: Kimball's bus, and his direction" }] }
+      ]
+    },
+    {
+      "source": "Fivetran, \"ETL vs. ELT: Why a post-load process wins every time\"",
+      "items": [
+        { "item": "Cloud data warehouses drove down storage cost and increased processing power, making pre-load transformation far less necessary", "at": [{ "step": "Reveal: what ELT on a columnar engine changed" }] },
+        { "item": "This opened up post-load transformation (ELT) as an alternative to traditional pre-load transformation (ETL)", "at": [{ "step": "Reveal: what ELT on a columnar engine changed" }] }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "Claude (single session, written from the syllabus line and the fetched sources before storyboarding; not independent of the builder, so a later owner review should repeat it)",
+    "date": "2026-10-22",
+    "items": [
+      { "item": "The three-axis synthesis (steps 4-9) is explicitly marked in FACT-CHECK.md as this topic's own reasoning applied to the two methodologies' sourced, well-documented characteristics, not itself an external citation, and the tolerance-to-change axis is presented honestly as contested rather than forced to a clean verdict", "at": [{ "step": "Reveal: tolerance to change is genuinely contested" }] },
+      { "item": "The ELT-narrows-the-gap claim (step 12) is marked in FACT-CHECK.md as this topic's own synthesis connecting the sourced ELT-economics shift (Fivetran) to the sourced Inmon/Kimball tradeoffs, since no single fetched source makes this exact connection by name", "at": [{ "step": "Reveal: how that narrows the original gap" }] },
+      { "item": "The deadline predict (step 4) is red-teamed against the plausible wrong answer that building the full normalized model first is always the more rigorous, hence safer, choice; the reveal shows why that is the slower path under this specific constraint", "at": [{ "step": "Predict: one deadline, one source system" }] },
+      { "item": "The integration predict (step 6) is red-teamed against the plausible wrong answer that conformed dimensions alone fully solve cross-system integration; the reveal clarifies conformed dimensions still do real work, but names what the normalized model specifically buys beyond them", "at": [{ "step": "Predict: a dozen sources, one definition of customer" }] },
+      { "item": "The change-tolerance predict (step 8) is deliberately built with the honest answer \"it depends,\" following this chapter's own established pattern (topic 4's join-cost predict) of not forcing a false clean verdict when the real answer is genuinely contested", "at": [{ "step": "Predict: a business rule that keeps changing" }] },
+      { "item": "The closing check (Prove it) asks the viewer to apply the time-to-value and integration-cost axes together to a new scenario (frequent onboarding, no agreed model) rather than re-testing an isolated fact", "at": [{ "step": "Prove it" }] },
+      { "item": "The recap keeps the top-down/bottom-up distinction, the three-axis framing, and the ELT-narrowed-not-erased claim as three separate ideas rather than collapsing them into one vague \"it depends\" takeaway", "at": [{ "step": "Recap" }] },
+      { "item": "The bridge from topic 5 (key design) is answered explicitly: this topic is framed as the single warehouse-organizing philosophy that every key type in that topic assumed, now put in question, and the handoff to the next topic (Data Vault 2.0) is confirmed by reading both CHAPTER.md entries side by side", "at": [{ "step": "Same key types, two different warehouses" }] },
+      { "item": "Inmon's own Corporate Information Factory concept is deliberately not claimed beyond what Wikipedia's own text supports (a named 1998 book title and a top-down characterization), since no live, quotable CIF-definition page from Inmon's own sites was found during research — this topic does not fabricate an Inmon quote to fill that gap", "at": [{ "step": "Reveal: Inmon's definition, and his direction" }] },
+      { "item": "The three-axes reveal (step 9) is placed immediately after all three individual predict/reveal pairs so the viewer sees the synthesis only after working through each axis individually, not before", "at": [{ "step": "Reveal: the three axes, side by side" }] }
+    ]
+  },
+  "gapReview": { "date": "2026-10-22", "by": "Claude (single session)", "open": [] }
+}

@@ -1,0 +1,105 @@
+{
+  "topic": "de.inmon-vs-kimball-warehouse",
+  "steps": [
+    {
+      "lines": [
+        "Two people organized a whole warehouse around the same kinds of tables this chapter has been building, in opposite directions.",
+        "Neither of them was simply right. Each one wins on a different thing."
+      ]
+    },
+    {
+      "lines": [
+        "The very definition most people use for a data warehouse comes from the first of these two.",
+        "His own approach builds one normalized model for the whole enterprise first, and feeds every department's view from that single model afterward."
+      ]
+    },
+    {
+      "lines": [
+        "The second person's approach runs the opposite direction.",
+        "Plan one business process, ship a star schema for it, and share dimensions across every process after that, instead of modeling the whole enterprise before shipping anything."
+      ]
+    },
+    {
+      "lines": [
+        "Picture a team with a hard deadline and only one source system to deal with.",
+        "Which of these two gets them to something usable first?"
+      ],
+      "answer": [
+        "The process-first approach. One star schema, shipped.",
+        "Modeling the whole enterprise first is the slower path exactly when the deadline is what matters most."
+      ]
+    },
+    {
+      "lines": [
+        "Here is that speed, made concrete.",
+        "One star schema can go live while the enterprise-wide model is still being designed. That is the entire point of building process by process."
+      ]
+    },
+    {
+      "lines": [
+        "Now picture a dozen separate source systems that all need to agree on one thing: what a customer actually is.",
+        "Which approach handles that kind of agreement better?"
+      ],
+      "answer": [
+        "The single enterprise model.",
+        "Shared dimensions across stars do real work too, but settling one definition once, in one place, is exactly what that model exists for."
+      ]
+    },
+    {
+      "lines": [
+        "That is the cost the single model is actually paying for.",
+        "One definition, agreed on once, instead of re-settling it separately inside every star schema that happens to touch a customer."
+      ]
+    },
+    {
+      "lines": [
+        "Now picture a business rule that keeps changing, unpredictably, over time.",
+        "Does either approach clearly handle that better?"
+      ],
+      "answer": [
+        "Not cleanly. It depends entirely on what kind of change you mean.",
+        "A new process slots into the incremental approach without touching what already exists. A changed rule gets fixed once in a single model instead of chased down everywhere."
+      ]
+    },
+    {
+      "lines": [
+        "Both of those are genuinely true at the same time, pointed at different kinds of change.",
+        "Neither approach simply wins this one."
+      ]
+    },
+    {
+      "lines": [
+        "Put all three comparisons next to each other and a pattern shows up.",
+        "Speed favors one. Agreement across sources favors the other. Tolerance to change depends on what's actually changing. The real choice was never a single verdict."
+      ]
+    },
+    {
+      "lines": [
+        "Now, the shift that changed all of this.",
+        "Cloud warehouses built on columns made storage far cheaper and processing far faster than it used to be."
+      ]
+    },
+    {
+      "lines": [
+        "That single shift is why teams stopped having to commit upfront.",
+        "When transforming data after it lands is cheap and fast, a team can start with the incremental, process-first approach and fold in that single shared model later, instead of betting on one direction from day one."
+      ]
+    },
+    {
+      "lines": [
+        "Two directions, opposite ways of organizing the same kind of warehouse.",
+        "The real choice runs against speed, agreement, and tolerance to change, not one preference. And cheap, fast transforms after loading narrowed that choice, without making it disappear."
+      ]
+    },
+    {
+      "lines": [
+        "One more scenario before moving on.",
+        "A team has to bring in a new source system on a short, repeating cycle, with no enterprise-wide model agreed on yet. Which approach actually fits that?"
+      ],
+      "answer": [
+        "The process-first, incremental approach.",
+        "It was built specifically to add one process at a time, without waiting on a model nobody has agreed to yet."
+      ]
+    }
+  ]
+}
