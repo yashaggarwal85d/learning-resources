@@ -1,0 +1,23 @@
+import Resource from '../../../../../components/Resource.astro';
+
+<section class="prereq" data-section="before-this">
+
+### <span class="n">01</span> Before this: the bill, not yet the architectural response to it
+
+<ul class="resources">
+  <Resource kind="reel" title="Object storage and query economics" domain="data-engineering" host="de.object-storage-query-economics" by="the topic right before this one" />
+</ul>
+
+</section>
+
+<section class="prereq" data-section="the-architecture">
+
+### <span class="n">02</span> Elastic compute and warehouse caching, straight from a vendor's own docs
+
+<ul class="resources">
+  <Resource kind="reading" title="Snowflake key concepts and architecture" href="https://docs.snowflake.com/en/user-guide/intro-key-concepts" by="Snowflake">Independent compute clusters over separated storage.</Resource>
+  <Resource kind="reading" title="Multi-cluster warehouses" href="https://docs.snowflake.com/en/user-guide/warehouses-multicluster" by="Snowflake">Elastic scaling for concurrency, not for a single slow query.</Resource>
+  <Resource kind="reading" title="Warehouse considerations" href="https://docs.snowflake.com/en/user-guide/warehouses-considerations" by="Snowflake">A warehouse's own cache, and what suspending it costs.</Resource>
+</ul>
+
+</section>

@@ -1,0 +1,51 @@
+{
+  "topic": "de.compute-storage-separation-workload",
+  "syllabus": [
+    { "clause": "elastic stateless compute over shared storage", "at": [{ "step": "Reveal: the separated architecture, quoted directly" }, { "step": "Reveal: elastic scaling, quoted directly" }] },
+    { "clause": "per-workload clusters and warehouses", "at": [{ "step": "Reveal: the noisy-neighbor fix, assembled" }] },
+    { "clause": "caches that re-couple storage for speed", "at": [{ "step": "Reveal: the cache, quoted directly" }, { "step": "Reveal: the cache's real cost, quoted directly" }] },
+    { "clause": "noisy neighbors and concurrency scaling", "at": [{ "step": "Predict: does separating storage from compute, by itself, stop one workload's load from affecting another's?" }, { "step": "Reveal: independent compute clusters, quoted directly" }, { "step": "Predict: does adding more compute clusters make a single slow query run faster?" }, { "step": "Reveal: the vendor's own disclosed limit, quoted directly" }] }
+  ],
+  "sources": [
+    {
+      "source": "Snowflake, \"Snowflake key concepts and architecture\"",
+      "items": [
+        { "item": "Storage and compute are architecturally separate, simplifying infrastructure management and performance tuning", "at": [{ "step": "Reveal: the separated architecture, quoted directly" }] },
+        { "item": "Each compute cluster is independent and shares no compute resources with other clusters, so one cluster's load has no effect on another's performance", "at": [{ "step": "Reveal: independent compute clusters, quoted directly" }] }
+      ]
+    },
+    {
+      "source": "Snowflake, \"Multi-cluster warehouses\"",
+      "items": [
+        { "item": "Additional compute clusters can be allocated, statically or dynamically, onto the same shared storage", "at": [{ "step": "Reveal: elastic scaling, quoted directly" }] },
+        { "item": "Clusters scale automatically as concurrent user/query load rises", "at": [{ "step": "Reveal: elastic scaling, quoted directly" }] },
+        { "item": "Multi-cluster scaling is scoped to concurrency; it is explicitly not beneficial for speeding up one slow query or a data-loading job", "at": [{ "step": "Reveal: the vendor's own disclosed limit, quoted directly" }] }
+      ]
+    },
+    {
+      "source": "Snowflake, \"Warehouse considerations\"",
+      "items": [
+        { "item": "A running compute cluster caches the table data it has touched, so later queries can skip rereading storage", "at": [{ "step": "Reveal: the cache, quoted directly" }] },
+        { "item": "That cache is dropped when its compute cluster is suspended, and the next queries after resuming are slower until it rebuilds", "at": [{ "step": "Reveal: the cache's real cost, quoted directly" }] }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "Claude (single session, written from the syllabus line and the fetched sources before storyboarding; not independent of the builder, so a later owner review should repeat it)",
+    "date": "2026-10-22",
+    "items": [
+      { "item": "The first predict (step 3) is red-teamed against the plausible wrong answer that separating storage from compute, by itself, already isolates every workload; the reveal at step 4 distinguishes removing storage as a shared bottleneck from the separate, deliberate decision to split compute per workload", "at": [{ "step": "Predict: does separating storage from compute, by itself, stop one workload's load from affecting another's?" }] },
+      { "item": "The second predict (step 6) is red-teamed against the plausible wrong answer that more compute resources always speed up any query; the reveal at step 7 quotes the vendor's own explicit scoping of multi-cluster scaling to concurrency, not to single-query runtime, as a disclosed limit rather than an inferred caveat", "at": [{ "step": "Predict: does adding more compute clusters make a single slow query run faster?" }] },
+      { "item": "The noisy-neighbor fix (step 8) is presented as an assembled conclusion from the two preceding quotes (independent clusters, elastic allocation), not as a new quote of its own, and is explicit about this in the reel's own comment and REVIEW.md", "at": [{ "step": "Reveal: the noisy-neighbor fix, assembled" }] },
+      { "item": "The third predict (step 9) is red-teamed against the plausible wrong answer that a cache is a pure optimization with no real cost; the reveal at step 11 quotes the vendor's own named cost (the cache is dropped on suspend, and performance regresses until it rebuilds) rather than asserting a cost the source doesn't actually state", "at": [{ "step": "Predict: is a cache just an optimization with no real cost, since it only ever makes things faster?" }] },
+      { "item": "The closing check (Prove it) is a genuinely new scenario, not a restatement of any reveal: a team's own cost-saving decision (aggressive auto-suspend) tested against the exact cache-cost mechanism from steps 10-11, checking whether the learner connects a policy choice to the specific named cost rather than just repeating the mechanism in the abstract", "at": [{ "step": "Prove it" }] },
+      { "item": "The bridge from topic 17 (object storage and query economics) and the handoff to topic 19 (medallion architecture) are both taken verbatim from CHAPTER.md's own entries for topics 17 and 18 and checked against this topic's own content before use, rather than invented fresh", "at": [{ "step": "One compute cluster, two teams' workloads" }] },
+      { "item": "This topic has no lab of its own (CHAPTER.md), and every claim traces to a direct quote verified word for word (scripts/sources.mjs check) from a single cloud warehouse vendor's own documentation, disclosed explicitly as sourced-only rather than invented or assumed to generalize to every vendor's architecture", "at": [{ "step": "Reveal: the separated architecture, quoted directly" }, { "step": "Reveal: independent compute clusters, quoted directly" }, { "step": "Reveal: elastic scaling, quoted directly" }, { "step": "Reveal: the vendor's own disclosed limit, quoted directly" }, { "step": "Reveal: the cache, quoted directly" }, { "step": "Reveal: the cache's real cost, quoted directly" }] },
+      { "item": "The recap keeps three separate ideas distinct (architectural separation, per-workload isolation, and caching as a deliberate re-coupling) matching the syllabus line's own several clauses, rather than collapsing them into one vague \"separation is good\" takeaway", "at": [{ "step": "Recap" }] },
+      { "item": "The topic deliberately treats \"elastic\" and \"stateless\" compute as two distinct properties worth naming separately: elastic (more clusters added/removed with load) is covered by the multi-cluster quotes, and stateless (a cluster's cache is disposable, not required for correctness) is covered directly by the cache-cost reveal, rather than conflating the two into one idea", "at": [{ "step": "Reveal: elastic scaling, quoted directly" }, { "step": "Reveal: the cache's real cost, quoted directly" }] },
+      { "item": "The topic explicitly separates \"concurrency scaling\" (step 5-7, helped by more clusters) from \"noisy-neighbor isolation\" (step 3-4, 8, helped by per-workload cluster assignment) as two different mechanisms answering two different problems, since the syllabus line names them as two separate items rather than one", "at": [{ "step": "Reveal: independent compute clusters, quoted directly" }, { "step": "Reveal: the noisy-neighbor fix, assembled" }] },
+      { "item": "No specific numeric claim (a particular cluster count, a particular cache hit rate, a particular dollar cost) is made anywhere in this topic beyond what the vendor's own quoted text states qualitatively, since this sandbox has no way to run a real multi-cluster warehouse to verify a specific number against", "at": [{ "step": "Reveal: elastic scaling, quoted directly" }] }
+    ]
+  },
+  "gapReview": { "date": "2026-10-22", "by": "Claude (single session)", "open": [] }
+}

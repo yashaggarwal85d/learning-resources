@@ -1,0 +1,100 @@
+{
+  "topic": "de.compute-storage-separation-workload",
+  "steps": [
+    {
+      "lines": [
+        "Picture two different teams, forced to share the exact same pool of compute, against one storage layer sitting underneath both.",
+        "Watch what happens the moment one of them starts something heavy — does sharing compute, by itself, actually cause a problem here, or not?"
+      ]
+    },
+    {
+      "lines": [
+        "Here's the architectural starting point this whole topic builds on.",
+        "Keeping storage and compute as genuinely separate layers already makes infrastructure simpler to manage and performance simpler to tune, on its own, before anything about workloads even comes up."
+      ]
+    },
+    {
+      "lines": [
+        "Here's a question worth sitting with before the next reveal.",
+        "Storage and compute are already kept apart in this architecture. Does that separation, all by itself, stop one team's heavy job from slowing the other team's queries down?"
+      ],
+      "answer": [
+        "It doesn't, on its own. Separating storage from compute only takes storage out of the picture as a shared bottleneck.",
+        "Compute itself still has to be deliberately split, one cluster per workload, for contention to actually go away."
+      ]
+    },
+    {
+      "lines": [
+        "Here's the mechanism that actually delivers that isolation.",
+        "Each compute cluster stands completely on its own — it shares no compute resources with any other cluster, so whatever load lands on one has zero effect on how any other cluster performs."
+      ]
+    },
+    {
+      "lines": [
+        "And clusters aren't fixed in number either.",
+        "More of them can be added, on the fly or ahead of time, onto that same shared storage underneath — scaling up specifically as the number of queries running at once goes up."
+      ]
+    },
+    {
+      "lines": [
+        "Here's a harder one, worth working through before it's shown.",
+        "More compute clusters are now available on demand. Throw more of them at one single slow, heavy query — does that one query itself end up running any faster?"
+      ],
+      "answer": [
+        "No, it doesn't. More clusters let many queries run side by side without queuing behind each other.",
+        "They do nothing for how fast any one individual query executes on its own."
+      ]
+    },
+    {
+      "lines": [
+        "That's not a guess — it's stated plainly by the people who built this.",
+        "Scaling up cluster count is explicitly for handling more simultaneous users and queries. It is not meant to, and does not, make one slow-running query or a data-loading job run any faster."
+      ]
+    },
+    {
+      "lines": [
+        "Put the last two reveals together and the fix for that opening scenario falls right out.",
+        "Give the batch job its own cluster, give the dashboard its own cluster, both reading the exact same shared storage underneath — and there's simply nothing left for either one to contend over."
+      ]
+    },
+    {
+      "lines": [
+        "One more question, worth reasoning through before the answer lands.",
+        "A cluster keeps a cache of the data it's recently touched. Since a cache only ever seems to make things faster, is there any genuine downside here worth naming at all?"
+      ],
+      "answer": [
+        "There is. A cache quietly re-couples storage and compute, right back together, on purpose, purely for speed.",
+        "And anything deliberately re-coupled that way can also be lost — which is exactly what's coming next."
+      ]
+    },
+    {
+      "lines": [
+        "Here's how that cache actually works.",
+        "While a cluster is running, it keeps hold of the table data its own queries have already touched — so the next query that needs the same data can skip reading it from storage all over again."
+      ]
+    },
+    {
+      "lines": [
+        "And here's the part that makes it a real trade, not a free upgrade.",
+        "Suspend that same cluster, and the cache is gone with it, completely. The very next queries right after it wakes back up run slower again, until that cache rebuilds itself from nothing."
+      ]
+    },
+    {
+      "lines": [
+        "Three ideas, and it's worth keeping them as three, not blending them into one.",
+        "Taking storage out of compute's own box is step one. Giving each workload its own box is the separate step that actually ends the contention.",
+        "And a cache is the one place that box deliberately gets reconnected to storage anyway, on purpose, only for as long as it keeps running."
+      ]
+    },
+    {
+      "lines": [
+        "One last scenario, worth reasoning through before the answer lands.",
+        "A team wants to save money by suspending its compute cluster the instant it sits idle, as aggressively as possible. What does that decision actually give up in return?"
+      ],
+      "answer": [
+        "Its cache, every single time. Each suspend throws away whatever that cluster had built up.",
+        "So the very first queries after each resume pay the rebuild cost directly — the savings are real, but so is this trade, every time it happens."
+      ]
+    }
+  ]
+}

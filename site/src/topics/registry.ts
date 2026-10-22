@@ -1698,4 +1698,24 @@ export const TOPICS: TopicMeta[] = [
     handoff:
       "This billing model is exactly what made separating storage from compute economically attractive in the first place. Next: compute-storage separation itself, the architectural consequence of this topic's own economics.",
   },
+  {
+    id: 'de.compute-storage-separation-workload',
+    domain: 'data-engineering',
+    slug: 'data-engineering/m1-foundations/ch03-data-modeling-analytical/compute-storage-separation-workload',
+    title: 'Compute–storage separation and workload isolation',
+    syllabusTitle: 'Compute–storage separation and workload isolation',
+    kind: 'full',
+    status: 'live',
+    milestone: { number: 1, title: 'Foundations' },
+    chapter: { number: 3, title: 'Data modeling and analytical architecture', section: '3.3' },
+    minutes: 13,
+    verified: '2026-10-22',
+    introduces: ['compute-storage-separation', 'noisy-neighbor-isolation'],
+    uses: ['object-storage-billing-model', 'warehouse-lake-lakehouse-history'],
+    declared: ['sql-select'],
+    bridge:
+      "This billing model is exactly what made separating storage from compute economically attractive in the first place. This topic is compute-storage separation itself, the architectural consequence of that economics.",
+    handoff:
+      "Every benefit here assumed a consistent layering convention for organizing data as it moves through separated storage and compute. Next: medallion architecture, the layering convention lakehouses actually settled on, and its real failure modes.",
+  },
 ];
