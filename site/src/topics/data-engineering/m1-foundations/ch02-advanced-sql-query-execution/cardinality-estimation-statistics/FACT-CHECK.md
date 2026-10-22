@@ -1,0 +1,34 @@
+# Fact-check, currency and red team — Cardinality estimation and statistics
+
+Self-review (no independent reviewer ran this pass in this session — see the report). Each claim from `OUTLINE.md` → "Claims list" re-derived from the fetched source text in `sources/`, or, for measured claims, by re-running the query.
+
+| # | Claim | Check | Verdict |
+|---|---|---|---|
+| 1 | `reltuples`/`relpages` live in `pg_class`, updated by VACUUM/ANALYZE/some DDL, rescaled to current physical size | Re-read `sources/planner-stats.txt` and `sources/row-estimation-examples.txt` verbatim; both state this directly | Confirmed |
+| 2 | `default_statistics_target` defaults to 100 | `sources/planner-stats.txt`: "The default limit is presently 100 entries." Matches `CHAPTER.md`'s own shared-constants table, which already cites this topic for it | Confirmed |
+| 3 | Equal-frequency histogram interpolation formula | `sources/row-estimation-examples.txt` gives the exact formula and the `tenk1` worked numbers (0.100697, 1007 rows); re-derived the arithmetic by hand: `(1 + (1000-993)/(1997-993))/10 = (1 + 7/1004)/10 = 1.006972/10 = 0.1006972` ✓ | Confirmed |
+| 4 | MCV equality (`eqsel`) and off-MCV uniform-remainder formula | Re-derived both worked numbers from the quote: in-MCV `0.003 × 10000 = 30` ✓; off-MCV `(1 − 0.0303333)/(676−10) = 0.9696667/666 = 0.0014559` ✓, `×10000 = 14.559 → 15` ✓ | Confirmed |
+| 5 | `n_distinct` sign convention | `sources/pg-stats-view.txt` quoted verbatim; matches the `road.name` example in `planner-stats.txt` (`-0.5681108`, a fraction, not a count) | Confirmed |
+| 6 | Independence assumption multiplies clause selectivities | Quoted directly; re-derived the worked number: `0.100697 × 0.0014559 = 0.00014659 → ×10000 = 1.47 → 1` (doc says "1 (rounding off)") ✓ | Confirmed |
+| 7 | `eqjoinsel` no-MCV/unique-column formula | Quoted directly; re-derived: `(1-0)(1-0)/max(10000,10000) = 0.0001`, `rows = 50×10000×0.0001 = 50` ✓ | Confirmed |
+| 8 | Functional-dependency/MCV extended stats apply only to simple equality/IN on constants | Quoted verbatim from the "Limitations" subsection — this directly constrains step 8's `CREATE STATISTICS` reveal: it works here because the correlated predicate (`status='cancelled' AND channel='app'`) is exactly two simple equalities, not a range or an array-containment test. **Red-team catch:** my first attempt at this demonstration used `'holiday_sale' = ANY(tags)`, an array-containment predicate — re-reading the limitation quote, that is *not* one of the condition types extended statistics are documented to help with, so it would have been a misleading demonstration. Replaced with a plain `channel` column and two simple equalities, which the documentation does cover. | Caught and fixed before this file existed in its current form (see "Changes" below) |
+| 9 | "sometimes diverge significantly" (join estimate caveat) | Quoted verbatim, in context (comparing the two ways PostgreSQL could size the same join) | Confirmed, used honestly: the reel does not claim PostgreSQL's docs assert a specific multiplier for compounding error — step 11's ≈3.3× is this topic's own arithmetic (2.04 × 1.6, both independently measured in steps 2–3 and 9–10), presented as *this topic's* illustration of compounding, not as a documented PostgreSQL number |
+| 10 | Learned cardinalities (MSCN) abstract | Quoted verbatim from the arXiv abstract; topic only claims what the abstract claims (a deep-learning approach, built on sampling, addressing join-crossing correlation) and does not claim MSCN is deployed in any production planner | Confirmed, scope kept to "frontier", one sentence |
+| 11 | Measured numbers (histogram, MCV, correlated-columns, stale-stats) | Re-ran all four `EXPLAIN` queries a second time (see "Reproducibility" below) | Confirmed, with a caveat — see below |
+
+## Reproducibility caveat (important: changes `examples.py`'s design)
+
+`ANALYZE` samples rows at random (quoted directly in `sources/planner-stats.txt`: "entries in pg_statistic ... are always approximate even when freshly updated"). Re-running the exact same setup script a second time reproduces the same *behaviour* and the same *order of magnitude* (histogram near-exact, correlated-columns ≈2× under, stale-stats ≈1.6× under, both fixes landing within about 1%), but not necessarily the same *exact integers* every time, because the random sample ANALYZE draws will differ run to run. Red-team finding: an earlier draft of this plan implicitly treated the measured integers (138,866; 282,940; etc.) as exact constants to assert equality against in `examples.py`. That would make `test:examples` flaky the moment anyone regenerated the measurement. Fix applied: the measured integers are reported as historical fact (what this topic's own build actually saw, stated as such in the reel captions, `SOURCES.md` and post-notes), while `examples.py` itself implements PostgreSQL's documented formulas in pure Python and asserts them against (a) the documentation's own worked numbers, which are fixed text, and (b) this topic's measured *proportions*, with a tolerance wide enough to survive normal sampling noise, not exact integer equality.
+
+## Red team: predict steps
+
+- **Step 2 (independence predict):** wrong options checked for plausibility — "16%" and "37%" (picking one factor instead of multiplying) are tempting if a reader skims; "53%" (adding instead of multiplying) is the classic probability-rules mistake. The correct option (~6%) is deliberately not a round number, so it can't be guessed from the options' shape alone.
+- **Step 9 (stale-stats predict):** checked that "yes exactly" is genuinely tempting — a reader who thinks ANALYZE is required for row counts generally (true for the *shape*) could reasonably but wrongly extend that to the *count*, which PostgreSQL in fact rescales without a fresh ANALYZE. The reveal is explicit that this is a split answer (count: yes: shape: no), not a trick with no real basis.
+
+## Currency
+
+PostgreSQL 18 is current stable (released September 2025, per the chapter's own engine-of-record note); PostgreSQL 19 RC1 was out as of this fetch (October 2026, visible in the fetched page's own banner) but had not reached general availability, and nothing in Chapter 69/§14.2's documented mechanism (histogram/MCV/independence/extended statistics) is flagged as changed in the PostgreSQL 19 release notes at the time of writing. No reopen needed; flagged here so the next re-verification pass checks the 19.0 release notes specifically for this section.
+
+## Gap review
+
+No open gaps: every syllabus clause (histograms, MCVs, n_distinct, independence/uniformity, correlated columns + `CREATE STATISTICS`, sampling, stale statistics, join error compounding, learned estimators as frontier) is mapped in `coverage.json`.
