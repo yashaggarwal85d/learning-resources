@@ -545,7 +545,7 @@ Folder prefix for every topic: `site/src/topics/data-engineering/m1-foundations/
   - State why a `DISTINCT` aggregate and parallel aggregation don't mix, and why a `DISTINCT` aggregate here is measured taking a sort-based path.
 - **Introduces:** `hash-aggregation`, `sort-aggregation`, `partial-aggregation`. **Uses:** `hash-join`, `merge-join`, `work-mem-spill`. **Declared:** `sql-select`, `group-by`.
 - **Bridge:** "A join is decided. The same build/probe vs. sorted-input choice happens one level up, for GROUP BY — next." (Answers topic 21's handoff.)
-- **Handoff:** "Every mechanism so far has assumed a plan, once chosen, runs as written. Next: what happens when the query itself is rewritten before the planner ever sees the shape the SQL text described."
+- **Handoff:** "Every operator so far has treated a spill to disk as a fact to read off `EXPLAIN`, not a thing to explain. Next: what `work_mem` actually budgets, why a sort, a hash join and a hash aggregate all spill differently, and why concurrency multiplies the memory a workload actually needs."
 - **Prerequisites panel:** topics 20 and 21 (Before this).
 - **Visual idea:** two totals for the same `GROUP BY`, one from a hash table and one from a sort, crossing over as group count climbs from a handful to nearly every row; a single aggregate splitting into a row of partial aggregates feeding one finalize step; a `DISTINCT` aggregate's rows filing through a sort instead of dropping into a hash table.
 - **Lab:** reproduces the chapter lab's own "find the key-cardinality crossover where sort-based aggregation wins" directly, on a real measured table rather than a simulated one.
