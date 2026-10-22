@@ -5,9 +5,8 @@ on:
     branches: [main]
   pull_request:
   workflow_dispatch:
-  # Pushes test only the reels they can affect (scripts/affected.mjs); once a week every live reel is tested.
-  schedule:
-    - cron: '41 5 * * 0'
+  # A push or PR tests only the reels it can affect (scripts/affected.mjs): a fixed canary when shared code changed,
+  # so this stays fast as topics grow. The true full sweep is a separate workflow (full-sweep.yml, daily and on demand).
 
 permissions:
   contents: read
@@ -41,7 +40,7 @@ jobs:
           BASE="${{ github.event_name == 'push' && github.event.before || format('origin/{0}', github.base_ref) }}"
           A=$(node scripts/affected.mjs "$BASE")
           echo "$A"
-          echo "reels=$(node -e 'const a=JSON.parse(process.argv[1]); console.log(a.all ? "" : (a.slugs.join(",") || "none"))' "$A")" >> "$GITHUB_OUTPUT"
+          echo "reels=$(node -e 'const a=JSON.parse(process.argv[1]); console.log(a.all ? a.canary.join(",") : (a.slugs.join(",") || "none"))' "$A")" >> "$GITHUB_OUTPUT"
       - name: Live reels are locked
         run: node scripts/check-locked.mjs "${{ github.event_name == 'push' && github.event.before || format('origin/{0}', github.base_ref) }}"
       - name: No site yet

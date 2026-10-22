@@ -1,4 +1,7 @@
 name: Deploy site to GitHub Pages
+# The reel smoke test gating this deploy runs only the reels a push can affect (scripts/affected.mjs): a fixed
+# canary, one topic per domain, when the push touched shared code, so publishing stays fast as topics grow. The
+# true full sweep is .github/workflows/full-sweep.yml, daily and on demand.
 
 on:
   push:
@@ -51,7 +54,7 @@ jobs:
         run: |
           A=$(node scripts/affected.mjs "${{ github.event.before }}")
           echo "$A"
-          echo "reels=$(node -e 'const a=JSON.parse(process.argv[1]); console.log(a.all ? "" : (a.slugs.join(",") || "none"))' "$A")" >> "$GITHUB_OUTPUT"
+          echo "reels=$(node -e 'const a=JSON.parse(process.argv[1]); console.log(a.all ? a.canary.join(",") : (a.slugs.join(",") || "none"))' "$A")" >> "$GITHUB_OUTPUT"
       - uses: actions/setup-node@v4
         with:
           node-version: 22
