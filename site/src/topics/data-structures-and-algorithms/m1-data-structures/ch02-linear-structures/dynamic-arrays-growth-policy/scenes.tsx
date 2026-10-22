@@ -62,21 +62,23 @@ export function ReusePredict({ t, answer }: StepCtx) {
 
 // 3 · Doubling outgrows everything it ever freed.
 export function Crawl({ t }: StepCtx) {
-  const n = 5;
-  const bw = 60;
+  const heights = [10, 20, 30, 40, 50]; // stylised, not to scale: represents 1,2,4,8,16
+  const pileHeight = heights.reduce((s, v) => s + v, 0); // 150, represents 31
+  const base = 280;
+  const bw = 70;
   return (
-    <Svg label="Each freed chunk of a doubling vector, stacked, still falls one chunk short of the next request" h={320}>
-      <T x={30} y={28} s={13} f={C.taupe}>freed chunks, stacked (cherry) vs the next request (caramel)</T>
-      {Array.from({ length: n }, (_, i) => {
-        const h = 10 + i * 10;
+    <Svg label="Each freed chunk of a doubling vector, stacked, still falls one chunk short of the next request" h={380}>
+      <T x={30} y={28} s={13} f={C.taupe}>freed chunks, stacked</T>
+      <T x={330} y={28} s={13} f={C.taupe}>next request</T>
+      {heights.map((h, i) => {
         const a = easeOut(seg(t, 0.2 + i * 0.3, 0.7 + i * 0.3));
-        const yTop = 260 - Array.from({ length: i }, (_, j) => 10 + j * 10).reduce((s, v) => s + v, 0);
-        return <rect key={i} x={60} y={yTop - h} width={bw} height={h} fill={C.cherry} opacity={a} />;
+        const yTop = base - heights.slice(0, i).reduce((s, v) => s + v, 0);
+        return <rect key={i} x={40} y={yTop - h} width={bw} height={h} fill={C.cherry} opacity={a} />;
       })}
-      <rect x={160} y={260 - 10 * 32} width={bw} height={10 * 32} fill="none" stroke={C.caramel} strokeWidth={1.5} opacity={easeOut(seg(t, 1.8, 2.6))} />
-      <T x={60} y={280} s={13} f={C.cherryText} a="start">1+2+4+8+16 = 31</T>
-      <T x={160} y={280} s={13} f={C.caramel} a="start">next: 32</T>
-      <T x={300} y={25} s={13} f={C.latte} a="end">1 + 2 + &hellip; + 2ⁿ = 2ⁿ⁺¹ &minus; 1</T>
+      <rect x={330} y={base - pileHeight * 1.03} width={bw} height={pileHeight * 1.03} fill="none" stroke={C.caramel} strokeWidth={1.5} opacity={easeOut(seg(t, 1.8, 2.6))} />
+      <T x={40} y={base + 20} s={13} f={C.cherryText}>1+2+4+8+16 = 31</T>
+      <T x={330} y={base + 20} s={13} f={C.caramel}>32</T>
+      <T x={300} y={350} s={13} f={C.latte} a="middle">1+2+&hellip;+2ⁿ = 2ⁿ⁺¹&minus;1, one short</T>
     </Svg>
   );
 }
@@ -166,17 +168,17 @@ export function ShrinkToFit({ t }: StepCtx) {
   const a1 = easeOut(seg(t, 0.2, 1.2));
   const a2 = easeOut(seg(t, 1.6, 2.6));
   return (
-    <Svg label="shrink_to_fit as a fork: it may reallocate to a smaller buffer, or may do nothing at all" h={320}>
+    <Svg label="shrink_to_fit as a fork: it may reallocate to a smaller buffer, or may do nothing at all" h={340}>
       <T x={30} y={28} s={13} f={C.taupe}>a vector at low load factor</T>
       {cellRow(16, 30, 40, 18, 3)}
       <T x={300} y={110} s={14} f={C.crema} a="middle" o={a1}>shrink_to_fit()</T>
       <g opacity={a2}>
-        {cellRow(3, 30, 170, 18, 3, 1, C.caramel)}
-        <T x={30} y={210} s={13} f={C.caramel}>reallocated: capacity now 3</T>
-        {cellRow(16, 240, 170, 18, 3, 1, C.taupe)}
-        <T x={240} y={210} s={13} f={C.taupe}>or: unchanged, capacity still 16</T>
+        {cellRow(3, 30, 150, 18, 3, 1, C.caramel)}
+        <T x={30} y={190} s={13} f={C.caramel}>may reallocate: capacity 3</T>
+        {cellRow(16, 30, 220, 18, 3, 1, C.taupe)}
+        <T x={30} y={262} s={13} f={C.taupe}>or may do nothing: capacity 16</T>
       </g>
-      <T x={30} y={260} s={13} f={C.latte}>non-binding: both are standards-compliant</T>
+      <T x={30} y={300} s={13} f={C.latte}>non-binding: both are standards-compliant</T>
     </Svg>
   );
 }
@@ -201,13 +203,11 @@ export function Invalidate({ t }: StepCtx) {
   const flash = clamp(1 - Math.abs(seg(t, 1.6, 2.2) - 1) * 4);
   return (
     <Svg label="Three pointers into a vector, all turning invalid the instant it reallocates" h={320}>
-      <T x={30} y={28} s={13} f={C.taupe}>{resized ? 'reallocated: new buffer, old one abandoned' : 'three pointers, one past-the-end iterator'}</T>
-      {cellRow(8, 30, 50, 26, 8, resized ? 0.3 : 1, resized ? C.cherry : C.crema)}
-      {!resized && [1, 3, 6].map((i) => <T key={i} x={30 + i * 29 + 6} y={100} s={13} f={C.caramel} a="middle">&uarr;</T>)}
-      {resized && cellRow(8, 30, 140, 26, 8, 1, C.caramel)}
-      {resized && [1, 3, 6].map((i) => (
-        <T key={i} x={30 + i * 29 + 6} y={40} s={13} f={C.cherryText} a="middle" o={0.5 + 0.5 * flash}>invalid</T>
-      ))}
+      <T x={30} y={28} s={13} f={C.taupe}>{resized ? 'reallocated: old buffer abandoned' : 'three pointers into the vector'}</T>
+      {cellRow(8, 30, 60, 26, 8, resized ? 0.3 : 1, resized ? C.cherry : C.crema)}
+      {!resized && [1, 3, 6].map((i) => <T key={i} x={30 + i * 29 + 6} y={110} s={13} f={C.caramel} a="middle">&uarr;</T>)}
+      {resized && cellRow(8, 30, 160, 26, 8, 1, C.caramel)}
+      <T x={300} y={230} s={15} f={C.cherryText} a="middle" o={0.6 + 0.4 * flash}>{resized ? 'all three now invalid' : ''}</T>
       <T x={300} y={280} s={13} f={C.latte} a="middle">including the past-the-end iterator</T>
     </Svg>
   );
@@ -222,7 +222,8 @@ export function Locality({ t }: StepCtx) {
       {cellRow(16, 30, 40, 18, 16)}
       <rect x={30} y={38} width={4 * 21 - 3} height={24} fill="none" stroke={C.caramel} strokeWidth={2} opacity={a} />
       <T x={30} y={100} s={13} f={C.latte} o={a}>one line, several elements, one fetch</T>
-      <T x={30} y={180} s={13} f={C.taupe} o={easeOut(seg(t, 1.6, 2.4))}>pointer-chased (next topic): scattered, up to one line per node</T>
+      <T x={30} y={180} s={13} f={C.taupe} o={easeOut(seg(t, 1.6, 2.4))}>pointer-chased (next topic): scattered</T>
+      <T x={30} y={200} s={13} f={C.taupe} o={easeOut(seg(t, 1.7, 2.5))}>up to one cache line per node</T>
       {Array.from({ length: 6 }, (_, i) => (
         <circle key={i} cx={60 + ((i * 97) % 480)} cy={220 + ((i * 53) % 60)} r={10} fill="none" stroke={C.taupe} strokeWidth={1.2} opacity={easeOut(seg(t, 1.8 + i * 0.1, 2.4 + i * 0.1)) * 0.6} />
       ))}
@@ -246,8 +247,8 @@ export function Verdict({ t }: StepCtx) {
           <T x={140} y={40 + i * 50} s={14} f={C.crema}>{r.note}</T>
         </g>
       ))}
-      <T x={30} y={270} s={13} f={C.latte}>reserve and shrink_to_fit: precise, non-binding tools</T>
-      <T x={30} y={292} s={13} f={C.latte}>reallocation invalidates everything into the old buffer, always</T>
+      <T x={30} y={270} s={13} f={C.latte}>reserve, shrink_to_fit: precise, non-binding</T>
+      <T x={30} y={292} s={13} f={C.latte}>reallocation invalidates the old buffer, always</T>
     </Svg>
   );
 }
@@ -263,7 +264,8 @@ export function ProveIt1({ t }: StepCtx) {
       <T x={30} y={110} s={14} f={C.cinnamon} serif>g = 1.5</T>
       <T x={160} y={110} s={13} f={C.crema}>33 resizes &middot; {fmt(2099719)} copies</T>
       <rect x={30} y={120} width={400} height={28} fill={C.cinnamon} opacity={0.25 * easeOut(seg(t, 0.6, 1.9))} />
-      <T x={30} y={190} s={13} f={C.latte}>more than twice the copying, for barely less final capacity</T>
+      <T x={30} y={190} s={13} f={C.latte}>more than twice the copying,</T>
+      <T x={30} y={210} s={13} f={C.latte}>for barely less final capacity</T>
     </Svg>
   );
 }
@@ -277,7 +279,8 @@ export function ProveIt2({ t }: StepCtx) {
       <T x={160} y={40} s={13} f={C.crema}>85 resizes &middot; {fmt(8445096)} copies</T>
       <rect x={30} y={50} width={520} height={28} fill={C.latte} opacity={0.25 * a} />
       <T x={30} y={120} s={13} f={C.taupe}>vs 20 / {fmt(1048575)} for g = 2, 33 / {fmt(2099719)} for g = 1.5</T>
-      <T x={30} y={200} s={14} f={C.caramel}>gentler growth is not free: it pays in far more total copying</T>
+      <T x={30} y={200} s={14} f={C.caramel}>gentler growth is not free:</T>
+      <T x={30} y={222} s={14} f={C.caramel}>it pays in far more copying</T>
     </Svg>
   );
 }

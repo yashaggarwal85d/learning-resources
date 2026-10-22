@@ -25,6 +25,7 @@ const reel: Reel = {
       body: <>A vector doubles four times in a row. Does the memory it frees ever become large enough to satisfy the next request on its own?</>,
       duration: 1.8,
       fig: 'Reuse',
+      takeaway: 'Doubling a vector can never reuse any of the memory it has already freed.',
       predict: {
         options: [
           { label: 'Yes, after a few resizes' },
@@ -82,6 +83,7 @@ const reel: Reel = {
       body: <>Rust&rsquo;s Vec documents no particular growth rate. If the rate isn&rsquo;t promised, what is?</>,
       duration: 1.8,
       fig: 'RustGuarantee',
+      takeaway: 'A library’s real promise is usually the complexity bound, not the mechanism that delivers it.',
       predict: {
         options: [
           { label: 'Nothing at all' },

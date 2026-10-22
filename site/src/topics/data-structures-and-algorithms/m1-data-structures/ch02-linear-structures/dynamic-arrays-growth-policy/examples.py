@@ -107,6 +107,8 @@ def main():
     assert c2 == cap2 - 1 == 1_048_575
     assert w2 == N + c2 == 2_048_575
     assert r2 == 20
+    assert r15 == 33
+    assert c15 == 2_099_719
     print(f'g=2,   n={N:,}: {r2} reallocations, {c2:,} copies, final capacity {cap2:,} (waste {cap2 - N:,})')
     print(f'g=1.5, n={N:,}: {r15} reallocations, {c15:,} copies, final capacity {cap15:,} (waste {cap15 - N:,})')
     assert c15 > c2, 'g=1.5 does strictly more total copying than g=2 for the same n'
@@ -127,6 +129,8 @@ def main():
     wc, cc, rc, capc, _ = simulate_cpython(N)
     print(f'cpython, n={N:,}: {rc} reallocations, {cc:,} copies, final capacity {capc:,} (waste {capc - N:,})')
     assert rc > r15 > r2, 'the gentler the growth, the more reallocations for the same n'
+    assert rc == 85
+    assert cc == 8_445_096
 
     print('All checks passed.')
 
