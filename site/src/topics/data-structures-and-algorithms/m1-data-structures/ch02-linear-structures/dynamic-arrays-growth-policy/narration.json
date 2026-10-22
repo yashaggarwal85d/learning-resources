@@ -1,0 +1,130 @@
+{
+  "topic": "dsa.dynamic-arrays-growth-policy",
+  "steps": [
+    {
+      "lines": [
+        "Last time we proved that doubling a vector is amortized constant time to append, and that the proof holds for any fixed growth factor at all.",
+        "It never said which factor to pick, or why two became the default so many places use without ever re-deriving it.",
+        { "beat": 0.4 },
+        "That is today's question. Not whether it works. Which one, and why."
+      ]
+    },
+    {
+      "lines": [
+        "Here is a vector that doubles four times in a row. Each time, the old chunk is freed and a new, bigger one takes its place.",
+        "Watch the pile of freed chunks grow beside it.",
+        { "beat": 0.4 },
+        "Does that pile ever get big enough to supply the next chunk the vector asks for, on its own?"
+      ],
+      "answer": [
+        "Never, for a factor of two. Add up every chunk freed so far and it is always exactly one chunk short of the next one requested.",
+        "A few resizes in feels tempting, because the pile looks big by then, but it never actually catches up. And the allocator does not know anything special about this vector that would let it reuse memory some other way.",
+        "The vector can only ever crawl forward through memory. It can never step back into what it already gave up."
+      ]
+    },
+    {
+      "lines": [
+        "Here is why, stacked up so you can see it. One chunk, then two, then four, then eight.",
+        "Add them together and you get one short of sixteen, every single time.",
+        "That is not a coincidence of this one example. It is the identity itself: one plus two plus four, all the way up, is always one short of the next power of two."
+      ]
+    },
+    {
+      "lines": [
+        "Now switch the growth factor to one and a half instead of two.",
+        "Watch the same pile of freed chunks this time. It does catch up.",
+        { "beat": 0.4 },
+        "Facebook's own engineers worked out exactly how long it takes. A factor of one and a half lets the vector reuse its own freed memory after four reallocations. One point four five takes three. One point three takes only two."
+      ]
+    },
+    {
+      "lines": [
+        "Four real libraries answered this question four different ways.",
+        "The G C C team's C plus plus library doubles, and has stuck with that choice for years.",
+        "Facebook's own vector deliberately picked one and a half instead.",
+        "Python's own list grows far more gently, only about one eighth larger each time, plus a small constant.",
+        { "beat": 0.4 },
+        "And Rust's vector documents no fixed rate at all."
+      ]
+    },
+    {
+      "lines": [
+        "If Rust's vector will not commit to a rate, what does it actually promise you?",
+        { "beat": 0.4 },
+        "What is the one guarantee it will not give up?"
+      ],
+      "answer": [
+        "Amortized constant time push. Nothing at all about the rate that delivers it.",
+        "Rust's own documentation says this directly: no particular growth strategy is guaranteed, but whatever strategy is used will of course guarantee that bound.",
+        "A library's real promise is almost always the complexity bound, not the mechanism underneath it. Confusing the two is how code quietly breaks when a library changes its internals."
+      ]
+    },
+    {
+      "lines": [
+        "Reserve is not a resize by itself. It is a directive: tell the vector how big it is about to get.",
+        "Call reserve with sixteen, and it reallocates only if its current capacity is already smaller than sixteen.",
+        "After that call, nothing resizes again, not once, until the vector would actually need to grow past the capacity you reserved."
+      ]
+    },
+    {
+      "lines": [
+        "Shrink to fit looks like the opposite of reserve, and it is, with one important difference.",
+        "It will never make the vector's capacity bigger, and it may shrink it by reallocating into a smaller buffer.",
+        { "beat": 0.4 },
+        "But the standard itself calls this a non binding request. An implementation is allowed to do nothing at all, and still be correct."
+      ]
+    },
+    {
+      "lines": [
+        "Suppose you take a pointer into one of these cells, right before calling shrink to fit.",
+        { "beat": 0.4 },
+        "Is that pointer still safe to use afterward?"
+      ],
+      "answer": [
+        "It depends entirely on whether that call actually reallocated.",
+        "If it did, every reference, every pointer, every iterator into the old buffer is invalid, including the one that used to point just past the last element.",
+        "If it did not reallocate, every single one of them is still perfectly valid. The standard states this as one shared rule, for reserve and for shrink to fit alike."
+      ]
+    },
+    {
+      "lines": [
+        "So watch what happens the instant a reallocation actually fires.",
+        "Three pointers into the old buffer, all perfectly good a moment ago.",
+        { "beat": 0.4 },
+        "The new buffer appears, the old one is abandoned, and every single one of them turns invalid at once. Not gradually. Not probably. All of them, the same instant, every time it happens."
+      ]
+    },
+    {
+      "lines": [
+        "One more thing contiguous storage buys you, almost for free.",
+        "Fetch one cache line from a contiguous vector and you get several elements back in a single trip.",
+        { "beat": 0.4 },
+        "Scatter those same records across memory as separate linked nodes, and each one can cost its own trip. The next topic builds that structure and measures exactly how much that gap really costs."
+      ]
+    },
+    {
+      "lines": [
+        "So here is where the four libraries actually land.",
+        "G C C crawls forward and never looks back. Facebook's vector trades a little more copying for memory it can eventually reuse. Python grows gently and pays for it in extra resizes. Rust promises you the bound and keeps the mechanism free to change.",
+        { "beat": 0.4 },
+        "Reserve and shrink to fit are precise tools with one unconditional rule behind them: a reallocation invalidates everything into the old buffer, every time, with nothing in between."
+      ]
+    },
+    {
+      "lines": [
+        "Prove it. A million appends, built up from nothing.",
+        "Doubling resizes twenty times, copying about one million forty eight thousand elements in total.",
+        { "beat": 0.4 },
+        "A growth factor of one and a half resizes thirty three times, copying about two million one hundred thousand elements. More than twice the copying, for a final capacity that ends up barely smaller."
+      ]
+    },
+    {
+      "lines": [
+        "Now the same million appends, under Python's own formula.",
+        "Eighty five resizes. About eight million four hundred forty five thousand elements copied in total.",
+        { "beat": 0.4 },
+        "Gentler growth is not free. It simply moves the cost from large capacity you are not using yet, to a great deal more total copying. There is no growth policy that avoids paying somewhere."
+      ]
+    }
+  ]
+}

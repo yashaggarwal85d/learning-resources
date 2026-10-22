@@ -1,0 +1,6 @@
+- **Amortized cost**: the total cost of a sequence of operations divided by their number, proved to hold for every sequence. *Where you meet it:* the doubling-array bound this topic takes as already settled.
+- **Growth factor**: the multiplier a dynamic array's capacity is scaled by on a resize. *Where you meet it:* "g" throughout this reel; g = 2 doubles, g = 1.5 grows by half again.
+- **Capacity vs size**: capacity is how many elements the current buffer can hold; size is how many it actually holds right now. *Where you meet it:* a vector of size 17 in capacity 32.
+- **Reallocation**: allocating a new, larger block of memory, copying every existing element into it, and freeing the old block. *Where you meet it:* what happens every time a full vector grows.
+- **Pointer, reference, iterator**: three ways of referring to a specific element already in the vector, by address, by alias, or by position. *Where you meet it:* what a reallocation does to all three at once.
+- **Cache line**: the fixed-size chunk of memory a CPU actually moves between main memory and its cache on one access. *Where you meet it:* why several contiguous elements can arrive in a single fetch.

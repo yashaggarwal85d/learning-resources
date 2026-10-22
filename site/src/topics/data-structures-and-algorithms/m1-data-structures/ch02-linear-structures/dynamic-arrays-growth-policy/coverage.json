@@ -1,26 +1,82 @@
 {
-  "expert": [
-    { "item": "amortized O(1) append already holds for any fixed growth factor g > 1 (Chapter 1's result); this topic doesn't reprove it", "source": "CHAPTER.md handoff; Chapter 1 topics 5-6 (dsa.aggregate-accounting-methods, dsa.potential-method)", "placement": "step 1" },
-    { "item": "the memory-reuse argument: g = 2 means every new chunk is larger than the sum of every chunk freed before it, so the allocator can never satisfy a resize from the vector's own discards; any g < 2 eventually can", "source": "Folly FBVector.md", "placement": "step 4-5" },
-    { "item": "real libraries disagree on g: gcc's libstdc++ uses 2 (per Folly's own account), Folly's fbvector deliberately picks 1.5, CPython's list uses a much gentler ~1.125x + 6 policy, Rust's Vec explicitly declines to guarantee any factor at all", "source": "Folly FBVector.md; CPython listobject.c; doc.rust-lang.org Vec docs", "placement": "step 5-6" },
-    { "item": "reserve(n): a non-binding-in-effect-but-precisely-specified directive; reallocates iff current capacity < n; no reallocation on later insertions until size would exceed the reserved capacity", "source": "N4868 [vector]", "placement": "step 7" },
-    { "item": "shrink_to_fit(): a non-binding request (the standard explicitly allows the implementation to ignore it); never increases capacity; may reallocate", "source": "N4868 [vector]", "placement": "step 8" },
-    { "item": "reallocation invalidates every pointer, reference and iterator into the old buffer, including the past-the-end iterator; if no reallocation happens, they all remain valid", "source": "N4868 [vector]", "placement": "step 9-10" },
-    { "item": "contiguous storage touches one cache line per B elements on a scan; a pointer-chased structure can touch one cache line per element if nodes aren't allocated in order", "source": "Chapter 1 topic 2/10 (cache-lines, cache-miss); previewed here, measured in topic 2", "placement": "step 11" },
-    { "item": "the growth-factor choice is a real, shipped engineering decision with measurable consequences (total bytes ever allocated, number of reallocations for a given final size), not a textbook abstraction", "source": "examples.py: simulate g=2, g=1.5 and CPython's formula over the chapter's 1,000,000-append run", "placement": "Prove it" }
-  ],
+  "topic": "dsa.dynamic-arrays-growth-policy",
   "syllabus": [
-    { "clause": "amortized O(1) append", "mappedTo": "step 1", "quote": "amortized O(1) append" },
-    { "clause": "growth factor 2 vs 1.5 (memory-reuse argument)", "mappedTo": "steps 3-6", "quote": "growth factor 2 vs 1.5 (memory-reuse argument)" },
-    { "clause": "reserve/shrink", "mappedTo": "steps 7-8", "quote": "reserve/shrink" },
-    { "clause": "pointer invalidation on reallocation", "mappedTo": "steps 9-10", "quote": "pointer invalidation on reallocation" },
-    { "clause": "why contiguous storage wins on cache locality", "mappedTo": "step 11", "quote": "why contiguous storage wins on cache locality" }
+    { "clause": "amortized O(1) append", "at": [{ "step": "The doubling array, proved and left open" }] },
+    { "clause": "growth factor 2 vs 1.5 (memory-reuse argument)", "at": [
+      { "step": "Does the old memory ever come back?" },
+      { "step": "Doubling outgrows everything it ever freed" },
+      { "step": "A factor under two can reuse a block" },
+      { "step": "Four libraries, four growth policies" }
+    ] },
+    { "clause": "reserve/shrink", "at": [
+      { "step": "Reserve skips the early resizes" },
+      { "step": "Shrink is a request, not a promise" }
+    ] },
+    { "clause": "pointer invalidation on reallocation", "at": [
+      { "step": "Is a pointer safe after shrink_to_fit?" },
+      { "step": "Every pointer into the old buffer dies at once" }
+    ] },
+    { "clause": "why contiguous storage wins on cache locality", "at": [{ "step": "Contiguous wins before the first cache miss" }] }
   ],
   "sources": [
-    { "source": "N4868 [vector]", "items": ["reserve effects and complexity", "shrink_to_fit effects and complexity", "reallocation-invalidation remarks"], "mappedTo": "steps 7-10" },
-    { "source": "Folly FBVector.md", "items": ["gcc vs other compilers' growth factor", "the chunk-reuse geometric argument", "fbvector's own choice of 1.5"], "mappedTo": "steps 4-6" },
-    { "source": "Rust Vec docs", "items": ["Vec does not guarantee any particular growth strategy", "extend/append's amortized growth note"], "mappedTo": "step 6" },
-    { "source": "CPython listobject.c", "items": ["the over-allocation formula", "the stated growth pattern 0,4,8,16,24,32,40,52,64,76"], "mappedTo": "step 6", "out": null }
+    {
+      "source": "N4868 [vector]",
+      "items": [
+        { "item": "reserve effects and complexity", "at": [{ "step": "Reserve skips the early resizes" }] },
+        { "item": "shrink_to_fit effects and complexity", "at": [{ "step": "Shrink is a request, not a promise" }] },
+        { "item": "reallocation-invalidation remarks on both reserve and shrink_to_fit", "at": [
+          { "step": "Is a pointer safe after shrink_to_fit?" },
+          { "step": "Every pointer into the old buffer dies at once" },
+          { "deep": "What reallocation invalidates, and why" }
+        ] }
+      ]
+    },
+    {
+      "source": "Folly FBVector.md",
+      "items": [
+        { "item": "gcc vs other compilers' growth factor", "at": [
+          { "step": "Four libraries, four growth policies" },
+          { "deep": "Four libraries, four choices" }
+        ] },
+        { "item": "the chunk-reuse geometric argument for g = 2", "at": [{ "step": "Doubling outgrows everything it ever freed" }, { "deep": "The memory-reuse argument, in full" }] },
+        { "item": "the three reuse-after-N-reallocations numbers for g < 2", "at": [{ "step": "A factor under two can reuse a block" }, { "deep": "The memory-reuse argument, in full" }] },
+        { "item": "fbvector's own choice of 1.5", "at": [{ "step": "Four libraries, four growth policies" }, { "deep": "Four libraries, four choices" }] },
+        { "item": "jemalloc cooperation", "at": [{ "deep": "The frontier" }] },
+        { "item": "object relocation and IsRelocatable", "at": [{ "deep": "The frontier" }] }
+      ]
+    },
+    {
+      "source": "Rust Vec docs",
+      "items": [
+        { "item": "Vec does not guarantee any particular growth strategy", "at": [{ "step": "What does Rust actually guarantee?" }, { "deep": "Four libraries, four choices" }] },
+        { "item": "whatever strategy is used guarantees O(1) amortized push", "at": [{ "step": "What does Rust actually guarantee?" }] }
+      ]
+    },
+    {
+      "source": "CPython listobject.c",
+      "items": [
+        { "item": "the over-allocation formula", "at": [{ "deep": "Four libraries, four choices" }] },
+        { "item": "the stated growth pattern 0,4,8,16,24,32,40,52,64,76", "at": [{ "step": "Four libraries, four growth policies" }, { "deep": "Four libraries, four choices" }] }
+      ]
+    }
   ],
-  "gapReview": { "date": "2026-10-22", "reviewer": "self-review", "open": [] }
+  "expert": {
+    "by": "self-review",
+    "date": "2026-10-22",
+    "items": [
+      { "item": "amortized O(1) append already holds for any fixed growth factor g > 1 (Chapter 1's result); this topic doesn't reprove it, it asks which g", "at": [{ "step": "The doubling array, proved and left open" }] },
+      { "item": "g = 2 means every new chunk is larger than the sum of every chunk freed before it, so the vector can never reuse its own discarded memory", "at": [{ "step": "Doubling outgrows everything it ever freed" }] },
+      { "item": "any g < 2 eventually permits reuse of a previously freed chunk, with concrete reallocation counts for specific factors", "at": [{ "step": "A factor under two can reuse a block" }] },
+      { "item": "real libraries disagree on g: at least one doubles, at least one deliberately chose a sub-2 factor, and at least one language explicitly refuses to guarantee any factor", "at": [{ "step": "Four libraries, four growth policies" }] },
+      { "item": "a library's real contract is usually the complexity bound (amortized O(1) push), not the mechanism that happens to deliver it", "at": [{ "step": "What does Rust actually guarantee?" }] },
+      { "item": "reserve(n) is a directive, not a resize: it reallocates iff current capacity < n, and prevents further reallocation until the reserved capacity would be exceeded", "at": [{ "step": "Reserve skips the early resizes" }] },
+      { "item": "shrink_to_fit() is explicitly non-binding in the standard: it may do nothing at all and remain correct", "at": [{ "step": "Shrink is a request, not a promise" }] },
+      { "item": "reallocation invalidates every pointer, reference and iterator into the sequence unconditionally, including the past-the-end iterator, the instant it happens", "at": [{ "step": "Every pointer into the old buffer dies at once" }] },
+      { "item": "whether a pointer survives a call to reserve or shrink_to_fit depends entirely on whether that specific call actually reallocated, not on which function was called", "at": [{ "step": "Is a pointer safe after shrink_to_fit?" }] },
+      { "item": "a contiguous array lets one cache-line fetch serve several elements; a pointer-chased structure can cost one cache line per element, which the next topic measures", "at": [{ "step": "Contiguous wins before the first cache miss" }] },
+      { "item": "CPython's list over-allocates far more gently than either g = 2 or g = 1.5, trading many more, smaller reallocations for far less wasted capacity at any given moment", "at": [{ "step": "Four libraries, four growth policies" }, { "deep": "Four libraries, four choices" }] },
+      { "item": "a specific library's growth-factor choice is an implementation detail, never mandated by the C++ or Rust language standard itself; only the complexity bound and (for C++) reserve/shrink_to_fit's own effects are", "at": [{ "step": "Back to the problem" }] }
+    ]
+  },
+  "gapReview": { "date": "2026-10-22", "by": "self-review", "open": [] }
 }
