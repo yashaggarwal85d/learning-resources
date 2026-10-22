@@ -1,0 +1,49 @@
+{
+  "topic": "de.lambda-vs-kappa-architectures",
+  "syllabus": [
+    { "clause": "Lambda (batch + speed layers merged at serving; Marz)", "at": [{ "step": "Reveal: Lambda itself, quoted directly" }] },
+    { "clause": "Kappa (stream-only, reprocess by replaying the log; Kreps)", "at": [{ "step": "Reveal: Kappa itself, named by its own creator, quoted directly" }] },
+    { "clause": "the reprocessing and serving-merge trade-off", "at": [{ "step": "Reveal: the batch layer always wins, quoted directly" }, { "step": "Reveal: Lambda's own restatement and its real cost, quoted directly" }, { "step": "Reveal: reprocessing as the shared problem, quoted directly" }] },
+    { "clause": "why the industry drifted to unified engines (one codebase, no dual-logic drift)", "at": [{ "step": "Reveal: the honest trade, quoted directly" }] },
+    { "clause": "when a batch correction layer still earns its cost", "at": [{ "step": "Prove it" }] }
+  ],
+  "sources": [
+    {
+      "source": "Nathan Marz, \"How to beat the CAP theorem\"",
+      "items": [
+        { "item": "Lambda's own mechanics: batch and realtime layers run in parallel, merged at query time", "at": [{ "step": "Reveal: Lambda itself, quoted directly" }] },
+        { "item": "The realtime layer's own stack: read/write databases, incremental algorithms, a different reasoning model than the batch layer's pure functions", "at": [{ "step": "Reveal: the realtime layer's own stack, quoted directly" }] },
+        { "item": "The batch layer always eventually overrides the realtime layer's results, making the realtime layer's own complexity transient", "at": [{ "step": "Reveal: the batch layer always wins, quoted directly" }] }
+      ]
+    },
+    {
+      "source": "Jay Kreps, \"Questioning the Lambda Architecture\"",
+      "items": [
+        { "item": "Kreps's own restatement of Lambda, attributing it to Marz", "at": [{ "step": "Reveal: Lambda itself, quoted directly" }] },
+        { "item": "Lambda's real named cost: maintaining the same transformation logic correctly in two complex distributed systems, called not fixable", "at": [{ "step": "Reveal: Lambda's own restatement and its real cost, quoted directly" }] },
+        { "item": "Reprocessing (re-deriving output when code changes) is the real shared challenge both architectures answer", "at": [{ "step": "Reveal: reprocessing as the shared problem, quoted directly" }] },
+        { "item": "Kappa's mechanism: retain the full log, start a second instance of the same job from the earliest offset, switch over once caught up", "at": [{ "step": "Reveal: Kappa itself, named by its own creator, quoted directly" }] },
+        { "item": "Kreps himself named this architecture \"the Kappa Architecture\"", "at": [{ "step": "Reveal: Kappa itself, named by its own creator, quoted directly" }] },
+        { "item": "The efficiency trade-off between the two approaches is roughly a wash", "at": [{ "step": "Reveal: the honest trade, quoted directly" }] },
+        { "item": "Kreps's own stated reason to prefer the single-pipeline approach is operating one framework, not raw efficiency — the basis for the industry's drift to unified engines", "at": [{ "step": "Reveal: the honest trade, quoted directly" }] }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "Claude (single session, written from the syllabus line and the fetched sources before storyboarding; not independent of the builder, so a later owner review should repeat it)",
+    "date": "2026-10-22",
+    "items": [
+      { "item": "The first predict (step 3) is red-teamed against the plausible wrong answer that a merge of two independently-computed layers is pure arithmetic and so can't disagree; the reveal at step 5 corrects this by quoting the batch layer's permanent authority over the realtime layer, which is exactly what keeps any disagreement temporary rather than absent", "at": [{ "step": "Predict: does merging two independently-computed layers risk them disagreeing?" }] },
+      { "item": "The second predict (step 6) is red-teamed against the plausible wrong answer that the query-time merge step is the expensive part of Lambda; the reveal at step 7 quotes Kreps's own naming of the real cost (maintaining duplicate logic across two systems), which he calls not fixable, directly contradicting the merge-step guess", "at": [{ "step": "Predict: is running the same logic twice the expensive part of Lambda, or is it the merge step?" }] },
+      { "item": "The third predict (step 9) is red-teamed against the plausible wrong answer that stream processing can only see new data and therefore can never reprocess history on its own; the reveal at step 10 quotes Kreps's own mechanism (an offset that can be reset to the earliest retained record) directly refuting that assumption", "at": [{ "step": "Predict: could one stream-only pipeline reprocess history without a separate batch system?" }] },
+      { "item": "Step 8's reprocessing reveal is kept as its own step, separate from both the dual-logic-cost reveal (step 7) and the Kappa reveal (step 10), because Kreps's own source treats it as the shared problem both architectures answer differently — the bridge between Lambda's cost and Kappa's proposed fix, not a restatement of either", "at": [{ "step": "Reveal: reprocessing as the shared problem, quoted directly" }] },
+      { "item": "Step 11's honest-trade reveal deliberately keeps Kreps's efficiency comparison (roughly even) and his actual stated preference (operational simplicity) as two separate claims, since CHAPTER.md's own \"why the industry drifted to unified engines\" clause is about the second claim, not the first, and collapsing them would misattribute the drift to a performance win Kreps himself does not claim", "at": [{ "step": "Reveal: the honest trade, quoted directly" }] },
+      { "item": "The closing check (Prove it) is a genuinely new scenario — a retained log too large to replay inside the latency the system needs — testing whether the learner can apply the chapter's own \"when a batch correction layer still earns its cost\" exception rather than defaulting to \"Kappa always wins\" from the prior reveal", "at": [{ "step": "Prove it" }] },
+      { "item": "The bridge from topic 19 (medallion architecture) and the handoff to topic 21 (data mesh) are both taken verbatim from CHAPTER.md's own entry for topic 20 and checked against this topic's own content before use, rather than invented fresh", "at": [{ "step": "The shop's fraud check, one stream or two?" }] },
+      { "item": "This topic has no lab of its own (CHAPTER.md), and every claim traces to a direct quote verified word for word (scripts/sources.mjs check) from each architecture's own originator — Marz for Lambda, Kreps for both his own restatement of Lambda and his own proposed Kappa — matching CHAPTER.md's explicit instruction to attribute both to their actual originators", "at": [{ "step": "Reveal: Lambda itself, quoted directly" }, { "step": "Reveal: Kappa itself, named by its own creator, quoted directly" }] },
+      { "item": "The recap keeps three separate ideas distinct (Lambda's real cost is duplicate logic, not the merge; Kappa answers the same reprocessing problem with one pipeline; the industry's real reason to prefer unified engines is simplicity, not speed) matching the syllabus line's own several distinct clauses, rather than collapsing them into one vague \"Kappa is simpler\" takeaway", "at": [{ "step": "Recap" }] },
+      { "item": "No specific numeric claim (a particular storage multiplier, a particular latency figure) is made anywhere in this topic beyond what the sources state qualitatively, since neither source gives a reproducible number and this topic has no lab of its own to measure one independently", "at": [{ "step": "Reveal: the honest trade, quoted directly" }] }
+    ]
+  },
+  "gapReview": { "date": "2026-10-22", "by": "Claude (single session)", "open": [] }
+}

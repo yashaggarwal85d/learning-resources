@@ -1,0 +1,100 @@
+{
+  "topic": "de.lambda-vs-kappa-architectures",
+  "steps": [
+    {
+      "lines": [
+        "Picture a shop's own fraud check.",
+        "It has to answer in seconds for a card swipe happening right now, but it also has to be exactly right once every order from today has actually settled. Does meeting both of those honestly take one pipeline, or does it take two?"
+      ]
+    },
+    {
+      "lines": [
+        "Here's the first architecture, in the words of the person who actually named it.",
+        "A slow, thorough system and a fast, approximate one both run on the very same incoming data at the same time, and whatever each one comes up with gets stitched together the moment someone actually asks a question."
+      ]
+    },
+    {
+      "lines": [
+        "Sit with this before the next reveal.",
+        "Two separate systems, computing two separate answers from the same input, then glued together at the end. Could that gluing-together step ever leave you with two answers that quietly disagree with each other?"
+      ],
+      "answer": [
+        "Briefly, yes — but only briefly, and that's by design.",
+        "One of the two systems is always treated as the one that eventually wins. Whatever the fast system got wrong gets overwritten once the slow, thorough system catches up to the same data."
+      ]
+    },
+    {
+      "lines": [
+        "Here's what that fast system is actually built out of.",
+        "It leans on databases built for constant, incremental updates, and on algorithms that adjust a running answer bit by bit as new events arrive — a genuinely different way of thinking than the slow system's plain, from-scratch calculation."
+      ]
+    },
+    {
+      "lines": [
+        "And here's why that difference actually matters.",
+        "Whatever the fast system computes is treated as provisional the whole time. The slow system eventually recomputes the same thing from scratch and simply replaces it, so any mistake the fast system makes never sticks around for long."
+      ]
+    },
+    {
+      "lines": [
+        "Here's a harder question about where the real cost actually sits.",
+        "You have to write the very same business logic twice — once for the fast system, once for the slow one. Is keeping those two copies in sync the expensive part, or is stitching their two answers together at the end?"
+      ],
+      "answer": [
+        "Keeping the two copies in sync is the expensive part.",
+        "Gluing two already-computed answers together is comparatively simple. Writing the same transformation twice, in two completely different frameworks, and keeping both correct as requirements change, is the part that genuinely never gets easier."
+      ]
+    },
+    {
+      "lines": [
+        "Here's that cost, named directly by the person who lived through it.",
+        "Every change to the business logic has to be made twice, once in each framework, and kept perfectly in sync between them. He calls that specific burden something that simply can't be engineered away."
+      ]
+    },
+    {
+      "lines": [
+        "Now here's the deeper problem both architectures are actually trying to solve.",
+        "Whenever the code producing an output changes — a new rule, a fixed bug — every result that code ever produced has to be recomputed from the original input, or the output silently stops matching the logic that's supposed to define it."
+      ]
+    },
+    {
+      "lines": [
+        "Here's a genuinely open question worth guessing at first.",
+        "Suppose every single input event, going all the way back, was kept somewhere, fully intact and replayable from the very beginning. Could one single streaming system recompute all of that history by itself, with no separate slow system at all?"
+      ],
+      "answer": [
+        "Yes — if the full history is genuinely still there to replay.",
+        "A streaming system just tracks its own position in that history. Rewinding that position all the way back to the start and running forward again reprocesses everything, through the exact same logic that handles brand-new events."
+      ]
+    },
+    {
+      "lines": [
+        "Here's that second architecture, in its own creator's words.",
+        "Keep the complete history around, start a second copy of the same streaming job reading from the very beginning, let it catch all the way up, then simply swap it in. He gave this particular shape its own name."
+      ]
+    },
+    {
+      "lines": [
+        "Here's the honest comparison, stated by the same person who proposed the simpler version.",
+        "Measured purely on resource cost, the two approaches come out close to even. What actually drew him toward the simpler one wasn't speed at all — it was never having to build, test, and operate two separate systems side by side."
+      ]
+    },
+    {
+      "lines": [
+        "Let's put the whole comparison back together.",
+        "Running two systems side by side costs you a second copy of every rule, forever. Running one system that can rewind costs you nothing extra most of the time.",
+        "And the real reason teams actually prefer that isn't raw speed — it's having only one thing to build, test, and operate."
+      ]
+    },
+    {
+      "lines": [
+        "One closing scenario worth genuinely working through.",
+        "Imagine a pipeline whose full retained history has grown so enormous that rewinding and replaying all of it would itself take days, far past any deadline that matters. Does a single rewindable pipeline still fully cover that case by itself?"
+      ],
+      "answer": [
+        "Not on its own, no — and that's the one honest exception.",
+        "Once a replay genuinely can't finish inside the time that's actually needed, keeping a separate, slower system that's always correct eventually, purely as a backstop, still earns the extra cost of running it."
+      ]
+    }
+  ]
+}
