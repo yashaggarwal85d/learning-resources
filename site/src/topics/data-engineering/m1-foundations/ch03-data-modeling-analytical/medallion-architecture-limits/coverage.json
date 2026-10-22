@@ -1,0 +1,45 @@
+{
+  "topic": "de.medallion-architecture-limits",
+  "syllabus": [
+    { "clause": "bronze/silver/gold as quality contracts", "at": [{ "step": "Reveal: the Bronze contract, quoted directly" }, { "step": "Reveal: the Silver contract, quoted directly" }, { "step": "Reveal: the Gold contract, quoted directly" }] },
+    { "clause": "failure modes: layer sprawl, copy cost and latency, unclear ownership of \"silver\"", "at": [{ "step": "Reveal: layer sprawl's cost, quoted directly" }, { "step": "Reveal: fragmented silver-layer accountability, quoted directly" }, { "step": "Reveal: the Silver bottleneck, quoted directly" }] },
+    { "clause": "when to collapse or reshape layers", "at": [{ "step": "Prove it" }] }
+  ],
+  "sources": [
+    {
+      "source": "Databricks, \"What is Medallion Architecture?\"",
+      "items": [
+        { "item": "Medallion architecture organizes data into Bronze, Silver, and Gold layers, to progressively improve quality and structure", "at": [{ "step": "Reveal: medallion architecture itself, quoted directly" }] },
+        { "item": "Bronze's contract is raw, as-is data with load metadata attached, for audit and lineage", "at": [{ "step": "Reveal: the Bronze contract, quoted directly" }] },
+        { "item": "Silver's contract is conformed, \"just-enough\" cleansed data, an enterprise view of key business entities, not yet project-specific", "at": [{ "step": "Reveal: the Silver contract, quoted directly" }] },
+        { "item": "Gold's contract is consumption-ready, denormalized, project-specific data for reporting", "at": [{ "step": "Reveal: the Gold contract, quoted directly" }] }
+      ]
+    },
+    {
+      "source": "Modern Data 101, \"Data Products: A Case Against Medallion Architecture\"",
+      "items": [
+        { "item": "Not every pipeline needs all three transformation stages; forcing the pattern anyway causes unnecessary processing", "at": [{ "step": "Reveal: layer sprawl's cost, quoted directly" }] },
+        { "item": "That unnecessary processing shows up concretely as added latency (data must pass through every layer before it's usable) and added storage cost (the same data copied across layers)", "at": [{ "step": "Reveal: layer sprawl's cost, quoted directly" }] },
+        { "item": "Because different teams apply transformations at different stages, accountability for data quality becomes fragmented, with no single clear owner", "at": [{ "step": "Reveal: fragmented silver-layer accountability, quoted directly" }] },
+        { "item": "The Silver layer specifically bears the brunt of this, becoming a named bottleneck because downstream consumers pull from aggregates built without their own input", "at": [{ "step": "Reveal: the Silver bottleneck, quoted directly" }] }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "Claude (single session, written from the syllabus line and the fetched sources before storyboarding; not independent of the builder, so a later owner review should repeat it)",
+    "date": "2026-10-22",
+    "items": [
+      { "item": "The first predict (step 3) is red-teamed against the plausible wrong answer that a layer's name (\"Silver\") is itself its quality contract; the reveal sequence states each layer's contract as a separately quoted, specific behavior rather than letting the labels carry the argument", "at": [{ "step": "Predict: does naming a layer \"Silver\" automatically give it a quality contract?" }] },
+      { "item": "The second predict (step 7) is red-teamed against the plausible wrong answer that more layers of refinement is unconditionally better, the same fallacy pattern as the partitioning predict in de.object-storage-query-economics; the reveal at step 8 quotes the independent critique's own named cost of forcing stages a pipeline doesn't need", "at": [{ "step": "Predict: does forcing every pipeline through all three stages always improve its data?" }] },
+      { "item": "The third predict (step 9) is red-teamed against the plausible wrong answer that ownership tracks discovery location (a bug found in Gold is Gold's problem); the reveal at steps 10-11 quotes the critique's actual claim that different teams transform data at different stages, fragmenting accountability so that discovery location and true ownership are routinely different teams", "at": [{ "step": "Predict: whose job is it to fix a data-quality bug that surfaces in the Gold layer?" }] },
+      { "item": "The Silver-specific bottleneck (step 11) is kept as its own reveal, separate from the general fragmented-accountability claim (step 10), because the critique source itself treats them as two distinct, if related, points — a general problem (fragmented accountability) and a specific, named consequence of it landing hardest on one particular layer", "at": [{ "step": "Reveal: the Silver bottleneck, quoted directly" }] },
+      { "item": "The closing check (Prove it) is a genuinely new scenario, not a restatement of any reveal: a minimal pipeline with exactly one source and one consumer, testing whether the learner can apply the \"when to collapse or reshape\" decision rule rather than defaulting to keeping all three layers out of habit", "at": [{ "step": "Prove it" }] },
+      { "item": "The bridge from topic 18 (compute-storage separation) and the handoff to topic 20 (Lambda versus Kappa) are both taken verbatim from CHAPTER.md's own entries for topics 18 and 19 and checked against this topic's own content before use, rather than invented fresh", "at": [{ "step": "The shop's own pipeline, three stops or fewer?" }] },
+      { "item": "This topic has no lab of its own (CHAPTER.md), and every claim traces to a direct quote verified word for word (scripts/sources.mjs check): the term's own originating vendor for each layer's contract, and an independently authored critique (not affiliated with that vendor) for the failure modes, matching CHAPTER.md's explicit instruction to cite both", "at": [{ "step": "Reveal: medallion architecture itself, quoted directly" }, { "step": "Reveal: layer sprawl's cost, quoted directly" }, { "step": "Reveal: fragmented silver-layer accountability, quoted directly" }] },
+      { "item": "The recap keeps three separate ideas distinct (a layer's name needs a real, honored contract; unneeded stages cost real latency and storage regardless of benefit; Silver specifically bears an ownership-fragmentation cost) matching the syllabus line's own several named failure modes, rather than collapsing them into one vague \"medallion has downsides\" takeaway", "at": [{ "step": "Recap" }] },
+      { "item": "The critique source's broader argument (a data-product/data-mesh alternative that shifts ownership left) is deliberately not claimed as this topic's own conclusion — it's deferred to the post-notes Frontier section as the source's own proposed alternative, since evaluating that alternative's own tradeoffs is outside this topic's syllabus-defined scope", "at": [{ "step": "Reveal: the Silver bottleneck, quoted directly" }] },
+      { "item": "No specific numeric claim (a particular storage-cost multiplier, a particular latency figure) is made anywhere in this topic beyond what the sources state qualitatively, since neither source gives a reproducible number and this topic has no lab of its own to measure one independently", "at": [{ "step": "Reveal: layer sprawl's cost, quoted directly" }] }
+    ]
+  },
+  "gapReview": { "date": "2026-10-22", "by": "Claude (single session)", "open": [] }
+}

@@ -1754,4 +1754,24 @@ export const TOPICS: TopicMeta[] = [
     handoff:
       "Every benefit here assumed a consistent layering convention for organizing data as it moves through separated storage and compute. Next: medallion architecture, the layering convention lakehouses actually settled on, and its real failure modes.",
   },
+  {
+    id: 'de.medallion-architecture-limits',
+    domain: 'data-engineering',
+    slug: 'data-engineering/m1-foundations/ch03-data-modeling-analytical/medallion-architecture-limits',
+    title: 'Medallion architecture and its limits',
+    syllabusTitle: 'Medallion architecture and its limits',
+    kind: 'full',
+    status: 'live',
+    milestone: { number: 1, title: 'Foundations' },
+    chapter: { number: 3, title: 'Data modeling and analytical architecture', section: '3.3' },
+    minutes: 14,
+    verified: '2026-10-22',
+    introduces: ['medallion-bronze-silver-gold', 'medallion-failure-modes'],
+    uses: ['compute-storage-separation', 'warehouse-lake-lakehouse-history'],
+    declared: ['sql-select'],
+    bridge:
+      "Every benefit here assumed a consistent layering convention for organizing data as it moves through separated storage and compute. This topic is medallion architecture, the layering convention lakehouses actually settled on, and its real failure modes.",
+    handoff:
+      "Medallion architecture settled how data moves through layers once it's already landed. Next: an older, still-relevant architectural debate about how data gets there in the first place — batch and streaming, merged at serving (Lambda) or unified into one stream-only engine (Kappa).",
+  },
 ];

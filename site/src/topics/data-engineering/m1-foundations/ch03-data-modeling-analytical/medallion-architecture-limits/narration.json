@@ -1,0 +1,99 @@
+{
+  "topic": "de.medallion-architecture-limits",
+  "steps": [
+    {
+      "lines": [
+        "Picture a small shop's own pipeline, start to finish.",
+        "Raw orders come in, get cleaned into one shared view, then turn into a sales dashboard. Does that genuinely need to be three separate stops, or could it honestly be fewer?"
+      ]
+    },
+    {
+      "lines": [
+        "Here's the pattern this whole topic is built on, in its own words.",
+        "Data gets organized into three named stages, each one meant to leave that data in a genuinely better state — more trustworthy, more structured — than the stage right before it."
+      ]
+    },
+    {
+      "lines": [
+        "Here's a question worth sitting with before the next reveal.",
+        "One of those stages gets called the trustworthy, polished one. Does calling it that already make it trustworthy and polished?"
+      ],
+      "answer": [
+        "It doesn't, on its own. A name is just a label someone chose.",
+        "Whatever that stage actually promises has to be spelled out and genuinely delivered on — the label alone guarantees nothing."
+      ]
+    },
+    {
+      "lines": [
+        "Here's the first stage's own actual promise.",
+        "Land the data exactly the way the source system structured it, with load metadata attached — built purely for audit and lineage, nothing cleaned up yet at all."
+      ]
+    },
+    {
+      "lines": [
+        "Here's the middle stage's own actual promise.",
+        "Conform and clean it just enough to give a single shared, trustworthy view of the business's own key entities — not yet shaped around any one team's particular project."
+      ]
+    },
+    {
+      "lines": [
+        "And here's the final stage's own actual promise.",
+        "Shape it specifically for one project's reporting, ready to consume directly — the layer built for exactly one audience, not for everyone at once."
+      ]
+    },
+    {
+      "lines": [
+        "Here's a harder one, worth working through before it's shown.",
+        "Running every single pipeline through all three of these stages sounds like it can only help the data. Does it always actually leave that data better off?"
+      ],
+      "answer": [
+        "Not always. Plenty of data genuinely doesn't need three separate stages of refinement.",
+        "Pushing it through all three anyway still costs something real, even when nothing about the data actually benefits from the trip."
+      ]
+    },
+    {
+      "lines": [
+        "And that cost is concrete, not hypothetical.",
+        "Forcing data through stages it doesn't need adds real latency before anyone can use it, and real storage cost from keeping copies of the same data sitting in every stage at once."
+      ]
+    },
+    {
+      "lines": [
+        "One more question, worth reasoning through before the answer lands.",
+        "A data-quality bug turns up in that final, project-specific stage. It was found there — does that make it obviously that team's own job to go fix?"
+      ],
+      "answer": [
+        "Not obviously, no — and that uncertainty is itself the real problem.",
+        "Different teams touch the data at different stages along the way, so wherever a bug happens to surface and whoever actually owns fixing it are routinely two completely different teams."
+      ]
+    },
+    {
+      "lines": [
+        "Here's exactly why that happens.",
+        "When different teams each apply their own transformations at different stages, responsibility for getting the data right ends up spread out so thin that no one team can honestly say they own it."
+      ]
+    },
+    {
+      "lines": [
+        "And the middle stage bears the worst of this, specifically.",
+        "Every downstream team ends up pulling from a shared view that was built without any of their own input — which is exactly what turns that one stage into a genuine traffic jam."
+      ]
+    },
+    {
+      "lines": [
+        "Pull it all together, as three separate ideas, not one blurry one.",
+        "A stage's name promises nothing without a contract actually behind it. Stages a pipeline doesn't need still cost something real. And the middle stage specifically pays for serving everyone with no one's input."
+      ]
+    },
+    {
+      "lines": [
+        "One last scenario, worth reasoning through before the answer lands.",
+        "A tiny pipeline: exactly one source feeding it, exactly one team consuming it, nobody else touching any of that data. Does it still genuinely need all three stages?"
+      ],
+      "answer": [
+        "No, not really. The whole point of three stages is serving multiple consumers who all share one trustworthy view.",
+        "With only one consumer and no one else to serve, there's nothing to reuse — so collapse whichever stages this particular pipeline was never actually going to need."
+      ]
+    }
+  ]
+}
