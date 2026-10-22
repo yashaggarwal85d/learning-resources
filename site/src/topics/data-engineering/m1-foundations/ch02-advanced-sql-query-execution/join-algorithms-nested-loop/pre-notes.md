@@ -1,0 +1,6 @@
+- **Outer side / inner side**: in a nested-loop join, the side scanned once (outer) versus the side re-scanned for every outer row (inner). *Where you meet it:* the nested-loop mechanism step and why an index on the inner side matters.
+- **Build side / probe side**: in a hash join, the side used to build the hash table versus the side scanned to probe it. *Where you meet it:* the hash-join mechanism step.
+- **Equality condition**: a join condition of the form `a = b`, as opposed to a range or inequality. *Where you meet it:* why hash and merge join both need one, and why nested loop is the only algorithm that doesn't.
+- **Batch**: a chunk a hash join's build side is partitioned into, so each chunk can fit in memory one at a time. *Where you meet it:* the `work_mem` spill, read directly off `EXPLAIN (ANALYZE)`'s own batch count.
+- **Spill**: writing data to temporary disk files because it no longer fits in the memory budget it was given. *Where you meet it:* what happens to a hash table once it outgrows `work_mem`.
+- **Plan node** (carried over from topic 20): one step of a query plan. *Where you meet it:* every join in this topic is a single plan node whose type (Nested Loop, Hash Join, Merge Join) is what the whole topic is about.

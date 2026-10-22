@@ -1010,4 +1010,24 @@ export const TOPICS: TopicMeta[] = [
     handoff:
       'The order of the joins is decided. Next: what actually happens inside each one — nested loop, hash, or sort-merge — and how cardinality, sort order and memory decide which.',
   },
+  {
+    id: 'de.join-algorithms-nested-loop',
+    domain: 'data-engineering',
+    slug: 'data-engineering/m1-foundations/ch02-advanced-sql-query-execution/join-algorithms-nested-loop',
+    title: 'Join algorithms: nested-loop, hash, sort-merge',
+    syllabusTitle: 'Join algorithms: nested-loop, hash, sort-merge',
+    kind: 'full',
+    status: 'live',
+    milestone: { number: 1, title: 'Foundations' },
+    chapter: { number: 2, title: 'Advanced SQL and query execution', section: '2.3' },
+    minutes: 15,
+    verified: '2026-10-22',
+    introduces: ['nested-loop-join', 'hash-join', 'merge-join', 'work-mem-spill'],
+    uses: ['planner-cost-constants', 'join-order-search'],
+    declared: ['sql-select'],
+    bridge:
+      "The order of the joins is decided. Next: what actually happens inside each one — nested loop, hash, or sort-merge — and how cardinality, sort order and memory decide which.",
+    handoff:
+      'A join is decided. The same build/probe vs. sorted-input choice happens one level up, for GROUP BY — next.',
+  },
 ];

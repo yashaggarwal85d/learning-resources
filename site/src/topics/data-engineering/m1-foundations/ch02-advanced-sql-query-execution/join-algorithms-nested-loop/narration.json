@@ -1,0 +1,151 @@
+{
+  "topic": "de.join-algorithms-nested-loop",
+  "steps": [
+    {
+      "lines": [
+        "Two queries, the same two tables underneath both of them.",
+        "One runs in a few milliseconds. The other takes tens of times longer.",
+        { "beat": 0.4 },
+        "That gap is not just more work. The planner reached for a different mechanism entirely."
+      ]
+    },
+    {
+      "lines": [
+        "One row on one side. A huge table on the other, with an index sitting right on the column being matched.",
+        "Think about what has to happen to answer that join, not what it's called.",
+        { "beat": 0.4 },
+        "With only one row to drive from, which join strategy does that favor?"
+      ],
+      "answer": [
+        "The one that drives straight through the index, once, for that single row.",
+        "A huge table is irrelevant here if almost none of it ever gets touched."
+      ]
+    },
+    {
+      "lines": [
+        "The planner's own choice runs in well under a hundredth of a second.",
+        "Force it onto a different strategy instead, on the exact same question, and it takes more than ten times as long.",
+        "Nothing about the data moved. Only the plan did."
+      ]
+    },
+    {
+      "lines": [
+        "Picture the outer side producing rows one at a time. For each one, the inner side gets searched again, from scratch.",
+        "Searched again sounds expensive, and it would be, if that search meant scanning the whole inner table every time.",
+        "An index turns that repeated search into a single lookup, which is the entire reason this strategy wins when the outer side is small."
+      ]
+    },
+    {
+      "lines": [
+        "A different approach: read one whole side first and drop every row into a table held in memory, keyed by whatever the join is matching on.",
+        "Then read the other side once, and for each row, check that table instead of searching anything.",
+        "One pass over each input, not a repeated search — but this only works when the condition is an exact match, and the table built from one side has to actually fit in memory."
+      ]
+    },
+    {
+      "lines": [
+        "Same two tables again, but now with nothing filtered out at all. Every row on one side gets matched to the other.",
+        { "beat": 0.4 },
+        "With no small side left to drive from, which of the strategies you've just seen wins now?"
+      ],
+      "answer": [
+        "The one built around a table in memory and one pass over each side, since there's no longer a tiny side for a repeated search to exploit, and nothing already arrived in a useful order to lean on instead.",
+        "Being small bought the earlier plan its win. Here, nothing is small."
+      ]
+    },
+    {
+      "lines": [
+        "The planner's default choice wins by a real margin here, not a narrow one.",
+        "Forced onto the repeated-search strategy instead, it's slower. Forced onto a third strategy that depends on both sides already being in order, it's slower still — the slowest of the three, measured honestly rather than massaged to look better.",
+        "No small side to exploit, and no free ordering to lean on, cost that third approach the most."
+      ]
+    },
+    {
+      "lines": [
+        "A third approach needs both inputs to already be arranged in the same order as the join key, whether that came from an index or from an explicit sorting step.",
+        "Once both sides are in that order, the join itself is just walking two already-ordered lists side by side.",
+        "No table built in memory, no repeated searching — but if nothing was already sorted, someone has to pay to sort it first, and that's exactly the bill that made this approach the most expensive one measured here."
+      ]
+    },
+    {
+      "lines": [
+        "Four things decide which of these a planner reaches for: how small one side is relative to the other, whether either side already arrives in a useful order, whether the data in play fits the memory it's been given.",
+        "And whether the condition being matched is an exact equality at all.",
+        "Only one of these three approaches never needs that last one to be true."
+      ]
+    },
+    {
+      "lines": [
+        "Take the strategy built around a table held in memory, and shrink how much memory it's allowed to use, down to a tiny fraction of its usual budget.",
+        { "beat": 0.4 },
+        "What happens to the plan itself once that table no longer fits?"
+      ],
+      "answer": [
+        "It doesn't abandon the strategy. It splits the work into many smaller pieces instead, each one small enough to fit, and processes them one at a time.",
+        "Running out of room doesn't mean switching approaches — it means paying to spill some of the work to disk."
+      ]
+    },
+    {
+      "lines": [
+        "At the ordinary memory budget, that table fits in a single piece, and the whole join finishes in well under half a second.",
+        "Shrink the budget down to a small fraction of that, and the same table in memory now splits into dozens of separate pieces.",
+        "The whole join still finishes only a little slower — spilling cost far less here than choosing the wrong strategy entirely cost on the very first comparison."
+      ]
+    },
+    {
+      "lines": [
+        "That memory budget is the amount a sort or an in-memory table gets before either one starts writing its overflow to temporary files on disk instead.",
+        "Tables held in memory get a little extra room beyond the ordinary budget, since they tend to need it more.",
+        "Once even that extra room runs out, splitting into more and smaller pieces is how the join keeps running instead of running out of memory outright."
+      ]
+    },
+    {
+      "lines": [
+        "Same two tables once more, but now the condition being matched isn't an exact equality — it's a range. And this time, the repeated-search strategy has been explicitly told it isn't allowed.",
+        { "beat": 0.4 },
+        "Does the planner manage to avoid it anyway?"
+      ],
+      "answer": [
+        "No. Neither of the other two approaches can work without an exact equality to match on, so the repeated-search strategy is the only one left — turning it off or not.",
+        "Telling the planner not to use something doesn't remove it as the only option that was ever available."
+      ]
+    },
+    {
+      "lines": [
+        "The plan comes back using the repeated-search strategy anyway.",
+        "Look inside the planner's own numbers and the alternatives haven't vanished — they're still listed, just priced absurdly high, which is what actually discourages them instead of ruling them out.",
+        "Discouraged and disallowed are not the same thing, and this is a case where the difference is the whole story."
+      ]
+    },
+    {
+      "lines": [
+        "Before trusting which approach a join took, three things are worth checking.",
+        "Does one side of the join have an index the other side can drive into directly?",
+        "Is either side already arranged in the order the join needs?",
+        "And is the condition being matched even an exact equality in the first place?"
+      ]
+    },
+    {
+      "lines": [
+        "One row on the outer side. The join column on the inner side has an index.",
+        { "beat": 0.4 },
+        "Which approach is almost certain to win here?"
+      ],
+      "answer": [
+        "The repeated-search one, driven through that index — one outer row means that lookup only ever has to run once.",
+        "Small outer side, indexed inner side: the same shape as the very first comparison in this topic."
+      ]
+    },
+    {
+      "lines": [
+        "A plan built around a table in memory comes back reporting that its build side split into a dozen separate pieces instead of staying in one.",
+        { "beat": 0.4 },
+        "What does that number tell you, and what setting actually controls it?"
+      ],
+      "answer": [
+        "It means that table never fit in its memory budget as a single piece, so it had to split and spill extra pieces to disk — and the budget it outgrew is the one lever that controls this.",
+        "More than one piece is the plan telling you, directly, that it ran out of room."
+      ]
+    }
+  ]
+}

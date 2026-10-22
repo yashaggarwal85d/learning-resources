@@ -1,0 +1,51 @@
+{
+  "topic": "de.join-algorithms-nested-loop",
+  "syllabus": [
+    { "clause": "block and index nested loops,", "at": [{ "step": "Predict: one customer out of 100,000" }, { "step": "Reveal: 14.6× apart" }, { "step": "How a nested loop actually runs" }] },
+    { "clause": "build/probe hash joins,", "at": [{ "step": "How a hash join actually runs" }, { "step": "Reveal: hash wins, merge loses" }] },
+    { "clause": "merge joins over sorted inputs;", "at": [{ "step": "How a merge join actually runs" }, { "step": "Reveal: hash wins, merge loses" }] },
+    { "clause": "how cardinalities, existing sort order, memory and equality vs inequality predicates decide the choice.", "at": [{ "step": "What actually decides the choice" }, { "step": "Predict: shrinking work_mem" }, { "step": "Reveal: 1 batch becomes 64" }, { "step": "work_mem: the budget before the spill" }, { "step": "Predict: an inequality, and nested loop disabled" }, { "step": "Reveal: impossible to suppress entirely" }] }
+  ],
+  "sources": [
+    {
+      "source": "PostgreSQL 18 Documentation §14.1 \"Using EXPLAIN\"",
+      "items": [
+        { "item": "Nested-loop join: the inner child runs once for each outer row; cost built from the outer scan plus one repetition of the inner scan per outer row", "at": [{ "step": "How a nested loop actually runs" }] },
+        { "item": "Hash join: rows of one table entered into an in-memory hash table, the other table scanned and probed", "at": [{ "step": "How a hash join actually runs" }] },
+        { "item": "Merge join requires both inputs sorted on the join key, by an index scan or an explicit sort", "at": [{ "step": "How a merge join actually runs" }] },
+        { "item": "The enable/disable flags are \"a crude tool, but useful\" for forcing the planner off its own chosen strategy", "at": [{ "step": "Reveal: hash wins, merge loses" }] }
+      ]
+    },
+    {
+      "source": "PostgreSQL 18 Documentation §19.7.1 \"Planner Method Configuration\"",
+      "items": [
+        { "item": "enable_hashjoin, enable_mergejoin, enable_nestloop all default on", "at": [{ "step": "Predict: an inequality, and nested loop disabled" }] },
+        { "item": "\"It is impossible to suppress nested-loop joins entirely\"", "at": [{ "step": "Reveal: impossible to suppress entirely" }] }
+      ]
+    },
+    {
+      "source": "PostgreSQL 18 Documentation §19.4.1 \"Memory\"",
+      "items": [
+        { "item": "work_mem: the budget for a sort or hash table before it writes to temporary disk files, default 4MB", "at": [{ "step": "Predict: shrinking work_mem" }, { "step": "work_mem: the budget before the spill" }] },
+        { "item": "Hash-based operations get extra memory via hash_mem_multiplier", "at": [{ "step": "work_mem: the budget before the spill" }] }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "Claude (single session, written from the syllabus line and the fetched sources before storyboarding; not independent of the builder, so a later owner review should repeat it)",
+    "date": "2026-10-22",
+    "items": [
+      { "item": "Why a tiny, highly selective outer side with an indexed inner side makes nested loop win by a wide margin, measured directly rather than asserted", "at": [{ "step": "Predict: one customer out of 100,000" }, { "step": "Reveal: 14.6× apart" }] },
+      { "item": "Why hash join wins an unfiltered equi-join when neither a small outer side nor a free sort order is available", "at": [{ "step": "Predict: the full join" }, { "step": "Reveal: hash wins, merge loses" }] },
+      { "item": "That merge join measured as the most expensive of the three on this topic's own schema is an honest, reported finding, not a general ranking of the three algorithms", "at": [{ "deep": "Into the internals" }] },
+      { "item": "Reading a hash join's batch count directly off EXPLAIN (ANALYZE) as the signal that it spilled to disk, rather than inferring it from timing alone", "at": [{ "step": "Reveal: 1 batch becomes 64" }] },
+      { "item": "What enable_nestloop=off actually does under the hood (repricing alternatives, not forbidding nested loop), confirmed by reading the planner's own inflated cost for the disallowed paths", "at": [{ "step": "Reveal: impossible to suppress entirely" }, { "deep": "Into the internals" }] },
+      { "item": "Grace/hybrid hash join partitioning as the general mechanism behind a batch count, named but deliberately left to its own later topic rather than claimed here without a quoted source", "at": [{ "deep": "Into the internals" }] },
+      { "item": "Block nested loop (batching outer rows to amortize an unindexed inner re-scan) as a real technique this topic's own measured examples didn't need, since an index was always available", "at": [{ "deep": "Into the internals" }] },
+      { "item": "Why a query joined with a non-equality predicate was never a hash-join or merge-join candidate in the first place, as a production diagnostic rule", "at": [{ "deep": "In production" }] },
+      { "item": "work_mem's per-operation, per-session nature, and why raising it globally to fix one query can multiply total memory use across concurrent sessions", "at": [{ "deep": "In production" }] },
+      { "item": "Why enable_nestloop=off is a diagnostic tool rather than a production fix, since it discourages nested loop even on the small, highly selective joins where it's genuinely the fastest choice", "at": [{ "deep": "In production" }] }
+    ]
+  },
+  "gapReview": { "date": "2026-10-22", "by": "Claude (single session)", "open": [] }
+}

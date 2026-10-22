@@ -508,4 +508,26 @@ Folder prefix for every topic: `site/src/topics/data-engineering/m1-foundations/
 - **Lab:** hosts the §2.3 lab's "force alternative join orders" part directly (`join_collapse_limit = 1` on a real query); the Join Order Benchmark's 100×+ estimate-error hunt stays with topic 19's post-notes pointer and is not repeated here.
 - **Sources:** PostgreSQL 18 docs §19.7.2 ("Planner Cost Constants"), §14.1 ("Using EXPLAIN"), §14.3 ("Controlling the Planner with Explicit JOIN Clauses"), §61.1 and §61.3 ("Query Handling as a Complex Optimization Problem", "Genetic Query Optimization (GEQO) in PostgreSQL"); this topic's own measurements on a real PostgreSQL 16 instance (see its `SOURCES.md`).
 
+### 21. Join algorithms: nested-loop, hash, sort-merge (`de.join-algorithms-nested-loop`): full, §2.3
+
+- **Folder:** `join-algorithms-nested-loop`. About 15 min.
+- **Scope:**
+  - "block and index nested loops": nested loop with an index on the inner side, measured winning a selective join by a wide margin.
+  - "build/probe hash joins": the hash table built on the smaller side, probed by the larger; measured winning an unfiltered equi-join.
+  - "merge joins over sorted inputs": requires both inputs sorted on the join key (by an index or an explicit sort); measured as the most expensive of the three on this topic's own join, which is also an honest finding, not softened to make merge join look better than it measured.
+  - "how cardinalities, existing sort order, memory and equality vs inequality predicates decide the choice": the same join forced through all three algorithms via `enable_hashjoin`/`enable_mergejoin`/`enable_nestloop`, `work_mem` reduced to force a hash join to spill to disk (measured batch count and the resulting slowdown), and an inequality join predicate measured forcing nested loop even with it disabled — "impossible to suppress nested-loop joins entirely," confirmed directly.
+  - Leaves the aggregation side of the same build/probe vs. sorted-input split (hash vs. sort aggregation) to topic 22.
+- **Outcomes:**
+  - Name the three join algorithms and state which physical property (an index, existing sort order, or neither) each one needs.
+  - Predict which of the three a given join will prefer from its cardinalities and filter selectivity alone.
+  - Recognize a hash join spilling to disk from `EXPLAIN (ANALYZE)`'s own batch count, and explain why `work_mem` is the lever.
+  - Explain why a hash join needs an equality condition and a nested loop never does.
+- **Introduces:** `nested-loop-join`, `hash-join`, `merge-join`, `work-mem-spill`. **Uses:** `planner-cost-constants`, `join-order-search`. **Declared:** `sql-select`.
+- **Bridge:** "The order of the joins is decided. Next: what actually happens inside each one — nested loop, hash, or sort-merge — and how cardinality, sort order and memory decide which." (Answers topic 20's handoff.)
+- **Handoff:** "A join is decided. The same build/probe vs. sorted-input choice happens one level up, for GROUP BY — next."
+- **Prerequisites panel:** topics 19 and 20 (Before this).
+- **Visual idea:** a tiny filtered outer looping into an index on a huge inner table, next to the same join forced through a hash table sized for all of it; a hash table's single clean bucket row splitting into dozens of smaller batches once `work_mem` shrinks; two already-sorted streams zipping together for a merge join; an inequality predicate's join staying a nested loop no matter which other algorithm is switched off.
+- **Lab:** none of the chapter lab's named parts; its own "Try it" reproduces the nested-loop-vs-hash cardinality flip and the `work_mem` spill directly.
+- **Sources:** PostgreSQL 18 docs §14.1 ("Using EXPLAIN"), §19.7.1 ("Planner Method Configuration"), §19.4 ("Resource Consumption", `work_mem`); this topic's own measurements on a real PostgreSQL 16 instance (see its `SOURCES.md`).
+
 ---
