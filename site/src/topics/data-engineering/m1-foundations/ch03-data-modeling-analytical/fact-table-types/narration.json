@@ -1,0 +1,99 @@
+{
+  "topic": "de.fact-table-types",
+  "steps": [
+    {
+      "lines": [
+        "Same shop, four completely different fact tables.",
+        "One keeps a row per event. One keeps a row per period. One keeps a single row and rewrites it. One keeps no measurement at all."
+      ]
+    },
+    {
+      "lines": [
+        "Start with the simplest shape there is.",
+        "A row exists the moment something measurable actually happens, and nowhere else. That's what makes it dense in some places and sparse in others."
+      ]
+    },
+    {
+      "lines": [
+        "Here's a question worth pausing on.",
+        "An account that didn't move at all today — does today's snapshot still get a row for it, or does nothing happening mean no row?"
+      ],
+      "answer": [
+        "Still a row. The grain here was never the event in the first place; it's the period itself.",
+        "Every entity this process tracks shows up every period, whether or not anything happened to it."
+      ]
+    },
+    {
+      "lines": [
+        "Here's that proven with real accounts, not just claimed.",
+        "Three days, two accounts, zero activity between them — and every single day still shows both accounts present."
+      ]
+    },
+    {
+      "lines": [
+        "Now a completely different behavior.",
+        "A row for this one gets written exactly once, the moment the process begins. Everything after that is the same row, revisited."
+      ]
+    },
+    {
+      "lines": [
+        "Test that against your own instinct for a second.",
+        "An order line passes through three separate milestones on its way to being delivered. After all three, how many rows does it actually have?"
+      ],
+      "answer": [
+        "Still just one. Every milestone updates that same row in place; nothing new ever gets inserted after the first time.",
+        "That's genuinely unusual — every other fact table here only ever adds rows, never rewrites one."
+      ]
+    },
+    {
+      "lines": [
+        "Here it is, run for real, start to finish.",
+        "One row, inserted once. Then updated at shipping. Then updated again at delivery. The row count never moved, and two separate lags got computed straight from the dates."
+      ]
+    },
+    {
+      "lines": [
+        "Last shape, and it's the strangest one.",
+        "Sometimes nothing gets measured at all — just which things showed up together. Take everything that could have happened, subtract what actually did, and what's left is what never occurred."
+      ]
+    },
+    {
+      "lines": [
+        "Watch that subtraction happen on real names, not abstractions.",
+        "Three students were expected. Two actually showed up. Subtract one list from the other, and exactly one student falls out, the one who was missing."
+      ]
+    },
+    {
+      "lines": [
+        "Now bring all four back together around one question.",
+        "An order amount arrives late and needs correcting. Which of these four shapes just absorbs that the easy way, and which one has to go back and redo its own arithmetic?"
+      ],
+      "answer": [
+        "The per-event and per-period tables just take the correction as another number to add in.",
+        "The one with milestones can't do that — its lags come from two dates, so fixing one date means recomputing, never simply adding."
+      ]
+    },
+    {
+      "lines": [
+        "That split is worth stating plainly.",
+        "Two of these four fact tables absorb a late correction by simply summing it in. The milestone-driven one has to recompute its own derived numbers instead."
+      ]
+    },
+    {
+      "lines": [
+        "Step back and look at why these four even need to be different shapes.",
+        "Each one is just the natural consequence of a different question: did it happen, how much is on hand right now, how far along is it, or did it happen at all. Pick the wrong shape and the question you actually need to ask becomes impossible to write."
+      ]
+    },
+    {
+      "lines": [
+        "One more to try on your own.",
+        "A support ticket gets opened, gets a first response, then gets closed. Which of these four shapes actually fits that?"
+      ],
+      "answer": [
+        "The one built for milestones. A ticket has a clear start, a clear end, and defined steps in between.",
+        "The same ticket's row gets revisited at each of those steps, exactly the way the order line's did."
+      ]
+    }
+  ]
+}

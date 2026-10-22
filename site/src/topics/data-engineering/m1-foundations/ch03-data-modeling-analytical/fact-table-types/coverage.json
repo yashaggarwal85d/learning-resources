@@ -1,0 +1,55 @@
+{
+  "topic": "de.fact-table-types",
+  "syllabus": [
+    { "clause": "transaction, periodic snapshot, accumulating snapshot and factless facts (event and coverage)", "at": [{ "step": "Reveal: transaction fact, quoted directly" }, { "step": "Reveal: periodic snapshot, measured" }, { "step": "Reveal: accumulating snapshot, measured" }, { "step": "Reveal: factless fact, measured" }] },
+    { "clause": "how each absorbs late updates and which measures stay additive", "at": [{ "step": "Predict: which types stay additive under a late update?" }, { "step": "Reveal: the additivity verdict" }] }
+  ],
+  "sources": [
+    {
+      "source": "Kimball Group, \"Transaction Fact Tables\"",
+      "items": [
+        { "item": "A row corresponds to a measurement event at a point in space and time", "at": [{ "step": "Reveal: transaction fact, quoted directly" }] },
+        { "item": "Transaction fact tables may be dense or sparse; rows exist only if measurements take place", "at": [{ "step": "Reveal: transaction fact, quoted directly" }] }
+      ]
+    },
+    {
+      "source": "Kimball Group, \"Periodic Snapshot Fact Tables\"",
+      "items": [
+        { "item": "A row summarizes many measurement events over a standard period; the grain is the period, not the transaction", "at": [{ "step": "Predict: does an idle account still get a snapshot row?" }] },
+        { "item": "These tables are uniformly dense: a row is inserted for every entity, every period, even with zero activity", "at": [{ "step": "Reveal: periodic snapshot, measured" }] }
+      ]
+    },
+    {
+      "source": "Kimball Group, \"Accumulating Snapshot Fact Tables\"",
+      "items": [
+        { "item": "A row summarizes events at predictable steps between a process's defined start and end", "at": [{ "step": "Reveal: accumulating snapshot, quoted directly" }] },
+        { "item": "A row is inserted once, at creation, then revisited and updated as pipeline progress occurs — unique among the fact table types", "at": [{ "step": "Predict: how many rows after three milestones?" }] },
+        { "item": "Accumulating snapshots often include numeric lag measurements and milestone completion counters", "at": [{ "step": "Reveal: accumulating snapshot, measured" }] }
+      ]
+    },
+    {
+      "source": "Kimball Group, \"Factless Fact Tables\"",
+      "items": [
+        { "item": "A measurement event can record only dimension keys coming together, with no numeric fact at all", "at": [{ "step": "Reveal: factless fact, quoted directly" }] },
+        { "item": "Subtracting a real activity table from a real coverage table finds the set of events that did not happen", "at": [{ "step": "Reveal: factless fact, measured" }] }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "Claude (single session, written from the syllabus line and the fetched sources before storyboarding; not independent of the builder, so a later owner review should repeat it)",
+    "date": "2026-10-22",
+    "items": [
+      { "item": "The periodic-snapshot predict (step 3) is red-teamed against the plausible wrong answer that an idle account should be skipped since nothing happened; the reveal shows the grain is the period, not the event, so every entity gets a row regardless", "at": [{ "step": "Predict: does an idle account still get a snapshot row?" }] },
+      { "item": "The accumulating-snapshot row-count predict (step 6) is red-teamed against the plausible wrong answer that each milestone inserts a new row, since that is how the other two types behave; the reveal shows the row count staying at exactly one", "at": [{ "step": "Predict: how many rows after three milestones?" }] },
+      { "item": "The periodic snapshot (step 4), accumulating snapshot (step 7), and factless (step 9) demonstrations are each run against a real, disclosed throwaway table built for this topic, not a described hypothetical — the account-presence count, the row-count-after-three-updates, and the coverage-minus-activity subtraction are all executed, not asserted", "at": [{ "step": "Reveal: periodic snapshot, measured" }, { "step": "Reveal: accumulating snapshot, measured" }, { "step": "Reveal: factless fact, measured" }] },
+      { "item": "The additivity verdict (steps 10-11) is this topic's own synthesis, built directly on topic 8's additivity classes and marked here as reasoning rather than a further Kimball Group quote, since no single fetched source states the per-fact-table-type verdict in those terms", "at": [{ "step": "Reveal: the additivity verdict" }] },
+      { "item": "The closing check (Prove it) applies the taxonomy to a new, undisclosed-in-the-reveals pipeline (a support ticket's open/first-response/closed milestones) rather than re-testing the exact order-fulfillment example from the reveals", "at": [{ "step": "Prove it" }] },
+      { "item": "The recap keeps all four fact-table types as four separate ideas rather than collapsing them into one vague \"facts come in different shapes\" takeaway", "at": [{ "step": "Recap" }] },
+      { "item": "The bridge from topic 8 (grain-first dimensional design) is answered explicitly: this topic is framed as the four shapes a fact table itself can take once its grain is already decided, and the handoff to the next topic (conformed dimensions and drill-across) is confirmed by reading both CHAPTER.md entries side by side", "at": [{ "step": "Same shop, four different fact tables" }] },
+      { "item": "Every number that appears on screen (the account-day counts, the milestone-lag counts, the coverage/activity counts) traces to a literal constant in examples.py; every other quantity in reel.tsx is spelled in words, so no on-screen number is asserted without a matching computed value", "at": [{ "step": "Reveal: periodic snapshot, measured" }, { "step": "Reveal: accumulating snapshot, measured" }, { "step": "Reveal: factless fact, measured" }] },
+      { "item": "The accumulating-snapshot demonstration is built with a persistent throwaway schema and two real UPDATE statements against the same primary key, rather than two separate INSERTs dressed up to look like updates, so the row-count-stays-at-one claim reflects actual UPDATE semantics", "at": [{ "step": "Reveal: accumulating snapshot, measured" }] },
+      { "item": "The ligature characters in the accumulating-snapshot and factless quotes (\"workﬂow\", \"fulﬁllment\", \"deﬁned\") were copied character-for-character from the fetched HTML, verified by the word-for-word sources check rather than retyped from memory", "at": [{ "step": "Reveal: accumulating snapshot, quoted directly" }, { "step": "Reveal: factless fact, quoted directly" }] }
+    ]
+  },
+  "gapReview": { "date": "2026-10-22", "by": "Claude (single session)", "open": [] }
+}

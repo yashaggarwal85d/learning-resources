@@ -1,0 +1,42 @@
+{
+  "topic": "de.scd-type-2-implementation",
+  "syllabus": [
+    { "clause": "effective/expiry timestamps, current flags, hash-diff change detection", "at": [{ "step": "Reveal: SCD Type 2, quoted directly" }, { "step": "Reveal: hash-diff detection" }] },
+    { "clause": "MERGE-based loads, idempotent reloads", "at": [{ "step": "Reveal: MERGE, quoted directly" }, { "step": "Reveal: the MERGE load, measured" }, { "step": "Reveal: idempotency, measured" }] },
+    { "clause": "correctness under out-of-order and duplicate changes", "at": [{ "step": "Reveal: the replay, measured" }, { "step": "Reveal: the as-of query, measured" }] }
+  ],
+  "sources": [
+    {
+      "source": "Kimball Group, \"Type 2: Add New Row\"",
+      "items": [
+        { "item": "Type 2 changes add a new row with updated attributes rather than overwriting the old one", "at": [{ "step": "Reveal: SCD Type 2, quoted directly" }] },
+        { "item": "A new surrogate key is assigned per version, used in fact tables from that update until the next change", "at": [{ "step": "Reveal: SCD Type 2, quoted directly" }] },
+        { "item": "A minimum of three columns are added: row effective timestamp, row expiration timestamp, current row indicator", "at": [{ "step": "Reveal: SCD Type 2, quoted directly" }] }
+      ]
+    },
+    {
+      "source": "PostgreSQL Documentation, \"MERGE\"",
+      "items": [
+        { "item": "MERGE provides a single SQL statement that can conditionally INSERT, UPDATE or DELETE, instead of multiple procedural statements", "at": [{ "step": "Predict: does a single MERGE statement expire the old row and insert the new one at once?" }, { "step": "Reveal: MERGE, quoted directly" }] },
+        { "item": "Each candidate row's match status is set once, then WHEN clauses evaluate in order, with no more than one firing per row", "at": [{ "step": "Reveal: MERGE, quoted directly" }] }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "Claude (single session, written from the syllabus line and the fetched sources before storyboarding; not independent of the builder, so a later owner review should repeat it)",
+    "date": "2026-10-22",
+    "items": [
+      { "item": "The first predict (step 3) is red-teamed against the plausible wrong answer that expiring an old row and inserting a new one needs two separate statements; the reveal shows a single MERGE, using NOT MATCHED BY SOURCE and NOT MATCHED clauses together, doing both atomically", "at": [{ "step": "Predict: does a single MERGE statement expire the old row and insert the new one at once?" }] },
+      { "item": "The MERGE-load (step 5) and idempotency (step 7) demonstrations are both run against a real, disclosed throwaway customer dimension built for this topic, not a described hypothetical — the 2-row change on first run and the 0-row change on an identical second run are both executed, not asserted", "at": [{ "step": "Reveal: the MERGE load, measured" }, { "step": "Reveal: idempotency, measured" }] },
+      { "item": "The second predict (step 6) is red-teamed against the plausible wrong answer that re-running an insert-capable statement always adds more rows; the reveal shows the identical MERGE changing nothing the second time, because the join condition itself already accounts for the new state", "at": [{ "step": "Predict: does running the identical load again change anything?" }] },
+      { "item": "The hash-diff reveal (step 8) is this topic's own reasoning about why one hash comparison replaces a column-by-column comparison, not a further quote, since neither fetched source states that tradeoff explicitly — marked as reasoning in coverage.json rather than sourced fact", "at": [{ "step": "Reveal: hash-diff detection" }] },
+      { "item": "The third predict (step 9) is red-teamed against the plausible wrong answer that out-of-order or duplicated events corrupt the final history; the reveal shows a real feed, fed out of order with a duplicate, converging to the exact correct chain regardless", "at": [{ "step": "Predict: does an out-of-order, duplicated feed still converge correctly?" }] },
+      { "item": "The replay (step 10) and as-of (step 11) demonstrations run against a real, disclosed 4-row change feed (one event duplicated) for a fresh customer, deduplicated and rebuilt by a load that is itself re-run a second time from the identical raw feed to confirm byte-identical output", "at": [{ "step": "Reveal: the replay, measured" }, { "step": "Reveal: the as-of query, measured" }] },
+      { "item": "The closing check (Prove it) applies the same convergence reasoning to a new, undemonstrated scenario (an entire feed replayed twice from start to finish) rather than re-testing the exact single-duplicate case from the reveals", "at": [{ "step": "Prove it" }] },
+      { "item": "The recap keeps the SCD2 row shape, the atomic MERGE load, and out-of-order/duplicate correctness as three separate ideas rather than collapsing them into one vague \"handle changing dimensions carefully\" takeaway", "at": [{ "step": "Recap" }] },
+      { "item": "The bridge from topic 12 (bridge tables and many-to-many) is answered explicitly: this topic is framed as the mechanism for when a dimension's own attributes genuinely change over time, and the handoff to the next topic (SCD types 0-7 and selection) is confirmed by reading both CHAPTER.md entries side by side", "at": [{ "step": "One customer, one changed address" }] },
+      { "item": "Every number that appears on screen (the rows-changed counts, the distinct-version count, the current-row counts) traces to a literal constant in examples.py; every other quantity in reel.tsx is spelled in words, so no on-screen number is asserted without a matching computed value", "at": [{ "step": "Reveal: the MERGE load, measured" }, { "step": "Reveal: idempotency, measured" }, { "step": "Reveal: the replay, measured" }] }
+    ]
+  },
+  "gapReview": { "date": "2026-10-22", "by": "Claude (single session)", "open": [] }
+}

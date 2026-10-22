@@ -1,0 +1,83 @@
+{
+  "topic": "de.conformed-dimensions-drill-across",
+  "steps": [
+    {
+      "lines": [
+        "Two completely different business processes, one shared calendar between them.",
+        "Join their fact tables on that shared date and add up the amounts. Is the number that falls out actually trustworthy?"
+      ]
+    },
+    {
+      "lines": [
+        "Here's what has to be true before any of this even makes sense.",
+        "Two separate dimension tables only count as the same thing if their columns and their actual values line up exactly, not just loosely resemble each other."
+      ]
+    },
+    {
+      "lines": [
+        "This is the trap worth stopping on.",
+        "The calendar really is shared, column for column. Does that alone make it safe to join the two business processes straight through it and sum the result?"
+      ],
+      "answer": [
+        "No, and this is the part that surprises people. Sharing a dimension never promises the two processes record things at the same grain.",
+        "Join them directly anyway, and a mismatched grain multiplies rows whether the dimension conforms or not."
+      ]
+    },
+    {
+      "lines": [
+        "So here's the move that actually works instead.",
+        "Query each business process on its own, using the same shared column to label the results, then line those two already-finished answers up side by side. Never touch the two processes' own tables to each other."
+      ]
+    },
+    {
+      "lines": [
+        "Zoom out to where this gets decided before any of it is built.",
+        "Picture a grid: every core business process down one side, every shared dimension across the other, checked wherever a process actually uses it. That grid is the whole plan."
+      ]
+    },
+    {
+      "lines": [
+        "Now watch the trap actually spring, on real numbers.",
+        "Two of one kind and three of another, joined straight through that one shared date. The row count explodes past what either table has on its own, and the total comes out wildly overstated."
+      ]
+    },
+    {
+      "lines": [
+        "Here's the fix, run the same way.",
+        "Add each business process up on its own first, down to that one shared date, and only then set the two results side by side. One answer meets one answer — nothing left to multiply."
+      ]
+    },
+    {
+      "lines": [
+        "Two different numbers just came out of the exact same data.",
+        "Which one would you trust if someone asked you to bet on it?"
+      ],
+      "answer": [
+        "The smaller one, from adding each process up separately. That's the one with nothing multiplying it.",
+        "The bigger number only exists because of how the join was written, not because of anything real in either process."
+      ]
+    },
+    {
+      "lines": [
+        "Here's the proof that seals it.",
+        "Add up each business process completely on its own, with no join anywhere near it. Both totals land exactly on the smaller figure. Neither one comes anywhere close to the inflated number."
+      ]
+    },
+    {
+      "lines": [
+        "Pull the whole shape of this back together.",
+        "A shared dimension only earns the name once its columns truly line up. Where that gets planned is the grid of processes against dimensions. And comparing two processes always means finishing each one separately before you ever set them side by side."
+      ]
+    },
+    {
+      "lines": [
+        "One more, and this time you decide.",
+        "A third business process shows up, sharing that same calendar. Straight through a join with the others, or finished on its own first?"
+      ],
+      "answer": [
+        "Finished on its own first, every time. A shared calendar never tells you the processes behind it line up in grain.",
+        "Skip that step and you've recreated the exact same trap, just with one more table caught in it."
+      ]
+    }
+  ]
+}
