@@ -1,0 +1,87 @@
+{
+  "topic": "dsa.monotonic-stacks-queues",
+  "steps": [
+    {
+      "lines": [
+        "Here is the whole trick of this topic: you don't get a faster answer by working harder. You get it by refusing to remember things you'll never need again.",
+        "Watch the bars on screen. Each one only matters for as long as something shorter is still waiting behind it. The moment a taller bar shows up, the shorter ones are done. Forget them.",
+        "That single refusal is what turns an answer that takes a long time into one that doesn't."
+      ]
+    },
+    {
+      "lines": [
+        "Picture the obvious way to solve this: stand at bar two, and look at every bar to its right until you find one taller.",
+        "Watch what happens on a run that only gets shorter, bar after bar. You never find a taller one, so you walk all the way to the end. And you do that from every single starting bar.",
+        "That's the trap a lot of people fall into: it feels like a reasonable scan, but it repeats the same ground over and over, and the repeats pile up fast as the row gets longer."
+      ]
+    },
+    {
+      "lines": [
+        "So instead of scanning forward from each bar, scan once, left to right, and carry a small record of what you've seen.",
+        "The rule: keep that record strictly taller at the bottom than the top. The instant a new bar shows up that's taller than what's sitting on top, throw the top away first.",
+        "Why throw it away? Because that discarded bar just got its answer. The thing that knocked it off is the next taller bar it was waiting for."
+      ]
+    },
+    {
+      "lines": [
+        "Walk through it with me on five, three, four, two, six, left to right.",
+        "Five goes on. Three is shorter, so it goes on top of five. Four arrives: taller than three, so three comes off, and four learns its answer was four. Four stays, since it's shorter than five. Two goes on top of four.",
+        "Now six is about to arrive."
+      ],
+      "answer": [
+        "Four popped three the moment it arrived, so three already knows its answer is four.",
+        "Nothing else has popped yet, because nothing taller has shown up since. Five, four and two are still waiting, bottom to top, each one shorter than the one below it.",
+        "That's the pattern to hold onto: an element only leaves once something taller forces it out, never before."
+      ]
+    },
+    {
+      "lines": [
+        "Here's the question this picture is really answering: how many times, in total, across the whole row, does a bar get thrown away?",
+        "Look at it this way. A bar can only be thrown away if it was placed first. So the number of throwaways can never be more than the number of placements.",
+        { "beat": 0.3 },
+        "Add those two counts together, placements plus throwaways, and neither one can run past the number of bars. That's the whole argument — no bar gets charged twice, no matter how the throwing-away happens to cluster."
+      ]
+    },
+    {
+      "lines": [
+        "Now change the question. Instead of one answer per bar, imagine a window of a fixed width sliding across the row, one step at a time, and at each stop you want the tallest bar currently inside it.",
+        "The obvious move is to look at every bar in the window, every time it slides. Watch how much of that looking is wasted: most of the bars inside the new window were already inside the old one. You just looked at them a moment ago."
+      ]
+    },
+    {
+      "lines": [
+        "The fix reuses the exact same discipline as before, just applied at both ends of a two-sided record instead of one.",
+        "At the back: the instant a new bar arrives taller than what's waiting there, the shorter ones behind it are finished — they can never win the window's top spot while this new one is still in range.",
+        "At the front: once the oldest surviving bar's position has slid out of the window entirely, it's gone too, whether or not anything beat it.",
+        "Watch the front position specifically. Because of both rules together, it never holds anything but the current window's tallest bar."
+      ]
+    },
+    {
+      "lines": [
+        "Trace a window of width three over one, three, negative one, negative three, five, up to the moment it first lands on negative one, negative three, five.",
+        "What's sitting in the record at that instant?"
+      ],
+      "answer": [
+        "Five just arrived, and it's taller than every bar still inside the window, so it clears all of them out in one step, back to front: three, negative one, and negative three all lose to it in turn.",
+        "What's left is just five's own position. One entry, and it's already the window's maximum, with nothing left over from the earlier bars at all.",
+        "Notice the record can shrink to a single entry even though the window holds three bars — the record only ever holds bars that could still win."
+      ]
+    },
+    {
+      "lines": [
+        "You've now seen two different reasons a sequence of operations can come out cheap on average, and it's worth telling them apart, because they don't generalize the same way.",
+        "Earlier in this course, an array amortized its cost by committing to a schedule ahead of time: double the size, and the rare expensive resize pays for all the cheap steps since the last one. The schedule is fixed before a single element arrives.",
+        { "beat": 0.3 },
+        "Here, nothing is scheduled in advance. The bound falls out of a rule enforced fresh on every single step: never let the record stop being ordered. The data itself decides when something gets thrown out, not a plan written beforehand."
+      ]
+    },
+    {
+      "lines": [
+        "So does any of this actually hold up, or is it just a nice argument on a board?",
+        "Run both techniques against the slow, obvious method, on the same inputs, and check every single answer. They match every time — this isn't a different algorithm with a different outcome, it's the same answer, found by throwing away less work.",
+        { "beat": 0.3 },
+        "And watch the count of placements plus throwaways as the row gets longer, from a hundred bars to a hundred thousand. It barely grows faster than the row itself. That's the whole promise of this topic, measured instead of just claimed."
+      ]
+    }
+  ]
+}
