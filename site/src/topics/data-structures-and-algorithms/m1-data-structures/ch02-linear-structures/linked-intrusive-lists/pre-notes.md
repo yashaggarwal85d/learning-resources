@@ -1,0 +1,6 @@
+- **Pointer**: an address of a specific location in memory. *Where you meet it:* a node's "next" field, holding the address of the next node.
+- **Struct (record)**: a value made of several named fields stored together. *Where you meet it:* a kernel payload struct with an embedded link field inside it.
+- **Cache line and cache miss**: the fixed-size chunk a CPU moves between memory and cache on one access, and the stall when the needed data isn't already in cache. *Where you meet it:* why walking memory in allocation order costs far less than walking it out of order.
+- **Prefetching**: the hardware's own guess, ahead of time, at which memory address will be needed next. *Where you meet it:* why a sequential pointer walk is cheap and a shuffled one isn't.
+- **Hardware prefetcher**: declared again here (Chapter 1, Data Engineering's "memory hierarchy" track); not re-taught.
+- **Offset**: how many bytes a struct field sits from the start of its struct, fixed at compile time. *Where you meet it:* the arithmetic `container_of` is built on.

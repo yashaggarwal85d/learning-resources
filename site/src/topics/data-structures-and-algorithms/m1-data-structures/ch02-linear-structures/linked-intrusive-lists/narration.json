@@ -1,0 +1,125 @@
+{
+  "topic": "dsa.linked-intrusive-lists",
+  "steps": [
+    {
+      "lines": [
+        "A dynamic array wins by being contiguous. One allocation, and a single fetch from memory can serve several elements at once.",
+        "A linked structure gives that up on purpose. Every element gets its own little allocation, scattered wherever the allocator happens to put it.",
+        { "beat": 0.4 },
+        "So what does giving that up actually buy back? That's today's question, and the answer has three real parts."
+      ]
+    },
+    {
+      "lines": [
+        "Here's a list with only a head pointer, one pointer per node, pointing forward. Nothing points at the tail.",
+        "Append one more record at the very end. What does that cost?"
+      ],
+      "answer": [
+        "You have to walk every node, starting from the head, just to find the last one, before you can even attach the new one. That's linear time, not constant.",
+        "A singly linked list is fast exactly at the one place you kept a pointer to. Everywhere else, you're walking."
+      ]
+    },
+    {
+      "lines": [
+        "Add a second pointer to every node, pointing backward as well as forward, and something changes.",
+        "Removing a node you already have a pointer to costs nothing but re-pointing its two neighbours at each other. No walk at all.",
+        { "beat": 0.4 },
+        "Notice the condition, though. This doesn't make finding the node any faster. It only makes removing one you've already found faster."
+      ]
+    },
+    {
+      "lines": [
+        "Close the chain into a ring, with one node standing in as a sentinel instead of a true beginning and end.",
+        "Now no pointer anywhere in the structure is ever empty. Inserting or removing at what used to be the edge uses exactly the same code as the middle.",
+        "This is the shape the Linux kernel's own list actually uses, and now you can see why: one fewer special case, everywhere."
+      ]
+    },
+    {
+      "lines": [
+        "Here are the same six records, laid out two ways. On top, in the order you'd walk them. Below, scattered so that order is broken.",
+        "The list itself doesn't choose this. The allocator does, long before the list ever sees these nodes."
+      ]
+    },
+    {
+      "lines": [
+        "So: walking a list by following pointers, instead of jumping by index into an array. Is that always slower?"
+      ],
+      "answer": [
+        "No. It's slower exactly when the order you're walking in disagrees with the order the nodes actually sit in memory.",
+        "When they agree, the hardware can see what's coming and fetch it ahead of time, almost as cheaply as it does for an array. When they don't agree, every single step is a guess the hardware can't make."
+      ]
+    },
+    {
+      "lines": [
+        "Here's what that gap actually costs, from one real measurement.",
+        "Walked in memory order, a list costs about nine cycles per element, once it's too big for the fast caches.",
+        "Walked out of order, the same list costs about four hundred fifty cycles per element, and it keeps climbing as the list grows.",
+        { "beat": 0.3 },
+        "Roughly fifty times worse. And the only thing that changed between the two is which order the allocator happened to put the nodes in."
+      ]
+    },
+    {
+      "lines": [
+        "Now take a whole run of nodes out of the middle of one list and splice it into another.",
+        "Four pointers change. The two ends of the gap you're leaving, and the two ends of the gap you're filling. That's it, no matter how long the run is.",
+        { "beat": 0.3 },
+        "Try the same move on an array and every single element between the cut and the end has to physically shift. The list simply never pays that price."
+      ]
+    },
+    {
+      "lines": [
+        "Take a pointer into one of these nodes and hold onto it. Other nodes get inserted and removed elsewhere in the list.",
+        "That pointer is still good. A list node's address doesn't move for as long as the node is alive.",
+        { "beat": 0.4 },
+        "Compare that to last time's vector, where the exact same kind of pointer died the instant a single append triggered a reallocation."
+      ]
+    },
+    {
+      "lines": [
+        "Here's the Linux kernel's own list head. Just two pointers. No payload field at all.",
+        "Instead of allocating a separate node that points at your data, you embed this two-pointer struct directly inside your own struct.",
+        { "beat": 0.3 },
+        "One allocation instead of two. And because the link itself carries no data, the very same struct can embed a second one of these and belong to a second, completely independent list at the same time."
+      ]
+    },
+    {
+      "lines": [
+        "Given a pointer to that embedded link field, how do you get back to the struct that contains it?",
+        "You subtract the link field's offset inside the struct, a number fixed the moment the struct's layout was decided, at compile time.",
+        { "beat": 0.4 },
+        "That's the whole trick behind a macro called container of, and the kernel builds its own list entry lookups directly on top of it."
+      ]
+    },
+    {
+      "lines": [
+        "Suppose you call that macro and accidentally name the wrong struct type for the member you're recovering. Does anything catch that mistake?"
+      ],
+      "answer": [
+        "Yes, in the version shipping today. The macro checks, at compile time, that the pointer you passed actually matches the named member's type, and turns a mismatch into a build error instead of a silent, dangerous cast.",
+        "That's worth knowing specifically because older code built the same idea without that check at all. Reading the current source, not an old memory of it, is what catches the difference."
+      ]
+    },
+    {
+      "lines": [
+        "So: three things a linked list buys back for giving up contiguity. Splicing any length of run for a fixed, small cost. Addresses that never move while a node lives. And a design — linking the structure right inside your own data — an array simply can't express.",
+        "Against one real, measured cost: roughly fifty times worse, when the order you walk in disagrees with the order memory actually put things in."
+      ]
+    },
+    {
+      "lines": [
+        "Here's the splice claim, run for real. Cut a run out of a ten thousand node list and splice it elsewhere.",
+        "Four pointer rewrites. Try it with a run of one node, thirty seven nodes, five thousand nodes — still four.",
+        { "beat": 0.3 },
+        "The array equivalent moves thousands of elements every single time. The list's cost never changes at all."
+      ]
+    },
+    {
+      "lines": [
+        "And here's container of, not just described but actually built. A real structure, a real embedded link field, a real byte offset the compiler computed.",
+        "Subtract that offset from the link field's own address, and you land exactly back on the structure's address. Every time.",
+        { "beat": 0.3 },
+        "That's the whole mechanism, working, not just claimed."
+      ]
+    }
+  ]
+}
