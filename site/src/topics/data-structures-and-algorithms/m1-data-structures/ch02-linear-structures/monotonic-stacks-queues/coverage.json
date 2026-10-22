@@ -1,0 +1,51 @@
+{
+  "topic": "dsa.monotonic-stacks-queues",
+  "syllabus": [
+    { "clause": "next-greater-element and sliding-window maximum in O(n) amortized", "at": [
+      { "step": "The problem" },
+      { "step": "The invariant" },
+      { "step": "Why O(n)" },
+      { "step": "Sliding-window maximum, the problem" },
+      { "step": "The monotonic deque" },
+      { "step": "What's in the deque once the window reaches [-1, -3, 5]?" }
+    ] },
+    { "clause": "the invariant that makes each element enter and leave once", "at": [
+      { "step": "Why O(n)" },
+      { "step": "The two idioms compared" }
+    ] }
+  ],
+  "sources": [
+    {
+      "source": "Sarah Zhang, TJHSST, Monotonic Queues (2020)",
+      "items": [
+        { "item": "monotonic deque: deletions at both ends, insertion only at the end, head is the max or min of the window", "at": [{ "step": "The monotonic deque" }] },
+        { "item": "each element is enqueued once and dequeued at most once, so maintaining the structure is O(n)", "at": [{ "step": "Why O(n)" }, { "step": "The monotonic deque" }] },
+        { "item": "naive sliding-window scan is O(N*k)", "at": [{ "step": "Sliding-window maximum, the problem" }] },
+        { "item": "maintenance rule: drop expired head, pop smaller tail before pushing, head is the current max", "at": [{ "step": "The monotonic deque" }] }
+      ]
+    },
+    {
+      "source": "Jeff Erickson, Algorithms, Lecture 9 (reused from Chapter 1)",
+      "items": [
+        { "item": "aggregate method / summation method: amortized cost is total cost of n operations divided by n", "at": [{ "step": "Why O(n)" }, { "step": "The two idioms compared" }] }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "self-review",
+    "date": "2026-10-22",
+    "items": [
+      { "item": "naive next-greater-element rescans to the right per element, Θ(n^2) on a strictly decreasing input", "at": [{ "step": "The problem" }] },
+      { "item": "keeping the stack monotonically decreasing and popping before each push means every pop has just found its next-greater element", "at": [{ "step": "The invariant" }] },
+      { "item": "the stack's contents at any point are always a subsequence of the input seen so far, so it never holds more than n elements", "at": [{ "step": "The invariant" }] },
+      { "item": "the amortized argument bounds total pushes plus pops, not any single operation's cost — one pop can still cascade, but not often enough to add up past O(n)", "at": [{ "step": "Why O(n)" }] },
+      { "item": "a monotonic deque is the same decreasing invariant as the stack, but with popping allowed from the front too, for elements that aged out of the window rather than ones that lost to a taller neighbor", "at": [{ "step": "The monotonic deque" }] },
+      { "item": "Chapter 1's doubling array amortizes over a resize schedule set in advance (grow by a fixed factor); this chapter's structures amortize over a data-dependent invariant (stay decreasing) enforced on every operation — same aggregate-method machinery, a different thing being bounded", "at": [{ "step": "The two idioms compared" }] },
+      { "item": "the two techniques (stack, deque) are run against brute-force equivalents on the same random and adversarial inputs and agree exactly, while push/pop counts stay linear as input size grows", "at": [{ "step": "Prove it" }] },
+      { "item": "naive sliding-window maximum rescans each window from scratch, Θ(n*k), repeating most of the previous window's comparisons", "at": [{ "step": "Sliding-window maximum, the problem" }] },
+      { "item": "a monotonic deque never holds more than k elements, since only indices still inside the current window can survive the front-popping rule", "at": [{ "step": "The monotonic deque" }] },
+      { "item": "a strict pop condition (pop while strictly smaller, not smaller-or-equal) is what makes next-greater-element mean strictly greater; an equal-or-greater pop condition would answer a different question", "at": [{ "step": "The invariant" }] }
+    ]
+  },
+  "gapReview": { "date": "2026-10-22", "by": "self-review", "open": [] }
+}
