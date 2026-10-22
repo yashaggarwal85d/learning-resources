@@ -1,0 +1,99 @@
+{
+  "topic": "de.object-storage-query-economics",
+  "steps": [
+    {
+      "lines": [
+        "Same dataset, same question asked of it, stored four completely different ways.",
+        "JSON, one Parquet file, a Parquet directory split by month, and an Iceberg table. Which one actually costs the least to answer that question?"
+      ]
+    },
+    {
+      "lines": [
+        "Start with what storage itself actually bills for.",
+        "Keeping the bytes, moving them in and out, and transferring them elsewhere are three separate charges, not one bundled price — and even the storage charge splits further by size, how long it sits there, and which class holds it, since slower retrieval buys a lower storage rate."
+      ]
+    },
+    {
+      "lines": [
+        "Here's a question worth sitting with before the next reveal.",
+        "JSON needs no schema, no special writer — about as cheap to produce as a format gets. Does that cheapness carry all the way through to querying it back later?"
+      ],
+      "answer": [
+        "It doesn't. Writing without any structure is cheap precisely because nothing gets organized ahead of time.",
+        "That's exactly what makes reading it back slower and costlier — someone has to do that organizing work at query time instead."
+      ]
+    },
+    {
+      "lines": [
+        "Run the exact same question against both formats and compare.",
+        "Against JSON, the engine reads back far more bytes to answer it than against the Parquet copy — Parquet only has to touch the columns this particular question actually needs."
+      ]
+    },
+    {
+      "lines": [
+        "Query compute itself splits into two genuinely different billing models.",
+        "One charges for how many bytes a query scans, no matter how long it takes to run. The other charges for compute capacity held in reserve, no matter how many bytes any one query scans."
+      ]
+    },
+    {
+      "lines": [
+        "Here's a harder one, worth working through before it's shown.",
+        "Splitting one file into twelve smaller ones, one per month, sounds like a pure win — smaller files, less to touch per question. Does that always come out cheaper?"
+      ],
+      "answer": [
+        "Not always — it depends entirely on what's being asked.",
+        "Splitting by month helps enormously when a question only needs one month. It does nothing to help, and can genuinely hurt, a question that needs every month at once."
+      ]
+    },
+    {
+      "lines": [
+        "Ask for just one month out of twelve and watch what happens.",
+        "Against the layout split by month, the engine reads far fewer bytes than against the single file holding every month together — it only ever opens the one file that could possibly match."
+      ]
+    },
+    {
+      "lines": [
+        "Now ask for every month at once, on that exact same split layout.",
+        "It reads more bytes than the single large file holding the identical rows — twelve files each carry their own overhead just to open, and that overhead adds up past what one big file ever cost."
+      ]
+    },
+    {
+      "lines": [
+        "Set the questions aside entirely and just look at what sits on disk.",
+        "The JSON copy of this same data takes up far more room than any of the three columnar layouts holding those exact same rows — storage cost and query cost move almost independently of each other."
+      ]
+    },
+    {
+      "lines": [
+        "One more question, worth reasoning through before the answer lands.",
+        "Think about everything an open table format actually promises — transactions, a catalog, concurrent writers. Does any of that, by itself, change how many bytes a question against the data actually ends up reading?"
+      ],
+      "answer": [
+        "It doesn't. Transactions and a catalog are one property; how the files are physically laid out underneath is a completely separate one.",
+        "Bytes read tracks that physical layout, not whichever format is wrapped around it."
+      ]
+    },
+    {
+      "lines": [
+        "Confirm that directly: wrap the same data, unpartitioned, in an actual Iceberg table and run both questions again.",
+        "Its bytes read track the bare Parquet file sitting underneath it almost exactly — for the narrow question and the broad one alike."
+      ]
+    },
+    {
+      "lines": [
+        "Pull it all back together.",
+        "Storage, requests, and query compute are billed on entirely separate meters. What actually moves bytes scanned is the physical layout of the files, not which format wraps them — and which layout wins depends completely on whether the next question is narrow or broad."
+      ]
+    },
+    {
+      "lines": [
+        "One last scenario, worth reasoning through before the answer lands.",
+        "Picture a dashboard that only ever asks for the single most recent day's data, never anything more. Of today's four layouts, which one should that dashboard actually be built on?"
+      ],
+      "answer": [
+        "Something split finely enough to isolate just that one day's worth of data, not one large undivided file.",
+        "A question that's permanently narrow, in the exact same shape every single time, is exactly the case where fine-grained splitting keeps winning — none of the broad-question cost ever shows up, because that question never gets asked."
+      ]
+    }
+  ]
+}
