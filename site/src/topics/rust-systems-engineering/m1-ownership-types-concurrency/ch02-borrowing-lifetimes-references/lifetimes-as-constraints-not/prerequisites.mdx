@@ -1,0 +1,22 @@
+import Resource from '../../../../../components/Resource.astro';
+
+<section class="prereq" data-section="chapter-so-far">
+
+### <span class="n">01</span> This chapter's rule so far
+
+<ul class="resources">
+  <Resource kind="reel" host={props.host} domain="rust-systems-engineering" title="Aliasing XOR mutability">The previous topic's rule covers how many borrows exist at once. This one covers how long each borrow is allowed to last.</Resource>
+</ul>
+
+</section>
+
+<section class="prereq" data-section="references-and-borrowing">
+
+### <span class="n">02</span> The Book's references and borrowing
+
+<ul class="resources">
+  <Resource kind="reading" title="References and Borrowing" href="https://doc.rust-lang.org/book/ch04-02-references-and-borrowing.html" by="Klabnik, Nichols and Krycho, The Rust Programming Language">The informal picture of `&T`/`&mut T` this topic turns into elision rules and a variance axis.</Resource>
+  <Resource kind="reading" title="Validating References with Lifetimes" href="https://doc.rust-lang.org/book/ch10-03-lifetime-syntax.html" by="Klabnik, Nichols and Krycho, The Rust Programming Language">The Book's own first pass at lifetime syntax, before this topic's elision and variance detail.</Resource>
+</ul>
+
+</section>
