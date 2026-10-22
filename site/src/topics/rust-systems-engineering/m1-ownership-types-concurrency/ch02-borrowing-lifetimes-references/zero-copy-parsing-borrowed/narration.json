@@ -1,0 +1,88 @@
+{
+  "topic": "rust.zero-copy-parsing-borrowed",
+  "note": "Written to be spoken: one sentence or phrase per line; {\"beat\": s} is a deliberate pause; numbers and codes are said the way a person would say them, never shown as digits. `answer` plays after the learner answers a predict step.",
+  "steps": [
+    {
+      "lines": [
+        "Here is a header pulled out of a raw buffer of bytes, and every one of its fields is simply a window onto that same buffer. Nothing about parsing it allocated a second copy anywhere.",
+        { "beat": 0.3 },
+        "That is the whole idea of a zero copy parse: the parsed value borrows the bytes it describes instead of duplicating them."
+      ]
+    },
+    {
+      "lines": [
+        "Now picture a function that builds its own buffer right there on the spot, as a plain owned vector, parses it, and tries to hand back that header.",
+        "Everything the header points at lives inside a value this function itself created and is about to throw away when it returns.",
+        { "beat": 0.3 },
+        "Does handing back that header actually compile?"
+      ],
+      "answer": [
+        "No, and the reason is the same rule from last time, applied without exception. A borrow is never allowed to outlive the thing it was taken from.",
+        "The vector is dropped the moment this function ends, so a header still pointing into it would be pointing at memory that no longer belongs to anyone. The compiler refuses before that can ever happen."
+      ]
+    },
+    {
+      "lines": [
+        "Try writing exactly that function, and the compiler's answer is specific rather than vague: it names the local variable by name and says plainly that you are returning a value which references data owned by the function you are already leaving.",
+        "That is the shape to recognize any time a function seems to hand back a borrow of something it only just created for itself."
+      ]
+    },
+    {
+      "lines": [
+        "Here is a type built for exactly the mostly reading, occasionally writing case: it starts out simply borrowing, and only becomes its own independent copy the first moment something actually tries to change it.",
+        "Run it over data that never needs changing, and it quietly stays a borrow the entire time, no copy ever made."
+      ]
+    },
+    {
+      "lines": [
+        "Call that same function twice: once on values that are all already fine as they are, and once on a list that has one value needing to be flipped.",
+        { "beat": 0.3 },
+        "Which of those two calls is the one that actually ends up making a private copy?"
+      ],
+      "answer": [
+        "Only the second call, the one with something that genuinely needs changing, ever triggers a copy.",
+        "The first call never finds anything to flip, so the step that would have cloned is simply never reached, and the value stays a plain borrow the whole way through."
+      ]
+    },
+    {
+      "lines": [
+        "Now here is a different kind of container entirely, one built specifically so that sharing never has to mean copying. A function can build its own buffer, hand this container back freely, and nothing about doing so counts as borrowing from that function's own stack.",
+        "Cloning this container only ever nudges a shared count up by one. Carving out a narrower view from it only ever narrows which part of the same memory you are looking at. Neither one duplicates a single byte."
+      ]
+    },
+    {
+      "lines": [
+        "Here is the attempt almost everyone eventually makes: a struct meant to own a string outright, plus a second field meant to borrow straight into that very same string, built and handed back together in one go.",
+        "The compiler produces two separate complaints about this one attempt, not one. It will not let you return something referencing data this function owns, and it will not let you move that same data out while something else is still actively borrowing it."
+      ]
+    },
+    {
+      "lines": [
+        "Now take that identical shape, an owned field plus a field meant to borrow it, and hand it to a tool built specifically to make this pattern safe.",
+        { "beat": 0.3 },
+        "Does this version, built through that tool's own generated helper, actually compile and work?"
+      ],
+      "answer": [
+        "Yes, and the trick is ordering. The owned field is settled into its final, permanent spot first, and only afterward is the borrowing field constructed against that now-stable location.",
+        "From the outside you no longer touch either field directly at all. You go through accessor methods the tool generates for you, which is exactly what keeps the whole arrangement sound."
+      ]
+    },
+    {
+      "lines": [
+        "So why do tools like this exist at all, instead of everyone simply reaching for a raw unsafe block whenever this pattern comes up?",
+        "One well known version takes a borrowed, zero copy value and welds it permanently to the exact piece of owned data it was built from, so the pair can be passed around and stored as a single ordinary value from then on.",
+        "The people behind it describe this as erasing a lifetime the same way a certain kind of dynamic dispatch erases a concrete type: trading a compile time guarantee for a value that carries what it needs to stay valid as it travels."
+      ]
+    },
+    {
+      "lines": [
+        "So: a zero copy parse points straight at the buffer it came from, and a plain borrow can never survive past that buffer's own lifetime.",
+        "A clone on write value defers making its own copy until the exact moment something tries to change it, never sooner.",
+        "A shared, reference counted container sidesteps that limit entirely, by owning its share of the data instead of merely borrowing someone else's.",
+        "And a struct that wants to borrow its own field needs real, purpose built help to do it safely, not a plain reference sitting beside an owned one.",
+        { "beat": 0.3 },
+        "Next time: what a borrow actually needs once it tries to cross into another thread or another running task."
+      ]
+    }
+  ]
+}
