@@ -1,0 +1,5 @@
+- **Deque**: declared again here (topic 3); the interface a ring buffer is one real implementation of.
+- **FIFO**: declared again here (topic 3); the access order this structure keeps regardless of which full/empty mechanism backs it.
+- **Contiguous storage**: declared again here (topic 1); what a ring buffer keeps, unlike a chunked block deque, while never growing it.
+- **Pointer invalidation**: declared again here (topics 1–2); why this topic's ring buffer is a fixed array from construction, with nothing to invalidate on a push or pop.
+- **Bitwise AND**: a logical operation comparing two numbers bit by bit, keeping a one only where both inputs have a one. *Where you meet it:* the single operation that replaces a division when a ring buffer's capacity is a power of two.

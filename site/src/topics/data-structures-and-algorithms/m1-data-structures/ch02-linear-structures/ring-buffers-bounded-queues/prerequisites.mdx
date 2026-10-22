@@ -1,0 +1,36 @@
+import Resource from '../../../../../components/Resource.astro';
+
+<section class="prereq" data-section="before">
+
+### <span class="n">01</span> Already covered
+
+<ul class="resources">
+  <Resource kind="reel" host={props.host} domain="data-structures-and-algorithms" title="Dynamic arrays and growth policy">The growing array this topic's ring buffer deliberately refuses to be.</Resource>
+  <Resource kind="reel" host={props.host} domain="data-structures-and-algorithms" title="Stacks, queues and deques">The deque interface a ring buffer is one real implementation of.</Resource>
+  <Resource kind="reading" title="Bitwise AND and power-of-two arithmetic" href="https://en.wikipedia.org/wiki/Bitwise_operation#AND" by="Background, not required reading" length="self-check">Self-check before this topic: what is 13 AND 15?</Resource>
+</ul>
+
+</section>
+
+<section class="prereq" data-section="standard">
+
+### <span class="n">02</span> The mechanism and the policies, from source
+
+<ul class="resources">
+  <Resource kind="reading" title="kfifo.h" href="https://raw.githubusercontent.com/torvalds/linux/master/include/linux/kfifo.h" by="Linux kernel, include/linux/kfifo.h">The unmasked, always-increasing in/out design this topic's full/empty fix is built on.</Resource>
+  <Resource kind="reading" title="collections.deque" href="https://docs.python.org/3/library/collections.html#collections.deque" by="Python documentation">The overwrite policy, officially documented: a bounded deque discards from the opposite end once full.</Resource>
+  <Resource kind="reading" title="sync_channel" href="https://doc.rust-lang.org/std/sync/mpsc/fn.sync_channel.html" by="Rust, std::sync::mpsc">The block policy and boundedness as backpressure, officially documented.</Resource>
+</ul>
+
+</section>
+
+<section class="prereq" data-section="later">
+
+### <span class="n">03</span> Where this goes next
+
+<ul class="resources">
+  <Resource kind="reel" host={props.host} domain="data-structures-and-algorithms" title="Strings and string builders">A string's own length, in bytes, isn't the length a person reading it would count.</Resource>
+  <Resource kind="reel" host={props.host} domain="rust-systems-engineering" title="Bounded channels and backpressure">Bounded channels under real concurrency, where the lock-free version of this exact structure lives too.</Resource>
+</ul>
+
+</section>
