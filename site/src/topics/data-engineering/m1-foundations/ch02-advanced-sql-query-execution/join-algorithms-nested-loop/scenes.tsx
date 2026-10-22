@@ -18,11 +18,11 @@ function Row({ y, label, value, valueColor = C.crema, big = false }: { y: number
 function timeBar(x: number, y: number, frac: number, display: string, label: string, fill: string) {
   return (
     <g key={label}>
-      <T x={x - 5} y={y - 8} s={13} f={C.latte} a="end">
+      <T x={x} y={y - 20} s={13} f={C.latte}>
         {label}
       </T>
-      <Bar x={x} y={y - 14} w={220 * frac} h={20} full={220} fill={fill} />
-      <T x={x + 230} y={y} s={13} f={C.crema}>
+      <Bar x={x} y={y} w={340 * frac} h={20} full={340} fill={fill} />
+      <T x={x} y={y + 38} s={13} f={C.crema}>
         {display}
       </T>
     </g>
@@ -132,14 +132,19 @@ export function PredictFull({ t }: StepCtx) {
 export function RevealFull({ t }: StepCtx) {
   const maxMs = 543.876;
   return (
-    <Svg label="hash 339.6-383.6ms, nested loop 431.269ms, merge join 543.876ms" h={260}>
+    <Svg label="hash 339.6-383.6ms, nested loop 431.269ms, merge join 543.876ms" h={370}>
       {t > 0.2 && timeBar(130, 60, 383.6 / maxMs, '339.6-383.6 ms', 'Hash Join (default)', C.focus)}
-      {t > 1.0 && timeBar(130, 120, 431.269 / maxMs, '431.269 ms', 'Nested Loop (forced)', C.cherryText)}
-      {t > 1.8 && timeBar(130, 180, 543.876 / maxMs, '543.876 ms', 'Merge Join (forced)', C.cherryText)}
+      {t > 1.0 && timeBar(130, 150, 431.269 / maxMs, '431.269 ms', 'Nested Loop (forced)', C.cherryText)}
+      {t > 1.8 && timeBar(130, 240, 543.876 / maxMs, '543.876 ms', 'Merge Join (forced)', C.cherryText)}
       {t > 2.6 && (
-        <T x={300} y={235} s={14} f={C.latte} a="middle">
-          hash wins here — no sort to pay for, no repeated inner scans
-        </T>
+        <>
+          <T x={300} y={330} s={14} f={C.latte} a="middle">
+            hash wins here — no sort to pay for,
+          </T>
+          <T x={300} y={352} s={14} f={C.latte} a="middle">
+            no repeated inner scans
+          </T>
+        </>
       )}
     </Svg>
   );
@@ -180,8 +185,20 @@ export function DecisionFactors({ t }: StepCtx) {
     ['predicate type', 'hash & merge need equality'],
   ];
   return (
-    <Svg label="four factors that decide the join algorithm" h={260}>
-      {rows.map(([label, value], i) => (t > i * 0.5 ? <Row key={label} y={40 + i * 50} label={label} value={value} valueColor={C.latte} /> : null))}
+    <Svg label="four factors that decide the join algorithm" h={300}>
+      {rows.map(([label, value], i) => {
+        const y = 40 + i * 65;
+        return t > i * 0.5 ? (
+          <g key={label}>
+            <T x={25} y={y} s={15} f={C.crema}>
+              {label}
+            </T>
+            <T x={25} y={y + 24} s={14} f={C.latte}>
+              {value}
+            </T>
+          </g>
+        ) : null;
+      })}
     </Svg>
   );
 }
