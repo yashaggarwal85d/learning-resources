@@ -1,0 +1,49 @@
+{
+  "topic": "de.adaptive-execution-runtime-filters",
+  "syllabus": [
+    { "clause": "re-optimization at stage boundaries (Spark AQE: coalescing partitions, switching join strategy, splitting skewed partitions),", "at": [{ "step": "Reveal: re-optimization happens at stage boundaries" }, { "step": "Reveal: coalescing shuffle partitions" }, { "step": "How a skewed partition gets found and split" }, { "step": "Reveal: AQE switches join strategy at runtime" }] },
+    { "clause": "runtime Bloom and min/max filters,", "at": [{ "step": "Reveal: a runtime filter built from the small side" }] },
+    { "clause": "dynamic partition pruning (sideways information passing).", "at": [{ "step": "Reveal: dynamic partition pruning" }, { "step": "How PostgreSQL prunes partitions at execution time" }] }
+  ],
+  "sources": [
+    {
+      "source": "Apache Spark 3.5.9 Documentation, \"Performance Tuning\" (Adaptive Query Execution)",
+      "items": [
+        { "item": "AQE enabled by default since Spark 3.2.0; three major features since Spark 3.0: coalescing post-shuffle partitions, converting sort-merge join to broadcast join, skew join optimization", "at": [{ "step": "Reveal: re-optimization happens at stage boundaries" }] },
+        { "item": "Coalescing simplifies tuning the shuffle-partition count by picking it from real map-output statistics at runtime", "at": [{ "step": "Reveal: coalescing shuffle partitions" }] },
+        { "item": "A partition is skewed if its size exceeds a factor times the median partition size, and also exceeds an absolute byte threshold; splits (and replicates) it into roughly even pieces", "at": [{ "step": "How a skewed partition gets found and split" }] }
+      ]
+    },
+    {
+      "source": "Trino documentation, \"Dynamic filtering\"",
+      "items": [
+        { "item": "Trino collects candidate join-condition values from the build side and pushes a runtime predicate (reported in queryStats as a SortedRangeSet, a min/max-style range) into the probe-side scan", "at": [{ "step": "Reveal: dynamic partition pruning" }] },
+        { "item": "For a partitioned source (the Hive connector), this is explicitly named \"dynamic partition pruning\" by Trino's own docs", "at": [{ "step": "Reveal: dynamic partition pruning" }] }
+      ]
+    },
+    {
+      "source": "PostgreSQL 18 Documentation §5.12.4, \"Partition Pruning\"",
+      "items": [
+        { "item": "Partition pruning happens not only at planning time but also during execution, for parameter values unknown at plan time (PREPARE parameters, subquery values, parameterized nested-loop joins)", "at": [{ "step": "How PostgreSQL prunes partitions at execution time" }] },
+        { "item": "The number of partitions removed at plan-initialization time is reported via the \"Subplans Removed\" EXPLAIN property", "at": [{ "step": "How PostgreSQL prunes partitions at execution time" }, { "step": "Prove it · 2 of 2" }] }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "Claude (single session, written from the syllabus line and the fetched sources before storyboarding; not independent of the builder, so a later owner review should repeat it)",
+    "date": "2026-10-22",
+    "items": [
+      { "item": "A genuine, locally reproduced Initial-Plan/Final-Plan pair showing AQE convert a SortMergeJoin to a BroadcastHashJoin at runtime, not just described from documentation", "at": [{ "step": "Reveal: AQE switches join strategy at runtime" }] },
+      { "item": "A genuine, locally reproduced partition-coalescing result (200 configured shuffle partitions collapsing to 1 real one) tied directly to the actual data size, not an assumed default", "at": [{ "step": "Reveal: coalescing shuffle partitions" }] },
+      { "item": "A genuine, locally reproduced skew-join plan marker (SortMergeJoin(skew=true), AQEShuffleRead skewed) confirming the mechanism fires, paired with the honest finding that its wall-clock benefit didn't show up on this sandbox's 4 cores", "at": [{ "step": "How a skewed partition gets found and split" }, { "step": "Reveal: splitting needs spare capacity to pay off" }] },
+      { "item": "The specific reason skew-splitting needs spare executor slots to pay off (the total work is unchanged; only idle capacity turns a split into a real wall-clock win), not just asserted but reasoned from the measured non-result", "at": [{ "deep": "In production" }] },
+      { "item": "Why a local, single-process Trino or Spark-cluster run couldn't honestly demonstrate dynamic partition pruning's own benefit (it is a cross-node, network-avoidance claim, not a single-job statistics claim like coalescing or skew-splitting), disclosed rather than silently skipped", "at": [{ "step": "Reveal: dynamic partition pruning" }, { "deep": "Into the internals" }] },
+      { "item": "Reading Spark's own InjectRuntimeFilter optimizer source directly (its doc comment and the \"skip if the filter creation side is too big\" guard), not a secondary paraphrase of the feature", "at": [{ "step": "Reveal: a runtime filter built from the small side" }] },
+      { "item": "The precise distinction between a runtime filter (row-level, from a join condition) and dynamic partition pruning (the same mechanism applied at partition/file granularity) — not conflated as the same thing", "at": [{ "step": "Reveal: dynamic partition pruning" }] },
+      { "item": "A genuine, locally reproduced PostgreSQL execution-time partition-pruning result (Subplans Removed: 3, ~3.2x faster, 4x fewer buffer reads), requiring the `force_generic_plan` trick to actually observe (a literal parameter value would otherwise let the planner prune at plan time, hiding the execution-time mechanism)", "at": [{ "step": "How PostgreSQL prunes partitions at execution time" }] },
+      { "item": "\"Sideways information passing\" read precisely as one side of a join passing real values to the other side's scan, not down a fixed plan tree — the structural reason the syllabus groups runtime filters and dynamic partition pruning together", "at": [{ "step": "Reveal: dynamic partition pruning" }] },
+      { "item": "The structural link back to topic 25: the broadcast threshold there was a plan-time constant; this topic shows the same decision revisited at runtime once real sizes are known, the same way partition-wise joins (topic 25) and partition pruning (this topic) are both single-machine analogs of a cluster-scale idea", "at": [{ "step": "Reveal: re-optimization happens at stage boundaries" }] }
+    ]
+  },
+  "gapReview": { "date": "2026-10-22", "by": "Claude (single session)", "open": [] }
+}

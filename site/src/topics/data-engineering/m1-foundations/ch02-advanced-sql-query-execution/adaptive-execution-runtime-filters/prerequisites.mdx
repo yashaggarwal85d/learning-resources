@@ -1,0 +1,24 @@
+import Resource from '../../../../../components/Resource.astro';
+
+<section class="prereq" data-section="earlier-topics">
+
+### <span class="n">01</span> The plan this topic revises
+
+<ul class="resources">
+  <Resource kind="reel" host={props.host} domain="data-engineering" title="Parallel and distributed query plans">The broadcast threshold and exchange operators this topic's join-strategy switch and dynamic partition pruning both build on directly.</Resource>
+  <Resource kind="reel" host={props.host} domain="data-engineering" title="Cardinality estimation and statistics">Why a planner's static size estimate can be wrong in the first place — the gap AQE's own runtime statistics exist to close.</Resource>
+</ul>
+
+</section>
+
+<section class="prereq" data-section="reference">
+
+### <span class="n">02</span> Reference
+
+<ul class="resources">
+  <Resource kind="reading" title="Performance Tuning" href="https://spark.apache.org/docs/3.5.9/sql-performance-tuning.html" by="Apache Spark documentation" length="15 min">Adaptive Query Execution: coalescing, join-strategy switching, skew-join optimization.</Resource>
+  <Resource kind="reading" title="Dynamic filtering" href="https://trino.io/docs/current/admin/dynamic-filtering.html" by="Trino documentation" length="10 min">Min/max-style runtime filters and dynamic partition pruning, with a real EXPLAIN example.</Resource>
+  <Resource kind="reading" title="5.12. Table Partitioning" href="https://www.postgresql.org/docs/18/ddl-partitioning.html" by="PostgreSQL documentation" length="15 min">Partition pruning performed during execution, and the "Subplans Removed" EXPLAIN property.</Resource>
+</ul>
+
+</section>

@@ -1,0 +1,130 @@
+{
+  "topic": "de.adaptive-execution-runtime-filters",
+  "steps": [
+    {
+      "lines": [
+        "Ask Spark to explain its own plan for this query, and it hands back two answers, not one.",
+        "Early on, it planned to join these two tables by sorting and merging them.",
+        "By the time the query actually finished, it had joined them a completely different way instead."
+      ]
+    },
+    {
+      "lines": [
+        "A planner usually picks one strategy and commits to it before a query ever starts running.",
+        { "beat": 0.4 },
+        "So what would make that same engine go back and pick a different strategy, for the exact same query, after it had already started?"
+      ],
+      "answer": [
+        "Something about the data simply wasn't knowable yet, back when the plan was first written.",
+        "This isn't the engine correcting a mistake, and it isn't some blanket double check. It's a targeted revision, made only once a real number exists to revise the plan with."
+      ]
+    },
+    {
+      "lines": [
+        "A distributed plan isn't one unbroken pipeline. It's built from separate stages, split wherever data has to be shuffled between machines.",
+        "The moment one of those stages finishes, its real output size stops being a guess and becomes a fact.",
+        "Everything still ahead of that point in the plan gets to use that fact, instead of whatever the planner assumed beforehand."
+      ]
+    },
+    {
+      "lines": [
+        "Here's the plainest version of that idea. Configure two hundred pieces for a shuffle, whether or not the data actually needs that many.",
+        "Without this feature, every single one of those two hundred pieces gets kept, no matter how little data ends up in them.",
+        "Turn it on, and once the real output turns out to be a handful of tiny groups, the engine collapses those two hundred pieces down to just one."
+      ]
+    },
+    {
+      "lines": [
+        "Sometimes one value in a join column shows up far more often than any other.",
+        "Every row sharing that one value lands in the same piece of a shuffle, so that one piece swells while its neighbors stay nearly empty.",
+        "The engine only calls a piece skewed once it clears two separate bars: noticeably bigger than a typical piece, and bigger than a flat size limit in its own right."
+      ]
+    },
+    {
+      "lines": [
+        "Once a piece is flagged as skewed, the engine breaks that one oversized task into several smaller ones.",
+        { "beat": 0.3 },
+        "Does breaking up that one big task always make the query finish sooner?"
+      ],
+      "answer": [
+        "Only if there are idle workers around to actually pick up the smaller pieces.",
+        "Splitting a task changes how the same work gets divided among the machines available. It never changes how much work there is in total."
+      ]
+    },
+    {
+      "lines": [
+        "Run that exact experiment on a machine with only four cores and nothing spare to give the split pieces.",
+        "Across repeated runs, the times with splitting turned on and turned off land all over the place, in no consistent order.",
+        "The split itself is real, and shows up plainly in the plan. It simply has nothing free to run on here."
+      ]
+    },
+    {
+      "lines": [
+        "A dimension table passes through its own filter, then its own aggregation, before it ever reaches the join below it.",
+        { "beat": 0.4 },
+        "The join itself was already planned before that filtering and aggregating had even run. What happens to that join's plan once the dimension side turns out to be tiny?"
+      ],
+      "answer": [
+        "The join's plan can still change, once that real, tiny size becomes known.",
+        "This is the exact mechanism from the very first moment of this topic: a plan written once, and rewritten again the moment a real number arrives to rewrite it with."
+      ]
+    },
+    {
+      "lines": [
+        "After its own filtering and aggregating, that dimension side turns out to hold only a handful of rows — nowhere near enough to bother shuffling.",
+        "The plan that had committed to sorting and merging both sides switches, mid query, to simply copying that tiny side wherever the join needs it.",
+        "Nothing here was guessed correctly in advance. The engine waited for a real number, and only then picked the cheaper strategy."
+      ]
+    },
+    {
+      "lines": [
+        "Take the actual key values sitting on one, smaller side of a join, and fold them into one compact structure that can answer one question fast: could this value possibly be on the other side, or definitely not?",
+        "Hand that structure to the larger side's own scan, before that scan has even finished reading.",
+        "Any row the structure can rule out never has to reach the join at all — thrown away at the source, not after being read for nothing."
+      ]
+    },
+    {
+      "lines": [
+        "Take that same trick and apply it one level up, to whole partitions instead of individual rows.",
+        "One side of a join collects its own real key values, then passes them across to the other side's table scan — sideways, not down the plan the way a value normally flows.",
+        "Any partition those real values prove can't contain a match gets skipped before it's ever opened."
+      ]
+    },
+    {
+      "lines": [
+        "A query filters on one column of a table split into several pieces, but the value it's filtering for isn't known until the query actually runs.",
+        "With this working, the plan reports three of those pieces removed, and only scans the one piece left.",
+        "Turn the same behavior off, and every single piece gets scanned regardless, at several times the cost."
+      ]
+    },
+    {
+      "lines": [
+        "A stage finishing is what hands the rest of a plan something it didn't have before: a real number instead of a guess.",
+        "That one fact is what lets an engine shrink an oversized shuffle, break up one lopsided piece, and swap a join's whole strategy, all without anyone rewriting the query by hand.",
+        "A filter built from one side and handed to the other plays out the same story at the level of a single row, or a whole slice of a table."
+      ]
+    },
+    {
+      "lines": [
+        "A plan starts out joining two tables by sorting and merging them, and ends up copying one side wherever it's needed instead.",
+        { "beat": 0.3 },
+        "Which of this topic's features just did that?"
+      ],
+      "answer": [
+        "Switching the join strategy at run time.",
+        "Shrinking a shuffle changes how many pieces there are. Splitting a lopsided piece changes how one piece gets divided. Only a changed join operator between the two plans points at this one."
+      ]
+    },
+    {
+      "lines": [
+        "A plan reports three pieces removed out of four, for a table split into pieces.",
+        { "beat": 0.3 },
+        "Did that removal happen while the plan was being written, or while the query was actually running?"
+      ],
+      "answer": [
+        "While the query was actually running.",
+        "A piece removed while the plan was being written never shows up as removed at all — it was simply never added. Seeing it reported this way only happens when the removing comes later."
+      ]
+    }
+  ]
+}

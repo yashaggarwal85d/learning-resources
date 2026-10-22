@@ -1110,4 +1110,24 @@ export const TOPICS: TopicMeta[] = [
     handoff:
       "This topic's broadcast threshold was already a plan-time decision an engine's adaptive execution could revise mid-query. Next: how far that goes — adaptive execution and runtime filters more generally, where a plan keeps changing its mind as the query actually runs.",
   },
+  {
+    id: 'de.adaptive-execution-runtime-filters',
+    domain: 'data-engineering',
+    slug: 'data-engineering/m1-foundations/ch02-advanced-sql-query-execution/adaptive-execution-runtime-filters',
+    title: 'Adaptive execution and runtime filters',
+    syllabusTitle: 'Adaptive execution and runtime filters',
+    kind: 'full',
+    status: 'live',
+    milestone: { number: 1, title: 'Foundations' },
+    chapter: { number: 2, title: 'Advanced SQL and query execution', section: '2.3' },
+    minutes: 15,
+    verified: '2026-10-22',
+    introduces: ['adaptive-query-execution', 'runtime-filter', 'dynamic-partition-pruning'],
+    uses: ['broadcast-threshold', 'exchange-operator', 'partitionwise-join', 'cardinality-estimation'],
+    declared: ['sql-select', 'group-by'],
+    bridge:
+      "This topic's broadcast threshold was already a plan-time decision an engine's adaptive execution could revise mid-query. This is how far that goes.",
+    handoff:
+      "Every plan in this chapter, adaptive or not, has been read off one engine's own EXPLAIN output at a time — PostgreSQL's Hash Join and Append, Trino's HASH and BROADCAST fragments, Spark's Initial Plan and Final Plan. Next: reading EXPLAIN across engines, where the same plan shape wears a different name and a different shape of output depending on who's asking.",
+  },
 ];
