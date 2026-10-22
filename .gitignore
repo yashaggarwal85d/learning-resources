@@ -1,3 +1,7 @@
 
 # Voice audition renders (the chosen voice is frozen in narration/pc/reference.wav)
 site/narration/pc/audition/
+
+# Rust topics that drive their examples through a small cargo crate (needs an external crate
+# examples.py cannot prove with a bare rustc compile) build their own target/ dir; never commit it.
+site/src/topics/rust-systems-engineering/**/examples/target/

@@ -1,0 +1,61 @@
+{
+  "topic": "rust.zero-copy-parsing-borrowed",
+  "syllabus": [
+    { "clause": "fn parse<'a>(buf: &'a [u8]) -> Header<'a>", "at": [{ "step": "A parser that copies nothing" }, { "step": "Does Header outlive the buffer it was parsed from?" }, { "step": "The attempt, and the error it earns" }] },
+    { "clause": "Cow<'a, [u8]> vs &'a [u8] vs an owned Vec<u8> for mostly-read workloads.", "at": [{ "step": "Cow: borrowed until something needs to change" }, { "step": "Which call actually clones?" }] },
+    { "clause": "Reference-counted zero-copy (bytes::Bytes) for when a borrow can't outlive the buffer's scope, as in network and async code.", "at": [{ "step": "bytes::Bytes: owning the share, not borrowing it" }, { "deep": "Production: network and async code" }] },
+    { "clause": "Self-referential structs and why yoke/ouroboros exist.", "at": [{ "step": "A struct that borrows its own field" }, { "step": "ouroboros makes the same shape safe" }, { "step": "Why yoke and ouroboros exist at all" }] }
+  ],
+  "sources": [
+    {
+      "source": "cow-std",
+      "items": [
+        { "item": "Cow is a clone-on-write smart pointer with two variants, Borrowed and Owned", "at": [{ "step": "Cow: borrowed until something needs to change" }] },
+        { "item": "Cow provides immutable access to borrowed data without cloning, cloning lazily only when mutation or ownership is required", "at": [{ "step": "Cow: borrowed until something needs to change" }] },
+        { "item": "to_mut acquires a mutable reference to the owned form, cloning first only if not already owned", "at": [{ "step": "Which call actually clones?" }] },
+        { "item": "the abs_all example: a read-only pass never clones, a mutating pass clones into an owned Vec", "at": [{ "step": "Cow: borrowed until something needs to change" }, { "step": "Which call actually clones?" }] }
+      ]
+    },
+    {
+      "source": "bytes-docs",
+      "items": [
+        { "item": "Bytes is meant for networking code and lets multiple Bytes values point at the same underlying memory, for zero-copy use", "at": [{ "step": "bytes::Bytes: owning the share, not borrowing it" }, { "deep": "Production: network and async code" }] },
+        { "item": "every Bytes implementation must be cheaply cloneable (e.g. by bumping a reference count) and sliceable without copying", "at": [{ "step": "bytes::Bytes: owning the share, not borrowing it" }] },
+        { "item": "cloning a Bytes backed by reference-counted storage shares the storage by increasing its reference count, not by copying bytes", "at": [{ "step": "bytes::Bytes: owning the share, not borrowing it" }] }
+      ]
+    },
+    {
+      "source": "yoke-docs",
+      "items": [
+        { "item": "Yoke<Y, C> attaches a zero-copy deserialized object to the cart it was deserialized from, producing one movable value", "at": [{ "step": "Why yoke and ouroboros exist at all" }] },
+        { "item": "this is described as erasing a static lifetime into a dynamic one, by analogy with dyn erasing a static type into a dynamic one", "at": [{ "step": "Why yoke and ouroboros exist at all" }] }
+      ]
+    },
+    {
+      "source": "ouroboros-self_referencing",
+      "items": [
+        { "item": "ouroboros exists to make self-referencing structs safe to build and use", "at": [{ "step": "Why yoke and ouroboros exist at all" }] },
+        { "item": "a struct is annotated #[self_referencing], and each self-referencing field is marked #[borrows(...)] naming which field(s) it borrows", "at": [{ "step": "ouroboros makes the same shape safe" }] },
+        { "item": "the macro generates a Builder with a _builder closure per self-referencing field, and borrow_{field} accessor methods replace direct field access", "at": [{ "step": "ouroboros makes the same shape safe" }] }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "self-review",
+    "date": "2026-10-22",
+    "items": [
+      { "item": "Zero-copy parsing means the parsed value's fields are views (subslices) into the exact same memory the input buffer occupies, never a second allocation holding a copy of those bytes", "at": [{ "step": "A parser that copies nothing" }] },
+      { "item": "The 'outlives' rule isn't specific to parsing: any borrow, of any shape, is rejected by the compiler the moment it could outlive the place it was taken from, which is exactly why a locally-owned buffer can never back a returned borrow", "at": [{ "step": "Does Header outlive the buffer it was parsed from?" }] },
+      { "item": "E0515 names the general shape of the failure precisely: 'returns a value referencing data owned by the current function' applies to any local, not just a Vec", "at": [{ "step": "The attempt, and the error it earns" }] },
+      { "item": "Cow's laziness is a real optimization only when the common case truly is read-only; a workload that almost always mutates gains nothing from Cow over just using an owned type from the start", "at": [{ "step": "Cow: borrowed until something needs to change" }] },
+      { "item": "Once a Cow has cloned into Owned, it stays Owned for the rest of its life; a later read-only use of the same Cow value does not revert it back to Borrowed", "at": [{ "step": "Which call actually clones?" }] },
+      { "item": "Bytes solves a different problem than Cow: Cow defers a clone that might never happen; Bytes avoids ever needing to clone at all, by making the shared, refcounted handle the normal way to hold the data from the start", "at": [{ "step": "bytes::Bytes: owning the share, not borrowing it" }] },
+      { "item": "A naive self-referencing struct fails for a structural reason, not an incidental one: Rust is free to move a struct's bytes to a new address at any point, and a reference baked in at construction time would then point at the old, no-longer-valid address", "at": [{ "step": "A struct that borrows its own field" }] },
+      { "item": "ouroboros's generated builder doesn't bypass the moving problem, it works around it: the owning field is placed into its final storage first, and the borrowing field is only constructed afterward against that now-stable address, with the type keeping both fields pinned together behind accessor methods instead of direct field access", "at": [{ "step": "ouroboros makes the same shape safe" }] },
+      { "item": "Yoke's framing of 'erasing a lifetime' is the same move as Box<dyn Trait> erasing a concrete type: in both cases a piece of compile-time information (a lifetime, a type) is replaced with a value that carries what it needs to stay valid at run time instead", "at": [{ "step": "Why yoke and ouroboros exist at all" }] },
+      { "item": "Choosing among &'a [u8], Cow<'a, [u8]>, and an owned Vec<u8> is really a question of who needs to hold onto the data and for how long: a borrow for a call that returns before the source does, Cow for mostly-read data that might occasionally need a private copy, and an owned Vec when the data must genuinely outlive its source", "at": [{ "step": "Cow: borrowed until something needs to change" }, { "deep": "Production: network and async code" }] },
+      { "item": "Network and async code reaches for Bytes specifically because a received buffer's lifetime is tied to the connection or task that received it, which a borrow usually cannot be tied to across an await point or a handed-off task boundary", "at": [{ "deep": "Production: network and async code" }] }
+    ]
+  },
+  "gapReview": { "date": "2026-10-22", "by": "self-review", "open": [] }
+}

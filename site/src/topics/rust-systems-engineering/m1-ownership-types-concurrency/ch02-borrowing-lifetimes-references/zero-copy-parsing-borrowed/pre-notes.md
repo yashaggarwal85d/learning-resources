@@ -1,0 +1,8 @@
+- **Zero-copy**: producing a new value whose fields are views into existing memory, without allocating a second copy of that memory. *Where you meet it:* `Header<'a>`'s fields pointing straight at the bytes of the buffer it was parsed from.
+- **Subslice**: a `&[T]` naming a contiguous range inside a larger slice, sharing its memory. *Where you meet it:* `&buf[0..4]`.
+- **Clone-on-write**: deferring a copy until the moment something actually needs to change, never copying on a read. *Where you meet it:* `Cow<'_, [i32]>` staying borrowed through a read-only pass.
+- **Reference count**: a number tracking how many handles currently share one allocation, incremented on clone and decremented on drop. *Where you meet it:* cloning a `bytes::Bytes` value.
+- **Self-referencing struct**: a struct where one field holds a reference into another field of the same struct. *Where you meet it:* a parsed value meant to own its buffer and also hold a view into it.
+- **Builder pattern (here)**: a generated helper type that assembles a struct's fields in a fixed order, so a self-referencing field can be built only after the field it borrows has already settled into place. *Where you meet it:* `ParsedBuilder` from `#[self_referencing]`.
+- **E0515**: the compiler error for returning a value that references something owned by the current function. *Where you meet it:* trying to return a borrow of a local `Vec`.
+- **E0505**: the compiler error for moving a value out of a binding while it is still borrowed. *Where you meet it:* trying to move a `String` into a struct literal right next to a reference into that same `String`.

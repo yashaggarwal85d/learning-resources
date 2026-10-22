@@ -1,0 +1,23 @@
+import Resource from '../../../../../components/Resource.astro';
+
+<section class="prereq" data-section="chapter-so-far">
+
+### <span class="n">01</span> This chapter's rules so far
+
+<ul class="resources">
+  <Resource kind="reel" host={props.host} domain="rust-systems-engineering" title="Aliasing XOR mutability">How many borrows, of what kind, can exist at once.</Resource>
+  <Resource kind="reel" host={props.host} domain="rust-systems-engineering" title="Lifetimes as constraints, not durations">How long a borrow is allowed to last, and why a borrow can never outlive what it points at — the exact rule this topic puts to work.</Resource>
+</ul>
+
+</section>
+
+<section class="prereq" data-section="smart-pointers">
+
+### <span class="n">02</span> The Book's smart pointers
+
+<ul class="resources">
+  <Resource kind="reading" title="Using Box<T> to Point to Data on the Heap" href="https://doc.rust-lang.org/book/ch15-01-box.html" by="Klabnik, Nichols and Krycho, The Rust Programming Language">The simplest owned heap pointer, for contrast with the refcounted sharing bytes::Bytes does.</Resource>
+  <Resource kind="reading" title="Rc<T>, the Reference Counted Smart Pointer" href="https://doc.rust-lang.org/book/ch15-04-rc.html" by="Klabnik, Nichols and Krycho, The Rust Programming Language">The reference-counting idea this topic's Bytes example relies on.</Resource>
+</ul>
+
+</section>

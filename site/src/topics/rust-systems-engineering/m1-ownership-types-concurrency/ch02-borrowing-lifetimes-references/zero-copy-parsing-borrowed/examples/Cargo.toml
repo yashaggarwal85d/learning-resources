@@ -1,0 +1,33 @@
+[package]
+name = "zero-copy-parsing-borrowed-examples"
+version = "0.1.0"
+edition = "2021"
+publish = false
+
+[[bin]]
+name = "zero_copy_parse"
+path = "src/bin/zero_copy_parse.rs"
+
+[[bin]]
+name = "cow_example"
+path = "src/bin/cow_example.rs"
+
+[[bin]]
+name = "owned_vs_borrowed_fail"
+path = "src/bin/owned_vs_borrowed_fail.rs"
+
+[[bin]]
+name = "bytes_share"
+path = "src/bin/bytes_share.rs"
+
+[[bin]]
+name = "self_ref_fail"
+path = "src/bin/self_ref_fail.rs"
+
+[[bin]]
+name = "ouroboros_works"
+path = "src/bin/ouroboros_works.rs"
+
+[dependencies]
+bytes = "1"
+ouroboros = "0.18"
