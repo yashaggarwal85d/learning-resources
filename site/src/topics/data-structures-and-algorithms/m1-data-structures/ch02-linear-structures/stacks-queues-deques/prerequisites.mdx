@@ -1,0 +1,33 @@
+import Resource from '../../../../../components/Resource.astro';
+
+<section class="prereq" data-section="before">
+
+### <span class="n">01</span> Arrays and lists, already covered
+
+<ul class="resources">
+  <Resource kind="reel" host={props.host} domain="data-structures-and-algorithms" title="Dynamic arrays and growth policy">Why contiguous storage reallocates the way it does — the mechanism behind an array-backed deque's own resize cost.</Resource>
+  <Resource kind="reel" host={props.host} domain="data-structures-and-algorithms" title="Linked and intrusive lists">Stable addresses and pointer invalidation, the contrast this topic's iterator-stability trade-off builds on.</Resource>
+</ul>
+
+</section>
+
+<section class="prereq" data-section="standard">
+
+### <span class="n">02</span> Reading a standard library's own guarantees
+
+<ul class="resources">
+  <Resource kind="reading" title="[deque]" href="https://timsong-cpp.github.io/cppwp/n4868/deque" by="N4868, the C++20 working draft, Tim Song's mirror">The exact clause this topic quotes for std::deque's O(1)-at-either-end complexity and its iterator/reference invalidation split.</Resource>
+  <Resource kind="reading" title="VecDeque" href="https://doc.rust-lang.org/std/collections/struct.VecDeque.html" by="Rust, std::collections">A second real, shipped deque design: a growable ring buffer, named here as the array-backed alternative to std::deque's chunked blocks.</Resource>
+</ul>
+
+</section>
+
+<section class="prereq" data-section="later">
+
+### <span class="n">03</span> Where this goes next
+
+<ul class="resources">
+  <Resource kind="reel" host={props.host} domain="data-structures-and-algorithms" title="Monotonic stacks and queues">A stack or queue whose own shape proves a second bound, without ever resizing for it.</Resource>
+</ul>
+
+</section>

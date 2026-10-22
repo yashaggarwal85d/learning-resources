@@ -1,0 +1,5 @@
+- **Iterator**: a position into a collection that can be advanced to visit its elements. *Where you meet it:* what `std::deque`'s own invalidation rule is stated about.
+- **Reference**: an alias for an existing element, distinct from a position that can move. *Where you meet it:* the thing `std::deque` promises to keep valid that an iterator isn't.
+- **Amortized O(1)**: declared again here (Chapter 1; topic 1); not re-taught.
+- **Reallocation**: declared again here (topic 1's dynamic array); the event a ring-buffer deque's resize triggers, exactly as a vector's does.
+- **Contiguous storage**: declared again here (topic 1); what a chunked deque deliberately gives up in exchange for not moving existing elements on growth.
