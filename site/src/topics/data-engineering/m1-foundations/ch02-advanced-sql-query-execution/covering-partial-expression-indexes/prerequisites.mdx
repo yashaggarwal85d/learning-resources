@@ -1,0 +1,23 @@
+import Resource from '../../../../../components/Resource.astro';
+
+<section class="prereq" data-section="earlier-topics">
+
+### <span class="n">01</span> What this topic builds on
+
+<ul class="resources">
+  <Resource kind="reel" host={props.host} domain="data-engineering" title="Composite index design and column order">The ordered index structure that INCLUDE, partial and expression indexes all refine, rather than replace.</Resource>
+</ul>
+
+</section>
+
+<section class="prereq" data-section="reference">
+
+### <span class="n">02</span> Reference
+
+<ul class="resources">
+  <Resource kind="reading" title="11.9. Index-Only Scans and Covering Indexes" href="https://www.postgresql.org/docs/18/indexes-index-only-scans.html" by="PostgreSQL 18 documentation" length="10 min">INCLUDE columns and the visibility map, in full detail.</Resource>
+  <Resource kind="reading" title="11.8. Partial Indexes" href="https://www.postgresql.org/docs/18/indexes-partial.html" by="PostgreSQL 18 documentation" length="10 min">Partial indexes over hot subsets, including the warning against many small partial indexes.</Resource>
+  <Resource kind="reading" title="11.7. Indexes on Expressions" href="https://www.postgresql.org/docs/18/indexes-expressional.html" by="PostgreSQL 18 documentation" length="5 min">Expression indexes and their write-time cost.</Resource>
+</ul>
+
+</section>

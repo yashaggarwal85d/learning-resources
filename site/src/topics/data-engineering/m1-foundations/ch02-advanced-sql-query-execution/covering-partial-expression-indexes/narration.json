@@ -1,0 +1,131 @@
+{
+  "topic": "de.covering-partial-expression-indexes",
+  "steps": [
+    {
+      "lines": [
+        "Run the same filter against the same table twice, reading back the same column each time.",
+        "One index needs tens of thousands of buffer reads to answer it.",
+        "A second index, covering that same column plus one extra payload column, needs a tiny fraction of that."
+      ]
+    },
+    {
+      "lines": [
+        "The column being read back here was never part of this query's own filter condition.",
+        { "beat": 0.4 },
+        "So why would simply adding it to the index change anything at all about reading it?"
+      ],
+      "answer": [
+        "Because now the index can answer the entire query on its own.",
+        "Once every column a query actually needs is sitting inside the index, filtered on or not, there is nothing left that requires opening the table itself."
+      ]
+    },
+    {
+      "lines": [
+        "Add that extra column to the index as plain payload, not as a search key.",
+        "The plan changes shape entirely: instead of reading the index and then the table, it reads only the index.",
+        "The index alone now has every piece this particular query ever asked for."
+      ]
+    },
+    {
+      "lines": [
+        "This shortcut depends on something hidden: one bit, kept per page of the actual table, saying every row on that page is old enough to be visible to absolutely everyone.",
+        "An index-only scan checks that bit instead of opening the table at all.",
+        "The index makes this shortcut possible. That one bit is what actually makes it safe."
+      ]
+    },
+    {
+      "lines": [
+        "Every row this query matches now gets updated. Nothing about the index's own structure changes because of that.",
+        { "beat": 0.4 },
+        "Does the shortcut this index enabled survive that update?"
+      ],
+      "answer": [
+        "No — the update clears exactly the bit this shortcut depended on.",
+        "The index itself stays structurally identical. What changes is the table's own claim about which of its pages are still entirely settled."
+      ]
+    },
+    {
+      "lines": [
+        "Run that exact same query again, against that exact same, unchanged index, right after the update.",
+        "A number that used to read zero now reads in the hundreds of thousands — one heap visit for nearly every single matching row.",
+        "Execution time climbs by roughly a factor of ten, for a query whose index never moved at all."
+      ]
+    },
+    {
+      "lines": [
+        "Run this engine's own routine maintenance command over that same table.",
+        "That one bit per page gets set again, for every page this maintenance pass confirms is settled.",
+        "The exact same query, against the exact same index, drops straight back down to its original speed — nothing about the index itself was ever rebuilt to get there."
+      ]
+    },
+    {
+      "lines": [
+        "One particular value accounts for the overwhelming majority of a column's rows. Every query that actually searches this column is hunting for something else entirely.",
+        { "beat": 0.4 },
+        "Is indexing that overwhelming majority ever something worth avoiding?"
+      ],
+      "answer": [
+        "Yes — indexing the common value adds real size for a search nobody ever actually runs.",
+        "A query hunting for something this common skips the index anyway, straight to scanning the table, so every entry an index holds for that value serves no query at all."
+      ]
+    },
+    {
+      "lines": [
+        "Build the index with a condition attached, covering only the rare slice instead of the whole column.",
+        "That narrower index comes out dozens of times smaller than an index covering the entire column would have been.",
+        "Nothing about which rows a real query needs changed. Only how much of the column got indexed in the first place did."
+      ]
+    },
+    {
+      "lines": [
+        "A row belonging to that overwhelming majority gets written or updated.",
+        "This narrower index was never built to contain that row in the first place, so there is nothing in it to touch.",
+        "Only a write landing in that small, deliberately indexed slice ever has anything here left to maintain."
+      ]
+    },
+    {
+      "lines": [
+        "One query builds a value by joining two pieces together with one particular operator. A second query builds the exact same value using a different function entirely.",
+        { "beat": 0.4 },
+        "Does an index built for the first expression help the second query too?"
+      ],
+      "answer": [
+        "No — only the exact expression the index was built around actually counts.",
+        "This engine's planner compares expressions by how they're written, not by what they end up computing. A different function call reads as a different expression altogether, whatever value it happens to produce."
+      ]
+    },
+    {
+      "lines": [
+        "Write the query with the exact expression the index was built on, and the answer comes back in a fraction of a millisecond, touching only a handful of pages.",
+        "Write the identical computation with a different function instead, and the plan falls back to scanning the entire table from the start.",
+        "Thousands of times slower, for a value that was never actually different at all."
+      ]
+    },
+    {
+      "lines": [
+        "An expression index earns its speed only from a query that writes the exact expression it was built to match.",
+        "How cheap or expensive the underlying computation happens to be has nothing to do with it.",
+        "This is purely a question of matching text, not a question of matching meaning."
+      ]
+    },
+    {
+      "lines": [
+        "A payload column makes an index-only scan possible in the first place. The visibility map is what actually decides whether that scan pays off, and an ordinary update can quietly take that away until the next maintenance pass.",
+        "A predicate narrow enough to cover only a genuinely rare slice of a column shrinks both how much space an index needs and how much upkeep every other write has to pay.",
+        "And an index built on one expression helps only the query that writes that exact same expression back."
+      ]
+    },
+    {
+      "lines": [
+        "A covering index answers a query with zero heap visits on one day.",
+        "By later that same week, every one of those rows has been updated, and the identical query now needs tens of thousands of heap visits to answer the same question.",
+        { "beat": 0.3 },
+        "Did the index itself change?"
+      ],
+      "answer": [
+        "No — the visibility map for those pages was cleared instead.",
+        "The index kept its exact same shape the whole time. What changed was the table's own claim about which of its pages still qualify for the shortcut."
+      ]
+    }
+  ]
+}

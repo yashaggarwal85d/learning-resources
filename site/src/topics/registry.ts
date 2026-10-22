@@ -1170,4 +1170,24 @@ export const TOPICS: TopicMeta[] = [
     handoff:
       "Equality-before-range ordering, selectivity, and skip scan all assumed a table's own rows still had to be visited through the index at all. Next: covering, partial and expression indexes, where INCLUDE columns, partial indexes, and expression indexes each change what an index even needs to visit in the first place.",
   },
+  {
+    id: 'de.covering-partial-expression-indexes',
+    domain: 'data-engineering',
+    slug: 'data-engineering/m1-foundations/ch02-advanced-sql-query-execution/covering-partial-expression-indexes',
+    title: 'Covering, partial and expression indexes',
+    syllabusTitle: 'Covering, partial and expression indexes',
+    kind: 'full',
+    status: 'live',
+    milestone: { number: 1, title: 'Foundations' },
+    chapter: { number: 2, title: 'Advanced SQL and query execution', section: '2.3' },
+    minutes: 15,
+    verified: '2026-10-22',
+    introduces: ['covering-index-include', 'visibility-map-dependence', 'partial-index-hot-subset'],
+    uses: ['composite-index-column-order', 'work-mem-spill'],
+    declared: ['sql-select', 'sql-create-index', 'sql-update', 'vacuum'],
+    bridge:
+      "Equality-before-range ordering, selectivity, and skip scan all assumed a table's own rows still had to be visited through the index at all. This topic changes what an index even needs to visit in the first place.",
+    handoff:
+      "An index can now answer a query without visiting its own table at all, when the visibility map allows it. Next: table partitioning and partition pruning, where the table itself gets split so a whole partition, not just an index range, can be skipped before anything is ever read.",
+  },
 ];

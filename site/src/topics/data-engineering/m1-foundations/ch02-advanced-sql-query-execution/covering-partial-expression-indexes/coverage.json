@@ -1,0 +1,47 @@
+{
+  "topic": "de.covering-partial-expression-indexes",
+  "syllabus": [
+    { "clause": "INCLUDE columns and index-only scans (and PostgreSQL's dependence on the visibility map),", "at": [{ "step": "Reveal: INCLUDE columns and index-only scans" }, { "step": "Reveal: this only works because of the visibility map" }, { "step": "Reveal: Heap Fetches jumps from 0 to 444,014" }, { "step": "Reveal: VACUUM restores it" }] },
+    { "clause": "partial indexes over hot subsets,", "at": [{ "step": "Reveal: partial indexes over a hot subset" }, { "step": "Reveal: and less to update on every other write" }] },
+    { "clause": "expression indexes and the planner's exact-expression match requirement.", "at": [{ "step": "Reveal: only the exact expression gets used" }, { "step": "Reveal: this is syntax, not semantics" }] }
+  ],
+  "sources": [
+    {
+      "source": "PostgreSQL 18 Documentation §11.9, \"Index-Only Scans and Covering Indexes\"",
+      "items": [
+        { "item": "The visibility map stores one bit per heap page saying whether every row on it is visible to all current and future transactions", "at": [{ "step": "Reveal: this only works because of the visibility map" }] },
+        { "item": "An index-only scan checks the visibility map bit; if unset, it must visit the heap anyway, gaining no advantage", "at": [{ "step": "Reveal: this only works because of the visibility map" }] },
+        { "item": "INCLUDE columns let a covering index answer a query's full column needs without a table visit", "at": [{ "step": "Reveal: INCLUDE columns and index-only scans" }] }
+      ]
+    },
+    {
+      "source": "PostgreSQL 18 Documentation §11.8, \"Partial Indexes\"",
+      "items": [
+        { "item": "A partial index indexes only rows satisfying a predicate; indexing a common value is pointless since queries for it won't use the index anyway", "at": [{ "step": "Reveal: partial indexes over a hot subset" }] }
+      ]
+    },
+    {
+      "source": "PostgreSQL 18 Documentation §11.7, \"Indexes on Expressions\"",
+      "items": [
+        { "item": "An index column can be a function or expression computed from the table's own columns", "at": [{ "step": "Reveal: only the exact expression gets used" }] }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "Claude (single session, written from the syllabus line and the fetched sources before storyboarding; not independent of the builder, so a later owner review should repeat it)",
+    "date": "2026-10-22",
+    "items": [
+      { "item": "A genuine before/after contrast isolating INCLUDE's own effect: identical query, identical filter column, only the presence of a payload column differing", "at": [{ "step": "Reveal: INCLUDE columns and index-only scans" }] },
+      { "item": "A locally reproduced visibility-map-clearing effect from an ordinary UPDATE, showing the index-only scan's advantage is a property of the heap's own state, not a fixed property of the index", "at": [{ "step": "Reveal: Heap Fetches jumps from 0 to 444,014" }] },
+      { "item": "Confirmation that VACUUM specifically restores the lost advantage, closing the loop rather than leaving the regression as a dead end", "at": [{ "step": "Reveal: VACUUM restores it" }] },
+      { "item": "A partial-index measurement using a genuinely realistic hot-subset ratio (2% of rows) rather than an artificially tiny one, so the 49x size difference reflects an ordinary real-world skew", "at": [{ "step": "Reveal: partial indexes over a hot subset" }] },
+      { "item": "The explicit claim that a partial index also reduces write-time maintenance cost, not just read-time size, drawn out as its own reveal rather than left implicit", "at": [{ "step": "Reveal: and less to update on every other write" }] },
+      { "item": "A direct demonstration that forcing enable_seqscan off still can't make the planner use an expression index for a non-matching expression — proving the limitation is structural, not just a cost-based preference", "at": [{ "step": "Reveal: only the exact expression gets used" }] },
+      { "item": "The exact-expression-match claim is sourced to this topic's own direct measurement rather than to a docs quote, since the fetched PostgreSQL pages describe building and using expression indexes without stating the syntactic-match limitation explicitly — disclosed plainly in FACT-CHECK.md", "at": [{ "step": "Reveal: this is syntax, not semantics" }] },
+      { "item": "A closing check that requires distinguishing 'the index changed' from 'the index's own precondition changed', directly testing the most counter-intuitive idea in the topic", "at": [{ "step": "Prove it" }] },
+      { "item": "Three independent mechanisms (INCLUDE/visibility map, partial predicate, expression syntax) kept clearly separate in the recap rather than blended into one vague 'index design matters' takeaway", "at": [{ "step": "Recap" }] },
+      { "item": "Every reveal in this topic is backed by a measurement taken on this session's own sandbox, with none of this topic's four claims relying on a sourced-but-unmeasured honest gap, unlike several prior topics in this chapter", "at": [{ "deep": "Into the internals" }] }
+    ]
+  },
+  "gapReview": { "date": "2026-10-22", "by": "Claude (single session)", "open": [] }
+}

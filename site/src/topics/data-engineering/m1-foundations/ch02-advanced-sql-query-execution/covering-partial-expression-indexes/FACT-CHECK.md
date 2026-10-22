@@ -1,0 +1,21 @@
+# Fact-check, currency and red team, 2026-10-22
+
+Re-derived each claim from the fetched PostgreSQL 18 docs and this topic's own four local measurements. Red-teamed the predict questions for edge cases.
+
+| # | Claim | Status | Evidence |
+|---|---|---|---|
+| 1 | INCLUDE columns let a covering index answer a query via an index-only scan, with no heap visit, when the query only needs columns in the index | Confirmed | Quoted verbatim from PostgreSQL 18 docs §11.9; measured directly on a 2,000,000-row table: a plain index on `(status)` answers `SELECT amount ... WHERE status = 5` with a `Bitmap Heap Scan`, 20,809 buffers, 158.458 ms; the identical query against `(status) INCLUDE (amount)` runs as an `Index Only Scan`, `Heap Fetches: 0`, 855 buffers, 29.634 ms |
+| 2 | An index-only scan's benefit depends on the visibility map; stale heap pages force a heap visit regardless of the index | Confirmed | Quoted verbatim from §11.9; measured directly on the same table and covering index: immediately after `VACUUM`, `Heap Fetches: 0`; after updating every matching row, the identical query's `Heap Fetches` jumps to 444,014 and execution time to 319.894 ms, though the index itself never changed shape; a fresh `VACUUM` restores `Heap Fetches: 0` |
+| 3 | A partial index over a genuinely small, frequently-queried subset is smaller than a full index on the same column | Confirmed | Quoted verbatim from §11.8; measured directly: a 2,000,000-row table where 2.0% of rows (39,960) match a `WHERE NOT billed` predicate — a partial index on that predicate is 896 kB, against 43 MB for a full index on the identical column, about 49 times smaller |
+| 4 | An expression index only helps a query whose expression matches syntactically; a semantically equivalent but differently-written expression gets no benefit | Confirmed, not stated this plainly in the fetched docs | §11.7 describes building and using an expression index but doesn't state the exact-match requirement in so many words; this topic's own direct measurement makes the claim instead: an index on `(first_name \|\| ' ' \|\| last_name)` answers a query written with the identical `\|\|` expression in 0.043 ms, 4 buffers; the same query rewritten with `concat(first_name, ' ', last_name)` — computing the identical value — falls back to a `Seq Scan` even with `enable_seqscan` forced off, 399.183 ms, 3,679 buffers |
+
+## Red team: predict questions
+- **Step 2** ("why would adding a column not in the WHERE clause change anything?"): tried the counter "maybe PostgreSQL always has to visit the table anyway" — ruled out directly by the measured `Heap Fetches: 0` and the `Index Only Scan` plan node name itself, both confirming no heap visit happened.
+- **Step 5** ("does the covering index's advantage survive an UPDATE of every matching row?"): the tempting wrong answer is "yes, since the index itself wasn't rebuilt or dropped" — ruled out by the measured `Heap Fetches` jump from 0 to 444,014 on the unchanged index, which is specifically a visibility-map effect, not an index-structure effect.
+- **Step 8** ("is a full index on a mostly-one-value column ever worth avoiding?"): the tempting wrong answer is "no, more indexing is always safer" — this topic's own measured 49x size difference shows a full index here carries real, avoidable cost for rows that predicate never needs to find.
+- **Step 11** ("does an index on one expression help a query using a different but equivalent expression?"): the tempting wrong answer is "yes, since the computed value is identical" — ruled out directly by the measured fallback to a `Seq Scan`, which happened even with `enable_seqscan` forced off, confirming no plan using the index existed at all for the mismatched expression.
+
+## Currency check
+PostgreSQL 16.15, measured directly on this sandbox (the existing instance from topics 23–28), is current as of 2026-10-22. The PostgreSQL 18 documentation pages fetched are the current `/docs/18/` pages as of this date; nothing in §§11.7–11.9 is version-gated to 18 specifically (INCLUDE columns, partial indexes and expression indexes all predate PostgreSQL 18), so measuring on 16.15 doesn't understate or overstate any of these three features.
+
+No corrections to OUTLINE.md were needed; all claims passed as planned.

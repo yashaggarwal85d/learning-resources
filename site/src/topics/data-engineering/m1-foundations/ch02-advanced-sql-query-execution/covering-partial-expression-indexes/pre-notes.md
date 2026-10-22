@@ -1,0 +1,4 @@
+- **Composite index column order**: how a multicolumn index's column order decides how much of it gets scanned (introduced in topic 28). *Where you meet it:* the covering, partial and expression indexes this topic builds are all refinements on top of that same ordered structure.
+- **Work_mem spill**: an operator running out of its own memory budget (introduced in topic 23). *Where you meet it:* this topic's own partial-index measurement, where a smaller index means less of it needs to be held at once.
+- **VACUUM**: PostgreSQL's own maintenance command that reclaims dead row space and updates visibility information. *Where you meet it:* this topic's own before/after measurement of the visibility map.
+- **UPDATE**: the SQL statement that modifies existing rows. *Where you meet it:* this topic's own demonstration that an UPDATE can silently undo an index-only scan's advantage.
