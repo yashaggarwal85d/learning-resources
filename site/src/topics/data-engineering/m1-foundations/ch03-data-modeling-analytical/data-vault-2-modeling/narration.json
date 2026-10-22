@@ -1,0 +1,107 @@
+{
+  "topic": "de.data-vault-2-modeling",
+  "steps": [
+    {
+      "lines": [
+        "The same customer, order and product, modeled three completely separate ways.",
+        "One question about them can be answered by all three. What differs is how much work answering it takes."
+      ]
+    },
+    {
+      "lines": [
+        "Here's the first question.",
+        "One of these models keeps a business key in a table by itself. Does that same table also hold what describes it, like a customer's own name?"
+      ],
+      "answer": [
+        "No. Everything descriptive lives somewhere else entirely, on purpose.",
+        "That table keeps only the key."
+      ]
+    },
+    {
+      "lines": [
+        "Start with that simplest piece, confirmed.",
+        "A table that holds only the business key itself, nothing describing it, and barely ever changes."
+      ]
+    },
+    {
+      "lines": [
+        "Next, the relationship between two of those keys, kept in a table of its own.",
+        "Whatever keys participate in that relationship are exactly what defines its grain."
+      ]
+    },
+    {
+      "lines": [
+        "And finally, everything descriptive about one of those keys, tracked over time.",
+        "Nothing here ever gets overwritten. A change adds a new row instead of replacing the old one."
+      ]
+    },
+    {
+      "lines": [
+        "Here's the test.",
+        "If each of these three kinds of table gets loaded by a completely separate process, with nobody coordinating between them, is that actually safe?"
+      ],
+      "answer": [
+        "Only if every one of those processes can work out the same key for the same thing, entirely on its own.",
+        "A shared counter handing out keys one at a time would defeat the whole point."
+      ]
+    },
+    {
+      "lines": [
+        "Watch this happen for real.",
+        "Two completely separate processes hash the same business key, never once talking to each other, and land on the exact same result. That's the entire mechanism, computed, not assumed."
+      ]
+    },
+    {
+      "lines": [
+        "Here's what that replaces.",
+        "A counter-based key forces a child record to go look up its parent's already-assigned key before it can even be written. Deriving the key on your own, from the thing itself, erases that dependency completely."
+      ]
+    },
+    {
+      "lines": [
+        "Now the actual cost of all this, measured rather than guessed at.",
+        "Asking for a customer's address as of a particular order's date takes one join in the simple normalized version, one join in the star-shaped version, and several joins plus an extra lookup once everything is split into separate business-key, relationship, and history tables."
+      ]
+    },
+    {
+      "lines": [
+        "That extra cost isn't an accident. It's the same decision, seen from the other side.",
+        "Splitting everything apart is exactly what made loading so easy a moment ago. Querying has to put all of that back together again, every single time."
+      ]
+    },
+    {
+      "lines": [
+        "Here's how that gets paid back down, also measured.",
+        "Pre-resolve that as-of lookup once, when the data loads, instead of recomputing it on every query, and one whole join disappears along with the extra lookup."
+      ]
+    },
+    {
+      "lines": [
+        "That trick works for one history table at a time.",
+        "When a query would otherwise have to cross several relationship tables in a row just to get an answer, a different kind of table pre-walks that whole path instead."
+      ]
+    },
+    {
+      "lines": [
+        "So what does all that extra querying cost actually buy you?",
+        "Nothing is ever thrown away, and a brand-new source system can be added as new tables of its own, without touching anything that already holds real history."
+      ]
+    },
+    {
+      "lines": [
+        "Three separate ideas, not one.",
+        "A business key, a relationship, and its history, kept apart on purpose. A key you can derive instead of having to ask for. A real, counted cost at query time, and two separate ways to pay it back down."
+      ]
+    },
+    {
+      "lines": [
+        "One more scenario.",
+        "A new source system joins next quarter, with its own version of the same business key. Which of today's three designs takes that with the least rebuilding?"
+      ],
+      "answer": [
+        "The one built from separate business-key, relationship, and history tables.",
+        "A new business key just becomes a new table of that same kind, sitting beside the ones that already hold production history, rather than forcing a redesign of them."
+      ]
+    }
+  ]
+}

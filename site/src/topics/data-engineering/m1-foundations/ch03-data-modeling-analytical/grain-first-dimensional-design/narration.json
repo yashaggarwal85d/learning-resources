@@ -1,0 +1,95 @@
+{
+  "topic": "de.grain-first-dimensional-design",
+  "steps": [
+    {
+      "lines": [
+        "The exact same order, kept two different ways.",
+        "One keeps a single row for the whole thing. The other keeps one row per line inside it. Ask which product actually sold, and only one of them can even answer."
+      ]
+    },
+    {
+      "lines": [
+        "Four decisions, always made in the same order.",
+        "What business process. What one row of the result represents. What it's broken down by. And what's actually being measured."
+      ]
+    },
+    {
+      "lines": [
+        "That second decision is the one everything else depends on.",
+        "Deciding what a single row represents has to happen before anything else, because every later choice has to agree with it."
+      ]
+    },
+    {
+      "lines": [
+        "Here's where that gets decided for real.",
+        "An order and its line items need one fact table. Should one row be the whole order, or just one of its lines?"
+      ],
+      "answer": [
+        "One of its lines. That's the most basic unit this process actually produces.",
+        "The order itself is really just several of those added together."
+      ]
+    },
+    {
+      "lines": [
+        "Here's the proof, run for real.",
+        "Add up every line's own total, grouped however you like, and you land back on the exact order total every single time."
+      ]
+    },
+    {
+      "lines": [
+        "Now here's what the other choice would have cost you.",
+        "A table kept at one row per whole order never had a column for which product, or how many, in the first place. Not a harder question. One it simply has no way to answer."
+      ]
+    },
+    {
+      "lines": [
+        "That's the first of three kinds of number you'll run into.",
+        "This one adds up correctly no matter how you slice it, and that was just checked directly, not assumed."
+      ]
+    },
+    {
+      "lines": [
+        "Here's the second kind, tested the same way.",
+        "A balance adds up fine across different accounts. Does it add up the same way across different stretches of time for the same account?"
+      ],
+      "answer": [
+        "No. Adding up several time periods' balances gives you a number that means nothing at all.",
+        "The real year-end figure is just whatever the last period's own balance happened to be."
+      ]
+    },
+    {
+      "lines": [
+        "Watch that happen with real numbers.",
+        "Four quarters' balances, added together, land on a total with no meaning. The actual year-end balance was simply the fourth quarter's own number, sitting there the whole time."
+      ]
+    },
+    {
+      "lines": [
+        "Now the third kind, and this one can't be added up at all, not even halfway.",
+        "Average two regions' profit margins the obvious way, and you get a different answer than if you add up their revenue and their cost separately first, and only then divide."
+      ]
+    },
+    {
+      "lines": [
+        "Here's the actual fix, and it's simpler than it sounds.",
+        "Keep the pieces that do add up safely. Add those. Only compute the ratio at the very end, after the adding is already done."
+      ]
+    },
+    {
+      "lines": [
+        "Four decisions, in order, with the second one binding everything after it.",
+        "One kind of number adds up anywhere. One adds up almost anywhere, except across time. One doesn't add up at all, only its pieces do."
+      ]
+    },
+    {
+      "lines": [
+        "Last one. A shipping cost, divided by how many units shipped.",
+        "Is it safe to just add that number up across orders, or does it need the same fix as the profit margin did?"
+      ],
+      "answer": [
+        "The same fix. Add up the shipping cost and the unit count separately, then divide once at the end.",
+        "It's a ratio for exactly the same reason the margin was, so it breaks the same way if you add it up directly."
+      ]
+    }
+  ]
+}

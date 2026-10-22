@@ -1,0 +1,52 @@
+{
+  "topic": "de.grain-first-dimensional-design",
+  "syllabus": [
+    { "clause": "the four-step process (business process, grain, dimensions, facts)", "at": [{ "step": "Reveal: Kimball's four steps, quoted directly" }, { "step": "Reveal: grain is the pivotal step, quoted directly" }] },
+    { "clause": "declaring the most atomic grain", "at": [{ "step": "Predict: one row per order, or one row per line?" }, { "step": "Reveal: atomic grain, measured" }, { "step": "Reveal: what the coarser grain loses" }] },
+    { "clause": "additive vs semi-additive vs non-additive measures", "at": [{ "step": "Reveal: additive measures, proven" }, { "step": "Reveal: semi-additive, measured" }, { "step": "Reveal: non-additive, measured" }, { "step": "Reveal: the fix, quoted directly" }] }
+  ],
+  "sources": [
+    {
+      "source": "Kimball Group, \"Four-Step Dimensional Design Process\"",
+      "items": [
+        { "item": "The four key decisions: select the business process, declare the grain, identify the dimensions, identify the facts", "at": [{ "step": "Reveal: Kimball's four steps, quoted directly" }] },
+        { "item": "These decisions are determined by the needs of the business and the realities of the source data, during collaborative modeling sessions", "at": [{ "step": "Reveal: Kimball's four steps, quoted directly" }] }
+      ]
+    },
+    {
+      "source": "Kimball Group, \"Grain\"",
+      "items": [
+        { "item": "Declaring the grain is the pivotal step; it establishes exactly what a single fact row represents and becomes a binding contract on the design", "at": [{ "step": "Reveal: grain is the pivotal step, quoted directly" }] },
+        { "item": "The grain must be declared before dimensions or facts, since every candidate dimension or fact must be consistent with it", "at": [{ "step": "Reveal: grain is the pivotal step, quoted directly" }] },
+        { "item": "Atomic grain is the lowest level a business process captures data at; starting there withstands unpredictable queries, unlike a rolled-up grain", "at": [{ "step": "Predict: one row per order, or one row per line?" }] },
+        { "item": "Different grains must not be mixed in the same fact table", "at": [{ "step": "Reveal: what the coarser grain loses" }] }
+      ]
+    },
+    {
+      "source": "Kimball Group, \"Additive, Semi-Additive, and Non-Additive Facts\"",
+      "items": [
+        { "item": "Additive measures can be summed across any dimension associated with the fact table", "at": [{ "step": "Reveal: additive measures, proven" }] },
+        { "item": "Semi-additive measures sum across some dimensions but not all; balance amounts are additive except across time", "at": [{ "step": "Reveal: semi-additive, measured" }] },
+        { "item": "Some measures, such as ratios, are completely non-additive", "at": [{ "step": "Reveal: non-additive, measured" }] },
+        { "item": "The fix: store the fully additive components, sum those, then compute the final ratio, often in the BI layer", "at": [{ "step": "Reveal: the fix, quoted directly" }] }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "Claude (single session, written from the syllabus line and the fetched sources before storyboarding; not independent of the builder, so a later owner review should repeat it)",
+    "date": "2026-10-22",
+    "items": [
+      { "item": "The atomic-grain reveal (step 5) and the coarse-grain-loses reveal (step 6) are both run against a real, disclosed throwaway order-line and order-header pair built for this topic, not a described hypothetical — the sum-to-order-total check and the missing-column observation are both executed, not asserted", "at": [{ "step": "Reveal: atomic grain, measured" }] },
+      { "item": "The semi-additive demonstration (step 9) uses a real four-quarter balance series where summing gives a concrete, wrong number (four hundred sixty) against the concrete, correct year-end figure (one hundred fifty), rather than describing the mismatch abstractly", "at": [{ "step": "Reveal: semi-additive, measured" }] },
+      { "item": "The non-additive demonstration (step 10) uses two real regions' revenue and cost figures, computing both the naive average and the correctly recomputed margin, with the two measured values genuinely differing rather than being chosen to differ only in principle", "at": [{ "step": "Reveal: non-additive, measured" }] },
+      { "item": "The grain predict (step 4) is red-teamed against the plausible wrong answer that the order itself, being the natural business unit, should be the grain; the reveal shows the atomic grain is the line, not the order, and that the order-level choice cannot answer line-level questions at all", "at": [{ "step": "Predict: one row per order, or one row per line?" }] },
+      { "item": "The closing check (Prove it) applies the non-additive fix to a new measure (a per-unit shipping-cost ratio) rather than re-testing the exact profit-margin figures from the reveals", "at": [{ "step": "Prove it" }] },
+      { "item": "The recap keeps the four-step process, the grain-first binding rule, and the three additivity classes as three separate ideas rather than collapsing them into one vague \"model carefully\" takeaway", "at": [{ "step": "Recap" }] },
+      { "item": "The bridge from topic 7 (Data Vault 2.0) is answered explicitly: this topic is framed as building a Kimball star for real, starting exactly where Kimball's own methodology insists (grain, before a single column is drawn), and the handoff to the next topic (fact table types) is confirmed by reading both CHAPTER.md entries side by side", "at": [{ "step": "Same order, two grains, one question" }] },
+      { "item": "The four-step reveal and the grain-is-binding reveal each quote Kimball Group's own page word for word rather than paraphrasing, so the pivotal-step claim rests on Kimball's own language, not a summary of it", "at": [{ "step": "Reveal: Kimball's four steps, quoted directly" }, { "step": "Reveal: grain is the pivotal step, quoted directly" }] },
+      { "item": "The closing predict (step 13) is red-teamed against the plausible wrong answer that a per-unit cost ratio is safe to sum because it looks like a simple division rather than a margin, and the answer explicitly ties it back to why margins break, not just that this one does too", "at": [{ "step": "Prove it" }] },
+      { "item": "Every digit that appears on screen in this topic's reveals (the order total, the four quarterly balances, the two regions' revenue and cost) traces to a literal constant in examples.py, and every other quantity (the join counts are not used in this topic) is spelled in words, so no on-screen number is asserted without a matching computed value", "at": [{ "step": "Reveal: atomic grain, measured" }, { "step": "Reveal: semi-additive, measured" }, { "step": "Reveal: non-additive, measured" }] }
+    ]
+  },
+  "gapReview": { "date": "2026-10-22", "by": "Claude (single session)", "open": [] }
+}
