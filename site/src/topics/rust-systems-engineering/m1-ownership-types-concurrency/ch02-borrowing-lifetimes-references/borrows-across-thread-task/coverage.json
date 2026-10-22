@@ -1,0 +1,59 @@
+{
+  "topic": "rust.borrows-across-thread-task",
+  "syllabus": [
+    { "clause": "thread::spawn and tokio::spawn require 'static because the spawned work can outlive the caller", "at": [{ "step": "A thread can outlive the frame that made it" }, { "step": "Borrow a local, then spawn" }, { "step": "The compiler's own reason" }, { "step": "`tokio::spawn` asks for the identical bound" }] },
+    { "clause": "std::thread::scope is the borrow-friendly alternative", "at": [{ "step": "`thread::scope` makes the same borrow sound" }] },
+    { "clause": "There is no sound scoped spawn in async, because futures may be leaked, so you move owned data or an Arc instead", "at": [{ "step": "Could a scoped async spawn ever be sound?" }, { "step": "`mem::forget` is exactly the hole" }, { "step": "Needs to outlive the function? Clone an `Arc` instead" }, { "step": "An owned `Arc` already satisfies `'static`" }] }
+  ],
+  "sources": [
+    {
+      "source": "std-thread-spawn",
+      "items": [
+        { "item": "thread::spawn<F,T>'s exact signature: F: FnOnce() -> T + Send + 'static, T: Send + 'static", "at": [{ "step": "A thread can outlive the frame that made it" }] },
+        { "item": "The 'static constraint exists because a spawned thread, and its return value, can outlive its caller and the caller can't know when it will return", "at": [{ "step": "A thread can outlive the frame that made it" }, { "deep": "Internals: why threads need `'static` and async can't get a scope" }] },
+        { "item": "The Send bound exists because the closure crosses from the spawning thread to the new one", "at": [{ "out": "Named only in post-notes/pre-notes as the companion bound; the reel's steps focus on 'static, which is the syllabus's own emphasis." }] },
+        { "item": "A spawned thread detaches implicitly if its JoinHandle is dropped; the program is responsible for joining or detaching every thread it creates", "at": [{ "out": "A related std fact, not one of this topic's claims; left for a reader of the quoted source." }] }
+      ]
+    },
+    {
+      "source": "std-thread-scope",
+      "items": [
+        { "item": "Scoped threads can borrow non-'static data because the scope guarantees all threads are joined at the end of the scope", "at": [{ "step": "`thread::scope` makes the same borrow sound" }] },
+        { "item": "Every thread spawned in the scope that wasn't manually joined is automatically joined before scope() itself returns", "at": [{ "step": "`thread::scope` makes the same borrow sound" }, { "deep": "Internals: why threads need `'static` and async can't get a scope" }] },
+        { "item": "The 'scope and 'env lifetimes: 'env must outlast the call to scope and so cannot be shorter than 'scope", "at": [{ "deep": "Frontier" }] }
+      ]
+    },
+    {
+      "source": "tokio-spawn",
+      "items": [
+        { "item": "tokio::task::spawn<F>'s signature requires F: Future + Send + 'static, F::Output: Send + 'static — the identical shape of bound as thread::spawn", "at": [{ "step": "`tokio::spawn` asks for the identical bound" }] },
+        { "item": "There is no guarantee a spawned task executes to completion; on runtime shutdown every outstanding task is dropped regardless of its lifecycle", "at": [{ "step": "`tokio::spawn` asks for the identical bound" }, { "deep": "Internals: why threads need `'static` and async can't get a scope" }, { "deep": "Production failures" }] }
+      ]
+    },
+    {
+      "source": "std-mem-forget",
+      "items": [
+        { "item": "mem::forget takes ownership of a value and skips its destructor entirely, with no unsafe required", "at": [{ "step": "Could a scoped async spawn ever be sound?" }, { "step": "`mem::forget` is exactly the hole" }] },
+        { "item": "forget is not unsafe because Rust's safety guarantees never included a promise that destructors always run; calling it from safe code does not weaken that guarantee", "at": [{ "step": "`mem::forget` is exactly the hole" }, { "deep": "Internals: why threads need `'static` and async can't get a scope" }] },
+        { "item": "Leaking a resource this way is 'usually undesirable' but is explicitly not a soundness violation", "at": [{ "out": "Named in post-notes as context; the reel's claim is specifically about the join-guarantee, not resource leaks in general." }] }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "self-review",
+    "date": "2026-10-22",
+    "items": [
+      { "item": "The 'static bound on thread::spawn is not about the closure itself living forever; it is about there being no borrow inside it with a lifetime the compiler could prove ends before the thread does", "at": [{ "step": "A thread can outlive the frame that made it" }] },
+      { "item": "E0373's two sub-messages matter: 'may outlive the current function' names the risk, 'is borrowed here, which is owned by the current function' names exactly which value and why it's at risk", "at": [{ "step": "The compiler's own reason" }] },
+      { "item": "thread::scope's soundness doesn't come from a weaker rule; it comes from scope() itself being unable to return until every scoped thread has actually joined, which the type signature's 'scope lifetime encodes", "at": [{ "step": "`thread::scope` makes the same borrow sound" }] },
+      { "item": "A scope cannot help when a thread must genuinely outlive the function that spawned it, because the scope's own call would then also have to still be running — that's the case Arc solves instead", "at": [{ "step": "Needs to outlive the function? Clone an `Arc` instead" }] },
+      { "item": "'static is a property of a value's type (does it contain any reference shorter than the program's lifetime), never a property of control flow (whether or when a function returns)", "at": [{ "step": "An owned `Arc` already satisfies `'static`" }] },
+      { "item": "tokio::spawn's lack of a scope equivalent isn't an oversight; it follows necessarily from the fact that a task can be dropped wholesale on shutdown, which thread::scope's join guarantee has no analogue for", "at": [{ "step": "`tokio::spawn` asks for the identical bound" }] },
+      { "item": "The async_scope-guard thought experiment is exactly isomorphic to thread::scope's own soundness argument, which is what makes mem::forget defeating it so damning: the identical proof technique that works for threads fails for futures", "at": [{ "step": "Could a scoped async spawn ever be sound?" }] },
+      { "item": "mem::forget being 100% safe is the load-bearing fact: if forgetting a Drop guard required unsafe, the soundness argument for an async scope would still hold, because unsafe code accepting responsibility is exactly how Rust tolerates few corners like this elsewhere", "at": [{ "step": "`mem::forget` is exactly the hole" }] },
+      { "item": "The fix for async is never 'add more unsafe'; it's the same two tools as threads minus the scope option: move owned data in, or move a reference-counted clone (Arc) in, so the spawned future never holds a borrow to begin with", "at": [{ "deep": "Internals: why threads need `'static` and async can't get a scope" }] },
+      { "item": "Crates that offer scoped-looking async spawning exist but accept the unsafe risk explicitly somewhere internally; they don't contradict this topic's claim, they confirm it by needing to patch around the same gap", "at": [{ "deep": "Frontier" }] }
+    ]
+  },
+  "gapReview": { "date": "2026-10-22", "by": "self-review", "open": [] }
+}

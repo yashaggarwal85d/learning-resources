@@ -1,0 +1,23 @@
+import Resource from '../../../../../components/Resource.astro';
+
+<section class="prereq" data-section="chapter-so-far">
+
+### <span class="n">01</span> This chapter's rules so far
+
+<ul class="resources">
+  <Resource kind="reel" host={props.host} domain="rust-systems-engineering" title="Lifetimes as constraints, not durations">A lifetime constrains how borrows relate, never how long a value lives — the fact this topic now applies across a thread boundary.</Resource>
+  <Resource kind="reel" host={props.host} domain="rust-systems-engineering" title="Zero-copy parsing with borrowed views">Every borrowed view in that topic stayed on one thread. This one asks what crossing into another thread or task actually requires.</Resource>
+</ul>
+
+</section>
+
+<section class="prereq" data-section="threads-and-sync">
+
+### <span class="n">02</span> The Book's threads and shared state
+
+<ul class="resources">
+  <Resource kind="reading" title="Using Threads to Run Code Simultaneously" href="https://doc.rust-lang.org/book/ch16-01-threads.html" by="Klabnik, Nichols and Krycho, The Rust Programming Language">The informal picture of `thread::spawn` and `move` closures this topic turns into the exact `'static` bound and why it exists.</Resource>
+  <Resource kind="reading" title="Shared-State Concurrency" href="https://doc.rust-lang.org/book/ch16-03-shared-state.html" by="Klabnik, Nichols and Krycho, The Rust Programming Language">`Arc<Mutex<T>>` as introduced here is exactly the owned value this topic moves across a spawn boundary.</Resource>
+</ul>
+
+</section>
