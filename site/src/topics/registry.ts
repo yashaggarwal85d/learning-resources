@@ -1370,4 +1370,24 @@ export const TOPICS: TopicMeta[] = [
     handoff:
       "Kimball's own bus architecture assumed a dimensional star was the right shape to build marts from. Next: a third philosophy that disagrees with both Inmon and Kimball about where auditability and source agility should live — Data Vault 2.0.",
   },
+  {
+    id: 'de.data-vault-2-modeling',
+    domain: 'data-engineering',
+    slug: 'data-engineering/m1-foundations/ch03-data-modeling-analytical/data-vault-2-modeling',
+    title: 'Data Vault 2.0 modeling',
+    syllabusTitle: 'Data Vault 2.0 modeling',
+    kind: 'full',
+    status: 'live',
+    milestone: { number: 1, title: 'Foundations' },
+    chapter: { number: 3, title: 'Data modeling and analytical architecture', section: '3.1' },
+    minutes: 15,
+    verified: '2026-10-22',
+    introduces: ['data-vault-hub-link-satellite', 'pit-bridge-table-data-vault'],
+    uses: ['inmon-enterprise-warehouse', 'kimball-dimensional-bus', 'key-types-natural-surrogate-durable-hash', 'functional-dependency'],
+    declared: ['sql-select', 'sql-create-table'],
+    bridge:
+      "Kimball's own bus architecture assumed a dimensional star was the right shape to build marts from. This topic is a third philosophy that disagrees with both Inmon and Kimball about where auditability and source agility should live: Data Vault 2.0.",
+    handoff:
+      "Every philosophy in this section assumed grain, facts and dimensions were already decided elsewhere. Next: building a Kimball star for real, starting exactly where Kimball's own methodology insists — grain, before a single column is drawn.",
+  },
 ];

@@ -1,0 +1,55 @@
+{
+  "topic": "de.data-vault-2-modeling",
+  "syllabus": [
+    { "clause": "hubs (business keys), links (relationships), satellites (descriptive history)", "at": [{ "step": "Reveal: hubs" }, { "step": "Reveal: links" }, { "step": "Reveal: satellites" }] },
+    { "clause": "hash keys and insert-only parallel loading", "at": [{ "step": "Reveal: hash keys make it safe, computed" }, { "step": "Reveal: why a sequence could not do this" }] },
+    { "clause": "raw vs business vault, PIT and bridge tables for query speed", "at": [{ "step": "Reveal: a point-in-time table cuts it back down, measured" }, { "step": "Reveal: bridge tables, for the other kind of cost" }] },
+    { "clause": "when auditability and source agility are worth the join cost", "at": [{ "step": "Reveal: the same query, three ways, measured" }, { "step": "Reveal: why raw vault costs more to query" }, { "step": "Reveal: what the join cost actually buys" }] }
+  ],
+  "sources": [
+    {
+      "source": "Wikipedia, \"Data vault modeling\"",
+      "items": [
+        { "item": "The Data Vault Model is a detail-oriented, historical-tracking, uniquely linked set of normalized tables, a hybrid of 3NF and star schema", "at": [{ "step": "Same domain, three models, one question" }] },
+        { "item": "Hubs contain business keys with low propensity to change and no descriptive attributes", "at": [{ "step": "Reveal: hubs" }] },
+        { "item": "Links capture the relationship between hubs, with the participating hub keys defining the grain", "at": [{ "step": "Reveal: links" }] },
+        { "item": "Satellites contain descriptive attributes and their history, append-only so every change is preserved", "at": [{ "step": "Reveal: satellites" }] },
+        { "item": "Data is never deleted from the data vault, unless there is a technical error while loading data", "at": [{ "step": "Reveal: what the join cost actually buys" }] },
+        { "item": "Since hubs, links and satellites are only joined through links, each can be loaded in parallel", "at": [{ "step": "Predict: can separate loaders run with no coordinator?" }] }
+      ]
+    },
+    {
+      "source": "PuppyGraph, \"What Is Data Vault?\"",
+      "items": [
+        { "item": "A deterministic hash key can replace a sequence-generated surrogate key; every loader using the same key definition derives the identical key independently", "at": [{ "step": "Reveal: hash keys make it safe, computed" }] },
+        { "item": "Generated surrogate keys force a child loader to look up the parent's stored key first, creating load-order dependencies that a deterministic hash key removes", "at": [{ "step": "Reveal: why a sequence could not do this" }] },
+        { "item": "PIT structures identify the applicable satellite records for selected snapshot times; bridge structures simplify multi-join paths across commonly traversed hubs and links", "at": [{ "step": "Reveal: bridge tables, for the other kind of cost" }] }
+      ]
+    },
+    {
+      "source": "WhereScape, \"What Is Data Vault 2.0...\"",
+      "items": [
+        { "item": "Join performance improves with fixed-length hash keys; parallel loading becomes simpler because processes can independently generate identical hash values without coordinating", "at": [{ "step": "Reveal: hash keys make it safe, computed" }] },
+        { "item": "PIT tables pre-materialize temporal joins across multiple satellites at load time rather than query time", "at": [{ "step": "Reveal: a point-in-time table cuts it back down, measured" }] },
+        { "item": "Bridge tables flatten complex link structures, such as a path through five links, for common query patterns", "at": [{ "step": "Reveal: bridge tables, for the other kind of cost" }] }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "Claude (single session, written from the syllabus line and the fetched sources before storyboarding; not independent of the builder, so a later owner review should repeat it)",
+    "date": "2026-10-22",
+    "items": [
+      { "item": "The hash-key determinism claim (step 6) is verified by a real Python computation in examples.py — two independent loader calls deriving the identical key — not merely asserted from the sourced text", "at": [{ "step": "Reveal: hash keys make it safe, computed" }] },
+      { "item": "The join-count comparison (step 8) is measured against a fresh, disclosed customer/order/product domain built for this topic's lab, since no customers or products table exists in this sandbox's public schema (confirmed: a customers table exists only in an unrelated join_demo schema) — the literal JOIN count in each query's own SQL is recorded, not estimated", "at": [{ "step": "Reveal: the same query, three ways, measured" }] },
+      { "item": "The PIT-table improvement (step 10) is measured on the same lab domain: three joins and zero correlated subqueries, down from four joins and one correlated subquery in the raw Data Vault version, confirmed by running both queries and checking they return the identical answer as the 3NF and star versions", "at": [{ "step": "Reveal: a point-in-time table cuts it back down, measured" }] },
+      { "item": "The worth-it synthesis (step 12, coverage clause 4) is explicitly marked in FACT-CHECK.md as this topic's own reasoning connecting the measured join-count difference to the sourced auditability and parallel-loading claims, not itself an external citation", "at": [{ "step": "Reveal: what the join cost actually buys" }] },
+      { "item": "The parallel-load predict (step 5) is red-teamed against the plausible wrong answer that only a single coordinating sequence can make concurrent loading safe; the reveal shows the actual mechanism (deterministic derivation, not central assignment) that makes coordination unnecessary", "at": [{ "step": "Predict: can separate loaders run with no coordinator?" }] },
+      { "item": "The closing check (Prove it) asks the viewer to apply the source-agility property (step 12) to a new scenario (a new source system, a different key definition) rather than re-testing an isolated fact", "at": [{ "step": "Prove it" }] },
+      { "item": "The recap keeps the three table types, the hash-key mechanism, and the measured join-cost tradeoff as three separate ideas rather than collapsing them into one vague \"Data Vault is more auditable\" takeaway", "at": [{ "step": "Recap" }] },
+      { "item": "The bridge from topic 6 (Inmon vs Kimball) is answered explicitly: this topic is framed as a third philosophy disagreeing with both about where auditability and source agility should live, and the handoff to the next topic (grain-first dimensional design) is confirmed by reading both CHAPTER.md entries side by side", "at": [{ "step": "Same domain, three models, one question" }] },
+      { "item": "The business vault and raw vault distinction from the syllabus's own scope bullet is covered by naming PIT and bridge tables as the business-vault layer's own query-assistance structures, per Wikipedia's own definition, rather than treating raw and business vault as a separate, unsourced claim", "at": [{ "step": "Reveal: bridge tables, for the other kind of cost" }] },
+      { "item": "No live, quotable page from Dan Linstedt's own sites (learndatavault.com, danlinstedt.com) could be confirmed reachable during research; every Linstedt-attributed claim in this topic traces through Wikipedia's or PuppyGraph's own citations of his published work, not a direct fetch of his own site", "at": [{ "step": "Reveal: hubs" }] }
+    ]
+  },
+  "gapReview": { "date": "2026-10-22", "by": "Claude (single session)", "open": [] }
+}
