@@ -1850,4 +1850,24 @@ export const TOPICS: TopicMeta[] = [
     handoff:
       "Federated governance assumed each domain team actually honors its own data's contract with the rest of the mesh. Next: data contracts themselves, the concrete artifact that enforcement actually happens against.",
   },
+  {
+    id: 'de.data-contracts-as-modeling',
+    domain: 'data-engineering',
+    slug: 'data-engineering/m1-foundations/ch03-data-modeling-analytical/data-contracts-as-modeling',
+    title: 'Data contracts as a modeling artifact',
+    syllabusTitle: 'Data contracts as a modeling artifact',
+    kind: 'full',
+    status: 'live',
+    milestone: { number: 1, title: 'Foundations' },
+    chapter: { number: 3, title: 'Data modeling and analytical architecture', section: '3.4' },
+    minutes: 13,
+    verified: '2026-10-22',
+    introduces: ['data-contract-specification', 'open-data-contract-standard'],
+    uses: ['data-as-a-product', 'data-mesh-four-principles'],
+    declared: ['sql-select'],
+    bridge:
+      "Federated governance assumed each domain team actually honors its own data's contract with the rest of the mesh. This topic is data contracts themselves, the concrete artifact that enforcement actually happens against.",
+    handoff:
+      "A contract specified what a data product's schema and semantics actually are. Next: the layer that compiles a business metric's own definition — built on top of exactly that schema — to SQL the same way for every tool that asks for it.",
+  },
 ];

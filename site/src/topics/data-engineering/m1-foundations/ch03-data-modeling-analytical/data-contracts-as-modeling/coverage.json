@@ -1,0 +1,67 @@
+{
+  "topic": "de.data-contracts-as-modeling",
+  "syllabus": [
+    { "clause": "what a contract specifies (schema, semantics, quality rules, SLAs, ownership)", "at": [{ "step": "Reveal: schema as both business and physical, quoted directly" }, { "step": "Reveal: quality rules tied to schema, quoted directly" }, { "step": "Reveal: SLAs as enumerated, checkable fields, quoted directly" }, { "step": "Reveal: ownership as a named role, quoted directly" }] },
+    { "clause": "enforcement at the producer boundary", "at": [{ "step": "Reveal: enforcement belongs at the producer boundary" }] },
+    { "clause": "the Open Data Contract Standard (Bitol, Linux Foundation; v3.1)", "at": [{ "step": "Reveal: the contract's own format, quoted directly" }, { "step": "Reveal: the version this topic is teaching against, quoted directly" }] },
+    { "clause": "versioning and breaking-change policy (CI enforcement → §11.4)", "at": [{ "deep": "Where this goes next" }] }
+  ],
+  "sources": [
+    {
+      "source": "Open Data Contract Standard, \"Definition: Open Data Contract Standard (ODCS)\"",
+      "items": [
+        { "item": "A data contract is a structured YAML document of keys and values, not free text", "at": [{ "step": "Reveal: the contract's own format, quoted directly" }] }
+      ]
+    },
+    {
+      "source": "Open Data Contract Standard, \"Fundamentals\"",
+      "items": [
+        { "item": "The specification's own current default version (v3.2.0) has moved past the version named in this chapter's own scope line (v3.1)", "at": [{ "step": "Reveal: the version this topic is teaching against, quoted directly" }] }
+      ]
+    },
+    {
+      "source": "Open Data Contract Standard, \"Schema\"",
+      "items": [
+        { "item": "Schema ties a business representation and a physical implementation of the data together in one artifact", "at": [{ "step": "Reveal: schema as both business and physical, quoted directly" }] },
+        { "item": "A concrete schema field (businessName) carries its business meaning directly alongside its physical type", "at": [{ "step": "Reveal: schema as both business and physical, quoted directly" }] }
+      ]
+    },
+    {
+      "source": "Open Data Contract Standard, \"Data Quality\"",
+      "items": [
+        { "item": "Quality rules are a named, specified section of the contract", "at": [{ "step": "Reveal: quality rules tied to schema, quoted directly" }] },
+        { "item": "Quality rules are explicitly tied to the schema they check, not a separate concern", "at": [{ "step": "Reveal: quality rules tied to schema, quoted directly" }] }
+      ]
+    },
+    {
+      "source": "Open Data Contract Standard, \"Service-Level Agreement\"",
+      "items": [
+        { "item": "SLAs are their own named, specified section with a required structured value from an enumerated property list", "at": [{ "step": "Reveal: SLAs as enumerated, checkable fields, quoted directly" }] }
+      ]
+    },
+    {
+      "source": "Open Data Contract Standard, \"Team\"",
+      "items": [
+        { "item": "Ownership is tracked as part of the contract's own team structure", "at": [{ "step": "Reveal: ownership as a named role, quoted directly" }] },
+        { "item": "The standard's own worked example names a team member's role explicitly as \"Owner\"", "at": [{ "step": "Reveal: ownership as a named role, quoted directly" }] }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "Claude (single session, written from the syllabus line and the fetched sources before storyboarding; not independent of the builder, so a later owner review should repeat it)",
+    "date": "2026-10-22",
+    "items": [
+      { "item": "The first predict (step 3) is red-teamed against the plausible wrong answer that business meaning and physical layout need separate documents for different audiences; the reveal at step 4 corrects this by quoting the standard's own schema section, which ties both into one artifact with a concrete businessName example", "at": [{ "step": "Predict: does a contract have to pick between a dataset's business meaning and its physical layout?" }] },
+      { "item": "The second predict (step 6) is red-teamed against the plausible wrong answer that catching bad data anywhere before a human reads a report counts as enforcement; the reveal at step 7 is this topic's own reasoned claim (not a direct ODCS quote, flagged in FACT-CHECK.md), since no fetched ODCS page states where enforcement must happen, only what a contract must specify", "at": [{ "step": "Reveal: enforcement belongs at the producer boundary" }] },
+      { "item": "The third predict (step 9) is red-teamed against the plausible wrong answer that ownership is safely implicit, assumed to belong to whoever originally wrote the pipeline; the reveal at step 10 quotes the standard's own worked example, which names \"Owner\" as an explicit, written role in the contract's team structure, directly refuting the implicit-ownership guess", "at": [{ "step": "Predict: does a contract leave ownership implicit, assumed from whoever wrote the pipeline?" }] },
+      { "item": "Step 11's version-drift reveal is included deliberately rather than silently teaching the v3.1 CHAPTER.md names: the fetched specification's own default apiVersion reads v3.2.0 with features explicitly marked as added in that version, so this topic quotes and teaches against the actual current spec and discloses the discrepancy rather than teaching a version the standard has since moved past", "at": [{ "step": "Reveal: the version this topic is teaching against, quoted directly" }] },
+      { "item": "The closing check (Prove it) is a genuinely new scenario — an unreviewed schema change with no updated contract — testing whether the learner can apply both the producer-boundary reasoning (step 7) and the named-ownership reveal (step 10) together, rather than restating either reveal alone", "at": [{ "step": "Prove it" }] },
+      { "item": "The bridge from topic 21 (data mesh) and the handoff to topic 23 (semantic and metrics layers) are both taken verbatim from CHAPTER.md's own entry for topic 22 and checked against this topic's own content before use, rather than invented fresh", "at": [{ "step": "The shop's schema that changed overnight" }] },
+      { "item": "This topic has no lab of its own (CHAPTER.md), and every sourced claim traces to a direct quote verified word for word (scripts/sources.mjs check) from the Open Data Contract Standard's own specification pages, matching CHAPTER.md's explicit instruction to quote the standard directly rather than paraphrase it from memory", "at": [{ "step": "Reveal: the contract's own format, quoted directly" }, { "step": "Reveal: schema as both business and physical, quoted directly" }] },
+      { "item": "The recap keeps four separate ideas distinct (a contract is structured, not a promise; schema ties meaning to layout; quality and SLA fields are named and checkable; ownership is an explicit role) matching the syllabus line's own five named specification dimensions (collapsing schema and semantics into one reveal, since the standard's own schema section treats them as one tied-together artifact), rather than collapsing everything into one vague \"contracts are good practice\" takeaway", "at": [{ "step": "Recap" }] },
+      { "item": "Versioning and breaking-change policy are deliberately deferred to §11.4 per CHAPTER.md's own explicit instruction, not silently skipped — this topic specifies what a contract contains and where it's enforced without building CI-level breaking-change detection", "at": [{ "step": "Reveal: the version this topic is teaching against, quoted directly" }] },
+      { "item": "No specific numeric claim (a particular SLA value, a particular quality threshold) is made anywhere in this topic beyond the field names and version number the specification itself states, since this topic has no lab of its own to measure anything independently", "at": [{ "step": "Reveal: SLAs as enumerated, checkable fields, quoted directly" }] }
+    ]
+  },
+  "gapReview": { "date": "2026-10-22", "by": "Claude (single session)", "open": [] }
+}

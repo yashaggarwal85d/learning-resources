@@ -1,0 +1,4 @@
+- **Data contract**: a structured document specifying a dataset's schema, semantics, quality rules, SLAs, and ownership, under the Open Data Contract Standard. *Where you meet it:* the concrete artifact this whole topic is built around.
+- **Schema (business + physical)**: one artifact tying a field's business meaning to its physical type, rather than two separate documents. *Where you meet it:* the standard's own `businessName` field, quoted directly.
+- **Producer-boundary enforcement**: stopping bad data at the point it's emitted, before any downstream consumer can see it, rather than catching it after the fact. *Where you meet it:* this topic's own reasoned argument for where enforcement actually has to happen.
+- **Ownership as a named role**: a contract's team structure names who owns a dataset explicitly, rather than leaving it assumed from whoever originally wrote the pipeline. *Where you meet it:* the standard's own worked example, naming "Owner" directly.
