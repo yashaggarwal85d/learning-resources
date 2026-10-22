@@ -1,0 +1,635 @@
+{
+ "topic": "de.cost-models-join-order",
+ "voice": "breeze-mellow-v2",
+ "asr": "large-v3-turbo",
+ "clips": {
+  "01": {
+   "hash": "7ebccfce18d0069f",
+   "takes": [
+    "44bc890ff95d8920500d",
+    "3ad271caa84c4c0882b1",
+    "5f3edef233369b7ef881"
+   ],
+   "duration": 18.516,
+   "lines": [
+    {
+     "text": "Nine tables. The same data, joined the same way, asking for the same count.",
+     "start": 0.15,
+     "end": 6.456
+    },
+    {
+     "text": "One version of that question reports a total cost. Another version reports a much smaller one.",
+     "start": 6.876,
+     "end": 12.998
+    },
+    {
+     "text": "Nothing about the tables changed between them. So what did?",
+     "start": 13.818,
+     "end": 18.166
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 130,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "02": {
+   "hash": "71d1f39a2d7b1d70",
+   "takes": [
+    "a474980332491fdffb43",
+    "385536b160b793729371",
+    "4f1c4e0ef95504103691"
+   ],
+   "duration": 22.625,
+   "lines": [
+    {
+     "text": "A table's page count and row count are sitting right there in the catalog, along with the two constants the planner uses to turn them into a cost.",
+     "start": 0.15,
+     "end": 9.413
+    },
+    {
+     "text": "Work the arithmetic by hand before the planner shows its own number.",
+     "start": 9.833,
+     "end": 14.148
+    },
+    {
+     "text": "Does the planner's reported cost land on the smaller figure, the larger one, or something else entirely?",
+     "start": 14.968,
+     "end": 22.275
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 151,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "02a": {
+   "hash": "7c698314185b0e7b",
+   "takes": [
+    "328c2e834106e9b95716",
+    "df635e4165aab307710b"
+   ],
+   "duration": 16.278,
+   "lines": [
+    {
+     "text": "It lands on the sum of the two pieces: the page count times the sequential page cost, plus the row count times the per row cost.",
+     "start": 0.15,
+     "end": 9.802
+    },
+    {
+     "text": "That is the whole formula, worked by hand on a real table instead of a toy one.",
+     "start": 10.222,
+     "end": 15.928
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -1.9,
+   "wpm": 159,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "03": {
+   "hash": "8312f6d886773e6c",
+   "takes": [
+    "2b74c3cc17720e1aa3c2",
+    "60aa9063a5e3c1ff5184",
+    "b43fe9aa57f4253680ca"
+   ],
+   "duration": 23.067,
+   "lines": [
+    {
+     "text": "Here is the planner's own reported number, printed right where the hand arithmetic predicted it would be.",
+     "start": 0.15,
+     "end": 6.39
+    },
+    {
+     "text": "Not an estimate rounded for convenience. An exact match, to the decimal.",
+     "start": 6.81,
+     "end": 11.961
+    },
+    {
+     "text": "A plan's cost is never measured after the query runs. It is computed, in the planner's own arbitrary units, before a single row moves.",
+     "start": 12.381,
+     "end": 22.718
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -2.0,
+   "wpm": 138,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "04": {
+   "hash": "4acf156534fa99ce",
+   "takes": [
+    "fdb5cacaa64f8e4968b7",
+    "8317b1e5f9fab7866607",
+    "d89aa51927125440af39"
+   ],
+   "duration": 25.714,
+   "lines": [
+    {
+     "text": "Five numbers do all the work: one for a sequential page, a larger one for a page fetched out of order, and three small ones for the cost of touching each row, each index entry, and each operator.",
+     "start": 0.15,
+     "end": 15.184
+    },
+    {
+     "text": "Every plan the planner ever considers is priced from just these five.",
+     "start": 15.604,
+     "end": 21.444
+    },
+    {
+     "text": "Whichever plan's total comes out lowest is the one that runs.",
+     "start": 21.864,
+     "end": 25.364
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -2.0,
+   "wpm": 142,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "05": {
+   "hash": "1356970d04de350d",
+   "takes": [
+    "9297ceb43d5ae7a1ebc0",
+    "2b5703175f62c36b9112",
+    "e3e0aea8346b6f107ef7",
+    "b58dd602f17935154ca0"
+   ],
+   "duration": 38.38,
+   "lines": [
+    {
+     "text": "Scanning one table barely counts as a decision. Choosing the order to join many tables is a different kind of problem.",
+     "start": 0.15,
+     "end": 8.669
+    },
+    {
+     "text": "Count every distinct way to join twelve tables and the number runs past twenty eight trillion. Push to fourteen tables and it is past sixty four quadrillion.",
+     "start": 9.089,
+     "end": 21.799
+    },
+    {
+     "text": "That count was not guessed at. It was checked by brute force on small cases before it was trusted on large ones.",
+     "start": 22.219,
+     "end": 30.176
+    },
+    {
+     "text": "The sheer size of that search is the actual reason a planner needs a strategy at all, not just a cost formula.",
+     "start": 30.596,
+     "end": 38.03
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 144,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "06": {
+   "hash": "d654f91ce3c3cb42",
+   "takes": [
+    "a037523d60f4092b0869",
+    "35a47a89fe3c9d7cdf90",
+    "cb9c0442104caa8d7c2c"
+   ],
+   "duration": 28.299,
+   "lines": [
+    {
+     "text": "Nine tables, written in the worst possible order. The one selective filter sits last, after eight unfiltered joins have already run.",
+     "start": 0.15,
+     "end": 10.486
+    },
+    {
+     "text": "A setting limits how many tables the planner is allowed to freely reorder, and by default that limit is smaller than nine.",
+     "start": 10.906,
+     "end": 19.537
+    },
+    {
+     "text": "Will the planner still find its way to a better order, or is it stuck with the order as written?",
+     "start": 20.357,
+     "end": 27.949
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 134,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "06a": {
+   "hash": "097577487ff2ab53",
+   "takes": [
+    "4a3a8a616955fcbd83ef",
+    "cdbf4ae618fd4dc1ad98"
+   ],
+   "duration": 13.726,
+   "lines": [
+    {
+     "text": "Stuck with it. Nine tables is one more than the default limit covers, so the planner cannot flatten and freely reorder the whole list.",
+     "start": 0.15,
+     "end": 9.242
+    },
+    {
+     "text": "The order on the page is the order that actually runs.",
+     "start": 9.662,
+     "end": 13.376
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 153,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "07": {
+   "hash": "c6c134affb44eb55",
+   "takes": [
+    "2b0b36e771ff9d957aec",
+    "46d87fa429e042867942",
+    "65db92f001991070c434"
+   ],
+   "duration": 37.262,
+   "lines": [
+    {
+     "text": "Force the planner to keep that literal, bad order and the total cost is enormous \u2014 every unfiltered table joined in full before the one real filter ever applies.",
+     "start": 0.15,
+     "end": 15.932
+    },
+    {
+     "text": "Let the planner reorder freely instead, and the total cost drops to a small fraction of that \u2014 more than ten times smaller.",
+     "start": 16.352,
+     "end": 25.236
+    },
+    {
+     "text": "Same tables. Same data. Same question being asked. The only thing that changed was whether the planner was allowed to rewrite what was written.",
+     "start": 25.656,
+     "end": 36.912
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 119,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "08": {
+   "hash": "be0a9aa01278513e",
+   "takes": [
+    "779aa42fd9c4f15a9a58",
+    "04bfba453fcdd0274099",
+    "ec6d7adc0eada7738ce2"
+   ],
+   "duration": 31.263,
+   "lines": [
+    {
+     "text": "Two settings, both defaulting to the same modest number, control this: one for how many tables a written join can flatten into, one for how many a merged subquery can.",
+     "start": 0.15,
+     "end": 12.787
+    },
+    {
+     "text": "Pin that number down to its smallest possible value and you are telling the planner: keep the order exactly as I wrote it.",
+     "start": 13.207,
+     "end": 22.752
+    },
+    {
+     "text": "That is not a workaround for a bug. It is the deliberate way to force a join order you already know is better.",
+     "start": 23.172,
+     "end": 30.913
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 146,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "09": {
+   "hash": "b03de3331e8ff8f8",
+   "takes": [
+    "16c241c324746b5a7efc",
+    "d9698fc23b729f079790",
+    "1478a66c61447ce7fd26"
+   ],
+   "duration": 20.527,
+   "lines": [
+    {
+     "text": "There is a threshold, measured in how many tables a query touches at once, past which the planner changes its whole strategy.",
+     "start": 0.15,
+     "end": 8.542
+    },
+    {
+     "text": "Push a chain of joins from just under that threshold to just over it.",
+     "start": 8.962,
+     "end": 13.891
+    },
+    {
+     "text": "Does the plan get better past that point, worse, or does nothing change at all?",
+     "start": 14.711,
+     "end": 20.177
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -2.9,
+   "wpm": 149,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "09a": {
+   "hash": "0df6465d6329f50a",
+   "takes": [
+    "f2bc0a9eee136df05e71",
+    "c0c1e2bbad193399dd16"
+   ],
+   "duration": 20.909,
+   "lines": [
+    {
+     "text": "Worse is possible, but faster to find is the actual trade. Past the threshold the planner swaps an exhaustive search for a much quicker, less certain one.",
+     "start": 0.15,
+     "end": 12.619
+    },
+    {
+     "text": "It gives up a guarantee of finding the best order in exchange for a bound on how long finding any order takes.",
+     "start": 13.039,
+     "end": 20.559
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 141,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "10": {
+   "hash": "163bbca1a186fa9b",
+   "takes": [
+    "9d342978d44f8b47137a",
+    "61a0af396da032e75dd3",
+    "ccc1bb443289b4526c1c",
+    "876d8b6a82bf5ee6f4c2"
+   ],
+   "duration": 46.767,
+   "lines": [
+    {
+     "text": "Force the exhaustive search anyway, past that threshold, and watch planning time itself: a small fraction of a second at eight tables, well over a second at twelve, dozens of seconds at fourteen.",
+     "start": 0.15,
+     "end": 16.014
+    },
+    {
+     "text": "Push two tables further still and the exhaustive search never returned an answer at all \u2014 the attempt alone was enough to strain the whole server.",
+     "start": 16.434,
+     "end": 26.314
+    },
+    {
+     "text": "Switch to the quicker strategy at those same sizes and planning finishes in a small fraction of a second, landing on exactly the same cost both times, here.",
+     "start": 26.734,
+     "end": 37.149
+    },
+    {
+     "text": "A bound on how long the search takes, not a promise about what the search finds \u2014 this particular query just happened to get both anyway.",
+     "start": 37.569,
+     "end": 46.417
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 142,
+   "wer": 0.08,
+   "exact": false,
+   "tolerated": [
+    {
+     "line": "A bound on how long the search takes, not a promise about what the search finds \u2014 this particular query just happened to get both anyway.",
+     "said": "a bound",
+     "heard": "abound"
+    }
+   ]
+  },
+  "11": {
+   "hash": "79d4cc618714df60",
+   "takes": [
+    "a83d2417080831a7ba50",
+    "38144e7371484f419cc2",
+    "14d5b6ccde3ce0a7dd02"
+   ],
+   "duration": 30.357,
+   "lines": [
+    {
+     "text": "That quicker strategy treats a join order the way an old routing puzzle treats a tour between cities: encode the order as a string of stops, and let a whole population of candidate strings compete.",
+     "start": 0.15,
+     "end": 14.304
+    },
+    {
+     "text": "Cheaper candidates survive. The most expensive ones are discarded, and new candidates are bred by recombining pieces of the ones that survived.",
+     "start": 14.724,
+     "end": 24.021
+    },
+    {
+     "text": "A genuine search through a sample of the space, not a shortcut through the whole thing.",
+     "start": 24.441,
+     "end": 30.007
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 144,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "12": {
+   "hash": "9b833fbb6a47176c",
+   "takes": [
+    "d7ae91becefa7a111892",
+    "f121de040669efd568c7",
+    "5550e5cbefabdbe1df28",
+    "573984c68cb2649eea50"
+   ],
+   "duration": 36.757,
+   "lines": [
+    {
+     "text": "One more thing the planner tracks that has nothing to do with cost alone: the order rows already come out in.",
+     "start": 0.15,
+     "end": 7.022
+    },
+    {
+     "text": "Ask for rows in a particular order with no help from an index and the planner adds an explicit sorting step, at real cost.",
+     "start": 7.442,
+     "end": 16.672
+    },
+    {
+     "text": "Add an index that already produces rows in that exact order and the sorting step disappears entirely. The total cost drops by more than a thousand times.",
+     "start": 17.092,
+     "end": 28.356
+    },
+    {
+     "text": "A scan is not just priced on how it reads rows \u2014 it is also valued for the order it happens to leave them in.",
+     "start": 28.776,
+     "end": 36.407
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 157,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "13": {
+   "hash": "7ef4a12eca97ecb3",
+   "takes": [
+    "bd34e355b01dba36c758",
+    "965c1f464020b70ef5e3",
+    "467c4e31ed6e09846a89",
+    "9195703760296de93303"
+   ],
+   "duration": 25.649,
+   "lines": [
+    {
+     "text": "Before trusting any plan's shape, three questions are worth asking.",
+     "start": 0.15,
+     "end": 4.786
+    },
+    {
+     "text": "What do those five constants assume about the hardware underneath \u2014 is a random read on this machine really that much slower than a sequential one?",
+     "start": 5.206,
+     "end": 13.25
+    },
+    {
+     "text": "Would a smaller reorder limit have blocked the planner from reaching a better order here?",
+     "start": 13.8,
+     "end": 18.993
+    },
+    {
+     "text": "And is this query already past the point where the quicker, less certain search took over?",
+     "start": 19.543,
+     "end": 25.299
+    }
+   ],
+   "lufs": -16.3,
+   "true_peak": -2.7,
+   "wpm": 154,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "14": {
+   "hash": "0d9128054fcf7512",
+   "takes": [
+    "2a040da1037e00290b80",
+    "c709ee09cbb21faf52b2"
+   ],
+   "duration": 13.884,
+   "lines": [
+    {
+     "text": "A smaller table this time: a couple thousand pages, tens of thousands of rows.",
+     "start": 0.15,
+     "end": 5.889
+    },
+    {
+     "text": "Using the same five constants as before, what total cost does a sequential scan of it report?",
+     "start": 6.709,
+     "end": 13.534
+    }
+   ],
+   "lufs": -15.9,
+   "true_peak": -2.1,
+   "wpm": 134,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "14a": {
+   "hash": "c8089ff334b82dda",
+   "takes": [
+    "bb9c4691f3db51bd7c3c",
+    "cc10c4ec657e4972a005"
+   ],
+   "duration": 15.563,
+   "lines": [
+    {
+     "text": "The same formula as before, just smaller numbers going in: the page count times the sequential page cost, plus the row count times the per row cost.",
+     "start": 0.15,
+     "end": 9.673
+    },
+    {
+     "text": "Once the formula is in hand, any table's number is just arithmetic.",
+     "start": 10.093,
+     "end": 15.213
+    }
+   ],
+   "lufs": -16.3,
+   "true_peak": -2.2,
+   "wpm": 150,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "15": {
+   "hash": "911ef4d4b49dea6c",
+   "takes": [
+    "1ea8b461b278169ed59c",
+    "e0fae580e16e00d16eb0"
+   ],
+   "duration": 15.406,
+   "lines": [
+    {
+     "text": "Seven tables this time, also written in a bad order, with the reorder limit left at its ordinary default.",
+     "start": 0.15,
+     "end": 8.2
+    },
+    {
+     "text": "Does seven fit comfortably under that default, or does it run into the same wall nine did?",
+     "start": 9.02,
+     "end": 15.056
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 140,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "15a": {
+   "hash": "d548755bc063e419",
+   "takes": [
+    "62ba9f77274282d504a4",
+    "d3d34dd787320ce23f77"
+   ],
+   "duration": 19.981,
+   "lines": [
+    {
+     "text": "It fits. Seven is within the default limit, so the planner can still flatten the whole list and search freely, no matter how it was written.",
+     "start": 0.15,
+     "end": 9.936
+    },
+    {
+     "text": "The wall only shows up once the written join actually exceeds the limit \u2014 which is exactly what made nine tables different from seven.",
+     "start": 10.356,
+     "end": 19.631
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -2.0,
+   "wpm": 147,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  }
+ }
+}
