@@ -4,7 +4,7 @@ Script items (narration.json): "a line" (the narrator) or {"beat": s} (a deliber
 import contextlib, hashlib, json, os, time
 
 HERE = os.path.dirname(os.path.abspath(__file__))
-VOICE = json.load(open(os.path.join(HERE, "voice.json")))
+VOICE = json.load(open(os.path.join(HERE, "voice.json"), encoding="utf-8"))
 CACHE = os.environ.get("NARRATION_CACHE", os.path.expanduser("~/.cache/learning-narration"))
 
 GPU_SLOTS = int(os.environ.get("NARRATION_GPU_SLOTS", 3))
@@ -71,7 +71,7 @@ def spoken(x):
 
 def clips(topic_dir):
     """Every clip of a topic: (clip id, items), where items are lines (str) or {"beat": s}."""
-    spec = json.load(open(os.path.join(topic_dir, "narration.json")))
+    spec = json.load(open(os.path.join(topic_dir, "narration.json"), encoding="utf-8"))
     out = []
     for i, s in enumerate(spec["steps"], 1):
         out.append((f"{i:02d}", s["lines"]))
