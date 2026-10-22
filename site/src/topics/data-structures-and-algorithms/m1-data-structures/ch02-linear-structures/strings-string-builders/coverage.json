@@ -7,7 +7,7 @@
     { "clause": "quadratic repeated concatenation", "at": [
       { "step": "The real cost of building one, piece by piece" },
       { "step": "What actually fixes the loop?" },
-      { "step": "The string builder: topic one's mechanism, applied here" }
+      { "step": "The string builder: topic 1's mechanism, applied here" }
     ] },
     { "clause": "UTF-8 byte vs code-point indexing costs.", "at": [
       { "step": "One character, one to four bytes" },
@@ -47,7 +47,7 @@
     {
       "source": "Java SE 21 API documentation, java.lang.StringBuilder",
       "items": [
-        { "item": "a string builder has a capacity; appending within it needs no new buffer, and overflow makes the buffer automatically larger", "at": [{ "step": "The string builder: topic one's mechanism, applied here" }] }
+        { "item": "a string builder has a capacity; appending within it needs no new buffer, and overflow makes the buffer automatically larger", "at": [{ "step": "The string builder: topic 1's mechanism, applied here" }] }
       ]
     }
   ],
@@ -59,7 +59,7 @@
       { "item": "immutability is why a string can be used as a dictionary/hash-map key: a mutable key could change its hash after insertion and silently break the hash table's invariant", "at": [{ "step": "Immutability: every edit is a new string" }] },
       { "item": "immutability also buys safe sharing between references, since neither can observe an edit the other made, because there are no edits — this is what makes interning equal strings safe", "at": [{ "step": "Immutability: every edit is a new string" }] },
       { "item": "building a string by looping s = s + piece is Θ(k²) for k pieces because each + allocates a whole new buffer sized to the current total length and copies everything built so far into it — the same shape as a dynamic array that reallocates by exactly one element every time instead of doubling", "at": [{ "step": "The real cost of building one, piece by piece" }] },
-      { "item": "a string builder is precisely a dynamic array of bytes/characters with the same doubling-capacity policy as topic one — not a new mechanism, topic one's mechanism applied to a different element type", "at": [{ "step": "The string builder: topic one's mechanism, applied here" }] },
+      { "item": "a string builder is precisely a dynamic array of bytes/characters with the same doubling-capacity policy as topic one — not a new mechanism, topic one's mechanism applied to a different element type", "at": [{ "step": "The string builder: topic 1's mechanism, applied here" }] },
       { "item": "a UTF-8 code point takes between one and four bytes; ASCII code points take exactly one byte and are byte-identical to ASCII, which is why UTF-8 stays backward-compatible with ASCII-only text and tools", "at": [{ "step": "One character, one to four bytes" }] },
       { "item": "indexing a UTF-8-encoded string by byte offset is O(1), but indexing by code-point ordinal is O(n) in general, because the byte offset of code point n depends on how many of code points zero through n minus one were multi-byte", "at": [{ "step": "Is indexing the nth character O(1)?" }] },
       { "item": "Go's s[i] indexes bytes directly in O(1), and the only code-point-aware traversal the language gives, for range, is defined to decode one UTF-8 rune per iteration — an O(n) walk by construction, not a missed optimization", "at": [{ "step": "Two real languages, two real trade-offs" }] },
