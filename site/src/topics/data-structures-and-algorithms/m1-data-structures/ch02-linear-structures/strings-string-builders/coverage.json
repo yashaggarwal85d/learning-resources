@@ -1,0 +1,24 @@
+{
+  "topic": "dsa.strings-string-builders",
+  "syllabus": [],
+  "sources": [],
+  "expert": {
+    "by": "self-review",
+    "date": "2026-10-22",
+    "items": [
+      { "item": "A string's immutability means every apparent in-place edit (concatenation, slicing, case change) actually allocates a brand-new string object and copies into it; the original is untouched.", "at": "step" },
+      { "item": "Immutability is why a string can be used as a dictionary/hash-map key at all in most languages: a mutable key could change its hash after insertion and silently break the hash table's invariant.", "at": "step" },
+      { "item": "Immutability also buys safe sharing: two references to the same string can never observe each other's edits, because there are no edits — this is why interning (sharing one copy of equal strings) is safe for immutable strings but not for mutable ones.", "at": "step" },
+      { "item": "Building a string by looping `s = s + piece` is Θ(k²) for k pieces because each `+` allocates a whole new buffer sized to the current total length and copies everything built so far into it — the same shape as a dynamic array that never pre-reserves and reallocates by exactly 1 element each time, not by doubling.", "at": "step" },
+      { "item": "A string builder (Java's StringBuilder, C#'s StringBuilder, Python's list-of-parts + str.join, C++'s std::string itself via reserve/append) is precisely a dynamic array of bytes/characters with the same doubling-capacity policy as topic 1 — it is not a new mechanism, it is topic 1's mechanism applied to a different element type.", "at": "step" },
+      { "item": "A UTF-8 code point takes between one and four bytes; ASCII code points (U+0000–U+007F) take exactly one byte and are byte-identical to ASCII, which is why UTF-8 can represent all of Unicode while staying backward-compatible with ASCII-only text and tools.", "at": "step" },
+      { "item": "Indexing a UTF-8-encoded string by byte offset is O(1) (it's just array indexing), but indexing by code-point ordinal (\"give me the nth character\") is O(n) in general, because the byte offset of code point n depends on how many of code points 0..n-1 were multi-byte — there is no way to compute it without walking and decoding them.", "at": "step" },
+      { "item": "Go's own design makes this concrete: `s[i]` indexes bytes directly (O(1)), and the only code-point-aware traversal the language gives you, `for range`, is defined to decode one UTF-8 rune per iteration — i.e. it is an O(n) walk by construction, not an optimization that was simply never written.", "at": "step" },
+      { "item": "Rust's design makes the opposite trade-off visible: `str` has no single-integer indexing operator at all (code does not compile), and byte-range slicing panics at runtime if either boundary doesn't land on a UTF-8 character boundary — the language chose to keep slicing O(1) by making it unsafe to use without already knowing where characters start.", "at": "step" },
+      { "item": "A structure that wants O(1) code-point indexing anyway (e.g. Swift's String internals historically, or any design that keeps a side table of code-point-boundary offsets) pays for it elsewhere: either extra memory for the offset table, or a fixed-width internal representation (e.g. always 4 bytes per code point, like UTF-32) that gives up UTF-8's space efficiency.", "at": "step" },
+      { "item": "What a person casually calls \"one character\" can be a grapheme cluster spanning multiple code points (e.g. an emoji plus a skin-tone modifier, or a base letter plus a combining accent) — this topic names that gap once and defers the mechanism entirely; no reel step claims to solve it.", "at": "out", "note": "named once per CHAPTER.md, no mechanism taught" },
+      { "item": "String hashing (turning a string into a fast, well-distributed integer for use as a hash-table key) and string interning (sharing one copy of equal immutable strings) are both deferred whole to Chapter 3, which is this topic's handoff.", "at": "out", "note": "Chapter 3: dsa.practical-hash-functions-hashdos and beyond" }
+    ]
+  },
+  "gapReview": { "date": "", "by": "", "open": [] }
+}
