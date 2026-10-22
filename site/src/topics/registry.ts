@@ -1210,4 +1210,24 @@ export const TOPICS: TopicMeta[] = [
     handoff:
       "Plan-time pruning, run-time pruning, and partition overhead all assumed the planner is told a partition key up front. Next: zone maps and BRIN indexes, where a much smaller structure learns the same kind of exclusion from a table's physical row order instead of its declared partitioning.",
   },
+  {
+    id: 'de.zone-maps-brin-indexes',
+    domain: 'data-engineering',
+    slug: 'data-engineering/m1-foundations/ch02-advanced-sql-query-execution/zone-maps-brin-indexes',
+    title: 'Zone maps and BRIN indexes',
+    syllabusTitle: 'Zone maps and BRIN indexes',
+    kind: 'full',
+    status: 'live',
+    milestone: { number: 1, title: 'Foundations' },
+    chapter: { number: 2, title: 'Advanced SQL and query execution', section: '2.3' },
+    minutes: 15,
+    verified: '2026-10-22',
+    introduces: ['block-range-summary-pruning', 'physical-correlation-requirement'],
+    uses: ['composite-index-column-order', 'covering-index-include'],
+    declared: ['sql-select', 'sql-create-index'],
+    bridge:
+      "Plan-time pruning, run-time pruning, and partition overhead all assumed the planner is told a partition key up front. This topic measures a much smaller structure that learns the same kind of exclusion from a table's physical row order instead of its declared partitioning.",
+    handoff:
+      "A block-range summary earns its tiny size only when a column is genuinely correlated with physical row order, and even then the executor still rechecks every candidate row. Next: materialized views and incremental view maintenance, where a query's own result gets stored and kept up to date instead of being recomputed, with a staleness bound replacing the freshness any live scan always had.",
+  },
 ];

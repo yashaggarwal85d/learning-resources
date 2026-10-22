@@ -1,0 +1,23 @@
+import Resource from '../../../../../components/Resource.astro';
+
+<section class="prereq" data-section="earlier-topics">
+
+### <span class="n">01</span> What this topic builds on
+
+<ul class="resources">
+  <Resource kind="reel" host={props.host} domain="data-engineering" title="Table partitioning and partition pruning">A declared partition key excludes whole partitions up front. This topic measures a structure that learns the same kind of exclusion from physical row order instead.</Resource>
+</ul>
+
+</section>
+
+<section class="prereq" data-section="reference">
+
+### <span class="n">02</span> Reference
+
+<ul class="resources">
+  <Resource kind="reading" title="11.2. Index Types" href="https://www.postgresql.org/docs/18/indexes-types.html" by="PostgreSQL 18 documentation" length="10 min">The overview of BRIN among PostgreSQL's index types, and the correlation requirement.</Resource>
+  <Resource kind="reading" title="65.5. BRIN Indexes" href="https://www.postgresql.org/docs/18/brin.html" by="PostgreSQL 18 documentation" length="15 min">Block ranges, summarization, lossiness, and the pages_per_range tradeoff, in full detail.</Resource>
+  <Resource kind="reading" title="Micro-partitions & Data Clustering" href="https://docs.snowflake.com/en/user-guide/tables-clustering-micropartitions" by="Snowflake documentation" length="10 min">The same min/max-per-chunk idea, at the micro-partition layer of a cloud warehouse.</Resource>
+</ul>
+
+</section>

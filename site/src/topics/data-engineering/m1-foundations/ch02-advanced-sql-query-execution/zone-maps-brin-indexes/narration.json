@@ -1,0 +1,130 @@
+{
+  "topic": "de.zone-maps-brin-indexes",
+  "steps": [
+    {
+      "lines": [
+        "Run the exact same equality filter against the exact same table, two different ways.",
+        "With no index at all, over ten thousand buffers get touched to answer it.",
+        "With one tiny summary index instead, only fifteen do."
+      ]
+    },
+    {
+      "lines": [
+        "An ordinary tree-shaped index stores one entry for every single row it covers, no matter how many rows that is.",
+        { "beat": 0.4 },
+        "Could an index that stores nothing at all per row still manage to help answer a query?"
+      ],
+      "answer": [
+        "Yes — a much coarser summary can still rule out most of the table at once.",
+        "A summary covering many rows together can still prove that an entire group of them cannot possibly match, which is exactly the mechanism this topic measures directly."
+      ]
+    },
+    {
+      "lines": [
+        "This kind of index keeps one summary for each group of physically neighboring pages, instead of one entry per row.",
+        "For a column with a natural order, that summary is simply the smallest and largest value seen anywhere inside that whole group.",
+        "One compact fact, standing in for every row the group actually contains."
+      ]
+    },
+    {
+      "lines": [
+        "Build that kind of index on this column, and measure its size directly.",
+        "It comes out to a few dozen kilobytes. An ordinary tree-shaped index over the identical column comes out to several megabytes instead.",
+        "Hundreds of times larger, for storing the exact same column, the exact same data."
+      ]
+    },
+    {
+      "lines": [
+        "A summary this coarse only ever rules out a whole group of rows at once, never a single row by itself.",
+        { "beat": 0.4 },
+        "Does that still work no matter how a column's values happen to be arranged inside the table, or does something about the data have to be true first?"
+      ],
+      "answer": [
+        "It only helps once a group's rows genuinely share values that are close together.",
+        "Whether that holds at all is a real property of how the data sits physically in the table, and this topic measures both sides of that directly."
+      ]
+    },
+    {
+      "lines": [
+        "A group's own summary is only a useful shortcut if that group's rows are genuinely clustered together by value.",
+        "In other words, the column has to be well matched to the physical order the rows actually sit in.",
+        "Without that match, a compact summary has nothing meaningful left to summarize."
+      ]
+    },
+    {
+      "lines": [
+        "Pick a column that is genuinely well matched to row order, and measure the same equality filter again.",
+        "Buffers drop all the way back down to that same small handful, and the whole query finishes in a tiny fraction of a millisecond.",
+        "Hundreds of times faster than touching the table with no index at all."
+      ]
+    },
+    {
+      "lines": [
+        "Now take the exact same kind of index, but on a column whose values are scattered randomly across the table instead.",
+        { "beat": 0.4 },
+        "Does it still help at all?"
+      ],
+      "answer": [
+        "No — once values are scattered, almost every group ends up containing nearly the full spread of them.",
+        "A summary covering a group that already contains everything has nothing left to rule out."
+      ]
+    },
+    {
+      "lines": [
+        "Measure that same scattered-column case directly.",
+        "The number of buffers touched comes out essentially the same as touching the table with no index at all.",
+        "And once the extra checking work this index still has to do gets counted, it actually finishes slightly slower than skipping the index entirely."
+      ]
+    },
+    {
+      "lines": [
+        "A group's own summary can be perfectly consistent with a filter without every single row inside that group actually matching it.",
+        { "beat": 0.4 },
+        "So what has to happen to those rows before they can be trusted as real matches?"
+      ],
+      "answer": [
+        "Every row inside a matching group still has to be checked individually before being trusted.",
+        "The summary only proves a group might contain a real match, never that every row inside it already is one."
+      ]
+    },
+    {
+      "lines": [
+        "A matching group hands back every single row it contains as a mere candidate, nothing more.",
+        "The engine running the query then checks each candidate against the real filter on its own, one at a time.",
+        "Whatever doesn't genuinely match gets thrown away right there — this kind of index gives up precision by design, in exchange for its own tiny size."
+      ]
+    },
+    {
+      "lines": [
+        "A columnar file format keeps this exact same trick at its own layer, one level removed from a database engine entirely.",
+        "Each chunk of rows inside such a file carries its own smallest and largest value, read before a single row inside that chunk ever gets decoded.",
+        "The exact same shortcut, just applied to a file instead of a table."
+      ]
+    },
+    {
+      "lines": [
+        "A cloud warehouse carries this same idea even further, automatically, for every table it stores.",
+        "Each small chunk of a table keeps the range of values for every one of its own columns, and an entire chunk gets skipped the moment that range cannot possibly match.",
+        "Different storage layer, same underlying principle this whole topic has been measuring directly."
+      ]
+    },
+    {
+      "lines": [
+        "A summary this coarse costs almost nothing to store, next to an ordinary tree-shaped index over the same column.",
+        "It only earns that advantage once a column's values genuinely line up with how the table is physically laid out.",
+        "And even then, every row a matching group returns still gets individually checked before it counts as a real answer."
+      ]
+    },
+    {
+      "lines": [
+        "A table is split into five hundred physical groups of rows. Every row was loaded in strict order by date, and a query filters on exactly one date, which only ever appears inside a single one of those groups.",
+        { "beat": 0.4 },
+        "How many of those groups should actually need to be checked?"
+      ],
+      "answer": [
+        "Just one — every other group gets ruled out purely by its own summary.",
+        "With the data this strictly ordered, only the single group whose own summary could possibly contain that date needs any checking done on it at all."
+      ]
+    }
+  ]
+}

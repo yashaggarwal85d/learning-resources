@@ -1,0 +1,47 @@
+{
+  "topic": "de.zone-maps-brin-indexes",
+  "syllabus": [
+    { "clause": "min/max summaries per block range for naturally ordered data vs B-trees;", "at": [{ "step": "Reveal: what a BRIN index actually stores" }, { "step": "Reveal: this topic's own measured size contrast" }] },
+    { "clause": "the physical-correlation requirement;", "at": [{ "step": "Reveal: the physical-correlation requirement" }, { "step": "Reveal: this topic's own measured correlated-column contrast" }, { "step": "Reveal: this topic's own measured uncorrelated-column result" }] },
+    { "clause": "the same idea as Parquet statistics and Snowflake micro-partition pruning (§6.2, §6.5).", "at": [{ "step": "Reveal: the same idea restated — Parquet statistics" }, { "step": "Reveal: Snowflake's micro-partition metadata" }] }
+  ],
+  "sources": [
+    {
+      "source": "PostgreSQL 18 Documentation §65.5, \"BRIN Indexes\"",
+      "items": [
+        { "item": "A BRIN index stores a summary per block range; for linearly-ordered types, the minimum and maximum value", "at": [{ "step": "Reveal: what a BRIN index actually stores" }] },
+        { "item": "BRIN indexes are lossy: the executor must recheck and discard non-matching tuples returned by a matching range", "at": [{ "step": "Reveal: lossy — rechecking every row in a matching range" }] },
+        { "item": "pages_per_range trades index size for summary precision", "at": [{ "deep": "Into the internals" }] }
+      ]
+    },
+    {
+      "source": "PostgreSQL 18 Documentation §11.2.6, \"BRIN\"",
+      "items": [
+        { "item": "BRIN is most effective for columns well-correlated with the physical order of the table rows", "at": [{ "step": "Reveal: the physical-correlation requirement" }] }
+      ]
+    },
+    {
+      "source": "Snowflake Documentation, \"Micro-partitions & Data Clustering\"",
+      "items": [
+        { "item": "Snowflake stores the range of values per column per micro-partition and prunes on that basis", "at": [{ "step": "Reveal: Snowflake's micro-partition metadata" }] }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "Claude (single session, written from the syllabus line and the fetched sources before storyboarding; not independent of the builder, so a later owner review should repeat it)",
+    "date": "2026-10-22",
+    "items": [
+      { "item": "The storage-size measurement compares a BRIN and a B-tree index on the exact same column of the exact same table, isolating the index structure as the only variable", "at": [{ "step": "Reveal: this topic's own measured size contrast" }] },
+      { "item": "The correlated-column measurement disables sequential scan entirely to force a true index-only comparison against a genuine no-index baseline, rather than letting the planner choose", "at": [{ "step": "Reveal: this topic's own measured correlated-column contrast" }] },
+      { "item": "The uncorrelated-column measurement uses the same table and the same kind of equality filter, with only the column's physical correlation changed, isolating correlation as the one variable under test", "at": [{ "step": "Reveal: this topic's own measured uncorrelated-column result" }] },
+      { "item": "The lossy-recheck explanation is tied directly to the measured Heap Blocks: lossy count rather than asserted abstractly", "at": [{ "step": "Reveal: lossy — rechecking every row in a matching range" }] },
+      { "item": "Parquet and Snowflake are presented as the same min/max-per-chunk idea at a different layer, not as unrelated features, matching this chapter's established cross-engine contrast pattern", "at": [{ "step": "Reveal: the same idea restated — Parquet statistics" }] },
+      { "item": "The Snowflake claim is sourced and explicitly disclosed as not independently measured, consistent with this chapter's honest-gap pattern for systems not installed on this sandbox", "at": [{ "deep": "Into the internals" }] },
+      { "item": "A closing check that requires reasoning about what correlation implies for block-range pruning, rather than re-testing the exact measured numbers from the reveals", "at": [{ "step": "Prove it" }] },
+      { "item": "The recap keeps the size advantage, the correlation requirement, and the lossy recheck cost as three separate ideas rather than one vague 'BRIN is small and fast' takeaway", "at": [{ "step": "Recap" }] },
+      { "item": "The predict on step 8 (scattered column) is red-teamed against the plausible wrong answer that any summary index helps regardless of data distribution", "at": [{ "step": "Predict: does it still help on a scattered column?" }] },
+      { "item": "Every locally-measured claim in this topic reuses the existing PostgreSQL 16.15 sandbox instance rather than requiring new infrastructure, consistent with the chapter's established measurement environment", "at": [{ "deep": "Into the internals" }] }
+    ]
+  },
+  "gapReview": { "date": "2026-10-22", "by": "Claude (single session)", "open": [] }
+}
