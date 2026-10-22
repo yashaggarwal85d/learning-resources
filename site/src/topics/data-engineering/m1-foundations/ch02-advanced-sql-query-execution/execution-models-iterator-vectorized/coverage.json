@@ -1,0 +1,55 @@
+{
+  "topic": "de.execution-models-iterator-vectorized",
+  "syllabus": [
+    { "clause": "Volcano tuple-at-a-time pull,", "at": [{ "step": "Reveal: the Volcano iterator" }, { "step": "How the iterator model actually runs" }] },
+    { "clause": "vectorized batches (MonetDB/X100, DuckDB, Velox, ClickHouse),", "at": [{ "step": "Reveal: vectorization" }, { "step": "How a vectorized operator actually works" }, { "step": "Reveal: the sweet spot" }] },
+    { "clause": "data-centric code generation (HyPer/Umbra),", "at": [{ "step": "How compiling goes further than vectorizing" }] },
+    { "clause": "push-based pipelines and morsel-driven parallelism;", "at": [{ "step": "How compiling goes further than vectorizing" }, { "step": "Morsel-driven parallelism" }] },
+    { "clause": "trade-offs in interpretation overhead, compile latency and debuggability.", "at": [{ "step": "How the iterator model actually runs" }, { "step": "Reveal: the real trade-off is compile latency and debuggability" }, { "deep": "Into the internals" }] }
+  ],
+  "sources": [
+    {
+      "source": "MonetDB/X100: Hyper-Pipelining Query Execution (Boncz, Zukowski, Nes, CIDR 2005)",
+      "items": [
+        { "item": "Volcano iterator's tuple-at-a-time pull causes high interpretation overhead and hides CPU parallelism from the compiler", "at": [{ "step": "How the iterator model actually runs" }] },
+        { "item": "X100's default vector size is 1024; the optimal size on their workload was about 1000, with 128–8K all working well, degrading once vectors overflow the CPU cache", "at": [{ "step": "Reveal: the sweet spot" }] }
+      ]
+    },
+    {
+      "source": "DuckDB documentation, \"Execution Format\" (internals)",
+      "items": [
+        { "item": "DuckDB uses a vectorized query execution model, with a default vector size (STANDARD_VECTOR_SIZE) of 2048 tuples", "at": [{ "step": "Reveal: vectorization" }] }
+      ]
+    },
+    {
+      "source": "Efficiently Compiling Efficient Query Plans for Modern Hardware (Neumann, VLDB 2011, HyPer)",
+      "items": [
+        { "item": "The classical iterator model is simple and flexible but performs poorly on modern CPUs due to lack of locality and instruction mispredictions", "at": [{ "step": "How compiling goes further than vectorizing" }] },
+        { "item": "HyPer's compiled model: processing is data-centric not operator-centric, and data is pushed toward consumers rather than pulled", "at": [{ "step": "How compiling goes further than vectorizing" }] }
+      ]
+    },
+    {
+      "source": "Morsel-Driven Parallelism: A NUMA-Aware Query Evaluation Framework for the Many-Core Age (Leis, Boncz, Kemper, Neumann, SIGMOD 2014)",
+      "items": [
+        { "item": "Morsels: small fragments of input dispatched to worker threads that run a whole pipeline until the next pipeline breaker, with the degree of parallelism free to change at run time", "at": [{ "step": "Morsel-driven parallelism" }] }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "Claude (single session, written from the syllabus line and the fetched sources before storyboarding; not independent of the builder, so a later owner review should repeat it)",
+    "date": "2026-10-22",
+    "items": [
+      { "item": "The same SQL query, over the identical logical data (checked by matching row count and sum, not assumed), run on two real production engines — a measured 16× gap attributable specifically to the execution model, isolated from parallelism and JIT by also reporting both engines' own default-settings numbers", "at": [{ "step": "The same query, the same answer, two very different costs" }, { "step": "Predict: why would the exact same SQL cost 16.4× more on one engine?" }] },
+      { "item": "That PostgreSQL's executor really is a Volcano-style pull plan and DuckDB's really is vectorized, confirmed directly from each engine's own EXPLAIN output rather than asserted from the docs alone", "at": [{ "step": "Reveal: the Volcano iterator" }, { "step": "Reveal: vectorization" }] },
+      { "item": "Why a bigger batch isn't always faster — the CPU-cache ceiling on vector size, from X100's own published experiment rather than re-derived here (no cache-level profiler on this sandbox)", "at": [{ "step": "Predict: is a bigger batch always faster?" }, { "step": "Reveal: the sweet spot" }] },
+      { "item": "Why compiling goes further than vectorizing specifically (operator boundaries blurred, registers instead of materialized arrays), not just \"compiling is also fast\"", "at": [{ "step": "How compiling goes further than vectorizing" }] },
+      { "item": "The honest limit of the compiled-engine claim: HyPer's own reported result, not independently measured, since no compiled query engine runs on this sandbox", "at": [{ "step": "Reveal: the real trade-off is compile latency and debuggability" }] },
+      { "item": "Morsel-driven parallelism's defining property (elastic, run-time dispatch, not a plan-time thread count) illustrated with this topic's own measured 1→4 thread scaling, while attributing the paper's own much larger reported speedup (32 cores) to the paper rather than implying this sandbox reproduced it", "at": [{ "step": "Morsel-driven parallelism" }] },
+      { "item": "PostgreSQL's own JIT as a real nuance to the \"PostgreSQL = pure iterator\" framing, named explicitly and excluded from the iterator baseline measurement rather than silently left in", "at": [{ "deep": "Into the internals" }] },
+      { "item": "Velox and ClickHouse named once as further vectorized engines per the syllabus line, without claiming either behaves identically to DuckDB (neither is installed or measured here)", "at": [{ "deep": "In production" }] },
+      { "item": "Reading a plan's own row-count reporting granularity (one count per whole stage vs. one entry per row) as a signal of tuple-at-a-time vs. batched execution, tested directly in the closing \"Prove it\" step rather than only asserted", "at": [{ "step": "Prove it · 1 of 2" }] },
+      { "item": "Distinguishing elastic, run-time thread scaling from a fixed, plan-time split by what the scaling curve itself looks like, not by naming the mechanism — tested in the second closing \"Prove it\" step", "at": [{ "step": "Prove it · 2 of 2" }] }
+    ]
+  },
+  "gapReview": { "date": "2026-10-22", "by": "Claude (single session)", "open": [] }
+}

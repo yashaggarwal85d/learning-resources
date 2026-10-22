@@ -1070,4 +1070,24 @@ export const TOPICS: TopicMeta[] = [
     handoff:
       'Every mechanism in this chapter has run one row, or one batch, through a tree of operators pulled one at a time. Next: is that pull-based iteration itself a cost — and what changes when an engine runs whole batches, or compiles the plan to code, instead?',
   },
+  {
+    id: 'de.execution-models-iterator-vectorized',
+    domain: 'data-engineering',
+    slug: 'data-engineering/m1-foundations/ch02-advanced-sql-query-execution/execution-models-iterator-vectorized',
+    title: 'Execution models: iterator, vectorized, compiled',
+    syllabusTitle: 'Execution models: iterator, vectorized, compiled',
+    kind: 'full',
+    status: 'live',
+    milestone: { number: 1, title: 'Foundations' },
+    chapter: { number: 2, title: 'Advanced SQL and query execution', section: '2.3' },
+    minutes: 15,
+    verified: '2026-10-22',
+    introduces: ['iterator-model', 'vectorized-execution', 'morsel-driven-parallelism'],
+    uses: ['hash-join', 'hash-aggregation', 'sort-aggregation', 'work-mem-spill'],
+    declared: ['sql-select', 'group-by'],
+    bridge:
+      'Every mechanism in this chapter has run one row, or one batch, through a tree of operators pulled one at a time. Next: is that pull-based iteration itself a cost — and what changes when an engine runs whole batches, or compiles the plan to code, instead?',
+    handoff:
+      "Morsels split the work across the cores of one machine. The same problem — how to split work, and how to move partial results between the pieces doing it — reappears one level up, across machines: exchange operators, repartitioning and the broadcast-vs-shuffle choice, next.",
+  },
 ];

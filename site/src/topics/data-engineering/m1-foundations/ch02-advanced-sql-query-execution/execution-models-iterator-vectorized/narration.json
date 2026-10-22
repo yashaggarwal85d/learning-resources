@@ -1,0 +1,130 @@
+{
+  "topic": "de.execution-models-iterator-vectorized",
+  "steps": [
+    {
+      "lines": [
+        "Run the exact same query, over the exact same table, on two different engines, and they agree on the answer down to a rounding error.",
+        "One of them takes well over three seconds to get there.",
+        "The other finishes in about a quarter of a second."
+      ]
+    },
+    {
+      "lines": [
+        "Same table, same SQL, same answer, checked and not assumed.",
+        { "beat": 0.4 },
+        "Why would one engine take sixteen times longer than the other to produce it?"
+      ],
+      "answer": [
+        "Not the hardware, and not a smarter plan — both engines pick the same kind of scan, filter and group.",
+        "What differs is how many rows actually move through each step of getting there at once."
+      ]
+    },
+    {
+      "lines": [
+        "The slower engine's executor works by asking the operator below it for one row, getting exactly one row back, and asking again.",
+        "Every operator in the plan, for every single row, pulled one at a time, all the way from the bottom to the top."
+      ]
+    },
+    {
+      "lines": [
+        "Pulling one row at a time means calling a function, once, for every operator, for every one of those millions of rows.",
+        "That's not free. Each call is its own small overhead, and it also hides any chance for the processor to work on more than one row at once.",
+        "Millions of tiny function calls add up to a real, measurable cost."
+      ]
+    },
+    {
+      "lines": [
+        "The faster engine's operators don't take one row at a time.",
+        "They take a whole array of rows in a single call.",
+        "A couple thousand rows move through one operator call, instead of one."
+      ]
+    },
+    {
+      "lines": [
+        "Instead of calling a function once per row, a vectorized operator runs one tight loop over an array already sitting in the processor's cache.",
+        "Same filter, same arithmetic, same millions of rows underneath.",
+        "Just looped over in batches, instead of summoned one at a time."
+      ]
+    },
+    {
+      "lines": [
+        "A batch of a couple thousand rows clearly beats a batch of one.",
+        { "beat": 0.4 },
+        "Does an even bigger batch keep winning — would the whole table in one call beat that?"
+      ],
+      "answer": [
+        "No — there's a sweet spot.",
+        "A batch only helps as long as it still fits inside the cache it's actually processed in. Past that, bigger stops helping and starts hurting."
+      ]
+    },
+    {
+      "lines": [
+        "On the benchmark that first measured this: a batch of exactly one row ran about as slowly as a plain row-at-a-time interpreter.",
+        "The best size measured was in the low thousands, with a wide range on either side still working fine.",
+        "Go past that range, though, and the batch no longer fits the cache, and the time climbs right back up again."
+      ]
+    },
+    {
+      "lines": [
+        "There's a way to go further than batching rows into arrays.",
+        "Compile the whole plan — the scan, the filter, the hash build — into one piece of actual machine code.",
+        "Values stay inside the processor's own registers the whole way through, pushed forward instead of pulled, instead of ever being written out to an array in between."
+      ]
+    },
+    {
+      "lines": [
+        "Three ways to run the exact same plan, on one core: pull one row at a time, process a batch at a time, or compile the whole thing to machine code first.",
+        { "beat": 0.4 },
+        "Which one actually wins?"
+      ],
+      "answer": [
+        "Compiling — it removes the most overhead of the three, by cutting out both the per-row call and the per-batch bookkeeping.",
+        "But winning on raw speed isn't the same as winning for free."
+      ]
+    },
+    {
+      "lines": [
+        "The system that pioneered this found hand-written code and its own compiled output landing close together — both a long way ahead of a plain row-at-a-time interpreter.",
+        "That speed comes with a real cost on the other side, though.",
+        "Every query first has to be compiled into machine code before its very first row comes out, and once something goes wrong inside that generated code, it's a much harder thing to read than a plain interpreter loop."
+      ]
+    },
+    {
+      "lines": [
+        "There's one more piece: how work gets spread across more than one core.",
+        "Instead of deciding the number of threads before a query even starts, split the work into small pieces and hand each idle thread the next piece as it finishes the last one.",
+        "Measured directly here: going from one thread to four cut the time by well over a factor of three — the same kind of scaling the system that introduced this idea reported at a much larger scale."
+      ]
+    },
+    {
+      "lines": [
+        "Pulling one row at a time costs a function call for every single row.",
+        "A batch amortizes that call, as long as it still fits in cache.",
+        "Compiling removes even the batch, at the price of compiling before you start and of a much harder debugging story.",
+        "And a fixed number of threads is just another decision made too early — morsels make it at run time instead."
+      ]
+    },
+    {
+      "lines": [
+        "A plan reports one row count for an entire stage of work, not one line for every row that passed through it.",
+        { "beat": 0.3 },
+        "Does that sound like an engine pulling rows one at a time, or one working in batches?"
+      ],
+      "answer": [
+        "Working in batches.",
+        "An engine that's only ever handling one row at a time has no reason to report a count for a whole stage at once — that kind of reporting is a sign it's accounting for arrays, not individual rows."
+      ]
+    },
+    {
+      "lines": [
+        "One engine's time drops by well over a factor of three, going from one thread to four, on the very same work.",
+        { "beat": 0.3 },
+        "Does that look like elastic, run-time scheduling, or a split that was fixed before the query even started?"
+      ],
+      "answer": [
+        "Elastic, run-time scheduling.",
+        "Scaling that closely tracks the number of cores actually available is exactly what a fixed, decided-in-advance split wouldn't give you on a different machine."
+      ]
+    }
+  ]
+}
