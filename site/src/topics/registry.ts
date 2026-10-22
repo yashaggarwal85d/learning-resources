@@ -1676,4 +1676,44 @@ export const TOPICS: TopicMeta[] = [
     handoff:
       "Every topic in this section built tables assuming a warehouse's own physical home was already settled. Next: zooming out to that home itself — the architectural history from a coupled warehouse to a lake to an open-table-format lakehouse, and what each stage still does best.",
   },
+  {
+    id: 'de.from-warehouse-lake-lakehouse',
+    domain: 'data-engineering',
+    slug: 'data-engineering/m1-foundations/ch03-data-modeling-analytical/from-warehouse-lake-lakehouse',
+    title: 'From warehouse to lake to lakehouse',
+    syllabusTitle: 'From warehouse to lake to lakehouse',
+    kind: 'full',
+    status: 'live',
+    milestone: { number: 1, title: 'Foundations' },
+    chapter: { number: 3, title: 'Data modeling and analytical architecture', section: '3.3' },
+    minutes: 13,
+    verified: '2026-10-22',
+    introduces: ['warehouse-lake-lakehouse-history'],
+    uses: ['inmon-enterprise-warehouse', 'kimball-dimensional-bus'],
+    declared: ['sql-select'],
+    bridge:
+      "Every topic in the previous section built tables assuming a warehouse's own physical home was already settled. This topic is that home itself: the architectural history from a coupled warehouse, to a lake, to an open-table-format lakehouse, and what each stage still does best.",
+    handoff:
+      "Every stage of this history was actually driven by one thing underneath it: what object storage costs, and how it bills. Next: that billing model itself.",
+  },
+  {
+    id: 'de.object-storage-query-economics',
+    domain: 'data-engineering',
+    slug: 'data-engineering/m1-foundations/ch03-data-modeling-analytical/object-storage-query-economics',
+    title: 'Object storage and query economics',
+    syllabusTitle: 'Object storage and query economics',
+    kind: 'full',
+    status: 'live',
+    milestone: { number: 1, title: 'Foundations' },
+    chapter: { number: 3, title: 'Data modeling and analytical architecture', section: '3.3' },
+    minutes: 14,
+    verified: '2026-10-22',
+    introduces: ['object-storage-billing-model', 'bytes-scanned-vs-compute-time-billing'],
+    uses: ['warehouse-lake-lakehouse-history'],
+    declared: ['sql-select'],
+    bridge:
+      "Every stage of this history was actually driven by one thing underneath it: what object storage costs, and how it bills. This topic is that billing model itself, in enough detail to predict a real bill from a real file layout.",
+    handoff:
+      "This billing model is exactly what made separating storage from compute economically attractive in the first place. Next: compute-storage separation itself, the architectural consequence of this topic's own economics.",
+  },
 ];

@@ -1,0 +1,99 @@
+{
+  "topic": "de.from-warehouse-lake-lakehouse",
+  "steps": [
+    {
+      "lines": [
+        "A warehouse sells its storage and its compute as one box, sized and paid for at whatever the busiest moment demands.",
+        "So what happens once the data that box has to hold grows past what that one box can afford to keep?"
+      ]
+    },
+    {
+      "lines": [
+        "The field has a name for that original box.",
+        "Call it the first generation of these platforms: compute and storage bought, sized, and billed together, as a single appliance."
+      ]
+    },
+    {
+      "lines": [
+        "Here's a question worth sitting with before the next reveal.",
+        "Cloud storage on its own is dramatically cheaper than storage bolted to a warehouse. Does moving the data there just settle the cost problem, cleanly, end of story?"
+      ],
+      "answer": [
+        "Not cleanly. Cheaper storage is real, but it isn't free — the warehouse's transactions, its governance, its performance tuning don't just come along for the ride.",
+        "Splitting storage out solves cost. It also hands something back."
+      ]
+    },
+    {
+      "lines": [
+        "Here's what actually got built with that cheaper storage.",
+        "Raw data lands in low-cost, open-format files, readable without any one database engine owning them — interpreted only when something actually reads it. The warehouse doesn't disappear; it still handles the reporting that matters most, fed from that storage downstream."
+      ]
+    },
+    {
+      "lines": [
+        "And here's exactly what got handed back to get that cost down.",
+        "Without anything enforcing transactions or governance by default, most of these lakes, in practice, stopped being trustworthy at all — the field's own honest name for that outcome is a data swamp."
+      ]
+    },
+    {
+      "lines": [
+        "This is the shape that actually won.",
+        "Cloud object storage took over from on-premises file systems through the back half of the twenty-tens, and lake-plus-warehouse became the dominant architecture industry-wide — not a niche pattern, the default one."
+      ]
+    },
+    {
+      "lines": [
+        "Here's a harder question, worth working through before it's shown.",
+        "That two-tier shape was supposed to be the improvement. Loading data through it — does that take more steps than the first generation's direct load into a warehouse, or fewer?"
+      ],
+      "answer": [
+        "More, not fewer. The data still has to land in the warehouse eventually for the reporting that matters.",
+        "The lake sits in front of that as an extra stop — it was never a replacement for the warehouse step, just an addition before it."
+      ]
+    },
+    {
+      "lines": [
+        "Count the stops plainly, the way this topic counts them.",
+        "Load straight into a warehouse, and that's one stop. Load into a lake first, then load again into the warehouse, and that's two. The lake added a stop; it never removed one."
+      ]
+    },
+    {
+      "lines": [
+        "One more question, worth reasoning through before the answer lands.",
+        "A warehouse's transactions came from one engine owning everything. Can a lake get transactions back without going back to that — one engine owning the data again?"
+      ],
+      "answer": [
+        "It can. The trick isn't handing the files back to one engine — it's laying a transactional record on top of files that stay open the whole time.",
+        "Track every write as a commit, swap which files count as current all at once, and more than one engine can still read the result."
+      ]
+    },
+    {
+      "lines": [
+        "That's exactly what a family of systems does now.",
+        "Delta Lake and Apache Iceberg sit over a data lake's own open files and give back a transactional view of them — the management features a lake lost, restored, without recoupling the storage to a single engine."
+      ]
+    },
+    {
+      "lines": [
+        "Follow one capability across this entire history and the shape of it becomes obvious.",
+        "Transactions were there in the coupled warehouse. They were gone in the lake alone. They're back again in the lakehouse — and each time, by a completely different mechanism, never just the one before it returning unchanged."
+      ]
+    },
+    {
+      "lines": [
+        "Pull the whole arc back together.",
+        "A coupled warehouse bought transactions at peak-load cost. A lake cut that cost and lost the transactions, drifting toward a swamp without them. A lakehouse's open table format hands transactions back, over the same open files, to more than one engine at once."
+      ]
+    },
+    {
+      "lines": [
+        "One last scenario, worth reasoning through before the answer lands.",
+        "Picture a one-off interactive dashboard that just needs today's streaming data, right now, with no requirement that any other engine ever touches it. Which stage of this whole history actually serves that best?"
+      ],
+      "answer": [
+        "Not automatically the newest one. The lakehouse's machinery earns its cost when more than one engine genuinely needs the same data.",
+        "A dashboard with no such requirement doesn't need that machinery to get its answer — the simplest stage that fits the actual need wins, not whichever one is newest."
+      ]
+    }
+  ]
+}

@@ -1,0 +1,54 @@
+{
+  "topic": "de.object-storage-query-economics",
+  "syllabus": [
+    { "clause": "$/TB-month storage vs per-request vs egress charges", "at": [{ "step": "Reveal: storage bills several axes at once, quoted directly" }, { "step": "Reveal: storage cost, measured" }] },
+    { "clause": "storage classes and retrieval latency", "at": [{ "step": "Reveal: storage bills several axes at once, quoted directly" }] },
+    { "clause": "bytes-scanned vs compute-time billing", "at": [{ "step": "Reveal: two billing models for query compute, quoted directly" }] },
+    { "clause": "how file sizing and layout move the bill", "at": [{ "step": "Predict: does splitting one file into many smaller files always lower the bill?" }, { "step": "Reveal: a narrow query, measured" }, { "step": "Reveal: a broad query, measured" }, { "step": "Prove it" }] }
+  ],
+  "sources": [
+    {
+      "source": "Amazon Web Services, \"Amazon S3 Pricing\"",
+      "items": [
+        { "item": "Object storage's cost components are storage, requests and retrievals, and data transfer, billed as separate dimensions", "at": [{ "step": "Reveal: storage bills several axes at once, quoted directly" }] },
+        { "item": "Storage price depends on object size, how long it's stored, and the storage class (which trades retrieval latency for storage price)", "at": [{ "step": "Reveal: storage bills several axes at once, quoted directly" }] },
+        { "item": "Requests are billed by request type and count, independent of how much data each request moves", "at": [{ "step": "Reveal: storage bills several axes at once, quoted directly" }] }
+      ]
+    },
+    {
+      "source": "Google Cloud, \"BigQuery pricing\"",
+      "items": [
+        { "item": "On-demand pricing charges strictly for bytes processed by a query, regardless of how long that query's compute actually runs", "at": [{ "step": "Reveal: two billing models for query compute, quoted directly" }] },
+        { "item": "Flat-rate/capacity pricing charges for reserved compute capacity over time instead, regardless of bytes scanned by any one query", "at": [{ "step": "Reveal: two billing models for query compute, quoted directly" }] }
+      ]
+    },
+    {
+      "source": "This topic's own lab (examples.py, measured via DuckDB's profiler)",
+      "items": [
+        { "item": "The same query reads far more bytes from JSON than from a Parquet file holding the same data", "at": [{ "step": "Reveal: JSON versus Parquet, measured" }] },
+        { "item": "A query narrowed to one partition reads far fewer bytes from a partitioned layout than from a single unpartitioned file", "at": [{ "step": "Reveal: a narrow query, measured" }] },
+        { "item": "A query spanning every partition reads more bytes from that same partitioned layout than from one single file holding identical rows", "at": [{ "step": "Reveal: a broad query, measured" }] },
+        { "item": "JSON's on-disk footprint is far larger than any of the three columnar layouts holding the same rows", "at": [{ "step": "Reveal: storage cost, measured" }] },
+        { "item": "An unpartitioned Iceberg table's bytes-scanned numbers track the bare Parquet file it wraps almost exactly, for both query shapes", "at": [{ "step": "Reveal: an Iceberg table, measured" }] }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "Claude (single session, written from the syllabus line and the fetched sources before storyboarding; not independent of the builder, so a later owner review should repeat it)",
+    "date": "2026-10-22",
+    "items": [
+      { "item": "The first predict (step 3) is red-teamed against the plausible wrong answer that a format cheap to write (no schema, no special writer) is cheap all the way through; the reveal distinguishes write-time cost from query-time cost directly by measurement, not by assertion", "at": [{ "step": "Predict: does the format that's cheapest to write also cost the least to query?" }] },
+      { "item": "The JSON-versus-Parquet comparison (step 4) is run for real on a throwaway dataset generated fresh each run, not described hypothetically — DuckDB's own profiler (`io.total_bytes_read`), not a file-size estimate, is the measured quantity", "at": [{ "step": "Reveal: JSON versus Parquet, measured" }] },
+      { "item": "The second predict (step 6) is red-teamed against the plausible wrong answer that more partitioning is strictly, universally better; steps 7 and 8 measure both directions on the identical dataset to show the answer genuinely depends on the query's own shape, not asserted as a caveat after the fact", "at": [{ "step": "Predict: does splitting one file into many smaller files always lower the bill?" }] },
+      { "item": "The broad-query reveal (step 8) is this topic's central surprising result and is explicitly not softened into a footnote: a Hive-partitioned layout measurably reading more bytes than one large file, on the exact same logical data, directly motivates the takeaway that file layout decisions are query-shape dependent, not universal", "at": [{ "step": "Reveal: a broad query, measured" }] },
+      { "item": "The third predict (step 10) is red-teamed against the plausible wrong answer carried over from de.from-warehouse-lake-lakehouse, that a lakehouse's transactional format itself changes how data is read; step 11 measures that an unpartitioned Iceberg table's bytes-scanned is statistically indistinguishable from the bare Parquet file beneath it, separating the format wrapper from the physical layout as genuinely different properties", "at": [{ "step": "Predict: does wrapping the data in an open table format change its bytes-scanned numbers, by itself?" }] },
+      { "item": "The Iceberg measurement (step 11) carries an explicit, disclosed limitation in examples.py and FACT-CHECK.md: this sandbox's DuckDB build writes one data file per Iceberg table regardless of a PARTITION_BY clause, so only the unpartitioned case is measured; a genuinely partitioned Iceberg table is not claimed to behave identically, and the topic says so rather than overclaiming", "at": [{ "step": "Reveal: an Iceberg table, measured" }] },
+      { "item": "The closing check (Prove it) is a genuinely new scenario, not a restatement of any reveal: a permanently narrow, fixed-grain access pattern, which tests whether the learner understands that fine partitioning wins specifically because it matches a stable query shape, not because partitioning is unconditionally good (the lesson from step 6's predict)", "at": [{ "step": "Prove it" }] },
+      { "item": "The bridge from topic 16 (the architectural history ending at the lakehouse) and the handoff to topic 18 (compute-storage separation) are both taken verbatim from CHAPTER.md's own entries for topics 17 and 18 and checked against this topic's own content before use, rather than invented fresh", "at": [{ "step": "The same data, the same query, stored four ways" }] },
+      { "item": "Every number that appears as a comparison in the reel traces to a real assertion in examples.py comparing measured quantities (ratios and inequalities, never exact byte counts, since the measured values are real runtime output and shift slightly run to run) rather than being asserted as a fixed, memorized figure", "at": [{ "step": "Reveal: JSON versus Parquet, measured" }, { "step": "Reveal: a narrow query, measured" }, { "step": "Reveal: a broad query, measured" }, { "step": "Reveal: storage cost, measured" }, { "step": "Reveal: an Iceberg table, measured" }] },
+      { "item": "The recap keeps the two distinct ideas (separate billing meters, and layout-not-format moving bytes scanned) as explicitly separate claims, matching the syllabus line's own two halves, rather than collapsing them into one vague \"storage is complicated\" takeaway", "at": [{ "step": "Recap" }] },
+      { "item": "The topic deliberately avoids a specific cloud vendor's exact current dollar rate anywhere, since both source pages render their price tables client-side and the fetched text does not carry real numbers — SOURCES.md discloses this explicitly rather than inventing or guessing a plausible-looking price", "at": [{ "step": "Reveal: storage bills several axes at once, quoted directly" }, { "step": "Reveal: two billing models for query compute, quoted directly" }] }
+    ]
+  },
+  "gapReview": { "date": "2026-10-22", "by": "Claude (single session)", "open": [] }
+}
