@@ -1,0 +1,5 @@
+- **Amortized O(1)**: declared again here (Chapter 1; topic 1); not re-taught.
+- **Reallocation**: declared again here (topic 1's dynamic array); the event a string builder's doubling triggers, exactly as a vector's does.
+- **Capacity**: declared again here (topic 1); a string builder's own capacity is the same idea applied to a buffer of bytes instead of elements.
+- **Code point**: a single Unicode character's own identifying number (for example, U+0041 for the letter A). *Where you meet it:* the unit this topic always distinguishes from a byte.
+- **Byte**: the fixed eight-bit unit a string is actually stored in underneath. *Where you meet it:* what indexing a UTF-8 string directly touches, as opposed to the character that unit may only be part of.
