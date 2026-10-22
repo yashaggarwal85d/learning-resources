@@ -1,0 +1,68 @@
+{
+  "topic": "rust.lifetimes-as-constraints-not",
+  "syllabus": [
+    { "clause": "a lifetime describes how existing references relate and never extends a value's life", "at": [{ "step": "A lifetime never extends a value's life" }] },
+    { "clause": "Elision rules", "at": [{ "step": "Three rules fill in what is left out" }, { "step": "Elision gives up: two inputs, no receiver" }] },
+    { "clause": "variance (&'a T covariant, &'a mut T and Cell<T> invariant) and why invariance bites", "at": [{ "step": "Can a longer borrow stand in for a shorter one?" }, { "step": "The same two references, now through a mutable reference" }, { "step": "Cell<T> inherits the same invariance" }, { "deep": "Production failures" }] },
+    { "clause": "higher-ranked bounds (for<'a> Fn(&'a T))", "at": [{ "step": "A lifetime that cannot be named until the call happens" }] },
+    { "clause": "T: 'static (\"holds no non-static borrows\") differs from &'static T and is rarely the right fix for an error", "at": [{ "step": "T: 'static is not a promise a value lives forever" }, { "step": "The one case the bound really is the fix" }, { "deep": "Production failures" }] }
+  ],
+  "sources": [
+    {
+      "source": "reference-lifetime-elision",
+      "items": [
+        { "item": "Each elided lifetime in the parameters becomes a distinct lifetime parameter", "at": [{ "step": "Three rules fill in what is left out" }] },
+        { "item": "With exactly one lifetime among the parameters, that lifetime is assigned to all elided outputs", "at": [{ "step": "Three rules fill in what is left out" }] },
+        { "item": "A &self/&mut self receiver's lifetime is assigned to all elided output lifetimes", "at": [{ "deep": "Internals: variance and the borrow checker" }] },
+        { "item": "The ambiguous two-input-lifetime case is illegal and cannot be inferred", "at": [{ "step": "Elision gives up: two inputs, no receiver" }] },
+        { "item": "Constant and static declarations of reference types get an implicit 'static lifetime unless written otherwise", "at": [{ "out": "Named only in post-notes as a related elision fact; not a claim this topic's reel builds a step around." }] }
+      ]
+    },
+    {
+      "source": "nomicon-subtyping",
+      "items": [
+        { "item": "The definitions of covariant, contravariant and invariant, and 'a <: 'b when 'a outlives 'b", "at": [{ "deep": "Internals: variance and the borrow checker" }] },
+        { "item": "&'a T is covariant over 'a", "at": [{ "step": "Can a longer borrow stand in for a shorter one?" }] },
+        { "item": "&'a mut T is invariant over T", "at": [{ "step": "The same two references, now through a mutable reference" }] },
+        { "item": "Cell<T>/UnsafeCell<T> are invariant over T because interior mutability gives them &mut T's variance", "at": [{ "step": "Cell<T> inherits the same invariance" }] },
+        { "item": "The assign::<T> worked example forcing T = &'static str exactly under invariance, versus covariance letting 'static shrink to 'b by value", "at": [{ "step": "Can a longer borrow stand in for a shorter one?" }, { "step": "The same two references, now through a mutable reference" }] },
+        { "item": "Variance for struct fields composes: invariance in any one field makes the whole type invariant over that parameter", "at": [{ "deep": "Frontier" }] }
+      ]
+    },
+    {
+      "source": "nomicon-hrtb",
+      "items": [
+        { "item": "An ordinary named lifetime parameter can't express 'works for whatever lifetime the caller's &self turns out to have'", "at": [{ "step": "A lifetime that cannot be named until the call happens" }] },
+        { "item": "The for<'a> F: Fn(&'a (u8, u16)) -> &'a u8 desugaring, read as 'for all choices of a'", "at": [{ "step": "A lifetime that cannot be named until the call happens" }] },
+        { "item": "Fn(a) -> b is itself sugar that already carries an implicit for<'a> when none is written", "at": [{ "out": "Named only in post-notes as a related HRTB fact; the reel step covers the Closure<F> case itself, not this further desugaring detail." }] }
+      ]
+    },
+    {
+      "source": "rbe-static-lifetime",
+      "items": [
+        { "item": "&'static T: the referent lives for the rest of the running program; can still be coerced to a shorter lifetime", "at": [{ "step": "T: 'static is not a promise a value lives forever" }] },
+        { "item": "T: 'static as a bound means T contains no non-'static references, not a claim about how long a value of T lives", "at": [{ "step": "T: 'static is not a promise a value lives forever" }] },
+        { "item": "Owned data always satisfies a 'static bound; a reference to local data generally does not", "at": [{ "step": "T: 'static is not a promise a value lives forever" }] },
+        { "item": "Box::leak as a way to mint a genuine &'static reference to data created at run time", "at": [{ "step": "The one case the bound really is the fix" }] }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "self-review",
+    "date": "2026-10-22",
+    "items": [
+      { "item": "A lifetime is a proof obligation the borrow checker discharges between borrows that already exist; it is never read by the drop glue that actually ends a value's life", "at": [{ "step": "A lifetime never extends a value's life" }] },
+      { "item": "Elision is sugar resolved entirely at the signature; it changes nothing about which borrows are actually valid, only how much the programmer has to write", "at": [{ "step": "Three rules fill in what is left out" }] },
+      { "item": "E0106's two sub-cases differ: 'no parameters to infer from' versus 'two candidates, no receiver to prefer' — this topic's frob is the second, harder-to-spot case", "at": [{ "step": "Elision gives up: two inputs, no receiver" }] },
+      { "item": "Covariance for &'a T falls directly out of 'a <: 'b meaning 'a outlives 'b: a longer-lived borrow is strictly more capable, so it can always be used where a shorter one suffices", "at": [{ "step": "Can a longer borrow stand in for a shorter one?" }] },
+      { "item": "&mut T's invariance is not an arbitrary restriction: if a shorter &mut T could substitute for a longer one, writing through it could leave a dangling reference once the short lifetime ends — invariance is what keeps that unsound", "at": [{ "step": "The same two references, now through a mutable reference" }] },
+      { "item": "Cell<T>'s invariance is not about Cell itself but about the general rule that any interior-mutability wrapper inherits &mut T's variance, because it offers the same write-through-a-shared-reference capability", "at": [{ "step": "Cell<T> inherits the same invariance" }] },
+      { "item": "A higher-ranked bound is strictly stronger than any single ordinary bound it could be mistaken for, because it must hold for every lifetime the caller could ever supply, including ones that don't exist yet at the bound's definition site", "at": [{ "step": "A lifetime that cannot be named until the call happens" }] },
+      { "item": "T: 'static is a closed-world statement purely about T's own definition (no field holds a shorter-lived reference); it says nothing about any particular runtime value's lifespan", "at": [{ "step": "T: 'static is not a promise a value lives forever" }] },
+      { "item": "The common 'LLM adds 'static everywhere' failure mode works by accident: the bound was often forcing a clone/Arc/Box::leak to manufacture real 'static data, trading a compile error for a real allocation or leak rather than fixing the underlying design", "at": [{ "deep": "Production failures" }] },
+      { "item": "Box::leak is the deliberate, rare case where minting a genuine &'static reference actually is the correct move, precisely because it is explicit about giving up the destructor rather than papering over a lifetime mismatch", "at": [{ "step": "The one case the bound really is the fix" }] },
+      { "item": "Reading a lifetime error that mentions 'static should prompt checking whether the value's type can ever satisfy that bound at all, before reaching for the annotation as a reflex fix", "at": [{ "deep": "Production failures" }] }
+    ]
+  },
+  "gapReview": { "date": "2026-10-22", "by": "self-review", "open": [] }
+}

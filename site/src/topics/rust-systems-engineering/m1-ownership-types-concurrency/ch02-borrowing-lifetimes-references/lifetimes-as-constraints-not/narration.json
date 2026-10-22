@@ -1,0 +1,94 @@
+{
+  "topic": "rust.lifetimes-as-constraints-not",
+  "note": "Written to be spoken: one sentence or phrase per line; {\"beat\": s} is a deliberate pause; numbers and codes are said the way a person would say them, never shown as digits. `answer` plays after the learner answers a predict step.",
+  "steps": [
+    {
+      "lines": [
+        "Ownership already told you exactly when a value dies: its owner falls out of scope, and the drop code runs right there, nothing in this topic touches that moment at all.",
+        { "beat": 0.3 },
+        "What a lifetime actually describes is something smaller and separate: how two borrows that already exist relate to one another, never how long the thing underneath them survives."
+      ]
+    },
+    {
+      "lines": [
+        "Here is a function that borrows a string and hands back part of it, and the person who wrote it never named a single relationship between the two.",
+        "The compiler isn't guessing. It follows one of three fixed rules, and the simplest says: when there is only one borrowed input anywhere in the signature, the thing handed back shares that one borrow's relationship.",
+        { "beat": 0.3 },
+        "Given that rule, what does the returned slice end up tied to here?"
+      ],
+      "answer": [
+        "It ties to the one borrowed parameter that exists, because that is the only candidate the rule has to offer.",
+        "Notice what just happened: nobody wrote the relationship down, and the compiler still had exactly one sensible answer to fall back on."
+      ]
+    },
+    {
+      "lines": [
+        "Now give that same function two separate borrowed inputs instead of one, with no receiver to break the tie, and ask the compiler to hand back a borrowed result.",
+        "This time the rule has two equally good candidates and no way to prefer either, so it refuses outright rather than pick one for you.",
+        "The lesson isn't that the compiler is weak here. It fills a gap only when exactly one sensible answer exists, and the moment there are two, it insists you say which."
+      ]
+    },
+    {
+      "lines": [
+        "Take a borrow that lives for the whole remaining run of the program, and a second, shorter-lived borrow of the same kind, and pass both of them by value into one function that only asks for some borrowed string.",
+        "It compiles without complaint, because a borrow that outlives everything else can always be handed to code expecting something that lives for less.",
+        "That direction only, and it has a name: the longer one is allowed to stand in for the shorter one."
+      ]
+    },
+    {
+      "lines": [
+        "Take that exact same pair of borrows, one long-lived and one short-lived, and this time route them both through a mutable reference instead of passing them by value.",
+        { "beat": 0.3 },
+        "Same two borrows as a moment ago, same relationship between them. Does swapping the shorter one in through the mutable reference still compile?"
+      ],
+      "answer": [
+        "No, and the rejection is exact: the compiler refuses because the shorter borrow does not live long enough to match the longer one.",
+        "A mutable reference lets you overwrite what it points at, and overwriting breaks the earlier trick completely: now the two borrows have to share one single relationship exactly, with no shrinking allowed in either direction."
+      ]
+    },
+    {
+      "lines": [
+        "The identical shape of failure shows up again through a type built for mutating something behind what looks like an ordinary shared borrow.",
+        "That isn't a coincidence or a separate special case. Any type that lets you write through what appears to be a shared borrow inherits the exact same strict matching a mutable reference demands, for exactly the same reason."
+      ]
+    },
+    {
+      "lines": [
+        "A closure's own borrowed self doesn't get a fixed relationship at the point where its type is declared; it gets a fresh one at every single call, decided by whoever is calling it that time.",
+        "So the bound written on that closure can't name one relationship in advance. It has to hold for every relationship the self borrow could possibly end up with, all of them at once, not just one chosen ahead of time.",
+        "That is a strictly stronger promise than any ordinary, single relationship could ever make."
+      ]
+    },
+    {
+      "lines": [
+        "Here is a function whose bound demands that whatever type you hand it contain no borrow shorter than the entire remaining run of the program.",
+        "Call it once with a plain owned value, and call it again with a borrow of a local variable that only lives inside this one function.",
+        { "beat": 0.3 },
+        "Which of those two calls does the compiler actually reject?"
+      ],
+      "answer": [
+        "The borrow of the local variable is the one that fails, because that local only survives to the end of the function it's declared in, nowhere close to the whole remaining run of the program.",
+        "The owned value sails through without any trouble at all, because it holds no borrow inside it whatsoever, so the bound was never asking anything of it in the first place.",
+        "That is the whole trap in one sentence: the bound is a statement about what a type is allowed to contain, never a promise about how long any particular value sitting in front of you will actually survive."
+      ]
+    },
+    {
+      "lines": [
+        "There is exactly one deliberate way to manufacture a borrow that genuinely lasts for the whole remaining run of the program out of data you only created just now, at run time.",
+        "You take ownership of freshly allocated data and throw away its destructor on purpose, so nothing will ever reclaim it and nothing can ever outlive it.",
+        "That move is rare and done on purpose. Reaching for the same bound just because an error message mentioned it is almost never the actual fix for whatever went wrong."
+      ]
+    },
+    {
+      "lines": [
+        "So: a borrowed relationship constrains how existing borrows relate to each other, and never how long the underlying value survives.",
+        "One borrowed input gives elision exactly one answer; two borrowed inputs with no receiver give it none.",
+        "An ordinary shared borrow lets a longer one stand in for a shorter one; a mutable reference, and anything that mutates behind a shared borrow, refuses that trick entirely.",
+        "A bound written for every possible relationship is stronger than one written for a single, fixed relationship.",
+        "And a bound demanding no short-lived borrows inside a type is a fact about that type, not a promise about any one value's survival.",
+        { "beat": 0.3 },
+        "Next time: a function that hands back many borrowed pieces at once, all tied to a single buffer it was given."
+      ]
+    }
+  ]
+}

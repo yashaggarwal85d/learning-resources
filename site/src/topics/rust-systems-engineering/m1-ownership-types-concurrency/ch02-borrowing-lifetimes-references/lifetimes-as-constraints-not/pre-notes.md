@@ -1,0 +1,9 @@
+- **Lifetime parameter**: the `'a` in `&'a T`, naming a relationship between borrows, not a span of calendar time. *Where you meet it:* `fn substr1<'a>(s: &'a str, until: usize) -> &'a str`.
+- **Elision**: the compiler filling in lifetime parameters you didn't write, by one of three fixed rules. *Where you meet it:* `fn substr1(s: &str, until: usize) -> &str` with no `'a` anywhere.
+- **E0106**: the error for a lifetime elision couldn't resolve on its own. *Where you meet it:* a function with two reference parameters, no receiver, and a reference return type.
+- **Variance**: whether one generic instantiation may substitute for another when their lifetimes differ. *Where you meet it:* asking whether a `&'static str` can be passed where a `&'b str` is expected.
+- **Covariant**: substitution is allowed in the direction a longer-lived thing standing in for a shorter-lived one. *Where you meet it:* `&'a T`, passing a `&'static str` to a function generic over a shorter borrow.
+- **Invariant**: no substitution is allowed either way; the lifetimes must match exactly. *Where you meet it:* `&'a mut T` and `Cell<T>`.
+- **Higher-ranked trait bound**: a bound written `for<'a> F: Fn(&'a T) -> &'a U`, holding for every lifetime rather than one fixed choice. *Where you meet it:* a closure field whose `&self` lifetime isn't known until it's called.
+- **`T: 'static` bound**: a constraint on a type's content (no borrow inside it shorter than `'static`), not a claim about a value's actual lifespan. *Where you meet it:* `fn print_it(input: impl Debug + 'static)`.
+- **`Box::leak`**: deliberately skipping a `Box`'s destructor to mint a genuine `&'static` reference to heap data created at run time. *Where you meet it:* turning a freshly allocated value into data that really does outlive everything else.
