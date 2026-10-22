@@ -2,7 +2,7 @@ import { useCallback, useEffect, useMemo, useRef, useState, type MutableRefObjec
 import { AnimatePresence, motion } from 'motion/react';
 import type { TopicMeta } from '../topics/registry';
 import { NOTES_FILE, lineDiff, problemsFor } from '../lib/notes-rules';
-import { EditError, SAVE_LIVE_MINUTES, commitMessage, getToken, readFile, setToken, writeFile } from './github-edit';
+import { EditError, ISSUE_URL_MAX, SAVE_LIVE_MINUTES, commitMessage, getToken, issueBody, issueUrl, readFile, setToken, writeFile } from './github-edit';
 
 export type Tab = 'prereq' | 'pre' | 'post' | 'sources';
 export type Panel = { id: string; tab: Tab; section?: string };
@@ -23,11 +23,12 @@ async function render(md: string) {
   return DOMPurify.sanitize(marked.parse(md, { async: false }) as string, { ADD_ATTR: ['data-section'] });
 }
 
-type Status = { kind: 'idle' } | { kind: 'busy'; msg: string } | { kind: 'error'; msg: string } | { kind: 'saved'; at: number };
+type Status = { kind: 'idle' } | { kind: 'busy'; msg: string } | { kind: 'error'; msg: string } | { kind: 'saved'; at: number } | { kind: 'sent'; clipboard: boolean };
 type Conflict = { theirs: string; sha: string };
 
 /** The right-hand panel: Prerequisites, Pre-notes, Post-notes and Sources of one topic. On a phone it is a full-height drawer.
- * Pre- and Post-notes can be edited in place when an edit token is set; a save is a commit to main (github-edit.ts). */
+ * Pre- and Post-notes can be edited in place on any device: with an edit token a save is a commit to main; without one it
+ * opens a prefilled GitHub issue that the notes-edit workflow applies (github-edit.ts). */
 export default function NotesPanel({ panel, topics, onTab, onClose, dirty }: { panel: Panel | null; topics: TopicMeta[]; onTab: (t: Tab) => void; onClose: () => void; dirty: MutableRefObject<boolean> }) {
   const topic = useMemo(() => topics.find((t) => t.id === panel?.id), [topics, panel?.id]);
   const body = useRef<HTMLDivElement>(null);
@@ -122,8 +123,21 @@ export default function NotesPanel({ panel, topics, onTab, onClose, dirty }: { p
     }
   }, [topic, tab]);
 
+  // No token: hand the edit to GitHub as an issue. The tab opens inside the click (a popup blocker allows that); the editor
+  // stays open, so nothing is lost if the issue is never submitted.
+  const sendIssue = useCallback(() => {
+    if (!topic || !tab || !EDITABLE(tab)) return;
+    const body = issueBody(tab, topic.id, notesPath(topic, tab), base.sha, text);
+    const direct = issueUrl(tab, topic.title, body);
+    const viaClipboard = direct.length > ISSUE_URL_MAX;
+    if (viaClipboard) navigator.clipboard?.writeText(body);
+    window.open(viaClipboard ? issueUrl(tab, topic.title, null) : direct, '_blank', 'noopener');
+    setStatus({ kind: 'sent', clipboard: viaClipboard });
+  }, [topic, tab, base.sha, text]);
+
   const save = useCallback(async () => {
     if (!topic || !tab || !EDITABLE(tab) || !key) return;
+    if (!getToken()) return sendIssue();
     setStatus({ kind: 'busy', msg: 'Saving to GitHub…' });
     try {
       const sha = await writeFile(notesPath(topic, tab), text, base.sha, commitMessage(tab, topic.title, topic.id));
@@ -145,7 +159,7 @@ export default function NotesPanel({ panel, topics, onTab, onClose, dirty }: { p
         }
       } else setStatus({ kind: 'error', msg: (e as Error).message });
     }
-  }, [topic, tab, key, text, base.sha]);
+  }, [topic, tab, key, text, base.sha, sendIssue]);
 
   const requestTab = (t: Tab) => {
     if (t === tab) return;
@@ -205,6 +219,12 @@ export default function NotesPanel({ panel, topics, onTab, onClose, dirty }: { p
               <p role="status" className="mx-4 mb-2 rounded-md border border-crema/25 bg-crema/[0.05] px-3 py-2 text-[0.82rem] text-chalk sm:mx-6">
                 Saved to GitHub.{' '}
                 {minutesLeft > 0 ? `Live on the site in about ${minutesLeft} min; this panel shows your text until then.` : 'The site should be rebuilt now; reload to see the published page.'}
+              </p>
+            )}
+            {status.kind === 'sent' && (
+              <p role="status" className="mx-4 mb-2 rounded-md border border-crema/25 bg-crema/[0.05] px-3 py-2 text-[0.82rem] text-chalk sm:mx-6">
+                {status.clipboard ? 'Opened a GitHub issue in a new tab; the edit was too long for a link, so it is on your clipboard: paste it over the issue text. ' : 'Opened a GitHub issue in a new tab with your edit. '}
+                Submit it there (signed in as the owner): it is checked and committed, and live in about {SAVE_LIVE_MINUTES + 1} min. If it can’t be applied, the issue says why.
               </p>
             )}
             {status.kind === 'busy' && <p role="status" className="mx-4 mb-2 text-[0.82rem] text-latte sm:mx-6">{status.msg}</p>}
@@ -280,7 +300,7 @@ export default function NotesPanel({ panel, topics, onTab, onClose, dirty }: { p
                       onClick={save}
                       className="rounded-full bg-caramel px-4 py-2 text-sm font-semibold text-espresso transition hover:bg-chalk disabled:opacity-40"
                     >
-                      Save to GitHub
+                      {token ? 'Save to GitHub' : 'Save via GitHub issue'}
                     </button>
                   )}
                   <button
@@ -299,7 +319,7 @@ export default function NotesPanel({ panel, topics, onTab, onClose, dirty }: { p
               </div>
             ) : (
               <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain px-4 pb-6 sm:px-6">
-                {token && tab && EDITABLE(tab) && (
+                {tab && EDITABLE(tab) && (
                   <button type="button" onClick={startEdit} disabled={status.kind === 'busy'} className="mb-2 mt-1 rounded-full border border-crema/20 px-4 py-1.5 text-sm text-crema transition hover:border-crema/60 hover:text-chalk disabled:opacity-50">
                     Edit {tab === 'pre' ? 'pre-notes' : 'post-notes'}
                   </button>
@@ -332,7 +352,7 @@ export default function NotesPanel({ panel, topics, onTab, onClose, dirty }: { p
                 </form>
               ) : (
                 <button type="button" className="underline-offset-2 hover:underline" onClick={() => setTokenForm(true)}>
-                  {token ? 'Editing is on in this browser · change or remove the token' : 'Editing is off · set an edit token'}
+                  {token ? 'Saving directly with this browser’s token · change or remove it' : 'Edits save through a GitHub issue · set an edit token to save directly'}
                 </button>
               )}
             </div>

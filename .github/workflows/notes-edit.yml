@@ -1,0 +1,89 @@
+# A notes edit sent from the site as an issue (the panel's "Save via GitHub issue", on a device without an edit token):
+# check it with the build's notes rules, commit it to main with the topic's Unlock line, and close the issue with the
+# outcome. Only issues the repository owner opens are applied. The push uses the NOTES_EDIT_TOKEN secret (a fine-grained
+# token, Contents: read and write on this repository) because a push made with the built-in token would not start the
+# Deploy workflow. scripts/apply-notes-edit.mjs holds the checks.
+name: Apply a notes edit
+
+on:
+  issues:
+    types: [opened]
+
+permissions:
+  contents: read
+  issues: write
+
+concurrency:
+  group: notes-edit
+  cancel-in-progress: false
+
+jobs:
+  apply:
+    if: startsWith(github.event.issue.title, '[notes-edit]') && github.event.issue.user.login == github.repository_owner
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          token: ${{ secrets.NOTES_EDIT_TOKEN }}
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - id: apply
+        name: Check the edit and write the file
+        env:
+          RESULT: ${{ runner.temp }}/result.md
+          MSG: ${{ runner.temp }}/message.txt
+        run: node --experimental-strip-types scripts/apply-notes-edit.mjs
+
+      - id: push
+        name: Commit and push
+        if: steps.apply.outputs.ok == 'true'
+        env:
+          FILE: ${{ steps.apply.outputs.file }}
+          MSG: ${{ runner.temp }}/message.txt
+          AUTHOR: ${{ github.event.issue.user.login }}
+          AUTHOR_ID: ${{ github.event.issue.user.id }}
+        run: |
+          git config user.name "$AUTHOR"
+          git config user.email "$AUTHOR_ID+$AUTHOR@users.noreply.github.com"
+          git add -- "$FILE"
+          git commit -F "$MSG"
+          # main moves often (narration commits): rebase onto it and retry. A rebase conflict means the same file
+          # changed meanwhile; the edit is then refused rather than forced.
+          for attempt in 1 2 3 4 5; do
+            if git push origin HEAD:main; then echo "sha=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"; exit 0; fi
+            git pull --rebase origin main || { git rebase --abort; echo "conflict=true" >> "$GITHUB_OUTPUT"; exit 1; }
+            sleep $((attempt * 5))
+          done
+          exit 1
+
+      - name: Report on the issue
+        if: always() && steps.apply.outcome != 'skipped'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          NUMBER: ${{ github.event.issue.number }}
+          RESULT: ${{ runner.temp }}/result.md
+          OK: ${{ steps.apply.outputs.ok }}
+          PUSHED: ${{ steps.push.outputs.sha }}
+          CONFLICT: ${{ steps.push.outputs.conflict }}
+          RUN: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+        run: |
+          if [ "$OK" = "true" ] && [ -n "$PUSHED" ]; then
+            printf '%s\n\nCommit: %s\n' "$(cat "$RESULT")" "$PUSHED" > "$RESULT"
+            gh issue comment "$NUMBER" --repo "$GITHUB_REPOSITORY" --body-file "$RESULT"
+            gh issue close "$NUMBER" --repo "$GITHUB_REPOSITORY" --reason completed
+          else
+            if [ "$OK" = "true" ]; then
+              if [ "$CONFLICT" = "true" ]; then
+                echo "Not applied: the file changed on main while this edit was being applied. Nothing was changed; open the panel again and resend." > "$RESULT"
+              else
+                echo "Not applied: the push to main failed (see $RUN). Nothing was changed." > "$RESULT"
+              fi
+            fi
+            [ -s "$RESULT" ] || echo "Not applied: the workflow failed before checking the edit (see $RUN)." > "$RESULT"
+            gh issue comment "$NUMBER" --repo "$GITHUB_REPOSITORY" --body-file "$RESULT"
+            gh issue close "$NUMBER" --repo "$GITHUB_REPOSITORY" --reason "not planned"
+          fi

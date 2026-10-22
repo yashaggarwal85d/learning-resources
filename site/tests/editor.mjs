@@ -1,8 +1,9 @@
 // The in-page notes editor, against a fake GitHub API (nothing is sent to GitHub). Usage:
 //   node tests/editor.mjs http://localhost:4321/learning-resources/
-// Checks: no Edit button without a token; with one, the file loads; text that would fail the build cannot be saved; a save
-// sends the sha it read, a commit message with the topic's Unlock line and the edited text; a file that changed on GitHub is
-// never overwritten (the differences are shown); the phone panel is a full-height drawer.
+// Checks: without a token the file loads with no credentials and a save opens a prefilled GitHub issue (topic, file, the sha
+// it read, the text) instead of writing; with one, text that would fail the build cannot be saved; a save sends the sha it
+// read, a commit message with the topic's Unlock line and the edited text; a file that changed on GitHub is never
+// overwritten (the differences are shown); the phone panel is a full-height drawer.
 import { chromium, devices } from 'playwright';
 import { readFileSync, existsSync, readdirSync } from 'node:fs';
 
@@ -57,12 +58,37 @@ const openPre = async (page) => {
   return page.getByRole('dialog', { name: 'Notes' });
 };
 
-// 1. No token: no Edit button.
+// 1. No token (any device): the file loads without credentials, and a save opens a prefilled GitHub issue in a new tab
+// (the notes-edit workflow applies it) instead of writing; nothing is sent to the contents API.
 {
-  const { ctx, page } = await open({ viewport: { width: 1440, height: 900 } }, {});
+  const { ctx, page, state } = await open({ viewport: { width: 1440, height: 900 } }, {});
+  const opened = [];
+  await ctx.route('https://github.com/**', (route) => route.fulfill({ status: 200, contentType: 'text/html', body: '<p>issue form</p>' }));
+  ctx.on('page', (p) => opened.push(p.url()));
+  const auths = [];
+  page.on('request', (r) => r.url().startsWith('https://api.github.com/') && auths.push(r.headers().authorization ?? null));
   const d = await openPre(page);
-  if (await d.getByRole('button', { name: /^Edit pre-notes$/ }).count()) fail('an Edit button shows without a token');
-  if (!(await d.getByText('Editing is off').count())) fail('the panel does not offer to set an edit token');
+  if (!(await d.getByText('Edits save through a GitHub issue').count())) fail('the panel does not say that edits go through a GitHub issue');
+  await d.getByRole('button', { name: 'Edit pre-notes', exact: true }).click();
+  const box = d.getByRole('textbox', { name: /pre-notes\.md/ });
+  await box.waitFor();
+  if (auths.some(Boolean)) fail('the file was read with credentials although no token is set');
+  const edited = original.replace(/\n$/, '') + '\n- **Write amplification**: bytes written to the device per byte the application writes. *Where you meet it:* compaction tuning.\n';
+  await box.fill(edited);
+  await d.getByRole('button', { name: 'Save via GitHub issue', exact: true }).click();
+  await page.waitForTimeout(1500);
+  if (state.puts.length) fail('a save without a token wrote to the contents API');
+  const url = opened.find((u) => u.startsWith('https://github.com/yashaggarwal85d/learning-resources/issues/new'));
+  if (!url) fail(`a save without a token did not open a new GitHub issue (opened: ${opened.join(', ') || 'nothing'})`);
+  else {
+    const q = new URL(url).searchParams;
+    const body = q.get('body') ?? '';
+    if (!q.get('title')?.startsWith('[notes-edit] Pre-notes: ')) fail(`the issue title is "${q.get('title')}"`);
+    for (const line of [`Topic: ${ID}`, `File: ${FILE}`, 'Base: sha1', 'Kind: pre']) if (!body.includes(line)) fail(`the issue body lacks "${line}"`);
+    const fenced = body.match(/^(~{4,})markdown\n([\s\S]*?)\n\1$/m);
+    if (!fenced || fenced[2] + '\n' !== edited) fail('the issue body does not carry the edited text exactly, fenced');
+  }
+  if (!(await d.getByText(/Opened a GitHub issue/).count())) fail('the panel does not say an issue was opened');
   await ctx.close();
 }
 
@@ -144,4 +170,4 @@ if (failures.length) {
   console.error(`Editor test failed:\n- ${failures.join('\n- ')}`);
   process.exit(1);
 }
-console.log('Editor test passed: token gate, validation, save with sha and Unlock line, conflict without overwrite, phone drawer.');
+console.log('Editor test passed: issue route without a token, validation, save with sha and Unlock line, conflict without overwrite, phone drawer.');
