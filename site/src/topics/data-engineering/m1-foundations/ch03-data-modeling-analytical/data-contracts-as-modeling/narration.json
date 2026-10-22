@@ -1,0 +1,99 @@
+{
+  "topic": "de.data-contracts-as-modeling",
+  "steps": [
+    {
+      "lines": [
+        "Picture a schema that quietly changed overnight, with nobody warned ahead of time.",
+        "A dashboard somewhere downstream just stopped working the next morning, with no error message at all. What that domain was actually missing wasn't a schema in the first place — it was a contract."
+      ]
+    },
+    {
+      "lines": [
+        "Here's what a contract actually looks like, in the standard's own words.",
+        "A properly structured document, built from defined keys and values, under a real published standard — not a wiki page somebody wrote once and forgot about, and certainly not a verbal promise between two teams."
+      ]
+    },
+    {
+      "lines": [
+        "Here's a question worth sitting with before the next reveal.",
+        "One document could describe what a field actually means to the business. A separate document could describe exactly how it's physically stored. Does a contract genuinely have to choose just one of those?"
+      ],
+      "answer": [
+        "It doesn't have to choose — the standard ties both together in a single place.",
+        "A field's own business meaning sits directly alongside its actual physical type, in that very same schema, rather than being split across two documents that can quietly drift apart."
+      ]
+    },
+    {
+      "lines": [
+        "Here's that tying-together, straight from the specification.",
+        "Schema is built to support both a business representation of the data and its physical implementation at once — one single field can carry its own business name sitting right next to its physical type."
+      ]
+    },
+    {
+      "lines": [
+        "And here's why quality rules can't just float on their own.",
+        "Quality rules get their own clearly named section in the contract, but they stay tightly linked to the exact schema they're actually checking — never a separate, disconnected concern sitting off to the side."
+      ]
+    },
+    {
+      "lines": [
+        "Here's a harder question about when a check genuinely counts.",
+        "Suppose a quality check only ever runs after the data has already landed inside some downstream warehouse. Is that genuinely late enough to still count as real enforcement?"
+      ],
+      "answer": [
+        "No, not really — by then, real damage has likely already happened.",
+        "Every single consumer sitting between the original producer and that downstream check has already been exposed to the bad data. That's catching a problem after the fact, not actually stopping it."
+      ]
+    },
+    {
+      "lines": [
+        "Here's where that stopping genuinely has to happen instead.",
+        "Right at the exact moment a producer actually emits the data — stopped there, before any consumer anywhere downstream ever even gets the chance to see it at all."
+      ]
+    },
+    {
+      "lines": [
+        "Now here's service-level agreements, treated with that same rigor.",
+        "They get their own clearly named section too, and each one has to take a required, properly structured value, pulled from a genuinely standard list — things like availability, latency, and how long data actually gets retained."
+      ]
+    },
+    {
+      "lines": [
+        "Here's a genuinely open question worth guessing at first.",
+        "Suppose nobody ever actually wrote down who owns a particular dataset. Is that honestly fine, since whoever originally built the pipeline is just obviously assumed to be its owner anyway?"
+      ],
+      "answer": [
+        "It's genuinely not fine — an assumed owner quietly stops being an owner at all.",
+        "The standard's own worked example names a specific role called simply Owner, written directly into the contract itself. The moment the original builder eventually moves on, an unwritten assumption leaves nobody left to actually point to."
+      ]
+    },
+    {
+      "lines": [
+        "Here's that ownership, made concrete in the standard's own words.",
+        "Team membership, and its entire history over time, gets tracked directly inside the contract itself — with that Owner role named explicitly, right there in the standard's own worked example."
+      ]
+    },
+    {
+      "lines": [
+        "One honest note about the exact version being taught here.",
+        "The specification's own default version has already quietly moved past the version this very course names elsewhere — which is a healthy reminder that a living standard like this one keeps evolving underneath whatever you last learned about it."
+      ]
+    },
+    {
+      "lines": [
+        "Let's put the whole picture back together.",
+        "A contract is a genuinely structured document, never just a promise. Its schema ties business meaning directly to physical layout. Quality rules and service agreements are named fields pinned to that schema, and ownership gets named explicitly, never left as an assumption."
+      ]
+    },
+    {
+      "lines": [
+        "One closing scenario worth genuinely working through.",
+        "A producer ships a schema change with absolutely no updated contract, and no new quality rule written for the field that actually changed. Who's actually supposed to catch that, and exactly where does that catch genuinely have to happen?"
+      ],
+      "answer": [
+        "The producer's own contract check, right at the exact moment that change is about to go out.",
+        "Waiting for some downstream consumer to eventually notice means every single consumer sitting in between has already been quietly exposed to a change nobody ever actually reviewed."
+      ]
+    }
+  ]
+}

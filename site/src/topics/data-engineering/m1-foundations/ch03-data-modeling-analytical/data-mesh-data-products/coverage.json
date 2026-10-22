@@ -1,0 +1,50 @@
+{
+  "topic": "de.data-mesh-data-products",
+  "syllabus": [
+    { "clause": "domain ownership", "at": [{ "step": "Reveal: domain ownership, quoted directly" }] },
+    { "clause": "data as a product", "at": [{ "step": "Reveal: data as a product, named and defined, quoted directly" }, { "step": "Reveal: the four data-product qualities, quoted directly" }] },
+    { "clause": "self-serve platform", "at": [{ "step": "Reveal: the self-serve platform's own stated reason to exist, quoted directly" }] },
+    { "clause": "federated computational governance", "at": [{ "step": "Reveal: federated computational governance, quoted directly" }] },
+    { "clause": "organizational preconditions and the failure mode of mesh without platform maturity", "at": [{ "step": "Reveal: the real cost of ownership without a shared platform, quoted directly" }, { "step": "Prove it" }] },
+    { "clause": "(governance mechanics → §13.4)", "at": [{ "deep": "Where this goes next" }] }
+  ],
+  "sources": [
+    {
+      "source": "Zhamak Dehghani, \"How to Move Beyond a Monolithic Data Lake to a Distributed Data Mesh\"",
+      "items": [
+        { "item": "Domain ownership reverses the flow: domains host and serve their own data instead of a centrally owned lake receiving it", "at": [{ "step": "Reveal: domain ownership, quoted directly" }] },
+        { "item": "Discoverability requires a registry/catalogue of available data products", "at": [{ "step": "Reveal: the four data-product qualities, quoted directly" }] },
+        { "item": "Addressability requires a unique, programmatically accessible location for each data product", "at": [{ "step": "Reveal: the four data-product qualities, quoted directly" }] },
+        { "item": "Trustworthiness requires an honest, stated quality guarantee rather than ad hoc cleansing after ingestion", "at": [{ "step": "Reveal: the four data-product qualities, quoted directly" }] },
+        { "item": "Inter-operability requires shared standards for correlating data across domains", "at": [{ "step": "Reveal: the four data-product qualities, quoted directly" }] },
+        { "item": "Distributing ownership without shared infrastructure duplicates specialized effort and skill in every domain", "at": [{ "step": "Reveal: the real cost of ownership without a shared platform, quoted directly" }] }
+      ]
+    },
+    {
+      "source": "Zhamak Dehghani, \"Data Mesh Principles and Logical Architecture\"",
+      "items": [
+        { "item": "The four principles, named by Dehghani herself: domain ownership, data as a product, self-serve platform, federated computational governance", "at": [{ "step": "Reveal: the four named principles together, quoted directly" }] },
+        { "item": "The four principles are stated as collectively necessary and sufficient, not independently substitutable", "at": [{ "step": "Reveal: the four named principles together, quoted directly" }] },
+        { "item": "The self-serve platform principle exists specifically to remove the specialized infrastructure skill domain ownership would otherwise require in every domain", "at": [{ "step": "Reveal: the self-serve platform's own stated reason to exist, quoted directly" }] },
+        { "item": "Federated computational governance is domain-local autonomy plus a small set of globally enforced, platform-automated rules", "at": [{ "step": "Reveal: federated computational governance, quoted directly" }] }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "Claude (single session, written from the syllabus line and the fetched sources before storyboarding; not independent of the builder, so a later owner review should repeat it)",
+    "date": "2026-10-22",
+    "items": [
+      { "item": "The first predict (step 3) is red-teamed against the plausible wrong answer that owning your own data automatically makes it trustworthy to its consumers; the reveal at steps 4-5 corrects this by quoting the data-as-a-product standard as a separate, explicit checklist that ownership alone doesn't satisfy", "at": [{ "step": "Predict: does owning your own data make it trustworthy to everyone else who needs it?" }] },
+      { "item": "The second predict (step 6) is red-teamed against the plausible wrong answer that domain ownership costs nothing extra since each domain already runs its own operational systems; the reveal at step 7 quotes Dehghani's own naming of the duplicated specialized-effort cost, directly refuting the no-extra-cost guess", "at": [{ "step": "Predict: does handing every domain full data ownership cost nothing extra?" }] },
+      { "item": "The third predict (step 9) is red-teamed against the plausible wrong answer that the organizational principles (ownership, data as a product) are what matter and the platform is just convenience tooling; the reveal at step 10 quotes Dehghani's own stated reason for the self-serve platform principle, which exists specifically to absorb the cost the prior two principles would otherwise push onto every domain separately", "at": [{ "step": "Predict: without a shared self-serve platform yet, does the mesh still work?" }] },
+      { "item": "Step 7's cost reveal and step 10's platform-justification reveal deliberately quote the same underlying claim (duplicated specialized infrastructure effort) from two different angles — step 7 as the cost domain ownership creates, step 10 as the reason the platform principle exists to remove it — because CHAPTER.md's own scope line treats the organizational precondition and the platform's own justification as the same mechanism, not two separate facts", "at": [{ "step": "Reveal: the self-serve platform's own stated reason to exist, quoted directly" }] },
+      { "item": "The closing check (Prove it) is a genuinely new scenario — principles rolled out before the platform is ready — testing whether the learner can apply the chapter's own named failure mode rather than defaulting to \"the organizational principles alone are sufficient\" from the earlier reveals", "at": [{ "step": "Prove it" }] },
+      { "item": "The bridge from topic 20 (Lambda vs Kappa) and the handoff to topic 22 (data contracts) are both taken verbatim from CHAPTER.md's own entry for topic 21 and checked against this topic's own content before use, rather than invented fresh", "at": [{ "step": "The shop's one central pipeline team, everywhere" }] },
+      { "item": "This topic has no lab of its own (CHAPTER.md), and every claim traces to a direct quote verified word for word (scripts/sources.mjs check) from Zhamak Dehghani's own two originating articles on data mesh, matching CHAPTER.md's explicit instruction to cite her own writing for the four principles and the platform-maturity precondition", "at": [{ "step": "Reveal: domain ownership, quoted directly" }, { "step": "Reveal: the four named principles together, quoted directly" }] },
+      { "item": "The recap keeps four separate ideas distinct (ownership reversed, data as a product is a real checklist, none of it is free without the platform, governance keeps the result interoperable) matching the syllabus line's own four named principles plus its own failure-mode clause, rather than collapsing them into one vague \"data mesh is decentralization\" takeaway", "at": [{ "step": "Recap" }] },
+      { "item": "Governance mechanics (the actual enforcement tooling, policy-as-code implementation) are deliberately deferred to §13.4 per CHAPTER.md's own explicit instruction, not silently skipped — this topic defines federated computational governance's own shape (quote 10) without building its enforcement mechanics", "at": [{ "step": "Reveal: federated computational governance, quoted directly" }] },
+      { "item": "No specific numeric claim (a particular cost multiplier, a particular team-size figure) is made anywhere in this topic beyond what the sources state qualitatively, since neither source gives a reproducible number and this topic has no lab of its own to measure one independently", "at": [{ "step": "Reveal: the real cost of ownership without a shared platform, quoted directly" }] }
+    ]
+  },
+  "gapReview": { "date": "2026-10-22", "by": "Claude (single session)", "open": [] }
+}
