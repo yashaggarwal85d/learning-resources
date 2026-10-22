@@ -1,0 +1,609 @@
+{
+ "topic": "de.cardinality-estimation-statistics",
+ "voice": "breeze-mellow-v2",
+ "asr": "large-v3-turbo",
+ "clips": {
+  "01": {
+   "hash": "fbea6d8bf60f1607",
+   "takes": [
+    "7d40fe985ff5a1d0e81c",
+    "ca7cd80ee4b59ccbd65b",
+    "6a306e8c9e53ca4911f5"
+   ],
+   "duration": 29.905,
+   "lines": [
+    {
+     "text": "Whether to look inside a query was last topic's question. Now a different one: before a query runs at all, how does the planner guess how many rows it will touch?",
+     "start": 0.15,
+     "end": 11.748
+    },
+    {
+     "text": "Watch the two readouts. One guess lands almost on the real count once the query actually runs. The other guess is off by more than double.",
+     "start": 12.298,
+     "end": 21.455
+    },
+    {
+     "text": "Same table. Same machinery that produced both guesses. So why does only one of them hold up?",
+     "start": 22.275,
+     "end": 29.555
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 148,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "02": {
+   "hash": "ca3d5d346302053f",
+   "takes": [
+    "50078968664c6739a5d6",
+    "e5d72689896968cad681",
+    "99db3a7ebda0c536422c"
+   ],
+   "duration": 23.584,
+   "lines": [
+    {
+     "text": "Here are two separate conditions on the same table. One matches about one row in six. The other matches more than a third of the rows.",
+     "start": 0.15,
+     "end": 8.914
+    },
+    {
+     "text": "If the planner treats them as having nothing to do with each other, what fraction does it expect when both conditions are required at once?",
+     "start": 9.334,
+     "end": 18.435
+    },
+    {
+     "text": "Multiply the two, add them, or just take the smaller one?",
+     "start": 19.385,
+     "end": 23.234
+    }
+   ],
+   "lufs": -16.3,
+   "true_peak": -2.8,
+   "wpm": 158,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "02a": {
+   "hash": "aad27ff3ba15a3c5",
+   "takes": [
+    "c361b97c55b9ab67fdfb",
+    "81117b734369ab8ee0f3",
+    "3f5b8db6a96bc23752f3"
+   ],
+   "duration": 26.09,
+   "lines": [
+    {
+     "text": "Multiply them. About one sixth times a bit more than a third lands close to one in seventeen.",
+     "start": 0.15,
+     "end": 7.742
+    },
+    {
+     "text": "That is exactly what treating the conditions as unrelated means: whatever one matches has nothing to do with whatever the other matches, so their chances multiply.",
+     "start": 8.162,
+     "end": 18.592
+    },
+    {
+     "text": "Whether that assumption is actually true for these two columns is the real question, and it is not.",
+     "start": 19.012,
+     "end": 25.74
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 143,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "03": {
+   "hash": "9b24574a3aac5a20",
+   "takes": [
+    "e01c8b2e8323ae960030",
+    "89455fd1ef8edde787a3",
+    "14fc80322d4eadeaf322"
+   ],
+   "duration": 23.754,
+   "lines": [
+    {
+     "text": "The guess really does land where multiplying predicts: a little under six in a hundred.",
+     "start": 0.15,
+     "end": 5.949
+    },
+    {
+     "text": "But watch the real count once the query runs. It lands past twice that.",
+     "start": 6.369,
+     "end": 10.755
+    },
+    {
+     "text": "The planner's arithmetic was not the problem. Its assumption was: these two columns move together, and nothing about multiplying separate chances can see that.",
+     "start": 11.175,
+     "end": 23.404
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 134,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "04": {
+   "hash": "f4edf39c9eefe85a",
+   "takes": [
+    "5890dd1384ad10d43659",
+    "5c587c6cb5ebaf0179b8",
+    "9c2f373c06faaab72f15"
+   ],
+   "duration": 36.586,
+   "lines": [
+    {
+     "text": "So where does a guess come from in the first place? One catalog keeps a cheap running total: how many rows a table has, rescaled to its current size without ever reading the table.",
+     "start": 0.15,
+     "end": 13.981
+    },
+    {
+     "text": "A second, harder catalog keeps the shape of each column: the spread of values, which ones repeat often, roughly how many distinct values exist.",
+     "start": 14.401,
+     "end": 25.002
+    },
+    {
+     "text": "Its own documentation calls that second catalog approximate even right after it is refreshed. Everything from here is about that harder number.",
+     "start": 25.422,
+     "end": 36.236
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 131,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "05": {
+   "hash": "eb7247d2a3a93440",
+   "takes": [
+    "c580b457a104513e51ea",
+    "f516bf571543ec8f8d41",
+    "f3260b9440b43e6e123c"
+   ],
+   "duration": 35.253,
+   "lines": [
+    {
+     "text": "Take a numeric column and ask for everything above a cutoff. The column's whole range has been cut into a hundred equal slices, each holding the same share of rows.",
+     "start": 0.15,
+     "end": 11.049
+    },
+    {
+     "text": "Watch the pointer travel along the line and settle inside one slice. Every full slice before it counts completely; the slice it lands in counts only its fraction.",
+     "start": 11.469,
+     "end": 23.77
+    },
+    {
+     "text": "Whole slices plus a fraction of one more, out of a hundred, is the guess \u2014 and here it lands within about one part in a hundred of the real count.",
+     "start": 24.59,
+     "end": 34.903
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -1.9,
+   "wpm": 150,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "06": {
+   "hash": "f94d76923fb57e9b",
+   "takes": [
+    "14811c330e3fd2bac8fa",
+    "a5d4451ba3e7903673ce",
+    "82085d63623f6df5df47"
+   ],
+   "duration": 27.549,
+   "lines": [
+    {
+     "text": "A different kind of column: six possible outcomes, and one of them, a refund, is rare \u2014 barely more than one row in sixty.",
+     "start": 0.15,
+     "end": 9.16
+    },
+    {
+     "text": "When a value is common enough to be tracked by name, the catalog already knows exactly how often it shows up in the sample. Lock onto the thin bar.",
+     "start": 9.58,
+     "end": 19.417
+    },
+    {
+     "text": "Asking for that one outcome doesn't need a slice or a formula at all. The measured share is the guess.",
+     "start": 19.837,
+     "end": 27.199
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -2.2,
+   "wpm": 157,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "07": {
+   "hash": "610fd90856046864",
+   "takes": [
+    "5ba1cf453aacfab36ee9",
+    "87ffce815e7da9e9f27c",
+    "09f95c13b7fdb3023a2e"
+   ],
+   "duration": 30.529,
+   "lines": [
+    {
+     "text": "Now ask for a value that isn't common enough to be tracked by name. The catalog knows the combined share taken by every value it does track.",
+     "start": 0.15,
+     "end": 9.43
+    },
+    {
+     "text": "Whatever share is left over gets divided evenly across every other distinct value that wasn't tracked, as if each of them were exactly as common as the rest.",
+     "start": 9.85,
+     "end": 20.221
+    },
+    {
+     "text": "That even division is a second assumption, doing the same job the slices did a moment ago: standing in for a real measurement with a guess.",
+     "start": 21.041,
+     "end": 30.178
+    }
+   ],
+   "lufs": -16.3,
+   "true_peak": -2.1,
+   "wpm": 159,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "08": {
+   "hash": "baadac4ec0287b15",
+   "takes": [
+    "25a7fa882348b3cbe8a1",
+    "bd5be4c3e23f7234921f",
+    "9c541d577d0029e683a0"
+   ],
+   "duration": 33.049,
+   "lines": [
+    {
+     "text": "Back to the two columns that move together. One command tells the planner to measure them as a pair instead of separately, watching for exactly this kind of dependence.",
+     "start": 0.15,
+     "end": 11.201
+    },
+    {
+     "text": "After that command runs and the catalog is refreshed, the same query's guess jumps from roughly half of the real count to within about one part in a hundred of it.",
+     "start": 11.621,
+     "end": 21.778
+    },
+    {
+     "text": "Nothing about the arithmetic changed. What changed is that the planner now has an actual joint measurement instead of an assumption about two unrelated columns.",
+     "start": 22.198,
+     "end": 32.699
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 154,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "09": {
+   "hash": "ef55bee80108e29e",
+   "takes": [
+    "2672768b70fba4c60b87",
+    "fbd02654b8f8cde5bebe",
+    "1c62b1f18597fba7e6fb"
+   ],
+   "duration": 23.88,
+   "lines": [
+    {
+     "text": "A large batch of new rows lands all at once, every one sharing the same outcome for a column the planner already has stale measurements for, and nobody refreshes the catalog yet.",
+     "start": 0.15,
+     "end": 12.146
+    },
+    {
+     "text": "Does the planner's guess for that outcome notice the new rows arrived at all?",
+     "start": 12.566,
+     "end": 17.74
+    },
+    {
+     "text": "Does it notice fully, not at all, or only part of what changed?",
+     "start": 18.69,
+     "end": 23.53
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 148,
+   "wer": 0.07142857142857142,
+   "exact": false,
+   "tolerated": [
+    {
+     "line": "Does the planner's guess for that outcome notice the new rows arrived at all?",
+     "said": "rows",
+     "heard": "rose"
+    }
+   ]
+  },
+  "09a": {
+   "hash": "2b324dd1e4275a21",
+   "takes": [
+    "3773b3f9d3efe4f0a862",
+    "7fdefd21f72b74410958",
+    "7fa9e5ddbe311155be9d"
+   ],
+   "duration": 25.659,
+   "lines": [
+    {
+     "text": "Only part. The cheap running total of how many rows exist updates on its own, scaled to the table's new size.",
+     "start": 0.15,
+     "end": 7.88
+    },
+    {
+     "text": "But the shape \u2014 how common each outcome actually is now \u2014 does not update until the harder catalog is refreshed. That refresh is a separate, deliberate step.",
+     "start": 8.3,
+     "end": 20.442
+    },
+    {
+     "text": "So the guess undercounts: it has the new total, but still the old mix.",
+     "start": 20.862,
+     "end": 25.309
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 143,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "10": {
+   "hash": "c6faaea70f42b853",
+   "takes": [
+    "a0d2055d4b77979cb8e4",
+    "59e1f9350670be0550fa"
+   ],
+   "duration": 16.781,
+   "lines": [
+    {
+     "text": "Before the refresh, the guess lands well under the real count once the query runs \u2014 off by about sixty percent.",
+     "start": 0.15,
+     "end": 7.629
+    },
+    {
+     "text": "One refresh later, with no other change at all, the same guess lands within less than half a percent of the real count.",
+     "start": 8.049,
+     "end": 16.431
+    }
+   ],
+   "lufs": -16.0,
+   "true_peak": -2.4,
+   "wpm": 154,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "11": {
+   "hash": "d9a109cbd87609f5",
+   "takes": [
+    "a55ab62d44576f393519",
+    "e08203ef0a1ab808e3c0",
+    "b210571ea7c0a0011726",
+    "51e8ff6e204fe2d74e88"
+   ],
+   "duration": 39.379,
+   "lines": [
+    {
+     "text": "Both failures just shown are guesses feeding into a larger plan, and a larger plan is usually more than one step.",
+     "start": 0.15,
+     "end": 8.551
+    },
+    {
+     "text": "Line up this topic's two measured misses \u2014 the unrelated-columns guess and the stale-shape guess \u2014 as if the same plan depended on both.",
+     "start": 8.971,
+     "end": 18.806
+    },
+    {
+     "text": "They don't cancel each other out. They compound, landing well past three times off, because each one feeds the next step as if it were simply true.",
+     "start": 19.626,
+     "end": 29.62
+    },
+    {
+     "text": "The planner's own documentation admits plainly that two different ways of sizing the same join can land far apart.",
+     "start": 30.04,
+     "end": 39.029
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 139,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "12": {
+   "hash": "af26781a5f13eae3",
+   "takes": [
+    "3fbdc71a3aeb6f3eea5e",
+    "32228808f381c97e14b4",
+    "ea25cd43ecfea2d6645a"
+   ],
+   "duration": 29.956,
+   "lines": [
+    {
+     "text": "Every formula shown so far is still a fixed recipe a person designed years ago, applied to a small sample.",
+     "start": 0.15,
+     "end": 8.387
+    },
+    {
+     "text": "One active line of research trains a model directly on real data and real queries instead, aimed specifically at the kind of related-column failure this topic just measured.",
+     "start": 8.807,
+     "end": 21.613
+    },
+    {
+     "text": "That line of work is still a research direction, not this topic's mechanism \u2014 more of it waits in the deep dive.",
+     "start": 22.033,
+     "end": 29.606
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -1.9,
+   "wpm": 140,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "13": {
+   "hash": "35f9da22b750a6c4",
+   "takes": [
+    "8dddbce5c15d403b3969",
+    "d425c40e4de216e19746"
+   ],
+   "duration": 29.085,
+   "lines": [
+    {
+     "text": "Three questions, before trusting the first number a plan shows you: do the columns in the condition actually move together? When was the harder catalog last refreshed? And is this guess itself about to feed into another step?",
+     "start": 0.15,
+     "end": 17.303
+    },
+    {
+     "text": "An estimate only matters once something compares it against the alternatives \u2014 and that comparison, the actual price of a plan, is next.",
+     "start": 17.853,
+     "end": 28.735
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 124,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "14": {
+   "hash": "9b08b1b47c44f75a",
+   "takes": [
+    "0367ed4bfa5ed04f49d8",
+    "b1e3ad53a2cb715c093f",
+    "df52f1aa163e76bdef1f"
+   ],
+   "duration": 16.927,
+   "lines": [
+    {
+     "text": "A value tracked by name shows up in two out of every hundred rows, on a table of half a million rows.",
+     "start": 0.15,
+     "end": 7.791
+    },
+    {
+     "text": "How many rows should the planner expect this condition to match?",
+     "start": 8.211,
+     "end": 11.87
+    },
+    {
+     "text": "Ten, a hundred, a thousand, or ten thousand?",
+     "start": 12.82,
+     "end": 16.577
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -1.9,
+   "wpm": 145,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "14a": {
+   "hash": "f096c85cb7a2a402",
+   "takes": [
+    "1fea7745ee81466b71d5",
+    "bc94820438150c004be3"
+   ],
+   "duration": 14.172,
+   "lines": [
+    {
+     "text": "Ten thousand. Two in a hundred of half a million.",
+     "start": 0.15,
+     "end": 4.372
+    },
+    {
+     "text": "A value tracked by name gets its share read straight from the catalog and multiplied by the row count \u2014 no slice, no leftover division.",
+     "start": 4.792,
+     "end": 13.822
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -2.0,
+   "wpm": 144,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "15": {
+   "hash": "a0b11e534c4a5f3d",
+   "takes": [
+    "430b9122399ebe5c3daf",
+    "8e35a79ace12ebab59a8",
+    "d48c5f7475c9673c3a13"
+   ],
+   "duration": 17.288,
+   "lines": [
+    {
+     "text": "Two separate conditions on columns that actually move together are each guessed at around one in five, treated as unrelated to each other.",
+     "start": 0.15,
+     "end": 9.748
+    },
+    {
+     "text": "What is the real risk hiding inside that guess?",
+     "start": 10.168,
+     "end": 13.004
+    },
+    {
+     "text": "Too high, too low, or no risk at all?",
+     "start": 13.954,
+     "end": 16.938
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -2.1,
+   "wpm": 142,
+   "wer": 0.1111111111111111,
+   "exact": false,
+   "tolerated": [
+    {
+     "line": "What is the real risk hiding inside that guess?",
+     "said": "guess",
+     "heard": "gas"
+    }
+   ]
+  },
+  "15a": {
+   "hash": "57416423da002535",
+   "takes": [
+    "b54dcba46336c07fc1be",
+    "13f9c57afd6b4921a9ca"
+   ],
+   "duration": 15.632,
+   "lines": [
+    {
+     "text": "Too low. Columns that move together overlap more than treating them as unrelated predicts.",
+     "start": 0.15,
+     "end": 6.676
+    },
+    {
+     "text": "The multiplied guess undershoots the real, larger overlap \u2014 the same failure this topic measured directly, at about double.",
+     "start": 7.096,
+     "end": 15.282
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 123,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  }
+ }
+}
