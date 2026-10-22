@@ -1048,7 +1048,7 @@ export const TOPICS: TopicMeta[] = [
     bridge:
       'A join is decided. The same build/probe vs. sorted-input choice happens one level up, for GROUP BY — next.',
     handoff:
-      "Every operator so far has treated a spill to disk as a fact to read off EXPLAIN, not a thing to explain. Next: what work_mem actually budgets, why a sort, a hash join and a hash aggregate all spill differently, and why concurrency multiplies the memory a workload actually needs.",
+      'Every mechanism so far has assumed a plan, once chosen, runs as written. Next: what happens when the query itself is rewritten before the planner ever sees the shape the SQL text described.',
   },
   {
     id: 'de.memory-budgets-spilling-grace',
