@@ -1350,4 +1350,24 @@ export const TOPICS: TopicMeta[] = [
     handoff:
       "Every key type here assumed one single philosophy for organizing a whole warehouse around these tables. Next: two philosophies that disagree about that directly — Inmon's single integrated model and Kimball's dimensional bus — and what each actually costs.",
   },
+  {
+    id: 'de.inmon-vs-kimball-warehouse',
+    domain: 'data-engineering',
+    slug: 'data-engineering/m1-foundations/ch03-data-modeling-analytical/inmon-vs-kimball-warehouse',
+    title: 'Inmon vs Kimball warehouse philosophies',
+    syllabusTitle: 'Inmon vs Kimball warehouse philosophies',
+    kind: 'full',
+    status: 'live',
+    milestone: { number: 1, title: 'Foundations' },
+    chapter: { number: 3, title: 'Data modeling and analytical architecture', section: '3.1' },
+    minutes: 13,
+    verified: '2026-10-22',
+    introduces: ['inmon-enterprise-warehouse', 'kimball-dimensional-bus'],
+    uses: ['key-types-natural-surrogate-durable-hash'],
+    declared: ['sql-select', 'sql-create-table'],
+    bridge:
+      "Every key type here assumed one single philosophy for organizing a whole warehouse around these tables. This topic is two philosophies that disagree about that directly: Inmon's single integrated model and Kimball's dimensional bus, and what each actually costs.",
+    handoff:
+      "Kimball's own bus architecture assumed a dimensional star was the right shape to build marts from. Next: a third philosophy that disagrees with both Inmon and Kimball about where auditability and source agility should live — Data Vault 2.0.",
+  },
 ];
