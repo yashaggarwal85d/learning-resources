@@ -1,0 +1,23 @@
+import Resource from '../../../../../components/Resource.astro';
+
+<section class="prereq" data-section="earlier-topics">
+
+### <span class="n">01</span> What this topic builds on
+
+<ul class="resources">
+  <Resource kind="reel" host={props.host} domain="data-engineering" title="Zone maps and BRIN indexes">A smaller structure that learns an exclusion from the table itself. This topic instead stores a query's own result and measures what keeping it current costs.</Resource>
+</ul>
+
+</section>
+
+<section class="prereq" data-section="reference">
+
+### <span class="n">02</span> Reference
+
+<ul class="resources">
+  <Resource kind="reading" title="REFRESH MATERIALIZED VIEW" href="https://www.postgresql.org/docs/18/sql-refreshmaterializedview.html" by="PostgreSQL 18 documentation" length="5 min">Full replacement semantics, CONCURRENTLY, and its UNIQUE-index requirement.</Resource>
+  <Resource kind="reading" title="Dynamic tables" href="https://docs.snowflake.com/en/user-guide/dynamic-tables-about" by="Snowflake documentation" length="10 min">Incremental vs. full refresh modes and target lag as a staleness bound.</Resource>
+  <Resource kind="reading" title="Incremental refresh for materialized views" href="https://docs.databricks.com/en/optimizations/incremental-refresh.html" by="Databricks documentation" length="10 min">Which query shapes and aggregates maintain incrementally, including the floating-point case.</Resource>
+</ul>
+
+</section>

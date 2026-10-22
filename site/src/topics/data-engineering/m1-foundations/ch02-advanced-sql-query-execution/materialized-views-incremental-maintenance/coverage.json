@@ -1,0 +1,46 @@
+{
+  "topic": "de.materialized-views-incremental-maintenance",
+  "syllabus": [
+    { "clause": "full refresh vs incremental view maintenance, PostgreSQL REFRESH … CONCURRENTLY, warehouse incremental MVs, Snowflake dynamic tables, Databricks materialized views;", "at": [{ "step": "Reveal: what REFRESH MATERIALIZED VIEW actually does" }, { "step": "Reveal: this topic's own measured result — full refresh is flat" }, { "step": "Reveal: this topic's own measured incremental-maintenance result" }, { "step": "Reveal: REFRESH MATERIALIZED VIEW CONCURRENTLY" }, { "step": "Reveal: the requirement CONCURRENTLY comes with" }, { "step": "Reveal: Snowflake dynamic tables and Databricks materialized views choose by cost" }] },
+    { "clause": "which aggregates maintain incrementally, staleness bounds;", "at": [{ "step": "Reveal: floating-point aggregates and the DECIMAL fix" }, { "step": "Reveal: a staleness bound is a target, not a guarantee" }] },
+    { "clause": "frontier: DBSP and differential dataflow (→ Ch.9).", "at": [{ "deep": "Into the internals" }] }
+  ],
+  "sources": [
+    {
+      "source": "PostgreSQL 18 Documentation, \"REFRESH MATERIALIZED VIEW\"",
+      "items": [
+        { "item": "REFRESH MATERIALIZED VIEW completely replaces the contents of a materialized view", "at": [{ "step": "Reveal: what REFRESH MATERIALIZED VIEW actually does" }] },
+        { "item": "CONCURRENTLY avoids locking out concurrent selects, but requires a UNIQUE index covering every row with no expression or WHERE clause", "at": [{ "step": "Reveal: the requirement CONCURRENTLY comes with" }] }
+      ]
+    },
+    {
+      "source": "Snowflake Documentation, \"Dynamic tables\"",
+      "items": [
+        { "item": "Target lag tells Snowflake how fresh the data must be, but actual lag can exceed the target when refreshes take longer than expected", "at": [{ "step": "Reveal: a staleness bound is a target, not a guarantee" }] }
+      ]
+    },
+    {
+      "source": "Databricks Documentation, \"Incremental refresh for materialized views\"",
+      "items": [
+        { "item": "Floating-point aggregates like SUM and AVG can produce non-deterministic results and force a full refresh unless cast to DECIMAL", "at": [{ "step": "Reveal: floating-point aggregates and the DECIMAL fix" }] }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "Claude (single session, written from the syllabus line and the fetched sources before storyboarding; not independent of the builder, so a later owner review should repeat it)",
+    "date": "2026-10-22",
+    "items": [
+      { "item": "The full-refresh measurement is taken both before and after an identical small change, isolating change size as the variable that does not move the cost, rather than asserting insensitivity abstractly", "at": [{ "step": "Reveal: this topic's own measured result — full refresh is flat" }] },
+      { "item": "The incremental-maintenance measurement uses a genuinely separate trigger-maintained table rather than PostgreSQL's REFRESH, since PostgreSQL has no built-in incremental materialized view refresh — the trigger stands in honestly for the mechanism, not disguised as a native feature", "at": [{ "step": "Reveal: this topic's own measured incremental-maintenance result" }] },
+      { "item": "The CONCURRENTLY measurement uses two real concurrent sessions against the same materialized view, not a simulated or estimated contrast", "at": [{ "step": "Reveal: REFRESH MATERIALIZED VIEW CONCURRENTLY" }] },
+      { "item": "The floating-point and staleness-bound claims are explicitly disclosed as sourced-only, consistent with this chapter's honest-gap pattern, rather than silently presented with the same confidence as the measured claims", "at": [{ "deep": "Into the internals" }] },
+      { "item": "DBSP and differential dataflow are named as the formalism behind the trigger-style mechanism this topic actually measures, not introduced as a disconnected buzzword", "at": [{ "deep": "Into the internals" }] },
+      { "item": "A closing check that requires reasoning about blocking behavior under CONCURRENTLY directly, rather than re-testing the exact measured millisecond figures from the reveals", "at": [{ "step": "Prove it" }] },
+      { "item": "The recap keeps full-refresh cost, incremental cost, and the CONCURRENTLY locking tradeoff as three separate ideas rather than one vague 'materialized views are good' takeaway", "at": [{ "step": "Recap" }] },
+      { "item": "The predict on step 10 (floating-point aggregates) is red-teamed against the plausible wrong answer that SUM behaves identically regardless of column type under incremental refresh", "at": [{ "step": "Predict: does a floating-point sum still maintain incrementally?" }] },
+      { "item": "The UNIQUE index requirement for CONCURRENTLY is stated with its exact restriction (no expression index, no WHERE clause) rather than loosely as 'needs an index'", "at": [{ "step": "Reveal: the requirement CONCURRENTLY comes with" }] },
+      { "item": "Every locally-measured claim in this topic reuses the existing PostgreSQL 16.15 sandbox instance rather than requiring new infrastructure, consistent with the chapter's established measurement environment", "at": [{ "deep": "Into the internals" }] }
+    ]
+  },
+  "gapReview": { "date": "2026-10-22", "by": "Claude (single session)", "open": [] }
+}

@@ -1230,4 +1230,24 @@ export const TOPICS: TopicMeta[] = [
     handoff:
       "A block-range summary earns its tiny size only when a column is genuinely correlated with physical row order, and even then the executor still rechecks every candidate row. Next: materialized views and incremental view maintenance, where a query's own result gets stored and kept up to date instead of being recomputed, with a staleness bound replacing the freshness any live scan always had.",
   },
+  {
+    id: 'de.materialized-views-incremental-maintenance',
+    domain: 'data-engineering',
+    slug: 'data-engineering/m1-foundations/ch02-advanced-sql-query-execution/materialized-views-incremental-maintenance',
+    title: 'Materialized views and incremental maintenance',
+    syllabusTitle: 'Materialized views and incremental maintenance',
+    kind: 'full',
+    status: 'live',
+    milestone: { number: 1, title: 'Foundations' },
+    chapter: { number: 2, title: 'Advanced SQL and query execution', section: '2.4' },
+    minutes: 15,
+    verified: '2026-10-22',
+    introduces: ['incremental-view-maintenance', 'staleness-bound-target-lag'],
+    uses: ['block-range-summary-pruning', 'composite-index-column-order'],
+    declared: ['sql-select', 'sql-create-index', 'sql-insert'],
+    bridge:
+      "A block-range summary earns its tiny size only when a column is genuinely correlated with physical row order, and even then the executor still rechecks every candidate row. This topic measures what happens when a query's own result gets stored and kept up to date instead of being recomputed, with a staleness bound replacing the freshness any live scan always had.",
+    handoff:
+      "A full refresh costs the same whether a tiny change happened or none did; incremental maintenance instead tracks the size of the change itself, and CONCURRENTLY trades a UNIQUE-index requirement for never blocking readers. This closes out query execution and physical design; next: node scripts/next-topic.mjs de names what starts chapter 3's modeling work.",
+  },
 ];

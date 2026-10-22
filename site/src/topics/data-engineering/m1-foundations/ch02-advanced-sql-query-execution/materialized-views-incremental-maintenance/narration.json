@@ -1,0 +1,130 @@
+{
+  "topic": "de.materialized-views-incremental-maintenance",
+  "steps": [
+    {
+      "lines": [
+        "A handful of new rows land in a table holding millions. Maintain a stored summary of that table two different ways, and measure both.",
+        "Fully rebuilding that summary from scratch barely moves, no matter how small the change was.",
+        "Updating it incrementally instead costs a tiny fraction of that — roughly a couple of orders of magnitude less."
+      ]
+    },
+    {
+      "lines": [
+        "Only a handful of rows changed, out of millions sitting in the table.",
+        { "beat": 0.4 },
+        "Does fully rebuilding the dependent summary get any cheaper, just because so little of the underlying data actually moved?"
+      ],
+      "answer": [
+        "No — rebuilding from scratch reruns the entire defining query regardless of how much actually changed.",
+        "Its cost tracks the size of the whole result, never the size of whatever change triggered it."
+      ]
+    },
+    {
+      "lines": [
+        "A full rebuild of a stored result throws away everything it held before and reruns its defining query completely from scratch.",
+        "Nothing from the previous version survives the process at all.",
+        "The entire result gets recomputed, every single time, whether the underlying data moved by a little or by a lot."
+      ]
+    },
+    {
+      "lines": [
+        "Measure that rebuild twice: once against an untouched table, once right after a handful of new rows get inserted into it.",
+        "The two timings land within a hair of each other.",
+        "A change this small simply doesn't register, because the rebuild was never going to do less work for a smaller change in the first place."
+      ]
+    },
+    {
+      "lines": [
+        "An incrementally maintained version of that same result only ever touches the rows a change actually affects, nothing else.",
+        { "beat": 0.4 },
+        "For a change this small, how much cheaper should maintaining it that way actually be?"
+      ],
+      "answer": [
+        "Dramatically cheaper — its cost should track the size of the change itself, not the size of the whole table.",
+        "Touching only what a change affects, instead of everything, is exactly the mechanism this topic measures directly next."
+      ]
+    },
+    {
+      "lines": [
+        "Maintain that same summary a second way: update only the one row a new order actually affects, the instant it arrives.",
+        "For the identical handful of new rows, that targeted update finishes in a small fraction of the time the full rebuild needed.",
+        "Roughly two orders of magnitude cheaper, for keeping exactly the same information current."
+      ]
+    },
+    {
+      "lines": [
+        "An ordinary full rebuild locks out anyone trying to read the stored result while it runs.",
+        { "beat": 0.4 },
+        "Is there any way to update that result without blocking the very queries reading from it?"
+      ],
+      "answer": [
+        "Yes — a concurrent mode exists specifically so a rebuild and ordinary reads can run side by side.",
+        "It trades away nothing about correctness, but it does come with a real requirement, which this topic names next."
+      ]
+    },
+    {
+      "lines": [
+        "Issue an ordinary read against that stored result while an ordinary rebuild is still running underneath it.",
+        "That read sits and waits for most of a second, blocked until the rebuild finishes.",
+        "Issue the identical read while a concurrent rebuild runs instead, and it comes back in a few thousandths of a second — never blocked at all."
+      ]
+    },
+    {
+      "lines": [
+        "That concurrent mode only works under one condition: the stored result already needs a uniqueness constraint covering every single row.",
+        "No partial coverage, and no index built over a computed expression — a plain, row-covering uniqueness guarantee is required.",
+        "Without that guarantee in place ahead of time, the concurrent mode simply isn't available at all."
+      ]
+    },
+    {
+      "lines": [
+        "A warehouse engine's own stored summary adds up values from a column that holds approximate, floating-point numbers.",
+        { "beat": 0.4 },
+        "Does that kind of running total still update incrementally, the same way an ordinary total would?"
+      ],
+      "answer": [
+        "Not reliably — a floating-point running total can force a full rebuild instead.",
+        "Floating-point addition doesn't always give the exact same answer regardless of the order values were added in, so an incrementally updated total can quietly drift from a freshly recomputed one."
+      ]
+    },
+    {
+      "lines": [
+        "Adding up values from an approximate, floating-point column can genuinely depend on the order those values arrived in.",
+        "That dependency is exactly what forces some engines to fall back to a full rebuild instead of trusting an incremental update.",
+        "Switching that column to a fixed-precision numeric type removes the dependency, and keeps the incremental path available."
+      ]
+    },
+    {
+      "lines": [
+        "A cloud warehouse's own stored tables and views don't commit to one strategy ahead of time.",
+        "Each one weighs, automatically, whether an incremental update or a full rebuild will actually cost less for its own particular query shape.",
+        "Whichever comes out cheaper is the one the engine actually runs."
+      ]
+    },
+    {
+      "lines": [
+        "A warehouse can be told how fresh a stored result needs to stay, as a target it should aim for.",
+        "That target is a goal the engine tries to hit, never a strict promise it's bound to keep.",
+        "A single slow rebuild can push the real staleness past that target anyway, however carefully it was set."
+      ]
+    },
+    {
+      "lines": [
+        "A full rebuild costs about the same no matter how little actually changed underneath it.",
+        "An incremental update instead costs roughly what the change itself costs, nothing more.",
+        "A concurrent rebuild trades a strict uniqueness requirement for never blocking an ordinary read, and a freshness target is a goal, never a guarantee."
+      ]
+    },
+    {
+      "lines": [
+        "A stored result is being rebuilt right now, using the concurrent mode this topic just measured. At that exact moment, a dashboard issues an ordinary read against it.",
+        { "beat": 0.4 },
+        "Does that read have to wait for the rebuild to finish first?"
+      ],
+      "answer": [
+        "No — the concurrent mode exists specifically so a read like that is never blocked.",
+        "That's exactly what this topic's own measurement showed directly: the identical kind of read finished in a few thousandths of a second while a concurrent rebuild was still running."
+      ]
+    }
+  ]
+}
