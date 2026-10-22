@@ -1410,4 +1410,24 @@ export const TOPICS: TopicMeta[] = [
     handoff:
       "Grain decided what one fact row actually represents. Next: the four different shapes a fact table itself can take, depending on how that grain's own measures behave over time.",
   },
+  {
+    id: 'de.fact-table-types',
+    domain: 'data-engineering',
+    slug: 'data-engineering/m1-foundations/ch03-data-modeling-analytical/fact-table-types',
+    title: 'Fact table types',
+    syllabusTitle: 'Fact table types',
+    kind: 'full',
+    status: 'live',
+    milestone: { number: 1, title: 'Foundations' },
+    chapter: { number: 3, title: 'Data modeling and analytical architecture', section: '3.2' },
+    minutes: 14,
+    verified: '2026-10-22',
+    introduces: ['fact-table-types-transaction-snapshot-accumulating-factless'],
+    uses: ['fact-grain', 'measure-additivity-classes'],
+    declared: ['sql-select', 'sql-create-table'],
+    bridge:
+      "Grain decided what one fact row actually represents. This topic is the four different shapes a fact table itself can take, depending on how that grain's own measures behave over time.",
+    handoff:
+      "Every fact type here assumed its dimensions were already clean, single, conformed tables. Next: what actually lets two facts of different grains, built from different fact tables entirely, get compared in the same query without the join silently multiplying rows.",
+  },
 ];

@@ -1,0 +1,4 @@
+- **Transaction fact table**: one row per measurement event, dense or sparse. *Where you meet it:* an order-line table with a new row only when an order line is actually placed.
+- **Periodic snapshot fact table**: one row per entity, per fixed period, inserted every period regardless of activity. *Where you meet it:* a daily account-balance table that gets a row for every account every day, even an idle one.
+- **Accumulating snapshot fact table**: one row per process instance, inserted once and then updated as the process moves through its milestones. *Where you meet it:* an order-fulfillment row whose ship-date and delivery-date columns get filled in over time, in place.
+- **Factless fact table**: a row with no numeric measure at all, just dimension keys. *Where you meet it:* a coverage table of who was expected, subtracted from an activity table of who showed up, to find who didn't.

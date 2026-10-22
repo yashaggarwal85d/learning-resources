@@ -1,0 +1,26 @@
+import Resource from '../../../../../components/Resource.astro';
+
+<section class="prereq" data-section="before-this">
+
+### <span class="n">01</span> Before this: grain decides what one row represents
+
+<ul class="resources">
+  <Resource kind="reel" title="Grain-first dimensional design" domain="data-engineering" host="de.grain-first-dimensional-design" by="the topic right before this one" />
+  <Resource kind="reel" title="Data Vault 2.0 modeling" domain="data-engineering" host="de.data-vault-2-modeling" by="earlier in this chapter" />
+  <Resource kind="reel" title="Key design: natural, surrogate, durable, hash" domain="data-engineering" host="de.key-design-natural-surrogate-durable-hash" by="earlier in this chapter" />
+</ul>
+
+</section>
+
+<section class="prereq" data-section="kimball-fact-types">
+
+### <span class="n">02</span> Kimball's own fact-table-type taxonomy
+
+<ul class="resources">
+  <Resource kind="reading" title="Transaction Fact Tables" href="https://www.kimballgroup.com/data-warehouse-business-intelligence-resources/kimball-techniques/dimensional-modeling-techniques/transaction-fact-table/" by="Kimball Group">One row per measurement event, dense or sparse.</Resource>
+  <Resource kind="reading" title="Periodic Snapshot Fact Tables" href="https://www.kimballgroup.com/data-warehouse-business-intelligence-resources/kimball-techniques/dimensional-modeling-techniques/periodic-snapshot-fact-table/" by="Kimball Group">One row per entity, per period, dense by grain.</Resource>
+  <Resource kind="reading" title="Accumulating Snapshot Fact Tables" href="https://www.kimballgroup.com/data-warehouse-business-intelligence-resources/kimball-techniques/dimensional-modeling-techniques/accumulating-snapshot-fact-table/" by="Kimball Group">One row, inserted once, updated at each milestone.</Resource>
+  <Resource kind="reading" title="Factless Fact Tables" href="https://www.kimballgroup.com/data-warehouse-business-intelligence-resources/kimball-techniques/dimensional-modeling-techniques/factless-fact-table/" by="Kimball Group">No numeric measure; coverage minus activity finds what didn't happen.</Resource>
+</ul>
+
+</section>
