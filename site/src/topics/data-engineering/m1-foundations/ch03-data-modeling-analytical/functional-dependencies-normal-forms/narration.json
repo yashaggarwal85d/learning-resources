@@ -1,0 +1,113 @@
+{
+  "topic": "de.functional-dependencies-normal-forms",
+  "steps": [
+    {
+      "lines": [
+        "Same six rows of data, stored two different ways.",
+        "One of them is a single missed update away from telling you two different things at once."
+      ]
+    },
+    {
+      "lines": [
+        "Splitting data apart to kill redundancy sounds like it has to cost you a join somewhere down the line.",
+        "Does it always?"
+      ],
+      "answer": [
+        "It depends entirely on how the data actually gets queried afterward.",
+        "A handful of point lookups barely notice a join. A query that scans everything pays for it on every single row."
+      ]
+    },
+    {
+      "lines": [
+        "Here is the actual rule underneath all of this.",
+        "One column determines another when every value on one side always comes with exactly the same value on the other."
+      ]
+    },
+    {
+      "lines": [
+        "Start from one column, and let every rule that already applies keep firing.",
+        "Each firing switches on more columns, until nothing new switches on at all."
+      ]
+    },
+    {
+      "lines": [
+        "That full set it eventually reaches is the whole point.",
+        "Whichever starting column gets you there, with nothing smaller able to do the same, is your real key."
+      ]
+    },
+    {
+      "lines": [
+        "Now here is a column that clearly determines something else on its own.",
+        "Does that earn it the same status?"
+      ],
+      "answer": [
+        "No, and the reason is mechanical, not a matter of opinion.",
+        "Its own reach stalls out early. It never gets anywhere near two of the other columns no matter how long you let it run."
+      ]
+    },
+    {
+      "lines": [
+        "Trace it yourself and you will watch it stall in exactly the same place every time.",
+        "Determining one neighbor is not the same thing as determining the whole row."
+      ]
+    },
+    {
+      "lines": [
+        "Climb the first three rungs of this ladder and each one is answering a different complaint.",
+        "Keep every value a single thing, then make sure nothing depends on only part of a key, then cut anything depending on a non-key column instead of the key itself."
+      ]
+    },
+    {
+      "lines": [
+        "There is a gap the third rung quietly leaves open, and the next rung closes it.",
+        "Every single determining column now has to be a full key in its own right, not just determine something."
+      ]
+    },
+    {
+      "lines": [
+        "Up to here, every rule has been about one value picking out exactly one other value.",
+        "This next kind of rule is different: one value can pick out a whole independent set of others."
+      ]
+    },
+    {
+      "lines": [
+        "Split a table along one of these real rules, and something important is guaranteed.",
+        "Join the pieces back, and you get every original row back, exactly, with nothing lost and nothing invented."
+      ]
+    },
+    {
+      "lines": [
+        "That guarantee is not the only one worth keeping, and it is not automatic that you keep both.",
+        "You can satisfy it completely and still lose the ability to check an original rule without stitching things back together first."
+      ]
+    },
+    {
+      "lines": [
+        "Watch what actually happens when the same change gets made two different ways.",
+        "One version needs a single touch. The other needs several, and skipping just one of them leaves two conflicting answers sitting on file at the same time."
+      ]
+    },
+    {
+      "lines": [
+        "None of that makes storing it the second way a mistake by itself.",
+        "A workload built around scanning everything pays a real cost on every row for a join the other version never needed, so trading some risk for speed can be exactly the right call."
+      ]
+    },
+    {
+      "lines": [
+        "One determining rule, one full reach, one real key. Four rungs, each closing a gap the last one left open.",
+        "One guarantee you never skip, and one you sometimes trade away on purpose for speed."
+      ]
+    },
+    {
+      "lines": [
+        "Here is a new rule: one column determines every other column directly, with nothing else determining anything.",
+        "So what has to be the key?"
+      ],
+      "answer": [
+        "That one column, on its own.",
+        "Its reach already covers everything in a single step, and nothing smaller could possibly do the same job."
+      ]
+    }
+  ]
+}

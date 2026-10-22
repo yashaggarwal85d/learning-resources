@@ -1,0 +1,26 @@
+import Resource from '../../../../../components/Resource.astro';
+
+<section class="prereq" data-section="before-this">
+
+### <span class="n">01</span> Before this: levels, workloads, cardinality and dependencies
+
+<ul class="resources">
+  <Resource kind="reel" title="Conceptual, logical and physical models" domain="data-engineering" host="de.conceptual-logical-physical-models" by="earlier in this chapter" />
+  <Resource kind="reel" title="OLTP vs OLAP workload shapes" domain="data-engineering" host="de.oltp-vs-olap-workload-shapes" by="earlier in this chapter" />
+  <Resource kind="reel" title="ER modeling and relationship cardinality" domain="data-engineering" host="de.er-modeling-relationship-cardinality" by="earlier in this chapter" />
+  <Resource kind="reel" title="Functional dependencies and normal forms" domain="data-engineering" host="de.functional-dependencies-normal-forms" by="the topic right before this one" />
+</ul>
+
+</section>
+
+<section class="prereq" data-section="keys">
+
+### <span class="n">02</span> Key design: sequences, UUIDs, hashing
+
+<ul class="resources">
+  <Resource kind="reading" title="CREATE SEQUENCE" href="https://www.postgresql.org/docs/current/sql-createsequence.html" by="PostgreSQL docs">How a sequence generates values, and the gaps and cross-session ordering it does not guarantee.</Resource>
+  <Resource kind="reading" title="UUID Functions" href="https://www.postgresql.org/docs/current/functions-uuid.html" by="PostgreSQL docs">gen_random_uuid()/uuidv4() and uuidv7(), and what each actually generates.</Resource>
+  <Resource kind="reading" title="RFC 9562: Universally Unique IDentifiers (UUIDs)" href="https://www.rfc-editor.org/rfc/rfc9562.html" by="IETF">The UUIDv7 bit layout and the index-locality problem it was designed to fix.</Resource>
+</ul>
+
+</section>

@@ -1,0 +1,51 @@
+{
+  "topic": "de.key-design-natural-surrogate-durable-hash",
+  "syllabus": [
+    { "clause": "key stability over time, composite keys", "at": [{ "step": "Reveal: the natural key breaks, measured" }, { "step": "Reveal: the surrogate key absorbs it" }, { "step": "Reveal: natural vs. surrogate, defined" }] },
+    { "clause": "generating surrogates in distributed pipelines (sequences vs hash keys vs time-ordered UUIDv7)", "at": [{ "step": "Reveal: a sequence's own docs admit the gaps" }, { "step": "Reveal: generation cost, measured" }, { "step": "Reveal: UUIDv4's own index locality cost, measured" }, { "step": "Reveal: why UUIDv7 keeps that locality" }] },
+    { "clause": "durable keys that survive SCD versions", "at": [{ "step": "Reveal: durable key, previewed" }] },
+    { "clause": "hash-collision risk", "at": [{ "step": "Reveal: the birthday bound, computed" }] }
+  ],
+  "sources": [
+    {
+      "source": "PostgreSQL docs, \"CREATE SEQUENCE\"",
+      "items": [
+        { "item": "nextval and setval calls are never rolled back, so gapless sequence assignment is not available from a sequence object", "at": [{ "step": "Reveal: a sequence's own docs admit the gaps" }] },
+        { "item": "A cache setting greater than one means multiple sessions' nextval values are only guaranteed distinct, not purely sequential across sessions", "at": [{ "step": "Reveal: a sequence's own docs admit the gaps" }] }
+      ]
+    },
+    {
+      "source": "PostgreSQL docs, \"UUID Functions\"",
+      "items": [
+        { "item": "uuidv7() generates a version 7 (time-ordered) UUID from a millisecond Unix timestamp plus randomness", "at": [{ "step": "Reveal: why UUIDv7 keeps that locality" }] },
+        { "item": "gen_random_uuid()/uuidv4() generates a version 4 (random) UUID", "at": [{ "step": "Reveal: UUIDv4's own index locality cost, measured" }] }
+      ]
+    },
+    {
+      "source": "RFC 9562, \"Universally Unique IDentifiers (UUIDs)\"",
+      "items": [
+        { "item": "UUID versions that are not time-ordered (UUIDv4) have poor database-index locality: new values land at random index locations, which can dramatically hurt B-tree performance", "at": [{ "step": "Reveal: UUIDv4's own index locality cost, measured" }] },
+        { "item": "Auto-increment schemes don't work well in distributed applications because coordinating sequential numeric identifiers across a network is a burden", "at": [{ "step": "Predict: is a sequence safe in a distributed pipeline?" }] },
+        { "item": "UUIDv7 places a 48-bit Unix millisecond timestamp in the most significant bits, with the remaining bits filled with randomness", "at": [{ "step": "Reveal: why UUIDv7 keeps that locality" }] },
+        { "item": "UUIDv4-style random UUIDs reserve 122 bits for implementation-specific (random) content once version/variant bits are set aside", "at": [{ "step": "Reveal: the birthday bound, computed" }] }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "Claude (single session, written from the syllabus line and the fetched sources before storyboarding; not independent of the builder, so a later owner review should repeat it)",
+    "date": "2026-10-22",
+    "items": [
+      { "item": "The natural-key-breaks and surrogate-key-absorbs reveals (steps 3, 4) are a real, reproduced pair of PostgreSQL sessions against a freshly built, disclosed FK-constrained table pair, not a described hypothetical — the actual FK-violation error and the actual successful UPDATE are both captured in examples.py's comments", "at": [{ "step": "Reveal: the natural key breaks, measured" }] },
+      { "item": "The generation-cost and index-locality numbers (steps 8, 9) are measured on this sandbox's own PostgreSQL 18 cluster, the only one here with uuidv7(), using a pre-built index so the comparison reflects ongoing-insert cost and locality rather than a one-time sorted index build", "at": [{ "step": "Reveal: generation cost, measured" }] },
+      { "item": "The hash-collision numbers (step 13) are computed directly by the standard birthday-bound formula in examples.py, not hand-picked to fit a narrative — the exact bit widths quoted in RFC 9562 (122 bits for UUIDv4, the 48-bit timestamp for UUIDv7) anchor the computation to this topic's own sourced facts", "at": [{ "step": "Reveal: the birthday bound, computed" }] },
+      { "item": "The durable-key reveal (step 11) is explicitly scoped as a preview rather than a full treatment, naming SCD2 by the syllabus's own forward reference rather than attempting to teach SCD2 itself out of order", "at": [{ "step": "Reveal: durable key, previewed" }] },
+      { "item": "The opening predict (step 2) is red-teamed against the plausible wrong answer that a database automatically propagates a changed key value everywhere it's referenced; the reveal shows the actual refusal instead", "at": [{ "step": "Predict: what happens when the email changes?" }] },
+      { "item": "The distributed-pipeline predict (step 6) is red-teamed against the plausible wrong answer that a sequence is always safe because nextval always returns a usable number; the reveal cites the sequence docs' own admission that this assumes one coordinator", "at": [{ "step": "Predict: is a sequence safe in a distributed pipeline?" }] },
+      { "item": "The hash-collision predict (step 12) is red-teamed against the common claim that hashes are effectively unique with no qualification; the reveal insists collision risk is a function of bit width, computed, not a blanket caveat", "at": [{ "step": "Predict: can a hash key collide?" }] },
+      { "item": "The closing check (Prove it) asks the viewer to choose the one key type that was measured to satisfy both constraints in this topic (no coordinator, index locality) together, rather than re-testing an isolated fact", "at": [{ "step": "Prove it" }] },
+      { "item": "The recap keeps natural-vs-surrogate, the three generation strategies' tradeoff, and hash-width risk as three separate ideas rather than collapsing them into one vague \"pick a good key\" takeaway", "at": [{ "step": "Recap" }] },
+      { "item": "The bridge from topic 4 (functional dependencies and normal forms) is answered explicitly: this topic is framed as the key-design decision normalization itself never settles, and the handoff to the next topic (Inmon vs. Kimball) is confirmed by reading both CHAPTER.md entries side by side", "at": [{ "step": "Same email change, two schemas" }] }
+    ]
+  },
+  "gapReview": { "date": "2026-10-22", "by": "Claude (single session)", "open": [] }
+}

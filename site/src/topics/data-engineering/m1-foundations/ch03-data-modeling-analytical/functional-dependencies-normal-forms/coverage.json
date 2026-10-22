@@ -1,0 +1,59 @@
+{
+  "topic": "de.functional-dependencies-normal-forms",
+  "syllabus": [
+    { "clause": "FDs, attribute closure and candidate keys", "at": [{ "step": "Reveal: what a functional dependency actually is" }, { "step": "Reveal: attribute closure, computed" }, { "step": "Reveal: candidate keys, from the closure" }, { "step": "Reveal: why customer_id is not a candidate key" }] },
+    { "clause": "1NF→BCNF (and 4NF for multivalued dependencies)", "at": [{ "step": "Reveal: first through third normal form" }, { "step": "Reveal: Boyce-Codd normal form, the stricter cut" }, { "step": "Reveal: fourth normal form, for multivalued dependencies" }] },
+    { "clause": "lossless and dependency-preserving decomposition", "at": [{ "step": "Reveal: lossless decomposition, and Heath's theorem" }, { "step": "Reveal: dependency preservation is a separate guarantee" }] },
+    { "clause": "deliberate denormalization for analytics and the update anomalies it brings back", "at": [{ "step": "Reveal: this topic's own measured anomaly" }, { "step": "Reveal: denormalization is still a deliberate trade" }] }
+  ],
+  "sources": [
+    {
+      "source": "Wikipedia, \"Functional dependency\"",
+      "items": [
+        { "item": "A functional dependency X → Y means each X value is associated with precisely one Y value", "at": [{ "step": "Reveal: what a functional dependency actually is" }] },
+        { "item": "A candidate key is a minimal set of attributes that functionally determine all attributes in a relation", "at": [{ "step": "Reveal: candidate keys, from the closure" }] },
+        { "item": "The closure of a set of attributes is the set of attributes determinable from it via its functional dependencies", "at": [{ "step": "Reveal: attribute closure, computed" }] },
+        { "item": "Splitting a relation on a functional dependency's attributes (Heath's theorem) guarantees a lossless join decomposition", "at": [{ "step": "Reveal: lossless decomposition, and Heath's theorem" }] }
+      ]
+    },
+    {
+      "source": "Wikipedia, \"Database normalization\"",
+      "items": [
+        { "item": "Insertion, update and deletion anomalies are the named failure modes an unnormalized schema is prone to", "at": [{ "step": "Reveal: this topic's own measured anomaly" }] },
+        { "item": "Most third-normal-form relations are free of insertion, update and deletion anomalies", "at": [{ "step": "Reveal: first through third normal form" }] }
+      ]
+    },
+    {
+      "source": "Wikipedia, \"Boyce–Codd normal form\"",
+      "items": [
+        { "item": "A relation is in Boyce-Codd normal form iff for every FD X → Y, either the FD is trivial or X is a superkey", "at": [{ "step": "Reveal: Boyce-Codd normal form, the stricter cut" }] },
+        { "item": "Boyce-Codd normal form is strictly stronger than third normal form: every BCNF relation is in 3NF, but not every 3NF relation is in BCNF", "at": [{ "step": "Reveal: Boyce-Codd normal form, the stricter cut" }] }
+      ]
+    },
+    {
+      "source": "Wikipedia, \"Fourth normal form\"",
+      "items": [
+        { "item": "Fourth normal form concerns multivalued dependencies, a more general kind of dependency than functional dependencies", "at": [{ "step": "Reveal: fourth normal form, for multivalued dependencies" }] },
+        { "item": "A functional dependency is a special case of multivalued dependency: every x determines exactly one y, never more than one", "at": [{ "step": "Reveal: fourth normal form, for multivalued dependencies" }] }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "Claude (single session, written from the syllabus line and the fetched sources before storyboarding; not independent of the builder, so a later owner review should repeat it)",
+    "date": "2026-10-22",
+    "items": [
+      { "item": "The closure computation and candidate-key search (steps 4, 5, 7) are run by a real algorithm in examples.py, not merely asserted — the reel's own claims about this topic's FD set are executed truth, matching the chapter's measurement standard even though this topic has no runnable database system to measure", "at": [{ "step": "Reveal: attribute closure, computed" }] },
+      { "item": "The update-anomaly measurement (step 13) is a real, reproduced demonstration on a throwaway PostgreSQL schema built for this topic, including the realistic missed-row scenario that produces an actual inconsistent state, not merely a description of the risk", "at": [{ "step": "Reveal: this topic's own measured anomaly" }] },
+      { "item": "The predict step on customer_id (step 6) is red-teamed against the plausible wrong answer that determining one other attribute is sufficient to be a candidate key; the reveal shows the closure computation that rules this out mechanically", "at": [{ "step": "Predict: is customer_id a candidate key too?" }] },
+      { "item": "FACT-CHECK.md explicitly marks two groups of claims as reasoned rather than sourced: the per-form 1NF/2NF/3NF definitions and the dependency-preservation trade-off, since this topic's four fetched sources did not yield clean quotable text for either, despite both being standard, uncontested database theory", "at": [{ "step": "Reveal: first through third normal form" }] },
+      { "item": "The denormalization reveal (step 14) explicitly connects back to topic 2 of this chapter (OLTP vs OLAP workload shapes), naming the scan-heavy access pattern as the concrete reason a team would accept anomaly risk on purpose, rather than presenting denormalization as an isolated idea", "at": [{ "step": "Reveal: denormalization is still a deliberate trade" }] },
+      { "item": "The running example (order_id, customer_id, customer_email, amount) is built fresh for this topic rather than reused from an existing table, since no customers table exists on this chapter's PostgreSQL sandbox; this substitution is disclosed in SOURCES.md rather than left implicit", "at": [{ "step": "Reveal: what a functional dependency actually is" }] },
+      { "item": "The opening predict (step 2) is answered honestly as \"it depends\" rather than forced into a clean yes/no, since the real answer depends on query shape already established in this chapter's OLTP/OLAP topic, and the reveal explains why rather than resolving it with a single fact", "at": [{ "step": "Predict: does normalizing always cost a join later?" }] },
+      { "item": "The closing check (Prove it) asks the viewer to apply the closure concept to a new FD set rather than re-testing the exact measured anomaly figures from the reveals", "at": [{ "step": "Prove it" }] },
+      { "item": "The recap keeps the FD/closure/key chain, the four-rung ladder, and the lossless-vs-preserving distinction as three separate ideas rather than collapsing them into one vague \"normalization is good\" takeaway", "at": [{ "step": "Recap" }] },
+      { "item": "The bridge from topic 3 (ER modeling and cardinality) is answered explicitly: this topic is framed as asking which columns actually determine which others, now that the relationships themselves are named", "at": [{ "step": "Same six rows, two very different schemas" }] },
+      { "item": "The handoff to the next topic (key design: natural, surrogate, durable, hash) is answered by that topic's own bridge line, confirmed by reading both CHAPTER.md entries side by side", "at": [{ "step": "Recap" }] }
+    ]
+  },
+  "gapReview": { "date": "2026-10-22", "by": "Claude (single session)", "open": [] }
+}

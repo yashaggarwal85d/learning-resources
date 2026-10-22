@@ -1310,4 +1310,44 @@ export const TOPICS: TopicMeta[] = [
     handoff:
       "Cardinality decided where a foreign key lives and when a junction table is unavoidable. Next: a sharper question about the same tables — which columns actually determine which others, and what that implies about how far a table should be normalized.",
   },
+  {
+    id: 'de.functional-dependencies-normal-forms',
+    domain: 'data-engineering',
+    slug: 'data-engineering/m1-foundations/ch03-data-modeling-analytical/functional-dependencies-normal-forms',
+    title: 'Functional dependencies and normal forms',
+    syllabusTitle: 'Functional dependencies and normal forms',
+    kind: 'full',
+    status: 'live',
+    milestone: { number: 1, title: 'Foundations' },
+    chapter: { number: 3, title: 'Data modeling and analytical architecture', section: '3.1' },
+    minutes: 14,
+    verified: '2026-10-22',
+    introduces: ['functional-dependency', 'attribute-closure', 'normal-forms-1nf-bcnf-4nf', 'lossless-decomposition'],
+    uses: ['er-cardinality-notation'],
+    declared: ['sql-select', 'sql-create-table'],
+    bridge:
+      "Cardinality decided where a foreign key lives and when a junction table is unavoidable. This topic asks a sharper question about the same tables: which columns actually determine which others, and what that implies about how far a table should be normalized.",
+    handoff:
+      "Normalization fixed how far a schema's own structure should go. Next: a decision inside that structure that normalization doesn't settle at all — what a row's own key should actually be, and how to pick one that survives the business changing under it.",
+  },
+  {
+    id: 'de.key-design-natural-surrogate-durable-hash',
+    domain: 'data-engineering',
+    slug: 'data-engineering/m1-foundations/ch03-data-modeling-analytical/key-design-natural-surrogate-durable-hash',
+    title: 'Key design: natural, surrogate, durable, hash',
+    syllabusTitle: 'Key design: natural, surrogate, durable, hash',
+    kind: 'full',
+    status: 'live',
+    milestone: { number: 1, title: 'Foundations' },
+    chapter: { number: 3, title: 'Data modeling and analytical architecture', section: '3.1' },
+    minutes: 14,
+    verified: '2026-10-22',
+    introduces: ['key-types-natural-surrogate-durable-hash', 'uuidv7-time-ordered-key'],
+    uses: ['functional-dependency', 'attribute-closure'],
+    declared: ['sql-select', 'sql-create-table'],
+    bridge:
+      "Normalization fixed how far a schema's own structure should go. This topic is a decision inside that structure normalization doesn't settle at all: what a row's own key should actually be, and how to pick one that survives the business changing under it.",
+    handoff:
+      "Every key type here assumed one single philosophy for organizing a whole warehouse around these tables. Next: two philosophies that disagree about that directly — Inmon's single integrated model and Kimball's dimensional bus — and what each actually costs.",
+  },
 ];
