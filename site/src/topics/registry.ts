@@ -1390,4 +1390,24 @@ export const TOPICS: TopicMeta[] = [
     handoff:
       "Every philosophy in this section assumed grain, facts and dimensions were already decided elsewhere. Next: building a Kimball star for real, starting exactly where Kimball's own methodology insists — grain, before a single column is drawn.",
   },
+  {
+    id: 'de.grain-first-dimensional-design',
+    domain: 'data-engineering',
+    slug: 'data-engineering/m1-foundations/ch03-data-modeling-analytical/grain-first-dimensional-design',
+    title: 'Grain-first dimensional design',
+    syllabusTitle: 'Grain-first dimensional design',
+    kind: 'full',
+    status: 'live',
+    milestone: { number: 1, title: 'Foundations' },
+    chapter: { number: 3, title: 'Data modeling and analytical architecture', section: '3.2' },
+    minutes: 13,
+    verified: '2026-10-22',
+    introduces: ['dimensional-design-four-step', 'fact-grain', 'measure-additivity-classes'],
+    uses: ['kimball-dimensional-bus', 'er-cardinality-notation'],
+    declared: ['sql-select', 'sql-create-table'],
+    bridge:
+      "Every philosophy in the previous section assumed grain, facts and dimensions were already decided elsewhere. This topic is building a Kimball star for real, starting exactly where Kimball's own methodology insists: grain, before a single column is drawn.",
+    handoff:
+      "Grain decided what one fact row actually represents. Next: the four different shapes a fact table itself can take, depending on how that grain's own measures behave over time.",
+  },
 ];

@@ -1,0 +1,5 @@
+- **Grain**: exactly what a single fact table row represents, declared before any dimension or fact. *Where you meet it:* "one row per order line" as the first sentence of a fact table's own design doc.
+- **Atomic grain**: the lowest level at which a business process actually captures data. *Where you meet it:* choosing "one row per order line" over "one row per order" because the line is what the process really produces.
+- **Additive measure**: a fact that sums correctly across every dimension in the table. *Where you meet it:* a sales amount, safely summed by region, by product, or by date, in any combination.
+- **Semi-additive measure**: a fact that sums correctly across most dimensions, but not across time. *Where you meet it:* an account balance, where the "total" balance across four quarters is not the sum of those four quarters' balances.
+- **Non-additive measure**: a fact that cannot be summed at all, in any dimension. *Where you meet it:* a profit margin or any other ratio, which has to be recomputed from its summed components rather than summed directly.
