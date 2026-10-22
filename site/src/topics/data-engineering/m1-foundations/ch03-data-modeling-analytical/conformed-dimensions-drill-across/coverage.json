@@ -1,0 +1,50 @@
+{
+  "topic": "de.conformed-dimensions-drill-across",
+  "syllabus": [
+    { "clause": "conformed dimensions and facts across business processes", "at": [{ "step": "Reveal: conformed dimension, quoted directly" }] },
+    { "clause": "the enterprise bus matrix", "at": [{ "step": "Reveal: the bus matrix, quoted directly" }] },
+    { "clause": "drill-across queries that combine facts of different grains without fan-out", "at": [{ "step": "Reveal: drilling across, quoted directly" }, { "step": "Reveal: the fan-out, measured" }, { "step": "Reveal: aggregate-first, measured" }] }
+  ],
+  "sources": [
+    {
+      "source": "Kimball Group, \"Conformed Dimensions\"",
+      "items": [
+        { "item": "Dimension tables conform when attributes in separate tables share the same column names and domain contents", "at": [{ "step": "Reveal: conformed dimension, quoted directly" }] },
+        { "item": "A conformed attribute used as the row header lets separate fact tables' results align on the same rows in a drill-across report — the essence of integration", "at": [{ "step": "Reveal: conformed dimension, quoted directly" }] },
+        { "item": "Conformed dimensions are defined once with the business's governance representatives and reused across fact tables, for consistency and reduced development cost", "at": [{ "step": "Reveal: conformed dimension, quoted directly" }] }
+      ]
+    },
+    {
+      "source": "Kimball Group, \"Drilling Across\"",
+      "items": [
+        { "item": "Drilling across means separate queries against two or more fact tables with identical conformed row headers", "at": [{ "step": "Predict: is a direct join on a conformed date safe to sum?" }, { "step": "Reveal: drilling across, quoted directly" }] },
+        { "item": "The answer sets are aligned by a sort-merge on the common row headers, not a row-level join", "at": [{ "step": "Reveal: drilling across, quoted directly" }] }
+      ]
+    },
+    {
+      "source": "Kimball Group, \"Enterprise Data Warehouse Bus Architecture\"",
+      "items": [
+        { "item": "The bus architecture decomposes DW/BI planning around core business processes and their conformed dimensions", "at": [{ "step": "Reveal: the bus matrix, quoted directly" }] },
+        { "item": "Conformed dimensions are standardized master dimensions managed once in ETL and reused by multiple fact tables, supporting drill-across integration", "at": [{ "step": "Reveal: the bus matrix, quoted directly" }] },
+        { "item": "The Enterprise Data Warehouse Bus Matrix is the key design tool representing business processes and their associated dimensionality", "at": [{ "step": "Reveal: the bus matrix, quoted directly" }] }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "Claude (single session, written from the syllabus line and the fetched sources before storyboarding; not independent of the builder, so a later owner review should repeat it)",
+    "date": "2026-10-22",
+    "items": [
+      { "item": "The first predict (step 3) is red-teamed against the plausible wrong answer that a direct join on a shared conformed date is safe since the dimension really is conformed; the reveal shows the fan-out happens anyway, because conforming the dimension says nothing about the two fact tables' own grains matching", "at": [{ "step": "Predict: is a direct join on a conformed date safe to sum?" }] },
+      { "item": "The fan-out (step 6) and aggregate-first (step 7) demonstrations are both run against real, disclosed throwaway fact tables built for this topic, not a described hypothetical — the six-row fan-out and the correct aggregate-first totals are both executed, not asserted", "at": [{ "step": "Reveal: the fan-out, measured" }, { "step": "Reveal: aggregate-first, measured" }] },
+      { "item": "The fanned-out total (four hundred thirty-five) is explained mechanically, not just shown as wrong: it is exactly the true order total multiplied by the ticket count, because every order row is duplicated once per matching ticket row under the direct join", "at": [{ "step": "Reveal: the fan-out, measured" }] },
+      { "item": "The second predict (step 8) is red-teamed against the plausible wrong answer that the fanned-out total might be the correct one and the smaller number the error; the reveal confirms the aggregate-first totals independently, by summing each fact table alone with no join at all", "at": [{ "step": "Predict: which number was actually correct all along?" }] },
+      { "item": "The bus matrix reveal explains what the matrix actually is as a planning tool (business processes as rows, conformed dimensions as columns) rather than only naming it, since the chapter's visual idea calls for drawing it as a grid", "at": [{ "step": "Reveal: the bus matrix, quoted directly" }] },
+      { "item": "The closing check (Prove it) applies the aggregate-first fix to a new, undemonstrated fact-table pairing rather than re-testing the exact orders/tickets numbers from the reveals", "at": [{ "step": "Prove it" }] },
+      { "item": "The recap keeps conformed dimensions, the bus matrix, and the aggregate-first fix as three separate ideas rather than collapsing them into one vague \"be careful with joins\" takeaway", "at": [{ "step": "Recap" }] },
+      { "item": "The bridge from topic 9 (fact table types) is answered explicitly: this topic is framed as what actually lets two facts of different grains get compared in the same query without the join silently multiplying rows, and the handoff to the next topic (special-purpose dimension patterns) is confirmed by reading both CHAPTER.md entries side by side", "at": [{ "step": "Two fact tables, one shared date, one question" }] },
+      { "item": "Every number that appears on screen (the row counts, the fanned-out sum, the two true totals) traces to a literal constant in examples.py; every other quantity in reel.tsx is spelled in words, so no on-screen number is asserted without a matching computed value", "at": [{ "step": "Reveal: the fan-out, measured" }, { "step": "Reveal: aggregate-first, measured" }] },
+      { "item": "The curly apostrophes in the quoted material (\"business’s\", \"organization’s\", \"It’s\") and the ligature in \"deﬁned\" were copied character-for-character from the fetched HTML, verified by the word-for-word sources check rather than retyped from memory", "at": [{ "step": "Reveal: conformed dimension, quoted directly" }] }
+    ]
+  },
+  "gapReview": { "date": "2026-10-22", "by": "Claude (single session)", "open": [] }
+}

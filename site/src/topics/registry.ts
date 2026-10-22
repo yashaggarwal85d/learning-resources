@@ -1430,4 +1430,24 @@ export const TOPICS: TopicMeta[] = [
     handoff:
       "Every fact type here assumed its dimensions were already clean, single, conformed tables. Next: what actually lets two facts of different grains, built from different fact tables entirely, get compared in the same query without the join silently multiplying rows.",
   },
+  {
+    id: 'de.conformed-dimensions-drill-across',
+    domain: 'data-engineering',
+    slug: 'data-engineering/m1-foundations/ch03-data-modeling-analytical/conformed-dimensions-drill-across',
+    title: 'Conformed dimensions and drill-across',
+    syllabusTitle: 'Conformed dimensions and drill-across',
+    kind: 'full',
+    status: 'live',
+    milestone: { number: 1, title: 'Foundations' },
+    chapter: { number: 3, title: 'Data modeling and analytical architecture', section: '3.2' },
+    minutes: 13,
+    verified: '2026-10-22',
+    introduces: ['conformed-dimension', 'enterprise-bus-matrix', 'drill-across-fanout'],
+    uses: ['fact-table-types-transaction-snapshot-accumulating-factless', 'fact-grain'],
+    declared: ['sql-select', 'sql-create-table'],
+    bridge:
+      "Every fact type in the previous topic assumed its dimensions were already clean, single, conformed tables. This topic is what actually lets two facts of different grains get compared in the same query without the join silently multiplying rows.",
+    handoff:
+      "Conforming dimensions assumed each dimension itself was already a clean, well-behaved table. Next: the dimension patterns — degenerate, role-playing, junk, outrigger — that exist specifically because real dimensions often aren't.",
+  },
 ];
