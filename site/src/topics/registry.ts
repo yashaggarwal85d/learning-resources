@@ -1792,4 +1792,24 @@ export const TOPICS: TopicMeta[] = [
     handoff:
       "Medallion architecture settled how data moves through layers once it's already landed. Next: an older, still-relevant architectural debate about how data gets there in the first place — batch and streaming, merged at serving (Lambda) or unified into one stream-only engine (Kappa).",
   },
+  {
+    id: 'de.lambda-vs-kappa-architectures',
+    domain: 'data-engineering',
+    slug: 'data-engineering/m1-foundations/ch03-data-modeling-analytical/lambda-vs-kappa-architectures',
+    title: 'Lambda vs Kappa architectures',
+    syllabusTitle: 'Lambda vs Kappa architectures',
+    kind: 'full',
+    status: 'live',
+    milestone: { number: 1, title: 'Foundations' },
+    chapter: { number: 3, title: 'Data modeling and analytical architecture', section: '3.3' },
+    minutes: 14,
+    verified: '2026-10-22',
+    introduces: ['lambda-architecture', 'kappa-architecture'],
+    uses: ['medallion-bronze-silver-gold', 'compute-storage-separation'],
+    declared: ['sql-select'],
+    bridge:
+      "Medallion architecture settled how data moves through layers once it's already landed. This topic is an older, still-relevant architectural debate about how data gets there in the first place: batch and streaming, merged at serving (Lambda) or unified into one stream-only engine (Kappa).",
+    handoff:
+      "Every architecture in this section assumed a single team could still own the whole pipeline end to end. Next: the organizational response to that no longer being true at scale — data mesh, domain ownership, and data as a product.",
+  },
 ];

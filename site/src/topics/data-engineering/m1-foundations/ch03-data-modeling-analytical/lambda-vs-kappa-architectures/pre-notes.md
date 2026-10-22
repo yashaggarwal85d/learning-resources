@@ -1,0 +1,4 @@
+- **Lambda Architecture**: batch and stream-processing systems run in parallel on the same input, their results merged at query time. *Where you meet it:* the first architecture this topic quotes directly, named by Nathan Marz.
+- **Reprocessing**: re-deriving output from scratch after the code that produces it changes. *Where you meet it:* the real shared problem both architectures answer, named directly by Jay Kreps.
+- **Kappa Architecture**: one stream-only pipeline that reprocesses by replaying a fully-retained log through a second instance of the same job. *Where you meet it:* Kreps's own proposed alternative to Lambda.
+- **Dual-logic cost**: the burden of maintaining the same transformation logic correctly in two separate, complex distributed systems. *Where you meet it:* the specific cost Kreps names as Lambda's real, unfixable problem.
