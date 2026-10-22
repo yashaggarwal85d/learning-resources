@@ -1,0 +1,140 @@
+{
+  "topic": "de.cardinality-estimation-statistics",
+  "steps": [
+    {
+      "lines": [
+        "Whether to look inside a query was last topic's question. Now a different one: before a query runs at all, how does the planner guess how many rows it will touch?",
+        "Watch the two readouts. One guess lands almost on the real count once the query actually runs. The other guess is off by more than double.",
+        { "beat": 0.4 },
+        "Same table. Same machinery that produced both guesses. So why does only one of them hold up?"
+      ]
+    },
+    {
+      "lines": [
+        "Here are two separate conditions on the same table. One matches about one row in six. The other matches more than a third of the rows.",
+        "If the planner treats them as having nothing to do with each other, what fraction does it expect when both conditions are required at once?",
+        { "beat": 0.4 },
+        "Multiply the two, add them, or just take the smaller one?"
+      ],
+      "answer": [
+        "Multiply them. About one sixth times a bit more than a third lands close to one in seventeen.",
+        "That is exactly what treating the conditions as unrelated means: whatever one matches has nothing to do with whatever the other matches, so their chances multiply.",
+        "Whether that assumption is actually true for these two columns is the real question, and it is not."
+      ]
+    },
+    {
+      "lines": [
+        "The guess really does land where multiplying predicts: a little under six in a hundred.",
+        "But watch the real count once the query runs. It lands past twice that.",
+        "The planner's arithmetic was not the problem. Its assumption was: these two columns move together, and nothing about multiplying separate chances can see that."
+      ]
+    },
+    {
+      "lines": [
+        "So where does a guess come from in the first place? One catalog keeps a cheap running total: how many rows a table has, rescaled to its current size without ever reading the table.",
+        "A second, harder catalog keeps the shape of each column: the spread of values, which ones repeat often, roughly how many distinct values exist.",
+        "Its own documentation calls that second catalog approximate even right after it is refreshed. Everything from here is about that harder number."
+      ]
+    },
+    {
+      "lines": [
+        "Take a numeric column and ask for everything above a cutoff. The column's whole range has been cut into a hundred equal slices, each holding the same share of rows.",
+        "Watch the pointer travel along the line and settle inside one slice. Every full slice before it counts completely; the slice it lands in counts only its fraction.",
+        { "beat": 0.4 },
+        "Whole slices plus a fraction of one more, out of a hundred, is the guess — and here it lands within about one part in a hundred of the real count."
+      ],
+      "takeaway": "A slice-based guess turns how many rows match into how much of one slice is covered."
+    },
+    {
+      "lines": [
+        "A different kind of column: six possible outcomes, and one of them, a refund, is rare — barely more than one row in sixty.",
+        "When a value is common enough to be tracked by name, the catalog already knows exactly how often it shows up in the sample. Lock onto the thin bar.",
+        "Asking for that one outcome doesn't need a slice or a formula at all. The measured share is the guess."
+      ]
+    },
+    {
+      "lines": [
+        "Now ask for a value that isn't common enough to be tracked by name. The catalog knows the combined share taken by every value it does track.",
+        "Whatever share is left over gets divided evenly across every other distinct value that wasn't tracked, as if each of them were exactly as common as the rest.",
+        { "beat": 0.4 },
+        "That even division is a second assumption, doing the same job the slices did a moment ago: standing in for a real measurement with a guess."
+      ],
+      "takeaway": "Dividing the leftover evenly is a stand-in for a measurement, not one."
+    },
+    {
+      "lines": [
+        "Back to the two columns that move together. One command tells the planner to measure them as a pair instead of separately, watching for exactly this kind of dependence.",
+        "After that command runs and the catalog is refreshed, the same query's guess jumps from roughly half of the real count to within about one part in a hundred of it.",
+        "Nothing about the arithmetic changed. What changed is that the planner now has an actual joint measurement instead of an assumption about two unrelated columns."
+      ],
+      "takeaway": "A joint measurement replaces the unrelated-columns guess; it doesn't make the guess smarter."
+    },
+    {
+      "lines": [
+        "A large batch of new rows lands all at once, every one sharing the same outcome for a column the planner already has stale measurements for, and nobody refreshes the catalog yet.",
+        "Does the planner's guess for that outcome notice the new rows arrived at all?",
+        { "beat": 0.4 },
+        "Does it notice fully, not at all, or only part of what changed?"
+      ],
+      "answer": [
+        "Only part. The cheap running total of how many rows exist updates on its own, scaled to the table's new size.",
+        "But the shape — how common each outcome actually is now — does not update until the harder catalog is refreshed. That refresh is a separate, deliberate step.",
+        "So the guess undercounts: it has the new total, but still the old mix."
+      ]
+    },
+    {
+      "lines": [
+        "Before the refresh, the guess lands well under the real count once the query runs — off by about three in five.",
+        "One refresh later, with no other change at all, the same guess lands within less than half a percent of the real count."
+      ],
+      "takeaway": "Totals update on their own; the shape of the data only updates when it is deliberately re-measured."
+    },
+    {
+      "lines": [
+        "Both failures just shown are guesses feeding into a larger plan, and a larger plan is usually more than one step.",
+        "Line up this topic's two measured misses — the unrelated-columns guess and the stale-shape guess — as if the same plan depended on both.",
+        { "beat": 0.4 },
+        "They don't cancel each other out. They compound, landing well past three times off, because each one feeds the next step as if it were simply true.",
+        "The planner's own documentation admits plainly that two different ways of sizing the same join can land far apart."
+      ],
+      "takeaway": "A guess that feeds another guess doesn't average its error away; it multiplies it."
+    },
+    {
+      "lines": [
+        "Every formula shown so far is still a fixed recipe a person designed years ago, applied to a small sample.",
+        "One active line of research trains a model directly on real data and real queries instead, aimed specifically at the kind of related-column failure this topic just measured.",
+        "That line of work is still a research direction, not this topic's mechanism — more of it waits in the deep dive."
+      ]
+    },
+    {
+      "lines": [
+        "Three questions, before trusting the first number a plan shows you: do the columns in the condition actually move together? When was the harder catalog last refreshed? And is this guess itself about to feed into another step?",
+        "An estimate only matters once something compares it against the alternatives — and that comparison, the actual price of a plan, is next."
+      ]
+    },
+    {
+      "lines": [
+        "A value tracked by name shows up in two out of every hundred rows, on a table of half a million rows.",
+        "How many rows does the planner expect to match it?",
+        { "beat": 0.4 },
+        "Ten, a hundred, a thousand, or ten thousand?"
+      ],
+      "answer": [
+        "Ten thousand. Two in a hundred of half a million.",
+        "A value tracked by name gets its share read straight from the catalog and multiplied by the row count — no slice, no leftover division."
+      ]
+    },
+    {
+      "lines": [
+        "Two separate conditions on columns that actually move together are each guessed at around one in five, treated as unrelated to each other.",
+        "What is the real risk in that guess?",
+        { "beat": 0.4 },
+        "Too high, too low, or no risk at all?"
+      ],
+      "answer": [
+        "Too low. Columns that move together overlap more than treating them as unrelated predicts.",
+        "The multiplied guess undershoots the real, larger overlap — the same failure this topic measured directly, at about double."
+      ]
+    }
+  ]
+}

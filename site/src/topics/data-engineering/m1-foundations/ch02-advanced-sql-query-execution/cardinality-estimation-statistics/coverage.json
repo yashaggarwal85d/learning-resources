@@ -1,0 +1,73 @@
+{
+  "topic": "de.cardinality-estimation-statistics",
+  "syllabus": [
+    { "clause": "histograms,", "at": [{ "step": "A histogram: equal-frequency buckets" }, { "deep": "Into the internals" }] },
+    { "clause": "most-common values,", "at": [{ "step": "A most-common-value list: read, don't guess" }, { "step": "Off the list: spread the rest evenly" }, { "deep": "Into the internals" }] },
+    { "clause": "n_distinct,", "at": [{ "step": "Off the list: spread the rest evenly" }, { "deep": "Into the internals" }] },
+    { "clause": "the independence and uniformity assumptions,", "at": [{ "step": "Predict: if these two were independent…" }, { "step": "Reveal: independence, measured" }, { "step": "Off the list: spread the rest evenly" }] },
+    { "clause": "correlated columns and extended statistics (CREATE STATISTICS),", "at": [{ "step": "CREATE STATISTICS: a real joint measurement" }, { "deep": "Into the internals" }] },
+    { "clause": "sampling,", "at": [{ "deep": "Into the internals" }] },
+    { "clause": "stale statistics after bulk loads;", "at": [{ "step": "Predict: a bulk load lands with no ANALYZE yet" }, { "step": "Reveal: the count rescales, the shape doesn't" }] },
+    { "clause": "how errors compound through joins;", "at": [{ "step": "Errors don't average out — they multiply" }] },
+    { "clause": "learned estimators as frontier.", "at": [{ "step": "The frontier: learn it instead of assuming it" }, { "deep": "The frontier" }] }
+  ],
+  "sources": [
+    {
+      "source": "PostgreSQL 18 Documentation §14.2 \"Statistics Used by the Planner\"",
+      "items": [
+        { "item": "pg_class.reltuples/relpages: cheap total-row-count statistic, rescaled to current physical size", "at": [{ "step": "Where the two numbers come from" }] },
+        { "item": "pg_statistic/pg_stats: per-column shape, always approximate even freshly updated", "at": [{ "step": "Where the two numbers come from" }] },
+        { "item": "default_statistics_target = 100, settable per column with ALTER TABLE ... SET STATISTICS", "at": [{ "deep": "Into the internals" }] },
+        { "item": "Extended statistics exist because the independence assumption breaks for correlated columns, which single-column stats can't see", "at": [{ "step": "CREATE STATISTICS: a real joint measurement" }] },
+        { "item": "CREATE STATISTICS creates a catalog entry; ANALYZE does the actual data collection", "at": [{ "step": "CREATE STATISTICS: a real joint measurement" }] },
+        { "item": "Functional dependencies: definition, and that they only apply to simple equality/IN on constants", "at": [{ "deep": "Into the internals" }, { "out": "The multivariate ndistinct and MCV kinds (also §14.2.2) are covered directly by this topic's CREATE STATISTICS step and reel; the functional-dependencies kind's own worked zipcodes example is left to the Deep dive rather than a second reel step, since the mcv/ndistinct kinds alone already fix this topic's measured example." }] }
+      ]
+    },
+    {
+      "source": "PostgreSQL 18 Documentation §69.1 \"Row Estimation Examples\"",
+      "items": [
+        { "item": "scalarltsel: equal-frequency histogram bucket location + linear interpolation, with the tenk1 worked example (0.100697, 1007 rows)", "at": [{ "step": "A histogram: equal-frequency buckets" }] },
+        { "item": "eqsel: in-MCV equality reads the frequency directly (0.003, 30 rows)", "at": [{ "step": "A most-common-value list: read, don't guess" }] },
+        { "item": "eqsel: off-MCV equality spreads the remainder evenly over the other distinct values (0.0014559, 15 rows)", "at": [{ "step": "Off the list: spread the rest evenly" }] },
+        { "item": "Independence assumption: AND clauses multiply (0.100697 × 0.0014559 → 1 row)", "at": [{ "step": "Reveal: independence, measured" }] },
+        { "item": "eqjoinsel for unique/no-MCV columns: (1-null_frac1)(1-null_frac2)/max(num_rows1,num_rows2)", "at": [{ "step": "Errors don't average out — they multiply" }, { "deep": "Into the internals" }] },
+        { "item": "eqjoinsel with MCV lists present: direct comparison of the two MCV lists", "at": [{ "deep": "Into the internals" }] },
+        { "item": "The planner's two ways of sizing a join's result can diverge significantly", "at": [{ "step": "Errors don't average out — they multiply" }] }
+      ]
+    },
+    {
+      "source": "CREATE STATISTICS (PostgreSQL 18 docs) and pg_stats (§53.29)",
+      "items": [
+        { "item": "The three statistics kinds: ndistinct, dependencies, mcv", "at": [{ "step": "CREATE STATISTICS: a real joint measurement" }] },
+        { "item": "n_distinct's sign convention (absolute count vs. fraction-of-rows)", "at": [{ "step": "Off the list: spread the rest evenly" }] }
+      ]
+    },
+    {
+      "source": "Kipf et al., \"Learned Cardinalities\" (arXiv:1809.00677, CIDR 2019)",
+      "items": [
+        { "item": "A deep-learning model (MSCN) estimating cardinalities, built to address correlated and join-crossing correlation weaknesses", "at": [{ "step": "The frontier: learn it instead of assuming it" }] }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "Claude (single session, written from the syllabus line and the fetched sources before storyboarding; not independent of the builder, so a later owner review should repeat it)",
+    "date": "2026-10-22",
+    "items": [
+      { "item": "The two-catalog split: pg_class (cheap row/page counts) vs. pg_statistic/pg_stats (the harder per-column shape)", "at": [{ "step": "Where the two numbers come from" }] },
+      { "item": "How a range predicate's selectivity comes from locating and interpolating within an equal-frequency histogram bucket", "at": [{ "step": "A histogram: equal-frequency buckets" }] },
+      { "item": "How an equality predicate's selectivity comes from the MCV list when the value is listed, and the uniform-remainder formula when it isn't", "at": [{ "step": "A most-common-value list: read, don't guess" }, { "step": "Off the list: spread the rest evenly" }] },
+      { "item": "n_distinct as the knob that drives the off-MCV formula, and its two sign conventions", "at": [{ "step": "Off the list: spread the rest evenly" }] },
+      { "item": "The independence assumption (clause selectivities multiply) as the single most common source of planner misestimation", "at": [{ "step": "Predict: if these two were independent…" }, { "step": "Reveal: independence, measured" }] },
+      { "item": "The uniformity assumption inside a histogram bucket and inside the off-MCV remainder — two instances of the same idea, not two different ones", "at": [{ "step": "A histogram: equal-frequency buckets" }, { "step": "Off the list: spread the rest evenly" }] },
+      { "item": "CREATE STATISTICS's three kinds and which kind fixes which failure mode (dependencies/mcv for the independence assumption; ndistinct for multi-column GROUP BY)", "at": [{ "step": "CREATE STATISTICS: a real joint measurement" }] },
+      { "item": "Why ANALYZE samples rather than scans the whole table, and what that costs in accuracy (always approximate) for the benefit in speed", "at": [{ "deep": "Into the internals" }] },
+      { "item": "Why reltuples/relpages rescale automatically but the statistical shape does not — the specific, commonly-misunderstood asymmetry behind 'stale statistics after a bulk load'", "at": [{ "step": "Predict: a bulk load lands with no ANALYZE yet" }, { "step": "Reveal: the count rescales, the shape doesn't" }] },
+      { "item": "Why join-size estimation errors compound multiplicatively rather than cancelling, and why that makes join order (topic 20) sensitive to estimation error", "at": [{ "step": "Errors don't average out — they multiply" }] },
+      { "item": "The autovacuum/ANALYZE trigger thresholds and when a DBA should force a manual ANALYZE after a known bulk change", "at": [{ "deep": "In production — a review checklist" }] },
+      { "item": "Extended statistics' documented limitation to simple equality/IN conditions on constants — why it would not have fixed an array-containment or range predicate", "at": [{ "deep": "Into the internals" }] },
+      { "item": "Learned/ML cardinality estimators (MSCN and the broader sampling+ML line) as the current research response to the independence assumption's structural limit", "at": [{ "step": "The frontier: learn it instead of assuming it" }] },
+      { "item": "How other engines (Snowflake, BigQuery, DuckDB, Spark) estimate cardinality", "at": [{ "out": "Each warehouse has its own estimator and documents it; the syllabus line and this chapter's engine of record are both PostgreSQL, and topic 25 (parallel/distributed plans) is where another engine's plan shape is next compared." }] }
+    ]
+  },
+  "gapReview": { "date": "2026-10-22", "by": "Claude (single session)", "open": [] }
+}
