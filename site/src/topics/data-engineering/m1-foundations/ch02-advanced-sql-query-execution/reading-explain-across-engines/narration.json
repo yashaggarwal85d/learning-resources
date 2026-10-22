@@ -1,0 +1,130 @@
+{
+  "topic": "de.reading-explain-across-engines",
+  "steps": [
+    {
+      "lines": [
+        "Run the exact same command on two versions of the same engine, one update apart.",
+        "On the older version, the plan shows nothing about memory and disk traffic at all.",
+        "On the newer version, that same line shows up on its own, completely unasked for."
+      ]
+    },
+    {
+      "lines": [
+        "Nothing about the query changed between those two runs, and nothing extra was requested either time.",
+        { "beat": 0.4 },
+        "So why would the exact same command print more information, just because it ran on a newer version?"
+      ],
+      "answer": [
+        "The engine's own default for what gets shown changed, between those two versions.",
+        "That's a real, dated decision the project made about what to show automatically, not a bug, and not the planner reasoning about this one query in particular."
+      ]
+    },
+    {
+      "lines": [
+        "The newer version's own documentation states the change plainly: asking it to actually run the query now also turns on detailed memory and disk reporting, by default.",
+        "The older version never did that. Asking it to run the query only ever showed timing, nothing about memory or disk, unless that reporting was requested separately.",
+        "That's exactly what this topic's own older instance still requires, side by side with the newer one on the same machine."
+      ]
+    },
+    {
+      "lines": [
+        "Every engine's plan carries two numbers for the same spot: what the planner guessed beforehand, and what actually came out once the query ran.",
+        "Here, the planner guessed a little over one thousand rows for one spot in the plan.",
+        "Two thousand rows actually came out of that same spot — a real, naturally occurring gap, not a constructed worst case."
+      ]
+    },
+    {
+      "lines": [
+        "This same chapter already measured a closely related question: whether an operator ran within its own memory budget, or had to spill extra data to disk.",
+        "That measurement read straight off a few specific numbers the engine itself printed, once asked.",
+        "Every engine answers that same question somewhere in its own output. Only the name of the field, and where it shows up, actually changes."
+      ]
+    },
+    {
+      "lines": [
+        "Five different engines format all of this five different ways, with five different names for closely related things.",
+        { "beat": 0.4 },
+        "Facing an unfamiliar plan from any one of them, where should your eye actually land first?"
+      ],
+      "answer": [
+        "Wherever the real number diverges furthest from what was expected.",
+        "A huge but expected count isn't a problem on its own, and a small spot run over and over can matter more than a big one run just once."
+      ]
+    },
+    {
+      "lines": [
+        "Ask one particular engine for its cost-aware plan, and its own estimate is sitting right there in the text.",
+        "A range of one million rows, printed directly on the exact spot in the plan that produces them.",
+        "No separate screen needed to see that number. It's part of the plan itself."
+      ]
+    },
+    {
+      "lines": [
+        "What that plan text can't tell you is what the run actually did once it finished.",
+        "For that, look somewhere else entirely: a comfortable run reports nothing spilled to memory or disk, read straight from that engine's own separate dashboard and its programming interface.",
+        "A memory-constrained run of a similar job reports a real, measured amount spilled to both memory and disk — not a hypothetical number, an observed one."
+      ]
+    },
+    {
+      "lines": [
+        "A completed stage's own reported numbers include how many bytes it moved between machines, and separately, how many bytes it had to spill to memory or disk.",
+        { "beat": 0.3 },
+        "Which one of those actually tells you a stage ran out of its own memory?"
+      ],
+      "answer": [
+        "A nonzero spilled-bytes number.",
+        "Moving data between stages is ordinary, expected work in every healthy run. Spilling is a separate, specific signal that only shows up once an operator actually runs out of the memory it was given."
+      ]
+    },
+    {
+      "lines": [
+        "One engine's own documentation describes a plan that shows the processing time spent in each stage, right alongside the relative cost of each individual step inside it.",
+        "Both of those numbers sit inline in the same plan text.",
+        "No separate screen is needed to see where the time actually went."
+      ]
+    },
+    {
+      "lines": [
+        "A different engine names this information with its own dedicated screens.",
+        "One screen reports how many pieces of a table actually got scanned, against how many pieces existed in total.",
+        "A separate screen reports how much data had to spill, broken out by whether it spilled locally or somewhere further away."
+      ]
+    },
+    {
+      "lines": [
+        "A fourth engine draws its own plan as a picture instead of text: boxes for each stage, with lines connecting them.",
+        "The estimated number of rows moving between stages sits on those connecting lines, not inside the boxes themselves.",
+        "That same engine also names, in its own words, spilling to disk as a specific cause of a query slowing down dramatically."
+      ]
+    },
+    {
+      "lines": [
+        "Five engines, five vocabularies, and still one fixed order worth checking regardless of which one is in front of you.",
+        "Start with the biggest gap between what was expected and what actually happened. Then a spot run far more times than expected. Then any sign of spilling. Then whichever single spot is simply the slowest or the widest.",
+        "Learn that one order once, and every new engine you meet is just a new set of field names hung on the same four questions."
+      ]
+    },
+    {
+      "lines": [
+        "One spot in a plan reports an expected count of five hundred.",
+        { "beat": 0.3 },
+        "The run actually produces fifty thousand. Is that estimate close, or badly off?"
+      ],
+      "answer": [
+        "Badly off, and worth investigating first.",
+        "A hundred-times gap between what was expected and what actually happened is exactly the kind of divergence this topic's own checking order puts at the very top, on any engine."
+      ]
+    },
+    {
+      "lines": [
+        "A stage reports a large number of bytes moved between machines, and a separate spilled-bytes number sitting at exactly zero.",
+        { "beat": 0.3 },
+        "Did that stage run out of memory?"
+      ],
+      "answer": [
+        "No. A zero spilled-bytes number means it stayed within its own budget.",
+        "Moving data between stages is ordinary, expected work on its own. Spilling is a separate, specific signal, and this stage's own number says it simply never happened here."
+      ]
+    }
+  ]
+}

@@ -1130,4 +1130,24 @@ export const TOPICS: TopicMeta[] = [
     handoff:
       "Every plan in this chapter, adaptive or not, has been read off one engine's own EXPLAIN output at a time — PostgreSQL's Hash Join and Append, Trino's HASH and BROADCAST fragments, Spark's Initial Plan and Final Plan. Next: reading EXPLAIN across engines, where the same plan shape wears a different name and a different shape of output depending on who's asking.",
   },
+  {
+    id: 'de.reading-explain-across-engines',
+    domain: 'data-engineering',
+    slug: 'data-engineering/m1-foundations/ch02-advanced-sql-query-execution/reading-explain-across-engines',
+    title: 'Reading EXPLAIN across engines',
+    syllabusTitle: 'Reading EXPLAIN across engines',
+    kind: 'full',
+    status: 'live',
+    milestone: { number: 1, title: 'Foundations' },
+    chapter: { number: 2, title: 'Advanced SQL and query execution', section: '2.3' },
+    minutes: 15,
+    verified: '2026-10-22',
+    introduces: ['explain-triage', 'buffers-default-pg18'],
+    uses: ['cardinality-estimation', 'work-mem-spill', 'adaptive-query-execution'],
+    declared: ['sql-select', 'group-by'],
+    bridge:
+      "Every plan in this chapter, adaptive or not, has been read off one engine's own EXPLAIN output at a time. This topic reads across all of them.",
+    handoff:
+      "A fixed triage order reads any plan, on any engine, once you know where to look. Next: composite index design and column order, where equality-before-range ordering, selectivity, and PostgreSQL 18's B-tree skip scan decide what that plan even has available to choose from.",
+  },
 ];

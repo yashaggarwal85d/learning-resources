@@ -1,0 +1,54 @@
+{
+  "topic": "de.reading-explain-across-engines",
+  "syllabus": [
+    { "clause": "estimated vs actual rows, loops, buffers (on by default with ANALYZE since PostgreSQL 18), spill and memory indicators;", "at": [{ "step": "Reveal: PostgreSQL 18 turns on Buffers by default" }, { "step": "Reveal: estimated vs. actual rows, and loops" }, { "step": "Reveal: spill and memory indicators" }] },
+    { "clause": "the equivalents in Spark (physical plan + UI), Trino (EXPLAIN ANALYZE), Snowflake (Query Profile) and BigQuery (execution graph);", "at": [{ "step": "Reveal: Spark’s estimate lives in its plan text" }, { "step": "Reveal: Spark’s actual stats live in its UI and API" }, { "step": "Reveal: Trino’s EXPLAIN ANALYZE" }, { "step": "Reveal: Snowflake’s Query Profile" }, { "step": "Reveal: BigQuery’s execution graph" }] },
+    { "clause": "a fixed triage order.", "at": [{ "step": "Recap" }] }
+  ],
+  "sources": [
+    {
+      "source": "PostgreSQL 18 Documentation §14.1, \"Using EXPLAIN\"",
+      "items": [
+        { "item": "The BUFFERS option provides additional detail about I/O operations performed during planning and execution", "at": [{ "step": "Reveal: PostgreSQL 18 turns on Buffers by default" }] },
+        { "item": "The ANALYZE option implicitly enables the BUFFERS option (new in PostgreSQL 18)", "at": [{ "step": "Reveal: PostgreSQL 18 turns on Buffers by default" }] }
+      ]
+    },
+    {
+      "source": "Trino documentation, \"EXPLAIN ANALYZE\"",
+      "items": [
+        { "item": "EXPLAIN ANALYZE shows the CPU time spent in each stage and the relative cost of each plan node within it", "at": [{ "step": "Reveal: Trino’s EXPLAIN ANALYZE" }] }
+      ]
+    },
+    {
+      "source": "Snowflake documentation, \"Monitor query activity with Query History\" (Query Profile reference)",
+      "items": [
+        { "item": "A Pruning pane reports partitions scanned against partitions total", "at": [{ "step": "Reveal: Snowflake’s Query Profile" }] },
+        { "item": "A Spilling pane reports bytes spilled to local storage and to remote storage separately", "at": [{ "step": "Reveal: Snowflake’s Query Profile" }] }
+      ]
+    },
+    {
+      "source": "Google Cloud documentation, \"Get query performance insights\" (BigQuery execution graph)",
+      "items": [
+        { "item": "Stages are drawn as boxes; edges between them carry the estimated number of rows exchanged", "at": [{ "step": "Reveal: BigQuery’s execution graph" }] },
+        { "item": "Shuffle memory spilling to disk when quota is exceeded is named explicitly as a cause of dramatic slowdown", "at": [{ "step": "Reveal: BigQuery’s execution graph" }] }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "Claude (single session, written from the syllabus line and the fetched sources before storyboarding; not independent of the builder, so a later owner review should repeat it)",
+    "date": "2026-10-22",
+    "items": [
+      { "item": "A genuine, locally reproduced version-dated default change (PostgreSQL 16 vs. 18's own BUFFERS-with-ANALYZE behavior), confirmed by installing both versions side by side on one sandbox rather than trusting the docs' wording alone", "at": [{ "step": "Reveal: PostgreSQL 18 turns on Buffers by default" }] },
+      { "item": "A real, naturally occurring estimate-vs-actual gap (not an artificially constructed worst case) measured on PostgreSQL 18's own output", "at": [{ "step": "Reveal: estimated vs. actual rows, and loops" }] },
+      { "item": "The precise distinction between where Spark's estimated statistics live (plan text) and where its actual runtime statistics live (UI/REST API) — not conflated, and each one independently queried", "at": [{ "step": "Reveal: Spark’s estimate lives in its plan text" }, { "step": "Reveal: Spark’s actual stats live in its UI and API" }] },
+      { "item": "A genuine, forced local spill in Spark (nonzero memoryBytesSpilled/diskBytesSpilled from the UI's own REST API), paired with a clean run's zero values, so the reel's spill claim is a measured contrast, not an assertion", "at": [{ "step": "Reveal: Spark’s actual stats live in its UI and API" }] },
+      { "item": "The specific field-level vocabulary for pruning and spilling in Snowflake's Query Profile, read directly from its own documented reference rather than a secondary paraphrase", "at": [{ "step": "Reveal: Snowflake’s Query Profile" }] },
+      { "item": "BigQuery's own structural detail that its \"estimated\" figure lives on the edges between stages, not inside them — a genuinely different placement from every other engine covered, caught by reading the primary source rather than assuming a shared convention", "at": [{ "step": "Reveal: BigQuery’s execution graph" }] },
+      { "item": "Why Trino, Snowflake and BigQuery's claims in this topic are sourced rather than measured (no local Trino install attempted given its resource requirements; no cloud account for the other two), disclosed plainly rather than described as observed", "at": [{ "deep": "Into the internals" }] },
+      { "item": "The structural commonality across all five engines — a stage/operator tree, a per-node cost signal, an estimate-vs-actual or similar comparison — drawn out explicitly as the actual transferable skill, independent of any one engine's naming", "at": [{ "step": "Recap" }] },
+      { "item": "A fixed, explicit triage order (estimate gap, then loop count, then spill/memory, then the single worst operator) stated as a usable checklist, not just implied by the examples", "at": [{ "step": "Recap" }] },
+      { "item": "Reading a stage's own numeric fields correctly to distinguish \"moved data\" (shuffle bytes, always present) from \"ran out of memory\" (spill bytes, present only under pressure) — tested directly in the closing \"Prove it\" steps", "at": [{ "step": "Prove it · 1 of 2" }, { "step": "Prove it · 2 of 2" }] }
+    ]
+  },
+  "gapReview": { "date": "2026-10-22", "by": "Claude (single session)", "open": [] }
+}
