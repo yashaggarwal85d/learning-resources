@@ -1,0 +1,131 @@
+{
+  "topic": "de.hash-sort-aggregation",
+  "steps": [
+    {
+      "lines": [
+        "Same table, same number of rows, grouped two different ways.",
+        "Group it by a column with almost no distinct values, and a table built in memory wins easily.",
+        "Group it by a column with almost as many distinct values as there are rows, and that same approach is no longer the faster one."
+      ]
+    },
+    {
+      "lines": [
+        "A handful of distinct groups, out of millions of rows. One approach builds a table in memory with one slot per group. The other sorts every single row before it groups anything.",
+        { "beat": 0.4 },
+        "With so few groups, which one wins?"
+      ],
+      "answer": [
+        "The one built around a table in memory. With only a handful of groups, that table stays tiny and never has to spill, while sorting every row first would be pure overhead this question doesn't need.",
+        "Few groups is exactly the shape that favors building rather than sorting."
+      ]
+    },
+    {
+      "lines": [
+        "The planner's own default choice finishes in well under a second, with one small table and no overflow to disk.",
+        "Force it to sort everything first instead, and it takes more than twice as long — the sort alone spills tens of megabytes to disk before any grouping even starts.",
+        "Same table, same rows, same question. Only the approach changed."
+      ]
+    },
+    {
+      "lines": [
+        "One table in memory, one entry per distinct group, built while the data is scanned exactly once.",
+        "A row's group gets looked up directly in that table — it isn't searched for.",
+        "Which means the cost of this approach scales with how many groups there are, not with how many rows get scanned."
+      ]
+    },
+    {
+      "lines": [
+        "The other approach sorts every row on the grouping column first, then walks through the sorted stream in order.",
+        "Once the rows are in order, closing out one group's running total is simple: the moment the grouping value changes, that group is done.",
+        "No table built in memory at all — but the sort gets paid for up front, no matter how many groups turn out to exist."
+      ]
+    },
+    {
+      "lines": [
+        "Same table, same number of rows as before. But now the grouping column has almost as many distinct values as there are rows to begin with.",
+        { "beat": 0.4 },
+        "Does the table-in-memory approach still come out ahead?"
+      ],
+      "answer": [
+        "No — once there are almost as many groups as rows, that table itself becomes large enough to overflow memory badly, while the sort's own cost never changed, since it depends on how many rows there are, not how many groups.",
+        "The exact thing that made the table-based approach win before is now working against it."
+      ]
+    },
+    {
+      "lines": [
+        "The planner still defaults to building a table in memory — but now that table has to split into dozens of smaller pieces and spill most of them to disk, taking well over two seconds.",
+        "Force the sorting approach instead on this same question, and it finishes faster — by a real margin, not a narrow one.",
+        "The exact opposite result from the handful-of-groups comparison a moment ago."
+      ]
+    },
+    {
+      "lines": [
+        "The sorting approach's bill is set by how many rows there are, and that number never moved between these two comparisons.",
+        "The table-in-memory approach's bill is set by how many groups it has to track relative to how much memory it's given — and that number grew enormously between them.",
+        "Same rows, wildly different group counts, and that's the entire reason the winner flipped."
+      ]
+    },
+    {
+      "lines": [
+        "Split the work across two separate processes, and each one builds its own small table in memory from only the rows it personally scanned — a partial result, not a final one.",
+        "One process then merges every partial result together into the single final answer.",
+        "Measured on the handful-of-groups comparison from earlier: splitting the work this way finishes faster than even the best single-process version did."
+      ]
+    },
+    {
+      "lines": [
+        "Count how many distinct values a column has, with no other process helping — the documentation itself says splitting the work across processes isn't available once an aggregate needs to drop duplicates first.",
+        { "beat": 0.4 },
+        "So which of the two approaches from earlier does the planner reach for here instead?"
+      ],
+      "answer": [
+        "Sorting — dropping duplicates is exactly the kind of work a sort already does as a side effect of putting rows in order, so that's the path taken instead of building any table at all.",
+        "Needing duplicates removed first pushes the planner toward the approach that does that for free."
+      ]
+    },
+    {
+      "lines": [
+        "The plan that comes back is a sort, with a simple counting step sitting on top of it.",
+        "No table built in memory anywhere in this plan, and no second process helping either.",
+        "The sort itself still has to spill a meaningful amount to disk, since every row has to be put in order before any duplicate can be dropped."
+      ]
+    },
+    {
+      "lines": [
+        "Dropping duplicates has to happen before the counting itself can even start.",
+        "Putting every row in order already does that, as a side effect of sorting — matching values end up sitting right next to each other, trivial to collapse.",
+        "That's the same reason this kind of work shows up on the list of things sorting exists to do in the first place, right alongside plain ordering."
+      ]
+    },
+    {
+      "lines": [
+        "Before trusting how a grouped query was executed, three things are worth checking.",
+        "How many distinct groups came out, relative to how many rows went in?",
+        "Was this query even allowed to split its work across more than one process?",
+        "And does any part of it need duplicates dropped first?"
+      ]
+    },
+    {
+      "lines": [
+        "A table holds ten million rows. Grouping it produces only twenty distinct results.",
+        { "beat": 0.4 },
+        "Which approach almost certainly wins here?"
+      ],
+      "answer": [
+        "Building a table in memory — twenty groups stays a tiny table no matter how many rows feed it, and sorting ten million rows first would be pure waste.",
+        "Row count alone never decides this. Group count does."
+      ]
+    },
+    {
+      "lines": [
+        "A plan that builds a table in memory for its grouping reports back that it had to split into several separate pieces instead of staying in one.",
+        { "beat": 0.4 },
+        "What does that number actually tell you?"
+      ],
+      "answer": [
+        "It means that table never fit in its memory budget as a single piece, so part of it had to spill to disk across more than one piece.",
+        "More than one piece is the plan telling you directly that it ran out of room — the same signal a spilling join gives."
+      ]
+    }
+  ]
+}

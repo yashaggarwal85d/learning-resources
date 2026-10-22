@@ -530,4 +530,25 @@ Folder prefix for every topic: `site/src/topics/data-engineering/m1-foundations/
 - **Lab:** none of the chapter lab's named parts; its own "Try it" reproduces the nested-loop-vs-hash cardinality flip and the `work_mem` spill directly.
 - **Sources:** PostgreSQL 18 docs §14.1 ("Using EXPLAIN"), §19.7.1 ("Planner Method Configuration"), §19.4 ("Resource Consumption", `work_mem`); this topic's own measurements on a real PostgreSQL 16 instance (see its `SOURCES.md`).
 
+### 22. Hash vs sort aggregation (`de.hash-sort-aggregation`): full, §2.3
+
+- **Folder:** `hash-sort-aggregation`. About 15 min.
+- **Scope:**
+  - "hash aggregation vs streaming aggregation over sorted input": the same `GROUP BY` forced through `HashAggregate` and `GroupAggregate` via `enable_hashagg`, measured at two cardinalities — a genuine crossover where hash wins at low cardinality and sort wins once the group count approaches the row count.
+  - "partial/two-phase aggregation for parallel plans": a real parallel plan showing `Partial HashAggregate` on each worker and `Finalize GroupAggregate` on the leader, measured against the single-worker case.
+  - "DISTINCT aggregates": `COUNT(DISTINCT ...)` measured choosing a sort-based dedup plan rather than a hash-based one, consistent with the documented rule that parallel aggregation (and, as measured here, the ordinary hashed path) doesn't apply to `DISTINCT` the same way.
+  - "eager aggregation pushed below joins (PostgreSQL 19 beta)": named as a syllabus line this topic could not measure on the PostgreSQL 16 instance available to this session (the feature doesn't exist there) — left as a pointer in post-notes rather than an unverified claim, the same honest-gap treatment topic 20 gave Volcano/Cascades.
+- **Outcomes:**
+  - Explain why `HashAggregate` wins at low group cardinality and why sort-based `GroupAggregate` can win once group count approaches row count — a real measured crossover, not a rule of thumb.
+  - Read a parallel aggregate plan's `Partial Aggregate`/`Finalize Aggregate` (or `Finalize GroupAggregate`) split and explain what each stage computes.
+  - Recognize a hash aggregation spilling to disk from `EXPLAIN (ANALYZE)`'s own batch/partition count, the same signal topic 21 used for a spilling hash join.
+  - State why a `DISTINCT` aggregate and parallel aggregation don't mix, and why a `DISTINCT` aggregate here is measured taking a sort-based path.
+- **Introduces:** `hash-aggregation`, `sort-aggregation`, `partial-aggregation`. **Uses:** `hash-join`, `merge-join`, `work-mem-spill`. **Declared:** `sql-select`, `group-by`.
+- **Bridge:** "A join is decided. The same build/probe vs. sorted-input choice happens one level up, for GROUP BY — next." (Answers topic 21's handoff.)
+- **Handoff:** "Every mechanism so far has assumed a plan, once chosen, runs as written. Next: what happens when the query itself is rewritten before the planner ever sees the shape the SQL text described."
+- **Prerequisites panel:** topics 20 and 21 (Before this).
+- **Visual idea:** two totals for the same `GROUP BY`, one from a hash table and one from a sort, crossing over as group count climbs from a handful to nearly every row; a single aggregate splitting into a row of partial aggregates feeding one finalize step; a `DISTINCT` aggregate's rows filing through a sort instead of dropping into a hash table.
+- **Lab:** reproduces the chapter lab's own "find the key-cardinality crossover where sort-based aggregation wins" directly, on a real measured table rather than a simulated one.
+- **Sources:** PostgreSQL 18 docs §19.7.1 ("Planner Method Configuration", `enable_hashagg`), §15.3.3 ("Parallel Aggregation"), §14.1 ("Using EXPLAIN"); this topic's own measurements on a real PostgreSQL 16 instance (see its `SOURCES.md`).
+
 ---

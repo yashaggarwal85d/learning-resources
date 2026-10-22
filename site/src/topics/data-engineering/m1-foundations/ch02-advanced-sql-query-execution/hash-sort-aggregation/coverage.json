@@ -1,0 +1,49 @@
+{
+  "topic": "de.hash-sort-aggregation",
+  "syllabus": [
+    { "clause": "hash aggregation vs streaming aggregation over sorted input,", "at": [{ "step": "Predict: 100 groups" }, { "step": "Reveal: hash wins by 2.1×" }, { "step": "How hash aggregation actually runs" }, { "step": "How sort-based aggregation actually runs" }, { "step": "Predict: 1,500,000 groups" }, { "step": "Reveal: the crossover" }, { "step": "Why the winner flips" }] },
+    { "clause": "partial/two-phase aggregation for parallel plans,", "at": [{ "step": "Reveal: aggregating in two stages" }, { "deep": "Into the internals" }] },
+    { "clause": "DISTINCT aggregates,", "at": [{ "step": "Predict: DISTINCT and parallelism" }, { "step": "Reveal: a plain sort, no hash table" }, { "step": "Why DISTINCT breaks the pattern" }] },
+    { "clause": "eager aggregation pushed below joins (PostgreSQL 19 beta).", "at": [{ "deep": "Into the internals" }] }
+  ],
+  "sources": [
+    {
+      "source": "PostgreSQL 18 Documentation §19.7.1 \"Planner Method Configuration\" and §19.4.1 \"Memory\"",
+      "items": [
+        { "item": "enable_hashagg, default on", "at": [{ "step": "Predict: 100 groups" }] },
+        { "item": "work_mem budgets both sorts and hash tables; sort operations are used for ORDER BY, DISTINCT, and merge joins", "at": [{ "step": "Why DISTINCT breaks the pattern" }] }
+      ]
+    },
+    {
+      "source": "PostgreSQL 18 Documentation §15.3.3 \"Parallel Aggregation\"",
+      "items": [
+        { "item": "Parallel aggregation's two-stage design: a Partial Aggregate node per worker, a Finalize Aggregate node on the leader", "at": [{ "step": "Reveal: aggregating in two stages" }] },
+        { "item": "Parallel aggregation is unfavorable when groups are many relative to input rows", "at": [{ "deep": "In production" }] },
+        { "item": "Parallel aggregation is not supported when an aggregate contains DISTINCT or ORDER BY, or for GROUPING SETS", "at": [{ "step": "Predict: DISTINCT and parallelism" }, { "deep": "Into the internals" }] }
+      ]
+    },
+    {
+      "source": "PostgreSQL 18 Documentation §14.1 \"Using EXPLAIN\"",
+      "items": [
+        { "item": "Plans add nodes above scans for aggregation, joining, sorting and other operations", "at": [{ "step": "How hash aggregation actually runs" }] }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "Claude (single session, written from the syllabus line and the fetched sources before storyboarding; not independent of the builder, so a later owner review should repeat it)",
+    "date": "2026-10-22",
+    "items": [
+      { "item": "Why hash aggregation wins decisively at low group cardinality, measured directly rather than asserted", "at": [{ "step": "Predict: 100 groups" }, { "step": "Reveal: hash wins by 2.1×" }] },
+      { "item": "That the hash-vs-sort crossover is a real, measured result on this topic's own schema — the planner's own default choice (HashAggregate) was not the faster plan at high cardinality", "at": [{ "step": "Reveal: the crossover" }] },
+      { "item": "Why sort cost tracks rows while hash cost (once spilling) tracks groups relative to available memory, as the structural explanation for the crossover", "at": [{ "step": "Why the winner flips" }, { "deep": "Into the internals" }] },
+      { "item": "Reading a HashAggregate's batch/partition count off EXPLAIN (ANALYZE) as the signal that it spilled, the same signal topic 21 used for a spilling hash join", "at": [{ "step": "Reveal: the crossover" }] },
+      { "item": "That the finalize step of a parallel aggregate plan is a GroupAggregate (streaming aggregation over sorted partial results), not a second HashAggregate — read directly from this topic's own measured plan", "at": [{ "deep": "Into the internals" }] },
+      { "item": "Why a DISTINCT aggregate takes a sort-based path rather than a hash-based one, confirmed by this topic's own measured plan rather than inferred from the docs alone", "at": [{ "step": "Reveal: a plain sort, no hash table" }, { "step": "Why DISTINCT breaks the pattern" }] },
+      { "item": "GROUPING SETS as a case parallel aggregation excludes entirely, named from the documented exclusion rather than measured directly in this session", "at": [{ "deep": "Into the internals" }] },
+      { "item": "Eager aggregation pushed below joins as a named PostgreSQL 19 beta feature this topic could not measure on its PostgreSQL 16 instance, left as a pointer rather than an unverified claim", "at": [{ "deep": "Into the internals" }] },
+      { "item": "Why adding parallel workers isn't a universal fix for a slow aggregate, specifically when groups are a large fraction of rows", "at": [{ "deep": "In production" }] },
+      { "item": "When to reach for enable_hashagg=off on a specific query rather than trusting the planner's own default choice, given this topic's own measured counter-example", "at": [{ "deep": "In production" }] }
+    ]
+  },
+  "gapReview": { "date": "2026-10-22", "by": "Claude (single session)", "open": [] }
+}

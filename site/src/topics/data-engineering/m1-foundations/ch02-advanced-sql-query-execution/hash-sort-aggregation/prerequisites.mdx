@@ -1,0 +1,24 @@
+import Resource from '../../../../../components/Resource.astro';
+
+<section class="prereq" data-section="earlier-topics">
+
+### <span class="n">01</span> Two ways to combine rows, now two ways to group them
+
+<ul class="resources">
+  <Resource kind="reel" host={props.host} domain="data-engineering" title="Join algorithms: nested-loop, hash, sort-merge">The previous reel: build/probe hash joins and sorted-input merge joins — the same split, one level down.</Resource>
+  <Resource kind="reel" host={props.host} domain="data-engineering" title="Cost models and join-order search">work_mem and the planner's cost constants, reused here for aggregation.</Resource>
+</ul>
+
+</section>
+
+<section class="prereq" data-section="reference">
+
+### <span class="n">02</span> Reference
+
+<ul class="resources">
+  <Resource kind="reading" title="19.7. Query Planning" href="https://www.postgresql.org/docs/18/runtime-config-query.html#RUNTIME-CONFIG-QUERY-ENABLE" by="PostgreSQL documentation" length="5 min">enable_hashagg, the setting used to force the sort-based alternative.</Resource>
+  <Resource kind="reading" title="15.3. Parallel Plans" href="https://www.postgresql.org/docs/18/parallel-plans.html#PARALLEL-AGGREGATION" by="PostgreSQL documentation" length="5 min">The two-stage Partial Aggregate / Finalize Aggregate design, and what it excludes.</Resource>
+  <Resource kind="reading" title="19.4. Resource Consumption" href="https://www.postgresql.org/docs/18/runtime-config-resource.html#GUC-WORK-MEM" by="PostgreSQL documentation" length="5 min">work_mem, shared by sorts and hash tables alike.</Resource>
+</ul>
+
+</section>

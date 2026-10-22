@@ -1030,4 +1030,24 @@ export const TOPICS: TopicMeta[] = [
     handoff:
       'A join is decided. The same build/probe vs. sorted-input choice happens one level up, for GROUP BY — next.',
   },
+  {
+    id: 'de.hash-sort-aggregation',
+    domain: 'data-engineering',
+    slug: 'data-engineering/m1-foundations/ch02-advanced-sql-query-execution/hash-sort-aggregation',
+    title: 'Hash vs sort aggregation',
+    syllabusTitle: 'Hash vs sort aggregation',
+    kind: 'full',
+    status: 'live',
+    milestone: { number: 1, title: 'Foundations' },
+    chapter: { number: 2, title: 'Advanced SQL and query execution', section: '2.3' },
+    minutes: 15,
+    verified: '2026-10-22',
+    introduces: ['hash-aggregation', 'sort-aggregation', 'partial-aggregation'],
+    uses: ['hash-join', 'merge-join', 'work-mem-spill'],
+    declared: ['sql-select', 'group-by'],
+    bridge:
+      'A join is decided. The same build/probe vs. sorted-input choice happens one level up, for GROUP BY — next.',
+    handoff:
+      'Every mechanism so far has assumed a plan, once chosen, runs as written. Next: what happens when the query itself is rewritten before the planner ever sees the shape the SQL text described.',
+  },
 ];

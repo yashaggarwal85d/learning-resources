@@ -1,0 +1,5 @@
+- **Group cardinality**: the number of distinct values a `GROUP BY` column produces, relative to the number of rows feeding it. *Where you meet it:* the whole topic turns on this one number — 100 groups versus 1,500,000 groups, same table.
+- **Partial result**: one worker's own aggregate over the slice of rows it scanned, not yet combined with any other worker's. *Where you meet it:* the `Partial Aggregate` step in a parallel plan.
+- **Streaming aggregation**: grouping rows as they arrive from an already-sorted input, closing out one group's total the moment the key changes. *Where you meet it:* what `GroupAggregate` actually does once its input is sorted.
+- **Batch** (carried over from topic 21): a chunk a hash-based operation's data is partitioned into so each chunk can fit in memory. *Where you meet it:* a spilling `HashAggregate`, read the same way as a spilling hash join.
+- **Plan node** (carried over from topic 20): one step of a query plan. *Where you meet it:* `HashAggregate`, `GroupAggregate`, `Partial Aggregate` and `Finalize Aggregate` are all plan nodes this topic reads directly off `EXPLAIN`.

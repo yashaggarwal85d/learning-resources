@@ -58,6 +58,13 @@ export default function ReelPlayer({ meta, reel, active, startStep, next, onPlay
   }, [nudge, shake]);
   const portrait = usePortrait();
   const tRef = useRef(0);
+  const captionScrollRef = useRef<HTMLDivElement>(null);
+  // The caption's own scroll container is never remounted (only its child is, keyed by step): without this, the
+  // browser's scroll anchoring can leave it part-scrolled from a taller earlier step, so a step's caption (and its
+  // swipe-start target) can land at a different position on a later visit than on the first one.
+  useEffect(() => {
+    captionScrollRef.current?.scrollTo(0, 0);
+  }, [step]);
   const cur = steps[step];
   const answer = answers[step] ?? null;
   const needsAnswer = !!cur.predict && answer === null;
@@ -339,7 +346,7 @@ export default function ReelPlayer({ meta, reel, active, startStep, next, onPlay
         </div>
 
         {/* Caption */}
-        <div className="no-scrollbar relative z-10 flex max-h-[62%] shrink-0 flex-col overflow-y-auto px-5 pb-3 pr-16 landscape:order-1 landscape:max-h-none landscape:justify-center landscape:py-24 landscape:pl-[max(2rem,5vw)] landscape:pr-4 xl:landscape:order-2 xl:landscape:pl-6">
+        <div ref={captionScrollRef} className="no-scrollbar relative z-10 flex max-h-[62%] shrink-0 flex-col overflow-y-auto px-5 pb-3 pr-16 landscape:order-1 landscape:max-h-none landscape:justify-center landscape:py-24 landscape:pl-[max(2rem,5vw)] landscape:pr-4 xl:landscape:order-2 xl:landscape:pl-6">
           <AnimatePresence mode="wait" initial={false}>
             <motion.div key={step} initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0, y: -8 }} transition={{ duration: 0.3, ease: EASE }}>
               {step === 0 && (
