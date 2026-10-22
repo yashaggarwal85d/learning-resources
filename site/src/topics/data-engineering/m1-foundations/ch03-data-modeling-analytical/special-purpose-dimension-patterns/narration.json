@@ -1,0 +1,96 @@
+{
+  "topic": "de.special-purpose-dimension-patterns",
+  "steps": [
+    {
+      "lines": [
+        "Four shortcuts, all built on purpose, each one hiding its own tradeoff.",
+        "A dimension with nothing in it. One table pretending to be two. A pile of flags shrunk down to almost nothing. A dimension that leans on another dimension."
+      ]
+    },
+    {
+      "lines": [
+        "Start with the strangest one: a dimension that's basically empty.",
+        "Once an invoice's line items borrow everything descriptive from the invoice itself, the invoice number has nothing left to describe. It still earns a place in the fact table anyway."
+      ]
+    },
+    {
+      "lines": [
+        "So test that against intuition for a second.",
+        "That order number has no table backing it up at all. Can you still group rows by it and trust the answer?"
+      ],
+      "answer": [
+        "You can, completely. Grouping only ever needs matching values to compare against each other.",
+        "A dimension table was never actually part of what makes that comparison work."
+      ]
+    },
+    {
+      "lines": [
+        "Watch it happen on real rows, not a hand-wave.",
+        "Two lines that share the same bare order number land in the same group. A third line, under a different number, lands by itself. No dimension table anywhere in the picture."
+      ]
+    },
+    {
+      "lines": [
+        "Now flip to the opposite problem: one table doing double duty.",
+        "The same physical dimension gets referenced more than once from a single fact row, and each one of those references stands for its own separate idea entirely."
+      ]
+    },
+    {
+      "lines": [
+        "Here it is with one real calendar table, used twice at once.",
+        "A single shared date table, joined into the same order from two different angles, hands back a genuinely different order date and ship date — the same table, acting as two things simultaneously."
+      ]
+    },
+    {
+      "lines": [
+        "Third pattern, and it's really about what you choose not to build.",
+        "A handful of small flags that tend to show up on every transaction don't each need their own table. One shared table can hold them all, storing only the combinations that genuinely show up."
+      ]
+    },
+    {
+      "lines": [
+        "Here's that restraint measured directly.",
+        "Three flags could combine eight different ways in theory. In practice, only three of those combinations ever actually occurred, and that's the entire size of the table that was needed."
+      ]
+    },
+    {
+      "lines": [
+        "Last pattern, and here's the trap worth naming before the reveal.",
+        "A dimension that simply points at another dimension sounds like it costs nothing. Does reading through it actually cost anything when you query it?"
+      ],
+      "answer": [
+        "It does, every time. Reaching that second dimension's own attribute means an extra join has to happen first.",
+        "That hidden cost is exactly why this pattern comes with a warning attached to it rather than a free pass."
+      ]
+    },
+    {
+      "lines": [
+        "Here's that warning, in the source's own words.",
+        "This kind of chaining is allowed, but only used lightly — in most situations, that relationship belongs sitting in the fact table itself instead, as its own direct connection."
+      ]
+    },
+    {
+      "lines": [
+        "Now the actual join count, measured rather than guessed at.",
+        "Reaching one account's own opened date through this chained dimension touches three separate tables in the query. A flatter design answering that same question would only need two."
+      ]
+    },
+    {
+      "lines": [
+        "Step back and weigh all four side by side.",
+        "An empty key still groups fine, but gives up every descriptive attribute. One table can wear two hats, as long as each hat is named separately.",
+        "A shrunk-down flag table skips whatever combination never actually happens. And a dimension chained to another dimension works, but someone pays for that chain on every single query."
+      ]
+    },
+    {
+      "lines": [
+        "One more, and this time it's yours to place.",
+        "Two separate timestamps, from the exact same calendar, sitting on the exact same record. Out of everything just covered, which pattern is that actually asking for?"
+      ],
+      "answer": [
+        "The one built for a single table standing in for more than one role. Both of these are genuinely dates from the same calendar.",
+        "They're just two independent roles of it — exactly the shape that pattern exists to solve."
+      ]
+    }
+  ]
+}

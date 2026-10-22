@@ -1,0 +1,4 @@
+- **Degenerate dimension**: a dimension key with no dimension table behind it at all, kept directly in the fact table. *Where you meet it:* an invoice number sitting as a plain column on a line-item fact table.
+- **Role-playing dimension**: one physical dimension table referenced more than once from the same fact table, each reference standing in for its own independent role. *Where you meet it:* one `dim_date` table joined twice to get both an order date and a ship date.
+- **Junk dimension**: a single small dimension table combining several low-cardinality flags, storing only the combinations that actually occur. *Where you meet it:* a handful of boolean shipping flags collapsed into one table instead of several tiny ones.
+- **Outrigger dimension**: a dimension table that itself references another dimension table. *Where you meet it:* an account dimension pointing at a separate date-opened dimension, one extra join away from the fact table.

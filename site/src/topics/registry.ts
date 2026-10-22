@@ -1450,4 +1450,24 @@ export const TOPICS: TopicMeta[] = [
     handoff:
       "Conforming dimensions assumed each dimension itself was already a clean, well-behaved table. Next: the dimension patterns — degenerate, role-playing, junk, outrigger — that exist specifically because real dimensions often aren't.",
   },
+  {
+    id: 'de.special-purpose-dimension-patterns',
+    domain: 'data-engineering',
+    slug: 'data-engineering/m1-foundations/ch03-data-modeling-analytical/special-purpose-dimension-patterns',
+    title: 'Special-purpose dimension patterns',
+    syllabusTitle: 'Special-purpose dimension patterns',
+    kind: 'full',
+    status: 'live',
+    milestone: { number: 1, title: 'Foundations' },
+    chapter: { number: 3, title: 'Data modeling and analytical architecture', section: '3.2' },
+    minutes: 13,
+    verified: '2026-10-22',
+    introduces: ['degenerate-dimension', 'role-playing-dimension', 'junk-dimension', 'outrigger-dimension'],
+    uses: ['conformed-dimension', 'fact-grain'],
+    declared: ['sql-select'],
+    bridge:
+      "Conforming dimensions assumed each dimension itself was already a clean, well-behaved table. This topic is the dimension patterns — degenerate, role-playing, junk, outrigger — that exist specifically because real dimensions often aren't.",
+    handoff:
+      "Every pattern here still assumed a fact row joins to exactly one row per dimension. Next: the one place that clean one-to-many assumption breaks on its own, and the bridge table that repairs it.",
+  },
 ];

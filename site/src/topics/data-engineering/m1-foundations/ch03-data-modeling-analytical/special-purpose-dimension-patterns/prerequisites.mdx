@@ -1,0 +1,25 @@
+import Resource from '../../../../../components/Resource.astro';
+
+<section class="prereq" data-section="before-this">
+
+### <span class="n">01</span> Before this: dimensions assumed to be clean, single tables
+
+<ul class="resources">
+  <Resource kind="reel" title="Conformed dimensions and drill-across" domain="data-engineering" host="de.conformed-dimensions-drill-across" by="the topic right before this one" />
+  <Resource kind="reel" title="Fact table types" domain="data-engineering" host="de.fact-table-types" by="earlier in this chapter" />
+</ul>
+
+</section>
+
+<section class="prereq" data-section="kimball-patterns">
+
+### <span class="n">02</span> Kimball's own dimension-pattern material
+
+<ul class="resources">
+  <Resource kind="reading" title="Degenerate Dimensions" href="https://www.kimballgroup.com/data-warehouse-business-intelligence-resources/kimball-techniques/dimensional-modeling-techniques/degenerate-dimension/" by="Kimball Group">A key with no content left, kept in the fact table.</Resource>
+  <Resource kind="reading" title="Role-Playing Dimensions" href="https://www.kimballgroup.com/data-warehouse-business-intelligence-resources/kimball-techniques/dimensional-modeling-techniques/role-playing-dimension/" by="Kimball Group">One physical table, several independent roles.</Resource>
+  <Resource kind="reading" title="Junk Dimensions" href="https://www.kimballgroup.com/data-warehouse-business-intelligence-resources/kimball-techniques/dimensional-modeling-techniques/junk-dimension/" by="Kimball Group">Only the combinations that actually occur.</Resource>
+  <Resource kind="reading" title="Outrigger Dimensions" href="https://www.kimballgroup.com/data-warehouse-business-intelligence-resources/kimball-techniques/dimensional-modeling-techniques/outrigger-dimension/" by="Kimball Group">Permissible, sparingly; demote to the fact table instead.</Resource>
+</ul>
+
+</section>
