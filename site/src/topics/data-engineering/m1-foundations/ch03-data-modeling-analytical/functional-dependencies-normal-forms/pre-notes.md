@@ -1,0 +1,7 @@
+- **Functional dependency (FD)**: a rule that one attribute (or set of attributes) determines another — same input, always the same output. *Where you meet it:* a `customer_id` that always implies the same email on file.
+- **Attribute closure**: every attribute reachable from a starting set by repeatedly applying known functional dependencies. *Where you meet it:* checking whether a proposed key really determines the whole row.
+- **Candidate key**: the smallest attribute set whose closure reaches every attribute in the relation. *Where you meet it:* choosing which column (or columns) a table's primary key should come from.
+- **Normal form**: a named level of guarantee a schema's design meets, each one stricter than the last. *Where you meet it:* "this table is in third normal form" as a design review statement.
+- **Multivalued dependency**: a rule where one value determines a whole set of other values, not just one. *Where you meet it:* a person who can have several phone numbers and several email addresses, independently.
+- **Lossless decomposition**: splitting a table into two or more so that joining them back recovers every original row exactly. *Where you meet it:* the non-negotiable check before accepting any schema split.
+- **Denormalization**: deliberately storing redundant data to avoid a join at read time, accepting some risk of inconsistency in exchange. *Where you meet it:* a wide analytics table that repeats a customer's name on every one of their orders.
