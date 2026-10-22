@@ -1,0 +1,66 @@
+{
+  "topic": "dsa.ring-buffers-bounded-queues",
+  "syllabus": [
+    { "clause": "power-of-two index masking", "at": [
+      { "step": "The real cost of wrap-around" },
+      { "step": "Predict: the next index" }
+    ] },
+    { "clause": "full/empty disambiguation", "at": [
+      { "step": "The ambiguity" },
+      { "step": "The fix this topic builds" }
+    ] },
+    { "clause": "overwrite vs block policies", "at": [
+      { "step": "What happens when it's full" },
+      { "step": "Predict: overwrite or block?" }
+    ] },
+    { "clause": "and boundedness as backpressure → Rust Systems Engineering Ch.7, Ch.10", "at": [
+      { "step": "Boundedness as backpressure" }
+    ] }
+  ],
+  "sources": [
+    {
+      "source": "Linux kernel, include/linux/kfifo.h",
+      "items": [
+        { "item": "struct holds unmasked, monotonically increasing in/out counters plus a mask", "at": [{ "step": "The fix this topic builds" }] },
+        { "item": "length is in minus out; empty is in == out; full is length greater than mask", "at": [{ "step": "The fix this topic builds" }] },
+        { "item": "fifo size must be a power of two", "at": [{ "step": "The real cost of wrap-around" }] }
+      ]
+    },
+    {
+      "source": "Agner Fog, Optimizing software in C++",
+      "items": [
+        { "item": "simple integer and bitwise operations cost about one clock cycle", "at": [{ "step": "The real cost of wrap-around" }] },
+        { "item": "integer division costs dozens of clock cycles, and a power-of-two division becomes a shift", "at": [{ "step": "The real cost of wrap-around" }] }
+      ]
+    },
+    {
+      "source": "Python documentation, collections.deque",
+      "items": [
+        { "item": "a bounded deque discards from the opposite end once full, on every new item", "at": [{ "step": "What happens when it's full" }, { "step": "Predict: overwrite or block?" }] }
+      ]
+    },
+    {
+      "source": "Rust documentation, std::sync::mpsc::sync_channel",
+      "items": [
+        { "item": "a full bounded channel's send blocks until the buffer opens up", "at": [{ "step": "What happens when it's full" }, { "step": "Boundedness as backpressure" }] }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "self-review",
+    "date": "2026-10-22",
+    "items": [
+      { "item": "a ring buffer never grows: capacity is fixed at construction, unlike topic 1's doubling array", "at": [{ "step": "Opening" }] },
+      { "item": "wrap-around via modulo is correct for any capacity, but only a power-of-two capacity lets a bitwise AND replace it", "at": [{ "step": "The real cost of wrap-around" }] },
+      { "item": "head equals tail is structurally ambiguous between empty and full under naive masked indices, since both states wrap identically", "at": [{ "step": "The ambiguity" }] },
+      { "item": "unmasked indices avoid the ambiguity because in and out keep counting forever and are only brought back into range at the moment of array access, so their difference is always the true occupancy", "at": [{ "step": "The fix this topic builds" }] },
+      { "item": "sacrificing one slot (capacity usable = allocated minus one) and keeping an explicit count or flag are both real, workable alternatives, each paying a different cost (wasted capacity; or an extra write on every push and pop)", "at": [{ "step": "The fix this topic builds" }] },
+      { "item": "overwrite and block are policy choices about what happens on a full write, independent of which full/empty mechanism is underneath", "at": [{ "step": "What happens when it's full" }] },
+      { "item": "a bounded structure forces a producer to either lose old data (overwrite) or slow down to the consumer's pace (block) — an unbounded structure defers that choice by growing instead, which is exactly what backpressure refuses to do", "at": [{ "step": "Boundedness as backpressure" }] },
+      { "item": "the concurrent, lock-free version of this same structure is a materially harder problem (multiple threads racing on the same in/out counters) and is left entirely to the Rust chapters", "at": [{ "step": "Boundedness as backpressure" }] },
+      { "item": "masking vs modulo is measured directly in examples.py at several capacities rather than asserting the cited cycle counts transfer unchanged to the machine running the example", "at": [{ "step": "Prove it" }] },
+      { "item": "a correctness check (masked-index ring buffer vs a naive modulo version) agrees exactly across a long randomized sequence of pushes and pops, including ones that wrap the buffer multiple times", "at": [{ "step": "Prove it" }] }
+    ]
+  },
+  "gapReview": { "date": "2026-10-22", "by": "self-review", "open": [] }
+}
