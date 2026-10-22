@@ -1,0 +1,99 @@
+{
+  "topic": "de.late-arriving-facts-dimensions",
+  "steps": [
+    {
+      "lines": [
+        "An order lands, and the customer it names isn't in the customer table at all.",
+        "Throw the row away, and that sale is gone from every report that ever runs — so what's the alternative?"
+      ]
+    },
+    {
+      "lines": [
+        "Make up a dimension row anyway, just enough of one to get by.",
+        "It carries the unresolved key and nothing real beyond that — generic, unknown values standing in for data that hasn't shown up yet — but it's enough for the order to post right now."
+      ]
+    },
+    {
+      "lines": [
+        "Watch that actually happen, on a real order.",
+        "One placeholder customer row goes in first, and the order loads against it immediately afterward — no missing link anywhere, even though nothing real is known about this customer yet."
+      ]
+    },
+    {
+      "lines": [
+        "Here's the question worth sitting with before the next reveal.",
+        "That placeholder was never a genuine version of this customer — it was a stand-in for not knowing. When the real data finally shows up, does filling it in add another row, the way a real change would?"
+      ],
+      "answer": [
+        "It doesn't. There was never a real history there to preserve, so there's nothing for a second row to protect.",
+        "The exact same row just gets written over with the real information."
+      ]
+    },
+    {
+      "lines": [
+        "Confirm that for real, on the same customer.",
+        "The real data lands on that same placeholder row, overwritten in place. Count the rows before and after — it hasn't moved at all."
+      ]
+    },
+    {
+      "lines": [
+        "Now a genuinely different kind of lateness, worth not confusing with the first.",
+        "Someone corrects an attribute that already has real history behind it. That's not filling in a gap — a new row goes in, and every sale that touched the old value has to be fixed to match."
+      ]
+    },
+    {
+      "lines": [
+        "Here's a harder one, worth working through before it's shown.",
+        "A sale from a while back turns up late, and this customer has moved more than once since then. Does that sale get tied to the address on file today, or to wherever this person actually lived when it happened?"
+      ],
+      "answer": [
+        "Wherever they actually lived then. A customer with real history isn't one row worth joining to — it's several, one for each stretch of time.",
+        "The sale's own date is what decides which one is the right match."
+      ]
+    },
+    {
+      "lines": [
+        "That's the fix, described plainly.",
+        "When a sale's own moment doesn't line up with what's current, go back and search the history for whichever version was actually true on that date — not whatever happens to be true today."
+      ]
+    },
+    {
+      "lines": [
+        "Run both versions of that search on the exact same sale and compare.",
+        "Reaching for today's address lands on the wrong stretch of history entirely. Searching by the sale's own date lands on the one that was genuinely true when it happened."
+      ]
+    },
+    {
+      "lines": [
+        "That search for the right version worked beautifully just now. Push on it a little.",
+        "Should every pipeline just always go back through its entire history, for every late sale, no matter how old?"
+      ],
+      "answer": [
+        "No — being able to search doesn't mean searching forever is free. Holding that much history open for arbitrarily late data costs real, unbounded resources.",
+        "Even systems built specifically for this problem still draw a line somewhere."
+      ]
+    },
+    {
+      "lines": [
+        "Streaming systems give that line an actual name.",
+        "A window for incoming data stays open for late arrivals only so long, and then it's considered closed for good — the exact same tradeoff a batch pipeline has to make, just named out loud instead of left to chance."
+      ]
+    },
+    {
+      "lines": [
+        "Pull it all back together.",
+        "A missing customer gets a placeholder, overwritten later, never versioned. A late sale joins on its own date, never on what's current today. And any plan for handling lateness needs a named limit, or its cost has no limit either."
+      ]
+    },
+    {
+      "lines": [
+        "One more, worth reasoning through before the answer lands.",
+        "A correction shows up for one of the very oldest sales on record — older than the limit this pipeline already draws for late data. Does the ordinary search just pick it up anyway?"
+      ],
+      "answer": [
+        "It doesn't, and that's by design. The whole point of naming a limit was that anything past it was never going to be swept up automatically.",
+        "That correction needs its own explicit handling — a deliberate decision, not something quietly skipped."
+      ]
+    }
+  ]
+}
