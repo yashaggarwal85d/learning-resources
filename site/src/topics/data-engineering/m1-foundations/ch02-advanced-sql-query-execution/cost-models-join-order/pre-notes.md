@@ -1,0 +1,7 @@
+- **Plan node**: one step of a query plan (a scan, a join, a sort). *Where you meet it:* every cost number in this topic belongs to a node, and a node's cost includes everything below it.
+- **Arbitrary cost units**: the numbers EXPLAIN prints aren't seconds — they're a relative scale set by a handful of constants. *Where you meet it:* the Seq Scan formula and every cost comparison in this topic.
+- **FROM item**: one table, subquery or joined group the planner has to place in a join order. *Where you meet it:* `join_collapse_limit` and `geqo_threshold` both count these, not tables.
+- **Search space**: the set of distinct ways a problem could be solved. *Where you meet it:* the number of join orders for n tables, and why it isn't small.
+- **Planning time vs. execution time**: the time spent choosing a plan versus the time spent running it. *Where you meet it:* every number in this topic is planning time; none of them are how long the query actually ran.
+- **Heuristic search**: a method that searches part of the space quickly instead of all of it exhaustively, without guaranteeing the best answer. *Where you meet it:* what GEQO trades for speed once a query gets large.
+- **Selectivity**: the fraction of rows a condition keeps (carried over from topic 19). *Where you meet it:* the one filtered table in this topic's join-order demonstration.

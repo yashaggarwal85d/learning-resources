@@ -1,0 +1,138 @@
+{
+  "topic": "de.cost-models-join-order",
+  "steps": [
+    {
+      "lines": [
+        "Nine tables. The same data, joined the same way, asking for the same count.",
+        "One version of that question reports a total cost. Another version reports a much smaller one.",
+        { "beat": 0.4 },
+        "Nothing about the tables changed between them. So what did?"
+      ]
+    },
+    {
+      "lines": [
+        "A table's page count and row count are sitting right there in the catalog, along with the two constants the planner uses to turn them into a cost.",
+        "Work the arithmetic by hand before the planner shows its own number.",
+        { "beat": 0.4 },
+        "Does the planner's reported cost land on the smaller figure, the larger one, or something else entirely?"
+      ],
+      "answer": [
+        "It lands on the sum of the two pieces: the page count times the sequential page cost, plus the row count times the per row cost.",
+        "That is the whole formula, worked by hand on a real table instead of a toy one."
+      ]
+    },
+    {
+      "lines": [
+        "Here is the planner's own reported number, printed right where the hand arithmetic predicted it would be.",
+        "Not an estimate rounded for convenience. An exact match, to the decimal.",
+        "A plan's cost is never measured after the query runs. It is computed, in the planner's own arbitrary units, before a single row moves."
+      ]
+    },
+    {
+      "lines": [
+        "Five numbers do all the work: one for a sequential page, a larger one for a page fetched out of order, and three small ones for the cost of touching each row, each index entry, and each operator.",
+        "Every plan the planner ever considers is priced from just these five.",
+        "Whichever plan's total comes out lowest is the one that runs."
+      ]
+    },
+    {
+      "lines": [
+        "Scanning one table barely counts as a decision. Choosing the order to join many tables is a different kind of problem.",
+        "Count every distinct way to join twelve tables and the number runs past twenty eight trillion. Push to fourteen tables and it is past sixty four quadrillion.",
+        "That count was not guessed at. It was checked by brute force on small cases before it was trusted on large ones.",
+        "The sheer size of that search is the actual reason a planner needs a strategy at all, not just a cost formula."
+      ]
+    },
+    {
+      "lines": [
+        "Nine tables, written in the worst possible order. The one selective filter sits last, after eight unfiltered joins have already run.",
+        "A setting limits how many tables the planner is allowed to freely reorder, and by default that limit is smaller than nine.",
+        { "beat": 0.4 },
+        "Will the planner still find its way to a better order, or is it stuck with the order as written?"
+      ],
+      "answer": [
+        "Stuck with it. Nine tables is one more than the default limit covers, so the planner cannot flatten and freely reorder the whole list.",
+        "The order on the page is the order that actually runs."
+      ]
+    },
+    {
+      "lines": [
+        "Force the planner to keep that literal, bad order and the total cost is enormous — every unfiltered table joined in full before the one real filter ever applies.",
+        "Let the planner reorder freely instead, and the total cost drops to a small fraction of that — more than ten times smaller.",
+        "Same tables. Same data. Same question being asked. The only thing that changed was whether the planner was allowed to rewrite what was written."
+      ]
+    },
+    {
+      "lines": [
+        "Two settings, both defaulting to the same modest number, control this: one for how many tables a written join can flatten into, one for how many a merged subquery can.",
+        "Pin that number down to its smallest possible value and you are telling the planner: keep the order exactly as I wrote it.",
+        "That is not a workaround for a bug. It is the deliberate way to force a join order you already know is better."
+      ]
+    },
+    {
+      "lines": [
+        "There is a threshold, measured in how many tables a query touches at once, past which the planner changes its whole strategy.",
+        "Push a chain of joins from just under that threshold to just over it.",
+        { "beat": 0.4 },
+        "Does the plan get better past that point, worse, or does nothing change at all?"
+      ],
+      "answer": [
+        "Worse is possible, but faster to find is the actual trade. Past the threshold the planner swaps an exhaustive search for a much quicker, less certain one.",
+        "It gives up a guarantee of finding the best order in exchange for a bound on how long finding any order takes."
+      ]
+    },
+    {
+      "lines": [
+        "Force the exhaustive search anyway, past that threshold, and watch planning time itself: a small fraction of a second at eight tables, well over a second at twelve, dozens of seconds at fourteen.",
+        "Push two tables further still and the exhaustive search never returned an answer at all — the attempt alone was enough to strain the whole server.",
+        "Switch to the quicker strategy at those same sizes and planning finishes in a small fraction of a second, landing on exactly the same cost both times, here.",
+        "A bound on how long the search takes, not a promise about what the search finds — this particular query just happened to get both anyway."
+      ]
+    },
+    {
+      "lines": [
+        "That quicker strategy treats a join order the way an old routing puzzle treats a tour between cities: encode the order as a string of stops, and let a whole population of candidate strings compete.",
+        "Cheaper candidates survive. The most expensive ones are discarded, and new candidates are bred by recombining pieces of the ones that survived.",
+        "A genuine search through a sample of the space, not a shortcut through the whole thing."
+      ]
+    },
+    {
+      "lines": [
+        "One more thing the planner tracks that has nothing to do with cost alone: the order rows already come out in.",
+        "Ask for rows in a particular order with no help from an index and the planner adds an explicit sorting step, at real cost.",
+        "Add an index that already produces rows in that exact order and the sorting step disappears entirely. The total cost drops by more than a thousand times.",
+        "A scan is not just priced on how it reads rows — it is also valued for the order it happens to leave them in."
+      ]
+    },
+    {
+      "lines": [
+        "Before trusting any plan's shape, three questions are worth asking.",
+        "What do those five constants assume about the hardware underneath — is a random read on this machine really that much slower than a sequential one?",
+        "Would a smaller reorder limit have blocked the planner from reaching a better order here?",
+        "And is this query already past the point where the quicker, less certain search took over?"
+      ]
+    },
+    {
+      "lines": [
+        "A smaller table this time: a couple thousand pages, tens of thousands of rows.",
+        { "beat": 0.4 },
+        "Using the same five constants as before, what total cost does a sequential scan of it report?"
+      ],
+      "answer": [
+        "The same formula as before, just smaller numbers going in: the page count times the sequential page cost, plus the row count times the per row cost.",
+        "Once the formula is in hand, any table's number is just arithmetic."
+      ]
+    },
+    {
+      "lines": [
+        "Seven tables this time, also written in a bad order, with the reorder limit left at its ordinary default.",
+        { "beat": 0.4 },
+        "Does seven fit comfortably under that default, or does it run into the same wall nine did?"
+      ],
+      "answer": [
+        "It fits. Seven is within the default limit, so the planner can still flatten the whole list and search freely, no matter how it was written.",
+        "The wall only shows up once the written join actually exceeds the limit — which is exactly what made nine tables different from seven."
+      ]
+    }
+  ]
+}

@@ -1,0 +1,59 @@
+{
+  "topic": "de.cost-models-join-order",
+  "syllabus": [
+    { "clause": "I/O + CPU cost formulas,", "at": [{ "step": "Predict: a Seq Scan, by the numbers" }, { "step": "Reveal: the formula, exactly" }, { "step": "Five constants, one scale" }] },
+    { "clause": "bottom-up dynamic programming (System R)", "at": [{ "step": "Choosing a join order is also a search" }, { "deep": "Into the internals" }] },
+    { "clause": "vs top-down transformation search (Volcano/Cascades),", "at": [{ "deep": "Into the internals" }] },
+    { "clause": "interesting orders,", "at": [{ "step": "Interesting orders: a sort you never paid for" }] },
+    { "clause": "search-space explosion;", "at": [{ "step": "Choosing a join order is also a search" }, { "deep": "Into the internals" }] },
+    { "clause": "PostgreSQL's collapse limits (default 8)", "at": [{ "step": "Predict: a query written in a bad order" }, { "step": "Reveal: the same query, 14× apart" }, { "step": "from_collapse_limit, join_collapse_limit" }, { "step": "Prove it · 2 of 2" }] },
+    { "clause": "and GEQO genetic search from 12 FROM items (geqo_threshold).", "at": [{ "step": "Predict: past the threshold" }, { "step": "Reveal: the planning-time curve" }, { "step": "How GEQO actually searches" }] }
+  ],
+  "sources": [
+    {
+      "source": "PostgreSQL 18 Documentation §14.1 \"Using EXPLAIN\" and §19.7.2 \"Planner Cost Constants\"",
+      "items": [
+        { "item": "Seq Scan cost = (disk pages * seq_page_cost) + (rows scanned * cpu_tuple_cost), with the documentation's own tenk1 worked example", "at": [{ "step": "Predict: a Seq Scan, by the numbers" }, { "step": "Reveal: the formula, exactly" }] },
+        { "item": "The topmost line's total cost is what the planner seeks to minimize", "at": [{ "step": "Reveal: the formula, exactly" }] },
+        { "item": "A scan whose output order matches an ORDER BY clause needs no extra Sort step — an \"interesting order\"", "at": [{ "step": "Interesting orders: a sort you never paid for" }] },
+        { "item": "The five default cost constants (1.0 / 4.0 / 0.01 / 0.005 / 0.0025)", "at": [{ "step": "Five constants, one scale" }] },
+        { "item": "random_page_cost defaults to 4x seq_page_cost on a caching assumption, not raw hardware ratios", "at": [{ "deep": "In production" }] }
+      ]
+    },
+    {
+      "source": "PostgreSQL 18 Documentation §14.3 \"Controlling the Planner with Explicit JOIN Clauses\" and §19.7.4 \"Other Planner Options\"",
+      "items": [
+        { "item": "Join-order search space grows exponentially; exhaustive search impractical beyond about ten tables", "at": [{ "step": "Choosing a join order is also a search" }] },
+        { "item": "from_collapse_limit/join_collapse_limit default to 8; join_collapse_limit=1 pins the literal written join order", "at": [{ "step": "Predict: a query written in a bad order" }, { "step": "from_collapse_limit, join_collapse_limit" }] },
+        { "item": "Constraining the planner's search is useful both for planning time and for directing it to a good plan", "at": [{ "step": "Reveal: the same query, 14× apart" }] }
+      ]
+    },
+    {
+      "source": "PostgreSQL 18 Documentation §61.1 \"Query Handling as a Complex Optimization Problem\" and §61.3 \"Genetic Query Optimization (GEQO) in PostgreSQL\"",
+      "items": [
+        { "item": "The normal planner's near-exhaustive search, first introduced in System R, can take enormous time and memory for large joins", "at": [{ "deep": "Into the internals" }] },
+        { "item": "geqo_threshold defaults to 12 FROM items; GEQO trades a guarantee of the best plan for a bound on planning time", "at": [{ "step": "Predict: past the threshold" }] },
+        { "item": "GEQO's mechanics: join orders as integer strings, a steady-state genetic algorithm, edge recombination crossover, fitness = lower estimated cost", "at": [{ "step": "How GEQO actually searches" }] },
+        { "item": "GEQO's own documented doubt about fitting query optimization to a TSP-shaped genetic algorithm", "at": [{ "deep": "Into the internals" }] }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "Claude (single session, written from the syllabus line and the fetched sources before storyboarding; not independent of the builder, so a later owner review should repeat it)",
+    "date": "2026-10-22",
+    "items": [
+      { "item": "Why EXPLAIN's cost numbers are planning-time estimates in arbitrary units, not measured execution time", "at": [{ "step": "Reveal: the formula, exactly" }] },
+      { "item": "Why an access path's own output order matters beyond the scan itself — it can let a later ORDER BY, merge join or GROUP BY skip a sort entirely", "at": [{ "step": "Interesting orders: a sort you never paid for" }] },
+      { "item": "That join-order search space size is a real, computable quantity (brute-force-verified formula), not a hand-waved 'it's big'", "at": [{ "step": "Choosing a join order is also a search" }] },
+      { "item": "How from_collapse_limit/join_collapse_limit structurally change what the planner can search, not just how long it takes", "at": [{ "step": "Predict: a query written in a bad order" }, { "step": "Reveal: the same query, 14× apart" }, { "deep": "Into the internals" }] },
+      { "item": "When to deliberately pin a join order with join_collapse_limit = 1 instead of trusting the default", "at": [{ "step": "from_collapse_limit, join_collapse_limit" }, { "deep": "In production" }] },
+      { "item": "What geqo_threshold actually controls, and that GEQO matching the optimum is this topic's own measured result on its own query shape, not a documented guarantee", "at": [{ "step": "Reveal: the planning-time curve" }] },
+      { "item": "The System R bottom-up dynamic-programming approach, as PostgreSQL's own docs describe it, versus the open question of how it compares to top-down (Volcano/Cascades) approaches used elsewhere", "at": [{ "deep": "Into the internals" }] },
+      { "item": "Bushy vs. left-deep join trees as the two shapes a real join-order count has to include", "at": [{ "deep": "Into the internals" }] },
+      { "item": "Why a query that plans slowly is a collapse-limit/geqo_threshold question before it's an execution-time question", "at": [{ "deep": "In production" }] },
+      { "item": "The System R dynamic-programming table's own size versus the raw join-order count this topic measured (subset reuse vs. full enumeration)", "at": [{ "deep": "Into the internals" }] },
+      { "item": "How other engines' optimizers (Volcano/Cascades-based: SQL Server, Spark Catalyst-adjacent systems) search top-down instead", "at": [{ "out": "No primary source could be fetched and quoted verbatim in this session; left as a pointer to further reading in the Deep dive rather than an unverified claim." }] }
+    ]
+  },
+  "gapReview": { "date": "2026-10-22", "by": "Claude (single session)", "open": [] }
+}

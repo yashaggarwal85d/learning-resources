@@ -484,4 +484,28 @@ Folder prefix for every topic: `site/src/topics/data-engineering/m1-foundations/
 - **Lab:** hosts the §2.3 lab's "fix some with extended statistics" part directly (its own measured correlated-columns example); the Join Order Benchmark and 100×+ estimate-error hunt belong to topic 20, which this topic's post-notes point to.
 - **Sources:** PostgreSQL 18 docs §14.2 ("Statistics Used by the Planner") and §69.1 ("Row Estimation Examples"), CREATE STATISTICS, §53.29 (pg_stats); Kipf et al., "Learned Cardinalities" (arXiv:1809.00677, CIDR 2019); this topic's own measurements on a real PostgreSQL 16 instance (see its `SOURCES.md`).
 
+### 20. Cost models and join-order search (`de.cost-models-join-order`): full, §2.3
+
+- **Folder:** `cost-models-join-order`. About 15 min.
+- **Scope:**
+  - "I/O + CPU cost formulas": the five planner cost constants (`seq_page_cost`=1.0, `random_page_cost`=4.0, `cpu_tuple_cost`=0.01, `cpu_index_tuple_cost`=0.005, `cpu_operator_cost`=0.0025) and the documented Seq Scan formula (`disk pages * seq_page_cost + rows scanned * cpu_tuple_cost`), verified by hand against a real table.
+  - "bottom-up dynamic programming (System R)": PostgreSQL's own description of its exhaustive planner as the System R algorithm; the number of join-order trees as a function of table count, verified directly by brute-force enumeration against the closed-form count, not assumed.
+  - "top-down transformation search (Volcano/Cascades)": named only, as the other lineage other engines use — no claim about its internals is made without a primary source to quote, so this stays a pointer in the Deep dive, not a reel claim.
+  - "search-space explosion": a real exhaustive-planning time curve measured on this topic's own schema (8, 10, 12, 13, 14 FROM items), including the point (16) where exhaustive planning exhausted the server itself.
+  - "PostgreSQL's collapse limits (default 8)": `join_collapse_limit`/`from_collapse_limit`, measured forcing a literal bad join order (`join_collapse_limit=1`) against letting the planner reorder it (`join_collapse_limit=20`) on the same 9-table query — a real ~14× cost gap.
+  - "GEQO genetic search from 12 FROM items (`geqo_threshold`)": the genetic algorithm's own documented mechanics (integer-string encoding, steady-state GA, edge recombination crossover) and a real measured comparison against forced exhaustive search at the same table counts (same cost, 13–40× less planning time on this topic's query; PostgreSQL's own docs are quoted that this isn't guaranteed every time).
+  - Leaves how each individual join actually executes (nested-loop, hash, sort-merge) to topic 21.
+- **Outcomes:**
+  - Compute a Seq Scan's estimated cost by hand from `pg_class` and the five cost constants.
+  - Explain why join-order search space grows the way it does, with a real computed count, not a hand-waved "it's big."
+  - Predict when a small `join_collapse_limit`/`from_collapse_limit` will stop the planner from fixing a badly-ordered query, and use `join_collapse_limit = 1` deliberately to pin a join order.
+  - State what `geqo_threshold` controls and what trade-off GEQO makes (less planning time, no optimality guarantee).
+- **Introduces:** `planner-cost-constants`, `join-order-search`, `collapse-limit`, `geqo`. **Uses:** `planner-paths`, `cardinality-estimation`. **Declared:** `sql-select`.
+- **Bridge:** "An estimate is only useful once it is compared against the alternatives. Next: the cost formulas that turn a row count into a plan's price, and the search that explores enough of the plan space without exploring all of it." (Answers topic 19's handoff.)
+- **Handoff:** "The order of the joins is decided. Next: what actually happens inside each one — nested loop, hash, or sort-merge — and how cardinality, sort order and memory decide which."
+- **Prerequisites panel:** topics 16 and 19 (Before this).
+- **Visual idea:** a Seq Scan's cost ticking up tuple by tuple against the hand-computed formula; a join-order tree count climbing from millions to quadrillions as table count rises by ones; two totals for the same 9-table query, one locked to a bad literal order and one let loose to reorder, splitting apart in cherry; a planning-time bar chart climbing steeply past 12 tables, with a GEQO bar sitting low and flat beside it.
+- **Lab:** hosts the §2.3 lab's "force alternative join orders" part directly (`join_collapse_limit = 1` on a real query); the Join Order Benchmark's 100×+ estimate-error hunt stays with topic 19's post-notes pointer and is not repeated here.
+- **Sources:** PostgreSQL 18 docs §19.7.2 ("Planner Cost Constants"), §14.1 ("Using EXPLAIN"), §14.3 ("Controlling the Planner with Explicit JOIN Clauses"), §61.1 and §61.3 ("Query Handling as a Complex Optimization Problem", "Genetic Query Optimization (GEQO) in PostgreSQL"); this topic's own measurements on a real PostgreSQL 16 instance (see its `SOURCES.md`).
+
 ---

@@ -990,4 +990,24 @@ export const TOPICS: TopicMeta[] = [
     handoff:
       "An estimate is only useful once it is compared against the alternatives. Next: the cost formulas that turn a row count into a plan's price, and the search that explores enough of the plan space without exploring all of it.",
   },
+  {
+    id: 'de.cost-models-join-order',
+    domain: 'data-engineering',
+    slug: 'data-engineering/m1-foundations/ch02-advanced-sql-query-execution/cost-models-join-order',
+    title: 'Cost models and join-order search',
+    syllabusTitle: 'Cost models and join-order search',
+    kind: 'full',
+    status: 'live',
+    milestone: { number: 1, title: 'Foundations' },
+    chapter: { number: 2, title: 'Advanced SQL and query execution', section: '2.3' },
+    minutes: 15,
+    verified: '2026-10-22',
+    introduces: ['planner-cost-constants', 'join-order-search', 'collapse-limit', 'geqo'],
+    uses: ['planner-paths', 'cardinality-estimation'],
+    declared: ['sql-select'],
+    bridge:
+      "An estimate is only useful once it is compared against the alternatives. Next: the cost formulas that turn a row count into a plan's price, and the search that explores enough of the plan space without exploring all of it.",
+    handoff:
+      'The order of the joins is decided. Next: what actually happens inside each one — nested loop, hash, or sort-merge — and how cardinality, sort order and memory decide which.',
+  },
 ];
