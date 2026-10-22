@@ -1,0 +1,8 @@
+- **Shared borrow**: a `&T` reference; any number may exist at once, and rustc's own diagnostics call it an "immutable" borrow. *Where you meet it:* `inspect(&buf)` reading a buffer without taking it.
+- **Exclusive borrow**: a `&mut T` reference; at most one may exist at a time, and rustc calls it a "mutable" borrow. *Where you meet it:* `fill(&mut buf, data)` writing into a buffer it doesn't own.
+- **Overlap**: two references that point at the same memory. *Where you meet it:* calling a function with two arguments that happen to be the same variable, like `f(&x, &mut x)`.
+- **Optimizer**: the part of the compiler that rewrites code to run faster without changing its result, after the borrow checker has already run. *Where you meet it:* compiling with `-O` (release builds) instead of a debug build.
+- **LLVM IR**: the intermediate representation rustc compiles down to before producing machine code; `--emit=llvm-ir` prints it. *Where you meet it:* inspecting what a function's parameters are annotated with after optimization.
+- **MIR**: Rust's own mid-level intermediate representation, used internally by the borrow checker (not something you normally see). *Where you meet it:* named only as the level two-phase borrows are implemented at.
+- **E-code**: the `Exxxx` identifier rustc attaches to a compiler error, explorable with `rustc --explain Exxxx`. *Where you meet it:* `error[E0502]` in a failed build.
+- **Method receiver**: the `self`/`&self`/`&mut self` a method call implicitly borrows from the value it's called on. *Where you meet it:* `v.push(...)` borrowing `v` as `&mut self`.

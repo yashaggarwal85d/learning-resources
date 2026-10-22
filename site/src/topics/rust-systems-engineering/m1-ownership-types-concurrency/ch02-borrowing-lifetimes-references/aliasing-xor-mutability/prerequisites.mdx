@@ -1,0 +1,22 @@
+import Resource from '../../../../../components/Resource.astro';
+
+<section class="prereq" data-section="chapter-so-far">
+
+### <span class="n">01</span> Chapter 1, and the rule it ended on
+
+<ul class="resources">
+  <Resource kind="reel" host={props.host} domain="rust-systems-engineering" title="Ownership topology over shared mutability">The previous reel's handoff: every topology still lends, `fill` by `&mut Buf`, `inspect` by `&Buf`. This topic is the rule behind both.</Resource>
+  <Resource kind="reel" host={props.host} domain="rust-systems-engineering" title="RAII, drop order, and leak safety">Where this chapter's `Mutex`/runtime-lock contrast first came up.</Resource>
+</ul>
+
+</section>
+
+<section class="prereq" data-section="borrowing-rule">
+
+### <span class="n">02</span> The Book's borrowing rule
+
+<ul class="resources">
+  <Resource kind="reading" title="References and Borrowing" href="https://doc.rust-lang.org/book/ch04-02-references-and-borrowing.html" by="Klabnik, Nichols and Krycho, The Rust Programming Language">The informal rule ("one mutable reference, or any number of immutable ones") this topic states precisely and explains.</Resource>
+</ul>
+
+</section>

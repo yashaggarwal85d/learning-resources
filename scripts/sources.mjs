@@ -15,6 +15,7 @@ import { spawnSync } from 'node:child_process';
 import { existsSync, mkdirSync, readFileSync, writeFileSync, mkdtempSync, rmSync } from 'node:fs';
 import { join } from 'node:path';
 import { tmpdir } from 'node:os';
+import { createHash } from 'node:crypto';
 
 const UA = 'Mozilla/5.0 (compatible; learning-resources-source-check)';
 
@@ -95,7 +96,11 @@ if (cmd === 'fetch' && a && b) {
   for (const s of parse(readFileSync(file, 'utf8'))) {
     if (!s.url) { console.error(`- "${s.title}": no URL line`); bad++; continue; }
     if (!s.quotes.length) continue;
-    const txt = join(cache, s.url.replace(/^https?:\/\//, '').replace(/[^a-z0-9]+/gi, '_').slice(0, 120) + '.txt');
+    // A short hash of the full URL keeps cache filenames unique even when two source URLs
+    // share a long common prefix that the 100-char slug slice alone would collapse to one name.
+    const slug = s.url.replace(/^https?:\/\//, '').replace(/[^a-z0-9]+/gi, '_').slice(0, 100);
+    const hash = createHash('sha1').update(s.url).digest('hex').slice(0, 8);
+    const txt = join(cache, `${slug}_${hash}.txt`);
     try {
       if (!existsSync(txt)) fetchSource(s.url, txt);
     } catch (e) {

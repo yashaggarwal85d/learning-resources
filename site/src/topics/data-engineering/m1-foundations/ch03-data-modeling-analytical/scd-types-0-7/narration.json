@@ -1,0 +1,105 @@
+{
+  "topic": "de.scd-types-0-7",
+  "steps": [
+    {
+      "lines": [
+        "The last topic's whole point was: never overwrite, add a new row instead, so nothing true gets lost.",
+        "Take that rule and apply it to every single attribute in a wide customer record, and watch what happens to that table over a few years."
+      ]
+    },
+    {
+      "lines": [
+        "Start with the attributes that don't even need a rule.",
+        "A customer's original credit score, or any identifier meant to be durable, isn't supposed to change in any sense that matters — so there's nothing here to version at all."
+      ]
+    },
+    {
+      "lines": [
+        "Now the opposite extreme: an attribute that changes, but whose old value nobody will ever want back.",
+        "Just write over it. Cheap, no growth in the table — the real cost is that the old value is gone, permanently, the moment it's overwritten."
+      ]
+    },
+    {
+      "lines": [
+        "Here's a question worth sitting with before the next reveal.",
+        "Overwriting throws the old value away completely. Adding a whole new row keeps it. Is there something in between — one row, but somehow both values?"
+      ],
+      "answer": [
+        "There is. A second column, sitting right there on the same row, can hold the old value while the main column gets overwritten with the new one.",
+        "One row, two values — no second row required."
+      ]
+    },
+    {
+      "lines": [
+        "That second column is exactly what this next approach adds.",
+        "The main value gets overwritten the same way as before, but a second column — sometimes called an alternate reality — keeps what used to be true, so either one can be reported on."
+      ]
+    },
+    {
+      "lines": [
+        "Line all four of these up against the exact same change and count what actually happens.",
+        "Two of them keep nothing at all. One of them keeps the old value by adding a whole row. One keeps it in a second column on the same row. That's the entire difference."
+      ]
+    },
+    {
+      "lines": [
+        "Now push on the row-per-change approach somewhere it hasn't been tested yet.",
+        "Picture a whole group of attributes, shared in pattern across a huge number of customers, that changes constantly. Does adding a new row still hold up at that scale?"
+      ],
+      "answer": [
+        "It doesn't, not without a real cost. Every single change duplicates the entire wide row — every other attribute on it, not just the ones that actually changed.",
+        "The narrow change ends up paying for the whole wide row, every single time."
+      ]
+    },
+    {
+      "lines": [
+        "So pull that fast-changing group out entirely, into a table of its own.",
+        "Only the combinations those attributes actually take on ever get a row there — out of nine combinations that are even possible, this set of customers only ever produces five."
+      ]
+    },
+    {
+      "lines": [
+        "Add one more piece, and the smaller table starts paying for itself even more.",
+        "Keep a pointer to a customer's current profile sitting right on their main record, overwritten the simple way whenever it changes — now the current values read without ever touching the smaller table at all."
+      ]
+    },
+    {
+      "lines": [
+        "Two more approaches claim to deliver exactly the same report. Worth questioning before they're shown.",
+        "Both say they can tell you the value that was true back then, and the value that's true right now, from one dimension. Do they really cost the same to get there?"
+      ],
+      "answer": [
+        "They don't. One of them keeps the current value honest by physically rewriting every prior row for that customer every time it changes.",
+        "The other reaches the current value through a second key instead, and never rewrites a single historical row."
+      ]
+    },
+    {
+      "lines": [
+        "Watch what each one actually does when a customer's current value changes.",
+        "The first rewrites every prior row that customer has accumulated — six of them, in this case. The second rewrites none of them, reaching the current value through that second key instead."
+      ]
+    },
+    {
+      "lines": [
+        "None of this is a formula to memorize — it's a question to ask about each attribute, with whoever owns that data.",
+        "A channel that never truly changes gets nothing at all. A typo gets overwritten without a second thought. A fast-changing pair that many customers share, where the current value also matters, earns its own small table."
+      ]
+    },
+    {
+      "lines": [
+        "Pull the whole menu back together in order.",
+        "The first few decide whether an old value survives at all, and where. Pulling a fast, shared group into its own table comes next. The rest aren't new ideas — they're the first ones, combined, trading one cost for another."
+      ]
+    },
+    {
+      "lines": [
+        "One more, and this one's worth working out before the answer lands.",
+        "An attribute changes about as often as that shared pair did, but it's tracked by itself, and every report needs its exact value at the moment of each sale — never today's value. What fits here?"
+      ],
+      "answer": [
+        "The row-per-change approach from the last topic. A small table earns its place when a group of attributes is shared and the current value matters.",
+        "Here neither is true — it's tracked alone, and only the historical value is ever asked for, which is exactly that approach's own case."
+      ]
+    }
+  ]
+}
