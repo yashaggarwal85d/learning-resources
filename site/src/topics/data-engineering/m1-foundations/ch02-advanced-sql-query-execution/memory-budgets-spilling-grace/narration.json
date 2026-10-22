@@ -1,0 +1,132 @@
+{
+  "topic": "de.memory-budgets-spilling-grace",
+  "steps": [
+    {
+      "lines": [
+        "Sort millions of rows with too little memory to hold them all, and the extra spills out to disk either way.",
+        "Give it a reasonable budget, and that spill finishes quickly.",
+        "Starve the budget down hard enough, and the very same amount of data spilled takes noticeably longer."
+      ]
+    },
+    {
+      "lines": [
+        "A sort over millions of rows, with a budget far too small to hold the whole thing in memory.",
+        { "beat": 0.4 },
+        "Does spilling the rest to disk make this sort slower than giving it all the memory it could want?"
+      ],
+      "answer": [
+        "Only once that budget gets severely undersized.",
+        "A spill that only takes a modest number of passes to put back together measured no slower here than staying fully in memory — it's starving the budget, not spilling itself, that costs you."
+      ]
+    },
+    {
+      "lines": [
+        "Give the sort a generous budget, and it finishes entirely in memory with one pass.",
+        "Give it the ordinary default instead — enough to force it to spill a meaningful chunk of data to disk — and it finishes just as fast, if not faster.",
+        "The spill itself didn't slow anything down."
+      ]
+    },
+    {
+      "lines": [
+        "That memory budget isn't handed to a query as a whole. It's handed to one sort, or one hash table, at a time.",
+        "A query with several of those running can spend the budget several times over in a single run.",
+        "And every other session doing the same thing at once is spending its own copy of that same budget."
+      ]
+    },
+    {
+      "lines": [
+        "Shrink that budget further, down toward the edge of what's practical, and the same sort spills almost exactly the same amount of data it did before.",
+        "But now it measurably takes longer.",
+        "The disk barely wrote any more than it already was. What changed is how many rounds it took to put all those pieces back together."
+      ]
+    },
+    {
+      "lines": [
+        "A table built for lookups is more fragile under memory pressure than a sort is, so it gets handed a bigger multiple of the same base budget by default.",
+        "Raise that multiple on a hash-based join, holding everything else fixed, and the number of pieces it has to split itself into drops sharply.",
+        "Same base budget. The hash side just got told it's allowed more of it."
+      ]
+    },
+    {
+      "lines": [
+        "A join building its lookup table from the smaller side of the two, with that memory budget shrinking step by step.",
+        { "beat": 0.4 },
+        "What happens to the join as that budget keeps shrinking?"
+      ],
+      "answer": [
+        "It keeps running — just split into more and more pieces on disk.",
+        "A join that can't fit its table in memory doesn't fail. It partitions the work instead."
+      ]
+    },
+    {
+      "lines": [
+        "Watch the number of pieces as the budget shrinks, one step at a time: one, then a few, then more than a dozen, then dozens, then hundreds.",
+        "Checked the step in between two of those settings too, and it landed exactly where doubling would put it.",
+        "Every time the budget is cut in half, the number of pieces this join splits into doubles."
+      ]
+    },
+    {
+      "lines": [
+        "A row that doesn't belong to whatever slice is currently sitting in memory gets written out to its own numbered file on disk instead — both the side building the table and the side probing it.",
+        "Once the in-memory pass finishes, each of those files gets joined on its own, one piece at a time.",
+        "Nothing about this requires the whole dataset to fit at once. It just means more separate passes."
+      ]
+    },
+    {
+      "lines": [
+        "Two separate sessions, each with the same ordinary memory budget, each running the very same spilling operation — at the same moment.",
+        { "beat": 0.4 },
+        "What happens to the total memory, and disk, those two sessions actually use between them?"
+      ],
+      "answer": [
+        "Each one gets its own full budget, so the total doubles.",
+        "That budget was never a system-wide ceiling to begin with — it was always per operation, and nothing stops two of them from spending it at once."
+      ]
+    },
+    {
+      "lines": [
+        "One session spilling alone writes a certain amount to disk.",
+        "Start a second session doing the exact same thing, at the same time, and watching the combined disk usage climb while both are still running shows it approaching double that amount.",
+        "Each session the whole time still only ever sees its own, unchanged budget."
+      ]
+    },
+    {
+      "lines": [
+        "One value in a column can carry a wildly disproportionate share of all the rows.",
+        "Without any special handling, every one of those rows would get rewritten into whichever disk partition its hash happens to land in — over and over, for a key that's small enough to just keep in memory the whole time.",
+        "The engine's own source code keeps that frequent key's matching rows in a dedicated bucket instead, permanently in memory — though this version gives no separate signal for it in a plan."
+      ]
+    },
+    {
+      "lines": [
+        "That memory budget belongs to one operation, not one query.",
+        "A hash-based operation gets handed a bigger share of it than a sort does.",
+        "Spilling itself, done well, cost nothing extra here — it was starving the budget that cost you.",
+        "A join that can't fit doesn't fail. It splits into pieces.",
+        "And every session spilling at the same time pays that budget all over again."
+      ]
+    },
+    {
+      "lines": [
+        "A plan reports a bucket count, and a count of how many pieces the operation split into, and how much memory it actually used.",
+        { "beat": 0.3 },
+        "Did this hash join have to spill to disk?"
+      ],
+      "answer": [
+        "Yes — anything more than a single piece means rows went out to disk.",
+        "A hash join that fits entirely in memory only ever reports one piece. More than one is the same signal a spilling hash join from earlier gave you."
+      ]
+    },
+    {
+      "lines": [
+        "Six sessions, each handed the same fixed memory budget, all spilling at once.",
+        { "beat": 0.3 },
+        "What's the worst case for how much memory this workload can actually use in total?"
+      ],
+      "answer": [
+        "Six times that one session's budget, not the budget on its own.",
+        "That's the exact same multiplication measured directly two steps back — nothing caps it at a single session's share."
+      ]
+    }
+  ]
+}

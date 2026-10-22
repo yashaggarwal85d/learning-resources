@@ -1048,6 +1048,26 @@ export const TOPICS: TopicMeta[] = [
     bridge:
       'A join is decided. The same build/probe vs. sorted-input choice happens one level up, for GROUP BY — next.',
     handoff:
-      'Every mechanism so far has assumed a plan, once chosen, runs as written. Next: what happens when the query itself is rewritten before the planner ever sees the shape the SQL text described.',
+      "Every operator so far has treated a spill to disk as a fact to read off EXPLAIN, not a thing to explain. Next: what work_mem actually budgets, why a sort, a hash join and a hash aggregate all spill differently, and why concurrency multiplies the memory a workload actually needs.",
+  },
+  {
+    id: 'de.memory-budgets-spilling-grace',
+    domain: 'data-engineering',
+    slug: 'data-engineering/m1-foundations/ch02-advanced-sql-query-execution/memory-budgets-spilling-grace',
+    title: 'Memory budgets, spilling and grace hash join',
+    syllabusTitle: 'Memory budgets, spilling and grace hash join',
+    kind: 'full',
+    status: 'live',
+    milestone: { number: 1, title: 'Foundations' },
+    chapter: { number: 2, title: 'Advanced SQL and query execution', section: '2.3' },
+    minutes: 15,
+    verified: '2026-10-22',
+    introduces: ['work-mem-budget', 'grace-hash-join', 'hash-mem-multiplier'],
+    uses: ['work-mem-spill', 'hash-join', 'hash-aggregation', 'sort-aggregation'],
+    declared: ['sql-select', 'group-by'],
+    bridge:
+      "Every operator so far has treated a spill to disk as a fact to read off EXPLAIN, not a thing to explain. Next: what work_mem actually budgets, why a sort, a hash join and a hash aggregate all spill differently, and why concurrency multiplies the memory a workload actually needs.",
+    handoff:
+      'Every mechanism in this chapter has run one row, or one batch, through a tree of operators pulled one at a time. Next: is that pull-based iteration itself a cost — and what changes when an engine runs whole batches, or compiles the plan to code, instead?',
   },
 ];

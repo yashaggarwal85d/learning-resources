@@ -1,0 +1,161 @@
+{
+  "topic": "de.memory-budgets-spilling-grace",
+  "syllabus": [
+    {
+      "clause": "work_mem-style per-operator budgets,",
+      "at": [
+        { "step": "How work_mem actually budgets" },
+        { "step": "How hash gets more room than sort" }
+      ]
+    },
+    {
+      "clause": "external-sort spills,",
+      "at": [
+        { "step": "Predict: does spilling make a sort slower?" },
+        { "step": "Reveal: not necessarily" },
+        { "step": "Reveal: what actually gets slow" }
+      ]
+    },
+    {
+      "clause": "grace and hybrid hash joins that partition to disk,",
+      "at": [
+        { "step": "Predict: shrink work_mem under a hash join" },
+        { "step": "Reveal: the batches double" },
+        { "step": "How a batch actually spills and recombines" }
+      ]
+    },
+    {
+      "clause": "recursive partitioning under skew;",
+      "at": [
+        { "step": "Why skew needs its own protection" },
+        { "deep": "Into the internals" }
+      ]
+    },
+    {
+      "clause": "reading spills in plans",
+      "at": [
+        { "step": "Reveal: not necessarily" },
+        { "step": "Reveal: the batches double" },
+        { "step": "Prove it · 1 of 2" }
+      ]
+    },
+    {
+      "clause": "and why concurrency multiplies memory.",
+      "at": [
+        { "step": "Predict: two sessions, same work_mem" },
+        { "step": "Reveal: concurrency multiplies the budget" },
+        { "step": "Prove it · 2 of 2" }
+      ]
+    }
+  ],
+  "sources": [
+    {
+      "source": "PostgreSQL 18 Documentation §19.4 \"Resource Consumption\" (work_mem, hash_mem_multiplier)",
+      "items": [
+        {
+          "item": "work_mem is the base budget per sort/hash operation; several operations, or several concurrent sessions, multiply it",
+          "at": [
+            { "step": "How work_mem actually budgets" },
+            { "step": "Reveal: concurrency multiplies the budget" }
+          ]
+        },
+        {
+          "item": "Hash-based operations get work_mem × hash_mem_multiplier (default 2.0), more room than sort",
+          "at": [
+            { "step": "How hash gets more room than sort" }
+          ]
+        },
+        {
+          "item": "Sort operations are used for ORDER BY, DISTINCT and merge joins; hash tables for hash joins, hash-based aggregation, memoize nodes and hash-based IN-subquery processing",
+          "at": [
+            { "step": "How work_mem actually budgets" }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "PostgreSQL 18 source, src/backend/executor/nodeHash.c (REL_18_0)",
+      "items": [
+        {
+          "item": "ExecHashIncreaseNumBatches doubles the batch count to reduce current memory consumption, unless growth has been shut off (growEnabled)",
+          "at": [
+            { "step": "How a batch actually spills and recombines" },
+            { "deep": "Into the internals" }
+          ]
+        },
+        {
+          "item": "A dedicated skew-bucket path keeps a frequent key's matching tuples in memory instead of letting them spill with the rest of their batch",
+          "at": [
+            { "step": "Why skew needs its own protection" },
+            { "deep": "Into the internals" }
+          ]
+        },
+        {
+          "item": "The bucket count is only ever grown, never shrunk, once batching starts",
+          "at": [
+            { "deep": "Into the internals" }
+          ]
+        }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "Claude (single session, written from the syllabus line and the fetched sources before storyboarding; not independent of the builder, so a later owner review should repeat it)",
+    "date": "2026-10-22",
+    "items": [
+      {
+        "item": "That the default work_mem's spill measured no slower than staying fully in memory on this workload — a real, repeated measurement, not a plausible-sounding rule of thumb",
+        "at": [{ "step": "Reveal: not necessarily" }]
+      },
+      {
+        "item": "That it's a severely undersized work_mem, not spilling itself, that measurably costs time here",
+        "at": [{ "step": "Reveal: what actually gets slow" }]
+      },
+      {
+        "item": "That hash_mem_multiplier, not just work_mem, is the lever the docs themselves recommend when spilling is a regular occurrence",
+        "at": [{ "step": "How hash gets more room than sort" }]
+      },
+      {
+        "item": "That a hash join's batch count tracks the memory budget and doubles per halving at the granularity actually tested, read directly off EXPLAIN rather than inferred from widely-spaced settings",
+        "at": [{ "step": "Reveal: the batches double" }]
+      },
+      {
+        "item": "The exact mechanism (ExecHashIncreaseNumBatches) that performs the doubling, and its growEnabled cutoff that stops runaway partitioning",
+        "at": [{ "deep": "Into the internals" }]
+      },
+      {
+        "item": "That concurrent sessions each pay their own work_mem budget again — measured directly via combined temp-file size during overlap, not just quoted from the docs",
+        "at": [{ "step": "Reveal: concurrency multiplies the budget" }]
+      },
+      {
+        "item": "That PostgreSQL's skew protection is real and sourced from its own executor code, but not independently observable through this version's EXPLAIN output — named honestly as a gap rather than faked as measured",
+        "at": [{ "step": "Why skew needs its own protection" }]
+      },
+      {
+        "item": "That work_mem is a per-operation budget, not a system-wide or even per-query ceiling",
+        "at": [{ "step": "How work_mem actually budgets" }]
+      },
+      {
+        "item": "That a sort too big for its budget spills to an external merge sort rather than erroring, read off Sort Method directly",
+        "at": [{ "step": "Reveal: not necessarily" }]
+      },
+      {
+        "item": "That EXPLAIN's own Sort Method and Batches lines are the direct, sufficient signal for whether and how an operator is spilling — no separate 'spilled' flag exists",
+        "at": [{ "step": "Prove it · 1 of 2" }]
+      },
+      {
+        "item": "Recognizing, from an EXPLAIN snippet alone, whether a given operator is spilling and how",
+        "at": [{ "step": "Prove it · 1 of 2" }]
+      },
+      {
+        "item": "Computing a workload's worst-case real memory footprint from its work_mem setting and its concurrency, not just its single-session budget",
+        "at": [{ "step": "Prove it · 2 of 2" }]
+      }
+    ]
+  },
+  "gapReview": {
+    "date": "2026-10-22",
+    "by": "self-review",
+    "open": []
+  }
+}

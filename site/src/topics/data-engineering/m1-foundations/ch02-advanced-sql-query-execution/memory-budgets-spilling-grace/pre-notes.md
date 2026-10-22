@@ -1,0 +1,5 @@
+- **work_mem**: the budget PostgreSQL gives one sort or one hash table before it starts writing to temporary disk files. *Where you meet it:* every number in this topic is a measurement at a different `work_mem` setting.
+- **hash_mem_multiplier**: the factor `work_mem` is multiplied by to get the memory limit for a hash-based operation specifically, 2.0 by default. *Where you meet it:* the step that shows the same `work_mem` giving a hash join 8 batches at multiplier 1.0 and only 2 at multiplier 4.0.
+- **Temp file**: a file PostgreSQL writes to disk when an operation's data doesn't fit the memory it's been given. *Where you meet it:* `pg_ls_tmpdir()`, used here to watch two sessions' temp files grow at the same time.
+- **Batch** (carried over from topics 21 and 22): a chunk a hash-based operation's data is partitioned into so each chunk can fit in memory. *Where you meet it:* this topic's own hash join, watched going from 1 batch to 256 as `work_mem` shrinks.
+- **Skew**: when one or a few values in a column carry far more rows than the rest. *Where you meet it:* `skew_key`, where a single value carries 1% of all 2,000,000 rows.
