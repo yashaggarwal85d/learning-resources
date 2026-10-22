@@ -1,0 +1,56 @@
+{
+  "topic": "de.special-purpose-dimension-patterns",
+  "syllabus": [
+    { "clause": "degenerate dimensions", "at": [{ "step": "Reveal: degenerate dimension, quoted directly" }, { "step": "Reveal: degenerate dimension, measured" }] },
+    { "clause": "role-playing dimensions (one date dimension, many roles)", "at": [{ "step": "Reveal: role-playing dimension, quoted directly" }, { "step": "Reveal: role-playing dimension, measured" }] },
+    { "clause": "junk dimensions for low-cardinality flags", "at": [{ "step": "Reveal: junk dimension, quoted directly" }, { "step": "Reveal: junk dimension, measured" }] },
+    { "clause": "outriggers; when each simplifies and when it complicates", "at": [{ "step": "Reveal: outrigger dimension, quoted directly" }, { "step": "Reveal: outrigger dimension, measured" }] }
+  ],
+  "sources": [
+    {
+      "source": "Kimball Group, \"Degenerate Dimensions\"",
+      "items": [
+        { "item": "A dimension sometimes has no content except its primary key, as with an invoice number once line items inherit the invoice's own descriptive keys", "at": [{ "step": "Reveal: degenerate dimension, quoted directly" }] },
+        { "item": "The degenerate dimension sits in the fact table with explicit acknowledgment that no dimension table exists for it; most common with transaction and accumulating snapshot facts", "at": [{ "step": "Reveal: degenerate dimension, quoted directly" }] }
+      ]
+    },
+    {
+      "source": "Kimball Group, \"Role-Playing Dimensions\"",
+      "items": [
+        { "item": "One physical dimension can be referenced multiple times in a fact table, each reference a logically distinct role", "at": [{ "step": "Reveal: role-playing dimension, quoted directly" }] },
+        { "item": "Each foreign key must refer to a separate, independent view of the shared dimension; these views are called roles", "at": [{ "step": "Reveal: role-playing dimension, quoted directly" }] }
+      ]
+    },
+    {
+      "source": "Kimball Group, \"Junk Dimensions\"",
+      "items": [
+        { "item": "Low-cardinality flags and indicators from transactional processes can be combined into one junk dimension instead of many separate ones", "at": [{ "step": "Reveal: junk dimension, quoted directly" }] },
+        { "item": "A junk dimension need not be the full Cartesian product of every attribute's values — only the combinations that actually occur", "at": [{ "step": "Reveal: junk dimension, quoted directly" }] }
+      ]
+    },
+    {
+      "source": "Kimball Group, \"Outrigger Dimensions\"",
+      "items": [
+        { "item": "A dimension can reference another dimension table; this secondary reference is called an outrigger", "at": [{ "step": "Reveal: outrigger dimension, quoted directly" }] },
+        { "item": "Outriggers are permissible but should be used sparingly; in most cases the correlation should be demoted to the fact table as separate foreign keys", "at": [{ "step": "Reveal: outrigger dimension, quoted directly" }] }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "Claude (single session, written from the syllabus line and the fetched sources before storyboarding; not independent of the builder, so a later owner review should repeat it)",
+    "date": "2026-10-22",
+    "items": [
+      { "item": "The degenerate-dimension predict (step 3) is red-teamed against the plausible wrong answer that a key with no table behind it can't really be grouped on correctly; the reveal shows real GROUP BY results on a bare order number working exactly as any other key would", "at": [{ "step": "Predict: does a bare order number still work as a grouping key?" }] },
+      { "item": "The outrigger predict (step 9) is red-teamed against the plausible wrong answer that an outrigger is purely a modeling nicety with no real cost; the reveal shows a genuine extra table touched on every query that needs the outrigger's own attribute", "at": [{ "step": "Predict: does an outrigger ever cost you anything to use?" }] },
+      { "item": "All four measured reveals (steps 4, 6, 8, 11) run against real, disclosed throwaway tables built for this topic, not described hypotheticals — the grouping result, the two-role join, the three-vs-eight row count, and the three-table touch count are all executed, not asserted", "at": [{ "step": "Reveal: degenerate dimension, measured" }, { "step": "Reveal: role-playing dimension, measured" }, { "step": "Reveal: junk dimension, measured" }, { "step": "Reveal: outrigger dimension, measured" }] },
+      { "item": "The role-playing demonstration uses one single dim_date table referenced by two separate foreign keys, confirmed by counting the table's own row count once while joining it twice in two different roles in the same query", "at": [{ "step": "Reveal: role-playing dimension, measured" }] },
+      { "item": "The junk-dimension demonstration explicitly computes the full Cartesian product (eight) alongside the three rows actually stored, so the saving is a measured comparison rather than a claimed one", "at": [{ "step": "Reveal: junk dimension, measured" }] },
+      { "item": "Each pattern's own downside is stated honestly rather than omitted: the degenerate key gives up any descriptive attributes of its own, role-playing requires separately named views to avoid ambiguity, a junk dimension can still grow large if the flags are not genuinely low-cardinality, and the outrigger costs a real extra join, which is why Kimball's own material recommends demoting it to the fact table in most cases", "at": [{ "step": "Recap" }] },
+      { "item": "The closing check (Prove it) applies the role-playing pattern to a new, undemonstrated case (a support ticket's opened/closed dates) rather than re-testing the exact order/ship dates from the reveal", "at": [{ "step": "Prove it" }] },
+      { "item": "The bridge from topic 10 (conformed dimensions and drill-across) is answered explicitly: this topic is framed as the patterns that exist because real dimensions often aren't the clean, well-behaved tables topic 10 assumed, and the handoff to the next topic (bridge tables and many-to-many) is confirmed by reading both CHAPTER.md entries side by side", "at": [{ "step": "Four patterns, four shortcuts" }] },
+      { "item": "Every number that appears on screen (the line counts, the row counts, the table-touch counts) traces to a literal constant in examples.py; every other quantity in reel.tsx is spelled in words, so no on-screen number is asserted without a matching computed value", "at": [{ "step": "Reveal: degenerate dimension, measured" }, { "step": "Reveal: junk dimension, measured" }, { "step": "Reveal: outrigger dimension, measured" }] },
+      { "item": "The ligature characters in the quoted material (\"deﬁned\", \"proﬁle\", \"ﬂags\", \"ﬂag\") and the curly apostrophe in \"attributes’\" were copied character-for-character from the fetched HTML, verified by the word-for-word sources check rather than retyped from memory", "at": [{ "step": "Reveal: degenerate dimension, quoted directly" }, { "step": "Reveal: junk dimension, quoted directly" }] }
+    ]
+  },
+  "gapReview": { "date": "2026-10-22", "by": "Claude (single session)", "open": [] }
+}

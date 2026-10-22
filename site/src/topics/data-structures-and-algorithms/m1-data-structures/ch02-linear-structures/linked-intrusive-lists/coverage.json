@@ -1,0 +1,76 @@
+{
+  "topic": "dsa.linked-intrusive-lists",
+  "syllabus": [
+    { "clause": "singly, doubly, circular", "at": [
+      { "step": "Append without a tail pointer" },
+      { "step": "Doubly: O(1) remove given a node" },
+      { "step": "Circular: no null at the ends" }
+    ] },
+    { "clause": "why pointer chasing usually loses to arrays", "at": [
+      { "step": "Same records, scattered in memory" },
+      { "step": "Is walking a list always slower than an array?" },
+      { "step": "Nine cycles versus four hundred fifty" }
+    ] },
+    { "clause": "where lists still win: O(1) splice, stable addresses", "at": [
+      { "step": "O(1) splice versus an array's shift" },
+      { "step": "An address that never moves" }
+    ] },
+    { "clause": "intrusive lists in kernels and allocators (Linux list_head)", "at": [
+      { "step": "The intrusive idea" },
+      { "step": "Recovering the struct from the link field" },
+      { "step": "Does container_of check the type?" }
+    ] }
+  ],
+  "sources": [
+    {
+      "source": "Linux kernel types.h",
+      "items": [
+        { "item": "struct list_head is exactly two pointers, no payload", "at": [{ "step": "The intrusive idea" }] }
+      ]
+    },
+    {
+      "source": "Linux kernel list.h",
+      "items": [
+        { "item": "list_add/list_add_tail name stacks/queues in their own doc comments", "at": [{ "deep": "Singly, doubly, circular, compared" }] },
+        { "item": "list_empty, the circular-no-null design", "at": [{ "step": "Circular: no null at the ends" }] },
+        { "item": "list_splice joins two lists by relinking, without walking either", "at": [{ "step": "O(1) splice versus an array's shift" }, { "deep": "Splice and stable addresses" }] },
+        { "item": "list_entry/list_first_entry are built directly on container_of", "at": [{ "step": "Recovering the struct from the link field" }, { "deep": "Intrusive lists and container_of" }] }
+      ]
+    },
+    {
+      "source": "Linux kernel container_of.h",
+      "items": [
+        { "item": "container_of recovers a struct's address from a member pointer by subtracting a fixed offset", "at": [{ "step": "Recovering the struct from the link field" }] },
+        { "item": "the current macro static_asserts the pointer and member types match", "at": [{ "step": "Does container_of check the type?" }] },
+        { "item": "container_of_const is now preferred; container_of's own doc says not to use it in new code", "at": [{ "deep": "Intrusive lists and container_of" }] }
+      ]
+    },
+    {
+      "source": "Drepper, What Every Programmer Should Know About Memory",
+      "items": [
+        { "item": "sequential pointer-chasing beyond L2 costs about 9 cycles/element", "at": [{ "step": "Nine cycles versus four hundred fifty" }] },
+        { "item": "random pointer-chasing beyond L2 costs about 450 cycles/element and climbing", "at": [{ "step": "Nine cycles versus four hundred fifty" }] },
+        { "item": "the mechanism: prefetching only works when access order is predictable", "at": [{ "step": "Is walking a list always slower than an array?" }, { "deep": "Why pointer chasing usually loses to arrays, precisely" }] }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "self-review",
+    "date": "2026-10-22",
+    "items": [
+      { "item": "a singly linked list is O(1) to append at its head and O(n) everywhere else without an extra pointer", "at": [{ "step": "Append without a tail pointer" }] },
+      { "item": "doubly linking makes remove-given-a-node O(1), but doesn't speed up finding the node in the first place", "at": [{ "step": "Doubly: O(1) remove given a node" }] },
+      { "item": "a circular list with a sentinel needs no null check at either end, letting insert/remove use one code path throughout", "at": [{ "step": "Circular: no null at the ends" }] },
+      { "item": "whether pointer chasing is slow depends on whether traversal order matches allocation order, not on the mere use of pointers", "at": [{ "step": "Is walking a list always slower than an array?" }] },
+      { "item": "on one real benchmark the gap between matched and mismatched order was roughly fiftyfold, a real measured number, not folklore", "at": [{ "step": "Nine cycles versus four hundred fifty" }] },
+      { "item": "splicing a run of nodes between lists costs a constant number of pointer rewrites regardless of run length; the array equivalent costs one move per element displaced", "at": [{ "step": "O(1) splice versus an array's shift" }] },
+      { "item": "a list node's address is stable for its entire lifetime, unlike a vector element's address, which any reallocation elsewhere in the vector can invalidate", "at": [{ "step": "An address that never moves" }] },
+      { "item": "an intrusive list embeds its link fields inside the payload struct, costing one allocation instead of two and letting one struct join several lists via several embedded link fields", "at": [{ "step": "The intrusive idea" }] },
+      { "item": "container_of recovers a containing struct's address from a member pointer by subtracting that member's fixed, compile-time offset", "at": [{ "step": "Recovering the struct from the link field" }] },
+      { "item": "the current container_of macro compile-time-checks that the pointer and member types match, unlike an older, unchecked version of the same idea", "at": [{ "step": "Does container_of check the type?" }] },
+      { "item": "no specific kernel subsystem is named as a container_of user in this topic, because that claim could not be verified against the current kernel source at research time (a large header fetch timed out); the topic states only what list.h and container_of.h themselves support", "at": [{ "deep": "In production" }] },
+      { "item": "the three things a list buys back for giving up contiguity (splice, stable addresses, intrusive design) are each tied to a specific mechanism, not asserted as a vague general advantage", "at": [{ "step": "Back to the problem" }] }
+    ]
+  },
+  "gapReview": { "date": "2026-10-22", "by": "self-review", "open": [] }
+}

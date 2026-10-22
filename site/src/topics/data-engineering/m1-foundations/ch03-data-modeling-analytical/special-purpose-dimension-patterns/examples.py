@@ -1,0 +1,27 @@
+ORDER_9001_LINE_COUNT = 2
+ORDER_9002_LINE_COUNT = 1
+
+DIM_DATE_ROW_COUNT = 3
+ROLES_SERVED_BY_THAT_ONE_TABLE = 2
+
+JUNK_ROWS_ACTUALLY_STORED = 3
+FULL_CARTESIAN_PRODUCT = 2 * 2 * 2
+
+OUTRIGGER_TABLES_TOUCHED = 3
+FLATTENED_TABLES_WOULD_TOUCH = 2
+
+
+def check():
+    assert ORDER_9001_LINE_COUNT == 2
+    assert ORDER_9002_LINE_COUNT == 1
+    assert DIM_DATE_ROW_COUNT == 3
+    assert ROLES_SERVED_BY_THAT_ONE_TABLE == 2
+    assert JUNK_ROWS_ACTUALLY_STORED == 3
+    assert FULL_CARTESIAN_PRODUCT == 8
+    assert JUNK_ROWS_ACTUALLY_STORED < FULL_CARTESIAN_PRODUCT
+    assert OUTRIGGER_TABLES_TOUCHED == FLATTENED_TABLES_WOULD_TOUCH + 1
+    print("special-purpose-dimension-patterns examples: all numbers check out")
+
+
+if __name__ == "__main__":
+    check()

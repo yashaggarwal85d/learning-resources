@@ -1,0 +1,74 @@
+{
+  "topic": "dsa.stacks-queues-deques",
+  "steps": [
+    {
+      "lines": [
+        "An array or a list holds a sequence. Neither one says anything about which end you're actually allowed to touch.",
+        "Today's structures are that missing rule, made concrete."
+      ]
+    },
+    {
+      "lines": [
+        "Push and pop, both at the same end. That's all a stack is.",
+        "An undo history is the clearest real example. Whatever you did most recently is always the first thing undone, because it's sitting right on top."
+      ]
+    },
+    {
+      "lines": [
+        "Add at one end, remove from the other. That's a queue.",
+        "A task queue works exactly this way. Whichever task has been waiting longest runs next, because it's the one sitting at the far end."
+      ]
+    },
+    {
+      "lines": [
+        "A stack handles one end. A queue splits the work across two ends, one for in, one for out.",
+        "What does a structure need, if it has to push and pop at both ends at once?"
+      ],
+      "answer": [
+        "Just one structure. Not two stacks stitched together, not a queue with some clever reversed copy underneath.",
+        "One structure, with push, pop, and a peek, directly at both ends, each one constant time."
+      ]
+    },
+    {
+      "lines": [
+        "Here it is, both ends lit at the same time. Push or pop from the front, push or pop from the back, equally cheaply.",
+        "A stack and a queue were never a different, weaker kind of structure. Each one is this, used with one hand tied behind its back."
+      ]
+    },
+    {
+      "lines": [
+        "Two real designs actually ship this. One wraps a fixed array around on itself, a ring buffer. When it's full, growing it means a brand new array and copying everything across, exactly like a doubling vector.",
+        "The other holds a row of fixed-size blocks instead of one big array. Growing it means allocating one more block. Nothing already stored has to move at all.",
+        { "beat": 0.3 },
+        "Rust's own double ended queue documents itself, in its own words, as a growable ring buffer. C plus plus's is required to be the chunked kind."
+      ]
+    },
+    {
+      "lines": [
+        "Take the chunked kind. Push one more record onto its front.",
+        "What happens to an iterator already pointing somewhere inside it? What about a plain reference to one of its elements?"
+      ],
+      "answer": [
+        "The standard is specific, and it splits the two. Every iterator into the deque becomes invalid, full stop.",
+        "But a reference to an element that was already there keeps working. That's the opposite of what a reallocating vector does, where everything dies together.",
+        { "beat": 0.3 },
+        "If your code is written against the wrong one of these two designs, that distinction is exactly the kind of bug that only shows up with one of them."
+      ]
+    },
+    {
+      "lines": [
+        "A stack is one end's worth of this. A queue is both ends, but only one direction each.",
+        "And the two real designs trade their cost in opposite directions: one resizes like a vector; the other never moves what's already there, at the cost of your iterators the moment you touch either end."
+      ]
+    },
+    {
+      "lines": [
+        "Here it is, run for real, not just claimed. A genuine ring-buffer-backed queue, pushed and popped at both ends, thousands of times, at ten elements and again at ten thousand.",
+        "The cost per operation barely moves between the two sizes.",
+        { "beat": 0.3 },
+        "Do the same thing with a plain list instead, popping from its front, and the cost scales directly with how many elements are sitting in front of the one you removed. Nine shifts at ten elements. Nearly ten thousand shifts at ten thousand.",
+        "Constant time at both ends isn't a label on a structure. It's a property you can actually go and measure."
+      ]
+    }
+  ]
+}

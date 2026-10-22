@@ -1,0 +1,48 @@
+{
+  "topic": "dsa.stacks-queues-deques",
+  "syllabus": [
+    { "clause": "LIFO/FIFO semantics", "at": [
+      { "step": "LIFO: last in, first out" },
+      { "step": "FIFO: first in, first out" }
+    ] },
+    { "clause": "array-backed circular deque vs chunked block deque (C++ std::deque) and their iterator-stability trade-offs", "at": [
+      { "step": "Does a deque need two separate structures?" },
+      { "step": "The deque: both ends, O(1)" },
+      { "step": "Two real designs, two trade-offs" },
+      { "step": "Does pushing onto a deque's front move anything?" }
+    ] }
+  ],
+  "sources": [
+    {
+      "source": "N4868 [deque]",
+      "items": [
+        { "item": "insert/erase at either end is O(1); in the middle, linear", "at": [{ "step": "Two real designs, two trade-offs" }] },
+        { "item": "insertion at either end invalidates iterators but not references to surviving elements", "at": [{ "step": "Does pushing onto a deque's front move anything?" }, { "deep": "Two real designs, precisely" }] },
+        { "item": "erasure's invalidation depends on which end is touched", "at": [{ "deep": "Two real designs, precisely" }] }
+      ]
+    },
+    {
+      "source": "Rust VecDeque docs",
+      "items": [
+        { "item": "VecDeque is a growable ring buffer; elements not necessarily contiguous", "at": [{ "step": "Two real designs, two trade-offs" }, { "deep": "Two real designs, precisely" }] }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "self-review",
+    "date": "2026-10-22",
+    "items": [
+      { "item": "a stack restricts access to one end (push/pop both there); an undo history is a real use where the most recent action is undone first", "at": [{ "step": "LIFO: last in, first out" }] },
+      { "item": "a queue splits access across two ends; a task queue is a real use where the oldest waiting task runs first", "at": [{ "step": "FIFO: first in, first out" }] },
+      { "item": "a deque is one structure with O(1) push/pop/peek at both ends directly, not a composition of a stack and a queue", "at": [{ "step": "Does a deque need two separate structures?" }] },
+      { "item": "a stack or a queue is a deque's interface used with a self-imposed restriction, not a structurally weaker data structure", "at": [{ "step": "The deque: both ends, O(1)" }] },
+      { "item": "an array-backed ring buffer resizes by reallocating, exactly like a dynamic array; a chunked block deque grows by adding a block without moving existing elements", "at": [{ "step": "Two real designs, two trade-offs" }] },
+      { "item": "Rust's VecDeque is a real, shipped example of the ring-buffer design, documented as such in its own words", "at": [{ "step": "Two real designs, two trade-offs" }] },
+      { "item": "std::deque's own invalidation rule is a specific split: insertion at either end invalidates iterators but not references to elements already present, the opposite of a vector's reallocation invalidating everything at once", "at": [{ "step": "Does pushing onto a deque's front move anything?" }] },
+      { "item": "mixing up which of the two deque designs backs a piece of code is a real, sourced way to introduce a use-after-invalidation bug that only one of the two designs would actually produce", "at": [{ "deep": "In production" }] },
+      { "item": "O(1) at both ends is a measurable property: a real ring-buffer-backed deque's per-operation cost stays flat from ten to ten thousand elements, while a plain list used the same way scales directly with size", "at": [{ "step": "Prove it" }] },
+      { "item": "the next topic builds a further invariant on top of a stack or queue, without changing which structure backs it", "at": [{ "step": "Back to the problem" }] }
+    ]
+  },
+  "gapReview": { "date": "2026-10-22", "by": "self-review", "open": [] }
+}

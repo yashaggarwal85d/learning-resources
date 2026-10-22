@@ -1,0 +1,89 @@
+{
+  "topic": "de.bridge-tables-many-many",
+  "steps": [
+    {
+      "lines": [
+        "One order, carrying three promotions at once instead of just one.",
+        "Join that order through to all three and add up the amount. Whatever number falls out, is it actually the order's own total?"
+      ]
+    },
+    {
+      "lines": [
+        "Most dimensions never run into this problem at all.",
+        "But some genuinely do carry more than one value for the same fact row, and the fix is a separate table holding one row for every value that applies at once."
+      ]
+    },
+    {
+      "lines": [
+        "Here's the trap worth naming before it springs.",
+        "That bridge really does hold all three of the order's promotions, correctly. Does joining through it and adding up the amount still hand you back the order's real number?"
+      ],
+      "answer": [
+        "It doesn't, and this is where people get caught out. Every one of those three rows carries the exact same amount along with it.",
+        "Add that amount up across all three, and you've counted the same order three times, not once."
+      ]
+    },
+    {
+      "lines": [
+        "Here's that trap, sprung on a real number.",
+        "One order, joined to three promotions, summed with nothing to stop it — and its true amount comes back three times larger than it actually is."
+      ]
+    },
+    {
+      "lines": [
+        "Here's the actual fix, straight from the source.",
+        "Give every one of those bridge rows its own share of the whole, and that over-counting disappears — but only if something is actually assigned to stop it."
+      ]
+    },
+    {
+      "lines": [
+        "Watch those shares do their job on the same real number.",
+        "Three shares, adding up to exactly one whole between them. Multiply each one into the amount before adding, and the order's real total comes back exactly, no more and no less."
+      ]
+    },
+    {
+      "lines": [
+        "Now a completely different kind of mess: a tree that doesn't grow evenly.",
+        "One branch goes three levels deep before it ends. Another branch is already finished after just one. A tree shaped like that resists ordinary queries badly."
+      ]
+    },
+    {
+      "lines": [
+        "Here's the question worth sitting with before the reveal.",
+        "Suppose every possible path through that uneven tree got computed just once, up front, into its own table. Would reading from it still demand a recursive query every time?"
+      ],
+      "answer": [
+        "It wouldn't. All the hard recursive work already happened once, at the moment that table was built.",
+        "Everything after that is just a plain filter — no recursion left for the reader to deal with at all."
+      ]
+    },
+    {
+      "lines": [
+        "Here's that built once, used plainly, for real.",
+        "Every path through the tree got computed a single time. Asking for everything beneath the top category afterward took nothing but an ordinary filter — not one trace of recursion left in sight."
+      ]
+    },
+    {
+      "lines": [
+        "Here's the proof that nothing got lost along the way.",
+        "Walk the same uneven tree again, completely independently, using genuine recursion this time. It lands on exactly the same categories the flattened version already had."
+      ]
+    },
+    {
+      "lines": [
+        "Pull both halves of this back together.",
+        "A dimension that carries more than one value gets its own bridge, one row per value. Shares that add to a whole number turn an inflated total back into a real one. And an uneven tree pays for its recursion exactly once, when the table is built, never again afterward."
+      ]
+    },
+    {
+      "lines": [
+        "One more, and this time it's on you.",
+        "A product carries two overlapping tags, and someone's already added up its revenue across both with nothing to correct for it. Do you trust that number, or go fix it first?"
+      ],
+      "answer": [
+        "Fix it, every time. Two overlapping rows duplicate a measure in exactly the same way three did.",
+        "The only thing that changes with fewer rows is how big the mistake turns out to be, never whether it needs fixing."
+      ]
+    }
+  ]
+}

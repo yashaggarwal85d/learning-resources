@@ -1,0 +1,32 @@
+import Resource from '../../../../../components/Resource.astro';
+
+<section class="prereq" data-section="before">
+
+### <span class="n">01</span> Stacks, queues and deques, already covered
+
+<ul class="resources">
+  <Resource kind="reel" host={props.host} domain="data-structures-and-algorithms" title="Stacks, queues and deques">LIFO and FIFO access, and the deque — the structures this topic keeps decreasing by invariant.</Resource>
+  <Resource kind="reel" host={props.host} domain="data-structures-and-algorithms" title="Aggregate and accounting methods">The aggregate method — bound the total, divide by n — this topic's "enters and leaves once" argument reuses directly.</Resource>
+</ul>
+
+</section>
+
+<section class="prereq" data-section="standard">
+
+### <span class="n">02</span> The technique, from a worked source
+
+<ul class="resources">
+  <Resource kind="reading" title="Monotonic Queues and Monotonic Optimization in Dynamic Programming" href="https://activities.tjhsst.edu/sct/lectures/1920/2020_2_21_Monotonic_Queues.pdf" by="Sarah Zhang, TJHSST (2020)">The maintenance rule and the enqueue-once/dequeue-at-most-once complexity argument this topic quotes directly.</Resource>
+</ul>
+
+</section>
+
+<section class="prereq" data-section="later">
+
+### <span class="n">03</span> Where this goes next
+
+<ul class="resources">
+  <Resource kind="reel" host={props.host} domain="data-structures-and-algorithms" title="Ring buffers and bounded queues">A queue that never resizes at all, because its capacity is fixed on purpose.</Resource>
+</ul>
+
+</section>

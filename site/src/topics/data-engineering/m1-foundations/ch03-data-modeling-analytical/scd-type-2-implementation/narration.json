@@ -1,0 +1,99 @@
+{
+  "topic": "de.scd-type-2-implementation",
+  "steps": [
+    {
+      "lines": [
+        "A customer moves, and their address on file has to change.",
+        "Overwrite it, and every sale that already happened quietly starts pointing at an address that wasn't even true yet when it occurred."
+      ]
+    },
+    {
+      "lines": [
+        "Here's the fix, and it's simpler than it sounds.",
+        "Instead of overwriting anything, a brand new row gets added with its own identity, and the row that was already there just sits untouched, exactly as it always was."
+      ]
+    },
+    {
+      "lines": [
+        "Here's the part worth stopping on before it's shown.",
+        "Closing out the old version and opening the new one both have to happen together, or you'd have a moment with either two current versions or none. Can a single command actually pull that off?"
+      ],
+      "answer": [
+        "It can. One command can carry a rule for the row that just fell out of step with what's arriving, alongside a rule for the version that never existed before.",
+        "Both of those fire from the exact same command, not two separate ones run back to back."
+      ]
+    },
+    {
+      "lines": [
+        "Here's that command, described in its own words.",
+        "One single statement stands in for an entire conditional insert, update, or delete — the kind of logic that would otherwise take several separate steps strung together."
+      ]
+    },
+    {
+      "lines": [
+        "Watch it actually happen, on a real row.",
+        "One customer, one address change, one command. The old version closes out and the new one opens, both in that same single pass."
+      ]
+    },
+    {
+      "lines": [
+        "Now ask the harder question.",
+        "Fire off that exact same command a second time, nothing else changed in between. Does anything move?"
+      ],
+      "answer": [
+        "Nothing does. By the second run, what's arriving already matches what's already sitting there.",
+        "There's simply nothing left for either rule in that command to act on."
+      ]
+    },
+    {
+      "lines": [
+        "Confirm that on the real numbers, not just in theory.",
+        "Run it again right after the first time, and the count of rows it touches drops straight to nothing. That's not assumed safety — that's safety actually demonstrated."
+      ]
+    },
+    {
+      "lines": [
+        "Step sideways for a second, to how a change even gets noticed.",
+        "Boil every tracked column down into one single fingerprint, and a changed fingerprint means something changed — full stop, with no column-by-column checklist to keep updating by hand."
+      ]
+    },
+    {
+      "lines": [
+        "Now throw a genuinely messy situation at this.",
+        "A real sequence of changes shows up scrambled, not in the order they actually happened, and one of them shows up twice. Does the history that comes out the other end still end up right?"
+      ],
+      "answer": [
+        "It does. Collapse the duplicate down to one, then rebuild the whole order using each event's own timestamp rather than whatever order it happened to arrive in.",
+        "The order things arrived in stops mattering completely once the timestamp is doing the actual sorting."
+      ]
+    },
+    {
+      "lines": [
+        "Here's that mess, actually untangled.",
+        "Four events come in, one of them a repeat, in the wrong order entirely. What comes out is exactly three versions, lined up correctly by when each one was genuinely true."
+      ]
+    },
+    {
+      "lines": [
+        "Push it one step further: ask about a moment in between.",
+        "Pick a date that falls squarely inside the middle version's own stretch of time, and querying for it hands back exactly that version — not the one before, not the one after."
+      ]
+    },
+    {
+      "lines": [
+        "Pull the whole shape of this back together.",
+        "Every change gets its own new row, never an overwrite. One command closes the old and opens the new, and running it twice proves that safety rather than hoping for it. A history rebuilt from each event's own timestamp shrugs off both scrambled order and repeats."
+      ]
+    },
+    {
+      "lines": [
+        "One more, and it's yours to reason through.",
+        "This time the entire sequence shows up twice, start to finish, not just one repeated moment. Does the exact same untangling still land on the same correct history?"
+      ],
+      "answer": [
+        "It does. Collapsing duplicates down to their distinct content doesn't care how many times something repeats.",
+        "One extra repeat or an entire second copy of everything gets erased exactly the same way, leaving the same real history behind either time."
+      ]
+    }
+  ]
+}

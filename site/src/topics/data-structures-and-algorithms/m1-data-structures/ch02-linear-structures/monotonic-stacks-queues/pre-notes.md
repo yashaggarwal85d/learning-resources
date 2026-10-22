@@ -1,0 +1,5 @@
+- **Stack**: declared again here (topic 3); the structure whose decreasing invariant this topic builds on top of.
+- **Deque**: declared again here (topic 3); the structure the sliding-window-maximum technique keeps decreasing at both ends.
+- **Amortized cost**: declared again here (Chapter 1, topic 5); the per-operation cost once a whole run's total is divided by the number of operations.
+- **Aggregate method**: declared again here (Chapter 1, topic 5); the framing this topic's "enters and leaves once" argument is a second instance of, applied to a structural invariant instead of a resize schedule.
+- **Invariant**: a property a structure is kept true at every step, by construction, rather than checked after the fact. *Where you meet it:* "stay monotonically decreasing" is the invariant both of this topic's structures enforce on every push.

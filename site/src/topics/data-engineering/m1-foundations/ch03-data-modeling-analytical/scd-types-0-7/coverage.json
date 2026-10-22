@@ -1,0 +1,52 @@
+{
+  "topic": "de.scd-types-0-7",
+  "syllabus": [
+    { "clause": "Types 0/1/3 (retain, overwrite, limited prior value)", "at": [{ "step": "Reveal: Type 0, quoted directly" }, { "step": "Reveal: Type 1, quoted directly" }, { "step": "Reveal: Type 3, quoted directly" }, { "step": "Reveal: the gallery, one change, four treatments, counted" }] },
+    { "clause": "Type 4 mini-dimensions for rapidly changing attributes", "at": [{ "step": "Reveal: Type 4, quoted directly — the mini-dimension, counted" }] },
+    { "clause": "hybrids 5/6/7", "at": [{ "step": "Reveal: Type 5, quoted directly — current without a fact join" }, { "step": "Reveal: Type 6 and Type 7, quoted directly — the update cost, counted" }] },
+    { "clause": "choosing by query pattern and attribute churn rate", "at": [{ "step": "Reveal: choosing by churn and query pattern, applied to three scenarios" }, { "step": "Prove it" }] }
+  ],
+  "sources": [
+    {
+      "source": "Kimball Group, \"Type 0: Retain Original\" / \"Type 1: Overwrite\" / \"Type 3: Add New Attribute\"",
+      "items": [
+        { "item": "Type 0: the value never changes, so facts are always grouped by it; appropriate for original-labeled attributes, durable identifiers, most date-dimension attributes", "at": [{ "step": "Reveal: Type 0, quoted directly" }] },
+        { "item": "Type 1: the old value is overwritten with the new one, destroying history; easy to implement, no new rows, but aggregates and cubes must be recomputed", "at": [{ "step": "Reveal: Type 1, quoted directly" }] },
+        { "item": "Type 3: adds a new attribute to preserve the old value (an \"alternate reality\"), while the main attribute is overwritten like Type 1; used relatively infrequently", "at": [{ "step": "Reveal: Type 3, quoted directly" }] }
+      ]
+    },
+    {
+      "source": "Kimball Group, \"Type 4: Add Mini-Dimension\" / \"Type 5: Add Mini-Dimension and Type 1 Outrigger\"",
+      "items": [
+        { "item": "Type 4: a rapidly changing attribute group (\"rapidly changing monster dimension\") is split off into a mini-dimension with its own primary key; both base and mini-dimension keys go in the fact table", "at": [{ "step": "Reveal: Type 4, quoted directly — the mini-dimension, counted" }] },
+        { "item": "Type 5: builds on Type 4 by embedding a current Type 1 reference in the base dimension, reading current mini-dimension attributes without a fact-table join; logically one presentation-layer table", "at": [{ "step": "Reveal: Type 5, quoted directly — current without a fact join" }] }
+      ]
+    },
+    {
+      "source": "Kimball Group, \"Type 6: Add Type 1 Attributes to Type 2 Dimension\" / \"Type 7: Dual Type 1 and Type 2 Dimensions\" / Design Tip #152",
+      "items": [
+        { "item": "Type 6: Type 2 plus current Type 1 versions of the same attributes, overwritten on every row for the durable key whenever the value updates", "at": [{ "step": "Reveal: Type 6 and Type 7, quoted directly — the update cost, counted" }] },
+        { "item": "Type 7: dual keys (surrogate for Type 2, durable for current), delivering Type 6's functionality via two separate views instead of overwriting", "at": [{ "step": "Reveal: Type 6 and Type 7, quoted directly — the update cost, counted" }] },
+        { "item": "The hybrid type numbers are arithmetic on the simpler types: Type 5 because 4 + 1 = 5; Type 6 because both 2 + 3 + 1 and 2 × 3 × 1 equal 6", "at": [{ "step": "Reveal: Type 5, quoted directly — current without a fact join" }, { "step": "Reveal: Type 6 and Type 7, quoted directly — the update cost, counted" }] },
+        { "item": "The SCD choice is a per-attribute governance decision made with the business; not every change needs history, but many do", "at": [{ "step": "Reveal: choosing by churn and query pattern, applied to three scenarios" }] }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "Claude (single session, written from the syllabus line and the fetched sources before storyboarding; not independent of the builder, so a later owner review should repeat it)",
+    "date": "2026-10-22",
+    "items": [
+      { "item": "The first predict (step 4) is red-teamed against the plausible wrong answer that preserving an old value always requires a second row; the reveal shows Type 3 doing it with a second column on the same row instead", "at": [{ "step": "Predict: can one column hold both the current value and the original, without a new row?" }] },
+      { "item": "The gallery (step 6) is a real counted comparison, not four separate hypotheticals: the same reclassification run through Types 0, 1, 2 and 3, counted by row and column, so the only real difference between them is made visible at a glance", "at": [{ "step": "Reveal: the gallery, one change, four treatments, counted" }] },
+      { "item": "The second predict (step 7) is red-teamed against the plausible wrong answer that Type 2 scales the same regardless of what changes; the reveal distinguishes a single narrow attribute (Type 2's own case, reserved for the closing \"Prove it\") from a shared, grouped, rapidly changing attribute set, which is specifically what forces the wide-row duplication Type 4 exists to avoid", "at": [{ "step": "Predict: does a rapidly changing, shared attribute group force Type 2's cost onto the whole dimension?" }] },
+      { "item": "The mini-dimension sizing (step 8) and the Type 6/7 update-cost contrast (step 11) are this topic's own disclosed, self-consistent worked scenario, computed and asserted in examples.py since this topic has no lab of its own (CHAPTER.md) — not a claim about a real running system, and marked as such in SOURCES.md and FACT-CHECK.md", "at": [{ "step": "Reveal: Type 4, quoted directly — the mini-dimension, counted" }, { "step": "Reveal: Type 6 and Type 7, quoted directly — the update cost, counted" }] },
+      { "item": "The third predict (step 10) is red-teamed against the plausible wrong answer that two techniques delivering the identical report must cost the identical amount; the reveal separates write-time cost (rewriting history, or not) from read-time cost (one join style or two), which the two hybrids trade against each other", "at": [{ "step": "Predict: can Type 6 and Type 7 both deliver current-plus-historical reporting, at different cost?" }] },
+      { "item": "The three scenarios in the choosing step are deliberately spread across the churn spectrum — never-changing, changed-but-worthless, and fast-changing-and-shared — rather than three variations of the same case, so the decision rule is shown doing real work three different ways", "at": [{ "step": "Reveal: choosing by churn and query pattern, applied to three scenarios" }] },
+      { "item": "The recap keeps \"keep it or not\" (0/1/3), \"split it off\" (4), and \"named combinations\" (5/6/7) as three separate ideas, matching the three-part structure Design Tip #152 itself uses (the basic three, then Type 4, then the hybrids), rather than collapsing seven types into one vague \"pick one\" takeaway", "at": [{ "step": "Recap" }] },
+      { "item": "The closing check (Prove it) is a genuinely new scenario, not a restatement of any reveal: an attribute with Type 4-like churn but tracked alone, with a pure historical-accuracy requirement, which the predict's wrong answer (defaulting to Type 4 purely because of churn rate) is designed to tempt, and the right answer correctly routes back to Type 2 — the previous topic's own subject — rather than to anything new in this one", "at": [{ "step": "Prove it" }] },
+      { "item": "The bridge from topic 13 (SCD Type 2 implementation) is answered explicitly: this topic is framed as the full menu Type 2 is one point in, and the handoff to the next topic (late-arriving facts and dimensions) is confirmed by reading both CHAPTER.md entries side by side", "at": [{ "step": "Not every change deserves a new row" }] },
+      { "item": "Every number that appears on screen (nine possible combinations, five observed, six rows rewritten for Type 6, zero for Type 7) traces to a literal constant in examples.py; every type number itself (0 through 7) is also an asserted constant, since the topic's own vocabulary is numeric", "at": [{ "step": "Reveal: Type 4, quoted directly — the mini-dimension, counted" }, { "step": "Reveal: Type 6 and Type 7, quoted directly — the update cost, counted" }] }
+    ]
+  },
+  "gapReview": { "date": "2026-10-22", "by": "Claude (single session)", "open": [] }
+}

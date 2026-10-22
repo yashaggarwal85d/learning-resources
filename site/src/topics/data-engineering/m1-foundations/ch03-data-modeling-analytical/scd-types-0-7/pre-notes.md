@@ -1,0 +1,4 @@
+- **Slowly changing dimension (SCD)**: the general problem of what a warehouse does when a dimension attribute's value changes in the source system. *Where you meet it:* every type in this reel is one answer to that same question.
+- **Durable key**: an identifier for an entity that never changes, even across every version a Type 2 row produces for it. *Where you meet it:* what Type 6 and Type 7 join through to find a customer's "current" row.
+- **Current flag**: a column on a Type 2 row marking whether it is the version in effect right now. *Where you meet it:* how Type 7's two perspectives tell current from historical apart.
+- **Hash-diff change detection**: comparing one hash of every tracked column at once, instead of a column-by-column check, to decide whether anything changed. *Where you meet it:* carried over from the previous topic, used informally when this topic asks whether an attribute "changed."
