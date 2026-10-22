@@ -137,7 +137,7 @@ Content plan and storyboard, written 2026-10-22 against this topic's entry (#1) 
 
 1. Simulate g = 2 and g = 1.5 growth (capacity starts at 0, first append allocates 1, a full vector resizes to `ceil(g * cap)` with a minimum of `cap + 1`) for 1,000,000 appends from empty; assert total element copies, final capacity, and reallocation count for each g.
 2. Simulate CPython's quoted formula (`new_allocated = ((newsize + newsize // 8 + 6) // 4) * 4`, with the small-size floor the quoted comment implies) for the same 1,000,000 appends; assert its reallocation count and compare its final over-allocation (allocated − used) against g = 2 and g = 1.5's.
-3. Reproduce the three concrete reallocation-reuse-after-N-resizes numbers from the Folly quote (1.5 → 4, 1.45 → 3, 1.3 → 2) as a direct arithmetic check: the smallest n such that the sum of the first n discarded-chunk sizes ≥ the (n+1)-th requested chunk size, for g ∈ {1.5, 1.45, 1.3}, asserting the three results exactly.
+3. Folly's three reuse-after-N-reallocations numbers (1.5 → 4, 1.45 → 3, 1.3 → 2) are cited, not re-derived: the obvious "sum of discarded chunks ≥ next chunk" model converges at the same count (2) for every g < φ, so it cannot be Folly's model and `examples.py` does not pretend to reconstruct it (see `FACT-CHECK.md`, claim 3).
 
 ## Claims list (every factual claim, with its source)
 
