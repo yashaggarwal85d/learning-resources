@@ -458,4 +458,30 @@ Folder prefix for every topic: `site/src/topics/data-engineering/m1-foundations/
 - **Lab:** none of the chapter lab's named parts; its own "Try it" triggers all three provable rewrites directly in EXPLAIN.
 - **Sources:** PostgreSQL source `analyzejoins.c` (`join_is_removable`), `prepjointree.c` (`reduce_outer_joins`); Neumann & Kemper, "Unnesting Arbitrary Queries," BTW 2015.
 
+### 19. Cardinality estimation and statistics (`de.cardinality-estimation-statistics`): full, §2.3
+
+*(Topic 18, CTE inlining vs materialization, shipped live without an entry appended here — a gap from that session, not fixed retroactively; its real registry entry, reel and post-notes were read directly in its place, per section 1 of the make-topic skill.)*
+
+- **Folder:** `cardinality-estimation-statistics`. About 15 min.
+- **Scope:**
+  - "histograms, most-common values, n_distinct": `pg_class`/`pg_statistic` (via `pg_stats`), the equal-frequency histogram bucket/interpolation formula (`scalarltsel`), the in-MCV and off-MCV equality formulas (`eqsel`), `n_distinct`'s sign convention.
+  - "the independence and uniformity assumptions": clause selectivities multiplying for `AND`; the uniform spread inside a histogram bucket and across the off-MCV remainder.
+  - "correlated columns and extended statistics (CREATE STATISTICS)": why correlation breaks independence and single-column stats can't see it; `CREATE STATISTICS ... (dependencies, mcv)`, measured fixing a real 2.04× underestimate to within 1%.
+  - "sampling, stale statistics after bulk loads": ANALYZE's random sampling; a real 1.6× underestimate from a bulk load with no re-ANALYZE, and the fix.
+  - "how errors compound through joins": `eqjoinsel`'s no-MCV case; this topic's own two measured errors compounding to ≈3.3× rather than averaging out.
+  - "learned estimators as frontier": one cited example (Kipf et al., MSCN, CIDR 2019), one sentence, left to the Deep dive.
+  - Leaves turning these estimates into a plan's price, and searching the plan space, to topic 20.
+- **Outcomes:**
+  - Reconstruct a planner's row estimate by hand from `pg_stats`.
+  - Name the independence and uniformity assumptions and recognize when real data breaks each.
+  - Fix a correlated-columns misestimate with `CREATE STATISTICS`; tell it apart from a stale-statistics misestimate that needs `ANALYZE` instead.
+  - Explain why join-input estimation errors compound rather than cancel.
+- **Introduces:** `cardinality-estimation`, `histogram-selectivity`, `mcv-selectivity`, `independence-assumption`, `extended-statistics`. **Uses:** `planner-paths`. **Declared:** `sql-select`.
+- **Bridge:** "Whether to look inside a query is settled. Next: the numbers the optimizer leans on to choose, and how it estimates them." (Answers topic 18's handoff.)
+- **Handoff:** "An estimate is only useful once it is compared against the alternatives. Next: the cost formulas that turn a row count into a plan's price, and the search that explores enough of the plan space without exploring all of it."
+- **Prerequisites panel:** topics 16 and 18 (Before this).
+- **Visual idea:** two `EXPLAIN` readouts side by side, estimated and actual, agreeing in white or splitting apart in cherry; a number line's equal-frequency histogram buckets with a pen locating and interpolating inside one; six status bars sized to their real frequency, one thin and locked onto; a measured remainder splitting into equal slivers for the uniformity assumption; a `CREATE STATISTICS` line typing in and closing a cherry gap into a pale-blue near-exact match; two independently measured misses sliding together into one compounded bar.
+- **Lab:** hosts the §2.3 lab's "fix some with extended statistics" part directly (its own measured correlated-columns example); the Join Order Benchmark and 100×+ estimate-error hunt belong to topic 20, which this topic's post-notes point to.
+- **Sources:** PostgreSQL 18 docs §14.2 ("Statistics Used by the Planner") and §69.1 ("Row Estimation Examples"), CREATE STATISTICS, §53.29 (pg_stats); Kipf et al., "Learned Cardinalities" (arXiv:1809.00677, CIDR 2019); this topic's own measurements on a real PostgreSQL 16 instance (see its `SOURCES.md`).
+
 ---

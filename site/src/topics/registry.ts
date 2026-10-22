@@ -964,4 +964,30 @@ export const TOPICS: TopicMeta[] = [
     handoff:
       'Whether to look inside a query is settled. Next: the numbers the optimizer leans on to choose, and how it estimates them.',
   },
+  {
+    id: 'de.cardinality-estimation-statistics',
+    domain: 'data-engineering',
+    slug: 'data-engineering/m1-foundations/ch02-advanced-sql-query-execution/cardinality-estimation-statistics',
+    title: 'Cardinality estimation and statistics',
+    syllabusTitle: 'Cardinality estimation and statistics',
+    kind: 'full',
+    status: 'live',
+    milestone: { number: 1, title: 'Foundations' },
+    chapter: { number: 2, title: 'Advanced SQL and query execution', section: '2.3' },
+    minutes: 15,
+    verified: '2026-10-22',
+    introduces: [
+      'cardinality-estimation',
+      'histogram-selectivity',
+      'mcv-selectivity',
+      'independence-assumption',
+      'extended-statistics',
+    ],
+    uses: ['planner-paths'],
+    declared: ['sql-select'],
+    bridge:
+      'Whether to look inside a query is settled. Next: the numbers the optimizer leans on to choose, and how it estimates them.',
+    handoff:
+      "An estimate is only useful once it is compared against the alternatives. Next: the cost formulas that turn a row count into a plan's price, and the search that explores enough of the plan space without exploring all of it.",
+  },
 ];

@@ -1,0 +1,23 @@
+import Resource from '../../../../../components/Resource.astro';
+
+<section class="prereq" data-section="earlier-topics">
+
+### <span class="n">01</span> Plans, and why they come from estimates
+
+<ul class="resources">
+  <Resource kind="reel" host={props.host} domain="data-engineering" title="CTE inlining vs materialization">The previous reel: whether the optimizer looks inside a query at all.</Resource>
+  <Resource kind="reel" host={props.host} domain="data-engineering" title="From SQL text to plan tree">Paths and physical plans — what an estimate is attached to.</Resource>
+</ul>
+
+</section>
+
+<section class="prereq" data-section="reference">
+
+### <span class="n">02</span> Reference
+
+<ul class="resources">
+  <Resource kind="reading" title="14.2. Statistics Used by the Planner" href="https://www.postgresql.org/docs/18/planner-stats.html" by="PostgreSQL documentation" length="15 min">Single-column and extended statistics, in the planner's own words.</Resource>
+  <Resource kind="reading" title="69.1. Row Estimation Examples" href="https://www.postgresql.org/docs/18/row-estimation-examples.html" by="PostgreSQL documentation" length="15 min">Every formula this topic uses, worked through on a real table.</Resource>
+</ul>
+
+</section>
