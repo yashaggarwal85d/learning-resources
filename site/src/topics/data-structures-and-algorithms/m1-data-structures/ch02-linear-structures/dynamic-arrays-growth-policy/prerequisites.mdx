@@ -1,0 +1,44 @@
+import Resource from '../../../../../components/Resource.astro';
+
+<section class="prereq" data-section="amortized">
+
+### <span class="n">01</span> Amortized cost and the doubling array
+
+<ul class="resources">
+  <Resource kind="reel" host={props.host} domain="data-structures-and-algorithms" title="Aggregate and accounting methods">The doubling vector's amortized O(1) append bound, proved by aggregate and accounting arguments. This topic takes the bound as settled and asks which growth factor instead.</Resource>
+  <Resource kind="reel" host={props.host} domain="data-structures-and-algorithms" title="The potential method">The same bound, proved again as a potential function, and the growth factor g used throughout both.</Resource>
+</ul>
+
+</section>
+
+<section class="prereq" data-section="hidden-costs">
+
+### <span class="n">02</span> Cache lines and cache misses
+
+<ul class="resources">
+  <Resource kind="reel" host={props.host} domain="data-structures-and-algorithms" title="The word-RAM model and its assumptions">What a cache miss is, and why the word-RAM's unit-cost memory access hides it.</Resource>
+  <Resource kind="reel" host={props.host} domain="data-structures-and-algorithms" title="External-memory (I/O) model">The cache line as the memory hierarchy's unit of transfer, which this topic's locality claim is built on.</Resource>
+</ul>
+
+</section>
+
+<section class="prereq" data-section="standard">
+
+### <span class="n">03</span> Reading a language standard or a library's own source
+
+<ul class="resources">
+  <Resource kind="reading" title="[vector]" href="https://timsong-cpp.github.io/cppwp/n4868/vector" by="N4868, the C++20 working draft, Tim Song's mirror">The exact clause this topic quotes for reserve, shrink_to_fit and reallocation invalidation.</Resource>
+  <Resource kind="reading" title="FBVector.md" href="https://github.com/facebook/folly/blob/main/folly/docs/FBVector.md" by="Facebook, folly">The memory-reuse argument and the growth-factor comparison, in the engineers' own words.</Resource>
+</ul>
+
+</section>
+
+<section class="prereq" data-section="later">
+
+### <span class="n">04</span> Where this goes next
+
+<ul class="resources">
+  <Resource kind="reel" host={props.host} domain="data-structures-and-algorithms" title="Linked and intrusive lists">Builds the pointer-chased structure this topic only previews, and measures the cache-locality gap in real cache misses and wall-clock time.</Resource>
+</ul>
+
+</section>
