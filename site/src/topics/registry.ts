@@ -1602,4 +1602,24 @@ export const TOPICS: TopicMeta[] = [
     handoff:
       "Every SCD type here assumed a dimension row's own data was itself correct and on time. Next: what happens when it genuinely isn't — facts that arrive before their own dimension row exists, or that arrive late enough to require mapping them onto a dimension's own historical versions.",
   },
+  {
+    id: 'de.late-arriving-facts-dimensions',
+    domain: 'data-engineering',
+    slug: 'data-engineering/m1-foundations/ch03-data-modeling-analytical/late-arriving-facts-dimensions',
+    title: 'Late-arriving facts and dimensions',
+    syllabusTitle: 'Late-arriving facts and dimensions',
+    kind: 'full',
+    status: 'live',
+    milestone: { number: 1, title: 'Foundations' },
+    chapter: { number: 3, title: 'Data modeling and analytical architecture', section: '3.2' },
+    minutes: 14,
+    verified: '2026-10-22',
+    introduces: ['inferred-dimension-member', 'backdated-fact-scd2-mapping', 'bounded-reprocessing-window'],
+    uses: ['scd-type-2', 'fact-grain'],
+    declared: ['sql-select'],
+    bridge:
+      "Every SCD type here assumed a dimension row's own data was itself correct and on time. This topic is what happens when it genuinely isn't: facts that arrive before their own dimension row exists, or that arrive late enough to require mapping them onto a dimension's own historical versions.",
+    handoff:
+      "Every topic in this section built tables assuming a warehouse's own physical home was already settled. Next: zooming out to that home itself — the architectural history from a coupled warehouse to a lake to an open-table-format lakehouse, and what each stage still does best.",
+  },
 ];

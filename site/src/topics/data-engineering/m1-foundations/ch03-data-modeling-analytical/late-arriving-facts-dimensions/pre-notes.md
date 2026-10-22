@@ -1,0 +1,4 @@
+- **Inferred member**: a placeholder dimension row created so a fact can post before its real dimension context arrives. *Where you meet it:* resolved later with a Type 1 overwrite, never a new row.
+- **Durable key**: an identifier for an entity that never changes, even across every Type 2 version. *Where you meet it:* what lets a backdated fact be matched to the right historical row at all.
+- **As-of join**: a join that matches a fact to the dimension version in effect on the fact's own date, not the current one. *Where you meet it:* the correct way to attach a backdated fact to SCD2 history.
+- **Watermark**: a streaming system's notion of when all data for a given time window can be expected to have arrived. *Where you meet it:* the mechanism behind a bounded reprocessing window.

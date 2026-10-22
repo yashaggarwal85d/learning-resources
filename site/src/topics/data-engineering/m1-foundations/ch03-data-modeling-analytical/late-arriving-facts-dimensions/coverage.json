@@ -1,0 +1,43 @@
+{
+  "topic": "de.late-arriving-facts-dimensions",
+  "syllabus": [
+    { "clause": "facts that arrive before their dimension rows (inferred members, later update)", "at": [{ "step": "Reveal: the inferred member, quoted directly" }, { "step": "Reveal: the inferred member, measured" }, { "step": "Predict: when the real customer data shows up later, does it get a new row or an update?" }, { "step": "Reveal: the resolve, measured" }, { "step": "Reveal: retroactive Type 2 changes are late-arriving data too, quoted directly" }] },
+    { "clause": "backdated facts that must map to historical SCD2 versions", "at": [{ "step": "Predict: does a backdated fact get the customer's current address, or whichever one was true then?" }, { "step": "Reveal: the late arriving fact, quoted directly" }, { "step": "Reveal: the as-of join, measured" }] },
+    { "clause": "bounded reprocessing windows", "at": [{ "step": "Predict: can a pipeline just search all of history for every late fact, no matter how late?" }, { "step": "Reveal: the bounded reprocessing window" }] }
+  ],
+  "sources": [
+    {
+      "source": "Kimball Group, \"Late Arriving Dimension\"",
+      "items": [
+        { "item": "An unresolved late-arriving fact's dimension row is a placeholder with unresolved natural key and generic unknown values", "at": [{ "step": "Reveal: the inferred member, quoted directly" }] },
+        { "item": "The placeholder is resolved with a Type 1 overwrite once the real context arrives", "at": [{ "step": "Reveal: the inferred member, quoted directly" }, { "step": "Reveal: the resolve, measured" }] },
+        { "item": "A retroactive Type 2 change is also late-arriving dimension data, needing a new row and fact restatement", "at": [{ "step": "Reveal: retroactive Type 2 changes are late-arriving data too, quoted directly" }] }
+      ]
+    },
+    {
+      "source": "Kimball Group, \"Late Arriving Fact\" / Apache Beam Programming Guide",
+      "items": [
+        { "item": "A fact is late-arriving when the current dimensional context doesn't match the incoming row; the relevant dimensions must be searched for the keys effective when the event occurred", "at": [{ "step": "Reveal: the late arriving fact, quoted directly" }] },
+        { "item": "Allowed lateness is a named, bounded horizon past which a late element is handled differently rather than folded in indefinitely", "at": [{ "step": "Reveal: the bounded reprocessing window" }] }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "Claude (single session, written from the syllabus line and the fetched sources before storyboarding; not independent of the builder, so a later owner review should repeat it)",
+    "date": "2026-10-22",
+    "items": [
+      { "item": "The first predict (step 4) is red-teamed against the plausible wrong answer that resolving a placeholder adds a new row the way a real Type 2 change would; the reveal distinguishes a placeholder (never a genuine prior version) from a real attribute change", "at": [{ "step": "Predict: when the real customer data shows up later, does it get a new row or an update?" }] },
+      { "item": "The inferred-member insert and resolve (steps 3 and 5) are both run for real on a throwaway sandbox schema, not described hypothetically: one dimension row created as a placeholder, a fact loaded against it immediately, then the same row updated in place with real data — never a second row", "at": [{ "step": "Reveal: the inferred member, measured" }, { "step": "Reveal: the resolve, measured" }] },
+      { "item": "The second predict (step 7) is red-teamed against the plausible wrong answer that a dimension only ever has one row worth joining to; the reveal requires more than one candidate row to exist, which is exactly SCD2 history from topic 13", "at": [{ "step": "Predict: does a backdated fact get the customer's current address, or whichever one was true then?" }] },
+      { "item": "The as-of join (step 9) is run for real against a genuine three-version SCD2 history and a real backdated fact, producing two different surrogate keys from the same fact row depending only on the join condition — the wrong one via the current flag, the right one via the event date", "at": [{ "step": "Reveal: the as-of join, measured" }] },
+      { "item": "The third predict (step 10) is red-teamed against the plausible wrong answer that correctness should always win over cost, so every late fact should trigger an unbounded history search; the reveal uses Apache Beam's allowed-lateness mechanism as a concrete, well known instance of the same bounded tradeoff in a different domain (streaming), not a warehouse-specific claim", "at": [{ "step": "Reveal: the bounded reprocessing window" }] },
+      { "item": "The closing check (Prove it) is a genuinely new scenario, not a restatement of any reveal: a correction arriving for an old event after the reprocessing window has already closed, which tests whether the window's own tradeoff (bounded cost over unbounded correctness) is actually understood rather than just the two prior mechanisms", "at": [{ "step": "Prove it" }] },
+      { "item": "The bridge from topic 14 (SCD types 0-7 and selection) is answered explicitly: every type there assumed a dimension row's own data was correct and on time, and this topic is what happens when it genuinely isn't; the handoff to the next topic (from warehouse to lake to lakehouse) is confirmed by reading both CHAPTER.md entries side by side", "at": [{ "step": "A fact arrives, its customer does not exist yet" }] },
+      { "item": "Every number that appears on screen (the dimension and fact row counts, the two different surrogate keys from the as-of join) traces to a literal constant in examples.py, computed from a real sandbox run, not asserted", "at": [{ "step": "Reveal: the inferred member, measured" }, { "step": "Reveal: the as-of join, measured" }] },
+      { "item": "The recap keeps the inferred member, the as-of join, and the bounded reprocessing window as three separate ideas, matching the syllabus line's own three clauses, rather than collapsing them into one vague \"handle late data carefully\" takeaway", "at": [{ "step": "Recap" }] },
+      { "item": "The topic deliberately keeps the two late-arriving cases (a fact missing its dimension row, versus a fact dated inside dimension history that already exists) separate throughout, since Kimball's own quoted material treats them as genuinely different mechanisms (Type 1 overwrite vs. an as-of search) rather than variations of one problem", "at": [{ "step": "Reveal: the inferred member, quoted directly" }, { "step": "Reveal: the late arriving fact, quoted directly" }] },
+      { "item": "The Apache Beam source is used deliberately as a cross-domain illustration, not a warehouse-specific claim: coverage.json and references.md both mark it as streaming terminology for the same bounded-lateness tradeoff, so the topic doesn't overstate it as Kimball-endorsed material", "at": [{ "step": "Reveal: the bounded reprocessing window" }] }
+    ]
+  },
+  "gapReview": { "date": "2026-10-22", "by": "Claude (single session)", "open": [] }
+}
