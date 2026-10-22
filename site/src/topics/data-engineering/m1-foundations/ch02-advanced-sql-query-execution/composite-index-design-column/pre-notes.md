@@ -1,0 +1,4 @@
+- **Cardinality estimation**: the planner's own guess at how many rows a condition matches (introduced in topic 19). *Where you meet it:* selectivity, this topic's own reason an equality-matched leading column narrows a scan so much more than a range-matched one.
+- **EXPLAIN triage**: a fixed order for reading a plan's own numbers, regardless of engine (introduced in topic 27). *Where you meet it:* the buffer counts and execution times this topic measures to compare index column orders directly.
+- **B-tree**: a balanced, ordered tree structure that keeps its entries sorted, letting an index both narrow a search and return rows in order. *Where you meet it:* this topic's own skip scan measurement, specific to PostgreSQL's B-tree index type.
+- **ORDER BY**: a query clause requesting rows in a specific sequence. *Where you meet it:* this topic's own measured contrast between an index that already stores the requested order and one that doesn't.

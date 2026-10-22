@@ -1,0 +1,24 @@
+import Resource from '../../../../../components/Resource.astro';
+
+<section class="prereq" data-section="earlier-topics">
+
+### <span class="n">01</span> What this topic builds on
+
+<ul class="resources">
+  <Resource kind="reel" host={props.host} domain="data-engineering" title="Reading EXPLAIN across engines">The buffer counts and execution times this topic reads directly, applied here to compare index column orders.</Resource>
+  <Resource kind="reel" host={props.host} domain="data-engineering" title="Cardinality estimation and statistics">Selectivity, the reason an equality-matched leading column narrows a scan so much more than a range-matched one.</Resource>
+</ul>
+
+</section>
+
+<section class="prereq" data-section="reference">
+
+### <span class="n">02</span> Reference
+
+<ul class="resources">
+  <Resource kind="reading" title="11.3. Multicolumn Indexes" href="https://www.postgresql.org/docs/18/indexes-multicolumn.html" by="PostgreSQL 18 documentation" length="10 min">Equality-before-range ordering and B-tree skip scan, in full detail.</Resource>
+  <Resource kind="reading" title="11.4. Indexes and ORDER BY" href="https://www.postgresql.org/docs/18/indexes-ordering.html" by="PostgreSQL 18 documentation" length="5 min">Using index order to avoid an explicit sort, especially with LIMIT.</Resource>
+  <Resource kind="reading" title="E.6. Release 18" href="https://www.postgresql.org/docs/18/release-18.html" by="PostgreSQL 18 documentation" length="5 min">The B-tree skip scan feature, as announced.</Resource>
+</ul>
+
+</section>

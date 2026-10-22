@@ -1,0 +1,131 @@
+{
+  "topic": "de.composite-index-design-column",
+  "steps": [
+    {
+      "lines": [
+        "Index the exact same two columns two different ways, and run the exact same query against each.",
+        "One of them answers it in six buffer reads.",
+        "The other reads over two thousand buffers, for the identical result."
+      ]
+    },
+    {
+      "lines": [
+        "Both indexes cover the same two columns. Neither one is missing anything this query needs.",
+        { "beat": 0.4 },
+        "So what could possibly make one of them so much more expensive to read?"
+      ],
+      "answer": [
+        "The order the columns are listed in, inside each index, differs.",
+        "Both runs were forced away from a plain table scan first, so this really is one index's own order against the other's, not the planner quietly picking a worse plan for one of them."
+      ]
+    },
+    {
+      "lines": [
+        "An equality match on a column at the front of an index narrows the search dramatically, almost down to nothing.",
+        "A range, sitting in that same front position instead, narrows things far less.",
+        "Put the equality column first, and the difference shows up directly in how much of the index actually gets touched."
+      ]
+    },
+    {
+      "lines": [
+        "One of these two columns has a thousand distinct values in it. Matching one of those values rules out nearly everything else immediately.",
+        "The other column has a hundred thousand distinct values. A range across it simply can't rule out nearly as much, position for position.",
+        "How many different values a column actually holds is exactly what decides how much an equality match on it can narrow things down."
+      ]
+    },
+    {
+      "lines": [
+        "The same index on those same two columns still exists.",
+        { "beat": 0.4 },
+        "Does asking for one order and asking for the reverse pairing cost the same against it?"
+      ],
+      "answer": [
+        "No — only one of those two orderings actually matches what the index physically stores.",
+        "A B-tree index is laid out in exactly one direction, forwards or its exact reverse. Ask for anything else, and no index, however it's built, can hand that order back directly."
+      ]
+    },
+    {
+      "lines": [
+        "Ask for the order this index already stores, and the answer comes back as a plain scan. No separate sorting step at all.",
+        "Ask for the other ordering, against that very same index, and the engine falls back to scanning broadly and sorting everything, in parallel, from scratch.",
+        "Nothing about the data changed between those two requests. Only which order was asked for did."
+      ]
+    },
+    {
+      "lines": [
+        "Ask for only the first few rows in the order the index already stores, and those rows come straight off the index, nothing else read at all.",
+        "Ask for that same small number of rows in the other order, and every single row has to be sorted first, before even the first one can be handed back.",
+        "Wanting only a handful of rows doesn't save you here. The sorting still has to happen over everything, regardless of how few rows you actually asked for."
+      ]
+    },
+    {
+      "lines": [
+        "A query filters only on the second column of a two-column index, with absolutely nothing constraining the first.",
+        { "beat": 0.4 },
+        "In an older version, could an index built that way help this query at all?"
+      ],
+      "answer": [
+        "Yes, but badly — the index still gets used, just inefficiently.",
+        "It still counts as using the index rather than falling back to the table. The real cost is that, with nothing narrowing where to begin, the engine ends up walking essentially the whole thing."
+      ]
+    },
+    {
+      "lines": [
+        "Run that exact query, that exact index, on an older version of this engine.",
+        "Over five thousand buffer reads, forty-one milliseconds — walking essentially the whole index to answer a filter on just its second column.",
+        "Nothing about the data is unusual here. This is simply what happens when a leading column is left with nothing constraining it."
+      ]
+    },
+    {
+      "lines": [
+        "Run the identical query against the identical index, on a newer version of the same engine.",
+        "Forty buffer reads this time, two tenths of a millisecond — and the plan itself now reports a dozen separate searches it ran internally.",
+        "Same query. Same index. Same data. The only thing that changed is the version doing the searching."
+      ]
+    },
+    {
+      "lines": [
+        "That column being searched this way only actually held ten distinct values.",
+        "Few enough that running a dozen small, targeted searches ends up far cheaper than reading straight through the whole index once.",
+        "Give that same leading column thousands of distinct values instead, and that trade flips — reading the whole index wins again."
+      ]
+    },
+    {
+      "lines": [
+        "Every single index looked at so far has sped something up. Not one of them has shown a downside yet.",
+        { "beat": 0.4 },
+        "Is adding an index ever actually free?"
+      ],
+      "answer": [
+        "No — every index carries a real, ongoing cost of its own.",
+        "This engine's own documentation is direct about it: once an index exists, it has to be kept in step with the table on every single change made to that table, whether or not anything ever reads that index back."
+      ]
+    },
+    {
+      "lines": [
+        "Load the exact same half-million rows twice: once into a table with no indexes at all, once into an otherwise identical table carrying three single-column indexes.",
+        "The bare table loads in a little over a second. The indexed table takes nearly five times as long.",
+        "Those three indexes also add real space on disk — on top of the table itself, for a load that hasn't been read back by a single query yet."
+      ]
+    },
+    {
+      "lines": [
+        "Put the most selective, equality-matched column first, so the scan narrows the way this topic's own first measurement showed.",
+        "Match that same column order to however queries actually ask for their results sorted, or a full sort steps in regardless of size.",
+        "A newer engine's skip scan narrows what an old, poorly ordered index costs, but only when the column standing in front has few distinct values — and every index, well ordered or not, still costs something on every single write."
+      ]
+    },
+    {
+      "lines": [
+        "A composite index is built with a date range as its leading column, and a region's exact match as the second column.",
+        "A report filters on an exact region and a date range together.",
+        { "beat": 0.3 },
+        "Is this index's own column order actually a good match for that report?"
+      ],
+      "answer": [
+        "No — the exact-match column should have led instead.",
+        "As built, the range sits in front, narrowing the scan far less than putting the equality match there would have — exactly the gap this topic opened with."
+      ]
+    }
+  ]
+}

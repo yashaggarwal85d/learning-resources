@@ -1150,4 +1150,24 @@ export const TOPICS: TopicMeta[] = [
     handoff:
       "A fixed triage order reads any plan, on any engine, once you know where to look. Next: composite index design and column order, where equality-before-range ordering, selectivity, and PostgreSQL 18's B-tree skip scan decide what that plan even has available to choose from.",
   },
+  {
+    id: 'de.composite-index-design-column',
+    domain: 'data-engineering',
+    slug: 'data-engineering/m1-foundations/ch02-advanced-sql-query-execution/composite-index-design-column',
+    title: 'Composite index design and column order',
+    syllabusTitle: 'Composite index design and column order',
+    kind: 'full',
+    status: 'live',
+    milestone: { number: 1, title: 'Foundations' },
+    chapter: { number: 2, title: 'Advanced SQL and query execution', section: '2.3' },
+    minutes: 15,
+    verified: '2026-10-22',
+    introduces: ['composite-index-column-order', 'btree-skip-scan'],
+    uses: ['cardinality-estimation', 'explain-triage'],
+    declared: ['sql-select', 'sql-create-index', 'order-by'],
+    bridge:
+      "A fixed triage order reads any plan, on any engine, once you know where to look. This topic decides what that plan even has available to choose from.",
+    handoff:
+      "Equality-before-range ordering, selectivity, and skip scan all assumed a table's own rows still had to be visited through the index at all. Next: covering, partial and expression indexes, where INCLUDE columns, partial indexes, and expression indexes each change what an index even needs to visit in the first place.",
+  },
 ];
