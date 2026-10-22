@@ -1,15 +1,29 @@
 // Which live reels a change can affect, so checks test those instead of every reel on every push.
-//   node scripts/affected.mjs [base]        prints JSON { all, slugs, mdx } for the changes from <base> (default origin/main) to HEAD
-// `all` is true when the change touches anything shared (site code outside the topic folders, tests, packages, workflows),
-// or when the base can't be compared; then every reel is affected. Otherwise `slugs` lists the topics whose folder,
-// registry entry or audio changed, or that sit under a changed chapter-level file, and `mdx` their Deep dive and
-// Prerequisites files (for the link check). The weekly full runs and a change to shared code still test everything.
+//   node scripts/affected.mjs [base]        prints JSON { all, slugs, mdx, canary } for the changes from <base>
+//                                           (default origin/main) to HEAD
+// `all` is true when the change touches anything shared (site code outside the topic folders, tests, packages,
+// workflows), or when the base can't be compared; then CI and Deploy run only `canary` (one topic per domain,
+// through the shared panel and player code) instead of every live reel, so a shared-code push stays fast. The true
+// full sweep — every live reel, both device sizes — runs separately: `.github/workflows/full-sweep.yml`, daily and
+// on demand (owner decision 2026-10-22: CI gating a merge or a deploy must stay fast as topics keep growing; the
+// full sweep catches what a canary misses, in the background, same guarantee as the "main is never left red" rule,
+// just not on the critical path). Otherwise `slugs` lists the topics whose folder, registry entry or audio changed,
+// or that sit under a changed chapter-level file, and `mdx` their Deep dive and Prerequisites files (for the link
+// check).
 import { spawnSync } from 'node:child_process';
 import { dirname, resolve } from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const git = (...a) => spawnSync('git', a, { cwd: root, encoding: 'utf8' });
+
+// One live topic per domain, each exercising the shared panel (four tabs, in-page editor) and player: enough to
+// catch most regressions in shared code fast. Revisit if a domain's canary goes held/cut, or a new domain starts.
+export const CANARY_SLUGS = [
+  'data-engineering/m1-foundations/ch01-cs-foundations/b-trees-vs-lsm',
+  'data-structures-and-algorithms/m1-data-structures/ch01-cost-models/asymptotic-notation',
+  'rust-systems-engineering/m1-ownership-types-concurrency/ch01-ownership-moves/single-ownership-move-semantics',
+];
 
 // Registry entries (id, slug, status, and the whole entry text) at a revision, read without importing it.
 function registry(rev) {
@@ -20,7 +34,7 @@ function registry(rev) {
 }
 
 export function affected(base = 'origin/main') {
-  const all = { all: true, slugs: [], mdx: [] };
+  const all = { all: true, slugs: [], mdx: [], canary: CANARY_SLUGS };
   if (!base || /^0+$/.test(base) || git('rev-parse', '--verify', '--quiet', `${base}^{commit}`).status !== 0) return all;
   const mergeBase = git('merge-base', base, 'HEAD').stdout.trim() || base;
   const changed = git('diff', '--name-only', mergeBase, 'HEAD').stdout.split('\n').filter(Boolean);
@@ -49,7 +63,7 @@ export function affected(base = 'origin/main') {
     return all; // shared code, tests, packages, workflows: everything is affected
   }
   const slugs = [...hit];
-  return { all: false, slugs, mdx: slugs.flatMap((s) => ['prerequisites.mdx', 'pre-notes.md', 'post-notes.md', 'references.md'].map((f) => `site/src/topics/${s}/${f}`)) };
+  return { all: false, slugs, mdx: slugs.flatMap((s) => ['prerequisites.mdx', 'pre-notes.md', 'post-notes.md', 'references.md'].map((f) => `site/src/topics/${s}/${f}`)), canary: CANARY_SLUGS };
 }
 
 if (import.meta.url === pathToFileURL(process.argv[1]).href) console.log(JSON.stringify(affected(process.argv[2])));

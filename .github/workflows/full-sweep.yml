@@ -1,0 +1,66 @@
+name: Full reel sweep
+# Every live reel, at desktop and phone size, plus narration and the notes editor: the full version of the checks
+# CI and Deploy now run only a fixed canary of (scripts/affected.mjs, owner decision 2026-10-22: a shared-code push
+# must stay fast as topics keep growing). This runs on its own schedule so it never blocks a merge or a deploy; a
+# failure here is a real regression in shared code that a canary topic didn't happen to exercise, and it is fixed
+# the same way any other CI-red is (never skipped, loosened or worked around) — just caught within a day instead of
+# immediately, which is the trade the owner made for merges and deploys not waiting on every live topic.
+#   node scripts/affected.mjs          lists the fixed canary this workflow does NOT limit itself to
+#   gh workflow run full-sweep.yml     run it on demand, e.g. right after a shared-code change for extra confidence
+
+on:
+  schedule:
+    - cron: '41 5 * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: full-sweep
+  cancel-in-progress: true
+
+jobs:
+  sweep:
+    name: Every live reel, both sizes
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: site
+    steps:
+      - uses: actions/checkout@v4
+      - name: No site yet
+        if: hashFiles('site/package-lock.json') == ''
+        run: echo "::notice::There is no site/ folder yet, so there is nothing to test."
+      - uses: actions/setup-node@v4
+        if: hashFiles('site/package-lock.json') != ''
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: site/package-lock.json
+      - if: hashFiles('site/package-lock.json') != ''
+        run: npm ci
+      - if: hashFiles('site/package-lock.json') != ''
+        run: npm run build
+      - name: Narration matches every live reel's script
+        if: hashFiles('site/package-lock.json') != ''
+        run: npm run test:narration
+      - name: Install Chromium for the reel smoke test
+        if: hashFiles('site/package-lock.json') != ''
+        run: npx playwright install --with-deps chromium
+      - name: Reel smoke test, every live reel (desktop and phone)
+        if: hashFiles('site/package-lock.json') != ''
+        run: |
+          # Held topics (finished, waiting for earlier ones) are tested too, on a test-only build that gives them pages.
+          export PREVIEW_HELD=1
+          npm run build > /dev/null
+          npx astro preview --host 127.0.0.1 --port 4321 > preview.log 2>&1 &
+          for i in $(seq 1 30); do curl -sf http://127.0.0.1:4321/learning-resources/ > /dev/null && break; sleep 1; done
+          npm run test:reels -- http://127.0.0.1:4321/learning-resources/
+          npm run test:editor -- http://127.0.0.1:4321/learning-resources/
+      - uses: actions/upload-artifact@v4
+        if: always() && hashFiles('site/package-lock.json') != ''
+        with:
+          name: reel-screenshots
+          path: site/test-results
+          if-no-files-found: ignore
