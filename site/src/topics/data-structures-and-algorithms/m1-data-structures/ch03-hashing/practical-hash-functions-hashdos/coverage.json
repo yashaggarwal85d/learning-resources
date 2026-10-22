@@ -1,0 +1,23 @@
+{
+  "topic": "dsa.practical-hash-functions-hashdos",
+  "expert": {
+    "by": "blind self-review, research stage",
+    "date": "2026-10-22",
+    "items": [
+      { "item": "Non-cryptographic hashes (xxHash3, wyhash, FxHash) aim for speed and statistical uniformity on non-adversarial input, not security; xxHash's own README scopes its quality claim to non-adversarial input explicitly.", "at": [] },
+      { "item": "XXH3 is xxHash's current recommended default, replacing the older XXH32/XXH64 arithmetic hashes; its own benchmark table puts it at tens of GB/s.", "at": [] },
+      { "item": "wyhash's \"dynamic secret\"/salted design and its real adoption (Zig, V, Nim, Go since 1.17); its own README says it has since been superseded by rapidhash.", "at": [] },
+      { "item": "FxHash/rustc-hash is the clearest real-world example of the non-cryptographic tier's assumption: its own README states explicitly that it gives up DoS resistance because the compiler's inputs aren't adversarial.", "at": [] },
+      { "item": "Rust's std HashMap chooses a keyed, randomly-seeded hash (SipHash 1-3) specifically for HashDoS resistance, with the speed trade-off against small/large keys stated in its own docs.", "at": [] },
+      { "item": "A HashMap built with a fixed (non-random) hasher in a const/static context loses HashDoS resistance entirely, per Rust's own docs' explicit warning.", "at": [] },
+      { "item": "SipHash is formally a PRF (pseudorandom function) — indistinguishable from a uniform random function — which is the actual property hash-flooding resistance needs, not merely \"has a secret key.\"", "at": [] },
+      { "item": "The real correction: a merely randomly-seeded *linear* public hash family is still breakable by an attacker with timing/adaptive query access, via Gaussian elimination against the linear structure — the actual reason SipHash's PRF strength matters over naive random seeding alone (the SipHash paper's own critique of post-2011 patches).", "at": [] },
+      { "item": "Hash flooding's documented history: the 1999 dnscache source-code comment, Crosby & Wallach's 2003 \"algorithmic complexity attacks\" paper (USENIX Security), and Klink & Wälde's December 2011 CCC 28c3 disclosure with a concrete real-world figure (500 KB of POST data occupying one PHP5 server for a full minute of CPU time).", "at": [] },
+      { "item": "The concrete mechanism of a collision-flooding attack: an attacker finds many inputs that hash to the same table index (a multicollision), degrading a hash table's expected O(1) per-operation cost to O(n), and a whole insertion run to O(n²).", "at": [] },
+      { "item": "Cryptographic hashes (SHA-256, BLAKE3) are a third, slower-but-strongly-collision-resistant tier; BLAKE3 is itself faster than SHA-2 by design, but still far slower than XXH3 for the ordinary, non-adversarial case.", "at": [] },
+      { "item": "SipHash was explicitly designed to be competitive in speed with popular non-cryptographic hash functions for short inputs, despite being a MAC-strength PRF — the reason it's usable as a general-purpose default hasher rather than too slow to ship.", "at": [] },
+      { "item": "How a hash table actually resolves two keys that hash to the same slot (chaining, open addressing, SIMD group probing) is a separate concern from which hash function feeds it, and is this chapter's own next three topics, not this one's subject.", "at": [] },
+      { "item": "Universal hashing's formal guarantee (a provable bound on collision probability for any fixed input distribution, independent of what an adversary chooses) is the deeper theoretical tool that would fully justify \"why keying helps\" beyond this topic's empirical framing — out of scope because the syllabus itself skips \"Universal and k-independent hashing\" in this chapter.", "at": [] }
+    ]
+  }
+}
