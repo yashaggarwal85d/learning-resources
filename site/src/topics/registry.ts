@@ -1812,4 +1812,24 @@ export const TOPICS: TopicMeta[] = [
     handoff:
       "Every architecture in this section assumed a single team could still own the whole pipeline end to end. Next: the organizational response to that no longer being true at scale — data mesh, domain ownership, and data as a product.",
   },
+  {
+    id: 'de.data-mesh-data-products',
+    domain: 'data-engineering',
+    slug: 'data-engineering/m1-foundations/ch03-data-modeling-analytical/data-mesh-data-products',
+    title: 'Data mesh and data products',
+    syllabusTitle: 'Data mesh and data products',
+    kind: 'full',
+    status: 'live',
+    milestone: { number: 1, title: 'Foundations' },
+    chapter: { number: 3, title: 'Data modeling and analytical architecture', section: '3.4' },
+    minutes: 13,
+    verified: '2026-10-22',
+    introduces: ['data-mesh-four-principles', 'data-as-a-product'],
+    uses: ['warehouse-lake-lakehouse-history'],
+    declared: ['sql-select'],
+    bridge:
+      "Every architecture in the previous section assumed a single team could still own the whole pipeline end to end. This topic is the organizational response to that no longer being true at scale: data mesh, domain ownership, and data as a product.",
+    handoff:
+      "Federated governance assumed each domain team actually honors its own data's contract with the rest of the mesh. Next: data contracts themselves, the concrete artifact that enforcement actually happens against.",
+  },
 ];
