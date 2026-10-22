@@ -1,0 +1,48 @@
+{
+  "topic": "de.table-partitioning-partition-pruning",
+  "syllabus": [
+    { "clause": "range/list/hash partitioning, choosing keys from predicates and retention policy,", "at": [{ "step": "Reveal: range/list/hash partitioning" }, { "step": "Reveal: choosing a partition key means choosing what retention can drop" }] },
+    { "clause": "plan-time vs run-time pruning,", "at": [{ "step": "Reveal: plan-time pruning" }, { "step": "Reveal: run-time pruning" }, { "step": "Reveal: two different signals for two different moments" }] },
+    { "clause": "overhead of too many partitions;", "at": [{ "step": "Reveal: overhead of too many partitions" }] },
+    { "clause": "contrast with warehouse clustering (§6.5).", "at": [{ "step": "Reveal: contrast with warehouse clustering" }] }
+  ],
+  "sources": [
+    {
+      "source": "PostgreSQL 18 Documentation §5.12.4, \"Partition Pruning\"",
+      "items": [
+        { "item": "With partition pruning enabled, the planner proves a partition can't match the WHERE clause and excludes it from the plan", "at": [{ "step": "Reveal: plan-time pruning" }] },
+        { "item": "Partition pruning can also be performed during execution, visible via Subplans Removed in EXPLAIN", "at": [{ "step": "Reveal: run-time pruning" }] },
+        { "item": "Too many partitions can mean longer query planning times and higher memory consumption", "at": [{ "step": "Reveal: overhead of too many partitions" }] }
+      ]
+    },
+    {
+      "source": "PostgreSQL 18 Documentation §5.12.2.2, \"Partition Maintenance\"",
+      "items": [
+        { "item": "Dropping an individual partition is far faster than a bulk operation and avoids the VACUUM overhead a bulk DELETE causes", "at": [{ "step": "Reveal: DROP vs. DELETE for retention" }] }
+      ]
+    },
+    {
+      "source": "BigQuery Documentation, \"Introduction to clustered tables\"",
+      "items": [
+        { "item": "Clustered tables sort data in storage blocks by clustered columns instead of splitting the table into separate physical objects", "at": [{ "step": "Reveal: contrast with warehouse clustering" }] }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "Claude (single session, written from the syllabus line and the fetched sources before storyboarding; not independent of the builder, so a later owner review should repeat it)",
+    "date": "2026-10-22",
+    "items": [
+      { "item": "The plan-time pruning measurement uses a 60-partition table, large enough to make the contrast dramatic and realistic rather than a toy 2-3-partition example", "at": [{ "step": "Reveal: plan-time pruning" }] },
+      { "item": "The run-time pruning measurement genuinely forces a generic plan via plan_cache_mode, reproducing a precondition from topic 27's own PostgreSQL execution-time pruning work rather than accidentally measuring plan-time pruning of a literal-substituted plan", "at": [{ "step": "Reveal: run-time pruning" }] },
+      { "item": "The overhead-of-many-partitions measurement isolates partition count as the only variable by loading identical data into a partitioned and an unpartitioned table and comparing planning time specifically, not execution time", "at": [{ "step": "Reveal: overhead of too many partitions" }] },
+      { "item": "The retention measurement uses a realistic row count (1,000,000 per partition) and explicitly notes the additional VACUUM overhead DELETE would still need beyond the measured DELETE time itself, rather than understating DELETE's real total cost", "at": [{ "step": "Reveal: DROP vs. DELETE for retention" }] },
+      { "item": "The warehouse-clustering contrast is sourced and explicitly disclosed as not independently measured, consistent with this chapter's honest-gap pattern for claims about systems not installed on this sandbox", "at": [{ "deep": "Into the internals" }] },
+      { "item": "The distinction between constraint exclusion (legacy inheritance, plan-time only) and partition pruning (declarative partitioning, plan-time and run-time) drawn out as a related but separate mechanism, not conflated with pruning itself", "at": [{ "deep": "Into the internals" }] },
+      { "item": "A closing check that requires reasoning about partition count directly (24 total, 23 pruned) rather than re-testing the exact measured numbers from the reveals", "at": [{ "step": "Prove it" }] },
+      { "item": "Four distinct mechanisms (plan-time pruning, run-time pruning, partition-count overhead, retention via DROP) kept separate in the recap rather than blended into one vague 'partitioning is good' takeaway", "at": [{ "step": "Recap" }] },
+      { "item": "The choice between range, list and hash partitioning tied explicitly to the predicates queries actually use and to retention policy, rather than presented as three equally-likely options with no selection criterion", "at": [{ "step": "Reveal: range/list/hash partitioning" }] },
+      { "item": "Every locally-measured claim in this topic reuses the existing PostgreSQL 16.15 sandbox instance rather than requiring new infrastructure, consistent with the chapter's established measurement environment", "at": [{ "deep": "Into the internals" }] }
+    ]
+  },
+  "gapReview": { "date": "2026-10-22", "by": "Claude (single session)", "open": [] }
+}

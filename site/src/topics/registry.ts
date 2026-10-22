@@ -1190,4 +1190,24 @@ export const TOPICS: TopicMeta[] = [
     handoff:
       "An index can now answer a query without visiting its own table at all, when the visibility map allows it. Next: table partitioning and partition pruning, where the table itself gets split so a whole partition, not just an index range, can be skipped before anything is ever read.",
   },
+  {
+    id: 'de.table-partitioning-partition-pruning',
+    domain: 'data-engineering',
+    slug: 'data-engineering/m1-foundations/ch02-advanced-sql-query-execution/table-partitioning-partition-pruning',
+    title: 'Table partitioning and partition pruning',
+    syllabusTitle: 'Table partitioning and partition pruning',
+    kind: 'full',
+    status: 'live',
+    milestone: { number: 1, title: 'Foundations' },
+    chapter: { number: 2, title: 'Advanced SQL and query execution', section: '2.3' },
+    minutes: 15,
+    verified: '2026-10-22',
+    introduces: ['partition-pruning-plan-vs-run-time', 'partition-overhead'],
+    uses: ['covering-index-include', 'composite-index-column-order'],
+    declared: ['sql-select', 'sql-create-table', 'sql-drop-table', 'sql-delete'],
+    bridge:
+      "An index can now answer a query without visiting its own table at all, when the visibility map allows it. This topic splits the table itself, so a whole partition — not just an index range — can be skipped before anything is ever read.",
+    handoff:
+      "Plan-time pruning, run-time pruning, and partition overhead all assumed the planner is told a partition key up front. Next: zone maps and BRIN indexes, where a much smaller structure learns the same kind of exclusion from a table's physical row order instead of its declared partitioning.",
+  },
 ];

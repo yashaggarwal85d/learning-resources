@@ -1,0 +1,130 @@
+{
+  "topic": "de.table-partitioning-partition-pruning",
+  "steps": [
+    {
+      "lines": [
+        "Run the exact same counting query, against the exact same table, with the exact same filter, twice.",
+        "Without pruning turned on, every single partition in that table gets scanned.",
+        "With pruning turned on, exactly one of them does."
+      ]
+    },
+    {
+      "lines": [
+        "That filter's value is written directly into the query, as a literal, known the moment the query is written.",
+        { "beat": 0.4 },
+        "So why would the planner ever still need to scan a partition that literal plainly cannot match?"
+      ],
+      "answer": [
+        "It would not, once pruning is actually enabled.",
+        "The planner can prove ahead of time which partitions a known literal cannot possibly satisfy, and leave them out of the plan entirely."
+      ]
+    },
+    {
+      "lines": [
+        "A range partition's own boundary is an ordered interval. A list partition's boundary is a fixed set of discrete values. A hash partition's boundary is a bucket number.",
+        "Each of those three shapes lines up with a different kind of predicate a query might actually filter on.",
+        "Choosing between them means matching the partition's own boundary shape to the predicates queries actually use."
+      ]
+    },
+    {
+      "lines": [
+        "With a known literal value and pruning switched on, the planner proves that almost every partition cannot possibly match, before any scan ever begins.",
+        "The buffers this query touches drop by a factor of sixty. The time it takes drops by roughly a factor of twenty five.",
+        "All of that is decided purely at planning time, before a single row gets read."
+      ]
+    },
+    {
+      "lines": [
+        "This time, the filter's value is a parameter instead of a literal. Nobody, including the planner, knows what it actually is until the query runs.",
+        { "beat": 0.4 },
+        "So does proving an exclusion always require knowing the answer before planning even starts?"
+      ],
+      "answer": [
+        "Yes — pruning can also happen once execution has already begun.",
+        "The planner cannot know the value ahead of time, but the engine can still check it the moment execution starts, and prune on the spot."
+      ]
+    },
+    {
+      "lines": [
+        "Force a genuinely unresolved parameter all the way through a prepared statement, so the plan itself cannot substitute in a literal ahead of time.",
+        "The resulting explain output reports a count of removed subplans, directly, for partitions that got dropped only once execution actually began.",
+        "That is pruning performed at execution time, not at planning time."
+      ]
+    },
+    {
+      "lines": [
+        "Plan-time pruning simply leaves a partition out of the plan altogether. Look at the plan, and it is just gone, as if it never existed.",
+        "Run-time pruning instead leaves that partition sitting in the plan, but reports it separately as a removed subplan, since nobody could rule it out before execution started.",
+        "Two different moments a partition gets ruled out, and two genuinely different signals for telling which moment happened."
+      ]
+    },
+    {
+      "lines": [
+        "Now take a query with no filter at all. Every single partition is genuinely needed, and nothing at all gets pruned.",
+        { "beat": 0.4 },
+        "Does having many partitions still cost anything here, even though none of them get skipped?"
+      ],
+      "answer": [
+        "Yes — every partition the planner has to consider adds real work, pruned or not.",
+        "Building a plan that touches dozens of separate partitions takes real planning time and real memory, whether or not pruning ever gets the chance to help."
+      ]
+    },
+    {
+      "lines": [
+        "Load the exact same data twice: once split across sixty partitions, once sitting in a single unpartitioned table.",
+        "Planning the identical no-filter query against the partitioned version takes roughly thirty six times longer, and uses roughly two hundred times more planning memory.",
+        "None of that difference comes from the data itself. All of it comes purely from the number of partitions the planner had to consider."
+      ]
+    },
+    {
+      "lines": [
+        "A retention policy needs an entire year of old data gone. One way is to drop the single partition holding that year. Another way is to delete those same rows directly, one at a time.",
+        { "beat": 0.4 },
+        "Is there actually any real difference between those two approaches?"
+      ],
+      "answer": [
+        "Yes — dropping the whole partition is dramatically faster.",
+        "Removing a partition deletes one object outright. Deleting the same rows one by one is a bulk operation this topic measures directly, and a far slower one."
+      ]
+    },
+    {
+      "lines": [
+        "Drop a partition holding a full million rows outright, and it finishes in a small fraction of a second.",
+        "Delete that exact same million rows from an unpartitioned table instead, and it takes roughly forty times longer.",
+        "And deleting those rows still leaves behind maintenance work the drop never needed at all."
+      ]
+    },
+    {
+      "lines": [
+        "A partition key chosen to match the predicates queries actually filter on is, almost always, the exact same key a retention policy wants to drop by.",
+        "That single column decides both what pruning can skip during a query, and what a drop can remove whole during cleanup.",
+        "Choosing a partition key is really choosing one answer to two different questions at once."
+      ]
+    },
+    {
+      "lines": [
+        "A cloud warehouse's own clustering sorts rows into physical storage blocks, instead of splitting a table into separate partition objects the way this engine does.",
+        "There is no single block to drop outright for retention, and no separate per-partition metadata for the planner to manage either.",
+        "Same underlying problem, two genuinely different physical designs for solving it."
+      ]
+    },
+    {
+      "lines": [
+        "Choose a partitioning method that matches the predicates queries actually use.",
+        "Plan-time pruning proves exclusions before any scan begins. Run-time pruning proves the same thing, once a real value finally becomes known.",
+        "More partitions cost real planning time, pruned or not. And dropping a whole partition always beats deleting its rows one by one."
+      ]
+    },
+    {
+      "lines": [
+        "A table is split into twenty four partitions. A query's filter matches exactly one of them, and that filter value is a literal, known the moment the query is written.",
+        { "beat": 0.4 },
+        "How many of those partitions should the explain output report as actually scanned?"
+      ],
+      "answer": [
+        "Just one — the other twenty three get pruned before any scan begins.",
+        "A literal value known at planning time is exactly the case plan-time pruning handles, proving every other partition cannot possibly match before a single scan starts."
+      ]
+    }
+  ]
+}

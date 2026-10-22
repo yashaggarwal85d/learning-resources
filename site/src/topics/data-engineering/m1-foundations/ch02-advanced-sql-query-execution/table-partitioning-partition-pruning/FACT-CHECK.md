@@ -1,0 +1,22 @@
+# Fact-check, currency and red team, 2026-10-22
+
+Re-derived each claim from the fetched PostgreSQL 18 and BigQuery docs and this topic's own four local measurements. Red-teamed the predict questions for edge cases.
+
+| # | Claim | Status | Evidence |
+|---|---|---|---|
+| 1 | Partition pruning lets the planner prove a partition can't match a query's WHERE clause and exclude it from the plan | Confirmed | Quoted verbatim from PostgreSQL 18 docs §5.12.4; measured directly on a 60-partition, 43,801-row table: `enable_partition_pruning = off` scans all 60 partitions (300 buffers, 3.633 ms); `= on` scans only the matching one (5 buffers, 0.146 ms) |
+| 2 | Partition pruning can also happen at execution time, for values not known at planning time, visible as `Subplans Removed` in EXPLAIN | Confirmed | Quoted verbatim from §5.12.4; measured directly: a `PREPARE`/`EXECUTE` with `plan_cache_mode = force_generic_plan` (so the parameter stays a genuine runtime unknown) reports `Subplans Removed: 59` directly in `EXPLAIN (ANALYZE)`, with only the one matching partition actually scanned |
+| 3 | Too many partitions means longer query planning time and higher memory consumption | Confirmed | Quoted verbatim from §5.12.4; measured directly: `SELECT count(*)` with no filter (every partition genuinely needed) against the 60-partition table reports `Planning Time: 3.875 ms`, `Planning: Buffers: shared hit=791`; the identical data loaded into an unpartitioned table reports `Planning Time: 0.107 ms`, `Planning: Buffers: shared hit=4` — about 36x and 198x respectively, from partition count alone |
+| 4 | Dropping a partition for retention is far faster than a bulk DELETE and avoids DELETE's VACUUM overhead | Confirmed | Quoted verbatim from §5.12.2.2; measured directly: `DROP TABLE` on a 1,000,000-row partition takes 15.440 ms; `DELETE` of the identical 1,000,000 rows from an unpartitioned table takes 584.947 ms, about 38x slower — and this doesn't even include the follow-up `VACUUM` the `DELETE` approach would additionally need, which the documentation states `DROP TABLE`/`DETACH PARTITION` avoid entirely |
+| 5 | BigQuery's clustering sorts rows into storage blocks instead of splitting the table into separate physical partitions | Confirmed, not independently measured | Quoted verbatim from BigQuery's own documentation. No BigQuery account available to this sandbox — the same honest-gap reasoning as prior cross-engine topics in this chapter: a real cloud warehouse feature can't be shown by a tool that isn't installed or accessible, so this claim is sourced and disclosed rather than measured |
+
+## Red team: predict questions
+- **Step 2** ("the planner already knows the filter value — why scan every partition anyway?"): tried the counter "maybe PostgreSQL always scans everything regardless" — ruled out directly by the measured contrast itself: with pruning enabled, only one partition's buffers show up in `EXPLAIN (ANALYZE, BUFFERS)` at all.
+- **Step 5** ("the filter value isn't known until the query runs — can pruning still happen?"): the tempting wrong answer is "no, pruning requires a literal value at planning time" — ruled out directly by this topic's own `Subplans Removed: 59` measurement, taken with a genuinely unresolved parameter.
+- **Step 8** ("a query with no filter still needs every partition — is partitioning a cost here?"): confirmed yes by the measured planning-time contrast; red-teamed the counter "maybe the cost is only in execution, not planning" — ruled out since the measured 36x/198x gap is specifically in the `Planning:` section of `EXPLAIN`, not execution.
+- **Step 10** ("DROP a partition or DELETE the rows, for a retention policy?"): the tempting wrong answer is "it doesn't matter, since the same rows disappear either way" — ruled out by the measured 38x timing gap, plus the documented VACUUM overhead DELETE leaves behind that DROP avoids structurally, not just by luck.
+
+## Currency check
+PostgreSQL 16.15, measured directly on this sandbox (the existing instance from topics 23–29), is current as of 2026-10-22, and declarative partitioning's plan-time/run-time pruning behavior is unchanged from PostgreSQL 16 through 18 (not a version-gated feature like topic 29's `BUFFERS` default or topic 28's skip scan). The fetched PostgreSQL 18 and BigQuery documentation pages are the current pages as of this date.
+
+No corrections to OUTLINE.md were needed; all claims passed as planned.
