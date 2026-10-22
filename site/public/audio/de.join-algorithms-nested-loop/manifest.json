@@ -1,0 +1,701 @@
+{
+ "topic": "de.join-algorithms-nested-loop",
+ "voice": "breeze-mellow-v2",
+ "asr": "large-v3-turbo",
+ "clips": {
+  "01": {
+   "hash": "116f39b41782bb43",
+   "takes": [
+    "781ca119f1720f8febf8",
+    "f96d6953c88ff7327a68",
+    "a4325401a1a8cf5657ae"
+   ],
+   "duration": 16.729,
+   "lines": [
+    {
+     "text": "Two queries, the same two tables underneath both of them.",
+     "start": 0.15,
+     "end": 3.823
+    },
+    {
+     "text": "One runs in a few milliseconds. The other takes tens of times longer.",
+     "start": 4.243,
+     "end": 8.81
+    },
+    {
+     "text": "That gap is not just more work. The planner reached for a different mechanism entirely.",
+     "start": 9.63,
+     "end": 16.379
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 136,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "02": {
+   "hash": "b00e23e4c53872ab",
+   "takes": [
+    "0801104b5e87aa67cc2c",
+    "a7e8f47f583ce7918053",
+    "359290020f31e7b04b3d"
+   ],
+   "duration": 17.482,
+   "lines": [
+    {
+     "text": "One row on one side. A huge table on the other, with an index sitting right on the column being matched.",
+     "start": 0.15,
+     "end": 6.75
+    },
+    {
+     "text": "Think about what has to happen to answer that join, not what it's called.",
+     "start": 7.17,
+     "end": 11.84
+    },
+    {
+     "text": "With only one row to drive from, which join strategy does that favor?",
+     "start": 12.66,
+     "end": 17.132
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 165,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "02a": {
+   "hash": "61b516713f3e2dcb",
+   "takes": [
+    "0b78ce2e6accbc19ff99",
+    "8638f48c080fdd3a590d"
+   ],
+   "duration": 10.34,
+   "lines": [
+    {
+     "text": "The one that drives straight through the index, once, for that single row.",
+     "start": 0.15,
+     "end": 4.982
+    },
+    {
+     "text": "A huge table is irrelevant here if almost none of it ever gets touched.",
+     "start": 5.402,
+     "end": 9.99
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 157,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "03": {
+   "hash": "cdf34d8130310ad3",
+   "takes": [
+    "c09fbb20ca3d5532aae4",
+    "9a55fcc1ead0f801027b",
+    "5950e7da64587482ff6b"
+   ],
+   "duration": 16.492,
+   "lines": [
+    {
+     "text": "The planner's own choice runs in well under a hundredth of a second.",
+     "start": 0.15,
+     "end": 4.656
+    },
+    {
+     "text": "Force it onto a different strategy instead, on the exact same question, and it takes more than ten times as long.",
+     "start": 5.076,
+     "end": 12.43
+    },
+    {
+     "text": "Nothing about the data moved. Only the plan did.",
+     "start": 12.85,
+     "end": 16.142
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -3.1,
+   "wpm": 156,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "04": {
+   "hash": "e9abcda103f2721f",
+   "takes": [
+    "f2c51f16b53499db43dc",
+    "619d840f4f94ccb2f955",
+    "c8de47e505099bacd783"
+   ],
+   "duration": 25.412,
+   "lines": [
+    {
+     "text": "Picture the outer side producing rows one at a time. For each one, the inner side gets searched again, from scratch.",
+     "start": 0.15,
+     "end": 7.911
+    },
+    {
+     "text": "Searched again sounds expensive, and it would be, if that search meant scanning the whole inner table every time.",
+     "start": 8.331,
+     "end": 15.611
+    },
+    {
+     "text": "An index turns that repeated search into a single lookup, which is the entire reason this strategy wins when the outer side is small.",
+     "start": 16.031,
+     "end": 25.062
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 151,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "05": {
+   "hash": "eefe45ec88c372e5",
+   "takes": [
+    "bc812b3cdcd7a736a8af",
+    "90cb16e416760b2256c9",
+    "a36d8342fcdefb59046b"
+   ],
+   "duration": 29.859,
+   "lines": [
+    {
+     "text": "A different approach: read one whole side first and drop every row into a table held in memory, keyed by whatever the join is matching on.",
+     "start": 0.15,
+     "end": 10.507
+    },
+    {
+     "text": "Then read the other side once, and for each row, check that table instead of searching anything.",
+     "start": 10.927,
+     "end": 17.241
+    },
+    {
+     "text": "One pass over each input, not a repeated search \u2014 but this only works when the condition is an exact match, and the table built from one side has to actually fit in memory.",
+     "start": 17.661,
+     "end": 29.509
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -1.8,
+   "wpm": 153,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "06": {
+   "hash": "d6cdf971eac5ec33",
+   "takes": [
+    "7f4529fa811cbb9f5c59",
+    "b4ff8804ffb0b0644dd8"
+   ],
+   "duration": 14.549,
+   "lines": [
+    {
+     "text": "Same two tables again, but now with nothing filtered out at all. Every row on one side gets matched to the other.",
+     "start": 0.15,
+     "end": 7.953
+    },
+    {
+     "text": "With no small side left to drive from, which of the strategies you've just seen wins now?",
+     "start": 8.773,
+     "end": 14.199
+    }
+   ],
+   "lufs": -16.0,
+   "true_peak": -2.3,
+   "wpm": 161,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "06a": {
+   "hash": "dd6f5c697238c7bd",
+   "takes": [
+    "e1af548e55e4ffd1adda",
+    "c0400485cfee18fb0803"
+   ],
+   "duration": 21.489,
+   "lines": [
+    {
+     "text": "The one built around a table in memory and one pass over each side, since there's no longer a tiny side for a repeated search to exploit, and nothing already arrived in a useful order to lean on instead.",
+     "start": 0.15,
+     "end": 15.919
+    },
+    {
+     "text": "Being small bought the earlier plan its win. Here, nothing is small.",
+     "start": 16.339,
+     "end": 21.139
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 142,
+   "wer": 0.16666666666666666,
+   "exact": false,
+   "tolerated": [
+    {
+     "line": "Being small bought the earlier plan its win. Here, nothing is small.",
+     "said": "plan its",
+     "heard": "planets"
+    }
+   ]
+  },
+  "07": {
+   "hash": "3a46cb758deeff3b",
+   "takes": [
+    "050d52b96fe15e6d296f",
+    "dd41317fb9ff636b45c9",
+    "6a0f491af314b59e9e42"
+   ],
+   "duration": 31.549,
+   "lines": [
+    {
+     "text": "The planner's default choice wins by a real margin here, not a narrow one.",
+     "start": 0.15,
+     "end": 5.581
+    },
+    {
+     "text": "Forced onto the repeated-search strategy instead, it's slower. Forced onto a third strategy that depends on both sides already being in order, it's slower still \u2014 the slowest of the three, measured honestly rather than massaged to look better.",
+     "start": 6.001,
+     "end": 22.778
+    },
+    {
+     "text": "No small side to exploit, and no free ordering to lean on, cost that third approach the most.",
+     "start": 23.198,
+     "end": 31.199
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 135,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "08": {
+   "hash": "5998eda3cc6286ad",
+   "takes": [
+    "ff31df254a191f8b4b00",
+    "1f5980a2c5aa9543493c",
+    "e18866e56bc4b168618b"
+   ],
+   "duration": 33.647,
+   "lines": [
+    {
+     "text": "A third approach needs both inputs to already be arranged in the same order as the join key, whether that came from an index or from an explicit sorting step.",
+     "start": 0.15,
+     "end": 10.347
+    },
+    {
+     "text": "Once both sides are in that order, the join itself is just walking two already-ordered lists side by side.",
+     "start": 10.767,
+     "end": 18.194
+    },
+    {
+     "text": "No table built in memory, no repeated searching \u2014 but if nothing was already sorted, someone has to pay to sort it first, and that's exactly the bill that made this approach the most expensive one measured here.",
+     "start": 18.614,
+     "end": 33.297
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 155,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "09": {
+   "hash": "9a6655b04028192d",
+   "takes": [
+    "8657953e9f107d2b5064",
+    "3fdb7368d0f28d8fcf2f",
+    "337f13856e23d5975b9d"
+   ],
+   "duration": 25.01,
+   "lines": [
+    {
+     "text": "Four things decide which of these a planner reaches for: how small one side is relative to the other, whether either side already arrives in a useful order, whether the data in play fits the memory it's been given.",
+     "start": 0.15,
+     "end": 15.527
+    },
+    {
+     "text": "And whether the condition being matched is an exact equality at all.",
+     "start": 15.947,
+     "end": 19.809
+    },
+    {
+     "text": "Only one of these three approaches never needs that last one to be true.",
+     "start": 20.229,
+     "end": 24.66
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 156,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "10": {
+   "hash": "f8d0b962d38a5e4b",
+   "takes": [
+    "74de481ce62d8dd5922d",
+    "f72a92eebb0bdb60959e"
+   ],
+   "duration": 15.715,
+   "lines": [
+    {
+     "text": "Take the strategy built around a table held in memory, and shrink how much memory it's allowed to use, down to a tiny fraction of its usual budget.",
+     "start": 0.15,
+     "end": 10.292
+    },
+    {
+     "text": "What happens to the plan itself once that table no longer fits?",
+     "start": 11.112,
+     "end": 15.365
+    }
+   ],
+   "lufs": -16.1,
+   "true_peak": -2.4,
+   "wpm": 153,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "10a": {
+   "hash": "48a3337bcdec49ba",
+   "takes": [
+    "4ea0c8ac603c84be1b99",
+    "777922878c25eca6dd56"
+   ],
+   "duration": 19.117,
+   "lines": [
+    {
+     "text": "It doesn't abandon the strategy. It splits the work into many smaller pieces instead, each one small enough to fit, and processes them one at a time.",
+     "start": 0.15,
+     "end": 11.977
+    },
+    {
+     "text": "Running out of room doesn't mean switching approaches \u2014 it means paying to spill some of the work to disk.",
+     "start": 12.397,
+     "end": 18.767
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 144,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "11": {
+   "hash": "a51a879827c56ddc",
+   "takes": [
+    "6cdde89ba151bbcc668e",
+    "cf29d90e6a7cc3ce3fb8",
+    "3e01b16c55e42a231088"
+   ],
+   "duration": 28.081,
+   "lines": [
+    {
+     "text": "At the ordinary memory budget, that table fits in a single piece, and the whole join finishes in well under half a second.",
+     "start": 0.15,
+     "end": 8.132
+    },
+    {
+     "text": "Shrink the budget down to a small fraction of that, and the same table in memory now splits into dozens of separate pieces.",
+     "start": 8.552,
+     "end": 17.276
+    },
+    {
+     "text": "The whole join still finishes only a little slower \u2014 spilling cost far less here than choosing the wrong strategy entirely cost on the very first comparison.",
+     "start": 17.697,
+     "end": 27.731
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -2.0,
+   "wpm": 154,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "12": {
+   "hash": "d726801c93ebc00b",
+   "takes": [
+    "7ce36c861dda8345a32f",
+    "dadc2c49be9f9b71c3f0",
+    "7c7c50fcdfbc4fbaefca"
+   ],
+   "duration": 27.958,
+   "lines": [
+    {
+     "text": "That memory budget is the amount a sort or an in-memory table gets before either one starts writing its overflow to temporary files on disk instead.",
+     "start": 0.15,
+     "end": 10.681
+    },
+    {
+     "text": "Tables held in memory get a little extra room beyond the ordinary budget, since they tend to need it more.",
+     "start": 11.101,
+     "end": 17.529
+    },
+    {
+     "text": "Once even that extra room runs out, splitting into more and smaller pieces is how the join keeps running instead of running out of memory outright.",
+     "start": 17.95,
+     "end": 27.608
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -2.5,
+   "wpm": 157,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "13": {
+   "hash": "b653e58af874a1e0",
+   "takes": [
+    "aa9d213aa1565f720ec4",
+    "948d5660f0c1d07288d9"
+   ],
+   "duration": 17.365,
+   "lines": [
+    {
+     "text": "Same two tables once more, but now the condition being matched isn't an exact equality \u2014 it's a range. And this time, the repeated-search strategy has been explicitly told it isn't allowed.",
+     "start": 0.15,
+     "end": 13.43
+    },
+    {
+     "text": "Does the planner manage to avoid it anyway?",
+     "start": 14.25,
+     "end": 17.015
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -2.0,
+   "wpm": 138,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "13a": {
+   "hash": "ef1a3ec4ede11263",
+   "takes": [
+    "b2cfc1f5da9f3a664a93",
+    "0cf3b1a3f5b88bbceceb"
+   ],
+   "duration": 18.633,
+   "lines": [
+    {
+     "text": "No. Neither of the other two approaches can work without an exact equality to match on, so the repeated-search strategy is the only one left \u2014 turning it off or not.",
+     "start": 0.15,
+     "end": 11.808
+    },
+    {
+     "text": "Telling the planner not to use something doesn't remove it as the only option that was ever available.",
+     "start": 12.228,
+     "end": 18.283
+    }
+   ],
+   "lufs": -16.6,
+   "true_peak": -1.9,
+   "wpm": 158,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "14": {
+   "hash": "54f391dfdb516312",
+   "takes": [
+    "79ff781e69a9a70cb415",
+    "bda43b24f182b7aae1ae",
+    "1e6779d9292f821d68ec"
+   ],
+   "duration": 24.27,
+   "lines": [
+    {
+     "text": "The plan comes back using the repeated-search strategy anyway.",
+     "start": 0.15,
+     "end": 3.886
+    },
+    {
+     "text": "Look inside the planner's own numbers and the alternatives haven't vanished \u2014 they're still listed, just priced absurdly high, which is what actually discourages them instead of ruling them out.",
+     "start": 4.306,
+     "end": 16.509
+    },
+    {
+     "text": "Discouraged and disallowed are not the same thing, and this is a case where the difference is the whole story.",
+     "start": 16.929,
+     "end": 23.92
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -2.0,
+   "wpm": 146,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "15": {
+   "hash": "a826747e6dd0463b",
+   "takes": [
+    "74f0f17cb70fc090f6af",
+    "fbaf68dae7734adcf86c",
+    "1ac6e95f68791d49c776",
+    "01a596393f216afb0911"
+   ],
+   "duration": 22.26,
+   "lines": [
+    {
+     "text": "Before trusting which approach a join took, three things are worth checking.",
+     "start": 0.15,
+     "end": 5.017
+    },
+    {
+     "text": "Does one side of the join have an index? Can the other side drive into it directly?",
+     "start": 5.437,
+     "end": 11.036
+    },
+    {
+     "text": "Is either side already arranged in the order the join needs?",
+     "start": 11.586,
+     "end": 15.718
+    },
+    {
+     "text": "And is the condition being matched even an exact equality in the first place?",
+     "start": 16.268,
+     "end": 21.91
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 146,
+   "wer": 0.16666666666666666,
+   "exact": false,
+   "tolerated": [
+    {
+     "line": "Before trusting which approach a join took, three things are worth checking.",
+     "said": "join took",
+     "heard": "joint tuck"
+    }
+   ]
+  },
+  "16": {
+   "hash": "949c8a1fd75985ad",
+   "takes": [
+    "4241aba112e77f3acd88",
+    "fd14bf7e4096ae99468b"
+   ],
+   "duration": 9.091,
+   "lines": [
+    {
+     "text": "One row on the outer side. The join column on the inner side has an index.",
+     "start": 0.15,
+     "end": 5.19
+    },
+    {
+     "text": "Which approach is almost certain to win here?",
+     "start": 6.01,
+     "end": 8.741
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 158,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "16a": {
+   "hash": "9e28cd9da520fffa",
+   "takes": [
+    "726be06ec212faa72d10",
+    "77bd194f339317b1126c"
+   ],
+   "duration": 15.926,
+   "lines": [
+    {
+     "text": "The repeated-search one, driven through that index \u2014 one outer row means that lookup only ever has to run once.",
+     "start": 0.15,
+     "end": 7.877
+    },
+    {
+     "text": "Small outer side, indexed inner side: the same shape as the very first comparison in this topic.",
+     "start": 8.297,
+     "end": 15.576
+    }
+   ],
+   "lufs": -16.3,
+   "true_peak": -2.1,
+   "wpm": 139,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "17": {
+   "hash": "3c9c7eae0676eddd",
+   "takes": [
+    "af02fd96e4eef8b6ae23",
+    "eafd7860abcf64a2d064"
+   ],
+   "duration": 14.07,
+   "lines": [
+    {
+     "text": "A plan built around a table in memory comes back reporting that its build side split into a dozen separate pieces instead of staying in one.",
+     "start": 0.15,
+     "end": 9.014
+    },
+    {
+     "text": "What does that number tell you, and what setting actually controls it?",
+     "start": 9.834,
+     "end": 13.72
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 162,
+   "wer": 0.038461538461538464,
+   "exact": false,
+   "tolerated": [
+    {
+     "line": "A plan built around a table in memory comes back reporting that its build side split into a dozen separate pieces instead of staying in one.",
+     "said": "side",
+     "heard": "sides"
+    }
+   ]
+  },
+  "17a": {
+   "hash": "8c1dea2a999588df",
+   "takes": [
+    "842ef74833941e800f32",
+    "f268daea7bca6ab9e480"
+   ],
+   "duration": 20.36,
+   "lines": [
+    {
+     "text": "It means that table never fit in its memory budget as a single piece, so it had to split and spill extra pieces to disk \u2014 and the budget it outgrew is the one lever that controls this.",
+     "start": 0.15,
+     "end": 13.712
+    },
+    {
+     "text": "More than one piece is the plan telling you, directly, that it ran out of room.",
+     "start": 14.132,
+     "end": 20.01
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -1.9,
+   "wpm": 156,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  }
+ }
+}
