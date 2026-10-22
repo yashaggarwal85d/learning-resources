@@ -1,0 +1,131 @@
+{
+  "topic": "de.parallel-distributed-query-plans",
+  "steps": [
+    {
+      "lines": [
+        "Join two tables, both split into matching pieces, and there are two ways to do it.",
+        "Combine everything first, then join.",
+        "Or join each matching piece on its own, and skip the combining entirely."
+      ]
+    },
+    {
+      "lines": [
+        "Neither plan here is cutting corners. Both of them touch every row, apply the same condition, and land on the same answer.",
+        { "beat": 0.4 },
+        "So why would cutting that work into four smaller pieces ever come out ahead of handling it as one piece?"
+      ],
+      "answer": [
+        "Each smaller join's own table of matching rows can fit somewhere the one big combined table can't.",
+        "The total amount of work doesn't change. How it gets divided up is what decides whether it fits in memory at all."
+      ]
+    },
+    {
+      "lines": [
+        "Turn the setting off, and the plan shows one join sitting above everything from both tables, stitched together first.",
+        "Turn it on, and that single join becomes four separate ones, each handling just its own matching slice."
+      ]
+    },
+    {
+      "lines": [
+        "This only works when the condition joining the two tables covers every piece they're split on, and both tables are split the exact same way.",
+        "Once that's true, a row on one side can only ever match a row that's already sitting in the exact same piece on the other.",
+        "There's nothing left to check across the different pieces — each one is already a complete, self-contained problem."
+      ]
+    },
+    {
+      "lines": [
+        "Give both versions of the plan the exact same, fairly tight amount of memory to work with.",
+        "The one combined table of matching rows doesn't fit, and has to spill out to disk.",
+        "Each of the four smaller ones does fit, with room to spare. Same hardware, same memory limit, same answer in the end."
+      ]
+    },
+    {
+      "lines": [
+        "Take that same idea up a level: two tables, each sitting across several different machines instead of pieces on one.",
+        { "beat": 0.4 },
+        "If those tables aren't already split up the same way across those machines, what has to happen before they can even be joined?"
+      ],
+      "answer": [
+        "Data has to physically move across the network first.",
+        "A single machine's matching pieces give you that alignment for free. Across separate machines, something has to go build it."
+      ]
+    },
+    {
+      "lines": [
+        "A system built to run across many machines writes this step right into its own plan, with a name.",
+        "One kind of step redistributes data by running it through a hash function, so matching rows end up together.",
+        "A different kind just copies one whole side out to every machine involved. The plan itself tells you exactly which one is happening, and where."
+      ]
+    },
+    {
+      "lines": [
+        "Redistributing by hash means taking both sides of the join and spreading each one out across every machine, sorted by the join key.",
+        "Once that's done, every machine is holding exactly the rows that could possibly match each other, locally.",
+        "That's the network doing, by force, the exact same thing a single machine's matching pieces already had for nothing."
+      ]
+    },
+    {
+      "lines": [
+        "There's a cheaper option when one side of the join is small.",
+        "Instead of redistributing both sides, just copy the small one, whole, out to every machine.",
+        "Nothing about the bigger side has to move anywhere at all."
+      ]
+    },
+    {
+      "lines": [
+        "A query has been copying one side of a join out to every machine, because it's small.",
+        "That side keeps growing, past the point the system considers small.",
+        { "beat": 0.3 },
+        "What should happen next?"
+      ],
+      "answer": [
+        "Switch over to redistributing both sides instead.",
+        "Past a certain size, copying something out to every machine costs more than just moving everything once, properly aligned."
+      ]
+    },
+    {
+      "lines": [
+        "One widely used system draws that line at ten megabytes by default — below it, copy; above it, redistribute.",
+        "That's not a vague guideline. It's a real number, and it can be changed, or turned off entirely.",
+        "Some systems can even cross that line mid-query, switching strategy the moment they see a side's actual size, rather than only guessing beforehand."
+      ]
+    },
+    {
+      "lines": [
+        "Step back and this is the exact same story as the one at the very start, just at a different scale.",
+        "Tables already split the same way need nothing extra done to them before a join, whether that split is across pieces on one machine, or across separate machines entirely.",
+        "It's the same alignment, paying off the same way, however far apart the pieces actually sit."
+      ]
+    },
+    {
+      "lines": [
+        "Matching pieces mean less duplicated work on a single machine.",
+        "Spread across separate machines, a join needs something to move data first, unless that alignment is already there.",
+        "One way to do that redistributes everything. The other just copies the small side.",
+        "And which one happens isn't locked in ahead of time — it can genuinely change once the real sizes are known."
+      ]
+    },
+    {
+      "lines": [
+        "A plan names one of its steps by the kind of redistribution it's doing, and the name reads as a hash-based spread, not a copy.",
+        { "beat": 0.3 },
+        "Is this step copying one side of a join out to every machine, or spreading both sides out by the join key?"
+      ],
+      "answer": [
+        "Spreading both sides out by the join key.",
+        "A hash-based spread redistributes; copying one side everywhere gets its own separate name in the plan, and this isn't it."
+      ]
+    },
+    {
+      "lines": [
+        "One side of a join comes in well under the size a system is willing to copy out to every machine.",
+        { "beat": 0.3 },
+        "Should that side get copied everywhere, or should both sides get redistributed instead?"
+      ],
+      "answer": [
+        "Copied everywhere.",
+        "Sitting comfortably under that limit is exactly the case copying exists for — redistributing both sides would just be doing more work for no reason."
+      ]
+    }
+  ]
+}

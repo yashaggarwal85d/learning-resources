@@ -1090,4 +1090,24 @@ export const TOPICS: TopicMeta[] = [
     handoff:
       "Morsels split the work across the cores of one machine. The same problem — how to split work, and how to move partial results between the pieces doing it — reappears one level up, across machines: exchange operators, repartitioning and the broadcast-vs-shuffle choice, next.",
   },
+  {
+    id: 'de.parallel-distributed-query-plans',
+    domain: 'data-engineering',
+    slug: 'data-engineering/m1-foundations/ch02-advanced-sql-query-execution/parallel-distributed-query-plans',
+    title: 'Parallel and distributed query plans',
+    syllabusTitle: 'Parallel and distributed query plans',
+    kind: 'full',
+    status: 'live',
+    milestone: { number: 1, title: 'Foundations' },
+    chapter: { number: 2, title: 'Advanced SQL and query execution', section: '2.3' },
+    minutes: 15,
+    verified: '2026-10-22',
+    introduces: ['partitionwise-join', 'exchange-operator', 'broadcast-threshold'],
+    uses: ['hash-join', 'hash-aggregation', 'work-mem-spill', 'morsel-driven-parallelism'],
+    declared: ['sql-select', 'group-by'],
+    bridge:
+      "Morsels split the work across the cores of one machine. The same problem — how to split work, and how to move partial results between the pieces doing it — reappears one level up, across machines: exchange operators, repartitioning and the broadcast-vs-shuffle choice, next.",
+    handoff:
+      "This topic's broadcast threshold was already a plan-time decision an engine's adaptive execution could revise mid-query. Next: how far that goes — adaptive execution and runtime filters more generally, where a plan keeps changing its mind as the query actually runs.",
+  },
 ];

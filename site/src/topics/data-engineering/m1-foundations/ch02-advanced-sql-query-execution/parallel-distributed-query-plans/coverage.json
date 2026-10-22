@@ -1,0 +1,48 @@
+{
+  "topic": "de.parallel-distributed-query-plans",
+  "syllabus": [
+    { "clause": "exchange operators (gather, repartition/shuffle, broadcast),", "at": [{ "step": "Reveal: exchange operators" }, { "step": "How a shuffle (repartition) exchange works" }, { "step": "How a broadcast exchange works" }] },
+    { "clause": "partition-wise and co-located joins,", "at": [{ "step": "Reveal: the plan shape changes" }, { "step": "How a partition-wise (co-located) join actually works" }, { "step": "Co-located joins are partition-wise joins at cluster scale" }] },
+    { "clause": "broadcast thresholds;", "at": [{ "step": "Predict: a broadcast side grows past the threshold — then what?" }, { "step": "Reveal: the broadcast threshold is a real switch" }] },
+    { "clause": "the plan shape that Spark (§7.2) and cloud warehouses (§6.5) implement.", "at": [{ "step": "Reveal: exchange operators" }, { "deep": "In production" }] }
+  ],
+  "sources": [
+    {
+      "source": "PostgreSQL 18 Documentation §19.7 \"Query Planning\"",
+      "items": [
+        { "item": "enable_partitionwise_join lets a join between partitioned tables be done by joining matching partitions, only when the join condition includes every partition key with matching types and partition bounds", "at": [{ "step": "How a partition-wise (co-located) join actually works" }] },
+        { "item": "The number of work_mem-bounded nodes in the final plan can increase linearly with partition count, increasing memory consumption and planning cost", "at": [{ "step": "Reveal: the memory win" }, { "deep": "In production" }] }
+      ]
+    },
+    {
+      "source": "Trino documentation, \"EXPLAIN\"",
+      "items": [
+        { "item": "Fragment types HASH (hash-redistributed) and BROADCAST (sent to every node), with RemoteExchange[GATHER]/[REPARTITION] nodes shown directly in a real plan", "at": [{ "step": "Reveal: exchange operators" }, { "step": "Prove it · 1 of 2" }] }
+      ]
+    },
+    {
+      "source": "Apache Spark 3.5.9 Documentation, \"Performance Tuning\"",
+      "items": [
+        { "item": "spark.sql.autoBroadcastJoinThreshold defaults to 10 MB and can be disabled by setting it to -1", "at": [{ "step": "How a broadcast exchange works" }, { "step": "Reveal: the broadcast threshold is a real switch" }] },
+        { "item": "Adaptive query execution can convert a sort-merge join into a broadcast join at run time once real join-side sizes are known", "at": [{ "step": "Reveal: the broadcast threshold is a real switch" }] }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "Claude (single session, written from the syllabus line and the fetched sources before storyboarding; not independent of the builder, so a later owner review should repeat it)",
+    "date": "2026-10-22",
+    "items": [
+      { "item": "A real plan-shape change (one combined hash join vs. four independent ones) confirmed directly from this topic's own EXPLAIN output, not asserted from the docs alone", "at": [{ "step": "Reveal: the plan shape changes" }] },
+      { "item": "A genuine, repeated ~20% speedup from partition-wise join specifically traced to a spill avoided under memory pressure, with the exact mechanism (hash table size per partition vs. combined) shown via EXPLAIN (ANALYZE, BUFFERS)", "at": [{ "step": "Reveal: the memory win" }] },
+      { "item": "The honest, non-oversold finding that the same two plans converge in wall-clock time under PostgreSQL's own default settings — reported rather than omitted, since it's the more common real-world case", "at": [{ "deep": "Into the internals" }] },
+      { "item": "Why a local, single-machine Spark run was deliberately not used for the broadcast/shuffle claim, rather than attempted and silently misrepresented as demonstrating a network cost it couldn't show", "at": [{ "step": "Reveal: the broadcast threshold is a real switch" }, { "deep": "Into the internals" }] },
+      { "item": "The structural parallel between partition-wise joins (one machine's partitions) and co-located joins (a cluster's nodes) drawn from PostgreSQL's own stated partition-wise requirements and what a shuffle exchange specifically exists to produce, not asserted as the same implementation", "at": [{ "step": "Co-located joins are partition-wise joins at cluster scale" }] },
+      { "item": "Reading Trino's own fragment-type names (HASH, BROADCAST) and RemoteExchange node types directly from its documented EXPLAIN output, not from a secondary paraphrase", "at": [{ "step": "Reveal: exchange operators" }] },
+      { "item": "The broadcast threshold as a real, numeric, configurable switch (10 MB default, disable-able via -1), not a vague heuristic", "at": [{ "step": "Reveal: the broadcast threshold is a real switch" }] },
+      { "item": "AQE's run-time reclassification of a join strategy as evidence the broadcast/shuffle choice isn't fixed once and for all at plan time", "at": [{ "step": "Reveal: the broadcast threshold is a real switch" }] },
+      { "item": "Why enable_partitionwise_join defaults to off despite its real measured benefit here — the same planning-cost and memory-increase trade-off the PostgreSQL documentation itself warns about", "at": [{ "deep": "In production" }] },
+      { "item": "Reading a plan's exchange-type name as a signal of which strategy is in play, tested directly in the closing \"Prove it\" steps rather than only asserted", "at": [{ "step": "Prove it · 1 of 2" }, { "step": "Prove it · 2 of 2" }] }
+    ]
+  },
+  "gapReview": { "date": "2026-10-22", "by": "Claude (single session)", "open": [] }
+}
