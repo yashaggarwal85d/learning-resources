@@ -38,9 +38,10 @@ export function Immutability({ t }: StepCtx) {
       <T x={30} y={100} s={13} f={C.cinnamon}>s + " world"</T>
       {cell(30, 114 + 20 * a, 260, 26, C.caramel, a)}
       <T x={300} y={114 + 20 * a + 18} s={13} f={C.caramel} o={a}>a new object</T>
-      <T x={30} y={200} s={13} f={C.latte}>the original "hello" is untouched &mdash; still there, still shared</T>
-      <T x={30} y={230} s={13} f={C.crema}>buys: safe sharing, hashable as a dict key</T>
-      <T x={30} y={252} s={13} f={C.crema}>costs: every edit copies</T>
+      <T x={30} y={200} s={13} f={C.latte}>the original "hello" is untouched</T>
+      <T x={30} y={222} s={13} f={C.latte}>still there, still shared</T>
+      <T x={30} y={254} s={13} f={C.crema}>buys: safe sharing, hashable as a dict key</T>
+      <T x={30} y={276} s={13} f={C.crema}>costs: every edit copies</T>
     </Svg>
   );
 }
@@ -69,7 +70,8 @@ export function QuadraticCost({ t }: StepCtx) {
           />
         );
       })}
-      <T x={30} y={280} s={13} f={C.cherry}>discarded, every time &mdash; total copies: 1+2+3+...+k &approx; k&sup2;/2</T>
+      <T x={30} y={280} s={13} f={C.cherry}>discarded, every time</T>
+      <T x={30} y={302} s={13} f={C.cherry}>total copies grow like k squared</T>
     </Svg>
   );
 }
@@ -102,11 +104,14 @@ export function Builder({ t }: StepCtx) {
   const w = 40 + (n - 1) * 44;
   return (
     <Svg label="One steadily growing buffer, doubling capacity on overflow, the same mechanism as topic 1's dynamic array" h={300}>
-      <T x={30} y={26} s={13} f={C.latte}>a string builder: one buffer, capacity doubles on overflow</T>
-      {cell(30, 60, w, 30, C.caramel)}
-      <T x={30} y={120} s={13} f={C.crema}>"every string builder has a capacity... the internal buffer is</T>
-      <T x={30} y={142} s={13} f={C.crema}>automatically made larger" &mdash; Java's own StringBuilder docs</T>
-      <T x={30} y={190} s={13} f={C.caramel}>topic 1's doubling array, specialized to bytes</T>
+      <T x={30} y={26} s={13} f={C.latte}>a string builder: one buffer,</T>
+      <T x={30} y={44} s={13} f={C.latte}>capacity doubles on overflow</T>
+      {cell(30, 70, w, 30, C.caramel)}
+      <T x={30} y={120} s={13} f={C.crema}>"every string builder has a capacity...</T>
+      <T x={30} y={142} s={13} f={C.crema}>the buffer is automatically made larger"</T>
+      <T x={30} y={164} s={13} f={C.crema}>&mdash; Java's own StringBuilder docs</T>
+      <T x={30} y={204} s={13} f={C.caramel}>topic 1's doubling array,</T>
+      <T x={30} y={226} s={13} f={C.caramel}>specialized to bytes</T>
     </Svg>
   );
 }
@@ -131,8 +136,10 @@ export function Utf8Bytes({ t }: StepCtx) {
           <path d={`M ${xs[i] + 2} 84 L ${xs[i] + w / 2} 92 L ${xs[i] + w - 2} 84`} fill="none" stroke={w > 20 ? C.caramel : C.taupe} strokeWidth={1.2} />
         </g>
       ))}
-      <T x={30} y={120} s={13} f={C.caramel} o={a}>1, 2, 3, 3, 3, 4 bytes &mdash; one code point each, widths one to four</T>
-      <T x={30} y={160} s={13} f={C.latte}>ASCII stays one byte; accents, CJK, emoji take more</T>
+      <T x={30} y={120} s={13} f={C.caramel} o={a}>one, two, three, three, three, four bytes</T>
+      <T x={30} y={142} s={13} f={C.caramel} o={a}>one code point each, widths one to four</T>
+      <T x={30} y={180} s={13} f={C.latte}>ASCII stays one byte; accents, CJK,</T>
+      <T x={30} y={202} s={13} f={C.latte}>emoji take more</T>
     </Svg>
   );
 }
@@ -191,7 +198,8 @@ export function ProveIt({ t }: StepCtx) {
       <T x={30} y={118} s={14} f={C.caramel} serif>string builder</T>
       <T x={30} y={138} s={13} f={C.crema}>time roughly doubles, inputs a hundred times larger</T>
       {cell(30, 148, 60, 22, C.caramel, easeOut(seg(t, 0.5, 1.6)))}
-      <T x={30} y={210} s={13} f={C.latte}>byte index: one step, any position &mdash; code point n: n decode steps</T>
+      <T x={30} y={210} s={13} f={C.latte}>byte index: one step, any position</T>
+      <T x={30} y={232} s={13} f={C.latte}>code point n: n decode steps</T>
     </Svg>
   );
 }
