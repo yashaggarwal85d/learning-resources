@@ -1,0 +1,32 @@
+import Resource from '../../../../../components/Resource.astro';
+
+<section class="prereq" data-section="before">
+
+### <span class="n">01</span> Already covered
+
+<ul class="resources">
+  <Resource kind="reel" host={props.host} domain="data-structures-and-algorithms" title="Merkle trees">Chapter 3's close: every structure so far turned a key into a number. This topic keeps the keys in order instead.</Resource>
+</ul>
+
+</section>
+
+<section class="prereq" data-section="standard">
+
+### <span class="n">02</span> The real source, from research and production
+
+<ul class="resources">
+  <Resource kind="reading" title="Binary Search Trees" href="https://algs4.cs.princeton.edu/32bst/" by="Robert Sedgewick and Kevin Wayne, Algorithms, 4th Edition">The BST property, recursive search/insert, delete by successor, and in-order traversal, all defined directly.</Resource>
+  <Resource kind="reading" title="Lecture 7: Binary Trees, Part 2: AVL" href="https://ocw.mit.edu/courses/6-006-introduction-to-algorithms-spring-2020/resources/mit6_006s20_lec7/" by="MIT 6.006, Spring 2020">The rotation as a constant-pointer relink that preserves traversal order, used here with no balancing invariant attached.</Resource>
+</ul>
+
+</section>
+
+<section class="prereq" data-section="later">
+
+### <span class="n">03</span> Where this goes next
+
+<ul class="resources">
+  <Resource kind="reel" host={props.host} domain="data-structures-and-algorithms" title="Red-black trees">A rotation alone doesn't keep a tree short. Next: the colour invariant that forces one before the tree degrades.</Resource>
+</ul>
+
+</section>
