@@ -1,0 +1,53 @@
+{
+  "topic": "rust.monomorphization-costs",
+  "syllabus": [
+    { "clause": "generics with trait bounds are compiled once per concrete type, which enables inlining at zero run-time cost but bloats code and compile times", "at": [{ "step": "One generic function, compiled once per concrete type" }, { "step": "How many compiled bodies does rustc actually emit?" }, { "step": "Zero run-time overhead is not zero cost" }] },
+    { "clause": "the \"non-generic inner function\" outlining trick", "at": [{ "step": "Pulling the loop out of the generic shrinks the duplicate" }, { "step": "Skip the outlining: what happens to the duplicate?" }] },
+    { "clause": "impl Trait in argument vs return position", "at": [{ "step": "impl Trait in argument position: sugar for a hidden generic" }, { "step": "One shared bound instead of two impl Trait parameters" }, { "step": "impl Trait in return position: one hidden, committed type" }, { "step": "Returning it unboxed costs nothing extra; boxing it allocates" }] }
+  ],
+  "sources": [
+    {
+      "source": "book-generic-syntax",
+      "items": [
+        { "item": "Generics carry no run-time cost because the compiler performs monomorphization", "at": [{ "step": "One generic function, compiled once per concrete type" }] },
+        { "item": "Monomorphization: turning generic code into specific code by filling in the concrete types actually used at compile time", "at": [{ "step": "One generic function, compiled once per concrete type" }] },
+        { "item": "The compiler looks at every call site and generates code for the concrete types used there", "at": [{ "step": "How many compiled bodies does rustc actually emit?" }] },
+        { "item": "The worked Option<T> example, expanded by the compiler into one specialized definition per concrete type used", "at": [{ "deep": "Internals: what the proof actually shows" }] }
+      ]
+    },
+    {
+      "source": "book-traits",
+      "items": [
+        { "item": "impl Trait in argument position is sugar for a trait-bounded generic parameter", "at": [{ "step": "impl Trait in argument position: sugar for a hidden generic" }] },
+        { "item": "The one case impl Trait in argument position cannot express that a named generic parameter can: forcing two parameters to share the same concrete type", "at": [{ "step": "One shared bound instead of two impl Trait parameters" }] }
+      ]
+    },
+    {
+      "source": "reference-impl-trait",
+      "items": [
+        { "item": "impl Trait can appear in argument position (an anonymous type parameter to functions) and return position (an abstract return type)", "at": [{ "step": "impl Trait in argument position: sugar for a hidden generic" }, { "step": "impl Trait in return position: one hidden, committed type" }] },
+        { "item": "impl Trait in argument position is syntactic sugar for a generic type parameter like <T: Trait>, except the type is anonymous and doesn't appear in the generic-params list", "at": [{ "step": "impl Trait in argument position: sugar for a hidden generic" }] },
+        { "item": "A generic parameter and impl Trait are not fully equivalent for a function parameter: the caller cannot explicitly supply the type argument when it's impl Trait", "at": [{ "deep": "Internals: what the proof actually shows" }] },
+        { "item": "Return-position impl Trait: each possible return value must resolve to the same concrete type, and the caller only sees the trait's interface", "at": [{ "step": "impl Trait in return position: one hidden, committed type" }] },
+        { "item": "impl Trait in return position allows a function to return an unboxed abstract type", "at": [{ "step": "Returning it unboxed costs nothing extra; boxing it allocates" }] }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "self-review",
+    "date": "2026-10-22",
+    "items": [
+      { "item": "Monomorphization is why a generic call optimizes exactly as well as a hand-written non-generic one: by the time the optimizer runs, there is no generic code left at all, only one concrete body per type actually instantiated", "at": [{ "step": "One generic function, compiled once per concrete type" }] },
+      { "item": "Counting monomorphized symbols only works unoptimized: at -O, LLVM's interprocedural constant propagation can fold a trivial single-call-site generic body away entirely, even with #[inline(never)], which blocks true inlining but not value-level folding, destroying the very symbols the proof needs to count", "at": [{ "deep": "Internals: what the proof actually shows" }] },
+      { "item": "The cost monomorphization moves is real but asymmetric: it scales with the number of distinct concrete types instantiated against a generic function, not with how many times it's called, so a hot loop calling one type pays nothing extra for being generic", "at": [{ "step": "Zero run-time overhead is not zero cost" }] },
+      { "item": "Outlining doesn't reduce the number of compiled copies, it reduces what's inside each one: the thin generic shim still gets duplicated per type, but the bulk of the logic moves into one ordinary function compiled exactly once and called by every shim", "at": [{ "step": "Pulling the loop out of the generic shrinks the duplicate" }] },
+      { "item": "A naive generic function with its full body inlined into the generic boundary pays monomorphization's bloat cost in direct proportion to how much logic sits inside the generic wrapper, which is exactly the lever outlining pulls on", "at": [{ "step": "Skip the outlining: what happens to the duplicate?" }] },
+      { "item": "impl Trait in argument position and a named generic bound compile to the same thing (an anonymous vs named type parameter); the difference that matters in practice is purely about whether two positions are allowed to diverge in concrete type, not about any run-time behavior", "at": [{ "step": "One shared bound instead of two impl Trait parameters" }] },
+      { "item": "Return-position impl Trait is not generic at all despite the shared keyword: the function, not the caller, picks the concrete type, and it's fixed at compile time for that function — this is why it carries no monomorphization choice at the call site the way argument position does", "at": [{ "step": "impl Trait in return position: one hidden, committed type" }] },
+      { "item": "Box<dyn Fn> existed before impl Trait in return position specifically to let a function return \"some type implementing Fn\" without naming it; impl Trait in return position replaced that need for the common case where the caller never needs dynamic dispatch, trading one heap allocation per call for none", "at": [{ "step": "Returning it unboxed costs nothing extra; boxing it allocates" }] },
+      { "item": "The allocation difference is real and measurable with a global-allocator counter, not a claim taken on faith: an impl Trait return makes exactly as many allocations as a hand-written function returning that same closure type directly would, which is zero beyond whatever the closure's own captures need", "at": [{ "deep": "Internals: what the proof actually shows" }] },
+      { "item": "Neither impl Trait position changes what the compiler can prove about aliasing or mutability (Chapter 2's rule); they only change which party, caller or callee, gets to pick the concrete type behind the trait's interface", "at": [{ "deep": "Frontier" }] }
+    ]
+  },
+  "gapReview": { "date": "2026-10-22", "by": "self-review", "open": [] }
+}

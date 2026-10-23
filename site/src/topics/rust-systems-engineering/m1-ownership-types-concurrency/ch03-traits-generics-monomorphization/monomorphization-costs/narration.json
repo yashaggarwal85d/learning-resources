@@ -1,0 +1,93 @@
+{
+  "topic": "rust.monomorphization-costs",
+  "note": "Written to be spoken: one sentence or phrase per line; {\"beat\": s} is a deliberate pause; numbers and codes are said the way a person would say them, never shown as digits. `answer` plays after the learner answers a predict step.",
+  "steps": [
+    {
+      "lines": [
+        "Write a function generically over some trait, and it is tempting to picture one compiled routine underneath, quietly handling whatever concrete type shows up at each call.",
+        { "beat": 0.3 },
+        "That is not what happens. The compiler writes that function out again, in full, for every distinct concrete type it is ever actually called with, as if you had hand-written a separate copy yourself for each one."
+      ]
+    },
+    {
+      "lines": [
+        "Here is one generic function, bound by a shared trait, called once through one codec and once through a completely different codec.",
+        "Look at what the compiler actually hands back before any optimizer has touched a single line of it.",
+        { "beat": 0.3 },
+        "How many separate, distinct bodies show up for that one generic function?"
+      ],
+      "answer": [
+        "Two, not one. One full body for the first codec, and a second, entirely separate full body for the second codec, each with its own name baked in by the compiler.",
+        "Nothing was shared between them at all. The generic version you wrote once became two real, independent routines the moment two different concrete types actually called into it."
+      ]
+    },
+    {
+      "lines": [
+        "Here is the part worth sitting with: both of those compiled copies run exactly as fast as a plain, hand-written, non-generic version of the same function would.",
+        "That is the entire promise generics make you at run time, and it is kept completely.",
+        { "beat": 0.3 },
+        "But producing two full copies instead of one is not free, and that cost only grows as more and more distinct types end up calling into the same generic function."
+      ]
+    },
+    {
+      "lines": [
+        "Now take the actual repetitive work inside that generic function, the part that does the same thing no matter which concrete type is involved, and move it into its own ordinary, non-generic function entirely.",
+        "What is left behind in the generic function shrinks down to almost nothing: a thin wrapper whose only job is to call straight into that one shared piece of work.",
+        "Nothing about the public, generic signature changed at all. Only what actually gets duplicated for every new type did."
+      ]
+    },
+    {
+      "lines": [
+        "Now put that same repetitive work straight back inside the generic function instead of pulling it out into its own piece, and compile for the same two concrete types as before.",
+        { "beat": 0.3 },
+        "What happens to the two compiled copies this time, compared with pulling that work out separately?"
+      ],
+      "answer": [
+        "Each copy now carries the entire repetitive work inside it, duplicated whole, not just a thin wrapper calling out to something shared.",
+        "Pulling that work out earlier was not a stylistic choice. It is the one lever that decides whether monomorphization duplicates almost nothing, or duplicates everything, every single time."
+      ]
+    },
+    {
+      "lines": [
+        "Here is a function taking two separate parameters, each one simply written as some trait, with no name given to either parameter's type at all.",
+        "Underneath, that is still exactly a generic function: each of those two positions is quietly its own separate, anonymous type parameter.",
+        "Which means those two parameters are completely free to hold two different concrete types at once, and calling it with two different ones compiles without any complaint."
+      ]
+    },
+    {
+      "lines": [
+        "Write that same function again, but this time give both parameters one single, shared, named type parameter instead of writing the trait twice.",
+        { "beat": 0.3 },
+        "Call it exactly the same way as before, with two different concrete types. Does it still compile?"
+      ],
+      "answer": [
+        "No, and the rejection names the exact mismatch: one shared type parameter has to be one single concrete type everywhere it appears, so the second argument's type simply does not match the first's.",
+        "Writing a trait on each position separately and sharing one named type parameter across both look almost identical on the page, but they make a completely different promise about whether the two sides are allowed to differ."
+      ]
+    },
+    {
+      "lines": [
+        "A function can also return some trait instead of taking one as a parameter, and that phrase means something entirely different once it moves to the other side of the arrow.",
+        "The caller never gets to choose anything here. The function itself quietly picks one real, concrete type that happens to implement that trait, and every single path through the function has to return that exact same type.",
+        "All the caller is ever allowed to see afterward is the trait's own interface, never the real type hiding behind it."
+      ]
+    },
+    {
+      "lines": [
+        "Count every single allocation a counting allocator records, right before and right after each of two different ways of returning that same closure.",
+        "Returning it the way this topic just described makes no new allocation whatsoever. Nothing on the heap changes at all.",
+        "Returning that exact same closure boxed up instead, which used to be the only way to return some unnamed closure type before this topic's approach existed, allocates on the heap every single time it runs, with no exceptions."
+      ]
+    },
+    {
+      "lines": [
+        "So: a generic function bound by a trait becomes one compiled body per concrete type actually calling into it, with every one of those bodies running exactly as fast as a hand-written version would.",
+        "That speed is not free elsewhere. It costs compile time and it costs size, and pulling the repeated work out into its own ordinary function is what keeps that cost down to almost nothing.",
+        "A trait written separately on each parameter lets those parameters differ; one shared named parameter across both forces them to match exactly.",
+        "And a trait used as a return type commits to one single, real, unboxed type chosen by the function itself, which costs nothing extra to return, unlike boxing that same value up instead.",
+        { "beat": 0.3 },
+        "Next time: a generic function already pays its whole cost once, at compile time, for every type it will ever meet. What happens once the set of types involved is not even known until the program is actually running?"
+      ]
+    }
+  ]
+}
