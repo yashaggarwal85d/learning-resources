@@ -1,0 +1,74 @@
+{
+  "topic": "dsa.order-statistic-trees",
+  "steps": [
+    {
+      "lines": [
+        "Every structure so far answered one question: is this key actually here.",
+        "This one answers a completely different question. Where does it rank, among everything else that's here too — for almost nothing extra."
+      ]
+    },
+    {
+      "lines": [
+        "Here's the one new thing: a count, kept at every node, of how big its own slice of the tree actually is.",
+        "Nothing about the keys changed. Every node just started keeping track of how much sits underneath it."
+      ]
+    },
+    {
+      "lines": [
+        "An insert just landed somewhere in this tree.",
+        "Think about it before the reveal: that one new key can't be free. Something has to pay for it in bookkeeping, and not everywhere."
+      ],
+      "answer": [
+        "Every node the insert actually walked past on its way down — nothing else.",
+        "Each one of those nodes just gained exactly one new thing underneath it. Nothing off that path gained anything at all."
+      ]
+    },
+    {
+      "lines": [
+        "That walk down wasn't extra work. It's the same walk the insert needed anyway, just to find where the key belonged.",
+        "So the counting hitches a ride on something the tree was already doing. Nothing underneath gets re-scanned, and nothing outside that one path even notices."
+      ]
+    },
+    {
+      "lines": [
+        "Here's the payoff. Want the middle key, or the tenth-smallest, or whichever rank you like?",
+        "Compare it against the left side's count. Too big, subtract that count and go right. Too small, go left. Land exactly on it, and you're done."
+      ]
+    },
+    {
+      "lines": [
+        "Now the harder question. A rotation just relinked two nodes.",
+        "Guess at the damage before you see it: does fixing the bookkeeping here spread far, or stay small?"
+      ],
+      "answer": [
+        "Exactly two — the two nodes that just changed which one is whose parent.",
+        "Every other node in this tree still has precisely the same set of things underneath it that it had a moment ago. Nothing else moved."
+      ]
+    },
+    {
+      "lines": [
+        "Watch it happen: two parents swap places, and exactly two counts get recomputed.",
+        "This looked like it should disturb a lot of bookkeeping. It disturbs exactly two numbers, every single time."
+      ]
+    },
+    {
+      "lines": [
+        "Here's why that's not a coincidence about this one count in particular.",
+        "This count survives a rotation cheaply because it's built from nothing but a node and its own two children. Any count built that same way survives a rotation the same way, at the same tiny cost."
+      ]
+    },
+    {
+      "lines": [
+        "Rank runs the opposite direction: start at a key, and climb.",
+        "Every time that climb comes up from a right-side child, add the whole left side's count to your running total. By the time you reach the top, that total is the key's own rank."
+      ]
+    },
+    {
+      "lines": [
+        "Everything in this topic gets checked right here, not just drawn.",
+        "A query asking for a specific rank never needs more comparisons than the tree is tall.",
+        "And one real rotation, measured directly: exactly two of these counts actually change."
+      ]
+    }
+  ]
+}
