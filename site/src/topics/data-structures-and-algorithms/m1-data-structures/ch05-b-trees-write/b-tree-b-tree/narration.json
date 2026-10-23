@@ -1,0 +1,74 @@
+{
+  "topic": "dsa.b-tree-b-tree",
+  "steps": [
+    {
+      "lines": [
+        "Last chapter's tree was already optimal, by its own measure. Every search cost the smallest number of comparisons a tree possibly could.",
+        "But a comparison and a trip to disk stopped being the same thing a long time ago. This chapter is about what you pay for the second one."
+      ]
+    },
+    {
+      "lines": [
+        "Here's the one new constraint: every leaf sits at the exact same depth, and nothing short of the root is ever less than half full.",
+        "That second rule is doing more work than it looks like. It's the whole reason this tree's height stays predictable at all."
+      ]
+    },
+    {
+      "lines": [
+        "This leaf just took in one key too many.",
+        "Before the reveal, think about what a structure with a hard capacity limit is actually forced to do once that limit is crossed."
+      ],
+      "answer": [
+        "It splits into two leaves, and one key moves up to the parent to keep routing correct.",
+        "Nothing about the keys already in that leaf changes. The split only decides which half each one now belongs to."
+      ]
+    },
+    {
+      "lines": [
+        "Watch what each half gets handed. The leaf copies its middle key upward, because that key still has to live somewhere a search can find it.",
+        "An inner node does the opposite: it pushes that key up and keeps no copy at all, because an inner node was never storing anything but a route.",
+        "If the split climbs all the way to the root, the tree gains a brand new top level. That's the only way this structure ever grows taller."
+      ]
+    },
+    {
+      "lines": [
+        "Now the opposite failure: a delete just left a leaf under its floor.",
+        "Guess at the fix before it's shown. A structure with a floor, not just a ceiling, has exactly two honest ways to recover from going under it."
+      ],
+      "answer": [
+        "Take one key from a sibling that can spare it, or, if none can, combine with one entirely.",
+        "Borrowing changes two neighbors' key counts and nothing else. A combine is the heavier move, and it's the last resort, not the first."
+      ]
+    },
+    {
+      "lines": [
+        "A borrow is cheap on purpose: one key slides across a boundary, and the tree's shape never moves.",
+        "A merge is the expensive branch, chosen only when borrowing has nowhere to come from, and it's the single operation in this whole topic that can make the tree shorter."
+      ]
+    },
+    {
+      "lines": [
+        "A range query doesn't want one key. It wants everything between two of them, in order.",
+        "Once the first matching leaf is found, every leaf after it is reached by a direct link to its neighbor, not by climbing back up and coming down again."
+      ]
+    },
+    {
+      "lines": [
+        "Fanout is just arithmetic: however many keys and pointers physically fit in one page, that's how many children a node can route to.",
+        "Height falls out of that arithmetic too. Grow the fanout, and the same number of keys needs dramatically fewer levels to reach."
+      ]
+    },
+    {
+      "lines": [
+        "Put the identical set of keys through both trees and the gap isn't subtle.",
+        "One pays for a trip to disk at every single comparison. The other reads an entire page's worth of comparisons in one trip, and a realistic page shrinks that gap even further."
+      ]
+    },
+    {
+      "lines": [
+        "Nothing in this topic was taken on faith, so here's what actually got measured.",
+        "Splitting and modifying a real tree, scanning across its linked leaves instead of climbing back to the top for every match, and the fanout-and-height formula checked directly against a billion keys."
+      ]
+    }
+  ]
+}
