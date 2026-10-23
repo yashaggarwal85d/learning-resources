@@ -1,0 +1,88 @@
+{
+  "steps": [
+    {
+      "lines": [
+        "Take two ordinary local variables sitting side by side inside the same function.",
+        { "beat": 0.3 },
+        "Could one of them end up holding a pointer straight into the other one's own address?"
+      ],
+      "answer": [
+        "Yes, it genuinely can — nothing in the ordinary rules stops a value from pointing straight into a sibling value that lives right next to it.",
+        "Both of them are just sitting in the same place in memory, and nothing about that forbids one from referring to the other."
+      ]
+    },
+    {
+      "lines": [
+        "That is not some rare, contrived shape — it is named directly, by the standard library itself, as the one thing that happens by default in a very specific place.",
+        "The exact kind of value the compiler quietly builds to represent a paused computation, the one behind every one of the lazy values from earlier topics, is called out as the leading example of exactly this."
+      ]
+    },
+    {
+      "lines": [
+        "Build a value that holds a pointer into one of its own other fields, check that the pointer still lines up right after it is built, then move the whole value somewhere else and check again.",
+        "The first check lines up perfectly. The second one does not."
+      ],
+      "takeaway": "A value that points into its own insides only stays correct until it moves — moving it leaves that pointer aimed at wherever it used to be, not wherever it is now."
+    },
+    {
+      "lines": [
+        "Try the obvious fix: put the whole thing behind a heap allocation instead of leaving it sitting directly on the stack.",
+        { "beat": 0.3 },
+        "Does that actually solve anything?"
+      ],
+      "answer": [
+        "No, not on its own — the thing behind the heap allocation can still be moved out of it, carrying the exact same broken pointer along for the ride.",
+        "A heap allocation only promises that one particular slot of memory stays put. It says nothing at all about whether the value sitting inside that slot is allowed to be lifted out and moved somewhere else."
+      ]
+    },
+    {
+      "lines": [
+        "So the actual fix has to be something stronger: a genuine promise, carried by the value itself, that it will never move again for as long as that promise exists.",
+        "That promise is exactly what this chapter's next piece of machinery provides — and almost every ordinary type from every earlier chapter never needed it at all, because it was never pointing into its own insides to begin with."
+      ],
+      "takeaway": "This promise is a guarantee the type itself carries and the compiler can check, not a convention a caller has to remember to respect."
+    },
+    {
+      "lines": [
+        "Make that promise in two different places — once on the heap, once directly on the stack — and check whether the exact same self-pointing value stays correct in both.",
+        "In both places, after the promise is made, checking the pointer again still lines up."
+      ],
+      "takeaway": "Making this promise on the heap or directly on the stack protects the identical self-pointing value in exactly the same way, because it is the same guarantee either time."
+    },
+    {
+      "lines": [
+        "Now ask the sharper question: once that promise has been made around a value that genuinely needs it, can the value still be pulled back out from underneath it, whole, and handed off somewhere else?",
+        { "beat": 0.3 },
+        "Try it, and see what happens."
+      ],
+      "answer": [
+        "No — and this is refused outright, not merely discouraged.",
+        "The thing making the promise simply never hands back a plain, ordinary, ownable copy of a value that actually needs the promise. There's nothing to pull out."
+      ]
+    },
+    {
+      "lines": [
+        "Try to compile exactly that attempt, and the compiler does not just quietly refuse — it names precisely what's being attempted and why it can't be allowed.",
+        "It points directly at the exact value, wrapped exactly the way it is, and says plainly that nothing can be moved out of it."
+      ],
+      "takeaway": "This isn't merely written down somewhere as a rule to remember — attempting it is rejected directly, by name, at the moment the program is compiled."
+    },
+    {
+      "lines": [
+        "Once a value is sitting behind one of these promises, what happens to each of its individual fields? Does every single one of them inherit the exact same promise automatically?",
+        "No — and this is a choice, made field by field, by whoever defined the value's shape in the first place.",
+        "One field can be marked as sharing the promise completely, moving only exactly when the whole value does. Every other field stays an entirely ordinary, ungoverned reference, reachable the normal way."
+      ],
+      "takeaway": "Whether a field shares the promise is a deliberate, individual choice for each field, never something that happens automatically just because the value around it made that promise."
+    },
+    {
+      "lines": [
+        "A value that quietly pointed into its own insides turned out to be sound only until the instant it moved — proven directly, not merely described.",
+        "The fix was never a container holding that value more tightly; it was a genuine promise the value itself carries, one the compiler checks, refusing outright the moment something tries to break it.",
+        "And which fields share that promise turned out to be a deliberate, individual choice every single time, never automatic.",
+        "Every single piece of this chapter, start to finish, has been about one of these values, running correctly, entirely by itself.",
+        "The very next question changes that completely: what happens the moment something is asked to hand one of these back across to an entirely different thread?"
+      ]
+    }
+  ]
+}

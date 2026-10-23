@@ -1,0 +1,48 @@
+{
+  "topic": "dsa.separate-chaining",
+  "syllabus": [
+    { "clause": "load factor α", "at": [{ "step": "At load factor 1.5, how long is a random key's chain?" }] },
+    { "clause": "expected chain length", "at": [{ "step": "The average is always alpha — that's not the real claim" }] },
+    { "clause": "why chaining tolerates α > 1", "at": [{ "step": "Chaining never fails — it just gets slow" }] },
+    { "clause": "and pays a pointer per entry", "at": [{ "step": "The one real cost: a pointer per entry" }] }
+  ],
+  "sources": [
+    {
+      "source": "MIT 6.046J/18.410J Introduction to Algorithms, Fall 2005, Lecture 7",
+      "items": [
+        { "item": "Chaining links records in the same slot into a list", "at": [{ "step": "Link records in the same slot into a list" }] },
+        { "item": "Worst case: every key hashes to the same slot, Θ(n) access", "at": [{ "step": "Chaining never fails — it just gets slow" }] },
+        { "item": "Load factor α = n/m under the simple-uniform-hashing assumption", "at": [{ "step": "At load factor 1.5, how long is a random key's chain?" }] },
+        { "item": "Expected unsuccessful-search time is Θ(1 + α), Θ(1) when α = O(1)", "at": [{ "step": "The average is always alpha — that's not the real claim" }] },
+        { "item": "A successful search has the same bound, but a harder proof, cited not re-derived", "at": [{ "deep": "Into the internals" }] }
+      ]
+    },
+    {
+      "source": "OpenJDK java.util.HashMap",
+      "items": [
+        { "item": "Java's HashMap is a real, current, chaining-based (\"binned/bucketed\") standard-library hash table", "at": [{ "step": "A real standard library already does this" }] },
+        { "item": "Default load factor 0.75, rehashing when entries exceed load-factor times capacity", "at": [{ "step": "A real standard library already does this" }] },
+        { "item": "An overgrown bin is transformed into a balanced tree bin — not pure chaining", "at": [{ "step": "A real standard library already does this" }, { "deep": "In production" }] }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "blind self-review, research stage",
+    "date": "2026-10-23",
+    "items": [
+      { "item": "A hash function alone says nothing about what happens when two keys collide — collision resolution is a separate mechanism, and chaining is the oldest answer to it.", "at": [{ "step": "A hash function says nothing about collisions" }] },
+      { "item": "Chaining's mechanism: a bucket doesn't hold one entry, it holds a linked list of every entry that landed there, built from the exact same singly-linked-list structure Chapter 2 already taught.", "at": [{ "step": "Link records in the same slot into a list" }] },
+      { "item": "Chaining's worst case (every key colliding) degrades access to Θ(n) but never fails outright — there is no fixed capacity per bucket, unlike open addressing's one-slot-per-entry design.", "at": [{ "step": "Chaining never fails — it just gets slow" }] },
+      { "item": "A real, current, widely-deployed standard library (Java's HashMap) is chaining-based, grounding the mechanism in a real system rather than a textbook toy.", "at": [{ "step": "A real standard library already does this" }] },
+      { "item": "Load factor α = n/m is defined precisely as the average number of keys per slot, and only means what it claims under the simple-uniform-hashing assumption (each key equally likely to land in any slot, independent of other keys).", "at": [{ "step": "At load factor 1.5, how long is a random key's chain?" }] },
+      { "item": "The expected length of the chain a random key lands in, under chaining, is about α itself — not a fixed constant, and not unbounded as long as α stays bounded.", "at": [{ "step": "The average is always alpha — that's not the real claim" }] },
+      { "item": "The Θ(1 + α) result is a classical, well-established result (cited from a primary academic source) rather than something this topic re-derives from first principles — matching the chapter's own stated approach for this topic.", "at": [{ "step": "The average is always alpha — that's not the real claim" }] },
+      { "item": "The average chain length over all buckets equals α exactly, by simple counting, for any hash function at all, good or terrible — measuring the average alone proves nothing about a hash being well-spread. The real, hash-dependent claim is that the longest chain stays close to that average rather than hoarding keys.", "at": [{ "step": "The average is always alpha — that's not the real claim" }] },
+      { "item": "Chaining's one real, named cost is a pointer per entry (the next-pointer every chain node carries) — the exact cost open addressing's in-place entry storage avoids, which is topic 18's own subject, not built here.", "at": [{ "step": "The one real cost: a pointer per entry" }] },
+      { "item": "Resizing a table to keep α bounded as n grows (so the Θ(1+α) bound stays Θ(1)) is a separate mechanism, this chapter's own topic 20, not this topic's subject.", "at": [{ "topic": "Resizing and incremental rehashing", "quote": "resizing" }] },
+      { "item": "Open addressing, this chapter's very next topic, stores every entry directly in the table itself rather than in a chain, which is why it cannot simply let a bucket's chain grow past a load factor of 1.", "at": [{ "topic": "Linear probing and open addressing", "quote": "open addressing" }] },
+      { "item": "Universal hashing's formal guarantee, which would turn the simple-uniform-hashing assumption into a provable bound rather than an assumption, is out of scope: the syllabus itself skips it for this chapter.", "at": [{ "out": "Syllabus topic \"Universal and k-independent hashing\" (§3.1) is marked *(skipped)* — no reel; named with no mechanism in post-notes' frontier section instead." }] }
+    ]
+  },
+  "gapReview": { "date": "2026-10-23", "by": "self-review", "open": [] }
+}

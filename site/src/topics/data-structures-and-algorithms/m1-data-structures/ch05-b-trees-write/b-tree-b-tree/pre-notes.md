@@ -1,0 +1,5 @@
+- **Binary search tree**: the pointer-based, comparison-ordered tree from Chapter 4, used here as the baseline this topic's cost model is contrasted against, not reused as a building block.
+- **I/O model (external-memory model)**: the cost model where what matters is blocks moved between memory and disk, not comparisons — introduced in Chapter 1, assumed here.
+- **Block size B**: the number of items (or, equivalently, bytes) one disk page holds and one I/O moves at once — the quantity this topic's fanout directly is.
+- **Θ(log_B N) I/O bound**: the search-cost bound the I/O model states a good disk-based structure should hit — this topic's B+Tree is the concrete structure that achieves it.
+- **Memory hierarchy**: the fact that a disk access costs orders of magnitude more than a comparison already in memory, which is the entire reason block-sized nodes matter at all.

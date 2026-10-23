@@ -1,0 +1,23 @@
+import Resource from '../../../../../components/Resource.astro';
+
+<section class="prereq" data-section="chapter-so-far">
+
+### <span class="n">01</span> Where the last topic left off
+
+<ul class="resources">
+  <Resource kind="reel" host={props.host} domain="rust-systems-engineering" title="Pin and self-referential state">A self-referential value breaks on move; Pin is a type-level promise the compiler enforces, not a convention.</Resource>
+</ul>
+
+</section>
+
+<section class="prereq" data-section="send-bound-primary">
+
+### <span class="n">02</span> The real docs: what's stable, and what still isn't
+
+<ul class="resources">
+  <Resource kind="reading" title="Announcing async fn and return-position impl Trait in traits" href="https://blog.rust-lang.org/2023/12/21/async-fn-rpit-in-traits/" by="The Rust Async Working Group">The stabilization announcement, naming the Send bound problem directly.</Resource>
+  <Resource kind="reading" title="async-trait" href="https://docs.rs/async-trait/latest/async_trait/" by="dtolnay">The crate's own documented expansion into Pin&lt;Box&lt;dyn Future&gt;&gt;.</Resource>
+  <Resource kind="reading" title="trait-variant" href="https://docs.rs/trait-variant/latest/trait_variant/" by="rust-lang">The generated Send-bounded sibling trait, in the crate's own example.</Resource>
+</ul>
+
+</section>

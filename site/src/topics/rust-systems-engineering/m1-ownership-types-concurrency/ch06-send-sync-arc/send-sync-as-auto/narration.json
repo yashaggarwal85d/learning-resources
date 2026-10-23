@@ -1,0 +1,70 @@
+{
+  "steps": [
+    {
+      "lines": [
+        "A plain cell, holding a counter, touched by exactly one thread. Nothing about this is interesting yet, and that's the point.",
+        "The compiler already knows this type is safe to hand to another thread entirely. The open question is something different: is it safe to let two threads touch the same one, at once?"
+      ]
+    },
+    {
+      "lines": [
+        "Wrap that same cell in a shared, reference counted pointer, clone the pointer, and hand the clone to a second thread.",
+        { "beat": 0.3 },
+        "Before either thread runs a single line, does this even build?"
+      ],
+      "answer": [
+        "No. The shared pointer's own atomic count only ever protects its own bookkeeping.",
+        "It adds no synchronization at all to the value sitting inside it, so sharing a cell through it is exactly as unsynchronized as sharing a bare cell would be."
+      ]
+    },
+    {
+      "lines": [
+        "Notice which word is missing from both of these messages: neither one says the cell can't move to another thread at all.",
+        "Both say it can't be shared between two threads at once, and that's a sharper, different claim — the same single trait is doing all the work in both failures."
+      ]
+    },
+    {
+      "lines": [
+        "This is the one change that actually fixes what the cell couldn't: a real, synchronized gate around every single access.",
+        "Four threads hammer on it at once, and the total still comes out exact — not luck, just because only one thread is ever inside that gate at a time."
+      ]
+    },
+    {
+      "lines": [
+        "The counter itself crossed threads without trouble, locked. Now try handing the lock's own guard, the thing taking it hands back, to a second thread.",
+        "That one fails, and for a sharp reason: the guard is tied, by the platform's own locking rules, to the exact thread that took it. Handing it elsewhere would let another thread try to release a lock it never held."
+      ]
+    },
+    {
+      "lines": [
+        "A generic wrapper with an ordinary marker field simply inherits whatever its payload allows.",
+        "Swap that marker for a raw pointer instead, and the wrapper loses the ability to move to another thread no matter what it's holding — raw pointers never get that ability on their own.",
+        { "beat": 0.3 },
+        "A separate, hand built box can grant that ability right back, with one unsafe line the compiler trusts completely and can never check itself."
+      ]
+    },
+    {
+      "lines": [
+        "A spawned task creates a non atomic shared pointer, pauses once, and uses that same pointer again right after it resumes.",
+        { "beat": 0.3 },
+        "Does the whole task still qualify to be handed to the runtime at all?"
+      ],
+      "answer": [
+        "No. A spawned task has to qualify to cross threads in its entirety, not just the line that starts it.",
+        "It only qualifies when everything still alive at the exact moment it pauses also qualifies — and here, something that doesn't is still alive right there."
+      ]
+    },
+    {
+      "lines": [
+        "Same pointer, same task. The only difference is whether it's still sitting there at the exact instant everything pauses.",
+        "Scope it away before that instant, and there is nothing left to check. Let it survive past that instant, and the whole task inherits its limitation."
+      ]
+    },
+    {
+      "lines": [
+        "Safe to move and safe to share turned out to be two separate questions, both answered the same structural way: look at a type's own fields.",
+        "A lock's guard stays loyal to the thread that took it. And only two deliberate overrides exist anywhere in this picture, pointed in opposite directions."
+      ]
+    }
+  ]
+}

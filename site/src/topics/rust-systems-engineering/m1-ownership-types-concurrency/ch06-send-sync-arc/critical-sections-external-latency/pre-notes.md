@@ -1,0 +1,6 @@
+- **Critical section**: the span of code where exactly one thread may run while holding a lock. *Where you meet it:* every example in this topic — what should and shouldn't live inside one.
+- **Wall-clock time** (vs. CPU time): the real elapsed time a program takes to finish, which is what a lock serializing external latency actually costs you. *Where you meet it:* the measured 40ms-vs-160ms comparison.
+- **Circular wait**: each of several threads holds a resource another one needs, forming a cycle with no way out. *Where you meet it:* the two-lock deadlock, and why a consistent lock order removes it.
+- **Scheduling quantum**: the slice of CPU time a scheduler grants a thread before switching to another. *Where you meet it:* a lock convoy's repeated, wasted context switches.
+- **Thread priority**: a scheduler hint about which runnable thread should get the CPU first. *Where you meet it:* priority inversion, and the kernel's fix of temporarily lending a higher priority to a low-priority lock holder.
+- **`subprocess.TimeoutExpired`** (Python): the exception a subprocess call raises when the process is still running past its timeout. *Where you meet it:* the actual proof this topic's deadlock example hangs, rather than a description of one.

@@ -1,0 +1,7 @@
+- **Amortized cost**: declared again here (Ch.1); still the averaged-per-operation cost argument, now applied to a hash table's own resize instead of a growable array's reallocation.
+- **Aggregate method**: declared again here (Ch.1); the same proof technique, cited and applied rather than re-derived.
+- **Load factor**: declared again here (topic 17); still entries ÷ capacity, now the trigger that decides when to resize.
+- **Growth factor**: declared again here (Ch.2); still doubling, the same shape a growable array uses.
+- **Hash-table resize**: introduced here; growing a hash table's own backing storage once load factor crosses a threshold.
+- **Incremental rehashing**: introduced here; migrating entries from an old table to a new one gradually, a bounded amount per operation, instead of all at once.
+- **Migration pointer**: introduced here; the marker tracking how far incremental rehashing has migrated through the old table.

@@ -1,0 +1,7 @@
+- **Marker trait**: a trait with no methods at all, used purely to tag a type with a property the compiler or other code can check. *Where you meet it:* `Send` and `Sync` are both marker traits.
+- **`move ||`**: a closure that takes ownership of the variables it uses, rather than borrowing them. *Where you meet it:* every `thread::spawn`/`tokio::spawn` call in this topic.
+- **`.await`**: the point inside an `async` function or block where execution may suspend and let the runtime run something else before resuming. *Where you meet it:* the two `tokio::spawn` examples.
+- **Future**: a value representing work not yet complete, which an async runtime polls until it finishes; an `async` block compiles down to one. *Where you meet it:* discussing what's actually "alive" inside a spawned `async` block at each `.await`.
+- **Raw pointer** (`*const T` / `*mut T`): a plain memory address with none of the borrow checker's usual guarantees. *Where you meet it:* `PhantomData<*const T>`, and the hand-built `Carton<T>`'s own inner field.
+- **`Arc`/`Rc`** (Chapter 4): reference-counted shared ownership, atomic in `Arc`, non-atomic in `Rc`. *Where you meet it:* reused throughout as the running example's own building blocks.
+- **`Mutex`/`MutexGuard`** (Chapter 4): a lock, and the RAII guard `lock()` hands back while it's held. *Where you meet it:* this topic's `Mutex` demos, and the guard that refuses to cross threads.

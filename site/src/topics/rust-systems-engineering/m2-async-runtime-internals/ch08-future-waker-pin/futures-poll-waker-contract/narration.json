@@ -1,0 +1,79 @@
+{
+  "steps": [
+    {
+      "lines": [
+        "A thread, once started, is simply running. It executes, or it waits for something, but either way, it's doing something, right now.",
+        "What's about to be built here does something stranger: a value that represents work, where nothing at all happens just because that value exists."
+      ]
+    },
+    {
+      "lines": [
+        "Write that value out by hand, with no shortcuts from the language's own sugar for this — just a plain structure, holding whatever state it needs.",
+        { "beat": 0.3 },
+        "The moment it's constructed, before anything else touches it, has any of its actual work already started?"
+      ],
+      "answer": [
+        "No, nothing has started at all.",
+        "This is a value, not an action in progress — building it is no different from building any other piece of data, until something asks it, directly, to move forward."
+      ]
+    },
+    {
+      "lines": [
+        "There's exactly one thing defined on this value that's capable of making anything happen, and nothing else gets to touch it.",
+        "Every bit of progress this computation will ever make happens only in the moment that single thing is called, and never otherwise."
+      ]
+    },
+    {
+      "lines": [
+        "Because nothing costs anything until that one call actually happens, a system can build and hold far more of these values than it could ever possibly run all at once.",
+        "None of them are consuming a thread, or memory beyond their own small size, or anything else, while they're just sitting there waiting to be asked."
+      ],
+      "takeaway": "Constructing a future does no work; nothing runs until something polls it, which is itself the backpressure mechanism."
+    },
+    {
+      "lines": [
+        "Suppose this value is asked whether it's done, says no, not yet, and then does absolutely nothing else — makes no arrangement at all for anyone to come back and ask again.",
+        { "beat": 0.3 },
+        "What happens to it after that?"
+      ],
+      "answer": [
+        "It may genuinely never be asked again, ever.",
+        "The entire system depends on the thing saying 'not yet' to also be the thing responsible for arranging its own follow-up — nothing else in the picture is watching for it."
+      ]
+    },
+    {
+      "lines": [
+        "Run exactly that broken version through a real driver built to run it, and give it a very generous amount of time to finish.",
+        "It simply never comes back — not eventually, not with an error, not ever, and that's demonstrated directly, on purpose, by waiting it out and watching it fail to return."
+      ],
+      "takeaway": "A pending future must arrange for its waker to be called; skip that, and the driver has no reason left to ask it again."
+    },
+    {
+      "lines": [
+        "Here's the actual fix, and it's smaller than it sounds: when this value says not yet, it also keeps hold of a handle it was handed for exactly this purpose.",
+        "Somewhere else entirely — a separate thread doing the real waiting — finishes its work, and the very last thing it does is reach for that same handle and use it."
+      ],
+      "takeaway": "A future waiting on real work keeps the handle it was given, and whatever finishes that work uses it — that is the entire handoff."
+    },
+    {
+      "lines": [
+        "That handle isn't exotic at all: wrap whatever a driver needs to remember about one unit of work in a single shared reference, teach it one small thing about how to respond when asked, and the standard library turns it into the real thing.",
+        "Waking, underneath all of it, just means putting that unit of work back where it can be looked at again."
+      ],
+      "takeaway": "The standard library's own trait is the ordinary way to build that handle: wrap the wakeup state in a shared reference, and waking means re-queueing it."
+    },
+    {
+      "lines": [
+        "Put every piece from this lesson together — the value, the handle, the thing that runs it, the one method that moves it forward — and run the whole thing start to finish.",
+        "The result shows up exactly once, correctly, and at no point does anything other than that one driver ever call the one method that does the work."
+      ],
+      "takeaway": "The whole architecture is the value, the handle, the driver, and the one method that moves it forward — nothing else ever touches any of it."
+    },
+    {
+      "lines": [
+        "Doing nothing until asked turned out to be the entire backpressure story, not a limitation to work around. Saying 'not yet' turned out to be a real promise, broken here on purpose just to prove what breaking it actually costs.",
+        "That whole loop, proven piece by piece, is exactly what gets built automatically next — by a compiler, out of code that never once mentions any of this by name."
+      ]
+    }
+  ]
+}

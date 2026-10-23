@@ -1,0 +1,6 @@
+- **Load factor**: declared again here (topic 17); the same ratio α = n/m, now governing how full an open-addressed table is allowed to get before every probe sequence gets long.
+- **Collision**: declared again here (topic 17); restated as the thing a probe sequence resolves, instead of the thing a chain resolves.
+- **Hash function**: declared again here (topic 16); open addressing reuses it unchanged — only what happens after a collision is new.
+- **Open addressing**: introduced here; every entry lives directly in the table itself, with no chain and no pointer.
+- **Probe sequence**: introduced here; the fixed order of slots a key tries when its first choice is full.
+- **Primary clustering**: introduced here; linear probing's own failure mode, where runs of occupied slots build up and get longer.

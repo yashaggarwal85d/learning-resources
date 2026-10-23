@@ -1,0 +1,7 @@
+- **Suspension state**: one variant of the compiler-generated enum an `async fn` lowers to, holding exactly the locals still live at one `.await` point. *Where you meet it:* the Rust Reference's own description of what an async block actually produces.
+- **`size_of_val`**: measures the real, in-memory size of a value, no polling required. *Where you meet it:* measuring a real future's size directly.
+- **`memcpy` cost**: the cost of copying a value's bytes when it moves — proportional to the value's size. *Where you meet it:* why a large future is a real, measurable cost, not just an aesthetic one.
+- **`Box::pin`**: heap-allocates a future and pins it there, trading one allocation for a much smaller enclosing suspension-state variant. *Where you meet it:* named as the usual fix for an oversized future, not built in this topic's examples.
+- **Auto trait**: a trait the compiler implements automatically based on a type's structure, never written by hand. *Where you meet it:* `Send`, inherited into a compiler-generated future the same way it's inherited into any ordinary struct.
+- **`Rc`**: a non-atomic reference-counting pointer, and the standard library's own canonical example of a type that is not `Send`. *Where you meet it:* held across an `.await` point to make a whole future not `Send`.
+- **Clippy's `large_futures` lint**: a real tool that flags a future whose generated size crosses a threshold. *Where you meet it:* named as the production-grade way this gets caught before it becomes a measured surprise.

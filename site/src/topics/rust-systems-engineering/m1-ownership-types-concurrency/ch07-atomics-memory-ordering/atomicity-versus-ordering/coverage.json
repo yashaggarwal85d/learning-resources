@@ -1,0 +1,94 @@
+{
+  "topic": "rust.atomicity-versus-ordering",
+  "syllabus": [
+    {
+      "clause": "atomicity means no torn updates;",
+      "at": [{ "step": "Exact: four hundred thousand, every time" }]
+    },
+    {
+      "clause": "ordering governs visibility between threads.",
+      "at": [{ "step": "loom found it: the reader saw the flag before the value" }]
+    },
+    {
+      "clause": "These are distinct concerns.",
+      "at": [{ "step": "Atomicity bought that — but it bought nothing about order" }]
+    },
+    {
+      "clause": "Rust's atomics follow the C++20 memory model (minus consume): happens-before, per-location modification order, and data races as UB.",
+      "at": [
+        { "step": "The missing piece has a name: happens-before" },
+        { "step": "Unsynchronized conflicting access is undefined behavior, full stop" }
+      ]
+    },
+    {
+      "clause": "The Linux kernel's own memory model (LKMM) matters only for kernel Rust (→ Ch.39).",
+      "at": [{ "step": "The kernel has its own, stricter model — and it only matters in the kernel" }]
+    }
+  ],
+  "sources": [
+    {
+      "source": "atomic-index",
+      "items": [
+        {
+          "item": "Rust atomics currently follow the same rules as C++20 atomics, specifically without the consume memory ordering",
+          "at": [{ "step": "The missing piece has a name: happens-before" }]
+        },
+        {
+          "item": "data races are undefined behavior, defined as conflicting non-synchronized accesses where at least one is a write",
+          "at": [{ "step": "Unsynchronized conflicting access is undefined behavior, full stop" }]
+        },
+        {
+          "item": "two accesses are non-synchronized exactly when neither happens-before the other, per the memory model's happens-before order",
+          "at": [{ "step": "The missing piece has a name: happens-before" }]
+        }
+      ]
+    },
+    {
+      "source": "ordering-enum",
+      "items": [
+        {
+          "item": "Relaxed gives no ordering constraints beyond atomicity itself",
+          "at": [{ "step": "One thread publishes a value, then a flag — does the reader ever see a stale value?" }]
+        },
+        {
+          "item": "a store-load pair of SeqCst operations preserves a total order of such operations across all threads, the strongest guarantee of the four orderings",
+          "at": [{ "step": "The missing piece has a name: happens-before" }]
+        }
+      ]
+    },
+    {
+      "source": "nomicon-atomics",
+      "items": [
+        {
+          "item": "when thread A releases a location and thread B subsequently acquires it, causality is established for every prior write",
+          "at": [{ "step": "The missing piece has a name: happens-before" }]
+        },
+        {
+          "item": "relaxed accesses are still atomic, but provide no happens-before relationship at all",
+          "at": [{ "step": "One thread publishes a value, then a flag — does the reader ever see a stale value?" }]
+        }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "self-review",
+    "date": "2026-10-23",
+    "items": [
+      { "item": "Atomicity and ordering are genuinely separable: a program can have perfect atomicity (every individual read or write is indivisible) while still having zero ordering guarantee between threads about when those writes become visible.", "at": [{ "step": "Atomicity bought that — but it bought nothing about order" }] },
+      { "item": "A relaxed fetch_add across many threads never loses or tears an update, no matter how much contention there is on the same atomic location — demonstrated directly by an exact, repeatable final count.", "at": [{ "step": "Exact: four hundred thousand, every time" }] },
+      { "item": "The relaxed publication pattern (store data, then store a ready flag, both Relaxed; another thread checks the flag then reads the data) is unsound: nothing stops a reader from observing the flag as set before observing the data write, because Relaxed creates no happens-before edge between the two threads.", "at": [{ "step": "One thread publishes a value, then a flag — does the reader ever see a stale value?" }] },
+      { "item": "A tool like loom proves this kind of violation by exhaustively exploring every interleaving the memory model actually permits, rather than relying on a specific run's hardware behavior happening to expose (or hide) the bug.", "at": [{ "step": "loom found it: the reader saw the flag before the value" }] },
+      { "item": "Rust's atomics are explicitly specified to follow the C++20 memory model, with one named exception: the 'consume' ordering, which C++20 itself never finished specifying well enough to be relied on.", "at": [{ "step": "The missing piece has a name: happens-before" }] },
+      { "item": "Happens-before is the foundational relation the whole model is built from: every one of Rust's orderings (Relaxed, Release, Acquire, AcqRel, SeqCst) is defined in terms of what happens-before edges it does or doesn't create.", "at": [{ "step": "The missing piece has a name: happens-before" }] },
+      { "item": "A data race has a precise technical definition, not a vague one: conflicting (overlapping, at least one a write) accesses to the same memory with no happens-before relation between them — and Rust, like C++20, treats this as undefined behavior, not merely an incorrect value.", "at": [{ "step": "Unsynchronized conflicting access is undefined behavior, full stop" }] },
+      { "item": "Undefined behavior is a stronger claim than 'the output might be wrong': it means the compiler is permitted to assume a data race never happens and optimize accordingly, which can produce effects with no sensible relationship to the source code at all.", "at": [{ "step": "Unsynchronized conflicting access is undefined behavior, full stop" }] },
+      { "item": "The Linux kernel maintains its own, separately-specified memory model (LKMM), distinct from and in places stricter than the C++20-derived model this chapter covers, because the kernel's concurrency primitives and constraints differ from ordinary userspace Rust.", "at": [{ "step": "The kernel has its own, stricter model — and it only matters in the kernel" }] },
+      { "item": "Choosing an ordering is not a performance-only decision with no correctness consequence: picking Relaxed where Acquire/Release or SeqCst was actually needed produces a program that is incorrect, not merely slower, even though it may appear to work on any given run.", "at": [{ "step": "Recap: atomicity and ordering, each proven separately" }] }
+    ]
+  },
+  "gapReview": {
+    "date": "2026-10-23",
+    "by": "self-review",
+    "open": []
+  }
+}

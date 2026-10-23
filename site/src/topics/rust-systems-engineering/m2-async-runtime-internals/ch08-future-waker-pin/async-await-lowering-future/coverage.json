@@ -1,0 +1,80 @@
+{
+  "topic": "rust.async-await-lowering-future",
+  "syllabus": [
+    {
+      "clause": "the compiler lowers async fn into an enum of suspension states holding the live locals at each .await. Large futures and the stack and memcpy cost they impose (Box::pin big futures, Clippy large_futures), and how holding a !Send value across .await makes the whole future !Send.",
+      "at": [
+        { "step": "So what is that value, exactly?" },
+        { "step": "Measured, not assumed: two bytes versus over four thousand" },
+        { "step": "That size difference is a real memcpy every time the future moves" },
+        { "step": "rustc's own diagnostic: this future cannot be sent between threads" }
+      ]
+    }
+  ],
+  "sources": [
+    {
+      "source": "block-expr-reference",
+      "items": [
+        {
+          "item": "executing an async block, like a closure, produces and returns an anonymous type, not an already-running computation",
+          "at": [{ "step": "A value. The same laziness as last topic, by a different name" }]
+        },
+        {
+          "item": "the future type rustc generates is roughly equivalent to an enum with one variant per await point, each variant storing the data needed to resume from that point",
+          "at": [{ "step": "So what is that value, exactly?" }]
+        },
+        {
+          "item": "async blocks capture variables from their environment using the same capture modes as closures",
+          "at": [{ "step": "Hold something not safe to move between threads across an await — still fine?" }]
+        }
+      ]
+    },
+    {
+      "source": "await-expr-reference",
+      "items": [
+        {
+          "item": "an await expression suspends a computation until the given future is ready, built directly on calling poll with the current task context",
+          "at": [{ "step": "So what is that value, exactly?" }]
+        },
+        {
+          "item": "if poll returns Pending, the await expression suspends its state so that execution resumes from that exact point on the next poll",
+          "at": [{ "step": "Measured, not assumed: two bytes versus over four thousand" }]
+        }
+      ]
+    },
+    {
+      "source": "send-trait",
+      "items": [
+        {
+          "item": "Send is an auto trait, automatically implemented when the compiler determines it is appropriate, never implemented by hand",
+          "at": [{ "step": "Hold something not safe to move between threads across an await — still fine?" }]
+        },
+        {
+          "item": "Rc is the standard library's own canonical example of a type that is not Send",
+          "at": [{ "step": "rustc's own diagnostic: this future cannot be sent between threads" }]
+        }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "self-review",
+    "date": "2026-10-23",
+    "items": [
+      { "item": "Calling an async function produces a future value and executes none of its body, exactly like any other hand-written future from the previous topic — async fn is sugar over the identical laziness, not an exception to it.", "at": [{ "step": "A value. The same laziness as last topic, by a different name" }] },
+      { "item": "The value an async fn call produces is, per the language reference's own description, roughly an enum with one variant per suspension point (each .await), where each variant holds exactly the locals still live at that point — this is the concrete, checkable shape behind the otherwise-abstract phrase 'the compiler generates a state machine'.", "at": [{ "step": "So what is that value, exactly?" }] },
+      { "item": "A future's in-memory size is entirely determined by what its generated suspension-state enum has to hold, which can be measured directly with size_of_val without ever polling the future — size does not depend on execution, only on which locals are alive across which await points.", "at": [{ "step": "Measured, not assumed: two bytes versus over four thousand" }] },
+      { "item": "A future that holds a large local across an await point is not merely 'less elegant' than one that does not — every time that future value is moved (boxed, spawned, returned), the move copies every byte the enum variant holds, which is a real, measurable memcpy cost proportional to the future's size.", "at": [{ "step": "That size difference is a real memcpy every time the future moves" }] },
+      { "item": "Send is an auto trait: never implemented by a programmer directly, but derived structurally by the compiler from whether every field of a type (including every variant of a compiler-generated enum) is itself Send.", "at": [{ "step": "Hold something not safe to move between threads across an await — still fine?" }] },
+      { "item": "Because the suspension-state enum's variants are real fields of a real compiler-generated type, holding a non-Send value (such as an Rc) across an await point makes that specific variant not Send, which makes the whole enum not Send, which makes the whole future returned by that async fn not Send — demonstrated here with the exact compiler diagnostic, not merely asserted.", "at": [{ "step": "rustc's own diagnostic: this future cannot be sent between threads" }] },
+      { "item": "This !Send propagation is not a special rule invented for async fn; it is the same auto-trait mechanism that has applied to every ordinary struct and enum since Chapter 6 — async fn's generated type is simply a type like any other, with the same rules.", "at": [{ "step": "rustc's own diagnostic: this future cannot be sent between threads" }] },
+      { "item": "In production, a large future is a common, real performance footgun: a deeply nested chain of async function calls (each one's future nesting inside the caller's) can produce a future many kilobytes in size, imposing real stack usage and real memcpy costs on every spawn or Box::pin — tools like Clippy's large_futures lint exist specifically because this is easy to introduce accidentally and hard to notice without measuring.", "at": [{ "step": "That size difference is a real memcpy every time the future moves" }] },
+      { "item": "The fix for an oversized future is typically to Box::pin the large sub-future at the point it is awaited, trading one heap allocation and one level of indirection for a much smaller enclosing suspension-state variant — a deliberate, measurable tradeoff, not a default to reach for everywhere.", "at": [{ "step": "That size difference is a real memcpy every time the future moves" }] },
+      { "item": "The !Send propagation rule is exactly why a multi-threaded executor (Tokio's default) requires every spawned future to be Send: the executor may move a task between worker threads at any suspension point, and a non-Send value trapped inside the suspension-state enum at that point would make that move unsound.", "at": [{ "step": "rustc's own diagnostic: this future cannot be sent between threads" }] }
+    ]
+  },
+  "gapReview": {
+    "date": "2026-10-23",
+    "by": "self-review",
+    "open": []
+  }
+}

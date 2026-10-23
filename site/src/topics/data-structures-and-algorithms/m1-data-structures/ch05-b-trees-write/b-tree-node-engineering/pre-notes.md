@@ -1,0 +1,5 @@
+- **B+Tree node**: the disk-page-sized, forced-full node from topic 26, whose split and merge mechanics this topic assumes and never re-derives.
+- **Fanout B**: the number of children one node can route to, bounded by how many keys and pointers physically fit in a page — this topic's entire subject is making that number as large as possible without growing the page.
+- **High key / pivot tuple**: the routing key a split promotes to the parent — the specific thing suffix truncation shrinks.
+- **Byte comparison (`memcmp`)**: comparing two values byte for byte, with no awareness of their original type — the comparison key normalization converts every typed key into.
+- **Page write**: one block-sized write to disk — the unit bulk loading's and one-at-a-time insertion's page-write counts are compared in.

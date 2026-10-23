@@ -1,0 +1,16 @@
+[package]
+name = "send-sync-as-auto-examples"
+version = "0.1.0"
+edition = "2021"
+publish = false
+
+[[bin]]
+name = "tokio_rc_dropped_before_await"
+path = "src/bin/tokio_rc_dropped_before_await.rs"
+
+[[bin]]
+name = "tokio_rc_across_await_fails"
+path = "src/bin/tokio_rc_across_await_fails.rs"
+
+[dependencies]
+tokio = { version = "1", features = ["full"] }

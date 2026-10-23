@@ -1,0 +1,77 @@
+{
+  "steps": [
+    {
+      "lines": [
+        "Write an ordinary-looking function, mark it with the keyword that turns it into one of these lazy computations, and call it, but don't wait on it yet.",
+        { "beat": 0.3 },
+        "In that exact moment, right after the call and before anything else, has any part of its body actually started running?"
+      ],
+      "answer": [
+        "No, nothing has started — a value comes back, and that's all that happened.",
+        "This is the same rule from last time, just reached by a shorter path: the keyword is sugar over building exactly that kind of lazy value, not an exception to how it behaves."
+      ]
+    },
+    {
+      "lines": [
+        "That's the whole story, under a different name: whatever produced it, a value that does nothing until polled is still just a value that does nothing until polled.",
+        "Nothing about writing it with that convenient syntax changes what it fundamentally is underneath."
+      ]
+    },
+    {
+      "lines": [
+        "So what does that convenient syntax actually turn into, underneath? The language's own specification says it plainly: a plain, anonymous piece of data — and describes its rough shape directly.",
+        "One labeled slot for every single pause point in the function, and each one holds exactly whatever local variables are still alive right there."
+      ],
+      "takeaway": "An async function lowers to an enum with one slot per pause point, each slot holding the locals still alive there."
+    },
+    {
+      "lines": [
+        "Take two functions, identical except for one thing: right before the exact same pause point, one of them sets aside a sizeable chunk of local data that has to stay alive across it.",
+        { "beat": 0.3 },
+        "Does keeping that extra data alive across the pause point change how big the resulting value actually is?"
+      ],
+      "answer": [
+        "Yes, it genuinely does.",
+        "Whatever's still alive at that pause point has to be stored somewhere inside that one labeled slot, and a bigger local simply means a bigger slot to hold it."
+      ]
+    },
+    {
+      "lines": [
+        "Measure both of these directly, with no need to run either one at all — just ask how many bytes each value actually takes up, right after it's built.",
+        "One comes back tiny, just about nothing. The other comes back holding over four thousand times that, because it's dragging that whole chunk of data along with it."
+      ],
+      "takeaway": "A value's size is fixed by what it holds at each pause point — a measured difference, not a guess."
+    },
+    {
+      "lines": [
+        "That difference in size isn't just a number sitting in a report somewhere — every single time a value like that one actually moves, every one of those bytes gets copied along with it.",
+        "Move it onto the heap, hand it to something that will run it later, and that whole, larger block travels with it, every time."
+      ],
+      "takeaway": "Moving a larger value like this copies every byte it holds — a real cost paid on every move, not a hypothetical one."
+    },
+    {
+      "lines": [
+        "Now swap that local for something else: a kind of reference-counted handle that was never designed to be handed safely from one thread to another.",
+        { "beat": 0.3 },
+        "Keep that same kind of handle alive across the identical pause point as before — does that cause any trouble at all?"
+      ],
+      "answer": [
+        "No, it is not fine at all — this genuinely breaks.",
+        "Whatever ends up stored inside one of those labeled slots carries its own properties along with it, and a slot holding something unsafe to move between threads makes the whole value unsafe to move between threads too."
+      ]
+    },
+    {
+      "lines": [
+        "Try to actually compile that, and the compiler doesn't just quietly allow it — it refuses outright, and names exactly why.",
+        "It points at the handle itself, and at the exact pause point where that handle is still alive, and says plainly that the whole thing can't be handed safely between threads."
+      ],
+      "takeaway": "A property like this spreads automatically from whatever's held at a pause point to the whole value built around it."
+    },
+    {
+      "lines": [
+        "A function that looked entirely ordinary turns out to lower, underneath, to a real, inspectable value with real, measurable size — and everything already true about ordinary values turns out to still be true about this one.",
+        "That value, built from a chain of these labeled slots, is only simple as long as nothing inside one slot ever points at something else living in a different slot of the exact same value. What happens when it does?"
+      ]
+    }
+  ]
+}

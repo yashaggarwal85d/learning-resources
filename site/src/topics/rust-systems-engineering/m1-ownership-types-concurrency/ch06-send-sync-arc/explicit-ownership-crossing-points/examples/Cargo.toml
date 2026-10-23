@@ -1,0 +1,12 @@
+[package]
+name = "explicit-ownership-crossing-points-examples"
+version = "0.1.0"
+edition = "2021"
+publish = false
+
+[[bin]]
+name = "tokio_spawn_owns"
+path = "src/bin/tokio_spawn_owns.rs"
+
+[dependencies]
+tokio = { version = "1", features = ["full"] }

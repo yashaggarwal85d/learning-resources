@@ -1,0 +1,8 @@
+- **Future**: a value representing a computation that might not have finished yet. *Where you meet it:* the hand-written `Delay` type, built with no `async` sugar at all.
+- **`poll`**: the one required method on `Future`; the only thing that ever moves a future's computation forward. *Where you meet it:* called directly by this topic's hand-built executor.
+- **`Poll::Pending` / `Poll::Ready`**: the two outcomes a poll can return — not ready yet, or finished with a value. *Where you meet it:* the contract a pending future takes on when it returns `Pending`.
+- **Backpressure**: a mechanism that limits how much work piles up by making unstarted work cheap to hold. *Where you meet it:* why constructing many futures costs nothing until they're polled.
+- **Waker**: a handle that lets whatever finishes some external work tell the executor "poll this future again." *Where you meet it:* stored by the `Delay` future, called by a conduit thread.
+- **`std::task::Wake`**: the standard trait an executor implements on an `Arc`-wrapped type to build a real `Waker` safely. *Where you meet it:* this topic's `Task` type, and `Waker::from(task.clone())`.
+- **Executor / scheduler**: the thing that actually calls `poll`, and re-polls a future once its `Waker` says to. *Where you meet it:* a small, complete, hand-rolled runnable-queue executor, built from scratch.
+- **Conduit**: the standard library's own term for a future whose real work happens elsewhere (another thread, a signal), and whose job is just to report readiness correctly. *Where you meet it:* the thread inside `Delay::new` that sleeps, then wakes the future.

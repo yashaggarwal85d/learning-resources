@@ -1,0 +1,123 @@
+{
+  "topic": "rust.critical-sections-external-latency",
+  "syllabus": [
+    {
+      "clause": "never do I/O inside a critical section: then the lock is serializing external latency, not just protecting a critical section.",
+      "at": [
+        { "step": "Measured: about 160 milliseconds" },
+        { "step": "Move the call outside the lock" }
+      ]
+    },
+    {
+      "clause": "Lock ordering prevents deadlock;",
+      "at": [
+        { "step": "It never finishes: a real deadlock, proven by timing out" },
+        { "step": "Same program, one consistent order: it finishes" }
+      ]
+    },
+    {
+      "clause": "lock convoys and priority inversion are the other failure modes.",
+      "at": [
+        { "step": "A lock convoy: everyone still moves, just badly" },
+        { "step": "Priority inversion: a low-priority holder blocks a high-priority waiter" }
+      ]
+    }
+  ],
+  "sources": [
+    {
+      "source": "tokio-sync-mutex",
+      "items": [
+        {
+          "item": "it is ok and often preferred to use the ordinary std Mutex in asynchronous code",
+          "at": [{ "step": "A lock's only job is synchronizing memory" }]
+        },
+        {
+          "item": "the async mutex's one real reason to exist: keeping the lock held across an .await point for shared mutable access to an IO resource",
+          "at": [{ "deep": "In production" }]
+        },
+        {
+          "item": "the docs' own preferred alternative to locking around an IO resource: spawn a task to manage it, and use message passing instead",
+          "at": [{ "deep": "Where this goes next" }]
+        }
+      ]
+    },
+    {
+      "source": "book-shared-state",
+      "items": [
+        {
+          "item": "the compiler's safety guarantees do not extend to deadlocks — Mutex<T> can still deadlock a correct-looking program",
+          "at": [{ "step": "Two locks, two threads, opposite acquisition order" }]
+        },
+        {
+          "item": "a two-lock deadlock is two threads, each already holding one of two needed locks, waiting on each other forever",
+          "at": [
+            { "step": "Two locks, two threads, opposite acquisition order" },
+            { "step": "It never finishes: a real deadlock, proven by timing out" }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "lockdep-design",
+      "items": [
+        {
+          "item": "two locks acquired in opposite order by two different paths can form a circle called lock inversion deadlock",
+          "at": [{ "step": "Two locks, two threads, opposite acquisition order" }]
+        },
+        {
+          "item": "a consistent acquisition order across every path never forms the circle the validator is built to detect",
+          "at": [{ "step": "Same program, one consistent order: it finishes" }]
+        }
+      ]
+    },
+    {
+      "source": "lock-convoy",
+      "items": [
+        {
+          "item": "a lock convoy occurs when multiple threads of equal priority contend repeatedly for the same lock",
+          "at": [{ "step": "A lock convoy: everyone still moves, just badly" }]
+        },
+        {
+          "item": "unlike deadlock and livelock, the threads in a lock convoy do progress; each failed attempt costs a relinquished scheduling quantum and a forced context switch",
+          "at": [{ "step": "A lock convoy: everyone still moves, just badly" }]
+        }
+      ]
+    },
+    {
+      "source": "rt-mutex",
+      "items": [
+        {
+          "item": "a low priority owner of a rt-mutex inherits the priority of a higher priority waiter until the rt-mutex is released",
+          "at": [{ "step": "Priority inversion: a low-priority holder blocks a high-priority waiter" }]
+        },
+        {
+          "item": "priority inheritance is not a magic bullet for poorly designed applications, quoted directly from the kernel docs",
+          "at": [{ "step": "Priority inversion: a low-priority holder blocks a high-priority waiter" }]
+        }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "self-review",
+    "date": "2026-10-23",
+    "items": [
+      { "item": "A critical section's contract is narrowly about memory operations; nothing in a Mutex's API stops a caller from putting an arbitrarily slow external call inside the guarded region.", "at": [{ "step": "A lock's only job is synchronizing memory" }] },
+      { "item": "Measured directly: four 40ms calls serialized behind one lock take roughly four times one call's length, not one call's length — the lock pays for whatever is inside it, latency included.", "at": [{ "step": "Measured: about 160 milliseconds" }] },
+      { "item": "Moving the identical call outside the lock, so the lock only ever protects the one memory write, drops the measured wall time back down to roughly one call's length, proving the lock itself was never the cost.", "at": [{ "step": "Move the call outside the lock" }] },
+      { "item": "tokio::sync::Mutex exists specifically because its guard is designed to survive being held across an .await; the docs' own stated preference is still to spawn a task and use message passing for a shared IO resource rather than serialize every caller through a lock.", "at": [{ "deep": "In production" }] },
+      { "item": "A two-lock deadlock requires a circular wait: each of two threads already holds one lock and is blocked waiting on the other. Breaking the circle, not avoiding locks altogether, is what fixes it.", "at": [{ "step": "Two locks, two threads, opposite acquisition order" }] },
+      { "item": "Running the deadlocking program under a short wall-clock timeout and asserting the timeout fires is a real, executable proof the program hangs — stronger evidence than a written description of the hazard.", "at": [{ "step": "It never finishes: a real deadlock, proven by timing out" }] },
+      { "item": "Lock ordering — the same consistent acquisition order on every code path that needs more than one lock — removes the circular wait a deadlock needs, and the identical program with that one change finishes cleanly every run.", "at": [{ "step": "Same program, one consistent order: it finishes" }] },
+      { "item": "The Linux kernel's own lockdep validator exists to catch exactly this class of bug automatically, at runtime, by tracking every lock-acquisition order a program's code paths actually exercise.", "at": [{ "deep": "Internals" }] },
+      { "item": "A lock convoy is a structurally different failure from deadlock: Wikipedia's own definition is threads of equal priority repeatedly contending for one lock, and its own stated consequence is that those threads still make progress — the cost is repeated, wasted context switches, not a permanent stall.", "at": [{ "step": "A lock convoy: everyone still moves, just badly" }] },
+      { "item": "Priority inversion is a liveness and performance problem, not a memory-safety one: a low-priority thread holding a lock can block a much higher-priority thread for an unbounded time, with no type-level signal that anything is wrong.", "at": [{ "step": "Priority inversion: a low-priority holder blocks a high-priority waiter" }] },
+      { "item": "Priority inheritance, the kernel's own named fix, temporarily boosts the low-priority holder's priority to the waiter's until release — and the kernel's own docs state plainly that this is not a substitute for correct application design.", "at": [{ "step": "Priority inversion: a low-priority holder blocks a high-priority waiter" }] },
+      { "item": "None of lock ordering, lock convoys, or priority inversion is checked by Rust's type system; Send and Sync govern what may cross a thread boundary at all, not what happens once several threads actually contend for the same lock.", "at": [{ "step": "Recap: four failure modes, none of them caught by the compiler" }] }
+    ]
+  },
+  "gapReview": {
+    "date": "2026-10-23",
+    "by": "self-review",
+    "open": []
+  }
+}

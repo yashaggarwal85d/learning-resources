@@ -1,0 +1,6 @@
+- **`move` closure**: a closure that takes ownership of everything it captures, rather than borrowing it. *Where you meet it:* every `thread::spawn` and `tokio::spawn` example in this topic.
+- **`JoinHandle`**: the value `thread::spawn` and `tokio::spawn` return, used to wait for the spawned thread or task and collect its result. *Where you meet it:* every example that calls `.join()` or `.await`s the handle.
+- **`E0373`**: the specific rustc error code for "closure may outlive the current function" — a borrow that doesn't live long enough for where it's being sent. *Where you meet it:* the one deliberately-broken example.
+- **Async runtime**: the scheduler (tokio, in this topic) that actually runs spawned tasks and decides which OS thread executes each one. *Where you meet it:* why `tokio::spawn` needs `Send`.
+- **FIFO**: first-in, first-out — the order a channel delivers messages in. *Where you meet it:* `std::sync::mpsc`'s own description of itself.
+- **Crate port**: reimplementing (or directly incorporating) one library's algorithm inside another, rather than writing a new one. *Where you meet it:* `std::sync::mpsc`'s real implementation, borrowed from `crossbeam-channel`.

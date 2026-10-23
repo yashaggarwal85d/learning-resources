@@ -1,0 +1,41 @@
+{
+  "topic": "dsa.bst-operations-rotations",
+  "syllabus": [
+    { "clause": "search, insert, delete (successor swap), in-order traversal", "at": [{ "step": "Search and insert both walk the same comparison: smaller, go left; bigger, go right. Insert just keeps going until it finds an empty spot." }, { "step": "Deleting a two-child node swaps in its in-order successor — the smallest key bigger than it. No key sits between them, so order never breaks." }, { "step": "Walk left, visit, walk right, every single time. That one rule reads every key back out in sorted order." }] },
+    { "clause": "the rotation as the one primitive all balancing schemes share", "at": [{ "step": "A rotation relinks a handful of pointers and reshapes a tree — but never touches its in-order sequence of keys." }] }
+  ],
+  "sources": [
+    {
+      "source": "Robert Sedgewick and Kevin Wayne, Algorithms, 4th Edition, \"Binary Search Trees\"",
+      "items": [
+        { "item": "The BST property: every node's key is greater than everything in its left subtree, less than everything in its right subtree", "at": [{ "step": "Hashing answered where a key lives by giving up on order completely. This topic keeps the keys in order instead, and asks what that costs." }] },
+        { "item": "Delete on a two-child node replaces it with its in-order successor, the smallest key in its right subtree; no key lies between them, so order is preserved", "at": [{ "step": "Deleting a two-child node swaps in its in-order successor — the smallest key bigger than it. No key sits between them, so order never breaks." }] },
+        { "item": "In-order traversal (left subtree, node, right subtree) is the basic recursive BST traversal, printed in sorted order", "at": [{ "step": "Walk left, visit, walk right, every single time. That one rule reads every key back out in sorted order." }] }
+      ]
+    },
+    {
+      "source": "MIT 6.006, Spring 2020, Lecture 7",
+      "items": [
+        { "item": "A rotation relinks O(1) pointers to modify tree structure and maintains traversal order", "at": [{ "step": "A rotation relinks a handful of pointers and reshapes a tree — but never touches its in-order sequence of keys." }] }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "blind self-review, research stage",
+    "date": "2026-10-23",
+    "items": [
+      { "item": "Hashing (Chapter 3) and a BST (Chapter 4) trade the same thing in opposite directions: hashing gives up order for O(1) location, a BST keeps order and pays for it in height risk — stated explicitly as the chapter's turn.", "at": [{ "step": "Hashing answered where a key lives by giving up on order completely. This topic keeps the keys in order instead, and asks what that costs." }] },
+      { "item": "Search and insert are not two separate algorithms; insert is literally a search that doesn't stop when it would otherwise report failure, continuing one more step into empty space.", "at": [{ "step": "Search and insert both walk the same comparison: smaller, go left; bigger, go right. Insert just keeps going until it finds an empty spot." }] },
+      { "item": "A sorted insertion order is not a random or unusual case — it is the single most deterministic order possible, and it is also the exact order that produces the worst-case shape.", "at": [{ "step": "Insert these timestamps in already-sorted order instead of random order. What shape does the tree take?" }] },
+      { "item": "The BST property is validated at every single insert along a sorted sequence, yet the resulting shape is the worst one achievable — the property is a constraint on key order, not a constraint on shape or height.", "at": [{ "step": "Same keys, same BST property, wildly different height. One insertion order silently degrades search from fast to slow." }] },
+      { "item": "The two-child delete case is the only genuinely hard case; one- and zero-child deletes are handled by simply relinking around the deleted node, with no successor search needed.", "at": [{ "step": "Deleting a two-child node swaps in its in-order successor — the smallest key bigger than it. No key sits between them, so order never breaks." }] },
+      { "item": "In-order traversal's sorted output is a consequence of the tree's shape, not an operation performed on the output afterward — nothing sorts the result; the recursive left-node-right order already is sorted order.", "at": [{ "step": "Walk left, visit, walk right, every single time. That one rule reads every key back out in sorted order." }] },
+      { "item": "A rotation's O(1) cost and order-preservation are not two separate facts to verify; the second follows directly from the first, since only the specific nodes already related by the rotated edge change parent, never any key's relative position.", "at": [{ "deep": "Into the internals" }] },
+      { "item": "This topic deliberately declares no balancing invariant for when to rotate, leaving that decision entirely to the following topics (red-black trees, order-statistic trees) rather than anticipating or duplicating their content.", "at": [{ "out": "AVL trees, splay trees, and treaps' own specific balancing invariants are skipped in the syllabus and not claimed here." }] },
+      { "item": "This topic's own measured heights (17 for random order, 200 for sorted order, on the identical 200-key set) are this topic's own honest measurement, not claimed to match any particular textbook's worked example.", "at": [{ "step": "Prove it" }] },
+      { "item": "A rotation is named here as the shared primitive every later balancing scheme in this chapter will reuse, without yet attaching any invariant that decides when to apply it.", "at": [{ "step": "A rotation relinks a handful of pointers and reshapes a tree — but never touches its in-order sequence of keys." }] },
+      { "item": "The chapter's own handoff into red-black trees is set up directly by this topic's degenerate-height finding, not asserted independently.", "at": [{ "deep": "Where this goes next" }] }
+    ]
+  },
+  "gapReview": { "date": "2026-10-23", "by": "self-review", "open": [] }
+}
