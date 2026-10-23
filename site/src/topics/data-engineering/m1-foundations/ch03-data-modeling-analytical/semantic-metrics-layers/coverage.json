@@ -1,0 +1,59 @@
+{
+  "topic": "de.semantic-metrics-layers",
+  "syllabus": [
+    { "clause": "metric definitions compiled to SQL over declared entities, grain and time spines", "at": [{ "step": "Reveal: the lab — two compiled queries from one declaration" }, { "step": "Reveal: entities as declared join keys, quoted directly" }, { "step": "Reveal: the time spine, quoted directly" }] },
+    { "clause": "MetricFlow (open-sourced under Apache 2.0, Oct 2025), Cube, LookML, warehouse-native Snowflake semantic views and Databricks metric views", "at": [{ "step": "Reveal: the lab — one metric, declared once" }, { "step": "Reveal: the other tools, named; this layer's own open-sourcing" }] },
+    { "clause": "the Open Semantic Interchange (OSI) spec", "at": [{ "step": "Reveal: the other tools, named; this layer's own open-sourcing" }] },
+    { "clause": "semantic layers as grounding for LLM text-to-SQL (BI boundary → Ch.17)", "at": [{ "deep": "Where this goes next" }] }
+  ],
+  "sources": [
+    {
+      "source": "MetricFlow, \"About MetricFlow\"",
+      "items": [
+        { "item": "MetricFlow's own stated purpose: a SQL query generation tool compiling metrics across different data dimensions", "at": [{ "step": "Reveal: what a semantic layer actually does, quoted directly" }] },
+        { "item": "MetricFlow's own license (Apache 2.0)", "at": [{ "step": "Reveal: the other tools, named; this layer's own open-sourcing" }] },
+        { "item": "The DRY principle: minimize redundancy by enabling one metric definition wherever possible", "at": [{ "step": "Reveal: the DRY principle, quoted directly" }] },
+        { "item": "Entities are the declared join keys / traversal paths between semantic models", "at": [{ "step": "Reveal: entities as declared join keys, quoted directly" }] },
+        { "item": "Dimensions are the declared ways to group or slice a metric", "at": [{ "step": "Reveal: the lab — two compiled queries from one declaration" }] }
+      ]
+    },
+    {
+      "source": "MetricFlow, \"MetricFlow time spine\"",
+      "items": [
+        { "item": "A time spine is a dedicated base table for time-based joins and aggregations, distinct from an ordinary dimension table", "at": [{ "step": "Reveal: the time spine, quoted directly" }] },
+        { "item": "MetricFlow requires a time spine before any time-based metric or dimension can compile", "at": [{ "step": "Reveal: the time spine, quoted directly" }] }
+      ]
+    },
+    {
+      "source": "dbt Labs, \"Announcing open source MetricFlow: Governed metrics to power trustworthy AI and agents\"",
+      "items": [
+        { "item": "MetricFlow was open-sourced at Coalesce 2025, dbt Labs' own annual conference", "at": [{ "step": "Reveal: the other tools, named; this layer's own open-sourcing" }] },
+        { "item": "MetricFlow's own move to the Apache 2.0 license, confirmed independently of the docs page", "at": [{ "step": "Reveal: the other tools, named; this layer's own open-sourcing" }] },
+        { "item": "MetricFlow's own stated alignment with the Open Semantic Interchange (OSI) initiative", "at": [{ "step": "Reveal: the other tools, named; this layer's own open-sourcing" }] }
+      ]
+    },
+    {
+      "source": "Apache Ossie (Incubating) [formerly Open Semantic Interchange], project homepage",
+      "items": [
+        { "item": "OSI has been accepted into the Apache Incubator and renamed Apache Ossie (incubating) — same spec, community, and mission, new name and governance home", "at": [{ "step": "Reveal: the other tools, named; this layer's own open-sourcing" }] }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "Claude (single session, written from the syllabus line and the fetched sources before storyboarding; not independent of the builder, so a later owner review should repeat it)",
+    "date": "2026-10-22",
+    "items": [
+      { "item": "This topic has a real hands-on lab (lab/mf_shop/, examples.py), unlike most of this chapter's other recent topics: MetricFlow was installed in a separate Python virtualenv (dbt-metricflow is not part of this repo's own environment, and a setuptools<70 pin was needed to work around a build failure — documented in lab/README.md), a dbt project was built over the shop's own star schema, and `mf query` was run by hand to compile the same declared metric to two different SQL queries", "at": [{ "step": "Reveal: the lab — two compiled queries from one declaration" }] },
+      { "item": "Both compiled queries' numeric results are cross-checked in examples.py against an independently written plain-SQL aggregate (total revenue, and January's own revenue), not merely assumed correct because MetricFlow produced them", "at": [{ "step": "Reveal: the lab — two compiled queries from one declaration" }] },
+      { "item": "The first predict (step 3) is red-teamed against the plausible wrong answer that one metric declaration is permanently tied to whatever grain it was first written for; the reveal at steps 4-5 directly refutes this by executing the identical declaration at two different grains with different results", "at": [{ "step": "Predict: does a metric defined once only ever compile to one fixed query?" }] },
+      { "item": "The second predict (step 6) is red-teamed against the plausible wrong answer that MetricFlow could infer a join from matching column names; the reveal at step 7 quotes MetricFlow's own definition of entities as explicitly declared join keys, and the lab's own build is the proof — the automatic join only happened because `product` was declared as an entity on fact_orders", "at": [{ "step": "Predict: does declaring the join key matter, or could it just guess from column names?" }] },
+      { "item": "The third predict (step 9) is red-teamed against the plausible wrong answer that any column holding a date should work directly for time-based grouping; the reveal at step 10 is backed by an actual build failure hit while constructing this lab (dbt parse refused to run with the exact error \"the semantic layer requires a time spine model... but none was found\" until one was added), not just the documentation's own claim", "at": [{ "step": "Reveal: the time spine, quoted directly" }] },
+      { "item": "The closing check (Prove it) is a genuinely new scenario, independently executed, not merely asserted: the existing average_order_value ratio metric was actually queried by customer region with no change to its own declaration, confirmed to compile a correctly joined query against dim_customer (documented in lab/README.md and FACT-CHECK.md)", "at": [{ "step": "Prove it" }] },
+      { "item": "MetricFlow's own open-sourcing date is confirmed as \"Coalesce 2025\" (dbt Labs' own annual October conference) rather than a specific calendar date, since the fetched announcement names the event, not a day-level date — consistent with CHAPTER.md's own \"Oct 2025\" framing without overclaiming more precision than the source gives", "at": [{ "step": "Reveal: the other tools, named; this layer's own open-sourcing" }] },
+      { "item": "The Open Semantic Interchange spec's own rename to Apache Ossie (incubating), discovered during this topic's own research, is disclosed explicitly rather than silently taught under its old name — the same version/name-drift discipline this chapter used for the Open Data Contract Standard's own version bump in the previous topic", "at": [{ "step": "Reveal: the other tools, named; this layer's own open-sourcing" }] },
+      { "item": "The bridge from topic 22 (data contracts) and the handoff to topic 24 (dbt models, tests and lineage) are both taken verbatim from CHAPTER.md's own entry for topic 23 and checked against this topic's own content before use, rather than invented fresh", "at": [{ "step": "The shop's two dashboards, two different numbers" }] },
+      { "item": "LLM text-to-SQL grounding is deliberately deferred to Ch.17 per CHAPTER.md's own explicit instruction, not silently skipped — this topic teaches what a semantic layer compiles and why, without building the BI/LLM-facing consumption layer on top of it", "at": [{ "step": "Reveal: the other tools, named; this layer's own open-sourcing" }] }
+    ]
+  },
+  "gapReview": { "date": "2026-10-22", "by": "Claude (single session)", "open": [] }
+}

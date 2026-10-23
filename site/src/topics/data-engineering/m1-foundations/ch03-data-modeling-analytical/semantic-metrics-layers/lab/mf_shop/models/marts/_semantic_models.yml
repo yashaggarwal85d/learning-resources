@@ -1,0 +1,77 @@
+semantic_models:
+  - name: fact_orders
+    description: "One row per order line, the shop's own fact table."
+    model: ref('fact_orders')
+    defaults:
+      agg_time_dimension: order_date
+    entities:
+      - name: order
+        type: primary
+        expr: order_id
+      - name: customer
+        type: foreign
+        expr: customer_id
+      - name: product
+        type: foreign
+        expr: product_id
+    dimensions:
+      - name: order_date
+        type: time
+        type_params:
+          time_granularity: day
+    measures:
+      - name: order_amount
+        agg: sum
+        expr: amount
+      - name: order_quantity
+        agg: sum
+        expr: quantity
+      - name: order_count
+        agg: count
+        expr: order_id
+
+  - name: dim_customer
+    description: "One row per customer."
+    model: ref('dim_customer')
+    defaults:
+      agg_time_dimension: null
+    entities:
+      - name: customer
+        type: primary
+        expr: customer_id
+    dimensions:
+      - name: region
+        type: categorical
+
+  - name: dim_product
+    description: "One row per product."
+    model: ref('dim_product')
+    entities:
+      - name: product
+        type: primary
+        expr: product_id
+    dimensions:
+      - name: category
+        type: categorical
+
+metrics:
+  - name: revenue
+    description: "Total order revenue, defined once."
+    type: simple
+    type_params:
+      measure: order_amount
+
+  - name: order_count
+    description: "Total number of orders."
+    type: simple
+    type_params:
+      measure: order_count
+
+  - name: average_order_value
+    description: "Revenue divided by order count — a ratio metric over the same two base measures."
+    type: ratio
+    type_params:
+      numerator:
+        name: revenue
+      denominator:
+        name: order_count
