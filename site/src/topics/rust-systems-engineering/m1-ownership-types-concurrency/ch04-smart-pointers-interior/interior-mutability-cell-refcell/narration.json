@@ -1,0 +1,61 @@
+{
+  "topic": "rust.interior-mutability-cell-refcell",
+  "note": "Written to be spoken: one sentence or phrase per line; {\"beat\": s} is a deliberate pause; numbers and codes are said the way a person would say them, never shown as digits. `answer` plays after the learner answers a predict step.",
+  "steps": [
+    {
+      "lines": [
+        "A shared reference is supposed to point at data the compiler is free to treat as fixed, never changing underneath it.",
+        "There is exactly one sanctioned way around that promise, a single primitive every other safe way of mutating through a shared reference is quietly built on top of."
+      ]
+    },
+    {
+      "lines": [
+        "Take that same shape, a value sitting behind a shared reference, but leave out the one primitive that's actually allowed to open it up.",
+        { "beat": 0.3 },
+        "Try to change that value anyway, through nothing but the shared reference. Does it compile?"
+      ],
+      "answer": [
+        "No, and it's refused immediately, before any question of safety even comes up.",
+        "This isn't some special protection against doing something unsafe. It's the same, completely ordinary rule that stops any shared reference from being used to change what it points to, whether or not that one escape hatch is anywhere nearby."
+      ]
+    },
+    {
+      "lines": [
+        "Give a value a far simpler way to change through a shared reference instead: copy the whole thing out, change it, and copy the result back in, never handing out a reference to the inside at all.",
+        "Because nothing is ever actually borrowed, there's nothing that needs to be tracked, checked, or protected while that swap happens."
+      ]
+    },
+    {
+      "lines": [
+        "Now give a value a way to hand out a real, tracked reference to its inside, through nothing but a shared reference to the whole thing.",
+        "Every time that happens, the exact same rule an ordinary reference would enforce while the program is being checked gets enforced instead while the program is actually running."
+      ]
+    },
+    {
+      "lines": [
+        "Take out one of those tracked, shared references and keep it alive, then, while it's still alive, ask for an exclusive one on the very same value.",
+        { "beat": 0.3 },
+        "What happens?"
+      ],
+      "answer": [
+        "It compiles without any complaint at all, and then the instant it actually runs, it stops the program right there, naming exactly which kind of conflict it hit.",
+        "Nothing about this was caught ahead of time. The whole point of tracking it this way is that the check only ever happens the moment it's actually needed, not before."
+      ]
+    },
+    {
+      "lines": [
+        "Give a value a way to be written exactly once, the very first time anyone asks for it, and read freely after that, with no further checking needed at all.",
+        "A value computed from a supplied set of instructions, instead of written directly, follows that same one-time rule: whatever produces it only ever actually runs the first time it's touched, no matter how many times it's asked for after that."
+      ]
+    },
+    {
+      "lines": [
+        "So: there is exactly one sanctioned way to mutate through a shared reference, and every other safe way of doing it is built on top of that one thing.",
+        "Copying a whole value in and out needs no tracking of any kind. Handing out a real, tracked reference to the inside needs that tracking to happen while the program runs, instead of before.",
+        "And something that only ever needs to be produced once can simply be written, or computed, the first time it's asked for, and read freely every time after that.",
+        { "beat": 0.3 },
+        "Next time: one of these values can be made to point right back at the very thing that holds it. What happens once two of them point at each other like that?"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,43 @@
+{
+  "topic": "rust.arc-mutex-t-as",
+  "syllabus": [
+    { "clause": "wrapping an unclear design until the compiler is satisfied serializes the hot path and hides contention.", "at": [{ "step": "The reflex: wrap it in Arc<Mutex<T>>" }, { "step": "Does splitting the work across threads help?" }] },
+    { "clause": "Alternatives: sharding, an owner task with a channel, and arc-swap (RCU-style) for read-mostly config.", "at": [{ "step": "Sharding: no two threads share a lock" }, { "step": "An owner task, reached only by channel" }, { "step": "Can a reader see a half-updated config?" }, { "step": "arc-swap: a lock-free swap for read-mostly data" }] }
+  ],
+  "sources": [
+    {
+      "source": "mutex-docs",
+      "items": [
+        { "item": "A Mutex is a mutual exclusion primitive useful for protecting shared data", "at": [{ "step": "The reflex: wrap it in Arc<Mutex<T>>" }] },
+        { "item": "A Mutex blocks threads waiting for the lock to become available", "at": [{ "step": "Does splitting the work across threads help?" }] },
+        { "item": "The protected data is only ever reachable through the RAII guard lock/try_lock returns, which guarantees it is never touched while unlocked", "at": [{ "step": "The reflex: wrap it in Arc<Mutex<T>>" }] }
+      ]
+    },
+    {
+      "source": "arc-swap-docs",
+      "items": [
+        { "item": "ArcSwap lets an Arc itself be swapped atomically, with no lock needed to read the current value", "at": [{ "step": "arc-swap: a lock-free swap for read-mostly data" }] },
+        { "item": "ArcSwap is built for read-mostly data, where many threads read often and updates are comparatively rare", "at": [{ "step": "arc-swap: a lock-free swap for read-mostly data" }] },
+        { "item": "A reader is guaranteed to see one complete, consistent version of the data, never a mix of an old and a new one", "at": [{ "step": "Can a reader see a half-updated config?" }] },
+        { "item": "RwLock<Arc<T>> is the naive alternative ArcSwap improves on, and it still pays for a lock acquisition plus a reference-count bump on every read", "at": [{ "deep": "Frontier" }] }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "self-review",
+    "date": "2026-10-23",
+    "items": [
+      { "item": "The Arc<Mutex<T>> reflex isn't wrong; the type signature is genuinely correct for any shape of shared, mutable, cross-thread state. What it hides is that correctness says nothing about how much contention the resulting single lock will actually see in practice", "at": [{ "step": "The reflex: wrap it in Arc<Mutex<T>>" }] },
+      { "item": "The measured slowdown here isn't a benchmarking artifact of this one sandbox; it is the direct, structural consequence of forcing every thread's work through one lock, which turns four threads of work into one thread's worth of serialized work plus the overhead of contending for the lock itself", "at": [{ "step": "Does splitting the work across threads help?" }] },
+      { "item": "Sharding only helps when the access pattern lets work be partitioned so that most operations stay within one shard; a workload that constantly needs to touch data across every shard at once gets none of sharding's benefit and still needs some form of coordination across shards", "at": [{ "step": "Sharding: no two threads share a lock" }] },
+      { "item": "An owner task's channel has its own real cost: every request now pays for a message send and, if a reply is needed, a round trip, instead of a lock acquisition; it trades contention on a lock for throughput through a queue, which is a win only when the queue doesn't itself become the bottleneck", "at": [{ "step": "An owner task, reached only by channel" }] },
+      { "item": "A reader using arc-swap's load() can still observe a config that is already stale by the time it finishes using it, if a writer stores a newer one in the meantime; what arc-swap actually guarantees is that the snapshot it handed back stays whole and self-consistent for as long as that Guard is held, never that it is the latest possible value", "at": [{ "step": "Can a reader see a half-updated config?" }] },
+      { "item": "arc-swap is specifically suited to read-mostly data; on a write-heavy workload its write path is comparatively expensive, and a plain Mutex or RwLock, sharded if needed, usually fits better", "at": [{ "step": "arc-swap: a lock-free swap for read-mostly data" }] },
+      { "item": "None of this chapter's four tools (a single Mutex, sharding, an owner task, arc-swap) is strictly better than the others; each is the right fit for a different shape of contention, and picking one without first knowing which shape the real workload has is itself the mistake this topic is naming", "at": [{ "step": "Recap: one lock, three ways around it" }] },
+      { "item": "This topic's contention measurements, like topic 12's Arc refcount measurements, are real executed numbers from this sandbox, not simulated or hand-picked; the qualitative ordering (single Mutex worst under real contention, sharding best, owner task and arc-swap each fitting their own workload) is the durable claim, not any specific nanosecond figure", "at": [{ "step": "Recap: one lock, three ways around it" }] },
+      { "item": "Choosing Arc<Mutex<T>> over any of these three alternatives is still frequently the right call: it is the simplest, most obviously correct option, and reaching for an alternative before measuring an actual contention problem is premature optimization in the other direction", "at": [{ "step": "Recap: one lock, three ways around it" }] },
+      { "item": "This chapter's whole arc, from Box through Rc and Arc, interior mutability, reference cycles, and now Arc<Mutex<T>>'s hidden cost, builds toward exactly the same place: a single, simple-looking type signature can hide a real design decision about ownership, mutability, or contention that only shows up once it is actually measured", "at": [{ "step": "Recap: one lock, three ways around it" }] }
+    ]
+  },
+  "gapReview": { "date": "2026-10-23", "by": "self-review", "open": [] }
+}

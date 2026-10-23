@@ -1,0 +1,22 @@
+import Resource from '../../../../../components/Resource.astro';
+
+<section class="prereq" data-section="chapter-so-far">
+
+### <span class="n">01</span> Where this chapter's last topic left off
+
+<ul class="resources">
+  <Resource kind="reel" host={props.host} domain="rust-systems-engineering" title="Reference cycles and Weak">Every shared value in this chapter so far lived on one thread's worth of logic at a time. This topic asks what happens once more than one thread actually touches the same mutable, shared state at once.</Resource>
+</ul>
+
+</section>
+
+<section class="prereq" data-section="mutex-and-arc-swap">
+
+### <span class="n">02</span> Mutex's own docs, and arc-swap's motivation
+
+<ul class="resources">
+  <Resource kind="reading" title="Mutex — std" href="https://doc.rust-lang.org/std/sync/struct.Mutex.html" by="The Rust Team">Why a Mutex blocks, and why its protected data is only ever reachable through the RAII guard it returns.</Resource>
+  <Resource kind="reading" title="arc_swap" href="https://docs.rs/arc-swap/latest/arc_swap/" by="vorner">The exact problem ArcSwap solves for read-mostly, rarely-updated data.</Resource>
+</ul>
+
+</section>

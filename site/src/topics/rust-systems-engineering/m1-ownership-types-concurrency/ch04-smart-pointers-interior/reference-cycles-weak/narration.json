@@ -1,0 +1,62 @@
+{
+  "topic": "rust.reference-cycles-weak",
+  "note": "Written to be spoken: one sentence or phrase per line; {\"beat\": s} is a deliberate pause; numbers and codes are said the way a person would say them, never shown as digits. `answer` plays after the learner answers a predict step.",
+  "steps": [
+    {
+      "lines": [
+        "Let one shared owner hold a strong claim on a second, and let that second one hold a strong claim right back on the first.",
+        "Once both of those claims go out of scope, neither one's count ever actually reaches nothing, because each is still being kept alive by the other."
+      ]
+    },
+    {
+      "lines": [
+        "Nothing about building that loop breaks any rule the compiler actually checks: not the borrowing rules, not the type rules, nothing about which crate a type or a trait came from.",
+        { "beat": 0.3 },
+        "So does a program built this way compile at all?"
+      ],
+      "answer": [
+        "Yes, completely cleanly, with no complaint whatsoever. And once it runs, it holds onto that memory forever.",
+        "Counting every single allocation and every single release directly shows real memory that is requested once and never, ever given back. That's not a guess, and it isn't simulated."
+      ]
+    },
+    {
+      "lines": [
+        "Give a value a second kind of pointer to the exact same thing an owning claim already points to, one that carries no ownership over it at all.",
+        "Its own count never being above nothing is never, by itself, a reason the thing it points to has to stay around a moment longer."
+      ]
+    },
+    {
+      "lines": [
+        "Build that identical closed loop one more time, but this time, have the second claim point back at the first with that non-owning kind of pointer instead of a second owning one.",
+        "Count every allocation and every release the exact same way as before. This time, once both go out of scope, everything that was asked for has also been fully given back."
+      ]
+    },
+    {
+      "lines": [
+        "Take that same non-owning pointer, and have whatever it was pointing to lose its very last owning claim entirely, so nothing owns it anymore at all.",
+        { "beat": 0.3 },
+        "Ask that non-owning pointer to hand back a real, owning claim on the thing it points to. What comes back?"
+      ],
+      "answer": [
+        "Nothing. It comes back empty, because the thing it used to point to is already gone.",
+        "A non-owning pointer like this one never once stopped that value from being let go. All it ever protects is the small bit of bookkeeping behind it, enough to let it answer that question safely instead of reading memory that's no longer there."
+      ]
+    },
+    {
+      "lines": [
+        "Build a value that needs to hold a non-owning pointer back to itself, from the very moment it comes into existence, before it's even finished being built.",
+        "One particular way of building it hands the very closure doing the building a non-owning pointer to that not-yet-finished value, specifically so it can be tucked away inside the value while it's still being put together."
+      ]
+    },
+    {
+      "lines": [
+        "So: two owning claims pointing back at each other in a closed loop never let each other go, and that memory is never given back for as long as the program keeps running.",
+        "A non-owning pointer to the same thing never keeps it alive on its own, which is exactly what lets a loop built with one break cleanly instead.",
+        "Asking a non-owning pointer for a real claim back gives nothing at all, the moment whatever it pointed to has already lost its last real owner.",
+        "And a value that needs to point back at itself from the moment it's built can be handed a non-owning pointer to itself while it's still being put together, before it's even finished.",
+        { "beat": 0.3 },
+        "Next time: every one of these shared values, so far, has only ever been touched by one thread's worth of logic at a time. What happens once more than one thread actually reaches for the very same, shared, changeable state, all at once?"
+      ]
+    }
+  ]
+}

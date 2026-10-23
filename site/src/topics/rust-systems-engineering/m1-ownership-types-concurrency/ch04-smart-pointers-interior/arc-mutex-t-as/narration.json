@@ -1,0 +1,61 @@
+{
+  "topic": "rust.arc-mutex-t-as",
+  "note": "Written to be spoken: one sentence or phrase per line; {\"beat\": s} is a deliberate pause; numbers and codes are said the way a person would say them, never shown as digits. `answer` plays after the learner answers a predict step.",
+  "steps": [
+    {
+      "lines": [
+        "Share a single value across several threads, let every one of them change it, and the standard, reflexive answer is to wrap it behind one shared lock.",
+        "That answer is genuinely correct. What it never says anywhere is how much it will actually cost once more than one thread genuinely wants that same lock at the same moment."
+      ]
+    },
+    {
+      "lines": [
+        "Take a fixed amount of work touching that one shared, locked value, and split it evenly across several threads instead of leaving it to one.",
+        { "beat": 0.3 },
+        "Does splitting it up like that get the whole thing done any sooner?"
+      ],
+      "answer": [
+        "No. Measured for real, splitting it across several threads took noticeably longer than one thread working through the entire thing by itself.",
+        "Every single thread's turn at that one lock still has to wait for every other thread's turn, one at a time, and fighting over who goes next adds real cost on top of that waiting."
+      ]
+    },
+    {
+      "lines": [
+        "Instead of forcing every thread through the exact same lock, give each one its own, so that no two threads are ever waiting on one another at all.",
+        "The same total amount of work, done this way, is no longer one thread's worth of work wearing a disguise. It's genuinely several threads' worth, running at the same time, for real."
+      ]
+    },
+    {
+      "lines": [
+        "Give one single thread sole ownership of the value, with nobody else ever touching it directly, and let every other thread only ever send that one owner a request.",
+        "There's no lock anywhere in this picture at all. The cost moved somewhere else entirely, from waiting on a shared lock to simply passing a message along and letting the owner handle it."
+      ]
+    },
+    {
+      "lines": [
+        "Let several readers constantly ask for the current version of some shared value, while, every so often, one writer swaps in a brand new version entirely.",
+        { "beat": 0.3 },
+        "Can one of those readers ever end up looking at a version that's only half updated, partway between the old one and the new one?"
+      ],
+      "answer": [
+        "No, never, by the very way this is built.",
+        "Each time a reader asks, it gets handed one single, complete version, swapped in as one atomic step. There's simply no moment where only part of it has changed and the rest hasn't caught up yet."
+      ]
+    },
+    {
+      "lines": [
+        "Build that same shape so the readers never take any lock at all to ask for the current version, and the writer swaps in a whole new version as a single atomic step.",
+        "This fits one shape of work especially well: something read constantly, by many threads, but only ever updated every so often by comparison."
+      ]
+    },
+    {
+      "lines": [
+        "So: a single shared lock is correct, but forces every thread's turn through the exact same place, one at a time, and that cost is real and measurable, not just theoretical.",
+        "Giving every thread its own lock instead removes that shared waiting entirely. Giving one thread sole ownership and only ever messaging it removes the lock altogether, in exchange for passing requests along instead.",
+        "And letting readers ask for a whole new version, swapped in as a single atomic step, gives something read constantly and updated rarely a way to be read with no lock at all.",
+        { "beat": 0.3 },
+        "Next time: the other tools built specifically for exactly this problem, measured the same way, against this one, simplest, most obviously correct answer as the baseline."
+      ]
+    }
+  ]
+}

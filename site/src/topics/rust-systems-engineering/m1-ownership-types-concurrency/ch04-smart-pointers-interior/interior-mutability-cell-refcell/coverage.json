@@ -1,0 +1,60 @@
+{
+  "topic": "rust.interior-mutability-cell-refcell",
+  "syllabus": [
+    { "clause": "UnsafeCell is the only legal way to mutate through &.", "at": [{ "step": "The one legal way to mutate through &T" }, { "step": "Mutate through &self, with no cell type at all" }] },
+    { "clause": "Cell copies values in and out.", "at": [{ "step": "Cell copies the whole value, in and out" }] },
+    { "clause": "RefCell keeps a runtime borrow flag and panics on conflict; it is !Sync and explicitly NOT a synchronization primitive.", "at": [{ "step": "RefCell tracks borrows while the program runs" }, { "step": "A shared borrow is still alive — then borrow_mut" }] },
+    { "clause": "OnceCell/OnceLock (stable 1.70) and LazyLock (stable 1.80) handle one-time initialization.", "at": [{ "step": "Written once, computed once" }] }
+  ],
+  "sources": [
+    {
+      "source": "cell-module-overview",
+      "items": [
+        { "item": "Cell, RefCell, and OnceCell allow interior mutability on one thread only, because they do not implement Sync", "at": [{ "step": "Cell copies the whole value, in and out" }] },
+        { "item": "RefCell's borrow and borrow_mut verify Rust's borrow rules at run time: any number of shared borrows, or exactly one exclusive borrow, never both", "at": [{ "step": "RefCell tracks borrows while the program runs" }] },
+        { "item": "A conflicting borrow panics the thread rather than refusing to compile", "at": [{ "step": "A shared borrow is still alive — then borrow_mut" }] },
+        { "item": "RwLock is the Sync equivalent of RefCell", "at": [{ "deep": "Frontier" }] }
+      ]
+    },
+    {
+      "source": "refcell-docs",
+      "items": [
+        { "item": "RefCell is a mutable memory location with dynamically checked borrow rules", "at": [{ "step": "RefCell tracks borrows while the program runs" }] },
+        { "item": "A live borrow_mut guard excludes every other borrow until it, and anything derived from it, goes out of scope", "at": [{ "step": "RefCell tracks borrows while the program runs" }] },
+        { "item": "borrow_mut panics if the value is already borrowed; try_borrow_mut is the non-panicking alternative", "at": [{ "step": "A shared borrow is still alive — then borrow_mut" }] }
+      ]
+    },
+    {
+      "source": "unsafecell-docs",
+      "items": [
+        { "item": "UnsafeCell is the core primitive for interior mutability in Rust", "at": [{ "step": "The one legal way to mutate through &T" }] },
+        { "item": "UnsafeCell opts out of the immutability guarantee for a shared reference, letting it point at data that is being mutated", "at": [{ "step": "The one legal way to mutate through &T" }] },
+        { "item": "Every other interior-mutability type, such as Cell and RefCell, is implemented internally on top of UnsafeCell", "at": [{ "step": "The one legal way to mutate through &T" }] }
+      ]
+    },
+    {
+      "source": "rust-releases",
+      "items": [
+        { "item": "LazyLock was stabilized in Rust 1.80.0, released 2024-07-25", "at": [{ "step": "Written once, computed once" }] },
+        { "item": "std::sync::OnceLock was stabilized in Rust 1.70.0, released 2023-06-01", "at": [{ "step": "Written once, computed once" }] }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "self-review",
+    "date": "2026-10-23",
+    "items": [
+      { "item": "UnsafeCell doesn't itself prevent data races; it only makes mutating through a shared reference legal in the type system. Avoiding actual races is still entirely on the programmer, which is exactly why every safe wrapper built on it (Cell, RefCell) adds its own rule to make that safety hold", "at": [{ "step": "The one legal way to mutate through &T" }] },
+      { "item": "The failure in the no-cell-type example isn't about aliasing or undefined behavior at all; it's the same ordinary borrow-check error any &self method hits trying to assign a field, with nothing special about interior mutability involved yet", "at": [{ "step": "Mutate through &self, with no cell type at all" }] },
+      { "item": "Cell's restriction to copying values in and out isn't a limitation worth working around; it's the reason Cell needs no runtime bookkeeping at all, which is exactly why it should be preferred over RefCell whenever the value is cheap to copy", "at": [{ "step": "Cell copies the whole value, in and out" }] },
+      { "item": "RefCell's borrow tracking is a run-time counter, not a lock; it never blocks or waits for anything, it only panics the instant a conflicting borrow is attempted, which is why RefCell is !Sync and specifically unsuitable for coordinating access across threads", "at": [{ "step": "RefCell tracks borrows while the program runs" }] },
+      { "item": "A RefCell panic from a conflicting borrow almost always comes from a borrow that outlives the statement it looks like it belongs to — a temporary Ref or RefMut kept alive by being bound to a variable instead of being dropped immediately at the end of an expression", "at": [{ "step": "A shared borrow is still alive — then borrow_mut" }] },
+      { "item": "try_borrow and try_borrow_mut exist precisely so that code that cannot tolerate a panic can detect the same conflict and recover instead, trading a hard failure for an explicit Result to handle", "at": [{ "step": "A shared borrow is still alive — then borrow_mut" }] },
+      { "item": "OnceLock's write-once guarantee is itself a form of interior mutability with its own runtime check, just one that only ever needs to succeed a single time rather than being re-validated on every access the way RefCell's is", "at": [{ "step": "Written once, computed once" }] },
+      { "item": "LazyLock's closure runs at most once no matter how many threads call it concurrently; it coordinates that first call across threads itself, which is a meaningfully stronger guarantee than a plain OnceLock plus a manually written closure would give for free", "at": [{ "step": "Written once, computed once" }] },
+      { "item": "This topic's three strategies (copy a value, track a borrow at run time, or write exactly once) are not competing options for the same job; the right one is decided by whether the inner value is cheap to copy, needs a real reference handed out, or only ever needs to be set up a single time", "at": [{ "step": "Recap: one way in, three ways to mutate safely" }] },
+      { "item": "None of Cell, RefCell, OnceCell, or LazyLock make the data behind them safe to share across threads on their own; that is exactly the gap Rc and Arc from the previous topic, combined with these types, still leave open until Mutex or an atomic type actually enters the picture", "at": [{ "step": "Recap: one way in, three ways to mutate safely" }] }
+    ]
+  },
+  "gapReview": { "date": "2026-10-23", "by": "self-review", "open": [] }
+}
