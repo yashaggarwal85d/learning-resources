@@ -1,0 +1,5 @@
+- **`spawn_blocking`**: runs a closure on a thread dedicated to blocking operations, off the cooperative worker pool entirely. *Where you meet it:* the real fix for a genuinely blocking call.
+- **Blocking pool**: a separate, dynamically-sized set of real threads, distinct from the worker pool. *Where you meet it:* why the identical blocking call stops stalling anything once moved there.
+- **`block_in_place`**: tells the executor the current task is about to block, so it hands other tasks to a new worker first. *Where you meet it:* a narrower, different promise than `spawn_blocking`.
+- **`rayon`**: a specialized executor for CPU-bound work. *Where you meet it:* the named alternative when the blocking pool isn't the right fit.
+- **Thread-per-core runtime**: pins one worker per core, with no cross-core work stealing at all. *Where you meet it:* `glommio`, `monoio`, `compio` — a different design, not a defect.
