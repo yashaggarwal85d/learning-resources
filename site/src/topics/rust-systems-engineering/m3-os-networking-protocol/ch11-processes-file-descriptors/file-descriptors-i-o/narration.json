@@ -1,0 +1,88 @@
+{
+  "steps": [
+    {
+      "lines": [
+        "Duplicate a file descriptor with a real system call, then read from the original and then from the duplicate.",
+        { "beat": 0.3 },
+        "Does the duplicate start reading from the beginning of the file, or from wherever the original left off?"
+      ],
+      "answer": [
+        "It continues from exactly where the original stopped.",
+        "Both descriptors point at the same open file description underneath, and that description is where the real offset actually lives."
+      ]
+    },
+    {
+      "lines": [
+        "Run it for real: the original descriptor reads the first half of the file, and the duplicate reads exactly the second half.",
+        "Continuing from the shared offset, never restarting from the beginning."
+      ]
+    },
+    {
+      "lines": [
+        "Drop an owned file descriptor, and a moment later try a raw system call on that exact same descriptor number.",
+        { "beat": 0.3 },
+        "What happens?"
+      ],
+      "answer": [
+        "It fails outright. The descriptor is genuinely gone.",
+        "That's the entire point of an owned descriptor: dropping it closes the real resource underneath, not just a number."
+      ]
+    },
+    {
+      "lines": [
+        "Run it for real: after the owned descriptor was dropped, a raw call on its number failed outright, exactly as it should.",
+        "And a borrowed descriptor, taken from a completely different file that was never dropped, stayed valid the entire time."
+      ],
+      "takeaway": "Dropping an owned file descriptor genuinely closes it — a raw call on that number afterward fails outright."
+    },
+    {
+      "lines": [
+        "Open the same file twice — once the normal way, once with its close-on-exec flag explicitly cleared — then fork and exec a genuinely real child process.",
+        { "beat": 0.3 },
+        "Which file descriptor is still open inside that child?"
+      ],
+      "answer": [
+        "Only the one with close-on-exec explicitly cleared.",
+        "The normally-opened one was never going to survive into the child in the first place."
+      ]
+    },
+    {
+      "lines": [
+        "Run it for real: the normally-opened descriptor never appeared inside the real forked and exec'd child at all.",
+        "The one with close-on-exec explicitly cleared leaked straight into it, exactly as cleared."
+      ],
+      "takeaway": "A file descriptor closes on exec by default — that genuinely stops it leaking into a forked child."
+    },
+    {
+      "lines": [
+        "So step back: why does any of this matter for a real, long-running service?",
+        { "beat": 0.3 },
+        "Can it just keep opening file descriptors, forever?"
+      ],
+      "answer": [
+        "No — a real kernel limit genuinely caps how many it may hold open at once.",
+        "Every descriptor counts against that same ceiling, whether it was duplicated, leaked, or opened the ordinary way."
+      ]
+    },
+    {
+      "lines": [
+        "That real ceiling is defined as one more than the highest file descriptor number a process is ever allowed to have open.",
+        "Try to open past it, and the attempt fails outright — not eventually, not gracefully. Outright."
+      ]
+    },
+    {
+      "lines": [
+        "So, pulling this together: every one of these behaviors exists for the same reason.",
+        "A file descriptor is a handle into a kernel resource, never the resource itself — so duplicating it, closing it, and leaking it are each their own, completely separate event."
+      ],
+      "takeaway": "A file descriptor is a handle, not the resource itself — closing or leaking it are separate, real events."
+    },
+    {
+      "lines": [
+        "So, pulling this topic together: duplicating a descriptor never gives it its own offset — the two stay tied to one real position, together.",
+        "Dropping an owned descriptor closes the real resource underneath, something a mere borrow is never able to do.",
+        "And whether a descriptor survives into a forked child comes down to one flag, set by default for exactly this reason."
+      ]
+    }
+  ]
+}

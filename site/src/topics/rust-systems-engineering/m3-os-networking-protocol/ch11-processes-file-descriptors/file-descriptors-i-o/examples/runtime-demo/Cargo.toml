@@ -1,0 +1,19 @@
+[package]
+name = "runtime-demo"
+version = "0.1.0"
+edition = "2024"
+
+[[bin]]
+name = "dup_shares_the_same_offset"
+path = "src/dup_shares_the_same_offset.rs"
+
+[[bin]]
+name = "owned_fd_closes_on_drop"
+path = "src/owned_fd_closes_on_drop.rs"
+
+[[bin]]
+name = "cloexec_default_blocks_the_leak"
+path = "src/cloexec_default_blocks_the_leak.rs"
+
+[dependencies]
+libc = "0.2"
