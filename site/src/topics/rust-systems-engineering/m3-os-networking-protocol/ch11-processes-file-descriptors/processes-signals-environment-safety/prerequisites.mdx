@@ -1,0 +1,25 @@
+import Resource from '../../../../../components/Resource.astro';
+
+<section class="prereq" data-section="chapter-so-far">
+
+### <span class="n">01</span> Where the last topic left off
+
+<ul class="resources">
+  <Resource kind="reel" host={props.host} domain="rust-systems-engineering" title="File descriptors and I/O safety">A file descriptor is a handle, not the resource itself — closing or leaking it are separate, real events.</Resource>
+</ul>
+
+</section>
+
+<section class="prereq" data-section="process-primary">
+
+### <span class="n">02</span> The real docs: processes, signals, pidfds, and the environment
+
+<ul class="resources">
+  <Resource kind="reading" title="std::process::Command" href="https://doc.rust-lang.org/std/process/struct.Command.html" by="The Rust Project">The process builder's own documented behavior.</Resource>
+  <Resource kind="reading" title="fork(2)" href="https://man7.org/linux/man-pages/man2/fork.2.html" by="The Linux man-pages Project">The single-thread guarantee, in the kernel's own words.</Resource>
+  <Resource kind="reading" title="signal-safety(7)" href="https://man7.org/linux/man-pages/man7/signal-safety.7.html" by="The Linux man-pages Project">What async-signal-safe actually means.</Resource>
+  <Resource kind="reading" title="pidfd_send_signal(2)" href="https://man7.org/linux/man-pages/man2/pidfd_send_signal.2.html" by="The Linux man-pages Project">The exact PID-reuse race a pidfd avoids.</Resource>
+  <Resource kind="reading" title="std::env::set_var" href="https://doc.rust-lang.org/std/env/fn.set_var.html" by="The Rust Project">The function's own documented safety contract.</Resource>
+</ul>
+
+</section>
