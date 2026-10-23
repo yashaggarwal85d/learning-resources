@@ -1,0 +1,88 @@
+{
+  "steps": [
+    {
+      "lines": [
+        "A worker pool signals shutdown with a token, and then one more job gets submitted, right after that signal.",
+        { "beat": 0.3 },
+        "Does that job still get accepted?"
+      ],
+      "answer": [
+        "No — it's rejected outright, immediately.",
+        "A cancelled token isn't a note that gets read eventually. It's a hard stop, checked on the spot."
+      ]
+    },
+    {
+      "lines": [
+        "Run it for real: a handful of jobs land before the signal, and every single submission after it is rejected outright.",
+        "Nothing already accepted is touched. The line is drawn at the exact moment the token is cancelled, not before and not after."
+      ]
+    },
+    {
+      "lines": [
+        "Now close a task tracker holding several jobs still in flight, and call wait on it right away.",
+        { "beat": 0.3 },
+        "Does that return as soon as the tracker is closed, or does it actually wait for the jobs themselves?"
+      ],
+      "answer": [
+        "It waits for every one of them.",
+        "Closing a tracker only stops new jobs from being added to it. It says nothing about the jobs already inside."
+      ]
+    },
+    {
+      "lines": [
+        "Run it for real: wait doesn't return until every accepted job has genuinely finished running, measured directly from the close to the moment it comes back.",
+        "That's a real wait for real completion, not a signal that completion is merely expected."
+      ],
+      "takeaway": "A TaskTracker's wait() returns only once every tracked job has actually finished, not merely stopped."
+    },
+    {
+      "lines": [
+        "Wrap that same wait in a real deadline, with one job deliberately running far longer than it.",
+        { "beat": 0.3 },
+        "Does the shutdown hang until that job finishes, or does it stop on time?"
+      ],
+      "answer": [
+        "It stops on time.",
+        "A deadline that doesn't actually end the wait isn't a deadline at all — it's a suggestion."
+      ]
+    },
+    {
+      "lines": [
+        "Run it for real: the wait genuinely stops right at its stated deadline, while the straggler, still unfinished, is simply left behind.",
+        "Not waited for a moment longer, and not abandoned a moment early either."
+      ],
+      "takeaway": "A shutdown's own wait respects a real deadline — it stops on time, even if a straggler hasn't finished."
+    },
+    {
+      "lines": [
+        "Step back and ask what real-world signal this entire sequence actually exists to answer, in time.",
+        { "beat": 0.3 },
+        "Is it an unhandled crash, or something more deliberate?"
+      ],
+      "answer": [
+        "A deliberate shutdown request, with a real, limited amount of time to respond.",
+        "That's exactly what a termination signal and a grace period are, on a real process, on a real clock."
+      ]
+    },
+    {
+      "lines": [
+        "So here's the full sequence this chapter has now assembled: stop accepting, signal, drain or cancel, close, wait.",
+        "Five stages, each one already measured directly, now placed in the order a real shutdown actually runs them."
+      ]
+    },
+    {
+      "lines": [
+        "And every stage of that sequence just used a mechanism this chapter had already proven on its own.",
+        "Stop accepting is the token. Drain or cancel is cancel safety. Wait, against a deadline, is the tracker, timed."
+      ],
+      "takeaway": "Graceful shutdown isn't a new mechanism — it's three already-proven ones, assembled into one sequence."
+    },
+    {
+      "lines": [
+        "So, pulling this topic together: a cancelled token draws a hard line, the instant it's checked, not sometime after.",
+        "A tracker's own wait only ever reports real completion, never merely that a stop was requested.",
+        "And a stated limit holds exactly where it's set, letting go of whatever hasn't finished by then."
+      ]
+    }
+  ]
+}
