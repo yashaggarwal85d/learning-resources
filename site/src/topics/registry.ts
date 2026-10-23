@@ -2506,4 +2506,24 @@ export const TOPICS: TopicMeta[] = [
     handoff:
       "Every model, test and incremental strategy in this chapter was still written and run by a person, by hand, in SQL and Jinja. Next chapter starts from the language every one of these pipelines is actually glued together in — Python — and where its own costs hide.",
   },
+  {
+    id: 'de.cpython-object-model-memory',
+    domain: 'data-engineering',
+    slug: 'data-engineering/m1-foundations/ch04-advanced-python-data/cpython-object-model-memory',
+    title: 'CPython object model and memory cost',
+    syllabusTitle: 'CPython object model and memory cost',
+    kind: 'full',
+    status: 'held',
+    milestone: { number: 1, title: 'Foundations' },
+    chapter: { number: 4, title: 'Advanced Python for Data Systems', section: '4.1' },
+    minutes: 15,
+    verified: '2026-10-23',
+    introduces: ['cpython-object-model', 'specializing-interpreter-jit'],
+    uses: [],
+    declared: ['basic-python-syntax'],
+    bridge:
+      "Every chapter so far modeled, queried and governed data from outside the language that actually glues almost all of it together: Python. This topic starts exactly where that language's own cost lives — inside a single Python object.",
+    handoff:
+      "A boxed Python object's overhead is the per-item cost; the next question is what actually stops more than one CPU core from paying that cost in parallel at once — the GIL, and every real way around it.",
+  },
 ];

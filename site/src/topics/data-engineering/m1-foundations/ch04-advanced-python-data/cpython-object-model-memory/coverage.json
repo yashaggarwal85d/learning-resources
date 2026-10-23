@@ -1,0 +1,132 @@
+{
+  "topic": "de.cpython-object-model-memory",
+  "syllabus": [
+    {
+      "clause": "PyObject headers and refcounts, boxed ints and floats, lists of pointers vs contiguous buffers, __slots__",
+      "at": [
+        { "step": "Reveal: the PyObject header, quoted directly" },
+        { "step": "Reveal: the lab — boxed vs. packed, measured for real" },
+        { "step": "Reveal: the lab — __slots__, measured for real" }
+      ]
+    },
+    {
+      "clause": "why per-row Python loops run 10–100× slower than columnar kernels",
+      "at": [
+        { "step": "Reveal: the lab — the vectorized call is still far ahead" }
+      ]
+    },
+    {
+      "clause": "what the specializing interpreter (3.11+) and experimental JIT (3.13+) do and do not fix.",
+      "at": [
+        { "step": "Reveal: the lab — the interpreter disassembled, cold and then warm" },
+        { "step": "Reveal: what specialization buys, quoted directly" },
+        { "step": "Reveal: the experimental JIT, quoted directly — this sandbox doesn't have it" },
+        { "step": "Reveal: the lab — the vectorized call is still far ahead" }
+      ]
+    }
+  ],
+  "sources": [
+    {
+      "source": "Python/C API Reference, \"Common Object Structures\"",
+      "items": [
+        {
+          "item": "A PyObject in a normal release build contains only a reference count and a type pointer",
+          "at": [{ "step": "Reveal: the PyObject header, quoted directly" }]
+        },
+        {
+          "item": "ob_refcnt is the object's reference count, read via Py_REFCNT",
+          "at": [{ "step": "Reveal: the PyObject header, quoted directly" }]
+        },
+        {
+          "item": "ob_type is the object's type, read via Py_TYPE",
+          "at": [{ "step": "Reveal: the PyObject header, quoted directly" }]
+        },
+        {
+          "item": "A free-threaded build adds a per-object lock (ob_mutex) to the header",
+          "at": [{ "step": "Reveal: the experimental JIT, quoted directly — this sandbox doesn't have it" }]
+        }
+      ]
+    },
+    {
+      "source": "PEP 659, \"Specializing Adaptive Interpreter\"",
+      "items": [
+        {
+          "item": "A specializing, adaptive interpreter speculatively specializes on observed types and adapts when they change",
+          "at": [{ "step": "Reveal: what specialization buys, quoted directly" }]
+        },
+        {
+          "item": "Adaptation limits the extra work caused by a mis-specialization",
+          "at": [{ "step": "Prove it" }]
+        },
+        {
+          "item": "Extensive experimentation suggests speedups of up to 50% from specialization",
+          "at": [{ "step": "Reveal: what specialization buys, quoted directly" }]
+        }
+      ]
+    },
+    {
+      "source": "Python 3.13 Release Notes, \"What's New In Python 3.13\"",
+      "items": [
+        {
+          "item": "The experimental JIT requires building with --enable-experimental-jit; it is not on by default",
+          "at": [{ "step": "Reveal: the experimental JIT, quoted directly — this sandbox doesn't have it" }]
+        },
+        {
+          "item": "Hot Tier 1 (specialized) bytecode is promoted to a Tier 2 IR, then to machine code via copy-and-patch",
+          "at": [{ "step": "Reveal: the experimental JIT, quoted directly — this sandbox doesn't have it" }]
+        }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "Claude (single session, written from the syllabus line and the fetched sources before storyboarding; not independent of the builder, so a later owner review should repeat it)",
+    "date": "2026-10-23",
+    "items": [
+      {
+        "item": "The boxed-vs-packed ratio (about four and a half times on a representative run) is measured directly on this sandbox's own CPython via sys.getsizeof, deduplicated by object id to avoid double-counting CPython's own small-int cache, not taken from a textbook figure",
+        "at": [{ "step": "Reveal: the lab — boxed vs. packed, measured for real" }]
+      },
+      {
+        "item": "The __slots__ measurement confirms directly (via hasattr) that the slotted instance has no __dict__ attribute at all, not merely a smaller one, which is the actual mechanism behind the memory saving rather than just its side effect",
+        "at": [{ "step": "Reveal: the lab — __slots__, measured for real" }]
+      },
+      {
+        "item": "The specializing interpreter's real effect is shown by disassembling the identical function before any call and after warm-up with two different argument types, rather than asserting PEP 659's claim secondhand",
+        "at": [{ "step": "Reveal: the lab — the interpreter disassembled, cold and then warm" }]
+      },
+      {
+        "item": "This sandbox's CPython build is checked directly for the experimental JIT (sys._jit absent) and free-threading (Py_GIL_DISABLED is 0) rather than assumed from the version number, so every claim about either feature's own effect is disclosed as sourced-only rather than locally measured",
+        "at": [{ "step": "Reveal: the experimental JIT, quoted directly — this sandbox doesn't have it" }]
+      },
+      {
+        "item": "The loop-vs-vectorized comparison warms up the vectorized call once before timing it, and discloses its own first-call overhead as a separate, honest number, so the headline speedup isn't inflated by one-time compilation cost",
+        "at": [{ "step": "Reveal: the lab — the vectorized call is still far ahead" }]
+      },
+      {
+        "item": "The measured speedup (repeatedly in the tens-of-times range) is checked against the syllabus's own stated ten-to-one-hundred-times range rather than asserted to match any single textbook number exactly",
+        "at": [{ "step": "Reveal: the lab — the vectorized call is still far ahead" }]
+      },
+      {
+        "item": "The takeaway that specialization and the JIT speed up interpreter dispatch without removing boxing cost is drawn from combining two separately measured results (the boxed/packed ratio and the loop/vectorized speedup) rather than asserted as a single fact from one source",
+        "at": [{ "step": "Reveal: the lab — the vectorized call is still far ahead" }]
+      },
+      {
+        "item": "The closing Prove-It scenario (mixed int/float calls) is a genuinely new measurement, not a restatement of the specialization reveal: it measures the real cost of re-adaptation under a type mix the earlier steps didn't test",
+        "at": [{ "step": "Prove it" }]
+      },
+      {
+        "item": "PEP 659's own fifty-percent speedup estimate is disclosed explicitly as the PEP's own pre-implementation estimate for the interpreter generally, not re-measured or re-asserted as this topic's own number, since this topic's own lab measures a different, specific comparison instead",
+        "at": [{ "step": "Reveal: what specialization buys, quoted directly" }]
+      },
+      {
+        "item": "The bridge from topic 25 (incremental models and snapshots in dbt, the last topic of Chapter 3) and the handoff to topic 27 (GIL, free-threading and subinterpreters) are both taken verbatim from CHAPTER.md's own entry for this topic and checked against this topic's own content before use",
+        "at": [{ "step": "A per-row loop looks innocent — what is each number actually carrying?" }]
+      },
+      {
+        "item": "The buffer-protocol and serialization-cost syllabus entries immediately next to this topic's own bullet are both marked (skipped) in the syllabus and are correctly left out of this topic's own scope rather than silently folded in",
+        "at": [{ "step": "Recap" }]
+      }
+    ]
+  },
+  "gapReview": { "date": "2026-10-23", "by": "Claude (single session)", "open": [] }
+}

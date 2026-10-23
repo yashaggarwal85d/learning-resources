@@ -1,0 +1,90 @@
+{
+  "topic": "de.cpython-object-model-memory",
+  "steps": [
+    {
+      "lines": [
+        "Put the exact same arithmetic through two different paths and one of them finishes dramatically sooner.",
+        "Nothing about the math changed. What changed is what each individual number was carrying along with it the whole way through."
+      ]
+    },
+    {
+      "lines": [
+        "Here's the tool's own answer to that, stated directly.",
+        "A reference count, and a pointer to the value's own type. Every object pays for both of those before a single byte of its actual value even exists."
+      ]
+    },
+    {
+      "lines": [
+        "Here's a question worth guessing at before the reveal.",
+        "A million plain integers, sitting in a list, compared against those exact same values packed into a plain buffer with none of that per-object bookkeeping. Roughly the same footprint, or something much bigger?"
+      ],
+      "answer": [
+        "Much bigger — every one of those integers is still paying for its own header and reference count.",
+        "The list itself only holds pointers. Each integer behind those pointers is a full, separate object, and none of that overhead exists in the packed version at all."
+      ]
+    },
+    {
+      "lines": [
+        "Here's that exact comparison, counted byte by byte on this machine's own interpreter.",
+        "Not estimated, not quoted from somewhere else — counted directly, deduplicating the handful of small integers this interpreter already keeps cached so they don't get counted twice."
+      ]
+    },
+    {
+      "lines": [
+        "Here's the same idea, but for a whole object instead of one number.",
+        "An ordinary object quietly carries its own private dictionary for its attributes. Declare it with a fixed set of named slots instead, and that dictionary doesn't shrink — it disappears outright, confirmed directly rather than assumed."
+      ]
+    },
+    {
+      "lines": [
+        "Here's a genuinely open question about how the interpreter itself behaves.",
+        "Python stays dynamically typed the whole time it runs. Does that mean the exact same instruction executes every single time a given line runs, no matter what type shows up — or does the interpreter actually rewrite itself?"
+      ],
+      "answer": [
+        "It rewrites itself. The instruction adapts to whatever type it actually keeps seeing.",
+        "Run the same tiny function cold and its instruction is generic. Call it over and over with one consistent type, and that instruction quietly becomes specific to exactly that type."
+      ]
+    },
+    {
+      "lines": [
+        "Here's that rewriting, made completely real by disassembling the same function twice.",
+        "Before a single call, a generic instruction. After enough calls with one consistent type, an instruction specific to that exact type — and a second copy of the same function, warmed up with a different type, specializes to that one instead."
+      ]
+    },
+    {
+      "lines": [
+        "Here's why the interpreter is built this way, in its own words.",
+        "It guesses ahead of time which type a piece of code is about to see, and quietly changes that guess again the moment the pattern actually shifts — keeping the cost of a wrong guess as small as it can."
+      ]
+    },
+    {
+      "lines": [
+        "Here's a compiler that goes even further than rewriting instructions — and a direct check for whether this machine actually has it.",
+        "Past a certain point, genuinely hot code can be turned into real machine code rather than just a faster instruction. That only happens in a build specifically configured for it, and this machine's own interpreter was checked directly and isn't one."
+      ]
+    },
+    {
+      "lines": [
+        "Here's where all of that still falls short of the vectorized path from the very first comparison.",
+        "Every trick in this topic so far makes the interpreter's own loop faster. None of it removes the per-object overhead measured earlier — and that overhead is most of why the vectorized call is still measured well ahead of all of it."
+      ]
+    },
+    {
+      "lines": [
+        "Let's put the whole picture back together.",
+        "Every plain value pays for its own header, whether it needs one or not. The interpreter adapts to whatever types it actually sees, and that adapting itself costs something real.",
+        "Neither of those tricks removes the one cost a vectorized call was built to skip from the very start."
+      ]
+    },
+    {
+      "lines": [
+        "One closing scenario worth actually measuring rather than guessing at.",
+        "The same function, called millions of times, but fed a genuine mix of two different types instead of one consistent type throughout. Does the earlier specialization still help here, or does mixing the types undo it?"
+      ],
+      "answer": [
+        "It still helps — just measurably less than it did with one consistent type.",
+        "The interpreter keeps switching its guess back and forth as the type keeps changing, and that repeated switching is exactly the extra cost its own adaptive design was built to keep small — small, never nothing."
+      ]
+    }
+  ]
+}
