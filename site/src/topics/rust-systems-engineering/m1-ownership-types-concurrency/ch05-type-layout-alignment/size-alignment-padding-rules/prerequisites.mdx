@@ -1,0 +1,22 @@
+import Resource from '../../../../../components/Resource.astro';
+
+<section class="prereq" data-section="chapter-so-far">
+
+### <span class="n">01</span> What the last chapter never asked
+
+<ul class="resources">
+  <Resource kind="reel" host={props.host} domain="rust-systems-engineering" title="Arc<Mutex<T>> as hidden serialization">Every guarantee the previous chapter made was about who owns a value and who may mutate it, never about the value's own bytes. This topic opens the question the ownership chapters quietly assumed an answer to.</Resource>
+</ul>
+
+</section>
+
+<section class="prereq" data-section="layout-reference">
+
+### <span class="n">02</span> The Reference's own chapter on layout
+
+<ul class="resources">
+  <Resource kind="reading" title="Type layout" href="https://doc.rust-lang.org/reference/type-layout.html" by="The Rust Team">What repr(Rust) actually guarantees (very little) versus repr(C) (a real, fixed contract).</Resource>
+  <Resource kind="reading" title="offset_of in std::mem" href="https://doc.rust-lang.org/std/mem/macro.offset_of.html" by="The Rust Team">Why an offset is stable within one build but not guaranteed across two separate compilations.</Resource>
+</ul>
+
+</section>

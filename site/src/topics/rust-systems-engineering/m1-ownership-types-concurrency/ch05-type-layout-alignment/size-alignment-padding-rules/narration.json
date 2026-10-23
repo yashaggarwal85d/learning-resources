@@ -1,0 +1,62 @@
+{
+  "topic": "rust.size-alignment-padding-rules",
+  "note": "Written to be spoken: one sentence or phrase per line; {\"beat\": s} is a deliberate pause; numbers and codes are said the way a person would say them, never shown as digits. `answer` plays after the learner answers a predict step.",
+  "steps": [
+    {
+      "lines": [
+        "Write the same four fields in reverse order, and ask the compiler to lay both versions out in memory.",
+        "Both come back with the exact same size, because nothing you wrote actually chose the order those bytes end up in. The compiler did."
+      ]
+    },
+    {
+      "lines": [
+        "That freedom just looked harmless, since the compiler happened to find the smallest layout either way you wrote it.",
+        { "beat": 0.3 },
+        "Does reordering a struct's fields ever genuinely cost real bytes, rather than just looking different on the page?"
+      ],
+      "answer": [
+        "Yes, the moment something stops the compiler from choosing the order itself, and pins it to the order you actually wrote.",
+        "Only then does your choice of order start mattering, because now nothing is quietly fixing a bad arrangement behind your back."
+      ]
+    },
+    {
+      "lines": [
+        "Fix the field order to exactly what's written, and watch the same four fields cost noticeably more bytes in one order than the other.",
+        "Picture it as a row of byte-sized boxes. One short field followed by a wide one forces empty, unused boxes in between, just to keep that wide field starting on a clean boundary.",
+        "Move the short fields next to each other instead, and those empty boxes never need to exist at all."
+      ]
+    },
+    {
+      "lines": [
+        "Ask the compiler directly where each field actually starts, instead of guessing from the source, and it hands back a real number, computed once, at build time.",
+        "Then write down a claim about that number and let the compiler check its own claim before the program is even allowed to exist.",
+        "A comment saying where a field sits can go stale the next time someone edits the struct. This cannot, because it's the build checking itself, not a sentence trusting itself."
+      ]
+    },
+    {
+      "lines": [
+        "Write that same kind of claim again, except this time, make it flatly wrong.",
+        { "beat": 0.3 },
+        "What happens when a claim like that gets built?"
+      ],
+      "answer": [
+        "The build simply refuses. Checking that claim is something the compiler does for itself, while it's still compiling, not something that waits around to be proven wrong while the program runs.",
+        "So a false layout claim never ships a program at all. It stops the build cold, every single time."
+      ]
+    },
+    {
+      "lines": [
+        "Take one struct, compile it twice, and deliberately tell the compiler to shuffle its fields differently each time, just to prove the point that it's allowed to.",
+        "The two results genuinely differ: different field positions, even a different total size, from the identical source, built by the identical compiler.",
+        "Nothing broke. That's precisely the point of doing this on purpose: catching any code that quietly assumed one particular arrangement would always hold."
+      ]
+    },
+    {
+      "lines": [
+        "A value's size is always a whole multiple of its alignment, full stop.",
+        "Leave the compiler free to choose the order, and it will, today, tomorrow, and differently again if you ask it to prove that on purpose.",
+        "Pin that order down instead, and check it with a real, computed offset and a claim the build verifies for itself, rather than one anybody merely assumed."
+      ]
+    }
+  ]
+}

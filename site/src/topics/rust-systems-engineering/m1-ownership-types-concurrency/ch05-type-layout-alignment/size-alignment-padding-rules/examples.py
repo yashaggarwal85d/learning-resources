@@ -49,9 +49,12 @@ print(f'repr_rust_reorders.rs: declaring the same four fields in reverse order s
 
 # ---- 2. repr(C) fixes layout to source order, so the same two orderings now really do differ. ----
 out = compile_and_run('repr_c_field_order_matters')
-size_good, size_bad = (int(x) for x in out.split())
+(size_good, size_bad, good_version, good_flags, good_length, good_seq,
+ bad_version, bad_length, bad_flags, bad_seq) = (int(x) for x in out.split())
 assert size_bad > size_good, f'expected a worse field order under repr(C) to cost more padding (good={size_good}, bad={size_bad})'
-print(f'repr_c_field_order_matters.rs: under repr(C), the same four fields cost {size_good} bytes in one order and {size_bad} bytes in another — field order is now load-bearing')
+assert (good_version, good_flags, good_length, good_seq) == (0, 1, 2, 4), out
+assert (bad_version, bad_length, bad_flags, bad_seq) == (0, 2, 4, 8), out
+print(f'repr_c_field_order_matters.rs: under repr(C), the same four fields cost {size_good} bytes (offsets {good_version}/{good_flags}/{good_length}/{good_seq}) in one order and {size_bad} bytes (offsets {bad_version}/{bad_length}/{bad_flags}/{bad_seq}) in another — field order is now load-bearing')
 
 # ---- 3. offset_of! and a compile-time assertion make a layout claim checkable, not assumed. ----
 out = compile_and_run('offsets_checked')

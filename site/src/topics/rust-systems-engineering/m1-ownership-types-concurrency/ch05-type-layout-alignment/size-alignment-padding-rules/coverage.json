@@ -1,0 +1,55 @@
+{
+  "topic": "rust.size-alignment-padding-rules",
+  "syllabus": [
+    { "clause": "size is a multiple of alignment, and padding depends on field order.", "at": [{ "step": "Same four fields, two orders — one repr(Rust) layout" }, { "step": "repr(C): the same reorder, now it costs four bytes" }] },
+    { "clause": "repr(Rust) layout is chosen by the compiler and unstable (fields get reordered; -Z randomize-layout exposes code that assumes otherwise).", "at": [{ "step": "Same four fields, two orders — one repr(Rust) layout" }, { "step": "-Z randomize-layout: the same struct, shuffled on purpose" }] },
+    { "clause": "Verify with size_of/align_of/offset_of! and compile-time assertions; never assume.", "at": [{ "step": "offset_of! and a compile-time assertion make the claim checkable" }, { "step": "What happens when the claim is wrong?" }] }
+  ],
+  "sources": [
+    {
+      "source": "reference-type-layout",
+      "items": [
+        { "item": "A value's alignment must be at least 1 and always a power of 2", "at": [{ "step": "Same four fields, two orders — one repr(Rust) layout" }] },
+        { "item": "A value's size is always a multiple of its alignment", "at": [{ "step": "Same four fields, two orders — one repr(Rust) layout" }] },
+        { "item": "repr(Rust) is the default representation, and explicit repr(Rust) equals no attribute at all", "at": [{ "step": "Same four fields, two orders — one repr(Rust) layout" }] },
+        { "item": "repr(Rust)'s only soundness guarantees are a field's offset divisible by its own alignment, and the type's alignment at least the max field alignment", "at": [{ "deep": "Internals" }] },
+        { "item": "Type layout can change with each compilation; only what is guaranteed today is documented", "at": [{ "step": "-Z randomize-layout: the same struct, shuffled on purpose" }] },
+        { "item": "repr changes the padding between fields, never the layout of the fields themselves", "at": [{ "step": "repr(C): the same reorder, now it costs four bytes" }] }
+      ]
+    },
+    {
+      "source": "std-mem-offset-of",
+      "items": [
+        { "item": "offset_of! expands to the offset in bytes of a field from the beginning of its type", "at": [{ "step": "offset_of! and a compile-time assertion make the claim checkable" }] },
+        { "item": "offset_of! was stabilized in 1.77.0", "at": [{ "out": "a version-history fact noted in SOURCES.md, not itself a teaching point the reel needs a dedicated beat for" }] },
+        { "item": "An offset is stable within one program's run but two separate compilations of the same program may produce different layouts", "at": [{ "step": "-Z randomize-layout: the same struct, shuffled on purpose" }] }
+      ]
+    },
+    {
+      "source": "unstable-randomize-layout",
+      "items": [
+        { "item": "-Z randomize-layout pseudorandomly rearranges repr(Rust) fields, also changing size and padding", "at": [{ "step": "-Z randomize-layout: the same struct, shuffled on purpose" }] },
+        { "item": "Its purpose is finding unsafe code that accidentally relies on unspecified layout behaviour", "at": [{ "step": "-Z randomize-layout: the same struct, shuffled on purpose" }] },
+        { "item": "Randomization is not guaranteed to differ per compilation session without an explicit -Z layout-seed", "at": [{ "deep": "Internals" }] }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "self-review",
+    "date": "2026-10-23",
+    "items": [
+      { "item": "repr(Rust)'s freedom to reorder fields is not a courtesy; the Reference explicitly declines to document the algorithm and reserves the right to change it between compiler versions, so any code that infers a field's position from its declared order, without checking, is relying on something the language never promised", "at": [{ "step": "Same four fields, two orders — one repr(Rust) layout" }] },
+      { "item": "The two source orders in step 1 happen to produce the same layout because the compiler's current heuristic (roughly: place larger-alignment fields first) already finds a minimal arrangement for this particular set of fields; a different set of field sizes could legitimately need a different one of the two orders to reach the same minimum", "at": [{ "step": "Same four fields, two orders — one repr(Rust) layout" }] },
+      { "item": "repr(C)'s fixed field order is exactly what makes it suitable for FFI and wire formats: a C compiler on the same platform lays the same field order out the same way, so repr(C) is the contract both sides can rely on, which repr(Rust) explicitly is not", "at": [{ "step": "repr(C): the same reorder, now it costs four bytes" }] },
+      { "item": "The padding repr(C)'s Bad ordering inserts is not wasted by the compiler's choice; it is required by alignment itself — length (u16) can only start on an even address, and seq (u32) only on a four-byte boundary, so the padding is the minimum the alignment rules force once the order is fixed", "at": [{ "step": "repr(C): the same reorder, now it costs four bytes" }] },
+      { "item": "offset_of! is resolved entirely at compile time and costs nothing at run time; it is syntactic sugar for a computation the compiler already has to do to lay the type out, exposed so a program (or a const assertion) can read it back", "at": [{ "step": "offset_of! and a compile-time assertion make the claim checkable" }] },
+      { "item": "A const-context assert! is not the same mechanism as a run-time assert!: it is evaluated during the compiler's own constant-evaluation pass, which is why a false claim becomes error[E0080] at build time rather than a panic that only fires if that code path happens to execute", "at": [{ "step": "What happens when the claim is wrong?" }] },
+      { "item": "This topic's -Z randomize-layout demonstration needed a struct with eight fields, not the four-field header used elsewhere; a type with too few fields has too few valid orderings for alignment to allow, so the randomizer can end up picking the same one anyway, which would have looked like randomization not working rather than randomization having little room to use", "at": [{ "step": "-Z randomize-layout: the same struct, shuffled on purpose" }] },
+      { "item": "The Unstable Book's own text is explicit that randomization isn't guaranteed to differ per compilation without -Z layout-seed providing extra entropy; this topic's examples.py therefore asserts on two different, fixed seeds rather than relying on two unseeded runs happening to differ", "at": [{ "deep": "Internals" }] },
+      { "item": "-Z randomize-layout is still gated behind nightly years after its tracking issue opened, which is itself informative: the Rust project has not judged the default layout algorithm stable or safe enough to randomize by default on stable, even though the whole point of the flag is to catch code that already shouldn't be relying on any one layout", "at": [{ "deep": "The frontier" }] },
+      { "item": "Everything this topic measured is about one value's own layout, standing still; it says nothing yet about whether that layout is safe to read back from a byte buffer that came from somewhere else, where the padding bytes this topic showed are very much real and may never have been written at all", "at": [{ "step": "Recap: layout is the compiler’s choice, until you fix it" }] },
+      { "item": "The chapter's own lab asks for a niche optimization example (Option<T> shrinking to T's own size when T has a spare bit pattern to use as None); that is deliberately out of scope for this topic's reel, since the syllabus marks repr attributes and niche optimization (skipped), and is covered only briefly in the Lab section of the Deep dive as a coda, not as a reel step", "at": [{ "deep": "Lab" }] }
+    ]
+  },
+  "gapReview": { "date": "2026-10-23", "by": "self-review", "open": [] }
+}
