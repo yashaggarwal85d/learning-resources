@@ -1,0 +1,48 @@
+{
+  "topic": "dsa.resizing-incremental-rehashing",
+  "syllabus": [
+    { "clause": "doubling with amortized cost vs incremental migration across two tables (Redis dict) to bound per-operation latency", "at": [{ "step": "Doubling pays for the whole rehash in one insert, proportional to the table's current size." }, { "step": "Redis's own dict keeps both the old and new table live, and migrates entries a few at a time instead of all at once." }, { "step": "Incremental migration's bound caps every single operation's cost, no matter how large the table." }] },
+    { "clause": "hash tables under memory pressure", "at": [{ "step": "Incremental migration keeps both tables live for many operations, not one — a real, sustained memory cost for a smoother latency." }] }
+  ],
+  "sources": [
+    {
+      "source": "Redis, dict.c (redis/redis, unstable branch)",
+      "items": [
+        { "item": "A second hash table is prepared for incremental rehashing; both tables stay live during migration", "at": [{ "step": "Redis's own dict keeps both the old and new table live, and migrates entries a few at a time instead of all at once." }] },
+        { "item": "A rehashing step moves a bounded number of buckets, and caps how many empty buckets it will scan, so no single operation blocks unboundedly", "at": [{ "step": "Incremental migration's bound caps every single operation's cost, no matter how large the table." }] },
+        { "item": "Migration is called from inside ordinary lookup/update operations, not a background thread", "at": [{ "step": "Who actually moves those keys from the old table to the new one?" }] },
+        { "item": "The hash table's capacity grows as a power of two, the same growth shape as a doubling dynamic array", "at": [{ "deep": "Into the internals" }] }
+      ]
+    },
+    {
+      "source": "Redis, dict.h (redis/redis, unstable branch)",
+      "items": [
+        { "item": "A named minimum-fill threshold (1/8, 12.5%) below which the table is willing to shrink", "at": [{ "deep": "The frontier" }] }
+      ]
+    },
+    {
+      "source": "This curriculum's own aggregate-method proof (Ch.1/Ch.2), cited not re-derived",
+      "items": [
+        { "item": "Doubling gives O(1) amortized cost per insert by the aggregate method — the same argument already proved for a growable array, now applied to rehashing", "at": [{ "step": "Doubling pays for the whole rehash in one insert, proportional to the table's current size." }] }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "blind self-review, research stage",
+    "date": "2026-10-23",
+    "items": [
+      { "item": "Every collision scheme built in this chapter so far assumed the table already had room; this topic is the one all three previous topics quietly deferred — what happens when it doesn't.", "at": [{ "step": "Every scheme in this chapter has worked inside a table of fixed size. None of them has said what happens when that table fills up." }] },
+      { "item": "Doubling's amortized O(1) cost per insert is the same aggregate-method argument already proved for a growable array's reallocation, now applied to rehashing (a genuinely different cost than copying, since every key's slot can change) instead of copying.", "at": [{ "step": "Doubling pays for the whole rehash in one insert, proportional to the table's current size." }] },
+      { "item": "Averaged over many inserts, doubling is cheap — but the one insert that actually triggers the rehash is not; its cost scales with the table's current size, not a constant.", "at": [{ "step": "That one insert — how does its cost compare to an ordinary insert right next to it?" }] },
+      { "item": "Redis's own dict answers the same question differently: keep the old and new table both live, and migrate entries gradually instead of pausing to move them all at once.", "at": [{ "step": "Redis's own dict keeps both the old and new table live, and migrates entries a few at a time instead of all at once." }] },
+      { "item": "Migration isn't a separate background process — it's called from inside the dictionary's own ordinary lookup and insert operations, riding along on work the table was already doing.", "at": [{ "step": "Who actually moves those keys from the old table to the new one?" }] },
+      { "item": "A single incremental-migration step is bounded by design (caps both buckets moved and empty buckets scanned), so no one operation ever pays for the whole migration, regardless of table size.", "at": [{ "step": "Incremental migration's bound caps every single operation's cost, no matter how large the table." }] },
+      { "item": "Incremental migration is not a free lunch: both tables stay live for the whole migration, a real, sustained memory cost that lasts far longer than doubling's single rehashing insert.", "at": [{ "step": "Incremental migration keeps both tables live for many operations, not one — a real, sustained memory cost for a smoother latency." }] },
+      { "item": "Both resize strategies move the same total number of entries across the same sequence of resizes — the difference is entirely about the schedule each one pays on, not the total amount of work.", "at": [{ "step": "Prove it" }] },
+      { "item": "Redis's own dict has a concrete, named minimum-fill threshold (1/8 occupancy) below which it becomes willing to shrink — a real, cited number for 'hash tables under memory pressure,' not an invented one.", "at": [{ "deep": "The frontier" }] },
+      { "item": "Concurrent or lock-free resizing (migrating a table that multiple threads touch at once) is a real, harder version of this problem, named with no mechanism, since the syllabus doesn't name it for this topic.", "at": [{ "out": "Syllabus names only doubling, incremental migration, and memory pressure for this topic — concurrent/lock-free resizing is not named, so it's left as a named-only frontier item." }] },
+      { "item": "This topic's own measured numbers (worst-op cost, total work, migration duration) come from a from-scratch table built in examples.py, not from Redis's own real-world benchmarked performance, which this topic makes no claim about.", "at": [{ "step": "Prove it" }] }
+    ]
+  },
+  "gapReview": { "date": "2026-10-23", "by": "self-review", "open": [] }
+}
