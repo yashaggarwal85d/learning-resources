@@ -1,0 +1,49 @@
+{
+  "topic": "rust.reference-cycles-weak",
+  "syllabus": [
+    { "clause": "safe Rust can still leak through cyclic logical ownership.", "at": [{ "step": "A cycle that never closes" }, { "step": "Does this reject at compile time?" }] },
+    { "clause": "Weak breaks cycles (parent pointers, caches), and Rc::new_cyclic builds self-referencing structures.", "at": [{ "step": "Weak: a reference that owns nothing" }, { "step": "The same shape, with one link made Weak" }, { "step": "The last strong owner is dropped — then upgrade" }, { "step": "Built with a Weak to itself" }] }
+  ],
+  "sources": [
+    {
+      "source": "book-reference-cycles",
+      "items": [
+        { "item": "Rust's safety guarantees don't prevent memory leaks; a leak is memory-safe, just wasteful", "at": [{ "step": "A cycle that never closes" }] },
+        { "item": "An Rc/RefCell cycle leaks because each item's reference count never reaches zero, so none of them is ever dropped", "at": [{ "step": "A cycle that never closes" }] },
+        { "item": "A Weak reference carries no ownership, so it cannot itself keep a cycle from breaking once every strong reference is gone", "at": [{ "step": "Weak: a reference that owns nothing" }] },
+        { "item": "upgrade returns an Option<Rc<T>> precisely so the compiler forces both the still-alive and the already-dropped case to be handled", "at": [{ "step": "The last strong owner is dropped — then upgrade" }] }
+      ]
+    },
+    {
+      "source": "weak-docs",
+      "items": [
+        { "item": "Weak<T> is a version of Rc<T> whose reference does not own the value it points at", "at": [{ "step": "Weak: a reference that owns nothing" }] },
+        { "item": "Because Weak carries no ownership, the value it points at can be dropped out from under it, and upgrade returns None when that has happened", "at": [{ "step": "The last strong owner is dropped — then upgrade" }] }
+      ]
+    },
+    {
+      "source": "rc-docs",
+      "items": [
+        { "item": "Rc::new_cyclic hands the constructor a Weak<T> to the value's own not-yet-finished allocation, so the value being built can store a weak pointer to itself", "at": [{ "step": "Built with a Weak to itself" }] },
+        { "item": "A self-referencing structure should hold that self-reference as a Weak, never a strong Rc, specifically to avoid creating a leak", "at": [{ "step": "Built with a Weak to itself" }] }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "self-review",
+    "date": "2026-10-23",
+    "items": [
+      { "item": "The leak in this topic's cycle has nothing to do with RefCell specifically; RefCell only supplies the mutability needed to point one Rc back at another after both already exist. The leak itself comes entirely from two strong reference counts that can never reach zero", "at": [{ "step": "A cycle that never closes" }] },
+      { "item": "The compiler has no way to see this leak coming, because nothing about a cycle of Rc clones violates any rule it checks; the borrow checker, the type system, and coherence are all completely satisfied by a program that will never free these two allocations", "at": [{ "step": "Does this reject at compile time?" }] },
+      { "item": "A Weak reference still keeps the backing allocation (the control block holding the strong and weak counts) alive even after the value itself is dropped, specifically so that calling upgrade on an already-invalid Weak is always safe rather than a dangling-pointer read", "at": [{ "step": "Weak: a reference that owns nothing" }] },
+      { "item": "Breaking a cycle with Weak is a one-sided decision: exactly one of the two directions in the cycle has to give up ownership, and which direction gives it up is a design choice (a parent pointer is the conventional one to weaken) rather than something the type system picks for you", "at": [{ "step": "The same shape, with one link made Weak" }] },
+      { "item": "Weak::upgrade's Option<Rc<T>> return type is doing real work here, not just defensive API design; it is the only way code that holds a Weak can safely know, at the moment it actually needs the value, whether anything still owns it", "at": [{ "step": "The last strong owner is dropped — then upgrade" }] },
+      { "item": "Calling upgrade from inside the closure passed to Rc::new_cyclic itself, before that closure returns, always yields None, because the Rc being constructed is not yet considered to exist; the weak pointer only becomes genuinely upgradable once new_cyclic finishes building it", "at": [{ "step": "Built with a Weak to itself" }] },
+      { "item": "Before Rc::new_cyclic existed, building a genuinely self-referencing Rc value required either a placeholder swapped in after construction or unsafe code; new_cyclic exists specifically to make that pattern safe and ergonomic", "at": [{ "step": "Built with a Weak to itself" }] },
+      { "item": "This topic's leak detector (a counting global allocator) is the same technique Chapter 1's leak-safety topic used for mem::forget and Box::leak; a reference cycle is simply a third, much easier to write by accident, way to reach the identical observable outcome", "at": [{ "step": "Recap: a cycle leaks, Weak breaks it, new_cyclic builds it in" }] },
+      { "item": "Neither Rc nor Weak, on their own, make any of this safe to touch from more than one thread; everything in this topic stays confined to the single thread Rc itself requires, same as the rest of this chapter's Rc-based examples", "at": [{ "step": "Recap: a cycle leaks, Weak breaks it, new_cyclic builds it in" }] },
+      { "item": "A cache is a second, equally common place Weak shows up beyond parent pointers: holding Weak references to values someone else still owns lets a cache observe and reuse live values without ever being the reason one of them stays alive past its real owner dropping it", "at": [{ "step": "Recap: a cycle leaks, Weak breaks it, new_cyclic builds it in" }] }
+    ]
+  },
+  "gapReview": { "date": "2026-10-23", "by": "self-review", "open": [] }
+}
