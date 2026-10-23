@@ -34,7 +34,7 @@ export function CriticalSectionHook({ t }: StepCtx) {
       <rect x={200} y={70} width={200} height={70} rx={8} fill="none" stroke={C.caramel} strokeWidth={2} />
       <T x={300} y={100} s={13} a="middle" f={C.crema}>critical section</T>
       <T x={300} y={122} s={11} a="middle" f={C.taupe}>read memory, write memory</T>
-      <T x={60} y={200} s={13} f={C.latte} o={fa(t, 0.6, 0.4)}>that is the whole job — two memory operations, nothing else</T>
+      <T x={60} y={200} s={13} f={C.latte} o={fa(t, 0.6, 0.4)}>that's the whole job, nothing more</T>
       <T x={60} y={226} s={13} f={C.mocha} o={fa(t, 1.1, 0.4)}>what if something else goes in there?</T>
     </Svg>
   );
@@ -53,7 +53,7 @@ export function FourThreadsPredict({ t }: StepCtx) {
           {threadDot(x, y, `t${i + 1}`)}
         </g>
       ))}
-      <T x={60} y={230} s={13} f={C.latte} o={fa(t, 1.3, 0.4)}>each thread's own 40ms "network call" happens while it holds the lock</T>
+      <T x={60} y={230} s={13} f={C.latte} o={fa(t, 1.3, 0.4)}>each thread holds the lock during its own call</T>
     </Svg>
   );
 }
@@ -89,9 +89,9 @@ export function MoveOutsideLock({ t }: StepCtx) {
         end={1.8}
         highlight={[0, 1]}
       />
-      <Svg label="the same four calls, now running concurrently" h={150}>
+      <Svg label="the same four calls, now running concurrently" h={220}>
         {timeBar(30, 30, 1, '160 ms, inside the lock', 'before: serialized', C.mocha)}
-        {timeBar(30, 100, 40 / 160, '40 ms, measured', 'after: concurrent', C.caramel)}
+        {timeBar(30, 150, 40 / 160, '40 ms, measured', 'after: concurrent', C.caramel)}
       </Svg>
     </Stack>
   );
@@ -167,8 +167,8 @@ export function LockConvoy({ t }: StepCtx) {
       <T x={300} y={64} s={12} a="middle" f={C.latte}>"threads of equal priority contend</T>
       <T x={300} y={82} s={12} a="middle" f={C.latte}>repeatedly for the same lock"</T>
       <T x={60} y={140} s={12} f={C.taupe} o={fa(t, 0.6, 0.4)}>— Wikipedia, "Lock convoy"</T>
-      <T x={60} y={190} s={13} f={C.crema} o={fa(t, 1.1, 0.4)}>unlike a deadlock, these threads still make progress</T>
-      <T x={60} y={216} s={13} f={C.mocha} o={fa(t, 1.6, 0.4)}>the cost is wasted context switches, not a permanent stall</T>
+      <T x={60} y={190} s={13} f={C.crema} o={fa(t, 1.1, 0.4)}>unlike a deadlock, they still progress</T>
+      <T x={60} y={216} s={13} f={C.mocha} o={fa(t, 1.6, 0.4)}>the cost: wasted switches, not a stall</T>
     </Svg>
   );
 }
@@ -181,8 +181,8 @@ export function PriorityInversion({ t }: StepCtx) {
       <T x={300} y={64} s={12} a="middle" f={C.latte}>"A low priority owner ... inherits the priority</T>
       <T x={300} y={84} s={12} a="middle" f={C.latte}>of a higher priority waiter"</T>
       <T x={60} y={150} s={12} f={C.taupe} o={fa(t, 0.6, 0.4)}>— Linux kernel docs, rt-mutex.html</T>
-      <T x={60} y={200} s={13} f={C.crema} o={fa(t, 1.1, 0.4)}>none of this is something the type system checks</T>
-      <T x={60} y={226} s={13} f={C.mocha} o={fa(t, 1.6, 0.4)}>the borrow checker's guarantees stop at memory safety</T>
+      <T x={60} y={200} s={13} f={C.crema} o={fa(t, 1.1, 0.4)}>not something the type system checks</T>
+      <T x={60} y={226} s={13} f={C.mocha} o={fa(t, 1.6, 0.4)}>the borrow checker stops at memory safety</T>
     </Svg>
   );
 }
@@ -190,10 +190,10 @@ export function PriorityInversion({ t }: StepCtx) {
 // ── 10 · Recap ───────────────────────────────────────────────────────────────────────────────────
 export function Recap({ t }: StepCtx) {
   const rows = [
-    'I/O inside a lock serializes that call too (measured: ~4x slower)',
-    'lock ordering removes the circular wait a deadlock needs',
-    'a convoy still progresses; a deadlock never does',
-    'priority inversion needs priority inheritance — none of this is checked by the type system',
+    'I/O in a lock serializes that latency too',
+    'lock ordering removes the circular wait',
+    'a convoy progresses; a deadlock never does',
+    'none of this is checked by the type system',
   ];
   return (
     <Svg label="recap: four failure modes, none of them caught by the compiler" h={300}>
