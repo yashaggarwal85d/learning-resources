@@ -1,0 +1,23 @@
+[package]
+name = "runtime-demo"
+version = "0.1.0"
+edition = "2024"
+
+[[bin]]
+name = "blocking_call_stalls_worker"
+path = "src/blocking_call_stalls_worker.rs"
+
+[dependencies]
+tokio = { version = "1", features = ["rt-multi-thread", "rt", "time", "sync", "macros"] }
+
+[[bin]]
+name = "spawn_blocking_isolates_it"
+path = "src/spawn_blocking_isolates_it.rs"
+
+[[bin]]
+name = "block_in_place_hands_off"
+path = "src/block_in_place_hands_off.rs"
+
+[[bin]]
+name = "block_in_place_panics_on_current_thread"
+path = "src/block_in_place_panics_on_current_thread.rs"

@@ -1,0 +1,70 @@
+{
+  "topic": "rust.blocking-cpu-bound-work",
+  "syllabus": [
+    {
+      "clause": "spawn_blocking (bounded blocking pool), block_in_place, and rayon or a separate dedicated runtime for CPU-heavy work (the pattern DataFusion-based engines use for query execution vs network I/O). Thread-per-core, shared-nothing runtimes (glommio, monoio, compio) are the alternative design point.",
+      "at": [
+        { "step": "Measured: the sibling ran almost instantly — spawn_blocking's own pool never touched the worker" },
+        { "step": "Measured: the sibling ran almost instantly — handed off to a new worker thread before the call even started" },
+        { "step": "For CPU-heavy work with no I/O at all, spawn_blocking's pool isn't the only answer" }
+      ]
+    }
+  ],
+  "sources": [
+    {
+      "source": "spawn-blocking",
+      "items": [
+        {
+          "item": "spawn_blocking runs the provided closure on a thread dedicated to blocking operations",
+          "at": [{ "step": "Measured: the sibling ran almost instantly — spawn_blocking's own pool never touched the worker" }]
+        },
+        {
+          "item": "Tokio spawns more blocking threads on demand until a configured upper limit is reached, then queues further requests",
+          "at": [{ "step": "Measured: the sibling ran almost instantly — spawn_blocking's own pool never touched the worker" }]
+        },
+        {
+          "item": "for many CPU-bound computations, a semaphore or a specialized executor such as rayon should be used to limit how many run in parallel",
+          "at": [{ "step": "For CPU-heavy work with no I/O at all, spawn_blocking's pool isn't the only answer" }]
+        }
+      ]
+    },
+    {
+      "source": "block-in-place",
+      "items": [
+        {
+          "item": "block_in_place informs the executor that the currently executing task is about to block, so it can hand its other tasks to a new worker thread first",
+          "at": [{ "step": "Measured: the sibling ran almost instantly — handed off to a new worker thread before the call even started" }]
+        },
+        {
+          "item": "block_in_place cannot be used within a current_thread runtime because there are no other worker threads to hand tasks off to",
+          "at": [{ "step": "rustc's own panic: there's no other worker thread to hand anything off to" }]
+        },
+        {
+          "item": "block_in_place panics when called from a current_thread runtime",
+          "at": [{ "step": "rustc's own panic: there's no other worker thread to hand anything off to" }]
+        }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "self-review",
+    "date": "2026-10-23",
+    "items": [
+      { "item": "This topic's baseline measurement is deliberately the exact same shape topic 28 already proved (a direct blocking call on the only worker stalls a trivial sibling for the call's full length) because every fix in this topic only makes sense measured against that identical, unchanged starting point.", "at": [{ "step": "Measured: the sibling waited the full 300ms, same baseline as the last topic" }] },
+      { "item": "spawn_blocking's dedicated pool is not merely a conceptual separation from the cooperative worker pool; it is a genuinely different, dynamically-sized set of real OS threads, which is exactly why the identical blocking call produces a measured sibling wait of roughly zero once moved there.", "at": [{ "step": "Measured: the sibling ran almost instantly — spawn_blocking's own pool never touched the worker" }] },
+      { "item": "spawn_blocking's own documentation draws a real line this topic takes seriously: it is for bounded, eventually-finishing blocking work, not for long-lived or persistent workloads, which should use a dedicated std::thread::spawn thread instead so they don't quietly reduce the blocking pool's effective capacity for everything else.", "at": [{ "step": "Measured: the sibling ran almost instantly — spawn_blocking's own pool never touched the worker" }] },
+      { "item": "block_in_place's promise is narrower and easy to state wrong: it does not move the blocking call anywhere, it blocks the exact same worker thread the calling task is already on, and only arranges in advance for that worker's other, independent tasks to be handed to a different worker first.", "at": [{ "step": "Measured: the sibling ran almost instantly — handed off to a new worker thread before the call even started" }] },
+      { "item": "block_in_place's own documentation names a real sharp edge this topic deliberately does not paper over: any other code running concurrently in the *same* task (for example behind a join! macro) is suspended for the whole call, which is exactly why its own docs recommend spawn_blocking instead whenever that matters.", "at": [{ "step": "Measured: the sibling ran almost instantly — handed off to a new worker thread before the call even started" }] },
+      { "item": "block_in_place's panic on a current-thread runtime is not an arbitrary restriction; it is the direct, structural consequence of its one mechanism (handing other tasks to a different worker thread) requiring a worker thread to hand them to, which a current-thread runtime, by construction, does not have.", "at": [{ "step": "rustc's own panic: there's no other worker thread to hand anything off to" }] },
+      { "item": "The distinction this topic draws between spawn_blocking and rayon-or-a-dedicated-runtime is a real, named one in production systems: spawn_blocking's pool is sized for IO-shaped blocking work and left large by default, while genuinely CPU-bound work is explicitly recommended to use its own bounded concurrency (a semaphore, or a specialized executor) precisely because the blocking pool's size was never tuned for saturating every core.", "at": [{ "step": "For CPU-heavy work with no I/O at all, spawn_blocking's pool isn't the only answer" }] },
+      { "item": "Thread-per-core, shared-nothing runtimes (glommio, monoio, compio) are named here as a genuinely different scheduler design, not a more-extreme version of anything Tokio already does: there is no cross-core work stealing at all in that model, trading topic 29's redistribution entirely away for strict per-core isolation.", "at": [{ "step": "For CPU-heavy work with no I/O at all, spawn_blocking's pool isn't the only answer" }] },
+      { "item": "This topic closes the chapter's cooperation story that began in topic 29: a task with no yield point at all (this topic's subject) cannot be helped by any budget, because no budget check is ever reached; it can only be moved off the cooperative pool entirely, or have its neighbours moved off instead.", "at": [{ "step": "Recap: a real stall, two real fixes with two different promises, and a named alternative for CPU-heavy work" }] },
+      { "item": "The two measured fixes in this topic are deliberately shown as different promises, not interchangeable options: spawn_blocking isolates the blocking call itself, while block_in_place isolates everything else from it — picking the wrong one for a given situation (for example block_in_place around code with other concurrent work in the same task) reintroduces exactly the kind of surprising stall this chapter opened with.", "at": [{ "step": "Recap: a real stall, two real fixes with two different promises, and a named alternative for CPU-heavy work" }] }
+    ]
+  },
+  "gapReview": {
+    "date": "2026-10-23",
+    "by": "self-review",
+    "open": []
+  }
+}
