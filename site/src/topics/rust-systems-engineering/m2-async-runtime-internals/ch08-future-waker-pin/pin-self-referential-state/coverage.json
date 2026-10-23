@@ -1,0 +1,76 @@
+{
+  "topic": "rust.pin-self-referential-state",
+  "syllabus": [
+    {
+      "clause": "Pin exists because an async state machine may hold references into itself after its first poll, and these break if the value moves. Pin<&mut Self>, Unpin, the pin! macro, and pin projection (pin-project-lite) with structural vs non-structural pinning.",
+      "at": [
+        { "step": "A self-referential value's own pointer breaks the instant it moves" },
+        { "step": "Pin<Ptr> is a promise about the pointee, enforced by the type" },
+        { "step": "Pinned — on the heap or the stack — the identical self-reference stays valid" },
+        { "step": "A pinned field projects by the type's own choice, not automatically" }
+      ]
+    }
+  ],
+  "sources": [
+    {
+      "source": "pin-module",
+      "items": [
+        {
+          "item": "a key example of an address-sensitive type is the state machine the compiler generates to implement Future for async fns",
+          "at": [{ "step": "Yes — and the standard library names the exact place this happens by default" }]
+        },
+        {
+          "item": "all values in Rust are trivially moveable, and the compiler is allowed to move a value without running any code to notify it that its address has changed",
+          "at": [{ "step": "A self-referential value's own pointer breaks the instant it moves" }]
+        },
+        {
+          "item": "Pin<Ptr> can wrap any pointer type, forming a promise that the pointee will not be moved or otherwise invalidated",
+          "at": [{ "step": "Pin<Ptr> is a promise about the pointee, enforced by the type" }]
+        },
+        {
+          "item": "the author of a type decides for each field whether pinning propagates to that field (structural) or not",
+          "at": [{ "step": "A pinned field projects by the type's own choice, not automatically" }]
+        }
+      ]
+    },
+    {
+      "source": "unpin-trait",
+      "items": [
+        {
+          "item": "Unpin is automatically implemented for almost every type; the compiler marks a type Unpin so long as every type composing its fields is also Unpin",
+          "at": [{ "step": "Pin<Ptr> is a promise about the pointee, enforced by the type" }]
+        }
+      ]
+    },
+    {
+      "source": "pin-project-lite",
+      "items": [
+        {
+          "item": "the pin_project! macro creates a projection type covering all the fields of a struct, where a #[pin] field projects to Pin<&mut T> and an ordinary field projects to a plain reference",
+          "at": [{ "step": "A pinned field projects by the type's own choice, not automatically" }]
+        }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "self-review",
+    "date": "2026-10-23",
+    "items": [
+      { "item": "A self-referential value (one holding a pointer into one of its own fields) is sound only as long as it never moves after that pointer is formed — the moment it moves, mechanically, the pointer still refers to the old address, which is now someone else's memory.", "at": [{ "step": "A self-referential value's own pointer breaks the instant it moves" }] },
+      { "item": "The standard library names the compiler's generated async state machines as the canonical example of a self-referential type, which is why this topic can demonstrate the exact mechanism with a hand-written stand-in struct rather than needing to show the hidden enum directly.", "at": [{ "step": "Yes — and the standard library names the exact place this happens by default" }] },
+      { "item": "Putting a self-referential value behind an ordinary Box<T> does not fix anything: a Box only guarantees the heap allocation's address is stable, but the T inside it can still be moved out (mem::replace, or an owning move), carrying the same stale-pointer problem with it.", "at": [{ "step": "Does wrapping it in a Box<T> fix this?" }] },
+      { "item": "Pin<Ptr> is not a container that holds a value more safely; it is a promise, carried by the type itself, that the pointer's pointee will not move or be invalidated for as long as the Pin exists — a guarantee the type system can check mechanically rather than one left to documentation.", "at": [{ "step": "Pin<Ptr> is a promise about the pointee, enforced by the type" }] },
+      { "item": "Unpin is an auto trait: almost every ordinary type gets it for free, and a type that implements Unpin is explicitly saying it never needed Pin's guarantee in the first place, so pinning it has no extra effect at all — PhantomPinned exists specifically to opt a type back out of Unpin.", "at": [{ "step": "Pin<Ptr> is a promise about the pointee, enforced by the type" }] },
+      { "item": "Box::pin (heap) and the pin! macro (stack) are two different places to put the exact same promise; a self-reference formed after either one stays valid for the same reason in both cases — nothing in the safe API can move the pinned value out from under it.", "at": [{ "step": "Pinned — on the heap or the stack — the identical self-reference stays valid" }] },
+      { "item": "Pin's guarantee is enforced by the compiler, not merely documented: attempting to move a !Unpin value out of a Pin<Box<T>> (or any Pin<Ptr>) fails to compile with a real, specific error, because Pin<Box<T>> only exposes a plain, ownable T through DerefMut when T: Unpin.", "at": [{ "step": "rustc's own diagnostic: this move is rejected outright" }] },
+      { "item": "Pin projection is a deliberate, per-field choice made by the author of a type, never automatic: a field can be declared structurally pinned (it moves exactly when its container does, and projects to Pin<&mut Field>) or left unpinned (projects to a plain reference) — getting this choice wrong in hand-written unsafe code is exactly the hazard pin-project-lite's generated code exists to rule out.", "at": [{ "step": "A pinned field projects by the type's own choice, not automatically" }] },
+      { "item": "In production, almost no code manually implements Pin projection with unsafe code; crates like pin-project and pin-project-lite exist precisely because getting structural vs non-structural projection right by hand is easy to get wrong and hard to notice when it's wrong, since the mistake only becomes unsound, not a compile error.", "at": [{ "step": "A pinned field projects by the type's own choice, not automatically" }] },
+      { "item": "This chapter's whole arc — a future that does nothing until polled, the waker contract, the generated state machine, and now Pin — has been entirely about one future running correctly by itself; nothing so far has required more than one thread to exist at all.", "at": [{ "step": "Recap: self-reference, Pin's promise, and projection, proven both ways" }] }
+    ]
+  },
+  "gapReview": {
+    "date": "2026-10-23",
+    "by": "self-review",
+    "open": []
+  }
+}
