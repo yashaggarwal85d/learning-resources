@@ -1,0 +1,8 @@
+- **`UnsafeCell<T>`**: the one primitive that legally allows getting a mutable pointer out of a shared reference. *Where you meet it:* a counter mutated through `&self` via `UnsafeCell::get`.
+- **Interior mutability**: mutating a value through `&T` instead of `&mut T`. *Where you meet it:* every type in this topic, each a different way of doing it safely.
+- **`Cell<T>`**: interior mutability by copying a whole value in and out, never handing out a reference to the inside. *Where you meet it:* `Cell::set`/`get`/`replace`.
+- **`RefCell<T>`**: interior mutability by handing out tracked `Ref`/`RefMut` guards, checked at run time. *Where you meet it:* `borrow_mut` pushing onto a shared `Vec`.
+- **`!Sync`**: a type the compiler refuses to share across threads, even through `Arc`. *Where you meet it:* why `RefCell` is confined to one thread and is not a synchronization primitive.
+- **Borrow panic**: a conflicting `RefCell` borrow caught at run time, not compile time. *Where you meet it:* a live shared borrow still held when `borrow_mut` is attempted.
+- **`OnceCell`/`OnceLock`**: a cell written at most once, then read freely without further checks. *Where you meet it:* `OnceLock::get_or_init` building a default value on first use.
+- **`LazyLock`**: a value computed once, on first access, from a closure supplied up front. *Where you meet it:* a `static` value read twice, computed only on the first read.
