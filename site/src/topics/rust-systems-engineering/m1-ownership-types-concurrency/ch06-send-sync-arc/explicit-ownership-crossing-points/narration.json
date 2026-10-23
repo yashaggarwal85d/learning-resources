@@ -1,0 +1,74 @@
+{
+  "steps": [
+    {
+      "lines": [
+        "Four moments, and the entire rest of this chapter's material never showed you a fifth one — that absence is itself the point worth noticing here.",
+        "Every other way two threads touch the same data goes through sharing a reference, protected by the locks and traits covered already, never by handing over ownership outright."
+      ]
+    },
+    {
+      "lines": [
+        "Take a string, capture it into a brand new thread with a move closure, and send that thread off to run.",
+        { "beat": 0.3 },
+        "Once that thread is running, can the code that spawned it still reach the string at all?"
+      ],
+      "answer": [
+        "No. Moving means exactly what it says — the string's ownership is gone from the spawning side the instant that closure was built.",
+        "There's no copy left behind anywhere to fall back on; the new thread is the only place that value exists now."
+      ]
+    },
+    {
+      "lines": [
+        "Here, the new thread computes the moved string's own length and hands that number back through the join handle.",
+        "The spawning side never touches the string itself again — only the single number the new thread chose to send back."
+      ]
+    },
+    {
+      "lines": [
+        "Now try the same shape, but borrow the data instead of moving it into that same kind of plain spawn.",
+        "The compiler refuses outright, and names the exact reason: the closure might still be running after the function that created it has already ended, so it can't be allowed to only borrow."
+      ]
+    },
+    {
+      "lines": [
+        "Wrap the identical borrow inside a scope instead, one that promises every thread it spawns will finish before the scope itself hands control back.",
+        "That promise is what makes the borrow safe this time — nothing spawned inside can ever outlive the data it's looking at."
+      ]
+    },
+    {
+      "lines": [
+        "Spawn a task onto an async runtime instead of a plain thread, moving the same string in the same way.",
+        { "beat": 0.3 },
+        "Does this task face the same restriction a plain spawned thread does?"
+      ],
+      "answer": [
+        "Yes, exactly the same restriction, just written on a future instead of a closure.",
+        "The runtime is free to hand this task to any worker thread it likes, and that freedom is exactly why the ownership rule can't be relaxed here either."
+      ]
+    },
+    {
+      "lines": [
+        "The runtime decides where this task actually runs, not the code that spawned it — it might stay put, or it might move to a different thread entirely.",
+        "That uncertainty is the whole reason the task has to own what it touches, the same way a plain spawned thread does."
+      ]
+    },
+    {
+      "lines": [
+        "Two separate threads each send their own message down the same channel, and one receiving thread picks both of them up.",
+        "Sending is the fourth and final way ownership changes hands: the value leaves the sending thread completely, and belongs to whoever calls receive next."
+      ]
+    },
+    {
+      "lines": [
+        "Here's the standard library's own comment, sitting directly above the code that actually implements this channel.",
+        "It names its source plainly: this isn't a bespoke design at all, it's a direct port of an existing, independently proven channel crate."
+      ]
+    },
+    {
+      "lines": [
+        "Four places, never more, never fewer: a plain spawn, a scoped spawn, a task spawn, or a send — that's every way ownership ever crosses a thread boundary.",
+        "Two of them demand ownership outright, one trades that for a promise to finish in time, and the channel underneath all of them was borrowed from somewhere else entirely."
+      ]
+    }
+  ]
+}

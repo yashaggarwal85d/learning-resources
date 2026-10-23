@@ -1,0 +1,25 @@
+import Resource from '../../../../../components/Resource.astro';
+
+<section class="prereq" data-section="chapter-so-far">
+
+### <span class="n">01</span> Where the last topic left off
+
+<ul class="resources">
+  <Resource kind="reel" host={props.host} domain="rust-systems-engineering" title="Critical sections and external latency">None of this — lock ordering, convoys, inversion — is something the type system checks. This topic asks what changes when the threads doing the sharing stop sharing state at all, and pass messages instead.</Resource>
+</ul>
+
+</section>
+
+<section class="prereq" data-section="crossing-points-primary">
+
+### <span class="n">02</span> The real docs: spawn, scope, tokio::spawn, and mpsc
+
+<ul class="resources">
+  <Resource kind="reading" title="spawn in std::thread" href="https://doc.rust-lang.org/std/thread/fn.spawn.html" by="The Rust Team">The exact two constraints on a spawned closure: Send and 'static, named and explained.</Resource>
+  <Resource kind="reading" title="scope in std::thread" href="https://doc.rust-lang.org/std/thread/fn.scope.html" by="The Rust Team">What a scoped thread buys back, and the join guarantee that makes it sound.</Resource>
+  <Resource kind="reading" title="spawn in tokio::task" href="https://docs.rs/tokio/latest/tokio/task/fn.spawn.html" by="The Tokio Project">The identical Send + 'static bound, now on a Future.</Resource>
+  <Resource kind="reading" title="std::sync::mpsc" href="https://doc.rust-lang.org/std/sync/mpsc/index.html" by="The Rust Team">Multi-producer, single-consumer: the channel's own shape, straight from its module docs.</Resource>
+  <Resource kind="reading" title="mpmc/mod.rs — source" href="https://doc.rust-lang.org/src/std/sync/mpmc/mod.rs.html" by="The Rust Team">The source comment naming mpsc's real implementation: a port of crossbeam-channel.</Resource>
+</ul>
+
+</section>
