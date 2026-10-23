@@ -1,0 +1,112 @@
+{
+  "topic": "rust.file-descriptors-i-o",
+  "syllabus": [
+    {
+      "clause": "an fd is a process-local handle to a kernel open file description, so duplicated or forked fds share an offset. I/O safety (RFC 3128, stable 1.63): OwnedFd closes on Drop, BorrowedFd<'a>/AsFd borrow, and into_raw_fd(self)/from_raw_fd are the explicit ownership handoffs that prevent use-after-close. std opens with O_CLOEXEC by default; fd leaks across exec; RLIMIT_NOFILE.",
+      "at": [
+        { "step": "Measured: the original fd read the first half of the file, and the duplicated fd read exactly the second half — continuing from the shared offset, not restarting" },
+        { "step": "Measured: after the OwnedFd was dropped, a raw syscall on its fd failed outright with EBADF — while a BorrowedFd taken from a completely different, still-owned file stayed valid the whole time" },
+        { "step": "Measured: the normally-opened file descriptor, protected by O_CLOEXEC, never appeared inside the real forked and exec'd child — the one with that flag explicitly cleared leaked straight into it" },
+        { "step": "RLIMIT_NOFILE is a real, enforced ceiling — one greater than the highest file descriptor number a process may ever have open at once" }
+      ]
+    }
+  ],
+  "sources": [
+    {
+      "source": "os-fd",
+      "items": [
+        {
+          "item": "std::os::fd provides owned and borrowed Unix-like file descriptors",
+          "at": [{ "step": "Duplicate a file descriptor with a real dup() call, then read from the original and then the duplicate. Does the duplicate start reading from the beginning of the file, or from wherever the original left off?" }]
+        }
+      ]
+    },
+    {
+      "source": "owned-fd",
+      "items": [
+        {
+          "item": "OwnedFd closes the file descriptor on drop, and it is guaranteed that nobody else will close the file descriptor",
+          "at": [{ "step": "An OwnedFd is dropped. A moment later, something tries a raw syscall on that exact file descriptor number. What happens?" }]
+        },
+        {
+          "item": "try_clone creates a new OwnedFd instance that shares the same underlying file description as the existing one",
+          "at": [{ "step": "Duplicate a file descriptor with a real dup() call, then read from the original and then the duplicate. Does the duplicate start reading from the beginning of the file, or from wherever the original left off?" }]
+        }
+      ]
+    },
+    {
+      "source": "borrowed-fd",
+      "items": [
+        {
+          "item": "a BorrowedFd has a lifetime tied to the thing that owns the fd, and for that lifetime it is guaranteed nobody will close it",
+          "at": [{ "step": "Measured: after the OwnedFd was dropped, a raw syscall on its fd failed outright with EBADF — while a BorrowedFd taken from a completely different, still-owned file stayed valid the whole time" }]
+        }
+      ]
+    },
+    {
+      "source": "as-fd",
+      "items": [
+        {
+          "item": "AsFd is a trait to borrow the file descriptor from an underlying object",
+          "at": [{ "step": "An OwnedFd is dropped. A moment later, something tries a raw syscall on that exact file descriptor number. What happens?" }]
+        }
+      ]
+    },
+    {
+      "source": "dup-2",
+      "items": [
+        {
+          "item": "dup() allocates a new file descriptor that refers to the same open file description as the original",
+          "at": [{ "step": "Duplicate a file descriptor with a real dup() call, then read from the original and then the duplicate. Does the duplicate start reading from the beginning of the file, or from wherever the original left off?" }]
+        },
+        {
+          "item": "since the two file descriptors refer to the same open file description, they share file offset and file status flags",
+          "at": [{ "step": "Measured: the original fd read the first half of the file, and the duplicated fd read exactly the second half — continuing from the shared offset, not restarting" }]
+        },
+        {
+          "item": "the two file descriptors do not share file descriptor flags, including the close-on-exec flag",
+          "at": [{ "step": "Open the same file twice: once the normal way, once with its close-on-exec flag explicitly cleared. Fork and exec a real child process. Which file descriptor is still open inside it?" }]
+        }
+      ]
+    },
+    {
+      "source": "open-2",
+      "items": [
+        {
+          "item": "the close-on-exec race this flag exists to close can leak a file descriptor into a child depending on execution order, if set via a separate fcntl call instead of atomically at open time",
+          "at": [{ "step": "Measured: the normally-opened file descriptor, protected by O_CLOEXEC, never appeared inside the real forked and exec'd child — the one with that flag explicitly cleared leaked straight into it" }]
+        }
+      ]
+    },
+    {
+      "source": "getrlimit-2",
+      "items": [
+        {
+          "item": "RLIMIT_NOFILE specifies a value one greater than the maximum file descriptor number that can be opened by a process",
+          "at": [{ "step": "RLIMIT_NOFILE is a real, enforced ceiling — one greater than the highest file descriptor number a process may ever have open at once" }]
+        }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "self-review",
+    "date": "2026-10-23",
+    "items": [
+      { "item": "The example deliberately uses a real dup(2) call rather than File::try_clone, even though try_clone is implemented in terms of a duplicating syscall itself, because the syllabus clause is specifically about what a raw fd-level duplication does to the shared offset, not about any one std convenience wrapper around it.", "at": [{ "step": "Duplicate a file descriptor with a real dup() call, then read from the original and then the duplicate. Does the duplicate start reading from the beginning of the file, or from wherever the original left off?" }] },
+      { "item": "The shared offset is not an implementation detail that happens to be true today; it follows directly from what dup() actually duplicates — a reference to the kernel's open file description, not a fresh one — which is exactly why two reads split cleanly across the file instead of each starting from zero.", "at": [{ "step": "Measured: the original fd read the first half of the file, and the duplicated fd read exactly the second half — continuing from the shared offset, not restarting" }] },
+      { "item": "OwnedFd's guarantee is narrower than 'the fd is freed'; it specifically guarantees that nobody else will close it while it's alive, which is the actual soundness property BorrowedFd's lifetime depends on — if OwnedFd could be closed from elsewhere, a BorrowedFd derived from it could silently start pointing at nothing.", "at": [{ "step": "An OwnedFd is dropped. A moment later, something tries a raw syscall on that exact file descriptor number. What happens?" }] },
+      { "item": "The EBADF measured here is not a side effect worth noting in passing; it is the entire mechanism I/O safety is built around, turning a use-after-close bug from a silent, possibly-reused-fd hazard into a syscall that fails loudly and immediately, every time.", "at": [{ "step": "Measured: after the OwnedFd was dropped, a raw syscall on its fd failed outright with EBADF — while a BorrowedFd taken from a completely different, still-owned file stayed valid the whole time" }] },
+      { "item": "Clearing FD_CLOEXEC with a separate fcntl call after open(), as this example does deliberately, is exactly the race pattern the open(2) man page itself warns about in a multithreaded process; doing it after open() here is a controlled stand-in for that same real race, not merely a convenient way to produce a leaked fd.", "at": [{ "step": "Open the same file twice: once the normal way, once with its close-on-exec flag explicitly cleared. Fork and exec a real child process. Which file descriptor is still open inside it?" }] },
+      { "item": "The child process in this example is a genuinely separate, real process — spawned via std::process::Command, which forks and execs for real — not a simulation of one; the fd that disappears, disappears because the kernel's own exec actually closed it, not because the test merely assumes it would.", "at": [{ "step": "Measured: the normally-opened file descriptor, protected by O_CLOEXEC, never appeared inside the real forked and exec'd child — the one with that flag explicitly cleared leaked straight into it" }] },
+      { "item": "RLIMIT_NOFILE being a soft limit as well as a hard one (adjustable up to the hard ceiling by an unprivileged process, and past it only with a capability) is why a real service tunes it explicitly rather than treating the default as fixed; this chapter's own measured fd behaviors are exactly what consumes that budget.", "at": [{ "step": "RLIMIT_NOFILE is a real, enforced ceiling — one greater than the highest file descriptor number a process may ever have open at once" }] },
+      { "item": "The three behaviors this topic measures are not three unrelated facts about file descriptors; they are three consequences of the same single idea — an fd is a handle into a kernel object, not the object — applied to three different kinds of event: duplication, destruction, and inheritance across exec.", "at": [{ "step": "Every one of these mechanisms exists because an fd is a handle into a kernel-side resource, not the resource itself — and a handle can be duplicated, closed, or leaked independently of what it points to" }] },
+      { "item": "into_raw_fd and from_raw_fd, named directly in the syllabus clause but not exercised by this topic's own executed examples, are the explicit ownership-handoff points at an FFI or API boundary; this topic measures the Drop and borrow halves of I/O safety directly and leaves the handoff functions to the processes topic that follows, which actually crosses a process boundary.", "at": [{ "step": "Recap: a shared offset, a drop that really closes, and a leak that really does not happen by default" }] },
+      { "item": "This topic answers, in full, the exact gap Chapter 10's own handoff named: every task in that chapter's shutdown sequences implicitly held real kernel handles whose ownership rules were never made explicit at the Rust level, and this topic is where that implicit assumption finally becomes a measured, type-enforced guarantee.", "at": [{ "step": "Duplicate a file descriptor with a real dup() call, then read from the original and then the duplicate. Does the duplicate start reading from the beginning of the file, or from wherever the original left off?" }] }
+    ]
+  },
+  "gapReview": {
+    "date": "2026-10-23",
+    "by": "self-review",
+    "open": []
+  }
+}

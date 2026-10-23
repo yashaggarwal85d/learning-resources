@@ -1,0 +1,4 @@
+- **A file descriptor as a handle**: an fd is a process-local handle into a kernel-side open file description, not the resource itself. *Where you meet it:* a real `dup()` call producing a second fd that shares the original's own offset, measured directly.
+- **I/O safety**: `OwnedFd` closes a real resource on `Drop`, `BorrowedFd<'a>`/`AsFd` borrow without owning. *Where you meet it:* a dropped `OwnedFd`'s number genuinely failing a raw syscall, while a separate `BorrowedFd` stays valid.
+- **`O_CLOEXEC` as a default**: std opens every fd with close-on-exec set, specifically to stop it leaking into a child. *Where you meet it:* a real fork and exec, showing exactly which fd survives and which doesn't.
+- **`RLIMIT_NOFILE`**: the real, enforced ceiling on how many of these handles one process may hold open at once.
