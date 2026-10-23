@@ -207,6 +207,44 @@ Contents:
 - A concrete worked HashDoS cost example (200,000 colliding 10-byte strings in 2 MB of POST data, ≈40 billion string comparisons, ≥10 s on a 2 GHz machine) usable as `examples.py`'s own order-of-magnitude sanity check.
 - Confirms "randomization" (a random seed) was the industry's actual 2011–2012 patch response, which this talk and the SipHash paper both go on to show is insufficient against an adaptive attacker without full PRF strength — the same correction as above, from an independent source.
 
+## PEP 456 — Secure and interchangeable hash algorithm (CPython's own `hash()`)
+
+URL: https://peps.python.org/pep-0456/
+Version: PEP 456, fetched 2026-10-22
+
+> This PEP proposes SipHash as default string and bytes hash algorithm to properly
+> fix hash randomization once and for all.
+
+> SipHash [sip] is introduced as default hash algorithm. It is fast and small
+> despite its cryptographic properties.
+
+> The randomization was not part of the initial hash code, but was added as
+> counter measure against hash collision attacks as explained in oCERT-2011-003
+
+> Because FNV is not a cryptographic hash algorithm and the dict
+> implementation is not fortified against side channel analysis, the
+> randomization secrets can be calculated by a remote attacker.
+
+Contents:
+- Confirms CPython's own built-in `hash()` of `str`/`bytes` objects has used SipHash as its default algorithm since this PEP, chosen specifically to fix hash-collision/HashDoS attacks — the primary source justifying `examples.py`'s use of Python's real `hash()` as the keyed/PRF tier's benchmark, not a from-scratch reimplementation.
+- An independent primary-source citation of the same `oCERT-2011-003` disclosure already named in the SipHash paper and the AppSec slides, this time from CPython's own side of the fix.
+- The explicit reason the prior scheme (a randomized FNV) was still broken: FNV is linear/non-cryptographic, so "the randomization secrets can be calculated by a remote attacker" — the same shape of correction (seed alone is not enough on a non-cryptographic hash) as claim 9, from a third independent source.
+
+## Python command line and environment documentation (`PYTHONHASHSEED`)
+
+URL: https://docs.python.org/3/using/cmdline.html
+Version: current docs, fetched 2026-10-22
+
+> If this variable is not set or set to random, a random value is used
+> to seed the hashes of str and bytes objects.
+
+> If PYTHONHASHSEED is set to an integer value, it is used as a fixed
+> seed for generating the hash() of the types covered by the hash
+> randomization.
+
+Contents:
+- Confirms `PYTHONHASHSEED` is the real, documented per-process control for CPython's `hash()` randomization — the production mechanism `examples.py`'s keyed-tier benchmark actually runs under by default (random, unset).
+
 ## BLAKE3 README (cryptographic-hash tier, relative cost)
 
 URL: https://raw.githubusercontent.com/BLAKE3-team/BLAKE3/master/README.md

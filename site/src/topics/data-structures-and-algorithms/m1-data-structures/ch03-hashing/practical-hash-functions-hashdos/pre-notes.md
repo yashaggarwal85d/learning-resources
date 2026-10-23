@@ -1,0 +1,4 @@
+- **Linear scan**: declared again here (Chapters 1–2); the O(n) baseline step 1 opens against before the hash function replaces it.
+- **Hash function**: introduced here; a function that turns any key into a number, with no promise about what happens when two keys land on the same number — that promise is the rest of this chapter's subject, starting with topic 17.
+- **Bucket / chain**: previewed, not built, here; the slot a hash points to, and the list a chained table keeps there when more than one key lands in it — this topic's step 4 uses a chain only to demonstrate the flood, and topic 17 builds chaining itself.
+- **PRF (pseudorandom function)**: introduced here; a keyed function indistinguishable from one that just picks a random output for every input — the actual property this topic's "keyed hash" tier needs, beyond merely having a secret.
