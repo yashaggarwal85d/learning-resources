@@ -110,7 +110,7 @@ export function MutexSynchronizesFig({ t }: StepCtx) {
           {threadDot(x, y, `t${i + 1}`)}
         </g>
       ))}
-      <T x={60} y={260} s={13} f={C.taupe} o={fa(t, 1.7, 0.4)}>every worker's increment lands; the count is exact, never short</T>
+      <T x={60} y={260} s={13} f={C.taupe} o={fa(t, 1.7, 0.4)}>every increment lands; the count comes out exact</T>
     </Svg>
   );
 }
@@ -143,22 +143,22 @@ export function GuardNotSendFig({ t }: StepCtx) {
 // ── 6 · PhantomData opt-out and unsafe impl Send opt-in (takeaway) ──────────────────────────────
 export function OverridesFig({ t }: StepCtx) {
   return (
-    <Svg label="a plain marker field inherits Send; a raw-pointer marker refuses it regardless; unsafe impl Send grants it back by hand" h={320}>
+    <Svg label="a plain marker field inherits Send; a raw-pointer marker refuses it regardless; unsafe impl Send grants it back by hand" h={340}>
       <g opacity={fa(t, 0.2, 0.4)}>
-        <T x={40} y={40} s={13} f={C.crema}>PhantomData&lt;T&gt;</T>
-        {traitBadge(230, 28, 'Send', true)}
+        <T x={40} y={36} s={13} f={C.crema}>PhantomData&lt;T&gt;</T>
+        {traitBadge(40, 48, 'Send', true)}
       </g>
       <g opacity={fa(t, 0.7, 0.4)}>
-        <T x={40} y={90} s={13} f={C.crema}>PhantomData&lt;*const T&gt;</T>
-        {traitBadge(230, 78, 'Send', false)}
+        <T x={220} y={36} s={13} f={C.crema}>PhantomData&lt;*const T&gt;</T>
+        {traitBadge(220, 48, 'Send', false)}
       </g>
       <g opacity={fa(t, 1.3, 0.4)}>
-        <T x={40} y={150} s={13} f={C.crema}>unsafe impl&lt;T: Send&gt; Send for Carton&lt;T&gt;</T>
-        <Draw pts={[[400, 155], [520, 155]]} t={t} from={1.5} to={1.7} stroke={C.caramel} w={1.5} pen={false} />
-        {threadDot(545, 155, 't2')}
+        <T x={40} y={130} s={13} f={C.crema}>unsafe impl&lt;T: Send&gt; Send for Carton&lt;T&gt;</T>
+        <Draw pts={[[60, 170], [180, 170]]} t={t} from={1.5} to={1.7} stroke={C.caramel} w={1.5} pen={false} />
+        {threadDot(205, 170, 't2')}
       </g>
-      <T x={40} y={230} s={13} f={C.taupe} o={fa(t, 2.0, 0.4)}>one marker closes a door the compiler would open on its own</T>
-      <T x={40} y={260} s={13} f={C.taupe} o={fa(t, 2.3, 0.4)}>one unsafe line opens a door the compiler could never prove itself</T>
+      <T x={40} y={240} s={13} f={C.taupe} o={fa(t, 2.0, 0.4)}>one marker closes a door the compiler opens on its own</T>
+      <T x={40} y={270} s={13} f={C.taupe} o={fa(t, 2.3, 0.4)}>one unsafe line opens a door the compiler could never prove</T>
     </Svg>
   );
 }
@@ -210,10 +210,10 @@ export function RcAwaitReveal({ t }: StepCtx) {
 // ── 9 · Recap ────────────────────────────────────────────────────────────────────────────────────
 export function Recap({ t }: StepCtx) {
   const rows = [
-    'Send is safe-to-move; Sync is safe-to-share — two separate, structural facts',
-    'Cell and RefCell are Send but never Sync; a lock adds the synchronization that closes the gap',
-    "a lock's own guard is tied to the thread that took it, even though the value it protects isn't",
-    "a raw-pointer marker and an unsafe impl are the compiler's only two deliberate overrides",
+    'move and share are two separate questions',
+    'a lock adds sync a bare cell never has',
+    'a guard stays tied to its own thread',
+    'only two deliberate overrides exist here',
   ];
   return (
     <Svg label="recap: two structural facts, and the compiler's only two overrides" h={300}>
