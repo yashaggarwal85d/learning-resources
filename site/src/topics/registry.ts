@@ -2858,4 +2858,24 @@ export const TOPICS: TopicMeta[] = [
     handoff:
       "Arrow is the shared memory format; pandas 3.0 is the first topic to show what changes when a library actually builds its own dtypes on top of it instead of NumPy's.",
   },
+  {
+    id: 'de.pandas-3-0-semantics',
+    domain: 'data-engineering',
+    slug: 'data-engineering/m1-foundations/ch04-advanced-python-data/pandas-3-0-semantics',
+    title: 'pandas 3.0 semantics',
+    syllabusTitle: 'pandas 3.0 semantics',
+    kind: 'full',
+    status: 'held',
+    milestone: { number: 1, title: 'Foundations' },
+    chapter: { number: 4, title: 'Advanced Python for Data Systems', section: '4.2' },
+    minutes: 15,
+    verified: '2026-10-23',
+    introduces: ['pandas-copy-on-write'],
+    uses: ['arrow-columnar-format'],
+    declared: ['basic pandas familiarity (DataFrame, Series)'],
+    bridge:
+      "Arrow is the shared memory format underneath. This topic is the first library this chapter shows actually built on it: pandas 3.0, whose headline semantic changes — Copy-on-Write always on, an Arrow-backed string dtype — only make sense in terms of the buffers topic 5 just introduced.",
+    handoff:
+      "pandas 3.0 adopted Arrow-backed dtypes as an option; the next topic is the dataframe library that was designed around Arrow and lazy evaluation from the start, rather than retrofitted onto it.",
+  },
 ];
