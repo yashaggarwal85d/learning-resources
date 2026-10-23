@@ -1,0 +1,90 @@
+{
+  "steps": [
+    {
+      "lines": [
+        "Register a real socket's own connection attempt directly with a readiness-polling library, naming exactly which operation to watch for, then call poll and wait.",
+        { "beat": 0.3 },
+        "Once that connection actually completes, does a real event come back saying so?"
+      ],
+      "answer": [
+        "Yes — a genuine readiness event comes back, naming the exact socket that just became ready.",
+        "This isn't a guess or a timeout firing blindly. It's a real signal, tied to the specific thing that was registered."
+      ]
+    },
+    {
+      "lines": [
+        "Run it for real: register the connection, call poll, and a writable readiness event comes straight back, naming that exact registered socket.",
+        "Register interest, then wait to be tapped on the shoulder — and here, for the first time in this chapter, that tap is the literal thing being measured."
+      ],
+      "takeaway": "Registering interest and polling delivers a real readiness event naming the exact source that became ready, not a guess."
+    },
+    {
+      "lines": [
+        "Now register a different socket for exactly the same kind of readiness, except this time, nothing is ever written to it at all. Nothing will ever make it ready.",
+        { "beat": 0.3 },
+        "What does the call to poll actually do in that case?"
+      ],
+      "answer": [
+        "It simply waits — genuinely, for close to the entire length of time it was told to wait, and then comes back empty.",
+        "There's no event to deliver, because nothing ever happened. It doesn't guess, and it doesn't return early."
+      ]
+    },
+    {
+      "lines": [
+        "Measure that wait directly: it comes back after almost exactly the full length of time requested, with no event in it at all.",
+        "This is the real mechanism this whole chapter has been calling 'an idle worker parking' — here, it's the literal thing, timed."
+      ],
+      "takeaway": "With nothing ever ready, the call genuinely parks for close to the full timeout — the real mechanism behind an idle worker, not a diagram."
+    },
+    {
+      "lines": [
+        "Take the ordinary way of waiting a fixed length of time inside one of these async units of work, and time it precisely from the moment it starts.",
+        { "beat": 0.3 },
+        "Does it actually wake up close to the real length of time requested, or does it just wake up eventually, whenever it happens to get around to it?"
+      ],
+      "answer": [
+        "It wakes up remarkably close to the real, requested length of time — not immediately, and not noticeably late either.",
+        "Something is actually watching the clock and waking it at close to the right moment, not just leaving it to chance."
+      ]
+    },
+    {
+      "lines": [
+        "Measure it precisely: ask for two hundred milliseconds, and it wakes at two hundred and one.",
+        "This is the thing that actually calls the wake function at the right moment — the exact mechanism an earlier chapter left entirely unnamed."
+      ],
+      "takeaway": "The timer driver is the thing that actually calls wake at close to the right moment — proven directly here, not assumed."
+    },
+    {
+      "lines": [
+        "There's a newer, much-discussed way of doing fast input and output on modern systems that some runtimes have already adopted as their default.",
+        { "beat": 0.3 },
+        "Is that the default way this particular runtime does its input and output now?"
+      ],
+      "answer": [
+        "No — not by default, and not without explicitly opting into it.",
+        "It's real, and it exists, but it's still marked unstable, requiring an explicit flag most programs never pass."
+      ]
+    },
+    {
+      "lines": [
+        "The crate's own words say this plainly: that feature is Linux-only, and using it at all requires passing a specific, explicit flag to the compiler, one that openly admits its own public interface might still change.",
+        "Nothing about everything measured so far in this topic depends on it at all."
+      ]
+    },
+    {
+      "lines": [
+        "Put the whole cycle back together now, with every single step of it already backed by something measured directly in this very topic: register interest in something specific, wait, a real event names exactly what became ready, that wakes the right unit of work, and it runs again from there.",
+        "An earlier chapter built the waking and polling contract in the abstract, with a hand-rolled, single-threaded stand-in. This is the real thing that calls it, for real, in a real runtime."
+      ]
+    },
+    {
+      "lines": [
+        "Registering interest and polling delivers a real, named readiness event once something genuinely becomes ready.",
+        "With nothing ready at all, that same call genuinely parks for the full length of time requested, no shortcuts.",
+        "A timer wakes a waiting unit of work close to its real, requested deadline, measured down to the millisecond.",
+        "And a newer, faster way of doing input and output exists, named honestly as real but still unstable, not the default.",
+        "Every one of these mechanisms, across this entire chapter, is a genuine, working guarantee. And every single one of them can also be broken: a unit of work that never yields, a channel with no real limit on it, a cancellation path nobody ever actually defined."
+      ]
+    }
+  ]
+}
