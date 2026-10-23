@@ -1,0 +1,76 @@
+{
+  "topic": "dsa.lsm-compaction-amplification",
+  "syllabus": [
+    {
+      "clause": "leveled vs tiered vs hybrid compaction; read, write and space amplification and the RUM trade-off (Athanassoulis et al., EDBT 2016); Monkey (SIGMOD 2017) per-level filter sizing and Dostoevsky (SIGMOD 2018) lazy leveling.",
+      "at": [
+        { "step": "One answer: leveled compaction. Each level holds one non-overlapping sorted run with its own size target; once a level grows past its target, the run merges down into the next level, rewriting every key it touches." },
+        { "step": "A different answer: tiered compaction. Several runs of similar size accumulate at a level; only once enough of them pile up are they all merged together into one wider run one level down." },
+        { "step": "Three numbers measure what either policy actually costs: write amplification, extra bytes written beyond the one logical write; read amplification, extra runs a read checks beyond the one it needs; space amplification, extra on-disk bytes beyond the live data itself." },
+        { "step": "Leveled minimizes space amplification at the cost of read and write amplification. Tiered minimizes write amplification at the cost of read and space amplification. A hybrid lands between both on the axes it mixes — it relocates the trade, not escapes it." },
+        { "step": "One piece of this cost is tunable on its own: the Bloom filter at every level. Most systems give every level's filter the same false-positive rate. Monkey's result: a tighter filter on a smaller level and a looser one on a bigger level lowers the total read cost for the same total memory." },
+        { "step": "Dostoevsky goes further: it treats leveled and tiered as two ends of one spectrum and picks a point on it per workload, merging only at the largest level by default and merging more only where a workload actually demands it." }
+      ]
+    }
+  ],
+  "sources": [
+    {
+      "source": "Athanassoulis, Kester, Idreos, Ailamaki, Stoica, Callaghan — \"Designing Access Methods: The RUM Conjecture\" (EDBT 2016)",
+      "items": [
+        { "item": "The RUM conjecture's own precise statement: bounding two of read/update/memory overheads sets a hard lower bound on the third", "at": [{ "deep": "Into the internals" }] },
+        { "item": "The three named overheads (read, update, memory) as the general case this topic's amplification numbers instantiate", "at": [{ "deep": "Into the internals" }] }
+      ]
+    },
+    {
+      "source": "Dayan, Athanassoulis, Idreos — \"Monkey: Optimal Navigable Key-Value Store\" (SIGMOD 2017)",
+      "items": [
+        { "item": "A uniform per-level Bloom-filter false-positive rate is suboptimal because worst-case lookup cost is proportional to the sum of every level's rate", "at": [{ "step": "One piece of this cost is tunable on its own: the Bloom filter at every level. Most systems give every level's filter the same false-positive rate. Monkey's result: a tighter filter on a smaller level and a looser one on a bigger level lowers the total read cost for the same total memory." }] },
+        { "item": "Monkey's own fix: size each level's filter false-positive rate proportional to that level's run size", "at": [{ "step": "One piece of this cost is tunable on its own: the Bloom filter at every level. Most systems give every level's filter the same false-positive rate. Monkey's result: a tighter filter on a smaller level and a looser one on a bigger level lowers the total read cost for the same total memory." }] }
+      ]
+    },
+    {
+      "source": "Dayan, Idreos — \"Dostoevsky\" (SIGMOD 2018)",
+      "items": [
+        { "item": "Lazy Leveling: merge only at the largest level, improving update cost while holding point-lookup, range-lookup, and space-amplification bounds", "at": [{ "step": "Dostoevsky goes further: it treats leveled and tiered as two ends of one spectrum and picks a point on it per workload, merging only at the largest level by default and merging more only where a workload actually demands it." }] },
+        { "item": "Dostoevsky navigates the tiered-to-leveled spectrum per workload under an explicit space-amplification constraint", "at": [{ "step": "Dostoevsky goes further: it treats leveled and tiered as two ends of one spectrum and picks a point on it per workload, merging only at the largest level by default and merging more only where a workload actually demands it." }] }
+      ]
+    },
+    {
+      "source": "RocksDB Compaction (wiki)",
+      "items": [
+        { "item": "The three-way trade-off, named directly: leveled minimizes space at the cost of read+write; tiered minimizes write at the cost of read+space; a hybrid lands in between", "at": [{ "step": "Leveled minimizes space amplification at the cost of read and write amplification. Tiered minimizes write amplification at the cost of read and space amplification. A hybrid lands between both on the axes it mixes — it relocates the trade, not escapes it." }] },
+        { "item": "The per-level merge mechanic: Ln-1 merged into Ln, rewriting the destination level", "at": [{ "step": "One answer: leveled compaction. Each level holds one non-overlapping sorted run with its own size target; once a level grows past its target, the run merges down into the next level, rewriting every key it touches." }] }
+      ]
+    },
+    {
+      "source": "RocksDB Leveled Compaction (wiki)",
+      "items": [
+        { "item": "Exponentially increasing per-level target sizes, and a file-level merge into the overlapping range of the next level down", "at": [{ "step": "One answer: leveled compaction. Each level holds one non-overlapping sorted run with its own size target; once a level grows past its target, the run merges down into the next level, rewriting every key it touches." }] }
+      ]
+    },
+    {
+      "source": "RocksDB Universal Compaction (wiki)",
+      "items": [
+        { "item": "Tiered's own merge trigger: several similar-sized runs merged together only once accumulated", "at": [{ "step": "A different answer: tiered compaction. Several runs of similar size accumulate at a level; only once enough of them pile up are they all merged together into one wider run one level down." }] },
+        { "item": "A real, named size-amplification-ratio formula, adapted directly in examples.py", "at": [{ "step": "Prove it" }] }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "blind self-review, research stage",
+    "date": "2026-10-23",
+    "items": [
+      { "item": "This topic's own write/read/space amplification numbers are a compaction-specific instance of the RUM conjecture's general read/update/memory overheads, not a restatement of the paper's own vocabulary — the RUM paper itself never says 'write amplification' or 'space amplification'.", "at": [{ "deep": "Into the internals" }] },
+      { "item": "Leveled compaction's read and space advantages and its write disadvantage both come from the same structural fact: a level holds exactly one non-overlapping run, so a key gets rewritten every time it crosses a level boundary on the way down.", "at": [{ "step": "One answer: leveled compaction. Each level holds one non-overlapping sorted run with its own size target; once a level grows past its target, the run merges down into the next level, rewriting every key it touches." }] },
+      { "item": "Tiered compaction's write advantage and its read and space disadvantages both come from the same structural fact: runs are left unmerged and un-deduplicated against each other until a threshold count is reached.", "at": [{ "step": "A different answer: tiered compaction. Several runs of similar size accumulate at a level; only once enough of them pile up are they all merged together into one wider run one level down." }] },
+      { "item": "A hybrid compaction policy (tiered at smaller levels, leveled at larger ones) is not a fourth, independent trade-off — it is a weighted average of the leveled and tiered trade-offs, proportional to how much of the level range each style governs.", "at": [{ "step": "Leveled minimizes space amplification at the cost of read and write amplification. Tiered minimizes write amplification at the cost of read and space amplification. A hybrid lands between both on the axes it mixes — it relocates the trade, not escapes it." }] },
+      { "item": "Monkey's result is orthogonal to the choice of compaction policy itself: it reallocates filter memory within whichever merge policy (leveled, tiered, or hybrid) a system already runs, and touches neither write amplification nor space amplification.", "at": [{ "step": "One piece of this cost is tunable on its own: the Bloom filter at every level. Most systems give every level's filter the same false-positive rate. Monkey's result: a tighter filter on a smaller level and a looser one on a bigger level lowers the total read cost for the same total memory." }] },
+      { "item": "Dostoevsky's Lazy Leveling does not contradict the RUM trade-off: it holds lookup cost and space amplification to the same bound while improving updates, which is possible only because leveled compaction was, by the paper's own diagnosis, paying more merge cost at smaller levels than those levels' contribution to lookup or space cost justified.", "at": [{ "step": "Dostoevsky goes further: it treats leveled and tiered as two ends of one spectrum and picks a point on it per workload, merging only at the largest level by default and merging more only where a workload actually demands it." }] },
+      { "item": "This topic's own leveled-vs-tiered measurement reuses topic 28's WAL/memtable/SSTable shape and confirms both compaction policies end with the exact same live key set a plain, uncompacted replay of every write would produce — compaction changes cost, never correctness.", "at": [{ "step": "Prove it" }] },
+      { "item": "The size-amplification-ratio formula from RocksDB's Universal Compaction (sum of non-largest-run sizes over the largest run's size) generalizes to a leveled structure too, once 'run' is read as 'level's own live content' rather than 'one of several same-tier runs'.", "at": [{ "step": "Prove it" }] },
+      { "item": "This topic's own measured numbers (leveled vs. tiered amplification, uniform vs. Monkey-style filter allocation) are scoped to its own examples.py workload and parameters, not claimed to generalize to every workload or every real system's own tuning.", "at": [{ "step": "Prove it" }] },
+      { "item": "Chapter 5 closes on a structural symmetry: topics 26-27 (B-trees) pay an I/O cost immediately, in place; topics 28-29 (LSM-trees) defer it, sequentially, to compaction — both halves optimize the same quantity, I/O per block, from opposite starting assumptions about when to pay it.", "at": [{ "step": "Flushing a full memtable to its own run solves the write problem, but only by deferring it: every run flushed is one more run every read has to check, and one more copy of every key compaction will eventually have to rewrite." }] }
+    ]
+  },
+  "gapReview": { "date": "2026-10-23", "by": "self-review", "open": [] }
+}

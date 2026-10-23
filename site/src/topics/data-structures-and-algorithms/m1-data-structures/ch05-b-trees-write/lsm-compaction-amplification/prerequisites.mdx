@@ -1,0 +1,34 @@
+import Resource from '../../../../../components/Resource.astro';
+
+<section class="prereq" data-section="before">
+
+### <span class="n">01</span> Already covered
+
+<ul class="resources">
+  <Resource kind="reel" host={props.host} domain="data-structures-and-algorithms" title="LSM-tree write and read paths">The write path that creates the runs this topic compacts, and the read path whose cost compaction exists to bound.</Resource>
+</ul>
+
+</section>
+
+<section class="prereq" data-section="standard">
+
+### <span class="n">02</span> The real source, from research and production
+
+<ul class="resources">
+  <Resource kind="reading" title="Designing Access Methods: The RUM Conjecture" href="https://openproceedings.org/2016/conf/edbt/paper-12.pdf" by="Athanassoulis, Kester, Idreos, Ailamaki, Stoica, Callaghan — EDBT 2016">The general trade-off this topic's own write/read/space amplification numbers are one instance of.</Resource>
+  <Resource kind="reading" title="Monkey: Optimal Navigable Key-Value Store" href="https://nivdayan.github.io/monkeykeyvaluestore.pdf" by="Dayan, Athanassoulis, Idreos — SIGMOD 2017">Why a uniform per-level Bloom-filter false-positive rate is suboptimal, and the fix.</Resource>
+  <Resource kind="reading" title="Dostoevsky" href="https://nivdayan.github.io/dostoevsky.pdf" by="Dayan, Idreos — SIGMOD 2018">Lazy Leveling and the tiered-to-leveled spectrum this topic's own compaction comparison sits on.</Resource>
+  <Resource kind="reading" title="RocksDB Compaction" href="https://raw.githubusercontent.com/wiki/facebook/rocksdb/Compaction.md" by="Meta">The leveled/tiered/hybrid taxonomy this topic names directly, in a real, current production engine.</Resource>
+</ul>
+
+</section>
+
+<section class="prereq" data-section="later">
+
+### <span class="n">03</span> Where this goes next
+
+<ul class="resources">
+  <Resource kind="reel" host={props.host} domain="data-structures-and-algorithms" title="Binary heaps and heapify">A narrower question, answered the same way regardless of where anything physically sits: which one is smallest, right now.</Resource>
+</ul>
+
+</section>

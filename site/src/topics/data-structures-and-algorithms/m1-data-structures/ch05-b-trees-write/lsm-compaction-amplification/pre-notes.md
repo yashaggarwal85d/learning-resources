@@ -1,0 +1,5 @@
+- **Flushed run (topic 28)**: this topic's central starting point — an immutable, on-disk sorted run, produced one per memtable flush, which this topic now has to clean up.
+- **Bloom filter / fence pointer (topic 28)**: this topic's Monkey discussion reuses the Bloom filter directly, tuning its memory allocation rather than its mechanism.
+- **Tombstone (topic 28)**: a delete entry that must survive until compaction physically removes it together with the value it shadows — the reason compaction is also a correctness mechanism, not only a performance one.
+- **I/O model (Chapter 1 §1.3)**: the cost model (blocks moved, not comparisons) this topic's amplification numbers are themselves expressed in.
+- **Node-split-merge (topic 26)**: the in-place alternative this entire chapter-half (28-29) is built to avoid; not reused as a mechanism here.
