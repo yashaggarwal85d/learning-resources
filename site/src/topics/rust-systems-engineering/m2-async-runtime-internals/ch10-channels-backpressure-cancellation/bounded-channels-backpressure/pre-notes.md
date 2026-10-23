@@ -1,0 +1,4 @@
+- **Backpressure**: a producer genuinely made to wait because its consumer, and the bounded channel between them, cannot accept more right now. *Where you meet it:* a channel of capacity 1 pacing a fast producer to a slow consumer's speed, measured directly.
+- **`Lagged` error**: the signal a `broadcast` receiver gets when it has fallen behind far enough that messages were dropped before it could read them. *Where you meet it:* exactly how many messages a receiver missed, named directly rather than silently lost.
+- **Latest-value-only**: `watch`'s guarantee that a receiver sees only the most recently sent value. *Where you meet it:* a receiver that checks in once after 50 sends, seeing only the last one.
+- **Load shedding**: refusing new work immediately rather than queueing it. *Where you meet it:* `try_send`'s immediate refusal on a full channel, measured in a fraction of a millisecond.

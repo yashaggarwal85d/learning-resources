@@ -1,0 +1,24 @@
+import Resource from '../../../../../components/Resource.astro';
+
+<section class="prereq" data-section="chapter-so-far">
+
+### <span class="n">01</span> Where the last chapter left off
+
+<ul class="resources">
+  <Resource kind="reel" host={props.host} domain="rust-systems-engineering" title="Runtime observability and operating rules">A Semaphore's permits genuinely run out; a bounded channel genuinely refuses a full send.</Resource>
+</ul>
+
+</section>
+
+<section class="prereq" data-section="channels-primary">
+
+### <span class="n">02</span> The real docs: four channels, four promises
+
+<ul class="resources">
+  <Resource kind="reading" title="tokio::sync::mpsc" href="https://docs.rs/tokio/latest/tokio/sync/mpsc/index.html" by="The Tokio Project">Bounded versus unbounded, and backpressure in the crate's own words.</Resource>
+  <Resource kind="reading" title="tokio::sync::broadcast" href="https://docs.rs/tokio/latest/tokio/sync/broadcast/index.html" by="The Tokio Project">What happens to a lagging receiver, named directly.</Resource>
+  <Resource kind="reading" title="tokio::sync::watch" href="https://docs.rs/tokio/latest/tokio/sync/watch/index.html" by="The Tokio Project">A channel that only retains the last sent value.</Resource>
+  <Resource kind="reading" title="tokio::sync::oneshot" href="https://docs.rs/tokio/latest/tokio/sync/oneshot/index.html" by="The Tokio Project">Exactly one value, across exactly one reply.</Resource>
+</ul>
+
+</section>
