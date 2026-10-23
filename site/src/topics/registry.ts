@@ -2748,4 +2748,24 @@ export const TOPICS: TopicMeta[] = [
     handoff:
       "Every profiling number in this section was read off Python-level code calling into native engines underneath it. The next section turns to those native engines directly, starting from the one memory format most of them now share without copying: Arrow.",
   },
+  {
+    id: 'de.arrow-columnar-memory-format',
+    domain: 'data-engineering',
+    slug: 'data-engineering/m1-foundations/ch04-advanced-python-data/arrow-columnar-memory-format',
+    title: 'Arrow columnar memory format',
+    syllabusTitle: 'Arrow columnar memory format',
+    kind: 'full',
+    status: 'held',
+    milestone: { number: 1, title: 'Foundations' },
+    chapter: { number: 4, title: 'Advanced Python for Data Systems', section: '4.2' },
+    minutes: 15,
+    verified: '2026-10-23',
+    introduces: ['arrow-columnar-format'],
+    uses: ['cpython-object-model'],
+    declared: [],
+    bridge:
+      "Every profiling number in §4.1 was read off Python-level code calling into a native engine underneath it. This topic is the memory format most of those native engines now share without copying a single byte at the boundary: Arrow.",
+    handoff:
+      "Arrow is the shared memory format; pandas 3.0 is the first topic to show what changes when a library actually builds its own dtypes on top of it instead of NumPy's.",
+  },
 ];

@@ -1,0 +1,25 @@
+import Resource from '../../../../../components/Resource.astro';
+
+<section class="prereq" data-section="before-this">
+
+### <span class="n">01</span> Before this: the §4.1 topics this one's hook and compute-kernel contrast both lean on
+
+<ul class="resources">
+  <Resource kind="reel" title="CPython object model and memory cost" domain="data-engineering" host="de.cpython-object-model-memory" by="four topics back" />
+  <Resource kind="reel" title="Profiling CPU, memory and allocations" domain="data-engineering" host="de.profiling-cpu-memory-allocations" by="the topic right before this one" />
+</ul>
+
+</section>
+
+<section class="prereq" data-section="arrow-straight-from-the-source">
+
+### <span class="n">02</span> The Arrow specification and PyArrow's own documentation
+
+<ul class="resources">
+  <Resource kind="reading" title="Arrow Columnar Format" href="https://arrow.apache.org/docs/format/Columnar.html" by="Apache Arrow">Validity bitmaps, the variable-size binary view layout, dictionary and run-end encoding, record batches.</Resource>
+  <Resource kind="reading" title="Data Types and In-Memory Data Model" href="https://arrow.apache.org/docs/python/data.html" by="Apache Arrow">ChunkedArray and Table as no-copy containers for multiple record batches.</Resource>
+  <Resource kind="reading" title="Compute Functions" href="https://arrow.apache.org/docs/python/compute.html" by="Apache Arrow">The pyarrow.compute kernel API.</Resource>
+  <Resource kind="reading" title="Using StringView / German Style Strings to Make Queries Faster: Part 1- Reading Parquet" href="https://datafusion.apache.org/blog/2024/09/13/string-view-german-style-strings-part-1/" by="Apache DataFusion">The "German Strings" name, prior adopters, and the measured ClickBench speedup — sourced-only on this sandbox.</Resource>
+</ul>
+
+</section>
