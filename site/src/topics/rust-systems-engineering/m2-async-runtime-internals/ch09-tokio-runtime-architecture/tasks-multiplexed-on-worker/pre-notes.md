@@ -1,0 +1,7 @@
+- **Worker thread**: one of a small, fixed pool of real OS threads a multi-thread runtime creates at startup. *Where you meet it:* the thing a task is multiplexed onto, never one-to-one.
+- **Multiplexing**: running many lightweight units of work on far fewer real threads. *Where you meet it:* why a hundred spawned tasks never means a hundred real threads.
+- **`Builder::new_multi_thread`**: builds a runtime with its own fixed worker pool. *Where you meet it:* measuring a real worker stall directly.
+- **`Builder::new_current_thread`**: builds a runtime with no worker threads of its own. *Where you meet it:* only runs while `Runtime::block_on` drives it.
+- **`LocalSet`**: a set of tasks guaranteed to run on one specific thread. *Where you meet it:* the real, working home for a `!Send` future `tokio::spawn` refuses.
+- **`spawn_local`**: spawns a `!Send` future onto a `LocalSet`. *Where you meet it:* the exact call that runs what `tokio::spawn` cannot.
+- **Workload-shape decision**: a choice driven by what the program actually needs, not a default. *Where you meet it:* current-thread versus multi-thread, decided by whether the work is genuinely single-threaded.

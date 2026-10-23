@@ -1,0 +1,90 @@
+{
+  "steps": [
+    {
+      "lines": [
+        "Spawn a hundred of these lightweight units of work onto a runtime that was only given two real worker threads to run on.",
+        { "beat": 0.3 },
+        "Does that actually start a hundred real operating-system threads underneath, one for each?"
+      ],
+      "answer": [
+        "No, it genuinely does not — all one hundred run on the exact same two real threads, the whole time.",
+        "Each one of these units of work is a small, paused computation, not a thread at all, and a great many of them can sit multiplexed onto a very small number of real ones."
+      ]
+    },
+    {
+      "lines": [
+        "That's the whole picture, drawn out: a small, fixed handful of real worker threads on one side, and a much larger flow of these lightweight units of work passing through them on the other.",
+        "None of them ever gets a thread of its own."
+      ]
+    },
+    {
+      "lines": [
+        "Now take a runtime with exactly one of these real worker threads, and give that one worker a call that genuinely never hands control back on its own — a real, blocking wait, with no pause point anywhere in it.",
+        { "beat": 0.3 },
+        "Right behind it, queue up a second unit of work that would otherwise finish instantly. What happens to that second one?"
+      ],
+      "answer": [
+        "It simply has to wait — for the entire length of that blocking call, with nothing else available to run it on.",
+        "There is only the one real worker thread in this picture, and it is now completely occupied; nothing can make a second one appear out of nowhere."
+      ]
+    },
+    {
+      "lines": [
+        "Measure that wait directly rather than just describing it: record the exact moment the second, otherwise-instant unit of work was created, then record the exact moment it actually started running.",
+        "The gap between those two moments comes out to almost exactly the length of the blocking call ahead of it."
+      ],
+      "takeaway": "A worker fully occupied by a call that never yields stalls every other unit of work that also needs it — measured directly here, not merely described."
+    },
+    {
+      "lines": [
+        "Here's a choice every one of these runtimes makes you commit to up front: build it with a whole fixed pool of these real worker threads, or build it with none of its own at all.",
+        { "beat": 0.3 },
+        "Is that choice just a style preference, with either one working equally well for any program?"
+      ],
+      "answer": [
+        "No — it's a real decision shaped by what the actual work looks like, not a matter of taste.",
+        "One of these two choices keeps its own pool of real threads running all the time regardless of anything else; the other one has no threads of its own at all, and only does anything while a specific call is actively driving it."
+      ]
+    },
+    {
+      "lines": [
+        "The documentation says this almost exactly: the version with its own fixed pool is always running, because it spawned those real threads itself. The version with none of its own only ever runs while that one specific driving call is actively keeping it going.",
+        "Most programs should reach for the version that keeps its own pool running, except in the genuinely single-threaded cases."
+      ],
+      "takeaway": "A pool-backed runtime is always running because it owns its own threads; a threadless one only runs while one specific call keeps actively driving it."
+    },
+    {
+      "lines": [
+        "Take a value that was never designed to be handed safely from one real thread to another, and hold onto it across one of these units of work's own pause points.",
+        { "beat": 0.3 },
+        "Can that unit of work still be handed off to the fixed worker pool the ordinary way?"
+      ],
+      "answer": [
+        "No — and this is refused outright, not merely discouraged.",
+        "The ordinary way of handing work off to that fixed pool explicitly requires the result to be safe to move to any one of those real threads, and this one plainly is not."
+      ]
+    },
+    {
+      "lines": [
+        "Try to compile exactly that, and the compiler does not just quietly refuse — it names the exact value responsible and says plainly why.",
+        "It points directly at the value held across the pause point and says it cannot be sent safely between threads at all."
+      ],
+      "takeaway": "Handing work off the ordinary way requires that result be safe to move between threads — a non-portable value held across a pause point makes that impossible to promise."
+    },
+    {
+      "lines": [
+        "One real, documented alternative solves this by making an entirely different promise: a dedicated set of these units of work that will only ever run on the one specific real thread that started them, never moved anywhere else at all.",
+        "Hand that exact, identical, non-portable value through that alternative instead, and it runs correctly, start to finish, producing exactly the result it was always going to produce."
+      ],
+      "takeaway": "A dedicated, single-thread-only set of these units of work runs the identical non-portable value the ordinary way refuses — by guaranteeing it is never moved anywhere else at all."
+    },
+    {
+      "lines": [
+        "A great many lightweight units of work turned out to multiplex onto a small, fixed handful of real threads, never one each — and one of them left unable to step aside stalls every single one behind it, proven here with a real, measured wait.",
+        "Keeping a whole pool of real threads running, versus keeping none at all, turned out to be a genuine decision shaped by the actual work, not a matter of taste.",
+        "And a dedicated, single-thread-only alternative turned out to be the real, working answer for a value the ordinary path has to refuse outright.",
+        "A worker that's fully stalled stops everything behind it completely — but even one that isn't stalled still has to decide, piece by piece, exactly what runs next and exactly where a newly-woken piece of work actually goes."
+      ]
+    }
+  ]
+}

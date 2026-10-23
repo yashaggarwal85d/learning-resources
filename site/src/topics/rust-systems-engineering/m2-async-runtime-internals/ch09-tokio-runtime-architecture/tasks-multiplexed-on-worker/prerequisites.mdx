@@ -1,0 +1,22 @@
+import Resource from '../../../../../components/Resource.astro';
+
+<section class="prereq" data-section="chapter-so-far">
+
+### <span class="n">01</span> Where the last chapter left off
+
+<ul class="resources">
+  <Resource kind="reel" host={props.host} domain="rust-systems-engineering" title="Async fn in traits and Send bounds">A trait's async method is neither dyn-safe nor Send-constrainable by default — both proven with real compiler errors.</Resource>
+</ul>
+
+</section>
+
+<section class="prereq" data-section="runtime-primary">
+
+### <span class="n">02</span> The real docs: how Tokio's runtimes actually behave
+
+<ul class="resources">
+  <Resource kind="reading" title="tokio::runtime" href="https://docs.rs/tokio/latest/tokio/runtime/index.html" by="The Tokio Project">Current-thread versus multi-thread scheduler behavior, in the crate's own words.</Resource>
+  <Resource kind="reading" title="LocalSet" href="https://docs.rs/tokio/latest/tokio/task/struct.LocalSet.html" by="The Tokio Project">Running !Send futures on the one thread that drives the set.</Resource>
+</ul>
+
+</section>

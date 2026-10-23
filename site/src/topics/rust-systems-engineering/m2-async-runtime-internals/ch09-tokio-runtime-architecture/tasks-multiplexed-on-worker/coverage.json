@@ -1,0 +1,66 @@
+{
+  "topic": "rust.tasks-multiplexed-on-worker",
+  "syllabus": [
+    {
+      "clause": "tasks are lightweight state machines multiplexed onto worker threads, not 1:1 with OS threads, so blocking a worker stalls unrelated tasks. Choosing the current-thread vs multi-thread runtime is a workload-shape decision, and LocalSet runs !Send tasks.",
+      "at": [
+        { "step": "Measured: a trivial task waited the full length of the blocking call" },
+        { "step": "A multi-thread runtime is always running; a current-thread one only runs while block_on drives it" },
+        { "step": "LocalSet runs that identical future for real, on the one thread that calls it" }
+      ]
+    }
+  ],
+  "sources": [
+    {
+      "source": "runtime-module",
+      "items": [
+        {
+          "item": "a multi thread runtime has a fixed number of worker threads, which are all created on startup",
+          "at": [{ "step": "No — a task is a lightweight state machine, not a thread" }]
+        },
+        {
+          "item": "most applications should use the multi-thread scheduler, except in some niche use-cases, such as when running only a single thread is required",
+          "at": [{ "step": "A multi-thread runtime is always running; a current-thread one only runs while block_on drives it" }]
+        },
+        {
+          "item": "the current-thread scheduler provides a single-threaded future executor; all tasks are created and executed on the current thread",
+          "at": [{ "step": "A multi-thread runtime is always running; a current-thread one only runs while block_on drives it" }]
+        }
+      ]
+    },
+    {
+      "source": "localset",
+      "items": [
+        {
+          "item": "in some cases it is necessary to run futures that do not implement Send; a local task set may be used to schedule one or more !Send futures to run together on the same thread",
+          "at": [{ "step": "LocalSet runs that identical future for real, on the one thread that calls it" }]
+        },
+        {
+          "item": "to spawn !Send futures, a local task set schedules them on the thread calling Runtime::block_on, using task::spawn_local",
+          "at": [{ "step": "LocalSet runs that identical future for real, on the one thread that calls it" }]
+        }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "self-review",
+    "date": "2026-10-23",
+    "items": [
+      { "item": "A task is not a thread: it is a Future plus the bookkeeping needed to poll it again, and Tokio multiplexes a potentially large number of these onto a small, fixed pool of real OS worker threads created once at startup.", "at": [{ "step": "No — a task is a lightweight state machine, not a thread" }] },
+      { "item": "Because tasks are multiplexed rather than mapped 1:1 onto threads, a worker fully occupied by a call with no yield point in it (a real, synchronous blocking call) cannot run anything else at all until that call returns — this is not a tuning problem to work around, it is a direct, structural consequence of multiplexing.", "at": [{ "step": "Measured: a trivial task waited the full length of the blocking call" }] },
+      { "item": "The measured stall in this topic (a trivial, already-ready task waiting the full length of an unrelated blocking call) is the single most important failure mode this chapter's whole architecture depends on understanding early, before any of the fixes (spawn_blocking, cooperative budgeting) make sense as fixes for anything.", "at": [{ "step": "Measured: a trivial task waited the full length of the blocking call" }] },
+      { "item": "Choosing the current-thread runtime over the multi-thread runtime is not a performance downgrade by default; it is correct specifically when a program is single-threaded by design, needs LocalSet for !Send tasks, or wants to avoid any cross-thread synchronization overhead for a genuinely single-threaded workload.", "at": [{ "step": "A multi-thread runtime is always running; a current-thread one only runs while block_on drives it" }] },
+      { "item": "A multi-thread runtime spawning its own worker threads at startup, independent of any call to block_on, is exactly why it is described as always running — tasks spawned onto it begin executing immediately on a free worker, with no separate step required to start the pool.", "at": [{ "step": "A multi-thread runtime is always running; a current-thread one only runs while block_on drives it" }] },
+      { "item": "tokio::spawn's Send bound exists for a concrete, mechanical reason, not an arbitrary restriction: a multi-threaded runtime's work-stealing scheduler may move a task from the worker that created it to any other worker at any suspension point, and a !Send value trapped inside that task's state would make that move unsound in exactly the way Chapter 8 proved for a bare future.", "at": [{ "step": "rustc's own diagnostic: tokio::spawn refuses it outright" }] },
+      { "item": "LocalSet is not a workaround that quietly breaks Send's guarantee; it is a structurally different scheduling promise — every task spawned with spawn_local is guaranteed to run only on the one thread that drives the LocalSet, so there is never a move for a !Send value to be unsound across in the first place.", "at": [{ "step": "LocalSet runs that identical future for real, on the one thread that calls it" }] },
+      { "item": "In production, a LocalSet is the standard answer for integrating a !Send-only library (one built around Rc, RefCell, or a non-thread-safe FFI handle) into an otherwise async codebase, typically on a dedicated current-thread runtime rather than mixed into a multi-thread one.", "at": [{ "step": "LocalSet runs that identical future for real, on the one thread that calls it" }] },
+      { "item": "This topic's two measured numbers (the stall length and the two running-vs-not-running runtime behaviors) are deliberately kept separate from Chapter 8's purely compile-time Send propagation: here the same rule has a scheduling consequence, not merely a compilation one, which is the whole reason this chapter exists after Chapter 8 rather than folding into it.", "at": [{ "step": "Measured: a trivial task waited the full length of the blocking call" }] },
+      { "item": "The next topic's work-stealing and cooperative-budgeting mechanisms only make sense once this topic's baseline is established: tasks are multiplexed, and an unyielding task on a worker is invisible to every scheduling mechanism until it returns control.", "at": [{ "step": "Recap: tasks multiplexed, a real stall, and LocalSet proven for !Send" }] }
+    ]
+  },
+  "gapReview": {
+    "date": "2026-10-23",
+    "by": "self-review",
+    "open": []
+  }
+}
