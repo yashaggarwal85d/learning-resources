@@ -1,0 +1,80 @@
+{
+  "topic": "dsa.b-tree-node-engineering",
+  "syllabus": [
+    {
+      "clause": "prefix and suffix truncation, key normalization, slotted node layout, fill factor, bulk loading from sorted input, and deduplication of duplicate keys (PostgreSQL 13+)",
+      "at": [
+        { "step": "A real page: a header tracking how many slots are used, a slot array of fixed-size offsets, and a growing area of the actual, variable-length keys." },
+        { "step": "Keep only the attributes that distinguish the last key on one side from the first key on the other. Everything after that point is dropped, at no storage cost at all." },
+        { "step": "A typed key — an integer, a string, a float — gets converted once into a fixed, byte-comparable form, so every comparison anywhere in the tree is a plain byte-for-byte check, never a type-aware parse." },
+        { "step": "Fill leaf pages left to right, keep the growing root only in memory, and only ever split the single page furthest to the right — because a sorted build never comes back to a page that's already full." },
+        { "step": "Fill factor is the percentage a page is packed to on a build or a right-edge append. Packing it completely full wastes nothing today, but risks a flood of splits on the very next write." },
+        { "step": "Repeated keys merge into one stored key plus a list of pointers to every row that shares it — and that merge only ever happens at the one moment a page was about to split anyway." }
+      ]
+    },
+    { "clause": "→ Rust Systems Engineering Ch.19", "at": [{ "deep": "In production" }] }
+  ],
+  "sources": [
+    {
+      "source": "PostgreSQL nbtree README",
+      "items": [
+        { "item": "Suffix truncation drops attributes not needed for the high key at a leaf split", "at": [{ "step": "Keep only the attributes that distinguish the last key on one side from the first key on the other. Everything after that point is dropped, at no storage cost at all." }] },
+        { "item": "Suffix truncation makes pivot tuples smaller, delaying internal-page splits", "at": [{ "step": "A typed key — an integer, a string, a float — gets converted once into a fixed, byte-comparable form, so every comparison anywhere in the tree is a plain byte-for-byte check, never a type-aware parse." }] },
+        { "item": "Suffix truncation does not apply to internal-page splits", "at": [{ "out": "The reel scopes suffix truncation to leaf splits only, matching the source; this edge case is documented in FACT-CHECK.md's red team and not stated as an on-screen claim." }] },
+        { "item": "Deduplication merges non-pivot tuples into one physical tuple with a posting list", "at": [{ "step": "Repeated keys merge into one stored key plus a list of pointers to every row that shares it — and that merge only ever happens at the one moment a page was about to split anyway." }] },
+        { "item": "Deduplication is always applied lazily, only when a page would otherwise split", "at": [{ "step": "Repeated keys merge into one stored key plus a list of pointers to every row that shares it — and that merge only ever happens at the one moment a page was about to split anyway." }] }
+      ]
+    },
+    {
+      "source": "PostgreSQL 13.0 Release Notes",
+      "items": [
+        { "item": "B-tree index deduplication shipped in PostgreSQL 13.0", "at": [{ "step": "Repeated keys merge into one stored key plus a list of pointers to every row that shares it — and that merge only ever happens at the one moment a page was about to split anyway." }] },
+        { "item": "An index built before upgrading needs a REINDEX to use deduplication", "at": [{ "deep": "In production" }] }
+      ]
+    },
+    {
+      "source": "PostgreSQL CREATE INDEX reference",
+      "items": [
+        { "item": "Fill factor is the percentage to pack a page to on build or right-edge append, default 90, range 10–100", "at": [{ "step": "Fill factor is the percentage a page is packed to on a build or a right-edge append. Packing it completely full wastes nothing today, but risks a flood of splits on the very next write." }] },
+        { "item": "deduplicate_items parameter, default on", "at": [{ "deep": "In production" }] }
+      ]
+    },
+    {
+      "source": "CMU 15-445 Spring 2024, Lecture 3: Database Storage Part 1",
+      "items": [
+        { "item": "Slotted page layout: header tracks used-slot count and last-used offset; slot array maps slots to tuple offsets", "at": [{ "step": "A real page: a header tracking how many slots are used, a slot array of fixed-size offsets, and a growing area of the actual, variable-length keys." }] }
+      ]
+    },
+    {
+      "source": "University at Buffalo CSE 350, Lecture 16: B-Tree Bulk Loading",
+      "items": [
+        { "item": "Bulk load: sort all data entries first, insert a pointer to the first leaf page into a new root", "at": [{ "step": "A million keys, already sorted, need to become one B+Tree. Insert them one at a time, or something else entirely?" }] },
+        { "item": "Index entries for leaf pages always go into the right-most index page just above leaf level; a split there may propagate up the right-most path to the root", "at": [{ "step": "Fill leaf pages left to right, keep the growing root only in memory, and only ever split the single page furthest to the right — because a sorted build never comes back to a page that's already full." }] }
+      ]
+    },
+    {
+      "source": "MyRocks record-format wiki",
+      "items": [
+        { "item": "Key normalization converts a typed key to a fixed, byte-comparable form for memcmp", "at": [{ "step": "A typed key — an integer, a string, a float — gets converted once into a fixed, byte-comparable form, so every comparison anywhere in the tree is a plain byte-for-byte check, never a type-aware parse." }] },
+        { "item": "Integer encoding: big-endian with sign bit flipped; float encoding: big-endian, sign bit flipped, bits inverted when negative", "at": [{ "step": "A typed key — an integer, a string, a float — gets converted once into a fixed, byte-comparable form, so every comparison anywhere in the tree is a plain byte-for-byte check, never a type-aware parse." }] }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "blind self-review, research stage",
+    "date": "2026-10-23",
+    "items": [
+      { "item": "A routing entry and a leaf entry answer structurally different questions (which side vs. is this exact key here), which is the reason only one of them can afford to drop bytes.", "at": [{ "step": "Keep only the attributes that distinguish the last key on one side from the first key on the other. Everything after that point is dropped, at no storage cost at all." }] },
+      { "item": "A slot array trades one layer of indirection for never having to shift existing tuples, the same trade an array of pointers makes over a packed array when entries vary in size.", "at": [{ "step": "A real page: a header tracking how many slots are used, a slot array of fixed-size offsets, and a growing area of the actual, variable-length keys." }] },
+      { "item": "Normalization and truncation solve different problems on the same key — one shrinks what a comparison needs to know, the other shrinks what a routing entry stores — and both savings compound rather than compete.", "at": [{ "step": "A typed key — an integer, a string, a float — gets converted once into a fixed, byte-comparable form, so every comparison anywhere in the tree is a plain byte-for-byte check, never a type-aware parse." }] },
+      { "item": "Bulk loading's speed comes from a structural property, not a clever shortcut: a sorted input makes the root-to-leaf descent that every ordinary insert needs entirely unnecessary, because every key's destination is already known from its position in the sort.", "at": [{ "step": "Fill leaf pages left to right, keep the growing root only in memory, and only ever split the single page furthest to the right — because a sorted build never comes back to a page that's already full." }] },
+      { "item": "Fill factor is a genuine trade-off, not a tuning mistake to avoid — the right value depends on whether the table is static or still taking writes, which is exactly why PostgreSQL exposes it as a parameter rather than hard-coding one value.", "at": [{ "step": "Fill factor is the percentage a page is packed to on a build or a right-edge append. Packing it completely full wastes nothing today, but risks a flood of splits on the very next write." }] },
+      { "item": "Lazy, split-time-only deduplication is cheaper than any background sweep specifically because most pages never split at all — a sweep would spend I/O on pages a lazy scheme never touches.", "at": [{ "step": "Repeated keys merge into one stored key plus a list of pointers to every row that shares it — and that merge only ever happens at the one moment a page was about to split anyway." }] },
+      { "item": "This topic's measured numbers (pivot-tuple byte savings, bulk-load page writes against one-at-a-time insertion, dedup ratio) are all tied to the specific key set and sizes examples.py states, not claimed to generalize to every key type or page size.", "at": [{ "step": "Prove it" }] },
+      { "item": "Suffix truncation's absence at internal-page splits is the one place this topic's own source draws a hard boundary around where the technique applies — a boundary this topic's claims respect rather than smooth over.", "at": [{ "step": "Prove it" }] },
+      { "item": "A slot array's offsets, not the tuples themselves, are what stay sorted and contiguous — the actual key-value bytes can sit anywhere in the growing data area, which is exactly what lets a new tuple claim free space without disturbing any tuple already placed.", "at": [{ "step": "A real page: a header tracking how many slots are used, a slot array of fixed-size offsets, and a growing area of the actual, variable-length keys." }] },
+      { "item": "PostgreSQL's choice not to compress deduplication's posting lists is a concurrency trade-off, not an oversight — compressed lists would make deleting one row's pointer out of a shared posting list far more expensive under concurrent access.", "at": [{ "deep": "The frontier" }] }
+    ]
+  },
+  "gapReview": { "date": "2026-10-23", "by": "self-review", "open": [] }
+}
