@@ -1,0 +1,42 @@
+{
+  "topic": "dsa.order-statistic-trees",
+  "syllabus": [
+    { "clause": "subtree-size augmentation for rank and select in O(log n)", "at": [{ "step": "One extra number per node: the size of its own subtree, including itself. Each one is just its children's sizes, plus one for itself." }, { "step": "Want the fifth-smallest key? Compare it against the left subtree's size. Too big, subtract and go right. Too small, go left. Exactly right, stop." }, { "step": "Rank runs the same trick upward: climb to the root, and every time the path climbs up from a right child, add that side's whole left subtree to the count." }] },
+    { "clause": "the general rule for which augmentations survive rotations", "at": [{ "step": "Size survives a rotation because it's computed from just a node and its two children. Any augmented field with that property survives the same way, at the same cost." }] }
+  ],
+  "sources": [
+    {
+      "source": "Charles E. Leiserson, MIT 6.046J/18.401J (Fall 2005), Lecture 11: \"Augmenting Data Structures\"",
+      "items": [
+        { "item": "The size field's recurrence: size[x] = size[left[x]] + size[right[x]] + 1", "at": [{ "step": "One extra number per node: the size of its own subtree, including itself. Each one is just its children's sizes, plus one for itself." }] },
+        { "item": "OS-SELECT compares the target rank against the left subtree's size and recurses, running in O(h) = O(log n) on a balanced tree", "at": [{ "step": "Want the fifth-smallest key? Compare it against the left subtree's size. Too big, subtract and go right. Too small, go left. Exactly right, stop." }] },
+        { "item": "Recolourings don't affect subtree sizes; rotations fix up subtree sizes in O(1) time, so insert/delete still runs in O(log n)", "at": [{ "step": "Two nodes change parent. Two sizes get recomputed. Everything else was never touched." }, { "out": "The underlying red-black invariant and its own rotation bound are topic 24's claims, reused here, not re-derived." }] },
+        { "item": "The four-step augmentation methodology (choose a structure, choose a field, verify it survives modifying operations, build new operations)", "at": [{ "deep": "Into the internals" }] }
+      ]
+    },
+    {
+      "source": "csce750 (Fall 2020), Lecture Notes: \"Augmenting Data Structures\"",
+      "items": [
+        { "item": "A rotation changes the size for only the two nodes incident to the rotated edge", "at": [{ "step": "Size survives a rotation because it's computed from just a node and its two children. Any augmented field with that property survives the same way, at the same cost." }] },
+        { "item": "The same four-step augmentation methodology, independently stated, following CLRS Chapter 14", "at": [{ "deep": "Into the internals" }] }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "blind self-review, research stage",
+    "date": "2026-10-23",
+    "items": [
+      { "item": "This topic deliberately augments topic 24's identical red-black tree rather than building a fresh balanced structure, because the point is that augmentation is cheap on top of an already-solved balancing problem.", "at": [{ "step": "A balanced tree answers whether a key is here in order log n. It says nothing about that key's rank among everything else in the tree. A small amount of bookkeeping, and that question is answered too." }] },
+      { "item": "The insert-path size update and the insert's own BST-property walk are the same walk — the augmentation costs nothing beyond what insert was already doing, not a separate O(log n) pass.", "at": [{ "step": "One new key, one path, one increment at every node along it — never a re-scan of anything beneath." }] },
+      { "item": "A valid size field and a valid BST/colour invariant are independent facts about a tree; this topic's predict step tests specifically whether a learner assumes the whole tree is disturbed by either an insert or a rotation, rather than only the directly affected nodes.", "at": [{ "step": "Insert a key into this augmented tree. Which nodes actually need their size updated?" }] },
+      { "item": "OS-SELECT's comparison trick (compare the target rank against the left subtree's size, recurse) is structurally the same partitioning decision quickselect makes, except the tree's shape already encodes it permanently rather than redoing it per query.", "at": [{ "step": "Want the fifth-smallest key? Compare it against the left subtree's size. Too big, subtract and go right. Too small, go left. Exactly right, stop." }] },
+      { "item": "The rotation-bound predict step directly targets the natural but wrong intuition that a structural change this visible (two nodes swapping roles) should require a proportionally wide recomputation.", "at": [{ "step": "A rotation relinks two nodes. How many of their subtree sizes actually need recomputing?" }] },
+      { "item": "The general augmentation-survives-rotation rule is this topic's own generalization from the sources' specific size-and-rotation example, stated explicitly as a generalization in FACT-CHECK.md rather than attributed as a direct quote.", "at": [{ "step": "Size survives a rotation because it's computed from just a node and its two children. Any augmented field with that property survives the same way, at the same cost." }] },
+      { "item": "Rank's upward climb and select's downward walk are the same subtree-size information read in two different directions — rank accumulates what select would have subtracted.", "at": [{ "step": "Rank runs the same trick upward: climb to the root, and every time the path climbs up from a right child, add that side's whole left subtree to the count." }] },
+      { "item": "This topic's own measured numbers (comparison counts tied to height, exactly two sizes changed by one isolated rotation) are honest measurements on one real augmented tree, not claimed as a universal worst case beyond what the sources themselves state.", "at": [{ "step": "Prove it" }] },
+      { "item": "Interval trees apply the identical general rule to a different field (max endpoint rather than size); this topic names that connection without re-teaching interval trees, which the syllabus skips.", "at": [{ "deep": "The frontier" }] },
+      { "item": "Ranks themselves aren't stored directly at each node because they would be expensive to maintain under tree modification, which is exactly why subtree sizes (a locally-computable field) are stored instead and rank is derived from them on demand.", "at": [{ "step": "Rank runs the same trick upward: climb to the root, and every time the path climbs up from a right child, add that side's whole left subtree to the count." }] }
+    ]
+  },
+  "gapReview": { "date": "2026-10-23", "by": "self-review", "open": [] }
+}
