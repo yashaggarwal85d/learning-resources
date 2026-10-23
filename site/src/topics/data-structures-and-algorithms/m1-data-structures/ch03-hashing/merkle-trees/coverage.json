@@ -1,0 +1,61 @@
+{
+  "topic": "dsa.merkle-trees",
+  "syllabus": [
+    { "clause": "hash trees for verifying and diffing large datasets in O(log n)", "at": [{ "step": "Hash each piece of data, then hash the hashes, two at a time, all the way up. One number at the top speaks for everything underneath it." }, { "step": "At each level, only one child can be wrong. Follow that branch down, and you reach the exact leaf in about log n steps." }] },
+    { "clause": "anti-entropy repair in Dynamo/Cassandra", "at": [{ "step": "A real database repair process, a version-control system, and a public certificate log all run on exactly this tree." }] },
+    { "clause": "Git objects", "at": [{ "step": "A real database repair process, a version-control system, and a public certificate log all run on exactly this tree." }] },
+    { "clause": "certificate transparency", "at": [{ "step": "A real database repair process, a version-control system, and a public certificate log all run on exactly this tree." }] },
+    { "clause": "content-defined variants (prolly trees) for diffable indexes", "at": [{ "step": "Split data into fixed-size pieces, and one early edit shifts every boundary after it. Split it where the data's own content says to, and only one boundary moves." }] }
+  ],
+  "sources": [
+    {
+      "source": "Ralph C. Merkle, \"A Certified Digital Signature\" (submitted 1979, Crypto '89)",
+      "items": [
+        { "item": "Tree authentication: H(i,j,Y) built recursively from two halves of a vector, up to one root value", "at": [{ "step": "Hash each piece of data, then hash the hashes, two at a time, all the way up. One number at the top speaks for everything underneath it." }] },
+        { "item": "Authenticating one leaf requires only the hashes on the path from that leaf to the root, not the whole tree", "at": [{ "step": "At each level, only one child can be wrong. Follow that branch down, and you reach the exact leaf in about log n steps." }] }
+      ]
+    },
+    {
+      "source": "Apache Cassandra, \"Repair\" documentation (4.1 stable docs)",
+      "items": [
+        { "item": "Repair compares two replicas' datasets with Merkle trees to find exactly the out-of-sync sections, without exchanging every key", "at": [{ "step": "A real database repair process, a version-control system, and a public certificate log all run on exactly this tree." }] }
+      ]
+    },
+    {
+      "source": "Pro Git, \"Git Internals — Git Objects\" (current edition)",
+      "items": [
+        { "item": "A tree object's entries are each the hash of a blob or subtree; a commit stores one tree hash plus its parent hashes", "at": [{ "step": "A real database repair process, a version-control system, and a public certificate log all run on exactly this tree." }] }
+      ]
+    },
+    {
+      "source": "IETF RFC 6962, \"Certificate Transparency\"",
+      "items": [
+        { "item": "A public, append-only Merkle tree of certificates; a log showing different histories can be caught by comparing roots and consistency proofs", "at": [{ "step": "A real database repair process, a version-control system, and a public certificate log all run on exactly this tree." }] }
+      ]
+    },
+    {
+      "source": "Dolt documentation, \"Prolly Tree\"",
+      "items": [
+        { "item": "Chunk boundaries are set by a rolling hash crossing a threshold, based on the data's own content, not a fixed byte offset", "at": [{ "step": "Split data into fixed-size pieces, and one early edit shifts every boundary after it. Split it where the data's own content says to, and only one boundary moves." }] }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "blind self-review, research stage",
+    "date": "2026-10-23",
+    "items": [
+      { "item": "Every structure earlier in this chapter answered a location question (where does this key live); this topic asks an agreement question instead (do these two copies match) and says so explicitly as the chapter's turn.", "at": [{ "step": "Consistent hashing answers where a piece of data lives. It says nothing about whether two copies of it actually agree. This topic proves they do, without comparing either one whole." }] },
+      { "item": "A Merkle tree's root hash is built by recursively hashing pairs of child hashes, not by hashing the whole dataset in one pass — the recursive structure is what makes the O(log n) walk-down possible.", "at": [{ "step": "Hash each piece of data, then hash the hashes, two at a time, all the way up. One number at the top speaks for everything underneath it." }] },
+      { "item": "A matching root hash is not merely probabilistic reassurance — with a cryptographic hash, it is as strong a guarantee as comparing every leaf, because any leaf difference provably propagates to the root.", "at": [{ "step": "Two trees, two root hashes — they match. What does that actually tell you?" }] },
+      { "item": "A root mismatch alone proves disagreement exists, without yet saying where — the two facts (disagreement exists; disagreement's location) are answered by two different operations at two different costs.", "at": [{ "step": "A mismatched root tells you the two copies disagree somewhere — but not yet where." }] },
+      { "item": "Finding one changed leaf costs about log n hash comparisons by walking from the root, following only the one child whose hash disagrees at each level — not n, and not a random search.", "at": [{ "step": "One leaf out of many changed. How many hashes do you have to check to find which one?" }] },
+      { "item": "The walk-down's correctness depends on exactly the same argument as the authentication direction: only one branch beneath a disagreement can be the source, so the other branch is provably safe to skip.", "at": [{ "step": "At each level, only one child can be wrong. Follow that branch down, and you reach the exact leaf in about log n steps." }] },
+      { "item": "Anti-entropy repair, Git's object model, and certificate transparency are three independent real systems built on the same Merkle-tree mechanism, each verified against its own current primary source rather than assumed from the structure's theoretical description.", "at": [{ "step": "A real database repair process, a version-control system, and a public certificate log all run on exactly this tree." }] },
+      { "item": "Fixed-offset chunking's weakness isn't the chunking itself — it's that a length-changing edit shifts the byte position of everything after it, and therefore every later boundary and every later chunk's hash.", "at": [{ "step": "Split data into fixed-size pieces, and one early edit shifts every boundary after it. Split it where the data's own content says to, and only one boundary moves." }] },
+      { "item": "Content-defined chunking fixes this by making boundaries a function of nearby content rather than a running byte count, so an edit's effect on chunk boundaries stays local to where the edit happened.", "at": [{ "deep": "Into the internals" }] },
+      { "item": "This topic's own measured numbers (hashes checked, chunks reshaped) come from a from-scratch tree and stream built in examples.py, not from any cited system's own benchmarked performance.", "at": [{ "step": "Prove it" }] },
+      { "item": "Merkle proofs underlie blockchains and other append-only ledgers too, named with no mechanism taught, since the syllabus doesn't name this use for this topic.", "at": [{ "deep": "The frontier" }] }
+    ]
+  },
+  "gapReview": { "date": "2026-10-23", "by": "self-review", "open": [] }
+}

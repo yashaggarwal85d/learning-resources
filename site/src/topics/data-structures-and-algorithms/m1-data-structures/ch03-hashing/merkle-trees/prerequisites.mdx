@@ -1,0 +1,36 @@
+import Resource from '../../../../../components/Resource.astro';
+
+<section class="prereq" data-section="before">
+
+### <span class="n">01</span> Already covered
+
+<ul class="resources">
+  <Resource kind="reel" host={props.host} domain="data-structures-and-algorithms" title="Practical hash functions and HashDoS">A cryptographic hash strong enough that two different inputs practically never share a hash — the guarantee a Merkle tree's root depends on.</Resource>
+  <Resource kind="reel" host={props.host} domain="data-structures-and-algorithms" title="Consistent hashing rings">The contrast this topic opens with: locating data vs. verifying it.</Resource>
+</ul>
+
+</section>
+
+<section class="prereq" data-section="standard">
+
+### <span class="n">02</span> The real source, from research and production
+
+<ul class="resources">
+  <Resource kind="reading" title="A Certified Digital Signature" href="https://www.ralphmerkle.com/papers/Certified1979.pdf" by="Ralph C. Merkle (submitted 1979, Crypto '89)">Merkle's own original "tree authentication" — the mechanism this topic builds from scratch.</Resource>
+  <Resource kind="reading" title="Repair" href="https://cassandra.apache.org/doc/4.1/cassandra/operating/repair.html" by="Apache Cassandra (4.1 stable docs)">Anti-entropy repair comparing Merkle trees over a shared key range.</Resource>
+  <Resource kind="reading" title="Git Internals — Git Objects" href="https://git-scm.com/book/en/v2/Git-Internals-Git-Objects" by="Pro Git (current edition)">Git's own object store as a real hash tree: commit, tree, and blob, each referenced by hash.</Resource>
+  <Resource kind="reading" title="RFC 6962: Certificate Transparency" href="https://datatracker.ietf.org/doc/html/rfc6962" by="IETF">A public, append-only Merkle tree of certificates, with audit and consistency proofs.</Resource>
+  <Resource kind="reading" title="Prolly Tree" href="https://www.dolthub.com/docs/architecture/storage-engine/prolly-tree/" by="Dolt (current docs)">Content-defined chunking: boundaries set by a rolling hash, not a fixed byte count.</Resource>
+</ul>
+
+</section>
+
+<section class="prereq" data-section="later">
+
+### <span class="n">03</span> Where this goes next
+
+<ul class="resources">
+  <Resource kind="reel" host={props.host} domain="data-structures-and-algorithms" title="BST operations and rotations">Every structure in this chapter turned data into a number. Next: keeping keys in order instead.</Resource>
+</ul>
+
+</section>
