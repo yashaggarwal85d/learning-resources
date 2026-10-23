@@ -1,0 +1,23 @@
+import Resource from '../../../../../components/Resource.astro';
+
+<section class="prereq" data-section="chapter-so-far">
+
+### <span class="n">01</span> This chapter's two other answers
+
+<ul class="resources">
+  <Resource kind="reel" host={props.host} domain="rust-systems-engineering" title="Trait objects, vtables, and dyn compatibility">Both earlier topics assumed the trait could be used a given way at all. This one asks what actually decides that.</Resource>
+</ul>
+
+</section>
+
+<section class="prereq" data-section="advanced-traits">
+
+### <span class="n">02</span> The Book's advanced traits, and the Reference's rules
+
+<ul class="resources">
+  <Resource kind="reading" title="Advanced Traits" href="https://doc.rust-lang.org/book/ch20-02-advanced-traits.html" by="Klabnik, Nichols and Krycho, The Rust Programming Language">The Iterator::Item example this topic contrasts against a generic parameter.</Resource>
+  <Resource kind="reading" title="Implementations — Orphan rules" href="https://doc.rust-lang.org/reference/items/implementations.html#orphan-rules" by="The Rust Reference">The exact rule this topic's compile failure and newtype fix are built from.</Resource>
+</ul>
+
+</section>
+

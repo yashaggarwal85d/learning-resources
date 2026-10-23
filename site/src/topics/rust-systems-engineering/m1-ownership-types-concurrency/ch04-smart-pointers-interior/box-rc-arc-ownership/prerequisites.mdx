@@ -1,0 +1,22 @@
+import Resource from '../../../../../components/Resource.astro';
+
+<section class="prereq" data-section="chapter-so-far">
+
+### <span class="n">01</span> Where Chapter 3 left off
+
+<ul class="resources">
+  <Resource kind="reel" host={props.host} domain="rust-systems-engineering" title="Associated types, GATs, and coherence">Every dyn Trait value that chapter built was borrowed or already behind a Box. This topic opens Chapter 4 by asking what that Box actually is.</Resource>
+</ul>
+
+</section>
+
+<section class="prereq" data-section="rc-and-arc">
+
+### <span class="n">02</span> The Book's Rc chapter, and the std Arc docs
+
+<ul class="resources">
+  <Resource kind="reading" title="Rc<T>, the Reference Counted Smart Pointer" href="https://doc.rust-lang.org/book/ch15-04-rc.html" by="Klabnik, Nichols and Krycho, The Rust Programming Language">Why Rc::clone is a cheap count increment, not a deep copy, on one thread.</Resource>
+  <Resource kind="reading" title="Arc — std" href="https://doc.rust-lang.org/std/sync/struct.Arc.html" by="The Rust Team">The exact Thread Safety wording this topic's contention measurement backs with real numbers.</Resource>
+</ul>
+
+</section>

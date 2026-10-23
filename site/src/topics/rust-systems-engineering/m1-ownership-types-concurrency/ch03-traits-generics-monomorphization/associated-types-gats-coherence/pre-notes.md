@@ -1,0 +1,9 @@
+- **Associated type**: a type chosen once per `impl` of a trait, like `Iterator::Item`. *Where you meet it:* `type Output;` inside `trait Codec`.
+- **Generic parameter (on a trait)**: a type parameter on the trait itself, like `From<T>`, letting the same target type implement it many times, once per parameter. *Where you meet it:* `CodecGeneric<u8>` and `CodecGeneric<u16>` both implemented for one type.
+- **Coherence**: the guarantee that a type has at most one implementation of a given trait, program-wide. *Where you meet it:* a second `impl Codec for A` rejected outright.
+- **Generic associated type (GAT)**: an associated type that itself takes generic parameters, usually a lifetime. *Where you meet it:* `type Item<'a> where Self: 'a;`.
+- **Lending iterator**: an iterator whose returned item borrows directly from the one call that produced it, needing a GAT to express. *Where you meet it:* a `next()` that hands back `&'a mut [u8]` tied to that call's own borrow.
+- **Orphan rule**: an `impl Trait for Type` is only allowed where the trait or the type is defined in the current crate. *Where you meet it:* `impl Display for Vec<u8>`, rejected because both are foreign.
+- **Newtype pattern**: wrapping a foreign type in a local, single-field struct to satisfy the orphan rule. *Where you meet it:* `struct Bytes(Vec<u8>);`.
+- **Blanket impl**: one `impl<T: Bound> Trait for T`, implementing a trait for every type meeting the bound. *Where you meet it:* `std`'s own `impl<T: Display> ToString for T`.
+- **Specialization**: an unstable feature that would let a more specific impl override a blanket one. *Where you meet it:* not available on today's stable compiler.

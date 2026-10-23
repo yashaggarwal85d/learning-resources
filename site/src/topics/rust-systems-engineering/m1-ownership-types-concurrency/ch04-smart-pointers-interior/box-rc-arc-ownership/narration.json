@@ -1,0 +1,63 @@
+{
+  "topic": "rust.box-rc-arc-ownership",
+  "note": "Written to be spoken: one sentence or phrase per line; {\"beat\": s} is a deliberate pause; numbers and codes are said the way a person would say them, never shown as digits. `answer` plays after the learner answers a predict step.",
+  "steps": [
+    {
+      "lines": [
+        "Move a value onto the heap through a box, and exactly one place in the program owns it, the entire time, no matter how it travels.",
+        { "beat": 0.3 },
+        "Let more than one place share that same owner instead, and the shape of the problem changes completely, whether that sharing stays on one thread or has to cross between several."
+      ]
+    },
+    {
+      "lines": [
+        "Take a shared owner built for a single thread, and move it straight into a brand new thread anyway.",
+        { "beat": 0.3 },
+        "Does that compile?"
+      ],
+      "answer": [
+        "No, and it's rejected the moment it's attempted, naming the exact reason: that shared count simply is not safe to touch from more than one thread at once.",
+        "This is caught before the program ever runs at all. The compiler refuses it outright, rather than leaving it to a crash much later, on some unlucky run."
+      ]
+    },
+    {
+      "lines": [
+        "Sharing that owner on a single thread costs almost nothing: cloning it never copies the underlying value at all, it only bumps a plain running count, and dropping a clone brings that same count back down.",
+        "Because that count only ever gets touched by one thread at a time, it doesn't need any special protection to stay correct."
+      ]
+    },
+    {
+      "lines": [
+        "Build the identical shared owner again, but this time make its running count safe to touch from several threads at once, and hand a clone of it to each of several real threads.",
+        "Every one of those threads can clone it, read through it, and let its own clone go, all at the same time, without ever corrupting that shared count."
+      ]
+    },
+    {
+      "lines": [
+        "Take the exact same total amount of cloning and dropping work on that one shared, thread-safe owner, and run it two different ways: once, start to finish, by a single thread working completely alone, and once split evenly across several threads, all released to start at precisely the same moment.",
+        { "beat": 0.3 },
+        "Does splitting that identical work across several threads finish it any sooner?"
+      ],
+      "answer": [
+        "No. Measured for real, the several threads together took noticeably longer to finish than the one thread working completely alone did.",
+        "Every single clone and every single drop on that shared count is a real read, modify, and write back, on the exact same shared location in memory, and several threads racing to do that at once cost far more than splitting the work ever gave back."
+      ]
+    },
+    {
+      "lines": [
+        "Look at what that same run actually measured, not what a naive guess would have predicted.",
+        "The several threads working together took meaningfully longer than even the single thread working entirely alone did, let alone finishing in some neat fraction of that time."
+      ]
+    },
+    {
+      "lines": [
+        "So: moving a value onto the heap through a box still leaves exactly one owner, only its storage changes.",
+        "Sharing that owner on a single thread costs almost nothing, because its running count only ever needs to be touched by one thread at a time.",
+        "Sharing it safely across several threads instead needs that count to be protected, and protecting it costs something real, every single time it's touched.",
+        "And once several threads genuinely race to touch that same protected count at once, the cost of that protection stops being something you can safely ignore; it has to be measured, not assumed.",
+        { "beat": 0.3 },
+        "Next time: none of these shared owners let a program actually change the value sitting behind them, on their own. What would it even take to make that legal?"
+      ]
+    }
+  ]
+}
