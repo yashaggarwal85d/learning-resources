@@ -1,0 +1,89 @@
+{
+  "topic": "rust.acquire-release-publication-seqcst",
+  "syllabus": [
+    {
+      "clause": "the publication pattern: release-store a flag or pointer, then acquire-load it before reading the published data. Relaxed is fine for statistics counters. SeqCst matters only for store-load patterns such as Dekker or the store-buffer litmus test. Fences and compiler_fence",
+      "at": [
+        { "step": "Fixed: loom finds no violation" },
+        { "step": "Relaxed is still right when nothing is being handed off" },
+        { "step": "SeqCst adds the one thing missing: one order, every thread agrees" },
+        { "step": "A fence carries the same handoff without touching the atomic op" }
+      ]
+    },
+    {
+      "clause": "how orderings map to hardware (x86-TSO hides missing orderings that ARM exposes).",
+      "at": [{ "step": "Recap: publication proven both ways, and the one case needing more" }]
+    }
+  ],
+  "sources": [
+    {
+      "source": "ordering-enum",
+      "items": [
+        {
+          "item": "a release store orders every previous operation before any load of this value with acquire (or stronger) ordering, and all previous writes become visible to threads that perform such a load",
+          "at": [{ "step": "Release orders everything before it; acquire orders everything after it" }]
+        },
+        {
+          "item": "an acquire load, if the loaded value was written by a release (or stronger) store, orders every subsequent operation after that store, and every subsequent load sees data written before it",
+          "at": [{ "step": "Release orders everything before it; acquire orders everything after it" }]
+        },
+        {
+          "item": "SeqCst has the effects of acquire and release together, plus the additional guarantee that all threads see all sequentially consistent operations in the same order",
+          "at": [{ "step": "SeqCst adds the one thing missing: one order, every thread agrees" }]
+        }
+      ]
+    },
+    {
+      "source": "fence-fn",
+      "items": [
+        {
+          "item": "an atomic operation with at least release ordering on one thread synchronizes with a fence with at least acquire ordering on another, providing a happens-before dependence between them",
+          "at": [{ "step": "A fence carries the same handoff without touching the atomic op" }]
+        },
+        {
+          "item": "fences cannot be used to establish synchronization between non-atomic accesses in different threads — the accesses on both sides of the handoff must themselves be atomic",
+          "at": [{ "step": "A fence carries the same handoff without touching the atomic op" }]
+        }
+      ]
+    },
+    {
+      "source": "nomicon-atomics",
+      "items": [
+        {
+          "item": "x86/64 provides strong ordering guarantees while ARM provides weak ordering guarantees, so code that is too weakly synchronized can still happen to work on the former while being wrong on the latter",
+          "at": [{ "step": "Recap: publication proven both ways, and the one case needing more" }]
+        },
+        {
+          "item": "sequentially consistent operations cannot be reordered: every access on one thread that happens before or after a SeqCst access stays before or after it",
+          "at": [{ "step": "SeqCst adds the one thing missing: one order, every thread agrees" }]
+        },
+        {
+          "item": "sequential consistency is not free even on strongly-ordered platforms — it still involves emitting real memory fences",
+          "at": [{ "step": "SeqCst adds the one thing missing: one order, every thread agrees" }]
+        }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "self-review",
+    "date": "2026-10-23",
+    "items": [
+      { "item": "A release store paired with an acquire load of the same atomic location establishes a happens-before edge between the two threads, and that edge is what closes the exact publication race the previous topic's loom run found — proven here by re-running loom against the fixed version and finding no violation.", "at": [{ "step": "Fixed: loom finds no violation" }] },
+      { "item": "The release/acquire pairing is not symmetric busywork — a release store only extends its visibility promise to a load that itself asks for acquire (or stronger); a relaxed load never asked, so it is not entitled to the promise, and fixing only one side leaves the exact same race loom found before.", "at": [{ "step": "Fixing only the write side doesn't work either" }] },
+      { "item": "Release/acquire is a pairwise guarantee between one releasing thread and one acquiring thread; it never promises a single order that every thread in the program agrees on, which is exactly the gap a store-buffering (Dekker-style) litmus test exposes.", "at": [{ "step": "Two threads, two flags, no shared leader — does release/acquire still hold?" }] },
+      { "item": "In the classic store-buffering shape (each of two threads stores its own flag and then loads the other's), loom finds a real interleaving where both loads observe 0 even when every access is release on the store and acquire on the load, because nothing forces the two stores into a single relative order the two loads must respect.", "at": [{ "step": "loom finds it: both loads see nothing, release/acquire everywhere" }] },
+      { "item": "SeqCst's extra guarantee beyond acquire/release is a single total order that every thread agrees on for every SeqCst operation; that total order is precisely the property that rules the store-buffering pattern's worst case out, which is why SeqCst (not a stronger acquire/release variant) is the fix for exactly this shape and no other.", "at": [{ "step": "SeqCst adds the one thing missing: one order, every thread agrees" }] },
+      { "item": "loom is not a universal oracle for every ordering claim: loom's own test suite documents that it can execute a permutation that is not actually legal under SeqCst for this exact store-buffering shape, so the SeqCst fix here is verified by compiling and cited against the standard library's and the nomicon's own stated guarantee, not by a loom run whose result would be misleading.", "at": [{ "step": "SeqCst adds the one thing missing: one order, every thread agrees" }] },
+      { "item": "A fence is not attached to any single atomic operation; it creates the same kind of acquire/release handoff a pair of atomic operations would, but only between a fence and a real atomic access on both sides — it cannot substitute for atomicity on a plain, non-atomic variable.", "at": [{ "step": "A fence carries the same handoff without touching the atomic op" }] },
+      { "item": "Relaxed remains the entirely correct choice, not merely an acceptable shortcut, whenever a value's final state depends only on operations performed on that same location and nothing is being handed off to another thread through it — the independent-counters case has no happens-before requirement for a stronger ordering to add.", "at": [{ "step": "Relaxed is still right when nothing is being handed off" }] },
+      { "item": "x86/64's strong default ordering can make an under-synchronized program appear correct on every test run on that hardware while the identical program, with the identical missing ordering, produces the wrong answer on ARM's weaker default guarantees — passing on one target is not evidence of correctness for either.", "at": [{ "step": "Recap: publication proven both ways, and the one case needing more" }] },
+      { "item": "The publication pattern (release-store a flag or pointer, then acquire-load it before touching what it published) and the store-load litmus-test case for SeqCst are two different problems with two different fixes, and conflating them — reaching for SeqCst everywhere out of caution, or for acquire/release where a total order is actually required — produces code that is either needlessly slower or still wrong.", "at": [{ "step": "Recap: publication proven both ways, and the one case needing more" }] },
+      { "item": "This chapter's vocabulary — happens-before, modification order, release/acquire pairing, SeqCst's total order — is exactly what Chapter 8's Future/Waker/Pin material depends on to explain how a waker's wake-up is guaranteed to actually be seen by the thread that polls again.", "at": [{ "step": "Recap: publication proven both ways, and the one case needing more" }] }
+    ]
+  },
+  "gapReview": {
+    "date": "2026-10-23",
+    "by": "self-review",
+    "open": []
+  }
+}

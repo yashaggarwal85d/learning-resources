@@ -1,0 +1,24 @@
+[package]
+name = "ordering-check"
+version = "0.1.0"
+edition = "2021"
+publish = false
+
+[[bin]]
+name = "release_acquire_fix"
+path = "src/release_acquire_fix.rs"
+
+[[bin]]
+name = "half_fixed_still_races"
+path = "src/half_fixed_still_races.rs"
+
+[[bin]]
+name = "store_buffering_acqrel"
+path = "src/store_buffering_acqrel.rs"
+
+[[bin]]
+name = "store_buffering_seqcst"
+path = "src/store_buffering_seqcst.rs"
+
+[dependencies]
+loom = "0.7"

@@ -1,0 +1,87 @@
+{
+  "steps": [
+    {
+      "lines": [
+        "Last time, a value was written and then a flag was flipped to announce it, both with the weakest ordering available — and a reader was caught seeing the flag before the value it was supposed to announce.",
+        "Two words close that gap for good, and this is where they earn their keep."
+      ]
+    },
+    {
+      "lines": [
+        "Keep the value's own write exactly as weak as before, but change only the flag: the write side now carries a stronger promise, and the matching read side asks for that same stronger promise back.",
+        { "beat": 0.3 },
+        "Does that one change, on just the flag, actually close the gap the earlier run exposed?"
+      ],
+      "answer": [
+        "Yes, and nothing else about the program had to change at all.",
+        "A matched pair like this hands off a guarantee directly from the writer to the reader, which is exactly the piece that was missing before."
+      ]
+    },
+    {
+      "lines": [
+        "The same exhaustive search that found the earlier violation was pointed at this fixed version, exploring every ordering the language actually allows.",
+        "Not one of them lets the reader see the flag before the value arrives."
+      ]
+    },
+    {
+      "lines": [
+        "Here's why the pairing actually works: the stronger write carries every earlier write on that same thread along with it, handed to whichever read later asks for the matching stronger guarantee.",
+        "That read, once it receives the handoff, then carries its own promise forward — everything it does afterward is guaranteed to come after what it just received."
+      ],
+      "takeaway": "The stronger write carries every earlier write on that thread before the matching stronger read; that read then carries everything after it comes after that handoff."
+    },
+    {
+      "lines": [
+        "Suppose only the writing side gets the stronger treatment, and the reading side is left exactly as weak as it started.",
+        "The exhaustive search finds the identical bad case all over again — seeing the flag set while the value underneath is still stale."
+      ],
+      "takeaway": "Both sides of the pair have to ask for the stronger guarantee; a stronger write alone promises nothing to a reader that never asked for it."
+    },
+    {
+      "lines": [
+        "Now picture two threads with no single leader between them: each one writes its own flag, then checks the other thread's flag, both ends using that same matched stronger pairing from before.",
+        { "beat": 0.3 },
+        "Does the pairing that fixed everything so far still rule out both threads seeing the other's flag as unset?"
+      ],
+      "answer": [
+        "No — this particular shape slips right through that pairing.",
+        "The pairing only ever promised a handoff between the one writer and the one reader directly involved; it never promised a single shared order that every thread in the picture agrees on."
+      ]
+    },
+    {
+      "lines": [
+        "The exhaustive search was pointed at exactly that two-sided shape, every access carrying the matched stronger pairing on both ends.",
+        "It still finds a path where both threads see the other's flag as unset, at the exact same moment."
+      ],
+      "takeaway": "The matched pairing only orders the one handoff that actually happens; it gives no single order that every thread involved agrees on at once."
+    },
+    {
+      "lines": [
+        "The strongest ordering the language offers adds exactly one more thing on top of everything already covered: every thread, without exception, agrees on one single order for every operation marked this way.",
+        "That single shared order is the one thing missing from the two-sided case, and it's the only reason this strongest ordering exists at all."
+      ],
+      "takeaway": "The strongest ordering keeps every earlier guarantee and adds a single order every thread agrees on, which is exactly what the two-sided shape needed."
+    },
+    {
+      "lines": [
+        "A standalone checkpoint can do the same handoff work without being tied to any one specific read or write: a lock's own compare-and-swap loop stays as weak as possible, and a separate checkpoint right after winning the lock does the strong-read half of the handoff on its own.",
+        "The strong-write half, releasing the lock, still happens the usual way."
+      ],
+      "takeaway": "A standalone checkpoint pairs with a matching operation or another checkpoint the same way the matched pairing does; it just isn't tied to one specific access."
+    },
+    {
+      "lines": [
+        "Not every atomic operation needs any of this at all: several independent counters, each one touched by its own set of threads, with nothing ever handed from one thread to another through them.",
+        "The weakest ordering was never a shortcut here — it was always the entire, correct story, because there's nothing being published for a stronger guarantee to protect."
+      ],
+      "takeaway": "The weakest ordering is the correct choice, not a shortcut, whenever nothing is actually being handed off from one thread to another."
+    },
+    {
+      "lines": [
+        "The matched pairing, proven both ways now, closes a handoff cleanly; the strongest ordering exists for the one narrow shape where a shared, single order across every thread is the actual requirement, not a safety margin someone reached for out of caution.",
+        "Every guarantee covered across this chapter has been about memory that's already running becoming visible to another thread that's already running too.",
+        "What comes next asks something stranger: what does it mean for a piece of work to not be running yet at all, waiting for something else entirely to decide when it starts."
+      ]
+    }
+  ]
+}
