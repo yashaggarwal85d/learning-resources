@@ -1,0 +1,23 @@
+import Resource from '../../../../../components/Resource.astro';
+
+<section class="prereq" data-section="chapter-so-far">
+
+### <span class="n">01</span> This chapter's other answer
+
+<ul class="resources">
+  <Resource kind="reel" host={props.host} domain="rust-systems-engineering" title="Monomorphization and its costs">The previous topic compiled one body per type, free at run time but costly to compile. This one asks what happens when the set of types isn't known until the program runs.</Resource>
+</ul>
+
+</section>
+
+<section class="prereq" data-section="trait-objects">
+
+### <span class="n">02</span> The Reference's trait objects and traits
+
+<ul class="resources">
+  <Resource kind="reading" title="Trait object types" href="https://doc.rust-lang.org/reference/types/trait-object.html" by="The Rust Reference">The fat pointer and vtable layout this topic measures directly.</Resource>
+  <Resource kind="reading" title="Traits — Dyn compatibility" href="https://doc.rust-lang.org/reference/items/traits.html#dyn-compatibility" by="The Rust Reference">The current, exact rules this topic's compile failure and fix are built from.</Resource>
+</ul>
+
+</section>
+

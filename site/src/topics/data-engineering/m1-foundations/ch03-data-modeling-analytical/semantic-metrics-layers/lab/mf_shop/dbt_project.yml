@@ -1,0 +1,12 @@
+name: 'mf_shop'
+version: '1.0.0'
+profile: 'mf_shop'
+model-paths: ["models"]
+target-path: "target"
+clean-targets:
+  - "target"
+  - "dbt_packages"
+models:
+  mf_shop:
+    marts:
+      +materialized: table

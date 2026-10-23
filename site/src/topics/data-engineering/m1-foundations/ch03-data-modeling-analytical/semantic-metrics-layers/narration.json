@@ -1,0 +1,100 @@
+{
+  "topic": "de.semantic-metrics-layers",
+  "steps": [
+    {
+      "lines": [
+        "Picture finance and marketing both looking at the exact same underlying data, for the exact same month.",
+        "Finance's own dashboard shows one revenue figure. Marketing's dashboard, built in a completely different tool, shows a different one. Nothing about the underlying data actually changed. So where does that disagreement genuinely come from?"
+      ]
+    },
+    {
+      "lines": [
+        "Here's what actually solves that, in the tool's own words.",
+        "A single tool that takes one metric's own definition and turns it into working SQL, consistently, no matter which dimension a particular question happens to ask about."
+      ]
+    },
+    {
+      "lines": [
+        "Here's a question worth sitting with before the next reveal.",
+        "A metric gets written down, in one single place, exactly once. Does writing it down that way mean it only ever produces one single, fixed query, forever?"
+      ],
+      "answer": [
+        "Not at all — that single declaration is meant to produce a different query every time.",
+        "The whole actual point is compiling that same declaration differently depending on exactly how it's being asked for, whether that's by month, by day, or by any other grouping entirely."
+      ]
+    },
+    {
+      "lines": [
+        "Here's that declaration, made completely real.",
+        "One single revenue metric, written down exactly once, sitting directly on top of the shop's own existing star schema — with absolutely no second copy of it anywhere else."
+      ]
+    },
+    {
+      "lines": [
+        "And here's that one declaration, actually put to the test.",
+        "Asked for a plain monthly total, it compiles with no join involved at all. Asked instead for a daily breakdown by product category, that exact same declaration compiles with a join added in completely automatically. Both answers were checked directly against an independent total, and both came out exactly right."
+      ]
+    },
+    {
+      "lines": [
+        "Here's a harder question about where that automatic join actually comes from.",
+        "One table has a product column. Another table has a matching id column. Does actually declaring that relationship matter at all, or could a tool just reasonably guess it from how the two columns happen to be named?"
+      ],
+      "answer": [
+        "Declaring it matters enormously — guessing was never actually involved here.",
+        "That automatic join only worked at all because the relationship between those two tables had already been explicitly declared ahead of time. Nothing here was ever inferred just from column names lining up."
+      ]
+    },
+    {
+      "lines": [
+        "Here's that declared relationship, named directly in the tool's own words.",
+        "The explicit, declared join keys of a model — genuine traversal paths between one table and another, always stated outright, never simply inferred from how two columns happen to be named."
+      ]
+    },
+    {
+      "lines": [
+        "Now here's the actual underlying principle that makes all of this worth doing at all.",
+        "Minimize redundancy by making one single metric definition work absolutely everywhere it possibly can — stated plainly as the layer's own core design principle, not treated as some incidental side benefit."
+      ]
+    },
+    {
+      "lines": [
+        "Here's a genuinely open question worth guessing at first.",
+        "A table already has a perfectly ordinary date column sitting right there on it. Does grouping results by month or by day genuinely require some separate, dedicated table, or can that one existing column just be used directly, exactly as it already is?"
+      ],
+      "answer": [
+        "A separate, dedicated table is genuinely required here — and this was discovered the hard way.",
+        "Building this very lab hit exactly that wall directly: compilation flatly refused to run at all until a properly dedicated table was actually added in."
+      ]
+    },
+    {
+      "lines": [
+        "Here's that dedicated table, named directly in the tool's own words.",
+        "A base table built specifically and only for time-based joins and aggregations — deliberately not just any ordinary table that merely happens to have a date column sitting somewhere on it."
+      ]
+    },
+    {
+      "lines": [
+        "Here's where this fits into a genuinely bigger picture.",
+        "Other real tools solve this exact same underlying problem too, named here without being built by hand themselves.",
+        "This particular tool's own move to a fully open license happened at a real industry conference, deliberately aligned with a broader open standard that has itself since been renamed as it keeps maturing."
+      ]
+    },
+    {
+      "lines": [
+        "Let's put the whole picture back together.",
+        "A semantic layer compiles one single declaration into many genuinely correct queries. Declared join keys are what make that compiling possible at all. A dedicated time table is a required, declared structure, never a convenient assumption. And this is a real industry-wide effort, not any one vendor's private trick."
+      ]
+    },
+    {
+      "lines": [
+        "One closing scenario worth genuinely working through.",
+        "Finance now wants that exact same average-order-value metric broken down by customer region instead of by month. Does meeting that new request genuinely require writing a brand-new metric definition completely from scratch?"
+      ],
+      "answer": [
+        "No, not at all — the existing declaration already fully covers it.",
+        "That exact same existing declaration, simply asked for a different breakdown this time, compiles directly to a correctly joined query against the customer data instead — with absolutely no redefinition needed anywhere."
+      ]
+    }
+  ]
+}
