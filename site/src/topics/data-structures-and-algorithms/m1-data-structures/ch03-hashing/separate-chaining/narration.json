@@ -1,0 +1,65 @@
+{
+  "topic": "dsa.separate-chaining",
+  "steps": [
+    {
+      "lines": [
+        "Last time we left two keys sitting right on top of each other, in the exact same slot, with no idea what happens next.",
+        "That's not a bug in the hash function. The hash function already did its job — it just never promised this couldn't happen.",
+        "So here's the oldest answer anyone gave to that problem, and it's still the one most standard libraries start with."
+      ]
+    },
+    {
+      "lines": [
+        "Here's the whole trick, and it's smaller than it looks: a bucket stops being one slot for one entry.",
+        "It becomes the head of a list. Every new key that lands there just gets linked on.",
+        "And notice what I didn't have to build to make that work — it's the exact same singly-linked list from two chapters back. Nothing new, just reused in a new place."
+      ]
+    },
+    {
+      "lines": [
+        "I want you to see this isn't a textbook simplification before we go any further.",
+        "This is Java's own source comment, word for word: a binned, bucketed hash table. That's chaining, shipping in one of the most used libraries on earth.",
+        "One honest footnote, though — once a bucket gets big enough, Java quietly upgrades it to a balanced tree instead of a plain list. Hold onto that; it'll matter again later."
+      ]
+    },
+    {
+      "lines": [
+        "Before I show you the real measurement, make a prediction.",
+        "At a load factor around one and a half — more keys than buckets — how long is the chain a typical key probably lands in?"
+      ],
+      "answer": [
+        "It's about α itself — the load factor, nothing fancier.",
+        "n divided by m is exactly what α means, so a random key's expected chain length tracks that same ratio."
+      ]
+    },
+    {
+      "lines": [
+        "Now push this mechanism as far as it can go, on purpose. What if every single key happened to land in the same bucket?",
+        "Watch the chain just keep growing. Access time slides toward scanning the whole thing — order n, the same cost as never hashing at all.",
+        "But notice what doesn't happen: nothing breaks. There's no fixed capacity per bucket to overflow — it just gets slow."
+      ]
+    },
+    {
+      "lines": [
+        "Here's the citation, straight from the lecture: expected search cost is theta of one plus alpha.",
+        "Now watch the part that should actually give you pause. The average chain length equals alpha, exactly, every single time I measure it — true no matter how bad the hash function is.",
+        "Even a hash that sends everything to one bucket gets that same average, by simple counting.",
+        "So the average alone proves nothing. What actually matters is whether the longest chain stays near that average instead of hoarding every key — and that's the one thing a well-spread hash genuinely buys you."
+      ]
+    },
+    {
+      "lines": [
+        "One more cost before we move on, and it's the one worth remembering.",
+        "Every node in this chain is carrying a pointer to the next one. That pointer isn't free — it's memory you're spending on bookkeeping, not on the key itself.",
+        "Next topic gives that pointer up entirely, by storing every entry directly inside the table. It pays for that a completely different way."
+      ]
+    },
+    {
+      "lines": [
+        "Three load factors, one real table, built fresh each time — nothing here is simulated.",
+        "Watch the average track alpha almost perfectly at all three, exactly as the counting argument guarantees.",
+        "And watch the longest chain stay a small fraction of the total, every time — next to the worst case on the right, where one single chain is holding everything."
+      ]
+    }
+  ]
+}

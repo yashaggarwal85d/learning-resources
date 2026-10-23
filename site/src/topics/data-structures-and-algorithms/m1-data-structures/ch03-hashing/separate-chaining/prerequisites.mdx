@@ -1,0 +1,32 @@
+import Resource from '../../../../../components/Resource.astro';
+
+<section class="prereq" data-section="before">
+
+### <span class="n">01</span> Already covered
+
+<ul class="resources">
+  <Resource kind="reel" host={props.host} domain="data-structures-and-algorithms" title="Practical hash functions and HashDoS">A hash function turns any key into a number. It says nothing yet about two different keys turning into the same one — this topic is the oldest answer to that.</Resource>
+</ul>
+
+</section>
+
+<section class="prereq" data-section="standard">
+
+### <span class="n">02</span> The real sources, from each design
+
+<ul class="resources">
+  <Resource kind="reading" title="6.046J/18.410J Introduction to Algorithms, Lecture 7" href="https://www.ocw.mit.edu/courses/6-046j-introduction-to-algorithms-sma-5503-fall-2005/ce6ea57dd298c8e64609802daf2eaaec_lec7.pdf" by="Demaine &amp; Leiserson, MIT OpenCourseWare, Fall 2005">Chaining's own mechanism, the load factor's definition, and the cited Θ(1 + α) expected-search-time result.</Resource>
+  <Resource kind="reading" title="java.util.HashMap" href="https://raw.githubusercontent.com/openjdk/jdk/master/src/java.base/share/classes/java/util/HashMap.java" by="OpenJDK source">A real, current standard library's own chaining implementation, default load factor, and the honest tree-bin refinement beyond pure chaining.</Resource>
+</ul>
+
+</section>
+
+<section class="prereq" data-section="later">
+
+### <span class="n">03</span> Where this goes next
+
+<ul class="resources">
+  <Resource kind="reel" host={props.host} domain="data-structures-and-algorithms" title="Linear probing and open addressing">Chaining pays a pointer per entry. Next: the scheme that gives that pointer up, by putting every entry directly in the table itself.</Resource>
+</ul>
+
+</section>
