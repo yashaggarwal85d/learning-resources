@@ -2088,4 +2088,24 @@ export const TOPICS: TopicMeta[] = [
     handoff:
       "A semantic layer defined what a metric means. Next: the tool that actually builds the models a semantic layer sits on top of, in most real warehouses today — dbt, its models, its tests, and the lineage graph it builds from them.",
   },
+  {
+    id: 'de.dbt-models-tests-lineage',
+    domain: 'data-engineering',
+    slug: 'data-engineering/m1-foundations/ch03-data-modeling-analytical/dbt-models-tests-lineage',
+    title: 'dbt models, tests and lineage',
+    syllabusTitle: 'dbt models, tests and lineage',
+    kind: 'full',
+    status: 'live',
+    milestone: { number: 1, title: 'Foundations' },
+    chapter: { number: 3, title: 'Data modeling and analytical architecture', section: '3.4' },
+    minutes: 15,
+    verified: '2026-10-23',
+    introduces: ['dbt-models-ref-dag', 'dbt-tests-data-unit', 'dbt-mesh-cross-project'],
+    uses: ['data-contract-specification', 'semantic-layer-metric-compilation'],
+    declared: ['sql-select'],
+    bridge:
+      "A semantic layer defined what a metric means. This topic is the tool that actually builds the models a semantic layer sits on top of, in most real warehouses today: dbt, its models, its tests, and the lineage graph it builds from them.",
+    handoff:
+      "Every model built here assumed a full rebuild was an acceptable way to materialize it. Next: dbt's own practical answer to a dimension that needs history kept and a fact table too large to rebuild from scratch every run — incremental models and snapshots.",
+  },
 ];
