@@ -1,0 +1,32 @@
+import Resource from '../../../../../components/Resource.astro';
+
+<section class="prereq" data-section="before">
+
+### <span class="n">01</span> Already covered
+
+<ul class="resources">
+  <Resource kind="reel" host={props.host} domain="data-structures-and-algorithms" title="Red-black trees">The balanced tree this topic augments — chosen because its height is already bounded.</Resource>
+</ul>
+
+</section>
+
+<section class="prereq" data-section="standard">
+
+### <span class="n">02</span> The real source, from research and production
+
+<ul class="resources">
+  <Resource kind="reading" title="Lecture 11: Augmenting Data Structures" href="https://www.ocw.mit.edu/courses/6-046j-introduction-to-algorithms-sma-5503-fall-2005/eebc00db28f8650591e3be446a31f1cf_lec11.pdf" by="Charles E. Leiserson, MIT 6.046J/18.401J (Fall 2005)">The subtree-size augmentation, OS-SELECT, and the four-step augmentation methodology, from one of CLRS's own authors.</Resource>
+  <Resource kind="reading" title="Lecture Notes: Augmenting Data Structures" href="https://www.cse.sc.edu/~fenner/csce750/OKane-Fall-2020/notes-augmenting.pdf" by="csce750, Fall 2020 (after CLRS Ch. 14)">The precise claim that a rotation changes the size of only the two nodes incident to the rotated edge.</Resource>
+</ul>
+
+</section>
+
+<section class="prereq" data-section="later">
+
+### <span class="n">03</span> Where this goes next
+
+<ul class="resources">
+  <Resource kind="reel" host={props.host} domain="data-structures-and-algorithms" title="B-tree and B+-tree mechanics">Every structure so far kept order with pointers and rotations, one node at a time. Next: a node too expensive to visit that way at all.</Resource>
+</ul>
+
+</section>

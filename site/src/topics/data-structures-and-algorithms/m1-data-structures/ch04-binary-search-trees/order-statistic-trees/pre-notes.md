@@ -1,0 +1,6 @@
+- **Binary search tree**: used again here (topic 23); the structure being augmented, not changed.
+- **Tree rotation**: used again here (topic 23), and declared again: this topic asks what happens to an augmented value when the identical move fires, rather than redefining the move.
+- **Red-black invariant**: used again here (topic 24); the balanced tree this topic augments, chosen specifically because its height is already bounded.
+- **Order-statistic tree**: introduced here; a balanced BST augmented with subtree sizes, answering rank and select queries.
+- **Subtree-size augmentation**: introduced here; one extra field per node (the count of nodes in its own subtree) kept correct across insert, delete and rotation.
+- **Rank-select query**: introduced here; select(i) finds the i-th smallest key, rank(x) finds x's position among all keys, both in O(log n) using subtree sizes.
