@@ -1,0 +1,6 @@
+- **RAII guard** (Chapter 4): a value whose `Drop` releases a resource automatically; `Mutex::lock()` returns one, and dropping it unlocks the mutex. *Where you meet it:* every lock this topic takes.
+- **`DerefMut`**: the trait that lets `*x = ...` write through a type; `Deref` alone only ever gives a shared `&T`. *Where you meet it:* why a bare `Arc<u64>` refuses a direct assignment.
+- **Futex**: a Linux kernel primitive ("fast userspace mutex") that lets a thread block cheaply only when a lock is actually contended. *Where you meet it:* `std::sync::Mutex`'s real implementation.
+- **Panic unwinding** (vs. abort): by default a Rust panic unwinds the stack, running `Drop` as it goes, which is what lets a poisoned lock's guard still be dropped and the panic caught by `thread::join`. *Where you meet it:* every panic-while-holding-the-lock demo in this topic.
+- **`.await`**: the point where an `async` function may suspend. *Where you meet it:* the `std`-guard-versus-`tokio`-guard contrast.
+- **Crate** (external dependency): a published Rust library added to a project's `Cargo.toml`. *Where you meet it:* `parking_lot` and `tokio`, both used here as real, compiled dependencies, not simulated.
