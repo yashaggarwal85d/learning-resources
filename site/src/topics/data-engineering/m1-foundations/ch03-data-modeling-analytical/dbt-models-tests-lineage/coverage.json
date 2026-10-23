@@ -1,0 +1,190 @@
+{
+  "topic": "de.dbt-models-tests-lineage",
+  "syllabus": [
+    {
+      "clause": "models as SELECTs, the ref()-built DAG, Jinja macros, data and unit tests, exposures, docs and lineage",
+      "at": [
+        { "step": "Reveal: what a model actually is, quoted directly" },
+        { "step": "Reveal: the lab — the DAG, read from dbt's own manifest" },
+        { "step": "Reveal: the macro, quoted directly; the lab's own macro" },
+        { "step": "Reveal: the lab — a failing data test actually blocking downstream models" },
+        { "step": "Reveal: the unit test, run in isolation, no seeded data touched" },
+        { "step": "Reveal: docs and lineage; dbt Mesh, named and sourced" }
+      ]
+    },
+    {
+      "clause": "multi-project dbt Mesh with cross-project refs, model contracts, versions and access levels",
+      "at": [
+        { "step": "Reveal: docs and lineage; dbt Mesh, named and sourced" }
+      ]
+    }
+  ],
+  "sources": [
+    {
+      "source": "dbt Developer Hub, \"SQL models\"",
+      "items": [
+        {
+          "item": "A SQL model is a select statement; dbt wraps it in the warehouse's own DDL/DML",
+          "at": [{ "step": "Reveal: what a model actually is, quoted directly" }]
+        },
+        {
+          "item": "ref() builds dependencies between models in place of literal table names",
+          "at": [{ "step": "Reveal: the lab — ref(), not table names" }]
+        },
+        {
+          "item": "dbt uses ref() to determine build order by creating a dependency acyclic graph (DAG)",
+          "at": [{ "step": "Reveal: the lab — the DAG, read from dbt's own manifest" }]
+        }
+      ]
+    },
+    {
+      "source": "dbt Developer Hub, \"Jinja and macros\"",
+      "items": [
+        {
+          "item": "Macros are reusable pieces of Jinja code, useful for logic repeated across models",
+          "at": [{ "step": "Reveal: the macro, quoted directly; the lab's own macro" }]
+        }
+      ]
+    },
+    {
+      "source": "dbt Developer Hub, \"Add data tests to your DAG\"",
+      "items": [
+        {
+          "item": "Data tests are assertions about models, expressed as select queries over other resources",
+          "at": [{ "step": "Reveal: the lab — a failing data test actually blocking downstream models" }]
+        },
+        {
+          "item": "A data test passes when it returns zero failing rows",
+          "at": [{ "step": "Reveal: the lab — a failing data test actually blocking downstream models" }]
+        },
+        {
+          "item": "dbt ships four built-in generic data tests: unique, not_null, accepted_values, relationships",
+          "at": [{ "step": "Reveal: the lab — a failing data test actually blocking downstream models" }]
+        }
+      ]
+    },
+    {
+      "source": "dbt Developer Hub, \"Unit tests\"",
+      "items": [
+        {
+          "item": "Unit tests validate modeling logic on small, fixed inputs before materializing the full model",
+          "at": [{ "step": "Reveal: the unit test, run in isolation, no seeded data touched" }]
+        }
+      ]
+    },
+    {
+      "source": "dbt Developer Hub, \"Add Exposures to your DAG\"",
+      "items": [
+        {
+          "item": "Exposures define and describe a downstream use of a dbt project, such as a dashboard",
+          "at": [{ "step": "Reveal: the lab — a failing data test actually blocking downstream models" }]
+        }
+      ]
+    },
+    {
+      "source": "dbt Developer Hub, \"About documentation\"",
+      "items": [
+        {
+          "item": "Generated documentation includes model code, the project's DAG, and column-level tests",
+          "at": [{ "step": "Reveal: docs and lineage; dbt Mesh, named and sourced" }]
+        }
+      ]
+    },
+    {
+      "source": "dbt Developer Hub, \"Intro to dbt Mesh\"",
+      "items": [
+        {
+          "item": "Cross-project references are dbt Mesh's foundational, multi-project-enabling feature",
+          "at": [{ "step": "Reveal: docs and lineage; dbt Mesh, named and sourced" }]
+        }
+      ]
+    },
+    {
+      "source": "dbt Developer Hub, \"Model contracts\"",
+      "items": [
+        {
+          "item": "An enforced model contract must declare every column's name and data type",
+          "at": [{ "step": "Reveal: docs and lineage; dbt Mesh, named and sourced" }]
+        }
+      ]
+    },
+    {
+      "source": "dbt Developer Hub, \"Model versions\"",
+      "items": [
+        {
+          "item": "Model versions are a dbt Mesh governance feature for tracking a model's changes over time",
+          "at": [{ "step": "Reveal: docs and lineage; dbt Mesh, named and sourced" }]
+        }
+      ]
+    },
+    {
+      "source": "dbt Developer Hub, \"Model access\"",
+      "items": [
+        {
+          "item": "Models carry an access modifier (private/protected/public) governing who may ref() them",
+          "at": [{ "step": "Reveal: docs and lineage; dbt Mesh, named and sourced" }]
+        }
+      ]
+    },
+    {
+      "source": "dbt Developer Hub, \"Project dependencies\"",
+      "items": [
+        {
+          "item": "Cross-project ref() requires an Enterprise or Enterprise+ plan and a designated public model",
+          "at": [{ "step": "Reveal: docs and lineage; dbt Mesh, named and sourced" }]
+        }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "Claude (single session, written from the syllabus line and the fetched sources before storyboarding; not independent of the builder, so a later owner review should repeat it)",
+    "date": "2026-10-23",
+    "items": [
+      {
+        "item": "This topic has a real hands-on lab (lab/shop_dbt/, examples.py): a full dbt-core project (seeds, three staging models, two mart models, a Jinja macro, thirteen data tests, one unit test, one exposure) was built and run against a local DuckDB target, with no packaging workaround needed (unlike the previous topic's MetricFlow install)",
+        "at": [{ "step": "Reveal: the lab — ref(), not table names" }]
+      },
+      {
+        "item": "The DAG shown in the reel and in examples.py is read directly from the real project's own target/manifest.json after a real dbt build (lab/manifest-dag.json is a frozen snapshot of that field), not drawn from imagination",
+        "at": [{ "step": "Reveal: the lab — the DAG, read from dbt's own manifest" }]
+      },
+      {
+        "item": "The second predict's reveal (the lab's failing data test) is backed by an actually executed failure: a dangling customer_id was introduced into the seed data, dbt build genuinely failed the relationships test and SKIPped fct_orders, mart_revenue_by_region, and the exposure, and the row was then reverted and the build re-verified clean",
+        "at": [{ "step": "Reveal: the lab — a failing data test actually blocking downstream models" }]
+      },
+      {
+        "item": "The closing \"Prove it\" scenario is a genuinely new, independently executed test, not merely asserted: a model selecting from a staging model's literal table name instead of ref() was added temporarily and built with eight threads against a freshly emptied database, and it failed for real with a missing-table error because dbt had no dependency edge to schedule it after its real dependency",
+        "at": [{ "step": "Prove it" }]
+      },
+      {
+        "item": "The unit test is run in isolation (dbt test --select test_type:unit) to show concretely that it validates the macro's own compiled logic against two fabricated rows, without ever touching the seeded data — distinguishing it from a data test in the reel's own words, not just in the source quote",
+        "at": [{ "step": "Reveal: the unit test, run in isolation, no seeded data touched" }]
+      },
+      {
+        "item": "dbt Mesh's cross-project refs, model contracts, versions and access levels are deliberately not built hands-on, since cross-project ref() requires an Enterprise or Enterprise+ plan and a second project that this session's single local DuckDB project cannot stand up — disclosed explicitly in SOURCES.md rather than silently implied to have been tested",
+        "at": [{ "step": "Reveal: docs and lineage; dbt Mesh, named and sourced" }]
+      },
+      {
+        "item": "The first predict (step three) is red-teamed against the plausible wrong answer that dbt can infer a dependency from any SQL referencing another table's name; the Prove-It scenario at the end independently re-confirms the same mistake with a real build failure, not just a restated claim",
+        "at": [{ "step": "Predict: does writing a table name directly also create a dependency dbt can see?" }]
+      },
+      {
+        "item": "The bridge from topic 23 (semantic and metrics layers) and the handoff to topic 25 (incremental models and snapshots) are both taken verbatim from CHAPTER.md's own entry for this topic and checked against this topic's own content before use, rather than invented fresh",
+        "at": [{ "step": "A model file with no CREATE TABLE anywhere in it" }]
+      },
+      {
+        "item": "This topic's own CHAPTER.md explicitly states it hosts no lab section of its own, since the project it builds feeds directly into topic 25's lab; the hands-on build here is still real (per the topic's own scope line, \"built hands-on against a local DuckDB target\") even though no chapter Lab bullet is attributed to it",
+        "at": [{ "step": "Reveal: the lab — ref(), not table names" }]
+      },
+      {
+        "item": "The Jinja macro example (cents_to_dollars) was deliberately chosen to give the macro a real, verifiable job — converting stored integer cents to a displayed dollar amount — rather than a toy macro with no numeric result to cross-check in examples.py",
+        "at": [{ "step": "Reveal: the macro, quoted directly; the lab's own macro" }]
+      },
+      {
+        "item": "dbt's own four built-in generic data tests (unique, not_null, accepted_values, relationships) are all actually used across the lab's schema.yml files, not just named — chosen so the \"Reveal: the lab\" step's failing-test proof uses a real built-in test (relationships) rather than a hand-written one",
+        "at": [{ "step": "Reveal: the lab — a failing data test actually blocking downstream models" }]
+      }
+    ]
+  },
+  "gapReview": { "date": "2026-10-23", "by": "Claude (single session)", "open": [] }
+}

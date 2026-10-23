@@ -11,9 +11,15 @@ on:
 permissions:
   contents: read
 
-# On main every push is checked to the end (routine runs confirm their own merge); elsewhere a newer push replaces an older run.
+# Owner decision 2026-10-23: with several domains making topics in parallel, many pushes to main landed within
+# minutes of each other. Each push's CI used to get its own concurrency group (keyed by sha), so they all raced
+# for the account's shared runner slots at once instead of queuing — one PR's CI sat queued for 6 hours and was
+# then cancelled outright, starved by the pile-up. Pushes to main now share one concurrency group, so they queue
+# in order through GitHub's own scheduler (one running at a time) instead of fighting for slots; none are
+# cancelled (every push still confirms its own merge), they just run one after another. PR and branch builds
+# still cancel an older run for a newer push, as before.
 concurrency:
-  group: ci-${{ github.ref }}-${{ github.ref == 'refs/heads/main' && github.sha || 'latest' }}
+  group: ci-${{ github.ref }}-${{ github.ref == 'refs/heads/main' && 'main' || 'latest' }}
   cancel-in-progress: ${{ github.ref != 'refs/heads/main' }}
 
 jobs:

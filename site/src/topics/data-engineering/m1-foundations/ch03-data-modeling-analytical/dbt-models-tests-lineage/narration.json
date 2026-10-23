@@ -1,0 +1,102 @@
+{
+  "topic": "de.dbt-models-tests-lineage",
+  "steps": [
+    {
+      "lines": [
+        "Open up a dbt model file and here's all you'll actually find inside it.",
+        "One select statement. No create-table command, no target schema name, no database connection string written anywhere in that file. So where does an actual, queryable table come from?"
+      ]
+    },
+    {
+      "lines": [
+        "Here's the tool's own answer to that, stated directly.",
+        "A model really is just a select statement. The tool itself takes care of wrapping that statement in whatever create-or-replace logic a given warehouse happens to need — that wrapping is never the model author's own job."
+      ]
+    },
+    {
+      "lines": [
+        "Here's a question worth sitting with before the next reveal.",
+        "One model selects from another by writing out that other model's table name directly, the plain way SQL has always allowed. Does writing it that way also tell the tool which model has to build first?"
+      ],
+      "answer": [
+        "It doesn't — a plain table name is invisible to that dependency graph entirely.",
+        "Only one specific function registers a dependency at all. Writing a table name directly, however correct the SQL looks, tells the build system nothing whatsoever about build order."
+      ]
+    },
+    {
+      "lines": [
+        "Here's that one function, made completely real in this lab.",
+        "The lab's own fact model joins three separate staging models — and every single one of those three joins goes through that one function, never once by writing out a literal table name."
+      ]
+    },
+    {
+      "lines": [
+        "And here's exactly what that buys, read straight from a real build's own output.",
+        "After running this lab's build for real, the tool's own internal manifest lists, model by model, precisely which one depends on which — pulled directly from that file, never sketched out by hand.",
+        "That dependency function is the only thing the build order and the dependency graph can actually see; a plain table name stays invisible to both, however correct it looks sitting right there in the SQL."
+      ]
+    },
+    {
+      "lines": [
+        "Here's a genuinely open question worth guessing at first.",
+        "A reusable snippet of templating logic converts a raw stored value into a cleaner display value, called from inside exactly one model's own SQL. Does changing that snippet's own logic later mean going back and editing every model that happens to call it?"
+      ],
+      "answer": [
+        "Not at all — every caller inherits a changed definition automatically, with nothing left to go back and re-edit.",
+        "That snippet exists in exactly one place. Every model calling it simply compiles against whatever that one place currently says."
+      ]
+    },
+    {
+      "lines": [
+        "Here's that reusable snippet named directly, in the tool's own words.",
+        "Pieces of templating code that can be reused repeatedly, described as extremely useful for exactly the kind of logic that would otherwise end up duplicated across many separate models — which is precisely what this lab's own cents-to-dollars conversion was built to demonstrate."
+      ]
+    },
+    {
+      "lines": [
+        "Here's a harder question about what happens when a check on the data actually fails.",
+        "One check on one early model fails outright — a row pointing at a customer who, it turns out, doesn't actually exist anywhere in the data. Does the build still go right ahead and build everything sitting downstream of that one failed check?"
+      ],
+      "answer": [
+        "No — every single thing depending on that failed check gets skipped outright, not built at all.",
+        "Nothing downstream of a known failure gets built on top of it, not even partially, not even with a warning attached."
+      ]
+    },
+    {
+      "lines": [
+        "Here's that exact failure, made completely real and then walked back.",
+        "A row pointing at a nonexistent customer was deliberately inserted into this lab's own seed data. A built-in relationship check caught it immediately, and every model, plus the one declared downstream consumer, were skipped entirely — not one of them was even attempted."
+      ]
+    },
+    {
+      "lines": [
+        "Here's a different kind of check entirely, run in complete isolation.",
+        "Checking modeling logic against a small set of fixed, deliberately fabricated rows, before ever materializing a full model against real production data — this lab's own version of that check runs against fabricated rows alone, with the real seeded data never touched at all."
+      ]
+    },
+    {
+      "lines": [
+        "Here's where the generated documentation, and a bigger multi-project picture, both come in.",
+        "The documentation this tool generates includes a project's own model code, its dependency graph, and every column's own attached checks — the identical graph already proven real a moment ago, now simply made browsable.",
+        "Across multiple separate projects at once, a distinct multi-project feature adds contracts, versions, and access levels, named here directly rather than built by hand."
+      ]
+    },
+    {
+      "lines": [
+        "Let's put the whole picture back together.",
+        "One function is the only dependency the build system can actually see. One reusable snippet, defined once, changes everywhere it's called. One failed check on the data is a hard stop for everything built on top of it. Generated documentation is that exact same proven graph, simply made browsable."
+      ]
+    },
+    {
+      "lines": [
+        "One closing scenario worth genuinely working through.",
+        "A brand-new model joins two existing models together, but writes out both of their table names directly instead of using that one dependency function on either. Built with several separate build threads running at once, what actually happens, and at what point does it happen?"
+      ],
+      "answer": [
+        "It can genuinely fail outright, racing directly against the very models it never declared any dependency on.",
+        "With no dependency function called anywhere, the build system has no edge at all to schedule it safely after its real dependencies — so it can run at the exact same time as them and lose that race.",
+        "It fails with a missing-table error, even though the identical query, written the other way, builds cleanly every single time."
+      ]
+    }
+  ]
+}
