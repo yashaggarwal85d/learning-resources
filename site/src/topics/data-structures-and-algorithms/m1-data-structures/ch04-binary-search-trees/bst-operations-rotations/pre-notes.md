@@ -1,0 +1,5 @@
+- **Node/pointer structures**: used again here (Ch.2); a BST is a pointer structure with an ordering rule layered on top.
+- **Binary search tree**: introduced here; a binary tree where every node's key is greater than everything in its left subtree and less than everything in its right subtree.
+- **In-order traversal**: introduced here; visiting left subtree, node, right subtree, recursively, which reads every key back out in sorted order.
+- **Tree rotation**: introduced here; relinking a constant number of pointers to change a subtree's shape while leaving its in-order sequence of keys unchanged.
+- **Successor swap**: introduced here; deleting a two-child node by replacing its key with its in-order successor's, then deleting that successor instead.

@@ -1,0 +1,74 @@
+{
+  "topic": "dsa.red-black-trees",
+  "steps": [
+    {
+      "lines": [
+        "Last topic ended on a cliffhanger it built on purpose.",
+        "A rotation kept order intact, but nothing stopped a sorted insertion from turning the tree into one long chain. One rule fixes that, and it's colour."
+      ]
+    },
+    {
+      "lines": [
+        "Four rules about colour, layered on top of a tree that's still just a plain search tree underneath.",
+        "Search, insert, delete, none of that changes. What changes is which colours an insert is allowed to leave behind before the tree counts as valid."
+      ]
+    },
+    {
+      "lines": [
+        "Here's an insert that just landed as a red node, directly under another red node.",
+        "Before you see the fix, think about what kind of repair this actually calls for."
+      ],
+      "answer": [
+        "A recolouring, and a rotation only if recolouring alone can't finish the job.",
+        "Nothing about the search tree property broke here. A separate rule did, and it has its own separate fix."
+      ]
+    },
+    {
+      "lines": [
+        "Recolouring is the cheap move, and it's tried first — flip colours going back up toward the root.",
+        "When that alone can't restore the rule, one rotation finishes it. The same move from last topic, now firing for an actual reason."
+      ]
+    },
+    {
+      "lines": [
+        "Here's the part that makes the colour rule feel less arbitrary.",
+        "A black node together with its red children isn't really several separate nodes. Redraw it, and it's exactly one node of a wider, four-way tree, wearing a disguise."
+      ]
+    },
+    {
+      "lines": [
+        "Now the harder question. Across every insert and every delete this tree will ever do,",
+        "predict it: what's the largest number of rotations any single one of them can possibly need?"
+      ],
+      "answer": [
+        "At most two for an insert, at most three for a delete — never more, no matter what.",
+        "Every case that actually rotates happens outside the loop that walks back up fixing colours. That walk can climb a long way. The rotation at the end of it never does."
+      ]
+    },
+    {
+      "lines": [
+        "Watch that play out: the recolouring climb drawn tall, as tall as the tree itself needs it to be.",
+        "And at the bottom of it, one rotation, always the same size, no matter how far the climb went to get there."
+      ]
+    },
+    {
+      "lines": [
+        "This is the piece doing the real work underneath the colour rule.",
+        "Every node of that wider four-way tree expands into at most two levels here, so this tree's height can never run away the way last topic's chain did on the exact same keys."
+      ]
+    },
+    {
+      "lines": [
+        "This isn't just a textbook exercise. Go look at the ordered map underneath the C plus plus standard library, and this is exactly the scheme running there.",
+        "Same story for Java's own ordered map, and for a whole list of subsystems inside the Linux kernel itself — the scheme nobody mentions until you actually go looking for it."
+      ]
+    },
+    {
+      "lines": [
+        "Everything in this topic gets checked right here, not just drawn.",
+        "Same worst-case keys from last topic, and the height stays nowhere close to that long chain.",
+        "And across every single insert and delete actually run, the rotation count never once reaches past what the source material promised."
+      ]
+    }
+  ]
+}

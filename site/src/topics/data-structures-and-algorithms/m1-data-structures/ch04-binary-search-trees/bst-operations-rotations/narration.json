@@ -1,0 +1,58 @@
+{
+  "topic": "dsa.bst-operations-rotations",
+  "steps": [
+    {
+      "lines": [
+        "Last chapter turned every key into a number and threw its order away on purpose.",
+        "This chapter keeps the order instead. Every node sits between its left subtree's keys and its right subtree's keys, and that one rule is going to cost something."
+      ]
+    },
+    {
+      "lines": [
+        "Watch what search and insert actually share.",
+        "Searching for a key and finding where a new one belongs are the exact same walk: smaller, go left, bigger, go right. Insert just keeps walking past the point where search would have given up, until it hits empty space."
+      ]
+    },
+    {
+      "lines": [
+        "Here's a set of timestamps, already in sorted order, about to go into an empty tree one at a time.",
+        "Predict it before I show you: what shape does this tree end up taking?"
+      ],
+      "answer": [
+        "One long chain, every node with only a right child, height equal to the number of keys.",
+        "Each new timestamp is bigger than every key already inside, so it always lands as the current rightmost node's right child. Nothing else is possible once the order is fixed ahead of time."
+      ]
+    },
+    {
+      "lines": [
+        "Nothing broke on the way there. The same property held after every single insert.",
+        "The shape just quietly became the worst one a tree can take, and the property itself never once warned you it was happening."
+      ]
+    },
+    {
+      "lines": [
+        "Deleting a leaf is easy. Deleting a node with two children is the one case that actually needs thought.",
+        "Swap in the smallest key from its right subtree instead. No key anywhere sits between the deleted key and that one, so sliding it up can't put anything out of order."
+      ]
+    },
+    {
+      "lines": [
+        "Walk left, visit the node, walk right, and repeat that at every level down.",
+        "Nobody sorted this output afterward. It comes out sorted because the shape of the tree already forced it to."
+      ]
+    },
+    {
+      "lines": [
+        "One move fixes a tree's shape without touching anything else: a rotation.",
+        "Promote one node, demote its parent, relink a small, constant number of pointers. The in-order sequence underneath never moves, because the relink only swaps which subtree sits where, not what order those subtrees hold inside themselves."
+      ]
+    },
+    {
+      "lines": [
+        "Everything in this topic gets checked right here, not assumed.",
+        "Same keys, same property, wildly different height depending only on the order they arrived in.",
+        "And a rotation, run on a real tree: the shape changes, and the in-order sequence coming back out is identical, byte for byte, before and after."
+      ]
+    }
+  ]
+}

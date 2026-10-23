@@ -1,0 +1,7 @@
+- **Hash function**: declared again here (Ch.3); still mapping an input to a number, now hashing hashes together to combine many values into one.
+- **Cryptographic hash**: declared again here (topic 16); a Merkle tree's guarantees depend on collisions being practically impossible, which only a cryptographic hash provides.
+- **Merkle tree**: introduced here; a binary tree where every leaf is the hash of one piece of data and every internal node is the hash of its two children.
+- **Root hash**: introduced here; the single hash at the top of a Merkle tree, depending on every leaf beneath it.
+- **Merkle proof**: introduced here; the small set of hashes along one root-to-leaf path, enough to authenticate or localize that one leaf without the rest of the tree.
+- **Anti-entropy repair**: introduced here; using Merkle trees to find exactly which key ranges two replicas disagree on, without exchanging every key.
+- **Content-defined chunking**: introduced here; setting a Merkle tree's chunk boundaries from the data's own content (a rolling hash crossing a threshold) instead of a fixed byte offset.

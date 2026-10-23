@@ -1,0 +1,54 @@
+{
+  "topic": "dsa.red-black-trees",
+  "syllabus": [
+    { "clause": "colour invariants as an encoding of 2-3-4 trees, at most three rotations per update and O(1) amortized recolourings", "at": [{ "step": "Every node is red or black, the root is black, a red node never has a red child, and every path down to empty space passes through the same number of black nodes." }, { "step": "A black node and its red children aren't really separate nodes — they're one node of a 2-3-4 tree, wearing a disguise." }, { "step": "The climb can be as tall as the tree. The rotation at the bottom of it never is." }] },
+    { "clause": "the default ordered map in std::map, Java TreeMap and many Linux kernel subsystems", "at": [{ "step": "This is the one scheme every mainstream ordered map actually ships with: C++'s std::map, Java's TreeMap, and a long list of Linux kernel subsystems." }] }
+  ],
+  "sources": [
+    {
+      "source": "\"Red–black tree,\" Wikipedia (current article)",
+      "items": [
+        { "item": "The five red-black invariants: every node red or black, null nodes black, a red node never has a red child, equal black-node count on every root-to-leaf path", "at": [{ "step": "Every node is red or black, the root is black, a red node never has a red child, and every path down to empty space passes through the same number of black nodes." }] },
+        { "item": "A black node together with its red children corresponds to one 2-3-4 node, with a two-representation caveat for 3-nodes", "at": [{ "step": "A black node and its red children aren't really separate nodes — they're one node of a 2-3-4 tree, wearing a disguise." }] },
+        { "item": "An insert needs at most two rotations total, a delete at most three, both occurring outside the recolouring loop", "at": [{ "step": "The climb can be as tall as the tree. The rotation at the bottom of it never is." }] }
+      ]
+    },
+    {
+      "source": "\"Red-black Trees (rbtree) in Linux,\" The Linux Kernel documentation (current)",
+      "items": [
+        { "item": "The kernel's own documentation corroborates the two-rotation/three-rotation bound independently of Wikipedia", "at": [{ "step": "The climb can be as tall as the tree. The rotation at the bottom of it never is." }] },
+        { "item": "Named kernel subsystems (I/O schedulers, high-resolution timers, ext3, VMAs, epoll, cryptographic keys, the HTB scheduler) use rbtree", "at": [{ "step": "This is the one scheme every mainstream ordered map actually ships with: C++'s std::map, Java's TreeMap, and a long list of Linux kernel subsystems." }] }
+      ]
+    },
+    {
+      "source": "\"TreeMap,\" Java SE 21 & JDK 21 API documentation",
+      "items": [
+        { "item": "Java's TreeMap is a red-black tree implementation adapting CLRS's own algorithms", "at": [{ "step": "This is the one scheme every mainstream ordered map actually ships with: C++'s std::map, Java's TreeMap, and a long list of Linux kernel subsystems." }] }
+      ]
+    },
+    {
+      "source": "\"std::map,\" cppreference.com",
+      "items": [
+        { "item": "C++'s std::map is usually implemented as a red-black tree", "at": [{ "step": "This is the one scheme every mainstream ordered map actually ships with: C++'s std::map, Java's TreeMap, and a long list of Linux kernel subsystems." }] }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "blind self-review, research stage",
+    "date": "2026-10-23",
+    "items": [
+      { "item": "Topic 23 established the rotation with no invariant attached; this topic is the first to give that move an actual reason to fire, stated explicitly as the chapter's own continuity.", "at": [{ "step": "A rotation preserves order, but last topic found nothing that keeps height small. What is the smallest rule that would have stopped that chain from ever forming?" }] },
+      { "item": "The colour invariant is layered entirely on top of the BST property; search, insert and delete's core logic is unchanged from topic 23 — only what colours an insert may leave behind is new.", "at": [{ "step": "Every node is red or black, the root is black, a red node never has a red child, and every path down to empty space passes through the same number of black nodes." }] },
+      { "item": "A valid BST can still be an invalid red-black tree — the two properties (ordering and colour) are independent, and this topic's predict step tests exactly that misconception.", "at": [{ "step": "An insert just created two consecutive red nodes. What has to happen before this tree is valid again?" }] },
+      { "item": "Recolouring is tried first because it is cheaper than a rotation and often sufficient by itself; a rotation is reached for only in the specific cases recolouring alone cannot resolve.", "at": [{ "step": "Recolouring fixes most violations by itself. When it can't, one rotation finishes the job — the same move last topic defined, now firing for a reason." }] },
+      { "item": "The 2-3-4 correspondence is not a separate fact about red-black trees to memorize alongside the colour invariant — the colour invariant is that correspondence, restated in binary-tree terms.", "at": [{ "step": "A black node and its red children aren't really separate nodes — they're one node of a 2-3-4 tree, wearing a disguise." }] },
+      { "item": "The rotation bound (two for insert, three for delete) is not obvious from the recolouring loop's own unbounded climb — the two facts (climb length, rotation count) are independent, and the second is what actually matters for cost.", "at": [{ "step": "Across every insert and delete this tree will ever do, what is the largest number of rotations any single one of them can need?" }] },
+      { "item": "The reason the scheme stays cheap is specifically that the expensive-looking part (the recolouring climb) is not the part that is bounded, and the bounded part (rotations) is not the part that looks expensive.", "at": [{ "step": "The climb can be as tall as the tree. The rotation at the bottom of it never is." }] },
+      { "item": "The height bound is a direct consequence of the 2-3-4 correspondence (each 2-3-4 node expands into at most two tree levels), not a separately-proven fact about red-black trees specifically.", "at": [{ "step": "The 2-3-4 correspondence is what does the real work: every 2-3-4 node expands into at most two tree levels, so a red-black tree's height can never run away the way an unbalanced BST's did." }] },
+      { "item": "All three named production uses (std::map, Java TreeMap, Linux kernel subsystems) are verified against each project's own current documentation rather than assumed from the scheme's reputation.", "at": [{ "step": "This is the one scheme every mainstream ordered map actually ships with: C++'s std::map, Java's TreeMap, and a long list of Linux kernel subsystems." }] },
+      { "item": "This topic's own measured numbers (height 13 vs. 200; max rotations observed, 2) are honest measurements on one real run, not claimed as the universal worst case for every possible operation sequence.", "at": [{ "step": "Prove it" }] },
+      { "item": "AVL trees, splay trees and treaps are named only as alternatives with no mechanism taught, consistent with the syllabus skipping them for this chapter.", "at": [{ "deep": "The frontier" }] }
+    ]
+  },
+  "gapReview": { "date": "2026-10-23", "by": "self-review", "open": [] }
+}
