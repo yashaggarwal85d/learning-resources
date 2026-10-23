@@ -1,0 +1,108 @@
+{
+  "topic": "rust.explicit-ownership-crossing-points",
+  "syllabus": [
+    {
+      "clause": "thread::spawn, thread::scope, tokio::spawn(async move { .. }) and channel sends are the only places ownership changes threads.",
+      "at": [
+        { "step": "Four places, and only four, change which thread owns a value" },
+        { "step": "Moved for good: the new thread owns it, the caller can't" },
+        { "step": "thread::scope makes the identical borrow sound" },
+        { "step": "Same contract, same reason: the runtime may move the task" },
+        { "step": "A channel send is the fourth crossing point" }
+      ]
+    },
+    {
+      "clause": "Design them deliberately",
+      "at": [
+        { "step": "Try to only borrow, not move, into a plain spawn" },
+        { "step": "tokio::spawn asks for the identical Send + 'static contract" }
+      ]
+    },
+    {
+      "clause": "(std mpsc is crossbeam-based internally).",
+      "at": [{ "step": "That channel's own implementation is borrowed, not built from scratch" }]
+    }
+  ],
+  "sources": [
+    {
+      "source": "thread-spawn",
+      "items": [
+        {
+          "item": "the closure's 'static constraint: the closure and its return value must have a lifetime of the whole program execution",
+          "at": [{ "step": "Try to only borrow, not move, into a plain spawn" }]
+        },
+        {
+          "item": "the closure's Send constraint: it is passed by value from the spawning thread to the new one",
+          "at": [{ "step": "Moved for good: the new thread owns it, the caller can't" }]
+        }
+      ]
+    },
+    {
+      "source": "thread-scope",
+      "items": [
+        {
+          "item": "scoped threads can borrow non-'static data, because the scope guarantees every thread is joined before the scope returns",
+          "at": [{ "step": "thread::scope makes the identical borrow sound" }]
+        },
+        {
+          "item": "all threads spawned in the scope that haven't been manually joined are automatically joined before the scope function returns",
+          "at": [{ "step": "thread::scope makes the identical borrow sound" }]
+        }
+      ]
+    },
+    {
+      "source": "tokio-spawn",
+      "items": [
+        {
+          "item": "tokio::spawn's signature requires F: Future + Send + 'static, the identical shape of bound as thread::spawn's closure",
+          "at": [{ "step": "tokio::spawn asks for the identical Send + 'static contract" }]
+        },
+        {
+          "item": "a spawned task may execute on the current thread or be sent to a different one, depending on the runtime configuration",
+          "at": [{ "step": "Same contract, same reason: the runtime may move the task" }]
+        }
+      ]
+    },
+    {
+      "source": "mpsc-index",
+      "items": [
+        {
+          "item": "std::sync::mpsc is a multi-producer, single-consumer FIFO queue; senders are clone-able so many threads can send to one receiver",
+          "at": [{ "step": "A channel send is the fourth crossing point" }]
+        }
+      ]
+    },
+    {
+      "source": "mpsc-crossbeam-src",
+      "items": [
+        {
+          "item": "the standard library's own source comment: the module used as sync::mpsc's implementation is a port of the crossbeam-channel crate",
+          "at": [{ "step": "That channel's own implementation is borrowed, not built from scratch" }]
+        }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "self-review",
+    "date": "2026-10-23",
+    "items": [
+      { "item": "A value's ownership only ever crosses a thread boundary at one of exactly four points in ordinary Rust: thread::spawn, thread::scope, tokio::spawn, or a channel send — never by merely sharing a reference across threads (that needs Send/Sync plus synchronization, covered in earlier topics, not an ownership transfer at all).", "at": [{ "step": "Four places, and only four, change which thread owns a value" }] },
+      { "item": "thread::spawn's closure is a 'move' closure in practice: ownership of anything it captures by value transfers to the new thread, and the spawning thread can no longer use that data afterward.", "at": [{ "step": "Moved for good: the new thread owns it, the caller can't" }] },
+      { "item": "thread::spawn's F: Send + 'static bound exists because the new thread may run for longer than the function that spawned it; without 'static, the closure could end up holding a reference to data that no longer exists.", "at": [{ "step": "Try to only borrow, not move, into a plain spawn" }] },
+      { "item": "Trying to borrow (rather than move) non-'static local data into a plain thread::spawn is a real E0373 compiler error: 'closure may outlive the current function, but it borrows ... which is owned by the current function.'", "at": [{ "step": "Try to only borrow, not move, into a plain spawn" }] },
+      { "item": "thread::scope relaxes the 'static requirement specifically because the scope function itself guarantees every thread spawned inside it is joined before the scope function returns — the borrow can never outlive the data.", "at": [{ "step": "thread::scope makes the identical borrow sound" }] },
+      { "item": "tokio::spawn requires F: Future + Send + 'static, the same two constraints as thread::spawn, now expressed on a Future rather than a closure, for the identical structural reason: ownership and lifetime both need to survive a thread hop.", "at": [{ "step": "tokio::spawn asks for the identical Send + 'static contract" }] },
+      { "item": "A spawned tokio task is not guaranteed to stay on the thread that spawned it; the docs state it may execute on the current thread or be sent to a different one depending on the runtime's configuration, which is exactly why Send is required at all.", "at": [{ "step": "Same contract, same reason: the runtime may move the task" }] },
+      { "item": "std::sync::mpsc is a multi-producer, single-consumer channel: Sender (and SyncSender) are clone-able so many threads may send, but there is only ever one Receiver.", "at": [{ "step": "A channel send is the fourth crossing point" }] },
+      { "item": "Calling send() on a channel moves ownership of the value out of the sending thread; the value only becomes reachable again once some thread calls recv() on the matching Receiver.", "at": [{ "step": "A channel send is the fourth crossing point" }] },
+      { "item": "std::sync::mpsc's actual channel implementation (std::sync::mpmc internally) is not a bespoke algorithm; its own source comment states plainly that it is ported from the crossbeam-channel crate.", "at": [{ "step": "That channel's own implementation is borrowed, not built from scratch" }] },
+      { "item": "Reusing crossbeam-channel's algorithm inside std is a deliberate engineering choice to adopt a mature, independently-tested design rather than maintain a separate, potentially-divergent implementation.", "at": [{ "step": "That channel's own implementation is borrowed, not built from scratch" }] },
+      { "item": "None of the four crossing points are interchangeable: a plain spawn needs owned, 'static data; a scoped spawn trades that for a join guarantee; a task spawn needs the same ownership rule as a plain spawn; and a channel send is the only one of the four that doesn't involve thread::spawn or tokio::spawn at all.", "at": [{ "step": "Recap: where ownership crosses a thread boundary" }] }
+    ]
+  },
+  "gapReview": {
+    "date": "2026-10-23",
+    "by": "self-review",
+    "open": []
+  }
+}

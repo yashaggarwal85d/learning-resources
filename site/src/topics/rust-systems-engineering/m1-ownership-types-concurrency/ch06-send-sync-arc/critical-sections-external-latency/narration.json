@@ -1,0 +1,74 @@
+{
+  "steps": [
+    {
+      "lines": [
+        "A critical section has exactly one job: guarding a handful of memory operations while one thread touches them.",
+        "That's the entire contract. Nothing in that contract says anything about what else might end up standing inside it."
+      ]
+    },
+    {
+      "lines": [
+        "Send four threads at one lock, and give each of them its own simulated network call to make while it's still holding that lock.",
+        { "beat": 0.3 },
+        "Roughly how long should the whole thing take to finish?"
+      ],
+      "answer": [
+        "Close to four times one call's length, not one call's length. The lock has no idea what it's guarding — it serializes the entire critical section, call included.",
+        "Only one thread is ever allowed inside at once, and that rule doesn't care whether the thing inside is a memory write or a wait for the outside world."
+      ]
+    },
+    {
+      "lines": [
+        "Here is the real number, measured, not guessed: roughly a hundred and sixty milliseconds for four calls that individually take forty.",
+        "That's the lock paying for every single one of those calls in sequence, because none of them could start until the one before it let go."
+      ]
+    },
+    {
+      "lines": [
+        "Move the exact same call to before the lock is ever taken, and leave the lock holding only the one memory write it was always meant to guard.",
+        "Now all four calls happen at once, and the whole thing finishes in about the length of a single call — the lock was never the bottleneck; what was inside it was."
+      ]
+    },
+    {
+      "lines": [
+        "Now take two separate locks and two threads. One of them reaches for the first lock, then the second. The other reaches for them in the opposite order.",
+        { "beat": 0.3 },
+        "Does a program built that way ever finish?"
+      ],
+      "answer": [
+        "No, it hangs forever. Each thread ends up holding exactly the one thing the other thread is still waiting for.",
+        "Neither thread did anything wrong on its own — the trouble only exists in how the two of them were ordered against each other."
+      ]
+    },
+    {
+      "lines": [
+        "Run that exact program under a short timeout, and the timeout is the one that gives up — the program itself never does.",
+        "That's a deadlock proven directly, not described: the process is still sitting there, waiting on a lock that will never come free."
+      ]
+    },
+    {
+      "lines": [
+        "Make one small change: have both threads reach for the first lock before ever touching the second, every single time.",
+        "The circle that made the deadlock possible simply can't form anymore, and the identical program now finishes cleanly, every time it runs."
+      ]
+    },
+    {
+      "lines": [
+        "A lock convoy looks similar from a distance, but it isn't a deadlock at all: it's a pile of equal-priority threads bouncing off the same lock, over and over.",
+        "Every one of them is still making progress — the cost here is wasted turns at the front of the line, not a permanent stop."
+      ]
+    },
+    {
+      "lines": [
+        "Priority inversion is the opposite shape of problem: a thread the scheduler barely cares about ends up holding the one lock a much more urgent thread is stuck waiting on.",
+        "The kernel's own fix borrows the urgent thread's priority and lends it to the holder, just long enough to get the lock back — and none of this, start to finish, is something the compiler was ever watching for."
+      ]
+    },
+    {
+      "lines": [
+        "Keep the outside world out of a critical section, order every lock the same way everywhere, and remember that a convoy still crawls forward while a deadlock never moves again.",
+        "Every one of those is a property of how the program behaves at runtime — the type system already did its part, and its part was never this."
+      ]
+    }
+  ]
+}
