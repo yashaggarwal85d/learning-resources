@@ -1,0 +1,78 @@
+{
+  "topic": "dsa.lsm-compaction-amplification",
+  "steps": [
+    {
+      "lines": [
+        "The last topic solved the write problem by refusing to update anything in place. That refusal has a bill attached, and it comes due here.",
+        "Every run that structure ever wrote is still sitting there, and a read still has to go through every one of them."
+      ]
+    },
+    {
+      "lines": [
+        "Before the reveal, think about this from the system's point of view: the pile of runs only grows, and every read gets a little slower for it.",
+        "What's actually worth doing about that, given that rewriting data costs real disk time too?"
+      ],
+      "answer": [
+        "Not nothing, and not everything at once either — some runs get merged together, on a schedule, trading some disk time now for a cheaper read later.",
+        "Merging on every single flush would mean paying that rewrite cost constantly, which defeats the entire point of writing sequentially in the first place."
+      ]
+    },
+    {
+      "lines": [
+        "One scheme keeps each level down to exactly one sorted run, with a size limit attached to it.",
+        "Once a level outgrows that limit, its run gets folded into the next level down, and that fold rewrites every key it touches, not just the new ones.",
+        "The upside is that a lookup never has more than one run per level to check — the downside is a key can get rewritten again and again as it works its way down."
+      ]
+    },
+    {
+      "lines": [
+        "A different scheme lets several similarly sized runs just sit there, side by side, completely unmerged.",
+        "Only once enough of them have piled up does the whole batch get folded together into one wider run.",
+        "A key barely gets touched this way, which is cheap — but now a lookup has to check every one of those unmerged runs instead of just one."
+      ]
+    },
+    {
+      "lines": [
+        "Three separate numbers are what actually let you compare these two schemes honestly, instead of arguing from intuition.",
+        "One counts the extra bytes a disk ends up writing beyond the single logical write that caused them.",
+        "Another counts the extra runs a lookup has to open beyond the one that actually holds the answer, and the third counts the extra bytes sitting on disk beyond what the live data alone would need."
+      ]
+    },
+    {
+      "lines": [
+        "Before the reveal, here's the real question: given that one scheme above is clearly cheaper to read from and the other is clearly cheaper to write to, can some clever design just win on every count?"
+      ],
+      "answer": [
+        "No. Pinning down any two of those three numbers forces the third one upward — there's no way around it, only a choice of which one gets to be the loser.",
+        "A hybrid scheme doesn't escape that. It's still built from the same two moves, so it just inherits a share of both costs instead of neither."
+      ]
+    },
+    {
+      "lines": [
+        "So here's the actual shape of the trade: one scheme wins by keeping wasted disk space down, at the cost of extra reading and extra rewriting.",
+        "The other wins by keeping rewriting down, at the cost of extra reading and extra wasted space.",
+        "Splitting the difference, tiered near the top and the other scheme near the bottom, doesn't dodge this — it just picks a different spot on the exact same curve."
+      ]
+    },
+    {
+      "lines": [
+        "There's a piece of this that's tunable completely separately from which merging scheme you picked at all: how much memory goes to each level's own membership filter.",
+        "Most systems just hand every level the same share, measured per key, which sounds fair but isn't actually the cheapest way to spend that memory.",
+        "A smarter split gives a small level a stingier wrong-guess rate and a huge level a more generous one, because tightening a filter on a small level buys back far more lookup cost per byte spent."
+      ]
+    },
+    {
+      "lines": [
+        "One more idea pushes this further: treat the two merging schemes not as a binary choice but as opposite ends of one continuous line.",
+        "Then pick a point on that line based on the actual shape of a given workload, merging aggressively only where it actually pays for itself.",
+        "That doesn't make the underlying trade go away. It just means someone found a better spot on it than guessing would have."
+      ]
+    },
+    {
+      "lines": [
+        "Here's what actually got measured, not assumed: write, read, and wasted-space cost for both merging schemes, run on the exact same sequence of inserts and updates.",
+        "Also measured: how much a smarter, per-level split of filter memory beats an equal-everywhere split, at the identical total memory budget."
+      ]
+    }
+  ]
+}
