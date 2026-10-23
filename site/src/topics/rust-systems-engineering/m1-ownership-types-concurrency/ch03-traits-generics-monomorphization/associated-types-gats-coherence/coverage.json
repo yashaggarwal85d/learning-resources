@@ -1,0 +1,60 @@
+{
+  "topic": "rust.associated-types-gats-coherence",
+  "syllabus": [
+    { "clause": "associated types vs generic parameters (one Iterator impl per type vs many From<T> impls)", "at": [{ "step": "Chosen once, or chosen many times" }, { "step": "Can the same type pick Output twice?" }, { "step": "A generic parameter dodges that limit" }] },
+    { "clause": "Generic associated types for lending iterators", "at": [{ "step": "An item that borrows from the call itself" }] },
+    { "clause": "The orphan rule, coherence, blanket impls and the newtype pattern", "at": [{ "step": "Implementing a foreign trait for a foreign type" }, { "step": "A local wrapper satisfies the rule" }, { "step": "One impl, every type that qualifies" }] },
+    { "clause": "Specialization remains unstable", "at": [{ "deep": "Frontier" }] },
+    { "clause": "Async methods in traits → Ch.8", "at": [{ "deep": "Frontier" }] }
+  ],
+  "sources": [
+    {
+      "source": "book-advanced-traits",
+      "items": [
+        { "item": "Iterator's associated Item stands in for the type of value the implementor iterates over", "at": [{ "step": "Chosen once, or chosen many times" }] },
+        { "item": "An associated type is chosen only once because a type can have only one impl of a given trait", "at": [{ "step": "Chosen once, or chosen many times" }] },
+        { "item": "A trait can have at most one implementation for any given type", "at": [{ "step": "Can the same type pick Output twice?" }] }
+      ]
+    },
+    {
+      "source": "book-traits-blanket",
+      "items": [
+        { "item": "A blanket implementation implements a trait for every type that satisfies a stated trait bound, in one declaration", "at": [{ "step": "One impl, every type that qualifies" }] },
+        { "item": "The standard library's own impl<T: Display> ToString for T is the canonical example of a blanket impl", "at": [{ "step": "One impl, every type that qualifies" }] }
+      ]
+    },
+    {
+      "source": "reference-associated-items",
+      "items": [
+        { "item": "An associated type that itself takes generic parameters (commonly a lifetime) is a generic associated type (GAT)", "at": [{ "step": "An item that borrows from the call itself" }] },
+        { "item": "The Reference's own canonical GAT example is a LendingIterator whose Item<'x> is bound by where Self: 'x", "at": [{ "step": "An item that borrows from the call itself" }] },
+        { "item": "A GAT's own where Self: 'x bound is required to match what can be proven at the point the GAT is used in the trait's methods", "at": [{ "deep": "Internals: coherence, GATs, and why the orphan rule exists" }] }
+      ]
+    },
+    {
+      "source": "reference-orphan-rule",
+      "items": [
+        { "item": "The orphan rule: an impl is allowed only if the trait or at least one of its types is defined in the current crate", "at": [{ "step": "Implementing a foreign trait for a foreign type" }] },
+        { "item": "An orphan impl is one that implements a foreign trait for a foreign type, which the rule forbids", "at": [{ "step": "Implementing a foreign trait for a foreign type" }] },
+        { "item": "The orphan rule exists to guarantee coherence: exactly one impl of any trait for any type can ever exist, program-wide", "at": [{ "deep": "Internals: coherence, GATs, and why the orphan rule exists" }] }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "self-review",
+    "date": "2026-10-23",
+    "items": [
+      { "item": "The real distinction isn't that associated types are 'less flexible' than generic parameters; it's that a generic parameter makes the trait itself parameterized, so Trait<A> and Trait<B> are different trait bounds that can each be independently implemented for the same Self type", "at": [{ "step": "A generic parameter dodges that limit" }] },
+      { "item": "A duplicate impl failure (E0119) has nothing specifically to do with associated types; it is coherence's blanket rule that a type gets exactly one impl of a given trait, period, and an associated type simply gets fixed inside whichever one impl exists", "at": [{ "step": "Can the same type pick Output twice?" }] },
+      { "item": "A GAT's lifetime parameter is resolved per call, not per impl, which is exactly what std::iter::Iterator's plain associated Item cannot express, because Item has no lifetime parameter of its own to tie to a single &mut self borrow", "at": [{ "step": "An item that borrows from the call itself" }] },
+      { "item": "The orphan rule is not primarily about preventing the author's own mistakes; it's about making a dependency upgrade safe: two crates adding the same foreign-for-foreign impl independently would silently conflict the moment both ended up in one dependency graph", "at": [{ "step": "Implementing a foreign trait for a foreign type" }] },
+      { "item": "The newtype pattern doesn't change what the orphan rule allows; it changes which type the impl is for, substituting a genuinely local type for the foreign one, so the exact same rule now accepts it", "at": [{ "step": "A local wrapper satisfies the rule" }] },
+      { "item": "A blanket impl is itself subject to the orphan rule like any other impl; std's own impl<T: Display> ToString for T is only legal because ToString is defined in std, the same crate as the blanket impl itself", "at": [{ "step": "One impl, every type that qualifies" }] },
+      { "item": "Specialization (letting a more specific impl override a blanket one) would let two impls of the same trait for an overlapping set of types coexist, which is exactly the coherence property the orphan rule and the one-impl-per-type rule both exist to prevent on stable Rust today", "at": [{ "deep": "Frontier" }] },
+      { "item": "An async fn in a trait needs a hidden, compiler-generated Future type per implementation, which is itself a kind of per-impl associated type the compiler invents automatically — a reason it interacts with this topic's whole subject even though the full mechanism is out of scope here", "at": [{ "deep": "Frontier" }] },
+      { "item": "Coherence is checked once, at compile time, for the whole crate graph being built; it is not a run-time property and never causes an ambiguous method call to be resolved differently depending on which code path reaches it first", "at": [{ "deep": "Internals: coherence, GATs, and why the orphan rule exists" }] },
+      { "item": "Fundamental types (like Box<T> or references) are treated specially by coherence: the T inside Box<T> is not counted as 'covered', so Box<LocalType> counts as local even though Box itself is foreign, which is why wrapping in Box (rather than a newtype) does not generally satisfy the orphan rule the same way a plain newtype does", "at": [{ "deep": "Frontier" }] }
+    ]
+  },
+  "gapReview": { "date": "2026-10-23", "by": "self-review", "open": [] }
+}

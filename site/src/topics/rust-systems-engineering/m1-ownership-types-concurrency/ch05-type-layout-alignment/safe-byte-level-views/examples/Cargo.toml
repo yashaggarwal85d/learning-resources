@@ -1,0 +1,16 @@
+[package]
+name = "safe-byte-level-views-examples"
+version = "0.1.0"
+edition = "2021"
+publish = false
+
+[[bin]]
+name = "bytemuck_header_safe"
+path = "src/bin/bytemuck_header_safe.rs"
+
+[[bin]]
+name = "bytemuck_padded_header_fails"
+path = "src/bin/bytemuck_padded_header_fails.rs"
+
+[dependencies]
+bytemuck = { version = "1", features = ["derive"] }

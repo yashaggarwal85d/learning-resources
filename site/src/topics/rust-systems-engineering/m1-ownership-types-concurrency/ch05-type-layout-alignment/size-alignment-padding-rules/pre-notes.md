@@ -1,0 +1,7 @@
+- **Size**: how many bytes a value occupies; always a whole multiple of its own alignment. *Where you meet it:* `size_of::<Header>()` on four different versions of the same struct.
+- **Alignment**: the byte boundary a value's address must fall on (always a power of two). *Where you meet it:* why `length`'s two bytes can't start right after `flags`.
+- **Padding**: bytes a layout inserts purely to keep every field aligned; they carry no value and may be uninitialized. *Where you meet it:* the hatched cells in `repr(C)`'s "Bad" field order.
+- **`repr(Rust)`**: the default representation; size, alignment, and field order are the compiler's own choice, not a promise. *Where you meet it:* two differently-written field orders getting the identical layout.
+- **`repr(C)`**: a representation that fixes field order to source order and the platform's C ABI. *Where you meet it:* the same reorder that did nothing under `repr(Rust)` now costing four real bytes.
+- **`offset_of!`**: a `std::mem` macro returning a field's byte offset from the start of its type, computed at compile time. *Where you meet it:* labelling every field's offset on the byte ruler.
+- **`const` assertion**: `const _: () = assert!(...)`, checked by the compiler itself; a false claim fails the build with `error[E0080]`, not a run-time panic.

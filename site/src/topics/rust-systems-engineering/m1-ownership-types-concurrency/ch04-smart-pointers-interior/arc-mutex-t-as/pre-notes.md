@@ -1,0 +1,6 @@
+- **`Arc<Mutex<T>>`**: the reflex for shared, mutable, cross-thread state, correct by construction. *Where you meet it:* four real threads incrementing a shared counter through one lock.
+- **Serialization (hidden)**: every access forced through the same single lock, one at a time, regardless of how independent the work actually was. *Where you meet it:* splitting identical work across threads on one `Mutex` measurably doesn't scale.
+- **Sharding**: splitting one lock's data into several independently-locked pieces, so unrelated accesses stop contending. *Where you meet it:* one `Mutex` per thread instead of one shared by all of them.
+- **Owner task with a channel**: giving one task sole, unshared ownership of the data, reached only by sending messages. *Where you meet it:* a single thread owns the counter; every other thread only sends a request.
+- **`arc-swap` (RCU-style)**: an external crate letting readers see a consistent snapshot of read-mostly data with no lock at all, by atomically swapping in a whole new `Arc` on write. *Where you meet it:* `ArcSwap::load`/`store` on a small config struct.
+- **RAII guard**: the value `lock()` returns, which is the only way to reach a `Mutex`'s protected data, guaranteeing it is never touched while unlocked. *Where you meet it:* every `*guard += 1` in this topic's examples.

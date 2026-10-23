@@ -1,0 +1,88 @@
+{
+  "topic": "rust.trait-objects-vtables-dyn",
+  "note": "Written to be spoken: one sentence or phrase per line; {\"beat\": s} is a deliberate pause; numbers and codes are said the way a person would say them, never shown as digits. `answer` plays after the learner answers a predict step.",
+  "steps": [
+    {
+      "lines": [
+        "A reference to some ordinary concrete type is just one single pointer, pointing straight at the data and nothing else.",
+        { "beat": 0.3 },
+        "Make that same reference point at a trait instead of a concrete type, and it quietly doubles in size. There is still a pointer to the data, but now there is a second pointer riding alongside it, pointing somewhere else entirely."
+      ]
+    },
+    {
+      "lines": [
+        "That second pointer is not pointing at more data about the value itself. It points at something built exactly once for each concrete type that ever gets used this way.",
+        { "beat": 0.3 },
+        "What does that second pointer actually point to?"
+      ],
+      "answer": [
+        "A table of function pointers, with exactly one entry for every method the trait, and anything it inherits from, actually has an implementation for.",
+        "Every single value of that same concrete type, no matter how many of them exist, shares that one table. Only the first pointer, the one pointing at the actual data, is ever different between them."
+      ]
+    },
+    {
+      "lines": [
+        "Call a method through a reference like this one, and the compiler genuinely cannot know in advance which implementation that call is going to land on.",
+        "So it waits. The correct function pointer gets pulled out of that table and called through only at the exact moment the call actually happens, never a moment before."
+      ]
+    },
+    {
+      "lines": [
+        "Take one single loop, calling one trivial method, and run it two ways: once through a reference whose concrete type the compiler already knows, and once through a reference to a trait instead.",
+        "Let the optimizer do everything it possibly can to both versions, and look at what's left afterward.",
+        { "beat": 0.3 },
+        "In the version where the concrete type was already known, that method call vanishes completely, folded straight into the surrounding code. In the trait version, a real call survives no matter how hard the optimizer tries, because the thing being called still isn't decided until the program actually runs.",
+        "That is the cost people usually get wrong. It is almost never the one extra jump through a table. It is everything the first version got to skip, for free, that the second version structurally never can."
+      ]
+    },
+    {
+      "lines": [
+        "Here is a method that takes ownership of itself and hands itself straight back, used through a reference to the trait rather than the concrete type underneath it.",
+        "Receiving a value by taking full ownership of it means the code receiving it has to know exactly how large that value actually is. A reference to a trait erases precisely that fact on purpose.",
+        { "beat": 0.3 },
+        "Does code written this way actually compile?"
+      ],
+      "answer": [
+        "No, and it fails immediately, naming the exact reason: this trait simply cannot be turned into a reference to the trait at all, because one of its methods hands back the whole, by-value thing a bare trait reference can never know the size of.",
+        "The trait itself isn't broken. It just can't be used this particular way, through this particular pointer, as written."
+      ]
+    },
+    {
+      "lines": [
+        "Add one small condition to that one troublesome method, and nothing else about the trait changes at all.",
+        "That condition tells the compiler this one method will never be reached through a trait reference, so leave it out of the table entirely rather than refusing the whole trait over it.",
+        "Every other method on that same trait keeps working exactly as before, through exactly the same kind of reference that failed a moment ago."
+      ]
+    },
+    {
+      "lines": [
+        "Take a trait that inherits from a second, broader trait, and a value you only know as a reference to the narrower one.",
+        "Converting that reference to the broader trait used to require going all the way back to the concrete type underneath both of them.",
+        { "beat": 0.3 },
+        "Does it still require that detour on a current toolchain?"
+      ],
+      "answer": [
+        "No. It converts directly now, with no detour through the concrete type at all, a capability added to the language fairly recently.",
+        "The narrower trait's own table is simply laid out so the broader trait's entries can be read straight out of it. Nothing new gets built, and nothing goes back through the original concrete type to get there."
+      ]
+    },
+    {
+      "lines": [
+        "Instead of hiding two different implementations behind one trait reference, wrap them both in one single type that lists exactly which two they are, and pick between them with an ordinary branch.",
+        "That removes the table and the second pointer completely. Every implementation has to be written into that one list ahead of time, with nothing hidden and nothing added later without touching it directly.",
+        "That trade is the whole point: give up the freedom to add new implementations later, in exchange for giving up the extra pointer and the table entirely."
+      ]
+    },
+    {
+      "lines": [
+        "So: a reference to a trait is really two pointers riding together, one to the data, one to a table built once per concrete type, and every call through it waits until the moment it actually happens to decide which function to run.",
+        "The expensive part most people blame is the smallest part of the real cost. The larger part is everything a call through a known type gets to skip for free, that a call through a trait reference structurally never can.",
+        "A method that hands back the whole value it was given, or one written generically inside the trait, can't go in that table at all, unless it's marked as something that will only ever be called when the concrete type is already known.",
+        "A narrower trait widens directly into a broader one it inherits from, with no detour back through the concrete type needed anymore.",
+        "And wrapping a known, closed set of implementations in one ordinary type instead removes the table and the extra pointer entirely, at the cost of needing every one of them written in by hand.",
+        { "beat": 0.3 },
+        "Next time: both of the tools this chapter has built so far quietly assume the trait itself is allowed to be used that way at all. What actually decides whether it is?"
+      ]
+    }
+  ]
+}

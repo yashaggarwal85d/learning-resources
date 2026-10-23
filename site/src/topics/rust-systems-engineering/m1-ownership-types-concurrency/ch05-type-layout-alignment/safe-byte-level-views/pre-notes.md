@@ -1,0 +1,6 @@
+- **Padding bytes**: gaps a struct's layout leaves to keep fields aligned; never guaranteed to hold any particular value. *Where you meet it:* the previous topic's "Bad" field order, revisited.
+- **Undefined behaviour (UB)**: a program action the language makes no guarantee about at all, not merely "probably works." *Where you meet it:* reading a struct's padding bytes as part of a value.
+- **`repr(C)`**: a representation that fixes field order to source order and the platform's C ABI, making a type's layout a real, checkable fact. *Where you meet it:* the packet header both this topic's examples read.
+- **`bytemuck`**: a crate providing derive-checked traits for safely viewing a value's bytes. *Where you meet it:* `Pod`, `Zeroable`, and `from_bytes` on the header struct.
+- **`transmute`**: a raw, unchecked reinterpret of one type's bytes as another; the unsafe baseline this topic's derive-checked view replaces. *Where you meet it:* named as the pattern being avoided, not executed.
+- **Endianness**: the byte order a multi-byte value is stored in (big-endian/little-endian); a platform's own choice, not a property of the value itself. *Where you meet it:* `to_be_bytes`/`from_be_bytes` versus the platform's native order.

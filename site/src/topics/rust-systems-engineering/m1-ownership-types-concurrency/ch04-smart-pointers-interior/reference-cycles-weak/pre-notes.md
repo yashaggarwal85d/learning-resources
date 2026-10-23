@@ -1,0 +1,6 @@
+- **Reference cycle**: two or more `Rc`/`RefCell` values pointing at each other so that no one's count ever reaches zero. *Where you meet it:* a parent and child each holding a strong `Rc` to the other.
+- **Memory leak**: memory never freed, even though it is memory-safe in Rust. *Where you meet it:* measured directly with a counting global allocator, the same technique Chapter 1's leak-safety topic used.
+- **`Weak<T>`**: a non-owning reference to an `Rc`-managed value. *Where you meet it:* the identical parent/child shape, with the parent link held by `Weak` instead of `Rc`.
+- **`upgrade`**: turns a `Weak<T>` back into a real `Rc<T>`, returning `None` if the value is already gone. *Where you meet it:* calling `upgrade` before and after the last strong owner is dropped.
+- **`Rc::new_cyclic`**: builds an `Rc<T>` while handing the constructor a `Weak<T>` to that same, not-yet-finished value. *Where you meet it:* a node that stores a weak pointer to itself from the moment it exists.
+- **Counting allocator**: a `GlobalAlloc` wrapper that counts every allocation and deallocation, used to measure a leak directly rather than guess at one. *Where you meet it:* net allocations after both nodes in a cycle go out of scope.

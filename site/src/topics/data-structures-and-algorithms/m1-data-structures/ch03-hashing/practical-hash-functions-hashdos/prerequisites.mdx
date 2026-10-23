@@ -1,0 +1,34 @@
+import Resource from '../../../../../components/Resource.astro';
+
+<section class="prereq" data-section="before">
+
+### <span class="n">01</span> Already covered
+
+<ul class="resources">
+  <Resource kind="reel" host={props.host} domain="data-structures-and-algorithms" title="Strings and string builders">This chapter's own foundation: a string as a sequence of bytes, compared and copied whole — this topic is the first to turn one into a number.</Resource>
+</ul>
+
+</section>
+
+<section class="prereq" data-section="standard">
+
+### <span class="n">02</span> The real sources, from each design
+
+<ul class="resources">
+  <Resource kind="reading" title="xxHash" href="https://raw.githubusercontent.com/Cyan4973/xxHash/dev/README.md" by="Cyan4973 / xxHash README">The fast, non-cryptographic tier's own quality claim, explicitly scoped to non-adversarial input.</Resource>
+  <Resource kind="reading" title="HashMap" href="https://doc.rust-lang.org/std/collections/struct.HashMap.html" by="Rust standard library documentation">The default SipHash 1-3 hasher, randomly seeded for HashDoS resistance, and the warning that a fixed hasher loses it.</Resource>
+  <Resource kind="reading" title="SipHash: a fast short-input PRF" href="https://www.aumasson.jp/siphash/siphash.pdf" by="Aumasson &amp; Bernstein, 2012">The paper this topic's central correction comes from: why a randomly-seeded but still-linear hash isn't enough.</Resource>
+  <Resource kind="reading" title="PEP 456 — Secure and interchangeable hash algorithm" href="https://peps.python.org/pep-0456/" by="Python Enhancement Proposals">Why CPython's own str/bytes hash() has been SipHash since this PEP, and why.</Resource>
+</ul>
+
+</section>
+
+<section class="prereq" data-section="later">
+
+### <span class="n">03</span> Where this goes next
+
+<ul class="resources">
+  <Resource kind="reel" host={props.host} domain="data-structures-and-algorithms" title="Separate chaining">A hash function says nothing about what happens when two keys collide. Next: the oldest answer.</Resource>
+</ul>
+
+</section>

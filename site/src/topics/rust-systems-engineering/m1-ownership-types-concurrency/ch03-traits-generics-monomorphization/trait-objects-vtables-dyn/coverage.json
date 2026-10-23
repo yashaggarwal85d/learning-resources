@@ -1,0 +1,51 @@
+{
+  "topic": "rust.trait-objects-vtables-dyn",
+  "syllabus": [
+    { "clause": "dyn Trait is a fat pointer (data + vtable), and most of its cost is lost inlining, not the indirect call", "at": [{ "step": "Two words, not one" }, { "step": "What's actually inside the second word?" }, { "step": "Calling through it is late binding" }, { "step": "The cost isn't the indirect call" }] },
+    { "clause": "Dyn-compatibility rules (formerly \"object safety\": no generic methods, no by-value Self) and the where Self: Sized escape hatch", "at": [{ "step": "A method that takes Self by value can't go in the vtable" }, { "step": "One bound excludes just that method" }] },
+    { "clause": "trait upcasting (stable 1.86)", "at": [{ "step": "Widening to the parent trait, directly" }] },
+    { "clause": "Enum dispatch as the closed-set alternative for plugin-style boundaries", "at": [{ "step": "A closed list, matched by hand" }] }
+  ],
+  "sources": [
+    {
+      "source": "reference-trait-object",
+      "items": [
+        { "item": "A pointer to a trait object is two parts: a pointer to the concrete data, and a pointer to a vtable", "at": [{ "step": "Two words, not one" }] },
+        { "item": "The vtable holds one function pointer per method of the trait (and its supertraits) that the concrete type implements", "at": [{ "step": "What's actually inside the second word?" }] },
+        { "item": "Calling a method on a trait object loads a function pointer from the vtable at run time and invokes it indirectly (late binding)", "at": [{ "step": "Calling through it is late binding" }] }
+      ]
+    },
+    {
+      "source": "reference-traits-dyn-compatible",
+      "items": [
+        { "item": "A dyn-compatible trait's associated functions must each be either dispatchable from a trait object or explicitly marked non-dispatchable", "at": [{ "step": "A method that takes Self by value can't go in the vtable" }] },
+        { "item": "A dispatchable method must take no type parameters and must not use Self except as its own receiver's type", "at": [{ "step": "A method that takes Self by value can't go in the vtable" }] },
+        { "item": "A method is made explicitly non-dispatchable (excluded from the vtable) by adding a where Self: Sized bound to it", "at": [{ "step": "One bound excludes just that method" }] },
+        { "item": "Dyn compatibility is the Reference's current name for what was formerly called object safety", "at": [{ "deep": "Internals: the vtable, dyn compatibility, and what optimization can't fix" }] }
+      ]
+    },
+    {
+      "source": "rust-releases",
+      "items": [
+        { "item": "Upcasting trait objects to supertraits was stabilized in Rust 1.86.0, released 2025-04-03", "at": [{ "step": "Widening to the parent trait, directly" }] }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "self-review",
+    "date": "2026-10-22",
+    "items": [
+      { "item": "The fat pointer itself is the fixed, one-time cost of using dyn Trait at all (one extra word per reference or Box); it is paid once per pointer, not once per call, and is not where most of the running-cost difference against monomorphization actually comes from", "at": [{ "step": "Two words, not one" }] },
+      { "item": "The vtable is built once per concrete type at compile time (not once per value at run time); every value of that concrete type behind a dyn Trait pointer shares the same vtable, only the data pointer differs between them", "at": [{ "step": "What's actually inside the second word?" }] },
+      { "item": "Late binding means the optimizer genuinely cannot know, at compile time, which concrete implementation a given dyn Trait call will reach, because that is decided by whichever data pointer happens to be paired with the vtable pointer at run time", "at": [{ "step": "Calling through it is late binding" }] },
+      { "item": "Raising optimization level cannot remove a vtable call the way it removes a monomorphized call's overhead; the lost inlining is structural, not a missed optimization, because inlining requires knowing the callee at compile time and a vtable call by definition does not", "at": [{ "step": "The cost isn't the indirect call" }] },
+      { "item": "The reputation that dyn Trait is slow because of \"the indirect call\" undersells the real cost and oversells a fix: removing the indirection (e.g. with enum dispatch) helps, but the inlining lost at every dyn Trait call site is usually the larger effect on real workloads with small, frequently-called methods", "at": [{ "deep": "Internals: the vtable, dyn compatibility, and what optimization can't fix" }] },
+      { "item": "A by-value Self method is excluded not because Self is somehow forbidden, but because the callee's own code would need to know Self's concrete size to receive it by value, and a fat pointer deliberately erases exactly that information", "at": [{ "step": "A method that takes Self by value can't go in the vtable" }] },
+      { "item": "A generic method is dyn-incompatible for a related but separate reason: a vtable has one fixed function-pointer slot per method, and a generic method would need a different slot per instantiation, which the vtable's fixed shape cannot express", "at": [{ "deep": "Internals: the vtable, dyn compatibility, and what optimization can't fix" }] },
+      { "item": "Adding where Self: Sized to one method doesn't make the trait object able to call that method; it makes the compiler build the vtable without a slot for it at all, so the trait object simply never offers it, while every other dyn-compatible method still does", "at": [{ "step": "One bound excludes just that method" }] },
+      { "item": "Upcasting is a coercion at the type-checking level, not a run-time conversion; a SubTrait's vtable is laid out so a SuperTrait's slots can be read directly out of it, with no new vtable built and no detour through the concrete type", "at": [{ "step": "Widening to the parent trait, directly" }] },
+      { "item": "Enum dispatch's real trade is closedness for structure: a match on a known, fixed set of variants gives the compiler everything it needs to inline each arm, at the literal cost that adding a new implementor means editing the enum, which dyn Trait never requires", "at": [{ "step": "A closed list, matched by hand" }] }
+    ]
+  },
+  "gapReview": { "date": "2026-10-22", "by": "self-review", "open": [] }
+}

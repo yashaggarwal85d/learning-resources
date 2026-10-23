@@ -1,0 +1,8 @@
+- **`Box<T>`**: a single owner's value, moved onto the heap; still single ownership, only the storage differs. *Where you meet it:* a `Node` and its child moved together through one `Box`.
+- **`Rc<T>`**: shared ownership of a heap value on one thread, via a plain, non-atomic reference count. *Where you meet it:* `Rc::clone`/`Rc::strong_count` bumping and dropping that count.
+- **`!Send`**: a type the compiler refuses to move into another thread. *Where you meet it:* moving an `Rc<i32>` into `thread::spawn`, rejected at compile time.
+- **`Arc<T>`**: shared ownership across threads, via an atomic reference count. *Where you meet it:* four real threads each cloning the same `Arc<Node>`.
+- **Atomic operation**: a read-modify-write that stays correct even when several threads touch it at once, at a real cost over an ordinary memory access. *Where you meet it:* why `Arc`'s count is safe to share and `Rc`'s is not.
+- **Contention**: several threads genuinely racing to touch the same shared value at once. *Where you meet it:* the same total clone/drop work measured once alone and once split across four threads.
+- **`std::sync::Barrier`**: forces a group of threads to all reach one point before any of them continues, so a benchmark's threads start touching shared state at genuinely the same moment. *Where you meet it:* releasing all four contending threads together.
+- **Wall-clock measurement**: timing a real, executed run rather than asserting a guessed number. *Where you meet it:* `std::time::Instant` timing the contended and uncontended runs this topic actually ran.

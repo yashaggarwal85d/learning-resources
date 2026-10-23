@@ -1,0 +1,22 @@
+import Resource from '../../../../../components/Resource.astro';
+
+<section class="prereq" data-section="chapter-so-far">
+
+### <span class="n">01</span> The node from the last two topics
+
+<ul class="resources">
+  <Resource kind="reel" host={props.host} domain="rust-systems-engineering" title="Interior mutability: Cell, RefCell, UnsafeCell">A node that can point at its own children, mutably, through RefCell, can also be made to point back at its parent. This topic asks what happens once two of those point at each other.</Resource>
+</ul>
+
+</section>
+
+<section class="prereq" data-section="cycles-and-weak">
+
+### <span class="n">02</span> The Book's own cycle, and Weak's docs
+
+<ul class="resources">
+  <Resource kind="reading" title="Reference Cycles Can Leak Memory" href="https://doc.rust-lang.org/book/ch15-06-reference-cycles.html" by="Klabnik, Nichols and Krycho, The Rust Programming Language">Why an Rc/RefCell cycle leaks, and how Weak breaks it.</Resource>
+  <Resource kind="reading" title="Weak — std" href="https://doc.rust-lang.org/std/rc/struct.Weak.html" by="The Rust Team">The exact upgrade behavior this topic's after-drop example reproduces.</Resource>
+</ul>
+
+</section>
