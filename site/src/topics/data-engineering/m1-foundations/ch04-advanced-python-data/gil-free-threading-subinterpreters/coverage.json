@@ -1,0 +1,183 @@
+{
+  "topic": "de.gil-free-threading-subinterpreters",
+  "syllabus": [
+    {
+      "clause": "what the GIL serializes",
+      "at": [
+        { "step": "Reveal: the GIL, quoted directly" }
+      ]
+    },
+    {
+      "clause": "multiprocessing costs (pickling, fork vs spawn, memory duplication)",
+      "at": [
+        { "step": "Reveal: the lab — multiprocessing's fork vs. spawn, measured for real" },
+        { "step": "Reveal: pickling's own real cost, measured for real" }
+      ]
+    },
+    {
+      "clause": "native code that releases the GIL",
+      "at": [
+        { "step": "Predict: does the GIL block a call into a C extension too?" },
+        { "step": "Reveal: the lab — native code releasing the GIL, measured for real" }
+      ]
+    },
+    {
+      "clause": "free-threaded CPython (experimental in 3.13, officially supported but optional in 3.14 under PEP 779, roughly 5–10% single-thread overhead)",
+      "at": [
+        { "step": "Predict: does removing the GIL mean the same speed, plus free parallelism?" },
+        { "step": "Reveal: free-threading's own disclosed cost, quoted directly" }
+      ]
+    },
+    {
+      "clause": "per-interpreter GILs via concurrent.interpreters and InterpreterPoolExecutor (3.14)",
+      "at": [
+        { "step": "Reveal: the lab — subinterpreters, a real multi-core speedup measured directly" },
+        { "step": "Reveal: what subinterpreters trade for that, quoted directly" }
+      ]
+    },
+    {
+      "clause": "C-extension compatibility as the gating factor",
+      "at": [
+        { "step": "Reveal: free-threading's own disclosed cost, quoted directly" }
+      ]
+    }
+  ],
+  "sources": [
+    {
+      "source": "Python Glossary, \"global interpreter lock\"",
+      "items": [
+        {
+          "item": "The mechanism used by the CPython interpreter to assure that only one thread executes Python bytecode at a time",
+          "at": [{ "step": "Reveal: the GIL, quoted directly" }]
+        },
+        {
+          "item": "This simplifies the CPython implementation by making the object model implicitly safe against concurrent access",
+          "at": [{ "step": "Reveal: the GIL, quoted directly" }]
+        },
+        {
+          "item": "Some extension modules are designed to release the GIL when doing computationally intensive tasks such as hashing, and the GIL is always released during I/O",
+          "at": [{ "step": "Predict: does the GIL block a call into a C extension too?" }, { "step": "Reveal: the lab — native code releasing the GIL, measured for real" }]
+        },
+        {
+          "item": "As of Python 3.13, the GIL can be disabled using the --disable-gil build configuration",
+          "at": [{ "step": "Predict: does removing the GIL mean the same speed, plus free parallelism?" }]
+        }
+      ]
+    },
+    {
+      "source": "PEP 703, \"Making the Global Interpreter Lock Optional in CPython\"",
+      "items": [
+        {
+          "item": "There will be two versions of Python requiring separately compiled C-API extensions, and it may take time for extension authors to build --disable-gil compatible packages",
+          "at": [{ "step": "Reveal: free-threading's own disclosed cost, quoted directly" }]
+        }
+      ]
+    },
+    {
+      "source": "PEP 779, \"Criteria for supported status for free-threaded Python\"",
+      "items": [
+        {
+          "item": "Phase I is experimental (3.13), phase II is officially supported but optional, phase III makes the free-threaded build the default",
+          "at": [{ "step": "Reveal: free-threading's own disclosed cost, quoted directly" }]
+        },
+        {
+          "item": "The single-thread performance penalty measured by pyperformance is currently around 10% (about 3% on macOS)",
+          "at": [{ "step": "Reveal: free-threading's own disclosed cost, quoted directly" }]
+        },
+        {
+          "item": "Free-threaded Python currently sees about 15-20% higher memory use (geometric mean, pyperformance)",
+          "at": [{ "step": "Reveal: free-threading's own disclosed cost, quoted directly" }]
+        }
+      ]
+    },
+    {
+      "source": "Python Documentation, \"multiprocessing — Process-based parallelism\"",
+      "items": [
+        {
+          "item": "Starting a process with spawn is rather slow compared to fork or forkserver, since the parent starts a fresh interpreter and the child only inherits what run() needs",
+          "at": [{ "step": "Reveal: the lab — multiprocessing's fork vs. spawn, measured for real" }]
+        },
+        {
+          "item": "A fork child is effectively identical to the parent process; all resources of the parent are inherited by the child",
+          "at": [{ "step": "Reveal: the lab — multiprocessing's fork vs. spawn, measured for real" }]
+        },
+        {
+          "item": "As of 3.14, fork is no longer the default start method on any platform; the POSIX default changed from fork to forkserver",
+          "at": [{ "step": "Reveal: the lab — multiprocessing's fork vs. spawn, measured for real" }]
+        }
+      ]
+    },
+    {
+      "source": "Python Documentation, \"concurrent.interpreters — Multiple interpreters in the same process\"",
+      "items": [
+        {
+          "item": "Each interpreter is effectively isolated from the others, with a limited number of carefully managed process-global exceptions",
+          "at": [{ "step": "Reveal: what subinterpreters trade for that, quoted directly" }]
+        },
+        {
+          "item": "Interpreters are sufficiently isolated that they do not share the GIL, so combining threads with multiple interpreters enables full multi-core parallelism, since Python 3.12",
+          "at": [{ "step": "Reveal: the lab — subinterpreters, a real multi-core speedup measured directly" }]
+        },
+        {
+          "item": "No other threads are automatically started for the operation",
+          "at": [{ "step": "Reveal: what subinterpreters trade for that, quoted directly" }]
+        }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "Claude (single session, written from the syllabus line and the fetched sources before storyboarding; not independent of the builder, so a later owner review should repeat it)",
+    "date": "2026-10-23",
+    "items": [
+      {
+        "item": "The native-GIL-release speedup (hashlib across threads, roughly 3.9x) is measured against the identical total work done single-threaded on this sandbox, not assumed from the glossary's own description of extensions that release the GIL",
+        "at": [{ "step": "Reveal: the lab — native code releasing the GIL, measured for real" }]
+      },
+      {
+        "item": "The contrast pure-Python loop (speedup held below 1.3x by assertion) is run as the identical total amount of work as the hashlib case, isolating the GIL's own serialization rather than comparing two differently-sized workloads",
+        "at": [{ "step": "Reveal: the lab — native code releasing the GIL, measured for real" }]
+      },
+      {
+        "item": "Fork vs. spawn memory duplication is checked with a direct hasattr probe inside the child process on an attribute set only in the parent, not inferred from RSS numbers alone, after an earlier top-level-global version of the same check gave a false result because a spawn child's fresh re-import silently rebuilt its own copy of the list",
+        "at": [{ "step": "Reveal: the lab — multiprocessing's fork vs. spawn, measured for real" }]
+      },
+      {
+        "item": "The 3.14 default-start-method change (fork to forkserver on POSIX) is disclosed as a currency finding on top of the syllabus's own framing, while this sandbox's own CPython 3.13 is confirmed directly (via get_start_method) to still default to fork, so the topic's own measured fork-vs-spawn contrast matches what this sandbox actually runs",
+        "at": [{ "step": "Reveal: the lab — multiprocessing's fork vs. spawn, measured for real" }]
+      },
+      {
+        "item": "The pickling-cost measurement times a real dumps/loads round trip on a hundred-thousand-row structure rather than asserting a cost from the multiprocessing docs' own description of what a spawn child must be handed",
+        "at": [{ "step": "Reveal: pickling's own real cost, measured for real" }]
+      },
+      {
+        "item": "Free-threading's own disclosed single-thread penalty and memory cost are sourced-only, never re-measured, because this sandbox's own CPython build is confirmed (in cpython-object-model-memory/examples.py) to not be a free-threaded build",
+        "at": [{ "step": "Reveal: free-threading's own disclosed cost, quoted directly" }]
+      },
+      {
+        "item": "The C-extension-compatibility clause is grounded in PEP 703's own distribution-challenges text rather than asserted generically, since the sandbox cannot itself demonstrate an incompatible extension failing to load under --disable-gil",
+        "at": [{ "step": "Reveal: free-threading's own disclosed cost, quoted directly" }]
+      },
+      {
+        "item": "The subinterpreter speedup (roughly 3.9x) is produced through the low-level _interpreters C module directly, confirmed present on this sandbox via import, after confirming the higher-level concurrent.interpreters module (3.14) is genuinely absent rather than just unused",
+        "at": [{ "step": "Reveal: the lab — subinterpreters, a real multi-core speedup measured directly" }]
+      },
+      {
+        "item": "The same-interpreter-threads contrast (roughly 1.9x) runs the identical total amount of pure-Python work as the subinterpreter case, isolating the effect of separate GILs rather than comparing differently-sized workloads",
+        "at": [{ "step": "Reveal: the lab — subinterpreters, a real multi-core speedup measured directly" }]
+      },
+      {
+        "item": "The isolation-and-no-shared-GIL property quoted from the concurrent.interpreters docs is disclosed as true since Python 3.12 (per the docs' own parenthetical), independent of the module's own 3.14 arrival, so the sandbox's 3.13-only reproduction via _interpreters is not anachronistic",
+        "at": [{ "step": "Reveal: what subinterpreters trade for that, quoted directly" }]
+      },
+      {
+        "item": "The closing Prove-It predict (whether creating subinterpreters alone, with no new threads, delivers parallelism) is a genuinely new scenario, not a restatement of the subinterpreter reveal: it isolates the role threads play on top of interpreter isolation",
+        "at": [{ "step": "Prove it" }]
+      },
+      {
+        "item": "The bridge from topic 26 (the object model and memory cost per item) and the handoff to topic 28 (async I/O, where none of this topic's CPU-bound machinery is the right tool) are both taken verbatim from CHAPTER.md's own entry for this topic",
+        "at": [{ "step": "A thread in most languages means real parallel work — in Python, it often doesn't" }]
+      }
+    ]
+  },
+  "gapReview": { "date": "2026-10-23", "by": "Claude (single session)", "open": [] }
+}

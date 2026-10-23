@@ -2616,4 +2616,24 @@ export const TOPICS: TopicMeta[] = [
     handoff:
       "A boxed Python object's overhead is the per-item cost; the next question is what actually stops more than one CPU core from paying that cost in parallel at once — the GIL, and every real way around it.",
   },
+  {
+    id: 'de.gil-free-threading-subinterpreters',
+    domain: 'data-engineering',
+    slug: 'data-engineering/m1-foundations/ch04-advanced-python-data/gil-free-threading-subinterpreters',
+    title: 'GIL, free-threading and subinterpreters',
+    syllabusTitle: 'GIL, free-threading and subinterpreters',
+    kind: 'full',
+    status: 'held',
+    milestone: { number: 1, title: 'Foundations' },
+    chapter: { number: 4, title: 'Advanced Python for Data Systems', section: '4.1' },
+    minutes: 15,
+    verified: '2026-10-23',
+    introduces: ['gil-serialization', 'free-threaded-cpython'],
+    uses: ['cpython-object-model'],
+    declared: ['basic familiarity with threads vs processes'],
+    bridge:
+      "A boxed object's overhead is a per-item cost that parallelism should be able to amortize across cores. This topic is the mechanism that decides whether it actually can: the GIL, and the four real ways — multiprocessing, GIL-releasing native code, free-threading, subinterpreters — to get around what it serializes.",
+    handoff:
+      "Every mechanism here answers CPU-bound parallelism. The next question is the other half of concurrency entirely: work that isn't CPU-bound at all, but spends almost all its time waiting on the network — where none of this topic's machinery is even the right tool.",
+  },
 ];
