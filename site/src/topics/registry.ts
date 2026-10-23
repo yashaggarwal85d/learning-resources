@@ -2914,4 +2914,24 @@ export const TOPICS: TopicMeta[] = [
     handoff:
       "pandas 3.0 adopted Arrow-backed dtypes as an option; the next topic is the dataframe library that was designed around Arrow and lazy evaluation from the start, rather than retrofitted onto it.",
   },
+  {
+    id: 'de.polars-lazy-query-engine',
+    domain: 'data-engineering',
+    slug: 'data-engineering/m1-foundations/ch04-advanced-python-data/polars-lazy-query-engine',
+    title: 'Polars lazy query engine',
+    syllabusTitle: 'Polars lazy query engine',
+    kind: 'full',
+    status: 'held',
+    milestone: { number: 1, title: 'Foundations' },
+    chapter: { number: 4, title: 'Advanced Python for Data Systems', section: '4.2' },
+    minutes: 15,
+    verified: '2026-10-23',
+    introduces: ['polars-lazy-expressions'],
+    uses: ['arrow-columnar-format'],
+    declared: [],
+    bridge:
+      "pandas 3.0 adopted Arrow-backed dtypes onto an eager, NumPy-born API. This topic is the dataframe library built around Arrow and lazy evaluation from the ground up: Polars, whose query engine looks a great deal like the SQL optimizer Chapter 2 already covered — pushdown, subexpression elimination — just compiled from a different front end.",
+    handoff:
+      "Arrow, pandas and Polars have all been in-process so far. The next section turns outward, to the database connection every one of this chapter's pipelines eventually has to open for real — starting with how to pool that connection correctly.",
+  },
 ];
