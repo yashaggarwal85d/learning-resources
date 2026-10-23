@@ -1,0 +1,5 @@
+- **In-place vs. log-structured update**: a B-tree (topics 26-27) updates a page in place, paying its I/O cost immediately on every write; this topic's structure never does, writing sequentially and deferring the cost — the one design choice this topic sits on the opposite side of from everything before it.
+- **I/O model**: the cost model where a block moved between memory and disk, not a comparison, is what matters — introduced in Chapter 1, assumed here exactly as topics 26-27 used it.
+- **Sorted run**: an on-disk file holding keys in sorted order, built once and never edited afterward — this topic's central data structure.
+- **Membership query**: a question with only two possible answers, "probably present" or "definitely absent" — what a Bloom filter answers, as distinct from an index, which also says where.
+- **Node-split-merge (topic 26)**: the in-place alternative this topic's structure is built specifically to avoid; not reused as a mechanism here.
