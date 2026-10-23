@@ -1,0 +1,24 @@
+import Resource from '../../../../../components/Resource.astro';
+
+<section class="prereq" data-section="before-this">
+
+### <span class="n">01</span> Before this: the models, tests and lineage graph this topic builds incrementally on
+
+<ul class="resources">
+  <Resource kind="reel" title="dbt models, tests and lineage" domain="data-engineering" host="de.dbt-models-tests-lineage" by="the topic right before this one" />
+</ul>
+
+</section>
+
+<section class="prereq" data-section="dbt-straight-from-the-source">
+
+### <span class="n">02</span> dbt's own documentation on incremental strategies, microbatch and snapshots
+
+<ul class="resources">
+  <Resource kind="reading" title="Configure incremental models" href="https://docs.getdbt.com/docs/build/incremental-models" by="dbt Labs">is_incremental(), --full-refresh, and on_schema_change.</Resource>
+  <Resource kind="reading" title="About incremental strategy" href="https://docs.getdbt.com/docs/build/incremental-strategy" by="dbt Labs">append, delete+insert, merge, insert_overwrite, microbatch.</Resource>
+  <Resource kind="reading" title="About microbatch incremental models" href="https://docs.getdbt.com/docs/build/incremental-microbatch" by="dbt Labs">event_time, batch_size, and per-batch processing.</Resource>
+  <Resource kind="reading" title="Add snapshots to your DAG" href="https://docs.getdbt.com/docs/build/snapshots" by="dbt Labs">Type-two SCD, the timestamp and check strategies.</Resource>
+</ul>
+
+</section>

@@ -1,0 +1,14 @@
+version: 2
+
+models:
+  - name: fct_orders
+    columns:
+      - name: order_id
+        data_tests:
+          - unique
+          - not_null
+  - name: mart_revenue_by_region
+    columns:
+      - name: region
+        data_tests:
+          - unique

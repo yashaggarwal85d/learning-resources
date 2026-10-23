@@ -2090,4 +2090,24 @@ export const TOPICS: TopicMeta[] = [
     handoff:
       "Every model built here assumed a full rebuild was an acceptable way to materialize it. Next: dbt's own practical answer to a dimension that needs history kept and a fact table too large to rebuild from scratch every run — incremental models and snapshots.",
   },
+  {
+    id: 'de.incremental-models-snapshots-dbt',
+    domain: 'data-engineering',
+    slug: 'data-engineering/m1-foundations/ch03-data-modeling-analytical/incremental-models-snapshots-dbt',
+    title: 'Incremental models and snapshots in dbt',
+    syllabusTitle: 'Incremental models and snapshots in dbt',
+    kind: 'full',
+    status: 'held',
+    milestone: { number: 1, title: 'Foundations' },
+    chapter: { number: 3, title: 'Data modeling and analytical architecture', section: '3.4' },
+    minutes: 15,
+    verified: '2026-10-23',
+    introduces: ['dbt-incremental-strategies', 'dbt-snapshot-scd2'],
+    uses: ['dbt-models-ref-dag', 'dbt-tests-data-unit', 'scd-type-2', 'hash-diff-change-detection'],
+    declared: ['sql-select'],
+    bridge:
+      "Every model built here assumed a full rebuild was an acceptable way to materialize it. This topic is dbt's own practical answer to a dimension that needs history kept and a fact table too large to rebuild from scratch every run: incremental models and snapshots.",
+    handoff:
+      "Every model, test and incremental strategy in this chapter was still written and run by a person, by hand, in SQL and Jinja. Next chapter starts from the language every one of these pipelines is actually glued together in — Python — and where its own costs hide.",
+  },
 ];
