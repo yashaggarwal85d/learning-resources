@@ -1,0 +1,23 @@
+import Resource from '../../../../../components/Resource.astro';
+
+<section class="prereq" data-section="chapter-so-far">
+
+### <span class="n">01</span> Where the last milestone left off
+
+<ul class="resources">
+  <Resource kind="reel" host={props.host} domain="rust-systems-engineering" title="Acquire/Release publication and SeqCst">Every guarantee in Chapter 7 was about memory becoming visible between threads that already exist and are already running. This chapter asks what it means for a unit of work to not be running yet at all.</Resource>
+</ul>
+
+</section>
+
+<section class="prereq" data-section="future-waker-primary">
+
+### <span class="n">02</span> The real docs: Future, Poll, and Wake
+
+<ul class="resources">
+  <Resource kind="reading" title="Future in std::future" href="https://doc.rust-lang.org/std/future/trait.Future.html" by="The Rust Team">The trait's own framing: a future is a value, inert until polled, and poll never blocks.</Resource>
+  <Resource kind="reading" title="Poll in std::task" href="https://doc.rust-lang.org/std/task/enum.Poll.html" by="The Rust Team">Pending's own stated obligation: arranging a wakeup, not merely returning "not yet."</Resource>
+  <Resource kind="reading" title="Wake in std::task" href="https://doc.rust-lang.org/std/task/trait.Wake.html" by="The Rust Team">The standard way an executor builds a real Waker from an Arc-wrapped type, with a worked block_on example.</Resource>
+</ul>
+
+</section>

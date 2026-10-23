@@ -1,0 +1,92 @@
+{
+  "topic": "rust.futures-poll-waker-contract",
+  "syllabus": [
+    {
+      "clause": "a Future is a lazy computation: constructing one does no work, and that laziness is itself a backpressure mechanism.",
+      "at": [
+        { "step": "Nothing. Polling is the only thing that ever runs it" },
+        { "step": "That laziness is the backpressure" }
+      ]
+    },
+    {
+      "clause": "The Poll::Pending contract says a pending future must arrange for its Waker to be called.",
+      "at": [
+        { "step": "It hangs. Timed out on purpose to prove it" },
+        { "step": "The fix: store the waker, call it when the work finishes" }
+      ]
+    },
+    {
+      "clause": "The architecture is Future → Waker → scheduler → poll, not a hidden thread.",
+      "at": [
+        { "step": "A waker is built from an Arc, using the standard library's own Wake trait" },
+        { "step": "Future, waker, scheduler, poll — run end to end, no hidden thread" }
+      ]
+    }
+  ],
+  "sources": [
+    {
+      "source": "future-trait",
+      "items": [
+        {
+          "item": "a future is a value that might not have finished computing yet, making it possible for a thread to continue doing useful work while it waits",
+          "at": [{ "step": "A value that does nothing until something asks" }]
+        },
+        {
+          "item": "poll does not block if the value is not ready; instead, the current task is scheduled to be woken up when it's possible to make further progress",
+          "at": [{ "step": "Nothing. Polling is the only thing that ever runs it" }]
+        },
+        {
+          "item": "futures alone are inert — they must be actively polled for the underlying computation to make progress",
+          "at": [{ "step": "That laziness is the backpressure" }]
+        }
+      ]
+    },
+    {
+      "source": "poll-enum",
+      "items": [
+        {
+          "item": "Poll indicates whether a value is available or if the current task has been scheduled to receive a wakeup instead",
+          "at": [{ "step": "Nothing. Polling is the only thing that ever runs it" }]
+        },
+        {
+          "item": "when a function returns Pending, the function must also ensure that the current task is scheduled to be awoken when progress can be made",
+          "at": [{ "step": "It hangs. Timed out on purpose to prove it" }]
+        }
+      ]
+    },
+    {
+      "source": "wake-trait",
+      "items": [
+        {
+          "item": "the Wake trait can be used to create a Waker; an executor can define an implementation and use it to construct a Waker to pass to the tasks it executes",
+          "at": [{ "step": "A waker is built from an Arc, using the standard library's own Wake trait" }]
+        },
+        {
+          "item": "the trait supports the common executor design in which the data used to wake up a task is stored in an Arc",
+          "at": [{ "step": "A waker is built from an Arc, using the standard library's own Wake trait" }]
+        }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "self-review",
+    "date": "2026-10-23",
+    "items": [
+      { "item": "A future is fundamentally a value, not a running computation — the distinction the whole chapter depends on is that building one (even a complex one with captured state) performs no work at all; only a call to poll does.", "at": [{ "step": "Nothing. Polling is the only thing that ever runs it" }] },
+      { "item": "The laziness of futures is not an implementation detail but the actual backpressure mechanism of async Rust: a system can construct and hold arbitrarily many futures without any of them consuming execution resources until something actually polls them.", "at": [{ "step": "That laziness is the backpressure" }] },
+      { "item": "Poll::Pending is not merely informational — it is the half of a contract: returning it without arranging a later wakeup leaves the executor with no mechanism to ever poll that future again, demonstrated here as a genuine, reproducible hang under a timeout.", "at": [{ "step": "It hangs. Timed out on purpose to prove it" }] },
+      { "item": "The correct pattern for a future waiting on external work (a timer, a socket, a signal from another thread) is to store the Waker it receives during poll and have whatever completes that external work call wake() on it — this is the entire mechanism by which 'external event happened' becomes 'poll me again'.", "at": [{ "step": "The fix: store the waker, call it when the work finishes" }] },
+      { "item": "std::task::Wake is the standard, safe way an executor builds a real Waker without touching the unsafe RawWaker vtable: wrap the executor's own per-task wakeup state in an Arc, implement wake(self: Arc<Self>), and Waker::from converts it.", "at": [{ "step": "A waker is built from an Arc, using the standard library's own Wake trait" }] },
+      { "item": "A minimal but complete executor needs only a runnable-task queue and a way to turn a woken task back into a poll call; no thread anywhere in that loop runs the future's logic on its behalf — the executor's own thread, calling poll directly, is the only thing that ever executes any of it.", "at": [{ "step": "Future, waker, scheduler, poll — run end to end, no hidden thread" }] },
+      { "item": "poll should return quickly and should not block; if a call to poll is known to take a while, that work belongs on a thread pool instead, precisely because blocking inside poll would stall every other task sharing that executor thread.", "at": [{ "step": "Nothing. Polling is the only thing that ever runs it" }] },
+      { "item": "Calling poll again after a future has already returned Ready is explicitly unspecified behavior by the trait's own contract (though never permitted to cause actual undefined behavior, since poll is a safe method) — a correct executor or combinator must never do this.", "at": [{ "step": "A value that does nothing until something asks" }] },
+      { "item": "The future/waker/poll model is deliberately runtime-agnostic: nothing in this topic's executor, Delay future, or Wake implementation depends on any particular async runtime, which is why the same shape (not the same code) reappears, at a larger scale, inside Tokio's own scheduler.", "at": [{ "step": "Future, waker, scheduler, poll — run end to end, no hidden thread" }] },
+      { "item": "A future representing a value computed elsewhere (a conduit, in the standard library's own phrasing) does not do the real work itself — its only job is to report readiness correctly and to hold the Waker needed to report a change in that readiness, which is exactly the separation this topic's Delay future and its conduit thread demonstrate.", "at": [{ "step": "The fix: store the waker, call it when the work finishes" }] }
+    ]
+  },
+  "gapReview": {
+    "date": "2026-10-23",
+    "by": "self-review",
+    "open": []
+  }
+}
