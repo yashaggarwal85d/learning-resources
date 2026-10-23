@@ -1,0 +1,6 @@
+- **Local queue**: each worker's own queue of ready tasks, checked before anything else. *Where you meet it:* what a worker drains first, and what stealing takes from.
+- **Global injection queue**: a shared queue behind every worker's local one, for tasks with nowhere more specific to go. *Where you meet it:* the fallback when a worker's own queue and the LIFO slot are both empty.
+- **LIFO slot**: a single, per-worker fast-path slot for a task that just woke a sibling. *Where you meet it:* the docs' own name for message-passing locality.
+- **Work stealing**: an idle worker moving half of a busy sibling's local queue to its own. *Where you meet it:* the only explanation for 200 one-worker-spawned tasks landing on several threads.
+- **Cooperative budgeting**: a bounded per-poll allowance of resource operations before a task is forced to yield. *Where you meet it:* why an always-ready hot loop still lets a trivial sibling run.
+- **`task::unconstrained`**: opts a future out of the budget entirely. *Where you meet it:* the measured, documented starvation risk, not just a warning in prose.

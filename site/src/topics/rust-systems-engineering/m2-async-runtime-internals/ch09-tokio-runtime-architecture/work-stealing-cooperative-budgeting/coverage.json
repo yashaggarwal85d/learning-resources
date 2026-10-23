@@ -1,0 +1,71 @@
+{
+  "topic": "rust.work-stealing-cooperative-budgeting",
+  "syllabus": [
+    {
+      "clause": "each worker has a local run queue plus a LIFO slot for message-passing locality; a global injection queue sits behind them, and idle workers steal half of a busy worker's queue. Cooperative budgeting forces a task to yield after a per-poll budget of resource operations, so a hot loop over a ready socket can't starve its neighbours.",
+      "at": [
+        { "step": "Measured: 200 tasks, all spawned from one worker, land on three or four real threads" },
+        { "step": "The LIFO slot: a fast lane for the task that was just woken, for message-passing locality" },
+        { "step": "Measured: the sibling ran long before the hot loop itself finished" },
+        { "step": "Measured: the sibling only ran the moment the unconstrained loop itself finished" }
+      ]
+    }
+  ],
+  "sources": [
+    {
+      "source": "runtime-module",
+      "items": [
+        {
+          "item": "stealing is done by moving half of the tasks in one worker's local queue to another local queue, when both the stealing worker's local queue and the global queue are empty",
+          "at": [{ "step": "Measured: 200 tasks, all spawned from one worker, land on three or four real threads" }]
+        },
+        {
+          "item": "a task that wakes another task is added to the woken worker's lifo slot instead of its ordinary queue",
+          "at": [{ "step": "The LIFO slot: a fast lane for the task that was just woken, for message-passing locality" }]
+        },
+        {
+          "item": "the lifo slot is disabled after it is used three times in a row, until the worker schedules a task that didn't come from it",
+          "at": [{ "step": "The LIFO slot: a fast lane for the task that was just woken, for message-passing locality" }]
+        }
+      ]
+    },
+    {
+      "source": "task-coop",
+      "items": [
+        {
+          "item": "a task that runs for a long time without yielding can starve other tasks or resources on the same executor",
+          "at": [{ "step": "A hot loop that’s always ready to run, never once blocked on anything real — does it ever let a trivial sibling task run?" }]
+        },
+        {
+          "item": "Tokio has explicit yield points in library functions that force tasks to return to the executor periodically",
+          "at": [{ "step": "Measured: the sibling ran long before the hot loop itself finished" }]
+        },
+        {
+          "item": "task::unconstrained exposes a service to starvation if the unconstrained future never yields otherwise",
+          "at": [{ "step": "Measured: the sibling only ran the moment the unconstrained loop itself finished" }]
+        }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "self-review",
+    "date": "2026-10-23",
+    "items": [
+      { "item": "A worker's local queue, the LIFO slot, and the global injection queue are not three independent mechanisms competing for attention; they are a strict priority order the worker checks in sequence every time it needs its next task, and work stealing only ever enters the picture once both of a worker's own sources are empty.", "at": [{ "step": "Measured: 200 tasks, all spawned from one worker, land on three or four real threads" }] },
+      { "item": "The 200-task measurement in this topic is deliberately constructed so that work stealing is the only possible explanation for the result: every one of those tasks was spawned by code running inside the single worker driving block_on, so any task that ends up executing on a different real thread got there by being stolen, not by being scheduled there directly.", "at": [{ "step": "Measured: 200 tasks, all spawned from one worker, land on three or four real threads" }] },
+      { "item": "Stealing moves half of a busy queue, not one task at a time, specifically to amortize the cost of the cross-thread synchronization the steal operation requires — a deliberate tradeoff that favors fewer, larger redistributions over frequent, cheap ones.", "at": [{ "step": "Measured: 200 tasks, all spawned from one worker, land on three or four real threads" }] },
+      { "item": "The LIFO slot exists for a specific, named pattern — a task sending a message to another task that is blocked waiting for exactly that message — where ordinary FIFO scheduling would let the woken task's own cached, 'hot' data cool in the CPU cache while it waits its turn behind everything already queued.", "at": [{ "step": "The LIFO slot: a fast lane for the task that was just woken, for message-passing locality" }] },
+      { "item": "The LIFO slot's own three-uses-in-a-row limit exists so that a long chain of tasks that keep waking each other cannot monopolize a single worker indefinitely through the fast path alone; after three consecutive uses, the next woken task is forced into the ordinary local queue instead.", "at": [{ "step": "The LIFO slot: a fast lane for the task that was just woken, for message-passing locality" }] },
+      { "item": "Cooperative budgeting is not a general-purpose preemption mechanism; it only takes effect inside library functions (channel receives, I/O readiness checks, and similar) that Tokio itself has instrumented to consult the current task's budget, which is exactly why a hand-written tight loop with no such calls inside it can still starve its neighbours even under ordinary scheduling.", "at": [{ "step": "A hot loop that’s always ready to run, never once blocked on anything real — does it ever let a trivial sibling task run?" }] },
+      { "item": "The measured gap in this topic (a trivial sibling resolving in milliseconds while an always-ready hot loop that never itself suspends on its own still takes tens of milliseconds to finish) is only possible because the loop's own channel receive is one of the instrumented calls: the forced yield interrupts it mid-loop, well before it would otherwise return.", "at": [{ "step": "Measured: the sibling ran long before the hot loop itself finished" }] },
+      { "item": "task::unconstrained does not change what the wrapped future does; it only removes the budget checks inside the library calls it makes, which is why the exact same loop, run exact-for-exact against the exact same sibling task, produces a completely different outcome purely from that one wrapper.", "at": [{ "step": "Wrap that exact same hot loop in task::unconstrained. Does the sibling still get in early?" }] },
+      { "item": "The near-exact alignment between the sibling's own wait and the unconstrained loop's own total runtime in this topic's measurement is itself the proof: the sibling was never interleaved at all, it was simply next in the one worker's queue once the loop task finally returned control on its own.", "at": [{ "step": "Measured: the sibling only ran the moment the unconstrained loop itself finished" }] },
+      { "item": "This topic's two measurements together establish the chapter's central distinction between a worker that is blocked (topic 28, nothing at all can run, no exceptions) and one that is merely monopolized by an uncooperative task (this topic): the budget exists specifically to prevent the second case from degrading into the first for any task willing to cooperate at all.", "at": [{ "step": "Recap: work stealing, the LIFO slot, and cooperative budgeting, proven by yield and by starvation" }] }
+    ]
+  },
+  "gapReview": {
+    "date": "2026-10-23",
+    "by": "self-review",
+    "open": []
+  }
+}
