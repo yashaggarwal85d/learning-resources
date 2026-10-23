@@ -1,0 +1,88 @@
+{
+  "steps": [
+    {
+      "lines": [
+        "Memory-map a real file, and also keep a separate, hand-built cache of those same bytes in your own code.",
+        { "beat": 0.3 },
+        "Does the mapped data end up resident in memory once, or does it genuinely end up resident twice?"
+      ],
+      "answer": [
+        "Twice — both copies are resident at the same time.",
+        "The kernel's own page cache and your application's own cache know absolutely nothing of each other."
+      ]
+    },
+    {
+      "lines": [
+        "Run it for real: the mapped file's own pages stayed resident in the kernel's own page cache.",
+        "And reading that exact same file again, into a separate application cache, genuinely grew memory by roughly another full copy."
+      ]
+    },
+    {
+      "lines": [
+        "Open that same file bypassing the page cache entirely, and read it into a buffer that isn't aligned to a block boundary.",
+        { "beat": 0.3 },
+        "Does that read quietly degrade, silently succeed, or fail outright with a specific error?"
+      ],
+      "answer": [
+        "It fails outright, with a specific, clear error.",
+        "Bypassing the cache never silently fixes a misaligned buffer for you."
+      ]
+    },
+    {
+      "lines": [
+        "Run it for real: the misaligned read failed outright with that exact clear error.",
+        "And the very same read, with a properly aligned buffer instead, succeeded cleanly."
+      ],
+      "takeaway": "Direct I/O removes the double copy only by making every buffer's alignment the caller's own strict job."
+    },
+    {
+      "lines": [
+        "If a mapped page's real read genuinely fails — a bad sector, a disk gone missing entirely —",
+        { "beat": 0.3 },
+        "does the program get back a normal, recoverable error?"
+      ],
+      "answer": [
+        "No — it can raise a process-terminating signal outright.",
+        "A page fault simply has no normal error channel to hand a result back through."
+      ]
+    },
+    {
+      "lines": [
+        "The paper's own argument names exactly four real costs: a dirty page written back whenever the kernel chooses, not the database.",
+        "A stall with no promised end. A crash instead of a result to handle. And every other thread paused just to unmap one region."
+      ],
+      "takeaway": "Mapping a file trades an explicit result for four real failure modes most systems can't actually afford."
+    },
+    {
+      "lines": [
+        "Given every one of those four real costs, is there still ever a real system where mapping a file directly is the right call?",
+        { "beat": 0.3 },
+        "Or is it simply never worth it?"
+      ],
+      "answer": [
+        "Yes — a read-mostly workload with no bounded-latency need at all.",
+        "That is exactly the one case a well-known embedded database is built around."
+      ]
+    },
+    {
+      "lines": [
+        "The paper's own recommendation is exactly that narrow: mapping stays the right call when the working set fits in memory and the workload is read-only.",
+        "Which is precisely the case that well-known embedded database's own design is built around."
+      ]
+    },
+    {
+      "lines": [
+        "So, pulling this together: holding bytes twice, a strict alignment cost, and four named failure classes are really the same question, asked three times.",
+        "Who decides when a page actually moves, and does the caller ever find out if that goes wrong."
+      ],
+      "takeaway": "An owned buffer pool exists because most systems need an explicit answer that mapping leaves to the kernel."
+    },
+    {
+      "lines": [
+        "So, pulling this topic together: a mapped file genuinely holds the same bytes twice, the moment an application keeps its own cache on top.",
+        "Direct access genuinely removes that only by making every buffer's alignment the caller's own strict job.",
+        "And the paper's own four failure classes are exactly why most databases own their buffer pool instead — except for that one narrow, read-mostly exception."
+      ]
+    }
+  ]
+}
