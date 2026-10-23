@@ -1,0 +1,90 @@
+{
+  "topic": "de.profiling-cpu-memory-allocations",
+  "steps": [
+    {
+      "lines": [
+        "Three different claims about speed have come up over the last three topics, each one measured on its own, small example.",
+        "Not one of them has actually been checked against a real profiler, run on real code, side by side with the others. That's exactly what's missing here."
+      ]
+    },
+    {
+      "lines": [
+        "Here's the first kind of tool, stated plainly.",
+        "Every single call a function makes, and every return from it, gets watched directly. That gives genuinely precise timing — at the real cost of watching that closely the entire time."
+      ]
+    },
+    {
+      "lines": [
+        "Here's a question worth guessing at before the reveal.",
+        "The exact same feed from this chapter, run four different ways. One topic back, the thread-free approach already won its own race against a plain loop. Does it win this particular race too?"
+      ],
+      "answer": [
+        "No — this isn't the kind of work that approach was ever built to speed up.",
+        "That earlier win was for waiting on a network. Parsing a file by hand is pure computation, and handing pure computation to a pool of threads still runs under the exact same lock this chapter already named."
+      ]
+    },
+    {
+      "lines": [
+        "Here's all four of them, finally measured together instead of one at a time.",
+        "The gap between the fastest and slowest of the four isn't close — it's closer to two orders of magnitude. And the approach that won its own earlier race, back in its own topic, lands nowhere near the front of this one."
+      ]
+    },
+    {
+      "lines": [
+        "Here's that first tool, pointed at the actual loop that just ran.",
+        "A real trace, naming the real function it was watching the whole time — not some tidy stand-in built just to look good in an example."
+      ]
+    },
+    {
+      "lines": [
+        "Here's a second tool, built to watch memory instead of time.",
+        "The real high-water mark it traced for the plain loop, against the same mark for the native engine. An earlier version of this exact comparison measured the wrong number entirely and got a backwards answer — caught, and fixed, right here."
+      ]
+    },
+    {
+      "lines": [
+        "Here's a genuinely open question worth sitting with.",
+        "One particular tool can attach itself to a process that's already running, from completely outside it, without changing a single line of that process's own code. Does it actually see real function names once it's in, or only raw memory addresses?"
+      ],
+      "answer": [
+        "Real function names — it reads straight from the live process's own memory.",
+        "That's exactly what makes a tool like this useful on something nobody can afford to restart or rewrite just to look inside it."
+      ]
+    },
+    {
+      "lines": [
+        "Here's that exact attach, done for real rather than just described.",
+        "A process already running, approached completely from the outside — and the dump that comes back names the precise file and function this very lab's own workload was executing at that exact moment."
+      ]
+    },
+    {
+      "lines": [
+        "Here's a tool built to answer a different question entirely: not how long, but where the time actually went.",
+        "Pointed at the native-engine leg of this lab, it reports back a real, measured split — confirming the native engine genuinely does the heavy lifting, not merely claiming it does."
+      ]
+    },
+    {
+      "lines": [
+        "Here's one claim that didn't survive its first, most obvious test — and what happened next.",
+        "Checking whether two libraries literally shared the same memory address came back negative, honestly. The real benefit turned out to be elsewhere: skipping a genuine round trip through a file format entirely, measured directly against doing exactly that."
+      ]
+    },
+    {
+      "lines": [
+        "Let's put the whole picture back together.",
+        "One tool times every call for real. Another attaches to a process already running and reads its true call stack. A third splits where time actually goes, Python or native.",
+        "And this chapter's four competing approaches, finally measured side by side, settle which one genuinely wins."
+      ]
+    },
+    {
+      "lines": [
+        "One closing scenario worth actually reasoning through rather than guessing at.",
+        "A pipeline just feels slow. Is that really CPU time being burned, memory quietly piling up somewhere, or a single call that's stalling the whole thread outright? Does any one tool from this topic answer all three of those, or does each one only answer its own?"
+      ],
+      "answer": [
+        "Each tool only answers its own question — none of them substitutes for the other two.",
+        "A timing tool answers CPU time. A memory tracer answers memory. Neither one, by itself, tells you a thread is genuinely stuck rather than simply running slowly."
+      ]
+    }
+  ]
+}

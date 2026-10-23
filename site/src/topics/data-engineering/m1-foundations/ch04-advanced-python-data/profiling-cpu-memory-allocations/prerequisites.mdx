@@ -1,0 +1,28 @@
+import Resource from '../../../../../components/Resource.astro';
+
+<section class="prereq" data-section="before-this">
+
+### <span class="n">01</span> Before this: three speed claims from the last three topics, not yet checked side by side
+
+<ul class="resources">
+  <Resource kind="reel" title="CPython object model and memory cost" domain="data-engineering" host="de.cpython-object-model-memory" by="three topics back" />
+  <Resource kind="reel" title="GIL, free-threading and subinterpreters" domain="data-engineering" host="de.gil-free-threading-subinterpreters" by="two topics back" />
+  <Resource kind="reel" title="Async I/O for network-bound pipelines" domain="data-engineering" host="de.async-i-o-network" by="the topic right before this one" />
+</ul>
+
+</section>
+
+<section class="prereq" data-section="profiling-straight-from-the-source">
+
+### <span class="n">02</span> The profiling tools' own documentation, READMEs and governing PEPs
+
+<ul class="resources">
+  <Resource kind="reading" title="profile — Pure Python profiler" href="https://docs.python.org/3/library/profile.html" by="Python Software Foundation">Deterministic vs. statistical profiling.</Resource>
+  <Resource kind="reading" title="tracemalloc — Trace memory allocations" href="https://docs.python.org/3/library/tracemalloc.html" by="Python Software Foundation">Allocation tracking and snapshot comparison.</Resource>
+  <Resource kind="reading" title="py-spy README" href="https://github.com/benfred/py-spy" by="Ben Frederickson">Attaching to a live process without code changes.</Resource>
+  <Resource kind="reading" title="Memray README" href="https://github.com/bloomberg/memray" by="Bloomberg">Tracking allocations in Python and native extensions.</Resource>
+  <Resource kind="reading" title="Scalene README" href="https://github.com/plasma-umass/scalene" by="Emery Berger et al.">Splitting Python time from native time.</Resource>
+  <Resource kind="reading" title="PEP 768 – Safe external debugger interface for CPython" href="https://peps.python.org/pep-0768/" by="Python Software Foundation">The 3.14 live-process-attach interface, sourced-only on this sandbox.</Resource>
+</ul>
+
+</section>
