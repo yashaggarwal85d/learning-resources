@@ -1,0 +1,23 @@
+# Fact-check — Binary heaps and heapify
+
+## Claims table
+
+| # | Claim | Status | Source |
+|---|---|---|---|
+| 1 | Sift-up: compare with parent, swap and repeat if out of order, else stop | Confirmed | `sources/wikipedia-binary-heap.txt`: "Compare the added element with its parent; if they are in the correct order, stop." / "If not, swap the element with its parent and return to the previous step." |
+| 2 | Sift-down: compare with children, swap with the smaller (min-heap), repeat if out of order, else stop | Confirmed | `sources/wikipedia-binary-heap.txt`: "Compare the new root with its children; if they are in the correct order, stop." / "If not, swap the element with one of its children... (Swap with its smaller child in a min-heap...)" |
+| 3 | Zero-indexed implicit array formula: children at 2i+1, 2i+2; parent at floor((i−1)/2) | Confirmed | `sources/wikipedia-binary-heap.txt`: "If the tree root is at index 0... children at indices 2i + 1 and 2i + 2... its parent at index floor((i − 1) / 2)." |
+| 4 | One-indexed equivalent: parent at k/2, children at 2k, 2k+1 | Confirmed | `sources/algs4-priority-queues.txt`: "the parent of the node in position k is in position k/2; and, conversely, the two children of the node in position k are in positions 2k and 2k + 1." |
+| 5 | One-at-a-time insertion build costs O(n log n) | Confirmed | `sources/wikipedia-binary-heap.txt`: "This approach, called Williams' method... is easily seen to run in O(n log n) time: it performs n insertions at O(log n) cost each." |
+| 6 | Bottom-up build costs O(n); most heapification work happens near the bottom | Confirmed | `sources/wikipedia-binary-heap.txt`: "operations (swaps) per node. In this method most of the heapification takes place in the lower levels."; `sources/algs4-priority-queues.txt`: "Sink-based heap construction is linear time." |
+
+## Red team
+
+1. **Is "O(n)" for bottom-up build actually proven here, or just asserted?** The Wikipedia source gives the real argument (most nodes are near the bottom, where a sift-down's cost — bounded by that node's height — is small) without spelling out the closed-form sum; the algs4 source states the same result as a named proposition without its own proof sketch on this page. `OUTLINE.md`'s "Claims not made" explicitly declines to re-derive the exact asymptotic series on screen, and `examples.py` instead measures the real swap-count gap directly — the claim is sourced and also independently verified by execution, not taken on faith from either source alone. First checked against a random permutation: the measured gap was only ~1.7x on n=4000, because a random insertion's expected sift-up cost is close to constant (most values land near the bottom and barely move) — a true but misleading demonstration of the bound. `examples.py` instead builds from a decreasing-order input, the adversarial case for a min-heap (every insertion is a new global minimum, so it swims the full root-ward path every time), which measures a ~10x gap at n=4000, consistent with the n log n vs. n bound. The input choice is disclosed in-file as a comment.
+2. **Does sift-up ever touch more than one path?** Checked directly against the source: "Steps 2 and 3... are called the up-heap operation" describes a single root-ward walk with no branching; `examples.py`'s own implementation is checked against this by asserting the total swap count for one insertion never exceeds the tree's own height.
+3. **Predict-step distractor check** (`SiftUpPredict`, step 3): "nothing happens" is ruled out directly by the sift-up procedure existing at all; "the whole heap gets rebuilt" is ruled out because the source describes a single bounded walk, not a rebuild; "the smallest element moves to the end" confuses sift-up (restoring order after an insertion) with sift-down's own extraction use, checked against the two sources' own separate treatment of insert vs. delete-min.
+4. **Does the 1-indexed and 0-indexed formula actually describe the same relationship?** Checked by direct arithmetic: for a 1-indexed array, node k's children are 2k and 2k+1; re-indexing to zero-based (k' = k−1) gives children at 2k'+1 and 2k'+2 — exactly the 0-indexed formula topic's own `examples.py` uses. Both sources' formulas are consistent, not contradictory, once the indexing convention is accounted for.
+
+## Claims not made
+
+(Mirrors `OUTLINE.md`'s own "Claims not made" section.) The full closed-form sum-of-heights proof is named, not re-derived symbol by symbol; heap variants (d-ary, monotone integer) are named only in the frontier section per the chapter plan's skip list; heapsort's sortdown phase is named only as where the bottom-up build is used, not taught as its own mechanism.

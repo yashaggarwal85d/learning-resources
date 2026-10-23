@@ -1,0 +1,4 @@
+- **Cost model (Chapter 1 §1.3)**: this topic measures cost by counting real operations (swaps), the same habit this site has used since Chapter 1, now applied to an in-memory structure rather than a block of disk I/O.
+- **Compaction merge step (topic 29)**: an LSM compaction merge already needed to find the smallest not-yet-emitted key across several runs — a binary heap is the direct, simplest structure for exactly that question.
+- **Asymptotic notation (Chapter 1)**: O(n) and O(n log n) are the same big-O vocabulary used throughout the course; this topic's own measurement is what distinguishes them in practice, not just on paper.
+- **Array (any earlier structure built on one)**: the one piece of machinery this topic actually reuses — a plain, fixed-position list, with every heap operation expressed as index arithmetic on it, no pointers at all.

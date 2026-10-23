@@ -1,0 +1,51 @@
+{
+  "topic": "dsa.binary-heaps-heapify",
+  "steps": [
+    {
+      "lines": [
+        "Every earlier structure in this part of the course asked the same question: where does this piece of data physically sit.",
+        "This one drops that question completely and asks something narrower instead: of everything still waiting, which one is smallest, right now."
+      ]
+    },
+    {
+      "lines": [
+        "Here's the trick worth noticing first: that tree you're picturing was never actually built anywhere.",
+        "Every parent and child position is just arithmetic on where something already sits inside one plain array."
+      ]
+    },
+    {
+      "lines": [
+        "Before the reveal, think about what actually goes wrong the moment a value lands past the very end of the array, out of order with everything above it.",
+        "What has to happen to it before this is a real heap again?"
+      ],
+      "answer": [
+        "It walks upward, one step at a time, swapping with its own parent for as long as the two are out of order, and then it stops.",
+        "A full rebuild would touch everything that's already fine. Only the one path from that new value up to the root ever needs fixing."
+      ]
+    },
+    {
+      "lines": [
+        "Watch what doesn't move here, not just what does.",
+        "Every node off to the side of that one path stays exactly where it already was — the walk only ever touches its own root-ward line."
+      ]
+    },
+    {
+      "lines": [
+        "Removing the smallest value empties out the root, so something has to fill that spot immediately.",
+        "The fix is the same idea, run in the opposite direction: pull the array's own last element into the empty root, then walk it downward, swapping with whichever child is smaller, until it stops."
+      ]
+    },
+    {
+      "lines": [
+        "Here's the part that actually surprises people: build the exact same heap from the exact same elements two different ways, and the total cost changes, even though nothing about either operation changed.",
+        "Insert one at a time and you pay a walk for every single element. Sift downward from the bottom instead, and most of that walking disappears, because most nodes already sit close to the bottom, where a walk is short."
+      ]
+    },
+    {
+      "lines": [
+        "This is the one place in the whole topic where a claim gets checked against a real count instead of just argued for.",
+        "Both builds end up at a fully valid heap. Only the swap counts along the way tell you which one actually paid less."
+      ]
+    }
+  ]
+}
