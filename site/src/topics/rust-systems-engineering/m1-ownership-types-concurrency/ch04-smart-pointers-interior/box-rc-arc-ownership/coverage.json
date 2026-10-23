@@ -1,0 +1,42 @@
+{
+  "topic": "rust.box-rc-arc-ownership",
+  "syllabus": [
+    { "clause": "Box for heap ownership, Rc for a single-threaded refcount (!Send), Arc for an atomic refcount.", "at": [{ "step": "One owner, many owners, many owners safely" }, { "step": "Moving Rc into a new thread" }, { "step": "A shared count, cheap to touch" }, { "step": "The same shape, safe across threads" }] },
+    { "clause": "\"Arc::clone is cheap\" stops being true under contention: every clone and drop is an atomic read-modify-write on a shared cache line", "at": [{ "step": "Does splitting the work across threads speed it up?" }, { "step": "Measuring what contention really costs" }] },
+    { "clause": "(→ Ch.29).", "at": [{ "deep": "Frontier" }] }
+  ],
+  "sources": [
+    {
+      "source": "book-rc",
+      "items": [
+        { "item": "Every time we call Rc::clone, the reference count to the data increases, and the data won't be cleaned up unless there are zero references to it", "at": [{ "step": "A shared count, cheap to touch" }] },
+        { "item": "The call to Rc::clone only increments the reference count, which doesn't take much time, unlike a deep copy", "at": [{ "step": "A shared count, cheap to touch" }] }
+      ]
+    },
+    {
+      "source": "std-arc-docs",
+      "items": [
+        { "item": "Arc<T> uses atomic operations for its reference counting, which is what makes it thread-safe", "at": [{ "step": "The same shape, safe across threads" }] },
+        { "item": "Atomic operations are more expensive than the ordinary memory accesses Rc<T>'s plain count uses", "at": [{ "step": "Measuring what contention really costs" }] },
+        { "item": "Rc<T> is a safe default because the compiler catches any attempt to send one between threads", "at": [{ "step": "Moving Rc into a new thread" }] }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "self-review",
+    "date": "2026-10-23",
+    "items": [
+      { "item": "Box, Rc, and Arc all point at the same kind of heap allocation; the only thing that changes between them is how many owners are allowed to hold a pointer to it and whether touching the owner count is safe from more than one thread", "at": [{ "step": "One owner, many owners, many owners safely" }] },
+      { "item": "Rc's non-atomic count is not a missing feature; it is a deliberate optimization, because most shared data never leaves one thread, and paying for atomics on every single-threaded clone would be pure waste", "at": [{ "step": "A shared count, cheap to touch" }] },
+      { "item": "The compiler rejects moving an Rc across threads at compile time, specifically because Rc does not implement Send; this is caught before the program ever runs, not as a runtime panic or a data race caught by luck", "at": [{ "step": "Moving Rc into a new thread" }] },
+      { "item": "Arc being Send and Sync is conditional on its contents also being Send and Sync; wrapping a non-thread-safe type in Arc does not retroactively make that type's own interior safe to share, only the pointer and count around it", "at": [{ "step": "The same shape, safe across threads" }] },
+      { "item": "A real contention measurement needs every thread to start touching the shared count at genuinely the same moment, not just be spawned around the same time; without a barrier, thread startup jitter can hide the very contention the benchmark is trying to show", "at": [{ "step": "Does splitting the work across threads speed it up?" }] },
+      { "item": "The naive expectation that four threads finish a fixed amount of work in a quarter of the time only holds when the work is actually independent; an atomically-shared counter makes every thread's clone and drop contend for the exact same cache line, destroying that independence", "at": [{ "step": "Does splitting the work across threads speed it up?" }] },
+      { "item": "This topic measured the contended run finishing well above even the single uncontended thread's own total time, not just above the naive quarter-time prediction, which is the stronger and more surprising claim worth taking away", "at": [{ "step": "Measuring what contention really costs" }] },
+      { "item": "The measured cost here is cache-line contention and atomic retry overhead, not heap allocation; the same Arc's single backing allocation is shared throughout, so none of the extra time comes from allocating or freeing memory", "at": [{ "step": "Measuring what contention really costs" }] },
+      { "item": "This topic reuses the same compare-and-swap-flavored cost that Chapter 1's arc-mutex-reflex smell gestured at without measuring; here the atomic refcount itself, with no Mutex involved at all, is enough to show a real, measured slowdown under contention", "at": [{ "step": "Measuring what contention really costs" }] },
+      { "item": "Choosing Rc over Arc is not just about whether data crosses a thread boundary today; it is a standing commitment that it never will without a later, deliberate type change, which is exactly why the compiler enforces it rather than leaving it to convention", "at": [{ "step": "Recap: one owner, shared, and shared safely" }] }
+    ]
+  },
+  "gapReview": { "date": "2026-10-23", "by": "self-review", "open": [] }
+}
