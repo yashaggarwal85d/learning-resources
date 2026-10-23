@@ -1,0 +1,89 @@
+{
+  "steps": [
+    {
+      "lines": [
+        "Take a trait with one of these lazy, asynchronous methods on it, and try to box up one of its implementors behind the trait itself, the ordinary way, so a caller never has to know which concrete type it actually is.",
+        { "beat": 0.3 },
+        "Does that work exactly the way it would for any other trait method?"
+      ],
+      "answer": [
+        "No, it genuinely does not — the trait simply refuses to be boxed up that way at all.",
+        "The compiler needs to build one shared table of function pointers for every method, and an asynchronous method's hidden return type is a different shape for every single implementor, so there is nothing uniform to put in that table."
+      ]
+    },
+    {
+      "lines": [
+        "Try it for real, and the compiler does not just quietly refuse — it names the exact method responsible and says plainly why.",
+        "It points directly at the asynchronous method and says the trait cannot be used this way because of it."
+      ]
+    },
+    {
+      "lines": [
+        "Now set that problem aside, and try a different one: write a generic function whose caller is already guaranteed to be safe to hand to another thread, and inside it, try to hand a completely different thread the lazy value that same caller's method produces.",
+        { "beat": 0.3 },
+        "Since the caller itself is already known to be safe across threads, is that enough to guarantee the lazy value coming out of its method is too?"
+      ],
+      "answer": [
+        "No — and this is surprising, because it feels like it should be enough.",
+        "The trait's own definition never wrote down any promise about what its method hands back, so nothing forces every implementor's version of that lazy value to also be safe across threads, no matter how safe the caller itself already is."
+      ]
+    },
+    {
+      "lines": [
+        "Try to compile exactly that, and the compiler names precisely what cannot be guaranteed and exactly where the gap is.",
+        "It points at the lazy value the method produced and says plainly that nothing promises it can be handed safely to another thread."
+      ],
+      "takeaway": "A trait's lazy method gives its implementors no way to promise their result is safe across threads — even a caller that is already known to be safe across threads cannot require it."
+    },
+    {
+      "lines": [
+        "One real, published fix for exactly this gap works by never touching the original trait at all.",
+        "Instead, one small annotation generates an entirely separate, second trait alongside the first — one that carries the extra promise built directly into its own definition from the start."
+      ],
+      "takeaway": "One real fix generates an entirely separate, second trait carrying the promise — not a change to the original one."
+    },
+    {
+      "lines": [
+        "Build something through that generated second trait instead of the first, then genuinely hand its lazy value off to a completely different, real operating-system thread and wait for the result to come back.",
+        "It comes back correctly, having actually crossed threads for real."
+      ],
+      "takeaway": "Through that generated second trait, the identical method's result really can be handed to another thread — proven by actually doing it, not merely asserted."
+    },
+    {
+      "lines": [
+        "Here's a sharper question: does fixing that cross-thread promise also fix the very first problem, the one about boxing an implementor up behind the trait itself?",
+        { "beat": 0.3 },
+        "Try boxing it up again, now that the cross-thread gap is fixed."
+      ],
+      "answer": [
+        "No — it still fails exactly the same way as before.",
+        "These were always two entirely separate gaps with two separate causes, and fixing one of them does nothing at all for the other."
+      ]
+    },
+    {
+      "lines": [
+        "A second, different fix exists for the boxing problem specifically, and it takes the opposite approach entirely.",
+        "Instead of trying to make every implementor's differently-shaped lazy value fit into one shared table, it rewrites every one of these methods to produce one single, uniform, boxed shape every single time, no matter which implementor it came from.",
+        "That uniform shape is exactly the kind of thing the original table-building problem can handle."
+      ],
+      "takeaway": "A second fix rewrites every method to produce one uniform, boxed shape instead — trading the table problem away entirely."
+    },
+    {
+      "lines": [
+        "That uniform shape doesn't just appear for free.",
+        "Producing it has to actually reserve a fresh chunk of memory somewhere, every single time one of these methods is called.",
+        "Count exactly how many times that memory-reserving step happens around a single call, for real, rather than simply trusting what it probably does.",
+        "It happens exactly once, every single call."
+      ],
+      "takeaway": "Making that uniform shape costs one real, measured reservation of memory on every single call — a real, counted cost, not an assumed one."
+    },
+    {
+      "lines": [
+        "Boxing an implementor up behind its trait, and promising its lazy methods are safe across threads, turned out to be two entirely separate gaps in today's stable language, each proven directly with the compiler's own refusal.",
+        "One published fix generates a whole second trait carrying the cross-thread promise. A different published fix solves the boxing gap instead, by forcing every call into one uniform, boxed shape, at one real, counted cost every time.",
+        "A native fix for the cross-thread gap specifically is still being worked on, and remains unstable even now. Every single piece of this chapter, start to finish, was deliberately built to work without needing any particular scheduler at all.",
+        "The very next question is what a real, production scheduler, spread across many real worker threads, actually does with every single piece of it."
+      ]
+    }
+  ]
+}
