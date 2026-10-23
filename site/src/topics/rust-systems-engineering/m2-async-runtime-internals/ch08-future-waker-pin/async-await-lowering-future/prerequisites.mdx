@@ -1,0 +1,23 @@
+import Resource from '../../../../../components/Resource.astro';
+
+<section class="prereq" data-section="chapter-so-far">
+
+### <span class="n">01</span> Where the last topic left off
+
+<ul class="resources">
+  <Resource kind="reel" host={props.host} domain="rust-systems-engineering" title="Futures, Poll, and the Waker contract">A future does nothing until polled, and a waker promises to ask again — proven by a hand-built loop with no hidden thread anywhere in it.</Resource>
+</ul>
+
+</section>
+
+<section class="prereq" data-section="lowering-primary">
+
+### <span class="n">02</span> The real docs: what async blocks actually lower to
+
+<ul class="resources">
+  <Resource kind="reading" title="Block expressions — async blocks" href="https://doc.rust-lang.org/reference/expressions/block-expr.html" by="The Rust Reference">The reference's own description: an anonymous type, roughly an enum with one variant per await point.</Resource>
+  <Resource kind="reading" title="Await expressions" href="https://doc.rust-lang.org/reference/expressions/await-expr.html" by="The Rust Reference">The exact suspend-and-resume desugaring an await expression compiles to.</Resource>
+  <Resource kind="reading" title="Send" href="https://doc.rust-lang.org/std/marker/trait.Send.html" by="The Rust Team">Send as an auto trait, automatically derived — never written by hand.</Resource>
+</ul>
+
+</section>
