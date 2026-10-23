@@ -1,0 +1,71 @@
+{
+  "topic": "dsa.merkle-trees",
+  "steps": [
+    {
+      "lines": [
+        "Every structure in this chapter so far answered one question: where does this key actually live.",
+        "Here's a completely different one. You've got two copies of the same data, maybe on two different machines. How do you know they agree, without reading either one all the way through?"
+      ]
+    },
+    {
+      "lines": [
+        "Watch what happens when you hash a hash.",
+        "Take every leaf's hash, pair them up, hash each pair, and keep going. Everything funnels into a single number at the top.",
+        "That one number depends on every piece underneath it, all the way down."
+      ]
+    },
+    {
+      "lines": [
+        "Here are two of these trees, built completely independently, and their top numbers happen to match.",
+        "Before I tell you what that's worth, predict it: what does that one match actually guarantee you?"
+      ],
+      "answer": [
+        "Every single leaf underneath is identical, guaranteed.",
+        "Think about it from the bottom up: change any leaf, and its hash changes, and that change has nowhere to go but up. It would have reached the top."
+      ]
+    },
+    {
+      "lines": [
+        "So flip it around and ask what the opposite tells you.",
+        "The two top numbers don't match anymore. That alone is proof something underneath disagrees — you haven't found what yet, but you already know for certain that something is wrong."
+      ]
+    },
+    {
+      "lines": [
+        "Now for the harder question. Exactly one leaf out of this whole tree actually changed.",
+        "Predict it before I show you: how many hashes do you actually have to check to track it down?"
+      ],
+      "answer": [
+        "Only the one path from the root down to the differing leaf — about log n hashes.",
+        "At every level you compare two children, and only one of them can possibly be the culprit. Follow that one, and the other branch is simply never worth looking at again."
+      ]
+    },
+    {
+      "lines": [
+        "Watch this play out level by level: one disagreement up top, forcing a choice between two children, over and over.",
+        "Every time you make that choice, half the remaining tree falls away untouched.",
+        "That's the exact same halving every divide-and-conquer trick in this course leans on — just running downward instead of across an array."
+      ]
+    },
+    {
+      "lines": [
+        "This isn't a classroom trick. Go look at how a real database repairs itself after a node falls behind, and this is exactly what's running underneath.",
+        "Go look at how a version-control system proves two histories are identical, or how a public certificate log proves nobody quietly rewrote it — same tree, same trick, three completely different jobs."
+      ]
+    },
+    {
+      "lines": [
+        "Here's the part that almost wrecks the whole idea.",
+        "Slice your data into same-size pieces, and one edit near the front doesn't just change that piece — it shoves every byte after it over by one, so every single boundary after it moves too.",
+        "Let the data's own content decide where to cut instead, and an edit mostly just reshuffles the one piece it actually landed in."
+      ]
+    },
+    {
+      "lines": [
+        "Everything in this topic gets checked right here, not just drawn.",
+        "Look at that first gap: finding the one changed leaf costs barely anything next to checking every leaf by hand.",
+        "And the second pair makes the chunking point concrete — one real edit, and content-defined chunking barely stirs, while slicing by a fixed count reshuffles almost everything."
+      ]
+    }
+  ]
+}
