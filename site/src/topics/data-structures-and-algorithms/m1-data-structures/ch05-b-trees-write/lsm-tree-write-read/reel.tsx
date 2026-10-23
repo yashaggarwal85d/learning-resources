@@ -1,8 +1,8 @@
 import type { Reel } from '../../../../../reels/types';
 import * as S from './scenes';
 
-// Topics 26-27 spent two topics making an in-place page's bytes count for more. This topic
-// refuses the whole premise: never update a page in place at all. Every number is in examples.py.
+// The previous two topics spent their effort making an in-place page's bytes count for more.
+// This topic refuses the whole premise: never update a page in place at all. Every number is in examples.py.
 
 const reel: Reel = {
   steps: [
@@ -73,7 +73,7 @@ const reel: Reel = {
       ),
       duration: 4.3,
       fig: 'FlushReveal',
-      takeaway: 'A flushed run is never modified again — reading it or compacting it away are the only two things that can ever happen to it next.',
+      takeaway: 'A flushed run never changes again — only reading it or compacting it away can happen next.',
       Visual: S.FlushReveal,
     },
     {
@@ -119,7 +119,7 @@ const reel: Reel = {
       ),
       duration: 4.5,
       fig: 'SkipWork',
-      takeaway: 'A Bloom filter and a fence pointer only ever skip or narrow work — neither one can cause a wrong answer, only waste some.',
+      takeaway: 'A Bloom filter and a fence pointer only skip or narrow work — neither can cause a wrong answer.',
       Visual: S.SkipWork,
     },
     {
@@ -132,7 +132,7 @@ const reel: Reel = {
       ),
       duration: 4.2,
       fig: 'Tombstone',
-      takeaway: 'A tombstone is a write, not an erasure — it has to survive every read on its own until compaction removes it and what it shadows together.',
+      takeaway: 'A tombstone is a write, not an erasure — it survives every read until compaction removes it.',
       Visual: S.Tombstone,
     },
     {
