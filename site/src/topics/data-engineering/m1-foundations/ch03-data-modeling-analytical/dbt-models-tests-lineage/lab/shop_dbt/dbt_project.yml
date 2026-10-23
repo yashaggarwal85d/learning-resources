@@ -1,0 +1,15 @@
+name: 'shop_dbt'
+version: '1.0.0'
+profile: 'shop_dbt'
+
+model-paths: ["models"]
+test-paths: ["tests"]
+macro-paths: ["macros"]
+seed-paths: ["seeds"]
+
+models:
+  shop_dbt:
+    staging:
+      +materialized: view
+    marts:
+      +materialized: table

@@ -1,0 +1,31 @@
+import Resource from '../../../../../components/Resource.astro';
+
+<section class="prereq" data-section="before-this">
+
+### <span class="n">01</span> Before this: the layer that defined what a metric means
+
+<ul class="resources">
+  <Resource kind="reel" title="Semantic and metrics layers" domain="data-engineering" host="de.semantic-metrics-layers" by="the topic right before this one" />
+</ul>
+
+</section>
+
+<section class="prereq" data-section="dbt-straight-from-the-source">
+
+### <span class="n">02</span> dbt's own documentation on models, tests, macros, docs and Mesh
+
+<ul class="resources">
+  <Resource kind="reading" title="SQL models" href="https://docs.getdbt.com/docs/build/sql-models" by="dbt Labs">What a model is, and how ref() builds the dependency graph.</Resource>
+  <Resource kind="reading" title="Jinja and macros" href="https://docs.getdbt.com/docs/build/jinja-macros" by="dbt Labs">Reusable SQL logic, defined once.</Resource>
+  <Resource kind="reading" title="Add data tests to your DAG" href="https://docs.getdbt.com/docs/build/data-tests" by="dbt Labs">Singular and generic data tests, and dbt's four built-in ones.</Resource>
+  <Resource kind="reading" title="Unit tests" href="https://docs.getdbt.com/docs/build/unit-tests" by="dbt Labs">Validating modeling logic against fixed, fabricated inputs.</Resource>
+  <Resource kind="reading" title="Add Exposures to your DAG" href="https://docs.getdbt.com/docs/build/exposures" by="dbt Labs">Declaring a downstream consumer of a dbt project.</Resource>
+  <Resource kind="reading" title="About documentation" href="https://docs.getdbt.com/docs/collaborate/documentation" by="dbt Labs">Generated docs and lineage, straight from the project's own DAG.</Resource>
+  <Resource kind="reading" title="Intro to dbt Mesh" href="https://docs.getdbt.com/best-practices/how-we-mesh/mesh-1-intro" by="dbt Labs">Cross-project references, dbt Mesh's foundational feature.</Resource>
+  <Resource kind="reading" title="Model contracts" href="https://docs.getdbt.com/docs/collaborate/govern/model-contracts" by="dbt Labs">Enforced column names and types across project boundaries.</Resource>
+  <Resource kind="reading" title="Model versions" href="https://docs.getdbt.com/docs/collaborate/govern/model-versions" by="dbt Labs">Tracking changes to a model over time.</Resource>
+  <Resource kind="reading" title="Model access" href="https://docs.getdbt.com/docs/collaborate/govern/model-access" by="dbt Labs">Private, protected and public models, and who can ref() them.</Resource>
+  <Resource kind="reading" title="Project dependencies" href="https://docs.getdbt.com/docs/collaborate/govern/project-dependencies" by="dbt Labs">Cross-project ref() syntax and requirements.</Resource>
+</ul>
+
+</section>
