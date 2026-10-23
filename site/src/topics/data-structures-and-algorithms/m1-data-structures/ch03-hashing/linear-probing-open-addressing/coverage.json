@@ -1,0 +1,56 @@
+{
+  "topic": "dsa.linear-probing-open-addressing",
+  "syllabus": [
+    { "clause": "primary clustering and Knuth's expected-probe analysis", "at": [{ "step": "Linear probing's own collisions make its runs longer, and longer runs catch even more of the next collisions." }] },
+    { "clause": "quadratic probing and double hashing", "at": [{ "step": "Two real fixes: quadratic probing scatters instead of extending a run; double hashing diverges immediately." }] },
+    { "clause": "tombstones vs backward-shift deletion", "at": [{ "step": "A tombstone keeps a slot occupied forever; rehashing the cluster costs a scan now instead." }] }
+  ],
+  "sources": [
+    {
+      "source": "MIT 6.046J/18.410J Introduction to Algorithms, Fall 2005, Lecture 7",
+      "items": [
+        { "item": "Linear probing's mechanism: h(k,i) = (h′(k) + i) mod m", "at": [{ "step": "Given an ordinary hash function, linear probing uses the next slot" }] },
+        { "item": "Primary clustering: runs build up and tend to get longer", "at": [{ "step": "Linear probing's own collisions make its runs longer, and longer runs catch even more of the next collisions." }] },
+        { "item": "Double hashing's mechanism: h(k,i) = (h1(k) + i·h2(k)) mod m, h2(k) relatively prime to m", "at": [{ "step": "Two real fixes: quadratic probing scatters instead of extending a run; double hashing diverges immediately." }] },
+        { "item": "A uniform-hashing-assumption bound: expected probes at most 1/(1-α)", "at": [{ "deep": "Into the internals" }] }
+      ]
+    },
+    {
+      "source": "Donald E. Knuth, \"Linear Probing and Graphs\" (Algorithmica 22, 1998)",
+      "items": [
+        { "item": "Knuth's own expected-probe analysis: total displacement d gives average successful-search cost 1 + d/n", "at": [{ "deep": "Into the internals" }] }
+      ]
+    },
+    {
+      "source": "CSE 332, University of Washington, Lecture 10 \"More Hashing\"",
+      "items": [
+        { "item": "Tombstones: a lazy-deletion marker, \"no data here, but don't stop probing\"", "at": [{ "step": "A tombstone keeps a slot occupied forever; rehashing the cluster costs a scan now instead." }] },
+        { "item": "Quadratic probing's one real guarantee: prime table size and α < 0.5 means the first TableSize/2 probes are distinct", "at": [{ "step": "Quadratic probing's guarantee needs a prime table size and α under one half — and it still clusters by starting slot." }] },
+        { "item": "Secondary clustering: two keys starting at the same slot follow the identical probe sequence", "at": [{ "step": "Quadratic probing's guarantee needs a prime table size and α under one half — and it still clusters by starting slot." }] }
+      ]
+    },
+    {
+      "source": "Robert Sedgewick, LinearProbingHashST.java (Princeton algs4)",
+      "items": [
+        { "item": "A real production implementation of cluster-rehash deletion: delete the entry, then rehash every later entry in the same cluster", "at": [{ "step": "A tombstone keeps a slot occupied forever; rehashing the cluster costs a scan now instead." }] }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "blind self-review, research stage",
+    "date": "2026-10-23",
+    "items": [
+      { "item": "Open addressing's entire reason for existing is to avoid chaining's one named cost (a pointer per entry) by storing every entry directly in the table itself, at the cost of a probe sequence when two keys compete for a slot.", "at": [{ "step": "Chaining pays a pointer per entry. Open addressing gives that up — every entry lives in the table itself." }] },
+      { "item": "Linear probing's mechanism is the simplest possible probe step (always +1), and that same simplicity is exactly what causes primary clustering: a collision with a run almost always extends it, and longer runs catch more future collisions.", "at": [{ "step": "Linear probing's own collisions make its runs longer, and longer runs catch even more of the next collisions." }] },
+      { "item": "Quadratic probing and double hashing are two different, real fixes for primary clustering, with two different trade-offs — quadratic probing needs a prime table size and α < 0.5 for its own guarantee and still suffers secondary clustering; double hashing avoids both at the cost of computing a second hash function per probe.", "at": [{ "step": "Two real fixes: quadratic probing scatters instead of extending a run; double hashing diverges immediately." }] },
+      { "item": "The syllabus names Knuth's expected-probe analysis specifically; this topic cites Knuth's own paper (total displacement d, average successful-search cost 1 + d/n) for that attribution, kept honestly distinct from the MIT lecture's separate uniform-hashing-assumption bound (1/(1-α)) that examples.py actually measures against — the two are related but not the same derivation.", "at": [{ "deep": "Into the internals" }] },
+      { "item": "Deleting an entry from an open-addressed table can't simply empty its slot, because a later probe sequence passing through would stop at the empty slot and miss entries placed beyond it — this is the one correctness subtlety both tombstones and backward-shift (cluster-rehash) deletion exist to solve, each at a different cost.", "at": [{ "step": "A tombstone keeps a slot occupied forever; rehashing the cluster costs a scan now instead." }] },
+      { "item": "A tombstone and cluster-rehash deletion are not equivalent in cost: a tombstone keeps its slot occupied forever, shrinking the table's effective capacity until a rehash reclaims it; cluster-rehash pays a bounded extra scan immediately but frees the slot right away.", "at": [{ "step": "A tombstone keeps a slot occupied forever; rehashing the cluster costs a scan now instead." }] },
+      { "item": "The table-is-full question (what happens when no empty slot exists, or when to resize under memory pressure) is explicitly this chapter's own topic 20, not built here.", "at": [{ "topic": "Resizing and incremental rehashing", "quote": "hash tables under memory pressure" }] },
+      { "item": "Robin Hood hashing and cuckoo hashing are more elaborate probe-sequence designs that trade extra bookkeeping for tighter worst-case guarantees than plain linear probing, double hashing, or quadratic probing offer — named with no mechanism, since the syllabus skips both for this chapter.", "at": [{ "out": "Syllabus names Robin Hood hashing and cuckoo hashing nowhere in this chapter's run — both are skipped, named only in post-notes' frontier section with no mechanism." }] },
+      { "item": "Double hashing's own correctness requirement (h2(k) relatively prime to m) is satisfiable by a simple, standard construction: pick a prime table size, so every nonzero step is automatically coprime to it — the same construction examples.py uses.", "at": [{ "step": "Two real fixes: quadratic probing scatters instead of extending a run; double hashing diverges immediately." }] },
+      { "item": "Linear probing's average-probe measurement and Knuth's own displacement-based result are related by the same underlying mechanism (how far, on average, keys land from their hash address) but are not interchangeable citations — this topic's examples.py measures the uniform-hashing-assumption quantity, not Knuth's own combinatorial displacement distribution.", "at": [{ "deep": "Into the internals" }] }
+    ]
+  },
+  "gapReview": { "date": "2026-10-23", "by": "self-review", "open": [] }
+}

@@ -1,0 +1,74 @@
+{
+  "topic": "dsa.linear-probing-open-addressing",
+  "steps": [
+    {
+      "lines": [
+        "Watch those pointers fade out, one by one. That's the entire cost topic seventeen named, and this topic exists just to get rid of it.",
+        "Every entry is about to move directly into the table itself. No node, no next pointer, nothing extra to allocate.",
+        "The price for that is hiding in plain sight, and you're about to find it the moment two keys want the same slot."
+      ]
+    },
+    {
+      "lines": [
+        "Here's the whole rule, and it's almost embarrassingly simple: if a slot is full, try the next one.",
+        "That's linear probing. One hash function, one fixed step, repeat until you hit something empty.",
+        "Simple to compute is not the same thing as fast to run. Keep that tension in mind going into the next two steps."
+      ]
+    },
+    {
+      "lines": [
+        "Two short runs of occupied slots are already sitting there. A new key is about to collide with one of them.",
+        "Before I show you what actually happens, predict it yourself. Where does that key probably end up?"
+      ],
+      "answer": [
+        "Very likely right at the end of one of those runs — making it one slot longer.",
+        "Any key whose probe sequence walks into a run has to cross the whole thing before it finds empty space. That's not bad luck, that's the mechanism."
+      ]
+    },
+    {
+      "lines": [
+        "This is primary clustering, and I want you to hear it in the original words: long runs of occupied slots build up, and the long runs tend to get longer.",
+        "Notice what's doing the damage here. It isn't a weak hash function, and it isn't bad luck — it's the probing rule itself, the same rule that made linear probing so simple to compute in the first place.",
+        "The exact thing that made this mechanism easy to build is the exact thing that makes it slow to run."
+      ]
+    },
+    {
+      "lines": [
+        "Two real answers to that problem, and they work completely differently.",
+        "Quadratic probing steps by one, then four, then nine — it jumps away from the run instead of extending it.",
+        "Double hashing goes further still. The step itself depends on the key, so two keys that collide at the start don't even follow the same path after that."
+      ]
+    },
+    {
+      "lines": [
+        "Quadratic probing's guarantee comes with real fine print, and I'm not going to let that slide.",
+        "It only guarantees you'll find an empty slot within half the table — and only if the table size is prime.",
+        "And even with all of that holding, two keys that start at the same slot still follow the exact same sequence after that. That has its own name: secondary clustering."
+      ]
+    },
+    {
+      "lines": [
+        "Here's a correctness trap that catches people who've never hit it before.",
+        "You've just deleted the middle entry of this run. Before I show you what real systems do, predict it: can you just empty that slot and move on?"
+      ],
+      "answer": [
+        "No — a later search walking through that slot would stop the moment it sees empty, and miss every entry sitting just beyond it.",
+        "Emptying the slot doesn't just lose the deleted key. It silently breaks every search that used to pass through it on the way to something else."
+      ]
+    },
+    {
+      "lines": [
+        "Two real answers, and they pay completely different costs.",
+        "One is a tombstone: a marker that says, out loud, 'nothing here, but keep going.' It keeps that slot occupied forever, until a rehash reclaims it.",
+        "The other, the one a real production library actually ships, rehashes every later entry in that same run, immediately, the moment you delete — more work right now, but nothing left behind."
+      ]
+    },
+    {
+      "lines": [
+        "Three load factors, two real strategies, one real measurement each time — nothing here is simulated.",
+        "Watch linear probing's average climb fastest as the table fills, while double hashing stays much closer to flat.",
+        "That widening gap, right there, is primary clustering actually happening, measured, not just described."
+      ]
+    }
+  ]
+}
