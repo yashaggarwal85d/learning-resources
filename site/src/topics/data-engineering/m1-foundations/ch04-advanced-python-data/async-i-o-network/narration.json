@@ -1,0 +1,92 @@
+{
+  "topic": "de.async-i-o-network",
+  "steps": [
+    {
+      "lines": [
+        "Picture a server holding open thousands of connections at once, almost none of them actually doing anything right now.",
+        "Every one of them is just waiting on a reply that hasn't come back yet. One single thread somehow has to keep all of that moving. How does that actually work?"
+      ]
+    },
+    {
+      "lines": [
+        "Here's the tool's own answer, stated plainly.",
+        "One thread, running every task, every callback, and every bit of network input and output the whole program does. Nothing here is secretly multi-threaded underneath — it's genuinely one thread, doing all of it."
+      ]
+    },
+    {
+      "lines": [
+        "Here's a question worth guessing at before the reveal.",
+        "Twenty separate coroutines, each one waiting on its own slow reply, all started on that same single thread. Does the total time taken add up across all twenty of them, or does it stay close to just one wait?"
+      ],
+      "answer": [
+        "It stays close to one wait — the thread isn't stuck on any single one of them.",
+        "While one coroutine sits waiting for its reply, the thread is completely free to go run every other waiting coroutine's own turn instead. None of them actually block the others."
+      ]
+    },
+    {
+      "lines": [
+        "Here's that exact interleaving, timed for real rather than just described.",
+        "Twenty genuine waits, fired off at the same time against a real local server. The clock on the wall barely moves past the time of a single one of them."
+      ]
+    },
+    {
+      "lines": [
+        "Here's a tool built specifically to keep a group of these tasks honest with each other.",
+        "Start several tasks together as one group, and let one of them genuinely fail. The rest of that same group gets cancelled right along with it — not left quietly running in the background, forgotten."
+      ]
+    },
+    {
+      "lines": [
+        "Here's a second tool, built to stop too much from happening at once.",
+        "A counter that simply refuses to let more than a set number of things run at the same time. Measured directly, the busiest moment in this lab never once goes past that number."
+      ]
+    },
+    {
+      "lines": [
+        "Here's a genuinely open question worth sitting with.",
+        "One coroutine, instead of waiting politely, calls something that blocks outright. Does that cost land only on the one coroutine that made the call, or does it reach every other coroutine sharing that same thread?"
+      ],
+      "answer": [
+        "It reaches every one of them — the whole thread stalls, not just the one coroutine.",
+        "A call that blocks never hands control back to anything else. Nothing else sharing that same thread gets a turn until it finally returns."
+      ]
+    },
+    {
+      "lines": [
+        "Here's that exact stall, measured directly — and then genuinely fixed.",
+        "A real blocking call inside one coroutine pushes every sibling's own finish time back by its entire length. Hand that same call off to a background thread instead, and every one of those siblings finishes right on its own short schedule again."
+      ]
+    },
+    {
+      "lines": [
+        "Here's a deadline, put to the exact same kind of real test.",
+        "Wrap a task that would otherwise run far too long in a hard time limit. It gets cancelled right around that limit, not anywhere near its own full length — and the error that comes back is real, and can actually be caught."
+      ]
+    },
+    {
+      "lines": [
+        "Here's the comparison this whole topic has been building toward, measured honestly rather than assumed.",
+        "The exact same network work, timed both as this thread's own coroutines and as separate operating-system threads. The two land close together — sometimes the threads even edge ahead.",
+        "The real, measured gap shows up somewhere else entirely: how much memory each approach actually holds onto for the same amount of waiting."
+      ]
+    },
+    {
+      "lines": [
+        "Let's put the whole picture back together.",
+        "One thread interleaves many waits for nothing. A task group cancels its own failures cleanly. A counter caps how much runs at once. A call that blocks stalls everything sharing its thread. A deadline cancels right on time.",
+        "And threads versus this single thread cost about the same in time — the real difference shows up in memory instead."
+      ]
+    },
+    {
+      "lines": [
+        "One closing scenario worth actually reasoning through rather than guessing at.",
+        "A pipeline needs to call out to a service that's slow and occasionally fails, without one bad call taking the whole batch down, and without hammering that service past what it can handle.",
+        "Does picking just one of this topic's own tools get you there, or does it take more than one working together?"
+      ],
+      "answer": [
+        "It takes more than one, working together — neither tool alone covers both halves of the problem.",
+        "The grouping tool keeps one failure from taking the rest down, but says nothing about load. The counter caps load, but says nothing about one call's own failure. Each one only covers its own half."
+      ]
+    }
+  ]
+}

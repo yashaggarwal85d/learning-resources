@@ -1,0 +1,5 @@
+- **Event loop**: the single thread that runs every coroutine, callback and network I/O operation in an asyncio program. *Where you meet it:* twenty real network waits, run concurrently, finishing close to the time of just one.
+- **TaskGroup**: an async context manager that creates and waits for a group of tasks, cancelling the rest of the group the moment one genuinely fails. *Where you meet it:* a long-running sibling measured cancelled when another sibling fails.
+- **Semaphore**: a counter-based primitive that blocks once its count hits zero, bounding how many holders run at once. *Where you meet it:* a real measured cap on concurrent in-flight requests.
+- **Blocking call**: any call that doesn't hand control back to the event loop while it waits — a genuine stall, not a cooperative wait. *Where you meet it:* a real blocking call measured to delay every other coroutine sharing the loop, then fixed.
+- **`asyncio.timeout()`**: a context manager that cancels its body past a deadline and turns the cancellation into a catchable `TimeoutError`. *Where you meet it:* a slow task measured cancelled near its own deadline, not its full length.

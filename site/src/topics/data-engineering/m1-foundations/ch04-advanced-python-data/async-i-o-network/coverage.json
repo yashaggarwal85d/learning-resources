@@ -1,0 +1,128 @@
+{
+  "topic": "de.async-i-o-network",
+  "syllabus": [
+    {
+      "clause": "event-loop mechanics, TaskGroup structured concurrency, bounded concurrency with semaphores as backpressure, cancellation and timeouts, blocking calls that stall the loop, async database drivers",
+      "at": [
+        { "step": "Reveal: the event loop, quoted directly" },
+        { "step": "Reveal: the lab — interleaving measured for real" },
+        { "step": "Reveal: the lab — TaskGroup's structured concurrency, quoted and measured" },
+        { "step": "Reveal: the lab — a semaphore as real backpressure, quoted and measured" },
+        { "step": "Reveal: the lab — a blocking call measured to stall every sibling, then fixed for real" },
+        { "step": "Reveal: the lab — cancellation and a timeout, quoted and measured" },
+        { "step": "Reveal: the lab — async vs. threads for the same fan-out, measured both ways" }
+      ]
+    },
+    {
+      "clause": "async vs threads for I/O fan-out",
+      "at": [
+        { "step": "Reveal: the lab — async vs. threads for the same fan-out, measured both ways" }
+      ]
+    }
+  ],
+  "sources": [
+    {
+      "source": "Python Documentation, \"Event loop\"",
+      "items": [
+        {
+          "item": "The event loop is the core of every asyncio application; it runs tasks/callbacks and performs network I/O on one thread",
+          "at": [{ "step": "Reveal: the event loop, quoted directly" }]
+        },
+        {
+          "item": "There is no asynchronous file I/O in asyncio; loop.run_in_executor() is the documented way to avoid blocking the loop",
+          "at": [{ "step": "Reveal: the lab — a blocking call measured to stall every sibling, then fixed for real" }]
+        }
+      ]
+    },
+    {
+      "source": "Python Documentation, \"Coroutines and tasks\"",
+      "items": [
+        {
+          "item": "asyncio.TaskGroup is a more modern alternative to create_task()",
+          "at": [{ "step": "Reveal: the lab — TaskGroup's structured concurrency, quoted and measured" }]
+        },
+        {
+          "item": "The first sibling task in a TaskGroup that fails with a real exception cancels the rest of the group",
+          "at": [{ "step": "Reveal: the lab — TaskGroup's structured concurrency, quoted and measured" }]
+        },
+        {
+          "item": "asyncio.timeout() cancels the wrapped task and transforms the resulting CancelledError into a catchable TimeoutError",
+          "at": [{ "step": "Reveal: the lab — cancellation and a timeout, quoted and measured" }]
+        }
+      ]
+    },
+    {
+      "source": "Python Documentation, \"Synchronization Primitives\"",
+      "items": [
+        {
+          "item": "A semaphore's internal counter blocks acquire() once it reaches zero, until a release() call",
+          "at": [{ "step": "Reveal: the lab — a semaphore as real backpressure, quoted and measured" }]
+        }
+      ]
+    },
+    {
+      "source": "psycopg documentation, \"Concurrent operations\"",
+      "items": [
+        {
+          "item": "psycopg's AsyncConnection/AsyncCursor support an asyncio interface with the same design as the sync API",
+          "at": [{ "step": "Reveal: the lab — async vs. threads for the same fan-out, measured both ways" }]
+        },
+        {
+          "item": "An AsyncConnection can be used by several asyncio.Tasks at once, but access to the connection is serialized, the same as with threads",
+          "at": [{ "step": "Reveal: the lab — async vs. threads for the same fan-out, measured both ways" }]
+        }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "Claude (single session, written from the syllabus line and the fetched sources before storyboarding; not independent of the builder, so a later owner review should repeat it)",
+    "date": "2026-10-23",
+    "items": [
+      {
+        "item": "Event-loop interleaving is measured against a real local TCP stub server (asyncio.start_server), not asserted from the glossary's own description of the event loop",
+        "at": [{ "step": "Reveal: the lab — interleaving measured for real" }]
+      },
+      {
+        "item": "TaskGroup's own sibling-cancellation behavior is confirmed directly by checking a long-running sibling's own cancelled() state after a different sibling fails, not just by observing the ExceptionGroup being raised",
+        "at": [{ "step": "Reveal: the lab — TaskGroup's structured concurrency, quoted and measured" }]
+      },
+      {
+        "item": "The semaphore's own peak-concurrency ceiling is tracked with a real shared counter updated inside each worker, not inferred from total wall time",
+        "at": [{ "step": "Reveal: the lab — a semaphore as real backpressure, quoted and measured" }]
+      },
+      {
+        "item": "The blocking-call-stalls-the-loop claim is demonstrated with a genuine time.sleep() call made directly inside a coroutine (not asyncio.sleep()), timed against sibling coroutines' own finish times, and the same scenario is re-run through run_in_executor() to measure the fix rather than merely describe it",
+        "at": [{ "step": "Reveal: the lab — a blocking call measured to stall every sibling, then fixed for real" }]
+      },
+      {
+        "item": "This exact blocking-the-loop failure mode was hit for real during this build: an earlier version of the async-vs-threads benchmark joined worker threads directly on the main thread (the same thread running the event loop), which deadlocked the whole script, and was fixed the same way the topic itself recommends (run_in_executor) — a lived instance of the claim, not just a staged one",
+        "at": [{ "step": "Reveal: the lab — async vs. threads for the same fan-out, measured both ways" }]
+      },
+      {
+        "item": "The timeout measurement checks both the real elapsed time (close to the deadline, not the slow task's full duration) and that TimeoutError is genuinely raised and catchable, rather than checking only one of the two",
+        "at": [{ "step": "Reveal: the lab — cancellation and a timeout, quoted and measured" }]
+      },
+      {
+        "item": "The async-vs-threads latency comparison is reported honestly as close at this lab's own scale (occasionally favoring threads), rather than forcing a result that matches the syllabus's implied expectation; the real asymmetry is demonstrated separately, as a memory measurement at a much larger held concurrency, rather than papered over",
+        "at": [{ "step": "Reveal: the lab — async vs. threads for the same fan-out, measured both ways" }]
+      },
+      {
+        "item": "The memory-cost-of-concurrency measurement holds real units of concurrency open simultaneously (not finishing immediately) for both threads and tasks, using a Barrier to ensure every thread has actually reached its own wait before RSS is sampled, rather than sampling too early and understating the real cost",
+        "at": [{ "step": "Reveal: the lab — async vs. threads for the same fan-out, measured both ways" }]
+      },
+      {
+        "item": "The async PostgreSQL driver claim is verified against this sandbox's own running Postgres 16 cluster (started for this build, confirmed reachable, not assumed running), with the returned rows checked for correctness, not just for the absence of an exception",
+        "at": [{ "step": "Reveal: the lab — async vs. threads for the same fan-out, measured both ways" }]
+      },
+      {
+        "item": "The closing Prove-It scenario (TaskGroup plus a semaphore together) is a genuinely new composition, not a restatement of either earlier reveal on its own: it tests whether the builder understands that the two mechanisms answer different halves of the same real-world requirement",
+        "at": [{ "step": "Prove it" }]
+      },
+      {
+        "item": "The bridge from topic 27 (the GIL and its four real workarounds) and the handoff to topic 29 (profiling, which turns every speed claim made in topics 26-28 into an actual measured number) are both taken verbatim from CHAPTER.md's own entry for this topic",
+        "at": [{ "step": "Thousands of connections, mostly just waiting — one thread has to handle all of it" }]
+      }
+    ]
+  },
+  "gapReview": { "date": "2026-10-23", "by": "Claude (single session)", "open": [] }
+}
