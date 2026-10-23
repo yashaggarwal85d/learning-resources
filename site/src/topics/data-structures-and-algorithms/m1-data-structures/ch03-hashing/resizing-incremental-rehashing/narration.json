@@ -1,0 +1,67 @@
+{
+  "topic": "dsa.resizing-incremental-rehashing",
+  "steps": [
+    {
+      "lines": [
+        "Chaining, open addressing, Swiss Tables — every single one of them quietly assumed the table already had room.",
+        "Not one of them ever said what happens the moment it doesn't.",
+        "That's the whole question this topic finally answers."
+      ]
+    },
+    {
+      "lines": [
+        "Here's the simplest possible answer, and it's the same move a growable array already makes.",
+        "When the table's full, allocate one twice the size, and rehash every single existing entry into it, right then, all at once.",
+        "Averaged over many inserts, that's still cheap. But somebody has to actually sit through the one insert where all of that happens."
+      ]
+    },
+    {
+      "lines": [
+        "Here's a row of ordinary inserts, and one of them is the one that triggers that rehash.",
+        "Before I show you the real number, predict it: how does that one insert's cost compare to its neighbors?"
+      ],
+      "answer": [
+        "Proportional to the whole table's current size — nowhere close to its neighbors.",
+        "That insert has to rehash every existing entry before it can even finish. The average cost was always fine. This one insert is not."
+      ]
+    },
+    {
+      "lines": [
+        "Here's a real production answer, built completely differently.",
+        "Keep the old table exactly as it is, and start a new one beside it, both live at the same time.",
+        "Instead of pausing to move everything at once, move it gradually, a little at a time."
+      ]
+    },
+    {
+      "lines": [
+        "There's a migration pointer sitting between those two tables right now.",
+        "Predict it: what actually makes that pointer move forward?"
+      ],
+      "answer": [
+        "It's piggybacked on every ordinary lookup or insert that touches the table — no separate thread, nothing running in the background.",
+        "It rides along on work the table was already doing. No thread, no scheduler, no separate cost to account for."
+      ]
+    },
+    {
+      "lines": [
+        "Here's the bound, and it's a real one, not a hand-wave.",
+        "Each operation moves only a fixed, small number of buckets, capped, every single time.",
+        "The table keeps growing, sure — but no single operation ever pays for the whole migration. Just its own small, fixed share."
+      ]
+    },
+    {
+      "lines": [
+        "I want to be honest about this: neither strategy here is free.",
+        "Incremental migration's smoother latency comes at a real cost — both tables stay live, roughly doubling peak memory, for as long as the migration takes.",
+        "Not for one insert. For every single operation until the migration finally finishes."
+      ]
+    },
+    {
+      "lines": [
+        "Same key sequence into both tables, measured, not assumed.",
+        "Watch the difference: one strategy pays for the resize in a single tall spike. The other spreads the exact same total work into many small, bounded steps.",
+        "Same final table. Same total work. A completely different schedule for who pays, and when."
+      ]
+    }
+  ]
+}

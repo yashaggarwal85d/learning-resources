@@ -1,0 +1,52 @@
+{
+  "topic": "dsa.simd-group-probing-tables",
+  "syllabus": [
+    { "clause": "Abseil's flat_hash_map design (2017): H1/H2 hash split, one control byte per slot, matching 16 slots per SIMD instruction", "at": [{ "step": "H1 picks the element's index. H2 is stored as that slot's one-byte fingerprint." }, { "step": "One instruction checks a whole group's control bytes against the query's H2 byte at once." }] },
+    { "clause": "adopted by Rust's hashbrown (std HashMap) and Go's built-in map since Go 1.24", "at": [{ "step": "Three real, current languages and runtimes converged on this exact design, verified at research time." }] }
+  ],
+  "sources": [
+    {
+      "source": "Abseil, \"Swiss Tables Design Notes\" (Google)",
+      "items": [
+        { "item": "H1 (57 bits): picks the element's index within the table", "at": [{ "step": "H1 picks the element's index. H2 is stored as that slot's one-byte fingerprint." }] },
+        { "item": "H2 (the remaining 7 bits): stored as per-slot metadata, not the key itself", "at": [{ "step": "H1 picks the element's index. H2 is stored as that slot's one-byte fingerprint." }] },
+        { "item": "One control byte per slot: one control bit plus the 7-bit H2 fingerprint", "at": [{ "step": "H1 picks the element's index. H2 is stored as that slot's one-byte fingerprint." }] },
+        { "item": "\"Winnow 16 candidates down... in only a few instructions\"", "at": [{ "step": "A group holds 16 slots. How many of them does one SIMD compare instruction actually test?" }] }
+      ]
+    },
+    {
+      "source": "The Go Blog, \"Faster Go maps with Swiss Tables\" (go.dev)",
+      "items": [
+        { "item": "Swiss Tables originated at Google in 2017, open-sourced in Abseil in 2018", "at": [{ "step": "Three real, current languages and runtimes converged on this exact design, verified at research time." }] },
+        { "item": "Go 1.24 includes a completely new implementation of the built-in map, based on Swiss Tables", "at": [{ "step": "Three real, current languages and runtimes converged on this exact design, verified at research time." }] },
+        { "item": "Go's own group size is 8 slots, with h2 as the lower 7 bits of the hash", "at": [{ "deep": "Into the internals" }] },
+        { "item": "Testing a whole group's control bytes \"at once, in parallel\" raised the maximum load factor both implementations could use", "at": [{ "step": "One instruction checks a whole group's control bytes against the query's H2 byte at once." }] }
+      ]
+    },
+    {
+      "source": "`hashbrown` crate README (Rust, `rust-lang/hashbrown`)",
+      "items": [
+        { "item": "Rust's standard library `HashMap` has used this design (via `hashbrown`) since Rust 1.36", "at": [{ "step": "Three real, current languages and runtimes converged on this exact design, verified at research time." }] },
+        { "item": "Lower memory usage: 1 byte of overhead per entry instead of 8", "at": [{ "step": "A node-per-entry table pays a pointer and an allocation per entry, and almost every probe misses the cache." }] }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "blind self-review, research stage",
+    "date": "2026-10-23",
+    "items": [
+      { "item": "Swiss Tables exist to avoid two real costs of a node-per-entry chained table at once: the pointer-and-allocation overhead per entry, and the near-certain cache miss on every probe once a chain is followed off the main array.", "at": [{ "step": "A node-per-entry table pays a pointer and an allocation per entry, and almost every probe misses the cache." }] },
+      { "item": "The whole design turns on one idea: a single wide SIMD instruction can test a whole group's control bytes against a query's fingerprint at once, so most wrong candidates are rejected without ever touching the real key.", "at": [{ "step": "A group holds 16 slots. How many of them does one SIMD compare instruction actually test?" }] },
+      { "item": "H1 and H2 do two different jobs from the same single hash value: H1 (the larger share) still does the ordinary job a hash always did — picking which group to probe; H2 (a small, fixed-width slice) becomes a cheap per-slot fingerprint, stored separately from the key.", "at": [{ "step": "H1 picks the element's index. H2 is stored as that slot's one-byte fingerprint." }] },
+      { "item": "The SIMD compare instruction itself doesn't skip empty or non-matching slots — it tests the whole group's control bytes unconditionally, in the same single operation; the control byte's value (sentinel or fingerprint) is what lets only the real candidates matter afterward.", "at": [{ "step": "One instruction checks a whole group's control bytes against the query's H2 byte at once." }] },
+      { "item": "A 7-bit fingerprint has exactly 128 possible values, so two unrelated keys land on the same one by pure chance about 1 time in 128 — this topic measures that rate directly in examples.py rather than asserting it from the bit count alone.", "at": [{ "step": "A 7-bit fingerprint has only a 1-in-128 chance of a false match that still needs a real key comparison." }] },
+      { "item": "Go's own group width (8 slots) is a real, verified difference from Abseil's original 16-wide SSE groups, not an inconsistency to smooth over — both share the same control-byte-plus-SIMD-compare mechanism, at two different widths, confirmed from each project's own current source.", "at": [{ "deep": "Into the internals" }] },
+      { "item": "Three independent, real adopters (Abseil/C++ since 2017, Rust's standard library since 1.36, Go's built-in map since Go 1.24) converged on the same control-byte-plus-SIMD-compare mechanism — each verified at research time against that project's own current documentation, not assumed from memory of an older version.", "at": [{ "step": "Three real, current languages and runtimes converged on this exact design, verified at research time." }] },
+      { "item": "Testing a whole group's control bytes in parallel is what let both Abseil and Go raise their maximum load factor compared to their prior designs, since a deep probe chain now costs about the same as a shallow one.", "at": [{ "step": "One instruction checks a whole group's control bytes against the query's H2 byte at once." }] },
+      { "item": "The full capacity-and-growth mechanics of resizing a Swiss Table (when and how the backing array grows) are explicitly left to this chapter's own topic 20, not built here.", "at": [{ "topic": "Resizing and incremental rehashing", "quote": "hash tables under memory pressure" }] },
+      { "item": "Robin Hood hashing and cuckoo hashing are alternative probe-sequence designs with their own worst-case guarantees, named with no mechanism taught, since the syllabus skips both for this chapter.", "at": [{ "out": "Syllabus marks Robin Hood hashing and cuckoo hashing *(skipped)* for this chapter's run — named only in post-notes' frontier section with no mechanism." }] },
+      { "item": "The measured asymmetry this topic puts on screen (one vectorized group-compare vs. up to sixteen naive byte-compares on a packed group) is this topic's own honest measurement from a from-scratch table, not a claim about any real production implementation's benchmarked performance.", "at": [{ "step": "Prove it" }] }
+    ]
+  },
+  "gapReview": { "date": "2026-10-23", "by": "self-review", "open": [] }
+}

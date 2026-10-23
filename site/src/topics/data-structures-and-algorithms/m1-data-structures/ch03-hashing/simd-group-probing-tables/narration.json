@@ -1,0 +1,74 @@
+{
+  "topic": "dsa.simd-group-probing-tables",
+  "steps": [
+    {
+      "lines": [
+        "Last topic's mechanism was correct. Open addressing really does keep every entry in the array itself.",
+        "But it still hops, one slot at a time, through its own probe sequence. This topic does the same kind of work in far fewer instructions.",
+        "Watch what happens when you stop asking 'is this one slot the right one' and start asking the same question of sixteen at once."
+      ]
+    },
+    {
+      "lines": [
+        "Two real costs, and Swiss Tables exist to avoid both of them.",
+        "A chained table pays a pointer and an allocation for every single entry. An open-addressed table avoids that, but its probe walk misses the cache on almost every step.",
+        "Keep both of those costs in mind. The next idea is built to dodge them at the same time."
+      ]
+    },
+    {
+      "lines": [
+        "Here's the setup. One group, sixteen slots, one control byte per slot.",
+        "Before I show you the real number, predict it yourself: how many of those sixteen does a single SIMD compare instruction actually test?"
+      ],
+      "answer": [
+        "All sixteen, in one instruction — Abseil's own design notes put it as 'winnowing sixteen candidates down... in only a few instructions.'",
+        "And it tests every one of them, occupied or not. The control byte is what decides afterward which lanes were even worth looking at."
+      ]
+    },
+    {
+      "lines": [
+        "One hash value, doing two different jobs at once.",
+        "The larger share, H one, does what a hash always did: it picks which group to probe.",
+        "The smaller share, H two, gets a new job. It becomes that slot's own one byte fingerprint, stored separately from the key, right there in the control array."
+      ]
+    },
+    {
+      "lines": [
+        "Now sweep that fingerprint across the whole group's control bytes, all at once.",
+        "Almost every lane fades immediately — wrong fingerprint, ruled out with no key ever touched.",
+        "The one, maybe two, that match are the only candidates that earn a real comparison. That's the entire trick: reject almost everyone with one byte, before paying for the expensive check."
+      ]
+    },
+    {
+      "lines": [
+        "A seven-bit fingerprint has exactly a hundred and twenty-eight possible values.",
+        "Predict it: what are the odds a wrong candidate's fingerprint matches the query's by pure coincidence?"
+      ],
+      "answer": [
+        "About one in a hundred and twenty-eight — not nothing, which is exactly why a real key comparison still has to run whenever that one byte says 'maybe.'",
+        "The fingerprint isn't a replacement for the real check. It's just a filter good enough that you almost never pay for one."
+      ]
+    },
+    {
+      "lines": [
+        "I didn't just take that one-in-a-hundred-twenty-eight number on faith — I measured it, directly, in this topic's own code.",
+        "Twenty thousand lookups for keys that were never inserted, and the rate the false matches actually land at tracks the theoretical odds closely.",
+        "That's the whole design in one sentence: the fingerprint doesn't replace the real comparison, it just makes paying for one incredibly rare."
+      ]
+    },
+    {
+      "lines": [
+        "Three real languages and runtimes, and I went and checked each one myself, not from memory.",
+        "Abseil's own C plus plus design, from twenty seventeen, open-sourced the following year. Rust's standard library HashMap, through the hashbrown crate, since a version released years back.",
+        "And Go's built-in map, adopted this very year — a current blog post is what I actually fetched for that one, not an older version I remembered."
+      ]
+    },
+    {
+      "lines": [
+        "One mechanism, three independent adopters, each one verified at research time.",
+        "And the asymmetry that makes it all worth it, measured, not asserted: on a packed group, the vectorized compare still costs one instruction. A naive, byte-by-byte scan of that same group costs sixteen.",
+        "Same correctness. Sixteen times fewer instructions to get there."
+      ]
+    }
+  ]
+}
