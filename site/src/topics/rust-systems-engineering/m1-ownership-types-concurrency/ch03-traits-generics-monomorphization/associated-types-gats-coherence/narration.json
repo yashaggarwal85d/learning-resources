@@ -1,0 +1,70 @@
+{
+  "topic": "rust.associated-types-gats-coherence",
+  "note": "Written to be spoken: one sentence or phrase per line; {\"beat\": s} is a deliberate pause; numbers and codes are said the way a person would say them, never shown as digits. `answer` plays after the learner answers a predict step.",
+  "steps": [
+    {
+      "lines": [
+        "A trait can let an implementor pick one type and commit to it inside the one implementation it's allowed to have, or it can carry its own parameter and let the very same target type satisfy it over and over, once per parameter.",
+        { "beat": 0.3 },
+        "Those are two genuinely different shapes, even though they can look almost identical sitting on the page."
+      ]
+    },
+    {
+      "lines": [
+        "Take a trait that commits to its type once, inside its one implementation, and write a second implementation of that same trait for the same type, choosing a different type this time.",
+        { "beat": 0.3 },
+        "Does the compiler let that second choice stand, or quietly prefer whichever one came first?"
+      ],
+      "answer": [
+        "Neither. It refuses the second implementation outright, the moment it sees it.",
+        "This has nothing special to do with the type being chosen inside it. A single type simply cannot implement the same trait twice, under any circumstances, and that rule alone is the whole explanation here."
+      ]
+    },
+    {
+      "lines": [
+        "Give the trait its own parameter instead of committing to one type inside a single implementation, and that same limit disappears completely.",
+        "One target type can now implement that trait twice over, once for each different parameter, because as far as the compiler's own coherence rules are concerned, those two parameterized versions of the trait simply aren't the same trait at all."
+      ]
+    },
+    {
+      "lines": [
+        "An ordinary associated type is fixed once, for the whole implementation, with no way to tie it to any one particular call.",
+        "Make that associated type itself take a parameter, almost always a lifetime, and suddenly it can be tied to one specific call instead: whatever gets handed back can borrow directly from that single call's own borrow of the thing producing it.",
+        "That is exactly what a lending iterator needs, and it's something an ordinary, parameter-free associated type could never express on its own."
+      ]
+    },
+    {
+      "lines": [
+        "Here is an implementation of someone else's trait, written for someone else's type, with neither one defined anywhere in this very project.",
+        { "beat": 0.3 },
+        "Does writing an implementation like that actually compile?"
+      ],
+      "answer": [
+        "No, and it's rejected immediately, naming the exact reason: neither the trait nor the type it's being implemented for belongs to this project.",
+        "That rule exists so that two completely separate projects can never quietly implement the same trait for the same type in two different, conflicting ways, which would make combining them together completely unpredictable."
+      ]
+    },
+    {
+      "lines": [
+        "Take that exact same foreign type, and wrap it in one small, local type defined right here, with nothing else about the logic changed at all.",
+        "Suddenly the identical implementation compiles without any complaint, because now the type on the other end of that implementation genuinely does belong to this project, even though all it does is hold the original foreign value inside it."
+      ]
+    },
+    {
+      "lines": [
+        "Instead of writing one implementation per type by hand, write exactly one implementation that covers every single type meeting some condition, all at once.",
+        "A plain number and an entirely custom type you wrote yourself can both satisfy that one condition, and both get the exact same behavior for free, from that one single declaration, with nothing written specifically for either of them."
+      ]
+    },
+    {
+      "lines": [
+        "So: committing to a type inside one single implementation happens exactly once; giving the trait its own parameter instead lets the same target type satisfy it as many times as there are different parameters.",
+        "Letting an associated type itself take a parameter, almost always a lifetime, ties it to one specific call instead of fixing it for the whole implementation, which is exactly what a lending iterator needs.",
+        "An implementation only compiles if the trait or the type belongs to this project, and wrapping a foreign type in a small local one is how you satisfy that rule anyway, without changing anything it actually does.",
+        "And one single implementation can cover every type that meets some shared condition, all at once, instead of writing one by hand for each type separately.",
+        { "beat": 0.3 },
+        "Next time: every value behind someone else's trait, in everything covered so far, was either borrowed or already sitting inside one particular kind of box. What shape of ownership is that box actually offering, and what changes once a single owner stops being enough?"
+      ]
+    }
+  ]
+}
