@@ -1,0 +1,5 @@
+- **Singly-linked list**: declared again here (Chapter 2); this topic's entire mechanism is one of these per bucket, with nothing new added to the list itself.
+- **Hash function**: declared again here (topic 16); the only new idea is what happens after the hash picks a slot, when two different keys land on the same one.
+- **Bucket**: introduced here; the array cell a hash function points at — this topic's own object once two keys can share it.
+- **Collision**: introduced here; two different keys hashing to the same bucket, the event this whole chapter has been building toward.
+- **Load factor**: introduced here; α = n/m, the average number of keys per bucket, and the quantity every number on screen is measured against.
