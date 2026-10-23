@@ -1,0 +1,89 @@
+{
+  "topic": "rust.cancellation-by-drop-cancel",
+  "syllabus": [
+    {
+      "clause": "cancellation means dropping the future at its current .await, and gets subtle once background tasks and external resources are involved. select! drops the losing branches, which defines cancel safety: dropping and recreating the future must lose nothing (mpsc::Receiver::recv is cancel-safe, read_exact is not). Dropping a JoinHandle detaches a task, it does not cancel it; use abort, JoinSet or AbortHandle. There is no async drop.",
+      "at": [
+        { "step": "Measured: the losing branch's own side effect never ran, even long after its own delay had passed" },
+        { "step": "Measured: a fresh recv() after cancellation received exactly the message that was sent, nothing lost" },
+        { "step": "Measured: the first half of the stream, already consumed by the cancelled read, is gone for good" },
+        { "step": "Measured: the task kept ticking long after its only handle was dropped — detached, not cancelled" }
+      ]
+    }
+  ],
+  "sources": [
+    {
+      "source": "select-macro",
+      "items": [
+        {
+          "item": "select! waits on multiple concurrent branches, returning when the first completes, cancelling the remaining branches",
+          "at": [{ "step": "select! races two branches and picks whichever finishes first. What happens to the one that loses?" }]
+        },
+        {
+          "item": "cancellation safety describes what happens when a future is dropped before it completes",
+          "at": [{ "step": "One real mechanism, two very different outcomes depending on what was cancelled" }]
+        },
+        {
+          "item": "mpsc::Receiver::recv is listed among the methods that are cancellation safe",
+          "at": [{ "step": "Cancel an mpsc recv() mid-wait with select!, then send a message and call recv() again. Does the first message ever go missing?" }]
+        },
+        {
+          "item": "AsyncReadExt::read_exact is listed among the methods that are not cancellation safe and can lead to loss of data",
+          "at": [{ "step": "Now cancel a read_exact() midway through reading, after it's already consumed part of the stream. What happens to those bytes?" }]
+        }
+      ]
+    },
+    {
+      "source": "mpsc-receiver",
+      "items": [
+        {
+          "item": "recv is cancel safe: if used as a select! branch and another branch completes first, no messages were received on the channel",
+          "at": [{ "step": "Measured: a fresh recv() after cancellation received exactly the message that was sent, nothing lost" }]
+        }
+      ]
+    },
+    {
+      "source": "async-read-ext",
+      "items": [
+        {
+          "item": "read_exact reads the exact number of bytes required to fill a buffer",
+          "at": [{ "step": "Measured: the first half of the stream, already consumed by the cancelled read, is gone for good" }]
+        }
+      ]
+    },
+    {
+      "source": "join-handle",
+      "items": [
+        {
+          "item": "a JoinHandle detaches the associated task when it is dropped, meaning there is no longer any handle to the task and no way to join on it",
+          "at": [{ "step": "Drop a JoinHandle without awaiting or aborting it. Does its task stop, or keep going?" }]
+        },
+        {
+          "item": "the background task associated with a JoinHandle started running immediately when spawn was called, even before the handle is ever awaited",
+          "at": [{ "step": "Measured: the task kept ticking long after its only handle was dropped — detached, not cancelled" }]
+        }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "self-review",
+    "date": "2026-10-23",
+    "items": [
+      { "item": "The loser's side effect is deliberately checked well past its own full sleep duration, not merely right after select! returns, because a future that was merely paused rather than dropped could still complete late; checking later rules that possibility out directly rather than assuming it.", "at": [{ "step": "select! races two branches and picks whichever finishes first. What happens to the one that loses?" }] },
+      { "item": "Cancelling a future and 'the future just didn't get polled again' are not the same claim; dropping a Sleep future specifically cancels its underlying timer registration, which is why the loser's side effect genuinely never fires rather than merely firing late.", "at": [{ "step": "Measured: the losing branch's own side effect never ran, even long after its own delay had passed" }] },
+      { "item": "recv's cancel safety is not an accident of its implementation; it holds because recv has no partial state to lose — it either has not yet observed a message, or it has fully received one, with no in-between moment a drop could catch it at.", "at": [{ "step": "Cancel an mpsc recv() mid-wait with select!, then send a message and call recv() again. Does the first message ever go missing?" }] },
+      { "item": "This is the exact property select! in a loop depends on for every branch it races: a cancel-unsafe operation used this way would intermittently and silently lose data depending on timing, which is precisely why the ecosystem documents this list explicitly rather than leaving it to be discovered in production.", "at": [{ "step": "Measured: a fresh recv() after cancellation received exactly the message that was sent, nothing lost" }] },
+      { "item": "read_exact's unsafety is structural, not incidental: it must read an exact byte count, so it necessarily has partial progress mid-operation whenever fewer than the full count has arrived yet, and that partial progress lives only inside the future being dropped.", "at": [{ "step": "Now cancel a read_exact() midway through reading, after it's already consumed part of the stream. What happens to those bytes?" }] },
+      { "item": "There is no async drop in Rust: a type cannot run asynchronous cleanup when it is dropped, which is exactly why read_exact cannot hand its partially-filled buffer back anywhere on cancellation — by the time drop runs, there is no way to await anything to save the bytes already read.", "at": [{ "step": "Measured: the first half of the stream, already consumed by the cancelled read, is gone for good" }] },
+      { "item": "A JoinHandle is deliberately not RAII-cancel-on-drop, unlike many other Rust guard types, because a background task is often meant to keep running independent of whoever spawned it; detaching, not cancelling, is the documented default specifically so that dropping a handle you don't need doesn't silently kill unrelated work.", "at": [{ "step": "Drop a JoinHandle without awaiting or aborting it. Does its task stop, or keep going?" }] },
+      { "item": "This is exactly the gap abort, JoinSet, and AbortHandle exist to close: none of them are needed to keep a task running after its handle is gone, because that already happens by default; they exist for the opposite case, when a caller genuinely does want the task to stop.", "at": [{ "step": "Measured: the task kept ticking long after its only handle was dropped — detached, not cancelled" }] },
+      { "item": "The three mechanisms this topic measures are not three variations on one rule; they are proof that 'cancellation is a drop' is a single, simple mechanism whose consequences are entirely determined by what the dropped thing was holding onto, which is the real skill this topic is teaching, not the mechanism itself.", "at": [{ "step": "One real mechanism, two very different outcomes depending on what was cancelled" }] },
+      { "item": "This topic deliberately proves both halves of Chapter 9's un-proven cancellation rule from topic 32: a drop is the real mechanism, and cancel safety is the real property that decides whether that drop is free or costly — the next topic turns both into one service-wide shutdown sequence.", "at": [{ "step": "Recap: a real drop, a safe recv, an unsafe read, and a detached task" }] }
+    ]
+  },
+  "gapReview": {
+    "date": "2026-10-23",
+    "by": "self-review",
+    "open": []
+  }
+}

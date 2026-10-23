@@ -1,0 +1,24 @@
+import Resource from '../../../../../components/Resource.astro';
+
+<section class="prereq" data-section="chapter-so-far">
+
+### <span class="n">01</span> Where the last topic left off
+
+<ul class="resources">
+  <Resource kind="reel" host={props.host} domain="rust-systems-engineering" title="Bounded channels and backpressure">mpsc genuinely paces a producer; try_send refuses a full channel outright.</Resource>
+</ul>
+
+</section>
+
+<section class="prereq" data-section="cancellation-primary">
+
+### <span class="n">02</span> The real docs: drop, cancel safety, and detaching
+
+<ul class="resources">
+  <Resource kind="reading" title="select!" href="https://docs.rs/tokio/latest/tokio/macro.select.html" by="The Tokio Project">The macro's own cancellation-safety list, method by method.</Resource>
+  <Resource kind="reading" title="tokio::sync::mpsc::Receiver" href="https://docs.rs/tokio/latest/tokio/sync/mpsc/struct.Receiver.html" by="The Tokio Project">recv's own cancel-safety guarantee, in the crate's words.</Resource>
+  <Resource kind="reading" title="tokio::io::AsyncReadExt" href="https://docs.rs/tokio/latest/tokio/io/trait.AsyncReadExt.html" by="The Tokio Project">read_exact's own contract: the exact byte count, no partial return.</Resource>
+  <Resource kind="reading" title="tokio::task::JoinHandle" href="https://docs.rs/tokio/latest/tokio/task/struct.JoinHandle.html" by="The Tokio Project">What dropping a handle actually does to its task.</Resource>
+</ul>
+
+</section>
