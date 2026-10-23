@@ -1,0 +1,35 @@
+import Resource from '../../../../../components/Resource.astro';
+
+<section class="prereq" data-section="before">
+
+### <span class="n">01</span> Already covered
+
+<ul class="resources">
+  <Resource kind="reel" host={props.host} domain="data-structures-and-algorithms" title="Resizing and incremental rehashing">What a resize costs on one machine — the contrast this topic's ring join measures against.</Resource>
+  <Resource kind="reel" host={props.host} domain="data-structures-and-algorithms" title="Practical hash functions and HashDoS">A hash function's own properties, now hashing machines onto a ring too, not just slots in one array.</Resource>
+</ul>
+
+</section>
+
+<section class="prereq" data-section="standard">
+
+### <span class="n">02</span> The real source, from research and production
+
+<ul class="resources">
+  <Resource kind="reading" title="Consistent Hashing and Random Trees" href="https://www.cs.princeton.edu/courses/archive/fall09/cos518/papers/chash.pdf" by="Karger, Lehman, Leighton, Levine, Lewin, Panigrahy (STOC 1997)">The original paper: ring placement and virtual nodes, from its own stated reasoning.</Resource>
+  <Resource kind="reading" title="Consistent Hashing with Bounded Loads" href="https://arxiv.org/pdf/1608.01350" by="Mirrokni, Thorup, Zadimoghaddam (SODA 2018)">The real guarantee this topic cites: a configurable cap on the busiest machine's load.</Resource>
+  <Resource kind="reading" title="Dynamo-style data placement" href="https://cassandra.apache.org/doc/stable/cassandra/architecture/dynamo.html" by="Apache Cassandra (current stable docs)">Virtual nodes in real production use, with a real, cited per-node token count.</Resource>
+</ul>
+
+</section>
+
+<section class="prereq" data-section="later">
+
+### <span class="n">03</span> Where this goes next
+
+<ul class="resources">
+  <Resource kind="reel" host={props.host} domain="data-structures-and-algorithms" title="Merkle trees">Consistent hashing says where a piece of data lives. Next: proving two copies of it agree, without comparing either one whole.</Resource>
+  <Resource kind="reading" title="Data Engineering, §5.3">Goes deeper later: sharding a distributed store across many machines, building on this topic's placement mechanism.</Resource>
+</ul>
+
+</section>

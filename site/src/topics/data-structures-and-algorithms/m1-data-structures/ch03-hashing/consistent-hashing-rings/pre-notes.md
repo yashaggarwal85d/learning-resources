@@ -1,0 +1,7 @@
+- **Hash function**: declared again here (Ch.3); still mapping an input to a number, now mapping both machines and keys onto the same ring.
+- **Hash-table resize**: declared again here (topic 20); the single-machine question this topic answers one level up, when the machine itself joins or leaves instead of the table running out of room.
+- **Consistent hashing**: introduced here; a scheme placing both machines and keys on the same hashed range so that adding or removing a machine moves only a small, bounded share of the keys.
+- **Ring placement**: introduced here; machines and keys hashed onto the same circular range, a key owned by the first machine found walking clockwise from it.
+- **Virtual node**: introduced here; hashing one physical machine to many points on the ring instead of one, to even out its share.
+- **Minimal remapping**: introduced here; the property that a machine joining or leaving only moves the keys between its ring position and its clockwise neighbor.
+- **Bounded-load hashing**: introduced here; a real extension guaranteeing a configurable cap on the busiest machine's load, even under an adversarial key distribution.
