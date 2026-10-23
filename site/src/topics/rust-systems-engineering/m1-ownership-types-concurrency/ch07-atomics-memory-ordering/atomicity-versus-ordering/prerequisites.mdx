@@ -1,0 +1,23 @@
+import Resource from '../../../../../components/Resource.astro';
+
+<section class="prereq" data-section="chapter-so-far">
+
+### <span class="n">01</span> Where the last chapter left off
+
+<ul class="resources">
+  <Resource kind="reel" host={props.host} domain="rust-systems-engineering" title="Explicit ownership-crossing points">Every type and every lock in the last chapter answered the question "is this safe to share at all." This chapter asks a question that one never had to: once two threads really are touching the same memory, what exactly is guaranteed about when one's write becomes visible to the other's read?</Resource>
+</ul>
+
+</section>
+
+<section class="prereq" data-section="atomicity-ordering-primary">
+
+### <span class="n">02</span> The real docs: atomics, orderings, and the C++20 model
+
+<ul class="resources">
+  <Resource kind="reading" title="std::sync::atomic" href="https://doc.rust-lang.org/std/sync/atomic/index.html" by="The Rust Team">Rust's own statement that its atomics follow C++20's rules, minus consume, and the exact definition of a data race.</Resource>
+  <Resource kind="reading" title="Ordering in std::sync::atomic" href="https://doc.rust-lang.org/std/sync/atomic/enum.Ordering.html" by="The Rust Team">Relaxed, Release, Acquire, AcqRel, SeqCst — each one's own guarantee, defined precisely.</Resource>
+  <Resource kind="reading" title="Atomics — The Rustonomicon" href="https://doc.rust-lang.org/nomicon/atomics.html" by="The Rust Team">The acquire/release mechanism explained directly, and relaxed's own limits named plainly.</Resource>
+</ul>
+
+</section>

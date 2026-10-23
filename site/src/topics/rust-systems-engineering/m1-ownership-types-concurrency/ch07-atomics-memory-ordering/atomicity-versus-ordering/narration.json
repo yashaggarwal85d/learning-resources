@@ -1,0 +1,74 @@
+{
+  "steps": [
+    {
+      "lines": [
+        "Two threads can touch the exact same spot in memory and still fail each other in two completely unrelated ways.",
+        "One is about the update itself staying whole. The other is about when, if ever, the other thread actually notices it happened."
+      ]
+    },
+    {
+      "lines": [
+        "Point every one of eight threads at the same counter, give each of them tens of thousands of increments to do, and use the weakest ordering the language allows for every single one.",
+        { "beat": 0.3 },
+        "Does anything get lost along the way?"
+      ],
+      "answer": [
+        "No, nothing is lost, and this isn't luck — it comes out exact on every single run.",
+        "Weak ordering never licenses a half finished update; that guarantee is kept no matter how little else is promised about timing."
+      ]
+    },
+    {
+      "lines": [
+        "Here is the real, measured total, run after run, never approximate.",
+        "Every one of those increments landed cleanly, with nothing torn and nothing dropped."
+      ]
+    },
+    {
+      "lines": [
+        "That exact total proves something real, but notice what it doesn't touch at all: not one word so far has been about when another thread would actually see any of this happening.",
+        "Keeping a value whole and letting another thread know when it changed turn out to be two entirely separate promises, and only one of them was tested here."
+      ]
+    },
+    {
+      "lines": [
+        "One thread writes a value, then flips a flag to say it's ready, using the weakest ordering both times. A second thread checks that same flag, and only reads the value once the flag looks set.",
+        { "beat": 0.3 },
+        "Can that second thread ever see the flag as ready while the value underneath it is still stale?"
+      ],
+      "answer": [
+        "Yes, it genuinely can — the weakest ordering promises nothing at all about which of two threads' operations become visible to the other, or in what sequence.",
+        "Nothing about this shape of mistake shows up as a type error; the program compiles, and may even look correct for a long time before it isn't."
+      ]
+    },
+    {
+      "lines": [
+        "A tool built to explore every ordering the language permits, not just the one that happened on this particular run, was turned loose on exactly that shape.",
+        "It found the bad case directly: the reader saw the ready flag before it ever saw the value that flag was supposed to be announcing."
+      ]
+    },
+    {
+      "lines": [
+        "There's a name for the one relation every one of these orderings is actually built from, borrowed whole from the same model a much older systems language already settled on.",
+        "One particular flavor of that model was deliberately left out, because even the language it came from never finished pinning it down cleanly enough to rely on."
+      ]
+    },
+    {
+      "lines": [
+        "Two threads touching the same memory with no agreement at all about order between them isn't a bug waiting to surface quietly — it's a line the specification says may never be crossed.",
+        "Once it is, nothing about the resulting behavior is owed to you at all, however reasonable the code looked a moment before."
+      ]
+    },
+    {
+      "lines": [
+        "One particular operating system kernel keeps its own separate rulebook for exactly this kind of question, stricter in places than everything covered so far.",
+        "That rulebook only matters once code is actually running inside that kernel itself — everywhere else, it simply doesn't apply."
+      ]
+    },
+    {
+      "lines": [
+        "Keeping a value whole and knowing when another thread sees it turned out to be two separate guarantees the whole time, each one proven here on its own terms rather than assumed.",
+        "The vocabulary now in place — one relation about visibility, one definition of what crosses the line into forbidden territory — is exactly what the next step needs to build something that actually works."
+      ]
+    }
+  ]
+}
