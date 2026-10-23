@@ -2746,4 +2746,24 @@ export const TOPICS: TopicMeta[] = [
     handoff:
       "Three different concurrency mechanisms are on the table now — processes, threads, async — each claimed to be faster for its own workload. The next topic is how to stop taking that on faith: profiling, which turns every claim made in topics 1–3 into an actual measured number.",
   },
+  {
+    id: 'de.profiling-cpu-memory-allocations',
+    domain: 'data-engineering',
+    slug: 'data-engineering/m1-foundations/ch04-advanced-python-data/profiling-cpu-memory-allocations',
+    title: 'Profiling CPU, memory and allocations',
+    syllabusTitle: 'Profiling CPU, memory and allocations',
+    kind: 'full',
+    status: 'held',
+    milestone: { number: 1, title: 'Foundations' },
+    chapter: { number: 4, title: 'Advanced Python for Data Systems', section: '4.1' },
+    minutes: 15,
+    verified: '2026-10-23',
+    introduces: ['cpu-memory-profiling'],
+    uses: ['cpython-object-model', 'gil-serialization', 'asyncio-event-loop'],
+    declared: [],
+    bridge:
+      "Topics 1 through 3 each made a claim about speed — an object's overhead, the GIL's cost, async's win for I/O. This topic is how to stop taking any of that on faith: profiling tools that turn 'this feels slow' into an actual number, run for real against all three.",
+    handoff:
+      "Every profiling number in this section was read off Python-level code calling into native engines underneath it. The next section turns to those native engines directly, starting from the one memory format most of them now share without copying: Arrow.",
+  },
 ];

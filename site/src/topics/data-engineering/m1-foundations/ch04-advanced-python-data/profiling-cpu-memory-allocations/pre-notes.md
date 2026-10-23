@@ -1,0 +1,4 @@
+- **Deterministic profiler (cProfile)**: instruments every function call/return/exception event for precise timing, at a real instrumentation cost. *Where you meet it:* a real trace of this lab's own plain loop.
+- **Statistical/sampling profiler (py-spy, Scalene)**: periodically samples the running process instead of instrumenting every event, at much lower overhead. *Where you meet it:* py-spy attaching to an already-running process from outside, with no code change.
+- **Allocation tracker (tracemalloc, memray)**: traces Python-level memory blocks and their call sites, not just total RSS. *Where you meet it:* a real peak traced for the plain loop versus the native engine.
+- **Native engine vs. Python glue**: the part of a pipeline actually written in a compiled language (Polars, DuckDB) versus the Python code that calls into it. *Where you meet it:* Scalene's own measured split between Python time and native time.
