@@ -32,7 +32,7 @@
     {
       "clause": "A future is Send only if everything held across an .await is.",
       "at": [
-        { "step": "Can an Rc be held across an .await and still compile?" },
+        { "step": "Can an Rc be held across an await and still compile?" },
         { "step": "The same Rc, dropped before the await, and held across it" }
       ]
     }
@@ -116,7 +116,7 @@
       "items": [
         {
           "item": "tokio::task::spawn's real signature requires F: Future + Send + 'static",
-          "at": [{ "step": "Can an Rc be held across an .await and still compile?" }]
+          "at": [{ "step": "Can an Rc be held across an await and still compile?" }]
         },
         {
           "item": "a !Send value (the docs' own example uses Rc) is fine inside a spawned future only while it never exists across an .await point",
@@ -125,7 +125,10 @@
       ]
     }
   ],
-  "expert": [
+  "expert": {
+    "by": "self-review",
+    "date": "2026-10-23",
+    "items": [
     { "item": "Send means ownership of a value may move to another thread; Sync means &T is itself Send — the two are formally related, not independent ad hoc rules.", "at": [{ "step": "A job counter that counts correctly, alone" }] },
     { "item": "Both are auto-traits: derived structurally from a type's own fields, not hand-implemented in the ordinary case; a type is Send/Sync exactly when every field is.", "at": [{ "step": "A job counter that counts correctly, alone" }] },
     { "item": "Cell and RefCell are Send but not Sync: their interior mutability performs no synchronization, so a shared reference across threads would race.", "at": [{ "step": "Cell and RefCell fail identically, before main even runs" }] },
@@ -138,5 +141,11 @@
     { "item": "A closure or future handed to std::thread::spawn or tokio::spawn must itself be Send + 'static — enforced directly in both functions' real signatures, not a convention.", "at": [{ "step": "Does Arc<Cell<u64>>, cloned into a second thread, compile?" }] },
     { "item": "A !Send value (such as an Rc) may still exist briefly inside a spawned async block, as long as it is dropped before any .await point it's held across; holding one across .await produces a real, specific compiler error.", "at": [{ "step": "The same Rc, dropped before the await, and held across it" }] },
     { "item": "Incorrectly derived Send/Sync cannot happen on its own from safe code — only a type built on unsafe code (raw pointers, UnsafeCell) can be wrongly auto-derived as thread-safe when it isn't.", "at": [{ "deep": "Internals" }] }
-  ]
+    ]
+  },
+  "gapReview": {
+    "date": "2026-10-23",
+    "by": "self-review",
+    "open": []
+  }
 }
