@@ -1,0 +1,100 @@
+{
+  "topic": "de.pandas-3-0-semantics",
+  "syllabus": [
+    {
+      "clause": "Copy-on-Write always on (chained assignment no longer works, SettingWithCopyWarning gone)",
+      "at": [
+        { "step": "Reveal: every indexing operation behaves as a copy" },
+        { "step": "Reveal: chained assignment stops working" }
+      ]
+    },
+    {
+      "clause": "the default str dtype backed by PyArrow when installed",
+      "at": [{ "step": "Reveal: a default string dtype, not object" }]
+    },
+    {
+      "clause": "microsecond-resolution datetime inference",
+      "at": [{ "step": "Reveal: microsecond-resolution datetime inference" }]
+    },
+    {
+      "clause": "NumPy vs Arrow-backed dtypes and missing-value semantics",
+      "at": [
+        { "step": "Predict: does the new default sentinel match the strict or the loose marker?" },
+        { "step": "Reveal: two confusingly similar string dtypes" },
+        { "step": "Reveal: NumPy-backed vs. Arrow-backed nullable numbers" }
+      ]
+    },
+    {
+      "clause": "migrating via pandas 2.3 warnings",
+      "at": [{ "step": "Reveal: migrating via pandas 2.3's warnings" }]
+    }
+  ],
+  "sources": [
+    {
+      "source": "pandas, \"What's new in 3.0.0 (January 21, 2026)\"",
+      "items": [
+        { "item": "A dedicated string dtype is enabled by default, PyArrow-backed when installed, else NumPy object-dtype fallback", "at": [{ "step": "Reveal: a default string dtype, not object" }] },
+        { "item": "The str dtype's missing-value sentinel is always NaN, following default-dtype semantics", "at": [{ "step": "Predict: does the new default sentinel match the strict or the loose marker?" }] },
+        { "item": "Every indexing operation or method returning a new DataFrame/Series behaves as a copy in the user API", "at": [{ "step": "Reveal: every indexing operation behaves as a copy" }] },
+        { "item": "Under the hood pandas reuses views as much as possible and only copies when needed", "at": [{ "step": "Reveal: every indexing operation behaves as a copy" }] },
+        { "item": "Chained assignment stops working consistently; SettingWithCopyWarning is removed", "at": [{ "step": "Reveal: chained assignment stops working" }] },
+        { "item": "mode.copy_on_write no longer has any impact and is deprecated, to be removed in pandas 4.0", "at": [{ "step": "Reveal: chained assignment stops working" }] },
+        { "item": "The new default resolution when parsing date strings is microseconds, falling back to nanoseconds only when precision requires it", "at": [{ "step": "Reveal: microsecond-resolution datetime inference" }] }
+      ]
+    },
+    {
+      "source": "pandas, \"What's new in 2.3.0 (June 4, 2025)\"",
+      "items": [
+        { "item": "pd.options.future.infer_string = True previews the pandas 3.0 string-dtype default", "at": [{ "step": "Reveal: migrating via pandas 2.3's warnings" }] },
+        { "item": "pd.options.mode.copy_on_write = \"warn\" (since 2.2) flags subtler Copy-on-Write behavior changes ahead of the hard 3.0 cutover", "at": [{ "step": "Reveal: migrating via pandas 2.3's warnings" }] }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "Claude (single session, written from the syllabus line and the fetched sources before storyboarding; not independent of the builder, so a later owner review should repeat it)",
+    "date": "2026-10-23",
+    "items": [
+      {
+        "item": "The str-dtype sentinel claim is checked against a real counter-example (the older, still-present opt-in string[pyarrow] dtype), not just quoted — both sound like the same 'Arrow string' concept, but print different dtype names ('str' vs 'string') and use genuinely different sentinels, confirmed directly on this sandbox",
+        "at": [{ "step": "Reveal: two confusingly similar string dtypes" }]
+      },
+      {
+        "item": "The NumPy-vs-Arrow nullable-numeric reveal is a genuine finding, not assumed from the string-dtype result: both Int64 (NumPy-backed) and int64[pyarrow] (Arrow-backed) use the identical pd.NA sentinel, so the axis that actually matters for missing-value semantics is nullable-extension vs. not, which the reveal states explicitly rather than implying numpy-vs-arrow always differs",
+        "at": [{ "step": "Reveal: NumPy-backed vs. Arrow-backed nullable numbers" }]
+      },
+      {
+        "item": "The chained-assignment claim names the real replacement warning class (pd.errors.ChainedAssignmentError, confirmed to be a Warning subclass despite its name) observed directly on this sandbox, and is explicit in FACT-CHECK.md and post-notes that this specific class name is not in the fetched whatsnew prose — a sandbox observation, never misattributed to the quoted source",
+        "at": [{ "step": "Reveal: chained assignment stops working" }]
+      },
+      {
+        "item": "The lazy-copy-on-write mechanism is demonstrated, not just quoted: np.shares_memory confirms a subset genuinely shares the original's memory before any mutation, and the original is confirmed unchanged after the subset is mutated",
+        "at": [{ "step": "Reveal: every indexing operation behaves as a copy" }]
+      },
+      {
+        "item": "The microsecond-resolution claim is measured on two distinct input types (a date string and an integer with an explicit unit) to show the inference genuinely depends on the input's own precision, not asserted as one blanket always-microseconds rule",
+        "at": [{ "step": "Reveal: microsecond-resolution datetime inference" }]
+      },
+      {
+        "item": "The pandas 2.3 migration-flags reveal measures a real asymmetry on this 3.0.5 sandbox: setting the now-legacy mode.copy_on_write flag triggers an explicit Pandas4Warning deprecation notice, while the now-redundant future.infer_string flag silently accepts the value with no warning at all",
+        "at": [{ "step": "Reveal: migrating via pandas 2.3's warnings" }]
+      },
+      {
+        "item": "The predict's tempting wrong answer (the new str dtype should use the strict nullable sentinel, since it's PyArrow-backed) is checked against the real, defensible reason someone would believe it, confirmed and then shown wrong by direct measurement rather than being an arbitrary distractor",
+        "at": [{ "step": "Predict: does the new default sentinel match the strict or the loose marker?" }]
+      },
+      {
+        "item": "The closing Prove-It scenario requires diagnosing two independent, genuinely common real-world code patterns (a dtype==object check, a chained-assignment-plus-defensive-copy pattern) against the specific pandas 3.0 behaviors this topic actually taught, rather than restating any single reveal",
+        "at": [{ "step": "Prove it" }]
+      },
+      {
+        "item": "The bridge from topic 30 (Arrow) and the handoff to Polars are both taken verbatim from CHAPTER.md's own entry for this topic, and the hook is built from the specific question topic 30 left open (is a library built on Arrow in name only, or does it actually change the API) rather than a generic restatement",
+        "at": [{ "step": "Hook: is this library built on Arrow in name only, or for real?" }]
+      },
+      {
+        "item": "Every numeric measurement in examples.py (dtype names, sentinel reprs, shares_memory booleans, warning category names) is read directly off this sandbox's installed pandas 3.0.5 and pyarrow 26.0.0, not asserted from the whatsnew prose alone",
+        "at": [{ "step": "Reveal: a default string dtype, not object" }]
+      }
+    ]
+  },
+  "gapReview": { "date": "2026-10-23", "by": "Claude (single session)", "open": [] }
+}

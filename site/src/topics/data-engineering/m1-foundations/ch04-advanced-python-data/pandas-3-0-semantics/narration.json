@@ -1,0 +1,81 @@
+{
+  "topic": "de.pandas-3-0-semantics",
+  "steps": [
+    {
+      "lines": [
+        "A shared memory format was just introduced, and here's the first library in this chapter actually said to be built on it.",
+        "Being built on something and being changed by it aren't automatically the same claim. Worth checking directly rather than taking the label at face value."
+      ]
+    },
+    {
+      "lines": [
+        "Here's the first real change, and it's about as basic as it gets.",
+        "A column of plain text values used to land in the exact same bucket as literally any other kind of value at all. Now text gets its own dedicated home, built straight on those buffers when they're actually available."
+      ]
+    },
+    {
+      "lines": [
+        "Worth guessing at before the reveal settles it.",
+        "This new, buffer-backed home for text sits right next to this chapter's own strict, typed tools for marking a value missing. Does it actually borrow their strict marker, or does it keep the old, looser one instead?"
+      ],
+      "answer": [
+        "It keeps the old, looser marker, on purpose.",
+        "Being built on stricter buffers underneath didn't force adopting the stricter rules on top of them — and keeping the familiar marker means code written years ago still recognizes a missing value the same way."
+      ]
+    },
+    {
+      "lines": [
+        "Here's a bigger behavioral promise, and it's worth separating what's promised from what actually happens.",
+        "Pulling a piece out of a table is now guaranteed to never let that piece secretly change the table it came from. But underneath that guarantee, nothing is actually duplicated in memory until the exact moment something really gets changed."
+      ]
+    },
+    {
+      "lines": [
+        "Here's a habit that used to work, sometimes, by accident.",
+        "Updating a table in two separate steps never quietly succeeds any more, confirmed directly against the real original table. And the warning built to catch exactly this kind of mistake is genuinely retired — replaced by one with a sharper, more specific name."
+      ]
+    },
+    {
+      "lines": [
+        "Here's where two things that sound like the same feature turn out not to be.",
+        "The new default home for text from a few moments ago, and an older, separate option that also claims to be Arrow-backed text. Side by side, measured directly, they don't even print the same type name, and they disagree on their missing-value marker too."
+      ]
+    },
+    {
+      "lines": [
+        "And here's the case where the opposite happens entirely.",
+        "A nullable number built the older way, and that same kind of number built on the newer buffers, use the exact identical missing-value marker. What actually decides the marker isn't which buffers sit underneath — it's whether the type is strictly nullable at all."
+      ]
+    },
+    {
+      "lines": [
+        "Here's a quieter change, in the same spirit as something this chapter already covered once.",
+        "Turning a date written as text into an actual date value used to always assume the single finest level of detail possible, no matter how little detail the text itself actually carried. Now the level of detail used actually depends on what's really there."
+      ]
+    },
+    {
+      "lines": [
+        "One last question worth sitting with before moving on.",
+        "A change this disruptive doesn't usually arrive with zero warning. The release that shipped right before this one offered two separate switches to rehearse this exact behavior early — and measured directly, on this very release, one of them still actively speaks up, while the other has gone completely silent."
+      ]
+    },
+    {
+      "lines": [
+        "Pulling it all back together now.",
+        "Text gets its own dedicated home, deliberately kept familiar on missing values. Every piece pulled from a table behaves like a copy, lazily, underneath.",
+        "The old two-step update habit is retired for good, under a sharper new name. Two text options differ in ways that matter; two number options don't differ at all. And one release back, this was already being rehearsed."
+      ]
+    },
+    {
+      "lines": [
+        "One closing scenario, worth reasoning through rather than guessing at.",
+        "A team's existing code checks a column's type against the old catch-all bucket to find its text columns, and still leans on the old two-step update habit, guarded by an extra defensive copy.",
+        "Both habits are about to quietly stop doing what the team assumes. What actually breaks, and what's the one-line fix for each?"
+      ],
+      "answer": [
+        "The type check stops matching entirely, since text no longer lands in that old catch-all bucket — check against the new dedicated type instead.",
+        "The two-step habit never silently worked to begin with, and that defensive copy is now pure noise — one single-step update replaces both."
+      ]
+    }
+  ]
+}
