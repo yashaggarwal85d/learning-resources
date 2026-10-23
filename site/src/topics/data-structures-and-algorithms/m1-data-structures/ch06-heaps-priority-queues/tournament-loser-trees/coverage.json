@@ -1,0 +1,48 @@
+{
+  "topic": "dsa.tournament-loser-trees",
+  "syllabus": [
+    {
+      "clause": "k-way merge with ⌈log₂ k⌉ comparisons per output and one root-to-leaf replay; the merge kernel of external sorting and LSM compaction (Ch.15).",
+      "at": [
+        { "step": "A tournament tree is an elimination bracket: two elements compete each game, the smaller one is promoted, and the bracket is a binary tree of games. Because each round plays one game per pair, each layer costs exactly one comparison, not the heap's own two." },
+        { "step": "Store only each game's loser, and the overall winner floats above the root: that's a loser tree. When the winning run's head is consumed and refilled, only the single path from that leaf back up to the root needs replaying — every other node is untouched." },
+        { "step": "This is the real merge kernel behind two systems already in this course: external sorting's own second stage merges sorted runs this way, and an LSM-tree's own compaction step is exactly this same k-way merge of several runs into one." }
+      ]
+    }
+  ],
+  "sources": [
+    {
+      "source": "\"K-way merge algorithm\" (Wikipedia)",
+      "items": [
+        { "item": "A naive scan of all k current heads costs Θ(k) comparisons per output", "at": [{ "step": "The obvious approach: scan every run’s current head and pick the smallest. That costs one comparison per still-active run beyond the first, every single output." }] },
+        { "item": "A heap-based merge costs roughly 2*log(k) comparisons per step, comparing both children at every level", "at": [{ "step": "A heap-based merge costs roughly two comparisons per level: a sift-down walks from the root toward the bottom, and at every level it compares both children to find the smaller one before deciding whether to swap." }] },
+        { "item": "A tournament tree is an elimination bracket; the winner of each game is promoted to the next round", "at": [{ "step": "A tournament tree is an elimination bracket: two elements compete each game, the smaller one is promoted, and the bracket is a binary tree of games. Because each round plays one game per pair, each layer costs exactly one comparison, not the heap's own two." }] },
+        { "item": "A loser tree stores each game's loser; refilling a leaf replays only the path from that leaf to the root", "at": [{ "step": "Store only each game's loser, and the overall winner floats above the root: that's a loser tree. When the winning run's head is consumed and refilled, only the single path from that leaf back up to the root needs replaying — every other node is untouched." }] },
+        { "item": "k-way merges are the second stage of external sorting; a wider merge needs fewer passes", "at": [{ "step": "This is the real merge kernel behind two systems already in this course: external sorting's own second stage merges sorted runs this way, and an LSM-tree's own compaction step is exactly this same k-way merge of several runs into one." }] }
+      ]
+    },
+    {
+      "source": "Chakraborty, \"Tournament Trees, Winner Trees and Loser Trees in Data Structure\" (TutorialsPoint)",
+      "items": [
+        { "item": "A second, independent statement of the loser tree's own leaf-to-root repair advantage", "at": [{ "step": "Store only each game's loser, and the overall winner floats above the root: that's a loser tree. When the winning run's head is consumed and refilled, only the single path from that leaf back up to the root needs replaying — every other node is untouched." }] }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "blind self-review, research stage",
+    "date": "2026-10-23",
+    "items": [
+      { "item": "A tournament tree and a loser tree have the identical asymptotic depth and comparison bound; the loser tree is only a storage optimization (keeping the loser instead of the winner at each internal node) that makes the single-path replay simpler to implement, not a different asymptotic structure.", "at": [{ "step": "Store only each game's loser, and the overall winner floats above the root: that's a loser tree. When the winning run's head is consumed and refilled, only the single path from that leaf back up to the root needs replaying — every other node is untouched." }] },
+      { "item": "A heap's sift-down and a loser tree's replay are both single-path repairs after an output; the difference between them is per-level comparison count (two versus one), not which nodes get touched.", "at": [{ "step": "A heap-based merge costs roughly two comparisons per level: a sift-down walks from the root toward the bottom, and at every level it compares both children to find the smaller one before deciding whether to swap." }] },
+      { "item": "The source's own 'approximately 2*log(k)' heap cost is a rough per-operation estimate for a sift-down that sinks the full tree depth; a real k-way merge's replacement values are usually close in rank to what was removed, so the measured heap-to-loser-tree ratio in examples.py comes out smaller than 2x.", "at": [{ "step": "Prove it" }] },
+      { "item": "The precise ceiling bound ⌈log₂ k⌉ is this topic's own exact statement of a claim both sources phrase informally as 'log(k)'; it follows from the sentinel-padding construction both sources describe, and is verified directly by counting real comparisons in examples.py at a non-power-of-two k.", "at": [{ "step": "A tournament tree is an elimination bracket: two elements compete each game, the smaller one is promoted, and the bracket is a binary tree of games. Because each round plays one game per pair, each layer costs exactly one comparison, not the heap's own two." }] },
+      { "item": "The LSM-compaction connection in this topic rests on topic 29's own already-verified leveled/tiered compaction content, not on a new source that names 'loser tree' inside an LSM context specifically — no such source exists among the ones fetched for this topic.", "at": [{ "step": "This is the real merge kernel behind two systems already in this course: external sorting's own second stage merges sorted runs this way, and an LSM-tree's own compaction step is exactly this same k-way merge of several runs into one." }] },
+      { "item": "All three merge approaches (naive scan, heap, loser tree) are checked against the identical ground truth (a plain sort of every run's concatenated elements) in examples.py, so the topic's own comparison measurements are about cost, never about correctness differing between approaches.", "at": [{ "step": "Prove it" }] },
+      { "item": "This topic declines to teach binomial, pairing or Fibonacci heaps as mechanisms, consistent with the chapter plan's own skip list — their decrease-key-optimized use case (graph algorithms such as Dijkstra) is outside this chapter's scope.", "at": [{ "deep": "The frontier" }] },
+      { "item": "Chapter 6 closes on a structural contrast: every structure in this chapter (binary heaps, tournament/loser trees) answers 'which one is smallest right now' without ever asking where its own data physically sits, unlike Chapters 4 and 5's own trees.", "at": [{ "step": "A binary heap answers what's smallest right now for one stream of insertions. A k-way merge asks the same question across several already-sorted streams at once, every time it produces one output — and a heap's own sift-down re-examines a full root-to-leaf path to answer it, which is more comparison work than the problem actually requires." }] },
+      { "item": "The naive scan's own cost (one comparison per still-active run beyond the first) shrinks as runs are exhausted near the end of a merge, so its own real measured total is a slight underestimate of a pure k-1-per-output claim averaged over the whole run — examples.py measures the real total directly rather than assuming a constant per-output cost throughout.", "at": [{ "step": "The obvious approach: scan every run’s current head and pick the smallest. That costs one comparison per still-active run beyond the first, every single output." }] },
+      { "item": "This topic's own measured numbers (comparisons per output at k=8 and k=6) are scoped to its own examples.py input and parameters, not claimed to generalize exactly to every k or every real workload's run-length distribution.", "at": [{ "step": "Prove it" }] }
+    ]
+  },
+  "gapReview": { "date": "2026-10-23", "by": "self-review", "open": [] }
+}
