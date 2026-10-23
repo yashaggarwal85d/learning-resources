@@ -8,20 +8,20 @@
     {
       "clause": "Mutex/RwLock (futex-based in std, with poisoning semantics) or parking_lot provide the synchronization.",
       "at": [
-        { "step": "Wrap it in a Mutex, and both jobs get done" },
+        { "step": "Wrap it in a lock, and both jobs get done" },
         { "step": "A panic while the lock is held really poisons it" },
-        { "step": "The identical panic, and parking_lot's opposite choice" }
+        { "step": "The identical panic, and a different library's opposite choice" }
       ]
     },
     {
       "clause": "Use tokio::sync::Mutex only when a lock must be held across .await,",
-      "at": [{ "step": "The real failure, and the one tool built to survive it" }]
+      "at": [{ "step": "The real failure, and the one lock built to survive it" }]
     },
     {
       "clause": "and never hold a std guard across .await.",
       "at": [
-        { "step": "Does holding a std lock's guard across an await compile?" },
-        { "step": "The real failure, and the one tool built to survive it" }
+        { "step": "Does holding a lock across an await compile?" },
+        { "step": "The real failure, and the one lock built to survive it" }
       ]
     }
   ],
@@ -39,7 +39,7 @@
         },
         {
           "item": "mutating through an Arc needs Mutex, RwLock, or an atomic type",
-          "at": [{ "step": "Wrap it in a Mutex, and both jobs get done" }]
+          "at": [{ "step": "Wrap it in a lock, and both jobs get done" }]
         }
       ]
     },
@@ -48,7 +48,7 @@
       "items": [
         {
           "item": "Mutex's data is only ever reachable through the RAII guard lock()/try_lock() return",
-          "at": [{ "step": "Wrap it in a Mutex, and both jobs get done" }]
+          "at": [{ "step": "Wrap it in a lock, and both jobs get done" }]
         },
         {
           "item": "the named poisoning strategy: a panic while holding the lock poisons it for every later locker, by default",
@@ -74,7 +74,7 @@
       "items": [
         {
           "item": "parking_lot's own explicit 'Differences from the standard library Mutex' list: no poisoning, the lock is released normally on panic",
-          "at": [{ "step": "The identical panic, and parking_lot's opposite choice" }]
+          "at": [{ "step": "The identical panic, and a different library's opposite choice" }]
         },
         {
           "item": "parking_lot's Mutex needs only one byte of lock state",
@@ -87,7 +87,7 @@
       "items": [
         {
           "item": "tokio::sync::Mutex's guard is designed to be held across .await points, unlike std's",
-          "at": [{ "step": "The real failure, and the one tool built to survive it" }]
+          "at": [{ "step": "The real failure, and the one lock built to survive it" }]
         },
         {
           "item": "the docs' own recommendation to prefer std/parking_lot in async code unless the lock must survive an .await",
@@ -95,7 +95,7 @@
         },
         {
           "item": "the docs' own warning that holding a std guard across .await virtually never leads to correct concurrent code in practice",
-          "at": [{ "step": "Does holding a std lock's guard across an await compile?" }]
+          "at": [{ "step": "Does holding a lock across an await compile?" }]
         }
       ]
     }
@@ -106,15 +106,15 @@
     "items": [
       { "item": "Arc's own documentation states its purpose precisely: it makes multiple ownership of the same data thread-safe, but it does not add thread safety to the data itself.", "at": [{ "step": "A bare Arc shares the counter — and that's all" }] },
       { "item": "A bare Arc<u64> (or any plain, non-locked type) compiles and shares, but nothing can mutate through it — proving Arc alone is never sufficient for anything beyond read-only sharing.", "at": [{ "step": "Does assigning through a bare Arc<u64> compile?" }] },
-      { "item": "Mutex/RwLock are what actually add the missing synchronization; this is the structural reason Arc<RefCell<T>> would be unsound if Rust let it compile, and why Arc<Mutex<T>> is the common pairing.", "at": [{ "step": "Wrap it in a Mutex, and both jobs get done" }] },
+      { "item": "Mutex/RwLock are what actually add the missing synchronization; this is the structural reason Arc<RefCell<T>> would be unsound if Rust let it compile, and why Arc<Mutex<T>> is the common pairing.", "at": [{ "step": "Wrap it in a lock, and both jobs get done" }] },
       { "item": "std::sync::Mutex implements 'poisoning': a thread that panics while holding the lock poisons it, and every later locker gets a PoisonError by default.", "at": [{ "step": "A panic while the lock is held really poisons it" }] },
       { "item": "Poisoning is advisory, not absolute — into_inner on a PoisonError still reaches the guard and the data, so a program can recover deliberately instead of being locked out.", "at": [{ "step": "A panic while the lock is held really poisons it" }] },
       { "item": "std's Mutex is a real futex-based primitive on Linux (a single atomic word with unlocked/locked/contended states, built on futex_wait/futex_wake), not a thin wrapper around a C library mutex.", "at": [{ "deep": "Internals" }] },
-      { "item": "parking_lot's Mutex makes the opposite design choice on purpose: no poisoning at all, the lock simply releases normally even after a panic, at the cost of losing poisoning's panic-propagation safety net.", "at": [{ "step": "The identical panic, and parking_lot's opposite choice" }] },
+      { "item": "parking_lot's Mutex makes the opposite design choice on purpose: no poisoning at all, the lock simply releases normally even after a panic, at the cost of losing poisoning's panic-propagation safety net.", "at": [{ "step": "The identical panic, and a different library's opposite choice" }] },
       { "item": "parking_lot's lock state fits in a single byte, versus std's word-sized futex state — a real, measurable memory-density difference, not just an API difference.", "at": [{ "deep": "Internals" }] },
-      { "item": "tokio::sync::Mutex exists for exactly one reason beyond std's Mutex: its guard is designed to be held across an .await point, which std's guard is not.", "at": [{ "step": "The real failure, and the one tool built to survive it" }] },
+      { "item": "tokio::sync::Mutex exists for exactly one reason beyond std's Mutex: its guard is designed to be held across an .await point, which std's guard is not.", "at": [{ "step": "The real failure, and the one lock built to survive it" }] },
       { "item": "tokio's own documentation recommends the ordinary std (or parking_lot) Mutex in async code by default, reserving its own async Mutex for genuinely holding a lock across .await — the async version is the more expensive, special-case tool, not the default.", "at": [{ "deep": "In production" }] },
-      { "item": "The compiler does not forbid holding a std Mutex guard across an .await in every situation, but tokio's own docs state plainly that doing so 'virtually never leads to correct concurrent code in practice,' since it risks deadlocking an executor.", "at": [{ "step": "Does holding a std lock's guard across an await compile?" }] },
+      { "item": "The compiler does not forbid holding a std Mutex guard across an .await in every situation, but tokio's own docs state plainly that doing so 'virtually never leads to correct concurrent code in practice,' since it risks deadlocking an executor.", "at": [{ "step": "Does holding a lock across an await compile?" }] },
       { "item": "Choosing the wrong lock for the job (std where the async guard was needed, or the async guard where the cheaper std lock would do) is a real, common performance and correctness mistake, not a stylistic preference.", "at": [{ "deep": "In production" }] }
     ]
   },

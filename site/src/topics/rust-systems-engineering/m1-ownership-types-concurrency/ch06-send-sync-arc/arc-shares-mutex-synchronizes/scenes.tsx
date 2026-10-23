@@ -71,7 +71,7 @@ export function BareArcReveal({ t }: StepCtx) {
     <Code
       title="the real compiler verdict"
       dim
-      lines={['error[E0594]: cannot assign to data in an `Arc`', 'help: trait `DerefMut` is required to modify through a dereference, but it is not implemented for `Arc<u64>`']}
+      lines={['error[E0594]: cannot assign to data in an `Arc`', 'help: trait `DerefMut` is required', 'to modify through a dereference,', 'but it is not implemented for `Arc<u64>`']}
       t={t}
       start={0.1}
       end={2.2}
@@ -114,7 +114,7 @@ export function StdMutexPoisons({ t }: StepCtx) {
       <Svg label="poisoned, recovered through into_inner" h={120}>
         {padlock(60, 60, true, fa(t, 1.9, 0.4))}
         <T x={90} y={64} s={13} f={C.mocha} o={fa(t, 1.9, 0.4)}>m.lock() now returns Err — poisoned</T>
-        <T x={40} y={100} s={13} f={C.taupe} o={fa(t, 2.4, 0.4)}>the value, 7, is still reachable through unwrap_err().into_inner()</T>
+        <T x={40} y={100} s={13} f={C.taupe} o={fa(t, 2.4, 0.4)}>the value is still reachable, on purpose</T>
       </Svg>
     </Stack>
   );
@@ -166,14 +166,14 @@ export function GuardAwaitReveal({ t }: StepCtx) {
       <Code
         title="the real compiler verdict, for the std guard"
         dim
-        lines={['error: future cannot be sent between threads safely', "note: future is not `Send` as this value is used across an await point: `MutexGuard<'_, u64>`"]}
+        lines={['error: future cannot be sent', 'between threads safely', 'note: future is not `Send` as this', "value is used across an await point:", "`MutexGuard<'_, u64>`"]}
         t={t}
         start={0.1}
         end={1.8}
         highlight={[0, 1]}
       />
       <Code
-        title="examples/src/bin/tokio_mutex_across_await_works.rs — builds and runs"
+        title="tokio_mutex_across_await_works.rs — builds and runs"
         lines={['let mut guard = m.lock().await;', 'tokio::task::yield_now().await;', '*guard += 1;']}
         t={t}
         start={2.1}
@@ -188,9 +188,9 @@ export function GuardAwaitReveal({ t }: StepCtx) {
 export function Recap({ t }: StepCtx) {
   const rows = [
     'a shared pointer shares — nothing more',
-    'a lock is the separate job of synchronizing',
-    "one library's lock poisons on panic, another's never does",
-    'one lock exists to survive a pause while held',
+    'a lock is a separate, synchronizing job',
+    'one poisons on panic, one never does',
+    'one lock survives a pause while held',
   ];
   return (
     <Svg label="recap: two jobs, two choices each" h={300}>

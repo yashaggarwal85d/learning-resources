@@ -515,7 +515,7 @@ export const TOPICS: TopicMeta[] = [
     verified: '2026-10-23',
     introduces: ['arc-shares-only', 'mutex-rwlock-synchronizes'],
     uses: ['send-auto-trait', 'sync-auto-trait', 'arc-atomic-refcount', 'threads-and-channels', 'mutexes'],
-    declared: [],
+    declared: ['threads-and-channels', 'mutexes'],
     bridge: "Knowing which types the compiler lets across a thread boundary says nothing yet about what happens once several threads actually hold the same one — Arc alone was never the whole answer in Chapter 4, and this chapter can finally say why.",
     handoff: "The lock now has exactly one well-defined job: synchronizing access to a few memory operations. The next question is what happens the moment something that isn't a memory operation ends up inside it.",
   },
