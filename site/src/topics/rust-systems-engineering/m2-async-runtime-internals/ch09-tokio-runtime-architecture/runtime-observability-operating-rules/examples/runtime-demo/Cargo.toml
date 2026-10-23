@@ -1,0 +1,19 @@
+[package]
+name = "runtime-demo"
+version = "0.1.0"
+edition = "2024"
+
+[[bin]]
+name = "semaphore_bounds_concurrency"
+path = "src/semaphore_bounds_concurrency.rs"
+
+[[bin]]
+name = "global_queue_depth_reveals_backlog"
+path = "src/global_queue_depth_reveals_backlog.rs"
+
+[[bin]]
+name = "bounded_channel_applies_backpressure"
+path = "src/bounded_channel_applies_backpressure.rs"
+
+[dependencies]
+tokio = { version = "1", features = ["rt-multi-thread", "rt", "time", "sync", "macros"] }

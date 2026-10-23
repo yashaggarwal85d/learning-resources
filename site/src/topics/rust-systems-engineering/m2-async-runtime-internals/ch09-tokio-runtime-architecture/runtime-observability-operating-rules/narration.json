@@ -1,0 +1,88 @@
+{
+  "steps": [
+    {
+      "lines": [
+        "Twenty separate tasks, all trying to get at the same resource, guarded by a single counting permit-holder allowing only four permits at once.",
+        { "beat": 0.3 },
+        "Does the runtime actually stop at four running at the same time, or do more slip through anyway?"
+      ],
+      "answer": [
+        "It actually stops at four. The permits genuinely run out, and it reports that directly.",
+        "This isn't a soft guideline the scheduler happens to follow. It's a hard count, enforced."
+      ]
+    },
+    {
+      "lines": [
+        "Count it directly, while all twenty tasks are contending: exactly four are running, zero permits remain available, and the other sixteen are genuinely still waiting their turn.",
+        "That's not an assumption about how concurrency limits are supposed to behave. It's a number, read straight off the running program."
+      ]
+    },
+    {
+      "lines": [
+        "Now spawn five hundred separate tasks onto a runtime with only one real worker thread, and immediately ask the runtime's own built-in counters what's still waiting to run.",
+        { "beat": 0.3 },
+        "Will that counter say zero, since spawning happens instantly, or will it say something much larger?"
+      ],
+      "answer": [
+        "It says something much larger — a real backlog, not zero.",
+        "One worker thread simply cannot get through five hundred tasks between one line of code and the very next one."
+      ]
+    },
+    {
+      "lines": [
+        "Sample it right after the spawn loop finishes, and the runtime's own metrics report hundreds of tasks still sitting in the queue, untouched.",
+        "This number isn't estimated or averaged over time. It's the runtime's own live count of work it hasn't gotten to yet."
+      ],
+      "takeaway": "Runtime metrics report a real backlog, not an estimate, well before a violated rule turns into an incident."
+    },
+    {
+      "lines": [
+        "A message channel with room for exactly one pending message, and nothing on the other end reading it yet.",
+        { "beat": 0.3 },
+        "Does a second attempt to send into it wait politely for room, or does it get refused outright, right away?"
+      ],
+      "answer": [
+        "It gets refused outright, immediately — no waiting, no silent queueing.",
+        "The capacity limit is a real wall, not a polite suggestion the sender can talk its way past."
+      ]
+    },
+    {
+      "lines": [
+        "Run it for real: the second send is refused the instant the channel is full, and once the one pending message is finally read out, a third send goes straight through.",
+        "Refused when full, accepted the moment it isn't — both measured directly, not assumed."
+      ],
+      "takeaway": "A bounded channel's limit is enforced, not aspirational — refused when full, accepted the moment it isn't."
+    },
+    {
+      "lines": [
+        "There's a well-known diagnostic tool built specifically for watching a running asynchronous program from the outside, while it's still live.",
+        { "beat": 0.3 },
+        "Is that tool just a fancy log viewer, or does it actually see every kind of thing this topic just measured — tasks, resources, operations, all of it?"
+      ],
+      "answer": [
+        "It sees all of it — tasks, resources, and operations, live, across the whole running program.",
+        "It isn't a separate feature bolted on afterward. It's a window directly onto the same mechanisms already built here."
+      ]
+    },
+    {
+      "lines": [
+        "In the tool's own words: it collects diagnostic data on exactly the asynchronous tasks, resources, and operations inside a running application.",
+        "That's not marketing language. It's a precise description of what it actually watches, matching this topic's own three measurements."
+      ]
+    },
+    {
+      "lines": [
+        "So here's this entire chapter's short list of operating rules, one more time, each pointed back at the exact mechanism that earned it.",
+        "Keep a task small enough to yield. Bound concurrency with a counting permit-holder. Bound every channel. Define what happens on cancellation, explicitly, rather than leaving it to chance."
+      ]
+    },
+    {
+      "lines": [
+        "So, pulling this whole chapter together: a counting permit-holder's limit genuinely runs out and genuinely stops concurrency there.",
+        "A runtime's own metrics report a real backlog, not a guess. A bounded channel genuinely refuses a send once it's full.",
+        "And a dedicated diagnostic tool turns every one of those same signals into a live view, in a program that's actually running in production."
+      ],
+      "takeaway": "A Semaphore's permits genuinely run out, and the runtime genuinely stops there — a real cap, not a suggestion."
+    }
+  ]
+}

@@ -1,0 +1,4 @@
+- **`Semaphore`**: bounds how many callers can hold a permit at once. *Where you meet it:* 20 tasks contending for 4 permits, measured never running more than 4 at a time.
+- **`RuntimeMetrics::global_queue_depth`**: the runtime's own live count of tasks still waiting to be polled. *Where you meet it:* the real backlog left by spawning 500 tasks onto one worker.
+- **`try_send`**: a channel send that returns immediately instead of waiting for space. *Where you meet it:* a bounded channel genuinely refusing a send once full.
+- **tokio-console**: a live, per-task view into a running Tokio application. *Where you meet it:* named directly from the crate's own words, as the tool that turns this chapter's measurements into production observability.

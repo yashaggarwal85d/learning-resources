@@ -1,0 +1,86 @@
+# Chapter 10 — Channels, Backpressure, Cancellation, and Graceful Shutdown (chapter plan)
+
+Domain: Rust Systems Engineering (`rust.`). Milestone 2, *Async Runtime Internals* (its last chapter). Chapter 10 has one section, 10.1 (three full topics and the milestone's closing lab). Planned 2026-10-23, in one `/make-topic` session. Previous chapter: Chapter 9, *Tokio Runtime Architecture* (all five topics live: multiplexing, work stealing and budgeting, blocking isolation, I/O and time drivers, and runtime observability and operating rules).
+
+This file is the contract each of the chapter's three topics builds to. Do not edit it once a topic is in progress; record any unavoidable departure under that topic's `OUTLINE.md` → "Changes from the chapter plan".
+
+## A.1 The problem it solves
+
+Chapter 9 named "bound every channel" and "define cancellation semantics explicitly" as two of its four operating rules, and deliberately did not prove either one in full — a bounded channel's `try_send` refusal was shown, but not the rest of what "bounded" actually requires in a real service, and cancellation was named but not built. This chapter proves both completely. An unbounded queue is not a convenience; it is a promise to grow without limit, and a program that makes that promise eventually breaks it against real memory. Tokio's different channel kinds are not interchangeable conveniences either — `mpsc`, `broadcast`, `watch`, and `oneshot` each make a different, specific promise about what happens to a message nobody was ready to receive, and choosing the wrong one silently drops exactly the data a system most needed. Cancellation in async Rust has a single real mechanism — dropping a future at its current `.await` point — and that mechanism has a sharp edge: a future that holds a resource or a partial operation across that drop point can lose data or leave something inconsistent, which is exactly what "cancel safety" names and `select!`'s losing-branch drop exercises directly. None of this is optional plumbing: a worker pool that does not define its own shutdown sequence, explicitly, is a worker pool that cannot be deployed safely behind a process manager that sends it a termination signal with a deadline.
+
+By the end of the chapter the learner can: choose a bounded channel's capacity as a deliberate, application-specific decision rather than a default, and name which of Tokio's four channel kinds fits a given delivery guarantee (`mpsc` for ordered point-to-point work, `broadcast` for fan-out that can drop behind a lagging receiver, `watch` for a latest-value-only signal, `oneshot` for a single reply) and why `try_send` is the correct hook for shedding load rather than queueing it; state precisely what dropping a future at its `.await` point does and does not guarantee, define cancel safety from first principles, and name a real cancel-unsafe operation next to a cancel-safe one from the standard library itself; and build an explicit shutdown sequence (stop accepting, signal workers, drain or cancel per policy, close transports, wait with a deadline) using `CancellationToken` and `TaskTracker`, and explain why dropping a `JoinHandle` detaches a task instead of cancelling it.
+
+## A.2 The order of ideas, and why
+
+1. **Bounded channels and backpressure** (topic 33) — the foundation: every channel this chapter and the next ones build on must be bounded, because an unbounded one is a standing promise to exhaust memory under enough load. Builds a real, measured comparison of Tokio's four channel kinds under contention — `mpsc` losing nothing but applying real backpressure, `broadcast` dropping messages behind a receiver that falls behind, `watch` discarding every value but the latest, and `oneshot` delivering exactly one reply — and demonstrates `try_send` as a real, immediate load-shedding decision a caller makes rather than a wait it's forced into.
+2. **Cancellation by drop and cancel safety** (topic 34) — needs (1): a bounded channel can apply backpressure, but the task waiting on it can also simply be cancelled instead, and that cancellation has exactly one real mechanism to understand. Demonstrates `select!` dropping its losing branches directly, contrasts a genuinely cancel-safe operation (`mpsc::Receiver::recv`, which loses nothing if dropped and recreated) against a genuinely cancel-unsafe one (a partial `read_exact` that has already consumed bytes from the stream when its future is dropped), and shows that dropping a `JoinHandle` detaches its task rather than cancelling it — the task keeps running, unobserved, unless `abort`, `JoinSet`, or `AbortHandle` is used instead.
+3. **Structured shutdown with tokens and trackers** (topic 35) — needs (1)–(2): closes the milestone by turning bounded channels and real cancellation into one explicit, ordered shutdown sequence, using `tokio-util`'s `CancellationToken` (broadcast a single shutdown signal to every worker that's listening) and `TaskTracker` (know when every spawned task has actually finished, not merely been told to stop). Builds the full sequence directly — stop accepting new work, signal every worker, drain or cancel in-flight work per an explicit policy, close transports, then wait for completion against a real deadline — and names `SIGTERM` handling and the Kubernetes termination grace period as the real-world deadline this sequence exists to meet. Hands off to Chapter 11 (Processes, File Descriptors, Syscalls, and Resource Ownership), where the kernel-level resource-ownership questions this chapter's Rust-level shutdown sequence has been assuming get their own full treatment.
+
+*(The chapter's lab — a worker pool that rejects new jobs after shutdown and guarantees every accepted job completes or is explicitly abandoned, plus a `select!` branch that is deliberately not cancel-safe, showing the lost data and then fixing it — is not a reel; it stays in the syllabus as a lab exercise per `CLAUDE.md`'s convention, exercising topics 33–35 together rather than introducing new tested claims of its own.)*
+
+## A.3 The running example: a real, bounded worker pipeline under direct observation
+
+All three topics share one running example family (no cross-topic imports, per Chapters 1–9's convention, except where a topic explicitly measures a previous topic's own construction as its baseline): a small, real Tokio pipeline of producer and worker tasks, built so each topic's specific mechanism is the one thing that changes.
+
+- **Topic 33** builds all four of Tokio's channel kinds side by side under real contention: an `mpsc` channel whose capacity genuinely applies backpressure to a producer running faster than its consumer (measuring the producer actually wait, not merely assuming it); a `broadcast` channel with a receiver deliberately held back long enough to measure a real `Lagged` error; a `watch` channel measuring that a receiver which checks in late only ever observes the latest value, never the ones in between; and a `oneshot` channel used for exactly one reply. `try_send`'s immediate refusal on a full channel is measured directly as the load-shedding hook, distinct from `send`'s backpressure.
+- **Topic 34** reuses topic 33's `mpsc` channel and wraps a `recv()` call in `select!` against a short timeout, measuring directly that a cancelled, dropped `recv()` future loses nothing when retried — then contrasts it with a hand-built, genuinely cancel-unsafe operation (a partial read that has already consumed some bytes when its future is dropped mid-operation), measuring the lost bytes directly. A `JoinHandle` is dropped while its task keeps running, measured via a side channel the detached task still writes to after the handle is gone.
+- **Topic 35** reuses topic 33's worker pool shape and wraps it in a real `CancellationToken` + `TaskTracker` shutdown sequence, measuring directly that no new job is accepted after shutdown begins, that every already-accepted job either completes or is explicitly abandoned per a stated policy, and that the shutdown's own wait completes within its stated deadline rather than hanging.
+
+Every number and every outcome shown must come from each topic's own executed `examples.py` on the current stable toolchain (container has rustc 1.97.0 stable, edition 2024; `tokio` with the features each topic actually needs continues as this milestone's chapter-wide dependency; `tokio-util` is an additional real dependency for topic 35 only, for `CancellationToken` and `TaskTracker`). Reuse Chapters 1–9's engineering conventions unchanged: a cargo crate under `examples/` wherever a topic needs `tokio`, compile-fail examples assert the exact `error[E0xxx]` where applicable, "never invent what you didn't run" (`QUALITY.md`).
+
+## A.4 Terms and notation (continuing Chapters 1–9's vocabulary)
+
+Everything in Chapters 1–9 §A.4 still applies. This chapter adds:
+
+- **Backpressure**: a producer genuinely being made to wait because its consumer, and the bounded channel between them, cannot accept more right now.
+- **Load shedding**: refusing new work immediately (`try_send`) rather than queueing it, as a deliberate choice under overload.
+- **`Lagged` error**: the signal a `broadcast` receiver gets when it has fallen so far behind that messages were dropped before it could read them.
+- **Latest-value-only**: `watch`'s guarantee — a receiver that checks in late sees only the most recent value, never the ones it missed in between.
+- **Cancellation by drop**: the one real mechanism for cancelling an async operation in Rust — dropping the future at whatever `.await` point it is currently suspended at.
+- **Cancel safety**: a future is cancel-safe if dropping it at any `.await` point and starting a fresh one loses no data and leaves no inconsistent state; cancel-unsafe if dropping it mid-operation can lose or corrupt something already in flight.
+- **Detaching a task**: what dropping a `JoinHandle` actually does — the task keeps running on the runtime, unobserved, not cancelled.
+- **`CancellationToken`**: a cloneable, broadcastable shutdown signal (`tokio-util`) that any number of tasks can check or wait on.
+- **`TaskTracker`**: a `tokio-util` type that tracks when every task registered with it has actually finished, as the thing a shutdown sequence waits on.
+
+Narration words (continuing the convention: no digits, no code-style names spoken): "a producer genuinely made to wait" for backpressure; "refuse it outright, right now" for load shedding; "falling behind until something gets dropped" for a lagging broadcast receiver; "only ever the most recent value" for a watch channel; "dropping the future, right where it was paused" for cancellation by drop; "safe to drop and start over, or not" for cancel safety; "let go of the handle, not the task" for detaching; "one signal, heard by everyone listening" for a cancellation token; "waiting to know everyone actually finished" for a task tracker.
+
+## A.5 Visual language (continuing Chapters 1–9's kit grammar)
+
+Same kit (`site/src/reels/kit.tsx`, `anim.ts`), same thread dots and shared-memory boxes reused where relevant. This chapter adds:
+
+- **A channel-kind comparison strip**: four small lanes side by side (mpsc, broadcast, watch, oneshot), each showing what happens to a message when nobody is ready for it — used once in topic 33 to make the four guarantees visually distinct.
+- **A drop-at-await glyph**: a future's progress bar frozen mid-flight, then visibly discarded at its pause point — used in topic 34 for cancellation by drop.
+- **A shutdown-sequence diagram**: a horizontal row of five labelled stages (stop accepting, signal, drain or cancel, close, wait) lighting up left to right — used in topic 35 for the full shutdown sequence.
+- Everything else (accents at most two per step, `Code` panels, colour-only-for-failure, the 600-unit `Svg` canvas kept at `h` 300–400) follows Chapter 1 §A.5 / `DESIGN.md` unchanged.
+
+## A.6 Engineering conventions
+
+Unchanged from Chapters 1–9 §A.6: executed `examples.py` compiling real `rustc --edition 2024` sources per topic, self-contained topics, sources fetched and quoted via `scripts/sources.mjs`, registry fields as in Chapters 1–9 but with `milestone: { number: 2, title: 'Async Runtime Internals' }` and `chapter: { number: 10, title: 'Channels, Backpressure, Cancellation, and Graceful Shutdown', section: '10.1' }` (the syllabus's own single subsection heading), topics shipped **in order** (34 only after 33 is live, and so on). A cargo crate under `examples/` is used in every topic this chapter (the `tokio` dependency, with only the features a given topic actually exercises); `tokio-util` is an additional real dependency for topic 35 only.
+
+## A.7 The chapter's concept ledger
+
+**Declared** (Chapters 1–9's own declared prerequisite ids, verified against `registry.ts` immediately before writing this list): `rust-basics`, `stack-and-heap`, `references-basics`, `structs-enums`, `pattern-matching-basics`, `std-collections`, `error-handling-result`, `traits-generics-basics`, `threads-and-channels`, `mutexes`, `closures-basics`, `ownership`, `move-semantics`, `box-ownership`. Chapters 1–9's *introduced* ids actually in `registry.ts` that this chapter's topics draw on directly: `future-laziness-backpressure`, `waker-contract` (topic 24); `task-multiplexing-on-workers` (topic 28); `cooperative-budgeting` (topic 29); `blocking-pool-isolation` (topic 30); `runtime-operating-rules` (topic 32, which already named "bound every channel" and "define cancellation semantics explicitly" as the two rules this chapter proves in full). A topic in this chapter lists in `uses` only the ones it actually relies on.
+
+**Introduced in this chapter:**
+
+| id | Introduced by | Meaning |
+|---|---|---|
+| `bounded-channel-backpressure` | 33 | Every channel must be bounded; capacity is an application-specific burst-tolerance decision, and `mpsc`, `broadcast`, `watch`, and `oneshot` each make a different promise about a message nobody was ready for. |
+| `load-shedding-try-send` | 33 | `try_send`'s immediate refusal on a full channel is the correct hook for shedding load outright, distinct from `send`'s backpressure. |
+| `cancellation-by-drop` | 34 | The one real mechanism for cancelling an async operation in Rust: dropping its future at its current `.await` point, as `select!` does to its losing branches. |
+| `cancel-safety` | 34 | Whether dropping and recreating a future loses data or leaves something inconsistent; a `JoinHandle` drop detaches a task rather than cancelling it. |
+| `structured-shutdown-sequence` | 35 | An explicit, ordered shutdown built from `CancellationToken` and `TaskTracker`: stop accepting, signal workers, drain or cancel per policy, close transports, wait with a deadline. |
+
+## A.8 Bridges and handoffs
+
+- **33** bridges from topic 32's real handoff ("Bound every channel was this chapter's shortest rule and its least explained one. The next chapter is entirely about what that actually means, and what happens at every one of the ways a bounded channel can still go wrong.") and opens by answering it directly: a bounded channel's capacity is a real, measured decision, and Tokio's four channel kinds each make a different promise about a message nobody was ready for. Hands off to 34: "A bounded channel can make a producer wait, but the task doing the waiting can also simply be cancelled instead — and that cancellation has exactly one real mechanism, with a sharp edge most code never checks for."
+- **34** bridges from 33's handoff and shows that mechanism directly: dropping a future at its `.await` point, and the real difference between an operation that survives that cleanly and one that doesn't. Hands off to 35: "Backpressure and cancellation are both real, local mechanisms — true of one channel, one future, one task at a time. Turning them into a shutdown a whole service can trust means making the sequence explicit, not assuming every task will notice on its own."
+- **35** bridges from 34's handoff and closes the milestone with the full, explicit shutdown sequence, naming the real external deadline (`SIGTERM`, a Kubernetes grace period) it exists to meet. Hands off to Chapter 11 (Processes, File Descriptors, Syscalls, and Resource Ownership): "Every shutdown sequence in this chapter has been a Rust-level story — tasks, channels, tokens. Underneath every one of those tasks sits a real kernel handle — a file descriptor, a process, a signal — whose ownership rules this chapter has been quietly assuming the whole time."
+
+## A.9 Primary sources to start from (topics must re-fetch and verify)
+
+- The `tokio::sync::mpsc`, `tokio::sync::broadcast`, `tokio::sync::watch`, and `tokio::sync::oneshot` module docs, for each channel kind's own documented delivery guarantee.
+- The `tokio::select!` macro docs, for its own description of dropping losing branches.
+- The `tokio::task::JoinHandle` docs, for the documented detach-on-drop behavior, and `tokio::task::JoinSet`/`AbortHandle` for the alternative.
+- The `tokio_util::sync::CancellationToken` and `tokio_util::task::TaskTracker` docs, for topic 35's structured-shutdown claims.
+- The standard library's `mpsc::Receiver::recv` and `AsyncReadExt::read_exact` docs, for a real cancel-safe/cancel-unsafe contrast from the ecosystem's own words.
