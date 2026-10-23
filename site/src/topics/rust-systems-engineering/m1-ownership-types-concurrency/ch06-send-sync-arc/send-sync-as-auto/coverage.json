@@ -1,0 +1,17 @@
+{
+  "topic": "rust.send-sync-as-auto",
+  "expert": [
+    { "item": "Send means ownership of a value may move to another thread; Sync means &T is itself Send — the two are formally related, not independent ad hoc rules." },
+    { "item": "Both are auto-traits: derived structurally from a type's own fields, not hand-implemented in the ordinary case; a type is Send/Sync exactly when every field is." },
+    { "item": "Cell and RefCell are Send but not Sync: their interior mutability performs no synchronization, so a shared reference across threads would race." },
+    { "item": "MutexGuard is !Send but still Sync: it is tied by the lock API to the OS thread that acquired it, but an &MutexGuard crossing threads does nothing unsafe." },
+    { "item": "Rc is neither Send nor Sync: its refcount increments are not atomic, so even moving ownership to another thread risks a race on the count." },
+    { "item": "Arc is Send (and Sync) only when its T is Sync + Send: the atomic refcount alone doesn't make sharing the inner value safe if the value itself isn't." },
+    { "item": "Raw pointers are neither Send nor Sync by default — not because dereferencing one is dangerous (it's already unsafe), but so that a type built on one doesn't get an auto-trait its author never considered." },
+    { "item": "PhantomData<T> simply inherits whatever auto-traits T has; PhantomData<*const T> and PhantomData<*mut T> are unconditionally !Send + !Sync regardless of T — the real, table-documented mechanism for opting a generic type out." },
+    { "item": "unsafe impl Send/Sync for a type is a real, unchecked proof obligation: the compiler trusts the implementer completely and can't verify the claim." },
+    { "item": "A closure or future handed to std::thread::spawn or tokio::spawn must itself be Send + 'static — enforced directly in both functions' real signatures, not a convention." },
+    { "item": "A !Send value (such as an Rc) may still exist briefly inside a spawned async block, as long as it is dropped before any .await point it's held across; holding one across .await produces a real, specific compiler error." },
+    { "item": "Incorrectly derived Send/Sync cannot happen on its own from safe code — only a type built on unsafe code (raw pointers, UnsafeCell) can be wrongly auto-derived as thread-safe when it isn't." }
+  ]
+}
