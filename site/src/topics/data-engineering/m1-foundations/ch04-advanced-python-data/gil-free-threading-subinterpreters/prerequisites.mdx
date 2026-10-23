@@ -1,0 +1,25 @@
+import Resource from '../../../../../components/Resource.astro';
+
+<section class="prereq" data-section="before-this">
+
+### <span class="n">01</span> Before this: the CPython object model and the real memory cost a single object carries
+
+<ul class="resources">
+  <Resource kind="reel" title="CPython object model and memory cost" domain="data-engineering" host="de.cpython-object-model-memory" by="the topic right before this one" />
+</ul>
+
+</section>
+
+<section class="prereq" data-section="gil-straight-from-the-source">
+
+### <span class="n">02</span> CPython's own documentation and governing proposals on the GIL and the four real ways around it
+
+<ul class="resources">
+  <Resource kind="reading" title="global interpreter lock (Python Glossary)" href="https://docs.python.org/3/glossary.html#term-global-interpreter-lock" by="Python Software Foundation">The GIL's own definition, and when extension code or I/O releases it.</Resource>
+  <Resource kind="reading" title="PEP 703 – Making the Global Interpreter Lock Optional in CPython" href="https://peps.python.org/pep-0703/" by="Sam Gross">Free-threading's own disclosed distribution and C-extension-compatibility cost.</Resource>
+  <Resource kind="reading" title="PEP 779 – Criteria for supported status for free-threaded Python" href="https://peps.python.org/pep-0779/" by="Python Software Foundation">The three-phase rollout and the disclosed single-thread performance and memory cost.</Resource>
+  <Resource kind="reading" title="multiprocessing — Process-based parallelism" href="https://docs.python.org/3/library/multiprocessing.html" by="Python Software Foundation">`fork`, `spawn`, `forkserver`, and the 3.14 default-start-method change.</Resource>
+  <Resource kind="reading" title="concurrent.interpreters — Multiple interpreters in the same process" href="https://docs.python.org/3/library/concurrent.interpreters.html" by="Python Software Foundation">Subinterpreter isolation and the no-shared-GIL property.</Resource>
+</ul>
+
+</section>

@@ -1,0 +1,89 @@
+{
+  "topic": "de.gil-free-threading-subinterpreters",
+  "steps": [
+    {
+      "lines": [
+        "Start four real threads in most languages, and four cores actually light up doing real work.",
+        "Do the exact same thing in plain Python, and watch the activity monitor. Usually only one core moves at all. Something in the runtime itself is choosing not to use the others."
+      ]
+    },
+    {
+      "lines": [
+        "Here's that something, stated in the language's own glossary.",
+        "Only one thread gets to execute Python bytecode at any given moment — not a bug, not a missing optimization, but a deliberate design choice that keeps the object model safe without the programmer doing any locking themselves."
+      ]
+    },
+    {
+      "lines": [
+        "Here's a question worth guessing before the reveal.",
+        "A thread calls into a hash function written in C instead of running ordinary Python bytecode. Does that lock still apply the exact same way it applies to a Python loop, or does calling into C change anything?"
+      ],
+      "answer": [
+        "No — native code is allowed to let go of that lock for its own computation.",
+        "The lock specifically guards bytecode execution. Code written in C can explicitly release it while it works, and other Python threads genuinely get to run during that window."
+      ]
+    },
+    {
+      "lines": [
+        "Here's that release, made real rather than just asserted.",
+        "The identical total amount of hashing work, spread across threads: the C function genuinely speeds up close to four times over. The same total work as a plain Python loop speeds up barely at all — the lock never lets go for it."
+      ]
+    },
+    {
+      "lines": [
+        "A second way around that same lock entirely: separate processes instead of threads.",
+        "One process starts by copying the parent wholesale, so it already has everything the parent had. The other starts from nothing and has to be handed whatever it needs — and starting from nothing measurably takes longer."
+      ]
+    },
+    {
+      "lines": [
+        "That handing-over isn't free either, and this is exactly how much it costs.",
+        "A fresh process can't just see memory it didn't inherit — anything crossing that boundary gets serialized first, byte by byte, and deserialized again on the other side. Both directions take real, measured time."
+      ]
+    },
+    {
+      "lines": [
+        "Here's a genuinely open question worth sitting with.",
+        "Suppose the lock were removed from the language entirely. Would one single thread, running completely alone, run exactly as fast as it always did — with real parallelism simply bolted on top for free?"
+      ],
+      "answer": [
+        "No — a single thread actually gets measurably slower too.",
+        "Whatever that lock used to guard for free now needs its own finer-grained protection scattered through the interpreter instead, and paying for that protection costs something even when nothing else is running at the same time."
+      ]
+    },
+    {
+      "lines": [
+        "Here's that cost, in the exact words of the body deciding whether this feature becomes the default.",
+        "A real slowdown on ordinary single-threaded code. Real extra memory use on top of that. And a second cost named just as plainly: existing C extensions need their own separate build before they'll even load."
+      ]
+    },
+    {
+      "lines": [
+        "A third way around the lock, verified by actually running it, not by reading about it.",
+        "Instead of removing the lock, give every interpreter its own. Four separate interpreters, each with its own lock, each running real Python work on its own core at the same time — measured directly, right here."
+      ]
+    },
+    {
+      "lines": [
+        "Here's what that separateness actually costs, in the documentation's own terms.",
+        "Nothing is shared automatically between one interpreter and the next, and no thread starts on its own just because an interpreter exists. Whatever sharing or concurrency you want has to be built deliberately, on purpose, every time."
+      ]
+    },
+    {
+      "lines": [
+        "Four separate tools for the exact same underlying problem, each with its own trade clearly named.",
+        "One lock serializes ordinary bytecode but lets native code step around it. Separate processes dodge the lock by not sharing memory at all. Removing the lock costs speed and memory. Separate interpreters trade automatic sharing for genuinely separate cores."
+      ]
+    },
+    {
+      "lines": [
+        "One closing scenario worth actually testing rather than assuming.",
+        "Four independent chunks of work need to run in parallel right now, on an ordinary Python build with the lock still fully in place. Does simply creating four separate interpreters, with no threads involved at all, already make that happen on its own?"
+      ],
+      "answer": [
+        "No — creating the interpreters alone delivers nothing; something still has to run each one.",
+        "Isolation isn't concurrency. Each interpreter sits there doing nothing until a thread of its own actually drives it, and only then does the real parallel work begin."
+      ]
+    }
+  ]
+}

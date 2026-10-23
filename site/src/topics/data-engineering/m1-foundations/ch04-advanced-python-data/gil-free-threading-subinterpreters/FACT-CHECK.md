@@ -1,0 +1,28 @@
+# Fact-check — de.gil-free-threading-subinterpreters
+
+| # | Claim | Status | Basis |
+|---|---|---|---|
+| 1 | The GIL ensures only one thread executes Python bytecode at a time | Confirmed | SOURCES.md, Python Glossary |
+| 2 | The GIL makes CPython's object model (e.g. `dict`) implicitly safe against concurrent access, at the cost of multi-core parallelism | Confirmed | SOURCES.md, same page |
+| 3 | Some extension modules release the GIL for computationally intensive work (e.g. hashing); the GIL is always released during I/O | Confirmed | SOURCES.md, same page |
+| 4 | As of 3.13, the GIL can be disabled with a `--disable-gil` build configuration | Confirmed | SOURCES.md, same page |
+| 5 | PEP 703/779 define three phases: experimental (3.13), officially supported but optional (proposed phase II), then default (phase III) | Confirmed | SOURCES.md, PEP 779 |
+| 6 | Free-threaded Python's own measured single-thread performance penalty is currently around 10% (about 3% on macOS) | Confirmed, disclosed as PEP 779's own measurement | SOURCES.md, PEP 779. This sandbox's own CPython build is not free-threaded (confirmed in `cpython-object-model-memory/examples.py`), so this number is sourced-only here, never re-measured locally. |
+| 7 | Free-threaded Python currently uses about 15-20% more memory (geometric mean) | Confirmed, disclosed as PEP 779's own measurement | SOURCES.md, same page |
+| 8 | `spawn` starts a fresh interpreter and only inherits what the child's `run()` needs; it is slower than `fork`/`forkserver` | Confirmed | SOURCES.md, multiprocessing docs |
+| 9 | `fork` makes the child "effectively identical" to the parent, inheriting all of the parent's resources | Confirmed | SOURCES.md, same page |
+| 10 | As of 3.14, `fork` is no longer the default start method on any platform; `forkserver` became the POSIX default | Confirmed — a currency finding, not assumed from an older syllabus framing | SOURCES.md, same page. This sandbox's own CPython is 3.13, where `fork` is still confirmed directly as the default (`examples.py`'s own check), so the topic treats "fork vs. spawn" as this sandbox's own live default vs. its slower alternative, while disclosing the 3.14 change honestly rather than silently. |
+| 11 | Multiple interpreters are isolated from each other, with a small number of managed exceptions | Confirmed | SOURCES.md, concurrent.interpreters docs |
+| 12 | Interpreters do not share the GIL, so combining them with threads enables full multi-core parallelism, since Python 3.12 | Confirmed, and independently reproduced | SOURCES.md, same page. The isolation and lack of a shared GIL predate the 3.14 `concurrent.interpreters` module itself (added 3.14, per the page's own "Added in version 3.14" note) — this sandbox's 3.13 doesn't have that module, but does have the lower-level `_interpreters` C module the new module wraps, confirmed directly and used to reproduce the claim. |
+
+## Lab claims (executed, not just sourced)
+
+- **Native code that releases the GIL genuinely parallelizes across threads; a pure-Python loop doesn't.** `examples.py`'s `native_gil_release_vs_pure_python()` measures a real speedup around 3.9× for four threads doing `hashlib.sha256` work (a C extension) versus the identical total work single-threaded, while the identical comparison for a pure-Python arithmetic loop shows a speedup close to 1× (asserted to stay below 1.3×) — the GIL's own serialization made directly visible, not just claimed.
+- **`fork` starts a pool measurably faster than `spawn`/`forkserver`, and a fork child inherits the parent's memory while a spawn child genuinely does not.** `examples.py`'s `fork_vs_spawn_startup()` and `fork_vs_spawn_memory_duplication()` measure this directly: a fork child's RSS reflects a five-million-element list allocated only in the parent (confirmed present via a direct attribute check on the child's own `__main__`), while a spawn child's RSS stays near its own fresh-interpreter baseline and the same attribute check confirms the list is genuinely absent there, not merely unused.
+- **Pickling a realistic structure costs real, non-trivial, measured time**, confirmed directly by `examples.py`'s `pickling_cost()` round-tripping a hundred-thousand-row structure through `pickle.dumps`/`pickle.loads`.
+- **Subinterpreters deliver real multi-core parallelism for pure Python CPU-bound work, exercised directly on this sandbox despite the high-level `concurrent.interpreters` module (3.14) not being available here.** `examples.py`'s `subinterpreter_parallelism()` uses the lower-level `_interpreters` C module directly (confirmed present on this sandbox's 3.13 via `import _interpreters`, while `import concurrent.interpreters` fails) and measures a speedup around 3.9× for four independent subinterpreters in four threads, versus a speedup around 1.9× for the identical total work as plain threads sharing one interpreter under the GIL.
+
+## Red-team analysis of the two predicts
+
+- **Predict 1 (step 3):** the tempting wrong answer ("the GIL blocks every line a thread runs, including a call into a C extension") is directly refuted by the measured ~3.9× hashlib speedup — the GIL specifically serializes Python bytecode execution, not every native call made from it, which SOURCES.md's own glossary quote already states before the lab measures it.
+- **Predict 2 (step 7):** the tempting wrong answer ("removing the GIL is a pure win — the same single-thread speed, plus real parallelism on top") is directly refuted by PEP 779's own disclosed single-thread overhead (around ten percent) and higher memory use — free-threading is a genuine trade, not a free upgrade, exactly as its own governing PEP states.
