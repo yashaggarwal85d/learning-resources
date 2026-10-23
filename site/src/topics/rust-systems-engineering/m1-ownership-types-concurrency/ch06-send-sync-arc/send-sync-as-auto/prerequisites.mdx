@@ -1,0 +1,23 @@
+import Resource from '../../../../../components/Resource.astro';
+
+<section class="prereq" data-section="chapter-so-far">
+
+### <span class="n">01</span> Where the last chapter left off
+
+<ul class="resources">
+  <Resource kind="reel" host={props.host} domain="rust-systems-engineering" title="Safe byte-level views of structs">Every guarantee that chapter made was about one value's own layout, standing still, inside one process. This topic asks which of those guarantees survive being handed to another thread at all.</Resource>
+</ul>
+
+</section>
+
+<section class="prereq" data-section="send-sync-primary">
+
+### <span class="n">02</span> The real definitions, from the std docs and the Rustonomicon
+
+<ul class="resources">
+  <Resource kind="reading" title="Send in std::marker" href="https://doc.rust-lang.org/std/marker/trait.Send.html" by="The Rust Team">The real trait definition, and why Rc is std's own example of a non-Send type.</Resource>
+  <Resource kind="reading" title="Sync in std::marker" href="https://doc.rust-lang.org/std/marker/trait.Sync.html" by="The Rust Team">Sync's precise definition (&T is Send), and why Cell and RefCell fail it.</Resource>
+  <Resource kind="reading" title="Send and Sync" href="https://doc.rust-lang.org/nomicon/send-and-sync.html" by="The Rust Team">How the two traits are derived automatically from a type's fields, and the real syntax for overriding that by hand.</Resource>
+</ul>
+
+</section>
