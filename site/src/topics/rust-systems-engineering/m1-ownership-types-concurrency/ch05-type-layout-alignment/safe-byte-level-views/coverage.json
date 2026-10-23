@@ -1,0 +1,52 @@
+{
+  "topic": "rust.safe-byte-level-views",
+  "syllabus": [
+    { "clause": "reading wire and on-disk structs: alignment, endianness, and padding bytes (reading uninitialized padding as bytes is UB).", "at": [{ "step": "The same padding that cost bytes now costs soundness" }, { "step": "Big-endian, little-endian, and the one wrong default" }] },
+    { "clause": "zerocopy/bytemuck derive-checked FromBytes/IntoBytes replace hand-rolled transmute (→ Ch.16, Ch.19).", "at": [{ "step": "A padding-free header, read with no unsafe code at all" }, { "step": "What derive(Pod) actually checks" }] }
+  ],
+  "sources": [
+    {
+      "source": "nomicon-uninitialized",
+      "items": [
+        { "item": "Interpreting uninitialized memory as a value of any type is undefined behaviour", "at": [{ "step": "The same padding that cost bytes now costs soundness" }] }
+      ]
+    },
+    {
+      "source": "bytemuck-docs",
+      "items": [
+        { "item": "bytemuck casts between plain data types via five basic forms (T, &T, &mut T, &[T], &mut [T])", "at": [{ "deep": "Internals" }] },
+        { "item": "NoUninit is the marker trait specifically for types with no uninit or padding bytes", "at": [{ "step": "What derive(Pod) actually checks" }] },
+        { "item": "Pod (\"plain old data\") is the strongest marker trait, a sub-trait of Zeroable", "at": [{ "step": "A padding-free header, read with no unsafe code at all" }] },
+        { "item": "from_bytes re-interprets a byte slice as &T", "at": [{ "step": "A padding-free header, read with no unsafe code at all" }] },
+        { "item": "The derive macros check a type's declaration and trigger an error if it does not qualify", "at": [{ "step": "What derive(Pod) actually checks" }] },
+        { "item": "The traits are unsafe to implement by hand, placing the burden of proof on whoever skips the derive", "at": [{ "deep": "Internals" }] }
+      ]
+    },
+    {
+      "source": "std-u32-bytes",
+      "items": [
+        { "item": "to_be_bytes/from_be_bytes use big-endian (network) byte order", "at": [{ "step": "Big-endian, little-endian, and the one wrong default" }] },
+        { "item": "to_le_bytes/from_le_bytes use little-endian byte order", "at": [{ "step": "Big-endian, little-endian, and the one wrong default" }] },
+        { "item": "to_ne_bytes uses the target platform's native order and is explicitly called out as not portable", "at": [{ "step": "Read the same two wire bytes without choosing a byte order" }] }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "self-review",
+    "date": "2026-10-23",
+    "items": [
+      { "item": "The link between this topic and the previous one is not a loose analogy: the exact padded field order that cost four extra bytes in topic 16 is the exact shape whose padding bytes are unsafe to read back, so the same struct carries both lessons without needing a new example", "at": [{ "step": "The same padding that cost bytes now costs soundness" }] },
+      { "item": "Padding bytes are not guaranteed to be zero, and nothing in the language initializes them on a stack allocation; a program that happens to see zeros there in testing can see something else entirely under a different allocator, a different build, or after the same memory is reused", "at": [{ "step": "The same padding that cost bytes now costs soundness" }] },
+      { "item": "bytemuck's Pod derive check is a real, mechanical analysis of the type's declared layout (size, alignment, and field offsets, the same facts topic 16's offset_of! computed), not a heuristic or a lint that can be silenced; there is no way to derive Pod on a type with padding short of removing the padding itself", "at": [{ "step": "What derive(Pod) actually checks" }] },
+      { "item": "NoUninit and Pod are deliberately not the same trait: NoUninit only rules out padding, while Pod (via Zeroable) also requires that any all-zero bit pattern be a valid value of the type, which is a stronger and separate property from having no padding at all", "at": [{ "deep": "Internals" }] },
+      { "item": "bytemuck::from_bytes is not unconditionally safe to call with any byte slice; it still panics at run time if the slice's length or alignment doesn't match the target type, which is a real, checked runtime condition, distinct from the compile-time padding check the derive performs on the type itself", "at": [{ "step": "A padding-free header, read with no unsafe code at all" }] },
+      { "item": "A hand-rolled transmute or pointer-cast reinterpret of the same padded byte buffer would compile without complaint and might even produce plausible-looking output most of the time, which is exactly what makes this bug class dangerous: the failure is undefined behaviour, not a guaranteed crash, so it can pass every test that happens not to expose it", "at": [{ "deep": "In production" }] },
+      { "item": "Endianness and padding are two independent problems that both happen to live in this topic because both concern reading someone else's bytes: a type can have zero padding and still be read wrong if its multi-byte fields' byte order doesn't match the sender's, and fixing one of the two problems does nothing for the other", "at": [{ "step": "Big-endian, little-endian, and the one wrong default" }] },
+      { "item": "This topic's own sandbox is little-endian (x86_64), which is why to_ne_bytes happens to agree with to_le_bytes here; the reel's claim is not that native order is always wrong, only that it is never guaranteed to match a wire format's chosen order, which is why portable code must never use to_ne_bytes/from_ne_bytes for data that crosses a boundary", "at": [{ "step": "Read the same two wire bytes without choosing a byte order" }] },
+      { "item": "Choosing bytemuck over zerocopy for this chapter is a scope decision, not a claim that one crate is strictly better; zerocopy's FromBytes/IntoBytes traits solve the same padding problem with a different, more finely split trait hierarchy, named in the Deep dive rather than built here to keep one running example", "at": [{ "deep": "The frontier" }] },
+      { "item": "Every number and every compiler diagnostic in this topic's reel is copied from a real execution of examples.py on this sandbox's toolchain (rustc 1.97.0, bytemuck resolved via cargo from crates.io), not invented or quoted from the crate's own documentation examples", "at": [{ "step": "Recap: padding is real, and bytes need a byte order" }] },
+      { "item": "This topic closes Chapter 5 without ever building the C-compatible-ABI half of type layout (extern \"C\" declarations, the Rust 2024 unsafe extern block rules); that content is the syllabus's own (skipped) section 5.2 and is out of scope here, named only in passing in post-notes.md", "at": [{ "deep": "Lab" }] }
+    ]
+  },
+  "gapReview": { "date": "2026-10-23", "by": "self-review", "open": [] }
+}
