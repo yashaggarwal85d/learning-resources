@@ -1,0 +1,77 @@
+{
+  "topic": "rust.async-fn-traits-send",
+  "syllabus": [
+    {
+      "clause": "async fn in traits and return-position impl Trait in traits have been stable since 1.75. The \"Send bound problem\": callers cannot require the returned future to be Send. Return-type notation (RFC 3654) would fix it but is still unstable in 2026. Workarounds: trait-variant, the boxing async-trait, and dynosaur for dyn dispatch.",
+      "at": [
+        { "step": "No — the compiler's own diagnostic says exactly why" },
+        { "step": "rustc's own diagnostic: the trait's future cannot be sent between threads" },
+        { "step": "Proven: spawned on a real thread, through the generated Send trait" },
+        { "step": "Measured, not assumed: one real heap allocation, every call" },
+        { "step": "Recap: two gaps, two separate fixes, proven both ways" }
+      ]
+    }
+  ],
+  "sources": [
+    {
+      "source": "async-fn-traits-stabilization",
+      "items": [
+        {
+          "item": "Rust 1.75, which hits stable next week, will include support for both -> impl Trait notation and async fn in traits",
+          "at": [{ "step": "No — the compiler's own diagnostic says exactly why" }]
+        },
+        {
+          "item": "of particular interest to users of async are Send bounds on the returned future; since users cannot add bounds later, the trait author has to decide whether the trait works with multithreaded executors",
+          "at": [{ "step": "rustc's own diagnostic: the trait's future cannot be sent between threads" }]
+        },
+        {
+          "item": "this proc macro is part of the trait-variant crate, published by the rust-lang org",
+          "at": [{ "step": "trait_variant::make fixes this by generating a second, Send-bounded trait" }]
+        }
+      ]
+    },
+    {
+      "source": "async-trait-crate",
+      "items": [
+        {
+          "item": "the stabilization of async functions in traits in Rust 1.75 did not include support for using traits containing async functions as dyn Trait",
+          "at": [{ "step": "Does fixing Send also fix dyn dispatch?" }]
+        },
+        {
+          "item": "async fns get transformed into methods that return Pin<Box<dyn Future + Send + 'async_trait>> and delegate to an async block",
+          "at": [{ "step": "async-trait fixes dyn dispatch instead — by boxing every call" }]
+        }
+      ]
+    },
+    {
+      "source": "trait-variant-crate",
+      "items": [
+        {
+          "item": "trait_variant generates a specialized version of a base trait that uses async fn and/or -> impl Trait",
+          "at": [{ "step": "trait_variant::make fixes this by generating a second, Send-bounded trait" }]
+        }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "self-review",
+    "date": "2026-10-23",
+    "items": [
+      { "item": "A trait containing an async fn is not dyn compatible: building a vtable requires every method's return type to be known and uniform across implementors, but an async fn's return type is an anonymous, per-implementor-sized future, so the compiler refuses outright with error E0038 rather than guessing at a layout.", "at": [{ "step": "No — the compiler's own diagnostic says exactly why" }] },
+      { "item": "The Send bound problem is not about whether a specific implementor's future happens to be Send — it is that the trait definition itself gives callers no syntax to require it, so even a fully generic, Send-bounded implementor cannot satisfy a generic caller that needs the returned future to be Send.", "at": [{ "step": "rustc's own diagnostic: the trait's future cannot be sent between threads" }] },
+      { "item": "trait-variant's fix is deliberately not a modification of the original trait: it generates an entirely separate, additional trait with the desired bound, and implementors choose which one (or both) to implement, so existing single-threaded users of the original trait are never forced to adopt the bound.", "at": [{ "step": "trait_variant::make fixes this by generating a second, Send-bounded trait" }] },
+      { "item": "Fixing the Send bound problem does nothing for dyn compatibility, and fixing dyn compatibility does nothing for the Send bound problem — they are two independent gaps in today's stable language, caused by two different limitations (vtable construction versus bound expressiveness), and each needs its own workaround.", "at": [{ "step": "Does fixing Send also fix dyn dispatch?" }] },
+      { "item": "async-trait's fix is type erasure: every async method is rewritten to return Pin<Box<dyn Future + Send>>, a single concrete, dyn-compatible type regardless of which implementor produced it, which is exactly what makes dyn dispatch possible again.", "at": [{ "step": "async-trait fixes dyn dispatch instead — by boxing every call" }] },
+      { "item": "That type erasure is not free: producing a Pin<Box<dyn Future>> requires one real heap allocation per call, measured directly here with a counting global allocator rather than merely cited from the macro's documentation — a cost real production code accepts deliberately in exchange for dyn dispatch, not an accident.", "at": [{ "step": "Measured, not assumed: one real heap allocation, every call" }] },
+      { "item": "Return-Type Notation (RFC 3654) is named as the eventual native fix for the Send bound problem specifically — letting a caller write a bound like G::greet(): Send directly — but it remains unstable as of 2026, so trait-variant's generated-sibling-trait approach is the practical answer today, not a stopgap nobody expects to last.", "at": [{ "step": "Recap: two gaps, two separate fixes, proven both ways" }] },
+      { "item": "dynosaur is named as a further, more recent workaround specifically for dyn-safe async traits, built on different internal machinery than async-trait's boxing approach; this topic does not build an executable example of it, consistent with naming a real tool without asserting specifics this topic did not verify by running it.", "at": [{ "step": "Recap: two gaps, two separate fixes, proven both ways" }] },
+      { "item": "In production, the choice between trait-variant and async-trait is a real design decision: trait-variant costs nothing at the call site (it is just a second trait) but requires generic code, while async-trait enables dyn dispatch and heterogeneous collections at the cost of one allocation per call — exactly the kind of tradeoff the advertising-platform example from async-trait's own documentation is built to motivate.", "at": [{ "step": "async-trait fixes dyn dispatch instead — by boxing every call" }] },
+      { "item": "This topic closes Chapter 8 on a deliberately honest note: not every gap in async Rust has a native, stable fix as of 2026, and naming a real, currently-unsolved limitation precisely (rather than glossing over it) is exactly what distinguishes production-grade understanding from a tutorial that only shows the happy path.", "at": [{ "step": "Recap: two gaps, two separate fixes, proven both ways" }] }
+    ]
+  },
+  "gapReview": {
+    "date": "2026-10-23",
+    "by": "self-review",
+    "open": []
+  }
+}
