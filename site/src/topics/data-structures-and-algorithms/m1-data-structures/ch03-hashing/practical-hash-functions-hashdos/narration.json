@@ -1,0 +1,74 @@
+{
+  "topic": "dsa.practical-hash-functions-hashdos",
+  "steps": [
+    {
+      "lines": [
+        "Watch the scan on the left lose this race before you even look at the box on the right.",
+        "It has to touch every record, one at a time, before it can rule any of them out — that's the whole cost, right there.",
+        "The hash function is the only genuinely new idea in this picture. Everything else is the array you already know; it just gets to skip straight to the answer."
+      ]
+    },
+    {
+      "lines": [
+        "Notice what's missing from this list of design goals. Every one of these was built to be fast on ordinary keys.",
+        "Nobody asked what happens if the keys stop being ordinary — if something on the other end gets to choose exactly which keys you hash.",
+        "Fast usually feels like it should also mean good enough. That's the assumption the next two steps are going to take apart."
+      ]
+    },
+    {
+      "lines": [
+        "Before you pick, think about what 'fast' actually promised you back there.",
+        "Did it promise anything at all about who gets to choose the keys?"
+      ],
+      "answer": [
+        "A fast public hash has exactly one published formula. Anyone can run it offline, for free.",
+        "Which means an attacker can precompute thousands of keys that all land in the same slot, on purpose, before ever touching your server."
+      ]
+    },
+    {
+      "lines": [
+        "This isn't a hypothetical. It's been rediscovered twice, a decade apart, under two different names.",
+        "Once in nineteen ninety nine, buried in a comment in a piece of DNS software. Again in two thousand three, formalized as a real academic attack. Again in twenty eleven, taking down live web servers with half a megabyte of carefully chosen form data.",
+        "It keeps coming back because the fix people reach for first — just add some randomness — turns out not to be enough. You're about to find out why, the same way the field did."
+      ]
+    },
+    {
+      "lines": [
+        "This is the answer most teams actually shipped, back in twenty eleven. It is not a wrong instinct.",
+        "Watch closely for what's different about the one case where it still breaks."
+      ],
+      "answer": [
+        "A random seed really does stop an attacker who has to precompute their colliding keys offline, with zero access to your server.",
+        "It does not stop someone who can send one key at a time and quietly time how long each lookup takes — not if the formula underneath is still a simple linear one."
+      ]
+    },
+    {
+      "lines": [
+        "The left side here is real, and it's genuinely good news — those are the same crafted keys from before, landing almost one per bucket now that the seed is unknown to whoever built them.",
+        "The right side is the part that actually surprised people in twenty twelve. Being unpredictable to a guesser is not the same thing as being unpredictable to someone who can watch you compute, one probe at a time.",
+        "Nobody built a working version of that timing attack here — it's the paper's own cited argument, not a demonstration. But notice why it works at all: a linear formula is a system of equations, and systems of equations get solved."
+      ]
+    },
+    {
+      "lines": [
+        "PRF is the one genuinely new term this whole topic needed.",
+        "Everything from here on is just one question, asked over and over: is this particular hash a real pseudorandom function, and what does that cost you?",
+        "And here's the part that should feel grounding rather than abstract: you've been calling this exact algorithm every single time you've hashed a string in Python."
+      ]
+    },
+    {
+      "lines": [
+        "This isn't a hypothetical trade-off dreamed up for a slide. It's a decision two real teams made differently, for the same language, on purpose.",
+        "The standard library chose the slower, safer default because it has no idea who's going to be populating its tables.",
+        "The compiler went the other way, deliberately, because it knows exactly where its own keys come from — and they were never going to fight back."
+      ]
+    },
+    {
+      "lines": [
+        "Every number on this chart, you've already watched build, one tier at a time.",
+        "Here's what should actually surprise you: the first two bars. They land close together, almost the same height, exactly the way the paper promised they would.",
+        "The real gap, the one worth remembering, is the third bar. That's the cost of asking a hash to also be cryptographically unforgeable — and it's a cost you only pay when you actually need it."
+      ]
+    }
+  ]
+}
