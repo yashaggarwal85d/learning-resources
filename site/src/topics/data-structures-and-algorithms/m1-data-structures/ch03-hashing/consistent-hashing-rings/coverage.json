@@ -1,0 +1,53 @@
+{
+  "topic": "dsa.consistent-hashing-rings",
+  "syllabus": [
+    { "clause": "ring placement", "at": [{ "step": "Hash both keys and machines onto the same ring. A key belongs to the first machine you find walking clockwise from the key's own position." }] },
+    { "clause": "virtual nodes for balance", "at": [{ "step": "What actually fixes one machine's unpredictable share of the ring?" }, { "step": "A real production system's own count: two hundred fifty six points per node, under its older random-allocation scheme." }] },
+    { "clause": "minimal remapping on join/leave", "at": [{ "step": "A new machine joins the ring — how many of the keys actually have to move to it?" }, { "step": "Only the keys between a joining machine and its clockwise neighbor move — not the whole ring." }] },
+    { "clause": "consistent hashing with bounded loads (Mirrokni, Thorup, Zadimoghaddam, SODA 2018)", "at": [{ "step": "A real extension caps how overloaded any one machine can get, even under an adversarial key distribution." }] },
+    { "clause": "Data Engineering §5.3", "at": [{ "deep": "The frontier" }] }
+  ],
+  "sources": [
+    {
+      "source": "Karger, Lehman, Leighton, Levine, Lewin, Panigrahy, \"Consistent Hashing and Random Trees\" (STOC 1997)",
+      "items": [
+        { "item": "Buckets and items are both mapped onto the unit interval; an item belongs to the bucket closest to it", "at": [{ "step": "Hash both keys and machines onto the same ring. A key belongs to the first machine you find walking clockwise from the key's own position." }] },
+        { "item": "More than one point per bucket is needed — the paper's own stated reason for what later came to be called virtual nodes", "at": [{ "step": "One point per machine isn't enough. Pure chance gives some machines a much larger arc of the ring than others." }] },
+        { "item": "The paper's own terms are 'the unit interval' and 'closest' point, not 'ring' or 'clockwise'", "at": [{ "deep": "Into the internals" }] }
+      ]
+    },
+    {
+      "source": "Mirrokni, Thorup, Zadimoghaddam, \"Consistent Hashing with Bounded Loads\" (arXiv:1608.01350, SODA 2018)",
+      "items": [
+        { "item": "A configurable balancing parameter c = 1+ε bounds the maximum load any one server can carry", "at": [{ "step": "A real extension caps how overloaded any one machine can get, even under an adversarial key distribution." }] },
+        { "item": "The guarantee holds while still moving only an expected constant number of clients per join or leave", "at": [{ "step": "A real extension caps how overloaded any one machine can get, even under an adversarial key distribution." }] }
+      ]
+    },
+    {
+      "source": "Apache Cassandra, Dynamo-style data-placement architecture documentation (current stable docs)",
+      "items": [
+        { "item": "Cassandra maps every node to one or more tokens on a continuous hash ring and walks it clockwise to assign ownership", "at": [{ "step": "Hash both keys and machines onto the same ring. A key belongs to the first machine you find walking clockwise from the key's own position." }] },
+        { "item": "Virtual nodes solve single-token imbalance by assigning multiple tokens per physical node", "at": [{ "step": "What actually fixes one machine's unpredictable share of the ring?" }] },
+        { "item": "Cassandra's own older default was 256 tokens per node under random allocation, with a newer deterministic allocator needing far fewer", "at": [{ "step": "A real production system's own count: two hundred fifty six points per node, under its older random-allocation scheme." }] }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "blind self-review, research stage",
+    "date": "2026-10-23",
+    "items": [
+      { "item": "The ring is the exact same hashing idea as every earlier topic in this chapter, now applied to machines instead of array slots — not a new mechanism.", "at": [{ "step": "A single machine's table can always grow. Consistent hashing asks the same question one level up: when a machine itself joins or leaves, how many keys have to move?" }] },
+      { "item": "A key's owning machine is whichever one is found first walking clockwise from the key's own hashed position — the mechanism, in the picture everyone actually draws.", "at": [{ "step": "Hash both keys and machines onto the same ring. A key belongs to the first machine you find walking clockwise from the key's own position." }] },
+      { "item": "Only the arc of keys between a joining machine and its clockwise neighbor ever moves — every other machine's keys are untouched, in sharp contrast to a full single-machine resize.", "at": [{ "step": "Only the keys between a joining machine and its clockwise neighbor move — not the whole ring." }] },
+      { "item": "Hashing each machine to exactly one point gives an unpredictable, often lopsided share purely by chance — the real-world flaw the ring's elegant math doesn't solve on its own.", "at": [{ "step": "One point per machine isn't enough. Pure chance gives some machines a much larger arc of the ring than others." }] },
+      { "item": "Virtual nodes don't change the hash function or the ring itself — they just ask the same question more times per machine, and many small shares average out by the law of large numbers.", "at": [{ "deep": "Into the internals" }] },
+      { "item": "A real, current, documented production system (Cassandra) assigned 256 tokens per node under its older allocation scheme — a concrete, cited number, not an invented one.", "at": [{ "step": "A real production system's own count: two hundred fifty six points per node, under its older random-allocation scheme." }] },
+      { "item": "Plain consistent hashing only balances well on average; the bounded-loads extension proves a worst-case guarantee even under an adversarial key distribution, by redirecting excess load to the next machine on the ring.", "at": [{ "step": "A real extension caps how overloaded any one machine can get, even under an adversarial key distribution." }] },
+      { "item": "The topic's own measured numbers (join-remapping fraction, imbalance with vs. without virtual nodes) come from a from-scratch ring built in examples.py, not from any real system's own benchmarked performance.", "at": [{ "step": "Prove it" }] },
+      { "item": "Karger's original 1997 paper never uses the words 'ring' or 'clockwise' — the now-standard visual metaphor is a pedagogical redrawing of the same unit-interval mechanism, confirmed as real production language by Cassandra's own docs.", "at": [{ "deep": "Into the internals" }] },
+      { "item": "Rendezvous, jump, and Maglev hashing solve the same problem with different mechanisms, but are skipped in this syllabus and named with no mechanism taught.", "at": [{ "deep": "The frontier" }] },
+      { "item": "The syllabus's own Lab bullet measures key movement specifically for growing a ring from ten machines to eleven — this topic's examples.py keeps exactly that measurement for the ring scheme.", "at": [{ "deep": "In the lab" }] }
+    ]
+  },
+  "gapReview": { "date": "2026-10-23", "by": "self-review", "open": [] }
+}

@@ -1,0 +1,75 @@
+{
+  "topic": "dsa.consistent-hashing-rings",
+  "steps": [
+    {
+      "lines": [
+        "Last topic's whole question was about one table filling up, and what a resize costs inside one machine.",
+        "This one asks almost the same question, just one level up.",
+        "When the machine itself joins or leaves, how many keys actually have to move?"
+      ]
+    },
+    {
+      "lines": [
+        "Here's the exact same hashing idea from every earlier topic, just pointed at machines instead of slots in one array.",
+        "Hash both the keys and the machines onto the same ring.",
+        "A key belongs to whichever machine it meets first, walking clockwise from the key's own position."
+      ]
+    },
+    {
+      "lines": [
+        "Think about what a new dot on this ring actually changes.",
+        "It only pushes in between whichever two existing dots happen to sit on either side of it. Nothing on the far side of the ring even notices.",
+        "So before I show you the real number, predict it: how many of the ring's keys actually have to move?"
+      ],
+      "answer": [
+        "Only the keys between the new machine's position and its clockwise neighbor — nothing else moves.",
+        "Those keys belonged to that one clockwise neighbor in the first place. Every other key's owning machine never changes."
+      ]
+    },
+    {
+      "lines": [
+        "Go back and watch what a resize actually did, last topic: it touched every entry, because the whole table's layout changed at once.",
+        "Nothing like that happens here. A ring's layout barely moves when one dot joins it.",
+        "That's the entire payoff of placing machines on the same hashed space as the keys, instead of giving the table a single fixed size to outgrow."
+      ]
+    },
+    {
+      "lines": [
+        "Here's the catch nobody mentions when they first draw this ring: hashing is random, and random doesn't mean even.",
+        "Roll enough dice and some number comes up far more than its fair share. One machine's single point can land in a wide open stretch of the ring and inherit a huge pile of keys for it.",
+        "That's not a bug in the scheme. It's just what a single random sample looks like."
+      ]
+    },
+    {
+      "lines": [
+        "Notice this isn't a capacity problem — giving that machine more memory wouldn't touch the actual cause.",
+        "The cause is that it only got to roll the dice once.",
+        "So predict it, before I show the fix: what actually gives one machine a fairer shot at the ring?"
+      ],
+      "answer": [
+        "Hash each machine to many points on the ring instead of just one.",
+        "Roll the dice many times instead of once, and the lucky and unlucky rolls start to cancel out — that's the whole mechanism."
+      ]
+    },
+    {
+      "lines": [
+        "Not a made up number. A real, current, documented system assigned each machine two hundred fifty six points on the ring, under its older allocation scheme.",
+        "Spreading one machine's share across many small points instead of one big one, specifically to even it out."
+      ]
+    },
+    {
+      "lines": [
+        "Averages are comforting, but an adversary doesn't play by averages.",
+        "Send every request at the one machine you know is overloaded, and virtual nodes alone won't save it — they only even things out in expectation, not against someone aiming at you.",
+        "So this guarantee works differently: once a machine hits its cap, the extra load simply spills to its neighbor, by design, no matter who's sending the traffic."
+      ]
+    },
+    {
+      "lines": [
+        "Everything claimed in this topic gets checked here, against a real ring built from scratch, not just asserted.",
+        "Watch the gap between the two left bars: that's the entire reason a ring beats a resize when machines come and go.",
+        "And the second pair shows the exact same ring paying off the fix from two steps ago — same mechanism, just asked more times per machine."
+      ]
+    }
+  ]
+}
