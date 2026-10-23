@@ -1,0 +1,24 @@
+import Resource from '../../../../../components/Resource.astro';
+
+<section class="prereq" data-section="chapter-so-far">
+
+### <span class="n">01</span> Where the last topic left off
+
+<ul class="resources">
+  <Resource kind="reel" host={props.host} domain="rust-systems-engineering" title="mmap versus an owned buffer pool">Mapping a file holds the same bytes twice once an application keeps its own cache; direct I/O only shifts the cost onto alignment.</Resource>
+</ul>
+
+</section>
+
+<section class="prereq" data-section="buffered-direct-primary">
+
+### <span class="n">02</span> The real docs: readahead, fadvise, and the page cache
+
+<ul class="resources">
+  <Resource kind="reading" title="posix_fadvise(2)" href="https://man7.org/linux/man-pages/man2/posix_fadvise.2.html" by="The Linux man-pages Project">The hint's own non-binding status, and its dirty-page caveat.</Resource>
+  <Resource kind="reading" title="readahead(2)" href="https://man7.org/linux/man-pages/man2/readahead.2.html" by="The Linux man-pages Project">The syscall's own documented effect on the page cache.</Resource>
+  <Resource kind="reading" title="open(2)" href="https://man7.org/linux/man-pages/man2/open.2.html" by="The Linux man-pages Project">O_DIRECT's own documented cache-bypassing behavior.</Resource>
+  <Resource kind="reading" title="Documentation for /proc/sys/vm/" href="https://docs.kernel.org/admin-guide/sysctl/vm.html" by="The Linux Kernel documentation">dirty_ratio's own documented throttling behavior.</Resource>
+</ul>
+
+</section>
