@@ -1,0 +1,34 @@
+import Resource from '../../../../../components/Resource.astro';
+
+<section class="prereq" data-section="before">
+
+### <span class="n">01</span> Already covered
+
+<ul class="resources">
+  <Resource kind="reel" host={props.host} domain="data-structures-and-algorithms" title="Practical hash functions and HashDoS">The real hash function this topic reuses unchanged, to split into H1 and H2.</Resource>
+  <Resource kind="reel" host={props.host} domain="data-structures-and-algorithms" title="Linear probing and open addressing">Open addressing keeps every entry in the array itself, but still walks a probe sequence one slot at a go.</Resource>
+</ul>
+
+</section>
+
+<section class="prereq" data-section="standard">
+
+### <span class="n">02</span> The real sources, from each adopter
+
+<ul class="resources">
+  <Resource kind="reading" title="Swiss Tables Design Notes" href="https://abseil.io/about/design/swisstables" by="Abseil (Google)">The H1/H2 hash split, the one-control-byte-per-slot layout, and the "winnow 16 candidates" SIMD-compare claim, in the original design's own words.</Resource>
+  <Resource kind="reading" title="Faster Go maps with Swiss Tables" href="https://go.dev/blog/swisstable" by="The Go Blog, 2025">Go 1.24's own adoption of the design, its own group width (8 slots), and the shared load-factor payoff — a current, dated source for a recent change.</Resource>
+  <Resource kind="reading" title="hashbrown README" href="https://raw.githubusercontent.com/rust-lang/hashbrown/master/README.md" by="rust-lang/hashbrown">Rust's standard library `HashMap`'s own adoption of this design since Rust 1.36, and its real memory-overhead payoff.</Resource>
+</ul>
+
+</section>
+
+<section class="prereq" data-section="later">
+
+### <span class="n">03</span> Where this goes next
+
+<ul class="resources">
+  <Resource kind="reel" host={props.host} domain="data-structures-and-algorithms" title="Resizing and incremental rehashing">Every scheme so far has worked inside a table of fixed size. Next: what happens when that table fills up.</Resource>
+</ul>
+
+</section>

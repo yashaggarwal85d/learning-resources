@@ -1,0 +1,7 @@
+- **Open addressing**: declared again here (topic 18); every entry still lives directly in the table — Swiss Tables are open addressing with one specific, fast way of answering "which slot."
+- **Probe sequence**: declared again here (topic 18); still the order of slots a key tries, now walked a whole group at a time instead of one slot at a go.
+- **Tombstone**: declared again here (topic 18); restated as one of three states a control byte can hold (empty, deleted, or a fingerprint).
+- **Swiss table**: introduced here; a group-probing hash table design built around one control byte per slot and a SIMD-width compare.
+- **Control byte**: introduced here; one byte per slot recording empty, deleted, or the slot's H2 fingerprint.
+- **H1/H2 split**: introduced here; one hash value split into H1 (which group to probe) and H2 (a one-byte fingerprint stored per slot).
+- **SIMD group match**: introduced here; one wide instruction testing a whole group's control bytes against a query's fingerprint at once.
