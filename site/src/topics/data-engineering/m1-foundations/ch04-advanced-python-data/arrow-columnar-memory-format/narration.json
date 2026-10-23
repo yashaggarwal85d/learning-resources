@@ -1,0 +1,88 @@
+{
+  "topic": "de.arrow-columnar-memory-format",
+  "steps": [
+    {
+      "lines": [
+        "A native engine just won a measured race against a Python loop, and a direct handoff into that engine beat a trip through a file.",
+        "Neither of those measurements ever asked the question underneath both of them: how do two completely different pieces of software agree on what a pile of bytes actually means?"
+      ]
+    },
+    {
+      "lines": [
+        "Here's the answer, stated as plainly as it gets.",
+        "An array isn't one solid chunk of memory. It's a small handful of separately addressable regions — one marking which values are missing, another holding the actual values — and that separation is what makes everything else in this topic possible."
+      ]
+    },
+    {
+      "lines": [
+        "Worth guessing at before the reveal settles it.",
+        "Picture an array built with zero missing values in it, provably, from the start. Does the system still spend memory on that missing-value marker anyway, just to stay consistent with every other array, or does it skip the cost entirely?"
+      ],
+      "answer": [
+        "It skips it entirely, at least on this build.",
+        "An array that can prove it has no missing values doesn't need a marker for them, and the real implementation checked here actually takes that shortcut rather than merely being allowed to."
+      ]
+    },
+    {
+      "lines": [
+        "Now picture data arriving in pieces — one small batch, then another, then another.",
+        "Instead of copying all of them into one bigger block to call it a single column, each piece simply stays exactly where it landed, and the column keeps nothing more than a list of where those pieces already are."
+      ]
+    },
+    {
+      "lines": [
+        "Suppose a column holds the same handful of values over and over.",
+        "Rather than storing that value in full every single time it shows up, each row gets a small number pointing into a separate list of the distinct values — the same trick a foreign key uses to avoid repeating a long value."
+      ]
+    },
+    {
+      "lines": [
+        "That trick from a moment ago has a blind spot worth exposing directly.",
+        "It counts repeats, but it has no idea whether those repeats sit next to each other. A value that shows up many times in a row compresses far harder under a scheme built just for runs — but a value that only alternates defeats that same scheme completely."
+      ]
+    },
+    {
+      "lines": [
+        "Text brings its own version of the same tradeoff.",
+        "A short piece of text gets tucked directly into its own small slot, no separate storage needed at all.",
+        "A longer one keeps just its first few characters sitting right there, alongside a note of which buffer the rest lives in — enough to settle most comparisons without ever visiting that buffer."
+      ]
+    },
+    {
+      "lines": [
+        "A reasonable worry at this point: does nesting one value inside another need some entirely new kind of memory layout?",
+        "It doesn't. A list of values turns out to need nothing more than the same missing-value marker from the very first reveal, a buffer of where each list starts and ends, and a plain array underneath holding whatever the list actually contains."
+      ]
+    },
+    {
+      "lines": [
+        "Here's where all of this buffer talk cashes out in actual speed.",
+        "The same sum, computed one way as a single vectorized pass over these exact buffers, and another way as a loop that has to build a full Python object for every single value along the way.",
+        "The gap between those two times is the direct, measured cost of that extra step."
+      ]
+    },
+    {
+      "lines": [
+        "And here's the demonstration this whole topic has been building toward.",
+        "Take one table sitting in memory and hand it, completely unchanged, to two genuinely different pieces of software. Neither one converts it, rewrites it, or reads it from disk again — they just read the same bytes directly, and both come back with the identical answer."
+      ]
+    },
+    {
+      "lines": [
+        "Pulling the whole picture together now.",
+        "An array is buffers, never a blob. Batches chunk together instead of being copied. Two specialists trade places depending on whether values repeat or actually run.",
+        "A string either fits inline or keeps a prefix. And underneath all of it, the exact same bytes can satisfy a fast kernel and two unrelated engines at once."
+      ]
+    },
+    {
+      "lines": [
+        "One closing scenario, worth reasoning through rather than guessing at.",
+        "Three columns: country codes that repeat constantly, timestamps sorted into long stretches of the same value, and free-text comments that barely repeat at all. Which layout from this topic actually earns its place on each one — and what does picking the wrong one cost?"
+      ],
+      "answer": [
+        "The repeating codes want the dictionary trick, the sorted stretches want the run-based one, and the free text wants the inline-prefix layout.",
+        "Pointing the run-based scheme at codes that repeat but don't actually run together can cost more than doing nothing at all — exactly the blind spot this topic measured directly."
+      ]
+    }
+  ]
+}

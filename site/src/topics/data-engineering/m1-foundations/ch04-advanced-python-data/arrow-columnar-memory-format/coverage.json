@@ -1,0 +1,131 @@
+{
+  "topic": "de.arrow-columnar-memory-format",
+  "syllabus": [
+    {
+      "clause": "arrays as validity bitmap + data/offset buffers",
+      "at": [
+        { "step": "Reveal: an array is buffers, not a blob" },
+        { "step": "Predict: does a zero-null array still get a bitmap buffer?" }
+      ]
+    },
+    {
+      "clause": "chunked arrays and record batches",
+      "at": [{ "step": "Reveal: chunked arrays and record batches" }]
+    },
+    {
+      "clause": "dictionary and run-end encoding",
+      "at": [
+        { "step": "Reveal: dictionary encoding" },
+        { "step": "Reveal: run-end encoding" }
+      ]
+    },
+    {
+      "clause": "the string-view layout (\"German strings\", used by Polars and DataFusion)",
+      "at": [{ "step": "Reveal: the string-view layout" }]
+    },
+    {
+      "clause": "nested types",
+      "at": [{ "step": "Reveal: nested types reuse the same primitives" }]
+    },
+    {
+      "clause": "compute kernels",
+      "at": [{ "step": "Reveal: compute kernels" }]
+    },
+    {
+      "clause": "why Arrow became the interchange layer (relation to Parquet → §6.1)",
+      "at": [
+        { "step": "Reveal: why Arrow became the interchange layer" },
+        { "step": "Reveal: why Arrow became the interchange layer" }
+      ]
+    }
+  ],
+  "sources": [
+    {
+      "source": "Apache Arrow Columnar Format specification",
+      "items": [
+        { "item": "Arrays are defined by a type, a sequence of buffers, a length, a null count, and an optional dictionary", "at": [{ "step": "Reveal: an array is buffers, not a blob" }] },
+        { "item": "A 0-null-count array may choose not to allocate a validity bitmap buffer", "at": [{ "step": "Predict: does a zero-null array still get a bitmap buffer?" }] },
+        { "item": "Validity bits are LSB-first; 1 means valid", "at": [{ "step": "Reveal: an array is buffers, not a blob" }] },
+        { "item": "The Variable-size Binary View Layout's 16-byte view: inline for <=12 bytes, else length/prefix/buffer-index/offset", "at": [{ "step": "Reveal: the string-view layout" }] },
+        { "item": "The prefix enables a fast path for string comparisons decided within the first four bytes", "at": [{ "step": "Reveal: the string-view layout" }] },
+        { "item": "Dictionary-encoded arrays store integer indices into a separate dictionary array; the dictionary may contain duplicates or nulls", "at": [{ "step": "Reveal: dictionary encoding" }] },
+        { "item": "Run-end encoding stores run_ends and values child arrays; run_ends holds cumulative end index, enabling binary-search random access unlike classic RLE", "at": [{ "step": "Reveal: run-end encoding" }] },
+        { "item": "The List layout is two buffers (validity bitmap, offsets) plus a child array — the same primitive buffer kinds as flat types", "at": [{ "step": "Reveal: nested types reuse the same primitives" }] },
+        { "item": "A record batch is an ordered collection of same-length arrays forming a schema; the IPC protocol reconstructs them without memory copying", "at": [{ "step": "Reveal: chunked arrays and record batches" }] },
+        { "item": "Arrow is a language-agnostic in-memory data structure specification offering true zero-copy access in shared memory", "at": [{ "step": "Reveal: why Arrow became the interchange layer" }] },
+        { "item": "Arrow's type system doesn't separate physical and logical types the way Parquet's does", "at": [{ "step": "Reveal: why Arrow became the interchange layer" }] }
+      ]
+    },
+    {
+      "source": "PyArrow \"Data Types and In-Memory Data Model\" documentation",
+      "items": [
+        { "item": "Table.from_batches concatenates record batches into one logical dataset without requiring additional memory copying", "at": [{ "step": "Reveal: chunked arrays and record batches" }] },
+        { "item": "A Table's columns are ChunkedArray, a container for one or more arrays of the same type", "at": [{ "step": "Reveal: chunked arrays and record batches" }] }
+      ]
+    },
+    {
+      "source": "PyArrow \"Compute Functions\" documentation",
+      "items": [
+        { "item": "pyarrow.compute provides standard compute operations usable directly, and many functions accept array (chunked or not) or scalar inputs", "at": [{ "step": "Reveal: compute kernels" }] }
+      ]
+    },
+    {
+      "source": "Apache DataFusion blog, \"Using StringView / German Style Strings... Part 1\"",
+      "items": [
+        { "item": "\"German Strings\" is Andy Pavlo's name after TU Munich's Umbra paper; Velox, Polars, DuckDB and CedarDB already used the idea before Arrow's StringViewArray", "at": [{ "step": "Reveal: the string-view layout" }] },
+        { "item": "StringView improved ClickBench string-intensive query performance by 20%-200%", "at": [{ "step": "Reveal: the string-view layout" }] }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "Claude (single session, written from the syllabus line and the fetched sources before storyboarding; not independent of the builder, so a later owner review should repeat it)",
+    "date": "2026-10-23",
+    "items": [
+      {
+        "item": "The validity-bitmap-absence claim is checked directly on this sandbox's installed PyArrow 26.0.0 (buffers()[0] is None for a 0-null array), not merely quoted from the spec's own permissive 'may choose' language",
+        "at": [{ "step": "Predict: does a zero-null array still get a bitmap buffer?" }]
+      },
+      {
+        "item": "Dictionary encoding and run-end encoding are shown as specialists for different data shapes, not as a strictly-better/strictly-worse pair — the reveal measures a real counter-case (alternating values) where run-end encoding is worse than the plain array and dictionary encoding wins",
+        "at": [{ "step": "Reveal: run-end encoding" }]
+      },
+      {
+        "item": "The string-view layout's byte-level claims are measured directly from this sandbox's own PyArrow string_view() cast; only the cross-engine ClickBench performance number is disclosed as sourced-only, since DataFusion itself is not installed here",
+        "at": [{ "step": "Reveal: the string-view layout" }]
+      },
+      {
+        "item": "The compute-kernel speed claim is measured as a real timed ratio on this sandbox (pc.sum over 2,000,000 ints vs. an equivalent Python loop), with the assertion in examples.py using a conservative lower bound rather than the exact measured ratio, so it won't flake on a slower machine",
+        "at": [{ "step": "Reveal: compute kernels" }]
+      },
+      {
+        "item": "The 'why Arrow is the interchange layer' claim is demonstrated, not just quoted: the identical pyarrow.Table Python object is consumed directly by both Polars (pl.from_arrow) and DuckDB (querying the Python variable by name) with no conversion step, both returning the same correct result",
+        "at": [{ "step": "Reveal: why Arrow became the interchange layer" }]
+      },
+      {
+        "item": "The interchange-layer takeaway is scoped honestly to the input side of the handoff: topic 29 already found that a DuckDB query's own output is not itself a zero-copy view, and this topic's wording ('no conversion of the input') does not contradict that finding",
+        "at": [{ "step": "Reveal: why Arrow became the interchange layer" }]
+      },
+      {
+        "item": "Nested-type coverage stays at the level the syllabus clause asks for (the List layout reuses the same buffer kinds) rather than expanding into Struct/Union, which the syllabus line does not name and which would dilute the step's single point",
+        "at": [{ "step": "Reveal: nested types reuse the same primitives" }]
+      },
+      {
+        "item": "The chunked-array/record-batch claim is measured directly (Table.from_batches, num_chunks), not only quoted, and is explicitly named as a PyArrow-level convenience rather than part of the Arrow columnar spec itself, matching the PyArrow docs' own disclaimer",
+        "at": [{ "step": "Reveal: chunked arrays and record batches" }]
+      },
+      {
+        "item": "The closing Prove-It scenario requires matching three distinctly-shaped columns (low-cardinality repeats, a long sorted run, free text) to the three encodings this topic actually taught, including naming the real cost of a wrong match for each",
+        "at": [{ "step": "Prove it" }]
+      },
+      {
+        "item": "The bridge from topic 29 and the handoff to pandas 3.0 are both taken verbatim from CHAPTER.md's own entry for this topic, and the hook is built from the specific gap topic 29 left open (how two different engines read the same bytes) rather than a generic restatement",
+        "at": [{ "step": "Hook: how do two different engines read the same bytes at all?" }]
+      },
+      {
+        "item": "The dictionary- and run-end-encoding byte counts are both real measurements on data built in examples.py to actually exhibit the shape each encoding is suited for (many repeats; long contiguous runs), not illustrative numbers invented for the reel",
+        "at": [{ "step": "Reveal: dictionary encoding" }]
+      }
+    ]
+  },
+  "gapReview": { "date": "2026-10-23", "by": "Claude (single session)", "open": [] }
+}

@@ -1,0 +1,5 @@
+- **Buffer**: a contiguous region of memory with a fixed length, reachable by pointer offset. *Where you meet it:* every layout this topic names is described as one or more buffers.
+- **Boxed `PyObject`**: a regular Python value's own header-plus-payload representation, the overhead topic 1 already measured against contiguous native storage. *Where you meet it:* the direct contrast behind the compute-kernel reveal.
+- **Null count**: how many values in an array are missing, tracked as a count rather than scanned for. *Where you meet it:* the predict about whether a zero-null array still gets a bitmap.
+- **Zero-copy**: reusing the same memory a value already occupies instead of duplicating it into a new location. *Where you meet it:* the interchange-layer reveal's own demonstration.
+- **Vectorized operation**: one instruction (or one call) that processes many values at once, instead of one value per loop iteration. *Where you meet it:* the compute-kernel reveal's own timing.
