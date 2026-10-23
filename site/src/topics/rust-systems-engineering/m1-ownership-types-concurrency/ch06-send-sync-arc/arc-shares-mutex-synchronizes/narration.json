@@ -1,0 +1,68 @@
+{
+  "steps": [
+    {
+      "lines": [
+        "Here is a pointer whose entire job is letting two threads look at the same number at once. Nothing more.",
+        "Notice what's missing: no gate, no lock, no permission check anywhere in sight. Sharing and changing turn out to be two completely different privileges."
+      ]
+    },
+    {
+      "lines": [
+        "Take that same pointer and try to write through it directly, from either side, with nothing guarding the access.",
+        { "beat": 0.3 },
+        "Before a single thread even runs, will the compiler let this line exist at all?"
+      ],
+      "answer": [
+        "No. Counting how many owners exist is a bookkeeping trick; it never grants a path to change what's being counted.",
+        "That path has a name of its own, and this pointer was never given it."
+      ]
+    },
+    {
+      "lines": [
+        "Here is the compiler's own answer, and it names the exact missing piece rather than just refusing.",
+        "A pointer that only ever hands out a shared view can't suddenly offer a mutable one; that second ability has to come from somewhere else entirely."
+      ]
+    },
+    {
+      "lines": [
+        "Slide a gate inside the same pointer, and send four real threads at it as fast as they'll go.",
+        "Every single one of those twenty five thousand increments per thread lands, because only one thread is ever standing inside that gate at any instant."
+      ]
+    },
+    {
+      "lines": [
+        "One of those four threads panics while it's still standing inside the gate, before it ever steps back out.",
+        "The next thread to try the gate gets told, plainly, that something went wrong last time — and the number inside is still there to recover on purpose."
+      ]
+    },
+    {
+      "lines": [
+        "Run the identical panic again, but through a different library's gate this time, built on a different promise entirely.",
+        "This one never reports trouble at all; the next thread through just finds the number waiting, as if the panic never happened — a deliberate, opposite bet."
+      ]
+    },
+    {
+      "lines": [
+        "A task takes the gate's own receipt, pauses for a moment mid flight, and then tries to use that receipt again once it resumes.",
+        { "beat": 0.3 },
+        "Will the runtime still accept handing this whole task off to run anywhere it likes?"
+      ],
+      "answer": [
+        "No. That receipt only ever makes sense on the exact thread that issued it, and a pause is exactly where the runtime might move things.",
+        "Still holding it at that instant disqualifies everything built around it, not just the receipt itself."
+      ]
+    },
+    {
+      "lines": [
+        "The ordinary gate's receipt names itself directly in the failure — it was never built with a pause like this in mind.",
+        "Swap in a gate built specifically to survive that pause, and the identical shape runs clean, printing out exactly what it should."
+      ]
+    },
+    {
+      "lines": [
+        "Sharing a number and guarding a number turned out to be two entirely separate jobs this whole time, never one standing in for the other.",
+        "Two different gates made two opposite bets about what a panic should leave behind, and one gate exists for exactly one reason: surviving a pause while it's still held."
+      ]
+    }
+  ]
+}
