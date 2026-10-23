@@ -1,0 +1,5 @@
+- **Binary search tree**: used again here (topic 23); a red-black tree is a BST with a colour invariant layered on top, never a different ordering rule.
+- **Tree rotation**: used again here (topic 23), and declared again: the move itself is identical, now firing to restore a specific colour invariant rather than demonstrated with no invariant at all.
+- **Red-black invariant**: introduced here; the four colour rules (every node red or black, root black, no red node has a red child, equal black-node count on every root-to-leaf path) that bound a BST's height.
+- **Recoloring**: introduced here; flipping a node's colour to restore a violated invariant, tried before a rotation because it's cheaper and often sufficient on its own.
+- **Balanced height bound**: introduced here; the O(log n) ceiling a red-black tree's height can never exceed, as a direct consequence of its 2-3-4 tree correspondence.
