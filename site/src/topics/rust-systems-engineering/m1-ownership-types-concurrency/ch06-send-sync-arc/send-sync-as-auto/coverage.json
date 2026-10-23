@@ -1,17 +1,142 @@
 {
   "topic": "rust.send-sync-as-auto",
+  "syllabus": [
+    {
+      "clause": "Send means ownership may move to another thread;",
+      "at": [{ "step": "A job counter that counts correctly, alone" }]
+    },
+    {
+      "clause": "Sync means &T is Send.",
+      "at": [{ "step": "Cell and RefCell fail identically, before main even runs" }]
+    },
+    {
+      "clause": "A type can be Send without being Sync (Cell, RefCell),",
+      "at": [{ "step": "Cell and RefCell fail identically, before main even runs" }]
+    },
+    {
+      "clause": "MutexGuard is !Send,",
+      "at": [{ "step": "MutexGuard is Sync but never Send" }]
+    },
+    {
+      "clause": "and Rc is neither.",
+      "at": [{ "step": "The same Rc, dropped before the await, and held across it" }]
+    },
+    {
+      "clause": "Opt-outs come through PhantomData,",
+      "at": [{ "step": "Two deliberate overrides of the compiler's own rule" }]
+    },
+    {
+      "clause": "and unsafe impl Send is a proof obligation.",
+      "at": [{ "step": "Two deliberate overrides of the compiler's own rule" }]
+    },
+    {
+      "clause": "A future is Send only if everything held across an .await is.",
+      "at": [
+        { "step": "Can an Rc be held across an .await and still compile?" },
+        { "step": "The same Rc, dropped before the await, and held across it" }
+      ]
+    }
+  ],
+  "sources": [
+    {
+      "source": "std-send",
+      "items": [
+        {
+          "item": "Send is an auto-trait (pub unsafe auto trait Send {}), derived automatically rather than hand-implemented in the ordinary case",
+          "at": [{ "step": "A job counter that counts correctly, alone" }]
+        },
+        {
+          "item": "Rc is the standard library's own named example of a non-Send type, because its refcount updates aren't atomic",
+          "at": [{ "step": "The same Rc, dropped before the await, and held across it" }]
+        },
+        {
+          "item": "Arc<T, A> is Send only when T: Sync + Send",
+          "at": [{ "step": "Does Arc<Cell<u64>>, cloned into a second thread, compile?" }]
+        }
+      ]
+    },
+    {
+      "source": "std-sync",
+      "items": [
+        {
+          "item": "Sync's precise definition: a type T is Sync if and only if &T is Send",
+          "at": [{ "step": "Cell and RefCell fail identically, before main even runs" }]
+        },
+        {
+          "item": "Cell/RefCell are the standard library's own named examples of Send-but-not-Sync types",
+          "at": [{ "step": "Cell and RefCell fail identically, before main even runs" }]
+        },
+        {
+          "item": "Mutex/RwLock add real synchronization, which is what makes their contents Sync",
+          "at": [{ "step": "Arc<Mutex<u64>> compiles — and really synchronizes four workers" }]
+        }
+      ]
+    },
+    {
+      "source": "nomicon-send-sync",
+      "items": [
+        {
+          "item": "raw pointers are neither Send nor Sync, by design, so types built on one don't auto-derive thread-safety their author never considered",
+          "at": [{ "step": "Two deliberate overrides of the compiler's own rule" }]
+        },
+        {
+          "item": "unsafe impl Send for MyBox {} is the real, exact syntax of a hand-written, unchecked claim",
+          "at": [{ "step": "Two deliberate overrides of the compiler's own rule" }]
+        },
+        {
+          "item": "MutexGuard is named directly as !Send, tied to the thread that acquired the lock, while remaining Sync",
+          "at": [{ "step": "MutexGuard is Sync but never Send" }]
+        }
+      ]
+    },
+    {
+      "source": "nomicon-phantomdata",
+      "items": [
+        {
+          "item": "the reference table of PhantomData<X> patterns and the Send/Sync each one produces",
+          "at": [{ "deep": "Internals" }]
+        },
+        {
+          "item": "PhantomData<*const T> and PhantomData<*mut T> are unconditionally !Send + !Sync, regardless of T",
+          "at": [{ "step": "Two deliberate overrides of the compiler's own rule" }]
+        }
+      ]
+    },
+    {
+      "source": "std-thread-spawn",
+      "items": [
+        {
+          "item": "std::thread::spawn's real signature requires F: FnOnce() -> T + Send + 'static and T: Send + 'static",
+          "at": [{ "step": "Does Arc<Cell<u64>>, cloned into a second thread, compile?" }]
+        }
+      ]
+    },
+    {
+      "source": "tokio-spawn",
+      "items": [
+        {
+          "item": "tokio::task::spawn's real signature requires F: Future + Send + 'static",
+          "at": [{ "step": "Can an Rc be held across an .await and still compile?" }]
+        },
+        {
+          "item": "a !Send value (the docs' own example uses Rc) is fine inside a spawned future only while it never exists across an .await point",
+          "at": [{ "step": "The same Rc, dropped before the await, and held across it" }]
+        }
+      ]
+    }
+  ],
   "expert": [
-    { "item": "Send means ownership of a value may move to another thread; Sync means &T is itself Send — the two are formally related, not independent ad hoc rules." },
-    { "item": "Both are auto-traits: derived structurally from a type's own fields, not hand-implemented in the ordinary case; a type is Send/Sync exactly when every field is." },
-    { "item": "Cell and RefCell are Send but not Sync: their interior mutability performs no synchronization, so a shared reference across threads would race." },
-    { "item": "MutexGuard is !Send but still Sync: it is tied by the lock API to the OS thread that acquired it, but an &MutexGuard crossing threads does nothing unsafe." },
-    { "item": "Rc is neither Send nor Sync: its refcount increments are not atomic, so even moving ownership to another thread risks a race on the count." },
-    { "item": "Arc is Send (and Sync) only when its T is Sync + Send: the atomic refcount alone doesn't make sharing the inner value safe if the value itself isn't." },
-    { "item": "Raw pointers are neither Send nor Sync by default — not because dereferencing one is dangerous (it's already unsafe), but so that a type built on one doesn't get an auto-trait its author never considered." },
-    { "item": "PhantomData<T> simply inherits whatever auto-traits T has; PhantomData<*const T> and PhantomData<*mut T> are unconditionally !Send + !Sync regardless of T — the real, table-documented mechanism for opting a generic type out." },
-    { "item": "unsafe impl Send/Sync for a type is a real, unchecked proof obligation: the compiler trusts the implementer completely and can't verify the claim." },
-    { "item": "A closure or future handed to std::thread::spawn or tokio::spawn must itself be Send + 'static — enforced directly in both functions' real signatures, not a convention." },
-    { "item": "A !Send value (such as an Rc) may still exist briefly inside a spawned async block, as long as it is dropped before any .await point it's held across; holding one across .await produces a real, specific compiler error." },
-    { "item": "Incorrectly derived Send/Sync cannot happen on its own from safe code — only a type built on unsafe code (raw pointers, UnsafeCell) can be wrongly auto-derived as thread-safe when it isn't." }
+    { "item": "Send means ownership of a value may move to another thread; Sync means &T is itself Send — the two are formally related, not independent ad hoc rules.", "at": [{ "step": "A job counter that counts correctly, alone" }] },
+    { "item": "Both are auto-traits: derived structurally from a type's own fields, not hand-implemented in the ordinary case; a type is Send/Sync exactly when every field is.", "at": [{ "step": "A job counter that counts correctly, alone" }] },
+    { "item": "Cell and RefCell are Send but not Sync: their interior mutability performs no synchronization, so a shared reference across threads would race.", "at": [{ "step": "Cell and RefCell fail identically, before main even runs" }] },
+    { "item": "MutexGuard is !Send but still Sync: it is tied by the lock API to the OS thread that acquired it, but an &MutexGuard crossing threads does nothing unsafe.", "at": [{ "step": "MutexGuard is Sync but never Send" }] },
+    { "item": "Rc is neither Send nor Sync: its refcount increments are not atomic, so even moving ownership to another thread risks a race on the count.", "at": [{ "step": "The same Rc, dropped before the await, and held across it" }] },
+    { "item": "Arc is Send (and Sync) only when its T is Sync + Send: the atomic refcount alone doesn't make sharing the inner value safe if the value itself isn't.", "at": [{ "step": "Does Arc<Cell<u64>>, cloned into a second thread, compile?" }] },
+    { "item": "Raw pointers are neither Send nor Sync by default — not because dereferencing one is dangerous (it's already unsafe), but so that a type built on one doesn't get an auto-trait its author never considered.", "at": [{ "step": "Two deliberate overrides of the compiler's own rule" }] },
+    { "item": "PhantomData<T> simply inherits whatever auto-traits T has; PhantomData<*const T> and PhantomData<*mut T> are unconditionally !Send + !Sync regardless of T — the real, table-documented mechanism for opting a generic type out.", "at": [{ "step": "Two deliberate overrides of the compiler's own rule" }] },
+    { "item": "unsafe impl Send/Sync for a type is a real, unchecked proof obligation: the compiler trusts the implementer completely and can't verify the claim.", "at": [{ "step": "Two deliberate overrides of the compiler's own rule" }] },
+    { "item": "A closure or future handed to std::thread::spawn or tokio::spawn must itself be Send + 'static — enforced directly in both functions' real signatures, not a convention.", "at": [{ "step": "Does Arc<Cell<u64>>, cloned into a second thread, compile?" }] },
+    { "item": "A !Send value (such as an Rc) may still exist briefly inside a spawned async block, as long as it is dropped before any .await point it's held across; holding one across .await produces a real, specific compiler error.", "at": [{ "step": "The same Rc, dropped before the await, and held across it" }] },
+    { "item": "Incorrectly derived Send/Sync cannot happen on its own from safe code — only a type built on unsafe code (raw pointers, UnsafeCell) can be wrongly auto-derived as thread-safe when it isn't.", "at": [{ "deep": "Internals" }] }
   ]
 }
