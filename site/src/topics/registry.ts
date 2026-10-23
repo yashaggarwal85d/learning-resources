@@ -1870,4 +1870,24 @@ export const TOPICS: TopicMeta[] = [
     handoff:
       "A contract specified what a data product's schema and semantics actually are. Next: the layer that compiles a business metric's own definition — built on top of exactly that schema — to SQL the same way for every tool that asks for it.",
   },
+  {
+    id: 'de.semantic-metrics-layers',
+    domain: 'data-engineering',
+    slug: 'data-engineering/m1-foundations/ch03-data-modeling-analytical/semantic-metrics-layers',
+    title: 'Semantic and metrics layers',
+    syllabusTitle: 'Semantic and metrics layers',
+    kind: 'full',
+    status: 'live',
+    milestone: { number: 1, title: 'Foundations' },
+    chapter: { number: 3, title: 'Data modeling and analytical architecture', section: '3.4' },
+    minutes: 14,
+    verified: '2026-10-22',
+    introduces: ['semantic-layer-metric-compilation', 'time-spine'],
+    uses: ['fact-grain', 'conformed-dimension', 'data-contract-specification'],
+    declared: ['sql-select'],
+    bridge:
+      "A contract specified what a data product's schema and semantics actually are. This topic is the layer that compiles a business metric's own definition — built on top of exactly that schema — to SQL the same way for every tool that asks for it.",
+    handoff:
+      "A semantic layer defined what a metric means. Next: the tool that actually builds the models a semantic layer sits on top of, in most real warehouses today — dbt, its models, its tests, and the lineage graph it builds from them.",
+  },
 ];
