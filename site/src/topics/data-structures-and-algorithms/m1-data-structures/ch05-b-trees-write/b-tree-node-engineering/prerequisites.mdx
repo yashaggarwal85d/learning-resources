@@ -1,0 +1,32 @@
+import Resource from '../../../../../components/Resource.astro';
+
+<section class="prereq" data-section="before">
+
+### <span class="n">01</span> Already covered
+
+<ul class="resources">
+  <Resource kind="reel" host={props.host} domain="data-structures-and-algorithms" title="B-tree and B+-tree mechanics">What a B+-tree node holds, and why its size is bounded by a disk page — the split and merge mechanics this topic assumes without re-deriving.</Resource>
+</ul>
+
+</section>
+
+<section class="prereq" data-section="standard">
+
+### <span class="n">02</span> The real source, from research and production
+
+<ul class="resources">
+  <Resource kind="reading" title="README — nbtree (B-tree access method)" href="https://raw.githubusercontent.com/postgres/postgres/master/src/backend/access/nbtree/README" by="PostgreSQL">Suffix truncation's purpose and scope, and deduplication's lazy, split-time-only application, from a current production B-tree's own documentation.</Resource>
+  <Resource kind="reading" title="MyRocks record format" href="https://raw.githubusercontent.com/wiki/facebook/mysql-5.6/MyRocks-record-format.md" by="Facebook, MySQL wiki">The exact byte-level normalization scheme — big-endian, sign-bit-flipped — for integers and floats in a real production key-value store.</Resource>
+</ul>
+
+</section>
+
+<section class="prereq" data-section="later">
+
+### <span class="n">03</span> Where this goes next
+
+<ul class="resources">
+  <Resource kind="reel" host={props.host} domain="data-structures-and-algorithms" title="LSM-tree write and read paths">Every technique in this topic still updates a page in place. The next structure refuses that trade entirely, writing sequentially and paying the cost back later.</Resource>
+</ul>
+
+</section>

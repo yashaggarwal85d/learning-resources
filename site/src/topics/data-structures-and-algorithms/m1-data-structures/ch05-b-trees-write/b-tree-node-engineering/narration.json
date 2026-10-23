@@ -1,0 +1,73 @@
+{
+  "topic": "dsa.b-tree-node-engineering",
+  "steps": [
+    {
+      "lines": [
+        "Last topic's fanout formula had one hidden assumption: that a page's bytes were being spent well in the first place.",
+        "They weren't. Nothing so far has asked what a key actually costs to store, only how many fit."
+      ]
+    },
+    {
+      "lines": [
+        "A real page never shifts a tuple to make room for another. It keeps a small header and a slot array of fixed-size offsets, and grows its actual data from the opposite end.",
+        "That's the same trade an array of pointers makes over a packed array whenever entries vary in size: one layer of indirection, and nothing ever has to slide."
+      ]
+    },
+    {
+      "lines": [
+        "A leaf just split in two.",
+        "Before the reveal, think about what the new routing entry above this split actually has to prove, and whether that's the same thing a leaf has to prove."
+      ],
+      "answer": [
+        "Only the bytes that still tell the two new halves apart. Nothing more ever gets copied up.",
+        "A leaf has to answer whether one exact key is present. A routing entry only has to pick a side, and that's a much smaller question."
+      ]
+    },
+    {
+      "lines": [
+        "So the new entry keeps only what distinguishes the last key on the left from the first key on the right, and drops everything after that point, at zero storage cost.",
+        "A leaf still can't do this. A leaf's whole job is answering whether the exact key is there, so a leaf keeps the key in full.",
+        "That asymmetry is the entire trick: the two node types are solving different questions, so only one of them can afford to forget."
+      ]
+    },
+    {
+      "lines": [
+        "Normalization is a separate problem that happens to pay off on the same key. It isn't about shrinking what's stored, it's about shrinking what a comparison has to know.",
+        "Flip the sign bit, reorder the bytes big-endian, and a type-aware comparison becomes a comparison that doesn't need to know the type at all, just the raw bytes."
+      ]
+    },
+    {
+      "lines": [
+        "A million keys, already sorted, need to become one tree.",
+        "Before the reveal, think about what descending from the root was ever for, and whether a sorted input still needs it."
+      ],
+      "answer": [
+        "Sort once, then build the leaf level directly from that order and link the levels above it upward.",
+        "Descending from the root exists to find where an unsorted key belongs. A sorted input already tells you exactly that, for every key, before a single page is written."
+      ]
+    },
+    {
+      "lines": [
+        "So the leaves fill left to right, the growing root stays in memory rather than hitting disk, and the only page that can ever overflow is the one furthest to the right.",
+        "No root-to-leaf descent is ever wasted re-finding a page that already had room. That's the whole speed gain, and it's structural, not incidental."
+      ]
+    },
+    {
+      "lines": [
+        "Fill factor just names how full a page gets packed on that kind of build, or on any append to the right edge.",
+        "There's no universal right answer here. A static table that's done taking writes wants every page packed as tight as it can go. One that keeps growing wants spare room reserved in advance, before the next key ever lands."
+      ]
+    },
+    {
+      "lines": [
+        "Deduplication merges every repeated key into one stored copy plus a list of pointers to the rows that share it, and it only ever runs at the instant a page was about to split anyway.",
+        "A background sweep would spend real disk trips rewriting pages that were never going to split in the first place. Waiting for the one moment that actually forces a rewrite spends none of that."
+      ]
+    },
+    {
+      "lines": [
+        "Here's what actually got measured, not assumed: the exact byte savings truncation and normalization give a real key set, a bulk load's page writes against one-at-a-time insertion on the identical sorted input, and a deduplication ratio on a key set built to repeat."
+      ]
+    }
+  ]
+}
