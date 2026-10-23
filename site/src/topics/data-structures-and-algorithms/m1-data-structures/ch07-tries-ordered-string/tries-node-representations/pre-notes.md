@@ -1,0 +1,4 @@
+- **Separate chaining (Chapter 3)**: the hash-table mechanism the hash-children representation reuses directly — a small hash table per node, keyed by one character.
+- **Binary search tree (Chapter 4)**: the comparison shape the ternary-search-tree representation's own lo/hi children reuse, one BST-style comparison per character position.
+- **Comparisons as the cost unit (every topic since Chapter 1)**: binary search over a node's own sorted children reuses the same comparison-search technique this course has used since the very first chapter.
+- **Everything before this topic compared whole keys**: hash tables, balanced trees, heaps, and loser trees all compared entire keys or values against each other — this topic's own shift is comparing one character at a time instead.
