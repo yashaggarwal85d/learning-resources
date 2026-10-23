@@ -1,0 +1,47 @@
+{
+  "topic": "dsa.b-tree-b-tree",
+  "syllabus": [
+    { "clause": "fanout B, splits and merges, all keys in leaves with sibling links for range scans, height 3–4 for billions of keys", "at": [{ "step": "A B+Tree: every leaf at the same depth, every node but the root at least half full, every inner node with some number of keys holding one more child than that." }, { "step": "Watch the split: both halves come out at least half full by construction, not by luck — a leaf copies its middle key up; an inner node pushes its middle key up instead, since inner nodes only route." }, { "step": "Borrow first, always: take one key from a sibling with keys to spare. Only merge, and delete the parent's now-orphaned key, when no sibling can spare one." }, { "step": "Leaves are linked to their siblings. A range scan finds the first leaf once, then streams across linked leaves directly — it never climbs back to the root to find the next one." }, { "step": "Fanout is bounded by how many keys and pointers actually fit in one disk page. Height is about the log of the key count, base fanout — not base two." }] },
+    { "clause": "Θ(log_B N) I/Os per search", "at": [{ "step": "The same keys, measured two ways: one comparison at a time against one disk page at a time. The gap is the entire reason this chapter exists." }] },
+    { "clause": "→ Data Engineering §5.1, Rust Systems Engineering Ch.21", "at": [{ "deep": "In production" }] }
+  ],
+  "sources": [
+    {
+      "source": "CMU 15-445/645 Database Systems (Spring 2024), Lecture 8: Tree Indexes",
+      "items": [
+        { "item": "B+Tree is self-balancing, ordered, M-way, O(log_f n), f the fanout", "at": [{ "step": "A B+Tree: every leaf at the same depth, every node but the root at least half full, every inner node with some number of keys holding one more child than that." }] },
+        { "item": "Perfect balance, every non-root node at least half full, k keys imply k+1 children", "at": [{ "step": "A B+Tree: every leaf at the same depth, every node but the root at least half full, every inner node with some number of keys holding one more child than that." }] },
+        { "item": "The 1972 B-tree stores values in every node; a B+Tree stores values only in leaves", "at": [{ "step": "A balanced, pointer-based tree answers whether a key is here in a small number of comparisons. It says nothing about how many of those comparisons are separate trips to disk." }] },
+        { "item": "Insert/split algorithm: leaf split copies the middle key up, inner-node split pushes it up", "at": [{ "step": "Watch the split: both halves come out at least half full by construction, not by luck — a leaf copies its middle key up; an inner node pushes its middle key up instead, since inner nodes only route." }] },
+        { "item": "Delete/underflow algorithm: borrow from a sibling first, merge and delete the parent's entry only if borrowing fails", "at": [{ "step": "Borrow first, always: take one key from a sibling with keys to spare. Only merge, and delete the parent's now-orphaned key, when no sibling can spare one." }] },
+        { "item": "Clustered B+Tree range-scan pattern: traverse to the left-most leaf, then read across leaf pages", "at": [{ "step": "Leaves are linked to their siblings. A range scan finds the first leaf once, then streams across linked leaves directly — it never climbs back to the root to find the next one." }] }
+      ]
+    },
+    {
+      "source": "Stanford CS145, Module 3B: B+Tree Indexes",
+      "items": [
+        { "item": "Leaves linked left-to-right so a range scan streams across them without returning to the root", "at": [{ "step": "Leaves are linked to their siblings. A range scan finds the first leaf once, then streams across linked leaves directly — it never climbs back to the root to find the next one." }] },
+        { "item": "A worked point-lookup I/O count for a specific tree shape", "at": [{ "step": "The same keys, measured two ways: one comparison at a time against one disk page at a time. The gap is the entire reason this chapter exists." }] },
+        { "item": "Fanout ≈ page size / (key size + pointer size); height ≈ ceil(log_f N), with a worked table for a trillion keys", "at": [{ "step": "Fanout is bounded by how many keys and pointers actually fit in one disk page. Height is about the log of the key count, base fanout — not base two." }] },
+        { "item": "High fanout keeps reads shallow; every insert risks a split that can propagate upward", "at": [{ "step": "Watch the split: both halves come out at least half full by construction, not by luck — a leaf copies its middle key up; an inner node pushes its middle key up instead, since inner nodes only route." }, { "out": "Topic 27 (B-tree node engineering) covers the byte-level techniques that make a real fanout actually large; this topic states the formula only." }] }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "blind self-review, research stage",
+    "date": "2026-10-23",
+    "items": [
+      { "item": "A B+Tree is an M-way generalization of a binary search tree: fanout replaces the binary tree's fixed two children, turning a base-two logarithm into a base-fanout one.", "at": [{ "step": "A balanced, pointer-based tree answers whether a key is here in a small number of comparisons. It says nothing about how many of those comparisons are separate trips to disk." }] },
+      { "item": "Perfect balance (every leaf at the same depth) is what makes a B+Tree's height predictable at all — the structural guarantee Chapter 4's colour invariant gave by a completely different mechanism.", "at": [{ "step": "A B+Tree: every leaf at the same depth, every node but the root at least half full, every inner node with some number of keys holding one more child than that." }] },
+      { "item": "Only leaves hold values in a B+Tree; inner nodes exist purely to route, which is the direct reason an inner-node split can drop its promoted key while a leaf split must keep a copy.", "at": [{ "step": "Watch the split: both halves come out at least half full by construction, not by luck — a leaf copies its middle key up; an inner node pushes its middle key up instead, since inner nodes only route." }] },
+      { "item": "A split or merge can propagate all the way to the root; a root split is the only way a B+Tree's height increases, and a root merge collapsing to one child is the only way it decreases.", "at": [{ "step": "Watch the split: both halves come out at least half full by construction, not by luck — a leaf copies its middle key up; an inner node pushes its middle key up instead, since inner nodes only route." }, { "step": "Borrow first, always: take one key from a sibling with keys to spare. Only merge, and delete the parent's now-orphaned key, when no sibling can spare one." }] },
+      { "item": "Borrowing from a sibling is always tried before merging because it is strictly cheaper: it touches one sibling's key count, not a tree-wide deletion of a separator entry.", "at": [{ "step": "Borrow first, always: take one key from a sibling with keys to spare. Only merge, and delete the parent's now-orphaned key, when no sibling can spare one." }] },
+      { "item": "A sibling-linked range scan is doing for scans exactly what a balancing invariant does for point lookups: turning a case that could be expensive (re-descending per key) into one that is cheap and bounded (one descent, then one I/O per leaf).", "at": [{ "step": "Leaves are linked to their siblings. A range scan finds the first leaf once, then streams across linked leaves directly — it never climbs back to the root to find the next one." }] },
+      { "item": "The fanout formula ties height directly to page size and key size, not to some fixed constant — the same N gives a different height depending on how many keys actually fit a page, which is this topic's own concrete form of Chapter 1's I/O model.", "at": [{ "step": "Fanout is bounded by how many keys and pointers actually fit in one disk page. Height is about the log of the key count, base fanout — not base two." }] },
+      { "item": "The contrast against Chapter 4's red-black tree is a fair one specifically because both trees are built on the identical key set — the gap is real, not an artifact of different data.", "at": [{ "step": "The same keys, measured two ways: one comparison at a time against one disk page at a time. The gap is the entire reason this chapter exists." }] },
+      { "item": "This topic's own illustrative tree uses a deliberately small order so splits and merges are visible on one frame; the realistic-fanout claim (height three to four for a billion keys) is checked separately and arithmetically, not read off the small illustrative tree.", "at": [{ "step": "Prove it" }] },
+      { "item": "Copy-on-write B-trees and the Linux maple tree both still keep all keys in leaves with some fanout; what they change is how a write propagates (path copying, or range-keyed gap tracking), not the mechanics this topic teaches — which is exactly why they're separate, skipped topics rather than variants shown here.", "at": [{ "deep": "The frontier" }] }
+    ]
+  },
+  "gapReview": { "date": "2026-10-23", "by": "self-review", "open": [] }
+}
