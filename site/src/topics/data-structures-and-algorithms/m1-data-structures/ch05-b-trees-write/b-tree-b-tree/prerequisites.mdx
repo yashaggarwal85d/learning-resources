@@ -1,0 +1,33 @@
+import Resource from '../../../../../components/Resource.astro';
+
+<section class="prereq" data-section="before">
+
+### <span class="n">01</span> Already covered
+
+<ul class="resources">
+  <Resource kind="reel" host={props.host} domain="data-structures-and-algorithms" title="External-memory (I/O) model">The I/O model this topic's bound is a concrete instance of: block size B, and why blocks moved, not comparisons, is the cost that matters once data outgrows memory.</Resource>
+  <Resource kind="reel" host={props.host} domain="data-structures-and-algorithms" title="Order-statistic trees">The pointer-based, comparison-ordered tree this topic's I/O count is contrasted against, on the identical keys.</Resource>
+</ul>
+
+</section>
+
+<section class="prereq" data-section="standard">
+
+### <span class="n">02</span> The real source, from research and production
+
+<ul class="resources">
+  <Resource kind="reading" title="15-445/645 Database Systems, Lecture 8: Tree Indexes" href="https://15445.courses.cs.cmu.edu/spring2024/slides/08-trees.pdf" by="Carnegie Mellon, Spring 2024">The B+Tree's own split, merge and leaf-sibling-scan algorithms, taught directly from a current database-internals course.</Resource>
+  <Resource kind="reading" title="Module 3B: B+Tree Indexes" href="https://cs145.stanford.edu/Module3B-Indexing/btree-indexes.html" by="Stanford CS145, Run · Modern Data Systems">The fanout/height formula with a worked table, and the sibling-linked range-scan mechanism stated concretely.</Resource>
+</ul>
+
+</section>
+
+<section class="prereq" data-section="later">
+
+### <span class="n">03</span> Where this goes next
+
+<ul class="resources">
+  <Resource kind="reel" host={props.host} domain="data-structures-and-algorithms" title="B-tree node engineering">A B+Tree's height is bounded only if its nodes are actually full of keys, not wasted bytes. Next: what it takes to make a real page's fanout large.</Resource>
+</ul>
+
+</section>
