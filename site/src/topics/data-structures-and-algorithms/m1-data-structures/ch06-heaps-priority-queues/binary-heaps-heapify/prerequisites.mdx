@@ -1,0 +1,32 @@
+import Resource from '../../../../../components/Resource.astro';
+
+<section class="prereq" data-section="before">
+
+### <span class="n">01</span> Already covered
+
+<ul class="resources">
+  <Resource kind="reel" host={props.host} domain="data-structures-and-algorithms" title="LSM compaction and amplification">A compaction merge step already needed to find the smallest not-yet-emitted key across several runs — a binary heap is the direct structure for exactly that question.</Resource>
+</ul>
+
+</section>
+
+<section class="prereq" data-section="standard">
+
+### <span class="n">02</span> The real source, from research and production
+
+<ul class="resources">
+  <Resource kind="reading" title="Binary heap" href="https://en.wikipedia.org/wiki/Binary_heap" by="Wikipedia">The sift-up and sift-down procedures, the implicit array index formula, and Williams' versus Floyd's build methods.</Resource>
+  <Resource kind="reading" title="Priority Queues" href="https://algs4.cs.princeton.edu/24pq/" by="Sedgewick, Wayne — Algorithms, 4th ed.">A second, independent statement of the index arithmetic and the linear-time bottom-up build.</Resource>
+</ul>
+
+</section>
+
+<section class="prereq" data-section="later">
+
+### <span class="n">03</span> Where this goes next
+
+<ul class="resources">
+  <Resource kind="reel" host={props.host} domain="data-structures-and-algorithms" title="Tournament and loser trees">The structure built to hit the comparison bound a k-way merge actually allows, where a binary heap's own sift-down does more work than the problem requires.</Resource>
+</ul>
+
+</section>
