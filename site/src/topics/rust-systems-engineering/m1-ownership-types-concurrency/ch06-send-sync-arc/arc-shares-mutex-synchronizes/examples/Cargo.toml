@@ -1,0 +1,21 @@
+[package]
+name = "arc-shares-mutex-synchronizes-examples"
+version = "0.1.0"
+edition = "2021"
+publish = false
+
+[[bin]]
+name = "parking_lot_no_poison"
+path = "src/bin/parking_lot_no_poison.rs"
+
+[[bin]]
+name = "std_guard_across_await_fails"
+path = "src/bin/std_guard_across_await_fails.rs"
+
+[[bin]]
+name = "tokio_mutex_across_await_works"
+path = "src/bin/tokio_mutex_across_await_works.rs"
+
+[dependencies]
+parking_lot = "0.13"
+tokio = { version = "1", features = ["full"] }
