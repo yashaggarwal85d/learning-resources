@@ -1,0 +1,90 @@
+{
+  "steps": [
+    {
+      "lines": [
+        "A thousand small writes to one real log file, each one followed right away by a real, full sync.",
+        { "beat": 0.3 },
+        "How many real sync calls does that actually end up making?"
+      ],
+      "answer": [
+        "Exactly a thousand.",
+        "One real sync call for every single write, no more and no fewer."
+      ]
+    },
+    {
+      "lines": [
+        "Run it for real, traced: a thousand writes, each one flushed on its own,",
+        "made exactly a thousand real sync calls underneath — not assumed, counted."
+      ]
+    },
+    {
+      "lines": [
+        "Write those same thousand records again, but this time sync only once every fifty of them, plus one last flush at the end.",
+        { "beat": 0.3 },
+        "How many real sync calls does that make now?"
+      ],
+      "answer": [
+        "A small, fixed number, close to one flush for each batch.",
+        "Nowhere near a thousand, and not zero either."
+      ]
+    },
+    {
+      "lines": [
+        "Run it for real, traced: the identical thousand writes, flushed in batches this time,",
+        "made twenty-one real sync calls — not a thousand."
+      ],
+      "takeaway": "Batching writes into deliberate flush points cuts the real fsync count close to the batch size."
+    },
+    {
+      "lines": [
+        "Same comparison again, but timed this time instead of counted.",
+        { "beat": 0.3 },
+        "Does cutting the call count also cut the real time spent waiting, by roughly the same large amount?"
+      ],
+      "answer": [
+        "Yes, by roughly that same large factor.",
+        "The time drops right along with the call count."
+      ]
+    },
+    {
+      "lines": [
+        "Timed for real: the one-sync-per-write version took far longer than the batched one,",
+        "for the exact same thousand writes, start to finish."
+      ],
+      "takeaway": "Most of the time in fsync-per-write is waiting on a syscall batching would have skipped."
+    },
+    {
+      "lines": [
+        "A well-known database's own documentation makes a specific claim about why keeping a write-ahead log helps at all.",
+        { "beat": 0.3 },
+        "What does it actually say gets to skip the flush?"
+      ],
+      "answer": [
+        "Every other data file the transaction touched.",
+        "Only the log file itself needs flushing to guarantee the commit."
+      ]
+    },
+    {
+      "lines": [
+        "The documentation's own words: keeping a log means only that log needs flushing, not every file a transaction changed.",
+        "And under real load, one flush can cover many small transactions committing around the same moment."
+      ]
+    },
+    {
+      "lines": [
+        "None of this matters if the drive itself is lying about it.",
+        { "beat": 0.3 },
+        "What does a drive's own volatile write cache actually do, and what forces it to tell the truth?"
+      ],
+      "takeaway": "A flush is not durable until something forces a volatile write cache to tell the truth."
+    },
+    {
+      "lines": [
+        "So, pulling this topic together: flushing after every write made a real call every single time, a thousand of them.",
+        "Batching into deliberate flush points cut that to twenty-one calls, and was dramatically faster for the identical writes.",
+        "A write-ahead log's own documentation explains why: one flush can cover many transactions at once.",
+        "And none of it is real durability until a forced flush makes a volatile write cache tell the truth."
+      ]
+    }
+  ]
+}
