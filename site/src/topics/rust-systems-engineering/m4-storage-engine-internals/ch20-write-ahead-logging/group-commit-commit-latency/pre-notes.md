@@ -1,0 +1,4 @@
+- **Group commit**: batching several transactions' log records into one flush, trading a small added latency for far less flush contention. *Where you meet it:* five transactions sharing one flush, instead of paying for five.
+- **Leader/follower**: the earliest-ready transaction becomes the leader and waits briefly; followers who join before the flush share its result.
+- **Commit latency ≠ execution time**: how long a caller waits for its own commit has nothing to do with how fast its own work ran — it's set by whoever filled the batch last.
+- **Asynchronous commit**: acknowledging a commit before its log record is actually durable. Faster, but a crash in that gap can lose exactly what was just promised.

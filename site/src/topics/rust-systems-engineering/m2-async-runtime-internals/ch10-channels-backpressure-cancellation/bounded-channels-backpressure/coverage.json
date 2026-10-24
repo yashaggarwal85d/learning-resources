@@ -1,0 +1,90 @@
+{
+  "topic": "rust.bounded-channels-backpressure",
+  "syllabus": [
+    {
+      "clause": "any concurrency or queueing you introduce must use a bounded channel, or memory exhaustion follows. Capacity is an application-specific burst-tolerance decision (Little's law sizing). Tokio's channels have different semantics: mpsc, broadcast (lagging receivers lose messages), watch (latest value only) and oneshot. try_send is the load-shedding hook.",
+      "at": [
+        { "step": "Measured: the producer's own total time tracked the consumer's pace, message for message" },
+        { "step": "Measured: a real Lagged error, naming exactly how many messages were dropped before resuming cleanly" },
+        { "step": "Measured: one receiver, checking in once, saw exactly the latest value — none of the other 49" },
+        { "step": "Measured: refused in a fraction of a millisecond — not a wait, a decision" },
+        { "step": "Four channels, four different promises about a message nobody was ready for" }
+      ]
+    }
+  ],
+  "sources": [
+    {
+      "source": "mpsc",
+      "items": [
+        {
+          "item": "the bounded mpsc variant has a limit on messages it can store, and sending into a full channel waits until a message is received",
+          "at": [{ "step": "A fast producer, a slow consumer, one channel with room for a single message. Does the producer race ahead, or get paced?" }]
+        },
+        {
+          "item": "if the bounded channel is at capacity, the send is rejected and the task is notified when additional capacity is available — this is backpressure",
+          "at": [{ "step": "Measured: the producer's own total time tracked the consumer's pace, message for message" }]
+        }
+      ]
+    },
+    {
+      "source": "broadcast",
+      "items": [
+        {
+          "item": "if a value is sent when the channel is at capacity, the oldest value currently held is overwritten",
+          "at": [{ "step": "A broadcast channel with room for 2 values, and a receiver that never checks in while 5 are sent. What happens to the ones it missed?" }]
+        },
+        {
+          "item": "a receiver that has not seen the overwritten value returns RecvError::Lagged the next time it receives",
+          "at": [{ "step": "Measured: a real Lagged error, naming exactly how many messages were dropped before resuming cleanly" }]
+        },
+        {
+          "item": "returning Lagged does not close the receiver; its cursor advances to the oldest value still retained",
+          "at": [{ "step": "Measured: a real Lagged error, naming exactly how many messages were dropped before resuming cleanly" }]
+        }
+      ]
+    },
+    {
+      "source": "watch",
+      "items": [
+        {
+          "item": "a watch channel is a multi-producer, multi-consumer channel that only retains the last sent value",
+          "at": [{ "step": "A watch channel sends 50 updates in a row before anyone checks in. How many of those 50 does a late receiver actually see?" }]
+        },
+        {
+          "item": "each watch Receiver independently tracks the last value seen by its caller",
+          "at": [{ "step": "Measured: one receiver, checking in once, saw exactly the latest value — none of the other 49" }]
+        }
+      ]
+    },
+    {
+      "source": "oneshot",
+      "items": [
+        {
+          "item": "oneshot creates a channel for sending a single value across asynchronous tasks",
+          "at": [{ "step": "Four channels, four different promises about a message nobody was ready for" }]
+        }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "self-review",
+    "date": "2026-10-23",
+    "items": [
+      { "item": "The producer measurement deliberately uses send().await rather than try_send, because the claim being proven is backpressure itself — a producer genuinely made to wait — not load shedding, which is this topic's own separate, later claim.", "at": [{ "step": "A fast producer, a slow consumer, one channel with room for a single message. Does the producer race ahead, or get paced?" }] },
+      { "item": "A channel of capacity 1 is deliberately the smallest possible bound, chosen so the producer can never get more than one message ahead of the consumer; the measured total time is therefore bounded tightly by the consumer's own per-message delay, which is exactly what makes the pacing claim checkable rather than merely plausible.", "at": [{ "step": "Measured: the producer's own total time tracked the consumer's pace, message for message" }] },
+      { "item": "Unlike mpsc, a broadcast channel's bound is not a queue depth the sender waits on; send never blocks. The bound instead decides how far behind a receiver can fall before it starts losing data, which is a fundamentally different kind of capacity decision from mpsc's.", "at": [{ "step": "A broadcast channel with room for 2 values, and a receiver that never checks in while 5 are sent. What happens to the ones it missed?" }] },
+      { "item": "The Lagged error's own count is not an estimate; it is computed directly from how far the receiver's cursor was from the channel's retained window, which is exactly why this topic measures the count itself rather than merely observing that an error occurred.", "at": [{ "step": "Measured: a real Lagged error, naming exactly how many messages were dropped before resuming cleanly" }] },
+      { "item": "A watch channel's single-slot design is not a smaller version of mpsc's bound; it is a structurally different guarantee, because no number of additional send calls before a read changes what gets delivered — only the most recent one ever can.", "at": [{ "step": "A watch channel sends 50 updates in a row before anyone checks in. How many of those 50 does a late receiver actually see?" }] },
+      { "item": "This measurement is deliberately aggressive (50 sends, zero reads in between) specifically to make the point sharply: no amount of sending changes what a late reader receives, which is the entire reason configuration-watching code reaches for this channel kind instead of mpsc.", "at": [{ "step": "Measured: one receiver, checking in once, saw exactly the latest value — none of the other 49" }] },
+      { "item": "try_send and send are not two speeds of the same operation; they are two different decisions a caller makes about what should happen when a channel is full, and conflating them is exactly the mistake that turns a load-shedding design into an accidental backpressure one, or the reverse.", "at": [{ "step": "The same channel, but now call try_send on it while it's already full. Does it wait a little, or refuse outright?" }] },
+      { "item": "The sub-millisecond refusal measured here matters because it proves try_send genuinely never blocks, even briefly — a caller using it for load shedding needs that guarantee to be exact, not merely fast in practice.", "at": [{ "step": "Measured: refused in a fraction of a millisecond — not a wait, a decision" }] },
+      { "item": "oneshot is the degenerate case of this whole family: a channel whose only meaningful capacity decision is exactly one, which is why it needs no backpressure or load-shedding policy of its own — it is used up on its first and only message.", "at": [{ "step": "Four channels, four different promises about a message nobody was ready for" }] },
+      { "item": "This topic closes the first half of what Chapter 9 named but didn't prove: a bounded channel's limit is real and enforced, in four genuinely different shapes depending on which channel kind is chosen — the second half, cancellation, is deliberately left to the next topic rather than folded in here.", "at": [{ "step": "Recap: a wait, a count of what was lost, a latest value kept, and a refusal that costs nothing" }] }
+    ]
+  },
+  "gapReview": {
+    "date": "2026-10-23",
+    "by": "self-review",
+    "open": []
+  }
+}

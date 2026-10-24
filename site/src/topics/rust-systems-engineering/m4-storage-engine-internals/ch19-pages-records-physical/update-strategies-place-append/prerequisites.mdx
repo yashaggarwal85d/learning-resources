@@ -1,0 +1,23 @@
+import Resource from '../../../../../components/Resource.astro';
+
+<section class="prereq" data-section="chapter-so-far">
+
+### <span class="n">01</span> Where the last topic left off
+
+<ul class="resources">
+  <Resource kind="reel" host={props.host} domain="rust-systems-engineering" title="Slotted pages and record identity">a record's slot index stays stable while compaction moves its physical offset underneath it.</Resource>
+</ul>
+
+</section>
+
+<section class="prereq" data-section="update-strategy-primary">
+
+### <span class="n">02</span> The real docs: three deliberate choices
+
+<ul class="resources">
+  <Resource kind="reading" title="Heap-Only Tuples (HOT)" href="https://www.postgresql.org/docs/current/storage-hot.html" by="The PostgreSQL Global Development Group">MVCC means an update adds a new row version.</Resource>
+  <Resource kind="reading" title="LevelDB implementation notes" href="https://raw.githubusercontent.com/google/leveldb/main/doc/impl.md" by="The LevelDB Authors">a log file appends every update, until compaction merges it away.</Resource>
+  <Resource kind="reading" title="LMDB" href="http://www.lmdb.tech/doc/index.html" by="Symas Corporation">copy-on-write pages that are never overwritten, buying crash safety.</Resource>
+</ul>
+
+</section>

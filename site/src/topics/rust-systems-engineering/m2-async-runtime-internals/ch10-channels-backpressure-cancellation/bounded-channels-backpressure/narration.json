@@ -1,0 +1,88 @@
+{
+  "steps": [
+    {
+      "lines": [
+        "A producer that can generate values quickly, a consumer that deliberately works through them slowly, and a channel between them with room for exactly one message at a time.",
+        { "beat": 0.3 },
+        "Does the producer just keep going, piling work up somewhere invisible, or does it genuinely get held back to the consumer's own pace?"
+      ],
+      "answer": [
+        "It genuinely gets held back. The channel's limit becomes the producer's real speed limit.",
+        "This isn't the producer being polite. It's forced to wait, because there's nowhere else for the next message to go."
+      ]
+    },
+    {
+      "lines": [
+        "Run it for real, and the producer's own total time to get through every message tracks the consumer's pace almost exactly, step for step.",
+        "That's the whole mechanism, made visible: the bound on the channel really does become the rate the whole pipeline runs at."
+      ]
+    },
+    {
+      "lines": [
+        "Now a different kind of channel, one meant for broadcasting the same message to many listeners, with room for only two values at a time, and a receiver that doesn't check in at all while five are sent.",
+        { "beat": 0.3 },
+        "What happens to the ones that receiver never got around to reading?"
+      ],
+      "answer": [
+        "The oldest ones simply get overwritten to make room — but the receiver isn't left guessing. It's told exactly how many it missed.",
+        "That's a very different failure mode from silently losing data. The gap is named, not hidden."
+      ]
+    },
+    {
+      "lines": [
+        "Run it for real: the receiver's very first read comes back as an actual error naming the exact count of messages it fell behind by, and then it resumes cleanly from whatever's still there.",
+        "The error isn't a crash and it isn't the end of the receiver. It's a real, honest signal, with a real number attached."
+      ],
+      "takeaway": "A lagging broadcast receiver is told exactly how many messages it missed, then resumes from what's left."
+    },
+    {
+      "lines": [
+        "A third kind of channel, built for watching a single value change over time, gets sent fifty separate updates in a row, with nobody checking in until all fifty have gone through.",
+        { "beat": 0.3 },
+        "When that one receiver finally does check in, how many of those fifty updates does it actually see?"
+      ],
+      "answer": [
+        "Just the very last one. Every value in between is already gone by the time it looks.",
+        "That's not a limitation of this channel. It's the entire reason it exists."
+      ]
+    },
+    {
+      "lines": [
+        "Run it for real: one receiver, reading exactly once after all fifty sends, sees only the final value — nothing from any of the other forty-nine.",
+        "This is the opposite design decision from the first channel in this topic. There, every message mattered. Here, only the newest one ever does."
+      ],
+      "takeaway": "A watch channel is not a queue — it keeps only the most recent value, by design."
+    },
+    {
+      "lines": [
+        "Go back to that very first kind of channel, still with its one slot already taken, but this time don't use the send that waits. Use the one that asks once and returns immediately.",
+        { "beat": 0.3 },
+        "Does that version wait a little too, or does it refuse outright, with no delay at all?"
+      ],
+      "answer": [
+        "It refuses outright, immediately. No waiting, not even briefly.",
+        "This is a completely different decision from the first channel's behavior — a decision to shed the extra work, not queue it."
+      ]
+    },
+    {
+      "lines": [
+        "Timed directly, that refusal comes back in a tiny fraction of a single millisecond — close enough to instant that there's no meaningful wait to speak of.",
+        "That precision matters. A caller using this to shed load under real pressure needs that guarantee to be exact, not just fast most of the time."
+      ]
+    },
+    {
+      "lines": [
+        "So here are four separate kinds of channel, lined up side by side, and each one keeps a genuinely different promise about a message nobody was ready for yet.",
+        "One makes the sender wait. One drops the oldest and says so. One throws almost everything away except the newest. And one is built to carry exactly a single reply, once, and nothing more."
+      ],
+      "takeaway": "Every channel must be bounded — but which of these four promises it keeps is a real design decision."
+    },
+    {
+      "lines": [
+        "So, pulling this topic together: a bounded channel of the first kind genuinely paces a fast producer to a slow consumer's speed.",
+        "A broadcast-style channel tells a lagging receiver exactly what it missed, instead of hiding the loss. A watch-style channel keeps only the newest value, on purpose, by design.",
+        "And asking once, instead of waiting, gets refused instantly the moment there's no room — a real, immediate decision, not a delay."
+      ]
+    }
+  ]
+}

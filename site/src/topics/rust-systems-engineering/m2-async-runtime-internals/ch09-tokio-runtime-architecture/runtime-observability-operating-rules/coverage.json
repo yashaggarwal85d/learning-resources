@@ -1,0 +1,80 @@
+{
+  "topic": "rust.runtime-observability-operating-rules",
+  "syllabus": [
+    {
+      "clause": "tokio-console, runtime metrics (stabilization in progress since 1.38) and task dumps. Operating rules: keep tasks small enough to yield, bound concurrency with a Semaphore, bound every channel, and define cancellation semantics explicitly. Track LTS lines and the rolling MSRV (1.85 as of 2026).",
+      "at": [
+        { "step": "Measured: 4 tasks running, zero permits available, with the rest genuinely waiting" },
+        { "step": "Measured: hundreds of tasks still queued, read straight from the runtime's own metrics" },
+        { "step": "Measured: the second send was refused outright, and a third went through the instant capacity freed up" },
+        { "step": "The crate's own words: tokio-console sees tasks, resources, and operations, live in a running process" }
+      ]
+    }
+  ],
+  "sources": [
+    {
+      "source": "semaphore",
+      "items": [
+        {
+          "item": "a semaphore maintains a set of permits that synchronize access to a shared resource, allowing more than one concurrent caller at a time",
+          "at": [{ "step": "Measured: 4 tasks running, zero permits available, with the rest genuinely waiting" }]
+        },
+        {
+          "item": "when no remaining permits are available, acquire asynchronously waits until an outstanding permit is dropped",
+          "at": [{ "step": "20 tasks, one Semaphore with 4 permits. Does the runtime actually stop at 4 running at once?" }]
+        }
+      ]
+    },
+    {
+      "source": "runtime-metrics",
+      "items": [
+        {
+          "item": "RuntimeMetrics is a handle to the runtime's metrics, obtained from Runtime::metrics",
+          "at": [{ "step": "Spawn 500 tasks onto one worker, then ask the runtime's own metrics what's still queued. Zero, or a real backlog?" }]
+        },
+        {
+          "item": "global_queue_depth returns the number of tasks currently scheduled in the runtime's global queue",
+          "at": [{ "step": "Measured: hundreds of tasks still queued, read straight from the runtime's own metrics" }]
+        }
+      ]
+    },
+    {
+      "source": "console-subscriber",
+      "items": [
+        {
+          "item": "tokio-console collects and displays in-depth diagnostic data on the asynchronous tasks, resources, and operations in an application",
+          "at": [{ "step": "The crate's own words: tokio-console sees tasks, resources, and operations, live in a running process" }]
+        },
+        {
+          "item": "currently, the only runtime that implements the instrumentation the console requires is Tokio version 1.7.0 and newer",
+          "at": [{ "step": "Is tokio-console just a log viewer, or does it see every task this chapter has measured?" }]
+        },
+        {
+          "item": "the tokio_unstable cfg flag, which enables experimental APIs in Tokio, must be enabled for console-subscriber to work",
+          "at": [{ "step": "The crate's own words: tokio-console sees tasks, resources, and operations, live in a running process" }]
+        }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "self-review",
+    "date": "2026-10-23",
+    "items": [
+      { "item": "A Semaphore's 'bound concurrency' guarantee only means something if it is a hard limit, not a convention; measuring available_permits() reaching exactly 0 while more tasks wait is the difference between trusting that and proving it.", "at": [{ "step": "Measured: 4 tasks running, zero permits available, with the rest genuinely waiting" }] },
+      { "item": "The semaphore measurement deliberately reuses the same 'count what's actually running, not what was asked for' technique topic 29 used for cooperative budgeting — this chapter's claims about limits are proven the same way every time: by counting, not by description.", "at": [{ "step": "20 tasks, one Semaphore with 4 permits. Does the runtime actually stop at 4 running at once?" }] },
+      { "item": "global_queue_depth is not a sampled estimate or an average; it is the runtime's own live count of tasks it has not yet polled, which is exactly why it can answer the operating question 'is some task hogging the worker right now' rather than only 'did it, at some point in the past'.", "at": [{ "step": "Spawn 500 tasks onto one worker, then ask the runtime's own metrics what's still queued. Zero, or a real backlog?" }] },
+      { "item": "The backlog measurement intentionally uses a single worker, the same shape topic 28 used to first demonstrate a blocked worker stalling its siblings; here the backlog isn't a bug being demonstrated, it's the normal, expected cost of asking one thread to do five hundred things, made visible instead of invisible.", "at": [{ "step": "Measured: hundreds of tasks still queued, read straight from the runtime's own metrics" }] },
+      { "item": "try_send's immediate refusal on a full channel is the mechanism that makes 'bound every channel' an actual operating rule rather than a design suggestion: nothing about an unbounded channel would ever refuse a send, so nothing about it would ever force a caller to decide what to do when the system is overloaded.", "at": [{ "step": "A channel with capacity for one message. Does a second send wait politely, or get refused outright?" }] },
+      { "item": "The channel measurement is deliberately two-sided, the same symmetry topic 31 used for mio: proving the limit is enforced when full is only half the claim; proving a freed slot is immediately usable again is what distinguishes a real bound from a one-shot failure.", "at": [{ "step": "Measured: the second send was refused outright, and a third went through the instant capacity freed up" }] },
+      { "item": "Naming tokio-console as watching 'tasks, resources, and operations' rather than just logs matters because every measurement in this topic — a semaphore's permits, a queue's depth, a channel's capacity — is exactly one of those three things; the tool is not a separate feature, it is a live window onto the same mechanisms this chapter already built.", "at": [{ "step": "Is tokio-console just a log viewer, or does it see every task this chapter has measured?" }] },
+      { "item": "console-subscriber's own requirement that tokio_unstable be enabled is the same tradeoff topic 31 already named for io_uring: the richest observability tooling in this ecosystem, as of 2026, still sits behind an explicit opt-in flag rather than being on by default.", "at": [{ "step": "The crate's own words: tokio-console sees tasks, resources, and operations, live in a running process" }] },
+      { "item": "Each of this chapter's four operating rules maps to exactly one topic's mechanism: small enough to yield is topic 29's cooperative budgeting; bounded concurrency is this topic's Semaphore measurement; bounded channels is this topic's try_send measurement; explicit cancellation semantics is the one rule this chapter names but does not yet prove, because Tokio's cancellation primitives are Chapter 10's own subject.", "at": [{ "step": "This chapter's rules, named one more time: small enough to yield, bounded concurrency, bounded channels, explicit cancellation" }] },
+      { "item": "This topic closes Chapter 9 the same way topic 27 closed Chapter 8: not with a new mechanism, but by turning every mechanism the chapter already built into a short list of consequences a reader can actually act on in a real service.", "at": [{ "step": "Recap: a real cap, a real backlog, a real refusal, and a live view of all three" }] }
+    ]
+  },
+  "gapReview": {
+    "date": "2026-10-23",
+    "by": "self-review",
+    "open": []
+  }
+}

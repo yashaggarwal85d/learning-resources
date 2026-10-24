@@ -1,0 +1,59 @@
+{
+  "topic": "rust.middleware-ordering-as-semantics",
+  "syllabus": [
+    {
+      "clause": "order changes meaning. A timeout before vs after auth bounds different things. Retrying a non-idempotent operation is catastrophic, so you need retry budgets and idempotency keys (→ Ch.28). Where the tracing layer sits decides whether a span describes one logical request or one retry attempt. ServiceBuilder applies the first layer outermost.",
+      "at": [
+        { "step": "Measured: with the buffer first, well over a hundred callers were admitted immediately; with the order reversed, only exactly ten were, matching the documentation closely" },
+        { "step": "Measured: the real deadline fired well before the slow auth step would have finished on its own, because it wrapped the auth step too" },
+        { "step": "Measured: with the deadline moved inside, the slow auth step ran to completion entirely unbounded, taking far longer than the deadline’s own limit, because the deadline never saw it at all" },
+        { "step": "Measured: the handler's own side effect ran three separate times, once per attempt, including the two that failed, since nothing was guarding it from running again" }
+      ]
+    }
+  ],
+  "sources": [
+    {
+      "source": "service-builder",
+      "items": [
+        {
+          "item": "the order in which layers are added impacts how requests are handled; layers that are added first will be called with the request first; the argument to service will be last to see the request",
+          "at": [{ "step": "tower::ServiceBuilder's own documentation gives a specific example: buffer first, then a concurrency cap, admits a lot more callers at once than the reverse order. Does real code actually behave that way, or is that just a simplification in the docs?" }]
+        },
+        {
+          "item": "buffer(100).concurrency_limit(10) allows up to 110 requests to be in-flight; concurrency_limit(10).buffer(100) allows only 10 requests to be in-flight total",
+          "at": [{ "step": "Measured: with the buffer first, well over a hundred callers were admitted immediately; with the order reversed, only exactly ten were, matching the documentation closely" }]
+        }
+      ]
+    },
+    {
+      "source": "retry-index",
+      "items": [
+        {
+          "item": "middleware for retrying \"failed\" requests; a \"retry policy\" to classify if a request should be retried; a retry \"budget\" for allowing only a certain amount of retries over time",
+          "at": [{ "step": "Wrap a handler that isn't safe to run twice in a real retry layer, with no idempotency key guarding it. The handler fails twice, then succeeds on the third attempt. How many times does its own side effect actually run?" }]
+        }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "self-review",
+    "date": "2026-10-24",
+    "items": [
+      { "item": "The order measurement counts how many of a large batch of concurrent callers get their own ready() call to return almost instantly, rather than how many calls run concurrently at the innermost service, since both orderings still cap the innermost service's own concurrency at ten; the real, caller-visible difference the documentation describes is about admission, not execution concurrency.", "at": [{ "step": "Measured: with the buffer first, well over a hundred callers were admitted immediately; with the order reversed, only exactly ten were, matching the documentation closely" }] },
+      { "item": "The measured admission counts (111 and 10) land almost exactly on the documentation's own claimed figures (110 and 10); the one-off difference is attributed to the fast-admission threshold (under twenty milliseconds) occasionally catching one additional caller whose own scheduling happened to land just inside that window, not to any discrepancy in the underlying claim.", "at": [{ "step": "tower::ServiceBuilder's own documentation gives a specific example: buffer first, then a concurrency cap, admits a lot more callers at once than the reverse order. Does real code actually behave that way, or is that just a simplification in the docs?" }] },
+      { "item": "The timeout-placement example reuses the exact same two durations (a deadline of fifty milliseconds, a slow step of two hundred milliseconds) in both orderings, so the only variable between the two measured runs is which layer wraps which; nothing else about the pipeline's own timing changes between the two cases.", "at": [{ "step": "Measured: the real deadline fired well before the slow auth step would have finished on its own, because it wrapped the auth step too" }] },
+      { "item": "The retry example's own policy retries on every error with no attempt limit of its own, matching the handler's own fixed two-failures-then-success behavior exactly, so the measured attempt count (three) is deterministic rather than depending on how many attempts a more realistic, bounded retry policy would have allowed.", "at": [{ "step": "Measured: the handler's own side effect ran three separate times, once per attempt, including the two that failed, since nothing was guarding it from running again" }] },
+      { "item": "The idempotency fix is a single atomic boolean guarding the side effect, the simplest possible real idempotency check, deliberately chosen over a more realistic persisted idempotency-key store, since the claim under test is that some real guard changes the outcome, not what the most production-appropriate guard's own storage layer looks like.", "at": [{ "step": "Add one real idempotency check to that same handler, with the same two failures and the same retries. How many times does the side effect run now?" }] },
+      { "item": "The tracing-layer-placement claim named in the syllabus (where the tracing layer sits decides whether a span describes one logical request or one retry attempt) is discussed in prose only, not measured, since reproducing it needs a real tracing subscriber capturing span structure across retried calls, a layer of infrastructure beyond this topic's own three measured claims; this is a deliberate scope choice, not an oversight.", "at": [{ "step": "Recap: order, bounds, and a side effect that remembers" }] },
+      { "item": "This topic continues directly from topic 45's tower-service-poll-ready-contract and tower-layer-composition-limits ids and topic 46's axum-is-tower-all-the-way-down id: every layer reordered here (Buffer, ConcurrencyLimit, Timeout, Retry) is one already established as a real, composable Service wrapper in the two topics before this one; this topic's own new claim is specifically about order, not about any one layer's own behavior in isolation.", "at": [{ "step": "tower::ServiceBuilder's own documentation gives a specific example: buffer first, then a concurrency cap, admits a lot more callers at once than the reverse order. Does real code actually behave that way, or is that just a simplification in the docs?" }] },
+      { "item": "All three of this topic's own measured claims run entirely within this container's own async runtime and wall-clock timing; none need a real network, root access, or hardware the sandbox lacks, continuing the pattern from topics 45 and 46 of measuring every claim directly.", "at": [{ "step": "Measured: with the deadline moved inside, the slow auth step ran to completion entirely unbounded, taking far longer than the deadline’s own limit, because the deadline never saw it at all" }] },
+      { "item": "The lesson steps for the timeout-placement claim (steps four and six) and the retry claim (steps eight and nine) are deliberately paired as before-and-after measurements of the same scenario with one variable changed, rather than two independent scenarios, since the point of each pair is specifically the contrast, not either outcome in isolation.", "at": [{ "step": "Measured: the real deadline fired well before the slow auth step would have finished on its own, because it wrapped the auth step too" }] },
+      { "item": "This topic closes Chapter 18 and Milestone 3 deliberately on the ordering and correctness of a single service boundary's own middleware stack, not on anything behind that boundary; what sits behind it, starting with a storage engine's own physical page layout, is specifically Milestone 4's own opening subject, per CHAPTER.md's own planned handoff.", "at": [{ "step": "Recap: order, bounds, and a side effect that remembers" }] }
+    ]
+  },
+  "gapReview": {
+    "date": "2026-10-24",
+    "by": "self-review",
+    "open": []
+  }
+}

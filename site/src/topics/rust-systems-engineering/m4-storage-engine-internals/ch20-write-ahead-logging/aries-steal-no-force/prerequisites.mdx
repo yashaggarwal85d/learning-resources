@@ -1,0 +1,22 @@
+import Resource from '../../../../../components/Resource.astro';
+
+<section class="prereq" data-section="chapter-so-far">
+
+### <span class="n">01</span> Where the last topic left off
+
+<ul class="resources">
+  <Resource kind="reel" host={props.host} domain="rust-systems-engineering" title="Write-ahead rule and LSNs">a log record and a page that each carry their own LSN are enough to tell whether a change still needs replaying.</Resource>
+</ul>
+
+</section>
+
+<section class="prereq" data-section="aries-primary">
+
+### <span class="n">02</span> The real docs: analysis, redo, undo
+
+<ul class="resources">
+  <Resource kind="reading" title="ARIES: A Transaction Recovery Method" href="https://web.stanford.edu/class/cs345d-01/rl/aries.pdf" by="Mohan, Haderle, Lindsay, Pirahesh & Schwarz, ACM TODS 1992">fuzzy checkpoints, compensation log records, and a redo-only CLR.</Resource>
+  <Resource kind="reading" title="WAL Configuration" href="https://www.postgresql.org/docs/current/wal-configuration.html" by="The PostgreSQL Global Development Group">a checkpoint record names the point recovery must redo from.</Resource>
+</ul>
+
+</section>

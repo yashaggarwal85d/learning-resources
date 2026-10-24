@@ -1,0 +1,25 @@
+import Resource from '../../../../../components/Resource.astro';
+
+<section class="prereq" data-section="before-this">
+
+### <span class="n">01</span> Before this: the page this whole topic now caches
+
+<ul class="resources">
+  <Resource kind="reel" title="Pages, slotted pages and tuple layout" domain="data-engineering" host="de.pages-slotted-pages-tuple" by="the first topic of this chapter" />
+</ul>
+
+</section>
+
+<section class="prereq" data-section="straight-from-the-source">
+
+### <span class="n">02</span> The sources this topic measures against
+
+<ul class="resources">
+  <Resource kind="reading" title="PostgreSQL buffer manager README" href="https://raw.githubusercontent.com/postgres/postgres/REL_16_STABLE/src/backend/storage/buffer/README" by="PostgreSQL source">The clock-sweep algorithm and the buffer-ring replacement strategy, in the engine's own words.</Resource>
+  <Resource kind="reading" title="pg_buffercache" href="https://www.postgresql.org/docs/16/pgbuffercache.html" by="PostgreSQL docs">The usage-count column this topic reads directly off a real cluster.</Resource>
+  <Resource kind="reading" title="Resource Consumption" href="https://www.postgresql.org/docs/16/runtime-config-resource.html" by="PostgreSQL docs">`shared_buffers`'s own double-caching framing and the VACUUM ring-size knob.</Resource>
+  <Resource kind="reading" title="Release 18" href="https://www.postgresql.org/docs/18/release-18.html" by="PostgreSQL docs">The asynchronous I/O subsystem confirmed for real on this sandbox's second cluster.</Resource>
+  <Resource kind="reading" title="open(2)" href="https://man7.org/linux/man-pages/man2/open.2.html" by="Linux manual pages">The `O_DIRECT` flag this topic contrasts with ordinary double-cached reads.</Resource>
+</ul>
+
+</section>

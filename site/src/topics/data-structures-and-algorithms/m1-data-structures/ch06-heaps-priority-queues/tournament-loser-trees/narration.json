@@ -1,0 +1,67 @@
+{
+  "topic": "dsa.tournament-loser-trees",
+  "steps": [
+    {
+      "lines": [
+        "Last time, the question was which value is smallest across one stream of insertions.",
+        "Here's the same question asked a different way: you've got several already-sorted streams, and you need the smallest head among them, over and over, every time one gets consumed."
+      ]
+    },
+    {
+      "lines": [
+        "Start with the approach that needs no structure at all: just look at every stream's current head and pick the smallest one.",
+        "That's completely correct, and it's also the thing worth measuring against, because it gets more expensive every time you add another stream."
+      ]
+    },
+    {
+      "lines": [
+        "Before the reveal, think about what a heap actually has to do on the way down, not just how many levels it has.",
+        "Does repairing a heap after a pop only ever look at one thing per level, or does it have to look at more than that?"
+      ],
+      "answer": [
+        "More than one. At every level, it first has to figure out which of the two children is smaller, and only then decide whether to swap with it.",
+        "That's two separate comparisons per level, not one — the log of the size tells you how many levels, not how many comparisons."
+      ]
+    },
+    {
+      "lines": [
+        "Here's the part that's easy to miss: being logarithmic doesn't automatically mean cheap, because each one of those levels isn't free.",
+        "A heap pays for finding the smaller child and then checking whether to swap, every single level it touches on the way down."
+      ]
+    },
+    {
+      "lines": [
+        "Before this reveal, picture the same streams arranged as a single-elimination bracket instead of a heap.",
+        "Can a structure built that way actually beat what a heap pays per output, or does it just move the same cost somewhere else?"
+      ],
+      "answer": [
+        "It can, and the reason is specific: each round only ever plays one game, so it only ever costs one comparison, not two.",
+        "Same number of rounds as a heap has levels. Half the work at every single one of them."
+      ]
+    },
+    {
+      "lines": [
+        "Watch what's actually different here, not just that it's a tree too.",
+        "Every round is one game between exactly two contenders — there's no second comparison hiding anywhere in a round, the way there was in a heap's own level."
+      ]
+    },
+    {
+      "lines": [
+        "Here's the clever part: keep only the loser of each game stored in the tree, and let the winner float all the way up past the root.",
+        "When a stream's head gets consumed and replaced, only the one path from that spot back up to the root ever needs to be replayed — nothing else in the whole bracket has to move."
+      ]
+    },
+    {
+      "lines": [
+        "This exact mechanism is already quietly running inside two systems this course has already covered.",
+        "An external sort's own merge phase works this way, and so does the compaction step from a couple of topics back — both are just this same multi-way merge, wearing a different name."
+      ]
+    },
+    {
+      "lines": [
+        "Here's what actually got measured, not assumed: real comparison counts for a plain scan, a heap-based merge, and a loser tree, on the exact same streams.",
+        "And here's the honest part — the loser tree wins every time, but the real gap over the heap turns out smaller than a rough per-level estimate would suggest, because a heap rarely sinks all the way to the bottom in practice."
+      ]
+    }
+  ]
+}

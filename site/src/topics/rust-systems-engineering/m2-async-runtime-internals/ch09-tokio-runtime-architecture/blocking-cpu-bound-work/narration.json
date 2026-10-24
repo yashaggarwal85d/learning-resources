@@ -1,0 +1,90 @@
+{
+  "steps": [
+    {
+      "lines": [
+        "Make a real, genuine three-hundred-millisecond blocking call, directly inside one of these units of work, on a runtime with exactly one real worker thread.",
+        { "beat": 0.3 },
+        "Right behind it, queue up a second, trivial one that would otherwise finish instantly. Does it notice at all?"
+      ],
+      "answer": [
+        "Yes, completely — it waits for the entire length of that call before it ever gets a turn.",
+        "There's still only the one real worker thread in this picture, and nothing here has changed that fact."
+      ]
+    },
+    {
+      "lines": [
+        "Measure it directly, exactly the way an earlier topic already did: the trivial one waits the full three hundred milliseconds, every time.",
+        "Same baseline, same real cause — this is the exact starting point every fix in this topic has to be measured against."
+      ]
+    },
+    {
+      "lines": [
+        "Now take that identical blocking call and move it, unchanged, into a function built for exactly this purpose: running it on a thread dedicated to blocking operations, entirely separate from the small pool of workers.",
+        { "beat": 0.3 },
+        "Does the one worker still end up stalled?"
+      ],
+      "answer": [
+        "No — not at all, this time.",
+        "That dedicated pool of threads is a genuinely separate set of real threads, so the worker never even notices the call happening."
+      ]
+    },
+    {
+      "lines": [
+        "Measure that too: the trivial sibling now runs almost the instant it's created, not after any meaningful wait at all.",
+        "The call itself didn't change in the slightest — only where it was allowed to run."
+      ],
+      "takeaway": "Moving a blocking call onto its own dedicated pool leaves the worker pool untouched entirely — measured as a wait of roughly nothing."
+    },
+    {
+      "lines": [
+        "Here's a second, different tool making a different kind of promise entirely: it tells the scheduler, in advance, that the unit of work calling it is about to block the thread it's currently running on.",
+        { "beat": 0.3 },
+        "Can an entirely separate, independent piece of work still get a turn while that happens?"
+      ],
+      "answer": [
+        "Yes — because the scheduler, warned ahead of time, hands that independent piece of work off to a different real thread before the blocking even starts.",
+        "Nothing about where the blocking call itself runs changes here at all. Only what happens to everything else around it."
+      ]
+    },
+    {
+      "lines": [
+        "Measure it: the independent sibling runs almost instantly, same as before — but for a completely different reason this time.",
+        "It wasn't moved anywhere at all. It was handed off to a different real thread before the blocking call ever touched the one it had been running on."
+      ],
+      "takeaway": "This second tool hands an independent sibling off to a new worker thread before blocking — a different mechanism from moving the call itself."
+    },
+    {
+      "lines": [
+        "Now try that exact same call on a runtime built with no additional worker threads of its own at all — just the one thread driving everything, start to finish.",
+        { "beat": 0.3 },
+        "Does it still work the same way there?"
+      ],
+      "answer": [
+        "No — it refuses outright, the moment it's called.",
+        "Its entire mechanism depends on handing something off to a different worker thread, and on a runtime with none of those, there is nowhere at all for anything to be handed off to."
+      ]
+    },
+    {
+      "lines": [
+        "Run it for real on exactly that kind of runtime, and watch it fail loudly and specifically, naming the real reason directly: it can only be used on a runtime that actually has more than one worker thread to hand things off to.",
+        "Not a silent no-op, not a quiet fallback — a real, immediate, named failure."
+      ],
+      "takeaway": "This hand-off tool fails outright on a runtime with no other worker thread — its one mechanism has nowhere at all to hand anything off to."
+    },
+    {
+      "lines": [
+        "For work that's genuinely heavy on computation rather than genuinely blocked on something external, that dedicated pool of blocking threads isn't necessarily the right home either — it was never sized with saturating every processor core in mind.",
+        "A specialized library built for exactly that kind of work, or an entirely separate runtime set aside for it, is the real answer there instead.",
+        "And a design that pins one worker to one processor core, with no borrowing between them at all, is a genuinely different approach again, not a flaw in anything built so far."
+      ]
+    },
+    {
+      "lines": [
+        "A real, direct blocking call on the only worker stalls everything behind it, exactly as measured before. One fix moves the call itself onto a pool built for it, and the worker never notices.",
+        "A second, different fix moves everything else away first, and fails outright wherever that's impossible. Heavy computation, with nothing blocking about it at all, has its own separate answers again.",
+        "Every one of these units of work scheduled anywhere in this chapter so far was either already ready to run, or was told directly that it needed to step aside for a while.",
+        "None of them were ever actually waiting on something out in the world that simply hadn't happened yet."
+      ]
+    }
+  ]
+}

@@ -1,0 +1,6 @@
+- **GIL (Global Interpreter Lock)**: the mechanism that lets only one thread execute Python bytecode at a time. *Where you meet it:* the lab's own threaded comparison that makes its effect visible directly.
+- **GIL release**: native extension code (such as `hashlib`) explicitly giving up the GIL during its own computation, or Python itself releasing it during I/O. *Where you meet it:* a C hash function genuinely parallelizing across threads where an equivalent pure-Python loop doesn't.
+- **Fork**: a process start method that gives the child a copy of the parent's own memory via `os.fork()`. *Where you meet it:* a child process measured to inherit a five-million-element list the parent already built.
+- **Spawn / forkserver**: process start methods that begin from a fresh interpreter instead, inheriting nothing by default. *Where you meet it:* the same child measured to genuinely not have that list, and to start slower.
+- **Free-threaded CPython**: a build of CPython with the GIL removed entirely (`--disable-gil`), currently optional. *Where you meet it:* its own disclosed single-thread cost and memory cost, quoted directly from the proposal governing it.
+- **Subinterpreter**: a separate, isolated Python interpreter running in the same process, with its own GIL. *Where you meet it:* the lab's own measured multi-core speedup from running several at once.

@@ -1,0 +1,14 @@
+version: 2
+
+exposures:
+  - name: regional_revenue_dashboard
+    type: dashboard
+    maturity: medium
+    url: https://bi.example.internal/dashboards/regional-revenue
+    description: >
+      The regional revenue dashboard finance checks weekly; depends on mart_revenue_by_region.
+    depends_on:
+      - ref('mart_revenue_by_region')
+    owner:
+      name: Finance Analytics
+      email: finance-analytics@example.internal

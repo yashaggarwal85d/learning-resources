@@ -1,0 +1,4 @@
+- **Binary heap, sift-up/sift-down (topic 30)**: the structure this topic's own heap-based merge baseline is built from directly, and the single-path discipline (one path repaired, nothing else moves) a loser tree reuses with a cheaper per-level cost.
+- **Compaction and amplification (topic 29)**: leveled and tiered compaction each already merged several runs together without naming the mechanism — this topic names it: a k-way merge, and the specific structure (a loser tree) that makes it cheap per output.
+- **SSTable / sealed run (topic 28)**: the on-disk shape this topic's own k runs echo directly, consistent with every earlier Chapter 5 visual.
+- **Comparisons as the cost unit (every topic since Chapter 1)**: this topic keeps counting real comparisons, not wall-clock time, the same cost model used throughout the course.

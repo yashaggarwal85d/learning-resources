@@ -1,0 +1,64 @@
+{
+  "topic": "rust.framing-strategies-failure-modes",
+  "syllabus": [
+    {
+      "clause": "length-prefix (cap the frame size or get DoS'd), delimiter-based (escaping, scan cost) and fixed-size framing each fail differently. tokio_util::codec (Decoder/Encoder/Framed) and BytesMut::split_to for zero-copy frame extraction.",
+      "at": [
+        { "step": "Measured: a frame claiming a length of 1 GiB was rejected immediately, no buffer anywhere near that claimed size was ever allocated to hold it" },
+        { "step": "Measured: the extracted frame's own data pointer landed exactly where the payload started in the original buffer, not a fresh allocation, confirmed directly" },
+        { "step": "The documentation's own words: the Decoder trait's job is to specify how sequences of bytes are turned into a sequence of frames, and to determine where the boundaries between frames are, exactly the problem a byte stream creates in the first place" },
+        { "step": "Each framing strategy fails differently: a length prefix without a cap is a denial-of-service vector, a delimiter needs escaping and a real scan to find it, and a fixed size wastes real bandwidth on anything smaller than it" }
+      ]
+    }
+  ],
+  "sources": [
+    {
+      "source": "tokio-util-codec",
+      "items": [
+        {
+          "item": "the job of the Decoder trait is to specify how sequences of bytes are turned into a sequence of frames, and to determine where the boundaries between frames are",
+          "at": [{ "step": "The codec documentation's own description names the Decoder trait's actual job. What does it say that job actually is?" }]
+        }
+      ]
+    },
+    {
+      "source": "length-delimited-codec",
+      "items": [
+        {
+          "item": "max_frame_length is the largest size this codec will accept from the wire; larger frames will be rejected",
+          "at": [{ "step": "Build a real length-prefixed frame decoder with an explicit 1024-byte cap. Send it a frame whose length prefix honestly claims a length of 1 GiB. What happens?" }]
+        }
+      ]
+    },
+    {
+      "source": "bytesmut",
+      "items": [
+        {
+          "item": "split_to splits the buffer into two at the given index; this is an O(1) operation that just increases the reference count and sets a few indices",
+          "at": [{ "step": "Now send a frame under the cap, and extract it with BytesMut::split_to. Does that extraction copy the payload's bytes into a new buffer, or not?" }]
+        }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "self-review",
+    "date": "2026-10-24",
+    "items": [
+      { "item": "The example's cap-rejection claim deliberately claims a length of one billion bytes rather than a merely large but plausible length, to make the rejection-before-allocation claim unambiguous: no reasonable implementation accident could allocate that much and still pass the test, so the assertion is robust to implementation detail.", "at": [{ "step": "Build a real length-prefixed frame decoder with an explicit 1024-byte cap. Send it a frame whose length prefix honestly claims a length of 1 GiB. What happens?" }] },
+      { "item": "The zero-copy claim is verified by comparing the extracted frame's own raw pointer against the original buffer's own payload address, not by reading BytesMut's documentation and trusting it; this mirrors this pipeline's established practice (topic 40's sync_all/sync_data distinction) of confirming a documented behavior via direct measurement rather than citation alone.", "at": [{ "step": "Measured: the extracted frame's own data pointer landed exactly where the payload started in the original buffer, not a fresh allocation, confirmed directly" }] },
+      { "item": "This topic's own executed example is a minimal, self-contained length-prefix decoder over BytesMut directly, not the full tokio_util::codec::Decoder/Framed trait machinery over a real async runtime, because the claims under test (capped decode correctness, zero-copy extraction, pre-allocation rejection) are properties of the length-prefix-plus-cap pattern itself, independent of which trait wraps it.", "at": [{ "step": "Now send a frame under the cap, and extract it with BytesMut::split_to. Does that extraction copy the payload's bytes into a new buffer, or not?" }] },
+      { "item": "Delimiter-based and fixed-size framing's own distinct failure modes (escaping cost, scan cost, wasted bandwidth) are described from first principles in the lesson step rather than measured, since quantifying a scan's own cost or a fixed frame's own wasted bandwidth would need a second and third executed example this topic's own scope, per CHAPTER.md, does not call for.", "at": [{ "step": "Each framing strategy fails differently: a length prefix without a cap is a denial-of-service vector, a delimiter needs escaping and a real scan to find it, and a fixed size wastes real bandwidth on anything smaller than it" }] },
+      { "item": "This topic continues directly from topic 42's own byte-stream claim: a framing strategy is specifically the answer to the problem topic 42 established (that a read or write call has no message boundaries of its own), and the Decoder trait's own documented job statement makes that connection explicit rather than leaving it implicit.", "at": [{ "step": "The codec documentation's own description names the Decoder trait's actual job. What does it say that job actually is?" }] },
+      { "item": "The LengthDelimitedCodec quote is chosen over a paraphrase specifically because its own wording (largest size this codec will accept, larger frames will be rejected) states the cap's effect as a hard boundary, not a soft preference, which matches what the executed example demonstrates directly.", "at": [{ "step": "Build a real length-prefixed frame decoder with an explicit 1024-byte cap. Send it a frame whose length prefix honestly claims a length of 1 GiB. What happens?" }] },
+      { "item": "The lesson step's own framing (three strategies, three distinct costs, no free option) is deliberately presented before the recap rather than only in the recap, so the recap can compress it rather than introduce it fresh.", "at": [{ "step": "A capped length prefix, extracted without copying: that's the shape every framing strategy in this chapter's own lab is actually built around" }] },
+      { "item": "This topic deliberately stops at framing and does not yet address what happens when a connection produces or consumes faster than its peer can keep up, because that is specifically topic 44's own scoped claim, per CHAPTER.md's own order of ideas.", "at": [{ "step": "Recap: a cap that runs before allocation, and a split that never copies" }] },
+      { "item": "The example's own decode function returns an error type, not a panic, specifically so the cap violation is a normal, recoverable protocol error rather than a crash, which is the behavior a real server handling a malicious or buggy peer actually needs.", "at": [{ "step": "Measured: a frame claiming a length of 1 GiB was rejected immediately, no buffer anywhere near that claimed size was ever allocated to hold it" }] },
+      { "item": "This topic's own claim list keeps the measured pointer-equality check (zero-copy) distinct from the quoted O(1) complexity claim, since a reference-count bump that happened to still copy bytes would technically be O(1) too; the pointer check is what actually rules out a hidden copy.", "at": [{ "step": "Now send a frame under the cap, and extract it with BytesMut::split_to. Does that extraction copy the payload's bytes into a new buffer, or not?" }] }
+    ]
+  },
+  "gapReview": {
+    "date": "2026-10-24",
+    "by": "self-review",
+    "open": []
+  }
+}

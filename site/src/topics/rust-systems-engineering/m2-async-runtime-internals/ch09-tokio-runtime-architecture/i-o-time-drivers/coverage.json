@@ -1,0 +1,76 @@
+{
+  "topic": "rust.i-o-time-drivers",
+  "syllabus": [
+    {
+      "clause": "the I/O driver (mio over epoll/kqueue/IOCP) follows register interest → park the worker → readiness event → wake task → poll again, which ties directly to Ch.13. Timers use a hierarchical timer wheel. io_uring in Tokio is still an unstable, opt-in io-uring feature for filesystem operations in 1.5x (behind tokio_unstable); the separate tokio-uring runtime has seen few releases (→ Ch.14).",
+      "at": [
+        { "step": "Measured: a real writable readiness event, naming the exact socket that connected" },
+        { "step": "Measured: poll parked for the full timeout, delivering no event at all" },
+        { "step": "Measured: a 200ms sleep woke right at its deadline — the timer driver’s own wake cycle" },
+        { "step": "The crate’s own words: io-uring requires tokio_unstable, opted in explicitly" }
+      ]
+    }
+  ],
+  "sources": [
+    {
+      "source": "mio-poll",
+      "items": [
+        {
+          "item": "Poll monitors a large number of registered event sources, waiting until one or more become ready for reading or writing",
+          "at": [{ "step": "Measured: a real writable readiness event, naming the exact socket that connected" }]
+        },
+        {
+          "item": "an event source must be registered with Poll via its Registry, supplying a Token that is returned with the readiness event",
+          "at": [{ "step": "Measured: a real writable readiness event, naming the exact socket that connected" }]
+        },
+        {
+          "item": "Poll::poll may return readiness events even if the associated event source is not actually ready (spurious events)",
+          "at": [{ "step": "Register a socket for readiness that will never arrive. What does poll actually do?" }]
+        },
+        {
+          "item": "once a readiness event is received, the corresponding operation must be performed repeatedly until it returns WouldBlock",
+          "at": [{ "step": "Measured: poll parked for the full timeout, delivering no event at all" }]
+        }
+      ]
+    },
+    {
+      "source": "time-module",
+      "items": [
+        {
+          "item": "Sleep is a future that does no work and completes at a specific Instant in time",
+          "at": [{ "step": "Measured: a 200ms sleep woke right at its deadline — the timer driver’s own wake cycle" }]
+        }
+      ]
+    },
+    {
+      "source": "tokio-crate-root",
+      "items": [
+        {
+          "item": "io-uring enables io-uring support, Linux only, and requires the tokio_unstable flag to be passed to rustc",
+          "at": [{ "step": "The crate’s own words: io-uring requires tokio_unstable, opted in explicitly" }]
+        }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "self-review",
+    "date": "2026-10-23",
+    "items": [
+      { "item": "This topic deliberately builds the register → park → readiness-event → poll cycle directly against mio rather than against any exposed Tokio internals, because mio is the actual, real dependency Tokio's own I/O driver is built on, and the cycle is identical in substance to what every topic in this chapter has assumed without yet proving.", "at": [{ "step": "Measured: a real writable readiness event, naming the exact socket that connected" }] },
+      { "item": "A Token exists specifically to answer the question every earlier topic's scheduling mechanics implicitly depended on: when a readiness event arrives, which exact registered source does it belong to, so the correct task can be identified and woken rather than merely 'some task, somewhere'.", "at": [{ "step": "Measured: a real writable readiness event, naming the exact socket that connected" }] },
+      { "item": "The spurious-event behavior mio's own docs name directly (a readiness event that arrives even though the operation it names will still block) is not a bug this topic glosses over; it is exactly why 'the corresponding operation must be performed repeatedly until it returns WouldBlock' is stated as a requirement, not a suggestion.", "at": [{ "step": "Register a socket for readiness that will never arrive. What does poll actually do?" }] },
+      { "item": "The measured, genuinely-parked wait in this topic (poll blocking for close to its full timeout when nothing becomes ready) is the same mechanism this chapter has called 'parking the worker' from the very first topic — here it is finally the literal, measured thing, not a name for something assumed to happen underneath.", "at": [{ "step": "Measured: poll parked for the full timeout, delivering no event at all" }] },
+      { "item": "The sleep measurement closes a loop Chapter 8 left deliberately open: every topic since has talked about 'waking' a task as a documented fact of Tokio's scheduler, but this is the first topic to show, directly, what actually calls wake() and roughly when — the time driver, firing close to the real requested deadline.", "at": [{ "step": "Measured: a 200ms sleep woke right at its deadline — the timer driver’s own wake cycle" }] },
+      { "item": "Naming io_uring as unstable and opt-in, rather than silently assuming it or ignoring it, matters precisely because a reader who has seen io_uring discussed elsewhere (as the fast, modern Linux I/O interface) needs to know explicitly that Tokio's default I/O path in 2026 is still the mio-based readiness cycle this topic just built, not io_uring.", "at": [{ "step": "The crate’s own words: io-uring requires tokio_unstable, opted in explicitly" }] },
+      { "item": "The full register → park → readiness-event → wake → poll-again cycle, restated once all five of its steps are backed by this topic's own measurements rather than merely named, is the single mechanism every earlier topic in this chapter (task scheduling, work stealing, cooperative budgeting, blocking isolation) assumed was already working correctly underneath it.", "at": [{ "step": "This closes the loop the earlier chapter opened: register, park, event, wake, poll again — for real" }] },
+      { "item": "This topic's two mio measurements are deliberately symmetric: one proves the cycle fires correctly when something really does become ready, and the other proves it correctly does nothing — for the full timeout, no shortcuts — when nothing does, which is exactly as important a guarantee as the first.", "at": [{ "step": "Recap: register, park, a real event, and a timer that wakes on time" }] },
+      { "item": "Chapter 8 built the poll/wake contract in the abstract and proved it with a hand-rolled, single-threaded executor; this topic is the first to show the real caller of wake() in a production runtime, which is why it is placed here, after scheduling, budgeting, and blocking are already understood, rather than any earlier.", "at": [{ "step": "Recap: register, park, a real event, and a timer that wakes on time" }] },
+      { "item": "Every mechanism this chapter has built — multiplexing, stealing, budgeting, blocking isolation, and now the I/O and time drivers — is a real guarantee that can also be violated in production: a task that never yields, a channel with no bound, a readiness cycle nobody is watching. Naming that directly is this chapter's own bridge into its final topic.", "at": [{ "step": "Recap: register, park, a real event, and a timer that wakes on time" }] }
+    ]
+  },
+  "gapReview": {
+    "date": "2026-10-23",
+    "by": "self-review",
+    "open": []
+  }
+}

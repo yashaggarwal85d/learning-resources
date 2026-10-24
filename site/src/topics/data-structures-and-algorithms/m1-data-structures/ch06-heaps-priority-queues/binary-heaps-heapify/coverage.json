@@ -1,0 +1,49 @@
+{
+  "topic": "dsa.binary-heaps-heapify",
+  "syllabus": [
+    {
+      "clause": "sift-up/sift-down, O(n) bottom-up build (sum-of-heights argument), heap as an implicit tree in an array.",
+      "at": [
+        { "step": "A binary heap's tree lives entirely in one flat array — no pointers at all. A node at index i has its children at indices 2i+1 and 2i+2, and its parent at index floor((i−1)/2)." },
+        { "step": "Sift-up: compare the new value with its parent; if the heap property already holds, stop. If not, swap them, and repeat from the new position." },
+        { "step": "Removing the minimum empties the root. Sift-down fills it: move the array's last element into the root, then walk it down, swapping with whichever child is smaller, until it's no longer out of order." },
+        { "step": "Building a heap from n arbitrary elements one insertion at a time costs O(n log n) — each of n insertions pays its own O(log n) sift-up. Sifting down from the bottom instead costs O(n): most nodes sit near the bottom, where a sift-down's own cost, bounded by that node's height, is small." }
+      ]
+    }
+  ],
+  "sources": [
+    {
+      "source": "\"Binary heap\" (Wikipedia)",
+      "items": [
+        { "item": "Sift-up (up-heap): compare with parent, swap and repeat if out of order, else stop", "at": [{ "step": "Sift-up: compare the new value with its parent; if the heap property already holds, stop. If not, swap them, and repeat from the new position." }] },
+        { "item": "Sift-down (down-heap): compare with children, swap with the smaller (min-heap) and repeat if out of order, else stop", "at": [{ "step": "Removing the minimum empties the root. Sift-down fills it: move the array's last element into the root, then walk it down, swapping with whichever child is smaller, until it's no longer out of order." }] },
+        { "item": "Zero-indexed implicit array formula: children at 2i+1, 2i+2; parent at floor((i−1)/2)", "at": [{ "step": "A binary heap's tree lives entirely in one flat array — no pointers at all. A node at index i has its children at indices 2i+1 and 2i+2, and its parent at index floor((i−1)/2)." }] },
+        { "item": "Williams' one-at-a-time insertion method costs O(n log n); Floyd's bottom-up sift-down method is faster because most heapification work happens in the lower levels", "at": [{ "step": "Building a heap from n arbitrary elements one insertion at a time costs O(n log n) — each of n insertions pays its own O(log n) sift-up. Sifting down from the bottom instead costs O(n): most nodes sit near the bottom, where a sift-down's own cost, bounded by that node's height, is small." }] }
+      ]
+    },
+    {
+      "source": "Sedgewick, Wayne — \"Priority Queues\" (Algorithms, 4th ed. booksite)",
+      "items": [
+        { "item": "One-indexed equivalent of the index arithmetic: parent at k/2, children at 2k, 2k+1", "at": [{ "step": "A binary heap's tree lives entirely in one flat array — no pointers at all. A node at index i has its children at indices 2i+1 and 2i+2, and its parent at index floor((i−1)/2)." }] },
+        { "item": "A direct, named proposition: sink-based (bottom-up) heap construction is linear time", "at": [{ "step": "Building a heap from n arbitrary elements one insertion at a time costs O(n log n) — each of n insertions pays its own O(log n) sift-up. Sifting down from the bottom instead costs O(n): most nodes sit near the bottom, where a sift-down's own cost, bounded by that node's height, is small." }] }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "blind self-review, research stage",
+    "date": "2026-10-23",
+    "items": [
+      { "item": "Sift-up never touches more than the one path from the new leaf to the root — its total swap count for a single insertion can never exceed the tree's own height, checked directly in examples.py.", "at": [{ "step": "Sift-up: compare the new value with its parent; if the heap property already holds, stop. If not, swap them, and repeat from the new position." }] },
+      { "item": "Sift-down is sift-up's exact mirror, aimed root to leaf instead of leaf to root, for the same structural reason: touch one path, trust the rest.", "at": [{ "step": "Removing the minimum empties the root. Sift-down fills it: move the array's last element into the root, then walk it down, swapping with whichever child is smaller, until it's no longer out of order." }] },
+      { "item": "A random-permutation input understates the one-at-a-time build's own O(n log n) cost, because a random insertion's expected sift-up distance is close to constant; examples.py instead measures on a decreasing-order input, the adversarial case for a min-heap, to actually expose the gap.", "at": [{ "step": "Building a heap from n arbitrary elements one insertion at a time costs O(n log n) — each of n insertions pays its own O(log n) sift-up. Sifting down from the bottom instead costs O(n): most nodes sit near the bottom, where a sift-down's own cost, bounded by that node's height, is small." }] },
+      { "item": "The full closed-form sum-of-heights proof for the O(n) bottom-up bound is named and sourced, not re-derived symbol by symbol on screen; the real swap-count gap is measured directly instead.", "at": [{ "deep": "Into the internals" }] },
+      { "item": "The 1-indexed (Sedgewick & Wayne) and 0-indexed (Wikipedia) index formulas describe the identical parent-child relationship once the indexing convention is accounted for, not two different structures.", "at": [{ "step": "A binary heap's tree lives entirely in one flat array — no pointers at all. A node at index i has its children at indices 2i+1 and 2i+2, and its parent at index floor((i−1)/2)." }] },
+      { "item": "This topic's own measured swap counts (one-at-a-time versus bottom-up build) are scoped to its own examples.py input (n=4,000, decreasing order) and are not claimed to generalize exactly to every n or every input shape, only to the asymptotic bound each input shape is chosen to expose.", "at": [{ "step": "Prove it" }] },
+      { "item": "The implicit-array representation is what makes this topic's heap pointer-free: a node's own position in the array is the only state needed to compute both its parent and its children, with no stored links at all.", "at": [{ "step": "A binary heap's tree lives entirely in one flat array — no pointers at all. A node at index i has its children at indices 2i+1 and 2i+2, and its parent at index floor((i−1)/2)." }] },
+      { "item": "Heapify's linear-time build and heapsort's own sortdown phase are two separate mechanisms sharing one structure; this topic covers only the build, naming the sortdown phase only as where that build is actually used in production.", "at": [{ "deep": "In production" }] },
+      { "item": "Insertion (sift-up) and extraction (sift-down) are each bounded by the tree's own height, not by n directly — the height bound is what makes a single operation O(log n), distinct from the separate claim about total build cost across n operations.", "at": [{ "step": "Removing the minimum empties the root. Sift-down fills it: move the array's last element into the root, then walk it down, swapping with whichever child is smaller, until it's no longer out of order." }] },
+      { "item": "This topic declines to teach d-ary heaps, monotone integer priority queues, binomial heaps, pairing heaps or Fibonacci heaps as mechanisms, consistent with the chapter plan's own skip list for sections 6.1 and 6.2 of the syllabus.", "at": [{ "deep": "The frontier" }] }
+    ]
+  },
+  "gapReview": { "date": "2026-10-23", "by": "self-review", "open": [] }
+}

@@ -1,0 +1,24 @@
+import Resource from '../../../../../components/Resource.astro';
+
+<section class="prereq" data-section="chapter-so-far">
+
+### <span class="n">01</span> Where the last topic left off
+
+<ul class="resources">
+  <Resource kind="reel" host={props.host} domain="rust-systems-engineering" title="Tower Service and poll_ready backpressure">poll_ready and call are two separate steps, and every layer composes around that same readiness contract.</Resource>
+</ul>
+
+</section>
+
+<section class="prereq" data-section="axum-primary">
+
+### <span class="n">02</span> The real docs: Axum's own middleware story
+
+<ul class="resources">
+  <Resource kind="reading" title="axum" href="https://docs.rs/axum/latest/axum/index.html" by="The Axum Project">No middleware system of its own; built entirely on tower::Service.</Resource>
+  <Resource kind="reading" title="axum::extract" href="https://docs.rs/axum/latest/axum/extract/index.html" by="The Axum Project">A handler takes extractors as arguments; FromRequest and FromRequestParts.</Resource>
+  <Resource kind="reading" title="middleware::from_fn" href="https://docs.rs/axum/latest/axum/middleware/fn.from_fn.html" by="The Axum Project">Create a middleware from a plain async function.</Resource>
+  <Resource kind="reading" title="tower_http" href="https://docs.rs/tower-http/latest/tower_http/index.html" by="The Tower Project">HTTP-specific middleware built on tower, shared with any Tower stack.</Resource>
+</ul>
+
+</section>

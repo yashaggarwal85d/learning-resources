@@ -1,0 +1,7 @@
+- **Self-referential value**: a value that holds a pointer into one of its own fields. *Where you meet it:* a struct whose own `pointer` field targets its own `value` field — sound only until it moves.
+- **Address-sensitive**: the standard library's term for a value that must not move during some part of its lifespan. *Where you meet it:* the compiler-generated async state machine, named directly as the key example.
+- **`Pin<Ptr>`**: a wrapper around a pointer that promises its pointee will not move or be invalidated. *Where you meet it:* the type-level guarantee that keeps a self-reference valid.
+- **`Unpin`**: an auto trait implemented for almost every type, meaning the type never needed `Pin`'s guarantee in the first place. *Where you meet it:* why `Pin` has no effect at all on ordinary types from earlier chapters.
+- **`PhantomPinned`**: a zero-sized field that opts a type out of `Unpin`. *Where you meet it:* marking this topic's self-referential struct so `Pin` actually matters for it.
+- **The `pin!` macro**: pins a value on the stack, with the identical guarantee `Box::pin` gives on the heap. *Where you meet it:* a second, allocation-free way to pin the same self-referential struct.
+- **Structural pin projection**: projecting a pinned struct's field to `Pin<&mut Field>` only when that field is declared to move exactly when its container does. *Where you meet it:* `pin-project-lite`'s `#[pin]` attribute, generating that projection safely.

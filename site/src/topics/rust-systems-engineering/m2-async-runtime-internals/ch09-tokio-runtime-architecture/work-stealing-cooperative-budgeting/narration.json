@@ -1,0 +1,90 @@
+{
+  "steps": [
+    {
+      "lines": [
+        "Take two hundred of these lightweight units of work, every single one of them spawned by code running inside the one worker that's currently driving the whole runtime forward.",
+        { "beat": 0.3 },
+        "Do all two hundred stay right there, on that same one worker that spawned them?"
+      ],
+      "answer": [
+        "No — quite a few of them end up running on entirely different real worker threads instead.",
+        "Nothing scheduled them there directly. The only way they could have gotten there at all is by being moved, after the fact, from the worker that created them."
+      ]
+    },
+    {
+      "lines": [
+        "Here's that exact move, drawn out: one worker's own queue, now visibly short by half, and that missing half sliding straight into an idle sibling's queue right next to it.",
+        "An idle worker doesn't wait patiently for new work to arrive on its own — it reaches over and takes half of what a busy neighbour already has."
+      ]
+    },
+    {
+      "lines": [
+        "Measure it directly rather than just asserting it: run those exact two hundred units of work, every one of them spawned from that single worker, and record which real thread each one actually executed on.",
+        "They land across three or four different real threads, not just the one that spawned them."
+      ],
+      "takeaway": "Idle workers steal half of a busy sibling's queue — the only way units of work spawned from one worker end up running on several real threads."
+    },
+    {
+      "lines": [
+        "Now take one of these units of work that, the moment it runs, immediately wakes up a second one waiting right behind it on a channel.",
+        { "beat": 0.3 },
+        "Does that woken one just get pushed onto the back of the ordinary queue, behind everything already waiting there?"
+      ],
+      "answer": [
+        "No — it gets a dedicated fast-path slot instead, ahead of the ordinary queue entirely.",
+        "This exists for exactly this pattern: one unit of work handing data straight to another that's been sitting there waiting for it."
+      ]
+    },
+    {
+      "lines": [
+        "The documentation calls this the lifo slot, and it says plainly what it's for: data that was just handed off is still warm, sitting right there in the processor's own cache, so the newly-woken piece of work gets to run next, immediately, while that data is still hot.",
+        "And it has a real limit built in: use that same fast lane three times in a row on one worker, and it gets temporarily switched off, until that worker runs something that didn't come through it."
+      ]
+    },
+    {
+      "lines": [
+        "Now picture a unit of work that is never, ever truly blocked on anything real — a loop around a channel kept perpetually topped back up, so every single check of it comes back immediately ready.",
+        { "beat": 0.3 },
+        "Running that, forever, on a runtime with exactly one real worker thread — does a trivial, otherwise-instant sibling ever actually get a turn?"
+      ],
+      "answer": [
+        "Yes, it still does — it's forced in, periodically, whether the hot loop would have offered to step aside on its own or not.",
+        "There's a hard limit on how many of these resource checks any one piece of work gets to make before the runtime makes it return control, whether or not real data happened to be sitting there ready."
+      ]
+    },
+    {
+      "lines": [
+        "Measure that limit directly: let the trivial sibling report back the exact moment it got to run, and let the hot loop report back its own total running time once it finally finishes.",
+        "The sibling runs and finishes in a sliver of a moment — nowhere close to how long that supposedly endless hot loop actually took to run its full course."
+      ],
+      "takeaway": "A bounded per-poll allowance of resource checks forces even an always-ready hot loop to yield — a trivial sibling got to run while that loop was still going."
+    },
+    {
+      "lines": [
+        "Take that exact same hot loop, not one line of it changed, and wrap it in a function built for exactly one purpose: turning that spending limit off entirely.",
+        { "beat": 0.3 },
+        "Does the sibling still manage to sneak in early, the same way it did a moment ago?"
+      ],
+      "answer": [
+        "No — now it has to wait for the entire loop to finish, start to end, before it gets any turn at all.",
+        "There's no longer any limit being enforced inside it, so nothing ever forces it to hand control back early."
+      ]
+    },
+    {
+      "lines": [
+        "Measure that too, side by side: the sibling's own moment of completion, against the once-unconstrained loop's own total running time.",
+        "The two numbers land within a few milliseconds of each other — the sibling wasn't interleaved with the loop at all, it simply ran the instant the loop itself finally finished and stepped aside on its own."
+      ],
+      "takeaway": "Turning that budget off entirely removes its protection completely — the sibling only runs once the identical loop finishes on its own, exactly the risk this is documented to carry."
+    },
+    {
+      "lines": [
+        "An idle worker takes half of a busy sibling's queue, proven directly by two hundred units of work scattering themselves across several real threads.",
+        "A fast-path slot exists specifically for data that was just handed off, still warm, with a hard limit on how many times in a row it can be used.",
+        "A spending limit on resource checks forces even an endlessly-ready loop to step aside periodically, measured directly. Turning that limit off entirely removes the protection completely, also measured directly, down to the millisecond.",
+        "That spending limit only ever helps a piece of work that's making the kind of calls it actually watches in the first place — one that's willing to cooperate at all.",
+        "Some real work, a genuine blocking system call or a long stretch of raw computation, never makes any such call, and so has no point in it where any of this can ever step in."
+      ]
+    }
+  ]
+}

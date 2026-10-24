@@ -1,0 +1,23 @@
+import Resource from '../../../../../components/Resource.astro';
+
+<section class="prereq" data-section="chapter-so-far">
+
+### <span class="n">01</span> Where the last topic left off
+
+<ul class="resources">
+  <Resource kind="reel" host={props.host} domain="rust-systems-engineering" title="TCP as a byte stream">a single real write took dozens of real reads to receive, because TCP delivers an undifferentiated byte stream, not messages.</Resource>
+</ul>
+
+</section>
+
+<section class="prereq" data-section="framing-primary">
+
+### <span class="n">02</span> The real docs: framing strategies and zero-copy extraction
+
+<ul class="resources">
+  <Resource kind="reading" title="tokio_util::codec" href="https://docs.rs/tokio-util/latest/tokio_util/codec/index.html" by="The Tokio Project">The Decoder trait's own job, and the denial-of-service risk an uncapped length creates.</Resource>
+  <Resource kind="reading" title="LengthDelimitedCodec" href="https://docs.rs/tokio-util/latest/tokio_util/codec/length_delimited/struct.LengthDelimitedCodec.html" by="The Tokio Project">max_frame_length's own documented rejection behavior.</Resource>
+  <Resource kind="reading" title="BytesMut" href="https://docs.rs/bytes/latest/bytes/struct.BytesMut.html" by="The Tokio Project">split_to's own documented zero-copy, O(1) behavior.</Resource>
+</ul>
+
+</section>

@@ -1,0 +1,24 @@
+import Resource from '../../../../../components/Resource.astro';
+
+<section class="prereq" data-section="before-this">
+
+### <span class="n">01</span> Before this: the GIL and the four real ways around it
+
+<ul class="resources">
+  <Resource kind="reel" title="GIL, free-threading and subinterpreters" domain="data-engineering" host="de.gil-free-threading-subinterpreters" by="the topic right before this one" />
+</ul>
+
+</section>
+
+<section class="prereq" data-section="asyncio-straight-from-the-source">
+
+### <span class="n">02</span> asyncio's own documentation, and an async database driver's own docs
+
+<ul class="resources">
+  <Resource kind="reading" title="Event loop" href="https://docs.python.org/3/library/asyncio-eventloop.html" by="Python Software Foundation">The event loop's own definition and `run_in_executor()` as the documented fix for a blocking call.</Resource>
+  <Resource kind="reading" title="Coroutines and tasks" href="https://docs.python.org/3/library/asyncio-task.html" by="Python Software Foundation">`TaskGroup`'s structured concurrency and `asyncio.timeout()`'s own cancellation behavior.</Resource>
+  <Resource kind="reading" title="Synchronization Primitives" href="https://docs.python.org/3/library/asyncio-sync.html" by="Python Software Foundation">The semaphore's own counter mechanics as real backpressure.</Resource>
+  <Resource kind="reading" title="Concurrent operations" href="https://www.psycopg.org/psycopg3/docs/advanced/async.html" by="psycopg">`AsyncConnection`/`AsyncCursor` and what sharing one connection across tasks actually costs.</Resource>
+</ul>
+
+</section>

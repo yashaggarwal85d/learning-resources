@@ -1,0 +1,25 @@
+import Resource from '../../../../../components/Resource.astro';
+
+<section class="prereq" data-section="before-this">
+
+### <span class="n">01</span> Before this: the engine every Python tool in this course called
+
+<ul class="resources">
+  <Resource kind="reel" title="Native extensions with Rust and PyO3" domain="data-engineering" host="de.native-extensions-rust-pyo3" by="the last topic of the previous chapter" />
+</ul>
+
+</section>
+
+<section class="prereq" data-section="straight-from-the-source">
+
+### <span class="n">02</span> The sources this topic measures against
+
+<ul class="resources">
+  <Resource kind="reading" title="Database Page Layout" href="https://www.postgresql.org/docs/16/storage-page-layout.html" by="PostgreSQL docs">The page's five parts, the line-pointer array, and the heap tuple header's own null bitmap.</Resource>
+  <Resource kind="reading" title="TOAST" href="https://www.postgresql.org/docs/16/storage-toast.html" by="PostgreSQL docs">Why a fixed page size forces a large value out of line, and the real chunking scheme.</Resource>
+  <Resource kind="reading" title="pageinspect" href="https://www.postgresql.org/docs/16/pageinspect.html" by="PostgreSQL docs">`get_raw_page` and `heap_page_items`, the real functions this topic's examples use directly.</Resource>
+  <Resource kind="reading" title="InnoDB Row Formats Overview" href="https://mariadb.com/kb/en/innodb-row-formats-overview/" by="MariaDB Knowledge Base">InnoDB's own overflow-page mechanism, the comparison point to TOAST.</Resource>
+</ul>
+
+</section>
+

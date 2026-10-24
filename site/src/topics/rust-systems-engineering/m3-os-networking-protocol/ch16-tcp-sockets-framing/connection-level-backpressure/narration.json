@@ -1,0 +1,88 @@
+{
+  "steps": [
+    {
+      "lines": [
+        "A real server accepts a connection, then deliberately never reads from it again.",
+        { "beat": 0.3 },
+        "Keep writing from the other side. Does the writer eventually notice, or does it just keep succeeding forever?"
+      ],
+      "answer": [
+        "It eventually notices.",
+        "Once the kernel's own receive window closes, a real write genuinely blocks."
+      ]
+    },
+    {
+      "lines": [
+        "Run it for real: the writer sent several megabytes successfully,",
+        "and then one real write call genuinely blocked, once that window had filled and closed."
+      ]
+    },
+    {
+      "lines": [
+        "Build a real, bounded queue for one connection's own outgoing messages, with a real cap on how many it holds.",
+        { "beat": 0.3 },
+        "Fill it to exactly that cap, then push one more. What happens to that extra message?"
+      ],
+      "answer": [
+        "It's turned away outright.",
+        "The queue's own length never grows past the cap it was given."
+      ]
+    },
+    {
+      "lines": [
+        "Run it for real: the queue filled to exactly its own cap, and the very next push past it",
+        "was genuinely rejected — its length never grew by one more, confirmed directly."
+      ],
+      "takeaway": "A queue that is genuinely bounded turns away the next push outright, every time."
+    },
+    {
+      "lines": [
+        "A real peer connects, then deliberately sends nothing at all, the way a slow, stalling attacker would.",
+        { "beat": 0.3 },
+        "The other side sets a real deadline on how long it will wait. Does it wait forever anyway, or does that deadline actually fire?"
+      ],
+      "answer": [
+        "It actually fires.",
+        "Right on schedule, closing the connection to a peer that never sent a single byte."
+      ]
+    },
+    {
+      "lines": [
+        "Run it for real: the real deadline fired right on schedule,",
+        "closing a connection whose peer had sent nothing at all — confirmed directly, by measuring the real elapsed time."
+      ],
+      "takeaway": "A connection that might never send anything needs its own real deadline, not good faith."
+    },
+    {
+      "lines": [
+        "This protocol's own standard makes a specific claim about how long one side may leave its own receiving window shut.",
+        { "beat": 0.3 },
+        "What does it actually say?"
+      ],
+      "answer": [
+        "Indefinitely.",
+        "As long as it keeps answering the other side's own probes, the standard itself allows the wait."
+      ]
+    },
+    {
+      "lines": [
+        "The standard's own words: one side may leave its receiving window closed indefinitely,",
+        "as long as it keeps answering the sender's own probes — not reading is a real, sanctioned way to say not yet."
+      ]
+    },
+    {
+      "lines": [
+        "Stop reading to say not yet, cap a queue to say no more than this, set a real deadline to say not forever:",
+        "that's overload handled as an explicit, deliberate choice, never something that simply happens on its own."
+      ],
+      "takeaway": "Handling overload is a choice a connection makes on purpose, never an accident of a buffer."
+    },
+    {
+      "lines": [
+        "So, pulling this topic together: not reading a real connection genuinely closes its own window and blocks the other side, exactly as the standard itself says is allowed, indefinitely.",
+        "A real bounded queue enforces its own cap by genuinely turning away the next push once it's full.",
+        "And a real deadline genuinely fires against a peer that may never send anything at all, closing the connection rather than waiting on it forever."
+      ]
+    }
+  ]
+}

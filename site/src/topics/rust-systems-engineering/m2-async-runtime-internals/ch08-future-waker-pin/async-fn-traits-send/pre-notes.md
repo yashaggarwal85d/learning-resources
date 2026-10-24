@@ -1,0 +1,7 @@
+- **`dyn` compatible**: a trait the compiler can build a vtable for, allowing `Box<dyn Trait>`. *Where you meet it:* a trait with an `async fn`, which is not.
+- **The Send bound problem**: a trait's `async fn` returns an anonymous future a caller cannot currently require to be `Send`. *Where you meet it:* a generic, `Send`-bounded implementor still can't satisfy a generic caller needing its future to be `Send`.
+- **`trait-variant`**: a crate generating a second, bound-added sibling trait from one attribute. *Where you meet it:* fixing the Send bound problem without touching the original trait.
+- **`async-trait`**: a crate erasing every async method's future into `Pin<Box<dyn Future + Send>>`. *Where you meet it:* fixing `dyn` dispatch, at a real per-call allocation.
+- **Type erasure**: replacing many concrete types with one uniform, boxed representation. *Where you meet it:* what `async-trait`'s macro actually does under the hood.
+- **Return-Type Notation (RFC 3654)**: a proposed native syntax for bounding a trait method's return type directly. *Where you meet it:* the eventual fix for the Send bound problem, still unstable in 2026.
+- **`dynosaur`**: a newer crate offering `dyn`-safe async traits by different means than `async-trait`. *Where you meet it:* named as a further option, not built here.

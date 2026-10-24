@@ -1,0 +1,46 @@
+version: 2
+
+models:
+  - name: stg_orders
+    columns:
+      - name: order_id
+        data_tests:
+          - unique
+          - not_null
+      - name: customer_id
+        data_tests:
+          - not_null
+          - relationships:
+              to: ref('stg_customers')
+              field: customer_id
+      - name: status
+        data_tests:
+          - accepted_values:
+              values: ['completed', 'cancelled', 'shipped']
+
+  - name: stg_customers
+    columns:
+      - name: customer_id
+        data_tests:
+          - unique
+          - not_null
+
+  - name: stg_products
+    columns:
+      - name: product_id
+        data_tests:
+          - unique
+          - not_null
+
+unit_tests:
+  - name: test_cents_to_dollars_conversion
+    model: stg_orders
+    given:
+      - input: ref('raw_orders')
+        rows:
+          - {order_id: 1, customer_id: 1, product_id: 10, order_date: "2026-01-03", quantity: 1, amount_cents: 999, status: completed, updated_at: "2026-01-03 09:00:00", channel: online}
+          - {order_id: 2, customer_id: 1, product_id: 10, order_date: "2026-01-04", quantity: 1, amount_cents: 100, status: completed, updated_at: "2026-01-04 09:00:00", channel: online}
+    expect:
+      rows:
+        - {order_id: 1, amount_dollars: 9.99}
+        - {order_id: 2, amount_dollars: 1.00}

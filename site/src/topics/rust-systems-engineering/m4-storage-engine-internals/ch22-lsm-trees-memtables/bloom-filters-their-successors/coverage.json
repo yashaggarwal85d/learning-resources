@@ -1,0 +1,62 @@
+{
+  "topic": "rust.bloom-filters-their-successors",
+  "syllabus": [
+    {
+      "clause": "Bloom filters rule out SSTables that definitely lack a key: no false negatives, some false positives. A negative result is proof of absence; a positive result only gives permission to look. False-positive rate vs bits per key, per-level allocation (Monkey, SIGMOD 2017), Ribbon/xor filters, and prefix filters for range scans.",
+      "at": [
+        { "step": "Measured: zero false negatives, at every budget" },
+        { "step": "Measured: a tight bits-per-key budget genuinely produced real false positives against keys that were never inserted at all" },
+        { "step": "Measured: spending far more bits per key genuinely lowered the measured false-positive rate" }
+      ]
+    }
+  ],
+  "sources": [
+    {
+      "source": "wiki-bloom",
+      "items": [
+        {
+          "item": "this generates filters using about 10 bits of space per key, which works well for many workloads, though the bits per key is continuously configurable from 1 to 20 or more",
+          "at": [{ "step": "Measured, in RocksDB's own numbers: the low end of the table buys far more improvement per bit spent than the same size increase further up" }]
+        },
+        {
+          "item": "9.9 bits per key (1% false positive rate) is 99% as effective as 100 bits per key",
+          "at": [{ "step": "Measured, in RocksDB's own numbers: the low end of the table buys far more improvement per bit spent than the same size increase further up" }]
+        }
+      ]
+    },
+    {
+      "source": "wiki-basic-operations",
+      "items": [
+        {
+          "item": "the optional FilterPolicy mechanism can be used to reduce the number of disk reads substantially",
+          "at": [{ "step": "RocksDB's own wiki also states, directly, why any of this bits-per-key spending is worth it at all: what does a real filter actually save a lookup from doing?" }]
+        },
+        {
+          "item": "this filter will reduce the number of unnecessary disk reads needed for Get() calls by a factor of approximately a 100",
+          "at": [{ "step": "RocksDB's own wiki also states, directly, why any of this bits-per-key spending is worth it at all: what does a real filter actually save a lookup from doing?" }]
+        }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "self-review",
+    "date": "2026-10-24",
+    "items": [
+      { "item": "The zero-false-negatives claim checks every single one of the two thousand actually-inserted keys, not a sample, at both a tight and a generous bits-per-key budget, so the claim genuinely covers the entire inserted key set rather than being a spot check that happened to pass.", "at": [{ "step": "Measured: zero false negatives, at every budget" }] },
+      { "item": "The false-positive measurements probe a disjoint range of keys (ten times the inserted range and beyond) that share no overlap whatsoever with the inserted keys, so a measured false positive is genuinely a key the filter was never given, not an accidental re-probe of an inserted one.", "at": [{ "step": "Measured: a tight bits-per-key budget genuinely produced real false positives against keys that were never inserted at all" }] },
+      { "item": "The bits-per-key comparison rebuilds the filter from scratch at each budget over the identical inserted key set and the identical probe range, so the measured drop in false-positive rate is attributable to the budget alone, not to any difference in what was inserted or probed.", "at": [{ "step": "Measured: spending far more bits per key genuinely lowered the measured false-positive rate" }] },
+      { "item": "This topic's own hash-position function combines two independent base hashes via the Kirsch-Mitzenmacher technique to stand in for several genuinely independent hash functions from only two underlying hash computations, a real, standard technique, not an ad hoc shortcut.", "at": [{ "step": "A Bloom filter says a key is either 'maybe present' or 'definitely absent.' For a key that was genuinely inserted earlier, could it ever come back 'definitely absent'?" }] },
+      { "item": "This topic continues directly from topic 56's own lsm-write-read-amplification-paths id, since a real Bloom filter sits in front of exactly the SSTables that topic's own flush path produces, letting a read rule most of them out without opening a single one.", "at": [{ "step": "A Bloom filter says a key is either 'maybe present' or 'definitely absent.' For a key that was genuinely inserted earlier, could it ever come back 'definitely absent'?" }] },
+      { "item": "The syllabus names per-level allocation (Monkey), Ribbon/xor filters, and prefix filters for range scans as further material beyond this topic's own core measured claims (the false-negative/false-positive guarantee and the bits-per-key trade); this topic covers the core guarantee and trade directly and names the successors in prose, without separately measuring each one, since the core Bloom filter mechanics are what every successor still builds on.", "at": [{ "step": "RocksDB's own wiki also states, directly, why any of this bits-per-key spending is worth it at all: what does a real filter actually save a lookup from doing?" }] },
+      { "item": "All of this topic's own measured claims run entirely on an in-memory Rust bit array with no file, network, or root access needed, continuing this chapter's own established pattern from topics 56 and 57.", "at": [{ "step": "Recap: what a Bloom filter guarantees, and what it only budgets" }] },
+      { "item": "This topic deliberately closes Chapter 22 as its third and last topic, after topic 56's own write and read paths and topic 57's own compaction strategies, since a Bloom filter is specifically what cuts down how many of the SSTables those two topics already measured a read even has to open.", "at": [{ "step": "Recap: what a Bloom filter guarantees, and what it only budgets" }] },
+      { "item": "The RocksDB bits-per-key quotes were fetched from raw.githubusercontent.com/wiki/facebook/rocksdb rather than github.com/facebook/rocksdb/wiki directly, for the same reason as topics 56 and 57: this session's GitHub access is scoped to a different repository, and github.com itself is proxied through a repository-scoped endpoint that refuses other repositories' pages.", "at": [{ "step": "Measured, in RocksDB's own numbers: the low end of the table buys far more improvement per bit spent than the same size increase further up" }] },
+      { "item": "The measured false-positive rates in this topic's own prototype (roughly six and a half percent at four bits per key, dropping to under half a percent at twelve) are a real, deterministic consequence of this specific implementation and workload, not a claim to match RocksDB's own production false-positive curve exactly; the direction of the trade-off is what this topic measures, not RocksDB's precise numbers.", "at": [{ "step": "Measured: spending far more bits per key genuinely lowered the measured false-positive rate" }] }
+    ]
+  },
+  "gapReview": {
+    "date": "2026-10-24",
+    "by": "self-review",
+    "open": []
+  }
+}

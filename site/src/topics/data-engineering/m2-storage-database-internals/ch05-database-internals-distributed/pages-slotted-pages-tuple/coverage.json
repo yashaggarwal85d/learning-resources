@@ -1,0 +1,132 @@
+{
+  "topic": "de.pages-slotted-pages-tuple",
+  "syllabus": [
+    {
+      "clause": "the fixed-size page as the unit of I/O: header, line-pointer (slot) array, tuples growing toward each other, record headers, null bitmaps, page checksums",
+      "at": [
+        { "step": "Reveal: a page's own five parts, read directly off a real table" },
+        { "step": "Reveal: a line pointer, decoded" },
+        { "step": "Reveal: the null bitmap, read off a real inserted row" }
+      ]
+    },
+    {
+      "clause": "why slots decouple logical row identity (Postgres ctid) from physical offset",
+      "at": [
+        { "step": "Predict: if VACUUM moves a surviving row to a new offset, does that row's own CTID change too?" },
+        { "step": "Reveal: the identical row, moved by a real VACUUM, CTID unchanged" }
+      ]
+    },
+    {
+      "clause": "out-of-line storage of large values (Postgres TOAST, InnoDB overflow pages). Build depth → Rust Systems Engineering Ch.19",
+      "at": [
+        { "step": "Reveal: a large value, moved out of line by a real TOAST" },
+        { "step": "Reveal: InnoDB's own overflow pages, the same problem solved differently" }
+      ]
+    }
+  ],
+  "sources": [
+    {
+      "source": "Database Page Layout",
+      "items": [
+        {
+          "item": "a page has five parts, and item identifiers grow from one end while item data grows from the other",
+          "at": [{ "step": "Reveal: a page's own five parts, read directly off a real table" }]
+        },
+        {
+          "item": "a line pointer is a 4-byte (offset, length) pair that never moves until freed, even when the item it points to is physically relocated",
+          "at": [{ "step": "Reveal: a line pointer, decoded" }]
+        },
+        {
+          "item": "every CTID is a page number plus a line-pointer index, which is why it stays usable as a long-term reference even when the item moves",
+          "at": [{ "step": "Reveal: the identical row, moved by a real VACUUM, CTID unchanged" }]
+        },
+        {
+          "item": "the heap tuple header has a fixed size followed by an optional null bitmap, present only if the row has a null column",
+          "at": [{ "step": "Reveal: the null bitmap, read off a real inserted row" }]
+        }
+      ]
+    },
+    {
+      "source": "TOAST",
+      "items": [
+        {
+          "item": "a fixed page size forces a large value to be compressed and/or chunked, since a tuple cannot span pages",
+          "at": [{ "step": "Reveal: a large value, moved out of line by a real TOAST" }]
+        },
+        {
+          "item": "an out-of-line value is divided into roughly 2 kB chunks stored as separate rows in a side table",
+          "at": [{ "step": "Reveal: a large value, moved out of line by a real TOAST" }]
+        }
+      ]
+    },
+    {
+      "source": "pageinspect",
+      "items": [
+        {
+          "item": "get_raw_page and heap_page_items read a live page's own bytes directly",
+          "at": [{ "deep": "Lab" }]
+        }
+      ]
+    },
+    {
+      "source": "InnoDB Row Formats Overview",
+      "items": [
+        {
+          "item": "InnoDB solves the identical fixed-page problem with its own overflow pages, with different row formats storing different amounts out of line",
+          "at": [{ "step": "Reveal: InnoDB's own overflow pages, the same problem solved differently" }]
+        }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "Claude (single session)",
+    "date": "2026-10-24",
+    "items": [
+      {
+        "item": "A page has five parts (header, line-pointer array, free space, items, special space), and item identifiers grow from one end while item data grows from the other, meeting in the middle.",
+        "at": [{ "step": "Reveal: a page's own five parts, read directly off a real table" }]
+      },
+      {
+        "item": "A line pointer (ItemIdData) is an (offset, length) pair, 4 bytes, that never moves once allocated until freed, even when the item it points to is physically relocated to compact free space.",
+        "at": [{ "step": "Reveal: a line pointer, decoded" }]
+      },
+      {
+        "item": "A CTID (the row's visible identity) is a page number plus a line-pointer index, not a byte offset — this is exactly why a row's logical identity survives being moved within the page.",
+        "at": [{ "step": "Predict: if VACUUM moves a surviving row to a new offset, does that row's own CTID change too?" }]
+      },
+      {
+        "item": "The heap tuple header has a fixed size (23 bytes on most machines) followed by an optional null bitmap (one bit per column, present only if any column is null) before the real column data begins.",
+        "at": [{ "step": "Reveal: the null bitmap, read off a real inserted row" }]
+      },
+      {
+        "item": "A fixed page size (8 kB by default) is the direct cause of TOAST's existence: PostgreSQL tuples cannot span pages, so a value too large to fit is compressed and/or chunked into a separate TOAST table instead.",
+        "at": [{ "step": "Reveal: a large value, moved out of line by a real TOAST" }]
+      },
+      {
+        "item": "TOAST chunks a large value into roughly 2 kB pieces stored as separate rows in a side table (chunk_id, chunk_seq, chunk_data), triggered once a row crosses the 2 kB threshold.",
+        "at": [{ "step": "Reveal: a large value, moved out of line by a real TOAST" }]
+      },
+      {
+        "item": "InnoDB solves the identical fixed-page problem with its own overflow pages rather than a side table, and different row formats (COMPACT, DYNAMIC, COMPRESSED) store different amounts of data out of line.",
+        "at": [{ "step": "Reveal: InnoDB's own overflow pages, the same problem solved differently" }]
+      },
+      {
+        "item": "pageinspect's get_raw_page and heap_page_items are the real, direct way to read a live page's own bytes rather than trust a diagram — this topic should use them on a real page, not simulate one.",
+        "at": [{ "deep": "Lab" }]
+      },
+      {
+        "item": "A page checksum and the pd_lsn field exist so a torn or stale page can be detected — named here, not taught in depth, since full treatment belongs to the next topic's own write-ahead-logging material.",
+        "at": [{ "topic": "Write-ahead logging and fsync semantics", "quote": "fsync" }]
+      },
+      {
+        "item": "This topic is the entry point to the whole chapter; every later topic (buffer pool, WAL, B-tree, MVCC, LSM) assumes the reader already has the page and slot vocabulary this topic introduces.",
+        "at": [{ "deep": "Where this goes next" }]
+      }
+    ]
+  },
+  "gapReview": {
+    "date": "2026-10-24",
+    "by": "Claude (single session)",
+    "open": []
+  }
+}

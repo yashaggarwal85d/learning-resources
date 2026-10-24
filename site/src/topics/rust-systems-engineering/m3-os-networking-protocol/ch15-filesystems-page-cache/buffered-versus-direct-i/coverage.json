@@ -1,0 +1,89 @@
+{
+  "topic": "rust.buffered-versus-direct-i",
+  "syllabus": [
+    {
+      "clause": "buffered I/O goes through the page cache (writeback, readahead, dirty-page throttling). Direct I/O (O_DIRECT) bypasses it under alignment and completion constraints (logical block size, aligned buffers). posix_fadvise.",
+      "at": [
+        { "step": "Measured: before readahead, none of the pages were resident; immediately after it, every single one was, with no read() call in between" },
+        { "step": "Measured: every one of those pages was resident right after readahead, and not one of them was resident right after the real DONTNEED call" },
+        { "step": "Measured: the buffered read left every single page resident in the cache, and the exact same read through O_DIRECT left none resident at all" }
+      ]
+    }
+  ],
+  "sources": [
+    {
+      "source": "posix-fadvise-2",
+      "items": [
+        {
+          "item": "the advice is not binding; it merely constitutes an expectation on behalf of the application",
+          "at": [{ "step": "Those same freshly-cached pages: call posix_fadvise with DONTNEED on them. Does that hint alone genuinely evict them, or is it merely advisory and ignored?" }]
+        },
+        {
+          "item": "POSIX_FADV_DONTNEED attempts to free cached pages associated with the specified region",
+          "at": [{ "step": "Measured: every one of those pages was resident right after readahead, and not one of them was resident right after the real DONTNEED call" }]
+        },
+        {
+          "item": "any unwritten dirty pages will not be freed by DONTNEED; fsync or fdatasync must be called first to release them",
+          "at": [{ "step": "The man page is explicit: any unwritten, dirty page will not be freed by DONTNEED at all — fsync or fdatasync has to write it back first, or the hint has nothing clean to discard" }]
+        }
+      ]
+    },
+    {
+      "source": "readahead-2",
+      "items": [
+        {
+          "item": "readahead() initiates readahead on a file so that subsequent reads will be satisfied from the cache, and not block on disk I/O",
+          "at": [{ "step": "A file's pages have genuinely been dropped from the page cache. Call the real readahead() syscall on it. Does that alone bring the pages back in, or does a read still have to happen first?" }]
+        }
+      ]
+    },
+    {
+      "source": "open-2",
+      "items": [
+        {
+          "item": "O_DIRECT tries to minimize cache effects of I/O to and from a file, useful when applications do their own caching",
+          "at": [{ "step": "Read the same amount of data two real ways: once through a normal buffered read, once through O_DIRECT. Does the O_DIRECT read end up resident in the page cache too, or not?" }]
+        }
+      ]
+    },
+    {
+      "source": "vm-sysctl",
+      "items": [
+        {
+          "item": "dirty_ratio is the percentage of available memory at which a process generating disk writes will itself start writing out dirty data",
+          "at": [{ "step": "If DONTNEED can't evict a file's pages right after it's written, what's actually stopping it?" }]
+        }
+      ]
+    },
+    {
+      "source": "mm-concepts",
+      "items": [
+        {
+          "item": "whenever a file is read, the data is put into the page cache to avoid expensive disk access on subsequent reads",
+          "at": [{ "step": "Readahead, DONTNEED, and O_DIRECT are the same page cache, pulled three different directions: bring pages in early, push them back out on request, or never let them in to begin with" }]
+        }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "self-review",
+    "date": "2026-10-23",
+    "items": [
+      { "item": "The readahead measurement specifically confirms zero resident pages before the call, not merely that readahead succeeded, because the claim is that readahead alone moves pages into residency — without that baseline, a pre-existing cache hit from the write itself could produce the same apparent result.", "at": [{ "step": "A file's pages have genuinely been dropped from the page cache. Call the real readahead() syscall on it. Does that alone bring the pages back in, or does a read still have to happen first?" }] },
+      { "item": "Residency is measured via mincore() on a freshly created mmap that is never read through at all, specifically so the measurement itself cannot be the thing that causes the pages to become resident; a read-based measurement would be measuring its own side effect.", "at": [{ "step": "Measured: before readahead, none of the pages were resident; immediately after it, every single one was, with no read() call in between" }] },
+      { "item": "DONTNEED's own documented non-binding status is exactly why this topic measures its effect directly rather than trusting the documentation alone; a hint that the kernel is free to ignore could, in principle, do nothing in a given kernel version or configuration, which only an executed measurement can rule out.", "at": [{ "step": "Those same freshly-cached pages: call posix_fadvise with DONTNEED on them. Does that hint alone genuinely evict them, or is it merely advisory and ignored?" }] },
+      { "item": "The example's own fresh_file helper deliberately fsyncs before its first DONTNEED call, not as an incidental cleanup step, but because the man page's own documented caveat about dirty pages means skipping that fsync would make this topic's very first baseline measurement non-deterministic across runs.", "at": [{ "step": "Measured: every one of those pages was resident right after readahead, and not one of them was resident right after the real DONTNEED call" }] },
+      { "item": "The buffered-versus-direct comparison uses two separate files rather than reopening one file both ways, specifically so an earlier buffered read's own cache effect cannot leak into the O_DIRECT measurement through shared page-cache state for that inode.", "at": [{ "step": "Read the same amount of data two real ways: once through a normal buffered read, once through O_DIRECT. Does the O_DIRECT read end up resident in the page cache too, or not?" }] },
+      { "item": "O_DIRECT leaving zero resident pages is not merely the absence of a speed-up; it is direct evidence that the read path taken by O_DIRECT genuinely does not pass through the same kernel structure a buffered read populates, which is a stronger and more specific claim than 'O_DIRECT is slower.'", "at": [{ "step": "Measured: the buffered read left every single page resident in the cache, and the exact same read through O_DIRECT left none resident at all" }] },
+      { "item": "The dirty-page explanation for DONTNEED's apparent failure right after a write is not a guess; it follows directly from the same man page's own documented caveat quoted in this topic, and the executed example demonstrates the contrapositive directly: fsyncing first makes the very same DONTNEED call succeed.", "at": [{ "step": "If DONTNEED can't evict a file's pages right after it's written, what's actually stopping it?" }] },
+      { "item": "This topic deliberately defers any claim about durability to topic 40, even though fsync appears in its own example code as a baseline-clearing helper; using fsync to produce a clean measurement is not the same claim as fsync making data durable, and conflating the two here would pre-empt topic 40's own real subject.", "at": [{ "step": "The man page is explicit: any unwritten, dirty page will not be freed by DONTNEED at all — fsync or fdatasync has to write it back first, or the hint has nothing clean to discard" }] },
+      { "item": "This topic's three measured behaviors are not three unrelated facts about three different syscalls; each one is a different point of control over the exact same underlying kernel data structure, the page cache for one file's pages, which is why the lesson step frames them as one shared resource rather than three separate topics.", "at": [{ "step": "Readahead, DONTNEED, and O_DIRECT are the same page cache, pulled three different directions: bring pages in early, push them back out on request, or never let them in to begin with" }] },
+      { "item": "This topic builds directly on topic 38's own direct-I/O alignment measurement from Chapter 12, extending a single-path alignment claim into a genuine two-path residency comparison, and deliberately leaves durability entirely out of scope so that topic 40 has a clean, unclaimed subject of its own.", "at": [{ "step": "Recap: a real pull, a real push, and a real refusal, all against the same cache" }] }
+    ]
+  },
+  "gapReview": {
+    "date": "2026-10-23",
+    "by": "self-review",
+    "open": []
+  }
+}

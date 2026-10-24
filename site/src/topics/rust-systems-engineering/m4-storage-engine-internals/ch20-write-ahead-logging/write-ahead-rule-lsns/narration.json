@@ -1,0 +1,87 @@
+{
+  "steps": [
+    {
+      "lines": [
+        "Build a real write-ahead log and a real page, each carrying its own LSN.",
+        "Apply the same update two different ways: log the change, then write the page, or write the page, then log the change.",
+        { "beat": 0.3 },
+        "Now crash at the exact same point in both: right between the two steps. Which update survives?"
+      ],
+      "answer": [
+        "Only the logged-first one.",
+        "The other update is simply gone, with nothing left to redo it from."
+      ]
+    },
+    {
+      "lines": [
+        "Run it for real: the log-first update survived the crash and recovered correctly.",
+        "The identical crash, with the page written first, genuinely and silently lost the update."
+      ],
+      "takeaway": "Log first, data later: the same crash loses nothing with the rule followed, but silently loses the update reversed."
+    },
+    {
+      "lines": [
+        "Now replay an already-applied log record against the page it already describes.",
+        { "beat": 0.3 },
+        "Does redo apply it again, or leave the page alone?"
+      ],
+      "answer": [
+        "It's a genuine no-op.",
+        "The page's own LSN already covers it."
+      ]
+    },
+    {
+      "lines": [
+        "Run it for real: replaying an already-applied record was a genuine no-op, and running the full recovery pass a second time changed nothing either."
+      ],
+      "takeaway": "Comparing a page's own LSN against a record's own LSN is what makes redo safe to run more than once."
+    },
+    {
+      "lines": [
+        "A crash mid-write can tear a page: part of its bytes land in the new state, part are still the old ones.",
+        { "beat": 0.3 },
+        "Does a checksum over the page's own bytes catch that?"
+      ],
+      "answer": [
+        "Yes, genuinely.",
+        "A half-written page's own checksum simply doesn't match anymore."
+      ]
+    },
+    {
+      "lines": [
+        "Run it for real: the torn page's own checksum genuinely didn't match, and restoring the log's own full-page image fixed it completely."
+      ],
+      "takeaway": "A torn page is caught by its own checksum, fixed by restoring the log's own already-durable image."
+    },
+    {
+      "lines": [
+        "One real system's own documentation states the write-ahead rule directly.",
+        { "beat": 0.3 },
+        "Why doesn't a transaction's commit need every data page it touched flushed to disk?"
+      ],
+      "answer": [
+        "Because the log reaching disk is already enough.",
+        "The data pages can be redone from it later."
+      ]
+    },
+    {
+      "lines": [
+        "In that system's own words: changes to data files must be written only after those changes have been logged, and any change not yet applied to a data page can be redone from the log."
+      ]
+    },
+    {
+      "lines": [
+        "That same system's own fix for a torn page is a full-page write: periodically writing a complete image of a page to the log before modifying it on disk, so a partially-written page can always be restored from that image."
+      ],
+      "takeaway": "A full-page write is that system's own name for exactly the fix this topic just measured."
+    },
+    {
+      "lines": [
+        "So, pulling this topic together: durability comes from the log reaching disk, not from the page it describes.",
+        "That ordering is why the same kind of interrupted write is recoverable one way and simply gone the other way.",
+        "A number stamped on both the record and the page is enough to tell whether a change still needs replaying, safely, as many times as recovery needs to try.",
+        "And a page half-written by a crash isn't trusted on its own word; its own checksum gives that away, and a separate, already-durable copy is what actually fixes it."
+      ]
+    }
+  ]
+}

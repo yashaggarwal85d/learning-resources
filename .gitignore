@@ -6,3 +6,14 @@ site/narration/pc/audition/
 # examples.py cannot prove with a bare rustc compile) build their own target/ dir; never commit it.
 site/src/topics/rust-systems-engineering/**/examples/target/
 site/src/topics/rust-systems-engineering/**/examples/*/target/
+
+# dbt-core lab projects (data-engineering ch03) build target/, logs/ and dbt_packages/ when run;
+# never commit those build artifacts.
+site/src/topics/data-engineering/**/lab/*/target/
+site/src/topics/data-engineering/**/lab/*/logs/
+site/src/topics/data-engineering/**/lab/*/dbt_packages/
+site/src/topics/data-engineering/**/lab/*/.user.yml
+
+# native-extensions-rust-pyo3's examples.py drives a real maturin/cargo build of a PyO3
+# extension; the resulting target/ dir (compiled objects, built wheels) is never committed.
+site/src/topics/data-engineering/**/examples/*/target/

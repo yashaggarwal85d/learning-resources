@@ -1,0 +1,4 @@
+- **A real child process**: `std::process::Command` genuinely forks and execs a separate process. *Where you meet it:* a spawned child's own, different pid and its exact real exit code, measured directly.
+- **Async-signal-safe**: the narrow set of operations safe to call in a forked, not-yet-exec'd multithreaded child. *Where you meet it:* a real fork measured to leave the child with exactly one thread.
+- **A pidfd**: a stable reference to one exact process, immune to a raw PID's reuse race. *Where you meet it:* a real signal sent through it, succeeding while alive and failing with a clear error once that process is genuinely gone.
+- **`std::env::set_var` as `unsafe`**: the real race it has with a C function that reads the environment without synchronization.

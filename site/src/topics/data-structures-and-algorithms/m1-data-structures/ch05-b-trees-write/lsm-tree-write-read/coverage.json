@@ -1,0 +1,89 @@
+{
+  "topic": "dsa.lsm-tree-write-read",
+  "syllabus": [
+    {
+      "clause": "WAL + memtable, flush to immutable sorted runs (SSTables), newest-first reads with Bloom filters and fence pointers, tombstones",
+      "at": [
+        { "step": "Every write is appended to a write-ahead log before anything else happens, so a crash between landing in memory and reaching its real home can still be recovered by replaying the log in order." },
+        { "step": "The write also lands in an in-memory sorted structure, the memtable, which serves new writes and reads directly — it's consulted on every read, so nothing logged is ever invisible to a query." },
+        { "step": "The full memtable is flushed out as one new, immutable sorted run. A fresh, empty memtable takes over immediately, and the write-ahead log behind the flushed memtable can be discarded, since its data now lives safely on disk." },
+        { "step": "A read checks the memtable first, then every on-disk run from newest to oldest, stopping at the first match it finds." },
+        { "step": "Checking every run for every read doesn't scale. A Bloom filter per run answers definitely-not-here or maybe-here from memory, skipping a run's disk read entirely on a definite no; a fence pointer narrows a maybe down to the one range worth reading." },
+        { "step": "A delete can't remove anything in place, because the run holding the old value is immutable. It's recorded instead as its own kind of entry, a tombstone, which has to outrank and hide that older value on every read until a compaction physically drops both of them together." }
+      ]
+    },
+    { "clause": "→ Data Engineering §5.1, Rust Systems Engineering Ch.22", "at": [{ "deep": "In production" }] }
+  ],
+  "sources": [
+    {
+      "source": "CMU 15-445/645 Database Systems (Fall 2024), Lecture 4: Database Storage II",
+      "items": [
+        { "item": "LSM write path: a log of PUT/DELETE operations, applied to a MemTable, flushed sequentially to an SSTable", "at": [{ "step": "Every write is appended to a write-ahead log before anything else happens, so a crash between landing in memory and reaching its real home can still be recovered by replaying the log in order." }] },
+        { "item": "A delete is its own kind of log entry (marking the tuple deleted), not an in-place removal", "at": [{ "step": "A delete can't remove anything in place, because the run holding the old value is immutable. It's recorded instead as its own kind of entry, a tombstone, which has to outrank and hide that older value on every read until a compaction physically drops both of them together." }] },
+        { "item": "A WAL-style append-only write discipline: records appended without checking previous records", "at": [{ "step": "Every write is appended to a write-ahead log before anything else happens, so a crash between landing in memory and reaching its real home can still be recovered by replaying the log in order." }] },
+        { "item": "A min/max key range per SSTable (a fence pointer) and a key filter per level (a Bloom filter) as the two structures a read uses to skip work", "at": [{ "step": "Checking every run for every read doesn't scale. A Bloom filter per run answers definitely-not-here or maybe-here from memory, skipping a run's disk read entirely on a definite no; a fence pointer narrows a maybe down to the one range worth reading." }] }
+      ]
+    },
+    {
+      "source": "CMU 15-445/645 Database Systems (Fall 2024), Lecture 8: Indexes & Filters I",
+      "items": [
+        { "item": "An index locates a record; a filter only answers set-membership", "at": [{ "step": "Checking every run for every read doesn't scale. A Bloom filter per run answers definitely-not-here or maybe-here from memory, skipping a run's disk read entirely on a definite no; a fence pointer narrows a maybe down to the one range worth reading." }] }
+      ]
+    },
+    {
+      "source": "leveldb Implementation Notes",
+      "items": [
+        { "item": "WAL + memtable + flush-to-sorted-table, with a size threshold triggering the flush", "at": [{ "step": "The full memtable is flushed out as one new, immutable sorted run. A fresh, empty memtable takes over immediately, and the write-ahead log behind the flushed memtable can be discarded, since its data now lives safely on disk." }] },
+        { "item": "The memtable is consulted on every read so reads reflect every logged update not yet flushed", "at": [{ "step": "The write also lands in an in-memory sorted structure, the memtable, which serves new writes and reads directly — it's consulted on every read, so nothing logged is ever invisible to a query." }] },
+        { "item": "A flushed run stores either a value or a deletion marker per key", "at": [{ "step": "A delete can't remove anything in place, because the run holding the old value is immutable. It's recorded instead as its own kind of entry, a tombstone, which has to outrank and hide that older value on every read until a compaction physically drops both of them together." }] }
+      ]
+    },
+    {
+      "source": "leveldb File Format",
+      "items": [
+        { "item": "The literal on-disk form of a fence pointer: an index block, one boundary-key entry per data block", "at": [{ "step": "Checking every run for every read doesn't scale. A Bloom filter per run answers definitely-not-here or maybe-here from memory, skipping a run's disk read entirely on a definite no; a fence pointer narrows a maybe down to the one range worth reading." }] },
+        { "item": "The literal on-disk form of a Bloom filter: a filter block, one filter per range of data blocks", "at": [{ "step": "Checking every run for every read doesn't scale. A Bloom filter per run answers definitely-not-here or maybe-here from memory, skipping a run's disk read entirely on a definite no; a fence pointer narrows a maybe down to the one range worth reading." }] }
+      ]
+    },
+    {
+      "source": "RocksDB Terminology (wiki)",
+      "items": [
+        { "item": "WAL definition and its recovery role in a second production engine", "at": [{ "step": "Every write is appended to a write-ahead log before anything else happens, so a crash between landing in memory and reaching its real home can still be recovered by replaying the log in order." }] },
+        { "item": "Immutable memtable: a closed memtable waiting to be flushed", "at": [{ "step": "The full memtable is flushed out as one new, immutable sorted run. A fresh, empty memtable takes over immediately, and the write-ahead log behind the flushed memtable can be discarded, since its data now lives safely on disk." }] },
+        { "item": "SST File named and defined; its index block named explicitly", "at": [{ "step": "Checking every run for every read doesn't scale. A Bloom filter per run answers definitely-not-here or maybe-here from memory, skipping a run's disk read entirely on a definite no; a fence pointer narrows a maybe down to the one range worth reading." }] },
+        { "item": "Sequence number: an auto-incremented ID attached to every write, used to resolve which copy of a key is newest", "at": [{ "step": "A read checks the memtable first, then every on-disk run from newest to oldest, stopping at the first match it finds." }] }
+      ]
+    },
+    {
+      "source": "RocksDB Write-Ahead-Log File Format (wiki)",
+      "items": [
+        { "item": "WAL recovery: reconstructing the memtable from the log after a crash", "at": [{ "step": "Every write is appended to a write-ahead log before anything else happens, so a crash between landing in memory and reaching its real home can still be recovered by replaying the log in order." }] },
+        { "item": "A WAL becomes obsolete once its memtable is safely flushed", "at": [{ "step": "The full memtable is flushed out as one new, immutable sorted run. A fresh, empty memtable takes over immediately, and the write-ahead log behind the flushed memtable can be discarded, since its data now lives safely on disk." }] }
+      ]
+    },
+    {
+      "source": "RocksDB Bloom Filter (wiki)",
+      "items": [
+        { "item": "A real bits-per-key-to-false-positive-rate table", "at": [{ "step": "Prove it" }] },
+        { "item": "A Bloom filter is embedded in each SST file", "at": [{ "step": "Checking every run for every read doesn't scale. A Bloom filter per run answers definitely-not-here or maybe-here from memory, skipping a run's disk read entirely on a definite no; a fence pointer narrows a maybe down to the one range worth reading." }] }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "blind self-review, research stage",
+    "date": "2026-10-23",
+    "items": [
+      { "item": "Topics 26-27 made in-place updates cheaper; this topic doesn't compete on that axis at all — it eliminates in-place updates entirely, which is a different trade, not a better version of the same one.", "at": [{ "step": "Every technique so far still updates a page in place, paying its I/O cost immediately on every write. The next structure refuses that trade entirely: never update in place, write sequentially, and pay the cost back later, on its own schedule." }] },
+      { "item": "A write-ahead log's entire reason to exist is the narrow window between a write landing in volatile memory and reaching durable storage anywhere else — it protects nothing once a flush has already happened.", "at": [{ "step": "Every write is appended to a write-ahead log before anything else happens, so a crash between landing in memory and reaching its real home can still be recovered by replaying the log in order." }] },
+      { "item": "The memtable is not an optimization layer a correct implementation could skip — a read that bypassed it would return provably stale data for anything written since the last flush, which is a correctness bug, not a performance one.", "at": [{ "step": "The write also lands in an in-memory sorted structure, the memtable, which serves new writes and reads directly — it's consulted on every read, so nothing logged is ever invisible to a query." }] },
+      { "item": "A flushed run's immutability is the single property every later mechanic in this topic depends on: a Bloom filter built once for it stays correct forever, and a fence pointer's stored range never needs updating, specifically because nothing in the run it describes can ever change.", "at": [{ "step": "The full memtable is flushed out as one new, immutable sorted run. A fresh, empty memtable takes over immediately, and the write-ahead log behind the flushed memtable can be discarded, since its data now lives safely on disk." }] },
+      { "item": "Newest-first reads aren't a performance tweak layered on top of a simpler correct algorithm — they are the only correct algorithm, since nothing else in the structure tracks which of several surviving copies of a key is current.", "at": [{ "step": "A read checks the memtable first, then every on-disk run from newest to oldest, stopping at the first match it finds." }] },
+      { "item": "A Bloom filter and a fence pointer are independent, compounding optimizations that answer two different questions (should this run be opened at all; where inside it to look), which is why a real system uses both rather than treating either as a substitute for the other.", "at": [{ "step": "Checking every run for every read doesn't scale. A Bloom filter per run answers definitely-not-here or maybe-here from memory, skipping a run's disk read entirely on a definite no; a fence pointer narrows a maybe down to the one range worth reading." }] },
+      { "item": "A tombstone has to be at least as discoverable as the value it shadows, which is exactly why it's stored and indexed like any other write rather than as out-of-band metadata — anything less discoverable would let an older value resurface on some reads and not others.", "at": [{ "step": "A delete can't remove anything in place, because the run holding the old value is immutable. It's recorded instead as its own kind of entry, a tombstone, which has to outrank and hide that older value on every read until a compaction physically drops both of them together." }] },
+      { "item": "This topic's own measured numbers (the Bloom filter's observed false-positive rate, the run-count reduction, the tombstone test) are tied to the specific key set, sizes, and bits-per-key setting examples.py states, not claimed to generalize to every workload.", "at": [{ "step": "Prove it" }] },
+      { "item": "A Bloom filter's guarantee only runs in one direction: it can say maybe about a key that is actually absent (a false positive), but it structurally cannot say definitely-not about a key that is actually present — reversing that asymmetry would silently lose real data.", "at": [{ "step": "Prove it" }] },
+      { "item": "Sequence numbers, not wall-clock timestamps, are what make 'newest wins' well-defined even across a crash and restart — a clock can run backward or stall across a failure, but a strictly increasing counter attached to every write cannot.", "at": [{ "deep": "Into the internals" }] }
+    ]
+  },
+  "gapReview": { "date": "2026-10-23", "by": "self-review", "open": [] }
+}

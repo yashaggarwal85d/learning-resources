@@ -1,0 +1,27 @@
+import Resource from '../../../../../components/Resource.astro';
+
+<section class="prereq" data-section="before-this">
+
+### <span class="n">01</span> Before this: the last line of defense it now opens up
+
+<ul class="resources">
+  <Resource kind="reel" title="Runtime schema validation" domain="data-engineering" host="de.runtime-schema-validation" by="the topic right before this one" />
+</ul>
+
+</section>
+
+<section class="prereq" data-section="straight-from-the-source">
+
+### <span class="n">02</span> The sources this topic measures against
+
+<ul class="resources">
+  <Resource kind="reading" title="Data Validation with Polars" href="https://pandera.readthedocs.io/en/stable/polars.html" by="pandera docs">Polars' own core named directly as Rust, with Python as one of its SDKs.</Resource>
+  <Resource kind="reading" title="Pydantic Validation" href="https://docs.pydantic.dev/latest/" by="Pydantic docs">pydantic-core named directly as Rust, the stated reason for its speed.</Resource>
+  <Resource kind="reading" title="orjson README" href="https://raw.githubusercontent.com/ijl/orjson/master/README.md" by="orjson">The Rust/maturin packaging requirement and the real multi-platform wheel matrix.</Resource>
+  <Resource kind="reading" title="Parallelism" href="https://pyo3.rs/v0.22.0/parallelism" by="PyO3 user guide">The GIL's effect on threaded code and `Python::allow_threads` as the release mechanism.</Resource>
+  <Resource kind="reading" title="Building and distribution" href="https://pyo3.rs/v0.22.0/building-and-distribution" by="PyO3 user guide">The abi3 limited API and the real `cp3X-abi3` wheel naming.</Resource>
+  <Resource kind="reading" title="Python support for free threading" href="https://docs.python.org/3/howto/free-threading-python.html" by="Python docs">Free-threaded CPython as an optional 3.13+ build, and the real way to check for it.</Resource>
+</ul>
+
+</section>
+

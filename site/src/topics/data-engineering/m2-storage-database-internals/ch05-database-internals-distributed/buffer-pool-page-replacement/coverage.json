@@ -1,0 +1,158 @@
+{
+  "topic": "de.buffer-pool-page-replacement",
+  "syllabus": [
+    {
+      "clause": "the buffer pool as the engine's own cache: pin/unpin, dirty-page tracking, replacement policies (LRU, clock-sweep, LRU-K/2Q) and why plain LRU fails under sequential scans (ring buffers)",
+      "at": [
+        { "step": "Reveal: the buffer pool's own clock sweep, read directly off a real cluster" },
+        { "step": "Reveal: repeated access raises a real buffer's usage count to its own cap" },
+        { "step": "Predict: does a sequential scan bigger than the whole buffer pool evict most of it?" },
+        { "step": "Reveal: a real, bigger-than-the-pool table's measured footprint, ring-bounded" },
+        { "step": "Reveal: a dirtied buffer, read directly, cleaned by a real checkpoint" }
+      ]
+    },
+    {
+      "clause": "double caching with the OS page cache vs O_DIRECT",
+      "at": [{ "step": "Reveal: double caching, and the flag that bypasses it" }]
+    },
+    {
+      "clause": "PostgreSQL 18's asynchronous I/O subsystem (io_method = worker or io_uring) replacing reliance on OS readahead",
+      "at": [{ "step": "Reveal: a genuinely newer cluster's own async I/O, measured for real" }]
+    }
+  ],
+  "sources": [
+    {
+      "source": "PostgreSQL buffer manager README",
+      "items": [
+        {
+          "item": "a buffer's usage counter is incremented, up to a small cap, whenever it is pinned, and a circularly moving clock hand decrements each buffer's counter until it finds one at zero",
+          "at": [{ "step": "Reveal: the buffer pool's own clock sweep, read directly off a real cluster" }]
+        },
+        {
+          "item": "a page touched only by a big, once-only scan is unlikely to be needed again soon, so a small ring of buffers is allocated and reused for the whole scan instead of blowing out the entire cache",
+          "at": [
+            { "step": "Predict: does a sequential scan bigger than the whole buffer pool evict most of it?" },
+            { "step": "Reveal: a real, bigger-than-the-pool table's measured footprint, ring-bounded" }
+          ]
+        },
+        {
+          "item": "the sequential-scan ring is 256KB; bulk writes (COPY, CREATE TABLE AS SELECT) use a 16MB ring instead",
+          "at": [{ "step": "Reveal: a real, bigger-than-the-pool table's measured footprint, ring-bounded" }]
+        }
+      ]
+    },
+    {
+      "source": "pg_buffercache",
+      "items": [
+        {
+          "item": "pg_buffercache's own usage-count column is literally documented as the Clock-sweep access count",
+          "at": [{ "step": "Reveal: the buffer pool's own clock sweep, read directly off a real cluster" }]
+        }
+      ]
+    },
+    {
+      "source": "Resource Consumption (shared_buffers)",
+      "items": [
+        {
+          "item": "shared_buffers relies on the operating system's own page cache too, which is why allocating more than about 40% of RAM to it rarely helps",
+          "at": [{ "step": "Reveal: double caching, and the flag that bypasses it" }]
+        },
+        {
+          "item": "the size of VACUUM's own ring is a documented, tunable setting, the Buffer Access Strategy used by VACUUM and ANALYZE",
+          "at": [{ "deep": "Lab" }]
+        }
+      ]
+    },
+    {
+      "source": "The Cumulative Statistics System",
+      "items": [
+        {
+          "item": "heap_blks_read and heap_blks_hit are the real, queryable counters a table's disk reads and buffer hits are measured with",
+          "at": [{ "deep": "Lab" }]
+        }
+      ]
+    },
+    {
+      "source": "Resource Consumption (io_method)",
+      "items": [
+        {
+          "item": "io_method defaults to worker, with io_uring as the alternative, executing asynchronous I/O",
+          "at": [{ "step": "Reveal: a genuinely newer cluster's own async I/O, measured for real" }]
+        }
+      ]
+    },
+    {
+      "source": "Release 18",
+      "items": [
+        {
+          "item": "PostgreSQL 18 added a real asynchronous I/O subsystem improving sequential scans, bitmap heap scans, vacuums and other operations",
+          "at": [{ "step": "Reveal: a genuinely newer cluster's own async I/O, measured for real" }]
+        }
+      ]
+    },
+    {
+      "source": "open(2)",
+      "items": [
+        {
+          "item": "O_DIRECT tries to minimize cache effects of I/O to and from a file, useful when an application does its own caching",
+          "at": [{ "step": "Reveal: double caching, and the flag that bypasses it" }]
+        }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "Claude (single session)",
+    "date": "2026-10-24",
+    "items": [
+      {
+        "item": "A buffer is pinned while in use and unpinned when a backend is done with it; a pinned buffer can never be chosen as a victim, which is the whole reason pin/unpin bookkeeping exists before any replacement policy runs at all.",
+        "at": [{ "step": "Reveal: the buffer pool's own clock sweep, read directly off a real cluster" }]
+      },
+      {
+        "item": "Clock-sweep with a usage counter is a cheap approximation of LRU: it avoids a system-wide lock on every access by only requiring the per-buffer spinlock already needed to pin, trading perfect recency ordering for a counter that caps out at a small fixed value.",
+        "at": [{ "step": "Reveal: repeated access raises a real buffer's usage count to its own cap" }]
+      },
+      {
+        "item": "A plain sequential scan is the textbook case where LRU-style policies fail badly: every page is touched exactly once, so ranking by recency alone would evict the whole working set of every other query just to make room for pages that will never be revisited.",
+        "at": [{ "step": "Predict: does a sequential scan bigger than the whole buffer pool evict most of it?" }]
+      },
+      {
+        "item": "A buffer ring isn't a separate allocation outside the normal buffer pool; it's a small, reused subset of the very same shared buffers, chosen by the normal clock-sweep algorithm and then deliberately kept small so the scan can't grow past it.",
+        "at": [{ "step": "Reveal: a real, bigger-than-the-pool table's measured footprint, ring-bounded" }]
+      },
+      {
+        "item": "Dirty-page tracking exists so a checkpoint (or the background writer) knows which buffers actually need a write; a buffer that was only ever read, never modified, costs nothing to evict.",
+        "at": [{ "step": "Reveal: a dirtied buffer, read directly, cleaned by a real checkpoint" }]
+      },
+      {
+        "item": "Double caching costs real memory (the same bytes held twice, once by the kernel and once by the engine) but buys crash safety for free, since the OS page cache survives a backend crash that would otherwise lose anything cached only in a process's own memory.",
+        "at": [{ "step": "Reveal: double caching, and the flag that bypasses it" }]
+      },
+      {
+        "item": "O_DIRECT isn't free: an engine that bypasses the OS cache has to do its own readahead, its own write-back scheduling and its own alignment handling, work the kernel was doing for it.",
+        "at": [{ "step": "Reveal: double caching, and the flag that bypasses it" }]
+      },
+      {
+        "item": "An asynchronous I/O subsystem (io_method) attacks a different problem than the buffer-ring strategy: the ring bounds how much memory a big scan uses, while async I/O lets the engine queue several reads at once instead of blocking on one read(2) call at a time.",
+        "at": [{ "step": "Reveal: a genuinely newer cluster's own async I/O, measured for real" }]
+      },
+      {
+        "item": "pg_buffercache and pg_stat_io read fundamentally different things: pg_buffercache reads live shared-buffer headers directly (no flush needed), while pg_stat_io is a cumulative, periodically-flushed statistics view — conflating the two leads to false negatives when checking a backend's own just-run query.",
+        "at": [{ "deep": "Lab" }]
+      },
+      {
+        "item": "A dirty page sitting in the buffer pool is lost the instant the process crashes unless something records the write durably first — the buffer pool alone guarantees nothing about durability, only about avoiding unnecessary disk reads.",
+        "at": [{ "topic": "Write-ahead logging and fsync semantics", "quote": "fsync" }]
+      },
+      {
+        "item": "This topic is the cache layer every later Chapter 5 topic assumes exists underneath it: WAL durability, checkpoints, B-tree page access and MVCC version visibility all read and write through the exact same pinned, clock-swept buffer pool this topic opens.",
+        "at": [{ "deep": "Where this goes next" }]
+      }
+    ]
+  },
+  "gapReview": {
+    "date": "2026-10-24",
+    "by": "Claude (single session)",
+    "open": []
+  }
+}

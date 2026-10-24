@@ -1,0 +1,71 @@
+{
+  "topic": "rust.self-describing-page-formats",
+  "syllabus": [
+    {
+      "clause": "PostgreSQL's page layout as the reference: a fixed-size page with a header, line pointers, tuples, free space and a special area. A self-describing format carries a magic number, format version, slot info, a checksum (CRC32C) and the page LSN. Encode endianness and alignment explicitly (→ Ch.5).",
+      "at": [
+        { "step": "Measured: an untouched page's own checksum validates cleanly, and a single corrupted byte anywhere in its body genuinely invalidates that same checksum" },
+        { "step": "Measured: the checksum, recomputed over the new bytes, still validated cleanly; only checking the magic number itself caught that the format had changed" },
+        { "step": "Measured: the same raw bytes, read in the chosen byte order, gave back the exact original value; read in the opposite byte order, they genuinely gave back a different value" },
+        { "step": "The documentation's own words: the first field tracks the most recent log entry related to this page, and the second field holds the page's own checksum, when checksums are enabled" }
+      ]
+    }
+  ],
+  "sources": [
+    {
+      "source": "pg-page-layout",
+      "items": [
+        {
+          "item": "the first field tracks the most recent WAL entry related to this page; the second field contains the page checksum if data checksums are enabled",
+          "at": [{ "step": "The documentation's own words: the first field tracks the most recent log entry related to this page, and the second field holds the page's own checksum, when checksums are enabled" }]
+        },
+        {
+          "item": "pd_pagesize_version stores both the page size and a version indicator",
+          "at": [{ "step": "The documentation's own words: the first field tracks the most recent log entry related to this page, and the second field holds the page's own checksum, when checksums are enabled" }]
+        },
+        {
+          "item": "because an item identifier is never moved until it is freed, its index can be used on a long-term basis to reference an item, even when the item itself is moved around on the page to compact free space",
+          "at": [{ "step": "The same documentation also says something stronger about an item identifier's own index inside a page: it's never moved until freed, so it can be used to reference an item on a long-term basis, even while the item itself moves around during compaction. That's the whole reason a slot and a physical offset are two different things" }]
+        },
+        {
+          "item": "every pointer to an item (ItemPointer, also known as CTID) created by PostgreSQL consists of a page number and the index of an item identifier",
+          "at": [{ "step": "The same documentation also says something stronger about an item identifier's own index inside a page: it's never moved until freed, so it can be used to reference an item on a long-term basis, even while the item itself moves around during compaction. That's the whole reason a slot and a physical offset are two different things" }]
+        }
+      ]
+    },
+    {
+      "source": "crc32c",
+      "items": [
+        {
+          "item": "this crate provides the CRC-32-Castagnoli algorithm",
+          "at": [{ "step": "Build a real, fixed-size page as a byte buffer. It has its own header: a magic number, a format version, a checksum, a page LSN. Does a corrupted byte anywhere in that page actually get caught, or does the page just silently hand back the wrong data?" }]
+        },
+        {
+          "item": "computes the CRC for the data payload",
+          "at": [{ "step": "Measured: an untouched page's own checksum validates cleanly, and a single corrupted byte anywhere in its body genuinely invalidates that same checksum" }]
+        }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "self-review",
+    "date": "2026-10-24",
+    "items": [
+      { "item": "The checksum field itself is zeroed before computing the checksum over the rest of the page, an explicit struct-layout choice matching how a real self-describing page would avoid the checksum covering its own stored value; this is why recomputing the checksum after changing the magic number still produces a checksum that validates against itself.", "at": [{ "step": "Now instead of corrupting a byte, change the page's own magic number to something else, and recompute the checksum over those new bytes. Does the checksum alone catch that the format itself has changed?" }] },
+      { "item": "The crate used for the checksum (crc32c) is deliberately chosen over the more commonly reached-for crc32fast crate, since crc32fast implements the plain CRC-32 IEEE polynomial, not the CRC-32-Castagnoli algorithm the syllabus names explicitly; the two produce different checksum values over identical bytes.", "at": [{ "step": "Build a real, fixed-size page as a byte buffer. It has its own header: a magic number, a format version, a checksum, a page LSN. Does a corrupted byte anywhere in that page actually get caught, or does the page just silently hand back the wrong data?" }] },
+      { "item": "The corruption measurement flips a single byte inside the page's body, well past the header itself, deliberately showing the checksum's own coverage extends across the whole page rather than only the header fields it happens to describe.", "at": [{ "step": "Measured: an untouched page's own checksum validates cleanly, and a single corrupted byte anywhere in its body genuinely invalidates that same checksum" }] },
+      { "item": "The byte-order measurement reads the exact same in-memory byte array two different ways rather than writing it out twice in two different orders, isolating the claim to the reading side alone: the same bytes genuinely mean two different numbers depending only on how they are interpreted.", "at": [{ "step": "Measured: the same raw bytes, read in the chosen byte order, gave back the exact original value; read in the opposite byte order, they genuinely gave back a different value" }] },
+      { "item": "The page's own slot count field is written into the header but not yet exercised by any of this topic's four measured claims; it is declared now because the header layout is fixed here, and used directly in topic 49's own slotted-page work, per CHAPTER.md's own concept ledger.", "at": [{ "step": "Recap: a page that can tell its own story" }] },
+      { "item": "All four of this topic's own measured claims run entirely on an in-memory byte array with no file, network, or root access, continuing this chapter's pattern of measuring every claim directly against a real implementation rather than describing it in prose alone.", "at": [{ "step": "Measured: the checksum, recomputed over the new bytes, still validated cleanly; only checking the magic number itself caught that the format had changed" }] },
+      { "item": "The item-identifier permanence quote is deliberately placed as this topic's own closing, surprising fact rather than folded into the checksum or byte-order sections, since it is specifically the fact that motivates topic 49's own subject: a slot's identity staying stable while its physical offset can still move.", "at": [{ "step": "The same documentation also says something stronger about an item identifier's own index inside a page: it's never moved until freed, so it can be used to reference an item on a long-term basis, even while the item itself moves around during compaction. That's the whole reason a slot and a physical offset are two different things" }] },
+      { "item": "This topic continues directly from Chapter 5's repr-c-fixed-layout and derive-checked-byte-view ids: the page's own fixed byte offsets and explicit little-endian encoding are a direct application of those two ids to a new, storage-engine-specific structure, not a new foundational claim about layout itself.", "at": [{ "step": "Build a real, fixed-size page as a byte buffer. It has its own header: a magic number, a format version, a checksum, a page LSN. Does a corrupted byte anywhere in that page actually get caught, or does the page just silently hand back the wrong data?" }] },
+      { "item": "This topic opens Chapter 19 and Milestone 4 deliberately on the page as the unit of self-describing physical storage, before anything about records moving within that page (topic 49), update strategies (topic 50), or buffer pool eviction (topic 51) is introduced, per CHAPTER.md's own planned order of ideas.", "at": [{ "step": "Recap: a page that can tell its own story" }] },
+      { "item": "The magic number and format version fields are checked together as a single format_valid() condition rather than separately, since the syllabus's own claim is specifically that a self-describing format carries both together as one unit distinct from the checksum, not that each field alone catches something different from the other.", "at": [{ "step": "Measured: the checksum, recomputed over the new bytes, still validated cleanly; only checking the magic number itself caught that the format had changed" }] }
+    ]
+  },
+  "gapReview": {
+    "date": "2026-10-24",
+    "by": "self-review",
+    "open": []
+  }
+}

@@ -1,0 +1,77 @@
+{
+  "topic": "de.polars-lazy-query-engine",
+  "steps": [
+    {
+      "lines": [
+        "The library in the last topic adopted a shared buffer format, but kept its old, eager, line-by-line way of running.",
+        "Here's one built around a different idea from day one: don't run anything until the whole query is seen at once. Worth asking plainly whether that label actually changes behavior, or just changes how the code reads."
+      ]
+    },
+    {
+      "lines": [
+        "Here's the simplest possible test of that question.",
+        "The identical filter and column choice, written as a normal call chain and as a deferred query. The call chain runs each step the instant it's called.",
+        "The deferred version runs nothing at all until one single final call asks for the result, and what comes back from each path is the exact same rows."
+      ]
+    },
+    {
+      "lines": [
+        "Worth seeing the proof directly, not just trusting the label.",
+        "A deferred query actually keeps two separate plans: the one exactly as written, and the one it really runs. Printed directly from a real query here, the filter has physically moved inside the read step, and the read step itself now only touches the columns anything later still needs."
+      ]
+    },
+    {
+      "lines": [
+        "Worth guessing at before the reveal settles it.",
+        "No particular way of running the query was named, and nothing explicitly asked for any reordering. Does the result that comes back still land in the same row order it started in?"
+      ],
+      "answer": [
+        "It doesn't, and that's by design, not by accident.",
+        "The way this runs by default now doesn't promise to preserve row order for several common operations. Being built on a plan that proves its own optimizations didn't also buy a promise about the order its rows come back in."
+      ]
+    },
+    {
+      "lines": [
+        "That claim is worth more than one run's evidence, so here it is run thirty separate times.",
+        "The identical join, run over and over. Several genuinely different row orders come back across those runs, measured directly rather than read off release notes. One extra keyword, asking the result to keep its order, returns the exact same order every single time."
+      ]
+    },
+    {
+      "lines": [
+        "Here's a smaller optimization, easy to miss unless you go looking for it.",
+        "One expression, reused by two different output columns. Written out, it's typed twice. Printed from the real plan that actually runs, it's computed exactly once and handed to both columns — and both still come out numerically correct."
+      ]
+    },
+    {
+      "lines": [
+        "Here's where a real, measured gain meets an honest limit, in the engine's own builders' words.",
+        "The identical column choice, read fully into memory first versus read in batches instead. Measured directly, the batched version peaks lower on real memory use. But not every operation spills past memory yet — the people building this engine say that part themselves, as still in progress."
+      ]
+    },
+    {
+      "lines": [
+        "One capability this sandbox genuinely cannot show directly, so it's named plainly as someone else's words, not this room's own measurement.",
+        "The same kind of query plan, dispatched to a graphics processor instead of a regular one. An operation it can't run there doesn't fail the whole query — it quietly falls back to the regular engine instead.",
+        "And both sides read and write the identical buffer format, so nothing has to be converted crossing that line either."
+      ]
+    },
+    {
+      "lines": [
+        "Pulling it all back together now.",
+        "Eager and deferred produce the same rows, one of them held back until the end. A plan can prove its own optimizations in print, not just in marketing. Row order isn't kept unless something asks for it, measured across many repeated runs.",
+        "A batched read already uses less memory today, with the fuller promise still being built. And a graphics-processor path exists, documented here, run nowhere in this sandbox."
+      ]
+    },
+    {
+      "lines": [
+        "One closing scenario, worth reasoning through rather than guessing at.",
+        "A team's nightly job joins two of these deferred queries and writes the result straight into a report, read back later by row position, with no ordering option ever set.",
+        "That report's row-to-meaning mapping can silently drift between one run and the next. What's actually happening, and what's the one-line fix?"
+      ],
+      "answer": [
+        "The join's row order was never promised in the first place, so reading rows by position eventually points at the wrong record.",
+        "The fix is a single keyword asking that one join to keep its order — or sorting the result explicitly before it's written anywhere."
+      ]
+    }
+  ]
+}

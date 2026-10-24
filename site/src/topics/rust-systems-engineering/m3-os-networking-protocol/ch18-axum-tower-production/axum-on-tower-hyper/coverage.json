@@ -1,0 +1,77 @@
+{
+  "topic": "rust.axum-on-tower-hyper",
+  "syllabus": [
+    {
+      "clause": "Axum has no middleware system of its own; it is built entirely on tower::Service, so Tower middleware (timeouts, tracing, compression, authorization via tower-http) is shared with any Tower-based stack. Extractors, State, middleware::from_fn, and the 0.8 routing syntax (/{param}).",
+      "at": [
+        { "step": "Axum's own documentation says so plainly: Axum doesn't have its own middleware system; it uses tower::Service, and that's what gets it timeouts, tracing, compression, and authorization for free" },
+        { "step": "Measured: a real request to a path with a name in it came back with that exact name, pulled out by a real extractor, not a hand-written parser" },
+        { "step": "Measured: three separate real requests came back with increasing values in a row, a real piece of shared state actually accumulating, not three fresh copies" },
+        { "step": "Measured: a real middleware::from_fn layer genuinely modified a real response, and a real tower-http timeout genuinely cut off a handler that would have taken far longer, both running against real requests" }
+      ]
+    }
+  ],
+  "sources": [
+    {
+      "source": "axum-index",
+      "items": [
+        {
+          "item": "axum doesn't have its own middleware system but instead uses tower::Service; this means axum gets timeouts, tracing, compression, authorization, and more, for free, and enables sharing middleware with applications written using hyper or tonic",
+          "at": [{ "step": "The last topic showed that Service and Layer are the whole backpressure abstraction. Axum is the framework most of this ecosystem actually ships with. Does Axum build its own separate middleware system on top of that, or does it just reuse Service and Layer directly?" }]
+        },
+        {
+          "item": "axum is designed to work with tokio and hyper",
+          "at": [{ "step": "None of this needed a separate thing to learn: the extractor, the shared state, the two layers, all of it is the same Service and Layer abstraction from the topic before this one, just running inside a real HTTP server" }]
+        }
+      ]
+    },
+    {
+      "source": "axum-extract",
+      "items": [
+        {
+          "item": "a handler function is an async function that takes any number of extractors as arguments; an extractor is a type that implements FromRequest or FromRequestParts",
+          "at": [{ "step": "Stand up a real, running Axum server with a route written in the newer /{param} syntax. Send a real request for a specific name through it. Does the handler actually receive that name, or does it need to parse the raw path itself?" }]
+        }
+      ]
+    },
+    {
+      "source": "axum-from-fn",
+      "items": [
+        {
+          "item": "from_fn creates a middleware from an async function; this function doesn't support extracting State directly, for that use from_fn_with_state",
+          "at": [{ "step": "Wrap that server in a real middleware::from_fn layer that touches every response, and separately, a real tower-http layer that cuts a handler off if it runs too long. Do both of those actually run against real requests, the same way any other Tower layer would?" }]
+        }
+      ]
+    },
+    {
+      "source": "tower-http-index",
+      "items": [
+        {
+          "item": "tower-http is a library that provides HTTP-specific middleware and utilities built on top of tower; all middleware uses the http and http-body crates, compatible with any library using those crates",
+          "at": [{ "step": "Measured: a real middleware::from_fn layer genuinely modified a real response, and a real tower-http timeout genuinely cut off a handler that would have taken far longer, both running against real requests" }]
+        }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "self-review",
+    "date": "2026-10-24",
+    "items": [
+      { "item": "The server under test binds to a real ephemeral TcpListener port (127.0.0.1:0) rather than a fixed port, so the same binary can run repeatedly in CI without a stale port-in-use conflict; the real local address is read back from the listener itself before the client connects to it.", "at": [{ "step": "Stand up a real, running Axum server with a route written in the newer /{param} syntax. Send a real request for a specific name through it. Does the handler actually receive that name, or does it need to parse the raw path itself?" }] },
+      { "item": "The State measurement sends three sequential real HTTP requests rather than concurrent ones, specifically so the accumulated counter values (one, two, three in order) are deterministic; a concurrent version would still prove sharing, but the exact final count would depend on scheduling, which is not the claim under test here.", "at": [{ "step": "Measured: three separate real requests came back with increasing values in a row, a real piece of shared state actually accumulating, not three fresh copies" }] },
+      { "item": "The from_fn middleware is verified by checking for a custom response header it injects, rather than by its side effects being merely assumed from the API working at all; the header's presence is the actual, falsifiable signal that the middleware genuinely ran against that specific real response.", "at": [{ "step": "Wrap that server in a real middleware::from_fn layer that touches every response, and separately, a real tower-http layer that cuts a handler off if it runs too long. Do both of those actually run against real requests, the same way any other Tower layer would?" }] },
+      { "item": "The tower-http Timeout example uses TimeoutLayer::with_status_code rather than the deprecated TimeoutLayer::new, both to avoid a compiler warning and because the status-code variant makes the layer's own real effect (a request-timeout response, not a dropped connection) directly observable in the measured response's own status code.", "at": [{ "step": "Measured: a real middleware::from_fn layer genuinely modified a real response, and a real tower-http timeout genuinely cut off a handler that would have taken far longer, both running against real requests" }] },
+      { "item": "This topic continues directly from topic 45's own tower-service-poll-ready-contract and tower-layer-composition-limits ids: every claim measured here (an extractor, State, middleware::from_fn, a tower-http layer) is demonstrated by showing it compose through the exact same Service and Layer abstraction topic 45 established, inside a real framework rather than a bare, hand-written service.", "at": [{ "step": "The last topic showed that Service and Layer are the whole backpressure abstraction. Axum is the framework most of this ecosystem actually ships with. Does Axum build its own separate middleware system on top of that, or does it just reuse Service and Layer directly?" }] },
+      { "item": "All four of this topic's own measured claims run against a real, running Axum server driven by a real HTTP client within this container; none need a real network beyond loopback, root access, or hardware the sandbox lacks, continuing the pattern from topic 45 of measuring every claim directly rather than quoting one.", "at": [{ "step": "Measured: a real request to a path with a name in it came back with that exact name, pulled out by a real extractor, not a hand-written parser" }] },
+      { "item": "The lesson step's own synthesis (none of this needed a separate thing to learn) is deliberately placed as a connecting step with no new measured claim of its own, since its entire content is a restatement of the four already-measured results plus the already-quoted documentation, not a fifth independent claim.", "at": [{ "step": "None of this needed a separate thing to learn: the extractor, the shared state, the two layers, all of it is the same Service and Layer abstraction from the topic before this one, just running inside a real HTTP server" }] },
+      { "item": "This topic deliberately shows Axum as a thin layer over Service and Layer, not Axum's full feature surface (routing fallbacks, nested routers, WebSocket upgrades, and so on); those are out of this topic's own scope, which is specifically whether Axum's middleware story is Tower's own story, per the syllabus clause's own framing.", "at": [{ "step": "None of this needed a separate thing to learn: the extractor, the shared state, the two layers, all of it is the same Service and Layer abstraction from the topic before this one, just running inside a real HTTP server" }] },
+      { "item": "The surprising-fact quote (axum has no middleware system of its own) is placed as step two, directly answering the hook's own prediction in step one, rather than later in the reel as in several earlier topics, since here the quote itself is the direct, complete answer to the opening question rather than a separate supporting fact.", "at": [{ "step": "Axum's own documentation says so plainly: Axum doesn't have its own middleware system; it uses tower::Service, and that's what gets it timeouts, tracing, compression, and authorization for free" }] },
+      { "item": "This topic closes on Axum's own middleware story deliberately without yet discussing ordering, because showing that reordering a real stack's own layers changes what it actually guarantees is specifically topic 47's own scoped subject, per CHAPTER.md's own planned order of ideas.", "at": [{ "step": "Recap: one abstraction, running inside a real server" }] }
+    ]
+  },
+  "gapReview": {
+    "date": "2026-10-24",
+    "by": "self-review",
+    "open": []
+  }
+}

@@ -1,0 +1,17 @@
+[package]
+name = "hot_transform"
+version = "0.1.0"
+edition = "2021"
+
+[lib]
+name = "hot_transform"
+crate-type = ["cdylib"]
+
+[dependencies]
+pyo3 = { version = "0.22", features = ["extension-module"] }
+
+[features]
+abi3 = ["pyo3/abi3-py39"]
+
+[profile.release]
+opt-level = 3

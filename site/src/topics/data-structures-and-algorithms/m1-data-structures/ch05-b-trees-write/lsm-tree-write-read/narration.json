@@ -1,0 +1,75 @@
+{
+  "topic": "dsa.lsm-tree-write-read",
+  "steps": [
+    {
+      "lines": [
+        "The last two topics spent their whole runtime making an in-place page's bytes count for more.",
+        "This structure doesn't bother optimizing that problem. It just refuses to have it, by never touching a page in place at all."
+      ]
+    },
+    {
+      "lines": [
+        "Before a write touches anything else, it gets appended to a log, in order, on disk.",
+        "That log exists for exactly one scenario: the machine loses power or crashes in the gap between a write landing in memory and reaching anywhere durable."
+      ]
+    },
+    {
+      "lines": [
+        "The same write also lands in a sorted structure kept entirely in memory.",
+        "A read has to check that structure first, every time, or it would hand back an answer that's already out of date the moment something newer was written."
+      ]
+    },
+    {
+      "lines": [
+        "This in-memory structure just hit its size limit.",
+        "Before the reveal, think about what a structure with no disk presence yet is actually able to do once it runs out of room."
+      ],
+      "answer": [
+        "The whole thing gets written out as one new file on disk, and it will never be edited again.",
+        "Merging it into something that already exists isn't an option yet — nothing on disk even exists for it to merge into at this point."
+      ]
+    },
+    {
+      "lines": [
+        "So the full structure gets flushed out whole, becoming one run that never changes again from this point forward.",
+        "A brand-new, empty version takes over immediately, and the log behind the one that just got flushed can be thrown away, since everything in it now lives safely on disk.",
+        "From here on, reading that run or folding it into a later cleanup pass are the only two things that can ever happen to it."
+      ]
+    },
+    {
+      "lines": [
+        "Picture the identical key sitting in three different places at once: the in-memory structure, and two separate runs already on disk.",
+        "Before the reveal, think about what actually distinguishes those three copies from each other, and whether speed has anything to do with it."
+      ],
+      "answer": [
+        "Whichever one was written most recently is the one that counts, full stop.",
+        "A later write or a later delete always shadows whatever came before it for that same key. That's the entire rule, and it has nothing to do with which copy happens to be closest or quickest to reach."
+      ]
+    },
+    {
+      "lines": [
+        "So a lookup checks the newest structure first, then walks the on-disk runs from newest to oldest, and stops the instant it finds a match.",
+        "That ordering isn't there for speed. It's the only mechanism this structure has for knowing which of several surviving copies is actually the current one."
+      ]
+    },
+    {
+      "lines": [
+        "Checking every single run for every single lookup falls apart fast once there are more than a handful of them.",
+        "One trick answers a much cheaper question from memory alone: could this run possibly hold the key at all, or is a disk read definitely a waste of time here.",
+        "A second trick, once a run can't be ruled out that way, narrows the search down to one small range inside it instead of scanning the whole thing."
+      ]
+    },
+    {
+      "lines": [
+        "Deleting a key can't mean editing the run that holds its old value, because that run doesn't get edited, ever, by anything.",
+        "Instead the delete becomes its own entry in the newest structure, one that has to out-rank and hide the older value on every single lookup until some later cleanup pass physically removes them both together."
+      ]
+    },
+    {
+      "lines": [
+        "Here's what actually got measured, not assumed: how closely a real filter's wrong-guess rate tracked its own published setting.",
+        "Also measured: how many runs a lookup had to actually open with that filter and a range check in place, against opening every run blind, and a deleted key coming back as truly gone with no cleanup pass run at all."
+      ]
+    }
+  ]
+}

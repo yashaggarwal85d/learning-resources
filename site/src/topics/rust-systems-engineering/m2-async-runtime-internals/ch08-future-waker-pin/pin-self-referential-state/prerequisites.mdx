@@ -1,0 +1,23 @@
+import Resource from '../../../../../components/Resource.astro';
+
+<section class="prereq" data-section="chapter-so-far">
+
+### <span class="n">01</span> Where the last topic left off
+
+<ul class="resources">
+  <Resource kind="reel" host={props.host} domain="rust-systems-engineering" title="async/await lowering and future size">async fn lowers to a real enum, one variant per await point — and holding a non-Send value in one makes the whole future non-Send.</Resource>
+</ul>
+
+</section>
+
+<section class="prereq" data-section="pin-primary">
+
+### <span class="n">02</span> The real docs: why Pin exists, and what it promises
+
+<ul class="resources">
+  <Resource kind="reading" title="std::pin" href="https://doc.rust-lang.org/std/pin/index.html" by="The Rust Team">Address-sensitive values, self-referential types, and Pin's own promise, in the standard library's own words.</Resource>
+  <Resource kind="reading" title="Unpin" href="https://doc.rust-lang.org/std/marker/trait.Unpin.html" by="The Rust Team">Why almost every type is Unpin automatically, and what PhantomPinned opts out of.</Resource>
+  <Resource kind="reading" title="pin-project-lite" href="https://docs.rs/pin-project-lite/latest/pin_project_lite/" by="taiki-e">The real crate this topic's structural-projection example depends on.</Resource>
+</ul>
+
+</section>

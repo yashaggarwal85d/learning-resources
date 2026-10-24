@@ -1,0 +1,87 @@
+{
+  "steps": [
+    {
+      "lines": [
+        "A key's value gets written, and then its memtable gets flushed to an SSTable.",
+        "That same key is then overwritten, but the new write never gets flushed anywhere.",
+        { "beat": 0.3 },
+        "Which value does a lookup actually return: the old, flushed one, or the new, unflushed one?"
+      ],
+      "answer": [
+        "The new one, genuinely.",
+        "A lookup checks the newest structure first, and that structure is the active memtable."
+      ]
+    },
+    {
+      "lines": [
+        "Run it for real: the overwrite that lands only in the fresh active memtable genuinely won over that same key's stale, already-flushed value sitting in the SSTable."
+      ],
+      "takeaway": "A read checks the newest structure first, so a fresh, unflushed write always beats a stale, flushed one."
+    },
+    {
+      "lines": [
+        "Three keys end up in three different places: one in the very first SSTable ever flushed, one in a later SSTable, and one still sitting only in the active memtable.",
+        { "beat": 0.3 },
+        "Does looking up that oldest key cost the same as looking up the newest one?"
+      ],
+      "answer": [
+        "No, genuinely.",
+        "The oldest key costs more, because more structures have to be checked before it's found."
+      ]
+    },
+    {
+      "lines": [
+        "Run it for real: the oldest key genuinely took checking more than one structure, the newest key took checking only the active memtable.",
+        "And a lookup for a key that doesn't exist anywhere at all had to check every single structure that exists before it could be ruled out."
+      ],
+      "takeaway": "A read falls through structures newest to oldest, and a genuine miss costs checking everything."
+    },
+    {
+      "lines": [
+        "A memtable gets flushed to an SSTable, and that SSTable then gets read from many times, by many different lookups.",
+        { "beat": 0.3 },
+        "Does any single one of those reads ever change even one byte of the SSTable itself?"
+      ],
+      "answer": [
+        "No, genuinely.",
+        "The SSTable's own bytes never change once it's been flushed."
+      ]
+    },
+    {
+      "lines": [
+        "Run it for real: a flushed SSTable's own bytes genuinely never changed across many later reads against it, whether those reads were hits or honest misses."
+      ],
+      "takeaway": "Once an SSTable is flushed, it's never modified in place; only read, merged, or deleted."
+    },
+    {
+      "lines": [
+        "One real production system names the exact moment a memtable stops accepting writes, in its own documentation.",
+        { "beat": 0.3 },
+        "At that exact moment, what happens to the active memtable, and to the write-ahead log alongside it?"
+      ],
+      "answer": [
+        "It's closed on the spot, genuinely.",
+        "The active memtable turns into an immutable one, and a brand-new write-ahead log file starts at that same instant."
+      ]
+    },
+    {
+      "lines": [
+        "That system's own words state it directly: the active memtable is closed and turned into an immutable memtable, and the write-ahead log switches to a new file at that exact same moment."
+      ],
+      "takeaway": "A memtable switch closes the active memtable and starts a fresh write-ahead log file at the exact same moment."
+    },
+    {
+      "lines": [
+        "That same system's own documentation also names, directly, what the resulting structure actually is.",
+        "A memtable that's just been closed this way isn't gone and isn't still being written to; it's simply waiting its turn to be flushed to disk."
+      ]
+    },
+    {
+      "lines": [
+        "So here's the shape of this whole topic: a lookup always checks the newest place a value could be first, which is exactly why a fresh, unflushed write beats an old, already-flushed one every time.",
+        "That same newest-first order means an older key costs more to find than a newer one, and a key that genuinely doesn't exist anywhere costs the most of all, because ruling it out means checking every single structure there is.",
+        "And once any one of those structures gets flushed to disk, it stops changing entirely; from that moment on, it's read from, merged with others, or eventually deleted, but never edited in place again."
+      ]
+    }
+  ]
+}

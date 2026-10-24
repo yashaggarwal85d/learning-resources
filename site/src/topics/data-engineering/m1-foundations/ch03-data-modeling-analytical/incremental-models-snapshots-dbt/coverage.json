@@ -1,0 +1,150 @@
+{
+  "topic": "de.incremental-models-snapshots-dbt",
+  "syllabus": [
+    {
+      "clause": "strategies (append, merge, delete+insert, insert_overwrite, microbatch), is_incremental() filters and late-data lookback, full-refresh drift, schema-change handling",
+      "at": [
+        { "step": "Reveal: the lab — the strategies, run for real" },
+        { "step": "Reveal: the lab — the adapter doesn't support every named strategy" },
+        { "step": "Reveal: the lab — a missed correction, confirmed, then fixed" },
+        { "step": "Reveal: the lab — three real stages of a schema change" }
+      ]
+    },
+    {
+      "clause": "snapshots as SCD2 via timestamp vs check strategies (→ §3.2).",
+      "at": [
+        { "step": "Reveal: snapshots as SCD two, quoted directly; timestamp vs check, run for real" },
+        { "step": "Reveal: why the timestamp strategy is preferred, quoted directly; tied to this chapter's own SCD mechanism" }
+      ]
+    }
+  ],
+  "sources": [
+    {
+      "source": "dbt Developer Hub, \"Configure incremental models\"",
+      "items": [
+        {
+          "item": "is_incremental() returns true only under specific conditions, powering incremental runs",
+          "at": [{ "step": "Reveal: what makes a run incremental, quoted directly" }]
+        },
+        {
+          "item": "--full-refresh drops and rebuilds the target table for all time",
+          "at": [{ "step": "Reveal: the lab — a missed correction, confirmed, then fixed" }]
+        },
+        {
+          "item": "No on_schema_change behavior backfills old records for a newly added column",
+          "at": [{ "step": "Reveal: the lab — three real stages of a schema change" }]
+        },
+        {
+          "item": "The default on_schema_change behavior is ignore",
+          "at": [{ "step": "Predict: does adding a column to a model just work on the next run?" }]
+        }
+      ]
+    },
+    {
+      "source": "dbt Developer Hub, \"About incremental strategy\"",
+      "items": [
+        {
+          "item": "append inserts without updating or deleting, and can duplicate rows",
+          "at": [{ "step": "Reveal: the lab — the strategies, run for real" }]
+        },
+        {
+          "item": "delete+insert deletes matching unique_key rows, then inserts",
+          "at": [{ "step": "Reveal: the lab — the strategies, run for real" }]
+        },
+        {
+          "item": "merge inserts new keys and updates existing ones, mirroring SCD1",
+          "at": [{ "step": "Reveal: the lab — the strategies, run for real" }]
+        },
+        {
+          "item": "insert_overwrite replaces whole partitions, built for partitioned warehouses",
+          "at": [{ "step": "Reveal: the lab — the adapter doesn't support every named strategy" }]
+        },
+        {
+          "item": "microbatch splits large time-series data into time-based batches",
+          "at": [{ "step": "Reveal: the lab — the strategies, run for real" }]
+        }
+      ]
+    },
+    {
+      "source": "dbt Developer Hub, \"Add snapshots to your DAG\"",
+      "items": [
+        {
+          "item": "Snapshots implement type-2 SCD over mutable source tables",
+          "at": [{ "step": "Reveal: snapshots as SCD two, quoted directly; timestamp vs check, run for real" }]
+        },
+        {
+          "item": "The timestamp strategy uses updated_at to detect a changed row",
+          "at": [{ "step": "Reveal: snapshots as SCD two, quoted directly; timestamp vs check, run for real" }]
+        },
+        {
+          "item": "The check strategy compares check_cols values instead of a timestamp",
+          "at": [{ "step": "Reveal: snapshots as SCD two, quoted directly; timestamp vs check, run for real" }]
+        },
+        {
+          "item": "The timestamp strategy is recommended as more robust to schema evolution than check",
+          "at": [{ "step": "Reveal: why the timestamp strategy is preferred, quoted directly; tied to this chapter's own SCD mechanism" }]
+        }
+      ]
+    },
+    {
+      "source": "dbt Developer Hub, \"About microbatch incremental models\"",
+      "items": [
+        {
+          "item": "Microbatch relies solely on an event_time column to define time-based ranges",
+          "at": [{ "step": "Reveal: the lab — the strategies, run for real" }]
+        },
+        {
+          "item": "A microbatch run splits processing into multiple time-based batch queries",
+          "at": [{ "step": "Reveal: the lab — the strategies, run for real" }]
+        }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "Claude (single session, written from the syllabus line and the fetched sources before storyboarding; not independent of the builder, so a later owner review should repeat it)",
+    "date": "2026-10-23",
+    "items": [
+      {
+        "item": "This topic extends the previous topic's own real dbt-core project (lab/shop_dbt/) rather than starting fresh: four incremental strategies, a schema-change demonstration, and two snapshot strategies were all actually built and run against the same local DuckDB target",
+        "at": [{ "step": "Reveal: the lab — the strategies, run for real" }]
+      },
+      {
+        "item": "insert_overwrite's absence from the DuckDB adapter was confirmed by reading the installed dbt-adapters package's own source (DUCKDB_BASE_INCREMENTAL_STRATEGIES), not assumed from the docs or from a vendor comparison table",
+        "at": [{ "step": "Reveal: the lab — the adapter doesn't support every named strategy" }]
+      },
+      {
+        "item": "The missed-correction scenario (second predict) is red-teamed against the plausible wrong answer that any lookback window, widened enough, eventually catches a late correction; the real result directly refutes it, since the correction's own historical timestamp sits below the table's high-water mark regardless of window size",
+        "at": [{ "step": "Predict: does a wide lookback window catch a correction dated in the past?" }]
+      },
+      {
+        "item": "The schema-change demonstration (third predict) actually reproduces all three stages in sequence against the same model and the same real binder error, rather than asserting the documented behavior secondhand: ignore silently drops the column, append_new_columns adds it with NULL backfill, full-refresh backfills correctly",
+        "at": [{ "step": "Predict: does adding a column to a model just work on the next run?" }]
+      },
+      {
+        "item": "The snapshot comparison is a real, repeated run (before and after a genuine source change) rather than a single build: the timestamp snapshot's dbt_valid_from reflects the source data's own updated_at value, while the check snapshot's dbt_valid_from reflects this session's own wall-clock run time, confirmed by reading both snapshot tables directly",
+        "at": [{ "step": "Reveal: snapshots as SCD two, quoted directly; timestamp vs check, run for real" }]
+      },
+      {
+        "item": "The tie-back to topic 13's own SCD2 mechanism (dbt_valid_from/dbt_valid_to as the same effective/expiry columns built there by hand with MERGE) is checked against that topic's own content before being asserted, not invented fresh",
+        "at": [{ "step": "Reveal: why the timestamp strategy is preferred, quoted directly; tied to this chapter's own SCD mechanism" }]
+      },
+      {
+        "item": "fct_orders_microbatch's real first build split into two hundred ninety-six actual per-day batches (begin to the run date) and produced a real warning that its upstream lacks its own event_time, both confirmed from actual dbt build output rather than inferred from the docs' description of batching",
+        "at": [{ "step": "Reveal: the lab — the strategies, run for real" }]
+      },
+      {
+        "item": "The bridge from topic 24 (dbt models, tests and lineage) and the handoff to topic 26 (the next chapter's own Python costs) are both taken verbatim from CHAPTER.md's own entry for this topic and checked against this topic's own content before use",
+        "at": [{ "step": "Every model so far assumed a full rebuild was fine" }]
+      },
+      {
+        "item": "The closing Prove-It scenario (an append-only table needing an occasional old-dated correction) is a genuinely new combination of this topic's own two real findings (append's own limits, and the missed-correction result), not a restatement of either alone",
+        "at": [{ "step": "Prove it" }]
+      },
+      {
+        "item": "dbt Fusion engine and SQLMesh, both marked (skipped) in this chapter's own syllabus, are correctly left out of this topic's own comparison of tools, consistent with the previous topic's own disclosure of the same scope boundary",
+        "at": [{ "step": "Recap" }]
+      }
+    ]
+  },
+  "gapReview": { "date": "2026-10-23", "by": "Claude (single session)", "open": [] }
+}

@@ -1,0 +1,143 @@
+{
+  "topic": "de.profiling-cpu-memory-allocations",
+  "syllabus": [
+    {
+      "clause": "deterministic vs sampling profilers (cProfile vs py-spy, Scalene), allocation tracking (tracemalloc, memray), native frames via perf support, attaching to live processes (PEP 768 in 3.14) and the built-in sampling profiler profiling.sampling (3.15)",
+      "at": [
+        { "step": "Reveal: deterministic profiling, quoted directly" },
+        { "step": "Reveal: cProfile, run for real on the plain loop" },
+        { "step": "Reveal: tracemalloc, quoted and measured" },
+        { "step": "Predict: can an outside tool see real function names with no code change at all?" },
+        { "step": "Reveal: the lab — py-spy attaching to a live process, for real" },
+        { "step": "Reveal: Scalene, run for real on the native-engine leg" }
+      ]
+    },
+    {
+      "clause": "profiling the native engine (Polars, DuckDB) separately from the Python glue",
+      "at": [
+        { "step": "Reveal: Scalene, run for real on the native-engine leg" },
+        { "step": "Reveal: the lab — the Arrow handoff, measured against a round trip" }
+      ]
+    }
+  ],
+  "sources": [
+    {
+      "source": "Python Documentation, \"profile — Pure Python profiler\"",
+      "items": [
+        {
+          "item": "Deterministic profiling monitors every function call, return, and exception event, with precise timings between them",
+          "at": [{ "step": "Reveal: deterministic profiling, quoted directly" }]
+        },
+        {
+          "item": "Statistical profiling (profiling.sampling) periodically samples the effective instruction pointer and deduces where time is being spent",
+          "at": [{ "step": "Reveal: deterministic profiling, quoted directly" }]
+        }
+      ]
+    },
+    {
+      "source": "Python Documentation, \"tracemalloc — Trace memory allocations\"",
+      "items": [
+        {
+          "item": "tracemalloc is a debug tool to trace memory blocks allocated by Python",
+          "at": [{ "step": "Reveal: tracemalloc, quoted and measured" }]
+        },
+        {
+          "item": "tracemalloc can compute the differences between two snapshots to detect memory leaks",
+          "at": [{ "step": "Reveal: tracemalloc, quoted and measured" }]
+        }
+      ]
+    },
+    {
+      "source": "py-spy README",
+      "items": [
+        {
+          "item": "py-spy visualizes where a Python program is spending time without restarting the program or modifying its code",
+          "at": [{ "step": "Predict: can an outside tool see real function names with no code change at all?" }, { "step": "Reveal: the lab — py-spy attaching to a live process, for real" }]
+        }
+      ]
+    },
+    {
+      "source": "Memray README",
+      "items": [
+        {
+          "item": "Memray is a memory profiler for Python that tracks allocations in Python code and in native extensions",
+          "at": [{ "step": "Reveal: tracemalloc, quoted and measured" }]
+        }
+      ]
+    },
+    {
+      "source": "Scalene README",
+      "items": [
+        {
+          "item": "Scalene separates out time spent in Python from time in native code",
+          "at": [{ "step": "Reveal: Scalene, run for real on the native-engine leg" }]
+        }
+      ]
+    },
+    {
+      "source": "PEP 768, \"Safe external debugger interface for CPython\"",
+      "items": [
+        {
+          "item": "PEP 768 proposes a zero-overhead debugging interface letting debuggers and profilers safely attach to running Python processes",
+          "at": [{ "step": "Predict: can an outside tool see real function names with no code change at all?" }]
+        }
+      ]
+    },
+    {
+      "source": "Python 3.15 Release Notes, \"What's New In Python 3.15\"",
+      "items": [
+        {
+          "item": "profiling.sampling (Tachyon) is a new statistical sampling profiler enabling low-overhead analysis without code modification or process restart",
+          "at": [{ "step": "Reveal: deterministic profiling, quoted directly" }]
+        }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "Claude (single session, written from the syllabus line and the fetched sources before storyboarding; not independent of the builder, so a later owner review should repeat it)",
+    "date": "2026-10-23",
+    "items": [
+      {
+        "item": "The four-way comparison (plain loop, multiprocessing, async, native engine) runs on the identical synthetic feed in one process, so the comparison is apples-to-apples rather than four separately-run, differently-sized benchmarks",
+        "at": [{ "step": "Reveal: the lab — all four ways, measured together for real" }]
+      },
+      {
+        "item": "Async is measured honestly as slower than the plain loop on this CPU-bound local-parsing workload, not merely 'no faster' — the topic does not soften a result that contradicts the chapter's earlier async win, since that win was for a different kind of workload entirely",
+        "at": [{ "step": "Reveal: the lab — all four ways, measured together for real" }]
+      },
+      {
+        "item": "The tracemalloc measurement went through a real correction during this build: an initial version compared post-call live block counts and got a backwards result, fixed by reading tracemalloc.get_traced_memory()'s own peak instead — documented as a finding, not silently rewritten away",
+        "at": [{ "step": "Reveal: tracemalloc, quoted and measured" }]
+      },
+      {
+        "item": "The py-spy attach is checked against the real subprocess's own actual function name appearing in the dump output, not merely that the dump command exited without an error",
+        "at": [{ "step": "Reveal: the lab — py-spy attaching to a live process, for real" }]
+      },
+      {
+        "item": "PEP 768 (3.14) and profiling.sampling (3.15) are both confirmed absent from this sandbox's CPython 3.13.16 by direct import/attribute checks, not assumed absent from the version number, and perf is confirmed absent by checking for the actual command rather than assumed",
+        "at": [{ "step": "Predict: can an outside tool see real function names with no code change at all?" }]
+      },
+      {
+        "item": "The Scalene python-vs-native split is read directly from Scalene's own JSON report on a real subprocess run against the Polars/DuckDB leg, not inferred from either library's own description of being written in Rust/C++",
+        "at": [{ "step": "Reveal: Scalene, run for real on the native-engine leg" }]
+      },
+      {
+        "item": "The Arrow handoff claim was redesigned mid-build after a more direct first test (buffer-address identity between input and DuckDB's query output) gave a real, honest negative result, rather than discarding that result or forcing the expected answer; the real measured benefit was relocated to the serialize/deserialize cost skipped on the way in, verified against a genuine CSV round trip",
+        "at": [{ "step": "Reveal: the lab — the Arrow handoff, measured against a round trip" }]
+      },
+      {
+        "item": "The closing Prove-It scenario (matching a profiling tool to a specific question — CPU, memory, or a stall) is a genuinely new synthesis task, not a restatement of any single reveal: it requires recognizing that this topic's own tools answer different, non-overlapping questions",
+        "at": [{ "step": "Prove it" }]
+      },
+      {
+        "item": "The bridge from topics 26-28 (object overhead, the GIL, async) and the handoff to the next section (Arrow's columnar format, the first native-engine topic) are both taken verbatim from CHAPTER.md's own entry for this topic",
+        "at": [{ "step": "Three claims about speed so far — none of them checked with a real profiler yet" }]
+      },
+      {
+        "item": "The synthetic feed's size is disclosed as an exact, honest fraction of the chapter's own 20 GB running-example target rather than a round number chosen to look adequate, computed directly from the file actually written to disk",
+        "at": [{ "step": "Reveal: the lab — all four ways, measured together for real" }]
+      }
+    ]
+  },
+  "gapReview": { "date": "2026-10-23", "by": "Claude (single session)", "open": [] }
+}

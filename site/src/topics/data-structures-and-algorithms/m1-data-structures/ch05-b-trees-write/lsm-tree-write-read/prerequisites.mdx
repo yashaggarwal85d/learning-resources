@@ -1,0 +1,33 @@
+import Resource from '../../../../../components/Resource.astro';
+
+<section class="prereq" data-section="before">
+
+### <span class="n">01</span> Already covered
+
+<ul class="resources">
+  <Resource kind="reel" host={props.host} domain="data-structures-and-algorithms" title="B-tree and B+-tree mechanics">The in-place, page-based alternative this structure is built specifically to avoid.</Resource>
+</ul>
+
+</section>
+
+<section class="prereq" data-section="standard">
+
+### <span class="n">02</span> The real source, from research and production
+
+<ul class="resources">
+  <Resource kind="reading" title="Database Storage II" href="https://15445.courses.cs.cmu.edu/fall2024/slides/04-storage2.pdf" by="Carnegie Mellon, Fall 2024">The LSM write path (log, memtable, SSTable) and the newest-first read order, taught directly from a current database-internals course.</Resource>
+  <Resource kind="reading" title="leveldb Implementation Notes" href="https://raw.githubusercontent.com/google/leveldb/main/doc/impl.md" by="Google">The write-ahead log, memtable, and immutable sorted table mechanics in a real, current LSM storage engine.</Resource>
+  <Resource kind="reading" title="RocksDB Bloom Filter" href="https://raw.githubusercontent.com/wiki/facebook/rocksdb/RocksDB-Bloom-Filter.md" by="Meta">The bits-per-key-to-false-positive-rate table this topic's own Bloom filter measurement is checked against.</Resource>
+</ul>
+
+</section>
+
+<section class="prereq" data-section="later">
+
+### <span class="n">03</span> Where this goes next
+
+<ul class="resources">
+  <Resource kind="reel" host={props.host} domain="data-structures-and-algorithms" title="LSM compaction and amplification">Flushing solves the write problem only by deferring it. Next: what it costs to clean up the runs this topic lets accumulate.</Resource>
+</ul>
+
+</section>

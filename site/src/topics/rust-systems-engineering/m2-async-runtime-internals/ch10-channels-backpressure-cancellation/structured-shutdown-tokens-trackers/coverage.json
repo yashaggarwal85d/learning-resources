@@ -1,0 +1,84 @@
+{
+  "topic": "rust.structured-shutdown-tokens-trackers",
+  "syllabus": [
+    {
+      "clause": "CancellationToken + TaskTracker (tokio-util). An explicit shutdown sequence: stop accepting → signal workers → drain or cancel per policy → close transports → wait for completion with a deadline. SIGTERM handling and Kubernetes termination grace periods.",
+      "at": [
+        { "step": "Measured: 3 jobs accepted before the signal, then every single submission after it rejected outright" },
+        { "step": "Measured: wait() didn't return until all 8 accepted jobs had genuinely finished running" },
+        { "step": "Measured: the wait genuinely stopped right at its deadline — the straggler, still unfinished, was not waited for any longer" },
+        { "step": "Every stage of that sequence just used a mechanism this chapter already proved" }
+      ]
+    }
+  ],
+  "sources": [
+    {
+      "source": "cancellation-token",
+      "items": [
+        {
+          "item": "a CancellationToken is a token which can be used to signal a cancellation request to one or more tasks",
+          "at": [{ "step": "A worker pool signals shutdown with a CancellationToken. Does a job submitted right after that signal still get accepted?" }]
+        },
+        {
+          "item": "cancellation can be requested through the CancellationToken::cancel method",
+          "at": [{ "step": "Measured: 3 jobs accepted before the signal, then every single submission after it rejected outright" }]
+        }
+      ]
+    },
+    {
+      "source": "task-tracker",
+      "items": [
+        {
+          "item": "a TaskTracker is a task tracker used for waiting until tasks exit",
+          "at": [{ "step": "A TaskTracker's wait() is called right after the tracker is closed. Does it return as soon as the tracker is closed, or does it wait for the jobs themselves?" }]
+        },
+        {
+          "item": "the TaskTracker must be closed, and must be empty (all tracked tasks must have exited), before wait returns",
+          "at": [{ "step": "Measured: wait() didn't return until all 8 accepted jobs had genuinely finished running" }]
+        },
+        {
+          "item": "when a call to wait returns, it is guaranteed that all tracked tasks have exited and that the destructor of the future has finished running",
+          "at": [{ "step": "Measured: wait() didn't return until all 8 accepted jobs had genuinely finished running" }]
+        },
+        {
+          "item": "a TaskTracker is usually used together with a CancellationToken to implement graceful shutdown: the token signals tasks to shut down, and the tracker waits for them to finish",
+          "at": [{ "step": "Every stage of that sequence just used a mechanism this chapter already proved" }]
+        }
+      ]
+    },
+    {
+      "source": "signal-unix",
+      "items": [
+        {
+          "item": "tokio::signal::unix provides Unix-specific types for signal handling",
+          "at": [{ "step": "Which real-world signal is this entire sequence actually built to answer, in time?" }]
+        },
+        {
+          "item": "a listener can be created which receives notifications when the current process receives a specified signal kind",
+          "at": [{ "step": "Which real-world signal is this entire sequence actually built to answer, in time?" }]
+        }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "self-review",
+    "date": "2026-10-23",
+    "items": [
+      { "item": "A cancellation token's check happens at the exact call site of the submission, not at some later poll, which is why the dividing line between accepted and rejected jobs is drawn at the precise moment cancel() runs rather than fuzzily around it.", "at": [{ "step": "Measured: 3 jobs accepted before the signal, then every single submission after it rejected outright" }] },
+      { "item": "A tracker's close() is deliberately a one-way, separate step from wait(): closing stops new work from being tracked, but says nothing about the work already inside, which is exactly why wait() still has real waiting left to do after close() returns.", "at": [{ "step": "A TaskTracker's wait() is called right after the tracker is closed. Does it return as soon as the tracker is closed, or does it wait for the jobs themselves?" }] },
+      { "item": "wait() returning only once every tracked task has both exited and finished dropping its future is a stronger guarantee than merely finishing its last line of code, which is exactly what lets a caller treat wait() returning as proof that every task's own cleanup, not just its work, is done.", "at": [{ "step": "Measured: wait() didn't return until all 8 accepted jobs had genuinely finished running" }] },
+      { "item": "Wrapping the tracker's own wait in a timeout doesn't change what the tracker promises; it changes what the caller is willing to promise back, which is the real reason a deadline belongs at the call site of wait() and not inside the tracker itself.", "at": [{ "step": "Wrap that same wait in a real deadline, with one job that deliberately runs far longer than it. Does the shutdown hang, or does it stop on time?" }] },
+      { "item": "The straggler job that outlives the deadline isn't cancelled by the timeout; it's simply no longer waited for, which is a direct, deliberate consequence of this chapter's own earlier finding that dropping a future is the one real cancellation mechanism and a timeout is just another place that drop happens.", "at": [{ "step": "Measured: the wait genuinely stopped right at its deadline — the straggler, still unfinished, was not waited for any longer" }] },
+      { "item": "A real deployment's SIGTERM and its termination grace period are not a separate concern layered on top of this sequence; they are the exact reason the sequence has a deadline at all, since an orchestrator that receives no response within its own grace period simply kills the process outright, straggler or not.", "at": [{ "step": "Which real-world signal is this entire sequence actually built to answer, in time?" }] },
+      { "item": "The five-stage sequence — stop accepting, signal, drain or cancel, close, wait — is an ordering claim as much as a list: stopping acceptance before signalling avoids a race where a job slips in during the signal itself, and closing before waiting is what makes the wait's own completion guarantee meaningful rather than open-ended.", "at": [{ "step": "The real sequence, assembled from this chapter: stop accepting, signal, drain or cancel, close, wait" }] },
+      { "item": "Nothing in this topic's own code is a new primitive: every stage reuses exactly the token, the channel, and the cancel-safety distinctions this chapter already measured directly in its first two topics, which is the whole argument that graceful shutdown is composition, not a new mechanism.", "at": [{ "step": "Every stage of that sequence just used a mechanism this chapter already proved" }] },
+      { "item": "This topic closes the loop Chapter 9 opened and left unproven: 'bound every channel' and 'define cancellation semantics explicitly' were both named as operating rules there, and this chapter has now measured, directly, exactly what each one costs and buys when it's actually followed.", "at": [{ "step": "Recap: a real stop, a real wait, and a real deadline" }] },
+      { "item": "The job pool this topic measures is the same worker-pool shape this chapter's first topic already built around a bounded mpsc channel, which is a deliberate choice: a shutdown sequence that only ever worked on a brand-new example would prove far less than one that visibly reuses a structure already shown to apply backpressure correctly.", "at": [{ "step": "A worker pool signals shutdown with a CancellationToken. Does a job submitted right after that signal still get accepted?" }] }
+    ]
+  },
+  "gapReview": {
+    "date": "2026-10-23",
+    "by": "self-review",
+    "open": []
+  }
+}

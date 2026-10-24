@@ -1,0 +1,4 @@
+- **Cancellation by drop**: the one real mechanism for cancelling an async operation — dropping its future at the `.await` point it's currently paused at. *Where you meet it:* `select!` genuinely dropping its losing branch, measured directly.
+- **Cancel safety**: whether dropping and recreating a future loses data or leaves something inconsistent. *Where you meet it:* `mpsc::Receiver::recv` losing nothing when cancelled, contrasted with `read_exact` losing bytes it already consumed.
+- **Detaching a task**: what dropping a `JoinHandle` actually does. *Where you meet it:* a task that keeps running, unobserved, long after its only handle is gone.
+- **No async drop**: Rust's `Drop` cannot run asynchronous cleanup. *Where you meet it:* why `read_exact`'s partially-filled buffer can't be handed back anywhere once it's cancelled.

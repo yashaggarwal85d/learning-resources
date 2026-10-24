@@ -1,0 +1,5 @@
+- **`mio::Poll`**: monitors registered event sources, becoming ready when read or write can happen immediately. *Where you meet it:* the real register → park → event cycle, built directly.
+- **`Token`**: identifies which registered source a readiness event belongs to. *Where you meet it:* how a readiness event is matched back to the right task.
+- **Spurious event**: a readiness event that arrives even though the operation still blocks. *Where you meet it:* why the operation must be retried until it returns `WouldBlock`.
+- **Timer wheel**: the data structure the time driver uses to fire many deadlines efficiently. *Where you meet it:* `tokio::time::sleep` waking close to its real deadline, measured directly.
+- **`io_uring`**: a real, currently unstable, opt-in Tokio feature (`tokio_unstable`). *Where you meet it:* not the default I/O path, named directly rather than assumed.

@@ -1,0 +1,77 @@
+{
+  "topic": "rust.wal-flush-points-i",
+  "syllabus": [
+    {
+      "clause": "databases use a WAL plus explicit flush points, not an fsync per small update (→ Ch.20). Volatile device write caches and FUA. Tools: strace, perf, biolatency/bpftrace, device queue-depth counters.",
+      "at": [
+        { "step": "Measured: a thousand writes, each followed by its own fsync, made exactly one thousand real fsync syscalls, confirmed directly by strace" },
+        { "step": "Measured: the exact same thousand writes, flushed every fifty records plus a final flush, made twenty-one real fsync syscalls, not a thousand" },
+        { "step": "Measured: the per-update version took far longer, in real wall-clock time, than the batched version, for the identical thousand writes" },
+        { "step": "None of this flushing means anything if the disk itself lies about it. What does a volatile write cache actually do, and what forces it to tell the truth?" }
+      ]
+    }
+  ],
+  "sources": [
+    {
+      "source": "postgres-wal-intro",
+      "items": [
+        {
+          "item": "Using WAL results in a significantly reduced number of disk writes, because only the WAL file needs to be flushed to disk to guarantee that a transaction is committed, rather than every data file changed by the transaction",
+          "at": [{ "step": "PostgreSQL's own documentation makes a specific claim about why a WAL helps at all. What does it actually say the WAL avoids flushing?" }]
+        },
+        {
+          "item": "when the server is processing many small concurrent transactions, one fsync of the WAL file may suffice to commit many transactions",
+          "at": [{ "step": "The documentation's own words: using WAL means only the WAL file needs to be flushed, rather than every data file the transaction changed, and under load one flush can cover many transactions at once" }]
+        }
+      ]
+    },
+    {
+      "source": "postgres-wal-configuration",
+      "items": [
+        {
+          "item": "Normally, WAL buffers should be written and flushed by an XLogFlush request, which is made, for the most part, at transaction commit time to ensure that transaction records are flushed to permanent storage",
+          "at": [{ "step": "The documentation's own words: using WAL means only the WAL file needs to be flushed, rather than every data file the transaction changed, and under load one flush can cover many transactions at once" }]
+        },
+        {
+          "item": "the purpose of commit_delay is to allow the cost of each flush operation to be amortized across concurrently committing transactions",
+          "at": [{ "step": "None of this flushing means anything if the disk itself lies about it. What does a volatile write cache actually do, and what forces it to tell the truth?" }]
+        }
+      ]
+    },
+    {
+      "source": "writeback-cache-control",
+      "items": [
+        {
+          "item": "Many storage devices, especially in the consumer market, come with volatile write back caches. That means the devices signal I/O completion to the operating system before data actually has hit the non-volatile storage",
+          "at": [{ "step": "None of this flushing means anything if the disk itself lies about it. What does a volatile write cache actually do, and what forces it to tell the truth?" }]
+        },
+        {
+          "item": "The REQ_FUA flag can be OR ed into the r/w flags of a bio submitted from the filesystem and will make sure that I/O completion for this request is only signaled after the data has been committed to non-volatile storage",
+          "at": [{ "step": "Recap: fewer real flushes, far less real waiting, and a disk that still has to be forced to tell the truth" }]
+        }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "self-review",
+    "date": "2026-10-24",
+    "items": [
+      { "item": "The 1000-versus-21 fsync count is not a sampled approximation; it is the exact arithmetic of flushing every 50th write plus one final flush over 1000 writes (1000/50 = 20, plus the one trailing flush), confirmed stable across repeated runs before being asserted.", "at": [{ "step": "Measured: the exact same thousand writes, flushed every fifty records plus a final flush, made twenty-one real fsync syscalls, not a thousand" }] },
+      { "item": "Both binaries write identical content to a freshly created file with the identical record format; the only variable that differs between them is how often sync_all() is actually called, which is why the measured wall-clock gap can be attributed specifically to the fsync calls themselves.", "at": [{ "step": "Same comparison, but timed instead of counted. Does cutting the fsync count also cut the real wall-clock time, by roughly the same large factor?" }] },
+      { "item": "The timing assertion in examples.py deliberately uses a conservative 5x multiplier rather than the full observed ~30-40x gap from repeated local runs, so the claim holds even on a slower or more contended CI machine than the one that first measured it.", "at": [{ "step": "Measured: the per-update version took far longer, in real wall-clock time, than the batched version, for the identical thousand writes" }] },
+      { "item": "The fsync syscall count is measured by counting literal 'fsync(' occurrences in strace's own stderr output under -e trace=fsync, the same technique topic 40 established for distinguishing fsync from fdatasync, rather than trusting the Rust program's own return codes.", "at": [{ "step": "Measured: a thousand writes, each followed by its own fsync, made exactly one thousand real fsync syscalls, confirmed directly by strace" }] },
+      { "item": "Prototyping this comparison at /tmp/waltest/ before writing the real crate confirmed both the timing ratio and the exact syscall counts were stable and repeatable, not an artifact of a single lucky run, before either number was committed to examples.py's assertions.", "at": [{ "step": "A thousand small writes to a real log file, each followed immediately by a real fsync. How many real fsync syscalls does that actually make?" }] },
+      { "item": "PostgreSQL's own documentation frames the WAL's benefit narrowly: it is specifically that only the WAL file, not every data file a transaction touched, needs flushing to guarantee durability — this topic's own batching measurement is a direct, syscall-level demonstration of that same narrow claim, not a separate or stronger one.", "at": [{ "step": "PostgreSQL's own documentation makes a specific claim about why a WAL helps at all. What does it actually say the WAL avoids flushing?" }] },
+      { "item": "commit_delay's own documented purpose, amortizing flush cost across concurrently committing transactions, is the same batching principle this topic's two binaries demonstrate directly, just applied to concurrent transactions rather than to one process's own sequential writes.", "at": [{ "step": "None of this flushing means anything if the disk itself lies about it. What does a volatile write cache actually do, and what forces it to tell the truth?" }] },
+      { "item": "This topic deliberately does not attempt to measure a real device's write-cache honesty or REQ_FUA support directly, because confirming either needs root-level access to raw block-device behavior (queue-depth counters, biolatency/bpftrace) this container's sandbox does not grant; the claim is sourced directly from the kernel's own already-published documentation instead.", "at": [{ "step": "None of this flushing means anything if the disk itself lies about it. What does a volatile write cache actually do, and what forces it to tell the truth?" }] },
+      { "item": "This topic builds directly on topic 40's own fsync framing: fsync and fdatasync are the mechanism topic 40 established as correct; this topic measures how rarely a real system actually needs to pay that mechanism's cost, not whether the mechanism itself is correct.", "at": [{ "step": "A thousand small writes to a real log file, each followed immediately by a real fsync. How many real fsync syscalls does that actually make?" }] },
+      { "item": "The REQ_FUA quote is specific to a per-request completion signal, not a whole-device flush; this topic's own batching measurement is orthogonal to it, since REQ_FUA governs whether a single write's own completion can be trusted, while batching governs how many such writes need a flush at all.", "at": [{ "step": "Recap: fewer real flushes, far less real waiting, and a disk that still has to be forced to tell the truth" }] },
+      { "item": "This topic closes Chapter 15 deliberately on durability cost, not on a new durability mechanism: it assumes topic 40's fsync-and-directory-fsync correctness is already established, and only asks how infrequently that correct mechanism needs to run to still be correct.", "at": [{ "step": "Recap: fewer real flushes, far less real waiting, and a disk that still has to be forced to tell the truth" }] }
+    ]
+  },
+  "gapReview": {
+    "date": "2026-10-24",
+    "by": "self-review",
+    "open": []
+  }
+}
