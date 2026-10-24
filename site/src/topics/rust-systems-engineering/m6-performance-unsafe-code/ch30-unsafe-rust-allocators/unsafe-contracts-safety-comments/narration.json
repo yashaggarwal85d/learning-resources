@@ -1,0 +1,68 @@
+{
+  "steps": [
+    {
+      "lines": [
+        "A function is marked unsafe and ships with a documented contract.",
+        { "beat": 0.3 },
+        "Does calling it from behind a real safe guard that checks the contract first ever reach undefined behavior?"
+      ],
+      "answer": [
+        "No, genuinely.",
+        "A real, enforcing guard keeps it sound."
+      ]
+    },
+    {
+      "lines": [
+        "Run it for real: every real call that genuinely satisfies the documented contract returns the genuinely correct value, every single time."
+      ]
+    },
+    {
+      "lines": [
+        "Now send the guard three requests outside the real contract.",
+        { "beat": 0.3 },
+        "Does it still let any of them reach the unsafe code underneath it?"
+      ],
+      "answer": [
+        "No, genuinely.",
+        "Every one is rejected before the unsafe code ever runs."
+      ]
+    },
+    {
+      "lines": [
+        "Run it for real: the real guard genuinely rejected every one of the three out-of-contract requests, and the unsafe function's own real call counter never moved for them."
+      ],
+      "takeaway": "Soundness means a guard rejects every out-of-contract call, not merely most of them."
+    },
+    {
+      "lines": [
+        "Suppose a different caller skipped the guard and called the unsafe function directly, with the identical invalid inputs.",
+        { "beat": 0.3 },
+        "Would that genuinely violate the documented contract?"
+      ],
+      "answer": [
+        "Yes, genuinely.",
+        "Exactly outside the documented bound."
+      ]
+    },
+    {
+      "lines": [
+        "Run it for real: the identical invalid inputs genuinely violate the real documented contract, the exact real bound the guard above was built to enforce."
+      ],
+      "takeaway": "My callers don't misuse it is weaker than a guard that genuinely cannot be misused."
+    },
+    {
+      "lines": [
+        "Two real, independent sources on this exact rule agree, in their own words.",
+        "Unsafe code is sound only if no safe caller can ever trigger undefined behavior through it, and a real Safety section is how that contract gets written down."
+      ],
+      "takeaway": "A documented contract plus a real, enforcing guard is the whole of what soundness asks for."
+    },
+    {
+      "lines": [
+        "So here's why the word unsafe is misleading if you read it as a speed setting: nothing about the keyword itself removes a single rule Rust enforces everywhere else, it only moves the job of proving those rules onto the person who wrote that one function.",
+        "That's also why a comment claiming something runs faster is never, on its own, a safety argument: faster and sound are answering two completely different questions, and this topic's own guard shows what actually answering the second one looks like in real code.",
+        "And the sharper standard underneath all of it is the one this topic measured directly: it isn't enough that today's callers happen to behave, since a function is only sound once no caller, however it is written, can ever reach the broken state through the safe surface alone."
+      ]
+    }
+  ]
+}
