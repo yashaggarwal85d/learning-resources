@@ -1,0 +1,472 @@
+{
+ "topic": "de.compute-storage-separation-workload",
+ "voice": "breeze-mellow-v2",
+ "asr": "large-v3-turbo",
+ "clips": {
+  "01": {
+   "hash": "f56d6e70cabbec15",
+   "takes": [
+    "8441eb1d40ee8e6b1dcd",
+    "deb1975edd6168fe0cb6"
+   ],
+   "duration": 18.94,
+   "lines": [
+    {
+     "text": "Picture two different teams, forced to share the exact same pool of compute, against one storage layer sitting underneath both.",
+     "start": 0.15,
+     "end": 8.081
+    },
+    {
+     "text": "Watch what happens the moment one of them starts something heavy \u2014 does sharing compute, by itself, actually cause a problem here, or not?",
+     "start": 8.501,
+     "end": 18.59
+    }
+   ],
+   "lufs": -16.0,
+   "true_peak": -2.4,
+   "wpm": 136,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "02": {
+   "hash": "4a5d47cbef9d7acb",
+   "takes": [
+    "09c1d8cb1b788259d58e",
+    "a71f72da31312e0b992f"
+   ],
+   "duration": 19.513,
+   "lines": [
+    {
+     "text": "Here's the architectural starting point this whole topic builds on.",
+     "start": 0.15,
+     "end": 4.033
+    },
+    {
+     "text": "Keeping storage and compute as genuinely separate layers already makes infrastructure simpler to manage and performance simpler to tune, on its own, before anything about workloads even comes up.",
+     "start": 4.453,
+     "end": 19.163
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -2.0,
+   "wpm": 120,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "03": {
+   "hash": "95d460e614e06b6f",
+   "takes": [
+    "e5b35fb1c3e0840e571d",
+    "b7831c938845505caf87"
+   ],
+   "duration": 15.177,
+   "lines": [
+    {
+     "text": "Here's a question worth sitting with before the next reveal.",
+     "start": 0.15,
+     "end": 3.584
+    },
+    {
+     "text": "Storage and compute are already kept apart in this architecture. Does that separation, all by itself, stop one team's heavy job from slowing the other team's queries down?",
+     "start": 4.005,
+     "end": 14.827
+    }
+   ],
+   "lufs": -16.1,
+   "true_peak": -2.0,
+   "wpm": 150,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "03a": {
+   "hash": "1eed473587d66ab5",
+   "takes": [
+    "8ea381871045fb2e92a9",
+    "e65d0287b8d45131848c"
+   ],
+   "duration": 16.84,
+   "lines": [
+    {
+     "text": "It doesn't, on its own. Separating storage from compute only takes storage out of the picture as a shared bottleneck.",
+     "start": 0.15,
+     "end": 7.681
+    },
+    {
+     "text": "Compute itself still has to be deliberately split, one cluster per workload, for contention to actually go away.",
+     "start": 8.101,
+     "end": 16.49
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 135,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "04": {
+   "hash": "238d09dd6d867af8",
+   "takes": [
+    "9d3e1f968fedc8fb4938",
+    "43a03ef84abf03fa197d"
+   ],
+   "duration": 17.271,
+   "lines": [
+    {
+     "text": "Here's the mechanism that actually delivers that isolation.",
+     "start": 0.15,
+     "end": 3.68
+    },
+    {
+     "text": "Each compute cluster stands completely on its own \u2014 it shares no compute resources with any other cluster, so whatever load lands on one has zero effect on how any other cluster performs.",
+     "start": 4.1,
+     "end": 16.921
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 139,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "05": {
+   "hash": "623336585093cbef",
+   "takes": [
+    "9930ad4ff0ca2a6c816a",
+    "8ed6bdbf76687f51342e"
+   ],
+   "duration": 16.401,
+   "lines": [
+    {
+     "text": "And clusters aren't fixed in number either.",
+     "start": 0.15,
+     "end": 2.511
+    },
+    {
+     "text": "More of them can be added, on the fly or ahead of time, onto that same shared storage underneath \u2014 scaling up specifically as the number of queries running at once goes up.",
+     "start": 2.931,
+     "end": 16.051
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 143,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "06": {
+   "hash": "b1cfe917ffd61af8",
+   "takes": [
+    "7dfd82be781001096c80",
+    "c26fc6a4c93e07a45b2a"
+   ],
+   "duration": 16.063,
+   "lines": [
+    {
+     "text": "Here's a harder one, worth working through before it's shown.",
+     "start": 0.15,
+     "end": 4.735
+    },
+    {
+     "text": "More compute clusters are now available on demand. Throw more of them at one single slow, heavy query \u2014 does that one query itself end up running any faster?",
+     "start": 5.155,
+     "end": 15.713
+    }
+   ],
+   "lufs": -16.1,
+   "true_peak": -2.9,
+   "wpm": 142,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "06a": {
+   "hash": "5c3a0f2a0fb0cd86",
+   "takes": [
+    "a9101eb9d3cc06d7b959",
+    "69741d7a3f4868d46c7a"
+   ],
+   "duration": 11.821,
+   "lines": [
+    {
+     "text": "No, it doesn't. More clusters let many queries run side by side without queuing behind each other.",
+     "start": 0.15,
+     "end": 6.547
+    },
+    {
+     "text": "They do nothing for how fast any one individual query executes on its own.",
+     "start": 6.967,
+     "end": 11.471
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -1.9,
+   "wpm": 157,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "07": {
+   "hash": "98e8b8e9f011eb43",
+   "takes": [
+    "a018f7b66122826820c2",
+    "c3b41a2a4589d14ef146"
+   ],
+   "duration": 20.899,
+   "lines": [
+    {
+     "text": "That's not a guess \u2014 it's stated plainly by the people who built this.",
+     "start": 0.15,
+     "end": 5.969
+    },
+    {
+     "text": "Scaling up cluster count is explicitly for handling more simultaneous users and queries. It is not meant to, and does not, make one slow-running query or a data-loading job run any faster.",
+     "start": 6.389,
+     "end": 20.549
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -1.9,
+   "wpm": 135,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "08": {
+   "hash": "2650563b17bac30e",
+   "takes": [
+    "97a8fa68b02bb536c5d2",
+    "29b8ebcbe232b3d8e6b1"
+   ],
+   "duration": 18.517,
+   "lines": [
+    {
+     "text": "Put the last two reveals together and the fix for that opening scenario falls right out.",
+     "start": 0.15,
+     "end": 5.573
+    },
+    {
+     "text": "Give the batch job its own cluster, give the dashboard its own cluster, both reading the exact same shared storage underneath \u2014 and there's simply nothing left for either one to contend over.",
+     "start": 5.993,
+     "end": 18.167
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 156,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "09": {
+   "hash": "4c36ee30d695e4e8",
+   "takes": [
+    "2d373a6a77fdd7f29563",
+    "8617ba35af885950d97f"
+   ],
+   "duration": 15.669,
+   "lines": [
+    {
+     "text": "One more question, worth reasoning through before the answer lands.",
+     "start": 0.15,
+     "end": 4.214
+    },
+    {
+     "text": "A cluster keeps a cache of the data it's recently touched. Since a cache only ever seems to make things faster, is there any genuine downside here worth naming at all?",
+     "start": 4.634,
+     "end": 15.319
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -3.1,
+   "wpm": 157,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "09a": {
+   "hash": "1a2cf6dd38789c7a",
+   "takes": [
+    "dd531d13d19c9e7d3f31",
+    "e8c397095950d114d792"
+   ],
+   "duration": 16.024,
+   "lines": [
+    {
+     "text": "There is. A cache quietly re-couples storage and compute, right back together, on purpose, purely for speed.",
+     "start": 0.15,
+     "end": 8.94
+    },
+    {
+     "text": "And anything deliberately re-coupled that way can also be lost \u2014 which is exactly what's coming next.",
+     "start": 9.36,
+     "end": 15.674
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -2.0,
+   "wpm": 131,
+   "wer": 0.11764705882352941,
+   "exact": false,
+   "tolerated": [
+    {
+     "line": "There is. A cache quietly re-couples storage and compute, right back together, on purpose, purely for speed.",
+     "said": "re couples",
+     "heard": "recouples"
+    },
+    {
+     "line": "And anything deliberately re-coupled that way can also be lost \u2014 which is exactly what's coming next.",
+     "said": "re coupled",
+     "heard": "recoupled"
+    }
+   ]
+  },
+  "10": {
+   "hash": "f1df8d943b181111",
+   "takes": [
+    "ad5b48023f7a5d64ec1e",
+    "c0efb09a3a3ff0467181"
+   ],
+   "duration": 15.319,
+   "lines": [
+    {
+     "text": "Here's how that cache actually works.",
+     "start": 0.15,
+     "end": 2.916
+    },
+    {
+     "text": "While a cluster is running, it keeps hold of the table data its own queries have already touched \u2014 so the next query that needs the same data can skip reading it from storage all over again.",
+     "start": 3.336,
+     "end": 14.969
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -1.9,
+   "wpm": 165,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "11": {
+   "hash": "b8138a2a29479d50",
+   "takes": [
+    "e9ba627ef9182ce429f4",
+    "afeaca41c1b44e13d954"
+   ],
+   "duration": 19.766,
+   "lines": [
+    {
+     "text": "And here's the part that makes it a real trade, not a free upgrade.",
+     "start": 0.15,
+     "end": 4.598
+    },
+    {
+     "text": "Suspend that same cluster, and the cache is gone with it, completely. The very next queries right after it wakes back up run slower again, until that cache rebuilds itself from nothing.",
+     "start": 5.018,
+     "end": 19.416
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.8,
+   "wpm": 140,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "12": {
+   "hash": "2665d2a150f28a14",
+   "takes": [
+    "455ac0a66bbee70157e1",
+    "ec93667d355b8966f5da",
+    "644d13b214b24c508084"
+   ],
+   "duration": 26.852,
+   "lines": [
+    {
+     "text": "Three ideas, and it's worth keeping them as three, not blending them into one.",
+     "start": 0.15,
+     "end": 6.056
+    },
+    {
+     "text": "Taking storage out of compute's own box is step one. Giving each workload its own box is the separate step that actually ends the contention.",
+     "start": 6.476,
+     "end": 16.032
+    },
+    {
+     "text": "And a cache is the one place that box deliberately gets reconnected to storage anyway, on purpose, only for as long as it keeps running.",
+     "start": 16.452,
+     "end": 26.502
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 143,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "13": {
+   "hash": "cecdc445040cd0e4",
+   "takes": [
+    "738d57fb9e13907fc9af",
+    "2ed989d6b1e181c532f6"
+   ],
+   "duration": 16.208,
+   "lines": [
+    {
+     "text": "One last scenario, worth reasoning through before the answer lands.",
+     "start": 0.15,
+     "end": 4.403
+    },
+    {
+     "text": "A team wants to save money by suspending its compute cluster the instant it sits idle, as aggressively as possible. What does that decision actually give up in return?",
+     "start": 4.823,
+     "end": 15.858
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 144,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "13a": {
+   "hash": "f547f2dfb5f4afc4",
+   "takes": [
+    "7bcf3bb57b02ea821450",
+    "14d6d8a576429eb06d60"
+   ],
+   "duration": 17.773,
+   "lines": [
+    {
+     "text": "Its cache, every single time. Each suspend throws away whatever that cluster had built up.",
+     "start": 0.15,
+     "end": 6.628
+    },
+    {
+     "text": "So the very first queries after each resume pay the rebuild cost directly \u2014 the savings are real, but so is this trade, every time it happens.",
+     "start": 7.048,
+     "end": 17.423
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 138,
+   "wer": 0.06666666666666667,
+   "exact": false,
+   "tolerated": [
+    {
+     "line": "Its cache, every single time. Each suspend throws away whatever that cluster had built up.",
+     "said": "cache",
+     "heard": "cash"
+    }
+   ]
+  }
+ }
+}
