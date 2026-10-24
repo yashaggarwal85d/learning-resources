@@ -1,0 +1,68 @@
+{
+  "steps": [
+    {
+      "lines": [
+        "Two real failures happen here, genuinely different from each other: one of them is worth trying again, and the other one really isn't.",
+        { "beat": 0.3 },
+        "Each one is captured as its own real, named kind, matched directly against to decide whether to try again. Does matching it this way give the right call for both?"
+      ],
+      "answer": [
+        "Yes, genuinely.",
+        "Matching against the real, specific kind it actually is gives the correct call every time."
+      ]
+    },
+    {
+      "lines": [
+        "Run it for real: matched against its own real kind, the one worth retrying gets retried, and the one that isn't gets correctly skipped."
+      ]
+    },
+    {
+      "lines": [
+        "The identical two failures are checked again, but this time only as the plain words each one happened to print, instead of their real, named kind.",
+        { "beat": 0.3 },
+        "Can those words alone still tell the two of them apart correctly?"
+      ],
+      "answer": [
+        "No, genuinely.",
+        "Both of those failures happen to share the exact same words, so reading them can't tell them apart at all."
+      ]
+    },
+    {
+      "lines": [
+        "Run it for real: checked by those words alone, both failures now come back saying to try again, because the words genuinely can't tell the two of them apart."
+      ],
+      "takeaway": "Two genuinely different failures can print the identical words, where their real, named kind never gets confused that way."
+    },
+    {
+      "lines": [
+        "Look specifically at the one failure that should never be retried.",
+        { "beat": 0.3 },
+        "Does the decision made from its real kind and the decision made from its plain words actually come out different?"
+      ],
+      "answer": [
+        "Yes, genuinely, and that's the real problem.",
+        "One correctly says don't bother trying again; the other wrongly says go ahead and try."
+      ]
+    },
+    {
+      "lines": [
+        "Run it for real: on that exact same failure, the real-kind check correctly says don't retry, and the plain-words check wrongly says retry anyway, a genuine disagreement over the identical failure."
+      ],
+      "takeaway": "Reading a failure's own words instead of its real kind can genuinely get the retry call wrong, not just differently worded."
+    },
+    {
+      "lines": [
+        "One real, independent page, and a second real, independent page right beside it, each describe the identical idea in their own words.",
+        "One says it offers a simple way to give code its own real, named kinds of failure. The other says it offers one, single kind that just carries whatever extra context a program wants to add as it goes."
+      ],
+      "takeaway": "A real, named kind is chosen specifically so whoever catches it can act on exactly what happened, not just read about it."
+    },
+    {
+      "lines": [
+        "So here's what this topic's own measurements are really standing in for: giving a real failure its own specific, named kind means whoever catches it can act correctly on exactly what happened.",
+        "Flattening that same failure down into plain words throws that away, and two genuinely different failures can end up looking identical once they're just words.",
+        "That isn't a small cosmetic difference. It's the real reason a retry call, or any decision like it, can come out wrong."
+      ]
+    }
+  ]
+}

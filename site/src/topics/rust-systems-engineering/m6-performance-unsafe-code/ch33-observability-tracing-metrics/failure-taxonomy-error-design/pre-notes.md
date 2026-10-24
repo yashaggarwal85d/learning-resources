@@ -1,0 +1,4 @@
+- **Typed error**: a real Rust enum (here, via `thiserror`'s derive macro) with one real variant per genuinely different failure kind, matched directly in code rather than read as text.
+- **Untyped error**: a real error reduced to a plain `String` or `&str`, carrying the identical information as a typed error but only as rendered text.
+- **Retry decision**: whether a real failure should be attempted again, which should genuinely differ for a timeout (worth retrying) and a genuine remote error (often not).
+- **Library boundary**: where `thiserror`'s own typed-enum style fits, since a caller needs to match on exactly what happened; a binary's own top level is where `anyhow`'s own single, contextual error type fits instead.
