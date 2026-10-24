@@ -1,0 +1,5 @@
+- **Heap tuple**: a row's own physical representation inside a page, already background from topic 1's own slotted-page layout, not re-taught here. *Where you meet it:* the reveal that an update leaves two of them behind.
+- **`ctid`**: a tuple's own physical address (page and slot), already assumed from topic 1. *Where you meet it:* read directly off a real page, as the forwarding pointer an old tuple leaves toward its replacement.
+- **Transaction / transaction ID (XID)**: a unit of work and the number that identifies it, a standard database term assumed throughout this chapter. *Where you meet it:* `xmin`/`xmax`, a snapshot's own in-progress list, and the commit-log lookup.
+- **Write-ahead log (WAL)**: topic 3's own durability mechanism; a new heap tuple is itself written through this same path. *Where you meet it:* named only in passing, not retaught.
+- **B-tree index**: topic 5's own structure for finding a row fast, assumed background here. *Where you meet it:* the hook, which picks up exactly where that topic's own handoff left off.

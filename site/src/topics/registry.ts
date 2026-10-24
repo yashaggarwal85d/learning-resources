@@ -4268,4 +4268,24 @@ export const TOPICS: TopicMeta[] = [
     handoff:
       "A B-tree index answers 'where is this row' fast, but says nothing about what happens when two transactions want to change the same row at once. That's the next question: MVCC, Postgres's own answer to concurrent writes.",
   },
+  {
+    id: 'de.mvcc-append-versions-vs',
+    domain: 'data-engineering',
+    slug: 'data-engineering/m2-storage-database-internals/ch05-database-internals-distributed/mvcc-append-versions-vs',
+    title: 'MVCC: append versions vs undo logs',
+    syllabusTitle: 'MVCC: append versions vs undo logs',
+    kind: 'full',
+    status: 'held',
+    milestone: { number: 2, title: 'Storage: Database Internals, Files & the Lakehouse' },
+    chapter: { number: 5, title: 'Database Internals and Distributed Storage', section: '5.1' },
+    minutes: 15,
+    verified: '2026-10-24',
+    introduces: ['mvcc-versioning'],
+    uses: ['slotted-page-layout', 'wal-lsn-fsync'],
+    declared: [],
+    bridge:
+      "A B-tree index answers 'where is this row' fast, but says nothing about what happens when two transactions want to change the same row at once. This topic is Postgres's own answer: MVCC, and the entirely different undo-log family InnoDB and Oracle use instead.",
+    handoff:
+      "Postgres's own append-only MVCC never overwrites a row in place — which means every update leaves an old version behind. The next topic is the maintenance job that has to clean that up: vacuum.",
+  },
 ];

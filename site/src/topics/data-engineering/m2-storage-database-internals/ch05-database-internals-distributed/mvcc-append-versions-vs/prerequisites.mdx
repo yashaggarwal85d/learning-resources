@@ -1,0 +1,27 @@
+import Resource from '../../../../../components/Resource.astro';
+
+<section class="prereq" data-section="before-this">
+
+### <span class="n">01</span> Before this: the question this topic answers
+
+<ul class="resources">
+  <Resource kind="reel" title="B-tree indexes in production" domain="data-engineering" host="de.b-tree-indexes-production" by="the previous topic of this chapter" />
+</ul>
+
+</section>
+
+<section class="prereq" data-section="straight-from-the-source">
+
+### <span class="n">02</span> The sources this topic measures and quotes against
+
+<ul class="resources">
+  <Resource kind="reading" title="13.1. Introduction" href="https://www.postgresql.org/docs/current/mvcc-intro.html" by="PostgreSQL docs">The MVCC model and its own stated guarantee.</Resource>
+  <Resource kind="reading" title="66.6. Database Page Layout" href="https://www.postgresql.org/docs/current/storage-page-layout.html" by="PostgreSQL docs">`t_xmin`, `t_xmax`, `t_ctid` in the engine's own words.</Resource>
+  <Resource kind="reading" title="9.27. System Information Functions and Operators" href="https://www.postgresql.org/docs/current/functions-info.html" by="PostgreSQL docs">`pg_current_snapshot()` and `pg_xact_status()`.</Resource>
+  <Resource kind="reading" title="InnoDB Undo Log" href="https://mariadb.com/docs/server/server-usage/storage-engines/innodb/innodb-undo-log" by="MariaDB Documentation">No private copies; the undo log holds old versions.</Resource>
+  <Resource kind="reading" title="START TRANSACTION ... WITH CONSISTENT SNAPSHOT" href="https://mariadb.com/docs/server/ha-and-performance/standard-replication/enhancements-for-start-transaction-with-consistent-snapshot" by="MariaDB Documentation">The InnoDB read view.</Resource>
+  <Resource kind="reading" title="Data Concurrency and Consistency" href="https://docs.oracle.com/en/database/oracle/oracle-database/23/cncpt/data-concurrency-and-consistency.html" by="Oracle Database 23ai Concepts">Undo data, CR clones, and the documented cause of "snapshot too old."</Resource>
+  <Resource kind="reading" title="ORA-01555" href="https://docs.oracle.com/error-help/db/ora-01555/" by="Oracle Database Error Messages">The current, official cause and action.</Resource>
+</ul>
+
+</section>
