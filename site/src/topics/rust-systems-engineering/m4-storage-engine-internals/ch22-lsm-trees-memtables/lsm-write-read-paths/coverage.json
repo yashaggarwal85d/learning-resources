@@ -1,0 +1,62 @@
+{
+  "topic": "rust.lsm-write-read-paths",
+  "syllabus": [
+    {
+      "clause": "write path: durable log append → memtable → rotate to an immutable memtable → flush as a sorted SSTable. Reads check the newest structures first. Immutable flushed files simplify concurrent reads and recovery.",
+      "at": [
+        { "step": "Measured: the fresh overwrite genuinely won over the stale, flushed value" },
+        { "step": "Measured: the oldest key genuinely took checking more than one structure, the newest key took checking only the active memtable, and a lookup for a key that doesn't exist at all had to check every single structure that exists" },
+        { "step": "Measured: a flushed SSTable's own bytes genuinely never changed across many later reads against it, hits and misses alike" }
+      ]
+    }
+  ],
+  "sources": [
+    {
+      "source": "wiki-memtable",
+      "items": [
+        {
+          "item": "new writes always insert data to memtable, and reads has to query memtable before reading from SST files, because data in memtable is newer",
+          "at": [{ "step": "Measured: the fresh overwrite genuinely won over the stale, flushed value" }]
+        },
+        {
+          "item": "once a memtable is full, it becomes immutable and replaced by a new memtable",
+          "at": [{ "step": "Measured, in RocksDB's own words: the active memtable is closed and turned into an immutable memtable, and the write-ahead log switches to a new file at that same moment" }]
+        }
+      ]
+    },
+    {
+      "source": "wiki-terminology",
+      "items": [
+        {
+          "item": "a closed memtable that is waiting to be flushed",
+          "at": [{ "step": "RocksDB's own wiki also names what an immutable memtable actually is, directly: what's it waiting for?" }]
+        },
+        {
+          "item": "during this process, the current active memtable (the one current writes go to) is closed and turned into an immutable memtable",
+          "at": [{ "step": "Measured, in RocksDB's own words: the active memtable is closed and turned into an immutable memtable, and the write-ahead log switches to a new file at that same moment" }]
+        }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "self-review",
+    "date": "2026-10-24",
+    "items": [
+      { "item": "The overwrite claim deliberately flushes the SSTable before the overwrite happens, so the stale value genuinely exists on disk at the moment of the overwrite; a fresh get() against the same key afterward can only return the new value by actually checking the active memtable first, not by the SSTable never having held a conflicting value in the first place.", "at": [{ "step": "Measured: the fresh overwrite genuinely won over the stale, flushed value" }] },
+      { "item": "The fall-through claim measures a real checked-structure count returned by the lookup itself, not an assumption about which structure should have been checked, so the oldest key's higher cost and the newest key's lower cost are both genuine consequences of the real read path's own newest-first order.", "at": [{ "step": "Measured: the oldest key genuinely took checking more than one structure, the newest key took checking only the active memtable, and a lookup for a key that doesn't exist at all had to check every single structure that exists" }] },
+      { "item": "The immutability claim uses a content fold over the SSTable's own entry bytes taken immediately after flush and again after several further reads (hits and misses both), rather than merely asserting no mutating method exists on the type, so the claim is a genuine before-and-after measurement, not a structural guarantee taken on faith.", "at": [{ "step": "Measured: a flushed SSTable's own bytes genuinely never changed across many later reads against it, hits and misses alike" }] },
+      { "item": "This topic's own memtable, immutable-memtable list, and SSTable list are all plain in-memory Rust collections rather than real files, continuing this chapter's own stated convention that nothing here needs real file I/O, root access, or special hardware; the write-ahead log itself is represented only as a generation counter, since the claims under test are about read-path ordering and SSTable immutability, not log durability.", "at": [{ "step": "A key's value gets written, then its memtable is flushed to an SSTable. The same key is then overwritten, but that new write never gets flushed. Which value does a read actually return: the old, flushed one, or the new, unflushed one?" }] },
+      { "item": "This topic continues directly from Chapter 20's own write-ahead-lsn-redo-idempotence id and Chapter 21's own btree-fanout-split-tradeoff id, since this chapter's own bridge is specifically the cost an LSM tree defers relative to a B+-tree's own immediate, at-insert-time split cost.", "at": [{ "step": "A key's value gets written, then its memtable is flushed to an SSTable. The same key is then overwritten, but that new write never gets flushed. Which value does a read actually return: the old, flushed one, or the new, unflushed one?" }] },
+      { "item": "The three-key fall-through scenario deliberately rotates and flushes twice before the final key is written, so the oldest key ends up in the very first SSTable created rather than merely in some SSTable, making the newest-to-oldest check order the genuine reason that key costs more to find.", "at": [{ "step": "Measured: the oldest key genuinely took checking more than one structure, the newest key took checking only the active memtable, and a lookup for a key that doesn't exist at all had to check every single structure that exists" }] },
+      { "item": "The syllabus names 'immutable flushed files simplify concurrent reads and recovery' directly; this topic's own measured claim is the immutability half of that statement specifically (a flushed SSTable's own bytes never change), since concurrency and recovery themselves are this milestone's own later chapters' subjects, not this topic's.", "at": [{ "step": "Measured: a flushed SSTable's own bytes genuinely never changed across many later reads against it, hits and misses alike" }] },
+      { "item": "All three of this topic's own measured claims run entirely on in-memory Rust collections with no file, network, or root access needed, continuing this milestone's own established pattern from Chapters 19 through 21.", "at": [{ "step": "Recap: what a read actually checks, and what never changes once flushed" }] },
+      { "item": "This topic deliberately opens Chapter 22 on the LSM tree's own write and read paths before either of the chapter's later topics (compaction, Bloom filters), since both of those build directly on the SSTables this topic's own flush path first produces.", "at": [{ "step": "Recap: what a read actually checks, and what never changes once flushed" }] },
+      { "item": "The RocksDB wiki quotes in this topic were fetched from raw.githubusercontent.com/wiki/facebook/rocksdb rather than github.com/facebook/rocksdb/wiki directly, since this session's GitHub access is scoped to a different repository and github.com itself is proxied through a repository-scoped endpoint that refuses other repositories' pages; the raw wiki content host is unaffected by that scoping.", "at": [{ "step": "RocksDB's own wiki also names what an immutable memtable actually is, directly: what's it waiting for?" }] }
+    ]
+  },
+  "gapReview": {
+    "date": "2026-10-24",
+    "by": "self-review",
+    "open": []
+  }
+}

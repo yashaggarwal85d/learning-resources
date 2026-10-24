@@ -1,0 +1,86 @@
+{
+  "steps": [
+    {
+      "lines": [
+        "A Bloom filter answers a single question about a key: either maybe present, or definitely absent.",
+        { "beat": 0.3 },
+        "For a key that was genuinely inserted earlier, could it ever come back definitely absent?"
+      ],
+      "answer": [
+        "No, never, genuinely.",
+        "At any budget at all, an inserted key always comes back as at least maybe present."
+      ]
+    },
+    {
+      "lines": [
+        "Run it for real: at every single bits-per-key budget tried, every key that was actually inserted genuinely came back possibly present, with not one false negative anywhere."
+      ],
+      "takeaway": "A Bloom filter never forgets a key it was actually given; a negative result is always proof of absence."
+    },
+    {
+      "lines": [
+        "Build that same filter again, but with a much tighter bits-per-key budget this time.",
+        { "beat": 0.3 },
+        "Does a key that was never inserted at all ever come back maybe present?"
+      ],
+      "answer": [
+        "Yes, genuinely, sometimes.",
+        "Some keys that were never inserted do come back as maybe present."
+      ]
+    },
+    {
+      "lines": [
+        "Run it for real: that tight bits-per-key budget genuinely produced real false positives, against keys that had never been inserted at all."
+      ],
+      "takeaway": "A positive result only grants permission to go look; it's never a guarantee the key is actually there."
+    },
+    {
+      "lines": [
+        "Spend far more bits per key on that exact same filter instead.",
+        { "beat": 0.3 },
+        "Does that genuinely change how often a never-inserted key comes back maybe present?"
+      ],
+      "answer": [
+        "Yes, genuinely, it drops.",
+        "Spending more bits per key lowers how often that happens."
+      ]
+    },
+    {
+      "lines": [
+        "Run it for real: spending far more bits per key genuinely lowered the measured false-positive rate on that same filter, by a wide margin."
+      ],
+      "takeaway": "More bits per key genuinely buys a lower false-positive rate; it's a real budget, not a free setting."
+    },
+    {
+      "lines": [
+        "One real production system states an actual bits-per-key table directly, in its own documentation.",
+        { "beat": 0.3 },
+        "Does a small increase near the low end of that table buy as much improvement as the same size increase further up it?"
+      ],
+      "answer": [
+        "No, genuinely.",
+        "The low end of that table buys far more improvement for every bit spent than the same increase further up does."
+      ]
+    },
+    {
+      "lines": [
+        "That system's own numbers state it directly: spending a small amount near the low end of the table buys far more improvement, per bit, than spending that same amount further up it."
+      ],
+      "takeaway": "Spending bits per key has diminishing returns; the first few bits buy far more than the next few."
+    },
+    {
+      "lines": [
+        "That same system's own documentation also states, directly, why any of this spending is worth doing at all.",
+        "A filter like this one can cut the number of unneeded disk reads a lookup would otherwise have to pay for, substantially, often by close to two orders of magnitude."
+      ]
+    },
+    {
+      "lines": [
+        "So here's the shape of this whole topic: a filter like this one never forgets a key it was actually given, so when it says a key is absent, that's genuine proof, not a guess.",
+        "A positive answer is the opposite: it only grants permission to go check further, since it can occasionally be wrong about a key that was never there at all.",
+        "Spending more bits per key on that filter genuinely buys a lower rate of those wrong answers, though with real diminishing returns.",
+        "The entire reason any of this is worth doing is that it lets a lookup skip opening most of the files it would otherwise have had to check."
+      ]
+    }
+  ]
+}
