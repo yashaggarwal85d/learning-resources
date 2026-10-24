@@ -1,0 +1,4 @@
+- **FFI boundary**: the real, explicit point where a function call crosses from Rust into foreign code or back; matching layout is only part of making that crossing correct.
+- **Ownership protocol**: the real, explicit agreement over who allocates and who frees a given piece of memory, kept by convention since the compiler cannot check it across languages.
+- **`extern "C-unwind"`**: the real, stable calling convention that lets a panic unwind across an FFI boundary in a defined way, instead of the undefined behavior an ordinary `extern "C"` unwind would risk.
+- **Thread affinity**: the real requirement that some foreign state may only be safely touched from one particular thread, a constraint the type system does not express.

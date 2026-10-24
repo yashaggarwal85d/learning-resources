@@ -1,0 +1,22 @@
+import Resource from '../../../../../components/Resource.astro';
+
+<section class="prereq" data-section="chapter-so-far">
+
+### <span class="n">01</span> Where the last chapter left off
+
+<ul class="resources">
+  <Resource kind="reel" host={props.host} domain="rust-systems-engineering" title="Miri and sanitizers for UB detection">this chapter measured what a safety contract has to guarantee, what makes a value valid in the first place, and how a real checker catches a violation only on the path it actually runs; this topic turns to a boundary where Rust's own rules stop applying at all, because the code on the other side of it was never written in Rust.</Resource>
+</ul>
+
+</section>
+
+<section class="prereq" data-section="ffi-boundary-primary">
+
+### <span class="n">02</span> The real docs: the Rustonomicon's FFI chapter, and the Rust Reference
+
+<ul class="resources">
+  <Resource kind="reading" title="FFI" href="https://doc.rust-lang.org/nomicon/ffi.html" by="The Rustonomicon">ownership, destructors, and unwinding across a real foreign boundary.</Resource>
+  <Resource kind="reading" title="External blocks" href="https://doc.rust-lang.org/reference/items/external-blocks.html" by="The Rust Reference">what a calling convention actually specifies, including "C-unwind".</Resource>
+</ul>
+
+</section>
