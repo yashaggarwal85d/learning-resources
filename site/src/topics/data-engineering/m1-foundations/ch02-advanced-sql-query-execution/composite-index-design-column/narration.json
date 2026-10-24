@@ -104,7 +104,7 @@
     {
       "lines": [
         "Load the exact same half-million rows twice: once into a table with no indexes at all, once into an otherwise identical table carrying three single-column indexes.",
-        "The bare table loads in a little over a second. The indexed table takes nearly five times as long.",
+        "The bare table loads in a little over a second. The one with the index takes nearly five times as long.",
         "Those three indexes also add real space on disk — on top of the table itself, for a load that hasn't been read back by a single query yet."
       ]
     },
