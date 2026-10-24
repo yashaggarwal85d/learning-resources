@@ -1,0 +1,69 @@
+{
+  "steps": [
+    {
+      "lines": [
+        "A real workspace, two real crates, one depending on the other, gets built once.",
+        { "beat": 0.3 },
+        "Now only the dependent crate's own source changes. Does the one it depends on rebuild too?"
+      ],
+      "answer": [
+        "No, genuinely.",
+        "Only the crate that actually changed rebuilds."
+      ]
+    },
+    {
+      "lines": [
+        "Run it for real: the crate being depended on keeps the identical real build artifact it already had; only the one that actually changed gets a new one."
+      ]
+    },
+    {
+      "lines": [
+        "The identical workspace, but now it's the other crate's own source that changes, the one everything else depends on.",
+        { "beat": 0.3 },
+        "Does the dependent crate have to rebuild too, even though its own source never moved?"
+      ],
+      "answer": [
+        "Yes, genuinely.",
+        "It depends on the one that changed, so it has to rebuild."
+      ]
+    },
+    {
+      "lines": [
+        "Run it for real: both crates now carry a genuinely newer build than before, because the dependency itself is what actually changed."
+      ],
+      "takeaway": "A dependency's own real boundary is exactly where a rebuild's own real cost actually spreads."
+    },
+    {
+      "lines": [
+        "This workspace has one rule written down exactly once: no crate in it is allowed to contain unsafe code.",
+        { "beat": 0.3 },
+        "A real unsafe block gets added to one member crate anyway. Does that one rule genuinely catch it?"
+      ],
+      "answer": [
+        "Yes, genuinely.",
+        "The real build itself refuses to finish."
+      ]
+    },
+    {
+      "lines": [
+        "Run it for real: the build genuinely fails the moment that real violation exists, and genuinely succeeds again the moment it's removed, with the shared rule itself never touched at all."
+      ],
+      "takeaway": "A rule written down once for the whole workspace is enforced the identical way everywhere in it."
+    },
+    {
+      "lines": [
+        "Two real, independent sources name both of these exact ideas directly, in their own words.",
+        "One names what a crate actually is as a unit of building and linking; the other names exactly where a shared dependency or a shared rule gets written down once for an entire workspace."
+      ],
+      "takeaway": "Drawing a boundary along real ownership, not around a module, decides what a rebuild or a rule actually touches."
+    },
+    {
+      "lines": [
+        "So here's what this topic's own small workspace is really standing in for: splitting a project along the wrong line doesn't just look messy, it has a real, measurable cost every single time anyone builds it.",
+        "The crate is the thing that actually gets rebuilt, the dependency between two crates is the thing that actually decides how far a change spreads, and a rule written down once at the top is the thing that actually gets enforced the same way for everyone underneath it.",
+        "None of that comes from habit or convention; it comes from exactly where the real lines were drawn.",
+        "And that's the real question the rest of this chapter keeps asking in different shapes: once more than one crate exists, what exactly is shared, and what exactly is each one's own?"
+      ]
+    }
+  ]
+}

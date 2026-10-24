@@ -1,0 +1,75 @@
+{
+  "topic": "rust.workspace-crate-boundaries",
+  "syllabus": [
+    {
+      "clause": "workspace boundaries should follow API and dependency ownership, not \"a crate per module\".",
+      "at": [{ "deep": "The frontier" }]
+    },
+    {
+      "clause": "Crates are the unit of parallel and incremental compilation.",
+      "at": [
+        { "step": "Measured: after a consumer-only change, core_crate's own real compiled artifact has the identical real modification time it had before; only consumer_crate's own artifact genuinely changed" },
+        { "step": "Measured: after a real core_crate change, both core_crate's own artifact and consumer_crate's own artifact genuinely get a new, later real modification time" }
+      ]
+    },
+    {
+      "clause": "Workspace inheritance ([workspace.dependencies], [workspace.lints])",
+      "at": [
+        { "step": "Measured: the real build genuinely fails the instant the real unsafe block exists in consumer_crate, and genuinely succeeds again the moment it is removed, with no change to the workspace's own lint declaration at all" }
+      ]
+    },
+    {
+      "clause": "and workspace publishing (Cargo 1.90).",
+      "at": [{ "deep": "In production" }]
+    }
+  ],
+  "sources": [
+    {
+      "source": "crates-ref",
+      "items": [
+        {
+          "item": "A crate is a unit of compilation and linking, as well as versioning, distribution, and runtime loading",
+          "at": [{ "step": "The Rust Reference and the Cargo Book state these rules directly: a crate is a real unit of compilation and linking; a workspace's own dependencies and lints tables are where a shared dependency or lint configuration is defined once, to be inherited by every member. Does this topic's own three measured boundaries model exactly the rules both sources describe?" }]
+        }
+      ]
+    },
+    {
+      "source": "workspaces",
+      "items": [
+        {
+          "item": "A workspace is a collection of one or more packages, called workspace members, that are managed together",
+          "at": [{ "step": "A real two-crate workspace is built once, then only consumer_crate's own source changes, and the workspace is rebuilt. Does core_crate's own compiled artifact change too?" }]
+        },
+        {
+          "item": "The workspace.dependencies table is where you define dependencies to be inherited by members of a workspace",
+          "at": [{ "deep": "Internals" }]
+        },
+        {
+          "item": "The workspace.lints table is where you define lint configuration to be inherited by members of a workspace",
+          "at": [{ "step": "The Rust Reference and the Cargo Book state these rules directly: a crate is a real unit of compilation and linking; a workspace's own dependencies and lints tables are where a shared dependency or lint configuration is defined once, to be inherited by every member. Does this topic's own three measured boundaries model exactly the rules both sources describe?" }]
+        }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "self-review",
+    "date": "2026-10-24",
+    "items": [
+      { "item": "The incremental-rebuild claims are measured with real filesystem modification times on the actual .rlib artifacts cargo produces, with a real sleep between edits to clear filesystem mtime resolution, rather than parsing cargo's own build log text, so the claim is about the real artifact, not about what cargo prints.", "at": [{ "step": "Measured: after a consumer-only change, core_crate's own real compiled artifact has the identical real modification time it had before; only consumer_crate's own artifact genuinely changed" }] },
+      { "item": "examples.py resets both member crates' own source files to their original, committed text at the start of the script and again at the end, so running it twice in a row (or after a failed run) produces the identical real result both times.", "at": [{ "step": "A real two-crate workspace is built once, then only consumer_crate's own source changes, and the workspace is rebuilt. Does core_crate's own compiled artifact change too?" }] },
+      { "item": "The lint-enforcement claim checks both directions for real: the build genuinely fails with the real violation present, and genuinely succeeds again once it is removed, rather than checking only the failing case, which would leave open whether the workspace could ever build at all.", "at": [{ "step": "The workspace's own workspace.lints table forbids unsafe code for every member crate. A real, deliberately unsafe block is added to consumer_crate. Does the inherited lint genuinely catch it?" }] },
+      { "item": "The workspace.dependencies mechanism is used structurally (once_cell is declared once at the workspace root and consumed via workspace = true in core_crate) so the real build depends on inheritance actually working, but this topic does not separately measure it with its own claim, since the lint-enforcement claim already demonstrates that an inherited workspace-level setting is genuinely enforced.", "at": [{ "deep": "Internals" }] },
+      { "item": "This topic uses no earlier chapter's own introduced id directly in its own measured code, since Chapter 32 changes subject from a single crate's own external boundary to the structure of a project with more than one crate; its own bridge instead names Chapter 31's own closing question in prose.", "at": [{ "step": "A real two-crate workspace is built once, then only consumer_crate's own source changes, and the workspace is rebuilt. Does core_crate's own compiled artifact change too?" }] },
+      { "item": "Workspace publishing and the resolver-3 default are named in post-notes rather than measured, since this sandboxed container has no crates.io credentials to publish with for real, and this topic's own two-crate workspace is too small for the resolver-2-versus-3 feature-unification difference (topic 83's own subject) to show up in a measured claim of its own.", "at": [{ "deep": "In production" }] },
+      { "item": "All of this topic's own measured claims run on a real, local two-crate cargo workspace with one small real external dependency (once_cell) fetched once from crates.io, with no root access and no genuinely separate machine; 'the workspace', 'the crate', and 'the lint' are all real, working Cargo projects built and checked directly.", "at": [{ "step": "Recap: a workspace's own real boundaries" }] },
+      { "item": "The Rust Reference and the Cargo Book are two genuinely independent sources describing two genuinely different real rules (what a crate fundamentally is, and how a workspace's own shared configuration is declared), giving this topic two separate sources rather than multiple quotes drawn from a single page.", "at": [{ "step": "The Rust Reference and the Cargo Book state these rules directly: a crate is a real unit of compilation and linking; a workspace's own dependencies and lints tables are where a shared dependency or lint configuration is defined once, to be inherited by every member. Does this topic's own three measured boundaries model exactly the rules both sources describe?" }] },
+      { "item": "The specific choice of once_cell as the shared workspace dependency and unsafe_code as the forbidden lint are this specific example's own choice; the measured claims illustrate the real shape of workspace inheritance and crate-level rebuild boundaries for any real workspace at all, not a claim bound to exactly these names.", "at": [{ "step": "The identical workspace now has core_crate's own source changed instead. Does consumer_crate have to rebuild too, even though its own source never changed?" }] },
+      { "item": "The 1.1-second sleep before each timed edit in examples.py exists only to clear the host filesystem's own mtime resolution (coarser than a second on some filesystems); it is not part of the real claim being measured, which is the direction and presence of a change in mtime, not its exact magnitude.", "at": [{ "step": "Measured: after a consumer-only change, core_crate's own real compiled artifact has the identical real modification time it had before; only consumer_crate's own artifact genuinely changed" }] }
+    ]
+  },
+  "gapReview": {
+    "date": "2026-10-24",
+    "by": "self-review",
+    "open": []
+  }
+}

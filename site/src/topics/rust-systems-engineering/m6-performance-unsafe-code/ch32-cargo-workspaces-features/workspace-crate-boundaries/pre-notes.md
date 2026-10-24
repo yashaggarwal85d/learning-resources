@@ -1,0 +1,4 @@
+- **Workspace**: a real set of crates built and versioned together under one top-level `Cargo.toml`, sharing one `Cargo.lock` and one `target/` directory.
+- **Crate**: Rust's own real unit of compilation and linking; cargo rebuilds along crate boundaries, never along module boundaries inside one crate.
+- **Workspace inheritance**: a real mechanism (`[workspace.dependencies]`, `[workspace.lints]`) letting a shared dependency or lint policy be declared once at the workspace root instead of repeated in every member crate's own `Cargo.toml`.
+- **`[lints]` table**: the real, stable mechanism for declaring a lint's own level (`warn`, `deny`, `forbid`) directly in `Cargo.toml`, enforced identically for every contributor.
