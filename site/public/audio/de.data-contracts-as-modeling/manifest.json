@@ -1,0 +1,449 @@
+{
+ "topic": "de.data-contracts-as-modeling",
+ "voice": "breeze-mellow-v2",
+ "asr": "large-v3-turbo",
+ "clips": {
+  "01": {
+   "hash": "a2086ffdcab567d5",
+   "takes": [
+    "fbc0c90b92b18ed1eaed",
+    "235de14d143583dc8fa9"
+   ],
+   "duration": 20.601,
+   "lines": [
+    {
+     "text": "Picture a schema that quietly changed overnight, with nobody warned ahead of time.",
+     "start": 0.15,
+     "end": 5.576
+    },
+    {
+     "text": "A dashboard somewhere downstream just stopped working the next morning, with no error message at all. What that domain was actually missing wasn't a schema in the first place \u2014 it was a contract.",
+     "start": 5.996,
+     "end": 20.251
+    }
+   ],
+   "lufs": -16.1,
+   "true_peak": -2.6,
+   "wpm": 134,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "02": {
+   "hash": "2778a96a7e6c8a22",
+   "takes": [
+    "2443c4a1eca7f36fc43f",
+    "13f14c20515f759b6be1"
+   ],
+   "duration": 22.26,
+   "lines": [
+    {
+     "text": "Here's what a contract actually looks like, in the standard's own words.",
+     "start": 0.15,
+     "end": 5.176
+    },
+    {
+     "text": "A properly structured document, built from defined keys and values, under a real published standard \u2014 not a wiki page somebody wrote once and forgot about, and certainly not a verbal promise between two teams.",
+     "start": 5.596,
+     "end": 21.91
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -1.8,
+   "wpm": 124,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "03": {
+   "hash": "82ca79d14228f74c",
+   "takes": [
+    "e5b35fb1c3e0840e571d",
+    "f9ac03da9a1867dff5cf"
+   ],
+   "duration": 16.825,
+   "lines": [
+    {
+     "text": "Here's a question worth sitting with before the next reveal.",
+     "start": 0.15,
+     "end": 3.584
+    },
+    {
+     "text": "One document could describe what a field actually means to the business. A separate document could describe exactly how it's physically stored. Does a contract genuinely have to choose just one of those?",
+     "start": 4.005,
+     "end": 16.475
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -2.2,
+   "wpm": 153,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "03a": {
+   "hash": "b9e74b54e51ac2e2",
+   "takes": [
+    "3e4eea2bff3590223be8",
+    "8b87a3527145ae8a8d0f"
+   ],
+   "duration": 20.511,
+   "lines": [
+    {
+     "text": "It doesn't have to choose \u2014 the standard ties both together in a single place.",
+     "start": 0.15,
+     "end": 5.27
+    },
+    {
+     "text": "A field's own business meaning sits directly alongside its actual physical type, in that very same schema, rather than being split across two documents that can quietly drift apart.",
+     "start": 5.69,
+     "end": 20.161
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 126,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "04": {
+   "hash": "bdff4ae67cd8daba",
+   "takes": [
+    "ee981cb8527fe7f77a47",
+    "e2d8b11c4eec3f702c1a"
+   ],
+   "duration": 20.446,
+   "lines": [
+    {
+     "text": "Here's that tying-together, straight from the specification.",
+     "start": 0.15,
+     "end": 3.31
+    },
+    {
+     "text": "Schema is built to support both a business representation of the data and its physical implementation at once \u2014 one single field can carry its own business name sitting right next to its physical type.",
+     "start": 3.73,
+     "end": 20.096
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 123,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "05": {
+   "hash": "0b1f198eb7020d31",
+   "takes": [
+    "76e7b8e9673162e9431a",
+    "47b6544ea857a1d237b7"
+   ],
+   "duration": 17.039,
+   "lines": [
+    {
+     "text": "And here's why quality rules can't just float on their own.",
+     "start": 0.15,
+     "end": 3.967
+    },
+    {
+     "text": "Quality rules get their own clearly named section in the contract, but they stay tightly linked to the exact schema they're actually checking \u2014 never a separate, disconnected concern sitting off to the side.",
+     "start": 4.387,
+     "end": 16.689
+    }
+   ],
+   "lufs": -16.2,
+   "true_peak": -2.3,
+   "wpm": 155,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "06": {
+   "hash": "39656bfcf9311263",
+   "takes": [
+    "bcfd0e837355b12d0f31",
+    "55a45d79736fc1a451f1"
+   ],
+   "duration": 16.142,
+   "lines": [
+    {
+     "text": "Here's a harder question about when a check genuinely counts.",
+     "start": 0.15,
+     "end": 3.545
+    },
+    {
+     "text": "Suppose a quality check only ever runs after the data has already landed inside some downstream warehouse. Is that genuinely late enough to still count as real enforcement?",
+     "start": 3.965,
+     "end": 15.792
+    }
+   ],
+   "lufs": -16.1,
+   "true_peak": -2.5,
+   "wpm": 141,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "06a": {
+   "hash": "b34fb86e55ba5e46",
+   "takes": [
+    "1d597b9c8f1eac0f9675",
+    "a2556b58c17f9f271412"
+   ],
+   "duration": 20.337,
+   "lines": [
+    {
+     "text": "No, not really \u2014 by then, real damage has likely already happened.",
+     "start": 0.15,
+     "end": 4.704
+    },
+    {
+     "text": "Every single consumer sitting between the original producer and that downstream check has already been exposed to the bad data. That's catching a problem after the fact, not actually stopping it.",
+     "start": 5.124,
+     "end": 19.987
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -1.9,
+   "wpm": 124,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "07": {
+   "hash": "a67fd89385c6016e",
+   "takes": [
+    "5d66fa5d355ca2589a34",
+    "baa07ff06d58018f0056"
+   ],
+   "duration": 17.737,
+   "lines": [
+    {
+     "text": "Here's where that stopping genuinely has to happen instead.",
+     "start": 0.15,
+     "end": 3.414
+    },
+    {
+     "text": "Right at the exact moment a producer actually emits the data \u2014 stopped there, before any consumer anywhere downstream ever even gets the chance to see it at all.",
+     "start": 3.834,
+     "end": 17.387
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 125,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "08": {
+   "hash": "47d75d7f83369cb2",
+   "takes": [
+    "504c7d181ec72c39ba23",
+    "0c0365989ca896a5eaf9"
+   ],
+   "duration": 23.023,
+   "lines": [
+    {
+     "text": "Now here's service-level agreements, treated with that same rigor.",
+     "start": 0.15,
+     "end": 4.536
+    },
+    {
+     "text": "They get their own clearly named section too, and each one has to take a required, properly structured value, pulled from a genuinely standard list \u2014 things like availability, latency, and how long data actually gets retained.",
+     "start": 4.956,
+     "end": 22.673
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 120,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "09": {
+   "hash": "06f866e98cd2446d",
+   "takes": [
+    "a5bc7d30b162d5ddb7dd",
+    "e191d0f86923d1b78572"
+   ],
+   "duration": 17.183,
+   "lines": [
+    {
+     "text": "Here's a genuinely open question worth guessing at first.",
+     "start": 0.15,
+     "end": 3.613
+    },
+    {
+     "text": "Suppose nobody ever actually wrote down who owns a particular dataset. Is that honestly fine, since whoever originally built the pipeline is just obviously assumed to be its owner anyway?",
+     "start": 4.033,
+     "end": 16.833
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -2.0,
+   "wpm": 136,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "09a": {
+   "hash": "8c81185b8d3ab541",
+   "takes": [
+    "4bf105de733532533662",
+    "b4df9839a13382eec0c0"
+   ],
+   "duration": 23.705,
+   "lines": [
+    {
+     "text": "It's genuinely not fine \u2014 an assumed owner quietly stops being an owner at all.",
+     "start": 0.15,
+     "end": 6.177
+    },
+    {
+     "text": "The standard's own worked example names a specific role called simply Owner, written directly into the contract itself. The moment the original builder eventually moves on, an unwritten assumption leaves nobody left to actually point to.",
+     "start": 6.597,
+     "end": 23.355
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -3.1,
+   "wpm": 127,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "10": {
+   "hash": "03b4a17abe3d2522",
+   "takes": [
+    "77c242f82ebdbef15e25",
+    "5cee8d689a7f74210db7"
+   ],
+   "duration": 20.552,
+   "lines": [
+    {
+     "text": "Here's that ownership, made concrete in the standard's own words.",
+     "start": 0.15,
+     "end": 4.603
+    },
+    {
+     "text": "Team membership, and its entire history over time, gets tracked directly inside the contract itself \u2014 with that Owner role named explicitly, right there in the standard's own worked example.",
+     "start": 5.023,
+     "end": 20.202
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -2.0,
+   "wpm": 114,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "11": {
+   "hash": "501782530963d216",
+   "takes": [
+    "581b95376851b8af1ff1",
+    "534703354b7836fdc125"
+   ],
+   "duration": 21.387,
+   "lines": [
+    {
+     "text": "One honest note about the exact version being taught here.",
+     "start": 0.15,
+     "end": 3.585
+    },
+    {
+     "text": "The specification's own default version has already quietly moved past the version this very course names elsewhere \u2014 which is a healthy reminder that a living standard like this one keeps evolving underneath whatever you last learned about it.",
+     "start": 4.005,
+     "end": 21.037
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -1.9,
+   "wpm": 135,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "12": {
+   "hash": "af712e60c9f7996a",
+   "takes": [
+    "f1111f2ed24bcd631b8b",
+    "1bf9a99a3e83ceed4351"
+   ],
+   "duration": 25.91,
+   "lines": [
+    {
+     "text": "Let's put the whole picture back together.",
+     "start": 0.15,
+     "end": 2.37
+    },
+    {
+     "text": "A contract is a genuinely structured document, never just a promise. Its schema ties business meaning directly to physical layout. Quality rules and service agreements are named fields pinned to that schema, and ownership gets named explicitly, never left as an assumption.",
+     "start": 2.79,
+     "end": 25.56
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -1.9,
+   "wpm": 113,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "13": {
+   "hash": "4579bcb0c5ba7723",
+   "takes": [
+    "e51dd5075d42bae9f239",
+    "6436610fc02cc03b5047"
+   ],
+   "duration": 22.349,
+   "lines": [
+    {
+     "text": "One closing scenario worth genuinely working through.",
+     "start": 0.15,
+     "end": 3.252
+    },
+    {
+     "text": "A producer ships a schema change with absolutely no updated contract, and no new quality rule written for the field that actually changed. Who's actually supposed to catch that, and exactly where does that catch genuinely have to happen?",
+     "start": 3.672,
+     "end": 21.999
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -2.0,
+   "wpm": 123,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "13a": {
+   "hash": "e9e185ebf6c2d5aa",
+   "takes": [
+    "8f80e9c2358bbdbd26e4",
+    "e9152e8e9647b2c4ee07"
+   ],
+   "duration": 19.143,
+   "lines": [
+    {
+     "text": "The producer's own contract check, right at the exact moment that change is about to go out.",
+     "start": 0.15,
+     "end": 6.824
+    },
+    {
+     "text": "Waiting for some downstream consumer to eventually notice means every single consumer sitting in between has already been quietly exposed to a change nobody ever actually reviewed.",
+     "start": 7.244,
+     "end": 18.793
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -2.0,
+   "wpm": 138,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  }
+ }
+}

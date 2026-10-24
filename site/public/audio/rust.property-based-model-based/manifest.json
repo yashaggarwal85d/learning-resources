@@ -1,0 +1,281 @@
+{
+ "topic": "rust.property-based-model-based",
+ "voice": "breeze-mellow-v2",
+ "asr": "large-v3-turbo",
+ "clips": {
+  "01": {
+   "hash": "afb1142f8bb5bf39",
+   "takes": [
+    "596579b3b4c8d141ef18",
+    "3be3d3f95a4533a8eb48"
+   ],
+   "duration": 24.668,
+   "lines": [
+    {
+     "text": "Here's a real allocator that only ever checks one thing about each new piece it's handed: that the piece itself isn't too big. It never once checks where that piece actually lands.",
+     "start": 0.15,
+     "end": 14.37
+    },
+    {
+     "text": "Nobody sat down and thought up the exact sequence that breaks it. Can a search that just tries a great many random sequences find it anyway?",
+     "start": 15.09,
+     "end": 24.318
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -1.9,
+   "wpm": 141,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "01a": {
+   "hash": "b65359a2832b1d9e",
+   "takes": [
+    "9995c204b819e717847b",
+    "29238640f24453c5406e"
+   ],
+   "duration": 8.708,
+   "lines": [
+    {
+     "text": "Yes, genuinely.",
+     "start": 0.15,
+     "end": 1.42
+    },
+    {
+     "text": "It doesn't need anyone to think of the exact case. It just needs to try enough of them.",
+     "start": 1.84,
+     "end": 8.358
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -2.6,
+   "wpm": 138,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "02": {
+   "hash": "7f7a87605ae79e7a",
+   "takes": [
+    "0b3e1e203184cd699fce"
+   ],
+   "duration": 11.94,
+   "lines": [
+    {
+     "text": "Run it for real: out of hundreds of random sequences thrown at it, one of them genuinely breaks the real rule that nothing's allowed to run past the end.",
+     "start": 0.15,
+     "end": 11.59
+    }
+   ],
+   "lufs": -16.7,
+   "true_peak": -1.9,
+   "wpm": 146,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "03": {
+   "hash": "7c1b1c364ac6b376",
+   "takes": [
+    "4e305f0a3a38061d028a",
+    "c30582f07bbc190a41b6"
+   ],
+   "duration": 13.226,
+   "lines": [
+    {
+     "text": "The search that found that broken case started from a sequence of quite a few real pieces.",
+     "start": 0.15,
+     "end": 6.003
+    },
+    {
+     "text": "Does the case it actually hands you stay that long and complicated, or does something more useful happen?",
+     "start": 6.723,
+     "end": 12.876
+    }
+   ],
+   "lufs": -16.3,
+   "true_peak": -2.2,
+   "wpm": 159,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "03a": {
+   "hash": "a02799f77847574b",
+   "takes": [
+    "4ee58b15e6c85d0b6759",
+    "812ab224686b6fbc78cb"
+   ],
+   "duration": 8.075,
+   "lines": [
+    {
+     "text": "Something more useful.",
+     "start": 0.15,
+     "end": 1.663
+    },
+    {
+     "text": "It keeps cutting the case down, on purpose, until nothing smaller still breaks it.",
+     "start": 2.083,
+     "end": 7.725
+    }
+   ],
+   "lufs": -16.2,
+   "true_peak": -4.5,
+   "wpm": 126,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "04": {
+   "hash": "5c7cde07b516fba7",
+   "takes": [
+    "31c2428763b2621fbc29"
+   ],
+   "duration": 15.129,
+   "lines": [
+    {
+     "text": "Run it for real: what started as a long, tangled sequence gets reduced down to just a handful of pieces, landing barely past the real edge, the smallest real case that still breaks the rule.",
+     "start": 0.15,
+     "end": 14.779
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 139,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "05": {
+   "hash": "36c8b10d73324450",
+   "takes": [
+    "9492be03923e4655982e",
+    "67fee8c9d38cfbd6fc61"
+   ],
+   "duration": 18.227,
+   "lines": [
+    {
+     "text": "Now swap in the version that actually checks where each piece lands before accepting it, and run the identical real search against it.",
+     "start": 0.15,
+     "end": 9.461
+    },
+    {
+     "text": "Does it pass because this run happened to pick easy cases, or because the real rule genuinely holds up?",
+     "start": 10.181,
+     "end": 17.877
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 138,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "05a": {
+   "hash": "23aa78986f3cbbfd",
+   "takes": [
+    "6121f59181dfe5434226",
+    "83a824721b8fd13919ba"
+   ],
+   "duration": 7.418,
+   "lines": [
+    {
+     "text": "It genuinely holds up.",
+     "start": 0.15,
+     "end": 1.83
+    },
+    {
+     "text": "The same search that broke the other version can't find anything wrong with this one.",
+     "start": 2.25,
+     "end": 7.068
+    }
+   ],
+   "lufs": -16.1,
+   "true_peak": -2.1,
+   "wpm": 154,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "06": {
+   "hash": "601ac1a402fe3744",
+   "takes": [
+    "8a83e20f96b0bd0778cc"
+   ],
+   "duration": 14.422,
+   "lines": [
+    {
+     "text": "Run it for real: the identical hundreds of random sequences, checked the identical way, and every single one of them genuinely holds, against the version that actually checks where things land.",
+     "start": 0.15,
+     "end": 14.072
+    }
+   ],
+   "lufs": -16.1,
+   "true_peak": -2.3,
+   "wpm": 129,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "07": {
+   "hash": "79b97138c28f19c2",
+   "takes": [
+    "05cf694e3286fae18e0d",
+    "9a1a278df320d758c2ff"
+   ],
+   "duration": 21.229,
+   "lines": [
+    {
+     "text": "One real, well-known tool for exactly this kind of testing describes its own job in plain words.",
+     "start": 0.15,
+     "end": 6.484
+    },
+    {
+     "text": "It checks that a real property genuinely holds across inputs it picks essentially at random, and the moment one of them breaks it, it automatically works backward to the smallest real case that still does.",
+     "start": 6.904,
+     "end": 20.879
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -1.9,
+   "wpm": 150,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "08": {
+   "hash": "941824a589623eb3",
+   "takes": [
+    "ee324bc90f5bd07c0577",
+    "5983a582812d0cfa8f56",
+    "de37eeed05557f44863d"
+   ],
+   "duration": 52.134,
+   "lines": [
+    {
+     "text": "So here's what this topic's own two real runs were really standing in for: trying a great many real cases catches a mistake nobody thought to write down by hand, and reducing it down to its own smallest real cause makes that catch genuinely easy to understand.",
+     "start": 0.15,
+     "end": 22.138
+    },
+    {
+     "text": "The identical real idea works just as well for comparing two whole, separate implementations against each other, a real one and a simpler stand-in, across a real sequence of operations, rather than checking just one rule at a time.",
+     "start": 22.558,
+     "end": 39.296
+    },
+    {
+     "text": "Either way, it's the same real habit: try far more than anyone would write by hand, and when something breaks, don't stop until you've found the smallest real reason why.",
+     "start": 39.716,
+     "end": 51.784
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 135,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  }
+ }
+}
