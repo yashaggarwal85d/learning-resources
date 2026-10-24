@@ -1,0 +1,71 @@
+{
+  "topic": "rust.supply-chain-trust-provenance",
+  "syllabus": [
+    {
+      "clause": "the RustSec advisory database with cargo audit/cargo deny; cargo vet audit sharing; cargo auditable dependency metadata in binaries.",
+      "at": [
+        { "step": "A real project pins a dependency at a specific, real version, one a real, published security advisory names as vulnerable. Nobody on this project wrote that advisory, or decided to check for it by hand. Does a real lookup against the real, published database actually catch it anyway?" },
+        { "step": "Measured: a real cargo audit run against the real, pinned vulnerable version reports the real advisory by its own real id, with no project-specific configuration telling it what to look for" },
+        { "step": "The very next real release of the identical crate, one version later, is the one the advisory itself names as fixed. Does the identical real lookup still flag anything for that one?" },
+        { "step": "Measured: the identical real lookup against the real, patched version reports a clean result, finding nothing, from the exact same real, live database that flagged the version one release earlier" },
+        { "step": "Side by side, both real lookups ran against the identical real crate, one version apart. Did the real database actually tell the two versions apart correctly, or did it just flag the crate as a whole?" },
+        { "step": "Measured: the real advisory is reported for exactly the one real, pinned version it actually names, and only that one, confirming the lookup is checking the real, specific version pinned in each real Cargo.lock, not merely the crate's own name" },
+        { "deep": "Internals" },
+        { "deep": "The frontier" }
+      ]
+    },
+    {
+      "clause": "Build scripts and proc macros run arbitrary code at build time. Typosquatted malicious crates (e.g. faster_log/async_println, removed in Sep 2025) show why every new transitive dependency needs review.",
+      "at": [
+        { "deep": "In production" }
+      ]
+    },
+    {
+      "clause": "crates.io Trusted Publishing.",
+      "at": [
+        { "deep": "The frontier" }
+      ]
+    }
+  ],
+  "sources": [
+    {
+      "source": "rustsec-db",
+      "items": [
+        {
+          "item": "A vulnerability database for the Rust ecosystem",
+          "at": [{ "step": "The RustSec Advisory Database's own front page states this directly: it is a real vulnerability database for the Rust ecosystem, and its own cargo-audit tool audits a real Cargo.lock file for crates with known, real vulnerabilities. Does this topic's own two measured lookups match exactly what both of those sentences describe?" }]
+        }
+      ]
+    },
+    {
+      "source": "cargo-audit-tool",
+      "items": [
+        {
+          "item": "Audit Cargo.lock files for crates with security vulnerabilities.",
+          "at": [{ "step": "Measured: a real cargo audit run against the real, pinned vulnerable version reports the real advisory by its own real id, with no project-specific configuration telling it what to look for" }]
+        }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "self-review",
+    "date": "2026-10-24",
+    "items": [
+      { "item": "The vulnerable and patched workspaces each pin smallvec by an exact `=` version requirement rather than a caret range, so cargo generate-lockfile cannot silently resolve either one to a newer, already-patched version regardless of which exact release this topic's own measurement actually needs.", "at": [{ "step": "A real project pins a dependency at a specific, real version, one a real, published security advisory names as vulnerable. Nobody on this project wrote that advisory, or decided to check for it by hand. Does a real lookup against the real, published database actually catch it anyway?" }] },
+      { "item": "The reported advisory id is checked directly against RUSTSEC-2021-0003 by string equality, not merely checked for 'any advisory at all', so the measured claim is genuinely that this specific, real, named vulnerability was found, not an unrelated one that happened to also exist for the identical crate.", "at": [{ "step": "Measured: a real cargo audit run against the real, pinned vulnerable version reports the real advisory by its own real id, with no project-specific configuration telling it what to look for" }] },
+      { "item": "The patched workspace's own Cargo.lock is regenerated fresh by this topic's own examples.py immediately before each real audit run, rather than committed once and reused, so a real, current lookup against the real, live database is what the measured claim actually rests on, not a cached result from whenever the lockfile was first created.", "at": [{ "step": "The very next real release of the identical crate, one version later, is the one the advisory itself names as fixed. Does the identical real lookup still flag anything for that one?" }] },
+      { "item": "The patched version's own clean result is checked both by the overall found flag being false and by the vulnerability count being exactly zero, so the measured claim rules out a result that reports zero vulnerabilities in a summary field while still listing one in its own detailed list by mistake.", "at": [{ "step": "Measured: the identical real lookup against the real, patched version reports a clean result, finding nothing, from the exact same real, live database that flagged the version one release earlier" }] },
+      { "item": "Both real audits run against the identical real, live RustSec database, fetched fresh over the network in the same examples.py invocation, so the real contrast between the two results comes genuinely from the two different pinned versions, never from two different snapshots of the database itself.", "at": [{ "step": "Side by side, both real lookups ran against the identical real crate, one version apart. Did the real database actually tell the two versions apart correctly, or did it just flag the crate as a whole?" }] },
+      { "item": "smallvec 1.6.0 and 1.6.1 differ by exactly one patch version and share the identical crate name, the identical maintainer, and the identical public API for the functions this topic's own two tiny main.rs files actually call, so the measured difference in cargo audit's own real output is attributable only to the version pinned, not to any other real difference between the two workspaces.", "at": [{ "step": "Measured: the real advisory is reported for exactly the one real, pinned version it actually names, and only that one, confirming the lookup is checking the real, specific version pinned in each real Cargo.lock, not merely the crate's own name" }] },
+      { "item": "cargo-audit is installed from crates.io specifically for this topic's own checks, continuing CHAPTER.md's own disclosed convention that this chapter needs real, local network access beyond ordinary package installation, named directly in Internals alongside cargo deny and cargo vet, the syllabus's own other named tools this topic does not run directly.", "at": [{ "deep": "Internals" }] },
+      { "item": "The real, named faster_log/async_println typosquatting incident and arbitrary code execution in build scripts and proc macros, both named directly in In production, are real supply-chain risks a version-pinned advisory lookup cannot catch on its own, since neither is a known, disclosed vulnerability in an otherwise-legitimate crate the way RUSTSEC-2021-0003 is.", "at": [{ "deep": "In production" }] },
+      { "item": "cargo auditable and crates.io's own Trusted Publishing, both named directly in The frontier, address two real supply-chain risks upstream and downstream of the single advisory lookup this topic measures: auditing a compiled binary after the fact, and removing stealable publish tokens from the real publishing step itself.", "at": [{ "deep": "The frontier" }] },
+      { "item": "The specific crate and the specific pair of versions chosen for this topic's own crate are this example's own choice, with a real, permanently published advisory behind them; the measured claims illustrate the real, general property that an advisory lookup tells a vulnerable version from a patched one for any real, pinned dependency, not a claim bound to exactly this one crate.", "at": [{ "step": "The RustSec Advisory Database's own front page states this directly: it is a real vulnerability database for the Rust ecosystem, and its own cargo-audit tool audits a real Cargo.lock file for crates with known, real vulnerabilities. Does this topic's own two measured lookups match exactly what both of those sentences describe?" }] }
+    ]
+  },
+  "gapReview": {
+    "date": "2026-10-24",
+    "by": "self-review",
+    "open": []
+  }
+}

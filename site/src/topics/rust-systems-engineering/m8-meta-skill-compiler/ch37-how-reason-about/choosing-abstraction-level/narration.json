@@ -1,0 +1,68 @@
+{
+  "steps": [
+    {
+      "lines": [
+        "Before touching a single line of code, here's a guess, written down on purpose: waiting for a storage write to actually finish before replying to a client will make that reply measurably slower, by roughly however long that write itself takes.",
+        { "beat": 0.3 },
+        "Is a guess like that actually specific enough to be wrong?"
+      ],
+      "answer": [
+        "Yes, genuinely.",
+        "It names a real number and a real direction, so a real measurement can actually agree or disagree with it."
+      ]
+    },
+    {
+      "lines": [
+        "Run it for real, first, without the change: a handful of requests, each one replied to the moment it's handed off, long before any of the real work behind it is even close to done."
+      ]
+    },
+    {
+      "lines": [
+        "Now make the one real change the guess was actually about: hold the reply back until that specific request's own work has genuinely finished.",
+        { "beat": 0.3 },
+        "Does the client actually feel that difference, the way the guess said it would?"
+      ],
+      "answer": [
+        "It does, genuinely.",
+        "Waiting for real work to finish costs real time, and now that cost shows up exactly where it was expected to."
+      ]
+    },
+    {
+      "lines": [
+        "Run it for real: what used to be a reply so fast it barely registered now takes roughly as long as the real work itself takes, every single time."
+      ],
+      "takeaway": "A guess written down ahead of time turns a real number into something that's confirmed or contradicted, not just observed."
+    },
+    {
+      "lines": [
+        "Put the two real numbers side by side: what was guessed beforehand, and what actually got measured afterward.",
+        { "beat": 0.3 },
+        "Did the guess just happen to land close, or is that match the real point of writing it down in the first place?"
+      ],
+      "answer": [
+        "That's the real point, genuinely.",
+        "A guess that happens to be right only means something once there's a written record to check it against."
+      ]
+    },
+    {
+      "lines": [
+        "Run it for real: the slowdown that actually showed up lines up with what was guessed beforehand, closely enough that there's no real question left about whether the two are actually connected."
+      ],
+      "takeaway": "A change's own real result only means something once it's checked against what was actually predicted beforehand."
+    },
+    {
+      "lines": [
+        "One real, well-known field guide to exactly this kind of problem says it plainly, in its own words.",
+        "First, come up with a real, specific guess about what's actually going on. Then, measure the real system and see whether what you find actually backs that guess up, or knocks it down."
+      ],
+      "takeaway": "Writing the guess down before checking it is what actually lets a real result confirm it or contradict it."
+    },
+    {
+      "lines": [
+        "So here's what this topic's own two real runs were really standing in for: a real guess, written down before anything changes, a real change made on purpose, and a real result measured the exact same way both times.",
+        "Without that written guess, the exact same slower number would just be a number, with nothing to say whether it was actually expected or not.",
+        "With it, that same number either backs up what was predicted, or it doesn't, and either way, that's a real answer instead of a feeling."
+      ]
+    }
+  ]
+}

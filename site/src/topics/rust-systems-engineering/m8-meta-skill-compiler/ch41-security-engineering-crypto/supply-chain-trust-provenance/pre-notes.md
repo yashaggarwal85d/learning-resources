@@ -1,0 +1,4 @@
+- **Advisory database**: a real, published, continuously updated record (RustSec) of which real dependency versions have known, disclosed vulnerabilities, looked up by a real tool rather than checked by hand.
+- **`cargo audit`**: a real command-line tool that checks a real `Cargo.lock` file's own pinned versions against the real RustSec database and reports any that are genuinely known to be vulnerable.
+- **Provenance**: a real, traceable record of where a dependency actually came from and what has actually been published against it, as opposed to an assumption that nothing has broken yet.
+- **Pinned version**: the one, specific real version of a dependency a `Cargo.lock` file actually locks a build to, which an advisory lookup checks directly rather than checking a crate's own name in general.
