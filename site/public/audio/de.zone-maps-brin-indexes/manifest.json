@@ -1,0 +1,599 @@
+{
+ "topic": "de.zone-maps-brin-indexes",
+ "voice": "breeze-mellow-v2",
+ "asr": "large-v3-turbo",
+ "clips": {
+  "01": {
+   "hash": "8c59ddd86e224c12",
+   "takes": [
+    "d12445d202558ad28cd8",
+    "a4a93b6b8a51f0430c97",
+    "c3d3f5d7670cf57a4b18"
+   ],
+   "duration": 17.825,
+   "lines": [
+    {
+     "text": "Run the exact same equality filter against the exact same table, two different ways.",
+     "start": 0.15,
+     "end": 6.629
+    },
+    {
+     "text": "With no index at all, over ten thousand buffers get touched to answer it.",
+     "start": 7.049,
+     "end": 12.619
+    },
+    {
+     "text": "With one tiny summary index instead, only fifteen do.",
+     "start": 13.039,
+     "end": 17.475
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 125,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "02": {
+   "hash": "62ceba1704d3a2ec",
+   "takes": [
+    "109be22e61822e18d554",
+    "d723b667f34824566461"
+   ],
+   "duration": 16.604,
+   "lines": [
+    {
+     "text": "An ordinary tree-shaped index stores one entry for every single row it covers, no matter how many rows that is.",
+     "start": 0.15,
+     "end": 8.331
+    },
+    {
+     "text": "Could an index that stores nothing at all per row still manage to help answer a query?",
+     "start": 9.151,
+     "end": 16.254
+    }
+   ],
+   "lufs": -16.1,
+   "true_peak": -2.9,
+   "wpm": 137,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "02a": {
+   "hash": "c43cb7fcb8b8fb7e",
+   "takes": [
+    "2cfc04af4864231bcb7b",
+    "5f302bb618b7151f1c8e"
+   ],
+   "duration": 18.257,
+   "lines": [
+    {
+     "text": "Yes \u2014 a much coarser summary can still rule out most of the table at once.",
+     "start": 0.15,
+     "end": 6.39
+    },
+    {
+     "text": "A summary covering many rows together can still prove that an entire group of them cannot possibly match, which is exactly the mechanism this topic measures directly.",
+     "start": 6.81,
+     "end": 17.907
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 138,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "03": {
+   "hash": "c217ef9ed4236039",
+   "takes": [
+    "264b6da34c10c13d050b",
+    "4b38be14e873d21a9145",
+    "8451226e37afaa44bd67"
+   ],
+   "duration": 22.501,
+   "lines": [
+    {
+     "text": "This kind of index keeps one summary for each group of physically neighboring pages, instead of one entry per row.",
+     "start": 0.15,
+     "end": 7.763
+    },
+    {
+     "text": "For a column with a natural order, that summary is simply the smallest and largest value seen anywhere inside that whole group.",
+     "start": 8.183,
+     "end": 17.188
+    },
+    {
+     "text": "One compact fact, standing in for every row the group actually contains.",
+     "start": 17.608,
+     "end": 22.151
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 144,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "04": {
+   "hash": "cee9edaaa9c316d2",
+   "takes": [
+    "7419e93c91d8e9c8ce62",
+    "2f4d27bfbc306115462b",
+    "b62bda9a9f49295d996a"
+   ],
+   "duration": 20.563,
+   "lines": [
+    {
+     "text": "Build that kind of index on this column, and measure its size directly.",
+     "start": 0.15,
+     "end": 4.961
+    },
+    {
+     "text": "It comes out to a few dozen kilobytes. An ordinary tree-shaped index over the identical column comes out to several megabytes instead.",
+     "start": 5.381,
+     "end": 13.835
+    },
+    {
+     "text": "Hundreds of times larger, for storing the exact same column, the exact same data.",
+     "start": 14.255,
+     "end": 20.213
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 146,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "05": {
+   "hash": "c282b30faf4a1354",
+   "takes": [
+    "3057ba0cf3e5d003229d",
+    "9d3e66c0993387f2479b"
+   ],
+   "duration": 17.543,
+   "lines": [
+    {
+     "text": "A summary this coarse only ever rules out a whole group of rows at once, never a single row by itself.",
+     "start": 0.15,
+     "end": 7.103
+    },
+    {
+     "text": "Does that still work no matter how a column's values happen to be arranged inside the table, or does something about the data have to be true first?",
+     "start": 7.923,
+     "end": 17.193
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 168,
+   "wer": 0.047619047619047616,
+   "exact": false,
+   "tolerated": [
+    {
+     "line": "A summary this coarse only ever rules out a whole group of rows at once, never a single row by itself.",
+     "said": "coarse",
+     "heard": "course"
+    }
+   ]
+  },
+  "05a": {
+   "hash": "e8bdd3ead7183b72",
+   "takes": [
+    "4d1de8d736d66281f139",
+    "bc2ff318aa776c3ea44c"
+   ],
+   "duration": 15.372,
+   "lines": [
+    {
+     "text": "It only helps once a group's rows genuinely share values that are close together.",
+     "start": 0.15,
+     "end": 5.395
+    },
+    {
+     "text": "Whether that holds at all is a real property of how the data sits physically in the table, and this topic measures both sides of that directly.",
+     "start": 5.815,
+     "end": 15.022
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 160,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "06": {
+   "hash": "e4d7539c8dde1197",
+   "takes": [
+    "cafeb3ef6c83f90fa82b",
+    "ccfeb4111a2557028678",
+    "276a320bf3a6eb5e885c"
+   ],
+   "duration": 20.982,
+   "lines": [
+    {
+     "text": "A group's own summary is only a useful shortcut if that group's rows are genuinely clustered together by value.",
+     "start": 0.15,
+     "end": 8.146
+    },
+    {
+     "text": "In other words, the column has to be well matched to the physical order the rows actually sit in.",
+     "start": 8.566,
+     "end": 15.103
+    },
+    {
+     "text": "Without that match, a compact summary has nothing meaningful left to summarize.",
+     "start": 15.523,
+     "end": 20.632
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 143,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "07": {
+   "hash": "795c5ac9e9177e7c",
+   "takes": [
+    "af51dea51fcd09bd768f",
+    "5e2bb7c3069d27acc55a",
+    "37da09ee2251ee2e7608"
+   ],
+   "duration": 21.598,
+   "lines": [
+    {
+     "text": "Pick a column that is genuinely well matched to row order, and measure the same equality filter again.",
+     "start": 0.15,
+     "end": 7.265
+    },
+    {
+     "text": "Buffers drop all the way back down to that same small handful, and the whole query finishes in a tiny fraction of a millisecond.",
+     "start": 7.685,
+     "end": 16.472
+    },
+    {
+     "text": "Hundreds of times faster than touching the table with no index at all.",
+     "start": 16.892,
+     "end": 21.248
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.7,
+   "wpm": 153,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "08": {
+   "hash": "012586b59ced5a4f",
+   "takes": [
+    "df82ffbd04f51f99df9a",
+    "b9ceb47e0db9b27621c0"
+   ],
+   "duration": 10.799,
+   "lines": [
+    {
+     "text": "Now take the exact same kind of index, but on a column whose values are scattered randomly across the table instead.",
+     "start": 0.15,
+     "end": 7.674
+    },
+    {
+     "text": "Does it still help at all?",
+     "start": 8.494,
+     "end": 10.449
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -1.9,
+   "wpm": 150,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "08a": {
+   "hash": "89c1585e39f583c1",
+   "takes": [
+    "a6947c3bc24d14db26a9",
+    "8dad8b27b11985dbd824"
+   ],
+   "duration": 14.438,
+   "lines": [
+    {
+     "text": "No \u2014 once values are scattered, almost every group ends up containing nearly the full spread of them.",
+     "start": 0.15,
+     "end": 7.146
+    },
+    {
+     "text": "A summary covering a group that already contains everything has nothing left to rule out.",
+     "start": 7.566,
+     "end": 14.088
+    }
+   ],
+   "lufs": -16.3,
+   "true_peak": -2.2,
+   "wpm": 133,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "09": {
+   "hash": "4e78794a1b186ebb",
+   "takes": [
+    "af8b6bf39404395af702",
+    "a3ffe13d928353e3e86e",
+    "fade537b13d6e27673d8"
+   ],
+   "duration": 19.676,
+   "lines": [
+    {
+     "text": "Measure that same scattered-column case directly.",
+     "start": 0.15,
+     "end": 3.242
+    },
+    {
+     "text": "The number of buffers touched comes out essentially the same as touching the table with no index at all.",
+     "start": 3.662,
+     "end": 9.652
+    },
+    {
+     "text": "And once the extra checking work this index still has to do gets counted, it actually finishes slightly slower than skipping the index entirely.",
+     "start": 10.072,
+     "end": 19.326
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 152,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "10": {
+   "hash": "b4c3bbf0a53a0cac",
+   "takes": [
+    "8ebc5c653fbed5a2dc4c",
+    "8f3632f4843430d3f0bc"
+   ],
+   "duration": 16.247,
+   "lines": [
+    {
+     "text": "A group's own summary can be perfectly consistent with a filter without every single row inside that group actually matching it.",
+     "start": 0.15,
+     "end": 9.24
+    },
+    {
+     "text": "So what has to happen, then, to those rows before they can be trusted as real matches?",
+     "start": 10.06,
+     "end": 15.898
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -3.0,
+   "wpm": 140,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "10a": {
+   "hash": "ea8457661e3fa4c7",
+   "takes": [
+    "15578ad1bda2db74a590",
+    "33591bb48ee36238d4d1"
+   ],
+   "duration": 14.316,
+   "lines": [
+    {
+     "text": "Every row inside a matching group still has to be checked individually before being trusted.",
+     "start": 0.15,
+     "end": 5.859
+    },
+    {
+     "text": "The summary only proves a group might contain a real match, never that every row inside it already is one.",
+     "start": 6.279,
+     "end": 13.966
+    }
+   ],
+   "lufs": -16.1,
+   "true_peak": -3.0,
+   "wpm": 147,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "11": {
+   "hash": "157a6987063cda8c",
+   "takes": [
+    "48beaa9a094a459d375a",
+    "d54864b1e080bd452110",
+    "b2554def990392a21f1b"
+   ],
+   "duration": 26.16,
+   "lines": [
+    {
+     "text": "A matching group hands back every single row it contains as a mere candidate, nothing more.",
+     "start": 0.15,
+     "end": 7.131
+    },
+    {
+     "text": "The engine running the query then checks each candidate against the real filter on its own, one at a time.",
+     "start": 7.551,
+     "end": 14.17
+    },
+    {
+     "text": "Whatever doesn't genuinely match gets thrown away right there \u2014 this kind of index gives up precision by design, in exchange for its own tiny size.",
+     "start": 14.59,
+     "end": 25.81
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 140,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "12": {
+   "hash": "245ef9dfe7d21685",
+   "takes": [
+    "89497c3456ced42ab090",
+    "348d700c52c7f9d2ee80",
+    "22e56f61b874fb82ff14"
+   ],
+   "duration": 26.975,
+   "lines": [
+    {
+     "text": "A columnar file format keeps this exact same trick at its own layer, one level removed from a database engine entirely.",
+     "start": 0.15,
+     "end": 9.061
+    },
+    {
+     "text": "Each chunk of rows inside such a file carries its own smallest and largest value, read before a single row inside that chunk ever gets decoded.",
+     "start": 9.481,
+     "end": 20.899
+    },
+    {
+     "text": "The exact same shortcut, just applied to a file instead of a table.",
+     "start": 21.319,
+     "end": 26.625
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 133,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "13": {
+   "hash": "5b6cccb7a9687e8c",
+   "takes": [
+    "0d63d0279ef9e33dfbaf",
+    "caa26aea9d1242013497",
+    "fe53c9a18195c6db8cdd"
+   ],
+   "duration": 26.835,
+   "lines": [
+    {
+     "text": "A cloud warehouse carries this same idea even further, automatically, for every table it stores.",
+     "start": 0.15,
+     "end": 7.759
+    },
+    {
+     "text": "Each small chunk of a table keeps the range of values for every one of its own columns, and an entire chunk gets skipped the moment that range cannot possibly match.",
+     "start": 8.179,
+     "end": 19.933
+    },
+    {
+     "text": "Different storage layer, same underlying principle this whole topic has been measuring directly.",
+     "start": 20.353,
+     "end": 26.485
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 132,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "14": {
+   "hash": "c60391952e23b95b",
+   "takes": [
+    "a5098e82fc6414d7ad90",
+    "74212ea174dc22314bba",
+    "63184d56b0511fc644fe"
+   ],
+   "duration": 23.657,
+   "lines": [
+    {
+     "text": "A summary this coarse costs almost nothing to store, next to an ordinary tree-shaped index over the same column.",
+     "start": 0.15,
+     "end": 7.506
+    },
+    {
+     "text": "It only earns that advantage once a column's values genuinely line up with how the table is physically laid out.",
+     "start": 7.926,
+     "end": 14.875
+    },
+    {
+     "text": "And even then, every row a matching group returns still gets individually checked before it counts as a real answer.",
+     "start": 15.295,
+     "end": 23.307
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -2.4,
+   "wpm": 152,
+   "wer": 0.05,
+   "exact": false,
+   "tolerated": [
+    {
+     "line": "A summary this coarse costs almost nothing to store, next to an ordinary tree-shaped index over the same column.",
+     "said": "coarse",
+     "heard": "course"
+    }
+   ]
+  },
+  "15": {
+   "hash": "dfe3f472e7a44519",
+   "takes": [
+    "6c5f1041a4be65917b08",
+    "a4fecd5f3822e0669eb7"
+   ],
+   "duration": 20.448,
+   "lines": [
+    {
+     "text": "A table is split into five hundred physical groups of rows. Every row was loaded in strict order by date, and a query filters on exactly one date, which only ever appears inside a single one of those groups.",
+     "start": 0.15,
+     "end": 15.397
+    },
+    {
+     "text": "How many of those groups, though, actually need to be checked?",
+     "start": 16.217,
+     "end": 20.098
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -2.0,
+   "wpm": 147,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "15a": {
+   "hash": "372511a42fbf20f4",
+   "takes": [
+    "412a8018d746fcd42cdc",
+    "56d575aa1981262fe5c8"
+   ],
+   "duration": 16.723,
+   "lines": [
+    {
+     "text": "Just one \u2014 every other group gets ruled out purely by its own summary.",
+     "start": 0.15,
+     "end": 5.029
+    },
+    {
+     "text": "With the data this strictly ordered, only the single group whose own summary could possibly contain that date needs any checking done on it at all.",
+     "start": 5.449,
+     "end": 16.373
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -2.9,
+   "wpm": 140,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  }
+ }
+}
