@@ -1,0 +1,4 @@
+- **Memtable**: the in-memory table that catches every new write, kept sorted. *Where you meet it:* a key overwritten in the active memtable, winning over an older, already-flushed value.
+- **Immutable memtable**: a closed memtable, waiting to be flushed, no longer accepting new writes.
+- **SSTable**: an unchangeable, sorted file written once, during a flush — never modified in place afterward, only read, merged, or deleted.
+- **Newest-first read path**: a lookup checks the active memtable, then each immutable memtable, then each SSTable, newest to oldest — a hit on an old key, or a genuine miss, costs checking more of them.
