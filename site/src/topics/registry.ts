@@ -4228,4 +4228,24 @@ export const TOPICS: TopicMeta[] = [
     handoff:
       "A WAL that's never allowed to grow forever needs a way to bound how far back a crash recovery must replay. That bound is a checkpoint.",
   },
+  {
+    id: 'de.checkpoints-crash-recovery',
+    domain: 'data-engineering',
+    slug: 'data-engineering/m2-storage-database-internals/ch05-database-internals-distributed/checkpoints-crash-recovery',
+    title: 'Checkpoints and crash recovery',
+    syllabusTitle: 'Checkpoints and crash recovery',
+    kind: 'full',
+    status: 'held',
+    milestone: { number: 2, title: 'Storage: Database Internals, Files & the Lakehouse' },
+    chapter: { number: 5, title: 'Database Internals and Distributed Storage', section: '5.1' },
+    minutes: 15,
+    verified: '2026-10-24',
+    introduces: ['checkpoint-recovery-redo-undo'],
+    uses: ['wal-lsn-fsync'],
+    declared: [],
+    bridge:
+      "A WAL that's never allowed to grow forever needs a bound on how far back a crash recovery must replay. This topic is that bound: the checkpoint, and the two real recovery strategies (ARIES's redo/undo, Postgres's redo-only) built on top of the WAL topic 3 established.",
+    handoff:
+      "Every mechanism so far assumed one path to a row: a direct page read. The next topic is the structure that makes finding the right page fast in the first place — the B-tree.",
+  },
 ];

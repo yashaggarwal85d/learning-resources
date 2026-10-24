@@ -1,0 +1,85 @@
+{
+  "topic": "de.checkpoints-crash-recovery",
+  "steps": [
+    {
+      "lines": [
+        "The last topic established that a committed change is durable in the log before the page itself is.",
+        "But a log nobody ever trims would mean a crash has to replay the engine's entire history, from the very beginning.",
+        "Something marks a far more recent, trustworthy point to start from instead."
+      ]
+    },
+    {
+      "lines": [
+        "That something is a checkpoint's own redo record, read directly off a live cluster rather than assumed.",
+        "It names the exact position recovery would resume from if a crash happened this very instant.",
+        "And the live distance behind that position is exactly how much work a crash right now would force."
+      ]
+    },
+    {
+      "lines": [
+        "Checkpoint more often, and there's genuinely less work to redo after a crash — that part is the clear win.",
+        "But the same documentation names a real cost sitting right next to it.",
+        "With the page-tear defense turned on, checkpointing more often also means logging a full page copy more often."
+      ]
+    },
+    {
+      "lines": [
+        "Worth reasoning through before the reveal settles it.",
+        "A disk doesn't write an entire page in one physical step — it lands in several smaller physical pieces, one after another.",
+        "If a crash happens partway through, why would the whole page need logging, rather than just the change being made?"
+      ],
+      "answer": [
+        "Because some of those smaller pieces can land while others never do, leaving a page that's part old and part new.",
+        "Applying an ordinary change on top of that mixed-up state could still produce something wrong.",
+        "Only a full, known-good copy of the page can safely repair whatever a crash left behind."
+      ]
+    },
+    {
+      "lines": [
+        "Here's that trade-off shown directly, not just argued for.",
+        "Checkpointing after every single one of ten identical rounds of change, measured directly against a real cluster: a very large number of full-page copies logged.",
+        "And the live distance a crash would need to replay, kept down to something small."
+      ]
+    },
+    {
+      "lines": [
+        "The identical rounds of change, measured again, but checkpointed only once at the very start instead.",
+        "Far fewer full-page copies logged this time — a small fraction of the earlier count.",
+        "But the live distance a crash would need to replay has grown far larger instead, the trade-off flipped in the opposite direction."
+      ]
+    },
+    {
+      "lines": [
+        "A completely different piece of this same topic is worth naming directly.",
+        "A well-known recovery method, named from its own original paper, describes three separate passes: figuring out what was happening, redoing everything, and then undoing the transactions that never finished.",
+        "This sandbox's own engine describes only one of those passes — redo — because a change's own transaction status decides what's visible, with nothing left to physically undo."
+      ]
+    },
+    {
+      "lines": [
+        "The exact same log this whole topic measures turns out to get reused for three more jobs entirely.",
+        "Stop replaying it early instead of running it to the end, and that's a point-in-time recovery.",
+        "Ship the identical bytes to another machine that keeps applying them continuously, and that's physical replication. Decode those same bytes into row-level changes instead, and that's the basis of logical decoding."
+      ]
+    },
+    {
+      "lines": [
+        "Pulling the whole topic back together.",
+        "A checkpoint's own redo record, naming the real starting point for recovery.",
+        "A real, measured trade-off, pulling two real costs in opposite directions by a huge margin each. One engine that redoes only, deciding visibility by a change's own status rather than physically undoing anything. And the identical log, reused for three more jobs entirely."
+      ]
+    },
+    {
+      "lines": [
+        "One closing scenario, worth reasoning through before the explanation lands.",
+        "A system claims instant crash recovery no matter how long it's been running, without ever mentioning anything like a checkpoint.",
+        "Before believing that claim, what would actually have to be true underneath it?"
+      ],
+      "answer": [
+        "Any crash-recovery claim that doesn't grow with how long a system has been running has to be capping how far back it looks somehow.",
+        "That capping is exactly the job this topic's own checkpoint does.",
+        "A claim of instant recovery with no stated bound at all is either marketing, or it's quietly hiding a checkpoint-equivalent under a different name."
+      ]
+    }
+  ]
+}

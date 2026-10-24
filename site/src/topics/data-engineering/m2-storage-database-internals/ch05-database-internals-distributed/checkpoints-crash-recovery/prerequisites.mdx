@@ -1,0 +1,25 @@
+import Resource from '../../../../../components/Resource.astro';
+
+<section class="prereq" data-section="before-this">
+
+### <span class="n">01</span> Before this: the log this topic bounds
+
+<ul class="resources">
+  <Resource kind="reel" title="Write-ahead logging and fsync semantics" domain="data-engineering" host="de.write-ahead-logging-fsync" by="the previous topic of this chapter" />
+</ul>
+
+</section>
+
+<section class="prereq" data-section="straight-from-the-source">
+
+### <span class="n">02</span> The sources this topic measures against
+
+<ul class="resources">
+  <Resource kind="reading" title="WAL Configuration" href="https://www.postgresql.org/docs/16/wal-configuration.html" by="PostgreSQL docs">The redo record itself, and the checkpoint-frequency trade-off in the engine's own words.</Resource>
+  <Resource kind="reading" title="Write-Ahead Logging (WAL)" href="https://www.postgresql.org/docs/16/wal-intro.html" by="PostgreSQL docs">Crash recovery described as roll-forward/REDO.</Resource>
+  <Resource kind="reading" title="Continuous Archiving and Point-in-Time Recovery (PITR)" href="https://www.postgresql.org/docs/16/continuous-archiving.html" by="PostgreSQL docs">Point-in-time recovery as partial WAL replay.</Resource>
+  <Resource kind="reading" title="Log-Shipping Standby Servers" href="https://www.postgresql.org/docs/16/warm-standby.html" by="PostgreSQL docs">Physical replication as continuous WAL application.</Resource>
+  <Resource kind="reading" title="Logical Decoding Concepts" href="https://www.postgresql.org/docs/16/logicaldecoding-explanation.html" by="PostgreSQL docs">Logical decoding as the same WAL, decoded into row changes.</Resource>
+</ul>
+
+</section>
