@@ -4328,4 +4328,24 @@ export const TOPICS: TopicMeta[] = [
     handoff:
       "An LSM tree accumulates sorted runs forever unless something merges them back down. That something is compaction, and how it merges them decides the trade-off the whole structure is built around.",
   },
+  {
+    id: 'de.lsm-compaction-rum-trade',
+    domain: 'data-engineering',
+    slug: 'data-engineering/m2-storage-database-internals/ch05-database-internals-distributed/lsm-compaction-rum-trade',
+    title: 'LSM compaction and the RUM trade-off',
+    syllabusTitle: 'LSM compaction and the RUM trade-off',
+    kind: 'full',
+    status: 'held',
+    milestone: { number: 2, title: 'Storage: Database Internals, Files & the Lakehouse' },
+    chapter: { number: 5, title: 'Database Internals and Distributed Storage', section: '5.1' },
+    minutes: 15,
+    verified: '2026-10-24',
+    introduces: ['lsm-compaction-rum'],
+    uses: ['lsm-write-read-path', 'btree-fanout-blink'],
+    declared: [],
+    bridge:
+      "An LSM tree accumulates sorted runs forever unless something merges them back down. This topic is that merge, the real trade-off (the RUM conjecture) every compaction strategy makes, and the production failures that strategy's own debt causes.",
+    handoff:
+      "Every mechanism in this section so far lived inside one engine, on one machine. The next section asks what a transaction even means once two transactions can run at the same time at all — starting with a precise restatement of ACID itself.",
+  },
 ];

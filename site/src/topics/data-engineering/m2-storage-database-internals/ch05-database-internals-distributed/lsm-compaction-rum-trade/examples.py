@@ -167,6 +167,9 @@ def compaction_style_file_counts():
         f"expected leveled compaction to settle to fewer live files than tiered on the same workload, "
         f"got level={counts['level']}, universal={counts['universal']}"
     )
+    # Deterministic on this RocksDB build (confirmed across repeated runs): pin the exact counts too.
+    assert counts["level"] == 3, f"expected leveled compaction to settle to 3 files, got {counts['level']}"
+    assert counts["universal"] == 4, f"expected universal (tiered) compaction to settle to 4 files, got {counts['universal']}"
     print(f"same write pattern, two compaction styles: level settles to {counts['level']} file(s), universal to {counts['universal']}")
     return counts
 
@@ -228,6 +231,8 @@ def write_stall_trigger_crossed():
 
         l0_files = db.property_int_value("rocksdb.num-files-at-level0")
         assert l0_files >= slowdown_trigger, f"expected at least {slowdown_trigger} L0 files to demonstrate the trigger, got {l0_files}"
+        # Deterministic on this RocksDB build (confirmed across repeated runs): pin the exact count too.
+        assert l0_files == 6, f"expected exactly 6 L0 files after this write pattern, got {l0_files}"
 
         print(f"level0_slowdown_writes_trigger = {slowdown_trigger}; real L0 file count = {l0_files} (at or past the trigger)")
         return l0_files, slowdown_trigger

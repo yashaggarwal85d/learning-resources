@@ -1,0 +1,5 @@
+- **Sorted run / flushed file**: a collection of key-value pairs kept in key order, taught in the previous topic. *Where you meet it:* what compaction actually merges.
+- **L0, the newest-data level**: the lowest-numbered level, holding the newest flushed files. *Where you meet it:* the level this topic's write-stall measurement watches directly.
+- **Tombstone**: a delete recorded as a new write, taught directly in the previous topic. *Where you meet it:* the same uncollected-work shape this topic generalizes to compaction debt and write stalls.
+- **Amplification ratio**: actual work or space divided by the logical amount, a standard way to score a storage engine's overhead, background from this chapter's earlier topics (write amplification already named for Postgres's own WAL). *Where you meet it:* the precise read/write/space definitions the RUM conjecture is built from.
+- **B-tree**: the sorted, in-place-updated tree structure Postgres's own storage engine uses, background from earlier topics in this chapter. *Where you meet it:* the chapter's own lab's point of comparison against RocksDB's LSM tree.
