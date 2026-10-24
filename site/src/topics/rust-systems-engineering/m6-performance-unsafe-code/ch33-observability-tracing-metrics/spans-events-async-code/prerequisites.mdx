@@ -1,0 +1,22 @@
+import Resource from '../../../../../components/Resource.astro';
+
+<section class="prereq" data-section="chapter-so-far">
+
+### <span class="n">01</span> Where the last chapter left off
+
+<ul class="resources">
+  <Resource kind="reel" host={props.host} domain="rust-systems-engineering" title="Release profiles and build speed">a workspace, a feature, a lint policy, and a release profile are all decisions paid for on every build; this topic turns to a system that is actually running.</Resource>
+</ul>
+
+</section>
+
+<section class="prereq" data-section="tracing-primary">
+
+### <span class="n">02</span> The real docs: the tracing crate's own Span and Instrument pages
+
+<ul class="resources">
+  <Resource kind="reading" title="Span" href="https://docs.rs/tracing/latest/tracing/struct.Span.html" by="docs.rs">why holding the enter guard across an await produces an incorrect trace.</Resource>
+  <Resource kind="reading" title="Instrument" href="https://docs.rs/tracing/latest/tracing/trait.Instrument.html" by="docs.rs">the span entered every time the instrumented future is polled.</Resource>
+</ul>
+
+</section>

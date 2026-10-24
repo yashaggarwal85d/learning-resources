@@ -1,0 +1,4 @@
+- **Span**: a real, named period of time `tracing` tracks, with a real start and a real end, that a function's own execution can enter and exit any number of times.
+- **Event**: a real, single, point-in-time record `tracing` emits inside whichever span is currently entered, carrying real, structured fields rather than only a formatted string.
+- **`Span::enter()`**: a real guard whose own lifetime marks exactly when a span is entered; holding it across a real `.await` point is a classic, real mistake that leaks the span onto whatever runs next on the same thread.
+- **`.instrument(span)` / `#[instrument]`**: the real, correct way to attach a span to an async function or block, so the span is exited and re-entered around every real `.await` inside it, instead of being held open by hand.

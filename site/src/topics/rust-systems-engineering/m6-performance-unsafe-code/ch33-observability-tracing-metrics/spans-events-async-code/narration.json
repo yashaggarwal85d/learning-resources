@@ -1,0 +1,68 @@
+{
+  "steps": [
+    {
+      "lines": [
+        "One task here holds something open, on purpose, right across a point where it has to pause and let another task run.",
+        { "beat": 0.3 },
+        "While it's paused, that other task records a real event of its own. Does that event end up looking like it happened inside the first task's own open period?"
+      ],
+      "answer": [
+        "Yes, genuinely.",
+        "That open period never actually closed, so it just keeps covering whatever runs next."
+      ]
+    },
+    {
+      "lines": [
+        "Run it for real: the second task's own event comes back tagged as happening inside the first task's own period, even though the first task never touched it at all."
+      ]
+    },
+    {
+      "lines": [
+        "Same two tasks, but now the first one wraps its own paused work differently, instead of holding anything open by hand.",
+        { "beat": 0.3 },
+        "Does the second task's event still get mistagged this way?"
+      ],
+      "answer": [
+        "No, genuinely.",
+        "This time it closes itself the instant it pauses, and reopens once it resumes."
+      ]
+    },
+    {
+      "lines": [
+        "Run it for real: the second task's own event now comes back correctly untagged, because the first one genuinely closed its own period before ever letting another task run."
+      ],
+      "takeaway": "Something attached to a paused task closes and reopens around every real pause inside it."
+    },
+    {
+      "lines": [
+        "One more version of the same first task, written as a plain function with one short label added to it instead.",
+        { "beat": 0.3 },
+        "Does it behave the same correct way the wrapped version just did?"
+      ],
+      "answer": [
+        "Yes, genuinely.",
+        "That short label quietly builds the identical, correct wrapping underneath."
+      ]
+    },
+    {
+      "lines": [
+        "Run it for real: the second task's own event comes back untagged again, exactly matching the wrapped version's own real result, because underneath, it really is the same thing."
+      ],
+      "takeaway": "A short label is not a different trick; it is the same correct code, written for you."
+    },
+    {
+      "lines": [
+        "One real, independent page names both of these exact ideas directly, in its own words.",
+        "It says holding something open by hand across a pause produces a wrong result, because another task starts running while still covered by it. And it says the fix is tied to the task itself resuming, not to anyone remembering to close it."
+      ],
+      "takeaway": "Something like this has to be tied to the task actually resuming, never to someone remembering to close it."
+    },
+    {
+      "lines": [
+        "So here's what this topic's own three real runs are really standing in for: the moment anything pauses and hands control to something else, holding a period open by hand across that pause is exactly how it ends up covering work that was never really inside it.",
+        "Wrapping the paused work instead, or labeling it with one short attribute, both fix that the identical way, by genuinely closing it the instant it pauses and only reopening it once it resumes.",
+        "Neither one is a trick. They're both just the correct way to tie something like this to the real shape of a task that keeps getting paused and resumed."
+      ]
+    }
+  ]
+}
