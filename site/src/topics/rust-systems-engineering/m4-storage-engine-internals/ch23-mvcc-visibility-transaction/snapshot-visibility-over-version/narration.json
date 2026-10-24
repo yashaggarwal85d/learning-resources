@@ -1,0 +1,85 @@
+{
+  "steps": [
+    {
+      "lines": [
+        "A row's own version chain holds two things right now: an old version that already committed, and a brand-new version a transaction just wrote but hasn't committed yet.",
+        { "beat": 0.3 },
+        "An existing reader already took its own snapshot earlier. Which one of those two versions does that reader actually see?"
+      ],
+      "answer": [
+        "The old, committed one.",
+        "Until that newer transaction actually commits, its version simply isn't visible to anyone else yet."
+      ]
+    },
+    {
+      "lines": [
+        "Run it for real: the reader's own snapshot genuinely returned the old value, even while the chain's own newest entry already held the new one.",
+        "So which version a reader sees depends on that version's own metadata together with the snapshot, never simply on which one happens to be newest."
+      ]
+    },
+    {
+      "lines": [
+        "That same newer transaction now goes ahead and commits.",
+        { "beat": 0.3 },
+        "Does the original reader's own snapshot change what it reports, now that the write behind it is finally committed?"
+      ],
+      "answer": [
+        "No, it doesn't change at all.",
+        "It keeps reporting exactly what it reported before."
+      ]
+    },
+    {
+      "lines": [
+        "Run it for real: the original reader's own snapshot kept returning exactly the same value after that commit as it did before it."
+      ],
+      "takeaway": "A snapshot taken once stays fixed for its own reader, however many other transactions commit around it."
+    },
+    {
+      "lines": [
+        "A transaction now updates a row it's able to see.",
+        { "beat": 0.3 },
+        "Does that update ever rewrite the existing version's own stored fields directly, in place?"
+      ],
+      "answer": [
+        "No, never.",
+        "A brand-new version gets appended instead, and only the old version's own deleting-transaction marker gets stamped."
+      ]
+    },
+    {
+      "lines": [
+        "Run it for real: the superseded version's own fields came back completely untouched afterward, and the chain genuinely grew by exactly one brand-new entry."
+      ],
+      "takeaway": "A writer appends a new version instead of overwriting one a reader may still need, so neither one ever blocks the other."
+    },
+    {
+      "lines": [
+        "One real production system states this exact guarantee directly, in its own documentation.",
+        { "beat": 0.3 },
+        "Does that system ever let a long write force a concurrent read to wait, or the other way around, a long read forcing a write to wait?"
+      ],
+      "answer": [
+        "Neither one, genuinely.",
+        "Reading never blocks writing there, and writing never blocks reading either."
+      ]
+    },
+    {
+      "lines": [
+        "That system's own documentation states it in exactly those words: reading never blocks writing, and writing never blocks reading."
+      ],
+      "takeaway": "Giving every reader its own fixed snapshot, instead of a lock on the row, is what buys that guarantee."
+    },
+    {
+      "lines": [
+        "That same system's own documentation also names exactly what this topic's own version metadata has been standing in for all along.",
+        "Its own version-identity column records the inserting transaction for a row version, and its own deletion-identity column records the deleting transaction, or stays at zero while a version is still undeleted."
+      ]
+    },
+    {
+      "lines": [
+        "So here's the shape of this whole topic: which single version of a row a reader gets to see depends on that version's own metadata together with the reader's own fixed snapshot, never simply on which version happens to be newest.",
+        "A writer never rewrites an existing version in place; it appends a brand-new one instead, and leaves the old one's own fields exactly as they were.",
+        "That one choice is the entire reason a real production system can promise what it promises: a long write never forces a read to wait, and a long read never forces a write to wait either."
+      ]
+    }
+  ]
+}

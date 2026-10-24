@@ -1,0 +1,23 @@
+import Resource from '../../../../../components/Resource.astro';
+
+<section class="prereq" data-section="chapter-so-far">
+
+### <span class="n">01</span> Where the last chapter left off
+
+<ul class="resources">
+  <Resource kind="reel" host={props.host} domain="rust-systems-engineering" title="Bloom filters and their successors">a storage engine must give an in-flight reader a consistent view of data that writers keep changing underneath it.</Resource>
+</ul>
+
+</section>
+
+<section class="prereq" data-section="mvcc-primary">
+
+### <span class="n">02</span> The real docs: MVCC, visibility, and system columns
+
+<ul class="resources">
+  <Resource kind="reading" title="13.1. Introduction (Concurrency Control)" href="https://www.postgresql.org/docs/current/mvcc-intro.html" by="The PostgreSQL Global Development Group">reading never blocks writing, and writing never blocks reading, under multiversion concurrency control.</Resource>
+  <Resource kind="reading" title="5.6. System Columns" href="https://www.postgresql.org/docs/current/ddl-system-columns.html" by="The PostgreSQL Global Development Group">every table's hidden xmin and xmax columns, and what each row version actually is.</Resource>
+  <Resource kind="reading" title="13.2. Transaction Isolation" href="https://www.postgresql.org/docs/current/transaction-iso.html" by="The PostgreSQL Global Development Group">a repeatable read transaction's own snapshot, fixed from its first real statement onward.</Resource>
+</ul>
+
+</section>

@@ -1,0 +1,67 @@
+{
+  "topic": "rust.snapshot-visibility-over-version",
+  "syllabus": [
+    {
+      "clause": "PostgreSQL's MVCC docs as the reference. Visibility is a function of version metadata plus the transaction's snapshot, not \"the newest row\" (xmin/xmax). Writers create new versions instead of overwriting ones a concurrent reader may need, which stops readers blocking on writers but ties visibility to garbage collection. Version-storage designs: append, time-travel and delta storage, oldest-to-newest vs newest-to-oldest chains (Wu et al., VLDB 2017).",
+      "at": [
+        { "step": "Measured: the old version, not the chain's own newest row" },
+        { "step": "Measured: the superseded version's own fields were never touched; a brand-new version was appended instead" },
+        { "step": "PostgreSQL's own system columns name exactly what this prototype's own version metadata stands in for: what does its xmin column actually record?" }
+      ]
+    }
+  ],
+  "sources": [
+    {
+      "source": "mvcc-intro",
+      "items": [
+        {
+          "item": "in MVCC locks acquired for querying (reading) data do not conflict with locks acquired for writing data, and so reading never blocks writing and writing never blocks reading",
+          "at": [{ "step": "PostgreSQL's own words, directly: reading never blocks writing, and writing never blocks reading" }]
+        }
+      ]
+    },
+    {
+      "source": "system-columns",
+      "items": [
+        {
+          "item": "xmin is the identity (transaction ID) of the inserting transaction for this row version; a row version is an individual state of a row, and each update creates a new row version for the same logical row",
+          "at": [{ "step": "PostgreSQL's own system columns name exactly what this prototype's own version metadata stands in for: what does its xmin column actually record?" }]
+        },
+        {
+          "item": "xmax is the identity (transaction ID) of the deleting transaction, or zero for an undeleted row version; it can be nonzero in a visible row version when the deleting transaction hasn't committed yet or was rolled back",
+          "at": [{ "step": "PostgreSQL's own system columns name exactly what this prototype's own version metadata stands in for: what does its xmin column actually record?" }]
+        }
+      ]
+    },
+    {
+      "source": "transaction-iso",
+      "items": [
+        {
+          "item": "a query in a repeatable read transaction sees a snapshot as of the start of the first non-transaction-control statement in the transaction, not as of the start of the current statement within the transaction",
+          "at": [{ "step": "That same newer version's writer now commits. Does the original reader's own snapshot change what it sees?" }]
+        }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "self-review",
+    "date": "2026-10-24",
+    "items": [
+      { "item": "The visibility check runs against a real HashSet of committed transaction ids snapshotted at the moment the reader's own snapshot is taken, not a hand-picked answer, so the measured result genuinely depends on which transactions had actually committed by then, not on which version happens to sit last in the chain.", "at": [{ "step": "Measured: the old version, not the chain's own newest row" }] },
+      { "item": "The commit happens strictly after the reader's own snapshot is taken but before the reader checks visibility a second time, so the stability claim genuinely exercises the snapshot being held across a real, subsequent state change, not merely checked once.", "at": [{ "step": "Measured: the reader's snapshot kept seeing exactly what it saw before, even after that writer committed" }] },
+      { "item": "The superseded version's own struct is compared field by field (xmin and value) before and after the later update, rather than merely checking the chain's own length, so the no-overwrite claim is genuinely about the old version's own bytes, not just about how many versions exist.", "at": [{ "step": "Measured: the superseded version's own fields were never touched; a brand-new version was appended instead" }] },
+      { "item": "The long-lived-reader claim measures across two further, unrelated commits (not just one), so the stability it measures is genuinely durable across repeated state changes, not a one-off coincidence of timing.", "at": [{ "step": "PostgreSQL's own documentation states this guarantee directly. Does MVCC let a long write ever force a concurrent read to wait, or the reverse?" }] },
+      { "item": "This topic continues directly from Chapter 22's own closing handoff (a storage engine must give an in-flight reader a consistent view of data that writers keep changing underneath it), applying the identical shape of problem (multiple structures a reader must resolve) to row versions instead of SSTables.", "at": [{ "step": "A row's version chain has an old, committed version and a newer version just written by a transaction that hasn't committed yet. Which one does an existing reader's own snapshot see?" }] },
+      { "item": "The syllabus's own further material (version-storage designs: append, time-travel and delta storage, oldest-to-newest vs newest-to-oldest chains, and Wu et al.'s VLDB 2017 comparison) is named in this clause but not separately measured; this topic's own prototype uses an oldest-to-newest, append-only chain as its concrete storage design, the simplest of the ones the clause names.", "at": [{ "step": "Recap: what a version chain guarantees, and what a snapshot fixes" }] },
+      { "item": "All of this topic's own measured claims run entirely on in-memory Rust collections (a Vec of versions, a HashSet of committed transaction ids) with no file, network, or root access needed, continuing this chapter's own established pattern.", "at": [{ "step": "Recap: what a version chain guarantees, and what a snapshot fixes" }] },
+      { "item": "This topic deliberately opens Chapter 23 as its first of three topics, building the version chain and visibility check that topics 60 (isolation levels) and 61 (version garbage collection) both build on directly.", "at": [{ "step": "Recap: what a version chain guarantees, and what a snapshot fixes" }] },
+      { "item": "The snapshot's own committed set is a direct, deliberately simplified stand-in for PostgreSQL's real snapshot mechanism (which also tracks in-progress and aborted transaction ids separately); an aborted transaction's own id is modeled correctly here too, since it is simply never added to the committed set, so a version it \"deleted\" still correctly reads as visible.", "at": [{ "step": "A transaction updates a row it can see. Does that update ever overwrite the existing version's own stored fields in place?" }] },
+      { "item": "The measured values in this prototype (100, 200, 300, 400) are this specific scenario's own chosen numbers, used only to make each version's own identity easy to tell apart in the printed output; they carry no significance beyond that.", "at": [{ "step": "Measured: the old version, not the chain's own newest row" }] }
+    ]
+  },
+  "gapReview": {
+    "date": "2026-10-24",
+    "by": "self-review",
+    "open": []
+  }
+}
