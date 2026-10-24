@@ -1,0 +1,4 @@
+- **Middleware ordering as semantics**: the order layers are composed in changes what a stack actually guarantees, not just its performance. *Where you meet it:* the same two layers, reordered, admitting a hundred-plus callers immediately in one order and exactly ten in the other.
+- **`ServiceBuilder`'s own order**: the first layer added is called with the request first — the outermost wrapper from the caller's own point of view.
+- **A deadline bounds whatever it wraps**: placed around a slow step, it catches that step; moved to wrap only what's behind it, it never sees that step at all.
+- **Retry budget / idempotency key**: retrying a non-idempotent operation without one genuinely re-executes its own side effect, once per attempt.
