@@ -1,0 +1,120 @@
+{
+  "topic": "de.vacuum-bloat-transaction-id",
+  "syllabus": [],
+  "sources": [],
+  "expert": {
+    "by": "self-review",
+    "date": "2026-10-24",
+    "items": [
+      {
+        "item": "A dead tuple is the old heap tuple version MVCC's own append-only design leaves behind after an UPDATE or DELETE; VACUUM's standard form marks that space reusable but does not return it to the operating system except at the very end of the file.",
+        "at": [
+          {
+            "step": "Reveal: a dead tuple, counted directly"
+          }
+        ]
+      },
+      {
+        "item": "HOT (heap-only tuple) updates skip creating new index entries and can opportunistically prune now-invisible intermediate row versions outside of VACUUM entirely, but only when the update touches no indexed column and the page has enough free space left — exactly the condition this chapter's previous topic's own growth experiment had to defeat by indexing the updated column.",
+        "at": [
+          {
+            "step": "Reveal: HOT updates, the free optimization"
+          }
+        ]
+      },
+      {
+        "item": "The visibility map records which pages are known all-visible so vacuum can skip them on the next run and so an index-only scan can skip fetching the heap tuple entirely; it exists specifically because Postgres's own indexes carry no visibility information of their own.",
+        "at": [
+          {
+            "step": "Reveal: HOT updates, the free optimization"
+          }
+        ]
+      },
+      {
+        "item": "Autovacuum decides whether to vacuum a table from a threshold formula — the minimum of a configured maximum and a base threshold plus a scale factor times the table's row count — not from a fixed schedule, and ordinary autovacuum workers yield to a conflicting lock, but one running specifically to prevent wraparound does not.",
+        "at": [
+          {
+            "step": "Reveal: autovacuum's own knobs"
+          }
+        ]
+      },
+      {
+        "item": "A long-running open transaction pins Postgres's xmin horizon: as long as it holds a snapshot, VACUUM cannot treat any row that snapshot could still see as dead-and-reclaimable, so every table the transaction could read grows for as long as it stays open — found in practice via pg_stat_activity's own backend_xmin age.",
+        "at": [
+          {
+            "step": "Reveal: the xmin horizon, held open"
+          }
+        ]
+      },
+      {
+        "item": "A stale prepared transaction (two-phase commit left uncommitted) pins the horizon the identical way an ordinary long transaction does, found via pg_prepared_xacts, and must be explicitly committed or rolled back — Postgres has no timeout that cleans one up on its own.",
+        "at": [
+          {
+            "step": "Reveal: the xmin horizon, held open"
+          }
+        ]
+      },
+      {
+        "item": "An abandoned replication slot pins the horizon even once its standby is disconnected or gone entirely: a slot holds back not just the WAL segments a standby hasn't received yet, but also the specific rows vacuum would otherwise be free to remove — found via pg_replication_slots' own xmin and catalog_xmin.",
+        "at": [
+          {
+            "step": "Reveal: the xmin horizon, held open"
+          }
+        ]
+      },
+      {
+        "item": "A real transaction held open against this sandbox's own cluster while a concurrent workload updates the same table makes the pin's cost visible directly: table size (and dead-tuple count) grows for as long as the transaction stays open, then drops once it is released and autovacuum actually runs.",
+        "at": [
+          {
+            "step": "Reveal: bloat, charted live"
+          }
+        ]
+      },
+      {
+        "item": "Postgres compares 32-bit transaction IDs with circular (modulo-2^32) arithmetic, not simple greater-than; VACUUM's freezing marks a row's insert XID as permanently 'in the past' via the special FrozenTransactionId value, so a row can survive the counter wrapping around without ever appearing to be from the future.",
+        "at": [
+          {
+            "step": "Reveal: freezing and the wraparound shutdown"
+          }
+        ]
+      },
+      {
+        "item": "Postgres gives explicit, escalating warning before the failure: a warning once a database's oldest XIDs are forty million transactions from wraparound, then an outright refusal to assign any new write-transaction XID once fewer than three million remain — read-only transactions can still start, but every write fails.",
+        "at": [
+          {
+            "step": "Reveal: freezing and the wraparound shutdown"
+          }
+        ]
+      },
+      {
+        "item": "Sentry's own 2015 production outage is a real instance of exactly this failure: a write-heavy, large-table workload hit the wraparound protection and went fully write-blocked for most of a working day, caused by autovacuum_freeze_max_age tuned too high and too much cost delay — and 'just disable autovacuum,' which Sentry's own postmortem calls out as common bad advice, is the precise opposite of the fix.",
+        "at": [
+          {
+            "step": "Reveal: freezing and the wraparound shutdown"
+          }
+        ]
+      },
+      {
+        "item": "Postgres's own documented recovery procedure, once wraparound protection has tripped, is not 'restart in single-user mode': resolve old prepared transactions, end long-running open transactions, drop stale replication slots, then run VACUUM on the target database — and never VACUUM FULL in that state, since it itself requires a fresh XID.",
+        "at": [
+          {
+            "step": "Prove it"
+          }
+        ]
+      },
+      {
+        "item": "Multixact IDs — the separate 32-bit counter and wraparound mechanism for row-level locks held by more than one transaction at once — share the same freeze/wraparound shape as ordinary XIDs but are a distinct mechanism with their own thresholds.",
+        "at": [
+          {
+            "out": "a distinct counter and wraparound path from ordinary XID wraparound; teaching both in one 15-minute topic would blur the mechanism this topic is actually about"
+          }
+        ]
+      }
+    ]
+  },
+  "gapReview": {
+    "date": "",
+    "by": "",
+    "open": []
+  }
+}
