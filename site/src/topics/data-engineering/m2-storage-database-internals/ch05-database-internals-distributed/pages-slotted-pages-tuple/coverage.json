@@ -1,0 +1,56 @@
+{
+  "topic": "de.pages-slotted-pages-tuple",
+  "syllabus": [],
+  "sources": [],
+  "expert": {
+    "by": "Claude (single session)",
+    "date": "2026-10-24",
+    "items": [
+      {
+        "item": "A page has five parts (header, line-pointer array, free space, items, special space), and item identifiers grow from one end while item data grows from the other, meeting in the middle.",
+        "at": [{ "out": "planned: a reveal step drawing a real page's five parts" }]
+      },
+      {
+        "item": "A line pointer (ItemIdData) is an (offset, length) pair, 4 bytes, that never moves once allocated until freed, even when the item it points to is physically relocated to compact free space.",
+        "at": [{ "out": "planned: the slot-indirection reveal" }]
+      },
+      {
+        "item": "A CTID (the row's visible identity) is a page number plus a line-pointer index, not a byte offset — this is exactly why a row's logical identity survives being moved within the page.",
+        "at": [{ "out": "planned: the predict step and its reveal" }]
+      },
+      {
+        "item": "The heap tuple header has a fixed size (23 bytes on most machines) followed by an optional null bitmap (one bit per column, present only if any column is null) before the real column data begins.",
+        "at": [{ "out": "planned: a reveal step on a real inserted row with a null" }]
+      },
+      {
+        "item": "A fixed page size (8 kB by default) is the direct cause of TOAST's existence: PostgreSQL tuples cannot span pages, so a value too large to fit is compressed and/or chunked into a separate TOAST table instead.",
+        "at": [{ "out": "planned: the TOAST reveal" }]
+      },
+      {
+        "item": "TOAST chunks a large value into roughly 2 kB pieces stored as separate rows in a side table (chunk_id, chunk_seq, chunk_data), triggered once a row crosses the 2 kB threshold.",
+        "at": [{ "out": "planned: the TOAST reveal" }]
+      },
+      {
+        "item": "InnoDB solves the identical fixed-page problem with its own overflow pages rather than a side table, and different row formats (COMPACT, DYNAMIC, COMPRESSED) store different amounts of data out of line.",
+        "at": [{ "out": "planned: the InnoDB contrast step" }]
+      },
+      {
+        "item": "pageinspect's get_raw_page and heap_page_items are the real, direct way to read a live page's own bytes rather than trust a diagram — this topic should use them on a real page, not simulate one.",
+        "at": [{ "out": "planned: every reveal step, built from a real page read" }]
+      },
+      {
+        "item": "A page checksum and the pd_lsn field exist so a torn or stale page can be detected — this connects directly to the next topic's own write-ahead-logging material and shouldn't be taught in depth here.",
+        "at": [{ "out": "named only, not taught in depth — full treatment is topic 3 (write-ahead-logging-fsync)" }]
+      },
+      {
+        "item": "This topic is the entry point to the whole chapter; every later topic (buffer pool, WAL, B-tree, MVCC, LSM) assumes the reader already has the page and slot vocabulary this topic introduces.",
+        "at": [{ "out": "structural, covered by the chapter's own CHAPTER.md rather than a single step" }]
+      }
+    ]
+  },
+  "gapReview": {
+    "date": "",
+    "by": "",
+    "open": ["content plan not yet written"]
+  }
+}
