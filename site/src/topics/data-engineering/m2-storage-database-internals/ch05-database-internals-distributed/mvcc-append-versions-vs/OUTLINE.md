@@ -102,9 +102,11 @@
 
 ## Post-notes headings (layers 5–8)
 
-- **Internals:** `t_ctid` chains across repeated updates (the "current TID of this or newer row version" field), `pg_current_snapshot`/`pg_xact_status` as the two real functions behind visibility, InnoDB's rollback segments and purge threads, Oracle's CR-clone reconstruction and SCN-based consistency.
-- **Lab:** none of its own (feeds the §5.1 chapter lab, per `CHAPTER.md`); post-notes points at `examples.py` as the reproducible local setup.
-- **Production:** ORA-01555 in long-running batch/report jobs; the operational fix (`undo_retention`, larger rollback segments) and why it's a delay, not a cure; Postgres's own very different production failure mode (bloat, previewed but not taught here — the next topic's subject).
+Following this chapter's own established heading set (`Outcomes`, `Lab`, `Production failures this topic warns about`, `Frontier`, `Where this goes next`), not an invented "Internals" heading:
+
+- **Outcomes:** states the three learning outcomes, and carries the internals depth the reel's steps don't have room for — `t_ctid` chains across repeated updates (the "current TID of this or newer row version" field), `pg_current_snapshot`/`pg_xact_status` as the two real functions behind visibility, InnoDB's rollback segments and purge threads, Oracle's CR-clone reconstruction and SCN-based consistency.
+- **Lab:** none of its own (feeds the §5.1 chapter lab, per `CHAPTER.md`); points at `examples.py` as the reproducible local setup.
+- **Production failures this topic warns about:** ORA-01555 in long-running batch/report jobs; the operational fix (`undo_retention`, larger rollback segments) and why it's a delay, not a cure; Postgres's own very different production failure mode (bloat, previewed but not taught here — the next topic's subject).
 - **Frontier:** brief, sourced-only pointer — distributed SQL systems (covered later in this chapter's own syllabus, §5.3) combine MVCC with timestamps across machines, not just within one.
 - **Where this goes next:** verbatim handoff to `de.vacuum-bloat-transaction-id`.
 
