@@ -85,7 +85,9 @@ export function checkTopicFiles(topics: TopicMeta[]) {
     const narrPath = resolve(dir, 'narration.json');
     if (!existsSync(narrPath)) errors.push(`${t.id}: no narration.json`);
     else {
-      const narr: Step[] = JSON.parse(readFileSync(narrPath, 'utf8')).steps;
+      const narrSpec = JSON.parse(readFileSync(narrPath, 'utf8'));
+      if (narrSpec.topic !== t.id) errors.push(`${t.id}: narration.json's "topic" field is ${JSON.stringify(narrSpec.topic)}, not ${JSON.stringify(t.id)} (narration/common.py's clips() needs it to match, or narrate.sh crashes with KeyError).`);
+      const narr: Step[] = narrSpec.steps;
       if (narr.length !== steps.length) errors.push(`${t.id}: narration.json has ${narr.length} steps, reel.tsx has ${steps.length}. One narration entry per step, in order.`);
       steps.forEach((s, i) => {
         const n = narr[i];
