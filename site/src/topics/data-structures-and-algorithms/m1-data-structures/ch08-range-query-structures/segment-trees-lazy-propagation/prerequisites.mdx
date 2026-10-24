@@ -1,0 +1,33 @@
+import Resource from '../../../../../components/Resource.astro';
+
+<section class="prereq" data-section="before">
+
+### <span class="n">01</span> Already covered
+
+<ul class="resources">
+  <Resource kind="reel" host={props.host} domain="data-structures-and-algorithms" title="Fenwick trees">The O(log n) range-query bound this topic generalizes past, and the specific gap — range minimum, range-wide updates — this topic exists to close.</Resource>
+</ul>
+
+</section>
+
+<section class="prereq" data-section="standard">
+
+### <span class="n">02</span> The real source, from research and production
+
+<ul class="resources">
+  <Resource kind="reading" title="Segment Tree" href="https://cp-algorithms.com/data_structures/segment_tree.html" by="cp-algorithms, Algorithms for Competitive Programming">The recursive segment tree, generalization to other associative operators, and lazy propagation for range updates, all on one page.</Resource>
+  <Resource kind="reading" title="Iterative Segment Tree (Range Minimum Query)" href="https://www.geeksforgeeks.org/dsa/iterative-segment-tree-range-minimum-query/" by="GeeksforGeeks">The bottom-up, non-recursive array layout.</Resource>
+  <Resource kind="reading" title="Range Update Range Query" href="https://usaco.guide/plat/RURQ" by="USACO Guide, Platinum">The rule for composing a pending range-add tag with a pending range-assign tag on the same node.</Resource>
+</ul>
+
+</section>
+
+<section class="prereq" data-section="later">
+
+### <span class="n">03</span> Where this goes next
+
+<ul class="resources">
+  <Resource kind="reel" host={props.host} domain="data-structures-and-algorithms" title="Space-filling curves and cell indexes">A different question about dimension: how to order points scattered across two or three dimensions so nearby points end up nearby in one linear ordering.</Resource>
+</ul>
+
+</section>

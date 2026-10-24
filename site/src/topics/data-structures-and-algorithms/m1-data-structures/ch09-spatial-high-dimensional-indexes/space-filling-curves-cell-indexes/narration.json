@@ -1,0 +1,67 @@
+{
+  "topic": "dsa.space-filling-curves-cell-indexes",
+  "steps": [
+    {
+      "lines": [
+        "Every structure so far has ordered one array, by position or by key. Here's a different kind of question: points scattered across two dimensions, not one.",
+        "Two points that are neighbours on a map — once you squeeze them into a single line, how far apart do they actually land?"
+      ]
+    },
+    {
+      "lines": [
+        "Start with the obvious ordering: number the grid row by row, left to right, top to bottom.",
+        "It's a perfectly valid ordering — every cell gets its own distinct number — but it has no special relationship to the grid's own two dimensions. Step one row down, and you can jump a huge distance in that ordering."
+      ]
+    },
+    {
+      "lines": [
+        "Before the reveal, think about what happens if, instead of numbering by rows, you weave a point's two coordinates together, bit by bit.",
+        "Does that actually fix row-major's problem everywhere, or does it just move the problem somewhere else?"
+      ],
+      "answer": [
+        "Somewhere else, mostly. Weaving the bits together ties the ordering to both coordinates at once, and that fixes most of the problem.",
+        "But it doesn't fix all of it — there are still specific places where this new ordering breaks down, and finding exactly where is the point of what comes next."
+      ]
+    },
+    {
+      "lines": [
+        "Here's the construction: take one bit from each coordinate in turn and interleave them into a single number.",
+        "Connect those numbers in order, and the path they trace visits every single cell on the grid exactly once — a real one-to-one ordering, not an approximation of one."
+      ]
+    },
+    {
+      "lines": [
+        "Here's the catch that's easy to miss: near the grid's own corner, this new ordering is already about as tight as plain row numbering.",
+        "But step across a boundary — out of one quadrant and into the next — and the ordering can jump by far more than a single step, because interleaving has nothing special to say about that crossing."
+      ]
+    },
+    {
+      "lines": [
+        "Before this reveal, picture a curve built by recursion instead of by simply weaving bits together.",
+        "Can a curve built that way specifically dodge the exact crossing that just broke the other one?"
+      ],
+      "answer": [
+        "It can, and the reason is specific: the recursive construction chooses each quadrant's own order and orientation so the path never has to leap across a boundary it's about to come straight back to.",
+        "Same two points that jumped apart a moment ago land right next to each other on this curve instead."
+      ]
+    },
+    {
+      "lines": [
+        "Watch what's actually different here, not just that it's built differently.",
+        "Every quadrant is visited in an order and a flip chosen specifically so the path folds back on itself at a boundary rather than leaping across it. That's more work to construct, and it's exactly what buys the tighter closeness."
+      ]
+    },
+    {
+      "lines": [
+        "Three real systems each pick one specific curve and one specific cell shape, on top of this exact idea.",
+        "One weaves latitude and longitude together into a short text string. One wraps a curve around six faces of a cube instead of a flat plane. One swaps squares for hexagons outright, because every neighbour of a hexagon sits the identical distance from its centre."
+      ]
+    },
+    {
+      "lines": [
+        "Here's what actually got measured, not assumed: three real pairs of grid neighbours, their real distance apart in three different orderings.",
+        "And here's the honest part — the boundary-crossing pairs show a huge gap in favor of the recursive curve, but right at the grid's own corner, the simple bit-weaving ordering already matches plain row numbering, and the recursive curve isn't even the closest of the three there."
+      ]
+    }
+  ]
+}

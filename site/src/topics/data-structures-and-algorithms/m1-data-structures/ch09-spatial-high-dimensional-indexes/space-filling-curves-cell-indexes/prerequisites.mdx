@@ -1,0 +1,25 @@
+import Resource from '../../../../../components/Resource.astro';
+
+<section class="prereq" data-section="standard">
+
+### <span class="n">01</span> The real source, from research and production
+
+<ul class="resources">
+  <Resource kind="reading" title="Z-order curve" href="https://en.wikipedia.org/wiki/Z-order_curve" by="Wikipedia">The bit-interleaving construction, its locality property, and its use in commercial databases.</Resource>
+  <Resource kind="reading" title="Hilbert curve" href="https://en.wikipedia.org/wiki/Hilbert_curve" by="Wikipedia">The curve's own locality property, and its stated advantage over Z-order.</Resource>
+  <Resource kind="reading" title="Geohash" href="https://en.wikipedia.org/wiki/Geohash" by="Wikipedia">Geohash's own relationship to Z-order, and its base-32 text encoding.</Resource>
+  <Resource kind="reading" title="S2 Cells" href="https://s2geometry.io/devguide/s2cell_hierarchy.html" by="S2Geometry official developer guide">The cube projection and the per-face Hilbert curve construction.</Resource>
+  <Resource kind="reading" title="Aggregation" href="https://h3geo.org/docs/highlights/aggregation/" by="H3 official docs">Why hexagonal cells: every neighbour sits at the identical distance from its centre.</Resource>
+</ul>
+
+</section>
+
+<section class="prereq" data-section="later">
+
+### <span class="n">02</span> Where this goes next
+
+<ul class="resources">
+  <Resource kind="reel" host={props.host} domain="data-structures-and-algorithms" title="Adjacency lists, matrices and edge lists">A structural question instead of an ordering one: how a graph's own edges are laid out in memory.</Resource>
+</ul>
+
+</section>
