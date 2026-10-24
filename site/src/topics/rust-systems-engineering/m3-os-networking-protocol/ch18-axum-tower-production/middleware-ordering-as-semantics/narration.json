@@ -1,0 +1,90 @@
+{
+  "steps": [
+    {
+      "lines": [
+        "This abstraction's own documentation gives a specific example: one wrapper first, then a cap on how many run at once, admits a lot more work at once than the reverse order.",
+        { "beat": 0.3 },
+        "Does real code actually behave that way, or is that just a simplification written into the documentation?"
+      ],
+      "answer": [
+        "It matches, almost exactly.",
+        "The documentation's own numbers hold up when you actually run it."
+      ]
+    },
+    {
+      "lines": [
+        "Run it for real: with the first wrapper in front, well over a hundred requests were accepted right away;",
+        "with the order reversed, only exactly ten were — matching the documentation's own claim closely."
+      ]
+    },
+    {
+      "lines": [
+        "Build a real pipeline with a deliberately slow authorization step, and a real deadline wrapped around the whole thing, authorization included.",
+        { "beat": 0.3 },
+        "Does a slow authorization step get caught by that deadline, the same way a slow piece of work would?"
+      ],
+      "answer": [
+        "Yes, it does.",
+        "The deadline bounds whatever sits inside it, authorization included."
+      ]
+    },
+    {
+      "lines": [
+        "Run it for real: the real deadline fired well before the slow authorization step would have finished on its own,",
+        "because it wrapped that step too, not only the work behind it."
+      ],
+      "takeaway": "A deadline bounds whatever it actually wraps; placed around a slow step too, it genuinely catches that."
+    },
+    {
+      "lines": [
+        "Now put that same deadline only around the work behind authorization, with the slow authorization step run ahead of it, outside its reach.",
+        { "beat": 0.3 },
+        "Does the slow authorization step still get caught, since the deadline is still somewhere in the pipeline?"
+      ],
+      "answer": [
+        "No, it runs unbounded.",
+        "The deadline never sees the authorization step at all; only what it actually wraps."
+      ]
+    },
+    {
+      "lines": [
+        "Run it for real: with the deadline moved inside, the slow authorization step ran all the way to completion, entirely unbounded,",
+        "taking far longer than the deadline's own limit — because the deadline never saw it at all."
+      ],
+      "takeaway": "The same deadline bounds a different thing depending on where it sits; move it, and the protection moves with it."
+    },
+    {
+      "lines": [
+        "Wrap a piece of work that isn't safe to run twice in a real retry wrapper, with nothing guarding it.",
+        "It fails twice, then succeeds on the third attempt.",
+        { "beat": 0.3 },
+        "How many times does its own side effect actually run?"
+      ],
+      "answer": [
+        "Every single attempt.",
+        "Nothing stopped the side effect from running again, each time it was retried."
+      ]
+    },
+    {
+      "lines": [
+        "Run it for real: the work's own side effect ran three separate times, once per attempt,",
+        "including the two attempts that failed, since nothing was guarding it from running again."
+      ],
+      "takeaway": "Retrying work that isn't safe to run twice means its side effect runs again, every time, unless something stops it."
+    },
+    {
+      "lines": [
+        "Add one real check to that same piece of work, one that remembers it already ran, with the same two failures and the same retries.",
+        { "beat": 0.3 },
+        "The side effect now runs exactly once. One check, and all those repeats stopped mattering."
+      ]
+    },
+    {
+      "lines": [
+        "So, pulling this topic together: a real wrapper placed first admits far more work at once than the reverse order, matching the documentation's own numbers.",
+        "A deadline bounds whatever it actually wraps, and moving it changes what it protects.",
+        "And a piece of work that isn't safe to run twice reruns its own side effect on every retry, unless a real check remembers it already ran."
+      ]
+    }
+  ]
+}

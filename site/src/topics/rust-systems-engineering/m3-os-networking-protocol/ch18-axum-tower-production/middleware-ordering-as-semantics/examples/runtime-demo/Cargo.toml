@@ -1,0 +1,20 @@
+[package]
+name = "runtime-demo"
+version = "0.1.0"
+edition = "2024"
+
+[[bin]]
+name = "service_builder_order_bounds_in_flight"
+path = "src/service_builder_order_bounds_in_flight.rs"
+
+[[bin]]
+name = "timeout_placement_bounds_different_things"
+path = "src/timeout_placement_bounds_different_things.rs"
+
+[[bin]]
+name = "retry_without_idempotency_reruns_the_effect"
+path = "src/retry_without_idempotency_reruns_the_effect.rs"
+
+[dependencies]
+tower = { version = "0.5", features = ["full"] }
+tokio = { version = "1", features = ["full"] }
