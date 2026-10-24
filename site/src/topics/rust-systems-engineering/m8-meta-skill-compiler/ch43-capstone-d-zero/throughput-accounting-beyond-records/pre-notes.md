@@ -1,0 +1,4 @@
+- **Allocation regime**: the real, measured pattern of how much memory a program actually allocates per unit of real work, which can differ enormously between two implementations that otherwise produce the identical real throughput number.
+- **Global allocator**: the real, single allocator a Rust program registers once, through which every real heap allocation in that program actually passes.
+- **Records per second**: a real, common throughput number counting how many real records a system processes in a real unit of time, which says nothing about how much memory each one actually cost.
+- **Bytes allocated per record**: a real, second throughput number counting how much real memory a system actually allocates for each record it processes, independent of how fast it processes them.

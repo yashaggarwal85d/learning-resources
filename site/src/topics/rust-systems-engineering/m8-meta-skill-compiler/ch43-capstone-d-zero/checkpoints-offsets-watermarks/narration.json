@@ -1,0 +1,69 @@
+{
+  "topic": "rust.checkpoints-offsets-watermarks",
+  "steps": [
+    {
+      "lines": [
+        "Here's a real pipeline that only ever writes down how far it's gotten once a batch is genuinely, durably finished, never a moment before that.",
+        { "beat": 0.3 },
+        "Now make it crash, right in the middle of a stream, exactly as its next batch starts going out the door. Does picking back up afterward redo anything it already finished, or lose anything it hadn't?"
+      ],
+      "answer": [
+        "Neither.",
+        "It picks back up exactly where it genuinely left off, nothing redone, nothing missing."
+      ]
+    },
+    {
+      "lines": [
+        "Run it for real: the record this pipeline wrote down lines up exactly with the last batch it genuinely finished. Picking back up afterward redoes nothing and loses nothing."
+      ]
+    },
+    {
+      "lines": [
+        "Now take the identical real crash, at the identical real moment, against a second pipeline that writes down how far it's gotten the instant a batch is handed off, before it's actually finished at all.",
+        { "beat": 0.3 },
+        "Does that second pipeline's own record still line up with what genuinely happened, or does it get ahead of itself?"
+      ],
+      "answer": [
+        "It gets ahead of itself.",
+        "It writes down a batch as done one whole step before that batch was ever actually finished."
+      ]
+    },
+    {
+      "lines": [
+        "Run it for real: that second pipeline's own record claims one more batch finished than genuinely was, because the crash landed exactly while that one was still going out the door."
+      ],
+      "takeaway": "Writing something down before it's genuinely finished records a promise the pipeline never actually kept."
+    },
+    {
+      "lines": [
+        "When that second pipeline picks back up, it starts right after whatever it wrote down, skipping straight past the one batch that record claims is already handled.",
+        { "beat": 0.3 },
+        "Does that skipped batch's own real data come back later, or is it simply gone?"
+      ],
+      "answer": [
+        "Simply gone.",
+        "Picking back up never looks at that batch again, so whatever it held is gone for good."
+      ]
+    },
+    {
+      "lines": [
+        "Run it for real: a whole real batch's worth of records, genuinely never finished, vanishes the moment picking back up resumes, because the record said it was already handled."
+      ],
+      "takeaway": "Writing down too much doesn't redo extra work; it quietly erases whatever was never genuinely finished."
+    },
+    {
+      "lines": [
+        "One real, well-known piece of documentation, about making sure a write genuinely reaches disk, describes exactly this distinction in its own words.",
+        "A write only counts as genuinely finished once it has actually reached where it's going. Writing something down before that moment is writing down a finish that hasn't happened yet."
+      ],
+      "takeaway": "What a pipeline writes down is only as honest as the work it's supposed to follow, never the work it's merely expecting."
+    },
+    {
+      "lines": [
+        "So here's what both of these real runs were really showing: writing something down only once it's genuinely finished lets picking back up continue exactly where things actually stood, nothing redone, nothing missing.",
+        "Writing it down a moment too early can look completely identical, right up until something crashes in exactly the wrong place, at which point it quietly erases whatever never actually finished.",
+        "Either way, it's the identical real lesson: a record is only ever as true as the real work standing behind it, never the work it merely expects is coming."
+      ]
+    }
+  ]
+}

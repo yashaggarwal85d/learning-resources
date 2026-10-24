@@ -1,0 +1,21 @@
+import Resource from '../../../../../components/Resource.astro';
+
+<section class="prereq" data-section="chapter-so-far">
+
+### <span class="n">01</span> What this milestone draws on
+
+<ul class="resources">
+  <Resource kind="reel" host={props.host} domain="rust-systems-engineering" title="Checkpoints, offsets, and watermarks">a checkpoint taken after the real commit returns restarts cleanly; one taken before it can look identical, until a crash lands in between the two.</Resource>
+</ul>
+
+</section>
+
+<section class="prereq" data-section="alloc-primary">
+
+### <span class="n">02</span> The real doc: a global allocator
+
+<ul class="resources">
+  <Resource kind="reading" title="std::alloc::GlobalAlloc" href="https://doc.rust-lang.org/std/alloc/trait.GlobalAlloc.html" by="doc.rust-lang.org">a memory allocator that can be registered as the standard library's default through the #[global_allocator] attribute.</Resource>
+</ul>
+
+</section>

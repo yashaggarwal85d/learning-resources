@@ -1,0 +1,72 @@
+{
+  "topic": "rust.throughput-accounting-beyond-records",
+  "syllabus": [
+    {
+      "clause": "allocation bytes/record",
+      "at": [
+        { "step": "The identical real workload, this time measured by a real, custom global allocator counting every real byte each implementation actually allocates. Does that real number look as close between the two as records per second did?" },
+        { "step": "Measured: the real, borrowing implementation allocates only a handful of real bytes per record, essentially none of each record own data, while the real, cloning implementation allocates right around each record own full real size, every single time" }
+      ]
+    },
+    {
+      "clause": "Records/s alone can hide a pathological allocation regime.",
+      "at": [
+        { "step": "The real, measured gap between eight real bytes per record and two hundred eight real bytes per record, for implementations whose own real throughput looked statistically indistinguishable. Is that a modest, incidental difference, or a real, structural one?" },
+        { "step": "Measured: the real, cloning implementation own bytes per record is more than twenty times the real, borrowing implementation own, for the identical real throughput and the identical real checksum result, a real, structural gap a single speed number hid completely" },
+        { "step": "The Rust standard library own documentation on a real global allocator states this directly: a real, registered allocator stands behind every real allocation a running program makes, invoked through functions the program never calls directly" }
+      ]
+    },
+    {
+      "clause": "MB/s, records/s, CPU cycles/record",
+      "at": [
+        { "step": "Two real transform implementations process the identical twenty thousand real records, computing the identical real checksum. One borrows each record directly; the other clones it first, needlessly, before doing the identical work. Does that real difference show up in how many real records per second each one processes?" },
+        { "step": "Measured: the real, borrowing implementation and the real, cloning implementation both process several million real records per second, landing within a real, modest band of each other, statistically indistinguishable throughput for the identical real workload" }
+      ]
+    },
+    {
+      "clause": "queue depth, batch size, sink latency and memory high-water mark",
+      "at": [{ "deep": "Internals" }]
+    }
+  ],
+  "sources": [
+    {
+      "source": "global-alloc-registration",
+      "items": [
+        {
+          "item": "A memory allocator that can be registered as the standard library's default through the #[global_allocator] attribute",
+          "at": [{ "step": "The Rust standard library own documentation on a real global allocator states this directly: a real, registered allocator stands behind every real allocation a running program makes, invoked through functions the program never calls directly" }]
+        }
+      ]
+    },
+    {
+      "source": "global-alloc-invocation",
+      "items": [
+        {
+          "item": "That global allocator can be invoked via the functions alloc, alloc_zeroed, dealloc, realloc)",
+          "at": [{ "step": "The Rust standard library own documentation on a real global allocator states this directly: a real, registered allocator stands behind every real allocation a running program makes, invoked through functions the program never calls directly" }]
+        }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "self-review",
+    "date": "2026-10-24",
+    "items": [
+      { "item": "transform_move and transform_clone are run over the identical twenty thousand real, two-hundred-byte records, warmed up once each before the real, measured run, so the reported numbers reflect steady-state allocator and cache behavior rather than first-touch page faults.", "at": [{ "step": "Two real transform implementations process the identical twenty thousand real records, computing the identical real checksum. One borrows each record directly; the other clones it first, needlessly, before doing the identical work. Does that real difference show up in how many real records per second each one processes?" }] },
+      { "item": "Both implementations compute the identical real checksum over the identical bytes, asserted equal directly in main's own real assert_eq!, so the comparison is between two genuinely equivalent pieces of work, not two different computations that merely happen to run at similar speeds.", "at": [{ "step": "Measured: the real, borrowing implementation and the real, cloning implementation both process several million real records per second, landing within a real, modest band of each other, statistically indistinguishable throughput for the identical real workload" }] },
+      { "item": "The real, custom CountingAllocator wraps std::alloc::System directly, incrementing a single AtomicUsize by each real Layout's own size on every real allocation, so the reported byte counts are this exact run's own real totals, not an estimate derived after the fact.", "at": [{ "step": "The identical real workload, this time measured by a real, custom global allocator counting every real byte each implementation actually allocates. Does that real number look as close between the two as records per second did?" }] },
+      { "item": "The real, borrowing implementation's own eight bytes per record comes entirely from amortizing the one output Vec<u64>'s own single real allocation across all twenty thousand records; it touches none of each record's own two hundred bytes directly.", "at": [{ "step": "Measured: the real, borrowing implementation allocates only a handful of real bytes per record, essentially none of each record own data, while the real, cloning implementation allocates right around each record own full real size, every single time" }] },
+      { "item": "The real, cloning implementation's own two hundred eight bytes per record is confirmed by examples.py to land within one and a half times the real, two-hundred-byte record size, matching exactly what a genuine Vec<u8>::clone of each record should cost, not a coincidental number.", "at": [{ "step": "The real, measured gap between eight real bytes per record and two hundred eight real bytes per record, for implementations whose own real throughput looked statistically indistinguishable. Is that a modest, incidental difference, or a real, structural one?" }] },
+      { "item": "The real throughput ratio between the two implementations is confirmed by examples.py to stay within a real, generous band (never worse than half of each other) across repeated real runs, while the allocation ratio is confirmed to exceed a real factor of ten every single time, making the contrast this topic measures a genuinely reliable one, not a lucky single run.", "at": [{ "step": "Measured: the real, cloning implementation own bytes per record is more than twenty times the real, borrowing implementation own, for the identical real throughput and the identical real checksum result, a real, structural gap a single speed number hid completely" }] },
+      { "item": "The quoted sentences are read from the identical real, canonical Rust standard library page for std::alloc::GlobalAlloc this topic's own CountingAllocator directly implements, describing the exact real registration mechanism (#[global_allocator]) this topic's own crate actually uses.", "at": [{ "step": "The Rust standard library own documentation on a real global allocator states this directly: a real, registered allocator stands behind every real allocation a running program makes, invoked through functions the program never calls directly" }] },
+      { "item": "The syllabus's own longer list of throughput metrics beyond records per second and allocation bytes per record is already measured, under its own name, by this chapter's earlier two topics: topic 97's own peak bytes in flight is a real memory high-water mark, and topic 98's own checkpoint-to-commit gap is a real instance of sink latency mattering for correctness.", "at": [{ "deep": "Internals" }] },
+      { "item": "A real production system typically responds to this exact kind of measured allocation regime by replacing the general-purpose global allocator with a real, specialized one for the workload (an arena, a slab, or a pool), rather than only continuing to measure the cost a general allocator pays on every record.", "at": [{ "deep": "In production" }] },
+      { "item": "A real, continuous production profiler samples a real, running system's own allocation regime over real wall-clock time, catching a real pattern that only appears under a specific real load, rather than this topic's own one-shot, in-process measurement of one fixed, real batch of records.", "at": [{ "deep": "The frontier" }] }
+    ]
+  },
+  "gapReview": {
+    "date": "2026-10-24",
+    "by": "self-review",
+    "open": []
+  }
+}
