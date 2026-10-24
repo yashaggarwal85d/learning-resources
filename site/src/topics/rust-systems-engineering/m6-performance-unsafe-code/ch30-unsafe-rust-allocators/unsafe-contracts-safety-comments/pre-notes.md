@@ -1,0 +1,4 @@
+- **Soundness**: the real property that no *safe* caller can ever trigger undefined behavior through a given API. *Where you meet it:* a function can be unsafe and still sound, if every path a safe caller can reach genuinely respects its contract.
+- **Safety contract**: the real, documented set of preconditions (a `# Safety` doc comment on an unsafe function) that must genuinely hold for that unsafe code to behave as intended.
+- **`// SAFETY:` comment**: a real comment at an unsafe block's own call site stating why the contract genuinely holds there, specifically, not in general. *Where you meet it:* Clippy's own `undocumented_unsafe_blocks` lint, which flags an unsafe block with no such comment.
+- **`unsafe_op_in_unsafe_fn`**: a real Rust 2024 default warning requiring an explicit `unsafe { }` block inside an unsafe function's own body, so that which operations actually need the contract stays visible even when the whole function is already unsafe.

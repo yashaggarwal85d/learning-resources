@@ -1,0 +1,4 @@
+- **Percentile (p50, p95, p99)**: a real statistic read off a sorted set of samples at a given rank; the median is the fiftieth. *Where you meet it:* a service's own "typical" and "worst" cases are two separate percentiles of the identical distribution, not two names for the same number.
+- **Warmup**: a real, discarded set of runs before measurement begins, giving the OS, CPU, and JIT time to adapt. *Where you meet it:* skip it and a cold cache or a compilation pause gets measured as if it were the real steady-state cost.
+- **Outlier classification**: a real, statistical rule (a modified Tukey's method, using the interquartile range) for deciding which samples are noise rather than signal, before trusting a comparison between two runs.
+- **Coordinated omission**: the real bias a naive load generator introduces by waiting for one slow request to finish before sending the next, which silently erases exactly the slow samples a tail statistic exists to catch.

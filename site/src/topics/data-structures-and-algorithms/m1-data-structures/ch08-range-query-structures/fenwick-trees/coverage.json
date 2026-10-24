@@ -1,0 +1,115 @@
+{
+  "topic": "dsa.fenwick-trees",
+  "syllabus": [
+    {
+      "clause": "lowest-set-bit indexing for prefix sums with point updates in O(log n); range-update/range-query with two trees; 2D Fenwick trees.",
+      "at": [
+        { "step": "A Fenwick tree stores, at index i, a partial sum whose own range is set by i's own lowest set bit — one array, no explicit tree, index arithmetic only." },
+        { "step": "The real jump sequence: minute 5 (0101) adds its own lowest set bit to reach 6 (0110), adds again to reach 8 (1000), and stops there once the index runs past the array — three slots touched, not fifteen." },
+        { "step": "Minute 11 (1011) subtracts its own lowest set bit to reach 10 (1010), subtracts again to reach 8 (1000), and stops — the same three-slot walk, run backward." },
+        { "step": "A range sum from minute 5 through minute 11 needs exactly two of these queries — the prefix through 11, minus the prefix through 4 — and the same two-tree trick extends a single Fenwick tree to a range-wide update." },
+        { "step": "A 2D Fenwick tree updates and queries by jumping in two dimensions at once — the identical lowest-set-bit arithmetic, nested, on a grid measured directly: a 4-by-4 grid's own full prefix sum came out to 73, checked against a brute-force sum of every cell." },
+        { "step": "Prove it" }
+      ]
+    }
+  ],
+  "sources": [
+    {
+      "source": "Fenwick Tree (cp-algorithms)",
+      "items": [
+        {
+          "item": "A Fenwick tree answers an associative range query and an element update, each in O(log n), using O(n) memory",
+          "at": [{ "step": "Every structure in Chapters 3 through 7 answered 'is this key here, and where' — one key, one answer. This chapter asks a different question about a changing array: what's true about positions i through j, right now, as individual positions keep getting updated?" }]
+        },
+        {
+          "item": "The Fenwick tree is also called a Binary Indexed Tree (BIT), first described by Peter M. Fenwick in 1994",
+          "at": [{ "deep": "Into the internals" }]
+        },
+        {
+          "item": "g(i) replaces trailing 1 bits with 0; the next index to touch is found by flipping the last unset bit",
+          "at": [{ "step": "A Fenwick tree stores, at index i, a partial sum whose own range is set by i's own lowest set bit — one array, no explicit tree, index arithmetic only." }]
+        },
+        {
+          "item": "A range sum over [l, r] is computed as two prefix sums, [0, r] and [0, l-1], subtracted",
+          "at": [{ "step": "A range sum from minute 5 through minute 11 needs exactly two of these queries — the prefix through 11, minus the prefix through 4 — and the same two-tree trick extends a single Fenwick tree to a range-wide update." }]
+        },
+        {
+          "item": "A range update by x over [l, r], with point queries, uses two point updates: add(l, x) and add(r+1, -x)",
+          "at": [{ "deep": "In the lab" }]
+        },
+        {
+          "item": "Range update and range query together use two BITs, B1 and B2, combined as sum(B1,i)*i - sum(B2,i)",
+          "at": [{ "step": "A range sum from minute 5 through minute 11 needs exactly two of these queries — the prefix through 11, minus the prefix through 4 — and the same two-tree trick extends a single Fenwick tree to a range-wide update." }]
+        },
+        {
+          "item": "A 2D Fenwick tree is built by nesting the same update/query loop along a second dimension",
+          "at": [{ "step": "A 2D Fenwick tree updates and queries by jumping in two dimensions at once — the identical lowest-set-bit arithmetic, nested, on a grid measured directly: a 4-by-4 grid's own full prefix sum came out to 73, checked against a brute-force sum of every cell." }]
+        }
+      ]
+    },
+    {
+      "source": "2D Range Queries / Range Update Range Query (USACO Guide, Platinum)",
+      "items": [
+        {
+          "item": "A 2D BIT nests the loops of a 1D BIT to get N-dimensional BITs, using inclusion-exclusion for subrectangle sums",
+          "at": [{ "step": "The same lowest-set-bit arithmetic extends along a second dimension. Does a 2D Fenwick tree need a genuinely new mechanism, or the same index jumps run twice?" }]
+        },
+        {
+          "item": "Binary Indexed Trees can support range increments and range sum queries",
+          "at": [{ "step": "A range sum from minute 5 through minute 11 needs exactly two of these queries — the prefix through 11, minus the prefix through 4 — and the same two-tree trick extends a single Fenwick tree to a range-wide update." }]
+        }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "self-review",
+    "date": "2026-10-24",
+    "items": [
+      {
+        "item": "A Fenwick tree's own O(log n) bound holds for any associative group operation with an inverse (sum, under addition); it does not extend directly to min/max, which have no inverse",
+        "at": [{ "deep": "In production" }]
+      },
+      {
+        "item": "The lowest-set-bit trick has two equivalent forms, a zero-based (i & (i+1), i | (i+1)) and a one-based (i - (i&-i), i + (i&-i)); this topic teaches the one-based form",
+        "at": [{ "deep": "Into the internals" }]
+      },
+      {
+        "item": "Building a Fenwick tree from an existing array one element at a time costs O(n log n); a linear O(n) construction exists but isn't this topic's own default build path",
+        "at": [{ "out": "named by cp-algorithms as a possible improvement; this topic's own examples.py builds the tree the direct O(n log n) way, since the chapter's array is small and the construction cost isn't the point being taught" }]
+      },
+      {
+        "item": "A Fenwick tree requires O(n) memory, the same order as the array it indexes",
+        "at": [{ "step": "Every structure in Chapters 3 through 7 answered 'is this key here, and where' — one key, one answer. This chapter asks a different question about a changing array: what's true about positions i through j, right now, as individual positions keep getting updated?" }]
+      },
+      {
+        "item": "The update and query jump sequences are exact inverses of each other (one adds, one subtracts, the same lowest set bit), which is why they can take a different number of jumps for different starting indices even though the arithmetic is identical",
+        "at": [{ "step": "A prefix-sum query through minute 11 jumps backward the same way, subtracting a lowest set bit each time instead of adding one. How many slots does it visit?" }]
+      },
+      {
+        "item": "A 2D Fenwick tree's real cost per operation is O(log^2 n), not O(log n): one nested loop per axis, each independently O(log n)",
+        "at": [{ "deep": "Into the internals" }]
+      },
+      {
+        "item": "A Fenwick tree is a standard building block behind a counter or histogram bucket that is updated and queried often, in contrast to a plain cached prefix-sum array that is cheap to query but expensive to keep current",
+        "at": [{ "deep": "In production" }]
+      },
+      {
+        "item": "A harder Fenwick-tree variant supporting arbitrary range-minimum queries exists (a second BIT with a different structure) but is explicitly out of this topic's own scope, left to segment trees",
+        "at": [{ "out": "named by cp-algorithms as a separate, harder construction; this chapter's own scope hands range-min to segment trees (topic 34) instead" }]
+      },
+      {
+        "item": "The structure now commonly called a 'Fenwick tree' was proposed by Boris Ryabko in 1989, five years before Peter Fenwick's own 1994 paper that gave it its common name",
+        "at": [{ "deep": "Into the internals" }]
+      },
+      {
+        "item": "Deriving a Fenwick tree from first principles (as a set of implicit, overlapping binary ranges forming a tree-shaped structure over the array) is the content taught here; this topic verifies the arithmetic by hand on real indices rather than asserting the bound from the paper alone",
+        "at": [{ "step": "A Fenwick tree stores, at index i, a partial sum whose own range is set by i's own lowest set bit — one array, no explicit tree, index arithmetic only." }]
+      }
+    ]
+  },
+  "gapReview": {
+    "date": "2026-10-24",
+    "by": "self-review",
+    "open": []
+  }
+}

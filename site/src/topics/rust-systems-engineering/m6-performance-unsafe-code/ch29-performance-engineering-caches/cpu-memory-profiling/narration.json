@@ -1,0 +1,68 @@
+{
+  "steps": [
+    {
+      "lines": [
+        "A flamegraph's own width shows how often a function was on the real call stack.",
+        { "beat": 0.3 },
+        "Does that real cost spread evenly across every function a program calls, or does it pile up in one place?"
+      ],
+      "answer": [
+        "No, genuinely.",
+        "It piles up in one specific function."
+      ]
+    },
+    {
+      "lines": [
+        "Run it for real: one specific function genuinely holds the real majority of the whole tree's total cost, far more than an even share across every function."
+      ],
+      "takeaway": "A cost spread evenly is the wrong default assumption; a program's own real cost piles up."
+    },
+    {
+      "lines": [
+        "That one real hot function sits several calls deep in the tree, under two real ancestors.",
+        { "beat": 0.3 },
+        "Does checking just the top of the real call stack find it?"
+      ],
+      "answer": [
+        "No, genuinely.",
+        "The whole real tree must be walked to find it."
+      ]
+    },
+    {
+      "lines": [
+        "Run it for real: the real hot function is genuinely not a top-level function, so attributing its real cost correctly means walking down through its real ancestors, not just reading the top frame."
+      ],
+      "takeaway": "A profiler's own attribution must walk the whole tree; a glance at the top frame cannot."
+    },
+    {
+      "lines": [
+        "A specialized allocator claims a real, measured speedup over a generic one, at the identical allocation count.",
+        { "beat": 0.3 },
+        "Is that real difference big enough to matter, or too small to bother measuring?"
+      ],
+      "answer": [
+        "It's genuinely big enough.",
+        "A real, measurable, majority-level cut in total cost."
+      ]
+    },
+    {
+      "lines": [
+        "Run it for real: the specialized allocator genuinely cut total allocation cost by more than half, at the identical allocation count."
+      ],
+      "takeaway": "Allocator choice is a real, measured decision, never a free abstraction to assume away."
+    },
+    {
+      "lines": [
+        "Two real, independent sources on this exact discipline agree, in their own words.",
+        "A frame's own width is how often it sat on the real stack; an allocator's own overhead is a real, measured, sometimes decisive share of the real cost."
+      ]
+    },
+    {
+      "lines": [
+        "So here's why a flamegraph earns its own shape: a call tree can be several real functions deep, and the one actually spending the real time is rarely sitting at the top where a casual glance would land.",
+        "That's also why profiling and benchmarking answer two genuinely different questions: a benchmark from the last chapter told you whether a change helped or hurt overall, while a profiler tells you exactly where, inside the real code, that cost is actually coming from.",
+        "And the allocator result matters for the identical reason the tail mattered last chapter: a cost that looks too small to bother with on average can still be the real, decisive share once you actually go measure it rather than assume it away."
+      ]
+    }
+  ]
+}

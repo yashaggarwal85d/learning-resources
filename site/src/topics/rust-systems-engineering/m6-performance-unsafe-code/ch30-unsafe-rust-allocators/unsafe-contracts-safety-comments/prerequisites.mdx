@@ -1,0 +1,22 @@
+import Resource from '../../../../../components/Resource.astro';
+
+<section class="prereq" data-section="chapter-so-far">
+
+### <span class="n">01</span> Where the last chapter left off
+
+<ul class="resources">
+  <Resource kind="reel" host={props.host} domain="rust-systems-engineering" title="Cache lines and false sharing">this chapter measured how to tell a real improvement from a real regression, where a real cost actually lives, and why two unrelated values sharing a cache line pay a real, measurable price for it; the next topic turns to a proof obligation unsafe code itself carries, one no benchmark or profiler can discharge on its own.</Resource>
+</ul>
+
+</section>
+
+<section class="prereq" data-section="unsafe-contracts-primary">
+
+### <span class="n">02</span> The real docs: the Reference's own rule, and the API Guidelines' own convention
+
+<ul class="resources">
+  <Resource kind="reading" title="Behavior considered undefined" href="https://doc.rust-lang.org/reference/behavior-considered-undefined.html" by="The Rust Reference">the real standard a function must meet to be called sound.</Resource>
+  <Resource kind="reading" title="Documentation" href="https://rust-lang.github.io/api-guidelines/documentation.html" by="Rust API Guidelines">the real convention for writing a safety contract down.</Resource>
+</ul>
+
+</section>

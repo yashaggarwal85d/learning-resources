@@ -1,0 +1,4 @@
+- **Flamegraph**: a real visualization of a program's own captured call stacks, where a frame's own width shows how often it was present, not the passage of time. *Where you meet it:* `cargo flamegraph` or `samply`, reading from a real sampled profile.
+- **Hot path**: the real function a profiler's own cost attribution shows is responsible for the real majority of a program's own total cost, as distinct from every function the program merely calls.
+- **On-CPU vs. off-CPU**: a real distinction between time a thread spends genuinely running (on-CPU) and time it spends genuinely blocked, waiting on I/O or a lock (off-CPU); a profiler that only samples on-CPU time misses the second kind entirely.
+- **Allocator**: the real library deciding where and how a program's own heap allocations are placed. *Where you meet it:* swapping the system allocator for `jemalloc` or `mimalloc`, and measuring whether that swap is a real, decisive cost or a rounding error.

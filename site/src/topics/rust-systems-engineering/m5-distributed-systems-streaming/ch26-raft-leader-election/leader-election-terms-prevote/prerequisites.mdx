@@ -1,0 +1,22 @@
+import Resource from '../../../../../components/Resource.astro';
+
+<section class="prereq" data-section="chapter-so-far">
+
+### <span class="n">01</span> Where the last chapter left off
+
+<ul class="resources">
+  <Resource kind="reel" host={props.host} domain="rust-systems-engineering" title="Failure injection and linearizability checking">how a cluster of nodes, with no leader assumed in advance, actually agrees on which one gets to make the acknowledgement promise at all, and proves it stays correct.</Resource>
+</ul>
+
+</section>
+
+<section class="prereq" data-section="raft-primary">
+
+### <span class="n">02</span> The real docs: the Raft paper and a real implementation's own PreVote
+
+<ul class="resources">
+  <Resource kind="reading" title="In Search of an Understandable Consensus Algorithm" href="https://raft.github.io/raft.pdf" by="Ongaro & Ousterhout">the real rules for terms, randomized timeouts, and the up-to-date-log voting rule this topic's own code measures directly.</Resource>
+  <Resource kind="reading" title="raft (doc.go)" href="https://github.com/etcd-io/raft" by="etcd-io">a real, widely used implementation's own words on why PreVote exists.</Resource>
+</ul>
+
+</section>
