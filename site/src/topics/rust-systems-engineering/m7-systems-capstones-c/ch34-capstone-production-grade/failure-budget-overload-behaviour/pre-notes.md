@@ -1,0 +1,4 @@
+- **Load shedding**: a real, deliberate rejection of a request once a real resource is already at capacity.
+- **Saturation**: the real point at which a resource (here, a bounded queue) can admit no more real work until something already in it is finished.
+- **Failure budget**: a real, explicit, stated threshold for how much of a specific real failure a service is allowed to produce before that rate itself is treated as a real incident.
+- **Reproducible**: a real outcome that comes back the identical way when the identical real conditions are run again, which is what makes a rate meaningful enough to budget for at all.
