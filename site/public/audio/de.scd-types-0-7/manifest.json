@@ -1,0 +1,487 @@
+{
+ "topic": "de.scd-types-0-7",
+ "voice": "breeze-mellow-v2",
+ "asr": "large-v3-turbo",
+ "clips": {
+  "01": {
+   "hash": "2d327fece9aa8d03",
+   "takes": [
+    "3bcadaae35c1998791df",
+    "32bc1102d03544595b30"
+   ],
+   "duration": 19.116,
+   "lines": [
+    {
+     "text": "The last topic's whole point was: never overwrite, add a new row instead, so nothing true gets lost.",
+     "start": 0.15,
+     "end": 8.539
+    },
+    {
+     "text": "Take that rule and apply it to every single attribute in a wide customer record, and watch what happens to that table over a few years.",
+     "start": 8.959,
+     "end": 18.766
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -2.1,
+   "wpm": 138,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "02": {
+   "hash": "b29c4b841f1c956d",
+   "takes": [
+    "e465bde40f9d8e2e62b3",
+    "4becd5bfe5f74a8db4a7"
+   ],
+   "duration": 15.489,
+   "lines": [
+    {
+     "text": "Start with the attributes that don't even need a rule.",
+     "start": 0.15,
+     "end": 3.66
+    },
+    {
+     "text": "A customer's original credit score, or any identifier meant to be durable, isn't supposed to change in any sense that matters \u2014 so there's nothing here to version at all.",
+     "start": 4.08,
+     "end": 15.139
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 151,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "03": {
+   "hash": "7768acf02b9b7cda",
+   "takes": [
+    "37dc5e0bce728277627e",
+    "3b56d762441d9507e9dd"
+   ],
+   "duration": 18.917,
+   "lines": [
+    {
+     "text": "Now the opposite extreme: an attribute that changes, but whose old value nobody will ever want back.",
+     "start": 0.15,
+     "end": 7.599
+    },
+    {
+     "text": "Just write over it. Cheap, no growth in the table \u2014 the real cost is that the old value is gone, permanently, the moment it's overwritten.",
+     "start": 8.019,
+     "end": 18.567
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -1.9,
+   "wpm": 133,
+   "wer": 0.04,
+   "exact": false,
+   "tolerated": [
+    {
+     "line": "Just write over it. Cheap, no growth in the table \u2014 the real cost is that the old value is gone, permanently, the moment it's overwritten.",
+     "said": "write",
+     "heard": "right"
+    }
+   ]
+  },
+  "04": {
+   "hash": "d399b7b71c77bf0b",
+   "takes": [
+    "e5b35fb1c3e0840e571d",
+    "649aa546c8a89b14a424"
+   ],
+   "duration": 15.78,
+   "lines": [
+    {
+     "text": "Here's a question worth sitting with before the next reveal.",
+     "start": 0.15,
+     "end": 3.584
+    },
+    {
+     "text": "Overwriting throws the old value away completely. Adding a whole new row keeps it. Is there something in between \u2014 one row, but somehow both values?",
+     "start": 4.005,
+     "end": 15.43
+    }
+   ],
+   "lufs": -16.3,
+   "true_peak": -3.9,
+   "wpm": 133,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "04a": {
+   "hash": "d0c0dac207c90643",
+   "takes": [
+    "e7e599272da0f29ae0b7",
+    "272bd3a8f691b085bf39"
+   ],
+   "duration": 13.831,
+   "lines": [
+    {
+     "text": "There is. A second column, sitting right there on the same row, can hold the old value while the main column gets overwritten with the new one.",
+     "start": 0.15,
+     "end": 9.317
+    },
+    {
+     "text": "One row, two values \u2014 no second row required.",
+     "start": 9.737,
+     "end": 13.481
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -2.5,
+   "wpm": 152,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "05": {
+   "hash": "6109c2797e39c328",
+   "takes": [
+    "3c233ad46372c4faf4a3",
+    "e390a7f83f19af3d010e"
+   ],
+   "duration": 17.161,
+   "lines": [
+    {
+     "text": "That second column is exactly what this next approach adds.",
+     "start": 0.15,
+     "end": 4.34
+    },
+    {
+     "text": "The main value gets overwritten the same way as before, but a second column \u2014 sometimes called an alternate reality \u2014 keeps what used to be true, so either one can be reported on.",
+     "start": 4.76,
+     "end": 16.811
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -1.9,
+   "wpm": 147,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "06": {
+   "hash": "222770aa19901c79",
+   "takes": [
+    "7631fdb5681568c9c8f7",
+    "2c53853ac43719606f38"
+   ],
+   "duration": 18.259,
+   "lines": [
+    {
+     "text": "Line all four of these up against the exact same change and count what actually happens.",
+     "start": 0.15,
+     "end": 6.237
+    },
+    {
+     "text": "Two of them keep nothing at all. One of them keeps the old value by adding a whole row. One keeps it in a second column on the same row. That's the entire difference.",
+     "start": 6.657,
+     "end": 17.909
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 164,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "07": {
+   "hash": "e367e2e45235b34b",
+   "takes": [
+    "b83aa747c9a090379fa4",
+    "77d3c6058c5205e72d77"
+   ],
+   "duration": 17.229,
+   "lines": [
+    {
+     "text": "Now push on the row-per-change approach somewhere it hasn't been tested yet.",
+     "start": 0.15,
+     "end": 5.11
+    },
+    {
+     "text": "Picture a whole group of attributes, shared in pattern across a huge number of customers, that changes constantly. Does adding a new row still hold up at that scale?",
+     "start": 5.53,
+     "end": 16.879
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.8,
+   "wpm": 150,
+   "wer": 0.14285714285714285,
+   "exact": false,
+   "tolerated": [
+    {
+     "line": "Now push on the row-per-change approach somewhere it hasn't been tested yet.",
+     "said": "row per",
+     "heard": "rope or"
+    }
+   ]
+  },
+  "07a": {
+   "hash": "1eb1e5b5214d083f",
+   "takes": [
+    "bb0da7484b80245388f1",
+    "87e65d5a917c703e6140"
+   ],
+   "duration": 18.693,
+   "lines": [
+    {
+     "text": "It doesn't, not without a real cost. Every single change duplicates the entire wide row \u2014 every other attribute on it, not just the ones that actually changed.",
+     "start": 0.15,
+     "end": 12.01
+    },
+    {
+     "text": "The narrow change ends up paying for the whole wide row, every single time.",
+     "start": 12.43,
+     "end": 18.343
+    }
+   ],
+   "lufs": -16.3,
+   "true_peak": -1.9,
+   "wpm": 132,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "08": {
+   "hash": "bc6424792e741a6f",
+   "takes": [
+    "71ded1496c652dbc3049",
+    "2dd12443aa1b18ecea1a"
+   ],
+   "duration": 19.757,
+   "lines": [
+    {
+     "text": "So pull that fast-changing group out entirely, into a table of its own.",
+     "start": 0.15,
+     "end": 5.872
+    },
+    {
+     "text": "Only the combinations those attributes actually take on ever get a row there \u2014 out of nine combinations that are even possible, this set of customers only ever produces five.",
+     "start": 6.292,
+     "end": 19.407
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -1.9,
+   "wpm": 131,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "09": {
+   "hash": "c9048c1c3038f558",
+   "takes": [
+    "456e69a50ee22eff753c",
+    "cd7b431226b173d77505"
+   ],
+   "duration": 18.834,
+   "lines": [
+    {
+     "text": "Add one more piece, and the smaller table starts paying for itself even more.",
+     "start": 0.15,
+     "end": 5.11
+    },
+    {
+     "text": "Keep a pointer to a customer's current profile sitting right on their main record, overwritten the simple way whenever it changes \u2014 now the current values read without ever touching the smaller table at all.",
+     "start": 5.53,
+     "end": 18.484
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -2.1,
+   "wpm": 153,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "10": {
+   "hash": "87e322e50febadad",
+   "takes": [
+    "50334121fe1aa2a3e55c",
+    "14f2f1e5df5329ed67a1"
+   ],
+   "duration": 17.153,
+   "lines": [
+    {
+     "text": "Two more approaches claim to deliver exactly the same report. Worth questioning before they're shown.",
+     "start": 0.15,
+     "end": 5.898
+    },
+    {
+     "text": "Both say they can tell you the value that was true back then, and the value that's true right now, from one dimension. Do they really cost the same to get there?",
+     "start": 6.318,
+     "end": 16.803
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 164,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "10a": {
+   "hash": "de78718a6fb0f01b",
+   "takes": [
+    "77814fa561799cf0a5d1",
+    "5b1268bdd276797749bf"
+   ],
+   "duration": 17.188,
+   "lines": [
+    {
+     "text": "They don't. One of them keeps the current value honest by physically rewriting every prior row for that customer every time it changes.",
+     "start": 0.15,
+     "end": 9.543
+    },
+    {
+     "text": "The other reaches the current value through a second key instead, and never rewrites a single historical row.",
+     "start": 9.963,
+     "end": 16.838
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 143,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "11": {
+   "hash": "910f4c21355363a4",
+   "takes": [
+    "3983a97e103e7facb985",
+    "71bcea82e956028555da"
+   ],
+   "duration": 18.778,
+   "lines": [
+    {
+     "text": "Watch what each one actually does when a customer's current value changes.",
+     "start": 0.15,
+     "end": 4.085
+    },
+    {
+     "text": "The first rewrites every prior row that customer has accumulated \u2014 six of them, in this case. The second rewrites none of them, reaching the current value through that second key instead.",
+     "start": 4.505,
+     "end": 18.428
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.4,
+   "wpm": 137,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "12": {
+   "hash": "11f198db23dc6ef1",
+   "takes": [
+    "f868682773fbfaa07486",
+    "83552eceda23fabdb709"
+   ],
+   "duration": 24.211,
+   "lines": [
+    {
+     "text": "None of this is a formula to memorize \u2014 it's a question to ask about each attribute, with whoever owns that data.",
+     "start": 0.15,
+     "end": 7.871
+    },
+    {
+     "text": "A channel that never truly changes gets nothing at all. A typo gets overwritten without a second thought. A fast-changing pair that many customers share, where the current value also matters, earns its own small table.",
+     "start": 8.291,
+     "end": 23.861
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 144,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "13": {
+   "hash": "8254f474b2183e9c",
+   "takes": [
+    "339059289c9723a8d43e",
+    "4c74905950632f76f415"
+   ],
+   "duration": 20.393,
+   "lines": [
+    {
+     "text": "Pull the whole menu back together in order.",
+     "start": 0.15,
+     "end": 2.67
+    },
+    {
+     "text": "The first few decide whether an old value survives at all, and where. Pulling a fast, shared group into its own table comes next. The rest aren't new ideas \u2014 they're the first ones, combined, trading one cost for another.",
+     "start": 3.09,
+     "end": 20.043
+    }
+   ],
+   "lufs": -16.2,
+   "true_peak": -2.8,
+   "wpm": 138,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "14": {
+   "hash": "c90440dde68b74b0",
+   "takes": [
+    "d2c160647f3743a3c066",
+    "ca27ef7280750ff6356e"
+   ],
+   "duration": 21.637,
+   "lines": [
+    {
+     "text": "One more, and this one's worth working out before the answer lands.",
+     "start": 0.15,
+     "end": 4.202
+    },
+    {
+     "text": "An attribute changes about as often as that shared pair did, but it's tracked by itself, and every report needs its exact value at the moment of each sale \u2014 never today's value. What fits here?",
+     "start": 4.622,
+     "end": 21.287
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 130,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "14a": {
+   "hash": "003fba217189ed28",
+   "takes": [
+    "1360c94279e9c946f4a9",
+    "57dd0263b5314aec455d"
+   ],
+   "duration": 19.924,
+   "lines": [
+    {
+     "text": "The row-per-change approach from the last topic. A small table earns its place when a group of attributes is shared and the current value matters.",
+     "start": 0.15,
+     "end": 10.146
+    },
+    {
+     "text": "Here neither is true \u2014 it's tracked alone, and only the historical value is ever asked for, which is exactly that approach's own case.",
+     "start": 10.566,
+     "end": 19.574
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -2.1,
+   "wpm": 151,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  }
+ }
+}
