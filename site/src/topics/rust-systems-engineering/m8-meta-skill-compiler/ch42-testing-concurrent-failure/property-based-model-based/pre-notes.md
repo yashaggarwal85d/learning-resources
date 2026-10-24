@@ -1,0 +1,4 @@
+- **Property-based test**: a real test that states a general, real invariant and checks it against a large, real, randomly generated space of inputs, rather than against one, hand-picked example.
+- **Shrinking**: a real process by which a property-testing tool, having found a real failing input, searches for a real, smaller input that still fails the identical check.
+- **Model-based test**: a real test that compares a real, complex implementation against a real, deliberately simpler reference model across a real sequence of operations.
+- **Reference model**: a real, independent, deliberately simplified stand-in for a system's own real behavior, checked against that real system directly rather than trusted on its own.

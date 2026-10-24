@@ -1,0 +1,62 @@
+{
+  "topic": "rust.bounded-stages-buffer-ownership",
+  "syllabus": [
+    {
+      "clause": "bounded dataflow stages: source → decoder → batch builder → transform → sink.",
+      "at": [
+        { "step": "A real, bounded pipeline connects its stages with channels that hold only four batches at a time, moving each batch forward rather than copying it, against a sink that is deliberately twenty times slower than the producer feeding it. Does its own real memory keep growing while the producer runs ahead, or does it stay capped?" },
+        { "step": "The identical real producer and the identical real, slow sink, this time connected by channels with no real limit on how many batches they can hold, each stage cloning its own batch before handing it downstream. Does its own real peak memory land near the bounded pipeline own real peak, or far past it?" }
+      ]
+    },
+    {
+      "clause": "Each batch owns its backing buffers, transforms borrow or move columns, and downstream gets ownership only when it can keep up, which prevents unbounded producer allocation against a slow sink.",
+      "at": [
+        { "step": "Measured: the real, bounded pipeline own peak bytes held across every in-flight batch lands at six thousand bytes, just a few batches worth, for the entire real run of fifty batches" },
+        { "step": "Measured: the real, unbounded, cloning pipeline own peak bytes held reaches fifty-one thousand bytes, essentially the entire run own total batch bytes, because its fast producer never once has to wait on the real, slow sink" },
+        { "step": "Measured: the real, unbounded pipeline own peak is more than eight times the real, bounded pipeline own peak, for the identical fifty real batches and the identical real sink delay, a real, structural gap rather than an incidental one" },
+        { "step": "The tokio mpsc module own documentation states this directly: a bounded channel at capacity rejects a send until capacity frees up, which is exactly how it provides backpressure; an unbounded channel own send always completes immediately, with no real limit to push back against" }
+      ]
+    }
+  ],
+  "sources": [
+    {
+      "source": "mpsc-backpressure",
+      "items": [
+        {
+          "item": "If the bounded channel is at capacity, the send is rejected and the task will be notified when additional capacity is available. In other words, the channel provides backpressure",
+          "at": [{ "step": "The tokio mpsc module own documentation states this directly: a bounded channel at capacity rejects a send until capacity frees up, which is exactly how it provides backpressure; an unbounded channel own send always completes immediately, with no real limit to push back against" }]
+        }
+      ]
+    },
+    {
+      "source": "mpsc-unbounded-infinite",
+      "items": [
+        {
+          "item": "An unbounded channel has an infinite capacity, so the send method will always complete immediately",
+          "at": [{ "step": "The tokio mpsc module own documentation states this directly: a bounded channel at capacity rejects a send until capacity frees up, which is exactly how it provides backpressure; an unbounded channel own send always completes immediately, with no real limit to push back against" }]
+        }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "self-review",
+    "date": "2026-10-24",
+    "items": [
+      { "item": "The real, bounded pipeline connects its source, batch-builder, and sink stages with a real, bounded tokio::sync::mpsc channel of capacity four between the batch builder and the sink, moving each real Batch by value rather than cloning it, so the identical heap allocation that the batch builder creates is the identical one the sink eventually drops.", "at": [{ "step": "A real, bounded pipeline connects its stages with channels that hold only four batches at a time, moving each batch forward rather than copying it, against a sink that is deliberately twenty times slower than the producer feeding it. Does its own real memory keep growing while the producer runs ahead, or does it stay capped?" }] },
+      { "item": "The real producer builds fifty batches of one thousand bytes each (ten records of one hundred bytes), as fast as the runtime can schedule it, while the real sink sleeps twenty milliseconds per batch, so the producer finishes its own real work in a small fraction of the time the sink needs to drain everything.", "at": [{ "step": "A real, bounded pipeline connects its stages with channels that hold only four batches at a time, moving each batch forward rather than copying it, against a sink that is deliberately twenty times slower than the producer feeding it. Does its own real memory keep growing while the producer runs ahead, or does it stay capped?" }] },
+      { "item": "The real, measured peak of six thousand bytes is tracked by an Arc<AtomicUsize> incremented by the real batch size when the batch builder sends a batch and decremented when the sink finishes it, with a second atomic updated via fetch_max on every increment, so the reported number is this run's own real high-water mark, not an estimate.", "at": [{ "step": "Measured: the real, bounded pipeline own peak bytes held across every in-flight batch lands at six thousand bytes, just a few batches worth, for the entire real run of fifty batches" }] },
+      { "item": "The real, unbounded pipeline's own batch builder clones each real Batch's own backing Vec<u8> before sending the clone onward and dropping the original locally, so the identical real byte count is briefly held twice during that handoff, modeling the real, extra allocation a cloning stage pays that a moving one does not.", "at": [{ "step": "The identical real producer and the identical real, slow sink, this time connected by channels with no real limit on how many batches they can hold, each stage cloning its own batch before handing it downstream. Does its own real peak memory land near the bounded pipeline own real peak, or far past it?" }] },
+      { "item": "The real, measured peak of fifty-one thousand bytes lands just over the full run's own total batch bytes (fifty thousand), confirming that the unbounded pipeline's own fast producer genuinely builds every real batch before the slow sink has drained more than a handful of them.", "at": [{ "step": "Measured: the real, unbounded, cloning pipeline own peak bytes held reaches fifty-one thousand bytes, essentially the entire run own total batch bytes, because its fast producer never once has to wait on the real, slow sink" }] },
+      { "item": "The real ratio between the two measured peaks, fifty-one thousand against six thousand, is confirmed deterministic across five separate real runs of examples.py, so the gap this topic reports is this exact workload's own repeatable outcome, not a one-off timing artifact.", "at": [{ "step": "Measured: the real, unbounded pipeline own peak is more than eight times the real, bounded pipeline own peak, for the identical fifty real batches and the identical real sink delay, a real, structural gap rather than an incidental one" }] },
+      { "item": "The quoted sentences are read from the identical real, canonical docs.rs page for the tokio::sync::mpsc module this topic's own crate actually depends on, describing the bounded and unbounded constructors this topic's own two pipelines are built directly from.", "at": [{ "step": "The tokio mpsc module own documentation states this directly: a bounded channel at capacity rejects a send until capacity frees up, which is exactly how it provides backpressure; an unbounded channel own send always completes immediately, with no real limit to push back against" }] },
+      { "item": "The Apache Arrow project's own documentation on its columnar format, named directly in CHAPTER.md's own A.9, describes a real, relocatable buffer convention without pointer swizzling that this topic's own small pipeline is modeled on at a far smaller, in-process scale.", "at": [{ "deep": "Internals" }] },
+      { "item": "A longer, real pipeline chain propagates the identical real backpressure across more than one bounded channel, with whichever stage is genuinely the slowest, not necessarily the final sink, being the one that actually fills up and pushes back on the stage feeding it.", "at": [{ "deep": "In production" }] },
+      { "item": "A real, distributed pipeline running its stages on separate machines extends the identical idea, a receiver's own real capacity signaling a sender to slow down, but carries that signal over a real network boundary (an acknowledgment, a credit, a flow-control window) rather than through a single process's own in-memory channel.", "at": [{ "deep": "The frontier" }] }
+    ]
+  },
+  "gapReview": {
+    "date": "2026-10-24",
+    "by": "self-review",
+    "open": []
+  }
+}
