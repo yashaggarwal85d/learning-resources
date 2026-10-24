@@ -1,0 +1,87 @@
+{
+  "steps": [
+    {
+      "lines": [
+        "Build a real frame decoder with an explicit cap on how large a single frame can claim to be.",
+        { "beat": 0.3 },
+        "Send it a frame whose own length field honestly claims something far past that cap. What happens?"
+      ],
+      "answer": [
+        "It's rejected right away.",
+        "No buffer anywhere near that claimed size ever gets allocated to hold it."
+      ]
+    },
+    {
+      "lines": [
+        "Run it for real: a frame claiming an enormous length was rejected immediately,",
+        "and no buffer anywhere near that size was ever allocated — confirmed directly, not assumed."
+      ]
+    },
+    {
+      "lines": [
+        "Now send a frame that's genuinely under the cap, and pull it back out of the buffer.",
+        { "beat": 0.3 },
+        "Does pulling it out copy those bytes into a brand new buffer, or not?"
+      ],
+      "answer": [
+        "It doesn't copy anything.",
+        "The same underlying bytes, just split into two pieces in place."
+      ]
+    },
+    {
+      "lines": [
+        "Run it for real: the frame that came back pointed at the exact same address the payload started at in the original buffer,",
+        "not a fresh allocation — confirmed directly, by checking the real pointer, not assumed from the documentation."
+      ],
+      "takeaway": "Splitting a buffer in place was never going to copy the bytes just to hand them back."
+    },
+    {
+      "lines": [
+        "The real documentation for this kind of decoder names its actual job in plain words.",
+        { "beat": 0.3 },
+        "What does it say that job actually is?"
+      ],
+      "answer": [
+        "Finding the boundaries.",
+        "Turning a sequence of bytes into a sequence of frames, nothing about sockets or encryption."
+      ]
+    },
+    {
+      "lines": [
+        "The documentation's own words: this trait's job is to say how bytes become frames,",
+        "and to decide exactly where the boundary between one frame and the next actually falls."
+      ]
+    },
+    {
+      "lines": [
+        "A length prefix needs that cap to stay safe.",
+        { "beat": 0.3 },
+        "What do the other two common ways of framing messages need instead, to avoid their own failure modes?"
+      ],
+      "answer": [
+        "A delimiter needs its own kind of escaping, and a real scan to find it.",
+        "A fixed size wastes real bandwidth on anything smaller than it."
+      ]
+    },
+    {
+      "lines": [
+        "Each of these fails differently: an uncapped length claim is a real denial-of-service risk,",
+        "a delimiter needs escaping and a real scan, and a fixed size wastes real bandwidth on anything short."
+      ],
+      "takeaway": "There is no framing strategy without a real cost, only a choice of which one to pay."
+    },
+    {
+      "lines": [
+        "A capped claim, split out of the buffer without copying a single byte: that's the one shape this whole chapter's own lab is actually built around."
+      ],
+      "takeaway": "Cap the claim first, then split the buffer in place: safe and cheap, both at once."
+    },
+    {
+      "lines": [
+        "So, pulling this topic together: a capped frame decodes correctly, and splitting it out never copies a single byte.",
+        "A frame claiming far more than the cap is rejected before any such buffer is ever allocated, which is the real risk an uncapped claim creates.",
+        "And each of the three ways of framing a message fails in its own distinct way, so the real choice a protocol makes is which one of those costs it can actually afford."
+      ]
+    }
+  ]
+}
