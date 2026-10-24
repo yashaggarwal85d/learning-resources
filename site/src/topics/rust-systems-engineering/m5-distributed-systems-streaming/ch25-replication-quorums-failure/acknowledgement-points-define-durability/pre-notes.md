@@ -1,0 +1,4 @@
+- **Acknowledgement point**: the single point in a replication pipeline at which a write is considered accepted, regardless of how far it has actually spread beyond that point.
+- **Quorum**: a subset of nodes large enough that any two such subsets are guaranteed to overlap in at least one node; for a cluster of a given size, a strict majority is the smallest quorum.
+- **ISR (in-sync replica set)**: the set of replicas, including the leader, currently caught up closely enough to be counted toward a durability guarantee.
+- **Durable vs. replicated**: a write can be durably recorded (safely on disk) on exactly one node and still not be replicated anywhere else; destroying that one node loses it regardless of its own durability. *Where you meet it:* the leader-only-durable policy measured here loses the write identically to a policy with no durability at all.

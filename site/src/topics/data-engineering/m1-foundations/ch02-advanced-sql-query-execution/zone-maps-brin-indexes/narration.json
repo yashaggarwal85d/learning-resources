@@ -80,7 +80,7 @@
       "lines": [
         "A group's own summary can be perfectly consistent with a filter without every single row inside that group actually matching it.",
         { "beat": 0.4 },
-        "So what has to happen to those rows before they can be trusted as real matches?"
+        "So what has to happen, then, to those rows before they can be trusted as real matches?"
       ],
       "answer": [
         "Every row inside a matching group still has to be checked individually before being trusted.",
@@ -119,7 +119,7 @@
       "lines": [
         "A table is split into five hundred physical groups of rows. Every row was loaded in strict order by date, and a query filters on exactly one date, which only ever appears inside a single one of those groups.",
         { "beat": 0.4 },
-        "How many of those groups should actually need to be checked?"
+        "How many of those groups, though, actually need to be checked?"
       ],
       "answer": [
         "Just one — every other group gets ruled out purely by its own summary.",

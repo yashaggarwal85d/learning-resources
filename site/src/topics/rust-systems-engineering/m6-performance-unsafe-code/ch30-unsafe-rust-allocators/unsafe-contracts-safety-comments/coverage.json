@@ -1,0 +1,81 @@
+{
+  "topic": "rust.unsafe-contracts-safety-comments",
+  "syllabus": [
+    {
+      "clause": "unsafe code must prove validity, aliasing, initialization, lifetime, alignment and thread-safety.",
+      "at": [{ "deep": "Internals" }]
+    },
+    {
+      "clause": "Every unsafe function documents its preconditions (# Safety) and every unsafe block states why they hold (// SAFETY:, enforced by Clippy undocumented_unsafe_blocks).",
+      "at": [
+        { "step": "Measured: every real call that genuinely satisfies the documented contract returns the genuinely correct value, every time" },
+        { "step": "The Rust Reference's own words and the Rust API Guidelines' own words both state this exact rule directly: unsafe code is sound only if no safe caller can ever trigger undefined behavior through it, and a real \"Safety\" section is how that contract gets written down. Does this topic's own guard measure exactly that rule?" }
+      ]
+    },
+    {
+      "clause": "\"This is faster\" is not a safety argument.",
+      "at": [{ "deep": "In production" }]
+    },
+    {
+      "clause": "Rust 2024 warns on unsafe_op_in_unsafe_fn by default.",
+      "at": [{ "deep": "Internals" }]
+    },
+    {
+      "clause": "Soundness means no safe caller can trigger UB, which is stronger than \"my callers don't\".",
+      "at": [
+        { "step": "Measured: the real guard genuinely rejected every one of the three out-of-contract requests; the unsafe function's own real call counter never moved for them" },
+        { "step": "Measured: the identical invalid inputs genuinely violate the real documented contract, the exact real bound the guard above was built to enforce" },
+        { "step": "The Rust Reference's own words and the Rust API Guidelines' own words both state this exact rule directly: unsafe code is sound only if no safe caller can ever trigger undefined behavior through it, and a real \"Safety\" section is how that contract gets written down. Does this topic's own guard measure exactly that rule?" }
+      ]
+    }
+  ],
+  "sources": [
+    {
+      "source": "ub-reference",
+      "items": [
+        {
+          "item": "Rust code is incorrect if it exhibits undefined behavior, including inside unsafe blocks and functions; unsafe only moves the responsibility for avoiding it onto the programmer",
+          "at": [{ "step": "A function is marked unsafe and ships with a documented contract. Does calling it from behind a real safe guard that checks the contract first ever reach undefined behavior?" }]
+        },
+        {
+          "item": "unsafe code is sound only if no safe code interacting with it can trigger undefined behavior; if safe code can misuse it to cause UB, it is unsound",
+          "at": [{ "step": "Measured: the identical invalid inputs genuinely violate the real documented contract, the exact real bound the guard above was built to enforce" }]
+        }
+      ]
+    },
+    {
+      "source": "api-guidelines-documentation",
+      "items": [
+        {
+          "item": "unsafe functions should be documented with a Safety section explaining every invariant the caller is responsible for upholding",
+          "at": [{ "step": "Measured: every real call that genuinely satisfies the documented contract returns the genuinely correct value, every time" }]
+        },
+        {
+          "item": "std::ptr::read's own real Safety section states exactly why the function is unsafe: it semantically moves a value out of a pointer without preventing further use of it",
+          "at": [{ "deep": "Internals" }]
+        }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "self-review",
+    "date": "2026-10-24",
+    "items": [
+      { "item": "The unsafe function's own call counter is a real `Cell<u64>`, incremented on every real entry into the unsafe function itself, not on every call to the safe guard, which is what lets the measured claim distinguish 'the guard rejected the request' from 'the guard let it through but the unsafe code happened to behave.'", "at": [{ "step": "Measured: the real guard genuinely rejected every one of the three out-of-contract requests; the unsafe function's own real call counter never moved for them" }] },
+      { "item": "The unguarded-caller claim is checked as a direct, safe comparison (index >= buffer length) against the identical invalid inputs already used against the guard, rather than by actually calling the unsafe function with them, since executing a real contract violation would itself be undefined behavior this topic must never trigger.", "at": [{ "step": "Measured: the identical invalid inputs genuinely violate the real documented contract, the exact real bound the guard above was built to enforce" }] },
+      { "item": "The in-contract claim checks the exact returned values against the array's own known contents, not merely that the call succeeded, so the test would fail if the guard let a request through but the unsafe function returned the wrong element.", "at": [{ "step": "Measured: every real call that genuinely satisfies the documented contract returns the genuinely correct value, every time" }] },
+      { "item": "This topic uses no earlier chapter's own introduced concept, per the chapter plan's own A.7, since this chapter changes subject from performance measurement to soundness itself; its own bridge instead names Chapter 29's own closing handoff in prose.", "at": [{ "step": "A function is marked unsafe and ships with a documented contract. Does calling it from behind a real safe guard that checks the contract first ever reach undefined behavior?" }] },
+      { "item": "The unsafe function's own one real unsafe operation (`self.data.get_unchecked(index)`) is wrapped in its own explicit `unsafe { }` block with its own `// SAFETY:` comment, even though the whole function is already marked unsafe, which is exactly what Rust 2024's own `unsafe_op_in_unsafe_fn` default warning requires.", "at": [{ "deep": "Internals" }] },
+      { "item": "The six real properties unsafe code must prove (validity, aliasing, initialization, lifetime, alignment, thread-safety) are named and briefly explained in post-notes rather than all individually measured here, since this topic's own guard directly demonstrates only the initialization/bounds property; the other five get their own full, direct treatment in topic 78.", "at": [{ "deep": "Internals" }] },
+      { "item": "'This is faster' being insufficient as a safety argument is explained in post-notes by contrasting it directly with Chapter 29's own performance-measurement topics, since speed and soundness are two genuinely separate claims a single function can satisfy independently of each other.", "at": [{ "deep": "In production" }] },
+      { "item": "All of this topic's own measured claims run entirely on plain in-memory Rust values, a plain fixed-size array, and a plain `Cell<u64>` counter, with no file, network, root access, or actual undefined behavior executed; 'the contract', 'the guard', and 'the call counter' are all real, deterministic Rust values, continuing this domain's own established pattern.", "at": [{ "step": "Recap: a real contract, a real guard, measured directly" }] },
+      { "item": "The Rust Reference's own words and the Rust API Guidelines' own words are two genuinely independent sources describing two genuinely different parts of the identical discipline (the formal standard for soundness, and the concrete convention for writing a contract down), giving this topic two separate sources rather than multiple quotes drawn from a single page.", "at": [{ "step": "The Rust Reference's own words and the Rust API Guidelines' own words both state this exact rule directly: unsafe code is sound only if no safe caller can ever trigger undefined behavior through it, and a real \"Safety\" section is how that contract gets written down. Does this topic's own guard measure exactly that rule?" }] },
+      { "item": "The specific array length and the specific valid and invalid index values used throughout this topic's own scenarios are this specific example's own choice; the measured claims illustrate the real shape of a safety contract and a real enforcing guard for any array length and any index values, not a claim bound to exactly these numbers.", "at": [{ "step": "Measured: the real guard genuinely rejected every one of the three out-of-contract requests; the unsafe function's own real call counter never moved for them" }] }
+    ]
+  },
+  "gapReview": {
+    "date": "2026-10-24",
+    "by": "self-review",
+    "open": []
+  }
+}

@@ -1,0 +1,599 @@
+{
+ "topic": "de.composite-index-design-column",
+ "voice": "breeze-mellow-v2",
+ "asr": "large-v3-turbo",
+ "clips": {
+  "01": {
+   "hash": "6c1fc5045daa8bc3",
+   "takes": [
+    "147cbfa7ca1fb50ad092",
+    "e35a50ba31af41c539b4",
+    "726ed3b108547e26bbbf"
+   ],
+   "duration": 17.346,
+   "lines": [
+    {
+     "text": "Index the exact same two columns two different ways, and run the exact same query against each.",
+     "start": 0.15,
+     "end": 8.821
+    },
+    {
+     "text": "One of them answers it in six buffer reads.",
+     "start": 9.241,
+     "end": 12.318
+    },
+    {
+     "text": "The other reads over two thousand buffers, for the identical result.",
+     "start": 12.738,
+     "end": 16.996
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 128,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "02": {
+   "hash": "615b0583e24e1416",
+   "takes": [
+    "bfe1173c5d604aa385b7",
+    "34748e9d141b75640445"
+   ],
+   "duration": 12.372,
+   "lines": [
+    {
+     "text": "Both indexes cover the same two columns. Neither one is missing anything this query needs.",
+     "start": 0.15,
+     "end": 6.759
+    },
+    {
+     "text": "So what could possibly make one of them so much more expensive to read?",
+     "start": 7.579,
+     "end": 12.022
+    }
+   ],
+   "lufs": -16.3,
+   "true_peak": -2.5,
+   "wpm": 141,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "02a": {
+   "hash": "e61fac5e9cc63592",
+   "takes": [
+    "7b2bc911ffa3773589b6",
+    "ac009a5fc608364153f8"
+   ],
+   "duration": 16.89,
+   "lines": [
+    {
+     "text": "The order the columns are listed in, inside each index, differs.",
+     "start": 0.15,
+     "end": 4.274
+    },
+    {
+     "text": "Both runs were forced away from a plain table scan first, so this really is one index's own order against the other's, not the planner quietly picking a worse plan for one of them.",
+     "start": 4.694,
+     "end": 16.54
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -1.9,
+   "wpm": 160,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "03": {
+   "hash": "3032e6e2ce91dac9",
+   "takes": [
+    "93d7aa7061507938a36b",
+    "d211b0848fbe54e2e521",
+    "b7a2ba01b895047d9dd0"
+   ],
+   "duration": 24.003,
+   "lines": [
+    {
+     "text": "An equality match on a column at the front of an index narrows the search dramatically, almost down to nothing.",
+     "start": 0.15,
+     "end": 7.798
+    },
+    {
+     "text": "A range, sitting in that same front position instead, narrows things far less.",
+     "start": 8.218,
+     "end": 14.338
+    },
+    {
+     "text": "Put the equality column first, and the difference shows up directly in how much of the index actually gets touched.",
+     "start": 14.758,
+     "end": 23.653
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -2.0,
+   "wpm": 132,
+   "wer": 0.15384615384615385,
+   "exact": false,
+   "tolerated": [
+    {
+     "line": "A range, sitting in that same front position instead, narrows things far less.",
+     "said": "a range",
+     "heard": "arrange"
+    }
+   ]
+  },
+  "04": {
+   "hash": "dc270fd6bfe891a0",
+   "takes": [
+    "ced9ef6fe42d89c53ce8",
+    "60031c553dc231cd63c0",
+    "9022b267243a68857c7f"
+   ],
+   "duration": 27.105,
+   "lines": [
+    {
+     "text": "One of these two columns has a thousand distinct values in it. Matching one of those values rules out nearly everything else immediately.",
+     "start": 0.15,
+     "end": 9.402
+    },
+    {
+     "text": "The other column has a hundred thousand distinct values. A range across it simply can't rule out nearly as much, position for position.",
+     "start": 9.822,
+     "end": 18.344
+    },
+    {
+     "text": "How many different values a column actually holds is exactly what decides how much an equality match on it can narrow things down.",
+     "start": 18.764,
+     "end": 26.755
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 153,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "05": {
+   "hash": "36aa5bc93a1d6527",
+   "takes": [
+    "afcf1cc8039146642233",
+    "80e468be43880f450882"
+   ],
+   "duration": 12.606,
+   "lines": [
+    {
+     "text": "The same index on those same two columns still exists.",
+     "start": 0.15,
+     "end": 5.531
+    },
+    {
+     "text": "Does asking for one order and asking for the reverse pairing cost the same against it?",
+     "start": 6.351,
+     "end": 12.256
+    }
+   ],
+   "lufs": -16.2,
+   "true_peak": -2.0,
+   "wpm": 124,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "05a": {
+   "hash": "33845dbd3a736fe3",
+   "takes": [
+    "04cf79a1bc8914312833",
+    "05e74e75f564f37c7ad0"
+   ],
+   "duration": 20.414,
+   "lines": [
+    {
+     "text": "No \u2014 only one of those two orderings actually matches what the index physically stores.",
+     "start": 0.15,
+     "end": 6.128
+    },
+    {
+     "text": "A B-tree index is laid out in exactly one direction, forwards or its exact reverse. Ask for anything else, and no index, however it's built, can hand that order back directly.",
+     "start": 6.548,
+     "end": 20.064
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -2.9,
+   "wpm": 135,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "06": {
+   "hash": "e74608d01af9d7b1",
+   "takes": [
+    "54012b1ce5b49c7c5b93",
+    "078b54371a69504cf115",
+    "a26f6d14e72d8bf94159"
+   ],
+   "duration": 26.921,
+   "lines": [
+    {
+     "text": "Ask for the order this index already stores, and the answer comes back as a plain scan. No separate sorting step at all.",
+     "start": 0.15,
+     "end": 8.623
+    },
+    {
+     "text": "Ask for the other ordering, against that very same index, and the engine falls back to scanning broadly and sorting everything, in parallel, from scratch.",
+     "start": 9.043,
+     "end": 20.179
+    },
+    {
+     "text": "Nothing about the data changed between those two requests. Only which order was asked for did.",
+     "start": 20.599,
+     "end": 26.571
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 143,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "07": {
+   "hash": "368c7be37e0eff55",
+   "takes": [
+    "0c7a4c31fbabec6ebf20",
+    "e211a197b2203689cb10",
+    "5bd18fef23c56b77dc7d"
+   ],
+   "duration": 30.033,
+   "lines": [
+    {
+     "text": "Ask for only the first few rows in the order the index already stores, and those rows come straight off the index, nothing else read at all.",
+     "start": 0.15,
+     "end": 9.11
+    },
+    {
+     "text": "Ask for that same small number of rows in the other order, and every single row has to be sorted first, before even the first one can be handed back.",
+     "start": 9.53,
+     "end": 19.187
+    },
+    {
+     "text": "Wanting only a handful of rows doesn't save you here. The sorting still has to happen over everything, regardless of how few rows you actually asked for.",
+     "start": 19.607,
+     "end": 29.683
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 168,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "08": {
+   "hash": "7d7495db487e49a5",
+   "takes": [
+    "11335344c8564834a179",
+    "7083fbf0f6b59a738eff"
+   ],
+   "duration": 14.289,
+   "lines": [
+    {
+     "text": "A query filters only on the second column of a two-column index, with absolutely nothing constraining the first.",
+     "start": 0.15,
+     "end": 8.179
+    },
+    {
+     "text": "In an older version, could an index built that way help this query at all?",
+     "start": 8.999,
+     "end": 13.939
+    }
+   ],
+   "lufs": -16.2,
+   "true_peak": -2.7,
+   "wpm": 143,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "08a": {
+   "hash": "6963159cf9aedd83",
+   "takes": [
+    "7705c66082426e7acb24",
+    "a74dfc35005f3389e926"
+   ],
+   "duration": 18.042,
+   "lines": [
+    {
+     "text": "Yes, but badly \u2014 the index still gets used, just inefficiently.",
+     "start": 0.15,
+     "end": 5.101
+    },
+    {
+     "text": "It still counts as using the index rather than falling back to the table. The real cost is that, with nothing narrowing where to begin, the engine ends up walking essentially the whole thing.",
+     "start": 5.521,
+     "end": 17.692
+    }
+   ],
+   "lufs": -16.2,
+   "true_peak": -2.5,
+   "wpm": 146,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "09": {
+   "hash": "b15677d772891158",
+   "takes": [
+    "2a1210452e0e689d971d",
+    "ed7cf0575d1843739e5e",
+    "fa8fe576caca4f818cdf"
+   ],
+   "duration": 25.871,
+   "lines": [
+    {
+     "text": "Run that exact query, that exact index, on an older version of this engine.",
+     "start": 0.15,
+     "end": 5.899
+    },
+    {
+     "text": "Over five thousand buffer reads, forty-one milliseconds \u2014 walking essentially the whole index to answer a filter on just its second column.",
+     "start": 6.319,
+     "end": 16.947
+    },
+    {
+     "text": "Nothing about the data is unusual here. This is simply what happens when a leading column is left with nothing constraining it.",
+     "start": 17.367,
+     "end": 25.521
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 135,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "10": {
+   "hash": "99f05677b154d33e",
+   "takes": [
+    "528d9c5865c447a62f45",
+    "df6eef06ba3df81611b7",
+    "09a2c9c09f2e3c8b82d8"
+   ],
+   "duration": 23.843,
+   "lines": [
+    {
+     "text": "Run the identical query against the identical index, on a newer version of the same engine.",
+     "start": 0.15,
+     "end": 6.147
+    },
+    {
+     "text": "Forty buffer reads this time, two tenths of a millisecond \u2014 and the plan itself now reports a dozen separate searches it ran internally.",
+     "start": 6.567,
+     "end": 16.167
+    },
+    {
+     "text": "Same query. Same index. Same data. The only thing that changed is the version doing the searching.",
+     "start": 16.587,
+     "end": 23.493
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -3.3,
+   "wpm": 141,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "11": {
+   "hash": "5417217402b4057c",
+   "takes": [
+    "0f99585fb1c894c4966a",
+    "c1d80b1543f26bcdd742",
+    "40a101f174058088e8cc"
+   ],
+   "duration": 25.468,
+   "lines": [
+    {
+     "text": "That column being searched this way only actually held ten distinct values.",
+     "start": 0.15,
+     "end": 6.059
+    },
+    {
+     "text": "Few enough that running a dozen small, targeted searches ends up far cheaper than reading straight through the whole index once.",
+     "start": 6.479,
+     "end": 14.458
+    },
+    {
+     "text": "Give that same leading column thousands of distinct values instead, and that trade flips \u2014 reading the whole index wins again.",
+     "start": 14.878,
+     "end": 25.118
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 125,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "12": {
+   "hash": "3b74f05d08c4f25a",
+   "takes": [
+    "30ad27770f2df6525f3f",
+    "a7ff429ddd6eaaab6050"
+   ],
+   "duration": 10.558,
+   "lines": [
+    {
+     "text": "Every single index looked at so far has sped something up. Not one of them has shown a downside yet.",
+     "start": 0.15,
+     "end": 6.516
+    },
+    {
+     "text": "Is adding an index ever actually free?",
+     "start": 7.336,
+     "end": 10.208
+    }
+   ],
+   "lufs": -16.6,
+   "true_peak": -2.3,
+   "wpm": 153,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "12a": {
+   "hash": "120ffe354c9e999b",
+   "takes": [
+    "4796a57bbd4dca587329",
+    "bb45fe6c53a0946dc5e1"
+   ],
+   "duration": 22.082,
+   "lines": [
+    {
+     "text": "No \u2014 every index carries a real, ongoing cost of its own.",
+     "start": 0.15,
+     "end": 5.584
+    },
+    {
+     "text": "This engine's own documentation is direct about it: once an index exists, it has to be kept in step with the table on every single change made to that table, whether or not anything ever reads that index back.",
+     "start": 6.004,
+     "end": 21.732
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -1.9,
+   "wpm": 136,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "13": {
+   "hash": "38bf57f853d36e04",
+   "takes": [
+    "8a859ef829cb07919f02",
+    "a58072d2a3ffe9d0d1bc",
+    "e83f860ae38319f59030"
+   ],
+   "duration": 31.953,
+   "lines": [
+    {
+     "text": "Load the exact same half-million rows twice: once into a table with no indexes at all, once into an otherwise identical table carrying three single-column indexes.",
+     "start": 0.15,
+     "end": 13.154
+    },
+    {
+     "text": "The bare table loads in a little over a second. The one with the index takes nearly five times as long.",
+     "start": 13.574,
+     "end": 20.543
+    },
+    {
+     "text": "Those three indexes also add real space on disk \u2014 on top of the table itself, for a load that hasn't been read back by a single query yet.",
+     "start": 20.963,
+     "end": 31.603
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 145,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "14": {
+   "hash": "22e0a27bbb24ce8d",
+   "takes": [
+    "e23803d52d2145a927b5",
+    "0c4fd87171e4969aefe2",
+    "b575044c2989fed24e83"
+   ],
+   "duration": 34.641,
+   "lines": [
+    {
+     "text": "Put the most selective, equality-matched column first, so the scan narrows the way this topic's own first measurement showed.",
+     "start": 0.15,
+     "end": 7.848
+    },
+    {
+     "text": "Match that same column order to however queries actually ask for their results sorted, or a full sort steps in regardless of size.",
+     "start": 8.268,
+     "end": 17.836
+    },
+    {
+     "text": "A newer engine's skip scan narrows what an old, poorly ordered index costs, but only when the column standing in front has few distinct values \u2014 and every index, well ordered or not, still costs something on every single write.",
+     "start": 18.256,
+     "end": 34.291
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -2.0,
+   "wpm": 142,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "15": {
+   "hash": "2165355a429e42dc",
+   "takes": [
+    "a4f432c0b376360340c5",
+    "e24aa087cf064504dd33",
+    "2269ce7948cdda5f2f4b"
+   ],
+   "duration": 18.152,
+   "lines": [
+    {
+     "text": "A composite index is built with a date range as its leading column, and a region's exact match as the second column.",
+     "start": 0.15,
+     "end": 7.986
+    },
+    {
+     "text": "A report filters on an exact region and a date range together.",
+     "start": 8.406,
+     "end": 12.794
+    },
+    {
+     "text": "Is this index's own column order actually a good match for that report?",
+     "start": 13.514,
+     "end": 17.802
+    }
+   ],
+   "lufs": -16.2,
+   "true_peak": -2.6,
+   "wpm": 155,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "15a": {
+   "hash": "59552c270121509e",
+   "takes": [
+    "89d487940e51d5364863",
+    "84bfea493cdbaed287dd"
+   ],
+   "duration": 14.63,
+   "lines": [
+    {
+     "text": "No \u2014 the exact-match column should have led instead.",
+     "start": 0.15,
+     "end": 3.763
+    },
+    {
+     "text": "As built, the range sits in front, narrowing the scan far less than putting the equality match there would have \u2014 exactly the gap this topic opened with.",
+     "start": 4.183,
+     "end": 14.28
+    }
+   ],
+   "lufs": -15.9,
+   "true_peak": -2.0,
+   "wpm": 148,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  }
+ }
+}

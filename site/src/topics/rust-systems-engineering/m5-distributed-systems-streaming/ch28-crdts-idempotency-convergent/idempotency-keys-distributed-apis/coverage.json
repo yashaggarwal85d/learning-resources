@@ -1,0 +1,77 @@
+{
+  "topic": "rust.idempotency-keys-distributed-apis",
+  "syllabus": [
+    {
+      "clause": "the practical cousin of exactly-once.",
+      "at": [{ "deep": "In production" }]
+    },
+    {
+      "clause": "Key scope and TTL,",
+      "at": [
+        { "step": "Two different resources each get a request carrying the identical idempotency key string. Does a real key's own scope keep them from colliding?" },
+        { "step": "Once the key's own real TTL genuinely expires, is the identical key genuinely treated as brand new?" }
+      ]
+    },
+    {
+      "clause": "storing and replaying the response,",
+      "at": [{ "step": "Measured: the duplicate genuinely replayed the exact stored response, and the real side effect genuinely never ran a second time" }]
+    },
+    {
+      "clause": "and the race between concurrent retries carrying the same key.",
+      "at": [{ "step": "Measured: the genuine race was genuinely caught; the real side effect ran exactly once, not twice" }]
+    }
+  ],
+  "sources": [
+    {
+      "source": "stripe-idempotent-requests",
+      "items": [
+        {
+          "item": "Stripe saves the status code and body of the first request made with a given idempotency key after endpoint execution begins; retries with the same key return the saved response, including 500 errors",
+          "at": [{ "step": "Now a duplicate request arrives, carrying the identical key, well within its own real TTL. Does it genuinely replay the stored response, or does it run the side effect again?" }]
+        },
+        {
+          "item": "keys can be removed from the system automatically after they're at least 24 hours old; a new request is generated if a key is reused after the original is pruned",
+          "at": [{ "step": "Once the key's own real TTL genuinely expires, is the identical key genuinely treated as brand new?" }]
+        },
+        {
+          "item": "results are saved only after execution begins; if the request conflicts with another request executing concurrently, the idempotent result is not saved",
+          "at": [{ "step": "Now a second request, carrying the identical key, arrives while the first one is still genuinely running. Is that genuinely caught, or does it race the first one into running the side effect twice?" }]
+        }
+      ]
+    },
+    {
+      "source": "ietf-idempotency-key",
+      "items": [
+        {
+          "item": "a retry after the original request completed should get a response consistent with the request being completed according to the user's intent",
+          "at": [{ "step": "Stripe's own API reference and the IETF's own Idempotency-Key header draft both state this exact mechanism directly: a completed retry replays the stored response, and a genuinely concurrent one gets a real conflict instead. Does this topic's own code measure exactly that rule?" }]
+        },
+        {
+          "item": "a retry before the original request completed should get a resource conflict error",
+          "at": [{ "step": "Stripe's own API reference and the IETF's own Idempotency-Key header draft both state this exact mechanism directly: a completed retry replays the stored response, and a genuinely concurrent one gets a real conflict instead. Does this topic's own code measure exactly that rule?" }]
+        }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "self-review",
+    "date": "2026-10-24",
+    "items": [
+      { "item": "The store's own status is a genuine three-way enum (absent, in progress, completed), not a boolean flag, specifically because a boolean cannot distinguish a genuine race (the first request still running) from a genuine duplicate (the first request already finished); the code's own match arms handle these as two distinct, separately tested outcomes.", "at": [{ "step": "Now a second request, carrying the identical key, arrives while the first one is still genuinely running. Is that genuinely caught, or does it race the first one into running the side effect twice?" }] },
+      { "item": "The scope scenario is checked by asserting the two stored responses are genuinely distinct strings, not merely that both requests succeeded, so the test would fail if the store accidentally shared one entry across the two scopes.", "at": [{ "step": "Measured: both resources genuinely ran their own real side effect, and each one's own stored response is genuinely distinct" }] },
+      { "item": "The duplicate-replay claim is checked against the side effect's own call counter staying unchanged across the duplicate request, not merely that the returned response matched; a store that happened to return the right string while still re-running the side effect would fail this check.", "at": [{ "step": "Measured: the duplicate genuinely replayed the exact stored response, and the real side effect genuinely never ran a second time" }] },
+      { "item": "This topic uses topic 71's own introduced concept (`idempotent-consumer-removes-duplicate-effect`) rather than declaring a wholly new idea from scratch, per the chapter plan's own A.7, since it reuses the identical idempotency-key mechanism at a different layer (an API request rather than a log message).", "at": [{ "step": "Two different resources each get a request carrying the identical idempotency key string. Does a real key's own scope keep them from colliding?" }] },
+      { "item": "The syllabus's own wider frontier (CRDT merge semantics and CALM's own coordination-avoidance rule, both skipped topics) is named in prose in post-notes rather than separately measured here, since an idempotency key is explicitly not a CRDT: it makes one request safe to retry, not two concurrent writes converge.", "at": [{ "deep": "The frontier" }] },
+      { "item": "All of this topic's own measured claims run entirely on plain in-memory Rust values and a plain vector-backed key lookup, with no file, network, or root access needed; 'the store', 'the race', and 'the TTL' are all real, deterministic Rust values and function calls, continuing this domain's own established pattern.", "at": [{ "step": "Recap: a real idempotency-key store, measured end to end" }] },
+      { "item": "Stripe's own production API reference and the IETF's own vendor-neutral draft state the identical two-outcome rule (replay on a finished retry, conflict on a concurrent one) in genuinely distinct wording, giving this topic two independent sources rather than multiple quotes drawn from a single page.", "at": [{ "step": "Stripe's own API reference and the IETF's own Idempotency-Key header draft both state this exact mechanism directly: a completed retry replays the stored response, and a genuinely concurrent one gets a real conflict instead. Does this topic's own code measure exactly that rule?" }] },
+      { "item": "The specific TTL value (24 real hours, in seconds) and the specific scope and key strings used throughout this topic's own scenarios are this specific example's own choice, matching Stripe's own documented default; the measured claims illustrate the real shape of scope, TTL, replay, and the race for any TTL value and any key, not a claim bound to exactly these numbers.", "at": [{ "step": "Measured: the genuinely expired key was genuinely treated as new, and the real side effect genuinely ran again" }] },
+      { "item": "The race scenario's own second request arrives one real time unit after the first, strictly before the first one's own `complete` call would have run, which is what makes the conflict a genuine race rather than a request that simply happened to find an already-completed entry.", "at": [{ "step": "Now a second request, carrying the identical key, arrives while the first one is still genuinely running. Is that genuinely caught, or does it race the first one into running the side effect twice?" }] },
+      { "item": "The TTL expiry scenario reuses the identical key string and scope already used in the scope and replay scenarios, rather than introducing a new key, which is what makes the fresh-run outcome attributable to the passage of real time past the TTL rather than to some other difference in the request.", "at": [{ "step": "Once the key's own real TTL genuinely expires, is the identical key genuinely treated as brand new?" }] }
+    ]
+  },
+  "gapReview": {
+    "date": "2026-10-24",
+    "by": "self-review",
+    "open": []
+  }
+}

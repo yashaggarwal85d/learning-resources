@@ -1,0 +1,525 @@
+{
+ "topic": "de.key-design-natural-surrogate-durable-hash",
+ "voice": "breeze-mellow-v2",
+ "asr": "large-v3-turbo",
+ "clips": {
+  "01": {
+   "hash": "c04a4d4f9f218fc4",
+   "takes": [
+    "8ff8dc1c9f2241938084",
+    "cfc90e9bd235b0796a8d"
+   ],
+   "duration": 11.615,
+   "lines": [
+    {
+     "text": "Watch what one ordinary event does to two schemas built around the same email address.",
+     "start": 0.15,
+     "end": 6.285
+    },
+    {
+     "text": "One of them simply refuses the change. The other barely notices.",
+     "start": 6.705,
+     "end": 11.265
+    }
+   ],
+   "lufs": -16.3,
+   "true_peak": -2.8,
+   "wpm": 134,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "02": {
+   "hash": "928662cbb58f41ee",
+   "takes": [
+    "7693b708e380a5a6c983",
+    "6d61f4ee0feccb673948"
+   ],
+   "duration": 11.884,
+   "lines": [
+    {
+     "text": "Suppose that email address is the key, referenced everywhere a customer's orders live.",
+     "start": 0.15,
+     "end": 6.286
+    },
+    {
+     "text": "She changes it. What happens to every row that pointed at the old value?",
+     "start": 6.706,
+     "end": 11.534
+    }
+   ],
+   "lufs": -16.0,
+   "true_peak": -2.1,
+   "wpm": 136,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "02a": {
+   "hash": "5b248a8084dd52d5",
+   "takes": [
+    "9029cc82a13852d32078",
+    "b95c4c5ed30b06d60437"
+   ],
+   "duration": 10.884,
+   "lines": [
+    {
+     "text": "Either the database blocks the update outright, or every one of those references has to be rewritten at once.",
+     "start": 0.15,
+     "end": 6.991
+    },
+    {
+     "text": "Nothing updates itself quietly in the background.",
+     "start": 7.411,
+     "end": 10.534
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -1.9,
+   "wpm": 143,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "03": {
+   "hash": "8eb36c8429074ac9",
+   "takes": [
+    "3bfe4a006e4f9f220c3f",
+    "d646a045743f0654d043"
+   ],
+   "duration": 11.042,
+   "lines": [
+    {
+     "text": "Here is that refusal, happening for real, not described.",
+     "start": 0.15,
+     "end": 4.381
+    },
+    {
+     "text": "An order still points at the email about to change, so the database stops the update cold.",
+     "start": 4.801,
+     "end": 10.692
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -2.1,
+   "wpm": 141,
+   "wer": 0.058823529411764705,
+   "exact": false,
+   "tolerated": [
+    {
+     "line": "An order still points at the email about to change, so the database stops the update cold.",
+     "said": "cold",
+     "heard": "called"
+    }
+   ]
+  },
+  "04": {
+   "hash": "5f6d85d669e6291f",
+   "takes": [
+    "3bae475b7b6b97551374",
+    "7cd27b6ca012b8de6c26"
+   ],
+   "duration": 13.582,
+   "lines": [
+    {
+     "text": "Now swap in a separate, meaningless id for the same job.",
+     "start": 0.15,
+     "end": 4.521
+    },
+    {
+     "text": "The email changes in one row, and every order still finds its way back, because nothing it relies on moved.",
+     "start": 4.941,
+     "end": 13.232
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -2.0,
+   "wpm": 137,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "05": {
+   "hash": "d5bba94b438ef9e1",
+   "takes": [
+    "404b4a75b834eba5fa16",
+    "61b6a27ebdf2ae01f159"
+   ],
+   "duration": 11.492,
+   "lines": [
+    {
+     "text": "That is the whole difference between these two kinds of key.",
+     "start": 0.15,
+     "end": 3.659
+    },
+    {
+     "text": "One borrows meaning from the business and inherits its instability. The other has no meaning to lose.",
+     "start": 4.079,
+     "end": 11.142
+    }
+   ],
+   "lufs": -16.2,
+   "true_peak": -2.1,
+   "wpm": 146,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "06": {
+   "hash": "ba3a19af67825a4a",
+   "takes": [
+    "458a9e7d90add2e4fa1a",
+    "e9d5daec53529cfb4036"
+   ],
+   "duration": 11.589,
+   "lines": [
+    {
+     "text": "Now picture several writers, in different places, generating rows with nobody coordinating between them.",
+     "start": 0.15,
+     "end": 7.022
+    },
+    {
+     "text": "Can a plain increasing counter still do the job?",
+     "start": 7.442,
+     "end": 11.239
+    }
+   ],
+   "lufs": -15.9,
+   "true_peak": -2.0,
+   "wpm": 119,
+   "wer": 0.1111111111111111,
+   "exact": false,
+   "tolerated": [
+    {
+     "line": "Can a plain increasing counter still do the job?",
+     "said": "plain",
+     "heard": "plane"
+    }
+   ]
+  },
+  "06a": {
+   "hash": "620375853cf7f7fc",
+   "takes": [
+    "322f75a62a54f1053d99",
+    "86da47bc3dd2b05954a2"
+   ],
+   "duration": 14.265,
+   "lines": [
+    {
+     "text": "Not safely. A counter like that lives in one place, and every writer needs to ask it for the next number.",
+     "start": 0.15,
+     "end": 8.545
+    },
+    {
+     "text": "That round trip is exactly the coordination a spread-out pipeline is trying to avoid.",
+     "start": 8.965,
+     "end": 13.915
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -1.9,
+   "wpm": 151,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "07": {
+   "hash": "c6fae13a86e0334b",
+   "takes": [
+    "79cd200ff35d438aefac",
+    "29cc4e5d8d17c3636f11"
+   ],
+   "duration": 17.428,
+   "lines": [
+    {
+     "text": "The documentation for that counter admits as much, in its own words.",
+     "start": 0.15,
+     "end": 4.777
+    },
+    {
+     "text": "A value it hands out is never undone, so it can't promise no gaps, and letting it hand out several at once breaks the strict order across writers entirely.",
+     "start": 5.197,
+     "end": 17.078
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 141,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "08": {
+   "hash": "7f02d4a4a3f74d73",
+   "takes": [
+    "e6adb0126a18e2970507",
+    "0e7c8b3882deb5f80d6f"
+   ],
+   "duration": 17.515,
+   "lines": [
+    {
+     "text": "So three ways of generating a key were timed against each other, inserting into a table that already had its index built.",
+     "start": 0.15,
+     "end": 8.112
+    },
+    {
+     "text": "The counter came out fastest every time. The time-ordered random id came next. The fully random one was slowest.",
+     "start": 8.532,
+     "end": 17.166
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.8,
+   "wpm": 144,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "09": {
+   "hash": "a96999ad19ec60fd",
+   "takes": [
+    "b229b96223702bb28377",
+    "94fae0185490ba527b23"
+   ],
+   "duration": 18.788,
+   "lines": [
+    {
+     "text": "Then the shape of each index itself was inspected directly, after all that inserting.",
+     "start": 0.15,
+     "end": 5.662
+    },
+    {
+     "text": "The counter and the time-ordered id both kept their index tight and full. The fully random one left it visibly emptier, spread across more pages for the same number of rows.",
+     "start": 6.082,
+     "end": 18.438
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -2.1,
+   "wpm": 147,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "10": {
+   "hash": "d16e732bf9a8191b",
+   "takes": [
+    "a757b2abe5c4313f9e98",
+    "6c252c56cc302ee9b70e"
+   ],
+   "duration": 14.788,
+   "lines": [
+    {
+     "text": "Here is why the time-ordered one keeps that tightness.",
+     "start": 0.15,
+     "end": 3.591
+    },
+    {
+     "text": "Its leading bits are a timestamp, so two ids made moments apart share that whole beginning, and land near each other in the index almost by construction.",
+     "start": 4.011,
+     "end": 14.438
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -1.9,
+   "wpm": 150,
+   "wer": 0.037037037037037035,
+   "exact": false,
+   "tolerated": [
+    {
+     "line": "Its leading bits are a timestamp, so two ids made moments apart share that whole beginning, and land near each other in the index almost by construction.",
+     "said": "ids",
+     "heard": "idds"
+    }
+   ]
+  },
+  "11": {
+   "hash": "5bd6ce1be713fab0",
+   "takes": [
+    "20b65543a8bad5ab50de",
+    "894992f54544d77baf52"
+   ],
+   "duration": 15.612,
+   "lines": [
+    {
+     "text": "One more distinction, worth having ready before it matters later in this chapter.",
+     "start": 0.15,
+     "end": 5.262
+    },
+    {
+     "text": "When a row gets versioned over time, something about it has to stay the same across every version, even while its own identifier changes with each one.",
+     "start": 5.682,
+     "end": 15.262
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -2.0,
+   "wpm": 154,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "12": {
+   "hash": "96331643f539106d",
+   "takes": [
+    "a0767036b671b9c7f5ae",
+    "e1d082c39f2f8ad23892"
+   ],
+   "duration": 11.76,
+   "lines": [
+    {
+     "text": "One pattern hashes a business attribute instead of generating a fresh id for it.",
+     "start": 0.15,
+     "end": 5.069
+    },
+    {
+     "text": "Is a collision there something to actually worry about, or just a line to mention and move past?",
+     "start": 5.489,
+     "end": 11.41
+    }
+   ],
+   "lufs": -16.1,
+   "true_peak": -2.9,
+   "wpm": 163,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "12a": {
+   "hash": "7364c6710935dede",
+   "takes": [
+    "f8d30beb5ba490aabd46",
+    "37e7e26058c685bfff4e"
+   ],
+   "duration": 12.633,
+   "lines": [
+    {
+     "text": "It depends entirely on how wide that hash is.",
+     "start": 0.15,
+     "end": 3.744
+    },
+    {
+     "text": "A wide one is safe by an enormous margin. A narrow one, trimmed down to save space, is not.",
+     "start": 4.165,
+     "end": 12.283
+    }
+   ],
+   "lufs": -16.0,
+   "true_peak": -2.7,
+   "wpm": 133,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "13": {
+   "hash": "c442f6ffbbbcb3bb",
+   "takes": [
+    "b95a8217f33cd84f7c9e",
+    "df182741069cf761a70e"
+   ],
+   "duration": 21.199,
+   "lines": [
+    {
+     "text": "Here is that dependence, worked out properly instead of waved at.",
+     "start": 0.15,
+     "end": 4.756
+    },
+    {
+     "text": "A narrow hash reaches even odds of a collision after surprisingly few values. A mid-sized one still carries a real risk once a pipeline grows large. A genuinely wide one does not, by an enormous margin.",
+     "start": 5.176,
+     "end": 20.849
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -1.9,
+   "wpm": 136,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "14": {
+   "hash": "9b134d02516fd1c6",
+   "takes": [
+    "109d11d14332f200ffd7",
+    "b31c47fa2d2cbd22ab91",
+    "33309950f5fdbe4dce04"
+   ],
+   "duration": 27.294,
+   "lines": [
+    {
+     "text": "One key that borrows meaning breaks when that meaning changes. One that doesn't, absorbs it.",
+     "start": 0.15,
+     "end": 6.894
+    },
+    {
+     "text": "A single counter is fastest but needs one coordinator. The time-ordered id gets most of that speed without one. The fully random id gives up tightness entirely for no coordination at all.",
+     "start": 7.314,
+     "end": 20.943
+    },
+    {
+     "text": "And a hash's safety is a number you can check against your own scale, not a feeling.",
+     "start": 21.363,
+     "end": 26.944
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -2.0,
+   "wpm": 143,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "15": {
+   "hash": "6b2fea3f1cced8b1",
+   "takes": [
+    "6340d535128bfa1fec8d",
+    "9fc0af595ecdb005d4b0"
+   ],
+   "duration": 14.372,
+   "lines": [
+    {
+     "text": "One last question before moving on.",
+     "start": 0.15,
+     "end": 2.269
+    },
+    {
+     "text": "Several writers, nobody coordinating, and the key still has to land close to where it was inserted in the index. Which of today's options actually does both?",
+     "start": 2.689,
+     "end": 14.022
+    }
+   ],
+   "lufs": -16.7,
+   "true_peak": -1.9,
+   "wpm": 138,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "15a": {
+   "hash": "74a7910c81eae4d5",
+   "takes": [
+    "1e231f986e1a48ff38a4",
+    "df0297ddf27452da2413"
+   ],
+   "duration": 8.988,
+   "lines": [
+    {
+     "text": "The time-ordered random id.",
+     "start": 0.15,
+     "end": 2.091
+    },
+    {
+     "text": "Nothing coordinates it, and its own leading bits are exactly what keeps it landing close together.",
+     "start": 2.511,
+     "end": 8.638
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -1.9,
+   "wpm": 140,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  }
+ }
+}

@@ -1,0 +1,77 @@
+{
+  "topic": "rust.delivery-semantics-idempotent-consumers",
+  "syllabus": [
+    {
+      "clause": "at-most-once, at-least-once and exactly-once are defined by where publish, consume and commit fail, not by the network.",
+      "at": [{ "deep": "In production" }]
+    },
+    {
+      "clause": "The idempotent producer (producer ID + sequence number) and transactions (read_committed).",
+      "at": [{ "deep": "In production" }]
+    },
+    {
+      "clause": "Use idempotent consumers even with transactional broker support, because downstream side effects (payments, email) need their own dedup.",
+      "at": [
+        { "step": "Measured: the real idempotency key genuinely removed the duplicate's own visible effect; the real ledger balance is genuinely exact" },
+        { "deep": "In production" }
+      ]
+    },
+    {
+      "clause": "Consumer-group protocols: KIP-848 (GA in Kafka 4.0); share groups for queue semantics (KIP-932, preview in 4.1, production-ready in 4.2).",
+      "at": [{ "deep": "The frontier" }]
+    }
+  ],
+  "sources": [
+    {
+      "source": "confluent-delivery-semantics",
+      "items": [
+        {
+          "item": "if a producer fails to receive a commit response, it resends; this provides at-least-once delivery, since the message may be written to the log again if the original request had succeeded",
+          "at": [{ "step": "A consumer applies a real side effect, then commits its own offset, as two separate steps. The process genuinely crashes between them. Does the next real poll genuinely redeliver that same message?" }]
+        },
+        {
+          "item": "the idempotent delivery option guarantees that resending will not result in duplicate entries; the broker assigns each producer an id and deduplicates by a sequence number sent with every message",
+          "at": [{ "step": "Confluent's own documentation and the Kafka project's own design document both state this exact mechanism directly: the broker assigns each producer a real id, and deduplicates by a real sequence number sent with every message. Does this topic's own code measure exactly that rule?" }]
+        },
+        {
+          "item": "a consumer that saves its position after processing may process some messages a second time on crash; assigning messages a primary key makes updates idempotent",
+          "at": [{ "step": "That redelivered message now hits the side effect a second time. Does a naive consumer genuinely apply it twice?" }]
+        }
+      ]
+    },
+    {
+      "source": "kafka-design-md",
+      "items": [
+        {
+          "item": "since 0.11.0.0, the Kafka producer supports an idempotent delivery option; the broker assigns each producer an id and deduplicates messages using a sequence number sent along with every message",
+          "at": [{ "step": "Confluent's own documentation and the Kafka project's own design document both state this exact mechanism directly: the broker assigns each producer a real id, and deduplicates by a real sequence number sent with every message. Does this topic's own code measure exactly that rule?" }]
+        },
+        {
+          "item": "many messages have a primary key, so updates are idempotent; receiving the same message twice just overwrites a record with another copy of itself",
+          "at": [{ "step": "Measured: the real idempotency key genuinely removed the duplicate's own visible effect; the real ledger balance is genuinely exact" }]
+        }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "self-review",
+    "date": "2026-10-24",
+    "items": [
+      { "item": "The naive consumer and the idempotent consumer run the identical crash-and-redeliver loop, differing only in the single idempotency-key check gating the side effect itself; this isolates the real effect of that one check rather than comparing two consumers that also differ in their own offset-commit logic.", "at": [{ "step": "That redelivered message now hits the side effect a second time. Does a naive consumer genuinely apply it twice?" }] },
+      { "item": "The measured overcount in the naive scenario is checked against an exact expected balance (the sum of all three deposits, plus the one that ran twice), not merely that the balance 'changed', so the test would fail if the duplicate ran a different amount than the one actually redelivered.", "at": [{ "step": "Measured: a naive consumer genuinely applied the real side effect twice, and the real ledger balance is genuinely wrong because of it" }] },
+      { "item": "The idempotency key here is genuinely the pair (producer id, sequence number) named in both primary sources, not a derived hash or a message-content comparison; two messages with identical content but different sequence numbers would correctly both apply, which the code's own key check reflects directly.", "at": [{ "step": "Now the consumer checks a real idempotency key, the producer's own id plus its sequence number, before applying anything. Does that genuinely remove the duplicate effect?" }] },
+      { "item": "The redelivery count is tracked as its own separate measured value from the applied-effect count specifically to make the claim that redelivery and duplicate-effect are different facts checkable rather than asserted; the code could not pass this check by simply recording the two values from the same conditional, since they genuinely diverge on the second pass.", "at": [{ "step": "Measured: the redelivery itself genuinely still happened; only the duplicate's own effect was genuinely removed" }] },
+      { "item": "This topic builds directly on topic 70's own partitioned log rather than starting a new one from scratch, per the chapter plan's own A.3; `uses` lists topic 70's own introduced concept id for exactly this reason, even though this topic's own measured code works with a single partition's own message stream rather than the routing function itself.", "at": [{ "step": "A consumer applies a real side effect, then commits its own offset, as two separate steps. The process genuinely crashes between them. Does the next real poll genuinely redeliver that same message?" }] },
+      { "item": "The syllabus's own further material on consumer-group protocols (KIP-848's broker-coordinated rebalancing and KIP-932's share groups) is named in prose in post-notes rather than separately measured here, since neither protocol changes the idempotency question this topic's own code measures; whichever consumer ends up owning a partition still needs the identical real key check.", "at": [{ "deep": "The frontier" }] },
+      { "item": "All of this topic's own measured claims run entirely on plain in-memory Rust values and a plain vector-backed key lookup, with no file, network, or root access needed; 'the broker', 'the crash', and 'the redelivery' are all real, deterministic Rust values and function calls, continuing this domain's own established pattern.", "at": [{ "step": "Recap: a real crash, a real idempotency key" }] },
+      { "item": "Confluent's own documentation and the Apache Kafka project's own GitHub-hosted design document state the identical idempotent-producer mechanism in genuinely distinct wording, giving this topic two independent sources rather than multiple quotes drawn from a single page.", "at": [{ "step": "Confluent's own documentation and the Kafka project's own design document both state this exact mechanism directly: the broker assigns each producer a real id, and deduplicates by a real sequence number sent with every message. Does this topic's own code measure exactly that rule?" }] },
+      { "item": "The three deposits and the single injected crash point used throughout this topic's own scenarios are this specific example's own choice; the measured claims illustrate the real shape of the duplicate-effect hazard and its own idempotency-key fix for any crash point and any sequence of messages, not a claim bound to exactly these numbers.", "at": [{ "step": "A consumer applies a real side effect, then commits its own offset, as two separate steps. The process genuinely crashes between them. Does the next real poll genuinely redeliver that same message?" }] },
+      { "item": "The idempotent consumer's own restart pass still redelivers from the same uncommitted offset as the naive consumer's restart pass; the two scenarios differ in nothing except the one real key check, which is precisely the isolated variable the claims attribute the entire measured difference to.", "at": [{ "step": "The redelivery itself is still genuinely happening, every time. Does only the effect disappear, or does the redelivery disappear too?" }] }
+    ]
+  },
+  "gapReview": {
+    "date": "2026-10-24",
+    "by": "self-review",
+    "open": []
+  }
+}

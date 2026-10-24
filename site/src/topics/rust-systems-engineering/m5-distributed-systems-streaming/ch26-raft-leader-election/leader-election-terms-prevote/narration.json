@@ -1,0 +1,84 @@
+{
+  "steps": [
+    {
+      "lines": [
+        "Five identical, healthy nodes each get a real, deterministic timeout.",
+        { "beat": 0.3 },
+        "The one whose timeout fires first becomes a candidate and asks for votes. Does it genuinely win, and does the winner genuinely match the fastest timeout?"
+      ],
+      "answer": [
+        "Yes, genuinely.",
+        "The fastest real timeout genuinely wins."
+      ]
+    },
+    {
+      "lines": [
+        "Run it for real: the election genuinely elects the node whose real timeout fired first, with a real majority of votes."
+      ]
+    },
+    {
+      "lines": [
+        "Now one candidate's own log is genuinely behind the rest of the cluster's.",
+        { "beat": 0.3 },
+        "Does its vote request still win, or does the up-to-date-log voting rule genuinely reject it?"
+      ],
+      "answer": [
+        "Rejected.",
+        "A fresh term alone was never enough."
+      ]
+    },
+    {
+      "lines": [
+        "Run it for real: the out-of-date candidate's own vote request is genuinely rejected, by the real up-to-date-log voting rule; it loses the election."
+      ],
+      "takeaway": "A fresh term alone is never enough; the voting rule also checks whether a log is genuinely caught up."
+    },
+    {
+      "lines": [
+        "A healthy cluster has a live leader. One node gets partitioned and, missing every heartbeat, keeps incrementing its own term locally.",
+        { "beat": 0.3 },
+        "When it rejoins and broadcasts that stale, inflated term, does the healthy leader genuinely step down?"
+      ],
+      "answer": [
+        "Yes, genuinely.",
+        "Every node updates to a higher term it sees."
+      ]
+    },
+    {
+      "lines": [
+        "Run it for real: genuinely disruptive. Every node updates its own term the moment it sees a higher one, and the healthy leader genuinely steps down."
+      ],
+      "takeaway": "A bare term increase alone, with nothing else genuinely wrong, can depose a working leader."
+    },
+    {
+      "lines": [
+        "Now the identical partitioned node runs a real pre-vote round first, before ever raising its own term.",
+        { "beat": 0.3 },
+        "Does pre-voting genuinely stop the identical disruption this time?"
+      ],
+      "answer": [
+        "Yes, genuinely.",
+        "Its term never even rises."
+      ]
+    },
+    {
+      "lines": [
+        "Run it for real: with that pre-vote round, every healthy voter already has a live leader and genuinely denies it; the partitioned node's own term never rises, and the healthy leader is never disturbed."
+      ],
+      "takeaway": "Pre-voting protects a leader before any real term is ever spent trying to depose it."
+    },
+    {
+      "lines": [
+        "One real, widely used consensus implementation's own documentation states this exact purpose directly, in its own words.",
+        "It names stopping a partitioned node from disrupting the cluster on rejoin, directly."
+      ]
+    },
+    {
+      "lines": [
+        "So here's the real shape of this whole topic: timing alone picks a candidate, but two separate guardrails decide whether that pick is actually safe.",
+        "One guardrail looks backward, at whether a candidate's own history is caught up; the other looks forward, refusing to even spend a higher term until winning is already likely.",
+        "Neither guardrail needs a clock anyone trusts, or a human watching; both come straight out of comparing plain numbers a node already has on hand."
+      ]
+    }
+  ]
+}

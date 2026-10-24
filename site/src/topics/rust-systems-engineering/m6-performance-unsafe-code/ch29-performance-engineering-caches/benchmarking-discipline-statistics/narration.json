@@ -1,0 +1,68 @@
+{
+  "steps": [
+    {
+      "lines": [
+        "A benchmark's own average goes down after a change.",
+        { "beat": 0.3 },
+        "Does that genuinely mean every real user's own request got faster?"
+      ],
+      "answer": [
+        "No, genuinely.",
+        "The real tail can genuinely move the opposite way."
+      ]
+    },
+    {
+      "lines": [
+        "Run it for real: a distribution's typical case and its real worst case are two genuinely separate numbers, read off the identical samples, not one number counted twice."
+      ]
+    },
+    {
+      "lines": [
+        "Now a real change is applied, and the real typical case genuinely drops.",
+        { "beat": 0.3 },
+        "Does the real worst case genuinely drop along with it?"
+      ],
+      "answer": [
+        "No, genuinely.",
+        "The real worst case can genuinely rise instead."
+      ]
+    },
+    {
+      "lines": [
+        "Run it for real: the typical request genuinely got faster, while the real worst case genuinely got slower, from the identical change."
+      ],
+      "takeaway": "A median improving says nothing about the real tail; the two are genuinely separate facts about one change."
+    },
+    {
+      "lines": [
+        "Now check the real average on this identical change.",
+        { "beat": 0.3 },
+        "Does it genuinely show the real worst case getting slower?"
+      ],
+      "answer": [
+        "No, genuinely.",
+        "The average can genuinely improve while the tail genuinely regresses."
+      ]
+    },
+    {
+      "lines": [
+        "Run it for real: the real average genuinely improved too, completely hiding the real regression sitting in the tail."
+      ],
+      "takeaway": "A single average can genuinely improve while the real tail a user actually waits on genuinely gets worse."
+    },
+    {
+      "lines": [
+        "Two real, independent sources on this exact discipline agree, in their own words.",
+        "A trustworthy measurement needs a real warmup and a real check for outliers first; an uncorrected sample can hide its own slowest requests entirely."
+      ],
+      "takeaway": "Trusting one run at all needs a real warmup and a real check for outliers first, before any comparison."
+    },
+    {
+      "lines": [
+        "So here's why a single number can never stand in for a benchmark's own result: an average is a statement about the bulk of a distribution, and the bulk is exactly where a real regression has the least room to hide.",
+        "The tail is the opposite case, a small share of requests that an average genuinely outvotes, which is exactly why a change that helps nearly everyone can still make the unluckiest request wait noticeably longer.",
+        "That's the real discipline underneath a trustworthy benchmark: treat the distribution as the real object being measured, and read its separate statistics separately, because the headline number was never standing in for all of them."
+      ]
+    }
+  ]
+}
