@@ -1,0 +1,65 @@
+{
+  "topic": "dsa.space-filling-curves-cell-indexes",
+  "syllabus": [
+    {
+      "clause": "Z-order (Morton) and Hilbert curves linearising multi-dimensional keys; geohash, S2 cells and H3 hexagons; Z-order in Delta Lake ZORDER BY and Hilbert curves in Delta liquid clustering → Data Engineering §6.3.",
+      "at": [
+        { "step": "Z-order interleaves each coordinate’s own bits, one bit from each axis in turn, into a single z-value. Connecting the z-values in order traces a recursively Z-shaped path, and the whole construction visits every one of the grid’s cells exactly once." },
+        { "step": "A Hilbert curve’s own recursive construction — each quadrant visited in an order and orientation chosen so the path never has to jump across a boundary it’s about to re-enter — keeps the identical boundary pair adjacent in its ordering, where Z-order’s jump was large." },
+        { "step": "Three production systems fix one specific curve and cell shape over this same idea: geohash interleaves latitude and longitude Z-order-style into a base-thirty-two string; S2 projects the sphere onto a cube and runs a Hilbert curve on each of its six faces; H3 tiles the sphere in hexagons instead of squares, because a hexagon’s neighbours are all the same distance from its centre, where a square’s corner neighbours sit farther away than its edge neighbours." }
+      ]
+    }
+  ],
+  "sources": [
+    {
+      "source": "\"Z-order curve\" (Wikipedia)",
+      "items": [
+        { "item": "Z-order/Morton code maps multidimensional data to one dimension by bit-interleaving, preserving locality with high probability", "at": [{ "step": "Z-order interleaves each coordinate’s own bits, one bit from each axis in turn, into a single z-value. Connecting the z-values in order traces a recursively Z-shaped path, and the whole construction visits every one of the grid’s cells exactly once." }] },
+        { "item": "Once sorted by interleaved bits, any one-dimensional structure can index the result directly", "at": [{ "step": "The obvious ordering is row-major: number the cells left to right, row by row. It works as an ordering — every cell gets a distinct number — but two cells that are neighbours on the grid can land arbitrarily far apart in it, the moment they sit in different rows." }] },
+        { "item": "Z-order preserves locality well, but not perfectly, at every boundary", "at": [{ "step": "Near the grid’s own origin corner, Z-order’s ordering is already about as tight as row-major’s. But a step across a boundary — crossing from one quadrant into the next — can jump the ordering by far more than a single step." }] }
+      ]
+    },
+    {
+      "source": "\"Hilbert curve\" (Wikipedia)",
+      "items": [
+        { "item": "A Hilbert curve preserves locality fairly well, one-directionally", "at": [{ "step": "A Hilbert curve’s own recursive construction — each quadrant visited in an order and orientation chosen so the path never has to jump across a boundary it’s about to re-enter — keeps the identical boundary pair adjacent in its ordering, where Z-order’s jump was large." }] },
+        { "item": "Hilbert order is proposed over Z-order for multidimensional databases specifically because of better locality-preserving behavior", "at": [{ "step": "A Hilbert curve is built recursively instead of by simple bit-interleaving. Can a curve built this way avoid Z-order’s own boundary jump?" }] }
+      ]
+    },
+    {
+      "source": "\"Geohash\" (Wikipedia)",
+      "items": [
+        { "item": "Geohash is built directly on the Z-order curve, encoded in base-32 text", "at": [{ "step": "Three production systems fix one specific curve and cell shape over this same idea: geohash interleaves latitude and longitude Z-order-style into a base-thirty-two string; S2 projects the sphere onto a cube and runs a Hilbert curve on each of its six faces; H3 tiles the sphere in hexagons instead of squares, because a hexagon’s neighbours are all the same distance from its centre, where a square’s corner neighbours sit farther away than its edge neighbours." }] }
+      ]
+    },
+    {
+      "source": "\"S2 Cells\" (S2Geometry official developer guide)",
+      "items": [
+        { "item": "S2 projects a cube's six faces and runs a Hilbert curve independently on each one", "at": [{ "step": "Three production systems fix one specific curve and cell shape over this same idea: geohash interleaves latitude and longitude Z-order-style into a base-thirty-two string; S2 projects the sphere onto a cube and runs a Hilbert curve on each of its six faces; H3 tiles the sphere in hexagons instead of squares, because a hexagon’s neighbours are all the same distance from its centre, where a square’s corner neighbours sit farther away than its edge neighbours." }] }
+      ]
+    },
+    {
+      "source": "\"Aggregation\" and \"Overview of the H3 Geospatial Indexing System\" (H3 official docs)",
+      "items": [
+        { "item": "H3 chooses hexagonal cells because every neighbour is equidistant from the centre", "at": [{ "step": "Three production systems fix one specific curve and cell shape over this same idea: geohash interleaves latitude and longitude Z-order-style into a base-thirty-two string; S2 projects the sphere onto a cube and runs a Hilbert curve on each of its six faces; H3 tiles the sphere in hexagons instead of squares, because a hexagon’s neighbours are all the same distance from its centre, where a square’s corner neighbours sit farther away than its edge neighbours." }] }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "blind self-review, research stage",
+    "date": "2026-10-24",
+    "items": [
+      { "item": "Z-order and Hilbert are both verified as real bijections onto every cell of the measurement grid in examples.py, not merely illustrated by a diagram — the same discipline topic 33 and 34 applied to their own structures.", "at": [{ "step": "Z-order interleaves each coordinate’s own bits, one bit from each axis in turn, into a single z-value. Connecting the z-values in order traces a recursively Z-shaped path, and the whole construction visits every one of the grid’s cells exactly once." }] },
+      { "item": "The Hilbert advantage is not claimed universally: examples.py measures three real pairs and reports the honest case (near the grid's own origin) where Z-order ties row-major and Hilbert is not the smallest of the three.", "at": [{ "step": "Prove it" }] },
+      { "item": "k-d trees, quadtrees/octrees and R-trees are named only as the skipped alternative family (building a new multi-dimensional tree shape) and are not built or benchmarked against Z-order/Hilbert in this topic, per the chapter plan's own skip list.", "at": [{ "deep": "The frontier" }] },
+      { "item": "Geohash, S2, and H3 are each sourced from their own official documentation (or Wikipedia for geohash, which states the Z-order relationship directly), not from a secondary blog summary, for the one design choice this topic states about each.", "at": [{ "step": "Three production systems fix one specific curve and cell shape over this same idea: geohash interleaves latitude and longitude Z-order-style into a base-thirty-two string; S2 projects the sphere onto a cube and runs a Hilbert curve on each of its six faces; H3 tiles the sphere in hexagons instead of squares, because a hexagon’s neighbours are all the same distance from its centre, where a square’s corner neighbours sit farther away than its edge neighbours." }] },
+      { "item": "Delta Lake's own ZORDER BY and liquid clustering are named only in passing, per the chapter plan's own cross-domain link to this course's Data Engineering track (§6.3), not rebuilt here.", "at": [{ "deep": "In production" }] },
+      { "item": "The boundary-crossing pairs were chosen by inspecting each pair's own binary coordinates for a shared high-bit flip, not by searching after the fact for whichever pair produced the largest-looking gap.", "at": [{ "step": "Near the grid’s own origin corner, Z-order’s ordering is already about as tight as row-major’s. But a step across a boundary — crossing from one quadrant into the next — can jump the ordering by far more than a single step." }] },
+      { "item": "The BIGMIN/LITMAX range-search machinery that makes Z-order efficient for range queries is named, from the source's own caveat about imperfect locality, but not built — this topic's scope is the ordering and its measured locality, not range-query machinery on top of it.", "at": [{ "deep": "Into the internals" }] },
+      { "item": "This topic declines to build k-d trees, quadtrees, R-trees, or either approximate-nearest-neighbour family, consistent with the chapter plan's own skip list for all of §9.1's remaining structures and all of §9.2.", "at": [{ "deep": "The frontier" }] },
+      { "item": "The Hilbert xy2d construction used in examples.py is the standard recursive public-domain algorithm (quadrant chosen by the two high bits, remaining bits rotated/reflected, recurse one level down); it is verified structurally (a full bijection) rather than quoted as text, since no fetched source reproduced the algorithm's own code as extractable plain text.", "at": [{ "step": "A Hilbert curve’s own recursive construction — each quadrant visited in an order and orientation chosen so the path never has to jump across a boundary it’s about to re-enter — keeps the identical boundary pair adjacent in its ordering, where Z-order’s jump was large." }] },
+      { "item": "This topic closes Milestone 1's own run of structures that organize data along one dimension, handing off to Chapter 10's structural question about how a graph's edges are laid out in memory, independent of any ordering.", "at": [{ "step": "Three production systems fix one specific curve and cell shape over this same idea: geohash interleaves latitude and longitude Z-order-style into a base-thirty-two string; S2 projects the sphere onto a cube and runs a Hilbert curve on each of its six faces; H3 tiles the sphere in hexagons instead of squares, because a hexagon’s neighbours are all the same distance from its centre, where a square’s corner neighbours sit farther away than its edge neighbours." }] }
+    ]
+  },
+  "gapReview": { "date": "2026-10-24", "by": "self-review", "open": [] }
+}

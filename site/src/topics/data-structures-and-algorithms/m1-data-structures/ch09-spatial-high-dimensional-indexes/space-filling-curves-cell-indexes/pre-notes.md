@@ -1,0 +1,4 @@
+- **Bit manipulation (general programming background)**: reading off a number's own binary representation one bit at a time, the mechanical step Z-order's own bit-interleaving performs directly.
+- **Recursion and divide-and-conquer (Chapter 4's own binary search trees)**: the shape a Hilbert curve's own construction reuses — split into quadrants, recurse, combine — over geometry instead of over a key range.
+- **Big-O and the cost model used throughout this course**: this topic measures real distances in a one-dimensional ordering, the same "count it directly, don't assume it" discipline as every earlier chapter.
+- **Arrays indexed by position (Chapter 2)**: every curve this topic builds exists to let an ordinary one-dimensional array (or any structure built on one) stand in for a multi-dimensional index.
