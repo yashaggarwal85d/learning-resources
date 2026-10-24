@@ -1,0 +1,281 @@
+{
+ "topic": "rust.failure-taxonomy-error-design",
+ "voice": "breeze-mellow-v2",
+ "asr": "large-v3-turbo",
+ "clips": {
+  "01": {
+   "hash": "eb82ae5eb8f2edde",
+   "takes": [
+    "fed7d78ee598c30dc911",
+    "02092474d55c94791ec8"
+   ],
+   "duration": 22.311,
+   "lines": [
+    {
+     "text": "Two real failures happen here, genuinely different from each other: one of them is worth trying again, and the other one really isn't.",
+     "start": 0.15,
+     "end": 9.719
+    },
+    {
+     "text": "Each one is captured as its own real, named kind, matched directly against to decide whether to try again. Does matching it this way give the right call for both?",
+     "start": 10.439,
+     "end": 21.961
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 143,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "01a": {
+   "hash": "5ff7c4b6cd4047f5",
+   "takes": [
+    "9995c204b819e717847b",
+    "4023ecfea3acb1941351"
+   ],
+   "duration": 9.168,
+   "lines": [
+    {
+     "text": "Yes, genuinely.",
+     "start": 0.15,
+     "end": 1.42
+    },
+    {
+     "text": "Matching against the real, specific kind it actually is gives the correct call every time.",
+     "start": 1.84,
+     "end": 8.818
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -1.9,
+   "wpm": 111,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "02": {
+   "hash": "7cdc70ab27527ec9",
+   "takes": [
+    "9129cc06343c5a201e77"
+   ],
+   "duration": 10.188,
+   "lines": [
+    {
+     "text": "Run it for real: matched against its own real kind, the one worth retrying gets retried, and the one that isn't gets correctly skipped.",
+     "start": 0.15,
+     "end": 9.838
+    }
+   ],
+   "lufs": -16.0,
+   "true_peak": -3.2,
+   "wpm": 141,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "03": {
+   "hash": "33bf833060036db9",
+   "takes": [
+    "b04f526bc08b97048eb2",
+    "48baeb0e3080ab04ca6f"
+   ],
+   "duration": 17.157,
+   "lines": [
+    {
+     "text": "The identical two failures are checked again, but this time only as the plain words each one happened to print, instead of their real, named kind.",
+     "start": 0.15,
+     "end": 11.574
+    },
+    {
+     "text": "Can those words alone still tell the two of them apart correctly?",
+     "start": 12.294,
+     "end": 16.807
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -2.8,
+   "wpm": 133,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "03a": {
+   "hash": "3de22382bc75b657",
+   "takes": [
+    "1150c6c8ffc7ee040e26",
+    "2582e4f9fc5987b8a1ec"
+   ],
+   "duration": 9.832,
+   "lines": [
+    {
+     "text": "No, genuinely.",
+     "start": 0.15,
+     "end": 1.966
+    },
+    {
+     "text": "Both of those failures happen to share the exact same words, so reading them can't tell them apart at all.",
+     "start": 2.386,
+     "end": 9.482
+    }
+   ],
+   "lufs": -16.7,
+   "true_peak": -1.8,
+   "wpm": 134,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "04": {
+   "hash": "7fc71fe477e8c4c5",
+   "takes": [
+    "ae85a2d690cc84561ba2"
+   ],
+   "duration": 11.123,
+   "lines": [
+    {
+     "text": "Run it for real: checked by those words alone, both failures now come back saying to try again, because the words genuinely can't tell the two of them apart.",
+     "start": 0.15,
+     "end": 10.773
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 156,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "05": {
+   "hash": "4f344371a0a1ba38",
+   "takes": [
+    "038d9bfde199b036e6fd",
+    "622e9ecdb659b0c3c651"
+   ],
+   "duration": 12.776,
+   "lines": [
+    {
+     "text": "Look specifically at the one failure that should never be retried.",
+     "start": 0.15,
+     "end": 4.894
+    },
+    {
+     "text": "Does the decision made from its real kind and the decision made from its plain words actually come out different?",
+     "start": 5.614,
+     "end": 12.426
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -2.1,
+   "wpm": 146,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "05a": {
+   "hash": "f675eb23bf329517",
+   "takes": [
+    "fa03c4eb21824ad9541d",
+    "d97893d8dbd41605f1c9"
+   ],
+   "duration": 10.449,
+   "lines": [
+    {
+     "text": "Yes, genuinely, and that's the real problem.",
+     "start": 0.15,
+     "end": 3.398
+    },
+    {
+     "text": "One correctly says don't bother trying again; the other wrongly says go ahead and try.",
+     "start": 3.818,
+     "end": 10.099
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 126,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "06": {
+   "hash": "9cbdab0af3a8f4d5",
+   "takes": [
+    "67131c82f5136d55802b"
+   ],
+   "duration": 14.779,
+   "lines": [
+    {
+     "text": "Run it for real: on that exact same failure, the real-kind check correctly says don't retry, and the plain-words check wrongly says retry anyway, a genuine disagreement over the identical failure.",
+     "start": 0.15,
+     "end": 14.429
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -2.6,
+   "wpm": 134,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "07": {
+   "hash": "2430410f37f329a6",
+   "takes": [
+    "a7db30e2dd2dd956348a",
+    "a9ab52f54880c70b51d5"
+   ],
+   "duration": 26.808,
+   "lines": [
+    {
+     "text": "One real, independent page, and a second real, independent page right beside it, each describe the identical idea in their own words.",
+     "start": 0.15,
+     "end": 11.575
+    },
+    {
+     "text": "One says it offers a simple way to give code its own real, named kinds of failure. The other says it offers one, single kind that just carries whatever extra context a program wants to add as it goes.",
+     "start": 11.995,
+     "end": 26.458
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 137,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "08": {
+   "hash": "01fc687332256781",
+   "takes": [
+    "282c10e1277e7797fc57",
+    "e8b62d99349f0a1e82fc",
+    "da89c3ab97f71c3a683b"
+   ],
+   "duration": 33.699,
+   "lines": [
+    {
+     "text": "So here's what this topic's own measurements are really standing in for: giving a real failure its own specific, named kind means whoever catches it can act correctly on exactly what happened.",
+     "start": 0.15,
+     "end": 14.014
+    },
+    {
+     "text": "Flattening that same failure down into plain words throws that away, and two genuinely different failures can end up looking identical once they're just words.",
+     "start": 14.434,
+     "end": 25.121
+    },
+    {
+     "text": "That isn't a small cosmetic difference. It's the real reason a retry call, or any decision like it, can come out wrong.",
+     "start": 25.541,
+     "end": 33.349
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 141,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  }
+ }
+}
