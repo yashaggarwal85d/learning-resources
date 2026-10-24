@@ -1,0 +1,287 @@
+{
+ "topic": "rust.metrics-that-answer-overload",
+ "voice": "breeze-mellow-v2",
+ "asr": "large-v3-turbo",
+ "clips": {
+  "01": {
+   "hash": "b9cee940368c2343",
+   "takes": [
+    "79b1c90ebbde2c50a978",
+    "a08bd8b254decedc76f6"
+   ],
+   "duration": 19.863,
+   "lines": [
+    {
+     "text": "Several real calls are running right now, each one started at a slightly different moment and taking a different real amount of time.",
+     "start": 0.15,
+     "end": 8.565
+    },
+    {
+     "text": "At one real moment while some of them are still going, something that only ever counts how many have finished is checked. Does that tell you whether anything is still running?",
+     "start": 9.285,
+     "end": 19.513
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -2.1,
+   "wpm": 163,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "01a": {
+   "hash": "03e11494a6b9bd16",
+   "takes": [
+    "1150c6c8ffc7ee040e26",
+    "cbe340376e4f27ac9b3e"
+   ],
+   "duration": 8.775,
+   "lines": [
+    {
+     "text": "No, genuinely.",
+     "start": 0.15,
+     "end": 1.966
+    },
+    {
+     "text": "Something that only ever counts finished work has no way to speak about work that isn't finished yet.",
+     "start": 2.386,
+     "end": 8.425
+    }
+   ],
+   "lufs": -16.7,
+   "true_peak": -1.9,
+   "wpm": 137,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "02": {
+   "hash": "0d35e3c395c32361",
+   "takes": [
+    "4f235e489f6d72d3d06c"
+   ],
+   "duration": 9.29,
+   "lines": [
+    {
+     "text": "Run it for real: checked at that exact moment, it reports only how many calls have already finished, and says nothing at all about the rest.",
+     "start": 0.15,
+     "end": 8.94
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 168,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "03": {
+   "hash": "f140a94ddd7d9fb2",
+   "takes": [
+    "af1195fba1b751f5527b",
+    "549f827c3f6244cca856"
+   ],
+   "duration": 17.076,
+   "lines": [
+    {
+     "text": "A second kind of real measurement, built the same careful way from only the calls that have already finished, is checked at that identical moment.",
+     "start": 0.15,
+     "end": 10.813
+    },
+    {
+     "text": "Does building it a different way let it see what the first one couldn't?",
+     "start": 11.533,
+     "end": 16.726
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -1.9,
+   "wpm": 137,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "03a": {
+   "hash": "8366f8096a9fd48f",
+   "takes": [
+    "1150c6c8ffc7ee040e26",
+    "92873b6b12771539e1aa"
+   ],
+   "duration": 7.767,
+   "lines": [
+    {
+     "text": "No, genuinely.",
+     "start": 0.15,
+     "end": 1.966
+    },
+    {
+     "text": "It's still built only from finished work, so it ends up with the identical blind spot.",
+     "start": 2.386,
+     "end": 7.417
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -1.9,
+   "wpm": 139,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "04": {
+   "hash": "3e249b17c8ccae9b",
+   "takes": [
+    "2c9434cdeaf9825183e1"
+   ],
+   "duration": 9.734,
+   "lines": [
+    {
+     "text": "Run it for real: checked at that same moment, it reports exactly the same count as before, and is just as blind to whatever is still running.",
+     "start": 0.15,
+     "end": 9.384
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -2.5,
+   "wpm": 166,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "05": {
+   "hash": "51fe0811c1567132",
+   "takes": [
+    "be51a21de83b498fe747",
+    "ab457aa97b9628e78b5c"
+   ],
+   "duration": 21.745,
+   "lines": [
+    {
+     "text": "A third kind of real measurement is different: instead of only ever counting upward, it's read as whatever the current real value happens to be right now, and it can go back down again.",
+     "start": 0.15,
+     "end": 14.927
+    },
+    {
+     "text": "Checked at that same exact moment, does this one correctly tell you something is still running?",
+     "start": 15.647,
+     "end": 21.395
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 138,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "05a": {
+   "hash": "9cae58e5e59ddcd1",
+   "takes": [
+    "9995c204b819e717847b",
+    "20a010f18e3740ad859c",
+    "e70118cfa4519beca557"
+   ],
+   "duration": 8.293,
+   "lines": [
+    {
+     "text": "Yes, genuinely.",
+     "start": 0.15,
+     "end": 1.42
+    },
+    {
+     "text": "Because it was built to be read as a current value.",
+     "start": 1.84,
+     "end": 5.628
+    },
+    {
+     "text": "Not as a running total.",
+     "start": 6.048,
+     "end": 7.943
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 130,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "06": {
+   "hash": "ac149f2ca3cc588a",
+   "takes": [
+    "eed1725cb6306276a898"
+   ],
+   "duration": 11.377,
+   "lines": [
+    {
+     "text": "Run it for real: checked at that same moment, this one correctly reports that real work is still running right now, answering what the other two genuinely couldn't.",
+     "start": 0.15,
+     "end": 11.027
+    }
+   ],
+   "lufs": -15.8,
+   "true_peak": -2.1,
+   "wpm": 148,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "07": {
+   "hash": "5d6421c081cfca91",
+   "takes": [
+    "5516b482470762dc54ca",
+    "9b2a18f1c8d497b6e33c"
+   ],
+   "duration": 24.839,
+   "lines": [
+    {
+     "text": "One real, independent page names all three of these exact shapes directly, in its own words.",
+     "start": 0.15,
+     "end": 6.099
+    },
+    {
+     "text": "It says the first kind can only ever increase. It says the second kind counts things into buckets the same careful way. And it says the third kind can arbitrarily go up and down, which is exactly why only that one could answer the real question being asked.",
+     "start": 6.519,
+     "end": 24.489
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 155,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "08": {
+   "hash": "04f47fa2baf0d0c6",
+   "takes": [
+    "7cd3fdca0d0a2a3963e9",
+    "48bb0d1bd31fd9085bcc",
+    "e447ca95d28ef31bbdaf"
+   ],
+   "duration": 41.234,
+   "lines": [
+    {
+     "text": "So here's what this topic's own three real readings are really standing in for: something that only ever counts upward can tell you a running total, but it can never tell you what's true right now, at this exact moment.",
+     "start": 0.15,
+     "end": 16.363
+    },
+    {
+     "text": "Building a second measurement the same careful way, only from finished work, doesn't fix that; it just repeats the identical blind spot in a different shape.",
+     "start": 16.783,
+     "end": 28.255
+    },
+    {
+     "text": "The one real fix is choosing a measurement that was actually built to answer a right-now question in the first place, one that can go back down as easily as it goes up.",
+     "start": 28.675,
+     "end": 40.884
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 146,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  }
+ }
+}
