@@ -1,0 +1,68 @@
+{
+  "steps": [
+    {
+      "lines": [
+        "Three real events happen here, each one worded completely differently from the other two.",
+        { "beat": 0.3 },
+        "Each one also carries the same real, typed field attached to it, underneath its own wording. Summed directly, does that typed field give the real, correct total?"
+      ],
+      "answer": [
+        "Yes, genuinely.",
+        "That field was never text to begin with, so summing it directly just works."
+      ]
+    },
+    {
+      "lines": [
+        "Run it for real: summed directly, that typed field gives exactly the right total, no matter how differently each of the three events happened to word its own message."
+      ]
+    },
+    {
+      "lines": [
+        "Now try getting the same total a different way: by reading it back out of each event's own rendered sentence instead of the typed field underneath.",
+        { "beat": 0.3 },
+        "Does reading the sentences give the same correct total?"
+      ],
+      "answer": [
+        "No, genuinely.",
+        "One of those three sentences spells its own number out as a word instead of writing it as a digit."
+      ]
+    },
+    {
+      "lines": [
+        "Run it for real: read back out of the sentences, the total comes out genuinely wrong, because one real sentence never wrote its number as a digit at all."
+      ],
+      "takeaway": "A sentence written for a person to read is not a reliable place to recover a value the typed field already holds exactly."
+    },
+    {
+      "lines": [
+        "Separately, picture one real, specified header, built once from a real trace id, a real parent id, and a real sampled flag, then handed to a completely different parser to read back.",
+        { "beat": 0.3 },
+        "Does it come back exactly as built? And does a genuinely broken version of that same header get rejected, instead of being guessed at?"
+      ],
+      "answer": [
+        "Yes to both, genuinely.",
+        "A real specification is written so a second, independent implementation can parse what the first one built, exactly, and refuse whatever it can't."
+      ]
+    },
+    {
+      "lines": [
+        "Run it for real: handed to the parser, that header comes back out exactly as it was built, and the genuinely broken version of it is rejected outright, never guessed at."
+      ],
+      "takeaway": "A real, specified format is built once to survive being read by a completely different, independent reader."
+    },
+    {
+      "lines": [
+        "One real, independent specification and one real crate's own documentation each name this exact rule in their own words.",
+        "A trace id and a parent id are real, specific values, never free text. And a field attached to a real event or span is real, typed data, never a sentence written for a person."
+      ],
+      "takeaway": "A typed field survives being asked about later; a sentence written for a person was never built to survive that."
+    },
+    {
+      "lines": [
+        "So here's what this topic's own three real runs are really standing in for: a typed value attached directly to a real event survives being summed, filtered, or asked about later, exactly, no matter how its own event happens to be worded.",
+        "The same value, once it's only living inside a sentence written for a person, can quietly go missing the moment that sentence is worded any differently.",
+        "And a real, specified format carries its own values across that same gap, surviving being built by one program and read back correctly by a completely different one."
+      ]
+    }
+  ]
+}
