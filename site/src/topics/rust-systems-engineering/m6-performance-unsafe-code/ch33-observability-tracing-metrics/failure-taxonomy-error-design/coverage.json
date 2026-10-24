@@ -1,0 +1,67 @@
+{
+  "topic": "rust.failure-taxonomy-error-design",
+  "syllabus": [
+    {
+      "clause": "timeout, cancellation, remote error, protocol violation, local resource exhaustion and invariant failure each drive retry policy and alerting differently.",
+      "at": [
+        { "step": "A real, typed error distinguishes a real timeout from a real remote error. Matched directly on its own variant, does a real retry decision correctly retry the timeout and skip the remote error?" },
+        { "step": "Measured: matched directly on the real, typed variant, the retry decision correctly retries the real timeout and correctly skips the real remote error, exactly as the taxonomy says it should" },
+        { "step": "On the identical real remote error, does the typed decision and the untyped decision actually disagree about whether to retry it?" },
+        { "step": "Measured: on the real remote error, the typed decision correctly says skip, and the untyped decision incorrectly says retry, a real, direct disagreement produced by the identical error, read two different ways" },
+        { "deep": "Internals" }
+      ]
+    },
+    {
+      "clause": "Typed errors at library boundaries (thiserror) vs contextual errors in binaries (anyhow-style);",
+      "at": [
+        { "step": "The thiserror and anyhow crates' own documentation each state this directly: thiserror provides a derive macro for the standard library's own Error trait, fitting a library's typed errors; anyhow provides one dynamic error type for an application's own contextual errors. Does this topic's own comparison model exactly the distinction both crates are built around?" },
+        { "deep": "Internals" }
+      ]
+    },
+    {
+      "clause": "panic vs Result.",
+      "at": [{ "deep": "The frontier" }]
+    }
+  ],
+  "sources": [
+    {
+      "source": "thiserror",
+      "items": [
+        {
+          "item": "This library provides a convenient derive macro for the standard library's std::error::Error trait",
+          "at": [{ "step": "A real, typed error distinguishes a real timeout from a real remote error. Matched directly on its own variant, does a real retry decision correctly retry the timeout and skip the remote error?" }]
+        }
+      ]
+    },
+    {
+      "source": "anyhow",
+      "items": [
+        {
+          "item": "This library provides anyhow::Error, a trait object based error type for easy idiomatic error handling in Rust applications",
+          "at": [{ "step": "The thiserror and anyhow crates' own documentation each state this directly: thiserror provides a derive macro for the standard library's own Error trait, fitting a library's typed errors; anyhow provides one dynamic error type for an application's own contextual errors. Does this topic's own comparison model exactly the distinction both crates are built around?" }]
+        }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "self-review",
+    "date": "2026-10-24",
+    "items": [
+      { "item": "The typed and untyped retry checks are measured against the identical two real errors, produced by the identical function and differing only in whether the caller sees the real enum variant or its rendered string, so the comparison isolates the real effect of the type itself rather than any difference in the underlying failure.", "at": [{ "step": "A real, typed error distinguishes a real timeout from a real remote error. Matched directly on its own variant, does a real retry decision correctly retry the timeout and skip the remote error?" }] },
+      { "item": "The typed retry check is a real, exhaustive match on the enum's own variants, which the compiler itself checks covers every real case; the untyped check is a real, ordinary substring test with no such guarantee, which is the real, structural reason the two diverge.", "at": [{ "step": "Measured: matched directly on the real, typed variant, the retry decision correctly retries the real timeout and correctly skips the real remote error, exactly as the taxonomy says it should" }] },
+      { "item": "The two real error messages are deliberately written to share one identical, realistic prefix ('operation failed'), rather than being contrived to collide; a real system's own error messages routinely share exactly this kind of common wording, which is why the untyped check's own mistake is a real, representative one and not a worst-case contrivance.", "at": [{ "step": "The identical two real errors, rendered only as plain strings, are checked by the identical retry logic, now reading each message's own text instead of a variant. Does it still correctly tell them apart?" }] },
+      { "item": "The untyped check's own retry outcome is measured for both failure kinds, not only asserted for one, confirming directly that it returns the identical answer for two real, different errors rather than merely returning a plausible-looking answer for either one alone.", "at": [{ "step": "Measured: checked by text alone, the real retry decision now retries both the real timeout and the real remote error, since both real error messages share the identical \"operation failed\" substring the untyped check keys on" }] },
+      { "item": "The real disagreement this topic measures is specifically on the remote error, the one case where a wrong retry is operationally costly (retrying against a peer that already rejected the connection); the timeout case, where both checks happen to agree, is measured too, but the remote-error disagreement is the one the taxonomy calls out directly.", "at": [{ "step": "On the identical real remote error, does the typed decision and the untyped decision actually disagree about whether to retry it?" }] },
+      { "item": "The disagreement is measured as a direct boolean comparison between the two real retry decisions on the identical error value, not as two separate runs compared by eye, which is why the Python harness asserts they differ rather than only printing both.", "at": [{ "step": "Measured: on the real remote error, the typed decision correctly says skip, and the untyped decision incorrectly says retry, a real, direct disagreement produced by the identical error, read two different ways" }] },
+      { "item": "Cancellation, protocol violation, local resource exhaustion, and invariant failure are named directly in Internals rather than measured in code, since this topic's own crate needs only one retryable and one non-retryable real kind to demonstrate the identical typed-versus-untyped property the syllabus names for all six failure kinds.", "at": [{ "deep": "Internals" }] },
+      { "item": "anyhow's own real, contextual style for a binary's own top-level error handling is named directly in Internals alongside thiserror's own typed style, since the two are genuinely complementary real conventions (a library's typed boundary versus an application's single dynamic type) rather than competing choices for the identical real problem.", "at": [{ "deep": "Internals" }] },
+      { "item": "panic! is named in The frontier specifically as the real alternative this topic's own crate deliberately never reaches for, since every failure kind the taxonomy names is a real, recoverable one that a caller is meant to decide how to handle, which is exactly why this topic models all of them as Result and a typed error rather than an abort.", "at": [{ "deep": "The frontier" }] },
+      { "item": "The specific error messages and the specific substring they share ('operation failed') are this example's own choice; the measured claims illustrate the real, general property that an untyped string rendering can collide across genuinely different real failures for any real system at all, not a claim bound to exactly this wording.", "at": [{ "step": "Recap: a shape that tells failures apart" }] }
+    ]
+  },
+  "gapReview": {
+    "date": "2026-10-24",
+    "by": "self-review",
+    "open": []
+  }
+}

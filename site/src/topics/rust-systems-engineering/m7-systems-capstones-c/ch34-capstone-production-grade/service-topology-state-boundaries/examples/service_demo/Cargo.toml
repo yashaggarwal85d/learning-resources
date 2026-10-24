@@ -1,0 +1,13 @@
+[package]
+name = "service_demo"
+version = "0.1.0"
+edition = "2024"
+
+[[bin]]
+name = "topology_demo"
+path = "src/main.rs"
+
+[dependencies]
+axum = "0.8"
+tokio = { version = "1", features = ["full"] }
+reqwest = { version = "0.12", features = ["json"] }

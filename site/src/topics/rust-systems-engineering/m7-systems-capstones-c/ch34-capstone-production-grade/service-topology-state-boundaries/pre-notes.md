@@ -1,0 +1,4 @@
+- **State boundary**: a real, specific point in a service's own layering where one real component owns a piece of state (a queue, storage), reached only through one real, narrow interface.
+- **Load shedding**: a real, deliberate rejection of a request once a real resource is at capacity, returned immediately rather than queued.
+- **Graceful shutdown**: a real, coordinated stop that stops accepting new real work immediately, but lets real work already admitted finish before the process exits.
+- **Worker pool**: one or more real tasks pulling real work off a real, shared queue and doing it, kept separate from the real edge that accepts that work in the first place.
