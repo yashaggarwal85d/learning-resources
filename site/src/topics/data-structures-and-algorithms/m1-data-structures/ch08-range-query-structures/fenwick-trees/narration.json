@@ -1,0 +1,79 @@
+{
+  "topic": "dsa.fenwick-trees",
+  "steps": [
+    {
+      "lines": [
+        "Every structure from here back answered one question: is this key here, and where. This chapter asks something different about an array that keeps changing.",
+        "What's true about a stretch of positions, right now, while individual positions keep getting updated underneath you.",
+        "Scan the stretch for an answer and the cost grows with how many positions there are. Cache a running total instead, and an update just moves that same cost somewhere else."
+      ]
+    },
+    {
+      "lines": [
+        "Here's the one piece of arithmetic the whole chapter runs on.",
+        "Every index owns a range of the array, and that range is set entirely by the index's own lowest set bit, the rightmost one bit in its binary form.",
+        "An index ending in a single one bit owns a short range of its own. An index that is a clean power of two owns almost everything beneath it."
+      ]
+    },
+    {
+      "lines": [
+        "Before the reveal, a natural first guess is that fixing one position after a change means touching everything downstream of it.",
+        "Ask instead how far an update actually has to walk, if it only ever jumps by its own lowest set bit."
+      ],
+      "answer": [
+        "Each jump adds the current index's own lowest set bit, and the walk runs past the end of the array after only a few jumps.",
+        "Doubling the array's size would only add one more jump, not many more positions touched."
+      ]
+    },
+    {
+      "lines": [
+        "Watch the jumps land: a direct arithmetic walk, not a tree being climbed one node at a time.",
+        "A short handful of positions touched, forward, each one found by adding the previous index's own lowest set bit."
+      ]
+    },
+    {
+      "lines": [
+        "Before this reveal, notice the query runs the identical arithmetic in reverse, subtracting a lowest set bit instead of adding one.",
+        "Does that reverse walk take the same number of jumps the update did, or a different number entirely?"
+      ],
+      "answer": [
+        "The same count turns up here, but that's a property of these two particular positions, not a rule that an update and a query always match.",
+        "Pick a different starting position and the two counts can easily come apart."
+      ]
+    },
+    {
+      "lines": [
+        "Same arithmetic, opposite direction: each jump now subtracts the current index's own lowest set bit instead of adding it.",
+        "A short handful of positions visited, and their own stored partial sums add straight up to the running total."
+      ]
+    },
+    {
+      "lines": [
+        "A stretch between two positions is just one running total subtracted from another, nothing new to compute, only a difference to take.",
+        "The same pairing trick, run on two separate trees instead of one, turns a single update into a correction applied across an entire stretch at once."
+      ]
+    },
+    {
+      "lines": [
+        "Before this reveal, resist the pull toward assuming a grid needs something smarter than the one-dimensional trick.",
+        "Ask plainly whether running the identical jump arithmetic once along each axis actually works, or whether a second dimension breaks it."
+      ],
+      "answer": [
+        "It works, nested exactly that way: the same jump arithmetic, run once along each axis in turn.",
+        "Nothing about the underlying bit trick changes. Only how many times it gets applied."
+      ]
+    },
+    {
+      "lines": [
+        "Two nested walks, one per axis, and the structure composes without needing any new idea.",
+        "The measured total here was checked directly against summing every cell by hand, not assumed from the one-dimensional case."
+      ]
+    },
+    {
+      "lines": [
+        "Here's where every claimed saving gets checked against a real count instead of an argument.",
+        "Across the same batch of updates and lookups on the identical array, a naive cached running total touched far more positions in total than the Fenwick tree's own jumps did."
+      ]
+    }
+  ]
+}

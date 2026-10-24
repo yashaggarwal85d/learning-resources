@@ -1,0 +1,24 @@
+import Resource from '../../../../../components/Resource.astro';
+
+<section class="prereq" data-section="standard">
+
+### <span class="n">01</span> The real source, from research and production
+
+<ul class="resources">
+  <Resource kind="reading" title="Fenwick Tree" href="https://cp-algorithms.com/data_structures/fenwick.html" by="cp-algorithms, Algorithms for Competitive Programming">The full derivation: lowest-set-bit indexing, point update/range query, range update/range query with two BITs, and the 2D extension, all on one page.</Resource>
+  <Resource kind="reading" title="2D Range Queries" href="https://usaco.guide/plat/2DRQ?lang=cpp" by="USACO Guide, Platinum">The 2D Fenwick tree as the 1D loop nested along a second dimension.</Resource>
+  <Resource kind="reading" title="Range Update Range Query" href="https://usaco.guide/plat/RURQ" by="USACO Guide, Platinum">The range-update/range-query capability, via a suffix-add/prefix-sum framing.</Resource>
+  <Resource kind="reading" title="Fenwick tree" href="https://en.wikipedia.org/wiki/Fenwick_tree" by="Wikipedia">The structure's own naming history: Boris Ryabko, 1989, commonly named after Peter Fenwick's 1994 paper.</Resource>
+</ul>
+
+</section>
+
+<section class="prereq" data-section="later">
+
+### <span class="n">02</span> Where this goes next
+
+<ul class="resources">
+  <Resource kind="reel" host={props.host} domain="data-structures-and-algorithms" title="Segment trees and lazy propagation">The fully general structure: any associative combine function, any range, with a range-wide update costing no more than a point update does here.</Resource>
+</ul>
+
+</section>
