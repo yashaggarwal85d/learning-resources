@@ -1,0 +1,24 @@
+import Resource from '../../../../../components/Resource.astro';
+
+<section class="prereq" data-section="before-this">
+
+### <span class="n">01</span> Before this: locking and optimistic concurrency
+
+<ul class="resources">
+  <Resource kind="reel" title="Locking, deadlocks and lock escalation" domain="data-engineering" host="de.locking-deadlocks-lock-escalation" by="the lock-holding background this topic measures" />
+  <Resource kind="reel" title="Optimistic vs pessimistic concurrency control" domain="data-engineering" host="de.optimistic-vs-pessimistic-concurrency" by="the previous topic of this chapter" />
+</ul>
+
+</section>
+
+<section class="prereq" data-section="straight-from-the-source">
+
+### <span class="n">02</span> The sources this topic measures and quotes against
+
+<ul class="resources">
+  <Resource kind="reading" title="PREPARE TRANSACTION" href="https://www.postgresql.org/docs/current/sql-prepare-transaction.html" by="PostgreSQL documentation">The real two-phase-commit command this topic measures directly against this sandbox's own cluster.</Resource>
+  <Resource kind="reading" title="Distributed Transaction Processing: The XA Specification" href="https://pubs.opengroup.org/onlinepubs/009680699/toc.pdf" by="X/Open Company Ltd., 1991">The vendor-neutral standard behind every production database's own two-phase-commit implementation.</Resource>
+  <Resource kind="reading" title="Spanner: Google's Globally-Distributed Database" href="https://static.googleusercontent.com/media/research.google.com/en//archive/spanner-osdi2012.pdf" by="Corbett et al., OSDI 2012">How a real distributed SQL system hides two-phase commit behind consensus-replicated participants.</Resource>
+</ul>
+
+</section>

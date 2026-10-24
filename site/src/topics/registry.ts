@@ -4468,4 +4468,24 @@ export const TOPICS: TopicMeta[] = [
     handoff:
       "Every mechanism in this section so far assumed one engine making one decision. The next topic is what happens the moment a transaction has to span more than one: two-phase commit.",
   },
+  {
+    id: 'de.2pc-production-databases',
+    domain: 'data-engineering',
+    slug: 'data-engineering/m2-storage-database-internals/ch05-database-internals-distributed/2pc-production-databases',
+    title: '2PC in production databases',
+    syllabusTitle: '2PC in production databases',
+    kind: 'full',
+    status: 'held',
+    milestone: { number: 2, title: 'Storage: Database Internals, Files & the Lakehouse' },
+    chapter: { number: 5, title: 'Database Internals and Distributed Storage', section: '5.2' },
+    minutes: 15,
+    verified: '2026-10-24',
+    introduces: ['two-phase-commit'],
+    uses: ['wal-lsn-fsync'],
+    declared: [],
+    bridge:
+      "Every mechanism in this section so far assumed one engine making one decision. This topic is what happens the moment a transaction has to span more than one: prepare, commit, and the real in-doubt state a coordinator failure leaves participants in.",
+    handoff:
+      "A single engine's own transactions are done. The next section spreads that single engine across machines entirely — starting with the replication vocabulary every later topic in it assumes.",
+  },
 ];
