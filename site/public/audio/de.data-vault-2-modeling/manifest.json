@@ -1,0 +1,475 @@
+{
+ "topic": "de.data-vault-2-modeling",
+ "voice": "breeze-mellow-v2",
+ "asr": "large-v3-turbo",
+ "clips": {
+  "01": {
+   "hash": "8336b7f743f91d6b",
+   "takes": [
+    "c98cd625daad68fda7aa",
+    "0f36033140dd281a6112"
+   ],
+   "duration": 13.399,
+   "lines": [
+    {
+     "text": "The same customer, order and product, modeled three completely separate ways.",
+     "start": 0.15,
+     "end": 5.491
+    },
+    {
+     "text": "One question about them can be answered by all three. What differs is how much work answering it takes.",
+     "start": 5.911,
+     "end": 13.049
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 134,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "02": {
+   "hash": "a378def493cb418b",
+   "takes": [
+    "d2efc45c4e5850df1117",
+    "624979da5da472c3b854"
+   ],
+   "duration": 12.797,
+   "lines": [
+    {
+     "text": "Here's the first question.",
+     "start": 0.15,
+     "end": 1.307
+    },
+    {
+     "text": "One of these models keeps a business key in a table by itself. Does that same table also hold what describes it, like a customer's own name?",
+     "start": 1.727,
+     "end": 12.447
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -1.9,
+   "wpm": 145,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "02a": {
+   "hash": "bd517f517ce7d0d1",
+   "takes": [
+    "c7b6cc8322485ca0a56c",
+    "0d38f791c6242d42c9ef"
+   ],
+   "duration": 7.933,
+   "lines": [
+    {
+     "text": "No. Everything descriptive lives somewhere else entirely, on purpose.",
+     "start": 0.15,
+     "end": 4.923
+    },
+    {
+     "text": "That table keeps only the key.",
+     "start": 5.343,
+     "end": 7.583
+    }
+   ],
+   "lufs": -16.2,
+   "true_peak": -2.1,
+   "wpm": 113,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "03": {
+   "hash": "e53a23a40a385feb",
+   "takes": [
+    "fdd8be06e458799a65a8",
+    "edc5c2a94529f6998728"
+   ],
+   "duration": 11.159,
+   "lines": [
+    {
+     "text": "Start with that simplest piece, confirmed.",
+     "start": 0.15,
+     "end": 3.434
+    },
+    {
+     "text": "A table that holds only the business key itself, nothing describing it, and barely ever changes.",
+     "start": 3.854,
+     "end": 10.809
+    }
+   ],
+   "lufs": -16.2,
+   "true_peak": -2.3,
+   "wpm": 118,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "04": {
+   "hash": "eb0aeb40f5fb34b7",
+   "takes": [
+    "4cbaacc0206dc5259ec8",
+    "3c7921c69e8ed4237950"
+   ],
+   "duration": 11.472,
+   "lines": [
+    {
+     "text": "Next, the relationship between two of those keys, kept in a table of its own.",
+     "start": 0.15,
+     "end": 5.762
+    },
+    {
+     "text": "Whatever keys participate in that relationship are exactly what defines its grain.",
+     "start": 6.182,
+     "end": 11.122
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -3.0,
+   "wpm": 141,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "05": {
+   "hash": "088a56d2cf4d3e64",
+   "takes": [
+    "3103a5d065d8437788c5",
+    "2a2a874854b53d9b5e43"
+   ],
+   "duration": 14.089,
+   "lines": [
+    {
+     "text": "And finally, everything descriptive about one of those keys, tracked over time.",
+     "start": 0.15,
+     "end": 6.971
+    },
+    {
+     "text": "Nothing here ever gets overwritten. A change adds a new row instead of replacing the old one.",
+     "start": 7.391,
+     "end": 13.739
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -2.4,
+   "wpm": 123,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "06": {
+   "hash": "95ddada834973574",
+   "takes": [
+    "a090c005406fb9dc7518",
+    "ccf27eb2e072a20d02ee"
+   ],
+   "duration": 11.454,
+   "lines": [
+    {
+     "text": "Here's the test.",
+     "start": 0.15,
+     "end": 1.093
+    },
+    {
+     "text": "If each of these three kinds of table gets loaded by a completely separate process, with nobody coordinating between them, is that actually safe?",
+     "start": 1.513,
+     "end": 11.104
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -1.9,
+   "wpm": 141,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "06a": {
+   "hash": "adfd8c15d20c5f1b",
+   "takes": [
+    "63f5e1421cf672aef6d7",
+    "5b4249b9a3297d1eaad4"
+   ],
+   "duration": 13.671,
+   "lines": [
+    {
+     "text": "Only if every one of those processes can work out the same key for the same thing, entirely on its own.",
+     "start": 0.15,
+     "end": 8.189
+    },
+    {
+     "text": "A shared counter handing out keys one at a time would defeat the whole point.",
+     "start": 8.609,
+     "end": 13.321
+    }
+   ],
+   "lufs": -15.9,
+   "true_peak": -2.0,
+   "wpm": 158,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "07": {
+   "hash": "3541b655c2415934",
+   "takes": [
+    "348c2bfbe7ddd57e691b",
+    "6e083f1666f662b10b11"
+   ],
+   "duration": 17.472,
+   "lines": [
+    {
+     "text": "Watch this happen for real.",
+     "start": 0.15,
+     "end": 1.902
+    },
+    {
+     "text": "Two completely separate processes hash the same business key, never once talking to each other, and land on the exact same result. That's the entire mechanism, computed, not assumed.",
+     "start": 2.322,
+     "end": 17.122
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.8,
+   "wpm": 117,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "08": {
+   "hash": "41931e72af3c4fe8",
+   "takes": [
+    "6872e70253fbcdc01ac1",
+    "70574fa9a211edff5313"
+   ],
+   "duration": 17.92,
+   "lines": [
+    {
+     "text": "Here's what that replaces.",
+     "start": 0.15,
+     "end": 1.727
+    },
+    {
+     "text": "A counter-based key forces a child record to go look up its parent's already-assigned key before it can even be written. Deriving the key on your own, from the thing itself, erases that dependency completely.",
+     "start": 2.147,
+     "end": 17.57
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -2.2,
+   "wpm": 137,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "09": {
+   "hash": "932231f611bbe83a",
+   "takes": [
+    "c8261abd626c1861c629",
+    "4dbca1d1636b77803b8d"
+   ],
+   "duration": 24.505,
+   "lines": [
+    {
+     "text": "Now the actual cost of all this, measured rather than guessed at.",
+     "start": 0.15,
+     "end": 4.008
+    },
+    {
+     "text": "Asking for a customer's address as of a particular order's date takes one join in the simple normalized version, one join in the star-shaped version, and several joins plus an extra lookup once everything is split into separate business-key, relationship, and history tables.",
+     "start": 4.428,
+     "end": 24.155
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 140,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "10": {
+   "hash": "84590f5e258d4708",
+   "takes": [
+    "456a9dfc8ba107c41c15",
+    "f80fd1f2689452d77907"
+   ],
+   "duration": 18.494,
+   "lines": [
+    {
+     "text": "That extra cost isn't an accident. It's the same decision, seen from the other side.",
+     "start": 0.15,
+     "end": 6.315
+    },
+    {
+     "text": "Splitting everything apart is exactly what made loading so easy a moment ago. Querying has to put all of that back together again, every single time.",
+     "start": 6.735,
+     "end": 18.144
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 133,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "11": {
+   "hash": "87a8002abeda3cbb",
+   "takes": [
+    "ed88cc4fdbc04633f974",
+    "f3c9e289d74c26a3295c"
+   ],
+   "duration": 16.155,
+   "lines": [
+    {
+     "text": "Here's how that gets paid back down, also measured.",
+     "start": 0.15,
+     "end": 3.683
+    },
+    {
+     "text": "Pre-resolve that as-of lookup once, when the data loads, instead of recomputing it on every query, and one whole join disappears along with the extra lookup.",
+     "start": 4.103,
+     "end": 15.805
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -2.5,
+   "wpm": 137,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "12": {
+   "hash": "1bde65fb2299a91a",
+   "takes": [
+    "e5635d1a25c144c80870",
+    "16afd1582a94e2f23b95"
+   ],
+   "duration": 14.711,
+   "lines": [
+    {
+     "text": "That trick works for one history table at a time.",
+     "start": 0.15,
+     "end": 3.318
+    },
+    {
+     "text": "When a query would otherwise have to cross several relationship tables in a row just to get an answer, a different kind of table pre-walks that whole path instead.",
+     "start": 3.738,
+     "end": 14.361
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 163,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "13": {
+   "hash": "77e419ce5a8d48b4",
+   "takes": [
+    "42ccca9d9a1ba98f2b7b",
+    "e671df411c1a31f9cc12"
+   ],
+   "duration": 15.321,
+   "lines": [
+    {
+     "text": "So what does all that extra querying cost actually buy you?",
+     "start": 0.15,
+     "end": 4.31
+    },
+    {
+     "text": "Nothing is ever thrown away, and a brand-new source system can be added as new tables of its own, without touching anything that already holds real history.",
+     "start": 4.86,
+     "end": 14.971
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 153,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "14": {
+   "hash": "5cc7ced4fd06aac0",
+   "takes": [
+    "0c6ff75d707c987de65b",
+    "74482caaffb6b3a0af4f"
+   ],
+   "duration": 19.874,
+   "lines": [
+    {
+     "text": "Three separate ideas, not one.",
+     "start": 0.15,
+     "end": 2.641
+    },
+    {
+     "text": "A business key, a relationship, and its history, kept apart on purpose. A key you can derive instead of having to ask for. A real, counted cost at query time, and two separate ways to pay it back down.",
+     "start": 3.061,
+     "end": 19.524
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 133,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "15": {
+   "hash": "3bf968abc5deb7da",
+   "takes": [
+    "7c569da5209324824837",
+    "ba08d943a883e0808f89"
+   ],
+   "duration": 12.647,
+   "lines": [
+    {
+     "text": "One more scenario.",
+     "start": 0.15,
+     "end": 1.423
+    },
+    {
+     "text": "A new source system joins next quarter, with its own version of the same business key. Which of today's three designs takes that with the least rebuilding?",
+     "start": 1.843,
+     "end": 12.297
+    }
+   ],
+   "lufs": -15.8,
+   "true_peak": -2.0,
+   "wpm": 142,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "15a": {
+   "hash": "87aba8562300ed20",
+   "takes": [
+    "277ce1ac154a6bdd12f9",
+    "00bfd2f723ff6c34346c"
+   ],
+   "duration": 17.176,
+   "lines": [
+    {
+     "text": "The one built from separate business-key, relationship, and history tables.",
+     "start": 0.15,
+     "end": 6.072
+    },
+    {
+     "text": "A new business key just becomes a new table of that same kind, sitting beside the ones that already hold production history, rather than forcing a redesign of them.",
+     "start": 6.492,
+     "end": 16.826
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -2.0,
+   "wpm": 140,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  }
+ }
+}
