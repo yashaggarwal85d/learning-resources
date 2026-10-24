@@ -1,0 +1,23 @@
+import Resource from '../../../../../components/Resource.astro';
+
+<section class="prereq" data-section="chapter-so-far">
+
+### <span class="n">01</span> Where the last topic left off
+
+<ul class="resources">
+  <Resource kind="reel" host={props.host} domain="rust-systems-engineering" title="Update strategies: in-place, append, copy-on-write">all three update strategies still produce pages that need to be cached in memory.</Resource>
+</ul>
+
+</section>
+
+<section class="prereq" data-section="buffer-pool-primary">
+
+### <span class="n">02</span> The real docs: who decides, and when
+
+<ul class="resources">
+  <Resource kind="reading" title="pg_buffercache" href="https://www.postgresql.org/docs/current/pgbuffercache.html" by="The PostgreSQL Global Development Group">isdirty, usagecount, and pinning_backends on a real shared buffer.</Resource>
+  <Resource kind="reading" title="LeanStore" href="https://raw.githubusercontent.com/leanstore/leanstore/master/README.md" by="The LeanStore authors">a lightweight buffer manager built on pointer swizzling.</Resource>
+  <Resource kind="reading" title="Are You Sure You Want to Use MMAP in Your Database Management System?" href="https://www.cidrdb.org/cidr2022/papers/p13-crotty.pdf" by="Crotty, Leis & Pavlo, CIDR 2022">mmap hands control of when a dirty page is flushed entirely to the OS.</Resource>
+</ul>
+
+</section>

@@ -1,0 +1,4 @@
+- **Buffer pool**: a frame table in memory, caching pages from disk, with a pin count and a dirty bit per frame. *Where you meet it:* a pool that genuinely refuses to evict a pinned frame, and writes a dirty frame back before reusing it.
+- **CLOCK**: a cheap approximation of LRU. A sweep clears a frame's reference bit on its way past; a frame touched since the last sweep gets a real second chance instead of being evicted.
+- **Pinning**: while a frame is pinned, it is never a candidate for eviction, no matter how stale it looks to the sweep.
+- **mmap contrast**: an explicit buffer pool decides for itself when a dirty page is written back; mapping the file into memory instead hands that timing entirely to the OS.
