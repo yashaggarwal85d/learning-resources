@@ -4248,4 +4248,24 @@ export const TOPICS: TopicMeta[] = [
     handoff:
       "Every mechanism so far assumed one path to a row: a direct page read. The next topic is the structure that makes finding the right page fast in the first place — the B-tree.",
   },
+  {
+    id: 'de.b-tree-indexes-production',
+    domain: 'data-engineering',
+    slug: 'data-engineering/m2-storage-database-internals/ch05-database-internals-distributed/b-tree-indexes-production',
+    title: 'B-tree indexes in production',
+    syllabusTitle: 'B-tree indexes in production',
+    kind: 'full',
+    status: 'held',
+    milestone: { number: 2, title: 'Storage: Database Internals, Files & the Lakehouse' },
+    chapter: { number: 5, title: 'Database Internals and Distributed Storage', section: '5.1' },
+    minutes: 15,
+    verified: '2026-10-24',
+    introduces: ['btree-fanout-blink'],
+    uses: ['slotted-page-layout', 'buffer-pool-pin-unpin'],
+    declared: [],
+    bridge:
+      "Every mechanism so far assumed one path to a row: a direct page read. This topic is the structure that makes finding the right page fast in the first place, and the real concurrency and production features (deduplication, skip scan) a real B-tree index needs.",
+    handoff:
+      "A B-tree index answers 'where is this row' fast, but says nothing about what happens when two transactions want to change the same row at once. That's the next question: MVCC, Postgres's own answer to concurrent writes.",
+  },
 ];

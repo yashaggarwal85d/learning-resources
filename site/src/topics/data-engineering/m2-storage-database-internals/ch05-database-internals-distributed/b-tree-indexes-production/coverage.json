@@ -26,7 +26,7 @@
       "at": [{ "step": "Reveal: two more production features" }]
     },
     {
-      "clause": "clustered (InnoDB) vs heap-organised (Postgres) tables and what a secondary-index lookup costs in each",
+      "clause": "clustered (InnoDB) vs heap-organised (Postgres) tables and what a secondary-index lookup costs in each. Build depth → Rust Systems Engineering Ch.21.",
       "at": [{ "step": "Reveal: two more production features" }]
     }
   ],
@@ -130,8 +130,20 @@
       {
         "item": "The clustered-vs-heap-organized contrast isn't just an implementation detail — it directly determines a secondary-index lookup's own real cost: InnoDB pays a second B-tree traversal every time, because its primary key's own leaf pages hold the full row; Postgres's heap-organized design means a secondary-index lookup is one traversal plus one direct page fetch, not two traversals, because the chapter's own topic 1 already established that an index tuple holds a ctid pointer, not the row itself.",
         "at": [{ "step": "Reveal: two more production features" }]
+      },
+      {
+        "item": "A clustered table isn't strictly worse than a heap-organized one — it trades a cheaper secondary-index lookup's own extra hop against a primary-key lookup that never needs a second traversal at all, since the full row already lives at the leaf; which trade wins depends entirely on whether a workload's real queries go through the primary key or a secondary index more often.",
+        "at": [{ "step": "Reveal: two more production features" }]
+      },
+      {
+        "item": "This topic's own declared background (the Data Structures & Algorithms track's B-tree topic) covers the generic structure; what this topic itself introduces on top of that background is specifically the production reality of a real B-tree index: concurrency without a whole-tree lock, and the fillfactor/deduplication trade-offs that only show up under real, sustained write load.",
+        "at": [{ "step": "Reveal: page split & cascade" }]
+      },
+      {
+        "item": "The Lehman-Yao protocol's real guarantee is narrower than 'fully lock-free': a reader never blocks on another reader or writer holding a lock elsewhere in the tree, but a single page being physically modified is still briefly locked against other access to that same page — the algorithm eliminates whole-tree contention, not all contention.",
+        "at": [{ "step": "Reveal: Lehman-Yao concurrency" }]
       }
     ]
   },
-  "gapReview": { "date": "", "by": "", "open": [] }
+  "gapReview": { "date": "2026-10-24", "by": "self-review", "open": [] }
 }
