@@ -1,0 +1,91 @@
+{
+  "topic": "de.optimistic-vs-pessimistic-concurrency",
+  "steps": [
+    {
+      "lines": [
+        "Picture two browser tabs, both checking out the very last unit of the same item.",
+        "Exactly one of those orders can actually succeed. That part was never in question.",
+        "What's in question is when the database finds that out, and what it spends finding out."
+      ]
+    },
+    {
+      "lines": [
+        "The first answer is the one you already know from last topic. Lock the row the moment you touch it.",
+        "Watch the left-hand row. The lock goes on before the database has any idea whether a second checkout is even coming.",
+        "That's the defining trait of a pessimistic strategy. It pays the cost of protection whether or not protection turns out to be needed."
+      ]
+    },
+    {
+      "lines": [
+        "The second answer flips that bet entirely.",
+        "Read the row with nothing held. No lock, nothing stopping a second reader from reading that exact same value a moment later.",
+        "The version number is the only thing protecting you. Your write only lands if that number hasn't moved since you read it. If it has, you start over."
+      ]
+    },
+    {
+      "lines": [
+        "Here's where I want you to actually commit to an answer.",
+        "If almost nobody collides most of the time, is paying for a lock on every single row still the safer choice?"
+      ],
+      "answer": [
+        "It's tempting to treat a lock as cheap insurance you should always carry.",
+        "But insurance has a premium, and the lock's premium gets paid on every row, collision or not.",
+        "No. On a workload this uncontended, skipping the lock and betting on the version column wins outright, on the identical workload."
+      ]
+    },
+    {
+      "lines": [
+        "Here's that exact bet, run for real, against this sandbox's own database.",
+        "Hundreds of rows, a handful of workers, hundreds of increments apiece — the same work, once under each strategy.",
+        "Watch the bottom row win. Almost nothing collided, so almost nothing was wasted either."
+      ]
+    },
+    {
+      "lines": [
+        "Now shrink the target. The same workers, but only a couple of rows left to fight over.",
+        "Watch what happens to the optimistic row. It isn't just slower. It's burning through retry after retry, redoing the same work over and over.",
+        "The winner flipped completely, on the exact same two strategies. Neither mechanism changed. Only how often they collided did."
+      ]
+    },
+    {
+      "lines": [
+        "So why does how often they collide flip the winner this completely? Look at what each strategy actually wastes the moment a collision happens.",
+        "A blocked session isn't doing nothing. It's waiting its turn, and every bit of that wait still counts the moment the lock finally arrives.",
+        "A failed compare and set throws real work away. The read, the comparison, the attempted write — all of it, discarded, and started over from nothing."
+      ]
+    },
+    {
+      "lines": [
+        "There's a third version of this same bet, and you've actually already met it.",
+        "Instead of checking one row's own version number, validate everything a transaction read, all at once, right before it commits.",
+        "That's exactly what the serializable route from a couple of topics back does. Same philosophy as the version column, scaled up to a transaction's entire read set."
+      ]
+    },
+    {
+      "lines": [
+        "This exact bet isn't unique to one database row.",
+        "A table format built on object storage commits a whole table the same way. Swap one pointer, and only if nobody else swapped it first.",
+        "A distributed database runs the identical bet across an entire cluster of machines. Different altitude, same wager."
+      ]
+    },
+    {
+      "lines": [
+        "Pull the whole topic together.",
+        "One strategy pays up front, whether or not it turns out to need protecting. The other pays only when it guesses wrong — and sometimes it guesses wrong a lot.",
+        "Which one actually wins was never something you could answer from instinct. You measure it, the way this topic just did, twice."
+      ]
+    },
+    {
+      "lines": [
+        "One last one. An endpoint lets a shopper claim one seat at a show.",
+        "Most of the day, almost nobody is claiming a seat at the same moment. Then the sale opens, and for roughly a minute and a half, everyone is.",
+        "Given everything you just watched about what decides the winner here. Does one fixed strategy serve this endpoint well for the whole day?"
+      ],
+      "answer": [
+        "It's tempting to pick one strategy for the endpoint and leave it there. It is, after all, one endpoint.",
+        "But what decides the winner was never the endpoint's own identity. It was how often requests actually collided, and that genuinely changes for those ninety seconds.",
+        "So no. The optimistic version wins for most of the day, and the pessimistic one is the better bet for that one spike — the exact reversal this topic just measured."
+      ]
+    }
+  ]
+}

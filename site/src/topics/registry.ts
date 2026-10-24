@@ -4448,4 +4448,24 @@ export const TOPICS: TopicMeta[] = [
     handoff:
       "Locking is pessimistic by nature: it blocks before it knows there's really a conflict. The next topic is the practical choice between that and the optimistic alternative topics 12–13 already showed working.",
   },
+  {
+    id: 'de.optimistic-vs-pessimistic-concurrency',
+    domain: 'data-engineering',
+    slug: 'data-engineering/m2-storage-database-internals/ch05-database-internals-distributed/optimistic-vs-pessimistic-concurrency',
+    title: 'Optimistic vs pessimistic concurrency control',
+    syllabusTitle: 'Optimistic vs pessimistic concurrency control',
+    kind: 'full',
+    status: 'held',
+    milestone: { number: 2, title: 'Storage: Database Internals, Files & the Lakehouse' },
+    chapter: { number: 5, title: 'Database Internals and Distributed Storage', section: '5.2' },
+    minutes: 15,
+    verified: '2026-10-24',
+    introduces: ['occ-vs-pcc'],
+    uses: ['locking-deadlock-detection', 'snapshot-isolation'],
+    declared: [],
+    bridge:
+      "Locking is pessimistic by nature: it blocks before it knows there's really a conflict. This topic is the practical choice between that and the optimistic alternative — real FOR UPDATE, a version-column compare-and-set, and validate-at-commit OCC, measured against each other at two real conflict rates.",
+    handoff:
+      "Every mechanism in this section so far assumed one engine making one decision. The next topic is what happens the moment a transaction has to span more than one: two-phase commit.",
+  },
 ];

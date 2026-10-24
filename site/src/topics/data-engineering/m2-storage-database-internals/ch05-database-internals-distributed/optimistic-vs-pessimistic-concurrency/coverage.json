@@ -1,0 +1,73 @@
+{
+  "topic": "de.optimistic-vs-pessimistic-concurrency",
+  "syllabus": [
+    {
+      "clause": "SELECT … FOR UPDATE vs version-column compare-and-set vs validate-at-commit OCC",
+      "at": [
+        { "step": "Reveal: pessimistic, for real" },
+        { "step": "Reveal: optimistic, a version-column compare-and-set" },
+        { "step": "Reveal: a third flavor, validate-at-commit OCC" }
+      ]
+    },
+    {
+      "clause": "how conflict rate decides the winner",
+      "at": [
+        { "step": "Predict: is paying for a lock still worth it when conflicts are rare?" },
+        { "step": "Reveal: low conflict, measured" },
+        { "step": "Reveal: high conflict, measured" }
+      ]
+    },
+    {
+      "clause": "the same pattern reappearing in object-store table commits (§6.3) and distributed SQL (§5.3)",
+      "at": [
+        { "step": "Reveal: the same pattern elsewhere" }
+      ]
+    }
+  ],
+  "sources": [
+    {
+      "source": "13.3. Explicit Locking (PostgreSQL documentation)",
+      "items": [
+        { "item": "FOR UPDATE locks the retrieved rows against modification or deletion by other transactions until the current transaction ends", "at": [{ "step": "Reveal: pessimistic, for real" }] },
+        { "item": "within REPEATABLE READ/SERIALIZABLE, FOR UPDATE throws an error on a row that already changed rather than silently locking a stale one", "at": [{ "deep": "Internals" }] },
+        { "item": "locking a row with FOR UPDATE can itself cause a disk write", "at": [{ "out": "named in FACT-CHECK.md claim 3, not shown on screen; the reel's own cost framing is the retry/round-trip cost, not FOR UPDATE's own write cost" }] }
+      ]
+    },
+    {
+      "source": "13.4. Data Consistency Checks at the Application Level (PostgreSQL documentation)",
+      "items": [
+        { "item": "FOR UPDATE/FOR SHARE/LOCK TABLE named as the explicit, pessimistic route to protecting a row's current validity", "at": [{ "step": "Reveal: pessimistic, for real" }] },
+        { "item": "FOR UPDATE only temporarily blocks — a blocked transaction proceeds once released unless the row was actually written while held", "at": [{ "deep": "Internals" }] }
+      ]
+    },
+    {
+      "source": "On Optimistic Methods for Concurrency Control (Kung & Robinson, 1981)",
+      "items": [
+        { "item": "the optimistic approach relies on transaction backup, \"hoping\" conflicts will not occur, rather than locking before the fact", "at": [{ "step": "Reveal: optimistic, a version-column compare-and-set" }] },
+        { "item": "the three phases: read (local copies only), validation (checked before anything becomes visible), write (made global only if validation passed)", "at": [{ "step": "Reveal: optimistic, a version-column compare-and-set" }, { "step": "Reveal: a third flavor, validate-at-commit OCC" }] },
+        { "item": "a failed validation backs the transaction up and restarts it as a new one", "at": [{ "step": "Reveal: high conflict, measured" }] }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "self-review",
+    "date": "2026-10-24",
+    "items": [
+      { "item": "Pessimistic and optimistic concurrency are not two different goals — they're two different bets about the same unknown (will this transaction collide with another?), made at opposite times: before any work happens, or after.", "at": [{ "step": "Hook" }] },
+      { "item": "A version-column compare-and-set is optimistic concurrency control scoped down to exactly one row; it protects that row's own write, and says nothing about any other row the same transaction read along the way.", "at": [{ "step": "Reveal: optimistic, a version-column compare-and-set" }] },
+      { "item": "The crossover this topic measures isn't about which mechanism is faster in the abstract — it's about what each one wastes when a collision happens: locking wastes time (a queued wait), optimistic concurrency wastes work (a discarded read and write, redone from scratch).", "at": [{ "step": "Reveal: why the crossover happens" }] },
+      { "item": "Validate-at-commit OCC doesn't eliminate the optimistic bet, it widens what gets validated: instead of one row's own version, a whole transaction's whole read set is checked together, which is exactly why it can catch a conflict a version-column compare-and-set would miss entirely.", "at": [{ "step": "Reveal: a third flavor, validate-at-commit OCC" }] },
+      { "item": "Conflict rate is not a fixed property of a workload — it changes with time of day, feature launches, and sales events, which is exactly why the right answer in this topic's own 'Prove it' scenario can flip within the same system, the same day.", "at": [{ "step": "Prove it" }] },
+      { "item": "An object-store table format's own commit (a compare-and-swap on the table's current pointer) and this topic's own version-column compare-and-set are the identical mechanism at a different altitude: one row's version versus one table's whole pointer, both optimistic, both retried on a lost race.", "at": [{ "step": "Reveal: the same pattern elsewhere" }] },
+      { "item": "This topic's own measured numbers are a real reversal, not a coincidence of one run: both directions (optimistic ahead at low conflict, pessimistic ahead at high conflict) held across seven repeated runs each, which is why the reel's own assertions use a conservative margin well inside the real observed range.", "at": [{ "step": "Recap" }] },
+      { "item": "Retrying an optimistic failure isn't free even when it eventually succeeds — every retry is a full extra round trip to the database, and this topic's own high-conflict run shows that cost can exceed the real, useful work by more than two to one.", "at": [{ "deep": "Internals" }] },
+      { "item": "Topic 13's own SSI abort-rate measurement (contention rising from about fifty percent aborted to about eighty-three percent aborted) is the same shape of cost this topic measures directly for a single-row compare-and-set — conflict rate driving up wasted, retried work, just at a different granularity.", "at": [{ "deep": "Production failures this topic warns about" }] },
+      { "item": "Neither object-store table commits nor a distributed SQL system's own commit protocol are built or measured here — naming them as the same pattern is the whole of this topic's own claim about them, and both are a later topic's job to actually open up.", "at": [{ "deep": "Frontier" }] }
+    ]
+  },
+  "gapReview": {
+    "date": "2026-10-24",
+    "by": "self-review",
+    "open": []
+  }
+}
