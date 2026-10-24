@@ -1,0 +1,593 @@
+{
+ "topic": "de.parallel-distributed-query-plans",
+ "voice": "breeze-mellow-v2",
+ "asr": "large-v3-turbo",
+ "clips": {
+  "01": {
+   "hash": "8b0d1fb7f329911c",
+   "takes": [
+    "818bd9e6be5a0c761c97",
+    "f18fbfe1170cc9047015",
+    "11beecec275e5c9a2246"
+   ],
+   "duration": 16.605,
+   "lines": [
+    {
+     "text": "Join two tables, both split into matching pieces, and there are two ways to do it.",
+     "start": 0.15,
+     "end": 6.297
+    },
+    {
+     "text": "Combine everything first, then join.",
+     "start": 6.717,
+     "end": 10.136
+    },
+    {
+     "text": "Or join each matching piece on its own, and skip the combining entirely.",
+     "start": 10.556,
+     "end": 16.256
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -2.5,
+   "wpm": 123,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "02": {
+   "hash": "d616876fce7a995f",
+   "takes": [
+    "6007a7c1369ecac15c77",
+    "9243cfa1758cf551e4b2"
+   ],
+   "duration": 16.45,
+   "lines": [
+    {
+     "text": "Neither plan here is cutting corners. Both of them touch every row, apply the same condition, and land on the same answer.",
+     "start": 0.15,
+     "end": 8.333
+    },
+    {
+     "text": "So why would cutting that work into four smaller pieces ever come out ahead of handling it as one piece?",
+     "start": 9.153,
+     "end": 16.1
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -2.0,
+   "wpm": 153,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "02a": {
+   "hash": "aed9e17f889e98cc",
+   "takes": [
+    "d8e8a8ba28b8cf2f5a98",
+    "12273089d25a8bb68bf5"
+   ],
+   "duration": 15.196,
+   "lines": [
+    {
+     "text": "Each smaller join's own table of matching rows can fit somewhere the one big combined table can't.",
+     "start": 0.15,
+     "end": 6.994
+    },
+    {
+     "text": "The total amount of work doesn't change. How it gets divided up is what decides whether it fits in memory at all.",
+     "start": 7.414,
+     "end": 14.846
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -2.8,
+   "wpm": 154,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "03": {
+   "hash": "73e2fd0948e4a149",
+   "takes": [
+    "1087ceeca67a47605215",
+    "b44ff5dbc42bea36053c"
+   ],
+   "duration": 17.843,
+   "lines": [
+    {
+     "text": "Turn the setting off, and the plan shows one join sitting above everything from both tables, stitched together first.",
+     "start": 0.15,
+     "end": 9.003
+    },
+    {
+     "text": "Turn it on, and that single join becomes four separate ones, each handling just its own matching slice.",
+     "start": 9.423,
+     "end": 17.493
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 124,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "04": {
+   "hash": "bdc4b4f42ac492f0",
+   "takes": [
+    "932167c6cc6234ccff0f",
+    "90dfefa38b138019d276",
+    "a1eb302f5ed6a80c270f"
+   ],
+   "duration": 26.036,
+   "lines": [
+    {
+     "text": "This only works when the condition joining the two tables covers every piece they're split on, and both tables are split the exact same way.",
+     "start": 0.15,
+     "end": 8.49
+    },
+    {
+     "text": "Once that's true, a row on one side can only ever match a row that's already sitting in the exact same piece on the other.",
+     "start": 8.91,
+     "end": 18.031
+    },
+    {
+     "text": "There's nothing left to check across the different pieces \u2014 each one is already a complete, self-contained problem.",
+     "start": 18.451,
+     "end": 25.686
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 157,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "05": {
+   "hash": "67cb568df3de38fc",
+   "takes": [
+    "4219342c05a1742400fd",
+    "9d9b42d18c440b2e34b7",
+    "e4a555c7d7f8b6e49ab6"
+   ],
+   "duration": 22.643,
+   "lines": [
+    {
+     "text": "Give both versions of the plan the exact same, fairly tight amount of memory to work with.",
+     "start": 0.15,
+     "end": 6.698
+    },
+    {
+     "text": "The one combined table of matching rows doesn't fit, and has to spill out to disk.",
+     "start": 7.118,
+     "end": 13.063
+    },
+    {
+     "text": "Each of the four smaller ones does fit, with room to spare. Same hardware, same memory limit, same answer in the end.",
+     "start": 13.483,
+     "end": 22.293
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 146,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "06": {
+   "hash": "1fdd2cf9b263bcec",
+   "takes": [
+    "1781be0145198c21df03",
+    "451d0bcd6a66e917989b"
+   ],
+   "duration": 18.078,
+   "lines": [
+    {
+     "text": "Take that same idea up a level: two tables, each sitting across several different machines instead of pieces on one.",
+     "start": 0.15,
+     "end": 8.853
+    },
+    {
+     "text": "If those tables aren't already split up the same way across those machines, what has to happen before they can even be joined?",
+     "start": 9.673,
+     "end": 17.728
+    }
+   ],
+   "lufs": -16.2,
+   "true_peak": -2.1,
+   "wpm": 143,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "06a": {
+   "hash": "b2069c99c2ba122f",
+   "takes": [
+    "421693546db9ee12eda6",
+    "744c45ed780a4da168dc"
+   ],
+   "duration": 12.859,
+   "lines": [
+    {
+     "text": "Data has to physically move across the network first.",
+     "start": 0.15,
+     "end": 3.449
+    },
+    {
+     "text": "A single machine's matching pieces give you that alignment for free. Across separate machines, something has to go build it.",
+     "start": 3.869,
+     "end": 12.509
+    }
+   ],
+   "lufs": -15.9,
+   "true_peak": -2.0,
+   "wpm": 135,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "07": {
+   "hash": "30108fc5437e1653",
+   "takes": [
+    "f94fa1be79b249788c29",
+    "915120e38c3037ca5af9",
+    "ea27d3383c24bd215a52"
+   ],
+   "duration": 29.113,
+   "lines": [
+    {
+     "text": "A system built to run across many machines writes this step right into its own plan, with a name.",
+     "start": 0.15,
+     "end": 7.991
+    },
+    {
+     "text": "One kind of step redistributes data by running it through a hash function, so matching rows end up together.",
+     "start": 8.411,
+     "end": 17.445
+    },
+    {
+     "text": "A different kind just copies one whole side out to every machine involved. The plan itself tells you exactly which one is happening, and where.",
+     "start": 17.865,
+     "end": 28.763
+    }
+   ],
+   "lufs": -16.2,
+   "true_peak": -2.2,
+   "wpm": 130,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "08": {
+   "hash": "74c96209568645ce",
+   "takes": [
+    "639f2f7e04995d1b545c",
+    "b9c0c34ac81f68c93666",
+    "15037d59d20b373b9f58"
+   ],
+   "duration": 27.037,
+   "lines": [
+    {
+     "text": "Redistributing by hash means taking both sides of the join and spreading each one out across every machine, sorted by the join key.",
+     "start": 0.15,
+     "end": 9.907
+    },
+    {
+     "text": "Once that's done, every machine is holding exactly the rows that could possibly match each other, locally.",
+     "start": 10.327,
+     "end": 17.091
+    },
+    {
+     "text": "That's the network doing, by force, the exact same thing a single machine's matching pieces already had for nothing.",
+     "start": 17.511,
+     "end": 26.687
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 131,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "09": {
+   "hash": "a4ba8717fc6b472e",
+   "takes": [
+    "9fb4bea12a2fdcb4c8c5",
+    "ae8a587cd023ed817913",
+    "e86fce1d6805e90f9195"
+   ],
+   "duration": 14.907,
+   "lines": [
+    {
+     "text": "There's a cheaper option, though, when one side of the join is small.",
+     "start": 0.15,
+     "end": 4.34
+    },
+    {
+     "text": "Instead of redistributing both sides, just copy the small one, whole, out to every machine.",
+     "start": 4.76,
+     "end": 10.659
+    },
+    {
+     "text": "Nothing about the bigger side has to move anywhere at all.",
+     "start": 11.079,
+     "end": 14.557
+    }
+   ],
+   "lufs": -16.1,
+   "true_peak": -2.0,
+   "wpm": 157,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "10": {
+   "hash": "b5e74c254c320f9a",
+   "takes": [
+    "26b30eb74d715133087c",
+    "58f4a4b919210af27cab",
+    "ffe9ae014fdb30e2f049"
+   ],
+   "duration": 14.073,
+   "lines": [
+    {
+     "text": "A query has been copying one side of a join out to every machine, because it's small.",
+     "start": 0.15,
+     "end": 6.274
+    },
+    {
+     "text": "That side keeps growing, past the point the system considers small.",
+     "start": 6.694,
+     "end": 11.675
+    },
+    {
+     "text": "What should happen next?",
+     "start": 12.395,
+     "end": 13.723
+    }
+   ],
+   "lufs": -16.3,
+   "true_peak": -2.1,
+   "wpm": 136,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "10a": {
+   "hash": "77a2752edf31357d",
+   "takes": [
+    "45accdd7441ce0b96237",
+    "eedafc398caa7702ab85"
+   ],
+   "duration": 11.628,
+   "lines": [
+    {
+     "text": "Switch over to redistributing both sides instead.",
+     "start": 0.15,
+     "end": 2.947
+    },
+    {
+     "text": "Past a certain size, copying something out to every machine costs more than just moving everything once, properly aligned.",
+     "start": 3.367,
+     "end": 11.278
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -2.1,
+   "wpm": 134,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "11": {
+   "hash": "963e158fba0e4661",
+   "takes": [
+    "27c138e937029f84e6a6",
+    "7836e2761ef19d9e2eb5",
+    "e36b40aa5c148c975e8c"
+   ],
+   "duration": 27.318,
+   "lines": [
+    {
+     "text": "One widely used system draws that line at ten megabytes by default \u2014 below it, copy; above it, redistribute.",
+     "start": 0.15,
+     "end": 8.328
+    },
+    {
+     "text": "That's not a vague guideline. It's a real number, and it can be changed, or turned off entirely.",
+     "start": 8.748,
+     "end": 16.179
+    },
+    {
+     "text": "Some systems can even cross that line mid-query, switching strategy the moment they see a side's actual size, rather than only guessing beforehand.",
+     "start": 16.599,
+     "end": 26.968
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 132,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "12": {
+   "hash": "6d9a37c36d1653f7",
+   "takes": [
+    "08e4f92e7167e5e25d65",
+    "f56841ca21105c341f85",
+    "b0396e23ab80a94cfd16"
+   ],
+   "duration": 25.631,
+   "lines": [
+    {
+     "text": "Step back and this is the exact same story as the one at the very start, just at a different scale.",
+     "start": 0.15,
+     "end": 7.761
+    },
+    {
+     "text": "Tables already split the same way need nothing extra done to them before a join, whether that split is across pieces on one machine, or across separate machines entirely.",
+     "start": 8.181,
+     "end": 18.558
+    },
+    {
+     "text": "It's the same alignment, paying off the same way, however far apart the pieces actually sit.",
+     "start": 18.978,
+     "end": 25.281
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 155,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "13": {
+   "hash": "da9656407a89dcdd",
+   "takes": [
+    "fdd2cf05fd2bae44d0bf",
+    "f30799fb842f966bdc0b",
+    "19115480d0e29f89da6e",
+    "a22702fd7c14278a10c1"
+   ],
+   "duration": 26.386,
+   "lines": [
+    {
+     "text": "Matching pieces mean less duplicated work on a single machine.",
+     "start": 0.15,
+     "end": 4.748
+    },
+    {
+     "text": "Spread across separate machines, a join needs something to move data first, unless that alignment is already there.",
+     "start": 5.168,
+     "end": 13.007
+    },
+    {
+     "text": "One way to do that redistributes everything. The other just copies the small side.",
+     "start": 13.427,
+     "end": 19.321
+    },
+    {
+     "text": "And which one happens isn't locked in ahead of time \u2014 it can genuinely change once the real sizes are known.",
+     "start": 19.741,
+     "end": 26.035
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -2.4,
+   "wpm": 141,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "14": {
+   "hash": "b48a92499db2295e",
+   "takes": [
+    "b23c48ab89f916276849",
+    "30e31eb9790a10c53bb3"
+   ],
+   "duration": 17.989,
+   "lines": [
+    {
+     "text": "A plan names one of its steps by the kind of redistribution it's doing, and the name reads as a hash-based spread, not a copy.",
+     "start": 0.15,
+     "end": 8.394
+    },
+    {
+     "text": "Is this step copying one side of a join out to every machine, or spreading both sides out by the join key?",
+     "start": 9.114,
+     "end": 17.639
+    }
+   ],
+   "lufs": -16.2,
+   "true_peak": -2.0,
+   "wpm": 160,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "14a": {
+   "hash": "ee8dc57868c3cc9b",
+   "takes": [
+    "247ad659f7ec472e22f9",
+    "1276b78d7ba3ecb3b692"
+   ],
+   "duration": 12.759,
+   "lines": [
+    {
+     "text": "Spreading both sides out by the join key.",
+     "start": 0.15,
+     "end": 3.064
+    },
+    {
+     "text": "A hash-based spread redistributes; copying one side everywhere gets its own separate name in the plan, and this isn't it.",
+     "start": 3.484,
+     "end": 12.409
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 136,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "15": {
+   "hash": "1417de35df39315c",
+   "takes": [
+    "c946be41906830388613",
+    "225fd37ded8cb4c13daa"
+   ],
+   "duration": 13.992,
+   "lines": [
+    {
+     "text": "One side of a join comes in well under the size a system is willing to copy out to every machine.",
+     "start": 0.15,
+     "end": 7.02
+    },
+    {
+     "text": "Should that side get copied everywhere, or should both sides get redistributed instead?",
+     "start": 7.74,
+     "end": 13.642
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -1.9,
+   "wpm": 146,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "15a": {
+   "hash": "f8f3e09ac03e8acc",
+   "takes": [
+    "f3411948257c7e25b5a0",
+    "2f16b8a4b916ed83b2a3"
+   ],
+   "duration": 12.638,
+   "lines": [
+    {
+     "text": "Copied everywhere.",
+     "start": 0.15,
+     "end": 1.391
+    },
+    {
+     "text": "Sitting comfortably under that limit is exactly the case copying exists for \u2014 redistributing both sides would just be doing more work for no reason.",
+     "start": 1.811,
+     "end": 12.288
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -2.0,
+   "wpm": 123,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  }
+ }
+}
