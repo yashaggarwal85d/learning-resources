@@ -4388,4 +4388,24 @@ export const TOPICS: TopicMeta[] = [
     handoff:
       "Snapshot isolation prevents most of these anomalies by construction — but not all of them. The next topic is exactly which it prevents, which one survives, and the vendor-naming traps around calling it 'serializable.'",
   },
+  {
+    id: 'de.snapshot-isolation-write-skew',
+    domain: 'data-engineering',
+    slug: 'data-engineering/m2-storage-database-internals/ch05-database-internals-distributed/snapshot-isolation-write-skew',
+    title: 'Snapshot isolation and write skew',
+    syllabusTitle: 'Snapshot isolation and write skew',
+    kind: 'full',
+    status: 'held',
+    milestone: { number: 2, title: 'Storage: Database Internals, Files & the Lakehouse' },
+    chapter: { number: 5, title: 'Database Internals and Distributed Storage', section: '5.2' },
+    minutes: 15,
+    verified: '2026-10-24',
+    introduces: ['snapshot-isolation'],
+    uses: ['isolation-anomalies', 'mvcc-versioning'],
+    declared: [],
+    bridge:
+      "Snapshot isolation prevents most of the anomalies topic 11 named, by construction — but not all of them. This topic is exactly which it prevents, which survives, and a real write-skew reproduction against this sandbox's own Postgres cluster.",
+    handoff:
+      "Write skew survives snapshot isolation. The next topic is the two real ways to close that gap entirely and reach full serializability — one of which is SI itself, made serializable.",
+  },
 ];

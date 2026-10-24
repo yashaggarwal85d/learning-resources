@@ -1,0 +1,25 @@
+import Resource from '../../../../../components/Resource.astro';
+
+<section class="prereq" data-section="before-this">
+
+### <span class="n">01</span> Before this: §5.1, and the anomalies beyond ANSI
+
+<ul class="resources">
+  <Resource kind="reel" title="ACID guarantees, precisely stated" domain="data-engineering" host="de.acid-guarantees-precisely-stated" by="§5.2's own refresher" />
+  <Resource kind="reel" title="Isolation anomalies beyond ANSI" domain="data-engineering" host="de.isolation-anomalies-beyond-ansi" by="the previous topic of this chapter" />
+</ul>
+
+</section>
+
+<section class="prereq" data-section="straight-from-the-source">
+
+### <span class="n">02</span> The sources this topic measures and quotes against
+
+<ul class="resources">
+  <Resource kind="reading" title="13.2. Transaction Isolation" href="https://www.postgresql.org/docs/current/transaction-iso.html" by="PostgreSQL documentation">States that Repeatable Read is implemented as Snapshot Isolation, with the first-updater-wins behavior and the mytab/class/SUM example.</Resource>
+  <Resource kind="reading" title="Data Concurrency and Consistency" href="https://docs.oracle.com/en/database/oracle/oracle-database/19/cncpt/data-concurrency-and-consistency.html" by="Oracle Database 19c Concepts">States that Oracle's own SERIALIZABLE level is snapshot isolation.</Resource>
+  <Resource kind="reading" title="17.7.2.1 Transaction Isolation Levels" href="https://dev.mysql.com/doc/refman/8.0/en/innodb-transaction-isolation-levels.html" by="MySQL 8.0 Reference Manual">States that InnoDB's REPEATABLE READ mixes a snapshot read with a locking read.</Resource>
+  <Resource kind="reading" title="Snapshot isolation" href="https://en.wikipedia.org/wiki/Snapshot_isolation" by="Wikipedia">States the mechanism, the write-skew anomaly, and the real vendor-naming trap around Oracle's own naming.</Resource>
+</ul>
+
+</section>

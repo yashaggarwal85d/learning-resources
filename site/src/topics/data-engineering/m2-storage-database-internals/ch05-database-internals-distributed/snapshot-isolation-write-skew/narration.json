@@ -1,0 +1,97 @@
+{
+  "topic": "de.snapshot-isolation-write-skew",
+  "steps": [
+    {
+      "lines": [
+        "Two doctors are on call tonight. The hospital's own rule says at least one of them has to stay.",
+        "Each one checks the schedule, decides it's fine to leave, and commits. Neither commit throws an error.",
+        "Zero doctors on call, and the database never objected once. By the end of this you'll see exactly why."
+      ]
+    },
+    {
+      "lines": [
+        "Start with the mechanism underneath all of this.",
+        "A transaction running under snapshot isolation takes one fixed picture of the database, right when it starts, and reads from that picture the whole way through.",
+        "When it finally tries to commit, there's one check: has anything it wrote been changed by someone else since that picture was taken. If so, it loses."
+      ]
+    },
+    {
+      "lines": [
+        "Here's the question I want you to actually answer before I show you.",
+        "That commit check already catches two writers racing to update the exact same row.",
+        "Does it also catch two doctors, each updating a completely different row, off the same shared rule?"
+      ],
+      "answer": [
+        "It feels like it should count, since they're both reading the same shared rule.",
+        "But the check only ever compares one written row against its own snapshot. It never looks at two rows together.",
+        "So no. Two different rows never collide here, no matter how related they are in meaning."
+      ]
+    },
+    {
+      "lines": [
+        "Let's see what this mechanism actually buys you, for real.",
+        "I took the exact read skew setup from last topic and reran it, this time under a real snapshot instead of read committed.",
+        "Transaction one's first read and its second read now land on the exact same picture of the data. Fifty, then fifty again. Last topic's broken pair just can't happen here."
+      ]
+    },
+    {
+      "lines": [
+        "And here's the case the mechanism is actually built for.",
+        "Two transactions both try to update the same row, off the same starting snapshot. One of them commits balance one hundred ten.",
+        "The other one's write hits a row that's already changed underneath it, and Postgres hands back a real serialization failure. Not a guess. An actual error, measured."
+      ]
+    },
+    {
+      "lines": [
+        "Now the doctors, for real, against a real Postgres table.",
+        "Watch what the database actually checks when each transaction commits: only whether its own written row moved out from under it. Nothing more.",
+        "Since each doctor's update lands on a different row, that check has nothing to object to. It passes twice, and the rule the hospital actually cared about is still gone."
+      ]
+    },
+    {
+      "lines": [
+        "That same gap shows up as something worse than a technicality: three real vendors calling it three different things.",
+        "Postgres's own documentation says plainly that what it calls repeatable read is implemented as snapshot isolation.",
+        "Oracle's own serializable level is snapshot isolation too, and Oracle itself sometimes just calls it serializable anyway."
+      ]
+    },
+    {
+      "lines": [
+        "One more for you to sit with.",
+        "Without touching the isolation level at all, not raising it, not changing anything about the database setup.",
+        "Is there any way at all to make this exact doctors scenario safe?"
+      ],
+      "answer": [
+        "Raising the level is one route, but it's not the only one.",
+        "Give both transactions a real row to collide on. Lock a shared row, or touch it, and that same first committer wins rule you already saw now has something to actually catch.",
+        "Yes, there's a fix, and it doesn't need a stronger isolation level."
+      ]
+    },
+    {
+      "lines": [
+        "Here's exactly how far that fix actually reaches, and no further.",
+        "Lock a shared row, and this specific scenario is closed. Measured, caught, done.",
+        "But it's a patch written for this one query pattern. A different question against the exact same underlying rule can walk right back through the gap."
+      ]
+    },
+    {
+      "lines": [
+        "Pull it together. One mechanism: a snapshot, and whoever commits first wins.",
+        "Two anomalies it actually prevents, read skew and lost update, both measured directly.",
+        "One anomaly it never catches, write skew, and three real vendors who each call this same mechanism by a different name."
+      ]
+    },
+    {
+      "lines": [
+        "Last one. Two transactions each read the exact same shared total.",
+        "Each one then updates only its own separate row, and both commits go through without a single error from either one.",
+        "Is that a safe outcome, a caught conflict, or write skew?"
+      ],
+      "answer": [
+        "No row ever got written twice, so there was never anything for the commit check to catch.",
+        "Two transactions reading one shared total, then each independently writing a different row that total depends on, is exactly the shape you've been watching this whole topic.",
+        "That's write skew, and next topic is where you'll watch the two real ways to finally close this gap for good."
+      ]
+    }
+  ]
+}
