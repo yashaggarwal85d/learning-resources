@@ -1,0 +1,69 @@
+{
+  "steps": [
+    {
+      "lines": [
+        "A real buffer handle crosses the boundary through an allocate function and a free function.",
+        { "beat": 0.3 },
+        "After that handle is correctly freed once, what happens when the identical handle is freed a second time?"
+      ],
+      "answer": [
+        "The free is genuinely rejected.",
+        "The handle is no longer live, so there is nothing left to free."
+      ]
+    },
+    {
+      "lines": [
+        "Run it for real: every correct pair is accepted exactly once, a second free on the same handle is genuinely turned away rather than carried out, and no handle is ever left outstanding afterward."
+      ]
+    },
+    {
+      "lines": [
+        "A status function writes its real result through an out pointer instead, since there is no proper result type crossing this particular boundary.",
+        { "beat": 0.3 },
+        "When the real call genuinely fails, what happens to that out pointer?"
+      ],
+      "answer": [
+        "It is left genuinely untouched.",
+        "Only the status code itself reports that anything went wrong."
+      ]
+    },
+    {
+      "lines": [
+        "Run it for real: a genuine success writes the real value through the out pointer, and a genuine failure returns its own status code while leaving that out pointer genuinely untouched."
+      ],
+      "takeaway": "A status code is only half the error protocol; where the real answer actually gets written matters just as much."
+    },
+    {
+      "lines": [
+        "A real function on the other side of the boundary genuinely panics when it is told to.",
+        { "beat": 0.3 },
+        "When a real caller catches that panic, does the caller genuinely keep running afterward?"
+      ],
+      "answer": [
+        "Yes, genuinely.",
+        "This exact calling convention defines what crossing with an unwind is allowed to mean."
+      ]
+    },
+    {
+      "lines": [
+        "Run it for real: the real panic crossing that boundary is genuinely caught, and the caller genuinely keeps running right afterward, exactly as that convention defines."
+      ],
+      "takeaway": "That calling convention is not a suggestion; it genuinely defines what crossing with an unwind means."
+    },
+    {
+      "lines": [
+        "Two real, independent sources name this identical protocol directly, in their own words.",
+        "A foreign library handing off a resource's ownership needs a real destructor to guarantee it actually gets released, and a boundary expecting a panic to cross it has to say so explicitly in its own calling convention."
+      ],
+      "takeaway": "A calling convention's string names only the visible fraction of a protocol both sides keep by hand."
+    },
+    {
+      "lines": [
+        "So here's what this topic's own three small boundaries are really standing in for: matching a foreign struct's own layout gets you through the door, but it tells you nothing about who is actually on the hook for freeing what you're handed.",
+        "It tells you nothing about where a real failure's answer actually lands, and it tells you nothing about what happens the instant something on the other side of that door genuinely goes wrong.",
+        "Those three questions are a real, unenforced agreement two sides have to keep by hand, every single time, which is exactly why this chapter calls a boundary like this a protocol rather than just a shape.",
+        "And that's the real question this whole chapter now turns to: once code stops being Rust at all, what is anyone actually promising the other side?"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,4 @@
+- **Miri**: a real interpreter for Rust's MIR that runs a program or test suite and reports undefined behavior it actually observes during that run.
+- **Path limitation**: the real, stated limit of a dynamic checker like Miri: it can only catch a violation on a path the program actually executes during that run, never one hiding in a branch the run never takes.
+- **Sanitizer**: a real, different kind of tool (AddressSanitizer, LeakSanitizer, MemorySanitizer, ThreadSanitizer) that instruments compiled machine code to catch memory errors at native speed, rather than interpreting Rust's own rules.
+- **`cargo +nightly miri test`**: the real command that runs a project's own test suite under Miri, which needs the nightly toolchain.

@@ -1,0 +1,70 @@
+{
+  "steps": [
+    {
+      "lines": [
+        "A real interpreter runs one program with a real branch, and this run takes the branch whose every operation stays inside one fixed buffer.",
+        { "beat": 0.3 },
+        "Does the real checker, run only on this branch's own operations, find a violation?"
+      ],
+      "answer": [
+        "No, genuinely.",
+        "Every operation on this branch stays inside the buffer."
+      ]
+    },
+    {
+      "lines": [
+        "Run it for real: the real checker, run over every operation this branch actually takes, finds no violation at all."
+      ]
+    },
+    {
+      "lines": [
+        "The identical interpreter now runs the branch its first run never took, which holds a real, genuinely out of bounds operation.",
+        { "beat": 0.3 },
+        "Does the checker catch it this time?"
+      ],
+      "answer": [
+        "Yes, genuinely.",
+        "Caught, the moment a run actually takes the branch that holds it."
+      ]
+    },
+    {
+      "lines": [
+        "Run it for real: the real checker, run over this branch's own operations, genuinely catches the violation the instant this run actually reaches it."
+      ],
+      "takeaway": "The identical violation is real and checkable the instant a run actually reaches it."
+    },
+    {
+      "lines": [
+        "The safe branch's own run never took the other branch at all.",
+        { "beat": 0.3 },
+        "How many of the other branch's own operations did that first run's checker actually examine?"
+      ],
+      "answer": [
+        "None, genuinely.",
+        "That branch was never taken, so it was never checked."
+      ]
+    },
+    {
+      "lines": [
+        "Run it for real: the safe branch run genuinely examined exactly its own operations and none of the other branch's; the violation sat there, real and uninspected, the whole time."
+      ],
+      "takeaway": "A checker that never runs a branch never asks it a single question."
+    },
+    {
+      "lines": [
+        "Two real, independent sources on the identical limitation agree, in their own words.",
+        "A checker can tell you whether one particular way of running your code causes undefined behavior in one particular execution, never every execution a program could ever take."
+      ],
+      "takeaway": "A run-based checker's silence means this run found nothing, not that nothing is there."
+    },
+    {
+      "lines": [
+        "So here's what this topic's own tiny interpreter is really standing in for: a real detection tool doesn't read your code and reason about every path it could ever take, it watches one actual execution and reports exactly what that one execution did.",
+        "That's a genuinely useful thing to watch, and it's also a genuinely narrower thing than people sometimes assume a clean run means: a clean run says this path was fine, it never says every path would have been.",
+        "And that closes out what this whole chapter has been building toward: a documented contract decided what a caller was even allowed to reach, a validity rule decided what counted as a legal value once they reached it.",
+        "And now a checker decides, one actual execution at a time, whether either rule was ever actually broken.",
+        "None of the three can do the other one's job, and together they're still only as good as the paths somebody actually bothered to run."
+      ]
+    }
+  ]
+}

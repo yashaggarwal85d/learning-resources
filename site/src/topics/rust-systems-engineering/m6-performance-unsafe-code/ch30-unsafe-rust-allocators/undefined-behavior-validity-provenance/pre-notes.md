@@ -1,0 +1,4 @@
+- **Validity invariant**: the real constraint on which bit patterns are a legal value of a given type (a `bool` is only ever `0` or `1`); constructing a value that violates it is undefined behavior the instant it exists, whether or not it is ever read.
+- **`MaybeUninit<T>`**: a real wrapper that lets code hold possibly-uninitialized memory of type `T` without that memory being "produced" as a `T` yet; calling `assume_init` before every byte the type's own validity rule requires has genuinely been written is undefined behavior.
+- **Provenance**: the real, additional information a pointer carries beyond its numeric address, tracking which real allocation it is actually permitted to access.
+- **Strict provenance (`addr()` / `with_addr()`, stable since Rust 1.84)**: a real pair of APIs that let code work with a pointer's own address explicitly, without ever fabricating provenance the original pointer did not have.

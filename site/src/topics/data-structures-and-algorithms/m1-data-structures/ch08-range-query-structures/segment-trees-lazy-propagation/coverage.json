@@ -1,0 +1,120 @@
+{
+  "topic": "dsa.segment-trees-lazy-propagation",
+  "syllabus": [
+    {
+      "clause": "recursive and iterative (bottom-up) layouts, arbitrary associative combine functions, lazy tags for range assignment and range add, and what makes a tag composable.",
+      "at": [
+        { "step": "A segment tree draws a small binary tree above the array: each leaf holds one slot's own value, each internal node holds the combine of its two children — sum here, but any associative operator fits the same shape." },
+        { "step": "The query descends only into the nodes it actually needs: any node whose own range sits fully inside [5, 11) is used directly, and the descent skips straight past everything else." },
+        { "step": "The identical tree shape, built with a different combine function — minimum instead of sum — answers a range-minimum query by the same descent, in the same O(log n)." },
+        { "step": "The identical structure, built a second way: one flat array, leaves at fixed positions, no pointers and no recursion — a point update climbs from a leaf straight up to the root, combining with its sibling at every level." },
+        { "step": "A lazy tag sits on an internal node whose own range falls fully inside the update — the whole subtree is marked updated without visiting one leaf beneath it — and is only pushed down into that node's own children the moment a later query actually needs to see past it." },
+        { "step": "Prove it" }
+      ]
+    }
+  ],
+  "sources": [
+    {
+      "source": "Segment Tree (cp-algorithms)",
+      "items": [
+        {
+          "item": "A segment tree stores array-interval information as a tree, built around a merge operation combining two siblings",
+          "at": [{ "step": "A segment tree draws a small binary tree above the array: each leaf holds one slot's own value, each internal node holds the combine of its two children — sum here, but any associative operator fits the same shape." }]
+        },
+        {
+          "item": "Build runs in O(n), assuming the merge operation is constant time",
+          "at": [{ "deep": "In the lab" }]
+        },
+        {
+          "item": "A range query visits at most 4·log n vertices, giving O(log n)",
+          "at": [{ "step": "The query descends only into the nodes it actually needs: any node whose own range sits fully inside [5, 11) is used directly, and the descent skips straight past everything else." }]
+        },
+        {
+          "item": "A point update touches O(log n) vertices",
+          "at": [{ "deep": "Into the internals" }]
+        },
+        {
+          "item": "The identical tree shape generalizes to other associative operators by storing that operator's own combined value at each vertex",
+          "at": [{ "step": "The identical tree shape, built with a different combine function — minimum instead of sum — answers a range-minimum query by the same descent, in the same O(log n)." }]
+        },
+        {
+          "item": "A lazy range-assignment tag marks a vertex so every element of its segment (and its whole subtree) is treated as assigned, without visiting the subtree directly",
+          "at": [{ "step": "A lazy tag sits on an internal node whose own range falls fully inside the update — the whole subtree is marked updated without visiting one leaf beneath it — and is only pushed down into that node's own children the moment a later query actually needs to see past it." }]
+        },
+        {
+          "item": "Any query or update must push stored lazy information down into both children before descending further",
+          "at": [{ "deep": "Into the internals" }]
+        }
+      ]
+    },
+    {
+      "source": "Iterative Segment Tree, Range Minimum Query (GeeksforGeeks)",
+      "items": [
+        {
+          "item": "An iterative, bottom-up array layout places a leaf at a fixed array position and climbs from leaf to root, reaching the same O(log n) bound",
+          "at": [{ "step": "The identical structure, built a second way: one flat array, leaves at fixed positions, no pointers and no recursion — a point update climbs from a leaf straight up to the root, combining with its sibling at every level." }]
+        }
+      ]
+    },
+    {
+      "source": "Range Update Range Query (USACO Guide, Platinum)",
+      "items": [
+        {
+          "item": "A range-add arriving at a node with a pending range-assign folds into the assign's own value; a range-assign arriving at a node with a pending range-add replaces it outright",
+          "at": [{ "step": "A node already carries a pending range-assign tag — set every slot underneath to 7 — when a new range-add arrives for the same node, add 3 more. Does the add combine with the assign, or does one simply win?" }]
+        }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "self-review",
+    "date": "2026-10-24",
+    "items": [
+      {
+        "item": "A segment tree's own O(log n) bound holds for any associative combine function with a well-defined identity element, not just sum",
+        "at": [{ "step": "A segment tree draws a small binary tree above the array: each leaf holds one slot's own value, each internal node holds the combine of its two children — sum here, but any associative operator fits the same shape." }]
+      },
+      {
+        "item": "A query's own three-way split — fully inside, fully outside, partially overlapping — is the entire mechanism behind the O(log n) bound, not a separate optimization layered on top",
+        "at": [{ "deep": "Into the internals" }]
+      },
+      {
+        "item": "The recursive and iterative layouts compute identically but differ in constant factor and extensibility; the iterative layout is shorter and faster but harder to extend to lazy propagation",
+        "at": [{ "deep": "In production" }]
+      },
+      {
+        "item": "cp-algorithms' own two lazy-propagation sections (addition; assignment) are separate, non-interacting implementations that never state the mixed-tag-type composition rule this topic teaches; that rule comes from USACO Guide alone",
+        "at": [{ "out": "cp-algorithms never addresses what happens when a pending add and a pending assign meet on the same node; this topic sources that specific rule from USACO Guide instead and verifies all four cases directly in examples.py" }]
+      },
+      {
+        "item": "A segment tree's own memory cost is O(n) in the bottom-up array layout (2n slots) but can run to O(4n) in the naive recursive array-indexed layout cp-algorithms shows first, before its own memory-efficient variant",
+        "at": [{ "deep": "In production" }]
+      },
+      {
+        "item": "Persistent segment trees (keeping every past version reachable) and dynamic (pointer-based, sparse-range) segment trees are both named by cp-algorithms as advanced variants, neither taught in this topic",
+        "at": [{ "out": "named by cp-algorithms in its own 'Advanced versions' section; this topic's own scope stops at lazy propagation over a fixed-size array, per CHAPTER.md" }]
+      },
+      {
+        "item": "A range-minimum query answered by a segment tree has no equivalent in a single Fenwick tree (topic 33), since minimum has no inverse operation — this is precisely the gap CHAPTER.md names as this topic's own reason to exist",
+        "at": [{ "step": "A Fenwick tree answers one specific aggregate — a running sum — in O(log n), using one fixed operator and nothing but lowest-set-bit arithmetic. It can't answer a range minimum, and it can't apply one update to an entire range without extending it." }]
+      },
+      {
+        "item": "The square-root decomposition and Mo's algorithm alternatives this chapter skips exist specifically for awkward update patterns and offline, batched queries — a different trade-off than this topic's own always-online, general-operator structure",
+        "at": [{ "out": "named in CHAPTER.md's own 'Skipped in this chapter' note; square-root decomposition and Mo's algorithm are not built or taught by any topic in this chapter" }]
+      },
+      {
+        "item": "A segment tree is the standard choice once the aggregate isn't a running sum, or a range-wide update needs to cost what a point update costs; a Fenwick tree stays simpler and faster when the operator is sum with no range-wide update",
+        "at": [{ "deep": "In production" }]
+      },
+      {
+        "item": "The workload comparison's own methodology (measuring each range-add from an independent, untagged tree, rather than letting push-down costs accumulate across unrelated updates) isolates the mechanism's own bound from a separate, real cost a sequence of overlapping updates adds on top of it",
+        "at": [{ "deep": "In the lab" }]
+      }
+    ]
+  },
+  "gapReview": {
+    "date": "2026-10-24",
+    "by": "self-review",
+    "open": []
+  }
+}

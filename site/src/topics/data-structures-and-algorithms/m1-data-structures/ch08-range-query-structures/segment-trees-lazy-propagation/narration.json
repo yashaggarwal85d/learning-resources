@@ -1,0 +1,84 @@
+{
+  "topic": "dsa.segment-trees-lazy-propagation",
+  "steps": [
+    {
+      "lines": [
+        "The last structure answered one specific question well: a running sum, one operator, nothing but one array and a little bit arithmetic.",
+        "But it has real limits. It can't tell you the smallest value in a stretch, and it can't apply one correction across an entire stretch at once.",
+        "This topic builds the structure that closes both gaps, for any operator that makes sense to combine, not just a sum."
+      ]
+    },
+    {
+      "lines": [
+        "Here's the one new picture this topic needs: a small binary tree, drawn above the array itself.",
+        "Every leaf holds one slot's own value. Every node above a leaf holds whatever its two children combine to.",
+        "Built once, from the bottom up — each node combines its own two children exactly once, nothing recomputed twice."
+      ]
+    },
+    {
+      "lines": [
+        "Before the reveal, a natural first guess is that answering a question about a stretch of positions means visiting a node for every position in it.",
+        "Ask instead whether the tree can skip straight past any branch whose own stretch doesn't matter at all."
+      ],
+      "answer": [
+        "A handful of nodes, not one per position and not the whole tree.",
+        "Doubling how many positions the array holds would only add one more level to climb, not many more nodes to visit."
+      ]
+    },
+    {
+      "lines": [
+        "Watch the descent: any branch whose own stretch sits entirely inside the question gets used directly, no further.",
+        "Any branch whose own stretch sits entirely outside the question gets skipped without a second look.",
+        "Only a branch straddling the edge of the question gets split open to look further."
+      ]
+    },
+    {
+      "lines": [
+        "Here's the generalization the whole topic is built around: swap out the one operator plugged into every node's combine step, and the identical tree answers a different question.",
+        "Nothing about where the nodes sit, or how the descent skips branches, changes at all."
+      ]
+    },
+    {
+      "lines": [
+        "The identical structure, stored a second way: one flat list, no pointers, no recursion, each position's own neighbor fixed in advance by simple arithmetic.",
+        "A single position's own update climbs straight from its own leaf to the root, combining with its sibling at every step on the way up.",
+        "Same answers, every time, on every question — only how the structure is kept in memory changed."
+      ]
+    },
+    {
+      "lines": [
+        "Before this reveal, notice the instinct: correcting an entire stretch at once sounds like it should cost one touch per position in that stretch.",
+        "Ask instead whether a single tag, sitting at one node whose own stretch already matches the correction, could stand in for touching every position underneath it."
+      ],
+      "answer": [
+        "It can, and it does: one tag, at one node, costing what a single-position update costs.",
+        "Nothing underneath that node gets touched at all, not yet."
+      ]
+    },
+    {
+      "lines": [
+        "A tag sits at a node on purpose, marking its entire stretch as corrected without visiting one position beneath it.",
+        "It stays there until some later question actually needs to see past that node and down into its own children.",
+        "Only then does the tag move down one level, handed off to both children before the question continues."
+      ]
+    },
+    {
+      "lines": [
+        "Here's the one place getting this wrong would actually break something real.",
+        "A node already carries one kind of pending correction. A second, different kind of correction arrives for the identical node before either one has moved down. Which one survives?",
+        "If the new correction simply overwrites the old base value outright, ask whether an earlier, still-pending adjustment to that value should still apply afterward, or whether it's simply gone."
+      ],
+      "answer": [
+        "An overwrite discards whatever adjustment was pending before it — the old base value is gone, so an adjustment to it no longer means anything.",
+        "The reverse direction behaves differently: a later adjustment, arriving after an overwrite is already pending, folds straight into that overwrite's own value instead of sitting beside it as a second, separate correction."
+      ]
+    },
+    {
+      "lines": [
+        "Here's where the real cost gets checked against a count, not an argument.",
+        "Across the same batch of stretch-wide corrections on the identical array, a version with no deferred tags touched every single position in every stretch, every time.",
+        "The version with deferred tags touched only a small, bounded handful of nodes per correction — the saving this whole mechanism exists to deliver, measured directly."
+      ]
+    }
+  ]
+}

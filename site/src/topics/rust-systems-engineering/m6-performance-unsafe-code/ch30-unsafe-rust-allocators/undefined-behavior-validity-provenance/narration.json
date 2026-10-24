@@ -1,0 +1,72 @@
+{
+  "steps": [
+    {
+      "lines": [
+        "A bool's own one byte could hold any of two hundred fifty six possible patterns.",
+        { "beat": 0.3 },
+        "How many of those genuinely count as a valid bool?"
+      ],
+      "answer": [
+        "Only two, genuinely.",
+        "Every other byte value is invalid."
+      ]
+    },
+    {
+      "lines": [
+        "Run it for real: a real validity check, applied to every single one of those byte values in turn, finds exactly two that genuinely pass, the byte for false and the byte for true."
+      ]
+    },
+    {
+      "lines": [
+        "A pointer's address is read out, shifted to point at a different element of the identical allocation, then rebuilt into a new pointer.",
+        { "beat": 0.3 },
+        "Does the rebuilt pointer still carry the real right to read that allocation?"
+      ],
+      "answer": [
+        "Yes, genuinely.",
+        "Rebuilding the address copies the original pointer's own provenance along with it."
+      ]
+    },
+    {
+      "lines": [
+        "Run it for real: reading an array's own base address out, shifting it over by a few elements, then rebuilding a pointer from the shifted address genuinely recovers the exact correct element."
+      ],
+      "takeaway": "Rebuilding a pointer that way keeps the real right to access memory explicit; a bare integer cast never makes that promise."
+    },
+    {
+      "lines": [
+        "A reference to an aligned type must genuinely be both non null and a multiple of its own alignment.",
+        { "beat": 0.3 },
+        "Of a handful of candidate addresses, how many genuinely pass both checks, without ever building a reference from them?"
+      ],
+      "answer": [
+        "Only about half, genuinely.",
+        "The rest fail one check or the other."
+      ]
+    },
+    {
+      "lines": [
+        "Run it for real: the identical non null and alignment check, run directly on each candidate address, finds that only about half genuinely pass both."
+      ],
+      "takeaway": "The validity rule is checked directly on the address; nothing invalid needs to be built to measure it."
+    },
+    {
+      "lines": [
+        "Three real, independent sources on the identical rule agree, in their own words.",
+        "A value is valid for its type or producing it is immediate undefined behavior, and provenance is the real right that makes a dereference sound."
+      ],
+      "takeaway": "A type's own validity rule cuts far below what its raw bits could represent."
+    },
+    {
+      "lines": [
+        "So here's the thing a validity rule and a provenance rule have in common that a lot of unsafe code quietly ignores: neither one is a property of the bits sitting in memory right now.",
+        "It's a property of what those bits are allowed to mean, and the compiler is entitled to assume that meaning holds everywhere, every time, without checking.",
+        "That's why this topic never once constructs the invalid case it's describing.",
+        "Doing that would be the exact undefined behavior under discussion.",
+        "So every claim here runs a real check over every possible value, or over a fixed real address, instead of ever crossing the line it's measuring.",
+        "And that's the sharper version of what the last topic started: a safe guard decides whether a caller can reach the unsafe code at all.",
+        "But validity and provenance are the actual rules that guard has to be checking, the ones that decide whether a value or a pointer was ever sound to begin with."
+      ]
+    }
+  ]
+}

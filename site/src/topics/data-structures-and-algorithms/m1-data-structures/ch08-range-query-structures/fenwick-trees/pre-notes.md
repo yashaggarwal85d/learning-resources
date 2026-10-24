@@ -1,0 +1,4 @@
+- **Binary representation of an integer**: every whole number written as a sequence of bits, each one a power of two — this topic reads an index's own bits directly, not just its decimal value. *Where you meet it:* every index-jump step.
+- **Big-O notation, O(log n)**: a cost that grows by one step each time the input doubles, used since Chapter 1 for a balanced tree's own height. *Where you meet it:* the whole chapter's own promise — both operations stay this cheap.
+- **A plain array, indexed by position**: this chapter's own array holds one slot per position, read and written by index, not by key — the background every structure in this chapter is built on top of. *Where you meet it:* the running example, one slot per minute.
+- **An associative operation**: an operator where grouping doesn't change the result, like addition — this topic fixes that operator to sum; a later topic generalizes it to others. *Where you meet it:* the Fenwick tree's own definition.

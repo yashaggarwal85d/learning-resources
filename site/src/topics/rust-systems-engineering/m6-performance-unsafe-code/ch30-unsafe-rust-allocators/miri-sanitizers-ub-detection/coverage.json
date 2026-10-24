@@ -1,0 +1,78 @@
+{
+  "topic": "rust.miri-sanitizers-ub-detection",
+  "syllabus": [
+    {
+      "clause": "Miri interprets MIR and detects provenance, aliasing and validity violations, data races and weak-memory behaviours (Jung et al., POPL 2026).",
+      "at": [{ "deep": "Internals" }]
+    },
+    {
+      "clause": "Its limits: speed, FFI, and only the paths actually executed.",
+      "at": [
+        { "step": "Measured: the real checker, run over this branch's own two operations, genuinely catches the violation on the second one, the moment a run actually takes this branch" },
+        { "step": "Measured: the safe-branch run genuinely examined exactly its own three operations and none of the other branch's two; the violation sat there, real and uninspected, the whole time" },
+        { "step": "Miri's own README states the identical limitation directly, in its own words: Miri can tell you whether one particular way of interacting with your code causes undefined behavior in one particular execution, among the many an unexplored branch could have taken. The Unstable Book's own AddressSanitizer docs name a different, complementary tool with its own different real reach. Does this topic's own small interpreter model exactly the limitation both sources describe?" }
+      ]
+    },
+    {
+      "clause": "Run cargo +nightly miri test in CI.",
+      "at": [{ "deep": "In production" }]
+    },
+    {
+      "clause": "The -Zsanitizer flag is still nightly-only, though the Tier 2 x86_64-unknown-linux-gnuasan target lets AddressSanitizer run from a stable compiler;",
+      "at": [{ "deep": "The frontier" }]
+    },
+    {
+      "clause": "AddressSanitizer/LeakSanitizer are close to stabilization, while MemorySanitizer/ThreadSanitizer need an instrumented std.",
+      "at": [{ "deep": "The frontier" }]
+    }
+  ],
+  "sources": [
+    {
+      "source": "miri-readme",
+      "items": [
+        {
+          "item": "Miri is an Undefined Behavior detection tool for Rust, able to run binaries and test suites of cargo projects and detect unsafe code that fails to uphold its safety requirements",
+          "at": [{ "step": "A real interpreter runs one program with a real branch, and this run takes the branch whose every operation stays inside a sixteen-byte buffer. Does the real checker, run only on this branch's own operations, find a violation?" }]
+        },
+        {
+          "item": "Miri fundamentally cannot ensure that your code is sound; it can only tell you if a particular way of interacting with your code causes undefined behavior in a particular execution",
+          "at": [{ "step": "Miri's own README states the identical limitation directly, in its own words: Miri can tell you whether one particular way of interacting with your code causes undefined behavior in one particular execution, among the many an unexplored branch could have taken. The Unstable Book's own AddressSanitizer docs name a different, complementary tool with its own different real reach. Does this topic's own small interpreter model exactly the limitation both sources describe?" }]
+        }
+      ]
+    },
+    {
+      "source": "sanitizer-unstable-book",
+      "items": [
+        {
+          "item": "AddressSanitizer is a memory error detector that can detect out-of-bound accesses to heap, stack and globals, use after free and use after scope",
+          "at": [{ "deep": "The frontier" }]
+        },
+        {
+          "item": "AddressSanitizer works with non-instrumented code although it will impede its ability to detect some bugs, and is not expected to produce false positive reports",
+          "at": [{ "deep": "The frontier" }]
+        }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "self-review",
+    "date": "2026-10-24",
+    "items": [
+      { "item": "The checker's own two example branches share an identical, real out-of-bounds operation (address 10, length 10, against a sixteen-byte buffer); only its placement relative to which branch a given run takes differs, isolating the path limitation from any difference in the violation itself.", "at": [{ "step": "Measured: the safe-branch run genuinely examined exactly its own three operations and none of the other branch's two; the violation sat there, real and uninspected, the whole time" }] },
+      { "item": "The examined-ops counter increments once per operation actually iterated inside run_checked's own loop, so a branch's count of zero is a real, measured fact about what that run's own execution touched, not an assumption about what it would have found.", "at": [{ "step": "Measured: the safe-branch run genuinely examined exactly its own three operations and none of the other branch's two; the violation sat there, real and uninspected, the whole time" }] },
+      { "item": "This topic cannot run a real nightly Miri session in this sandboxed container, so the interpreter, the branch, and the checker are all this topic's own small, real, deterministic Rust code standing in for Miri's own real detection logic, continuing Chapter 30's own no-real-UB rule by never executing an actual invalid memory access either.", "at": [{ "step": "A real interpreter runs one program with a real branch, and this run takes the branch whose every operation stays inside a sixteen-byte buffer. Does the real checker, run only on this branch's own operations, find a violation?" }] },
+      { "item": "This topic uses both of this chapter's own earlier introduced ids (safety-contracts-bound-what-a-caller-can-trigger from topic 77, validity-invariants-reject-illegal-bit-patterns from topic 78) only in its own bridge and handoff prose, not in its own measured code, since this topic's own subject is a third, separate question: how a violation of either rule actually gets caught.", "at": [{ "step": "A real interpreter runs one program with a real branch, and this run takes the branch whose every operation stays inside a sixteen-byte buffer. Does the real checker, run only on this branch's own operations, find a violation?" }] },
+      { "item": "Miri's own broader real detection list (data races, weak-memory effects, the experimental Stacked Borrows and Tree Borrows aliasing checks) is named and explained in post-notes rather than measured here, since this topic's own interpreter models only the one, simplest case (an out-of-bounds access) that is easiest to check safely and deterministically without a real Miri session.", "at": [{ "deep": "Internals" }] },
+      { "item": "The -Zsanitizer flag's own current, real state (nightly-only overall, but the Tier 2 x86_64-unknown-linux-gnuasan target allowing a stable AddressSanitizer build) is explained in post-notes rather than measured, since actually building with a sanitizer is a real toolchain/target configuration this sandboxed container's own pinned stable toolchain cannot exercise.", "at": [{ "deep": "The frontier" }] },
+      { "item": "A sanitizer's own real reach (instrumenting compiled machine code, catching errors at native speed, reaching real FFI and I/O) is explained in post-notes by direct contrast with Miri's own platform-independent interpreter, which is the genuinely different tool/reach the syllabus's own clause on sanitizers is naming.", "at": [{ "deep": "The frontier" }] },
+      { "item": "All of this topic's own measured claims run entirely on plain in-memory Rust values, a plain fixed-size struct array, and a plain usize counter, with no file, network, root access, or actual nightly Miri session; 'the interpreter', 'the branch', and 'the checker' are all real, deterministic Rust values and functions, continuing this domain's own established pattern.", "at": [{ "step": "Recap: a checker only asks the path it runs" }] },
+      { "item": "Miri's own README and the Rust Unstable Book's own sanitizer page are two genuinely independent sources describing two genuinely different tools (an interpreter checking Rust's own abstract rules, and a family of instrumentation-based detectors checking compiled machine code), giving this topic two separate sources rather than multiple quotes drawn from a single page.", "at": [{ "step": "Miri's own README states the identical limitation directly, in its own words: Miri can tell you whether one particular way of interacting with your code causes undefined behavior in one particular execution, among the many an unexplored branch could have taken. The Unstable Book's own AddressSanitizer docs name a different, complementary tool with its own different real reach. Does this topic's own small interpreter model exactly the limitation both sources describe?" }] },
+      { "item": "The specific buffer size and the specific addresses and lengths used throughout this topic's own two branches are this specific example's own choice; the measured claims illustrate the real shape of a run-based checker's own path limitation for any program with a real, untaken branch, not a claim bound to exactly these numbers.", "at": [{ "step": "Measured: the real checker, run over this branch's own two operations, genuinely catches the violation on the second one, the moment a run actually takes this branch" }] }
+    ]
+  },
+  "gapReview": {
+    "date": "2026-10-24",
+    "by": "self-review",
+    "open": []
+  }
+}

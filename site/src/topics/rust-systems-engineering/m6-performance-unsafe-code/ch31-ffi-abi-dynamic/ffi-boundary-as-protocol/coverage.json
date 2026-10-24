@@ -1,0 +1,88 @@
+{
+  "topic": "rust.ffi-boundary-as-protocol",
+  "syllabus": [
+    {
+      "clause": "who allocates and who frees",
+      "at": [
+        { "step": "Measured: every correct allocate/free pair is accepted exactly once, a second free on the same handle is genuinely rejected rather than performed, and no handle is ever left outstanding afterward" }
+      ]
+    },
+    {
+      "clause": "how errors are represented",
+      "at": [
+        { "step": "Measured: a genuine success writes the real value through the out pointer and returns the OK status; a genuine failure returns its own status code and leaves the out pointer genuinely untouched" }
+      ]
+    },
+    {
+      "clause": "alignment,",
+      "at": [{ "deep": "Internals" }]
+    },
+    {
+      "clause": "unwinding (\"C-unwind\"),",
+      "at": [
+        { "step": "Measured: the real panic crossing the \"C-unwind\" boundary is genuinely caught, and the caller genuinely keeps running afterward, exactly as the ABI's own unwind contract defines" }
+      ]
+    },
+    {
+      "clause": "thread affinity,",
+      "at": [{ "deep": "Internals" }]
+    },
+    {
+      "clause": "and whether callbacks can arrive concurrently or reentrantly.",
+      "at": [{ "deep": "Internals" }]
+    }
+  ],
+  "sources": [
+    {
+      "source": "nomicon-ffi",
+      "items": [
+        {
+          "item": "Foreign libraries often hand off ownership of resources to the calling code; when this occurs, we must use Rust's destructors to provide safety and guarantee the release of these resources",
+          "at": [{ "step": "The Rustonomicon states the ownership and unwinding rules directly: a foreign library handing off ownership of a resource requires Rust's own destructors to guarantee its release, and a boundary expecting a panic to cross it must use the appropriate unwind ABI string. The Rust Reference's own definition of a calling convention names who is responsible for cleaning up the stack as part of that same protocol. Does this topic's own three measured boundaries model exactly the protocol both sources describe?" }]
+        },
+        {
+          "item": "If you expect Rust panics or foreign exceptions to cross an FFI boundary, that boundary must use the appropriate -unwind ABI string",
+          "at": [{ "step": "The Rustonomicon states the ownership and unwinding rules directly: a foreign library handing off ownership of a resource requires Rust's own destructors to guarantee its release, and a boundary expecting a panic to cross it must use the appropriate unwind ABI string. The Rust Reference's own definition of a calling convention names who is responsible for cleaning up the stack as part of that same protocol. Does this topic's own three measured boundaries model exactly the protocol both sources describe?" }]
+        },
+        {
+          "item": "A foreign exception entering Rust will cause undefined behavior",
+          "at": [{ "deep": "The frontier" }]
+        }
+      ]
+    },
+    {
+      "source": "reference-external-blocks",
+      "items": [
+        {
+          "item": "The calling convention defines a low-level interface for functions, such as how arguments are placed in registers or on the stack, how return values are passed, and who is responsible for cleaning up the stack",
+          "at": [{ "step": "The Rustonomicon states the ownership and unwinding rules directly: a foreign library handing off ownership of a resource requires Rust's own destructors to guarantee its release, and a boundary expecting a panic to cross it must use the appropriate unwind ABI string. The Rust Reference's own definition of a calling convention names who is responsible for cleaning up the stack as part of that same protocol. Does this topic's own three measured boundaries model exactly the protocol both sources describe?" }]
+        },
+        {
+          "item": "extern \"C-unwind\" and extern \"system-unwind\" are identical to \"C\" and \"system\", respectively, but with different behavior when the callee unwinds",
+          "at": [{ "step": "A real function declared extern \"C-unwind\" panics when told to. When a real caller catches that panic, does the caller genuinely keep running afterward?" }]
+        }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "self-review",
+    "date": "2026-10-24",
+    "items": [
+      { "item": "This sandboxed container cannot add and link a genuinely separate compiled C library, so the FFI boundary is built as real extern \"C\" and extern \"C-unwind\" functions inside the same crate, called only through their own declared extern signature, exactly as a genuinely separate C caller would; this is disclosed directly in OUTLINE.md and post-notes.md rather than presented as a limitation the learner would not otherwise know about.", "at": [{ "step": "A real buffer handle crosses the boundary through an allocate and a free function. After a handle is correctly freed once, what happens when the identical handle is freed a second time?" }] },
+      { "item": "The double-free rejection is a real, measured fact about the handle registry's own tracked set, not an assumption: free_buffer_handle returns whether the handle was actually present and removed, so a second call on an already-removed handle genuinely returns false rather than silently succeeding.", "at": [{ "step": "Measured: every correct allocate/free pair is accepted exactly once, a second free on the same handle is genuinely rejected rather than performed, and no handle is ever left outstanding afterward" }] },
+      { "item": "The out-pointer convention (write only on success, leave genuinely untouched on failure) is this specific example's own choice of error representation, not the only one a real FFI boundary could use; the syllabus's own clause names the general question, and this topic measures one real, concrete answer to it.", "at": [{ "step": "Measured: a genuine success writes the real value through the out pointer and returns the OK status; a genuine failure returns its own status code and leaves the out pointer genuinely untouched" }] },
+      { "item": "catch_unwind at the simulated foreign call site stands in for a genuinely separate C caller catching the unwind at the real ABI boundary; since both sides are compiled by rustc here, this is disclosed directly rather than presented as a genuinely cross-language unwind.", "at": [{ "step": "A real function declared extern \"C-unwind\" panics when told to. When a real caller catches that panic, does the caller genuinely keep running afterward?" }] },
+      { "item": "This topic uses no earlier chapter's own introduced id directly in its own measured code, since Chapter 31 changes subject from soundness within Rust to a boundary outside it entirely; its own bridge instead names Chapter 30's own closing question in prose.", "at": [{ "step": "A real buffer handle crosses the boundary through an allocate and a free function. After a handle is correctly freed once, what happens when the identical handle is freed a second time?" }] },
+      { "item": "Binding-generation tools and callback/cross-boundary-lifetime handling are named in post-notes rather than measured here, since they are this chapter's own two skipped topics' own subjects, already recorded in syllabus/review-notes/rust-cuts.md.", "at": [{ "deep": "In production" }] },
+      { "item": "The now-defined (rather than undefined) behavior of a plain, non-unwind extern \"C\" function panicking on current stable Rust, contrasted with the genuinely undefined case of a foreign exception entering Rust, is explained in post-notes rather than measured, since deliberately triggering either case would violate this domain's own rule against executing real undefined behavior.", "at": [{ "deep": "The frontier" }] },
+      { "item": "All of this topic's own measured claims run entirely on plain in-memory Rust values, a plain Mutex-guarded HashSet, and the real std::panic::catch_unwind API, with no file, network, or root access, and no genuinely separate compiled library; 'the boundary', 'the handle', and 'the caller' are all real, deterministic Rust values and functions, continuing this domain's own established pattern.", "at": [{ "step": "Recap: the boundary is a protocol, not just layout" }] },
+      { "item": "The Rustonomicon and the Rust Reference are two genuinely independent sources describing two genuinely different aspects of the identical protocol (a destructor-based resource-release convention, and a calling convention's own formal definition of stack cleanup and unwinding), giving this topic two separate sources rather than multiple quotes drawn from a single page.", "at": [{ "step": "The Rustonomicon states the ownership and unwinding rules directly: a foreign library handing off ownership of a resource requires Rust's own destructors to guarantee its release, and a boundary expecting a panic to cross it must use the appropriate unwind ABI string. The Rust Reference's own definition of a calling convention names who is responsible for cleaning up the stack as part of that same protocol. Does this topic's own three measured boundaries model exactly the protocol both sources describe?" }] },
+      { "item": "The specific handle count, buffer values, and panic message used throughout this topic's own three measured boundaries are this specific example's own choice; the measured claims illustrate the real shape of an ownership, error, and unwinding protocol for any FFI boundary at all, not a claim bound to exactly these values.", "at": [{ "step": "A real status-code function writes its result through an out pointer, since there is no Result on the wire. When the real call fails, what happens to the out pointer?" }] }
+    ]
+  },
+  "gapReview": {
+    "date": "2026-10-24",
+    "by": "self-review",
+    "open": []
+  }
+}
