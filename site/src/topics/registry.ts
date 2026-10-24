@@ -3046,4 +3046,24 @@ export const TOPICS: TopicMeta[] = [
     handoff:
       "A resilient client's retry logic is exactly the kind of code that looks correct and silently isn't under replay or duplication. Next: the tests — including a property-based one built for precisely that — that actually prove it.",
   },
+  {
+    id: 'de.testing-data-code',
+    domain: 'data-engineering',
+    slug: 'data-engineering/m1-foundations/ch04-advanced-python-data/testing-data-code',
+    title: 'Testing data code',
+    syllabusTitle: 'Testing data code',
+    kind: 'full',
+    status: 'held',
+    milestone: { number: 1, title: 'Foundations' },
+    chapter: { number: 4, title: 'Advanced Python for Data Systems', section: '4.2' },
+    minutes: 15,
+    verified: '2026-10-24',
+    introduces: ['data-code-testing-layers'],
+    uses: ['resilient-client-patterns'],
+    declared: ['basic familiarity with pytest or an equivalent test runner'],
+    bridge:
+      "Topic 9's retry and dedup logic is exactly the kind of code that looks correct and silently isn't under replay. This topic is the layered set of tests — unit, property-based, contract, integration, golden-output — that actually prove it, run for real against that same client.",
+    handoff:
+      "Tests prove the client behaves correctly against the inputs they thought to generate. The last line of defense, for every input nobody thought to generate, is a schema checked at the boundary itself — this chapter's last library topic.",
+  },
 ];

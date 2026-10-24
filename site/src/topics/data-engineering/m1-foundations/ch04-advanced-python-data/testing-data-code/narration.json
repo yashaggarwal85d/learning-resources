@@ -1,0 +1,82 @@
+{
+  "topic": "de.testing-data-code",
+  "steps": [
+    {
+      "lines": [
+        "The last topic built a client that handles failure well: a time limit, a shared deadline, a growing wait with randomness, a retry allowance, tripped logic, a repeated key.",
+        "None of that actually proves the client is correct. So what does?"
+      ]
+    },
+    {
+      "lines": [
+        "Here's the smallest test that still earns its keep.",
+        "One minimal input, the smallest shape that still exercises the function being checked, not a full dataset of real records.",
+        "One call, one check on the shape it hands back. That's the whole test, and it's already enough to catch the one thing it claims to verify."
+      ]
+    },
+    {
+      "lines": [
+        "Here's a very different kind of test, built to generate its own inputs rather than take one you hand it.",
+        "The same repeated-key rule from the last topic, checked not once but across a hundred separately generated sequences of write attempts, each one varying in length and in which keys repeat.",
+        "Every single one of those hundred holds: the number of real effects recorded always equals the number of distinct keys actually used."
+      ]
+    },
+    {
+      "lines": [
+        "Worth guessing at before the reveal settles it.",
+        "A handwritten test already sends the same repeated key three separate times and checks that repeating it doesn't double the effect. Does generating a hundred more sequences on top of that actually find anything that handwritten test misses?"
+      ],
+      "answer": [
+        "It does, and here's precisely why.",
+        "A handwritten test only ever exercises the one exact sequence someone sat down and typed. A generated test searches a much larger space of that same rule, including key-reuse patterns nobody thought to write by hand."
+      ]
+    },
+    {
+      "lines": [
+        "Here's a test aimed at an agreement between two separate pieces of code, rather than at one function alone.",
+        "The expected request and its minimal expected reply are described once, as a single interaction. From that one description, a real local server is built automatically.",
+        "The calling code, with no special awareness that it's being tested, makes a genuine call against that server and gets back exactly the reply the interaction described."
+      ]
+    },
+    {
+      "lines": [
+        "Here's the one layer this sandbox genuinely couldn't run exactly as described, said plainly rather than faked.",
+        "The same insert, then read, run directly against this sandbox's own real, already-running database, not an in-memory stand-in that can only ever agree with itself.",
+        "The tool built to spin up a disposable copy of that database for every single test needs a container system this sandbox doesn't have. The real database underneath it is still right here, and the test runs against it for real."
+      ]
+    },
+    {
+      "lines": [
+        "One last layer, and it works by comparison rather than by any fresh check.",
+        "A fully deterministic report, built from a fixed random starting point, gets written to a file the very first time it runs.",
+        "Run it again in the same sitting: nothing new gets worked out, only a comparison against the file already sitting on disk, and that comparison comes back with no difference at all."
+      ]
+    },
+    {
+      "lines": [
+        "Now all five, run together against the exact same client the last topic built.",
+        "The minimal-input test, the hundred generated sequences, the agreement check, the real-database check, and the recorded comparison each pass in turn.",
+        "Each one was checking a genuinely different claim. None of the other four would have caught what that one specifically catches."
+      ]
+    },
+    {
+      "lines": [
+        "Pulling it all back together now.",
+        "A minimal-input test earns its keep on the smallest fixture that still exercises the function. A generated test checks the same rule across a hundred inputs, catching what one handwritten example can't.",
+        "An agreement check runs the calling code's real behavior against a server built from a shared description. A real-database check's whole point is a dependency that can genuinely disagree with you — this sandbox ran that part for real, saying plainly that only the disposable-copy tool was unavailable.",
+        "And a recorded comparison writes the answer once and checks against it from then on."
+      ]
+    },
+    {
+      "lines": [
+        "One closing scenario, worth reasoning through rather than guessing at.",
+        "A team ships a retry client backed only by handwritten minimal-input tests, every one of them passing. Once live, a single repeated key ends up with two real effects recorded against it instead of one — a flaw a hundred generated sequences would have caught on the very first run.",
+        "What's actually missing here, and why does an all-green suite of handwritten tests not catch it?"
+      ],
+      "answer": [
+        "A generated test was missing, and that's the whole answer.",
+        "A handwritten minimal-input test only proves the function behaves on the one input it was actually given. It can never prove a rule holds for inputs nobody sat down and wrote — closing exactly that gap is the entire point of a test that generates its own."
+      ]
+    }
+  ]
+}
