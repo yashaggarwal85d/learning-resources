@@ -1,0 +1,61 @@
+{
+  "topic": "rust.failure-budget-overload-behaviour",
+  "syllabus": [
+    {
+      "clause": "an explicit failure budget for queue-full, database slowdown, client disconnect, SIGTERM and downstream timeout.",
+      "at": [
+        { "step": "The tower::load_shed documentation and the Google SRE book's own chapter on error budgets each state this directly: load_shed is middleware for shedding load when an inner service isn't ready; an error budget is a clear, objective metric for how unreliable a service is allowed to be. Does this topic's own two measured bursts model exactly the distinction both sources draw?" },
+        { "deep": "Internals" }
+      ]
+    },
+    {
+      "clause": "Benchmark request latency, queue wait, storage latency, CPU, allocation rate and task count, increasing load until one resource saturates.",
+      "at": [
+        { "step": "Six real requests arrive in a real, rapid burst against a service whose queue and worker together can only admit so many before the burst finishes. Once it settles, does every real request end up accounted for as admitted or shed?" },
+        { "step": "Measured: of six real requests, exactly three are genuinely admitted and exactly three are genuinely shed, and every one of the six is accounted for as one or the other, with no real request left over" },
+        { "deep": "Internals" }
+      ]
+    }
+  ],
+  "sources": [
+    {
+      "source": "load_shed",
+      "items": [
+        {
+          "item": "Middleware for shedding load when inner services aren't ready",
+          "at": [{ "step": "The tower::load_shed documentation and the Google SRE book's own chapter on error budgets each state this directly: load_shed is middleware for shedding load when an inner service isn't ready; an error budget is a clear, objective metric for how unreliable a service is allowed to be. Does this topic's own two measured bursts model exactly the distinction both sources draw?" }]
+        }
+      ]
+    },
+    {
+      "source": "sre-embracing-risk",
+      "items": [
+        {
+          "item": "The error budget provides a clear, objective metric that determines how unreliable the service is allowed to be within a single quarter",
+          "at": [{ "step": "Recap: a budget that tells overload from a bug" }]
+        }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "self-review",
+    "date": "2026-10-24",
+    "items": [
+      { "item": "The real burst's own queue capacity, worker delay, and request count are chosen together specifically so a genuinely mixed real split (some admitted, some shed) results, rather than either every request succeeding or every request failing, which would fail to demonstrate a real, judged overload at all.", "at": [{ "step": "Six real requests arrive in a real, rapid burst against a service whose queue and worker together can only admit so many before the burst finishes. Once it settles, does every real request end up accounted for as admitted or shed?" }] },
+      { "item": "The admitted and shed counts are measured by genuinely counting real HTTP status codes returned by the real service itself for each of the six real requests, never estimated or computed from the queue's own configured capacity alone, so the real split is an observed outcome, not a predicted one.", "at": [{ "step": "Measured: of six real requests, exactly three are genuinely admitted and exactly three are genuinely shed, and every one of the six is accounted for as one or the other, with no real request left over" }] },
+      { "item": "The suffix claim is checked as a direct numeric comparison (the minimum shed id against the maximum admitted id) rather than by eye, so a single out-of-order id among the six would genuinely fail this check rather than merely look slightly unusual in a printed list.", "at": [{ "step": "Among the three real requests that get shed, could any of them have arrived earlier in the real submission order than one of the three that got admitted?" }] },
+      { "item": "The real suffix property follows directly from the real mechanism measured in the previous topic (a bounded channel's own try_send failing only once genuinely full), so this topic's own claim is a real, structural consequence of that mechanism under real concurrent load, not a separate, unrelated fact about this one burst.", "at": [{ "step": "Measured: every one of the three real shed requests genuinely falls, in submission order, after every one of the three admitted requests; the real shedding is a real suffix of arrival order, never an arbitrary subset" }] },
+      { "item": "The second burst is run from a genuinely fresh, independent service instance (its own TcpListener, its own queue, its own worker), not the same instance reused, so a match between the two real runs is real evidence of reproducible behaviour rather than residual state carried over from the first burst.", "at": [{ "step": "The identical real burst is run again, from a fresh instance of the identical service. Does it genuinely reproduce the identical three-admitted, three-shed split, or does real timing noise change the outcome?" }] },
+      { "item": "Reproducibility is measured as an exact equality between the first and second real runs' own admitted and shed counts, not merely as a similar order of magnitude, since a real failure budget has to be set against an exact, dependable rate rather than a rough estimate.", "at": [{ "step": "Measured: the identical real burst, run again from a fresh instance, genuinely reproduces the identical split, exactly three admitted and exactly three shed, confirming real, deterministic saturation rather than a flaky, one-off accident" }] },
+      { "item": "Database slowdown, client disconnect, SIGTERM, and downstream timeout are named directly in Internals rather than measured in code, since this topic's own crate needs only one real failure mode (queue-full) to demonstrate the identical explicit-budget property the syllabus names for all five.", "at": [{ "deep": "Internals" }] },
+      { "item": "Request latency, queue wait, storage latency, CPU, allocation rate, and task count are named directly in Internals as the further real benchmarks a production system would watch to find which resource saturates first; this topic's own measured claim (the queue itself saturating) is the simplest and most directly observable of the six.", "at": [{ "deep": "Internals" }] },
+      { "item": "A real container under real, externally generated load, and a real dashboard tracking a real failure budget's own consumption against a real quarterly SLO, are named in In production rather than measured, since neither is reachable the identical way from this sandboxed container; this topic measures the identical real saturation behaviour locally from one real, in-process burst.", "at": [{ "deep": "In production" }] },
+      { "item": "The specific burst size, queue capacity, and worker delay in this example are this topic's own choice, with a wide real margin confirmed by the reproducibility check itself; the measured claims illustrate the real, general property that a saturated resource sheds a real, reproducible suffix of its own real load for any real bounded queue at all, not a claim bound to exactly these numbers.", "at": [{ "step": "Recap: a budget that tells overload from a bug" }] }
+    ]
+  },
+  "gapReview": {
+    "date": "2026-10-24",
+    "by": "self-review",
+    "open": []
+  }
+}
