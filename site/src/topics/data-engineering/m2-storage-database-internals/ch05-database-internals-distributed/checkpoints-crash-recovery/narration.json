@@ -29,9 +29,9 @@
         "If a crash happens partway through, why would the whole page need logging, rather than just the change being made?"
       ],
       "answer": [
-        "Because some of those smaller pieces can land while others never do, leaving a page that's part old and part new.",
-        "Applying an ordinary change on top of that mixed-up state could still produce something wrong.",
-        "Only a full, known-good copy of the page can safely repair whatever a crash left behind."
+        "It's not a format limitation, and it's not about saving space either — it's a physical problem.",
+        "Some of those smaller physical pieces can land while others never do, leaving a page that's part old and part new.",
+        "Applying an ordinary change on top of that mixed-up state could still produce something wrong, so only a full, known-good copy of the page can safely repair whatever a crash left behind."
       ]
     },
     {
@@ -76,8 +76,8 @@
         "Before believing that claim, what would actually have to be true underneath it?"
       ],
       "answer": [
-        "Any crash-recovery claim that doesn't grow with how long a system has been running has to be capping how far back it looks somehow.",
-        "That capping is exactly the job this topic's own checkpoint does.",
+        "It can't really be true as stated, and the giveaway isn't about redo versus undo at all — that's a separate question this topic already settled.",
+        "Any crash-recovery claim that doesn't grow with how long a system has been running has to be capping how far back it looks somehow, and that capping is exactly the job this topic's own checkpoint does.",
         "A claim of instant recovery with no stated bound at all is either marketing, or it's quietly hiding a checkpoint-equivalent under a different name."
       ]
     }

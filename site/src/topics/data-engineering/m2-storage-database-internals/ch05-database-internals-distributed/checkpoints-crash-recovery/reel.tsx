@@ -2,10 +2,10 @@ import type { Reel } from '../../../../../reels/types';
 import * as S from './scenes';
 
 // Real results on this sandbox's own PostgreSQL cluster (examples.py): checkpointing every
-// round of ten identical update rounds against a two-thousand-row table measured 1267 full-page
-// images and a roughly 1.42 MB live replay gap; checkpointing once up front, before the same ten
-// rounds, measured 66 full-page images and a roughly 9.6 MB live replay gap — the documented
-// checkpoint-frequency trade-off as a real, repeatable number, not an abstraction. The ARIES
+// round of ten identical update rounds against a two-thousand-row table measures far more
+// full-page images and a far smaller live replay gap than checkpointing only once up front
+// before the same ten rounds does — the documented checkpoint-frequency trade-off as a real,
+// repeatable, order-of-magnitude pair of numbers, not an abstraction. The ARIES
 // three-pass recovery structure and the point-in-time-recovery/replication/logical-decoding
 // substrate claims are named and sourced directly from Postgres's own documentation (and ARIES's
 // own paper, cited without a block quote since its only available copies are badly OCR-scrambled)
@@ -45,7 +45,8 @@ const reel: Reel = {
         <>
           Checkpoint more often, and there's genuinely less to redo after a crash. But the same
           documentation names a real cost: with full-page writes on, checkpointing more often
-          also means logging a full copy of a page more often.
+          means more write amplification — a full copy of a page logged more often than the
+          change itself would need on its own.
         </>
       ),
       duration: 4.8,

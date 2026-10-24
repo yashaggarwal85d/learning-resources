@@ -35,7 +35,7 @@ CHAPTER.md's own entry for this topic calls for a crash-recovery measurement. Th
 - Hook: step 1.
 - Predicts: step 4 (torn-page / full-page-write cost) and step 10 ("Prove it" — redo-only vs. three-pass transfer question). Two predicts, satisfying the ≥2 requirement for a full topic.
 - Surprising number: the real measured ratio — frequent checkpoints log roughly 19x the full-page images (1267 vs 66) of infrequent ones, while infrequent checkpoints leave a replay gap roughly 7x larger (~9.6 MB vs ~1.4 MB) — the same knob, pulling two real costs in opposite directions by almost an order of magnitude each.
-- Takeaways (≥3): steps 3, 5, 7.
+- Takeaways (≥3): steps 3, 5, 6.
 - Recap: step 9.
 
 ## Storyboard
@@ -94,7 +94,7 @@ CHAPTER.md's own entry for this topic calls for a crash-recovery measurement. Th
 - `takeaway`: "Checkpoint every round: 1267 full-page images, but only ~1.4 MB left to replay."
 - Narrator's line of thought: "This isn't a diagram — I ran it. Ten rounds of updates to a two-thousand-row table, checkpointing after every single round. 1267 full-page images. And the live replay gap behind the last checkpoint: about 1.4 megabytes."
 
-### Step 6 — Reveal: the real measurement, infrequent
+### Step 6 — Reveal: the real measurement, infrequent (takeaway)
 - **fig**: "Checkpointing once: how many full pages, how far behind?"
 - Visual idea: the same two rows, now labeled "checkpoint once, before ten rounds."
 - On screen: `Row` for fpi, `Row` for replay bytes, same layout as step 5 for direct visual comparison.
@@ -103,8 +103,9 @@ CHAPTER.md's own entry for this topic calls for a crash-recovery measurement. Th
 - Final frame: both rows.
 - Caption's point: the same workload, checkpointed once instead of ten times, flips the costs — far fewer full-page images, far more to replay.
 - Narrator's line of thought: "Same ten rounds, same table — but checkpoint only once, up front. Full-page images: 66, not 1267 — almost twenty times fewer. But the replay gap: about 9.6 megabytes, nearly seven times larger. Same knob, same workload, opposite result."
+- `takeaway`: "Checkpointing once logs far fewer full-page images, but leaves a far larger replay gap behind."
 
-### Step 7 — Reveal: redo-only vs. ARIES's three passes (takeaway, sourced-only)
+### Step 7 — Reveal: redo-only vs. ARIES's three passes (sourced-only)
 - **fig**: "Postgres redoes. ARIES also undoes. Why the difference?"
 - Visual idea: two rows, "Postgres: one pass (redo)" and "ARIES: three passes (analysis, redo, undo)."
 - On screen: two `Row`s, directly contrasting pass counts.
@@ -112,7 +113,6 @@ CHAPTER.md's own entry for this topic calls for a crash-recovery measurement. Th
 - Real values shown: none (sourced-only; named in SOURCES.md, no live measurement — this sandbox runs no ARIES-style engine).
 - Final frame: both rows plus the connecting line.
 - Caption's point: redo-only recovery is not Postgres cutting a corner — it's a different, equally real design, where undo work is replaced by checking a row's own commit status.
-- `takeaway`: "Postgres recovery redoes once; a row's own status decides what's visible — no separate undo pass."
 - Narrator's line of thought: "Here's a real design difference between engines, not an optimization. The classic ARIES method — the one taught in nearly every database-systems course — makes three passes: figure out what was in flight, redo everything, then physically undo the transactions that never committed. Postgres's own documentation describes just one pass: redo. It never undoes a page. Why? Because whether a change is visible is decided by looking at the transaction's own status, not by rolling the page back."
 
 ### Step 8 — Reveal: the substrate reused later (sourced-only)
