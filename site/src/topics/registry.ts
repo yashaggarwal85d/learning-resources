@@ -4288,4 +4288,24 @@ export const TOPICS: TopicMeta[] = [
     handoff:
       "Postgres's own append-only MVCC never overwrites a row in place — which means every update leaves an old version behind. The next topic is the maintenance job that has to clean that up: vacuum.",
   },
+  {
+    id: 'de.vacuum-bloat-transaction-id',
+    domain: 'data-engineering',
+    slug: 'data-engineering/m2-storage-database-internals/ch05-database-internals-distributed/vacuum-bloat-transaction-id',
+    title: 'Vacuum, bloat and transaction-ID wraparound',
+    syllabusTitle: 'Vacuum, bloat and transaction-ID wraparound',
+    kind: 'full',
+    status: 'held',
+    milestone: { number: 2, title: 'Storage: Database Internals, Files & the Lakehouse' },
+    chapter: { number: 5, title: 'Database Internals and Distributed Storage', section: '5.1' },
+    minutes: 15,
+    verified: '2026-10-24',
+    introduces: ['vacuum-xid-wraparound'],
+    uses: ['mvcc-versioning'],
+    declared: [],
+    bridge:
+      "Postgres's own append-only MVCC never overwrites a row in place, which means every update leaves an old version behind. This topic is the maintenance job that cleans that up — and the real outage that happens when something stops it from running: vacuum, bloat, and transaction-ID wraparound.",
+    handoff:
+      "MVCC is one family's answer to concurrent writes, and vacuum is the bill it pays later. The next topic is the other family entirely — a structure built from the start around never updating in place: the LSM tree.",
+  },
 ];

@@ -1,0 +1,86 @@
+{
+  "topic": "de.vacuum-bloat-transaction-id",
+  "steps": [
+    {
+      "lines": [
+        "The last topic left you with one uncomfortable fact.",
+        "Postgres never changes a row where it sits. An update just writes a new copy and walks away from the old one.",
+        "Do that forever, and nothing cleans itself up on its own. Something else has to."
+      ]
+    },
+    {
+      "lines": [
+        "I deleted half the rows in a real table on this sandbox's own cluster, then asked Postgres how many of them it still considers dead weight.",
+        "The answer came back exactly that many, straight from the engine's own bookkeeping, not a guess.",
+        "Only once I ran the cleanup command did that number drop. Deleting a row and reclaiming its space are two separate events."
+      ]
+    },
+    {
+      "lines": [
+        "Here's the part that actually surprised me running this.",
+        "I updated three hundred rows one way, and the table's own index never grew by a single byte. Updated the same rows a different way, and it doubled.",
+        "Same table, same row count, same number of updates. The only difference was which column I touched."
+      ]
+    },
+    {
+      "lines": [
+        "Picture a table that keeps getting bigger, and nobody can point to a slow query or a bad plan.",
+        "Autovacuum's logs show it running right on schedule. So what's actually stopping it from doing its job?",
+        "Sit with that for a second before I tell you."
+      ],
+      "answer": [
+        "It's not falling behind. That's the instinct, because load is usually the answer to why something's slow.",
+        "But a vacuum that runs and reclaims nothing isn't broken. It's being careful.",
+        "Something, somewhere, is still holding onto a view of the table old enough that today's cleanup isn't safe yet."
+      ]
+    },
+    {
+      "lines": [
+        "So what actually holds that view open? Postgres's own documentation names exactly three things.",
+        "A transaction somebody forgot to close. A two phase commit left half finished. A replica's slot nobody dropped after that replica was decommissioned.",
+        "Three completely different situations, and from the cleanup job's point of view, they look identical."
+      ]
+    },
+    {
+      "lines": [
+        "I made that invisible thing visible by holding one transaction open on purpose.",
+        "Six hundred updates landed on the same table while it sat there. I ran the cleanup command anyway, mid experiment, just to see.",
+        "It ran. It finished without error. It reclaimed not one of those six hundred dead rows, until I let that transaction go."
+      ]
+    },
+    {
+      "lines": [
+        "So how does autovacuum actually decide when to show up, if not on a timer?",
+        "It watches one number per table: how many rows changed since the last pass, measured against a threshold built from that table's own size.",
+        "Cross it, and a worker starts. There's no clock involved at all, which is exactly why 'it just ran an hour ago' tells you nothing."
+      ]
+    },
+    {
+      "lines": [
+        "Here's the part that makes all of this matter beyond disk space.",
+        "Postgres identifies every transaction with a number that eventually runs out and wraps back around to the start, like a clock face.",
+        "Freezing a row is what makes that safe — it tells Postgres, permanently, that this row is always in the past, no matter where the clock hand is.",
+        "Skip that for long enough, and Postgres doesn't corrupt your data. It simply refuses to take another write. Sentry's own production database did exactly that, for most of a working day, back in twenty fifteen."
+      ]
+    },
+    {
+      "lines": [
+        "So pull all of that together.",
+        "A dead row nobody reclaimed. A table that keeps growing for no visible reason. A whole cluster that one day just stops accepting writes.",
+        "Different scales, same root cause every time: something nobody's watching is holding a horizon open."
+      ]
+    },
+    {
+      "lines": [
+        "Last one. Sentry's database just hit that wall and stopped taking writes.",
+        "Somebody on the team suggests the obvious fix: turn autovacuum off so it quits interfering with recovery.",
+        "Before I tell you what they actually did, ask yourself whether that suggestion even makes sense."
+      ],
+      "answer": [
+        "Sentry's own writeup calls that exact suggestion out by name, because it's what everybody reaches for first.",
+        "It's backwards. Autovacuum isn't the thing fighting you during a wraparound crisis — it's the only thing capable of digging you out of one.",
+        "What actually worked was finding what was pinning the cleanup, giving the vacuum already running room to finish, and only then fixing the settings that let it get this bad."
+      ]
+    }
+  ]
+}
