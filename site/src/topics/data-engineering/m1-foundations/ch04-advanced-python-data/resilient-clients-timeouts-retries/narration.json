@@ -1,0 +1,82 @@
+{
+  "topic": "de.resilient-clients-timeouts-retries",
+  "steps": [
+    {
+      "lines": [
+        "The last topic decided how many database connections a service is allowed to hold open at once.",
+        "It never said what happens the moment one of those connections' own calls actually fails. That's exactly where this one picks up."
+      ]
+    },
+    {
+      "lines": [
+        "Here's the simplest possible failure, measured rather than assumed.",
+        "The identical client, calling two different endpoints under the same time limit: one deliberately slow, one quick to answer.",
+        "Measured directly, the slow call gives up right around that configured limit, and the quick call returns well before it."
+      ]
+    },
+    {
+      "lines": [
+        "A single time limit only protects one call. Here's what protects a whole chain of them.",
+        "One shared limit, handed down through three separate steps in a row. The first two steps run and spend most of that shared time.",
+        "The third step checks how much time is genuinely left before it even starts, finds none remaining, and skips its own work entirely rather than doing it for nothing."
+      ]
+    },
+    {
+      "lines": [
+        "Worth guessing at before the reveal settles it.",
+        "A growing wait after each failed attempt already spreads retries out somewhat. Does adding genuine randomness on top of that growing wait actually help any further, or is it just noise on a problem already solved?"
+      ],
+      "answer": [
+        "It genuinely does help, and here's precisely why.",
+        "A growing wait alone still slows every client down by the exact same fixed schedule, so they keep landing on the same moments as each other. Measured directly, adding real randomness is what actually breaks that pattern apart."
+      ]
+    },
+    {
+      "lines": [
+        "Worth seeing both sides of that claim directly.",
+        "One real client, retrying against a server that fails a fixed number of times, waiting a randomized amount bounded by a cap. Separately, picture a hundred clients that all fail at the exact same moment.",
+        "Without randomness, every one of them retries at that same later moment too. With it, that same hundred retries spreads out measurably instead."
+      ]
+    },
+    {
+      "lines": [
+        "Here's a second, entirely different kind of limit, aimed at the client's own behavior rather than any one call's timing.",
+        "A fixed number of retry attempts allowed in total, spent one at a time against a server that never actually recovers.",
+        "Once that allowance runs out, the client stops calling altogether and fails immediately instead, and the server's own real call count matches that allowance exactly."
+      ]
+    },
+    {
+      "lines": [
+        "One more way to stop calling a struggling dependency, and it works completely differently.",
+        "The identical failing call, wrapped by the identical piece of logic, measured both before and after that logic trips.",
+        "Before tripping, every failing call still pays its full waiting period. The moment after it trips, the very next call fails in a tiny fraction of that time, because nothing was actually sent over the network at all."
+      ]
+    },
+    {
+      "lines": [
+        "One last mechanism, aimed at a write rather than a read.",
+        "The identical write request, sent three separate times carrying one shared, repeated key, as though a client retried after never actually seeing the first reply.",
+        "The server's own internal count of real effects, not merely the replies it sent back, shows exactly one genuine effect. A different repeated key, or no repeated key at all, produces a brand new effect every single time instead."
+      ]
+    },
+    {
+      "lines": [
+        "Pulling it all back together now.",
+        "A time limit bounds how long one call can hold onto a client's resources. A shared limit lets a later step in a chain skip work nobody is still waiting on.",
+        "A growing wait alone still clusters; genuine randomness is what measurably spreads it apart. A fixed retry allowance caps one client's own total behavior, while tripped logic stops calling a struggling dependency altogether — two different fixes for two different problems.",
+        "And a repeated key turns a retried write into exactly one genuine effect, confirmed against the server's own real count."
+      ]
+    },
+    {
+      "lines": [
+        "One closing scenario, worth reasoning through rather than guessing at.",
+        "A client retries a payment call after it never saw the first reply. It sends no repeated key on that retry, and every step along its own call chain invents its own fresh time limit instead of sharing one single limit.",
+        "The payment gets charged twice, and a slow dependency keeps consuming resources long after the original caller already gave up. What's actually wrong here, and what fixes it?"
+      ],
+      "answer": [
+        "Two separate failures, not one, and both were measured directly earlier in this very topic.",
+        "Without a repeated key, that retried write is never recognized as a repeat, so it charges twice over. Without one shared, passed-down time limit, each step keeps working long after the original caller has already given up on the whole thing."
+      ]
+    }
+  ]
+}

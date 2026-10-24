@@ -2990,4 +2990,24 @@ export const TOPICS: TopicMeta[] = [
     handoff:
       "A pool decides how many connections exist; it says nothing about what happens when one of those connections' calls actually fails. Next: making the client built on top of this pool resilient to exactly that.",
   },
+  {
+    id: 'de.resilient-clients-timeouts-retries',
+    domain: 'data-engineering',
+    slug: 'data-engineering/m1-foundations/ch04-advanced-python-data/resilient-clients-timeouts-retries',
+    title: 'Resilient clients: timeouts, retries, idempotency',
+    syllabusTitle: 'Resilient clients: timeouts, retries, idempotency',
+    kind: 'full',
+    status: 'held',
+    milestone: { number: 1, title: 'Foundations' },
+    chapter: { number: 4, title: 'Advanced Python for Data Systems', section: '4.2' },
+    minutes: 15,
+    verified: '2026-10-24',
+    introduces: ['resilient-client-patterns'],
+    uses: ['connection-pool-sizing'],
+    declared: [],
+    bridge:
+      "A pool decides how many connections exist; it says nothing about what happens when one of those connections' calls actually fails. This topic is exactly that: timeouts, backoff, circuit breakers and idempotency, built directly onto the pooled client the last topic just measured.",
+    handoff:
+      "A resilient client's retry logic is exactly the kind of code that looks correct and silently isn't under replay or duplication. Next: the tests — including a property-based one built for precisely that — that actually prove it.",
+  },
 ];

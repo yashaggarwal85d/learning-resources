@@ -1,0 +1,176 @@
+{
+  "topic": "de.resilient-clients-timeouts-retries",
+  "syllabus": [
+    {
+      "clause": "timeouts on every call and deadline propagation",
+      "at": [
+        { "step": "Reveal: connection timeout, measured" },
+        { "step": "Reveal: deadline propagation through a call chain" }
+      ]
+    },
+    {
+      "clause": "exponential backoff with jitter",
+      "at": [
+        { "step": "Predict: does adding randomness to a backoff actually help, or just add noise?" },
+        { "step": "Reveal: backoff with jitter, measured and simulated side by side" }
+      ]
+    },
+    {
+      "clause": "retry budgets and circuit breakers against retry storms",
+      "at": [
+        { "step": "Reveal: a retry budget, enforced directly" },
+        { "step": "Reveal: a circuit breaker fails fast" }
+      ]
+    },
+    {
+      "clause": "idempotency keys and deduplication for exactly-once effects",
+      "at": [{ "step": "Reveal: an idempotency key, deduplicated for real" }]
+    }
+  ],
+  "sources": [
+    {
+      "source": "Timeouts, retries, and backoff with jitter",
+      "items": [
+        {
+          "item": "timeouts are the maximum amount of time a client waits for a request to complete",
+          "at": [{ "step": "Reveal: connection timeout, measured" }]
+        },
+        {
+          "item": "retries let clients survive partial and short-lived transient failures by sending the same request again",
+          "at": [{ "step": "Reveal: backoff with jitter, measured and simulated side by side" }]
+        },
+        {
+          "item": "circuit breakers introduce modal behavior that's hard to test; Amazon instead limits retries locally with a token bucket",
+          "at": [{ "step": "Reveal: a retry budget, enforced directly" }, { "step": "Reveal: a circuit breaker fails fast" }]
+        },
+        {
+          "item": "retrying independently at every layer of a multi-hop stack multiplies load; the best practice is to retry at a single point in the stack",
+          "at": [{ "deep": "Production failures this topic warns about" }]
+        }
+      ]
+    },
+    {
+      "source": "Exponential Backoff And Jitter",
+      "items": [
+        {
+          "item": "with N clients contending, the total amount of work done by the system increases with N squared",
+          "at": [{ "out": "below the depth this topic's scope needs; a contention-growth proof isn't a syllabus clause and isn't asserted by any reveal" }]
+        },
+        {
+          "item": "capped exponential backoff alone still produces clusters of correlated calls",
+          "at": [{ "step": "Predict: does adding randomness to a backoff actually help, or just add noise?" }]
+        },
+        {
+          "item": "Full Jitter, Equal Jitter and Decorrelated Jitter are named as the three alternatives, with Full and Equal doing the least client work",
+          "at": [{ "step": "Reveal: backoff with jitter, measured and simulated side by side" }]
+        }
+      ]
+    },
+    {
+      "source": "Addressing Cascading Failures (Google SRE Book, Ch. 22)",
+      "items": [
+        {
+          "item": "a server-wide retry budget (e.g. a fixed number of retries per minute) contains the retry effect once exhausted",
+          "at": [{ "step": "Reveal: a retry budget, enforced directly" }]
+        },
+        {
+          "item": "deadline propagation shares one absolute deadline down a call tree instead of a fresh timeout per hop",
+          "at": [{ "step": "Reveal: deadline propagation through a call chain" }]
+        },
+        {
+          "item": "a server working past its caller's already-expired deadline wastes resources for no credit",
+          "at": [{ "step": "Reveal: deadline propagation through a call chain" }]
+        },
+        {
+          "item": "having deadlines several orders of magnitude longer than the mean request latency is usually bad",
+          "at": [{ "deep": "Production failures this topic warns about" }]
+        }
+      ]
+    },
+    {
+      "source": "Circuit Breaker pattern",
+      "items": [
+        {
+          "item": "a circuit breaker temporarily blocks access to a remote resource after failures reach a threshold, instead of repeatedly retrying a call likely to fail",
+          "at": [{ "step": "Reveal: a circuit breaker fails fast" }]
+        },
+        {
+          "item": "the three named states are Closed, Open and Half-Open, with failure and success thresholds driving the transitions between them",
+          "at": [{ "step": "Reveal: a circuit breaker fails fast" }]
+        }
+      ]
+    },
+    {
+      "source": "Idempotent requests (Stripe API Reference)",
+      "items": [
+        {
+          "item": "an idempotency key lets a client safely retry a write without risking a second effect",
+          "at": [{ "step": "Reveal: an idempotency key, deduplicated for real" }]
+        },
+        {
+          "item": "the server stores the first response (including an error) for a key and replays it on retry, rather than repeating the side effect",
+          "at": [{ "step": "Reveal: an idempotency key, deduplicated for real" }]
+        },
+        {
+          "item": "reusing a key with different parameters produces an error rather than a second operation",
+          "at": [{ "out": "not asserted by any reveal; this topic measures the same-parameters retry path, not the mismatched-parameters error path" }]
+        }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "Claude (single session)",
+    "date": "2026-10-24",
+    "items": [
+      {
+        "item": "A timeout bounds how long a client holds its own resources waiting on a call, measured directly against a real slow endpoint versus a real fast one on the same client-side timeout.",
+        "at": [{ "step": "Reveal: connection timeout, measured" }]
+      },
+      {
+        "item": "Deadline propagation shares one absolute deadline down a call chain rather than resetting a fresh timeout at every hop, so a later hop can see that the time is already gone and skip work nobody will collect.",
+        "at": [{ "step": "Reveal: deadline propagation through a call chain" }]
+      },
+      {
+        "item": "Capped exponential backoff slows every client down by the same schedule, which is why it still produces correlated clusters of retries rather than spreading them out.",
+        "at": [{ "step": "Predict: does adding randomness to a backoff actually help, or just add noise?" }]
+      },
+      {
+        "item": "Jitter is the specific fix for correlated retry clustering, confirmed both by a real client retrying against a real flaky server and by a direct simulation contrasting a hundred synchronized clients with and without it.",
+        "at": [{ "step": "Reveal: backoff with jitter, measured and simulated side by side" }]
+      },
+      {
+        "item": "A retry budget caps how many times a process is allowed to retry in total, independent of any single call's own backoff schedule — once exhausted, the client fails fast rather than retrying forever.",
+        "at": [{ "step": "Reveal: a retry budget, enforced directly" }]
+      },
+      {
+        "item": "A circuit breaker's Open state measurably fails in microseconds because it stops calling the dependency at all, not because the call itself got faster.",
+        "at": [{ "step": "Reveal: a circuit breaker fails fast" }]
+      },
+      {
+        "item": "A circuit breaker's Half-Open state sends a limited trial request rather than immediately trusting the dependency is healthy again; a failed trial reopens the breaker.",
+        "at": [{ "step": "Reveal: a circuit breaker fails fast" }]
+      },
+      {
+        "item": "An idempotency key's dedup guarantee is about the server's own effect count, not just about the client seeing the same response text back.",
+        "at": [{ "step": "Reveal: an idempotency key, deduplicated for real" }]
+      },
+      {
+        "item": "A retry budget and a circuit breaker solve different problems: a budget caps a single client's own total retry volume; a breaker stops an entire dependency from being called at all once it looks unhealthy.",
+        "at": [{ "deep": "Outcomes" }]
+      },
+      {
+        "item": "Retrying at every layer of a multi-hop stack multiplies load geometrically, which is why the sourced best practice is to retry at a single point in the stack rather than at each hop independently.",
+        "at": [{ "deep": "Production failures this topic warns about" }]
+      },
+      {
+        "item": "An idempotency key only makes a retry safe if the client actually reuses the same key on its retry; generating a fresh key per attempt defeats the whole mechanism.",
+        "at": [{ "deep": "Production failures this topic warns about" }]
+      }
+    ]
+  },
+  "gapReview": {
+    "date": "2026-10-24",
+    "by": "Claude (single session)",
+    "open": []
+  }
+}
