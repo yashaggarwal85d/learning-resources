@@ -39,7 +39,7 @@ const reel: Reel = {
       Visual: S.RetentionReveal,
     },
     {
-      title: 'Now run compaction over the identical log instead. Does the old entry survive this time, just because it is still that key\'s own latest value?',
+      title: "Now run compaction over the identical log instead. Does the old entry survive this time, just because it is still that key's own latest value?",
       body: (
         <>
           The identical log, compaction instead of retention.
@@ -115,7 +115,7 @@ const reel: Reel = {
       Visual: S.DocsReveal,
     },
     {
-      title: 'Measured: time/size retention, keep-the-latest compaction, and the tombstone\'s own removal are all genuinely one coherent set of outcomes, from the identical log',
+      title: "Measured: time/size retention, keep-the-latest compaction, and the tombstone's own removal are all genuinely one coherent set of outcomes, from the identical log",
       body: (
         <>
           All three real, measured results, side by side.
