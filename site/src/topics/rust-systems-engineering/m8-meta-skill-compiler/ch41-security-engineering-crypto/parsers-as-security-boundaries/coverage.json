@@ -1,0 +1,70 @@
+{
+  "topic": "rust.parsers-as-security-boundaries",
+  "syllabus": [
+    {
+      "clause": "validate lengths before arithmetic can overflow; integer overflow checks are off in release builds by default, so use checked or saturating operations.",
+      "at": [
+        { "step": "A naive parser reads a declared length straight off the wire and slices the buffer with it, no check against how much buffer is actually left. A real, deliberately malformed input claims far more bytes than the real buffer holds. What happens?" },
+        { "step": "Measured: the naive parser's own unchecked slice genuinely panics on the oversized claim, while a checked parser, validating the same length against the real remaining buffer first, rejects it cleanly with no panic at all" },
+        { "step": "Two attacker-influenced lengths get added together with plain, unchecked arithmetic, in a real release build, where overflow checks are off by default. Does a real sum that genuinely overflows actually show up as a big, obviously wrong number?" },
+        { "step": "Measured: the naive, unchecked sum of two lengths that genuinely overflow a 32-bit addition wraps silently to a small number, while the identical real addition done with checked_add correctly reports that it overflowed, rather than handing back a small number that looks perfectly safe" }
+      ]
+    },
+    {
+      "clause": "Set maximum size and nesting policies.",
+      "at": [
+        { "step": "Now a declared length that genuinely fits inside the real buffer, but is still larger than this format's own stated maximum payload size. Does the naive parser, which only ever checks the buffer's own bounds, actually catch this one too?" },
+        { "step": "Measured: the naive parser genuinely accepts the over-policy payload, since nothing in it ever checks a maximum size at all, while the checked parser, which validates against that real, stated maximum directly, rejects it" },
+        { "deep": "In production" }
+      ]
+    },
+    {
+      "clause": "Fuzz with cargo-fuzz (libFuzzer) or AFL.rs, structure-aware via arbitrary, for truncated, oversized, duplicated and inconsistent fields.",
+      "at": [
+        { "deep": "Internals" },
+        { "deep": "The frontier" }
+      ]
+    }
+  ],
+  "sources": [
+    {
+      "source": "checked_add",
+      "items": [
+        {
+          "item": "Checked integer addition. Computes self + rhs, returning None if overflow occurred",
+          "at": [{ "step": "Measured: the naive, unchecked sum of two lengths that genuinely overflow a 32-bit addition wraps silently to a small number, while the identical real addition done with checked_add correctly reports that it overflowed, rather than handing back a small number that looks perfectly safe" }]
+        }
+      ]
+    },
+    {
+      "source": "overflow-checks",
+      "items": [
+        {
+          "item": "The overflow-checks setting controls the -C overflow-checks flag which controls the behavior of runtime integer overflow. When overflow-checks are enabled, a panic will occur on overflow",
+          "at": [{ "step": "Two attacker-influenced lengths get added together with plain, unchecked arithmetic, in a real release build, where overflow checks are off by default. Does a real sum that genuinely overflows actually show up as a big, obviously wrong number?" }]
+        }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "self-review",
+    "date": "2026-10-24",
+    "items": [
+      { "item": "The oversized-claim input is built by encoding a genuinely well-formed two-byte payload and then overwriting only its own length field to claim ten thousand bytes, so the real buffer behind it genuinely holds far fewer bytes than the claim, rather than a buffer that was never populated at all.", "at": [{ "step": "A naive parser reads a declared length straight off the wire and slices the buffer with it, no check against how much buffer is actually left. A real, deliberately malformed input claims far more bytes than the real buffer holds. What happens?" }] },
+      { "item": "The naive parser's own panic is caught with a real std::panic::catch_unwind rather than allowed to abort the whole measuring process, so the topic's own examples.py can observe and assert on the real panic directly, instead of merely trusting that it would have happened.", "at": [{ "step": "Measured: the naive parser's own unchecked slice genuinely panics on the oversized claim, while a checked parser, validating the same length against the real remaining buffer first, rejects it cleanly with no panic at all" }] },
+      { "item": "The over-policy payload is exactly one byte larger than this format's own stated maximum, chosen deliberately at that exact boundary so the measured rejection is genuinely about the stated maximum itself, not about some larger, less precise oversized value that could be explained another way.", "at": [{ "step": "Now a declared length that genuinely fits inside the real buffer, but is still larger than this format's own stated maximum payload size. Does the naive parser, which only ever checks the buffer's own bounds, actually catch this one too?" }] },
+      { "item": "The naive parser's own real acceptance of the over-policy payload is measured by confirming it returns Ok rather than merely failing to return an error of a particular kind, so the claim is genuinely that nothing in it checks a maximum, not an assumption from the absence of a panic.", "at": [{ "step": "Measured: the naive parser genuinely accepts the over-policy payload, since nothing in it ever checks a maximum size at all, while the checked parser, which validates against that real, stated maximum directly, rejects it" }] },
+      { "item": "The two lengths used in the overflow scenario, u32::MAX minus ten and twenty, are chosen so their real sum genuinely exceeds u32::MAX by exactly nine, landing deterministically on a real, specific wrapped value rather than depending on where in the overflow's own range a less precisely chosen pair of inputs might land.", "at": [{ "step": "Two attacker-influenced lengths get added together with plain, unchecked arithmetic, in a real release build, where overflow checks are off by default. Does a real sum that genuinely overflows actually show up as a big, obviously wrong number?" }] },
+      { "item": "The naive sum's own real wraparound is measured specifically by confirming it is smaller than one of its own two inputs, a real, general property that can only hold true if a genuine overflow occurred, rather than checking it against one specific expected wrapped value that might mask a different, unrelated bug.", "at": [{ "step": "Measured: the naive, unchecked sum of two lengths that genuinely overflow a 32-bit addition wraps silently to a small number, while the identical real addition done with checked_add correctly reports that it overflowed, rather than handing back a small number that looks perfectly safe" }] },
+      { "item": "The same real crate's own cargo run is executed under --release specifically, continuing this domain's own established pattern, because the overflow scenario's own entire claim depends on overflow-checks being off, which is the real, stated default for that profile and not something the test harness has to configure separately.", "at": [{ "step": "The Rust standard library's own checked_add documentation and Cargo's own reference on overflow-checks each state this directly: checked_add reports None on overflow instead of wrapping, and a release build's own overflow checks are off by default, so an unchecked plus genuinely wraps there instead of panicking. Does this topic's own two measured comparisons match exactly what both sources describe?" }] },
+      { "item": "Real, structure-aware fuzzing with cargo-fuzz or arbitrary, named directly in Internals, would discover inputs like this topic's own two hand-crafted ones automatically across a much larger real input space; this topic measures two specific, chosen inputs by hand to keep its own crate's dependency list minimal rather than add a fuzzing harness for two fixed, already-known cases.", "at": [{ "deep": "Internals" }] },
+      { "item": "A real nesting-depth policy, named directly in In production, applies only to a format that can recursively contain records of its own kind; this topic's own flat, one-level record format has no real nesting to bound, so only the size policy half of the syllabus's own named pair is measured directly.", "at": [{ "deep": "In production" }] },
+      { "item": "Real, duplicated and inconsistent fields, named directly in The frontier, are a real, additional kind of malformed input beyond the truncated and oversized kinds this topic measures; a richer record format with two conflicting length fields or a mismatched checksum would be needed to measure that kind directly, which this topic's own single-length format does not have.", "at": [{ "deep": "The frontier" }] }
+    ]
+  },
+  "gapReview": {
+    "date": "2026-10-24",
+    "by": "self-review",
+    "open": []
+  }
+}

@@ -1,0 +1,65 @@
+{
+  "topic": "rust.property-based-model-based",
+  "syllabus": [
+    {
+      "clause": "proptest! for storage-page invariants (slots in bounds, no bad offset overlap, serialization round-trips), with shrinking.",
+      "at": [
+        { "step": "A real allocator checks only that each new slot's own real length fits the page, never checking where that slot actually starts. A real property test throws a large, random space of real insert sequences at it. Does a hand-picked example test actually need to find this bug, or does the random search find it anyway?" },
+        { "step": "Measured: the real property test, run against hundreds of real, randomly generated insert sequences, genuinely finds a sequence that violates the bounds invariant, and shrinks it down to a real, minimal failing case" },
+        { "step": "The real, random search that found the bug started from sequences up to thirty inserts long. Does the real counterexample it actually reports stay that long, or does it get smaller?" },
+        { "step": "Measured: the real, reported counterexample shrinks down to a handful of inserts whose real total lands just barely over the page's own real capacity, the smallest real overrun proptest could find" },
+        { "step": "The identical real property test, run against the checked, correct insert instead. Does it pass because this topic happened to pick easy random cases, or because the real invariant genuinely holds?" },
+        { "step": "Measured: the identical real bounds check, run against hundreds of real, randomly generated sequences, genuinely passes every single one against the checked insert, the same real invariant that found a bug moments earlier" },
+        { "step": "The proptest crate's own README states this directly: it tests that real properties hold for arbitrary inputs and, on failure, automatically finds the real, minimal case that reproduces the problem. Does this topic's own two measured runs match exactly what that sentence describes?" }
+      ]
+    },
+    {
+      "clause": "Stateful model-based tests compare the system against a simple reference model.",
+      "at": [
+        { "step": "Recap: trying a great many real cases" },
+        { "deep": "Internals" }
+      ]
+    }
+  ],
+  "sources": [
+    {
+      "source": "proptest-intro",
+      "items": [
+        {
+          "item": "It allows to test that certain properties of your code hold for arbitrary inputs, and if a failure is found, automatically finds the minimal test case to reproduce the problem",
+          "at": [{ "step": "The proptest crate's own README states this directly: it tests that real properties hold for arbitrary inputs and, on failure, automatically finds the real, minimal case that reproduces the problem. Does this topic's own two measured runs match exactly what that sentence describes?" }]
+        }
+      ]
+    },
+    {
+      "source": "proptest-framework",
+      "items": [
+        {
+          "item": "Proptest is a property testing framework (i.e., the QuickCheck family) inspired by the Hypothesis framework for Python",
+          "at": [{ "step": "Measured: the real property test, run against hundreds of real, randomly generated insert sequences, genuinely finds a sequence that violates the bounds invariant, and shrinks it down to a real, minimal failing case" }]
+        }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "self-review",
+    "date": "2026-10-24",
+    "items": [
+      { "item": "naive_insert's own real bug is a genuine, planted off-by-one: it checks a new slot's own real length against the page's own real capacity, but never checks the slot's own real starting offset, so a real sequence of small inserts whose own real total exceeds capacity is accepted anyway, each one individually passing the one check it does perform.", "at": [{ "step": "A real allocator checks only that each new slot's own real length fits the page, never checking where that slot actually starts. A real property test throws a large, random space of real insert sequences at it. Does a hand-picked example test actually need to find this bug, or does the random search find it anyway?" }] },
+      { "item": "The real property check is run with 256 real, randomly generated cases per scenario, via proptest's own Config, a real, large enough sample that the measured pass or fail outcome is a genuine property of the implementation under test rather than an artifact of too few cases being tried.", "at": [{ "step": "Measured: the real property test, run against hundreds of real, randomly generated insert sequences, genuinely finds a sequence that violates the bounds invariant, and shrinks it down to a real, minimal failing case" }] },
+      { "item": "The real input strategy generates sequences of one to twenty-nine inserts, each between one and twenty bytes, so the real, random search explores a genuinely large space of possible real sequences before proptest's own real shrinking ever begins reducing whatever it finds.", "at": [{ "step": "The real, random search that found the bug started from sequences up to thirty inserts long. Does the real counterexample it actually reports stay that long, or does it get smaller?" }] },
+      { "item": "The real, shrunk counterexample's own total length is measured directly from proptest's own real, minimal failing input, summed by this topic's own examples.py, and checked to land just over the stated capacity (between 101 and 105), confirming shrinking found a genuinely minimal real overrun rather than reporting back some arbitrary, still-large failing case.", "at": [{ "step": "Measured: the real, reported counterexample shrinks down to a handful of inserts whose real total lands just barely over the page's own real capacity, the smallest real overrun proptest could find" }] },
+      { "item": "checked_insert uses a real checked_add on the slot's own starting offset and length before comparing the real sum against capacity, so the identical kind of silent, unchecked arithmetic this domain's own prior topic (Ch.41) measured as a real security bug is exactly what this topic's own correct implementation avoids.", "at": [{ "step": "The identical real property test, run against the checked, correct insert instead. Does it pass because this topic happened to pick easy random cases, or because the real invariant genuinely holds?" }] },
+      { "item": "The checked insert's own real pass is measured as a genuine proptest::test_runner::TestRunner::run returning Ok across the identical 256 real cases and the identical real strategy as the naive run that failed, so the contrast is attributable only to the one real difference between the two implementations, not to an easier test configuration.", "at": [{ "step": "Measured: the identical real bounds check, run against hundreds of real, randomly generated sequences, genuinely passes every single one against the checked insert, the same real invariant that found a bug moments earlier" }] },
+      { "item": "The quoted README sentence is read from the identical real, canonical GitHub README for the exact proptest version (1.x) this topic's own crate actually depends on, not from an older or unrelated description of the tool's own purpose.", "at": [{ "step": "The proptest crate's own README states this directly: it tests that real properties hold for arbitrary inputs and, on failure, automatically finds the real, minimal case that reproduces the problem. Does this topic's own two measured runs match exactly what that sentence describes?" }] },
+      { "item": "The real, stateful, model-based comparison drives the identical checked_insert allocator and a genuinely independent reference model, a single running total with no slot list at all, through the identical random sequence strategy, checking real agreement on every accept-or-reject decision rather than on a final summary count alone.", "at": [{ "deep": "Internals" }] },
+      { "item": "loom's own real, exhaustive interleaving search, named directly in In production, answers a genuinely different kind of question than this topic's own single-threaded property test: which thread schedule causes a failure, rather than which sequence of operations against one structure does, since this topic's own SlotPage has no real concurrency for loom to explore.", "at": [{ "deep": "In production" }] },
+      { "item": "Deterministic simulation testing and turning real fuzz findings into permanent regressions, both named directly in The frontier, each extend this topic's own real discipline (trying many cases, reducing a failure to its minimal cause) to a real, distributed, multi-machine system rather than the single-process allocator this topic measures directly.", "at": [{ "deep": "The frontier" }] }
+    ]
+  },
+  "gapReview": {
+    "date": "2026-10-24",
+    "by": "self-review",
+    "open": []
+  }
+}

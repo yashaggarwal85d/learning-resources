@@ -1,0 +1,33 @@
+# Outline — Choosing the abstraction level
+
+Concept ledger: introduces `a-recorded-hypothesis-is-what-a-result-is-checked-against`; reuses `an-implicit-backpressure-point-is-still-a-real-decision` (topic 92) directly, continuing the identical within-chapter pattern Chapters 30–34 established, per Chapter 37's own CHAPTER.md §A.7.
+
+Bridge/handoff (verbatim from CHAPTER.md §A.8): "An implicit decision answered by a real default is still a real decision, measured directly; the next real question is whether a decision that was made on purpose, an optimization, actually did what it was meant to." Hands off to whatever this milestone's own next chapter begins with (verbatim): "A real method for finding an implicit decision, and a real method for checking an optimization's own result against what it was supposed to do, are both real, repeatable habits; the next real question this milestone asks is what the compiler itself is actually doing with the code those habits produce."
+
+Chapter 37's own disclosed convention (§A.3/§A.6) applies: this topic's own crate (`examples/evidence_demo/`) builds the identical real bounded Axum/`tokio::sync::mpsc` service shape, measuring one real, specific optimization decision: whether a request's own handler replies immediately once the job is enqueued, or only once the worker's own storage write for that specific job has genuinely completed, signalled back through a real `tokio::sync::oneshot` channel per job.
+
+## Changes from the chapter plan
+
+CHAPTER.md §A.9 names Google's SRE workbook chapter on monitoring for this topic's own primary source. That specific chapter's own text does not use the words "hypothesis" or "scientific method" directly; the Google SRE Book's own "Effective Troubleshooting" chapter does, in exactly the terms this topic measures (hypothesize, then compare the observed state against the theory), so this topic cites that chapter instead, from the same publisher's own real, adjacent work.
+
+## Storyboard (8 steps, 3 predict/reveal pairs)
+
+1. **HypothesisPredict** — Before any code changes, a real hypothesis gets written down: replying to a client only once the worker's own storage write for that request has genuinely finished, instead of replying the instant the request is enqueued, will add roughly the worker's own real per-request delay to what the client observes. Is that hypothesis specific enough to actually be wrong? Options: no, it's too vague to check against a real number; yes, genuinely, it names a real metric and a real expected size of change (correct); only once the code is already written.
+2. **HypothesisReveal** — Measured: a real workload of five sequential requests, against the identical real service, with the handler replying immediately on enqueue first. No separate takeaway here (this is the reel's own "from" step for the phone swipe test; its takeaway moves to step 7, the connecting step, below).
+3. **ChangePredict** — Now the one real, specific change: the handler is changed to await a real completion signal from the worker before it replies, for the identical workload against the identical service shape. Does the client's own real, observed latency actually change the way the hypothesis predicted? Options: no, replying is replying either way; yes, genuinely, it grows by roughly the worker's own real delay (correct); only on the very first request.
+4. **ChangeReveal** — Measured: the real, observed latency jumps from a fraction of a millisecond to a number close to the worker's own real delay, once the handler waits for the real completion signal instead of replying immediately. Takeaway: a recorded hypothesis turns a real number into something that is confirmed or contradicted, not just observed.
+5. **ComparePredict** — Side by side, does the real, measured size of the added latency actually match the hypothesis's own stated prediction, or did writing the hypothesis down turn out to be a coincidence? Options: it was a lucky coincidence, with no real connection; it matches, genuinely, because the added wait really is the worker's own real delay (correct); it only matches for this one specific run.
+6. **CompareReveal** — Measured: the real, added latency lands within a wide margin of the worker's own stated delay, confirming the hypothesis directly rather than merely producing a number that happens to exist. Takeaway: a change's own real result only means something once it is checked against what was actually predicted beforehand.
+7. **DocsReveal** — The Google SRE Book's own "Effective Troubleshooting" chapter states this directly, in its own words: hypothesize, then compare the observed state against the theory to find confirming or disconfirming evidence. Does this topic's own measured hypothesis and result follow exactly that real method? Takeaway (moved here from step 2): writing the guess down before checking it is what makes a real result something that can actually confirm or contradict it.
+8. **Recap** — A real hypothesis, a real workload, a real metric, and a real change, checked against a real result: that is the whole of evidence discipline, and it is what turns an optimization from a feeling that it worked into a number that genuinely did, or genuinely didn't, match what was predicted.
+
+## Engagement arc
+
+- Predicts: steps 1, 3, 5 — each a genuine guess about what this exact pair of real handlers actually does under the identical real workload.
+- Takeaways: steps 4, 6, 7 (three — step 2 deliberately carries none, since it is the reel's own "from" step for the phone swipe test; its takeaway moves to step 7, the connecting step; step 8's recap carries the closing statement instead of a fourth).
+
+## Deferred to post-notes (not measured in the reel itself, per the kit's real-measurement standard)
+
+- The worksheet's own remaining explicit-versus-implicit questions, each one answerable the identical way topic 92 measured the backpressure point, none of which this topic re-measures since its own subject is the evidence-discipline method, not the worksheet itself — Internals.
+- A real, concurrent workload (many simultaneous clients, not five sequential requests), where the identical reply-on-persist change interacts with real queueing delay in ways a single-client sequential measurement cannot show on its own — In production.
+- A real, measured throughput cost (not just latency) of holding a real HTTP connection open for the worker's own full processing time, the natural next real metric once the identical hypothesis-and-measure method is applied to a production service under real concurrent load — The frontier.

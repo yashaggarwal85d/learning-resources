@@ -1,0 +1,22 @@
+import Resource from '../../../../../components/Resource.astro';
+
+<section class="prereq" data-section="chapter-so-far">
+
+### <span class="n">01</span> What this chapter draws on
+
+<ul class="resources">
+  <Resource kind="reel" host={props.host} domain="rust-systems-engineering" title="Choosing the abstraction level">a real method for finding an implicit decision, and a real method for checking an optimization's own result, are both real, repeatable habits; this chapter turns from a project's own decisions to the inputs it has to defend against.</Resource>
+</ul>
+
+</section>
+
+<section class="prereq" data-section="parsers-primary">
+
+### <span class="n">02</span> The real docs: checked_add and overflow-checks
+
+<ul class="resources">
+  <Resource kind="reading" title="checked_add" href="https://doc.rust-lang.org/std/primitive.u32.html" by="doc.rust-lang.org">checked integer addition; computes self plus rhs, returning none if overflow occurred.</Resource>
+  <Resource kind="reading" title="overflow-checks" href="https://doc.rust-lang.org/cargo/reference/profiles.html" by="doc.rust-lang.org">controls the behavior of runtime integer overflow; when enabled, a panic occurs on overflow.</Resource>
+</ul>
+
+</section>

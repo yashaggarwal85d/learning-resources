@@ -1,0 +1,461 @@
+{
+ "topic": "de.object-storage-query-economics",
+ "voice": "breeze-mellow-v2",
+ "asr": "large-v3-turbo",
+ "clips": {
+  "01": {
+   "hash": "5af92ff512bfa891",
+   "takes": [
+    "a5297be6b497b2af6c73",
+    "c0e3734cfacff4a563a5"
+   ],
+   "duration": 19.696,
+   "lines": [
+    {
+     "text": "Same dataset, same question asked of it, stored four completely different ways.",
+     "start": 0.15,
+     "end": 6.696
+    },
+    {
+     "text": "JSON, one Parquet file, a Parquet directory split by month, and an Iceberg table. Which one actually costs the least to answer that question?",
+     "start": 7.116,
+     "end": 19.346
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 110,
+   "wer": 0.16666666666666666,
+   "exact": false,
+   "tolerated": [
+    {
+     "line": "Same dataset, same question asked of it, stored four completely different ways.",
+     "said": "dataset",
+     "heard": "data set"
+    }
+   ]
+  },
+  "02": {
+   "hash": "1bfcfe29e58c3fce",
+   "takes": [
+    "6b012b815e147c35b951",
+    "8893734b833c64af9dcd"
+   ],
+   "duration": 23.54,
+   "lines": [
+    {
+     "text": "Start with what storage itself actually bills for.",
+     "start": 0.15,
+     "end": 3.67
+    },
+    {
+     "text": "Keeping the bytes, moving them in and out, and transferring them elsewhere are three separate charges, not one bundled price \u2014 and even the storage charge splits further by size, how long it sits there, and which class holds it, since slower retrieval buys a lower storage rate.",
+     "start": 4.09,
+     "end": 23.19
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 140,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "03": {
+   "hash": "6d7d396f04499bbe",
+   "takes": [
+    "e5b35fb1c3e0840e571d",
+    "ce7fa8f37e0ef5baf21a"
+   ],
+   "duration": 15.655,
+   "lines": [
+    {
+     "text": "Here's a question worth sitting with before the next reveal.",
+     "start": 0.15,
+     "end": 3.584
+    },
+    {
+     "text": "JSON needs no schema, no special writer \u2014 about as cheap to produce as a format gets. Does that cheapness carry all the way through to querying it back later?",
+     "start": 4.005,
+     "end": 15.305
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -1.9,
+   "wpm": 149,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "03a": {
+   "hash": "0a33b7542e1c6dcf",
+   "takes": [
+    "54eee2831640191c7aea",
+    "b026ec4847ac1ee6a23f"
+   ],
+   "duration": 17.383,
+   "lines": [
+    {
+     "text": "It doesn't. Writing without any structure is cheap precisely because nothing gets organized ahead of time.",
+     "start": 0.15,
+     "end": 8.003
+    },
+    {
+     "text": "That's exactly what makes reading it back slower and costlier \u2014 someone has to do that organizing work at query time instead.",
+     "start": 8.423,
+     "end": 17.032
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -2.0,
+   "wpm": 128,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "04": {
+   "hash": "e9461b5be3e907ba",
+   "takes": [
+    "6015be362e2d3831fbfc",
+    "6a1356e2f726101438c8"
+   ],
+   "duration": 16.819,
+   "lines": [
+    {
+     "text": "Run the exact same question against both formats and compare.",
+     "start": 0.15,
+     "end": 3.695
+    },
+    {
+     "text": "Against JSON, the engine reads back far more bytes to answer it than against the Parquet copy \u2014 Parquet only has to touch the columns this particular question actually needs.",
+     "start": 4.115,
+     "end": 16.469
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 139,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "05": {
+   "hash": "0a28dc1d0f5bcd25",
+   "takes": [
+    "87eb6197adcc42f69c24",
+    "aa4a0a4e57dda8e16ff7"
+   ],
+   "duration": 18.592,
+   "lines": [
+    {
+     "text": "Query compute itself splits into two genuinely different billing models.",
+     "start": 0.15,
+     "end": 4.905
+    },
+    {
+     "text": "One charges for how many bytes a query scans, no matter how long it takes to run. The other charges for compute capacity held in reserve, no matter how many bytes any one query scans.",
+     "start": 5.325,
+     "end": 18.242
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -2.4,
+   "wpm": 145,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "06": {
+   "hash": "03d4d76422d88a6a",
+   "takes": [
+    "7dfd82be781001096c80",
+    "21a1d50ce3c0b9970be7"
+   ],
+   "duration": 19.872,
+   "lines": [
+    {
+     "text": "Here's a harder one, worth working through before it's shown.",
+     "start": 0.15,
+     "end": 4.735
+    },
+    {
+     "text": "Splitting one file into twelve smaller ones, one per month, sounds like a pure win \u2014 smaller files, less to touch per question. Does that always come out cheaper?",
+     "start": 5.155,
+     "end": 19.522
+    }
+   ],
+   "lufs": -16.3,
+   "true_peak": -2.6,
+   "wpm": 115,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "06a": {
+   "hash": "d2c1da26eb032963",
+   "takes": [
+    "b63052193ce909f2cada",
+    "827402bec5c820c62728"
+   ],
+   "duration": 16.023,
+   "lines": [
+    {
+     "text": "Not always \u2014 it depends entirely on what's being asked.",
+     "start": 0.15,
+     "end": 3.51
+    },
+    {
+     "text": "Splitting by month helps enormously when a question only needs one month. It does nothing to help, and can genuinely hurt, a question that needs every month at once.",
+     "start": 3.93,
+     "end": 15.673
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -2.0,
+   "wpm": 142,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "07": {
+   "hash": "a4e44d1724a6ec70",
+   "takes": [
+    "b7d27f798491477babf3",
+    "6eef819838f0e17e60f4"
+   ],
+   "duration": 17.623,
+   "lines": [
+    {
+     "text": "Ask for just one month out of twelve and watch what happens.",
+     "start": 0.15,
+     "end": 3.906
+    },
+    {
+     "text": "Against the layout split by month, the engine reads far fewer bytes than against the single file holding every month together \u2014 it only ever opens the one file that could possibly match.",
+     "start": 4.326,
+     "end": 17.273
+    }
+   ],
+   "lufs": -16.2,
+   "true_peak": -2.2,
+   "wpm": 150,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "08": {
+   "hash": "59dc9936bfc5ae7a",
+   "takes": [
+    "53e1966e3662c99cf292",
+    "0ec406535e2cffd43030"
+   ],
+   "duration": 20.408,
+   "lines": [
+    {
+     "text": "Now ask for every month at once, on that exact same split layout.",
+     "start": 0.15,
+     "end": 5.098
+    },
+    {
+     "text": "It reads more bytes than the single large file holding the identical rows \u2014 twelve files each carry their own overhead just to open, and that overhead adds up past what one big file ever cost.",
+     "start": 5.518,
+     "end": 20.058
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -1.9,
+   "wpm": 141,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "09": {
+   "hash": "eb2440d2ca1bc66b",
+   "takes": [
+    "fd7f948d00d766310a5d",
+    "34871efd5c72ec6b504b"
+   ],
+   "duration": 19.668,
+   "lines": [
+    {
+     "text": "Set the questions aside entirely and just look at what sits on disk.",
+     "start": 0.15,
+     "end": 4.981
+    },
+    {
+     "text": "The JSON copy of this same data takes up far more room than any of the three columnar layouts holding those exact same rows \u2014 storage cost and query cost move almost independently of each other.",
+     "start": 5.401,
+     "end": 19.318
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.8,
+   "wpm": 146,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "10": {
+   "hash": "bc3ec816cb32b9b8",
+   "takes": [
+    "2d373a6a77fdd7f29563",
+    "336fed3528a598d5859b"
+   ],
+   "duration": 21.643,
+   "lines": [
+    {
+     "text": "One more question, worth reasoning through before the answer lands.",
+     "start": 0.15,
+     "end": 4.214
+    },
+    {
+     "text": "Think about everything an open table format actually promises \u2014 transactions, a catalog, concurrent writers. Does any of that, by itself, change how many bytes a question against the data actually ends up reading?",
+     "start": 4.634,
+     "end": 21.293
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 119,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "10a": {
+   "hash": "6e73627ba5e18772",
+   "takes": [
+    "d89706eb57f4a8229784",
+    "a76664bf2fb0d6d7e44d"
+   ],
+   "duration": 15.553,
+   "lines": [
+    {
+     "text": "It doesn't. Transactions and a catalog are one property; how the files are physically laid out underneath is a completely separate one.",
+     "start": 0.15,
+     "end": 9.558
+    },
+    {
+     "text": "Bytes read tracks that physical layout, not whichever format is wrapped around it.",
+     "start": 9.978,
+     "end": 15.203
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 135,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "11": {
+   "hash": "bcc6c1753a204df5",
+   "takes": [
+    "26dc49e37d0e67c860a2",
+    "a86444e0fd20a11e2032"
+   ],
+   "duration": 20.417,
+   "lines": [
+    {
+     "text": "Confirm that directly: wrap the same data, unpartitioned, in an actual Iceberg table and run both questions again.",
+     "start": 0.15,
+     "end": 9.419
+    },
+    {
+     "text": "Its bytes read track the bare Parquet file sitting underneath it almost exactly \u2014 for the narrow question and the broad one alike.",
+     "start": 9.839,
+     "end": 20.067
+    }
+   ],
+   "lufs": -16.2,
+   "true_peak": -2.0,
+   "wpm": 118,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "12": {
+   "hash": "4426116d24c42351",
+   "takes": [
+    "f68170e0cb722dda124e",
+    "2324a54024e9c51e5352"
+   ],
+   "duration": 20.52,
+   "lines": [
+    {
+     "text": "Pull it all back together.",
+     "start": 0.15,
+     "end": 1.717
+    },
+    {
+     "text": "Storage, requests, and query compute are billed on entirely separate meters. What actually moves bytes scanned is the physical layout of the files, not which format wraps them \u2014 and which layout wins depends completely on whether the next question is narrow or broad.",
+     "start": 2.137,
+     "end": 20.17
+    }
+   ],
+   "lufs": -16.1,
+   "true_peak": -2.3,
+   "wpm": 140,
+   "wer": 0.023255813953488372,
+   "exact": false,
+   "tolerated": [
+    {
+     "line": "Storage, requests, and query compute are billed on entirely separate meters. What actually moves bytes scanned is the physical layout of the files, not which format wraps them \u2014 and which layout wins depends completely on whether the next question is narrow or broad.",
+     "said": "billed",
+     "heard": "built"
+    }
+   ]
+  },
+  "13": {
+   "hash": "392568ebe5e198d6",
+   "takes": [
+    "738d57fb9e13907fc9af",
+    "7e669fcd7b1a8c8259ab"
+   ],
+   "duration": 20.277,
+   "lines": [
+    {
+     "text": "One last scenario, worth reasoning through before the answer lands.",
+     "start": 0.15,
+     "end": 4.403
+    },
+    {
+     "text": "Picture a dashboard that only ever asks for the single most recent day's data, never anything more. Of today's four layouts, which one should that dashboard actually be built on?",
+     "start": 4.823,
+     "end": 19.927
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -2.4,
+   "wpm": 118,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "13a": {
+   "hash": "f3a6414a284c66a3",
+   "takes": [
+    "ff9c9294462b0fd1db0a",
+    "944c55a689f2c4f9ec29"
+   ],
+   "duration": 26.071,
+   "lines": [
+    {
+     "text": "Something split finely enough to isolate just that one day's worth of data, not one large undivided file.",
+     "start": 0.15,
+     "end": 8.139
+    },
+    {
+     "text": "A question that's permanently narrow, in the exact same shape every single time, is exactly the case where fine-grained splitting keeps winning \u2014 none of the broad-question cost ever shows up, because that question never gets asked.",
+     "start": 8.559,
+     "end": 25.721
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -1.9,
+   "wpm": 129,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  }
+ }
+}

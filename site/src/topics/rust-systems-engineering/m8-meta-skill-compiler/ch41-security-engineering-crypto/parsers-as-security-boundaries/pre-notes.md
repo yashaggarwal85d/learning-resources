@@ -1,0 +1,4 @@
+- **Security boundary**: a real, specific point where untrusted input is checked against a real limit before it is trusted enough to drive arithmetic, allocation, or control flow.
+- **Checked arithmetic**: a real operation (`checked_add`, `checked_mul`, and their saturating equivalents) that reports its own real overflow instead of silently wrapping or, in a debug build only, panicking.
+- **Size and nesting policy**: a real, stated maximum a design chooses on purpose, separate from and in addition to whatever a buffer's own real bounds happen to allow.
+- **Overflow checks**: a real, compiler-level setting, on by default in debug builds and off by default in release builds, controlling whether an integer operation that runs past its own real limit panics or silently wraps.

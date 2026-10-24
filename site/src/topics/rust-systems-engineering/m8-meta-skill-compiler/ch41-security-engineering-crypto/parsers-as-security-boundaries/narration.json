@@ -1,0 +1,68 @@
+{
+  "steps": [
+    {
+      "lines": [
+        "Here's a parser that trusts a number someone else sent it. It reads that number, and uses it right away to cut a piece out of a real buffer, with no second look at how much is actually in there.",
+        { "beat": 0.3 },
+        "Hand it a real message that claims there's far more left than there genuinely is. What happens?"
+      ],
+      "answer": [
+        "It breaks, genuinely.",
+        "Cutting past the real end of something that isn't there long enough doesn't just fail quietly."
+      ]
+    },
+    {
+      "lines": [
+        "Run it for real: the parser that never checks genuinely crashes the moment it tries to cut past the real end. A second parser, built to check that number first, turns the identical message away cleanly, nothing crashes at all."
+      ]
+    },
+    {
+      "lines": [
+        "Now try a number that's actually honest about the real buffer, genuinely small enough to fit inside it.",
+        { "beat": 0.3 },
+        "But this format has its own separate real rule: nothing this big is ever allowed through, no matter how honest the number is. Does checking the buffer alone catch that too?"
+      ],
+      "answer": [
+        "No, it doesn't.",
+        "Fitting inside what's actually there and obeying a separate, real limit are two different questions entirely."
+      ]
+    },
+    {
+      "lines": [
+        "Run it for real: the parser that only checks the buffer lets the oversized one straight through, since nothing in it ever asks the second question. The one built to check the real limit, separately, turns it away."
+      ],
+      "takeaway": "Fitting inside what's actually there still isn't safe without a real, separate limit on how big anything's allowed to be."
+    },
+    {
+      "lines": [
+        "Take two real numbers, each one large enough on its own, and just add them together, the plain way, in exactly the kind of build that actually ships.",
+        { "beat": 0.3 },
+        "When that real sum genuinely runs past what a number that size can hold, does it come back looking obviously, enormously wrong?"
+      ],
+      "answer": [
+        "No, genuinely.",
+        "It quietly wraps back around to something small, which looks like nothing went wrong at all."
+      ]
+    },
+    {
+      "lines": [
+        "Run it for real: the plain addition of two numbers that genuinely run past their own limit comes back small and ordinary-looking. The version that actually checks for that limit reports, correctly, that something real went wrong."
+      ],
+      "takeaway": "A silent wraparound is the dangerous case, since it looks exactly like a small, perfectly safe number instead of an obvious failure."
+    },
+    {
+      "lines": [
+        "One real page describes exactly what that checking version of addition promises: it reports that nothing fits, instead of quietly handing back a number that's wrong.",
+        "A second real page says plainly that the kind of build meant for actually shipping leaves that checking turned off, by default, unless someone turns it back on."
+      ],
+      "takeaway": "A number read from something untrusted is a real boundary, whether or not anyone actually decided to treat it as one."
+    },
+    {
+      "lines": [
+        "So here's what this topic's own two real comparisons were really standing in for: a number that genuinely fits what's there can still break a separate, real rule about how big anything's ever allowed to be.",
+        "And a sum that genuinely runs past its own limit doesn't announce itself. It comes back small, ordinary, and perfectly convincing, right up until something downstream trusts it.",
+        "Checking both, on purpose, every time, is the whole real difference between a boundary that exists because someone decided it should, and one that only exists by accident, the moment it finally gets tested."
+      ]
+    }
+  ]
+}

@@ -1,0 +1,21 @@
+import Resource from '../../../../../components/Resource.astro';
+
+<section class="prereq" data-section="chapter-so-far">
+
+### <span class="n">01</span> What this chapter draws on
+
+<ul class="resources">
+  <Resource kind="reel" host={props.host} domain="rust-systems-engineering" title="Parsers as security boundaries">a boundary that checks a real length before trusting it catches a real, adversarial input the moment it arrives; this topic turns to whether the code trusted to run at all is actually trustworthy in the first place.</Resource>
+</ul>
+
+</section>
+
+<section class="prereq" data-section="supply-chain-primary">
+
+### <span class="n">02</span> The real docs: RustSec and cargo-audit
+
+<ul class="resources">
+  <Resource kind="reading" title="RustSec Advisory Database" href="https://rustsec.org/" by="rustsec.org">a vulnerability database for the Rust ecosystem; cargo-audit audits a Cargo.lock file against it directly.</Resource>
+</ul>
+
+</section>
