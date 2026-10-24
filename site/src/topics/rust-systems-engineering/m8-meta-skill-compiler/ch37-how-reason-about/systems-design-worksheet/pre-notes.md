@@ -1,0 +1,4 @@
+- **Backpressure point**: a real, specific place in a service's own design where it states exactly how much waiting work it will hold before turning the rest away.
+- **Implicit decision**: a real design question that was never explicitly answered, and so was answered anyway, by whatever a language or library's own default happens to do.
+- **The worksheet**: the syllabus's own nine real questions a design is not finished until each has a real, explicit answer.
+- **Bounded vs. unbounded channel**: a real queue with a stated real capacity versus one with none, the identical real mechanism either stating or hiding its own backpressure point.

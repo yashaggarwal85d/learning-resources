@@ -1,0 +1,68 @@
+{
+  "steps": [
+    {
+      "lines": [
+        "Here's a service that made one decision on purpose before anyone wrote a line of code: exactly how much waiting work it would ever hold at once.",
+        { "beat": 0.3 },
+        "A burst of requests lands on it all at once, faster than it can keep up. Does that stated limit actually hold, or does the line just keep growing anyway?"
+      ],
+      "answer": [
+        "It holds, genuinely.",
+        "That's the whole point of stating it ahead of time instead of leaving it to chance."
+      ]
+    },
+    {
+      "lines": [
+        "Run it for real: most of that burst gets turned away the moment the line is full, and the line itself never grows past the number that was chosen for it."
+      ]
+    },
+    {
+      "lines": [
+        "Now take the identical burst, and send it at a second, separate service, built the same way in every respect but one.",
+        { "beat": 0.3 },
+        "Nobody ever told this one how much waiting work to allow. Does skipping that question change anything real about what happens?"
+      ],
+      "answer": [
+        "It changes everything, genuinely.",
+        "Skipping the question doesn't make it go away. It just hands the answer to whatever the library does by default."
+      ]
+    },
+    {
+      "lines": [
+        "Run it for real: nothing gets turned away at all this time, and the waiting line just keeps growing, request after request, with no ceiling anywhere in sight."
+      ],
+      "takeaway": "Leaving that question unanswered doesn't dodge it; it quietly hands the answer to the library's own default instead."
+    },
+    {
+      "lines": [
+        "Put both of those real runs side by side, from the identical burst.",
+        { "beat": 0.3 },
+        "Which one actually protects the rest of the service sitting behind it?"
+      ],
+      "answer": [
+        "The one that turned work away on purpose.",
+        "The other one didn't protect anything; it just postponed the real cost further down the line."
+      ]
+    },
+    {
+      "lines": [
+        "Run it for real: one line stays capped at the number someone chose. The other keeps climbing, under the exact same pressure, because nobody ever chose a number for it at all."
+      ],
+      "takeaway": "A decision nobody wrote down is still a decision. It's just one the library made for you, by default, instead of one you made on purpose."
+    },
+    {
+      "lines": [
+        "One real page, the library's own reference for this exact piece, says it plainly, in two short lines about its two different modes.",
+        "One mode is described as communicating with a real limit in place. The other is described, just as plainly, as communicating with no limit in place at all."
+      ],
+      "takeaway": "That question about how much waiting work to allow is never actually optional. It only ever gets answered on purpose, or answered by accident."
+    },
+    {
+      "lines": [
+        "So here's what this topic's own two real services were really standing in for: a design that writes down its own limit on purpose turns away exactly the work it chose to turn away, and nothing more.",
+        "A design that never writes that limit down at all still gets an answer to the identical question. It's simply an answer nobody actually chose, discovered the hard way, under real pressure, instead of checked for ahead of time.",
+        "That's the whole reason a real worksheet gets filled in before any code gets written, not after: so every one of its questions gets a real, chosen answer, instead of whatever a default happens to supply."
+      ]
+    }
+  ]
+}
