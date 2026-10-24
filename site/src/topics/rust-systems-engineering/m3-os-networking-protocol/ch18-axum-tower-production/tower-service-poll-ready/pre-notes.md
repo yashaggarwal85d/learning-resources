@@ -1,0 +1,5 @@
+- **`Service`**: `poll_ready` plus `call`; readiness and doing-the-work are two separate steps, and a caller must wait for a real `Ready` result before it may call. *Where you meet it:* a service that reports not ready several times before a caller is allowed to call it.
+- **Readiness as the backpressure contract**: `poll_ready` returning not-ready is a real signal a well-behaved caller must wait on, not a formality.
+- **`Layer`**: a wrapper that turns one `Service` into another `Service`, which is how Tower middleware composes without touching the inner service's own code.
+- **`ConcurrencyLimit` / `LoadShed` / `RateLimit` / `Timeout`**: four layers that each bound a different real axis of a call stack — in-flight concurrency, immediate rejection, real spacing over time, and a real deadline.
+- **`Buffer`**: a layer with its own hidden queue; it can accept work the inner service's own readiness would otherwise reject, which can quietly reintroduce an unbounded backlog if sized carelessly.

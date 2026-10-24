@@ -1,0 +1,77 @@
+{
+  "topic": "rust.tower-service-poll-ready",
+  "syllabus": [
+    {
+      "clause": "tower::Service is poll_ready plus call; readiness is the backpressure contract, and Layers compose services. ConcurrencyLimit, LoadShed, RateLimit and Timeout, and Buffer with the hidden queue it introduces.",
+      "at": [
+        { "step": "Measured: the real service reported not ready several times in a row, and only once it had genuinely become ready did a caller actually call it" },
+        { "step": "Measured: the concurrency cap genuinely capped how many calls ran at once, the load shedder genuinely rejected a call immediately instead of waiting, the rate limiter genuinely spaced calls out over real time, and the deadline genuinely cancelled a call that ran too long" },
+        { "step": "Measured: the queue accepted every call immediately, while the service hiding behind it still ran only one call at a time underneath, a real, hidden backlog, not a rejection" },
+        { "step": "Asking if it is ready and asking it to do the work are two separate steps on purpose, that is the backpressure contract itself, and every layer wrapping a service composes around exactly that same contract" }
+      ]
+    }
+  ],
+  "sources": [
+    {
+      "source": "tower-service",
+      "items": [
+        {
+          "item": "calling a Service which is at capacity should result in an error; the caller is responsible for ensuring the service is ready before calling it; Service::poll_ready returns Ready if the service expects it is able to process a request",
+          "at": [{ "step": "A real tower::Service can report that it isn't ready several times before it finally says yes. If a caller calls it anyway, while it's still reporting not ready, what does the trait's own contract actually allow to happen?" }]
+        },
+        {
+          "item": "implementations are permitted to panic if call is invoked without first obtaining Ready(Ok(())) from poll_ready",
+          "at": [{ "step": "The trait's own words settle it directly: an implementation is permitted to panic outright if a call arrives before it has genuinely reported ready" }]
+        }
+      ]
+    },
+    {
+      "source": "tower-load-shed",
+      "items": [
+        {
+          "item": "middleware for shedding load when inner services aren't ready; a Service that sheds load when the inner service isn't ready",
+          "at": [{ "step": "Wrap that same kind of service with four different Tower layers at once, a concurrency cap, a load shedder, a rate limiter, and a deadline, then send a whole batch of calls through all four together. How many of those four layers actually change what happens to that batch, rather than just watching it pass by?" }]
+        }
+      ]
+    },
+    {
+      "source": "tower-buffer",
+      "items": [
+        {
+          "item": "middleware that provides a buffered mpsc channel to a service; this module allows placing the service behind a multi-producer, single-consumer buffering channel",
+          "at": [{ "step": "Put a bounded queue in front of a service whose own concurrency is capped at just one, then send several calls in all at once. Does that queue reject the extra calls, the same way the load shedder did?" }]
+        }
+      ]
+    },
+    {
+      "source": "tower-timeout",
+      "items": [
+        {
+          "item": "middleware that applies a timeout to requests; if the response does not complete within the specified timeout, the response will be aborted",
+          "at": [{ "step": "Measured: the concurrency cap genuinely capped how many calls ran at once, the load shedder genuinely rejected a call immediately instead of waiting, the rate limiter genuinely spaced calls out over real time, and the deadline genuinely cancelled a call that ran too long" }]
+        }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "self-review",
+    "date": "2026-10-24",
+    "items": [
+      { "item": "The poll_ready example drives readiness with a raw std::future::poll_fn loop rather than tower::ServiceExt::ready, specifically to make each individual Pending result visible and countable, since the claim under test is that a caller genuinely observes and waits through those Pending results, not merely that a convenience method happens to work.", "at": [{ "step": "A real tower::Service can report that it isn't ready several times before it finally says yes. If a caller calls it anyway, while it's still reporting not ready, what does the trait's own contract actually allow to happen?" }] },
+      { "item": "The ConcurrencyLimit measurement holds its shared Mutex only long enough to reserve readiness and obtain the response future, then drops it before awaiting that future; an earlier draft held the lock across the whole call, which serialized every request and silently produced a measured concurrency of one regardless of the configured limit, a bug the measurement itself would otherwise have hidden rather than exposed.", "at": [{ "step": "Measured: the concurrency cap genuinely capped how many calls ran at once, the load shedder genuinely rejected a call immediately instead of waiting, the rate limiter genuinely spaced calls out over real time, and the deadline genuinely cancelled a call that ran too long" }] },
+      { "item": "LoadShed's own poll_ready always reports Ready immediately regardless of the inner service's own state; it defers the actual readiness check to call time and reports the rejection there, so the example calls both ready() and call() in sequence rather than checking only readiness, matching LoadShed's own documented behavior rather than the default Service contract.", "at": [{ "step": "Wrap that same kind of service with four different Tower layers at once, a concurrency cap, a load shedder, a rate limiter, and a deadline, then send a whole batch of calls through all four together. How many of those four layers actually change what happens to that batch, rather than just watching it pass by?" }] },
+      { "item": "The Buffer example deliberately nests ConcurrencyLimit(1) inside the Buffer rather than measuring Buffer alone, since Buffer's own queue has no bound of its own in this example; what it demonstrates is that Buffer's acceptance of a call is entirely decoupled from whatever bound the inner service enforces, which is the hidden-queue hazard the syllabus calls out by name.", "at": [{ "step": "Put a bounded queue in front of a service whose own concurrency is capped at just one, then send several calls in all at once. Does that queue reject the extra calls, the same way the load shedder did?" }] },
+      { "item": "The RateLimit and Timeout measurements are folded into the same executed binary and the same reel step as ConcurrencyLimit and LoadShed, rather than given their own dedicated predict-and-reveal pair, since all four are independently measured, independently asserted claims about one syllabus clause (four named layers, four distinct real effects), and splitting them further would not change what is actually being tested, only how many steps present it.", "at": [{ "step": "Measured: the concurrency cap genuinely capped how many calls ran at once, the load shedder genuinely rejected a call immediately instead of waiting, the rate limiter genuinely spaced calls out over real time, and the deadline genuinely cancelled a call that ran too long" }] },
+      { "item": "This topic continues directly from Chapter 16's own connection-backpressure-state-machine id and from Chapter 9's io-driver-readiness-cycle and async-state-machine-lowering ids: poll_ready is the same poll-based readiness contract driving Future::poll itself, now applied to a request-response boundary instead of raw I/O.", "at": [{ "step": "A real tower::Service can report that it isn't ready several times before it finally says yes. If a caller calls it anyway, while it's still reporting not ready, what does the trait's own contract actually allow to happen?" }] },
+      { "item": "All four of this topic's own measured claims run entirely within this container's own async runtime and wall-clock timing; none need a real network, root access, or hardware the sandbox lacks, unlike several topics in the two previous chapters that had to quote rather than measure a claim for exactly that reason.", "at": [{ "step": "Measured: the queue accepted every call immediately, while the service hiding behind it still ran only one call at a time underneath, a real, hidden backlog, not a rejection" }] },
+      { "item": "The panic-permission quote is chosen specifically because it frames the readiness contract as a documented, sanctioned behavior of the trait itself (implementations are permitted to panic), not merely an observed implementation quirk of one particular service, which is the stronger claim this topic's own lesson step rests on.", "at": [{ "step": "The trait's own words settle it directly: an implementation is permitted to panic outright if a call arrives before it has genuinely reported ready" }] },
+      { "item": "The lesson step's own two-part framing (asking if it is ready, asking it to do the work) maps directly onto this topic's own measured examples in order: the poll_ready example demonstrates the first half directly, and the four-layer example demonstrates that every layer composes around that same two-step contract rather than replacing it.", "at": [{ "step": "Asking if it is ready and asking it to do the work are two separate steps on purpose, that is the backpressure contract itself, and every layer wrapping a service composes around exactly that same contract" }] },
+      { "item": "This topic opens Chapter 18 deliberately on the Service and Layer abstraction itself, not on a real framework, because showing that a real framework (Axum) is built on exactly this abstraction, with nothing of its own, is specifically topic 46's own scoped subject, per CHAPTER.md's own planned order of ideas.", "at": [{ "step": "Recap: a service that says not yet, and callers, and layers, that actually listen" }] }
+    ]
+  },
+  "gapReview": {
+    "date": "2026-10-24",
+    "by": "self-review",
+    "open": []
+  }
+}

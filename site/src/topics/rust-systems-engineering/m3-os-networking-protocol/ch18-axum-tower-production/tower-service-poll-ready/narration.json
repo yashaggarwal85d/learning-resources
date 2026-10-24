@@ -1,0 +1,89 @@
+{
+  "steps": [
+    {
+      "lines": [
+        "A real piece of work can report that it isn't ready yet, several times in a row, before it finally says yes.",
+        { "beat": 0.3 },
+        "If a caller goes ahead and does the work anyway, while it's still saying not ready, what's actually allowed to happen?"
+      ],
+      "answer": [
+        "It's allowed to break, outright.",
+        "Doing the work before a genuine yes is not a minor shortcut; it breaks the whole agreement."
+      ]
+    },
+    {
+      "lines": [
+        "Run it for real: the piece of work said not ready several times in a row,",
+        "and only once it had genuinely become ready did a caller actually go ahead and do the work."
+      ]
+    },
+    {
+      "lines": [
+        "Wrap that same kind of work in four different wrappers at once: one that caps how many run together, one that turns work away immediately, one that spaces work out over time, and one that gives up past a deadline.",
+        { "beat": 0.3 },
+        "Send a whole batch of work through all four together. How many of those four actually change what happens to that batch, rather than just watching it pass by?"
+      ],
+      "answer": [
+        "All four.",
+        "Each one bounds a genuinely different thing about that batch."
+      ]
+    },
+    {
+      "lines": [
+        "Run it for real: the cap genuinely limited how many ran at once, the turn-away wrapper genuinely rejected one immediately instead of waiting,",
+        "the spacing wrapper genuinely stretched the work out over real time, and the deadline wrapper genuinely gave up on work that ran too long."
+      ],
+      "takeaway": "A wrapper sits around one piece of work without touching its own code, and each wrapper bounds a different real thing."
+    },
+    {
+      "lines": [
+        "Put a queue in front of a piece of work whose own concurrency is capped at just one, then send several requests in all at once.",
+        { "beat": 0.3 },
+        "Does that queue turn away the extra requests, the same way the turn-away wrapper did?"
+      ],
+      "answer": [
+        "No, it doesn't.",
+        "It accepts every one of them up front into its own queue, no matter what the work underneath can actually get through."
+      ]
+    },
+    {
+      "lines": [
+        "Run it for real: the queue accepted every request immediately,",
+        "while the work hiding behind it still only ran one at a time underneath — a real, hidden backlog, not a rejection."
+      ],
+      "takeaway": "A queue in front of a piece of work can quietly hide the very backlog a hard cap exists to prevent, unless it's sized on purpose."
+    },
+    {
+      "lines": [
+        "Go back to the very first question: a caller goes ahead and does the work without ever checking whether it's ready first.",
+        { "beat": 0.3 },
+        "What does the documentation for this agreement actually say is allowed to happen?"
+      ],
+      "answer": [
+        "It's allowed to break, outright.",
+        "That's not a side effect; it's exactly what the documentation itself permits."
+      ]
+    },
+    {
+      "lines": [
+        "The documentation's own words settle it directly: an implementation is allowed to break outright,",
+        "if work arrives before it has genuinely reported that it's ready."
+      ]
+    },
+    {
+      "lines": [
+        "Asking if something is ready, and asking it to actually do the work, are two separate steps on purpose.",
+        "That split is the whole agreement about overload, and every wrapper placed around a piece of work composes around that exact same agreement."
+      ],
+      "takeaway": "Readiness isn't a formality bolted on afterward; it's the whole agreement about overload, and every wrapper composes around that same agreement."
+    },
+    {
+      "lines": [
+        "So, pulling this topic together: a real piece of work that says not ready, and a caller that genuinely waits for a real yes before doing the work.",
+        "Four separate wrappers, each one bounding a different real thing about a batch of work.",
+        "A queue that can accept work the thing underneath it cannot yet get through, a real hidden backlog unless it's sized on purpose.",
+        "And the documentation's own permission to break outright, if that agreement is ever broken first."
+      ]
+    }
+  ]
+}
