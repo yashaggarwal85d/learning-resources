@@ -1,0 +1,24 @@
+import Resource from '../../../../../components/Resource.astro';
+
+<section class="prereq" data-section="before-this">
+
+### <span class="n">01</span> Before this: the question this topic answers
+
+<ul class="resources">
+  <Resource kind="reel" title="Vacuum, bloat and transaction-ID wraparound" domain="data-engineering" host="de.vacuum-bloat-transaction-id" by="the previous topic of this chapter" />
+</ul>
+
+</section>
+
+<section class="prereq" data-section="straight-from-the-source">
+
+### <span class="n">02</span> The sources this topic measures and quotes against
+
+<ul class="resources">
+  <Resource kind="reading" title="Log-structured merge-tree" href="https://en.wikipedia.org/wiki/Log-structured_merge-tree" by="Wikipedia">The write path, the point-read and range-read paths, tombstones, and the Bloom-filter gate.</Resource>
+  <Resource kind="reading" title="RocksDB Overview" href="https://github.com/facebook/rocksdb/wiki/RocksDB-Overview" by="RocksDB wiki">The memtable, sstfile and logfile constructs, and memtable pipelining, in the engine's own words.</Resource>
+  <Resource kind="reading" title="RocksDB Bloom Filter" href="https://github.com/facebook/rocksdb/wiki/RocksDB-Bloom-Filter" by="RocksDB wiki">The filter's own mechanism and the real statistics counters this topic reads directly.</Resource>
+  <Resource kind="reading" title="RocksDB BlockBasedTable Format" href="https://github.com/facebook/rocksdb/wiki/Rocksdb-BlockBasedTable-Format" by="RocksDB wiki">The default SST layout and the index block's own job.</Resource>
+</ul>
+
+</section>

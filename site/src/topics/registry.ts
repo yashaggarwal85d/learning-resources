@@ -4308,4 +4308,24 @@ export const TOPICS: TopicMeta[] = [
     handoff:
       "MVCC is one family's answer to concurrent writes, and vacuum is the bill it pays later. The next topic is the other family entirely — a structure built from the start around never updating in place: the LSM tree.",
   },
+  {
+    id: 'de.lsm-trees-write-read',
+    domain: 'data-engineering',
+    slug: 'data-engineering/m2-storage-database-internals/ch05-database-internals-distributed/lsm-trees-write-read',
+    title: 'LSM trees: write and read paths',
+    syllabusTitle: 'LSM trees: write and read paths',
+    kind: 'full',
+    status: 'held',
+    milestone: { number: 2, title: 'Storage: Database Internals, Files & the Lakehouse' },
+    chapter: { number: 5, title: 'Database Internals and Distributed Storage', section: '5.1' },
+    minutes: 15,
+    verified: '2026-10-24',
+    introduces: ['lsm-write-read-path'],
+    uses: ['wal-lsn-fsync'],
+    declared: [],
+    bridge:
+      "MVCC is one family's answer to concurrent writes, and vacuum is the bill it pays later. This topic is the other family entirely — a structure built from the start around never updating in place: the LSM tree, its own write path through a memtable and its own read path through Bloom filters and sorted runs.",
+    handoff:
+      "An LSM tree accumulates sorted runs forever unless something merges them back down. That something is compaction, and how it merges them decides the trade-off the whole structure is built around.",
+  },
 ];

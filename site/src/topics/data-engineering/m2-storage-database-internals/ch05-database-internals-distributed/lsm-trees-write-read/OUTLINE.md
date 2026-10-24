@@ -27,7 +27,6 @@
 - **Real values:** 0 SST files before any flush, 1 SST file (level 0, 1 entry) right after (examples.py: `memtable_flush_lifecycle`).
 - **Final frame:** the one new file's own metadata — level 0, 1 entry.
 - **Caption point:** the memtable is RocksDB's own default skiplist, a sorted in-memory structure; flushing writes it out whole, as one new, immutable, sorted file — never edited again once written.
-- **Takeaway:** "A memtable never gets edited after it's flushed. Every flush is a brand-new, immutable file."
 
 ### 3. Predict: which value answers the read
 
@@ -47,7 +46,6 @@
 - **Real values:** reading `k1` after this sequence returns `"B"`; RocksDB's own counters show 1 memtable hit and 0 L0 (file) hits (examples.py: `point_read_checks_newest_first`).
 - **Final frame:** "memtable hits: 1, file hits: 0" held next to the returned value, `B`.
 - **Caption point:** a point read checks the newest structure first and stops the moment it finds the key — the active memtable, then older immutable memtables, then files from newest to oldest — so an older file holding a stale value is never even opened.
-- **Takeaway:** "A point read stops at the first structure that has the key. An older file holding a stale value is never opened."
 
 ### 5. Reveal: a range read can't stop early
 
@@ -58,7 +56,7 @@
 - **Real values:** scanning the whole keyspace returns exactly `[k1=old, k2=old, k3=new, k4=old, k5=old, k6=new]` — six keys, the shared key `k3` appearing once, at its newest value (examples.py: `range_read_merges_sorted_runs`).
 - **Final frame:** the six merged rows, `k3` and `k6` marked as where the memtable's newer value won.
 - **Caption point:** a range read has no single newest structure to stop at — every structure's overlap with the range must be scanned and merged, keeping only the newest version of any key more than one of them holds.
-- **Takeaway:** "A point read stops at the first match. A range read can't — it has to merge every structure's overlap with the range."
+- **Takeaway:** "A point read stops at the first match. A range read can't — it has to merge every overlapping structure." (first takeaway of the reel, placed at the chapter's own midpoint, per `QUALITY.md` #59 — no `done`-gated element sits on an earlier step.)
 
 ### 6. Reveal: the Bloom filter, a fast no
 
@@ -69,7 +67,7 @@
 - **Real values:** 494 of 500 lookups for absent keys rejected by the Bloom filter without touching the file; 6 false positives that still forced a wasted read, 0 of which turned out to actually exist (examples.py: `bloom_filter_rejects_absent_keys`).
 - **Final frame:** "494 rejected, 6 wasted reads, 0 wrong answers" held on screen.
 - **Caption point:** a Bloom filter hashes the key and probes a handful of bits per file; a single zero bit proves the key is absent, which is most of what it ever has to say, but it can never prove a key is present — a positive only means "maybe", and checking "maybe" costs a real, if occasional, wasted read.
-- **Takeaway:** "A Bloom filter can prove a key is absent in one shot. It can never prove a key is present — only 'maybe'."
+- **Takeaway:** "A Bloom filter can prove absence in one shot. It can never prove presence — only 'maybe'."
 
 ### 7. Reveal: the block index, after the filter says maybe
 
@@ -115,7 +113,7 @@
 - **Early prediction (step 3, within the first four):** which value answers a read when the newest write hasn't been flushed yet — the tempting wrong answer is "check both and merge", the real answer is "the memtable alone, nothing else touched".
 - **Surprising number:** step 6 — 494 of 500 lookups for keys that flatly don't exist are rejected by a single bit check, with only 6 needing an actual (wasted, but still correct) read.
 - **Second prediction (step 10, Prove it):** why the disk doesn't shrink the instant a tombstone is written — the tempting wrong answer is "the delete removes the shadowed copies immediately".
-- **Three takeaways:** steps 2, 4, 8 (6 and 7's points are carried by the chart and recap; 2, 4 and 8 are the three chosen as reel takeaway rows).
+- **Three takeaways:** steps 5, 6, 8 — all at or after the chapter's own midpoint, per `QUALITY.md` #59 (steps 2 and 4's points are carried by their own captions and the recap instead, matching every sibling topic's pattern of keeping early reveal steps free of any `done`-gated element).
 - **Recap (step 9):** the whole write-then-read chain, one decision (never update in place) seen at every step.
 
 ## Narrator's line of thought

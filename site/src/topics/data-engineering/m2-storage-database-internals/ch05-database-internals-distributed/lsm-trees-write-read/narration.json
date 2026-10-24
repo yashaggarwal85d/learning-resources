@@ -1,0 +1,85 @@
+{
+  "topic": "de.lsm-trees-write-read",
+  "steps": [
+    {
+      "lines": [
+        "The last topic left every update paying a cleanup bill later, because nothing ever changes in place.",
+        "Now ask the opposite question. What if a storage engine was built around that rule on purpose, from day one?",
+        "That's the log structured merge tree, and we're going to trace a real write through a real one."
+      ]
+    },
+    {
+      "lines": [
+        "I opened a real RocksDB instance and watched where one write actually goes.",
+        "First it's appended to a write ahead log for safety, then it lands in memory, in a sorted structure called the memtable.",
+        "The moment I flushed that memtable, exactly one brand new file appeared on disk. Nothing before it ever gets touched again."
+      ]
+    },
+    {
+      "lines": [
+        "Here's the question I want you to sit with before I answer it.",
+        "I flush a key to disk, then write a newer value for that same key, but I don't flush again yet.",
+        "When a read for that key comes in, does it have any reason to go open that file on disk at all?"
+      ],
+      "answer": [
+        "Checking both and picking the newer one sounds like the careful answer. It's actually the wrong one here.",
+        "A point read stops the instant it finds the key, and the newest copy is always checked first.",
+        "So no, the file on disk never gets touched. The memtable already has the answer."
+      ]
+    },
+    {
+      "lines": [
+        "I didn't just argue that. I measured it.",
+        "RocksDB keeps its own internal counters, and after that read, the memtable counter went up by one.",
+        "The counter for the file on disk stayed at zero. It was never even opened."
+      ]
+    },
+    {
+      "lines": [
+        "Now flip the question. What if I don't want one key, I want a whole range of them?",
+        "There's no single newest place to stop at anymore, because different keys in that range live in different structures.",
+        "So the engine has to walk the file's own sorted list and the memtable's sorted list together, merging as it goes, and whenever both have the same key, the memtable's copy wins."
+      ]
+    },
+    {
+      "lines": [
+        "Deletes aside for a second, here's a cost most people never think about. Checking whether a key exists at all.",
+        "I asked for five hundred keys that flatly don't exist in a file, and watched that file's own bloom filter handle every single one.",
+        "The large majority got rejected in one cheap check, no disk read at all. A handful slipped through to an actual, wasted read, but not one of them turned out to be a real match."
+      ]
+    },
+    {
+      "lines": [
+        "So what happens on that small handful that slip past the filter?",
+        "Every file keeps its own index too, built once when the file was written, and it works like a binary search.",
+        "It can't say the key is definitely absent the way the filter can, but it can say exactly which one block to load, instead of the whole file."
+      ]
+    },
+    {
+      "lines": [
+        "Now the part that genuinely surprised me the first time I measured it.",
+        "I deleted a batch of keys and flushed again, expecting the file to shrink. Instead, a second file appeared.",
+        "That new file was made almost entirely of what are called tombstones, and the storage footprint actually climbed."
+      ]
+    },
+    {
+      "lines": [
+        "Let's pull that whole chain together.",
+        "A write goes into the memtable, then becomes its own immutable file. A point read checks newest first and stops early. A range read can't stop early, so it merges instead.",
+        "And a delete never erases anything by itself. It just writes one more record and waits for something else to clean up."
+      ]
+    },
+    {
+      "lines": [
+        "Last one. A single key has three shadowed copies sitting around: a tombstone, and two older stale values behind it in two different files.",
+        "The instinctive answer is that deleting it should have already thrown those other copies away. That instinct is wrong here.",
+        "Why does the disk not shrink down to just that tombstone right now?"
+      ],
+      "answer": [
+        "Nothing has merged those files yet, and until something does, all three copies just sit there.",
+        "A flush doesn't touch them. A read just knows to ignore the shadowed ones and keep the newest.",
+        "Only a later merge of those files actually throws the superseded copies and the tombstone away together."
+      ]
+    }
+  ]
+}

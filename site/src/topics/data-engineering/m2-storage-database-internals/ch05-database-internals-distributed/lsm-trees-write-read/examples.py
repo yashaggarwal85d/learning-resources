@@ -103,6 +103,7 @@ def tombstones_are_not_free():
     db, path, _ = fresh_db()
     try:
         n = 500
+        assert n // 2 == 250, "this experiment's own numbers are written for n = 500 (250 deleted)"
         for i in range(n):
             db[f"k{i:06d}"] = "v" * 20
         db.flush()
@@ -122,6 +123,9 @@ def tombstones_are_not_free():
         assert tombstone_file["num_deletions"] == n // 2, f"expected {n // 2} tombstones in the new SST, got {tombstone_file['num_deletions']}"
         assert tombstone_file["num_entries"] == n // 2, f"a tombstone-only SST's entries should equal its deletions, got {tombstone_file['num_entries']} entries vs {tombstone_file['num_deletions']} deletions"
         assert size_after_delete > size_after_insert, f"deleting keys should grow total on-disk size (a new tombstone file), {size_after_insert} -> {size_after_delete}"
+        # Deterministic on this RocksDB build (confirmed across repeated runs): pin the exact byte counts too, not just the direction.
+        assert size_after_insert == 5187, f"expected 5187 bytes after the first flush of {n} keys, got {size_after_insert}"
+        assert size_after_delete == 7926, f"expected 7926 total bytes after the delete-and-flush, got {size_after_delete}"
 
         print(f"after inserting {n} keys and flushing: {len(files_after_insert)} file, {size_after_insert} bytes")
         print(f"after deleting {n // 2} of them and flushing: {len(files_after_delete)} files, {size_after_delete} bytes (grew)")
@@ -167,6 +171,9 @@ def bloom_filter_rejects_absent_keys():
         assert useful + false_positives == n, f"every one of the {n} lookups should be either rejected by the filter or a false positive, got {useful} + {false_positives}"
         assert true_positives == 0, f"none of these {n} keys actually exist, so there should be no true positive, got {true_positives}"
         assert useful > n * 0.9, f"a 10-bits-per-key Bloom filter should reject the large majority of absent-key lookups, only rejected {useful} of {n}"
+        # Deterministic on this RocksDB build (confirmed across repeated runs): pin the exact split too.
+        assert useful == 494, f"expected 494 lookups rejected by the filter, got {useful}"
+        assert false_positives == 6, f"expected 6 false positives, got {false_positives}"
 
         print(f"{n} lookups for keys that don't exist, inside the file's own key range:")
         print(f"  rejected by the Bloom filter without touching the block: {useful}")
