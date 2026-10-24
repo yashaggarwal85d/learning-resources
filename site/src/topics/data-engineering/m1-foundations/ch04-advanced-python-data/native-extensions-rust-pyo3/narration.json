@@ -1,0 +1,81 @@
+{
+  "topic": "de.native-extensions-rust-pyo3",
+  "steps": [
+    {
+      "lines": [
+        "Every speed claim this chapter made rested on a quiet assumption: that the library doing the work was itself written in the language you called it from.",
+        "Nobody checked that assumption directly. This topic finally opens the hood on what these libraries actually run on underneath."
+      ]
+    },
+    {
+      "lines": [
+        "Start with the libraries already in hand, and read what they say about themselves.",
+        "One dataframe library states, in its own documentation, that its core is a different, compiled language with a thin layer on top for this one. A validation library makes the identical claim about its own core, and names that as the reason it's fast."
+      ]
+    },
+    {
+      "lines": [
+        "If a library can be built that way, so can a function written for this topic alone.",
+        "A small routine, written in that compiled language, run through one real build step rather than assumed to work. An ordinary import pulls it in afterward, and calling it returns a correct, checkable answer, not a packaging demo."
+      ]
+    },
+    {
+      "lines": [
+        "Here's the harder question, worth answering before it's shown.",
+        "A compiled routine can explicitly hand back the one lock that normally keeps two pieces of interpreted code from running at once. Once that lock is handed back mid-call, does a waiting thread actually get real work done, or does it just sit there out of habit?"
+      ],
+      "answer": [
+        "It genuinely gets real work done, and that's the whole point of handing the lock back.",
+        "The lock isn't cosmetic. Dropping it for the duration of one call is a real, measurable grant of running time to whatever else is waiting, not a documented gesture that changes nothing in practice."
+      ]
+    },
+    {
+      "lines": [
+        "One function, three different ways of computing it, is a fair test only if all three are forced to agree first.",
+        "The identical arithmetic, run in plain interpreted code, in the compiled routine, and through the dataframe library's own expression engine. All three are checked to land on the exact same number before any clock is read.",
+        "Only once that agreement is confirmed does the timing become interesting: the compiled routine comes in well ahead of the interpreted version doing the same work."
+      ]
+    },
+    {
+      "lines": [
+        "Put the exact same busy work through both paths and count what a waiting thread manages to do.",
+        "Once holding that lock the whole time, the waiting thread barely advances. Once releasing it for the identical stretch, that same waiting thread racks up a count dozens of times larger in the same span.",
+        "That gap is the direct evidence. Releasing the lock isn't a courtesy — it's time genuinely handed to someone else."
+      ]
+    },
+    {
+      "lines": [
+        "Now a packaging question that sounds cosmetic but isn't.",
+        "Build the identical routine twice from the same source, flipping one setting between the two builds. The two resulting files really are named differently, and that difference tracks a real decision: one locks itself to this one interpreter version, the other declares itself good from a stated minimum version onward.",
+        "That's not a label chosen after the fact. It's a different contract, baked in at build time."
+      ]
+    },
+    {
+      "lines": [
+        "One more fact worth checking directly rather than guessing from a version number alone.",
+        "A newer interpreter can optionally be built with that same lock removable entirely, as a deliberate build choice rather than something every copy of that version gets automatically.",
+        "Asked directly, this particular interpreter answers plainly: this is the ordinary kind, built with the lock present, not the optional kind that removes it."
+      ]
+    },
+    {
+      "lines": [
+        "Pulling the whole topic back together.",
+        "Two of this chapter's own fast libraries name a different, compiled language as their real core, not inferred from outside. A routine built that way, through a real build step, imports and runs like any other code, and measurably beats the interpreted version at the identical task.",
+        "Handing back that one shared lock during a call is real, measured time given to whatever else is waiting. One build-time setting produces a genuinely different file, aimed at a whole range of future versions instead of just this one.",
+        "And whether an interpreter can remove that lock at all turns out to be a checkable fact about how it was built, not a guess from its version number."
+      ]
+    },
+    {
+      "lines": [
+        "One closing scenario, worth reasoning through before the explanation lands.",
+        "A team builds a routine this same way and ships exactly one file, tied tightly to the one interpreter version they deploy with today. Later, three more versions need that identical routine running, unmodified, and the team is staring down building and testing a separate file for each one.",
+        "What should that team have chosen at the very first build, and why does today's choice matter so much more once those extra versions show up?"
+      ],
+      "answer": [
+        "They should have chosen the build-time setting that targets a whole range of versions from the start, not just the one in front of them.",
+        "A file locked to one exact version multiplies every time a new version ships — that's the cost this team is paying now. The alternative setting, built from identical source, already covers every version from its declared minimum upward.",
+        "That's exactly the real, differently named file this topic built and measured directly."
+      ]
+    }
+  ]
+}

@@ -3140,4 +3140,24 @@ export const TOPICS: TopicMeta[] = [
     handoff:
       "Every production habit in this section — pooling, resilience, testing, validation — assumed Python was still the one writing the code. The last section of this chapter is the honest answer to how much of that code is actually Python at all: native extensions, built with Rust and PyO3.",
   },
+  {
+    id: 'de.native-extensions-rust-pyo3',
+    domain: 'data-engineering',
+    slug: 'data-engineering/m1-foundations/ch04-advanced-python-data/native-extensions-rust-pyo3',
+    title: 'Native extensions with Rust and PyO3',
+    syllabusTitle: 'Native extensions with Rust and PyO3',
+    kind: 'full',
+    status: 'held',
+    milestone: { number: 1, title: 'Foundations' },
+    chapter: { number: 4, title: 'Advanced Python for Data Systems', section: '4.3' },
+    minutes: 15,
+    verified: '2026-10-24',
+    introduces: ['pyo3-native-extensions'],
+    uses: ['gil-serialization', 'free-threaded-cpython', 'polars-lazy-expressions'],
+    declared: [],
+    bridge:
+      "Every production habit in §4.2 — pooling, resilience, testing, validation — assumed Python was the language actually doing the work. This topic is the honest answer to how much of that work is actually Python at all: Polars, pydantic-core and orjson are already Rust underneath, and this topic builds that same kind of extension by hand.",
+    handoff:
+      "Every acceleration in this chapter — profiling, Arrow, Polars, a hand-built PyO3 extension — still assumed a database engine already existed underneath, already written in C or Rust. Next chapter opens that engine itself, starting from the single fixed-size page every one of them reads and writes.",
+  },
 ];

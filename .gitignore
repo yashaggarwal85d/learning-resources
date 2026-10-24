@@ -13,3 +13,7 @@ site/src/topics/data-engineering/**/lab/*/target/
 site/src/topics/data-engineering/**/lab/*/logs/
 site/src/topics/data-engineering/**/lab/*/dbt_packages/
 site/src/topics/data-engineering/**/lab/*/.user.yml
+
+# native-extensions-rust-pyo3's examples.py drives a real maturin/cargo build of a PyO3
+# extension; the resulting target/ dir (compiled objects, built wheels) is never committed.
+site/src/topics/data-engineering/**/examples/*/target/
