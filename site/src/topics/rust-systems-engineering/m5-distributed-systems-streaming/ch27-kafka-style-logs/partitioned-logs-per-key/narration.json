@@ -1,0 +1,79 @@
+{
+  "steps": [
+    {
+      "lines": [
+        "A topic's writes, for many different keys, all go through one real partitioning function.",
+        { "beat": 0.3 },
+        "Does every write to the same key genuinely always land in the same partition?"
+      ],
+      "answer": [
+        "Yes, genuinely.",
+        "As long as the partition count stays fixed."
+      ]
+    },
+    {
+      "lines": [
+        "Run it for real: many writes to the same key genuinely all landed in the identical partition, in the identical order they were written."
+      ]
+    },
+    {
+      "lines": [
+        "Now the operator grows the topic's own partition count.",
+        { "beat": 0.3 },
+        "Does every existing key's own routing genuinely stay put?"
+      ],
+      "answer": [
+        "No.",
+        "At least one existing key genuinely reroutes."
+      ]
+    },
+    {
+      "lines": [
+        "Run it for real: growing the partition count genuinely rerouted at least one existing key to a different partition."
+      ],
+      "takeaway": "Growing a partition count is never free; it can reroute a key that already exists."
+    },
+    {
+      "lines": [
+        "That rerouted key keeps writing after the resize.",
+        { "beat": 0.3 },
+        "Does its own history now genuinely live in one partition, or does it genuinely split?"
+      ],
+      "answer": [
+        "It genuinely splits.",
+        "And it stays split."
+      ]
+    },
+    {
+      "lines": [
+        "Run it for real: the rerouted key's own history genuinely split across the old partition and the new one, and the order guarantee it had is genuinely gone."
+      ],
+      "takeaway": "A rerouted key's own order guarantee is genuinely gone once its history splits."
+    },
+    {
+      "lines": [
+        "One real, widely used streaming platform's own documentation states this mechanism directly, in its own words.",
+        "Events sharing a key are written to the same partition, and a consumer of that partition reads them in exactly the order they were written."
+      ]
+    },
+    {
+      "lines": [
+        "That same platform's own design document describes its message log as nothing more than a real directory of files on disk, recopied in whole segments whenever it is compacted.",
+        "This topic's own partition-per-vector model mirrors that identical, real, append-only shape."
+      ]
+    },
+    {
+      "lines": [
+        "Run it for real, all together: fixed-count order, count-change rerouting, and the resulting split history, all measured from one real routing function."
+      ],
+      "takeaway": "One plain hash-and-modulo function is the entire real routing rule behind all three outcomes."
+    },
+    {
+      "lines": [
+        "So here's the real trade this whole topic turns on: spreading a topic's load across many machines and keeping one key's own writes strictly in order are not the same promise, and the second one only survives as long as the first one's own shape never moves.",
+        "A hash function doesn't know or care about history; it just answers the identical question the identical way every time it's asked, which is exactly why that answer changing at all is what breaks things.",
+        "Nothing here is approximate or probabilistic: a key's own order either lives entirely inside one partition, or it doesn't live anywhere at all once that partition assignment moves."
+      ]
+    }
+  ]
+}

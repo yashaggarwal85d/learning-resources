@@ -1,0 +1,22 @@
+import Resource from '../../../../../components/Resource.astro';
+
+<section class="prereq" data-section="chapter-so-far">
+
+### <span class="n">01</span> Where the last topic left off
+
+<ul class="resources">
+  <Resource kind="reel" host={props.host} domain="rust-systems-engineering" title="Partitioned logs and per-key ordering">per-key ordering decides what a single partition promises about the order writes land in; it says nothing yet about what a consumer that crashes mid-way through handling one of those writes is allowed to do about it.</Resource>
+</ul>
+
+</section>
+
+<section class="prereq" data-section="delivery-primary">
+
+### <span class="n">02</span> The real docs: delivery guarantees and the project's own design
+
+<ul class="resources">
+  <Resource kind="reading" title="Kafka Message Delivery Guarantees" href="https://docs.confluent.io/kafka/design/delivery-semantics.html" by="Confluent">the real idempotency key and the real duplicate this topic's own code measures directly.</Resource>
+  <Resource kind="reading" title="Design (docs/design/design.md)" href="https://github.com/apache/kafka/blob/trunk/docs/design/design.md" by="Apache Kafka">the project's own words on the identical producer-id-and-sequence dedup mechanism.</Resource>
+</ul>
+
+</section>

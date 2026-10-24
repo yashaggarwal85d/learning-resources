@@ -1,0 +1,74 @@
+{
+  "topic": "rust.retention-compaction-tiered-storage",
+  "syllabus": [
+    {
+      "clause": "log compaction keeps the latest value per key forever (with tombstones), unlike time/size retention.",
+      "at": [
+        { "step": "Measured: compaction genuinely kept the old entry, because it is still that key's own latest value, with no age check at all" },
+        { "step": "Measured: the tombstone genuinely removed the key entirely, once compaction ran past it, with every other key genuinely untouched" },
+        { "step": "Measured: retention genuinely deleted the old entry, even though it was that key's own only, latest value" }
+      ]
+    },
+    {
+      "clause": "Tiered storage (KIP-405) offloads cold segments to object storage.",
+      "at": [{ "deep": "The frontier" }]
+    },
+    {
+      "clause": "The Rust client (rdkafka) wraps librdkafka.",
+      "at": [{ "deep": "The frontier" }]
+    }
+  ],
+  "sources": [
+    {
+      "source": "confluent-log-compaction",
+      "items": [
+        {
+          "item": "topic compaction retains the latest value for each message key, discarding older values, guaranteeing the latest value is always retained",
+          "at": [{ "step": "Now run compaction over the identical log instead. Does the old entry survive this time, just because it is still that key's own latest value?" }]
+        },
+        {
+          "item": "log compaction provides finer-grained per-record retention than time-based retention, selectively removing records with a more recent update under the same key, guaranteeing at least the last state for each key",
+          "at": [{ "step": "Confluent's own documentation and the Kafka project's own design document both state this exact mechanism directly: compaction keeps at least the last state for each key, and a null-payload message is treated as a real delete. Does this topic's own code measure exactly that rule?" }]
+        },
+        {
+          "item": "a message with a key and a null payload is treated as a delete from the log; these null-payload messages are called tombstones, and they are cleaned out of the log after a period of time",
+          "at": [{ "step": "A real tombstone, a message with the same key and no value, is appended after all the others. Compaction runs past it. Does the key genuinely disappear entirely?" }]
+        }
+      ]
+    },
+    {
+      "source": "kafka-design-md",
+      "items": [
+        {
+          "item": "log compaction gives finer-grained per-record retention than time-based retention, selectively removing records with a more recent update under the same primary key",
+          "at": [{ "step": "Confluent's own documentation and the Kafka project's own design document both state this exact mechanism directly: compaction keeps at least the last state for each key, and a null-payload message is treated as a real delete. Does this topic's own code measure exactly that rule?" }]
+        },
+        {
+          "item": "a message with a key and a null payload is treated as a delete from the log, sometimes called a tombstone; the delete marker removes any prior message with that key, and is itself cleaned out after a period of time",
+          "at": [{ "step": "Measured: the tombstone genuinely removed the key entirely, once compaction ran past it, with every other key genuinely untouched" }]
+        }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "self-review",
+    "date": "2026-10-24",
+    "items": [
+      { "item": "Retention and compaction run over the identical real log in this topic's own code, rather than two separately constructed logs, so the measured difference between them is attributable to the one real thing that differs (an age comparison versus a per-key latest comparison), not to any accidental difference in the data each one sees.", "at": [{ "step": "Now run compaction over the identical log instead. Does the old entry survive this time, just because it is still that key's own latest value?" }] },
+      { "item": "The tombstone scenario reuses the identical compaction function used in the non-tombstone scenario, adding only one real entry with a null value, rather than a separate tombstone-handling code path; this isolates the real effect of a tombstone from any other difference in how compaction itself runs.", "at": [{ "step": "A real tombstone, a message with the same key and no value, is appended after all the others. Compaction runs past it. Does the key genuinely disappear entirely?" }] },
+      { "item": "The measured claim that other keys survive a tombstone is checked by asserting the surviving key's own exact latest value, not merely that the compacted log's own length changed, so the test would fail if the tombstone's own removal accidentally also dropped or altered an unrelated key.", "at": [{ "step": "Measured: the tombstone genuinely removed the key entirely, once compaction ran past it, with every other key genuinely untouched" }] },
+      { "item": "This topic builds directly on topic 70's own partitioned log rather than starting a new one from scratch, per the chapter plan's own A.3; `uses` lists topic 70's own introduced concept id for exactly this reason, even though this topic's own measured code works with a single partition's own entries rather than the routing function itself.", "at": [{ "step": "One key's own only entry is already old; another key has several recent updates. Time-based retention runs over the whole log. Does it genuinely delete the old entry, even though it is that key's own latest?" }] },
+      { "item": "The syllabus's own further material on tiered storage (KIP-405) and the rdkafka Rust client is named in prose in post-notes rather than separately measured here, since neither changes the retention-versus-compaction question this topic's own code measures; a tiered segment is still either aging out or being compacted by key, exactly as on local disk.", "at": [{ "deep": "The frontier" }] },
+      { "item": "All of this topic's own measured claims run entirely on plain in-memory Rust vectors and a plain `Option<i64>` tombstone encoding, with no file, network, or root access needed; 'the log', 'retention', and 'compaction' are all real, deterministic Rust values and function calls, continuing this domain's own established pattern.", "at": [{ "step": "Recap: a real log, retention, and compaction" }] },
+      { "item": "Confluent's own documentation and the Apache Kafka project's own GitHub-hosted design document state the identical compaction-and-tombstone mechanism in genuinely distinct wording, giving this topic two independent sources rather than multiple quotes drawn from a single page.", "at": [{ "step": "Confluent's own documentation and the Kafka project's own design document both state this exact mechanism directly: compaction keeps at least the last state for each key, and a null-payload message is treated as a real delete. Does this topic's own code measure exactly that rule?" }] },
+      { "item": "The specific ages and the single 'cold-account' versus 'hot-account' key pair used throughout this topic's own scenarios are this specific example's own choice; the measured claims illustrate the real shape of retention, compaction, and the tombstone's own effect for any age threshold and any set of keys, not a claim bound to exactly these numbers.", "at": [{ "step": "Measured: retention genuinely deleted the old entry, even though it was that key's own only, latest value" }] },
+      { "item": "The closing connecting step naming this chapter's own three topics together (order, delivery, retention) is a deliberate structural choice, tying the chapter's own arc together explicitly before the recap, rather than leaving the chapter's own coherence implicit across three separately shipped topics.", "at": [{ "step": "This chapter measured a partitioned, product-facing log's own order, delivery, and retention rules, end to end. Does a real tombstone's own removal close the loop on everything this chapter set out to measure?" }] },
+      { "item": "The compaction function's own final filter step, dropping a key whose latest entry is a tombstone, runs strictly after the latest-per-key scan completes, matching the real mechanism described in both primary sources (a delete marker removing a prior message with the same key) rather than skipping a tombstoned key during the scan itself.", "at": [{ "step": "A real tombstone, a message with the same key and no value, is appended after all the others. Compaction runs past it. Does the key genuinely disappear entirely?" }] }
+    ]
+  },
+  "gapReview": {
+    "date": "2026-10-24",
+    "by": "self-review",
+    "open": []
+  }
+}
