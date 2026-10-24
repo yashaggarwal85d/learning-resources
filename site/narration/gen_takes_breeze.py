@@ -129,9 +129,8 @@ try:
         os.replace(tmp, path)
         print(f"[{n}/{len(todo)}] {len(a)/sr:.1f}s audio in {time.time()-t0:.1f}s: {line[:60]}", flush=True)
 finally:
-    if server_proc:
-        server_proc.terminate()
-        try:
-            server_proc.wait(timeout=10)
-        except subprocess.TimeoutExpired:
-            server_proc.kill()
+    # Leave a server this call started running for later rounds/topics to find via server_alive() and reuse —
+    # killing it here is what made every round/topic (narrate.sh calls this script fresh each time) pay the ~60s
+    # GGUF reload again, which is the GPU-idle/pausing pattern this was meant to avoid (narration-breeze-server-fix
+    # memory). The owner's PC session stops it once, when the whole bulk run is done (pc/README.md section 4).
+    pass

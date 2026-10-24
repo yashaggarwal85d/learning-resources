@@ -1,0 +1,605 @@
+{
+ "topic": "de.hash-sort-aggregation",
+ "voice": "breeze-mellow-v2",
+ "asr": "large-v3-turbo",
+ "clips": {
+  "01": {
+   "hash": "0c3f950bbce6b3ef",
+   "takes": [
+    "0c6c9f145dccad90e765",
+    "4ef11e8f30c72a82c0be",
+    "e3eaf8996d457c288c16"
+   ],
+   "duration": 21.114,
+   "lines": [
+    {
+     "text": "Same table, same number of rows, grouped two different ways.",
+     "start": 0.15,
+     "end": 4.521
+    },
+    {
+     "text": "Group it by a column with almost no distinct values, and a table built in memory wins easily.",
+     "start": 4.941,
+     "end": 12.172
+    },
+    {
+     "text": "Group it by a column with almost as many distinct values as there are rows, and that same approach is no longer the faster one.",
+     "start": 12.592,
+     "end": 20.764
+    }
+   ],
+   "lufs": -16.2,
+   "true_peak": -2.6,
+   "wpm": 151,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "02": {
+   "hash": "111b2ef529c17a0e",
+   "takes": [
+    "c6c73a95d65fd4d71231",
+    "7e85a7f8370b70846132"
+   ],
+   "duration": 16.881,
+   "lines": [
+    {
+     "text": "A handful of distinct groups, out of millions of rows. One approach builds a table in memory with one slot per group. The other sorts every single row before it groups anything.",
+     "start": 0.15,
+     "end": 12.764
+    },
+    {
+     "text": "With so few groups, which one wins?",
+     "start": 13.584,
+     "end": 16.531
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -3.0,
+   "wpm": 139,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "02a": {
+   "hash": "f96aa88a1c778b81",
+   "takes": [
+    "3e86e72783b82e53bb97",
+    "ab94ff12f1afe9187710"
+   ],
+   "duration": 21.101,
+   "lines": [
+    {
+     "text": "The one built around a table in memory. With only a handful of groups, that table stays tiny and never has to spill, while sorting every row first would be pure overhead this question doesn't need.",
+     "start": 0.15,
+     "end": 15.542
+    },
+    {
+     "text": "Few groups is exactly the shape that favors building rather than sorting.",
+     "start": 15.962,
+     "end": 20.751
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -1.9,
+   "wpm": 136,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "03": {
+   "hash": "315df9251bf9371f",
+   "takes": [
+    "9ead7eb3d4c1d8f5915d",
+    "cf233aa25686882c4ec2",
+    "60a022c01979b0eb6da6"
+   ],
+   "duration": 26.177,
+   "lines": [
+    {
+     "text": "The planner's own default choice finishes in well under a second, with one small table and no overflow to disk.",
+     "start": 0.15,
+     "end": 7.979
+    },
+    {
+     "text": "Force it to sort everything first instead, and it takes more than twice as long \u2014 the sort alone spills tens of megabytes to disk before any grouping even starts.",
+     "start": 8.399,
+     "end": 19.891
+    },
+    {
+     "text": "Same table, same rows, same question. Only the approach changed.",
+     "start": 20.311,
+     "end": 25.827
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 135,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "04": {
+   "hash": "4ec9e4485cc22ffc",
+   "takes": [
+    "ed9fa14edb00978af46f",
+    "ef5da5eeea302b0ac578",
+    "bb6d917088bd1fb5cc24"
+   ],
+   "duration": 20.323,
+   "lines": [
+    {
+     "text": "One table in memory, one entry per distinct group, built while the data is scanned exactly once.",
+     "start": 0.15,
+     "end": 7.101
+    },
+    {
+     "text": "A row's group gets looked up directly in that table \u2014 it isn't searched for.",
+     "start": 7.521,
+     "end": 12.388
+    },
+    {
+     "text": "Which means the cost of this approach scales with how many groups there are, not with how many rows get scanned.",
+     "start": 12.808,
+     "end": 19.973
+    }
+   ],
+   "lufs": -16.3,
+   "true_peak": -2.0,
+   "wpm": 154,
+   "wer": 0.07142857142857142,
+   "exact": false,
+   "tolerated": [
+    {
+     "line": "A row's group gets looked up directly in that table \u2014 it isn't searched for.",
+     "said": "rows",
+     "heard": "rose"
+    }
+   ]
+  },
+  "05": {
+   "hash": "d0517a5dcd8a5c60",
+   "takes": [
+    "6bf57581ec6df806380e",
+    "94b635d9f227808be552",
+    "4f6dbedb420e672761ff"
+   ],
+   "duration": 27.332,
+   "lines": [
+    {
+     "text": "The other approach sorts every row on the grouping column first, then walks through the sorted stream in order.",
+     "start": 0.15,
+     "end": 8.158
+    },
+    {
+     "text": "Once the rows are in order, closing out one group's running total is simple: the moment the grouping value changes, that group is done.",
+     "start": 8.578,
+     "end": 18.002
+    },
+    {
+     "text": "No table built in memory at all \u2014 but the sort gets paid for up front, no matter how many groups turn out to exist.",
+     "start": 18.422,
+     "end": 26.982
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 147,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "06": {
+   "hash": "2921aa0073bea0d4",
+   "takes": [
+    "04a1e293d69eca9c9bd1",
+    "ea1b7c57bf9988d35648"
+   ],
+   "duration": 14.8,
+   "lines": [
+    {
+     "text": "Same table, same number of rows as before. But now the grouping column has almost as many distinct values as there are rows to begin with.",
+     "start": 0.15,
+     "end": 10.28
+    },
+    {
+     "text": "Does the table-in-memory approach still come out ahead?",
+     "start": 11.1,
+     "end": 14.45
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -3.2,
+   "wpm": 146,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "06a": {
+   "hash": "526cfab2e575cc4a",
+   "takes": [
+    "d8add1d6499896403fa1",
+    "2d13871253bd0ba5430e"
+   ],
+   "duration": 22.033,
+   "lines": [
+    {
+     "text": "No \u2014 once there are almost as many groups as rows, that table itself becomes large enough to overflow memory badly, while the sort's own cost never changed, since it depends on how many rows there are, not how many groups.",
+     "start": 0.15,
+     "end": 15.972
+    },
+    {
+     "text": "The exact thing that made the table-based approach win before is now working against it.",
+     "start": 16.392,
+     "end": 21.683
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 152,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "07": {
+   "hash": "1339203ddce48b0d",
+   "takes": [
+    "7b7e8add6dffea2f757f",
+    "909c7a6437f8c1ff1ffa",
+    "7055ae0fdcc70d9cd19c"
+   ],
+   "duration": 27.937,
+   "lines": [
+    {
+     "text": "The planner still defaults to building a table in memory \u2014 but now that table has to split into dozens of smaller pieces and spill most of them to disk, taking well over two seconds.",
+     "start": 0.15,
+     "end": 13.342
+    },
+    {
+     "text": "Force the sorting approach instead on this same question, and it finishes faster \u2014 by a real margin, not a narrow one.",
+     "start": 13.762,
+     "end": 22.128
+    },
+    {
+     "text": "The exact opposite result from the handful-of-groups comparison a moment ago.",
+     "start": 22.548,
+     "end": 27.587
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -2.0,
+   "wpm": 146,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "08": {
+   "hash": "5e9f24efbf09f18b",
+   "takes": [
+    "95c0624f57e7ebf21585",
+    "2dd7a6d1832ef9e555ea",
+    "561ab3e589897caad416"
+   ],
+   "duration": 27.274,
+   "lines": [
+    {
+     "text": "The sorting approach's bill is set by how many rows there are, and that number never moved between these two comparisons.",
+     "start": 0.15,
+     "end": 8.226
+    },
+    {
+     "text": "The table-in-memory approach's bill is set by how many groups it has to track relative to how much memory it's given \u2014 and that number grew enormously between them.",
+     "start": 8.646,
+     "end": 20.504
+    },
+    {
+     "text": "Same rows, wildly different group counts, and that's the entire reason the winner flipped.",
+     "start": 20.924,
+     "end": 26.924
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -2.3,
+   "wpm": 143,
+   "wer": 0.047619047619047616,
+   "exact": false,
+   "tolerated": [
+    {
+     "line": "The sorting approach's bill is set by how many rows there are, and that number never moved between these two comparisons.",
+     "said": "approachs",
+     "heard": "approaches"
+    }
+   ]
+  },
+  "09": {
+   "hash": "36448f6289ed5902",
+   "takes": [
+    "56631f05e18e3c7a08bd",
+    "91882c07ee6bf14b0306",
+    "a76fff28ed887d0d6467"
+   ],
+   "duration": 30.073,
+   "lines": [
+    {
+     "text": "Split the work across two separate processes, and each one builds its own small table in memory from only the rows it personally scanned \u2014 a partial result, not a final one.",
+     "start": 0.15,
+     "end": 12.578
+    },
+    {
+     "text": "One process then merges every partial result together into the single final answer.",
+     "start": 12.998,
+     "end": 19.336
+    },
+    {
+     "text": "Measured on the handful-of-groups comparison from earlier: splitting the work this way finishes faster than even the best single-process version did.",
+     "start": 19.756,
+     "end": 29.723
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 136,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "10": {
+   "hash": "2d324ff81c2ba041",
+   "takes": [
+    "72285f5cbe92def0ed56",
+    "4196e7acfe9f22dd1621"
+   ],
+   "duration": 21.637,
+   "lines": [
+    {
+     "text": "Count how many distinct values a column has, with no other process helping \u2014 the documentation itself says splitting the work across processes isn't available once an aggregate needs to drop duplicates first.",
+     "start": 0.15,
+     "end": 15.574
+    },
+    {
+     "text": "So which of the two approaches from earlier does the planner reach for here instead?",
+     "start": 16.394,
+     "end": 21.287
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -1.9,
+   "wpm": 130,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "10a": {
+   "hash": "becb429262b024ef",
+   "takes": [
+    "a0b4cd6480716a5f7080",
+    "0942968d96ba7c9d0d82"
+   ],
+   "duration": 17.997,
+   "lines": [
+    {
+     "text": "Sorting \u2014 dropping duplicates is exactly the kind of work a sort already does as a side effect of putting rows in order, so that's the path taken instead of building any table at all.",
+     "start": 0.15,
+     "end": 11.901
+    },
+    {
+     "text": "Needing duplicates removed first pushes the planner toward the approach that does that for free.",
+     "start": 12.321,
+     "end": 17.647
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -1.9,
+   "wpm": 163,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "11": {
+   "hash": "d7eeef80dd121343",
+   "takes": [
+    "87ff81ed4f317d3564c9",
+    "400b7cb51d36999147e6",
+    "6592f935704edeaf1a66"
+   ],
+   "duration": 20.79,
+   "lines": [
+    {
+     "text": "The plan that comes back is a sort, with a simple counting step added to it.",
+     "start": 0.15,
+     "end": 5.166
+    },
+    {
+     "text": "No table built in memory anywhere in this plan, and no second process helping either.",
+     "start": 5.586,
+     "end": 11.324
+    },
+    {
+     "text": "Putting every row in order still means spilling a meaningful amount to disk, since each row has to be ordered before any duplicate can be dropped.",
+     "start": 11.744,
+     "end": 20.44
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 164,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "12": {
+   "hash": "80d3e5c58538bbc4",
+   "takes": [
+    "a97330bfab4e47a9fb1b",
+    "d329dc81ab87650a680d",
+    "31febdfffb4d6f04cabe"
+   ],
+   "duration": 25.55,
+   "lines": [
+    {
+     "text": "Dropping duplicates has to happen before the counting itself can even start.",
+     "start": 0.15,
+     "end": 5.188
+    },
+    {
+     "text": "Putting every row in order already does that, as a side effect of sorting \u2014 matching values end up sitting right next to each other, trivial to collapse.",
+     "start": 5.608,
+     "end": 16.316
+    },
+    {
+     "text": "That's the same reason this kind of work shows up on the list of things sorting exists to do in the first place, right alongside plain ordering.",
+     "start": 16.736,
+     "end": 25.2
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 155,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "13": {
+   "hash": "34702e007b13a5b2",
+   "takes": [
+    "ea2be6f95aa85e564bbb",
+    "18a5226dfb202fc1f79e",
+    "eb9074118b2dcb8659a4",
+    "7ce1037de5de52283c29"
+   ],
+   "duration": 20.023,
+   "lines": [
+    {
+     "text": "Before trusting how a grouped query was executed, three things are worth checking.",
+     "start": 0.15,
+     "end": 5.611
+    },
+    {
+     "text": "How many distinct groups came out, relative to how many rows went in?",
+     "start": 6.031,
+     "end": 10.406
+    },
+    {
+     "text": "Was this query even allowed to split its work across more than one process?",
+     "start": 10.956,
+     "end": 15.693
+    },
+    {
+     "text": "And does any part of it need duplicates dropped first?",
+     "start": 16.243,
+     "end": 19.673
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 150,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "14": {
+   "hash": "41fdfb610700b19e",
+   "takes": [
+    "2697f456de40523f94aa",
+    "c2c52f5028c34d17659e"
+   ],
+   "duration": 10.179,
+   "lines": [
+    {
+     "text": "A table holds ten million rows. Grouping it produces only twenty distinct results.",
+     "start": 0.15,
+     "end": 6.453
+    },
+    {
+     "text": "Which approach almost certainly wins here?",
+     "start": 7.273,
+     "end": 9.829
+    }
+   ],
+   "lufs": -16.1,
+   "true_peak": -3.8,
+   "wpm": 112,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "14a": {
+   "hash": "b4b6597d1125cbf4",
+   "takes": [
+    "01c669630065edfd6300",
+    "7a0da6f6499e415f795d"
+   ],
+   "duration": 15.405,
+   "lines": [
+    {
+     "text": "Building a table in memory \u2014 twenty groups stays a tiny table no matter how many rows feed it, and sorting ten million rows first would be pure waste.",
+     "start": 0.15,
+     "end": 10.269
+    },
+    {
+     "text": "Row count alone never decides this. Group count does.",
+     "start": 10.689,
+     "end": 15.055
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -2.0,
+   "wpm": 144,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "15": {
+   "hash": "ac6587734d6db492",
+   "takes": [
+    "aade79a459ecabcc5620",
+    "33e34aece36e401d1ca2"
+   ],
+   "duration": 13.142,
+   "lines": [
+    {
+     "text": "A plan that builds a table in memory for its grouping reports back that it had to split into several separate pieces instead of staying in one.",
+     "start": 0.15,
+     "end": 9.739
+    },
+    {
+     "text": "What does that number actually tell you?",
+     "start": 10.559,
+     "end": 12.792
+    }
+   ],
+   "lufs": -16.6,
+   "true_peak": -2.2,
+   "wpm": 155,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "15a": {
+   "hash": "58a8d3066f98916f",
+   "takes": [
+    "db582d85eac2bd7a2a52",
+    "5efa49f33c48ee9ef3b6"
+   ],
+   "duration": 18.221,
+   "lines": [
+    {
+     "text": "It means that table never fit in its memory budget as a single piece, so part of it had to spill to disk across more than one piece.",
+     "start": 0.15,
+     "end": 8.971
+    },
+    {
+     "text": "More than one piece is the plan telling you directly that it ran out of room \u2014 the same signal a spilling join gives.",
+     "start": 9.391,
+     "end": 17.871
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 168,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  }
+ }
+}

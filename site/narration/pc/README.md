@@ -70,4 +70,6 @@ A new voice is a new `voice.json` version; every existing clip becomes stale and
 
 ## 4. Then
 
-`/narrate` (`.claude/skills/narrate/SKILL.md`): work list, bulk generation, listening, commit, release. On this card a Breeze take is about a second (plus the model load per call, a few seconds, since the CLI is run per take), so a topic's 160 to 250 takes are ten to twenty minutes; the CPU checker is the other slow part.
+`/narrate` (`.claude/skills/narrate/SKILL.md`): work list, bulk generation, listening, commit, release. On this card a Breeze take is about a second once the server is warm, plus the ~60s GGUF load the first time it's needed, so a topic's 160 to 250 takes are a few minutes once warm; the CPU checker is the other slow part.
+
+For Breeze, `gen_takes_breeze.py` starts `breeze-server.exe` itself if none is running on port 8137, and now leaves it running afterwards (it no longer kills a server it started) so the next round or topic's `narrate.sh` call finds it via `/health` and reuses it instead of paying the GGUF reload again — this is what keeps the GPU busy across an entire `/narrate` bulk session without a manual pre-start step. When the whole bulk session is done, stop it so it isn't left resident between PC sessions: `taskkill //IM breeze-server.exe //F` (Git Bash) or close its window if you started it in the foreground.
