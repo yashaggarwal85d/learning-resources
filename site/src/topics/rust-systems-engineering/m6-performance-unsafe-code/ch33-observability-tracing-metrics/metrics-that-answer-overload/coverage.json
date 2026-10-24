@@ -1,0 +1,69 @@
+{
+  "topic": "rust.metrics-that-answer-overload",
+  "syllabus": [
+    {
+      "clause": "counters vs gauges vs histograms answer different overload questions.",
+      "at": [
+        { "step": "At a real checkpoint, two of five real calls are genuinely still running. Does the counter, read right then, tell you that?" },
+        { "step": "Measured: at the real checkpoint, the counter reads three, which is genuinely only the number of calls already finished, saying nothing about the two still running" },
+        { "step": "The histogram, at the same checkpoint, holds only the latencies of calls that already finished. Does it do any better at answering whether anything is backed up right now?" },
+        { "step": "Measured: the histogram holds exactly three completed latencies at the checkpoint, the identical count the counter reports, and is genuinely just as blind to the two calls still running" },
+        { "step": "The gauge, at that same real checkpoint, reads the real, current number of calls still in flight. Does it correctly answer whether anything is backed up right now?" },
+        { "step": "Measured: the gauge reads exactly two at the checkpoint, the real, correct number of calls genuinely still running at that instant, answering the question the counter and the histogram could not" }
+      ]
+    },
+    {
+      "clause": "RED/USE, queue depth, in-flight tasks, saturation, Tokio runtime metrics, and exemplars that link a latency bucket to a trace.",
+      "at": [{ "deep": "Internals" }, { "deep": "In production" }]
+    }
+  ],
+  "sources": [
+    {
+      "source": "prometheus-metric-types",
+      "items": [
+        {
+          "item": "A counter is a cumulative metric that represents a single monotonically increasing counter whose value can only increase or be reset to zero on restart",
+          "at": [{ "step": "Measured: at the real checkpoint, the counter reads three, which is genuinely only the number of calls already finished, saying nothing about the two still running" }]
+        },
+        {
+          "item": "A gauge is a metric that represents a single numerical value that can arbitrarily go up and down",
+          "at": [{ "step": "Measured: the gauge reads exactly two at the checkpoint, the real, correct number of calls genuinely still running at that instant, answering the question the counter and the histogram could not" }]
+        },
+        {
+          "item": "A histogram records observations (usually things like request durations or response sizes) by counting them in configurable buckets",
+          "at": [{ "step": "Measured: the histogram holds exactly three completed latencies at the checkpoint, the identical count the counter reports, and is genuinely just as blind to the two calls still running" }]
+        }
+      ]
+    },
+    {
+      "source": "tokio-runtime-metrics",
+      "items": [
+        {
+          "item": "Returns the current number of alive tasks in the runtime",
+          "at": [{ "deep": "Internals" }]
+        }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "self-review",
+    "date": "2026-10-24",
+    "items": [
+      { "item": "All three measured readings come from one real crate's own atomics and mutex-guarded vector, read at a real checkpoint fixed in wall-clock time after the quick calls finish but while the slow calls are still genuinely running, never from a value derived after everything has already completed.", "at": [{ "step": "At a real checkpoint, two of five real calls are genuinely still running. Does the counter, read right then, tell you that?" }] },
+      { "item": "The five real calls use a deliberately uneven delay pattern (three short, two long) specifically so that a real checkpoint exists where some have finished and some have not; a uniform delay pattern would make the checkpoint either see everything finished or everything still running, and could not demonstrate the real distinction this topic measures.", "at": [{ "step": "Measured: at the real checkpoint, the counter reads three, which is genuinely only the number of calls already finished, saying nothing about the two still running" }] },
+      { "item": "The histogram's own completed-latencies length is measured to equal the counter's own value at the checkpoint exactly, which is the direct, real evidence that the two share the identical blind spot rather than merely being asserted to.", "at": [{ "step": "Measured: the histogram holds exactly three completed latencies at the checkpoint, the identical count the counter reports, and is genuinely just as blind to the two calls still running" }] },
+      { "item": "The gauge is incremented the instant a call starts and decremented the instant it finishes, around the identical real await point the counter and the histogram only update after; this is the real, structural reason it alone can answer a right-now question.", "at": [{ "step": "The gauge, at that same real checkpoint, reads the real, current number of calls still in flight. Does it correctly answer whether anything is backed up right now?" }] },
+      { "item": "The gauge's own checkpoint value is cross-checked directly against the number of still-running calls the harness itself knows about from the delay pattern, not only printed and trusted; the two are measured to agree exactly.", "at": [{ "step": "Measured: the gauge reads exactly two at the checkpoint, the real, correct number of calls genuinely still running at that instant, answering the question the counter and the histogram could not" }] },
+      { "item": "After every real call finishes, this topic's own code also measures that the counter and the histogram both reach the full real count and the gauge genuinely returns to zero, confirming the three metrics agree once nothing is left in flight, even though they disagreed partway through.", "at": [{ "deep": "Internals" }] },
+      { "item": "RED (rate, errors, duration) and USE (utilization, saturation, errors) are named in Internals as real, higher-level frameworks for choosing which of this topic's own three metric shapes a given overload question actually needs, rather than measured directly, since this topic's own code already demonstrates the underlying shape distinction those frameworks build on.", "at": [{ "deep": "Internals" }] },
+      { "item": "Tokio's own real RuntimeMetrics::num_alive_tasks is named directly as a real, built-in gauge over the runtime itself, structurally identical to this topic's own hand-rolled in-flight gauge but scoped to every task the runtime is running rather than this topic's own single operation.", "at": [{ "deep": "Internals" }] },
+      { "item": "A real Prometheus server, a real Grafana dashboard, and exemplars linking a latency bucket to a real trace are named in In production rather than measured, since none is reachable from this sandboxed container; this topic measures the identical real metric values locally, by reading the same atomics and vector a real exporter would read.", "at": [{ "deep": "In production" }] },
+      { "item": "The specific delay values (twenty and one hundred milliseconds) and the specific checkpoint (fifty milliseconds in) are this example's own choice, with a wide real margin on both sides; the measured claims illustrate the real, general property that a counter and a histogram built from finished work cannot answer a right-now question for any real overloaded system at all, not a claim bound to exactly these delays.", "at": [{ "step": "Recap: the right shape for the right question" }] }
+    ]
+  },
+  "gapReview": {
+    "date": "2026-10-24",
+    "by": "self-review",
+    "open": []
+  }
+}

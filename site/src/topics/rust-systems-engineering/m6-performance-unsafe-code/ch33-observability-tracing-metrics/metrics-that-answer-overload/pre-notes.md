@@ -1,0 +1,4 @@
+- **Counter**: a real metric whose own value can only increase (or reset to zero on restart), used to count something that only ever accumulates, like calls completed.
+- **Gauge**: a real metric read as a single current value that can arbitrarily go up and down, used for something like how many calls are in flight right now.
+- **Histogram**: a real metric that counts observed values (like a latency) into configurable buckets, built the same way a counter is: only from what has already been observed.
+- **Checkpoint**: a real, fixed point in time, during this topic's own code, while some real work is already finished and other real work is genuinely still running.
