@@ -1,7 +1,219 @@
 {
   "topic": "de.vacuum-bloat-transaction-id",
-  "syllabus": [],
-  "sources": [],
+  "syllabus": [
+    {
+      "clause": "dead tuples",
+      "at": [
+        {
+          "step": "Reveal: a dead tuple, counted directly"
+        }
+      ]
+    },
+    {
+      "clause": "HOT updates",
+      "at": [
+        {
+          "step": "Reveal: HOT updates, the free optimization"
+        }
+      ]
+    },
+    {
+      "clause": "the visibility map",
+      "at": [
+        {
+          "step": "Reveal: HOT updates, the free optimization"
+        }
+      ]
+    },
+    {
+      "clause": "autovacuum tuning",
+      "at": [
+        {
+          "step": "Reveal: autovacuum's own knobs"
+        }
+      ]
+    },
+    {
+      "clause": "why one long transaction, an abandoned replication slot or a stale prepared transaction pins the xmin horizon and grows every table",
+      "at": [
+        {
+          "step": "Reveal: the xmin horizon, held open"
+        },
+        {
+          "step": "Reveal: bloat, charted live"
+        }
+      ]
+    },
+    {
+      "clause": "32-bit XID freezing and the wraparound shutdown as a real production outage",
+      "at": [
+        {
+          "step": "Reveal: freezing and the wraparound shutdown"
+        },
+        {
+          "step": "Prove it"
+        }
+      ]
+    }
+  ],
+  "sources": [
+    {
+      "source": "Postgres 18, Routine Vacuuming (24.1)",
+      "items": [
+        {
+          "item": "why VACUUM runs: reclaim space, update planner stats, update the visibility map, prevent XID/multixact wraparound",
+          "at": [
+            {
+              "step": "Hook"
+            }
+          ]
+        },
+        {
+          "item": "standard VACUUM marks dead row versions' space reusable but does not return it to the OS except at the end of the file",
+          "at": [
+            {
+              "step": "Reveal: a dead tuple, counted directly"
+            }
+          ]
+        },
+        {
+          "item": "the visibility map tracks all-visible pages: vacuum skips them, and an index-only scan skips the heap fetch entirely",
+          "at": [
+            {
+              "step": "Reveal: HOT updates, the free optimization"
+            }
+          ]
+        },
+        {
+          "item": "32-bit XIDs compared with circular (modulo-2^32) arithmetic; freezing marks a row permanently \"in the past\" via FrozenTransactionId",
+          "at": [
+            {
+              "step": "Reveal: freezing and the wraparound shutdown"
+            }
+          ]
+        },
+        {
+          "item": "the escalating warning (forty million transactions from wraparound) then outright refusal of new write XIDs (fewer than three million remaining); read-only transactions still work",
+          "at": [
+            {
+              "deep": "Production failures this topic warns about"
+            }
+          ]
+        },
+        {
+          "item": "the documented three-step recovery order: resolve prepared transactions, end long-running transactions, drop stale replication slots, then VACUUM (never VACUUM FULL in that state)",
+          "at": [
+            {
+              "step": "Prove it"
+            }
+          ]
+        },
+        {
+          "item": "multixact IDs: a separate 32-bit counter and wraparound mechanism for row-level locks held by more than one transaction",
+          "at": [
+            {
+              "out": "a distinct mechanism from XID wraparound; named in post-notes as Frontier material, not taught as part of this topic's own mechanism"
+            }
+          ]
+        },
+        {
+          "item": "the autovacuum daemon's launcher/worker model and the vacuum-threshold formula (base threshold plus scale factor times row count)",
+          "at": [
+            {
+              "step": "Reveal: autovacuum's own knobs"
+            }
+          ]
+        },
+        {
+          "item": "autovacuum workers normally yield to a conflicting lock; an anti-wraparound autovacuum is not interrupted",
+          "at": [
+            {
+              "step": "Reveal: autovacuum's own knobs"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "Postgres 18, Heap-Only Tuples (HOT) (66.7)",
+      "items": [
+        {
+          "item": "HOT's two preconditions: the update touches no indexed column, and the page has enough free space for the new version",
+          "at": [
+            {
+              "step": "Reveal: HOT updates, the free optimization"
+            }
+          ]
+        },
+        {
+          "item": "HOT's two optimizations: no new index entry is needed, and intermediate dead versions can be pruned outside VACUUM entirely (during ordinary access, including SELECTs)",
+          "at": [
+            {
+              "step": "Reveal: HOT updates, the free optimization"
+            }
+          ]
+        },
+        {
+          "item": "fillfactor and pg_stat_all_tables as the tuning/observability knobs for HOT",
+          "at": [
+            {
+              "deep": "Lab"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "Postgres 18, Log-Shipping Standby Servers — Replication Slots (26.2.6)",
+      "items": [
+        {
+          "item": "a replication slot holds back both WAL recycling and the specific rows vacuum would otherwise remove, even while its standby is disconnected or gone entirely",
+          "at": [
+            {
+              "step": "Reveal: the xmin horizon, held open"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "Sentry: Transaction ID Wraparound in Postgres (2015 production outage)",
+      "items": [
+        {
+          "item": "a real write-heavy production outage: down for most of a US working day after hitting XID wraparound protection",
+          "at": [
+            {
+              "step": "Reveal: freezing and the wraparound shutdown"
+            }
+          ]
+        },
+        {
+          "item": "disabling autovacuum, common internet advice under write load, is called out by name as the opposite of the fix",
+          "at": [
+            {
+              "step": "Prove it"
+            }
+          ]
+        },
+        {
+          "item": "the actual, improvised recovery: wait for the stuck autovacuums, then truncate the one large non-critical table whose autovacuum had stalled",
+          "at": [
+            {
+              "deep": "Lab"
+            }
+          ]
+        },
+        {
+          "item": "the post-incident configuration fix: autovacuum_freeze_max_age lowered, autovacuum_max_workers raised, excess cost delay removed",
+          "at": [
+            {
+              "deep": "Production failures this topic warns about"
+            }
+          ]
+        }
+      ]
+    }
+  ],
   "expert": {
     "by": "self-review",
     "date": "2026-10-24",
