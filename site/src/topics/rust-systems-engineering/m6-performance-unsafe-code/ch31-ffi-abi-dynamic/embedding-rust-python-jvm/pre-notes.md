@@ -1,0 +1,4 @@
+- **PyO3**: the real Rust crate that lets a Rust function become a real, callable Python extension module, built with `maturin`.
+- **The GIL**: the real lock CPython uses to serialize access to Python objects; only one thread runs Python bytecode at a time unless it is explicitly released.
+- **`Python::detach`**: the real, explicit call that releases the GIL for the duration of a closure, letting other Python threads run real work concurrently.
+- **Zero-copy exchange**: the real sharing of one buffer's own underlying memory across the Python/Rust boundary, without a real duplicate allocation and copy.

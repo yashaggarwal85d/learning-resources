@@ -1,0 +1,69 @@
+{
+  "steps": [
+    {
+      "lines": [
+        "A real Python buffer is handed to a real Rust function, which reads its own real memory address directly.",
+        { "beat": 0.3 },
+        "Does the address Rust sees genuinely match the address Python itself reports for that identical buffer?"
+      ],
+      "answer": [
+        "Yes, genuinely.",
+        "The same real address, on both sides."
+      ]
+    },
+    {
+      "lines": [
+        "Run it for real: the real address Rust reads straight off that buffer is genuinely identical to the one Python already had for it, no copy ever made along the way."
+      ]
+    },
+    {
+      "lines": [
+        "A real Rust function now holds onto the interpreter's own lock for its entire run, while it does real, honest work.",
+        { "beat": 0.3 },
+        "While it's running, how much progress does a separate, real Python thread actually make?"
+      ],
+      "answer": [
+        "Genuinely very little.",
+        "That lock is never given up, so there's almost no room for anything else."
+      ]
+    },
+    {
+      "lines": [
+        "Run it for real: while that call holds on, a separate thread's own counter barely moves at all; there was nowhere for it to go."
+      ],
+      "takeaway": "Holding that lock the whole time leaves almost no room for anything else to run."
+    },
+    {
+      "lines": [
+        "The identical real work now runs with that lock explicitly let go, just for the length of this one call.",
+        { "beat": 0.3 },
+        "Does the other thread now get dramatically more done in the same stretch of time?"
+      ],
+      "answer": [
+        "Yes, genuinely; dramatically more.",
+        "Letting go of it is the one real thing that actually opens the door."
+      ]
+    },
+    {
+      "lines": [
+        "Run it for real: the identical counter, given that identical stretch of time, now climbs many times higher, because something else finally got to run."
+      ],
+      "takeaway": "That explicit release is the real act that actually lets other work run."
+    },
+    {
+      "lines": [
+        "Two real, independent sources name both of these exact rules directly, in their own words.",
+        "One names the explicit release that lets other work run while real work continues; the other names reading a buffer's own real bytes directly, with nothing copied in along the way."
+      ],
+      "takeaway": "A real extension hands over its own memory, and steps out of the way, only if the code asks."
+    },
+    {
+      "lines": [
+        "So here's what this topic's own two small boundaries are really standing in for: a real extension built this way isn't limited to handing Python back a brand new answer every time.",
+        "It can hand Python the exact same memory it was already holding, and it can step out of the interpreter's own way entirely while it does the real work underneath.",
+        "Neither one happens automatically; both are a real, explicit choice the code has to make, the same way the handle, the status code, and the unwind boundary were.",
+        "And that's the real thread running through this entire chapter: crossing out of Rust was never going to be automatic, not once, not anywhere along the way."
+      ]
+    }
+  ]
+}

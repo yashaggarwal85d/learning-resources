@@ -1,0 +1,22 @@
+import Resource from '../../../../../components/Resource.astro';
+
+<section class="prereq" data-section="chapter-so-far">
+
+### <span class="n">01</span> Where the last topic left off
+
+<ul class="resources">
+  <Resource kind="reel" host={props.host} domain="rust-systems-engineering" title="FFI boundary as a protocol">a protocol for who allocates, who frees, and how an error or a panic crosses the line holds for any foreign boundary at all; this topic asks what that boundary actually looks like for the two real runtimes this domain's own data platforms are built around.</Resource>
+</ul>
+
+</section>
+
+<section class="prereq" data-section="pyo3-primary">
+
+### <span class="n">02</span> The real docs: the PyO3 user guide, and PyByteArrayMethods
+
+<ul class="resources">
+  <Resource kind="reading" title="Parallelism" href="https://pyo3.rs/v0.29.0/parallelism.html" by="PyO3 user guide">releasing the GIL with Python::detach, and why it matters.</Resource>
+  <Resource kind="reading" title="PyByteArrayMethods" href="https://docs.rs/pyo3/latest/pyo3/types/trait.PyByteArrayMethods.html" by="docs.rs">reading a bytearray's own real buffer with no copy made.</Resource>
+</ul>
+
+</section>
