@@ -3416,4 +3416,24 @@ export const TOPICS: TopicMeta[] = [
     handoff:
       "A dirty page sitting in the buffer pool is lost the instant the process crashes, unless something records the write durably before the page itself is ever flushed. That something is the write-ahead log.",
   },
+  {
+    id: 'de.write-ahead-logging-fsync',
+    domain: 'data-engineering',
+    slug: 'data-engineering/m2-storage-database-internals/ch05-database-internals-distributed/write-ahead-logging-fsync',
+    title: 'Write-ahead logging and fsync semantics',
+    syllabusTitle: 'Write-ahead logging and fsync semantics',
+    kind: 'full',
+    status: 'held',
+    milestone: { number: 2, title: 'Storage: Database Internals, Files & the Lakehouse' },
+    chapter: { number: 5, title: 'Database Internals and Distributed Storage', section: '5.1' },
+    minutes: 15,
+    verified: '2026-10-24',
+    introduces: ['wal-lsn-fsync'],
+    uses: ['slotted-page-layout', 'buffer-pool-pin-unpin'],
+    declared: [],
+    bridge:
+      "A dirty page sitting in the buffer pool is lost the instant the process crashes, unless something records the write durably first. This topic is that something: the write-ahead log, LSNs, and the real fsync machinery underneath \"durable.\"",
+    handoff:
+      "A WAL that's never allowed to grow forever needs a way to bound how far back a crash recovery must replay. That bound is a checkpoint.",
+  },
 ];
