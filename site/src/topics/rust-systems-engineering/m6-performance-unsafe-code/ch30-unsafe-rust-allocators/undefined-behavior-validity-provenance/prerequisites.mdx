@@ -1,0 +1,23 @@
+import Resource from '../../../../../components/Resource.astro';
+
+<section class="prereq" data-section="chapter-so-far">
+
+### <span class="n">01</span> Where the last topic left off
+
+<ul class="resources">
+  <Resource kind="reel" host={props.host} domain="rust-systems-engineering" title="Unsafe contracts and safety comments">a safe guard decides whether a caller is even allowed to reach the unsafe code; it says nothing yet about what, exactly, makes a value inside that unsafe code valid or invalid once a caller does reach it.</Resource>
+</ul>
+
+</section>
+
+<section class="prereq" data-section="ub-validity-provenance-primary">
+
+### <span class="n">02</span> The real docs: the Reference's own UB list, MaybeUninit, and std::ptr
+
+<ul class="resources">
+  <Resource kind="reading" title="Behavior considered undefined" href="https://doc.rust-lang.org/reference/behavior-considered-undefined.html" by="The Rust Reference">the real rule: producing an invalid value is immediate undefined behavior.</Resource>
+  <Resource kind="reading" title="MaybeUninit in std::mem" href="https://doc.rust-lang.org/std/mem/union.MaybeUninit.html" by="The Rust standard library">why zero-initializing a reference is undefined behavior the instant it exists.</Resource>
+  <Resource kind="reading" title="std::ptr" href="https://doc.rust-lang.org/std/ptr/index.html" by="The Rust standard library">provenance, and the strict-provenance APIs that keep it explicit.</Resource>
+</ul>
+
+</section>

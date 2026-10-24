@@ -1,0 +1,102 @@
+{
+  "topic": "rust.undefined-behavior-validity-provenance",
+  "syllabus": [
+    {
+      "clause": "the Reference's UB list.",
+      "at": [{ "deep": "Internals" }]
+    },
+    {
+      "clause": "Validity invariants (bool, enum discriminants, non-null aligned references) and MaybeUninit.",
+      "at": [
+        { "step": "Measured: a real validity check run over every one of the 256 possible byte values finds exactly 2 that genuinely pass" },
+        { "step": "Measured: the identical real non-null and alignment check run over the 6 candidate addresses finds exactly 3 that genuinely pass both" },
+        { "step": "The Rust Reference's own words, the standard library's own MaybeUninit docs, and std::ptr's own docs all state the identical rule directly: a value is valid for its type or producing it is immediate undefined behavior, and provenance is the real right that makes a dereference sound. Do this topic's own three measured checks apply exactly that rule?" }
+      ]
+    },
+    {
+      "clause": "Pointer provenance and the strict-provenance APIs (stable 1.84);",
+      "at": [
+        { "step": "Measured: the real addr()/with_addr() round trip genuinely recovers the exact correct element of the identical allocation" },
+        { "step": "The Rust Reference's own words, the standard library's own MaybeUninit docs, and std::ptr's own docs all state the identical rule directly: a value is valid for its type or producing it is immediate undefined behavior, and provenance is the real right that makes a dereference sound. Do this topic's own three measured checks apply exactly that rule?" }
+      ]
+    },
+    {
+      "clause": "&raw const/&raw mut (stable 1.82).",
+      "at": [{ "deep": "Internals" }]
+    },
+    {
+      "clause": "Aliasing models: Stacked Borrows → Tree Borrows (PLDI 2025).",
+      "at": [{ "deep": "Internals" }]
+    },
+    {
+      "clause": "static mut references are denied by default in Rust 2024.",
+      "at": [{ "deep": "In production" }]
+    }
+  ],
+  "sources": [
+    {
+      "source": "ub-reference",
+      "items": [
+        {
+          "item": "the compiler assumes that all values produced during program execution are valid, and producing an invalid value is hence immediate UB",
+          "at": [{ "step": "The Rust compiler is entitled to assume every value it ever sees is valid for its own type. Of the 256 possible byte patterns a bool's own one byte could hold, how many genuinely count as a valid bool?" }]
+        },
+        {
+          "item": "a bool value must be false (0) or true (1)",
+          "at": [{ "step": "Measured: a real validity check run over every one of the 256 possible byte values finds exactly 2 that genuinely pass" }]
+        },
+        {
+          "item": "an enum must have a valid discriminant, and all fields of the variant indicated by that discriminant must be valid at their respective type",
+          "at": [{ "deep": "Internals" }]
+        }
+      ]
+    },
+    {
+      "source": "maybeuninit",
+      "items": [
+        {
+          "item": "the compiler, in general, assumes that a variable is properly initialized or valid according to the requirements of the variable's type",
+          "at": [{ "deep": "Internals" }]
+        },
+        {
+          "item": "zero-initializing a variable of reference type causes instantaneous undefined behavior, no matter whether that reference ever gets used to access memory",
+          "at": [{ "step": "Measured: the identical real non-null and alignment check run over the 6 candidate addresses finds exactly 3 that genuinely pass both" }]
+        }
+      ]
+    },
+    {
+      "source": "ptr-provenance",
+      "items": [
+        {
+          "item": "it is undefined behavior to access memory through a pointer that does not have provenance over that memory",
+          "at": [{ "step": "Measured: the real addr()/with_addr() round trip genuinely recovers the exact correct element of the identical allocation" }]
+        },
+        {
+          "item": "with_addr creates a new pointer with the given address and the provenance of self",
+          "at": [{ "step": "The Rust Reference's own words, the standard library's own MaybeUninit docs, and std::ptr's own docs all state the identical rule directly: a value is valid for its type or producing it is immediate undefined behavior, and provenance is the real right that makes a dereference sound. Do this topic's own three measured checks apply exactly that rule?" }]
+        }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "self-review",
+    "date": "2026-10-24",
+    "items": [
+      { "item": "The bool-validity check runs over all 256 possible byte values of a plain u8, never over an actual bool, so no step of this topic ever constructs a genuinely invalid bool to measure the rule.", "at": [{ "step": "Measured: a real validity check run over every one of the 256 possible byte values finds exactly 2 that genuinely pass" }] },
+      { "item": "The non-null-and-alignment check is run directly on plain usize addresses, never on an actual reference, so checking which addresses would be invalid never requires building the invalid reference those addresses would otherwise produce.", "at": [{ "step": "Measured: the identical real non-null and alignment check run over the 6 candidate addresses finds exactly 3 that genuinely pass both" }] },
+      { "item": "The addr()/with_addr() round trip stays strictly within the bounds of the one real Vec<i32> its provenance was derived from (index 3 of a 5-element array), so the dereference at the end is itself sound, not merely a claim about what a dereference outside those bounds would have done.", "at": [{ "step": "Measured: the real addr()/with_addr() round trip genuinely recovers the exact correct element of the identical allocation" }] },
+      { "item": "This topic uses topic 77's own introduced concept (safety-contracts-bound-what-a-caller-can-trigger) only in its own bridge prose, not in its own measured code, since this topic's own subject is one level deeper: what makes a value valid in the first place, which a contract and a guard both presuppose.", "at": [{ "step": "The Rust compiler is entitled to assume every value it ever sees is valid for its own type. Of the 256 possible byte patterns a bool's own one byte could hold, how many genuinely count as a valid bool?" }] },
+      { "item": "Enum discriminant validity and &raw const/&raw mut are named and explained in post-notes rather than measured directly, since measuring the first would require constructing an invalid enum (the exact UB this chapter's own rule forbids) and the second is a syntactic tool for avoiding an intermediate reference rather than its own separate rule to check.", "at": [{ "deep": "Internals" }] },
+      { "item": "Stacked Borrows and Tree Borrows are named in post-notes as the formal aliasing model Miri checks against, rather than hand-simulated here, since safely modeling either one in a few lines of ordinary Rust would not genuinely represent what the real model checks; topic 79 covers directly what a checker built on a model like this can and cannot catch.", "at": [{ "deep": "Internals" }] },
+      { "item": "static mut references being denied by default in Rust 2024 is explained in post-notes as a lint promoted to deny-by-default, not a new validity or provenance rule, and is connected directly to the aliasing violation Stacked Borrows and Tree Borrows exist to catch.", "at": [{ "deep": "In production" }] },
+      { "item": "The specific byte values, candidate addresses, and array length used throughout this topic's own scenarios are this specific example's own choice; the measured claims illustrate the real shape of a validity check and a real provenance round trip for any type with these properties, not a claim bound to exactly these numbers.", "at": [{ "step": "Measured: the identical real non-null and alignment check run over the 6 candidate addresses finds exactly 3 that genuinely pass both" }] },
+      { "item": "The Rust Reference, the standard library's MaybeUninit docs, and std::ptr's own docs are three genuinely independent sources describing three genuinely different parts of the identical discipline (the formal UB standard, the initialization half of validity, and the provenance rule for pointers), giving this topic three separate sources rather than multiple quotes drawn from a single page.", "at": [{ "step": "The Rust Reference's own words, the standard library's own MaybeUninit docs, and std::ptr's own docs all state the identical rule directly: a value is valid for its type or producing it is immediate undefined behavior, and provenance is the real right that makes a dereference sound. Do this topic's own three measured checks apply exactly that rule?" }] },
+      { "item": "All of this topic's own measured claims run entirely on plain in-memory Rust values, a plain fixed-size array, and a plain Vec<i32>, with no file, network, root access, or actual undefined behavior executed; 'the validity check', 'the alignment check', and 'the provenance round trip' are all real, deterministic Rust values and operations, continuing this domain's own established pattern.", "at": [{ "step": "Recap: validity and provenance, checked directly" }] }
+    ]
+  },
+  "gapReview": {
+    "date": "2026-10-24",
+    "by": "self-review",
+    "open": []
+  }
+}
