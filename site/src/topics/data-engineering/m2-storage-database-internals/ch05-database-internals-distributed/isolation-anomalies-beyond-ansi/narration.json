@@ -1,0 +1,104 @@
+{
+  "topic": "de.isolation-anomalies-beyond-ansi",
+  "steps": [
+    {
+      "lines": [
+        "Two transactions. Both commit cleanly. Neither one throws a single error.",
+        "And ten dollars is still gone, with nothing in the database's own response hinting that it happened.",
+        "That's not a bug in Postgres. It's a real, named anomaly, and by the end of this you'll know exactly which one."
+      ]
+    },
+    {
+      "lines": [
+        "Start with the vocabulary the SQL standard itself actually gives you.",
+        "ANSI SQL ninety two names four phenomena precisely: a dirty write, a dirty read, a non repeatable read, a phantom.",
+        "Four different, specific ways for concurrent transactions to step on each other."
+      ]
+    },
+    {
+      "lines": [
+        "Here's where I want you to actually commit to an answer.",
+        "Take the standard's own written definition of a dirty read, hand it to two separate engineers, and let each one build the check from scratch.",
+        "What are the odds their two implementations actually agree on everything?"
+      ],
+      "answer": [
+        "It reads like one precise rule, which is exactly why this result is uncomfortable.",
+        "The same sentence genuinely supports a narrow reading and a broader one, and they don't agree on what to block.",
+        "So no, they don't end up with the same rule. The English itself is the problem."
+      ]
+    },
+    {
+      "lines": [
+        "I'm not just telling you that, the paper actually shows it.",
+        "The narrow reading only blocks a read of a write that later gets rolled back.",
+        "The broad reading blocks any read at all before the writer has even decided to commit or abort. Same sentence, two different rules."
+      ]
+    },
+    {
+      "lines": [
+        "I built this one for real, against a real Postgres table.",
+        "Transaction one reads one hundred, writes and commits one hundred ten.",
+        "Transaction two reads that exact same stale one hundred, writes and commits one hundred twenty, after transaction one already committed. The final balance is one hundred twenty. Transaction one's own ten dollars just vanished."
+      ]
+    },
+    {
+      "lines": [
+        "Same database, a different shape of the same problem.",
+        "Transaction one reads x, then transaction two updates both x and y together and commits, then transaction one rereads y.",
+        "One transaction, two reads, and an inconsistent pair of values it never should have been able to see. Write skew is the two writer version of this exact same gap."
+      ]
+    },
+    {
+      "lines": [
+        "Now here's a case where the real engine is actually stricter than the standard requires.",
+        "ANSI only forces a dirty write to be blocked at its own strictest level.",
+        "I measured a second writer hitting the same row, and it genuinely blocks, for roughly as long as the first transaction holds that row, before it's ever allowed to apply."
+      ]
+    },
+    {
+      "lines": [
+        "One more for you to sit with before I answer it.",
+        "A transaction that performs no writes of its own at all, only reads.",
+        "Can it still end up seeing a state that no real order of execution could ever have actually produced?"
+      ],
+      "answer": [
+        "\"It only reads, so it can't be the one with the problem\" is the intuitive answer.",
+        "It's wrong. The reader itself did nothing wrong, but what it got handed can still be an impossible state.",
+        "Yes, it can happen, and it has a name."
+      ]
+    },
+    {
+      "lines": [
+        "It's called the read only transaction anomaly, and it's one of the stranger ones in this whole list.",
+        "Line up every possible order those other transactions could have run in, one at a time, and check which final database states are actually reachable.",
+        "The reader's own answer isn't on that list. No ordering of anyone else's work ever produces what it saw, and it never touched the data itself."
+      ]
+    },
+    {
+      "lines": [
+        "So how do you actually pin any of this down, instead of arguing about English sentences?",
+        "Adya's own answer: build a real graph of dependencies between transactions, instead of a paragraph of prose.",
+        "An anomaly becomes a cycle in that graph. You can check for a cycle. You can't check for a vibe."
+      ]
+    },
+    {
+      "lines": [
+        "Pull it together. Eight anomalies, named precisely, not vaguely.",
+        "One real reason the standard's own definitions kept slipping past careful engineers: the English itself was ambiguous.",
+        "And one formal graph that finally closed that gap for good."
+      ]
+    },
+    {
+      "lines": [
+        "Last one. Two doctors are on call. Transaction one reads that count: two. Transaction two reads the same count: two.",
+        "Both doctors then take themselves off call, independently, and both transactions commit successfully.",
+        "Zero doctors on call. Which anomaly is this?"
+      ],
+      "answer": [
+        "If you're thinking lost update, look again: nobody's write got overwritten. Both doctors successfully came off call.",
+        "Two transactions reading one shared constraint, then each independently writing a different piece of it, breaking the constraint only together.",
+        "That's write skew, and the next topic is where you'll watch it actually survive snapshot isolation."
+      ]
+    }
+  ]
+}

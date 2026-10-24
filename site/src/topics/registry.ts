@@ -4368,4 +4368,24 @@ export const TOPICS: TopicMeta[] = [
     handoff:
       "Isolation is the one letter with the most room to be violated quietly. The next topic names exactly how, with the real anomalies ANSI's own definitions leave ambiguous.",
   },
+  {
+    id: 'de.isolation-anomalies-beyond-ansi',
+    domain: 'data-engineering',
+    slug: 'data-engineering/m2-storage-database-internals/ch05-database-internals-distributed/isolation-anomalies-beyond-ansi',
+    title: 'Isolation anomalies beyond ANSI',
+    syllabusTitle: 'Isolation anomalies beyond ANSI',
+    kind: 'full',
+    status: 'held',
+    milestone: { number: 2, title: 'Storage: Database Internals, Files & the Lakehouse' },
+    chapter: { number: 5, title: 'Database Internals and Distributed Storage', section: '5.2' },
+    minutes: 15,
+    verified: '2026-10-24',
+    introduces: ['isolation-anomalies'],
+    uses: ['acid-guarantees'],
+    declared: [],
+    bridge:
+      "Isolation is the one letter of ACID with the most room to be violated quietly. This topic names exactly how: every real anomaly ANSI's own ambiguous definitions leave out, each shown as a real two-transaction timeline.",
+    handoff:
+      "Snapshot isolation prevents most of these anomalies by construction — but not all of them. The next topic is exactly which it prevents, which one survives, and the vendor-naming traps around calling it 'serializable.'",
+  },
 ];

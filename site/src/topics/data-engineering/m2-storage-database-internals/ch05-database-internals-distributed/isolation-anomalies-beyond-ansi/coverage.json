@@ -1,0 +1,87 @@
+{
+  "topic": "de.isolation-anomalies-beyond-ansi",
+  "syllabus": [
+    {
+      "clause": "dirty write, dirty read, non-repeatable read, read skew, lost update, write skew, phantoms",
+      "at": [
+        { "step": "Reveal: the ANSI vocabulary" },
+        { "step": "Reveal: Lost Update, a real timeline" },
+        { "step": "Reveal: Read Skew and Write Skew" },
+        { "step": "Reveal: Dirty Write, blocked anyway" }
+      ]
+    },
+    {
+      "clause": "and the read-only transaction anomaly",
+      "at": [
+        { "step": "Predict #2" },
+        { "step": "Reveal: the read-only transaction anomaly" }
+      ]
+    },
+    {
+      "clause": "why the ANSI SQL-92 definitions are ambiguous (Berenson et al. 1995, Adya's dependency-graph formalisation)",
+      "at": [
+        { "step": "Predict: who reads the same rule the same way?" },
+        { "step": "Reveal: the ambiguity, exposed" },
+        { "step": "Reveal: Adya's formalization, the real fix" }
+      ]
+    },
+    {
+      "clause": "and what each anomaly looks like as a two-transaction timeline",
+      "at": [
+        { "step": "Reveal: Lost Update, a real timeline" },
+        { "step": "Reveal: Read Skew and Write Skew" },
+        { "step": "Reveal: Dirty Write, blocked anyway" }
+      ]
+    }
+  ],
+  "sources": [
+    {
+      "source": "A Critique of ANSI SQL Isolation Levels (Berenson et al., 1995)",
+      "items": [
+        { "item": "Dirty Write (P0)'s own precise definition", "at": [{ "step": "Reveal: Dirty Write, blocked anyway" }] },
+        { "item": "Dirty Read (P1)'s own precise definition", "at": [{ "step": "Reveal: the ANSI vocabulary" }] },
+        { "item": "Non-repeatable Read (P2)'s own precise definition", "at": [{ "step": "Reveal: the ANSI vocabulary" }] },
+        { "item": "Phantom (P3)'s own precise definition", "at": [{ "step": "Reveal: the ANSI vocabulary" }] },
+        { "item": "Lost Update (P4)'s own precise definition", "at": [{ "step": "Reveal: Lost Update, a real timeline" }] },
+        { "item": "Read Skew (A5A)'s own precise definition, and its relation to Non-repeatable Read as a degenerate case", "at": [{ "step": "Reveal: Read Skew and Write Skew" }] },
+        { "item": "Write Skew (A5B)'s own precise definition", "at": [{ "step": "Reveal: Read Skew and Write Skew" }] },
+        { "item": "the P1 (2.1) narrow vs. (2.2) broad reading, the paper's own demonstration of the ANSI definitions' ambiguity", "at": [{ "step": "Reveal: the ambiguity, exposed" }] }
+      ]
+    },
+    {
+      "source": "Elle: Inferring Isolation Anomalies from Experimental Observations (Kingsbury & Alvaro, 2020)",
+      "items": [
+        { "item": "Adya, Liskov and O'Neil's own dependency-graph formalism, restated directly", "at": [{ "step": "Reveal: Adya's formalization, the real fix" }] },
+        { "item": "the Direct Serialization Graph and G0 as a write-only-dependency cycle", "at": [{ "step": "Reveal: Adya's formalization, the real fix" }] }
+      ]
+    },
+    {
+      "source": "Automating the Detection of Snapshot Isolation Anomalies (Jorwekar et al., 2007)",
+      "items": [
+        { "item": "the read-only transaction anomaly's own precise definition", "at": [{ "step": "Reveal: the read-only transaction anomaly" }] }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "self-review",
+    "date": "2026-10-24",
+    "items": [
+      { "item": "Dirty Write (P0) is excluded by ANSI SQL-92 only at its strictest level, but every real locking implementation excludes it unconditionally via row locks.", "at": [{ "step": "Reveal: Dirty Write, blocked anyway" }] },
+      { "item": "Dirty Read (P1) is the anomaly ANSI's own definitions state ambiguously: a narrow reading and a broad reading of the same English sentence prohibit genuinely different sets of histories.", "at": [{ "step": "Reveal: the ambiguity, exposed" }] },
+      { "item": "Non-repeatable Read (P2) is a special case of Read Skew (A5A) where the two items read are the same single item.", "at": [{ "step": "Reveal: Read Skew and Write Skew" }] },
+      { "item": "Phantom (P3) is about a changing set of rows matching a predicate, not a changing value of a single row — a distinct phenomenon from the first three.", "at": [{ "step": "Reveal: the ANSI vocabulary" }] },
+      { "item": "Lost Update (P4) silently discards a committed change with no error from the database at all; the application has no way to know, from the database's own response, that this happened.", "at": [{ "step": "Reveal: Lost Update, a real timeline" }] },
+      { "item": "Write Skew (A5B) needs two transactions and a cross-row constraint; each transaction, in isolation, looks correct, and the violation only exists across the two commits together.", "at": [{ "step": "Reveal: Read Skew and Write Skew" }] },
+      { "item": "The read-only transaction anomaly is the one case where a transaction that writes nothing at all can still see an impossible state, which is why it survives mechanisms (like simple read/write conflict detection) that would otherwise seem to rule it out.", "at": [{ "step": "Reveal: the read-only transaction anomaly" }] },
+      { "item": "Adya's Direct Serialization Graph turns 'does this history violate isolation' into a checkable graph-cycle question, closing the exact ambiguity Berenson et al.'s own English-language phenomena left open.", "at": [{ "step": "Reveal: Adya's formalization, the real fix" }] },
+      { "item": "A two-transaction timeline is the standard way every one of these anomalies is actually shown: two labeled transactions, their reads and writes interleaved in a specific order, with commit points marked.", "at": [{ "step": "Reveal: Lost Update, a real timeline" }] },
+      { "item": "Naming an anomaly precisely (not just 'something went wrong with concurrency') is what makes it possible to say which isolation levels prevent it and which don't — the subject of the next two topics.", "at": [{ "step": "Recap" }] },
+      { "item": "Serializable, the strictest ANSI level, is defined to prohibit all of A1–A3 (and hence implicitly all of P0–P4), but Berenson et al. note the phenomenon-based approach still leaves the weaker levels ambiguous about exactly which histories they permit.", "at": [{ "deep": "Frontier" }] }
+    ]
+  },
+  "gapReview": {
+    "date": "2026-10-24",
+    "by": "self-review",
+    "open": []
+  }
+}
