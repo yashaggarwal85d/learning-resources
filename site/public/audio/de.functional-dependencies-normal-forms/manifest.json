@@ -1,0 +1,501 @@
+{
+ "topic": "de.functional-dependencies-normal-forms",
+ "voice": "breeze-mellow-v2",
+ "asr": "large-v3-turbo",
+ "clips": {
+  "01": {
+   "hash": "808020a596463661",
+   "takes": [
+    "5600174728c0e457101a",
+    "24aa4d53f7c210556305"
+   ],
+   "duration": 10.542,
+   "lines": [
+    {
+     "text": "Same six rows of data, stored two different ways.",
+     "start": 0.15,
+     "end": 4.1
+    },
+    {
+     "text": "One of them is a single missed update away from telling you two different things at once.",
+     "start": 4.52,
+     "end": 10.192
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 148,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "02": {
+   "hash": "72fdeaf86c8c0a6e",
+   "takes": [
+    "6cd85113d8325619cf19",
+    "b1b9f590ea0d303680e3"
+   ],
+   "duration": 8.432,
+   "lines": [
+    {
+     "text": "Splitting data apart to kill redundancy sounds like it has to cost you a join somewhere down the line.",
+     "start": 0.15,
+     "end": 6.753
+    },
+    {
+     "text": "Does it always?",
+     "start": 7.173,
+     "end": 8.082
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 157,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "02a": {
+   "hash": "ad4ab065cab720e4",
+   "takes": [
+    "0edb4b84f4632f4a96bd",
+    "e3024b3d7a5f354cec8b"
+   ],
+   "duration": 13.61,
+   "lines": [
+    {
+     "text": "It depends entirely on how the data actually gets queried afterward.",
+     "start": 0.15,
+     "end": 4.302
+    },
+    {
+     "text": "A handful of point lookups barely notice a join. A query that scans everything pays for it on every single row.",
+     "start": 4.722,
+     "end": 13.26
+    }
+   ],
+   "lufs": -16.0,
+   "true_peak": -2.9,
+   "wpm": 141,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "03": {
+   "hash": "df2f3f5d78136807",
+   "takes": [
+    "3a1b0132d46150dc5d43",
+    "880952fc813f9e98fb73"
+   ],
+   "duration": 11.204,
+   "lines": [
+    {
+     "text": "Here is the actual rule underneath all of this.",
+     "start": 0.15,
+     "end": 3.292
+    },
+    {
+     "text": "One column determines another when every value on one side always comes with exactly the same value on the other.",
+     "start": 3.712,
+     "end": 10.854
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -2.1,
+   "wpm": 155,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "04": {
+   "hash": "df2f32590b52607d",
+   "takes": [
+    "878878b5138243826d0d",
+    "59a8ee287a975bae2628"
+   ],
+   "duration": 10.799,
+   "lines": [
+    {
+     "text": "Start from one column, and let every rule that already applies keep firing.",
+     "start": 0.15,
+     "end": 5.217
+    },
+    {
+     "text": "Each firing switches on more columns, until nothing new switches on at all.",
+     "start": 5.637,
+     "end": 10.449
+    }
+   ],
+   "lufs": -16.2,
+   "true_peak": -3.1,
+   "wpm": 144,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "05": {
+   "hash": "e0fc0f1af143ecc8",
+   "takes": [
+    "3c60fe6cfaecb73777ce",
+    "ca51757eb00cacf96ba0"
+   ],
+   "duration": 10.801,
+   "lines": [
+    {
+     "text": "That full set it eventually reaches is the whole point.",
+     "start": 0.15,
+     "end": 3.838
+    },
+    {
+     "text": "Whichever starting column gets you there, with nothing smaller able to do the same, is your real key.",
+     "start": 4.258,
+     "end": 10.451
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 156,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "06": {
+   "hash": "705cd5835a84c7a0",
+   "takes": [
+    "e647718ba56dd7fc6050",
+    "74188b1886e3a6306b88"
+   ],
+   "duration": 8.091,
+   "lines": [
+    {
+     "text": "Now here is a column that clearly determines something else on its own.",
+     "start": 0.15,
+     "end": 4.444
+    },
+    {
+     "text": "Does that earn it the same status?",
+     "start": 4.864,
+     "end": 7.741
+    }
+   ],
+   "lufs": -16.3,
+   "true_peak": -2.2,
+   "wpm": 148,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "06a": {
+   "hash": "d4a102156838fd0b",
+   "takes": [
+    "a00237b192fd447cc5d7",
+    "e342caef3a696c8ddb8a"
+   ],
+   "duration": 13.669,
+   "lines": [
+    {
+     "text": "No, and the reason is mechanical, not a matter of opinion.",
+     "start": 0.15,
+     "end": 4.426
+    },
+    {
+     "text": "Its own reach stalls out early. It never gets anywhere near two of the other columns no matter how long you let it run.",
+     "start": 4.846,
+     "end": 13.319
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 154,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "07": {
+   "hash": "37ad12fa5fd7ebc0",
+   "takes": [
+    "23501fd109cb271d1cb7",
+    "8f99f3063dd2aca460fe"
+   ],
+   "duration": 11.534,
+   "lines": [
+    {
+     "text": "Trace it yourself and you will watch it stall in exactly the same place every time.",
+     "start": 0.15,
+     "end": 6.296
+    },
+    {
+     "text": "Determining one neighbor is not the same thing as determining the whole row.",
+     "start": 6.716,
+     "end": 11.184
+    }
+   ],
+   "lufs": -16.2,
+   "true_peak": -2.0,
+   "wpm": 151,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "08": {
+   "hash": "ddd76616173c6f11",
+   "takes": [
+    "0f7ed2d5a2d1d4c229db",
+    "187cbb6c1d10dabf8ba5"
+   ],
+   "duration": 19.16,
+   "lines": [
+    {
+     "text": "Climb the first three rungs of this ladder and each one is answering a different complaint.",
+     "start": 0.15,
+     "end": 5.518
+    },
+    {
+     "text": "Keep every value a single thing, then make sure nothing depends on only part of a key, then cut anything depending on a non-key column instead of the key itself.",
+     "start": 5.938,
+     "end": 18.81
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -1.9,
+   "wpm": 147,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "09": {
+   "hash": "c0414d2121bff8a8",
+   "takes": [
+    "ae354d4350de7331fb4f",
+    "f4ba2d13a31e4ac786a7"
+   ],
+   "duration": 13.623,
+   "lines": [
+    {
+     "text": "There is a gap the third rung quietly leaves open, and the next rung closes it.",
+     "start": 0.15,
+     "end": 6.229
+    },
+    {
+     "text": "Every single determining column now has to be a full key in its own right, not just determine something.",
+     "start": 6.649,
+     "end": 13.273
+    }
+   ],
+   "lufs": -16.3,
+   "true_peak": -2.7,
+   "wpm": 154,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "10": {
+   "hash": "4bec16d8d554d15f",
+   "takes": [
+    "bc8c9b207da02ee985d7",
+    "d6b23ae749b4e43a58de"
+   ],
+   "duration": 13.495,
+   "lines": [
+    {
+     "text": "Up to here, every rule has been about one value picking out exactly one other value.",
+     "start": 0.15,
+     "end": 6.625
+    },
+    {
+     "text": "This next kind of rule is different: one value can pick out a whole independent set of others.",
+     "start": 7.045,
+     "end": 13.145
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 151,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "11": {
+   "hash": "4736f396e810bb5d",
+   "takes": [
+    "d5562ccaab4c0ac151c8",
+    "03b4bde0e26477c30e12"
+   ],
+   "duration": 15.643,
+   "lines": [
+    {
+     "text": "Split a table along one of these real rules, and something important is guaranteed.",
+     "start": 0.15,
+     "end": 5.536
+    },
+    {
+     "text": "Join the pieces back, and you get every original row back, exactly, with nothing lost and nothing invented.",
+     "start": 5.956,
+     "end": 15.293
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 123,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "12": {
+   "hash": "e8a830a0b0f99438",
+   "takes": [
+    "d780a3c33f6f1bae23a6",
+    "74dbdefd2817631373c4"
+   ],
+   "duration": 16.196,
+   "lines": [
+    {
+     "text": "That guarantee is not the only one worth keeping, and it is not automatic that you keep both.",
+     "start": 0.15,
+     "end": 6.706
+    },
+    {
+     "text": "You can satisfy it completely and still lose the ability to check an original rule without stitching things back together first.",
+     "start": 7.126,
+     "end": 15.846
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 144,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "13": {
+   "hash": "84a2ac1728b0b39d",
+   "takes": [
+    "4fed8ff7cbaf24b4d703",
+    "3568a1ee9b841faafb17"
+   ],
+   "duration": 16.083,
+   "lines": [
+    {
+     "text": "Watch what actually happens when the same change gets made two different ways.",
+     "start": 0.15,
+     "end": 4.654
+    },
+    {
+     "text": "One version needs a single touch. The other needs several, and skipping just one of them leaves two conflicting answers sitting on file at the same time.",
+     "start": 5.074,
+     "end": 15.733
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.8,
+   "wpm": 149,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "14": {
+   "hash": "6efa10bc089b0a8f",
+   "takes": [
+    "8508b7dd9de9963de54b",
+    "629e14252f3a44516756"
+   ],
+   "duration": 16.763,
+   "lines": [
+    {
+     "text": "None of that makes storing it the second way a mistake by itself.",
+     "start": 0.15,
+     "end": 4.452
+    },
+    {
+     "text": "A workload built around scanning everything pays a real cost on every row for a join the other version never needed, so trading some risk for speed can be exactly the right call.",
+     "start": 4.872,
+     "end": 16.413
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -1.9,
+   "wpm": 165,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "15": {
+   "hash": "656f7375b65724b9",
+   "takes": [
+    "2e7c8a5b523768d1e33b",
+    "077c720e5f1e43df0edf"
+   ],
+   "duration": 14.461,
+   "lines": [
+    {
+     "text": "One determining rule, one full reach, one real key. Four rungs, each closing a gap the last one left open.",
+     "start": 0.15,
+     "end": 8.702
+    },
+    {
+     "text": "One guarantee you never skip, and one you sometimes trade away on purpose for speed.",
+     "start": 9.122,
+     "end": 14.111
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -2.0,
+   "wpm": 145,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "16": {
+   "hash": "7a0c94ab3c6ec882",
+   "takes": [
+    "d969522d91a889a34370",
+    "fc5818c28596b005e82b"
+   ],
+   "duration": 11.035,
+   "lines": [
+    {
+     "text": "Here is a new rule: one column determines every other column directly, with nothing else determining anything.",
+     "start": 0.15,
+     "end": 8.043
+    },
+    {
+     "text": "So what has to be the key?",
+     "start": 8.463,
+     "end": 10.685
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -2.7,
+   "wpm": 130,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "16a": {
+   "hash": "722ef45d68d33551",
+   "takes": [
+    "c70350d8642cd018f2ca",
+    "faef9fa44db0706dec04"
+   ],
+   "duration": 9.893,
+   "lines": [
+    {
+     "text": "That one column, on its own.",
+     "start": 0.15,
+     "end": 2.389
+    },
+    {
+     "text": "Its reach already covers everything in a single step, and nothing smaller could possibly do the same job.",
+     "start": 2.809,
+     "end": 9.543
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -1.9,
+   "wpm": 146,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  }
+ }
+}
