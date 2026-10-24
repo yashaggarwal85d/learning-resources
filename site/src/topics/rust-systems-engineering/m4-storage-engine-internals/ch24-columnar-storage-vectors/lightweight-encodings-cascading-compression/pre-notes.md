@@ -1,0 +1,4 @@
+- **Run-length encoding (RLE)**: storing a long run of the identical value as one (value, length) pair instead of repeating the value itself.
+- **Lightweight encoding**: a compression scheme (run-length, delta, dictionary, frame-of-reference, bit-packing) chosen by a column's own real data distribution, not applied by default regardless of the data.
+- **Compression ratio**: raw bytes divided by encoded bytes; above one means the encoding genuinely shrank the data, below one means it genuinely grew it.
+- **Decode cost**: the real work a decoder has to do to turn an encoded representation back into its original values. *Where you meet it:* it rides on the data's own shape, exactly like the compression ratio does.

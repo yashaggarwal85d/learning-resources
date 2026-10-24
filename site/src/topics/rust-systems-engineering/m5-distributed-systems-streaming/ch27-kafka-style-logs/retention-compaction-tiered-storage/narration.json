@@ -1,0 +1,79 @@
+{
+  "steps": [
+    {
+      "lines": [
+        "One key's own only entry is already old; another key has several recent updates.",
+        { "beat": 0.3 },
+        "Time-based retention runs over the whole log. Does it genuinely delete the old entry, even though it is that key's own latest?"
+      ],
+      "answer": [
+        "Yes, genuinely.",
+        "Retention never looks at a key at all."
+      ]
+    },
+    {
+      "lines": [
+        "Run it for real: retention genuinely deleted the old entry, even though it was that key's own only, latest value."
+      ]
+    },
+    {
+      "lines": [
+        "Now run compaction over the identical log instead.",
+        { "beat": 0.3 },
+        "Does the old entry survive this time, just because it is still that key's own latest value?"
+      ],
+      "answer": [
+        "Yes, genuinely.",
+        "Compaction never checks age at all."
+      ]
+    },
+    {
+      "lines": [
+        "Run it for real: compaction genuinely kept the old entry, because it is still that key's own latest value, with no age check at all."
+      ],
+      "takeaway": "Compaction has no age check at all; it only ever asks whether a value is still a key's own latest."
+    },
+    {
+      "lines": [
+        "A real tombstone, a message with the same key and no value, is appended after all the others.",
+        { "beat": 0.3 },
+        "Compaction runs past it. Does the key genuinely disappear entirely?"
+      ],
+      "answer": [
+        "Yes, genuinely.",
+        "The tombstone removes the key itself."
+      ]
+    },
+    {
+      "lines": [
+        "Run it for real: the tombstone genuinely removed the key entirely, once compaction ran past it, with every other key genuinely untouched."
+      ],
+      "takeaway": "A tombstone removes the key itself from the log, not merely its most recent value."
+    },
+    {
+      "lines": [
+        "Two real, independent sources on this exact mechanism agree, in their own words.",
+        "Compaction keeps at least the last state for each key, and a null-payload message is treated as a real delete."
+      ]
+    },
+    {
+      "lines": [
+        "Run it for real, all together: time-based retention, keep-the-latest compaction, and the tombstone's own removal, all measured from the identical log."
+      ],
+      "takeaway": "Retention, compaction, and a tombstone are three genuinely different answers to how long data lasts."
+    },
+    {
+      "lines": [
+        "This whole chapter has been building toward one closed loop: how a log orders writes, how a consumer survives redelivery, and now, how long any of that even sticks around to be read.",
+        "A real tombstone's own removal is the last piece of that loop, closing the question this chapter opened."
+      ]
+    },
+    {
+      "lines": [
+        "So here's the real question underneath both of these mechanisms: how long should any one piece of data actually matter, and who gets to decide that, the clock or the key?",
+        "Retention never even looks at a key; it just watches a clock, which is exactly why it can erase something that still mattered, simply because enough time went by.",
+        "Compaction flips that completely: it watches keys, not clocks, so a value sticks around for as long as nothing newer has replaced it, and a tombstone is just the producer's own way of saying that this key's story is finally over."
+      ]
+    }
+  ]
+}

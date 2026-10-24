@@ -1,0 +1,66 @@
+{
+  "topic": "rust.partitioned-logs-per-key",
+  "syllabus": [
+    {
+      "clause": "a topic is divided into partitions, each an ordered append-only log, so ordering is scoped to a partition, not the topic. Key-based partitioning (hash(key) % N) preserves per-key order while spreading load, and changing N breaks it. Segment files and sparse offset indexes.",
+      "at": [
+        { "step": "Measured: every one of many writes to the same key genuinely landed in the identical partition, in the identical order it was written" },
+        { "step": "Measured: changing the partition count genuinely rerouted at least one existing key to a different partition" },
+        { "step": "Measured: the rerouted key's own history genuinely split across the old and the new partition; the order guarantee it had is genuinely gone" }
+      ]
+    }
+  ],
+  "sources": [
+    {
+      "source": "confluent-introduction",
+      "items": [
+        {
+          "item": "topics are broken up into partitions, meaning a single topic log is broken into multiple logs located on different Kafka brokers",
+          "at": [{ "step": "A topic's writes, for many different keys, go through one real partitioning function, hash of the key modulo the partition count. Does every write to the same key genuinely always land in the same partition?" }]
+        },
+        {
+          "item": "events with the same event key are written to the same partition, and any consumer of a given topic partition will always read that partition's events in exactly the same order as they were written",
+          "at": [{ "step": "Confluent's own documentation states this exact mechanism directly: events with the same key are written to the same partition, and a consumer of a given partition always reads it in exactly the order it was written. Does this topic's own code measure exactly that rule?" }]
+        },
+        {
+          "item": "events with the same key are written to the same partition; both producers can write to the same partition if appropriate",
+          "at": [{ "step": "Measured: every one of many writes to the same key genuinely landed in the identical partition, in the identical order it was written" }]
+        }
+      ]
+    },
+    {
+      "source": "kafka-design-md",
+      "items": [
+        {
+          "item": "the message log maintained by the broker is itself just a directory of files, each populated by a sequence of message sets that have been written to disk in the same format used by the producer and consumer",
+          "at": [{ "step": "The Kafka project's own design document describes the message log itself as just a directory of real files on disk, recopied in whole segments whenever the log cleaner compacts it. Does this topic's own partition-per-vector model mirror that same real, append-only shape?" }]
+        },
+        {
+          "item": "log compaction is handled by the log cleaner, a pool of background threads that recopy log segment files, removing records whose key appears in the head of the log",
+          "at": [{ "step": "The Kafka project's own design document describes the message log itself as just a directory of real files on disk, recopied in whole segments whenever the log cleaner compacts it. Does this topic's own partition-per-vector model mirror that same real, append-only shape?" }]
+        }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "self-review",
+    "date": "2026-10-24",
+    "items": [
+      { "item": "The partitioning function used here (FNV-1a over the key's own bytes, then modulo the partition count) is a plain, deterministic string hash rather than Rust's own std DefaultHasher, specifically because std's own hasher output is explicitly not guaranteed stable across Rust versions; a toy meant to measure a real, repeatable routing rule needs a hash whose output never silently changes under it.", "at": [{ "step": "A topic's writes, for many different keys, go through one real partitioning function, hash of the key modulo the partition count. Does every write to the same key genuinely always land in the same partition?" }] },
+      { "item": "The fixed-partition-count scenario writes twenty interleaved rounds across five distinct keys rather than twenty consecutive writes to one key, so the measured per-key order guarantee is checked against real interleaving with other keys' own writes, not an artificially simplified single-key stream.", "at": [{ "step": "Measured: every one of many writes to the same key genuinely landed in the identical partition, in the identical order it was written" }] },
+      { "item": "The resize scenario keeps the already-written entries in their own original partition rather than replaying the whole log under the new partition count, since this mirrors how a real partitioned log actually behaves on a resize: existing segments stay exactly where they already are, and only new writes are routed by the new count.", "at": [{ "step": "That rerouted key keeps writing after the resize. Does its own history now genuinely live in one partition, or does it genuinely split?" }] },
+      { "item": "The measured claim that a rerouted key's history splits is checked by asserting the exact entry count in both the old and the new partition after the resize, not merely that the two partition indices differ; this rules out a routing function that happens to compute a different index but still somehow leaves the key's entries untouched.", "at": [{ "step": "Measured: the rerouted key's own history genuinely split across the old and the new partition; the order guarantee it had is genuinely gone" }] },
+      { "item": "This topic needs no earlier chapter's own introduced concept directly, since it changes subject from a single replicated log's own consensus (Chapter 26) to a partitioned, product-facing log's own ordering and resize behavior, per the chapter plan's own A.7; `uses` is empty for exactly this reason.", "at": [{ "step": "A topic's writes, for many different keys, go through one real partitioning function, hash of the key modulo the partition count. Does every write to the same key genuinely always land in the same partition?" }] },
+      { "item": "The syllabus's own further material (the lab's own at-least-once crash-and-duplicate exercise, which needs an idempotent consumer this topic does not yet build) is named in prose in the post-notes rather than separately measured here, since it is this chapter's own next topic's subject, not this one's.", "at": [{ "step": "Recap: one real partitioning function, checked against a real resize" }] },
+      { "item": "All of this topic's own measured claims run entirely on plain in-memory Rust vectors and a plain hash function, with no real network I/O, root access, or real multiple machines needed; 'partitions', 'brokers', and 'a topic resize' are all real, deterministic Rust values and function calls, continuing this domain's own established pattern.", "at": [{ "step": "Recap: one real partitioning function, checked against a real resize" }] },
+      { "item": "Confluent's own documentation and the Apache Kafka project's own GitHub-hosted design document are two genuinely distinct primary sources (a product-facing introduction to partitioning and key-based routing, and the project's own lower-level description of the log's real on-disk file structure and compaction), giving this topic two independent sources rather than multiple quotes drawn from a single page.", "at": [{ "step": "The Kafka project's own design document describes the message log itself as just a directory of real files on disk, recopied in whole segments whenever the log cleaner compacts it. Does this topic's own partition-per-vector model mirror that same real, append-only shape?" }] },
+      { "item": "The five keys and twenty writes per key used throughout this topic's own scenarios are this specific example's own choice; the measured claims illustrate the real shape of key-based routing and the resize hazard for any key set and any partition-count change, not a claim bound to exactly these numbers.", "at": [{ "step": "Now the operator grows the topic's own partition count. Does every existing key's own routing genuinely stay put?" }] },
+      { "item": "The partition count change used here (four partitions growing to six) is a real, concrete case chosen because it is guaranteed to reroute at least one of the five sample keys under FNV-1a, which the code itself locates and asserts on, rather than assuming a reroute happens without checking for one.", "at": [{ "step": "Measured: changing the partition count genuinely rerouted at least one existing key to a different partition" }] }
+    ]
+  },
+  "gapReview": {
+    "date": "2026-10-24",
+    "by": "self-review",
+    "open": []
+  }
+}

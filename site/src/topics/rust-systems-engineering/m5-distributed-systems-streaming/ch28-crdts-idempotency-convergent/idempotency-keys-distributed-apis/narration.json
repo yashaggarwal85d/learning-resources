@@ -1,0 +1,84 @@
+{
+  "steps": [
+    {
+      "lines": [
+        "Two different resources each get a request carrying the identical idempotency key string.",
+        { "beat": 0.3 },
+        "Does a real key's own scope keep them from colliding?"
+      ],
+      "answer": [
+        "Yes, genuinely.",
+        "Scope is genuinely part of the key."
+      ]
+    },
+    {
+      "lines": [
+        "Run it for real: both resources genuinely ran their own real side effect, and each one's own stored response is genuinely distinct."
+      ]
+    },
+    {
+      "lines": [
+        "Now a duplicate request arrives, carrying the identical key, well within its own real TTL.",
+        { "beat": 0.3 },
+        "Does it genuinely replay the stored response, or does it run the side effect again?"
+      ],
+      "answer": [
+        "It replays.",
+        "The side effect never runs again."
+      ]
+    },
+    {
+      "lines": [
+        "Run it for real: the duplicate genuinely replayed the exact stored response, and the real side effect genuinely never ran a second time."
+      ],
+      "takeaway": "An idempotency key buys a client exactly one thing: a safe retry that never runs the real side effect twice."
+    },
+    {
+      "lines": [
+        "Now a second request, carrying the identical key, arrives while the first one is still genuinely running.",
+        { "beat": 0.3 },
+        "Is that genuinely caught, or does it race the first one into running the side effect twice?"
+      ],
+      "answer": [
+        "It's genuinely caught.",
+        "Only one request ever wins."
+      ]
+    },
+    {
+      "lines": [
+        "Run it for real: the genuine race was genuinely caught, and the real side effect ran exactly once, not twice."
+      ],
+      "takeaway": "Two requests racing for the identical key never both get to run the side effect; one of them always loses."
+    },
+    {
+      "lines": [
+        "Once the key's own real TTL genuinely expires,",
+        { "beat": 0.3 },
+        "is the identical key genuinely treated as brand new?"
+      ],
+      "answer": [
+        "Yes, genuinely.",
+        "An expired key is genuinely free again."
+      ]
+    },
+    {
+      "lines": [
+        "Run it for real: the genuinely expired key was genuinely treated as new, and the real side effect genuinely ran again."
+      ],
+      "takeaway": "A TTL exists so a key is never held forever; it genuinely frees the key, not just the stored response."
+    },
+    {
+      "lines": [
+        "Two real, independent sources on this exact mechanism agree, in their own words.",
+        "A finished retry replays the saved response; a genuinely concurrent one gets a real conflict instead."
+      ]
+    },
+    {
+      "lines": [
+        "So here's what an idempotency key is actually buying a client that has no way to know whether its own last request landed: not certainty about the past, but a guarantee about what happens next.",
+        "The server can't tell the difference between a lost response and a lost request either, which is exactly why a stored answer, not a fresh guess, is the only safe thing to hand back on a retry.",
+        "And the hardest part was never the duplicate that arrives late; it was the one that arrives while the first copy is still mid-flight, which is why catching that overlap matters as much as remembering the answer afterward."
+      ]
+    }
+  ]
+}

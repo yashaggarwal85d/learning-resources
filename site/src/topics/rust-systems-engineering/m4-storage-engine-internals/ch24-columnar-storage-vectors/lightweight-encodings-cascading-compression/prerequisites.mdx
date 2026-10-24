@@ -1,0 +1,22 @@
+import Resource from '../../../../../components/Resource.astro';
+
+<section class="prereq" data-section="chapter-so-far">
+
+### <span class="n">01</span> Where the last topic left off
+
+<ul class="resources">
+  <Resource kind="reel" host={props.host} domain="rust-systems-engineering" title="Columnar layout and the Arrow format">a column-major layout already cuts the bytes a narrow scan has to touch; it says nothing yet about how much smaller those bytes themselves could genuinely get, or at what cost to read them back out.</Resource>
+</ul>
+
+</section>
+
+<section class="prereq" data-section="encoding-primary">
+
+### <span class="n">02</span> The real docs: Parquet's own encodings and compression
+
+<ul class="resources">
+  <Resource kind="reading" title="Encodings" href="https://parquet.apache.org/docs/file-format/data-pages/encodings/" by="The Apache Parquet Project">run-length, bit-packing and delta encoding, in the real format's own words.</Resource>
+  <Resource kind="reading" title="Compression" href="https://parquet.apache.org/docs/file-format/data-pages/compression/" by="The Apache Parquet Project">several codecs, covering different areas of the compression ratio / processing cost spectrum.</Resource>
+</ul>
+
+</section>

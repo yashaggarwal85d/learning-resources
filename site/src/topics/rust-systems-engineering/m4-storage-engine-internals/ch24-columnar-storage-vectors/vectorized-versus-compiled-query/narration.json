@@ -1,0 +1,85 @@
+{
+  "steps": [
+    {
+      "lines": [
+        "Run the identical filter-then-sum operation two different ways over the identical column: once evaluating it one row at a time, once processing a whole batch at a time instead.",
+        { "beat": 0.3 },
+        "Does the batch-at-a-time version genuinely cut the number of dispatches the row-at-a-time version has to pay?"
+      ],
+      "answer": [
+        "Yes, genuinely.",
+        "Far fewer dispatches, in the batched version."
+      ]
+    },
+    {
+      "lines": [
+        "Run it for real: far fewer dispatches showed up in the batch-at-a-time version, on the identical operation and data.",
+        "One dispatch per batch, instead of one dispatch per row, is exactly where that cut comes from."
+      ]
+    },
+    {
+      "lines": [
+        "Both paths apply the identical filter and the identical sum to the identical column.",
+        { "beat": 0.3 },
+        "Does the batch-at-a-time version still produce the exact identical result as the row-at-a-time version?"
+      ],
+      "answer": [
+        "Yes, genuinely.",
+        "The exact identical result."
+      ]
+    },
+    {
+      "lines": [
+        "Run it for real: the exact identical result came back, from both the row-at-a-time path and the batch-at-a-time path."
+      ],
+      "takeaway": "Cutting dispatch overhead by batching changes nothing about the real answer, only how expensively the engine gets there."
+    },
+    {
+      "lines": [
+        "Does the batch-at-a-time version's own real dispatch count match exactly what the batch size and the column's own length predict?",
+        { "beat": 0.3 },
+        "Or does it merely come out close?"
+      ],
+      "answer": [
+        "Yes, genuinely.",
+        "An exact match."
+      ]
+    },
+    {
+      "lines": [
+        "Run it for real: an exact match showed up, between the real, measured dispatch count and the real batch arithmetic."
+      ],
+      "takeaway": "The dispatch cut a batch-at-a-time engine buys isn't a rough estimate; it follows exactly from the chosen batch size."
+    },
+    {
+      "lines": [
+        "Real vectorized, Arrow-based query engines state this exact batch-at-a-time approach directly, in their own words.",
+        { "beat": 0.3 },
+        "Does one of those real engines own documentation name itself a vectorized execution engine directly?"
+      ],
+      "answer": [
+        "Yes, genuinely.",
+        "It names itself vectorized directly."
+      ]
+    },
+    {
+      "lines": [
+        "That real engine's own documentation states it in exactly those words: a blazingly fast, vectorized, multithreaded, streaming execution engine."
+      ],
+      "takeaway": "A real production query engine names vectorized, batch-at-a-time execution as central to its own speed, not incidental."
+    },
+    {
+      "lines": [
+        "A second, different real query engine's own documentation names the identical batch-at-a-time idea in its own words.",
+        "It states directly that it can execute a query in real batches, instead of processing all of the data at once."
+      ]
+    },
+    {
+      "lines": [
+        "So here's the shape of this whole topic: processing a batch at a time instead of one row at a time genuinely cuts the real per-row dispatch overhead by exactly the batch size chosen, not by a rough estimate.",
+        "That cut changes nothing at all about the real answer a query produces, only how expensively the engine actually gets there.",
+        "Two real, independent vectorized query engines both state this identical batch-at-a-time approach directly, in their own words, as central to their own real speed."
+      ]
+    }
+  ]
+}

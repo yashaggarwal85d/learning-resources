@@ -1,0 +1,261 @@
+{
+ "topic": "de.er-modeling-relationship-cardinality",
+ "voice": "breeze-mellow-v2",
+ "asr": "large-v3-turbo",
+ "clips": {
+  "01": {
+   "hash": "3eda7d13eb90897a",
+   "takes": [
+    "94bf1ee207742f5c83f7",
+    "b7d62fb8db469303f2df"
+   ],
+   "duration": 9.552,
+   "lines": [
+    {
+     "text": "Every relationship line on one of these diagrams is answering exactly one question.",
+     "start": 0.15,
+     "end": 5.289
+    },
+    {
+     "text": "How many of this thing, for how many of that one.",
+     "start": 5.709,
+     "end": 9.202
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -3.8,
+   "wpm": 151,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "02": {
+   "hash": "c801699bdc42d17e",
+   "takes": [
+    "6f1e494e374b57f04b01",
+    "c32a5a93ac03fde0ce36"
+   ],
+   "duration": 13.483,
+   "lines": [
+    {
+     "text": "Three shapes do all the work here: a ring, a dash, and a crow's foot.",
+     "start": 0.15,
+     "end": 5.866
+    },
+    {
+     "text": "Put two of them together on one end of a line, and you get a minimum and a maximum at once.",
+     "start": 6.286,
+     "end": 13.133
+    }
+   ],
+   "lufs": -16.0,
+   "true_peak": -2.5,
+   "wpm": 160,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "03": {
+   "hash": "07bc0ef9da31d337",
+   "takes": [
+    "0025ad37cf7774915828"
+   ],
+   "duration": 8.718,
+   "lines": [
+    {
+     "text": "A dash on both ends of this line. One customer, one card, and neither side gets to skip the other.",
+     "start": 0.15,
+     "end": 8.368
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -2.9,
+   "wpm": 138,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "04": {
+   "hash": "0d690fa72cb77272",
+   "takes": [
+    "2b16024f6c162456bc1c",
+    "71350a265a57f7516066"
+   ],
+   "duration": 9.781,
+   "lines": [
+    {
+     "text": "A customer can have many orders, but every single order points back to just one customer.",
+     "start": 0.15,
+     "end": 6.247
+    },
+    {
+     "text": "So which table actually stores that connection?",
+     "start": 6.667,
+     "end": 9.431
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -2.9,
+   "wpm": 141,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "04a": {
+   "hash": "b77dae7d9ec62422",
+   "takes": [
+    "96a4091e59356ab30000",
+    "e4fb96269a53a55e137f"
+   ],
+   "duration": 15.482,
+   "lines": [
+    {
+     "text": "The order table. Each order only ever needs to name one customer, so that fits in a single column.",
+     "start": 0.15,
+     "end": 7.925
+    },
+    {
+     "text": "The customer side would need a column holding a whole list of orders, and an ordinary column just can't do that.",
+     "start": 8.345,
+     "end": 15.132
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -2.0,
+   "wpm": 155,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "05": {
+   "hash": "3e9bdfdbf57ebebe",
+   "takes": [
+    "c82f52921d687bb1e8fd",
+    "18f736fe8f21d62b78d1"
+   ],
+   "duration": 12.073,
+   "lines": [
+    {
+     "text": "Watch where the key actually sits once you draw it out.",
+     "start": 0.15,
+     "end": 3.756
+    },
+    {
+     "text": "One value per order, pointing at exactly one customer. That is the whole reason it lands here and not there.",
+     "start": 4.176,
+     "end": 11.723
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -2.5,
+   "wpm": 154,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "06": {
+   "hash": "ccf5818e1e668f3f",
+   "takes": [
+    "b8617777110242cf2038",
+    "89ab79d5367815f3aebd"
+   ],
+   "duration": 10.175,
+   "lines": [
+    {
+     "text": "Now both ends of the line get a crow's foot.",
+     "start": 0.15,
+     "end": 3.958
+    },
+    {
+     "text": "An order lists many products, and the same product shows up on many different orders.",
+     "start": 4.378,
+     "end": 9.825
+    }
+   ],
+   "lufs": -15.8,
+   "true_peak": -2.5,
+   "wpm": 147,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "07": {
+   "hash": "ddb05e4f94cb3a51",
+   "takes": [
+    "8abb3d216da72d89cae8",
+    "66777081ce18f3b4d9b7"
+   ],
+   "duration": 12.237,
+   "lines": [
+    {
+     "text": "Neither table can hold that on its own, so a third one shows up.",
+     "start": 0.15,
+     "end": 4.723
+    },
+    {
+     "text": "It carries a key pointing to each side, and together those two keys usually become its own primary key.",
+     "start": 5.143,
+     "end": 11.887
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 162,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "08": {
+   "hash": "c41770045ab60892",
+   "takes": [
+    "0632613acb32f58e539a",
+    "f85f436134e4bcc287d1"
+   ],
+   "duration": 16.317,
+   "lines": [
+    {
+     "text": "Swap just one symbol, from a dash to a ring, and that one end goes from required to optional.",
+     "start": 0.15,
+     "end": 8.584
+    },
+    {
+     "text": "Nothing else about the shape changes. Read it straight off the diagram, never off the relationship's name.",
+     "start": 9.004,
+     "end": 15.967
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 132,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "09": {
+   "hash": "b126b83e7c94c0b7",
+   "takes": [
+    "bf817d5691f6baea8783",
+    "893a7450f548606dd881"
+   ],
+   "duration": 14.061,
+   "lines": [
+    {
+     "text": "Three paired symbols, the key on the many side, and a third table whenever both sides say many.",
+     "start": 0.15,
+     "end": 6.63
+    },
+    {
+     "text": "Carry that forward, because the next refresher asks a sharper question about these same tables.",
+     "start": 7.05,
+     "end": 13.711
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -2.4,
+   "wpm": 141,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  }
+ }
+}

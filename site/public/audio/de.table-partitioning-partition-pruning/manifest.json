@@ -1,0 +1,609 @@
+{
+ "topic": "de.table-partitioning-partition-pruning",
+ "voice": "breeze-mellow-v2",
+ "asr": "large-v3-turbo",
+ "clips": {
+  "01": {
+   "hash": "fab37d9053fa6606",
+   "takes": [
+    "a704cca600eb305499ad",
+    "421ca0ed50854c5adb37",
+    "66906a635ad59df3afc5"
+   ],
+   "duration": 17.596,
+   "lines": [
+    {
+     "text": "Run the exact same counting query, against the exact same table, with the exact same filter, twice.",
+     "start": 0.15,
+     "end": 8.039
+    },
+    {
+     "text": "Without pruning turned on, every single partition in that table gets scanned.",
+     "start": 8.459,
+     "end": 13.529
+    },
+    {
+     "text": "With pruning turned on, exactly one of them does.",
+     "start": 13.949,
+     "end": 17.246
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -1.9,
+   "wpm": 130,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "02": {
+   "hash": "07d2985abcd06b7f",
+   "takes": [
+    "fb303420d4024ea174f8",
+    "ad1bb33613138852e156"
+   ],
+   "duration": 16.364,
+   "lines": [
+    {
+     "text": "That filter's value is written directly into the query, as a literal, known the moment the query is written.",
+     "start": 0.15,
+     "end": 8.596
+    },
+    {
+     "text": "So why would the planner ever still need to scan a partition that literal plainly cannot match?",
+     "start": 9.416,
+     "end": 16.014
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -2.0,
+   "wpm": 132,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "02a": {
+   "hash": "2f800f9a618d0ffd",
+   "takes": [
+    "adca7890ae0eabbc47e7",
+    "672f93f9ce71799e210a"
+   ],
+   "duration": 12.592,
+   "lines": [
+    {
+     "text": "It would not, once pruning is actually enabled.",
+     "start": 0.15,
+     "end": 3.372
+    },
+    {
+     "text": "The planner can prove ahead of time which partitions a known literal cannot possibly satisfy, and leave them out of the plan entirely.",
+     "start": 3.792,
+     "end": 12.242
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -3.4,
+   "wpm": 148,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "03": {
+   "hash": "deb543274eeaba7a",
+   "takes": [
+    "41397323422a7edc8337",
+    "ab6d475a6f64b399f3bd",
+    "e825da25f83affcede9c"
+   ],
+   "duration": 27.971,
+   "lines": [
+    {
+     "text": "A range partition's own boundary is an ordered interval. A list partition's boundary is a fixed set of discrete values. A hash partition's boundary is a bucket number.",
+     "start": 0.15,
+     "end": 11.794
+    },
+    {
+     "text": "Each of those three shapes lines up with a different kind of predicate a query might actually filter on.",
+     "start": 12.214,
+     "end": 20.081
+    },
+    {
+     "text": "Choosing between them means matching the partition's own boundary shape to the predicates queries actually use.",
+     "start": 20.501,
+     "end": 27.621
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 135,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "04": {
+   "hash": "bb7a4b19c9eaad47",
+   "takes": [
+    "e6a06663a95d458b649c",
+    "b8e5e287416888cb6eb1",
+    "3bc786fdaa7efca0b8a4"
+   ],
+   "duration": 27.012,
+   "lines": [
+    {
+     "text": "With a known literal value and pruning switched on, the planner proves that almost every partition cannot possibly match, before any scan ever begins.",
+     "start": 0.15,
+     "end": 11.957
+    },
+    {
+     "text": "The buffers this query touches drop by a factor of sixty. The time it takes drops by roughly a factor of twenty five.",
+     "start": 12.377,
+     "end": 20.797
+    },
+    {
+     "text": "All of that is decided purely at planning time, before a single row gets read.",
+     "start": 21.217,
+     "end": 26.662
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 138,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "05": {
+   "hash": "aa5f80cc3254f77b",
+   "takes": [
+    "fc39b6283bf123205086",
+    "e147f68573fad532c544"
+   ],
+   "duration": 18.702,
+   "lines": [
+    {
+     "text": "This time, the filter's value is a parameter instead of a literal. Nobody, including the planner, knows what it actually is until the query runs.",
+     "start": 0.15,
+     "end": 12.107
+    },
+    {
+     "text": "So does proving an exclusion always require knowing the answer before planning even starts?",
+     "start": 12.927,
+     "end": 18.352
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 125,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "05a": {
+   "hash": "0c1632f93553b0e7",
+   "takes": [
+    "700acf16547f4cb23d53",
+    "09d0409cb99041c4fea4"
+   ],
+   "duration": 15.379,
+   "lines": [
+    {
+     "text": "Yes \u2014 pruning can also happen once execution has already begun.",
+     "start": 0.15,
+     "end": 5.126
+    },
+    {
+     "text": "The planner cannot know the value ahead of time, but the engine can still check it the moment execution starts, and prune on the spot.",
+     "start": 5.546,
+     "end": 15.029
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -2.1,
+   "wpm": 137,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "06": {
+   "hash": "b07fced6fa7d6bd0",
+   "takes": [
+    "dcc6207a0616abcb92c1",
+    "651d9bb96963ff0863b1",
+    "1001e52fefe58cbc2282"
+   ],
+   "duration": 29.616,
+   "lines": [
+    {
+     "text": "Force a genuinely unresolved parameter all the way through a prepared statement, so the plan itself cannot substitute in a literal ahead of time.",
+     "start": 0.15,
+     "end": 10.945
+    },
+    {
+     "text": "The resulting explain output reports a count of removed subplans, directly, for partitions that got dropped only once execution actually began.",
+     "start": 11.365,
+     "end": 24.234
+    },
+    {
+     "text": "That is pruning performed at execution time, not at planning time.",
+     "start": 24.654,
+     "end": 29.266
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.8,
+   "wpm": 113,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "07": {
+   "hash": "99b89340c5d1641e",
+   "takes": [
+    "7b5fafa156283d07ae8f",
+    "a0aac3c88e32a9f2ac6a",
+    "7ab4a0218b799a30c882"
+   ],
+   "duration": 30.645,
+   "lines": [
+    {
+     "text": "Plan-time pruning simply leaves a partition out of the plan altogether. Look at the plan, and it is just gone, as if it never existed.",
+     "start": 0.15,
+     "end": 9.307
+    },
+    {
+     "text": "Run-time pruning instead leaves that partition sitting in the plan, but reports it separately as a removed subplan, since nobody could rule it out before execution started.",
+     "start": 9.727,
+     "end": 21.413
+    },
+    {
+     "text": "Two different moments a partition gets ruled out, and two genuinely different signals for telling which moment happened.",
+     "start": 21.833,
+     "end": 30.295
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 141,
+   "wer": 0.14285714285714285,
+   "exact": false,
+   "tolerated": [
+    {
+     "line": "Run-time pruning instead leaves that partition sitting in the plan, but reports it separately as a removed subplan, since nobody could rule it out before execution started.",
+     "said": "run time",
+     "heard": "runtime"
+    },
+    {
+     "line": "Run-time pruning instead leaves that partition sitting in the plan, but reports it separately as a removed subplan, since nobody could rule it out before execution started.",
+     "said": "subplan",
+     "heard": "sub plan"
+    }
+   ]
+  },
+  "08": {
+   "hash": "22f24c77f1223bec",
+   "takes": [
+    "868b1a15f5514412907c",
+    "e9037d804ac0e44ae7ce"
+   ],
+   "duration": 16.492,
+   "lines": [
+    {
+     "text": "Now take a query with no filter at all. Every single partition is genuinely needed, and nothing at all gets pruned.",
+     "start": 0.15,
+     "end": 9.972
+    },
+    {
+     "text": "Does having many partitions still cost anything here, even though none of them get skipped?",
+     "start": 10.792,
+     "end": 16.142
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -2.1,
+   "wpm": 131,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "08a": {
+   "hash": "9887da4072ace38c",
+   "takes": [
+    "4fc2f9c4e50ece79b43a",
+    "d4a0b92a416a13bd9cec"
+   ],
+   "duration": 19.925,
+   "lines": [
+    {
+     "text": "Yes \u2014 every partition the planner has to consider adds real work, pruned or not.",
+     "start": 0.15,
+     "end": 6.729
+    },
+    {
+     "text": "Building a plan that touches dozens of separate partitions takes real planning time and real memory, whether or not pruning ever gets the chance to help.",
+     "start": 7.149,
+     "end": 19.575
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 120,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "09": {
+   "hash": "cdd45e4c3b3e071b",
+   "takes": [
+    "4049e976fffcc48fb8c6",
+    "04e4f954f2f0604bdf31",
+    "2e6905a8bf1d2ba505e1"
+   ],
+   "duration": 29.766,
+   "lines": [
+    {
+     "text": "Load the exact same data twice: once split across sixty partitions, once sitting in a single unpartitioned table.",
+     "start": 0.15,
+     "end": 9.177
+    },
+    {
+     "text": "Planning the identical no-filter query against the partitioned version takes roughly thirty six times longer, and uses roughly two hundred times more planning memory.",
+     "start": 9.597,
+     "end": 20.708
+    },
+    {
+     "text": "None of that difference comes from the data itself. All of it comes purely from the number of partitions the planner had to consider.",
+     "start": 21.128,
+     "end": 29.416
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -1.9,
+   "wpm": 135,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "10": {
+   "hash": "2fb44395bb08a585",
+   "takes": [
+    "3678ca9ed0fa62a695a8",
+    "6b1f8ffacec24b5a51f7"
+   ],
+   "duration": 18.369,
+   "lines": [
+    {
+     "text": "A retention policy needs an entire year of old data gone. One way is to drop the single partition holding that year. Another way is to delete those same rows directly, one at a time.",
+     "start": 0.15,
+     "end": 13.425
+    },
+    {
+     "text": "Is there actually any real difference between those two approaches?",
+     "start": 14.245,
+     "end": 18.019
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 147,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "10a": {
+   "hash": "18d7b23a7082df86",
+   "takes": [
+    "baf9db7f6a6a6beecd7e",
+    "62c5257924e6abd6b48b"
+   ],
+   "duration": 16.705,
+   "lines": [
+    {
+     "text": "Yes \u2014 dropping the whole partition is dramatically faster.",
+     "start": 0.15,
+     "end": 4.273
+    },
+    {
+     "text": "Removing a partition deletes one object outright. Deleting the same rows one by one is a bulk operation this topic measures directly, and a far slower one.",
+     "start": 4.693,
+     "end": 16.355
+    }
+   ],
+   "lufs": -16.6,
+   "true_peak": -1.9,
+   "wpm": 126,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "11": {
+   "hash": "5d92d1494e31690e",
+   "takes": [
+    "c6db81ea0ad7d5e1dd5f",
+    "89f04f3ab3685f1da474",
+    "9f8a37cc45729843738a"
+   ],
+   "duration": 21.395,
+   "lines": [
+    {
+     "text": "Drop a partition holding a full million rows outright, and it finishes in a small fraction of a second.",
+     "start": 0.15,
+     "end": 7.309
+    },
+    {
+     "text": "Delete that exact same million rows from an unpartitioned table instead, and it takes roughly forty times longer.",
+     "start": 7.729,
+     "end": 14.964
+    },
+    {
+     "text": "And deleting those rows still leaves behind maintenance work the drop never needed at all.",
+     "start": 15.384,
+     "end": 21.044
+    }
+   ],
+   "lufs": -16.2,
+   "true_peak": -2.3,
+   "wpm": 146,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "12": {
+   "hash": "9ca1d2cac4231995",
+   "takes": [
+    "92934ad5611dfebbd384",
+    "16b5182e85e7752cfd31",
+    "d870b30f248a586621cc"
+   ],
+   "duration": 26.189,
+   "lines": [
+    {
+     "text": "A partition key chosen to match the predicates queries actually filter on is, almost always, the exact same key a retention policy wants to drop by.",
+     "start": 0.15,
+     "end": 10.793
+    },
+    {
+     "text": "That single column decides both what pruning can skip during a query, and what a drop can remove whole during cleanup.",
+     "start": 11.213,
+     "end": 19.55
+    },
+    {
+     "text": "Choosing a partition key is really choosing one answer to two different questions at once.",
+     "start": 19.97,
+     "end": 25.839
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 142,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "13": {
+   "hash": "2916111cd0acf376",
+   "takes": [
+    "8adef866843645fe79e0",
+    "a878fd5ad719803cb4e5",
+    "0e1898168e6176e3cac7"
+   ],
+   "duration": 26.88,
+   "lines": [
+    {
+     "text": "A cloud warehouse's own clustering sorts rows into physical storage blocks, instead of splitting a table into separate partition objects the way this engine does.",
+     "start": 0.15,
+     "end": 11.32
+    },
+    {
+     "text": "There is no single block to drop outright for retention, and no separate per-partition metadata for the planner to manage either.",
+     "start": 11.74,
+     "end": 19.505
+    },
+    {
+     "text": "Same underlying problem, two genuinely different physical designs for solving it.",
+     "start": 19.925,
+     "end": 26.53
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 129,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "14": {
+   "hash": "c06a2060b4762dda",
+   "takes": [
+    "6f953c25d6d4dbd2724c",
+    "706a9f5c66d003a48fb8",
+    "578d1bf57af7149936dc"
+   ],
+   "duration": 25.959,
+   "lines": [
+    {
+     "text": "Choose a partitioning method that matches the predicates queries actually use.",
+     "start": 0.15,
+     "end": 4.85
+    },
+    {
+     "text": "Plan-time pruning proves exclusions before any scan begins. Run-time pruning proves the same thing, once a real value finally becomes known.",
+     "start": 5.27,
+     "end": 16.161
+    },
+    {
+     "text": "More partitions cost real planning time, pruned or not. And dropping a whole partition always beats deleting its rows one by one.",
+     "start": 16.581,
+     "end": 25.609
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -2.2,
+   "wpm": 129,
+   "wer": 0.17391304347826086,
+   "exact": false,
+   "tolerated": [
+    {
+     "line": "Plan-time pruning proves exclusions before any scan begins. Run-time pruning proves the same thing, once a real value finally becomes known.",
+     "said": "plan time",
+     "heard": "plantime"
+    },
+    {
+     "line": "Plan-time pruning proves exclusions before any scan begins. Run-time pruning proves the same thing, once a real value finally becomes known.",
+     "said": "run time",
+     "heard": "runtime"
+    }
+   ]
+  },
+  "15": {
+   "hash": "b46932fb328ecced",
+   "takes": [
+    "a61fb2d63d0662d5c275",
+    "6c24a490fe523b7f6a8e"
+   ],
+   "duration": 19.783,
+   "lines": [
+    {
+     "text": "A table is split into twenty four partitions. A query's filter matches exactly one of them, and that filter value is a literal, known the moment the query is written.",
+     "start": 0.15,
+     "end": 12.621
+    },
+    {
+     "text": "How many of those partitions should the explain output report as actually scanned?",
+     "start": 13.441,
+     "end": 19.433
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 130,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "15a": {
+   "hash": "60ae262d5c23b6be",
+   "takes": [
+    "d9a97bf46f2040c71fc2",
+    "091111bc149e7b5e3cff"
+   ],
+   "duration": 18.065,
+   "lines": [
+    {
+     "text": "Just one \u2014 the other twenty three get pruned before any scan begins.",
+     "start": 0.15,
+     "end": 4.981
+    },
+    {
+     "text": "A literal value known at planning time is exactly the case plan-time pruning handles, proving every other partition cannot possibly match before a single scan starts.",
+     "start": 5.401,
+     "end": 17.715
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -2.3,
+   "wpm": 130,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  }
+ }
+}

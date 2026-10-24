@@ -1,0 +1,599 @@
+{
+ "topic": "de.materialized-views-incremental-maintenance",
+ "voice": "breeze-mellow-v2",
+ "asr": "large-v3-turbo",
+ "clips": {
+  "01": {
+   "hash": "a8ff04a5eaf7046c",
+   "takes": [
+    "5d5201cb8bcafb274a6c",
+    "206f112fb09b54b94826",
+    "e99cfe610a0befdb4870"
+   ],
+   "duration": 24.483,
+   "lines": [
+    {
+     "text": "A handful of new rows land in a table holding millions. Maintain a stored summary of that table two different ways, and measure both.",
+     "start": 0.15,
+     "end": 10.096
+    },
+    {
+     "text": "Fully rebuilding that summary from scratch barely moves, no matter how small the change was.",
+     "start": 10.516,
+     "end": 16.409
+    },
+    {
+     "text": "Updating it incrementally instead costs a tiny fraction of that \u2014 roughly a couple of orders of magnitude less.",
+     "start": 16.829,
+     "end": 24.133
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 140,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "02": {
+   "hash": "261e8babcbe7ecdf",
+   "takes": [
+    "6d8d207883f2ecb00fbe",
+    "86ddb8d3d7952f2eab25"
+   ],
+   "duration": 12.399,
+   "lines": [
+    {
+     "text": "Only a handful of rows changed, out of millions sitting in the table.",
+     "start": 0.15,
+     "end": 4.578
+    },
+    {
+     "text": "Does fully rebuilding the dependent summary get any cheaper, just because so little of the underlying data actually moved?",
+     "start": 5.398,
+     "end": 12.049
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -2.0,
+   "wpm": 155,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "02a": {
+   "hash": "f9c30282dcbcc5fa",
+   "takes": [
+    "71a29a2e298d380411d6",
+    "e2294b65218098fb2ca2"
+   ],
+   "duration": 14.831,
+   "lines": [
+    {
+     "text": "No \u2014 rebuilding from scratch reruns the entire defining query regardless of how much actually changed.",
+     "start": 0.15,
+     "end": 7.359
+    },
+    {
+     "text": "Its cost tracks the size of the whole result, never the size of whatever change triggered it.",
+     "start": 7.779,
+     "end": 14.481
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 129,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "03": {
+   "hash": "d455bda008f97531",
+   "takes": [
+    "82d2364c0836aab9d01f",
+    "3b9d282a7c44ac0d8389",
+    "4e5f4f5ca8926f87d08d"
+   ],
+   "duration": 21.888,
+   "lines": [
+    {
+     "text": "A full rebuild of a stored result throws away everything it held before and reruns its defining query completely from scratch.",
+     "start": 0.15,
+     "end": 8.968
+    },
+    {
+     "text": "Nothing from the previous version survives the process at all.",
+     "start": 9.388,
+     "end": 12.821
+    },
+    {
+     "text": "The entire result gets recomputed, every single time, whether the underlying data moved by a little or by a lot.",
+     "start": 13.241,
+     "end": 21.538
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 140,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "04": {
+   "hash": "e6e3606b6d0b74f0",
+   "takes": [
+    "a9c7f656f1ee320515d7",
+    "599a4419f696af2e6373",
+    "f39004c4be9e86319317"
+   ],
+   "duration": 23.765,
+   "lines": [
+    {
+     "text": "Measure that rebuild twice: once against an untouched table, once right after a handful of new rows get inserted into it.",
+     "start": 0.15,
+     "end": 8.737
+    },
+    {
+     "text": "The two timings, in the end, land within a hair of each other.",
+     "start": 9.157,
+     "end": 13.271
+    },
+    {
+     "text": "A change this small simply doesn't register, because the rebuild was never going to do less work for a smaller change in the first place.",
+     "start": 13.691,
+     "end": 23.415
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 149,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "05": {
+   "hash": "365b8398511dde02",
+   "takes": [
+    "3c86272bf10f89beeb6f",
+    "840905ad8c98e7ed5d6d"
+   ],
+   "duration": 15.698,
+   "lines": [
+    {
+     "text": "An incrementally maintained version of that same result only ever touches the rows a change actually affects, nothing else.",
+     "start": 0.15,
+     "end": 8.982
+    },
+    {
+     "text": "For a change this small, how much cheaper should maintaining it that way actually be?",
+     "start": 9.802,
+     "end": 15.348
+    }
+   ],
+   "lufs": -16.2,
+   "true_peak": -2.2,
+   "wpm": 130,
+   "wer": 0.05263157894736842,
+   "exact": false,
+   "tolerated": [
+    {
+     "line": "An incrementally maintained version of that same result only ever touches the rows a change actually affects, nothing else.",
+     "said": "rows",
+     "heard": "rose"
+    }
+   ]
+  },
+  "05a": {
+   "hash": "1cc9f7af0d41dcb7",
+   "takes": [
+    "707af56996e51bedc7f0",
+    "8586b892ffa842c2214f"
+   ],
+   "duration": 16.846,
+   "lines": [
+    {
+     "text": "Dramatically cheaper \u2014 its cost should track the size of the change itself, not the size of the whole table.",
+     "start": 0.15,
+     "end": 7.184
+    },
+    {
+     "text": "Touching only what a change affects, instead of everything, is exactly the mechanism this topic measures directly next.",
+     "start": 7.604,
+     "end": 16.496
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -2.3,
+   "wpm": 132,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "06": {
+   "hash": "353c2f5fae3e5693",
+   "takes": [
+    "ba2cc45c07309f7efa4a",
+    "14cfa0c9fad852b252f0",
+    "a21b3fb8368a48933293"
+   ],
+   "duration": 24.392,
+   "lines": [
+    {
+     "text": "Maintain that same summary a second way: update only the one row a new order actually affects, the instant it arrives.",
+     "start": 0.15,
+     "end": 9.483
+    },
+    {
+     "text": "For the identical handful of new rows, that targeted update finishes in a small fraction of the time the full rebuild needed.",
+     "start": 9.903,
+     "end": 18.02
+    },
+    {
+     "text": "Roughly two orders of magnitude cheaper, for keeping exactly the same information current.",
+     "start": 18.44,
+     "end": 24.042
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -2.1,
+   "wpm": 138,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "07": {
+   "hash": "8a12065ddfad7a03",
+   "takes": [
+    "dcfff29a9279fa790639",
+    "45dc5eed48298bd152a9"
+   ],
+   "duration": 12.206,
+   "lines": [
+    {
+     "text": "An ordinary full rebuild locks out anyone trying to read the stored result while it runs.",
+     "start": 0.15,
+     "end": 5.519
+    },
+    {
+     "text": "Is there any way to update that result without blocking the very queries reading from it?",
+     "start": 6.339,
+     "end": 11.856
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -2.7,
+   "wpm": 157,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "07a": {
+   "hash": "c396c578f4083581",
+   "takes": [
+    "8efc75cb987cfe323190",
+    "a0f56b42ea2a94982f3b"
+   ],
+   "duration": 14.943,
+   "lines": [
+    {
+     "text": "Yes \u2014 a concurrent mode exists specifically so a rebuild and ordinary reads can run side by side.",
+     "start": 0.15,
+     "end": 6.928
+    },
+    {
+     "text": "It trades away nothing about correctness, but it does come with a real requirement, which this topic names next.",
+     "start": 7.348,
+     "end": 14.593
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 145,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "08": {
+   "hash": "22637e3f8e5b4579",
+   "takes": [
+    "b8a5f4e32bfc233f17b6",
+    "b8fd2d4404bb4c116da1",
+    "5d8b79ed454b0741e707"
+   ],
+   "duration": 23.616,
+   "lines": [
+    {
+     "text": "Issue an ordinary read against that stored result while an ordinary rebuild is still running underneath it.",
+     "start": 0.15,
+     "end": 7.767
+    },
+    {
+     "text": "That read sits and waits for most of a second, blocked until the rebuild finishes.",
+     "start": 8.187,
+     "end": 13.933
+    },
+    {
+     "text": "Issue the identical read while a concurrent rebuild runs instead, and it comes back in a few thousandths of a second \u2014 never blocked at all.",
+     "start": 14.353,
+     "end": 23.266
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -1.9,
+   "wpm": 145,
+   "wer": 0.06666666666666667,
+   "exact": false,
+   "tolerated": [
+    {
+     "line": "That read sits and waits for most of a second, blocked until the rebuild finishes.",
+     "said": "read",
+     "heard": "reed"
+    }
+   ]
+  },
+  "09": {
+   "hash": "1bbd8f70b43cb238",
+   "takes": [
+    "217f4404e7286355e2cf",
+    "3697b5bc04075e229dbf",
+    "4fe97c32c425ecff08fe"
+   ],
+   "duration": 27.383,
+   "lines": [
+    {
+     "text": "That concurrent mode only works under one condition: the stored result already needs a uniqueness constraint covering every single row.",
+     "start": 0.15,
+     "end": 10.292
+    },
+    {
+     "text": "No partial coverage, and no index built over a computed expression \u2014 a plain, row-covering uniqueness guarantee is required.",
+     "start": 10.712,
+     "end": 20.004
+    },
+    {
+     "text": "Without that guarantee in place ahead of time, the concurrent mode simply isn't available at all.",
+     "start": 20.424,
+     "end": 27.033
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -1.9,
+   "wpm": 121,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "10": {
+   "hash": "8245f0e8ef0aab3b",
+   "takes": [
+    "f130458921926f3a1be2",
+    "3b0dc4fd9367192a7a1d"
+   ],
+   "duration": 15.3,
+   "lines": [
+    {
+     "text": "A warehouse engine's own stored summary adds up values from a column that holds approximate, floating-point numbers.",
+     "start": 0.15,
+     "end": 8.164
+    },
+    {
+     "text": "Does that kind of running total still update incrementally, the same way an ordinary total would?",
+     "start": 8.984,
+     "end": 14.95
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 133,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "10a": {
+   "hash": "d717f4fc8c280307",
+   "takes": [
+    "2d8ed37924553ca60dcc",
+    "659bbdf34bf4a06e75a8"
+   ],
+   "duration": 20.509,
+   "lines": [
+    {
+     "text": "Not reliably \u2014 a floating-point running total can force a full rebuild instead.",
+     "start": 0.15,
+     "end": 5.917
+    },
+    {
+     "text": "Floating-point addition doesn't always give the exact same answer regardless of the order values were added in, so an incrementally updated total can quietly drift from a freshly recomputed one.",
+     "start": 6.337,
+     "end": 20.159
+    }
+   ],
+   "lufs": -16.1,
+   "true_peak": -3.0,
+   "wpm": 129,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "11": {
+   "hash": "4ddcfa087bf4c0b5",
+   "takes": [
+    "d9cbab7b2a210a7e16b8",
+    "ba5c51cd9497acd6bab9",
+    "1a68d2129366a4bb4dfa"
+   ],
+   "duration": 27.356,
+   "lines": [
+    {
+     "text": "Adding up values from an approximate, floating-point column can genuinely depend on the order those values arrived in.",
+     "start": 0.15,
+     "end": 8.953
+    },
+    {
+     "text": "That dependency is exactly what forces some engines to fall back to a full rebuild instead of trusting an incremental update.",
+     "start": 9.373,
+     "end": 18.253
+    },
+    {
+     "text": "Switching that column to a fixed-precision numeric type removes the dependency, and keeps the incremental path available.",
+     "start": 18.673,
+     "end": 27.006
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -1.9,
+   "wpm": 127,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "12": {
+   "hash": "7df74b3420901975",
+   "takes": [
+    "db802e089bcda161a451",
+    "7107564a5d286b590aaf",
+    "654d582793f06fc9043d"
+   ],
+   "duration": 20.669,
+   "lines": [
+    {
+     "text": "A cloud warehouse's own stored tables and views don't commit to one strategy ahead of time.",
+     "start": 0.15,
+     "end": 5.875
+    },
+    {
+     "text": "Each one weighs, automatically, whether an incremental update or a full rebuild will actually cost less for its own particular query shape.",
+     "start": 6.295,
+     "end": 15.318
+    },
+    {
+     "text": "Whichever comes out cheaper is the one the engine actually runs.",
+     "start": 15.738,
+     "end": 20.319
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 142,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "13": {
+   "hash": "d6300c32b0611220",
+   "takes": [
+    "42247f5d4b3ddf72c521",
+    "aa9ccb15dbc13722ddf8",
+    "bfaabd54fc7d053e691d"
+   ],
+   "duration": 20.605,
+   "lines": [
+    {
+     "text": "A warehouse can be told how fresh a stored result needs to stay, as a target it should aim for.",
+     "start": 0.15,
+     "end": 6.538
+    },
+    {
+     "text": "That target is a goal the engine tries to hit, never a strict promise it's bound to keep.",
+     "start": 6.958,
+     "end": 12.672
+    },
+    {
+     "text": "A single slow rebuild can push the real staleness past that target anyway, however carefully it was set.",
+     "start": 13.092,
+     "end": 20.255
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -1.9,
+   "wpm": 163,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "14": {
+   "hash": "3f46ea7b3f076717",
+   "takes": [
+    "d9fb1888dd0e5877014e",
+    "43782ad02282f597476a",
+    "ff64dc8b9d6afaf40ae5"
+   ],
+   "duration": 22.397,
+   "lines": [
+    {
+     "text": "A full rebuild costs about the same no matter how little actually changed underneath it.",
+     "start": 0.15,
+     "end": 5.022
+    },
+    {
+     "text": "An incremental update instead costs roughly what the change itself costs, nothing more.",
+     "start": 5.442,
+     "end": 11.185
+    },
+    {
+     "text": "A concurrent rebuild trades a strict uniqueness requirement for never blocking an ordinary read, and a freshness target is a goal, never a guarantee.",
+     "start": 11.605,
+     "end": 22.047
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -1.9,
+   "wpm": 139,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "15": {
+   "hash": "ad77f2325311dad7",
+   "takes": [
+    "ae4feaa5c2681cc15373",
+    "21620fac228fd50a16ad"
+   ],
+   "duration": 16.882,
+   "lines": [
+    {
+     "text": "A stored result is being rebuilt right now, using the concurrent mode this topic just measured. At that exact moment, a dashboard issues an ordinary read against it.",
+     "start": 0.15,
+     "end": 11.598
+    },
+    {
+     "text": "Does that read, though, have to wait for the rebuild to finish first?",
+     "start": 12.418,
+     "end": 16.532
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -1.9,
+   "wpm": 146,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "15a": {
+   "hash": "1857bcf3237f16d0",
+   "takes": [
+    "cb15339f5563cf1b5a8e",
+    "2dd18bbb874921008428"
+   ],
+   "duration": 18.499,
+   "lines": [
+    {
+     "text": "No \u2014 the concurrent mode exists specifically so a read like that is never blocked.",
+     "start": 0.15,
+     "end": 6.356
+    },
+    {
+     "text": "That's exactly what this topic's own measurement showed directly: the identical kind of read finished in a few thousandths of a second while a concurrent rebuild was still running.",
+     "start": 6.776,
+     "end": 18.149
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -2.1,
+   "wpm": 139,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  }
+ }
+}

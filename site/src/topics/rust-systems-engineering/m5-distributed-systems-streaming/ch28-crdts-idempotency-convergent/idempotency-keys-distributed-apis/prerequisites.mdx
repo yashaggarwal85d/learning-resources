@@ -1,0 +1,22 @@
+import Resource from '../../../../../components/Resource.astro';
+
+<section class="prereq" data-section="chapter-so-far">
+
+### <span class="n">01</span> Where the last chapter left off
+
+<ul class="resources">
+  <Resource kind="reel" host={props.host} domain="rust-systems-engineering" title="Retention, compaction, and tiered storage">this chapter measured what a partitioned, product-facing log promises about order, delivery, and how long its own data sticks around; the next chapter turns to state that does not need any of this chapter's own coordination at all, because it is built to merge safely no matter which order its own updates arrive in.</Resource>
+</ul>
+
+</section>
+
+<section class="prereq" data-section="idempotency-primary">
+
+### <span class="n">02</span> The real docs: a production reference and a vendor-neutral draft
+
+<ul class="resources">
+  <Resource kind="reading" title="Idempotent requests" href="https://docs.stripe.com/api/idempotent_requests" by="Stripe">the real TTL, replay, and race behavior this topic's own code measures directly.</Resource>
+  <Resource kind="reading" title="The Idempotency-Key HTTP Header Field" href="https://datatracker.ietf.org/doc/html/draft-ietf-httpapi-idempotency-key-header" by="IETF httpapi working group">the identical mechanism, stated in vendor-neutral terms.</Resource>
+</ul>
+
+</section>
