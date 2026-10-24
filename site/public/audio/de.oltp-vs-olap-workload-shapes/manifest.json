@@ -1,0 +1,247 @@
+{
+ "topic": "de.oltp-vs-olap-workload-shapes",
+ "voice": "breeze-mellow-v2",
+ "asr": "large-v3-turbo",
+ "clips": {
+  "01": {
+   "hash": "76db141cd23225c3",
+   "takes": [
+    "bc9e554f25598034cdee",
+    "64a3f308f2d32801665f"
+   ],
+   "duration": 6.729,
+   "lines": [
+    {
+     "text": "Same table, two very different questions.",
+     "start": 0.15,
+     "end": 3.105
+    },
+    {
+     "text": "Watch how differently each one gets answered.",
+     "start": 3.525,
+     "end": 6.379
+    }
+   ],
+   "lufs": -16.6,
+   "true_peak": -1.9,
+   "wpm": 116,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "02": {
+   "hash": "d8ff8f22933663f7",
+   "takes": [
+    "37dce557007cb5f3a27b",
+    "8590f9f1d6d48f2db4f6"
+   ],
+   "duration": 10.165,
+   "lines": [
+    {
+     "text": "One order, found by its id, through an index that was already sitting there.",
+     "start": 0.15,
+     "end": 5.3
+    },
+    {
+     "text": "A handful of pages touched, and it is done before you would notice.",
+     "start": 5.72,
+     "end": 9.815
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -1.9,
+   "wpm": 159,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "03": {
+   "hash": "01b6c59e162722b6",
+   "takes": [
+    "7b66debac5ac8e0e51ba",
+    "1279b480d7143c857a35"
+   ],
+   "duration": 9.628,
+   "lines": [
+    {
+     "text": "Now ask for a total instead, across every single row.",
+     "start": 0.15,
+     "end": 4.157
+    },
+    {
+     "text": "The index cannot help with that, so the engine has to walk the entire table.",
+     "start": 4.577,
+     "end": 9.278
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -2.3,
+   "wpm": 156,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "04": {
+   "hash": "77343e5943a2bede",
+   "takes": [
+    "f1bca315780299173fe5",
+    "c88cf5848951d590b77e"
+   ],
+   "duration": 10.735,
+   "lines": [
+    {
+     "text": "That total only actually needs one column out of the six this table has.",
+     "start": 0.15,
+     "end": 4.775
+    },
+    {
+     "text": "So does the engine get to skip the other five, or does it read them anyway?",
+     "start": 5.195,
+     "end": 10.385
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 168,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "04a": {
+   "hash": "29d1ec07493886ba",
+   "takes": [
+    "aa3729d867d94d28d509",
+    "bf13b5d7bce320e33ac5"
+   ],
+   "duration": 12.166,
+   "lines": [
+    {
+     "text": "It reads them anyway. A row's columns sit packed together in the same block on disk.",
+     "start": 0.15,
+     "end": 5.771
+    },
+    {
+     "text": "There is no way to grab just one column's bytes without pulling the whole row along with it.",
+     "start": 6.191,
+     "end": 11.816
+    }
+   ],
+   "lufs": -16.3,
+   "true_peak": -2.0,
+   "wpm": 168,
+   "wer": 0.125,
+   "exact": false,
+   "tolerated": [
+    {
+     "line": "It reads them anyway. A row's columns sit packed together in the same block on disk.",
+     "said": "rows columns",
+     "heard": "rose column"
+    }
+   ]
+  },
+  "05": {
+   "hash": "188799b45813a0c0",
+   "takes": [
+    "bf4daa7574676a37dfe7",
+    "8a65f5db609489aea3db"
+   ],
+   "duration": 10.969,
+   "lines": [
+    {
+     "text": "Here is exactly how little of each row that one column really is.",
+     "start": 0.15,
+     "end": 4.801
+    },
+    {
+     "text": "And none of that waste is a bug. It is just what storing by row means.",
+     "start": 5.221,
+     "end": 10.619
+    }
+   ],
+   "lufs": -16.6,
+   "true_peak": -3.3,
+   "wpm": 159,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "06": {
+   "hash": "33b6b23829af2b43",
+   "takes": [
+    "28d5ebdc63f9e068b807",
+    "be6288193efe379556f4"
+   ],
+   "duration": 14.126,
+   "lines": [
+    {
+     "text": "Flip the storage around, column by column instead of row by row, and the waste disappears.",
+     "start": 0.15,
+     "end": 7.952
+    },
+    {
+     "text": "Needing five columns out of a hundred now means reading roughly five percent of the table.",
+     "start": 8.372,
+     "end": 13.776
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -1.9,
+   "wpm": 136,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "07": {
+   "hash": "4d73a57c6d2e41c7",
+   "takes": [
+    "c3df833fb881e513bf9c",
+    "3f0449f554d44f2464c3"
+   ],
+   "duration": 13.936,
+   "lines": [
+    {
+     "text": "Splitting data into small tables is exactly what makes independent transactions cheap and safe.",
+     "start": 0.15,
+     "end": 6.87
+    },
+    {
+     "text": "That same split is also what forces a big aggregate query to stitch everything back together first.",
+     "start": 7.29,
+     "end": 13.586
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -2.0,
+   "wpm": 133,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "08": {
+   "hash": "e612603578388f3d",
+   "takes": [
+    "5de343fc969b5b679fec",
+    "0a2e8c4986dd626a5f58"
+   ],
+   "duration": 13.121,
+   "lines": [
+    {
+     "text": "Few rows, read whole, for point work. Few columns, read whole, for scans.",
+     "start": 0.15,
+     "end": 5.821
+    },
+    {
+     "text": "Carry that forward, because the next refresher names the relationships underneath both of them.",
+     "start": 6.241,
+     "end": 12.771
+    }
+   ],
+   "lufs": -16.6,
+   "true_peak": -1.9,
+   "wpm": 123,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  }
+ }
+}
