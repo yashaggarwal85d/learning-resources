@@ -1,0 +1,4 @@
+- **`fsync` vs `fdatasync`**: `fsync` flushes a file's data and its metadata; `fdatasync` skips metadata that doesn't affect a subsequent correct read. *Where you meet it:* `File::sync_all` and `File::sync_data`, traced to two genuinely different real syscalls.
+- **File-plus-directory durability**: a file's own `fsync` says nothing about whether its parent directory's entry has reached disk — that needs a second, explicit `fsync` on the directory's own fd.
+- **The atomic-replace pattern**: write-temp, fsync, rename, fsync-the-directory — the sequence that leaves no window where a crash can expose a half-written file under the real name.
+- **Fsyncgate**: a failed `fsync` can mean the file system already marked the dirty page clean, so a retry can succeed while having written nothing — the only safe response is to crash and recover from a WAL, never to retry.

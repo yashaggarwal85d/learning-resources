@@ -1,0 +1,23 @@
+import Resource from '../../../../../components/Resource.astro';
+
+<section class="prereq" data-section="chapter-so-far">
+
+### <span class="n">01</span> Where the last topic left off
+
+<ul class="resources">
+  <Resource kind="reel" host={props.host} domain="rust-systems-engineering" title="fsync semantics and failure modes">sync_all and sync_data genuinely differ, a file's fsync and its directory's are two calls, and a failed fsync's own retry can report success while having written nothing.</Resource>
+</ul>
+
+</section>
+
+<section class="prereq" data-section="wal-primary">
+
+### <span class="n">02</span> The real docs: WAL flush points and volatile write caches
+
+<ul class="resources">
+  <Resource kind="reading" title="Write-Ahead Logging (WAL)" href="https://www.postgresql.org/docs/current/wal-intro.html" by="The PostgreSQL Global Development Group">Why only the WAL file needs flushing to guarantee a commit.</Resource>
+  <Resource kind="reading" title="WAL Configuration" href="https://www.postgresql.org/docs/current/wal-configuration.html" by="The PostgreSQL Global Development Group">XLogFlush, commit_delay, and amortizing flush cost across transactions.</Resource>
+  <Resource kind="reading" title="Explicit volatile write back cache control" href="https://docs.kernel.org/block/writeback_cache_control.html" by="The Linux Kernel documentation">Volatile write caches, REQ_PREFLUSH, and REQ_FUA.</Resource>
+</ul>
+
+</section>
