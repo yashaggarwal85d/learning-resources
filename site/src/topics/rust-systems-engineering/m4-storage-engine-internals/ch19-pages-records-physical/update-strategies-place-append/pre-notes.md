@@ -1,0 +1,4 @@
+- **Three update strategies**: in-place, append-only, and copy-on-write each apply an update to a record a genuinely different real way, trading off fragmentation, concurrency support, and compaction cost differently. *Where you meet it:* the same five updates, measured three ways, with three genuinely different footprints.
+- **In-place**: overwrite the old bytes directly. Cheapest in space — no garbage ever — but the old version is simply gone.
+- **Append-only**: write each new version elsewhere, keeping the old ones until a real compaction pass discards them. The footprint grows with every update until that cleanup happens.
+- **Copy-on-write**: copy the whole page, write the new version into the copy, and swap it in. Costs a whole page per update, not just the record's own bytes — but a page that's never overwritten can't be left half-written by a crash.

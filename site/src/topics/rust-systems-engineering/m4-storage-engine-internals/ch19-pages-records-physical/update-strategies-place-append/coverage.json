@@ -1,0 +1,72 @@
+{
+  "topic": "rust.update-strategies-place-append",
+  "syllabus": [
+    {
+      "clause": "in-place, append-only and copy-on-write updates trade off fragmentation, MVCC support and compaction cost differently (PostgreSQL heap vs LSM append vs LMDB-style CoW B-tree).",
+      "at": [
+        { "step": "Measured: overwriting the record in place, five times, left its own footprint exactly as it started, with no garbage at all" },
+        { "step": "Measured: the append-only log's own footprint genuinely grew with every update; compacting it afterward discarded every version but the newest to reclaim that growth" },
+        { "step": "Measured: copying the whole page on every update grew the structure by a whole page each time, not just the record's own bytes" },
+        { "step": "Measured: on the exact same five updates, copy-on-write's own garbage was strictly larger than append-only's own garbage" }
+      ]
+    }
+  ],
+  "sources": [
+    {
+      "source": "storage-hot",
+      "items": [
+        {
+          "item": "to allow for high concurrency, PostgreSQL uses multiversion concurrency control (MVCC) to store rows; updates require new versions of rows to be added to tables",
+          "at": [{ "step": "Apply the exact same sequence of updates to one logical record three different real ways: overwrite it in place, append each new version to a growing log, or copy a whole page with the new version swapped in. Does overwriting in place ever leave behind any garbage to clean up later?" }]
+        }
+      ]
+    },
+    {
+      "source": "leveldb-impl",
+      "items": [
+        {
+          "item": "a log file stores a sequence of recent updates, with each update appended to the current log file",
+          "at": [{ "step": "Now apply those same five updates by appending each new version to a growing log instead, never overwriting the old one. Does the log's own footprint grow with every update?" }]
+        },
+        {
+          "item": "a compaction's old files are discarded and the new files are added to the serving state",
+          "at": [{ "step": "Measured: the append-only log's own footprint genuinely grew with every update; compacting it afterward discarded every version but the newest to reclaim that growth" }]
+        }
+      ]
+    },
+    {
+      "source": "lmdb-doc",
+      "items": [
+        {
+          "item": "data pages use a copy-on-write strategy so no active data pages are ever overwritten, which also provides resistance to corruption and eliminates the need of any special recovery procedures after a system crash",
+          "at": [{ "step": "Three real systems made three different, deliberate choices here. LMDB's own documentation: copying a page instead of overwriting it means no active data page is ever touched, so a crash can't leave a page half-written, and there's no special recovery procedure needed at all" }]
+        },
+        {
+          "item": "write-ahead loggers and append-only databases both require periodic checkpointing and/or compaction of their log or database files, or they grow without bound",
+          "at": [{ "step": "Recap: three deliberate choices" }]
+        }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "self-review",
+    "date": "2026-10-24",
+    "items": [
+      { "item": "All three strategies are measured against the exact same sequence of five updates to one logical record, so the comparison between them is on a shared workload, not three separately chosen scenarios that happen to differ.", "at": [{ "step": "Apply the exact same sequence of updates to one logical record three different real ways: overwrite it in place, append each new version to a growing log, or copy a whole page with the new version swapped in. Does overwriting in place ever leave behind any garbage to clean up later?" }] },
+      { "item": "The in-place strategy's own footprint is measured as a constant (the record's own fixed size) rather than tracked as a change over time, since the entire claim is that it never changes at all across any number of updates.", "at": [{ "step": "Measured: overwriting the record in place, five times, left its own footprint exactly as it started, with no garbage at all" }] },
+      { "item": "The append-only strategy's own compact() function keeps only the single newest version, the simplest possible real compaction policy, deliberately chosen over a more realistic time-windowed or reference-counted retention policy, since the claim under test is that compaction can reclaim the growth, not what a production-appropriate retention policy looks like.", "at": [{ "step": "Measured: the append-only log's own footprint genuinely grew with every update; compacting it afterward discarded every version but the newest to reclaim that growth" }] },
+      { "item": "The copy-on-write strategy's own page size is deliberately set many times larger than one record's own size, matching a real system's own page being far larger than any single small record, so the measured per-update growth genuinely reflects a whole-page cost rather than an artifact of a page sized close to the record itself.", "at": [{ "step": "Measured: copying the whole page on every update grew the structure by a whole page each time, not just the record's own bytes" }] },
+      { "item": "The garbage comparison between append-only and copy-on-write is measured in raw bytes on the identical five-update workload, not normalized or estimated, so the claim that copy-on-write leaves strictly more behind is a direct, executed measurement rather than an argument from the two strategies' own designs.", "at": [{ "step": "Measured: on the exact same five updates, copy-on-write's own garbage was strictly larger than append-only's own garbage" }] },
+      { "item": "The syllabus names three real systems (PostgreSQL's heap, an LSM's append, LMDB's copy-on-write B-tree) as examples of these three strategies; this topic's own three implementations are deliberately minimal analogues of each, not ports of any one real system's own full code, since the claim under test is the strategy's own fragmentation and compaction trade-off, not a specific system's own implementation details.", "at": [{ "step": "Recap: three deliberate choices" }] },
+      { "item": "PostgreSQL's own heap update is, in its full form, closer to an in-place-with-versioning hybrid (the HOT optimization keeps the old row's item identifier as a redirect rather than purely overwriting or purely appending); this topic's own in-place strategy is deliberately the simpler, pure-overwrite end of that spectrum, since the claim under test is the simplest case's own zero-garbage property, not HOT's own more nuanced redirect mechanism.", "at": [{ "step": "Apply the exact same sequence of updates to one logical record three different real ways: overwrite it in place, append each new version to a growing log, or copy a whole page with the new version swapped in. Does overwriting in place ever leave behind any garbage to clean up later?" }] },
+      { "item": "This topic continues directly from topic 49's slot-indirection-stable-identity id: all three strategies here are applied to a record that already has a stable logical identity separate from its physical location, and this topic's own new claim is specifically about the cost of updating that record's content, not about its identity again.", "at": [{ "step": "Recap: three deliberate choices" }] },
+      { "item": "All four of this topic's own measured claims run entirely on in-memory Rust structures with no file, network, or root access, continuing this chapter's own pattern from topics 48 and 49 of measuring every claim directly against a real implementation.", "at": [{ "step": "Measured: copying the whole page on every update grew the structure by a whole page each time, not just the record's own bytes" }] },
+      { "item": "This topic closes deliberately on the cost of updating a record's own content, before anything about which pages are resident in memory at all or who decides eviction (topic 51) is introduced, per CHAPTER.md's own planned order of ideas.", "at": [{ "step": "Recap: three deliberate choices" }] }
+    ]
+  },
+  "gapReview": {
+    "date": "2026-10-24",
+    "by": "self-review",
+    "open": []
+  }
+}

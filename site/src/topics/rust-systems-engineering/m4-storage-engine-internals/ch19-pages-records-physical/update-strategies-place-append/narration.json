@@ -1,0 +1,86 @@
+{
+  "steps": [
+    {
+      "lines": [
+        "Take the exact same sequence of updates to one logical record, and apply it three genuinely different real ways: overwrite it where it sits, append each new version to a growing log, or copy the whole page it lives on and swap in the new one.",
+        { "beat": 0.3 },
+        "Start with the first way. Does overwriting a record in place ever leave anything behind to clean up later?"
+      ],
+      "answer": [
+        "No, nothing at all.",
+        "The old bytes are simply gone the moment the new ones land."
+      ]
+    },
+    {
+      "lines": [
+        "Run it for real: overwrite the same record five separate times, in place.",
+        "Its own footprint, before and after all five updates, is exactly the same, with nothing extra accumulating anywhere."
+      ]
+    },
+    {
+      "lines": [
+        "Now take those same five updates and apply them a different way: append each new version to a growing log instead, and never touch the old one.",
+        { "beat": 0.3 },
+        "Does the log's own footprint actually grow with every single update?"
+      ],
+      "answer": [
+        "Yes, it does.",
+        "Nothing old gets thrown away on its own; something else has to come along and do that later."
+      ]
+    },
+    {
+      "lines": [
+        "Run it for real: the log's own footprint genuinely grew with every one of the five updates.",
+        "Compacting it afterward threw away every version except the newest, shrinking the footprint right back down."
+      ],
+      "takeaway": "Appending each new version keeps every old one around until a real compaction pass goes and discards it."
+    },
+    {
+      "lines": [
+        "Apply the same five updates one more way: copy the whole page the record lives on, write the new version into that copy, and swap it in.",
+        { "beat": 0.3 },
+        "Does this grow the structure by only the record's own handful of bytes each time, the same way the log did?"
+      ],
+      "answer": [
+        "No, not at all.",
+        "A whole page gets copied every single time, no matter how small the update actually is."
+      ]
+    },
+    {
+      "lines": [
+        "Run it for real: copying the whole page on every update genuinely grew the structure by one whole page each time, never just the record's own bytes."
+      ],
+      "takeaway": "Copy-on-write own unit of work is the whole page, so its footprint grows by a page each time."
+    },
+    {
+      "lines": [
+        "Compare the real amount left behind by the append-only version and the copy-on-write version, on the exact same five updates.",
+        { "beat": 0.3 },
+        "Which one leaves more behind for some later cleanup pass to reclaim?"
+      ],
+      "answer": [
+        "Copy-on-write leaves more.",
+        "Every discarded copy there is a whole page, not just one small record."
+      ]
+    },
+    {
+      "lines": [
+        "Run it for real: on the exact same five updates, the copy-on-write version's own leftover was measurably, strictly larger than the append-only version's own leftover."
+      ]
+    },
+    {
+      "lines": [
+        "One real system built around copying pages explains why that larger cost is worth paying: because no active page is ever touched directly, a crash can never leave a page sitting half-written.",
+        "There's no special recovery step needed at all afterward, because every page on disk was always either fully old or fully new."
+      ],
+      "takeaway": "Copy-on-write's larger footprint buys crash safety: a page never overwritten can't be left half-written."
+    },
+    {
+      "lines": [
+        "So, pulling this topic together: the cheapest choice in space destroys the old version outright the moment it's overwritten.",
+        "Keeping every version around costs more, until something comes along and cleans the old ones out.",
+        "And paying the most, a whole page at a time, is exactly what buys a page that a crash can never catch half-finished."
+      ]
+    }
+  ]
+}
