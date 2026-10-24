@@ -1,0 +1,25 @@
+import Resource from '../../../../../components/Resource.astro';
+
+<section class="prereq" data-section="before-this">
+
+### <span class="n">01</span> Before this: isolation anomalies and serializability
+
+<ul class="resources">
+  <Resource kind="reel" title="Isolation anomalies beyond ANSI" domain="data-engineering" host="de.isolation-anomalies-beyond-ansi" by="§5.2's own row-level locking background" />
+  <Resource kind="reel" title="Serializability: strict 2PL versus SSI" domain="data-engineering" host="de.serializability-strict-2pl-versus" by="the previous topic of this chapter" />
+</ul>
+
+</section>
+
+<section class="prereq" data-section="straight-from-the-source">
+
+### <span class="n">02</span> The sources this topic measures and quotes against
+
+<ul class="resources">
+  <Resource kind="reading" title="13.3. Explicit Locking" href="https://www.postgresql.org/docs/current/explicit-locking.html" by="PostgreSQL documentation">Real table lock modes, ACCESS EXCLUSIVE's own conflict set, and the canonical deadlock example.</Resource>
+  <Resource kind="reading" title="Transaction Locking and Row Versioning Guide" href="https://learn.microsoft.com/en-us/sql/relational-databases/sql-server-transaction-locking-and-row-versioning-guide" by="Microsoft Learn">SQL Server's own intent locks and lock-escalation mechanism, with real thresholds.</Resource>
+  <Resource kind="reading" title="Deadlocks Guide" href="https://learn.microsoft.com/en-us/sql/relational-databases/sql-server-deadlocks-guide" by="Microsoft Learn">SQL Server's own deadlock monitor and cyclic-dependency search.</Resource>
+  <Resource kind="reading" title="maxlocks" href="https://www.ibm.com/docs/en/SSHRBY/com.ibm.db2.luw.admin.config.doc/doc/r0000268.html" by="Db2 documentation">Db2's own percentage-based lock-escalation trigger.</Resource>
+</ul>
+
+</section>

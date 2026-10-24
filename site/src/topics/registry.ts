@@ -4428,4 +4428,24 @@ export const TOPICS: TopicMeta[] = [
     handoff:
       "SSI aborts on a dangerous structure instead of blocking; strict 2PL blocks instead of aborting. Both routes still rest on one underlying mechanism neither topic has opened yet: locking itself, and what happens when it deadlocks.",
   },
+  {
+    id: 'de.locking-deadlocks-lock-escalation',
+    domain: 'data-engineering',
+    slug: 'data-engineering/m2-storage-database-internals/ch05-database-internals-distributed/locking-deadlocks-lock-escalation',
+    title: 'Locking, deadlocks and lock escalation',
+    syllabusTitle: 'Locking, deadlocks and lock escalation',
+    kind: 'full',
+    status: 'held',
+    milestone: { number: 2, title: 'Storage: Database Internals, Files & the Lakehouse' },
+    chapter: { number: 5, title: 'Database Internals and Distributed Storage', section: '5.2' },
+    minutes: 15,
+    verified: '2026-10-24',
+    introduces: ['locking-deadlock-detection'],
+    uses: ['serializability-2pl-ssi'],
+    declared: [],
+    bridge:
+      "SSI aborts on a dangerous structure instead of blocking; strict 2PL blocks instead of aborting. This topic opens the blocking mechanism itself — real lock modes and granularity, and what happens when two sessions' locks form a cycle: a deadlock.",
+    handoff:
+      "Locking is pessimistic by nature: it blocks before it knows there's really a conflict. The next topic is the practical choice between that and the optimistic alternative topics 12–13 already showed working.",
+  },
 ];

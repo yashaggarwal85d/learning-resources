@@ -1,0 +1,5 @@
+- **Strict two-phase locking**: taught precisely in topic 13 — lock what you touch, hold until commit, block conflicting access. *Where you meet it:* this topic opens the exact locking mechanism topic 13's own S2PL route is built from.
+- **A row-level lock**: a database holding exclusive access to a row, measured directly in topic 11. *Where you meet it:* the finest granularity this topic contrasts against page- and table-level locks.
+- **Transaction, commit, rollback**: background from earlier topics. *Where you meet it:* every outcome in this topic (blocked, deadlocked, escalated) ends in one of these three.
+- **A serialization failure (SQLSTATE 40001)**: topic 13's own SSI-caught conflict. *Where you meet it:* contrasted directly against this topic's own deadlock error — a different mechanism producing a structurally similar real abort.
+- **DDL (Data Definition Language)**: statements like `ALTER TABLE` that change a table's own schema rather than its data, background from general database knowledge. *Where you meet it:* the exact kind of statement this topic's own migration-hazard experiment reproduces.
