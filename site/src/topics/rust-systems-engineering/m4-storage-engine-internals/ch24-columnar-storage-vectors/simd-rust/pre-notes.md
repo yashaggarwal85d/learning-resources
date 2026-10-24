@@ -1,0 +1,4 @@
+- **SIMD (single instruction, multiple data)**: one CPU instruction operating on several values at once; an explicit kernel does this by hand, autovectorization is the compiler doing it on its own.
+- **Runtime feature detection**: checking, while the program runs, whether the real CPU actually supports a given instruction set feature, rather than assuming it.
+- **`#[target_feature]`**: a Rust attribute enabling a CPU feature for just one function, which that function must then be marked `unsafe` to reflect.
+- **Lane width**: how many values one real vector instruction processes together. *Where you meet it:* the real cut an explicit SIMD kernel buys follows exactly from it.

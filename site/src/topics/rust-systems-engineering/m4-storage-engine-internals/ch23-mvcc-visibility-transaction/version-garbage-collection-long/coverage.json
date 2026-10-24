@@ -1,0 +1,64 @@
+{
+  "topic": "rust.version-garbage-collection-long",
+  "syllabus": [
+    {
+      "clause": "version retention is coupled to vacuum: old versions can't be reclaimed while any active snapshot might need them, so one long-running transaction becomes a storage-growth problem. Epoch-based version GC (→ Ch.30).",
+      "at": [
+        { "step": "Measured: not one of the four, for as long as that reader stays open" },
+        { "step": "Measured: the long-lived run genuinely retained far more versions than the short-lived run, on the identical workload" }
+      ]
+    }
+  ],
+  "sources": [
+    {
+      "source": "monitoring-stats",
+      "items": [
+        {
+          "item": "backend_xmin: the current backend's xmin horizon",
+          "at": [{ "step": "PostgreSQL's own documentation also names exactly what that horizon is made of: what does a backend's own xmin horizon, visible in its own system view, actually represent?" }]
+        }
+      ]
+    },
+    {
+      "source": "routine-vacuuming",
+      "items": [
+        {
+          "item": "the row version must not be deleted while it is still potentially visible to other transactions",
+          "at": [{ "step": "Measured: not one of the four, for as long as that reader stays open" }] },
+        {
+          "item": "an outdated or deleted row version is no longer of interest to any transaction. The space it occupies must then be reclaimed for reuse by new rows, to avoid unbounded growth of disk space requirements",
+          "at": [{ "step": "Measured: the long-lived run genuinely retained far more versions than the short-lived run, on the identical workload" }]
+        },
+        {
+          "item": "the standard form of VACUUM removes dead row versions in tables and indexes and marks the space available for future reuse",
+          "at": [{ "step": "Measured: yes, genuinely; closing the reader freed every one of its previously-pinned dead versions" }]
+        },
+        {
+          "item": "end long-running open transactions. You can find these by checking pg_stat_activity for rows where age(backend_xid) or age(backend_xmin) is large",
+          "at": [{ "step": "Measured, in PostgreSQL's own words: end long-running open transactions directly, since VACUUM alone can't reclaim past them" }]
+        }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "self-review",
+    "date": "2026-10-24",
+    "items": [
+      { "item": "The horizon used by the GC pass is computed as the real minimum over the set of currently open snapshot ids, exactly matching PostgreSQL's own documented xmin-horizon mechanism, not a hand-picked threshold chosen to make the demonstration work.", "at": [{ "step": "Measured: not one of the four, for as long as that reader stays open" }] },
+      { "item": "The claim that a long-lived reader blocks reclaim of versions it never directly reads (not just the one it does read) is the more surprising, stronger claim this topic measures, and it genuinely holds here: all four dead versions, not only the one visible to the reader, remain unreclaimed while it stays open.", "at": [{ "step": "Measured: not one of the four, for as long as that reader stays open" }] },
+      { "item": "The short-lived and long-lived scenarios run the identical sequence of five transactions and four updates, differing only in when the reader's own snapshot is removed from the open set, so the measured difference in retained versions is attributable to that one variable alone.", "at": [{ "step": "Measured: the long-lived run genuinely retained far more versions than the short-lived run, on the identical workload" }] },
+      { "item": "This topic continues directly from topic 59's own version-chain structure and topic 60's own transaction model, applying a garbage-collection pass to the identical kind of version chain both of those topics built and reasoned about.", "at": [{ "step": "A reader opens a snapshot, then a row gets updated four more times while that reader stays open. Does any of those four now-dead versions ever become reclaimable while the reader is still open?" }] },
+      { "item": "The syllabus's own further-material pointer (epoch-based version GC, named as a forward reference to Chapter 30) is named in prose rather than separately measured here; this topic measures the simpler, direct xmin-horizon mechanism that an epoch-based scheme is itself built to make cheaper to compute at scale.", "at": [{ "step": "Recap: what pins a version, and what actually frees it" }] },
+      { "item": "All of this topic's own measured claims run entirely on plain in-memory Rust structs and vectors with no file, network, or root access needed, continuing this chapter's own established pattern from topics 59 and 60.", "at": [{ "step": "Recap: what pins a version, and what actually frees it" }] },
+      { "item": "This topic deliberately closes Chapter 23 as its third and last topic, and with it Milestone 4 (Storage-Engine Internals) as a whole, handing off directly to Chapter 24's own columnar-storage question rather than to another topic within this chapter.", "at": [{ "step": "Recap: what pins a version, and what actually frees it" }] },
+      { "item": "The PostgreSQL quote recommending administrators end long-running open transactions directly is a genuinely different remedy from running VACUUM more often; this topic's own prototype demonstrates exactly why running GC more frequently would not help, since the horizon itself, not the GC pass's own frequency, is what's actually blocking reclaim.", "at": [{ "step": "Measured, in PostgreSQL's own words: end long-running open transactions directly, since VACUUM alone can't reclaim past them" }] },
+      { "item": "The counts measured here (one retained version for the short-lived run, five for the long-lived run, on an identical five-transaction workload) are this specific scenario's own real numbers; they illustrate the direction and shape of the real effect, not a claim to match any particular production workload's own retention curve.", "at": [{ "step": "Measured: the long-lived run genuinely retained far more versions than the short-lived run, on the identical workload" }] },
+      { "item": "The pg_stat_activity quote used for the xmin-horizon definition is from a genuinely different PostgreSQL documentation page than the routine-vacuuming quotes, giving this topic two independent primary sources rather than multiple quotes drawn from a single page.", "at": [{ "step": "PostgreSQL's own documentation also names exactly what that horizon is made of: what does a backend's own xmin horizon, visible in its own system view, actually represent?" }] }
+    ]
+  },
+  "gapReview": {
+    "date": "2026-10-24",
+    "by": "self-review",
+    "open": []
+  }
+}

@@ -1,0 +1,63 @@
+{
+  "topic": "rust.vectorized-versus-compiled-query",
+  "syllabus": [
+    {
+      "clause": "vectorized execution processes batches instead of rows to cut interpreter overhead (MonetDB/X100, CIDR 2005), using selection vectors. The alternative is data-centric code generation (HyPer, VLDB 2011); Kersten et al. (VLDB 2018) compare the two. Polars and DataFusion are vectorized Arrow engines.",
+      "at": [
+        { "step": "Measured: far fewer dispatches in the batch-at-a-time version, on the identical operation and data" },
+        { "step": "Measured: the exact identical result, from both the row-at-a-time path and the batch-at-a-time path" },
+        { "step": "Measured, in Apache DataFusion's own words: a blazingly fast, vectorized, multithreaded, streaming execution engine" },
+        { "step": "Polars's own documentation names the identical batch-at-a-time idea from a different real engine's own words: does it state that Polars can execute a query in batches, instead of processing all the data at once?" }
+      ]
+    }
+  ],
+  "sources": [
+    {
+      "source": "datafusion-introduction",
+      "items": [
+        {
+          "item": "DataFusion is built using the Apache Arrow in-memory format",
+          "at": [{ "step": "Real vectorized, Arrow-based query engines state this exact batch-at-a-time approach directly, in their own words. Does Apache DataFusion's own documentation name itself a vectorized execution engine directly?" }]
+        },
+        {
+          "item": "Blazingly fast, vectorized, multithreaded, streaming execution engine.",
+          "at": [{ "step": "Measured, in Apache DataFusion's own words: a blazingly fast, vectorized, multithreaded, streaming execution engine" }]
+        },
+        {
+          "item": "High Performance: Leveraging Rust and Arrow’s memory model, DataFusion is very fast.",
+          "at": [{ "step": "Measured, in Apache DataFusion's own words: a blazingly fast, vectorized, multithreaded, streaming execution engine" }]
+        }
+      ]
+    },
+    {
+      "source": "polars-streaming",
+      "items": [
+        {
+          "item": "Instead of processing all the data at once, Polars can execute the query in batches",
+          "at": [{ "step": "Polars's own documentation names the identical batch-at-a-time idea from a different real engine's own words: does it state that Polars can execute a query in batches, instead of processing all the data at once?" }]
+        }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "self-review",
+    "date": "2026-10-24",
+    "items": [
+      { "item": "The row-at-a-time and batch-at-a-time paths apply the identical filter predicate and the identical sum to the identical column, so the dispatch-count difference measured is attributable to the batching strategy alone, not to a different operation or different data.", "at": [{ "step": "Run the identical filter-then-sum operation two ways over the identical column: once evaluating one row at a time, once processing a whole batch at a time instead. Does the batch-at-a-time version genuinely cut the number of per-row dispatches the row-at-a-time version pays?" }] },
+      { "item": "Dispatch count is measured as a real, deterministic structural property (the number of times each path's own dispatch-counting code path runs), not a wall-clock timing measurement that would be noisy and non-deterministic in a sandboxed build.", "at": [{ "step": "Measured: far fewer dispatches in the batch-at-a-time version, on the identical operation and data" }] },
+      { "item": "The two paths' own final sums are compared for exact equality, not approximate closeness, confirming that cutting dispatch overhead by batching never silently changes which rows a query's own filter actually selects.", "at": [{ "step": "Measured: the exact identical result, from both the row-at-a-time path and the batch-at-a-time path" }] },
+      { "item": "The batch-at-a-time path's own measured dispatch count is checked against an independently computed expected value (the column's own length divided by the batch size, rounded up), not merely asserted to look roughly right.", "at": [{ "step": "Measured: an exact match between the real, measured dispatch count and the real batch arithmetic" }] },
+      { "item": "This topic builds directly on topic 62's own column-major layout, applying the row-at-a-time-versus-batch-at-a-time comparison to one of that layout's own columns rather than introducing an unrelated data structure, continuing this chapter's own running example as CHAPTER.md §A.3 lays out.", "at": [{ "step": "Run the identical filter-then-sum operation two ways over the identical column: once evaluating one row at a time, once processing a whole batch at a time instead. Does the batch-at-a-time version genuinely cut the number of per-row dispatches the row-at-a-time version pays?" }] },
+      { "item": "The syllabus's own further material on data-centric code generation (HyPer, VLDB 2011) and on Kersten et al.'s own direct comparison of the two approaches (VLDB 2018) is named in prose in the pre-notes and post-notes rather than separately measured here; this topic measures the vectorized side of that comparison directly, continuing into topic 65's own SIMD measurement.", "at": [{ "step": "Recap: what batching buys, and what it leaves unchanged" }] },
+      { "item": "All of this topic's own measured claims run entirely on plain in-memory Rust structs and vectors, with no file, network, or root access needed, continuing this chapter's own established pattern from topics 62 and 63.", "at": [{ "step": "Recap: what batching buys, and what it leaves unchanged" }] },
+      { "item": "The Apache DataFusion Introduction page and the Polars Streaming page are two genuinely distinct documentation sites belonging to two genuinely distinct, independently maintained vectorized Arrow engines, giving this topic two independent primary sources rather than multiple quotes drawn from a single engine's own documentation.", "at": [{ "step": "Polars's own documentation names the identical batch-at-a-time idea from a different real engine's own words: does it state that Polars can execute a query in batches, instead of processing all the data at once?" }] },
+      { "item": "The specific dispatch counts and the specific cut factor measured here are this specific ten-thousand-row, hundred-row-batch scenario's own real numbers; they illustrate the direction and shape of the real effect, not a claim to match any particular production query engine's own measured throughput.", "at": [{ "step": "Measured: far fewer dispatches in the batch-at-a-time version, on the identical operation and data" }] },
+      { "item": "The uniformly random column measured here is generated by a self-contained, deterministic xorshift generator rather than any external randomness source, so the measured dispatch counts and sums are exactly reproducible on every run.", "at": [{ "step": "Measured: the exact identical result, from both the row-at-a-time path and the batch-at-a-time path" }] }
+    ]
+  },
+  "gapReview": {
+    "date": "2026-10-24",
+    "by": "self-review",
+    "open": []
+  }
+}
