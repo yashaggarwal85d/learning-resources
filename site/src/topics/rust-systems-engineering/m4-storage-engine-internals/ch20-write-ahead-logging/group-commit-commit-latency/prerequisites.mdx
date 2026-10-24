@@ -1,0 +1,22 @@
+import Resource from '../../../../../components/Resource.astro';
+
+<section class="prereq" data-section="chapter-so-far">
+
+### <span class="n">01</span> Where the last topic left off
+
+<ul class="resources">
+  <Resource kind="reel" host={props.host} domain="rust-systems-engineering" title="ARIES steal/no-force recovery">a correct recovery says nothing yet about how expensive making a transaction durable actually is.</Resource>
+</ul>
+
+</section>
+
+<section class="prereq" data-section="group-commit-primary">
+
+### <span class="n">02</span> The real docs: what batching buys, what async gives up
+
+<ul class="resources">
+  <Resource kind="reading" title="Asynchronous Commit" href="https://www.postgresql.org/docs/current/wal-async-commit.html" by="The PostgreSQL Global Development Group">faster, at the cost that the most recent transactions may be lost.</Resource>
+  <Resource kind="reading" title="Write Ahead Log (runtime configuration)" href="https://www.postgresql.org/docs/current/runtime-config-wal.html" by="The PostgreSQL Global Development Group">the leader waits out the interval; followers only wait for the leader.</Resource>
+</ul>
+
+</section>

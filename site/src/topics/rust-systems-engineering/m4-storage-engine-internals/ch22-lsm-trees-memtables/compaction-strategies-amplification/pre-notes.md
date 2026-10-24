@@ -1,0 +1,4 @@
+- **Compaction**: merging SSTables back together in the background, cutting down how many a read must check and reclaiming space from overwritten keys.
+- **Leveled compaction**: cascades data downward through size-bounded levels, merging in smaller, more frequent steps. *Where you meet it:* cheaper to read from, more expensive to run.
+- **Tiered (universal) compaction**: merges whole batches of same-tier files together at once, less often. *Where you meet it:* cheaper to run, more expensive to read from.
+- **Read, write, and space amplification**: the real, measurable extra cost a workload pays beyond its own logical size — a real strategy trades these against each other, never minimizing all three at once.

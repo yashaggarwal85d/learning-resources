@@ -1,0 +1,68 @@
+{
+  "topic": "rust.compaction-strategies-amplification",
+  "syllabus": [
+    {
+      "clause": "leveled vs tiered (universal) vs hybrid compaction, and the read/write/space amplification trade-off (RUM conjecture). Compaction must be budgeted against foreground I/O and CPU (rate limiting, write stalls).",
+      "at": [
+        { "step": "Measured: the run count genuinely kept growing" },
+        { "step": "Measured: both leveled and tiered compaction genuinely beat no compaction at all, on both read and space amplification" },
+        { "step": "Measured: leveled and tiered compaction genuinely cost different amounts of rewritten data on the identical workload, with tiered costing less" },
+        { "step": "Measured: the tiered compactor that cost less rewritten data genuinely left more files to check and more stale data on disk than leveled did" }
+      ]
+    }
+  ],
+  "sources": [
+    {
+      "source": "wiki-leveled",
+      "items": [
+        {
+          "item": "this sacrifices write amplification by one but may significantly improve read amplification in L0 and in turn increase the capability RocksDB can hold data in L0",
+          "at": [{ "step": "Measured: leveled and tiered compaction genuinely cost different amounts of rewritten data on the identical workload, with tiered costing less" }]
+        }
+      ]
+    },
+    {
+      "source": "wiki-universal",
+      "items": [
+        {
+          "item": "universal compaction style is a compaction style, targeting the use cases requiring lower write amplification, trading off read amplification and space amplification",
+          "at": [{ "step": "Measured: leveled and tiered compaction genuinely cost different amounts of rewritten data on the identical workload, with tiered costing less" }]
+        },
+        {
+          "item": "it is generally regarded that the second strategy provides far better write amplification with worse read amplification",
+          "at": [{ "step": "Measured: the tiered compactor that cost less rewritten data genuinely left more files to check and more stale data on disk than leveled did" }]
+        }
+      ]
+    },
+    {
+      "source": "wiki-write-stalls",
+      "items": [
+        {
+          "item": "RocksDB has extensive system to slow down writes when flush or compaction can't keep up with the incoming write rate",
+          "at": [{ "step": "RocksDB's own wiki names directly why compaction itself can't just run flat out: what happens if writes keep coming in faster than flush and compaction can keep up?" }]
+        }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "self-review",
+    "date": "2026-10-24",
+    "items": [
+      { "item": "The no-compaction baseline and both real compactors are fed the identical sequence of batches, built by the same workload() function, so every comparison between them is a genuine apples-to-apples measurement rather than an artifact of different inputs.", "at": [{ "step": "Measured: both leveled and tiered compaction genuinely beat no compaction at all, on both read and space amplification" }] },
+      { "item": "The write-amplification claim counts every input entry actually processed by every merge a strategy performs, including entries from a level's or tier's own pre-existing run being re-merged, so the measured cost reflects real re-rewriting, not just the entries newly flushed.", "at": [{ "step": "Measured: leveled and tiered compaction genuinely cost different amounts of rewritten data on the identical workload, with tiered costing less" }] },
+      { "item": "The read/space-amplification claim is checked at the same point in the identical workload for both strategies (after all twenty batches), not at an arbitrarily convenient moment for either one, so the measured difference reflects the strategies' own structural trade-off rather than a lucky or unlucky snapshot.", "at": [{ "step": "Measured: the tiered compactor that cost less rewritten data genuinely left more files to check and more stale data on disk than leveled did" }] },
+      { "item": "The workload deliberately overwrites every one of its fifty distinct keys in full on every single batch, so every merge's deduplication step has real, verifiable work to do; a workload of only ever-new keys would never exercise the deduplication this topic's own claims depend on.", "at": [{ "step": "Flush memtables to SSTables over and over, with no compaction at all. As more and more flushes pile up, does a lookup's own cost ever stop growing?" }] },
+      { "item": "This topic's own leveled compactor is a simplified, two-level cascade (not RocksDB's own multi-level, multi-file-per-level design) and its own tiered compactor merges every current run at once rather than RocksDB's own size-ratio-triggered subset merges; both are real, working, measurably different compaction policies built for this topic's own claims, not a claim to replicate RocksDB's exact algorithms.", "at": [{ "step": "Run a real leveled compactor and a real tiered compactor against that same pile of flushes instead. Do both of them at least beat doing no compaction at all, on how many files a lookup has to check and how much stale data sits on disk?" }] },
+      { "item": "This topic continues directly from topic 56's own lsm-write-read-amplification-paths id, since the SSTables this topic's own compactors merge are exactly the structures topic 56's own flush path produces.", "at": [{ "step": "Flush memtables to SSTables over and over, with no compaction at all. As more and more flushes pile up, does a lookup's own cost ever stop growing?" }] },
+      { "item": "The syllabus names the RUM conjecture (read, update, and memory overhead can't all be minimized at once) directly; this topic's own measured write-versus-read/space trade-off between tiered and leveled compaction is a concrete instance of exactly that conjecture, not a separate, unrelated measurement.", "at": [{ "step": "Measured: the tiered compactor that cost less rewritten data genuinely left more files to check and more stale data on disk than leveled did" }] },
+      { "item": "All of this topic's own measured claims run entirely on in-memory Rust collections with no file, network, or root access needed, continuing this chapter's own established pattern from topic 56.", "at": [{ "step": "Recap: what compacting at all buys, and what leveled trades against tiered" }] },
+      { "item": "This topic deliberately sits second of three in Chapter 22, after topic 56's own write and read paths establish the SSTables being compacted, and before topic 58's own Bloom filters, which cut down how many of those same SSTables a read even has to open in the first place.", "at": [{ "step": "Recap: what compacting at all buys, and what leveled trades against tiered" }] },
+      { "item": "The write-stalls quote is used to state the syllabus's own 'budgeted against foreground I/O and CPU' clause directly, in the real system's own words, rather than asserting it as a claim this topic's own Rust prototype measures; the prototype itself has no foreground workload to contend with, since it runs the whole batch sequence synchronously.", "at": [{ "step": "RocksDB's own wiki names directly why compaction itself can't just run flat out: what happens if writes keep coming in faster than flush and compaction can keep up?" }] }
+    ]
+  },
+  "gapReview": {
+    "date": "2026-10-24",
+    "by": "self-review",
+    "open": []
+  }
+}

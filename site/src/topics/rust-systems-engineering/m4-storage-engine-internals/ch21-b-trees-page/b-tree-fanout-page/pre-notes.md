@@ -1,0 +1,4 @@
+- **Fanout**: how many entries fit in one page before it has to split. A high fanout is what keeps a tree only a few levels deep even at a huge record count.
+- **Page split**: when a full page gets one more entry than it can hold, it divides its entries into two pages and hands a new separator key up to its parent.
+- **Fill factor**: packing a page less than completely full on purpose, leaving room to absorb more inserts before the next split. *Where you meet it:* two trees, identical inserts, different packing, a different number of splits.
+- **Prefix/suffix truncation**: keeping only the shortest piece of a key that still tells two sides apart, instead of a full copy of the key that triggered the split.

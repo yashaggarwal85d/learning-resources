@@ -1,0 +1,73 @@
+{
+  "topic": "rust.buffer-pool-page-eviction",
+  "syllabus": [
+    {
+      "clause": "the frame table, pin counts and dirty bits; eviction policies (LRU-K, CLOCK, 2Q); latches (short, physical) vs locks (transactional). Modern designs avoid the hash-table indirection: LeanStore pointer swizzling (ICDE 2018) and vmcache (SIGMOD 2023). Contrast with the mmap approach (Ch.12).",
+      "at": [
+        { "step": "Measured: with every frame genuinely pinned, loading one more page than the pool can hold was rejected outright; nothing was ever evicted" },
+        { "step": "Measured: the dirty frame's own data was genuinely written back before that same frame was reused for the new page" },
+        { "step": "Measured: CLOCK genuinely evicted the untouched frame, not the one just re-accessed since the last sweep" },
+        { "step": "The earlier chapter's own mmap approach hands the question of when a dirty page gets written back to the OS entirely. This chapter's own buffer pool never does: a real paper on mmap-based databases names the real difference directly" },
+        { "step": "PostgreSQL's own words: pinning_backends is the number of backends pinning this buffer, and pg_buffercache_evict_relation only ever evicts a buffer that isn't pinned by anyone" }
+      ]
+    }
+  ],
+  "sources": [
+    {
+      "source": "pgbuffercache",
+      "items": [
+        {
+          "item": "isdirty asks whether the page is dirty; usagecount is the clock-sweep access count; pinning_backends is the number of backends pinning this buffer",
+          "at": [{ "step": "PostgreSQL's own pg_buffercache names exactly these fields on a real shared buffer: whether it's dirty, its own clock-sweep count, and how many backends are pinning it right now. What's that third one actually for?" }]
+        },
+        {
+          "item": "the pg_buffercache_evict_relation() function allows all unpinned shared buffers in the relation to be evicted from the buffer pool",
+          "at": [{ "step": "PostgreSQL's own words: pinning_backends is the number of backends pinning this buffer, and pg_buffercache_evict_relation only ever evicts a buffer that isn't pinned by anyone" }]
+        }
+      ]
+    },
+    {
+      "source": "leanstore-readme",
+      "items": [
+        {
+          "item": "LeanStore is a high-performance OLTP storage engine optimized for many-core CPUs and NVMe SSDs, with a lightweight buffer manager built on pointer swizzling",
+          "at": [{ "step": "Recap: who decides, and when" }]
+        }
+      ]
+    },
+    {
+      "source": "cidr2022-paper",
+      "items": [
+        {
+          "item": "a traditional buffer pool interacts with secondary storage using system calls like read and write, with the DBMS maintaining complete control over how and when it transfers pages",
+          "at": [{ "step": "The earlier chapter's own mmap approach hands the question of when a dirty page gets written back to the OS entirely. This chapter's own buffer pool never does: a real paper on mmap-based databases names the real difference directly" }]
+        },
+        {
+          "item": "with mmap, due to transparent paging, the OS can flush a dirty page to secondary storage at any time, irrespective of whether the writing transaction has committed",
+          "at": [{ "step": "The earlier chapter's own mmap approach hands the question of when a dirty page gets written back to the OS entirely. This chapter's own buffer pool never does: a real paper on mmap-based databases names the real difference directly" }]
+        }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "self-review",
+    "date": "2026-10-24",
+    "items": [
+      { "item": "The fully pinned pool claim uses a pool sized to exactly the number of pages already loaded, so the rejection is a genuine capacity failure with zero evictable frames, not an edge case sensitive to how many unpinned frames happen to remain.", "at": [{ "step": "Build a real buffer pool: a frame table, a pin count per frame, a dirty bit per frame. Pin every single frame in the pool, then try to load one more page than the pool can hold. What happens?" }] },
+      { "item": "The dirty-write-back measurement checks the write-back log's own last entry against the specific page id that was evicted, not merely that the log's length increased, so the claim is specifically that the correct page was flushed, not just that some flush happened.", "at": [{ "step": "Measured: the dirty frame's own data was genuinely written back before that same frame was reused for the new page" }] },
+      { "item": "The CLOCK demonstration deliberately re-accesses one specific frame between two separate eviction-triggering loads, rather than relying on initial load order alone, since a naive sweep would otherwise evict whichever frame the clock hand happens to reach first, which would not demonstrate the reference bit's own protective effect at all.", "at": [{ "step": "Measured: CLOCK genuinely evicted the untouched frame, not the one just re-accessed since the last sweep" }] },
+      { "item": "This implementation's own CLOCK sweep bounds its search to twice the frame count before giving up, matching a real implementation's own need for a termination guarantee when every frame is pinned; this topic's own first claim already demonstrates that exact termination case.", "at": [{ "step": "Measured: with every frame genuinely pinned, loading one more page than the pool can hold was rejected outright; nothing was ever evicted" }] },
+      { "item": "The syllabus names LRU-K and 2Q alongside CLOCK as eviction policies, and latches versus locks as a separate concept; this topic measures only CLOCK directly and discusses the others and the latch/lock distinction in prose, since building and measuring three separate eviction policies and a real latching layer is a materially larger piece of work than this topic's own three measured claims.", "at": [{ "step": "Recap: who decides, and when" }] },
+      { "item": "LeanStore's own pointer-swizzling approach, and vmcache's own virtual-memory-assisted redesign, are both named in prose from LeanStore's own documentation rather than measured, since reproducing pointer swizzling's own avoidance of a frame-table lookup needs a real virtual-memory-backed implementation beyond this topic's own minimal frame table.", "at": [{ "step": "Recap: who decides, and when" }] },
+      { "item": "The mmap contrast reuses the same CIDR 2022 paper topic twelve's own mmap-versus-owned-buffer topic quoted, re-fetched and independently verified for this topic rather than assumed from that earlier topic, per this chapter's own convention that every topic re-fetches and verifies its own sources.", "at": [{ "step": "The earlier chapter's own mmap approach hands the question of when a dirty page gets written back to the OS entirely. This chapter's own buffer pool never does: a real paper on mmap-based databases names the real difference directly" }] },
+      { "item": "This topic continues directly from topic 50's update-strategy-fragmentation-tradeoff id: all three update strategies measured there still produce pages that this topic's own buffer pool caches, and this topic's own new claim is specifically about caching and eviction, not about update cost again.", "at": [{ "step": "Build a real buffer pool: a frame table, a pin count per frame, a dirty bit per frame. Pin every single frame in the pool, then try to load one more page than the pool can hold. What happens?" }] },
+      { "item": "All three of this topic's own measured claims run entirely on in-memory Rust structures with no file, network, or root access, continuing this chapter's own pattern from topics 48 through 50 of measuring every claim directly against a real implementation.", "at": [{ "step": "Measured: CLOCK genuinely evicted the untouched frame, not the one just re-accessed since the last sweep" }] },
+      { "item": "This topic closes Chapter 19 deliberately on the question of which pages are resident in memory and who decides eviction, before anything about durability if the process dies with a dirty page still unflushed (Chapter 20) is introduced, per CHAPTER.md's own planned handoff.", "at": [{ "step": "Recap: who decides, and when" }] }
+    ]
+  },
+  "gapReview": {
+    "date": "2026-10-24",
+    "by": "self-review",
+    "open": []
+  }
+}

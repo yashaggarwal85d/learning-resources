@@ -1,0 +1,63 @@
+{
+  "topic": "rust.group-commit-commit-latency",
+  "syllabus": [
+    {
+      "clause": "group commit batches several transactions into one flush. Commit latency ≠ execution time: p99 commit latency can be dominated by flush contention. Leader/follower group-commit implementation in Rust, and what asynchronous commit gives away.",
+      "at": [
+        { "step": "Measured: committing without any grouping genuinely cost one flush per transaction, five separate flushes for five transactions ready within the same short window" },
+        { "step": "Measured: group commit genuinely used exactly one flush for the whole batch of five" },
+        { "step": "Measured: commit latency genuinely varied across the batch, even though every transaction's own execution time was identical; the earliest-ready one waited the longest" },
+        { "step": "Measured: the crash inside that gap genuinely revealed a false promise for the asynchronous commit; the identical crash against a synchronous commit never did" }
+      ]
+    }
+  ],
+  "sources": [
+    {
+      "source": "wal-async-commit",
+      "items": [
+        {
+          "item": "asynchronous commit is an option that allows transactions to complete more quickly, at the cost that the most recent transactions may be lost if the database should crash",
+          "at": [{ "step": "PostgreSQL's own documentation names exactly this trade-off directly: what does asynchronous commit actually risk, and what doesn't it risk?" }]
+        },
+        {
+          "item": "the risk that is taken by using asynchronous commit is of data loss, not data corruption",
+          "at": [{ "step": "PostgreSQL's own documentation names exactly this trade-off directly: what does asynchronous commit actually risk, and what doesn't it risk?" }]
+        }
+      ]
+    },
+    {
+      "source": "runtime-config-wal",
+      "items": [
+        {
+          "item": "setting commit_delay adds a time delay before a WAL flush is initiated, improving group commit throughput by letting a larger number of transactions commit via a single flush",
+          "at": [{ "step": "Now let the same five transactions commit as one group instead: the earliest-ready one becomes the leader, waits briefly, and a single flush covers everyone ready by then. How many flushes does that cost?" }]
+        },
+        {
+          "item": "the first process that becomes ready to flush waits for the configured interval, while subsequent processes wait only until the leader completes the flush operation",
+          "at": [{ "step": "Measured: group commit genuinely used exactly one flush for the whole batch of five" }]
+        }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "self-review",
+    "date": "2026-10-24",
+    "items": [
+      { "item": "The flush-count comparison uses the identical set of five ready ticks for both the ungrouped and the grouped runs, so the difference measured is genuinely the grouping policy itself, not a difference in how many transactions happened to be ready.", "at": [{ "step": "Measured: group commit genuinely used exactly one flush for the whole batch of five" }] },
+      { "item": "The commit-latency claim deliberately gives every transaction identical, zero-cost execution time, so any spread in commit latency measured afterward is attributable entirely to the shared flush's own timing, not to any difference in the transactions' own work.", "at": [{ "step": "Measured: commit latency genuinely varied across the batch, even though every transaction's own execution time was identical; the earliest-ready one waited the longest" }] },
+      { "item": "A false promise is defined precisely as the acknowledgment tick being at or before the crash tick while the durable tick is strictly after it, rather than simply checking whether the crash happened before durability, so that a transaction never acknowledged early in the first place is correctly never flagged regardless of when the crash lands.", "at": [{ "step": "Measured: the crash inside that gap genuinely revealed a false promise for the asynchronous commit; the identical crash against a synchronous commit never did" }] },
+      { "item": "The whole simulation runs on a discrete logical tick counter rather than real wall-clock timing or real threads, so every one of this topic's own measurements is exactly reproducible; no claim here depends on scheduler timing or measured wall-clock durations.", "at": [{ "step": "Five transactions all become ready to commit within a short window. Commit each one separately, with no grouping at all. How many WAL flushes does that cost?" }] },
+      { "item": "The leader in this topic's own group-commit implementation is simply whichever transaction has the earliest ready tick, matching PostgreSQL's own words directly: the first process ready to flush waits out the configured interval while every later-arriving process only waits for that leader's own flush to finish.", "at": [{ "step": "Now let the same five transactions commit as one group instead: the earliest-ready one becomes the leader, waits briefly, and a single flush covers everyone ready by then. How many flushes does that cost?" }] },
+      { "item": "The syllabus names p99 commit latency as the metric flush contention can dominate; this topic's own five-transaction batch measures the same underlying mechanism (the spread in individual commit latencies within one batch) at a scale small enough to show by hand, rather than reproducing a full percentile calculation over a large simulated workload.", "at": [{ "step": "Recap: what grouping buys, and what asynchronous commit gives away" }] },
+      { "item": "This topic continues directly from topic 52's own write-ahead-lsn-redo-idempotence id: asynchronous commit's own risk window is exactly the data-first-ordering risk that topic measured, deliberately accepted here in exchange for lower latency rather than treated as a bug.", "at": [{ "step": "One transaction commits asynchronously: it's told 'committed' the instant it's ready, before its own flush even happens. Crash in the gap between that acknowledgment and the real flush. Does its update survive?" }] },
+      { "item": "All three of this topic's own measured claims run entirely on in-memory Rust structures and a logical tick counter, with no file, network, or root access needed, continuing this chapter's own convention from topics 52 and 53.", "at": [{ "step": "Measured: committing without any grouping genuinely cost one flush per transaction, five separate flushes for five transactions ready within the same short window" }] },
+      { "item": "This topic deliberately closes Chapter 20 on the cost of durability itself, after topic 53's own recovery algorithm already established that durability is correct; the two topics together cover correctness and cost as genuinely separate questions.", "at": [{ "step": "Recap: what grouping buys, and what asynchronous commit gives away" }] },
+      { "item": "The syllabus's own commit_delay mechanism is a tunable number of ticks in this topic's own implementation rather than a real, configurable server parameter, since the claim under test is the leader/follower batching behavior itself, not a full configuration surface.", "at": [{ "step": "Measured: group commit genuinely used exactly one flush for the whole batch of five" }] }
+    ]
+  },
+  "gapReview": {
+    "date": "2026-10-24",
+    "by": "self-review",
+    "open": []
+  }
+}

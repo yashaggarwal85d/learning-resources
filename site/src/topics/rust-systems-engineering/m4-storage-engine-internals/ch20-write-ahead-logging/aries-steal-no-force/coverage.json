@@ -1,0 +1,68 @@
+{
+  "topic": "rust.aries-steal-no-force",
+  "syllabus": [
+    {
+      "clause": "the analysis, redo and undo passes, compensation log records and fuzzy checkpoints. Why steal + no-force is the high-performance buffer policy, and when a simpler redo-only design (no-steal, typical of LSM engines) is enough.",
+      "at": [
+        { "step": "Measured: redo genuinely reapplied the uncommitted transaction's own updates too, exactly like the committed one's; nothing about redo itself tells them apart" },
+        { "step": "Measured: redo starting from the checkpoint's own bound visited genuinely fewer log records, and reached the exact same final state as a full scan from the start" },
+        { "step": "Measured: the second recovery resumed undo exactly where the first one left off; the already-undone update got exactly one compensation log record, total, across both attempts" },
+        { "step": "The paper's own words: in ARIES, a CLR's own update is never undone, and hence CLRs are viewed as redo-only log records" },
+        { "step": "The same paper names the buffer policy this topic's own recovery assumes: steal, allowing an uncommitted page to be written back early, and no-force, allowing a committed one to stay unwritten. Redo and undo together are exactly why that combination is safe" }
+      ]
+    }
+  ],
+  "sources": [
+    {
+      "source": "aries",
+      "items": [
+        {
+          "item": "ARIES supports fuzzy checkpoints, selective and deferred restart, fuzzy image copies, media recovery, and high concurrency lock modes",
+          "at": [{ "step": "A checkpoint recorded that one page was already safely on disk, with nothing else dirty at that moment. Does redo, starting from that checkpoint's own bound instead of the very start of the log, still reach the correct final state?" }]
+        },
+        {
+          "item": "a log record's update is redone if the affected page's page-LSN is less than the log record's LSN; no logging is performed when updates are redone",
+          "at": [{ "step": "Measured: redo genuinely reapplied the uncommitted transaction's own updates too, exactly like the committed one's; nothing about redo itself tells them apart" }]
+        },
+        {
+          "item": "in ARIES, a CLR's own update is never undone, and hence CLRs are viewed as redo-only log records",
+          "at": [{ "step": "The paper's own words: in ARIES, a CLR's own update is never undone, and hence CLRs are viewed as redo-only log records" }]
+        }
+      ]
+    },
+    {
+      "source": "wal-configuration",
+      "items": [
+        {
+          "item": "checkpoints guarantee that the heap and index data files have been updated with all information written before that checkpoint; a special checkpoint record is written to the WAL file",
+          "at": [{ "step": "A checkpoint recorded that one page was already safely on disk, with nothing else dirty at that moment. Does redo, starting from that checkpoint's own bound instead of the very start of the log, still reach the correct final state?" }]
+        },
+        {
+          "item": "the crash recovery procedure looks at the latest checkpoint record to determine the point in the WAL (known as the redo record) from which it should start the REDO operation",
+          "at": [{ "step": "Measured: redo starting from the checkpoint's own bound visited genuinely fewer log records, and reached the exact same final state as a full scan from the start" }]
+        }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "self-review",
+    "date": "2026-10-24",
+    "items": [
+      { "item": "The redo-reapplies-everyone claim deliberately runs redo alone, before undo, against a log with one committed and one never-committed transaction's updates, so the measurement is specifically that redo itself carries no notion of commit status, not merely that the final recovered state happens to be correct.", "at": [{ "step": "Measured: redo genuinely reapplied the uncommitted transaction's own updates too, exactly like the committed one's; nothing about redo itself tells them apart" }] },
+      { "item": "The checkpoint-bound measurement seeds the bounded redo's own starting pages with the value actually already on disk at checkpoint time, not with blanks, matching what a real recovery's own redo pass starts from; the full-scan comparison instead starts from blanks to show what redo would need to reconstruct without that known state.", "at": [{ "step": "Measured: redo starting from the checkpoint's own bound visited genuinely fewer log records, and reached the exact same final state as a full scan from the start" }] },
+      { "item": "The record count comparison between the full scan and the checkpoint-bounded scan counts only Update and CLR records actually applied to a page, not every record type, since a checkpoint or commit record carries no page content for redo to apply in the first place.", "at": [{ "step": "Measured: redo starting from the checkpoint's own bound visited genuinely fewer log records, and reached the exact same final state as a full scan from the start" }] },
+      { "item": "The bounded-undo measurement deliberately interrupts undo after exactly one of the loser transaction's two updates, then discards the in-memory page state entirely and reruns the complete analysis, redo, and undo sequence from scratch, so the claim is about a genuine second, independent recovery attempt, not a single continuous run that merely paused.", "at": [{ "step": "Measured: the second recovery resumed undo exactly where the first one left off; the already-undone update got exactly one compensation log record, total, across both attempts" }] },
+      { "item": "Analysis determines each loser's own undo-resumption point from the most recent record belonging to that transaction, whether that record is a plain update or a CLR already written on an earlier attempt; the undo pass itself then follows a CLR's own undo_next_lsn pointer forward rather than ever re-examining the record the CLR already compensated for.", "at": [{ "step": "Measured: the second recovery resumed undo exactly where the first one left off; the already-undone update got exactly one compensation log record, total, across both attempts" }] },
+      { "item": "The syllabus names a simpler, redo-only, no-steal design, typical of LSM engines, as sufficient when immutable, append-only writes mean an uncommitted page is never written back before commit in the first place; this topic discusses that alternative in prose rather than building a second recovery implementation, since the claim under test is specifically why steal and no-force need both an undo pass and CLRs, not a full comparison implementation.", "at": [{ "step": "Recap: who redoes, who undoes, and why that makes steal and no-force safe" }] },
+      { "item": "This topic continues directly from topic 52's own write-ahead-lsn-redo-idempotence id: the same page.lsn-versus-record.lsn comparison that made redo idempotent there is the exact mechanism this topic's own redo pass and undo pass both still rely on.", "at": [{ "step": "A checkpoint recorded that one page was already safely on disk, with nothing else dirty at that moment. Does redo, starting from that checkpoint's own bound instead of the very start of the log, still reach the correct final state?" }] },
+      { "item": "All three of this topic's own measured claims run entirely on in-memory Rust structures, with a crash simulated by discarding in-memory state rather than killing a real process, continuing this chapter's own convention that no topic needs root access or a real filesystem crash.", "at": [{ "step": "Measured: redo genuinely reapplied the uncommitted transaction's own updates too, exactly like the committed one's; nothing about redo itself tells them apart" }] },
+      { "item": "This topic's own toy log uses a single byte per page as the value being updated and undone, rather than a full page buffer as topics 48-52 did, since the claim under test here is the recovery algorithm's own control flow across analysis, redo, and undo, not page-level byte layout, which earlier topics in this chapter already measured directly.", "at": [{ "step": "Build a real log with two transactions: one commits, one never does. Run only the redo pass over it, before any undo. Does redo apply the committed transaction's own updates, the uncommitted one's, or both?" }] },
+      { "item": "This topic deliberately closes Chapter 20's own recovery algorithm before its final topic (group commit and commit latency) addresses how expensive making a transaction durable actually is in the first place, per CHAPTER.md's own planned order of ideas.", "at": [{ "step": "Recap: who redoes, who undoes, and why that makes steal and no-force safe" }] }
+    ]
+  },
+  "gapReview": {
+    "date": "2026-10-24",
+    "by": "self-review",
+    "open": []
+  }
+}
