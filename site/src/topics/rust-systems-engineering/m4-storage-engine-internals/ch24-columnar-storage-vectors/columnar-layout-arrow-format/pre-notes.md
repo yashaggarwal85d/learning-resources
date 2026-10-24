@@ -1,0 +1,4 @@
+- **Row-major layout**: storing a logical row's own fields contiguously, so a wide-row read or a point update touches one contiguous region. *Where you meet it:* every chapter before this one, and any struct-of-rows table.
+- **Column-major layout**: storing each column's own values contiguously instead, so a narrow-column scan touches only that column's own bytes, at the cost of scattering a row's own fields across separate buffers.
+- **Validity bitmap**: a packed, bit-per-row array recording whether a column's value at a given row is present or null, the mechanism Apache Arrow's own format uses.
+- **Arrow**: a real columnar in-memory format, with `arrow-rs` as its Rust implementation, naming this topic's own row-versus-column trade-off directly in its own documentation.

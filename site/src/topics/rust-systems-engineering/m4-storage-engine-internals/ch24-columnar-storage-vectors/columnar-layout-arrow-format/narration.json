@@ -1,0 +1,85 @@
+{
+  "steps": [
+    {
+      "lines": [
+        "Build the identical rows two ways: once as a row-major table, and once as a column-major table split into one separate buffer per column.",
+        { "beat": 0.3 },
+        "Scanning just one of those columns, does the column-major table genuinely touch fewer bytes than the row-major one does?"
+      ],
+      "answer": [
+        "Yes, genuinely.",
+        "Far fewer bytes, in the column-major table."
+      ]
+    },
+    {
+      "lines": [
+        "Run it for real: the column-major table touched far fewer bytes scanning that one column than the row-major table did.",
+        "A row-major layout's other columns ride along for free during a narrow scan, so every row's full set of fields gets touched regardless."
+      ]
+    },
+    {
+      "lines": [
+        "Now update every field of one single logical row instead, in each of the two layouts.",
+        { "beat": 0.3 },
+        "Does the column-major table touch more separate, non-adjacent regions doing that than the row-major table does?"
+      ],
+      "answer": [
+        "Yes, genuinely.",
+        "Several separate regions, in the column-major table."
+      ]
+    },
+    {
+      "lines": [
+        "Run it for real: the column-major table touched four separate regions updating that one row, while the row-major table touched exactly one."
+      ],
+      "takeaway": "A column-major layout trades a cheap, contiguous row update for an expensive, scattered one across every column's own buffer."
+    },
+    {
+      "lines": [
+        "Mark every seventh row's own value absent, using a packed bitmap, a single bit per row, the way a real columnar format does it.",
+        { "beat": 0.3 },
+        "Does a scan over that column correctly skip exactly the rows that bitmap marks absent?"
+      ],
+      "answer": [
+        "Yes, genuinely.",
+        "Exactly those rows get skipped."
+      ]
+    },
+    {
+      "lines": [
+        "Run it for real: the scan correctly skipped exactly the rows the bitmap marked absent, using a single bit, not a whole byte, for each one."
+      ],
+      "takeaway": "A packed validity bitmap tells a scan exactly which rows to skip, at a fraction of a byte-per-row's cost."
+    },
+    {
+      "lines": [
+        "A real production columnar format's own documentation states this exact trade-off directly.",
+        { "beat": 0.3 },
+        "Does it name comparatively more expensive mutation as the real cost of its own locality and performance guarantees?"
+      ],
+      "answer": [
+        "Yes, genuinely.",
+        "It names the more expensive mutation cost directly."
+      ]
+    },
+    {
+      "lines": [
+        "That format's own documentation states it in exactly those words: real analytical performance and real data locality guarantees, in exchange for comparatively more expensive mutation operations."
+      ],
+      "takeaway": "A columnar format isn't a free upgrade over a row-major one; it trades cheap mutation for cheap scanning, on purpose."
+    },
+    {
+      "lines": [
+        "That same format's own Rust implementation names the identical trade-off from the other side, the implementation side.",
+        "Handling the validity bitmap on its own, separately from each value, is named directly as a real, measured performance improvement over folding it in."
+      ]
+    },
+    {
+      "lines": [
+        "So here's the shape of this whole topic: a column-major layout genuinely touches far fewer bytes scanning a single column, and its packed bitmap genuinely skips exactly the rows it marks absent, at a small fraction of a byte-per-row's own cost.",
+        "What it pays for that is real: updating every field of one single logical row now means touching several separate, non-adjacent buffers instead of one contiguous region, the way a row-major layout would.",
+        "That's the real trade a columnar format makes on purpose, stated directly in its own documentation: cheap scanning, bought with expensive mutation."
+      ]
+    }
+  ]
+}
