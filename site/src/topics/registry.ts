@@ -3378,4 +3378,24 @@ export const TOPICS: TopicMeta[] = [
     handoff:
       "A page sitting on disk is only useful if an engine doesn't have to read it from disk on every access. The next question is the cache in front of it: the buffer pool.",
   },
+  {
+    id: 'de.buffer-pool-page-replacement',
+    domain: 'data-engineering',
+    slug: 'data-engineering/m2-storage-database-internals/ch05-database-internals-distributed/buffer-pool-page-replacement',
+    title: 'Buffer pool and page replacement',
+    syllabusTitle: 'Buffer pool and page replacement',
+    kind: 'full',
+    status: 'held',
+    milestone: { number: 2, title: 'Storage: Database Internals, Files & the Lakehouse' },
+    chapter: { number: 5, title: 'Database Internals and Distributed Storage', section: '5.1' },
+    minutes: 15,
+    verified: '2026-10-24',
+    introduces: ['buffer-pool-pin-unpin'],
+    uses: ['slotted-page-layout'],
+    declared: [],
+    bridge:
+      "A page sitting on disk is only useful if an engine doesn't have to read it from disk on every access. This topic is the cache in front of it: the buffer pool, pin/unpin, and every real replacement policy an engine uses to decide what stays in memory.",
+    handoff:
+      "A dirty page sitting in the buffer pool is lost the instant the process crashes, unless something records the write durably before the page itself is ever flushed. That something is the write-ahead log.",
+  },
 ];

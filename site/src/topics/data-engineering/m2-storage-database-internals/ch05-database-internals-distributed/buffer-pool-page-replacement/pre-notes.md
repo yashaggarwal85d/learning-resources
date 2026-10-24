@@ -1,0 +1,5 @@
+- **Buffer pool**: the fixed-size array of in-memory slots an engine caches pages in, the thing this whole topic opens. *Where you meet it:* every step, read directly off this sandbox's own cluster.
+- **Pin/unpin**: marking a buffer as currently in use (pinned) so it can't be chosen as a replacement victim, and releasing that mark (unpin) when done. *Where you meet it:* named throughout, underlying every reveal in this topic.
+- **Checkpoint**: an engine's own operation that writes every dirty buffer out to disk at once, bounding how much work crash recovery has to redo. *Where you meet it:* the dirty-flag reveal, run for real against this sandbox's own cluster.
+- **Page cache**: the operating system's own cache of recently read or written disk blocks, separate from and underneath whatever an engine's own buffer pool does. *Where you meet it:* the double-caching reveal.
+- **Checksum/XID (transaction ID)**: identifiers already named on a page's own header in the last topic, not retaught here. *Where you meet it:* assumed, not retaught.
