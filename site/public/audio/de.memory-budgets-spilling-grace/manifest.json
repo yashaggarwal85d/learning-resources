@@ -1,0 +1,640 @@
+{
+ "topic": "de.memory-budgets-spilling-grace",
+ "voice": "breeze-mellow-v2",
+ "asr": "large-v3-turbo",
+ "clips": {
+  "01": {
+   "hash": "8a03961e9e87292f",
+   "takes": [
+    "15706e5ca456f46f37d8",
+    "698101a3f6917bedeb0c",
+    "308a068323d6db670c28"
+   ],
+   "duration": 18.942,
+   "lines": [
+    {
+     "text": "Sort millions of rows with too little memory to hold them all, and the extra spills out to disk either way.",
+     "start": 0.15,
+     "end": 6.978
+    },
+    {
+     "text": "Give it a reasonable budget, and that spill finishes quickly.",
+     "start": 7.398,
+     "end": 11.132
+    },
+    {
+     "text": "Starve the budget down hard enough, and the very same amount of data spilled takes noticeably longer.",
+     "start": 11.552,
+     "end": 18.592
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 152,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "02": {
+   "hash": "ed3fab3b7859c500",
+   "takes": [
+    "1753f9e38f0d765d1d66",
+    "bc06c8d6f2394dbb4fad",
+    "3c85a29383666f3b8a0c"
+   ],
+   "duration": 13.982,
+   "lines": [
+    {
+     "text": "A sort over millions of rows, with a budget far too small to hold the whole thing in memory.",
+     "start": 0.15,
+     "end": 6.448
+    },
+    {
+     "text": "Does spilling the rest to disk",
+     "start": 7.268,
+     "end": 9.172
+    },
+    {
+     "text": "slow this down, compared to giving it all the memory it wants?",
+     "start": 9.792,
+     "end": 13.632
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 159,
+   "wer": 0.16666666666666666,
+   "exact": false,
+   "tolerated": [
+    {
+     "line": "Does spilling the rest to disk",
+     "said": "disk",
+     "heard": "desk"
+    }
+   ]
+  },
+  "02a": {
+   "hash": "5f9d78629c4eff48",
+   "takes": [
+    "acbf581d5edf03bbe719",
+    "e03854c4166a20ba4381"
+   ],
+   "duration": 17.727,
+   "lines": [
+    {
+     "text": "Only once that budget gets severely undersized.",
+     "start": 0.15,
+     "end": 3.299
+    },
+    {
+     "text": "A spill that only takes a modest number of passes to put back together measured no slower here than staying fully in memory \u2014 it's starving the budget, not spilling itself, that costs you.",
+     "start": 3.719,
+     "end": 17.377
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -2.0,
+   "wpm": 135,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "03": {
+   "hash": "2f7f8385a52d790e",
+   "takes": [
+    "590a756f62b079cc3b44",
+    "2aa5944abc9528924baf",
+    "06a2a9fb363b22b2c3b8"
+   ],
+   "duration": 19.236,
+   "lines": [
+    {
+     "text": "Give it a generous memory budget, and the sort finishes in one pass.",
+     "start": 0.15,
+     "end": 4.751
+    },
+    {
+     "text": "Give it the ordinary default instead \u2014 enough to force it to spill a meaningful chunk of data to disk \u2014 and it finishes just as fast, if not faster.",
+     "start": 5.171,
+     "end": 15.845
+    },
+    {
+     "text": "The spill itself didn't slow anything down.",
+     "start": 16.265,
+     "end": 18.886
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -2.5,
+   "wpm": 150,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "04": {
+   "hash": "c7803316b9003b36",
+   "takes": [
+    "8f0dffd4a994928696a7",
+    "705f85718065aff7c7e0",
+    "940d93677bb2db929a25"
+   ],
+   "duration": 22.98,
+   "lines": [
+    {
+     "text": "That memory budget isn't handed to a query as a whole. It's handed to one sort, or one hash table, at a time.",
+     "start": 0.15,
+     "end": 8.935
+    },
+    {
+     "text": "A query with several of those running can spend the budget several times over in a single run.",
+     "start": 9.355,
+     "end": 15.181
+    },
+    {
+     "text": "And every other session doing the same thing at once is spending its own copy of that same budget.",
+     "start": 15.601,
+     "end": 22.63
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -2.7,
+   "wpm": 157,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "05": {
+   "hash": "75da5fe13e098ada",
+   "takes": [
+    "c23adee18e1fd705bb10",
+    "9dcb0311d8b7f7737acf",
+    "1f7e6f9f0a537170a913"
+   ],
+   "duration": 22.549,
+   "lines": [
+    {
+     "text": "Shrink that budget further, down toward the edge of what's practical, and the same sort spills almost exactly the same amount of data it did before.",
+     "start": 0.15,
+     "end": 10.959
+    },
+    {
+     "text": "But now it measurably takes longer.",
+     "start": 11.379,
+     "end": 13.365
+    },
+    {
+     "text": "The disk barely wrote any more than it already was. What changed is how many rounds it took to put all those pieces back together.",
+     "start": 13.785,
+     "end": 22.2
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -2.0,
+   "wpm": 152,
+   "wer": 0.04,
+   "exact": false,
+   "tolerated": [
+    {
+     "line": "The disk barely wrote any more than it already was. What changed is how many rounds it took to put all those pieces back together.",
+     "said": "disk",
+     "heard": "disc"
+    }
+   ]
+  },
+  "06": {
+   "hash": "b1c502e99875da29",
+   "takes": [
+    "7109102858a0eaf2ae43",
+    "d9a945e4ea39b9333d98",
+    "1e06663f7d79a0ecc267"
+   ],
+   "duration": 24.613,
+   "lines": [
+    {
+     "text": "A table built for lookups is more fragile under memory pressure than a sort is, so it gets handed a bigger multiple of the same base budget by default.",
+     "start": 0.15,
+     "end": 10.209
+    },
+    {
+     "text": "Raise that multiple on a hash-based join, holding everything else fixed, and the number of pieces it has to split itself into drops sharply.",
+     "start": 10.629,
+     "end": 19.309
+    },
+    {
+     "text": "Same base budget. The hash side just got told it's allowed more of it.",
+     "start": 19.729,
+     "end": 24.264
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 166,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "07": {
+   "hash": "f4c0b0c3b6dde021",
+   "takes": [
+    "578afbaa30b44f18c82a",
+    "d48180f40b9cfb282da9"
+   ],
+   "duration": 11.121,
+   "lines": [
+    {
+     "text": "A join building its lookup table from the smaller side of the two, with that memory budget shrinking step by step.",
+     "start": 0.15,
+     "end": 6.798
+    },
+    {
+     "text": "What happens to the join as that budget keeps shrinking?",
+     "start": 7.618,
+     "end": 10.771
+    }
+   ],
+   "lufs": -16.1,
+   "true_peak": -2.1,
+   "wpm": 167,
+   "wer": 0.09523809523809523,
+   "exact": false,
+   "tolerated": [
+    {
+     "line": "A join building its lookup table from the smaller side of the two, with that memory budget shrinking step by step.",
+     "said": "lookup",
+     "heard": "look up"
+    }
+   ]
+  },
+  "07a": {
+   "hash": "b971f92f53e90253",
+   "takes": [
+    "d34c09b07e87775675d8",
+    "3834f7345177807fc7d7"
+   ],
+   "duration": 11.832,
+   "lines": [
+    {
+     "text": "It keeps running \u2014 just split into more and more pieces on disk.",
+     "start": 0.15,
+     "end": 4.924
+    },
+    {
+     "text": "A join that can't fit its table in memory doesn't fail. It partitions the work instead.",
+     "start": 5.344,
+     "end": 11.482
+    }
+   ],
+   "lufs": -16.1,
+   "true_peak": -2.0,
+   "wpm": 142,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "08": {
+   "hash": "5d0700cfdaf18b03",
+   "takes": [
+    "bc1b610d68a410300ff2",
+    "b4cac01fe6ea9b423ecb",
+    "fb61e72dda48f21f6aba"
+   ],
+   "duration": 24.069,
+   "lines": [
+    {
+     "text": "Watch the number of pieces as the budget shrinks, one step at a time: one, then a few, then more than a dozen, then dozens, then hundreds.",
+     "start": 0.15,
+     "end": 10.539
+    },
+    {
+     "text": "Checked the step in between two of those settings too, and it landed exactly where doubling would put it.",
+     "start": 10.959,
+     "end": 17.325
+    },
+    {
+     "text": "Every time the budget is cut in half, the number of pieces this join splits into doubles.",
+     "start": 17.745,
+     "end": 23.719
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 157,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "09": {
+   "hash": "cba1391d35794f1f",
+   "takes": [
+    "1165473b9a783c01d0c5",
+    "d3f41d3d2b59ab3a8e6c",
+    "38d2170f00866248f5a0"
+   ],
+   "duration": 26.336,
+   "lines": [
+    {
+     "text": "A row that doesn't belong to whatever slice is currently sitting in memory gets written out to its own numbered file on disk instead \u2014 both the side building the table and the side probing it.",
+     "start": 0.15,
+     "end": 11.968
+    },
+    {
+     "text": "Once the in-memory pass finishes, each of those files gets joined on its own, one piece at a time.",
+     "start": 12.388,
+     "end": 19.573
+    },
+    {
+     "text": "Nothing about this requires the whole dataset to fit at once. It just means more separate passes.",
+     "start": 19.993,
+     "end": 25.986
+    }
+   ],
+   "lufs": -16.2,
+   "true_peak": -2.3,
+   "wpm": 164,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "10": {
+   "hash": "66564299ead059a8",
+   "takes": [
+    "35841c17457b9c766455",
+    "5fd82ee56de44235ab35"
+   ],
+   "duration": 16.075,
+   "lines": [
+    {
+     "text": "Two separate sessions, each with the same ordinary memory budget, each running the very same spilling operation \u2014 at the same moment.",
+     "start": 0.15,
+     "end": 9.293
+    },
+    {
+     "text": "What happens to the total memory, and disk, those two sessions actually use between them?",
+     "start": 10.113,
+     "end": 15.725
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -2.3,
+   "wpm": 134,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "10a": {
+   "hash": "bdafe74765851dea",
+   "takes": [
+    "84c6d7f4b38395876a33",
+    "32ecbab6a51a7b742927"
+   ],
+   "duration": 14.292,
+   "lines": [
+    {
+     "text": "Each one gets its own full budget, so the total doubles.",
+     "start": 0.15,
+     "end": 4.324
+    },
+    {
+     "text": "That budget was never a system-wide ceiling to begin with \u2014 it was always per operation, and nothing stops two of them from spending it at once.",
+     "start": 4.744,
+     "end": 13.942
+    }
+   ],
+   "lufs": -16.1,
+   "true_peak": -1.9,
+   "wpm": 160,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "11": {
+   "hash": "d75b5e0cea7ada7d",
+   "takes": [
+    "bc4be69fe6fda20cecd2",
+    "d60f6e6859c22f676a32",
+    "c97bd406af1f628585dd"
+   ],
+   "duration": 23.97,
+   "lines": [
+    {
+     "text": "One session spilling alone writes a certain amount to disk.",
+     "start": 0.15,
+     "end": 3.593
+    },
+    {
+     "text": "Start a second session doing the exact same thing, at the same time, and watching the combined disk usage climb while both are still running shows it approaching double that amount.",
+     "start": 4.013,
+     "end": 18.184
+    },
+    {
+     "text": "Each session the whole time still only ever sees its own, unchanged budget.",
+     "start": 18.604,
+     "end": 23.62
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 135,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "12": {
+   "hash": "73d46f222b7061e4",
+   "takes": [
+    "3aea2cb14e64a6dd029e",
+    "0e656edbb04fcbeb6099",
+    "b800e2364abe29e83497"
+   ],
+   "duration": 32.526,
+   "lines": [
+    {
+     "text": "One value in a column can carry a wildly disproportionate share of all the rows.",
+     "start": 0.15,
+     "end": 5.695
+    },
+    {
+     "text": "Without any special handling, every one of those rows would get rewritten into whichever disk partition its hash happens to land in \u2014 over and over, for a key that's small enough to just keep in memory the whole time.",
+     "start": 6.115,
+     "end": 20.253
+    },
+    {
+     "text": "The engine's own source code keeps that frequent key's matching rows in a dedicated bucket instead, permanently in memory \u2014 though this version gives no separate signal for it in a plan.",
+     "start": 20.673,
+     "end": 32.176
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 157,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "13": {
+   "hash": "6371c1e97acb4b55",
+   "takes": [
+    "76c91856466de0d41a2a",
+    "10a60543960dc5e78fff",
+    "be71733263709111642c",
+    "4c67ccf8dbc00696c63a",
+    "e30b7510bcded0624d9e"
+   ],
+   "duration": 27.655,
+   "lines": [
+    {
+     "text": "That memory budget belongs to one operation, not one query.",
+     "start": 0.15,
+     "end": 4.3
+    },
+    {
+     "text": "A hash-based operation gets handed a bigger share of it than a sort does.",
+     "start": 4.72,
+     "end": 9.663
+    },
+    {
+     "text": "Spilling itself, done well, cost nothing extra here \u2014 it was starving the budget that cost you.",
+     "start": 10.083,
+     "end": 16.084
+    },
+    {
+     "text": "A join that can't fit doesn't fail. It splits into pieces.",
+     "start": 16.504,
+     "end": 20.815
+    },
+    {
+     "text": "And every session spilling at the same time pays that budget all over again.",
+     "start": 21.235,
+     "end": 27.305
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -1.9,
+   "wpm": 143,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "14": {
+   "hash": "bc26b1a202a52ce3",
+   "takes": [
+    "a6c04984e03861a09b81",
+    "5cb8ef7aa486f5d48b71"
+   ],
+   "duration": 13.374,
+   "lines": [
+    {
+     "text": "A plan reports a bucket count, and a count of how many pieces the operation split into, and how much memory it actually used.",
+     "start": 0.15,
+     "end": 8.184
+    },
+    {
+     "text": "Did this hash join have to spill to disk?",
+     "start": 8.904,
+     "end": 13.024
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -2.5,
+   "wpm": 148,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "14a": {
+   "hash": "4bd0a25937457bdd",
+   "takes": [
+    "77c37482a15a1605aad7",
+    "afb2bdbc3b026db9c8f1"
+   ],
+   "duration": 17.633,
+   "lines": [
+    {
+     "text": "Yes \u2014 anything more than a single piece means rows went out to disk.",
+     "start": 0.15,
+     "end": 5.577
+    },
+    {
+     "text": "A hash join that fits entirely in memory only ever reports one piece. More than one is the same signal a spilling hash join from earlier gave you.",
+     "start": 5.997,
+     "end": 17.283
+    }
+   ],
+   "lufs": -16.2,
+   "true_peak": -2.8,
+   "wpm": 140,
+   "wer": 0.15384615384615385,
+   "exact": false,
+   "tolerated": [
+    {
+     "line": "Yes \u2014 anything more than a single piece means rows went out to disk.",
+     "said": "rows",
+     "heard": "rose"
+    },
+    {
+     "line": "Yes \u2014 anything more than a single piece means rows went out to disk.",
+     "said": "disk",
+     "heard": "desk"
+    }
+   ]
+  },
+  "15": {
+   "hash": "793109adef3ae5d7",
+   "takes": [
+    "68c4f62cb1eeb623b856",
+    "2b1a520b1f4084ac65ae"
+   ],
+   "duration": 11.881,
+   "lines": [
+    {
+     "text": "Six sessions, each handed the same fixed memory budget, all spilling at once.",
+     "start": 0.15,
+     "end": 5.778
+    },
+    {
+     "text": "What's the worst case for how much memory this workload can actually use in total?",
+     "start": 6.498,
+     "end": 11.531
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 141,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "15a": {
+   "hash": "a9a925a0320f7ab4",
+   "takes": [
+    "8367555a3b9ad9481a5e",
+    "c6345c56eaceea8e7de9"
+   ],
+   "duration": 13.861,
+   "lines": [
+    {
+     "text": "Six times that one session's budget, not the budget on its own.",
+     "start": 0.15,
+     "end": 4.056
+    },
+    {
+     "text": "That's the exact same multiplication measured directly two steps back \u2014 nothing caps it at a single session's share.",
+     "start": 4.476,
+     "end": 13.511
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 130,
+   "wer": 0.05555555555555555,
+   "exact": false,
+   "tolerated": [
+    {
+     "line": "That's the exact same multiplication measured directly two steps back \u2014 nothing caps it at a single session's share.",
+     "said": "sessions",
+     "heard": "session"
+    }
+   ]
+  }
+ }
+}
