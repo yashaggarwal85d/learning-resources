@@ -4348,4 +4348,24 @@ export const TOPICS: TopicMeta[] = [
     handoff:
       "Every mechanism in this section so far lived inside one engine, on one machine. The next section asks what a transaction even means once two transactions can run at the same time at all — starting with a precise restatement of ACID itself.",
   },
+  {
+    id: 'de.acid-guarantees-precisely-stated',
+    domain: 'data-engineering',
+    slug: 'data-engineering/m2-storage-database-internals/ch05-database-internals-distributed/acid-guarantees-precisely-stated',
+    title: 'ACID guarantees, precisely stated',
+    syllabusTitle: 'ACID guarantees, precisely stated',
+    kind: 'refresher',
+    status: 'held',
+    milestone: { number: 2, title: 'Storage: Database Internals, Files & the Lakehouse' },
+    chapter: { number: 5, title: 'Database Internals and Distributed Storage', section: '5.2' },
+    minutes: 5,
+    verified: '2026-10-24',
+    introduces: ['acid-guarantees'],
+    uses: ['wal-lsn-fsync', 'mvcc-versioning'],
+    declared: [],
+    bridge:
+      "Every mechanism in §5.1 lived inside one engine, on one machine. This refresher is the precise vocabulary the rest of this section needs before naming what happens when two transactions run at the same time: ACID, each letter stated exactly, and which one the engine can't own alone.",
+    handoff:
+      "Isolation is the one letter with the most room to be violated quietly. The next topic names exactly how, with the real anomalies ANSI's own definitions leave ambiguous.",
+  },
 ];

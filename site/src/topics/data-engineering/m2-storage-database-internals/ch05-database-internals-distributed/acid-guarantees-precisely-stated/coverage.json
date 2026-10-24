@@ -1,0 +1,134 @@
+{
+  "topic": "de.acid-guarantees-precisely-stated",
+  "syllabus": [
+    {
+      "clause": "what atomicity, consistency, isolation and durability each actually promise",
+      "at": [
+        { "step": "Reveal: Atomicity" },
+        { "step": "Reveal: Consistency, the split answer" },
+        { "step": "Reveal: Isolation" },
+        { "step": "Reveal: Durability" }
+      ]
+    },
+    {
+      "clause": "which layer (engine vs application) owns \"consistency\"",
+      "at": [
+        { "step": "Predict: who owns \"Consistency\"?" },
+        { "step": "Reveal: Consistency, the split answer" }
+      ]
+    }
+  ],
+  "sources": [
+    {
+      "source": "ACID (Wikipedia)",
+      "items": [
+        {
+          "item": "the 1983 coinage by Reuter and Härder, building on Jim Gray's earlier atomicity/consistency/durability naming",
+          "at": [{ "step": "Reveal: the ten-year gap" }]
+        },
+        {
+          "item": "IBM's IMS already supported ACID transactions in 1973, a decade before the acronym existed",
+          "at": [{ "step": "Reveal: the ten-year gap" }]
+        },
+        {
+          "item": "atomicity's own precise definition: all-or-nothing, in every situation including crashes",
+          "at": [{ "step": "Reveal: Atomicity" }]
+        },
+        {
+          "item": "consistency's own engine-side definition: only valid-per-declared-rules state transitions",
+          "at": [{ "step": "Reveal: Consistency, the split answer" }]
+        },
+        {
+          "item": "isolation's own precise definition: concurrent transactions behave as if run sequentially",
+          "at": [{ "step": "Reveal: Isolation" }]
+        },
+        {
+          "item": "durability's own precise definition: a commit survives a crash, usually via non-volatile recording",
+          "at": [{ "step": "Reveal: Durability" }]
+        },
+        {
+          "item": "the bank-transfer atomicity example, reproduced directly in examples.py",
+          "at": [{ "step": "Reveal: Atomicity" }]
+        }
+      ]
+    },
+    {
+      "source": "Consistency (database systems) (Wikipedia)",
+      "items": [
+        {
+          "item": "the precise split: the engine doesn't guarantee application-intended correctness, only that its own declared constraints aren't violated",
+          "at": [{ "step": "Reveal: Consistency, the split answer" }]
+        }
+      ]
+    },
+    {
+      "source": "PostgreSQL docs: Transaction Isolation",
+      "items": [
+        {
+          "item": "Serializable's own precise SQL-standard definition",
+          "at": [{ "deep": "Frontier" }]
+        }
+      ]
+    },
+    {
+      "source": "PostgreSQL docs: Concurrency Control Introduction",
+      "items": [
+        {
+          "item": "MVCC as Postgres's own real isolation mechanism (snapshots), measured directly via Read Committed vs. Repeatable Read",
+          "at": [{ "step": "Reveal: Isolation" }]
+        }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "self-review",
+    "date": "2026-10-24",
+    "items": [
+      {
+        "item": "ACID is a 1983 coinage (Reuter & Härder) built on Jim Gray's earlier atomicity/consistency/durability naming; isolation was Reuter and Härder's own addition.",
+        "at": [{ "step": "Reveal: the ten-year gap" }]
+      },
+      {
+        "item": "The real guarantees predate the acronym: IBM's IMS already supported ACID-equivalent transactions in 1973.",
+        "at": [{ "step": "Reveal: the ten-year gap" }]
+      },
+      {
+        "item": "Atomicity means a transaction is indivisible: every statement succeeds, or none of their effects persist, even across a crash mid-transaction.",
+        "at": [{ "step": "Reveal: Atomicity" }]
+      },
+      {
+        "item": "Consistency as an engine guarantee covers only what the schema actually declares: constraints, cascades, triggers. It says nothing about whether the transaction did what the application programmer actually meant.",
+        "at": [{ "step": "Reveal: Consistency, the split answer" }]
+      },
+      {
+        "item": "The application owns the rest of 'correctness': any invariant not expressed as a declared constraint is invisible to the engine and can be silently violated by a transaction the engine happily commits.",
+        "at": [{ "step": "Reveal: Consistency, the split answer" }]
+      },
+      {
+        "item": "Isolation is about concurrent transactions appearing as if they ran one at a time; the exact guarantee strength (which anomalies are and aren't allowed) varies by isolation level, from Read Committed up to Serializable.",
+        "at": [{ "step": "Reveal: Isolation" }]
+      },
+      {
+        "item": "PostgreSQL's own isolation mechanism is MVCC: each transaction sees a snapshot, not the live table, which is why Read Committed and Repeatable Read can see the identical interleaving differently.",
+        "at": [{ "step": "Reveal: Isolation" }]
+      },
+      {
+        "item": "Durability means a commit survives a crash; the real mechanism (write-ahead logging, already taught in §5.1) is what makes that promise physically true, not just contractually claimed.",
+        "at": [{ "step": "Reveal: Durability" }]
+      },
+      {
+        "item": "A transaction's commit acknowledgment to the client is itself evidence the WAL record reached durable storage; a crash after that point must not lose the change, which is what distinguishes a real durability guarantee from an optimistic one.",
+        "at": [{ "step": "Reveal: Durability" }]
+      },
+      {
+        "item": "ACID is a transaction-level contract; it says nothing by itself about distributed consistency across multiple nodes (a separate, later concern this chapter builds toward, not this refresher's own scope).",
+        "at": [{ "out": "distributed transactions are out of scope for this refresher; named only as a boundary, not measured or taught here" }]
+      }
+    ]
+  },
+  "gapReview": {
+    "date": "2026-10-24",
+    "by": "self-review",
+    "open": []
+  }
+}
