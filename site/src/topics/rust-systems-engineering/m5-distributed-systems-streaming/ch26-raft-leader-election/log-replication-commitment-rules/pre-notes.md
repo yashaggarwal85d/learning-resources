@@ -1,0 +1,4 @@
+- **AppendEntries**: the leader's own real replication call, carrying its current term, the previous log index and term it expects a follower to already hold, the new entries, and its own current commit index.
+- **Commitment rule**: an entry is only ever considered committed once it is stored on a real majority of nodes under the leader's own current term. *Where you meet it:* a previous-term entry on a real majority is genuinely not enough on its own.
+- **Figure 8 hazard**: the real situation the commitment rule exists to prevent, where an old log entry sits on a majority yet can still be overwritten by a future leader, if committed by counting replicas alone.
+- **Conflict repair**: when a follower's log diverges from the leader's, the leader backs up to the last index both genuinely agree on and overwrites the follower's own divergent suffix from there, never silently corrupting an index.

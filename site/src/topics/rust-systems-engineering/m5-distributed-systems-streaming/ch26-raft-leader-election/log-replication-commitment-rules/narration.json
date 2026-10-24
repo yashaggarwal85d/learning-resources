@@ -1,0 +1,79 @@
+{
+  "steps": [
+    {
+      "lines": [
+        "A follower's own log genuinely diverges from the leader's, at one point.",
+        { "beat": 0.3 },
+        "The leader retries, backing up one entry at a time. Does it genuinely find the real common prefix, and overwrite only the divergent suffix?"
+      ],
+      "answer": [
+        "Yes, genuinely.",
+        "It finds the real common prefix."
+      ]
+    },
+    {
+      "lines": [
+        "Run it for real: the repair genuinely finds the common prefix, and overwrites the follower's divergent suffix exactly."
+      ]
+    },
+    {
+      "lines": [
+        "Now a single entry from a previous term already sits on a real majority of the cluster.",
+        { "beat": 0.3 },
+        "Does the leader genuinely count it as committed, just from that real majority alone?"
+      ],
+      "answer": [
+        "No.",
+        "A real majority alone was genuinely not enough."
+      ]
+    },
+    {
+      "lines": [
+        "Run it for real: genuinely not committed. A previous term's own real majority alone is genuinely not enough."
+      ],
+      "takeaway": "A real majority alone is not enough for a previous-term entry; this is the exact hazard the rule prevents."
+    },
+    {
+      "lines": [
+        "Now the leader also replicates one real entry from its own current term, to the identical majority.",
+        { "beat": 0.3 },
+        "Does that entry genuinely commit, and does the earlier entry genuinely commit along with it?"
+      ],
+      "answer": [
+        "Both, genuinely.",
+        "One real commitment reaches backward too."
+      ]
+    },
+    {
+      "lines": [
+        "Run it for real: the current-term entry genuinely commits, and the earlier entry genuinely commits right along with it."
+      ],
+      "takeaway": "One real commitment, from the leader's own current term, reaches backward and commits every earlier entry too."
+    },
+    {
+      "lines": [
+        "One real, foundational paper on this exact subject states this rule directly, in its own words.",
+        "Only entries from the leader's own current term are ever committed by counting replicas."
+      ]
+    },
+    {
+      "lines": [
+        "A real, widely used consensus implementation in Rust keeps its own log genuinely separate from the application's own state machine.",
+        "That separation is exactly what lets consensus itself be tested against a trivial state machine first."
+      ]
+    },
+    {
+      "lines": [
+        "Run it for real, all together: the repair, the previous-term refusal, and the current-term commitment, measured on one real log and one real follower."
+      ],
+      "takeaway": "A handful of plain comparisons, on index, term, and replica count, turn out to be the whole real safety net."
+    },
+    {
+      "lines": [
+        "So here's the real shape of this whole topic: committing is never about a count alone, and repairing is never about guessing where two logs went wrong.",
+        "A log entry only counts once a real majority holds it under the exact term the leader is currently running, which is why an old, already-widespread entry still has to wait.",
+        "And fixing a broken follower never means special-casing anything; the leader just keeps stepping backward until the numbers finally agree, then lets ordinary replication take it from there."
+      ]
+    }
+  ]
+}
