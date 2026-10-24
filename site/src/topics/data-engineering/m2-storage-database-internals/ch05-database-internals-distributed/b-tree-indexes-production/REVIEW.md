@@ -59,3 +59,43 @@ Read in order: `checkpoints-crash-recovery/reel.tsx` + `checkpoints-crash-recove
    deduplication, concurrency) together. No fix needed.
 
 `coverage.json → gapReview` recorded below.
+
+## Looks review, self-review, 2026-10-24
+
+Opened every phone screenshot in `site/test-results/` (steps 01–10, plus the two `-q` predict-answer
+frames for steps 4 and 10) and one desktop screenshot (step 5), against `DESIGN.md`'s checklist.
+
+1. **[Phone text overlap] `tests/reels.mjs`'s automated check initially failed on three rows**
+   (step 7's `RevealLehmanYao` row, and step 8's `RevealProductionFeatures` both rows) — label/value
+   text too long for phone width, the recurring `Row`-overlap pattern from prior topics. **Fix
+   applied:** shortened step 7's value from "follow the link, not a lock" to "follow the link", and
+   step 8's label/value pairs to "a skipped column" / "PG18 still uses it" and "a secondary lookup" /
+   "one engine's extra hop". Re-ran `node scripts/check-all.mjs --only reels --topic
+   b-tree-indexes-production`: "Reel smoke test passed: 1 live reel(s) at desktop and phone sizes."
+   Severity: moderate (a real rendering bug, not polish).
+
+2. **[Point visible at a glance] Checked every step for more than just colour.** Each step's title,
+   the bold value text, and (where present) the red/white predict-answer framing and the
+   gold-highlighted focus value carry the point without relying on colour alone — e.g. step 5's
+   "grew by real pages" vs. "grew by none" reads as the point from the words themselves, colour only
+   reinforces it. No fix needed.
+
+3. **[Motion and landing frame] Every step's rows fade/ease in** (`easeOut(seg(t, ...))`) and land on
+   a settled final frame with both rows fully visible — confirmed in the phone screenshots, which all
+   show the post-animation resting state with no mid-transition clipping. No fix needed.
+
+4. **[Crowding / clipping / small text] Checked all ten phone frames and the desktop frame.** No
+   crowded, clipped, or undersized text in any of them after the step 7/8 fix; row spacing (55px
+   gaps, consistent with sibling topics) holds on phone width throughout, including the four-row
+   `Recap` step and three-row `ProveIt` step. No fix needed.
+
+5. **[Colour used only for meaning] Confirmed red is reserved for the wrong predict-answer option**
+   (steps 4 and 10's `-q` frames) and the warm focus colour marks the step's actual takeaway value,
+   never decorative. No fix needed.
+
+6. **[Captions match the voice] Checked on-screen text against `narration.json` for steps 1, 5, 6,
+   7, and 9.** The on-screen `Row` text stays terse (data labels), the narration explains and teaches
+   around it rather than reading it aloud, consistent with the house rule. No fix needed.
+
+All phone and desktop screenshots re-checked after the step 7/8 fix (the `-q` frames for steps 4 and
+10 were captured before this fix and are unaffected, since neither overlap was on those two steps).

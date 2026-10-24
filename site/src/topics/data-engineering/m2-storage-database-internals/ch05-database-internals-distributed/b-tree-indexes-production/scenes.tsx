@@ -74,7 +74,7 @@ export function RevealLehmanYao({ t }: StepCtx) {
   return (
     <Svg label="a search is reading a page exactly when it splits underneath it. What stops that from reading garbage?" h={200}>
       <Row y={70} label="every page" value="a right-link to its sibling" o={easeOut(seg(t, 0, 0.5))} />
-      <Row y={130} label="a split mid-search" value="follow the link, not a lock" valueColor={C.focus} o={easeOut(seg(t, 0.3, 1))} />
+      <Row y={130} label="a split, mid-search" value="follow the link" valueColor={C.focus} o={easeOut(seg(t, 0.3, 1))} />
     </Svg>
   );
 }
@@ -82,8 +82,8 @@ export function RevealLehmanYao({ t }: StepCtx) {
 export function RevealProductionFeatures({ t }: StepCtx) {
   return (
     <Svg label="two features production systems actually use: a smarter multicolumn lookup, and a different engine's own trade-off." h={200}>
-      <Row y={70} label="skips the leading column" value="PG18: still uses the index" o={easeOut(seg(t, 0, 0.5))} />
-      <Row y={130} label="a secondary lookup" value="one engine's own extra hop" valueColor={C.focus} o={easeOut(seg(t, 0.3, 1))} />
+      <Row y={70} label="a skipped column" value="PG18 still uses it" o={easeOut(seg(t, 0, 0.5))} />
+      <Row y={130} label="a secondary lookup" value="one engine's extra hop" valueColor={C.focus} o={easeOut(seg(t, 0.3, 1))} />
     </Svg>
   );
 }
