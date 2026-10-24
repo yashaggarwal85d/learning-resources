@@ -1,0 +1,143 @@
+{
+  "topic": "de.write-ahead-logging-fsync",
+  "syllabus": [
+    {
+      "clause": "\"log before data\": LSNs, group commit, fsync vs fdatasync vs O_DSYNC, write barriers and drive caches",
+      "at": [
+        { "step": "Reveal: a real log position, read directly off this sandbox's own cluster" },
+        { "step": "Reveal: the write-ahead rule, and a measured trick that bends it without breaking it" },
+        { "step": "Reveal: three real ways to force a write out, and which one this sandbox actually uses" }
+      ]
+    },
+    {
+      "clause": "torn pages and Postgres full-page writes vs InnoDB's doublewrite buffer",
+      "at": [
+        { "step": "Predict: does a torn page mean a write always lands as all-or-nothing?" },
+        { "step": "Reveal: a torn page's real defense, measured triggering exactly once per checkpoint" },
+        { "step": "Reveal: a different engine's own defense against the identical torn-page problem" }
+      ]
+    },
+    {
+      "clause": "the 2018 \"fsyncgate\" lesson (a failed fsync can silently drop dirty pages, so the only safe response is to crash and replay). Build depth → Rust Systems Engineering Ch.20 and Ch.15.",
+      "at": [{ "step": "Reveal: a real, documented lesson a failed force-out taught the hard way" }]
+    }
+  ],
+  "sources": [
+    {
+      "source": "WAL Internals",
+      "items": [
+        {
+          "item": "an LSN is a byte offset into the WAL, increasing monotonically with each new record, and comparable to measure the volume of WAL data between two of them",
+          "at": [{ "step": "Reveal: a real log position, read directly off this sandbox's own cluster" }]
+        }
+      ]
+    },
+    {
+      "source": "Write Ahead Log",
+      "items": [
+        {
+          "item": "wal_sync_method's real options include fdatasync, fsync, and an open_datasync option built on the O_DSYNC open flag",
+          "at": [{ "step": "Reveal: three real ways to force a write out, and which one this sandbox actually uses" }]
+        },
+        {
+          "item": "commit_delay can improve group commit throughput by letting more transactions share one WAL flush, at the cost of added per-commit latency",
+          "at": [{ "step": "Reveal: the write-ahead rule, and a measured trick that bends it without breaking it" }]
+        },
+        {
+          "item": "full-page writes log a page's entire content on its first modification after a checkpoint, because an interrupted page write can leave a mix of old and new data",
+          "at": [{ "step": "Reveal: a torn page's real defense, measured triggering exactly once per checkpoint" }]
+        }
+      ]
+    },
+    {
+      "source": "Reliability",
+      "items": [
+        {
+          "item": "a disk write happens in fixed-size sectors, and a crash partway through can leave some sectors written and others not",
+          "at": [{ "step": "Predict: does a torn page mean a write always lands as all-or-nothing?" }]
+        },
+        {
+          "item": "PostgreSQL periodically writes full page images to WAL before modifying the actual page, so a partially-written page can be restored from WAL during crash recovery",
+          "at": [{ "step": "Reveal: a torn page's real defense, measured triggering exactly once per checkpoint" }]
+        }
+      ]
+    },
+    {
+      "source": "Fsync Errors",
+      "items": [
+        {
+          "item": "in 2018, multiple Linux kernel versions were found to lose or misreport fsync errors, so a buffer could be marked clean after a failed write and discarded under memory pressure",
+          "at": [{ "step": "Reveal: a real, documented lesson a failed force-out taught the hard way" }]
+        },
+        {
+          "item": "PostgreSQL's real fix, backpatched across five release lines, is to PANIC on an fsync failure rather than retry it",
+          "at": [{ "step": "Reveal: a real, documented lesson a failed force-out taught the hard way" }]
+        }
+      ]
+    },
+    {
+      "source": "InnoDB Doublewrite Buffer",
+      "items": [
+        {
+          "item": "InnoDB writes a page to its own doublewrite buffer first and only writes it to its final destination once that buffer copy is safely flushed, recovering a half-written page by checking the buffer's own copy",
+          "at": [{ "step": "Reveal: a different engine's own defense against the identical torn-page problem" }]
+        }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "Claude (single session)",
+    "date": "2026-10-24",
+    "items": [
+      {
+        "item": "The write-ahead rule isn't just 'log things' — it specifically requires the log record to be durable (flushed) before the changed data page itself is written back, which is the exact ordering this topic's own LSN measurement and group-commit measurement both depend on.",
+        "at": [{ "step": "Reveal: the write-ahead rule, and a measured trick that bends it without breaking it" }]
+      },
+      {
+        "item": "An LSN is useful precisely because it's comparable: replication and recovery both work by asking 'how far ahead is this LSN of that one,' not by inspecting log contents directly.",
+        "at": [{ "step": "Reveal: a real log position, read directly off this sandbox's own cluster" }]
+      },
+      {
+        "item": "Group commit doesn't weaken the write-ahead rule at all — every one of the grouped transactions still waits for its own flush to actually complete before it's reported as committed; it only reduces how many separate flushes that waiting costs in total.",
+        "at": [{ "step": "Reveal: the write-ahead rule, and a measured trick that bends it without breaking it" }]
+      },
+      {
+        "item": "A torn page is a physical-layer problem, not a software bug: the database's own page size (commonly 8 kB) is written in multiple smaller physical sector writes, and nothing above that layer can assume all of them land together.",
+        "at": [{ "step": "Predict: does a torn page mean a write always lands as all-or-nothing?" }]
+      },
+      {
+        "item": "Full-page writes only need to fire once per page per checkpoint cycle, because WAL replay always starts from a checkpoint anyway — logging the full page again on a second change to the same page before the next checkpoint would be pure waste.",
+        "at": [{ "step": "Reveal: a torn page's real defense, measured triggering exactly once per checkpoint" }]
+      },
+      {
+        "item": "fsync, fdatasync and the O_DSYNC-based option all answer the same question (force this out to real storage) at different costs: fdatasync skips flushing metadata that doesn't affect how the data reads back, which is why it's the faster default on the platforms that support it correctly.",
+        "at": [{ "step": "Reveal: three real ways to force a write out, and which one this sandbox actually uses" }]
+      },
+      {
+        "item": "InnoDB's doublewrite buffer and Postgres's full-page writes solve the identical problem (recovering from a torn page) with opposite trade-offs: InnoDB pays a second physical write up front on every flush, while Postgres pays extra WAL volume only on a page's first change after a checkpoint.",
+        "at": [{ "step": "Reveal: a different engine's own defense against the identical torn-page problem" }]
+      },
+      {
+        "item": "The 2018 fsyncgate lesson generalizes past Postgres: any system that calls fsync and trusts a success return value was exposed, because the kernel's own error-reporting contract at the time didn't guarantee a caller could ever reliably learn that a write had actually failed.",
+        "at": [{ "step": "Reveal: a real, documented lesson a failed force-out taught the hard way" }]
+      },
+      {
+        "item": "Crashing on a failed fsync looks drastic, but the alternative is worse: once a caller can't trust that 'fsync succeeded' means the data is actually durable, the only state anyone can still trust is whatever a full crash-and-replay from the last known-good checkpoint reconstructs.",
+        "at": [{ "step": "Reveal: a real, documented lesson a failed force-out taught the hard way" }]
+      },
+      {
+        "item": "wal_sync_method is a per-cluster configuration choice, not a fixed property of the database engine itself — the same Postgres binary can be told to use any of several real system calls depending on what the underlying platform and filesystem actually support correctly.",
+        "at": [{ "deep": "Lab" }]
+      },
+      {
+        "item": "This topic is the durability layer every later Chapter 5 topic assumes: checkpoints bound how far back a crash recovery must replay this exact log, B-tree page splits and MVCC version writes are themselves WAL records before they're anything else.",
+        "at": [{ "deep": "Where this goes next" }]
+      }
+    ]
+  },
+  "gapReview": {
+    "date": "2026-10-24",
+    "by": "Claude (single session)",
+    "open": []
+  }
+}

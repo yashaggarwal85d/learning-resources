@@ -1,0 +1,5 @@
+- **Write-ahead log (WAL)**: the append-only log a change is recorded in before the data page it describes is ever written back, the thing this whole topic opens. *Where you meet it:* every step, read directly off this sandbox's own cluster.
+- **Checkpoint**: an engine's own operation that writes every dirty buffer out to disk at once, already named in the last topic's dirty-flag reveal. *Where you meet it:* the full-page-write reveal, run for real against a checkpoint this topic triggers itself.
+- **Commit**: the point at which a transaction's changes are made durable and visible to others. *Where you meet it:* the group-commit reveal, measured directly across many real commits.
+- **Crash recovery**: an engine replaying its own log after a restart to reconstruct any change that was durable but hadn't yet reached the actual data page. *Where you meet it:* named throughout, taught in depth by the next topic.
+- **Checksum**: a page-level integrity check already named on a page's own header two topics ago, not retaught here. *Where you meet it:* assumed, not retaught.
