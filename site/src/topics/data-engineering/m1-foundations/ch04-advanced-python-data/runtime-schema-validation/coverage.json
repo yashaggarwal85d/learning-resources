@@ -1,0 +1,156 @@
+{
+  "topic": "de.runtime-schema-validation",
+  "syllabus": [
+    {
+      "clause": "Pydantic v2 (Rust core) for records and config",
+      "at": [
+        { "step": "Reveal: a record validated against a shape, and the error it raises" },
+        { "step": "Reveal: the same record check, run at scale" }
+      ]
+    },
+    {
+      "clause": "Pandera for DataFrames (pandas and Polars backends)",
+      "at": [
+        { "step": "Predict: does the same schema shape work against two different DataFrame libraries?" },
+        { "step": "Reveal: one schema, two real DataFrame backends" },
+        { "step": "Reveal: the same schema catches a real out-of-range value" }
+      ]
+    },
+    {
+      "clause": "Great Expectations (GX Core 1.x) and Soda checks",
+      "at": [{ "step": "Reveal: what this sandbox names but doesn't run, and why the two differ" }]
+    },
+    {
+      "clause": "row-level vs batch-level validation cost",
+      "at": [{ "step": "Reveal: row-level vs. batch-level cost, measured directly" }]
+    },
+    {
+      "clause": "where validation belongs (governance tooling → §13.3)",
+      "at": [{ "deep": "Where this goes next" }]
+    }
+  ],
+  "sources": [
+    {
+      "source": "Pydantic Validation",
+      "items": [
+        {
+          "item": "Pydantic is the most widely used data validation library for Python",
+          "at": [{ "out": "a popularity claim, not asserted by any reveal" }]
+        },
+        {
+          "item": "Pydantic's core validation logic is written in Rust, named directly as why it's among the fastest Python validation libraries",
+          "at": [
+            { "step": "Reveal: a record validated against a shape, and the error it raises" },
+            { "deep": "Outcomes" }
+          ]
+        },
+        {
+          "item": "a required field is coerced where possible; an invalid field raises a structured error naming exactly which field and why",
+          "at": [{ "step": "Reveal: a record validated against a shape, and the error it raises" }]
+        }
+      ]
+    },
+    {
+      "source": "DataFrame Schemas (pandera)",
+      "items": [
+        {
+          "item": "DataFrameSchema verifies the columns and index of a pandas DataFrame; columns are non-nullable by default",
+          "at": [{ "step": "Reveal: one schema, two real DataFrame backends" }]
+        },
+        {
+          "item": "coerce=True on a column makes schema.validate coerce to the declared dtype before checks run",
+          "at": [{ "out": "named in SOURCES.md; this topic's reveal uses a range check, not column coercion" }]
+        }
+      ]
+    },
+    {
+      "source": "Data Validation with Polars (pandera)",
+      "items": [
+        {
+          "item": "Polars' own core is written in Rust; the same DataFrameModel class-based syntax validates a Polars DataFrame as well as a pandas one",
+          "at": [
+            { "step": "Predict: does the same schema shape work against two different DataFrame libraries?" },
+            { "step": "Reveal: one schema, two real DataFrame backends" }
+          ]
+        },
+        {
+          "item": "pandera ships an optional Narwhals-powered backend keeping Polars validation fully lazy",
+          "at": [{ "out": "named in SOURCES.md; below the depth this topic's reveal needs" }]
+        }
+      ]
+    },
+    {
+      "source": "GX Core overview",
+      "items": [
+        {
+          "item": "GX Core workflows share one pattern: Data Context, connect to data, define Expectations, run Validations; an Expectation is a verifiable, declarative assertion collected into an Expectation Suite",
+          "at": [{ "step": "Reveal: what this sandbox names but doesn't run, and why the two differ" }]
+        },
+        {
+          "item": "a Checkpoint is GX's primary production-validation mechanism, running Validation Definitions and triggering Actions; Data Docs are generated human-readable output",
+          "at": [{ "deep": "Lab" }]
+        }
+      ]
+    },
+    {
+      "source": "Write SodaCL checks",
+      "items": [
+        {
+          "item": "SodaCL is a YAML-based DSL for data reliability; a Soda scan returns pass/fail/error per check against a real data source, not a plain boolean",
+          "at": [{ "step": "Reveal: what this sandbox names but doesn't run, and why the two differ" }]
+        }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "Claude (single session)",
+    "date": "2026-10-24",
+    "items": [
+      {
+        "item": "A record validator's real value isn't just rejecting bad input — it coerces what it safely can and names exactly which field failed when it can't, confirmed against a real structured error, not just a boolean.",
+        "at": [{ "step": "Reveal: a record validated against a shape, and the error it raises" }]
+      },
+      {
+        "item": "A record validator's cost scales with the record count directly, not some worse curve, confirmed by doubling the input and measuring the ratio land near two.",
+        "at": [{ "step": "Reveal: the same record check, run at scale" }]
+      },
+      {
+        "item": "The same declared schema fields, differing only in base class, validate a real pandas DataFrame and a real Polars frame without being rewritten for either.",
+        "at": [{ "step": "Reveal: one schema, two real DataFrame backends" }]
+      },
+      {
+        "item": "A DataFrame schema's range check genuinely rejects a real out-of-range value by column name, confirmed against a real raised error, not assumed from the declaration alone.",
+        "at": [{ "step": "Reveal: the same schema catches a real out-of-range value" }]
+      },
+      {
+        "item": "The identical check costs measurably more run row by row in a Python loop than run once, vectorized, across the whole column — confirmed directly, not claimed from the libraries' own documentation alone.",
+        "at": [{ "step": "Reveal: row-level vs. batch-level cost, measured directly" }]
+      },
+      {
+        "item": "Great Expectations and Soda both name real, sourced mechanisms for checking data in production even though neither runs directly in this sandbox; naming them honestly as sourced-only is different from skipping them silently.",
+        "at": [{ "step": "Reveal: what this sandbox names but doesn't run, and why the two differ" }]
+      },
+      {
+        "item": "A record validator (Pydantic), a DataFrame schema (Pandera), and a production data-quality scan (GX, Soda) check at three different points in a pipeline, not one point three different ways.",
+        "at": [{ "deep": "Outcomes" }]
+      },
+      {
+        "item": "Pydantic v2's Rust core is measurably faster than Pydantic v1's pure-Python core on the identical record-validation task, confirmed by a real cross-version benchmark rather than taken only from the documentation's own speed claim.",
+        "at": [{ "deep": "Outcomes" }]
+      },
+      {
+        "item": "Validating every record of a large batch one at a time, inside a per-row loop, instead of once as a vectorized batch check, is exactly the row-level-vs-batch-level cost gap this topic measures directly.",
+        "at": [{ "deep": "Production failures this topic warns about" }]
+      },
+      {
+        "item": "A schema checked at the boundary (this topic) is a different layer from governance tooling that catalogs and audits data quality across a whole organization (§13.3) — validation belongs at the boundary; governance belongs downstream of it.",
+        "at": [{ "deep": "Where this goes next" }]
+      }
+    ]
+  },
+  "gapReview": {
+    "date": "2026-10-24",
+    "by": "Claude (single session)",
+    "open": []
+  }
+}

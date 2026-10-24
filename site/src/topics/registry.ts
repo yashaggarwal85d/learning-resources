@@ -3138,4 +3138,24 @@ export const TOPICS: TopicMeta[] = [
     handoff:
       "Tests prove the client behaves correctly against the inputs they thought to generate. The last line of defense, for every input nobody thought to generate, is a schema checked at the boundary itself — this chapter's last library topic.",
   },
+  {
+    id: 'de.runtime-schema-validation',
+    domain: 'data-engineering',
+    slug: 'data-engineering/m1-foundations/ch04-advanced-python-data/runtime-schema-validation',
+    title: 'Runtime schema validation',
+    syllabusTitle: 'Runtime schema validation',
+    kind: 'full',
+    status: 'held',
+    milestone: { number: 1, title: 'Foundations' },
+    chapter: { number: 4, title: 'Advanced Python for Data Systems', section: '4.2' },
+    minutes: 15,
+    verified: '2026-10-24',
+    introduces: ['runtime-schema-validation'],
+    uses: ['data-code-testing-layers', 'arrow-columnar-format'],
+    declared: [],
+    bridge:
+      "Tests prove the client behaves correctly against inputs someone thought to generate. This topic is the last line of defense for every input nobody thought to generate: a schema checked at the actual boundary, on both records (Pydantic) and whole DataFrames (Pandera).",
+    handoff:
+      "Every production habit in this section — pooling, resilience, testing, validation — assumed Python was still the one writing the code. The last section of this chapter is the honest answer to how much of that code is actually Python at all: native extensions, built with Rust and PyO3.",
+  },
 ];
