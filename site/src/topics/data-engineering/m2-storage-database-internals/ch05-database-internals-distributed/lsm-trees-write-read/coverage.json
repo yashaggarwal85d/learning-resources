@@ -1,19 +1,198 @@
 {
   "topic": "de.lsm-trees-write-read",
-  "expert": [
-    { "item": "Writes go through a write-ahead log before (or alongside) landing in the memtable, so a crash before flush doesn't lose data.", "source": "RocksDB Overview", "by": "self-review", "date": "2026-10-24" },
-    { "item": "The memtable is an in-memory sorted structure; RocksDB's default implementation is a skiplist.", "source": "RocksDB Overview", "by": "self-review", "date": "2026-10-24" },
-    { "item": "A full memtable becomes immutable; a new mutable memtable takes writes while the immutable one waits in the flush pipeline (memtable pipelining).", "source": "RocksDB Overview", "by": "self-review", "date": "2026-10-24" },
-    { "item": "Flushing writes the immutable memtable out as one new, sorted, immutable SSTable file, sequentially, at the newest level (L0).", "source": "RocksDB Overview; Log-structured merge-tree (Wikipedia)", "by": "self-review", "date": "2026-10-24" },
-    { "item": "A point read checks the newest structure first and stops at the first match: the active memtable, then immutable memtables, then SSTables from newest to oldest.", "source": "Log-structured merge-tree (Wikipedia)", "by": "self-review", "date": "2026-10-24" },
-    { "item": "A per-file Bloom filter lets a read skip an SSTable without touching disk: hash the key, probe those bits, and a single zero bit proves the key is absent from that file.", "source": "RocksDB Bloom Filter", "by": "self-review", "date": "2026-10-24" },
-    { "item": "A Bloom filter can be wrong in only one direction: it never gives a false negative, but it can give a false positive, forcing a wasted read of a file that doesn't actually hold the key.", "source": "RocksDB Bloom Filter", "by": "self-review", "date": "2026-10-24" },
-    { "item": "After a Bloom filter passes, a per-file block index (a binary-search structure over that file's data blocks) finds the one data block that might hold the key, without scanning the whole file.", "source": "RocksDB BlockBasedTable Format", "by": "self-review", "date": "2026-10-24" },
-    { "item": "A range read can't stop at the first match: it must scan every live structure's overlap with the range and merge the results (newest version of each key wins), typically via a priority queue.", "source": "Log-structured merge-tree (Wikipedia)", "by": "self-review", "date": "2026-10-24" },
-    { "item": "A delete is written as a new record, a tombstone, not an in-place removal; it occupies real space on disk until a later compaction discards it.", "source": "Log-structured merge-tree (Wikipedia); RocksDB Overview", "by": "self-review", "date": "2026-10-24" },
-    { "item": "Compaction is what actually removes tombstones and superseded duplicate keys by merging files down the levels; it is the next topic's own mechanism, not re-taught here.", "source": "RocksDB Overview", "placement": "de.lsm-compaction-rum-trade", "by": "self-review", "date": "2026-10-24" },
-    { "item": "Two merge policies (levelling vs tiering) trade write amplification against read cost; which to pick, and the RUM conjecture itself, belongs to the compaction topic.", "source": "Log-structured merge-tree (Wikipedia)", "placement": "de.lsm-compaction-rum-trade", "by": "self-review", "date": "2026-10-24" },
-    { "item": "The skip list's own structure (how a skip list is built and searched) is assumed background from the Data Structures & Algorithms track, not re-taught here.", "source": "n/a", "placement": "Data Structures & Algorithms track (skip-list topic)", "by": "self-review", "date": "2026-10-24" },
-    { "item": "Partitioned and block-based (old-format) Bloom filter variants, and the exact false-positive-rate math, are implementation detail beyond what this topic's outcomes need.", "source": "RocksDB Bloom Filter", "out": "too deep for this topic's outcomes; the single full-filter rejection/false-positive measurement is enough to teach the mechanism", "by": "self-review", "date": "2026-10-24" }
-  ]
+  "syllabus": [
+    {
+      "clause": "WAL → memtable (often a skip list) → immutable memtable → sorted SSTable flush",
+      "at": [
+        { "step": "Reveal: a write, through the memtable and out to a file" }
+      ]
+    },
+    {
+      "clause": "point reads checking newest structures first, guided by per-file Bloom filters and block indexes",
+      "at": [
+        { "step": "Predict: which value answers the read" },
+        { "step": "Reveal: a point read checks the newest structure first" },
+        { "step": "Reveal: the Bloom filter, a fast no" },
+        { "step": "Reveal: the block index, after the filter says maybe" }
+      ]
+    },
+    {
+      "clause": "range reads merging many sorted runs",
+      "at": [
+        { "step": "Reveal: a range read can't stop early" }
+      ]
+    },
+    {
+      "clause": "tombstones and why deletes are not free",
+      "at": [
+        { "step": "Reveal: a delete is not free" },
+        { "step": "Prove it" }
+      ]
+    }
+  ],
+  "sources": [
+    {
+      "source": "Log-structured merge-tree (Wikipedia)",
+      "items": [
+        {
+          "item": "the write path: buffer in an in-memory sorted component, flush sequentially to disk as an immutable component once full, optionally behind a WAL for crash durability",
+          "at": [{ "step": "Reveal: a write, through the memtable and out to a file" }]
+        },
+        {
+          "item": "updates as new writes, deletes as tombstone entries, both resolved only later during merging",
+          "at": [{ "step": "Reveal: a delete is not free" }]
+        },
+        {
+          "item": "the point-read path: in-memory component first, then disk components newest to oldest, stop at the first match",
+          "at": [{ "step": "Reveal: a point read checks the newest structure first" }]
+        },
+        {
+          "item": "the Bloom filter as the per-component gate checked before any disk component is opened",
+          "at": [{ "step": "Reveal: the Bloom filter, a fast no" }]
+        },
+        {
+          "item": "the range-read path: scan every relevant component and merge via a priority queue, keeping only the newest version of each key",
+          "at": [{ "step": "Reveal: a range read can't stop early" }]
+        },
+        {
+          "item": "levelling vs. tiering merge policies and their write-/read-amplification trade-off; amortized write-cost formula",
+          "at": [{ "out": "the next topic's own subject (de.lsm-compaction-rum-trade)" }]
+        }
+      ]
+    },
+    {
+      "source": "RocksDB Overview (RocksDB wiki)",
+      "items": [
+        {
+          "item": "the three on-disk constructs (memtable, sstfile, logfile/WAL) and the write path through them",
+          "at": [{ "step": "Reveal: a write, through the memtable and out to a file" }]
+        },
+        {
+          "item": "memtable-full → flush to a new L0 sstfile, duplicate/overwritten keys removed on flush",
+          "at": [{ "step": "Reveal: a write, through the memtable and out to a file" }]
+        },
+        {
+          "item": "memtable pipelining: full memtable → immutable memtable → background flush, new writes go to a fresh memtable",
+          "at": [{ "step": "Reveal: a write, through the memtable and out to a file" }]
+        },
+        {
+          "item": "the default skiplist memtable implementation",
+          "at": [{ "step": "Reveal: a write, through the memtable and out to a file" }]
+        },
+        {
+          "item": "a memtable flush's own inline compaction: duplicate updates collapsed, a put hidden by a later delete dropped entirely",
+          "at": [{ "step": "Reveal: a delete is not free" }]
+        },
+        {
+          "item": "compaction merges files down levels and is what actually removes tombstones and superseded keys",
+          "at": [{ "step": "Prove it" }]
+        },
+        {
+          "item": "the Snapshot API's own point-in-time view, distinct from an Iterator",
+          "at": [{ "out": "a distinct RocksDB feature from the plain get()/iterator reads this topic measures; not needed for this topic's outcomes" }]
+        }
+      ]
+    },
+    {
+      "source": "RocksDB Bloom Filter (RocksDB wiki)",
+      "items": [
+        {
+          "item": "a Bloom filter's mechanism: hash the key, probe bits, a zero probe proves absence, a positive probe only means maybe",
+          "at": [{ "step": "Reveal: the Bloom filter, a fast no" }]
+        },
+        {
+          "item": "every SST file gets its own embedded filter",
+          "at": [{ "step": "Reveal: the Bloom filter, a fast no" }]
+        },
+        {
+          "item": "the real statistics counters this topic reads directly: useful, full.positive, full.true.positive",
+          "at": [{ "step": "Reveal: the Bloom filter, a fast no" }]
+        },
+        {
+          "item": "bits-per-key effectiveness table, partitioned filters, Ribbon filters, block-based (legacy) filters, the false-positive-rate math",
+          "at": [{ "deep": "Frontier" }]
+        }
+      ]
+    },
+    {
+      "source": "RocksDB BlockBasedTable Format (RocksDB wiki)",
+      "items": [
+        {
+          "item": "the default SST layout: sorted key/value pairs in data blocks, plus meta blocks including the filter and index",
+          "at": [{ "step": "Reveal: the block index, after the filter says maybe" }]
+        },
+        {
+          "item": "the index block's job: a binary-search structure that finds the one data block that might hold a key",
+          "at": [{ "step": "Reveal: the block index, after the filter says maybe" }]
+        }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "self-review",
+    "date": "2026-10-24",
+    "items": [
+      {
+        "item": "Writes go through a write-ahead log before (or alongside) landing in the memtable, so a crash before flush doesn't lose data.",
+        "at": [{ "step": "Reveal: a write, through the memtable and out to a file" }]
+      },
+      {
+        "item": "The memtable is an in-memory sorted structure; RocksDB's default implementation is a skiplist.",
+        "at": [{ "step": "Reveal: a write, through the memtable and out to a file" }]
+      },
+      {
+        "item": "A full memtable becomes immutable; a new mutable memtable takes writes while the immutable one waits in the flush pipeline (memtable pipelining).",
+        "at": [{ "step": "Reveal: a write, through the memtable and out to a file" }]
+      },
+      {
+        "item": "Flushing writes the immutable memtable out as one new, sorted, immutable SSTable file, sequentially, at the newest level (L0).",
+        "at": [{ "step": "Reveal: a write, through the memtable and out to a file" }]
+      },
+      {
+        "item": "A point read checks the newest structure first and stops at the first match: the active memtable, then immutable memtables, then SSTables from newest to oldest.",
+        "at": [{ "step": "Reveal: a point read checks the newest structure first" }]
+      },
+      {
+        "item": "A per-file Bloom filter lets a read skip an SSTable without touching disk: hash the key, probe those bits, and a single zero bit proves the key is absent from that file.",
+        "at": [{ "step": "Reveal: the Bloom filter, a fast no" }]
+      },
+      {
+        "item": "A Bloom filter can be wrong in only one direction: it never gives a false negative, but it can give a false positive, forcing a wasted read of a file that doesn't actually hold the key.",
+        "at": [{ "step": "Reveal: the Bloom filter, a fast no" }]
+      },
+      {
+        "item": "After a Bloom filter passes, a per-file block index (a binary-search structure over that file's data blocks) finds the one data block that might hold the key, without scanning the whole file.",
+        "at": [{ "step": "Reveal: the block index, after the filter says maybe" }]
+      },
+      {
+        "item": "A range read can't stop at the first match: it must scan every live structure's overlap with the range and merge the results (newest version of each key wins), typically via a priority queue.",
+        "at": [{ "step": "Reveal: a range read can't stop early" }]
+      },
+      {
+        "item": "A delete is written as a new record, a tombstone, not an in-place removal; it occupies real space on disk until a later compaction discards it.",
+        "at": [{ "step": "Reveal: a delete is not free" }]
+      },
+      {
+        "item": "Compaction is what actually removes tombstones and superseded duplicate keys by merging files down the levels; it is the next topic's own mechanism, not re-taught here.",
+        "at": [{ "out": "placement: de.lsm-compaction-rum-trade" }]
+      },
+      {
+        "item": "Two merge policies (levelling vs tiering) trade write amplification against read cost; which to pick, and the RUM conjecture itself, belongs to the compaction topic.",
+        "at": [{ "out": "placement: de.lsm-compaction-rum-trade" }]
+      },
+      {
+        "item": "The skip list's own structure (how a skip list is built and searched) is assumed background from the Data Structures & Algorithms track, not re-taught here.",
+        "at": [{ "out": "placement: Data Structures & Algorithms track (skip-list topic)" }]
+      },
+      {
+        "item": "Partitioned and block-based (old-format) Bloom filter variants, and the exact false-positive-rate math, are implementation detail beyond what this topic's outcomes need.",
+        "at": [{ "out": "too deep for this topic's outcomes; the single full-filter rejection/false-positive measurement is enough to teach the mechanism" }]
+      }
+    ]
+  },
+  "gapReview": {
+    "date": "2026-10-24",
+    "by": "self-review",
+    "open": []
+  }
 }
