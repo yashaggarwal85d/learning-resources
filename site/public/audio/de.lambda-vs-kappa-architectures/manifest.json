@@ -1,0 +1,455 @@
+{
+ "topic": "de.lambda-vs-kappa-architectures",
+ "voice": "breeze-mellow-v2",
+ "asr": "large-v3-turbo",
+ "clips": {
+  "01": {
+   "hash": "1ba3ccee39f409fc",
+   "takes": [
+    "d013c6cb26991328d723",
+    "97662f6e2d64e366eb6a"
+   ],
+   "duration": 19.653,
+   "lines": [
+    {
+     "text": "Picture a shop's own fraud check.",
+     "start": 0.15,
+     "end": 2.642
+    },
+    {
+     "text": "It has to answer in seconds for a card swipe happening right now, but it also has to be exactly right once every order from today has actually settled. Does meeting both of those honestly take one pipeline, or does it take two?",
+     "start": 3.062,
+     "end": 19.303
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 150,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "02": {
+   "hash": "893ba0fe5dd2a4e4",
+   "takes": [
+    "990b7924ee39e0dcc9da",
+    "c7613502359735139f28"
+   ],
+   "duration": 21.633,
+   "lines": [
+    {
+     "text": "Here's the first architecture, in the words of the person who actually named it.",
+     "start": 0.15,
+     "end": 5.17
+    },
+    {
+     "text": "A slow, thorough system and a fast, approximate one both run on the very same incoming data at the same time, and whatever each one comes up with gets stitched together the moment someone actually asks a question.",
+     "start": 5.59,
+     "end": 21.283
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -2.0,
+   "wpm": 144,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "03": {
+   "hash": "454da55babe90f9e",
+   "takes": [
+    "15fb6595491c2e4c9706",
+    "b2fad4b674e363be9511"
+   ],
+   "duration": 18.736,
+   "lines": [
+    {
+     "text": "Sit with this before the next reveal.",
+     "start": 0.15,
+     "end": 2.544
+    },
+    {
+     "text": "Two separate systems, computing two separate answers from the same input, then glued together at the end. Could that gluing-together step ever leave you with two answers that quietly disagree with each other?",
+     "start": 2.964,
+     "end": 18.386
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 131,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "03a": {
+   "hash": "760fae4af46dea8a",
+   "takes": [
+    "4b999a42089b2ddaa43f",
+    "c79563642ff6636fe35e"
+   ],
+   "duration": 18.857,
+   "lines": [
+    {
+     "text": "Briefly, yes \u2014 but only briefly, and that's by design.",
+     "start": 0.15,
+     "end": 5.134
+    },
+    {
+     "text": "One of the two systems is always treated as the one that eventually wins. Whatever the fast system got wrong gets overwritten once the slow, thorough system catches up to the same data.",
+     "start": 5.554,
+     "end": 18.507
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -1.9,
+   "wpm": 134,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "04": {
+   "hash": "256b070af7480f0f",
+   "takes": [
+    "071c847207f829688632",
+    "04c1e43ad89051d91870"
+   ],
+   "duration": 21.761,
+   "lines": [
+    {
+     "text": "Here's what it's built from.",
+     "start": 0.15,
+     "end": 2.043
+    },
+    {
+     "text": "It leans on databases built for constant, incremental updates, and on algorithms that adjust a running answer bit by bit as new events arrive \u2014 a genuinely different way of thinking than the slow system's plain, from-scratch calculation.",
+     "start": 2.463,
+     "end": 21.411
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -2.0,
+   "wpm": 119,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "05": {
+   "hash": "74b67ac8be417d1c",
+   "takes": [
+    "2be2b252370fba7cf02a",
+    "eab7f2516aca1b9e6ecd"
+   ],
+   "duration": 20.207,
+   "lines": [
+    {
+     "text": "And here's why that difference actually matters.",
+     "start": 0.15,
+     "end": 2.773
+    },
+    {
+     "text": "Whatever the fast system computes is treated as provisional the whole time. The slow system eventually recomputes the same thing from scratch and simply replaces it, so any mistake the fast system makes never sticks around for long.",
+     "start": 3.193,
+     "end": 19.857
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -2.1,
+   "wpm": 134,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "06": {
+   "hash": "c95739f3224d8f4f",
+   "takes": [
+    "84164a99cb5976db0d3a",
+    "f497ef51ce67e1d77210"
+   ],
+   "duration": 18.597,
+   "lines": [
+    {
+     "text": "Here's a harder question about where the real cost actually sits.",
+     "start": 0.15,
+     "end": 4.088
+    },
+    {
+     "text": "You have to write the very same business logic twice \u2014 once for the fast system, once for the slow one. Is keeping those two copies in sync the expensive part, or is stitching their two answers together at the end?",
+     "start": 4.508,
+     "end": 18.247
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 165,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "06a": {
+   "hash": "8b8cf9488907ee06",
+   "takes": [
+    "736f7742819acca81ae1",
+    "bd42e0129fe40627bcbc"
+   ],
+   "duration": 21.22,
+   "lines": [
+    {
+     "text": "Keeping the two copies in sync is the expensive part.",
+     "start": 0.15,
+     "end": 3.464
+    },
+    {
+     "text": "Gluing two already-computed answers together is comparatively simple. Writing the same transformation twice, in two completely different frameworks, and keeping both correct as requirements change, is the part that genuinely never gets easier.",
+     "start": 3.884,
+     "end": 20.87
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -1.9,
+   "wpm": 124,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "07": {
+   "hash": "74f7519a81e11184",
+   "takes": [
+    "07f3d7739bace6ea3d52",
+    "53ae1da97b18b2a571cf"
+   ],
+   "duration": 18.032,
+   "lines": [
+    {
+     "text": "Here's that cost, named directly by the person who lived through it.",
+     "start": 0.15,
+     "end": 3.926
+    },
+    {
+     "text": "Every change to the business logic has to be made twice, once in each framework, and kept perfectly in sync between them. He calls that specific burden something that simply can't be engineered away.",
+     "start": 4.346,
+     "end": 17.682
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 153,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "08": {
+   "hash": "9d52dc6591a52326",
+   "takes": [
+    "eb39c40f617208037408",
+    "d9047d0f4935c0a27d1e"
+   ],
+   "duration": 22.381,
+   "lines": [
+    {
+     "text": "Now here's the deeper problem both architectures are actually trying to solve.",
+     "start": 0.15,
+     "end": 5.011
+    },
+    {
+     "text": "Whenever the code producing an output changes \u2014 a new rule, a fixed bug \u2014 every result that code ever produced has to be recomputed from the original input, or the output silently stops matching the logic that's supposed to define it.",
+     "start": 5.431,
+     "end": 22.031
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 139,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "09": {
+   "hash": "cc6116cb14e94d6a",
+   "takes": [
+    "a5bc7d30b162d5ddb7dd",
+    "a5c538aef583d96407b8"
+   ],
+   "duration": 22.412,
+   "lines": [
+    {
+     "text": "Here's a genuinely open question worth guessing at first.",
+     "start": 0.15,
+     "end": 3.613
+    },
+    {
+     "text": "Suppose every single input event, going all the way back, was kept somewhere, fully intact and replayable from the very beginning. Could one single streaming system recompute all of that history by itself, with no separate slow system at all?",
+     "start": 4.033,
+     "end": 22.062
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.7,
+   "wpm": 131,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "09a": {
+   "hash": "d5d52b7a0a45e84f",
+   "takes": [
+    "290174217a52aa7d77c6",
+    "28d3c6942369626752d3"
+   ],
+   "duration": 21.988,
+   "lines": [
+    {
+     "text": "Yes \u2014 if the full history is genuinely still there to replay.",
+     "start": 0.15,
+     "end": 4.585
+    },
+    {
+     "text": "A streaming system just tracks its own position in that history. Rewinding that position all the way back to the start and running forward again reprocesses everything, through the exact same logic that handles brand-new events.",
+     "start": 5.005,
+     "end": 21.639
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -2.3,
+   "wpm": 131,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "10": {
+   "hash": "7da599a5bdf40cab",
+   "takes": [
+    "150c7341065ba5b617c9",
+    "6fb8e5297366e69aafc1"
+   ],
+   "duration": 20.373,
+   "lines": [
+    {
+     "text": "Here's that second architecture, in its own creator's words.",
+     "start": 0.15,
+     "end": 4.693
+    },
+    {
+     "text": "Keep the complete history around, start a second copy of the same streaming job reading from the very beginning, let it catch all the way up, then simply swap it in. He gave this particular shape its own name.",
+     "start": 5.113,
+     "end": 20.023
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -2.2,
+   "wpm": 141,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "11": {
+   "hash": "5a25d567d00a0385",
+   "takes": [
+    "e2b9225c8847db93f93e",
+    "08a201cb5ad4a1dc6023"
+   ],
+   "duration": 22.867,
+   "lines": [
+    {
+     "text": "Here's the honest comparison, stated by the same person who proposed the simpler version.",
+     "start": 0.15,
+     "end": 5.518
+    },
+    {
+     "text": "Measured purely on resource cost, the two approaches come out close to even. What actually drew him toward the simpler one wasn't speed at all \u2014 it was never having to build, test, and operate two separate systems side by side.",
+     "start": 5.938,
+     "end": 22.517
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 142,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "12": {
+   "hash": "dd210f347358cb77",
+   "takes": [
+    "7406ad097cb2ea229aa1",
+    "adda4bad3ba0e8d8c18e",
+    "51cf81a1aa83c744ba9c"
+   ],
+   "duration": 25.71,
+   "lines": [
+    {
+     "text": "Let's put the whole comparison back together.",
+     "start": 0.15,
+     "end": 3.027
+    },
+    {
+     "text": "Running two systems side by side costs you a second copy of every rule, forever. Running one system that can rewind costs you nothing extra most of the time.",
+     "start": 3.447,
+     "end": 15.953
+    },
+    {
+     "text": "And the real reason teams actually prefer that isn't raw speed \u2014 it's having only one thing to build, test, and operate.",
+     "start": 16.373,
+     "end": 25.36
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -2.0,
+   "wpm": 133,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "13": {
+   "hash": "c7674794f3fc4b9e",
+   "takes": [
+    "e51dd5075d42bae9f239",
+    "12d5e775f2343f9434e2"
+   ],
+   "duration": 21.774,
+   "lines": [
+    {
+     "text": "One closing scenario worth genuinely working through.",
+     "start": 0.15,
+     "end": 3.252
+    },
+    {
+     "text": "Imagine a pipeline whose full retained history has grown so enormous that rewinding and replaying all of it would itself take days, far past any deadline that matters. Does a single rewindable pipeline still fully cover that case by itself?",
+     "start": 3.672,
+     "end": 21.424
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 130,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "13a": {
+   "hash": "2157c6a6fadde47e",
+   "takes": [
+    "1781216849ded821cb81",
+    "d02d03bc63551aa4fbda"
+   ],
+   "duration": 19.778,
+   "lines": [
+    {
+     "text": "Not on its own, no \u2014 and that's the one honest exception.",
+     "start": 0.15,
+     "end": 4.681
+    },
+    {
+     "text": "Once a replay genuinely can't finish inside the time that's actually needed, keeping a separate, slower system that's always correct eventually, purely as a backstop, still earns the extra cost of running it.",
+     "start": 5.101,
+     "end": 19.428
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 133,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  }
+ }
+}
