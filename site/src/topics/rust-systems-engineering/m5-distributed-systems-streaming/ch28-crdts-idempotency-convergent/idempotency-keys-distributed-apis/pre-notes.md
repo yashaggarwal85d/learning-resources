@@ -1,0 +1,4 @@
+- **Idempotency key**: a real, client-supplied identifier for one logical request. *Where you meet it:* a server checks it before running any side effect, never after.
+- **Key scope**: the real part of a key's own identity beyond the key string itself; the identical key string under two different scopes is two genuinely separate keys.
+- **TTL**: the real window a stored response is honored. *Where you meet it:* a duplicate inside the TTL replays; a request past it runs fresh, as if the key had never existed.
+- **The race**: the real hazard a scope-and-TTL check alone does not solve — two genuinely concurrent retries, arriving before the first one's own side effect has finished, need a third real state (in progress) to catch, not just completed-or-absent.
