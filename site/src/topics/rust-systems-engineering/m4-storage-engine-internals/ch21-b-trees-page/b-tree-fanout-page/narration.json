@@ -1,0 +1,90 @@
+{
+  "steps": [
+    {
+      "lines": [
+        "A leaf page can only hold a handful of entries before it fills up.",
+        { "beat": 0.3 },
+        "Insert one more into a page that's already full. What actually happens to it?"
+      ],
+      "answer": [
+        "It splits, genuinely.",
+        "Its entries divide into two pages, and a new key gets handed up to the parent."
+      ]
+    },
+    {
+      "lines": [
+        "Run it for real: inserting past a full page genuinely allocated a brand-new page and pushed a real separator key up into a new root.",
+        "Every one of the original keys is still found correctly, right where it should be, after the split."
+      ],
+      "takeaway": "A full page doesn't reject or overwrite a new entry; it splits in two and hands a new key up."
+    },
+    {
+      "lines": [
+        "Keep inserting records, thousands more of them.",
+        { "beat": 0.3 },
+        "Does the structure need to grow a new level for roughly every batch of records, or does something else keep it from growing that fast?"
+      ],
+      "answer": [
+        "Much slower, genuinely.",
+        "A high enough fanout per page keeps the whole structure only a few levels deep."
+      ]
+    },
+    {
+      "lines": [
+        "Run it for real: after thousands of inserts, the structure's own depth genuinely stayed within a handful of levels.",
+        "Every one of those thousands of records is still found correctly by walking down from the root."
+      ],
+      "takeaway": "High fanout is why a lookup touches only a few pages, even at billions of records."
+    },
+    {
+      "lines": [
+        "Take two trees and feed them the identical sequence of inserts.",
+        "One of them deliberately leaves each page less than completely full before its next split; the other packs pages fuller.",
+        { "beat": 0.3 },
+        "Which one ends up splitting more times, over that same identical sequence?"
+      ],
+      "answer": [
+        "The one packed less full, genuinely.",
+        "Each of its splits leaves less spare room, so the very next insert forces another split sooner."
+      ]
+    },
+    {
+      "lines": [
+        "Run it for real: packing pages less full genuinely caused more splits over the identical insert sequence than packing them fuller did.",
+        "The same inserts, two different outcomes, purely from how much slack each split leaves behind."
+      ],
+      "takeaway": "Packing a page less than completely full on purpose smooths out how often it has to split again."
+    },
+    {
+      "lines": [
+        "A split's new separator key only has one job: tell the left side apart from the right side.",
+        { "beat": 0.3 },
+        "Can that separator genuinely take less storage than a full copy of the key, and still send every search to the correct side?"
+      ],
+      "answer": [
+        "Yes, genuinely.",
+        "Keeping only the part where the two sides first actually differ is enough to route correctly."
+      ]
+    },
+    {
+      "lines": [
+        "Run it for real: a separator built from only the first differing part of the key genuinely took fewer bytes than a full copy of that key.",
+        "Yet it routed every single test key exactly the way the full key would have."
+      ],
+      "takeaway": "Keeping only the shortest piece of a key that still tells two sides apart shrinks separator keys for free."
+    },
+    {
+      "lines": [
+        "One real production system documents exactly this technique, in its own source tree, in plain terms.",
+        "It states the entire point of throwing away those extra, unneeded key bytes directly: doing that is what lets each page hold more separators, so the whole structure branches wider and stays shallower."
+      ]
+    },
+    {
+      "lines": [
+        "So here's the shape of this whole topic: a page that fills up doesn't refuse a new entry, it splits, and that split is what makes room for the structure to keep growing correctly.",
+        "A high branching factor per page is exactly what keeps that growth from ever costing many levels, even once the record count reaches into the billions.",
+        "And two smaller decisions compound on top of that: leaving a little slack in each page on purpose means fewer splits later, and trimming a separator key down to only its first real difference means every one of those splits costs less to remember."
+      ]
+    }
+  ]
+}

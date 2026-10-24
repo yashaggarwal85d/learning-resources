@@ -1,0 +1,23 @@
+import Resource from '../../../../../components/Resource.astro';
+
+<section class="prereq" data-section="chapter-so-far">
+
+### <span class="n">01</span> Where the last chapter left off
+
+<ul class="resources">
+  <Resource kind="reel" host={props.host} domain="rust-systems-engineering" title="Group commit and commit latency">a durable, recoverable log says nothing yet about how a single record is found among billions without scanning every page.</Resource>
+</ul>
+
+</section>
+
+<section class="prereq" data-section="btree-primary">
+
+### <span class="n">02</span> The real docs: nbtree, fillfactor, and suffix truncation
+
+<ul class="resources">
+  <Resource kind="reading" title="B-Tree Indexes" href="https://www.postgresql.org/docs/current/btree.html" by="The PostgreSQL Global Development Group">over 99% of all pages in a B-tree are leaf pages; a split cascades a new downlink upward.</Resource>
+  <Resource kind="reading" title="CREATE INDEX (fillfactor)" href="https://www.postgresql.org/docs/current/sql-createindex.html" by="The PostgreSQL Global Development Group">a full page gets split, fragmenting the index; B-trees default to a fillfactor of ninety.</Resource>
+  <Resource kind="reading" title="nbtree README (suffix truncation)" href="https://raw.githubusercontent.com/postgres/postgres/master/src/backend/access/nbtree/README" by="The PostgreSQL Global Development Group">the goal of suffix truncation is to improve index fan-out.</Resource>
+</ul>
+
+</section>
