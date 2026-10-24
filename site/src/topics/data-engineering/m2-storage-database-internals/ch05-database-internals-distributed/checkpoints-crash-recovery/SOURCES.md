@@ -24,6 +24,18 @@ Fetched: 2026-10-24, cached at `sources/continuous-archiving.txt`.
 
 > It is not necessary to replay the WAL entries all the way to the end. We could stop the replay at any point and have a consistent snapshot of the database as it was at that time. Thus, this technique supports point-in-time recovery: it is possible to restore the database to its state at any time since your base backup was taken.
 
+## wal-replication-standby — PostgreSQL 16 documentation (27.2. Log-Shipping Standby Servers)
+URL: https://www.postgresql.org/docs/16/warm-standby.html
+Fetched: 2026-10-24, cached at `sources/warm-standby.txt`.
+
+> In standby mode, the server continuously applies WAL received from the primary server. The standby server can read WAL from a WAL archive (see restore_command) or directly from the primary over a TCP connection (streaming replication).
+
+## wal-logical-decoding — PostgreSQL 16 documentation (49.2. Logical Decoding Concepts)
+URL: https://www.postgresql.org/docs/16/logicaldecoding-explanation.html
+Fetched: 2026-10-24, cached at `sources/logicaldecoding.txt`.
+
+> In PostgreSQL, logical decoding is implemented by decoding the contents of the write-ahead log, which describe changes on a storage level, into an application-specific form such as a stream of tuples or SQL statements.
+
 **Named but not quoted** (OCR scan unreliable for word-for-word quoting):
 
 Mohan, C., Haderle, D., Lindsay, B., Pirahesh, H., Schwarz, P. "ARIES: A Transaction Recovery Method Supporting Fine-Granularity Locking and Partial Rollbacks Using Write-Ahead Logging." *ACM Transactions on Database Systems*, Vol. 17, No. 1, March 1992.
