@@ -1,0 +1,4 @@
+- **Linearizability**: a correctness property for a history of concurrent operations: the history must be consistent with some real total order of those operations that also respects each operation's own real-time precedence.
+- **Failure injection**: deliberately introducing a real fault (a node failing, a message arriving late or duplicated) into a system under test, several together rather than one at a time, instead of waiting for one to occur naturally.
+- **Nemesis**: the real process, in Jepsen's own vocabulary, that injects faults into a system while its generator produces ordinary operations against it.
+- **Linear extension**: a total order consistent with a partial order's own constraints; a linearizability checker works by searching for at least one linear extension that also matches an object's real read/write semantics. *Where you meet it:* the checker here finds this by genuine brute-force enumeration, not by assumption.

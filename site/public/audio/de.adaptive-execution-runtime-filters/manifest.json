@@ -1,0 +1,587 @@
+{
+ "topic": "de.adaptive-execution-runtime-filters",
+ "voice": "breeze-mellow-v2",
+ "asr": "large-v3-turbo",
+ "clips": {
+  "01": {
+   "hash": "a838fabe884c4a8e",
+   "takes": [
+    "8ccfe9a3761f1a0f70d8",
+    "24ca7116ae5b89b32284",
+    "6c567c735ede28de3621"
+   ],
+   "duration": 19.902,
+   "lines": [
+    {
+     "text": "Ask Spark to explain its own plan for this query, and it hands back two answers, not one.",
+     "start": 0.15,
+     "end": 7.43
+    },
+    {
+     "text": "Early on, it planned to join these two tables by sorting and merging them.",
+     "start": 7.85,
+     "end": 13.096
+    },
+    {
+     "text": "By the time the query actually finished, it had joined them a completely different way instead.",
+     "start": 13.516,
+     "end": 19.552
+    }
+   ],
+   "lufs": -16.2,
+   "true_peak": -2.1,
+   "wpm": 145,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "02": {
+   "hash": "9168c60b74189f76",
+   "takes": [
+    "b5f32dafedd0a08c6eea",
+    "0beeea7b96a13c82bf21"
+   ],
+   "duration": 15.891,
+   "lines": [
+    {
+     "text": "A planner usually picks one strategy and commits to it before a query ever starts running.",
+     "start": 0.15,
+     "end": 5.675
+    },
+    {
+     "text": "So what would make that same engine go back and pick a different strategy, for the exact same query, after it had already started?",
+     "start": 6.495,
+     "end": 15.541
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -2.0,
+   "wpm": 151,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "02a": {
+   "hash": "8bbcf7ba080dcac7",
+   "takes": [
+    "5cef29e73134ad697478",
+    "41e474acf4a6f4ff3017"
+   ],
+   "duration": 18.237,
+   "lines": [
+    {
+     "text": "Something about the data simply wasn't knowable yet, back when the plan was first written.",
+     "start": 0.15,
+     "end": 5.944
+    },
+    {
+     "text": "This isn't the engine correcting a mistake, and it isn't some blanket double check. It's a targeted revision, made only once a real number exists to revise the plan with.",
+     "start": 6.364,
+     "end": 17.887
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 148,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "03": {
+   "hash": "451c2375647dbd4e",
+   "takes": [
+    "98e5d20859e8a3db45fc",
+    "3d9223a3505a68c53664",
+    "84014f40dbca94c77411"
+   ],
+   "duration": 26.897,
+   "lines": [
+    {
+     "text": "A distributed plan isn't one unbroken pipeline. It's built from separate stages, split wherever data has to be shuffled between machines.",
+     "start": 0.15,
+     "end": 10.814
+    },
+    {
+     "text": "The moment one of those stages finishes, its real output size stops being a guess and becomes a fact.",
+     "start": 11.234,
+     "end": 18.232
+    },
+    {
+     "text": "Everything still ahead of that point in the plan gets to use that fact, instead of whatever the planner assumed beforehand.",
+     "start": 18.652,
+     "end": 26.547
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -1.9,
+   "wpm": 136,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "04": {
+   "hash": "e4420170c06614af",
+   "takes": [
+    "93e2de6d53c133769b17",
+    "98dd0f25756844a3e38e",
+    "1a1dc18bd49f9336efa2"
+   ],
+   "duration": 27.755,
+   "lines": [
+    {
+     "text": "Here's the plainest version of that idea. Configure two hundred pieces for a shuffle, whether or not the data actually needs that many.",
+     "start": 0.15,
+     "end": 8.393
+    },
+    {
+     "text": "Without this feature, every single one of those two hundred pieces gets kept, no matter how little data ends up in them.",
+     "start": 8.813,
+     "end": 16.998
+    },
+    {
+     "text": "Turn it on, and once the real output turns out to be a handful of tiny groups, the engine collapses those two hundred pieces down to just one.",
+     "start": 17.418,
+     "end": 27.405
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -2.2,
+   "wpm": 158,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "05": {
+   "hash": "fd7a728e286cfa00",
+   "takes": [
+    "741cd107a4aaa85d64fc",
+    "ef227f7aaa7be0adfae6",
+    "e6ab3b17cf13767a375c"
+   ],
+   "duration": 27.32,
+   "lines": [
+    {
+     "text": "Sometimes one value in a join column shows up far more often than any other.",
+     "start": 0.15,
+     "end": 6.243
+    },
+    {
+     "text": "Every row sharing that one value lands in the same piece of a shuffle, so that one piece swells while its neighbors stay nearly empty.",
+     "start": 6.663,
+     "end": 16.262
+    },
+    {
+     "text": "The engine only calls a piece skewed once it clears two separate bars: noticeably bigger than a typical piece, and bigger than a flat size limit in its own right.",
+     "start": 16.682,
+     "end": 26.97
+    }
+   ],
+   "lufs": -16.3,
+   "true_peak": -3.1,
+   "wpm": 154,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "06": {
+   "hash": "2a2bd9d45e5f290b",
+   "takes": [
+    "25d779f66de8883640fd",
+    "63a20fa5e20caee3e17c"
+   ],
+   "duration": 13.111,
+   "lines": [
+    {
+     "text": "Once a piece is flagged as skewed, the engine breaks that one oversized task into several smaller ones.",
+     "start": 0.15,
+     "end": 7.122
+    },
+    {
+     "text": "Does breaking up that one big task always make the query finish sooner?",
+     "start": 7.842,
+     "end": 12.761
+    }
+   ],
+   "lufs": -16.1,
+   "true_peak": -4.0,
+   "wpm": 142,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "06a": {
+   "hash": "98ee1c22d1f88e84",
+   "takes": [
+    "4c745d0ef08b4e88674e",
+    "b4f5c5413e22e732b824"
+   ],
+   "duration": 14.311,
+   "lines": [
+    {
+     "text": "Only if there are idle workers around to actually pick up the smaller pieces.",
+     "start": 0.15,
+     "end": 4.566
+    },
+    {
+     "text": "Splitting a task changes how the same work gets divided among the machines available. It never changes how much work there is in total.",
+     "start": 4.986,
+     "end": 13.961
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 159,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "07": {
+   "hash": "b9f7e01a148373dc",
+   "takes": [
+    "fc76f56fece3a7b72266",
+    "0bdef468ff1df797020f",
+    "059557aa5c5aa0159bd9"
+   ],
+   "duration": 25.2,
+   "lines": [
+    {
+     "text": "Run that exact experiment on a machine with only four cores and nothing spare to give the split pieces.",
+     "start": 0.15,
+     "end": 6.943
+    },
+    {
+     "text": "Across repeated runs, the times with splitting turned on and turned off land all over the place, in no consistent order.",
+     "start": 7.363,
+     "end": 16.559
+    },
+    {
+     "text": "The split itself is real, and shows up plainly in the plan. It simply has nothing free to run on here.",
+     "start": 16.98,
+     "end": 24.85
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -2.3,
+   "wpm": 145,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "08": {
+   "hash": "1877fd6d52b8cbeb",
+   "takes": [
+    "f58c9943204e6fc23056",
+    "4b725db9b7586362268c"
+   ],
+   "duration": 20.1,
+   "lines": [
+    {
+     "text": "A dimension table passes through its own filter, then its own aggregation, before it ever reaches the join below it.",
+     "start": 0.15,
+     "end": 8.005
+    },
+    {
+     "text": "The join itself was already planned before that filtering and aggregating had even run. What happens to that join's plan once the dimension side turns out to be tiny?",
+     "start": 8.825,
+     "end": 19.75
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 146,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "08a": {
+   "hash": "48c88d6f52b23c26",
+   "takes": [
+    "da8b3551e7af9c66899c",
+    "355447ea9351f962233e"
+   ],
+   "duration": 18.083,
+   "lines": [
+    {
+     "text": "The join's plan can still change, once that real, tiny size becomes known.",
+     "start": 0.15,
+     "end": 5.231
+    },
+    {
+     "text": "This is the exact mechanism from the very first moment of this topic: a plan written once, and rewritten again the moment a real number arrives to rewrite it with.",
+     "start": 5.651,
+     "end": 17.733
+    }
+   ],
+   "lufs": -16.1,
+   "true_peak": -2.5,
+   "wpm": 143,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "09": {
+   "hash": "1e97b8cade13cc1a",
+   "takes": [
+    "e6d2b60f5313a3b30522",
+    "ee1330c17e8f908116ef",
+    "72fed92ce8fcde62999f"
+   ],
+   "duration": 29.558,
+   "lines": [
+    {
+     "text": "After its own filtering and aggregating, that dimension side turns out to hold only a handful of rows \u2014 nowhere near enough to bother shuffling.",
+     "start": 0.15,
+     "end": 9.602
+    },
+    {
+     "text": "The plan that had committed to sorting and merging both sides switches, mid query, to simply copying that tiny side wherever the join needs it.",
+     "start": 10.022,
+     "end": 20.55
+    },
+    {
+     "text": "Nothing here was guessed correctly in advance. The engine waited for a real number, and only then picked the cheaper strategy.",
+     "start": 20.97,
+     "end": 29.208
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 142,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "10": {
+   "hash": "baa21fdb1106de52",
+   "takes": [
+    "3831d23bf2c118cd98c6",
+    "64ab40a425087a7a3633",
+    "979fafcad20b05d1c2d1"
+   ],
+   "duration": 35.264,
+   "lines": [
+    {
+     "text": "Take the actual key values sitting on one, smaller side of a join, and fold them into one compact structure that can answer one question fast: could this value possibly be on the other side, or definitely not?",
+     "start": 0.15,
+     "end": 18.336
+    },
+    {
+     "text": "Hand that structure to the larger side's own scan, before that scan has even finished reading.",
+     "start": 18.886,
+     "end": 25.01
+    },
+    {
+     "text": "Any row the structure can rule out never has to reach the join at all \u2014 thrown away at the source, not after being read for nothing.",
+     "start": 25.43,
+     "end": 34.914
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 136,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "11": {
+   "hash": "6a8950cbf26802fe",
+   "takes": [
+    "7df339b2a0b901638400",
+    "891d87fea8304d419c56",
+    "9605c99163a7f2a6075a"
+   ],
+   "duration": 25.297,
+   "lines": [
+    {
+     "text": "Take that same trick and apply it one level up, to whole partitions instead of individual rows.",
+     "start": 0.15,
+     "end": 6.25
+    },
+    {
+     "text": "One side of a join collects its own real key values, then passes them across to the other side's table scan \u2014 sideways, not down the plan the way a value normally flows.",
+     "start": 6.67,
+     "end": 18.392
+    },
+    {
+     "text": "Any partition those real values prove can't contain a match gets skipped before it's ever opened.",
+     "start": 18.812,
+     "end": 24.947
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 154,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "12": {
+   "hash": "d2a9207816273d42",
+   "takes": [
+    "d012b7b1c7b035105376",
+    "c38cf33a4647154ea23f",
+    "a88991a00d36488bd3d1"
+   ],
+   "duration": 26.155,
+   "lines": [
+    {
+     "text": "A query filters on one column of a table split into several pieces, but the value it's filtering for isn't known until the query actually runs.",
+     "start": 0.15,
+     "end": 9.742
+    },
+    {
+     "text": "With this working, the plan reports three of those pieces removed, and only scans the one piece left.",
+     "start": 10.162,
+     "end": 16.785
+    },
+    {
+     "text": "Turn the same behavior off, and every single piece gets scanned regardless, at several times the cost.",
+     "start": 17.205,
+     "end": 25.805
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -2.7,
+   "wpm": 140,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "13": {
+   "hash": "0c05cd9e301afd7c",
+   "takes": [
+    "67c0835ce52bc0763a37",
+    "087a3598c42550cacf04",
+    "772ba1fe958cd9aac780"
+   ],
+   "duration": 31.22,
+   "lines": [
+    {
+     "text": "A stage finishing is what hands the rest of a plan something it didn't have before: a real number instead of a guess.",
+     "start": 0.15,
+     "end": 7.741
+    },
+    {
+     "text": "That one fact is what lets an engine shrink an oversized shuffle, break up one lopsided piece, and swap a join's whole strategy, all without anyone rewriting the query by hand.",
+     "start": 8.161,
+     "end": 20.887
+    },
+    {
+     "text": "A filter built from one side and handed to the other plays out the same story at the level of a single row, or a whole slice of a table.",
+     "start": 21.307,
+     "end": 30.87
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -2.4,
+   "wpm": 161,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "14": {
+   "hash": "1c71f6738c0f080a",
+   "takes": [
+    "031ba57da6d5c496caa8",
+    "05fed3a8ba4c04d3e96b"
+   ],
+   "duration": 13.076,
+   "lines": [
+    {
+     "text": "A plan starts out joining two tables by sorting and merging them, and ends up copying one side wherever it's needed instead.",
+     "start": 0.15,
+     "end": 9.171
+    },
+    {
+     "text": "Which of this topic's features just did that?",
+     "start": 9.891,
+     "end": 12.726
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -1.9,
+   "wpm": 138,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "14a": {
+   "hash": "3a1f069142e65e30",
+   "takes": [
+    "62841231e265adc6add9",
+    "75c416cedc674737d2c7"
+   ],
+   "duration": 16.952,
+   "lines": [
+    {
+     "text": "Switching the join strategy at run time.",
+     "start": 0.15,
+     "end": 2.402
+    },
+    {
+     "text": "Shrinking a shuffle changes how many pieces there are. Splitting a lopsided piece changes how one piece gets divided. Only a changed join operator between the two plans points at this one.",
+     "start": 2.822,
+     "end": 16.602
+    }
+   ],
+   "lufs": -15.9,
+   "true_peak": -2.3,
+   "wpm": 138,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "15": {
+   "hash": "f315b0e5f7494049",
+   "takes": [
+    "9a60db3a56e57e1b9d16",
+    "961f47c482dfb263bc26"
+   ],
+   "duration": 12.428,
+   "lines": [
+    {
+     "text": "A plan reports three pieces removed out of four, for a table split into pieces.",
+     "start": 0.15,
+     "end": 5.903
+    },
+    {
+     "text": "Did that removal happen while the plan was being written, or while the query was actually running?",
+     "start": 6.623,
+     "end": 12.078
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -2.0,
+   "wpm": 154,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "15a": {
+   "hash": "bf709a7734087b01",
+   "takes": [
+    "8e7b1f63378e1977a7d5",
+    "0016dc24287497a46a8f"
+   ],
+   "duration": 15.46,
+   "lines": [
+    {
+     "text": "While the query was actually running.",
+     "start": 0.15,
+     "end": 2.138
+    },
+    {
+     "text": "A piece removed while the plan was being written never shows up as removed at all \u2014 it was simply never added. Seeing it reported this way only happens when the removing comes later.",
+     "start": 2.558,
+     "end": 15.11
+    }
+   ],
+   "lufs": -15.9,
+   "true_peak": -2.0,
+   "wpm": 151,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  }
+ }
+}

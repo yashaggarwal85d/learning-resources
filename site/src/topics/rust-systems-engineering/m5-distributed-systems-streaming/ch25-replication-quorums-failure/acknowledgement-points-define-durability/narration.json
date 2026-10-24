@@ -1,0 +1,85 @@
+{
+  "steps": [
+    {
+      "lines": [
+        "A write is acknowledged once a subset smaller than a quorum has it: the leader, and the leader alone.",
+        { "beat": 0.3 },
+        "The leader is then destroyed. Does the write genuinely survive?"
+      ],
+      "answer": [
+        "No, it genuinely gets lost.",
+        "The acknowledgement promised nothing more."
+      ]
+    },
+    {
+      "lines": [
+        "Run it for real: the write was genuinely lost, once the leader that alone held it was destroyed.",
+        "An acknowledgement smaller than a quorum promises nothing more, once the one node holding it is gone."
+      ]
+    },
+    {
+      "lines": [
+        "Now the leader durably records the write to its own disk before acknowledging, still with no replica involved.",
+        { "beat": 0.3 },
+        "The leader is destroyed the same way. Does durably recording it on the leader alone protect the write this time?"
+      ],
+      "answer": [
+        "No, it genuinely gets lost too.",
+        "It never left the one node destroyed."
+      ]
+    },
+    {
+      "lines": [
+        "Run it for real: the write was genuinely lost again, even though it was durably recorded, because it never reached any node beyond the one that was destroyed."
+      ],
+      "takeaway": "Durability on one node is not durability at all, once that single node is the one that gets destroyed."
+    },
+    {
+      "lines": [
+        "Now the write is persisted by a real quorum instead: the leader, and enough replicas that any two quorums are guaranteed to overlap.",
+        { "beat": 0.3 },
+        "The identical leader destruction happens. Does the write survive this time?"
+      ],
+      "answer": [
+        "Yes, genuinely.",
+        "A real quorum already held a second copy."
+      ]
+    },
+    {
+      "lines": [
+        "Run it for real: the write genuinely survived, on the identical leader destruction, because a real quorum already held a durable copy beyond just the leader."
+      ],
+      "takeaway": "A quorum's real promise is that destroying any single node, even the leader, can never take every copy with it."
+    },
+    {
+      "lines": [
+        "One real production messaging system's own documentation states the weakest of these policies directly.",
+        { "beat": 0.3 },
+        "Does it name a leader failing right after acknowledging on its own, before any follower replicates the record, as something that genuinely loses it?"
+      ],
+      "answer": [
+        "Yes, genuinely.",
+        "That exact loss, named directly."
+      ]
+    },
+    {
+      "lines": [
+        "That system's own documentation states it in exactly those words: should the leader fail immediately after acknowledging the record but before the followers have replicated it, the record will be lost."
+      ],
+      "takeaway": "A real production system states this exact loss in its own documentation; it isn't a hypothetical edge case invented here."
+    },
+    {
+      "lines": [
+        "That same system's own documentation also names the real setting that turns a quorum requirement into an enforced guarantee.",
+        "It states that this setting causes the system to raise an error whenever the in-sync set falls below it."
+      ]
+    },
+    {
+      "lines": [
+        "So here's the shape of this whole topic: which single point in a replication pipeline counts as acknowledged genuinely decides whether a write survives the node that accepted it being destroyed.",
+        "A subset smaller than a quorum, even one that's durably recorded, can lose that write outright, since the data never genuinely left the one node that held it.",
+        "A real quorum cannot lose it the same way, because destroying any single node, even the leader, can never take every real copy with it."
+      ]
+    }
+  ]
+}
