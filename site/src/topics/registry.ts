@@ -4488,4 +4488,24 @@ export const TOPICS: TopicMeta[] = [
     handoff:
       "A single engine's own transactions are done. The next section spreads that single engine across machines entirely — starting with the replication vocabulary every later topic in it assumes.",
   },
+  {
+    id: 'de.synchronous-asynchronous-semi-synchronous',
+    domain: 'data-engineering',
+    slug: 'data-engineering/m2-storage-database-internals/ch05-database-internals-distributed/synchronous-asynchronous-semi-synchronous',
+    title: 'Synchronous, asynchronous and semi-synchronous replication',
+    syllabusTitle: 'Synchronous, asynchronous and semi-synchronous replication',
+    kind: 'refresher',
+    status: 'held',
+    milestone: { number: 2, title: 'Storage: Database Internals, Files & the Lakehouse' },
+    chapter: { number: 5, title: 'Database Internals and Distributed Storage', section: '5.3' },
+    minutes: 5,
+    verified: '2026-10-24',
+    introduces: ['replication-ack-modes'],
+    uses: ['wal-lsn-fsync'],
+    declared: [],
+    bridge:
+      "A single engine's own transactions are done. This refresher opens the vocabulary every later topic in this section assumes: a primary and its replicas, and exactly what each acknowledgement mode risks the moment the primary fails.",
+    handoff:
+      "This refresher treated replication as one undifferentiated thing. The next topic is the two genuinely different mechanisms hiding behind that word: shipping WAL bytes versus shipping decoded row changes.",
+  },
 ];

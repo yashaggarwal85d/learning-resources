@@ -1,0 +1,73 @@
+{
+  "topic": "de.synchronous-asynchronous-semi-synchronous",
+  "syllabus": [
+    {
+      "clause": "primary/replica topologies",
+      "at": [
+        { "step": "Hook" },
+        { "step": "Reveal: asynchronous" },
+        { "step": "Reveal: synchronous, measured" }
+      ]
+    },
+    {
+      "clause": "what each acknowledgement mode risks on failover (lost commits vs stalled writes)",
+      "at": [
+        { "step": "Reveal: asynchronous" },
+        { "step": "Predict: what does synchronous replication cost instead?" },
+        { "step": "Reveal: synchronous, measured" },
+        { "step": "Reveal: what synchronous risks" },
+        { "step": "Reveal: semi-synchronous" }
+      ]
+    },
+    {
+      "clause": "failover/promotion basics",
+      "at": [
+        { "step": "Reveal: failover and promotion, basics" }
+      ]
+    }
+  ],
+  "sources": [
+    {
+      "source": "26.2.8. Synchronous Replication / 26.3. Failover (PostgreSQL documentation)",
+      "items": [
+        { "item": "PostgreSQL streaming replication is asynchronous by default; a primary crash can lose transactions not yet replicated", "at": [{ "step": "Reveal: asynchronous" }] },
+        { "item": "synchronous replication confirms that all changes made by a transaction have been transferred to one or more synchronous standby servers", "at": [{ "step": "Reveal: synchronous, measured" }] },
+        { "item": "requesting synchronous replication makes each commit wait until confirmation the WAL was written to disk on both primary and standby", "at": [{ "step": "Reveal: synchronous, measured" }] },
+        { "item": "waiting for synchronous confirmation doesn't use system resources, but the transaction's own locks are held until confirmed", "at": [{ "step": "Reveal: what synchronous risks" }] },
+        { "item": "if the primary fails, the standby should begin failover procedures", "at": [{ "step": "Reveal: failover and promotion, basics" }] },
+        { "item": "triggering failover of a log-shipping standby runs pg_ctl promote or calls pg_promote()", "at": [{ "step": "Reveal: failover and promotion, basics" }] }
+      ]
+    },
+    {
+      "source": "Semisynchronous Replication (MariaDB documentation)",
+      "items": [
+        { "item": "with regular asynchronous replication, the primary does not wait for a replica to confirm an event was received", "at": [{ "step": "Reveal: asynchronous" }] },
+        { "item": "semisynchronous replication waits for just one replica to acknowledge it has received and logged the events", "at": [{ "step": "Reveal: semi-synchronous" }] },
+        { "item": "with AFTER_SYNC, failover should be lossless since every committed transaction would already be replicated", "at": [{ "deep": "Internals" }] },
+        { "item": "with AFTER_COMMIT, failover may involve data loss since the primary may have committed transactions the replica never acknowledged", "at": [{ "deep": "Internals" }] },
+        { "item": "if a semisynchronous replica doesn't acknowledge in time, a timeout occurs and the primary switches to asynchronous replication", "at": [{ "step": "Reveal: semi-synchronous" }] }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "self-review",
+    "date": "2026-10-24",
+    "items": [
+      { "item": "Asynchronous and synchronous replication aren't a spectrum from 'bad' to 'good' — they're opposite answers to the same question (when is a commit actually safe?), and neither answer is free: one spends durability, the other spends latency.", "at": [{ "step": "Hook" }] },
+      { "item": "'Fire and forget' doesn't mean the replica never catches up — it means the primary never waits to find out whether it did, which is exactly the gap a crash can expose.", "at": [{ "step": "Reveal: asynchronous" }] },
+      { "item": "The wait a synchronous commit pays isn't CPU time, it's round-trip time — the documentation's own 'minimum wait time is the round-trip time between primary and standby' is why synchronous replication punishes distance specifically, not load.", "at": [{ "step": "Reveal: synchronous, measured" }] },
+      { "item": "A stalled write under synchronous replication isn't just slow — the transaction's own locks stay held for the entire wait, so a slow or unreachable replica doesn't just delay one client, it can back up everyone waiting behind that lock too.", "at": [{ "step": "Reveal: what synchronous risks" }] },
+      { "item": "Semi-synchronous replication's own timeout fallback means it quietly becomes asynchronous the moment a replica goes slow or silent — the guarantee it offers is conditional on the replica actually keeping up, not unconditional the way its name suggests.", "at": [{ "step": "Reveal: semi-synchronous" }] },
+      { "item": "Promotion is a one-way door in this basic picture: once a replica is promoted to primary, the old primary (if it comes back) is not automatically still a primary — it has to be reintroduced as a new replica, or conflicting writes can happen on both.", "at": [{ "step": "Reveal: failover and promotion, basics" }] },
+      { "item": "This topic's own local measurement of synchronous_commit's cost is a genuine stand-in for the same acknowledgement wait a real synchronous replica adds, but it is not a replacement for the multi-host failover and lost-commit claims themselves, which stay sourced directly from the documentation (see FACT-CHECK.md).", "at": [{ "deep": "Internals" }] },
+      { "item": "The choice between modes isn't fixed per database — PostgreSQL's own synchronous_standby_names can be set per user, database, or dynamically per transaction, which is exactly how a real system applies synchronous replication only to the writes that are worth the cost.", "at": [{ "deep": "Internals" }] },
+      { "item": "Lag, the next topic's own subject, is what makes asynchronous replication's risk concrete and measurable: the size of an asynchronous primary's own potential data loss is directly proportional to how far behind the replica currently is.", "at": [{ "deep": "Where this goes next" }] },
+      { "item": "This refresher's three modes (asynchronous, synchronous, semi-synchronous) describe acknowledgement timing only — they say nothing yet about what a replica actually ships (WAL bytes vs. decoded row changes), which is exactly what the next topic opens.", "at": [{ "step": "Recap" }] }
+    ]
+  },
+  "gapReview": {
+    "date": "2026-10-24",
+    "by": "self-review",
+    "open": []
+  }
+}

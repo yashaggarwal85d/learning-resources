@@ -1,0 +1,24 @@
+import Resource from '../../../../../components/Resource.astro';
+
+<section class="prereq" data-section="before-this">
+
+### <span class="n">01</span> Before this: 2PC and the write-ahead log
+
+<ul class="resources">
+  <Resource kind="reel" title="2PC in production databases" domain="data-engineering" host="de.2pc-production-databases" by="the previous topic of this chapter" />
+  <Resource kind="reel" title="Write-ahead logging and fsync semantics" domain="data-engineering" host="de.write-ahead-logging-fsync" by="the WAL background synchronous_commit measures directly" />
+</ul>
+
+</section>
+
+<section class="prereq" data-section="straight-from-the-source">
+
+### <span class="n">02</span> The sources this topic measures and quotes against
+
+<ul class="resources">
+  <Resource kind="reading" title="26.2.8. Synchronous Replication" href="https://www.postgresql.org/docs/current/warm-standby.html#SYNCHRONOUS-REPLICATION" by="PostgreSQL documentation">Synchronous replication's own acknowledgement and wait mechanics, measured locally here.</Resource>
+  <Resource kind="reading" title="26.3. Failover" href="https://www.postgresql.org/docs/current/warm-standby-failover.html" by="PostgreSQL documentation">Failover and promotion, named directly from the real command that triggers it.</Resource>
+  <Resource kind="reading" title="Semisynchronous Replication" href="https://mariadb.com/kb/en/semisynchronous-replication/" by="MariaDB documentation">The semi-synchronous middle ground and its own timeout fallback to asynchronous.</Resource>
+</ul>
+
+</section>

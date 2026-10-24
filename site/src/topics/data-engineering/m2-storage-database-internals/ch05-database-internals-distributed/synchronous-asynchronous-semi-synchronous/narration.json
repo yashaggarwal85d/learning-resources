@@ -1,0 +1,65 @@
+{
+  "topic": "de.synchronous-asynchronous-semi-synchronous",
+  "steps": [
+    {
+      "lines": [
+        "A primary database just told a client its write succeeded.",
+        "Somewhere nearby, a second copy of that same database is supposed to end up with that exact same write.",
+        "Whether it has it yet, and whether that even matters, depends entirely on what happens next."
+      ]
+    },
+    {
+      "lines": [
+        "The simplest answer is fire and forget.",
+        "The primary commits, tells the client it's done, and ships the change over whenever it gets around to it.",
+        "No waiting. No confirmation required from anyone else before the client hears back."
+      ]
+    },
+    {
+      "lines": [
+        "Here's where I want you to actually commit to an answer.",
+        "Suppose you remove that risk entirely. The primary now waits until it knows the replica has the change too, before it ever tells the client it's done. What does that actually cost you?"
+      ],
+      "answer": [
+        "It's tempting to assume confirming with a nearby replica is essentially free.",
+        "But that confirmation has to travel there and back before the commit can return, and that round trip is real time, paid every single time.",
+        "So no, it isn't free. Every commit now waits on the replica's own reply, whether or not that particular write would ever have actually been lost."
+      ]
+    },
+    {
+      "lines": [
+        "Here's that exact wait, measured for real, against this sandbox's own database.",
+        "Two hundred commits, run twice. Once with no wait held at all, once waiting for confirmation before returning.",
+        "Watch the gap. Waiting for that confirmation is measurably, consistently slower, every single time this was run."
+      ]
+    },
+    {
+      "lines": [
+        "That wait costs more than just time.",
+        "The transaction's own locks stay held for the entire length of it, not just the moment the actual write happens.",
+        "So a replica that's slow, or briefly unreachable, doesn't just delay one write. It can back up everything waiting behind that same lock."
+      ]
+    },
+    {
+      "lines": [
+        "There's a middle ground between paying that cost every time and risking a lost commit.",
+        "Wait for just one replica to acknowledge, not every single one, and put a timer on that wait.",
+        "Go quiet too long, and the system quietly falls back to fire and forget until that replica catches back up."
+      ]
+    },
+    {
+      "lines": [
+        "Eventually, the primary itself can simply be gone.",
+        "When that happens, one of the replicas has to be promoted to take over its role entirely.",
+        "And once that promotion happens, it's a one way door. The old primary coming back online does not hand its old role back automatically."
+      ]
+    },
+    {
+      "lines": [
+        "Pull the whole topic together.",
+        "Fire and forget risks losing a commit outright. Waiting for confirmation risks stalling a write instead.",
+        "The middle option is a genuine compromise, but it's a bet with a timer underneath it, not a guarantee with no cost at all."
+      ]
+    }
+  ]
+}
