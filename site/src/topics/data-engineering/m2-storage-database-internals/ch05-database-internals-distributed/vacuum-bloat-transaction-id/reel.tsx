@@ -36,7 +36,6 @@ const reel: Reel = {
       ),
       duration: 4.8,
       fig: 'half of 300 rows, deleted. A real dead-tuple count, measured — then VACUUM runs.',
-      takeaway: "A dead tuple is MVCC's own leftover. Nothing but VACUUM gets that space back.",
       Visual: S.RevealDeadTuple,
     },
     {

@@ -69,3 +69,49 @@ Read in order: `mvcc-append-versions-vs/reel.tsx` + `mvcc-append-versions-vs/pos
    scope choice, not a gap. No fix needed.
 
 `coverage.json → gapReview` recorded below.
+
+## Looks review, self-review, 2026-10-24
+
+The targeted reel test (`node scripts/check-all.mjs --only reels --topic vacuum-bloat-transaction-id`)
+failed on its first run: `phone vacuum-bloat-transaction-id: swipe from the caption on step 2 went to 2`.
+Root-caused, not just retried: `ReelPlayer.tsx`'s step-dot handler calls `goTo(i, i < step)`, so
+navigating to an earlier step sets `atEnd = true` and the step's own clock starts already at its
+full duration — `done` is `true` the instant the step mounts. Step 2 was the only early step
+carrying a `takeaway` (every sibling topic in this chapter keeps takeaways off its first couple of
+reveals), so arriving at it from a later step showed the takeaway immediately, while arriving at it
+by advancing forward from an earlier step didn't — two visibly different layout heights for the
+identical step, large enough that the test's fixed wait couldn't settle through it before measuring
+the caption's position. **Fix applied:** removed step 2's `takeaway` (kept on steps 3, 6 and 8,
+still three — the plan's minimum). Re-ran the full targeted check: build green, reel smoke test
+passed clean, confirmed stable across three separate runs of the isolated gesture sequence before
+and after the fix.
+
+Opened every phone screenshot in `site/test-results/` (steps 01–10, the two `-q` predict-answer
+frames for steps 4 and 10) and one desktop screenshot (step 6), against `DESIGN.md`'s checklist.
+
+1. **[Point visible at a glance] Checked every step for more than just colour.** Each step's title,
+   bold value text, and the predict-answer framing (steps 4 and 10) carry the point from the words
+   alone — e.g. step 6's "VACUUM: reclaims none" reads as the point without needing colour. No fix
+   needed.
+
+2. **[Motion and landing frame] Every step's rows fade/ease in and land on a settled final frame**
+   with all rows fully visible — confirmed across the ten phone frames and the desktop frame, which
+   show the post-animation resting state with no mid-transition clipping. No fix needed.
+
+3. **[Crowding / clipping / small text] Checked all ten phone frames and the desktop frame.** No
+   crowded, clipped, or undersized text anywhere, including the four-row `RevealXminHorizon` and
+   `Recap` steps. No fix needed.
+
+4. **[Colour used only for meaning] Confirmed red is reserved for the wrong predict-answer option**
+   (steps 4 and 10's `-q` frames, neither of which fired this run since both were answered
+   correctly in the capture pass) and the warm focus colour marks each step's own real measured
+   value, never decorative. No fix needed.
+
+5. **[Captions match the voice] Checked on-screen text against `narration.json` for steps 1, 2, 5,
+   6 and 8.** The on-screen `Row` text stays terse (e.g. "600 updates, held open" / "VACUUM:
+   reclaims none"), while the narration explains and teaches around it rather than reading it aloud
+   — consistent with the house rule, and already confirmed clean by `narration-teaches.mjs` (0–5%
+   overlap, no verbatim flags) above. No fix needed.
+
+All screenshots were taken after the step-2-takeaway fix above, so they reflect the shipped text
+and the reel test's passing state.
