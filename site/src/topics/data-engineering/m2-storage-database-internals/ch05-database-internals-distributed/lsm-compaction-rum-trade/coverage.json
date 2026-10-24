@@ -1,5 +1,100 @@
 {
   "topic": "de.lsm-compaction-rum-trade",
+  "syllabus": [
+    {
+      "clause": "leveled vs tiered (size-tiered/universal) vs FIFO compaction",
+      "at": [
+        { "step": "Reveal: the same writes, two different shapes" },
+        { "step": "Reveal: FIFO, the style that never merges" }
+      ]
+    },
+    {
+      "clause": "read, write and space amplification and the RUM conjecture (you can optimise at most two)",
+      "at": [
+        { "step": "Predict: the trade-off none of them escape" },
+        { "step": "Reveal: the RUM conjecture, precisely" }
+      ]
+    },
+    {
+      "clause": "compaction debt, write stalls and tombstone build-up as production failures",
+      "at": [
+        { "step": "Reveal: write stalls, a real trigger crossed" },
+        { "step": "Reveal: compaction debt, the same shape as a tombstone" }
+      ]
+    },
+    {
+      "clause": "when a B-tree beats an LSM and vice versa (RocksDB, Cassandra, ScyllaDB, Pebble as reference points)",
+      "at": [
+        { "step": "Reveal: the chapter's own lab — Postgres vs. RocksDB, measured" },
+        { "step": "Prove it" }
+      ]
+    }
+  ],
+  "sources": [
+    {
+      "source": "Designing Access Methods: The RUM Conjecture (Athanassoulis et al.)",
+      "items": [
+        {
+          "item": "the three overheads (read, update, memory) and their precise amplification-ratio definitions",
+          "at": [{ "step": "Reveal: the RUM conjecture, precisely" }]
+        },
+        {
+          "item": "the theoretical minimum of 1.0 for each overhead, and why all three can't hit it at once",
+          "at": [{ "step": "Reveal: the RUM conjecture, precisely" }]
+        },
+        {
+          "item": "the conjecture itself, stated as a hypothesis",
+          "at": [{ "step": "Reveal: the RUM conjecture, precisely" }]
+        },
+        {
+          "item": "the complexity table comparing B+-Trees, Hash Indexes, ZoneMaps and levelled LSM on point/range query and update cost",
+          "at": [{ "step": "Reveal: the chapter's own lab — Postgres vs. RocksDB, measured" }]
+        }
+      ]
+    },
+    {
+      "source": "RocksDB Compaction (RocksDB wiki)",
+      "items": [
+        {
+          "item": "L0 as the newest-data level",
+          "at": [{ "step": "Reveal: the same writes, two different shapes" }]
+        },
+        {
+          "item": "leveled compaction's own space-vs-read/write amplification trade",
+          "at": [{ "step": "Reveal: the same writes, two different shapes" }]
+        },
+        {
+          "item": "tiered (RocksDB's own Universal) compaction's own trade",
+          "at": [{ "step": "Reveal: the same writes, two different shapes" }]
+        },
+        {
+          "item": "FIFO compaction as the drop-oldest, cache-like-data style",
+          "at": [{ "step": "Reveal: FIFO, the style that never merges" }]
+        },
+        {
+          "item": "Leveled-N / Fluid LSM (Dostoevsky paper) as a tunable middle ground",
+          "at": [{ "deep": "Frontier" }]
+        }
+      ]
+    },
+    {
+      "source": "RocksDB Write Stalls (RocksDB wiki)",
+      "items": [
+        {
+          "item": "why write stalls exist: unchecked writes grow space and read amplification without bound",
+          "at": [{ "step": "Reveal: write stalls, a real trigger crossed" }]
+        },
+        {
+          "item": "the two concrete triggers this topic measures: too many L0 files, too many pending compaction bytes",
+          "at": [{ "step": "Reveal: write stalls, a real trigger crossed" }]
+        },
+        {
+          "item": "what RocksDB actually does once triggered: throttle to delayed_write_rate, not just block",
+          "at": [{ "step": "Reveal: write stalls, a real trigger crossed" }]
+        }
+      ]
+    }
+  ],
   "expert": [
     { "item": "Leveled compaction minimizes space amplification at the cost of read and write amplification — it keeps one sorted run per level, merging aggressively.", "source": "RocksDB Compaction", "by": "self-review", "date": "2026-10-24" },
     { "item": "Tiered compaction (RocksDB's own 'Universal' style) trades the other way: write amplification is usually lower than leveled's, at the cost of higher read and space amplification, since more sorted runs coexist before merging.", "source": "RocksDB Compaction", "by": "self-review", "date": "2026-10-24" },
@@ -12,5 +107,10 @@
     { "item": "Tombstone build-up (taught directly in the previous topic) is the same debt in miniature: a tombstone is uncollected compaction work, and it is compaction, not a flush or a read, that finally discards it.", "source": "self (continuity with de.lsm-trees-write-read)", "by": "self-review", "date": "2026-10-24" },
     { "item": "Whether a B-tree or an LSM tree wins is a workload question, not a universal ranking: it depends on the actual read/write/space amplification measured for a given workload, which this chapter's own lab measures directly rather than citing received wisdom.", "source": "RUM Conjecture paper (complexity table, B+-Tree vs. Levelled LSM) + examples.py", "by": "self-review", "date": "2026-10-24" },
     { "item": "Cassandra, ScyllaDB and Pebble each default to a different point on the same leveled/tiered spectrum RocksDB exposes as configuration — named as reference points for where real systems sit, not measured directly in this sandbox.", "source": "n/a", "at": [{ "out": "named only, not measured; this topic measures RocksDB and Postgres directly rather than running three more engines" }], "by": "self-review", "date": "2026-10-24" }
-  ]
+  ],
+  "gapReview": {
+    "date": "2026-10-24",
+    "by": "self-review",
+    "open": []
+  }
 }
