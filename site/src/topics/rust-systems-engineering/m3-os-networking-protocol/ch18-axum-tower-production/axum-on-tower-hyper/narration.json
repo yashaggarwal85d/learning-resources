@@ -1,0 +1,89 @@
+{
+  "steps": [
+    {
+      "lines": [
+        "The last topic showed that the two-step readiness contract, and the wrappers composed around it, are the whole backpressure abstraction.",
+        { "beat": 0.3 },
+        "The framework most of this ecosystem actually ships with is built on top of that. Does it build its own separate middleware system, or does it just reuse that same abstraction directly?"
+      ],
+      "answer": [
+        "It reuses it directly.",
+        "No separate system of its own; that same abstraction, all the way down."
+      ]
+    },
+    {
+      "lines": [
+        "The framework's own documentation says so plainly: it has no middleware system of its own.",
+        "It reuses that one abstraction directly, and that's what gets it timeouts, tracing, compression, and authorization for free."
+      ]
+    },
+    {
+      "lines": [
+        "Stand up a real, running server with a route written in the newer path-parameter style.",
+        { "beat": 0.3 },
+        "Send a real request for a specific name through it. Does the handler actually receive that name, or does it have to parse the raw path itself?"
+      ],
+      "answer": [
+        "It receives it directly.",
+        "Already pulled out of the request, before the handler ever runs."
+      ]
+    },
+    {
+      "lines": [
+        "Run it for real: a real request to a path with a name in it came back with that exact name,",
+        "pulled out automatically — the handler itself never touched the raw path at all."
+      ],
+      "takeaway": "A piece of code that knows how to pull itself out of a request means the handler never touches the raw path."
+    },
+    {
+      "lines": [
+        "Give that same server a piece of state, shared across every request, and send three real requests to a handler that reads and updates it.",
+        { "beat": 0.3 },
+        "Does each request see a fresh copy, or does that value actually build up over time?"
+      ],
+      "answer": [
+        "It actually builds up.",
+        "Genuinely shared, across every one of those three separate, real requests."
+      ]
+    },
+    {
+      "lines": [
+        "Run it for real: three separate real requests came back with increasing values, in order —",
+        "a real, shared value actually building up, not three fresh copies handed out one at a time."
+      ],
+      "takeaway": "Shared state in a real server is exactly that — shared; three real requests prove it builds up, rather than resetting."
+    },
+    {
+      "lines": [
+        "Wrap that server in one layer that touches every response on its way out, and separately, in another that cuts a handler off if it runs too long.",
+        { "beat": 0.3 },
+        "Do both of those actually run against real requests, the same way any other wrapper composes?"
+      ],
+      "answer": [
+        "Both genuinely run.",
+        "Neither one is special-cased by the framework underneath."
+      ]
+    },
+    {
+      "lines": [
+        "Run it for real: one layer genuinely changed a real response on its way out,",
+        "and the other genuinely cut off a handler that would have taken far longer — both against real requests."
+      ],
+      "takeaway": "Those two wrappers are ordinary layers; a real server runs both exactly the way the abstraction promised."
+    },
+    {
+      "lines": [
+        "None of this needed a separate thing to learn: the piece that pulls itself out of a request, the shared value, both wrappers,",
+        "all of it is the same two-step contract and composition from the topic before this one, just running inside a real server."
+      ]
+    },
+    {
+      "lines": [
+        "So, pulling this topic together: a real path-parameter route genuinely hands a handler its own value, already pulled out.",
+        "Real shared state genuinely builds up across real requests, rather than resetting.",
+        "One layer that touches every response, and one that cuts off a handler that runs too long, both genuinely ran against real requests, composed the same way any wrapper composes.",
+        "None of it needed a system of its own, exactly as the framework's own documentation says."
+      ]
+    }
+  ]
+}
