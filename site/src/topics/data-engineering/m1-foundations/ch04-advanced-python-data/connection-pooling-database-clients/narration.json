@@ -1,0 +1,83 @@
+{
+  "topic": "de.connection-pooling-database-clients",
+  "steps": [
+    {
+      "lines": [
+        "Everything in this chapter so far has stayed inside one process, moving data between in-memory formats.",
+        "A real database connection is the first thing that actually leaves the process and talks to another service over the network. Worth asking plainly whether opening one of those actually costs something real, or whether that's just a rumor engineers repeat."
+      ]
+    },
+    {
+      "lines": [
+        "Here's the direct answer, measured rather than assumed.",
+        "The identical tiny query, run two ways against this sandbox's own database cluster: a brand new connection opened and closed each time, and one connection opened once and reused for every call.",
+        "Measured directly, the brand new connection is dramatically slower, every single time it's tried."
+      ]
+    },
+    {
+      "lines": [
+        "That gap is exactly why a connection pool exists, and its size doesn't have to be a guess.",
+        "One formula says a pool's needed size equals how many requests arrive each second, multiplied by how long one connection is held handling a request.",
+        "Feeding it a real measured hold time and a chosen target rate gives a concrete number, not a round one picked out of habit."
+      ]
+    },
+    {
+      "lines": [
+        "Worth guessing at before the reveal settles it.",
+        "One client prepares a reusable query once, then later asks to run that same prepared query again. The client's own connection to the pool never visibly changes in between.",
+        "Does that prepared query actually survive into the later request?"
+      ],
+      "answer": [
+        "It doesn't always, and that's the exact trap this step sets up.",
+        "One pooling mode hands the physical database connection behind the scenes back to the shared pool the moment a request finishes. The very next request, even from that same client, isn't guaranteed to land on that same physical connection again."
+      ]
+    },
+    {
+      "lines": [
+        "Worth seeing this failure actually happen, not just described.",
+        "One client prepares a reusable query on a shared physical connection. A second, unrelated client then reuses that very same physical connection and clears its state entirely.",
+        "A third request on that same physical connection is then denied, because the prepared query it's asking for is simply gone."
+      ]
+    },
+    {
+      "lines": [
+        "Here's the identical test again, changing only one setting.",
+        "This time, each client keeps one dedicated physical connection for its whole session instead of sharing connections between short requests.",
+        "Run again under that setting, the exact same prepare-then-run test succeeds every single time, because nothing else ever touches that connection in between."
+      ]
+    },
+    {
+      "lines": [
+        "Here's a different kind of trade, still about what a connection holds onto.",
+        "The identical large result, pulled two ways: fetched entirely into memory in one shot, versus pulled through gradually in tuned batches instead.",
+        "Measured in an isolated process both times, the batched version peaks measurably lower on the client's own memory use."
+      ]
+    },
+    {
+      "lines": [
+        "One last comparison, loading data in rather than reading it back out.",
+        "The identical rows, loaded into this sandbox's own database three separate ways: one row inserted at a time, a dedicated bulk-loading path, and a library built around a shared columnar buffer format instead.",
+        "Measured directly, row-at-a-time is by far the slowest, and the buffer-format library tracks the dedicated bulk path closely — because, by its own documentation, it runs that very same path underneath."
+      ]
+    },
+    {
+      "lines": [
+        "Pulling it all back together now.",
+        "A fresh connection measurably costs more than a reused one, which is the entire reason a pool exists in the first place. One formula turns a measured hold time directly into a concrete pool size.",
+        "A prepared query can vanish between requests under one pooling setting, reproduced directly, and survives under the other at the cost of a dedicated connection.",
+        "A gradual, batched fetch trades server memory for client memory on a result too big to hold at once, and a buffer-format loader runs the same fast path a dedicated bulk loader does."
+      ]
+    },
+    {
+      "lines": [
+        "One closing scenario, worth reasoning through rather than guessing at.",
+        "A service shares its database connections across many short requests, and quietly relies on a prepared query surviving from one request to the next for the same client. It starts failing intermittently, with no code change anywhere.",
+        "What's actually happening underneath, and what's the fix?"
+      ],
+      "answer": [
+        "That prepared query was never guaranteed to survive on a shared connection under that pooling setting, so it intermittently lands on a connection that never saw it prepared in the first place.",
+        "The fix is turning on that pool's own tracking of prepared queries, or moving that one workload onto dedicated, per-client connections instead."
+      ]
+    }
+  ]
+}
