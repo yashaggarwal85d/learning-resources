@@ -1,0 +1,69 @@
+{
+  "topic": "de.serializability-strict-2pl-versus",
+  "syllabus": [
+    {
+      "clause": "two routes to the same guarantee: two-phase locking with predicate/next-key locks (block on conflict) vs Serializable Snapshot Isolation (track rw-antidependencies, abort on a dangerous structure; Cahill 2008, Ports & Grittner 2012 for Postgres)",
+      "at": [
+        { "step": "Reveal: strict two-phase locking" },
+        { "step": "Reveal: SSI's own mechanism" },
+        { "step": "Reveal: the dangerous structure" },
+        { "step": "Reveal: SERIALIZABLE catches the doctors" }
+      ]
+    },
+    {
+      "clause": "throughput, false-positive aborts",
+      "at": [
+        { "step": "Reveal: throughput and false positives, the real cost on each side" },
+        { "step": "Reveal: abort rate, measured as contention rises" }
+      ]
+    },
+    {
+      "clause": "and why retries become mandatory application logic",
+      "at": [
+        { "step": "Reveal: a real retry, succeeding" }
+      ]
+    }
+  ],
+  "sources": [
+    {
+      "source": "README-SSI (PostgreSQL source tree)",
+      "items": [
+        { "item": "strict two-phase locking's own mechanism and throughput cost under contention", "at": [{ "step": "Reveal: strict two-phase locking" }] },
+        { "item": "SSI's own mechanism (run SI, monitor rw-conflicts, roll back on a dangerous structure, some false positives, never a missed anomaly)", "at": [{ "step": "Reveal: SSI's own mechanism" }] },
+        { "item": "the dangerous structure itself (Tin -> Tpivot -> Tout), attributed to Cahill et al. directly", "at": [{ "step": "Reveal: the dangerous structure" }] },
+        { "item": "Postgres's own SERIALIZABLE has implemented SSI since 9.1, built on Cahill et al.'s algorithm", "at": [{ "deep": "Internals" }] },
+        { "item": "SQLSTATE 40001 and Postgres's own retry-friendly victim-selection design", "at": [{ "step": "Reveal: a real retry, succeeding" }] }
+      ]
+    },
+    {
+      "source": "13.2. Transaction Isolation (PostgreSQL documentation)",
+      "items": [
+        { "item": "applications must be prepared to retry under SERIALIZABLE; the retry mechanics themselves", "at": [{ "step": "Reveal: a real retry, succeeding" }] },
+        { "item": "only updating transactions can ever need a retry; read-only transactions never conflict", "at": [{ "out": "named in FACT-CHECK.md claim 8, not shown on screen; this topic's own three reproductions are all updating transactions" }] },
+        { "item": "predicate locking never blocks and never causes a deadlock, the structural reason SSI avoids S2PL's own cost", "at": [{ "step": "Reveal: throughput and false positives, the real cost on each side" }] }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "self-review",
+    "date": "2026-10-24",
+    "items": [
+      { "item": "S2PL's own guarantee comes from never letting conflicting transactions overlap at all; SSI's own guarantee comes from letting them overlap freely and only intervening when a specific dangerous pattern actually appears in how they read and write each other's data.", "at": [{ "step": "Predict: both routes guarantee the exact same thing" }] },
+      { "item": "The dangerous structure needs exactly two adjacent rw-conflict edges, not a ww-conflict or a wr-dependency; this is why SSI can leave ordinary snapshot isolation's own write-write conflict handling completely unchanged and only add rw-conflict tracking on top.", "at": [{ "step": "Reveal: the dangerous structure" }] },
+      { "item": "A false positive under SSI means a transaction gets rolled back even though, had it been allowed to continue, no actual anomaly would have resulted — not every dangerous structure is embedded in a real cycle, but Postgres's own implementation accepts this cost to keep detection overhead low.", "at": [{ "step": "Reveal: throughput and false positives, the real cost on each side" }] },
+      { "item": "Postgres's own SSI implementation specifically tries to pick which transaction to cancel so an immediate retry won't collide with the exact same conflict again; this is a deliberate engineering choice on top of the bare algorithm, not a guarantee the dangerous-structure theory itself provides.", "at": [{ "step": "Reveal: a real retry, succeeding" }] },
+      { "item": "Abort rate rising with contention isn't a flaw unique to SSI; S2PL's own deadlock rate rises with contention too, just paid as blocking time and rollback instead of an up-front serialization failure — the two routes convert the same underlying cost into different symptoms.", "at": [{ "step": "Reveal: abort rate, measured as contention rises" }] },
+      { "item": "Because SSI's predicate locks never block (per the PostgreSQL docs quoted directly), they also can never be part of a deadlock cycle — deadlocks are a risk unique to S2PL's own blocking locks, not something SSI trades away for its own false-positive cost.", "at": [{ "step": "Reveal: SSI's own mechanism" }] },
+      { "item": "A workload with most of its contention on a small number of hot rows tends to favor S2PL's own predictable blocking over SSI's own false-positive aborts, because SSI's abort rate rises fastest exactly where read/write overlap is densest.", "at": [{ "step": "Prove it" }] },
+      { "item": "Next-key locking (named in the syllabus scope alongside predicate locks) is S2PL's own answer to phantoms — locking the gaps between index entries, not just the rows that already exist — a mechanism this topic names but doesn't build, since Postgres's own SERIALIZABLE uses predicate locks rather than next-key locks for this purpose.", "at": [{ "deep": "Frontier" }] },
+      { "item": "Both of this topic's own routes assume a single-engine transaction; neither S2PL nor SSI, by themselves, say anything about what happens when a transaction's own writes span two separate database engines, which is exactly the gap the next topic (locking and deadlocks) begins closing from the mechanism both of these routes are actually built on.", "at": [{ "step": "Recap" }] },
+      { "item": "Topic 12's own doctors scenario is reused here deliberately, with every variable held fixed except the isolation level, so the contrast (both committed under REPEATABLE READ, one caught under SERIALIZABLE) is a controlled experiment rather than two unrelated anecdotes.", "at": [{ "step": "Hook" }] },
+      { "item": "SSI's own false-positive cost and S2PL's own blocking cost are not interchangeable numbers on the same scale; a false positive wastes one transaction's own work and a retry, while a block can cascade into other transactions waiting behind it, which is why contention-heavy systems often measure them with entirely different metrics.", "at": [{ "deep": "Production failures this topic warns about" }] }
+    ]
+  },
+  "gapReview": {
+    "date": "2026-10-24",
+    "by": "self-review",
+    "open": []
+  }
+}

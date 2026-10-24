@@ -1,0 +1,5 @@
+- **Snapshot isolation and write skew**: taught precisely in topic 12 — one fixed snapshot per transaction, first-committer-wins, and the exact doctors scenario this topic reuses. *Where you meet it:* this topic's own subject is the two real routes that close the gap topic 12 left open.
+- **Isolation anomalies (read skew, lost update, the dangerous read/write pattern)**: named in topic 11. *Where you meet it:* the dangerous structure this topic names is exactly the cross-row pattern those anomalies share.
+- **A row-level lock**: a database holding exclusive access to a row until a transaction ends, background from topic 11's own row locking measurement. *Where you meet it:* the real mechanism strict two-phase locking's own blocking is built from.
+- **Transaction, commit, rollback**: background from earlier topics. *Where you meet it:* every outcome in this topic (caught, retried, aborted) is one of these three.
+- **A snapshot**: a fixed, point-in-time view of the database, taught directly in topic 12. *Where you meet it:* what SSI keeps unchanged from topic 12, while adding its own extra check on top.

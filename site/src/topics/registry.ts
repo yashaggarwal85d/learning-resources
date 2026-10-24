@@ -4408,4 +4408,24 @@ export const TOPICS: TopicMeta[] = [
     handoff:
       "Write skew survives snapshot isolation. The next topic is the two real ways to close that gap entirely and reach full serializability — one of which is SI itself, made serializable.",
   },
+  {
+    id: 'de.serializability-strict-2pl-versus',
+    domain: 'data-engineering',
+    slug: 'data-engineering/m2-storage-database-internals/ch05-database-internals-distributed/serializability-strict-2pl-versus',
+    title: 'Serializability: strict 2PL versus SSI',
+    syllabusTitle: 'Serializability: strict 2PL versus SSI',
+    kind: 'full',
+    status: 'held',
+    milestone: { number: 2, title: 'Storage: Database Internals, Files & the Lakehouse' },
+    chapter: { number: 5, title: 'Database Internals and Distributed Storage', section: '5.2' },
+    minutes: 15,
+    verified: '2026-10-24',
+    introduces: ['serializability-2pl-ssi'],
+    uses: ['snapshot-isolation', 'isolation-anomalies'],
+    declared: [],
+    bridge:
+      "Write skew survives snapshot isolation. This topic is the two real routes that close that gap — strict 2PL's blocking locks, and Serializable Snapshot Isolation, the same snapshot mechanism from topic 12 made genuinely serializable.",
+    handoff:
+      "SSI aborts on a dangerous structure instead of blocking; strict 2PL blocks instead of aborting. Both routes still rest on one underlying mechanism neither topic has opened yet: locking itself, and what happens when it deadlocks.",
+  },
 ];
