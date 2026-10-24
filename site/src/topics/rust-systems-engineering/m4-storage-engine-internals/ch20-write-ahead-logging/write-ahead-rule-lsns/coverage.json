@@ -1,0 +1,63 @@
+{
+  "topic": "rust.write-ahead-rule-lsns",
+  "syllabus": [
+    {
+      "clause": "\"log first, data later\": a durable log record must reach its durability point before the data page can be trusted after a crash. The Log Sequence Number lets recovery decide whether a redo record still needs applying (page.lsn >= record.lsn makes redo idempotent). Physical vs logical vs physiological logging; torn pages and the fixes for them (PostgreSQL full-page writes, InnoDB doublewrite buffer).",
+      "at": [
+        { "step": "Measured: the log-first update survived the crash and recovered correctly; the identical crash, with the page written first, genuinely and silently lost the update" },
+        { "step": "Measured: replaying an already-applied record was a genuine no-op, and running the full recovery pass a second time changed nothing either" },
+        { "step": "Measured: the torn page's own checksum genuinely didn't match, and restoring the log's own full-page image fixed it completely" },
+        { "step": "PostgreSQL's own fix for a torn page is a full-page write: periodically writing a complete image of a page to the WAL before modifying it on disk, so a partially-written page can always be restored from that image" }
+      ]
+    }
+  ],
+  "sources": [
+    {
+      "source": "wal-intro",
+      "items": [
+        {
+          "item": "changes to data files must be written only after those changes have been logged, flushed to permanent storage first",
+          "at": [{ "step": "PostgreSQL's own words: changes to data files must be written only after those changes have been logged, and any change not yet applied to a data page can be redone from the WAL records" }]
+        },
+        {
+          "item": "any changes that have not been applied to the data pages can be redone from the WAL records",
+          "at": [{ "step": "PostgreSQL's own words: changes to data files must be written only after those changes have been logged, and any change not yet applied to a data page can be redone from the WAL records" }]
+        }
+      ]
+    },
+    {
+      "source": "wal-reliability",
+      "items": [
+        {
+          "item": "the process of writing could fail due to power loss at any time, meaning some sectors were written while others were not; PostgreSQL periodically writes full page images to permanent WAL storage before modifying the actual page on disk",
+          "at": [{ "step": "PostgreSQL's own fix for a torn page is a full-page write: periodically writing a complete image of a page to the WAL before modifying it on disk, so a partially-written page can always be restored from that image" }]
+        },
+        {
+          "item": "during crash recovery PostgreSQL can restore partially-written pages from WAL",
+          "at": [{ "step": "PostgreSQL's own fix for a torn page is a full-page write: periodically writing a complete image of a page to the WAL before modifying it on disk, so a partially-written page can always be restored from that image" }]
+        }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "self-review",
+    "date": "2026-10-24",
+    "items": [
+      { "item": "The log-first-versus-data-first comparison injects the identical crash point (between the two writes) into both orderings, so the difference measured is genuinely the ordering itself, not a different or more forgiving kind of crash in one case.", "at": [{ "step": "Measured: the log-first update survived the crash and recovered correctly; the identical crash, with the page written first, genuinely and silently lost the update" }] },
+      { "item": "The crash itself is simulated by discarding the in-memory page's own bytes entirely, matching this chapter's own handoff from Chapter 19: a dirty page can be evicted, or simply never flushed, independent of whether it was already overwritten in memory.", "at": [{ "step": "Measured: the log-first update survived the crash and recovered correctly; the identical crash, with the page written first, genuinely and silently lost the update" }] },
+      { "item": "The idempotence measurement checks two separate cases: replaying one specific already-applied record, and re-running the entire recovery pass over every record a second time, since a real recovery does the latter and the claim needs to hold for both.", "at": [{ "step": "Measured: replaying an already-applied record was a genuine no-op, and running the full recovery pass a second time changed nothing either" }] },
+      { "item": "The torn page is produced by zeroing exactly half of the page's own bytes after a genuine full-page write, deliberately leaving the other half in the new, correct state, so the checksum failure is specifically from a partial write, not from a page that was never updated at all.", "at": [{ "step": "Measured: the torn page's own checksum genuinely didn't match, and restoring the log's own full-page image fixed it completely" }] },
+      { "item": "The fix this topic measures restores the torn page entirely from the log's own full-page image rather than patching just the torn half, matching PostgreSQL's own full-page write exactly: a complete image written to the log before the page write, not a partial repair.", "at": [{ "step": "PostgreSQL's own fix for a torn page is a full-page write: periodically writing a complete image of a page to the WAL before modifying it on disk, so a partially-written page can always be restored from that image" }] },
+      { "item": "The syllabus names physical, logical, and physiological logging as three distinct granularities, and InnoDB's doublewrite buffer as a second named torn-page fix alongside PostgreSQL's full-page write; this topic discusses both in prose rather than measuring them, since this topic's own log records are already physical, full-page images, and reproducing a second real system's own doublewrite buffer is a materially separate piece of work from the one fix this topic measures.", "at": [{ "step": "Recap: log first, data later" }] },
+      { "item": "This topic continues directly from Chapter 19's own buffer-pool-pin-evict-contract id: the write-ahead rule exists specifically because that chapter's own buffer pool can evict, or simply never flush, a dirty page at any time, which is exactly the crash this topic's own first claim injects.", "at": [{ "step": "Build a real write-ahead log and a real page, each carrying its own LSN. Apply the same update two ways: log it, then write the page; or write the page, then log it. Crash at the exact same point in both: right between the two steps. Which update survives?" }] },
+      { "item": "All three of this topic's own measured claims run entirely on in-memory Rust structures, with a crash simulated by discarding in-memory state rather than killing a real process, continuing this chapter's own convention that no topic needs root access or a real filesystem crash.", "at": [{ "step": "Measured: the log-first update survived the crash and recovered correctly; the identical crash, with the page written first, genuinely and silently lost the update" }] },
+      { "item": "This topic deliberately closes on the write-ahead rule and the LSN contract alone, before a real recovery algorithm built on top of it (Chapter 20's own next topic, ARIES) is introduced, per CHAPTER.md's own planned order of ideas.", "at": [{ "step": "Recap: log first, data later" }] },
+      { "item": "The checksum used to detect a torn page is a plain, explicit fold over the page's own bytes rather than a real CRC32C implementation, since the claim under test is that any mismatch is caught at all, not the specific algorithm's own collision resistance; Chapter 19's own topic already measured a real CRC32C over a page's own bytes.", "at": [{ "step": "Measured: the torn page's own checksum genuinely didn't match, and restoring the log's own full-page image fixed it completely" }] }
+    ]
+  },
+  "gapReview": {
+    "date": "2026-10-24",
+    "by": "self-review",
+    "open": []
+  }
+}

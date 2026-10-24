@@ -1,0 +1,22 @@
+import Resource from '../../../../../components/Resource.astro';
+
+<section class="prereq" data-section="chapter-so-far">
+
+### <span class="n">01</span> Where the last chapter left off
+
+<ul class="resources">
+  <Resource kind="reel" host={props.host} domain="rust-systems-engineering" title="Buffer pool and page eviction">a buffer pool can evict, or simply never flush, a dirty page at any time.</Resource>
+</ul>
+
+</section>
+
+<section class="prereq" data-section="wal-primary">
+
+### <span class="n">02</span> The real docs: log first, data later
+
+<ul class="resources">
+  <Resource kind="reading" title="Write-Ahead Logging (WAL)" href="https://www.postgresql.org/docs/current/wal-intro.html" by="The PostgreSQL Global Development Group">changes to data files are written only after they've been logged.</Resource>
+  <Resource kind="reading" title="Reliability" href="https://www.postgresql.org/docs/current/wal-reliability.html" by="The PostgreSQL Global Development Group">full page images, written to WAL before the actual page, guard against a torn page.</Resource>
+</ul>
+
+</section>
