@@ -1,0 +1,67 @@
+{
+  "topic": "rust.choosing-abstraction-level",
+  "syllabus": [
+    {
+      "clause": "stay in safe Rust and the runtime's abstractions until the problem genuinely crosses a lower-level boundary; drop to epoll, io_uring or unsafe only when the abstraction blocks control you need.",
+      "at": [
+        { "deep": "In production" },
+        { "deep": "The frontier" }
+      ]
+    },
+    {
+      "clause": "Evidence discipline: record hypothesis, workload, metric, change and result for every optimization.",
+      "at": [
+        { "step": "Before any code changes, a real hypothesis gets written down: replying to a client only once the worker's own storage write for that request has genuinely finished, instead of replying the instant the request is enqueued, will add roughly the worker's own real per-request delay to what the client observes. Is that hypothesis specific enough to actually be wrong?" },
+        { "step": "Measured: a real workload of five sequential requests, against the identical real service, with the handler replying immediately on enqueue first" },
+        { "step": "Now the one real, specific change: the handler is changed to await a real completion signal from the worker before it replies, for the identical workload against the identical service shape. Does the client's own real, observed latency actually change the way the hypothesis predicted?" },
+        { "step": "Measured: the real, observed latency jumps from a fraction of a millisecond to a number close to the worker's own real delay, once the handler waits for the real completion signal instead of replying immediately" },
+        { "step": "Side by side, does the real, measured size of the added latency actually match the hypothesis's own stated prediction, or did writing the hypothesis down turn out to be a coincidence?" },
+        { "step": "Measured: the real, added latency lands within a wide margin of the worker's own stated delay, confirming the hypothesis directly rather than merely producing a number that happens to exist" },
+        { "step": "The Google SRE Book's own Effective Troubleshooting chapter states this directly: hypothesize, then compare the observed state against the theory to find confirming or disconfirming evidence. Does this topic's own measured hypothesis and result follow exactly that real method?" },
+        { "deep": "Internals" }
+      ]
+    }
+  ],
+  "sources": [
+    {
+      "source": "hypothesize",
+      "items": [
+        {
+          "item": "given a set of observations about a system and a theoretical basis for understanding system behavior, we iteratively hypothesize potential causes for the failure and try to test those hypotheses",
+          "at": [{ "step": "Before any code changes, a real hypothesis gets written down: replying to a client only once the worker's own storage write for that request has genuinely finished, instead of replying the instant the request is enqueued, will add roughly the worker's own real per-request delay to what the client observes. Is that hypothesis specific enough to actually be wrong?" }]
+        }
+      ]
+    },
+    {
+      "source": "compare",
+      "items": [
+        {
+          "item": "We can compare the observed state of the system against our theories to find confirming or disconfirming evidence",
+          "at": [{ "step": "The Google SRE Book's own Effective Troubleshooting chapter states this directly: hypothesize, then compare the observed state against the theory to find confirming or disconfirming evidence. Does this topic's own measured hypothesis and result follow exactly that real method?" }]
+        }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "self-review",
+    "date": "2026-10-24",
+    "items": [
+      { "item": "The hypothesis is written down in this topic's own OUTLINE.md and narrated before either real run executes, naming both a real metric (client-observed latency) and a real expected direction and rough size (growth by roughly the worker's own delay), so it is genuinely falsifiable rather than vague enough to match whatever happens.", "at": [{ "step": "Before any code changes, a real hypothesis gets written down: replying to a client only once the worker's own storage write for that request has genuinely finished, instead of replying the instant the request is enqueued, will add roughly the worker's own real per-request delay to what the client observes. Is that hypothesis specific enough to actually be wrong?" }] },
+      { "item": "The baseline workload is five real, sequential HTTP requests against a real Axum service, each one timed client-side with a real Instant captured immediately before the request and immediately after the response returns, so the measured latency is genuinely the client's own observed round trip, not a number read out of the server's own internal state.", "at": [{ "step": "Measured: a real workload of five sequential requests, against the identical real service, with the handler replying immediately on enqueue first" }] },
+      { "item": "The one real change is isolated to exactly the handler's own reply timing (awaiting a oneshot completion signal versus not), with the identical queue capacity, identical worker delay, and identical sequential workload held fixed on both runs, so any measured difference is attributable to that one change and not to some other variable moving at the same time.", "at": [{ "step": "Now the one real, specific change: the handler is changed to await a real completion signal from the worker before it replies, for the identical workload against the identical service shape. Does the client's own real, observed latency actually change the way the hypothesis predicted?" }] },
+      { "item": "The per-job completion signal is a real tokio::sync::oneshot channel, created fresh for each request and fulfilled by the worker only once that exact job's own simulated storage write has finished, so the handler's wait genuinely tracks one specific job's own completion, not an approximate or shared signal that could resolve early.", "at": [{ "step": "Measured: the real, observed latency jumps from a fraction of a millisecond to a number close to the worker's own real delay, once the handler waits for the real completion signal instead of replying immediately" }] },
+      { "item": "The comparison step checks the measured added latency against a stated tolerance band around the worker's own real delay, wide enough that ordinary scheduling noise cannot produce a false match, so a genuine confirmation is distinguished from a result that merely happens to land in the right neighborhood by chance.", "at": [{ "step": "Side by side, does the real, measured size of the added latency actually match the hypothesis's own stated prediction, or did writing the hypothesis down turn out to be a coincidence?" }] },
+      { "item": "Both the baseline and changed measurements come from two genuinely independent real service instances, each with its own TcpListener, channel, and worker, run one after the other in the same process, so the second measurement is never contaminated by connections or state the first measurement already left behind.", "at": [{ "step": "Measured: the real, added latency lands within a wide margin of the worker's own stated delay, confirming the hypothesis directly rather than merely producing a number that happens to exist" }] },
+      { "item": "The quoted sentence about comparing observed state against a theory is read from the identical Google SRE Book chapter the hypothesize quote comes from, both taken from its own real, continuous explanation of the troubleshooting method, not spliced together from two separate, unrelated sources.", "at": [{ "step": "The Google SRE Book's own Effective Troubleshooting chapter states this directly: hypothesize, then compare the observed state against the theory to find confirming or disconfirming evidence. Does this topic's own measured hypothesis and result follow exactly that real method?" }] },
+      { "item": "CHAPTER.md's own A.9 names a different SRE workbook chapter for this topic's source; that chapter's own real text does not use the words hypothesis or scientific method, so this topic cites the Google SRE Book's own Effective Troubleshooting chapter instead, a real, adjacent source from the identical publisher that states the exact method in its own words, recorded as a departure in OUTLINE.md.", "at": [{ "deep": "Internals" }] },
+      { "item": "The syllabus's own first half, staying in safe Rust until a problem genuinely crosses a lower-level boundary, is named directly in In production and The frontier rather than measured in this topic's own reel, since this topic's own running example never needs to cross that boundary; the evidence-discipline half is this topic's own measured subject instead.", "at": [{ "deep": "In production" }] },
+      { "item": "A real, concurrent workload would make the reply-on-persist change interact with real queueing delay in a way this topic's own sequential, five-request workload deliberately avoids, named directly in In production, so that this topic's own measured number isolates the one effect its hypothesis is actually about.", "at": [{ "deep": "The frontier" }] },
+      { "item": "The specific worker delay, request count, and tolerance band in this topic's own crate are this example's own choice, with wide real margins on every side; the measured claims illustrate the real, general property that a reply-on-persist change adds roughly the worker's own delay for any real service built this way, not a claim bound to exactly these numbers.", "at": [{ "step": "The Google SRE Book's own Effective Troubleshooting chapter states this directly: hypothesize, then compare the observed state against the theory to find confirming or disconfirming evidence. Does this topic's own measured hypothesis and result follow exactly that real method?" }] }
+    ]
+  },
+  "gapReview": {
+    "date": "2026-10-24",
+    "by": "self-review",
+    "open": []
+  }
+}

@@ -1,0 +1,4 @@
+- **Evidence discipline**: recording a real hypothesis, workload, metric, change, and result for a real optimization, specifically so the real result can be checked against the real hypothesis rather than only against a feeling that it worked.
+- **Hypothesis**: a real, specific, checkable prediction about what a real change will do, made before the change, not after.
+- **Workload**: the real, concrete set of operations a measurement is run against, kept identical before and after the real change so the comparison is genuinely fair.
+- **Metric**: the real, specific number a hypothesis is actually checked against, chosen before the measurement, not picked afterward to fit whatever happened.
