@@ -1,0 +1,88 @@
+{
+  "steps": [
+    {
+      "lines": [
+        "Write one real payload to a real connection in a single call, several megabytes at once.",
+        { "beat": 0.3 },
+        "On the other end, read it back with a far smaller buffer. How many real read calls does that actually take?"
+      ],
+      "answer": [
+        "Many of them.",
+        "This connection has no idea your write was ever one single unit to begin with."
+      ]
+    },
+    {
+      "lines": [
+        "Run it for real: that one real write, received through a far smaller read buffer,",
+        "took dozens of real read calls to get back in full — confirmed directly, not assumed."
+      ]
+    },
+    {
+      "lines": [
+        "Write a message, then shut down just one direction of a real connection, for real.",
+        { "beat": 0.3 },
+        "Does the other side's own read call see an error now, or something else, and can that side still reply?"
+      ],
+      "answer": [
+        "It sees a clean end of stream, and it can still reply.",
+        "Shutting down one direction never touches the other."
+      ]
+    },
+    {
+      "lines": [
+        "Run it for real: the far side genuinely saw a clean end of stream once the first side shut its own sending down,",
+        "and it could still write a real reply back, which genuinely arrived."
+      ],
+      "takeaway": "Half-closing just one direction of a connection leaves the other genuinely open."
+    },
+    {
+      "lines": [
+        "The real documentation describes what disabling Nagle's algorithm actually changes.",
+        { "beat": 0.3 },
+        "What does it say happens to small writes when that batching is left on?"
+      ],
+      "answer": [
+        "They wait, deliberately.",
+        "Held back until there's enough to send, specifically so the network isn't flooded with tiny packets."
+      ]
+    },
+    {
+      "lines": [
+        "The documentation's own words: left on, small writes wait until there's enough to send,",
+        "specifically to avoid flooding the network with tiny packets — and disabling it turns that waiting off."
+      ]
+    },
+    {
+      "lines": [
+        "Separate real documentation describes what a certain closing option actually changes about closing a connection.",
+        { "beat": 0.3 },
+        "Does turning it on make closing behave the same, just with a timer running, or something genuinely different?"
+      ],
+      "answer": [
+        "Genuinely different.",
+        "Closing itself now blocks, waiting for the queue to drain or the timer to run out — which it otherwise never does."
+      ]
+    },
+    {
+      "lines": [
+        "The documentation's own words: with that option on, closing won't return until everything queued has gone out, or the timer runs out.",
+        "A separate, later wait, held by the operating system itself for an entirely different reason, is something else again."
+      ],
+      "takeaway": "One option changes whether closing itself waits; the operating system's own wait comes after."
+    },
+    {
+      "lines": [
+        "Partial reads, a half-close that leaves one direction open, patient batching, and a closing call that waits:",
+        "these are all the same kind of surprise. A stream of bytes was never going to hand your own boundaries back."
+      ],
+      "takeaway": "A byte stream promises an ordered sequence of bytes, never your own write boundaries back."
+    },
+    {
+      "lines": [
+        "So, pulling this topic together: one real write of several megabytes took dozens of real reads to arrive, because this connection delivers an undifferentiated stream of bytes, not messages.",
+        "A real half-close genuinely leaves one direction open while ending the other.",
+        "Patient batching is what disabling it turns off, and a certain closing option changes whether closing itself waits — which is an entirely different thing from the operating system's own wait, held afterward, for its own reason."
+      ]
+    }
+  ]
+}

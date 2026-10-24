@@ -1,0 +1,4 @@
+- **Byte stream, not a message queue**: TCP delivers an ordered, undifferentiated sequence of bytes; a single `read` or `write` call can return fewer bytes than requested, with no error. *Where you meet it:* one real 4 MiB write, measured to take dozens of real reads to receive.
+- **Nagle's algorithm / `TCP_NODELAY`**: Nagle batches small outgoing writes to avoid flooding the network with tiny packets; `TCP_NODELAY` disables that batching on a given socket.
+- **Half-close vs RST**: `shutdown(Write)` closes only the local side's ability to send, letting the peer finish reading and still reply — a graceful half-close, genuinely different from an abrupt RST.
+- **`SO_LINGER` / TIME-WAIT**: `SO_LINGER` controls whether `close()` itself blocks to flush pending data; TIME-WAIT is a separate, later wait the kernel holds afterward, to catch stray late packets from the old connection.
