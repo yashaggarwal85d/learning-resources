@@ -98,7 +98,7 @@ export function RevealVectorization({ t }: StepCtx) {
   return (
     <Svg label="an array of rows per operator call, not one row" h={200}>
       <Row y={70} label="DuckDB's default vector" value="2048 rows" valueColor={C.focus} />
-      <Row y={130} label="the research engine that started this" value="1024 rows" />
+      <Row y={130} label="the research engine's default" value="1024 rows" />
     </Svg>
   );
 }
