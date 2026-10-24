@@ -1,0 +1,22 @@
+{
+  "topic": "de.checkpoints-crash-recovery",
+  "syllabus": [],
+  "sources": [],
+  "expert": {
+    "by": "self-review",
+    "date": "2026-10-24",
+    "items": [
+      { "item": "A checkpoint is a point in the transaction sequence where Postgres guarantees every dirty data page has actually been flushed to disk; crash recovery never needs to look further back than the most recent checkpoint's own redo record, per the WAL Configuration documentation.", "at": [] },
+      { "item": "Reducing checkpoint_timeout or max_wal_size makes checkpoints happen more often, which bounds how much WAL a crash recovery must replay, at the real cost of flushing dirty pages more often and, when full_page_writes is on (the default), logging a full copy of each page on its first change after every checkpoint — a real, documented trade-off, not a rule of thumb.", "at": [] },
+      { "item": "full_page_writes defends against a torn page (a page partly written when the OS or drive crashes mid-write) by logging the entire page content on the first real modification to that page after each checkpoint, so a checkpoint interval and the full-page-write volume are directly, mechanically linked, not independently tunable.", "at": [] },
+      { "item": "Postgres's own WAL documentation describes crash recovery as a single roll-forward operation (REDO) from the checkpoint's redo record; it never describes a separate pass that physically undoes an uncommitted transaction's changes, because a row's own transaction status (not an undo pass) decides whether it is visible.", "at": [] },
+      { "item": "ARIES (Mohan et al., 1992) explicitly defines a third, separate pass — undo — that physically rolls back the updates of transactions that were still in progress ('losers') when the crash happened, a real, distinct recovery phase Postgres's own redo-only path never runs.", "at": [] },
+      { "item": "This topic's own real measurement (examples.py) checkpoints a two-thousand-row table every round versus only once before ten identical rounds of the same update, and finds the frequent-checkpoint run logs roughly nineteen times as many full-page images (1267 vs 66) while keeping the real, measured replay distance to about a seventh of the infrequent run's (roughly 1.4 MB vs 9.6 MB) — the documented trade-off as a real, concrete number, not an abstract claim.", "at": [] },
+      { "item": "Point-in-time recovery works by replaying WAL only up to a chosen point rather than all the way to the end, per Postgres's own Continuous Archiving documentation; it is a direct, structural use of the identical WAL and checkpoint mechanism this topic measures, not a separate recovery system.", "at": [] },
+      { "item": "Physical replication ships the raw WAL bytes themselves to a standby, which continuously performs the identical REDO Postgres's own crash recovery does, just against a different, remote copy of the data files rather than its own — the same mechanism, applied continuously rather than only after a crash.", "at": [] },
+      { "item": "Logical decoding (the basis of change-data-capture pipelines, Data Engineering Ch.8) reads and decodes the identical WAL stream this topic measures into row-level changes, rather than raw bytes, so a consumer can replay a table's own changes without replaying Postgres's own internal page format at all.", "at": [] },
+      { "item": "pg_control_checkpoint()'s redo_lsn is exactly the point crash recovery would resume replay from if the server crashed right now; the gap between it and pg_current_wal_lsn() is a real, direct, live measurement of how much WAL a crash this instant would force a replay of, not an estimate.", "at": [] }
+    ]
+  },
+  "gapReview": { "date": "", "by": "", "open": [] }
+}
