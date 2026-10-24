@@ -29,7 +29,7 @@ export function RevealRedoLsn({ t }: StepCtx) {
   return (
     <Svg label="the redo record names exactly where recovery starts; the live gap behind it is exactly how much a crash this instant would force a replay of." h={200}>
       <Row y={70} label="redo_lsn" value="where recovery resumes" o={easeOut(seg(t, 0, 0.5))} />
-      <Row y={130} label="current_wal_lsn minus redo_lsn" value="the live replay gap" valueColor={C.focus} o={easeOut(seg(t, 0.3, 1))} />
+      <Row y={130} label="the gap behind it" value="the live replay distance" valueColor={C.focus} o={easeOut(seg(t, 0.3, 1))} />
     </Svg>
   );
 }
@@ -46,7 +46,7 @@ export function RevealFrequencyTradeoff({ t }: StepCtx) {
 export function PredictTornPage({ t }: StepCtx) {
   return (
     <Svg label="a torn page is possible because a disk write isn't atomic at the page level — only a full before/after copy can repair whatever the tear left behind." h={200}>
-      <Row y={70} label="why log the whole page" value="instead of just the change?" />
+      <Row y={70} label="log the whole page?" value="or just the change?" />
       <Row y={130} label="the real reason" value="not yet revealed" valueColor={C.focus} />
     </Svg>
   );
@@ -92,9 +92,9 @@ export function RevealSubstrate({ t }: StepCtx) {
 export function Recap({ t }: StepCtx) {
   return (
     <Svg label="a checkpoint's own redo record, a real trade-off measured almost twenty times in one direction and seven in the other, and a redo-only recovery that needs no undo pass." h={260}>
-      <Row y={50} label="the redo record" value="recovery's real starting point" o={easeOut(seg(t, 0, 0.3))} />
-      <Row y={95} label="checkpoint frequency" value="a measured, real trade-off" o={easeOut(seg(t, 0.1, 0.4))} />
-      <Row y={140} label="Postgres recovery" value="redo-only, measured by design" valueColor={C.focus} o={easeOut(seg(t, 0.25, 0.6))} />
+      <Row y={50} label="a redo record" value="recovery's real start" o={easeOut(seg(t, 0, 0.3))} />
+      <Row y={95} label="checkpoint frequency" value="a real trade-off" o={easeOut(seg(t, 0.1, 0.4))} />
+      <Row y={140} label="Postgres recovery" value="redo-only by design" valueColor={C.focus} o={easeOut(seg(t, 0.25, 0.6))} />
       <Row y={185} label="this same WAL" value="reused three more times" o={easeOut(seg(t, 0.5, 0.85))} />
     </Svg>
   );
@@ -105,7 +105,7 @@ export function ProveIt({ t }: StepCtx) {
     <Svg label="a system claims instant crash recovery no matter how long it's been running, with no checkpoint mentioned — what would have to be true?" h={220}>
       <Row y={55} label="the claim" value="instant recovery, any uptime" o={easeOut(seg(t, 0, 0.4))} />
       <Row y={110} label="no stated bound" value="feels too good to check" valueColor={C.focus} o={easeOut(seg(t, 0.25, 0.65))} />
-      <Row y={165} label="the real answer" value="some checkpoint-like bound, hidden" valueColor={C.focus} o={easeOut(seg(t, 0.55, 1))} />
+      <Row y={165} label="really" value="a hidden checkpoint" valueColor={C.focus} o={easeOut(seg(t, 0.55, 1))} />
     </Svg>
   );
 }

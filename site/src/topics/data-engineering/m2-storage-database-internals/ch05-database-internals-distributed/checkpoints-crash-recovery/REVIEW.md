@@ -63,3 +63,42 @@ Read in order: `write-ahead-logging-fsync/reel.tsx` + `write-ahead-logging-fsync
    threads (redo record, trade-off, redo-only design, WAL reuse) together. No fix needed.
 
 `coverage.json → gapReview` recorded below.
+
+## Looks review, self-review, 2026-10-24
+
+`node scripts/check-all.mjs --only reels --topic checkpoints-crash-recovery` caught a real phone
+text-overlap bug on first run (`tests/reels.mjs`'s own automated check): steps 2, 4, 9, and 10
+had label/value pairs long enough to wrap to a second line on phone width and collide with the
+row below. **Fix applied:** shortened the colliding label/value text in `scenes.tsx` (step 2's
+`current_wal_lsn minus redo_lsn` → `the gap behind it`; step 4's `why log the whole page` →
+`log the whole page?`; step 9's three Recap rows shortened; step 10's `the real answer` /
+`a hidden checkpoint-like bound` → `really` / `a hidden checkpoint`), then re-ran the check until
+it passed clean ("Reel smoke test passed: 1 live reel(s) at desktop and phone sizes").
+
+Opened every screenshot in `site/test-results/` for this topic (all ten phone steps, plus
+desktop step 4 as a cross-check for the three-column briefing layout) and judged each against
+`DESIGN.md`'s looks-review checklist:
+
+- **Point visible at a glance, more than colour.** Every reveal's `C.focus`-coloured row is also
+  the row with the new information (the second row on a two-row reveal, the corrected answer on
+  a predict step) — colour reinforces the point, it isn't the only signal. Confirmed on
+  `phone-checkpoints-crash-recovery-02.png` (redo-record reveal), `-07.png` (redo vs. undo), and
+  `-10.png`/`-10-q.png` (Prove it, correct option highlighted white against the wrong option's
+  dark red).
+- **Every step moves and lands on a teaching final frame.** Confirmed across all ten phone
+  screenshots: each step's rows are mid-animation or settled at their final, legible position,
+  never mid-transition or clipped.
+- **Nothing crowded, clipped, or too small.** No text overlap anywhere after the fix (the
+  automated check now passes); the predict steps' three-option layout (`-04.png`, `-10.png`)
+  keeps each option in its own bordered box with room to breathe, matching the sibling topic's
+  own two-option layout pattern scaled up to three.
+- **Colour used only for meaning.** `C.focus` (the warm highlight) appears only on the row/option
+  carrying the new or correct information; no decorative colour use anywhere in `scenes.tsx`.
+- **Captions match.** Every screenshot's `fig` caption (top right, desktop; collapsed above the
+  rows, phone) states the same question the step's `Row`s answer, confirmed step by step.
+- **Desktop three-column briefing layout** (`desktop-checkpoints-crash-recovery-04.png`): step
+  index on the left with the current step marked, caption and predict options in the middle,
+  figure frame on the right with its own step clock — matches `PROJECT_PLAN.md`'s own desktop
+  layout description exactly, no clipping or crowding.
+
+No further findings. `coverage.json → gapReview` stands as recorded.
