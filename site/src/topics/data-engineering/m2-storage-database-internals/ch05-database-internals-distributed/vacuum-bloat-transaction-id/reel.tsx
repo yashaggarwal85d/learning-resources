@@ -110,8 +110,9 @@ const reel: Reel = {
       body: (
         <>
           Autovacuum isn't on a clock. It reacts once a table's own obsolete-tuple count crosses
-          a threshold built from a base value plus a scale factor times its row count — and once
-          a worker is running specifically to prevent wraparound, nothing interrupts it.
+          a threshold built from a configured base value plus a scale factor times its row
+          count — the two knobs an administrator actually tunes — and once a worker is running
+          specifically to prevent wraparound, nothing interrupts it.
         </>
       ),
       duration: 4.8,
