@@ -1,0 +1,77 @@
+{
+  "topic": "dsa.tries-node-representations",
+  "steps": [
+    {
+      "lines": [
+        "Every structure this course has built so far answers the same kind of question by comparing whole keys, or whole values, against each other.",
+        "Here's a different question entirely: given a string, where does it live, found out one character at a time instead of comparing it whole against anything else?"
+      ]
+    },
+    {
+      "lines": [
+        "A trie stores the characters themselves in its nodes, not the keys — each node has one child for every possible next character.",
+        "Walking from the root one character at a time either lands on the string or proves it was never there, and two words that start the same way walk through the exact same shared node."
+      ]
+    },
+    {
+      "lines": [
+        "Before the reveal, think about what actually changes if this dictionary gets much bigger.",
+        "Does a lookup that walks one character at a time even notice how many other keys are stored alongside it?"
+      ],
+      "answer": [
+        "No. Each step only ever consumes one character and moves to exactly one child — that cost never once references how many other keys share the trie.",
+        "Add far more words to the same dictionary and this exact lookup costs exactly the same."
+      ]
+    },
+    {
+      "lines": [
+        "Here's the part worth sitting with: every earlier chapter's own cost grew with how many keys were stored.",
+        "This is the first structure in the whole course where that stops being true — the cost depends only on the key's own length."
+      ]
+    },
+    {
+      "lines": [
+        "Before this reveal, picture one single node's own array of possible next characters, sized for the whole alphabet.",
+        "On a sparse dictionary, how many of those slots do you think actually get used?"
+      ],
+      "answer": [
+        "Almost none of them. One node rarely has anywhere near enough distinct children to fill every slot the alphabet allows.",
+        "That's the trade an array makes: every slot gets allocated up front, whether or not anything ever lands in it."
+      ]
+    },
+    {
+      "lines": [
+        "An array child slot costs nothing to search — one direct step, no comparison at all.",
+        "And on the exact dictionary measured here, the overwhelming majority of those slots sit completely empty."
+      ]
+    },
+    {
+      "lines": [
+        "Same shared tree underneath, every time — only the way a single node stores its own children changes.",
+        "A hash table keyed by character, a sorted list searched by comparison, or a tiny three-child structure built around one character at a time — three more ways to hold exactly the same information."
+      ]
+    },
+    {
+      "lines": [
+        "Before this reveal: the array's whole advantage was one direct step, no comparison needed.",
+        "Can something that compares against just one stored character still keep that same one-step-per-character discipline, while using far less memory?"
+      ],
+      "answer": [
+        "Yes. Comparing against a single stored character, instead of indexing into a slot for every letter in the alphabet, needs far less memory per node.",
+        "It still consumes exactly one character per step forward — it just gets there by comparison instead of a direct index."
+      ]
+    },
+    {
+      "lines": [
+        "This structure's own node holds exactly one character, one value, and three children: two of them compare against that same character, and the third moves forward to the next one.",
+        "Measured on the exact same dictionary as every other representation here, this one used less memory than all three of the others."
+      ]
+    },
+    {
+      "lines": [
+        "Here's what actually got measured, not assumed: real memory, in bytes, for every representation, on the exact same small dictionary.",
+        "The array representation came out the most expensive by a wide margin — and that wasted memory is the exact problem every later design this syllabus names, and skips, exists to solve."
+      ]
+    }
+  ]
+}
