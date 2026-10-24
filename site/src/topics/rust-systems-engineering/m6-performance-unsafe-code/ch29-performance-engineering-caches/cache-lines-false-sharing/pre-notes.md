@@ -1,0 +1,4 @@
+- **Cache line**: the real, fixed-size unit (commonly sixty-four bytes) memory actually moves and invalidates in, never a single byte or variable on its own. *Where you meet it:* two unrelated variables placed close together in memory can still end up on the identical line.
+- **False sharing**: the real, measurable cost two logically unrelated variables pay when they happen to share one real cache line, each write from one core genuinely invalidating the other core's own cached copy.
+- **Padding**: adding real, unused bytes between two variables so each one lands on its own real cache line. *Where you meet it:* `crossbeam_utils::CachePadded<T>`, a real Rust type built for exactly this.
+- **Per-core sharding**: giving each core its own real, independent counter instead of one shared value, so no core's own write ever touches another core's own cache line in the first place.
