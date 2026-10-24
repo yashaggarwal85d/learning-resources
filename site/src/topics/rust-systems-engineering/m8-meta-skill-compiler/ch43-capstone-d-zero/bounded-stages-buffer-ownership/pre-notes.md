@@ -1,0 +1,4 @@
+- **Buffer ownership**: which real stage of a pipeline actually owns a batch's own backing memory at a given moment, moved forward rather than copied, so a slow stage downstream cannot force an unbounded amount of memory to pile up upstream of it.
+- **Backpressure**: a real, bounded channel's own refusal to accept another message once it is full, which forces the stage sending into it to wait rather than build up an unbounded queue of its own.
+- **Bytes in flight**: the real, total size of every batch a pipeline currently holds somewhere between its source and its sink, at any one real moment.
+- **Peak bytes in flight**: the real, largest value bytes in flight ever reaches across an entire real run, the real high-water mark for that pipeline's own memory.

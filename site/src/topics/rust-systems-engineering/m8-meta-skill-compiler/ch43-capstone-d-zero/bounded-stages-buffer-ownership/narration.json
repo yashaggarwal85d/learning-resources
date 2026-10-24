@@ -1,0 +1,68 @@
+{
+  "steps": [
+    {
+      "lines": [
+        "Here's a real pipeline whose own middle stage only ever hands a batch forward through a channel that holds a small, fixed number of them at once.",
+        { "beat": 0.3 },
+        "The stage at the far end is deliberately slow. Does memory keep piling up while the fast end waits on the slow one, or does something hold it back?"
+      ],
+      "answer": [
+        "Something holds it back.",
+        "Once that small channel fills up, the fast end simply has to wait its turn."
+      ]
+    },
+    {
+      "lines": [
+        "Run it for real: across an entire real run of many batches against that same slow ending, the most memory this pipeline ever holds at once stays small, just a handful of batches worth."
+      ]
+    },
+    {
+      "lines": [
+        "Now swap in a version whose channels have no real limit at all, and whose own stages each make a fresh copy of a batch before handing it onward.",
+        { "beat": 0.3 },
+        "Same fast beginning, same slow ending underneath it. Does its own peak memory land anywhere close to the first version?"
+      ],
+      "answer": [
+        "Nowhere close.",
+        "With nothing to push back against, the fast end just keeps going, piling up copies the slow end hasn't gotten to yet."
+      ]
+    },
+    {
+      "lines": [
+        "Run it for real: that second pipeline's own peak memory climbs to nearly the entire run's worth of bytes, because its fast end never once had a reason to pause."
+      ],
+      "takeaway": "A channel with no real limit removes the one signal that would have told a fast producer to slow down."
+    },
+    {
+      "lines": [
+        "Put those two real peaks side by side, from the identical workload, the identical slow ending underneath both.",
+        { "beat": 0.3 },
+        "Is that gap between them a small, incidental thing, or something sturdier than that?"
+      ],
+      "answer": [
+        "Something sturdier.",
+        "It's a real, structural gap, many times over, that holds for as long as the fast end keeps outrunning the slow one."
+      ]
+    },
+    {
+      "lines": [
+        "Run it for real: the pipeline with no real limit peaks at several times what the bounded one ever reaches, for the identical workload and the identical slow ending."
+      ],
+      "takeaway": "A bounded channel's own real limit is what turns a fast producer's head start into backpressure, not goodwill."
+    },
+    {
+      "lines": [
+        "One real, well-known piece of documentation describes exactly this, in its own words.",
+        "A channel that's actually full rejects the next handoff until room opens back up. A channel with no real limit always accepts the handoff right away, with nothing behind it to ever say no."
+      ],
+      "takeaway": "A buffer handed forward through a channel that can say no keeps memory bounded; copying into one that cannot does not."
+    },
+    {
+      "lines": [
+        "So here's what both of these real runs were really showing: moving a batch forward through a channel that can genuinely refuse it keeps a pipeline's own memory in check, no matter how far behind the slow end falls.",
+        "Copying that same batch into a channel that never refuses anything removes the only thing standing between a fast beginning and a pile of memory nobody asked for.",
+        "Either way, it's the identical real lesson: a limit that's only ever assumed isn't a limit at all, until something downstream can actually enforce it."
+      ]
+    }
+  ]
+}
