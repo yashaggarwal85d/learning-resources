@@ -1,0 +1,461 @@
+{
+ "topic": "de.semantic-metrics-layers",
+ "voice": "breeze-mellow-v2",
+ "asr": "large-v3-turbo",
+ "clips": {
+  "01": {
+   "hash": "516ce1dde062da6e",
+   "takes": [
+    "4745a7f2b1a96f67dc32",
+    "62be7f71058911b4ff83"
+   ],
+   "duration": 25.562,
+   "lines": [
+    {
+     "text": "Picture finance and marketing both looking at the exact same underlying data, for the exact same month.",
+     "start": 0.15,
+     "end": 7.822
+    },
+    {
+     "text": "Finance's own dashboard shows one revenue figure. Marketing's dashboard, built in a completely different tool, shows a different one. Nothing about the underlying data actually changed. So where does that disagreement genuinely come from?",
+     "start": 8.242,
+     "end": 25.212
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -1.9,
+   "wpm": 120,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "02": {
+   "hash": "7b884be65e719002",
+   "takes": [
+    "576df847875a4c518adf",
+    "9ee6d1423e996be06c6e"
+   ],
+   "duration": 16.741,
+   "lines": [
+    {
+     "text": "Here's what actually solves that, in the tool's own words.",
+     "start": 0.15,
+     "end": 4.207
+    },
+    {
+     "text": "A single tool that takes one metric's own definition and turns it into working SQL, consistently, no matter which dimension a particular question happens to ask about.",
+     "start": 4.627,
+     "end": 16.391
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -2.2,
+   "wpm": 133,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "03": {
+   "hash": "54f83809aee9baf9",
+   "takes": [
+    "e5b35fb1c3e0840e571d",
+    "9bfb3967e9ee7feb6cee"
+   ],
+   "duration": 15.392,
+   "lines": [
+    {
+     "text": "Here's a question worth sitting with before the next reveal.",
+     "start": 0.15,
+     "end": 3.584
+    },
+    {
+     "text": "A metric gets written down, in one single place, exactly once. Does writing it down that way mean it only ever produces one single, fixed query, forever?",
+     "start": 4.005,
+     "end": 15.042
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -2.3,
+   "wpm": 144,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "03a": {
+   "hash": "e42aad9b6132da00",
+   "takes": [
+    "a2f138070a1437c767d2",
+    "2263eedcc55418dd9a9f"
+   ],
+   "duration": 21.022,
+   "lines": [
+    {
+     "text": "Not at all \u2014 that single declaration is meant to produce a different query every time.",
+     "start": 0.15,
+     "end": 6.046
+    },
+    {
+     "text": "The whole actual point is compiling that same declaration differently depending on exactly how it's being asked for, whether that's by month, by day, or by any other grouping entirely.",
+     "start": 6.466,
+     "end": 20.672
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -1.9,
+   "wpm": 128,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "04": {
+   "hash": "8db2b9f50a856e1e",
+   "takes": [
+    "2ac9e2fac8903af34c64",
+    "2714e1115e50f032de56"
+   ],
+   "duration": 15.825,
+   "lines": [
+    {
+     "text": "Here's that declaration, made completely real.",
+     "start": 0.15,
+     "end": 3.232
+    },
+    {
+     "text": "One single revenue metric, written down exactly once, sitting directly on top of the shop's own existing star schema \u2014 with absolutely no second copy of it anywhere else.",
+     "start": 3.652,
+     "end": 15.475
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -2.6,
+   "wpm": 129,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "05": {
+   "hash": "e433d79d609a307e",
+   "takes": [
+    "ab11c6ee1eefa99ab405",
+    "6e9ad150d9a89dfe9f3a"
+   ],
+   "duration": 30.823,
+   "lines": [
+    {
+     "text": "And here's that one declaration, actually put to the test.",
+     "start": 0.15,
+     "end": 4.349
+    },
+    {
+     "text": "Asked for a plain monthly total, it compiles with no join involved at all. Asked instead for a daily breakdown by product category, that exact same declaration compiles with a join added in completely automatically. Both answers were checked directly against an independent total, and both came out exactly right.",
+     "start": 4.769,
+     "end": 30.473
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -1.9,
+   "wpm": 117,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "06": {
+   "hash": "f11ff15a56505ce7",
+   "takes": [
+    "04ab5ba6422a178fdaff",
+    "db4cf72c1132e20db34f"
+   ],
+   "duration": 19.343,
+   "lines": [
+    {
+     "text": "Here's a harder question about where that automatic join actually comes from.",
+     "start": 0.15,
+     "end": 4.491
+    },
+    {
+     "text": "One table has a product column. Another table has a matching id column. Does actually declaring that relationship matter at all, or could a tool just reasonably guess it from how the two columns happen to be named?",
+     "start": 4.911,
+     "end": 18.993
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -1.9,
+   "wpm": 155,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "06a": {
+   "hash": "52e0fbb0d4c8f23d",
+   "takes": [
+    "d9adced5f2be552e3360",
+    "f361b6a2408b06abaa4f"
+   ],
+   "duration": 21.732,
+   "lines": [
+    {
+     "text": "Declaring it matters enormously \u2014 guessing was never actually involved here.",
+     "start": 0.15,
+     "end": 5.75
+    },
+    {
+     "text": "That automatic join only worked at all because the relationship between those two tables had already been explicitly declared ahead of time. Nothing here was ever inferred just from column names lining up.",
+     "start": 6.17,
+     "end": 21.382
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -2.0,
+   "wpm": 119,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "07": {
+   "hash": "85dd073cf119c59e",
+   "takes": [
+    "62102f61877e7784683b",
+    "e9ae0809e4ce820eb8f1"
+   ],
+   "duration": 21.655,
+   "lines": [
+    {
+     "text": "Here's that declared relationship, named directly in the tool's own words.",
+     "start": 0.15,
+     "end": 6.103
+    },
+    {
+     "text": "The explicit, declared join keys of a model \u2014 genuine traversal paths between one table and another, always stated outright, never simply inferred from how two columns happen to be named.",
+     "start": 6.523,
+     "end": 21.305
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 114,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "08": {
+   "hash": "6bd61e7ea5ccf9e1",
+   "takes": [
+    "5111bfabd78159147ed7",
+    "61db60a45b29d907e629"
+   ],
+   "duration": 24.15,
+   "lines": [
+    {
+     "text": "Now here's the actual underlying principle that makes all of this worth doing at all.",
+     "start": 0.15,
+     "end": 5.506
+    },
+    {
+     "text": "Minimize redundancy by making one single metric definition work absolutely everywhere it possibly can \u2014 stated plainly as the layer's own core design principle, not treated as some incidental side benefit.",
+     "start": 5.926,
+     "end": 23.8
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 112,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "09": {
+   "hash": "d6290c42934ab042",
+   "takes": [
+    "a5bc7d30b162d5ddb7dd",
+    "2c96f4f61b6475600f91"
+   ],
+   "duration": 25.763,
+   "lines": [
+    {
+     "text": "Here's a genuinely open question worth guessing at first.",
+     "start": 0.15,
+     "end": 3.613
+    },
+    {
+     "text": "A table already has a perfectly ordinary date column sitting right there on it. Does grouping results by month or by day genuinely require some separate, dedicated table, or can that one existing column just be used directly, exactly as it already is?",
+     "start": 4.033,
+     "end": 25.413
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -2.3,
+   "wpm": 121,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "09a": {
+   "hash": "2f0be29719719148",
+   "takes": [
+    "6d32dbc15018692dbc04",
+    "8cbf7e6514366ed924ae"
+   ],
+   "duration": 17.49,
+   "lines": [
+    {
+     "text": "A separate, dedicated table is genuinely required here \u2014 and this was discovered the hard way.",
+     "start": 0.15,
+     "end": 6.944
+    },
+    {
+     "text": "Building this very lab hit exactly that wall directly: compilation flatly refused to run at all until a properly dedicated table was actually added in.",
+     "start": 7.364,
+     "end": 17.14
+    }
+   ],
+   "lufs": -16.0,
+   "true_peak": -2.3,
+   "wpm": 137,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "10": {
+   "hash": "a32d66fb8d793883",
+   "takes": [
+    "bfeb79ba34b8b6e38eec",
+    "bf6f129c7c1dc7a0644d"
+   ],
+   "duration": 18.116,
+   "lines": [
+    {
+     "text": "Here's that dedicated table, named directly in the tool's own words.",
+     "start": 0.15,
+     "end": 5.063
+    },
+    {
+     "text": "A base table built specifically and only for time-based joins and aggregations \u2014 deliberately not just any ordinary table that merely happens to have a date column sitting somewhere on it.",
+     "start": 5.483,
+     "end": 17.766
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 139,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "11": {
+   "hash": "76907d1d3caea84d",
+   "takes": [
+    "84eb243b1177e85256d9",
+    "91919dd474526e4b6bd3",
+    "bb47b30fc6cea8b39f94"
+   ],
+   "duration": 28.132,
+   "lines": [
+    {
+     "text": "Here's where this fits into a genuinely bigger picture.",
+     "start": 0.15,
+     "end": 3.29
+    },
+    {
+     "text": "Other real tools solve this exact same underlying problem too, named here without being built by hand themselves.",
+     "start": 3.71,
+     "end": 12.957
+    },
+    {
+     "text": "This particular tool's own move to a fully open license happened at a real industry conference, deliberately aligned with a broader open standard that has itself since been renamed as it keeps maturing.",
+     "start": 13.377,
+     "end": 27.782
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 128,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "12": {
+   "hash": "8d11d93cedbd2499",
+   "takes": [
+    "f1111f2ed24bcd631b8b",
+    "985924989025c6d5550a"
+   ],
+   "duration": 30.705,
+   "lines": [
+    {
+     "text": "Let's put the whole picture back together.",
+     "start": 0.15,
+     "end": 2.37
+    },
+    {
+     "text": "A semantic layer compiles one single declaration into many genuinely correct queries. Declared join keys are what make that compiling possible at all. A dedicated time table is a required, declared structure, never a convenient assumption. And this is a real industry-wide effort, not any one vendor's private trick.",
+     "start": 2.79,
+     "end": 30.355
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -1.8,
+   "wpm": 111,
+   "wer": 0.04,
+   "exact": false,
+   "tolerated": [
+    {
+     "line": "A semantic layer compiles one single declaration into many genuinely correct queries. Declared join keys are what make that compiling possible at all. A dedicated time table is a required, declared structure, never a convenient assumption. And this is a real industry-wide effort, not any one vendor's private trick.",
+     "said": "time table",
+     "heard": "timetable"
+    }
+   ]
+  },
+  "13": {
+   "hash": "169f0d858aaadb4a",
+   "takes": [
+    "e51dd5075d42bae9f239",
+    "5ccfcfac04d58014f9ba"
+   ],
+   "duration": 20.703,
+   "lines": [
+    {
+     "text": "One closing scenario worth genuinely working through.",
+     "start": 0.15,
+     "end": 3.252
+    },
+    {
+     "text": "Finance now wants that exact same average-order-value metric broken down by customer region instead of by month. Does meeting that new request genuinely require writing a brand-new metric definition completely from scratch?",
+     "start": 3.672,
+     "end": 20.353
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 122,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "13a": {
+   "hash": "8543ae40a1fd5acf",
+   "takes": [
+    "fcba6a3b934b7e2f4776",
+    "e3cd8a799c71729714cf"
+   ],
+   "duration": 21.503,
+   "lines": [
+    {
+     "text": "No, not at all \u2014 the existing declaration already fully covers it.",
+     "start": 0.15,
+     "end": 5.023
+    },
+    {
+     "text": "That exact same existing declaration, simply asked for a different breakdown this time, compiles directly to a correctly joined query against the customer data instead \u2014 with absolutely no redefinition needed anywhere.",
+     "start": 5.443,
+     "end": 21.153
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -2.4,
+   "wpm": 117,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  }
+ }
+}
