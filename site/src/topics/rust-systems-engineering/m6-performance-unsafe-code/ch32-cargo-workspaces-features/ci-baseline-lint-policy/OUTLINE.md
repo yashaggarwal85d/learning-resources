@@ -1,0 +1,29 @@
+# Outline — CI baseline and lint policy
+
+Concept ledger: introduces `a-lint-written-once-is-enforced-every-time`; uses `a-feature-must-stay-additive-under-unification` (topic 83) only in prose, per Chapter 32's own CHAPTER.md §A.7 — this topic reuses the immediately preceding topic's own introduced id directly, continuing the identical within-chapter pattern Chapters 30 and 31 established.
+
+Bridge/handoff (verbatim from CHAPTER.md §A.8): "A feature that stays additive under real unification is a real, local correctness property; it says nothing yet about whether anyone but its own author ever actually checks that property before it ships." Hands off to topic 85 (verbatim): "A lint and a test enforced the same way every time catches a real regression in the code; it says nothing yet about the real, separate cost a release build itself imposes once that correct code actually has to ship."
+
+Chapter 32's own disclosed convention (§A.3/§A.6) applies: this topic's own workspace (`examples/ci_demo/`) is a two-crate workspace (`core_crate`, `consumer_crate`, the latter depending on the former) with a real `[workspace.lints.clippy]` table denying `needless_return`, inherited by both crates via `[lints] workspace = true`. All three claims are measured by deliberately rewriting one real source file to a known-bad version, running a real local CI-style command against it, then reverting, never a timed benchmark or a parsed log summary beyond the tool's own real exit code and output.
+
+## Storyboard (8 steps, 3 predict/reveal pairs)
+
+1. **FmtPredict** — A real source file in this workspace is rewritten with one line indented four extra spaces, a change `cargo build` compiles without complaint. Does `cargo fmt --check` genuinely catch it? Options: no, formatting is only a style suggestion, never enforced; yes, genuinely, the real check fails on it (correct); only if `cargo fmt` is run without `--check`.
+2. **FmtReveal** — Measured: `cargo fmt --check` genuinely fails the instant the real indentation violation exists, and genuinely passes again the moment it is reverted, with `cargo build` never once complaining either way. No separate takeaway here (this is the reel's own "from" step for the phone swipe test; its takeaway moves to step 7, the connecting step, below).
+3. **ClippyPredict** — The workspace's own `[workspace.lints.clippy]` table denies `needless_return` for every member crate. A real, deliberately redundant `return` keyword is added to one function. Does the inherited lint genuinely catch it? Options: no, Clippy only warns by default, it never blocks a build; yes, genuinely, the real build fails on it (correct); only if `cargo clippy -- -D warnings` is passed by hand.
+4. **ClippyReveal** — Measured: `cargo clippy` genuinely fails, naming the denied lint directly, the instant the real violation exists, and genuinely passes again the moment it is reverted, with the workspace's own lint declaration never touched. Takeaway: a lint denied once in the workspace's own manifest is enforced the identical way on every real violation, with no extra flag needed.
+5. **TestPredict** — A real function's own logic is replaced with one that always returns the same, wrong answer; the function's own type signature never changes. Does `cargo build` catch this real regression? Does `cargo test` catch it? Options: both catch it, since the logic clearly changed; neither catches it, since no type ever changed; `cargo build` stays green, but `cargo test` genuinely fails (correct).
+6. **TestReveal** — Measured: `cargo build` genuinely stays green through the real logic regression, since the code still compiles; `cargo test` genuinely fails on it, since the existing unit tests assert the real, now-wrong behavior directly; both pass again once the regression is reverted. Takeaway: a test is the one real local gate that checks what a program actually does, not just whether it compiles.
+7. **DocsReveal** — The Cargo Book states these rules directly, in its own words: the `[lints]` table overrides a lint's own level in one table, written once; `cargo test` compiles and executes a package's own unit, integration, and documentation tests. Does this topic's own three measured gates model exactly the rules both quotes describe? Takeaway (moved here from step 2): a format check, a denied lint, and a real test each catch a genuinely different class of mistake the other two let straight through.
+8. **Recap** — A format check catches what a human eye would call messy; a denied lint catches a known, named mistake the instant it appears; a test catches a real behavior regression neither one can see; none of the three substitutes for either of the other two.
+
+## Engagement arc
+
+- Predicts: steps 1, 3, 5 — each a genuine guess about what one specific, real local CI command run against this exact workspace actually does.
+- Takeaways: steps 4, 6, 7 (three — step 2 deliberately carries none, since it is the reel's own "from" step for the phone swipe test; its takeaway moves to step 7, the connecting "the docs say this" step; step 8's recap carries the closing statement instead of a fourth).
+
+## Deferred to post-notes (not measured in the reel itself, per the kit's real-measurement standard)
+
+- `cargo nextest`, the syllabus's own named faster test runner, and `cargo-semver-checks`, the syllabus's own named library-API-compatibility checker; neither is installed in this sandboxed container, named here in prose — In production.
+- An MSRV check against a crate's own declared `rust-version`, and dependency auditing (deferred by the syllabus itself to Chapter 41) — Internals.
+- `cargo fix --edition`, the syllabus's own named tool for automating an edition migration, a real, separate concern from the three gates this topic measures directly (format, lint, behavior) — The frontier.

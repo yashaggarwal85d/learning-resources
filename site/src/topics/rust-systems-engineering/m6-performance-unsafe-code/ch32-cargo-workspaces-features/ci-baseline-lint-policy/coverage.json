@@ -1,0 +1,84 @@
+{
+  "topic": "rust.ci-baseline-lint-policy",
+  "syllabus": [
+    {
+      "clause": "format check,",
+      "at": [
+        { "step": "Measured: cargo fmt --check genuinely fails the instant the real indentation violation exists, and genuinely passes again the moment it is reverted, with cargo build never once complaining either way" }
+      ]
+    },
+    {
+      "clause": "Clippy with warnings as errors (via the [lints] table and Cargo's build.warnings, stable 1.97),",
+      "at": [
+        { "step": "Measured: cargo clippy genuinely fails, naming the denied lint directly, the instant the real violation exists, and genuinely passes again the moment it is reverted, with the workspace's own lint declaration never touched" }
+      ]
+    },
+    {
+      "clause": "unit and integration tests (cargo nextest),",
+      "at": [
+        { "step": "Measured: cargo build genuinely stays green through the real logic regression, since the code still compiles; cargo test genuinely fails on it, since the existing unit tests assert the real, now-wrong behavior directly" }
+      ]
+    },
+    {
+      "clause": "an MSRV check against rust-version,",
+      "at": [{ "deep": "Internals" }]
+    },
+    {
+      "clause": "cargo-semver-checks for libraries,",
+      "at": [{ "deep": "In production" }]
+    },
+    {
+      "clause": "dependency auditing (→ Ch.41),",
+      "at": [{ "deep": "Internals" }]
+    },
+    {
+      "clause": "and cargo fix --edition for edition migrations.",
+      "at": [{ "deep": "The frontier" }]
+    }
+  ],
+  "sources": [
+    {
+      "source": "lints",
+      "items": [
+        {
+          "item": "Override the default level of lints from different tools by assigning them to a new level in a table",
+          "at": [{ "step": "The workspace's own lints.clippy table denies needless_return for every member crate. A real, deliberately redundant return keyword is added to one function. Does the inherited lint genuinely catch it?" }]
+        },
+        {
+          "item": "Cargo only applies these to the current package and not to dependencies.",
+          "at": [{ "deep": "Internals" }]
+        }
+      ]
+    },
+    {
+      "source": "cargo-test",
+      "items": [
+        {
+          "item": "Compile and execute unit, integration, and documentation tests.",
+          "at": [{ "step": "The Cargo Book states these rules directly: the lints table overrides a lint's own level in one table, written once; cargo test compiles and executes a package's own unit, integration, and documentation tests. Do the three measured gates here model exactly the rules both quotes describe?" }]
+        }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "self-review",
+    "date": "2026-10-24",
+    "items": [
+      { "item": "All three claims are measured by rewriting one real source file to a known, specific bad version, running a real local CI command against it, and checking that command's own real exit code and output, never by parsing a human-readable summary line a tool happens to print.", "at": [{ "step": "A real source file in this workspace is rewritten with one line indented four extra spaces, a change cargo build compiles without complaint. Does cargo fmt --check genuinely catch it?" }] },
+      { "item": "examples.py resets the workspace's own source file to its original, committed text at the start of the script and again after each of the three claims, so running it twice in a row (or after a failed run) produces the identical real result both times.", "at": [{ "step": "Measured: cargo fmt --check genuinely fails the instant the real indentation violation exists, and genuinely passes again the moment it is reverted, with cargo build never once complaining either way" }] },
+      { "item": "The clippy claim asserts not just a nonzero exit code but that the real failure output actually names the denied lint (needless_return), so the claim is about this specific rule being enforced, not merely about some unrelated compile error happening to occur.", "at": [{ "step": "The workspace's own lints.clippy table denies needless_return for every member crate. A real, deliberately redundant return keyword is added to one function. Does the inherited lint genuinely catch it?" }] },
+      { "item": "The regression claim deliberately keeps the function's own real type signature identical before and after, so the claim isolates exactly the syllabus's own point: a test catches a behavior change a type system cannot see, not a type error any compiler would already report.", "at": [{ "step": "A real function's own logic is replaced with one that always returns the same, wrong answer; its type signature never changes. Does cargo build catch this real regression? Does cargo test catch it?" }] },
+      { "item": "cargo nextest is not installed in this sandboxed container (shutil.which returns nothing for it), so the claim uses the stable, always-available cargo test instead; nextest's own real advantage (speed, isolation) is named in post-notes rather than measured, since it changes how tests run, not whether this topic's own measured regression is caught.", "at": [{ "step": "Measured: cargo build genuinely stays green through the real logic regression, since the code still compiles; cargo test genuinely fails on it, since the existing unit tests assert the real, now-wrong behavior directly" }] },
+      { "item": "No second, older Rust toolchain is installed in this sandboxed container, so an MSRV violation against a crate's own declared rust-version cannot be measured directly; the real mechanism is named in post-notes instead of faked.", "at": [{ "deep": "Internals" }] },
+      { "item": "cargo-semver-checks is not installed in this sandboxed container, so the syllabus's own named library-API-compatibility claim is named in post-notes rather than run for real; no measured claim in this topic depends on it.", "at": [{ "deep": "In production" }] },
+      { "item": "This topic reuses Chapter 32's own established workspace-lints-table pattern from topic 82 (workspace.lints inherited via [lints] workspace = true) but applies it to Clippy's own needless_return rather than rustc's unsafe_code, and adds a real, separate format-check and test-regression claim neither topic 82 nor 83 measures.", "at": [{ "step": "Recap: three real, different gates" }] },
+      { "item": "The Cargo Book's manifest page and its cargo-test command page are two genuinely separate pages describing two genuinely different real mechanisms (a lint's own declared level, and what a test command actually runs), giving this topic two sources rather than multiple quotes drawn from a single page.", "at": [{ "step": "The Cargo Book states these rules directly: the lints table overrides a lint's own level in one table, written once; cargo test compiles and executes a package's own unit, integration, and documentation tests. Do the three measured gates here model exactly the rules both quotes describe?" }] },
+      { "item": "The specific choice of needless_return as the denied Clippy lint, and is_valid_feature_name as the regressed function, are this specific example's own choice; the measured claims illustrate the real shape of a format check, a denied lint, and a test for any real Cargo workspace at all, not a claim bound to exactly these names.", "at": [{ "step": "Measured: cargo clippy genuinely fails, naming the denied lint directly, the instant the real violation exists, and genuinely passes again the moment it is reverted, with the workspace's own lint declaration never touched" }] }
+    ]
+  },
+  "gapReview": {
+    "date": "2026-10-24",
+    "by": "self-review",
+    "open": []
+  }
+}

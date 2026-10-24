@@ -1,0 +1,70 @@
+{
+  "steps": [
+    {
+      "lines": [
+        "One real line in this project gets indented a few spaces further than it should be.",
+        { "beat": 0.3 },
+        "The real build still compiles it without a single complaint. Does the real format check catch it anyway?"
+      ],
+      "answer": [
+        "Yes, genuinely.",
+        "The format check cares about exactly this, even when the build does not."
+      ]
+    },
+    {
+      "lines": [
+        "Run it for real: the format check genuinely fails the moment that real indentation is wrong, and genuinely passes again the moment it is put back, while the build itself never once objects either way."
+      ]
+    },
+    {
+      "lines": [
+        "This workspace has one rule written down exactly once: a specific, named mistake is forbidden everywhere in it.",
+        { "beat": 0.3 },
+        "A real line breaking that exact rule gets added anyway. Does the rule genuinely catch it?"
+      ],
+      "answer": [
+        "Yes, genuinely.",
+        "The real build refuses to finish, and says exactly why."
+      ]
+    },
+    {
+      "lines": [
+        "Run it for real: the build genuinely fails the moment that real violation exists, naming the exact rule it broke, and genuinely succeeds again the moment it is fixed, with the rule itself never touched at all."
+      ],
+      "takeaway": "A rule denied once for the whole workspace is enforced the same way on every real violation."
+    },
+    {
+      "lines": [
+        "Now a real function quietly starts giving the wrong answer every single time, even though its own real shape, what it takes in and what it hands back, never changes at all.",
+        { "beat": 0.3 },
+        "Does the build catch that. Does a real test catch it?"
+      ],
+      "answer": [
+        "The build stays green.",
+        "But the real test genuinely fails."
+      ]
+    },
+    {
+      "lines": [
+        "Run it for real: the build keeps compiling the whole way through that real wrong answer, completely unbothered, while the test genuinely fails on it, because the test is the one thing actually checking what the code does."
+      ],
+      "takeaway": "A real test is the one local check that looks at what a program actually does, not just whether it compiles."
+    },
+    {
+      "lines": [
+        "Two real, independent pages name both of these exact ideas directly, in their own words.",
+        "One names the one place a rule like this gets written down for an entire project. The other names exactly what a real test is actually doing when it runs."
+      ],
+      "takeaway": "A format check, a denied rule, and a real test each catch a different mistake the other two let through."
+    },
+    {
+      "lines": [
+        "So here's what this topic's own three real checks are really standing in for: none of them is a stand in for either of the other two, because each one is actually looking at something completely different.",
+        "A format check only ever looks at how the code is laid out on the page.",
+        "A rule denied once only ever looks for one specific, named mistake it already knows about.",
+        "And a real test is the only one of the three that ever actually looks at whether the code does the right thing.",
+        "Skip any one of them, and that's exactly the kind of mistake that gets through."
+      ]
+    }
+  ]
+}

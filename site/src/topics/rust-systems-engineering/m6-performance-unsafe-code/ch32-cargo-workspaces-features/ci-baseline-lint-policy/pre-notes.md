@@ -1,0 +1,4 @@
+- **Format check**: `cargo fmt --check`, a real command that fails if any file does not already match `rustfmt`'s own canonical formatting, without rewriting anything.
+- **The `[lints]` table**: the real, stable mechanism for overriding a lint's own level (`forbid`, `deny`, `warn`, `allow`) directly in `Cargo.toml`, enforced the same way every time the workspace is built.
+- **Clippy**: Rust's own real, separate linter, with lints beyond what `rustc` itself checks; a lint it reports can be denied as a build error through the identical `[lints]` table.
+- **`cargo test`**: the real command that compiles and runs a crate's own unit, integration, and documentation tests, the one local gate that checks a program's own real behavior rather than only whether it compiles.
