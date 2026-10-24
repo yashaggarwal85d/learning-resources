@@ -1,0 +1,616 @@
+{
+ "topic": "de.execution-models-iterator-vectorized",
+ "voice": "breeze-mellow-v2",
+ "asr": "large-v3-turbo",
+ "clips": {
+  "01": {
+   "hash": "6970ffe41ab43475",
+   "takes": [
+    "6cb001e01055a7be8802",
+    "ce6a9adbcfe513f598c9",
+    "7d165039c0ea5c96235c"
+   ],
+   "duration": 18.075,
+   "lines": [
+    {
+     "text": "Run the exact same query, over the exact same table, on two different engines, and they agree on the answer down to a rounding error.",
+     "start": 0.15,
+     "end": 10.221
+    },
+    {
+     "text": "One of them takes well over three seconds.",
+     "start": 10.641,
+     "end": 13.665
+    },
+    {
+     "text": "The other finishes in about a quarter of a second.",
+     "start": 14.085,
+     "end": 17.725
+    }
+   ],
+   "lufs": -16.1,
+   "true_peak": -2.0,
+   "wpm": 143,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "02": {
+   "hash": "8129b5da9c6b8aa4",
+   "takes": [
+    "4769a2d3e442d75e33e1",
+    "803aac0eeb7a9f6df5fa"
+   ],
+   "duration": 10.952,
+   "lines": [
+    {
+     "text": "Same table, same SQL, same answer, checked and not assumed.",
+     "start": 0.15,
+     "end": 5.35
+    },
+    {
+     "text": "Why would one engine take sixteen times longer than the other to produce it?",
+     "start": 6.17,
+     "end": 10.602
+    }
+   ],
+   "lufs": -15.9,
+   "true_peak": -4.0,
+   "wpm": 131,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "02a": {
+   "hash": "22b38c1a4ef109f4",
+   "takes": [
+    "0049cea430511c57596a",
+    "d2921dd239d922bd34ea"
+   ],
+   "duration": 14.336,
+   "lines": [
+    {
+     "text": "Not the hardware, and not a smarter plan \u2014 both engines pick the same kind of scan, filter and group.",
+     "start": 0.15,
+     "end": 7.925
+    },
+    {
+     "text": "What differs is how many rows actually move through each step of getting there at once.",
+     "start": 8.345,
+     "end": 13.986
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 146,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "03": {
+   "hash": "8bc6b53929f52129",
+   "takes": [
+    "950e5ce6864d1b52db15",
+    "104c6c82908cbd6b904a"
+   ],
+   "duration": 17.014,
+   "lines": [
+    {
+     "text": "The slower engine's executor works by asking the operator below it for one row, getting exactly one row back, and asking again.",
+     "start": 0.15,
+     "end": 8.23
+    },
+    {
+     "text": "Every operator in the plan, for every single row, pulled one at a time, all the way from the bottom to the top.",
+     "start": 8.65,
+     "end": 16.663
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -2.0,
+   "wpm": 159,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "04": {
+   "hash": "9dbdb9097f2fafed",
+   "takes": [
+    "598802720c856eeb09b2",
+    "675ce201556fa7dc0c9a",
+    "8664713fbee790c6e6e2"
+   ],
+   "duration": 23.939,
+   "lines": [
+    {
+     "text": "Pulling one row at a time means calling a function, once, for every operator, for every one of those millions of rows.",
+     "start": 0.15,
+     "end": 8.7
+    },
+    {
+     "text": "That's not free. Each call is its own small overhead, and it also hides any chance for the processor to work on more than one row at once.",
+     "start": 9.12,
+     "end": 18.124
+    },
+    {
+     "text": "Millions of tiny function calls add up to a real, measurable cost.",
+     "start": 18.544,
+     "end": 23.589
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -1.9,
+   "wpm": 155,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "05": {
+   "hash": "dc604b1010463dd8",
+   "takes": [
+    "6b0ef78e1177725bd4f6",
+    "dbd6ffe4af6eea1d22e2",
+    "c3f60e3a787002aec95c"
+   ],
+   "duration": 13.175,
+   "lines": [
+    {
+     "text": "The faster engine's operators don't take one row at a time.",
+     "start": 0.15,
+     "end": 3.741
+    },
+    {
+     "text": "They take a whole array of rows in a single call.",
+     "start": 4.161,
+     "end": 7.831
+    },
+    {
+     "text": "A couple thousand rows move through one operator call, instead of one.",
+     "start": 8.251,
+     "end": 12.825
+    }
+   ],
+   "lufs": -16.2,
+   "true_peak": -2.2,
+   "wpm": 155,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "06": {
+   "hash": "b90b3768effe8209",
+   "takes": [
+    "dfc905ecb2b16c0dc92d",
+    "c43948a776d1d8887133",
+    "78aefce5a22ebf4fa8a6"
+   ],
+   "duration": 19.813,
+   "lines": [
+    {
+     "text": "Instead of calling a function once per row, a vectorized operator runs one tight loop over an array already sitting in the processor's cache.",
+     "start": 0.15,
+     "end": 9.766
+    },
+    {
+     "text": "Same filter, same arithmetic, same millions of rows underneath.",
+     "start": 10.186,
+     "end": 14.883
+    },
+    {
+     "text": "Just looped over in batches, instead of summoned one at a time.",
+     "start": 15.303,
+     "end": 19.463
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.8,
+   "wpm": 136,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "07": {
+   "hash": "3b53ae70c2250b03",
+   "takes": [
+    "b9130b39cc0bfcc604ad",
+    "210ac5187121af166097"
+   ],
+   "duration": 11.472,
+   "lines": [
+    {
+     "text": "A batch of a couple thousand rows clearly beats a batch of one.",
+     "start": 0.15,
+     "end": 4.23
+    },
+    {
+     "text": "Does an even bigger batch keep winning \u2014 would the whole table in one call beat that?",
+     "start": 5.05,
+     "end": 11.122
+    }
+   ],
+   "lufs": -16.3,
+   "true_peak": -2.4,
+   "wpm": 152,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "07a": {
+   "hash": "a53c1dc2276a53db",
+   "takes": [
+    "73175c50f63d9bab59ea",
+    "298732f2606c185d7bf6"
+   ],
+   "duration": 13.045,
+   "lines": [
+    {
+     "text": "No \u2014 there's a sweet spot.",
+     "start": 0.15,
+     "end": 2.287
+    },
+    {
+     "text": "A batch only helps as long as it still fits inside the cache it's actually processed in. Past that, bigger stops helping and starts hurting.",
+     "start": 2.707,
+     "end": 12.695
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -2.4,
+   "wpm": 138,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "08": {
+   "hash": "0441ed6f1e61a6c4",
+   "takes": [
+    "4ac270559c5e9cea4cca",
+    "f4088f976439f89b822f",
+    "70986187574cd70a8dc5"
+   ],
+   "duration": 25.629,
+   "lines": [
+    {
+     "text": "On the benchmark that first measured this: a batch of exactly one row ran about as slowly as a plain row-at-a-time interpreter.",
+     "start": 0.15,
+     "end": 9.824
+    },
+    {
+     "text": "The best size measured was in the low thousands, with a wide range on either side still working fine.",
+     "start": 10.244,
+     "end": 17.512
+    },
+    {
+     "text": "Go past that range, though, and the batch no longer fits the cache, and the time climbs right back up again.",
+     "start": 17.932,
+     "end": 25.279
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -2.6,
+   "wpm": 152,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "09": {
+   "hash": "d3d29cd5ec8ea8bf",
+   "takes": [
+    "9c0dc545a42c12a996b4",
+    "ad9fae42c4ff440cc55b",
+    "b1367b9d6a6a680128a4"
+   ],
+   "duration": 22.218,
+   "lines": [
+    {
+     "text": "There's a way to go further than batching rows into arrays.",
+     "start": 0.15,
+     "end": 3.849
+    },
+    {
+     "text": "Compile the whole plan \u2014 the scan, the filter, the hash build \u2014 into one piece of actual machine code.",
+     "start": 4.269,
+     "end": 11.258
+    },
+    {
+     "text": "Values stay inside the processor's own registers the whole way through, pushed forward instead of pulled, instead of ever being written out to an array in between.",
+     "start": 11.678,
+     "end": 21.868
+    }
+   ],
+   "lufs": -16.0,
+   "true_peak": -2.5,
+   "wpm": 151,
+   "wer": 0.18181818181818182,
+   "exact": false,
+   "tolerated": [
+    {
+     "line": "There's a way to go further than batching rows into arrays.",
+     "said": "arrays",
+     "heard": "a race"
+    }
+   ]
+  },
+  "10": {
+   "hash": "33ef72f49a91c9a5",
+   "takes": [
+    "435b89c1212a2d9e4b58",
+    "a43a67119482bfc71446"
+   ],
+   "duration": 15.427,
+   "lines": [
+    {
+     "text": "Three ways to run the exact same plan, on one core: pull one row at a time, process a batch at a time, or compile the whole thing to machine code first.",
+     "start": 0.15,
+     "end": 12.245
+    },
+    {
+     "text": "Which one actually wins?",
+     "start": 13.065,
+     "end": 15.077
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -2.4,
+   "wpm": 140,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "10a": {
+   "hash": "f0030b259481866e",
+   "takes": [
+    "78c84de5c0a788aa0ba1",
+    "d86238971483dce1f1d2"
+   ],
+   "duration": 13.7,
+   "lines": [
+    {
+     "text": "Compiling \u2014 it removes the most overhead of the three, by cutting out both the per-row call and the per-batch bookkeeping.",
+     "start": 0.15,
+     "end": 8.542
+    },
+    {
+     "text": "But winning on raw speed isn't the same as winning for free.",
+     "start": 8.962,
+     "end": 13.35
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -2.5,
+   "wpm": 149,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "11": {
+   "hash": "0d3e153f0d6cca94",
+   "takes": [
+    "add37ebef2bb35109157",
+    "83c67fd74a1e033596a6",
+    "eb541a35a9e4b2f1cc23"
+   ],
+   "duration": 31.513,
+   "lines": [
+    {
+     "text": "The system that pioneered this found hand-written code and its own compiled output landing close together \u2014 both a long way ahead of a plain row-at-a-time interpreter.",
+     "start": 0.15,
+     "end": 11.785
+    },
+    {
+     "text": "That speed comes with a real cost on the other side, though.",
+     "start": 12.205,
+     "end": 16.083
+    },
+    {
+     "text": "Every query first has to be compiled into machine code before its very first row comes out, and once something goes wrong inside that generated code, it's a much harder thing to read than a plain interpreter loop.",
+     "start": 16.503,
+     "end": 31.163
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -1.9,
+   "wpm": 152,
+   "wer": 0.06666666666666667,
+   "exact": false,
+   "tolerated": [
+    {
+     "line": "The system that pioneered this found hand-written code and its own compiled output landing close together \u2014 both a long way ahead of a plain row-at-a-time interpreter.",
+     "said": "hand written",
+     "heard": "handwritten"
+    }
+   ]
+  },
+  "12": {
+   "hash": "6b976c766b585e22",
+   "takes": [
+    "765e98fe7149548377c6",
+    "ff895db237c07da4816d",
+    "f0b4fcc18fc66c324ae3"
+   ],
+   "duration": 30.712,
+   "lines": [
+    {
+     "text": "There's one more piece: how work gets spread across more than one core.",
+     "start": 0.15,
+     "end": 5.033
+    },
+    {
+     "text": "Instead of deciding the number of threads before a query even starts, split the work into small pieces and hand each idle thread the next piece as it finishes the last one.",
+     "start": 5.453,
+     "end": 16.749
+    },
+    {
+     "text": "Measured directly here: going from one thread to four cut the time by well over a factor of three \u2014 the same kind of scaling the system that introduced this idea reported at a much larger scale.",
+     "start": 17.169,
+     "end": 30.362
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 158,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "13": {
+   "hash": "eb15b578f9bb2a83",
+   "takes": [
+    "aa6323420e1f35559451",
+    "d24a37c98ad774965edd",
+    "ec6f1970bbd774154f5b",
+    "4b1d1696d828ad006cc3"
+   ],
+   "duration": 27.899,
+   "lines": [
+    {
+     "text": "Pulling one row at a time costs a function call for every single row.",
+     "start": 0.15,
+     "end": 4.804
+    },
+    {
+     "text": "A batch amortizes that call, as long as it still fits in cache.",
+     "start": 5.224,
+     "end": 10.914
+    },
+    {
+     "text": "Compiling removes even the batch, at the price of compiling before you start and of a much harder debugging story.",
+     "start": 11.334,
+     "end": 19.968
+    },
+    {
+     "text": "And a fixed number of threads is just another decision made too early \u2014 morsels make it at run time instead.",
+     "start": 20.388,
+     "end": 27.549
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -1.9,
+   "wpm": 144,
+   "wer": 0.1,
+   "exact": false,
+   "tolerated": [
+    {
+     "line": "A batch amortizes that call, as long as it still fits in cache.",
+     "said": "cache",
+     "heard": "cash"
+    },
+    {
+     "line": "And a fixed number of threads is just another decision made too early \u2014 morsels make it at run time instead.",
+     "said": "run time",
+     "heard": "runtime"
+    }
+   ]
+  },
+  "14": {
+   "hash": "e5bcd9f8af3f8d7b",
+   "takes": [
+    "948f4522d3692ec67e19",
+    "61484b1e973d974b118d"
+   ],
+   "duration": 13.821,
+   "lines": [
+    {
+     "text": "A plan reports one row count for an entire stage of work, not one line for every row that passed through it.",
+     "start": 0.15,
+     "end": 7.237
+    },
+    {
+     "text": "Does that sound like an engine pulling rows one at a time, or one working in batches?",
+     "start": 7.957,
+     "end": 13.471
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 169,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "14a": {
+   "hash": "6c60f49c452a1140",
+   "takes": [
+    "d70beaf3722b72a71c19",
+    "31121ab202686ce33998"
+   ],
+   "duration": 14.877,
+   "lines": [
+    {
+     "text": "Working in batches.",
+     "start": 0.15,
+     "end": 1.395
+    },
+    {
+     "text": "An engine that's only ever handling one row at a time has no reason to report a count for a whole stage at once \u2014 that kind of reporting is a sign it's accounting for arrays, not individual rows.",
+     "start": 1.815,
+     "end": 14.527
+    }
+   ],
+   "lufs": -16.2,
+   "true_peak": -3.3,
+   "wpm": 165,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "15": {
+   "hash": "ad4c0ba2e902d2ee",
+   "takes": [
+    "2ffdc32200b15d536d4b",
+    "1d272217f709070d52b2"
+   ],
+   "duration": 18.168,
+   "lines": [
+    {
+     "text": "One engine's time drops by well over a factor of three, going from one thread to four, on the very same work.",
+     "start": 0.15,
+     "end": 8.637
+    },
+    {
+     "text": "Does that look like elastic, run-time scheduling, or a split that was fixed before the query even started?",
+     "start": 9.357,
+     "end": 17.818
+    }
+   ],
+   "lufs": -16.0,
+   "true_peak": -2.9,
+   "wpm": 135,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "15a": {
+   "hash": "e8ea45bd1e68009a",
+   "takes": [
+    "337858ab588896d93128",
+    "e5740cab7d38ba0666dd"
+   ],
+   "duration": 14.149,
+   "lines": [
+    {
+     "text": "Elastic, run-time scheduling.",
+     "start": 0.15,
+     "end": 2.547
+    },
+    {
+     "text": "Scaling that closely tracks the number of cores actually available is exactly what a fixed, decided-in-advance split wouldn't give you on a different machine.",
+     "start": 2.967,
+     "end": 13.799
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -2.2,
+   "wpm": 127,
+   "wer": 0.5,
+   "exact": false,
+   "tolerated": [
+    {
+     "line": "Elastic, run-time scheduling.",
+     "said": "run time",
+     "heard": "runtime"
+    }
+   ]
+  }
+ }
+}
