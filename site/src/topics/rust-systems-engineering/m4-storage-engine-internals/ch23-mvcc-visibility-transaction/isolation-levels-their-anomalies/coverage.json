@@ -1,0 +1,66 @@
+{
+  "topic": "rust.isolation-levels-their-anomalies",
+  "syllabus": [
+    {
+      "clause": "isolation levels are statements about which concurrent histories are allowed. Read committed vs snapshot isolation vs serializable; write skew as the anomaly SI permits; Adya's dependency-graph formalism. Serializable Snapshot Isolation (Cahill et al., SIGMOD 2008; in PostgreSQL, Ports & Grittner, VLDB 2012).",
+      "at": [
+        { "step": "Measured: it breaks, with no write-write conflict at all" },
+        { "step": "Measured: no conflict, genuinely; snapshot isolation's own commit rule only checks for writes to the identical key" },
+        { "step": "Measured: a real, two-edge cycle, genuinely found; each transaction's own read was invalidated by the other's write" }
+      ]
+    }
+  ],
+  "sources": [
+    {
+      "source": "mvcc-intro",
+      "items": [
+        {
+          "item": "PostgreSQL maintains this guarantee even when providing the strictest level of transaction isolation through the use of an innovative Serializable Snapshot Isolation (SSI) level",
+          "at": [{ "step": "A stricter check instead builds a real dependency graph between the two transactions' own reads and writes. Does that graph genuinely catch what the write-write check missed?" }]
+        }
+      ]
+    },
+    {
+      "source": "transaction-iso",
+      "items": [
+        {
+          "item": "the result of successfully committing a group of transactions is inconsistent with all possible orderings of running those transactions one at a time",
+          "at": [{ "step": "PostgreSQL's own documentation states this exact anomaly directly, using two account classes instead of two doctors. What does it call the result of committing a group of transactions in a way no one-at-a-time ordering could produce?" }]
+        },
+        {
+          "item": "this level emulates serial transaction execution for all committed transactions; as if transactions had been executed one after another, serially, rather than concurrently",
+          "at": [{ "step": "PostgreSQL's own documentation states this exact anomaly directly, using two account classes instead of two doctors. What does it call the result of committing a group of transactions in a way no one-at-a-time ordering could produce?" }]
+        },
+        {
+          "item": "if either transaction were running at the Repeatable Read isolation level, both would be allowed to commit; but since there is no serial order of execution consistent with the result, using Serializable transactions will allow one transaction to commit and will roll the other back",
+          "at": [{ "step": "A stricter check instead builds a real dependency graph between the two transactions' own reads and writes. Does that graph genuinely catch what the write-write check missed?" }]
+        },
+        {
+          "item": "the Repeatable Read isolation level only sees data committed before the transaction began; it never sees either uncommitted data or changes committed by concurrent transactions during the transaction's execution",
+          "at": [{ "step": "Measured: no conflict, genuinely; snapshot isolation's own commit rule only checks for writes to the identical key" }]
+        }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "self-review",
+    "date": "2026-10-24",
+    "items": [
+      { "item": "The write-skew scenario's own invariant check runs against the real, post-commit state produced by applying both transactions' own recorded writes, not a hand-picked answer, so the measured violation is genuinely a consequence of the two writes actually being applied, not asserted directly.", "at": [{ "step": "Measured: it breaks, with no write-write conflict at all" }] },
+      { "item": "The snapshot-isolation commit rule checked here is the real, minimal one (same-key write conflicts only); it is not a straw-man weakened version, since PostgreSQL's own Repeatable Read (its snapshot-isolation level) is documented as using exactly this first-committer-wins rule on genuine row conflicts.", "at": [{ "step": "Measured: no conflict, genuinely; snapshot isolation's own commit rule only checks for writes to the identical key" }] },
+      { "item": "The dependency-graph check implements the real rw-antidependency relation from Adya's own formalism (an edge from a transaction to the one whose write invalidates something it read), and the cycle it detects here is genuinely the two-edge 'dangerous structure' the Cahill et al. SIGMOD 2008 Serializable Snapshot Isolation algorithm is built to catch, not a simplified stand-in rule invented for this topic alone.", "at": [{ "step": "Measured: a real, two-edge cycle, genuinely found; each transaction's own read was invalidated by the other's write" }] },
+      { "item": "The control scenario (two transactions over independent keys) uses the identical check function as the write-skew scenario, called with different inputs, so the negative result it returns is a genuine property of the check itself, not a separately coded 'always pass' path.", "at": [{ "step": "Measured: no cycle, genuinely, for two transactions that never read each other's own writes" }] },
+      { "item": "This topic continues directly from topic 59's own version-chain visibility work: the two transactions' own reads here are exactly the kind of snapshot-visible reads topic 59 measured, and this topic asks what happens once several such reads and writes interact across transactions, rather than just one reader's own view.", "at": [{ "step": "Two on-call doctors, both currently on call. Each one separately checks: is at least one other doctor on call? Each gets yes, and each goes off call. Does the shared rule survive?" }] },
+      { "item": "The syllabus's own further named material (Serializable Snapshot Isolation, Cahill et al. SIGMOD 2008, and its PostgreSQL implementation, Ports and Grittner VLDB 2012) is named in prose rather than separately measured; this topic's own stricter check implements the core detection rule that algorithm is built around (the rw-antidependency cycle), not the full SSI algorithm's own locking and abort machinery.", "at": [{ "step": "Recap: what a stricter check catches, and what it leaves alone" }] },
+      { "item": "All of this topic's own measured claims run entirely on plain in-memory Rust structs and vectors with no file, network, or root access needed, continuing this chapter's own established pattern from topic 59.", "at": [{ "step": "Recap: what a stricter check catches, and what it leaves alone" }] },
+      { "item": "This topic deliberately sits second of this chapter's three topics, building directly on topic 59's own version-visibility work and handing off to topic 61's own question of how long a version a long-lived snapshot might still need has to be kept around.", "at": [{ "step": "Recap: what a stricter check catches, and what it leaves alone" }] },
+      { "item": "The PostgreSQL quote used for the serialization-anomaly example (two account classes, a sum inserted as a new row) is a different concrete scenario from this topic's own two-doctors write-skew scenario, but both are the identical anomaly shape: two transactions, each individually consistent with what they read, together producing a result no serial ordering could have produced.", "at": [{ "step": "PostgreSQL's own documentation states this exact anomaly directly, using two account classes instead of two doctors. What does it call the result of committing a group of transactions in a way no one-at-a-time ordering could produce?" }] },
+      { "item": "PostgreSQL's own Repeatable Read isolation level is, by its own documentation, its implementation of snapshot isolation; this topic's own prototype therefore measures a real property of a real, shipped isolation level, not an abstract textbook definition with no concrete implementation behind it.", "at": [{ "step": "Measured: no conflict, genuinely; snapshot isolation's own commit rule only checks for writes to the identical key" }] }
+    ]
+  },
+  "gapReview": {
+    "date": "2026-10-24",
+    "by": "self-review",
+    "open": []
+  }
+}
