@@ -1,0 +1,181 @@
+{
+  "topic": "de.connection-pooling-database-clients",
+  "syllabus": [
+    {
+      "clause": "connection setup cost (→ §1.4)",
+      "at": [{ "step": "Reveal: connection setup cost" }]
+    },
+    {
+      "clause": "pool sizing by Little's law",
+      "at": [{ "step": "Reveal: Little's Law pool sizing" }]
+    },
+    {
+      "clause": "PgBouncer session vs transaction pooling and prepared-statement caveats",
+      "at": [
+        { "step": "Predict: does a prepared statement survive into a client's next request, under transaction pooling?" },
+        { "step": "Reveal: the prepared-statement caveat, reproduced" },
+        { "step": "Reveal: session pooling, the same test, survives" }
+      ]
+    },
+    {
+      "clause": "server-side cursors and fetch size",
+      "at": [{ "step": "Reveal: server-side cursor, a tuned fetch size" }]
+    },
+    {
+      "clause": "bulk paths (COPY, Arrow-native ADBC drivers) vs row-by-row inserts",
+      "at": [{ "step": "Reveal: three bulk-load paths, measured" }]
+    }
+  ],
+  "sources": [
+    {
+      "source": "PgBouncer features",
+      "items": [
+        {
+          "item": "session pooling supports all PostgreSQL features; the server connection stays assigned for the client's whole connection",
+          "at": [{ "step": "Reveal: session pooling, the same test, survives" }]
+        },
+        {
+          "item": "transaction pooling assigns a server connection only for the duration of a transaction, breaking session-based features unless the application cooperates",
+          "at": [{ "step": "Reveal: the prepared-statement caveat, reproduced" }]
+        }
+      ]
+    },
+    {
+      "source": "PgBouncer config",
+      "items": [
+        {
+          "item": "max_prepared_statements makes PgBouncer track client prepared statements and rewrite them to an internal shared name on the backing connection",
+          "at": [{ "step": "Reveal: the prepared-statement caveat, reproduced" }]
+        },
+        {
+          "item": "reusing a prepared statement whose result/argument types changed throws \"cached plan must not change result type\"",
+          "at": [{ "out": "below the depth this topic's scope needs; the reproduction uses a disappeared statement, not a type-changed one, and this error text isn't asserted by any reveal" }]
+        }
+      ]
+    },
+    {
+      "source": "PgBouncer FAQ",
+      "items": [
+        {
+          "item": "session pooling's reset query (server_reset_query = DISCARD ALL) is what clears old prepared statements between clients",
+          "at": [{ "step": "Reveal: the prepared-statement caveat, reproduced" }]
+        },
+        {
+          "item": "transaction-pooling prepared-statement tracking requires PgBouncer 1.21.0 or newer",
+          "at": [{ "deep": "Lab" }, { "deep": "Outcomes" }]
+        }
+      ]
+    },
+    {
+      "source": "The simple scalability equation",
+      "items": [
+        {
+          "item": "Little's Law (pool size = throughput × hold time) applies to any stable system, including a connection pool",
+          "at": [{ "step": "Reveal: Little's Law pool sizing" }]
+        },
+        {
+          "item": "the worked example: a 0.1s hold time and a pool of 5 delivers up to 50 requests per second with no queuing",
+          "at": [{ "step": "Reveal: Little's Law pool sizing" }]
+        },
+        {
+          "item": "Little's Law describes long-term averages, not burst traffic, so metrics still matter for provisioning",
+          "at": [{ "deep": "Production failures this topic warns about" }]
+        }
+      ]
+    },
+    {
+      "source": "Cursor types (psycopg 3)",
+      "items": [
+        {
+          "item": "a server-side cursor lets a client process a result larger than what fits in its own memory, at the cost of server-side state",
+          "at": [{ "step": "Reveal: server-side cursor, a tuned fetch size" }]
+        },
+        {
+          "item": "server-side cursors are less efficient for small queries, since they need more round trips for the same result",
+          "at": [{ "deep": "Production failures this topic warns about" }]
+        }
+      ]
+    },
+    {
+      "source": "Using COPY TO and COPY FROM (psycopg 3)",
+      "items": [
+        {
+          "item": "COPY is one of the most efficient ways to load data into PostgreSQL",
+          "at": [{ "step": "Reveal: three bulk-load paths, measured" }]
+        },
+        {
+          "item": "psycopg exposes COPY through Cursor.copy(), writing rows with write_row()",
+          "at": [{ "step": "Reveal: three bulk-load paths, measured" }]
+        }
+      ]
+    },
+    {
+      "source": "PostgreSQL Driver (ADBC)",
+      "items": [
+        {
+          "item": "the ADBC PostgreSQL driver executes queries, including bulk ingestion, using COPY internally rather than a separate wire protocol",
+          "at": [{ "step": "Reveal: three bulk-load paths, measured" }]
+        },
+        {
+          "item": "the COPY optimization can be disabled with the adbc.postgresql.use_copy statement option",
+          "at": [{ "out": "not asserted by any reveal; this topic measures the default path, not the opt-out" }]
+        }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "Claude (single session)",
+    "date": "2026-10-24",
+    "items": [
+      {
+        "item": "Opening a connection is measurably slower than reusing an open one — a pool's entire reason to exist is that gap, not a theoretical concern.",
+        "at": [{ "step": "Reveal: connection setup cost" }]
+      },
+      {
+        "item": "A pool size isn't guessed — Little's Law (pool size = throughput × hold time) turns a measured hold time and a target throughput into a concrete number.",
+        "at": [{ "step": "Reveal: Little's Law pool sizing" }]
+      },
+      {
+        "item": "A SQL-level PREPARE/EXECUTE is forwarded straight to the physical backend connection, not tracked by PgBouncer unless max_prepared_statements is configured.",
+        "at": [{ "step": "Reveal: the prepared-statement caveat, reproduced" }]
+      },
+      {
+        "item": "Under transaction pooling, a backend is returned to the pool the moment a transaction ends — even the same client's own next transaction isn't guaranteed that same backend.",
+        "at": [{ "step": "Predict: does a prepared statement survive into a client's next request, under transaction pooling?" }]
+      },
+      {
+        "item": "A prepared statement lives on the physical backend, not the logical client connection — that's exactly what transaction pooling's backend-sharing exposes.",
+        "at": [{ "step": "Reveal: the prepared-statement caveat, reproduced" }]
+      },
+      {
+        "item": "Session pooling avoids the prepared-statement caveat entirely by giving each client one dedicated backend for its whole connection, at the cost of not sharing that backend with anyone else meanwhile.",
+        "at": [{ "step": "Reveal: session pooling, the same test, survives" }]
+      },
+      {
+        "item": "A server-side cursor trades server-side memory for the ability to process a result that wouldn't fit on the client at once, fetched in tuned batches instead of all at once.",
+        "at": [{ "step": "Reveal: server-side cursor, a tuned fetch size" }]
+      },
+      {
+        "item": "Server-side cursors cost more round trips, so they help for large results and hurt for small ones.",
+        "at": [{ "deep": "Production failures this topic warns about" }]
+      },
+      {
+        "item": "Row-by-row inserts (executemany) are the slowest of the three bulk paths measured; COPY is the fastest.",
+        "at": [{ "step": "Reveal: three bulk-load paths, measured" }]
+      },
+      {
+        "item": "An Arrow-native driver like ADBC isn't a different wire protocol for bulk loads — by its own documentation it runs COPY underneath, which is why its measured time tracks COPY's rather than executemany's.",
+        "at": [{ "step": "Reveal: three bulk-load paths, measured" }]
+      },
+      {
+        "item": "Little's Law describes long-term averages; it doesn't size a pool correctly for bursty traffic, which still needs headroom beyond the formula's answer.",
+        "at": [{ "deep": "Production failures this topic warns about" }]
+      }
+    ]
+  },
+  "gapReview": {
+    "date": "2026-10-24",
+    "by": "Claude (single session)",
+    "open": []
+  }
+}
