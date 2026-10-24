@@ -1,0 +1,4 @@
+- **Vectorized execution**: processing a batch of values at a time instead of one row at a time, cutting the per-row dispatch overhead a naive row-at-a-time engine pays.
+- **Selection vector**: a batch's own list of row offsets that passed a filter, built once per batch rather than branched on once per row.
+- **Compiled (data-centric code generation) execution**: the alternative approach, compiling a query down to generated code specialized to it, rather than interpreting it a batch at a time.
+- **Dispatch**: one step of evaluating an operation. *Where you meet it:* a row-at-a-time engine pays one per row; a vectorized engine pays one per batch instead.

@@ -1,0 +1,22 @@
+import Resource from '../../../../../components/Resource.astro';
+
+<section class="prereq" data-section="chapter-so-far">
+
+### <span class="n">01</span> Where the last topic left off
+
+<ul class="resources">
+  <Resource kind="reel" host={props.host} domain="rust-systems-engineering" title="Vectorized versus compiled query execution">vectorized execution already cuts the per-row overhead a naive loop pays by working through a batch at a time; it says nothing yet about how much further a single CPU instruction can push that same batch, by working on several of its values at once.</Resource>
+</ul>
+
+</section>
+
+<section class="prereq" data-section="simd-primary">
+
+### <span class="n">02</span> The real docs: std::arch and runtime feature detection
+
+<ul class="resources">
+  <Resource kind="reading" title="std::arch" href="https://doc.rust-lang.org/std/arch/index.html" by="The Rust Project">why calling an unchecked SIMD intrinsic is unsafe, and how a runtime check makes it sound.</Resource>
+  <Resource kind="reading" title="is_x86_feature_detected!" href="https://doc.rust-lang.org/std/macro.is_x86_feature_detected.html" by="The Rust Project">checking for a real CPU feature at runtime, relying mostly on the cpuid instruction.</Resource>
+</ul>
+
+</section>
