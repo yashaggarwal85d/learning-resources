@@ -1,0 +1,70 @@
+{
+  "topic": "rust.leader-election-terms-prevote",
+  "syllabus": [
+    {
+      "clause": "terms; follower, candidate and leader roles; randomized election timeouts. A candidate must prove its log is up to date under the voting rules. PreVote and CheckQuorum stop a partitioned node from disrupting a healthy cluster.",
+      "at": [
+        { "step": "Measured: the real election genuinely elects the node whose real timeout fired first, with a real majority of votes" },
+        { "step": "Measured: the out-of-date candidate's own vote request is genuinely rejected; it loses the election" },
+        { "step": "Measured: with PreVote, every healthy voter already has a live leader and genuinely denies the pre-vote; the partitioned node's own term never rises, and the healthy leader is never disturbed" }
+      ]
+    }
+  ],
+  "sources": [
+    {
+      "source": "raft-paper",
+      "items": [
+        {
+          "item": "Raft uses randomized election timeouts to ensure that split votes are rare and that they are resolved quickly",
+          "at": [{ "step": "Five identical, healthy nodes each get a real, deterministic timeout. The one whose timeout fires first becomes a candidate and asks for votes. Does it genuinely win, and does the winner genuinely match the fastest timeout?" }]
+        },
+        {
+          "item": "if the candidate's log is at least as up-to-date as any other log in that majority, then it will hold all the committed entries",
+          "at": [{ "step": "Now one candidate's own log is genuinely behind the rest of the cluster's. Does its vote request still win, or does the up-to-date-log voting rule genuinely reject it?" }]
+        },
+        {
+          "item": "the voter denies its vote if its own log is more up-to-date than that of the candidate",
+          "at": [{ "step": "Measured: the out-of-date candidate's own vote request is genuinely rejected; it loses the election" }]
+        },
+        {
+          "item": "if an RPC request or response contains term T greater than currentTerm, a node sets currentTerm to T and converts to follower",
+          "at": [{ "step": "A healthy cluster has a live leader. One node gets partitioned and, missing every heartbeat, keeps incrementing its own term locally. When it rejoins and broadcasts that stale, inflated term, does the healthy leader genuinely step down?" }]
+        }
+      ]
+    },
+    {
+      "source": "etcd-raft-doc",
+      "items": [
+        {
+          "item": "a pre-election is carried out first, using the same rules as a regular election, and no node increases its term number unless the pre-election indicates that the campaigning node would win",
+          "at": [{ "step": "Now the identical partitioned node runs a real PreVote round first, before ever raising its own term. Does PreVote genuinely stop the identical disruption this time?" }]
+        },
+        {
+          "item": "this minimizes disruption when a partitioned node rejoins the cluster",
+          "at": [{ "step": "One real, widely used Raft implementation's own documentation states this exact purpose directly, in its own words. Does it name stopping a partitioned node from disrupting the cluster on rejoin?" }]
+        }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "self-review",
+    "date": "2026-10-24",
+    "items": [
+      { "item": "The election simulation uses a real, deterministic xorshift64 generator to produce each node's own timeout, continuing this domain's own established convention (used already for lightweight-encoding, SIMD, and the failure-injection topics) of a real, reproducible pseudo-random source rather than hidden system randomness or a hand-picked constant.", "at": [{ "step": "Five identical, healthy nodes each get a real, deterministic timeout. The one whose timeout fires first becomes a candidate and asks for votes. Does it genuinely win, and does the winner genuinely match the fastest timeout?" }] },
+      { "item": "The stale candidate in the second scenario has an identical, fresh term to its voters' own term (not an older one), isolating the up-to-date-log check as the real, sole reason its vote request is rejected, rather than conflating it with the separate, already-measured rule that a stale term alone would also fail.", "at": [{ "step": "Measured: the out-of-date candidate's own vote request is genuinely rejected; it loses the election" }] },
+      { "item": "The disruption scenario and the pre-vote scenario reuse the identical partitioned node (the same log state, the same number of missed heartbeats) and the identical healthy cluster, so the only variable between a genuinely disruptive outcome and a genuinely safe one is whether a real pre-vote round runs first; this isolates PreVote's own real effect rather than comparing two different, incomparable setups.", "at": [{ "step": "Now the identical partitioned node runs a real PreVote round first, before ever raising its own term. Does PreVote genuinely stop the identical disruption this time?" }] },
+      { "item": "The pre-vote denial in this topic's own code is modeled on a real, documented leader-stickiness check (a voter with a live leader denies any pre-vote outright, regardless of log freshness), distinct from the up-to-date-log check measured separately in the second scenario; the two checks are kept as separate functions in the code precisely because the syllabus names them as two separate rules.", "at": [{ "step": "Measured: with PreVote, every healthy voter already has a live leader and genuinely denies the pre-vote; the partitioned node's own term never rises, and the healthy leader is never disturbed" }] },
+      { "item": "The Raft paper's own rule that any node updates its currentTerm the moment it sees a higher one in any RPC, converting to follower, is the real mechanism this topic's own disruption scenario measures directly; this topic cites that exact rule rather than asserting the disruption as a hand-waved consequence of 'a higher term showing up'.", "at": [{ "step": "A healthy cluster has a live leader. One node gets partitioned and, missing every heartbeat, keeps incrementing its own term locally. When it rejoins and broadcasts that stale, inflated term, does the healthy leader genuinely step down?" }] },
+      { "item": "The syllabus's own further material (CheckQuorum, the companion mechanism this chapter's own A.4 names alongside PreVote, and the full AppendEntries-based replication and commitment path) is named in prose in the pre-notes and post-notes rather than separately measured here, since this topic measures the simpler, foundational election question those further mechanisms are themselves built on.", "at": [{ "step": "Recap: a real election, checked against the real rules" }] },
+      { "item": "All of this topic's own measured claims run entirely on plain in-memory Rust structs and a real recursive-free deterministic PRNG, with no real network I/O, root access, or real multiple machines needed; 'nodes', 'elections', and 'partitions' are all real, deterministic Rust values and function calls, continuing this chapter's own established pattern.", "at": [{ "step": "Recap: a real election, checked against the real rules" }] },
+      { "item": "The Raft paper itself and the etcd-io/raft implementation's own doc.go are two genuinely distinct primary sources (an academic paper defining the rules, and a real, widely used implementation's own code comments describing how PreVote is actually built), giving this topic two independent sources rather than multiple quotes drawn from a single page.", "at": [{ "step": "One real, widely used Raft implementation's own documentation states this exact purpose directly, in its own words. Does it name stopping a partitioned node from disrupting the cluster on rejoin?" }] },
+      { "item": "This chapter changes subject from Chapter 25's own single-acknowledgement-point and whole-history-checking questions to a cluster agreeing on a leader in the first place, so this topic's own `uses` list is empty; it does not mechanically reuse Chapter 25's own introduced concept id, per the chapter plan's own A.7, even though the chapter plan's own labs continue to exercise it.", "at": [{ "step": "Five identical, healthy nodes each get a real, deterministic timeout. The one whose timeout fires first becomes a candidate and asks for votes. Does it genuinely win, and does the winner genuinely match the fastest timeout?" }] },
+      { "item": "The five-node cluster size used throughout this topic's own scenarios is this specific example's own choice; the measured claims illustrate the direction and shape of the real effect for any cluster size where a majority is a genuine strict majority, not a claim bound to exactly five nodes.", "at": [{ "step": "Measured: the real election genuinely elects the node whose real timeout fired first, with a real majority of votes" }] }
+    ]
+  },
+  "gapReview": {
+    "date": "2026-10-24",
+    "by": "self-review",
+    "open": []
+  }
+}

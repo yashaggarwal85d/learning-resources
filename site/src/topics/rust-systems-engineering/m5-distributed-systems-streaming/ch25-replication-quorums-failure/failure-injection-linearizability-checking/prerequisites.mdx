@@ -1,0 +1,22 @@
+import Resource from '../../../../../components/Resource.astro';
+
+<section class="prereq" data-section="chapter-so-far">
+
+### <span class="n">01</span> Where the last topic left off
+
+<ul class="resources">
+  <Resource kind="reel" host={props.host} domain="rust-systems-engineering" title="Acknowledgement points define durability">choosing an acknowledgement point decides what a single write survives; it says nothing yet about whether an entire recorded history of many concurrent reads and writes, gathered while real failures are happening, is even consistent with any honest order at all.</Resource>
+</ul>
+
+</section>
+
+<section class="prereq" data-section="linearizability-primary">
+
+### <span class="n">02</span> The real docs: linearizability and Jepsen's own methodology
+
+<ul class="resources">
+  <Resource kind="reading" title="Linearizability" href="https://jepsen.io/consistency/models/linearizable" by="Jepsen">the real definition this topic's own checker tests a recorded history against.</Resource>
+  <Resource kind="reading" title="Jepsen (README)" href="https://github.com/jepsen-io/jepsen" by="Jepsen">the real generator, nemesis, and checker methodology this topic's own code mirrors.</Resource>
+</ul>
+
+</section>

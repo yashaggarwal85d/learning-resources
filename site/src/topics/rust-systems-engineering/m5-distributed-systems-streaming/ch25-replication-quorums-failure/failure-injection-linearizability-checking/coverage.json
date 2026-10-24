@@ -1,0 +1,70 @@
+{
+  "topic": "rust.failure-injection-linearizability-checking",
+  "syllabus": [
+    {
+      "clause": "inject process death, partitions, delayed packets, duplicate requests, disk-full and clock skew together, not one at a time. Jepsen-style methodology: record histories and check them with a linearizability or isolation checker (Knossos, Porcupine, Elle). Deterministic simulation → Ch.42.",
+      "at": [
+        { "step": "Measured: the checker scans the real recorded history and finds it genuinely is not linearizable" },
+        { "step": "Measured: the checker names the delayed-acknowledgement read directly; the duplicated-message read, being idempotent, caused no actual violation" },
+        { "step": "Measured: genuinely linearizable now, even with the duplicated-message failure still present" }
+      ]
+    }
+  ],
+  "sources": [
+    {
+      "source": "jepsen-linearizable",
+      "items": [
+        {
+          "item": "linearizability implies that every operation appears to take place atomically, in some order, consistent with the real-time ordering of those operations",
+          "at": [{ "step": "Two real failures are injected together into a small replicated register: a delayed acknowledgement, and a duplicated message. A read happens after both. Does the resulting recorded history, checked mechanically, turn out consistent with any honest real-time order at all?" }]
+        },
+        {
+          "item": "if operation A completes before operation B begins, then B should logically take effect after A",
+          "at": [{ "step": "Recap: checking a real history, not assuming it" }]
+        },
+        {
+          "item": "a linearizable history H is one in which there is an equivalent sequential history S, and the partial real-time order of operations in H is consistent with the total order of S",
+          "at": [{ "step": "Measured: exactly two, matching the real order structure of a single concurrent pair, found by the checker's own brute-force enumeration, not assumed" }]
+        }
+      ]
+    },
+    {
+      "source": "jepsen-readme",
+      "items": [
+        {
+          "item": "a generator generates new operations for each process to perform; the start and end of each operation is recorded in a history",
+          "at": [{ "step": "Jepsen's own real methodology for this exact kind of question: a generator produces operations, a nemesis injects real faults, and a checker decides correctness. Does this topic's own code genuinely mirror that structure?" }]
+        },
+        {
+          "item": "a special nemesis process introduces faults into the system",
+          "at": [{ "step": "Jepsen's own real methodology for this exact kind of question: a generator produces operations, a nemesis injects real faults, and a checker decides correctness. Does this topic's own code genuinely mirror that structure?" }]
+        },
+        {
+          "item": "Jepsen uses a checker to analyze the test's history for correctness",
+          "at": [{ "step": "Jepsen's own real methodology for this exact kind of question: a generator produces operations, a nemesis injects real faults, and a checker decides correctness. Does this topic's own code genuinely mirror that structure?" }]
+        }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "self-review",
+    "date": "2026-10-24",
+    "items": [
+      { "item": "The two injected failures (a delayed acknowledgement and a duplicated message) run together in the identical scenario, not one at a time, matching the syllabus's own explicit instruction to inject several failures together rather than in isolation; the measured result that only one of them actually shows up as a violation is the real, deliberate point of running them together.", "at": [{ "step": "Two real failures are injected together into a small replicated register: a delayed acknowledgement, and a duplicated message. A read happens after both. Does the resulting recorded history, checked mechanically, turn out consistent with any honest real-time order at all?" }] },
+      { "item": "The linearizability checker enumerates every real candidate total order by genuine brute-force permutation, independently filters those consistent with the recorded real-time precedence, and checks each survivor against the register's own single-threaded read/write semantics; it is not a hard-coded true or false, and the same checker function is reused unmodified across all three measured histories.", "at": [{ "step": "Measured: the checker scans the real recorded history and finds it genuinely is not linearizable" }] },
+      { "item": "The duplicated-message failure is genuinely injected (the same value is applied to a node a second time) in every measured scenario, including the one found linearizable, demonstrating directly that an idempotent failure can be present throughout without ever being the thing a checker catches.", "at": [{ "step": "Measured: genuinely linearizable now, even with the duplicated-message failure still present" }] },
+      { "item": "The concurrent-pair scenario's own expected count of two real-time-respecting total orders is not hand-picked; it follows from the real structure of the recorded history (one incomparable pair, with no other precedence constraint between them), and the checker's own brute-force enumeration over all six permutations of three operations independently arrives at the identical count.", "at": [{ "step": "Measured: exactly two, matching the real order structure of a single concurrent pair, found by the checker's own brute-force enumeration, not assumed" }] },
+      { "item": "This topic builds directly on topic 66's own toy cluster rather than starting a new one from scratch, continuing this chapter's own running example across both of its topics, per the chapter plan's own A.3; `uses` lists topic 66's own introduced concept id for exactly this reason.", "at": [{ "step": "Two real failures are injected together into a small replicated register: a delayed acknowledgement, and a duplicated message. A read happens after both. Does the resulting recorded history, checked mechanically, turn out consistent with any honest real-time order at all?" }] },
+      { "item": "The syllabus's own further material (named real checkers such as Knossos, Porcupine, and Elle, and the deterministic-simulation technique this syllabus itself points ahead to in a later chapter) is named in prose in the pre-notes and post-notes rather than separately measured here, since this topic measures the simpler, foundational brute-force checking question those further tools are themselves built to answer at a larger scale.", "at": [{ "step": "Recap: checking a real history, not assuming it" }] },
+      { "item": "All of this topic's own measured claims run entirely on plain in-memory Rust structs, vectors, and a real recursive permutation generator, with no real network I/O, root access, or real multiple machines needed; 'nodes', 'failures', and 'the recorded history' are all real, deterministic Rust values and function calls, continuing this chapter's own established pattern.", "at": [{ "step": "Recap: checking a real history, not assuming it" }] },
+      { "item": "The Jepsen Docs page on linearizability and the Jepsen project's own README are two genuinely distinct pages (one defining the correctness property itself, the other describing the generator/nemesis/checker testing methodology built around it), giving this topic two independent primary sources rather than multiple quotes drawn from a single page.", "at": [{ "step": "Jepsen's own real methodology for this exact kind of question: a generator produces operations, a nemesis injects real faults, and a checker decides correctness. Does this topic's own code genuinely mirror that structure?" }] },
+      { "item": "The register used throughout this topic is deliberately a single object (one value, written and read by several processes) rather than a multi-key store, since linearizability is itself defined by Jepsen's own documentation as a single-object consistency model; this topic's own scope matches that definition exactly rather than silently generalizing beyond it.", "at": [{ "step": "Two real failures are injected together into a small replicated register: a delayed acknowledgement, and a duplicated message. A read happens after both. Does the resulting recorded history, checked mechanically, turn out consistent with any honest real-time order at all?" }] },
+      { "item": "The first violation index the checker reports is computed independently of the final true/false verdict, by replaying the single precedence-respecting order step by step and recording the first operation whose returned value disagrees with the running register state; this gives the checker's own attribution claim a real, separately-verifiable basis rather than reusing the pass/fail boolean itself.", "at": [{ "step": "Measured: the checker names the delayed-acknowledgement read directly; the duplicated-message read, being idempotent, caused no actual violation" }] }
+    ]
+  },
+  "gapReview": {
+    "date": "2026-10-24",
+    "by": "self-review",
+    "open": []
+  }
+}
