@@ -1,0 +1,85 @@
+{
+  "steps": [
+    {
+      "lines": [
+        "A reader opens a snapshot, and then the same row gets updated four more times while that reader stays open.",
+        { "beat": 0.3 },
+        "Does any one of those four now-dead versions ever become reclaimable while the reader is still sitting there, open?"
+      ],
+      "answer": [
+        "No, not one of them.",
+        "For as long as that reader stays open, none of them can be reclaimed."
+      ]
+    },
+    {
+      "lines": [
+        "Run it for real: not one of the four dead versions came back reclaimable while the reader stayed open.",
+        "A long-lived reader blocks reclaim of everything newer than it, not only the one version it actually reads."
+      ]
+    },
+    {
+      "lines": [
+        "That same reader now closes instead, on the identical workload.",
+        { "beat": 0.3 },
+        "Do those same four now-dead versions become reclaimable once it's gone?"
+      ],
+      "answer": [
+        "Yes, genuinely, all of them.",
+        "Closing the reader frees every single one."
+      ]
+    },
+    {
+      "lines": [
+        "Run it for real: closing that reader genuinely freed every one of its previously-pinned dead versions."
+      ],
+      "takeaway": "A version becomes reclaimable once no open snapshot could still need it; closing a reader removes exactly that need."
+    },
+    {
+      "lines": [
+        "Run the identical workload twice: once with that reader staying open the entire time, once with it closing early instead.",
+        { "beat": 0.3 },
+        "Does the long-lived run genuinely retain more versions than the short-lived one?"
+      ],
+      "answer": [
+        "Yes, genuinely.",
+        "The long-lived run retains far more."
+      ]
+    },
+    {
+      "lines": [
+        "Run it for real: the long-lived run genuinely retained far more versions than the short-lived run, on the identical workload."
+      ],
+      "takeaway": "One long-running reader turns into a real, measurable storage-growth problem, on a workload that would otherwise stay small."
+    },
+    {
+      "lines": [
+        "One real production system's own documentation states this exact coupling directly.",
+        { "beat": 0.3 },
+        "Does it name actually ending a long-running open transaction as something that frees up space its own cleanup process alone cannot?"
+      ],
+      "answer": [
+        "Yes, genuinely.",
+        "It tells administrators to end those transactions directly."
+      ]
+    },
+    {
+      "lines": [
+        "That system's own documentation states it in exactly those words: end long-running open transactions directly, found by checking for backends whose own transaction age has grown large."
+      ],
+      "takeaway": "The real fix for this isn't a smarter cleanup pass; it's ending the long-running transaction that's pinning the horizon."
+    },
+    {
+      "lines": [
+        "That same system's own documentation also names exactly what that horizon is made of.",
+        "A backend's own value in that system's own activity view is named directly as that backend's own xmin horizon."
+      ]
+    },
+    {
+      "lines": [
+        "So here's the shape of this whole topic: a version becomes reclaimable only once no open snapshot could possibly still need it, never any sooner.",
+        "One long-running reader genuinely blocks every single reclaim newer than it, not just the one version it directly reads, which is exactly why it turns into a real, measurable storage-growth problem on a workload that would otherwise stay small.",
+        "The actual fix for that isn't a smarter cleanup pass running more often; it's ending the long-running transaction that's pinning the horizon in the first place."
+      ]
+    }
+  ]
+}
