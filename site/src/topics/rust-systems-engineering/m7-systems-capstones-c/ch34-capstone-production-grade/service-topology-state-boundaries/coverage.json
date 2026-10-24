@@ -1,0 +1,59 @@
+{
+  "topic": "rust.service-topology-state-boundaries",
+  "syllabus": [
+    {
+      "clause": "HTTP edge (Axum) → bounded internal queue → worker pool → storage layer → shutdown coordinator, each owning a narrow state boundary.",
+      "at": [
+        { "step": "A real, bounded queue sits behind a real Axum edge. Three real requests arrive quickly, faster than the single worker can finish its first storage write. Does the third one get queued like the first two?" },
+        { "step": "Measured: the first two real requests are genuinely queued, and the third is genuinely rejected the instant it finds the bounded queue already full, before the worker pool or storage is ever involved" },
+        { "step": "Does that rejected third request show up in the real storage layer once the worker has finished processing everything it actually received?" },
+        { "step": "Measured: once the worker finishes, the real storage layer holds exactly the first two requests and nothing else; the rejected third request never reached it, since the boundary that rejected it sits entirely in front of the worker pool and storage" },
+        { "step": "A real shutdown coordinator stops a second, independent instance of this service from accepting new work. Two real requests were already queued first. Does that queued work get finished, or dropped along with the shutdown?" },
+        { "step": "Measured: once shutdown begins, a real new request is genuinely rejected immediately, while the two real requests already queued are genuinely drained all the way to storage before the worker pool itself stops" },
+        { "deep": "Internals" },
+        { "deep": "In production" }
+      ]
+    }
+  ],
+  "sources": [
+    {
+      "source": "mpsc",
+      "items": [
+        {
+          "item": "If the bounded channel is at capacity, the send is rejected and the task will be notified when additional capacity is available. In other words, the channel provides backpressure",
+          "at": [{ "step": "Measured: the first two real requests are genuinely queued, and the third is genuinely rejected the instant it finds the bounded queue already full, before the worker pool or storage is ever involved" }]
+        }
+      ]
+    },
+    {
+      "source": "cancellation-token",
+      "items": [
+        {
+          "item": "A token which can be used to signal a cancellation request to one or more tasks",
+          "at": [{ "deep": "Internals" }]
+        }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "self-review",
+    "date": "2026-10-24",
+    "items": [
+      { "item": "The real queue's own capacity (one) and the worker's own real storage-write delay are chosen together specifically so three real requests sent quickly genuinely produce exactly one rejection, not as a coincidence of default values; a larger capacity or a faster worker would let all three through and fail to demonstrate the real boundary at all.", "at": [{ "step": "A real, bounded queue sits behind a real Axum edge. Three real requests arrive quickly, faster than the single worker can finish its first storage write. Does the third one get queued like the first two?" }] },
+      { "item": "The rejection is measured as a real HTTP 503 status code returned by the real Axum handler itself, from a real try_send call that genuinely failed, never a status the test harness assigns after the fact by guessing which request should have failed.", "at": [{ "step": "Measured: the first two real requests are genuinely queued, and the third is genuinely rejected the instant it finds the bounded queue already full, before the worker pool or storage is ever involved" }] },
+      { "item": "Storage is read back only after a real, fixed wait long enough for the worker to have genuinely finished both admitted requests, confirmed indirectly by the wait being several multiples of the worker's own real per-request delay, so the absence of the third request is a genuine absence and not merely a race the check arrived too early to see.", "at": [{ "step": "Does that rejected third request show up in the real storage layer once the worker has finished processing everything it actually received?" }] },
+      { "item": "The real storage contents are read through the identical HTTP edge (a real GET route backed by the identical shared Mutex) rather than inspected directly from the test harness's own process, so the claim is genuinely about what the service itself reports, not about data the harness reached into the service to find.", "at": [{ "step": "Measured: once the worker finishes, the real storage layer holds exactly the first two requests and nothing else; the rejected third request never reached it, since the boundary that rejected it sits entirely in front of the worker pool and storage" }] },
+      { "item": "The second instance in the shutdown scenario is a genuinely independent real service (its own TcpListener, its own queue, its own storage), not the same instance reused after the first scenario, so the shutdown measurement is never contaminated by state the boundary scenario already left behind.", "at": [{ "step": "A real shutdown coordinator stops a second, independent instance of this service from accepting new work. Two real requests were already queued first. Does that queued work get finished, or dropped along with the shutdown?" }] },
+      { "item": "Shutdown is measured by genuinely awaiting the real worker task's own join handle, which only resolves once the real channel has closed and been fully drained, so 'the queued work finished' is a real, observed completion rather than an assumption based on elapsed wall-clock time.", "at": [{ "step": "Measured: once shutdown begins, a real new request is genuinely rejected immediately, while the two real requests already queued are genuinely drained all the way to storage before the worker pool itself stops" }] },
+      { "item": "This topic's own shutdown coordinator is hand-written rather than built on the syllabus's own named CancellationToken, named directly in Internals as a real, equivalent alternative, to keep this topic's own crate's dependency list to exactly what its three measured claims need.", "at": [{ "deep": "Internals" }] },
+      { "item": "A real load balancer retrying a request against a different real instance after a 503, and a real container's own SIGTERM handler invoking the identical real shutdown code this topic measures in-process, are both named in In production rather than measured, since neither a second real instance behind a balancer nor a real external signal is reachable the identical way from this sandboxed container.", "at": [{ "deep": "In production" }] },
+      { "item": "tower::load_shed, a real, drop-in Tower middleware performing the identical rejection this topic's own handler writes by hand, is named in The frontier specifically to show this topic's own hand-written check is a real, minimal stand-in for an existing, named mechanism, not a one-off trick invented for this topic alone.", "at": [{ "deep": "The frontier" }] },
+      { "item": "The specific queue capacity, worker delay, and request counts in both scenarios are this example's own choice, with a wide real margin on both sides; the measured claims illustrate the real, general property that a boundary either rejects correctly or drains correctly for any real layered service at all, not a claim bound to exactly these numbers.", "at": [{ "step": "Recap: a topology with real boundaries" }] }
+    ]
+  },
+  "gapReview": {
+    "date": "2026-10-24",
+    "by": "self-review",
+    "open": []
+  }
+}

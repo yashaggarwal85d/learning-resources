@@ -1,0 +1,68 @@
+{
+  "steps": [
+    {
+      "lines": [
+        "A real service sits behind one narrow door that can only hold so much waiting work at once.",
+        { "beat": 0.3 },
+        "Several real requests arrive quickly, faster than the work behind that door can be finished. Does every single one of them get let through?"
+      ],
+      "answer": [
+        "No, genuinely.",
+        "Once that door is already full, whatever arrives next is turned away right there."
+      ]
+    },
+    {
+      "lines": [
+        "Run it for real: the first couple of requests get let through, and the next one is genuinely turned away the instant it finds that door already full."
+      ]
+    },
+    {
+      "lines": [
+        "The work behind that door eventually finishes everything it actually let through.",
+        { "beat": 0.3 },
+        "Does the one that got turned away show up back there anyway, once everything settles?"
+      ],
+      "answer": [
+        "No, genuinely.",
+        "Something turned away at the door was never let in, so it was never there to begin with."
+      ]
+    },
+    {
+      "lines": [
+        "Run it for real: once everything settles, only the requests that were actually let through show up, and the one that was turned away never does."
+      ],
+      "takeaway": "Something turned away at one real boundary genuinely never reaches whatever sits behind it."
+    },
+    {
+      "lines": [
+        "A second, separate copy of this same real service starts shutting down, with a couple of requests already let through and still waiting their turn.",
+        { "beat": 0.3 },
+        "Does that already-waiting work get finished, or does it get dropped along with the shutdown?"
+      ],
+      "answer": [
+        "Finished, genuinely.",
+        "The door closes to anything new right away, but whatever had already gotten in still gets to finish."
+      ]
+    },
+    {
+      "lines": [
+        "Run it for real: a brand new request is genuinely turned away the moment shutdown begins, while the couple already waiting are genuinely finished off before the service actually stops."
+      ],
+      "takeaway": "Shutting down closes the door to anything new immediately, without dropping whatever had already gotten in."
+    },
+    {
+      "lines": [
+        "One real, independent page, and a second real, independent page right beside it, each describe one of these exact two ideas, in their own words.",
+        "One says a door like this, once full, turns a new arrival away and that's exactly what lets it push back correctly instead of just piling up. The other says a shutdown signal is something any of the real pieces behind the door can watch for and react to."
+      ],
+      "takeaway": "A real service's own shape is only as solid as its narrowest door, the one place something is actually allowed to be turned away."
+    },
+    {
+      "lines": [
+        "So here's what this topic's own two real measurements are really standing in for: a door that's allowed to turn things away, once it's genuinely full, is what keeps whatever's behind it from being overwhelmed by work it was never built to hold.",
+        "Shutting down doesn't mean throwing away whatever's already waiting. It means closing that same door to anything new, while still letting what already got through finish properly.",
+        "Put those two together, and that's what makes a real service's own shape solid, rather than just something drawn on a diagram."
+      ]
+    }
+  ]
+}
