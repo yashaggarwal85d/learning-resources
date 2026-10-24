@@ -1,0 +1,277 @@
+{
+ "topic": "rust.size-alignment-padding-rules",
+ "voice": "breeze-mellow-v2",
+ "asr": "large-v3-turbo",
+ "clips": {
+  "01": {
+   "hash": "5cda68f213bb3e21",
+   "takes": [
+    "a9dad6d1a10795ab22a8",
+    "919cc5eae77b27110c65"
+   ],
+   "duration": 16.442,
+   "lines": [
+    {
+     "text": "Write the same four fields in reverse order, and ask the compiler to lay both versions out in memory.",
+     "start": 0.15,
+     "end": 6.598
+    },
+    {
+     "text": "Both come back with the exact same size, because nothing you wrote actually chose the order those bytes end up in. The compiler did.",
+     "start": 7.018,
+     "end": 16.092
+    }
+   ],
+   "lufs": -16.0,
+   "true_peak": -2.2,
+   "wpm": 157,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "02": {
+   "hash": "a373fa7d26dce2ee",
+   "takes": [
+    "45c0e0e21528171aae9e",
+    "b1ff9630be36624d9534"
+   ],
+   "duration": 14.591,
+   "lines": [
+    {
+     "text": "That freedom just looked harmless, since the compiler happened to find the smallest layout either way you wrote it.",
+     "start": 0.15,
+     "end": 6.487
+    },
+    {
+     "text": "Does reordering a struct's fields ever genuinely cost real bytes, rather than just looking different on the page?",
+     "start": 7.207,
+     "end": 14.242
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 152,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "02a": {
+   "hash": "96985385e0015040",
+   "takes": [
+    "d3a7e6e7d165c8b73ea6",
+    "0788280306419671e355"
+   ],
+   "duration": 16.982,
+   "lines": [
+    {
+     "text": "Yes, the moment something stops the compiler from choosing the order itself, and pins it to the order you actually wrote.",
+     "start": 0.15,
+     "end": 7.883
+    },
+    {
+     "text": "Only then does your choice of order start mattering, because now nothing is quietly fixing a bad arrangement behind your back.",
+     "start": 8.303,
+     "end": 16.632
+    }
+   ],
+   "lufs": -15.9,
+   "true_peak": -2.6,
+   "wpm": 148,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "03": {
+   "hash": "d3fd0a48b8f1bbbb",
+   "takes": [
+    "f67509a973d8d024b834",
+    "0e9db6f41243e2098102",
+    "b6521db563e2020e4937"
+   ],
+   "duration": 31.858,
+   "lines": [
+    {
+     "text": "Fix the field order to exactly what's written, and watch the same four fields cost noticeably more bytes in one order than the other.",
+     "start": 0.15,
+     "end": 9.216
+    },
+    {
+     "text": "Picture it as a row of byte-sized boxes. One short field followed by a wide one forces empty, unused boxes in between, just to keep that wide field starting on a clean boundary.",
+     "start": 9.636,
+     "end": 23.154
+    },
+    {
+     "text": "Move the short fields next to each other instead, and those empty boxes never need to exist at all.",
+     "start": 23.574,
+     "end": 31.508
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 145,
+   "wer": 0.029411764705882353,
+   "exact": false,
+   "tolerated": [
+    {
+     "line": "Picture it as a row of byte-sized boxes. One short field followed by a wide one forces empty, unused boxes in between, just to keep that wide field starting on a clean boundary.",
+     "said": "byte",
+     "heard": "bite"
+    }
+   ]
+  },
+  "04": {
+   "hash": "1f3295bcdfd4b683",
+   "takes": [
+    "76a5bfc58f0b80be215c",
+    "c4cf05b131a15d67c46a",
+    "c4058dc3f987216e6f8e"
+   ],
+   "duration": 33.155,
+   "lines": [
+    {
+     "text": "Ask the compiler directly where each field actually starts, instead of guessing from the source, and it hands back a real number, computed once, at build time.",
+     "start": 0.15,
+     "end": 11.562
+    },
+    {
+     "text": "Then write down a claim about that number and let the compiler check its own claim before the program is even allowed to exist.",
+     "start": 11.982,
+     "end": 20.261
+    },
+    {
+     "text": "A comment saying where a field sits can go stale the next time someone edits the struct. This cannot, because it's the build checking itself, not a sentence trusting itself.",
+     "start": 20.681,
+     "end": 32.805
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 147,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "05": {
+   "hash": "e314f7d76bfda06b",
+   "takes": [
+    "48257e131354b9157b8c",
+    "aaf13acb6f28edc16e6b"
+   ],
+   "duration": 10.927,
+   "lines": [
+    {
+     "text": "Write that same kind of claim again, except this time, make it flatly wrong.",
+     "start": 0.15,
+     "end": 5.297
+    },
+    {
+     "text": "So, what actually happens when a claim like that one gets built?",
+     "start": 6.017,
+     "end": 10.577
+    }
+   ],
+   "lufs": -16.1,
+   "true_peak": -2.5,
+   "wpm": 143,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "05a": {
+   "hash": "3318e6eed324136c",
+   "takes": [
+    "b5e5170276d1c711d164",
+    "6c22358d240e4515d8df"
+   ],
+   "duration": 19.529,
+   "lines": [
+    {
+     "text": "The build simply refuses. Checking that claim is something the compiler does for itself, while it's still compiling, not something that waits around to be proven wrong while the program runs.",
+     "start": 0.15,
+     "end": 12.251
+    },
+    {
+     "text": "So a false layout claim never ships a program at all. It stops the build cold, every single time.",
+     "start": 12.671,
+     "end": 19.18
+    }
+   ],
+   "lufs": -16.6,
+   "true_peak": -1.9,
+   "wpm": 154,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "06": {
+   "hash": "a920305b837315fb",
+   "takes": [
+    "32eea52ec7a3152d7d7a",
+    "0c211a58c96b7fde6418",
+    "cf1b62af77e911dab957"
+   ],
+   "duration": 32.957,
+   "lines": [
+    {
+     "text": "Take one struct, compile it twice, and deliberately tell the compiler to shuffle its fields differently each time, just to prove the point that it's allowed to.",
+     "start": 0.15,
+     "end": 10.89
+    },
+    {
+     "text": "The two results genuinely differ: different field positions, even a different total size, from the identical source, built by the identical compiler.",
+     "start": 11.31,
+     "end": 21.997
+    },
+    {
+     "text": "Nothing broke. That's precisely the point of doing this on purpose: catching any code that quietly assumed one particular arrangement would always hold.",
+     "start": 22.417,
+     "end": 32.607
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 131,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "07": {
+   "hash": "9558390bcd1741d2",
+   "takes": [
+    "c015c467b918c0392e30",
+    "349d0d15dcf8815e752c",
+    "f01b62cbe3f037809d27"
+   ],
+   "duration": 26.718,
+   "lines": [
+    {
+     "text": "A value's size is always a whole multiple of its alignment, full stop.",
+     "start": 0.15,
+     "end": 4.792
+    },
+    {
+     "text": "Leave the compiler free to choose the order, and it will, today, tomorrow, and differently again if you ask it to prove that on purpose.",
+     "start": 5.212,
+     "end": 15.072
+    },
+    {
+     "text": "Pin that order down instead, and check it with a real, computed offset and a claim the build verifies for itself, rather than one anybody merely assumed.",
+     "start": 15.492,
+     "end": 26.368
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 146,
+   "wer": 0.07692307692307693,
+   "exact": false,
+   "tolerated": [
+    {
+     "line": "A value's size is always a whole multiple of its alignment, full stop.",
+     "said": "values",
+     "heard": "value"
+    }
+   ]
+  }
+ }
+}
