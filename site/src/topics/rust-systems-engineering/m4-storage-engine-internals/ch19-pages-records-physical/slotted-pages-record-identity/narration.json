@@ -1,0 +1,86 @@
+{
+  "steps": [
+    {
+      "lines": [
+        "Add one real addition to last topic's page: a slot array, where each slot holds a physical offset and a length, and a record's own identity is that slot's own index, never its offset.",
+        "Delete a record sitting in the middle of the page, and compact it, physically closing the gap that deletion left behind.",
+        { "beat": 0.3 },
+        "Does that record's own identity survive being physically moved?"
+      ],
+      "answer": [
+        "Yes, it does.",
+        "Its slot index stays exactly the same, even though its physical offset changes underneath it."
+      ]
+    },
+    {
+      "lines": [
+        "Run it for real: insert several records of different lengths into the page, and every one of them reads back correctly through its own slot index.",
+        "Delete the middle one and compact the page, and the surviving records' own physical offsets genuinely change."
+      ]
+    },
+    {
+      "lines": [
+        "Look closely at those same two surviving records.",
+        { "beat": 0.3 },
+        "Did compacting the page change their own slot indices at all?"
+      ],
+      "answer": [
+        "No, neither one changed.",
+        "Each record's own slot index stayed exactly what it was before the deletion."
+      ]
+    },
+    {
+      "lines": [
+        "Run it for real: after compaction, the surviving records' own physical offsets had changed, but their own slot indices had not moved at all."
+      ],
+      "takeaway": "A slot index is a record's own stable name; its offset is just where it sits right now."
+    },
+    {
+      "lines": [
+        "Now read each surviving record back, by that same slot index, after the compaction that physically moved it.",
+        { "beat": 0.3 },
+        "Does it still return the exact same content it held before the move?"
+      ],
+      "answer": [
+        "Yes, exactly the same content.",
+        "The slot index was never tied to the old physical offset in the first place."
+      ]
+    },
+    {
+      "lines": [
+        "Run it for real: reading by slot index after compaction returned the exact same content as before, for every surviving record, byte for byte."
+      ],
+      "takeaway": "Decoupling identity from location means a caller holding only a slot index never notices a record moved."
+    },
+    {
+      "lines": [
+        "Now try to insert one more record, one too large to fit in whatever free space is left on the page.",
+        { "beat": 0.3 },
+        "What happens?"
+      ],
+      "answer": [
+        "The insert is rejected cleanly.",
+        "Every record already on the page stays exactly as it was."
+      ]
+    },
+    {
+      "lines": [
+        "Run it for real: the oversized insert was rejected cleanly, and every record already on the page, read back by its own slot index, was still exactly intact."
+      ]
+    },
+    {
+      "lines": [
+        "The documentation this page design is modeled on makes a stronger claim still: because a page's own size is fixed, a value too large to fit can't just spill onto the next page.",
+        "It has to be compressed, or broken up and stored somewhere else entirely. That's the real reason a whole separate storage mechanism exists for oversized values."
+      ],
+      "takeaway": "A fixed page size is not a limitation; it's why a large value needs a different kind of home."
+    },
+    {
+      "lines": [
+        "So, pulling this topic together: giving a record a name that never changes, separate from wherever it happens to physically sit, is the entire reason this indirection exists.",
+        "Move the bytes during compaction all you like; the name never has to be told.",
+        "And when something simply can't fit, the right answer is a clean rejection, not a corrupted page, which is exactly why oversized values end up living somewhere else altogether."
+      ]
+    }
+  ]
+}

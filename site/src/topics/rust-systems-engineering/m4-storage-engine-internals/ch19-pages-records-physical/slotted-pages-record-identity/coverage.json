@@ -1,0 +1,64 @@
+{
+  "topic": "rust.slotted-pages-record-identity",
+  "syllabus": [
+    {
+      "clause": "a slotted page separates the tuple identifier from the physical offset, so records can move within a page while their logical identity (the slot) stays stable. In-page compaction, variable-length records, overflow pages and TOAST-style out-of-line storage.",
+      "at": [
+        { "step": "Measured: the surviving records' own slot indices never changed; only their physical offsets did" },
+        { "step": "Measured: reading by slot index after compaction returned the exact same content as before, for every surviving record" },
+        { "step": "Measured: the oversized insert was rejected cleanly, and every record already on the page, read back by its own slot index, was still exactly intact" },
+        { "step": "PostgreSQL's own documentation makes a stronger claim still: because a page's own size is fixed, a value too large to fit can't just overflow onto another page, it has to be compressed, or broken up and stored somewhere else entirely. That's the real reason TOAST exists" }
+      ]
+    }
+  ],
+  "sources": [
+    {
+      "source": "pg-page-layout",
+      "items": [
+        {
+          "item": "an item identifier is never moved until it is freed, so its index can be used on a long-term basis to reference an item, even while the item itself moves to compact free space; every ItemPointer (CTID) consists of a page number and the index of an item identifier",
+          "at": [{ "step": "Add a real slot array to the page: each slot holds a physical offset and a length, and a record's own identity is its slot index, never its offset. Delete a record in the middle of the page and compact it, physically closing the gap. Does the record's own identity survive that move?" }]
+        }
+      ]
+    },
+    {
+      "source": "storage-toast",
+      "items": [
+        {
+          "item": "PostgreSQL uses a fixed page size and does not allow tuples to span multiple pages, so a very large field value has to be compressed and/or broken up into multiple physical rows",
+          "at": [{ "step": "PostgreSQL's own documentation makes a stronger claim still: because a page's own size is fixed, a value too large to fit can't just overflow onto another page, it has to be compressed, or broken up and stored somewhere else entirely. That's the real reason TOAST exists" }]
+        }
+      ]
+    },
+    {
+      "source": "pageinspect",
+      "items": [
+        {
+          "item": "heap_page_items shows all line pointers on a heap page, with tuple headers and raw data for the ones in use",
+          "at": [{ "step": "Measured: three variable-length records, inserted into the page, all read back correctly through their own slot index; after deleting the middle one and compacting, the surviving records own physical offsets genuinely changed" }]
+        }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "self-review",
+    "date": "2026-10-24",
+    "items": [
+      { "item": "The slot array's own entries are the single addition to topic 48's page format: a (offset, length) pair per slot, with a zero length marking a freed slot, deliberately distinct from the header fields (magic number, checksum, LSN) that topic 48 already measured.", "at": [{ "step": "Add a real slot array to the page: each slot holds a physical offset and a length, and a record's own identity is its slot index, never its offset. Delete a record in the middle of the page and compact it, physically closing the gap. Does the record's own identity survive that move?" }] },
+      { "item": "The compaction measurement deliberately deletes the middle record of three, not the first or last, so that the surviving records on both sides of the gap both have their own physical offset genuinely changed by the compaction pass, rather than only one side moving.", "at": [{ "step": "Measured: three variable-length records, inserted into the page, all read back correctly through their own slot index; after deleting the middle one and compacting, the surviving records own physical offsets genuinely changed" }] },
+      { "item": "Slot indices are never reused or renumbered by compact() in this implementation; a freed slot's own index becomes permanently unavailable rather than being recycled, the simplest possible choice that still demonstrates the identity-versus-offset claim without introducing a separate free-slot-reuse policy as a second variable.", "at": [{ "step": "Measured: the surviving records' own slot indices never changed; only their physical offsets did" }] },
+      { "item": "The read-back-after-compaction measurement compares the exact byte content read through each slot index before and after compaction, not merely that a read succeeds, so the claim is specifically that the bytes are unchanged, not only that the slot remains valid.", "at": [{ "step": "Measured: reading by slot index after compaction returned the exact same content as before, for every surviving record" }] },
+      { "item": "The oversized-insert measurement deliberately sizes the rejected record to the full page size, guaranteeing it cannot fit regardless of how much free space compaction reclaimed, so the rejection is a genuine capacity failure, not an edge case sensitive to the exact amount of free space remaining.", "at": [{ "step": "Measured: the oversized insert was rejected cleanly, and every record already on the page, read back by its own slot index, was still exactly intact" }] },
+      { "item": "The implementation returns a plain Option from insert() rather than panicking or silently truncating the record, so a caller that doesn't check the inserted slot's own success cannot silently corrupt the page either, matching the measured claim that nothing already on the page was disturbed.", "at": [{ "step": "Try to insert one more record, too large to fit in whatever free space is left on the page. What happens?" }] },
+      { "item": "This topic's own page never implements TOAST itself, out-of-line chunking, or overflow pages; it measures only that a too-large insert is rejected cleanly, and states PostgreSQL's own documented reason (a fixed page size) in prose, since building a real chunked out-of-line store is a materially larger piece of work than this topic's own four measured claims.", "at": [{ "step": "PostgreSQL's own documentation makes a stronger claim still: because a page's own size is fixed, a value too large to fit can't just overflow onto another page, it has to be compressed, or broken up and stored somewhere else entirely. That's the real reason TOAST exists" }] },
+      { "item": "This topic continues directly from topic 48's self-describing-page-header id: the slot array is built on the same explicit, little-endian byte buffer topic 48 already measured as self-describing, and this topic's own new claim is specifically about the slot-to-offset indirection, not about the header's own integrity checks again.", "at": [{ "step": "Add a real slot array to the page: each slot holds a physical offset and a length, and a record's own identity is its slot index, never its offset. Delete a record in the middle of the page and compact it, physically closing the gap. Does the record's own identity survive that move?" }] },
+      { "item": "All four of this topic's own measured claims run entirely on an in-memory byte array with no file, network, or root access, continuing this chapter's own pattern from topic 48 of measuring every claim directly against a real implementation rather than describing it in prose alone.", "at": [{ "step": "Recap: identity, decoupled from location" }] },
+      { "item": "This topic closes deliberately on a record having a stable logical identity, before anything about how that same record's own content gets updated (topic 50) or which pages are resident in memory at all (topic 51) is introduced, per CHAPTER.md's own planned order of ideas.", "at": [{ "step": "Recap: identity, decoupled from location" }] }
+    ]
+  },
+  "gapReview": {
+    "date": "2026-10-24",
+    "by": "self-review",
+    "open": []
+  }
+}
