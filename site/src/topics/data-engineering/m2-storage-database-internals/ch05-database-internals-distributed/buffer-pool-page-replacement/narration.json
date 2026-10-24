@@ -1,0 +1,86 @@
+{
+  "topic": "de.buffer-pool-page-replacement",
+  "steps": [
+    {
+      "lines": [
+        "Knowing exactly what a page looks like only gets an engine so far.",
+        "A disk is slow enough that fetching the same page over and over would drag every query down with it.",
+        "So something has to decide, moment to moment, which pages are worth holding onto in memory and which ones can wait."
+      ]
+    },
+    {
+      "lines": [
+        "Here's that cache's own replacement scheme, read directly off a live cluster rather than assumed.",
+        "A hand sweeps past every slot in a fixed circle, never stopping to rank anything by how recently it was touched.",
+        "Each slot carries its own small counter, raised every time that slot gets used, and the hand only takes a slot whose counter has already fallen to nothing."
+      ]
+    },
+    {
+      "lines": [
+        "Worth checking what happens if that same small table keeps getting touched again and again.",
+        "Measured directly, the counter does keep climbing with each touch, but only up to a small ceiling.",
+        "Past that ceiling it simply stops, no matter how many more times the table gets scanned."
+      ]
+    },
+    {
+      "lines": [
+        "Worth reasoning through before the reveal settles it.",
+        "A scan that reads a table far bigger than the whole cache touches an enormous number of slots, but only once each.",
+        "Does sweeping past every one of those slots the ordinary way end up clearing out most of the cache to make room?"
+      ],
+      "answer": [
+        "It doesn't, and the reason is a second, separate trick this scheme reaches for.",
+        "A slot that's only ever touched by a once-through scan like that is unlikely to matter again soon, so a small, separate loop of slots gets reused for the whole scan instead of sweeping through the entire cache.",
+        "Nothing outside that small loop ever gets disturbed."
+      ]
+    },
+    {
+      "lines": [
+        "Here's that separate loop shown directly, not just argued for.",
+        "A table built and scanned for real, with vastly more content than the whole cache could ever hold at once.",
+        "Measured right after the scan finishes, only a small, bounded slice of it actually ended up resident. The rest of the cache was never touched."
+      ]
+    },
+    {
+      "lines": [
+        "A completely different kind of bookkeeping is worth checking the same way.",
+        "A page just changed for real carries a marker, read directly, saying it still needs to be written out.",
+        "Run a real save point and check that exact same marker again: it's already flipped back to clean."
+      ]
+    },
+    {
+      "lines": [
+        "Worth naming one real cost of running a cache like this at all.",
+        "The operating system underneath is already caching the same bytes on its own, so an engine's own cache usually ends up holding a duplicate copy of everything.",
+        "One setting on the operating system exists specifically to skip that duplication, at the cost of the engine doing all of that caching work itself."
+      ]
+    },
+    {
+      "lines": [
+        "There happens to be a second cluster available here too, a genuinely newer release of the same engine.",
+        "That newer release really does run a documented approach to reading many pages at once instead of one at a time.",
+        "Scanning it for real shows the counters it keeps rising under exactly that approach, which is real, counted activity, not just a claim in a document."
+      ]
+    },
+    {
+      "lines": [
+        "Pulling the whole topic back together.",
+        "A sweeping hand and a small counter per slot, read directly rather than assumed, with a measured ceiling on how high that counter climbs.",
+        "A once-through scan that reuses a small, separate loop instead of clearing out the whole cache, measured directly after it ran.",
+        "A dirty marker that a real save point actually flips clean. Duplicate caching, and the one setting that skips it. And a second, newer cluster's own newer reading approach, measured for real."
+      ]
+    },
+    {
+      "lines": [
+        "One closing scenario, worth reasoning through before the explanation lands.",
+        "One once-through scan over a huge table finishes right before a second, unrelated once-through scan starts over a different, equally huge table.",
+        "Does the second scan get slowed down because the first one already used up the whole cache scanning its own table?"
+      ],
+      "answer": [
+        "It doesn't, for exactly the reason this topic already measured directly.",
+        "Each once-through scan reuses its own small, separate loop rather than claiming space across the whole cache, so the first scan never touches the rest of the cache at all.",
+        "There's nothing there for the second scan to find missing."
+      ]
+    }
+  ]
+}
