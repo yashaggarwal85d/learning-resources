@@ -1,0 +1,4 @@
+- **Checkpoint**: a real, durable record of how far a pipeline has genuinely gotten, used to decide what a restart must redo and what it must not.
+- **Watermark**: a real, monotonically advancing marker naming the latest real point in a stream a pipeline has fully, durably processed.
+- **Exactly-once restart**: a real restart that reprocesses nothing already, durably committed and loses nothing that was not, the real correctness property a checkpoint's own timing decides.
+- **Durable commit**: the real moment a sink's own write genuinely, irreversibly reaches its destination, distinct from the earlier, real moment a batch is merely handed to that sink.

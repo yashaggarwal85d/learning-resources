@@ -1,0 +1,68 @@
+{
+  "topic": "rust.checkpoints-offsets-watermarks",
+  "syllabus": [
+    {
+      "clause": "durable checkpoints store source offsets and watermarks alongside output commit metadata",
+      "at": [
+        { "step": "A real pipeline checkpoints only once a batch own real commit has genuinely returned, never before. It crashes mid-stream, right as its fifteenth real batch begins committing. Does a restart from that real checkpoint reprocess anything already committed, or lose anything that was not?" },
+        { "step": "Measured: the real, correct pipeline own checkpoint lands on exactly the fourteenth batch, the identical real batch its own commit genuinely finished last, so a restart from that checkpoint reprocesses zero batches and loses zero records" }
+      ]
+    },
+    {
+      "clause": "so restart is exactly-once at the sink",
+      "at": [
+        { "step": "The identical real crash, at the identical real point, this time against a second pipeline that checkpoints the moment a batch is merely handed to the sink, before its own real commit has run at all. Does its own real checkpoint still match what was genuinely committed, or does it run ahead?" },
+        { "step": "Measured: the real, wrong pipeline own checkpoint lands on the fifteenth batch, one real batch ahead of the fourteen its own commits genuinely finished, because the crash landed exactly while that fifteenth commit was still in flight" },
+        { "step": "The real, wrong pipeline own restart resumes from the batch after its own real checkpoint, the sixteenth, skipping the fifteenth entirely. Does that fifteenth batch own real records get reprocessed later, or are they gone?" },
+        { "step": "Measured: the real, wrong pipeline own restart genuinely loses the fifteenth batch own full set of records, permanently, since its checkpoint told it that batch was already done" },
+        { "step": "The Rust standard library own documentation on a real, durable file sync states this directly: a real commit own job is to make sure in-memory data genuinely reaches the filesystem before it returns; a checkpoint taken before that return has happened is a checkpoint for a commit that has not, in fact, happened yet" }
+      ]
+    },
+    {
+      "clause": "(→ Data Engineering Ch.9)",
+      "at": [{ "deep": "Internals" }]
+    }
+  ],
+  "sources": [
+    {
+      "source": "durable-commit-sync",
+      "items": [
+        {
+          "item": "This function will attempt to ensure that all in-memory data reaches the filesystem before returning",
+          "at": [{ "step": "The Rust standard library own documentation on a real, durable file sync states this directly: a real commit own job is to make sure in-memory data genuinely reaches the filesystem before it returns; a checkpoint taken before that return has happened is a checkpoint for a commit that has not, in fact, happened yet" }]
+        }
+      ]
+    },
+    {
+      "source": "mpsc-reused-backpressure",
+      "items": [
+        {
+          "item": "If the bounded channel is at capacity, the send is rejected and the task will be notified when additional capacity is available. In other words, the channel provides backpressure",
+          "at": [{ "deep": "Internals" }]
+        }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "self-review",
+    "date": "2026-10-24",
+    "items": [
+      { "item": "Both real pipelines send the identical twenty real batches over the identical real bounded tokio::sync::mpsc channel, reused directly from topic 97's own pipeline shape, so the only real difference between the two runs is exactly when each one writes down its own checkpoint value relative to the real commit for a batch.", "at": [{ "step": "A real pipeline checkpoints only once a batch own real commit has genuinely returned, never before. It crashes mid-stream, right as its fifteenth real batch begins committing. Does a restart from that real checkpoint reprocess anything already committed, or lose anything that was not?" }] },
+      { "item": "The real crash point is fixed by construction rather than by real timing: both pipelines stop the instant their fourteenth real commit has returned and their fifteenth batch has just been dequeued, so the comparison isolates the one real variable this topic measures, not an incidental race.", "at": [{ "step": "A real pipeline checkpoints only once a batch own real commit has genuinely returned, never before. It crashes mid-stream, right as its fifteenth real batch begins committing. Does a restart from that real checkpoint reprocess anything already committed, or lose anything that was not?" }] },
+      { "item": "The correct pipeline's own real checkpoint value, fourteen, is computed directly from the same committed_batches counter examples.py asserts against, confirmed deterministic across repeated real runs of the identical crate.", "at": [{ "step": "Measured: the real, correct pipeline own checkpoint lands on exactly the fourteenth batch, the identical real batch its own commit genuinely finished last, so a restart from that checkpoint reprocesses zero batches and loses zero records" }] },
+      { "item": "The wrong pipeline's own checkpoint is written the instant a batch is dequeued by the sink stage, before the identical real ten-millisecond commit delay this topic's own crate actually awaits, so the gap this topic measures is a real, structural ordering choice, not a tuning accident.", "at": [{ "step": "The identical real crash, at the identical real point, this time against a second pipeline that checkpoints the moment a batch is merely handed to the sink, before its own real commit has run at all. Does its own real checkpoint still match what was genuinely committed, or does it run ahead?" }] },
+      { "item": "The real gap between the wrong pipeline's own checkpoint (fifteen) and its own genuinely committed count (fourteen) is exactly one real batch in every run, confirmed deterministic because the crash point and the checkpoint-write order are both fixed by this topic's own code, not by scheduler timing.", "at": [{ "step": "Measured: the real, wrong pipeline own checkpoint lands on the fifteenth batch, one real batch ahead of the fourteen its own commits genuinely finished, because the crash landed exactly while that fifteenth commit was still in flight" }] },
+      { "item": "A restart's own real resume point is computed directly as checkpoint plus one in this topic's own restart_outcome function, so the sixteenth batch is the first one a real restart would touch, leaving the fifteenth permanently unexamined by either the original run or the restart.", "at": [{ "step": "The real, wrong pipeline own restart resumes from the batch after its own real checkpoint, the sixteenth, skipping the fifteenth entirely. Does that fifteenth batch own real records get reprocessed later, or are they gone?" }] },
+      { "item": "The real, lost record count, ten, is computed directly as the one lost batch multiplied by this topic's own real records-per-batch constant, confirmed by examples.py asserting it equals that same constant exactly, not an approximation.", "at": [{ "step": "Measured: the real, wrong pipeline own restart genuinely loses the fifteenth batch own full set of records, permanently, since its checkpoint told it that batch was already done" }] },
+      { "item": "The quoted sentence is read from the identical real, canonical Rust standard library page for std::fs::File::sync_all this topic's own OUTLINE.md cites directly, describing the real moment a write is considered durable, the identical real moment this topic's own correct pipeline waits for before writing its checkpoint.", "at": [{ "step": "The Rust standard library own documentation on a real, durable file sync states this directly: a real commit own job is to make sure in-memory data genuinely reaches the filesystem before it returns; a checkpoint taken before that return has happened is a checkpoint for a commit that has not, in fact, happened yet" }] },
+      { "item": "This topic's own real channel between source and sink is the identical bounded tokio::sync::mpsc construct topic 97 measured for backpressure, reused here to carry batches rather than to be the subject of measurement, continuing the chapter's own single, extending pipeline.", "at": [{ "deep": "Internals" }] },
+      { "item": "A real pipeline with more than one real source has to reconcile a real watermark across each source independently before a restart can be trusted, a real complication this topic's own single-source simulation deliberately does not have to resolve.", "at": [{ "deep": "In production" }] },
+      { "item": "A real, distributed pipeline's own checkpoint store living on a separate real machine from its own sink introduces a real network partition as a second way a checkpoint and a commit can disagree, beyond the single-process timing gap this topic measures directly.", "at": [{ "deep": "The frontier" }] }
+    ]
+  },
+  "gapReview": {
+    "date": "2026-10-24",
+    "by": "self-review",
+    "open": []
+  }
+}
