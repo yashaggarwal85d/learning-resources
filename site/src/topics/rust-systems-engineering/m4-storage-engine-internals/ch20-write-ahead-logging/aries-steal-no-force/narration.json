@@ -1,0 +1,90 @@
+{
+  "steps": [
+    {
+      "lines": [
+        "Build a real log with two transactions: one commits, one never does.",
+        "Run only the redo pass over it, before any undo at all.",
+        { "beat": 0.3 },
+        "Does redo apply the committed transaction's own updates, the uncommitted one's, or both?"
+      ],
+      "answer": [
+        "Both, genuinely.",
+        "Redo doesn't know or care about commit status at all."
+      ]
+    },
+    {
+      "lines": [
+        "Run it for real: redo genuinely reapplied the uncommitted transaction's own updates too, exactly like the committed one's.",
+        "Nothing about redo itself tells them apart."
+      ],
+      "takeaway": "Redo repeats history for everyone first; only the undo pass that follows tells a winner from a loser."
+    },
+    {
+      "lines": [
+        "A checkpoint recorded that one page was already safely on disk, with nothing else dirty at that moment.",
+        { "beat": 0.3 },
+        "Does redo, starting from that checkpoint's own bound instead of the very start of the log, still reach the correct final state?"
+      ],
+      "answer": [
+        "Yes, genuinely.",
+        "That bound is exactly how far back redo actually needs to look."
+      ]
+    },
+    {
+      "lines": [
+        "Run it for real: redo starting from the checkpoint's own bound visited genuinely fewer log records, and reached the exact same final state as a full scan from the start."
+      ],
+      "takeaway": "A fuzzy checkpoint's own dirty-page bound lets redo skip what's already durable, without skipping anything it needs."
+    },
+    {
+      "lines": [
+        "Undo the uncommitted transaction's own last update, writing a compensation log record for it.",
+        "Now crash again, right there, in the middle of undoing.",
+        { "beat": 0.3 },
+        "On the next recovery, does undo repeat that same step, skip it, or resume exactly where it left off?"
+      ],
+      "answer": [
+        "It resumes exactly there.",
+        "The compensation log record already in the log says where."
+      ]
+    },
+    {
+      "lines": [
+        "Run it for real: the second recovery resumed undo exactly where the first one left off.",
+        "The already-undone update got exactly one compensation log record, total, across both attempts."
+      ],
+      "takeaway": "A compensation log record bounds undo's own work across repeated failures: nothing already undone gets undone twice."
+    },
+    {
+      "lines": [
+        "The original paper behind this whole method names this kind of log record directly: a compensation log record.",
+        { "beat": 0.3 },
+        "Once that record undoes some earlier update, is its own effect ever itself undone later?"
+      ],
+      "answer": [
+        "Never.",
+        "A compensation log record is a redo-only log record."
+      ]
+    },
+    {
+      "lines": [
+        "In that paper's own words: a compensation log record's own update is never undone, and such records are viewed as redo-only log records."
+      ]
+    },
+    {
+      "lines": [
+        "That same paper names the buffer policy this topic's own recovery assumes: letting an uncommitted page be written back early, and letting a committed one stay unwritten for a while.",
+        "Redo and undo together are exactly why that combination is safe: whatever was written back, and whenever, both passes can fix it up."
+      ],
+      "takeaway": "Steal and no-force are safe because redo and undo together can fix up a page however it was written back."
+    },
+    {
+      "lines": [
+        "So, pulling this topic together: one pass reconstructs the database's own state as of the crash, without asking yet who gets to keep their changes.",
+        "A separate bookkeeping record lets that pass start its work partway through the log instead of at the very beginning, with nothing lost by doing so.",
+        "Rolling back whoever didn't finish uses its own kind of record precisely so that trying again, after yet another failure, picks up exactly where it stopped rather than starting over.",
+        "And because both directions can always correct a page no matter when it reached disk, a system is free to write one back early or hold another back late, whichever happens to be faster."
+      ]
+    }
+  ]
+}

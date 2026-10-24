@@ -1,0 +1,4 @@
+- **Framing strategy**: the explicit, application-level scheme that turns TCP's byte stream back into discrete messages — length-prefix, delimiter-based, or fixed-size — each with its own documented failure mode. *Where you meet it:* a real length-prefixed decoder, measured decoding correctly under its own cap.
+- **Length-prefix framing's own cap**: an uncapped length field is a denial-of-service vector; a decoder must reject a claimed length over its own cap before allocating a buffer that size.
+- **Zero-copy frame extraction**: extracting a complete frame from a buffer without copying its bytes into a new allocation, as `BytesMut::split_to` does by splitting the underlying buffer in place.
+- **The `Decoder` trait**: specifies how a sequence of bytes becomes a sequence of frames, and where the boundary between one frame and the next falls.

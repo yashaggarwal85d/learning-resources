@@ -1,0 +1,4 @@
+- **`object` dtype**: pandas's old catch-all column type, able to hold any Python value, not just strings. *Where you meet it:* the direct contrast behind the new default string dtype.
+- **Missing-value sentinel**: the specific placeholder value a column uses to mark a missing entry (e.g. `NaN` or `pd.NA`). *Where you meet it:* the predict, and the string-dtype vs. numeric-dtype sentinel contrasts.
+- **View vs. copy**: a view shares the original data's memory; a copy duplicates it. *Where you meet it:* the Copy-on-Write reveal's own memory-sharing check.
+- **`SettingWithCopyWarning`**: pandas's old warning for code that may have silently failed to update the data it meant to. *Where you meet it:* the chained-assignment reveal, which names its replacement.

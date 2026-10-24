@@ -1,0 +1,82 @@
+{
+  "topic": "de.runtime-schema-validation",
+  "steps": [
+    {
+      "lines": [
+        "Every layer built so far has one thing in common: a human decided, ahead of time, which inputs were worth checking.",
+        "A live system doesn't get that luxury. Something has to stand at the actual edge and judge whatever shows up there, sight unseen. This is that something."
+      ]
+    },
+    {
+      "lines": [
+        "Here's one record, checked against one declared shape.",
+        "A well-formed record gets coerced cleanly into the right types without complaint.",
+        "A record with one bad field gets rejected outright, and the error names that exact field directly, not some generic failure."
+      ]
+    },
+    {
+      "lines": [
+        "Worth asking whether that check stays affordable once the volume grows.",
+        "The identical record check, run first against one batch of records, then against twice as many.",
+        "The time it takes roughly doubles too. The cost tracks the record count directly, not some steeper curve hiding underneath."
+      ]
+    },
+    {
+      "lines": [
+        "Worth guessing at before the reveal settles it.",
+        "One set of column checks, written once, already works against one kind of table. Does checking a completely different kind of table underneath actually need its own separately written version?"
+      ],
+      "answer": [
+        "It doesn't, and here's precisely why.",
+        "The identical declared column checks, differing only in which underlying table type they're pointed at, genuinely validate both kinds of table without being rewritten for either."
+      ]
+    },
+    {
+      "lines": [
+        "Here's that claim shown directly, not just argued for.",
+        "The same declared fields and the same range check, run first against one real table, then against a second, differently built one.",
+        "Neither needs its own version of the check. Both validate cleanly against the exact same declaration."
+      ]
+    },
+    {
+      "lines": [
+        "Now the same check, deliberately pointed at data that's actually wrong.",
+        "One column value pushed outside its declared range. The check doesn't quietly let it through.",
+        "It rejects that row outright and names the exact column responsible, not a vague complaint about the table as a whole."
+      ]
+    },
+    {
+      "lines": [
+        "One more cost worth measuring directly rather than assuming.",
+        "The identical range check, run two different ways: once per value inside an ordinary loop, and once as a single operation across the entire column at once.",
+        "Measured directly, the loop costs several times more than that one single pass."
+      ]
+    },
+    {
+      "lines": [
+        "Here's the one layer this sandbox names honestly rather than runs.",
+        "One real, sourced framework built around declared checks and a production run step; a second real, sourced framework built around a written-out scan against a live data source.",
+        "Neither needs a full production deployment inside this sandbox to describe accurately what it checks and how — named directly here, not faked and not silently skipped."
+      ]
+    },
+    {
+      "lines": [
+        "Pulling it all back together now.",
+        "A record check coerces what it safely can and names exactly what it can't, its cost scaling with record count directly rather than some worse curve.",
+        "A whole-table check validates an entire table at once, the identical declaration genuinely working across two differently built kinds of table, and genuinely rejecting a real violation by name.",
+        "Running that check row by row costs measurably more than running it once, across the whole table. And a production-scale scan checks data that's already landed — named honestly here, not run, the same kind of disclosed gap the last topic also had."
+      ]
+    },
+    {
+      "lines": [
+        "One closing scenario, worth reasoning through rather than guessing at.",
+        "A pipeline checks every record one at a time with a record check, inside a loop running over an entire batch, and a separate downstream tool re-checks that same batch all over again afterward.",
+        "What's actually misplaced here, and where should each of those checks really sit?"
+      ],
+      "answer": [
+        "Two separate things, and both were measured directly earlier in this very topic.",
+        "The per-record loop is exactly the costlier row-by-row pattern measured earlier; a single whole-table check does the identical job for measurably less. The downstream tool belongs after that check, auditing data already proven sound, not repeating the same boundary check a moment before it."
+      ]
+    }
+  ]
+}

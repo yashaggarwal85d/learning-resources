@@ -1,0 +1,5 @@
+- **Axum has no middleware system of its own**: it is built entirely on `tower::Service`, so Tower middleware (timeouts, tracing, compression, authorization via `tower-http`) is shared with any Tower-based stack. *Where you meet it:* a real, running server whose extractor, shared state, and both middleware layers are all the same `Service`/`Layer` abstraction from the topic before this one.
+- **Extractors**: a handler is an async function taking any number of extractors as arguments; an extractor is a type implementing `FromRequest` or `FromRequestParts`.
+- **`State`**: a piece of application state shared across every request, not re-created fresh each time.
+- **`middleware::from_fn`**: Axum's own stated way to write a middleware, from a plain async function, with no separate system of its own.
+- **0.8 routing syntax**: a path parameter is written `/{param}` and extracted directly by a real extractor, never parsed by hand.

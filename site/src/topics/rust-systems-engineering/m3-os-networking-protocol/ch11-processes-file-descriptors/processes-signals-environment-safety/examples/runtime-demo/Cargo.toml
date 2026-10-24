@@ -1,0 +1,19 @@
+[package]
+name = "runtime-demo"
+version = "0.1.0"
+edition = "2024"
+
+[[bin]]
+name = "command_spawns_a_real_child"
+path = "src/command_spawns_a_real_child.rs"
+
+[[bin]]
+name = "fork_child_has_one_thread"
+path = "src/fork_child_has_one_thread.rs"
+
+[[bin]]
+name = "pidfd_fails_after_the_process_is_gone"
+path = "src/pidfd_fails_after_the_process_is_gone.rs"
+
+[dependencies]
+libc = "0.2"

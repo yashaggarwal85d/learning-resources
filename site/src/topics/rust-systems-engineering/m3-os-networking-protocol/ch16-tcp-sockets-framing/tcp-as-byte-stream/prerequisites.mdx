@@ -1,0 +1,24 @@
+import Resource from '../../../../../components/Resource.astro';
+
+<section class="prereq" data-section="chapter-so-far">
+
+### <span class="n">01</span> Where the last chapter left off
+
+<ul class="resources">
+  <Resource kind="reel" host={props.host} domain="rust-systems-engineering" title="WAL flush points and I/O measurement">batching fsyncs into deliberate flush points cut the real syscall count from a thousand to twenty-one, and was dramatically faster for the identical writes.</Resource>
+</ul>
+
+</section>
+
+<section class="prereq" data-section="tcp-primary">
+
+### <span class="n">02</span> The real docs: TCP as a byte stream
+
+<ul class="resources">
+  <Resource kind="reading" title="RFC 9293: Transmission Control Protocol (TCP)" href="https://www.rfc-editor.org/rfc/rfc9293.txt" by="IETF">The byte-stream contract, and TIME-WAIT's own documented purpose.</Resource>
+  <Resource kind="reading" title="tcp(7)" href="https://man7.org/linux/man-pages/man7/tcp.7.html" by="The Linux man-pages Project">TCP_NODELAY, Nagle's algorithm, and delayed ACK.</Resource>
+  <Resource kind="reading" title="socket(7)" href="https://man7.org/linux/man-pages/man7/socket.7.html" by="The Linux man-pages Project">SO_LINGER's own documented effect on close().</Resource>
+  <Resource kind="reading" title="shutdown(2)" href="https://man7.org/linux/man-pages/man2/shutdown.2.html" by="The Linux man-pages Project">Half-closing one direction of a full-duplex connection.</Resource>
+</ul>
+
+</section>

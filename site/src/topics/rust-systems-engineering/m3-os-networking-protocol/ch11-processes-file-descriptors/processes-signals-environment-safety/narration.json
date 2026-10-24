@@ -1,0 +1,88 @@
+{
+  "steps": [
+    {
+      "lines": [
+        "Spawn a real child process with a real process builder.",
+        { "beat": 0.3 },
+        "Does it get its own, separate process identifier, or does it somehow share the parent's?"
+      ],
+      "answer": [
+        "It gets its own, completely separate identifier.",
+        "Spawning genuinely forks and execs a distinct process — not merely a distinct name for the same one."
+      ]
+    },
+    {
+      "lines": [
+        "Run it for real: the spawned child had its own, genuinely different process identifier.",
+        "And its real exit code was observed exactly, round-tripped straight back through a completely separate process."
+      ]
+    },
+    {
+      "lines": [
+        "A process already running several real threads calls a real fork.",
+        { "beat": 0.3 },
+        "How many threads does the resulting child actually have?"
+      ],
+      "answer": [
+        "Exactly one — the single thread that called fork.",
+        "The entire address space gets copied, every byte of it, but only one thread is there to run it afterward."
+      ]
+    },
+    {
+      "lines": [
+        "Run it for real: the parent genuinely had several real threads running, and the forked child had exactly one.",
+        "Which is exactly why only a narrow, carefully safe set of operations are allowed there before that child execs."
+      ],
+      "takeaway": "A forked child has exactly one thread — any lock another thread held belongs to nobody there now."
+    },
+    {
+      "lines": [
+        "Send a signal through a stable process handle, to a process that has already exited and been properly reaped.",
+        { "beat": 0.3 },
+        "Does it silently succeed, silently fail, or fail with a specific, clear error?"
+      ],
+      "answer": [
+        "It fails with a clear, specific error.",
+        "That handle never confuses a process that's genuinely gone with some other one that happens to share an old number."
+      ]
+    },
+    {
+      "lines": [
+        "Run it for real: sending through that handle succeeded while the real process was still alive.",
+        "And it failed outright, with that exact clear error, the instant the process was genuinely gone — never silently reaching anything else."
+      ],
+      "takeaway": "A pidfd is a stable reference to one process — never confused with a later one reusing its number."
+    },
+    {
+      "lines": [
+        "Why did setting an environment variable become unsafe to call directly, when it was perfectly fine to call for years before?",
+        { "beat": 0.3 },
+        "What actually changed?"
+      ],
+      "answer": [
+        "Because it genuinely races with a C function that reads the environment.",
+        "And no library anywhere can be relied on to never call that function internally, without ever telling anyone."
+      ]
+    },
+    {
+      "lines": [
+        "That function's own safety section says it plainly: sound alone on a single thread, or on one particular operating system.",
+        "Everywhere else, in a multithreaded program, the only genuinely sound choice is simply never to call it at all."
+      ]
+    },
+    {
+      "lines": [
+        "So, pulling this together: every one of these rules is really the same rule, said three separate ways.",
+        "A forked child, a stable process handle, and a shared global variable are each state that something else might be touching at that exact same moment."
+      ],
+      "takeaway": "Fork safety, pidfds, and set_var's unsafety are one lesson three times: shared state, touched at the wrong moment."
+    },
+    {
+      "lines": [
+        "So, pulling this topic together: spawning a child genuinely gives it its own, separate identity, never the parent's.",
+        "A forked child genuinely runs with only one thread, the very one that called fork, and nothing else survives there.",
+        "And a stable handle to a process never, ever gets confused with some unrelated process that happens to share an old number."
+      ]
+    }
+  ]
+}

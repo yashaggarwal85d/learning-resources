@@ -1,0 +1,4 @@
+- **Readahead**: the kernel speculatively bringing a file's pages into the page cache ahead of a sequential access pattern. *Where you meet it:* a real `readahead()` call measured to fill every page, with no read ever called.
+- **Dirty-page throttling**: the kernel slowing a writer once too many dirty pages are queued for write-back, bounding the memory pressure buffered writes create.
+- **`posix_fadvise`**: a hint, not a guarantee, about how a file will be accessed — shaping readahead and retention on the buffered path without bypassing it. *Where you meet it:* a real `DONTNEED` call measured to evict every page it touches, once they're clean.
+- **Direct I/O (`O_DIRECT`)**: bypassing the page cache entirely. *Where you meet it:* a real read measured to leave zero pages resident, next to a buffered read that leaves every page resident.

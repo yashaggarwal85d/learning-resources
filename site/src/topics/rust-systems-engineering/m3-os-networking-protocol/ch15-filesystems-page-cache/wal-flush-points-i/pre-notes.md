@@ -1,0 +1,4 @@
+- **Per-update fsync**: calling a real `fsync` after every single small write, the naive way to make each update durable, and the baseline real systems deliberately avoid. *Where you meet it:* `fsync_per_update.rs`, traced to exactly 1000 real fsync syscalls for 1000 writes.
+- **WAL flush point**: a deliberate, batched point at which a write-ahead log is fsynced, chosen to be far less frequent than one fsync per logical update.
+- **Volatile write cache**: many storage devices signal I/O completion to the operating system before the data has actually reached non-volatile storage, unless something forces it not to.
+- **`REQ_FUA`**: the Linux block layer flag that makes a write's completion signal wait until the data has genuinely reached non-volatile storage, rather than trusting a volatile cache's own early signal.

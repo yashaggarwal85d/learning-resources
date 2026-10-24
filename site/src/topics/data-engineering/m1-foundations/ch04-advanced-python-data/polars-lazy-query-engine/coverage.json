@@ -1,0 +1,217 @@
+{
+  "topic": "de.polars-lazy-query-engine",
+  "syllabus": [
+    {
+      "clause": "the expression API",
+      "at": [
+        { "step": "Reveal: the same transformation, eager and lazy" }
+      ]
+    },
+    {
+      "clause": "lazy plans with predicate/projection pushdown and common-subexpression elimination",
+      "at": [
+        { "step": "Reveal: predicate and projection pushdown, read from a real query plan" },
+        { "step": "Reveal: common subexpression elimination" }
+      ]
+    },
+    {
+      "clause": "the streaming engine (the default for lazy queries since Polars 2.0)",
+      "at": [
+        { "step": "Predict: does collect() with no arguments preserve the original row order?" },
+        { "step": "Reveal: no implicit row order, measured across repeated runs" }
+      ]
+    },
+    {
+      "clause": "its no-implicit-row-order rule",
+      "at": [
+        { "step": "Reveal: no implicit row order, measured across repeated runs" }
+      ]
+    },
+    {
+      "clause": "out-of-core execution",
+      "at": [
+        { "step": "Reveal: the streaming engine lowers peak memory, short of full out-of-core" }
+      ]
+    },
+    {
+      "clause": "the cuDF-backed GPU engine",
+      "at": [
+        { "step": "Reveal: the cuDF-backed GPU engine" }
+      ]
+    }
+  ],
+  "sources": [
+    {
+      "source": "Usage (Lazy API)",
+      "items": [
+        {
+          "item": "using the lazy API from a file (pl.scan_csv) or from a DataFrame (.lazy())",
+          "at": [{ "step": "Reveal: the same transformation, eager and lazy" }]
+        },
+        {
+          "item": "why the lazy API matters: automatic query optimization, larger-than-memory streaming, early schema-error detection",
+          "at": [
+            { "step": "Reveal: predicate and projection pushdown, read from a real query plan" },
+            { "step": "Reveal: the streaming engine lowers peak memory, short of full out-of-core" }
+          ]
+        },
+        {
+          "item": "a lazy query is not executed until collect()",
+          "at": [{ "step": "Reveal: the same transformation, eager and lazy" }]
+        }
+      ]
+    },
+    {
+      "source": "Query plan",
+      "items": [
+        {
+          "item": "every lazy query has a non-optimized plan (as written) and an optimized plan (after the query optimizer)",
+          "at": [{ "step": "Reveal: predicate and projection pushdown, read from a real query plan" }]
+        },
+        {
+          "item": "explain(optimized=False) vs explain() print both plans as text, read bottom to top",
+          "at": [{ "step": "Reveal: predicate and projection pushdown, read from a real query plan" }]
+        },
+        {
+          "item": "predicate pushdown: a filter folded into the scan step instead of applied after a full read",
+          "at": [{ "step": "Reveal: predicate and projection pushdown, read from a real query plan" }]
+        }
+      ]
+    },
+    {
+      "source": "Optimizations",
+      "items": [
+        {
+          "item": "predicate pushdown, projection pushdown, slice pushdown: each runs once, at or before the scan",
+          "at": [{ "step": "Reveal: predicate and projection pushdown, read from a real query plan" }]
+        },
+        {
+          "item": "common subplan elimination: caches subtrees/file scans reused by multiple branches of the query plan",
+          "at": [{ "step": "Reveal: common subexpression elimination" }]
+        },
+        {
+          "item": "simplify expressions and type coercion run until a fixed point; cardinality estimation runs 0..n times depending on the query",
+          "at": [{ "out": "below the depth this topic's scope needs; not a syllabus clause and not asserted by any reveal" }]
+        }
+      ]
+    },
+    {
+      "source": "Streaming",
+      "items": [
+        {
+          "item": "the streaming engine executes a query in batches instead of materializing all data at once",
+          "at": [{ "step": "Reveal: the streaming engine lowers peak memory, short of full out-of-core" }]
+        },
+        {
+          "item": "besides lowering memory pressure, the streaming engine is also more performant than the in-memory engine",
+          "at": [{ "deep": "Outcomes" }]
+        },
+        {
+          "item": "operations not yet implemented in a streaming manner fall back to the in-memory engine automatically",
+          "at": [{ "step": "Reveal: the streaming engine lowers peak memory, short of full out-of-core" }]
+        }
+      ]
+    },
+    {
+      "source": "Pre-release of Polars 2.0",
+      "items": [
+        {
+          "item": "collect() now defaults to the streaming engine (engine=\"auto\" resolves to streaming); the old default is opt-in via engine=\"in-memory\" or Config.set_engine_affinity",
+          "at": [{ "step": "Predict: does collect() with no arguments preserve the original row order?" }]
+        },
+        {
+          "item": "the streaming engine doesn't guarantee row order by default for join/group_by/unpivot; maintain_order opts back into a stable order",
+          "at": [{ "step": "Reveal: no implicit row order, measured across repeated runs" }]
+        },
+        {
+          "item": "the team's own disclosure: 'proper out-of-core support for the streaming engine' is still in flight, not yet complete, as of this pre-release post",
+          "at": [{ "step": "Reveal: the streaming engine lowers peak memory, short of full out-of-core" }]
+        }
+      ]
+    },
+    {
+      "source": "GPU Support [Open Beta]",
+      "items": [
+        {
+          "item": "engine=\"gpu\" dispatches a query to a RAPIDS cuDF physical execution backend on NVIDIA GPUs",
+          "at": [{ "step": "Reveal: the cuDF-backed GPU engine" }]
+        },
+        {
+          "item": "CPU and GPU engines share the Arrow columnar format, so results and files move between them without conversion",
+          "at": [{ "step": "Reveal: the cuDF-backed GPU engine" }]
+        },
+        {
+          "item": "an unsupported operation falls back transparently to the CPU engine rather than failing",
+          "at": [{ "step": "Reveal: the cuDF-backed GPU engine" }]
+        },
+        {
+          "item": "GPU speedups are most likely for grouped aggregations and joins; I/O-bound queries see little benefit",
+          "at": [{ "deep": "Outcomes" }]
+        }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "Claude (single session)",
+    "date": "2026-10-23",
+    "items": [
+      {
+        "item": "Building from pl.scan_* instead of pl.read_* defers execution: the optimizer sees the whole query before any of it runs, not just the step in front of it.",
+        "at": [{ "step": "Reveal: the same transformation, eager and lazy" }]
+      },
+      {
+        "item": "The lazy API's three stated benefits are automatic optimization, larger-than-memory streaming, and catching schema errors before touching the data — not just 'it's faster'.",
+        "at": [{ "step": "Reveal: the same transformation, eager and lazy" }]
+      },
+      {
+        "item": "explain(optimized=False) and explain() on the same query show the real before/after plan directly — predicate pushdown folds a filter into the scan step rather than applying it after a full read.",
+        "at": [{ "step": "Reveal: predicate and projection pushdown, read from a real query plan" }]
+      },
+      {
+        "item": "Projection pushdown narrows a scan to only the columns a query actually needs downstream, visible in explain() as a reduced column count at the scan.",
+        "at": [{ "step": "Reveal: predicate and projection pushdown, read from a real query plan" }]
+      },
+      {
+        "item": "Common subexpression elimination caches one repeated sub-expression used by two different output columns and computes it once, visible as a single cached node two later steps both reference.",
+        "at": [{ "step": "Reveal: common subexpression elimination" }]
+      },
+      {
+        "item": "Since Polars 2.0, collect() with no engine argument defaults to the streaming engine; the pre-2.0 in-memory default is now opt-in, per query or process-wide.",
+        "at": [{ "step": "Predict: does collect() with no arguments preserve the original row order?" }]
+      },
+      {
+        "item": "The streaming engine doesn't guarantee row order by default for join, group_by and unpivot; this is a real behavioral break, not a performance footnote, which is why it needed a major version bump.",
+        "at": [{ "step": "Reveal: no implicit row order, measured across repeated runs" }]
+      },
+      {
+        "item": "maintain_order opts back into the pre-2.0 stable ordering for an operation that would otherwise be unordered under the streaming default.",
+        "at": [{ "step": "Reveal: no implicit row order, measured across repeated runs" }]
+      },
+      {
+        "item": "The streaming engine processes a query in batches instead of materializing everything at once, which is what lets it handle data that wouldn't fit in memory under the old default; operations without a streaming implementation fall back to the in-memory engine automatically.",
+        "at": [{ "step": "Reveal: the streaming engine lowers peak memory, short of full out-of-core" }]
+      },
+      {
+        "item": "The Polars team's own 2.0 pre-release post discloses that 'proper out-of-core support for the streaming engine' is still in flight — the honest boundary between what the streaming engine already does today and what the team itself says isn't finished.",
+        "at": [{ "step": "Reveal: the streaming engine lowers peak memory, short of full out-of-core" }]
+      },
+      {
+        "item": "The GPU engine (Open Beta) dispatches to RAPIDS cuDF on NVIDIA GPUs via engine=\"gpu\", and falls back transparently to the CPU engine on any operation it doesn't support, rather than failing the query.",
+        "at": [{ "step": "Reveal: the cuDF-backed GPU engine" }]
+      },
+      {
+        "item": "The CPU and GPU engines share the Arrow columnar format, so results and files move between them without conversion — the same cross-engine property topic 30 showed between Polars and DuckDB, now crossing a CPU/GPU boundary instead of a library boundary.",
+        "at": [{ "step": "Reveal: the cuDF-backed GPU engine" }]
+      },
+      {
+        "item": "The team's own benchmarking says GPU speedups are most likely for workloads dominated by grouped aggregations and joins; I/O-bound queries see little benefit from the GPU engine.",
+        "at": [{ "deep": "Outcomes" }]
+      }
+    ]
+  },
+  "gapReview": {
+    "date": "2026-10-23",
+    "by": "Claude (single session)",
+    "open": []
+  }
+}

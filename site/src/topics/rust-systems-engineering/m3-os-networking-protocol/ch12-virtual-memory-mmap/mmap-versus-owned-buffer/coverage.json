@@ -1,0 +1,93 @@
+{
+  "topic": "rust.mmap-versus-owned-buffer",
+  "syllabus": [
+    {
+      "clause": "the double-caching problem (page cache and application cache holding the same data), and direct I/O trading it for alignment constraints. Crotty, Leis & Pavlo (CIDR 2022): transactional-safety, I/O-stall, error-handling and TLB-shootdown problems explain why most DBMSs own their buffer pool (→ Ch.19), and when mmap is fine (read-mostly, LMDB-style).",
+      "at": [
+        { "step": "Measured: the mapped file's pages stayed resident in the kernel's own page cache, and reading the exact same file again into a separate application cache grew the process's resident memory by roughly another full copy" },
+        { "step": "Measured: the misaligned read failed outright with the kernel’s own EINVAL, and the exact same read with a properly aligned buffer succeeded cleanly" },
+        { "step": "The paper's own argument is specific: a dirty mapped page can be written back at a moment the database never chose, a page fault can stall with no promised end, a real I/O error surfaces as a process-killing SIGBUS instead of a Result, and unmapping has to interrupt every other thread's TLB just to unmap one region" },
+        { "step": "The paper's own recommendation is exactly that narrow: mapping remains the right call when the working set fits in memory and the workload is read-only — precisely the case LMDB's own design is built around" }
+      ]
+    }
+  ],
+  "sources": [
+    {
+      "source": "cidr2022-paper",
+      "items": [
+        {
+          "item": "the core issue is that, due to transparent paging, the OS can flush a dirty page to secondary storage at any time, irrespective of whether the writing transaction has committed",
+          "at": [{ "step": "If a mapped page's real read genuinely fails — a bad sector, a disk gone missing — does the program get a normal, recoverable error back?" }]
+        },
+        {
+          "item": "accessing any page could result in an unexpected I/O stall because the DBMS cannot know whether the page is in memory",
+          "at": [{ "step": "The paper's own argument is specific: a dirty mapped page can be written back at a moment the database never chose, a page fault can stall with no promised end, a real I/O error surfaces as a process-killing SIGBUS instead of a Result, and unmapping has to interrupt every other thread's TLB just to unmap one region" }]
+        },
+        {
+          "item": "any code that interacts with mmap-backed memory can now produce a SIGBUS that the DBMS must deal with via cumbersome signal handlers",
+          "at": [{ "step": "If a mapped page's real read genuinely fails — a bad sector, a disk gone missing — does the program get a normal, recoverable error back?" }]
+        },
+        {
+          "item": "the OS has to issue an expensive inter-processor interrupt to flush other threads' TLB entries, called a TLB shootdown",
+          "at": [{ "step": "The paper's own argument is specific: a dirty mapped page can be written back at a moment the database never chose, a page fault can stall with no promised end, a real I/O error surfaces as a process-killing SIGBUS instead of a Result, and unmapping has to interrupt every other thread's TLB just to unmap one region" }]
+        },
+        {
+          "item": "your working set (or the entire database) fits in memory and the workload is read-only is exactly when mmap remains a reasonable choice",
+          "at": [{ "step": "The paper's own recommendation is exactly that narrow: mapping remains the right call when the working set fits in memory and the workload is read-only — precisely the case LMDB's own design is built around" }]
+        }
+      ]
+    },
+    {
+      "source": "mmap-2",
+      "items": [
+        {
+          "item": "a MAP_SHARED mapping's updates are visible to other processes mapping the same region, and are carried through to the underlying file",
+          "at": [{ "step": "Memory-map a file, and also keep a separate, hand-built cache of the same bytes in your own code. Does the mapped data end up resident in memory once, or twice?" }]
+        }
+      ]
+    },
+    {
+      "source": "open-2",
+      "items": [
+        {
+          "item": "O_DIRECT tries to minimize cache effects of I/O to and from a file, useful when applications do their own caching, at the cost of real alignment requirements",
+          "at": [{ "step": "Open the same file with O_DIRECT and read it into a buffer that isn't aligned to a block boundary. Does the read quietly degrade, silently succeed, or fail outright?" }]
+        },
+        {
+          "item": "since Linux 2.6.0, O_DIRECT's alignment requirement was relaxed to the logical block size of the block device, typically 512 bytes",
+          "at": [{ "step": "Measured: the misaligned read failed outright with the kernel’s own EINVAL, and the exact same read with a properly aligned buffer succeeded cleanly" }]
+        }
+      ]
+    },
+    {
+      "source": "memmap2-mmap",
+      "items": [
+        {
+          "item": "all file-backed memory map constructors are marked unsafe because of the potential for undefined behavior if the underlying file is modified, in or out of process",
+          "at": [{ "step": "Memory-map a file, and also keep a separate, hand-built cache of the same bytes in your own code. Does the mapped data end up resident in memory once, or twice?" }]
+        }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "self-review",
+    "date": "2026-10-23",
+    "items": [
+      { "item": "The double-caching measurement deliberately touches every mapped byte before reading /proc/self/smaps, because an untouched mapping has no resident pages at all; the claim is specifically about pages that have actually been faulted in, not about the mapping's mere existence.", "at": [{ "step": "Memory-map a file, and also keep a separate, hand-built cache of the same bytes in your own code. Does the mapped data end up resident in memory once, or twice?" }] },
+      { "item": "The application-level cache's own resident-memory growth is measured as a VmRSS delta around the fs::read call specifically, rather than as its allocated Vec length, because an allocation alone does not prove the kernel actually backed it with real pages the way the claim requires.", "at": [{ "step": "Measured: the mapped file's pages stayed resident in the kernel's own page cache, and reading the exact same file again into a separate application cache grew the process's resident memory by roughly another full copy" }] },
+      { "item": "The misaligned buffer is produced by offsetting a genuinely block-aligned allocation by exactly one byte, not by using an arbitrary unaligned stack buffer, because the claim is specifically about alignment, not about some other incidental property of a sloppily chosen buffer.", "at": [{ "step": "Open the same file with O_DIRECT and read it into a buffer that isn't aligned to a block boundary. Does the read quietly degrade, silently succeed, or fail outright?" }] },
+      { "item": "4096 bytes is used as the alignment in the executed example specifically because it is a safe multiple of every real filesystem's own logical block size, not because the container's own block device happens to report exactly that value; the container's device in fact reports 512 bytes.", "at": [{ "step": "Measured: the misaligned read failed outright with the kernel’s own EINVAL, and the exact same read with a properly aligned buffer succeeded cleanly" }] },
+      { "item": "SIGBUS specifically, rather than a more general fault, is the documented outcome because a mapped page's I/O error surfaces during the memory access itself, not during a syscall that could return an error code the normal way a read() or write() would.", "at": [{ "step": "If a mapped page's real read genuinely fails — a bad sector, a disk gone missing — does the program get a normal, recoverable error back?" }] },
+      { "item": "The TLB-shootdown cost is a genuinely cross-thread cost, not a per-call overhead the mapping thread alone pays; every other thread sharing the address space must have its own cached translation entries invalidated before the unmap can be considered complete, which is why it scales with thread count.", "at": [{ "step": "The paper's own argument is specific: a dirty mapped page can be written back at a moment the database never chose, a page fault can stall with no promised end, a real I/O error surfaces as a process-killing SIGBUS instead of a Result, and unmapping has to interrupt every other thread's TLB just to unmap one region" }] },
+      { "item": "The paper's own four failure classes are not independent concerns a system could mitigate one at a time; transactional safety and error handling both stem from the same root cause, the kernel's own unannounced control over when and whether a dirty page actually reaches disk.", "at": [{ "step": "Given all four of those costs, is there ever a real system where mapping a file directly is still the right call?" }] },
+      { "item": "The read-mostly exception the paper names is not merely a smaller version of the same risk; a workload that never writes through the mapping has no dirty pages for the kernel to flush unpredictably, which removes the transactional-safety and most of the I/O-stall problem entirely, not just reduces it.", "at": [{ "step": "The paper's own recommendation is exactly that narrow: mapping remains the right call when the working set fits in memory and the workload is read-only — precisely the case LMDB's own design is built around" }] },
+      { "item": "This topic deliberately measures its two central claims (double caching, alignment) directly rather than only quoting the paper's own argument for the other two (transactional safety, TLB shootdown), because the container's own filesystem makes the first two directly observable while the latter two require conditions (a real crash, a multi-threaded shootdown trace) outside what a short, repeatable example can safely demonstrate.", "at": [{ "step": "Double caching, direct I/O's alignment cost, and the paper's own four failure classes are all the same question asked three ways: who decides when a page moves, and does the caller find out if it goes wrong" }] },
+      { "item": "This topic closes Chapter 12 as the chapter plan scoped it: the two preceding syllabus items, address translation and mmap's own soundness argument for unsafe, are deliberately skipped and contribute no prerequisite ids, so this topic's only real dependency is Chapter 11's own file-descriptor and ownership framing, not anything about paging mechanics itself.", "at": [{ "step": "Recap: a real double cache, a real alignment gate, and a real exception finally named" }] }
+    ]
+  },
+  "gapReview": {
+    "date": "2026-10-23",
+    "by": "self-review",
+    "open": []
+  }
+}

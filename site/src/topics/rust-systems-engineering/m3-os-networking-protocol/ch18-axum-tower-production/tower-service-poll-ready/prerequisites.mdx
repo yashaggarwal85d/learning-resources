@@ -1,0 +1,24 @@
+import Resource from '../../../../../components/Resource.astro';
+
+<section class="prereq" data-section="chapter-so-far">
+
+### <span class="n">01</span> Where the last chapter left off
+
+<ul class="resources">
+  <Resource kind="reel" host={props.host} domain="rust-systems-engineering" title="Connection-level backpressure">a server that stops reading genuinely closes its own window and blocks the remote sender; a real timeout fires against a stalled peer.</Resource>
+</ul>
+
+</section>
+
+<section class="prereq" data-section="tower-primary">
+
+### <span class="n">02</span> The real docs: Tower's own Service and middleware
+
+<ul class="resources">
+  <Resource kind="reading" title="Service" href="https://docs.rs/tower/latest/tower/trait.Service.html" by="The Tower Project">poll_ready plus call, and the backpressure contract between them.</Resource>
+  <Resource kind="reading" title="load_shed" href="https://docs.rs/tower/latest/tower/load_shed/index.html" by="The Tower Project">Middleware that sheds load when the inner service isn't ready.</Resource>
+  <Resource kind="reading" title="buffer" href="https://docs.rs/tower/latest/tower/buffer/index.html" by="The Tower Project">Middleware that places a service behind its own buffering channel.</Resource>
+  <Resource kind="reading" title="timeout" href="https://docs.rs/tower/latest/tower/timeout/index.html" by="The Tower Project">Middleware that aborts a response that runs past its own deadline.</Resource>
+</ul>
+
+</section>

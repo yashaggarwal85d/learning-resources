@@ -1,0 +1,4 @@
+- **CancellationToken**: a token used to signal a cancellation request to one or more tasks; cancelling it is a single, deliberate call, not a drop. *Where you meet it:* a worker pool rejecting every submission after the token is cancelled, measured directly.
+- **TaskTracker**: a tracker that waits until every task it's tracking has actually exited. *Where you meet it:* `wait()` genuinely waiting for 8 real jobs to finish, not just for the tracker to be closed.
+- **A real shutdown deadline**: wrapping that same wait in a timeout, so a straggler job doesn't hold the whole shutdown hostage. *Where you meet it:* the wait stopping right at its deadline, straggler left behind.
+- **The assembled sequence**: stop accepting, signal, drain or cancel, close, wait — five stages, each one this chapter already proved on its own.

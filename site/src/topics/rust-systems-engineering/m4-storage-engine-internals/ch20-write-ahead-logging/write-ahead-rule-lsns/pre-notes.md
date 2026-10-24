@@ -1,0 +1,4 @@
+- **Write-ahead rule**: a durable log record must reach disk before the page it describes can be trusted after a crash. *Where you meet it:* the same crash, two orderings, with only one of them recoverable.
+- **LSN (Log Sequence Number)**: a number stamped on both a log record and the page it touches, letting recovery compare them to decide whether a change still needs replaying.
+- **Idempotent redo**: `page.lsn >= record.lsn` means a record already reflected in the page is safely skipped — recovery can run twice without corrupting anything.
+- **Torn page**: a crash mid-write that leaves a page part old, part new. A checksum catches it; a full-page write, logged before the page is touched, fixes it.

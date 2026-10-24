@@ -1,0 +1,64 @@
+{
+  "topic": "rust.connection-level-backpressure",
+  "syllabus": [
+    {
+      "clause": "backpressure is explicit connection state-machine behaviour: pause producers (stop reading, so the TCP window closes and the sender blocks), drop by policy, or close once a limit is reached. Bound the output buffer per connection, set per-connection timeouts, and defend against slow-loris.",
+      "at": [
+        { "step": "Measured: the client wrote several megabytes successfully, then a real write() call genuinely blocked, once the real receive window had filled and closed" },
+        { "step": "Measured: the buffer filled to exactly its cap, and the very next push was genuinely rejected, its length never growing past the cap" },
+        { "step": "Measured: the real read timeout fired right on schedule, closing the connection to a peer that had sent nothing at all" },
+        { "step": "Stop reading to say not yet, cap the buffer to say no more than this, and time out to say not forever: that is backpressure as an explicit connection state machine, not something that just happens on its own" }
+      ]
+    }
+  ],
+  "sources": [
+    {
+      "source": "rfc9293",
+      "items": [
+        {
+          "item": "a TCP implementation MAY keep its offered receive window closed indefinitely, as long as the receiving peer continues to send acknowledgments in response to the probe segments",
+          "at": [{ "step": "The TCP standard's own documentation makes a specific claim about how long an implementation may keep its own receive window closed. What does it actually say?" }]
+        }
+      ]
+    },
+    {
+      "source": "tcp-7",
+      "items": [
+        {
+          "item": "the socket receive buffer space is shared between the application and kernel; TCP maintains part of the buffer as the TCP window, the size of the receive window advertised to the other end",
+          "at": [{ "step": "A real server accepts a connection, then deliberately never reads from it again. Keep writing from the other side. Does the writer eventually notice, or does it just keep succeeding forever?" }]
+        }
+      ]
+    },
+    {
+      "source": "tokio-timeout",
+      "items": [
+        {
+          "item": "requires a Future to complete before the specified duration has elapsed; otherwise an error is returned and the future is canceled",
+          "at": [{ "step": "A real client connects, then deliberately sends nothing at all, a stalled, slow-loris-style peer. The server sets a real read timeout. Does it wait forever, or does the timeout genuinely fire?" }]
+        }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "self-review",
+    "date": "2026-10-24",
+    "items": [
+      { "item": "The window-closing example never calls any application-level policy code to stop reading; the server simply never reads at all, so the blocking the client observes is TCP's own flow control enforced by the kernel, not a simulated or application-level effect.", "at": [{ "step": "A real server accepts a connection, then deliberately never reads from it again. Keep writing from the other side. Does the writer eventually notice, or does it just keep succeeding forever?" }] },
+      { "item": "The example detects blocking by timing each individual write() call and flagging one that takes far longer than the others, rather than asserting a fixed total byte count, since the exact number of bytes the kernel buffers before blocking is a kernel and machine-dependent detail this topic does not claim to pin down.", "at": [{ "step": "Measured: the client wrote several megabytes successfully, then a real write() call genuinely blocked, once the real receive window had filled and closed" }] },
+      { "item": "The bounded-buffer example is a minimal, self-contained data structure, not a full connection handler, because the claim under test (a cap is enforced, not a soft suggestion) is a property of the buffer's own push logic, independent of whatever connection or protocol code would call it in a real server.", "at": [{ "step": "Build a real per-connection output buffer with an explicit cap of sixteen messages. Fill it to exactly the cap, then push one more. What happens to that extra message?" }] },
+      { "item": "The timeout example's own assertion checks that the measured elapsed time falls in a generous window around the configured timeout, rather than an exact value, since real scheduling jitter on a shared CI machine could otherwise make an exact-equality assertion flaky without the claim itself being false.", "at": [{ "step": "Measured: the real read timeout fired right on schedule, closing the connection to a peer that had sent nothing at all" }] },
+      { "item": "The slow-loris defense demonstrated here is a single stalled connection hitting a real timeout, not a full multi-connection resource-exhaustion attack and its mitigation at scale; reproducing an actual exhaustion attack is out of this topic's own scope, which names the defensive pattern, not a benchmark of the attack itself.", "at": [{ "step": "A real client connects, then deliberately sends nothing at all, a stalled, slow-loris-style peer. The server sets a real read timeout. Does it wait forever, or does the timeout genuinely fire?" }] },
+      { "item": "The RFC 9293 quote is chosen specifically because it frames not-reading as a sanctioned, standard-level behavior (MAY keep closed indefinitely), not merely an observed implementation quirk, which is the stronger claim this topic's own lesson step rests on.", "at": [{ "step": "The standard's own words: a TCP implementation may keep its offered receive window closed indefinitely, as long as it keeps answering the sender's own probes, not reading is a real, sanctioned way to say not yet" }] },
+      { "item": "This topic continues directly from topic 43's own framing claim and from Chapter 10's own bounded-channel-backpressure and load-shedding-try-send ids: a per-connection output buffer with a hard cap and a reject-when-full policy is the same shape as those channel-level concepts, now applied at the connection level instead of an in-process channel.", "at": [{ "step": "Build a real per-connection output buffer with an explicit cap of sixteen messages. Fill it to exactly the cap, then push one more. What happens to that extra message?" }] },
+      { "item": "All three of this topic's own claims are measured directly in this container, unlike several earlier topics in this chapter and the previous one, because none of them need root access, a real device, or hardware the sandbox lacks — only a real loopback TCP connection and real wall-clock timing.", "at": [{ "step": "Measured: the real read timeout fired right on schedule, closing the connection to a peer that had sent nothing at all" }] },
+      { "item": "The lesson step's own three-part framing (pause, drop by policy, close) maps directly onto this topic's own three executed examples in order, so the recap can compress all three without re-deriving each one from scratch.", "at": [{ "step": "Stop reading to say not yet, cap the buffer to say no more than this, and time out to say not forever: that is backpressure as an explicit connection state machine, not something that just happens on its own" }] },
+      { "item": "This topic closes Chapter 16 deliberately on the connection's own policy, not on a composed system of many connections, because composing many connections' worth of backpressure behind a single readiness contract is specifically Chapter 18's own scoped subject (Tower's poll_ready), per CHAPTER.md's own planned handoff.", "at": [{ "step": "Recap: a connection that chooses to pause, bound, or stop, on purpose" }] }
+    ]
+  },
+  "gapReview": {
+    "date": "2026-10-24",
+    "by": "self-review",
+    "open": []
+  }
+}

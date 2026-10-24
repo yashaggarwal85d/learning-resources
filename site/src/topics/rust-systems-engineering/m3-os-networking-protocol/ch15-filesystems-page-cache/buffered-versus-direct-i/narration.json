@@ -1,0 +1,88 @@
+{
+  "steps": [
+    {
+      "lines": [
+        "A file's pages have genuinely been dropped from the page cache entirely.",
+        { "beat": 0.3 },
+        "Call the real readahead syscall on it. Does that alone bring the pages back in, or does a real read still have to happen first?"
+      ],
+      "answer": [
+        "Readahead alone genuinely brings every page back in.",
+        "No read call happens at all — the syscall itself is enough."
+      ]
+    },
+    {
+      "lines": [
+        "Run it for real: before readahead, not one of those pages was resident.",
+        "And immediately after that one call, every single one of them genuinely was."
+      ]
+    },
+    {
+      "lines": [
+        "Those exact same, freshly cached pages: call a real hint to discard them.",
+        { "beat": 0.3 },
+        "Does that hint alone genuinely evict them, or is it merely advisory and simply ignored?"
+      ],
+      "answer": [
+        "It genuinely evicts every single one of those pages.",
+        "A documented hint, once it's actually called, has a completely real effect."
+      ]
+    },
+    {
+      "lines": [
+        "Run it for real: every one of those pages was resident right after readahead.",
+        "And not a single one of them was resident right after that real discard call."
+      ],
+      "takeaway": "A hint documented as non-binding can still have a completely real, measured effect once called."
+    },
+    {
+      "lines": [
+        "Read the same amount of data two genuinely different ways: once through a normal buffered read, once bypassing the cache entirely.",
+        { "beat": 0.3 },
+        "Does the bypassing read end up resident in the page cache too, or does it not?"
+      ],
+      "answer": [
+        "Only the normal, buffered read ends up resident.",
+        "The bypassing read never touches that cache at all."
+      ]
+    },
+    {
+      "lines": [
+        "Run it for real: the buffered read left every single page resident in the cache.",
+        "And the exact same read, bypassing the cache instead, left absolutely none resident."
+      ],
+      "takeaway": "Bypassing the cache isn't a faster buffered read — it's a read the cache never sees happen."
+    },
+    {
+      "lines": [
+        "If that discard hint can't evict a file's pages right after it's written,",
+        { "beat": 0.3 },
+        "what's actually stopping it?"
+      ],
+      "answer": [
+        "Those pages are still dirty, and the hint only discards clean ones.",
+        "A page that hasn't been written back yet simply isn't eligible to be dropped."
+      ]
+    },
+    {
+      "lines": [
+        "The documentation is explicit: an unwritten, dirty page is never freed by that hint at all.",
+        "Flushing it to disk first is the only way to give the hint something clean to actually discard."
+      ]
+    },
+    {
+      "lines": [
+        "So, pulling this together: bringing pages in early, pushing them back out, and never letting them in — these are really the same cache, pulled three different directions.",
+        "Who decides whether a given page is sitting in it right now."
+      ],
+      "takeaway": "The page cache has exactly one knob, pulled three ways: whether a page is in it."
+    },
+    {
+      "lines": [
+        "So, pulling this topic together: one real syscall, called on its own, can refill a dropped file's residency before anyone reads a byte.",
+        "A second one empties those same pages back out, the instant they stop being dirty.",
+        "And a third path simply refuses to let the cache see a read go by in the first place."
+      ]
+    }
+  ]
+}

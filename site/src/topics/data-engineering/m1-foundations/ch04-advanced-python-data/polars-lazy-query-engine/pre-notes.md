@@ -1,0 +1,5 @@
+- **DataFrame vs. query**: a DataFrame holds real, already-loaded rows; a query describes work to be done, which may not have run yet. *Where you meet it:* the eager-vs-lazy reveal's core distinction.
+- **Query plan**: the ordered set of steps a query engine will run to answer a query. *Where you meet it:* the pushdown and common-subexpression reveals, both read directly from a real printed plan.
+- **Query optimizer**: the part of a query engine that rewrites a plan into an equivalent, faster one before running it (the same idea Chapter 2's SQL optimizer topics covered). *Where you meet it:* every pushdown/elimination reveal in this topic.
+- **Row order**: which physical position each row lands in within a result, independent of its values. *Where you meet it:* the predict and its reveal, the center of this topic's biggest behavioral break.
+- **Peak memory (RSS)**: the highest amount of real memory a running process actually held at once. *Where you meet it:* the streaming-vs-eager measurement.

@@ -1,0 +1,257 @@
+{
+  "topic": "de.testing-data-code",
+  "syllabus": [
+    {
+      "clause": "unit tests on minimal fixtures",
+      "at": [
+        {
+          "step": "Reveal: a unit test on a minimal fixture"
+        }
+      ]
+    },
+    {
+      "clause": "property-based tests for invariants (Hypothesis)",
+      "at": [
+        {
+          "step": "Reveal: a property test runs the same check on a hundred generated inputs"
+        },
+        {
+          "step": "Predict: does a hand-picked example catch what a generated one does?"
+        }
+      ]
+    },
+    {
+      "clause": "producer/consumer contract tests",
+      "at": [
+        {
+          "step": "Reveal: a contract test runs against a real mock provider"
+        }
+      ]
+    },
+    {
+      "clause": "integration tests against real ephemeral dependencies (Testcontainers)",
+      "at": [
+        {
+          "step": "Reveal: an integration test against a real dependency"
+        }
+      ]
+    },
+    {
+      "clause": "golden-output tests (pipeline CI → §11.4)",
+      "at": [
+        {
+          "step": "Reveal: a golden-output test records once, then diffs forever"
+        }
+      ]
+    }
+  ],
+  "sources": [
+    {
+      "source": "Quickstart (Hypothesis)",
+      "items": [
+        {
+          "item": "@given takes a strategy describing the input domain, and the decorated function still runs normally under pytest or unittest",
+          "at": [
+            {
+              "step": "Reveal: a property test runs the same check on a hundred generated inputs"
+            }
+          ]
+        },
+        {
+          "item": "Hypothesis generates 100 random inputs by default, controlled by max_examples",
+          "at": [
+            {
+              "step": "Reveal: a property test runs the same check on a hundred generated inputs"
+            }
+          ]
+        },
+        {
+          "item": ".filter() and assume() narrow generated cases; @composite builds dependent generation from draw",
+          "at": [
+            {
+              "out": "below the depth this topic's scope needs; the property-test reveal uses a single list strategy, not filtering or dependent generation"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "testcontainers-python",
+      "items": [
+        {
+          "item": "with PostgresContainer(...) as postgres: spins up a real, disposable database container for a test's duration",
+          "at": [
+            {
+              "step": "Reveal: an integration test against a real dependency"
+            }
+          ]
+        },
+        {
+          "item": "running Testcontainers from inside a container requires a docker client plus access to the daemon",
+          "at": [
+            {
+              "deep": "Outcomes"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "How Pact works",
+      "items": [
+        {
+          "item": "a pact is a collection of interactions; each HTTP interaction is an expected request plus a minimal expected response",
+          "at": [
+            {
+              "step": "Reveal: a contract test runs against a real mock provider"
+            }
+          ]
+        },
+        {
+          "item": "consumer testing drives a real request from the consumer's own code against a mock provider built from the interaction",
+          "at": [
+            {
+              "step": "Reveal: a contract test runs against a real mock provider"
+            }
+          ]
+        },
+        {
+          "item": "pairing consumer test and provider verification fully tests the contract without spinning up both services together",
+          "at": [
+            {
+              "step": "Reveal: a contract test runs against a real mock provider"
+            }
+          ]
+        },
+        {
+          "item": "provider verification replays each interaction against the real provider and compares the actual response",
+          "at": [
+            {
+              "out": "not run here; this topic's demo covers the consumer side only, which is the half the syllabus clause names first"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "Testing legacy code with Golden Master",
+      "items": [
+        {
+          "item": "generate a fixed set of random inputs using a fixed seed so the same set reproduces every run",
+          "at": [
+            {
+              "step": "Reveal: a golden-output test records once, then diffs forever"
+            }
+          ]
+        },
+        {
+          "item": "record the output the first run, then diff every later run against that recorded output",
+          "at": [
+            {
+              "step": "Reveal: a golden-output test records once, then diffs forever"
+            }
+          ]
+        },
+        {
+          "item": "Approval Tests automates the record/diff file handling rather than doing it by hand",
+          "at": [
+            {
+              "deep": "Outcomes"
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "Claude (single session)",
+    "date": "2026-10-24",
+    "items": [
+      {
+        "item": "A unit test earns its keep on the smallest input that still exercises the function, not the biggest dataset available.",
+        "at": [
+          {
+            "step": "Reveal: a unit test on a minimal fixture"
+          }
+        ]
+      },
+      {
+        "item": "A property test doesn't pick one input \u2014 it generates a hundred and checks the same invariant against all of them, surfacing a sequence a handwritten example wouldn't have thought to try.",
+        "at": [
+          {
+            "step": "Reveal: a property test runs the same check on a hundred generated inputs"
+          }
+        ]
+      },
+      {
+        "item": "A hand-picked example only ever exercises the specific case someone thought to type; a generated test searches a much larger space of the same invariant.",
+        "at": [
+          {
+            "step": "Predict: does a hand-picked example catch what a generated one does?"
+          }
+        ]
+      },
+      {
+        "item": "A contract test's mock provider is built from the exact interaction definition, so the consumer's real client code is exercised against it \u2014 not a hand-rolled stub the test also controls the shape of.",
+        "at": [
+          {
+            "step": "Reveal: a contract test runs against a real mock provider"
+          }
+        ]
+      },
+      {
+        "item": "An integration test's whole point is a dependency that can actually disagree the way an in-memory stub never will; Testcontainers' job is making that dependency disposable, not making it fake.",
+        "at": [
+          {
+            "step": "Reveal: an integration test against a real dependency"
+          }
+        ]
+      },
+      {
+        "item": "A golden-output test doesn't re-derive the right answer each run \u2014 it diffs against the answer it already recorded, so a second run against the same recorded file either matches exactly or visibly diverges.",
+        "at": [
+          {
+            "step": "Reveal: a golden-output test records once, then diffs forever"
+          }
+        ]
+      },
+      {
+        "item": "No single test layer proves a client correct on its own \u2014 each layer answers a question none of the other four ask.",
+        "at": [
+          {
+            "step": "Reveal: the five layers, run together"
+          }
+        ]
+      },
+      {
+        "item": "A property test's generated inputs are drawn from a strategy that describes the input domain, not hand-picked by whoever wrote the test, which is exactly why it can find a sequence nobody thought to write.",
+        "at": [
+          {
+            "step": "Reveal: a property test runs the same check on a hundred generated inputs"
+          }
+        ]
+      },
+      {
+        "item": "This sandbox's own PostgreSQL cluster, already running, stands in for the real-dependency claim Testcontainers exists to make disposable, once Testcontainers' own container-orchestration mechanism is confirmed unavailable (no Docker daemon) rather than faked.",
+        "at": [
+          {
+            "deep": "Outcomes"
+          }
+        ]
+      },
+      {
+        "item": "A team shipping only hand-picked unit tests on a retry client can pass every test it has and still ship a dedup bug a property test would have found on its first generated run.",
+        "at": [
+          {
+            "deep": "Production failures this topic warns about"
+          }
+        ]
+      }
+    ]
+  },
+  "gapReview": {
+    "date": "2026-10-24",
+    "by": "Claude (single session)",
+    "open": []
+  }
+}

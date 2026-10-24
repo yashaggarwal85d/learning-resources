@@ -1,0 +1,81 @@
+{
+  "topic": "de.pages-slotted-pages-tuple",
+  "steps": [
+    {
+      "lines": [
+        "Every tool this course has reached for so far has called a real database engine without once asking what that engine actually keeps its data in.",
+        "Underneath every one of them sits the exact same physical unit. This topic is finally opening it."
+      ]
+    },
+    {
+      "lines": [
+        "Here's one, read directly off a live table rather than drawn from memory.",
+        "A fixed header comes first, tracking where the free space in the middle begins and ends.",
+        "Two regions grow toward each other from opposite sides of that free space until they meet, and that meeting point is literally how full the page is."
+      ]
+    },
+    {
+      "lines": [
+        "One of those two growing regions is worth opening further.",
+        "Each entry in it is tiny on purpose: just a starting point and a length, nothing else, one entry per row stored on the page."
+      ]
+    },
+    {
+      "lines": [
+        "Worth reasoning through before the reveal settles it.",
+        "Reclaiming space left behind by a deleted row sometimes means physically sliding a surviving row to a different spot on the page.",
+        "When that happens, does the handle everything else uses to find that row change along with it?"
+      ],
+      "answer": [
+        "It doesn't, and the reason is exactly where that handle actually points.",
+        "That handle isn't the row's address. It's a small, fixed slot number that stays put, and the slot itself simply gets told where the row moved to. Nothing holding onto that slot number ever has to notice the row moved at all."
+      ]
+    },
+    {
+      "lines": [
+        "Here's that claim shown directly, not just argued for.",
+        "A real row, its deleted neighbors reclaimed by a real cleanup pass against this sandbox's own database.",
+        "Its stored position on the page genuinely changes. The handle used to find it, checked before and after, does not."
+      ]
+    },
+    {
+      "lines": [
+        "A different piece of that same header is worth checking the same way.",
+        "One row inserted with every column filled in, and a second with one column deliberately left empty.",
+        "Only the second one carries any marker at all for which columns are empty, and read directly, that marker names the exact column that's missing."
+      ]
+    },
+    {
+      "lines": [
+        "Now a genuinely large value, inserted for real rather than assumed to behave a certain way.",
+        "A page can't grow to fit it, so something has to give. What's actually left sitting in the main table once that value is too big to stay put?",
+        "Measured directly, what's left behind is a tiny marker, with the real value chopped into pieces and stored somewhere else entirely."
+      ]
+    },
+    {
+      "lines": [
+        "A different engine runs into the identical problem: a fixed page, and a value too big for it.",
+        "Named here directly from its own documentation rather than run in this sandbox, that engine reaches for a genuinely different fix: space set aside elsewhere for exactly this case, attached to the same row rather than filed away in a separate table."
+      ]
+    },
+    {
+      "lines": [
+        "Pulling the whole topic back together.",
+        "A page's own five regions, read directly rather than assumed. A tiny per-row entry that's just a position and a length.",
+        "A real cleanup pass that moves a row's stored position while the handle used to find it stays exactly the same. A real missing-column marker that only exists when a column is actually missing.",
+        "A genuinely large value chopped into real pieces elsewhere, leaving only a small marker behind. And a different engine solving the identical oversized-value problem a different way."
+      ]
+    },
+    {
+      "lines": [
+        "One closing scenario, worth reasoning through before the explanation lands.",
+        "A maintenance script holds onto one row's handle while a batch of unrelated updates runs elsewhere in the same table, and somewhere in the middle of that batch a cleanup pass runs too.",
+        "When the batch finishes, does the script's own held handle still point at the right row, and why?"
+      ],
+      "answer": [
+        "It still points at the right row, for exactly the reason this topic already measured directly.",
+        "A cleanup pass only ever updates where a slot's own stored position points within the page. It never changes which slot a given row occupies, and the script's handle names that slot, not a position. That's the identical stability this topic's own real measurement already proved."
+      ]
+    }
+  ]
+}

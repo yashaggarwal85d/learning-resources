@@ -1,0 +1,151 @@
+{
+  "topic": "de.native-extensions-rust-pyo3",
+  "syllabus": [
+    {
+      "clause": "why the Python data stack is Rust/C++ underneath (Polars, pydantic-core, orjson, DataFusion bindings)",
+      "at": [{ "step": "Reveal: the libraries this chapter leaned on, named directly" }]
+    },
+    {
+      "clause": "building extensions with PyO3 + maturin",
+      "at": [{ "step": "Reveal: a real PyO3 extension, built and imported" }]
+    },
+    {
+      "clause": "releasing the GIL and supporting free-threaded builds",
+      "at": [
+        { "step": "Reveal: the GIL released, measured directly" },
+        { "step": "Reveal: what this sandbox's own interpreter actually is, checked rather than assumed" }
+      ]
+    },
+    {
+      "clause": "abi3 and multi-platform wheels (→ Rust Systems Engineering M6)",
+      "at": [{ "step": "Reveal: one feature flag, two real wheels" }]
+    }
+  ],
+  "sources": [
+    {
+      "source": "Data Validation with Polars (pandera)",
+      "items": [
+        {
+          "item": "Polars' own core is written in Rust, with Python as one of its SDKs",
+          "at": [{ "step": "Reveal: the libraries this chapter leaned on, named directly" }]
+        }
+      ]
+    },
+    {
+      "source": "Pydantic Validation",
+      "items": [
+        {
+          "item": "Pydantic's core validation logic is written in Rust, the stated reason for its speed",
+          "at": [{ "step": "Reveal: the libraries this chapter leaned on, named directly" }]
+        }
+      ]
+    },
+    {
+      "source": "orjson README",
+      "items": [
+        {
+          "item": "orjson requires Rust and the maturin build tool to package",
+          "at": [{ "step": "Reveal: the libraries this chapter leaned on, named directly" }]
+        },
+        {
+          "item": "it distributes real wheels across multiple CPU architectures and three operating systems",
+          "at": [{ "deep": "Outcomes" }]
+        }
+      ]
+    },
+    {
+      "source": "Parallelism (PyO3 user guide)",
+      "items": [
+        {
+          "item": "the GIL prevents several Python threads from executing Python bytecode in parallel",
+          "at": [{ "step": "Predict: does releasing the GIL inside a Rust extension actually let Python keep working?" }]
+        },
+        {
+          "item": "Python::allow_threads is PyO3's own mechanism to release the GIL for real parallel work",
+          "at": [{ "step": "Reveal: the GIL released, measured directly" }]
+        }
+      ]
+    },
+    {
+      "source": "Building and distribution (PyO3 user guide)",
+      "items": [
+        {
+          "item": "the abi3 limited API lets one wheel work across multiple Python versions, at the cost of some version-specific optimizations",
+          "at": [{ "step": "Reveal: one feature flag, two real wheels" }]
+        },
+        {
+          "item": "an abi3-pyXY feature flag sets the minimum Python version; maturin names the wheel cp3X-abi3-...",
+          "at": [{ "step": "Reveal: one feature flag, two real wheels" }]
+        }
+      ]
+    },
+    {
+      "source": "Python support for free threading",
+      "items": [
+        {
+          "item": "free-threaded CPython is an optional build starting in Python 3.13",
+          "at": [{ "step": "Reveal: what this sandbox's own interpreter actually is, checked rather than assumed" }]
+        },
+        {
+          "item": "sys._is_gil_enabled() and Py_GIL_DISABLED are the real ways to check whether a build is free-threaded",
+          "at": [{ "step": "Reveal: what this sandbox's own interpreter actually is, checked rather than assumed" }]
+        },
+        {
+          "item": "a C-extension not marked as free-threading-safe can cause the GIL to be re-enabled even on a free-threaded build",
+          "at": [{ "deep": "Outcomes" }]
+        }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "Claude (single session)",
+    "date": "2026-10-24",
+    "items": [
+      {
+        "item": "Two libraries this chapter already used for speed (Polars, Pydantic) both name Rust directly as their own core in their own documentation, not inferred from outside claims.",
+        "at": [{ "step": "Reveal: the libraries this chapter leaned on, named directly" }]
+      },
+      {
+        "item": "A PyO3 extension is a real build artifact a plain import loads and calls, confirmed by a real maturin build whose result matches an independently computed value.",
+        "at": [{ "step": "Reveal: a real PyO3 extension, built and imported" }]
+      },
+      {
+        "item": "The identical transformation measured three ways (pure Python, a PyO3 extension, Polars) with the same asserted-equal result rules out a faster path getting there by computing something slightly different.",
+        "at": [{ "step": "Reveal: the same computation, three ways, measured" }]
+      },
+      {
+        "item": "Releasing the GIL from a Rust extension is not a documented formality — a separate Python thread's own measured progress during that window is the direct evidence.",
+        "at": [{ "step": "Reveal: the GIL released, measured directly" }]
+      },
+      {
+        "item": "A single feature flag changes which Python C API an extension links against, producing a genuinely different, differently named wheel file rather than just a label applied afterward.",
+        "at": [{ "step": "Reveal: one feature flag, two real wheels" }]
+      },
+      {
+        "item": "Whether an interpreter is free-threading-capable is a checkable build configuration, not something to infer from a Python version number alone.",
+        "at": [{ "step": "Reveal: what this sandbox's own interpreter actually is, checked rather than assumed" }]
+      },
+      {
+        "item": "A sandbox that can confirm its own interpreter isn't free-threaded can still disclose the free-threading mechanism itself honestly, sourced rather than independently re-measured on a build that doesn't exist here.",
+        "at": [{ "deep": "Outcomes" }]
+      },
+      {
+        "item": "Choosing a per-version wheel upfront, rather than an abi3 one, multiplies a team's own build matrix every time a new Python version ships — the real cost the \"Prove it\" scenario's team pays.",
+        "at": [{ "deep": "Production failures this topic warns about" }]
+      },
+      {
+        "item": "Every production habit this chapter built — pooling, resilience, testing, validation — assumed Python was the language actually doing the work; this topic is the honest accounting of how much of that work was already Rust.",
+        "at": [{ "deep": "Outcomes" }]
+      },
+      {
+        "item": "The next chapter opens the database engine itself, starting from the single fixed-size page every engine this chapter relied on already reads and writes underneath.",
+        "at": [{ "deep": "Where this goes next" }]
+      }
+    ]
+  },
+  "gapReview": {
+    "date": "2026-10-24",
+    "by": "Claude (single session)",
+    "open": []
+  }
+}

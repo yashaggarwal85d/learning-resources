@@ -1,0 +1,89 @@
+{
+  "steps": [
+    {
+      "lines": [
+        "Five transactions all become ready to commit within a short window.",
+        "Commit each one separately, with no grouping at all.",
+        { "beat": 0.3 },
+        "How many WAL flushes does that cost?"
+      ],
+      "answer": [
+        "Five, genuinely.",
+        "No grouping means no sharing of the flush at all."
+      ]
+    },
+    {
+      "lines": [
+        "Run it for real: committing without any grouping genuinely cost one flush per transaction, five separate flushes for five transactions ready within the same short window."
+      ],
+      "takeaway": "Without grouping, every transaction pays for its own flush, even when several become ready at almost the same moment."
+    },
+    {
+      "lines": [
+        "Now let the same five transactions commit as one group instead.",
+        "The earliest-ready one becomes the leader, waits briefly, and a single flush covers everyone ready by then.",
+        { "beat": 0.3 },
+        "How many flushes does that cost?"
+      ],
+      "answer": [
+        "Exactly one.",
+        "The whole batch shares that single flush."
+      ]
+    },
+    {
+      "lines": [
+        "Run it for real: group commit genuinely used exactly one flush for the whole batch of five."
+      ],
+      "takeaway": "Group commit trades a short wait for one flush instead of one per transaction."
+    },
+    {
+      "lines": [
+        "Every transaction in that batch did identical, instant work.",
+        { "beat": 0.3 },
+        "Does each one's own commit latency, the time from ready to acknowledged, end up identical too, or does it differ?"
+      ],
+      "answer": [
+        "It genuinely differs.",
+        "The earliest-ready one waits the longest for the shared flush."
+      ]
+    },
+    {
+      "lines": [
+        "Run it for real: commit latency genuinely varied across the batch, even though every transaction's own execution time was identical.",
+        "The earliest-ready one waited the longest of all."
+      ],
+      "takeaway": "Commit latency isn't execution time: inside one batch, it's entirely about how long the shared flush made you wait."
+    },
+    {
+      "lines": [
+        "One transaction commits asynchronously: it's told it's done the instant it's ready, before its own flush even happens.",
+        { "beat": 0.3 },
+        "Crash in the gap between that acknowledgment and the real flush. Does its update survive?"
+      ],
+      "answer": [
+        "No, genuinely.",
+        "The client was told something that wasn't true yet."
+      ]
+    },
+    {
+      "lines": [
+        "Run it for real: the crash inside that gap genuinely revealed a false promise for the asynchronous commit.",
+        "The identical crash against a synchronous commit never did."
+      ],
+      "takeaway": "Asynchronous commit's own risk window is real: a crash inside it can reveal a promise that wasn't true yet."
+    },
+    {
+      "lines": [
+        "One real system's own documentation names exactly this trade-off directly: that faster, asynchronous mode risks losing the most recent transactions, but it never risks corruption.",
+        "Everything recovered is still self-consistent, just possibly missing whatever hadn't reached disk yet."
+      ]
+    },
+    {
+      "lines": [
+        "So, pulling this topic together: a flush is the expensive part, and sharing one flush across a whole batch is cheaper than paying for it separately, every single time.",
+        "Inside that shared batch, how long any one caller waits has nothing to do with its own work; it's set entirely by whoever filled the batch last.",
+        "And telling a caller it's done before that shared work actually finishes isn't free: it's a real promise, made early, that a crash in just the wrong moment can expose as not yet true."
+      ]
+    }
+  ]
+}

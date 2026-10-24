@@ -1,0 +1,24 @@
+import Resource from '../../../../../components/Resource.astro';
+
+<section class="prereq" data-section="chapter-so-far">
+
+### <span class="n">01</span> Where the last topic left off
+
+<ul class="resources">
+  <Resource kind="reel" host={props.host} domain="rust-systems-engineering" title="Processes, signals, and environment safety">A process's file descriptors and its signals are both kernel handles — its memory is one too, just more heavily abstracted.</Resource>
+</ul>
+
+</section>
+
+<section class="prereq" data-section="mmap-primary">
+
+### <span class="n">02</span> The real docs: mmap, direct I/O, and the paper's own argument
+
+<ul class="resources">
+  <Resource kind="reading" title="Are You Sure You Want to Use MMAP in Your Database Management System?" href="https://www.cidrdb.org/cidr2022/papers/p13-crotty.pdf" by="Crotty, Leis & Pavlo (CIDR 2022)">The paper's own four-failure-class argument, and when mmap is still fine.</Resource>
+  <Resource kind="reading" title="mmap(2)" href="https://man7.org/linux/man-pages/man2/mmap.2.html" by="The Linux man-pages Project">The kernel's own description of shared file-backed mappings.</Resource>
+  <Resource kind="reading" title="open(2)" href="https://man7.org/linux/man-pages/man2/open.2.html" by="The Linux man-pages Project">O_DIRECT's own documented alignment and completion requirements.</Resource>
+  <Resource kind="reading" title="memmap2::Mmap" href="https://docs.rs/memmap2/latest/memmap2/struct.Mmap.html" by="The memmap2 crate">Mmap::map's own documented safety contract.</Resource>
+</ul>
+
+</section>

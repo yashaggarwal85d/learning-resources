@@ -1,0 +1,6 @@
+- **Analysis pass**: scans the log to find which transactions committed and which didn't, and where each unfinished one's own undo needs to resume from.
+- **Redo pass**: reapplies every update whose durability point was reached but whose page didn't yet reflect it — for *every* transaction, committed or not. *Where you meet it:* redo touching an uncommitted transaction's own updates too, before undo ever runs.
+- **Undo pass**: rolls back every change a never-committed transaction made, writing a compensation log record (CLR) for each one.
+- **Compensation log record (CLR)**: a log record written while undoing, so that undo's own work survives a second crash without being redone or skipped.
+- **Fuzzy checkpoint**: a checkpoint taken without stopping the system, bounding how far back redo ever needs to scan.
+- **Steal / no-force**: the high-performance buffer policy ARIES assumes — an uncommitted page may be written back early, a committed one may stay unwritten for a while — safe because redo and undo together can always fix up either case.

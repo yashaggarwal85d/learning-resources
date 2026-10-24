@@ -1,0 +1,24 @@
+import Resource from '../../../../../components/Resource.astro';
+
+<section class="prereq" data-section="chapter-so-far">
+
+### <span class="n">01</span> Where the last topic left off
+
+<ul class="resources">
+  <Resource kind="reel" host={props.host} domain="rust-systems-engineering" title="Buffered versus direct I/O">readahead pulls pages in, DONTNEED pushes them out, and O_DIRECT never lets them in — none of it says a byte is durable.</Resource>
+</ul>
+
+</section>
+
+<section class="prereq" data-section="fsync-primary">
+
+### <span class="n">02</span> The real docs: fsync, sync_all/sync_data, and fsyncgate
+
+<ul class="resources">
+  <Resource kind="reading" title="fsync(2)" href="https://man7.org/linux/man-pages/man2/fsync.2.html" by="The Linux man-pages Project">The kernel's own durability guarantee, and what it doesn't cover.</Resource>
+  <Resource kind="reading" title="std::fs::File" href="https://doc.rust-lang.org/std/fs/struct.File.html" by="The Rust Project">sync_all and sync_data's own documented difference.</Resource>
+  <Resource kind="reading" title="Can Applications Recover from fsync Failures?" href="https://www.usenix.org/system/files/atc20-rebello.pdf" by="Rebello et al. (USENIX ATC 2020)">The real finding behind PostgreSQL's own fsyncgate incident.</Resource>
+  <Resource kind="reading" title="pwritev2(2)" href="https://man7.org/linux/man-pages/man2/pwritev2.2.html" by="The Linux man-pages Project">RWF_ATOMIC's own documented torn-write protection.</Resource>
+</ul>
+
+</section>

@@ -1,0 +1,99 @@
+{
+  "topic": "rust.processes-signals-environment-safety",
+  "syllabus": [
+    {
+      "clause": "std::process::Command, and why after fork in a multithreaded process only async-signal-safe operations are allowed. Signal handling in async code (tokio::signal, signal-hook), and pidfds for race-free process management. std::env::set_var is unsafe in Rust 2024 because of races with C getenv.",
+      "at": [
+        { "step": "Measured: the spawned child had its own, genuinely different process id, and its real exit code — 7 — was observed exactly" },
+        { "step": "Measured: the parent genuinely had several real threads running, and the forked child had exactly one — which is exactly why only async-signal-safe operations are allowed there before exec" },
+        { "step": "Measured: sending through the pidfd succeeded while the real process was alive, and failed outright with ESRCH the instant it was genuinely gone — never silently reaching some other process that reused its old pid" },
+        { "step": "std::env::set_var's own safety section is explicit: this function is sound in a single-threaded program, and in any program on Windows — but in a multithreaded program on other platforms, the only sound choice is not to call it at all" }
+      ]
+    }
+  ],
+  "sources": [
+    {
+      "source": "command",
+      "items": [
+        {
+          "item": "std::process::Command is a process builder, providing fine-grained control over how a new process should be spawned",
+          "at": [{ "step": "Spawn a real child process with Command. Does it get its own, separate process id, or does it somehow share the parent's?" }]
+        }
+      ]
+    },
+    {
+      "source": "fork-2",
+      "items": [
+        {
+          "item": "the child process created by fork() is created with a single thread — the one that called fork()",
+          "at": [{ "step": "A multithreaded process calls fork(). How many threads does the resulting child actually have?" }]
+        },
+        {
+          "item": "after a fork() in a multithreaded program, the child can safely call only async-signal-safe functions until it calls execve()",
+          "at": [{ "step": "Measured: the parent genuinely had several real threads running, and the forked child had exactly one — which is exactly why only async-signal-safe operations are allowed there before exec" }]
+        }
+      ]
+    },
+    {
+      "source": "signal-safety-7",
+      "items": [
+        {
+          "item": "an async-signal-safe function is one that can be safely called from within a signal handler",
+          "at": [{ "step": "Measured: the parent genuinely had several real threads running, and the forked child had exactly one — which is exactly why only async-signal-safe operations are allowed there before exec" }]
+        }
+      ]
+    },
+    {
+      "source": "pidfd-open-2",
+      "items": [
+        {
+          "item": "pidfd_open() creates a file descriptor that refers to the task referenced by a given pid",
+          "at": [{ "step": "Send a signal through a pidfd to a process that has already exited and been reaped. Does it silently succeed, silently fail, or fail with a specific, clear error?" }]
+        }
+      ]
+    },
+    {
+      "source": "pidfd-send-signal-2",
+      "items": [
+        {
+          "item": "pidfd_send_signal() avoids the race where a traditional pid-based signal could reach the wrong process if the original pid was recycled; a pidfd is a stable reference to one specific process and fails with ESRCH once that process has terminated",
+          "at": [{ "step": "Measured: sending through the pidfd succeeded while the real process was alive, and failed outright with ESRCH the instant it was genuinely gone — never silently reaching some other process that reused its old pid" }]
+        }
+      ]
+    },
+    {
+      "source": "set-var",
+      "items": [
+        {
+          "item": "std::env::set_var is sound to call in a single-threaded program, and always sound on Windows",
+          "at": [{ "step": "Why did Rust 2024 make std::env::set_var unsafe, when it was perfectly safe to call for years before?" }]
+        },
+        {
+          "item": "in multi-threaded programs on other operating systems, the only sound option is to not use set_var or remove_var at all, because no thread-safe way exists to read the environment and most C libraries don't advertise which functions read from it",
+          "at": [{ "step": "std::env::set_var's own safety section is explicit: this function is sound in a single-threaded program, and in any program on Windows — but in a multithreaded program on other platforms, the only sound choice is not to call it at all" }]
+        }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "self-review",
+    "date": "2026-10-23",
+    "items": [
+      { "item": "The example deliberately measures a real spawned child's pid and exit code rather than merely asserting Command's documented behavior, because the syllabus clause's actual point is that a real, separate kernel process results — a claim worth measuring, not just quoting.", "at": [{ "step": "Spawn a real child process with Command. Does it get its own, separate process id, or does it somehow share the parent's?" }] },
+      { "item": "The thread-count measurement deliberately reads /proc from the parent about the child's real pid, never from inside the forked child itself, precisely because doing anything beyond the async-signal-safe set inside that window is exactly the hazard this topic is teaching, not something to risk for a cleaner measurement.", "at": [{ "step": "A multithreaded process calls fork(). How many threads does the resulting child actually have?" }] },
+      { "item": "The single-thread guarantee is not merely a fact about fork's implementation; it is the entire reason the async-signal-safe restriction exists at all — a lock another thread held at fork time belongs to a thread that, in the child, has no way to ever release it, because it was never duplicated.", "at": [{ "step": "Measured: the parent genuinely had several real threads running, and the forked child had exactly one — which is exactly why only async-signal-safe operations are allowed there before exec" }] },
+      { "item": "The pidfd measurement specifically waits on and reaps the child before testing the post-exit case, because pidfd_send_signal's own documented ESRCH condition is defined as the process having both terminated and been waited on — testing against an unreaped zombie would not exercise the same guarantee.", "at": [{ "step": "Send a signal through a pidfd to a process that has already exited and been reaped. Does it silently succeed, silently fail, or fail with a specific, clear error?" }] },
+      { "item": "The race pidfd_send_signal avoids is not hypothetical or rare under load: PID numbers are reused as soon as the kernel's pid counter wraps back around a value that has exited, which happens constantly on a busy, long-running system that spawns and reaps many short-lived processes.", "at": [{ "step": "Measured: sending through the pidfd succeeded while the real process was alive, and failed outright with ESRCH the instant it was genuinely gone — never silently reaching some other process that reused its old pid" }] },
+      { "item": "set_var's own race is specifically with reads of the environment that go through C's getenv, not with Rust's own std::env::var, because std::env::var itself takes an internal lock that set_var also takes — the actually dangerous case is exactly the C library call that std cannot see or coordinate with.", "at": [{ "step": "Why did Rust 2024 make std::env::set_var unsafe, when it was perfectly safe to call for years before?" }] },
+      { "item": "The asymmetry between Windows and other platforms in set_var's own safety section is not an afterthought; Windows actually provides a thread-safe way to access the per-process environment block, while POSIX genuinely does not, which is why the same function is unconditionally sound on one platform and conditionally unsound on the other.", "at": [{ "step": "std::env::set_var's own safety section is explicit: this function is sound in a single-threaded program, and in any program on Windows — but in a multithreaded program on other platforms, the only sound choice is not to call it at all" }] },
+      { "item": "All three of this topic's measured behaviors are instances of exactly one idea: correctness requires knowing precisely what else in the system might touch the same resource at the same moment — a lock across fork, a pid number across process lifetimes, an environment variable across threads — and each mechanism this topic covers exists to make that moment explicit rather than assumed.", "at": [{ "step": "Every one of these rules is the same rule, said three different ways: a forked child, a pidfd, and the environment are all shared state that something else in the process can be touching at the exact same moment" }] },
+      { "item": "This topic completes Chapter 11's own stated scope deliberately leaving tokio::signal and signal-hook's async-specific integration out of its own executed examples, since that material is where Chapter 9's io-driver-readiness topic already placed tokio's own signal-delivery mechanism; this topic's job is the process, pidfd, and environment claims specifically.", "at": [{ "step": "Recap: a real pid, a real one-thread child, and a real race finally named" }] },
+      { "item": "This topic, together with topic 36, fully discharges the gap Chapter 10's own handoff named: every kernel handle a task implicitly held across that chapter's shutdown sequences — file descriptors, process identity, signal delivery — now has a measured, documented ownership and safety story at the Rust level, closing Chapter 11 and the milestone's first topic pair.", "at": [{ "step": "Spawn a real child process with Command. Does it get its own, separate process id, or does it somehow share the parent's?" }] }
+    ]
+  },
+  "gapReview": {
+    "date": "2026-10-23",
+    "by": "self-review",
+    "open": []
+  }
+}

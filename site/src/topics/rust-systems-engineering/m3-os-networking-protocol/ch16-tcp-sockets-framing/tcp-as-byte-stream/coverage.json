@@ -1,0 +1,183 @@
+{
+  "topic": "rust.tcp-as-byte-stream",
+  "syllabus": [
+    {
+      "clause": "TCP is a byte stream, not a message queue: read/write can be partial. Nagle and delayed ACK (TCP_NODELAY), socket buffer sizing vs the bandwidth-delay product, half-close (shutdown(Write)) vs RST, SO_LINGER, TIME_WAIT.",
+      "at": [
+        {
+          "step": "Measured: writing 4 MiB in one real call took dozens of real read() calls to receive, through a 64 KiB read buffer, confirmed directly"
+        },
+        {
+          "step": "Measured: the server's own read() genuinely saw EOF once the client half-closed, and the server could still write a real reply back, which the client genuinely received"
+        },
+        {
+          "step": "The documentation's own words: with Nagle left on, data is buffered until there's a sufficient amount to send out, specifically to avoid the frequent sending of small packets, and TCP_NODELAY turns that batching off"
+        },
+        {
+          "step": "The documentation's own words: with SO_LINGER enabled, close() won't return until all queued messages have been sent or the linger timeout is reached, while TIME-WAIT is a separate, later wait for an entirely different reason"
+        }
+      ]
+    }
+  ],
+  "sources": [
+    {
+      "source": "rfc9293",
+      "items": [
+        {
+          "item": "Applications may perform writes at the granularity of messages in the upper-layer protocol, but TCP guarantees no correlation between the boundaries of TCP segments sent and received and the boundaries of the read or write buffers of user application data",
+          "at": [
+            {
+              "step": "Write one real 4 MiB payload to a real TCP connection in a single write_all() call. On the other end, read it back with a 64 KiB buffer. How many real read() calls does that actually take?"
+            }
+          ]
+        },
+        {
+          "item": "TIME-WAIT represents waiting for enough time to pass to be sure the remote TCP peer received the acknowledgment of its connection termination request and to avoid new connections being impacted by delayed segments from previous connections",
+          "at": [
+            {
+              "step": "The documentation's own words: with SO_LINGER enabled, close() won't return until all queued messages have been sent or the linger timeout is reached, while TIME-WAIT is a separate, later wait for an entirely different reason"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "tcp-7",
+      "items": [
+        {
+          "item": "TCP_NODELAY: If set, disable the Nagle algorithm. When not set, data is buffered until there is a sufficient amount to send out, thereby avoiding the frequent sending of small packets",
+          "at": [
+            {
+              "step": "The documentation's own words: with Nagle left on, data is buffered until there's a sufficient amount to send out, specifically to avoid the frequent sending of small packets, and TCP_NODELAY turns that batching off"
+            }
+          ]
+        },
+        {
+          "item": "In quickack mode, acks are sent immediately, rather than delayed if needed in accordance to normal TCP operation",
+          "at": [
+            {
+              "step": "The TCP manual page's own documentation describes what TCP_NODELAY actually disables. What does it say happens to small writes when Nagle's algorithm is left on?"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "socket-7",
+      "items": [
+        {
+          "item": "When enabled, a close(2) or shutdown(2) will not return until all queued messages for the socket have been successfully sent or the linger timeout has been reached. Otherwise, the call returns immediately and the closing is done in the background",
+          "at": [
+            {
+              "step": "The documentation's own words: with SO_LINGER enabled, close() won't return until all queued messages have been sent or the linger timeout is reached, while TIME-WAIT is a separate, later wait for an entirely different reason"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "shutdown-2",
+      "items": [
+        {
+          "item": "If how is SHUT_WR, further transmissions will be disallowed",
+          "at": [
+            {
+              "step": "Write a message, then call the real shutdown(Write) half-close on just one side of a real connection. Does the other side's read() see an error, or something else, and can that side still reply?"
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "self-review",
+    "date": "2026-10-24",
+    "items": [
+      {
+        "item": "The partial-reads example uses a payload far larger than any default socket buffer specifically so the measured read count is robust to buffer-size differences across machines; the assertion checks only that reads exceed a conservative threshold, not an exact count, since the real number depends on kernel-level buffering this topic does not control.",
+        "at": [
+          {
+            "step": "Write one real 4 MiB payload to a real TCP connection in a single write_all() call. On the other end, read it back with a 64 KiB buffer. How many real read() calls does that actually take?"
+          }
+        ]
+      },
+      {
+        "item": "The half-close example deliberately has the server write its reply only after observing EOF from the client, not concurrently, so the ordering itself demonstrates that the write direction was never affected by the client's own shutdown(Write) call.",
+        "at": [
+          {
+            "step": "Measured: the server's own read() genuinely saw EOF once the client half-closed, and the server could still write a real reply back, which the client genuinely received"
+          }
+        ]
+      },
+      {
+        "item": "TCP_NODELAY's own latency effect was prototyped directly as a ping-pong benchmark over this container's loopback interface before deciding to quote it instead; the effect did not reproduce measurably because loopback round-trip latency is already far below the delayed-ACK timer the Nagle/delayed-ACK interaction depends on, so a flaky or misleading number was deliberately not shipped.",
+        "at": [
+          {
+            "step": "The TCP manual page's own documentation describes what TCP_NODELAY actually disables. What does it say happens to small writes when Nagle's algorithm is left on?"
+          }
+        ]
+      },
+      {
+        "item": "SO_LINGER's own close()-blocking effect was also prototyped directly, using a duplicated file descriptor to keep a socket's send queue genuinely non-empty at close time; the attempt did not reliably reproduce a measurable difference in this container, so the claim is quoted from socket(7) directly rather than shipped as an unreliable measurement.",
+        "at": [
+          {
+            "step": "The socket manual page's own documentation describes what SO_LINGER actually changes. Does enabling it make close() behave the same, just with a timer attached, or something genuinely different?"
+          }
+        ]
+      },
+      {
+        "item": "TIME-WAIT's own documented purpose (RFC 9293) is kept deliberately distinct from SO_LINGER's own documented effect (socket(7)) in this topic's own lesson step, since conflating 'a wait during close()' with 'a wait the kernel holds afterward' is exactly the kind of surface-level confusion this chapter's own vocabulary section (CHAPTER.md \u00a7A.4) calls out.",
+        "at": [
+          {
+            "step": "The documentation's own words: with SO_LINGER enabled, close() won't return until all queued messages have been sent or the linger timeout is reached, while TIME-WAIT is a separate, later wait for an entirely different reason"
+          }
+        ]
+      },
+      {
+        "item": "This topic continues Chapter 11's own fd-as-kernel-handle and io-safety-ownership-types framing directly: a TcpStream is still a file descriptor under Rust's io-safety types, with the same ownership rules Chapter 11 already established, just opened by connect() instead of open().",
+        "at": [
+          {
+            "step": "Write one real 4 MiB payload to a real TCP connection in a single write_all() call. On the other end, read it back with a 64 KiB buffer. How many real read() calls does that actually take?"
+          }
+        ]
+      },
+      {
+        "item": "The RFC 9293 quote on segmentation is deliberately chosen over a paraphrase of 'TCP is a byte stream' because the RFC's own words are specific about what is and is not guaranteed (no correlation between segment boundaries and read/write buffer boundaries), which is a stronger, more falsifiable claim than the informal slogan.",
+        "at": [
+          {
+            "step": "Write one real 4 MiB payload to a real TCP connection in a single write_all() call. On the other end, read it back with a 64 KiB buffer. How many real read() calls does that actually take?"
+          }
+        ]
+      },
+      {
+        "item": "This topic deliberately opens the chapter on the byte-stream claim rather than jumping straight to framing, because framing (topic 43) only makes sense as a response to a problem topic 42 establishes first: that a write and a read are not the same event.",
+        "at": [
+          {
+            "step": "Recap: a stream that never promised to keep your own boundaries"
+          }
+        ]
+      },
+      {
+        "item": "The four claims in the lesson step (partial reads, half-close, Nagle, SO_LINGER) are presented as four instances of one cause, not four unrelated facts, because that framing is what lets the recap step compress them without re-explaining each one from scratch.",
+        "at": [
+          {
+            "step": "Partial reads, a half-close that leaves one direction open, Nagle's own batching, and SO_LINGER's own blocking are all the same kind of surprise: a byte stream genuinely has none of a message's boundaries"
+          }
+        ]
+      },
+      {
+        "item": "Both executed examples use real loopback TCP sockets (127.0.0.1) rather than in-process pipes or mocks, specifically because the claims being tested (partial delivery, half-close semantics) are properties of the real TCP state machine, not of any particular Rust abstraction over it.",
+        "at": [
+          {
+            "step": "Measured: writing 4 MiB in one real call took dozens of real read() calls to receive, through a 64 KiB read buffer, confirmed directly"
+          }
+        ]
+      }
+    ]
+  },
+  "gapReview": {
+    "date": "2026-10-24",
+    "by": "self-review",
+    "open": []
+  }
+}

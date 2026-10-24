@@ -1,0 +1,4 @@
+- **Slot indirection**: a slotted page separates a record's own stable, logical identity (its slot index) from its physical offset inside the page — two different things, deliberately. *Where you meet it:* a record's slot index never changes, even after compaction physically moves it.
+- **In-page compaction**: closing the gaps left by deleted records by physically rewriting the tuple region, updating each surviving record's own offset field without ever touching its slot index.
+- **Content survives the move**: reading a record back by its own slot index, after compaction, returns the exact same bytes it held before — the caller never has to notice a record moved at all.
+- **Fixed page size forces out-of-line storage**: a record too large for the page's own remaining free space is rejected cleanly rather than overflowing or corrupting the page, which is exactly why a real system moves oversized values somewhere else entirely.

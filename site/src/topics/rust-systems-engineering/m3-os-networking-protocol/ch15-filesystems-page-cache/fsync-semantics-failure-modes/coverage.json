@@ -1,0 +1,97 @@
+{
+  "topic": "rust.fsync-semantics-failure-modes",
+  "syllabus": [
+    {
+      "clause": "a successful write is not durable. Durability may need both the file data AND the directory metadata on stable storage: fsync the file and its parent directory after create or rename, and use the write-temp + fsync + rename + fsync-dir atomic-replace pattern. In Rust, File::sync_all vs sync_data. After fsyncgate (PostgreSQL, 2018), a failed fsync may drop dirty pages, so retrying can lie; crash and recover from the WAL instead (Rebello et al., USENIX ATC 2020). Torn writes and RWF_ATOMIC (Linux 6.11+, direct I/O, needs hardware support).",
+      "at": [
+        { "step": "Measured: sync_all() made a real fsync() syscall, and sync_data() made a real, genuinely different fdatasync() syscall — confirmed directly by strace, not by the docs alone" },
+        { "step": "Measured: the file’s fsync and the directory’s fsync were two real, separate syscalls, on two genuinely different file descriptors" },
+        { "step": "Measured: across many tens of thousands of real concurrent reads during two hundred real replacements, the reader never once observed a length that wasn’t the old file’s or the new file’s" },
+        { "step": "The paper’s own finding is specific: on the file systems it tested, a failed fsync marks the dirty page clean regardless, so a second fsync call finds nothing left to write, succeeds immediately, and PostgreSQL mistook that success for a completed write" }
+      ]
+    }
+  ],
+  "sources": [
+    {
+      "source": "fsync-2",
+      "items": [
+        {
+          "item": "fsync() transfers all modified in-core data of a file to the disk device so that changed information can be retrieved even after a crash",
+          "at": [{ "step": "Call File::sync_all() on a file, and separately call File::sync_data() on another. Do they genuinely make the same real syscall underneath, or two different ones?" }]
+        },
+        {
+          "item": "calling fsync() does not necessarily ensure the directory entry has reached disk; an explicit fsync() on the directory's own fd is needed too",
+          "at": [{ "step": "fsync a file's own fd, then separately fsync its parent directory's fd. Does the file's own fsync already cover the directory, or are these genuinely two separate operations?" }]
+        },
+        {
+          "item": "fdatasync() is similar to fsync() but does not flush modified metadata unless needed for a subsequent correct data retrieval",
+          "at": [{ "step": "Measured: sync_all() made a real fsync() syscall, and sync_data() made a real, genuinely different fdatasync() syscall — confirmed directly by strace, not by the docs alone" }]
+        }
+      ]
+    },
+    {
+      "source": "file-sync",
+      "items": [
+        {
+          "item": "File::sync_all attempts to sync all OS-internal file content and metadata to disk",
+          "at": [{ "step": "Call File::sync_all() on a file, and separately call File::sync_data() on another. Do they genuinely make the same real syscall underneath, or two different ones?" }]
+        },
+        {
+          "item": "File::sync_data is similar to sync_all except that it might not synchronize file metadata",
+          "at": [{ "step": "Measured: sync_all() made a real fsync() syscall, and sync_data() made a real, genuinely different fdatasync() syscall — confirmed directly by strace, not by the docs alone" }]
+        }
+      ]
+    },
+    {
+      "source": "rebello-atc2020",
+      "items": [
+        {
+          "item": "all three tested file systems mark pages clean after fsync fails, rendering application-level retry ineffective",
+          "at": [{ "step": "PostgreSQL retried a failed fsync, exactly as its own code had done for twenty years. What actually went wrong?" }]
+        },
+        {
+          "item": "when PostgreSQL retried a failed fsync, the second call succeeded without actually writing data, because there were no dirty pages left for the file system to write",
+          "at": [{ "step": "The paper’s own finding is specific: on the file systems it tested, a failed fsync marks the dirty page clean regardless, so a second fsync call finds nothing left to write, succeeds immediately, and PostgreSQL mistook that success for a completed write" }]
+        },
+        {
+          "item": "developers changed PostgreSQL to respond to an fsync error by crashing and restarting without retrying the fsync",
+          "at": [{ "step": "Recap: two real calls, one real sequence, and one real lie, all finally named" }]
+        }
+      ]
+    },
+    {
+      "source": "pwritev2-2",
+      "items": [
+        {
+          "item": "RWF_ATOMIC's torn-write protection means a power or hardware failure stores all or none of a write's data, never a mix of old and new",
+          "at": [{ "step": "Measured: across many tens of thousands of real concurrent reads during two hundred real replacements, the reader never once observed a length that wasn’t the old file’s or the new file’s" }]
+        },
+        {
+          "item": "RWF_ATOMIC's torn-write protection only works with O_DIRECT; buffered writes are not supported",
+          "at": [{ "step": "sync_all vs sync_data, a file’s fsync vs its directory’s, and a failed fsync’s retry are all the same question: what, exactly, did that one call actually promise you" }]
+        }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "self-review",
+    "date": "2026-10-23",
+    "items": [
+      { "item": "The sync_all-versus-sync_data claim is confirmed via strace specifically because the Rust documentation itself only describes behavior, not which real syscall implements it; a kernel or libc change could in principle alter the mapping without changing the documented contract, which only an executed trace can catch.", "at": [{ "step": "Call File::sync_all() on a file, and separately call File::sync_data() on another. Do they genuinely make the same real syscall underneath, or two different ones?" }] },
+      { "item": "The directory-fsync example opens the directory itself as a File specifically to get a real file descriptor to fsync, rather than relying on any higher-level API, because the man page's own claim is specifically about a file descriptor for the directory, not about some directory-level abstraction Rust's std provides.", "at": [{ "step": "fsync a file's own fd, then separately fsync its parent directory's fd. Does the file's own fsync already cover the directory, or are these genuinely two separate operations?" }] },
+      { "item": "The example's own assertion that the two file descriptors are numerically distinct is a deliberately weak, purely structural check; the strong claim, that fsyncing one has no effect on the other's durability, is not something a single-process, no-crash measurement can observe directly, so the topic reports the real two-syscall structure and leaves the durability guarantee itself to the man page's own documented claim.", "at": [{ "step": "Measured: the file’s fsync and the directory’s fsync were two real, separate syscalls, on two genuinely different file descriptors" }] },
+      { "item": "The atomic-replace example's reset step (going back from the long content to the short content) is implemented with the exact same write-temp-fsync-rename sequence as the forward step, not a plain overwrite, because an early draft of this example used a plain overwrite for the reset and it produced real partial reads — the bug was in the test's own reset step, not in the atomic-replace pattern, and that finding is itself evidence for why the full sequence matters everywhere, not just on the interesting half.", "at": [{ "step": "Measured: across many tens of thousands of real concurrent reads during two hundred real replacements, the reader never once observed a length that wasn’t the old file’s or the new file’s" }] },
+      { "item": "The fsyncgate incident's lesson is not that fsync is unreliable in general; it is that a single failure permanently changes what a subsequent retry can observe, because the file system's own internal bookkeeping (the dirty bit) was already updated by the failed attempt, which is a specific, narrow claim quite different from a vague warning that fsync 'can fail'.", "at": [{ "step": "PostgreSQL retried a failed fsync, exactly as its own code had done for twenty years. What actually went wrong?" }] },
+      { "item": "This topic deliberately does not reproduce fsyncgate's own EIO injection in its executed examples, because the fault-injection tooling the paper used (device-mapper's dm-flakey/dm-error) needs root-level access this container's sandbox does not grant; the claim is instead sourced directly from the paper's own already-published, already-reproduced findings rather than invented or assumed.", "at": [{ "step": "The paper’s own finding is specific: on the file systems it tested, a failed fsync marks the dirty page clean regardless, so a second fsync call finds nothing left to write, succeeds immediately, and PostgreSQL mistook that success for a completed write" }] },
+      { "item": "RWF_ATOMIC is deliberately covered only by quoting its own documented constraints, never by an executed example, because it requires Linux 6.11+ and specific hardware support for torn-write protection that this container's own kernel and virtual block device cannot be assumed to provide.", "at": [{ "step": "sync_all vs sync_data, a file’s fsync vs its directory’s, and a failed fsync’s retry are all the same question: what, exactly, did that one call actually promise you" }] },
+      { "item": "This topic's three measured or quoted behaviors are not three unrelated fsync quirks; each one exposes a different gap between what a call's name suggests it promises and what it actually, narrowly covers, which is exactly the frame the lesson step states explicitly rather than leaving implicit.", "at": [{ "step": "sync_all vs sync_data, a file’s fsync vs its directory’s, and a failed fsync’s retry are all the same question: what, exactly, did that one call actually promise you" }] },
+      { "item": "This topic builds directly on topic 39's own buffered-versus-direct framing, since fsync and fdatasync only matter at all on the buffered path topic 39 already distinguished; a file opened and written entirely through O_DIRECT has no dirty page cache entries for fsync to flush in the first place.", "at": [{ "step": "Call File::sync_all() on a file, and separately call File::sync_data() on another. Do they genuinely make the same real syscall underneath, or two different ones?" }] },
+      { "item": "This topic deliberately stops short of measuring how much less I/O a batched WAL costs compared to fsyncing every update, even though the atomic-replace example already demonstrates one correct pattern, because quantifying that reduction is specifically topic 41's own scoped claim, not a byproduct to report here.", "at": [{ "step": "Recap: two real calls, one real sequence, and one real lie, all finally named" }] }
+    ]
+  },
+  "gapReview": {
+    "date": "2026-10-23",
+    "by": "self-review",
+    "open": []
+  }
+}

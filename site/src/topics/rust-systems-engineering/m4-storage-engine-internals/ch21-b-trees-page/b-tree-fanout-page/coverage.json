@@ -1,0 +1,69 @@
+{
+  "topic": "rust.b-tree-fanout-page",
+  "syllabus": [
+    {
+      "clause": "PostgreSQL's B-tree (nbtree) as the reference. High fanout keeps the tree a few levels deep even at billions of records, at the cost of page splits and write amplification. Merges, prefix/suffix truncation and fill factor.",
+      "at": [
+        { "step": "Measured: inserting past a full page genuinely allocated a new page and pushed a real separator key up into a new root; every original key is still found afterward" },
+        { "step": "Measured: after thousands of inserts, the tree's own depth genuinely stayed within a handful of levels, with every record still found correctly" },
+        { "step": "Measured: packing pages less full genuinely caused more splits over the identical insert sequence than packing them fuller did" },
+        { "step": "Measured: a separator built from only the first differing part of the key genuinely took fewer bytes than a full copy, yet routed every test key exactly like the full one" }
+      ]
+    }
+  ],
+  "sources": [
+    {
+      "source": "btree",
+      "items": [
+        {
+          "item": "typically, over 99% of all pages are leaf pages",
+          "at": [{ "step": "Measured: after thousands of inserts, the tree's own depth genuinely stayed within a handful of levels, with every record still found correctly" }]
+        },
+        {
+          "item": "page splits must also insert a new downlink to the new page in the parent page, which may cause the parent to split in turn",
+          "at": [{ "step": "Measured: inserting past a full page genuinely allocated a new page and pushed a real separator key up into a new root; every original key is still found afterward" }]
+        }
+      ]
+    },
+    {
+      "source": "sql-createindex",
+      "items": [
+        {
+          "item": "if pages subsequently become completely full, they will be split, leading to fragmentation of the on-disk index structure; B-trees use a default fillfactor of 90",
+          "at": [{ "step": "Measured: packing pages less full genuinely caused more splits over the identical insert sequence than packing them fuller did" }]
+        }
+      ]
+    },
+    {
+      "source": "nbtree-readme",
+      "items": [
+        {
+          "item": "the goal of suffix truncation of key attributes is to improve index fan-out",
+          "at": [{ "step": "PostgreSQL's own nbtree README names exactly why it bothers with this directly: what does it say the goal of suffix truncation actually is?" }]
+        }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "self-review",
+    "date": "2026-10-24",
+    "items": [
+      { "item": "The split-triggers-a-separator claim builds the tree up to exactly capacity with no split at all first, so the measured split genuinely happens on the very next insert, not as an artifact of an earlier, already-split structure.", "at": [{ "step": "Measured: inserting past a full page genuinely allocated a new page and pushed a real separator key up into a new root; every original key is still found afterward" }] },
+      { "item": "The depth claim inserts four thousand ascending keys through the real recursive insert path, including every intermediate split and root promotion, rather than constructing a balanced tree directly, so the measured height is a genuine consequence of the insert sequence.", "at": [{ "step": "Measured: after thousands of inserts, the tree's own depth genuinely stayed within a handful of levels, with every record still found correctly" }] },
+      { "item": "The fill-factor comparison runs the identical ascending key sequence through two independent trees that differ only in the fill factor passed to every split, so the difference in total split count is attributable to the packing choice alone, not to any difference in the inserted keys.", "at": [{ "step": "Measured: packing pages less full genuinely caused more splits over the identical insert sequence than packing them fuller did" }] },
+      { "item": "The truncation claim verifies two separate properties, not one: that the truncated separator is strictly shorter in bytes, and that it produces the identical left-or-right routing decision as the full key on every one of a set of boundary-sensitive test keys, so a shorter-but-wrong separator could not pass silently.", "at": [{ "step": "Measured: a separator built from only the first differing part of the key genuinely took fewer bytes than a full copy, yet routed every test key exactly like the full one" }] },
+      { "item": "Every page in this topic's own B+-tree is a fixed-size byte buffer with a self-describing header (page type and entry count) plus a fixed-size entry array, continuing Chapter 19's own self-describing-page-header and slot-indirection-stable-identity concepts directly rather than using a plain in-memory collection to stand in for a page.", "at": [{ "step": "A leaf page holds only a handful of entries before it's full, say seven. Insert one more into a full page. What happens?" }] },
+      { "item": "The implementation's own leaf and internal page capacity (seven entries per page) is a deliberately small, fixed constant chosen so that a bulk insert of thousands of keys produces many real splits and several real levels within one quick, deterministic run, not a claim that production B-trees use a page this small.", "at": [{ "step": "Keep inserting records, into the thousands. Does the tree's own depth grow about as fast as the record count, or much slower?" }] },
+      { "item": "This topic's own fill factor controls the split point directly, as the fraction of the overflowing page's entries that stay on the left side of a split, modeling the same right-edge-packing behavior PostgreSQL's own fillfactor applies during initial builds and sequential appends, rather than modeling fillfactor as a storage reservation made ahead of any insert.", "at": [{ "step": "Two trees get the identical sequence of inserts. One packs each page less than completely full before its next split; the other packs pages fuller. Which one ends up splitting more times overall?" }] },
+      { "item": "The truncation demonstration uses a four-attribute composite key rather than this topic's own single integer key, because PostgreSQL's own suffix truncation drops whole trailing key attributes, not arbitrary suffix bytes of a single scalar value; the routing check pads a truncated separator back out with zero bytes to stand in for the implicit negative-infinity value truncated attributes carry.", "at": [{ "step": "A split's new separator key only has to tell two sides apart, not describe either key in full. Can it genuinely take less storage than a full copy of the key, and still route every search correctly?" }] },
+      { "item": "This topic continues directly from Chapter 19's self-describing-page-header and slot-indirection-stable-identity ids rather than from Chapter 20's write-ahead or recovery ids, since this chapter's own bridge is specifically about finding a record among many, not about durability or crash recovery.", "at": [{ "step": "Measured: inserting past a full page genuinely allocated a new page and pushed a real separator key up into a new root; every original key is still found afterward" }] },
+      { "item": "All four of this topic's own measured claims run entirely on in-memory, fixed-size byte buffers with no file, network, or root access needed, continuing this milestone's own established pattern from Chapters 19 and 20.", "at": [{ "step": "Recap: what fanout buys, and what keeps it cheap" }] },
+      { "item": "This topic deliberately closes Chapter 21 as a single-topic chapter, since the syllabus's other three B-tree bullets (crash-safe structure modifications, range scans and B-link trees, and concurrent latching protocols) are already marked skipped in syllabus/review-notes/rust-cuts.md and get no reel of their own.", "at": [{ "step": "Recap: what fanout buys, and what keeps it cheap" }] }
+    ]
+  },
+  "gapReview": {
+    "date": "2026-10-24",
+    "by": "self-review",
+    "open": []
+  }
+}

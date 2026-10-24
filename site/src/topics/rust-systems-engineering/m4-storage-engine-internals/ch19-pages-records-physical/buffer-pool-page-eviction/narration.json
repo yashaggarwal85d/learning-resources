@@ -1,0 +1,88 @@
+{
+  "steps": [
+    {
+      "lines": [
+        "Build a real buffer pool: a frame table, a pin count on each frame, and a dirty bit on each frame.",
+        "Now pin every single frame in that pool, and try to load one more page than the pool can actually hold.",
+        { "beat": 0.3 },
+        "What happens?"
+      ],
+      "answer": [
+        "The pool genuinely refuses.",
+        "There is nothing left in it that can be evicted; a pinned frame is simply never a candidate."
+      ]
+    },
+    {
+      "lines": [
+        "Run it for real: with every frame genuinely pinned, loading one more page than the pool can hold was rejected outright.",
+        "Nothing was evicted, because nothing could be."
+      ]
+    },
+    {
+      "lines": [
+        "Now unpin those frames, and load a new page. One of them gets evicted to make room.",
+        { "beat": 0.3 },
+        "If the frame that gets evicted happens to be dirty, does its own data get written back first, before that frame is handed to the new page?"
+      ],
+      "answer": [
+        "Yes, every time.",
+        "Nothing dirty is ever simply discarded along with the frame."
+      ]
+    },
+    {
+      "lines": [
+        "Run it for real: the dirty frame's own data was genuinely written back first, and only afterward was that same frame reused for the new page."
+      ],
+      "takeaway": "A dirty frame's own data is never simply discarded; it's written back first, before its frame is reused."
+    },
+    {
+      "lines": [
+        "Now give the real eviction policy, CLOCK, an actual choice.",
+        "Take two unpinned frames: touch one of them again since the last sweep, and leave the other one genuinely alone.",
+        "Load one more page.",
+        { "beat": 0.3 },
+        "Does CLOCK evict the one just touched again, or the one left untouched?"
+      ],
+      "answer": [
+        "It evicts the untouched one.",
+        "Being touched again buys a real second chance."
+      ]
+    },
+    {
+      "lines": [
+        "Run it for real: CLOCK genuinely evicted the frame left untouched since the last sweep, and spared the one that had been accessed again."
+      ],
+      "takeaway": "CLOCK's own reference bit gives a touched frame a real second chance; an untouched one doesn't get one."
+    },
+    {
+      "lines": [
+        "One real system names exactly these fields on its own real shared buffer: whether it's dirty, its own clock-sweep count, and how many backends are pinning it right now.",
+        { "beat": 0.3 },
+        "What's that pinning count actually there to protect?"
+      ],
+      "answer": [
+        "Exactly the pin count this topic's own pool uses.",
+        "A frame being pinned right now is the entire reason it survives eviction."
+      ]
+    },
+    {
+      "lines": [
+        "In that system's own words: the pinning count is how many backends currently hold that buffer pinned, and its own eviction function only ever touches a buffer nobody is pinning."
+      ]
+    },
+    {
+      "lines": [
+        "An earlier chapter's own approach to this same problem hands the question of when a dirty page actually gets written back to the operating system entirely.",
+        "A real paper on exactly that approach names the difference directly: the operating system can flush a dirty page back to disk at any moment it chooses, whether or not the write that dirtied it has even finished."
+      ],
+      "takeaway": "An explicit buffer pool decides for itself when a dirty page is written back; mmap hands that to the OS."
+    },
+    {
+      "lines": [
+        "So, pulling this topic together: a pinned frame is never a candidate for eviction, a dirty frame is always written back before its own frame gets reused, and a real sweep-based policy genuinely favors whichever frame was touched more recently.",
+        "A real system names exactly these same three things on its own shared buffers.",
+        "And where one approach hands the timing of a dirty write entirely to the operating system, an explicit pool like this one decides that for itself, on its own terms."
+      ]
+    }
+  ]
+}

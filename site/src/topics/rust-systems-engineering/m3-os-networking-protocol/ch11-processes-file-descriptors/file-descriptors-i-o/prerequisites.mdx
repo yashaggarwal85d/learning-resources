@@ -1,0 +1,24 @@
+import Resource from '../../../../../components/Resource.astro';
+
+<section class="prereq" data-section="chapter-so-far">
+
+### <span class="n">01</span> Where the async-runtime milestone left off
+
+<ul class="resources">
+  <Resource kind="reel" host={props.host} domain="rust-systems-engineering" title="Structured shutdown with tokens and trackers">A shutdown sequence assembled from three already-proven mechanisms, against a real deadline.</Resource>
+</ul>
+
+</section>
+
+<section class="prereq" data-section="fd-primary">
+
+### <span class="n">02</span> The real docs: ownership, borrowing, and the kernel's own view
+
+<ul class="resources">
+  <Resource kind="reading" title="std::os::fd" href="https://doc.rust-lang.org/std/os/fd/index.html" by="The Rust Project">OwnedFd and BorrowedFd, in the standard library's own words.</Resource>
+  <Resource kind="reading" title="dup(2)" href="https://man7.org/linux/man-pages/man2/dup.2.html" by="The Linux man-pages Project">The kernel's own account of a shared open file description.</Resource>
+  <Resource kind="reading" title="open(2)" href="https://man7.org/linux/man-pages/man2/open.2.html" by="The Linux man-pages Project">O_CLOEXEC, and the exact race it exists to close.</Resource>
+  <Resource kind="reading" title="getrlimit(2)" href="https://man7.org/linux/man-pages/man2/getrlimit.2.html" by="The Linux man-pages Project">RLIMIT_NOFILE's own definition, word for word.</Resource>
+</ul>
+
+</section>

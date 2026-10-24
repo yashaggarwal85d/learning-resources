@@ -1,0 +1,88 @@
+{
+  "steps": [
+    {
+      "lines": [
+        "A macro that races two separate pieces of work against each other and moves on as soon as whichever one finishes first.",
+        { "beat": 0.3 },
+        "What actually happens to the piece of work that loses that race?"
+      ],
+      "answer": [
+        "It gets dropped outright. Its whole future simply stops existing.",
+        "This isn't a pause, and it isn't something quietly finishing up in the background. It's gone, the instant the other one wins."
+      ]
+    },
+    {
+      "lines": [
+        "Run it for real, and check back well after the losing side's own full delay should have passed anyway.",
+        "Its own side effect never happened at all — not late, not eventually. Dropped really does mean dropped."
+      ]
+    },
+    {
+      "lines": [
+        "Now take a channel receive call, cancel it partway through waiting with that same racing macro, then actually send a message and call receive again fresh.",
+        { "beat": 0.3 },
+        "Could that first message ever quietly go missing because of the cancelled attempt?"
+      ],
+      "answer": [
+        "No — nothing goes missing. This particular receive call is safe to cancel.",
+        "It either hasn't seen a message yet, or it's fully received one. There's no half-finished state in between for a cancellation to catch it in."
+      ]
+    },
+    {
+      "lines": [
+        "Run it for real: after the cancelled attempt, a fresh receive call gets exactly the one message that was sent — nothing lost, nothing duplicated.",
+        "That's what makes a receive call like this one genuinely safe to use inside a racing macro, over and over, in a loop."
+      ],
+      "takeaway": "mpsc::Receiver::recv is cancel-safe — dropping it mid-wait and starting a fresh one loses nothing."
+    },
+    {
+      "lines": [
+        "Now try the same kind of cancellation on a different operation — one that reads an exact number of bytes from a stream, cancelled midway, after it's already pulled part of that data in.",
+        { "beat": 0.3 },
+        "What happens to the bytes it already grabbed before it got cancelled?"
+      ],
+      "answer": [
+        "They're simply gone. A fresh read only ever sees whatever arrives afterward.",
+        "Unlike the receive call, this operation genuinely has a half-finished state — and cancelling it catches that state and throws it away."
+      ]
+    },
+    {
+      "lines": [
+        "Run it for real: the first half of what was sent, already pulled in by the cancelled read, never comes back. A fresh read only recovers the second half.",
+        "There's no mechanism in the language for handing that partial progress back anywhere once it's being dropped. It's simply lost, permanently."
+      ],
+      "takeaway": "read_exact is not cancel-safe — cancelling it mid-read loses the bytes it already consumed, permanently."
+    },
+    {
+      "lines": [
+        "Spawn a background task, get a handle back for it, and then drop that handle right away — without ever waiting on it, and without explicitly stopping the task.",
+        { "beat": 0.3 },
+        "Does the task actually stop running when its only handle disappears, or does it keep going?"
+      ],
+      "answer": [
+        "It keeps going completely. Dropping the handle only gives up the ability to check on it or wait for it.",
+        "That's a deliberate choice, not an oversight. A background task often needs to outlive whatever spawned it in the first place."
+      ]
+    },
+    {
+      "lines": [
+        "Run it for real: long after that handle was dropped, the task is still quietly doing its work, completely unobserved by anything.",
+        "It was never cancelled at all. It simply became impossible to check on, or to stop through that particular handle."
+      ]
+    },
+    {
+      "lines": [
+        "So here's the same underlying mechanism, used three different ways, with three genuinely different outcomes.",
+        "A receive call drops cleanly and loses nothing. A partial read drops and loses exactly what it had already consumed. And a background task's handle drops while the task itself just keeps right on running."
+      ],
+      "takeaway": "Cancellation is always a drop at the current .await — whether that loses anything depends on what was paused."
+    },
+    {
+      "lines": [
+        "So, pulling this topic together: that racing macro genuinely drops whichever side loses, not merely delays it.",
+        "A channel receive call survives being cancelled with nothing lost. A partial stream read does not, and loses exactly the part it already consumed.",
+        "And dropping a task's only handle detaches that task instead of stopping it — it just keeps running, completely on its own."
+      ]
+    }
+  ]
+}

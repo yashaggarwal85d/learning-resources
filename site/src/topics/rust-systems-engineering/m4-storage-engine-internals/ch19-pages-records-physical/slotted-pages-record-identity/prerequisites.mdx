@@ -1,0 +1,22 @@
+import Resource from '../../../../../components/Resource.astro';
+
+<section class="prereq" data-section="chapter-so-far">
+
+### <span class="n">01</span> Where the last topic left off
+
+<ul class="resources">
+  <Resource kind="reel" host={props.host} domain="rust-systems-engineering" title="Self-describing page formats">a real page catching corruption, a format change, and the wrong byte order, all from its own header alone.</Resource>
+</ul>
+
+</section>
+
+<section class="prereq" data-section="slotted-page-primary">
+
+### <span class="n">02</span> The real docs: line pointers and TOAST
+
+<ul class="resources">
+  <Resource kind="reading" title="Database Page Layout" href="https://www.postgresql.org/docs/current/storage-page-layout.html" by="The PostgreSQL Global Development Group">an item identifier's own index, stable even while the item itself moves.</Resource>
+  <Resource kind="reading" title="TOAST" href="https://www.postgresql.org/docs/current/storage-toast.html" by="The PostgreSQL Global Development Group">why a fixed page size means a large value has to live somewhere else.</Resource>
+</ul>
+
+</section>

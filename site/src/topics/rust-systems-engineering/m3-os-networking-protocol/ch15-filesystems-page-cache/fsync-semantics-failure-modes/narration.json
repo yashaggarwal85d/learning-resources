@@ -1,0 +1,88 @@
+{
+  "steps": [
+    {
+      "lines": [
+        "Call one real function to sync a file fully, and a separate one to sync just its data.",
+        { "beat": 0.3 },
+        "Do they genuinely make the same real system call underneath, or two different ones?"
+      ],
+      "answer": [
+        "Two genuinely different real system calls.",
+        "The data-only version genuinely isn't just the full version, renamed."
+      ]
+    },
+    {
+      "lines": [
+        "Run it for real, traced: the full sync made one specific real system call.",
+        "And the data-only sync made a real, genuinely different one in its place."
+      ]
+    },
+    {
+      "lines": [
+        "Sync a file's own handle, then separately sync its parent folder's own handle.",
+        { "beat": 0.3 },
+        "Does the file's own sync already cover the folder, or are these genuinely separate?"
+      ],
+      "answer": [
+        "They're genuinely two separate real calls, on two different handles.",
+        "The file's own sync says absolutely nothing about its folder entry."
+      ]
+    },
+    {
+      "lines": [
+        "Run it for real, traced: the file's own sync was one real call.",
+        "And the folder's own sync was a second, genuinely separate real call."
+      ],
+      "takeaway": "A file's own fsync says nothing about its directory entry — that's a second, separate call."
+    },
+    {
+      "lines": [
+        "Replace a file's content two hundred real times, the careful way: a temporary copy, synced, then renamed in.",
+        { "beat": 0.3 },
+        "Meanwhile a separate thread reads that same file as fast as it possibly can. Does it ever catch one half-written?"
+      ],
+      "answer": [
+        "No — it only ever sees the old content, or the new content.",
+        "Never once anything in between."
+      ]
+    },
+    {
+      "lines": [
+        "Run it for real: across many tens of thousands of real reads, racing two hundred real replacements,",
+        "the reader never once observed a length that wasn't the old file's, or the new file's."
+      ],
+      "takeaway": "Write-temp, sync, rename, sync-the-folder: that whole sequence makes a replace genuinely atomic."
+    },
+    {
+      "lines": [
+        "A well-known database retried a failed sync, exactly as its own code had done for twenty years.",
+        { "beat": 0.3 },
+        "What actually went wrong?"
+      ],
+      "answer": [
+        "The retry succeeded without writing anything at all.",
+        "The page it needed to write had already been marked clean by the first failure."
+      ]
+    },
+    {
+      "lines": [
+        "The real finding is specific: a failed sync marks the dirty page clean regardless, on every file system tested.",
+        "So the second call finds nothing left to write, succeeds immediately, and the database mistook that for a completed write."
+      ]
+    },
+    {
+      "lines": [
+        "So, pulling this together: a full sync versus a data-only one, a file's own sync versus its folder's, and a retried sync that quietly lied, are really the same question, asked three times.",
+        "What, exactly, did that one call actually promise you."
+      ],
+      "takeaway": "Every one of fsync's surprises comes from the same gap: what a call promises, and what it covers."
+    },
+    {
+      "lines": [
+        "So, pulling this topic together: a full sync and a data-only sync genuinely make two different real calls.",
+        "A file's own sync and its folder's own sync are genuinely two separate calls that a safe replace needs both of.",
+        "And a failed sync's own retry can report success while having written nothing at all — which is exactly why the real fix is to crash and recover, never to simply try again."
+      ]
+    }
+  ]
+}

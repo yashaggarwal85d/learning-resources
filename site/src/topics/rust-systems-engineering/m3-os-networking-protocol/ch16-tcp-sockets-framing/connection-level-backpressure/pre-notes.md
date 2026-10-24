@@ -1,0 +1,4 @@
+- **Connection-level backpressure**: an explicit state-machine response to a connection producing faster than it's consumed — pausing the producer by stopping reads, dropping by policy, or closing once a bound is hit. *Where you meet it:* a server that stops reading, measured to genuinely block the remote sender's own writes.
+- **TCP window / receive buffer**: not reading a socket lets its own receive window fill and close, which genuinely blocks the remote peer's own `write()` calls — a real, kernel-enforced signal, not application logic.
+- **Bounded output buffer**: a per-connection queue with a hard cap; a real implementation rejects the next push outright once full, rather than growing without bound.
+- **Slow-loris defense**: a per-connection timeout that fires against a peer that connects and then sends little or nothing, closing the connection rather than waiting on it forever.
