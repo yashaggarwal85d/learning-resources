@@ -1,0 +1,69 @@
+{
+  "steps": [
+    {
+      "lines": [
+        "One crate here never asks for a feature its own dependency offers.",
+        { "beat": 0.3 },
+        "But a sibling crate, built right alongside it, does ask for that feature. Does the first crate's own output change anyway?"
+      ],
+      "answer": [
+        "Yes, genuinely.",
+        "Cargo builds one shared copy, and a sibling's own request reaches it too."
+      ]
+    },
+    {
+      "lines": [
+        "Run it for real: built alone, it prints one plain word. Built together with that sibling, the identical crate prints a different word instead, and its own source never moved."
+      ]
+    },
+    {
+      "lines": [
+        "Same two crates, but now the sibling asks for a different kind of feature, one that only adds something new instead of changing what is already there.",
+        { "beat": 0.3 },
+        "Does the first crate's own output change this time too?"
+      ],
+      "answer": [
+        "No, genuinely.",
+        "An additive feature never touches what was already there."
+      ]
+    },
+    {
+      "lines": [
+        "Run it for real: alone or built together with that sibling, the identical crate prints the identical word both times."
+      ],
+      "takeaway": "A feature that only adds, never changes, a dependency's behavior leaves every sibling that never asked for it untouched."
+    },
+    {
+      "lines": [
+        "One crate here declares the identical dependency twice: once for its real build, and once just for its own tests, with an extra feature turned on only for those tests.",
+        { "beat": 0.3 },
+        "Under the resolver a modern project uses by default, does that test-only feature reach the real, non-test build anyway?"
+      ],
+      "answer": [
+        "No, genuinely.",
+        "The modern resolver keeps a test-only request out of the real build."
+      ]
+    },
+    {
+      "lines": [
+        "Run it for real: the identical declaration, checked under the resolver an older project would default to instead, genuinely does leak into the real build. Checked under the modern resolver, it genuinely does not."
+      ],
+      "takeaway": "The resolver a workspace declares decides whether a dev-only feature request can reach a build nobody meant it to touch."
+    },
+    {
+      "lines": [
+        "The Cargo Book names both of these exact ideas directly, in its own words.",
+        "One line says a shared dependency is built once, with every requester's own features unified together. The other line says that is exactly why a feature should only ever add, never take away or change."
+      ],
+      "takeaway": "A feature's real safety is never just the crate's own property; it belongs to every combination the build can unify."
+    },
+    {
+      "lines": [
+        "So here is what this topic's own small pair of crates is really standing in for: a feature is never a private decision one crate makes alone, because the moment a sibling shares its dependency, that sibling's own request reaches you too, whether you asked for it or not.",
+        "Staying purely additive is what keeps that reach harmless instead of dangerous.",
+        "And a resolver is not just an implementation detail either, since it is the real thing deciding whether even a feature meant only for tests can quietly cross into a build nobody meant it to touch.",
+        "None of that is a matter of style. It is a matter of exactly which combinations the real build graph can actually produce."
+      ]
+    }
+  ]
+}

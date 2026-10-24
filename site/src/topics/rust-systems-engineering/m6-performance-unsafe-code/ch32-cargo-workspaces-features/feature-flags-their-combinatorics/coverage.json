@@ -1,0 +1,71 @@
+{
+  "topic": "rust.feature-flags-their-combinatorics",
+  "syllabus": [
+    {
+      "clause": "Cargo features are compile-time product variants and must be additive.",
+      "at": [
+        { "step": "Measured: consumer_b built alone and consumer_b built alongside consumer_a requesting fancy genuinely print the identical \"plain\" both times" }
+      ]
+    },
+    {
+      "clause": "Feature unification across the dependency graph (resolver 2) and dev-dependency surprises.",
+      "at": [
+        { "step": "Measured: consumer_b built alone genuinely prints \"plain\"; the identical consumer_b, built alongside consumer_a requesting fast_mode, genuinely prints \"fast\" instead, with its own source and Cargo.toml never touched" },
+        { "step": "Measured: the identical Cargo.toml declaration, built under the old, pre-2021 resolver default, genuinely leaks fast_mode into the plain build; built under the modern, edition-2024 resolver, the identical declaration genuinely does not leak" }
+      ]
+    },
+    {
+      "clause": "Every feature combination costs test space, so cover it with cargo hack --feature-powerset.",
+      "at": [{ "deep": "In production" }]
+    },
+    {
+      "clause": "The MSRV-aware resolver 3 is the default under edition 2024.",
+      "at": [{ "deep": "The frontier" }]
+    }
+  ],
+  "sources": [
+    {
+      "source": "features",
+      "items": [
+        {
+          "item": "When a dependency is used by multiple packages, Cargo will use the union of all features enabled on that dependency when building it",
+          "at": [{ "step": "consumer_b never asks for core_crate's own fast_mode feature. It is built alone, then built again in the same cargo invocation as consumer_a, which does request fast_mode on the shared core_crate. Does consumer_b's own real output change?" }]
+        },
+        {
+          "item": "A consequence of this is that features should be additive",
+          "at": [{ "step": "The identical comparison, but now consumer_a requests a genuinely additive feature, fancy, which only adds a new function and touches nothing consumer_b already calls. Does the output of consumer_b change this time?" }]
+        }
+      ]
+    },
+    {
+      "source": "resolver",
+      "items": [
+        {
+          "item": "The version \"1\" resolver will unify features for a package no matter where it is specified",
+          "at": [{ "step": "consumer_b itself declares core_crate twice: once as a plain dependency, and once as a dev-dependency with fast_mode turned on, for its own tests. Under the resolver edition 2024 makes the default, does that dev-only feature request leak into a plain, non-test build?" }]
+        }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "self-review",
+    "date": "2026-10-24",
+    "items": [
+      { "item": "The non-additive and additive claims are measured by comparing one crate's own real stdout, built alone versus built in one cargo invocation together with a sibling that requests a feature on their shared dependency, rather than by inspecting Cargo.lock or a build log, so the claim is about the real, running binary's own behavior.", "at": [{ "step": "consumer_b never asks for core_crate's own fast_mode feature. It is built alone, then built again in the same cargo invocation as consumer_a, which does request fast_mode on the shared core_crate. Does consumer_b's own real output change?" }] },
+      { "item": "Each cargo build is preceded by deleting that workspace's own target directory, so an earlier invocation's own cached, unified result can never leak into a later, separately-invoked build and produce a false measurement.", "at": [{ "step": "Measured: consumer_b built alone genuinely prints \"plain\"; the identical consumer_b, built alongside consumer_a requesting fast_mode, genuinely prints \"fast\" instead, with its own source and Cargo.toml never touched" }] },
+      { "item": "The additive-feature comparison (fancy) deliberately mirrors the non-additive comparison (fast_mode) step for step, changing only which kind of feature is requested, so the two measured claims isolate exactly the one variable the syllabus's own additivity clause is about.", "at": [{ "step": "Measured: consumer_b built alone and consumer_b built alongside consumer_a requesting fancy genuinely print the identical \"plain\" both times" }] },
+      { "item": "The dev-dependency claim uses two genuinely separate on-disk workspaces (one declaring resolver 3 explicitly, the other declaring no resolver field under edition 2018, resolver 1's own real historical default) rather than one workspace with a flag toggled, since the resolver is fixed for a whole workspace at the point it is created, not switchable per build.", "at": [{ "step": "consumer_b itself declares core_crate twice: once as a plain dependency, and once as a dev-dependency with fast_mode turned on, for its own tests. Under the resolver edition 2024 makes the default, does that dev-only feature request leak into a plain, non-test build?" }] },
+      { "item": "cargo-hack is not installed in this sandboxed container (cargo hack --feature-powerset fails with 'no such command'), so it is named in post-notes rather than run for real; no measured claim in this topic depends on it.", "at": [{ "deep": "In production" }] },
+      { "item": "This topic reuses Chapter 32's own established shared-workspace convention but does not reuse topic 82's own workspace files directly, since topic 82's core_crate and consumer_crate already exist for a different purpose (rebuild boundaries) and adding feature flags to them would conflate the two topics' own measured claims.", "at": [{ "step": "consumer_b never asks for core_crate's own fast_mode feature. It is built alone, then built again in the same cargo invocation as consumer_a, which does request fast_mode on the shared core_crate. Does consumer_b's own real output change?" }] },
+      { "item": "All of this topic's own measured claims run on real, local cargo workspaces built directly in this sandboxed container, with no crates.io-published dependency involved in any of the three comparisons; core_crate, consumer_a, and consumer_b are all real, working crates built from source each time.", "at": [{ "step": "Recap: a feature's own real combinatorics" }] },
+      { "item": "The Cargo Book's features page and its dependency-resolution page are two genuinely separate pages describing two genuinely different real rules (unification, and the resolver's own historical default), giving this topic two sources rather than multiple quotes drawn from a single page.", "at": [{ "step": "The Cargo Book states these rules directly: cargo unifies the union of every feature requested on a shared dependency across the whole build, and a feature should stay additive so that enabling any combination of features stays safe. Do the three measured comparisons here model exactly the rule and the risk both quotes describe?" }] },
+      { "item": "The specific names fast_mode, fancy, core_crate, consumer_a, and consumer_b are this specific example's own choice; the measured claims illustrate the real shape of feature unification and dev-dependency leakage for any real Cargo workspace at all, not a claim bound to exactly these names.", "at": [{ "step": "The identical comparison, but now consumer_a requests a genuinely additive feature, fancy, which only adds a new function and touches nothing consumer_b already calls. Does the output of consumer_b change this time?" }] },
+      { "item": "An earlier draft of this topic's own third claim attempted to measure whether a prior --workspace build's own unified result would persist into a later, separate, non-unified build invocation; this was tested directly and found false (the later build genuinely reverts to the un-unified result), so the claim was redesigned around the real, reproducible dev-dependency/resolver contrast measured here instead.", "at": [{ "step": "consumer_b itself declares core_crate twice: once as a plain dependency, and once as a dev-dependency with fast_mode turned on, for its own tests. Under the resolver edition 2024 makes the default, does that dev-only feature request leak into a plain, non-test build?" }] }
+    ]
+  },
+  "gapReview": {
+    "date": "2026-10-24",
+    "by": "self-review",
+    "open": []
+  }
+}

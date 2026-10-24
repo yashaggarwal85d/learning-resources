@@ -1,0 +1,11 @@
+[package]
+name = "consumer_a"
+version = "0.1.0"
+edition = "2024"
+
+[features]
+fast_mode = ["core_crate/fast_mode"]
+fancy = ["core_crate/fancy"]
+
+[dependencies]
+core_crate = { path = "../core" }

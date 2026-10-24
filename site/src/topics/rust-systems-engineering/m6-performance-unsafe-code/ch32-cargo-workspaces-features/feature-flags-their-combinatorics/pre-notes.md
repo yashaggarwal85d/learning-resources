@@ -1,0 +1,4 @@
+- **Feature**: a named, optional switch declared in a crate's own `Cargo.toml` `[features]` table, which other code can turn on when it depends on that crate.
+- **Feature unification**: cargo's own real rule that, when several crates in one build depend on the identical crate, the union of every feature any of them requests is what that shared crate is actually built with.
+- **Additive feature**: a feature that only adds new behavior, never changes or disables behavior that already exists without it, so that enabling any combination of features stays safe.
+- **Resolver**: the real cargo component that decides, among other things, which features get unified across normal, dev, and build dependencies; its default changed between Rust editions.
