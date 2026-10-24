@@ -1,0 +1,4 @@
+- **Term**: a monotonically increasing counter that every node agrees defines at most one leader at any given value; a node that sees a higher term immediately treats its own as stale.
+- **Randomized election timeout**: a randomly chosen wait before a follower becomes a candidate, chosen so that one real candidate is likely to start first and win before a second one starts.
+- **Log-up-to-date voting rule**: a candidate may only win a vote if its own log is at least as current as the voter's, comparing the last entry's term first and length second. *Where you meet it:* this is the real rule that rejects an out-of-date candidate, fresh term or not.
+- **PreVote**: an extra round before a real election in which a candidate confirms it could actually win before raising its own term, specifically to stop a partitioned node's own stale, ever-rising term from disrupting a healthy cluster on rejoin.
