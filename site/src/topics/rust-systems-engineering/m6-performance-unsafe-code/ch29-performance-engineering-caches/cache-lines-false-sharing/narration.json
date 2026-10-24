@@ -1,0 +1,68 @@
+{
+  "steps": [
+    {
+      "lines": [
+        "Two unrelated counters, one touched by each of two cores, happen to share one real cache line.",
+        { "beat": 0.3 },
+        "Does writing one counter ever cost the other core anything?"
+      ],
+      "answer": [
+        "Yes, genuinely.",
+        "Every write can invalidate the other core's own cached copy."
+      ]
+    },
+    {
+      "lines": [
+        "Run it for real: the shared layout genuinely pays a real invalidation cost on every single alternating write between the two cores, even though the two counters are otherwise unrelated."
+      ],
+      "takeaway": "\"Unrelated\" data is not the same as \"safe to place on the identical cache line.\""
+    },
+    {
+      "lines": [
+        "Now pad each counter onto its own real cache line instead.",
+        { "beat": 0.3 },
+        "Does that genuinely remove the cost, or only reduce it?"
+      ],
+      "answer": [
+        "It genuinely removes it.",
+        "Entirely, down to zero."
+      ]
+    },
+    {
+      "lines": [
+        "Run it for real: the padded layout genuinely avoids every real cross-core invalidation, at the identical sequence of writes the shared layout paid for."
+      ],
+      "takeaway": "Padding buys all of the cost back, not a partial share of it."
+    },
+    {
+      "lines": [
+        "Run both layouts again, but with far more operations this time.",
+        { "beat": 0.3 },
+        "Does the shared layout's own real cost grow, or does it stay the same no matter how much work runs?"
+      ],
+      "answer": [
+        "It genuinely grows.",
+        "With every additional operation."
+      ]
+    },
+    {
+      "lines": [
+        "Run it for real: the shared layout's own real cost genuinely grows with more operations, while the padded layout's own real cost stays genuinely at zero no matter how many run."
+      ],
+      "takeaway": "False sharing gets worse the longer a real program runs, never better."
+    },
+    {
+      "lines": [
+        "Two real, independent sources on this exact mechanism agree, in their own words.",
+        "Updating one piece of data invalidates the whole real cache line it belongs to, and padding is the real, standard fix."
+      ]
+    },
+    {
+      "lines": [
+        "So here's the real reason this cost is so easy to miss: nothing about these two counters looks wrong in the source code, since neither thread ever touches the other's variable, and that is exactly what makes the bug invisible to a correctness reviewer.",
+        "The hardware, not the program, is the one deciding the real unit of sharing, and it moves data in whole cache lines, so two values a programmer considers completely separate can still be glued together the moment the allocator happens to place them close enough.",
+        "That also closes this whole chapter's own real argument: a program's own cost can hide in a statistic nobody looked at, in a function nobody suspected, or simply in where two unrelated bytes happened to land, and all three need the identical discipline of measuring instead of assuming."
+      ]
+    }
+  ]
+}
