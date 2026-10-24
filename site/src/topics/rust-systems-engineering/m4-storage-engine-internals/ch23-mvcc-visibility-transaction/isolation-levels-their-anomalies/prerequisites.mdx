@@ -1,0 +1,22 @@
+import Resource from '../../../../../components/Resource.astro';
+
+<section class="prereq" data-section="chapter-so-far">
+
+### <span class="n">01</span> Where the last topic left off
+
+<ul class="resources">
+  <Resource kind="reel" host={props.host} domain="rust-systems-engineering" title="Snapshot visibility over version chains">visibility decides which single version a reader sees; it says nothing yet about which concurrent histories across several transactions are even allowed to happen at all.</Resource>
+</ul>
+
+</section>
+
+<section class="prereq" data-section="isolation-primary">
+
+### <span class="n">02</span> The real docs: isolation levels and the serialization anomaly
+
+<ul class="resources">
+  <Resource kind="reading" title="13.1. Introduction (Concurrency Control)" href="https://www.postgresql.org/docs/current/mvcc-intro.html" by="The PostgreSQL Global Development Group">the strictest isolation level, kept through an innovative Serializable Snapshot Isolation technique.</Resource>
+  <Resource kind="reading" title="13.2. Transaction Isolation" href="https://www.postgresql.org/docs/current/transaction-iso.html" by="The PostgreSQL Global Development Group">a real serialization anomaly, shown with two account classes, two sums, and one transaction rolled back.</Resource>
+</ul>
+
+</section>

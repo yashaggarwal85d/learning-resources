@@ -1,0 +1,4 @@
+- **Write skew**: a concurrency anomaly where two transactions each individually preserve a shared invariant they read, but their combined effect, once both commit, violates it. *Where you meet it:* snapshot isolation's own commit rule never catches it.
+- **Serialization anomaly**: the SQL standard's own name for a result that no one-at-a-time ordering of the committed transactions could have produced.
+- **rw-antidependency**: a dependency edge from a transaction to the one whose write invalidated something it read; two such edges running in opposite directions between the same pair is write skew's own signature.
+- **Dependency-graph check**: a stricter test than a same-key write conflict, built from a transaction's own reads and writes, that catches an anomaly a simpler check would miss.

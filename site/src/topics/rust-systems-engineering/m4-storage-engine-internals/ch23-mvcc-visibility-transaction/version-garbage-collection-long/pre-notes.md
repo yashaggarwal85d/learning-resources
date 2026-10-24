@@ -1,0 +1,4 @@
+- **xmin horizon**: the oldest transaction id any currently open snapshot still depends on; nothing with a later deleting transaction can be safely reclaimed past it.
+- **Version garbage collection (GC)**: reclaiming an old, superseded version's own storage, safe only once no open snapshot could possibly still need to see it.
+- **A long-running transaction**: one whose snapshot stays open across many later commits. *Where you meet it:* it genuinely blocks reclaim of everything newer than it, not only what it reads.
+- **VACUUM**: PostgreSQL's own name for the process that removes dead row versions and reclaims their space, coupled directly to this same horizon.

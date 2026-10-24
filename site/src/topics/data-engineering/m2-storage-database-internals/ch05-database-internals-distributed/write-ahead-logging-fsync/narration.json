@@ -1,0 +1,85 @@
+{
+  "topic": "de.write-ahead-logging-fsync",
+  "steps": [
+    {
+      "lines": [
+        "The last topic opened the cache that sits in front of a slow disk.",
+        "But a change that only ever lived in that cache disappears completely the instant the process stops running before it's written back.",
+        "So something has to exist that survives a crash even when the cache itself doesn't."
+      ]
+    },
+    {
+      "lines": [
+        "That something turns out to have its own position, read directly off a live cluster rather than assumed.",
+        "Checked before and after a real write, that position only ever moves forward, never back.",
+        "And the real distance between those two readings turns out to be an exact count, not a rough guess."
+      ]
+    },
+    {
+      "lines": [
+        "Worth checking whether every single change really pays for its own separate trip to make that log durable.",
+        "A real batch of changes happening close together in time, measured directly, shares a single one of those trips across many of them at once.",
+        "Nothing about sharing that trip lets any individual change skip waiting for it to finish first."
+      ]
+    },
+    {
+      "lines": [
+        "Worth reasoning through before the reveal settles it.",
+        "A disk doesn't write an entire page in one physical step. It writes several smaller physical pieces, one after another.",
+        "If power fails partway through, does the result always come out as either every piece landing or none of them?"
+      ],
+      "answer": [
+        "It doesn't, and that gap is exactly why a separate defense has to exist at all.",
+        "Some of those smaller pieces can land on disk while others never do, leaving a result that's part old and part new.",
+        "Nothing reading that result afterward can tell which parts actually finished."
+      ]
+    },
+    {
+      "lines": [
+        "Here's that defense shown directly, not just argued for.",
+        "A real page, changed twice right after a real save point. Measured directly, the full defense against exactly that mixed-up result fires once, on the first change.",
+        "The second change to that same page doesn't trigger it again, because nothing about the risk changed."
+      ]
+    },
+    {
+      "lines": [
+        "A completely different piece of this same machinery is worth checking the same way.",
+        "Several genuinely different system-level ways exist to force a write all the way out to physical storage rather than leave it sitting in some cache along the way.",
+        "Read directly off this sandbox's own cluster, one specific one of those ways turns out to actually be in use, not an abstraction standing in for all of them."
+      ]
+    },
+    {
+      "lines": [
+        "A different engine runs into the identical mixed-up-page risk.",
+        "Named here directly from its own documentation rather than run in this sandbox, that engine reaches for a genuinely different fix: a safety copy, written somewhere else first, checked during recovery instead of trusting the original location at all."
+      ]
+    },
+    {
+      "lines": [
+        "One real, documented failure is worth naming directly rather than glossed over.",
+        "A system once discovered that a failed attempt to force data all the way out to disk could come back claiming success anyway, even though the write never actually landed.",
+        "Once that's even possible, the only response anyone can still trust is starting over completely: stop, and rebuild everything from the last point known to be good."
+      ]
+    },
+    {
+      "lines": [
+        "Pulling the whole topic back together.",
+        "That position in the log, moving only forward by an exact measured amount. A real batch of changes sharing far fewer separate durability trips than it has changes.",
+        "A real mixed-up-page defense that fires exactly once per save point, not on every single change. One specific, chosen way to force a write all the way out, confirmed directly.",
+        "A different engine's own different answer to the identical risk. And the hard lesson that a failed attempt to force data out can never be safely assumed to just need retrying."
+      ]
+    },
+    {
+      "lines": [
+        "One closing scenario, worth reasoning through before the explanation lands.",
+        "A monitoring script sees one of those force-out attempts fail, just once. It writes a warning and lets everything keep running rather than stopping it, reasoning that a single failure probably doesn't matter much.",
+        "Is that response actually safe, and why or why not?"
+      ],
+      "answer": [
+        "It isn't safe, for exactly the reason this topic already named directly.",
+        "The whole point of that hard lesson is that once a failed force-out attempt can happen without the caller reliably finding out, nothing the caller believes about what already landed on disk can be trusted anymore.",
+        "Writing a warning and continuing keeps running on exactly that untrustworthy belief. Stopping and rebuilding from the last known-good point is the only response that doesn't."
+      ]
+    }
+  ]
+}

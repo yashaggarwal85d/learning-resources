@@ -1,0 +1,82 @@
+{
+  "topic": "rust.columnar-layout-arrow-format",
+  "syllabus": [
+    {
+      "clause": "column-major storage reduces bytes touched for narrow projections, improves cache locality and enables SIMD-friendly loops, but it hurts point updates and wide-row access. The Apache Arrow format: validity bitmaps, offset buffers, dictionary arrays, and the variable-size view layouts (Utf8View/BinaryView, \"German strings\") with inline prefixes. arrow-rs as the Rust implementation.",
+      "at": [
+        { "step": "Measured: the column-major table touched far fewer bytes scanning that one column" },
+        { "step": "Measured: the column-major table touched four separate regions updating that one row; the row-major table touched exactly one" },
+        { "step": "Measured: the scan correctly skipped exactly the rows the bitmap marked absent, using one bit, not one byte, per row" }
+      ]
+    }
+  ],
+  "sources": [
+    {
+      "source": "arrow-columnar-format",
+      "items": [
+        {
+          "item": "Data adjacency for sequential access (scans)",
+          "at": [{ "step": "Build the identical rows two ways: a row-major table, and a column-major table split into one buffer per column. Scanning just one column, does the column-major table genuinely touch fewer bytes than the row-major one?" }]
+        },
+        {
+          "item": "the Arrow columnar format provides analytical performance and data locality guarantees in exchange for comparatively more expensive mutation operations",
+          "at": [{ "step": "Measured, in Apache Arrow's own words: analytical performance and data locality guarantees, in exchange for comparatively more expensive mutation operations" }]
+        },
+        {
+          "item": "a 1 (set bit) for index j indicates that the value is not null, while a 0 (bit not set) indicates that it is null",
+          "at": [{ "step": "Mark every seventh row's own value absent, using a packed bitmap, one bit per row, the way Arrow's own format does it. Does a scan over that column correctly skip exactly those marked rows?" }]
+        },
+        {
+          "item": "validity bitmaps are to be initialized to be all unset at allocation time (this includes padding)",
+          "at": [{ "step": "Measured: the scan correctly skipped exactly the rows the bitmap marked absent, using one bit, not one byte, per row" }]
+        },
+        {
+          "item": "arrays having a 0 null count may choose to not allocate the validity bitmap",
+          "at": [{ "step": "Measured: the scan correctly skipped exactly the rows the bitmap marked absent, using one bit, not one byte, per row" }]
+        }
+      ]
+    },
+    {
+      "source": "arrow-buffer-nullbuffer",
+      "items": [
+        {
+          "item": "a NullBuffer is a BooleanBuffer used to encode validity (null values) for Arrow arrays",
+          "at": [{ "step": "The arrow-buffer crate's own docs name the identical trade-off from the implementation side: does handling the validity bitmap separately, rather than folding it into each value, genuinely improve real performance?" }]
+        },
+        {
+          "item": "true indicates that the corresponding value is not NULL",
+          "at": [{ "step": "The arrow-buffer crate's own docs name the identical trade-off from the implementation side: does handling the validity bitmap separately, rather than folding it into each value, genuinely improve real performance?" }]
+        },
+        {
+          "item": "it is more efficient to not set the null buffer if it is known to be all valid",
+          "at": [{ "step": "Measured: the scan correctly skipped exactly the rows the bitmap marked absent, using one bit, not one byte, per row" }]
+        },
+        {
+          "item": "handling the null mask separately in this way can yield significant performance improvements over an iterator approach",
+          "at": [{ "step": "The arrow-buffer crate's own docs name the identical trade-off from the implementation side: does handling the validity bitmap separately, rather than folding it into each value, genuinely improve real performance?" }]
+        }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "self-review",
+    "date": "2026-10-24",
+    "items": [
+      { "item": "The row-major and column-major tables are built over the identical rows (the same formula generating every column's own value, for the identical number of rows), so the measured difference in bytes touched and regions touched is attributable to the layout alone, not to different data.", "at": [{ "step": "Build the identical rows two ways: a row-major table, and a column-major table split into one buffer per column. Scanning just one column, does the column-major table genuinely touch fewer bytes than the row-major one?" }] },
+      { "item": "The narrow-scan byte counts are computed from Rust's own std::mem::size_of for the real struct and element types involved, not hand-picked numbers chosen to make the demonstration work.", "at": [{ "step": "Measured: the column-major table touched far fewer bytes scanning that one column" }] },
+      { "item": "The wide-row update genuinely writes every one of a logical row's four fields in both layouts, so the region count measured (one for row-major, four for column-major) reflects the identical operation applied to the identical row in each layout.", "at": [{ "step": "Measured: the column-major table touched four separate regions updating that one row; the row-major table touched exactly one" }] },
+      { "item": "The validity bitmap is a real bit-packed Vec<u8>, one bit per row, matching Arrow's own documented packed-bitmask convention, not a Vec<bool> standing in for it; the skip count it drives is checked against an independently computed expected count.", "at": [{ "step": "Measured: the scan correctly skipped exactly the rows the bitmap marked absent, using one bit, not one byte, per row" }] },
+      { "item": "The syllabus's own further material on offset buffers, dictionary arrays, and the variable-size Utf8View/BinaryView 'German strings' layout is named in prose in the pre-notes and post-notes rather than separately measured here; this topic measures the simpler, foundational row-major-versus-column-major trade-off and the validity bitmap those further layouts are themselves built on top of.", "at": [{ "step": "Recap: what a column-major layout buys, and what it costs" }] },
+      { "item": "All of this topic's own measured claims run entirely on plain in-memory Rust structs and vectors, with no file, network, or root access needed, opening this chapter's own pattern the way Chapters 19 through 23 opened theirs.", "at": [{ "step": "Recap: what a column-major layout buys, and what it costs" }] },
+      { "item": "This topic deliberately opens Chapter 24 as its first topic, continuing directly from Chapter 23's own closing handoff into a genuinely different subject, physical layout rather than concurrency control, rather than reusing any of Chapter 23's own introduced concepts mechanically.", "at": [{ "step": "Build the identical rows two ways: a row-major table, and a column-major table split into one buffer per column. Scanning just one column, does the column-major table genuinely touch fewer bytes than the row-major one?" }] },
+      { "item": "The Apache Arrow documentation quote and the arrow-buffer crate documentation quote are from two genuinely different sources (a format specification page and a Rust crate's own API documentation), giving this topic two independent primary sources on the identical mechanism rather than multiple quotes drawn from a single page.", "at": [{ "step": "The arrow-buffer crate's own docs name the identical trade-off from the implementation side: does handling the validity bitmap separately, rather than folding it into each value, genuinely improve real performance?" }] },
+      { "item": "The point-update function genuinely writes to all four fields of the chosen logical row in both layouts (not just the one field named in the title), so the region count it measures reflects a true wide-row update rather than a single-field write that would understate the column-major layout's own real scatter cost.", "at": [{ "step": "Measured: the column-major table touched four separate regions updating that one row; the row-major table touched exactly one" }] },
+      { "item": "The specific counts measured here (bytes touched for the narrow scan, regions touched for the wide-row update, the bitmap's own byte count against one byte per row) are this specific ten-thousand-row scenario's own real numbers; they illustrate the direction and shape of the real effect, not a claim to match any particular production table's own measured ratio.", "at": [{ "step": "Measured: the column-major table touched four separate regions updating that one row; the row-major table touched exactly one" }] }
+    ]
+  },
+  "gapReview": {
+    "date": "2026-10-24",
+    "by": "self-review",
+    "open": []
+  }
+}
