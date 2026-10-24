@@ -85,9 +85,9 @@
     },
     {
       "lines": [
-        "The plan that comes back is a sort, with a simple counting step sitting on top of it.",
+        "The plan that comes back is a sort, with a simple counting step added to it.",
         "No table built in memory anywhere in this plan, and no second process helping either.",
-        "The sort itself still has to spill a meaningful amount to disk, since every row has to be put in order before any duplicate can be dropped."
+        "Putting every row in order still means spilling a meaningful amount to disk, since each row has to be ordered before any duplicate can be dropped."
       ]
     },
     {
