@@ -110,17 +110,33 @@ try:
         t0 = time.time()
         path = take_path(line, take)
         with gpu_slot():
-            try:
-                a, sr = generate(line, take)
-            except urllib.error.HTTPError as e:
-                detail = e.read().decode(errors="replace")[-800:]
-                if e.code == 409:  # "busy": another process (another narrate.sh) is mid-take on the shared server
-                    print(f"breeze-server busy on {line[:60]!r}, skipping this take for now", flush=True)
-                    continue
-                sys.exit(f"breeze-server failed on {line[:60]!r}: {detail}")
-            except (urllib.error.URLError, TimeoutError) as e:
-                # mirrors the old CLI "wedged" handling: skip this one take, a later round asks for a fresh one
-                print(f"breeze-server unreachable on {line[:60]!r} ({e}), skipping this take", flush=True)
+            # Several concurrent narrate.sh processes (different topics) share this one breeze-server, which only
+            # ever serves one request at a time: a 409 means another process's take is in flight right now, not
+            # that this take is bad. Wait our turn here instead of giving up on it — immediately moving on to the
+            # next take let whichever process happened to be mid-stream keep winning every race, so a topic running
+            # at the same time as a bigger one could lose almost every take in a round and fail the whole round on
+            # pure contention (observed: a 100-line topic lost 2 of its last 4 rounds to an unrelated topic's busy
+            # server, exhausting its retry budget with nothing wrong in the lines themselves).
+            a = sr = None
+            gave_up = False
+            for attempt in range(30):
+                try:
+                    a, sr = generate(line, take)
+                    break
+                except urllib.error.HTTPError as e:
+                    detail = e.read().decode(errors="replace")[-800:]
+                    if e.code != 409:
+                        sys.exit(f"breeze-server failed on {line[:60]!r}: {detail}")
+                    time.sleep(1 + attempt * 0.2)
+                except (urllib.error.URLError, TimeoutError) as e:
+                    # mirrors the old CLI "wedged" handling: skip this one take, a later round asks for a fresh one
+                    print(f"breeze-server unreachable on {line[:60]!r} ({e}), skipping this take", flush=True)
+                    gave_up = True
+                    break
+            else:
+                print(f"breeze-server stayed busy on {line[:60]!r} after waiting, skipping this take for now", flush=True)
+                gave_up = True
+            if gave_up:
                 continue
         if a.size == 0:
             sys.exit(f"breeze-server returned no audio for {line[:60]!r}")

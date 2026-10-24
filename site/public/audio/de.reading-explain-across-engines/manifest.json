@@ -1,0 +1,599 @@
+{
+ "topic": "de.reading-explain-across-engines",
+ "voice": "breeze-mellow-v2",
+ "asr": "large-v3-turbo",
+ "clips": {
+  "01": {
+   "hash": "d7e97b05ce71bb34",
+   "takes": [
+    "5469d4122a9c146f2190",
+    "69fd39f6b295b7ec18ee",
+    "67b547bde5d144813dca"
+   ],
+   "duration": 19.127,
+   "lines": [
+    {
+     "text": "Run the exact same command on two versions of the same engine, one update apart.",
+     "start": 0.15,
+     "end": 6.918
+    },
+    {
+     "text": "On the older version, the plan shows nothing about memory and disk traffic at all.",
+     "start": 7.338,
+     "end": 12.117
+    },
+    {
+     "text": "On the newer version, that same line shows up on its own, completely unasked for.",
+     "start": 12.537,
+     "end": 18.777
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -1.9,
+   "wpm": 141,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "02": {
+   "hash": "dcd85e4c99e5224e",
+   "takes": [
+    "8d0e511dad1b9ca3e8a9",
+    "dbc8075b1c73969fe75c"
+   ],
+   "duration": 14.99,
+   "lines": [
+    {
+     "text": "Nothing about the query changed between those two runs, and nothing extra was requested either time.",
+     "start": 0.15,
+     "end": 6.946
+    },
+    {
+     "text": "So why would the exact same command print more information, just because it ran on a newer version?",
+     "start": 7.766,
+     "end": 14.64
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 136,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "02a": {
+   "hash": "4d40c4b5677e4936",
+   "takes": [
+    "e4d5273ca1a68a5cbdcc",
+    "c9b32cd9a76d98e83e0b"
+   ],
+   "duration": 16.348,
+   "lines": [
+    {
+     "text": "The engine's own default for what gets shown changed, between those two versions.",
+     "start": 0.15,
+     "end": 5.904
+    },
+    {
+     "text": "That's a real, dated decision the project made about what to show automatically, not a bug, and not the planner reasoning about this one query in particular.",
+     "start": 6.324,
+     "end": 15.998
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 147,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "03": {
+   "hash": "f366b904600221df",
+   "takes": [
+    "ba1c6ece4f0fcc0e82ce",
+    "435ff521b511a1d77e7a",
+    "a412b73aee00cfa7ad2b"
+   ],
+   "duration": 32.35,
+   "lines": [
+    {
+     "text": "The newer version's own documentation states the change plainly: asking it to actually run the query now also turns on detailed memory and disk reporting, by default.",
+     "start": 0.15,
+     "end": 11.764
+    },
+    {
+     "text": "The older version never did that. Asking it to run the query only ever showed timing, nothing about memory or disk, unless that reporting was requested separately.",
+     "start": 12.184,
+     "end": 23.295
+    },
+    {
+     "text": "That's exactly what this topic's own older instance still requires, side by side with the newer one on the same machine.",
+     "start": 23.715,
+     "end": 32.0
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 139,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "04": {
+   "hash": "4684530672dee42e",
+   "takes": [
+    "6ab78f6c867610cb5d0b",
+    "5d7bd7e587dd06fd0d18",
+    "edfb749a285adcbbdba0"
+   ],
+   "duration": 24.661,
+   "lines": [
+    {
+     "text": "Every engine's plan carries two numbers for the same spot: what the planner guessed beforehand, and what actually came out once the query ran.",
+     "start": 0.15,
+     "end": 9.842
+    },
+    {
+     "text": "Here, the planner guessed a little over one thousand rows for one spot in the plan.",
+     "start": 10.262,
+     "end": 15.421
+    },
+    {
+     "text": "Two thousand rows actually came out of that same spot \u2014 a real, naturally occurring gap, not a constructed worst case.",
+     "start": 15.841,
+     "end": 24.311
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -2.0,
+   "wpm": 146,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "05": {
+   "hash": "b8f4d634764603e5",
+   "takes": [
+    "64ca313c7fe6ad0b0038",
+    "792e475f2aa035ead528",
+    "a5b08455bcdbdec6b5b1"
+   ],
+   "duration": 28.797,
+   "lines": [
+    {
+     "text": "This same chapter already measured a closely related question: whether an operator ran within its own memory budget, or had to spill extra data to disk.",
+     "start": 0.15,
+     "end": 11.102
+    },
+    {
+     "text": "That measurement read straight off a few specific numbers the engine itself printed, once asked.",
+     "start": 11.522,
+     "end": 17.786
+    },
+    {
+     "text": "Every engine answers that same question somewhere in its own output. Only the name of the field, and where it shows up, actually changes.",
+     "start": 18.206,
+     "end": 28.447
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -1.8,
+   "wpm": 135,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "06": {
+   "hash": "08bf4d83cf50ca0a",
+   "takes": [
+    "269617eb1e1987b96405",
+    "e440334c127c44be08f0"
+   ],
+   "duration": 16.072,
+   "lines": [
+    {
+     "text": "Five different engines format all of this five different ways, with five different names for closely related things.",
+     "start": 0.15,
+     "end": 8.71
+    },
+    {
+     "text": "Facing an unfamiliar plan from any one of them, where should your eye actually land first?",
+     "start": 9.53,
+     "end": 15.722
+    }
+   ],
+   "lufs": -16.1,
+   "true_peak": -3.1,
+   "wpm": 127,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "06a": {
+   "hash": "d74e7e8d09657496",
+   "takes": [
+    "7b7117d1b36dd5f5250e",
+    "034b22b5bb6c306bba77"
+   ],
+   "duration": 14.251,
+   "lines": [
+    {
+     "text": "Wherever the real number diverges furthest from what was expected.",
+     "start": 0.15,
+     "end": 4.157
+    },
+    {
+     "text": "A huge but expected count isn't a problem on its own, and a small spot run over and over can matter more than a big one run just once.",
+     "start": 4.577,
+     "end": 13.901
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -2.1,
+   "wpm": 164,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "07": {
+   "hash": "4f5da795a3ad95e0",
+   "takes": [
+    "0d1a57f311155b12a67c",
+    "14ee21d150c8c0a4ec5d",
+    "2020ce0486241ed7e337"
+   ],
+   "duration": 19.423,
+   "lines": [
+    {
+     "text": "Ask one particular engine for its cost-aware plan, and its own estimate is sitting right there in the text.",
+     "start": 0.15,
+     "end": 6.804
+    },
+    {
+     "text": "A range of one million rows, printed directly on the exact spot in the plan that produces them.",
+     "start": 7.224,
+     "end": 13.689
+    },
+    {
+     "text": "No separate screen needed to see that number. It's part of the plan itself.",
+     "start": 14.109,
+     "end": 19.073
+    }
+   ],
+   "lufs": -16.1,
+   "true_peak": -2.3,
+   "wpm": 161,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "08": {
+   "hash": "e86114a8fe469f98",
+   "takes": [
+    "8fa51bc846d4e4b9c7eb",
+    "ecf996a794871a778a3a",
+    "39d8afb5f118532930e5"
+   ],
+   "duration": 30.849,
+   "lines": [
+    {
+     "text": "What that plan text can't tell you is what the run actually did once it finished.",
+     "start": 0.15,
+     "end": 5.962
+    },
+    {
+     "text": "For that, look somewhere else entirely: a comfortable run reports nothing spilled to memory or disk, read straight from that engine's own separate dashboard and its programming interface.",
+     "start": 6.382,
+     "end": 19.253
+    },
+    {
+     "text": "A memory-constrained run of a similar job reports a real, measured amount spilled to both memory and disk \u2014 not a hypothetical number, an observed one.",
+     "start": 19.673,
+     "end": 30.499
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 136,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "09": {
+   "hash": "498827b7d193ab3d",
+   "takes": [
+    "553e02e2637b0b5daf21",
+    "d00fab6de581f1acca6f"
+   ],
+   "duration": 15.769,
+   "lines": [
+    {
+     "text": "A completed stage's own reported numbers include how many bytes it moved between machines, and separately, how many bytes it had to spill to memory or disk.",
+     "start": 0.15,
+     "end": 11.132
+    },
+    {
+     "text": "Which one tells you a stage actually ran out of memory?",
+     "start": 11.852,
+     "end": 15.419
+    }
+   ],
+   "lufs": -16.3,
+   "true_peak": -2.5,
+   "wpm": 145,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "09a": {
+   "hash": "587f9840383c9a14",
+   "takes": [
+    "43e4a6bbe3e2cc43f843",
+    "341fda67ceca3bfe2e36"
+   ],
+   "duration": 17.123,
+   "lines": [
+    {
+     "text": "A nonzero spilled-bytes number.",
+     "start": 0.15,
+     "end": 2.33
+    },
+    {
+     "text": "Moving data between stages is ordinary, expected work in every healthy run. Spilling is a separate, specific signal that only shows up once an operator actually runs out of the memory it was given.",
+     "start": 2.75,
+     "end": 16.773
+    }
+   ],
+   "lufs": -16.1,
+   "true_peak": -2.4,
+   "wpm": 137,
+   "wer": 0.4,
+   "exact": false,
+   "tolerated": [
+    {
+     "line": "A nonzero spilled-bytes number.",
+     "said": "nonzero",
+     "heard": "non zero"
+    }
+   ]
+  },
+  "10": {
+   "hash": "4ad8280c086469ca",
+   "takes": [
+    "0ad9c0c3eb9cf7bc37af",
+    "58b09d5f8d356377e07d",
+    "ed9abda26b299909a6df"
+   ],
+   "duration": 21.131,
+   "lines": [
+    {
+     "text": "One engine's own documentation describes a plan that shows the processing time spent in each stage, right alongside the relative cost of each individual step inside it.",
+     "start": 0.15,
+     "end": 11.664
+    },
+    {
+     "text": "Both of those numbers sit inline in the same plan text.",
+     "start": 12.084,
+     "end": 16.173
+    },
+    {
+     "text": "No separate screen is needed to see where the time actually went.",
+     "start": 16.593,
+     "end": 20.781
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 142,
+   "wer": 0.18181818181818182,
+   "exact": false,
+   "tolerated": [
+    {
+     "line": "Both of those numbers sit inline in the same plan text.",
+     "said": "inline",
+     "heard": "in line"
+    }
+   ]
+  },
+  "11": {
+   "hash": "18ef3beb27ddee2d",
+   "takes": [
+    "5ab7482ae6618ae26c98",
+    "c5e5ebe5e0e62b9f09df",
+    "75d9e37aa32fcf3a57ba"
+   ],
+   "duration": 21.21,
+   "lines": [
+    {
+     "text": "A different engine names this information with its own dedicated screens.",
+     "start": 0.15,
+     "end": 4.636
+    },
+    {
+     "text": "One screen reports how many pieces of a table actually got scanned, against how many pieces existed in total.",
+     "start": 5.056,
+     "end": 12.283
+    },
+    {
+     "text": "A separate screen reports how much data had to spill, broken out by whether it spilled locally or somewhere further away.",
+     "start": 12.703,
+     "end": 20.86
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 144,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "12": {
+   "hash": "326b9d5bdc4afad3",
+   "takes": [
+    "28edb19800da0d8d91ce",
+    "31ad2d3247f0dceaf5d0",
+    "56cd2b3da82cbd96169e"
+   ],
+   "duration": 26.335,
+   "lines": [
+    {
+     "text": "A fourth engine draws its own plan as a picture instead of text: boxes for each stage, with lines connecting them.",
+     "start": 0.15,
+     "end": 7.979
+    },
+    {
+     "text": "The estimated number of rows moving between stages sits on those connecting lines, not inside the boxes themselves.",
+     "start": 8.399,
+     "end": 16.459
+    },
+    {
+     "text": "That same engine also names, in its own words, spilling to disk as a specific cause of a query slowing down dramatically.",
+     "start": 16.879,
+     "end": 25.985
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -1.9,
+   "wpm": 139,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "13": {
+   "hash": "041c6ca3af83393d",
+   "takes": [
+    "aaa73332d6c8fa436444",
+    "a402419a41866e006c83",
+    "4be9d8e11615ce0edc59"
+   ],
+   "duration": 36.464,
+   "lines": [
+    {
+     "text": "Five engines, five vocabularies, and still one fixed order worth checking regardless of which one is in front of you.",
+     "start": 0.15,
+     "end": 9.517
+    },
+    {
+     "text": "Start with the biggest gap between what was expected and what actually happened. Then a spot run far more times than expected. Then any sign of spilling. Then whichever single spot is simply the slowest or the widest.",
+     "start": 9.937,
+     "end": 27.213
+    },
+    {
+     "text": "Learn that one order once, and every new engine you meet is just a new set of field names hung on the same four questions.",
+     "start": 27.633,
+     "end": 36.114
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.6,
+   "wpm": 137,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "14": {
+   "hash": "238342a55cc01fe9",
+   "takes": [
+    "a6771a4b33aecd2dc3e4",
+    "31c02b44041e995e7d8f"
+   ],
+   "duration": 11.572,
+   "lines": [
+    {
+     "text": "One spot in a plan reports an expected count of five hundred.",
+     "start": 0.15,
+     "end": 4.559
+    },
+    {
+     "text": "The run actually produces fifty thousand. Is that estimate close, or badly off?",
+     "start": 5.279,
+     "end": 11.222
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 130,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "14a": {
+   "hash": "61d45d83e972d980",
+   "takes": [
+    "8c50f2974c80e465127c",
+    "9b402396539f0c8171bb"
+   ],
+   "duration": 17.875,
+   "lines": [
+    {
+     "text": "Badly off, and worth investigating first.",
+     "start": 0.15,
+     "end": 3.03
+    },
+    {
+     "text": "A hundred-times gap between what was expected and what actually happened is exactly the kind of divergence this topic's own checking order puts at the very top, on any engine.",
+     "start": 3.45,
+     "end": 17.525
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 124,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "15": {
+   "hash": "b8229c4f989db6ce",
+   "takes": [
+    "9d6da79e31d7f600ca5f",
+    "13b8a6084dec5cba696b"
+   ],
+   "duration": 12.416,
+   "lines": [
+    {
+     "text": "A stage reports a large number of bytes moved between machines, and a separate spilled-bytes number sitting at exactly zero.",
+     "start": 0.15,
+     "end": 8.62
+    },
+    {
+     "text": "Did that stage run out of memory?",
+     "start": 9.34,
+     "end": 12.066
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 135,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "15a": {
+   "hash": "2511d735741613ab",
+   "takes": [
+    "db8144497ac959a0c0e9",
+    "df06861761f3042aba88"
+   ],
+   "duration": 18.288,
+   "lines": [
+    {
+     "text": "No. A zero spilled-bytes number means it stayed within its own budget.",
+     "start": 0.15,
+     "end": 5.402
+    },
+    {
+     "text": "Moving data between stages is ordinary, expected work on its own. Spilling is a separate, specific signal, and this stage's own number says it simply never happened here.",
+     "start": 5.822,
+     "end": 17.938
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 135,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  }
+ }
+}
