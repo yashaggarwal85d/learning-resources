@@ -1,0 +1,72 @@
+{
+  "topic": "rust.structured-fields-opentelemetry-export",
+  "syllabus": [
+    {
+      "clause": "structured fields over formatted-sentence logs: request_id, tenant, shard, partition, operation, attempt, queue depth.",
+      "at": [
+        { "step": "Three real events each carry a real, structured attempt field (1, 2, 3) alongside their own differently-worded, rendered message. Does summing the structured field directly give the real, correct total?" },
+        { "step": "Measured: summing the real, structured attempt field across all three real events gives exactly six, the real, correct total, regardless of how differently each event's own message happens to be worded" },
+        { "step": "The identical total is attempted again, this time recovered only from each event's own rendered, formatted message, by pulling out the first run of digits found in it. Does that give the identical, correct total too?" },
+        { "step": "Measured: the identical total, recovered only from each event's own rendered message, genuinely comes out to three, not six, since one real message spells its own number out as a word rather than a digit" },
+        { "deep": "Internals" }
+      ]
+    },
+    {
+      "clause": "tracing-opentelemetry → OTLP, and W3C trace-context propagation across services and Kafka headers.",
+      "at": [
+        { "step": "A real W3C Trace Context traceparent header is built from a real trace id, a real span id, and a real sampled flag, then parsed back. Does it round-trip exactly? Does a real, malformed header get rejected instead of guessed at?" },
+        { "step": "Measured: the real, formatted traceparent header, parsed back, genuinely recovers the identical trace id, span id, and sampled flag it was built from, and a real, malformed header is genuinely rejected rather than silently guessed at" },
+        { "deep": "In production" }
+      ]
+    }
+  ],
+  "sources": [
+    {
+      "source": "w3c-trace-context",
+      "items": [
+        {
+          "item": "version-format = trace-id \"-\" parent-id \"-\" trace-flags",
+          "at": [{ "step": "A real W3C Trace Context traceparent header is built from a real trace id, a real span id, and a real sampled flag, then parsed back. Does it round-trip exactly? Does a real, malformed header get rejected instead of guessed at?" }]
+        },
+        {
+          "item": "It is represented as a 16-byte array, for example, 4bf92f3577b34da6a3ce929d0e0e4736",
+          "at": [{ "step": "Measured: the real, formatted traceparent header, parsed back, genuinely recovers the identical trace id, span id, and sampled flag it was built from, and a real, malformed header is genuinely rejected rather than silently guessed at" }]
+        },
+        {
+          "item": "It is represented as an 8-byte array, for example, 00f067aa0ba902b7",
+          "at": [{ "step": "Measured: the real, formatted traceparent header, parsed back, genuinely recovers the identical trace id, span id, and sampled flag it was built from, and a real, malformed header is genuinely rejected rather than silently guessed at" }]
+        }
+      ]
+    },
+    {
+      "source": "fields",
+      "items": [
+        {
+          "item": "Spans and events may be annotated with key-value data, referred to as fields",
+          "at": [{ "step": "The W3C Trace Context specification and the tracing crate's own documentation state this directly: a trace id and a parent id are real, specific byte values joined into one real, specified format; a span or event's own fields are key-value data, not unstructured text. Do this topic's own three measured comparisons model exactly the rule both sources describe?" }]
+        }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "self-review",
+    "date": "2026-10-24",
+    "items": [
+      { "item": "All three claims are measured by parsing a real binary's own stdout for values it itself computed and printed, never by re-deriving a value the Python harness could compute independently; the harness only checks what the real Rust program already asserted about itself.", "at": [{ "step": "Three real events each carry a real, structured attempt field (1, 2, 3) alongside their own differently-worded, rendered message. Does summing the structured field directly give the real, correct total?" }] },
+      { "item": "The structured-field total is recovered by a real tracing_subscriber::Layer visiting each event's own typed attempt field directly, through tracing::field::Visit, never by formatting the event into text first and then re-parsing that text.", "at": [{ "step": "Measured: summing the real, structured attempt field across all three real events gives exactly six, the real, correct total, regardless of how differently each event's own message happens to be worded" }] },
+      { "item": "The formatted-message-only total is deliberately computed by regex-extracting the first run of digits out of each event's own rendered message text, which is exactly the lossy, informal recovery a person reading a log file by eye would otherwise have to do.", "at": [{ "step": "The identical total is attempted again, this time recovered only from each event's own rendered, formatted message, by pulling out the first run of digits found in it. Does that give the identical, correct total too?" }] },
+      { "item": "One of the three real messages is deliberately worded as 'third attempt now running' rather than 'attempt 3 now running', so the digit-based text recovery genuinely fails to find any number in it at all, which is the real, specific mechanism behind the wrong total rather than a contrived or hypothetical one.", "at": [{ "step": "Measured: the identical total, recovered only from each event's own rendered message, genuinely comes out to three, not six, since one real message spells its own number out as a word rather than a digit" }] },
+      { "item": "The traceparent header this topic builds and parses uses the W3C specification's own canonical worked example values for the trace id and parent id, so the measured round-trip and the specification's own example are the identical bytes, not merely a structurally similar stand-in.", "at": [{ "step": "A real W3C Trace Context traceparent header is built from a real trace id, a real span id, and a real sampled flag, then parsed back. Does it round-trip exactly? Does a real, malformed header get rejected instead of guessed at?" }] },
+      { "item": "The malformed header this topic's own code rejects is a real, deliberately shortened trace id field, which fails the specification's own fixed-length hex requirement; the parser's rejection is measured directly as returning no value at all, never a default or a best-effort guess.", "at": [{ "step": "Measured: the real, formatted traceparent header, parsed back, genuinely recovers the identical trace id, span id, and sampled flag it was built from, and a real, malformed header is genuinely rejected rather than silently guessed at" }] },
+      { "item": "request_id, tenant, shard, partition, operation, and queue depth are named directly in Internals rather than measured in code, since this topic's own crate needs only one real structured field, attempt, to demonstrate the identical property the syllabus names for all of them: a typed field survives being queried where the same value in a sentence does not.", "at": [{ "deep": "Internals" }] },
+      { "item": "tracing-opentelemetry, a real OTLP collector, and a real Kafka broker are named in In production rather than measured, since none of the three is reachable from this sandboxed container; this topic's own code instead implements and measures the real traceparent header format directly, which is the part of the propagation mechanism that survives the network.", "at": [{ "deep": "In production" }] },
+      { "item": "The W3C Trace Context specification and the tracing crate's own field documentation are two genuinely separate sources describing two genuinely different real mechanisms (a wire header format, and an in-process typed field), giving this topic two sources rather than multiple quotes drawn from a single page.", "at": [{ "step": "The W3C Trace Context specification and the tracing crate's own documentation state this directly: a trace id and a parent id are real, specific byte values joined into one real, specified format; a span or event's own fields are key-value data, not unstructured text. Do this topic's own three measured comparisons model exactly the rule both sources describe?" }] },
+      { "item": "The specific field name attempt and the specific total six are this topic's own example's choice; the measured claims illustrate the real, general property that a typed field survives being summed or queried where a formatted sentence does not, for any real structured field at all, not a claim bound to exactly this field or this total.", "at": [{ "step": "Recap: a field that survives being queried" }] }
+    ]
+  },
+  "gapReview": {
+    "date": "2026-10-24",
+    "by": "self-review",
+    "open": []
+  }
+}

@@ -1,0 +1,22 @@
+import Resource from '../../../../../components/Resource.astro';
+
+<section class="prereq" data-section="chapter-so-far">
+
+### <span class="n">01</span> Where the last topic left off
+
+<ul class="resources">
+  <Resource kind="reel" host={props.host} domain="rust-systems-engineering" title="Spans and events in async code">a span that survives every real await inside it tells you when something happened; this topic asks what, specifically, was true while it was happening.</Resource>
+</ul>
+
+</section>
+
+<section class="prereq" data-section="fields-primary">
+
+### <span class="n">02</span> The real docs: the W3C Trace Context spec and tracing's own field docs
+
+<ul class="resources">
+  <Resource kind="reading" title="Trace Context" href="https://www.w3.org/TR/trace-context/" by="W3C">a trace id and a parent id as real, specific byte values in one specified format.</Resource>
+  <Resource kind="reading" title="tracing::field" href="https://docs.rs/tracing/latest/tracing/field/index.html" by="docs.rs">key-value data, not unstructured text.</Resource>
+</ul>
+
+</section>

@@ -1,0 +1,4 @@
+- **Structured field**: a real, typed key-value pair (`attempt = 1u64`) attached to a span or event, recorded as real typed data rather than only rendered into a formatted sentence.
+- **Formatted-sentence log**: a real log line whose own values are embedded as text inside a human-readable sentence, recoverable only by re-parsing that sentence afterward.
+- **W3C Trace Context**: a real, specified header format (`traceparent`) carrying a trace id, a parent (span) id, and a sampled flag, designed to survive being built by one real system and parsed by a genuinely different one.
+- **OTLP**: the OpenTelemetry Protocol, the real wire format a tracing system exports its own real spans and events to, for a real, separate collector to receive.
