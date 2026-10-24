@@ -3232,4 +3232,24 @@ export const TOPICS: TopicMeta[] = [
     handoff:
       "Every acceleration in this chapter — profiling, Arrow, Polars, a hand-built PyO3 extension — still assumed a database engine already existed underneath, already written in C or Rust. Next chapter opens that engine itself, starting from the single fixed-size page every one of them reads and writes.",
   },
+  {
+    id: 'de.pages-slotted-pages-tuple',
+    domain: 'data-engineering',
+    slug: 'data-engineering/m2-storage-database-internals/ch05-database-internals-distributed/pages-slotted-pages-tuple',
+    title: 'Pages, slotted pages and tuple layout',
+    syllabusTitle: 'Pages, slotted pages and tuple layout',
+    kind: 'full',
+    status: 'held',
+    milestone: { number: 2, title: 'Storage: Database Internals, Files & the Lakehouse' },
+    chapter: { number: 5, title: 'Database Internals and Distributed Storage', section: '5.1' },
+    minutes: 15,
+    verified: '2026-10-24',
+    introduces: ['slotted-page-layout', 'tuple-identity-slots'],
+    uses: [],
+    declared: [],
+    bridge:
+      "Every acceleration in Chapter 4 — profiling, Arrow, Polars, a hand-built PyO3 extension — still assumed a database engine already existed underneath, already written in C or Rust. This topic opens that engine itself, starting from the single fixed-size page every one of them reads and writes.",
+    handoff:
+      "A page sitting on disk is only useful if an engine doesn't have to read it from disk on every access. The next question is the cache in front of it: the buffer pool.",
+  },
 ];

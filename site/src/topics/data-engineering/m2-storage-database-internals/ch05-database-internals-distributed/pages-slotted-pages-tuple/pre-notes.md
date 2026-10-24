@@ -1,0 +1,5 @@
+- **Page**: the fixed-size unit (commonly 8 kB) a table or index is stored as an array of, the unit a real engine reads and writes at a time. *Where you meet it:* every step, read directly off this sandbox's own Postgres cluster.
+- **Heap tuple**: a single row's own stored representation inside a page, with a fixed-size header before the real column data. *Where you meet it:* the null-bitmap reveal.
+- **TOAST**: PostgreSQL's own mechanism for compressing and/or chunking a value too large to fit comfortably in a page, into a separate side table. *Where you meet it:* the TOAST reveal and its real measured chunk count.
+- **Transaction ID (XID)**: the identifier a transaction is stamped with, used to decide which row versions are visible to which readers. *Where you meet it:* named on the page header, not taught in depth here — full treatment is the next topic's own write-ahead-logging material.
+- **VACUUM**: Postgres's own maintenance operation that reclaims space left behind by deleted or superseded rows. *Where you meet it:* the slot-stability reveal, run for real against this sandbox's own cluster.
