@@ -1,0 +1,66 @@
+{
+  "topic": "rust.systems-design-worksheet",
+  "syllabus": [
+    {
+      "clause": "resources, owners, sharing rules, queues, persistence boundary, failure modes, consistency rule, backpressure point and observability signals.",
+      "at": [
+        { "step": "A real burst of eight requests, arriving faster than one worker can finish them, hits a real service whose own backpressure point was stated on purpose, capacity two. Does its real queue length stay capped?" },
+        { "step": "Measured: of the eight real requests, three are genuinely admitted and five genuinely rejected, and the real queue length at the checkpoint stays at exactly two" },
+        { "step": "The identical real burst of eight requests hits a second, independent service that never states its own backpressure point at all. Does leaving that real decision implicit change what actually happens?" },
+        { "step": "Measured: all eight real requests are genuinely admitted, none rejected, and the real queue length at the identical checkpoint has grown to seven" },
+        { "deep": "In production" }
+      ]
+    },
+    {
+      "clause": "If any of these is implicit, the design is not finished.",
+      "at": [
+        { "step": "Side by side, under the identical real overload, which real design actually protects the service behind it?" },
+        { "step": "Measured: the identical eight-request burst leaves one real queue capped at two and the other genuinely climbing to seven, side by side" },
+        { "step": "The tokio::sync::mpsc documentation states this directly: a bounded channel communicates with backpressure, an unbounded one communicates without it. Does this topic's own measured comparison match exactly what both of the module's own functions describe?" },
+        { "deep": "Internals" }
+      ]
+    }
+  ],
+  "sources": [
+    {
+      "source": "mpsc-bounded",
+      "items": [
+        {
+          "item": "Creates a bounded mpsc channel for communicating between asynchronous tasks with backpressure",
+          "at": [{ "step": "Measured: of the eight real requests, three are genuinely admitted and five genuinely rejected, and the real queue length at the checkpoint stays at exactly two" }]
+        }
+      ]
+    },
+    {
+      "source": "mpsc-unbounded",
+      "items": [
+        {
+          "item": "Creates an unbounded mpsc channel for communicating between asynchronous tasks without backpressure",
+          "at": [{ "step": "Measured: all eight real requests are genuinely admitted, none rejected, and the real queue length at the identical checkpoint has grown to seven" }]
+        }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "self-review",
+    "date": "2026-10-24",
+    "items": [
+      { "item": "The burst size (eight), capacity (two), and worker delay (150ms) are chosen together so a real sequential burst genuinely produces a clean three-admitted, five-rejected split for the bounded instance, with wide enough real margins that the split is dependable rather than a coincidence of close timing.", "at": [{ "step": "A real burst of eight requests, arriving faster than one worker can finish them, hits a real service whose own backpressure point was stated on purpose, capacity two. Does its real queue length stay capped?" }] },
+      { "item": "Queue length is measured with hand-rolled enqueued and started atomic counters, read at the identical moment for both instances, rather than with tokio::sync::mpsc::Receiver::len(), which exists and works on both channel kinds but would require sharing a receiver between the worker task and the measuring code in a way that risks a real deadlock, named directly in Internals.", "at": [{ "step": "Measured: of the eight real requests, three are genuinely admitted and five genuinely rejected, and the real queue length at the checkpoint stays at exactly two" }] },
+      { "item": "The unbounded instance is a genuinely independent real service, its own TcpListener, its own channel, its own counters, not the bounded instance reused after the fact, so its own measured numbers are never contaminated by state the first scenario already left behind.", "at": [{ "step": "The identical real burst of eight requests hits a second, independent service that never states its own backpressure point at all. Does leaving that real decision implicit change what actually happens?" }] },
+      { "item": "The unbounded instance's own submit handler is measured to return a success response for every one of the eight requests, a real, observed HTTP status from the real handler itself, never a status the test harness assigns by assuming an unbounded channel always succeeds.", "at": [{ "step": "Measured: all eight real requests are genuinely admitted, none rejected, and the real queue length at the identical checkpoint has grown to seven" }] },
+      { "item": "The comparison step draws its own two numbers, two and seven, from the exact same two runs already measured in the prior two reveals, never a third, separate run, so the side-by-side claim is genuinely about the same real data rather than a fresh measurement that might not agree.", "at": [{ "step": "Side by side, under the identical real overload, which real design actually protects the service behind it?" }] },
+      { "item": "The seven-versus-two gap is wide enough, relative to the burst size of eight, that ordinary scheduling or timing noise on the container running this topic's own checks cannot plausibly close it, so the measured difference is a real, structural one rather than an artifact of this run in particular.", "at": [{ "step": "Measured: the identical eight-request burst leaves one real queue capped at two and the other genuinely climbing to seven, side by side" }] },
+      { "item": "The two quoted sentences come from the identical docs.rs page's own two function-level summaries, for tokio::sync::mpsc::channel and tokio::sync::mpsc::unbounded_channel respectively, not paraphrased or combined from separate pages, so the claim that the module states this distinction in its own words is checked against the module's own exact text.", "at": [{ "step": "The tokio::sync::mpsc documentation states this directly: a bounded channel communicates with backpressure, an unbounded one communicates without it. Does this topic's own measured comparison match exactly what both of the module's own functions describe?" }] },
+      { "item": "Receiver::len() was verified, in a throwaway scratch test outside this topic's own crate, to report a real, correct count on both a bounded and an unbounded receiver before it was deliberately set aside in favor of the atomic-counter design, named directly in Internals, so the chosen design is a considered trade-off rather than an unexamined default.", "at": [{ "deep": "Internals" }] },
+      { "item": "The remaining eight items of the worksheet's own nine, named in In production, are each answerable by the identical explicit-versus-implicit comparison this topic measures for the ninth; this topic does not re-run that comparison eight more times, since Chapter 34's own real service only gives this topic a concrete backpressure point to measure directly.", "at": [{ "deep": "In production" }] },
+      { "item": "The specific burst size, capacity, and delay in this topic's own crate are this example's own choice, with wide real margins on every side; the measured claims illustrate the real, general property that an unstated backpressure point defaults to unbounded growth for any real queued service at all, not a claim bound to exactly these numbers.", "at": [{ "step": "Recap: a question nobody actually answered" }] },
+      { "item": "Both services in this topic share the identical handler and worker shape Chapter 34 established, down to the field names, so the only real variable between the two measured runs is the one thing this topic is actually testing, whether the channel's own capacity was stated or left to default.", "at": [{ "step": "Recap: a question nobody actually answered" }] }
+    ]
+  },
+  "gapReview": {
+    "date": "2026-10-24",
+    "by": "self-review",
+    "open": []
+  }
+}

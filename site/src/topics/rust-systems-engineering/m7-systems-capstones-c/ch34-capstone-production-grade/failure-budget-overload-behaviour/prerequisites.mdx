@@ -1,0 +1,22 @@
+import Resource from '../../../../../components/Resource.astro';
+
+<section class="prereq" data-section="chapter-so-far">
+
+### <span class="n">01</span> Where the last topic left off
+
+<ul class="resources">
+  <Resource kind="reel" host={props.host} domain="rust-systems-engineering" title="Service topology and state boundaries">a rejected request stopping cleanly at its own real boundary is a real, structural property of one request at a time; this topic asks about the shape of many requests arriving at once.</Resource>
+</ul>
+
+</section>
+
+<section class="prereq" data-section="budget-primary">
+
+### <span class="n">02</span> The real docs: load_shed and the SRE book's error budgets
+
+<ul class="resources">
+  <Resource kind="reading" title="load_shed" href="https://docs.rs/tower/latest/tower/load_shed/index.html" by="docs.rs">middleware for shedding load when an inner service isn't ready.</Resource>
+  <Resource kind="reading" title="Embracing Risk" href="https://sre.google/sre-book/embracing-risk/" by="Google SRE Book">an error budget as a clear, objective metric for how unreliable a service is allowed to be.</Resource>
+</ul>
+
+</section>

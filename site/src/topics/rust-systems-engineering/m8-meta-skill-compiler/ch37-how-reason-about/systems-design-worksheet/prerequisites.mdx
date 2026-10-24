@@ -1,0 +1,21 @@
+import Resource from '../../../../../components/Resource.astro';
+
+<section class="prereq" data-section="chapter-so-far">
+
+### <span class="n">01</span> What this chapter draws on
+
+<ul class="resources">
+  <Resource kind="reel" host={props.host} domain="rust-systems-engineering" title="Failure budget and overload behaviour">a rejected request stopping cleanly at its own real boundary is a real, structural property of one request at a time; this chapter turns to a real decision that was never stated at all.</Resource>
+</ul>
+
+</section>
+
+<section class="prereq" data-section="worksheet-primary">
+
+### <span class="n">02</span> The real docs: mpsc, bounded and unbounded
+
+<ul class="resources">
+  <Resource kind="reading" title="mpsc" href="https://docs.rs/tokio/latest/tokio/sync/mpsc/index.html" by="docs.rs">a bounded channel communicates with backpressure; an unbounded one communicates without it.</Resource>
+</ul>
+
+</section>
