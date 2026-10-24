@@ -1,0 +1,86 @@
+{
+  "topic": "rust.release-profiles-build-speed",
+  "syllabus": [
+    {
+      "clause": "opt-level, thin vs fat LTO,",
+      "at": [
+        { "step": "Measured: the real, default release build and the real codegen-units = 1, lto = fat build are timed directly on this container's own toolchain; the second genuinely takes measurably longer, every time" }
+      ]
+    },
+    {
+      "clause": "codegen-units = 1,",
+      "at": [
+        { "step": "The identical crate is built once under the default release profile, then again with codegen-units = 1 and lto = \"fat\" added. Does the second real build genuinely take longer?" }
+      ]
+    },
+    {
+      "clause": "panic = \"abort\",",
+      "at": [
+        { "step": "Measured: the real, unwinding binary and the real, panic = \"abort\" binary are both measured directly by their own real file size on disk; the abort one is genuinely smaller every time, since no stack-unwinding tables need to be generated for it" }
+      ]
+    },
+    {
+      "clause": "stripping and split debuginfo;",
+      "at": [
+        { "step": "Measured: the real, unstripped binary and the real, stripped binary are both measured directly by their own real file size on disk; the stripped one is genuinely smaller every time" }
+      ]
+    },
+    {
+      "clause": "PGO/BOLT (→ Ch.38).",
+      "at": [{ "deep": "The frontier" }]
+    },
+    {
+      "clause": "Reproducible builds, sccache, the LLD default linker on x86_64 Linux (1.90), and crates.io Trusted Publishing (OIDC from CI, 2025).",
+      "at": [{ "deep": "In production" }]
+    }
+  ],
+  "sources": [
+    {
+      "source": "profiles",
+      "items": [
+        {
+          "item": "LTO can produce better optimized code, using whole-program analysis, at the cost of longer linking time",
+          "at": [{ "step": "The identical crate is built once under the default release profile, then again with codegen-units = 1 and lto = \"fat\" added. Does the second real build genuinely take longer?" }]
+        },
+        {
+          "item": "More code generation units allows more of a crate to be processed in parallel possibly reducing compile time, but may produce slower code",
+          "at": [{ "step": "The Cargo Book states these rules directly: LTO produces better optimized code at the cost of longer linking time; more codegen units lets more of a crate build in parallel, possibly reducing compile time but producing slower code. Do this topic's own three measured trade-offs model exactly the trade the Cargo Book names?" }]
+        },
+        {
+          "item": "strip = true is equivalent to strip = \"symbols\"",
+          "at": [{ "step": "The identical crate is built once with the default profile, then again with strip = true added. Does the real binary on disk genuinely shrink?" }]
+        }
+      ]
+    },
+    {
+      "source": "cargo-build",
+      "items": [
+        {
+          "item": "Build optimized artifacts with the release profile",
+          "at": [{ "deep": "Internals" }]
+        }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "self-review",
+    "date": "2026-10-24",
+    "items": [
+      { "item": "All three claims are measured by rewriting the crate's own Cargo.toml to a known profile configuration, running a real cargo build --release, and measuring either real wall-clock time (time.perf_counter()) or a real file's own byte size on disk (os.path.getsize), never a number asserted ahead of the measurement.", "at": [{ "step": "The identical crate is built once under the default release profile, then again with codegen-units = 1 and lto = \"fat\" added. Does the second real build genuinely take longer?" }] },
+      { "item": "Every build is preceded by deleting that crate's own target directory, so an earlier profile's own cached build artifacts can never leak into a later, differently-configured build and produce a false measurement.", "at": [{ "step": "Measured: the real, default release build and the real codegen-units = 1, lto = fat build are timed directly on this container's own toolchain; the second genuinely takes measurably longer, every time" }] },
+      { "item": "The crate itself (a small, genuinely recursive Fibonacci function called from a loop) is deliberately real, executable work, not an empty placeholder crate, so that codegen-units and lto have something genuine to optimize across; an empty crate would build near-instantly under every profile and show no real difference at all.", "at": [{ "step": "Measured: the real, default release build and the real codegen-units = 1, lto = fat build are timed directly on this container's own toolchain; the second genuinely takes measurably longer, every time" }] },
+      { "item": "Only the direction of each measured difference is claimed (slower, smaller), never a specific number or percentage, since build time and binary size both depend on this exact sandboxed container's own CPU and toolchain, continuing Chapter 32's own CHAPTER.md §A.6 rule against presenting a container-specific number as a general claim.", "at": [{ "step": "Measured: the real, unstripped binary and the real, stripped binary are both measured directly by their own real file size on disk; the stripped one is genuinely smaller every time" }] },
+      { "item": "The panic = \"abort\" claim measures a genuinely different real mechanism from the strip claim (removing unwinding tables the compiler would otherwise generate, versus removing symbols and debug info after the fact), so the two claims are not two measurements of the identical underlying cause.", "at": [{ "step": "Measured: the real, unwinding binary and the real, panic = \"abort\" binary are both measured directly by their own real file size on disk; the abort one is genuinely smaller every time, since no stack-unwinding tables need to be generated for it" }] },
+      { "item": "Thin-versus-fat LTO's own real linking-time difference is named in Internals rather than measured, since this topic's own crate has only one real crate in its build graph, too small to separate the three LTO settings' own distinct costs from each other.", "at": [{ "deep": "Internals" }] },
+      { "item": "sccache is not installed in this sandboxed container (shutil.which returns nothing for it), so the syllabus's own named shared-compilation-cache claim is named in post-notes rather than run for real; no measured claim in this topic depends on it.", "at": [{ "deep": "In production" }] },
+      { "item": "PGO and BOLT are deferred by the syllabus itself to Chapter 38, where they get their own full topic once this domain has built the profiling infrastructure both techniques depend on; naming them here rather than measuring them is the syllabus's own stated plan, not a gap this topic leaves open.", "at": [{ "deep": "The frontier" }] },
+      { "item": "The Cargo Book's own profiles page is one page describing two genuinely separate, independent real mechanisms (LTO's own trade, and codegen-units' own trade), giving this topic two distinct source quotes from its one primary source rather than treating the whole page as a single, undifferentiated quote.", "at": [{ "step": "The Cargo Book states these rules directly: LTO produces better optimized code at the cost of longer linking time; more codegen units lets more of a crate build in parallel, possibly reducing compile time but producing slower code. Do this topic's own three measured trade-offs model exactly the trade the Cargo Book names?" }] },
+      { "item": "The specific choice of a recursive Fibonacci function as the crate's own real workload is this specific example's own choice; the measured claims illustrate the real shape and direction of a release profile's own trade-offs for any real Cargo crate at all, not a claim bound to exactly this function.", "at": [{ "step": "Recap: a release profile's own real, deliberate trades" }] }
+    ]
+  },
+  "gapReview": {
+    "date": "2026-10-24",
+    "by": "self-review",
+    "open": []
+  }
+}

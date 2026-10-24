@@ -1,0 +1,70 @@
+{
+  "steps": [
+    {
+      "lines": [
+        "One real, small program gets built once, the ordinary way.",
+        { "beat": 0.3 },
+        "Then it gets built again, with one extra setting telling the compiler to optimize across the whole program at once. Does that second real build genuinely take longer?"
+      ],
+      "answer": [
+        "Yes, genuinely.",
+        "Optimizing across the whole program costs real linking time."
+      ]
+    },
+    {
+      "lines": [
+        "Run it for real: the ordinary build and the whole-program build are both timed directly, and the whole-program one genuinely takes longer, every single time."
+      ]
+    },
+    {
+      "lines": [
+        "The identical program, built once the ordinary way, and once more with one setting telling the compiler to strip extra information out of the finished file.",
+        { "beat": 0.3 },
+        "Does the real file on disk actually get smaller?"
+      ],
+      "answer": [
+        "Yes, genuinely.",
+        "The real file on disk gets smaller."
+      ]
+    },
+    {
+      "lines": [
+        "Run it for real: the ordinary file and the stripped file are both measured directly, and the stripped one is genuinely smaller every time, with the program's own behavior never touched at all."
+      ],
+      "takeaway": "A profile setting can shrink what actually ships without changing a single line of what the program does."
+    },
+    {
+      "lines": [
+        "Same program again, but this time the setting being changed is what happens when it panics: whether it unwinds the stack, or simply stops.",
+        { "beat": 0.3 },
+        "Does the real file on disk shrink this time too?"
+      ],
+      "answer": [
+        "Yes, genuinely.",
+        "The machinery for unwinding costs real space, even when nothing ever panics."
+      ]
+    },
+    {
+      "lines": [
+        "Run it for real: the unwinding version and the stop-immediately version are both measured directly, and the one that simply stops is genuinely smaller every time, because it never had to carry that machinery at all."
+      ],
+      "takeaway": "A release profile's own settings trade away a real capability for a real, measured amount of space."
+    },
+    {
+      "lines": [
+        "One real, independent page names both of these exact ideas directly, in its own words.",
+        "It says whole-program optimization costs real linking time in exchange for better code, and that splitting a build into more parallel pieces can cost real speed in exchange for finishing faster."
+      ],
+      "takeaway": "Every one of these settings is a real trade made on purpose, never a free improvement with no cost at all."
+    },
+    {
+      "lines": [
+        "So here's what this topic's own three real settings are really standing in for: there is no single switch anywhere in here that just makes a program faster for free.",
+        "Optimizing across the whole program trades real time spent building for real speed once it runs.",
+        "Stripping extra information trades the ability to debug it easily for a smaller file that actually ships.",
+        "And changing how it panics trades away a real safety net for a little less space.",
+        "Every single one of them is a real decision someone has to make on purpose, not a box anyone should just tick without knowing what it costs."
+      ]
+    }
+  ]
+}

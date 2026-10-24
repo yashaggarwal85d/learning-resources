@@ -1,0 +1,4 @@
+- **Release profile**: the real, named set of compiler dials (`opt-level`, `lto`, `codegen-units`, `panic`, `strip`) Cargo applies to a `--release` build, each with a real, measurable effect on build time, binary size, or runtime speed.
+- **LTO (link-time optimization)**: a real, whole-program optimization pass performed across crate boundaries at link time, trading real, longer linking time for real, better-optimized code.
+- **Codegen units**: the real number of pieces a crate is split into for parallel code generation; more units can build faster in parallel, at the real cost of producing slower code.
+- **Strip**: a real post-build step removing symbols or debug information from a compiled binary, shrinking what actually ships without changing the program's own real behavior.
