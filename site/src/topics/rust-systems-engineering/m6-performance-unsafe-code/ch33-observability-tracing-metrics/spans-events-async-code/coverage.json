@@ -1,0 +1,72 @@
+{
+  "topic": "rust.spans-events-async-code",
+  "syllabus": [
+    {
+      "clause": "the tracing crate's structured events and spans matter most in async code, where execution hops between tasks and the call stack isn't a simple linear story.",
+      "at": [
+        { "step": "Measured: the real, captured event fires with its own current span genuinely recorded as task_a, even though it happened entirely inside task_b's own code, on a different task that never touched task_a's span at all" }
+      ]
+    },
+    {
+      "clause": "#[instrument] and .instrument(span) vs holding a Span::enter() guard across .await (a classic bug).",
+      "at": [
+        { "step": "task_a holds a real Span::enter() guard across a real await; while it is suspended, a genuinely different task, task_b, runs on the identical thread and records one real event. Does that event get recorded as happening inside task_a's own span?" },
+        { "step": "Measured: the identical captured event now genuinely has no current span at all, since .instrument(span) exits task_a's span the instant it yields and only re-enters it once task_a itself resumes" },
+        { "step": "Measured: the identical captured event again has no current span at all, exactly matching .instrument(span)'s own real result, confirming #[instrument] genuinely generates the same correct code by hand would otherwise have to write" }
+      ]
+    },
+    {
+      "clause": "Subscribers and layers (tracing-subscriber, EnvFilter);",
+      "at": [{ "deep": "In production" }]
+    },
+    {
+      "clause": "sampling and overhead.",
+      "at": [{ "deep": "In production" }]
+    }
+  ],
+  "sources": [
+    {
+      "source": "span",
+      "items": [
+        {
+          "item": "Holding the drop guard returned by Span::enter across .await points will result in incorrect traces",
+          "at": [{ "step": "task_a holds a real Span::enter() guard across a real await; while it is suspended, a genuinely different task, task_b, runs on the identical thread and records one real event. Does that event get recorded as happening inside task_a's own span?" }]
+        },
+        {
+          "item": "another task will begin executing while remaining in the entered span. This results in an incorrect trace",
+          "at": [{ "step": "The tracing crate's own documentation states this directly: holding the guard across an await results in incorrect traces, since another task will begin executing while remaining in the entered span; the attached span is instead entered every time the instrumented future is polled. Does this topic's own three measured runs model exactly the mistake and the fix the docs describe?" }]
+        }
+      ]
+    },
+    {
+      "source": "instrument",
+      "items": [
+        {
+          "item": "The attached Span will be entered every time the instrumented Future is polled or Dropped",
+          "at": [{ "step": "Measured: the identical captured event now genuinely has no current span at all, since .instrument(span) exits task_a's span the instant it yields and only re-enters it once task_a itself resumes" }]
+        }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "self-review",
+    "date": "2026-10-24",
+    "items": [
+      { "item": "All three claims are measured through one real, custom tracing_subscriber::Layer that records, for every real event, the name of whichever span tracing itself considers current at that instant, never by parsing formatted terminal output a human-facing formatter produces.", "at": [{ "step": "task_a holds a real Span::enter() guard across a real await; while it is suspended, a genuinely different task, task_b, runs on the identical thread and records one real event. Does that event get recorded as happening inside task_a's own span?" }] },
+      { "item": "Each binary runs its own two tasks on a real, single-threaded tokio runtime (Builder::new_current_thread), so both genuinely interleave on the identical OS thread; on tokio's own default multi-threaded runtime, the two tasks could run on separate real threads and the bug would not reliably reproduce at all.", "at": [{ "step": "Measured: the real, captured event fires with its own current span genuinely recorded as task_a, even though it happened entirely inside task_b's own code, on a different task that never touched task_a's span at all" }] },
+      { "item": "The three binaries (bad_enter, fixed_instrument, fixed_macro) are three genuinely separate real programs rather than one program re-run with a flag, since each one's own async function is written a structurally different way (a held guard, a wrapped future, an attribute macro), and the claim is that each produces its own real, directly observed result.", "at": [{ "step": "The identical two tasks are run again, but task_a now wraps its own future with .instrument(span) instead of holding a guard. Does task_b's own event still get misattributed to task_a's span?" }] },
+      { "item": "task_b's own delay (10ms) is deliberately shorter than task_a's own delay (50ms) while it holds or carries its span, so task_b's own event reliably fires while task_a is still suspended inside its own await, which is the exact condition the real mistake needs to show up at all.", "at": [{ "step": "Measured: the real, captured event fires with its own current span genuinely recorded as task_a, even though it happened entirely inside task_b's own code, on a different task that never touched task_a's span at all" }] },
+      { "item": "The macro claim measures that #[instrument] produces the identical captured result as .instrument(span), not merely that it also happens to avoid the bug by some other means; this is why the claim is framed as matching the instrument(span) result exactly, not as a second, independent test of the same property.", "at": [{ "step": "Measured: the identical captured event again has no current span at all, exactly matching .instrument(span)'s own real result, confirming #[instrument] genuinely generates the same correct code by hand would otherwise have to write" }] },
+      { "item": "Span::enter()'s own returned guard (Entered) is, in the current tracing release, still genuinely Send, which is why holding it across an await compiles cleanly rather than failing outright; this is deliberately named in Internals rather than left implicit, since a reader familiar with Rust's Send rules might otherwise expect a compile error that does not actually occur.", "at": [{ "deep": "Internals" }] },
+      { "item": "Span::in_scope, the real, narrower tool for a synchronous section of code inside an async function, is named in The frontier rather than measured, since this topic's own crate's entire real workload (a sleep) is itself asynchronous, with no synchronous section for in_scope's own real guarantee to apply to.", "at": [{ "deep": "The frontier" }] },
+      { "item": "tracing-subscriber's own filtering and formatting layers, and EnvFilter, are named in post-notes rather than measured, since this topic's own single, minimal capturing Layer is deliberately built to answer exactly one question (which span is current) and not to demonstrate a production formatting or filtering pipeline.", "at": [{ "deep": "In production" }] },
+      { "item": "The tracing crate's own Span and Instrument documentation pages are two genuinely separate pages describing two genuinely different real mechanisms (the guard's own warning, and the instrumented future's own entering rule), giving this topic two sources rather than multiple quotes drawn from a single page.", "at": [{ "step": "The tracing crate's own documentation states this directly: holding the guard across an await results in incorrect traces, since another task will begin executing while remaining in the entered span; the attached span is instead entered every time the instrumented future is polled. Does this topic's own three measured runs model exactly the mistake and the fix the docs describe?" }] },
+      { "item": "The specific names task_a, task_b, and the specific delays (50ms, 10ms) are this specific example's own choice; the measured claims illustrate the real shape of the classic held-guard mistake and its two real fixes for any real tracing-instrumented async code at all, not a claim bound to exactly these names or delays.", "at": [{ "step": "Recap: a span tied to being polled, not held by hand" }] }
+    ]
+  },
+  "gapReview": {
+    "date": "2026-10-24",
+    "by": "self-review",
+    "open": []
+  }
+}

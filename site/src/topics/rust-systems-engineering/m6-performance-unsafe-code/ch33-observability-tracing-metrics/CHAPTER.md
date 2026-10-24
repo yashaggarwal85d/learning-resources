@@ -62,7 +62,7 @@ Unchanged from Chapters 1–32 §A.6, with this chapter's own explicit addition:
 
 | id | Introduced by | Meaning |
 |---|---|---|
-| `a-span-that-crosses-await-must-stay-send` | 86 | A real `Span::enter()` guard held across a real `.await` genuinely fails to compile once the future must be `Send`, confirming that a span's own lifetime and an async task's own suspension points are a real, enforced constraint, not a style preference. |
+| `a-spans-lifetime-ties-to-being-polled` | 86 | A real `Span::enter()` guard held across a real `.await` genuinely leaks the span onto whatever task runs next on the same thread (`tracing`'s own guard is `Send`, so this is a real, measured logic bug, not a compile error); `.instrument(span)` and `#[instrument]` genuinely fix it by exiting and re-entering the span around every real await instead. |
 | `a-structured-field-survives-being-queried` | 87 | A real structured field attached to a span or event genuinely survives a real, direct query a formatted log line's own embedded text cannot answer without being re-parsed first. |
 | `the-right-metric-shape-answers-the-real-question` | 88 | A real counter, gauge, and histogram recording the identical real calls genuinely answer three different real questions, and only the one shaped for the question actually being asked gives a correct answer to it. |
 | `a-typed-error-drives-a-different-real-retry` | 89 | A real, typed error distinguishing a timeout from a genuine remote error genuinely drives two different, correct retry decisions in a real retry loop, where an identical untyped error could not tell them apart at all. |
