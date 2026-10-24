@@ -1,0 +1,68 @@
+{
+  "steps": [
+    {
+      "lines": [
+        "Here's a real allocator that only ever checks one thing about each new piece it's handed: that the piece itself isn't too big. It never once checks where that piece actually lands.",
+        { "beat": 0.3 },
+        "Nobody sat down and thought up the exact sequence that breaks it. Can a search that just tries a great many random sequences find it anyway?"
+      ],
+      "answer": [
+        "Yes, genuinely.",
+        "It doesn't need anyone to think of the exact case. It just needs to try enough of them."
+      ]
+    },
+    {
+      "lines": [
+        "Run it for real: out of hundreds of random sequences thrown at it, one of them genuinely breaks the real rule that nothing's allowed to run past the end."
+      ]
+    },
+    {
+      "lines": [
+        "The search that found that broken case started from a sequence of quite a few real pieces.",
+        { "beat": 0.3 },
+        "Does the case it actually hands you stay that long and complicated, or does something more useful happen?"
+      ],
+      "answer": [
+        "Something more useful.",
+        "It keeps cutting the case down, on purpose, until nothing smaller still breaks it."
+      ]
+    },
+    {
+      "lines": [
+        "Run it for real: what started as a long, tangled sequence gets reduced down to just a handful of pieces, landing barely past the real edge, the smallest real case that still breaks the rule."
+      ],
+      "takeaway": "Shrinking turns a messy, random failure into its own smallest real cause, not just a lucky guess that happened to be close."
+    },
+    {
+      "lines": [
+        "Now swap in the version that actually checks where each piece lands before accepting it, and run the identical real search against it.",
+        { "beat": 0.3 },
+        "Does it pass because this run happened to pick easy cases, or because the real rule genuinely holds up?"
+      ],
+      "answer": [
+        "It genuinely holds up.",
+        "The same search that broke the other version can't find anything wrong with this one."
+      ]
+    },
+    {
+      "lines": [
+        "Run it for real: the identical hundreds of random sequences, checked the identical way, and every single one of them genuinely holds, against the version that actually checks where things land."
+      ],
+      "takeaway": "A test's own real confidence comes from how many different cases it actually tried, never from any one case by itself."
+    },
+    {
+      "lines": [
+        "One real, well-known tool for exactly this kind of testing describes its own job in plain words.",
+        "It checks that a real property genuinely holds across inputs it picks essentially at random, and the moment one of them breaks it, it automatically works backward to the smallest real case that still does."
+      ],
+      "takeaway": "A failure reduced down to its own smallest real cause finds what one, hand-picked example genuinely never would."
+    },
+    {
+      "lines": [
+        "So here's what this topic's own two real runs were really standing in for: trying a great many real cases catches a mistake nobody thought to write down by hand, and reducing it down to its own smallest real cause makes that catch genuinely easy to understand.",
+        "The identical real idea works just as well for comparing two whole, separate implementations against each other, a real one and a simpler stand-in, across a real sequence of operations, rather than checking just one rule at a time.",
+        "Either way, it's the same real habit: try far more than anyone would write by hand, and when something breaks, don't stop until you've found the smallest real reason why."
+      ]
+    }
+  ]
+}
