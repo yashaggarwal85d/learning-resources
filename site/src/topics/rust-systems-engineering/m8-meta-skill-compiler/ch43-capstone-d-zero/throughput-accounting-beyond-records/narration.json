@@ -1,0 +1,68 @@
+{
+  "steps": [
+    {
+      "lines": [
+        "Here are two real pieces of code doing the identical job on the identical pile of records. One just reaches into each record directly. The other makes a fresh copy of it first, for no real reason, before doing the identical work.",
+        { "beat": 0.3 },
+        "Does that extra, needless copy show up in how fast each one gets through the whole pile?"
+      ],
+      "answer": [
+        "Barely at all.",
+        "Both of them land in essentially the same, real range, close enough that the difference isn't the story here."
+      ]
+    },
+    {
+      "lines": [
+        "Run it for real: both versions tear through millions of records a second, landing close enough to each other that nobody would call one of them meaningfully faster."
+      ]
+    },
+    {
+      "lines": [
+        "Now measure the identical pile of records a completely different way: not how fast, but how much real memory each one actually reaches for, record by record.",
+        { "beat": 0.3 },
+        "Does that number stay just as close as speed did, or does something else show up?"
+      ],
+      "answer": [
+        "Something else shows up.",
+        "The version that copies each record reaches for a dramatically larger pile of real memory, record after record."
+      ]
+    },
+    {
+      "lines": [
+        "Run it for real: the version that reaches in directly barely touches memory at all, a handful of bytes per record, while the version that copies first reaches for roughly a whole record's worth, every single time."
+      ],
+      "takeaway": "How fast something runs measured one real story. How much it reaches for measured a completely different one underneath it."
+    },
+    {
+      "lines": [
+        "Put those two real numbers side by side: a handful of bytes against something far closer to a whole record's worth, for work that ran at essentially the identical speed.",
+        { "beat": 0.3 },
+        "Is that a small difference, or a real, structural one?"
+      ],
+      "answer": [
+        "A real, structural one.",
+        "More than twenty times the real memory, for work that looked, by speed alone, like it cost the identical amount."
+      ]
+    },
+    {
+      "lines": [
+        "Run it for real: the copying version reaches for more than twenty times the real memory the direct version does, for the identical speed and the identical final result."
+      ],
+      "takeaway": "Two pieces of code can run at the identical speed while paying a dramatically different real cost underneath it."
+    },
+    {
+      "lines": [
+        "One real, well-known piece of documentation, about the single place every real memory request in a running program actually goes through, describes exactly this in its own words.",
+        "One real allocator stands behind every single real request the whole program makes, reached only through a few shared functions, never called by hand."
+      ],
+      "takeaway": "How fast something runs can hide a real cost completely. A second, different number is what actually uncovers it."
+    },
+    {
+      "lines": [
+        "So here's what both of these real runs were really showing: two pieces of code can look identical by speed alone and still be paying a dramatically different real price underneath, every single time they run.",
+        "Speed alone told half the story, the half everyone already thinks to check. Watching what something actually reaches for told the rest of it.",
+        "And that's really the whole real lesson this domain keeps coming back to: build it so it holds up, watch it closely enough to actually know, and never trust just one number to tell you the whole real story."
+      ]
+    }
+  ]
+}
