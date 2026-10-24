@@ -1,0 +1,4 @@
+- **Version chain**: the ordered set of versions a single logical row has accumulated, each tagged with the transaction that created it and, once superseded, the one that deleted it. *Where you meet it:* a writer never overwrites an existing version; it appends a new one.
+- **Snapshot**: a transaction's own fixed view of which other transactions' writes it is allowed to see, decided once and held for its whole duration.
+- **Visibility**: the rule, a function of a version's own metadata and the reader's snapshot, that decides which single version of a row a reader may see — never simply "the newest version written."
+- **xmin / xmax**: PostgreSQL's own names for a version's creating and deleting transaction ids, the real-world version of this topic's own version metadata.

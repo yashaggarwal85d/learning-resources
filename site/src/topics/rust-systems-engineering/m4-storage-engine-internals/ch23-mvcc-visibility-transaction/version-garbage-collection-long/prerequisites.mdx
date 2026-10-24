@@ -1,0 +1,22 @@
+import Resource from '../../../../../components/Resource.astro';
+
+<section class="prereq" data-section="chapter-so-far">
+
+### <span class="n">01</span> Where the last topic left off
+
+<ul class="resources">
+  <Resource kind="reel" host={props.host} domain="rust-systems-engineering" title="Isolation levels and their anomalies">an isolation level draws the line on which histories are allowed; it says nothing about how long the versions those histories created stick around.</Resource>
+</ul>
+
+</section>
+
+<section class="prereq" data-section="gc-primary">
+
+### <span class="n">02</span> The real docs: vacuuming, the xmin horizon, and long transactions
+
+<ul class="resources">
+  <Resource kind="reading" title="24.1. Routine Vacuuming" href="https://www.postgresql.org/docs/current/routine-vacuuming.html" by="The PostgreSQL Global Development Group">ending long-running open transactions directly, since vacuuming alone can't reclaim past them.</Resource>
+  <Resource kind="reading" title="27.2.3. pg_stat_activity" href="https://www.postgresql.org/docs/current/monitoring-stats.html" by="The PostgreSQL Global Development Group">a backend's own xmin horizon, visible directly in its own activity view.</Resource>
+</ul>
+
+</section>

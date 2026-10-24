@@ -1,0 +1,22 @@
+import Resource from '../../../../../components/Resource.astro';
+
+<section class="prereq" data-section="chapter-so-far">
+
+### <span class="n">01</span> Where the last chapter left off
+
+<ul class="resources">
+  <Resource kind="reel" host={props.host} domain="rust-systems-engineering" title="Version garbage collection and long snapshots">this chapter measured what a storage engine owes a concurrent reader; the next chapter turns to how storing values column by column instead of row by row changes what a scan and a point update each cost.</Resource>
+</ul>
+
+</section>
+
+<section class="prereq" data-section="columnar-primary">
+
+### <span class="n">02</span> The real docs: the Arrow columnar format and its Rust implementation
+
+<ul class="resources">
+  <Resource kind="reading" title="Arrow Columnar Format" href="https://arrow.apache.org/docs/format/Columnar.html" by="The Apache Arrow Project">analytical performance and data locality guarantees, in exchange for comparatively more expensive mutation operations.</Resource>
+  <Resource kind="reading" title="NullBuffer in arrow_buffer::buffer" href="https://docs.rs/arrow-buffer/latest/arrow_buffer/buffer/struct.NullBuffer.html" by="The Apache Arrow Project">a packed bitmask encoding validity, kept separate from the values it describes.</Resource>
+</ul>
+
+</section>

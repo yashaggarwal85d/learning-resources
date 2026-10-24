@@ -1,0 +1,85 @@
+{
+  "steps": [
+    {
+      "lines": [
+        "Two doctors are both currently on call.",
+        { "beat": 0.3 },
+        "Each one separately checks whether at least one other doctor is still on call, gets yes, and goes off call. Does that shared rule, at least one doctor on call, actually survive both of them leaving?"
+      ],
+      "answer": [
+        "No, it genuinely breaks.",
+        "Neither individual check was wrong, yet together they still violate the rule."
+      ]
+    },
+    {
+      "lines": [
+        "Run it for real: it genuinely breaks, and there isn't even a conflict between the two transactions' own writes anywhere to be found.",
+        "A snapshot-isolation database lets this through because the two writes never touch the identical row."
+      ]
+    },
+    {
+      "lines": [
+        "Both transactions wrote a different doctor's own row, never the same one.",
+        { "beat": 0.3 },
+        "Does a snapshot-isolation database even notice a conflict here at all?"
+      ],
+      "answer": [
+        "No, genuinely.",
+        "Writes to the identical row are the only conflict its own commit rule checks for."
+      ]
+    },
+    {
+      "lines": [
+        "Run it for real: no conflict came back at all, because the commit rule genuinely only checks for writes landing on the identical row."
+      ],
+      "takeaway": "Snapshot isolation genuinely permits write skew through; its own commit rule was never designed to catch it."
+    },
+    {
+      "lines": [
+        "A stricter check instead builds a real dependency graph between the two transactions' own reads and writes.",
+        { "beat": 0.3 },
+        "Does that graph genuinely catch what the write-write check missed?"
+      ],
+      "answer": [
+        "Yes, genuinely.",
+        "It finds a real, dangerous two-edge cycle running between them."
+      ]
+    },
+    {
+      "lines": [
+        "Run it for real: a genuine two-edge cycle came back. Each transaction's own read was invalidated by the other transaction's own write."
+      ],
+      "takeaway": "A cycle of two opposing read-write dependencies between the identical pair of transactions is exactly write skew's own signature."
+    },
+    {
+      "lines": [
+        "Run that same stricter check against two entirely unrelated transactions instead, each one touching a different doctor that nobody else ever reads from.",
+        { "beat": 0.3 },
+        "Does it still flag that pair the same way?"
+      ],
+      "answer": [
+        "No, genuinely.",
+        "It correctly finds no cycle between them at all."
+      ]
+    },
+    {
+      "lines": [
+        "Run it for real: genuinely no cycle came back, for two transactions that never read anything the other one wrote."
+      ],
+      "takeaway": "The stricter check isn't simply stricter about everything; it correctly lets unrelated transactions straight through."
+    },
+    {
+      "lines": [
+        "One real production system's own documentation states this exact anomaly directly, using two account classes instead of two doctors.",
+        "It names the result of committing a group of transactions in a way no one-at-a-time ordering could ever have produced: a serialization anomaly."
+      ]
+    },
+    {
+      "lines": [
+        "So here's the shape of this whole topic: a snapshot-isolation commit rule only ever checks for two transactions writing the identical row, so it genuinely lets write skew straight through, even while each transaction individually preserves a shared rule it's supposed to protect.",
+        "A stricter, dependency-graph check catches exactly that pattern: a cycle of two opposing read-write dependencies running between the identical pair of transactions.",
+        "That same stricter check is never simply stricter about everything, though; it correctly leaves two unrelated transactions alone, with no cycle between them at all."
+      ]
+    }
+  ]
+}

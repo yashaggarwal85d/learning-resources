@@ -1,0 +1,25 @@
+import Resource from '../../../../../components/Resource.astro';
+
+<section class="prereq" data-section="before-this">
+
+### <span class="n">01</span> Before this: the cache this log now makes durable
+
+<ul class="resources">
+  <Resource kind="reel" title="Buffer pool and page replacement" domain="data-engineering" host="de.buffer-pool-page-replacement" by="the previous topic of this chapter" />
+</ul>
+
+</section>
+
+<section class="prereq" data-section="straight-from-the-source">
+
+### <span class="n">02</span> The sources this topic measures against
+
+<ul class="resources">
+  <Resource kind="reading" title="WAL Internals" href="https://www.postgresql.org/docs/16/wal-internals.html" by="PostgreSQL docs">The LSN itself, in the engine's own words.</Resource>
+  <Resource kind="reading" title="Write Ahead Log" href="https://www.postgresql.org/docs/16/runtime-config-wal.html" by="PostgreSQL docs">`wal_sync_method`'s own options, `commit_delay`'s group-commit effect, and `full_page_writes`'s own trigger condition.</Resource>
+  <Resource kind="reading" title="Reliability" href="https://www.postgresql.org/docs/16/wal-reliability.html" by="PostgreSQL docs">A torn page described directly, and PostgreSQL's own defense against it.</Resource>
+  <Resource kind="reading" title="Fsync Errors" href="https://wiki.postgresql.org/wiki/Fsync_Errors" by="PostgreSQL wiki">The 2018 fsyncgate retrospective and PostgreSQL's own fix.</Resource>
+  <Resource kind="reading" title="InnoDB Doublewrite Buffer" href="https://docs.w3cub.com/mariadb/innodb-doublewrite-buffer/" by="MariaDB Knowledge Base (mirrored)">InnoDB's own defense against the identical torn-page problem.</Resource>
+</ul>
+
+</section>
