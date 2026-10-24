@@ -1,0 +1,4 @@
+- **Bloom filter**: a compact, probabilistic structure that can rule a key definitely absent (no false negatives) or say only that it might be present (some false positives). *Where you meet it:* a negative result skips opening an SSTable entirely; a positive result only earns permission to go check.
+- **False-positive rate vs bits per key**: a real, traded budget — spending more bits per key genuinely lowers the rate, with diminishing returns the further up the budget you go.
+- **A structure that can say no for certain, but only maybe for yes**: the plain-words version of what a Bloom filter actually guarantees and doesn't.
+- **Kirsch-Mitzenmacher technique**: combining two independent base hashes to simulate several independent hash functions, instead of computing each one separately.

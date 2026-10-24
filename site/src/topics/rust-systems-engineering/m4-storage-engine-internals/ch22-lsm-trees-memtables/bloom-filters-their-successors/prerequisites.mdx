@@ -1,0 +1,22 @@
+import Resource from '../../../../../components/Resource.astro';
+
+<section class="prereq" data-section="chapter-so-far">
+
+### <span class="n">01</span> Where the last topic left off
+
+<ul class="resources">
+  <Resource kind="reel" host={props.host} domain="rust-systems-engineering" title="Compaction strategies and amplification">compaction cuts down how many SSTables a read has to merge; it says nothing about which are even worth opening.</Resource>
+</ul>
+
+</section>
+
+<section class="prereq" data-section="bloom-primary">
+
+### <span class="n">02</span> The real docs: bits per key, false positives, and cutting disk reads
+
+<ul class="resources">
+  <Resource kind="reading" title="RocksDB Bloom Filter" href="https://github.com/facebook/rocksdb/wiki/RocksDB-Bloom-Filter" by="The RocksDB Project">nine point nine bits per key, for a one percent false positive rate, is ninety nine percent as effective as a hundred bits per key.</Resource>
+  <Resource kind="reading" title="Basic Operations" href="https://github.com/facebook/rocksdb/wiki/Basic-Operations" by="The RocksDB Project">a filter can reduce unnecessary disk reads by a factor of approximately a hundred.</Resource>
+</ul>
+
+</section>
