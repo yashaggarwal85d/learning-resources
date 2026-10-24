@@ -1,0 +1,88 @@
+{
+  "steps": [
+    {
+      "lines": [
+        "Build a real, fixed-size page as its own byte buffer, with its own header baked right into those bytes: a magic number, a version, a checksum, a log position.",
+        { "beat": 0.3 },
+        "Now flip one byte somewhere in that page's body, on purpose. Does the page notice, or does it just hand back the wrong data without complaint?"
+      ],
+      "answer": [
+        "It notices.",
+        "The page's own checksum catches it, wherever that flipped byte happens to land."
+      ]
+    },
+    {
+      "lines": [
+        "Run it for real: an untouched page's checksum validates cleanly on its own.",
+        "Flip a single byte anywhere in that same page, and the checksum genuinely stops validating, with nothing outside the page telling it where to look."
+      ]
+    },
+    {
+      "lines": [
+        "Instead of corrupting a byte, change the page's own magic number to something else entirely, then recompute the checksum over those new bytes, honestly, the same way the page always does.",
+        { "beat": 0.3 },
+        "Does the checksum alone catch that the format itself has quietly changed underneath it?"
+      ],
+      "answer": [
+        "No, it doesn't.",
+        "A checksum recomputed over consistent new bytes still validates; it was never built to notice a deliberate, consistent change."
+      ]
+    },
+    {
+      "lines": [
+        "Run it for real: with the magic number changed and the checksum honestly recomputed over the new bytes, that checksum still validates cleanly.",
+        "Only checking the magic number itself caught that the format had actually changed."
+      ],
+      "takeaway": "A checksum catches damage to bytes that were supposed to stay the same; a magic number catches a deliberate change."
+    },
+    {
+      "lines": [
+        "The page's own multi-byte fields, like its log position, are written out in a specific byte order, chosen on purpose and never left to chance.",
+        "Take those exact same raw bytes and read them back in the opposite order instead.",
+        { "beat": 0.3 },
+        "Does that choice actually matter, or is one byte order as good as another?"
+      ],
+      "answer": [
+        "It matters completely.",
+        "The same bytes, read the wrong way, hand back a genuinely different value."
+      ]
+    },
+    {
+      "lines": [
+        "Run it for real: those raw bytes, read back in the chosen order, give the exact original value.",
+        "Read in the opposite order, the very same bytes give back a different value entirely."
+      ],
+      "takeaway": "A page byte order has to be explicit and enforced, not left to whatever platform happens to use."
+    },
+    {
+      "lines": [
+        "Now turn to the documentation this whole page design is modeled on. It describes exactly what the very first field of its own page header is there to track.",
+        { "beat": 0.3 },
+        "What does it say that first field actually tracks?"
+      ],
+      "answer": [
+        "The most recent log entry touching that page.",
+        "The header ties every page straight back to the log that describes it."
+      ]
+    },
+    {
+      "lines": [
+        "In the documentation's own words: that first field tracks the most recent log entry related to the page, and right beside it sits the page's own checksum, whenever checksums are turned on."
+      ]
+    },
+    {
+      "lines": [
+        "That same documentation says something stronger still, about the little index that points at an item inside a page.",
+        "That index is never moved until the item it points to is freed, so it keeps working as a long-term reference, even while the item itself gets shuffled around to make room."
+      ],
+      "takeaway": "A page own line pointers let an item identity outlive it being physically moved around that page."
+    },
+    {
+      "lines": [
+        "So, pulling this topic together: a page's own checksum genuinely catches a corrupted byte anywhere in its body, but that checksum alone can't catch a deliberate, consistent change to the format; only checking the magic number does.",
+        "A page's own byte order has to be explicit and enforced, never assumed.",
+        "And the documentation this design is modeled on describes exactly that: a header that tracks its own log position, and an index that lets an item's identity outlive the item being moved."
+      ]
+    }
+  ]
+}
