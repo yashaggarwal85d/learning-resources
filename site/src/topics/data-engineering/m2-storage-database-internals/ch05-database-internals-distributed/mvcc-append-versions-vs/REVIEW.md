@@ -62,3 +62,37 @@ Read in order: `b-tree-indexes-production/reel.tsx` + `b-tree-indexes-production
    update cost, long-read behaviour and the undo family's own limit together. No fix needed.
 
 `coverage.json → gapReview` recorded below.
+
+## Looks review, self-review, 2026-10-24
+
+Opened every phone screenshot in `site/test-results/` (steps 01–10, plus the two `-q`
+predict-answer frames for steps 4 and 10) and one desktop screenshot (step 5), against
+`DESIGN.md`'s checklist. The targeted reel test passed clean on the first run
+("Reel smoke test passed: 1 live reel(s) at desktop and phone sizes"), so no phone-overlap fix
+was needed for this topic.
+
+1. **[Point visible at a glance] Checked every step for more than just colour.** Each step's
+   title, the bold value text, and (where present) the red/white predict-answer framing carry the
+   point from the words alone — e.g. step 7's "unchanged" / "never blocked it" reads as the point
+   without needing colour to carry it. No fix needed.
+
+2. **[Motion and landing frame] Every step's rows fade/ease in and land on a settled final
+   frame** with all rows fully visible — confirmed across all ten phone frames, which show the
+   post-animation resting state with no mid-transition clipping. No fix needed.
+
+3. **[Crowding / clipping / small text] Checked all ten phone frames and the desktop frame.** No
+   crowded, clipped, or undersized text anywhere, including the four-row `Recap` step and the
+   three-row `Prove it` step. No fix needed.
+
+4. **[Colour used only for meaning] Confirmed red is reserved for the wrong predict-answer
+   option** (steps 4 and 10's `-q` frames) and the warm focus colour marks each step's actual
+   takeaway value, never decorative. No fix needed.
+
+5. **[Captions match the voice] Checked on-screen text against `narration.json` for steps 1, 2,
+   5, 6, and 8.** The on-screen `Row` text stays terse (data labels: "old tuple" / "xmax: the
+   updater"), while the narration explains and teaches around it rather than reading it aloud —
+   consistent with the house rule, and already confirmed clean by `narration-teaches.mjs`
+   (0–7% overlap, no verbatim flags) above. No fix needed.
+
+All screenshots were taken after the step 6/`coverage.json` content-review fixes above, so they
+reflect the shipped text.
