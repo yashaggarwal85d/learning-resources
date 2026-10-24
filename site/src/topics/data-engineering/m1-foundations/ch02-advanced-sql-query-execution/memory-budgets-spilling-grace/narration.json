@@ -12,7 +12,9 @@
       "lines": [
         "A sort over millions of rows, with a budget far too small to hold the whole thing in memory.",
         { "beat": 0.4 },
-        "Does spilling the rest to disk make this sort slower than giving it all the memory it could want?"
+        "Does spilling the rest to disk",
+        { "beat": 0.2 },
+        "slow this down, compared to giving it all the memory it wants?"
       ],
       "answer": [
         "Only once that budget gets severely undersized.",
@@ -21,7 +23,7 @@
     },
     {
       "lines": [
-        "Give the sort a generous budget, and it finishes entirely in memory with one pass.",
+        "Give it a generous memory budget, and the sort finishes in one pass.",
         "Give it the ordinary default instead — enough to force it to spill a meaningful chunk of data to disk — and it finishes just as fast, if not faster.",
         "The spill itself didn't slow anything down."
       ]

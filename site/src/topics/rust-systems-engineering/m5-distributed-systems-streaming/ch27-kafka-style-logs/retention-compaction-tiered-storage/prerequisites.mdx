@@ -1,0 +1,22 @@
+import Resource from '../../../../../components/Resource.astro';
+
+<section class="prereq" data-section="chapter-so-far">
+
+### <span class="n">01</span> Where the last topic left off
+
+<ul class="resources">
+  <Resource kind="reel" host={props.host} domain="rust-systems-engineering" title="Delivery semantics and idempotent consumers">an idempotent consumer decides what happens when the identical write is genuinely delivered twice; it says nothing yet about how long any write, duplicated or not, is even still there to be read at all.</Resource>
+</ul>
+
+</section>
+
+<section class="prereq" data-section="retention-primary">
+
+### <span class="n">02</span> The real docs: log compaction and the project's own design
+
+<ul class="resources">
+  <Resource kind="reading" title="Kafka Log Compaction" href="https://docs.confluent.io/kafka/design/log_compaction.html" by="Confluent">the real retention-versus-compaction rule, and the real tombstone, this topic's own code measures directly.</Resource>
+  <Resource kind="reading" title="Design (docs/design/design.md)" href="https://github.com/apache/kafka/blob/trunk/docs/design/design.md" by="Apache Kafka">the project's own words on the identical compaction and tombstone mechanism.</Resource>
+</ul>
+
+</section>

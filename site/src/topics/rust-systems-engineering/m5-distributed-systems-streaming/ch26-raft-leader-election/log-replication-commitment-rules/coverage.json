@@ -1,0 +1,70 @@
+{
+  "topic": "rust.log-replication-commitment-rules",
+  "syllabus": [
+    {
+      "clause": "AppendEntries{term, prev_log_index, prev_log_term, entries, leader_commit}. An entry commits only once stored on a majority under the leader's current term (the Figure 8 hazard). Conflict repair: the leader backs up to a common prefix and overwrites a follower's divergent suffix, and it must be impossible to silently corrupt indexes. Separating consensus from the state machine lets you test consensus against a trivial KV state machine first.",
+      "at": [
+        { "step": "Measured: the real conflict-repair pass genuinely finds the common prefix and overwrites the follower's divergent suffix exactly" },
+        { "step": "Measured: genuinely not committed. A previous-term entry's own real majority alone is genuinely not enough" },
+        { "step": "Measured: the current-term entry genuinely commits, and the earlier entry genuinely commits indirectly right along with it" }
+      ]
+    }
+  ],
+  "sources": [
+    {
+      "source": "raft-paper",
+      "items": [
+        {
+          "item": "a log entry is committed once the leader that created the entry has replicated it on a majority of the servers",
+          "at": [{ "step": "Now a single entry from a previous term already sits on a real majority of the cluster. Does the leader genuinely count it as committed, just from that real majority alone?" }]
+        },
+        {
+          "item": "Raft never commits log entries from previous terms by counting replicas; only log entries from the leader's current term are committed by counting replicas",
+          "at": [{ "step": "The Raft paper itself states this exact rule directly, in its own words: only entries from the leader's own current term are ever committed by counting replicas. Does this topic's own code measure exactly that rule?" }]
+        },
+        {
+          "item": "the leader handles inconsistencies by forcing the followers' logs to duplicate its own; conflicting entries in follower logs will be overwritten with entries from the leader's log",
+          "at": [{ "step": "A follower's own log genuinely diverges from the leader's at one point. The leader retries AppendEntries, backing up one entry at a time. Does it genuinely find the real common prefix, and overwrite only the divergent suffix?" }]
+        },
+        {
+          "item": "to bring a follower's log into consistency, the leader finds the latest log entry where the two logs agree, deletes any entries after that point, and sends the follower all of the leader's entries after that point",
+          "at": [{ "step": "Measured: the real conflict-repair pass genuinely finds the common prefix and overwrites the follower's divergent suffix exactly" }]
+        },
+        {
+          "item": "a leader never overwrites or deletes entries in its own log",
+          "at": [{ "step": "Recap: a real log, checked against the real rules" }]
+        }
+      ]
+    },
+    {
+      "source": "openraft-readme",
+      "items": [
+        {
+          "item": "fully pluggable: storage (RaftLogStorage, RaftStateMachine), networking (RaftNetworkV2, including application-defined snapshot transport), and every core type",
+          "at": [{ "step": "A real, widely used Rust Raft implementation keeps the consensus log genuinely separate from the application's own state machine, through its own pluggable storage traits. Does separating them this way let consensus be tested against a trivial state machine first, exactly as the syllabus names?" }]
+        }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "self-review",
+    "date": "2026-10-24",
+    "items": [
+      { "item": "The AppendEntries call implemented here carries all five of the syllabus's own named fields (term, prev_log_index, prev_log_term, entries, leader_commit), and every field is genuinely used: term gates a stale leader, prev_log_index and prev_log_term drive the real consistency check, entries are the real payload, and leader_commit genuinely advances the follower's own commit index on success.", "at": [{ "step": "A follower's own log genuinely diverges from the leader's at one point. The leader retries AppendEntries, backing up one entry at a time. Does it genuinely find the real common prefix, and overwrite only the divergent suffix?" }] },
+      { "item": "The conflict-repair scenario's own divergent follower entry (term three, a value no leader entry shares) is genuinely unreachable by any successful match at the point of divergence, so the repair loop's own three real attempts are a measured, counted fact, not a hand-picked constant; the test asserts the exact post-repair log equality index by index, not merely that repair 'succeeded'.", "at": [{ "step": "Measured: the real conflict-repair pass genuinely finds the common prefix and overwrites the follower's divergent suffix exactly" }] },
+      { "item": "The previous-term-entry scenario and the current-term-entry scenario reuse the identical majority count and the identical commitment function, changing only which term the newly added entry belongs to; this isolates the real effect of the current-term rule rather than comparing two scenarios that also differ in cluster size or majority threshold.", "at": [{ "step": "Now the leader also replicates one real entry from its own current term to the identical majority. Does that entry genuinely commit, and does the earlier entry genuinely commit along with it?" }] },
+      { "item": "This topic builds directly on topic 68's own elected leader rather than starting a new one from scratch, continuing this chapter's own running example across both of its topics, per the chapter plan's own A.3; `uses` lists topic 68's own introduced concept id for exactly this reason.", "at": [{ "step": "A follower's own log genuinely diverges from the leader's at one point. The leader retries AppendEntries, backing up one entry at a time. Does it genuinely find the real common prefix, and overwrite only the divergent suffix?" }] },
+      { "item": "The syllabus's own further material (the full Figure 8 time-sequence proof sketch in the paper's own section 5.4, and testing consensus against a genuinely trivial KV state machine as its own separate exercise) is named in prose in the pre-notes and post-notes rather than separately measured here, since this topic measures the simpler, directly checkable version of the same rule the full proof establishes in general.", "at": [{ "step": "Recap: a real log, checked against the real rules" }] },
+      { "item": "All of this topic's own measured claims run entirely on plain in-memory Rust vectors and structs, with no real network I/O, root access, or real multiple machines needed; 'the leader', 'the follower', and 'replicating' are all real, deterministic Rust values and function calls, continuing this chapter's own established pattern.", "at": [{ "step": "Recap: a real log, checked against the real rules" }] },
+      { "item": "The Raft paper itself and the openraft project's own README are two genuinely distinct primary sources (an academic paper defining the commitment and conflict-repair rules, and a real, widely used Rust implementation's own description of its pluggable storage and state-machine traits), giving this topic two independent sources rather than multiple quotes drawn from a single page.", "at": [{ "step": "A real, widely used Rust Raft implementation keeps the consensus log genuinely separate from the application's own state machine, through its own pluggable storage traits. Does separating them this way let consensus be tested against a trivial state machine first, exactly as the syllabus names?" }] },
+      { "item": "The commit-index function walks the log from the end backward and returns on the first current-term entry whose own replica count already meets the majority, which is the real, direct implementation of 'everything before a committed current-term entry commits indirectly', rather than a separate pass that re-derives the same fact a second way.", "at": [{ "step": "Measured: the current-term entry genuinely commits, and the earlier entry genuinely commits indirectly right along with it" }] },
+      { "item": "The three-node cluster and the majority-of-two threshold used throughout this topic's own scenarios are this specific example's own choice, matching the previous topic's own cluster size; the measured claims illustrate the real shape of the commitment and repair rules for any cluster size where a majority is a genuine strict majority, not a claim bound to exactly three nodes.", "at": [{ "step": "Now a single entry from a previous term already sits on a real majority of the cluster. Does the leader genuinely count it as committed, just from that real majority alone?" }] },
+      { "item": "The follower's own commit index is tracked and asserted to genuinely advance to match the leader's after a successful repair, not merely the log's own contents; this measures the paper's own stated mechanism directly, that a follower learns an entry is committed from the leader's own commit index carried in later AppendEntries calls, rather than inferring it from the log alone.", "at": [{ "step": "Measured: the real conflict-repair pass genuinely finds the common prefix and overwrites the follower's divergent suffix exactly" }] }
+    ]
+  },
+  "gapReview": {
+    "date": "2026-10-24",
+    "by": "self-review",
+    "open": []
+  }
+}

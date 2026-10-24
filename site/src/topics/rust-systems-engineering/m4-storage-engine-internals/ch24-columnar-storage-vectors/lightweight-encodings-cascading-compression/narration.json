@@ -1,0 +1,85 @@
+{
+  "steps": [
+    {
+      "lines": [
+        "Run-length encode a skewed, repetitive column: long stretches of the identical value, the way a real status column often looks.",
+        { "beat": 0.3 },
+        "Does the encoding genuinely win big, by compression ratio, on data shaped like that?"
+      ],
+      "answer": [
+        "Yes, genuinely.",
+        "A huge compression ratio."
+      ]
+    },
+    {
+      "lines": [
+        "Run it for real: a huge real compression ratio showed up on the skewed, repetitive column.",
+        "Long runs of the identical value collapse down to one header each, so the real win scales directly with how repetitive the data actually is."
+      ]
+    },
+    {
+      "lines": [
+        "Run the identical encoding on a uniformly random column of the identical length instead.",
+        { "beat": 0.3 },
+        "Does it still win there, or does it genuinely lose instead?"
+      ],
+      "answer": [
+        "It genuinely loses.",
+        "Taking up more space than the raw column did."
+      ]
+    },
+    {
+      "lines": [
+        "Run it for real: the identical encoding genuinely lost, taking more space than the raw column, on the uniformly random data."
+      ],
+      "takeaway": "The identical encoding that wins big on repetitive data genuinely loses on random data; choose by the real data."
+    },
+    {
+      "lines": [
+        "Now measure decode work itself: how many run-headers does decoding actually have to process, for every value it produces, on each column?",
+        { "beat": 0.3 },
+        "Does that real cost depend on the data's own shape too?"
+      ],
+      "answer": [
+        "Yes, genuinely.",
+        "Far fewer headers per value, on the skewed column."
+      ]
+    },
+    {
+      "lines": [
+        "Run it for real: decoding the skewed column processed far fewer run-headers for every value than decoding the random column did, and both decoded back to their exact original values."
+      ],
+      "takeaway": "Decode cost, like compression ratio, rides on the real shape of the data, not on the encoding scheme alone."
+    },
+    {
+      "lines": [
+        "One real production format's own documentation states the processing-cost side of this trade-off directly.",
+        { "beat": 0.3 },
+        "Does it name several real compression methods as covering different points on a ratio-versus-processing-cost spectrum?"
+      ],
+      "answer": [
+        "Yes, genuinely.",
+        "A real spectrum, named directly."
+      ]
+    },
+    {
+      "lines": [
+        "That format's own documentation states it in exactly those words: several compression methods, covering different areas in the compression ratio and processing cost spectrum."
+      ],
+      "takeaway": "A real format doesn't pick one encoding; it offers a spectrum, and the right point depends on the data."
+    },
+    {
+      "lines": [
+        "That same format's own documentation also names exactly what run-length encoding itself is doing underneath.",
+        "It combines bit-packing together with run-length encoding, to store those repeated values far more efficiently."
+      ]
+    },
+    {
+      "lines": [
+        "So here's the shape of this whole topic: a lightweight encoding like run-length can win hugely, by real compression ratio, on data that's genuinely repetitive.",
+        "That identical encoding genuinely loses outright on uniformly random data instead, in both its compression ratio and its own decode work, since there are simply no real runs there to collapse down.",
+        "The real choice of which encoding to use has to follow the real shape of the actual data in front of it; it can never be applied by default, regardless of what that data actually looks like."
+      ]
+    }
+  ]
+}

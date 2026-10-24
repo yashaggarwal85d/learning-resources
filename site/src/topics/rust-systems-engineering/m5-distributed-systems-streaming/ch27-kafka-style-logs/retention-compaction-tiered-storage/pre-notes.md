@@ -1,0 +1,4 @@
+- **Retention**: deleting a log's own entries once they age past a real time or size threshold, regardless of their own key. *Where you meet it:* a key's own only entry can be deleted even while it is still that key's own latest value.
+- **Compaction**: keeping only the latest entry for each distinct key forever, with no age check of its own, as long as a newer entry has not replaced it.
+- **Tombstone**: a real entry with a key and no value, which compaction treats as a real delete; once compaction runs past it, that key is genuinely removed entirely, not merely emptied.
+- **Tiered storage**: moving a log's own cold segments to cheaper object storage once they age past the broker's own local disk, rather than deleting them outright.

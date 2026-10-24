@@ -1,0 +1,22 @@
+import Resource from '../../../../../components/Resource.astro';
+
+<section class="prereq" data-section="chapter-so-far">
+
+### <span class="n">01</span> Where the last chapter left off
+
+<ul class="resources">
+  <Resource kind="reel" host={props.host} domain="rust-systems-engineering" title="Log replication and commitment rules">this chapter measured how a cluster agrees on a leader and safely commits what that leader replicates; the next chapter turns to what a log built on exactly this kind of replicated, ordered structure looks like once it is a real product-facing abstraction, with its own partitions, delivery guarantees, and retention rules.</Resource>
+</ul>
+
+</section>
+
+<section class="prereq" data-section="partitioning-primary">
+
+### <span class="n">02</span> The real docs: a product-facing introduction and the project's own design
+
+<ul class="resources">
+  <Resource kind="reading" title="Kafka Introduction" href="https://docs.confluent.io/kafka/introduction.html" by="Confluent">the real routing rule this topic's own code measures: same key, same partition, in order.</Resource>
+  <Resource kind="reading" title="Design (docs/design/design.md)" href="https://github.com/apache/kafka/blob/trunk/docs/design/design.md" by="Apache Kafka">the project's own words on the log's real on-disk file structure and compaction.</Resource>
+</ul>
+
+</section>

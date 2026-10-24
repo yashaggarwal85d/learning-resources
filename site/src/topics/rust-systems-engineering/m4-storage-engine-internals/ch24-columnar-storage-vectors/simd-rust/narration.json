@@ -1,0 +1,86 @@
+{
+  "steps": [
+    {
+      "lines": [
+        "Build an explicit SIMD kernel, summing several values at once instead of one at a time.",
+        { "beat": 0.3 },
+        "Before ever calling it, check the real processor's own feature support at runtime.",
+        "Does the real processor here genuinely support that feature?"
+      ],
+      "answer": [
+        "Yes, genuinely.",
+        "The real processor supports it."
+      ]
+    },
+    {
+      "lines": [
+        "Run it for real: the real processor here genuinely supports that feature, detected at runtime, so the explicit kernel actually ran.",
+        "The kernel only ever gets called once the real processor's own support is actually checked, never simply assumed."
+      ]
+    },
+    {
+      "lines": [
+        "Run the explicit SIMD kernel and the plain scalar loop on the identical column.",
+        { "beat": 0.3 },
+        "Does the kernel produce the exact identical sum as the scalar loop?"
+      ],
+      "answer": [
+        "Yes, genuinely.",
+        "The exact identical sum."
+      ]
+    },
+    {
+      "lines": [
+        "Run it for real: the exact identical sum came back, from both the explicit SIMD kernel and the plain scalar loop."
+      ],
+      "takeaway": "An explicit SIMD kernel changes how many values one instruction touches, never the real answer it computes."
+    },
+    {
+      "lines": [
+        "Now measure vector operations themselves: does the SIMD kernel genuinely process far fewer of them than the scalar loop processes scalar operations?",
+        { "beat": 0.3 },
+        "On the identical column?"
+      ],
+      "answer": [
+        "Yes, genuinely.",
+        "Far fewer, in the SIMD kernel."
+      ]
+    },
+    {
+      "lines": [
+        "Run it for real: far fewer vector operations showed up in the SIMD kernel, matching the real lane width exactly."
+      ],
+      "takeaway": "The real cut a SIMD kernel buys isn't a rough estimate; it follows exactly from the lane width."
+    },
+    {
+      "lines": [
+        "The Rust standard library's own documentation states why that runtime check genuinely has to come first.",
+        { "beat": 0.3 },
+        "Does it name calling that kind of function on a processor that genuinely lacks the feature as unsafe?"
+      ],
+      "answer": [
+        "Yes, genuinely.",
+        "Named directly as unsafe."
+      ]
+    },
+    {
+      "lines": [
+        "That standard library states it in exactly those words: it is unsafe to call a function built on that feature on a processor that doesn't actually support it."
+      ],
+      "takeaway": "The runtime feature check isn't a performance nicety; it's the real safety contract an explicit SIMD kernel depends on."
+    },
+    {
+      "lines": [
+        "That same standard library's own documentation also names exactly what that runtime check itself relies on.",
+        "It states that runtime detection currently relies mostly on one particular processor instruction."
+      ]
+    },
+    {
+      "lines": [
+        "So here's the shape of this whole topic: an explicit SIMD kernel, called only once the real processor's own support is genuinely checked at runtime, computes the exact identical answer as its scalar equivalent.",
+        "It does that while processing far fewer real operations, by exactly the real lane width a single instruction actually holds, never by a rough estimate.",
+        "That runtime check isn't an optional nicety either; it's the genuine safety contract making any of this sound to call at all."
+      ]
+    }
+  ]
+}

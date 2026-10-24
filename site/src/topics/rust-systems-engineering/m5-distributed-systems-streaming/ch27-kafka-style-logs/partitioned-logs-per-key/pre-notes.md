@@ -1,0 +1,4 @@
+- **Partition**: one of a topic's own ordered, append-only logs; ordering is a real property of a single partition, never of the topic as a whole.
+- **Key-based partitioning**: routing a write to a partition by a real function of its own key (`hash(key) % N`). *Where you meet it:* every write to the same key lands in the identical partition, until `N` itself changes.
+- **Resize hazard**: the real situation key-based partitioning does not protect against, where growing or shrinking the partition count reroutes an existing key to a different partition, splitting its own prior history across two places.
+- **Segment file**: the real on-disk unit a partition's own log is actually stored as, recopied in whole segments whenever the log cleaner compacts it.

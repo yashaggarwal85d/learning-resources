@@ -1,0 +1,84 @@
+{
+  "steps": [
+    {
+      "lines": [
+        "A consumer applies a real side effect, then commits its own offset, as two separate steps.",
+        { "beat": 0.3 },
+        "The process genuinely crashes between them. Does the next real poll genuinely redeliver that same message?"
+      ],
+      "answer": [
+        "Yes, genuinely.",
+        "From the same uncommitted offset."
+      ]
+    },
+    {
+      "lines": [
+        "Run it for real: the crash genuinely left the offset uncommitted, and the next real poll genuinely redelivered the identical message."
+      ]
+    },
+    {
+      "lines": [
+        "That redelivered message now hits the side effect a second time.",
+        { "beat": 0.3 },
+        "Does a naive consumer genuinely apply it twice?"
+      ],
+      "answer": [
+        "Yes, genuinely.",
+        "The side effect itself has no memory of its own."
+      ]
+    },
+    {
+      "lines": [
+        "Run it for real: a naive consumer genuinely applied the real side effect twice, and the real ledger balance is genuinely wrong because of it."
+      ],
+      "takeaway": "A naive consumer, with no memory of its own, can double-apply a real side effect."
+    },
+    {
+      "lines": [
+        "Now the consumer checks a real idempotency key, the producer's own id plus its sequence number, before applying anything.",
+        { "beat": 0.3 },
+        "Does that genuinely remove the duplicate effect?"
+      ],
+      "answer": [
+        "Yes, genuinely.",
+        "The key is what the consumer was missing."
+      ]
+    },
+    {
+      "lines": [
+        "Run it for real: the real idempotency key genuinely removed the duplicate's own visible effect, and the real ledger balance came out genuinely exact."
+      ],
+      "takeaway": "A real idempotency key removes a duplicate effect; it never removes the redelivery that carries it."
+    },
+    {
+      "lines": [
+        "The redelivery itself is still genuinely happening, every time.",
+        { "beat": 0.3 },
+        "Does only the effect disappear, or does the redelivery disappear too?"
+      ],
+      "answer": [
+        "Only the effect.",
+        "The redelivery itself keeps happening."
+      ]
+    },
+    {
+      "lines": [
+        "Run it for real: the redelivery itself genuinely still happened, and only the duplicate's own effect was genuinely removed."
+      ],
+      "takeaway": "An idempotency key is a filter on effects, never a filter on whether a message arrives again."
+    },
+    {
+      "lines": [
+        "Two real, independent sources on this exact mechanism agree, in their own words.",
+        "The broker assigns each producer a real id, and deduplicates by a real sequence number sent with every message."
+      ]
+    },
+    {
+      "lines": [
+        "So here's the real split this whole topic turns on: a broker's own promise about delivery and a consumer's own promise about effects are answering two completely different questions, and mixing them up is exactly where this kind of bug comes from.",
+        "A crash doesn't erase what already happened; it only erases the broker's own record of having heard about it, which is precisely why the work can come back around a second time looking brand new.",
+        "The fix was never about trying to stop that second arrival. It was about giving the consumer its own memory, so arriving twice and mattering twice stop being the same thing."
+      ]
+    }
+  ]
+}

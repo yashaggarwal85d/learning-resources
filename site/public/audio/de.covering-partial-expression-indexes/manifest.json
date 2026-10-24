@@ -1,0 +1,605 @@
+{
+ "topic": "de.covering-partial-expression-indexes",
+ "voice": "breeze-mellow-v2",
+ "asr": "large-v3-turbo",
+ "clips": {
+  "01": {
+   "hash": "da47603a225ec9c1",
+   "takes": [
+    "0b8eaa6c7f6a27c573ab",
+    "348cc05e75df425ed1c3",
+    "594b6cfad10133a029c6"
+   ],
+   "duration": 19.4,
+   "lines": [
+    {
+     "text": "Run the same filter against the same table twice, reading back the same column each time.",
+     "start": 0.15,
+     "end": 5.903
+    },
+    {
+     "text": "One index needs tens of thousands of buffer reads to answer it.",
+     "start": 6.323,
+     "end": 10.452
+    },
+    {
+     "text": "A second index, covering that same column plus one extra payload column, needs a tiny fraction of that.",
+     "start": 10.872,
+     "end": 19.05
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -2.2,
+   "wpm": 142,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "02": {
+   "hash": "a23c1fcdbcf074c2",
+   "takes": [
+    "1cdf362bfd43bef813c8",
+    "3e74a1fea841df76ac36"
+   ],
+   "duration": 12.211,
+   "lines": [
+    {
+     "text": "The column being read back here was never part of this query's own filter condition.",
+     "start": 0.15,
+     "end": 5.282
+    },
+    {
+     "text": "So why would simply adding it to the index change anything at all about reading it?",
+     "start": 6.102,
+     "end": 11.861
+    }
+   ],
+   "lufs": -16.0,
+   "true_peak": -2.9,
+   "wpm": 152,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "02a": {
+   "hash": "f8df9308b991b3d8",
+   "takes": [
+    "c8c7b0fdd1e3a2b6801b",
+    "58929c8cd8dd9a5b7195"
+   ],
+   "duration": 15.152,
+   "lines": [
+    {
+     "text": "Because now the index can answer the entire query on its own.",
+     "start": 0.15,
+     "end": 4.346
+    },
+    {
+     "text": "Once every column a query actually needs is sitting inside the index, filtered on or not, there is nothing left that requires opening the table itself.",
+     "start": 4.766,
+     "end": 14.802
+    }
+   ],
+   "lufs": -16.6,
+   "true_peak": -1.9,
+   "wpm": 150,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "03": {
+   "hash": "fe0f5b70ae9e08d3",
+   "takes": [
+    "668298558554e6917a3c",
+    "217c34b6c3349c70b8ab",
+    "cb1da61bff1e6aff9f46"
+   ],
+   "duration": 20.425,
+   "lines": [
+    {
+     "text": "Add that extra column to the index as plain payload, not as a search key.",
+     "start": 0.15,
+     "end": 5.237
+    },
+    {
+     "text": "The plan changes shape entirely: instead of reading the index and then the table, it reads only the index.",
+     "start": 5.657,
+     "end": 14.467
+    },
+    {
+     "text": "The index alone now has every piece this particular query ever asked for.",
+     "start": 14.887,
+     "end": 20.075
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 138,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "04": {
+   "hash": "edb7aaf43175ceea",
+   "takes": [
+    "7893ef49727360865601",
+    "4a9dffeb51ef870c3226",
+    "4d1e008b3aeea072ecff"
+   ],
+   "duration": 23.8,
+   "lines": [
+    {
+     "text": "This shortcut depends on something hidden: one bit, kept per page of the actual table, saying every row on that page is old enough to be visible to absolutely everyone.",
+     "start": 0.15,
+     "end": 12.49
+    },
+    {
+     "text": "An index-only scan checks that bit instead of opening the table at all.",
+     "start": 12.91,
+     "end": 17.568
+    },
+    {
+     "text": "The index makes this shortcut possible. That one bit is what actually makes it safe.",
+     "start": 17.988,
+     "end": 23.45
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -1.9,
+   "wpm": 149,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "05": {
+   "hash": "4a201786b3da9ccc",
+   "takes": [
+    "6fdde19478fbf10052ac",
+    "b95fd4a0f2c3ae646085"
+   ],
+   "duration": 12.111,
+   "lines": [
+    {
+     "text": "Every row this query matches now gets updated. Nothing about the index's own structure changes because of that.",
+     "start": 0.15,
+     "end": 7.544
+    },
+    {
+     "text": "Does the shortcut this index enabled survive that update?",
+     "start": 8.364,
+     "end": 11.761
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -1.9,
+   "wpm": 134,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "05a": {
+   "hash": "1780fbafff35869f",
+   "takes": [
+    "cc65bf4112a05b7496bc",
+    "d4d842befc2a65025fec"
+   ],
+   "duration": 16.621,
+   "lines": [
+    {
+     "text": "No \u2014 the update clears exactly the bit this shortcut depended on.",
+     "start": 0.15,
+     "end": 4.728
+    },
+    {
+     "text": "The index itself stays structurally identical. What changes is the table's own claim about which of its pages are still entirely settled.",
+     "start": 5.148,
+     "end": 16.271
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 119,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "06": {
+   "hash": "af6b61688d9d4a8f",
+   "takes": [
+    "406253b8f58157ade1dd",
+    "722392a5ba27c9ecf237",
+    "309ba656891db2bdde19"
+   ],
+   "duration": 26.266,
+   "lines": [
+    {
+     "text": "Run that exact same query again, against that exact same, unchanged index, right after the update.",
+     "start": 0.15,
+     "end": 8.128
+    },
+    {
+     "text": "A number that used to read zero now reads in the hundreds of thousands \u2014 one heap visit for nearly every single matching row.",
+     "start": 8.548,
+     "end": 18.821
+    },
+    {
+     "text": "Execution time climbs by roughly a factor of ten, for a query whose index never moved at all.",
+     "start": 19.241,
+     "end": 25.916
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 130,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "07": {
+   "hash": "def56ac00920f740",
+   "takes": [
+    "4b5fff4941a7b4ed2704",
+    "8e410e167189f7604e4e",
+    "355d33d543eaa54365ef"
+   ],
+   "duration": 25.409,
+   "lines": [
+    {
+     "text": "Run this engine's own routine maintenance command over that same table.",
+     "start": 0.15,
+     "end": 5.065
+    },
+    {
+     "text": "That one bit per page gets set again, for every page this maintenance pass confirms is settled.",
+     "start": 5.485,
+     "end": 12.586
+    },
+    {
+     "text": "The exact same query, against the exact same index, drops straight back down to its original speed \u2014 nothing about the index itself was ever rebuilt to get there.",
+     "start": 13.006,
+     "end": 25.059
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 132,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "08": {
+   "hash": "32c1c66d4b0cf973",
+   "takes": [
+    "6d477c618760b3656447",
+    "efb3b5ab0a1c82b89038"
+   ],
+   "duration": 16.54,
+   "lines": [
+    {
+     "text": "One particular value accounts for the overwhelming majority of a column's rows. Every query that actually searches this column is hunting for something else entirely.",
+     "start": 0.15,
+     "end": 11.018
+    },
+    {
+     "text": "Is indexing that overwhelming majority ever something worth avoiding?",
+     "start": 11.838,
+     "end": 16.189
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -1.9,
+   "wpm": 123,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "08a": {
+   "hash": "2adebea71e4e000c",
+   "takes": [
+    "2c4f68c936f64c641c83",
+    "72111b0f9cf7de334591"
+   ],
+   "duration": 19.625,
+   "lines": [
+    {
+     "text": "Yes \u2014 indexing the common value adds real size for a search nobody ever actually runs.",
+     "start": 0.15,
+     "end": 7.154
+    },
+    {
+     "text": "A query hunting for something this common skips the index anyway, straight to scanning the table, so every entry an index holds for that value serves no query at all.",
+     "start": 7.574,
+     "end": 19.275
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -1.9,
+   "wpm": 138,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "09": {
+   "hash": "cd9a94503b298c25",
+   "takes": [
+    "4cd9881d46e77be9fc50",
+    "676bcc32cd5c566a3735",
+    "287ff2b3293aca8f2d5b"
+   ],
+   "duration": 22.989,
+   "lines": [
+    {
+     "text": "Build the index with a condition attached, covering only the rare slice instead of the whole column.",
+     "start": 0.15,
+     "end": 6.77
+    },
+    {
+     "text": "That narrower index comes out dozens of times smaller than an index covering the entire column would have been.",
+     "start": 7.19,
+     "end": 15.167
+    },
+    {
+     "text": "Nothing about which rows a real query needs changed. Only how much of the column got indexed in the first place did.",
+     "start": 15.587,
+     "end": 22.639
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -2.2,
+   "wpm": 151,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "10": {
+   "hash": "85f338f696e2eee5",
+   "takes": [
+    "9d7b2edf255d878abf4b",
+    "0d35265e070d71ee279d",
+    "98e3bf9f28c539de7466"
+   ],
+   "duration": 20.347,
+   "lines": [
+    {
+     "text": "A row belonging to that overwhelming majority gets written or updated.",
+     "start": 0.15,
+     "end": 5.094
+    },
+    {
+     "text": "This narrower index was never built to contain that row in the first place, so there is nothing in it to touch.",
+     "start": 5.514,
+     "end": 12.55
+    },
+    {
+     "text": "Only a write landing in that small, deliberately indexed slice ever has anything here left to maintain.",
+     "start": 12.97,
+     "end": 19.997
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -2.1,
+   "wpm": 147,
+   "wer": 0.058823529411764705,
+   "exact": false,
+   "tolerated": [
+    {
+     "line": "Only a write landing in that small, deliberately indexed slice ever has anything here left to maintain.",
+     "said": "write",
+     "heard": "right"
+    }
+   ]
+  },
+  "11": {
+   "hash": "9335ba97d0826c81",
+   "takes": [
+    "669cc88024b753bb3730",
+    "5877152f891260d71349"
+   ],
+   "duration": 17.47,
+   "lines": [
+    {
+     "text": "One query builds a value by joining two pieces together with one particular operator. A second query builds the exact same value using a different function entirely.",
+     "start": 0.15,
+     "end": 11.605
+    },
+    {
+     "text": "Does an index built for the first expression help the second query too?",
+     "start": 12.425,
+     "end": 17.12
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -1.9,
+   "wpm": 137,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "11a": {
+   "hash": "415a9b5db437171a",
+   "takes": [
+    "45c9cb2ceeca937ae6c6",
+    "013f7ec2b94ad6dbfe8b"
+   ],
+   "duration": 20.141,
+   "lines": [
+    {
+     "text": "No \u2014 only the exact expression the index was built around actually counts.",
+     "start": 0.15,
+     "end": 5.497
+    },
+    {
+     "text": "This engine's planner compares expressions by how they're written, not by what they end up computing. A different function call reads as a different expression altogether, whatever value it happens to produce.",
+     "start": 5.917,
+     "end": 19.791
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -1.9,
+   "wpm": 131,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "12": {
+   "hash": "b8bd7f7044430ca5",
+   "takes": [
+    "b90cd1510a7803b31b3c",
+    "e9555a5e86e4fad68b8c",
+    "8c3dced2c63e71862d16"
+   ],
+   "duration": 26.247,
+   "lines": [
+    {
+     "text": "Write the query with the exact expression the index was built on, and the answer comes back in a fraction of a millisecond, touching only a handful of pages.",
+     "start": 0.15,
+     "end": 10.178
+    },
+    {
+     "text": "Write the identical computation with a different function instead, and the plan falls back to scanning the entire table from the start.",
+     "start": 10.598,
+     "end": 19.725
+    },
+    {
+     "text": "Thousands of times slower, for a value that was never actually different at all.",
+     "start": 20.145,
+     "end": 25.897
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 149,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "13": {
+   "hash": "91cdfb524da3532e",
+   "takes": [
+    "6cf6db5900e279337a38",
+    "6db19b6ff6f27df21142",
+    "843d0c8097a2536fa31f"
+   ],
+   "duration": 19.645,
+   "lines": [
+    {
+     "text": "An expression index earns its speed only from a query that writes the exact expression it was built to match.",
+     "start": 0.15,
+     "end": 6.79
+    },
+    {
+     "text": "How cheap or expensive the underlying computation happens to be has nothing to do with it.",
+     "start": 7.21,
+     "end": 13.384
+    },
+    {
+     "text": "This is purely a question of matching text, not a question of matching meaning.",
+     "start": 13.804,
+     "end": 19.295
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -2.4,
+   "wpm": 153,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "14": {
+   "hash": "16d47d4ed6e51312",
+   "takes": [
+    "4dfe094173107e85ec0a",
+    "9e7ddead5e85a974fe25",
+    "5ede94bf11e2549114c2"
+   ],
+   "duration": 39.529,
+   "lines": [
+    {
+     "text": "A payload column makes an index-only scan possible in the first place. The visibility map is what actually decides whether that scan pays off, and an ordinary update can quietly take that away until the next maintenance pass.",
+     "start": 0.15,
+     "end": 17.953
+    },
+    {
+     "text": "A predicate narrow enough to cover only a genuinely rare slice of a column shrinks both how much space an index needs and how much upkeep every other write has to pay.",
+     "start": 18.373,
+     "end": 31.483
+    },
+    {
+     "text": "And an index built on one expression helps only the query that writes that exact same expression back.",
+     "start": 31.903,
+     "end": 39.179
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 135,
+   "wer": 0.03125,
+   "exact": false,
+   "tolerated": [
+    {
+     "line": "A predicate narrow enough to cover only a genuinely rare slice of a column shrinks both how much space an index needs and how much upkeep every other write has to pay.",
+     "said": "write",
+     "heard": "right"
+    }
+   ]
+  },
+  "15": {
+   "hash": "54715728f1e1f755",
+   "takes": [
+    "3849218e43db8f8bd6ec",
+    "3ddd594a942d9f4c780e",
+    "e3cdfe543feb25c05943"
+   ],
+   "duration": 19.454,
+   "lines": [
+    {
+     "text": "A covering index answers a query with zero heap visits on one day.",
+     "start": 0.15,
+     "end": 4.94
+    },
+    {
+     "text": "By later that same week, every one of those rows has been updated, and the identical query now needs tens of thousands of heap visits to answer the same question.",
+     "start": 5.36,
+     "end": 16.319
+    },
+    {
+     "text": "Did the index itself change?",
+     "start": 17.039,
+     "end": 19.104
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 148,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "15a": {
+   "hash": "0eb6fdb7643bdf0a",
+   "takes": [
+    "f094d84e59a8366c82da",
+    "367237bf12238d374b3b"
+   ],
+   "duration": 14.886,
+   "lines": [
+    {
+     "text": "No \u2014 the visibility map for those pages was cleared instead.",
+     "start": 0.15,
+     "end": 4.362
+    },
+    {
+     "text": "The index kept its exact same shape the whole time. What changed was the table's own claim about which of its pages still qualify for the shortcut.",
+     "start": 4.782,
+     "end": 14.536
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -1.9,
+   "wpm": 149,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  }
+ }
+}

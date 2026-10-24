@@ -1,0 +1,70 @@
+{
+  "topic": "rust.acknowledgement-points-define-durability",
+  "syllabus": [
+    {
+      "clause": "grounded in the Kafka design docs and the Raft paper. Durability vs availability is decided by which acknowledgement point is used: accepted by a subset, persisted by a quorum, or durably recorded by the leader. Kafka's acks, ISR and min.insync.replicas; Kafka has run KRaft-only (no ZooKeeper) since 4.0 (March 2025).",
+      "at": [
+        { "step": "Measured: genuinely lost, once the leader that alone held the acknowledged write was destroyed" },
+        { "step": "Measured: genuinely lost again, even though the write was durably recorded, because it never reached any node beyond the one that was destroyed" },
+        { "step": "Measured: genuinely survives, on the identical leader destruction, because a real quorum already held a durable copy beyond just the leader" }
+      ]
+    }
+  ],
+  "sources": [
+    {
+      "source": "confluent-producer-configs",
+      "items": [
+        {
+          "item": "if set to zero then the producer will not wait for any acknowledgment from the server at all, and no guarantee can be made that the server has received the record",
+          "at": [{ "step": "A write is acknowledged once a subset smaller than a quorum has it: the leader alone. The leader is then destroyed. Does the write genuinely survive?" }]
+        },
+        {
+          "item": "the leader will write the record to its local log but will respond without awaiting full acknowledgement from all followers; should the leader fail immediately after acknowledging the record but before the followers have replicated it then the record will be lost",
+          "at": [{ "step": "Measured, in Kafka's own words: should the leader fail immediately after acknowledging the record but before the followers have replicated it, then the record will be lost" }]
+        },
+        {
+          "item": "the leader will wait for the full set of in-sync replicas to acknowledge the record; this guarantees that the record will not be lost as long as at least one in-sync replica remains alive",
+          "at": [{ "step": "Measured: genuinely survives, on the identical leader destruction, because a real quorum already held a durable copy beyond just the leader" }]
+        }
+      ]
+    },
+    {
+      "source": "confluent-topic-configs",
+      "items": [
+        {
+          "item": "specifies the minimum number of in-sync replicas (including the leader) required for a write to succeed",
+          "at": [{ "step": "Kafka's own documentation also names the real setting that turns a quorum requirement into an enforced guarantee: does it state that min.insync.replicas causes the producer to raise an exception when the in-sync set falls below it?" }]
+        },
+        {
+          "item": "if acks=all and the current ISR set contains fewer than min.insync.replicas members, then the producer will raise an exception",
+          "at": [{ "step": "Kafka's own documentation also names the real setting that turns a quorum requirement into an enforced guarantee: does it state that min.insync.replicas causes the producer to raise an exception when the in-sync set falls below it?" }]
+        },
+        {
+          "item": "regardless of the acks setting, the messages will not be visible to the consumers until they are replicated to all in-sync replicas and the min.insync.replicas condition is met",
+          "at": [{ "step": "Recap: what an acknowledgement point actually promises" }]
+        }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "self-review",
+    "date": "2026-10-24",
+    "items": [
+      { "item": "All three policies run the identical write id through the identical cluster size and the identical leader-destruction function, so the measured difference in survival is attributable to the acknowledgement threshold alone, not to a different write, cluster, or failure.", "at": [{ "step": "A write is acknowledged once a subset smaller than a quorum has it: the leader alone. The leader is then destroyed. Does the write genuinely survive?" }] },
+      { "item": "The quorum size used here is computed from the real cluster size via a genuine majority function (num_nodes divided by two, plus one), not a hard-coded constant chosen to make the demonstration work, and it is checked against that independently computed expected value.", "at": [{ "step": "Measured: genuinely survives, on the identical leader destruction, because a real quorum already held a durable copy beyond just the leader" }] },
+      { "item": "The surprising, stronger claim this topic measures is that durability on the leader alone genuinely fails identically to no durability at all, under node destruction, since neither write ever reached a second node; this is deliberately shown as its own separate step rather than folded into the subset case, so the distinction between 'durable' and 'replicated' stays visible.", "at": [{ "step": "Measured: genuinely lost again, even though the write was durably recorded, because it never reached any node beyond the one that was destroyed" }] },
+      { "item": "Node destruction is modeled as the complete removal of that node's own state (not merely a process restart with its disk intact), matching Kafka's own documented guarantee of surviving as long as at least one in-sync replica remains alive, which implies the failure model it is built to tolerate is losing a node entirely.", "at": [{ "step": "Measured: genuinely lost, once the leader that alone held the acknowledged write was destroyed" }] },
+      { "item": "This topic opens Milestone 5 (Distributed Systems and Streaming) and Chapter 25, continuing directly from Chapter 24's own closing handoff into a genuinely different subject, multi-node replication rather than single-machine layout and execution, so it introduces no earlier chapter's own concept into its own uses list.", "at": [{ "step": "A write is acknowledged once a subset smaller than a quorum has it: the leader alone. The leader is then destroyed. Does the write genuinely survive?" }] },
+      { "item": "The syllabus's own further material on Kafka's own KRaft-only architecture (no ZooKeeper, since its own version four point zero) and on the Raft paper's own commitment rule is named in prose in the pre-notes and post-notes rather than separately measured here; this topic measures the simpler, foundational acknowledgement-point question those further systems are themselves built to answer.", "at": [{ "step": "Recap: what an acknowledgement point actually promises" }] },
+      { "item": "All of this topic's own measured claims run entirely on plain in-memory Rust structs and vectors, with no real network I/O, root access, or real multiple machines needed; 'nodes' and 'destruction' are real, deterministic Rust values and function calls, continuing this domain's own established pattern of measuring a real, small, fully-controlled model directly.", "at": [{ "step": "Recap: what an acknowledgement point actually promises" }] },
+      { "item": "The Kafka Producer Configuration Reference page and the Kafka Topic Configuration Reference page are two genuinely distinct documentation pages (one on how a producer requests an acknowledgement, the other on how a broker enforces a minimum replica count), giving this topic two independent primary sources rather than multiple quotes drawn from a single page.", "at": [{ "step": "Kafka's own documentation also names the real setting that turns a quorum requirement into an enforced guarantee: does it state that min.insync.replicas causes the producer to raise an exception when the in-sync set falls below it?" }] },
+      { "item": "The three-node cluster size used throughout this topic's own scenario is this specific example's own choice, matching the syllabus's own three-node lab exercise for this chapter; the measured claims illustrate the direction and shape of the real effect for any cluster size where a quorum is a genuine strict majority, not a claim bound to exactly three nodes.", "at": [{ "step": "Measured: genuinely survives, on the identical leader destruction, because a real quorum already held a durable copy beyond just the leader" }] },
+      { "item": "The acknowledgement thresholds for the subset policy and the leader-only-durable policy are deliberately identical (both equal to one node), since the syllabus's own distinction between 'accepted by a subset' and 'durably recorded by the leader' is about durability semantics on that one node, not about how many nodes are involved; this topic's own measured result (both lose the write identically) is the real, intended answer to that distinction, not an oversight.", "at": [{ "step": "Measured: genuinely lost again, even though the write was durably recorded, because it never reached any node beyond the one that was destroyed" }] }
+    ]
+  },
+  "gapReview": {
+    "date": "2026-10-24",
+    "by": "self-review",
+    "open": []
+  }
+}
