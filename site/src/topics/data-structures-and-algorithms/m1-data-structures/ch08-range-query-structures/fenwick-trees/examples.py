@@ -146,6 +146,17 @@ for i in range(1, N + 1):
 assert rf.range_sum(5, 11) == sum(corrected[4:11])
 assert rf.range_sum(5, 11) == 100
 
+# edge case: a range-add ending at the very last index (r == n) must not index past the array
+edge = RangeFenwick(N)
+for i, v in enumerate(COUNTS, start=1):
+    edge.range_add(i, i, v)
+edge.range_add(10, N, 1)  # r == n exactly
+edge_expected = list(COUNTS)
+for i in range(10, N + 1):
+    edge_expected[i - 1] += 1
+for i in range(1, N + 1):
+    assert edge.prefix_sum(i) == naive_prefix_sum(edge_expected, i)
+
 # --- 8. 2D Fenwick tree, named and demonstrated at a small scale (4x4 grid) ---
 
 
@@ -202,7 +213,10 @@ naive_ops = 0
 fenwick_ops = 0
 workload_tree = Fenwick(N)
 for idx, delta in UPDATES:
-    naive_ops += N  # a naive cached-prefix-sum array rebuilds every slot from idx onward, worst case all N
+    # a naive cached prefix-sum array must recompute every prefix at and after
+    # the updated index, i.e. positions idx..N — the real per-update cost,
+    # not the worst-case bound applied flatly to every update.
+    naive_ops += N - idx + 1
     jumps = workload_tree.add(idx, delta)
     fenwick_ops += len(jumps)
 for q in QUERIES:
@@ -210,10 +224,8 @@ for q in QUERIES:
     _, jumps = workload_tree.prefix_sum(q)
     fenwick_ops += len(jumps)
 
-assert naive_ops == 160  # 10 updates * 15 + 10 queries * 1
+assert naive_ops == 97  # sum(15 - idx + 1) over the 10 updates' own indices, + 10 queries * 1
 assert fenwick_ops == 47
-NAIVE_UPDATE_COST = N
-assert NAIVE_UPDATE_COST == 15
 
 if __name__ == '__main__':
     print(f'array: {N} per-minute event counts {COUNTS}')

@@ -12,7 +12,7 @@
 - **Predict 1** (step 3, "UpdatePredict"): how many of 15 array slots does one point update actually touch?
 - **Predict 2** (step 5, "QueryPredict"): does the prefix-sum query's own jump count match the update's?
 - **Predict 3** (step 8, "TwoDPredict"): does a 2D Fenwick tree need a new mechanism, or the same arithmetic nested?
-- **Surprising number**: `examples.py`'s own measured workload cost — 160 naive slot-touches against 47 Fenwick index-jumps, over the identical ten updates and ten queries.
+- **Surprising number**: `examples.py`'s own measured workload cost — 97 naive slot-touches against 47 Fenwick index-jumps, over the identical ten updates and ten queries.
 - **Takeaways** (steps 4, 7, 9, 10).
 - **Recap** (step 10, "ProveIt").
 
@@ -39,8 +39,8 @@
 9. **TwoDReveal.** *Title:* "A 2D Fenwick tree updates and queries by jumping in two dimensions at once — the identical lowest-set-bit arithmetic, nested, on a grid measured directly: a 4-by-4 grid's own full prefix sum came out to 73, checked against a brute-force sum of every cell." *Body:* "Named and measured at this small scale — the same mechanism carries to a production-scale grid without changing." *Visual:* the 4-by-4 grid with a nested jump path lit across both axes, arriving at the measured total.
    *Takeaway (step 9):* "A 2D Fenwick tree is the identical index-jump arithmetic, nested along a second dimension — not a new mechanism."
 
-10. **ProveIt.** *Title:* "Prove it." *Body:* "Measured, not assumed: ten point updates and ten prefix-sum queries over this exact 15-slot array cost a naive cached running total 160 slot-touches in total — rebuilding up to fifteen slots per update — against 47 for the Fenwick tree's own index jumps." *Visual:* two bars, naive 160 against Fenwick 47, built directly from `examples.py`'s own measured counts.
-    *Takeaway (step 10):* "Across ten updates and ten queries on the same array, the naive approach touched 160 slots; the Fenwick tree touched 47."
+10. **ProveIt.** *Title:* "Prove it." *Body:* "Measured, not assumed: ten point updates and ten prefix-sum queries over this exact 15-slot array cost a naive cached running total 97 slot-touches in total — rebuilding every prefix at and after each updated index — against 47 for the Fenwick tree's own index jumps." *Visual:* two bars, naive 97 against Fenwick 47, built directly from `examples.py`'s own measured counts.
+    *Takeaway (step 10):* "Across ten updates and ten queries on the same array, the naive approach touched 97 slots; the Fenwick tree touched 47."
 
 ## Narrator's line of thought (one bullet per step)
 
@@ -58,7 +58,7 @@
 ## Post-notes headings
 
 - **Internals**: the one-based indexing identity (`i & (i+1)` for the owning range, `i | (i+1)` for the next index to touch on an update) as cp-algorithms derives it, and why zero-based and one-based Fenwick layouts are equivalent in cost even though their own bit tricks look different.
-- **Lab**: `examples.py`'s own measured workload — ten point updates and ten prefix-sum queries over the identical 15-slot array, naive rebuild cost (160 slot-touches) against the Fenwick tree's own index-jump cost (47), plus the two-Fenwick-tree range-update/range-query extension verified against a brute-force array.
+- **Lab**: `examples.py`'s own measured workload — ten point updates and ten prefix-sum queries over the identical 15-slot array, naive rebuild cost (97 slot-touches) against the Fenwick tree's own index-jump cost (47), plus the two-Fenwick-tree range-update/range-query extension verified against a brute-force array.
 - **Production**: named in passing — a Fenwick tree's own O(log n) bound and O(n) memory make it the standard choice for a running count or sum behind a counter or a histogram bucket that updates often and is queried often, in contrast to a cached prefix-sum array that is cheap to query but expensive to keep current.
 - **Frontier**: segment trees as the fully general structure this chapter's own next topic builds, for any associative combine function and any range update, not just a running sum — named as what a Fenwick tree can't do, not taught here.
 - **Where this goes next**: this topic's own handoff — what a Fenwick tree can't answer (a range minimum, or a range-wide update without the two-tree extension) is exactly the gap segment trees and lazy propagation exist to close.
@@ -71,7 +71,7 @@
 4. Derive a range sum (minutes 5 through 11) from two prefix-sum queries and assert it against a direct slice sum of the raw array.
 5. Build the range-update/range-query two-Fenwick-tree extension, apply a real range-wide correction, and assert the result against a brute-force corrected array at every index.
 6. Build a small 4-by-4 2D Fenwick tree, assert every prefix sum against a brute-force double sum over the grid.
-7. Run a fixed workload of ten point updates and ten prefix-sum queries over the same 15-slot array; assert the naive cached-running-total cost (160 slot-touches) against the Fenwick tree's own measured index-jump cost (47).
+7. Run a fixed workload of ten point updates and ten prefix-sum queries over the same 15-slot array; assert the naive cached-running-total cost (97 slot-touches) against the Fenwick tree's own measured index-jump cost (47).
 
 ## Bridge (Chapter 7's own handoff, quoted word for word)
 
@@ -103,7 +103,7 @@
 - This topic's own naming does not claim Peter Fenwick invented the structure from nothing — Wikipedia's own sourced history (Boris Ryabko, 1989, with a 1992 modification, predating Fenwick's 1994 paper by five years) is recorded in `SOURCES.md` and in claim 8 above, and the post-notes mention it in passing rather than asserting an uncomplicated single-inventor story the reel's narration does not have room to unpack.
 - cp-algorithms' own min-query variant of a Fenwick tree (a second, harder-to-build structure needed because `min` has no inverse) is read and understood but not taught: this topic's chapter plan scopes the structure to the sum operation, with segment trees (topic 34) generalizing to an arbitrary associative combine function including min. No claim is made here about a single-tree Fenwick range-minimum query.
 - The paper cp-algorithms cites for a harder arbitrary-range-minimum Fenwick variant ("Efficient Range Minimum Queries using Binary Indexed Trees") is named by cp-algorithms but was not independently fetched or verified by this topic, since it is explicitly out of this topic's own scope; no claim from it appears anywhere in this topic's files.
-- `examples.py`'s own workload comparison (160 naive slot-touches vs. 47 Fenwick index-jumps, on a fixed sequence of 10 updates and 10 queries over 15 slots) is this topic's own measured result on its own chosen workload, not a number taken from any source — no source gives a numeric update/query-count comparison on this topic's own running example, so the ratio is reported as measured, not sourced.
+- `examples.py`'s own workload comparison (97 naive slot-touches vs. 47 Fenwick index-jumps, on a fixed sequence of 10 updates and 10 queries over 15 slots) is this topic's own measured result on its own chosen workload, not a number taken from any source — no source gives a numeric update/query-count comparison on this topic's own running example, so the ratio is reported as measured, not sourced.
 
 ## Progress
 
