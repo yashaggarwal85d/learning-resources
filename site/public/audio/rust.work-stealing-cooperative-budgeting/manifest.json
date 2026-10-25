@@ -1,0 +1,405 @@
+{
+ "topic": "rust.work-stealing-cooperative-budgeting",
+ "voice": "breeze-mellow-v2",
+ "asr": "large-v3-turbo",
+ "clips": {
+  "01": {
+   "hash": "d9a2330202168c2e",
+   "takes": [
+    "3de83efedd5b0a49395c",
+    "b70db03d7476e4f1adfa"
+   ],
+   "duration": 17.553,
+   "lines": [
+    {
+     "text": "Take two hundred of these lightweight units of work, every single one of them spawned by code running inside the one worker that's currently driving the whole runtime forward.",
+     "start": 0.15,
+     "end": 11.711
+    },
+    {
+     "text": "Do all two hundred stay right there, on that same one worker that spawned them?",
+     "start": 12.431,
+     "end": 17.203
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -2.2,
+   "wpm": 150,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "01a": {
+   "hash": "605c799400468074",
+   "takes": [
+    "635fa5fe3dff9aa03b73",
+    "deff170a925582b89185"
+   ],
+   "duration": 16.514,
+   "lines": [
+    {
+     "text": "No \u2014 quite a few of them end up running on entirely different real worker threads instead.",
+     "start": 0.15,
+     "end": 6.098
+    },
+    {
+     "text": "Nothing scheduled them there directly. The only way they could have gotten there at all is by being moved, after the fact, from the worker that created them.",
+     "start": 6.518,
+     "end": 16.163
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.6,
+   "wpm": 160,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "02": {
+   "hash": "64b0141587aa3ba5",
+   "takes": [
+    "1596389b414ee9638483",
+    "2cff0af724df5199c032"
+   ],
+   "duration": 22.78,
+   "lines": [
+    {
+     "text": "Here's that exact move, drawn out: one worker's own queue, now visibly short by half, and that missing half sliding straight into an idle sibling's queue right next to it.",
+     "start": 0.15,
+     "end": 13.151
+    },
+    {
+     "text": "An idle worker doesn't wait patiently for new work to arrive on its own \u2014 it reaches over and takes half of what a busy neighbour already has.",
+     "start": 13.571,
+     "end": 22.43
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -2.0,
+   "wpm": 150,
+   "wer": 0.06666666666666667,
+   "exact": false,
+   "tolerated": [
+    {
+     "line": "Here's that exact move, drawn out: one worker's own queue, now visibly short by half, and that missing half sliding straight into an idle sibling's queue right next to it.",
+     "said": "queue",
+     "heard": "cue"
+    },
+    {
+     "line": "Here's that exact move, drawn out: one worker's own queue, now visibly short by half, and that missing half sliding straight into an idle sibling's queue right next to it.",
+     "said": "queue",
+     "heard": "cue"
+    },
+    {
+     "line": "An idle worker doesn't wait patiently for new work to arrive on its own \u2014 it reaches over and takes half of what a busy neighbour already has.",
+     "said": "neighbour",
+     "heard": "neighbor"
+    }
+   ]
+  },
+  "03": {
+   "hash": "6617f149346f04f3",
+   "takes": [
+    "a3d115573137cf18e669",
+    "7b5bbb080e8c1864ccd9"
+   ],
+   "duration": 22.582,
+   "lines": [
+    {
+     "text": "Measure it directly rather than just asserting it: run those exact two hundred units of work, every one of them spawned from that single worker, and record which real thread each one actually executed on.",
+     "start": 0.15,
+     "end": 16.382
+    },
+    {
+     "text": "They land across three or four different real threads, not just the one that spawned them.",
+     "start": 16.802,
+     "end": 22.232
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 136,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "04": {
+   "hash": "0efd892e689da883",
+   "takes": [
+    "ab0e046adb946656f965",
+    "cda3c2046c5dd3db7524"
+   ],
+   "duration": 15.898,
+   "lines": [
+    {
+     "text": "Now take one of these units of work that, the moment it runs, immediately wakes up a second one waiting right behind it on a channel.",
+     "start": 0.15,
+     "end": 8.669
+    },
+    {
+     "text": "Does that woken one just get pushed onto the back of the ordinary queue, behind everything already waiting there?",
+     "start": 9.389,
+     "end": 15.548
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -1.9,
+   "wpm": 170,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "04a": {
+   "hash": "b818ff96db9305c7",
+   "takes": [
+    "a3da94d86f748915eb07",
+    "87d40bfb81213cfbd32e"
+   ],
+   "duration": 16.139,
+   "lines": [
+    {
+     "text": "No \u2014 it gets a dedicated fast-path slot instead, ahead of the ordinary queue entirely.",
+     "start": 0.15,
+     "end": 6.788
+    },
+    {
+     "text": "This exists for exactly this pattern: one unit of work handing data straight to another that's been sitting there waiting for it.",
+     "start": 7.208,
+     "end": 15.789
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 138,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "05": {
+   "hash": "87c8326490f85bc0",
+   "takes": [
+    "5a315413750d3af6e9b1",
+    "8413bf2c06ed9298b4c5"
+   ],
+   "duration": 31.799,
+   "lines": [
+    {
+     "text": "The documentation calls this the lifo slot, and it says plainly what it's for: data that was just handed off is still warm, sitting right there in the processor's own cache, so the newly-woken piece of work gets to run next, immediately, while that data is still hot.",
+     "start": 0.15,
+     "end": 19.215
+    },
+    {
+     "text": "And it has a real limit built in: use that same fast lane three times in a row on one worker, and it gets temporarily switched off, until that worker runs something that didn't come through it.",
+     "start": 19.635,
+     "end": 31.449
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 162,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "06": {
+   "hash": "e44a79af325f4d82",
+   "takes": [
+    "8de608e1abf088315a2f",
+    "50ff26158199004d0057"
+   ],
+   "duration": 28.031,
+   "lines": [
+    {
+     "text": "Now picture a unit of work that is never, ever truly blocked on anything real \u2014 a loop around a channel kept perpetually topped back up, so every single check of it comes back immediately ready.",
+     "start": 0.15,
+     "end": 15.884
+    },
+    {
+     "text": "Running that, forever, on a runtime with exactly one real worker thread \u2014 does a trivial, otherwise-instant sibling ever actually get a turn?",
+     "start": 16.604,
+     "end": 27.681
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -1.9,
+   "wpm": 124,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "06a": {
+   "hash": "fe62c70a5e499ae0",
+   "takes": [
+    "b29c58b7a53aa2474cfe",
+    "37d0cf7840263842c4e7"
+   ],
+   "duration": 21.733,
+   "lines": [
+    {
+     "text": "Yes, it still does \u2014 it's forced in, periodically, whether the hot loop would have offered to step aside on its own or not.",
+     "start": 0.15,
+     "end": 8.428
+    },
+    {
+     "text": "There's a hard limit on how many of these resource checks any one piece of work gets to make before the runtime makes it return control, whether or not real data happened to be sitting there ready.",
+     "start": 8.848,
+     "end": 21.383
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 166,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "07": {
+   "hash": "00da710e481652c0",
+   "takes": [
+    "102103009c4abcbb3589",
+    "f1e0c1ca8e2de5a6f01b"
+   ],
+   "duration": 24.421,
+   "lines": [
+    {
+     "text": "Measure that limit directly: let the trivial sibling report back the exact moment it got to run, and let the hot loop report back its own total running time once it finally finishes.",
+     "start": 0.15,
+     "end": 12.84
+    },
+    {
+     "text": "The sibling runs and finishes in a sliver of a moment \u2014 nowhere close to how long that supposedly endless hot loop actually took to run its full course.",
+     "start": 13.26,
+     "end": 24.071
+    }
+   ],
+   "lufs": -16.1,
+   "true_peak": -2.2,
+   "wpm": 150,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "08": {
+   "hash": "abd518e3dd0a78ba",
+   "takes": [
+    "fd1d7027d91451f248f6",
+    "85a89cb8699dc5c064dc"
+   ],
+   "duration": 18.62,
+   "lines": [
+    {
+     "text": "Take that exact same hot loop, not one line of it changed, and wrap it in a function built for exactly one purpose: turning that spending limit off entirely.",
+     "start": 0.15,
+     "end": 12.035
+    },
+    {
+     "text": "Does the sibling still manage to sneak in early, the same way it did a moment ago?",
+     "start": 12.755,
+     "end": 18.27
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -2.7,
+   "wpm": 148,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "08a": {
+   "hash": "24bcb89355613ea0",
+   "takes": [
+    "40f3083ae9b10e4699ad",
+    "fb280e5eba7a92bc7940"
+   ],
+   "duration": 16.823,
+   "lines": [
+    {
+     "text": "No \u2014 now it has to wait for the entire loop to finish, start to end, before it gets any turn at all.",
+     "start": 0.15,
+     "end": 9.14
+    },
+    {
+     "text": "There's no longer any limit being enforced inside it, so nothing ever forces it to hand control back early.",
+     "start": 9.56,
+     "end": 16.473
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 146,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "09": {
+   "hash": "162f22b1d37bf5fe",
+   "takes": [
+    "cff833adcffb984a1489",
+    "16a99eda69258b214988"
+   ],
+   "duration": 23.124,
+   "lines": [
+    {
+     "text": "Measure that too, side by side: the sibling's own moment of completion, against the once-unconstrained loop's own total running time.",
+     "start": 0.15,
+     "end": 10.368
+    },
+    {
+     "text": "The two numbers land within a few milliseconds of each other \u2014 the sibling wasn't interleaved with the loop at all, it simply ran the instant the loop itself finally finished and stepped aside on its own.",
+     "start": 10.788,
+     "end": 22.774
+    }
+   ],
+   "lufs": -16.2,
+   "true_peak": -2.7,
+   "wpm": 148,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "10": {
+   "hash": "7778a973103ff4a5",
+   "takes": [
+    "8561ea30e9d5c99d619d",
+    "5136f168ac46eb0914b5",
+    "96964f0eb78af4eb6384",
+    "77ccd190d5349727b9c8",
+    "6178707ce1f6129958cb"
+   ],
+   "duration": 68.755,
+   "lines": [
+    {
+     "text": "An idle worker takes half of a busy sibling's queue, proven directly by two hundred units of work scattering themselves across several real threads.",
+     "start": 0.15,
+     "end": 10.708
+    },
+    {
+     "text": "A fast-path slot exists specifically for data that was just handed off, still warm, with a hard limit on how many times in a row it can be used.",
+     "start": 11.128,
+     "end": 21.835
+    },
+    {
+     "text": "A spending limit on resource checks forces even an endlessly-ready loop to step aside periodically, measured directly. Turning that limit off entirely removes the protection completely, also measured directly, down to the millisecond.",
+     "start": 22.255,
+     "end": 43.399
+    },
+    {
+     "text": "That spending limit only ever helps a piece of work that's making the kind of calls it actually watches in the first place \u2014 one that's willing to cooperate at all.",
+     "start": 43.819,
+     "end": 54.235
+    },
+    {
+     "text": "Some real work, a genuine blocking system call or a long stretch of raw computation, never makes any such call, and so has no point in it where any of this can ever step in.",
+     "start": 54.655,
+     "end": 68.405
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 134,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  }
+ }
+}
