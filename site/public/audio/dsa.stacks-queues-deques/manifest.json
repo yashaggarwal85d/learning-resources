@@ -1,0 +1,341 @@
+{
+ "topic": "dsa.stacks-queues-deques",
+ "voice": "breeze-mellow-v2",
+ "asr": "large-v3-turbo",
+ "clips": {
+  "01": {
+   "hash": "caa6a749493473b6",
+   "takes": [
+    "31df48291bb160602d85",
+    "cf002ad3b77d2e6bd171"
+   ],
+   "duration": 11.187,
+   "lines": [
+    {
+     "text": "An array or a list holds a sequence. Neither one says anything about which end you're actually allowed to touch.",
+     "start": 0.15,
+     "end": 6.937
+    },
+    {
+     "text": "Today's structures are that missing rule, made concrete.",
+     "start": 7.357,
+     "end": 10.837
+    }
+   ],
+   "lufs": -16.0,
+   "true_peak": -2.0,
+   "wpm": 150,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "02": {
+   "hash": "b8ae5fc87f29dc5d",
+   "takes": [
+    "77f76a3d21198712e018",
+    "b49a34ce3ed520d30570"
+   ],
+   "duration": 16.531,
+   "lines": [
+    {
+     "text": "Push and pop, both at the same end. That's all a stack is.",
+     "start": 0.15,
+     "end": 5.35
+    },
+    {
+     "text": "An undo history is the clearest real example. Whatever you did most recently is always the first thing undone, because it's sitting right on top.",
+     "start": 5.77,
+     "end": 16.181
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 138,
+   "wer": 0.04,
+   "exact": false,
+   "tolerated": [
+    {
+     "line": "An undo history is the clearest real example. Whatever you did most recently is always the first thing undone, because it's sitting right on top.",
+     "said": "undo",
+     "heard": "undue"
+    }
+   ]
+  },
+  "03": {
+   "hash": "d3f8fc54d7c59ae7",
+   "takes": [
+    "6d0cd6fee1af99600aa4",
+    "621c3e48b2addc28a38a"
+   ],
+   "duration": 14.139,
+   "lines": [
+    {
+     "text": "Add at one end, remove from the other. That's a queue.",
+     "start": 0.15,
+     "end": 4.547
+    },
+    {
+     "text": "A task queue works exactly this way. Whichever task has been waiting longest runs next, because it's the one sitting at the far end.",
+     "start": 4.967,
+     "end": 13.789
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -2.5,
+   "wpm": 149,
+   "wer": 0.09090909090909091,
+   "exact": false,
+   "tolerated": [
+    {
+     "line": "Add at one end, remove from the other. That's a queue.",
+     "said": "queue",
+     "heard": "cue"
+    }
+   ]
+  },
+  "04": {
+   "hash": "f9633c066fc330c3",
+   "takes": [
+    "6bf553ed1186297e46b6",
+    "305e6f872cef3e2c84e1"
+   ],
+   "duration": 13.211,
+   "lines": [
+    {
+     "text": "A stack handles one end. A queue splits the work across two ends, one for in, one for out.",
+     "start": 0.15,
+     "end": 7.12
+    },
+    {
+     "text": "What does a structure need, if it has to push and pop at both ends at once?",
+     "start": 7.54,
+     "end": 12.861
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -2.0,
+   "wpm": 163,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "04a": {
+   "hash": "48b2b271aaeaeb4b",
+   "takes": [
+    "ec33519e99828e7e6154",
+    "72858fd0a37b08e96de4"
+   ],
+   "duration": 15.347,
+   "lines": [
+    {
+     "text": "Just one structure. Not two stacks stitched together, not a queue with some clever reversed copy underneath.",
+     "start": 0.15,
+     "end": 7.429
+    },
+    {
+     "text": "One structure, with push, pop, and a peek, directly at both ends, each one constant time.",
+     "start": 7.849,
+     "end": 14.997
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -2.1,
+   "wpm": 129,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "05": {
+   "hash": "ca46c92e00eac738",
+   "takes": [
+    "7b888b65223b8191ed88",
+    "fa7a6ad67061a4e33855"
+   ],
+   "duration": 21.459,
+   "lines": [
+    {
+     "text": "Here it is, both ends lit at the same time. Push or pop from the front, push or pop from the back, equally cheaply.",
+     "start": 0.15,
+     "end": 9.583
+    },
+    {
+     "text": "A stack and a queue were never a different, weaker kind of structure. Each one is this, used with one hand tied behind its back.",
+     "start": 10.003,
+     "end": 21.109
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -2.0,
+   "wpm": 137,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "06": {
+   "hash": "ab48c9a47da6ed09",
+   "takes": [
+    "cf92838285bbc9a07d7a",
+    "472b31ceb9205cb31203",
+    "5f0190357ba2a60211e1"
+   ],
+   "duration": 37.667,
+   "lines": [
+    {
+     "text": "Two real designs actually ship this. One wraps a fixed array around on itself, a ring buffer. When it's full, growing it means a brand new array and copying everything across, exactly like a doubling vector.",
+     "start": 0.15,
+     "end": 15.495
+    },
+    {
+     "text": "The other holds a row of fixed-size blocks instead of one big array. Growing it means allocating one more block. Nothing already stored has to move at all.",
+     "start": 15.915,
+     "end": 25.987
+    },
+    {
+     "text": "Rust's own double ended queue documents itself, in its own words, as a growable ring buffer. C++'s is required to be the chunked kind.",
+     "start": 26.707,
+     "end": 37.317
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 143,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "07": {
+   "hash": "ef10ebe34ab2fdf6",
+   "takes": [
+    "6e522b15b4250a2c98ae",
+    "69a66c552c7da6103f9f"
+   ],
+   "duration": 12.591,
+   "lines": [
+    {
+     "text": "Take the chunked kind. Push one more record onto its front.",
+     "start": 0.15,
+     "end": 4.288
+    },
+    {
+     "text": "What happens to an iterator already pointing somewhere inside it? What about a plain reference to one of its elements?",
+     "start": 4.708,
+     "end": 12.241
+    }
+   ],
+   "lufs": -16.0,
+   "true_peak": -2.6,
+   "wpm": 148,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "07a": {
+   "hash": "d8741a2860c5fd61",
+   "takes": [
+    "292ed656ae0b8e7265f0",
+    "b608c2d357e3c0d951db",
+    "00a8532ec5a3e67caa35"
+   ],
+   "duration": 29.748,
+   "lines": [
+    {
+     "text": "The standard is specific, and it splits the two. Every iterator into the deque becomes invalid, full stop.",
+     "start": 0.15,
+     "end": 8.186
+    },
+    {
+     "text": "But a reference to an element that was already there keeps working. That's the opposite of what a reallocating vector does, where everything dies together.",
+     "start": 8.606,
+     "end": 19.485
+    },
+    {
+     "text": "If your code is written against the wrong one of these two designs, that distinction is exactly the kind of bug that only shows up with one of them.",
+     "start": 20.205,
+     "end": 29.398
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -1.8,
+   "wpm": 145,
+   "wer": 0.05555555555555555,
+   "exact": false,
+   "tolerated": [
+    {
+     "line": "The standard is specific, and it splits the two. Every iterator into the deque becomes invalid, full stop.",
+     "said": "deque",
+     "heard": "dq"
+    }
+   ]
+  },
+  "08": {
+   "hash": "5c32a1299febfe0a",
+   "takes": [
+    "ee598b377b227c925c86",
+    "95a589d26b1b3511b2f3"
+   ],
+   "duration": 21.271,
+   "lines": [
+    {
+     "text": "A stack is one end's worth of this. A queue is both ends, but only one direction each.",
+     "start": 0.15,
+     "end": 7.424
+    },
+    {
+     "text": "And the two real designs trade their cost in opposite directions: one resizes like a vector; the other never moves what's already there, at the cost of your iterators the moment you touch either end.",
+     "start": 7.844,
+     "end": 20.921
+    }
+   ],
+   "lufs": -16.1,
+   "true_peak": -2.5,
+   "wpm": 150,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "09": {
+   "hash": "615f97e20fd30ccb",
+   "takes": [
+    "f42217c8cbdcdf0561e8",
+    "03ebcb5c06c6a9ee775c",
+    "c7bc4de3bf3e67155276",
+    "9d4fb71830f2c901f8d9"
+   ],
+   "duration": 41.794,
+   "lines": [
+    {
+     "text": "Here it is, run for real, not just claimed. A genuine ring-buffer-backed queue, pushed and popped at both ends, thousands of times, at ten elements and again at ten thousand.",
+     "start": 0.15,
+     "end": 13.187
+    },
+    {
+     "text": "The cost per operation barely moves between the two sizes.",
+     "start": 13.607,
+     "end": 17.481
+    },
+    {
+     "text": "Do the same thing with a plain list instead, popping from its front, and the cost scales directly with how many elements are sitting in front of the one you removed. Nine shifts at ten elements. Nearly ten thousand shifts at ten thousand.",
+     "start": 18.201,
+     "end": 33.786
+    },
+    {
+     "text": "Constant time at both ends isn't a label on a structure. It's a property you can actually go and measure.",
+     "start": 34.206,
+     "end": 41.444
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 151,
+   "wer": 0.03125,
+   "exact": false,
+   "tolerated": [
+    {
+     "line": "Here it is, run for real, not just claimed. A genuine ring-buffer-backed queue, pushed and popped at both ends, thousands of times, at ten elements and again at ten thousand.",
+     "said": "queue",
+     "heard": "cue"
+    }
+   ]
+  }
+ }
+}
