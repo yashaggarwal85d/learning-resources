@@ -1,0 +1,381 @@
+{
+ "topic": "rust.pin-self-referential-state",
+ "voice": "breeze-mellow-v2",
+ "asr": "large-v3-turbo",
+ "clips": {
+  "01": {
+   "hash": "446d9fb633654d8a",
+   "takes": [
+    "7db1754dd903c2d512ce",
+    "6c89fb9f16826011a6c6"
+   ],
+   "duration": 12.354,
+   "lines": [
+    {
+     "text": "Take two ordinary local variables sitting side by side inside the same function.",
+     "start": 0.15,
+     "end": 6.25
+    },
+    {
+     "text": "Could one of them end up holding a pointer straight into the other one's own address?",
+     "start": 6.97,
+     "end": 12.004
+    }
+   ],
+   "lufs": -15.9,
+   "true_peak": -2.2,
+   "wpm": 141,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "01a": {
+   "hash": "00168891f1ce3195",
+   "takes": [
+    "b2608e8b597baf938427",
+    "ba4b8887144256ac5344"
+   ],
+   "duration": 17.453,
+   "lines": [
+    {
+     "text": "Yes, it genuinely can \u2014 nothing in the ordinary rules stops a value from pointing straight into a sibling value that lives right next to it.",
+     "start": 0.15,
+     "end": 9.496
+    },
+    {
+     "text": "Both of them are just sitting in the same place in memory, and nothing about that forbids one from referring to the other.",
+     "start": 9.916,
+     "end": 17.104
+    }
+   ],
+   "lufs": -16.1,
+   "true_peak": -2.5,
+   "wpm": 165,
+   "wer": 0.04,
+   "exact": false,
+   "tolerated": [
+    {
+     "line": "Yes, it genuinely can \u2014 nothing in the ordinary rules stops a value from pointing straight into a sibling value that lives right next to it.",
+     "said": "rules",
+     "heard": "rule"
+    }
+   ]
+  },
+  "02": {
+   "hash": "33c53dfa596d0d53",
+   "takes": [
+    "a790ffb82dde593077f6",
+    "c134d1606c500bdfd72c"
+   ],
+   "duration": 28.545,
+   "lines": [
+    {
+     "text": "That is not some rare, contrived shape \u2014 it is named directly, by the standard library itself, as the one thing that happens by default in a very specific place.",
+     "start": 0.15,
+     "end": 11.728
+    },
+    {
+     "text": "The exact kind of value the compiler quietly builds to represent a paused computation, the one behind every one of the lazy values from earlier topics, is called out as the leading example of exactly this.",
+     "start": 12.148,
+     "end": 28.195
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -1.9,
+   "wpm": 137,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "03": {
+   "hash": "017a4c867a7eae54",
+   "takes": [
+    "d6b47ebf2fab8c44c80b",
+    "3ba4ec2908dd2f8677a9"
+   ],
+   "duration": 16.636,
+   "lines": [
+    {
+     "text": "Build a value that holds a pointer into one of its own other fields, check that the pointer still lines up right after it is built, then move the whole value somewhere else and check again.",
+     "start": 0.15,
+     "end": 11.571
+    },
+    {
+     "text": "The first check lines up perfectly. The second one does not.",
+     "start": 11.991,
+     "end": 16.286
+    }
+   ],
+   "lufs": -16.2,
+   "true_peak": -2.1,
+   "wpm": 170,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "04": {
+   "hash": "863d2924c464a967",
+   "takes": [
+    "915bb5d9f861c75154d1",
+    "5f54f47d3dc24c100cd2"
+   ],
+   "duration": 10.294,
+   "lines": [
+    {
+     "text": "Try the obvious fix: put the whole thing behind a heap allocation instead of leaving it sitting directly on the stack.",
+     "start": 0.15,
+     "end": 7.424
+    },
+    {
+     "text": "Does that actually solve anything?",
+     "start": 8.144,
+     "end": 9.944
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 152,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "04a": {
+   "hash": "04c50f2d005b58ca",
+   "takes": [
+    "2c1530c1ac38c21020f0",
+    "e738ee10bf6ffbc7a817"
+   ],
+   "duration": 24.848,
+   "lines": [
+    {
+     "text": "No, not on its own \u2014 the thing behind the heap allocation can still be moved out of it, carrying the exact same broken pointer along for the ride.",
+     "start": 0.15,
+     "end": 11.126
+    },
+    {
+     "text": "A heap allocation only promises that one particular slot of memory stays put. It says nothing at all about whether the value sitting inside that slot is allowed to be lifted out and moved somewhere else.",
+     "start": 11.546,
+     "end": 24.498
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 155,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "05": {
+   "hash": "9bacfd36e4a7f670",
+   "takes": [
+    "6f1369112329379e22e1",
+    "b7315e007fbdd61127be"
+   ],
+   "duration": 29.294,
+   "lines": [
+    {
+     "text": "So the actual fix has to be something stronger: a genuine promise, carried by the value itself, that it will never move again for as long as that promise exists.",
+     "start": 0.15,
+     "end": 12.147
+    },
+    {
+     "text": "That promise is exactly what this chapter's next piece of machinery provides \u2014 and almost every ordinary type from every earlier chapter never needed it at all, because it was never pointing into its own insides to begin with.",
+     "start": 12.567,
+     "end": 28.944
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 139,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "06": {
+   "hash": "d3cb88534d1578b7",
+   "takes": [
+    "1f64ddc6f87da4f32069",
+    "9217dd1adf75d36ea2f7"
+   ],
+   "duration": 17.722,
+   "lines": [
+    {
+     "text": "Make that promise in two different places \u2014 once on the heap, once directly on the stack \u2014 and check whether the exact same self-pointing value stays correct in both.",
+     "start": 0.15,
+     "end": 10.713
+    },
+    {
+     "text": "In both places, after the promise is made, checking the pointer again still lines up.",
+     "start": 11.133,
+     "end": 17.372
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -2.7,
+   "wpm": 149,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "07": {
+   "hash": "e0880e3fb83e064c",
+   "takes": [
+    "3f66851a8a3e09630fa3",
+    "26d960d080c9f1575efd"
+   ],
+   "duration": 15.863,
+   "lines": [
+    {
+     "text": "Now ask the sharper question: once that promise has been made around a value that genuinely needs it, can the value still be pulled back out from underneath it, whole, and handed off somewhere else?",
+     "start": 0.15,
+     "end": 12.605
+    },
+    {
+     "text": "Try it, and see what happens.",
+     "start": 13.455,
+     "end": 15.513
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 155,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "07a": {
+   "hash": "9be6526ef8eb9473",
+   "takes": [
+    "fbacb5beaa8cb849b2a8",
+    "b7d160287d081db9645a"
+   ],
+   "duration": 16.723,
+   "lines": [
+    {
+     "text": "No \u2014 and this is refused outright, not merely discouraged.",
+     "start": 0.15,
+     "end": 5.044
+    },
+    {
+     "text": "The thing making the promise simply never hands back a plain, ordinary, ownable copy of a value that actually needs the promise. There's nothing to pull out.",
+     "start": 5.464,
+     "end": 16.373
+    }
+   ],
+   "lufs": -16.6,
+   "true_peak": -1.9,
+   "wpm": 129,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "08": {
+   "hash": "4dcd53bf7731b062",
+   "takes": [
+    "a99960e77a57deb7e867",
+    "60c6d95fbd6c8dadc895"
+   ],
+   "duration": 21.847,
+   "lines": [
+    {
+     "text": "Try to compile exactly that attempt, and the compiler does not just quietly refuse \u2014 it names precisely what's being attempted and why it can't be allowed.",
+     "start": 0.15,
+     "end": 11.723
+    },
+    {
+     "text": "It points directly at the exact value, wrapped exactly the way it is, and says plainly that nothing can be moved out of it.",
+     "start": 12.143,
+     "end": 21.497
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -1.9,
+   "wpm": 137,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "09": {
+   "hash": "98f060af4c61e688",
+   "takes": [
+    "d03687c44e175ca7f4a9",
+    "94d25675e1e1e14ed800",
+    "a65214cd82459a6a09bd"
+   ],
+   "duration": 35.978,
+   "lines": [
+    {
+     "text": "Once a value is sitting behind one of these promises, what happens to each of its individual fields? Does every single one of them inherit the exact same promise automatically?",
+     "start": 0.15,
+     "end": 12.306
+    },
+    {
+     "text": "No \u2014 and this is a choice, made field by field, by whoever defined the value's shape in the first place.",
+     "start": 12.856,
+     "end": 20.183
+    },
+    {
+     "text": "One field can be marked as sharing the promise completely, moving only exactly when the whole value does. Every other field stays an entirely ordinary, ungoverned reference, reachable the normal way.",
+     "start": 20.603,
+     "end": 35.629
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 135,
+   "wer": 0.05,
+   "exact": false,
+   "tolerated": [
+    {
+     "line": "No \u2014 and this is a choice, made field by field, by whoever defined the value's shape in the first place.",
+     "said": "values",
+     "heard": "value"
+    }
+   ]
+  },
+  "10": {
+   "hash": "f1934673f432c57c",
+   "takes": [
+    "b29fd3eff7e63e872c3c",
+    "461244cb7e57311105c4",
+    "12f0e351e1fb44112674",
+    "7a784dda9377df8a906a",
+    "c9a7fb6273b701e40bca"
+   ],
+   "duration": 59.418,
+   "lines": [
+    {
+     "text": "A value that quietly pointed into its own insides turned out to be sound only until the instant it moved \u2014 proven directly, not merely described.",
+     "start": 0.15,
+     "end": 12.514
+    },
+    {
+     "text": "The fix was never a container holding that value more tightly; it was a genuine promise the value itself carries, one the compiler checks, refusing outright the moment something tries to break it.",
+     "start": 12.934,
+     "end": 27.021
+    },
+    {
+     "text": "And which fields share that promise turned out to be a deliberate, individual choice every single time, never automatic.",
+     "start": 27.441,
+     "end": 37.92
+    },
+    {
+     "text": "Every single piece of this chapter, start to finish, has been about one of these values, running correctly, entirely by itself.",
+     "start": 38.34,
+     "end": 48.723
+    },
+    {
+     "text": "The very next question changes that completely: what happens the moment something is asked to hand one of these back across to an entirely different thread?",
+     "start": 49.143,
+     "end": 59.068
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 125,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  }
+ }
+}
