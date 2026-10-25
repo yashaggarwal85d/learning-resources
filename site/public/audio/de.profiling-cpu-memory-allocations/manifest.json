@@ -1,0 +1,403 @@
+{
+ "topic": "de.profiling-cpu-memory-allocations",
+ "voice": "breeze-mellow-v2",
+ "asr": "large-v3-turbo",
+ "clips": {
+  "01": {
+   "hash": "d1b049114b798b6c",
+   "takes": [
+    "14b128363038e5977776",
+    "712439665ed9a8eb7ede"
+   ],
+   "duration": 18.707,
+   "lines": [
+    {
+     "text": "Three different claims about speed have come up over the last three topics, each one measured on its own, small example.",
+     "start": 0.15,
+     "end": 7.498
+    },
+    {
+     "text": "Not one of them has actually been checked against a real profiler, run on real code, side by side with the others. That's exactly what's missing here.",
+     "start": 7.918,
+     "end": 18.357
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -1.9,
+   "wpm": 154,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "02": {
+   "hash": "795745998eb2760a",
+   "takes": [
+    "5d2bdfcc913315ffa589",
+    "3c8dc4c187aa16700a6f"
+   ],
+   "duration": 17.937,
+   "lines": [
+    {
+     "text": "Here's the first kind of tool, stated plainly.",
+     "start": 0.15,
+     "end": 3.887
+    },
+    {
+     "text": "Every single call a function makes, and every return from it, gets watched directly. That gives genuinely precise timing \u2014 at the real cost of watching that closely the entire time.",
+     "start": 4.307,
+     "end": 17.587
+    }
+   ],
+   "lufs": -16.0,
+   "true_peak": -2.5,
+   "wpm": 127,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "03": {
+   "hash": "17b152cdad68ac8c",
+   "takes": [
+    "6cdd14fb3ae5f1305064",
+    "97a111d946ff1a4004fc"
+   ],
+   "duration": 18.493,
+   "lines": [
+    {
+     "text": "Here's a question worth guessing at before the reveal.",
+     "start": 0.15,
+     "end": 2.971
+    },
+    {
+     "text": "The exact same feed from this chapter, run four different ways. One topic back, the thread-free approach already won its own race against a plain loop. Does it win this particular race too?",
+     "start": 3.391,
+     "end": 18.143
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 140,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "03a": {
+   "hash": "9dc2d1eb23e73c05",
+   "takes": [
+    "4c618c0f6e02b2ee4ada",
+    "96c885cd20cd3d91f173"
+   ],
+   "duration": 21.705,
+   "lines": [
+    {
+     "text": "No \u2014 this isn't the kind of work that approach was ever built to speed up.",
+     "start": 0.15,
+     "end": 4.951
+    },
+    {
+     "text": "That earlier win was for waiting on a network. Parsing a file by hand is pure computation, and handing pure computation to a pool of threads still runs under the exact same lock this chapter already named.",
+     "start": 5.371,
+     "end": 21.355
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -2.3,
+   "wpm": 144,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "04": {
+   "hash": "024e87ea4b52b0b0",
+   "takes": [
+    "8fcb2de53a25d377dc58",
+    "fcc0916e3bfd01856a23"
+   ],
+   "duration": 20.782,
+   "lines": [
+    {
+     "text": "Here's all four of them, finally measured together instead of one at a time.",
+     "start": 0.15,
+     "end": 5.141
+    },
+    {
+     "text": "The gap between the fastest and slowest of the four isn't close \u2014 it's closer to two orders of magnitude. And the approach that won its own earlier race, back in its own topic, lands nowhere near the front of this one.",
+     "start": 5.561,
+     "end": 20.431
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 159,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "05": {
+   "hash": "7afaf9a4d3ff7ef4",
+   "takes": [
+    "bd1a94303edc068fc6ac",
+    "79e3d5014911c63b3fc8"
+   ],
+   "duration": 14.575,
+   "lines": [
+    {
+     "text": "Here's that first tool, pointed at the actual loop that just ran.",
+     "start": 0.15,
+     "end": 3.972
+    },
+    {
+     "text": "A real trace, naming the real function it was watching the whole time \u2014 not some tidy stand-in built just to look good in an example.",
+     "start": 4.392,
+     "end": 14.225
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -1.7,
+   "wpm": 156,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "06": {
+   "hash": "57c36e989782c014",
+   "takes": [
+    "7f4671768eb46b21b910",
+    "0c61c924490a9496ef75"
+   ],
+   "duration": 20.439,
+   "lines": [
+    {
+     "text": "Here's a second tool, built to watch memory instead of time.",
+     "start": 0.15,
+     "end": 3.822
+    },
+    {
+     "text": "The real high-water mark it traced for the plain loop, against the same mark for the native engine. An earlier version of this exact comparison measured the wrong number entirely and got a backwards answer \u2014 caught, and fixed, right here.",
+     "start": 4.242,
+     "end": 20.089
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.8,
+   "wpm": 153,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "07": {
+   "hash": "d69060ad7c774201",
+   "takes": [
+    "b35ac74597268917a73c",
+    "f5cc03bf54f26a6e52d1"
+   ],
+   "duration": 20.922,
+   "lines": [
+    {
+     "text": "Here's a genuinely open question worth sitting with.",
+     "start": 0.15,
+     "end": 3.219
+    },
+    {
+     "text": "One particular tool can attach itself to a process that's already running, from completely outside it, without changing a single line of that process's own code. Does it actually see real function names once it's in, or only raw memory addresses?",
+     "start": 3.639,
+     "end": 20.572
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -2.3,
+   "wpm": 141,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "07a": {
+   "hash": "f9e0b296f9c0361b",
+   "takes": [
+    "52fbafc2fc735be7f6b8",
+    "377adce0faa797eb03d6"
+   ],
+   "duration": 13.62,
+   "lines": [
+    {
+     "text": "Real function names \u2014 it reads straight from the live process's own memory.",
+     "start": 0.15,
+     "end": 5.019
+    },
+    {
+     "text": "That's exactly what makes a tool like this useful on something nobody can afford to restart or rewrite just to look inside it.",
+     "start": 5.439,
+     "end": 13.27
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -2.4,
+   "wpm": 154,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "08": {
+   "hash": "0bb607b0f9672ee6",
+   "takes": [
+    "04911b2e90772f4a4c0c",
+    "8155c0ed1efc47886619"
+   ],
+   "duration": 21.884,
+   "lines": [
+    {
+     "text": "Here's that exact attach, done for real rather than just described.",
+     "start": 0.15,
+     "end": 4.707
+    },
+    {
+     "text": "A process already running, approached completely from the outside \u2014 and the dump that comes back names the precise file and function this very lab's own workload was executing at that exact moment.",
+     "start": 5.127,
+     "end": 21.534
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -2.1,
+   "wpm": 118,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "09": {
+   "hash": "411a5d2904fbb653",
+   "takes": [
+    "50e25f6a01f9c3ff3ed8",
+    "ac3a2c866561edfa3bab"
+   ],
+   "duration": 19.86,
+   "lines": [
+    {
+     "text": "Here's a tool built to answer a different question entirely: not how long, but where the time actually went.",
+     "start": 0.15,
+     "end": 6.824
+    },
+    {
+     "text": "Pointed at the native-engine leg of this lab, it reports back a real, measured split \u2014 confirming the native engine genuinely does the heavy lifting, not merely claiming it does.",
+     "start": 7.244,
+     "end": 19.51
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 148,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "10": {
+   "hash": "8533bec74c9f169b",
+   "takes": [
+    "ea50601c914af0e19793",
+    "3a1290a0d913aef7def9"
+   ],
+   "duration": 24.996,
+   "lines": [
+    {
+     "text": "Here's one claim that didn't survive its first, most obvious test \u2014 and what happened next.",
+     "start": 0.15,
+     "end": 6.071
+    },
+    {
+     "text": "Checking whether two libraries literally shared the same memory address came back negative, honestly. The real benefit turned out to be elsewhere: skipping a genuine round trip through a file format entirely, measured directly against doing exactly that.",
+     "start": 6.491,
+     "end": 24.646
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -2.0,
+   "wpm": 127,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "11": {
+   "hash": "12e17a06ee0eae00",
+   "takes": [
+    "f1111f2ed24bcd631b8b",
+    "b904a2503e693adcf72a",
+    "c0d58f0bda789fcebb26"
+   ],
+   "duration": 25.406,
+   "lines": [
+    {
+     "text": "Let's put the whole picture back together.",
+     "start": 0.15,
+     "end": 2.37
+    },
+    {
+     "text": "One tool times every call for real. Another attaches to a process already running and reads its true call stack. A third splits where time actually goes, Python or native.",
+     "start": 2.79,
+     "end": 16.422
+    },
+    {
+     "text": "And this chapter's four competing approaches, finally measured side by side, settle which one genuinely wins.",
+     "start": 16.842,
+     "end": 25.056
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -1.9,
+   "wpm": 125,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "12": {
+   "hash": "7dc964277e879d18",
+   "takes": [
+    "acfb97a6e21ef7dcedd3",
+    "94ddf1060775ca9ec0a1"
+   ],
+   "duration": 27.096,
+   "lines": [
+    {
+     "text": "One closing scenario worth actually reasoning through rather than guessing at.",
+     "start": 0.15,
+     "end": 4.939
+    },
+    {
+     "text": "A pipeline just feels slow. Is that really CPU time being burned, memory quietly piling up somewhere, or a single call that's stalling the whole thread outright? Does any one tool from this topic answer all three of those, or does each one only answer its own?",
+     "start": 5.359,
+     "end": 26.746
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -1.9,
+   "wpm": 128,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "12a": {
+   "hash": "e09a6f706859f367",
+   "takes": [
+    "e9acc3bd3d13ef17724d",
+    "65114cfee02afb47b308"
+   ],
+   "duration": 20.769,
+   "lines": [
+    {
+     "text": "Each tool only answers its own question \u2014 none of them substitutes for the other two.",
+     "start": 0.15,
+     "end": 6.053
+    },
+    {
+     "text": "A timing tool answers CPU time. A memory tracer answers memory. Neither one, by itself, tells you a thread is genuinely stuck rather than simply running slowly.",
+     "start": 6.473,
+     "end": 20.419
+    }
+   ],
+   "lufs": -16.3,
+   "true_peak": -2.8,
+   "wpm": 121,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  }
+ }
+}
