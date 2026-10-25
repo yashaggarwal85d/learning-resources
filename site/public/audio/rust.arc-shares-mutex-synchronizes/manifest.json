@@ -1,0 +1,293 @@
+{
+ "topic": "rust.arc-shares-mutex-synchronizes",
+ "voice": "breeze-mellow-v2",
+ "asr": "large-v3-turbo",
+ "clips": {
+  "01": {
+   "hash": "de06a9bc9384bdd0",
+   "takes": [
+    "567e30a740534995ac2d",
+    "d19b28eae6dfb8b6cd64"
+   ],
+   "duration": 18.806,
+   "lines": [
+    {
+     "text": "Here is a pointer whose entire job is letting two threads look at the same number at once. Nothing more.",
+     "start": 0.15,
+     "end": 6.615
+    },
+    {
+     "text": "Notice what's missing: no gate, no lock, no permission check anywhere in sight. Sharing and changing turn out to be two completely different privileges.",
+     "start": 7.035,
+     "end": 18.456
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -1.9,
+   "wpm": 140,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "02": {
+   "hash": "f45e7ef9fef35ee9",
+   "takes": [
+    "6f07ee3f7525bfe907fa",
+    "10a37bd52d646fc9c329"
+   ],
+   "duration": 13.603,
+   "lines": [
+    {
+     "text": "Take that same pointer and try to write through it directly, from either side, with nothing guarding the access.",
+     "start": 0.15,
+     "end": 7.386
+    },
+    {
+     "text": "Before a single thread even runs, will the compiler let this line exist at all?",
+     "start": 8.106,
+     "end": 13.253
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 150,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "02a": {
+   "hash": "2f306ae00036a9f8",
+   "takes": [
+    "312cc45fcdef45ce9112",
+    "70734646b567989753c4"
+   ],
+   "duration": 14.077,
+   "lines": [
+    {
+     "text": "No. Counting how many owners exist is a bookkeeping trick; it never grants a path to change what's being counted.",
+     "start": 0.15,
+     "end": 8.23
+    },
+    {
+     "text": "That path has a name of its own, and this pointer was never given it.",
+     "start": 8.65,
+     "end": 13.727
+    }
+   ],
+   "lufs": -16.1,
+   "true_peak": -2.6,
+   "wpm": 149,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "03": {
+   "hash": "f3ed3b726f253781",
+   "takes": [
+    "16c3e2ab60b2d36e6335",
+    "4503a2281b7e02801c8e"
+   ],
+   "duration": 18.59,
+   "lines": [
+    {
+     "text": "Here is the compiler's own answer, and it names the exact missing piece rather than just refusing.",
+     "start": 0.15,
+     "end": 6.86
+    },
+    {
+     "text": "A pointer that only ever hands out a shared view can't suddenly offer a mutable one; that second ability has to come from somewhere else entirely.",
+     "start": 7.28,
+     "end": 18.24
+    }
+   ],
+   "lufs": -16.1,
+   "true_peak": -2.6,
+   "wpm": 139,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "04": {
+   "hash": "a80edc021f3044f0",
+   "takes": [
+    "eb85fde6c523a88debbb",
+    "3f335cc3fec1d2a3299a"
+   ],
+   "duration": 17.24,
+   "lines": [
+    {
+     "text": "Slide a gate inside the same pointer, and send four real threads at it as fast as they'll go.",
+     "start": 0.15,
+     "end": 7.11
+    },
+    {
+     "text": "Every single one of those twenty five thousand increments per thread lands, because only one thread is ever standing inside that gate at any instant.",
+     "start": 7.53,
+     "end": 16.89
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -1.9,
+   "wpm": 153,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "05": {
+   "hash": "4d0b8ada4991ce64",
+   "takes": [
+    "dfffaf9309e51287b81a",
+    "fdfedc86c8c45328d67c"
+   ],
+   "duration": 17.438,
+   "lines": [
+    {
+     "text": "One of those four threads panics while it's still standing inside the gate, before it ever steps back out.",
+     "start": 0.15,
+     "end": 7.672
+    },
+    {
+     "text": "The next thread to try the gate gets told, plainly, that something went wrong last time \u2014 and the number inside is still there to recover on purpose.",
+     "start": 8.092,
+     "end": 17.088
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 158,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "06": {
+   "hash": "fec50887f76a56a5",
+   "takes": [
+    "c68f0e191cb88da2ac7e",
+    "a37b48c7a66e1e6907a9"
+   ],
+   "duration": 21.645,
+   "lines": [
+    {
+     "text": "Run the identical panic again, but through a different library's gate this time, built on a different promise entirely.",
+     "start": 0.15,
+     "end": 8.556
+    },
+    {
+     "text": "This one never reports trouble at all; the next thread through just finds the number waiting, as if the panic never happened \u2014 a deliberate, opposite bet.",
+     "start": 8.976,
+     "end": 21.295
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -2.0,
+   "wpm": 125,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "07": {
+   "hash": "87bdfefcda249e7f",
+   "takes": [
+    "5e7159bc2d8ec03b2ead",
+    "926de9cecbc4c471ade1"
+   ],
+   "duration": 15.565,
+   "lines": [
+    {
+     "text": "A task takes the gate's own receipt, pauses for a moment mid flight, and then tries to use that receipt again once it resumes.",
+     "start": 0.15,
+     "end": 8.439
+    },
+    {
+     "text": "Will the runtime still accept handing this whole task off to run anywhere it likes?",
+     "start": 9.159,
+     "end": 15.215
+    }
+   ],
+   "lufs": -16.0,
+   "true_peak": -2.0,
+   "wpm": 150,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "07a": {
+   "hash": "4f1591bb6eb48380",
+   "takes": [
+    "efd6516492e732210020",
+    "a86db957fb834e3612f9"
+   ],
+   "duration": 18.151,
+   "lines": [
+    {
+     "text": "No. That receipt only ever makes sense on the exact thread that issued it, and a pause is exactly where the runtime might move things.",
+     "start": 0.15,
+     "end": 10.627
+    },
+    {
+     "text": "Still holding it at that instant disqualifies everything built around it, not just the receipt itself.",
+     "start": 11.047,
+     "end": 17.801
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -2.6,
+   "wpm": 136,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "08": {
+   "hash": "ba2ea0f2877c8c74",
+   "takes": [
+    "e71cdd9ff1771f3d9175",
+    "66e5935b555a168f270a"
+   ],
+   "duration": 17.335,
+   "lines": [
+    {
+     "text": "The ordinary gate's receipt names itself directly in the failure \u2014 it was never built with a pause like this in mind.",
+     "start": 0.15,
+     "end": 7.662
+    },
+    {
+     "text": "Swap in a gate built specifically to survive that pause, and the identical shape runs clean, printing out exactly what it should.",
+     "start": 8.082,
+     "end": 16.985
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -2.0,
+   "wpm": 149,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "09": {
+   "hash": "7ee3b880e9165990",
+   "takes": [
+    "18359674351187b2c8a6",
+    "54b5bef55c9277859832"
+   ],
+   "duration": 22.906,
+   "lines": [
+    {
+     "text": "Sharing a number and guarding a number turned out to be two entirely separate jobs this whole time, never one standing in for the other.",
+     "start": 0.15,
+     "end": 9.181
+    },
+    {
+     "text": "Two different gates made two opposite bets about what a panic should leave behind, and one gate exists for exactly one reason: surviving a pause while it's still held.",
+     "start": 9.601,
+     "end": 22.556
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 141,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  }
+ }
+}
