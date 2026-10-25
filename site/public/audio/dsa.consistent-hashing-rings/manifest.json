@@ -1,0 +1,353 @@
+{
+ "topic": "dsa.consistent-hashing-rings",
+ "voice": "breeze-mellow-v2",
+ "asr": "large-v3-turbo",
+ "clips": {
+  "01": {
+   "hash": "4990a2486caebd95",
+   "takes": [
+    "ae5c9337dfcf68de4851",
+    "ab4e30e169b95a1c0c19",
+    "a5437506f077c05a24da"
+   ],
+   "duration": 18.986,
+   "lines": [
+    {
+     "text": "Last topic's whole question was about one table filling up, and what a resize costs inside one machine.",
+     "start": 0.15,
+     "end": 7.362
+    },
+    {
+     "text": "This one asks almost the same question, just one level up.",
+     "start": 7.782,
+     "end": 12.78
+    },
+    {
+     "text": "When the machine itself joins or leaves, how many keys actually have to move?",
+     "start": 13.2,
+     "end": 18.636
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 136,
+   "wer": 0.05555555555555555,
+   "exact": false,
+   "tolerated": [
+    {
+     "line": "Last topic's whole question was about one table filling up, and what a resize costs inside one machine.",
+     "said": "costs",
+     "heard": "cost"
+    }
+   ]
+  },
+  "02": {
+   "hash": "06bf5d02a7ce03ca",
+   "takes": [
+    "8e3f86a047a753f9c601",
+    "775fb574914ae403be7e",
+    "d44259e52b8bc8871376"
+   ],
+   "duration": 19.131,
+   "lines": [
+    {
+     "text": "Here's the exact same hashing idea from every earlier topic, just pointed at machines instead of slots in one array.",
+     "start": 0.15,
+     "end": 7.884
+    },
+    {
+     "text": "Hash both the keys and the machines onto the same ring.",
+     "start": 8.304,
+     "end": 12.019
+    },
+    {
+     "text": "A key belongs to whichever machine it meets first, walking clockwise from the key's own position.",
+     "start": 12.439,
+     "end": 18.781
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 147,
+   "wer": 0.1,
+   "exact": false,
+   "tolerated": [
+    {
+     "line": "Here's the exact same hashing idea from every earlier topic, just pointed at machines instead of slots in one array.",
+     "said": "pointed",
+     "heard": "point it"
+    }
+   ]
+  },
+  "03": {
+   "hash": "1a02012e038ffdbb",
+   "takes": [
+    "9f4d724a4528615277b3",
+    "6f29ec0b498264cc12eb",
+    "6a5d1b3fe5f8bebbe15b"
+   ],
+   "duration": 21.637,
+   "lines": [
+    {
+     "text": "Think about what a new dot on this ring actually changes.",
+     "start": 0.15,
+     "end": 3.926
+    },
+    {
+     "text": "It only pushes in between whichever two existing dots happen to sit on either side of it. Nothing on the far side of the ring even notices.",
+     "start": 4.346,
+     "end": 14.227
+    },
+    {
+     "text": "So before I show you the real number, predict it: how many of the ring's keys actually have to move?",
+     "start": 14.647,
+     "end": 21.287
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 161,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "03a": {
+   "hash": "d9073908d13af047",
+   "takes": [
+    "2076837fc661db1986db",
+    "913b8960cf6ec9109b82"
+   ],
+   "duration": 14.912,
+   "lines": [
+    {
+     "text": "Only the keys between the new machine's position and its clockwise neighbor \u2014 nothing else moves.",
+     "start": 0.15,
+     "end": 6.24
+    },
+    {
+     "text": "Those keys belonged to that one clockwise neighbor in the first place. Every other key's owning machine never changes.",
+     "start": 6.66,
+     "end": 14.562
+    }
+   ],
+   "lufs": -16.0,
+   "true_peak": -2.1,
+   "wpm": 137,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "04": {
+   "hash": "271f98e5a83a4380",
+   "takes": [
+    "a2cced50caf2ca2120f8",
+    "e9dc6dfa0b4657ca85d9",
+    "cf75a0808c777294846b"
+   ],
+   "duration": 26.971,
+   "lines": [
+    {
+     "text": "Go back and watch what a resize actually did, last topic: it touched every entry, because the whole table's layout changed at once.",
+     "start": 0.15,
+     "end": 9.779
+    },
+    {
+     "text": "Nothing like that happens here. A ring's layout barely moves when one dot joins it.",
+     "start": 10.199,
+     "end": 16.015
+    },
+    {
+     "text": "That's the entire payoff of placing machines on the same hashed space as the keys, instead of giving the table a single fixed size to outgrow.",
+     "start": 16.435,
+     "end": 26.621
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 142,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "05": {
+   "hash": "2ce727bb90a8f05d",
+   "takes": [
+    "e5a718c64d7ff6751b71",
+    "1054374b3ff1917264a6",
+    "cd9f1897964a3f3b7b49"
+   ],
+   "duration": 27.223,
+   "lines": [
+    {
+     "text": "Here's the catch nobody mentions when they first draw this ring: hashing is random, and random doesn't mean even.",
+     "start": 0.15,
+     "end": 8.157
+    },
+    {
+     "text": "Roll enough dice and some number comes up far more than its fair share. One machine's single point can land in a wide open stretch of the ring and inherit a huge pile of keys for it.",
+     "start": 8.577,
+     "end": 20.956
+    },
+    {
+     "text": "That's not a bug in the scheme. It's just what a single random sample looks like.",
+     "start": 21.376,
+     "end": 26.873
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 159,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "06": {
+   "hash": "df3eac76bee4b829",
+   "takes": [
+    "23abce3c59b4c81b7964",
+    "f8eb09d1a0ed972eccbc",
+    "bfcb8d86e8868971a36c"
+   ],
+   "duration": 19.291,
+   "lines": [
+    {
+     "text": "Notice this isn't a capacity problem \u2014 giving that machine more memory wouldn't touch the actual cause.",
+     "start": 0.15,
+     "end": 7.671
+    },
+    {
+     "text": "The cause is that it only got to roll the dice once.",
+     "start": 8.091,
+     "end": 11.981
+    },
+    {
+     "text": "So predict it, before I show the fix: what actually gives one machine a fairer shot at the ring?",
+     "start": 12.401,
+     "end": 18.941
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 146,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "06a": {
+   "hash": "1e928764cf80ebec",
+   "takes": [
+    "dafc46aee6c8696da710",
+    "62c2394820ec41cc9286"
+   ],
+   "duration": 13.153,
+   "lines": [
+    {
+     "text": "Hash each machine to many points on the ring instead of just one.",
+     "start": 0.15,
+     "end": 4.226
+    },
+    {
+     "text": "Roll the dice many times instead of once, and the lucky and unlucky rolls start to cancel out \u2014 that's the whole mechanism.",
+     "start": 4.646,
+     "end": 12.803
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -2.6,
+   "wpm": 160,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "07": {
+   "hash": "d00d6a4234ae4846",
+   "takes": [
+    "90954d5ffecf1be6f121",
+    "4e1aa4b11c58e8f51143"
+   ],
+   "duration": 21.273,
+   "lines": [
+    {
+     "text": "Not a made up number. A real, current, documented system assigned each machine two hundred fifty six points on the ring, under its older allocation scheme.",
+     "start": 0.15,
+     "end": 13.11
+    },
+    {
+     "text": "Spreading one machine's share across many small points instead of one big one, specifically to even it out.",
+     "start": 13.53,
+     "end": 20.923
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 124,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "08": {
+   "hash": "e775c8aa1eff9b6b",
+   "takes": [
+    "0bc2006ab10b54141756",
+    "bc5adad405e099ce142b",
+    "4f17de9c08c72a9dd646"
+   ],
+   "duration": 30.037,
+   "lines": [
+    {
+     "text": "Averages are comforting, but an adversary doesn't play by averages.",
+     "start": 0.15,
+     "end": 4.578
+    },
+    {
+     "text": "Send every request at the one machine you know is overloaded, and virtual nodes alone won't save it \u2014 they only even things out in expectation, not against someone aiming at you.",
+     "start": 4.998,
+     "end": 16.931
+    },
+    {
+     "text": "So this guarantee works differently: once a machine hits its cap, the extra load simply spills to its neighbor, by design, no matter who's sending the traffic.",
+     "start": 17.351,
+     "end": 29.687
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 136,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "09": {
+   "hash": "17d938d5cec54f58",
+   "takes": [
+    "2ec4bb57e0e47f640b88",
+    "1b2e4762ab0d1fc8ccb2",
+    "53d4037a12c8eb1da533"
+   ],
+   "duration": 25.511,
+   "lines": [
+    {
+     "text": "Everything claimed in this topic gets checked here, against a real ring built from scratch, not just asserted.",
+     "start": 0.15,
+     "end": 6.852
+    },
+    {
+     "text": "Watch the gap between the two left bars: that's the entire reason a ring beats a resize when machines come and go.",
+     "start": 7.272,
+     "end": 14.392
+    },
+    {
+     "text": "And the second pair shows the exact same ring paying off the fix from two steps ago \u2014 same mechanism, just asked more times per machine.",
+     "start": 14.812,
+     "end": 25.161
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 153,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  }
+ }
+}
