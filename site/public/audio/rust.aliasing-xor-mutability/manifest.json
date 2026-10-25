@@ -1,0 +1,354 @@
+{
+ "topic": "rust.aliasing-xor-mutability",
+ "voice": "breeze-mellow-v2",
+ "asr": "large-v3-turbo",
+ "clips": {
+  "01": {
+   "hash": "41fe450c4ef79fac",
+   "takes": [
+    "793a6005cd043ab6b06f",
+    "c9c516fd12f40125ab05"
+   ],
+   "duration": 29.537,
+   "lines": [
+    {
+     "text": "Here is the rule every borrow in the last chapter was quietly obeying. A place in memory may be read by as many borrows as you like at once, or written to by exactly one, but never both at the same time.",
+     "start": 0.15,
+     "end": 15.427
+    },
+    {
+     "text": "Notice the exact shape of the ban. It is not simply mutable versus immutable. It is about overlap: nothing else may be looking while one borrow is writing.",
+     "start": 16.147,
+     "end": 29.187
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 142,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "02": {
+   "hash": "adbf5ddd1be6817b",
+   "takes": [
+    "852f6c5ee52d1782900c",
+    "4e6e455cbd2026e1656c"
+   ],
+   "duration": 27.042,
+   "lines": [
+    {
+     "text": "Picture two threads each holding what they believe is exclusive access to the same value. That is the textbook shape of a data race, and borrowed code refuses to let it exist.",
+     "start": 0.15,
+     "end": 14.87
+    },
+    {
+     "text": "You already met a looser version of this same promise: a lock, which enforces the identical exclusivity, only while the program is running instead of before it starts.",
+     "start": 15.29,
+     "end": 26.692
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 133,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "03": {
+   "hash": "e5d9538228333f1c",
+   "takes": [
+    "7d86cc154a46ab078cf4",
+    "8c917beb82bfcae16344",
+    "99ab6b54aac7b889e223"
+   ],
+   "duration": 26.976,
+   "lines": [
+    {
+     "text": "Look at this small function. It checks one value twice, and depending on what it finds, it can write a second value up to twice as well.",
+     "start": 0.15,
+     "end": 9.184
+    },
+    {
+     "text": "A clever compiler would rather check once and write once. Before you see that shortcut, answer one question for yourself.",
+     "start": 9.604,
+     "end": 17.487
+    },
+    {
+     "text": "If the two parameters secretly pointed at the same place, could that shortcut ever land on a different answer than the careful version?",
+     "start": 18.207,
+     "end": 26.626
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -1.9,
+   "wpm": 156,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "03a": {
+   "hash": "8c98f6a3ca503409",
+   "takes": [
+    "dee163fe4a081251a350",
+    "25dde28e27bd7093b47f",
+    "39458cec1f15425a6577"
+   ],
+   "duration": 38.024,
+   "lines": [
+    {
+     "text": "Yes, and here is exactly when. Once the first value climbs high enough, the careful version's own write also changes the very value it is about to check next, so it stops one step earlier than the shortcut does.",
+     "start": 0.15,
+     "end": 16.095
+    },
+    {
+     "text": "The shortcut never sees that interference, so it always lands on the same result. The two versions disagree precisely when the parameters overlap.",
+     "start": 16.515,
+     "end": 26.209
+    },
+    {
+     "text": "The whole point of what comes next is that this disagreement can never actually happen, because the overlapping call is the one input the language refuses to let you write.",
+     "start": 26.629,
+     "end": 37.674
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 145,
+   "wer": 0.07692307692307693,
+   "exact": false,
+   "tolerated": [
+    {
+     "line": "Yes, and here is exactly when. Once the first value climbs high enough, the careful version's own write also changes the very value it is about to check next, so it stops one step earlier than the shortcut does.",
+     "said": "here is",
+     "heard": "heres"
+    },
+    {
+     "line": "Yes, and here is exactly when. Once the first value climbs high enough, the careful version's own write also changes the very value it is about to check next, so it stops one step earlier than the shortcut does.",
+     "said": "write",
+     "heard": "right"
+    }
+   ]
+  },
+  "04": {
+   "hash": "aa4e8bb81aa036f9",
+   "takes": [
+    "54149f696434510bcfa0",
+    "1798cecf2fd383b6ea69"
+   ],
+   "duration": 19.796,
+   "lines": [
+    {
+     "text": "Try to pass the same variable as both the readable argument and the writable one, and the compiler stops you before the optimizer's part of the job even begins.",
+     "start": 0.15,
+     "end": 10.54
+    },
+    {
+     "text": "It is not warning you that the shortcut is risky here. It is telling you the dangerous input was never going to exist in the first place.",
+     "start": 10.96,
+     "end": 19.446
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -2.0,
+   "wpm": 170,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "05": {
+   "hash": "784cc29cb5d62128",
+   "takes": [
+    "5dd90979f21a405c4f7e",
+    "4da80197845d82f4e75f"
+   ],
+   "duration": 28.763,
+   "lines": [
+    {
+     "text": "Ask the compiler to show you what it produced under optimization, and you can read its promise directly in the output. Each reference parameter carries a tag that means no other pointer touches this memory for the whole call.",
+     "start": 0.15,
+     "end": 15.039
+    },
+    {
+     "text": "Hand it two raw addresses doing the identical arithmetic instead, and that tag disappears, because nothing about a raw address's type makes the same promise on its own.",
+     "start": 15.459,
+     "end": 28.413
+    }
+   ],
+   "lufs": -16.2,
+   "true_peak": -2.4,
+   "wpm": 140,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "06": {
+   "hash": "2ed5fa2dd10c7e49",
+   "takes": [
+    "3415564e1a38fc92ca52",
+    "8cb008e3923c1bf74fe9"
+   ],
+   "duration": 24.572,
+   "lines": [
+    {
+     "text": "Hand the same exclusive reference to a function twice in a row, and it still compiles, which looks at first glance like two overlapping claims on one binding.",
+     "start": 0.15,
+     "end": 10.714
+    },
+    {
+     "text": "What actually happens is subtler. Each call borrows a shorter claim from the original reference and hands it back the moment the call ends, so the original is free again for the very next call.",
+     "start": 11.134,
+     "end": 24.222
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -2.1,
+   "wpm": 154,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "07": {
+   "hash": "b97b73ad5c08f1ab",
+   "takes": [
+    "4ca227221ddb21e85e6f",
+    "e174ef0677fb9ecdaaff"
+   ],
+   "duration": 16.332,
+   "lines": [
+    {
+     "text": "Here is a line that trips up beginners constantly. A method that needs exclusive access to a list is also handed an argument that reads that very same list's length.",
+     "start": 0.15,
+     "end": 13.35
+    },
+    {
+     "text": "Does the compiler accept it?",
+     "start": 14.07,
+     "end": 15.982
+    }
+   ],
+   "lufs": -16.6,
+   "true_peak": -1.9,
+   "wpm": 129,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "07a": {
+   "hash": "d98a4704ff491828",
+   "takes": [
+    "01a9f672740e7413b8fd",
+    "3191199f265290b1989d"
+   ],
+   "duration": 15.828,
+   "lines": [
+    {
+     "text": "It compiles cleanly, and has for years across every edition.",
+     "start": 0.15,
+     "end": 4.951
+    },
+    {
+     "text": "The reason is the next step: the exclusive claim that method is about to take doesn't actually start out exclusive.",
+     "start": 5.371,
+     "end": 15.478
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -2.6,
+   "wpm": 114,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "08": {
+   "hash": "8f72380a9dde83ff",
+   "takes": [
+    "1fdf2658cf04115e34ea",
+    "1ff21c74a2bee351e451"
+   ],
+   "duration": 31.441,
+   "lines": [
+    {
+     "text": "The exclusive claim push is about to take begins life in a softer state. While it is only reserved, it behaves exactly like an ordinary shared borrow, so reading the list's length right beside it causes no conflict at all.",
+     "start": 0.15,
+     "end": 14.921
+    },
+    {
+     "text": "Only once the call itself actually happens does that reservation harden into a true, fully exclusive claim. The opening rule never relaxed; it is simply applied one instant later than you might expect.",
+     "start": 15.341,
+     "end": 31.091
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -1.6,
+   "wpm": 139,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "09": {
+   "hash": "52b6a6365dee9f1f",
+   "takes": [
+    "6f75c52c540c20242d2f",
+    "7f711713647c749a36b8"
+   ],
+   "duration": 24.185,
+   "lines": [
+    {
+     "text": "Now try to stretch that softer phase too far, by keeping a borrow alive past the point where the reservation hardens, and the compiler catches it anyway.",
+     "start": 0.15,
+     "end": 10.295
+    },
+    {
+     "text": "That is the detail worth keeping: the softer phase is a genuine exception to when exclusivity begins, never an exception to whether the rule still applies.",
+     "start": 10.715,
+     "end": 23.835
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.8,
+   "wpm": 131,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "10": {
+   "hash": "b1c73d7f22b73747",
+   "takes": [
+    "1b4a04b2cb8108d12230",
+    "7bb7dcbc25a1b6a14f37",
+    "c4c267d7fa27bfd1bfe2"
+   ],
+   "duration": 39.343,
+   "lines": [
+    {
+     "text": "So: many readers, or one writer, never together. That single promise is what keeps two threads from racing, and it is the very fact the optimizer leans on whenever it reorders work or drops a needless read.",
+     "start": 0.15,
+     "end": 17.354
+    },
+    {
+     "text": "A reborrow lends from an exclusive reference without ever taking it away. A reserved claim is a shared borrow wearing a disguise, right up until the instant it is used.",
+     "start": 17.774,
+     "end": 29.289
+    },
+    {
+     "text": "One question is still wide open: the rule says how many borrows, and of what kind. It never said how long any of them are allowed to last.",
+     "start": 30.009,
+     "end": 38.993
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -1.9,
+   "wpm": 145,
+   "wer": 0.06666666666666667,
+   "exact": false,
+   "tolerated": [
+    {
+     "line": "A reborrow lends from an exclusive reference without ever taking it away. A reserved claim is a shared borrow wearing a disguise, right up until the instant it is used.",
+     "said": "reborrow",
+     "heard": "re borrow"
+    }
+   ]
+  }
+ }
+}
