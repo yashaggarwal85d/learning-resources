@@ -1,0 +1,303 @@
+{
+ "topic": "dsa.resizing-incremental-rehashing",
+ "voice": "breeze-mellow-v2",
+ "asr": "large-v3-turbo",
+ "clips": {
+  "01": {
+   "hash": "59158208dab9d924",
+   "takes": [
+    "6e510e10e6eb5b658689",
+    "4f2f5147e4b42fa73916",
+    "a20afde92bce9f48c443"
+   ],
+   "duration": 17.416,
+   "lines": [
+    {
+     "text": "Chaining, open addressing, Swiss Tables \u2014 every single one of them quietly assumed the table already had room.",
+     "start": 0.15,
+     "end": 9.198
+    },
+    {
+     "text": "Not one of them ever said what happens the moment it doesn't.",
+     "start": 9.618,
+     "end": 13.424
+    },
+    {
+     "text": "That's the whole question this topic finally answers.",
+     "start": 13.844,
+     "end": 17.066
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 127,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "02": {
+   "hash": "7fe376d064680eb2",
+   "takes": [
+    "dc25f1d5d32e655136ef",
+    "88d76f4590942025079b",
+    "4acc2a12665798e55c01"
+   ],
+   "duration": 25.534,
+   "lines": [
+    {
+     "text": "Here's the simplest possible answer, and it's the same move a growable array already makes.",
+     "start": 0.15,
+     "end": 6.055
+    },
+    {
+     "text": "When the table's full, allocate one twice the size, and rehash every single existing entry into it, right then, all at once.",
+     "start": 6.475,
+     "end": 15.735
+    },
+    {
+     "text": "Averaged over many inserts, that's still cheap. But somebody has to actually sit through the one insert where all of that happens.",
+     "start": 16.155,
+     "end": 25.184
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 139,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "03": {
+   "hash": "c6f738411e65c8ec",
+   "takes": [
+    "af6f46bfbed7083deae7",
+    "76b08257650a301dd06f"
+   ],
+   "duration": 14.364,
+   "lines": [
+    {
+     "text": "Here's a row of ordinary inserts, and one of them is the one that triggers that rehash.",
+     "start": 0.15,
+     "end": 5.905
+    },
+    {
+     "text": "Before I show you the real number, predict it: how does that one insert's cost compare to its neighbors?",
+     "start": 6.325,
+     "end": 14.014
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -2.5,
+   "wpm": 150,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "03a": {
+   "hash": "4d8241f97048d27c",
+   "takes": [
+    "ca1983b8eb421ce35167",
+    "95b03b7e17ed9d86b325"
+   ],
+   "duration": 17.673,
+   "lines": [
+    {
+     "text": "Proportional to the whole table's current size \u2014 nowhere close to its neighbors.",
+     "start": 0.15,
+     "end": 5.18
+    },
+    {
+     "text": "That insert has to rehash every existing entry before it can even finish. The average cost was always fine. This one insert is not.",
+     "start": 5.6,
+     "end": 17.323
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 122,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "04": {
+   "hash": "f5d9adc1502cdc37",
+   "takes": [
+    "c03aa9df48d210cb404f",
+    "18af3e2af8ad0e7c553f",
+    "18bdd0515d111ee20d45"
+   ],
+   "duration": 17.928,
+   "lines": [
+    {
+     "text": "Here's a real production answer, built completely differently.",
+     "start": 0.15,
+     "end": 3.967
+    },
+    {
+     "text": "Keep the old table exactly as it is, and start a new one beside it, both live at the same time.",
+     "start": 4.387,
+     "end": 11.242
+    },
+    {
+     "text": "Instead of pausing to move everything at once, move it gradually, a little at a time.",
+     "start": 11.662,
+     "end": 17.578
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 151,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "05": {
+   "hash": "9301994ea3ff2cdb",
+   "takes": [
+    "c7540902aa733ce59793",
+    "6cf38d36b0337f16baa1"
+   ],
+   "duration": 8.645,
+   "lines": [
+    {
+     "text": "There's a migration pointer sitting between those two tables right now.",
+     "start": 0.15,
+     "end": 4.609
+    },
+    {
+     "text": "Predict it: what actually makes that pointer move forward?",
+     "start": 5.029,
+     "end": 8.295
+    }
+   ],
+   "lufs": -16.7,
+   "true_peak": -2.9,
+   "wpm": 139,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "05a": {
+   "hash": "b74c20e296a741ec",
+   "takes": [
+    "a559113a88b9a932967d",
+    "e1167fe43c1dd118b072"
+   ],
+   "duration": 16.926,
+   "lines": [
+    {
+     "text": "It's piggybacked on every ordinary lookup or insert that touches the table \u2014 no separate thread, nothing running in the background.",
+     "start": 0.15,
+     "end": 8.433
+    },
+    {
+     "text": "It rides along on work the table was already doing. No thread, no scheduler, no separate cost to account for.",
+     "start": 8.853,
+     "end": 16.576
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 142,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "06": {
+   "hash": "300854bec82a32e3",
+   "takes": [
+    "52517cd15614583e1ce9",
+    "0ac67fe6cd272ff4d29a",
+    "6aa8e85d1f79c98d5f66"
+   ],
+   "duration": 20.898,
+   "lines": [
+    {
+     "text": "Here's the bound, and it's a real one, not a hand-wave.",
+     "start": 0.15,
+     "end": 4.079
+    },
+    {
+     "text": "Each operation moves only a fixed, small number of buckets, capped, every single time.",
+     "start": 4.499,
+     "end": 10.572
+    },
+    {
+     "text": "The table keeps growing, sure \u2014 but no single operation ever pays for the whole migration. Just its own small, fixed share.",
+     "start": 10.992,
+     "end": 20.548
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 135,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "07": {
+   "hash": "ba3257cb9f4cd8b7",
+   "takes": [
+    "89c3cfaea5f3ae0a6c17",
+    "52070d84f38549686631",
+    "3a973a45f2cbaa633cdd"
+   ],
+   "duration": 23.547,
+   "lines": [
+    {
+     "text": "I want to be honest about this: neither strategy here is free.",
+     "start": 0.15,
+     "end": 4.496
+    },
+    {
+     "text": "Incremental migration's smoother latency comes at a real cost \u2014 both tables stay live, roughly doubling peak memory, for as long as the migration takes.",
+     "start": 4.916,
+     "end": 16.027
+    },
+    {
+     "text": "Not for one insert. For every single operation until the migration finally finishes.",
+     "start": 16.447,
+     "end": 23.197
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 125,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "08": {
+   "hash": "8c67ce10beaba7da",
+   "takes": [
+    "0c69f425c119833cc372",
+    "0368f95884e7d85e629f",
+    "fd760f5b7fe0ae1b7437"
+   ],
+   "duration": 25.22,
+   "lines": [
+    {
+     "text": "Same key sequence into both tables, measured, not assumed.",
+     "start": 0.15,
+     "end": 4.86
+    },
+    {
+     "text": "Watch the difference: one strategy pays for the resize in a single tall spike. The other spreads the exact same total work into many small, bounded steps.",
+     "start": 5.28,
+     "end": 16.986
+    },
+    {
+     "text": "Same final table. Same total work. A completely different schedule for who pays, and when.",
+     "start": 17.406,
+     "end": 24.87
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -1.9,
+   "wpm": 121,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  }
+ }
+}
