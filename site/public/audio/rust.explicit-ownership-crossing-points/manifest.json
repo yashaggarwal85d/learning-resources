@@ -1,0 +1,342 @@
+{
+ "topic": "rust.explicit-ownership-crossing-points",
+ "voice": "breeze-mellow-v2",
+ "asr": "large-v3-turbo",
+ "clips": {
+  "01": {
+   "hash": "05f46c3685bbcd37",
+   "takes": [
+    "4d0ebcaae4f4d878e607",
+    "173a8655ac1277417055"
+   ],
+   "duration": 22.581,
+   "lines": [
+    {
+     "text": "Four moments, and the entire rest of this chapter's material never showed you a fifth one \u2014 that absence is itself the point worth noticing here.",
+     "start": 0.15,
+     "end": 9.924
+    },
+    {
+     "text": "Every other way two threads touch the same data goes through sharing a reference, protected by the locks and traits covered already, never by handing over ownership outright.",
+     "start": 10.344,
+     "end": 22.231
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -2.3,
+   "wpm": 141,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "02": {
+   "hash": "dc80bb42e80f586f",
+   "takes": [
+    "ba21165c65d8ca3343e4",
+    "c8356a2a3752c658f99f"
+   ],
+   "duration": 14.245,
+   "lines": [
+    {
+     "text": "Take a string, capture it into a brand new thread with a move closure, and send that thread off to run.",
+     "start": 0.15,
+     "end": 7.63
+    },
+    {
+     "text": "Once that thread is running, can the code that spawned it still reach the string at all?",
+     "start": 8.35,
+     "end": 13.895
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -2.0,
+   "wpm": 160,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "02a": {
+   "hash": "1092ace54c9ffb96",
+   "takes": [
+    "34b197f4de54c2ecb067",
+    "458e9965f11b65480b77"
+   ],
+   "duration": 16.908,
+   "lines": [
+    {
+     "text": "No. Moving means exactly what it says \u2014 the string's ownership is gone from the spawning side the instant that closure was built.",
+     "start": 0.15,
+     "end": 9.023
+    },
+    {
+     "text": "There's no copy left behind anywhere to fall back on; the new thread is the only place that value exists now.",
+     "start": 9.443,
+     "end": 16.558
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -1.9,
+   "wpm": 153,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "03": {
+   "hash": "41eac61df4273ef6",
+   "takes": [
+    "bb8afe167dbf821befe2",
+    "a495495b9d58d4a5208c"
+   ],
+   "duration": 16.305,
+   "lines": [
+    {
+     "text": "Here, the new thread computes the moved string's own length and hands that number back through the join handle.",
+     "start": 0.15,
+     "end": 7.422
+    },
+    {
+     "text": "The spawning side never touches the string itself again \u2014 only the single number the new thread chose to send back.",
+     "start": 7.842,
+     "end": 15.955
+    }
+   ],
+   "lufs": -16.1,
+   "true_peak": -2.0,
+   "wpm": 144,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "04": {
+   "hash": "b6d6a2a2850f38a9",
+   "takes": [
+    "f2d20202acfe19a37e7d",
+    "de84385f5a1f031e83f3"
+   ],
+   "duration": 21.758,
+   "lines": [
+    {
+     "text": "Now try the same shape, but borrow the data instead of moving it into that same kind of plain spawn.",
+     "start": 0.15,
+     "end": 8.784
+    },
+    {
+     "text": "The compiler refuses outright, and names the exact reason: the closure might still be running after the function that created it has already ended, so it can't be allowed to only borrow.",
+     "start": 9.204,
+     "end": 21.407
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -2.1,
+   "wpm": 143,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "05": {
+   "hash": "e3072e868f6078e1",
+   "takes": [
+    "321c9861dba81b9349a2",
+    "0a383071fdb71e95497a"
+   ],
+   "duration": 18.162,
+   "lines": [
+    {
+     "text": "Wrap the identical borrow inside a scope instead, one that promises every thread it spawns will finish before the scope itself hands control back.",
+     "start": 0.15,
+     "end": 10.198
+    },
+    {
+     "text": "That promise is what makes the borrow safe this time \u2014 nothing spawned inside can ever outlive the data it's looking at.",
+     "start": 10.618,
+     "end": 17.812
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -1.9,
+   "wpm": 149,
+   "wer": 0.047619047619047616,
+   "exact": false,
+   "tolerated": [
+    {
+     "line": "That promise is what makes the borrow safe this time \u2014 nothing spawned inside can ever outlive the data it's looking at.",
+     "said": "borrow",
+     "heard": "borough"
+    }
+   ]
+  },
+  "06": {
+   "hash": "006e9620641042ce",
+   "takes": [
+    "4cf586d8a22d18222e9d",
+    "53cd31a2fe7dbd5b9531"
+   ],
+   "duration": 12.567,
+   "lines": [
+    {
+     "text": "Spawn a task onto an async runtime instead of a plain thread, moving the same string in the same way.",
+     "start": 0.15,
+     "end": 6.945
+    },
+    {
+     "text": "Does this task face the same restriction a plain spawned thread does?",
+     "start": 7.665,
+     "end": 12.217
+    }
+   ],
+   "lufs": -16.1,
+   "true_peak": -2.5,
+   "wpm": 153,
+   "wer": 0.16666666666666666,
+   "exact": false,
+   "tolerated": [
+    {
+     "line": "Does this task face the same restriction a plain spawned thread does?",
+     "said": "plain",
+     "heard": "plane"
+    },
+    {
+     "line": "Does this task face the same restriction a plain spawned thread does?",
+     "said": "thread",
+     "heard": "threat"
+    }
+   ]
+  },
+  "06a": {
+   "hash": "e8ef137cc217b2b7",
+   "takes": [
+    "196ed97f3574533b531d",
+    "e4a97aebc221a8f6df43"
+   ],
+   "duration": 16.706,
+   "lines": [
+    {
+     "text": "Yes, exactly the same restriction, just written on a future instead of a closure.",
+     "start": 0.15,
+     "end": 5.474
+    },
+    {
+     "text": "The runtime is free to hand this task to any worker thread it likes, and that freedom is exactly why the ownership rule can't be relaxed here either.",
+     "start": 5.894,
+     "end": 16.356
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 151,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "07": {
+   "hash": "e3bb16f293559a7a",
+   "takes": [
+    "d8e927519f1316f3ccdb",
+    "14247a7bfe1144b2f5a2"
+   ],
+   "duration": 18.141,
+   "lines": [
+    {
+     "text": "The runtime decides where this task actually runs, not the code that spawned it \u2014 it might stay put, or it might move to a different thread entirely.",
+     "start": 0.15,
+     "end": 9.976
+    },
+    {
+     "text": "That uncertainty is the whole reason the task has to own what it touches, the same way a plain spawned thread does.",
+     "start": 10.396,
+     "end": 17.791
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -1.9,
+   "wpm": 162,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "08": {
+   "hash": "5cf29edfbbc6003e",
+   "takes": [
+    "a5058d3883211be3f31e",
+    "b4eb649273ee620be5e9"
+   ],
+   "duration": 17.316,
+   "lines": [
+    {
+     "text": "Two separate threads each send their own message down the same channel, and one receiving thread picks both of them up.",
+     "start": 0.15,
+     "end": 7.186
+    },
+    {
+     "text": "Sending is the fourth and final way ownership changes hands: the value leaves the sending thread completely, and belongs to whoever calls receive next.",
+     "start": 7.606,
+     "end": 16.966
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 156,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "09": {
+   "hash": "2966fac448dd1414",
+   "takes": [
+    "7675ef8621e1b01f8bcd",
+    "c1d640adf3d8907ace3e"
+   ],
+   "duration": 16.726,
+   "lines": [
+    {
+     "text": "Here's the standard library's own comment, sitting directly above the code that actually implements this channel.",
+     "start": 0.15,
+     "end": 6.899
+    },
+    {
+     "text": "It names its source plainly: this isn't a bespoke design at all, it's a direct port of an existing, independently proven channel crate.",
+     "start": 7.319,
+     "end": 16.376
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -2.0,
+   "wpm": 140,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "10": {
+   "hash": "4bbf5a2f29285137",
+   "takes": [
+    "cd2bec0c16016c39a3de",
+    "f2bfbb7752b03ff3f5e3"
+   ],
+   "duration": 22.695,
+   "lines": [
+    {
+     "text": "Four places, never more, never fewer: a plain spawn, a scoped spawn, a task spawn, or a send \u2014 that's every way ownership ever crosses a thread boundary.",
+     "start": 0.15,
+     "end": 12.013
+    },
+    {
+     "text": "Two of them demand ownership outright, one trades that for a promise to finish in time, and the channel underneath all of them was borrowed from somewhere else entirely.",
+     "start": 12.433,
+     "end": 22.346
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 148,
+   "wer": 0.07407407407407407,
+   "exact": false,
+   "tolerated": [
+    {
+     "line": "Four places, never more, never fewer: a plain spawn, a scoped spawn, a task spawn, or a send \u2014 that's every way ownership ever crosses a thread boundary.",
+     "said": "never more",
+     "heard": "nevermore"
+    }
+   ]
+  }
+ }
+}
