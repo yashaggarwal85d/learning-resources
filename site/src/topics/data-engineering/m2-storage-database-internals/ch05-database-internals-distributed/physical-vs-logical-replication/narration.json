@@ -1,0 +1,91 @@
+{
+  "topic": "de.physical-vs-logical-replication",
+  "steps": [
+    {
+      "lines": [
+        "A replica is supposed to end up with everything its primary has.",
+        "That word, everything, is doing a lot of work. It can mean two genuinely different things to actually send across the wire.",
+        "Both of them get called replication. Only one of them is replicating the same bytes."
+      ]
+    },
+    {
+      "lines": [
+        "The first answer is the exact one. Send the actual blocks, byte for byte, address for address.",
+        "It's fast and cheap to apply, because the replica never has to figure anything out. It just writes the same bytes in the same place.",
+        "The cost of that simplicity is strictness. Both sides have to be running the identical version of the database engine."
+      ]
+    },
+    {
+      "lines": [
+        "The second answer throws away the bytes entirely and sends something higher level instead.",
+        "Decode the write-ahead log back into the actual row that changed, and send that instead of raw storage.",
+        "Now the two sides don't have to match at all. Different versions, even different operating systems, can read the same decoded change."
+      ]
+    },
+    {
+      "lines": [
+        "Here's where I want you to actually commit to an answer.",
+        "Picture a consumer on the other end of one of these streams that simply stops reading. What happens to all the data it hasn't picked up yet?"
+      ],
+      "answer": [
+        "It's tempting to assume the primary eventually just cleans up and moves on.",
+        "But the primary has no way to know whether that consumer is gone for good or just slow. Guessing wrong either way is dangerous.",
+        "So it doesn't guess. It keeps every bit the consumer hasn't confirmed, for however long that takes."
+      ]
+    },
+    {
+      "lines": [
+        "That keeping is a real, named mechanism, not an accident.",
+        "A replication slot is the primary's own promise to a specific consumer. Don't you dare remove anything I might still need.",
+        "The primary holds up its end of that promise completely, with no built in sense of how long is too long."
+      ]
+    },
+    {
+      "lines": [
+        "Here's that exact promise, held for real, against this sandbox's own database.",
+        "A real slot gets created, and then real writes just keep landing, with absolutely nothing on the other end ever reading them.",
+        "Watch what the primary ends up holding onto on that one consumer's behalf. It just keeps growing."
+      ]
+    },
+    {
+      "lines": [
+        "Left alone long enough, that growth becomes a real outage. The documentation itself is blunt about this. It can fill the space set aside for the log entirely.",
+        "Now watch the other half of the same measurement.",
+        "The identical slot, except this time a real consumer actually shows up and catches all the way up. What was being held just drops straight back down to nothing."
+      ]
+    },
+    {
+      "lines": [
+        "One newer wrinkle on this whole mechanism.",
+        "A more recent version of this database engine lets one of these decoded slots survive its own primary failing over to a replacement, something earlier versions simply couldn't do.",
+        "This particular sandbox is running an older version, so you're hearing this one described rather than watching it happen."
+      ]
+    },
+    {
+      "lines": [
+        "This same basic idea isn't unique to one database engine either.",
+        "A different, very widely used database can log its binary changes row by row instead of logging the statement that produced them.",
+        "Same underlying bet as the decoded approach you just watched. Describe what actually changed, not the command that caused it."
+      ]
+    },
+    {
+      "lines": [
+        "Pull the whole topic together.",
+        "Shipping bytes is fast and exact, but locks both sides to the same version. Shipping decoded changes is flexible, but someone has to do the decoding.",
+        "Either way, a slot's own promise has a real cost the moment nothing is there to collect on it."
+      ]
+    },
+    {
+      "lines": [
+        "One last one. A consumer reading one of these decoded slots crashes, and stays down for six hours.",
+        "During those six hours, a sale happens to double the normal rate of writes.",
+        "Given everything you just watched measured here. What is this doing to the primary's own disk that whole time, and does simply restarting the consumer undo it by itself?"
+      ],
+      "answer": [
+        "It's tempting to assume fixing the consumer fixes everything retroactively.",
+        "But for those six hours, at double the usual load, the primary kept every single byte it thought that consumer might still need.",
+        "So no, restarting it alone only stops things from getting worse. Everything already piled up still has to actually be read through before it's released."
+      ]
+    }
+  ]
+}

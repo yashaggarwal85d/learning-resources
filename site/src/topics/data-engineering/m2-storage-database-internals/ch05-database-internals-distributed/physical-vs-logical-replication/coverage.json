@@ -1,0 +1,83 @@
+{
+  "topic": "de.physical-vs-logical-replication",
+  "syllabus": [
+    {
+      "clause": "shipping WAL bytes (exact block copy, same major version) vs decoded row changes (cross-version, selective, the basis of CDC)",
+      "at": [
+        { "step": "Reveal: physical, exact bytes" },
+        { "step": "Reveal: logical, decoded changes" }
+      ]
+    },
+    {
+      "clause": "Postgres replication slots and the WAL-retention outage when a consumer stalls",
+      "at": [
+        { "step": "Reveal: replication slots, named" },
+        { "step": "Reveal: a stalled slot, measured" },
+        { "step": "Reveal: the outage, and the fix, measured" }
+      ]
+    },
+    {
+      "clause": "failover-safe logical slots (PG17+)",
+      "at": [
+        { "step": "Reveal: failover-safe logical slots" }
+      ]
+    },
+    {
+      "clause": "MySQL row-based binlog as the equivalent",
+      "at": [
+        { "step": "Reveal: the same idea elsewhere" }
+      ]
+    }
+  ],
+  "sources": [
+    {
+      "source": "Chapter 29. Logical Replication (PostgreSQL documentation)",
+      "items": [
+        { "item": "logical replication is named in contrast to physical replication, which uses exact block addresses and byte-by-byte replication", "at": [{ "step": "Reveal: physical, exact bytes" }] },
+        { "item": "logical replication is used for replicating between different major versions of PostgreSQL", "at": [{ "step": "Reveal: logical, decoded changes" }] },
+        { "item": "logical replication is used for replicating between PostgreSQL instances on different platforms", "at": [{ "deep": "Internals" }] }
+      ]
+    },
+    {
+      "source": "26.2.6. Replication Slots (PostgreSQL documentation)",
+      "items": [
+        { "item": "replication slots ensure the primary doesn't remove WAL segments until received by all standbys, and doesn't remove rows that could cause a recovery conflict", "at": [{ "step": "Reveal: replication slots, named" }] },
+        { "item": "replication slots can cause the server to retain so many WAL segments that they fill up the space allocated for pg_wal", "at": [{ "step": "Reveal: the outage, and the fix, measured" }] }
+      ]
+    },
+    {
+      "source": "PostgreSQL 17.0 Release Notes",
+      "items": [
+        { "item": "PostgreSQL 17 enables the failover of logical slots", "at": [{ "step": "Reveal: failover-safe logical slots" }] },
+        { "item": "PostgreSQL 17 adds sync_replication_slots to enable failover logical slot synchronization", "at": [{ "step": "Reveal: failover-safe logical slots" }] }
+      ]
+    },
+    {
+      "source": "Binary Log Formats (MariaDB documentation)",
+      "items": [
+        { "item": "with row-based logging, DML statements aren't logged; each row a statement inserts, updates or deletes is logged separately", "at": [{ "step": "Reveal: the same idea elsewhere" }] }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "self-review",
+    "date": "2026-10-24",
+    "items": [
+      { "item": "Physical and logical replication aren't competing for the same job — physical replication's whole value is being an exact, byte-identical copy (so it can't cross versions), while logical replication's whole value is being a selective, decoded copy (so it can cross versions, but can never be byte-identical).", "at": [{ "step": "Hook" }] },
+      { "item": "A replication slot doesn't ship anything itself — it's a promise the primary keeps about what it won't delete yet, which is exactly why the same mechanism (and the same risk) applies to a physical slot and a logical slot alike.", "at": [{ "step": "Reveal: replication slots, named" }] },
+      { "item": "This topic's own measured experiment uses a physical slot specifically because this sandbox's server can't be restarted to enable logical replication — but the retained-WAL number it measures is the identical mechanism a stalled logical slot would trigger, not an approximation of a different one.", "at": [{ "step": "Reveal: a stalled slot, measured" }] },
+      { "item": "The WAL-retention outage this topic measures isn't a logical-replication-specific bug — it's the necessary cost of the exact guarantee a slot provides: the primary genuinely cannot know how much WAL a stalled consumer still needs, so its only safe choice is to keep all of it.", "at": [{ "step": "Reveal: the outage, and the fix, measured" }] },
+      { "item": "Before PostgreSQL 17's failover-safe logical slots, a promoted replica had no memory of a logical subscriber's own progress — the subscriber had to be rebuilt from scratch after a failover, which is exactly the gap this feature closes.", "at": [{ "step": "Reveal: failover-safe logical slots" }] },
+      { "item": "Row-based binlog logging and logical replication's own decoded-changes approach solve the same underlying problem from opposite directions: Postgres decodes WAL after the fact into row changes, while row-based MySQL/MariaDB logging records row changes directly instead of ever logging the original statement.", "at": [{ "step": "Reveal: the same idea elsewhere" }] },
+      { "item": "Change-data-capture tooling (Debezium and similar) exists specifically because logical replication's own decoded row changes are exactly the input CDC needs — this topic's own clause naming CDC isn't a tangent, it's naming logical replication's actual real-world use beyond replica databases.", "at": [{ "deep": "Internals" }] },
+      { "item": "A stalled consumer and a slow consumer create the identical risk at different speeds — this topic measures the stalled (zero-progress) case directly because it is the clean, reproducible extreme; a merely lagging consumer is exactly the subject of the next topic.", "at": [{ "deep": "Where this goes next" }] },
+      { "item": "'Advancing' a slot isn't the same operation a real consumer performs — a real logical subscriber advances its own slot only as a side effect of actually having read and applied the changes, so forcibly advancing a slot without consuming (as this topic's own experiment does, deliberately, to demonstrate the mechanism) would silently discard data for a real logical replica.", "at": [{ "deep": "Internals" }] },
+      { "item": "This topic's own 'Prove it' scenario has a two-part answer: the stalled slot keeps retaining WAL regardless of why the consumer is down, and fixing the consumer alone only stops further growth — it doesn't shrink what's already been retained until the consumer actually catches up to the current position.", "at": [{ "step": "Prove it" }] }
+    ]
+  },
+  "gapReview": {
+    "date": "2026-10-24",
+    "by": "self-review",
+    "open": []
+  }
+}
