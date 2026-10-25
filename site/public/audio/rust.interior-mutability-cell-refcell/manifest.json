@@ -1,0 +1,259 @@
+{
+ "topic": "rust.interior-mutability-cell-refcell",
+ "voice": "breeze-mellow-v2",
+ "asr": "large-v3-turbo",
+ "clips": {
+  "01": {
+   "hash": "b1a5e9d477d8445e",
+   "takes": [
+    "e178371f5de027a6a269",
+    "f0febe2a28baceba357b"
+   ],
+   "duration": 19.499,
+   "lines": [
+    {
+     "text": "A shared reference is supposed to point at data the compiler is free to treat as fixed, never changing underneath it.",
+     "start": 0.15,
+     "end": 8.359
+    },
+    {
+     "text": "There is exactly one sanctioned way around that promise, a single primitive every other safe way of mutating through a shared reference is quietly built on top of.",
+     "start": 8.779,
+     "end": 19.149
+    }
+   ],
+   "lufs": -16.0,
+   "true_peak": -2.1,
+   "wpm": 151,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "02": {
+   "hash": "7d81387cd5f7180f",
+   "takes": [
+    "846b055232dbc3adcfcb",
+    "2d5d7e6ee39e4c99c58f"
+   ],
+   "duration": 16.033,
+   "lines": [
+    {
+     "text": "Take that same shape, a value sitting behind a shared reference, but leave out the one primitive that's actually allowed to open it up.",
+     "start": 0.15,
+     "end": 9.056
+    },
+    {
+     "text": "Try to change that value anyway, through nothing but the shared reference. Does it compile?",
+     "start": 9.776,
+     "end": 15.683
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 146,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "02a": {
+   "hash": "131b35a8d1ee15f6",
+   "takes": [
+    "f46d1f880d2a3859b3fd",
+    "b149ad674fe927f98fc8"
+   ],
+   "duration": 24.698,
+   "lines": [
+    {
+     "text": "No, and it's refused immediately, before any question of safety even comes up.",
+     "start": 0.15,
+     "end": 6.018
+    },
+    {
+     "text": "This isn't some special protection against doing something unsafe. It's the same, completely ordinary rule that stops any shared reference from being used to change what it points to, whether or not that one escape hatch is anywhere nearby.",
+     "start": 6.438,
+     "end": 24.348
+    }
+   ],
+   "lufs": -16.1,
+   "true_peak": -2.2,
+   "wpm": 126,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "03": {
+   "hash": "b2292ae82dea897a",
+   "takes": [
+    "745650a350050fe15f1b",
+    "93268ae3a6f13587d57d"
+   ],
+   "duration": 24.059,
+   "lines": [
+    {
+     "text": "Give a value a far simpler way to change through a shared reference instead: copy the whole thing out, change it, and copy the result back in, never handing out a reference to the inside at all.",
+     "start": 0.15,
+     "end": 14.539
+    },
+    {
+     "text": "Because nothing is ever actually borrowed, there's nothing that needs to be tracked, checked, or protected while that swap happens.",
+     "start": 14.959,
+     "end": 23.709
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 142,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "04": {
+   "hash": "92abded4beb0f857",
+   "takes": [
+    "a75a13404b90453a6882",
+    "f89fe92debc07a63e323"
+   ],
+   "duration": 21.672,
+   "lines": [
+    {
+     "text": "Now give a value a way to hand out a real, tracked reference to its inside, through nothing but a shared reference to the whole thing.",
+     "start": 0.15,
+     "end": 9.236
+    },
+    {
+     "text": "Every time that happens, the exact same rule an ordinary reference would enforce while the program is being checked gets enforced instead while the program is actually running.",
+     "start": 9.656,
+     "end": 21.322
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -2.6,
+   "wpm": 150,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "05": {
+   "hash": "e82109cb9e70dbe0",
+   "takes": [
+    "909177b2e50480923e06",
+    "15b9348e3b5218cd4819"
+   ],
+   "duration": 12.426,
+   "lines": [
+    {
+     "text": "Take out one of those tracked, shared references and keep it alive, then, while it's still alive, ask for an exclusive one on the very same value.",
+     "start": 0.15,
+     "end": 10.502
+    },
+    {
+     "text": "What happens?",
+     "start": 11.222,
+     "end": 12.076
+    }
+   ],
+   "lufs": -16.3,
+   "true_peak": -2.0,
+   "wpm": 140,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "05a": {
+   "hash": "5538b25e5fcd8f47",
+   "takes": [
+    "c132cc9723a2d8361602",
+    "823eaa4120b017b8b0f5"
+   ],
+   "duration": 23.851,
+   "lines": [
+    {
+     "text": "It compiles without any complaint at all, and then the instant it actually runs, it stops the program right there, naming exactly which kind of conflict it hit.",
+     "start": 0.15,
+     "end": 12.138
+    },
+    {
+     "text": "Nothing about this was caught ahead of time. The whole point of tracking it this way is that the check only ever happens the moment it's actually needed, not before.",
+     "start": 12.558,
+     "end": 23.501
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 146,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "06": {
+   "hash": "5a9bf3e447ea88b7",
+   "takes": [
+    "505c45eea8a0daa62970",
+    "5ba7641ffee9ddcbc89c"
+   ],
+   "duration": 28.986,
+   "lines": [
+    {
+     "text": "Give a value a way to be written exactly once, the very first time anyone asks for it, and read freely after that, with no further checking needed at all.",
+     "start": 0.15,
+     "end": 10.856
+    },
+    {
+     "text": "A value computed from a supplied set of instructions, instead of written directly, follows that same one-time rule: whatever produces it only ever actually runs the first time it's touched, no matter how many times it's asked for after that.",
+     "start": 11.276,
+     "end": 28.636
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -2.4,
+   "wpm": 147,
+   "wer": 0.06666666666666667,
+   "exact": false,
+   "tolerated": [
+    {
+     "line": "Give a value a way to be written exactly once, the very first time anyone asks for it, and read freely after that, with no further checking needed at all.",
+     "said": "a way",
+     "heard": "away"
+    }
+   ]
+  },
+  "07": {
+   "hash": "023e215ed2a3a0a5",
+   "takes": [
+    "6e7a5132e47491409194",
+    "9dec345277134b7afb56",
+    "284af0e182b7813517d8",
+    "f402a22b7345f8a11896"
+   ],
+   "duration": 46.315,
+   "lines": [
+    {
+     "text": "So: there is exactly one sanctioned way to mutate through a shared reference, and every other safe way of doing it is built on top of that one thing.",
+     "start": 0.15,
+     "end": 10.496
+    },
+    {
+     "text": "Copying a whole value in and out needs no tracking of any kind. Handing out a real, tracked reference to the inside needs that tracking to happen while the program runs, instead of before.",
+     "start": 10.916,
+     "end": 23.583
+    },
+    {
+     "text": "And something that only ever needs to be produced once can simply be written, or computed, the first time it's asked for, and read freely every time after that.",
+     "start": 24.003,
+     "end": 34.883
+    },
+    {
+     "text": "Next time: one of these values can be made to point right back at the very thing that holds it. What happens once two of them point at each other like that?",
+     "start": 35.603,
+     "end": 45.965
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 161,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  }
+ }
+}
