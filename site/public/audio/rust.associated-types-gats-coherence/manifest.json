@@ -1,0 +1,297 @@
+{
+ "topic": "rust.associated-types-gats-coherence",
+ "voice": "breeze-mellow-v2",
+ "asr": "large-v3-turbo",
+ "clips": {
+  "01": {
+   "hash": "7e8c662aefcc2e3d",
+   "takes": [
+    "1a64d9926548fe6632fc",
+    "0ceddb17f67ae7b110cc"
+   ],
+   "duration": 25.54,
+   "lines": [
+    {
+     "text": "A trait can let an implementor pick one type and commit to it inside the one implementation it's allowed to have, or it can carry its own parameter and let the very same target type satisfy it over and over, once per parameter.",
+     "start": 0.15,
+     "end": 17.924
+    },
+    {
+     "text": "Those are two genuinely different shapes, even though they can look almost identical sitting on the page.",
+     "start": 18.644,
+     "end": 25.19
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.7,
+   "wpm": 141,
+   "wer": 0.023255813953488372,
+   "exact": false,
+   "tolerated": [
+    {
+     "line": "A trait can let an implementor pick one type and commit to it inside the one implementation it's allowed to have, or it can carry its own parameter and let the very same target type satisfy it over and over, once per parameter.",
+     "said": "implementor",
+     "heard": "implementer"
+    }
+   ]
+  },
+  "02": {
+   "hash": "6905d9803cda6fa3",
+   "takes": [
+    "6098bc08384f66140046",
+    "e631918068d04e6f0f64"
+   ],
+   "duration": 19.705,
+   "lines": [
+    {
+     "text": "Take a trait that commits to its type once, inside its one implementation, and write a second implementation of that same trait for the same type, choosing a different type this time.",
+     "start": 0.15,
+     "end": 12.758
+    },
+    {
+     "text": "Does the compiler let that second choice stand, or quietly prefer whichever one came first?",
+     "start": 13.478,
+     "end": 19.355
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 143,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "02a": {
+   "hash": "014affee770e639f",
+   "takes": [
+    "f5e82ecdb9ce52b30a14",
+    "7c13bf95eb506a4ca778"
+   ],
+   "duration": 20.911,
+   "lines": [
+    {
+     "text": "Neither. It refuses the second implementation outright, the moment it sees it.",
+     "start": 0.15,
+     "end": 6.315
+    },
+    {
+     "text": "This has nothing special to do with the type being chosen inside it. A single type simply cannot implement the same trait twice, under any circumstances, and that rule alone is the whole explanation here.",
+     "start": 6.735,
+     "end": 20.561
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -2.1,
+   "wpm": 135,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "03": {
+   "hash": "2da95d5b732ec8ce",
+   "takes": [
+    "d85bd8a5f475caa85749",
+    "81547ab26c9c873cfe78"
+   ],
+   "duration": 26.901,
+   "lines": [
+    {
+     "text": "Give the trait its own parameter instead of committing to one type inside a single implementation, and that same limit disappears completely.",
+     "start": 0.15,
+     "end": 10.218
+    },
+    {
+     "text": "One target type can now implement that trait twice over, once for each different parameter, because as far as the compiler's own coherence rules are concerned, those two parameterized versions of the trait simply aren't the same trait at all.",
+     "start": 10.638,
+     "end": 26.551
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 138,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "04": {
+   "hash": "4713e587320fef19",
+   "takes": [
+    "e9b5bd5e2af2ca95414c",
+    "abe78954c55255c44c41",
+    "d24ac5e89d00afb77775"
+   ],
+   "duration": 37.213,
+   "lines": [
+    {
+     "text": "An ordinary associated type is fixed once, for the whole implementation, with no way to tie it to any one particular call.",
+     "start": 0.15,
+     "end": 8.494
+    },
+    {
+     "text": "Make that associated type itself take a parameter, almost always a lifetime, and suddenly it can be tied to one specific call instead: whatever gets handed back can borrow directly from that single call's own borrow of the thing producing it.",
+     "start": 8.914,
+     "end": 27.357
+    },
+    {
+     "text": "That is exactly what a lending iterator needs, and it's something an ordinary, parameter-free associated type could never express on its own.",
+     "start": 27.777,
+     "end": 36.863
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -1.9,
+   "wpm": 139,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "05": {
+   "hash": "4d04110b95a68149",
+   "takes": [
+    "a3354964180d659408fd",
+    "92cc7bb7f152828e029d"
+   ],
+   "duration": 13.857,
+   "lines": [
+    {
+     "text": "Here is an implementation of someone else's trait, written for someone else's type, with neither one defined anywhere in this very project.",
+     "start": 0.15,
+     "end": 9.443
+    },
+    {
+     "text": "Does writing an implementation like that actually compile?",
+     "start": 10.163,
+     "end": 13.507
+    }
+   ],
+   "lufs": -16.2,
+   "true_peak": -3.3,
+   "wpm": 130,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "05a": {
+   "hash": "0197f6dac4c70085",
+   "takes": [
+    "20d52affb7fc2843af43",
+    "9451284131a6e18ebcc3"
+   ],
+   "duration": 27.4,
+   "lines": [
+    {
+     "text": "No, and it's rejected immediately, naming the exact reason: neither the trait nor the type it's being implemented for belongs to this project.",
+     "start": 0.15,
+     "end": 10.104
+    },
+    {
+     "text": "That rule exists so that two completely separate projects can never quietly implement the same trait for the same type in two different, conflicting ways, which would make combining them together completely unpredictable.",
+     "start": 10.524,
+     "end": 27.05
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -1.9,
+   "wpm": 123,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "06": {
+   "hash": "1a2020eab9b9f999",
+   "takes": [
+    "e0f90a9c90b937e1a744",
+    "35435cd05d7081c84766"
+   ],
+   "duration": 28.4,
+   "lines": [
+    {
+     "text": "Take that exact same foreign type, and wrap it in one small, local type defined right here, with nothing else about the logic changed at all.",
+     "start": 0.15,
+     "end": 10.486
+    },
+    {
+     "text": "Suddenly the identical implementation compiles without any complaint, because now the type on the other end of that implementation genuinely does belong to this project, even though all it does is hold the original foreign value inside it.",
+     "start": 10.906,
+     "end": 28.05
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -1.9,
+   "wpm": 135,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "07": {
+   "hash": "520eb304edcef7bd",
+   "takes": [
+    "18b395e5fac479149c03",
+    "81f828b073c9f8d8b48e"
+   ],
+   "duration": 31.848,
+   "lines": [
+    {
+     "text": "Instead of writing one implementation per type by hand, write exactly one implementation that covers every single type meeting some condition, all at once.",
+     "start": 0.15,
+     "end": 11.505
+    },
+    {
+     "text": "A plain number and an entirely custom type you wrote yourself can both satisfy that one condition, and both get the exact same behavior for free, from that one single declaration, with nothing written specifically for either of them.",
+     "start": 11.925,
+     "end": 31.498
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 119,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "08": {
+   "hash": "d00c365e2e9c6394",
+   "takes": [
+    "f901c2bf572630ad0fa6",
+    "6bc632b80b63525a2d21",
+    "8c2d889e7b40fbb30c62",
+    "d658cad7d4b3325affec",
+    "978722f39afd0f2d7997"
+   ],
+   "duration": 75.702,
+   "lines": [
+    {
+     "text": "So: committing to a type inside one single implementation happens exactly once; giving the trait its own parameter instead lets the same target type satisfy it as many times as there are different parameters.",
+     "start": 0.15,
+     "end": 14.95
+    },
+    {
+     "text": "Letting an associated type itself take a parameter, almost always a lifetime, ties it to one specific call instead of fixing it for the whole implementation, which is exactly what a lending iterator needs.",
+     "start": 15.37,
+     "end": 29.442
+    },
+    {
+     "text": "An implementation only compiles if the trait or the type belongs to this project, and wrapping a foreign type in a small local one is how you satisfy that rule anyway, without changing anything it actually does.",
+     "start": 29.862,
+     "end": 44.291
+    },
+    {
+     "text": "And one single implementation can cover every type that meets some shared condition, all at once, instead of writing one by hand for each type separately.",
+     "start": 44.711,
+     "end": 54.963
+    },
+    {
+     "text": "Next time: every value behind someone else's trait, in everything covered so far, was either borrowed or already sitting inside one particular kind of box. What shape of ownership is that box actually offering, and what changes once a single owner stops being enough?",
+     "start": 55.683,
+     "end": 75.352
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 139,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  }
+ }
+}
