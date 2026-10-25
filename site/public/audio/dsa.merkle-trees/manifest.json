@@ -1,0 +1,334 @@
+{
+ "topic": "dsa.merkle-trees",
+ "voice": "breeze-mellow-v2",
+ "asr": "large-v3-turbo",
+ "clips": {
+  "01": {
+   "hash": "322cb98b8816967f",
+   "takes": [
+    "e63db24b2ecffe0abc47",
+    "326076af8e3e7a971a89"
+   ],
+   "duration": 20.331,
+   "lines": [
+    {
+     "text": "Every structure in this chapter so far answered one question: where does this key actually live.",
+     "start": 0.15,
+     "end": 8.125
+    },
+    {
+     "text": "Here's a completely different one. You've got two copies of the same data, maybe on two different machines. How do you know they agree, without reading either one all the way through?",
+     "start": 8.545,
+     "end": 19.981
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 142,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "02": {
+   "hash": "9ceee0dca610ae00",
+   "takes": [
+    "d3f0f3949f85cd5ca72c",
+    "db23b139636ddefc7a13",
+    "24ddcc9cf61458347ebd"
+   ],
+   "duration": 18.024,
+   "lines": [
+    {
+     "text": "Watch what happens when you hash a hash.",
+     "start": 0.15,
+     "end": 2.688
+    },
+    {
+     "text": "Take every leaf's hash, pair them up, hash each pair, and keep going. Everything funnels into a single number at the top.",
+     "start": 3.108,
+     "end": 12.133
+    },
+    {
+     "text": "That one number depends on every piece underneath it, all the way down.",
+     "start": 12.553,
+     "end": 17.674
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -2.2,
+   "wpm": 143,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "03": {
+   "hash": "658852efded91c19",
+   "takes": [
+    "f15047194897c891b7ef",
+    "717fb19d59f594dba880"
+   ],
+   "duration": 14.6,
+   "lines": [
+    {
+     "text": "Here are two of these trees, built completely independently, and their top numbers happen to match.",
+     "start": 0.15,
+     "end": 6.945
+    },
+    {
+     "text": "Before I tell you what that's worth, predict it: what does that one match actually guarantee you?",
+     "start": 7.365,
+     "end": 14.25
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 136,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "03a": {
+   "hash": "a56459edb85a29c4",
+   "takes": [
+    "d71dd06d9ea1f88cad2f",
+    "2785ef9f5867fb1ca043"
+   ],
+   "duration": 16.142,
+   "lines": [
+    {
+     "text": "Every single leaf underneath is identical, guaranteed.",
+     "start": 0.15,
+     "end": 4.659
+    },
+    {
+     "text": "Think about it from the bottom up: change any leaf, and its hash changes, and that change has nowhere to go but up. It would have reached the top.",
+     "start": 5.079,
+     "end": 15.792
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 134,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "04": {
+   "hash": "b42f45aafa3e1f85",
+   "takes": [
+    "198b8e8251cb1b57ec88",
+    "7e7d6b60ec0b338d1908"
+   ],
+   "duration": 15.467,
+   "lines": [
+    {
+     "text": "So flip it around and ask what the opposite tells you.",
+     "start": 0.15,
+     "end": 4.195
+    },
+    {
+     "text": "The two top numbers don't match anymore. That alone is proof something underneath disagrees \u2014 you haven't found what yet, but you already know for certain that something is wrong.",
+     "start": 4.615,
+     "end": 15.117
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -2.4,
+   "wpm": 155,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "05": {
+   "hash": "5ead6c2876b24c65",
+   "takes": [
+    "9e66d532af6d0c72fc79",
+    "4e110ee261f12bb93b8b"
+   ],
+   "duration": 13.728,
+   "lines": [
+    {
+     "text": "Now for the harder question. Exactly one leaf out of this whole tree actually changed.",
+     "start": 0.15,
+     "end": 6.938
+    },
+    {
+     "text": "Predict it before I show you: how many hashes do you actually have to check to track it down?",
+     "start": 7.358,
+     "end": 13.378
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 149,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "05a": {
+   "hash": "fecf4f5852b6ff26",
+   "takes": [
+    "cbb42a9c9bddad27c469",
+    "be808a122eb3eb95d297"
+   ],
+   "duration": 17.439,
+   "lines": [
+    {
+     "text": "Only the one path from the root down to the differing leaf \u2014 about log n hashes.",
+     "start": 0.15,
+     "end": 5.745
+    },
+    {
+     "text": "At every level you compare two children, and only one of them can possibly be the culprit. Follow that one, and the other branch is simply never worth looking at again.",
+     "start": 6.165,
+     "end": 17.089
+    }
+   ],
+   "lufs": -16.1,
+   "true_peak": -2.1,
+   "wpm": 162,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "06": {
+   "hash": "5dc06e1e8bd9366e",
+   "takes": [
+    "900b51ddccf73d991332",
+    "bba27d5c58f9de921427",
+    "91a42898d5858fc890d8"
+   ],
+   "duration": 24.271,
+   "lines": [
+    {
+     "text": "Watch this play out level by level: one disagreement up top, forcing a choice between two children, over and over.",
+     "start": 0.15,
+     "end": 9.545
+    },
+    {
+     "text": "Every time you make that choice, half the remaining tree falls away untouched.",
+     "start": 9.965,
+     "end": 15.193
+    },
+    {
+     "text": "That's the exact same halving every divide-and-conquer trick in this course leans on \u2014 just running downward instead of across an array.",
+     "start": 15.613,
+     "end": 23.921
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 138,
+   "wer": 0.043478260869565216,
+   "exact": false,
+   "tolerated": [
+    {
+     "line": "That's the exact same halving every divide-and-conquer trick in this course leans on \u2014 just running downward instead of across an array.",
+     "said": "halving",
+     "heard": "having"
+    }
+   ]
+  },
+  "07": {
+   "hash": "6c78703afa61d267",
+   "takes": [
+    "25e575a1936b33b1a8fc",
+    "7578238f7c4c3e082fa6"
+   ],
+   "duration": 27.348,
+   "lines": [
+    {
+     "text": "This isn't a classroom trick. Go look at how a real database repairs itself after a node falls behind, and this is exactly what's running underneath.",
+     "start": 0.15,
+     "end": 9.974
+    },
+    {
+     "text": "Go look at how a version-control system proves two histories are identical, or how a public certificate log proves nobody quietly rewrote it \u2014 same tree, same trick, three completely different jobs.",
+     "start": 10.394,
+     "end": 26.998
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 127,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "08": {
+   "hash": "2e9f724bfd608f67",
+   "takes": [
+    "55e2a6fda9d6730d2a42",
+    "eda839d40b98bffb6a40",
+    "7a96601226b9f3c8761b"
+   ],
+   "duration": 27.088,
+   "lines": [
+    {
+     "text": "Here's the part that almost wrecks the whole idea.",
+     "start": 0.15,
+     "end": 3.834
+    },
+    {
+     "text": "Slice your data into same-size pieces, and one edit near the front doesn't just change that piece \u2014 it shoves every byte after it over by one, so every single boundary after it moves too.",
+     "start": 4.255,
+     "end": 17.982
+    },
+    {
+     "text": "Let the data's own content decide where to cut instead, and an edit mostly just reshuffles the one piece it actually landed in.",
+     "start": 18.402,
+     "end": 26.738
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -1.9,
+   "wpm": 148,
+   "wer": 0.05714285714285714,
+   "exact": false,
+   "tolerated": [
+    {
+     "line": "Slice your data into same-size pieces, and one edit near the front doesn't just change that piece \u2014 it shoves every byte after it over by one, so every single boundary after it moves too.",
+     "said": "byte",
+     "heard": "bite"
+    },
+    {
+     "line": "Slice your data into same-size pieces, and one edit near the front doesn't just change that piece \u2014 it shoves every byte after it over by one, so every single boundary after it moves too.",
+     "said": "too",
+     "heard": "two"
+    }
+   ]
+  },
+  "09": {
+   "hash": "bd50e79390e1e2cd",
+   "takes": [
+    "f6f579b1ace6052115aa",
+    "1d7f27e141275f5528b4",
+    "0988e1e62ff8000c39cc"
+   ],
+   "duration": 27.745,
+   "lines": [
+    {
+     "text": "Everything in this topic gets checked right here, not just drawn.",
+     "start": 0.15,
+     "end": 4.35
+    },
+    {
+     "text": "Look at that first gap: finding the one changed leaf costs barely anything next to checking every leaf by hand.",
+     "start": 4.77,
+     "end": 12.483
+    },
+    {
+     "text": "And the second pair makes the chunking point concrete \u2014 one real edit, and content-defined chunking barely stirs, while slicing by a fixed count reshuffles almost everything.",
+     "start": 12.903,
+     "end": 27.395
+    }
+   ],
+   "lufs": -16.2,
+   "true_peak": -2.2,
+   "wpm": 125,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  }
+ }
+}
