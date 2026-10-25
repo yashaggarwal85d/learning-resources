@@ -1,0 +1,325 @@
+{
+ "topic": "rust.atomicity-versus-ordering",
+ "voice": "breeze-mellow-v2",
+ "asr": "large-v3-turbo",
+ "clips": {
+  "01": {
+   "hash": "1ead428027563189",
+   "takes": [
+    "0aa7f82828eab4f4a93a",
+    "79c03d1353ffeed0e5af"
+   ],
+   "duration": 16.572,
+   "lines": [
+    {
+     "text": "Two threads can touch the exact same spot in memory and still fail each other in two completely unrelated ways.",
+     "start": 0.15,
+     "end": 6.739
+    },
+    {
+     "text": "One is about the update itself staying whole. The other is about when, if ever, the other thread actually notices it happened.",
+     "start": 7.159,
+     "end": 16.222
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 152,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "02": {
+   "hash": "a0a8dc9af29fc08f",
+   "takes": [
+    "bbf5434880451cd2bac9",
+    "0c465a2f720eb4d22f2e"
+   ],
+   "duration": 17.346,
+   "lines": [
+    {
+     "text": "Point every one of eight threads at the same counter, give each of them tens of thousands of increments to do, and use the weakest ordering the language allows for every single one.",
+     "start": 0.15,
+     "end": 13.505
+    },
+    {
+     "text": "Does anything get lost along the way?",
+     "start": 14.225,
+     "end": 16.995
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -1.9,
+   "wpm": 138,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "02a": {
+   "hash": "874dd2ac593063a9",
+   "takes": [
+    "0597e2ed9fca160e6dd1",
+    "f60f820d85acf7589472"
+   ],
+   "duration": 16.624,
+   "lines": [
+    {
+     "text": "No, nothing is lost, and this isn't luck \u2014 it comes out exact on every single run.",
+     "start": 0.15,
+     "end": 6.735
+    },
+    {
+     "text": "Weak ordering never licenses a half finished update; that guarantee is kept no matter how little else is promised about timing.",
+     "start": 7.155,
+     "end": 16.274
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -1.9,
+   "wpm": 134,
+   "wer": 0.047619047619047616,
+   "exact": false,
+   "tolerated": [
+    {
+     "line": "Weak ordering never licenses a half finished update; that guarantee is kept no matter how little else is promised about timing.",
+     "said": "kept",
+     "heard": "capped"
+    }
+   ]
+  },
+  "03": {
+   "hash": "2627739094fa8d4b",
+   "takes": [
+    "2ca44e2b094ecc4c55ee",
+    "7b49e13ce403c0766776"
+   ],
+   "duration": 12.406,
+   "lines": [
+    {
+     "text": "Here is the real, measured total, run after run, never approximate.",
+     "start": 0.15,
+     "end": 6.197
+    },
+    {
+     "text": "Every one of those increments landed cleanly, with nothing torn and nothing dropped.",
+     "start": 6.617,
+     "end": 12.056
+    }
+   ],
+   "lufs": -16.1,
+   "true_peak": -2.0,
+   "wpm": 116,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "04": {
+   "hash": "f9bc0f0c39ce2767",
+   "takes": [
+    "2d56eeacf5d3ee0d1d6f",
+    "651048d6c18e432e59f5"
+   ],
+   "duration": 23.215,
+   "lines": [
+    {
+     "text": "That exact total proves something real, but notice what it doesn't touch at all: not one word so far has been about when another thread would actually see any of this happening.",
+     "start": 0.15,
+     "end": 12.458
+    },
+    {
+     "text": "Keeping a value whole and letting another thread know when it changed turn out to be two entirely separate promises, and only one of them was tested here.",
+     "start": 12.878,
+     "end": 22.865
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 155,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "05": {
+   "hash": "446ff1b7509f9200",
+   "takes": [
+    "1cfdac349576a1425dea",
+    "01b1ce1dd532c67ddf53"
+   ],
+   "duration": 21.872,
+   "lines": [
+    {
+     "text": "One thread writes a value, then flips a flag to say it's ready, using the weakest ordering both times. A second thread checks that same flag, and only reads the value once the flag looks set.",
+     "start": 0.15,
+     "end": 15.058
+    },
+    {
+     "text": "Can that second thread ever see the flag as ready while the value underneath it is still stale?",
+     "start": 15.778,
+     "end": 21.522
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -2.0,
+   "wpm": 148,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "05a": {
+   "hash": "1c90af18fc61a56c",
+   "takes": [
+    "a7ae791c0a43231bf199",
+    "3405cd37078f3830f3a6"
+   ],
+   "duration": 21.202,
+   "lines": [
+    {
+     "text": "Yes, it genuinely can \u2014 the weakest ordering promises nothing at all about which of two threads' operations become visible to the other, or in what sequence.",
+     "start": 0.15,
+     "end": 9.819
+    },
+    {
+     "text": "Nothing about this shape of mistake shows up as a type error; the program compiles, and may even look correct for a long time before it isn't.",
+     "start": 10.239,
+     "end": 20.852
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 150,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "06": {
+   "hash": "96bf4663960bd38b",
+   "takes": [
+    "03aecbbd6e2d2e8a9304",
+    "bdb8068d84d4791796a6"
+   ],
+   "duration": 20.158,
+   "lines": [
+    {
+     "text": "A tool built to explore every ordering the language permits, not just the one that happened on this particular run, was turned loose on exactly that shape.",
+     "start": 0.15,
+     "end": 10.781
+    },
+    {
+     "text": "It found the bad case directly: the reader saw the ready flag before it ever saw the value that flag was supposed to be announcing.",
+     "start": 11.201,
+     "end": 19.808
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 155,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "07": {
+   "hash": "9303fd9aff6c3cd8",
+   "takes": [
+    "2e64534bd67781afccd7",
+    "23f84788d9184fbec3f1"
+   ],
+   "duration": 23.061,
+   "lines": [
+    {
+     "text": "There's a name for the one relation every one of these orderings is actually built from, borrowed whole from the same model a much older systems language already settled on.",
+     "start": 0.15,
+     "end": 12.203
+    },
+    {
+     "text": "One particular flavor of that model was deliberately left out, because even the language it came from never finished pinning it down cleanly enough to rely on.",
+     "start": 12.623,
+     "end": 22.711
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 148,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "08": {
+   "hash": "7009f05ac299737f",
+   "takes": [
+    "2b274671a806896b58f0",
+    "98e319da7f9a69d1b3ad"
+   ],
+   "duration": 23.658,
+   "lines": [
+    {
+     "text": "Two threads touching the same memory with no agreement at all about order between them isn't a bug waiting to surface quietly \u2014 it's a line the specification says may never be crossed.",
+     "start": 0.15,
+     "end": 13.022
+    },
+    {
+     "text": "Once it is, nothing about the resulting behavior is owed to you at all, however reasonable the code looked a moment before.",
+     "start": 13.442,
+     "end": 23.308
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -1.9,
+   "wpm": 137,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "09": {
+   "hash": "04f7bff4ebce6723",
+   "takes": [
+    "81b5b48c9c530a850a59",
+    "00af22290e1a7397a736"
+   ],
+   "duration": 21.054,
+   "lines": [
+    {
+     "text": "One particular operating system kernel keeps its own separate rulebook for exactly this kind of question, stricter in places than everything covered so far.",
+     "start": 0.15,
+     "end": 10.864
+    },
+    {
+     "text": "That rulebook only matters once code is actually running inside that kernel itself \u2014 everywhere else, it simply doesn't apply.",
+     "start": 11.284,
+     "end": 20.704
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 123,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "10": {
+   "hash": "d8d7c33bd3d5c590",
+   "takes": [
+    "ebaed7c1159344fca33b",
+    "d2c1d809c5065ae4ccfd"
+   ],
+   "duration": 28.067,
+   "lines": [
+    {
+     "text": "Keeping a value whole and knowing when another thread sees it turned out to be two separate guarantees the whole time, each one proven here on its own terms rather than assumed.",
+     "start": 0.15,
+     "end": 13.249
+    },
+    {
+     "text": "The vocabulary now in place \u2014 one relation about visibility, one definition of what crosses the line into forbidden territory \u2014 is exactly what the next step needs to build something that actually works.",
+     "start": 13.669,
+     "end": 27.717
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 137,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  }
+ }
+}
