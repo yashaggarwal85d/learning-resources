@@ -1,0 +1,427 @@
+{
+ "topic": "de.async-i-o-network",
+ "voice": "breeze-mellow-v2",
+ "asr": "large-v3-turbo",
+ "clips": {
+  "01": {
+   "hash": "26d711fbc0035084",
+   "takes": [
+    "2108d3d8767d9e97ec38",
+    "3b0ce8daf32332807200"
+   ],
+   "duration": 18.616,
+   "lines": [
+    {
+     "text": "Picture a server holding open thousands of connections at once, almost none of them actually doing anything right now.",
+     "start": 0.15,
+     "end": 6.581
+    },
+    {
+     "text": "Every one of them is just waiting on a reply that hasn't come back yet. One single thread somehow has to keep all of that moving. How does that actually work?",
+     "start": 7.001,
+     "end": 18.266
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.8,
+   "wpm": 161,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "02": {
+   "hash": "e8a191b9a4f17a13",
+   "takes": [
+    "4a80f3df76e1adee013d",
+    "627ecabf2abf72d8a6a2"
+   ],
+   "duration": 20.799,
+   "lines": [
+    {
+     "text": "Here's the tool's own answer, stated plainly.",
+     "start": 0.15,
+     "end": 3.531
+    },
+    {
+     "text": "One thread, running every task, every callback, and every bit of network input and output the whole program does. Nothing here is secretly multi-threaded underneath \u2014 it's genuinely one thread, doing all of it.",
+     "start": 3.951,
+     "end": 20.449
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -2.0,
+   "wpm": 118,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "03": {
+   "hash": "d080e7f47ae5424c",
+   "takes": [
+    "6cdd14fb3ae5f1305064",
+    "ef055b77961c08d4e550"
+   ],
+   "duration": 18.25,
+   "lines": [
+    {
+     "text": "Here's a question worth guessing at before the reveal.",
+     "start": 0.15,
+     "end": 2.971
+    },
+    {
+     "text": "Twenty separate coroutines, each one waiting on its own slow reply, all started on that same single thread. Does the total time taken add up across all twenty of them, or does it stay close to just one wait?",
+     "start": 3.391,
+     "end": 17.9
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 158,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "03a": {
+   "hash": "10482d5cf80a75f7",
+   "takes": [
+    "3a6687835c6a29a6ca8a",
+    "e7bd56e9b2641a1d9ba9"
+   ],
+   "duration": 19.256,
+   "lines": [
+    {
+     "text": "It stays close to one wait \u2014 the thread isn't stuck on any single one of them.",
+     "start": 0.15,
+     "end": 5.298
+    },
+    {
+     "text": "While one coroutine sits waiting for its reply, the thread is completely free to go run every other waiting coroutine's own turn instead. None of them actually block the others.",
+     "start": 5.718,
+     "end": 18.906
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -3.0,
+   "wpm": 143,
+   "wer": 0.0625,
+   "exact": false,
+   "tolerated": [
+    {
+     "line": "It stays close to one wait \u2014 the thread isn't stuck on any single one of them.",
+     "said": "wait",
+     "heard": "weight"
+    }
+   ]
+  },
+  "04": {
+   "hash": "740c2faf589890f7",
+   "takes": [
+    "947ecbf48e19fa51483a",
+    "f9a885960596c9a51595"
+   ],
+   "duration": 17.287,
+   "lines": [
+    {
+     "text": "Here's that exact interleaving, timed for real rather than just described.",
+     "start": 0.15,
+     "end": 5.404
+    },
+    {
+     "text": "Twenty genuine waits, fired off at the same time against a real local server. The clock on the wall barely moves past the time of a single one of them.",
+     "start": 5.824,
+     "end": 16.937
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 142,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "05": {
+   "hash": "a7bbc3cf82f875cb",
+   "takes": [
+    "7763b0ede05af19a48f8",
+    "fcfa20d11ec9fb01221e"
+   ],
+   "duration": 19.156,
+   "lines": [
+    {
+     "text": "Here's a tool built specifically to keep a group of these tasks honest with each other.",
+     "start": 0.15,
+     "end": 5.786
+    },
+    {
+     "text": "Start several tasks together as one group, and let one of them genuinely fail. The rest of that same group gets cancelled right along with it \u2014 not left quietly running in the background, forgotten.",
+     "start": 6.206,
+     "end": 18.806
+    }
+   ],
+   "lufs": -16.2,
+   "true_peak": -2.2,
+   "wpm": 157,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "06": {
+   "hash": "a86e59b73b9e293f",
+   "takes": [
+    "14a1a2fe6bcaf082b5a3",
+    "0c3ac7f27b6a9cbc6acf"
+   ],
+   "duration": 17.185,
+   "lines": [
+    {
+     "text": "Here's a second tool, built to stop too much from happening at once.",
+     "start": 0.15,
+     "end": 4.779
+    },
+    {
+     "text": "A counter that simply refuses to let more than a set number of things run at the same time. Measured directly, the busiest moment in this lab never once goes past that number.",
+     "start": 5.199,
+     "end": 16.835
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -1.9,
+   "wpm": 161,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "07": {
+   "hash": "2621b5438b2df55c",
+   "takes": [
+    "b35ac74597268917a73c",
+    "fd347ea296a4fcd05d0b"
+   ],
+   "duration": 20.482,
+   "lines": [
+    {
+     "text": "Here's a genuinely open question worth sitting with.",
+     "start": 0.15,
+     "end": 3.219
+    },
+    {
+     "text": "One coroutine, instead of waiting politely, calls something that blocks outright. Does that cost land only on the one coroutine that made the call, or does it reach every other coroutine sharing that same thread?",
+     "start": 3.639,
+     "end": 20.132
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 126,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "07a": {
+   "hash": "f093ea6d6c1c2783",
+   "takes": [
+    "f4ed1563e262187eab56",
+    "da110479c8c835878320"
+   ],
+   "duration": 17.707,
+   "lines": [
+    {
+     "text": "It reaches every one of them \u2014 the whole thread stalls, not just the one coroutine.",
+     "start": 0.15,
+     "end": 5.869
+    },
+    {
+     "text": "A call that blocks never hands control back to anything else. Nothing else sharing that same thread gets a turn until it finally returns.",
+     "start": 6.289,
+     "end": 17.357
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 132,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "08": {
+   "hash": "880268e31a22080e",
+   "takes": [
+    "e564b8c40f15e2af39b5",
+    "51407dbf81e07fd22ee4"
+   ],
+   "duration": 22.001,
+   "lines": [
+    {
+     "text": "Here's that exact stall, measured directly \u2014 and then genuinely fixed.",
+     "start": 0.15,
+     "end": 4.896
+    },
+    {
+     "text": "A real blocking call inside one coroutine pushes every sibling's own finish time back by its entire length. Hand that same call off to a background thread instead, and every one of those siblings finishes right on its own short schedule again.",
+     "start": 5.316,
+     "end": 21.651
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -1.9,
+   "wpm": 142,
+   "wer": 0.023809523809523808,
+   "exact": false,
+   "tolerated": [
+    {
+     "line": "A real blocking call inside one coroutine pushes every sibling's own finish time back by its entire length. Hand that same call off to a background thread instead, and every one of those siblings finishes right on its own short schedule again.",
+     "said": "coroutine",
+     "heard": "caroutine"
+    }
+   ]
+  },
+  "09": {
+   "hash": "d3d92186eae8307b",
+   "takes": [
+    "b1aca0d9a68c3bdbdeff",
+    "ed4ecf01fb3fb02a2d8f"
+   ],
+   "duration": 23.848,
+   "lines": [
+    {
+     "text": "Here's a deadline, put to the exact same kind of real test.",
+     "start": 0.15,
+     "end": 4.579
+    },
+    {
+     "text": "Wrap a task that would otherwise run far too long in a hard time limit. It gets cancelled right around that limit, not anywhere near its own full length \u2014 and the error that comes back is real, and can actually be caught.",
+     "start": 4.999,
+     "end": 23.498
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -1.9,
+   "wpm": 136,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "10": {
+   "hash": "5f862ffab8025a34",
+   "takes": [
+    "1b58afa4a79560d429c6",
+    "7094ca2507106f38131a",
+    "59657627271fd7501b04"
+   ],
+   "duration": 32.211,
+   "lines": [
+    {
+     "text": "Here's the comparison this whole topic has been building toward, measured honestly rather than assumed.",
+     "start": 0.15,
+     "end": 7.005
+    },
+    {
+     "text": "The exact same network work, timed both as this thread's own coroutines and as separate operating-system threads. The two land close together \u2014 sometimes the threads even edge ahead.",
+     "start": 7.425,
+     "end": 21.107
+    },
+    {
+     "text": "The real, measured gap shows up somewhere else entirely: how much memory each approach actually holds onto for the same amount of waiting.",
+     "start": 21.527,
+     "end": 31.861
+    }
+   ],
+   "lufs": -16.2,
+   "true_peak": -1.9,
+   "wpm": 125,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "11": {
+   "hash": "2ddbaf51bede0c88",
+   "takes": [
+    "f1111f2ed24bcd631b8b",
+    "9667a4e206d611605368",
+    "09e3ddcae10059306770"
+   ],
+   "duration": 32.987,
+   "lines": [
+    {
+     "text": "Let's put the whole picture back together.",
+     "start": 0.15,
+     "end": 2.37
+    },
+    {
+     "text": "One thread interleaves many waits for nothing. A task group cancels its own failures cleanly. A counter caps how much runs at once. A call that blocks stalls everything sharing its thread. A deadline cancels right on time.",
+     "start": 2.79,
+     "end": 23.741
+    },
+    {
+     "text": "And threads versus this single thread cost about the same in time \u2014 the real difference shows up in memory instead.",
+     "start": 24.161,
+     "end": 32.637
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 118,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "12": {
+   "hash": "89ae4f820de74b2c",
+   "takes": [
+    "acfb97a6e21ef7dcedd3",
+    "23c88d5c8591f3d74eae",
+    "7fdf2c248def51a53705"
+   ],
+   "duration": 24.852,
+   "lines": [
+    {
+     "text": "One closing scenario worth actually reasoning through rather than guessing at.",
+     "start": 0.15,
+     "end": 4.939
+    },
+    {
+     "text": "A pipeline needs to call out to a service that's slow and occasionally fails, without one bad call taking the whole batch down, and without hammering that service past what it can handle.",
+     "start": 5.359,
+     "end": 16.399
+    },
+    {
+     "text": "Does picking just one of this topic's own tools get you there, or does it take more than one working together?",
+     "start": 16.819,
+     "end": 24.502
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 157,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "12a": {
+   "hash": "0aad93f0da5da9d7",
+   "takes": [
+    "a122670008abf7e3c398",
+    "6897021b8cce8ea1460f"
+   ],
+   "duration": 23.369,
+   "lines": [
+    {
+     "text": "It takes more than one, working together \u2014 neither tool alone covers both halves of the problem.",
+     "start": 0.15,
+     "end": 7.157
+    },
+    {
+     "text": "The grouping tool keeps one failure from taking the rest down, but says nothing about load. The counter caps load, but says nothing about one call's own failure. Each one only covers its own half.",
+     "start": 7.577,
+     "end": 23.019
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -1.6,
+   "wpm": 131,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  }
+ }
+}
