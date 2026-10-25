@@ -1,0 +1,5 @@
+- **Isolation anomalies (dirty write, lost update, read skew, write skew, the read-only anomaly)**: named precisely in topic 11, each as a real two-transaction timeline. *Where you meet it:* this topic's own subject is which of them a real mechanism prevents and which survive.
+- **Read Committed**: Postgres's own default isolation level, measured directly in topic 11. *Where you meet it:* the level every one of this topic's own real experiments is deliberately run *without*, to show the contrast.
+- **A snapshot**: a fixed, point-in-time view of the database, background from topic 6's own MVCC. *Where you meet it:* the exact mechanism this topic names and measures directly.
+- **Transaction, commit, rollback**: background from earlier topics. *Where you meet it:* the two-transaction timeline is this topic's own unit of explanation, carried over from topic 11.
+- **Database constraint / invariant**: a rule the data must satisfy, taught directly in topic 10's own consistency split. *Where you meet it:* the exact rule write skew breaks without ever being caught.

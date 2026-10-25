@@ -1,0 +1,85 @@
+{
+  "topic": "de.mvcc-append-versions-vs",
+  "steps": [
+    {
+      "lines": [
+        "Every earlier topic in this chapter answered one question: given a row, how do you find it fast.",
+        "Here's a different question. Two transactions reach for that exact same row at the exact same moment.",
+        "What does a third transaction, just trying to read, see while that's happening?"
+      ]
+    },
+    {
+      "lines": [
+        "I updated one row on a real cluster, then asked Postgres directly what's sitting on that page right now.",
+        "Not one tuple. Two — the one from before the update, and the one from after, both still physically there.",
+        "Watch the transaction number. It closes the old tuple and opens the new one — the same number, in two different fields."
+      ]
+    },
+    {
+      "lines": [
+        "That header alone can't tell a reader whether a tuple counts.",
+        "A reader also carries its own snapshot — a record of which transactions were still running when it started — and for anything outside that list, there's one more question: did it actually commit.",
+        "Two checks, not one, before a version is considered visible at all."
+      ]
+    },
+    {
+      "lines": [
+        "InnoDB and Oracle don't keep two tuples around like that.",
+        "Each row has exactly one physical copy on disk, and a plain update changes it right where it sits.",
+        "So a reader who needs the value from a moment ago — where does that come from, if there's only one copy left?"
+      ],
+      "answer": [
+        "Not by waiting. That's the assumption locking-era databases made, and it isn't what either system does here.",
+        "Both keep a separate log of exactly what got overwritten.",
+        "A reader who needs the old value doesn't get a second tuple handed to it — it gets that log, rebuilt into a readable version."
+      ]
+    },
+    {
+      "lines": [
+        "Same update, this time under that other model, straight from each engine's own documentation.",
+        "The row itself: one copy, changed in place. Nothing duplicated there.",
+        "Off to the side, a record of exactly what it used to say — structurally nothing like what you just watched Postgres do."
+      ]
+    },
+    {
+      "lines": [
+        "An append-only design has to pay for itself somewhere. Here's where.",
+        "I updated the same row, over and over, on a column that's indexed, with nothing running to clean up behind it.",
+        "The table grew. The index grew. Every one of those old tuples is still sitting there, because nothing has told Postgres it's safe to reuse that space yet."
+      ]
+    },
+    {
+      "lines": [
+        "This is the payoff for all of that.",
+        "One connection opens a transaction and reads a value. A second, completely separate connection updates and commits that same row while the first is still open.",
+        "The first connection reads again. Same answer. Not delayed, not blocked — its own snapshot from a few steps back is exactly what makes that possible."
+      ]
+    },
+    {
+      "lines": [
+        "That bounded log from a few steps back has a sharp edge.",
+        "It's reused in a circle — new undo eventually overwrites old undo, because the space isn't infinite.",
+        "A reader that's still running when its own undo gets overwritten doesn't get a stale answer. It gets no answer at all — that's what snapshot too old actually means."
+      ]
+    },
+    {
+      "lines": [
+        "Step back and look at what you've actually seen.",
+        "Postgres pays as it goes — every write leaves something behind, and the next topic is exactly what deals with that.",
+        "The other family pays differently — cheap writes in place, reconstruction work on long reads, and one hard limit that Postgres, structurally, doesn't share."
+      ]
+    },
+    {
+      "lines": [
+        "One more scenario, worth working through before the answer lands.",
+        "A team keeps hitting that failure on a nightly report and turns one dial to make it stop: more retention.",
+        "Does that actually fix what's wrong, or does it just buy some time?"
+      ],
+      "answer": [
+        "It buys time. The underlying shape of the problem hasn't moved.",
+        "Retention, by Oracle's own description, is a target the database tries for — not a promise.",
+        "Give it more room and the report runs longer before failing again. Grow the writes instead, and the exact same failure comes back."
+      ]
+    }
+  ]
+}

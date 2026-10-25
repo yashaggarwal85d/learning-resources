@@ -1,0 +1,79 @@
+{
+  "topic": "de.snapshot-isolation-write-skew",
+  "syllabus": [
+    {
+      "clause": "how SI works (read from a snapshot, first-committer-wins on write–write conflicts)",
+      "at": [
+        { "step": "Reveal: snapshot isolation's own mechanism" },
+        { "step": "Reveal: SI catches a write-write conflict" }
+      ]
+    },
+    {
+      "clause": "which anomalies it prevents and why write skew and the read-only anomaly survive",
+      "at": [
+        { "step": "Reveal: SI prevents read skew" },
+        { "step": "Reveal: write skew survives anyway" },
+        { "step": "Reveal: materializing the conflict" }
+      ]
+    },
+    {
+      "clause": "vendor naming traps: Postgres REPEATABLE READ is SI, Oracle SERIALIZABLE is SI, MySQL InnoDB REPEATABLE READ mixes snapshot reads with locking reads",
+      "at": [
+        { "step": "Reveal: the vendor-naming traps" }
+      ]
+    }
+  ],
+  "sources": [
+    {
+      "source": "13.2. Transaction Isolation (PostgreSQL documentation)",
+      "items": [
+        { "item": "Postgres's own REPEATABLE READ is implemented as snapshot isolation", "at": [{ "step": "Reveal: the vendor-naming traps" }] },
+        { "item": "Postgres's own first-updater-wins rollback behavior under REPEATABLE READ", "at": [{ "step": "Reveal: SI catches a write-write conflict" }] },
+        { "item": "the mytab/class/SUM example: two SERIALIZABLE transactions that REPEATABLE READ alone would both let commit, inconsistent with any serial order", "at": [{ "deep": "Internals" }] }
+      ]
+    },
+    {
+      "source": "Data Concurrency and Consistency (Oracle Database Concepts)",
+      "items": [
+        { "item": "Oracle's own SERIALIZABLE level is snapshot isolation (first-committer-wins, ORA-08177)", "at": [{ "step": "Reveal: the vendor-naming traps" }] }
+      ]
+    },
+    {
+      "source": "17.7.2.1 Transaction Isolation Levels (MySQL 8.0 Reference Manual)",
+      "items": [
+        { "item": "MySQL InnoDB's REPEATABLE READ mixes a snapshot read with a locking read, and its own docs recommend SERIALIZABLE instead of mixing them", "at": [{ "step": "Reveal: the vendor-naming traps" }] }
+      ]
+    },
+    {
+      "source": "Snapshot isolation (Wikipedia)",
+      "items": [
+        { "item": "snapshot isolation's own mechanism (personal snapshot, write-write conflict aborts)", "at": [{ "step": "Reveal: snapshot isolation's own mechanism" }] },
+        { "item": "write skew's own precise definition (disjoint updates from an overlapping read, neither transaction seeing the other's commit)", "at": [{ "step": "Reveal: write skew survives anyway" }] },
+        { "item": "the canonical two-balance (\"Phil\") write-skew example", "at": [{ "step": "Reveal: write skew survives anyway" }] },
+        { "item": "Oracle itself sometimes calls its own snapshot-isolation SERIALIZABLE level \"serializable\"", "at": [{ "step": "Reveal: the vendor-naming traps" }] },
+        { "item": "materializing the conflict as a workaround for write skew", "at": [{ "step": "Reveal: materializing the conflict" }] }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "self-review",
+    "date": "2026-10-24",
+    "items": [
+      { "item": "Snapshot isolation's own guarantee is per-row: a write-write conflict on the same row is caught, but nothing about the mechanism inspects any constraint spanning two different rows.", "at": [{ "step": "Reveal: snapshot isolation's own mechanism" }] },
+      { "item": "Read skew (topic 11's A5A) and lost update (topic 11's P4) are both prevented by SI's own snapshot: once every read inside a transaction comes from one fixed point in time, neither anomaly's own precondition (a stale read mixed with a fresh one, or two writers racing off the same stale read) can occur.", "at": [{ "step": "Reveal: SI prevents read skew" }] },
+      { "item": "Write skew needs two disjoint writes and a constraint that spans both rows together; SI's own conflict detection only ever looks at whether a row you wrote was changed since your snapshot, which is why two different rows never trigger it.", "at": [{ "step": "Reveal: write skew survives anyway" }] },
+      { "item": "Vendor naming is not a technical detail; calling snapshot isolation \"serializable\" (Oracle) or offering it as the default under a name (REPEATABLE READ) that the SQL standard defines more weakly (Postgres, MySQL) is exactly how an application engineer ends up trusting a guarantee the engine never actually promised.", "at": [{ "step": "Reveal: the vendor-naming traps" }] },
+      { "item": "Materializing the conflict (a dummy row or a SELECT ... FOR UPDATE on a shared resource) only closes the specific case it is written for; a new query pattern that reads the same invariant a different way can reopen the same anomaly, which is why the field needs a general guarantee, not a list of patches.", "at": [{ "step": "Reveal: materializing the conflict" }] },
+      { "item": "The read-only transaction anomaly (named in topic 11, not re-reproduced here) survives snapshot isolation for the same root reason write skew does: a read-only transaction's own snapshot can still be inconsistent with the actual commit order of transactions it never conflicts with.", "at": [{ "deep": "Frontier" }] },
+      { "item": "Two genuinely different mechanisms both close this exact gap without reverting to simple locking: Serializable Snapshot Isolation, which adds anomaly detection on top of SI itself, and strict two-phase locking, which blocks instead of detecting after the fact — the subject of the next topic.", "at": [{ "step": "Recap" }] },
+      { "item": "A write-write conflict failing at commit time (SI) is a structurally different event from a lock wait (topic 11's row locking): the second transaction's statement itself succeeds under SI, and only the commit fails, whereas a lock wait blocks the statement itself before it can even run.", "at": [{ "step": "Reveal: SI catches a write-write conflict" }] },
+      { "item": "The hook's own doctors scenario passes every individual check (each transaction's own read of the count is accurate, each transaction's own update is valid) — the invariant breaks only when both commits are considered together, which is exactly why no single transaction's own logic can be blamed.", "at": [{ "step": "Hook" }] },
+      { "item": "Postgres offers REPEATABLE READ (SI) and SERIALIZABLE (SSI, topic 13's subject) as two distinct levels precisely because SI alone cannot be upgraded to full serializability just by reading more carefully; it needs genuinely different bookkeeping (predicate locks, in Postgres's own case).", "at": [{ "step": "Reveal: materializing the conflict" }] }
+    ]
+  },
+  "gapReview": {
+    "date": "2026-10-24",
+    "by": "self-review",
+    "open": []
+  }
+}

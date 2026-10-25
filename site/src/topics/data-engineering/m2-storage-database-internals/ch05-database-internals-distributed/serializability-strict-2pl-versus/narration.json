@@ -1,0 +1,92 @@
+{
+  "topic": "de.serializability-strict-2pl-versus",
+  "steps": [
+    {
+      "lines": [
+        "Same two doctors as last topic. Same rule. The exact same two writes that broke cleanly and committed without a single error.",
+        "I'm running it again, one isolation level stricter than before.",
+        "This time, one of those two transactions doesn't make it to commit."
+      ]
+    },
+    {
+      "lines": [
+        "There are really only two ways anyone has ever built full serializability. Here's the first.",
+        "Lock whatever you touch, and don't let go until you commit. Anyone who wants the same data has to wait their turn.",
+        "If two transactions end up waiting on each other, that's a deadlock, and one of them gets rolled back to break it."
+      ]
+    },
+    {
+      "lines": [
+        "Here's the second way, and it looks nothing like the first.",
+        "Run snapshot isolation exactly the way it already runs. Nothing blocks. Nobody waits for anybody.",
+        "The only new thing is a watcher, checking the read write conflicts between transactions that are running at the same time."
+      ]
+    },
+    {
+      "lines": [
+        "Both of these actually deliver the exact same guarantee, full serializability, no exceptions.",
+        "Here's what I want you to commit to before I show you the measurements.",
+        "Locking blocks you up front. Watching lets you run and sometimes throws your work away afterward. Does that cost the same either way?"
+      ],
+      "answer": [
+        "It really doesn't, and the measurements in this topic are going to make that concrete, not just plausible.",
+        "One route makes you wait before you've done any work. The other lets you do the work and sometimes wastes it.",
+        "Same promise. Two genuinely different bills."
+      ]
+    },
+    {
+      "lines": [
+        "So what exactly is that watcher looking for? One specific shape.",
+        "Two transactions, each reading data the other one is about to write, chained together through a transaction sitting in the middle.",
+        "That chain, two read write conflicts back to back, is the one pattern every single write skew anomaly turns out to have."
+      ]
+    },
+    {
+      "lines": [
+        "Now watch it actually happen, against a real table, not a diagram.",
+        "I ran the exact same doctors scenario from last topic, with nothing changed except the isolation level.",
+        "One doctor's commit goes through clean. The other one gets handed a real serialization failure, straight from the engine."
+      ]
+    },
+    {
+      "lines": [
+        "That failed transaction doesn't just disappear. It's supposed to try again, and I built exactly that.",
+        "The retry starts completely fresh, with a brand new snapshot of the actual current data.",
+        "This time the count it reads is the real one, the other doctor already left, and it correctly decides to stay."
+      ]
+    },
+    {
+      "lines": [
+        "So here's the actual price tag on each side, stated plainly.",
+        "Locking makes you wait, and under real contention it can tip into a deadlock that rolls someone back anyway.",
+        "Watching never makes you wait at all, but it will sometimes cancel a transaction that was never actually going to cause a problem."
+      ]
+    },
+    {
+      "lines": [
+        "I didn't just state that false positive cost, I measured it, at two different levels of contention.",
+        "With two transactions sharing one rule, about half of them get aborted.",
+        "Scale that up to six transactions sharing the exact same rule, and most of them get aborted. The rate climbs, for real, as the crowd grows."
+      ]
+    },
+    {
+      "lines": [
+        "Put the two routes side by side.",
+        "One guarantee, full serializability, reached two completely different ways.",
+        "One of them bills you in blocking and the occasional deadlock. The other bills you in false alarms and mandatory retries."
+      ]
+    },
+    {
+      "lines": [
+        "Last one. Picture a workload where most of the contention lands on just a handful of very hot rows.",
+        "Given everything you just watched, which of these two routes handles that better, locking or watching?",
+        "Think about where each one's own real cost actually gets worse as things get busier."
+      ],
+      "answer": [
+        "It's tempting to reach for the one that never blocks, since that sounds strictly better on paper.",
+        "But the watcher's own false positive rate climbs fastest exactly where reads and writes overlap the most, and a few very hot rows is exactly that.",
+        "Strict locking's blocking is at least predictable there. For this specific shape of contention, that's usually the better trade."
+      ]
+    }
+  ]
+}

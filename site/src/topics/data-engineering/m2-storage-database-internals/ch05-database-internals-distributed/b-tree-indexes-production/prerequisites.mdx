@@ -1,0 +1,26 @@
+import Resource from '../../../../../components/Resource.astro';
+
+<section class="prereq" data-section="before-this">
+
+### <span class="n">01</span> Before this: the bound this topic is built on
+
+<ul class="resources">
+  <Resource kind="reel" title="Checkpoints and crash recovery" domain="data-engineering" host="de.checkpoints-crash-recovery" by="the previous topic of this chapter" />
+</ul>
+
+</section>
+
+<section class="prereq" data-section="straight-from-the-source">
+
+### <span class="n">02</span> The sources this topic measures against
+
+<ul class="resources">
+  <Resource kind="reading" title="67.4. Implementation" href="https://www.postgresql.org/docs/16/btree-implementation.html" by="PostgreSQL docs">B-tree structure, page splits, and deduplication, in the engine's own words.</Resource>
+  <Resource kind="reading" title="CREATE INDEX" href="https://www.postgresql.org/docs/16/sql-createindex.html" by="PostgreSQL docs">`fillfactor`'s own documented trade-off.</Resource>
+  <Resource kind="reading" title="nbtree README" href="https://raw.githubusercontent.com/postgres/postgres/REL_16_STABLE/src/backend/access/nbtree/README" by="PostgreSQL source tree">Postgres's own description of the Lehman-Yao concurrency algorithm.</Resource>
+  <Resource kind="reading" title="E.6. Release 18" href="https://www.postgresql.org/docs/18/release-18.html" by="PostgreSQL docs">Skip scan as a real, versioned feature.</Resource>
+  <Resource kind="reading" title="PRIMARY KEY Constraints" href="https://mariadb.com/docs/server/architecture/server-constraints/primary-key-constraints" by="MariaDB Documentation">InnoDB's clustered-index design.</Resource>
+  <Resource kind="reading" title="Building the best INDEX for a given SELECT" href="https://mariadb.com/docs/server/ha-and-performance/optimization-and-tuning/optimization-and-indexes/building-the-best-index-for-a-given-select" by="MariaDB Documentation">A secondary-index lookup's real cost on a clustered table.</Resource>
+</ul>
+
+</section>

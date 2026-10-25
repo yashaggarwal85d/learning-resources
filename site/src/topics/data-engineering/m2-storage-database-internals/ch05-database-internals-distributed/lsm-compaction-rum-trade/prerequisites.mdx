@@ -1,0 +1,23 @@
+import Resource from '../../../../../components/Resource.astro';
+
+<section class="prereq" data-section="before-this">
+
+### <span class="n">01</span> Before this: the question this topic answers
+
+<ul class="resources">
+  <Resource kind="reel" title="LSM trees: write and read paths" domain="data-engineering" host="de.lsm-trees-write-read" by="the previous topic of this chapter" />
+</ul>
+
+</section>
+
+<section class="prereq" data-section="straight-from-the-source">
+
+### <span class="n">02</span> The sources this topic measures and quotes against
+
+<ul class="resources">
+  <Resource kind="reading" title="Designing Access Methods: The RUM Conjecture" href="https://users.cs.utah.edu/~pandey/courses/cs6530/fall22/papers/indexdesign/rum.pdf" by="Athanassoulis, Kester, Maas, Stoica, Idreos, Ailamaki, Callaghan (EDBT 2016)">The precise read/update/memory overhead definitions and the conjecture itself.</Resource>
+  <Resource kind="reading" title="RocksDB Compaction" href="https://github.com/facebook/rocksdb/wiki/Compaction" by="RocksDB wiki">Classic leveled, tiered (Universal) and FIFO compaction, and L0 as the newest-data level.</Resource>
+  <Resource kind="reading" title="RocksDB Write Stalls" href="https://github.com/facebook/rocksdb/wiki/Write-Stalls" by="RocksDB wiki">The two real triggers and RocksDB's own throttled response.</Resource>
+</ul>
+
+</section>

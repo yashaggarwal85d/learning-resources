@@ -1,0 +1,84 @@
+{
+  "topic": "de.lsm-compaction-rum-trade",
+  "steps": [
+    {
+      "lines": [
+        "Last time we traced one write all the way down to a brand new file on disk, never edited again.",
+        "Do that forever and you get a problem. Sorted runs just keep piling up, one per flush.",
+        "Something has to merge them back down, and that something is compaction. What does it actually cost?"
+      ]
+    },
+    {
+      "lines": [
+        "I ran the exact same shuffled write pattern through two of RocksDB's own real compaction styles, measuring the result directly.",
+        "Leveled compaction keeps one sorted run per level and merges aggressively. On this workload, it settled down to just three files.",
+        "Tiered, which RocksDB itself calls universal compaction, lets more runs coexist before merging. The same writes settled to four files instead."
+      ]
+    },
+    {
+      "lines": [
+        "There's a third style that doesn't merge at all.",
+        "I wrote well past a configured hundred kilobyte cap on a real FIFO-style store.",
+        "The oldest round's own key was simply gone, dropped outright. The newest round's own key was still right there."
+      ]
+    },
+    {
+      "lines": [
+        "So here's the real question these three styles are all dancing around.",
+        "Leveled pays more to write. Tiered pays more to read later, because more runs pile up first. Is there a compaction style out there that just avoids all of these costs?"
+      ],
+      "answer": [
+        "\"Somebody just hasn't invented it yet\" is a tempting answer. It's also wrong.",
+        "This isn't an engineering gap waiting to be closed. It has a name, and a proof sketch behind it.",
+        "No compaction style escapes this trade-off, and the next thing I'm going to show you is exactly why."
+      ]
+    },
+    {
+      "lines": [
+        "It's called the RUM conjecture, and it gives each of those costs a precise name.",
+        "Read overhead is read amplification. Update overhead is write amplification. Memory overhead is space amplification. Each one is a real ratio, with a theoretical floor of exactly one.",
+        "And the conjecture itself says: optimize any two of those three, and the one you didn't touch gets worse. Not usually. Provably."
+      ]
+    },
+    {
+      "lines": [
+        "That trade-off isn't just theory. RocksDB has a real, measured trigger built around it.",
+        "I configured the trigger on the newest level, L zero, to two files, then ran a real write pattern and read RocksDB's own internal file count directly.",
+        "It came back at six, well past that trigger. At that point RocksDB doesn't crash or block. It deliberately slows writes down, on purpose."
+      ]
+    },
+    {
+      "lines": [
+        "Here's the connection I want you to see.",
+        "Last topic, a tombstone was uncollected merge work on a single key, sitting there until some later compaction finally cleaned it up.",
+        "A write stall is the exact same debt, just at the scale of the whole system instead of one key, finally forcing a slowdown."
+      ]
+    },
+    {
+      "lines": [
+        "This chapter's own lab puts a number on all of this. I ran the identical insert-then-update workload against a real Postgres cluster and a real RocksDB instance, side by side.",
+        "Postgres paid roughly two point six one times write amplification and one point eight nine times space amplification. RocksDB paid less on both: about one point eight five and one point one one.",
+        "RocksDB's own read came back faster every single run too, but I want to be honest about that one. That's an in-process read against Postgres's own network round trip, not a clean amplification comparison."
+      ]
+    },
+    {
+      "lines": [
+        "Pull it together, because none of this was three separate design choices.",
+        "Every compaction style you just saw is picking a spot on the exact same read, write and space trade-off, and the conjecture is why none of them can pick a better spot than the others.",
+        "The lab didn't just illustrate that idea. It put a real number on what two production engines actually chose to pay for their own spot on it."
+      ]
+    },
+    {
+      "lines": [
+        "One more for you. Picture a workload that's almost all writes, barely ever reads anything back, and disk space costs nothing to it.",
+        "The instinct is to reach for the mature, general-purpose default. Is that actually the right call here?",
+        "Which engine from this lab genuinely fits that workload: the B-tree, or the LSM tree?"
+      ],
+      "answer": [
+        "\"The mature default\" is usually a safe bet. Here, it's the wrong one.",
+        "This workload cares about exactly one thing: writing cheaply. This chapter's own lab just measured the LSM tree paying less for precisely that.",
+        "So it's the LSM tree, not because it's newer, but because the numbers we just measured say so."
+      ]
+    }
+  ]
+}

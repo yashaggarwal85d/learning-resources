@@ -1,0 +1,6 @@
+- **Transaction / transaction ID (XID)**: a unit of work and the number that identifies it, a standard database term assumed throughout this chapter. *Where you meet it:* the thing a long-running transaction, a prepared transaction and a replication slot each hold onto.
+- **`xmin` / `xmax`**: the inserting and deleting transaction IDs stamped directly in a heap tuple's own header, taught in topic 6. *Where you meet it:* assumed background for why an old version can't just be deleted the instant it's superseded.
+- **Snapshot**: a transaction's own record of which transaction IDs were still in progress when it started, taught in topic 6. *Where you meet it:* the thing that pins the xmin horizon this topic measures directly.
+- **Heap tuple**: a row's own physical representation inside a page, background from topic 1's own slotted-page layout. *Where you meet it:* the thing a dead tuple is a leftover copy of.
+- **Index**: a structure mapping a column's own values to the rows that hold them, topic 5's own B-tree. *Where you meet it:* the thing a HOT update specifically avoids touching.
+- **`REPEATABLE READ`**: an isolation level that fixes a transaction's own snapshot for its whole duration rather than per-statement, a standard SQL term. *Where you meet it:* the real transaction this topic holds open to measure bloat directly.

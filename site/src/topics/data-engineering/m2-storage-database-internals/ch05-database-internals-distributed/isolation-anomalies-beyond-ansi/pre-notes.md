@@ -1,0 +1,5 @@
+- **Isolation**: taught precisely in topic 10 — concurrent transactions behave as if run one at a time. *Where you meet it:* the guarantee every anomaly in this topic is a way of violating.
+- **Read Committed / Repeatable Read**: Postgres's own two real isolation levels, measured directly in topic 10. *Where you meet it:* the isolation level every one of this topic's own reproduced timelines runs under.
+- **Transaction, commit, rollback**: background from earlier topics. *Where you meet it:* the two-transaction timeline is this topic's own unit of explanation — every anomaly is shown as two transactions' reads, writes and commits in a specific order.
+- **Row-level locking**: a database holding an exclusive lock on a row a transaction has modified, until that transaction ends, background from general database knowledge. *Where you meet it:* the real mechanism this topic's own dirty-write measurement depends on.
+- **Database constraint / invariant**: a rule the data must satisfy (e.g. two columns must sum to a fixed value), taught directly in topic 10's own consistency split. *Where you meet it:* the shared rule read skew and write skew both threaten.

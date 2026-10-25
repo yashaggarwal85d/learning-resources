@@ -1,0 +1,66 @@
+{
+  "topic": "de.acid-guarantees-precisely-stated",
+  "steps": [
+    {
+      "lines": [
+        "Picture a transfer, mid-flight, when the power dies. Ten dollars already left account A. It never reached account B.",
+        "Four letters are supposed to be the reason that can't happen to you.",
+        "So let's actually say what each one promises, instead of just reciting the acronym."
+      ]
+    },
+    {
+      "lines": [
+        "First letter. I ran a real transfer against a real table, with a rule built in: two columns always have to sum to one hundred.",
+        "I deliberately let the second half of that transfer fail.",
+        "The row came back exactly as it started. Not half changed. Nothing at all."
+      ]
+    },
+    {
+      "lines": [
+        "Here's where I want you to actually commit to an answer before I give you mine.",
+        "The engine clearly does check some rules, since you just watched it enforce one.",
+        "So who really owns keeping the database correct: the engine, because it's the one doing the checking, or the application?"
+      ],
+      "answer": [
+        "The trap is that the engine really does check rules, so it's tempting to hand it the whole job.",
+        "But it only checks the rules you actually wrote down. Anything you never declared, it has no way to know about.",
+        "So the honest answer is both, split: the engine owns what you told it, and the application owns everything you didn't."
+      ]
+    },
+    {
+      "lines": [
+        "I measured both halves of that split directly.",
+        "A rule I did declare, stock can't go negative, got blocked outright, no question.",
+        "A rule I never declared, reservations can't exceed what's on hand, slipped straight through. Fifty three reserved against ten on hand, committed without a single complaint."
+      ]
+    },
+    {
+      "lines": [
+        "Third letter. I ran the identical interleaving twice, once under each of two real isolation levels.",
+        "Under Read Committed, a transaction re-read the row and actually saw the other transaction's change land in the middle of its own work: one hundred, then one hundred ten.",
+        "Under Repeatable Read, the exact same interleaving, same code, and it never saw that change at all. One hundred, then one hundred, the whole way through."
+      ]
+    },
+    {
+      "lines": [
+        "Fourth letter. I watched what actually happens the instant a transaction commits.",
+        "The server's own write ahead log position measurably moved forward, right then.",
+        "And a brand new connection, one that had nothing to do with writing that data, read the committed value straight back."
+      ]
+    },
+    {
+      "lines": [
+        "One more thing before we pull this together, and it genuinely surprised me.",
+        "IBM's own IMS system was already running transactions with all four of these guarantees back in nineteen seventy three.",
+        "The acronym that actually names them didn't get coined until nineteen eighty three. A full decade of running it before anyone needed a word for it."
+      ]
+    },
+    {
+      "lines": [
+        "So, four letters, stated precisely instead of recited.",
+        "Atomicity: all or nothing, even mid crash. Isolation: as if you were the only one running. Durability: a commit survives everything after it.",
+        "And consistency, the one that isn't owned by just one side: the engine keeps its own promises, and the application has to keep the rest."
+      ]
+    }
+  ]
+}

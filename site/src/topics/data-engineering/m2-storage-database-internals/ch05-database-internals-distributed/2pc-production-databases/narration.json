@@ -1,0 +1,91 @@
+{
+  "topic": "de.2pc-production-databases",
+  "steps": [
+    {
+      "lines": [
+        "One order, two separate databases. One holds inventory, the other holds the payment.",
+        "Both of them have to agree to commit, or neither one should.",
+        "Shaking hands on that, across a network, between two machines that don't trust each other blindly, is not the simple part it sounds like."
+      ]
+    },
+    {
+      "lines": [
+        "The first step is a question, not an order.",
+        "A coordinator asks every participant one thing. Could you guarantee committing this, if I asked you to right now?",
+        "Each one answers only after it's already written down, durably, exactly what it would need to follow through on that guarantee."
+      ]
+    },
+    {
+      "lines": [
+        "Only once every participant has answered yes does the coordinator do something irreversible of its own.",
+        "It writes its own decision down, durably, before a single commit message ever goes out.",
+        "Only after that does it actually tell everyone involved to commit for real."
+      ]
+    },
+    {
+      "lines": [
+        "Here's where I want you to actually commit to an answer.",
+        "The coordinator has been giving every order so far. What happens to the participants if the coordinator itself goes silent, right between those two phases?"
+      ],
+      "answer": [
+        "You might expect each participant to just give up and decide on its own after a while.",
+        "But a participant that already promised it could commit can't safely guess which way to go. Guessing wrong either way could break the whole transaction.",
+        "So no. It just sits there, prepared, still holding what it holds, waiting to be told."
+      ]
+    },
+    {
+      "lines": [
+        "Here's that exact prepared state, done for real, against this sandbox's own database.",
+        "One session prepares a change and disconnects. A second session looks, and sees nothing has changed yet.",
+        "Only a third session, one that never touched this transaction before, is the one that actually commits it."
+      ]
+    },
+    {
+      "lines": [
+        "Now watch what that same prepared transaction is still doing underneath, while it waits.",
+        "It's still holding the row it touched. A second, completely separate writer that wants that same row has to wait.",
+        "That wait is measured here, for real, and it lasts for exactly as long as that prepared transaction stays unresolved."
+      ]
+    },
+    {
+      "lines": [
+        "This is exactly what a real coordinator failure leaves behind.",
+        "Locks held. Nothing resolved. For as long as nobody with the authority to decide steps back in.",
+        "The database's own documentation is blunt about this. Leave it too long, and it can force a shutdown just to protect itself."
+      ]
+    },
+    {
+      "lines": [
+        "Every production database that does this is really implementing one vendor-neutral standard underneath.",
+        "That standard's rule is simple and strict. One single no, from any one participant, vetoes the entire transaction for everyone.",
+        "And a yes is never just an optimistic guess. It's a guarantee that committing or rolling back will still work later, even if that participant itself fails in between."
+      ]
+    },
+    {
+      "lines": [
+        "A real distributed database doesn't get to skip this problem. It hides it behind something sturdier instead.",
+        "One whole group of machines elects a leader to act as the coordinator. Another whole group elects a leader to act as a participant.",
+        "Each one of those leaders is itself backed by its own group reaching agreement, so the fragile single coordinator you just watched become durable, not assumed away."
+      ]
+    },
+    {
+      "lines": [
+        "Pull the whole topic together.",
+        "Asking for a guarantee is one phase. Spending that guarantee is the next one.",
+        "The gap in between those two phases is real, it's measurable, and shrinking it is most of what a production two-phase-commit implementation actually exists to do."
+      ]
+    },
+    {
+      "lines": [
+        "One last one. A payment and an inventory decrement have to commit together, across two separate databases.",
+        "The coordinator process crashes one second after telling both of them to prepare, before either one is ever told to commit.",
+        "Given everything you just watched happen in this sandbox. What state are both of those databases actually in right now?"
+      ],
+      "answer": [
+        "It's tempting to assume a missing commit order just means everything quietly rolls back on its own.",
+        "But neither database can safely decide that by itself. Each one already guaranteed it could commit if asked.",
+        "So both of them stay exactly where this topic's own measurements left one: prepared, holding their locks, waiting for some session to finally resolve them."
+      ]
+    }
+  ]
+}

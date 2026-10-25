@@ -1,0 +1,24 @@
+import Resource from '../../../../../components/Resource.astro';
+
+<section class="prereq" data-section="before-this">
+
+### <span class="n">01</span> Before this: locking and snapshot isolation
+
+<ul class="resources">
+  <Resource kind="reel" title="Locking, deadlocks and lock escalation" domain="data-engineering" host="de.locking-deadlocks-lock-escalation" by="the previous topic of this chapter" />
+  <Resource kind="reel" title="Snapshot isolation and write skew" domain="data-engineering" host="de.snapshot-isolation-write-skew" by="validate-at-commit OCC's own background" />
+</ul>
+
+</section>
+
+<section class="prereq" data-section="straight-from-the-source">
+
+### <span class="n">02</span> The sources this topic measures and quotes against
+
+<ul class="resources">
+  <Resource kind="reading" title="13.3. Explicit Locking" href="https://www.postgresql.org/docs/current/explicit-locking.html" by="PostgreSQL documentation">FOR UPDATE's own row-locking semantics, the pessimistic side of this topic's contrast.</Resource>
+  <Resource kind="reading" title="13.4. Data Consistency Checks at the Application Level" href="https://www.postgresql.org/docs/current/applevel-consistency.html" by="PostgreSQL documentation">FOR UPDATE named directly as the explicit, pessimistic route to protecting a row's current validity.</Resource>
+  <Resource kind="reading" title="On Optimistic Methods for Concurrency Control" href="https://www.eecs.harvard.edu/~htk/publication/1981-tods-kung-robinson.pdf" by="Kung &amp; Robinson, ACM TODS, 1981">The original definition of optimistic concurrency control: its own three phases, and backup on a failed validation.</Resource>
+</ul>
+
+</section>

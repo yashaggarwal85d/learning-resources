@@ -1,0 +1,81 @@
+{
+  "topic": "de.2pc-production-databases",
+  "syllabus": [
+    {
+      "clause": "prepare/commit as databases run it",
+      "at": [
+        { "step": "Reveal: Phase 1, prepare" },
+        { "step": "Reveal: Phase 2, commit" },
+        { "step": "Reveal: prepared, for real" }
+      ]
+    },
+    {
+      "clause": "coordinator failure leaving participants in doubt (theory in Ch.14)",
+      "at": [
+        { "step": "Predict: what happens to the participants if the coordinator itself goes silent" },
+        { "step": "Reveal: still holding its locks, measured" },
+        { "step": "Reveal: the in-doubt state, named" }
+      ]
+    },
+    {
+      "clause": "XA in practice, and how distributed SQL systems hide 2PC behind consensus-replicated participants (Spanner, Ch.14 and the M6 case study)",
+      "at": [
+        { "step": "Reveal: XA in practice" },
+        { "step": "Reveal: distributed SQL hides this behind consensus" }
+      ]
+    }
+  ],
+  "sources": [
+    {
+      "source": "PREPARE TRANSACTION (PostgreSQL documentation)",
+      "items": [
+        { "item": "PREPARE TRANSACTION stores a transaction's state fully on disk, committable with very high probability even if a database crash occurs before the commit is requested", "at": [{ "deep": "Internals" }] },
+        { "item": "from the issuing session's own point of view, PREPARE TRANSACTION behaves like a ROLLBACK: no active transaction remains and its effects are not visible", "at": [{ "step": "Reveal: prepared, for real" }] },
+        { "item": "COMMIT PREPARED/ROLLBACK PREPARED can be issued from any session, not only the one that executed the original transaction", "at": [{ "step": "Reveal: prepared, for real" }] },
+        { "item": "a prepared transaction continues to hold whatever locks it held when prepared", "at": [{ "step": "Reveal: still holding its locks, measured" }] },
+        { "item": "leaving a transaction prepared for a long time interferes with VACUUM and in extreme cases can force a shutdown to prevent transaction ID wraparound", "at": [{ "step": "Reveal: the in-doubt state, named" }] }
+      ]
+    },
+    {
+      "source": "Distributed Transaction Processing: The XA Specification (X/Open, 1991)",
+      "items": [
+        { "item": "TMs and RMs use two-phase commit with presumed rollback", "at": [{ "step": "Reveal: XA in practice" }] },
+        { "item": "Phase 1: the TM asks every RM to prepare, asking whether each RM can guarantee its own ability to commit", "at": [{ "step": "Reveal: Phase 1, prepare" }] },
+        { "item": "an RM that can commit records that fact stably before replying affirmatively; a negative reply reports failure for any reason", "at": [{ "step": "Reveal: Phase 1, prepare" }] },
+        { "item": "Phase 2: the TM issues an actual commit or rollback request to every RM, having already stably recorded its own decision to commit", "at": [{ "step": "Reveal: Phase 2, commit" }] },
+        { "item": "any single negative reply in Phase 1 vetoes the whole global transaction", "at": [{ "deep": "Production failures this topic warns about" }] },
+        { "item": "an affirmative reply from xa_prepare() guarantees a later xa_commit()/xa_rollback() succeeds, even after the RM itself fails in between", "at": [{ "step": "Reveal: XA in practice" }] }
+      ]
+    },
+    {
+      "source": "Spanner: Google's Globally-Distributed Database (Corbett et al., OSDI 2012)",
+      "items": [
+        { "item": "the transaction manager implements a participant leader, with the group's other replicas as participant slaves", "at": [{ "step": "Reveal: distributed SQL hides this behind consensus" }] },
+        { "item": "one participant group is chosen as the coordinator, its leader the coordinator leader, its state stored in the underlying Paxos group", "at": [{ "step": "Reveal: distributed SQL hides this behind consensus" }] },
+        { "item": "running two-phase commit over Paxos mitigates the availability problems a single coordinator would otherwise have", "at": [{ "step": "Reveal: distributed SQL hides this behind consensus" }] },
+        { "item": "having the client drive two-phase commit avoids sending data twice across wide-area links", "at": [{ "deep": "Frontier" }] }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "self-review",
+    "date": "2026-10-24",
+    "items": [
+      { "item": "Two-phase commit's whole structure exists to turn one hard question — did every participant actually agree? — into two separate, stably recorded answers, so that a coordinator crash never has to guess which participants already committed.", "at": [{ "step": "Hook" }] },
+      { "item": "A prepare reply is not a promise to try — it's a guarantee. The XA specification is explicit that an affirmative prepare means a later commit or rollback will succeed even if that participant itself fails in between, which is exactly why the coordinator is allowed to treat 'everyone prepared' as safe to act on.", "at": [{ "step": "Reveal: Phase 1, prepare" }] },
+      { "item": "The coordinator's own decision only becomes real the instant it's stably recorded, before a single commit message goes out — which is exactly why a coordinator crash right after that point still resolves correctly once it (or its replacement) recovers and reads its own log.", "at": [{ "step": "Reveal: Phase 2, commit" }] },
+      { "item": "'In doubt' doesn't mean undecided in the abstract — this topic's own measurement shows it concretely: a participant holding real locks, on real rows, for exactly as long as nobody tells it what to do next.", "at": [{ "step": "Reveal: still holding its locks, measured" }] },
+      { "item": "The same unresolved-lock cost this topic measures directly is why production systems treat an in-doubt transaction as an operational emergency, not a background detail — PostgreSQL's own documentation warns it can force a shutdown, not just slow a query down.", "at": [{ "step": "Reveal: the in-doubt state, named" }] },
+      { "item": "'Presumed rollback' is a liveness choice, not a detail: the moment the coordinator can't confirm a transaction was ever decided, the safe default favors undoing it rather than finishing it, because an unwanted rollback is recoverable and an unwanted commit often isn't.", "at": [{ "step": "Reveal: XA in practice" }] },
+      { "item": "Spanner doesn't eliminate the single-coordinator problem this topic measures — it replaces the one fragile coordinator process with a coordinator leader backed by its own Paxos group, so the coordinator itself can fail over without the in-doubt window this topic just demonstrated.", "at": [{ "step": "Reveal: distributed SQL hides this behind consensus" }] },
+      { "item": "This topic's own two real experiments only reach the length of an ordinary prepared-transaction window (milliseconds to seconds); they don't reproduce the actual coordinator-crash scenario Chapter 14 formally models, where the coordinator itself is gone for an unbounded, unknown amount of time.", "at": [{ "deep": "Internals" }] },
+      { "item": "The `Prove it` scenario's own answer is already fully determined by this topic's own measured behavior: both databases are exactly where `prepared_transaction_holds_its_locks` leaves one — prepared, holding locks, invisible, waiting for a session (the coordinator's own recovery, or an operator) to issue COMMIT PREPARED or ROLLBACK PREPARED on each.", "at": [{ "step": "Prove it" }] },
+      { "item": "Sagas and the outbox pattern, this syllabus's own *(skipped)* neighboring entry, exist specifically because 2PC's own in-doubt window is unacceptable for some systems — they trade 2PC's atomicity for compensating actions that never hold a cross-service lock at all.", "at": [{ "deep": "Frontier" }] }
+    ]
+  },
+  "gapReview": {
+    "date": "2026-10-24",
+    "by": "self-review",
+    "open": []
+  }
+}

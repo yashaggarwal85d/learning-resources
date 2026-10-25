@@ -1,0 +1,149 @@
+{
+  "topic": "de.b-tree-indexes-production",
+  "syllabus": [
+    {
+      "clause": "B+-tree structure and fanout",
+      "at": [{ "step": "Reveal: structure & fanout (real measurement)" }]
+    },
+    {
+      "clause": "page splits and merges, fill factor",
+      "at": [
+        { "step": "Reveal: page split & cascade" },
+        { "step": "Predict: fillfactor" },
+        { "step": "Reveal: the real fillfactor measurement" }
+      ]
+    },
+    {
+      "clause": "Lehman–Yao (B-link) concurrency",
+      "at": [{ "step": "Reveal: Lehman-Yao concurrency" }]
+    },
+    {
+      "clause": "index bloat and deduplication (PG13+)",
+      "at": [{ "step": "Reveal: the real deduplication measurement" }]
+    },
+    {
+      "clause": "multicolumn skip scan (PG18)",
+      "at": [{ "step": "Reveal: two more production features" }]
+    },
+    {
+      "clause": "clustered (InnoDB) vs heap-organised (Postgres) tables and what a secondary-index lookup costs in each. Build depth → Rust Systems Engineering Ch.21.",
+      "at": [{ "step": "Reveal: two more production features" }]
+    }
+  ],
+  "sources": [
+    {
+      "source": "B-Tree Implementation",
+      "items": [
+        {
+          "item": "a B-tree index is a multi-level tree of leaf and internal pages; over 99% of all pages are typically leaf pages",
+          "at": [{ "step": "Reveal: structure & fanout (real measurement)" }]
+        },
+        {
+          "item": "a page split happens when a leaf page can't fit an incoming tuple; splits cascade upward and a root split adds a new level",
+          "at": [{ "step": "Reveal: page split & cascade" }]
+        },
+        {
+          "item": "a duplicate is a leaf tuple where all indexed columns match another leaf tuple's; deduplication is a space-efficient representation for duplicates",
+          "at": [{ "step": "Reveal: the real deduplication measurement" }]
+        }
+      ]
+    },
+    {
+      "source": "CREATE INDEX (fillfactor)",
+      "items": [
+        {
+          "item": "fillfactor controls how full leaf pages are packed at build time (default 90); lower settings can smooth out or lower the absolute number of page splits",
+          "at": [
+            { "step": "Predict: fillfactor" },
+            { "step": "Reveal: the real fillfactor measurement" }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "nbtree README (Lehman & Yao)",
+      "items": [
+        {
+          "item": "L&Y adds a right-link pointer and a high key to each page, making a concurrent split detectable without a whole-tree read lock",
+          "at": [{ "step": "Reveal: Lehman-Yao concurrency" }]
+        },
+        {
+          "item": "when a search key exceeds a page's high key, the page split concurrently and the search follows the right-link to find the right page",
+          "at": [{ "step": "Reveal: Lehman-Yao concurrency" }]
+        }
+      ]
+    },
+    {
+      "source": "PostgreSQL 18 Release Notes",
+      "items": [
+        {
+          "item": "PostgreSQL 18 adds skip scan, letting a multicolumn B-tree index be used in more cases",
+          "at": [{ "step": "Reveal: two more production features" }]
+        }
+      ]
+    },
+    {
+      "source": "MariaDB Documentation (InnoDB)",
+      "items": [
+        {
+          "item": "InnoDB uses the primary key as a clustered index, storing table data itself in primary-key order",
+          "at": [{ "step": "Reveal: two more production features" }]
+        },
+        {
+          "item": "a secondary-index lookup on InnoDB costs two B-tree traversals (secondary index, then the clustered primary key)",
+          "at": [{ "step": "Reveal: two more production features" }]
+        }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "self-review",
+    "date": "2026-10-24",
+    "items": [
+      {
+        "item": "A B-tree's own fanout is what keeps lookup depth bounded as row count grows: this topic's own measurement found a two-level tree for fifty thousand rows, confirming the textbook logarithmic-depth property on a real index rather than a diagram.",
+        "at": [{ "step": "Reveal: structure & fanout (real measurement)" }]
+      },
+      {
+        "item": "A page split cascades upward exactly as far as it needs to: only when the root itself overflows does the whole tree gain a new level, which is the one structural event that changes a B-tree's own depth.",
+        "at": [{ "step": "Reveal: page split & cascade" }]
+      },
+      {
+        "item": "Fillfactor is not a space-vs-nothing trade-off; it's a space-vs-future-split-cost trade-off, and this topic's own measurement shows the split cost side is real and large (19 pages grown vs. 0) under a realistic mid-range insert workload, not a marginal theoretical concern.",
+        "at": [
+          { "step": "Predict: fillfactor" },
+          { "step": "Reveal: the real fillfactor measurement" }
+        ]
+      },
+      {
+        "item": "Deduplication's benefit is directly proportional to how duplicated the indexed column's own values actually are; this topic's own measurement (45 vs. 139 pages on a ten-distinct-value column) shows a large benefit precisely because the column was chosen to be heavily duplicated, not because deduplication is a universal space saving.",
+        "at": [{ "step": "Reveal: the real deduplication measurement" }]
+      },
+      {
+        "item": "Lehman and Yao's right-link and high-key additions are the entire reason a B-tree can be searched under concurrent writes without a whole-tree lock: a concurrent split is detected locally (the search's key exceeds the page's own high key) and recovered from locally (follow the right-link), never requiring a reader to block a writer anywhere else in the tree.",
+        "at": [{ "step": "Reveal: Lehman-Yao concurrency" }]
+      },
+      {
+        "item": "Skip scan and deduplication solve different problems that both only matter in production at scale: skip scan is about which queries can use an index at all; deduplication is about how much space an index that's already being used actually costs.",
+        "at": [{ "step": "Reveal: two more production features" }]
+      },
+      {
+        "item": "The clustered-vs-heap-organized contrast isn't just an implementation detail — it directly determines a secondary-index lookup's own real cost: InnoDB pays a second B-tree traversal every time, because its primary key's own leaf pages hold the full row; Postgres's heap-organized design means a secondary-index lookup is one traversal plus one direct page fetch, not two traversals, because the chapter's own topic 1 already established that an index tuple holds a ctid pointer, not the row itself.",
+        "at": [{ "step": "Reveal: two more production features" }]
+      },
+      {
+        "item": "A clustered table isn't strictly worse than a heap-organized one — it trades a cheaper secondary-index lookup's own extra hop against a primary-key lookup that never needs a second traversal at all, since the full row already lives at the leaf; which trade wins depends entirely on whether a workload's real queries go through the primary key or a secondary index more often.",
+        "at": [{ "step": "Reveal: two more production features" }]
+      },
+      {
+        "item": "This topic's own declared background (the Data Structures & Algorithms track's B-tree topic) covers the generic structure; what this topic itself introduces on top of that background is specifically the production reality of a real B-tree index: concurrency without a whole-tree lock, and the fillfactor/deduplication trade-offs that only show up under real, sustained write load.",
+        "at": [{ "step": "Reveal: page split & cascade" }]
+      },
+      {
+        "item": "The Lehman-Yao protocol's real guarantee is narrower than 'fully lock-free': a reader never blocks on another reader or writer holding a lock elsewhere in the tree, but a single page being physically modified is still briefly locked against other access to that same page — the algorithm eliminates whole-tree contention, not all contention.",
+        "at": [{ "step": "Reveal: Lehman-Yao concurrency" }]
+      }
+    ]
+  },
+  "gapReview": { "date": "2026-10-24", "by": "self-review", "open": [] }
+}

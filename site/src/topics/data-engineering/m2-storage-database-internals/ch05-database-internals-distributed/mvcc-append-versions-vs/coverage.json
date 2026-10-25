@@ -1,0 +1,316 @@
+{
+  "topic": "de.mvcc-append-versions-vs",
+  "syllabus": [
+    {
+      "clause": "two families of the same idea",
+      "at": [
+        {
+          "step": "Reveal: a real update, inspected directly"
+        },
+        {
+          "step": "Reveal: the undo-log family's own answer"
+        },
+        {
+          "step": "Recap"
+        }
+      ]
+    },
+    {
+      "clause": "Postgres writes new heap tuples (xmin/xmax, snapshots, commit-log lookups)",
+      "at": [
+        {
+          "step": "Reveal: a real update, inspected directly"
+        },
+        {
+          "step": "Reveal: what decides visibility"
+        }
+      ]
+    },
+    {
+      "clause": "while InnoDB and Oracle update in place and reconstruct old versions from undo segments",
+      "at": [
+        {
+          "step": "Reveal: the undo-log family's own answer"
+        }
+      ]
+    },
+    {
+      "clause": "how each affects update cost, index maintenance, long-read behaviour",
+      "at": [
+        {
+          "step": "Reveal: the real cost of never overwriting"
+        },
+        {
+          "step": "Reveal: a reader that never blocks"
+        },
+        {
+          "deep": "Outcomes"
+        }
+      ]
+    },
+    {
+      "clause": "and \"snapshot too old\" failures. Build depth \u2192 Rust Systems Engineering Ch.23.",
+      "at": [
+        {
+          "step": "Reveal: snapshot too old"
+        }
+      ]
+    }
+  ],
+  "sources": [
+    {
+      "source": "PostgreSQL MVCC Introduction",
+      "items": [
+        {
+          "item": "MVCC means each SQL statement sees a snapshot of data as it was some time ago, regardless of the current underlying state",
+          "at": [
+            {
+              "step": "Reveal: what decides visibility"
+            }
+          ]
+        },
+        {
+          "item": "reading never blocks writing and writing never blocks reading, even at the strictest isolation level",
+          "at": [
+            {
+              "step": "Reveal: a reader that never blocks"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "PostgreSQL Database Page Layout (HeapTupleHeaderData)",
+      "items": [
+        {
+          "item": "t_xmin is the insert XID stamp and t_xmax is the delete XID stamp, both stored directly in the tuple's own fixed header",
+          "at": [
+            {
+              "step": "Reveal: a real update, inspected directly"
+            }
+          ]
+        },
+        {
+          "item": "t_ctid is the current TID of this or newer row version \u2014 the forwarding pointer an old tuple leaves behind",
+          "at": [
+            {
+              "step": "Reveal: a real update, inspected directly"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "PostgreSQL Transaction ID and Snapshot Information Functions",
+      "items": [
+        {
+          "item": "pg_current_snapshot returns which transaction IDs are currently in-progress",
+          "at": [
+            {
+              "step": "Reveal: what decides visibility"
+            }
+          ]
+        },
+        {
+          "item": "pg_xact_status reports whether a given transaction actually committed, aborted, or is still in progress",
+          "at": [
+            {
+              "step": "Reveal: what decides visibility"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "MariaDB InnoDB Undo Log",
+      "items": [
+        {
+          "item": "a write creates no private copy; the old version of a row being modified is stored in the undo log instead, restorable or readable by a consistent read",
+          "at": [
+            {
+              "step": "Reveal: the undo-log family's own answer"
+            }
+          ]
+        },
+        {
+          "item": "a purge thread later deletes undo-log rows no longer needed by any existing view",
+          "at": [
+            {
+              "deep": "Outcomes"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "MariaDB InnoDB Read View / PRIMARY KEY Constraints",
+      "items": [
+        {
+          "item": "a read view is an instantaneous snapshot that ignores uncommitted changes and changes from transactions that started later",
+          "at": [
+            {
+              "step": "Reveal: the undo-log family's own answer"
+            }
+          ]
+        },
+        {
+          "item": "InnoDB uses the primary key itself as a clustered index, storing table rows in primary-key order",
+          "at": [
+            {
+              "step": "Reveal: the undo-log family's own answer"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "Oracle Database 23ai Concepts \u2014 Data Concurrency and Consistency",
+      "items": [
+        {
+          "item": "read consistency is achieved through undo data; undo entries written to undo segments hold old values, so multiple versions of the same data can exist at once",
+          "at": [
+            {
+              "step": "Reveal: the undo-log family's own answer"
+            }
+          ]
+        },
+        {
+          "item": "the database reconstructs an older block by copying the current block and applying undo data, called a consistent read (CR) clone",
+          "at": [
+            {
+              "deep": "Outcomes"
+            }
+          ]
+        },
+        {
+          "item": "undo segments are reused circularly; a long-running reader whose needed undo has been overwritten by other writers raises a snapshot too old error, mitigated by undo_retention",
+          "at": [
+            {
+              "step": "Reveal: snapshot too old"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "Oracle Database Error Messages (ORA-01555)",
+      "items": [
+        {
+          "item": "ORA-01555's documented cause is rollback records needed by a reader for consistent read being overwritten by other writers, with the documented action to raise undo_retention or use larger rollback segments",
+          "at": [
+            {
+              "step": "Reveal: snapshot too old"
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "self-review",
+    "date": "2026-10-24",
+    "items": [
+      {
+        "item": "Postgres never overwrites a heap tuple in place: an UPDATE is physically a new tuple inserted with its own xmin, while the old tuple stays where it is with its xmax set to the updating transaction \u2014 the row is logically one row but physically two tuples until something cleans up the old one.",
+        "at": [
+          {
+            "step": "Reveal: a real update, inspected directly"
+          }
+        ]
+      },
+      {
+        "item": "Every heap tuple's fixed 23-byte header carries t_xmin (the inserting transaction's ID) and t_xmax (the deleting/updating transaction's ID) directly in the row itself, so visibility is a property of the tuple, not a separate structure layered on top of it.",
+        "at": [
+          {
+            "step": "Reveal: a real update, inspected directly"
+          }
+        ]
+      },
+      {
+        "item": "A transaction's snapshot (pg_current_snapshot) is a data structure recording which transaction IDs were still in-progress at a point in time; a tuple is visible to a reader only if its xmin is outside that in-progress set and its xmax either doesn't apply or is also outside it.",
+        "at": [
+          {
+            "step": "Reveal: what decides visibility"
+          }
+        ]
+      },
+      {
+        "item": "Whether a given xmin or xmax actually committed, aborted, or is still in progress is answered by a separate commit-status lookup (pg_xact_status et al.), not by anything stored in the tuple header itself \u2014 deciding visibility costs a second read, not just a header comparison.",
+        "at": [
+          {
+            "step": "Reveal: what decides visibility"
+          }
+        ]
+      },
+      {
+        "item": "InnoDB and Oracle take the structurally opposite approach: the current row is updated in place at its one physical location, and the value being overwritten is pushed out to a separate undo log (InnoDB) or undo segment (Oracle) before the overwrite happens.",
+        "at": [
+          {
+            "step": "Reveal: the undo-log family's own answer"
+          }
+        ]
+      },
+      {
+        "item": "InnoDB's own documentation states plainly that no private copies are created when a transaction writes: only one physical copy of the row exists in the table itself at any time, and the undo log is what lets a concurrent reader reconstruct an older version.",
+        "at": [
+          {
+            "step": "Reveal: the undo-log family's own answer"
+          }
+        ]
+      },
+      {
+        "item": "Oracle's own documentation describes reading an older version as active reconstruction work: the database copies the current block, applies undo data to roll it back to the reader's start SCN, and calls the result a 'consistent read (CR) clone' \u2014 producing an old version costs CPU work proportional to how much has changed since, not a lookup.",
+        "at": [
+          {
+            "step": "Reveal: the undo-log family's own answer"
+          }
+        ]
+      },
+      {
+        "item": "The two families put their real cost in different places and at different times: Postgres pays at write time and after (every update leaves a dead tuple behind that must eventually be reclaimed, previewing the next topic's vacuum), while the undo-log family pays at read time (reconstructing old versions) and bounds how far back a read can reach (the undo log's own retained size).",
+        "at": [
+          {
+            "step": "Reveal: the real cost of never overwriting"
+          }
+        ]
+      },
+      {
+        "item": "InnoDB's primary key is the clustered index itself \u2014 the table's rows are physically stored in primary-key order at the index's own leaf level \u2014 so an in-place update never relocates the row the way Postgres's new-tuple-per-update design does; this is the structural reason the two families' update costs diverge, not merely a configuration difference.",
+        "at": [
+          {
+            "step": "Reveal: the real cost of never overwriting"
+          }
+        ]
+      },
+      {
+        "item": "'Snapshot too old' (Oracle's ORA-01555) is the direct, structural consequence of the undo-log family's bounded, circular history: once other writers' new undo has overwritten the specific undo records a long-running reader still needs, there is nothing left to reconstruct from, and the read fails outright rather than returning stale or inconsistent data.",
+        "at": [
+          {
+            "step": "Reveal: snapshot too old"
+          }
+        ]
+      },
+      {
+        "item": "Postgres has no equivalent failure mode by the same mechanism, because a long-running Postgres reader's needed old versions are not a bounded, overwritable log \u2014 they are ordinary heap tuples that simply haven't been reclaimed yet; a long read in Postgres can always finish, at the cost of table bloat rather than an outright read failure.",
+        "at": [
+          {
+            "step": "Reveal: snapshot too old"
+          }
+        ]
+      },
+      {
+        "item": "Oracle's own documented remedy for ORA-01555 \u2014 raising undo_retention, or using larger rollback segments \u2014 is literally 'give the bounded log more room before it wraps,' which delays the failure rather than removing the structural cause; Postgres's equivalent mitigation (shortening the long-running read) targets a different resource (bloat) because the underlying mechanism is different.",
+        "at": [
+          {
+            "step": "Prove it"
+          }
+        ]
+      }
+    ]
+  },
+  "gapReview": {
+    "date": "2026-10-24",
+    "by": "self-review",
+    "open": []
+  }
+}

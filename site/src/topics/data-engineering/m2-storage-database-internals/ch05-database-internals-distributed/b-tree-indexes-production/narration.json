@@ -1,0 +1,84 @@
+{
+  "topic": "de.b-tree-indexes-production",
+  "steps": [
+    {
+      "lines": [
+        "Every topic in this chapter so far has quietly assumed something: that you already know which page holds the row you want.",
+        "Real tables hold far more rows than fit comfortably in memory, spread across many, many pages.",
+        "Checking every one of them in order would work, eventually. What's the structure that makes it unnecessary?"
+      ]
+    },
+    {
+      "lines": [
+        "I built a real index on a real, sizeable table and asked Postgres's own page-inspection tools how deep the tree actually is.",
+        "Just two levels. Not a comparison for every single row — two.",
+        "That's fanout: each page near the top points to many children below it, so the tree's own height grows far slower than the row count does."
+      ]
+    },
+    {
+      "lines": [
+        "When a leaf page can't fit a new entry, Postgres splits it: moves part of its contents to a brand new page, and inserts a pointer to that new page in the parent.",
+        "If the parent itself is now full, it splits too — the split cascades upward.",
+        "Only when even the very top page can't fit a new pointer does the whole tree grow by one more level. That's the one moment fanout actually changes."
+      ]
+    },
+    {
+      "lines": [
+        "Worth reasoning through before the measurement settles it.",
+        "About to insert a large batch of rows into a brand-new index — should it pack every page as full as it'll go, or leave real room on each page on purpose?"
+      ],
+      "answer": [
+        "It's not about saving space at any cost — that's the trap.",
+        "Packing every page to its limit leaves nothing for a future insert that lands inside an existing page's own range, which forces an immediate split on the very next one.",
+        "Leaving real room trades some space up front for genuine room to absorb future writes without splitting."
+      ]
+    },
+    {
+      "lines": [
+        "Here's that trade-off shown directly, not just argued for.",
+        "The identical batch of inserts, landing inside the existing key range rather than at the end, run against two otherwise identical indexes — one packed tight, one left loose.",
+        "Measured directly, the tight index grows by real pages. The loose one, on the exact same data, doesn't grow by a single page."
+      ]
+    },
+    {
+      "lines": [
+        "Duplicates in an indexed column are common — a status flag, a category, a boolean.",
+        "I built the identical index twice on a column with only a handful of distinct values across many rows: once with a space-saving duplicate representation turned on, once off.",
+        "Measured directly, the space-saving version comes out to roughly a third the size of the other."
+      ]
+    },
+    {
+      "lines": [
+        "Here's the part that makes a real index usable under genuinely concurrent writes.",
+        "A nineteen-eighty-one algorithm adds just one pointer to every page — to its right-hand sibling — and one more value, an upper bound on what belongs on that page.",
+        "If a search's target is bigger than that upper bound, the page must have just split underneath it. The fix isn't a lock on the whole tree — just follow that one pointer to the new page. Postgres's own source implements exactly this."
+      ]
+    },
+    {
+      "lines": [
+        "Two more things worth naming precisely, even without a live measurement here.",
+        "A newer Postgres release lets a multicolumn index still be used even when a query's own condition skips the very first column, something earlier versions couldn't do.",
+        "And a genuinely different design choice in a different engine: clustering a table's actual row data under its primary key means a secondary lookup there costs an extra full tree traversal that a table storing rows separately from its indexes doesn't pay."
+      ]
+    },
+    {
+      "lines": [
+        "Pulling the whole topic back together.",
+        "Fanout keeps a real index's own depth small no matter how many rows get added, measured directly.",
+        "Packing pages tight or loose is a real, measured trade-off, not a guess. A space-saving duplicate representation shrinks a duplicate-heavy index to a fraction its size. And none of it needs to lock the whole tree to stay safe while writes are happening concurrently."
+      ]
+    },
+    {
+      "lines": [
+        "One closing scenario, worth reasoning through before the explanation lands.",
+        "A team sees this topic's own measurement — a space-saving duplicate representation shrank a duplicate-heavy index dramatically — and then redesigns their schema so that same column's values become almost entirely unique.",
+        "What happens to that space-saving benefit on the exact same index now?"
+      ],
+      "answer": [
+        "It shrinks or disappears entirely, and the reason is the same mechanism in reverse.",
+        "The entire benefit came from packing tuples that shared identical values into one compact representation.",
+        "Once those values stop being duplicates, there's nothing left to pack together — the feature quietly becomes a no-op rather than a space saver."
+      ]
+    }
+  ]
+}

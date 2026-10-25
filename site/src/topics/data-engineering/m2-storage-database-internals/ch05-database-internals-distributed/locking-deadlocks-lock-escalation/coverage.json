@@ -1,0 +1,97 @@
+{
+  "topic": "de.locking-deadlocks-lock-escalation",
+  "syllabus": [
+    {
+      "clause": "lock modes and intention locks, row vs page vs table granularity",
+      "at": [
+        { "step": "Reveal: real lock modes" },
+        { "step": "Reveal: intention locks" },
+        { "step": "Predict: is finer granularity always better?" }
+      ]
+    },
+    {
+      "clause": "deadlock detection (wait-for graphs) vs prevention (timeouts, wait-die/wound-wait)",
+      "at": [
+        { "step": "Reveal: the deadlock, for real" },
+        { "step": "Reveal: detection vs prevention" }
+      ]
+    },
+    {
+      "clause": "lock escalation in SQL Server/Db2",
+      "at": [
+        { "step": "Reveal: lock escalation" }
+      ]
+    },
+    {
+      "clause": "and long DDL locks as a migration hazard",
+      "at": [
+        { "step": "Reveal: the migration hazard, measured" }
+      ]
+    }
+  ],
+  "sources": [
+    {
+      "source": "13.3. Explicit Locking (PostgreSQL documentation)",
+      "items": [
+        { "item": "all table lock modes are genuinely table-level; the only real difference is the conflict set", "at": [{ "step": "Reveal: real lock modes" }] },
+        { "item": "ACCESS EXCLUSIVE's own conflict set, the DDL commands that acquire it, and that only it blocks a plain SELECT", "at": [{ "step": "Reveal: the migration hazard, measured" }] },
+        { "item": "the canonical two-table deadlock example and the documented best defense (consistent lock order)", "at": [{ "step": "Reveal: the deadlock, for real" }] }
+      ]
+    },
+    {
+      "source": "19.12. Lock Management (PostgreSQL documentation)",
+      "items": [
+        { "item": "deadlock_timeout gates when the expensive cycle check runs, a detection mechanism", "at": [{ "step": "Reveal: detection vs prevention" }] }
+      ]
+    },
+    {
+      "source": "Transaction Locking and Row Versioning Guide (SQL Server documentation)",
+      "items": [
+        { "item": "intent locks (IS/IX/SIX) and why they exist (checking one table-level flag instead of scanning every row lock)", "at": [{ "step": "Reveal: intention locks" }] },
+        { "item": "lock escalation's own mechanism and real thresholds (5,000 locks, rechecked every 1,250)", "at": [{ "step": "Reveal: lock escalation" }] },
+        { "item": "what escalation releases and replaces when it succeeds", "at": [{ "deep": "Internals" }] }
+      ]
+    },
+    {
+      "source": "Deadlocks Guide (SQL Server documentation)",
+      "items": [
+        { "item": "the deadlock monitor's own cyclic-dependency search, functionally a wait-for graph", "at": [{ "step": "Reveal: detection vs prevention" }] },
+        { "item": "the adaptive detection interval (5s down to 100ms)", "at": [{ "out": "named in FACT-CHECK.md claim 9, not shown on screen; the reel's own measured interval is Postgres's ~1s default" }] }
+      ]
+    },
+    {
+      "source": "maxlocks - Maximum percent of lock list before escalation configuration parameter (Db2 documentation)",
+      "items": [
+        { "item": "Db2's own percentage-of-lock-list escalation trigger", "at": [{ "step": "Reveal: lock escalation" }] }
+      ]
+    },
+    {
+      "source": "Deadlock prevention algorithms (Wikipedia)",
+      "items": [
+        { "item": "wait-die and wound-wait's own precise priority-based abort rules", "at": [{ "step": "Reveal: detection vs prevention" }] }
+      ]
+    }
+  ],
+  "expert": {
+    "by": "self-review",
+    "date": "2026-10-24",
+    "items": [
+      { "item": "An intention lock is never a substitute for the row lock it signals; it exists purely so a competing table-level request doesn't have to scan every row to find out whether it's safe.", "at": [{ "step": "Reveal: intention locks" }] },
+      { "item": "Finer granularity (row locks) maximizes concurrency but multiplies the number of locks a transaction holds, which is exactly the cost lock escalation exists to cap; coarser granularity (table locks) does the opposite trade in both directions.", "at": [{ "step": "Predict: is finer granularity always better?" }] },
+      { "item": "Detection and prevention solve the same problem from opposite directions: detection lets every transaction run and only intervenes once a real cycle has formed; prevention refuses to let a cycle-prone wait even start, using nothing but each transaction's own priority.", "at": [{ "step": "Reveal: detection vs prevention" }] },
+      { "item": "Wait-die and wound-wait never produce a real deadlock cycle at all, by construction — which is also their own cost: both abort transactions pessimistically, including some that would never actually have deadlocked.", "at": [{ "deep": "Internals" }] },
+      { "item": "Lock escalation's own trigger is per-statement and per-table-reference, not per-transaction: a statement touching two tables can escalate on one while staying fine-grained on the other, exactly as SQL Server's own documentation describes.", "at": [{ "step": "Reveal: lock escalation" }] },
+      { "item": "A long-running ACCESS EXCLUSIVE lock is dangerous specifically because it is the one mode that blocks even a read; a lock that only blocked writes would be far less disruptive to a live, read-heavy production table.", "at": [{ "step": "Reveal: the migration hazard, measured" }] },
+      { "item": "Postgres's own deadlock_timeout default is a genuine engineering trade-off, not an arbitrary number: too short wastes CPU checking for cycles that rarely exist, too long leaves a real deadlock undetected and both transactions stalled for longer than necessary.", "at": [{ "deep": "Production failures this topic warns about" }] },
+      { "item": "A deadlock caught by detection always costs one transaction a rollback and a retry; this is identical in shape to topic 13's own SSI false positives, even though the underlying mechanism (locking vs. snapshot conflict tracking) is completely different.", "at": [{ "step": "Recap" }] },
+      { "item": "This topic's own consistent-lock-order experiment doesn't eliminate contention, only the deadlock: the waiting transaction in that reproduction still blocks for its own real duration, it simply never forms a cycle, which is the distinction a learner must hold onto to avoid thinking 'ordered locks mean no waiting.'", "at": [{ "step": "Reveal: the exact same contention, ordered" }] },
+      { "item": "Neither SQL Server nor Db2 runs in this sandbox, so their own thresholds (the 5,000/1,250-lock figures, Db2's percentage-based maxlocks) are disclosed directly as sourced from each vendor's own current documentation rather than measured here, exactly as the chapter's own shared notation requires for a claim this sandbox can't run.", "at": [{ "deep": "Frontier" }] },
+      { "item": "A migration tool that wraps a schema change in a short transaction and retries on lock-wait timeout is treating this topic's own ACCESS EXCLUSIVE hazard as a known, managed risk rather than hoping it never happens — exactly the operational posture the next topic's optimistic-vs-pessimistic framing generalizes.", "at": [{ "step": "Prove it" }] }
+    ]
+  },
+  "gapReview": {
+    "date": "2026-10-24",
+    "by": "self-review",
+    "open": []
+  }
+}

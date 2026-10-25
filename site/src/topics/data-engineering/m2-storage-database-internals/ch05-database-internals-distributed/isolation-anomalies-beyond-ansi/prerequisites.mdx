@@ -1,0 +1,24 @@
+import Resource from '../../../../../components/Resource.astro';
+
+<section class="prereq" data-section="before-this">
+
+### <span class="n">01</span> Before this: §5.1, and ACID precisely stated
+
+<ul class="resources">
+  <Resource kind="reel" title="LSM compaction and the RUM trade-off" domain="data-engineering" host="de.lsm-compaction-rum-trade" by="§5.1's last topic" />
+  <Resource kind="reel" title="ACID guarantees, precisely stated" domain="data-engineering" host="de.acid-guarantees-precisely-stated" by="the previous topic of this chapter" />
+</ul>
+
+</section>
+
+<section class="prereq" data-section="straight-from-the-source">
+
+### <span class="n">02</span> The sources this topic measures and quotes against
+
+<ul class="resources">
+  <Resource kind="reading" title="A Critique of ANSI SQL Isolation Levels" href="https://arxiv.org/pdf/cs/0701157" by="Berenson, Bernstein, Gray, Melton, O'Neil, O'Neil (SIGMOD 1995)">The full anomaly vocabulary and the paper's own demonstration of the ANSI definitions' ambiguity.</Resource>
+  <Resource kind="reading" title="Elle: Inferring Isolation Anomalies from Experimental Observations" href="https://arxiv.org/pdf/2003.10554" by="Kingsbury & Alvaro (VLDB 2020)">Restates Adya, Liskov & O'Neil's own dependency-graph formalism directly.</Resource>
+  <Resource kind="reading" title="Automating the Detection of Snapshot Isolation Anomalies" href="https://www.vldb.org/conf/2007/papers/industrial/p1263-jorwekar.pdf" by="Jorwekar, Fekete, Ramamritham, Sudarshan (VLDB 2007)">The read-only transaction anomaly's own precise definition.</Resource>
+</ul>
+
+</section>

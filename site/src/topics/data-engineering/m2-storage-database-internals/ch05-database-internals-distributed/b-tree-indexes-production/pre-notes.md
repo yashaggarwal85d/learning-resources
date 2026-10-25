@@ -1,0 +1,5 @@
+- **B-tree / B+-tree**: a multi-level tree of pages, already background from the Data Structures & Algorithms track's own B-tree topic, not re-taught here. *Where you meet it:* every step, measured for real against this sandbox's own cluster.
+- **Leaf page / internal page**: a B-tree's own two page roles — leaf pages point to table rows, internal pages point to the next level down. *Where you meet it:* the structure/fanout reveal and the page-split reveal.
+- **Fanout**: how many children one internal page points to, the reason tree depth stays small even as row count grows. *Where you meet it:* the structure/fanout reveal, measured directly.
+- **Page split**: an engine's own operation that moves part of an overflowing page's contents to a new page, already named in earlier chapter topics for data pages; this topic is the same operation for index pages. *Where you meet it:* the page-split reveal and the fillfactor measurement.
+- **Index**: a structure, separate from a table's own rows, built to make a lookup fast; assumed from earlier Data Engineering topics, not retaught. *Where you meet it:* throughout.
