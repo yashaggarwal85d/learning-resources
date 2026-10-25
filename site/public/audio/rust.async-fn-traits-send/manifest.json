@@ -1,0 +1,437 @@
+{
+ "topic": "rust.async-fn-traits-send",
+ "voice": "breeze-mellow-v2",
+ "asr": "large-v3-turbo",
+ "clips": {
+  "01": {
+   "hash": "19ea8ff7073c8dab",
+   "takes": [
+    "de35a3a5cc13583ff7c1",
+    "545edd3f62cb0accf2d0"
+   ],
+   "duration": 20.179,
+   "lines": [
+    {
+     "text": "Take a trait with one of these lazy, asynchronous methods on it, and try to box up one of its implementors behind the trait itself, the ordinary way, so a caller never has to know which concrete type it actually is.",
+     "start": 0.15,
+     "end": 14.91
+    },
+    {
+     "text": "Does that work exactly the way it would for any other trait method?",
+     "start": 15.63,
+     "end": 19.829
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -1.8,
+   "wpm": 161,
+   "wer": 0.024390243902439025,
+   "exact": false,
+   "tolerated": [
+    {
+     "line": "Take a trait with one of these lazy, asynchronous methods on it, and try to box up one of its implementors behind the trait itself, the ordinary way, so a caller never has to know which concrete type it actually is.",
+     "said": "implementors",
+     "heard": "implementers"
+    }
+   ]
+  },
+  "01a": {
+   "hash": "20bc68de74c3a62b",
+   "takes": [
+    "af1fd47658ecf50ed8ae",
+    "36604b7361971e076de2"
+   ],
+   "duration": 22.656,
+   "lines": [
+    {
+     "text": "No, it genuinely does not \u2014 the trait simply refuses to be boxed up that way at all.",
+     "start": 0.15,
+     "end": 6.576
+    },
+    {
+     "text": "The compiler needs to build one shared table of function pointers for every method, and an asynchronous method's hidden return type is a different shape for every single implementor, so there is nothing uniform to put in that table.",
+     "start": 6.996,
+     "end": 22.306
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 148,
+   "wer": 0.02564102564102564,
+   "exact": false,
+   "tolerated": [
+    {
+     "line": "The compiler needs to build one shared table of function pointers for every method, and an asynchronous method's hidden return type is a different shape for every single implementor, so there is nothing uniform to put in that table.",
+     "said": "implementor",
+     "heard": "implementer"
+    }
+   ]
+  },
+  "02": {
+   "hash": "93be698bf9f350e4",
+   "takes": [
+    "d52d6f911956ff27b5c2",
+    "94b853457b1995082b01"
+   ],
+   "duration": 18.987,
+   "lines": [
+    {
+     "text": "Try it for real, and the compiler does not just quietly refuse \u2014 it names the exact method responsible and says plainly why.",
+     "start": 0.15,
+     "end": 10.696
+    },
+    {
+     "text": "It points directly at the asynchronous method and says the trait cannot be used this way because of it.",
+     "start": 11.116,
+     "end": 18.637
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -2.4,
+   "wpm": 130,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "03": {
+   "hash": "6c050fbb111d6531",
+   "takes": [
+    "d8ace690cc5287eb8607",
+    "2f8ef024c84dd3dbbbc6"
+   ],
+   "duration": 30.814,
+   "lines": [
+    {
+     "text": "Now set that problem aside, and try a different one: write a generic function whose caller is already guaranteed to be safe to hand to another thread, and inside it, try to hand a completely different thread the lazy value that same caller's method produces.",
+     "start": 0.15,
+     "end": 18.236
+    },
+    {
+     "text": "Since the caller itself is already known to be safe across threads, is that enough to guarantee the lazy value coming out of its method is too?",
+     "start": 18.956,
+     "end": 30.464
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -2.4,
+   "wpm": 140,
+   "wer": 0.07407407407407407,
+   "exact": false,
+   "tolerated": [
+    {
+     "line": "Since the caller itself is already known to be safe across threads, is that enough to guarantee the lazy value coming out of its method is too?",
+     "said": "caller",
+     "heard": "collar"
+    },
+    {
+     "line": "Since the caller itself is already known to be safe across threads, is that enough to guarantee the lazy value coming out of its method is too?",
+     "said": "too",
+     "heard": "to"
+    }
+   ]
+  },
+  "03a": {
+   "hash": "14eb04f299b4302c",
+   "takes": [
+    "3e21a918b226a8553f64",
+    "ac4d00a1bc4b23c6aeef"
+   ],
+   "duration": 23.302,
+   "lines": [
+    {
+     "text": "No \u2014 and this is surprising, because it feels like it should be enough.",
+     "start": 0.15,
+     "end": 5.188
+    },
+    {
+     "text": "The trait's own definition never wrote down any promise about what its method hands back, so nothing forces every implementor's version of that lazy value to also be safe across threads, no matter how safe the caller itself already is.",
+     "start": 5.608,
+     "end": 22.952
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -1.9,
+   "wpm": 136,
+   "wer": 0.05,
+   "exact": false,
+   "tolerated": [
+    {
+     "line": "The trait's own definition never wrote down any promise about what its method hands back, so nothing forces every implementor's version of that lazy value to also be safe across threads, no matter how safe the caller itself already is.",
+     "said": "implementors",
+     "heard": "implementers"
+    },
+    {
+     "line": "The trait's own definition never wrote down any promise about what its method hands back, so nothing forces every implementor's version of that lazy value to also be safe across threads, no matter how safe the caller itself already is.",
+     "said": "threads",
+     "heard": "threats"
+    }
+   ]
+  },
+  "04": {
+   "hash": "aa1c956201881892",
+   "takes": [
+    "b202a16f82fdc4f6cf0b",
+    "90ce8a610a96f463ae7b"
+   ],
+   "duration": 17.006,
+   "lines": [
+    {
+     "text": "Try to compile exactly that, and the compiler names precisely what cannot be guaranteed and exactly where the gap is.",
+     "start": 0.15,
+     "end": 8.367
+    },
+    {
+     "text": "It points at the lazy value the method produced and says plainly that nothing promises it can be handed safely to another thread.",
+     "start": 8.787,
+     "end": 16.656
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -2.0,
+   "wpm": 152,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "05": {
+   "hash": "abeb4aee69872a9b",
+   "takes": [
+    "19c5253760a646b9598c",
+    "29a6ebac3517175e6ccb"
+   ],
+   "duration": 21.038,
+   "lines": [
+    {
+     "text": "One real, published fix for exactly this gap works by never touching the original trait at all.",
+     "start": 0.15,
+     "end": 7.179
+    },
+    {
+     "text": "Instead, one small annotation generates an entirely separate, second trait alongside the first \u2014 one that carries the extra promise built directly into its own definition from the start.",
+     "start": 7.599,
+     "end": 20.688
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -2.0,
+   "wpm": 128,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "06": {
+   "hash": "b6a9116a7d3c3ed4",
+   "takes": [
+    "9f4c8e593e0fa70d2273",
+    "8c3b1d3c7add6c0976f3"
+   ],
+   "duration": 20.113,
+   "lines": [
+    {
+     "text": "Build something through that generated second trait instead of the first, then genuinely hand its lazy value off to a completely different, real operating-system thread and wait for the result to come back.",
+     "start": 0.15,
+     "end": 14.654
+    },
+    {
+     "text": "It comes back correctly, having actually crossed threads for real.",
+     "start": 15.074,
+     "end": 19.763
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -2.0,
+   "wpm": 131,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "07": {
+   "hash": "74cf05f3e643a6f1",
+   "takes": [
+    "4e55a60252771b16c00c",
+    "05a967e4984742b96342"
+   ],
+   "duration": 17.763,
+   "lines": [
+    {
+     "text": "Here's a sharper question: does fixing that cross-thread promise also fix the very first problem, the one about boxing an implementor up behind the trait itself?",
+     "start": 0.15,
+     "end": 10.646
+    },
+    {
+     "text": "Now try boxing that same future up again, now that the cross-thread gap is finally fixed.",
+     "start": 11.496,
+     "end": 17.413
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.8,
+   "wpm": 149,
+   "wer": 0.037037037037037035,
+   "exact": false,
+   "tolerated": [
+    {
+     "line": "Here's a sharper question: does fixing that cross-thread promise also fix the very first problem, the one about boxing an implementor up behind the trait itself?",
+     "said": "implementor",
+     "heard": "implementer"
+    }
+   ]
+  },
+  "07a": {
+   "hash": "5b3fd2ea67f8e632",
+   "takes": [
+    "002446e1db44c9be7bea",
+    "a6e5fd44e42050b9db48"
+   ],
+   "duration": 14.668,
+   "lines": [
+    {
+     "text": "No \u2014 it still fails exactly the same way as before.",
+     "start": 0.15,
+     "end": 4.382
+    },
+    {
+     "text": "These were always two entirely separate gaps with two separate causes, and fixing one of them does nothing at all for the other.",
+     "start": 4.802,
+     "end": 14.318
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -1.9,
+   "wpm": 135,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "08": {
+   "hash": "59d6d0d97a098130",
+   "takes": [
+    "36d90bb9d5d4628c76d7",
+    "abaa3603e79dd1f4e04c",
+    "c6191e47304910ecf21f"
+   ],
+   "duration": 35.011,
+   "lines": [
+    {
+     "text": "A second, different fix exists for the boxing problem specifically, and it takes the opposite approach entirely.",
+     "start": 0.15,
+     "end": 8.297
+    },
+    {
+     "text": "Instead of trying to make every implementor's differently-shaped lazy value fit into one shared table, it rewrites every one of these methods to produce one single, uniform, boxed shape every single time, no matter which implementor it came from.",
+     "start": 8.717,
+     "end": 28.132
+    },
+    {
+     "text": "That uniform shape is exactly the kind of thing the original table-building problem can handle.",
+     "start": 28.552,
+     "end": 34.661
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -1.9,
+   "wpm": 125,
+   "wer": 0.05,
+   "exact": false,
+   "tolerated": [
+    {
+     "line": "Instead of trying to make every implementor's differently-shaped lazy value fit into one shared table, it rewrites every one of these methods to produce one single, uniform, boxed shape every single time, no matter which implementor it came from.",
+     "said": "implementors",
+     "heard": "implementers"
+    },
+    {
+     "line": "Instead of trying to make every implementor's differently-shaped lazy value fit into one shared table, it rewrites every one of these methods to produce one single, uniform, boxed shape every single time, no matter which implementor it came from.",
+     "said": "implementor",
+     "heard": "implementer"
+    }
+   ]
+  },
+  "09": {
+   "hash": "f7c56eef227dbe79",
+   "takes": [
+    "ae4c639fa88e3a3d026c",
+    "a0fc4d6a567d2a7e9b8c",
+    "d045044ea7e9c687a380",
+    "16c466e1a68ae498392d"
+   ],
+   "duration": 26.717,
+   "lines": [
+    {
+     "text": "That uniform shape doesn't just appear for free.",
+     "start": 0.15,
+     "end": 3.469
+    },
+    {
+     "text": "Producing it has to actually reserve a fresh chunk of memory somewhere, every single time one of these methods is called.",
+     "start": 3.889,
+     "end": 11.0
+    },
+    {
+     "text": "Count exactly how many times that memory-reserving step happens around a single call, for real, rather than simply trusting what it probably does.",
+     "start": 11.42,
+     "end": 21.689
+    },
+    {
+     "text": "It happens exactly once, every single call.",
+     "start": 22.109,
+     "end": 26.367
+    }
+   ],
+   "lufs": -16.2,
+   "true_peak": -2.0,
+   "wpm": 135,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "10": {
+   "hash": "cbce0890840923c6",
+   "takes": [
+    "c1d4ecd4c9bbf1556602",
+    "f505b89e25e944a3c040",
+    "8d65444cf2f07ab34245",
+    "d9e909c84a98d949b5fe"
+   ],
+   "duration": 64.279,
+   "lines": [
+    {
+     "text": "Boxing an implementor up behind its trait, and promising its lazy methods are safe across threads, turned out to be two entirely separate gaps in today's stable language, each proven directly with the compiler's own refusal.",
+     "start": 0.15,
+     "end": 14.927
+    },
+    {
+     "text": "One published fix generates a whole second trait carrying the cross-thread promise. A different published fix solves the boxing gap instead, by forcing every call into one uniform, boxed shape, at one real, counted cost every time.",
+     "start": 15.347,
+     "end": 35.886
+    },
+    {
+     "text": "A native fix for the cross-thread gap specifically is still being worked on, and remains unstable even now. Every single piece of this chapter, start to finish, was deliberately built to work without needing any particular scheduler at all.",
+     "start": 36.306,
+     "end": 53.738
+    },
+    {
+     "text": "The very next question is what a real, production scheduler, spread across many real worker threads, actually does with every single piece of it.",
+     "start": 54.158,
+     "end": 63.929
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -1.9,
+   "wpm": 129,
+   "wer": 0.05555555555555555,
+   "exact": false,
+   "tolerated": [
+    {
+     "line": "Boxing an implementor up behind its trait, and promising its lazy methods are safe across threads, turned out to be two entirely separate gaps in today's stable language, each proven directly with the compiler's own refusal.",
+     "said": "implementor",
+     "heard": "implementer"
+    },
+    {
+     "line": "Boxing an implementor up behind its trait, and promising its lazy methods are safe across threads, turned out to be two entirely separate gaps in today's stable language, each proven directly with the compiler's own refusal.",
+     "said": "gaps",
+     "heard": "caps"
+    }
+   ]
+  }
+ }
+}
