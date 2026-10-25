@@ -1,0 +1,428 @@
+{
+ "topic": "dsa.ring-buffers-bounded-queues",
+ "voice": "breeze-mellow-v2",
+ "asr": "large-v3-turbo",
+ "clips": {
+  "01": {
+   "hash": "43becf9e003ea4ec",
+   "takes": [
+    "bd03ed5f276968a1238d",
+    "0684d40677d40bf4c07c",
+    "e1bacab3b8373ae4698e"
+   ],
+   "duration": 31.724,
+   "lines": [
+    {
+     "text": "Every structure so far in this chapter eventually had to answer the question: what happens when you run out of room?",
+     "start": 0.15,
+     "end": 8.566
+    },
+    {
+     "text": "This one refuses to ask it. Watch the shape on screen: a closed loop, not a line that can be extended. There is no far end to reach.",
+     "start": 9.116,
+     "end": 20.14
+    },
+    {
+     "text": "That refusal is not a limitation bolted on afterward. It's the entire design, chosen on purpose, and it's what buys everything else this topic covers.",
+     "start": 20.56,
+     "end": 31.374
+    }
+   ],
+   "lufs": -16.2,
+   "true_peak": -2.4,
+   "wpm": 140,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "02": {
+   "hash": "e362ad8fa672f86d",
+   "takes": [
+    "64891624353451b84864",
+    "15189ebde9b0afdff0b4",
+    "1c9504024a392f727817"
+   ],
+   "duration": 26.575,
+   "lines": [
+    {
+     "text": "So how do you keep writing into something that never gets bigger? You walk back to the start.",
+     "start": 0.15,
+     "end": 6.203
+    },
+    {
+     "text": "Follow the two markers going around the circle. One marks where the next read will come from, the other where the next write will land.",
+     "start": 6.623,
+     "end": 15.24
+    },
+    {
+     "text": "Neither one ever runs off the edge, because the edge simply isn't there: once a marker reaches the last slot, the very next step takes it back to the first.",
+     "start": 15.66,
+     "end": 26.225
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -2.5,
+   "wpm": 165,
+   "wer": 0.08,
+   "exact": false,
+   "tolerated": [
+    {
+     "line": "Follow the two markers going around the circle. One marks where the next read will come from, the other where the next write will land.",
+     "said": "read",
+     "heard": "reed"
+    },
+    {
+     "line": "Follow the two markers going around the circle. One marks where the next read will come from, the other where the next write will land.",
+     "said": "write",
+     "heard": "right"
+    }
+   ]
+  },
+  "03": {
+   "hash": "a94ad73a1127027f",
+   "takes": [
+    "062441c097e125ba89ff",
+    "eb66df76ebb3c0e544dc",
+    "2209367529675ef46f1a"
+   ],
+   "duration": 45.887,
+   "lines": [
+    {
+     "text": "Now, how is that wrap actually computed? The honest answer most people reach for is a remainder: divide the index by the capacity, keep what's left over.",
+     "start": 0.15,
+     "end": 11.91
+    },
+    {
+     "text": "Here's the part worth slowing down for: a division is one of the most expensive single operations a processor does. Compare a bar of bitwise operations, each one about a single tick of the clock, against a bar of division, which can run into the dozens.",
+     "start": 12.33,
+     "end": 31.434
+    },
+    {
+     "text": "If the capacity happens to be a power of two, there's a shortcut: chop off everything above the low bits, with a single bitwise comparison. Same wrapped result. A fraction of the cost.",
+     "start": 31.854,
+     "end": 45.537
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 139,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "04": {
+   "hash": "781dff5d5c82b018",
+   "takes": [
+    "f91106abaa486c08b54b",
+    "be799923b03448dd25fa"
+   ],
+   "duration": 17.625,
+   "lines": [
+    {
+     "text": "Try it yourself. Capacity sixteen, the write marker currently sitting at position eleven. Five more writes land, one after another.",
+     "start": 0.15,
+     "end": 12.377
+    },
+    {
+     "text": "Where does the marker end up, and what operation actually gets it there?",
+     "start": 12.797,
+     "end": 17.275
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -2.0,
+   "wpm": 112,
+   "wer": 0.1,
+   "exact": false,
+   "tolerated": [
+    {
+     "line": "Try it yourself. Capacity sixteen, the write marker currently sitting at position eleven. Five more writes land, one after another.",
+     "said": "write",
+     "heard": "right"
+    },
+    {
+     "line": "Try it yourself. Capacity sixteen, the write marker currently sitting at position eleven. Five more writes land, one after another.",
+     "said": "writes",
+     "heard": "rights"
+    }
+   ]
+  },
+  "04a": {
+   "hash": "83d80fa54ffb7336",
+   "takes": [
+    "b0c07764c82e6ccd4d7e",
+    "33f7d7d0c810c109b18c",
+    "43937649c29d18ed2e34"
+   ],
+   "duration": 26.066,
+   "lines": [
+    {
+     "text": "Eleven plus five is sixteen, and sixteen is exactly one full lap past where you started counting, so the marker lands back at position zero.",
+     "start": 0.15,
+     "end": 10.362
+    },
+    {
+     "text": "The operation that gets it there isn't a division at all. It's a single bitwise trim against capacity minus one, because capacity is a power of two.",
+     "start": 10.782,
+     "end": 21.462
+    },
+    {
+     "text": "Hold onto that number, zero. It's about to cause a problem.",
+     "start": 21.882,
+     "end": 25.716
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 145,
+   "wer": 0.18181818181818182,
+   "exact": false,
+   "tolerated": [
+    {
+     "line": "Hold onto that number, zero. It's about to cause a problem.",
+     "said": "onto",
+     "heard": "on to"
+    }
+   ]
+  },
+  "05": {
+   "hash": "395fc7926993f660",
+   "takes": [
+    "e31e1886ac71ec7e9370",
+    "efa40bcc0c88ab2f9aef"
+   ],
+   "duration": 27.088,
+   "lines": [
+    {
+     "text": "Here's the problem the last step was setting up: watch both markers land on the exact same slot.",
+     "start": 0.15,
+     "end": 6.693
+    },
+    {
+     "text": "Ask yourself honestly which situation you're looking at. Is the ring completely empty, having never been touched? Or is it completely full, having wrapped all the way around? From the two marker positions alone, you genuinely cannot tell. Both situations look identical on screen.",
+     "start": 7.113,
+     "end": 26.738
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -1.9,
+   "wpm": 137,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "06": {
+   "hash": "c5b280192b9a4c35",
+   "takes": [
+    "4dd5629a694a78d21840",
+    "dcd119cc5412d1b1658d",
+    "a300c6e5fe897fba95ac",
+    "d0fad396cdf9b79f3970"
+   ],
+   "duration": 46.675,
+   "lines": [
+    {
+     "text": "The fix is to stop trimming the markers down to size so early.",
+     "start": 0.15,
+     "end": 4.458
+    },
+    {
+     "text": "Let them climb forever, uncapped, every single write and read nudging one of them up by exactly one, no wraparound at all. Only at the last possible moment, when a marker actually needs to touch a slot in memory, do you trim it down.",
+     "start": 4.878,
+     "end": 23.534
+    },
+    {
+     "text": "Now the gap between the two uncapped markers is the honest count of what's stored, and it tells empty from full without any ambiguity at all.",
+     "start": 24.254,
+     "end": 33.512
+    },
+    {
+     "text": "Two other fixes exist too, each paying a different price: give up one slot of capacity forever, or carry a separate counter and update it on every single operation.",
+     "start": 33.932,
+     "end": 46.325
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -1.9,
+   "wpm": 144,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "07": {
+   "hash": "2510905a4e03c212",
+   "takes": [
+    "3471f1f72186c7312a3d",
+    "bab5ea72fe800e06af08"
+   ],
+   "duration": 23.896,
+   "lines": [
+    {
+     "text": "Suppose the ring is completely full and one more write shows up anyway. What now?",
+     "start": 0.15,
+     "end": 6.221
+    },
+    {
+     "text": "This is a choice, and it has nothing to do with the marker arithmetic you just watched. One answer: let the newest write bump out whichever entry has been sitting there longest. A second answer: refuse the write outright, and make it wait.",
+     "start": 6.771,
+     "end": 23.546
+    }
+   ],
+   "lufs": -16.3,
+   "true_peak": -2.7,
+   "wpm": 146,
+   "wer": 0.06666666666666667,
+   "exact": false,
+   "tolerated": [
+    {
+     "line": "Suppose the ring is completely full and one more write shows up anyway. What now?",
+     "said": "write",
+     "heard": "rite"
+    },
+    {
+     "line": "This is a choice, and it has nothing to do with the marker arithmetic you just watched. One answer: let the newest write bump out whichever entry has been sitting there longest. A second answer: refuse the write outright, and make it wait.",
+     "said": "write",
+     "heard": "right"
+    },
+    {
+     "line": "This is a choice, and it has nothing to do with the marker arithmetic you just watched. One answer: let the newest write bump out whichever entry has been sitting there longest. A second answer: refuse the write outright, and make it wait.",
+     "said": "write",
+     "heard": "right"
+    }
+   ]
+  },
+  "08": {
+   "hash": "d4b1c4483b82cff4",
+   "takes": [
+    "526096a898b16035324b",
+    "75e65dd408ae749ad79a"
+   ],
+   "duration": 17.301,
+   "lines": [
+    {
+     "text": "A ring of recent readings, completely full, tracking only the latest few values anyone actually cares about. One more reading comes in.",
+     "start": 0.15,
+     "end": 10.771
+    },
+    {
+     "text": "What happens to it, and does a ring that refuses to lose data handle it the same way?",
+     "start": 11.191,
+     "end": 16.951
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 139,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "08a": {
+   "hash": "77310cfb8ae60d10",
+   "takes": [
+    "e8310f605c117edf584f",
+    "7e9fec8793c3ea6a5942",
+    "59ba8abd50d96ef88900"
+   ],
+   "duration": 37.023,
+   "lines": [
+    {
+     "text": "The oldest reading is simply gone, replaced. The newest one takes its slot, and nobody ever asked for it back, because keeping only the latest handful was the entire point of this particular ring.",
+     "start": 0.15,
+     "end": 13.422
+    },
+    {
+     "text": "A ring built around never losing anything would not make that trade at all. That write would instead sit and wait, exactly as long as it takes for the oldest reading to finally be consumed and make room.",
+     "start": 13.842,
+     "end": 27.645
+    },
+    {
+     "text": "Same full ring, same extra write arriving \u2014 two entirely different outcomes, depending on which promise the ring was built to keep.",
+     "start": 28.065,
+     "end": 36.673
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -1.9,
+   "wpm": 151,
+   "wer": 0.047619047619047616,
+   "exact": false,
+   "tolerated": [
+    {
+     "line": "A ring built around never losing anything would not make that trade at all. That write would instead sit and wait, exactly as long as it takes for the oldest reading to finally be consumed and make room.",
+     "said": "write",
+     "heard": "rite"
+    },
+    {
+     "line": "Same full ring, same extra write arriving \u2014 two entirely different outcomes, depending on which promise the ring was built to keep.",
+     "said": "write",
+     "heard": "right"
+    }
+   ]
+  },
+  "09": {
+   "hash": "85f92dae06bd1c4d",
+   "takes": [
+    "686eac22a8b289b91190",
+    "d84c03507cc396de14e6",
+    "1bea858e1e94d077b7b9"
+   ],
+   "duration": 46.612,
+   "lines": [
+    {
+     "text": "Here's where the refusal to make room stops being just an implementation detail and starts shaping the behavior of an entire system.",
+     "start": 0.15,
+     "end": 8.833
+    },
+    {
+     "text": "A structure that waits instead of losing data hands something back to whoever's producing faster than it's being consumed: a wait. Not a crash, not silent data loss \u2014 a forced pause, exactly as long as it takes the slower side to catch up.",
+     "start": 9.253,
+     "end": 28.898
+    },
+    {
+     "text": "Compare that to a structure that just keeps making room for more. It never forces that pause, which sounds generous right up until it quietly runs out of room to make \u2014 at the worst possible moment, under the worst possible load.",
+     "start": 29.618,
+     "end": 46.262
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.6,
+   "wpm": 136,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "10": {
+   "hash": "63b421fce707aee4",
+   "takes": [
+    "f957f3f440ef56e3a7f5",
+    "8fc642ee64d34dad8430",
+    "37909fdb621a5132172e"
+   ],
+   "duration": 43.283,
+   "lines": [
+    {
+     "text": "Time to find out whether any of this holds up outside of an argument on a board.",
+     "start": 0.15,
+     "end": 5.679
+    },
+    {
+     "text": "The timing you're looking at didn't come from a textbook figure plugged into a slide \u2014 it came out of a real program, compiled and run, with the capacity handed in as an argument specifically so the compiler couldn't quietly perform the shortcut on your behalf.",
+     "start": 6.099,
+     "end": 23.436
+    },
+    {
+     "text": "Every capacity tested lands the same way: the bitwise version wins, and wins by a wide, consistent margin. That's not a coincidence of one lucky run. It's the exact gap this whole topic has been pointing at, measured instead of merely asserted.",
+     "start": 24.156,
+     "end": 42.933
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 144,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  }
+ }
+}
