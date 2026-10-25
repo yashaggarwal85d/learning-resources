@@ -1,0 +1,310 @@
+{
+ "topic": "rust.send-sync-as-auto",
+ "voice": "breeze-mellow-v2",
+ "asr": "large-v3-turbo",
+ "clips": {
+  "01": {
+   "hash": "645a35f256584dba",
+   "takes": [
+    "623129757b0db9fcfe23",
+    "0100966fcd69c3a7da05"
+   ],
+   "duration": 22.92,
+   "lines": [
+    {
+     "text": "A plain cell, holding a counter, touched by exactly one thread. Nothing about this is interesting yet, and that's the point.",
+     "start": 0.15,
+     "end": 9.375
+    },
+    {
+     "text": "The compiler already knows this type is safe to hand to another thread entirely. The open question is something different: is it safe to let two threads touch the same one, at once?",
+     "start": 9.795,
+     "end": 22.57
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -1.9,
+   "wpm": 141,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "02": {
+   "hash": "7e91de1c12d3b42a",
+   "takes": [
+    "f696c5f2eecfa4b4660f",
+    "97e1a1df5e5a618299aa"
+   ],
+   "duration": 13.103,
+   "lines": [
+    {
+     "text": "Wrap that same cell in a shared, reference counted pointer, clone the pointer, and hand the clone to a second thread.",
+     "start": 0.15,
+     "end": 7.816
+    },
+    {
+     "text": "Before either thread runs a single line, does this even build?",
+     "start": 8.536,
+     "end": 12.753
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -2.5,
+   "wpm": 147,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "02a": {
+   "hash": "16762eb21e168576",
+   "takes": [
+    "2e2c884349ea157f34ed",
+    "b55e3ead2882c5c9a527"
+   ],
+   "duration": 17.75,
+   "lines": [
+    {
+     "text": "No. The shared pointer's own atomic count only ever protects its own bookkeeping.",
+     "start": 0.15,
+     "end": 5.512
+    },
+    {
+     "text": "It adds no synchronization at all to the value sitting inside it, so sharing a cell through it is exactly as unsynchronized as sharing a bare cell would be.",
+     "start": 5.932,
+     "end": 17.4
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 142,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "03": {
+   "hash": "3996ef7f616235da",
+   "takes": [
+    "d6d1e70ed5d89cc55c9f",
+    "0918910b669977bf017b"
+   ],
+   "duration": 20.855,
+   "lines": [
+    {
+     "text": "Notice which word is missing from both of these messages: neither one says the cell can't move to another thread at all.",
+     "start": 0.15,
+     "end": 8.771
+    },
+    {
+     "text": "Both say it can't be shared between two threads at once, and that's a sharper, different claim \u2014 the same single trait is doing all the work in both failures.",
+     "start": 9.191,
+     "end": 20.505
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -1.9,
+   "wpm": 147,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "04": {
+   "hash": "d1f455e9f53eb717",
+   "takes": [
+    "5378d0feb74d4d7ad3cc",
+    "c38e43e166f9bf14368a"
+   ],
+   "duration": 20.578,
+   "lines": [
+    {
+     "text": "This is the one change that actually fixes what the cell couldn't: a real, synchronized gate around every single access.",
+     "start": 0.15,
+     "end": 9.431
+    },
+    {
+     "text": "Four threads hammer on it at once, and the total still comes out exact \u2014 not luck, just because only one thread is ever inside that gate at a time.",
+     "start": 9.851,
+     "end": 20.228
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -1.9,
+   "wpm": 143,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "05": {
+   "hash": "db1696350061b385",
+   "takes": [
+    "a9be3f6f8fe559442dd2",
+    "46c1c1826fab45035a76"
+   ],
+   "duration": 28.216,
+   "lines": [
+    {
+     "text": "The counter itself crossed threads without trouble, locked. Now try handing the lock's own guard, the thing taking it hands back, to a second thread.",
+     "start": 0.15,
+     "end": 11.864
+    },
+    {
+     "text": "That one fails, and for a sharp reason: the guard is tied, by the platform's own locking rules, to the exact thread that took it. Handing it elsewhere would let another thread try to release a lock it never held.",
+     "start": 12.284,
+     "end": 27.866
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -1.9,
+   "wpm": 138,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "06": {
+   "hash": "2792f33ee205f31e",
+   "takes": [
+    "01b1107bd893a985166c",
+    "03efd075bb2c3dd4f429",
+    "dd38c4d69c6ae688f949"
+   ],
+   "duration": 30.152,
+   "lines": [
+    {
+     "text": "A generic wrapper with an ordinary marker field simply inherits whatever its payload allows.",
+     "start": 0.15,
+     "end": 6.313
+    },
+    {
+     "text": "Swap that marker for a raw pointer instead, and the wrapper loses the ability to move to another thread no matter what it's holding \u2014 raw pointers never get that ability on their own.",
+     "start": 6.733,
+     "end": 18.396
+    },
+    {
+     "text": "A separate, hand built box can grant that ability right back, with one unsafe line the compiler trusts completely and can never check itself.",
+     "start": 19.116,
+     "end": 29.802
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -2.0,
+   "wpm": 141,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "07": {
+   "hash": "221e86b2fb19579a",
+   "takes": [
+    "0a7e86897a94de7e1c98",
+    "fa70e588c0d7f0200602"
+   ],
+   "duration": 15.762,
+   "lines": [
+    {
+     "text": "A spawned task creates a non atomic shared pointer, pauses once, and uses that same pointer again right after it resumes.",
+     "start": 0.15,
+     "end": 10.285
+    },
+    {
+     "text": "Does the whole task still qualify to be handed to the runtime at all?",
+     "start": 11.005,
+     "end": 15.412
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -1.9,
+   "wpm": 133,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "07a": {
+   "hash": "828f1fafa8757dac",
+   "takes": [
+    "4a8195ce65e88bb5ff9f",
+    "3b068037039901902766"
+   ],
+   "duration": 19.908,
+   "lines": [
+    {
+     "text": "No. A spawned task has to qualify to cross threads in its entirety, not just the line that starts it.",
+     "start": 0.15,
+     "end": 7.384
+    },
+    {
+     "text": "It only qualifies when everything still alive at the exact moment it pauses also qualifies \u2014 and here, something that doesn't is still alive right there.",
+     "start": 7.804,
+     "end": 19.558
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 136,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "08": {
+   "hash": "575981ad792679f4",
+   "takes": [
+    "324252f32565c0b0a04c",
+    "1cf325c47cd5dc3142c5"
+   ],
+   "duration": 19.801,
+   "lines": [
+    {
+     "text": "Same pointer, same task. The only difference is whether it's still sitting there at the exact instant everything pauses.",
+     "start": 0.15,
+     "end": 8.52
+    },
+    {
+     "text": "Scope it away before that instant, and there is nothing left to check. Let it survive past that instant, and the whole task inherits its limitation.",
+     "start": 8.94,
+     "end": 19.451
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 136,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "09": {
+   "hash": "35a58a6c761f9250",
+   "takes": [
+    "89c9301f62b118e558e2",
+    "c8fd0b56ae9623610fc4"
+   ],
+   "duration": 22.794,
+   "lines": [
+    {
+     "text": "Safe to move and safe to share turned out to be two separate questions, both answered the same structural way: look at a type's own fields.",
+     "start": 0.15,
+     "end": 10.512
+    },
+    {
+     "text": "A lock's guard stays loyal to the thread that took it. And only two deliberate overrides exist anywhere in this picture, pointed in opposite directions.",
+     "start": 10.932,
+     "end": 22.444
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 134,
+   "wer": 0.12,
+   "exact": false,
+   "tolerated": [
+    {
+     "line": "A lock's guard stays loyal to the thread that took it. And only two deliberate overrides exist anywhere in this picture, pointed in opposite directions.",
+     "said": "a locks",
+     "heard": "aloks"
+    },
+    {
+     "line": "A lock's guard stays loyal to the thread that took it. And only two deliberate overrides exist anywhere in this picture, pointed in opposite directions.",
+     "said": "thread",
+     "heard": "threat"
+    }
+   ]
+  }
+ }
+}
