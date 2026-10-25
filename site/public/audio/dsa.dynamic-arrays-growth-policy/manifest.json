@@ -1,0 +1,557 @@
+{
+ "topic": "dsa.dynamic-arrays-growth-policy",
+ "voice": "breeze-mellow-v2",
+ "asr": "large-v3-turbo",
+ "clips": {
+  "01": {
+   "hash": "3d25653296cc1ff3",
+   "takes": [
+    "0925e7ac010661109986",
+    "b82d4a3fda2d2de12ca9",
+    "67ac39af4490d1144840"
+   ],
+   "duration": 25.307,
+   "lines": [
+    {
+     "text": "Last time we proved that doubling a vector is amortized constant time to append, and that the proof holds for any fixed growth factor at all.",
+     "start": 0.15,
+     "end": 10.385
+    },
+    {
+     "text": "It never said which factor to pick, or why two became the default so many places use without ever re-deriving it.",
+     "start": 10.805,
+     "end": 18.387
+    },
+    {
+     "text": "That is today's question. Not whether it works. Which one, and why.",
+     "start": 19.207,
+     "end": 24.957
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 142,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "02": {
+   "hash": "da6ffd0721737a27",
+   "takes": [
+    "faf09cf377700bb21974",
+    "01ae065dfe80b62f4a44",
+    "7effab264f4fb39fda9c"
+   ],
+   "duration": 20.998,
+   "lines": [
+    {
+     "text": "Here is a vector that doubles four times in a row. Each time, the old chunk is freed and a new, bigger one takes its place.",
+     "start": 0.15,
+     "end": 9.907
+    },
+    {
+     "text": "Watch the pile of freed chunks grow beside it.",
+     "start": 10.327,
+     "end": 13.76
+    },
+    {
+     "text": "Does that pile ever get big enough to supply the next chunk the vector asks for, on its own?",
+     "start": 14.58,
+     "end": 20.648
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -2.4,
+   "wpm": 154,
+   "wer": 0.1111111111111111,
+   "exact": false,
+   "tolerated": [
+    {
+     "line": "Watch the pile of freed chunks grow beside it.",
+     "said": "freed",
+     "heard": "free"
+    }
+   ]
+  },
+  "02a": {
+   "hash": "ec546ea324fd89a8",
+   "takes": [
+    "c4e7413fc662d9642e62",
+    "4187348ab0f90ba91d64",
+    "a879b5cc550b63789817"
+   ],
+   "duration": 33.597,
+   "lines": [
+    {
+     "text": "Never, for a factor of two. Add up every chunk freed so far and it is always exactly one chunk short of the next one requested.",
+     "start": 0.15,
+     "end": 10.918
+    },
+    {
+     "text": "A few resizes in feels tempting, because the pile looks big by then, but it never actually catches up. And the allocator does not know anything special about this vector that would let it reuse memory some other way.",
+     "start": 11.338,
+     "end": 25.809
+    },
+    {
+     "text": "The vector can only ever crawl forward through memory. It can never step back into what it already gave up.",
+     "start": 26.229,
+     "end": 33.247
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 152,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "03": {
+   "hash": "3f97eb451e6bab01",
+   "takes": [
+    "749f135d98d7f9236d73",
+    "cf6533b4e2f95e7b36a2",
+    "50e3ffa1b5f38837b69b"
+   ],
+   "duration": 26.829,
+   "lines": [
+    {
+     "text": "Here is why, stacked up so you can see it. One chunk, then two, then four, then eight.",
+     "start": 0.15,
+     "end": 6.729
+    },
+    {
+     "text": "Add them together and you get one short of sixteen, every single time.",
+     "start": 7.149,
+     "end": 13.665
+    },
+    {
+     "text": "That is not a coincidence of this one example. It is the identity itself: one plus two plus four, all the way up, is always one short of the next power of two.",
+     "start": 14.085,
+     "end": 26.479
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 143,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "04": {
+   "hash": "9263db87f57c0d84",
+   "takes": [
+    "0eb0fb6482d7b4be8406",
+    "2f1c46b4872e044f7fd0",
+    "7f55a5b288441d2dfae0"
+   ],
+   "duration": 28.091,
+   "lines": [
+    {
+     "text": "Now switch the growth factor to one and a half instead of two.",
+     "start": 0.15,
+     "end": 4.689
+    },
+    {
+     "text": "Watch the same pile of freed chunks this time. It does catch up.",
+     "start": 5.109,
+     "end": 9.467
+    },
+    {
+     "text": "Facebook's own engineers worked out exactly how long it takes. A factor of one and a half lets the vector reuse its own freed memory after four reallocations. One point four five takes three. One point three takes only two.",
+     "start": 10.287,
+     "end": 27.741
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -1.9,
+   "wpm": 141,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "05": {
+   "hash": "5ba75a25cca41b70",
+   "takes": [
+    "64e427f73179be7572b0",
+    "6f928bd97f45a5bac1de",
+    "365e25812f06d450fca7",
+    "61331913e585115506d7",
+    "a1faa62df4bf040fe0ee"
+   ],
+   "duration": 28.538,
+   "lines": [
+    {
+     "text": "Four real libraries answered this question four different ways.",
+     "start": 0.15,
+     "end": 5.159
+    },
+    {
+     "text": "The GCC team's C++ library doubles, and has stuck with that choice for years.",
+     "start": 5.579,
+     "end": 11.25
+    },
+    {
+     "text": "Facebook's own vector deliberately picked one and a half instead.",
+     "start": 11.67,
+     "end": 15.726
+    },
+    {
+     "text": "Python's own list grows far more gently, only about one eighth larger each time, plus a small constant.",
+     "start": 16.146,
+     "end": 23.641
+    },
+    {
+     "text": "And Rust's vector documents no fixed rate at all.",
+     "start": 24.461,
+     "end": 28.188
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 126,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "06": {
+   "hash": "37423383de0ef389",
+   "takes": [
+    "6b5760a06a232eb19d0a",
+    "e14de9b81c376aa34970"
+   ],
+   "duration": 9.389,
+   "lines": [
+    {
+     "text": "If Rust's vector will not commit to a rate, what does it actually promise you?",
+     "start": 0.15,
+     "end": 4.928
+    },
+    {
+     "text": "What is the one guarantee it will not give up?",
+     "start": 5.878,
+     "end": 9.039
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 160,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "06a": {
+   "hash": "686ac027583647cd",
+   "takes": [
+    "490828210c2525291b87",
+    "1209c3b488e63cdffb3f",
+    "a4a440d54d4f8896d25e"
+   ],
+   "duration": 31.168,
+   "lines": [
+    {
+     "text": "Amortized constant time push. Nothing at all about the rate that delivers it.",
+     "start": 0.15,
+     "end": 5.99
+    },
+    {
+     "text": "Rust's own documentation says this directly: no particular growth strategy is guaranteed, but whatever strategy is used will of course guarantee that bound.",
+     "start": 6.41,
+     "end": 17.446
+    },
+    {
+     "text": "A library's real promise is almost always the complexity bound, not the mechanism underneath it. Confusing the two is how code quietly breaks when a library changes its internals.",
+     "start": 17.866,
+     "end": 30.818
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 125,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "07": {
+   "hash": "6ced0f6c95955882",
+   "takes": [
+    "ee7c618fd1c4833e6a16",
+    "8b362cc8a86263bf0bc9",
+    "f4c0daf5cf7905b0eea0"
+   ],
+   "duration": 27.284,
+   "lines": [
+    {
+     "text": "Reserve is not a resize by itself. It is a directive: tell the vector how big it is about to get.",
+     "start": 0.15,
+     "end": 8.143
+    },
+    {
+     "text": "Call reserve with sixteen, and it reallocates only if its current capacity is already smaller than sixteen.",
+     "start": 8.563,
+     "end": 17.359
+    },
+    {
+     "text": "After that call, nothing resizes again, not once, until the vector would actually need to grow past the capacity you reserved.",
+     "start": 17.779,
+     "end": 26.934
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 130,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "08": {
+   "hash": "c65c4b503e219336",
+   "takes": [
+    "8fd66e7fc81e66f2e872",
+    "f4183a1da3a0a602b76b",
+    "c88bf1b40c6a727fc8f0"
+   ],
+   "duration": 23.238,
+   "lines": [
+    {
+     "text": "Shrink to fit looks like the opposite of reserve, and it is, with one important difference.",
+     "start": 0.15,
+     "end": 5.651
+    },
+    {
+     "text": "It will never make the vector's capacity bigger, and it may shrink it by reallocating into a smaller buffer.",
+     "start": 6.071,
+     "end": 12.405
+    },
+    {
+     "text": "But the standard itself calls this a non binding request. An implementation is allowed to do nothing at all, and still be correct.",
+     "start": 13.225,
+     "end": 22.888
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 150,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "09": {
+   "hash": "c50b20c5b574d884",
+   "takes": [
+    "8a1b84b5a7a4ac4474b7",
+    "63bb32a891dc4c479db5"
+   ],
+   "duration": 9.112,
+   "lines": [
+    {
+     "text": "Suppose you take a pointer into one of these cells, right before calling shrink to fit.",
+     "start": 0.15,
+     "end": 5.163
+    },
+    {
+     "text": "Is that pointer still safe to use afterward?",
+     "start": 5.983,
+     "end": 8.762
+    }
+   ],
+   "lufs": -16.7,
+   "true_peak": -3.3,
+   "wpm": 158,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "09a": {
+   "hash": "95ad8f894c340015",
+   "takes": [
+    "e39cc5193eac16ece6ef",
+    "0e82b14e4e52d770107f",
+    "7da217cdbab5dc597f24"
+   ],
+   "duration": 28.585,
+   "lines": [
+    {
+     "text": "It depends entirely on whether that call actually reallocated.",
+     "start": 0.15,
+     "end": 4.015
+    },
+    {
+     "text": "If it did, every reference, every pointer, every iterator into the old buffer is invalid, including the one that used to point just past the last element.",
+     "start": 4.435,
+     "end": 15.802
+    },
+    {
+     "text": "If it did not reallocate, every single one of them is still perfectly valid. The standard states this as one shared rule, for reserve and for shrink to fit alike.",
+     "start": 16.222,
+     "end": 28.235
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -1.9,
+   "wpm": 139,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "10": {
+   "hash": "74964d492116ad33",
+   "takes": [
+    "7bcce806c1b2304e4629",
+    "7e298b5f318792917645",
+    "856d4182172c32f9ba19"
+   ],
+   "duration": 24.015,
+   "lines": [
+    {
+     "text": "So watch what happens the instant a reallocation actually fires.",
+     "start": 0.15,
+     "end": 3.89
+    },
+    {
+     "text": "Three pointers into the old buffer, all perfectly good a moment ago.",
+     "start": 4.31,
+     "end": 8.799
+    },
+    {
+     "text": "The new buffer appears, the old one is abandoned, and every single one of them turns invalid at once. Not gradually. Not probably. All of them, the same instant, every time it happens.",
+     "start": 9.619,
+     "end": 23.665
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -1.9,
+   "wpm": 137,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "11": {
+   "hash": "6fc88a41397c23cd",
+   "takes": [
+    "8baa25b1a2d62ab3a0d1",
+    "6e0d500ccf8bcabfca30",
+    "46e95bc6ac4ec4fa65dd"
+   ],
+   "duration": 27.815,
+   "lines": [
+    {
+     "text": "One more thing contiguous storage buys you, almost for free.",
+     "start": 0.15,
+     "end": 5.02
+    },
+    {
+     "text": "Fetch one cache line from a contiguous vector and you get several elements back in a single trip.",
+     "start": 5.44,
+     "end": 12.605
+    },
+    {
+     "text": "Scatter those same records across memory as separate linked nodes, and each one can cost its own trip. The next topic builds that structure and measures exactly how much that gap really costs.",
+     "start": 13.425,
+     "end": 27.465
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -1.9,
+   "wpm": 132,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "12": {
+   "hash": "ff648b48608628f0",
+   "takes": [
+    "bdc54263eb845e1bde8b",
+    "14e66472a52713fb742e",
+    "f86be591fd7dfa746c0b"
+   ],
+   "duration": 38.312,
+   "lines": [
+    {
+     "text": "So here is where the four libraries actually land.",
+     "start": 0.15,
+     "end": 3.004
+    },
+    {
+     "text": "GCC crawls forward and never looks back. Facebook's vector trades a little more copying for memory it can eventually reuse. Python grows gently and pays for it in extra resizes. Rust promises you the bound and keeps the mechanism free to change.",
+     "start": 3.424,
+     "end": 23.965
+    },
+    {
+     "text": "Reserve and shrink to fit are precise tools with one unconditional rule behind them: a reallocation invalidates everything into the old buffer, every time, with nothing in between.",
+     "start": 24.785,
+     "end": 37.962
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -1.8,
+   "wpm": 124,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "13": {
+   "hash": "28938c0cc61f21a9",
+   "takes": [
+    "d1be65c46276adb79a6c",
+    "3bddf3cc58105164668f",
+    "781a9dd0be9e2409f46a"
+   ],
+   "duration": 25.979,
+   "lines": [
+    {
+     "text": "Prove it. A million appends, built up from nothing.",
+     "start": 0.15,
+     "end": 3.8
+    },
+    {
+     "text": "Doubling resizes twenty times, copying about one million forty eight thousand elements in total.",
+     "start": 4.22,
+     "end": 11.087
+    },
+    {
+     "text": "A growth factor of one and a half resizes thirty three times, copying about two million one hundred thousand elements. More than twice the copying, for a final capacity that ends up barely smaller.",
+     "start": 11.907,
+     "end": 25.629
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 132,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "14": {
+   "hash": "c14ec98a1cb63ac9",
+   "takes": [
+    "f9885e644f9e8f0e9ac5",
+    "0140ae383db4e0b0bbd1",
+    "ba1deac06b03b120de43"
+   ],
+   "duration": 27.582,
+   "lines": [
+    {
+     "text": "Now the same million appends, under Python's own formula.",
+     "start": 0.15,
+     "end": 4.046
+    },
+    {
+     "text": "Eighty five resizes. About eight million four hundred forty five thousand elements copied in total.",
+     "start": 4.466,
+     "end": 11.944
+    },
+    {
+     "text": "Gentler growth is not free. It simply moves the cost from large capacity you are not using yet, to a great deal more total copying. There is no growth policy that avoids paying somewhere.",
+     "start": 12.764,
+     "end": 27.232
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 126,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  }
+ }
+}
