@@ -1,0 +1,387 @@
+{
+ "topic": "rust.borrows-across-thread-task",
+ "voice": "breeze-mellow-v2",
+ "asr": "large-v3-turbo",
+ "clips": {
+  "01": {
+   "hash": "5e7feb520029f613",
+   "takes": [
+    "5d9754e964278df2f4d6",
+    "52e967e42aca4c896d6f"
+   ],
+   "duration": 24.57,
+   "lines": [
+    {
+     "text": "Spawn a new thread, and the function that spawned it keeps running on its own. Nothing says those two have to finish in any particular order.",
+     "start": 0.15,
+     "end": 9.67
+    },
+    {
+     "text": "So when the function that did the spawning returns first, and its own local variables disappear, the thread it started may still be going. Whatever that thread was allowed to touch has to survive that moment.",
+     "start": 10.39,
+     "end": 24.22
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 151,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "02": {
+   "hash": "b69070ea68ec0879",
+   "takes": [
+    "3354cd6a5f5e5fd34299",
+    "d155350a76dd20f613ce",
+    "cb3e59ad53618fd45eeb"
+   ],
+   "duration": 24.186,
+   "lines": [
+    {
+     "text": "Here is a plain whole number sitting in a local variable, and a new thread spawned right next to it that only reads that variable, never takes it over.",
+     "start": 0.15,
+     "end": 10.569
+    },
+    {
+     "text": "The surrounding function could, in principle, return before that new thread ever gets around to running.",
+     "start": 10.989,
+     "end": 17.116
+    },
+    {
+     "text": "Given everything just said about a thread outliving the function that started it, does this compile?",
+     "start": 17.836,
+     "end": 23.836
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -2.1,
+   "wpm": 151,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "02a": {
+   "hash": "36ca3dd4302addc8",
+   "takes": [
+    "e1e82f6193b92574fbc0",
+    "3b569c3fe0711faeb5b9"
+   ],
+   "duration": 18.174,
+   "lines": [
+    {
+     "text": "It does not, and it is rejected before the program ever runs, not after.",
+     "start": 0.15,
+     "end": 5.812
+    },
+    {
+     "text": "The thread borrowed a variable that belongs to a function that might vanish before the thread is done with it. The compiler isn't willing to find out whether that actually happens at run time.",
+     "start": 6.232,
+     "end": 17.824
+    }
+   ],
+   "lufs": -16.0,
+   "true_peak": -1.9,
+   "wpm": 158,
+   "wer": 0.058823529411764705,
+   "exact": false,
+   "tolerated": [
+    {
+     "line": "The thread borrowed a variable that belongs to a function that might vanish before the thread is done with it. The compiler isn't willing to find out whether that actually happens at run time.",
+     "said": "run time",
+     "heard": "runtime"
+    }
+   ]
+  },
+  "03": {
+   "hash": "69e96a5c90e33565",
+   "takes": [
+    "0f32c2cf682a28111e9d",
+    "e14287b908a629edea93"
+   ],
+   "duration": 26.02,
+   "lines": [
+    {
+     "text": "Compile that exact attempt for real, and the compiler names the danger precisely: the closure handed to the new thread might outlive the very function it was written inside, and the variable it's reading belongs to that function, not to the thread.",
+     "start": 0.15,
+     "end": 17.656
+    },
+    {
+     "text": "That is the whole shape of the problem, stated by the tool that actually has to prevent it.",
+     "start": 18.076,
+     "end": 25.67
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -1.9,
+   "wpm": 138,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "04": {
+   "hash": "4569d07650715c5d",
+   "takes": [
+    "545b4d2288f16531b56f",
+    "00a33064112cea0cd8a7",
+    "63d5add128a15da25022"
+   ],
+   "duration": 39.74,
+   "lines": [
+    {
+     "text": "Now spawn the identical closure a different way: inside a scope built specifically for this. Same local variable, same borrow, same reading-only closure.",
+     "start": 0.15,
+     "end": 12.823
+    },
+    {
+     "text": "This time it compiles, and here is why that is actually sound rather than a loophole: the call that creates the scope will not hand control back to its caller until every thread spawned inside it has already finished.",
+     "start": 13.243,
+     "end": 30.756
+    },
+    {
+     "text": "The borrow never had a chance to outlive the thread, because the surrounding call refused to let go until the thread was done.",
+     "start": 31.176,
+     "end": 39.39
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 130,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "05": {
+   "hash": "5393e197673d057d",
+   "takes": [
+    "b58addbe7ffb39be57a6",
+    "13ded451472e6097b191"
+   ],
+   "duration": 27.079,
+   "lines": [
+    {
+     "text": "Different shape of problem now. Wrap a lockable counter in a reference-counted handle, clone that handle, and hand the clone to an ordinary new thread, the kind with no enclosing scope at all, from a function built to return immediately.",
+     "start": 0.15,
+     "end": 16.98
+    },
+    {
+     "text": "That thread genuinely needs to keep running after the function that launched it has already returned. Does handing it the cloned handle this way still compile?",
+     "start": 17.7,
+     "end": 26.729
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 148,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "05a": {
+   "hash": "9e7fc986d75cb8de",
+   "takes": [
+    "9fb58f01a61b307441df",
+    "e1d15371e42135ecefa8"
+   ],
+   "duration": 23.392,
+   "lines": [
+    {
+     "text": "It compiles, and for a completely different reason than the scoped case a moment ago: the closure never borrows anything at all.",
+     "start": 0.15,
+     "end": 9.978
+    },
+    {
+     "text": "It takes full ownership of its own clone of the handle. Nothing inside it points back at a variable that might disappear, so there was never a borrow for the surrounding function's lifetime to threaten.",
+     "start": 10.398,
+     "end": 23.042
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 146,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "06": {
+   "hash": "ba8587fd8c6e7417",
+   "takes": [
+    "4cb8aeefd77dd95e48b9",
+    "f87157b01d69fff92fb9"
+   ],
+   "duration": 26.459,
+   "lines": [
+    {
+     "text": "That reference-counted handle, once it has been moved rather than borrowed, already satisfies the exact requirement a new thread demands, with no extra work at all.",
+     "start": 0.15,
+     "end": 11.863
+    },
+    {
+     "text": "The requirement never asked how long the surrounding function keeps running. It only asked whether the thing you handed over contains a reference to something that might go away. An owned handle contains no such reference.",
+     "start": 12.283,
+     "end": 26.109
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 143,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "07": {
+   "hash": "0c67f3fc531a9fd2",
+   "takes": [
+    "f6be595ca56c0cf06010",
+    "ad6556ae4bf068c1863f"
+   ],
+   "duration": 27.86,
+   "lines": [
+    {
+     "text": "Switch from threads to an asynchronous runtime's own way of starting background work, and you meet the exact same shape of requirement again, word for word: own everything you hand over, borrow nothing.",
+     "start": 0.15,
+     "end": 13.551
+    },
+    {
+     "text": "But look for the asynchronous equivalent of that scope from a few steps back, the one that waited for everything inside it to finish before letting go, and it simply isn't there.",
+     "start": 13.971,
+     "end": 27.51
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 140,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "08": {
+   "hash": "6751d0617c6dfda2",
+   "takes": [
+    "cd4940cd6f2989909589",
+    "300c40a15df79aa975ba"
+   ],
+   "duration": 24.076,
+   "lines": [
+    {
+     "text": "Suppose someone built one anyway: a scope for background work that hands you a small guard object the moment you start it, and promises the work is truly finished the instant that guard is destroyed.",
+     "start": 0.15,
+     "end": 14.336
+    },
+    {
+     "text": "Could completely ordinary, everyday safe code ever break that promise, without reaching for anything marked unsafe?",
+     "start": 15.056,
+     "end": 23.726
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -1.9,
+   "wpm": 127,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "08a": {
+   "hash": "18e70da2e565470c",
+   "takes": [
+    "ec9a138f1fa309b35776",
+    "0742a7d26d89f7de5a94"
+   ],
+   "duration": 30.423,
+   "lines": [
+    {
+     "text": "Yes, and the tool that breaks it is itself perfectly ordinary and perfectly safe: a standard library function whose entire job is to take a value and skip whatever cleanup it was supposed to run when it disappeared.",
+     "start": 0.15,
+     "end": 16.686
+    },
+    {
+     "text": "Hand that guard to it, and the guard disappears without ever announcing that the work is done. The promise it was built to keep simply never fires, and nothing unsafe was needed to make that happen.",
+     "start": 17.106,
+     "end": 30.073
+    }
+   ],
+   "lufs": -16.6,
+   "true_peak": -1.6,
+   "wpm": 146,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "09": {
+   "hash": "02660c3a5a139e0a",
+   "takes": [
+    "112955e250093012627e",
+    "ac6428ef8221bb97165e",
+    "f0256a3a6b63cb2155b2"
+   ],
+   "duration": 31.133,
+   "lines": [
+    {
+     "text": "Build exactly that guard for real: something that is supposed to announce, the moment it is destroyed, that the background work it stood for has truly finished.",
+     "start": 0.15,
+     "end": 12.091
+    },
+    {
+     "text": "Then hand that very guard to the function whose whole job is skipping destruction, and run the program.",
+     "start": 12.511,
+     "end": 19.18
+    },
+    {
+     "text": "The announcement never happens. Nothing prints. The guard existed, and then it simply stopped existing, with its one promised duty left undone.",
+     "start": 19.6,
+     "end": 30.783
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 129,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "10": {
+   "hash": "841dcd8ff754d76e",
+   "takes": [
+    "73cd98e477611413be46",
+    "9fbd189e93aef04e778b",
+    "4fac073545966ba6f656",
+    "1b360b7d09d3c31948a6",
+    "9d39c1cd5f32e0530f7c"
+   ],
+   "duration": 52.667,
+   "lines": [
+    {
+     "text": "So: a new thread needs full ownership of everything it touches, because it can keep running after the function that started it is already gone.",
+     "start": 0.15,
+     "end": 9.232
+    },
+    {
+     "text": "A scope earns the right to lend out a borrow instead, by refusing to let go until every thread inside it has actually finished.",
+     "start": 9.652,
+     "end": 18.316
+    },
+    {
+     "text": "An owned, reference-counted handle already satisfies that same requirement, for free, the moment it stops being a borrow and becomes something fully owned.",
+     "start": 18.736,
+     "end": 29.358
+    },
+    {
+     "text": "Background asynchronous work asks for the identical ownership, but there is no sound version of that waiting scope for it, because the one tool that would have to enforce the promise can always be slipped past by ordinary, everyday code.",
+     "start": 29.778,
+     "end": 45.867
+    },
+    {
+     "text": "Next time: a world where none of this borrowing machinery has anything left to say at all.",
+     "start": 46.587,
+     "end": 52.317
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 148,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  }
+ }
+}
