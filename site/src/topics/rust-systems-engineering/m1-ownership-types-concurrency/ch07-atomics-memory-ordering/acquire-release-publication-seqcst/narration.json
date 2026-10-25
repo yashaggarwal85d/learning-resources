@@ -65,7 +65,8 @@
     },
     {
       "lines": [
-        "A standalone checkpoint can do the same handoff work without being tied to any one specific read or write: a lock's own compare-and-swap loop stays as weak as possible, and a separate checkpoint right after winning the lock does the strong-read half of the handoff on its own.",
+        "A standalone checkpoint can do the same handoff work without being tied to any one specific read or write.",
+        "A lock's own compare-and-swap loop stays as weak as possible, and a separate checkpoint right after winning the lock does the strong-read half of the handoff on its own.",
         "The strong-write half, releasing the lock, still happens the usual way."
       ],
       "takeaway": "A standalone checkpoint pairs with a matching operation or another checkpoint the same way the matched pairing does; it just isn't tied to one specific access."
