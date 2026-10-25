@@ -1,0 +1,393 @@
+{
+ "topic": "dsa.strings-string-builders",
+ "voice": "breeze-mellow-v2",
+ "asr": "large-v3-turbo",
+ "clips": {
+  "01": {
+   "hash": "49102e5e56827306",
+   "takes": [
+    "68e78261040298832f81",
+    "ebabf77b6ca246a13ee4",
+    "1d00dbc4c32fb3afdf02"
+   ],
+   "duration": 32.325,
+   "lines": [
+    {
+     "text": "Every structure you've met this chapter, you could point at a slot and say exactly where it sits, no extra work required.",
+     "start": 0.15,
+     "end": 7.987
+    },
+    {
+     "text": "A string quietly breaks that promise. It still looks like one simple row of characters on the page, but what's actually stored underneath doesn't have to match what you're reading at all.",
+     "start": 8.407,
+     "end": 20.381
+    },
+    {
+     "text": "By the end of this one, you'll see three separate costs hiding inside something that looks like plain text, and all three trace straight back to ideas this chapter already built.",
+     "start": 20.801,
+     "end": 31.975
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 158,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "02": {
+   "hash": "008d441048c43e3a",
+   "takes": [
+    "ff10ee8c1217cda17ce5",
+    "76056811fc1780e07af3",
+    "aa3874b9ee7b4ff90c68"
+   ],
+   "duration": 35.587,
+   "lines": [
+    {
+     "text": "Here's a habit worth examining: when a line like this one runs, nothing about the original string actually changes.",
+     "start": 0.15,
+     "end": 7.719
+    },
+    {
+     "text": "Picture two separate boxes sitting side by side, not one box getting new contents. The old box stays exactly as it was, and some other part of your program might still be holding onto it.",
+     "start": 8.139,
+     "end": 21.332
+    },
+    {
+     "text": "That guarantee, that nobody can quietly rewrite what you're holding, is why a string can safely sit as a key in a lookup table. Its identity can never shift out from under you.",
+     "start": 21.752,
+     "end": 35.237
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 147,
+   "wer": 0.05714285714285714,
+   "exact": false,
+   "tolerated": [
+    {
+     "line": "Picture two separate boxes sitting side by side, not one box getting new contents. The old box stays exactly as it was, and some other part of your program might still be holding onto it.",
+     "said": "onto",
+     "heard": "on to"
+    }
+   ]
+  },
+  "03": {
+   "hash": "d357063d895aec9e",
+   "takes": [
+    "4a612f602536488632ef",
+    "7e3753c93743f4064cbb",
+    "d5c1ea2b62d3ace23c08"
+   ],
+   "duration": 29.277,
+   "lines": [
+    {
+     "text": "Watch the size of each discarded buffer as this loop runs. It isn't growing by one piece each time; look at how much wider every new one gets.",
+     "start": 0.15,
+     "end": 10.252
+    },
+    {
+     "text": "Each piece you add makes the next copy more expensive, because that copy has to drag along everything built so far, not just the new piece.",
+     "start": 10.672,
+     "end": 20.213
+    },
+    {
+     "text": "Add that up across the whole loop, and the total grows like the piece count multiplied by itself, not like the piece count alone.",
+     "start": 20.633,
+     "end": 28.927
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 160,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "04": {
+   "hash": "2f9a19bda2bf6122",
+   "takes": [
+    "4a4f53df00b950f0c87e",
+    "63a99e102f5f0bdf31f3",
+    "d5ea923cccd306d5c584"
+   ],
+   "duration": 26.305,
+   "lines": [
+    {
+     "text": "Before you choose, notice what isn't an option here: an immutable string can't simply get smarter about this loop. Immutable means it never changes after it's made, full stop.",
+     "start": 0.15,
+     "end": 14.386
+    },
+    {
+     "text": "So whatever fixes this has to live somewhere else entirely, in a different kind of object with a different set of rules.",
+     "start": 14.806,
+     "end": 22.533
+    },
+    {
+     "text": "Which choice actually hands you that different object?",
+     "start": 22.953,
+     "end": 25.955
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 135,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "04a": {
+   "hash": "163e3b984b887b9a",
+   "takes": [
+    "7b86c9bce5db72654862",
+    "a739027eb77c6426e20e"
+   ],
+   "duration": 24.6,
+   "lines": [
+    {
+     "text": "A bigger starting string sounds reasonable, but think through what it would need: filling in an immutable string after it already exists, which it refuses to do by definition.",
+     "start": 0.15,
+     "end": 13.342
+    },
+    {
+     "text": "The real fix is a second, genuinely mutable object that does the collecting. You only pay the immutable-string cost once, right at the very end.",
+     "start": 13.762,
+     "end": 24.25
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -2.0,
+   "wpm": 134,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "05": {
+   "hash": "bfd76f5abf46c6a4",
+   "takes": [
+    "b2176dcb52b5dcc79ea3",
+    "7bba055e2a9398d81dbe",
+    "4c69cbafee58d3bdcf56"
+   ],
+   "duration": 26.611,
+   "lines": [
+    {
+     "text": "That mutable collector already has a name, and you've essentially met its trick before.",
+     "start": 0.15,
+     "end": 4.996
+    },
+    {
+     "text": "Give it a little spare room, and when that runs out, double the room instead of growing it by one slot. That's the exact same policy a growing array used, several topics back, under a different name.",
+     "start": 5.416,
+     "end": 19.566
+    },
+    {
+     "text": "Nothing new gets proven here. This is topic one's own result, wearing a different costume.",
+     "start": 19.986,
+     "end": 26.262
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 149,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "06": {
+   "hash": "8105ea365b5fc6f8",
+   "takes": [
+    "1e5a528cb229d58bf6db",
+    "aaf1bfb5e6b8bfa0a13b",
+    "42d9480f2efee28db432"
+   ],
+   "duration": 29.367,
+   "lines": [
+    {
+     "text": "Look closely at the widths of these cells. They're not all equal, even though each one holds exactly one character.",
+     "start": 0.15,
+     "end": 7.123
+    },
+    {
+     "text": "A single character can cost anywhere from one byte up to four, and which width you land on depends entirely on which character it is. Plain English text barely notices; many other scripts, and most emoji, pay more.",
+     "start": 7.543,
+     "end": 22.766
+    },
+    {
+     "text": "That one design choice is the reason the rest of this topic has to exist at all.",
+     "start": 23.186,
+     "end": 29.017
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 153,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "07": {
+   "hash": "16dd16e16e914aef",
+   "takes": [
+    "d5d3c88d8bd80cb6d7ac",
+    "c2d0e7f2c271ab952112",
+    "892461ddb1ba45aebd7e"
+   ],
+   "duration": 20.972,
+   "lines": [
+    {
+     "text": "Grabbing a single byte at a known position never has to inspect anything else. It jumps straight there.",
+     "start": 0.15,
+     "end": 6.784
+    },
+    {
+     "text": "Now ask the harder question: if you want the fifth character rather than the fifth byte, does the computer get to jump the same way?",
+     "start": 7.204,
+     "end": 15.173
+    },
+    {
+     "text": "Think about what it would need to already know before you pick an answer.",
+     "start": 15.723,
+     "end": 20.622
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -1.7,
+   "wpm": 163,
+   "wer": 0.05555555555555555,
+   "exact": false,
+   "tolerated": [
+    {
+     "line": "Grabbing a single byte at a known position never has to inspect anything else. It jumps straight there.",
+     "said": "byte",
+     "heard": "bite"
+    }
+   ]
+  },
+  "07a": {
+   "hash": "0e6718db38105031",
+   "takes": [
+    "86aa7d75fc9ecb5914df",
+    "a0fc06cc1e9418e3dfd3"
+   ],
+   "duration": 24.469,
+   "lines": [
+    {
+     "text": "It would need to know exactly how wide every character before the fifth one turned out to be, and the only way to learn that is to walk through and decode them, one at a time.",
+     "start": 0.15,
+     "end": 12.008
+    },
+    {
+     "text": "Jumping to a byte and jumping to a character are not the same operation, even though they look identical when every character happens to be exactly one byte wide.",
+     "start": 12.428,
+     "end": 24.119
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -1.9,
+   "wpm": 159,
+   "wer": 0.06896551724137931,
+   "exact": false,
+   "tolerated": [
+    {
+     "line": "Jumping to a byte and jumping to a character are not the same operation, even though they look identical when every character happens to be exactly one byte wide.",
+     "said": "byte",
+     "heard": "bite"
+    },
+    {
+     "line": "Jumping to a byte and jumping to a character are not the same operation, even though they look identical when every character happens to be exactly one byte wide.",
+     "said": "byte",
+     "heard": "bite"
+    }
+   ]
+  },
+  "08": {
+   "hash": "2c79e6cdb49ab999",
+   "takes": [
+    "0d61ea1f768442558731",
+    "e14202a63613a36f8a0a",
+    "84612c2d22410a239551",
+    "b746cd16c90c992201ab"
+   ],
+   "duration": 37.356,
+   "lines": [
+    {
+     "text": "Two real languages looked at this same problem and made opposite bets.",
+     "start": 0.15,
+     "end": 5.137
+    },
+    {
+     "text": "One hands you the byte directly and instantly, and only decodes characters when you explicitly ask it to walk through them one at a time, slower, but only when you asked for it.",
+     "start": 5.557,
+     "end": 18.032
+    },
+    {
+     "text": "The other refuses to let you index by character at all, and even its fast byte-based shortcut will stop your program outright if you slice it in the wrong spot.",
+     "start": 18.452,
+     "end": 29.758
+    },
+    {
+     "text": "Neither choice is a mistake. Each one is simply honest about which promise it's willing to keep.",
+     "start": 30.178,
+     "end": 37.006
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -1.9,
+   "wpm": 149,
+   "wer": 0.03225806451612903,
+   "exact": false,
+   "tolerated": [
+    {
+     "line": "One hands you the byte directly and instantly, and only decodes characters when you explicitly ask it to walk through them one at a time, slower, but only when you asked for it.",
+     "said": "byte",
+     "heard": "bite"
+    },
+    {
+     "line": "The other refuses to let you index by character at all, and even its fast byte-based shortcut will stop your program outright if you slice it in the wrong spot.",
+     "said": "byte",
+     "heard": "bite"
+    }
+   ]
+  },
+  "09": {
+   "hash": "aa439a502531c0cf",
+   "takes": [
+    "3843d752add288c33689",
+    "b58f011b5e9b123250f6",
+    "a49efbd0024a33cf971c"
+   ],
+   "duration": 33.943,
+   "lines": [
+    {
+     "text": "None of this is a story about one slow machine. It's a shape, and shapes only become obvious once you measure across a wide enough range of sizes.",
+     "start": 0.15,
+     "end": 10.579
+    },
+    {
+     "text": "Watch the naive approach's bar as the input doubles. It doesn't just get a little longer; it roughly quadruples.",
+     "start": 10.999,
+     "end": 18.435
+    },
+    {
+     "text": "Now watch the collector's bar at inputs a hundred times as large. It only roughly doubles. That gap between quadrupling and doubling is the whole quadratic-versus-linear story, measured, not assumed.",
+     "start": 18.855,
+     "end": 33.593
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -1.9,
+   "wpm": 140,
+   "wer": 0.05263157894736842,
+   "exact": false,
+   "tolerated": [
+    {
+     "line": "Watch the naive approach's bar as the input doubles. It doesn't just get a little longer; it roughly quadruples.",
+     "said": "approachs",
+     "heard": "approaches"
+    }
+   ]
+  }
+ }
+}
