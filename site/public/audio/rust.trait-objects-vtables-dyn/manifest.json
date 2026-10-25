@@ -1,0 +1,385 @@
+{
+ "topic": "rust.trait-objects-vtables-dyn",
+ "voice": "breeze-mellow-v2",
+ "asr": "large-v3-turbo",
+ "clips": {
+  "01": {
+   "hash": "1438ddc161d9113c",
+   "takes": [
+    "5d961b448841ad77c40c",
+    "0ea4d1b8e34ebd4e1556"
+   ],
+   "duration": 26.53,
+   "lines": [
+    {
+     "text": "A reference to some ordinary concrete type is just one single pointer, pointing straight at the data and nothing else.",
+     "start": 0.15,
+     "end": 8.488
+    },
+    {
+     "text": "Make that same reference point at a trait instead of a concrete type, and it quietly doubles in size. There is still a pointer to the data, but now there is a second pointer riding alongside it, pointing somewhere else entirely.",
+     "start": 9.208,
+     "end": 26.18
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 138,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "02": {
+   "hash": "2e01a44b19055e19",
+   "takes": [
+    "22e431c78fe2f556b81e",
+    "d112e4b9b5c1cf8dc37e"
+   ],
+   "duration": 16.71,
+   "lines": [
+    {
+     "text": "That second pointer is not pointing at more data about the value itself. It points at something built exactly once for each concrete type that ever gets used this way.",
+     "start": 0.15,
+     "end": 12.363
+    },
+    {
+     "text": "What does that second pointer actually point to?",
+     "start": 13.083,
+     "end": 16.36
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -2.2,
+   "wpm": 136,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "02a": {
+   "hash": "18a61a8dc03f7b6b",
+   "takes": [
+    "fac9e551fc0b53457c76",
+    "5308759c7e5d45884d63"
+   ],
+   "duration": 25.438,
+   "lines": [
+    {
+     "text": "A table of function pointers, with exactly one entry for every method the trait, and anything it inherits from, actually has an implementation for.",
+     "start": 0.15,
+     "end": 10.005
+    },
+    {
+     "text": "Every single value of that same concrete type, no matter how many of them exist, shares that one table. Only the first pointer, the one pointing at the actual data, is ever different between them.",
+     "start": 10.425,
+     "end": 25.088
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 139,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "03": {
+   "hash": "2c14f839223125d6",
+   "takes": [
+    "6b0f3f307652e44d5e60",
+    "896c7e92b253990cd277"
+   ],
+   "duration": 23.022,
+   "lines": [
+    {
+     "text": "Call a method through a reference like this one, and the compiler genuinely cannot know in advance which implementation that call is going to land on.",
+     "start": 0.15,
+     "end": 10.301
+    },
+    {
+     "text": "So it waits. The correct function pointer gets pulled out of that table and called through only at the exact moment the call actually happens, never a moment before.",
+     "start": 10.721,
+     "end": 22.672
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -2.0,
+   "wpm": 143,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "04": {
+   "hash": "a3fa46cf8951baa6",
+   "takes": [
+    "35d0dea0e7dc7d28accc",
+    "503a94010017c7c1d9da",
+    "3ffb9007bc5004ba13c9",
+    "e8767fcf7d16bcf4527a"
+   ],
+   "duration": 59.133,
+   "lines": [
+    {
+     "text": "Take one single loop, calling one trivial method, and run it two ways: once through a reference whose concrete type the compiler already knows, and once through a reference to a trait instead.",
+     "start": 0.15,
+     "end": 13.55
+    },
+    {
+     "text": "Let the optimizer do everything it possibly can to both versions, and look at what's left afterward.",
+     "start": 13.97,
+     "end": 19.879
+    },
+    {
+     "text": "In the version where the concrete type was already known, that method call vanishes completely, folded straight into the surrounding code. In the trait version, a real call survives no matter how hard the optimizer tries, because the thing being called still isn't decided until the program actually runs.",
+     "start": 20.599,
+     "end": 43.342
+    },
+    {
+     "text": "That is the cost people usually get wrong. It is almost never the one extra jump through a table. It is everything the first version got to skip, for free, that the second version structurally never can.",
+     "start": 43.762,
+     "end": 58.783
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -1.8,
+   "wpm": 138,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "05": {
+   "hash": "333e0089176359ac",
+   "takes": [
+    "c67fa546652db967991d",
+    "c8acdcb4cfddc58cee02",
+    "9aaf8b424859dc2387b0"
+   ],
+   "duration": 29.069,
+   "lines": [
+    {
+     "text": "Here is a method that takes ownership of itself and hands itself straight back, used through a reference to the trait rather than the concrete type underneath it.",
+     "start": 0.15,
+     "end": 11.005
+    },
+    {
+     "text": "Receiving a value by taking full ownership of it means the code receiving it has to know exactly how large that value actually is. A reference to a trait erases precisely that fact on purpose.",
+     "start": 11.425,
+     "end": 25.229
+    },
+    {
+     "text": "Does code written this way actually compile?",
+     "start": 25.949,
+     "end": 28.719
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -2.2,
+   "wpm": 144,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "05a": {
+   "hash": "02871beefdc180ca",
+   "takes": [
+    "36ed022b42bbe0f8c247",
+    "a062d9cf57f2a300e748"
+   ],
+   "duration": 27.162,
+   "lines": [
+    {
+     "text": "No, and it fails immediately, naming the exact reason: this trait simply cannot be turned into a reference to the trait at all, because one of its methods hands back the whole, by-value thing a bare trait reference can never know the size of.",
+     "start": 0.15,
+     "end": 18.471
+    },
+    {
+     "text": "The trait itself isn't broken. It just can't be used this particular way, through this particular pointer, as written.",
+     "start": 18.891,
+     "end": 26.812
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -1.9,
+   "wpm": 141,
+   "wer": 0.05263157894736842,
+   "exact": false,
+   "tolerated": [
+    {
+     "line": "The trait itself isn't broken. It just can't be used this particular way, through this particular pointer, as written.",
+     "said": "trait",
+     "heard": "trade"
+    }
+   ]
+  },
+  "06": {
+   "hash": "2d2c4ee710365419",
+   "takes": [
+    "225e9d1f6c8aec6418c7",
+    "0ffb8c2e42b2fbde68e1",
+    "325fb517a2b9ccd1d8a0"
+   ],
+   "duration": 26.918,
+   "lines": [
+    {
+     "text": "Add one small condition to that one troublesome method, and nothing else about the trait changes at all.",
+     "start": 0.15,
+     "end": 6.637
+    },
+    {
+     "text": "That condition tells the compiler this one method will never be reached through a trait reference, so leave it out of the table entirely rather than refusing the whole trait over it.",
+     "start": 7.057,
+     "end": 17.771
+    },
+    {
+     "text": "Every other method on that same trait keeps working exactly as before, through exactly the same kind of reference that failed a moment ago.",
+     "start": 18.191,
+     "end": 26.568
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 165,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "07": {
+   "hash": "aac7cbb6461e33a3",
+   "takes": [
+    "15ba1671fc85a2535516",
+    "ce5abb1208c379ce654d",
+    "9de731aaacc36122af50"
+   ],
+   "duration": 21.597,
+   "lines": [
+    {
+     "text": "Take a trait that inherits from a second, broader trait, and a value you only know as a reference to the narrower one.",
+     "start": 0.15,
+     "end": 7.903
+    },
+    {
+     "text": "Converting that reference to the broader trait used to require going all the way back to the concrete type underneath both of them.",
+     "start": 8.323,
+     "end": 16.658
+    },
+    {
+     "text": "Does it still require that detour on a current toolchain?",
+     "start": 17.378,
+     "end": 21.247
+    }
+   ],
+   "lufs": -16.3,
+   "true_peak": -2.4,
+   "wpm": 156,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "07a": {
+   "hash": "aa15610f88236491",
+   "takes": [
+    "d2600a533c4f6549ee12",
+    "bfc597b534535b3d02dd"
+   ],
+   "duration": 23.295,
+   "lines": [
+    {
+     "text": "No. It converts directly now, with no detour through the concrete type at all, a capability added to the language fairly recently.",
+     "start": 0.15,
+     "end": 9.663
+    },
+    {
+     "text": "The narrower trait's own table is simply laid out so the broader trait's entries can be read straight out of it. Nothing new gets built, and nothing goes back through the original concrete type to get there.",
+     "start": 10.083,
+     "end": 22.945
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -1.9,
+   "wpm": 152,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "08": {
+   "hash": "992a7060ab3dbff7",
+   "takes": [
+    "cb855d7538b9eff2208e",
+    "d2a450573921e9fa9560",
+    "d959d675d1f30f2f8702"
+   ],
+   "duration": 36.996,
+   "lines": [
+    {
+     "text": "Instead of hiding two different implementations behind one trait reference, wrap them both in one single type that lists exactly which two they are, and pick between them with an ordinary branch.",
+     "start": 0.15,
+     "end": 12.445
+    },
+    {
+     "text": "That removes the table and the second pointer completely. Every implementation has to be written into that one list ahead of time, with nothing hidden and nothing added later without touching it directly.",
+     "start": 12.865,
+     "end": 25.418
+    },
+    {
+     "text": "That trade is the whole point: give up the freedom to add new implementations later, in exchange for giving up the extra pointer and the table entirely.",
+     "start": 25.838,
+     "end": 36.646
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -1.9,
+   "wpm": 149,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "09": {
+   "hash": "04b0cecb1185f8a0",
+   "takes": [
+    "eb41593a74767c21c340",
+    "431eb03158c6619a9ef8",
+    "f3407e8247faa567a13f",
+    "75398b49b42d1ba6d694",
+    "8d85c5b2f81533e4cccd",
+    "78318686a8169e894708"
+   ],
+   "duration": 82.885,
+   "lines": [
+    {
+     "text": "So: a reference to a trait is really two pointers riding together, one to the data, one to a table built once per concrete type, and every call through it waits until the moment it actually happens to decide which function to run.",
+     "start": 0.15,
+     "end": 15.486
+    },
+    {
+     "text": "The expensive part most people blame is the smallest part of the real cost. The larger part is everything a call through a known type gets to skip for free, that a call through a trait reference structurally never can.",
+     "start": 15.906,
+     "end": 33.26
+    },
+    {
+     "text": "A method that hands back the whole value it was given, or one written generically inside the trait, can't go in that table at all, unless it's marked as something that will only ever be called when the concrete type is already known.",
+     "start": 33.68,
+     "end": 48.155
+    },
+    {
+     "text": "A narrower trait widens directly into a broader one it inherits from, with no detour back through the concrete type needed anymore.",
+     "start": 48.575,
+     "end": 57.61
+    },
+    {
+     "text": "And wrapping a known, closed set of implementations in one ordinary type instead removes the table and the extra pointer entirely, at the cost of needing every one of them written in by hand.",
+     "start": 58.03,
+     "end": 70.863
+    },
+    {
+     "text": "Next time: both of the tools this chapter has built so far quietly assume the trait itself is allowed to be used that way at all. What actually decides whether it is?",
+     "start": 71.583,
+     "end": 82.535
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -1.9,
+   "wpm": 155,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  }
+ }
+}
