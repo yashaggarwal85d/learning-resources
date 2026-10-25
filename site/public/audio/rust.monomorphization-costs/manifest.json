@@ -1,0 +1,428 @@
+{
+ "topic": "rust.monomorphization-costs",
+ "voice": "breeze-mellow-v2",
+ "asr": "large-v3-turbo",
+ "clips": {
+  "01": {
+   "hash": "58b5f6416c657679",
+   "takes": [
+    "6a9459dd1d4e85137eeb",
+    "fa2fa147fad7711208f2"
+   ],
+   "duration": 28.653,
+   "lines": [
+    {
+     "text": "Write a function generically over some trait, and it is tempting to picture one compiled routine underneath, quietly handling whatever concrete type shows up at each call.",
+     "start": 0.15,
+     "end": 11.887
+    },
+    {
+     "text": "That is not what happens. The compiler writes that function out again, in full, for every distinct concrete type it is ever actually called with, as if you had hand-written a separate copy yourself for each one.",
+     "start": 12.607,
+     "end": 28.303
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 136,
+   "wer": 0.05263157894736842,
+   "exact": false,
+   "tolerated": [
+    {
+     "line": "That is not what happens. The compiler writes that function out again, in full, for every distinct concrete type it is ever actually called with, as if you had hand-written a separate copy yourself for each one.",
+     "said": "hand written",
+     "heard": "handwritten"
+    }
+   ]
+  },
+  "02": {
+   "hash": "1fce02683a210b7f",
+   "takes": [
+    "9004d42903a14ce22c0e",
+    "91b55b035ebfe3549306",
+    "57d6faee7bf0b397c845"
+   ],
+   "duration": 23.183,
+   "lines": [
+    {
+     "text": "Here is one generic function, bound by a shared trait, called once through one codec and once through a completely different codec.",
+     "start": 0.15,
+     "end": 9.043
+    },
+    {
+     "text": "Look at what the compiler actually hands back before any optimizer has touched a single line of it.",
+     "start": 9.463,
+     "end": 16.523
+    },
+    {
+     "text": "How many separate, distinct bodies show up for that one generic function?",
+     "start": 17.244,
+     "end": 22.833
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -2.1,
+   "wpm": 135,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "02a": {
+   "hash": "bfdcca481c077d9a",
+   "takes": [
+    "473ad264bbbc0989c7f2",
+    "f3d440f6af01eb4e2f3d"
+   ],
+   "duration": 26.485,
+   "lines": [
+    {
+     "text": "Two, not one. One full body for the first codec, and a second, entirely separate full body for the second codec, each with its own name baked in by the compiler.",
+     "start": 0.15,
+     "end": 13.009
+    },
+    {
+     "text": "Nothing was shared between them at all. The generic version you wrote once became two real, independent routines the moment two different concrete types actually called into it.",
+     "start": 13.429,
+     "end": 26.135
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -1.9,
+   "wpm": 134,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "03": {
+   "hash": "3403887d39333954",
+   "takes": [
+    "bcf202306f8a3b371f25",
+    "34495602b23d3bf8d586",
+    "d3ae533d3a07de729743"
+   ],
+   "duration": 30.836,
+   "lines": [
+    {
+     "text": "Here is the part worth sitting with: both of those compiled copies run exactly as fast as a plain, hand-written, non-generic version of the same function would.",
+     "start": 0.15,
+     "end": 11.35
+    },
+    {
+     "text": "That is the entire promise generics make you at run time, and it is kept completely.",
+     "start": 11.77,
+     "end": 18.39
+    },
+    {
+     "text": "But producing two full copies instead of one is not free, and that cost only grows as more and more distinct types end up calling into the same generic function.",
+     "start": 19.11,
+     "end": 30.486
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 146,
+   "wer": 0.125,
+   "exact": false,
+   "tolerated": [
+    {
+     "line": "Here is the part worth sitting with: both of those compiled copies run exactly as fast as a plain, hand-written, non-generic version of the same function would.",
+     "said": "hand written",
+     "heard": "handwritten"
+    },
+    {
+     "line": "That is the entire promise generics make you at run time, and it is kept completely.",
+     "said": "run time",
+     "heard": "runtime"
+    }
+   ]
+  },
+  "04": {
+   "hash": "9cce95c87e3e1c50",
+   "takes": [
+    "06e7a8951ea356a677df",
+    "0944cac602a399e260c7",
+    "e4f17f4bd8e288828ace"
+   ],
+   "duration": 35.391,
+   "lines": [
+    {
+     "text": "Now take the actual repetitive work inside that generic function, the part that does the same thing no matter which concrete type is involved, and move it into its own ordinary, non-generic function entirely.",
+     "start": 0.15,
+     "end": 13.822
+    },
+    {
+     "text": "What is left behind in the generic function shrinks down to almost nothing: a thin wrapper whose only job is to call straight into that one shared piece of work.",
+     "start": 14.242,
+     "end": 26.472
+    },
+    {
+     "text": "Nothing about the public, generic signature changed at all. Only what actually gets duplicated for every new type did.",
+     "start": 26.892,
+     "end": 35.041
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 142,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "05": {
+   "hash": "e51fcd420f2235a5",
+   "takes": [
+    "c3c04b656f4e92ce5d58",
+    "71ff918c8201212a2cf7"
+   ],
+   "duration": 18.236,
+   "lines": [
+    {
+     "text": "Now put that same repetitive work straight back inside the generic function instead of pulling it out into its own piece, and compile for the same two concrete types as before.",
+     "start": 0.15,
+     "end": 11.585
+    },
+    {
+     "text": "What happens to the two compiled copies this time, compared with pulling that work out separately?",
+     "start": 12.305,
+     "end": 17.886
+    }
+   ],
+   "lufs": -16.3,
+   "true_peak": -2.5,
+   "wpm": 155,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "05a": {
+   "hash": "787f71720928e97f",
+   "takes": [
+    "1d509dcba01f306a948b",
+    "66c107df9562b16ddd18"
+   ],
+   "duration": 23.746,
+   "lines": [
+    {
+     "text": "Each copy now carries the entire repetitive work inside it, duplicated whole, not just a thin wrapper calling out to something shared.",
+     "start": 0.15,
+     "end": 10.024
+    },
+    {
+     "text": "Pulling that work out earlier was not a stylistic choice. It is the one lever that decides whether monomorphization duplicates almost nothing, or duplicates everything, every single time.",
+     "start": 10.444,
+     "end": 23.396
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 126,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "06": {
+   "hash": "5083ec3ae3b4db7d",
+   "takes": [
+    "e5bb1e8b0e8cf3e83765",
+    "062372c6f616eef88185",
+    "aef88f8e86350f48ffd0"
+   ],
+   "duration": 33.849,
+   "lines": [
+    {
+     "text": "Here is a function taking two separate parameters, each one simply written as some trait, with no name given to either parameter's type at all.",
+     "start": 0.15,
+     "end": 9.758
+    },
+    {
+     "text": "Underneath, that is still exactly a generic function: each of those two positions is quietly its own separate, anonymous type parameter.",
+     "start": 10.178,
+     "end": 21.363
+    },
+    {
+     "text": "Which means those two parameters are completely free to hold two different concrete types at once, and calling it with two different ones compiles without any complaint.",
+     "start": 21.783,
+     "end": 33.499
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 129,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "07": {
+   "hash": "0f154d2486674f0c",
+   "takes": [
+    "292b9a1b7077f68fe77f",
+    "eea2c58337f99ed694fa"
+   ],
+   "duration": 18.05,
+   "lines": [
+    {
+     "text": "Write that same function again, but this time give both parameters one single, shared, named type parameter instead of writing the trait twice.",
+     "start": 0.15,
+     "end": 10.484
+    },
+    {
+     "text": "Call it exactly the same way as before, with two different concrete types. Does it still compile?",
+     "start": 11.204,
+     "end": 17.7
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 133,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "07a": {
+   "hash": "9ac190746af9a202",
+   "takes": [
+    "80d9ca193e1336d770b1",
+    "7c9f4a65de363a594f91"
+   ],
+   "duration": 29.642,
+   "lines": [
+    {
+     "text": "No, and the rejection names the exact mismatch: one shared type parameter has to be one single concrete type everywhere it appears, so the second argument's type simply does not match the first's.",
+     "start": 0.15,
+     "end": 14.762
+    },
+    {
+     "text": "Writing a trait on each position separately and sharing one named type parameter across both look almost identical on the page, but they make a completely different promise about whether the two sides are allowed to differ.",
+     "start": 15.182,
+     "end": 29.291
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -1.9,
+   "wpm": 142,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "08": {
+   "hash": "89b04b03393278d9",
+   "takes": [
+    "312c36dc08835a819481",
+    "fef5156ca0cd2a714e3b",
+    "98a4ed20c79ded3b03ec"
+   ],
+   "duration": 36.435,
+   "lines": [
+    {
+     "text": "A function can also return some trait instead of taking one as a parameter, and that phrase means something entirely different once it moves to the other side of the arrow.",
+     "start": 0.15,
+     "end": 10.314
+    },
+    {
+     "text": "The caller never gets to choose anything here. The function itself quietly picks one real, concrete type that happens to implement that trait, and every single path through the function has to return that exact same type.",
+     "start": 10.734,
+     "end": 27.701
+    },
+    {
+     "text": "All the caller is ever allowed to see afterward is the trait's own interface, never the real type hiding behind it.",
+     "start": 28.121,
+     "end": 36.085
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.8,
+   "wpm": 147,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "09": {
+   "hash": "59dbb8f77dc827c2",
+   "takes": [
+    "61833e862f6957efa5c0",
+    "0cffcbe9390a1ab25690",
+    "b26c01fdfe648f9fe108"
+   ],
+   "duration": 37.535,
+   "lines": [
+    {
+     "text": "Count every single allocation a counting allocator records, right before and right after each of two different ways of returning that same closure.",
+     "start": 0.15,
+     "end": 11.005
+    },
+    {
+     "text": "Returning it the way this topic just described makes no new allocation whatsoever. Nothing on the heap changes at all.",
+     "start": 11.425,
+     "end": 20.11
+    },
+    {
+     "text": "Returning that exact same closure boxed up instead, which used to be the only way to return some unnamed closure type before this topic's approach existed, allocates on the heap every single time it runs, with no exceptions.",
+     "start": 20.53,
+     "end": 37.185
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -2.0,
+   "wpm": 129,
+   "wer": 0.08695652173913043,
+   "exact": false,
+   "tolerated": [
+    {
+     "line": "Count every single allocation a counting allocator records, right before and right after each of two different ways of returning that same closure.",
+     "said": "a counting",
+     "heard": "accounting"
+    }
+   ]
+  },
+  "10": {
+   "hash": "d3d69035512c65f5",
+   "takes": [
+    "9dde5a092cda6aad7d78",
+    "f88790c9f5d799dddd06",
+    "797010edf33c9ee2a5c1",
+    "799f7e552b288fb3e80a",
+    "14d0f00514d61c77e431"
+   ],
+   "duration": 68.707,
+   "lines": [
+    {
+     "text": "So: a generic function bound by a trait becomes one compiled body per concrete type actually calling into it, with every one of those bodies running exactly as fast as a hand-written version would.",
+     "start": 0.15,
+     "end": 14.814
+    },
+    {
+     "text": "That speed is not free elsewhere. It costs compile time and it costs size, and pulling the repeated work out into its own ordinary function is what keeps that cost down to almost nothing.",
+     "start": 15.234,
+     "end": 27.807
+    },
+    {
+     "text": "A trait written separately on each parameter lets those parameters differ; one shared named parameter across both forces them to match exactly.",
+     "start": 28.227,
+     "end": 39.158
+    },
+    {
+     "text": "And a trait used as a return type commits to one single, real, unboxed type chosen by the function itself, which costs nothing extra to return, unlike boxing that same value up instead.",
+     "start": 39.578,
+     "end": 53.558
+    },
+    {
+     "text": "Next time: a generic function already pays its whole cost once, at compile time, for every type it will ever meet. What happens once the set of types involved is not even known until the program is actually running?",
+     "start": 54.278,
+     "end": 68.357
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -1.9,
+   "wpm": 142,
+   "wer": 0.05714285714285714,
+   "exact": false,
+   "tolerated": [
+    {
+     "line": "So: a generic function bound by a trait becomes one compiled body per concrete type actually calling into it, with every one of those bodies running exactly as fast as a hand-written version would.",
+     "said": "hand written",
+     "heard": "handwritten"
+    }
+   ]
+  }
+ }
+}
