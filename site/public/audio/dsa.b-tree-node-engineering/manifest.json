@@ -1,0 +1,349 @@
+{
+ "topic": "dsa.b-tree-node-engineering",
+ "voice": "breeze-mellow-v2",
+ "asr": "large-v3-turbo",
+ "clips": {
+  "01": {
+   "hash": "e96ae2bf87edca6c",
+   "takes": [
+    "b015fba7f0a09a3df6a9",
+    "9bacda717b255afe7b04"
+   ],
+   "duration": 15.673,
+   "lines": [
+    {
+     "text": "Last topic's fanout formula had one hidden assumption: that a page's bytes were being spent well in the first place.",
+     "start": 0.15,
+     "end": 7.987
+    },
+    {
+     "text": "They weren't. Nothing so far has asked what a key actually costs to store, only how many fit.",
+     "start": 8.407,
+     "end": 15.323
+    }
+   ],
+   "lufs": -16.7,
+   "true_peak": -2.2,
+   "wpm": 145,
+   "wer": 0.1,
+   "exact": false,
+   "tolerated": [
+    {
+     "line": "Last topic's fanout formula had one hidden assumption: that a page's bytes were being spent well in the first place.",
+     "said": "fanout",
+     "heard": "fan out"
+    }
+   ]
+  },
+  "02": {
+   "hash": "3f2c18f9c297e284",
+   "takes": [
+    "3e4ab2da459d6d8e6201",
+    "d2ca9f8e74013cf15c91"
+   ],
+   "duration": 23.646,
+   "lines": [
+    {
+     "text": "A real page never shifts a tuple to make room for another. It keeps a small header and a slot array of fixed-size offsets, and grows its actual data from the opposite end.",
+     "start": 0.15,
+     "end": 12.207
+    },
+    {
+     "text": "That's the same trade an array of pointers makes over a packed array whenever entries vary in size: one layer of indirection, and nothing ever has to slide.",
+     "start": 12.627,
+     "end": 23.296
+    }
+   ],
+   "lufs": -16.1,
+   "true_peak": -2.3,
+   "wpm": 157,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "03": {
+   "hash": "a9ac0c6f4ebe1cd7",
+   "takes": [
+    "12017c4ca70913f35fb3",
+    "7edb30439be049c5ec79"
+   ],
+   "duration": 14.15,
+   "lines": [
+    {
+     "text": "A leaf just split in two.",
+     "start": 0.15,
+     "end": 2.285
+    },
+    {
+     "text": "Before the reveal, think about what the new routing entry above this split actually has to prove, and whether that's the same thing a leaf has to prove.",
+     "start": 2.705,
+     "end": 13.8
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 144,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "03a": {
+   "hash": "d36c7c58ee158f1f",
+   "takes": [
+    "98ebf1b96bd9cdc4b70d",
+    "5083280b7e11567bdf62"
+   ],
+   "duration": 15.841,
+   "lines": [
+    {
+     "text": "Only the bytes that still tell the two new halves apart. Nothing more ever gets copied up.",
+     "start": 0.15,
+     "end": 5.474
+    },
+    {
+     "text": "A leaf has to answer whether one exact key is present. A routing entry only has to pick a side, and that's a much smaller question.",
+     "start": 5.894,
+     "end": 15.491
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 163,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "04": {
+   "hash": "b5484a4e62e0e95b",
+   "takes": [
+    "3daf0c3b064d7a1f1fc7",
+    "fda48571c72b36bf5a5f",
+    "f6bfa9080932755171d4"
+   ],
+   "duration": 31.132,
+   "lines": [
+    {
+     "text": "So the new entry keeps only what distinguishes the last key on the left from the first key on the right, and drops everything after that point, at zero storage cost.",
+     "start": 0.15,
+     "end": 11.457
+    },
+    {
+     "text": "A leaf still can't do this. A leaf's whole job is answering whether the exact key is there, so a leaf keeps the key in full.",
+     "start": 11.877,
+     "end": 21.676
+    },
+    {
+     "text": "That asymmetry is the entire trick: the two node types are solving different questions, so only one of them can afford to forget.",
+     "start": 22.096,
+     "end": 30.782
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -2.0,
+   "wpm": 154,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "05": {
+   "hash": "9ac279e54e542e10",
+   "takes": [
+    "24bb6d83bfd016f520a8",
+    "5c23cd06cf4ed5026789"
+   ],
+   "duration": 23.81,
+   "lines": [
+    {
+     "text": "Normalization is a separate problem that happens to pay off on the same key. It isn't about shrinking what's stored, it's about shrinking what a comparison has to know.",
+     "start": 0.15,
+     "end": 10.718
+    },
+    {
+     "text": "Flip the sign bit, reorder the bytes big-endian, and a type-aware comparison becomes a comparison that doesn't need to know the type at all, just the raw bytes.",
+     "start": 11.138,
+     "end": 23.46
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -1.9,
+   "wpm": 149,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "06": {
+   "hash": "91d5ee82f090cd19",
+   "takes": [
+    "ce10ff0284f43f37fad9",
+    "c42eb1e1c213208ba4c6"
+   ],
+   "duration": 13.411,
+   "lines": [
+    {
+     "text": "A million keys, already sorted, need to become one tree.",
+     "start": 0.15,
+     "end": 4.651
+    },
+    {
+     "text": "Before the reveal, think about what descending from the root was ever for, and whether a sorted input still needs it.",
+     "start": 5.071,
+     "end": 13.061
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 139,
+   "wer": 0.047619047619047616,
+   "exact": false,
+   "tolerated": [
+    {
+     "line": "Before the reveal, think about what descending from the root was ever for, and whether a sorted input still needs it.",
+     "said": "sorted",
+     "heard": "sordid"
+    }
+   ]
+  },
+  "06a": {
+   "hash": "e5ab7cbb1020ef0b",
+   "takes": [
+    "4074847c6cb68a658c2d",
+    "f93a209c866650dd3095"
+   ],
+   "duration": 21.121,
+   "lines": [
+    {
+     "text": "Sort once, then build the leaf level directly from that order and link the levels above it upward.",
+     "start": 0.15,
+     "end": 7.423
+    },
+    {
+     "text": "Descending from the root exists to find where an unsorted key belongs. A sorted input already tells you exactly that, for every key, before a single page is written.",
+     "start": 7.843,
+     "end": 20.771
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 134,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "07": {
+   "hash": "059c102762e205f7",
+   "takes": [
+    "95c5a5a831e61c0df3c5",
+    "65123ce754c756a9c1be"
+   ],
+   "duration": 22.157,
+   "lines": [
+    {
+     "text": "So the leaves fill left to right, the growing root stays in memory rather than hitting disk, and the only page that can ever overflow is the one furthest to the right.",
+     "start": 0.15,
+     "end": 10.993
+    },
+    {
+     "text": "No root-to-leaf descent is ever wasted re-finding a page that already had room. That's the whole speed gain, and it's structural, not incidental.",
+     "start": 11.413,
+     "end": 21.807
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 157,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "08": {
+   "hash": "885fbf033acf9a6b",
+   "takes": [
+    "a98da881dcc7606e362d",
+    "86a044ee7f44d1551679"
+   ],
+   "duration": 24.919,
+   "lines": [
+    {
+     "text": "Fill factor just names how full a page gets packed on that kind of build, or on any append to the right edge.",
+     "start": 0.15,
+     "end": 8.07
+    },
+    {
+     "text": "There's no universal right answer here. A static table that's done taking writes wants every page packed as tight as it can go. One that keeps growing wants spare room reserved in advance, before the next key ever lands.",
+     "start": 8.49,
+     "end": 24.569
+    }
+   ],
+   "lufs": -16.2,
+   "true_peak": -1.8,
+   "wpm": 149,
+   "wer": 0.02564102564102564,
+   "exact": false,
+   "tolerated": [
+    {
+     "line": "There's no universal right answer here. A static table that's done taking writes wants every page packed as tight as it can go. One that keeps growing wants spare room reserved in advance, before the next key ever lands.",
+     "said": "writes",
+     "heard": "rights"
+    }
+   ]
+  },
+  "09": {
+   "hash": "943858471c2574ce",
+   "takes": [
+    "33bb300dd32d8f0fb205",
+    "ed8908177e38747e0a25"
+   ],
+   "duration": 25.982,
+   "lines": [
+    {
+     "text": "Deduplication merges every repeated key into one stored copy plus a list of pointers to the rows that share it, and it only ever runs at the instant a page was about to split anyway.",
+     "start": 0.15,
+     "end": 13.176
+    },
+    {
+     "text": "A background sweep would spend real disk trips rewriting pages that were never going to split in the first place. Waiting for the one moment that actually forces a rewrite spends none of that.",
+     "start": 13.596,
+     "end": 25.632
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 159,
+   "wer": 0.029411764705882353,
+   "exact": false,
+   "tolerated": [
+    {
+     "line": "A background sweep would spend real disk trips rewriting pages that were never going to split in the first place. Waiting for the one moment that actually forces a rewrite spends none of that.",
+     "said": "disk",
+     "heard": "disc"
+    }
+   ]
+  },
+  "10": {
+   "hash": "79ab5c5ed38abeb2",
+   "takes": [
+    "88cfadc760a72c1dce6c"
+   ],
+   "duration": 20.031,
+   "lines": [
+    {
+     "text": "Here's what actually got measured, not assumed: the exact byte savings truncation and normalization give a real key set, a bulk load's page writes against one-at-a-time insertion on the identical sorted input, and a deduplication ratio on a key set built to repeat.",
+     "start": 0.15,
+     "end": 19.681
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.8,
+   "wpm": 138,
+   "wer": 0.021739130434782608,
+   "exact": false,
+   "tolerated": [
+    {
+     "line": "Here's what actually got measured, not assumed: the exact byte savings truncation and normalization give a real key set, a bulk load's page writes against one-at-a-time insertion on the identical sorted input, and a deduplication ratio on a key set built to repeat.",
+     "said": "writes",
+     "heard": "rights"
+    }
+   ]
+  }
+ }
+}
