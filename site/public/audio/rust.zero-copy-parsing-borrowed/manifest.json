@@ -1,0 +1,375 @@
+{
+ "topic": "rust.zero-copy-parsing-borrowed",
+ "voice": "breeze-mellow-v2",
+ "asr": "large-v3-turbo",
+ "clips": {
+  "01": {
+   "hash": "900e005e0e705549",
+   "takes": [
+    "440ff34c9de2134c0e2f",
+    "999abcea59398f33964a"
+   ],
+   "duration": 24.083,
+   "lines": [
+    {
+     "text": "Here is a header pulled out of a raw buffer of bytes, and every one of its fields is simply a window onto that same buffer. Nothing about parsing it allocated a second copy anywhere.",
+     "start": 0.15,
+     "end": 15.025
+    },
+    {
+     "text": "That is the whole idea of a zero copy parse: the parsed value borrows the bytes it describes instead of duplicating them.",
+     "start": 15.745,
+     "end": 23.733
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -1.9,
+   "wpm": 142,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "02": {
+   "hash": "54e7a84a5a075696",
+   "takes": [
+    "28c7a7f2fe3fd59269fc",
+    "14acdf80d497b66c27e0",
+    "9359e977ea9af0563046"
+   ],
+   "duration": 22.032,
+   "lines": [
+    {
+     "text": "Now picture a function that builds its own buffer right there on the spot, as a plain owned vector, parses it, and tries to hand back that header.",
+     "start": 0.15,
+     "end": 9.961
+    },
+    {
+     "text": "Everything the header points at lives inside a value this function itself created and is about to throw away when it returns.",
+     "start": 10.381,
+     "end": 18.19
+    },
+    {
+     "text": "Does handing back that header actually compile?",
+     "start": 18.91,
+     "end": 21.682
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 155,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "02a": {
+   "hash": "04ad57f324c9d48b",
+   "takes": [
+    "94893c887a160127499a",
+    "8a7ee4c73a67562bb49b"
+   ],
+   "duration": 25.305,
+   "lines": [
+    {
+     "text": "No, and the reason is the same rule from last time, applied without exception. A borrow is never allowed to outlive the thing it was taken from.",
+     "start": 0.15,
+     "end": 10.573
+    },
+    {
+     "text": "The vector is dropped the moment this function ends, so a header still pointing into it would be pointing at memory that no longer belongs to anyone. The compiler refuses before that can ever happen.",
+     "start": 10.993,
+     "end": 24.955
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 147,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "03": {
+   "hash": "e4235e8493e12303",
+   "takes": [
+    "6c0343b821277be4d048",
+    "bb9b6196d1f2a76cfd8e"
+   ],
+   "duration": 29.202,
+   "lines": [
+    {
+     "text": "Try writing exactly that function, and the compiler's answer is specific rather than vague: it names the local variable by name and says plainly that you are returning a value which references data owned by the function you are already leaving.",
+     "start": 0.15,
+     "end": 20.022
+    },
+    {
+     "text": "That is the shape to recognize any time a function seems to hand back a borrow of something it only just created for itself.",
+     "start": 20.442,
+     "end": 28.852
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -2.0,
+   "wpm": 134,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "04": {
+   "hash": "fe73e63b63c7ee0a",
+   "takes": [
+    "9e8cee66115fc1988889",
+    "3abfe53bb26e784f7389"
+   ],
+   "duration": 24.257,
+   "lines": [
+    {
+     "text": "Here is a type built for exactly the mostly reading, occasionally writing case: it starts out simply borrowing, and only becomes its own independent copy the first moment something actually tries to change it.",
+     "start": 0.15,
+     "end": 15.27
+    },
+    {
+     "text": "Run it over data that never needs changing, and it quietly stays a borrow the entire time, no copy ever made.",
+     "start": 15.69,
+     "end": 23.907
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 136,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "05": {
+   "hash": "a868b3c4c4412a44",
+   "takes": [
+    "f8fe01b1dcf58c0e5d2b",
+    "f9eb7701afbd721c8a47"
+   ],
+   "duration": 19.554,
+   "lines": [
+    {
+     "text": "Call that same function twice: once on values that are all already fine as they are, and once on a list that has one value needing to be flipped.",
+     "start": 0.15,
+     "end": 10.862
+    },
+    {
+     "text": "So out of those two calls, which one is the call that actually ends up making its own private copy of the data?",
+     "start": 11.582,
+     "end": 19.204
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 160,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "05a": {
+   "hash": "4d7d53c2cf58ce86",
+   "takes": [
+    "eb1e5c9ce4be9e4c07b9",
+    "be164011ab0ba2e591c5"
+   ],
+   "duration": 18.253,
+   "lines": [
+    {
+     "text": "Only the second call, the one with something that genuinely needs changing, ever triggers a copy.",
+     "start": 0.15,
+     "end": 6.707
+    },
+    {
+     "text": "The first call never finds anything to flip, so the step that would have cloned is simply never reached, and the value stays a plain borrow the whole way through.",
+     "start": 7.127,
+     "end": 17.903
+    }
+   ],
+   "lufs": -16.0,
+   "true_peak": -2.2,
+   "wpm": 151,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "06": {
+   "hash": "393559ea9b351b20",
+   "takes": [
+    "0c6bf4110965f78ac7dd",
+    "773616ffead08e5da04b"
+   ],
+   "duration": 34.162,
+   "lines": [
+    {
+     "text": "Now here is a different kind of container entirely, one built specifically so that sharing never has to mean copying. A function can build its own buffer, hand this container back freely, and nothing about doing so counts as borrowing from that function's own stack.",
+     "start": 0.15,
+     "end": 18.756
+    },
+    {
+     "text": "Cloning this container only ever nudges a shared count up by one. Carving out a narrower view from it only ever narrows which part of the same memory you are looking at. Neither one duplicates a single byte.",
+     "start": 19.176,
+     "end": 33.812
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 146,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "07": {
+   "hash": "f493fde8a174c254",
+   "takes": [
+    "19a14dd579612088ffdf",
+    "f298dd20e767ed3ff528"
+   ],
+   "duration": 35.441,
+   "lines": [
+    {
+     "text": "Here is the attempt almost everyone eventually makes: a struct meant to own a string outright, plus a second field meant to borrow straight into that very same string, built and handed back together in one go.",
+     "start": 0.15,
+     "end": 16.284
+    },
+    {
+     "text": "The compiler produces two separate complaints about this one attempt, not one. It will not let you return something referencing data this function owns, and it will not let you move that same data out while something else is still actively borrowing it.",
+     "start": 16.704,
+     "end": 35.091
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 135,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "08": {
+   "hash": "3ec1a103ccf70581",
+   "takes": [
+    "2e0a4e011702d332bebb",
+    "8ef72128f7d07aaf8254"
+   ],
+   "duration": 16.696,
+   "lines": [
+    {
+     "text": "Now take that identical shape, an owned field plus a field meant to borrow it, and hand it to a tool built specifically to make this pattern safe.",
+     "start": 0.15,
+     "end": 9.9
+    },
+    {
+     "text": "Does this version, built through that tool's own generated helper, actually compile and work?",
+     "start": 10.62,
+     "end": 16.346
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -1.9,
+   "wpm": 151,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "08a": {
+   "hash": "63bb6269940521bb",
+   "takes": [
+    "2a5413ebfcedde38dd1a",
+    "d8c1d943a79b1b784297"
+   ],
+   "duration": 27.192,
+   "lines": [
+    {
+     "text": "Yes, and the trick is ordering. The owned field is settled into its final, permanent spot first, and only afterward is the borrowing field constructed against that now-stable location.",
+     "start": 0.15,
+     "end": 14.624
+    },
+    {
+     "text": "From the outside you no longer touch either field directly at all. You go through accessor methods the tool generates for you, which is exactly what keeps the whole arrangement sound.",
+     "start": 15.044,
+     "end": 26.842
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -1.9,
+   "wpm": 135,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "09": {
+   "hash": "4870aa1ba9e42d10",
+   "takes": [
+    "d30cdd71ae35741c746a",
+    "a02695bcce8142b1bdf0",
+    "03c34fc9f827c691c8d8"
+   ],
+   "duration": 43.357,
+   "lines": [
+    {
+     "text": "So why do tools like this exist at all, instead of everyone simply reaching for a raw unsafe block whenever this pattern comes up?",
+     "start": 0.15,
+     "end": 9.179
+    },
+    {
+     "text": "One well known version takes a borrowed, zero copy value and welds it permanently to the exact piece of owned data it was built from, so the pair can be passed around and stored as a single ordinary value from then on.",
+     "start": 9.729,
+     "end": 26.54
+    },
+    {
+     "text": "The people behind it describe this as erasing a lifetime the same way a certain kind of dynamic dispatch erases a concrete type: trading a compile time guarantee for a value that carries what it needs to stay valid as it travels.",
+     "start": 26.96,
+     "end": 43.007
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -1.9,
+   "wpm": 149,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "10": {
+   "hash": "c7adefcded07abbd",
+   "takes": [
+    "c37210e58d46b0a9e041",
+    "3f46d2ab7e6f4c3a66c0",
+    "4cab23049578c4a427ac",
+    "d3fac66412e04526d3fd",
+    "844cca2876076a756b85"
+   ],
+   "duration": 46.322,
+   "lines": [
+    {
+     "text": "So: a zero copy parse points straight at the buffer it came from, and a plain borrow can never survive past that buffer's own lifetime.",
+     "start": 0.15,
+     "end": 8.541
+    },
+    {
+     "text": "A clone on write value defers making its own copy until the exact moment something tries to change it, never sooner.",
+     "start": 8.961,
+     "end": 17.727
+    },
+    {
+     "text": "A shared, reference counted container sidesteps that limit entirely, by owning its share of the data instead of merely borrowing someone else's.",
+     "start": 18.147,
+     "end": 28.539
+    },
+    {
+     "text": "And a struct that wants to borrow its own field needs real, purpose built help to do it safely, not a plain reference sitting beside an owned one.",
+     "start": 28.959,
+     "end": 37.959
+    },
+    {
+     "text": "Next time: what a borrow actually needs once it tries to cross into another thread or another running task.",
+     "start": 38.679,
+     "end": 45.972
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 149,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  }
+ }
+}
