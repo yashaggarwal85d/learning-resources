@@ -1,0 +1,450 @@
+{
+ "topic": "de.incremental-models-snapshots-dbt",
+ "voice": "breeze-mellow-v2",
+ "asr": "large-v3-turbo",
+ "clips": {
+  "01": {
+   "hash": "a0d1eb72e525e679",
+   "takes": [
+    "cdd6cc2f237f634e0591",
+    "66b05f08354ee67ab7a7"
+   ],
+   "duration": 23.454,
+   "lines": [
+    {
+     "text": "Every model built in the last topic did the exact same thing on every single run.",
+     "start": 0.15,
+     "end": 7.07
+    },
+    {
+     "text": "Drop the table, rebuild it completely, from every row that has ever existed. That's fine at a small scale. What happens once a fact table has far, far too many rows for a full rebuild to stay practical?",
+     "start": 7.49,
+     "end": 23.104
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 138,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "02": {
+   "hash": "44d8b743d963ee03",
+   "takes": [
+    "07fac7abe39b8047f87e",
+    "5cd9bac6851ce393dabd"
+   ],
+   "duration": 18.03,
+   "lines": [
+    {
+     "text": "Here's the tool's own answer to that, stated directly.",
+     "start": 0.15,
+     "end": 3.702
+    },
+    {
+     "text": "One macro, returning true only under a specific, narrow set of conditions. That single condition is the entire mechanism that lets a run touch less than the whole table \u2014 nothing more exotic than that.",
+     "start": 4.122,
+     "end": 17.68
+    }
+   ],
+   "lufs": -16.2,
+   "true_peak": -2.6,
+   "wpm": 143,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "03": {
+   "hash": "f06bc529e8c82f8a",
+   "takes": [
+    "8fada5c14405e8130179",
+    "10b7d09d14200385d1a7"
+   ],
+   "duration": 17.075,
+   "lines": [
+    {
+     "text": "Here's a genuinely hard question worth guessing at first.",
+     "start": 0.15,
+     "end": 3.507
+    },
+    {
+     "text": "A correction to an old row shows up late, dated as of when it actually happened, not when it arrived. Widen the lookback window far enough, and does it always eventually get caught?",
+     "start": 3.927,
+     "end": 16.725
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 148,
+   "wer": 0.06060606060606061,
+   "exact": false,
+   "tolerated": [
+    {
+     "line": "A correction to an old row shows up late, dated as of when it actually happened, not when it arrived. Widen the lookback window far enough, and does it always eventually get caught?",
+     "said": "lookback",
+     "heard": "look back"
+    }
+   ]
+  },
+  "03a": {
+   "hash": "0549621b534648db",
+   "takes": [
+    "a7ff0d9df797a0a7f796",
+    "4dd41ff0f352d95a1c8a"
+   ],
+   "duration": 20.946,
+   "lines": [
+    {
+     "text": "No \u2014 a correction dated far enough in the past can outrun any lookback window at all.",
+     "start": 0.15,
+     "end": 5.936
+    },
+    {
+     "text": "A lookback window only reaches back a fixed distance behind the table's current high-water mark. A correction dated further back than that distance is missed no matter how wide the window gets set.",
+     "start": 6.356,
+     "end": 20.596
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -2.9,
+   "wpm": 143,
+   "wer": 0.125,
+   "exact": false,
+   "tolerated": [
+    {
+     "line": "No \u2014 a correction dated far enough in the past can outrun any lookback window at all.",
+     "said": "lookback",
+     "heard": "look back"
+    },
+    {
+     "line": "A lookback window only reaches back a fixed distance behind the table's current high-water mark. A correction dated further back than that distance is missed no matter how wide the window gets set.",
+     "said": "lookback",
+     "heard": "look back"
+    }
+   ]
+  },
+  "04": {
+   "hash": "be5502adcac9d18c",
+   "takes": [
+    "ed1a4ab8ac0c3546254b",
+    "c2e2fe6a482f526642bf"
+   ],
+   "duration": 24.577,
+   "lines": [
+    {
+     "text": "Here's that same fact table, rebuilt four genuinely different ways, all run for real.",
+     "start": 0.15,
+     "end": 7.112
+    },
+    {
+     "text": "Appending blindly, with no regard for duplicates. Deleting by key, then reinserting. Merging by key, updating in place. And splitting the whole thing into time-based batches instead of one pass.",
+     "start": 7.532,
+     "end": 24.227
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -2.1,
+   "wpm": 110,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "05": {
+   "hash": "50b996e8fcbb0fce",
+   "takes": [
+    "31299a292c724a1a206d",
+    "e6ba81396dde0bd933aa"
+   ],
+   "duration": 26.847,
+   "lines": [
+    {
+     "text": "Here's a fifth strategy, real and documented \u2014 and this lab's own database flatly can't run it.",
+     "start": 0.15,
+     "end": 7.783
+    },
+    {
+     "text": "Built specifically for warehouses that store data in separate physical partitions, meant to replace whole partitions at once. This project's own local database has no such partitions to replace, and its adapter simply doesn't implement the strategy at all.",
+     "start": 8.203,
+     "end": 26.497
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -1.9,
+   "wpm": 123,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "06": {
+   "hash": "aa41900cc3109c14",
+   "takes": [
+    "cd6cd10ef2632ec016f5",
+    "09e3b5dfd51c901622a6"
+   ],
+   "duration": 24.927,
+   "lines": [
+    {
+     "text": "Here's that missed correction, made completely real and then actually fixed.",
+     "start": 0.15,
+     "end": 5.419
+    },
+    {
+     "text": "An old row, given a genuinely old timestamp, built directly into this lab's own data. Every lookback-based strategy missed it outright, exactly as predicted. Only a full rebuild, discarding the lookback entirely, ever picked it up.",
+     "start": 5.839,
+     "end": 24.577
+    }
+   ],
+   "lufs": -16.1,
+   "true_peak": -2.2,
+   "wpm": 116,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "07": {
+   "hash": "e61d526c867f3743",
+   "takes": [
+    "4b9554d5caf91dcd4f14",
+    "55415f6accc6af44bd15"
+   ],
+   "duration": 26.492,
+   "lines": [
+    {
+     "text": "Here's a different kind of change to worry about \u2014 not a row this time, but a column.",
+     "start": 0.15,
+     "end": 5.815
+    },
+    {
+     "text": "Everything so far has assumed the model's own shape stays fixed while its data grows. Once someone edits the select statement itself, does the machinery built for changing data handle a changing structure the same way, or does structure break a different set of assumptions entirely?",
+     "start": 6.235,
+     "end": 26.142
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 143,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "07a": {
+   "hash": "1cfa63700477c1ce",
+   "takes": [
+    "373022b0572f4251b019",
+    "f1890988f269bc49f87f"
+   ],
+   "duration": 20.972,
+   "lines": [
+    {
+     "text": "No \u2014 by default, the new column is silently dropped, with no error raised anywhere at all.",
+     "start": 0.15,
+     "end": 7.75
+    },
+    {
+     "text": "The default behavior neither refuses the run nor warns about it. It simply ignores the change, and the new column never reaches the actual destination table.",
+     "start": 8.17,
+     "end": 20.622
+    }
+   ],
+   "lufs": -16.0,
+   "true_peak": -2.3,
+   "wpm": 120,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "08": {
+   "hash": "43425894466241a7",
+   "takes": [
+    "675d8118375c1e4aeb1c",
+    "5a6f945884b036e5511c"
+   ],
+   "duration": 27.993,
+   "lines": [
+    {
+     "text": "Here's that exact silent drop, made real, then fixed twice over, in three real stages.",
+     "start": 0.15,
+     "end": 7.098
+    },
+    {
+     "text": "Ignoring the change drops the new column completely, with a build that still reports success. Appending the column adds it for real, but leaves every row built before that moment empty. Only a full rebuild backfills every single row correctly.",
+     "start": 7.518,
+     "end": 27.643
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 118,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "09": {
+   "hash": "819383e2eca53a14",
+   "takes": [
+    "a237b1077309ca18fbc3",
+    "4dbd7423c1f4fcf93689"
+   ],
+   "duration": 25.758,
+   "lines": [
+    {
+     "text": "Here's a real customer's own region change, captured two different ways at once.",
+     "start": 0.15,
+     "end": 6.087
+    },
+    {
+     "text": "One strategy stamps its own record of that change using the data's own change time, straight from the source. The other strategy stamps it using whenever the snapshot itself happened to run \u2014 a genuinely different number, read directly off two real tables.",
+     "start": 6.507,
+     "end": 25.408
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -1.9,
+   "wpm": 128,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "10": {
+   "hash": "4aaee0e4148f1b89",
+   "takes": [
+    "183c431a28063236255c",
+    "b9a84bb6bed55e37c8f5",
+    "854ccd1a8d90ceea53b1"
+   ],
+   "duration": 41.454,
+   "lines": [
+    {
+     "text": "Here's the actual reasoning behind preferring one of those two strategies over the other.",
+     "start": 0.15,
+     "end": 5.575
+    },
+    {
+     "text": "The check strategy has to be told, by name, every column worth watching \u2014 add or rename one later, and it silently stops noticing changes there. Timestamp strategy only ever watches one column, so schema drift elsewhere can't quietly break it.",
+     "start": 5.995,
+     "end": 25.361
+    },
+    {
+     "text": "And that valid-from, valid-to pair either one writes is the same effective-and-expiry pair an earlier topic in this chapter built by hand with its own merge statement \u2014 this is that same idea, automated.",
+     "start": 25.781,
+     "end": 41.104
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 132,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "11": {
+   "hash": "b110bb46906f949b",
+   "takes": [
+    "f1111f2ed24bcd631b8b",
+    "0dea212877b77f01711e",
+    "cb460ab66e9998a794ee",
+    "03262476c139c2c1acd3"
+   ],
+   "duration": 30.91,
+   "lines": [
+    {
+     "text": "Let's put the whole picture back together.",
+     "start": 0.15,
+     "end": 2.37
+    },
+    {
+     "text": "Every one of these failures shares the same shape: the tool keeps doing exactly what it's configured to do.",
+     "start": 2.79,
+     "end": 9.668
+    },
+    {
+     "text": "The gap only shows up once someone asks a question the configuration was never built to answer \u2014 how far back, what happens to old rows, which clock a timestamp actually came from.",
+     "start": 10.088,
+     "end": 22.755
+    },
+    {
+     "text": "None of that is a bug to report. It's a setting to understand before trusting the table it produces.",
+     "start": 23.175,
+     "end": 30.56
+    }
+   ],
+   "lufs": -16.6,
+   "true_peak": -1.8,
+   "wpm": 149,
+   "wer": 0.03125,
+   "exact": false,
+   "tolerated": [
+    {
+     "line": "The gap only shows up once someone asks a question the configuration was never built to answer \u2014 how far back, what happens to old rows, which clock a timestamp actually came from.",
+     "said": "rows",
+     "heard": "rose"
+    }
+   ]
+  },
+  "12": {
+   "hash": "2c06c3171a85607c",
+   "takes": [
+    "e51dd5075d42bae9f239",
+    "108c59f80a515957c0d4"
+   ],
+   "duration": 17.95,
+   "lines": [
+    {
+     "text": "One closing scenario worth genuinely working through.",
+     "start": 0.15,
+     "end": 3.252
+    },
+    {
+     "text": "A fact table is append-only by nature, but every so often receives a correction to a row that's months old already. Which strategy, plus what extra care, actually handles both of those at once?",
+     "start": 3.672,
+     "end": 17.6
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -2.1,
+   "wpm": 140,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "12a": {
+   "hash": "7f97c1e93db31294",
+   "takes": [
+    "2ba1569bcf3b9b2cf2f2",
+    "fc6f14d5d3ea800ced58",
+    "7bb1a6d21bed08d0d7d0"
+   ],
+   "duration": 24.394,
+   "lines": [
+    {
+     "text": "Append alone only adds rows \u2014 it can never correct one that's already sitting there.",
+     "start": 0.15,
+     "end": 5.258
+    },
+    {
+     "text": "A merge or a delete-and-insert by key handles a recent correction through its own lookback just fine.",
+     "start": 5.678,
+     "end": 12.844
+    },
+    {
+     "text": "But an old-dated correction still needs a deliberate, scheduled full rebuild to ever actually land, no matter how that keyed strategy is tuned.",
+     "start": 13.264,
+     "end": 24.044
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 140,
+   "wer": 0.10526315789473684,
+   "exact": false,
+   "tolerated": [
+    {
+     "line": "A merge or a delete-and-insert by key handles a recent correction through its own lookback just fine.",
+     "said": "lookback",
+     "heard": "look back"
+    }
+   ]
+  }
+ }
+}
