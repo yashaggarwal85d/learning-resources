@@ -1,0 +1,407 @@
+{
+ "topic": "rust.tasks-multiplexed-on-worker",
+ "voice": "breeze-mellow-v2",
+ "asr": "large-v3-turbo",
+ "clips": {
+  "01": {
+   "hash": "81d5a09e1d35708c",
+   "takes": [
+    "f77c006b35ce00887bfa",
+    "cc6a0fde94033eb8220e"
+   ],
+   "duration": 15.948,
+   "lines": [
+    {
+     "text": "Spawn a hundred of these lightweight units of work onto a runtime that was only given two real worker threads to run on.",
+     "start": 0.15,
+     "end": 8.091
+    },
+    {
+     "text": "Does that actually start a hundred real operating-system threads underneath, one for each?",
+     "start": 8.811,
+     "end": 15.598
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 139,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "01a": {
+   "hash": "7152fbc747af85a6",
+   "takes": [
+    "4a00957687ca46fcd58d",
+    "e42213ef68f109f2a4bd"
+   ],
+   "duration": 20.659,
+   "lines": [
+    {
+     "text": "No, it genuinely does not \u2014 all one hundred run on the exact same two real threads, the whole time.",
+     "start": 0.15,
+     "end": 7.748
+    },
+    {
+     "text": "Each one of these units of work is a small, paused computation, not a thread at all, and a great many of them can sit multiplexed onto a very small number of real ones.",
+     "start": 8.168,
+     "end": 20.309
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 154,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "02": {
+   "hash": "d36f21c7c4bb1553",
+   "takes": [
+    "46917edf823dd9051ce0",
+    "0d5442adf1128f4a7433"
+   ],
+   "duration": 18.842,
+   "lines": [
+    {
+     "text": "That's the whole picture, drawn out: a small, fixed handful of real worker threads on one side, and a much larger flow of these lightweight units of work passing through them on the other.",
+     "start": 0.15,
+     "end": 13.284
+    },
+    {
+     "text": "Not a single one of them ever gets an operating system thread of its own.",
+     "start": 13.704,
+     "end": 18.492
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 156,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "03": {
+   "hash": "0df8648d57a3ff9f",
+   "takes": [
+    "ac679a3e128d41f99aad",
+    "866ffcb53a6c8e224c98"
+   ],
+   "duration": 25.742,
+   "lines": [
+    {
+     "text": "Now take a runtime with exactly one of these real worker threads, and give that one worker a call that genuinely never hands control back on its own \u2014 a real, blocking wait, with no pause point anywhere in it.",
+     "start": 0.15,
+     "end": 16.369
+    },
+    {
+     "text": "Right behind it, queue up a second unit of work that would otherwise finish instantly. What happens to that second one?",
+     "start": 17.089,
+     "end": 25.393
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -2.3,
+   "wpm": 140,
+   "wer": 0.047619047619047616,
+   "exact": false,
+   "tolerated": [
+    {
+     "line": "Right behind it, queue up a second unit of work that would otherwise finish instantly. What happens to that second one?",
+     "said": "queue",
+     "heard": "cue"
+    }
+   ]
+  },
+  "03a": {
+   "hash": "705e68a7b5cf5850",
+   "takes": [
+    "255077b5350566a96b37",
+    "f7d1211464e0b6eeaa5b"
+   ],
+   "duration": 17.371,
+   "lines": [
+    {
+     "text": "It simply has to wait \u2014 for the entire length of that blocking call, with nothing else available to run it on.",
+     "start": 0.15,
+     "end": 7.042
+    },
+    {
+     "text": "There is only the one real worker thread in this picture, and it is now completely occupied; nothing can make a second one appear out of nowhere.",
+     "start": 7.462,
+     "end": 17.021
+    }
+   ],
+   "lufs": -16.2,
+   "true_peak": -3.2,
+   "wpm": 166,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "04": {
+   "hash": "2801fcbe229c87ab",
+   "takes": [
+    "ca96d1e63fd4c76c5d6b",
+    "66c5a9e4bb2293d7ef43"
+   ],
+   "duration": 22.334,
+   "lines": [
+    {
+     "text": "Measure that wait directly rather than just describing it: record the exact moment the second, otherwise-instant unit of work was created, then record the exact moment it actually started running.",
+     "start": 0.15,
+     "end": 15.163
+    },
+    {
+     "text": "The gap between those two moments comes out to almost exactly the length of the blocking call ahead of it.",
+     "start": 15.583,
+     "end": 21.984
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 137,
+   "wer": 0.03225806451612903,
+   "exact": false,
+   "tolerated": [
+    {
+     "line": "Measure that wait directly rather than just describing it: record the exact moment the second, otherwise-instant unit of work was created, then record the exact moment it actually started running.",
+     "said": "wait",
+     "heard": "weight"
+    }
+   ]
+  },
+  "05": {
+   "hash": "32d97a22c96e67d5",
+   "takes": [
+    "234f7c189cf53c148fb6",
+    "0a507b7a553505c5bfcc"
+   ],
+   "duration": 20.93,
+   "lines": [
+    {
+     "text": "Here's a choice every one of these runtimes makes you commit to up front: build it with a whole fixed pool of these real worker threads, or build it with none of its own at all.",
+     "start": 0.15,
+     "end": 12.896
+    },
+    {
+     "text": "Is that choice just a style preference, with either one working equally well for any program?",
+     "start": 13.616,
+     "end": 20.58
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 149,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "05a": {
+   "hash": "3fb4beebf98fcde0",
+   "takes": [
+    "83900b50a21f87efe9da",
+    "f21008cf919e35cd4965"
+   ],
+   "duration": 22.55,
+   "lines": [
+    {
+     "text": "No \u2014 it's a real decision shaped by what the actual work looks like, not a matter of taste.",
+     "start": 0.15,
+     "end": 6.611
+    },
+    {
+     "text": "One of these two choices keeps its own pool of real threads running all the time regardless of anything else; the other one has no threads of its own at all, and only does anything while a specific call is actively driving it.",
+     "start": 7.031,
+     "end": 22.2
+    }
+   ],
+   "lufs": -16.1,
+   "true_peak": -2.4,
+   "wpm": 162,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "06": {
+   "hash": "de335a107d45d36d",
+   "takes": [
+    "97ddfcb11e37a301b233",
+    "c1efc6bee10f2dde7b74"
+   ],
+   "duration": 28.378,
+   "lines": [
+    {
+     "text": "The documentation says this almost exactly: the version with its own fixed pool is always running, because it spawned those real threads itself. The version with none of its own only ever runs while that one specific driving call is actively keeping it going.",
+     "start": 0.15,
+     "end": 20.444
+    },
+    {
+     "text": "Most programs should reach for the version that keeps its own pool running, except in the genuinely single-threaded cases.",
+     "start": 20.864,
+     "end": 28.028
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 135,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "07": {
+   "hash": "41abaa827c9d6e40",
+   "takes": [
+    "8e4fd970ef89b4c1ada7",
+    "ba9a03cf4c7da0dbd930"
+   ],
+   "duration": 17.364,
+   "lines": [
+    {
+     "text": "Take a value that was never designed to be handed safely from one real thread to another, and hold onto it across one of these units of work's own pause points.",
+     "start": 0.15,
+     "end": 10.381
+    },
+    {
+     "text": "Can that unit of work still be handed off to the fixed worker pool the ordinary way?",
+     "start": 11.101,
+     "end": 17.014
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -1.9,
+   "wpm": 166,
+   "wer": 0.03225806451612903,
+   "exact": false,
+   "tolerated": [
+    {
+     "line": "Take a value that was never designed to be handed safely from one real thread to another, and hold onto it across one of these units of work's own pause points.",
+     "said": "thread",
+     "heard": "threat"
+    }
+   ]
+  },
+  "07a": {
+   "hash": "e3929d79c493ac90",
+   "takes": [
+    "fbacb5beaa8cb849b2a8",
+    "992a88565d1c52e14463"
+   ],
+   "duration": 18.41,
+   "lines": [
+    {
+     "text": "No \u2014 and this is refused outright, not merely discouraged.",
+     "start": 0.15,
+     "end": 5.044
+    },
+    {
+     "text": "The ordinary way of handing work off to that fixed pool explicitly requires the result to be safe to move to any one of those real threads, and this one plainly is not.",
+     "start": 5.464,
+     "end": 18.06
+    }
+   ],
+   "lufs": -16.6,
+   "true_peak": -1.9,
+   "wpm": 137,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "08": {
+   "hash": "4811e0d8c1471435",
+   "takes": [
+    "3485ea94a71f328e0c6b",
+    "42e7ccd806bce66c123a"
+   ],
+   "duration": 19.137,
+   "lines": [
+    {
+     "text": "Try to compile exactly that, and the compiler does not just quietly refuse \u2014 it names the exact value responsible and says plainly why.",
+     "start": 0.15,
+     "end": 9.86
+    },
+    {
+     "text": "It points directly at the value held across the pause point and says it cannot be sent safely between threads at all.",
+     "start": 10.28,
+     "end": 18.787
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -3.1,
+   "wpm": 141,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "09": {
+   "hash": "422488e935c9c883",
+   "takes": [
+    "1bee0731183ebc122214",
+    "795c61e620f6528fcfa6"
+   ],
+   "duration": 33.41,
+   "lines": [
+    {
+     "text": "One real, documented alternative solves this by making an entirely different promise: a dedicated set of these units of work that will only ever run on the one specific real thread that started them, never moved anywhere else at all.",
+     "start": 0.15,
+     "end": 17.264
+    },
+    {
+     "text": "Hand that exact, identical, non-portable value through that alternative instead, and it runs correctly, start to finish, producing exactly the result it was always going to produce.",
+     "start": 17.684,
+     "end": 33.06
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -2.0,
+   "wpm": 122,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "10": {
+   "hash": "a81282ba57617be5",
+   "takes": [
+    "aa350cba2fe5849f5840",
+    "10dfb91cb1d720c3624f",
+    "88f7e766543ff973cf2a",
+    "f5bd02af0673f8145541"
+   ],
+   "duration": 59.226,
+   "lines": [
+    {
+     "text": "A great many lightweight units of work turned out to multiplex onto a small, fixed handful of real threads, never one each \u2014 and one of them left unable to step aside stalls every single one behind it, proven here with a real, measured wait.",
+     "start": 0.15,
+     "end": 18.913
+    },
+    {
+     "text": "Keeping a whole pool of real threads running, versus keeping none at all, turned out to be a genuine decision shaped by the actual work, not a matter of taste.",
+     "start": 19.333,
+     "end": 29.651
+    },
+    {
+     "text": "And a dedicated, single-thread-only alternative turned out to be the real, working answer for a value the ordinary path has to refuse outright.",
+     "start": 30.071,
+     "end": 41.31
+    },
+    {
+     "text": "A worker that's fully stalled stops everything behind it completely \u2014 but even one that isn't stalled still has to decide, piece by piece, exactly what runs next and exactly where a newly-woken piece of work actually goes.",
+     "start": 41.73,
+     "end": 58.876
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.8,
+   "wpm": 139,
+   "wer": 0.022727272727272728,
+   "exact": false,
+   "tolerated": [
+    {
+     "line": "A great many lightweight units of work turned out to multiplex onto a small, fixed handful of real threads, never one each \u2014 and one of them left unable to step aside stalls every single one behind it, proven here with a real, measured wait.",
+     "said": "wait",
+     "heard": "weight"
+    }
+   ]
+  }
+ }
+}
