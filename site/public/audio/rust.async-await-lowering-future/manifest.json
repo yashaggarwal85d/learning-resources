@@ -1,0 +1,342 @@
+{
+ "topic": "rust.async-await-lowering-future",
+ "voice": "breeze-mellow-v2",
+ "asr": "large-v3-turbo",
+ "clips": {
+  "01": {
+   "hash": "66d69f77ddb5041c",
+   "takes": [
+    "7ab2a3ad2629bd7673c3",
+    "0808b7be5fd519893b83"
+   ],
+   "duration": 21.23,
+   "lines": [
+    {
+     "text": "Write an ordinary-looking function, mark it with the keyword that turns it into one of these lazy computations, and call it, but don't wait on it yet.",
+     "start": 0.15,
+     "end": 11.241
+    },
+    {
+     "text": "In that exact moment, right after the call and before anything else, has any part of its body actually started running?",
+     "start": 11.961,
+     "end": 20.88
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -1.9,
+   "wpm": 138,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "01a": {
+   "hash": "748f8c14a5769e5c",
+   "takes": [
+    "e224a6b01a7c9ce189f3",
+    "e5d5a9a0e6de29c848be"
+   ],
+   "duration": 20.732,
+   "lines": [
+    {
+     "text": "No, nothing has started \u2014 a value comes back, and that's all that happened.",
+     "start": 0.15,
+     "end": 7.043
+    },
+    {
+     "text": "This is the same rule from last time, just reached by a shorter path: the keyword is sugar over building exactly that kind of lazy value, not an exception to how it behaves.",
+     "start": 7.463,
+     "end": 20.382
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -1.9,
+   "wpm": 133,
+   "wer": 0.06060606060606061,
+   "exact": false,
+   "tolerated": [
+    {
+     "line": "This is the same rule from last time, just reached by a shorter path: the keyword is sugar over building exactly that kind of lazy value, not an exception to how it behaves.",
+     "said": "keyword",
+     "heard": "key word"
+    }
+   ]
+  },
+  "02": {
+   "hash": "9111dc53063ca0b4",
+   "takes": [
+    "9794259e0fb442b9579e",
+    "7df419c4db26d511fb58"
+   ],
+   "duration": 20.99,
+   "lines": [
+    {
+     "text": "That's the whole story, under a different name: whatever produced it, a value that does nothing until polled is still just a value that does nothing until polled.",
+     "start": 0.15,
+     "end": 12.184
+    },
+    {
+     "text": "Nothing about writing it with that convenient syntax changes what it fundamentally is underneath.",
+     "start": 12.604,
+     "end": 20.64
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 120,
+   "wer": 0.07142857142857142,
+   "exact": false,
+   "tolerated": [
+    {
+     "line": "That's the whole story, under a different name: whatever produced it, a value that does nothing until polled is still just a value that does nothing until polled.",
+     "said": "polled",
+     "heard": "pulled"
+    },
+    {
+     "line": "That's the whole story, under a different name: whatever produced it, a value that does nothing until polled is still just a value that does nothing until polled.",
+     "said": "polled",
+     "heard": "pulled"
+    }
+   ]
+  },
+  "03": {
+   "hash": "9bbbb72ed3b60563",
+   "takes": [
+    "d6d0c1534f11882cfb2e",
+    "ab91b956d178f9cd6be5"
+   ],
+   "duration": 25.797,
+   "lines": [
+    {
+     "text": "So what does that convenient syntax actually turn into, underneath? The language's own specification says it plainly: a plain, anonymous piece of data \u2014 and describes its rough shape directly.",
+     "start": 0.15,
+     "end": 15.153
+    },
+    {
+     "text": "One labeled slot for every single pause point in the function, and each one holds exactly whatever local variables are still alive right there.",
+     "start": 15.573,
+     "end": 25.447
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 123,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "04": {
+   "hash": "2dfa40473a1ef62a",
+   "takes": [
+    "226504575949775e6a17",
+    "139d5da899a900023a39"
+   ],
+   "duration": 23.488,
+   "lines": [
+    {
+     "text": "Take two functions, identical except for one thing: right before the exact same pause point, one of them sets aside a sizeable chunk of local data that has to stay alive across it.",
+     "start": 0.15,
+     "end": 15.038
+    },
+    {
+     "text": "Does keeping that extra data alive across the pause point change how big the resulting value actually is?",
+     "start": 15.758,
+     "end": 23.138
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 130,
+   "wer": 0.030303030303030304,
+   "exact": false,
+   "tolerated": [
+    {
+     "line": "Take two functions, identical except for one thing: right before the exact same pause point, one of them sets aside a sizeable chunk of local data that has to stay alive across it.",
+     "said": "sizeable",
+     "heard": "sizable"
+    }
+   ]
+  },
+  "04a": {
+   "hash": "81322a0535b69b11",
+   "takes": [
+    "dc6d561e18b74ec42695",
+    "ab3800f9fecb112d2cd9"
+   ],
+   "duration": 14.097,
+   "lines": [
+    {
+     "text": "Yes, it genuinely does.",
+     "start": 0.15,
+     "end": 1.959
+    },
+    {
+     "text": "Whatever's still alive at that pause point has to be stored somewhere inside that one labeled slot, and a bigger local simply means a bigger slot to hold it.",
+     "start": 2.379,
+     "end": 13.747
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -3.0,
+   "wpm": 140,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "05": {
+   "hash": "16863ec6745cdf59",
+   "takes": [
+    "bab1c9bfe58b01e95e0b",
+    "55f30e5334755c1fe697"
+   ],
+   "duration": 22.352,
+   "lines": [
+    {
+     "text": "Measure both of these directly, with no need to run either one at all \u2014 just ask how many bytes each value actually takes up, right after it's built.",
+     "start": 0.15,
+     "end": 10.56
+    },
+    {
+     "text": "One comes back tiny, just about nothing. The other comes back holding over four thousand times that, because it's dragging that whole chunk of data along with it.",
+     "start": 10.98,
+     "end": 22.002
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 150,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "06": {
+   "hash": "675ff3c89414a091",
+   "takes": [
+    "1a00d201607b767316c5",
+    "0cc5ef988f49493d85d3"
+   ],
+   "duration": 21.834,
+   "lines": [
+    {
+     "text": "That difference in size isn't just a number sitting in a report somewhere \u2014 every single time a value like that one actually moves, every one of those bytes gets copied along with it.",
+     "start": 0.15,
+     "end": 12.481
+    },
+    {
+     "text": "Move it onto the heap, hand it to something that will run it later, and that whole, larger block travels with it, every time.",
+     "start": 12.901,
+     "end": 21.484
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 157,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "07": {
+   "hash": "3a44a25d800e26a2",
+   "takes": [
+    "e25582f7fc70bfe7b920",
+    "430ea5b8635258202ffc"
+   ],
+   "duration": 20.409,
+   "lines": [
+    {
+     "text": "Now swap that local for something else: a kind of reference-counted handle that was never designed to be handed safely from one thread to another.",
+     "start": 0.15,
+     "end": 11.105
+    },
+    {
+     "text": "Keep that same kind of handle alive across the identical pause point as before \u2014 does that cause any trouble at all?",
+     "start": 11.825,
+     "end": 20.059
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -2.8,
+   "wpm": 138,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "07a": {
+   "hash": "0642513cac1977f5",
+   "takes": [
+    "de51fa4bd88866eac472",
+    "49a66fd77d91970ed350"
+   ],
+   "duration": 20.959,
+   "lines": [
+    {
+     "text": "No, it is not fine at all \u2014 this genuinely breaks.",
+     "start": 0.15,
+     "end": 4.721
+    },
+    {
+     "text": "Whatever ends up stored inside one of those labeled slots carries its own properties along with it, and a slot holding something unsafe to move between threads makes the whole value unsafe to move between threads too.",
+     "start": 5.141,
+     "end": 20.609
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 135,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "08": {
+   "hash": "eb12955eabdcc671",
+   "takes": [
+    "a9fe8ec1197420f702ec",
+    "0b6ae11c2e5185f45c42"
+   ],
+   "duration": 21.386,
+   "lines": [
+    {
+     "text": "Try to actually compile that, and the compiler doesn't just quietly allow it \u2014 it refuses outright, and names exactly why.",
+     "start": 0.15,
+     "end": 8.957
+    },
+    {
+     "text": "It points at the handle itself, and at the exact pause point where that handle is still alive, and says plainly that the whole thing can't be handed safely between threads.",
+     "start": 9.377,
+     "end": 21.036
+    }
+   ],
+   "lufs": -16.4,
+   "true_peak": -1.9,
+   "wpm": 143,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  },
+  "09": {
+   "hash": "01f4fc33fca035ae",
+   "takes": [
+    "9abf272c920a1858bf6d",
+    "c7d65554fcb70186d63b"
+   ],
+   "duration": 35.514,
+   "lines": [
+    {
+     "text": "A function that looked entirely ordinary turns out to lower, underneath, to a real, inspectable value with real, measurable size \u2014 and everything already true about ordinary values turns out to still be true about this one.",
+     "start": 0.15,
+     "end": 18.862
+    },
+    {
+     "text": "That value, built from a chain of these labeled slots, is only simple as long as nothing inside one slot ever points at something else living in a different slot of the exact same value. What happens when it does?",
+     "start": 19.282,
+     "end": 35.164
+    }
+   ],
+   "lufs": -16.5,
+   "true_peak": -1.9,
+   "wpm": 128,
+   "wer": 0.0,
+   "exact": true,
+   "tolerated": []
+  }
+ }
+}
